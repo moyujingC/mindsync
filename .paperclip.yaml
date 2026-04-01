@@ -4,7 +4,7 @@
 
 # 公司信息
 company:
-  id: "6a1f17f0-f9e9-416e-bed4-0f1556a8fc33"
+  id: "e53a86d4-299d-4a9c-8db5-6e82c77b76c8"
   name: "墨予镜"
   description: "以墨予思，以镜观己"
   mode: "local_trusted"
@@ -116,7 +116,7 @@ projects:
 sync:
   # Agent 配置同步
   agents:
-    paperclip_base: "${HOME}/.paperclip/instances/default/companies/6a1f17f0-f9e9-416e-bed4-0f1556a8fc33/agents"
+    paperclip_base: "${HOME}/.paperclip/instances/default/companies/e53a86d4-299d-4a9c-8db5-6e82c77b76c8/agents"
     mindsync_base: "agents"
 
   # 同步方向
