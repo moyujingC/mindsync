@@ -1,0 +1,50 @@
+# MindSync - Git Ignore
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Secrets (never commit!)
+*.pem
+*.key
+.env
+.env.local
+secrets/
+
+# Node modules (if any)
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+
+# External dependencies (managed separately)
+external/*/
+!external/.gitkeep
+
+# Archive (keep structure but ignore large/old files)
+archive/**/*.zip
+archive/**/*.tar.gz

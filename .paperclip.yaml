@@ -1,0 +1,146 @@
+# .paperclip.yaml - 墨予镜公司 Paperclip 配置
+# 这是 MindSync 工作空间的核心配置文件
+# 定义了公司结构、Agents、Goals 和 Projects 的元数据
+
+# 公司信息
+company:
+  id: "6a1f17f0-f9e9-416e-bed4-0f1556a8fc33"
+  name: "墨予镜"
+  description: "以墨予思，以镜观己"
+  mode: "local_trusted"
+  host: "localhost"
+  port: 3100
+
+# Agent 配置
+agents:
+  - id: "d3d3f38e-7003-49d6-8301-825d8faf9ff8"
+    name: "CEO"
+    role: "ceo"
+    adapter: "claude_local"
+    directory: "agents/ceo"
+
+  - id: "8ee8ca86-8478-43e7-b22e-9878315a1271"
+    name: "Business Lead"
+    role: "business"
+    adapter: "claude_local"
+    directory: "agents/business-lead"
+
+  - id: "98779e06-b071-42c6-b6e9-ca42cf491578"
+    name: "Product Spec Lead"
+    role: "product_spec"
+    adapter: "claude_local"
+    directory: "agents/product-spec-lead"
+
+  - id: "c0cb9c1f-4dd9-4ca5-9d95-fb7dc67c078b"
+    name: "UI / UX"
+    role: "ui_ux"
+    adapter: "claude_local"
+    directory: "agents/ui-ux"
+
+  - id: "bae3a947-b810-476f-8a7c-ff7d85dbfe86"
+    name: "Research & Knowledge Lead"
+    role: "research_knowledge"
+    adapter: "claude_local"
+    directory: "agents/research-knowledge-lead"
+
+  - id: "fe0d2c95-79d8-4ec7-a05a-6ec7c1d84881"
+    name: "Architect"
+    role: "architect"
+    adapter: "claude_local"
+    directory: "agents/architect"
+
+  - id: "84ac6908-09f8-467b-a3fc-4a9c0b167a4f"
+    name: "Engineer"
+    role: "engineer"
+    adapter: "codex_local"
+    directory: "agents/engineer"
+
+  - id: "3896dab5-e7b2-4a87-9da2-97f73f08cafb"
+    name: "Test / QA"
+    role: "test_qa"
+    adapter: "codex_local"
+    directory: "agents/test-qa"
+
+  - id: "44c2d2c2-0b24-4e62-8397-b50ac1a72b2f"
+    name: "Content Lead"
+    role: "content"
+    adapter: "claude_local"
+    directory: "agents/content-lead"
+
+# Goal 配置
+goals:
+  - id: "6c77fbb6-2c8f-4c4a-a07d-d70334b4537c"
+    title: "书写和觉察"
+    description: "原始 onboarding goal"
+
+  - id: "5e306532-1d5c-4733-9a84-9804cfa2228d"
+    title: "一镜一梳上线"
+    projects:
+      - "ada487d0-5b78-44c6-b308-b711c13407d8"
+
+  - id: "8cadf9b9-969e-4d30-9c1b-2c6f8b051c02"
+    title: "怀瑾握瑜产品化"
+    projects:
+      - "00403f31-add0-4b19-b715-6652a4b3dfe3"
+
+  - id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
+    title: "墨予镜影响力建设"
+    projects:
+      - "6947ac34-cf22-4a87-bc4c-ded2edc77772"
+
+# Project 配置
+projects:
+  - id: "0570caa7-536b-460f-ac99-f270c1cd4640"
+    name: "Onboarding"
+    goal_id: "6c77fbb6-2c8f-4c4a-a07d-d70334b4537c"
+
+  - id: "ada487d0-5b78-44c6-b308-b711c13407d8"
+    name: "一镜一梳"
+    goal_id: "5e306532-1d5c-4733-9a84-9804cfa2228d"
+    directory: "projects/yijingyishu"
+    repository: "https://github.com/MindSyncHub/ai-mandala"
+    source_subdirectory: "src"
+
+  - id: "00403f31-add0-4b19-b715-6652a4b3dfe3"
+    name: "怀瑾握瑜"
+    goal_id: "8cadf9b9-969e-4d30-9c1b-2c6f8b051c02"
+    directory: "projects/huaijinnwooyu"
+    repository: "https://github.com/MindSyncHub/ai-career"
+    source_subdirectory: "src"
+
+  - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
+    name: "墨予镜内容"
+    goal_id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
+
+# 同步配置
+sync:
+  # Agent 配置同步
+  agents:
+    paperclip_base: "${HOME}/.paperclip/instances/default/companies/6a1f17f0-f9e9-416e-bed4-0f1556a8fc33/agents"
+    mindsync_base: "agents"
+
+  # 同步方向
+  # export: 从 Paperclip 导出到 mindsync (用于 Git 提交)
+  # import: 从 mindsync 导入到 Paperclip (应用到运行时)
+  default_direction: "export"
+
+# 工作空间配置
+workspace:
+  # 是否自动备份
+  auto_backup: true
+
+  # 备份间隔 (分钟)
+  backup_interval: 30
+
+  # 忽略的目录
+  ignore_dirs:
+    - "node_modules"
+    - "__pycache__"
+    - ".git"
+    - "*.log"
+
+  # 忽略的文件
+  ignore_files:
+    - ".DS_Store"
+    - "*.tmp"
+    - "*.temp"
