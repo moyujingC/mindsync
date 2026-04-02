@@ -22,7 +22,7 @@
 
 ### 公司设计与治理
 
-- [公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/公司蓝图.md)
+- [公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md)
 - [研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
 - [项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 - [内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)

@@ -8,14 +8,11 @@ version: 0.1.0
 goals:
   - 通过多角色 AI 协作推进产品、研究、内容与工程交付
   - 建立中文优先、文档优先、可持续演进的公司内核
-requirements:
-  secrets:
-    - OPENAI_API_KEY
 ---
 
 # 墨予镜
 
-`墨予镜` 是一个以中文协作为核心的混合型 AI 公司内核。
+`墨予镜` 是一个混合型 AI 公司内核。
 
 这个公司包聚焦于一套最小但完整的组织操作系统：
 
@@ -47,11 +44,60 @@ requirements:
 
 ## 仓库说明
 
-本仓库既是公司包，也是工作空间：
+本仓库既是公司包，也是 Monorepo 工作空间：
 
 - `agents/` 保存角色定义
 - `company/` 保存公司级原则与映射文档
+- `projects/` 保存项目级实现入口与项目工作区
 - `shared/` 保存共享工具
 - `.paperclip.yaml` 保存 Paperclip 运行时侧边配置
 
 导入到 Paperclip 后，`COMPANY.md` 作为公司入口，`agents/*/AGENTS.md` 作为组织核心角色定义。
+
+## 公司级必读文档
+
+进入 `墨予镜` 公司系统后，除 `COMPANY.md` 本身外，默认还应优先读取以下公司级文档：
+
+1. [company/公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md)
+2. [company/内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
+3. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+4. [company/研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
+5. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
+6. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
+
+其中：
+
+- `公司蓝图` 定义公司整体设计、组织模型与工作流边界
+- `内容矩阵` 定义个人号、产品号与 build in public 的内容定位
+- `项目与仓库映射` 定义公司项目对象与实际工作区 / Git 仓库之间的对应关系
+- `研发原则` 定义公司共享的工程与交付约束
+- `MONOREPO` 定义仓库分层、目录归属与迁移原则
+- `DOCS_GOVERNANCE` 定义 Harness Engineering、SDD、TDD 的最小执行规则
+
+## 信息分层
+
+为避免混层，默认按下面方式理解：
+
+- 公司级：
+  - `COMPANY.md`
+  - `company/公司蓝图.md`
+  - `company/内容矩阵.md`
+  - `company/项目与仓库映射.md`
+  - `company/研发原则.md`
+  - `MONOREPO.md`
+- 项目级：
+  - `company/projects/<项目名>/PROJECT.md`
+  - 该项目在 `company/projects/<项目名>/` 下的研究、纪要、任务定义、内容资产
+  - `projects/<project-slug>/PROJECT.md` 和项目专属文档
+
+默认不要把其他材料当成公司级固定必读；如果某份文档只服务某个项目，就应留在项目级入口下，而不是提升为公司级入口。
+
+## Paperclip 本地运维边界
+
+`shared/tools/` 下可以保留少量 Paperclip 本地运维脚本，例如环境变量装配、`local-cli` key 复用与旧 key 清理。
+
+这些能力只用于排障、调试与低频运维，不是公司的日常协作主路径。默认主路径应是：
+
+1. 在 Paperclip 中由 CEO 或相应负责人分派任务
+2. 直接在 `mindsync` 工作区完成文档治理、项目治理与实现工作
+3. 仅在需要排查本地身份、API 调试或运行时异常时，再使用本地运维脚本
