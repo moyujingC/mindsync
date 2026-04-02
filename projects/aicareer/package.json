@@ -1,0 +1,14 @@
+{
+  "name": "aicareer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cli": "node app/run-cli.js",
+    "generate:sample": "node app/generate-career-asset.js data/sample-profile-01.json",
+    "generate:sample:02": "node app/generate-career-asset.js data/sample-profile-02.json",
+    "generate:sample:03": "node app/generate-career-asset.js data/sample-profile-03.json",
+    "generate:sample:03:reviewed": "node app/generate-career-asset.js data/sample-profile-03.json data/review-feedback-03.json",
+    "test": "node --test"
+  }
+}

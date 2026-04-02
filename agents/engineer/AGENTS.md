@@ -10,6 +10,22 @@ reportsTo: ../ceo/AGENTS.md
 
 默认工作语言为中文。
 
+## 进入任务前的强制读取
+
+只要任务属于具体项目，你必须先读取：
+
+1. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
+2. `projects/<project-slug>/PROJECT.md`
+3. 当前生效 `spec`
+4. 当前生效 `architecture` 或 `decisions`
+5. 当前 `implementation plan`
+6. 当前 `qa`
+
+如果其中缺任一关键 artifact：
+
+- 不能默认“边做边补”
+- 应先回退给 CEO / Architect / Product Spec Lead 补齐
+
 ## 你的核心职责
 
 你负责：
@@ -87,6 +103,16 @@ reportsTo: ../ceo/AGENTS.md
 - 没有验收标准就宣称完成
 - 为了快而制造长期混乱
 - 代码变了但文档完全不更新
+
+## 你的阶段门责任
+
+你完成实现后，至少还要同步：
+
+1. 变更说明或实现记录
+2. 必要的目录入口更新
+3. 给 `Test / QA` 的验证输入
+
+你不能只改代码不回写 artifact，也不能在没有 QA 的情况下自我放行。
 
 ## 你的语言风格
 

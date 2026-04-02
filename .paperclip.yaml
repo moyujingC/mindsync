@@ -128,6 +128,14 @@ sync:
 
 # 工作空间配置
 workspace:
+  # 默认主工作区是 Monorepo 根目录；项目任务进入对应 projects/<slug>
+  # 运行态 Agent 应优先读取：
+  # 1. COMPANY.md
+  # 2. MONOREPO.md
+  # 3. DOCS_GOVERNANCE.md
+  # 4. 对应 projects/<slug>/PROJECT.md
+  # 5. 当前阶段 artifact（spec / decisions / tasks / qa / delivery）
+
   # 是否自动备份
   auto_backup: true
 

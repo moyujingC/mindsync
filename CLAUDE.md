@@ -7,6 +7,8 @@
 1. `AGENTS.md`
 2. `COMPANY.md`
 3. `.paperclip.yaml`
-4. 相关角色目录下的 `agents/*/AGENTS.md`
+4. `MONOREPO.md`
+5. `DOCS_GOVERNANCE.md`
+6. 相关角色目录下的 `agents/*/AGENTS.md`
 
-除非任务明确要求，否则不要把本仓库当作普通应用源码仓库处理。
+除非任务明确要求，否则不要把本仓库当作单应用仓库处理；应先判断任务属于公司内核、共享资源还是 `projects/` 下的具体项目。
