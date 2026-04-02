@@ -1,5 +1,5 @@
 # .paperclip.yaml - 墨予镜公司 Paperclip 配置
-# 这是 MindSync 工作空间的核心配置文件
+# 这是 MindSync Monorepo 工作空间的核心配置文件
 # 定义了公司结构、Agents、Goals 和 Projects 的元数据
 
 # 公司信息
@@ -69,17 +69,23 @@ agents:
 
 # Goal 配置
 goals:
-  - id: "6c77fbb6-2c8f-4c4a-a07d-d70334b4537c"
-    title: "书写和觉察"
-    description: "原始 onboarding goal"
-
   - id: "5e306532-1d5c-4733-9a84-9804cfa2228d"
     title: "一镜一梳上线"
     projects:
       - "ada487d0-5b78-44c6-b308-b711c13407d8"
 
+  - id: "40bb1c9f-91f9-4d73-9d32-1d0d7f8bb001"
+    title: "一镜一梳：产品内容号持续输出"
+    projects:
+      - "ada487d0-5b78-44c6-b308-b711c13407d8"
+
   - id: "8cadf9b9-969e-4d30-9c1b-2c6f8b051c02"
     title: "怀瑾握瑜产品化"
+    projects:
+      - "00403f31-add0-4b19-b715-6652a4b3dfe3"
+
+  - id: "73b94b65-4ee0-4f8d-84f6-e9ef6e4cc002"
+    title: "怀瑾握瑜：产品内容号持续输出"
     projects:
       - "00403f31-add0-4b19-b715-6652a4b3dfe3"
 
@@ -90,26 +96,22 @@ goals:
 
 # Project 配置
 projects:
-  - id: "0570caa7-536b-460f-ac99-f270c1cd4640"
-    name: "Onboarding"
-    goal_id: "6c77fbb6-2c8f-4c4a-a07d-d70334b4537c"
-
   - id: "ada487d0-5b78-44c6-b308-b711c13407d8"
     name: "一镜一梳"
     goal_id: "5e306532-1d5c-4733-9a84-9804cfa2228d"
-    directory: "projects/yijingyishu"
+    directory: "projects/aimandala"
     repository: "https://github.com/MindSyncHub/ai-mandala"
-    source_subdirectory: "src"
+    source_subdirectory: "."
 
   - id: "00403f31-add0-4b19-b715-6652a4b3dfe3"
     name: "怀瑾握瑜"
     goal_id: "8cadf9b9-969e-4d30-9c1b-2c6f8b051c02"
-    directory: "projects/huaijinnwooyu"
+    directory: "projects/aicareer"
     repository: "https://github.com/MindSyncHub/ai-career"
-    source_subdirectory: "src"
+    source_subdirectory: "."
 
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
-    name: "墨予镜内容"
+    name: "墨予镜 IP"
     goal_id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
 
 # 同步配置
