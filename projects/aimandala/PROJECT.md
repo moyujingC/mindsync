@@ -34,6 +34,7 @@
 1. [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
 2. [公司侧项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
 3. [AI-Mandala-迁移范围与工作区草案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
+4. [2026-04-04-首批迁移清单.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-04-首批迁移清单.md)
 
 ## 3. 当前迁移范围
 
