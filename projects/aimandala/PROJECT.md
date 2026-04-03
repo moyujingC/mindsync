@@ -35,6 +35,9 @@
 2. [公司侧项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
 3. [AI-Mandala-迁移范围与工作区草案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
 4. [2026-04-04-首批迁移清单.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-04-首批迁移清单.md)
+5. [2026-04-04-toc-mvp-spec.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md)
+6. [2026-04-04-toc-mvp-architecture.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-architecture.md)
+7. [2026-04-04-toc-mvp-qa-checklist.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md)
 
 ## 3. 当前迁移范围
 
@@ -61,6 +64,8 @@
   - 正式 spec、tasks、qa、decisions、delivery
 - `toC/`
   - To C 主产品实现主线
+  - 当前用户端以前手机端 Web 为主，后续应兼容小程序和 App 版扩展
+  - 用户端前端应采用“共享内核 + 渠道实现”的结构
 - `fixtures/`
   - 测试样本和模拟输入
 - `notes/`
