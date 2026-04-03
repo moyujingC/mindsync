@@ -51,3 +51,23 @@ handoff_to:
 - 是否写清下一步产物
 - 是否避免“一件事同时交给所有人”
 
+## 示例调用
+
+示例：
+
+- 输入：
+  - “我想研究本机 Paperclip 公司样本，最后给墨予镜补一批 skill。”
+
+## 示例产物
+
+最小结果应类似：
+
+- 工作流类型：
+  - research
+- 当前阶段：
+  - problem-framing / research brief
+- 主责角色：
+  - `Research & Knowledge Lead`
+- 下一步产物：
+  - 研究 brief
+  - 研究结论文档

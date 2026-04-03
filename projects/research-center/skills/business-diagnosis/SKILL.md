@@ -39,3 +39,22 @@ handoff_to:
 
 - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/business-diagnosis/templates/商业诊断模板.md`
 
+## 示例调用
+
+示例：
+
+- 输入：
+  - “中年转型这个方向到底值不值得做成产品？”
+
+## 示例产物
+
+最小结果应类似：
+
+- 用户：
+  - 中年转型人群
+- 场景：
+  - 求职 / 转型支持
+- 当前约束：
+  - 先验证付费意愿，不直接扩成完整产品
+- 建议：
+  - 先做最小验证动作

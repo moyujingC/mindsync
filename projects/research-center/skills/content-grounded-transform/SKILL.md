@@ -42,3 +42,20 @@ handoff_to:
 
 - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/content-grounded-transform/templates/内容转译模板.md`
 
+## 示例调用
+
+示例：
+
+- 输入：
+  - “把 Claude Code 研究转成一篇给墨予镜个人号的 build in public 选题结构。”
+
+## 示例产物
+
+最小结果应类似：
+
+- 内容角度：
+  - 为什么补 skill 比继续补 prompt 更重要
+- 推荐结构：
+  - 问题暴露 -> 研究对象 -> 关键发现 -> 墨予镜的动作
+- 需要避开的表述：
+  - 伪装成官方源码真相

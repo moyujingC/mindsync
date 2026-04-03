@@ -44,3 +44,18 @@ handoff_to:
 - 面向下游角色的使用建议
 - 下游下一步动作
 
+## 示例调用
+
+示例：
+
+- 输入：
+  - “把 Claude Code 的研究结论分别转给 Product 和 Content。”
+
+## 示例产物
+
+最小结果应类似：
+
+- 给 Product：
+  - 重点看 skill 协议和 P0 roadmap
+- 给 Content：
+  - 重点看‘为什么角色 prompt 不够、为什么要补 skill’这条表达线

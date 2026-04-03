@@ -92,3 +92,27 @@ handoff_to:
 - 如果已经具备对象、问题、范围和交付定义，可 handoff 给 `Research & Knowledge Lead`
 - 如果任务本质是产品定义而不是外部研究，应回退给 `Product Spec Lead`
 
+## 示例调用
+
+示例：
+
+- 输入：
+  - “研究一下 Claude Code 源码值不值得我们学，重点看 skill 和多 Agent，不要泛读全部代码。”
+- 期望动作：
+  - 先收束研究对象、研究问题、边界、服务对象和交付物
+
+## 示例产物
+
+最小结果应类似：
+
+- 研究对象：
+  - Claude Code 外部源码材料
+- 研究问题：
+  - skill 机制是什么
+  - 多 Agent 编排有什么值得借鉴
+- 服务对象：
+  - 研究中心 / CEO / Product / Architect
+- 交付物：
+  - 研究结论
+  - skill 启发
+  - 入库建议

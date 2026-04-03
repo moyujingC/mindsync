@@ -40,3 +40,22 @@ handoff_to:
 
 - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/architecture-boundary-plan/templates/架构边界模板.md`
 
+## 示例调用
+
+示例：
+
+- 输入：
+  - “我们已经决定要做 skill 体系，下一步如何进入可实现的架构边界？”
+
+## 示例产物
+
+最小结果应类似：
+
+- 模块边界：
+  - skill 协议
+  - skill 存储目录
+  - 角色引用层
+- 不做范围：
+  - 远程 marketplace
+- handoff：
+  - 给 `Engineer` 做目录与接线实现

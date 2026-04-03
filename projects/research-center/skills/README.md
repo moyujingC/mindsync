@@ -38,6 +38,10 @@
   - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/技能编写与维护规范.md`
 - 技能评审清单：
   - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/技能评审清单.md`
+- 技能接入准备方案：
+  - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/技能接入准备方案.md`
+- 技能统一索引：
+  - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/技能统一索引.md`
 
 ## 当前说明
 

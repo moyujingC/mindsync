@@ -90,3 +90,26 @@ handoff_to:
 - 只给摘要、不给约束时，不算合格 handoff
 - 若当前阶段结论不足，应先补 artifact，再 handoff
 
+## 示例调用
+
+示例：
+
+- 当前情况：
+  - Claude Code 研究已经完成第一轮结论
+- 目标：
+  - 交给 `Product Spec Lead` 继续判断哪些能力该优先产品化
+
+## 示例产物
+
+最小结果应类似：
+
+- 当前阶段：
+  - research
+- 已确认结论：
+  - Claude Code 值得学的是 skill 协议和 coordinator 思路
+- 下游角色：
+  - `Product Spec Lead`
+- 明确产物：
+  - 第一批 skill roadmap
+- 禁止改写范围：
+  - 不直接改写公司蓝图和项目定位
