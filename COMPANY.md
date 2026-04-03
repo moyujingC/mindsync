@@ -52,6 +52,9 @@ goals:
 - `shared/` 保存共享工具
 - `.paperclip.yaml` 保存 Paperclip 运行时侧边配置
 
+对象主数据以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为唯一权威清单。
+其他文档只解释结构、治理与协作方式，不重复维护对象主数据。
+
 导入到 Paperclip 后，`COMPANY.md` 作为公司入口，`agents/*/AGENTS.md` 作为组织核心角色定义。
 
 ## 公司级必读文档
@@ -59,20 +62,22 @@ goals:
 进入 `墨予镜` 公司系统后，除 `COMPANY.md` 本身外，默认还应优先读取以下公司级文档：
 
 1. [company/公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md)
-2. [company/内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
-3. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+2. [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml)
+3. [company/内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
 4. [company/研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
 5. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
 6. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
+7. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 
 其中：
 
 - `公司蓝图` 定义公司整体设计、组织模型与工作流边界
+- `项目注册表` 定义公司对象清单、对象类型与入口路径，是唯一权威注册表
 - `内容矩阵` 定义个人号、产品号与 build in public 的内容定位
-- `项目与仓库映射` 定义公司项目对象与实际工作区 / Git 仓库之间的对应关系
 - `研发原则` 定义公司共享的工程与交付约束
-- `MONOREPO` 定义仓库分层、目录归属与迁移原则
-- `DOCS_GOVERNANCE` 定义 Harness Engineering、SDD、TDD 的最小执行规则
+- `MONOREPO` 定义仓库分层、对象类型与目录归属原则
+- `DOCS_GOVERNANCE` 定义正式文档的状态、元数据和 artifact 规则
+- `项目与仓库映射` 解释注册表中的对象如何映射到当前 Monorepo 与历史仓库
 
 ## 信息分层
 
@@ -81,10 +86,11 @@ goals:
 - 公司级：
   - `COMPANY.md`
   - `company/公司蓝图.md`
+  - `company/项目注册表.yaml`
   - `company/内容矩阵.md`
-  - `company/项目与仓库映射.md`
   - `company/研发原则.md`
   - `MONOREPO.md`
+  - `DOCS_GOVERNANCE.md`
 - 项目级：
   - `company/projects/<项目名>/PROJECT.md`
   - 该项目在 `company/projects/<项目名>/` 下的研究、纪要、任务定义、内容资产

@@ -3,10 +3,11 @@
 > 状态：current
 > 版本：0.1.0
 > owner：CEO / Orchestrator
-> last_updated：2026-04-02
+> last_updated：2026-04-04
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md
 
 这份文档定义 `墨予镜` 在 `mindsync` Monorepo 中如何落实 `Harness Engineering`、`SDD`、`TDD` 与 `Docs As System`。
+它只负责定义正式文档如何写、如何分类、如何进入 handoff，不负责维护公司对象清单或目录结构主数据。
 
 ## 1. 目标
 
@@ -70,6 +71,8 @@
 
 - 公司规则
   - 放在 `company/` 或仓库根目录治理文件
+- 公司对象注册表
+  - 放在 `company/项目注册表.yaml`
 - 项目定义
   - 放在 `projects/<project-slug>/PROJECT.md`
 - 公司视角项目结论
@@ -86,6 +89,9 @@
   - 放在 `projects/<project-slug>/delivery/`
 - 临时笔记
   - 放在 `projects/<project-slug>/notes/`
+
+对象类型、对象状态、入口路径和历史来源不在这里维护；
+这些主数据统一以 `company/项目注册表.yaml` 为准。
 
 ## 6. Harness Engineering 最小检查项
 
@@ -146,6 +152,8 @@
 
 以下变更必须同步更新相关文档：
 
+- 对象新增、停用、改名、改类型
+  - 更新 `company/项目注册表.yaml`
 - 项目定位变化
   - 更新 `PROJECT.md`
 - 产品范围变化
