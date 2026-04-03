@@ -19,6 +19,7 @@
 当前首批样例：
 
 - `research-brief`
+- `research-synthesis`
 - `handoff-packaging`
 - `product-framing-spec`
 - `knowledge-ingest`
@@ -55,7 +56,7 @@
 当前已经完成：
 
 - 7 个核心角色的基础 skill 引用接入
-- 至少 3 条真实试跑链路的首轮验证
+- 多条真实试跑链路验证
 
 当前还没有完成：
 

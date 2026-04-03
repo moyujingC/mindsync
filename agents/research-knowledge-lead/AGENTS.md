@@ -51,6 +51,11 @@ reportsTo: ../ceo/AGENTS.md
   - 位置：
     - [research-brief](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-brief/SKILL.md)
 
+- `research-synthesis`
+  - 当研究已经形成事实材料，需要进一步收束成综合结论时使用
+  - 位置：
+    - [research-synthesis](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-synthesis/SKILL.md)
+
 - `knowledge-ingest`
   - 当研究已经形成稳定结论，需要判断哪些内容值得正式入库时使用
   - 位置：
