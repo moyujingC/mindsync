@@ -1,6 +1,8 @@
 # .paperclip.yaml - 墨予镜公司 Paperclip 配置
 # 这是 MindSync Monorepo 工作空间的核心配置文件
 # 定义了公司结构、Agents、Goals 和 Projects 的元数据
+# 公司对象主数据以 company/项目注册表.yaml 为治理源；
+# 本文件保留 Paperclip 运行时所需的映射和兼容配置。
 
 # 公司信息
 company:
@@ -94,6 +96,11 @@ goals:
     projects:
       - "6947ac34-cf22-4a87-bc4c-ded2edc77772"
 
+  - id: "2fd64a9d-31af-4cf6-a57a-a7b4abda1004"
+    title: "研究中心建设"
+    projects:
+      - "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
+
 # Project 配置
 projects:
   - id: "ada487d0-5b78-44c6-b308-b711c13407d8"
@@ -114,6 +121,13 @@ projects:
     name: "墨予镜 IP"
     goal_id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
 
+  - id: "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
+    name: "研究中心"
+    goal_id: "2fd64a9d-31af-4cf6-a57a-a7b4abda1004"
+    directory: "projects/research-center"
+    repository: "https://github.com/MindSyncHub/mindsync"
+    source_subdirectory: "projects/research-center"
+
 # 同步配置
 sync:
   # Agent 配置同步
@@ -131,10 +145,11 @@ workspace:
   # 默认主工作区是 Monorepo 根目录；项目任务进入对应 projects/<slug>
   # 运行态 Agent 应优先读取：
   # 1. COMPANY.md
-  # 2. MONOREPO.md
-  # 3. DOCS_GOVERNANCE.md
-  # 4. 对应 projects/<slug>/PROJECT.md
-  # 5. 当前阶段 artifact（spec / decisions / tasks / qa / delivery）
+  # 2. company/项目注册表.yaml
+  # 3. MONOREPO.md
+  # 4. DOCS_GOVERNANCE.md
+  # 5. 对应 projects/<slug>/PROJECT.md
+  # 6. 当前阶段 artifact（spec / decisions / tasks / qa / delivery）
 
   # 是否自动备份
   auto_backup: true
