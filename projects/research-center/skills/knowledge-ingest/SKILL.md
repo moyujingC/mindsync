@@ -1,0 +1,76 @@
+---
+name: knowledge-ingest
+description: 把研究结论转成结构化长期知识条目，避免研究停留在聊天和散笔记中。
+owner: Research & Knowledge Lead
+status: draft
+version: 0.1.0
+skill_type: shared
+applies_to:
+  - research_knowledge
+  - ceo
+when_to_use: >
+  当研究、拆解或方法总结已经形成稳定结论，需要判断哪些内容值得正式进入长期知识库时使用。
+inputs:
+  - 研究结论
+  - 模式抽象
+  - 复用判断
+outputs:
+  - 知识入库条目
+handoff_to:
+  - Research & Knowledge Lead
+---
+
+# Knowledge Ingest
+
+## 目标
+
+把“这次研究有价值”收束成“哪些内容值得长期保留，以及应该以什么形式保留”。
+
+## 适用场景
+
+- 研究对象已经完成第一轮拆解
+- 已经有可复用模式、方法或判断
+- 某项结论可能会被多个 Agent 反复用到
+
+## 不适用场景
+
+- 研究还停留在资料收集阶段
+- 当前只有零散观察，没有稳定结论
+- 只是项目局部状态更新，不具备长期复用价值
+
+## 必读上下文
+
+1. 当前研究任务文档
+2. 当前研究结论文档
+3. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
+
+## 执行步骤
+
+1. 先判断哪些结论具备长期复用价值。
+2. 区分哪些是事实、哪些是模式、哪些是启发。
+3. 判断更适合做：
+   - 方法条目
+   - 模式条目
+   - 案例条目
+   - 观点条目
+4. 写清来源、适用范围和不适用范围。
+5. 记录后续可能的维护责任。
+
+## 输出格式
+
+建议基于：
+
+- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/knowledge-ingest/templates/知识条目-模板.md`
+
+## 质量检查项
+
+- 是否明确为什么值得长期保留
+- 是否明确可复用范围
+- 是否避免把一次性状态记成长期知识
+- 是否保留来源路径
+
+## Handoff 规则
+
+- 入库后应回链到原始研究文档
+- 如果条目仍高度依赖上下文，应先保留在研究文档，不强行入库
+

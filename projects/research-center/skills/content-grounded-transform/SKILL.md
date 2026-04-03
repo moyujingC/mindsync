@@ -1,0 +1,44 @@
+---
+name: content-grounded-transform
+description: 基于真实研究、真实项目素材和真实个人边界做内容转译，不用外部拼装伪专业感。
+owner: Content Lead
+status: draft
+version: 0.1.0
+skill_type: role-specific
+applies_to:
+  - content
+  - ceo
+when_to_use: >
+  当任务需要把研究、产品、实践结论转成内容角度、大纲或表达结构时使用。
+inputs:
+  - 研究或项目素材
+  - 目标账号
+outputs:
+  - 内容转译结构
+handoff_to:
+  - content
+---
+
+# Content Grounded Transform
+
+## 目标
+
+确保内容专业度来自真实上游材料，而不是内容侧自行拼装外部资料。
+
+## 执行步骤
+
+1. 确认素材来源项目。
+2. 确认发布账号归属。
+3. 判断是观点、方法、主题还是转化内容。
+4. 把上游素材转成：
+   - 内容角度
+   - 结构建议
+   - 可传播论点
+5. 写清不能越界补写的部分。
+
+## 输出格式
+
+建议基于：
+
+- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/content-grounded-transform/templates/内容转译模板.md`
+
