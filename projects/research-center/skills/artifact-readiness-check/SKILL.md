@@ -42,6 +42,10 @@ handoff_to:
 - 缺失项：
 - 补齐建议：
 
+建议优先复用：
+
+- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/artifact-readiness-check/templates/Artifact-Readiness-Checklist.md`
+
 ## 示例调用
 
 示例：

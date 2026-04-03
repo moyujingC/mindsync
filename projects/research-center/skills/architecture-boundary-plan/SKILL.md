@@ -39,6 +39,7 @@ handoff_to:
 建议基于：
 
 - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/architecture-boundary-plan/templates/架构边界模板.md`
+- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/architecture-boundary-plan/templates/架构边界-快速检查清单.md`
 
 ## 示例调用
 
