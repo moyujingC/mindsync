@@ -72,6 +72,25 @@ reportsTo: ../ceo/AGENTS.md
 5. 有哪些可选方案，各自代价是什么
 6. 当前阶段最合理的推进边界是什么
 
+## 你优先使用的 skill
+
+当任务已经进入产品定义阶段时，你优先使用：
+
+- `product-framing-spec`
+  - 用于把模糊方向、研究输入和业务判断收束成明确的 framing / spec
+  - 位置：
+    - [product-framing-spec](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/product-framing-spec/SKILL.md)
+
+- `artifact-readiness-check`
+  - 当你准备把 `spec` 推进给 `Architect` 或 `Engineer` 时，先检查 artifact 是否成立
+  - 位置：
+    - [artifact-readiness-check](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/artifact-readiness-check/SKILL.md)
+
+- `handoff-packaging`
+  - 用于把产品定义打包成正式交接输入
+  - 位置：
+    - [handoff-packaging](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/handoff-packaging/SKILL.md)
+
 ## 你的输入来源
 
 你通常从下面几类输入开始工作：

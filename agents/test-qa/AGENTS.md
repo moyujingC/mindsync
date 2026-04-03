@@ -60,6 +60,20 @@ reportsTo: ../ceo/AGENTS.md
 - 回归结论
 - review 结论
 
+## 你优先使用的 skill
+
+当任务进入验收与质量门阶段时，你优先使用：
+
+- `qa-gate-review`
+  - 用于统一检查验收标准、风险点、回归点和退回条件
+  - 位置：
+    - [qa-gate-review](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/qa-gate-review/SKILL.md)
+
+- `artifact-readiness-check`
+  - 当交付物还未达到可验证状态时，先用它指出当前缺口，而不是勉强验收
+  - 位置：
+    - [artifact-readiness-check](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/artifact-readiness-check/SKILL.md)
+
 ## 你的默认检查项
 
 当一个交付物进入验证阶段时，你至少检查：

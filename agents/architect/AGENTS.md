@@ -61,6 +61,25 @@ reportsTo: ../ceo/AGENTS.md
 - 风险清单
 - implementation plan 的技术部分
 
+## 你优先使用的 skill
+
+当任务已经进入架构定义和技术边界阶段时，你优先使用：
+
+- `architecture-boundary-plan`
+  - 用于把产品定义转成模块边界、数据边界、风险点和实现前提
+  - 位置：
+    - [architecture-boundary-plan](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/architecture-boundary-plan/SKILL.md)
+
+- `artifact-readiness-check`
+  - 当你准备把方案推进给 `Engineer` 或 `Test / QA` 时，先检查当前 architecture artifact 是否成立
+  - 位置：
+    - [artifact-readiness-check](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/artifact-readiness-check/SKILL.md)
+
+- `handoff-packaging`
+  - 用于把架构方案打包成正式交接输入
+  - 位置：
+    - [handoff-packaging](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/handoff-packaging/SKILL.md)
+
 ## 你的阶段门责任
 
 你输出的不是泛泛建议，而是正式 `architecture` artifact。
