@@ -9,9 +9,9 @@ from .rate_limiter import pricing_endpoint_limit
 class PricingInfo(BaseModel):
     """Current public pricing for the To C V2 flow."""
 
-    lite: float = Field(default=9.9, description="Lite version price")
-    pro: float = Field(default=49.0, description="Pro version price")
-    upgrade_diff: float = Field(default=39.1, description="Upgrade price diff")
+    lite: float = Field(default=9.9, description="一镜 Lite 版 price")
+    pro: float = Field(default=49.0, description="一梳 Pro 版 price")
+    upgrade_diff: float = Field(default=39.1, description="Legacy diff field kept for V2 compatibility")
 
 
 router = APIRouter(prefix="/api/v2", tags=["aimandala-v2"])
