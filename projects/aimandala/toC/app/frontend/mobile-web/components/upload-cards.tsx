@@ -1,3 +1,5 @@
+import { useRef } from "react";
+
 import type {
   UploadPageChecklistItem,
   UploadPageField,
@@ -14,13 +16,20 @@ export interface UploadFormCardProps {
 export interface UploadAssetCardProps {
   imagePath: string;
   onUseSample?: () => void;
+  onSelectBrowserFile?: (filePath: string) => void;
 }
 
 export function UploadAssetCard({
   imagePath,
   onUseSample,
+  onSelectBrowserFile,
 }: UploadAssetCardProps) {
   const hasImage = Boolean(imagePath);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  function handlePickFile() {
+    fileInputRef.current?.click();
+  }
 
   return (
     <article className="mw-card mw-card--asset">
@@ -31,21 +40,54 @@ export function UploadAssetCard({
         </span>
       </div>
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="mw-visually-hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (!file) {
+            return;
+          }
+
+          onSelectBrowserFile?.(`browser-file:${file.name}`);
+        }}
+      />
+
       <button
         type="button"
         className="mw-upload-dropzone"
-        onClick={onUseSample}
+        onClick={handlePickFile}
       >
         <span className="mw-upload-dropzone__icon">+</span>
-        <strong>{hasImage ? "更换画作路径" : "选择一张曼陀罗画作"}</strong>
+        <strong>{hasImage ? "重新选择一张画作" : "选择一张曼陀罗画作"}</strong>
         <small>
-          当前先用占位方式承接手机端上传体验，后续再接真实文件选择能力。
+          当前先接浏览器原生选图，后续再把文件对象和上传接口正式串起来。
         </small>
       </button>
+
+      <div className="mw-upload-actions">
+        <button
+          type="button"
+          className="mw-secondary-button mw-secondary-button--inline"
+          onClick={handlePickFile}
+        >
+          从当前设备选择
+        </button>
+        <button
+          type="button"
+          className="mw-secondary-button mw-secondary-button--inline"
+          onClick={onUseSample}
+        >
+          使用示例路径
+        </button>
+      </div>
 
       <div className="mw-upload-hint">
         <span>当前文件</span>
         <strong>{imagePath || "尚未选择文件"}</strong>
+        <small>浏览器选图当前会回填为 `browser-file:文件名`，仅用于前端开发预览。</small>
       </div>
     </article>
   );

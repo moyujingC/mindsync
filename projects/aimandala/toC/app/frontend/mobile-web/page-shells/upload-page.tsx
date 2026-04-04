@@ -50,6 +50,11 @@ export function MobileWebUploadPage({
         <UploadAssetCard
           imagePath={descriptor.draft.imagePath}
           onUseSample={handleUseSampleAsset}
+          onSelectBrowserFile={(filePath) => {
+            onDraftChange?.({
+              imagePath: filePath,
+            });
+          }}
         />
       </section>
 

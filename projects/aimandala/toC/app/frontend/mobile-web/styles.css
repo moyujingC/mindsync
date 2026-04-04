@@ -29,6 +29,18 @@ select {
   min-height: 100vh;
 }
 
+.mw-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .browser-shell {
   min-height: 100vh;
 }
@@ -389,6 +401,17 @@ select {
   word-break: break-word;
 }
 
+.mw-upload-hint small {
+  color: #7c6850;
+}
+
+.mw-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 .mw-checklist {
   display: grid;
   gap: 10px;
@@ -496,6 +519,11 @@ select {
   background: rgba(255, 255, 255, 0.78);
   color: #5d4d37;
   font-weight: 600;
+}
+
+.mw-secondary-button--inline {
+  width: auto;
+  padding: 10px 14px;
 }
 
 @media (max-width: 920px) {
