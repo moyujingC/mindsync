@@ -289,6 +289,25 @@ class LayeredOrchestrator:
             return "pro"
         return "lite"
 
+    def get_status(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
+        """Return a compact status snapshot for polling clients."""
+
+        record = self.store.load(interpretation_id)
+        if record is None:
+            return None
+
+        return {
+            "interpretation_id": record.interpretation_id,
+            "status": record.status,
+            "generation_stage": record.generation_stage,
+            "generation_progress": record.generation_progress,
+            "report_ready": record.layer_2_lite_final is not None,
+            "version_purchased": record.version_purchased,
+            "three_circles": record.three_circles or {},
+            "auto_detected": record.three_circles_auto_detect is not None,
+            "can_upgrade": record.can_upgrade_to_pro(),
+        }
+
     def _build_lite_placeholder_report(self, record: InterpretationRecord) -> Layer2LiteFinal:
         theme = record.theme or "general"
         circle_info = record.three_circles or {"inner_radius": 33, "middle_radius": 66}

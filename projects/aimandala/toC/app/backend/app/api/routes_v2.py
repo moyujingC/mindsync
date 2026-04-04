@@ -65,6 +65,20 @@ class InterpretationRecordResponse(BaseModel):
     created_at: str
 
 
+class InterpretationStatusResponse(BaseModel):
+    """Compact status payload for polling interpretation progress."""
+
+    interpretation_id: str
+    status: str
+    generation_stage: str
+    generation_progress: int
+    report_ready: bool
+    version_purchased: list[str]
+    three_circles: dict
+    auto_detected: bool
+    can_upgrade: bool
+
+
 class ReportResponse(BaseModel):
     """Minimal report response for the migrated V2 flow."""
 
@@ -175,6 +189,19 @@ async def get_interpretation(interpretation_id: str):
     if record is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
     return to_record_response(record)
+
+
+@router.get(
+    "/interpretations/{interpretation_id}/status",
+    response_model=InterpretationStatusResponse,
+)
+async def get_interpretation_status(interpretation_id: str):
+    """Fetch a polling-friendly status snapshot for a migrated record."""
+
+    result = get_orchestrator().get_status(interpretation_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="interpretation not found")
+    return InterpretationStatusResponse(**result)
 
 
 @router.get(

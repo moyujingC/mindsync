@@ -214,3 +214,29 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert report["title"] == "一镜 Lite 版占位报告"
     assert report["structured"]["pro_teaser"] == "后续将接入正式的一梳 Pro 版生成链路。"
     assert report["can_upgrade"] is False
+
+
+def test_get_status_returns_compact_snapshot(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-6",
+        )
+    )
+
+    status = orchestrator.get_status(record.interpretation_id)
+
+    assert status is not None
+    assert status["interpretation_id"] == record.interpretation_id
+    assert status["generation_stage"] == "completed"
+    assert status["generation_progress"] == 100
+    assert status["report_ready"] is True

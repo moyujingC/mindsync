@@ -197,6 +197,33 @@ def test_get_user_interpretations_endpoint(tmp_path):
     assert all(item["user_id"] == "user-api-4" for item in data)
 
 
+def test_get_interpretation_status_endpoint(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-status.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-status",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.get(f"/api/v2/interpretations/{interpretation_id}/status")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["interpretation_id"] == interpretation_id
+    assert data["generation_stage"] == "completed"
+    assert data["generation_progress"] == 100
+    assert data["report_ready"] is True
+
+
 def test_get_report_endpoint_returns_placeholder(tmp_path):
     from app.api.main import app
 
