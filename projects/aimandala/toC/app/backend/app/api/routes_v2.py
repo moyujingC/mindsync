@@ -3,6 +3,8 @@
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
+from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
+
 from .rate_limiter import pricing_endpoint_limit
 
 
@@ -22,4 +24,5 @@ router = APIRouter(prefix="/api/v2", tags=["aimandala-v2"])
 async def get_pricing(request: Request):
     """Return the fixed V2 pricing baseline."""
 
-    return PricingInfo()
+    pricing = LayeredOrchestrator.get_pricing()
+    return PricingInfo(**pricing.to_dict())
