@@ -208,3 +208,12 @@
 1. 在 `frontend/` 目录安装依赖
 2. 运行 `npm run dev:mobile-web`
 3. 浏览器打开 `Vite` 提供的本地地址
+
+当前开发壳还补了一层本地预览模式：
+
+- 默认开启
+- 不请求后端
+- 可以直接切换 `upload / loading / report / history / upgrade`
+- 用固定 fixture 支撑页面结构开发
+
+当需要真实联调时，再关闭预览模式，切回 `MobileWebRuntime` 走当前 loader 与后端接口。

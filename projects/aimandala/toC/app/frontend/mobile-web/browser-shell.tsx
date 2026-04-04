@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 
+import { MobileWebApp } from "./app";
+import { createPreviewAppProps } from "./fixtures";
 import { MobileWebRuntime } from "./runtime";
 import type { MobileWebRouteInput } from "./router-plan";
 import type { MobileWebRouteId } from "./routes";
@@ -68,10 +70,15 @@ export function MobileWebBrowserShell() {
   const [draft, setDraft] = useState<MobileWebUploadDraft>(defaultDraft);
   const [interpretationId, setInterpretationId] = useState("demo-interpretation-id");
   const [userId, setUserId] = useState("demo-user-id");
+  const [previewMode, setPreviewMode] = useState(true);
 
   const input = useMemo(
     () => createInput(route, draft, interpretationId, userId),
     [draft, interpretationId, route, userId],
+  );
+  const previewProps = useMemo(
+    () => createPreviewAppProps(route, draft),
+    [draft, route],
   );
 
   return (
@@ -84,6 +91,17 @@ export function MobileWebBrowserShell() {
             这个宿主壳只负责把当前骨架接到浏览器运行时，方便后续继续长页面与交互。
           </p>
         </div>
+
+        <label className="field field--checkbox">
+          <input
+            type="checkbox"
+            checked={previewMode}
+            onChange={(event) => {
+              setPreviewMode(event.target.checked);
+            }}
+          />
+          <span>使用本地预览模式（不请求后端）</span>
+        </label>
 
         <label className="field">
           <span>路由</span>
@@ -178,16 +196,20 @@ export function MobileWebBrowserShell() {
 
       <section className="browser-shell__viewport">
         <div className="browser-shell__phone">
-          <MobileWebRuntime
-            input={input}
-            loadingFallback={<div className="runtime-state">正在装配 mobile-web 路由...</div>}
-            errorFallback={(message) => (
-              <div className="runtime-state runtime-state--error">
-                <h2>路由装配失败</h2>
-                <p>{message}</p>
-              </div>
-            )}
-          />
+          {previewMode ? (
+            <MobileWebApp {...previewProps} />
+          ) : (
+            <MobileWebRuntime
+              input={input}
+              loadingFallback={<div className="runtime-state">正在装配 mobile-web 路由...</div>}
+              errorFallback={(message) => (
+                <div className="runtime-state runtime-state--error">
+                  <h2>路由装配失败</h2>
+                  <p>{message}</p>
+                </div>
+              )}
+            />
+          )}
         </div>
       </section>
     </div>
