@@ -210,6 +210,34 @@ select {
   gap: 14px;
 }
 
+.mw-environment-banner {
+  display: grid;
+  gap: 4px;
+  margin: 0 12px 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(112, 90, 63, 0.14);
+}
+
+.mw-environment-banner strong {
+  font-size: 13px;
+}
+
+.mw-environment-banner p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.mw-environment-banner--preview {
+  background: rgba(255, 245, 229, 0.9);
+  color: #6a4a1f;
+}
+
+.mw-environment-banner--runtime {
+  background: rgba(235, 246, 240, 0.9);
+  color: #305844;
+}
+
 .mw-route-nav {
   padding: 6px 12px;
   border-radius: 999px;

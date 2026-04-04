@@ -244,6 +244,9 @@ export function MobileWebBrowserShell() {
             <MobileWebApp
               {...previewProps}
               uploadDraft={draft}
+              environmentLabel="当前为本地预览模式"
+              environmentDetail="页面里的检测、进度和报告内容来自前端占位数据，用于继续长交互与布局。"
+              environmentTone="preview"
               onUploadDraftChange={(patch) => {
                 setDraft((current) => ({
                   ...current,

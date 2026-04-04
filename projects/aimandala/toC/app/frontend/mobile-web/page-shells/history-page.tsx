@@ -12,18 +12,29 @@ import type { InterpretationRecordResponse } from "../../shared/types";
 
 export interface MobileWebHistoryPageProps {
   records: InterpretationRecordResponse[];
+  environmentLabel?: string;
+  environmentDetail?: string;
+  environmentTone?: "preview" | "runtime";
   onBackToUpload?: () => void;
 }
 
 export function MobileWebHistoryPage({
   records,
+  environmentLabel,
+  environmentDetail,
+  environmentTone,
   onBackToUpload,
 }: MobileWebHistoryPageProps) {
   const descriptor = createHistoryPageDescriptor(records);
   const [activeFilter, setActiveFilter] = useState<"all" | "ready" | "pending">("all");
 
   return (
-    <MobileWebAppShell route={mobileWebRoutes[3]}>
+    <MobileWebAppShell
+      route={mobileWebRoutes[3]}
+      environmentLabel={environmentLabel}
+      environmentDetail={environmentDetail}
+      environmentTone={environmentTone}
+    >
       <section className="mw-hero-card">
         <p className="mw-kicker">历史记录</p>
         <h2>{descriptor.title}</h2>

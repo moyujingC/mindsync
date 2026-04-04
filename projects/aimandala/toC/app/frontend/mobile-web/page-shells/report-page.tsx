@@ -14,12 +14,18 @@ import type { MandalaFlowState } from "../../shared/types";
 
 export interface MobileWebReportPageProps {
   state: MandalaFlowState;
+  environmentLabel?: string;
+  environmentDetail?: string;
+  environmentTone?: "preview" | "runtime";
   onPrimaryAction?: () => void;
   onSecondaryAction?: () => void;
 }
 
 export function MobileWebReportPage({
   state,
+  environmentLabel,
+  environmentDetail,
+  environmentTone,
   onPrimaryAction,
   onSecondaryAction,
 }: MobileWebReportPageProps) {
@@ -37,7 +43,12 @@ export function MobileWebReportPage({
     : "Lite 结果已经准备好，你可以查看历史记录，或重新开始一轮新的上传。";
 
   return (
-    <MobileWebAppShell route={mobileWebRoutes[2]}>
+    <MobileWebAppShell
+      route={mobileWebRoutes[2]}
+      environmentLabel={environmentLabel}
+      environmentDetail={environmentDetail}
+      environmentTone={environmentTone}
+    >
       <section className="mw-hero-card">
         <p className="mw-kicker">一镜 Lite 版</p>
         <h2>{descriptor.title}</h2>

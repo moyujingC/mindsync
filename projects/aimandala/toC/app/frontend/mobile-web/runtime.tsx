@@ -65,12 +65,18 @@ export interface MobileWebRuntimeProps {
   input: MobileWebRouteInput;
   loadingFallback?: React.ReactNode;
   errorFallback?: (message: string) => React.ReactNode;
+  environmentLabel?: string;
+  environmentDetail?: string;
+  environmentTone?: "preview" | "runtime";
 }
 
 export function MobileWebRuntime({
   input,
   loadingFallback = "Loading mobile web route...",
   errorFallback,
+  environmentLabel = "当前为联调运行时",
+  environmentDetail = "页面会按当前 loader 和接口装配真实路由结果，具体表现取决于本地后端是否可用。",
+  environmentTone = "runtime",
 }: MobileWebRuntimeProps) {
   const { loading, error, props } = useMobileWebRouteLoader(input);
 
@@ -89,5 +95,12 @@ export function MobileWebRuntime({
     return <>Missing mobile web props</>;
   }
 
-  return <MobileWebApp {...props} />;
+  return (
+    <MobileWebApp
+      {...props}
+      environmentLabel={environmentLabel}
+      environmentDetail={environmentDetail}
+      environmentTone={environmentTone}
+    />
+  );
 }

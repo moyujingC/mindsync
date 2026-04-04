@@ -5,11 +5,17 @@ import type { MobileWebRouteDefinition } from "./routes";
 export interface MobileWebAppShellProps {
   route: MobileWebRouteDefinition;
   children: ReactNode;
+  environmentLabel?: string;
+  environmentDetail?: string;
+  environmentTone?: "preview" | "runtime";
 }
 
 export function MobileWebAppShell({
   route,
   children,
+  environmentLabel,
+  environmentDetail,
+  environmentTone = "preview",
 }: MobileWebAppShellProps) {
   return (
     <main className="mw-app-shell">
@@ -26,6 +32,14 @@ export function MobileWebAppShell({
           {route.id}
         </nav>
       </header>
+      {environmentLabel ? (
+        <section
+          className={`mw-environment-banner mw-environment-banner--${environmentTone}`}
+        >
+          <strong>{environmentLabel}</strong>
+          <p>{environmentDetail}</p>
+        </section>
+      ) : null}
       <section className="mw-app-shell__content">{children}</section>
     </main>
   );

@@ -14,6 +14,9 @@ import type { MobileWebUploadDraft } from "../state";
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
   detection?: DetectCirclesResponse | null;
+  environmentLabel?: string;
+  environmentDetail?: string;
+  environmentTone?: "preview" | "runtime";
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onContinue?: () => void;
   onPreviewDetect?: () => void;
@@ -22,6 +25,9 @@ export interface MobileWebUploadPageProps {
 export function MobileWebUploadPage({
   draft,
   detection = null,
+  environmentLabel,
+  environmentDetail,
+  environmentTone,
   onDraftChange,
   onContinue,
   onPreviewDetect,
@@ -47,7 +53,12 @@ export function MobileWebUploadPage({
   }
 
   return (
-    <MobileWebAppShell route={mobileWebRoutes[0]}>
+    <MobileWebAppShell
+      route={mobileWebRoutes[0]}
+      environmentLabel={environmentLabel}
+      environmentDetail={environmentDetail}
+      environmentTone={environmentTone}
+    >
       <section className="mw-hero-card">
         <p className="mw-kicker">起点</p>
         <h2>{descriptor.title}</h2>

@@ -17,6 +17,9 @@ export interface MobileWebAppProps {
   uploadDetection?: DetectCirclesResponse | null;
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
+  environmentLabel?: string;
+  environmentDetail?: string;
+  environmentTone?: "preview" | "runtime";
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onUploadContinue?: () => void;
   onUploadPreviewDetect?: () => void;
@@ -31,6 +34,9 @@ export function MobileWebApp({
   uploadDetection,
   flowState,
   records = [],
+  environmentLabel,
+  environmentDetail,
+  environmentTone,
   onUploadDraftChange,
   onUploadContinue,
   onUploadPreviewDetect,
@@ -47,6 +53,9 @@ export function MobileWebApp({
         <MobileWebUploadPage
           draft={uploadDraft}
           detection={uploadDetection}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
           onDraftChange={onUploadDraftChange}
           onContinue={onUploadContinue}
           onPreviewDetect={onUploadPreviewDetect}
@@ -62,6 +71,9 @@ export function MobileWebApp({
       return (
         <MobileWebReportPage
           state={flowState}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
           onPrimaryAction={onReportPrimaryAction}
           onSecondaryAction={onReportSecondaryAction}
         />
@@ -71,6 +83,9 @@ export function MobileWebApp({
       return (
         <MobileWebHistoryPage
           records={records}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
           onBackToUpload={onHistoryBackToUpload}
         />
       );
