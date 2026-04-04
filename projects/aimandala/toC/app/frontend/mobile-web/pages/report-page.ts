@@ -6,12 +6,18 @@ export interface ReportPageSection {
   body: string;
 }
 
+export interface ReportPageMetric {
+  label: string;
+  value: string;
+}
+
 export interface ReportPageDescriptor {
   pageId: "report-page";
   title: string;
   subtitle: string;
   primaryActionLabel: string;
   sections: ReportPageSection[];
+  metrics: ReportPageMetric[];
 }
 
 export function createReportPageDescriptor(
@@ -32,6 +38,20 @@ export function createReportPageDescriptor(
         id: "report",
         heading: "报告内容",
         body: viewModel.reportMarkdown || "当前还没有可展示的报告正文。",
+      },
+    ],
+    metrics: [
+      {
+        label: "当前步骤",
+        value: viewModel.step,
+      },
+      {
+        label: "报告状态",
+        value: viewModel.reportMarkdown ? "已就绪" : "准备中",
+      },
+      {
+        label: "Interpretation ID",
+        value: viewModel.interpretationId || "暂未生成",
       },
     ],
   };

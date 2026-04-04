@@ -7,11 +7,24 @@ export interface UploadPageSection {
   description: string;
 }
 
+export interface UploadPageField {
+  label: string;
+  value: string;
+}
+
+export interface UploadPageChecklistItem {
+  id: string;
+  label: string;
+  status: "done" | "pending";
+}
+
 export interface UploadPageDescriptor {
   pageId: "upload-page";
   title: string;
   subtitle: string;
   sections: UploadPageSection[];
+  fields: UploadPageField[];
+  checklist: UploadPageChecklistItem[];
   draft: MobileWebUploadDraft;
   detection: DetectCirclesResponse | null;
 }
@@ -43,6 +56,44 @@ export function createUploadPageDescriptor(
         description: detection
           ? `当前检测结果：内圈 ${Math.round(detection.inner_radius * 100)}%，中圈 ${Math.round(detection.middle_radius * 100)}%，方法 ${detection.method}。`
           : "等待调用 detect-circles 获取三圈建议。",
+      },
+    ],
+    fields: [
+      {
+        label: "画作文件",
+        value: draft.imagePath || "暂未选择",
+      },
+      {
+        label: "解读主题",
+        value: draft.theme || "general",
+      },
+      {
+        label: "创作意图",
+        value: draft.paintingIntention || "暂未填写",
+      },
+      {
+        label: "创作感受",
+        value: draft.paintingFeeling || "暂未填写",
+      },
+    ],
+    checklist: [
+      {
+        id: "asset",
+        label: "上传画作",
+        status: draft.imagePath ? "done" : "pending",
+      },
+      {
+        id: "context",
+        label: "补充主题与创作信息",
+        status:
+          draft.theme || draft.paintingIntention || draft.paintingFeeling
+            ? "done"
+            : "pending",
+      },
+      {
+        id: "detect",
+        label: "等待三圈检测",
+        status: detection ? "done" : "pending",
       },
     ],
     draft,
