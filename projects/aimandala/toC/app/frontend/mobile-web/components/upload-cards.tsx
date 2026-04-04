@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type {
   UploadPageChecklistItem,
@@ -26,6 +26,28 @@ export function UploadAssetCard({
 }: UploadAssetCardProps) {
   const hasImage = Boolean(imagePath);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (imagePath.startsWith("browser-file:")) {
+      return;
+    }
+
+    setPreviewUrl((current) => {
+      if (current) {
+        URL.revokeObjectURL(current);
+      }
+      return null;
+    });
+  }, [imagePath]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   function handlePickFile() {
     fileInputRef.current?.click();
@@ -51,6 +73,12 @@ export function UploadAssetCard({
             return;
           }
 
+          setPreviewUrl((current) => {
+            if (current) {
+              URL.revokeObjectURL(current);
+            }
+            return URL.createObjectURL(file);
+          });
           onSelectBrowserFile?.(`browser-file:${file.name}`);
         }}
       />
@@ -83,6 +111,16 @@ export function UploadAssetCard({
           使用示例路径
         </button>
       </div>
+
+      {previewUrl ? (
+        <div className="mw-upload-preview">
+          <img
+            src={previewUrl}
+            alt="已选择画作预览"
+            className="mw-upload-preview__image"
+          />
+        </div>
+      ) : null}
 
       <div className="mw-upload-hint">
         <span>当前文件</span>
