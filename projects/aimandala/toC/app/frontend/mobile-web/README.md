@@ -158,3 +158,14 @@
 3. 把返回结果交给 `MobileWebApp`
 
 这样后续接真实框架时，路由层和页面层之间会更干净。
+
+## 当前宿主适配入口
+
+现在还补了 `host.tsx`：
+
+- `renderMobileWebRoute`
+  - 输入 `route + params`
+  - 内部调用 `resolveMobileWebRouteProps`
+  - 最终返回 `MobileWebApp`
+
+这意味着外部宿主框架如果要接这套骨架，最小只需要调用一个入口函数。

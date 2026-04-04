@@ -1,4 +1,5 @@
 import { renderUploadEntry } from "./entry";
+import { renderMobileWebRoute } from "./host";
 
 /**
  * Minimal mobile-web runtime entry placeholder.
@@ -9,4 +10,18 @@ import { renderUploadEntry } from "./entry";
  */
 export async function bootMobileWebExample() {
   return renderUploadEntry("/tmp/example-mandala.png");
+}
+
+export async function bootMobileWebRouteExample() {
+  return renderMobileWebRoute({
+    route: "upload",
+    params: {
+      draft: {
+        imagePath: "/tmp/example-mandala.png",
+        theme: "general",
+        paintingIntention: "",
+        paintingFeeling: "",
+      },
+    },
+  });
 }
