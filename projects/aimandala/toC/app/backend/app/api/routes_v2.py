@@ -48,6 +48,22 @@ class CreateInterpretationResponse(BaseModel):
     existing: bool = False
 
 
+class InterpretationRecordResponse(BaseModel):
+    """Minimal serialized interpretation record for the migrated V2 flow."""
+
+    interpretation_id: str
+    user_id: str
+    theme: str
+    status: str
+    generation_stage: str
+    generation_progress: int
+    version_purchased: list[str]
+    three_circles: dict
+    auto_detected: bool
+    can_upgrade: bool
+    created_at: str
+
+
 class PricingInfo(BaseModel):
     """Current public pricing for the To C V2 flow."""
 
@@ -65,6 +81,22 @@ def get_orchestrator() -> LayeredOrchestrator:
     if _orchestrator is None:
         _orchestrator = LayeredOrchestrator()
     return _orchestrator
+
+
+def to_record_response(record) -> InterpretationRecordResponse:
+    return InterpretationRecordResponse(
+        interpretation_id=record.interpretation_id,
+        user_id=record.user_id,
+        theme=record.theme,
+        status=record.status,
+        generation_stage=record.generation_stage,
+        generation_progress=record.generation_progress,
+        version_purchased=record.version_purchased,
+        three_circles=record.three_circles or {},
+        auto_detected=record.three_circles_auto_detect is not None,
+        can_upgrade=record.can_upgrade_to_pro(),
+        created_at=record.created_at,
+    )
 
 
 @router.post("/interpretations", response_model=CreateInterpretationResponse)
@@ -100,6 +132,30 @@ async def create_interpretation(payload: CreateInterpretationRequest):
         three_circles=record.three_circles or {},
         auto_detected=record.three_circles_auto_detect is not None,
     )
+
+
+@router.get(
+    "/interpretations/{interpretation_id}",
+    response_model=InterpretationRecordResponse,
+)
+async def get_interpretation(interpretation_id: str):
+    """Fetch a single migrated interpretation record."""
+
+    record = get_orchestrator().store.load(interpretation_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="interpretation not found")
+    return to_record_response(record)
+
+
+@router.get(
+    "/users/{user_id}/interpretations",
+    response_model=list[InterpretationRecordResponse],
+)
+async def get_user_interpretations(user_id: str):
+    """List migrated interpretation records for a user."""
+
+    records = get_orchestrator().store.get_user_records(user_id=user_id)
+    return [to_record_response(record) for record in records]
 
 
 @router.get("/pricing", response_model=PricingInfo)

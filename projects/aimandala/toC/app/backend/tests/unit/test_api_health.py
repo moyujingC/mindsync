@@ -81,3 +81,63 @@ def test_create_interpretation_requires_complete_manual_circles(tmp_path):
 
     assert response.status_code == 400
     assert "must be provided together" in response.json()["detail"]
+
+
+def test_get_interpretation_endpoint(tmp_path):
+    from app.api.main import app
+
+    client = TestClient(app)
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-3",
+            "image_path": str(image_path),
+            "theme": "growth",
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.get(f"/api/v2/interpretations/{interpretation_id}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["interpretation_id"] == interpretation_id
+    assert data["user_id"] == "user-api-3"
+    assert data["theme"] == "growth"
+    assert data["auto_detected"] is True
+
+
+def test_get_user_interpretations_endpoint(tmp_path):
+    from app.api.main import app
+
+    client = TestClient(app)
+    first_image = tmp_path / "mandala-1.png"
+    second_image = tmp_path / "mandala-2.png"
+    first_image.write_bytes(b"mock-image-1")
+    second_image.write_bytes(b"mock-image-2")
+
+    client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-4",
+            "image_path": str(first_image),
+        },
+    )
+    client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-4",
+            "image_path": str(second_image),
+            "theme": "relationships",
+        },
+    )
+
+    response = client.get("/api/v2/users/user-api-4/interpretations")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) >= 2
+    assert all(item["user_id"] == "user-api-4" for item in data)
