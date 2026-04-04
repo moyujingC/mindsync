@@ -94,6 +94,17 @@ class ReportResponse(BaseModel):
     error: Optional[str] = None
 
 
+class UpgradePlaceholderResponse(BaseModel):
+    """Compatibility-only response for the legacy V2 upgrade endpoint."""
+
+    success: bool
+    interpretation_id: str
+    version: str = "pro"
+    enabled: bool = False
+    status: str
+    message: str
+
+
 class PricingInfo(BaseModel):
     """Current public pricing for the To C V2 flow."""
 
@@ -238,6 +249,19 @@ async def get_report(interpretation_id: str, version: Optional[str] = None):
         upgrade_price=result.get("upgrade_price"),
         error=result.get("error"),
     )
+
+
+@router.post(
+    "/interpretations/{interpretation_id}/upgrade",
+    response_model=UpgradePlaceholderResponse,
+)
+async def upgrade_interpretation_placeholder(interpretation_id: str):
+    """Expose a compatibility-only placeholder for the legacy V2 upgrade route."""
+
+    result = get_orchestrator().get_upgrade_placeholder(interpretation_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="interpretation not found")
+    return UpgradePlaceholderResponse(**result)
 
 
 @router.get("/pricing", response_model=PricingInfo)

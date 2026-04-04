@@ -308,6 +308,25 @@ class LayeredOrchestrator:
             "can_upgrade": record.can_upgrade_to_pro(),
         }
 
+    def get_upgrade_placeholder(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
+        """Return a compatibility-only placeholder for the legacy V2 upgrade route."""
+
+        record = self.store.load(interpretation_id)
+        if record is None:
+            return None
+
+        return {
+            "success": False,
+            "interpretation_id": interpretation_id,
+            "version": "pro",
+            "enabled": False,
+            "status": "not_enabled",
+            "message": (
+                "V2 upgrade compatibility endpoint is present, but Pro placeholder generation "
+                "is not wired in the current migration baseline."
+            ),
+        }
+
     def _build_lite_placeholder_report(self, record: InterpretationRecord) -> Layer2LiteFinal:
         theme = record.theme or "general"
         circle_info = record.three_circles or {"inner_radius": 33, "middle_radius": 66}

@@ -262,3 +262,39 @@ def test_get_report_endpoint_404_for_unknown_record():
     response = client.get("/api/v2/interpretations/not-found/report")
 
     assert response.status_code == 404
+
+
+def test_upgrade_placeholder_endpoint(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-upgrade.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-upgrade",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is False
+    assert data["enabled"] is False
+    assert data["status"] == "not_enabled"
+
+
+def test_upgrade_placeholder_endpoint_404_for_unknown_record():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    response = client.post("/api/v2/interpretations/not-found/upgrade")
+
+    assert response.status_code == 404

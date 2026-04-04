@@ -240,3 +240,28 @@ def test_get_status_returns_compact_snapshot(tmp_path):
     assert status["generation_stage"] == "completed"
     assert status["generation_progress"] == 100
     assert status["report_ready"] is True
+
+
+def test_get_upgrade_placeholder_returns_compatibility_message(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-7",
+        )
+    )
+
+    result = orchestrator.get_upgrade_placeholder(record.interpretation_id)
+
+    assert result is not None
+    assert result["success"] is False
+    assert result["enabled"] is False
+    assert result["status"] == "not_enabled"
