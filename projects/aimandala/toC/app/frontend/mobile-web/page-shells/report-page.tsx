@@ -4,6 +4,7 @@ import { mobileWebRoutes } from "../routes";
 import { createMobileWebPageViewModel } from "../view-model";
 import { getMobileWebPrimaryAction } from "../state";
 import {
+  LoadingProgressCard,
   ReportMetricsRow,
   ReportSections,
   StructuredReportCards,
@@ -26,6 +27,7 @@ export function MobileWebReportPage({
   );
   const descriptor = createReportPageDescriptor(viewModel);
   const structured = getLiteStructuredReport(state.report);
+  const isLoading = state.step === "liteGenerating";
 
   return (
     <MobileWebAppShell route={mobileWebRoutes[2]}>
@@ -36,6 +38,8 @@ export function MobileWebReportPage({
       </section>
 
       <ReportMetricsRow metrics={descriptor.metrics} />
+
+      {isLoading ? <LoadingProgressCard state={state} /> : null}
 
       {structured ? <StructuredReportCards structured={structured} /> : null}
 

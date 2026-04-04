@@ -508,6 +508,42 @@ select {
   font-size: 12px;
 }
 
+.mw-progress {
+  width: 100%;
+  height: 10px;
+  margin-top: 14px;
+  border-radius: 999px;
+  background: rgba(112, 90, 63, 0.14);
+  overflow: hidden;
+}
+
+.mw-progress__bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8f6939, #d0aa73);
+}
+
+.mw-stage-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mw-stage-list__item {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(112, 90, 63, 0.06);
+  color: #7c6850;
+}
+
+.mw-stage-list__item--active {
+  background: rgba(139, 103, 55, 0.14);
+  color: #5d4d37;
+  font-weight: 600;
+}
+
 .mw-footer-action {
   padding: 4px 0 20px;
 }
