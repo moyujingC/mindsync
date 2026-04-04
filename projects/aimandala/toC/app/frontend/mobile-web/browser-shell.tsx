@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { createPreviewAppProps, createPreviewDetectionFixture } from "./fixtures";
-import { runMobileWebLiteFlow } from "./controller";
+import { refreshMobileWebReport, runMobileWebLiteFlow } from "./controller";
 import { MobileWebRuntime } from "./runtime";
 import type { MobileWebRouteInput } from "./router-plan";
 import type { MobileWebRouteId } from "./routes";
@@ -112,9 +112,26 @@ export function MobileWebBrowserShell() {
     [draft, previewDetection, previewFlowState, previewHistoryRecords, route],
   );
 
-  function handlePreviewPrimaryAction() {
+  async function handlePreviewPrimaryAction() {
     if (route === "loading") {
       if (previewFlowRunning) {
+        return;
+      }
+      const interpretationId = previewFlowState?.interpretation?.interpretation_id;
+      if (interpretationId) {
+        setPreviewFlowRunning(true);
+        try {
+          const refreshed = await refreshMobileWebReport(
+            interpretationId,
+            previewFlowState,
+          );
+          setPreviewFlowState(refreshed.state);
+          if (refreshed.state.step !== "liteGenerating") {
+            setRoute("report");
+          }
+        } finally {
+          setPreviewFlowRunning(false);
+        }
         return;
       }
       setRoute("report");
@@ -123,6 +140,24 @@ export function MobileWebBrowserShell() {
 
     if (route === "report" || route === "upgrade") {
       if (previewFlowState?.step === "error") {
+        const interpretationId = previewFlowState.interpretation?.interpretation_id;
+        if (interpretationId) {
+          setPreviewFlowRunning(true);
+          try {
+            const refreshed = await refreshMobileWebReport(
+              interpretationId,
+              previewFlowState,
+            );
+            setPreviewFlowState(refreshed.state);
+            if (refreshed.state.step === "liteGenerating") {
+              setRoute("loading");
+            }
+          } finally {
+            setPreviewFlowRunning(false);
+          }
+          return;
+        }
+
         setPreviewFlowState(null);
         setRoute("upload");
         return;
@@ -314,7 +349,7 @@ export function MobileWebBrowserShell() {
               environmentLabel="当前为本地预览模式"
               environmentDetail={
                 previewFlowRunning
-                  ? "当前正在尝试跑真实 Lite 主路径，请先等待 create/status/report 链路返回。"
+                  ? "当前正在尝试刷新或执行真实 Lite 主路径，请先等待 create/status/report 链路返回。"
                   : "页面里的 loading、report、history 仍以占位数据为主；上传页的三圈检测可切到真实接口触发。"
               }
               environmentTone="preview"

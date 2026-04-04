@@ -39,10 +39,19 @@ export function MobileWebReportPage({
   const structured = getLiteStructuredReport(state.report);
   const isLoading = state.step === "liteGenerating";
   const isError = state.step === "error";
-  const primaryLabel = isLoading ? "继续查看生成进度" : descriptor.primaryActionLabel;
+  const canRetryRefresh = Boolean(
+    isError && state.interpretation?.interpretation_id,
+  );
+  const primaryLabel = isLoading
+    ? "继续查看生成进度"
+    : canRetryRefresh
+      ? "重试刷新结果"
+      : descriptor.primaryActionLabel;
   const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
   const footerHint = isLoading
     ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
+    : canRetryRefresh
+      ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
     : isError
       ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
     : "Lite 结果已经准备好，你可以查看历史记录，或重新开始一轮新的上传。";
