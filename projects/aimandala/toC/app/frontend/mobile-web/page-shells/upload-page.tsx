@@ -2,6 +2,7 @@ import { MobileWebAppShell } from "../app-shell";
 import { mobileWebRoutes } from "../routes";
 import { createUploadPageDescriptor } from "../pages";
 import {
+  UploadAssetCard,
   UploadChecklistCard,
   UploadDetectionCard,
   UploadDraftSummaryCard,
@@ -27,12 +28,29 @@ export function MobileWebUploadPage({
   const themeSection = descriptor.sections.find((section) => section.id === "theme");
   const detectionSection = descriptor.sections.find((section) => section.id === "circles");
 
+  function handleUseSampleAsset() {
+    if (descriptor.draft.imagePath) {
+      return;
+    }
+
+    onDraftChange?.({
+      imagePath: "/tmp/example-mandala.png",
+    });
+  }
+
   return (
     <MobileWebAppShell route={mobileWebRoutes[0]}>
       <section className="mw-hero-card">
         <p className="mw-kicker">起点</p>
         <h2>{descriptor.title}</h2>
         <p>{descriptor.subtitle}</p>
+      </section>
+
+      <section className="mw-stack">
+        <UploadAssetCard
+          imagePath={descriptor.draft.imagePath}
+          onUseSample={handleUseSampleAsset}
+        />
       </section>
 
       <section className="mw-card-grid">

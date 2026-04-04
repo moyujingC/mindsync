@@ -266,6 +266,12 @@ select {
   background: linear-gradient(180deg, rgba(255, 245, 229, 0.98), rgba(255, 250, 243, 0.95));
 }
 
+.mw-card--asset {
+  background:
+    radial-gradient(circle at top right, rgba(184, 144, 86, 0.18), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+}
+
 .mw-card__header {
   display: flex;
   align-items: center;
@@ -335,6 +341,52 @@ select {
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.78);
   color: #2e2418;
+}
+
+.mw-upload-dropzone {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 22px 18px;
+  border: 1px dashed rgba(143, 105, 57, 0.4);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.62);
+  text-align: center;
+  color: #5d4d37;
+}
+
+.mw-upload-dropzone__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: rgba(139, 103, 55, 0.14);
+  color: #704d24;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.mw-upload-dropzone small {
+  color: #7c6850;
+}
+
+.mw-upload-hint {
+  display: grid;
+  gap: 4px;
+  margin-top: 14px;
+}
+
+.mw-upload-hint span {
+  color: #7c6850;
+  font-size: 12px;
+}
+
+.mw-upload-hint strong {
+  color: #2e2418;
+  word-break: break-word;
 }
 
 .mw-checklist {

@@ -11,6 +11,46 @@ export interface UploadFormCardProps {
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
 }
 
+export interface UploadAssetCardProps {
+  imagePath: string;
+  onUseSample?: () => void;
+}
+
+export function UploadAssetCard({
+  imagePath,
+  onUseSample,
+}: UploadAssetCardProps) {
+  const hasImage = Boolean(imagePath);
+
+  return (
+    <article className="mw-card mw-card--asset">
+      <div className="mw-card__header">
+        <h3>画作上传</h3>
+        <span className="mw-badge">
+          {hasImage ? "已载入预览路径" : "等待选择画作"}
+        </span>
+      </div>
+
+      <button
+        type="button"
+        className="mw-upload-dropzone"
+        onClick={onUseSample}
+      >
+        <span className="mw-upload-dropzone__icon">+</span>
+        <strong>{hasImage ? "更换画作路径" : "选择一张曼陀罗画作"}</strong>
+        <small>
+          当前先用占位方式承接手机端上传体验，后续再接真实文件选择能力。
+        </small>
+      </button>
+
+      <div className="mw-upload-hint">
+        <span>当前文件</span>
+        <strong>{imagePath || "尚未选择文件"}</strong>
+      </div>
+    </article>
+  );
+}
+
 export function UploadFormCard({
   draft,
   onDraftChange,
@@ -25,7 +65,7 @@ export function UploadFormCard({
       </div>
       <div className="mw-form-stack">
         <label className="mw-form-field">
-          <span>画作文件路径</span>
+          <span>文件路径</span>
           <input
             value={draft.imagePath}
             onChange={(event) => {
