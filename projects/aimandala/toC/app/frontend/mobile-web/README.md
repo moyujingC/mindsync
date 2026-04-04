@@ -38,6 +38,12 @@
   - `MobileWebUploadDraft`
   - `toStartCreatePayload`
   - `getMobileWebPrimaryAction`
+- `view-model.ts`
+  - `createMobileWebPageViewModel`
+- `examples/basic-flow-example.ts`
+  - 最小接入示例
+- `pages/`
+  - 上传页、结果页、历史页的最小页面描述器
 
 这意味着后续如果接 React 页面，可以直接：
 
@@ -47,3 +53,26 @@
 4. 用返回的 `state` 和 `report` 渲染页面
 
 这样页面层只负责 UI，不需要自己重新拼后端调用顺序。
+
+## 当前推荐页面接线方式
+
+建议页面层按下面的顺序接：
+
+1. `bootstrapMobileWebFlow`
+   - 初始化页面状态
+2. `toStartCreatePayload`
+   - 把上传表单草稿转成共享 payload
+3. `runMobileWebLiteFlow`
+   - 顺序完成检测、创建、状态、报告拉取
+4. `getMobileWebPrimaryAction`
+   - 决定当前主按钮文案
+5. `createMobileWebPageViewModel`
+   - 转成适合页面直接渲染的 title / subtitle / report 结构
+
+如果需要更接近页面层的数据结构，还可以继续走：
+
+6. `createUploadPageDescriptor`
+7. `createReportPageDescriptor`
+8. `createHistoryPageDescriptor`
+
+这样真正的 React 组件只需要消费页面描述器，而不是自己从原始接口结果里抽字段。
