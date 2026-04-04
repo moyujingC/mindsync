@@ -1,0 +1,113 @@
+import type {
+  CreateInterpretationResponse,
+  DetectCirclesResponse,
+  InterpretationStatusResponse,
+  LiteStructuredReport,
+  MandalaFlowState,
+  ReportResponse,
+  SelectedImageRef,
+} from "../types";
+
+export const initialMandalaFlowState: MandalaFlowState = {
+  step: "idle",
+  selectedImage: null,
+  detection: null,
+  geometry: null,
+  interpretation: null,
+  status: null,
+  report: null,
+  lastError: null,
+};
+
+export function selectImage(
+  state: MandalaFlowState,
+  imagePath: string,
+): MandalaFlowState {
+  const selectedImage: SelectedImageRef = { imagePath };
+  return {
+    ...state,
+    selectedImage,
+    lastError: null,
+  };
+}
+
+export function applyDetection(
+  state: MandalaFlowState,
+  detection: DetectCirclesResponse,
+): MandalaFlowState {
+  return {
+    ...state,
+    step: "detectingCircles",
+    detection,
+    geometry: detection.geometry_suggestion ?? null,
+    lastError: null,
+  };
+}
+
+export function applyInterpretationCreated(
+  state: MandalaFlowState,
+  interpretation: CreateInterpretationResponse,
+): MandalaFlowState {
+  return {
+    ...state,
+    step: interpretation.report_ready ? "liteReady" : "liteGenerating",
+    interpretation,
+    lastError: null,
+  };
+}
+
+export function applyStatus(
+  state: MandalaFlowState,
+  status: InterpretationStatusResponse,
+): MandalaFlowState {
+  return {
+    ...state,
+    step: status.report_ready ? "liteReady" : "liteGenerating",
+    status,
+    lastError: null,
+  };
+}
+
+export function applyReport(
+  state: MandalaFlowState,
+  report: ReportResponse,
+): MandalaFlowState {
+  return {
+    ...state,
+    step: report.version === "pro" ? "upgradePlaceholder" : "liteReady",
+    report,
+    lastError: report.error ?? null,
+  };
+}
+
+export function applyError(
+  state: MandalaFlowState,
+  message: string,
+): MandalaFlowState {
+  return {
+    ...state,
+    step: "error",
+    lastError: message,
+  };
+}
+
+export function getLiteStructuredReport(
+  report: ReportResponse | null,
+): LiteStructuredReport | null {
+  if (!report?.structured) {
+    return null;
+  }
+
+  const structured = report.structured as Partial<LiteStructuredReport>;
+  if (
+    typeof structured.title !== "string" ||
+    typeof structured.overall_impression !== "string" ||
+    typeof structured.visual_elements_rendered !== "string" ||
+    typeof structured.emotion_portrait_rendered !== "string" ||
+    typeof structured.pro_teaser !== "string"
+  ) {
+    return null;
+  }
+
+  return structured as LiteStructuredReport;
+}

@@ -54,3 +54,45 @@ frontend/
 - 不强行共享“页面组件和平台能力”
 
 当前阶段不必提前把空目录都建出来，但目录设计与文档命名应默认兼容这种扩展方式。
+
+## 当前前端迁移基线
+
+当前已经开始按“共享内核 + 渠道实现”方向建立最小骨架，优先承接：
+
+- `shared/types/`
+  - 对齐当前 To C `V2` 后端接口的 DTO
+- `shared/api/`
+  - 多渠道可复用的请求封装和 service
+- `shared/core/`
+  - 不依赖平台能力的流程状态定义与纯函数
+
+当前这一步的目标不是直接恢复 mobile-web UI，而是先把“接口契约”和“共享语义层”立住。
+
+## 当前共享层重点
+
+当前共享层优先围绕这些后端接口建立：
+
+- `POST /api/v2/detect-circles`
+- `POST /api/v2/interpretations`
+- `GET /api/v2/interpretations/{interpretation_id}`
+- `GET /api/v2/interpretations/{interpretation_id}/status`
+- `GET /api/v2/interpretations/{interpretation_id}/report`
+- `POST /api/v2/interpretations/{interpretation_id}/upgrade`
+- `GET /api/v2/users/{user_id}/interpretations`
+- `GET /api/v2/pricing`
+
+当前明确不在这一批里做：
+
+- React 页面
+- mobile-web 路由
+- 小程序适配
+- 原生 App 适配
+- 文件上传 UI / 支付 UI / 登录 UI
+
+## 下一步建议
+
+前端后续建议顺序：
+
+1. 先让 `mobile-web` 接共享 `api + types + core`
+2. 再补最小上传页 / 结果页 / 历史页
+3. 后续如需接小程序或 App，优先复用共享层，不复制业务决策
