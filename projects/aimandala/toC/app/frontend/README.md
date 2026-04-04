@@ -115,6 +115,9 @@ frontend/
 - `package.json`
 - `tsconfig.json`
 - `mobile-web/main.tsx`
+- `index.html`
+- `vite.config.ts`
+- `mobile-web/browser-entry.tsx`
 
 这意味着现在 `frontend/` 已经是一个明确的 TypeScript 前端工作区入口，而不只是文档目录。
 
@@ -122,14 +125,17 @@ frontend/
 
 - `npm run typecheck`
 - `npm run check:shared`
+- `npm run dev:mobile-web`
+- `npm run build:mobile-web`
+- `npm run preview:mobile-web`
 
-当前还没有锁定具体运行壳，所以：
+当前已经先锁定一个最小运行壳：
 
-- 没有直接绑定 Vite
-- 没有直接绑定 Next
-- 没有直接绑定某个 UI 框架脚手架
+- `mobile-web` 先用 `Vite` 承接浏览器运行时
+- 这只是开发壳，不代表未来渠道必须被同一个宿主框架锁死
+- `main.tsx` 仍然保留为宿主无关示例入口
 
-后续只需要在这个基础上补具体运行壳，而不用重新整理共享层目录。
+这样后续继续长真实页面时，可以直接在当前壳上推进，而不用重新整理共享层目录。
 
 ## 下一步建议
 

@@ -1,0 +1,149 @@
+:root {
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  color: #1f1f1f;
+  background:
+    radial-gradient(circle at top, rgba(194, 152, 95, 0.18), transparent 30%),
+    linear-gradient(180deg, #f4ecdf 0%, #efe4d4 100%);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.browser-shell {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(320px, 1fr);
+  min-height: 100vh;
+}
+
+.browser-shell__panel {
+  padding: 32px 24px;
+  border-right: 1px solid rgba(88, 67, 43, 0.12);
+  background: rgba(255, 250, 242, 0.82);
+  backdrop-filter: blur(14px);
+}
+
+.browser-shell__panel-header {
+  margin-bottom: 24px;
+}
+
+.browser-shell__viewport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.browser-shell__phone {
+  width: min(100%, 430px);
+  min-height: 780px;
+  padding: 16px;
+  border: 1px solid rgba(88, 67, 43, 0.15);
+  border-radius: 32px;
+  background: rgba(255, 252, 247, 0.92);
+  box-shadow: 0 24px 80px rgba(75, 50, 19, 0.14);
+  overflow: hidden;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #8a6641;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: #6f624f;
+}
+
+.field {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.field span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #5d4d37;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.runtime-state {
+  padding: 24px;
+}
+
+.runtime-state--error {
+  color: #8f2d2d;
+}
+
+main {
+  min-height: 100%;
+  padding: 20px;
+}
+
+header small {
+  color: #8a6641;
+}
+
+header h1 {
+  margin: 8px 0 16px;
+  font-size: 28px;
+}
+
+section pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(84, 65, 44, 0.06);
+  overflow: auto;
+}
+
+@media (max-width: 920px) {
+  .browser-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .browser-shell__panel {
+    border-right: 0;
+    border-bottom: 1px solid rgba(88, 67, 43, 0.12);
+  }
+
+  .browser-shell__viewport {
+    padding-top: 0;
+  }
+
+  .browser-shell__phone {
+    min-height: auto;
+  }
+}

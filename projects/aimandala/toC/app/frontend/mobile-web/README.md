@@ -180,3 +180,31 @@
   - 负责 loading / error / app 渲染分发
 
 这样如果后面接 React 宿主，可以直接先挂 `MobileWebRuntime`，不需要每个页面自己写一套异步加载状态管理。
+
+## 当前浏览器开发壳
+
+现在已经补上一个最小浏览器宿主层：
+
+- `../index.html`
+- `../vite.config.ts`
+- `browser-entry.tsx`
+- `browser-shell.tsx`
+- `styles.css`
+
+当前这个壳的目标很明确：
+
+- 用 `Vite` 把 `MobileWebRuntime` 正式挂到浏览器里
+- 提供一个简单控制面板，用来切换 `upload / loading / report / history / upgrade`
+- 保持 `runtime -> router-plan -> app` 这条装配链不变
+
+它不是正式 UI，也不是最终路由方案，但已经足够承担：
+
+1. 本地跑通 mobile-web 骨架
+2. 继续往上传页、结果页、历史页长真实组件
+3. 在不改共享层边界的前提下继续接后端接口
+
+当前本地启动方式：
+
+1. 在 `frontend/` 目录安装依赖
+2. 运行 `npm run dev:mobile-web`
+3. 浏览器打开 `Vite` 提供的本地地址

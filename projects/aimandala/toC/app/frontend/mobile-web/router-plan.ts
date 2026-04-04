@@ -70,14 +70,13 @@ export async function resolveMobileWebRouteProps(
         flowState: report.state,
       };
     }
-
-    default:
-      return assertNever(input.route);
   }
+
+  return assertNever(input);
 }
 
-function assertNever(route: never): never {
-  throw new Error(`Unsupported mobile web route: ${route}`);
+function assertNever(input: never): never {
+  throw new Error(`Unsupported mobile web route: ${JSON.stringify(input)}`);
 }
 
 export function isReportLikeRoute(route: MobileWebRouteId): boolean {

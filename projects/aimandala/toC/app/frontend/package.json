@@ -6,10 +6,20 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "check:shared": "tsc --noEmit -p tsconfig.json",
-    "dev:note": "node -e \"console.log('Choose a runtime shell before starting dev: Vite, Next, or another React host.')\""
+    "dev:mobile-web": "vite",
+    "build:mobile-web": "vite build",
+    "preview:mobile-web": "vite preview",
+    "dev:note": "node -e \"console.log('Mobile-web runtime shell now uses Vite. Run npm run dev:mobile-web to start local development.')\""
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.4.1",
     "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "vite": "^5.4.18",
     "typescript": "^5.8.3"
   }
 }
