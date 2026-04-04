@@ -42,6 +42,8 @@
   - `createMobileWebPageViewModel`
 - `examples/basic-flow-example.ts`
   - 最小接入示例
+- `examples/*-page-shell.tsx`
+  - 最小 React 风格页面壳示例
 - `pages/`
   - 上传页、结果页、历史页的最小页面描述器
 
@@ -76,3 +78,30 @@
 8. `createHistoryPageDescriptor`
 
 这样真正的 React 组件只需要消费页面描述器，而不是自己从原始接口结果里抽字段。
+
+## 最小页面壳说明
+
+当前 `examples/` 里额外放了三种极简页面壳：
+
+- `upload-page-shell.tsx`
+- `report-page-shell.tsx`
+- `history-page-shell.tsx`
+
+它们不是正式 UI，只是为了说明：
+
+- 页面如何消费 descriptor
+- 页面如何尽量不直接依赖原始 API 返回
+- 页面如何把业务决策留在共享层和 controller 中
+
+## 当前正式入口骨架
+
+除了示例文件，当前 `mobile-web/` 里也已经补了最小正式入口骨架：
+
+- `routes.ts`
+  - 当前 mobile-web 的最小路由定义
+- `app-shell.tsx`
+  - 最小应用壳
+- `entry.tsx`
+  - 把 controller、descriptor、view-model 串起来的入口示例
+
+当前这些文件仍然是轻量骨架，不代表正式 UI 已完成，但已经足够作为后续 React 页面接入的落点。
