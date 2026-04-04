@@ -81,6 +81,17 @@ export function MobileWebBrowserShell() {
     [draft, route],
   );
 
+  function handlePreviewPrimaryAction() {
+    if (route === "loading") {
+      setRoute("report");
+      return;
+    }
+
+    if (route === "report" || route === "upgrade") {
+      setRoute("history");
+    }
+  }
+
   return (
     <div className="browser-shell">
       <aside className="browser-shell__panel">
@@ -197,7 +208,23 @@ export function MobileWebBrowserShell() {
       <section className="browser-shell__viewport">
         <div className="browser-shell__phone">
           {previewMode ? (
-            <MobileWebApp {...previewProps} />
+            <MobileWebApp
+              {...previewProps}
+              uploadDraft={draft}
+              onUploadDraftChange={(patch) => {
+                setDraft((current) => ({
+                  ...current,
+                  ...patch,
+                }));
+              }}
+              onUploadContinue={() => {
+                setRoute("loading");
+              }}
+              onReportPrimaryAction={handlePreviewPrimaryAction}
+              onHistoryBackToUpload={() => {
+                setRoute("upload");
+              }}
+            />
           ) : (
             <MobileWebRuntime
               input={input}

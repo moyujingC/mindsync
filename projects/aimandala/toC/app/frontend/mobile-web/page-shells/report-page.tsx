@@ -8,9 +8,13 @@ import type { MandalaFlowState } from "../../shared/types";
 
 export interface MobileWebReportPageProps {
   state: MandalaFlowState;
+  onPrimaryAction?: () => void;
 }
 
-export function MobileWebReportPage({ state }: MobileWebReportPageProps) {
+export function MobileWebReportPage({
+  state,
+  onPrimaryAction,
+}: MobileWebReportPageProps) {
   const viewModel = createMobileWebPageViewModel(
     state,
     getMobileWebPrimaryAction(state),
@@ -80,7 +84,11 @@ export function MobileWebReportPage({ state }: MobileWebReportPageProps) {
       </section>
 
       <footer className="mw-footer-action">
-        <button type="button" className="mw-primary-button">
+        <button
+          type="button"
+          className="mw-primary-button"
+          onClick={onPrimaryAction}
+        >
           {descriptor.primaryActionLabel}
         </button>
       </footer>

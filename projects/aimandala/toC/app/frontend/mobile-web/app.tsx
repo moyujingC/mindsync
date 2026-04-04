@@ -12,6 +12,10 @@ export interface MobileWebAppProps {
   uploadDraft?: MobileWebUploadDraft;
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
+  onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
+  onUploadContinue?: () => void;
+  onReportPrimaryAction?: () => void;
+  onHistoryBackToUpload?: () => void;
 }
 
 export function MobileWebApp({
@@ -19,13 +23,23 @@ export function MobileWebApp({
   uploadDraft,
   flowState,
   records = [],
+  onUploadDraftChange,
+  onUploadContinue,
+  onReportPrimaryAction,
+  onHistoryBackToUpload,
 }: MobileWebAppProps): ReactNode {
   switch (route) {
     case "upload":
       if (!uploadDraft) {
         return "Missing upload draft";
       }
-      return <MobileWebUploadPage draft={uploadDraft} />;
+      return (
+        <MobileWebUploadPage
+          draft={uploadDraft}
+          onDraftChange={onUploadDraftChange}
+          onContinue={onUploadContinue}
+        />
+      );
 
     case "loading":
     case "report":
@@ -33,10 +47,20 @@ export function MobileWebApp({
       if (!flowState) {
         return "Missing flow state";
       }
-      return <MobileWebReportPage state={flowState} />;
+      return (
+        <MobileWebReportPage
+          state={flowState}
+          onPrimaryAction={onReportPrimaryAction}
+        />
+      );
 
     case "history":
-      return <MobileWebHistoryPage records={records} />;
+      return (
+        <MobileWebHistoryPage
+          records={records}
+          onBackToUpload={onHistoryBackToUpload}
+        />
+      );
 
     default:
       return "Unknown route";

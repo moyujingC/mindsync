@@ -5,10 +5,12 @@ import type { InterpretationRecordResponse } from "../../shared/types";
 
 export interface MobileWebHistoryPageProps {
   records: InterpretationRecordResponse[];
+  onBackToUpload?: () => void;
 }
 
 export function MobileWebHistoryPage({
   records,
+  onBackToUpload,
 }: MobileWebHistoryPageProps) {
   const descriptor = createHistoryPageDescriptor(records);
 
@@ -58,6 +60,16 @@ export function MobileWebHistoryPage({
           </article>
         )}
       </section>
+
+      <footer className="mw-footer-action">
+        <button
+          type="button"
+          className="mw-secondary-button"
+          onClick={onBackToUpload}
+        >
+          返回上传页
+        </button>
+      </footer>
     </MobileWebAppShell>
   );
 }

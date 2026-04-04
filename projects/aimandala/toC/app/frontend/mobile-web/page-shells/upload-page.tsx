@@ -7,11 +7,15 @@ import type { MobileWebUploadDraft } from "../state";
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
   detection?: DetectCirclesResponse | null;
+  onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
+  onContinue?: () => void;
 }
 
 export function MobileWebUploadPage({
   draft,
   detection = null,
+  onDraftChange,
+  onContinue,
 }: MobileWebUploadPageProps) {
   const descriptor = createUploadPageDescriptor(draft, detection);
 
@@ -26,19 +30,66 @@ export function MobileWebUploadPage({
       <section className="mw-card-grid">
         <article className="mw-card">
           <div className="mw-card__header">
-            <h3>当前上传草稿</h3>
+            <h3>上传表单</h3>
             <span className="mw-badge">
               {descriptor.draft.imagePath ? "已选择画作" : "等待上传"}
             </span>
           </div>
-          <dl className="mw-field-list">
-            {descriptor.fields.map((field) => (
-              <div key={field.label} className="mw-field-list__row">
-                <dt>{field.label}</dt>
-                <dd>{field.value}</dd>
-              </div>
-            ))}
-          </dl>
+          <div className="mw-form-stack">
+            <label className="mw-form-field">
+              <span>画作文件路径</span>
+              <input
+                value={descriptor.draft.imagePath}
+                onChange={(event) => {
+                  onDraftChange?.({
+                    imagePath: event.target.value,
+                  });
+                }}
+                placeholder="/tmp/example-mandala.png"
+              />
+            </label>
+
+            <label className="mw-form-field">
+              <span>解读主题</span>
+              <input
+                value={descriptor.draft.theme}
+                onChange={(event) => {
+                  onDraftChange?.({
+                    theme: event.target.value,
+                  });
+                }}
+                placeholder="general"
+              />
+            </label>
+
+            <label className="mw-form-field">
+              <span>创作意图</span>
+              <textarea
+                rows={3}
+                value={descriptor.draft.paintingIntention}
+                onChange={(event) => {
+                  onDraftChange?.({
+                    paintingIntention: event.target.value,
+                  });
+                }}
+                placeholder="例如：最近在整理内在状态"
+              />
+            </label>
+
+            <label className="mw-form-field">
+              <span>创作感受</span>
+              <textarea
+                rows={3}
+                value={descriptor.draft.paintingFeeling}
+                onChange={(event) => {
+                  onDraftChange?.({
+                    paintingFeeling: event.target.value,
+                  });
+                }}
+                placeholder="例如：有些收束，也有些想打开"
+              />
+            </label>
+          </div>
         </article>
 
         <article className="mw-card">
@@ -66,6 +117,17 @@ export function MobileWebUploadPage({
           </article>
         ))}
       </section>
+
+      <footer className="mw-footer-action">
+        <button
+          type="button"
+          className="mw-primary-button"
+          onClick={onContinue}
+          disabled={!descriptor.draft.imagePath}
+        >
+          进入当前解读流程
+        </button>
+      </footer>
     </MobileWebAppShell>
   );
 }
