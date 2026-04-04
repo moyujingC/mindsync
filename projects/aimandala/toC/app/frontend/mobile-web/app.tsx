@@ -27,6 +27,7 @@ export interface MobileWebAppProps {
   onUploadPreviewDetect?: () => void;
   onReportPrimaryAction?: () => void;
   onReportSecondaryAction?: () => void;
+  reportPrimaryDisabled?: boolean;
   onHistoryBackToUpload?: () => void;
 }
 
@@ -46,6 +47,7 @@ export function MobileWebApp({
   onUploadPreviewDetect,
   onReportPrimaryAction,
   onReportSecondaryAction,
+  reportPrimaryDisabled = false,
   onHistoryBackToUpload,
 }: MobileWebAppProps): ReactNode {
   switch (route) {
@@ -82,6 +84,7 @@ export function MobileWebApp({
           environmentTone={environmentTone}
           onPrimaryAction={onReportPrimaryAction}
           onSecondaryAction={onReportSecondaryAction}
+          primaryDisabled={reportPrimaryDisabled}
         />
       );
 

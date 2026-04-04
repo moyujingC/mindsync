@@ -19,6 +19,7 @@ export interface MobileWebReportPageProps {
   environmentTone?: "preview" | "runtime";
   onPrimaryAction?: () => void;
   onSecondaryAction?: () => void;
+  primaryDisabled?: boolean;
 }
 
 export function MobileWebReportPage({
@@ -28,6 +29,7 @@ export function MobileWebReportPage({
   environmentTone,
   onPrimaryAction,
   onSecondaryAction,
+  primaryDisabled = false,
 }: MobileWebReportPageProps) {
   const viewModel = createMobileWebPageViewModel(
     state,
@@ -36,10 +38,13 @@ export function MobileWebReportPage({
   const descriptor = createReportPageDescriptor(viewModel);
   const structured = getLiteStructuredReport(state.report);
   const isLoading = state.step === "liteGenerating";
+  const isError = state.step === "error";
   const primaryLabel = isLoading ? "继续查看生成进度" : descriptor.primaryActionLabel;
-  const secondaryLabel = isLoading ? "返回上传页" : "重新上传画作";
+  const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
   const footerHint = isLoading
     ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
+    : isError
+      ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
     : "Lite 结果已经准备好，你可以查看历史记录，或重新开始一轮新的上传。";
 
   return (
@@ -77,6 +82,7 @@ export function MobileWebReportPage({
             type="button"
             className="mw-primary-button"
             onClick={onPrimaryAction}
+            disabled={primaryDisabled}
           >
             {primaryLabel}
           </button>

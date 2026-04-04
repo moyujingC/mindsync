@@ -82,6 +82,7 @@ export function MobileWebBrowserShell() {
   const [previewDetectError, setPreviewDetectError] = useState<string | null>(null);
   const [previewFlowState, setPreviewFlowState] =
     useState<MandalaFlowState | null>(null);
+  const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
 
   const input = useMemo(
     () => createInput(route, draft, interpretationId, userId),
@@ -94,11 +95,20 @@ export function MobileWebBrowserShell() {
 
   function handlePreviewPrimaryAction() {
     if (route === "loading") {
+      if (previewFlowRunning) {
+        return;
+      }
       setRoute("report");
       return;
     }
 
     if (route === "report" || route === "upgrade") {
+      if (previewFlowState?.step === "error") {
+        setPreviewFlowState(null);
+        setRoute("upload");
+        return;
+      }
+
       setRoute("history");
     }
   }
@@ -256,7 +266,11 @@ export function MobileWebBrowserShell() {
               uploadDetecting={previewDetecting}
               uploadDetectError={previewDetectError}
               environmentLabel="当前为本地预览模式"
-              environmentDetail="页面里的 loading、report、history 仍以占位数据为主；上传页的三圈检测可切到真实接口触发。"
+              environmentDetail={
+                previewFlowRunning
+                  ? "当前正在尝试跑真实 Lite 主路径，请先等待 create/status/report 链路返回。"
+                  : "页面里的 loading、report、history 仍以占位数据为主；上传页的三圈检测可切到真实接口触发。"
+              }
               environmentTone="preview"
               onUploadDraftChange={(patch) => {
                 setDraft((current) => ({
@@ -276,6 +290,7 @@ export function MobileWebBrowserShell() {
                   return;
                 }
 
+                setPreviewFlowRunning(true);
                 try {
                   const result = await runMobileWebLiteFlow(
                     toStartCreatePayload(
@@ -292,6 +307,8 @@ export function MobileWebBrowserShell() {
                 } catch {
                   // runMobileWebLiteFlow already normalizes most failures into state,
                   // so this is a last-resort fallback for unexpected exceptions.
+                } finally {
+                  setPreviewFlowRunning(false);
                 }
               }}
               onUploadPreviewDetect={async () => {
@@ -322,6 +339,7 @@ export function MobileWebBrowserShell() {
               }}
               onReportPrimaryAction={handlePreviewPrimaryAction}
               onReportSecondaryAction={handlePreviewSecondaryAction}
+              reportPrimaryDisabled={route === "loading" && previewFlowRunning}
               onHistoryBackToUpload={() => {
                 setRoute("upload");
               }}
