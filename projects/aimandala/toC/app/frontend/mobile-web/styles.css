@@ -30,31 +30,39 @@ select {
 }
 
 .browser-shell {
-  display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(320px, 1fr);
   min-height: 100vh;
 }
 
 .browser-shell__panel {
   padding: 32px 24px;
-  border-right: 1px solid rgba(88, 67, 43, 0.12);
   background: rgba(255, 250, 242, 0.82);
   backdrop-filter: blur(14px);
+  border: 1px solid rgba(88, 67, 43, 0.12);
+  border-radius: 24px;
 }
 
 .browser-shell__panel-header {
   margin-bottom: 24px;
 }
 
+.browser-shell__panel-header h2 {
+  margin: 0 0 8px;
+}
+
+.browser-shell__panel--inline {
+  width: min(100%, 960px);
+  margin: 0 auto 20px;
+}
+
 .browser-shell__viewport {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  gap: 18px;
   padding: 24px;
 }
 
 .browser-shell__phone {
   width: min(100%, 430px);
+  margin: 0 auto;
   min-height: 780px;
   padding: 16px;
   border: 1px solid rgba(88, 67, 43, 0.15);
@@ -70,6 +78,44 @@ select {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.browser-shell__devbar {
+  width: min(100%, 960px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid rgba(88, 67, 43, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 250, 242, 0.82);
+  backdrop-filter: blur(14px);
+}
+
+.browser-shell__devbar-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.browser-shell__devbar-copy strong {
+  color: #2e2418;
+}
+
+.browser-shell__toggle {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(139, 103, 55, 0.14);
+  color: #704d24;
+  font-weight: 600;
+}
+
+.browser-shell__controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .muted {
@@ -377,15 +423,6 @@ select {
 }
 
 @media (max-width: 920px) {
-  .browser-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .browser-shell__panel {
-    border-right: 0;
-    border-bottom: 1px solid rgba(88, 67, 43, 0.12);
-  }
-
   .browser-shell__viewport {
     padding-top: 0;
   }
@@ -393,9 +430,18 @@ select {
   .browser-shell__phone {
     min-height: auto;
   }
+
+  .browser-shell__controls {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
+  .browser-shell__devbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .mw-card-grid,
   .mw-metric-row {
     grid-template-columns: 1fr;

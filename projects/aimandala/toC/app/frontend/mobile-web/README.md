@@ -194,7 +194,7 @@
 当前这个壳的目标很明确：
 
 - 用 `Vite` 把 `MobileWebRuntime` 正式挂到浏览器里
-- 提供一个简单控制面板，用来切换 `upload / loading / report / history / upgrade`
+- 提供一个开发辅助层，用来切换 `upload / loading / report / history / upgrade`
 - 保持 `runtime -> router-plan -> app` 这条装配链不变
 
 它不是正式 UI，也不是最终路由方案，但已经足够承担：
@@ -215,5 +215,6 @@
 - 不请求后端
 - 可以直接切换 `upload / loading / report / history / upgrade`
 - 用固定 fixture 支撑页面结构开发
+- 开发辅助层默认可折叠，不作为正式产品界面的一部分
 
 当需要真实联调时，再关闭预览模式，切回 `MobileWebRuntime` 走当前 loader 与后端接口。
