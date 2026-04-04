@@ -129,3 +129,34 @@ def test_prepare_lite_record_uses_detector_when_missing_manual_input(tmp_path):
     assert record.three_circles == {"inner_radius": 35, "middle_radius": 67}
     assert record.three_circles_auto_detect["method"] == "stub"
     assert record.three_circles_user_adjusted is False
+
+
+def test_get_report_returns_lite_placeholder_when_not_generated(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.prepare_lite_record(
+            image_path=str(image_path),
+            user_id="user-3",
+        )
+    )
+
+    report = orchestrator.get_report(record.interpretation_id)
+
+    assert report is not None
+    assert report["version"] == "lite"
+    assert report["error"] == "lite report not generated yet"
+
+
+def test_get_report_returns_none_for_missing_record(tmp_path):
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(store=store, enable_vision=False)
+
+    assert orchestrator.get_report("missing-record-id") is None

@@ -141,3 +141,37 @@ def test_get_user_interpretations_endpoint(tmp_path):
     data = response.json()
     assert len(data) >= 2
     assert all(item["user_id"] == "user-api-4" for item in data)
+
+
+def test_get_report_endpoint_returns_placeholder(tmp_path):
+    from app.api.main import app
+
+    client = TestClient(app)
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-5",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["version"] == "lite"
+    assert data["report"] is None
+    assert data["error"] == "lite report not generated yet"
+
+
+def test_get_report_endpoint_404_for_unknown_record():
+    from app.api.main import app
+
+    client = TestClient(app)
+    response = client.get("/api/v2/interpretations/not-found/report")
+
+    assert response.status_code == 404

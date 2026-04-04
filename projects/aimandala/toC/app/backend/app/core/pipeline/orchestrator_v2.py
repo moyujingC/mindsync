@@ -175,3 +175,63 @@ class LayeredOrchestrator:
             "inner_radius": inner,
             "middle_radius": middle,
         }
+
+    def get_report(
+        self,
+        interpretation_id: str,
+        version: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """Return the currently available report view for a migrated record."""
+
+        record = self.store.load(interpretation_id)
+        if record is None:
+            return None
+
+        requested_version = version or self._resolve_best_available_version(record)
+
+        if requested_version == "pro":
+            report = record.get_pro_report()
+            if report:
+                return {
+                    "version": "pro",
+                    "report": report,
+                    "ai_qa_context": record.get_ai_qa_context(),
+                    "can_upgrade": False,
+                    "upgrade_price": None,
+                }
+            return {
+                "version": "pro",
+                "error": "pro report not generated yet",
+                "can_upgrade": False,
+                "upgrade_price": None,
+            }
+
+        if requested_version == "lite":
+            report = record.get_lite_report()
+            if report:
+                return {
+                    "version": "lite",
+                    "report": report,
+                    "can_upgrade": record.can_upgrade_to_pro(),
+                    "upgrade_price": (
+                        self.get_upgrade_diff() if record.can_upgrade_to_pro() else None
+                    ),
+                }
+            return {
+                "version": "lite",
+                "error": "lite report not generated yet",
+                "can_upgrade": False,
+                "upgrade_price": None,
+            }
+
+        return {
+            "version": requested_version,
+            "error": f"unsupported version: {requested_version}",
+            "can_upgrade": False,
+            "upgrade_price": None,
+        }
+
+    def _resolve_best_available_version(self, record: InterpretationRecord) -> str:
+        if record.get_pro_report():
+            return "pro"
+        return "lite"

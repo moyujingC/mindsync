@@ -64,6 +64,18 @@ class InterpretationRecordResponse(BaseModel):
     created_at: str
 
 
+class ReportResponse(BaseModel):
+    """Minimal report response for the migrated V2 flow."""
+
+    interpretation_id: str
+    version: str
+    report: Optional[str] = None
+    ai_qa_context: Optional[str] = None
+    can_upgrade: bool = False
+    upgrade_price: Optional[float] = None
+    error: Optional[str] = None
+
+
 class PricingInfo(BaseModel):
     """Current public pricing for the To C V2 flow."""
 
@@ -156,6 +168,28 @@ async def get_user_interpretations(user_id: str):
 
     records = get_orchestrator().store.get_user_records(user_id=user_id)
     return [to_record_response(record) for record in records]
+
+
+@router.get(
+    "/interpretations/{interpretation_id}/report",
+    response_model=ReportResponse,
+)
+async def get_report(interpretation_id: str, version: Optional[str] = None):
+    """Fetch the currently available report view for a migrated record."""
+
+    result = get_orchestrator().get_report(interpretation_id, version)
+    if result is None:
+        raise HTTPException(status_code=404, detail="interpretation not found")
+
+    return ReportResponse(
+        interpretation_id=interpretation_id,
+        version=result.get("version", version or "lite"),
+        report=result.get("report"),
+        ai_qa_context=result.get("ai_qa_context"),
+        can_upgrade=result.get("can_upgrade", False),
+        upgrade_price=result.get("upgrade_price"),
+        error=result.get("error"),
+    )
 
 
 @router.get("/pricing", response_model=PricingInfo)
