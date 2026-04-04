@@ -169,3 +169,14 @@
   - 最终返回 `MobileWebApp`
 
 这意味着外部宿主框架如果要接这套骨架，最小只需要调用一个入口函数。
+
+## 当前运行时层
+
+现在还补了 `runtime.tsx`：
+
+- `useMobileWebRouteLoader`
+  - 负责异步 route props 加载
+- `MobileWebRuntime`
+  - 负责 loading / error / app 渲染分发
+
+这样如果后面接 React 宿主，可以直接先挂 `MobileWebRuntime`，不需要每个页面自己写一套异步加载状态管理。
