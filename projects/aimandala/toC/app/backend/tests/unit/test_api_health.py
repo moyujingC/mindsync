@@ -57,7 +57,8 @@ def test_create_interpretation_endpoint(tmp_path):
     assert data["success"] is True
     assert data["version"] == "lite"
     assert data["auto_detected"] is True
-    assert data["generation_stage"] == "detecting"
+    assert data["generation_stage"] == "completed"
+    assert data["report_ready"] is True
     assert data["three_circles"]["inner_radius"] == 33
     assert data["three_circles"]["middle_radius"] == 66
     assert data["interpretation_id"]
@@ -164,8 +165,8 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
     assert response.status_code == 200
     data = response.json()
     assert data["version"] == "lite"
-    assert data["report"] is None
-    assert data["error"] == "lite report not generated yet"
+    assert "一镜 Lite 版占位报告" in data["report"]
+    assert data["error"] is None
 
 
 def test_get_report_endpoint_404_for_unknown_record():

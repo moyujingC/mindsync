@@ -9,6 +9,7 @@ sys.path.insert(
 )
 
 from app.core.analysis.circle_detector import CircleDetectionResult
+from app.core.pipeline.data_models import GenerationStatus
 from app.core.pipeline.orchestrator_v2 import (
     GenerationStage,
     LayeredOrchestrator,
@@ -160,3 +161,54 @@ def test_get_report_returns_none_for_missing_record(tmp_path):
     orchestrator = LayeredOrchestrator(store=store, enable_vision=False)
 
     assert orchestrator.get_report("missing-record-id") is None
+
+
+def test_generate_lite_placeholder_creates_report(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-4",
+            theme="career",
+        )
+    )
+
+    assert record.status == GenerationStatus.COMPLETED
+    assert record.generation_stage == "completed"
+    assert record.generation_progress == 100
+    assert "lite" in record.version_purchased
+    assert record.layer_2_lite_final is not None
+    assert "迁移期的最小 Lite 闭环" in record.layer_2_lite_final.full_report_markdown
+
+
+def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-5",
+        )
+    )
+
+    report = orchestrator.get_report(record.interpretation_id)
+
+    assert report is not None
+    assert report["version"] == "lite"
+    assert report["report"] is not None
+    assert report["can_upgrade"] is False

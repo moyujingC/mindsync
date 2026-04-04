@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 from app.core.analysis.circle_detector import CircleDetectionResult, CircleDetector
 
-from .data_models import GenerationStatus, InterpretationRecord
+from .data_models import GenerationStatus, InterpretationRecord, Layer2LiteFinal
 from .store import InterpretationStore
 
 
@@ -160,6 +160,38 @@ class LayeredOrchestrator:
         self.store.save(record)
         return record
 
+    async def generate_lite_placeholder(
+        self,
+        *,
+        image_path: str,
+        user_id: str,
+        theme: str = "general",
+        painting_intention: Optional[str] = None,
+        painting_feeling: Optional[str] = None,
+        three_circles: Optional[Dict[str, int]] = None,
+    ) -> InterpretationRecord:
+        """Create a migrated Lite record with a placeholder report."""
+
+        record = await self.prepare_lite_record(
+            image_path=image_path,
+            user_id=user_id,
+            theme=theme,
+            painting_intention=painting_intention,
+            painting_feeling=painting_feeling,
+            three_circles=three_circles,
+        )
+
+        record.update_progress(GenerationStage.GENERATING.value, 70)
+        record.layer_2_lite_final = self._build_lite_placeholder_report(record)
+
+        if "lite" not in record.version_purchased:
+            record.version_purchased.append("lite")
+
+        record.status = GenerationStatus.COMPLETED
+        record.update_progress(GenerationStage.COMPLETED.value, 100)
+        self.store.save(record)
+        return record
+
     def _hash_image(self, image_path: str) -> str:
         path = Path(image_path)
         if not path.exists():
@@ -235,3 +267,42 @@ class LayeredOrchestrator:
         if record.get_pro_report():
             return "pro"
         return "lite"
+
+    def _build_lite_placeholder_report(self, record: InterpretationRecord) -> Layer2LiteFinal:
+        theme = record.theme or "general"
+        circle_info = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
+        title = "一镜 Lite 版占位报告"
+        overall_impression = (
+            "当前记录已经完成迁移期的最小 Lite 闭环，用于打通 To C 主路径与后续真实生成能力。"
+        )
+        visual_elements = (
+            f"当前主题为 `{theme}`，三圈参数为内圈 {circle_info['inner_radius']}%，"
+            f"中圈 {circle_info['middle_radius']}%。"
+        )
+        emotion_portrait = (
+            "这里暂时不是正式解读内容，而是迁移占位文本。后续接入真实分析、提示词和润色链路后，"
+            "这份占位报告会被正式 Lite 报告替换。"
+        )
+        full_report_markdown = "\n".join(
+            [
+                f"# {title}",
+                "",
+                "## 当前状态",
+                overall_impression,
+                "",
+                "## 已记录信息",
+                visual_elements,
+                "",
+                "## 说明",
+                emotion_portrait,
+            ]
+        )
+
+        return Layer2LiteFinal(
+            title=title,
+            overall_impression=overall_impression,
+            visual_elements_rendered=visual_elements,
+            emotion_portrait_rendered=emotion_portrait,
+            pro_teaser="后续将接入正式的一梳 Pro 版生成链路。",
+            full_report_markdown=full_report_markdown,
+        )

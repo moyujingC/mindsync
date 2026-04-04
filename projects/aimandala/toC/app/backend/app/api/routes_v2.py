@@ -46,6 +46,7 @@ class CreateInterpretationResponse(BaseModel):
     three_circles: dict
     auto_detected: bool
     existing: bool = False
+    report_ready: bool = False
 
 
 class InterpretationRecordResponse(BaseModel):
@@ -127,7 +128,7 @@ async def create_interpretation(payload: CreateInterpretationRequest):
             "middle_radius": payload.middle_radius,
         }
 
-    record = await get_orchestrator().prepare_lite_record(
+    record = await get_orchestrator().generate_lite_placeholder(
         image_path=payload.image_path,
         user_id=payload.user_id,
         theme=payload.theme,
@@ -143,6 +144,7 @@ async def create_interpretation(payload: CreateInterpretationRequest):
         generation_progress=record.generation_progress,
         three_circles=record.three_circles or {},
         auto_detected=record.three_circles_auto_detect is not None,
+        report_ready=record.layer_2_lite_final is not None,
     )
 
 

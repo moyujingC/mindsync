@@ -119,6 +119,12 @@ class StoryNode:
     content: str = ""  # 节点内容
     connector: Optional[str] = None  # 连接词（如"但与此同时..."）
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "content": self.content,
+            "connector": self.connector,
+        }
+
 
 @dataclass
 class StoryStructure:
@@ -138,6 +144,13 @@ class ThemeInsights:
     impact: str = ""  # 具体影响
     awareness: str = ""  # 觉察点
 
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "scene": self.scene,
+            "impact": self.impact,
+            "awareness": self.awareness,
+        }
+
 
 @dataclass
 class DailyAwareness:
@@ -145,6 +158,13 @@ class DailyAwareness:
     day: int = 1  # 第几天
     title: str = ""  # 标题
     content: str = ""  # 内容
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "day": self.day,
+            "title": self.title,
+            "content": self.content,
+        }
 
 
 @dataclass
