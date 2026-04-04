@@ -64,4 +64,25 @@
 - 每个 skill 的完整示例调用覆盖
 - 统一接入后的执行结果校验
 
-这些会在后续统一接入阶段再处理。
+## 当前运行时策略
+
+当前 skill 采用双层结构：
+
+- 治理源：
+  - `mindsync` 仓库内的 `projects/research-center/skills/`
+- 运行时镜像：
+  - 本机 `~/.claude/skills/`
+
+这意味着：
+
+- 仓库里的 skill 是 source of truth
+- 如果希望 Claude 本地运行时直接识别这些 skill，需要额外做本机挂载
+- 仅把 skill 写进角色 `AGENTS.md`，不会自动让 Paperclip 面板显示这些 skill
+
+当前建议使用：
+
+- `/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-local-skills.sh`
+
+把仓库 skill 轻量同步到 `~/.claude/skills/`。
+
+这套策略服务当前单人、单机开发阶段；它不等同于 Paperclip 已经提供了 company-managed skills runtime。
