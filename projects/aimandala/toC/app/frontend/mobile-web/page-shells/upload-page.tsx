@@ -29,6 +29,12 @@ export function MobileWebUploadPage({
   const descriptor = createUploadPageDescriptor(draft, detection);
   const themeSection = descriptor.sections.find((section) => section.id === "theme");
   const detectionSection = descriptor.sections.find((section) => section.id === "circles");
+  const canContinue = Boolean(descriptor.draft.imagePath && descriptor.detection);
+  const footerHint = descriptor.draft.imagePath
+    ? descriptor.detection
+      ? "三圈建议已就绪，可以进入当前解读流程。"
+      : "先完成三圈检测，再进入当前解读流程。"
+    : "请先选择一张画作。";
 
   function handleUseSampleAsset() {
     if (descriptor.draft.imagePath) {
@@ -81,11 +87,12 @@ export function MobileWebUploadPage({
       </section>
 
       <footer className="mw-footer-action">
+        <p className="mw-footer-hint">{footerHint}</p>
         <button
           type="button"
           className="mw-primary-button"
           onClick={onContinue}
-          disabled={!descriptor.draft.imagePath}
+          disabled={!canContinue}
         >
           进入当前解读流程
         </button>
