@@ -89,6 +89,29 @@ frontend/
 - 原生 App 适配
 - 文件上传 UI / 支付 UI / 登录 UI
 
+## 当前工程化落点
+
+当前已经补上最小工作区配置：
+
+- `package.json`
+- `tsconfig.json`
+- `mobile-web/main.tsx`
+
+这意味着现在 `frontend/` 已经是一个明确的 TypeScript 前端工作区入口，而不只是文档目录。
+
+当前脚本：
+
+- `npm run typecheck`
+- `npm run check:shared`
+
+当前还没有锁定具体运行壳，所以：
+
+- 没有直接绑定 Vite
+- 没有直接绑定 Next
+- 没有直接绑定某个 UI 框架脚手架
+
+后续只需要在这个基础上补具体运行壳，而不用重新整理共享层目录。
+
 ## 下一步建议
 
 前端后续建议顺序：

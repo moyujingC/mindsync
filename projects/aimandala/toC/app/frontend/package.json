@@ -1,0 +1,15 @@
+{
+  "name": "@mindsync/aimandala-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "check:shared": "tsc --noEmit -p tsconfig.json",
+    "dev:note": "node -e \"console.log('Choose a runtime shell before starting dev: Vite, Next, or another React host.')\""
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "typescript": "^5.8.3"
+  }
+}

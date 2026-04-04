@@ -1,4 +1,5 @@
 export * from "../shared";
+export * from "./app";
 export * from "./app-shell";
 export * from "./controller";
 export * from "./entry";

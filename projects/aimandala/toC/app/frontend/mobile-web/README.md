@@ -120,6 +120,15 @@
 - 交给 `MobileWebAppShell` 承载
 - 保持页面层尽量薄，不重新实现业务流程
 
+## 当前应用装配点
+
+现在还补了一个 `app.tsx`：
+
+- 根据 `route` 选择 upload / report / history 页面壳
+- 作为后续真实路由框架接入前的最小宿主层
+
+这样后面如果接 React Router 或其他路由层，优先把真实路由结果映射到 `MobileWebApp`，而不是在页面里重新分发业务状态。
+
 ## 当前页面 loader
 
 现在还新增了一层 `loaders.ts`，把页面壳真正接到 controller 上：

@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@aimandala/shared": ["./shared/index.ts"],
+      "@aimandala/shared/*": ["./shared/*"],
+      "@aimandala/mobile-web": ["./mobile-web/index.ts"],
+      "@aimandala/mobile-web/*": ["./mobile-web/*"]
+    }
+  },
+  "include": [
+    "./shared/**/*.ts",
+    "./shared/**/*.tsx",
+    "./mobile-web/**/*.ts",
+    "./mobile-web/**/*.tsx"
+  ]
+}
