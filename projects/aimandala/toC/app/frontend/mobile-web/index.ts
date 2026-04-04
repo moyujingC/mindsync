@@ -2,6 +2,8 @@ export * from "../shared";
 export * from "./app-shell";
 export * from "./controller";
 export * from "./entry";
+export * from "./loaders";
+export * from "./page-shells";
 export * from "./pages";
 export * from "./routes";
 export * from "./state";

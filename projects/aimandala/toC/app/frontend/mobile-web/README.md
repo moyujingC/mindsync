@@ -105,3 +105,28 @@
   - 把 controller、descriptor、view-model 串起来的入口示例
 
 当前这些文件仍然是轻量骨架，不代表正式 UI 已完成，但已经足够作为后续 React 页面接入的落点。
+
+## 当前页面壳落点
+
+除了示例和入口文件，当前还补了可直接挂路由的页面壳：
+
+- `page-shells/upload-page.tsx`
+- `page-shells/report-page.tsx`
+- `page-shells/history-page.tsx`
+
+这些页面壳默认只做三件事：
+
+- 从 descriptor / state 读取数据
+- 交给 `MobileWebAppShell` 承载
+- 保持页面层尽量薄，不重新实现业务流程
+
+## 当前页面 loader
+
+现在还新增了一层 `loaders.ts`，把页面壳真正接到 controller 上：
+
+- `loadUploadPage`
+- `loadLiteReportPage`
+- `loadExistingReportPage`
+- `loadHistoryPage`
+
+这样后续不管是 React Router、Next App Router，还是别的页面框架，都可以先把 loader 接进去，再把结果交给页面壳渲染。
