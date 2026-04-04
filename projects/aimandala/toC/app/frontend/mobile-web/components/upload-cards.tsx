@@ -229,11 +229,13 @@ export function UploadChecklistCard({
 export interface UploadDetectionCardProps {
   detection: DetectCirclesResponse | null;
   section: UploadPageSection | undefined;
+  onPreviewDetect?: () => void;
 }
 
 export function UploadDetectionCard({
   detection,
   section,
+  onPreviewDetect,
 }: UploadDetectionCardProps) {
   return (
     <article className="mw-card">
@@ -245,6 +247,16 @@ export function UploadDetectionCard({
       </div>
 
       <p>{section?.description || "等待调用 detect-circles 获取三圈建议。"}</p>
+
+      {!detection ? (
+        <button
+          type="button"
+          className="mw-secondary-button mw-secondary-button--inline"
+          onClick={onPreviewDetect}
+        >
+          模拟三圈检测结果
+        </button>
+      ) : null}
 
       {detection ? (
         <div className="mw-metric-row mw-metric-row--compact">

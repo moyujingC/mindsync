@@ -4,16 +4,22 @@ import { MobileWebHistoryPage } from "./page-shells/history-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
 import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { MobileWebRouteId } from "./routes";
-import type { InterpretationRecordResponse, MandalaFlowState } from "../shared/types";
+import type {
+  DetectCirclesResponse,
+  InterpretationRecordResponse,
+  MandalaFlowState,
+} from "../shared/types";
 import type { MobileWebUploadDraft } from "./state";
 
 export interface MobileWebAppProps {
   route: MobileWebRouteId;
   uploadDraft?: MobileWebUploadDraft;
+  uploadDetection?: DetectCirclesResponse | null;
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onUploadContinue?: () => void;
+  onUploadPreviewDetect?: () => void;
   onReportPrimaryAction?: () => void;
   onHistoryBackToUpload?: () => void;
 }
@@ -21,10 +27,12 @@ export interface MobileWebAppProps {
 export function MobileWebApp({
   route,
   uploadDraft,
+  uploadDetection,
   flowState,
   records = [],
   onUploadDraftChange,
   onUploadContinue,
+  onUploadPreviewDetect,
   onReportPrimaryAction,
   onHistoryBackToUpload,
 }: MobileWebAppProps): ReactNode {
@@ -36,8 +44,10 @@ export function MobileWebApp({
       return (
         <MobileWebUploadPage
           draft={uploadDraft}
+          detection={uploadDetection}
           onDraftChange={onUploadDraftChange}
           onContinue={onUploadContinue}
+          onPreviewDetect={onUploadPreviewDetect}
         />
       );
 

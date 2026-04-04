@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 
 import { MobileWebApp } from "./app";
-import { createPreviewAppProps } from "./fixtures";
+import { createPreviewAppProps, createPreviewDetectionFixture } from "./fixtures";
 import { MobileWebRuntime } from "./runtime";
 import type { MobileWebRouteInput } from "./router-plan";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
+import type { DetectCirclesResponse } from "../shared/types";
 
 const defaultDraft: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
@@ -72,14 +73,16 @@ export function MobileWebBrowserShell() {
   const [userId, setUserId] = useState("demo-user-id");
   const [previewMode, setPreviewMode] = useState(true);
   const [controlsOpen, setControlsOpen] = useState(false);
+  const [previewDetection, setPreviewDetection] =
+    useState<DetectCirclesResponse | null>(null);
 
   const input = useMemo(
     () => createInput(route, draft, interpretationId, userId),
     [draft, interpretationId, route, userId],
   );
   const previewProps = useMemo(
-    () => createPreviewAppProps(route, draft),
-    [draft, route],
+    () => createPreviewAppProps(route, draft, previewDetection),
+    [draft, previewDetection, route],
   );
 
   function handlePreviewPrimaryAction() {
@@ -240,9 +243,15 @@ export function MobileWebBrowserShell() {
                   ...current,
                   ...patch,
                 }));
+                if (patch.imagePath !== undefined) {
+                  setPreviewDetection(null);
+                }
               }}
               onUploadContinue={() => {
                 setRoute("loading");
+              }}
+              onUploadPreviewDetect={() => {
+                setPreviewDetection(createPreviewDetectionFixture());
               }}
               onReportPrimaryAction={handlePreviewPrimaryAction}
               onHistoryBackToUpload={() => {

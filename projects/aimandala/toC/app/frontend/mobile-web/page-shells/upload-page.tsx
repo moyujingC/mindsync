@@ -16,6 +16,7 @@ export interface MobileWebUploadPageProps {
   detection?: DetectCirclesResponse | null;
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onContinue?: () => void;
+  onPreviewDetect?: () => void;
 }
 
 export function MobileWebUploadPage({
@@ -23,6 +24,7 @@ export function MobileWebUploadPage({
   detection = null,
   onDraftChange,
   onContinue,
+  onPreviewDetect,
 }: MobileWebUploadPageProps) {
   const descriptor = createUploadPageDescriptor(draft, detection);
   const themeSection = descriptor.sections.find((section) => section.id === "theme");
@@ -74,6 +76,7 @@ export function MobileWebUploadPage({
         <UploadDetectionCard
           detection={descriptor.detection}
           section={detectionSection}
+          onPreviewDetect={onPreviewDetect}
         />
       </section>
 

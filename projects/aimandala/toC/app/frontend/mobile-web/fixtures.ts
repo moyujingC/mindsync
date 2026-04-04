@@ -63,6 +63,10 @@ function createMockDetection(): DetectCirclesResponse {
   };
 }
 
+export function createPreviewDetectionFixture(): DetectCirclesResponse {
+  return createMockDetection();
+}
+
 function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
   return {
     interpretation_id: "demo-interpretation-id",
@@ -130,6 +134,7 @@ function createMockRecords(): InterpretationRecordResponse[] {
 export function createPreviewAppProps(
   route: MobileWebRouteId,
   draft: MobileWebUploadDraft,
+  uploadDetection: DetectCirclesResponse | null = null,
 ): MobileWebAppProps {
   const baseFlowState = {
     step: "liteReady" as const,
@@ -149,6 +154,7 @@ export function createPreviewAppProps(
       return {
         route,
         uploadDraft: draft,
+        uploadDetection,
       };
 
     case "loading":
