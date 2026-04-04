@@ -253,6 +253,10 @@ select {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.mw-metric-row--compact {
+  margin-top: 14px;
+}
+
 .mw-card,
 .mw-metric-card {
   padding: 18px 16px;
