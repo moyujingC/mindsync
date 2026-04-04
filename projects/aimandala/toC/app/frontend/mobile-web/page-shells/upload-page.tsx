@@ -14,6 +14,8 @@ import type { MobileWebUploadDraft } from "../state";
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
   detection?: DetectCirclesResponse | null;
+  isDetecting?: boolean;
+  detectError?: string | null;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
@@ -25,6 +27,8 @@ export interface MobileWebUploadPageProps {
 export function MobileWebUploadPage({
   draft,
   detection = null,
+  isDetecting = false,
+  detectError = null,
   environmentLabel,
   environmentDetail,
   environmentTone,
@@ -92,6 +96,8 @@ export function MobileWebUploadPage({
         />
         <UploadDetectionCard
           detection={descriptor.detection}
+          isDetecting={isDetecting}
+          detectError={detectError}
           section={detectionSection}
           onPreviewDetect={onPreviewDetect}
         />

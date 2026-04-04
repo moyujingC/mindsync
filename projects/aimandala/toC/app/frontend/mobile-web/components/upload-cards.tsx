@@ -228,12 +228,16 @@ export function UploadChecklistCard({
 
 export interface UploadDetectionCardProps {
   detection: DetectCirclesResponse | null;
+  isDetecting?: boolean;
+  detectError?: string | null;
   section: UploadPageSection | undefined;
   onPreviewDetect?: () => void;
 }
 
 export function UploadDetectionCard({
   detection,
+  isDetecting = false,
+  detectError = null,
   section,
   onPreviewDetect,
 }: UploadDetectionCardProps) {
@@ -242,7 +246,7 @@ export function UploadDetectionCard({
       <div className="mw-card__header">
         <h3>{section?.title || "三圈检测"}</h3>
         <span className="mw-badge">
-          {detection ? "已生成建议" : "等待检测"}
+          {detection ? "已生成建议" : isDetecting ? "检测中" : "等待检测"}
         </span>
       </div>
 
@@ -253,9 +257,14 @@ export function UploadDetectionCard({
           type="button"
           className="mw-secondary-button mw-secondary-button--inline"
           onClick={onPreviewDetect}
+          disabled={isDetecting}
         >
-          模拟三圈检测结果
+          {isDetecting ? "正在检测..." : "触发三圈检测"}
         </button>
+      ) : null}
+
+      {detectError ? (
+        <p className="mw-inline-error">{detectError}</p>
       ) : null}
 
       {detection ? (

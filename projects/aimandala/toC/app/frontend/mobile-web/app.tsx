@@ -15,6 +15,8 @@ export interface MobileWebAppProps {
   route: MobileWebRouteId;
   uploadDraft?: MobileWebUploadDraft;
   uploadDetection?: DetectCirclesResponse | null;
+  uploadDetecting?: boolean;
+  uploadDetectError?: string | null;
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
   environmentLabel?: string;
@@ -32,6 +34,8 @@ export function MobileWebApp({
   route,
   uploadDraft,
   uploadDetection,
+  uploadDetecting = false,
+  uploadDetectError = null,
   flowState,
   records = [],
   environmentLabel,
@@ -53,6 +57,8 @@ export function MobileWebApp({
         <MobileWebUploadPage
           draft={uploadDraft}
           detection={uploadDetection}
+          isDetecting={uploadDetecting}
+          detectError={uploadDetectError}
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}

@@ -7,6 +7,7 @@ import type { MobileWebRouteInput } from "./router-plan";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
 import type { DetectCirclesResponse } from "../shared/types";
+import { detectCircles } from "../shared/api";
 
 const defaultDraft: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
@@ -75,6 +76,8 @@ export function MobileWebBrowserShell() {
   const [controlsOpen, setControlsOpen] = useState(false);
   const [previewDetection, setPreviewDetection] =
     useState<DetectCirclesResponse | null>(null);
+  const [previewDetecting, setPreviewDetecting] = useState(false);
+  const [previewDetectError, setPreviewDetectError] = useState<string | null>(null);
 
   const input = useMemo(
     () => createInput(route, draft, interpretationId, userId),
@@ -244,8 +247,11 @@ export function MobileWebBrowserShell() {
             <MobileWebApp
               {...previewProps}
               uploadDraft={draft}
+              uploadDetection={previewDetection}
+              uploadDetecting={previewDetecting}
+              uploadDetectError={previewDetectError}
               environmentLabel="当前为本地预览模式"
-              environmentDetail="页面里的检测、进度和报告内容来自前端占位数据，用于继续长交互与布局。"
+              environmentDetail="页面里的 loading、report、history 仍以占位数据为主；上传页的三圈检测可切到真实接口触发。"
               environmentTone="preview"
               onUploadDraftChange={(patch) => {
                 setDraft((current) => ({
@@ -254,13 +260,37 @@ export function MobileWebBrowserShell() {
                 }));
                 if (patch.imagePath !== undefined) {
                   setPreviewDetection(null);
+                  setPreviewDetectError(null);
                 }
               }}
               onUploadContinue={() => {
                 setRoute("loading");
               }}
-              onUploadPreviewDetect={() => {
-                setPreviewDetection(createPreviewDetectionFixture());
+              onUploadPreviewDetect={async () => {
+                if (!draft.imagePath) {
+                  setPreviewDetectError("请先选择一张画作，再触发三圈检测。");
+                  return;
+                }
+
+                setPreviewDetecting(true);
+                setPreviewDetectError(null);
+
+                try {
+                  const shouldUseFixture = draft.imagePath.startsWith("browser-file:");
+                  const detection = shouldUseFixture
+                    ? createPreviewDetectionFixture()
+                    : await detectCircles({
+                        image_path: draft.imagePath,
+                      });
+                  setPreviewDetection(detection);
+                } catch (error) {
+                  setPreviewDetectError(
+                    error instanceof Error ? error.message : "三圈检测失败",
+                  );
+                  setPreviewDetection(null);
+                } finally {
+                  setPreviewDetecting(false);
+                }
               }}
               onReportPrimaryAction={handlePreviewPrimaryAction}
               onReportSecondaryAction={handlePreviewSecondaryAction}

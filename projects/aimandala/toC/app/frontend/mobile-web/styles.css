@@ -433,6 +433,12 @@ select {
   color: #7c6850;
 }
 
+.mw-inline-error {
+  margin: 10px 0 0;
+  color: #8f2d2d;
+  font-size: 13px;
+}
+
 .mw-upload-actions {
   display: flex;
   flex-wrap: wrap;
