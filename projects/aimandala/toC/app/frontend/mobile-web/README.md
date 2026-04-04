@@ -25,3 +25,25 @@
    - 当前只接兼容占位接口
 
 当前不建议在这里直接复制旧仓库 `app/ui` 的整套结构，而是优先按共享层边界重组。
+
+## 当前已提供的页面层骨架
+
+当前这里已经补了一层不依赖具体框架的页面控制器：
+
+- `controller.ts`
+  - `bootstrapMobileWebFlow`
+  - `runMobileWebLiteFlow`
+  - `refreshMobileWebReport`
+- `state.ts`
+  - `MobileWebUploadDraft`
+  - `toStartCreatePayload`
+  - `getMobileWebPrimaryAction`
+
+这意味着后续如果接 React 页面，可以直接：
+
+1. 页面收集上传草稿
+2. 转成 `StartCreatePayload`
+3. 调 `runMobileWebLiteFlow`
+4. 用返回的 `state` 和 `report` 渲染页面
+
+这样页面层只负责 UI，不需要自己重新拼后端调用顺序。
