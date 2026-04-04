@@ -7,6 +7,7 @@ import { createHistoryPageDescriptor, createReportPageDescriptor, createUploadPa
 import { mobileWebRoutes } from "./routes";
 import { getMobileWebPrimaryAction, toStartCreatePayload } from "./state";
 import { createMobileWebPageViewModel } from "./view-model";
+import { resolveMobileWebRouteProps } from "./router-plan";
 
 export async function renderUploadEntry(imagePath: string) {
   const bootstrap = await bootstrapMobileWebFlow(imagePath);
@@ -84,6 +85,26 @@ export async function refreshReportEntry(interpretationId: string) {
   return (
     <MobileWebAppShell route={mobileWebRoutes[2]}>
       <pre>{JSON.stringify(descriptor, null, 2)}</pre>
+    </MobileWebAppShell>
+  );
+}
+
+export async function renderRouteEntry() {
+  const props = await resolveMobileWebRouteProps({
+    route: "upload",
+    params: {
+      draft: {
+        imagePath: "/tmp/example-mandala.png",
+        theme: "general",
+        paintingIntention: "",
+        paintingFeeling: "",
+      },
+    },
+  });
+
+  return (
+    <MobileWebAppShell route={mobileWebRoutes[0]}>
+      <pre>{JSON.stringify(props, null, 2)}</pre>
     </MobileWebAppShell>
   );
 }

@@ -139,3 +139,22 @@
 - `loadHistoryPage`
 
 这样后续不管是 React Router、Next App Router，还是别的页面框架，都可以先把 loader 接进去，再把结果交给页面壳渲染。
+
+## 当前路由装配器
+
+现在还补了 `router-plan.ts`，用于把：
+
+- route id
+- route params
+- loader
+- app props
+
+串成同一条装配链。
+
+当前推荐的接线顺序是：
+
+1. 路由层产出 `route + params`
+2. `resolveMobileWebRouteProps`
+3. 把返回结果交给 `MobileWebApp`
+
+这样后续接真实框架时，路由层和页面层之间会更干净。

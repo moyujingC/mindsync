@@ -6,6 +6,7 @@ export * from "./entry";
 export * from "./loaders";
 export * from "./page-shells";
 export * from "./pages";
+export * from "./router-plan";
 export * from "./routes";
 export * from "./state";
 export * from "./view-model";
