@@ -5,6 +5,7 @@ export interface HistoryPageItemDescriptor {
   title: string;
   subtitle: string;
   canOpenReport: boolean;
+  statusLabel: string;
 }
 
 export interface HistoryPageDescriptor {
@@ -38,6 +39,7 @@ export function createHistoryPageDescriptor(
       title: `${record.theme} / ${record.status}`,
       subtitle: `创建时间：${record.created_at}`,
       canOpenReport: record.generation_progress >= 100,
+      statusLabel: record.generation_progress >= 100 ? "可查看报告" : "生成中",
     })),
   };
 }

@@ -1,7 +1,10 @@
+import { useState } from "react";
+
 import { MobileWebAppShell } from "../app-shell";
 import { createHistoryPageDescriptor } from "../pages";
 import { mobileWebRoutes } from "../routes";
 import {
+  HistoryFilterTabs,
   HistoryRecordsList,
   HistorySummaryRow,
 } from "../components/history-cards";
@@ -17,6 +20,7 @@ export function MobileWebHistoryPage({
   onBackToUpload,
 }: MobileWebHistoryPageProps) {
   const descriptor = createHistoryPageDescriptor(records);
+  const [activeFilter, setActiveFilter] = useState<"all" | "ready" | "pending">("all");
 
   return (
     <MobileWebAppShell route={mobileWebRoutes[3]}>
@@ -27,8 +31,15 @@ export function MobileWebHistoryPage({
       </section>
 
       <HistorySummaryRow summary={descriptor.summary} />
+      <HistoryFilterTabs
+        activeFilter={activeFilter}
+        onChange={setActiveFilter}
+      />
 
-      <HistoryRecordsList descriptor={descriptor} />
+      <HistoryRecordsList
+        descriptor={descriptor}
+        activeFilter={activeFilter}
+      />
 
       <footer className="mw-footer-action">
         <button

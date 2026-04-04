@@ -367,6 +367,26 @@ select {
   color: #8a6641;
 }
 
+.mw-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mw-filter-chip {
+  border: 1px solid rgba(112, 90, 63, 0.18);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #6a5435;
+  font-weight: 600;
+}
+
+.mw-filter-chip--active {
+  background: rgba(139, 103, 55, 0.14);
+  color: #704d24;
+}
+
 .mw-stack {
   display: grid;
   gap: 14px;
