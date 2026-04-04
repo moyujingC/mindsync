@@ -1,11 +1,14 @@
+import { getGenerationPresentation } from "../../shared/core";
 import type { InterpretationRecordResponse } from "../../shared/types";
 
 export interface HistoryPageItemDescriptor {
   interpretationId: string;
+  theme: string;
   title: string;
   subtitle: string;
   canOpenReport: boolean;
   statusLabel: string;
+  statusDetail: string;
 }
 
 export interface HistoryPageDescriptor {
@@ -20,10 +23,25 @@ export interface HistoryPageDescriptor {
   };
 }
 
+function formatHistoryCreatedAt(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+}
+
 export function createHistoryPageDescriptor(
   records: InterpretationRecordResponse[],
 ): HistoryPageDescriptor {
-  const ready = records.filter((record) => record.generation_progress >= 100).length;
+  const ready = records.filter((record) => getGenerationPresentation(record).isReady).length;
 
   return {
     pageId: "history-page",
@@ -34,12 +52,18 @@ export function createHistoryPageDescriptor(
       ready,
       pending: records.length - ready,
     },
-    items: records.map((record) => ({
-      interpretationId: record.interpretation_id,
-      title: `${record.theme} / ${record.status}`,
-      subtitle: `创建时间：${record.created_at}`,
-      canOpenReport: record.generation_progress >= 100,
-      statusLabel: record.generation_progress >= 100 ? "可查看报告" : "生成中",
-    })),
+    items: records.map((record) => {
+      const presentation = getGenerationPresentation(record);
+
+      return {
+        interpretationId: record.interpretation_id,
+        theme: record.theme,
+        title: `${record.theme} 主题解读`,
+        subtitle: `创建于 ${formatHistoryCreatedAt(record.created_at)}`,
+        canOpenReport: presentation.isReady,
+        statusLabel: presentation.statusLabel,
+        statusDetail: presentation.statusDetail,
+      };
+    }),
   };
 }

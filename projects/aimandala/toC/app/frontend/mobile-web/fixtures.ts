@@ -163,6 +163,7 @@ export function createPreviewAppProps(
     case "loading":
       return {
         route,
+        uploadDraft: draft,
         flowState: flowStateOverride ?? {
           ...baseFlowState,
           step: "liteGenerating",
@@ -179,18 +180,25 @@ export function createPreviewAppProps(
     case "report":
       return {
         route,
+        uploadDraft: draft,
         flowState: flowStateOverride ?? baseFlowState,
       };
 
     case "history":
       return {
         route,
+        uploadDraft: draft,
+        historyQuery: {
+          filter: "all",
+          limit: 20,
+        },
         records: historyRecordsOverride ?? createMockRecords(),
       };
 
     case "upgrade":
       return {
         route,
+        uploadDraft: draft,
         flowState: flowStateOverride ?? {
           ...baseFlowState,
           step: "upgradePlaceholder",

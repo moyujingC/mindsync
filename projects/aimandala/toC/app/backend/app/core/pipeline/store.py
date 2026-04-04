@@ -303,14 +303,14 @@ class InterpretationStore:
         return record
 
     def get_user_records(
-        self, user_id: str, limit: int = 10
+        self, user_id: str, limit: Optional[int] = 10
     ) -> List[InterpretationRecord]:
         """
         获取用户的解读记录列表
 
         Args:
             user_id: 用户ID
-            limit: 返回数量限制
+            limit: 返回数量限制，None 表示不截断
 
         Returns:
             解读记录列表
@@ -331,6 +331,8 @@ class InterpretationStore:
 
         # 按创建时间排序，最新的在前
         records.sort(key=lambda r: r.created_at, reverse=True)
+        if limit is None:
+            return records
         return records[:limit]
 
     def cleanup_expired_data(self) -> int:

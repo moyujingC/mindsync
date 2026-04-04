@@ -30,7 +30,8 @@ export function HistorySummaryRow({
 
 export interface HistoryFilterTabsProps {
   activeFilter: HistoryFilterId;
-  onChange: (filter: HistoryFilterId) => void;
+  onChange?: (filter: HistoryFilterId) => void;
+  disabled?: boolean;
 }
 
 const historyFilterOptions: Array<{
@@ -45,6 +46,7 @@ const historyFilterOptions: Array<{
 export function HistoryFilterTabs({
   activeFilter,
   onChange,
+  disabled = false,
 }: HistoryFilterTabsProps) {
   return (
     <section className="mw-filter-row" aria-label="历史记录筛选">
@@ -54,10 +56,81 @@ export function HistoryFilterTabs({
           type="button"
           className={`mw-filter-chip ${activeFilter === option.id ? "mw-filter-chip--active" : ""}`}
           onClick={() => {
-            onChange(option.id);
+            onChange?.(option.id);
           }}
+          disabled={disabled}
         >
           {option.label}
+        </button>
+      ))}
+    </section>
+  );
+}
+
+export interface HistoryThemeTabsProps {
+  activeTheme?: string;
+  themes: string[];
+  onChange?: (theme?: string) => void;
+  disabled?: boolean;
+}
+
+export function HistoryThemeTabs({
+  activeTheme,
+  themes,
+  onChange,
+  disabled = false,
+}: HistoryThemeTabsProps) {
+  const options = ["all", ...themes];
+
+  return (
+    <section className="mw-filter-row" aria-label="历史主题筛选">
+      {options.map((theme) => {
+        const isAll = theme === "all";
+        const selected = isAll ? !activeTheme : activeTheme === theme;
+        return (
+          <button
+            key={theme}
+            type="button"
+            className={`mw-filter-chip ${selected ? "mw-filter-chip--active" : ""}`}
+            onClick={() => {
+              onChange?.(isAll ? undefined : theme);
+            }}
+            disabled={disabled}
+          >
+            {isAll ? "全部主题" : theme}
+          </button>
+        );
+      })}
+    </section>
+  );
+}
+
+export interface HistoryLimitTabsProps {
+  activeLimit?: number;
+  onChange?: (limit: number) => void;
+  disabled?: boolean;
+}
+
+const historyLimitOptions = [10, 20, 50];
+
+export function HistoryLimitTabs({
+  activeLimit = 20,
+  onChange,
+  disabled = false,
+}: HistoryLimitTabsProps) {
+  return (
+    <section className="mw-filter-row" aria-label="历史记录数量">
+      {historyLimitOptions.map((limit) => (
+        <button
+          key={limit}
+          type="button"
+          className={`mw-filter-chip ${activeLimit === limit ? "mw-filter-chip--active" : ""}`}
+          onClick={() => {
+            onChange?.(limit);
+          }}
+          disabled={disabled}
+        >
+          {`显示 ${limit} 条`}
         </button>
       ))}
     </section>
@@ -67,24 +140,44 @@ export function HistoryFilterTabs({
 export interface HistoryRecordsListProps {
   descriptor: HistoryPageDescriptor;
   activeFilter: HistoryFilterId;
+  activeTheme?: string;
+  onOpenRecord?: (interpretationId: string, canOpenReport: boolean) => void;
+  actionDisabled?: boolean;
+  actionBusy?: boolean;
+  activeRecordId?: string | null;
 }
 
-function getEmptyStateCopy(activeFilter: HistoryFilterId): ReactNode {
+function getEmptyStateCopy(activeFilter: HistoryFilterId, activeTheme?: string): ReactNode {
   switch (activeFilter) {
     case "ready":
-      return "当前还没有可直接打开的报告，可以先回到上传主路径生成一条记录。";
+      return activeTheme
+        ? `当前主题“${activeTheme}”下还没有可直接打开的报告，可以先回到上传主路径生成一条记录。`
+        : "当前还没有可直接打开的报告，可以先回到上传主路径生成一条记录。";
     case "pending":
-      return "当前没有生成中的记录，后续新的解读流程会出现在这里。";
+      return activeTheme
+        ? `当前主题“${activeTheme}”下没有生成中的记录，后续新的解读流程会出现在这里。`
+        : "当前没有生成中的记录，后续新的解读流程会出现在这里。";
     case "all":
-      return "当前用户还没有生成过 To C 解读，后续可从上传主路径进入。";
+      return activeTheme
+        ? `当前主题“${activeTheme}”下还没有生成过 To C 解读，后续可从上传主路径进入。`
+        : "当前用户还没有生成过 To C 解读，后续可从上传主路径进入。";
   }
 }
 
 export function HistoryRecordsList({
   descriptor,
   activeFilter,
+  activeTheme,
+  onOpenRecord,
+  actionDisabled = false,
+  actionBusy = false,
+  activeRecordId = null,
 }: HistoryRecordsListProps) {
   const filteredItems = descriptor.items.filter((item) => {
+    if (activeTheme && item.theme !== activeTheme) {
+      return false;
+    }
+
     switch (activeFilter) {
       case "ready":
         return item.canOpenReport;
@@ -105,7 +198,27 @@ export function HistoryRecordsList({
               <span className="mw-badge">{item.statusLabel}</span>
             </div>
             <p>{item.subtitle}</p>
+            <p>{item.statusDetail}</p>
             <p className="mw-meta">Interpretation ID: {item.interpretationId}</p>
+            <div className="mw-button-row">
+              {actionBusy && activeRecordId === item.interpretationId ? (
+                <p className="mw-meta">当前正在刷新这条记录的真实状态。</p>
+              ) : null}
+              <button
+                type="button"
+                className="mw-secondary-button mw-secondary-button--inline"
+                onClick={() => {
+                  onOpenRecord?.(item.interpretationId, item.canOpenReport);
+                }}
+                disabled={actionDisabled}
+              >
+                {actionBusy && activeRecordId === item.interpretationId
+                  ? "正在打开..."
+                  : item.canOpenReport
+                    ? "打开报告"
+                    : "查看进度"}
+              </button>
+            </div>
           </article>
         ))
       ) : (
@@ -113,7 +226,7 @@ export function HistoryRecordsList({
           <div className="mw-card__header">
             <h3>当前筛选下没有记录</h3>
           </div>
-          <p>{getEmptyStateCopy(activeFilter)}</p>
+          <p>{getEmptyStateCopy(activeFilter, activeTheme)}</p>
         </article>
       )}
     </section>

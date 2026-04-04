@@ -1,5 +1,5 @@
 import type { DetectCirclesResponse } from "../../shared/types";
-import type { MobileWebUploadDraft } from "../state";
+import { getUploadAssetRef, type MobileWebUploadDraft } from "../state";
 
 export interface UploadPageSection {
   id: string;
@@ -33,6 +33,8 @@ export function createUploadPageDescriptor(
   draft: MobileWebUploadDraft,
   detection: DetectCirclesResponse | null = null,
 ): UploadPageDescriptor {
+  const uploadAsset = getUploadAssetRef(draft);
+
   return {
     pageId: "upload-page",
     title: "上传你的曼陀罗",
@@ -49,6 +51,13 @@ export function createUploadPageDescriptor(
         id: "theme",
         title: "主题与补充信息",
         description: `主题：${draft.theme}；意图：${draft.paintingIntention || "未填写"}；感受：${draft.paintingFeeling || "未填写"}`,
+      },
+      {
+        id: "upload-meta",
+        title: "上传对象标识",
+        description: uploadAsset
+          ? `当前已换到 ${uploadAsset.storageBackend || "unknown"} 存储；key：${uploadAsset.storageKey || "unknown"}。`
+          : "当前还没有上传后的对象标识。",
       },
       {
         id: "circles",
@@ -74,6 +83,22 @@ export function createUploadPageDescriptor(
       {
         label: "创作感受",
         value: draft.paintingFeeling || "暂未填写",
+      },
+      {
+        label: "运行时图片路径",
+        value: uploadAsset?.runtimeImagePath || "尚未换到运行时路径",
+      },
+      {
+        label: "存储后端",
+        value: uploadAsset?.storageBackend || "尚未生成",
+      },
+      {
+        label: "存储 Key",
+        value: uploadAsset?.storageKey || "尚未生成",
+      },
+      {
+        label: "远程图片 URL",
+        value: uploadAsset?.imageUrl || "当前未返回",
       },
     ],
     checklist: [

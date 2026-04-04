@@ -35,6 +35,7 @@
 
 当前最小 `V2` API 包含：
 
+- `POST /api/v2/upload-image`
 - `POST /api/v2/detect-circles`
 - `POST /api/v2/interpretations`
 - `GET /api/v2/interpretations/{interpretation_id}`
@@ -47,6 +48,12 @@
 
 其中当前已经打通的最小行为：
 
+- 浏览器上传文件可以先落到后端本地临时路径
+- 本地临时上传目录会清理超过 24 小时的旧文件
+- 上传存储已经抽成独立策略层，当前默认走 `local` 工厂实现
+- `s3 / oss` 已有 dry-run 远程元数据语义，可先产出稳定的 `storage_key / image_url`
+- 远程上传后端现在已补上环境变量配置校验，能区分“缺配置”和“实现未接入”
+- 上传响应已开始返回统一的 `storage_backend / storage_key / image_url` 元数据
 - 独立三圈检测接口可用
 - Lite 初始化可创建记录
 - 会生成一份迁移期 `一镜 Lite 版` 占位报告
@@ -58,6 +65,9 @@
 
 当前实现明确还没有接入：
 
+- 正式对象存储 / CDN 上传链路
+- 基于 `s3 / oss` dry-run 升级为真实远程上传实现
+- 更完整的上传生命周期治理（例如引用计数、后台清理任务、持久化策略）
 - 真实的 Lite 分析链路
 - 真实的 Pro 生成链路
 - prompt builder
@@ -84,7 +94,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 
 后续优先级建议：
 
-1. 把 Lite 占位报告替换成真实 Lite 结构化生成链路
-2. 逐步接入 prompt / safety / knowledge 的正式编排
-3. 再决定 Pro 占位链路是否升级为真实生成链路
-4. 之后再让前端正式对接这些 `V2` 接口
+1. 把本地临时上传升级成正式图片存储方案
+2. 把 Lite 占位报告替换成真实 Lite 结构化生成链路
+3. 逐步接入 prompt / safety / knowledge 的正式编排
+4. 再决定 Pro 占位链路是否升级为真实生成链路

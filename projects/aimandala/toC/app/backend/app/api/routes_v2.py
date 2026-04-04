@@ -1,11 +1,12 @@
 """Minimal V2 API slice for the first AI-Mandala migration batch."""
 
-from typing import Optional
+from typing import Literal, Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
 from pydantic import BaseModel, Field
 
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
+from app.core.uploads import UploadStorage, create_upload_storage_from_env
 
 from .rate_limiter import pricing_endpoint_limit
 
@@ -134,8 +135,22 @@ class PricingInfo(BaseModel):
     upgrade_diff: float = Field(default=39.1, description="Legacy diff field kept for V2 compatibility")
 
 
+class UploadImageResponse(BaseModel):
+    """Response returned after storing a browser-uploaded image locally."""
+
+    success: bool = True
+    image_path: str
+    storage_backend: str
+    storage_key: str
+    original_filename: str
+    content_type: Optional[str] = None
+    size_bytes: int
+    image_url: Optional[str] = None
+
+
 router = APIRouter(prefix="/api/v2", tags=["aimandala-v2"])
 _orchestrator: Optional[LayeredOrchestrator] = None
+_upload_storage: Optional[UploadStorage] = None
 
 
 def get_orchestrator() -> LayeredOrchestrator:
@@ -145,14 +160,25 @@ def get_orchestrator() -> LayeredOrchestrator:
     return _orchestrator
 
 
+def get_upload_storage() -> UploadStorage:
+    global _upload_storage
+    if _upload_storage is None:
+        try:
+            _upload_storage = create_upload_storage_from_env()
+        except ValueError as error:
+            raise HTTPException(status_code=501, detail=str(error)) from error
+    return _upload_storage
+
+
 def to_record_response(record) -> InterpretationRecordResponse:
+    report_ready = record.layer_2_lite_final is not None
     return InterpretationRecordResponse(
         interpretation_id=record.interpretation_id,
         user_id=record.user_id,
         theme=record.theme,
         status=record.status,
-        generation_stage=record.generation_stage,
-        generation_progress=record.generation_progress,
+        generation_stage="completed" if report_ready else record.generation_stage,
+        generation_progress=100 if report_ready else record.generation_progress,
         version_purchased=record.version_purchased,
         three_circles=record.three_circles or {},
         auto_detected=record.three_circles_auto_detect is not None,
@@ -170,6 +196,26 @@ async def detect_circles(payload: DetectCirclesRequest):
         confidence_threshold=payload.confidence_threshold,
     )
     return DetectCirclesResponse(**result.to_dict())
+
+
+@router.post("/upload-image", response_model=UploadImageResponse)
+async def upload_image(file: UploadFile = File(...)):
+    """Store a browser-uploaded image locally and return a migrated image path."""
+
+    try:
+        stored = await get_upload_storage().save_upload(file)
+    except NotImplementedError as error:
+        raise HTTPException(status_code=501, detail=str(error)) from error
+
+    return UploadImageResponse(
+        image_path=stored.image_path,
+        storage_backend=stored.storage_backend,
+        storage_key=stored.storage_key,
+        original_filename=stored.original_filename,
+        content_type=stored.content_type,
+        size_bytes=stored.size_bytes,
+        image_url=stored.image_url,
+    )
 
 
 @router.post("/interpretations", response_model=CreateInterpretationResponse)
@@ -251,11 +297,22 @@ async def get_interpretation_status(interpretation_id: str):
     "/users/{user_id}/interpretations",
     response_model=list[InterpretationRecordResponse],
 )
-async def get_user_interpretations(user_id: str):
+async def get_user_interpretations(
+    user_id: str,
+    filter: Literal["all", "ready", "pending"] = "all",
+    limit: int = Query(default=10, ge=1, le=100),
+    theme: Optional[str] = None,
+):
     """List migrated interpretation records for a user."""
 
-    records = get_orchestrator().store.get_user_records(user_id=user_id)
-    return [to_record_response(record) for record in records]
+    records = get_orchestrator().store.get_user_records(user_id=user_id, limit=None)
+    if theme:
+        records = [record for record in records if record.theme == theme]
+    if filter == "ready":
+        records = [record for record in records if record.layer_2_lite_final is not None]
+    elif filter == "pending":
+        records = [record for record in records if record.layer_2_lite_final is None]
+    return [to_record_response(record) for record in records[:limit]]
 
 
 @router.get(

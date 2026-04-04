@@ -1,10 +1,12 @@
-import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUploadPage } from "./loaders";
+import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUpgradePage, loadUploadPage } from "./loaders";
 import type { MobileWebAppProps } from "./app";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
+import type { InterpretationListQuery } from "../shared/types";
 
 export interface UploadRouteInput {
   draft: MobileWebUploadDraft;
+  userId?: string;
 }
 
 export interface LiteReportRouteInput {
@@ -14,10 +16,13 @@ export interface LiteReportRouteInput {
 
 export interface ExistingReportRouteInput {
   interpretationId: string;
+  uploadDraft?: MobileWebUploadDraft;
 }
 
 export interface HistoryRouteInput {
   userId: string;
+  uploadDraft?: MobileWebUploadDraft;
+  historyQuery?: InterpretationListQuery;
 }
 
 export type MobileWebRouteInput =
@@ -44,6 +49,7 @@ export async function resolveMobileWebRouteProps(
       return {
         route: "loading",
         flowState: report.state,
+        uploadDraft: input.params.draft,
       };
     }
 
@@ -52,22 +58,29 @@ export async function resolveMobileWebRouteProps(
       return {
         route: "report",
         flowState: report.state,
+        uploadDraft: input.params.uploadDraft,
       };
     }
 
     case "history": {
-      const history = await loadHistoryPage(input.params.userId);
+      const history = await loadHistoryPage(
+        input.params.userId,
+        input.params.historyQuery,
+      );
       return {
         route: "history",
         records: history.records,
+        uploadDraft: input.params.uploadDraft,
+        historyQuery: input.params.historyQuery,
       };
     }
 
     case "upgrade": {
-      const report = await loadExistingReportPage(input.params.interpretationId);
+      const report = await loadUpgradePage(input.params.interpretationId);
       return {
         route: "upgrade",
         flowState: report.state,
+        uploadDraft: input.params.uploadDraft,
       };
     }
   }

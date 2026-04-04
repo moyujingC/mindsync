@@ -1,4 +1,11 @@
 export type InterpretationVersion = "lite" | "pro";
+export type InterpretationListFilter = "all" | "ready" | "pending";
+
+export interface InterpretationListQuery {
+  filter?: InterpretationListFilter;
+  limit?: number;
+  theme?: string;
+}
 
 export interface CircleGeometrySuggestion {
   shape_type: "circle" | "ellipse";
@@ -23,6 +30,17 @@ export interface DetectCirclesResponse {
   method: string;
   geometry_suggestion?: CircleGeometrySuggestion | null;
   debug_info?: Record<string, unknown> | null;
+}
+
+export interface UploadImageResponse {
+  success: boolean;
+  image_path: string;
+  storage_backend: string;
+  storage_key: string;
+  original_filename: string;
+  content_type?: string | null;
+  size_bytes: number;
+  image_url?: string | null;
 }
 
 export interface CreateInterpretationRequest {

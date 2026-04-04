@@ -5,10 +5,13 @@ import type {
   CreateInterpretationResponse,
   DetectCirclesRequest,
   DetectCirclesResponse,
+  InterpretationListFilter,
+  InterpretationListQuery,
   InterpretationRecordResponse,
   InterpretationStatusResponse,
   PricingInfo,
   ReportResponse,
+  UploadImageResponse,
   UpgradePlaceholderResponse,
 } from "../types";
 
@@ -25,6 +28,16 @@ export async function detectCircles(
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
+  });
+}
+
+export async function uploadImage(file: File): Promise<UploadImageResponse> {
+  const body = new FormData();
+  body.append("file", file);
+
+  return fetchJson<UploadImageResponse>(buildUrl("/api/v2/upload-image"), {
+    method: "POST",
+    body,
   });
 }
 
@@ -72,10 +85,23 @@ export async function getInterpretationReport(
 
 export async function getInterpretationList(
   userId: string,
+  query: InterpretationListQuery = {},
 ): Promise<InterpretationRecordResponse[]> {
-  return fetchJson<InterpretationRecordResponse[]>(
+  const filter: InterpretationListFilter = query.filter ?? "all";
+  const url = new URL(
     buildUrl(`/api/v2/users/${encodeURIComponent(userId)}/interpretations`),
   );
+  if (filter !== "all") {
+    url.searchParams.set("filter", filter);
+  }
+  if (query.limit !== undefined) {
+    url.searchParams.set("limit", String(query.limit));
+  }
+  if (query.theme) {
+    url.searchParams.set("theme", query.theme);
+  }
+
+  return fetchJson<InterpretationRecordResponse[]>(url.toString());
 }
 
 export async function upgradeInterpretation(

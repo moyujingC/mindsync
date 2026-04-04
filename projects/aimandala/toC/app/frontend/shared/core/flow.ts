@@ -6,6 +6,7 @@ import type {
   MandalaFlowState,
   ReportResponse,
   SelectedImageRef,
+  UpgradePlaceholderResponse,
 } from "../types";
 
 export const initialMandalaFlowState: MandalaFlowState = {
@@ -77,6 +78,29 @@ export function applyReport(
     step: report.version === "pro" ? "upgradePlaceholder" : "liteReady",
     report,
     lastError: report.error ?? null,
+  };
+}
+
+export function applyUpgradePlaceholder(
+  state: MandalaFlowState,
+  upgrade: UpgradePlaceholderResponse,
+): MandalaFlowState {
+  return {
+    ...state,
+    step: "upgradePlaceholder",
+    report: {
+      interpretation_id: upgrade.interpretation_id,
+      version: "pro",
+      title: "一梳 Pro 版入口",
+      overall_impression: upgrade.message,
+      structured: null,
+      report: upgrade.message,
+      ai_qa_context: null,
+      can_upgrade: false,
+      upgrade_price: null,
+      error: null,
+    },
+    lastError: null,
   };
 }
 

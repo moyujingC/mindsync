@@ -1,19 +1,33 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { MobileWebApp } from "./app";
-import { createPreviewAppProps, createPreviewDetectionFixture } from "./fixtures";
-import { refreshMobileWebReport, runMobileWebLiteFlow } from "./controller";
+import { createPreviewAppProps } from "./fixtures";
+import {
+  openMobileWebUpgradeEntry,
+  pollMobileWebReportUntilReady,
+  refreshMobileWebReport,
+  runMobileWebLiteFlow,
+} from "./controller";
 import { MobileWebRuntime } from "./runtime";
 import type { MobileWebRouteInput } from "./router-plan";
 import type { MobileWebRouteId } from "./routes";
-import type { MobileWebUploadDraft } from "./state";
-import { toStartCreatePayload } from "./state";
+import {
+  getDraftUploadImageResponse,
+  mergeMobileWebUploadDraft,
+  toMobileWebUploadAssetRef,
+  toStartCreatePayload,
+  type MobileWebUploadDraft,
+} from "./state";
+import type { HistoryFilterId } from "./components/history-cards";
 import type {
   DetectCirclesResponse,
+  InterpretationListQuery,
   InterpretationRecordResponse,
   MandalaFlowState,
+  UploadImageResponse,
 } from "../shared/types";
-import { detectCircles, getInterpretationList } from "../shared/api";
+import { detectCircles, getInterpretationList, uploadImage } from "../shared/api";
+import { initialMandalaFlowState } from "../shared/core";
 
 const defaultDraft: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
@@ -30,11 +44,44 @@ const routeOptions: Array<{ label: string; value: MobileWebRouteId }> = [
   { label: "Pro 引导", value: "upgrade" },
 ];
 
+const previewPollingIntervalMs = 1500;
+const previewPollingMaxAttempts = 8;
+
+async function ensureUploadedImagePath(
+  draft: MobileWebUploadDraft,
+  onResolved: (uploaded: UploadImageResponse) => void,
+): Promise<UploadImageResponse> {
+  const existingUpload = getDraftUploadImageResponse(draft);
+  if (existingUpload) {
+    return existingUpload;
+  }
+
+  if (draft.browserFile) {
+    const uploaded = await uploadImage(draft.browserFile);
+    onResolved(uploaded);
+    return uploaded;
+  }
+
+  const fallbackUpload = {
+    success: true,
+    image_path: draft.imagePath,
+    storage_backend: "path",
+    storage_key: draft.imagePath,
+    original_filename: draft.imagePath.split("/").pop() || draft.imagePath,
+    content_type: null,
+    size_bytes: 0,
+    image_url: null,
+  };
+  onResolved(fallbackUpload);
+  return fallbackUpload;
+}
+
 function createInput(
   route: MobileWebRouteId,
   draft: MobileWebUploadDraft,
   interpretationId: string,
   userId: string,
+  historyQuery: InterpretationListQuery,
 ): MobileWebRouteInput {
   switch (route) {
     case "upload":
@@ -42,6 +89,7 @@ function createInput(
         route,
         params: {
           draft,
+          userId,
         },
       };
 
@@ -60,6 +108,7 @@ function createInput(
         route,
         params: {
           interpretationId,
+          uploadDraft: draft,
         },
       };
 
@@ -68,6 +117,8 @@ function createInput(
         route,
         params: {
           userId,
+          uploadDraft: draft,
+          historyQuery,
         },
       };
   }
@@ -89,16 +140,24 @@ export function MobileWebBrowserShell() {
   const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
   const [previewHistoryRecords, setPreviewHistoryRecords] =
     useState<InterpretationRecordResponse[] | null>(null);
+  const [previewHistoryQuery, setPreviewHistoryQuery] =
+    useState<InterpretationListQuery>({ filter: "all", limit: 20 });
   const [previewHistoryStatusLabel, setPreviewHistoryStatusLabel] =
     useState<string | null>(null);
   const [previewHistoryStatusDetail, setPreviewHistoryStatusDetail] =
     useState<string | null>(null);
   const [previewHistoryStatusTone, setPreviewHistoryStatusTone] =
     useState<"preview" | "runtime">("preview");
+  const [previewHistoryOpeningId, setPreviewHistoryOpeningId] =
+    useState<string | null>(null);
 
   const input = useMemo(
-    () => createInput(route, draft, interpretationId, userId),
-    [draft, interpretationId, route, userId],
+    () => createInput(route, draft, interpretationId, userId, {
+      filter: (previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all",
+      limit: previewHistoryQuery.limit ?? 20,
+      theme: previewHistoryQuery.theme,
+    }),
+    [draft, interpretationId, previewHistoryQuery.filter, previewHistoryQuery.limit, previewHistoryQuery.theme, route, userId],
   );
   const previewProps = useMemo(
     () =>
@@ -111,6 +170,103 @@ export function MobileWebBrowserShell() {
       ),
     [draft, previewDetection, previewFlowState, previewHistoryRecords, route],
   );
+
+  async function refreshPreviewHistory(nextQuery: InterpretationListQuery) {
+    if (draft.browserFile && !draft.uploadAsset) {
+      setPreviewHistoryStatusLabel("当前显示占位历史记录");
+      setPreviewHistoryStatusDetail("当前浏览器文件还没完成上传换路径，因此历史页先不请求真实接口。");
+      setPreviewHistoryStatusTone("preview");
+      setPreviewHistoryRecords(null);
+      return;
+    }
+
+    try {
+      const records = await getInterpretationList(userId, nextQuery);
+      setPreviewHistoryRecords(records);
+      setPreviewHistoryStatusLabel("当前显示真实历史记录");
+      setPreviewHistoryStatusDetail("历史页已按当前查询条件重新请求真实记录。");
+      setPreviewHistoryStatusTone("runtime");
+    } catch (error) {
+      setPreviewHistoryRecords(null);
+      setPreviewHistoryStatusLabel("历史记录已回退到占位数据");
+      setPreviewHistoryStatusDetail(
+        `真实历史拉取失败：${error instanceof Error ? error.message : "unknown error"}`,
+      );
+      setPreviewHistoryStatusTone("preview");
+    }
+  }
+
+  useEffect(() => {
+    if (!previewMode || route !== "loading") {
+      return;
+    }
+
+    const currentInterpretationId =
+      previewFlowState?.interpretation?.interpretation_id;
+    if (!currentInterpretationId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    setPreviewFlowRunning(true);
+    void pollMobileWebReportUntilReady(
+      currentInterpretationId,
+      previewFlowState,
+      {
+        intervalMs: previewPollingIntervalMs,
+        maxAttempts: previewPollingMaxAttempts,
+        onTick: (snapshot) => {
+          if (!cancelled) {
+            setPreviewFlowState(snapshot.state);
+          }
+        },
+      },
+    )
+      .then(async (snapshot) => {
+        if (cancelled) {
+          return;
+        }
+
+        setPreviewFlowState(snapshot.state);
+
+        if (snapshot.state.step !== "liteGenerating") {
+          try {
+            const records = await getInterpretationList(userId, {
+              filter: previewHistoryQuery.filter as HistoryFilterId | undefined,
+              limit: previewHistoryQuery.limit,
+              theme: previewHistoryQuery.theme,
+            });
+            if (!cancelled) {
+              setPreviewHistoryRecords(records);
+              setPreviewHistoryStatusLabel("当前显示真实历史记录");
+              setPreviewHistoryStatusDetail("自动轮询完成后，真实 Lite 结果已尝试同步回历史列表。");
+              setPreviewHistoryStatusTone("runtime");
+            }
+          } catch {
+            if (!cancelled) {
+              setPreviewHistoryRecords(null);
+              setPreviewHistoryStatusLabel("历史记录暂时回退到占位数据");
+              setPreviewHistoryStatusDetail("Lite 结果已刷新完成，但历史列表拉取失败，因此仍显示 fixture。");
+              setPreviewHistoryStatusTone("preview");
+            }
+          }
+
+          if (!cancelled) {
+            setRoute("report");
+          }
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setPreviewFlowRunning(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [previewFlowState?.interpretation?.interpretation_id, previewMode, route, userId]);
 
   async function handlePreviewPrimaryAction() {
     if (route === "loading") {
@@ -163,26 +319,34 @@ export function MobileWebBrowserShell() {
         return;
       }
 
+      const interpretationId = previewFlowState?.interpretation?.interpretation_id;
+      const canOpenUpgrade = Boolean(
+        route === "report" &&
+        interpretationId &&
+        (previewFlowState?.report?.can_upgrade || previewFlowState?.status?.can_upgrade)
+      );
+
+      if (canOpenUpgrade && interpretationId) {
+        setPreviewFlowRunning(true);
+        try {
+          const upgraded = await openMobileWebUpgradeEntry(
+            interpretationId,
+            previewFlowState ?? initialMandalaFlowState,
+          );
+          setPreviewFlowState(upgraded.state);
+          setRoute("upgrade");
+        } finally {
+          setPreviewFlowRunning(false);
+        }
+        return;
+      }
+
       setRoute("history");
-      if (!draft.imagePath.startsWith("browser-file:")) {
-        getInterpretationList(userId)
-          .then((records) => {
-            setPreviewHistoryRecords(records);
-            setPreviewHistoryStatusLabel("当前显示真实历史记录");
-            setPreviewHistoryStatusDetail("历史页已优先使用真实接口返回的用户记录。");
-            setPreviewHistoryStatusTone("runtime");
-          })
-          .catch((error) => {
-            setPreviewHistoryRecords(null);
-            setPreviewHistoryStatusLabel("历史记录已回退到占位数据");
-            setPreviewHistoryStatusDetail(
-              `真实历史拉取失败：${error instanceof Error ? error.message : "unknown error"}`,
-            );
-            setPreviewHistoryStatusTone("preview");
-          });
+      if (!draft.browserFile || draft.uploadAsset) {
+        void refreshPreviewHistory(previewHistoryQuery);
       } else {
         setPreviewHistoryStatusLabel("当前显示占位历史记录");
-        setPreviewHistoryStatusDetail("浏览器本地文件仍走前端 fixture，不请求真实历史接口。");
+        setPreviewHistoryStatusDetail("当前浏览器文件还没完成上传换路径，因此历史页先不请求真实接口。");
         setPreviewHistoryStatusTone("preview");
       }
     }
@@ -190,11 +354,41 @@ export function MobileWebBrowserShell() {
 
   function handlePreviewSecondaryAction() {
     if (route === "loading" || route === "report" || route === "upgrade") {
-      setPreviewFlowState(null);
-      setPreviewHistoryRecords(null);
-      setPreviewHistoryStatusLabel(null);
-      setPreviewHistoryStatusDetail(null);
-      setRoute("upload");
+    setPreviewFlowState(null);
+    setPreviewHistoryRecords(null);
+    setPreviewHistoryQuery({ filter: "all", limit: 20 });
+    setPreviewHistoryStatusLabel(null);
+    setPreviewHistoryStatusDetail(null);
+    setPreviewHistoryOpeningId(null);
+    setRoute("upload");
+  }
+  }
+
+  async function handlePreviewOpenHistoryRecord(
+    interpretationId: string,
+    canOpenReport: boolean,
+  ) {
+    if (previewFlowRunning) {
+      return;
+    }
+
+    setPreviewFlowRunning(true);
+    setPreviewHistoryOpeningId(interpretationId);
+    try {
+      const refreshed = await refreshMobileWebReport(
+        interpretationId,
+        initialMandalaFlowState,
+      );
+      setPreviewFlowState(refreshed.state);
+      setInterpretationId(interpretationId);
+      setRoute(
+        canOpenReport || refreshed.state.step !== "liteGenerating"
+          ? "report"
+          : "loading",
+      );
+    } finally {
+      setPreviewHistoryOpeningId(null);
+      setPreviewFlowRunning(false);
     }
   }
 
@@ -263,8 +457,7 @@ export function MobileWebBrowserShell() {
                 <input
                   value={draft.imagePath}
                   onChange={(event) => {
-                    setDraft((current) => ({
-                      ...current,
+                    setDraft((current) => mergeMobileWebUploadDraft(current, {
                       imagePath: event.target.value,
                     }));
                   }}
@@ -343,6 +536,10 @@ export function MobileWebBrowserShell() {
               uploadDetection={previewDetection}
               uploadDetecting={previewDetecting}
               uploadDetectError={previewDetectError}
+              activeHistoryFilter={(previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
+              historyQuery={previewHistoryQuery}
+              historyActionBusy={previewFlowRunning && route === "history"}
+              activeHistoryRecordId={previewHistoryOpeningId}
               historyStatusLabel={previewHistoryStatusLabel ?? undefined}
               historyStatusDetail={previewHistoryStatusDetail ?? undefined}
               historyStatusTone={previewHistoryStatusTone}
@@ -354,15 +551,13 @@ export function MobileWebBrowserShell() {
               }
               environmentTone="preview"
               onUploadDraftChange={(patch) => {
-                setDraft((current) => ({
-                  ...current,
-                  ...patch,
-                }));
+                setDraft((current) => mergeMobileWebUploadDraft(current, patch));
                 if (patch.imagePath !== undefined) {
                   setPreviewDetection(null);
                   setPreviewDetectError(null);
                   setPreviewFlowState(null);
                   setPreviewHistoryRecords(null);
+                  setPreviewHistoryQuery({ filter: "all", limit: 20 });
                   setPreviewHistoryStatusLabel(null);
                   setPreviewHistoryStatusDetail(null);
                 }
@@ -370,16 +565,23 @@ export function MobileWebBrowserShell() {
               onUploadContinue={async () => {
                 setPreviewFlowState(null);
                 setRoute("loading");
-                if (draft.imagePath.startsWith("browser-file:")) {
-                  return;
-                }
 
                 setPreviewFlowRunning(true);
                 try {
+                  const resolvedImagePath = await ensureUploadedImagePath(
+                    draft,
+                    (uploaded) => {
+                      setDraft((current) => ({
+                        ...current,
+                        uploadAsset: toMobileWebUploadAssetRef(uploaded),
+                      }));
+                    },
+                  );
                   const result = await runMobileWebLiteFlow(
                     toStartCreatePayload(
                       {
                         ...draft,
+                        uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
                         innerRadius: previewDetection?.inner_radius,
                         middleRadius: previewDetection?.middle_radius,
                       },
@@ -387,8 +589,17 @@ export function MobileWebBrowserShell() {
                     ),
                   );
                   setPreviewFlowState(result.state);
+                  if (result.state.step === "liteGenerating") {
+                    setRoute("loading");
+                    return;
+                  }
+
                   try {
-                    const records = await getInterpretationList(userId);
+                    const records = await getInterpretationList(userId, {
+                      filter: previewHistoryQuery.filter as HistoryFilterId | undefined,
+                      limit: previewHistoryQuery.limit,
+                      theme: previewHistoryQuery.theme,
+                    });
                     setPreviewHistoryRecords(records);
                     setPreviewHistoryStatusLabel("当前显示真实历史记录");
                     setPreviewHistoryStatusDetail("刚完成的主路径结果已尝试回流到真实历史列表。");
@@ -417,12 +628,18 @@ export function MobileWebBrowserShell() {
                 setPreviewDetectError(null);
 
                 try {
-                  const shouldUseFixture = draft.imagePath.startsWith("browser-file:");
-                  const detection = shouldUseFixture
-                    ? createPreviewDetectionFixture()
-                    : await detectCircles({
-                        image_path: draft.imagePath,
-                      });
+                  const resolvedImagePath = await ensureUploadedImagePath(
+                    draft,
+                    (uploaded) => {
+                      setDraft((current) => ({
+                        ...current,
+                        uploadAsset: toMobileWebUploadAssetRef(uploaded),
+                      }));
+                    },
+                  );
+                  const detection = await detectCircles({
+                    image_path: resolvedImagePath.image_path,
+                  });
                   setPreviewDetection(detection);
                 } catch (error) {
                   setPreviewDetectError(
@@ -439,6 +656,46 @@ export function MobileWebBrowserShell() {
               onHistoryBackToUpload={() => {
                 setRoute("upload");
               }}
+              onHistoryFilterChange={(filter) => {
+                const nextQuery = {
+                  ...previewHistoryQuery,
+                  filter,
+                };
+                setPreviewHistoryQuery((current) => ({
+                  ...current,
+                  filter,
+                }));
+                if (route === "history") {
+                  void refreshPreviewHistory(nextQuery);
+                }
+              }}
+              onHistoryThemeChange={(theme) => {
+                const nextQuery = {
+                  ...previewHistoryQuery,
+                  theme,
+                };
+                setPreviewHistoryQuery((current) => ({
+                  ...current,
+                  theme,
+                }));
+                if (route === "history") {
+                  void refreshPreviewHistory(nextQuery);
+                }
+              }}
+              onHistoryLimitChange={(limit) => {
+                const nextQuery = {
+                  ...previewHistoryQuery,
+                  limit,
+                };
+                setPreviewHistoryQuery((current) => ({
+                  ...current,
+                  limit,
+                }));
+                if (route === "history") {
+                  void refreshPreviewHistory(nextQuery);
+                }
+              }}
+              onHistoryOpenRecord={handlePreviewOpenHistoryRecord}
             />
           ) : (
             <MobileWebRuntime

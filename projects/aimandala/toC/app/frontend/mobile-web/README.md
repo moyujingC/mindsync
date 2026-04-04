@@ -34,10 +34,13 @@
   - `bootstrapMobileWebFlow`
   - `runMobileWebLiteFlow`
   - `refreshMobileWebReport`
+  - `pollMobileWebReportUntilReady`
 - `state.ts`
   - `MobileWebUploadDraft`
+  - `MobileWebUploadAssetRef`
   - `toStartCreatePayload`
   - `getMobileWebPrimaryAction`
+  - `mergeMobileWebUploadDraft`
 - `view-model.ts`
   - `createMobileWebPageViewModel`
 - `examples/basic-flow-example.ts`
@@ -65,17 +68,20 @@
 2. `toStartCreatePayload`
    - 把上传表单草稿转成共享 payload
 3. `runMobileWebLiteFlow`
-   - 顺序完成检测、创建、状态、报告拉取
-4. `getMobileWebPrimaryAction`
+   - 顺序完成检测、创建，并在可读取时返回状态 / 报告
+4. `pollMobileWebReportUntilReady`
+   - 在 `loading` 阶段受控轮询 `status`
+   - 直到报告就绪后再进入 `report`
+5. `getMobileWebPrimaryAction`
    - 决定当前主按钮文案
-5. `createMobileWebPageViewModel`
+6. `createMobileWebPageViewModel`
    - 转成适合页面直接渲染的 title / subtitle / report 结构
 
 如果需要更接近页面层的数据结构，还可以继续走：
 
-6. `createUploadPageDescriptor`
-7. `createReportPageDescriptor`
-8. `createHistoryPageDescriptor`
+7. `createUploadPageDescriptor`
+8. `createReportPageDescriptor`
+9. `createHistoryPageDescriptor`
 
 这样真正的 React 组件只需要消费页面描述器，而不是自己从原始接口结果里抽字段。
 
@@ -214,10 +220,43 @@
 - 默认开启
 - 不请求后端
 - 可以直接切换 `upload / loading / report / history / upgrade`
+
+## 当前上传对象状态约定
+
+上传页和运行时现在统一通过 `MobileWebUploadDraft.uploadAsset` 保存已解析的上传对象信息，而不是把：
+
+- `uploadedImagePath`
+- `uploadedStorageBackend`
+- `uploadedStorageKey`
+- `uploadedImageUrl`
+
+分散在草稿顶层。
+
+当前推荐页面层只通过下面几个 helper 读写这段状态：
+
+- `toMobileWebUploadAssetRef`
+- `getDraftUploadImageResponse`
+- `mergeMobileWebUploadDraft`
+- `getDraftRuntimeImagePath`
+
+这样 upload / loading / report 三页看到的是同一份“运行时图片路径 + 对象标识”语义，也能减少 preview/runtime 两套宿主里的重复拷贝。
+
+另外，当前 `router-plan.ts` 也已经允许在：
+
+- `loading`
+- `report`
+- `history`
+- `upgrade`
+
+这些路由输入里显式携带 `uploadDraft`。
+
+这样后续如果接真实路由框架，就不必完全依赖宿主组件本地 state 才能把上传上下文从 upload 传到 report / history；运行时可以沿路由装配链继续保留这份草稿。
 - 用固定 fixture 支撑页面结构开发
 - 开发辅助层默认可折叠，不作为正式产品界面的一部分
 - 手机页面内会直接标明当前是“本地预览模式”还是“联调运行时”
 - history 页会额外标明当前展示的是“真实记录”还是“占位记录”
+- history 列表项现在会在打开记录时进入受控禁用态，并提示当前正在刷新真实状态后再跳转到 `loading / report`
+- history descriptor 现在会把原始 `status / generation_stage / progress` 收口成更接近用户语义的状态标签、阶段说明与可读时间
 
 当需要真实联调时，再关闭预览模式，切回 `MobileWebRuntime` 走当前 loader 与后端接口。
 
@@ -233,7 +272,8 @@
    - 只有检测完成后才能继续
 2. loading 页
    - 已有进度条和阶段列表
-   - 可以继续查看生成进度
+   - 已开始按受控节奏自动轮询真实 `status`
+   - 可以继续手动刷新生成进度
    - 也可以先返回上传页
 3. report 页
    - 已有结构化 Lite 内容卡
@@ -242,16 +282,52 @@
 4. history 页
    - 已有摘要区
    - 已有 `全部 / 可查看 / 生成中` 筛选
-   - 已支持真实历史优先加载与回退说明
+    - 已支持真实历史优先加载与回退说明
+    - runtime 下切换筛选时已开始回传真实筛选参数重新拉取列表
+    - shared API / route / backend 现在已开始统一走 `historyQuery(filter / limit / theme)` 语义
+    - 页面层已开始露出主题筛选入口，并与 `historyQuery.theme` 对齐
+    - 页面层已开始露出显示数量切换，并与 `historyQuery.limit` 对齐
+    - 列表项已开始支持直接打开报告或查看当前生成进度
 
 当前这些动作不再是纯占位：
 
 - 上传页的 `detect-circles` 已开始支持真实接口触发
+- 浏览器原生选图已开始先换成后端本地临时 `image_path`
+- 上传页摘要区已开始展示 `storage_backend / storage_key / image_url`
 - 预览壳里的 Lite 主路径已开始尝试真实 `create + status + report`
+- loading 页已开始在真实 `status` 未完成时自动轮询
 - history 页已开始优先承接真实记录
+- history 页的 `全部 / 可查看 / 生成中` 已开始向真实接口回传筛选参数
+- history 列表查询已开始统一收口到 `historyQuery`，为后续扩展 `theme / limit` 留出稳定接口面
+- history 页主题筛选已开始进入页面层，不再只是后端预留字段
+- history 页显示数量切换已开始进入页面层，不再只是查询参数占位
+- history 列表项已开始能回到 report / loading，而不再只是停在信息展示
+- 正式 `MobileWebRuntime` 已补上与预览壳一致的 loading 自动推进与 report 最小动作回路
+- 正式 `MobileWebRuntime` 的 upload 页已补上页面内 draft 编辑、三圈检测与继续进入 loading 的动作
 
 但它仍然不是完整联调成品：
 
-- 浏览器本地文件仍需要 fixture 兜底
-- loading 页仍未接真实轮询节奏
 - report / history 仍保留部分前端占位语义
+- 上传接口当前只落本地临时文件，并带最小过期清理；还没有正式对象存储 / CDN / 完整生命周期治理
+
+## 迁移收口状态
+
+如果当前目标是“先把旧主线迁完”，那 mobile-web 现在可以按下面理解：
+
+- 已迁入并可重复联调：
+  - 上传选图与上传对象换路径
+  - 三圈检测
+  - Lite `create + status + report`
+  - `existing` 复用提示
+  - 历史记录加载、筛选、回到 `report / loading`
+  - Pro 入口兼容占位页
+- 当前唯一明确阻塞：
+  - 正式 `一梳 Pro 版` 生成与报告读取还没有恢复，只接了真实 `upgrade` 兼容占位接口
+
+当前迁移期上传对象契约也先固定为：
+
+1. 浏览器文件先走 `upload-image`
+2. 前端把返回结果收口到 `MobileWebUploadDraft.uploadAsset`
+3. 后续 `detect / create / report` 一律消费 `uploadAsset.runtimeImagePath`
+
+在正式对象存储接入前，先按这套契约继续推进，不把存储升级本身作为 Lite 主链路迁移的阻塞项。

@@ -4,6 +4,7 @@ import {
   applyInterpretationCreated,
   applyReport,
   applyStatus,
+  applyUpgradePlaceholder,
   initialMandalaFlowState,
   selectImage,
 } from "../shared/core";
@@ -12,6 +13,7 @@ import {
   detectCircles,
   getInterpretationReport,
   getInterpretationStatus,
+  upgradeInterpretation,
 } from "../shared/api";
 import type {
   CreateInterpretationResponse,
@@ -28,6 +30,18 @@ export interface MobileWebFlowSnapshot {
   interpretation?: CreateInterpretationResponse;
   status?: InterpretationStatusResponse;
   report?: ReportResponse;
+}
+
+export interface MobileWebReportPollingOptions {
+  intervalMs?: number;
+  maxAttempts?: number;
+  onTick?: (snapshot: MobileWebFlowSnapshot) => void | Promise<void>;
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 export async function bootstrapMobileWebFlow(
@@ -62,6 +76,15 @@ export async function runMobileWebLiteFlow(
     const status = await getInterpretationStatus(interpretation.interpretation_id);
     state = applyStatus(state, status);
 
+    if (!status.report_ready) {
+      return {
+        state,
+        detection,
+        interpretation,
+        status,
+      };
+    }
+
     const report = await getInterpretationReport(interpretation.interpretation_id);
     state = applyReport(state, report);
 
@@ -94,6 +117,13 @@ export async function refreshMobileWebReport(
     const status = await getInterpretationStatus(interpretationId);
     state = applyStatus(state, status);
 
+    if (!status.report_ready) {
+      return {
+        state,
+        status,
+      };
+    }
+
     const report = await getInterpretationReport(interpretationId);
     state = applyReport(state, report);
 
@@ -112,4 +142,58 @@ export async function refreshMobileWebReport(
       state,
     };
   }
+}
+
+export async function openMobileWebUpgradeEntry(
+  interpretationId: string,
+  currentState: MandalaFlowState = initialMandalaFlowState,
+): Promise<MobileWebFlowSnapshot> {
+  let state = currentState;
+
+  try {
+    const upgrade = await upgradeInterpretation(interpretationId);
+    state = applyUpgradePlaceholder(state, upgrade);
+
+    return {
+      state,
+    };
+  } catch (error) {
+    state = applyError(
+      state,
+      error instanceof Error ? error.message : "Failed to open upgrade entry",
+    );
+
+    return {
+      state,
+    };
+  }
+}
+
+export async function pollMobileWebReportUntilReady(
+  interpretationId: string,
+  currentState: MandalaFlowState = initialMandalaFlowState,
+  options: MobileWebReportPollingOptions = {},
+): Promise<MobileWebFlowSnapshot> {
+  const { intervalMs = 1500, maxAttempts = 8, onTick } = options;
+  let latest = currentState;
+  let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    latestSnapshot = await refreshMobileWebReport(interpretationId, latest);
+    latest = latestSnapshot.state;
+
+    if (onTick) {
+      await onTick(latestSnapshot);
+    }
+
+    if (latest.step !== "liteGenerating") {
+      return latestSnapshot;
+    }
+
+    if (attempt < maxAttempts - 1) {
+      await wait(intervalMs);
+    }
+  }
+
+  return latestSnapshot;
 }

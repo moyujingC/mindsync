@@ -16,7 +16,7 @@ export interface UploadFormCardProps {
 export interface UploadAssetCardProps {
   imagePath: string;
   onUseSample?: () => void;
-  onSelectBrowserFile?: (filePath: string) => void;
+  onSelectBrowserFile?: (filePath: string, file: File) => void;
 }
 
 export function UploadAssetCard({
@@ -79,7 +79,7 @@ export function UploadAssetCard({
             }
             return URL.createObjectURL(file);
           });
-          onSelectBrowserFile?.(`browser-file:${file.name}`);
+          onSelectBrowserFile?.(`browser-file:${file.name}`, file);
         }}
       />
 
@@ -125,7 +125,10 @@ export function UploadAssetCard({
       <div className="mw-upload-hint">
         <span>当前文件</span>
         <strong>{imagePath || "尚未选择文件"}</strong>
-        <small>浏览器选图当前会回填为 `browser-file:文件名`，仅用于前端开发预览。</small>
+        <small>浏览器选图会先回填为 `browser-file:文件名`，后续再换成后端可复用的真实图片路径。</small>
+        {imagePath.startsWith("browser-file:") ? null : (
+          <small>如果已经换到运行时路径，下面的摘要区会展示存储后端、对象 key 和远程 URL。</small>
+        )}
       </div>
     </article>
   );

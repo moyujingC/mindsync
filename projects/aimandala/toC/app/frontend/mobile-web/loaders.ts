@@ -3,14 +3,17 @@ import { initialMandalaFlowState } from "../shared/core";
 
 import {
   bootstrapMobileWebFlow,
+  openMobileWebUpgradeEntry,
   refreshMobileWebReport,
   runMobileWebLiteFlow,
 } from "./controller";
+import type { HistoryFilterId } from "./components/history-cards";
 import type { MobileWebHistoryPageProps } from "./page-shells/history-page";
 import type { MobileWebReportPageProps } from "./page-shells/report-page";
 import type { MobileWebUploadPageProps } from "./page-shells/upload-page";
 import type { MobileWebUploadDraft } from "./state";
 import { toStartCreatePayload } from "./state";
+import type { InterpretationListQuery } from "../shared/types";
 
 export async function loadUploadPage(
   draft: MobileWebUploadDraft,
@@ -49,10 +52,30 @@ export async function loadExistingReportPage(
   };
 }
 
+export async function loadUpgradePage(
+  interpretationId: string,
+): Promise<MobileWebReportPageProps> {
+  const report = await loadExistingReportPage(interpretationId);
+  const upgrade = await openMobileWebUpgradeEntry(
+    interpretationId,
+    report.state,
+  );
+
+  return {
+    state: upgrade.state,
+  };
+}
+
 export async function loadHistoryPage(
   userId: string,
+  query: InterpretationListQuery = {},
 ): Promise<MobileWebHistoryPageProps> {
-  const records = await getInterpretationList(userId);
+  const historyQuery: InterpretationListQuery = {
+    filter: (query.filter as HistoryFilterId | undefined) ?? "all",
+    limit: query.limit,
+    theme: query.theme,
+  };
+  const records = await getInterpretationList(userId, historyQuery);
 
   return {
     records,
