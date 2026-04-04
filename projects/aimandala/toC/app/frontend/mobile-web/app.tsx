@@ -19,6 +19,9 @@ export interface MobileWebAppProps {
   uploadDetectError?: string | null;
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
+  historyStatusLabel?: string;
+  historyStatusDetail?: string;
+  historyStatusTone?: "preview" | "runtime";
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
@@ -39,6 +42,9 @@ export function MobileWebApp({
   uploadDetectError = null,
   flowState,
   records = [],
+  historyStatusLabel,
+  historyStatusDetail,
+  historyStatusTone,
   environmentLabel,
   environmentDetail,
   environmentTone,
@@ -92,6 +98,9 @@ export function MobileWebApp({
       return (
         <MobileWebHistoryPage
           records={records}
+          historyStatusLabel={historyStatusLabel}
+          historyStatusDetail={historyStatusDetail}
+          historyStatusTone={historyStatusTone}
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}

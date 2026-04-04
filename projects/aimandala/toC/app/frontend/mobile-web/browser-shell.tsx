@@ -89,6 +89,12 @@ export function MobileWebBrowserShell() {
   const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
   const [previewHistoryRecords, setPreviewHistoryRecords] =
     useState<InterpretationRecordResponse[] | null>(null);
+  const [previewHistoryStatusLabel, setPreviewHistoryStatusLabel] =
+    useState<string | null>(null);
+  const [previewHistoryStatusDetail, setPreviewHistoryStatusDetail] =
+    useState<string | null>(null);
+  const [previewHistoryStatusTone, setPreviewHistoryStatusTone] =
+    useState<"preview" | "runtime">("preview");
 
   const input = useMemo(
     () => createInput(route, draft, interpretationId, userId),
@@ -127,10 +133,22 @@ export function MobileWebBrowserShell() {
         getInterpretationList(userId)
           .then((records) => {
             setPreviewHistoryRecords(records);
+            setPreviewHistoryStatusLabel("当前显示真实历史记录");
+            setPreviewHistoryStatusDetail("历史页已优先使用真实接口返回的用户记录。");
+            setPreviewHistoryStatusTone("runtime");
           })
-          .catch(() => {
+          .catch((error) => {
             setPreviewHistoryRecords(null);
+            setPreviewHistoryStatusLabel("历史记录已回退到占位数据");
+            setPreviewHistoryStatusDetail(
+              `真实历史拉取失败：${error instanceof Error ? error.message : "unknown error"}`,
+            );
+            setPreviewHistoryStatusTone("preview");
           });
+      } else {
+        setPreviewHistoryStatusLabel("当前显示占位历史记录");
+        setPreviewHistoryStatusDetail("浏览器本地文件仍走前端 fixture，不请求真实历史接口。");
+        setPreviewHistoryStatusTone("preview");
       }
     }
   }
@@ -139,6 +157,8 @@ export function MobileWebBrowserShell() {
     if (route === "loading" || route === "report" || route === "upgrade") {
       setPreviewFlowState(null);
       setPreviewHistoryRecords(null);
+      setPreviewHistoryStatusLabel(null);
+      setPreviewHistoryStatusDetail(null);
       setRoute("upload");
     }
   }
@@ -288,6 +308,9 @@ export function MobileWebBrowserShell() {
               uploadDetection={previewDetection}
               uploadDetecting={previewDetecting}
               uploadDetectError={previewDetectError}
+              historyStatusLabel={previewHistoryStatusLabel ?? undefined}
+              historyStatusDetail={previewHistoryStatusDetail ?? undefined}
+              historyStatusTone={previewHistoryStatusTone}
               environmentLabel="当前为本地预览模式"
               environmentDetail={
                 previewFlowRunning
@@ -305,6 +328,8 @@ export function MobileWebBrowserShell() {
                   setPreviewDetectError(null);
                   setPreviewFlowState(null);
                   setPreviewHistoryRecords(null);
+                  setPreviewHistoryStatusLabel(null);
+                  setPreviewHistoryStatusDetail(null);
                 }
               }}
               onUploadContinue={async () => {
@@ -330,8 +355,14 @@ export function MobileWebBrowserShell() {
                   try {
                     const records = await getInterpretationList(userId);
                     setPreviewHistoryRecords(records);
+                    setPreviewHistoryStatusLabel("当前显示真实历史记录");
+                    setPreviewHistoryStatusDetail("刚完成的主路径结果已尝试回流到真实历史列表。");
+                    setPreviewHistoryStatusTone("runtime");
                   } catch {
                     setPreviewHistoryRecords(null);
+                    setPreviewHistoryStatusLabel("历史记录暂时回退到占位数据");
+                    setPreviewHistoryStatusDetail("真实 Lite 主路径已执行，但历史列表拉取失败，因此仍显示 fixture。");
+                    setPreviewHistoryStatusTone("preview");
                   }
                   setRoute("report");
                 } catch {

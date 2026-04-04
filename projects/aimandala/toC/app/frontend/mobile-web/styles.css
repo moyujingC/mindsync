@@ -238,6 +238,33 @@ select {
   color: #305844;
 }
 
+.mw-inline-banner {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(112, 90, 63, 0.14);
+}
+
+.mw-inline-banner strong {
+  font-size: 13px;
+}
+
+.mw-inline-banner p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.mw-inline-banner--preview {
+  background: rgba(255, 245, 229, 0.86);
+  color: #6a4a1f;
+}
+
+.mw-inline-banner--runtime {
+  background: rgba(235, 246, 240, 0.86);
+  color: #305844;
+}
+
 .mw-route-nav {
   padding: 6px 12px;
   border-radius: 999px;

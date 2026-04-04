@@ -12,6 +12,9 @@ import type { InterpretationRecordResponse } from "../../shared/types";
 
 export interface MobileWebHistoryPageProps {
   records: InterpretationRecordResponse[];
+  historyStatusLabel?: string;
+  historyStatusDetail?: string;
+  historyStatusTone?: "preview" | "runtime";
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
@@ -20,6 +23,9 @@ export interface MobileWebHistoryPageProps {
 
 export function MobileWebHistoryPage({
   records,
+  historyStatusLabel,
+  historyStatusDetail,
+  historyStatusTone = "preview",
   environmentLabel,
   environmentDetail,
   environmentTone,
@@ -40,6 +46,13 @@ export function MobileWebHistoryPage({
         <h2>{descriptor.title}</h2>
         <p>{descriptor.subtitle}</p>
       </section>
+
+      {historyStatusLabel ? (
+        <section className={`mw-inline-banner mw-inline-banner--${historyStatusTone}`}>
+          <strong>{historyStatusLabel}</strong>
+          <p>{historyStatusDetail}</p>
+        </section>
+      ) : null}
 
       <HistorySummaryRow summary={descriptor.summary} />
       <HistoryFilterTabs
