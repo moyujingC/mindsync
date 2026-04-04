@@ -110,6 +110,9 @@ class InterpretationStore:
             painting_intention=data.get("painting_intention"),
             painting_feeling=data.get("painting_feeling"),
             three_circles=data.get("three_circles"),
+            three_circles_auto_detect=data.get("three_circles_auto_detect"),
+            three_circles_user_adjusted=data.get("three_circles_user_adjusted", False),
+            three_circles_adjust_history=data.get("three_circles_adjust_history", []),
             version_purchased=data.get("version_purchased", []),
             status=data.get("status", GenerationStatus.PENDING),
         )
@@ -393,6 +396,28 @@ class InterpretationStore:
                     and data.get("user_id") == user_id
                     and data.get("theme") == theme
                     and data.get("layer_0_raw")
+                ):
+                    return self._dict_to_record(data)
+
+            except Exception:
+                continue
+
+        return None
+
+    def find_existing_record(
+        self, image_hash: str, user_id: str, theme: str
+    ) -> Optional[InterpretationRecord]:
+        """Find any existing record for the same user/image/theme tuple."""
+
+        for file_path in self.storage_dir.glob("*.json"):
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+
+                if (
+                    data.get("image_hash") == image_hash
+                    and data.get("user_id") == user_id
+                    and data.get("theme") == theme
                 ):
                     return self._dict_to_record(data)
 

@@ -2,7 +2,7 @@
 
 import os
 import sys
-from pathlib import Path
+import shutil
 
 from fastapi.testclient import TestClient
 
@@ -11,9 +11,23 @@ sys.path.insert(
 )
 
 
+def _reset_api_state():
+    from app.api import routes_v2
+
+    routes_v2._orchestrator = None
+    shutil.rmtree(
+        os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+            "data",
+        ),
+        ignore_errors=True,
+    )
+
+
 def test_health_endpoint():
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     response = client.get("/health")
 
@@ -26,6 +40,7 @@ def test_health_endpoint():
 def test_pricing_endpoint():
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     response = client.get("/api/v2/pricing")
 
@@ -39,6 +54,7 @@ def test_pricing_endpoint():
 def test_create_interpretation_endpoint(tmp_path):
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     image_path = tmp_path / "mandala.png"
     image_path.write_bytes(b"mock-image")
@@ -57,6 +73,7 @@ def test_create_interpretation_endpoint(tmp_path):
     assert data["success"] is True
     assert data["version"] == "lite"
     assert data["auto_detected"] is True
+    assert data["existing"] is False
     assert data["generation_stage"] == "completed"
     assert data["report_ready"] is True
     assert data["three_circles"]["inner_radius"] == 33
@@ -67,6 +84,7 @@ def test_create_interpretation_endpoint(tmp_path):
 def test_create_interpretation_requires_complete_manual_circles(tmp_path):
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     image_path = tmp_path / "mandala.png"
     image_path.write_bytes(b"mock-image")
@@ -84,9 +102,43 @@ def test_create_interpretation_requires_complete_manual_circles(tmp_path):
     assert "must be provided together" in response.json()["detail"]
 
 
+def test_create_interpretation_returns_existing_for_same_user_image_theme(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"mock-image")
+
+    first = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-existing",
+            "image_path": str(image_path),
+            "theme": "general",
+        },
+    )
+    second = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-existing",
+            "image_path": str(image_path),
+            "theme": "general",
+        },
+    )
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    first_data = first.json()
+    second_data = second.json()
+    assert second_data["existing"] is True
+    assert second_data["interpretation_id"] == first_data["interpretation_id"]
+
+
 def test_get_interpretation_endpoint(tmp_path):
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     image_path = tmp_path / "mandala.png"
     image_path.write_bytes(b"mock-image")
@@ -114,6 +166,7 @@ def test_get_interpretation_endpoint(tmp_path):
 def test_get_user_interpretations_endpoint(tmp_path):
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     first_image = tmp_path / "mandala-1.png"
     second_image = tmp_path / "mandala-2.png"
@@ -147,6 +200,7 @@ def test_get_user_interpretations_endpoint(tmp_path):
 def test_get_report_endpoint_returns_placeholder(tmp_path):
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     image_path = tmp_path / "mandala.png"
     image_path.write_bytes(b"mock-image")
@@ -172,6 +226,7 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
 def test_get_report_endpoint_404_for_unknown_record():
     from app.api.main import app
 
+    _reset_api_state()
     client = TestClient(app)
     response = client.get("/api/v2/interpretations/not-found/report")
 

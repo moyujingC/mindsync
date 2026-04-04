@@ -169,8 +169,19 @@ class LayeredOrchestrator:
         painting_intention: Optional[str] = None,
         painting_feeling: Optional[str] = None,
         three_circles: Optional[Dict[str, int]] = None,
+        check_existing: bool = True,
     ) -> InterpretationRecord:
         """Create a migrated Lite record with a placeholder report."""
+
+        image_hash = self._hash_image(image_path)
+        if check_existing:
+            existing = self.store.find_existing_record(
+                image_hash=image_hash,
+                user_id=user_id,
+                theme=theme,
+            )
+            if existing is not None:
+                return existing
 
         record = await self.prepare_lite_record(
             image_path=image_path,

@@ -116,6 +116,7 @@ def to_record_response(record) -> InterpretationRecordResponse:
 async def create_interpretation(payload: CreateInterpretationRequest):
     """Initialize the migrated Lite record flow for a local image path."""
 
+    orchestrator = get_orchestrator()
     manual_three_circles = None
     if payload.inner_radius is not None or payload.middle_radius is not None:
         if payload.inner_radius is None or payload.middle_radius is None:
@@ -128,14 +129,25 @@ async def create_interpretation(payload: CreateInterpretationRequest):
             "middle_radius": payload.middle_radius,
         }
 
-    record = await get_orchestrator().generate_lite_placeholder(
-        image_path=payload.image_path,
+    image_hash = orchestrator._hash_image(payload.image_path)
+    existing_record = orchestrator.store.find_existing_record(
+        image_hash=image_hash,
         user_id=payload.user_id,
         theme=payload.theme,
-        painting_intention=payload.painting_intention,
-        painting_feeling=payload.painting_feeling,
-        three_circles=manual_three_circles,
     )
+
+    if existing_record is not None:
+        record = existing_record
+    else:
+        record = await orchestrator.generate_lite_placeholder(
+            image_path=payload.image_path,
+            user_id=payload.user_id,
+            theme=payload.theme,
+            painting_intention=payload.painting_intention,
+            painting_feeling=payload.painting_feeling,
+            three_circles=manual_three_circles,
+            check_existing=False,
+        )
 
     return CreateInterpretationResponse(
         interpretation_id=record.interpretation_id,
@@ -144,6 +156,7 @@ async def create_interpretation(payload: CreateInterpretationRequest):
         generation_progress=record.generation_progress,
         three_circles=record.three_circles or {},
         auto_detected=record.three_circles_auto_detect is not None,
+        existing=existing_record is not None,
         report_ready=record.layer_2_lite_final is not None,
     )
 
