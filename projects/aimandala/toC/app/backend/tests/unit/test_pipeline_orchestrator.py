@@ -211,4 +211,6 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert report is not None
     assert report["version"] == "lite"
     assert report["report"] is not None
+    assert report["title"] == "一镜 Lite 版占位报告"
+    assert report["structured"]["pro_teaser"] == "后续将接入正式的一梳 Pro 版生成链路。"
     assert report["can_upgrade"] is False

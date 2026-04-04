@@ -250,10 +250,20 @@ class LayeredOrchestrator:
             }
 
         if requested_version == "lite":
+            lite_report = record.layer_2_lite_final
             report = record.get_lite_report()
-            if report:
+            if report and lite_report:
                 return {
                     "version": "lite",
+                    "title": lite_report.title,
+                    "overall_impression": lite_report.overall_impression,
+                    "structured": {
+                        "title": lite_report.title,
+                        "overall_impression": lite_report.overall_impression,
+                        "visual_elements_rendered": lite_report.visual_elements_rendered,
+                        "emotion_portrait_rendered": lite_report.emotion_portrait_rendered,
+                        "pro_teaser": lite_report.pro_teaser,
+                    },
                     "report": report,
                     "can_upgrade": record.can_upgrade_to_pro(),
                     "upgrade_price": (

@@ -70,6 +70,9 @@ class ReportResponse(BaseModel):
 
     interpretation_id: str
     version: str
+    title: Optional[str] = None
+    overall_impression: Optional[str] = None
+    structured: Optional[dict] = None
     report: Optional[str] = None
     ai_qa_context: Optional[str] = None
     can_upgrade: bool = False
@@ -199,6 +202,9 @@ async def get_report(interpretation_id: str, version: Optional[str] = None):
     return ReportResponse(
         interpretation_id=interpretation_id,
         version=result.get("version", version or "lite"),
+        title=result.get("title"),
+        overall_impression=result.get("overall_impression"),
+        structured=result.get("structured"),
         report=result.get("report"),
         ai_qa_context=result.get("ai_qa_context"),
         can_upgrade=result.get("can_upgrade", False),

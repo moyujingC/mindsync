@@ -219,6 +219,10 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
     assert response.status_code == 200
     data = response.json()
     assert data["version"] == "lite"
+    assert data["title"] == "一镜 Lite 版占位报告"
+    assert data["overall_impression"] is not None
+    assert data["structured"]["title"] == "一镜 Lite 版占位报告"
+    assert "pro_teaser" in data["structured"]
     assert "一镜 Lite 版占位报告" in data["report"]
     assert data["error"] is None
 
