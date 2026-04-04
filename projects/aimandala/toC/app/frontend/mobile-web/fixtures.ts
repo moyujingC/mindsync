@@ -137,6 +137,7 @@ export function createPreviewAppProps(
   draft: MobileWebUploadDraft,
   uploadDetection: DetectCirclesResponse | null = null,
   flowStateOverride: MandalaFlowState | null = null,
+  historyRecordsOverride: InterpretationRecordResponse[] | null = null,
 ): MobileWebAppProps {
   const baseFlowState = {
     step: "liteReady" as const,
@@ -184,7 +185,7 @@ export function createPreviewAppProps(
     case "history":
       return {
         route,
-        records: createMockRecords(),
+        records: historyRecordsOverride ?? createMockRecords(),
       };
 
     case "upgrade":

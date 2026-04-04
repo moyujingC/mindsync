@@ -8,8 +8,12 @@ import type { MobileWebRouteInput } from "./router-plan";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
 import { toStartCreatePayload } from "./state";
-import type { DetectCirclesResponse, MandalaFlowState } from "../shared/types";
-import { detectCircles } from "../shared/api";
+import type {
+  DetectCirclesResponse,
+  InterpretationRecordResponse,
+  MandalaFlowState,
+} from "../shared/types";
+import { detectCircles, getInterpretationList } from "../shared/api";
 
 const defaultDraft: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
@@ -83,14 +87,23 @@ export function MobileWebBrowserShell() {
   const [previewFlowState, setPreviewFlowState] =
     useState<MandalaFlowState | null>(null);
   const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
+  const [previewHistoryRecords, setPreviewHistoryRecords] =
+    useState<InterpretationRecordResponse[] | null>(null);
 
   const input = useMemo(
     () => createInput(route, draft, interpretationId, userId),
     [draft, interpretationId, route, userId],
   );
   const previewProps = useMemo(
-    () => createPreviewAppProps(route, draft, previewDetection, previewFlowState),
-    [draft, previewDetection, previewFlowState, route],
+    () =>
+      createPreviewAppProps(
+        route,
+        draft,
+        previewDetection,
+        previewFlowState,
+        previewHistoryRecords,
+      ),
+    [draft, previewDetection, previewFlowState, previewHistoryRecords, route],
   );
 
   function handlePreviewPrimaryAction() {
@@ -110,12 +123,22 @@ export function MobileWebBrowserShell() {
       }
 
       setRoute("history");
+      if (!draft.imagePath.startsWith("browser-file:")) {
+        getInterpretationList(userId)
+          .then((records) => {
+            setPreviewHistoryRecords(records);
+          })
+          .catch(() => {
+            setPreviewHistoryRecords(null);
+          });
+      }
     }
   }
 
   function handlePreviewSecondaryAction() {
     if (route === "loading" || route === "report" || route === "upgrade") {
       setPreviewFlowState(null);
+      setPreviewHistoryRecords(null);
       setRoute("upload");
     }
   }
@@ -281,6 +304,7 @@ export function MobileWebBrowserShell() {
                   setPreviewDetection(null);
                   setPreviewDetectError(null);
                   setPreviewFlowState(null);
+                  setPreviewHistoryRecords(null);
                 }
               }}
               onUploadContinue={async () => {
@@ -303,6 +327,12 @@ export function MobileWebBrowserShell() {
                     ),
                   );
                   setPreviewFlowState(result.state);
+                  try {
+                    const records = await getInterpretationList(userId);
+                    setPreviewHistoryRecords(records);
+                  } catch {
+                    setPreviewHistoryRecords(null);
+                  }
                   setRoute("report");
                 } catch {
                   // runMobileWebLiteFlow already normalizes most failures into state,
