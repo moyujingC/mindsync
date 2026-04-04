@@ -554,6 +554,11 @@ select {
   font-size: 13px;
 }
 
+.mw-button-row {
+  display: grid;
+  gap: 10px;
+}
+
 .mw-primary-button {
   width: 100%;
   padding: 14px 18px;
@@ -610,5 +615,11 @@ select {
 
   .mw-app-shell__header {
     flex-direction: column;
+  }
+}
+
+@media (min-width: 641px) {
+  .mw-button-row {
+    grid-template-columns: 1fr 1fr;
   }
 }

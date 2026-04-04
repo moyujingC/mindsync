@@ -21,6 +21,7 @@ export interface MobileWebAppProps {
   onUploadContinue?: () => void;
   onUploadPreviewDetect?: () => void;
   onReportPrimaryAction?: () => void;
+  onReportSecondaryAction?: () => void;
   onHistoryBackToUpload?: () => void;
 }
 
@@ -34,6 +35,7 @@ export function MobileWebApp({
   onUploadContinue,
   onUploadPreviewDetect,
   onReportPrimaryAction,
+  onReportSecondaryAction,
   onHistoryBackToUpload,
 }: MobileWebAppProps): ReactNode {
   switch (route) {
@@ -61,6 +63,7 @@ export function MobileWebApp({
         <MobileWebReportPage
           state={flowState}
           onPrimaryAction={onReportPrimaryAction}
+          onSecondaryAction={onReportSecondaryAction}
         />
       );
 

@@ -15,11 +15,13 @@ import type { MandalaFlowState } from "../../shared/types";
 export interface MobileWebReportPageProps {
   state: MandalaFlowState;
   onPrimaryAction?: () => void;
+  onSecondaryAction?: () => void;
 }
 
 export function MobileWebReportPage({
   state,
   onPrimaryAction,
+  onSecondaryAction,
 }: MobileWebReportPageProps) {
   const viewModel = createMobileWebPageViewModel(
     state,
@@ -28,6 +30,11 @@ export function MobileWebReportPage({
   const descriptor = createReportPageDescriptor(viewModel);
   const structured = getLiteStructuredReport(state.report);
   const isLoading = state.step === "liteGenerating";
+  const primaryLabel = isLoading ? "继续查看生成进度" : descriptor.primaryActionLabel;
+  const secondaryLabel = isLoading ? "返回上传页" : "重新上传画作";
+  const footerHint = isLoading
+    ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
+    : "Lite 结果已经准备好，你可以查看历史记录，或重新开始一轮新的上传。";
 
   return (
     <MobileWebAppShell route={mobileWebRoutes[2]}>
@@ -46,13 +53,23 @@ export function MobileWebReportPage({
       <ReportSections sections={descriptor.sections} />
 
       <footer className="mw-footer-action">
-        <button
-          type="button"
-          className="mw-primary-button"
-          onClick={onPrimaryAction}
-        >
-          {descriptor.primaryActionLabel}
-        </button>
+        <p className="mw-footer-hint">{footerHint}</p>
+        <div className="mw-button-row">
+          <button
+            type="button"
+            className="mw-secondary-button"
+            onClick={onSecondaryAction}
+          >
+            {secondaryLabel}
+          </button>
+          <button
+            type="button"
+            className="mw-primary-button"
+            onClick={onPrimaryAction}
+          >
+            {primaryLabel}
+          </button>
+        </div>
       </footer>
     </MobileWebAppShell>
   );

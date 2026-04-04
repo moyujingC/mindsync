@@ -96,6 +96,12 @@ export function MobileWebBrowserShell() {
     }
   }
 
+  function handlePreviewSecondaryAction() {
+    if (route === "loading" || route === "report" || route === "upgrade") {
+      setRoute("upload");
+    }
+  }
+
   return (
     <div className="browser-shell">
       <section className="browser-shell__viewport">
@@ -254,6 +260,7 @@ export function MobileWebBrowserShell() {
                 setPreviewDetection(createPreviewDetectionFixture());
               }}
               onReportPrimaryAction={handlePreviewPrimaryAction}
+              onReportSecondaryAction={handlePreviewSecondaryAction}
               onHistoryBackToUpload={() => {
                 setRoute("upload");
               }}
