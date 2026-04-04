@@ -49,6 +49,27 @@ class CreateInterpretationResponse(BaseModel):
     report_ready: bool = False
 
 
+class DetectCirclesRequest(BaseModel):
+    """Minimal request for standalone three-circle detection."""
+
+    image_path: str = Field(..., description="Local image path used during migration")
+    confidence_threshold: float = Field(
+        default=0.3,
+        description="Threshold passed to the migrated detector shell",
+    )
+
+
+class DetectCirclesResponse(BaseModel):
+    """Normalized standalone three-circle detection response."""
+
+    inner_radius: float
+    middle_radius: float
+    confidence: float
+    method: str
+    geometry_suggestion: Optional[dict] = None
+    debug_info: Optional[dict] = None
+
+
 class InterpretationRecordResponse(BaseModel):
     """Minimal serialized interpretation record for the migrated V2 flow."""
 
@@ -138,6 +159,17 @@ def to_record_response(record) -> InterpretationRecordResponse:
         can_upgrade=record.can_upgrade_to_pro(),
         created_at=record.created_at,
     )
+
+
+@router.post("/detect-circles", response_model=DetectCirclesResponse)
+async def detect_circles(payload: DetectCirclesRequest):
+    """Run the migrated three-circle detector as a standalone API."""
+
+    result = await get_orchestrator().detect_three_circles(
+        image_path=payload.image_path,
+        confidence_threshold=payload.confidence_threshold,
+    )
+    return DetectCirclesResponse(**result.to_dict())
 
 
 @router.post("/interpretations", response_model=CreateInterpretationResponse)

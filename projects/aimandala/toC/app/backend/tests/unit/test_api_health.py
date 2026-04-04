@@ -51,6 +51,48 @@ def test_pricing_endpoint():
     assert data["upgrade_diff"] == 39.1
 
 
+def test_detect_circles_endpoint(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "detect.png"
+    image_path.write_bytes(b"mock-image")
+
+    response = client.post(
+        "/api/v2/detect-circles",
+        json={
+            "image_path": str(image_path),
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["inner_radius"] == 0.33
+    assert data["middle_radius"] == 0.66
+    assert data["method"] == "default"
+    assert data["geometry_suggestion"]["shape_type"] == "circle"
+
+
+def test_detect_circles_endpoint_for_missing_file():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/detect-circles",
+        json={
+            "image_path": "/tmp/aimandala-missing-detect-file.png",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["method"] == "default"
+    assert data["debug_info"]["reason"] == "image_not_found"
+
+
 def test_create_interpretation_endpoint(tmp_path):
     from app.api.main import app
 
