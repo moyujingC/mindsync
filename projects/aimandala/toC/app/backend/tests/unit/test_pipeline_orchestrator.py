@@ -1,5 +1,6 @@
 """Unit tests for the minimal migrated V2 orchestrator shell."""
 
+import asyncio
 import os
 import sys
 
@@ -7,12 +8,29 @@ sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
+from app.core.analysis.circle_detector import CircleDetectionResult
 from app.core.pipeline.orchestrator_v2 import (
     GenerationStage,
     LayeredOrchestrator,
     PricingSnapshot,
 )
 from app.core.pipeline.store import InterpretationStore
+
+
+class StubCircleDetector:
+    async def detect_circles(
+        self,
+        image_path: str,
+        use_ai: bool = True,
+        use_opencv: bool = True,
+        confidence_threshold: float = 0.3,
+    ):
+        return CircleDetectionResult(
+            inner_radius=0.35,
+            middle_radius=0.67,
+            confidence=0.8,
+            method="stub",
+        )
 
 
 def test_generation_stage_values():
@@ -48,3 +66,66 @@ def test_layered_orchestrator_exposes_fixed_pricing(tmp_path):
     assert pricing.lite == 9.9
     assert pricing.pro == 49.0
     assert pricing.upgrade_diff == 39.1
+
+
+def test_normalize_circle_payload():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+
+    payload = orchestrator._normalize_circle_payload(
+        {"inner_radius": 8, "middle_radius": 11}
+    )
+
+    assert payload == {
+        "inner_radius": 10,
+        "middle_radius": 15,
+    }
+
+
+def test_hash_image_missing_file():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+
+    image_hash = orchestrator._hash_image("/tmp/aimandala-no-file.png")
+
+    assert image_hash == "missing:aimandala-no-file.png"
+
+
+def test_prepare_lite_record_with_manual_circles(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(store=store, enable_vision=False)
+
+    record = asyncio.run(
+        orchestrator.prepare_lite_record(
+            image_path=str(image_path),
+            user_id="user-1",
+            three_circles={"inner_radius": 40, "middle_radius": 72},
+        )
+    )
+
+    assert record.three_circles == {"inner_radius": 40, "middle_radius": 72}
+    assert record.three_circles_user_adjusted is True
+    assert record.generation_stage == "detecting"
+    assert record.generation_progress == 10
+
+
+def test_prepare_lite_record_uses_detector_when_missing_manual_input(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.prepare_lite_record(
+            image_path=str(image_path),
+            user_id="user-2",
+        )
+    )
+
+    assert record.three_circles == {"inner_radius": 35, "middle_radius": 67}
+    assert record.three_circles_auto_detect["method"] == "stub"
+    assert record.three_circles_user_adjusted is False
