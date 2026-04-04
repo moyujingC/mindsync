@@ -2,11 +2,13 @@ import { useMemo, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { createPreviewAppProps, createPreviewDetectionFixture } from "./fixtures";
+import { runMobileWebLiteFlow } from "./controller";
 import { MobileWebRuntime } from "./runtime";
 import type { MobileWebRouteInput } from "./router-plan";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
-import type { DetectCirclesResponse } from "../shared/types";
+import { toStartCreatePayload } from "./state";
+import type { DetectCirclesResponse, MandalaFlowState } from "../shared/types";
 import { detectCircles } from "../shared/api";
 
 const defaultDraft: MobileWebUploadDraft = {
@@ -78,14 +80,16 @@ export function MobileWebBrowserShell() {
     useState<DetectCirclesResponse | null>(null);
   const [previewDetecting, setPreviewDetecting] = useState(false);
   const [previewDetectError, setPreviewDetectError] = useState<string | null>(null);
+  const [previewFlowState, setPreviewFlowState] =
+    useState<MandalaFlowState | null>(null);
 
   const input = useMemo(
     () => createInput(route, draft, interpretationId, userId),
     [draft, interpretationId, route, userId],
   );
   const previewProps = useMemo(
-    () => createPreviewAppProps(route, draft, previewDetection),
-    [draft, previewDetection, route],
+    () => createPreviewAppProps(route, draft, previewDetection, previewFlowState),
+    [draft, previewDetection, previewFlowState, route],
   );
 
   function handlePreviewPrimaryAction() {
@@ -101,6 +105,7 @@ export function MobileWebBrowserShell() {
 
   function handlePreviewSecondaryAction() {
     if (route === "loading" || route === "report" || route === "upgrade") {
+      setPreviewFlowState(null);
       setRoute("upload");
     }
   }
@@ -261,10 +266,33 @@ export function MobileWebBrowserShell() {
                 if (patch.imagePath !== undefined) {
                   setPreviewDetection(null);
                   setPreviewDetectError(null);
+                  setPreviewFlowState(null);
                 }
               }}
-              onUploadContinue={() => {
+              onUploadContinue={async () => {
+                setPreviewFlowState(null);
                 setRoute("loading");
+                if (draft.imagePath.startsWith("browser-file:")) {
+                  return;
+                }
+
+                try {
+                  const result = await runMobileWebLiteFlow(
+                    toStartCreatePayload(
+                      {
+                        ...draft,
+                        innerRadius: previewDetection?.inner_radius,
+                        middleRadius: previewDetection?.middle_radius,
+                      },
+                      userId,
+                    ),
+                  );
+                  setPreviewFlowState(result.state);
+                  setRoute("report");
+                } catch {
+                  // runMobileWebLiteFlow already normalizes most failures into state,
+                  // so this is a last-resort fallback for unexpected exceptions.
+                }
               }}
               onUploadPreviewDetect={async () => {
                 if (!draft.imagePath) {

@@ -6,6 +6,7 @@ import type {
   DetectCirclesResponse,
   InterpretationRecordResponse,
   InterpretationStatusResponse,
+  MandalaFlowState,
   ReportResponse,
 } from "../shared/types";
 
@@ -135,6 +136,7 @@ export function createPreviewAppProps(
   route: MobileWebRouteId,
   draft: MobileWebUploadDraft,
   uploadDetection: DetectCirclesResponse | null = null,
+  flowStateOverride: MandalaFlowState | null = null,
 ): MobileWebAppProps {
   const baseFlowState = {
     step: "liteReady" as const,
@@ -160,7 +162,7 @@ export function createPreviewAppProps(
     case "loading":
       return {
         route,
-        flowState: {
+        flowState: flowStateOverride ?? {
           ...baseFlowState,
           step: "liteGenerating",
           report: null,
@@ -176,7 +178,7 @@ export function createPreviewAppProps(
     case "report":
       return {
         route,
-        flowState: baseFlowState,
+        flowState: flowStateOverride ?? baseFlowState,
       };
 
     case "history":
@@ -188,7 +190,7 @@ export function createPreviewAppProps(
     case "upgrade":
       return {
         route,
-        flowState: {
+        flowState: flowStateOverride ?? {
           ...baseFlowState,
           step: "upgradePlaceholder",
           report: createMockReport("pro"),
