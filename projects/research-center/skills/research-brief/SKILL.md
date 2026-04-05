@@ -56,6 +56,16 @@ handoff_to:
 - 保持任务在研究流里继续前进
 - 基于 brief 继续开展 research / synthesis / knowledge ingest
 
+如果当前 issue 已经存在 `research-brief` 文档，则默认说明：
+
+- brief 已经完成
+- 当前不应再次调用本 skill 来向用户补需求
+
+此时应直接切换到：
+
+- `research-synthesis`
+- 或正式研究执行
+
 ### 2. 不要把下游应用场景误写成主项目
 
 当前任务的主上下文必须来自当前 issue 自身：
