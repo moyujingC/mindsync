@@ -24,6 +24,8 @@
 
 - [公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md)
 - [研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
+- [任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
+- [Paperclip任务系统优化方案.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md)
 - [项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 - [内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
 
@@ -31,11 +33,16 @@
 
 ### 一镜一梳
 
-- [PROJECT.md](/Users/xinran/Downloads/dev/ai-mandala/PROJECT.md)
+- [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
 
 ### 怀瑾握瑜
 
-- [PROJECT.md](/Users/xinran/Downloads/dev/ai-career/PROJECT.md)
+- [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
+
+## 你优先使用的系统巡检工具
+
+- [paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
+- [sync-paperclip-project-workspaces.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-project-workspaces.sh)
 
 ## 你的默认工具使用原则
 

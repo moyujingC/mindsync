@@ -65,9 +65,11 @@ goals:
 2. [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml)
 3. [company/内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
 4. [company/研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
-5. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
-6. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
-7. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+5. [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
+6. [company/Paperclip任务系统优化方案.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md)
+7. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
+8. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
+9. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 
 其中：
 
@@ -75,6 +77,8 @@ goals:
 - `项目注册表` 定义公司对象清单、对象类型与入口路径，是唯一权威注册表
 - `内容矩阵` 定义个人号、产品号与 build in public 的内容定位
 - `研发原则` 定义公司共享的工程与交付约束
+- `任务审阅与状态流转规范` 定义 `in_review`、父子任务和 `done` 的默认解释规则
+- `Paperclip任务系统优化方案` 定义当前阶段对任务语义、巡检和面板首屏的系统优化方向
 - `MONOREPO` 定义仓库分层、对象类型与目录归属原则
 - `DOCS_GOVERNANCE` 定义正式文档的状态、元数据和 artifact 规则
 - `项目与仓库映射` 解释注册表中的对象如何映射到当前 Monorepo 与历史仓库

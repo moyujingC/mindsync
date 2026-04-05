@@ -19,10 +19,19 @@
 
 检查：
 
+- 优先运行任务系统巡检：
+  - [paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
 - 当前有哪些活跃项目
 - 哪些任务在推进
 - 哪些任务长时间没有 owner 或没有进展
 - 哪些项目在忙，但没有形成清晰产物
+
+至少要主动识别：
+
+- 顶层未分诊输入
+- 久置 `in_review`
+- 假 `in_progress`
+- project / goal 漂移
 
 ### 2. 工作流完整性
 
