@@ -86,6 +86,14 @@
 - `labels`
   - 后续用于补充 `type:*` 与 `review:*` 语义
 
+当前约定以：
+
+- [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
+- [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
+- [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
+
+为执行入口。
+
 也就是说：
 
 - 现阶段先补“派生语义”
@@ -230,6 +238,14 @@
   - `review:deliverable`
   - `review:decision`
 - 在 New Issue / handoff 中加入默认模板
+
+当前已先在治理层补齐：
+
+- [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
+- [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
+- [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
+
+若要处理某一批具体存量任务，应额外创建项目级或阶段性交付文档，不直接写入 `company/` 规则层。
 
 ### 9.3 第三阶段：再判断是否要原生字段化
 

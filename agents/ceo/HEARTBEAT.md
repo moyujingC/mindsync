@@ -33,6 +33,12 @@
 - 假 `in_progress`
 - project / goal 漂移
 
+并按下面顺序处理：
+
+1. 先判断它属于 `type:intake`、`type:epic`、`type:execution` 还是 `type:artifact`
+2. 再判断是否需要挂到某个父任务下
+3. 最后才判断是否要改 `status`
+
 ### 2. 工作流完整性
 
 检查：

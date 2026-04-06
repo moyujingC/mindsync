@@ -33,10 +33,14 @@
 7. `company/研发原则.md`
 8. `company/任务审阅与状态流转规范.md`
 9. `company/Paperclip任务系统优化方案.md`
-10. `MONOREPO.md`
-11. `DOCS_GOVERNANCE.md`
-12. `agents/*/AGENTS.md`
-13. `company/项目与仓库映射.md`
+10. `company/任务类型与标签规范.md`
+11. `company/任务创建模板.md`
+12. `company/顶层任务收束规则.md`
+13. `company/标签与状态使用说明.md`
+14. `MONOREPO.md`
+15. `DOCS_GOVERNANCE.md`
+16. `agents/*/AGENTS.md`
+17. `company/项目与仓库映射.md`
 
 如果任务与某个具体角色有关，应继续读取对应的 `agents/<role>/AGENTS.md`。
 

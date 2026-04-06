@@ -26,6 +26,9 @@
 - [研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
 - [任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
 - [Paperclip任务系统优化方案.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md)
+- [任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
+- [任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
+- [顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
 - [项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 - [内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
 

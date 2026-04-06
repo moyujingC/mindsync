@@ -123,8 +123,7 @@ projects/aimandala/
 
 当前不预建：
 
-- `business/`
-- `studio/`
+- `toB/`
 - `internal/`
 - `v3/`
 

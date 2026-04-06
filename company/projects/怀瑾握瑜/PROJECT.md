@@ -40,28 +40,28 @@
 
 1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md)
 2. [2026-04-02-可行性研究报告.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md)
-3. [2026-04-02-CMPA-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-任务状态纪要.md)
-4. 对应项目工作区入口：[projects/aicareer/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
+3. 对应项目工作区入口：[projects/aicareer/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
 
 如果任务明确是内容任务，还应继续读取：
 
-5. [content/怀瑾握瑜-立项首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-立项首发内容大纲.md)
+4. [content/怀瑾握瑜-立项首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-立项首发内容大纲.md)
 
 如果任务还涉及 `墨予镜` 账号，还应继续读取：
 
-6. [company/projects/墨予镜IP/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md)
-7. [company/projects/墨予镜IP/个人真实信息与表达基线.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/个人真实信息与表达基线.md)
-8. [company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-个人号内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-个人号内容策略简报.md)
-9. [company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-首批选题清单.md)
-10. [company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-立项首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-立项首发内容大纲.md)
+5. [company/projects/墨予镜IP/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md)
+6. [company/projects/墨予镜IP/个人真实信息与表达基线.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/个人真实信息与表达基线.md)
+7. [company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-个人号内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-个人号内容策略简报.md)
+8. [company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-首批选题清单.md)
+9. [company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-立项首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-立项首发内容大纲.md)
 
 如果任务明确是 `怀瑾握瑜` 产品号内容任务，还应继续读取：
 
-11. [content/怀瑾握瑜-产品号内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-产品号内容策略简报.md)
-12. [content/怀瑾握瑜-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-首批选题清单.md)
+10. [content/怀瑾握瑜-产品号内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-产品号内容策略简报.md)
+11. [content/怀瑾握瑜-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-首批选题清单.md)
 
-如果任务明确来自某次 handoff 或纠偏，还应补读对应任务定义：
+如果任务明确来自某次历史纠偏或需要追溯当时的流转背景，再补读下面这些历史参考材料：
 
+12. [2026-04-02-CMPA-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-任务状态纪要.md)
 13. [2026-04-02-CMPA-3-Build-in-Public-纠偏任务定义.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-3-Build-in-Public-纠偏任务定义.md)
 
 ## 3. 项目级材料放什么
@@ -70,9 +70,13 @@
 
 - 项目定位与入口
 - 已归档研究结论
-- 状态纪要
-- 关键任务定义
+- 可长期复用的项目资产
 - `怀瑾握瑜` 产品号内容资产
+
+这里可以保留但不应默认当前化：
+
+- 历史状态纪要
+- 单任务纠偏定义
 
 这里不优先放：
 

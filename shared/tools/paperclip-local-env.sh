@@ -22,6 +22,7 @@ Notes:
   - Passing an agent ref reuses a cached local-cli key when possible.
   - The cache is validated against /api/agents/me before reuse when the server is reachable.
   - Task / wake / approval variables are runtime-scoped and are intentionally not hard-coded here.
+  - In manual local mode, PAPERCLIP_RUN_ID is only exported when already provided by a real Paperclip run.
 EOF
 }
 
@@ -45,9 +46,13 @@ print_base_exports() {
   cat <<EOF
 export PAPERCLIP_API_URL='${PAPERCLIP_API_URL}'
 export PAPERCLIP_COMPANY_ID='${PAPERCLIP_COMPANY_ID}'
-export PAPERCLIP_RUN_ID='${PAPERCLIP_RUN_ID:-manual-$(date +%Y%m%d%H%M%S)}'
 export PAPERCLIP_WAKE_REASON='${PAPERCLIP_WAKE_REASON:-manual_local_cli}'
 EOF
+  if [[ -n "${PAPERCLIP_RUN_ID:-}" ]]; then
+    cat <<EOF
+export PAPERCLIP_RUN_ID='${PAPERCLIP_RUN_ID}'
+EOF
+  fi
 }
 
 sanitize_ref() {

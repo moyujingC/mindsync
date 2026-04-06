@@ -148,10 +148,14 @@ workspace:
   # 2. company/项目注册表.yaml
   # 3. company/任务审阅与状态流转规范.md
   # 4. company/Paperclip任务系统优化方案.md
-  # 5. MONOREPO.md
-  # 6. DOCS_GOVERNANCE.md
-  # 7. 对应 projects/<slug>/PROJECT.md
-  # 8. 当前阶段 artifact（spec / decisions / tasks / qa / delivery）
+  # 5. company/任务类型与标签规范.md
+  # 6. company/任务创建模板.md
+  # 7. company/顶层任务收束规则.md
+  # 8. company/标签与状态使用说明.md
+  # 9. MONOREPO.md
+  # 10. DOCS_GOVERNANCE.md
+  # 11. 对应 projects/<slug>/PROJECT.md
+  # 12. 当前阶段 artifact（spec / decisions / tasks / qa / delivery）
 
   # 是否自动备份
   auto_backup: true

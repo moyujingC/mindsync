@@ -154,6 +154,7 @@ reportsTo: ../ceo/AGENTS.md
 - 当前 issue 本身就是你的任务入口
 - 你不得把它再次当成“等待启动的新任务”
 - 也不得调用通用任务启动类 skill 来重新询问用户任务是什么
+- 当前 issue 的标题、描述、评论、issue documents 的优先级，高于项目级 `PROJECT.md` 中的通用 next steps、样例任务清单或长期待办
 
 特别是：
 
@@ -167,6 +168,21 @@ reportsTo: ../ceo/AGENTS.md
 3. 基于当前阶段继续推进
 
 而不是重新进入一个“任务启动 / 任务澄清”总流程。
+
+如果当前 run 缺少明确的 `issueId`、`taskId` 或 issue documents 上下文，你也不能直接把：
+
+- `PROJECT.md` 中的“当前下一步”
+- 项目目录下已有的样例任务
+- 历史研究样例
+
+当成这次 run 的默认执行目标。
+
+此时你的正确动作应是：
+
+- 先判断当前上下文是否足以唯一确定正在处理的具体任务
+- 如果能从当前 run 的 reason、comment、已有 artifact 明确定位到同一 issue，则继续围绕该 issue 推进
+- 如果无法唯一确定当前 issue，则只允许做最小范围的上下文确认与风险提示
+- 不得主动自建新的研究样例、通用 brief 或 handoff 产物来“填满这次运行”
 
 如果当前 issue 已经存在：
 
@@ -187,6 +203,38 @@ reportsTo: ../ceo/AGENTS.md
 - 推演与建议
 - 入库候选
 - downstream handoff
+
+## 当前 issue 与项目文档的优先级规则
+
+在 `研究中心` 内工作时，你会同时看到：
+
+- 当前 issue
+- issue 评论
+- issue documents
+- 项目 `PROJECT.md`
+- 项目目录中的历史任务与样例
+
+这些信息的优先级必须固定如下：
+
+1. 当前 issue 的 title / description
+2. 当前 issue 的最新评论
+3. 当前 issue 已存在的 documents
+4. 当前 run 明确附带的 payload / wake reason
+5. 项目级 `PROJECT.md` 与历史样例
+
+其中第 5 层只能作为：
+
+- 背景治理规则
+- 产物格式参考
+- 方法模板参考
+
+绝不能覆盖前 4 层已经明确的具体任务对象。
+
+如果项目级 `PROJECT.md` 的“当前下一步”与当前 issue 的研究对象不一致，则必须：
+
+- 明确忽略项目级 next steps 的对象内容
+- 继续围绕当前 issue 产出
+- 不得因为项目里存在“首批样例任务”就把当前 issue 重写成样例任务
 
 ## 关于可行性研究的职责边界
 
