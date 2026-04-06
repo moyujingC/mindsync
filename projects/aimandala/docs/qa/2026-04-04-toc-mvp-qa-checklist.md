@@ -75,11 +75,11 @@
 1. `TC-01 上传图片并创建一镜 Lite 版解读`
    - 期望：调用 `POST /api/v2/interpretations` 成功，返回 `一镜 Lite 版` 基础结果
 2. `TC-02 获取一镜 Lite 版报告`
-   - 期望：可以通过报告接口读取当前 `一镜 Lite 版` 报告
+   - 期望：可以通过报告接口读取当前 `一镜 Lite 版` 报告，且报告内容会受主题、用户输入和三圈参数影响
 3. `TC-03 进入一梳 Pro 版`
-   - 期望：当前流程可以从 `一镜 Lite 版` 引导进入 `一梳 Pro 版`
+   - 期望：当前流程可以从 `一镜 Lite 版` 引导进入 `一梳 Pro 版`，并读取 `version=pro` 报告；报告内容会受主题、用户输入和三圈参数影响，且正文组织应接近“Lite 基础 + 深度分析 + 调节建议”
 4. `TC-04 获取用户历史记录`
-   - 期望：可以通过用户解读列表查看历史结果
+   - 期望：可以通过用户解读列表查看历史结果，并区分当前记录是 `Lite` 还是 `Lite + Pro`；打开已有 Pro 记录时应直接进入 Pro 报告
 5. `TC-05 命中已有记录`
    - 期望：系统返回 `existing` 状态，而不是无提示重复生成
 6. `TC-06 三圈检测失败`
@@ -115,7 +115,14 @@
 当前状态：
 
 - To C MVP 的 spec、architecture、QA 清单已建立
+- `一镜 Lite 版 -> 一梳 Pro 版` 当前最小正式链路已可重复验证
+- 最近一轮命令级验证已通过：
+  - `pytest projects/aimandala/toC/app/backend/tests/unit/test_api_health.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py`
+  - `npm run typecheck`
+  - `npm run build:mobile-web`
+- history 页当前已能直接打开已有 `Lite + Pro` 记录并落到 Pro 报告页，不再重复走 Lite 刷新
+- Lite / Pro 报告当前都已开始向旧主线正式报告的文案组织靠拢，但仍未接入旧主线完整 AI 生成链路
 - 当前仍缺：
   - 第一轮纸面验证记录
   - 第一批迁入后的样本验证结果
-  - 对应的 delivery 记录
+  - 更贴近旧主线正式内容的 Lite / Pro 生成验证结果
