@@ -47,6 +47,23 @@
 - [paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
 - [sync-paperclip-project-workspaces.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-project-workspaces.sh)
 
+其中：
+
+- `paperclip-task-system-audit.mjs`
+  - 默认用于先看系统健康，而不是先看最近活跃
+  - 当前会输出：
+    - `by status`
+    - `by type`
+    - `待分诊输入`
+    - `待开始任务`
+    - `卡住的执行任务`
+    - `久置 review`
+    - `缺少类型标签的打开任务`
+    - `仍在顶层直接推进的活跃任务`
+    - `project / goal drift`
+- 当审计结果显示某条任务缺少 `type:*` 标签时，应优先补语义，再决定是否改状态
+- 当审计结果显示某条任务是健康的 `type:epic` 且已有活跃子任务承接时，不应误判为结构异常
+
 ## 你的默认工具使用原则
 
 ### 当你需要判断方向
