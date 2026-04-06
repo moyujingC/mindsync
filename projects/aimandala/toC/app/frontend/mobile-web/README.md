@@ -18,13 +18,22 @@
    - 轮询 `status`
 3. Lite 结果页
    - 调用 `report`
-   - 渲染结构化 Lite 占位字段
+   - 渲染结构化 Lite 字段
 4. 历史页
    - 调用用户历史列表
 5. Upgrade 页
-   - 当前只接兼容占位接口
+   - 当前已走真实 `upgrade + report(version=pro)` 最小闭环
+   - 但内容仍是迁移期 Pro 报告，还不是旧主线完整生成内容
 
 当前不建议在这里直接复制旧仓库 `app/ui` 的整套结构，而是优先按共享层边界重组。
+
+## 生产环境变量模板
+
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/frontend/mobile-web/.env.production.example`
+
+当前生产环境建议至少配置：
+
+- `VITE_AIMANDALA_API_BASE_URL=https://web-api.jingshu.cc`
 
 ## 当前已提供的页面层骨架
 
@@ -76,6 +85,15 @@
    - 决定当前主按钮文案
 6. `createMobileWebPageViewModel`
    - 转成适合页面直接渲染的 title / subtitle / report 结构
+
+当前这条链路依赖的上传对象契约已经固定为：
+
+- `runtimeImagePath`
+- `storageBackend`
+- `storageKey`
+- `imageUrl`
+
+因此后端即使从 `local` 切到 `cos`，页面层也不需要因为存储后端变化而改状态结构。
 
 如果需要更接近页面层的数据结构，还可以继续走：
 
@@ -255,8 +273,9 @@
 - 开发辅助层默认可折叠，不作为正式产品界面的一部分
 - 手机页面内会直接标明当前是“本地预览模式”还是“联调运行时”
 - history 页会额外标明当前展示的是“真实记录”还是“占位记录”
-- history 列表项现在会在打开记录时进入受控禁用态，并提示当前正在刷新真实状态后再跳转到 `loading / report`
+- history 列表项现在会在打开记录时进入受控禁用态，并提示当前正在读取真实状态后再跳转到 `loading / Lite / Pro`
 - history descriptor 现在会把原始 `status / generation_stage / progress` 收口成更接近用户语义的状态标签、阶段说明与可读时间
+- history 打开已有 `Lite + Pro` 记录时会直接读取 Pro 报告，不再额外触发 upgrade 或绕回 Lite
 
 当需要真实联调时，再关闭预览模式，切回 `MobileWebRuntime` 走当前 loader 与后端接口。
 
@@ -277,6 +296,10 @@
    - 也可以先返回上传页
 3. report 页
    - 已有结构化 Lite 内容卡
+   - Lite richer 字段已开始直接渲染为心灵画像故事、主题洞察、日常小觉察、核心洞察与小实验卡片
+   - Pro richer 字段已开始直接渲染为第一眼直觉、核心洞察、三圈画像、微观分析、根源分析与调节建议卡片
+   - structured 卡片存在时，页面已不再重复堆叠原始 markdown 正文
+   - Pro route 当前已按正式报告页语义展示，不再只是“兼容入口”提示
    - 可以进入历史页
    - 也可以重新上传
 4. history 页
@@ -288,12 +311,14 @@
     - 页面层已开始露出主题筛选入口，并与 `historyQuery.theme` 对齐
     - 页面层已开始露出显示数量切换，并与 `historyQuery.limit` 对齐
     - 列表项已开始支持直接打开报告或查看当前生成进度
+    - 列表项已开始区分当前只有 Lite 还是已经包含 Pro，并据此显示更准确的打开动作
+    - 打开已有 `Lite + Pro` 记录时，已开始直接落到 Pro 报告页
 
 当前这些动作不再是纯占位：
 
 - 上传页的 `detect-circles` 已开始支持真实接口触发
 - 浏览器原生选图已开始先换成后端本地临时 `image_path`
-- 上传页摘要区已开始展示 `storage_backend / storage_key / image_url`
+- 上传页摘要区已开始展示 `storage_backend / storage_key / image_url / image_local_expires_at`
 - 预览壳里的 Lite 主路径已开始尝试真实 `create + status + report`
 - loading 页已开始在真实 `status` 未完成时自动轮询
 - history 页已开始优先承接真实记录
@@ -301,9 +326,15 @@
 - history 列表查询已开始统一收口到 `historyQuery`，为后续扩展 `theme / limit` 留出稳定接口面
 - history 页主题筛选已开始进入页面层，不再只是后端预留字段
 - history 页显示数量切换已开始进入页面层，不再只是查询参数占位
-- history 列表项已开始能回到 report / loading，而不再只是停在信息展示
+- history 列表项已开始能回到 loading / Lite / Pro，而不再只是停在信息展示
+- history 列表项已开始直接提示当前记录版本是 `Lite` 还是 `Lite + Pro`
+- history 列表项已开始直接打开已有 Pro 报告，而不再重复触发 Lite 刷新
 - 正式 `MobileWebRuntime` 已补上与预览壳一致的 loading 自动推进与 report 最小动作回路
 - 正式 `MobileWebRuntime` 的 upload 页已补上页面内 draft 编辑、三圈检测与继续进入 loading 的动作
+- Lite / Pro richer structured report 已开始贯通到 mobile-web 页面壳，而不再只依赖 markdown 正文
+- report 页在 structured 卡片可用时，已开始优先走卡片阅读顺序，减少与原始正文的重复信息
+- report 页现在会显示 `prompt_schema_validation_issues` 的结构校验状态，方便联调时快速定位缺字段
+- richer report 文案现在也已开始跟随 `theme / painting_intention / painting_feeling / 三圈参数` 变化
 
 但它仍然不是完整联调成品：
 
@@ -319,15 +350,18 @@
   - 三圈检测
   - Lite `create + status + report`
   - `existing` 复用提示
-  - 历史记录加载、筛选、回到 `report / loading`
-  - Pro 入口兼容占位页
-- 当前唯一明确阻塞：
-  - 正式 `一梳 Pro 版` 生成与报告读取还没有恢复，只接了真实 `upgrade` 兼容占位接口
+  - 历史记录加载、筛选、回到 `loading / Lite / Pro`
+  - Pro `upgrade + report`
+- Lite / Pro richer structured report 展示
+- Lite / Pro 输入驱动的 richer 报告文案
+- 当前仍需继续替换的部分：
+  - `一梳 Pro 版` 当前已恢复最小正式闭环，但报告内容仍是迁移期文本，还不是旧主线的正式 Pro 生成内容
 
 当前迁移期上传对象契约也先固定为：
 
 1. 浏览器文件先走 `upload-image`
 2. 前端把返回结果收口到 `MobileWebUploadDraft.uploadAsset`
 3. 后续 `detect / create / report` 一律消费 `uploadAsset.runtimeImagePath`
+4. `create` 会同步透传 `image_url / storage_backend / storage_key / image_local_expires_at` 给后端入库，保证后续生命周期治理有追踪字段
 
 在正式对象存储接入前，先按这套契约继续推进，不把存储升级本身作为 Lite 主链路迁移的阻塞项。

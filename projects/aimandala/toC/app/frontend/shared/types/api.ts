@@ -41,11 +41,16 @@ export interface UploadImageResponse {
   content_type?: string | null;
   size_bytes: number;
   image_url?: string | null;
+  image_local_expires_at?: string | null;
 }
 
 export interface CreateInterpretationRequest {
   user_id: string;
   image_path: string;
+  image_url?: string | null;
+  storage_backend?: string | null;
+  storage_key?: string | null;
+  image_local_expires_at?: string | null;
   theme?: string;
   painting_intention?: string | null;
   painting_feeling?: string | null;
@@ -102,11 +107,43 @@ export interface InterpretationStatusResponse {
 }
 
 export interface LiteStructuredReport {
+  prompt_schema_validation_issues?: string[] | null;
   title: string;
   overall_impression: string;
   visual_elements_rendered: string;
   emotion_portrait_rendered: string;
+  story?: {
+    base?: { content?: string; connector?: string | null } | null;
+    contradiction?: { content?: string; connector?: string | null } | null;
+    pattern?: { content?: string; connector?: string | null } | null;
+    defense?: { content?: string; connector?: string | null } | null;
+    block?: { content?: string; connector?: string | null } | null;
+    light?: { content?: string; connector?: string | null } | null;
+  } | null;
+  theme_insights?: {
+    scene?: string;
+    impact?: string;
+    awareness?: string;
+  } | null;
+  three_awareness?: Array<{
+    day?: number;
+    title?: string;
+    content?: string;
+  }> | null;
+  six_insights_rendered?: Record<string, string> | null;
+  experiment_rendered?: string | null;
   pro_teaser: string;
+}
+
+export interface ProStructuredReport {
+  prompt_schema_validation_issues?: string[] | null;
+  first_impression?: string | null;
+  core_insight_table?: Record<string, string> | null;
+  three_circles_detailed?: Record<string, { label?: string; reading?: string }> | null;
+  micro_analysis_detailed?: Record<string, string> | null;
+  imbalance_confirmed?: Record<string, string> | null;
+  root_cause?: Record<string, string> | null;
+  healing_suggestions?: Array<{ phase?: string; focus?: string; practice?: string }> | null;
 }
 
 export interface ReportResponse {
