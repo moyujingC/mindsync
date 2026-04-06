@@ -1,0 +1,20 @@
+[Unit]
+Description=AIMandala ToC Backend (FastAPI)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/aimandala/backend
+EnvironmentFile=/opt/aimandala/backend/.env.production
+ExecStart=/opt/aimandala/backend/.venv/bin/python -m uvicorn app.api.main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=3
+TimeoutStopSec=30
+KillSignal=SIGINT
+StandardOutput=append:/var/log/aimandala/backend.out.log
+StandardError=append:/var/log/aimandala/backend.err.log
+
+[Install]
+WantedBy=multi-user.target
