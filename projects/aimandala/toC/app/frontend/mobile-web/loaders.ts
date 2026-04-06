@@ -4,6 +4,7 @@ import { initialMandalaFlowState } from "../shared/core";
 import {
   bootstrapMobileWebFlow,
   openMobileWebUpgradeEntry,
+  refreshMobileWebProReport,
   refreshMobileWebReport,
   runMobileWebLiteFlow,
 } from "./controller";
@@ -60,9 +61,13 @@ export async function loadUpgradePage(
     interpretationId,
     report.state,
   );
+  const proReport = await refreshMobileWebProReport(
+    interpretationId,
+    upgrade.state,
+  );
 
   return {
-    state: upgrade.state,
+    state: proReport.state,
   };
 }
 

@@ -72,7 +72,7 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
   return {
     interpretation_id: "demo-interpretation-id",
     version,
-    title: version === "pro" ? "一梳 Pro 版入口预览" : "一镜 Lite 版预览",
+    title: version === "pro" ? "一镜：冰封的太阳 - Pro版" : "一镜 Lite 版预览",
     overall_impression:
       "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
     structured: {
@@ -87,8 +87,13 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
         "如果想看更完整的层次拆解，后续可以从现有入口继续进入一梳 Pro 版路径。",
     },
     report:
-      "这是一份本地预览报告，用来支撑 mobile-web 页面开发。\n\n它不代表最终解读文案，只负责让布局、层次和状态在开发壳里先稳定下来。",
-    ai_qa_context: null,
+      version === "pro"
+        ? "# 一镜：冰封的太阳 - Pro版\n## 核心画像\n你的内在能量很强，但表达端仍带着明显的收束和保护。你不是没有热情，而是热情长期被谨慎包裹。\n\n## 三圈能量分析\n内圈更强，说明你对自己的真实感受并不陌生；中外圈的迟疑，更多发生在关系与外界互动层。\n\n## 当前失衡\n你现在更像是火被压住，而不是火不够。持续消耗、思虑偏多，会让行动感变弱。\n\n## 下一步建议\n先做小步表达，少做完美准备。让一个真实动作先发生，比继续在脑内推演更重要。"
+        : "这是一份本地预览报告，用来支撑 mobile-web 页面开发。\n\n它不代表最终解读文案，只负责让布局、层次和状态在开发壳里先稳定下来。",
+    ai_qa_context:
+      version === "pro"
+        ? "这个模式更像长期形成，还是最近被触发？\n我怎样减少过度消耗？\n什么环境最支持我的表达？"
+        : null,
     can_upgrade: true,
     upgrade_price: 49,
     error: null,
@@ -153,11 +158,23 @@ export function createPreviewAppProps(
   };
 
   switch (route) {
+    case "landing":
+      return {
+        route,
+        uploadDraft: draft,
+      };
+
     case "upload":
       return {
         route,
         uploadDraft: draft,
         uploadDetection,
+      };
+
+    case "reportEntry":
+      return {
+        route,
+        uploadDraft: draft,
       };
 
     case "loading":
@@ -178,6 +195,7 @@ export function createPreviewAppProps(
       };
 
     case "report":
+    case "reportLegacy":
       return {
         route,
         uploadDraft: draft,

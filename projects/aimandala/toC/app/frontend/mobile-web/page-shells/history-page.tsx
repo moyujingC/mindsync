@@ -28,7 +28,11 @@ export interface MobileWebHistoryPageProps {
   onFilterChange?: (filter: HistoryFilterId) => void;
   onThemeChange?: (theme?: string) => void;
   onLimitChange?: (limit: number) => void;
-  onOpenRecord?: (interpretationId: string, canOpenReport: boolean) => void;
+  onOpenRecord?: (
+    interpretationId: string,
+    canOpenReport: boolean,
+    reportVariant: "lite" | "pro",
+  ) => void;
 }
 
 export function MobileWebHistoryPage({
@@ -57,7 +61,7 @@ export function MobileWebHistoryPage({
 
   return (
     <MobileWebAppShell
-      route={mobileWebRoutes[3]}
+      route={mobileWebRoutes.find((route) => route.id === "history") ?? mobileWebRoutes[0]}
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}

@@ -169,6 +169,44 @@ export async function openMobileWebUpgradeEntry(
   }
 }
 
+export async function refreshMobileWebProReport(
+  interpretationId: string,
+  currentState: MandalaFlowState = initialMandalaFlowState,
+): Promise<MobileWebFlowSnapshot> {
+  let state = currentState;
+
+  try {
+    const status = await getInterpretationStatus(interpretationId);
+    state = applyStatus(state, status);
+
+    const report = await getInterpretationReport(interpretationId, "pro");
+    if (report?.version === "pro" && report.report) {
+      state = applyReport(state, report);
+
+      return {
+        state,
+        status,
+        report,
+      };
+    }
+
+    return {
+      state,
+      status,
+      report,
+    };
+  } catch (error) {
+    state = applyError(
+      state,
+      error instanceof Error ? error.message : "Failed to refresh pro report",
+    );
+
+    return {
+      state,
+    };
+  }
+}
+
 export async function pollMobileWebReportUntilReady(
   interpretationId: string,
   currentState: MandalaFlowState = initialMandalaFlowState,
@@ -187,6 +225,43 @@ export async function pollMobileWebReportUntilReady(
     }
 
     if (latest.step !== "liteGenerating") {
+      return latestSnapshot;
+    }
+
+    if (attempt < maxAttempts - 1) {
+      await wait(intervalMs);
+    }
+  }
+
+  return latestSnapshot;
+}
+
+export async function pollMobileWebProReportUntilReady(
+  interpretationId: string,
+  currentState: MandalaFlowState = initialMandalaFlowState,
+  options: MobileWebReportPollingOptions = {},
+): Promise<MobileWebFlowSnapshot> {
+  const { intervalMs = 1500, maxAttempts = 8, onTick } = options;
+  let latest = currentState;
+  let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    latestSnapshot = await refreshMobileWebProReport(interpretationId, latest);
+    latest = latestSnapshot.state;
+
+    if (onTick) {
+      await onTick(latestSnapshot);
+    }
+
+    if (
+      latestSnapshot.report?.version === "pro" &&
+      typeof latestSnapshot.report.report === "string" &&
+      latestSnapshot.report.report.trim()
+    ) {
+      return latestSnapshot;
+    }
+
+    if (latest.step === "error") {
       return latestSnapshot;
     }
 

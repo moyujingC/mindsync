@@ -10,7 +10,9 @@ import {
 import type { MobileWebAppProps } from "./app";
 import {
   openMobileWebUpgradeEntry,
+  pollMobileWebProReportUntilReady,
   pollMobileWebReportUntilReady,
+  refreshMobileWebProReport,
   runMobileWebLiteFlow,
   refreshMobileWebReport,
 } from "./controller";
@@ -145,11 +147,11 @@ async function ensureUploadedImagePath(
 function getDraftFromInput(
   input: MobileWebRouteInput,
 ): MobileWebUploadDraft | null {
-  if (input.route === "upload" || input.route === "loading") {
+  if (input.route === "landing" || input.route === "upload" || input.route === "reportEntry" || input.route === "loading") {
     return input.params.draft;
   }
 
-  if (input.route === "report" || input.route === "history" || input.route === "upgrade") {
+  if (input.route === "report" || input.route === "reportLegacy" || input.route === "history" || input.route === "upgrade") {
     return input.params.uploadDraft ?? null;
   }
 
@@ -157,7 +159,13 @@ function getDraftFromInput(
 }
 
 function getUserIdFromInput(input: MobileWebRouteInput): string | null {
-  if (input.route === "upload" || input.route === "loading" || input.route === "history") {
+  if (
+    input.route === "landing" ||
+    input.route === "upload" ||
+    input.route === "reportEntry" ||
+    input.route === "loading" ||
+    input.route === "history"
+  ) {
     return input.params.userId ?? null;
   }
 
@@ -235,48 +243,119 @@ export function MobileWebRuntime({
   useEffect(() => {
     if (
       !runtimeProps ||
-      runtimeProps.route !== "loading" ||
-      runtimeProps.flowState?.step !== "liteGenerating"
+      runtimeProps.route !== "loading"
     ) {
       return;
     }
 
+    const loadingState = runtimeProps.flowState;
+    if (!loadingState) {
+      return;
+    }
+
     const interpretationId =
-      runtimeProps.flowState.interpretation?.interpretation_id;
+      loadingState.interpretation?.interpretation_id;
     if (!interpretationId) {
       return;
     }
 
+    const selectedVariant =
+      runtimeUploadDraft?.reportVariant ??
+      runtimeProps.uploadDraft?.reportVariant ??
+      "lite";
+
     let cancelled = false;
 
     setRuntimeBusy(true);
-    void pollMobileWebReportUntilReady(
-      interpretationId,
-      runtimeProps.flowState,
-      {
-        onTick: (snapshot) => {
-          if (!cancelled) {
-            setRuntimeProps((current) => (
-              current && current.route === "loading"
-                ? {
-                    ...current,
-                    flowState: snapshot.state,
-                  }
-                : current
-            ));
+    const handleTick = (snapshot: { state: MandalaFlowState }) => {
+      if (!cancelled) {
+        setRuntimeProps((current) => (
+          current && current.route === "loading"
+            ? {
+                ...current,
+                flowState: snapshot.state,
+              }
+            : current
+        ));
+      }
+    };
+
+    const loadingTask = selectedVariant === "pro"
+      ? (async () => {
+          const liteSnapshot = loadingState.step === "liteGenerating"
+            ? await pollMobileWebReportUntilReady(
+                interpretationId,
+                loadingState,
+                { onTick: handleTick },
+              )
+            : { state: loadingState };
+
+          if (liteSnapshot.state.step === "liteGenerating" || liteSnapshot.state.step === "error") {
+            return liteSnapshot;
           }
-        },
-      },
-    )
-      .then((snapshot) => {
+
+          const upgradeSnapshot =
+            liteSnapshot.state.step === "upgradePlaceholder"
+              ? liteSnapshot
+              : await openMobileWebUpgradeEntry(interpretationId, liteSnapshot.state);
+
+          handleTick(upgradeSnapshot);
+
+          return pollMobileWebProReportUntilReady(
+            interpretationId,
+            upgradeSnapshot.state,
+            { onTick: handleTick },
+          );
+        })()
+      : pollMobileWebReportUntilReady(
+          interpretationId,
+          loadingState,
+          { onTick: handleTick },
+        );
+
+    void loadingTask
+      .then(async (snapshot) => {
         if (cancelled) {
           return;
         }
 
-        setRuntimeProps({
-          route: snapshot.state.step === "liteGenerating" ? "loading" : "report",
-          flowState: snapshot.state,
-        });
+        if (selectedVariant === "pro") {
+          const proReady =
+            snapshot.report?.version === "pro" &&
+            typeof snapshot.report.report === "string" &&
+            snapshot.report.report.trim();
+
+          if (!proReady) {
+            setRuntimeProps({
+              route: "loading",
+              flowState: snapshot.state,
+              uploadDraft: currentUploadDraft ?? undefined,
+            });
+            return;
+          }
+
+          setRuntimeProps({
+            route: "upgrade",
+            flowState: snapshot.state,
+            uploadDraft: currentUploadDraft ?? undefined,
+          });
+          return;
+        }
+
+        if (snapshot.state.step === "liteGenerating") {
+          setRuntimeProps({
+            route: "loading",
+            flowState: snapshot.state,
+            uploadDraft: currentUploadDraft ?? undefined,
+          });
+          return;
+        }
+
+        await finalizeSelectedReport(
+          interpretationId,
+          snapshot.state,
+          currentUploadDraft,
+        );
       })
       .finally(() => {
         if (!cancelled) {
@@ -291,6 +370,9 @@ export function MobileWebRuntime({
     runtimeProps?.route,
     runtimeProps?.flowState?.interpretation?.interpretation_id,
     runtimeProps?.flowState?.step,
+    runtimeProps?.flowState?.report?.version,
+    runtimeUploadDraft?.reportVariant,
+    runtimeProps?.uploadDraft?.reportVariant,
   ]);
 
   if (loading) {
@@ -316,6 +398,43 @@ export function MobileWebRuntime({
   const currentUploadDraft = runtimeUploadDraft ?? runtimeProps.uploadDraft ?? null;
   const uploadDraftForReturn = currentUploadDraft ?? defaultUploadDraft;
 
+  async function finalizeSelectedReport(
+    interpretationId: string,
+    state: MandalaFlowState,
+    draft: MobileWebUploadDraft | null,
+  ) {
+    if ((draft?.reportVariant ?? "lite") === "pro" && interpretationId) {
+      const upgraded = await openMobileWebUpgradeEntry(interpretationId, state);
+      const proReport = await refreshMobileWebProReport(interpretationId, upgraded.state);
+      const proReady =
+        proReport.report?.version === "pro" &&
+        typeof proReport.report.report === "string" &&
+        proReport.report.report.trim();
+
+      if (!proReady) {
+        setRuntimeProps({
+          route: "loading",
+          flowState: proReport.state,
+          uploadDraft: draft ?? undefined,
+        });
+        return;
+      }
+
+      setRuntimeProps({
+        route: "upgrade",
+        flowState: proReport.state,
+        uploadDraft: draft ?? undefined,
+      });
+      return;
+    }
+
+    setRuntimeProps({
+      route: "report",
+      flowState: state,
+      uploadDraft: draft ?? undefined,
+    });
+  }
+
   async function handleReportPrimaryAction() {
     if (!currentRuntimeProps.flowState || runtimeBusy) {
       return;
@@ -335,21 +454,26 @@ export function MobileWebRuntime({
           interpretationId,
           currentRuntimeProps.flowState,
         );
-        setRuntimeProps({
-          route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
-          flowState: refreshed.state,
-          uploadDraft: currentUploadDraft ?? undefined,
-        });
+        if (refreshed.state.step === "liteGenerating") {
+          setRuntimeProps({
+            route: "loading",
+            flowState: refreshed.state,
+            uploadDraft: currentUploadDraft ?? undefined,
+          });
+        } else {
+          await finalizeSelectedReport(
+            interpretationId,
+            refreshed.state,
+            currentUploadDraft,
+          );
+        }
       } finally {
         setRuntimeBusy(false);
       }
       return;
     }
 
-    if (
-      currentRuntimeProps.route === "report" ||
-      currentRuntimeProps.route === "upgrade"
-    ) {
+    if (currentRuntimeProps.route === "report") {
       if (currentRuntimeProps.flowState.step === "error") {
         if (!interpretationId) {
           return;
@@ -361,86 +485,45 @@ export function MobileWebRuntime({
             interpretationId,
             currentRuntimeProps.flowState,
           );
-          setRuntimeProps({
-            route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
-            flowState: refreshed.state,
-            uploadDraft: currentUploadDraft ?? undefined,
-          });
+          if (refreshed.state.step === "liteGenerating") {
+            setRuntimeProps({
+              route: "loading",
+              flowState: refreshed.state,
+              uploadDraft: currentUploadDraft ?? undefined,
+            });
+          } else {
+            await finalizeSelectedReport(
+              interpretationId,
+              refreshed.state,
+              currentUploadDraft,
+            );
+          }
         } finally {
           setRuntimeBusy(false);
         }
         return;
       }
 
-      const canOpenUpgrade = Boolean(
-        currentRuntimeProps.route === "report" &&
-        interpretationId &&
-        (currentRuntimeProps.flowState.report?.can_upgrade ||
-          currentRuntimeProps.flowState.status?.can_upgrade)
-      );
+      setRuntimeProps({
+        route: "reportEntry",
+        uploadDraft: currentUploadDraft ?? undefined,
+      });
+      return;
+    }
 
-      if (canOpenUpgrade && interpretationId) {
-        setRuntimeBusy(true);
-        try {
-          const upgraded = await openMobileWebUpgradeEntry(
-            interpretationId,
-            currentRuntimeProps.flowState,
-          );
-          setRuntimeProps({
-            route: "upgrade",
-            flowState: upgraded.state,
-            uploadDraft: currentUploadDraft ?? undefined,
-          });
-        } finally {
-          setRuntimeBusy(false);
-        }
-        return;
-      }
-
-      if (userId) {
-        setRuntimeBusy(true);
-        try {
-          const history = await loadHistoryPage(userId, runtimeHistoryQuery);
-          setRuntimeProps({
-            route: "history",
-            records: history.records,
-            uploadDraft: currentUploadDraft ?? undefined,
-            historyQuery: runtimeHistoryQuery,
-            historyStatusLabel: "当前显示真实历史记录",
-            historyStatusDetail: "结果页已通过当前 runtime 拉取真实历史列表。",
-            historyStatusTone: "runtime",
-          });
-        } catch (historyError) {
-          setRuntimeProps({
-            route: "history",
-            records: [],
-            uploadDraft: currentUploadDraft ?? undefined,
-            historyQuery: runtimeHistoryQuery,
-            historyStatusLabel: "真实历史记录拉取失败",
-            historyStatusDetail:
-              historyError instanceof Error
-                ? historyError.message
-                : "Failed to load interpretation history",
-            historyStatusTone: "runtime",
-          });
-        } finally {
-          setRuntimeBusy(false);
-        }
-        return;
-      }
-
+    if (currentRuntimeProps.route === "upgrade") {
       if (!interpretationId) {
         return;
       }
 
       setRuntimeBusy(true);
       try {
-        const refreshed = await refreshMobileWebReport(
+        const refreshed = await refreshMobileWebProReport(
           interpretationId,
           currentRuntimeProps.flowState,
         );
         setRuntimeProps({
-          route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
+          route: "upgrade",
           flowState: refreshed.state,
           uploadDraft: currentUploadDraft ?? undefined,
         });
@@ -579,6 +662,7 @@ export function MobileWebRuntime({
   async function handleHistoryOpenRecord(
     interpretationId: string,
     canOpenReport: boolean,
+    reportVariant: "lite" | "pro",
   ) {
     if (runtimeBusy || runtimeHistoryBusy) {
       return;
@@ -587,17 +671,31 @@ export function MobileWebRuntime({
     setRuntimeBusy(true);
     setRuntimeHistoryOpeningId(interpretationId);
     try {
+      const nextDraft = {
+        ...(currentUploadDraft ?? uploadDraftForReturn),
+        reportVariant,
+      };
       const refreshed = await refreshMobileWebReport(
         interpretationId,
         initialMandalaFlowState,
       );
+
+      if (reportVariant === "pro") {
+        await finalizeSelectedReport(
+          interpretationId,
+          refreshed.state,
+          nextDraft,
+        );
+        return;
+      }
+
       setRuntimeProps({
         route:
           canOpenReport || refreshed.state.step !== "liteGenerating"
             ? "report"
             : "loading",
         flowState: refreshed.state,
-        uploadDraft: currentUploadDraft ?? undefined,
+        uploadDraft: nextDraft,
       });
     } finally {
       setRuntimeHistoryOpeningId(null);
@@ -606,8 +704,32 @@ export function MobileWebRuntime({
   }
 
   function handleReportSecondaryAction() {
+    if (currentRuntimeProps.route === "loading") {
+      setRuntimeProps({
+        route: "reportEntry",
+        uploadDraft: uploadDraftForReturn,
+      });
+      return;
+    }
+
     setRuntimeProps({
       route: "upload",
+      uploadDraft: uploadDraftForReturn,
+    });
+  }
+
+  function handleReportBackAction() {
+    if (currentRuntimeProps.route === "upgrade") {
+      setRuntimeProps({
+        route: "reportEntry",
+        uploadDraft: uploadDraftForReturn,
+      });
+      return;
+    }
+
+    setRuntimeProps({
+      route: "report",
+      flowState: currentRuntimeProps.flowState,
       uploadDraft: uploadDraftForReturn,
     });
   }
@@ -656,7 +778,7 @@ export function MobileWebRuntime({
     }
   }
 
-  async function handleUploadContinue() {
+  async function handleUploadContinue(forcedDraft?: MobileWebUploadDraft | null) {
     if (runtimeBusy) {
       return;
     }
@@ -666,7 +788,9 @@ export function MobileWebRuntime({
       return;
     }
 
-    if (!currentUploadDraft) {
+    const draftToUse = forcedDraft ?? currentUploadDraft;
+
+    if (!draftToUse) {
       setRuntimeUploadDetectError("当前 runtime 缺少上传草稿，暂时无法继续。");
       return;
     }
@@ -680,8 +804,8 @@ export function MobileWebRuntime({
     setRuntimeUploadDetectError(null);
 
     try {
-      const resolvedImagePath = await ensureUploadedImagePath(
-        currentUploadDraft,
+        const resolvedImagePath = await ensureUploadedImagePath(
+        draftToUse,
         (uploaded) => {
           setRuntimeUploadDraft((current) => (
             current
@@ -697,13 +821,13 @@ export function MobileWebRuntime({
         route: "loading",
         flowState: createRuntimeLoadingState(
           {
-            ...currentUploadDraft,
+            ...draftToUse,
             uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
           },
           runtimeUploadDetection,
         ),
         uploadDraft: {
-          ...currentUploadDraft,
+          ...draftToUse,
           uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
         },
       });
@@ -711,23 +835,31 @@ export function MobileWebRuntime({
       const result = await runMobileWebLiteFlow(
         toStartCreatePayload(
           {
-            ...currentUploadDraft,
+            ...draftToUse,
             uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-            innerRadius: runtimeUploadDetection.inner_radius,
-            middleRadius: runtimeUploadDetection.middle_radius,
+            innerRadius: runtimeUploadDetection?.inner_radius ?? draftToUse.innerRadius,
+            middleRadius: runtimeUploadDetection?.middle_radius ?? draftToUse.middleRadius,
           },
           userId,
         ),
       );
-
-      setRuntimeProps({
-        route: result.state.step === "liteGenerating" ? "loading" : "report",
-        flowState: result.state,
-        uploadDraft: {
-          ...currentUploadDraft,
-          uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-        },
-      });
+      const nextDraft = {
+        ...draftToUse,
+        uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+      };
+      if (result.state.step === "liteGenerating") {
+        setRuntimeProps({
+          route: "loading",
+          flowState: result.state,
+          uploadDraft: nextDraft,
+        });
+      } else {
+        await finalizeSelectedReport(
+          result.state.interpretation?.interpretation_id ?? "",
+          result.state,
+          nextDraft,
+        );
+      }
     } finally {
       setRuntimeBusy(false);
     }
@@ -761,10 +893,45 @@ export function MobileWebRuntime({
           setRuntimeUploadDetectError(null);
         }
       }}
-      onUploadContinue={handleUploadContinue}
+      onUploadBack={() => {
+        setRuntimeProps({
+          route: "landing",
+          uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
+        });
+      }}
+      onUploadContinue={() => {
+        setRuntimeProps({
+          route: "reportEntry",
+          uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
+          uploadDetection: runtimeUploadDetection,
+        });
+      }}
       onUploadPreviewDetect={handleUploadPreviewDetect}
+      onReportEntryBack={() => {
+        setRuntimeProps({
+          route: "upload",
+          uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
+        });
+      }}
+      onReportEntryChooseLite={() => {
+        const nextDraft = {
+          ...(runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft),
+          reportVariant: "lite" as const,
+        };
+        setRuntimeUploadDraft(nextDraft);
+        void handleUploadContinue(nextDraft);
+      }}
+      onReportEntryChoosePro={() => {
+        const nextDraft = {
+          ...(runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft),
+          reportVariant: "pro" as const,
+        };
+        setRuntimeUploadDraft(nextDraft);
+        void handleUploadContinue(nextDraft);
+      }}
       onReportPrimaryAction={handleReportPrimaryAction}
       onReportSecondaryAction={handleReportSecondaryAction}
+      onReportBackAction={handleReportBackAction}
       reportPrimaryDisabled={runtimeBusy}
       onHistoryBackToUpload={handleHistoryBackToUpload}
       historyQuery={runtimeProps.historyQuery ?? runtimeHistoryQuery}

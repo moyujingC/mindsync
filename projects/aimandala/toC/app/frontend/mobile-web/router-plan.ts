@@ -26,9 +26,12 @@ export interface HistoryRouteInput {
 }
 
 export type MobileWebRouteInput =
+  | { route: "landing"; params: UploadRouteInput }
   | { route: "upload"; params: UploadRouteInput }
+  | { route: "reportEntry"; params: UploadRouteInput }
   | { route: "loading"; params: LiteReportRouteInput }
   | { route: "report"; params: ExistingReportRouteInput }
+  | { route: "reportLegacy"; params: ExistingReportRouteInput }
   | { route: "history"; params: HistoryRouteInput }
   | { route: "upgrade"; params: ExistingReportRouteInput };
 
@@ -36,11 +39,25 @@ export async function resolveMobileWebRouteProps(
   input: MobileWebRouteInput,
 ): Promise<MobileWebAppProps> {
   switch (input.route) {
+    case "landing": {
+      return {
+        route: "landing",
+        uploadDraft: input.params.draft,
+      };
+    }
+
     case "upload": {
       const upload = await loadUploadPage(input.params.draft);
       return {
         route: "upload",
         uploadDraft: upload.draft,
+      };
+    }
+
+    case "reportEntry": {
+      return {
+        route: "reportEntry",
+        uploadDraft: input.params.draft,
       };
     }
 
@@ -57,6 +74,15 @@ export async function resolveMobileWebRouteProps(
       const report = await loadExistingReportPage(input.params.interpretationId);
       return {
         route: "report",
+        flowState: report.state,
+        uploadDraft: input.params.uploadDraft,
+      };
+    }
+
+    case "reportLegacy": {
+      const report = await loadExistingReportPage(input.params.interpretationId);
+      return {
+        route: "reportLegacy",
         flowState: report.state,
         uploadDraft: input.params.uploadDraft,
       };
@@ -93,5 +119,5 @@ function assertNever(input: never): never {
 }
 
 export function isReportLikeRoute(route: MobileWebRouteId): boolean {
-  return route === "loading" || route === "report" || route === "upgrade";
+  return route === "loading" || route === "report" || route === "reportLegacy" || route === "upgrade";
 }

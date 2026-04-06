@@ -1,7 +1,12 @@
 import type { ReactNode } from "react";
 
+import { MobileWebLandingPage } from "./page-shells/landing-page";
+import { MobileWebLoadingPage } from "./page-shells/loading-page";
 import { MobileWebHistoryPage } from "./page-shells/history-page";
+import { MobileWebProReportPage } from "./page-shells/pro-report-page";
+import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
+import { MobileWebLegacyReportPage } from "./page-shells/report-page-legacy";
 import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
 import type { MobileWebRouteId } from "./routes";
@@ -32,17 +37,28 @@ export interface MobileWebAppProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  onLandingStart?: () => void;
+  onLandingOpenHistory?: () => void;
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onUploadContinue?: () => void;
   onUploadPreviewDetect?: () => void;
+  onUploadBack?: () => void;
+  onReportEntryBack?: () => void;
+  onReportEntryChooseLite?: () => void;
+  onReportEntryChoosePro?: () => void;
   onReportPrimaryAction?: () => void;
   onReportSecondaryAction?: () => void;
+  onReportBackAction?: () => void;
   reportPrimaryDisabled?: boolean;
   onHistoryBackToUpload?: () => void;
   onHistoryFilterChange?: (filter: HistoryFilterId) => void;
   onHistoryThemeChange?: (theme?: string) => void;
   onHistoryLimitChange?: (limit: number) => void;
-  onHistoryOpenRecord?: (interpretationId: string, canOpenReport: boolean) => void;
+  onHistoryOpenRecord?: (
+    interpretationId: string,
+    canOpenReport: boolean,
+    reportVariant: "lite" | "pro",
+  ) => void;
 }
 
 export function MobileWebApp({
@@ -64,11 +80,18 @@ export function MobileWebApp({
   environmentLabel,
   environmentDetail,
   environmentTone,
+  onLandingStart,
+  onLandingOpenHistory,
   onUploadDraftChange,
   onUploadContinue,
   onUploadPreviewDetect,
+  onUploadBack,
+  onReportEntryBack,
+  onReportEntryChooseLite,
+  onReportEntryChoosePro,
   onReportPrimaryAction,
   onReportSecondaryAction,
+  onReportBackAction,
   reportPrimaryDisabled = false,
   onHistoryBackToUpload,
   onHistoryFilterChange,
@@ -77,6 +100,14 @@ export function MobileWebApp({
   onHistoryOpenRecord,
 }: MobileWebAppProps): ReactNode {
   switch (route) {
+    case "landing":
+      return (
+        <MobileWebLandingPage
+          onStart={onLandingStart}
+          onOpenHistory={onLandingOpenHistory}
+        />
+      );
+
     case "upload":
       if (!uploadDraft) {
         return "Missing upload draft";
@@ -93,17 +124,42 @@ export function MobileWebApp({
           onDraftChange={onUploadDraftChange}
           onContinue={onUploadContinue}
           onPreviewDetect={onUploadPreviewDetect}
+          onBack={onUploadBack}
+        />
+      );
+
+    case "reportEntry":
+      if (!uploadDraft) {
+        return "Missing upload draft";
+      }
+      return (
+        <MobileWebReportEntryPage
+          draft={uploadDraft}
+          onBack={onReportEntryBack}
+          onChooseLite={onReportEntryChooseLite}
+          onChoosePro={onReportEntryChoosePro}
         />
       );
 
     case "loading":
-    case "report":
-    case "upgrade":
       if (!flowState) {
         return "Missing flow state";
       }
       return (
-        <MobileWebReportPage
+        <MobileWebLoadingPage
+          state={flowState}
+          isPro={uploadDraft?.reportVariant === "pro"}
+          onBack={onReportSecondaryAction}
+          onClose={onReportSecondaryAction}
+        />
+      );
+
+    case "report":
+      if (!flowState) {
+        return "Missing flow state";
+      }
+      return (
+        <MobileWebLegacyReportPage
           route={route}
           state={flowState}
           uploadDraft={uploadDraft}
@@ -113,6 +169,38 @@ export function MobileWebApp({
           onPrimaryAction={onReportPrimaryAction}
           onSecondaryAction={onReportSecondaryAction}
           primaryDisabled={reportPrimaryDisabled}
+        />
+      );
+
+    case "reportLegacy":
+      if (!flowState) {
+        return "Missing flow state";
+      }
+      return (
+        <MobileWebLegacyReportPage
+          route={route}
+          state={flowState}
+          uploadDraft={uploadDraft}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
+          onPrimaryAction={onReportPrimaryAction}
+          onSecondaryAction={onReportSecondaryAction}
+          primaryDisabled={reportPrimaryDisabled}
+        />
+      );
+
+    case "upgrade":
+      if (!flowState) {
+        return "Missing flow state";
+      }
+      return (
+        <MobileWebProReportPage
+          state={flowState}
+          uploadDraft={uploadDraft}
+          onBackAction={onReportBackAction}
+          onRestartAction={onReportSecondaryAction}
+          onRetryAction={onReportPrimaryAction}
         />
       );
 
