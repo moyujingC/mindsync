@@ -1,0 +1,26 @@
+version: "1.6"
+type: "pro"
+description: "一梳 Pro 版深度解读报告结构"
+
+fields:
+  - name: first_impression
+    type: string
+    required: true
+  - name: core_insight_table
+    type: object
+    required: true
+  - name: three_circles_detailed
+    type: object
+    required: true
+  - name: micro_analysis_detailed
+    type: object
+    required: true
+  - name: imbalance_confirmed
+    type: object
+    required: true
+  - name: root_cause
+    type: object
+    required: true
+  - name: healing_suggestions
+    type: array
+    required: true
