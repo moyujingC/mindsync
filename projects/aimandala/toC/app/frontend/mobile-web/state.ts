@@ -14,6 +14,7 @@ export interface MobileWebUploadAssetRef {
 export interface MobileWebUploadDraft {
   imagePath: string;
   theme: string;
+  reportVariant?: "lite" | "pro";
   paintingIntention: string;
   paintingFeeling: string;
   innerRadius?: number;

@@ -141,7 +141,11 @@ export interface HistoryRecordsListProps {
   descriptor: HistoryPageDescriptor;
   activeFilter: HistoryFilterId;
   activeTheme?: string;
-  onOpenRecord?: (interpretationId: string, canOpenReport: boolean) => void;
+  onOpenRecord?: (
+    interpretationId: string,
+    canOpenReport: boolean,
+    reportVariant: "lite" | "pro",
+  ) => void;
   actionDisabled?: boolean;
   actionBusy?: boolean;
   activeRecordId?: string | null;
@@ -208,7 +212,11 @@ export function HistoryRecordsList({
                 type="button"
                 className="mw-secondary-button mw-secondary-button--inline"
                 onClick={() => {
-                  onOpenRecord?.(item.interpretationId, item.canOpenReport);
+                  onOpenRecord?.(
+                    item.interpretationId,
+                    item.canOpenReport,
+                    item.reportVariant,
+                  );
                 }}
                 disabled={actionDisabled}
               >

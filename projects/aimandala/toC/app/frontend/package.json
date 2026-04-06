@@ -9,6 +9,7 @@
     "dev:mobile-web": "vite",
     "build:mobile-web": "vite build",
     "preview:mobile-web": "vite preview",
+    "assets:process-image": "python3 scripts/process-image.py",
     "dev:note": "node -e \"console.log('Mobile-web runtime shell now uses Vite. Run npm run dev:mobile-web to start local development.')\""
   },
   "dependencies": {

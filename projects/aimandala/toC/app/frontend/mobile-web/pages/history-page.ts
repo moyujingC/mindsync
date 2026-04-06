@@ -7,6 +7,7 @@ export interface HistoryPageItemDescriptor {
   title: string;
   subtitle: string;
   canOpenReport: boolean;
+  reportVariant: "lite" | "pro";
   statusLabel: string;
   statusDetail: string;
 }
@@ -61,6 +62,7 @@ export function createHistoryPageDescriptor(
         title: `${record.theme} 主题解读`,
         subtitle: `创建于 ${formatHistoryCreatedAt(record.created_at)}`,
         canOpenReport: presentation.isReady,
+        reportVariant: record.version_purchased.includes("pro") ? "pro" : "lite",
         statusLabel: presentation.statusLabel,
         statusDetail: presentation.statusDetail,
       };

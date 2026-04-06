@@ -21,15 +21,15 @@ export function MobileWebAppShell({
     <main className="mw-app-shell">
       <header className="mw-app-shell__header">
         <div>
-          <small className="mw-app-shell__eyebrow">一镜一梳 mobile-web</small>
+          <small className="mw-app-shell__eyebrow">一镜一梳</small>
           <h1>{route.title}</h1>
           <p className="mw-app-shell__subtitle">
-            To C 主路径开发壳，当前按手机端 Web 版先行推进。
+            当前先以内容结构与主路径衔接为主，视觉稿后续按 Figma 设计复刻。
           </p>
         </div>
 
         <nav className="mw-route-nav" aria-label="Mobile web routes">
-          {route.id}
+          内容过渡页
         </nav>
       </header>
       {environmentLabel ? (

@@ -1,13 +1,6 @@
-import { MobileWebAppShell } from "../app-shell";
-import { mobileWebRoutes } from "../routes";
-import { createUploadPageDescriptor } from "../pages";
-import {
-  UploadAssetCard,
-  UploadChecklistCard,
-  UploadDetectionCard,
-  UploadDraftSummaryCard,
-  UploadFormCard,
-} from "../components/upload-cards";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
+
+import brandPattern from "../assets/pattern.webp";
 import type { DetectCirclesResponse } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 
@@ -22,7 +15,795 @@ export interface MobileWebUploadPageProps {
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onContinue?: () => void;
   onPreviewDetect?: () => void;
+  onBack?: () => void;
 }
+
+type ThemeItem = {
+  value: string;
+  label: string;
+  subLabel: string;
+  icon: IconNode[];
+};
+
+const DEFAULT_INNER_RADIUS = 0.35;
+const DEFAULT_MIDDLE_RADIUS = 0.65;
+
+function NavBackIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="rgba(232,220,200,0.86)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function UploadGlyph() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="6" y="8" width="12" height="9" rx="2.2" stroke="#D4A054" strokeWidth="1.5" />
+      <path d="M9 8.5L10.2 6.8C10.6 6.2 11.2 5.9 11.9 5.9H12.1C12.8 5.9 13.4 6.2 13.8 6.8L15 8.5" stroke="#D4A054" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="12.5" r="2.3" stroke="#D4A054" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+type IconNode = ["path" | "circle" | "rect", Record<string, string>];
+
+const ICON_CHECK: IconNode[] = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const ICON_STAR: IconNode[] = [["path", { d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z", key: "r04s7s" }]];
+const ICON_USER: IconNode[] = [
+  ["path", { d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2", key: "975kel" }],
+  ["circle", { cx: "12", cy: "7", r: "4", key: "17ys0d" }],
+];
+const ICON_USERS: IconNode[] = [
+  ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
+  ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
+  ["path", { d: "M16 3.13a4 4 0 0 1 0 7.75", key: "1da9ce" }],
+];
+const ICON_BABY: IconNode[] = [
+  ["path", { d: "M9 12h.01", key: "157uk2" }],
+  ["path", { d: "M15 12h.01", key: "1k8ypt" }],
+  ["path", { d: "M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5", key: "1u7htd" }],
+  [
+    "path",
+    {
+      d: "M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1",
+      key: "5yv0yz",
+    },
+  ],
+];
+const ICON_COINS: IconNode[] = [
+  ["circle", { cx: "8", cy: "8", r: "6", key: "3yglwk" }],
+  ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }],
+  ["path", { d: "M7 6h1v4", key: "1obek4" }],
+  ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }],
+];
+const ICON_HEART_PULSE: IconNode[] = [
+  [
+    "path",
+    {
+      d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
+      key: "c3ymky",
+    },
+  ],
+  ["path", { d: "M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27", key: "1uw2ng" }],
+];
+const ICON_SPROUT: IconNode[] = [
+  ["path", { d: "M7 20h10", key: "e6iznv" }],
+  ["path", { d: "M10 20c5.5-2.5.8-6.4 3-10", key: "161w41" }],
+  [
+    "path",
+    {
+      d: "M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z",
+      key: "9gtqwd",
+    },
+  ],
+  [
+    "path",
+    {
+      d: "M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z",
+      key: "bkxnd2",
+    },
+  ],
+];
+const ICON_BOOK_OPEN: IconNode[] = [
+  ["path", { d: "M12 7v14", key: "1akyts" }],
+  [
+    "path",
+    {
+      d: "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",
+      key: "ruj8y",
+    },
+  ],
+];
+const ICON_LOCK: IconNode[] = [
+  ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
+  ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }],
+];
+const ICON_LOADER: IconNode[] = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const ICON_PENCIL: IconNode[] = [
+  [
+    "path",
+    {
+      d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+      key: "1a8usu",
+    },
+  ],
+  ["path", { d: "m15 5 4 4", key: "1mk7zo" }],
+];
+
+function LucideIcon({
+  iconNode,
+  size = 24,
+  color = "currentColor",
+  strokeWidth = 2,
+  className,
+  style,
+}: {
+  iconNode: IconNode[];
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
+      {iconNode.map(([tag, attrs]) => {
+        const { key, ...rest } = attrs;
+        return tag === "path" || tag === "circle" || tag === "rect"
+          ? (tag === "path"
+            ? <path key={key} {...rest} />
+            : tag === "circle"
+              ? <circle key={key} {...rest} />
+              : <rect key={key} {...rest} />
+          )
+          : null;
+      })}
+    </svg>
+  );
+}
+
+const themes: ThemeItem[] = [
+  { value: "general", label: "全面", subLabel: "解读", icon: ICON_STAR },
+  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_USER },
+  { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_USER },
+  { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_USERS },
+  { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_BABY },
+  { value: "wealth_career", label: "财富", subLabel: "事业", icon: ICON_COINS },
+  { value: "health_wellness", label: "身体", subLabel: "健康", icon: ICON_HEART_PULSE },
+  { value: "personal_growth", label: "个人", subLabel: "成长", icon: ICON_SPROUT },
+];
+
+function UploadSlider({
+  label,
+  value,
+  min,
+  max,
+  color,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  color: string;
+  onChange: (nextValue: number) => void;
+}) {
+  const percentage = ((value - min) / (max - min)) * 100;
+  return (
+    <label className="am-upload-slider">
+      <span className="am-upload-slider__label">{label}</span>
+      <div className="am-upload-slider__track-wrap">
+        <div className="am-upload-slider__track" />
+        <div className="am-upload-slider__fill" style={{ width: `${percentage}%` }} />
+        <div className="am-upload-slider__thumb" style={{ left: `calc(${percentage}% - 11px)` }} />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(event) => onChange(Number(event.target.value))}
+        />
+      </div>
+      <strong style={{ color }}>{value}%</strong>
+    </label>
+  );
+}
+
+const MAX_TEXT_LENGTH = 300;
+
+function buildBackgroundModel(data: Uint8ClampedArray, width: number, height: number) {
+  const borderThickness = Math.max(8, Math.floor(Math.min(width, height) * 0.06));
+  let borderRed = 0;
+  let borderGreen = 0;
+  let borderBlue = 0;
+  let borderCount = 0;
+  let borderVariance = 0;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const isBorder =
+        x < borderThickness ||
+        x >= width - borderThickness ||
+        y < borderThickness ||
+        y >= height - borderThickness;
+      if (!isBorder) continue;
+
+      const index = (y * width + x) * 4;
+      const alpha = data[index + 3];
+      if (alpha < 10) continue;
+
+      borderRed += data[index];
+      borderGreen += data[index + 1];
+      borderBlue += data[index + 2];
+      borderCount += 1;
+    }
+  }
+
+  const red = borderCount > 0 ? borderRed / borderCount : 245;
+  const green = borderCount > 0 ? borderGreen / borderCount : 245;
+  const blue = borderCount > 0 ? borderBlue / borderCount : 245;
+
+  if (borderCount > 0) {
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const isBorder =
+          x < borderThickness ||
+          x >= width - borderThickness ||
+          y < borderThickness ||
+          y >= height - borderThickness;
+        if (!isBorder) continue;
+
+        const index = (y * width + x) * 4;
+        const alpha = data[index + 3];
+        if (alpha < 10) continue;
+
+        const deltaRed = data[index] - red;
+        const deltaGreen = data[index + 1] - green;
+        const deltaBlue = data[index + 2] - blue;
+        borderVariance += deltaRed * deltaRed + deltaGreen * deltaGreen + deltaBlue * deltaBlue;
+      }
+    }
+  }
+
+  const borderStd = borderCount > 0 ? Math.sqrt(borderVariance / borderCount) : 20;
+  const adaptiveDistance = Math.max(22, Math.min(68, borderStd * 1.8));
+
+  return { red, green, blue, adaptiveDistance };
+}
+
+function isForegroundPixel(
+  red: number,
+  green: number,
+  blue: number,
+  alpha: number,
+  background: { red: number; green: number; blue: number; adaptiveDistance: number },
+) {
+  const luma = 0.299 * red + 0.587 * green + 0.114 * blue;
+  const rgbMax = Math.max(red, green, blue);
+  const rgbMin = Math.min(red, green, blue);
+  const saturation = rgbMax === 0 ? 0 : ((rgbMax - rgbMin) / rgbMax) * 255;
+  const deltaRed = red - background.red;
+  const deltaGreen = green - background.green;
+  const deltaBlue = blue - background.blue;
+  const backgroundDistance = Math.sqrt(
+    deltaRed * deltaRed + deltaGreen * deltaGreen + deltaBlue * deltaBlue,
+  );
+
+  const isBackground =
+    alpha < 10 ||
+    (luma > 236 && saturation < 36) ||
+    (luma > 200 && saturation < 26 && backgroundDistance < background.adaptiveDistance + 8) ||
+    (backgroundDistance < background.adaptiveDistance && saturation < 42 && luma > 140);
+
+  return !isBackground;
+}
+
+function TextInputField({
+  placeholder,
+  value: controlledValue,
+  onChange,
+}: {
+  placeholder: string;
+  value?: string;
+  onChange?: (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
+}) {
+  const [internalValue, setInternalValue] = useState("");
+  const [focused, setFocused] = useState(false);
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
+
+  const setValue = (nextValue: string) => {
+    if (controlledValue === undefined) {
+      setInternalValue(nextValue);
+    }
+  };
+
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    if (event.target.value.length <= MAX_TEXT_LENGTH) {
+      setValue(event.target.value);
+      onChange?.(event);
+    }
+  };
+
+  return (
+    <div
+      className="relative rounded-xl px-4 transition-all duration-200"
+      style={{
+        position: "relative",
+        minHeight: focused ? "100px" : "48px",
+        height: focused ? "auto" : "48px",
+        border: focused
+          ? "1.5px solid rgba(212, 160, 84, 0.45)"
+          : "1px solid rgba(200, 120, 80, 0.15)",
+        backgroundColor: focused ? "rgba(212, 160, 84, 0.03)" : "#F5EFE2",
+        boxShadow: focused ? "0 0 0 3px rgba(212, 160, 84, 0.08)" : "none",
+        display: "flex",
+        flexDirection: focused ? "column" : "row",
+        alignItems: focused ? "stretch" : "center",
+        paddingTop: focused ? "12px" : "0",
+        paddingBottom: focused ? "28px" : "0",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        borderRadius: "12px",
+        transition: "all 0.2s",
+      }}
+    >
+      {focused ? (
+        <textarea
+          autoFocus
+          value={value}
+          onChange={handleChange}
+          onBlur={() => setFocused(false)}
+          placeholder={placeholder}
+          maxLength={MAX_TEXT_LENGTH}
+          style={{
+            flex: 1,
+            outline: "none",
+            background: "transparent",
+            resize: "none",
+            fontSize: "16px",
+            fontFamily: "'Noto Sans SC', sans-serif",
+            color: "#3D2E1E",
+            lineHeight: "1.6",
+            minHeight: "60px",
+            border: "none",
+          }}
+        />
+      ) : (
+        <input
+          type="text"
+          value={value}
+          readOnly
+          onFocus={() => setFocused(true)}
+          placeholder={placeholder}
+          style={{
+            flex: 1,
+            outline: "none",
+            background: "transparent",
+            fontSize: "16px",
+            fontFamily: "'Noto Sans SC', sans-serif",
+            color: "#3D2E1E",
+            border: "none",
+          }}
+        />
+      )}
+
+      {focused ? (
+        <span
+          style={{
+            position: "absolute",
+            right: "14px",
+            bottom: "8px",
+            fontFamily: "'Noto Sans SC', sans-serif",
+            fontSize: "11px",
+            color: "rgba(155, 122, 90, 0.5)",
+          }}
+        >
+          {value.length}/{MAX_TEXT_LENGTH}字
+        </span>
+      ) : (
+        <LucideIcon
+          iconNode={ICON_PENCIL}
+          size={16}
+          color="rgba(200, 120, 80, 0.3)"
+          strokeWidth={2}
+          style={{ marginLeft: "8px", flexShrink: 0 }}
+        />
+      )}
+    </div>
+  );
+}
+
+function ThemeSelector({
+  value,
+  onChange,
+}: {
+  value?: string;
+  onChange?: (nextValue: string) => void;
+}) {
+  const [selected, setSelected] = useState(value ?? themes[0].value);
+  const [activeDotIndex, setActiveDotIndex] = useState(0);
+  const [pageCount, setPageCount] = useState(1);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dragStateRef = useRef({
+    pointerId: -1,
+    startX: 0,
+    startScrollLeft: 0,
+    moved: false,
+  });
+  const suppressNextClickRef = useRef(false);
+
+  useEffect(() => {
+    if (value && value !== selected) {
+      setSelected(value);
+    }
+  }, [value, selected]);
+
+  const updatePagination = () => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const viewportWidth = Math.max(container.clientWidth, 1);
+    const maxScrollLeft = Math.max(container.scrollWidth - container.clientWidth, 0);
+    const nextPageCount = Math.max(1, Math.ceil(container.scrollWidth / viewportWidth));
+    const nextDotIndex =
+      nextPageCount <= 1 || maxScrollLeft <= 0
+        ? 0
+        : Math.round((container.scrollLeft / maxScrollLeft) * (nextPageCount - 1));
+    setPageCount(nextPageCount);
+    setActiveDotIndex(Math.max(0, Math.min(nextPageCount - 1, nextDotIndex)));
+  };
+
+  useEffect(() => {
+    updatePagination();
+    const onResize = () => updatePagination();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    updatePagination();
+  }, [themes.length]);
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    if (container.scrollWidth <= container.clientWidth) return;
+    dragStateRef.current.pointerId = event.pointerId;
+    dragStateRef.current.startX = event.clientX;
+    dragStateRef.current.startScrollLeft = container.scrollLeft;
+    dragStateRef.current.moved = false;
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    if (dragStateRef.current.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - dragStateRef.current.startX;
+    if (Math.abs(deltaX) > 10) {
+      dragStateRef.current.moved = true;
+    }
+    container.scrollLeft = dragStateRef.current.startScrollLeft - deltaX;
+  };
+
+  const handlePointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (dragStateRef.current.pointerId !== event.pointerId) return;
+    suppressNextClickRef.current = dragStateRef.current.moved;
+    dragStateRef.current.pointerId = -1;
+    window.setTimeout(() => {
+      suppressNextClickRef.current = false;
+    }, 120);
+  };
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const selectedIndex = themes.findIndex((theme) => theme.value === selected);
+    if (selectedIndex >= 0) {
+      const selectedButton = container.children[selectedIndex] as HTMLElement | undefined;
+      selectedButton?.scrollIntoView({ inline: "nearest", block: "nearest" });
+    }
+    updatePagination();
+  }, [selected]);
+
+  return (
+    <div>
+      <p
+        style={{
+          marginBottom: "12px",
+          padding: "0 4px",
+          fontFamily: "'Noto Sans SC', sans-serif",
+          fontSize: "14px",
+          fontWeight: 500,
+          color: "#3D2E1E",
+        }}
+      >
+        选择解读主题 <span style={{ color: "#C87850" }}>*</span>
+      </p>
+
+      <div
+        ref={scrollRef}
+        className="am-scrollbar-hide"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onPointerLeave={handlePointerEnd}
+        onScroll={updatePagination}
+        style={{
+          display: "flex",
+          gap: "12px",
+          width: "100%",
+          overflowX: "auto",
+          paddingBottom: "12px",
+          flexWrap: "nowrap",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          WebkitOverflowScrolling: "touch",
+          touchAction: "pan-x",
+          overscrollBehaviorX: "contain",
+          userSelect: "none",
+          cursor: "grab",
+        }}
+      >
+        {themes.map((theme) => {
+          const isSelected = selected === theme.value;
+          return (
+            <button
+              key={theme.value}
+              type="button"
+              onClick={(event) => {
+                if (suppressNextClickRef.current) {
+                  event.preventDefault();
+                  return;
+                }
+                setSelected(theme.value);
+                onChange?.(theme.value);
+              }}
+              style={{
+                width: "72px",
+                height: "80px",
+                borderRadius: "12px",
+                border: isSelected
+                  ? "1px solid rgba(212,160,84,0.4)"
+                  : "1px solid rgba(200,120,80,0.15)",
+                backgroundColor: isSelected ? "transparent" : "#EDE6D8",
+                background: isSelected
+                  ? "linear-gradient(135deg, #1E2D4D 0%, #253860 40%, #2A4070 70%, #1E2D4D 100%)"
+                  : undefined,
+                boxShadow: isSelected ? "0 4px 14px rgba(26, 40, 68, 0.35)" : "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+                flexShrink: 0,
+              }}
+            >
+              {isSelected ? (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "radial-gradient(circle at 70% 20%, rgba(212,160,84,0.2) 0%, transparent 50%)",
+                    pointerEvents: "none",
+                  }}
+                />
+              ) : null}
+
+              {isSelected ? (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "4px",
+                    right: "4px",
+                    width: "16px",
+                    height: "16px",
+                    borderRadius: "999px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "rgba(212,160,84,0.5)",
+                  }}
+                >
+                  <LucideIcon iconNode={ICON_CHECK} size={10} color="#1E2D4D" strokeWidth={3} />
+                </div>
+              ) : null}
+
+              <span style={{ marginBottom: "4px", position: "relative", zIndex: 1 }}>
+                <LucideIcon
+                  iconNode={theme.icon}
+                  size={22}
+                  color={isSelected ? "#D4A054" : "#9B6840"}
+                  strokeWidth={1.5}
+                />
+              </span>
+              <span
+                style={{
+                  position: "relative",
+                  zIndex: 1,
+                  fontFamily: "'Noto Sans SC', sans-serif",
+                  fontSize: "14px",
+                  color: isSelected ? "#E8DCC8" : "#3D2E1E",
+                  lineHeight: 1.3,
+                }}
+              >
+                {theme.label}
+              </span>
+              <span
+                style={{
+                  position: "relative",
+                  zIndex: 1,
+                  fontFamily: "'Noto Sans SC', sans-serif",
+                  fontSize: "14px",
+                  color: isSelected ? "rgba(212,160,84,0.7)" : "#9B7A5A",
+                  lineHeight: 1.3,
+                }}
+              >
+                {theme.subLabel}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginTop: "4px" }}>
+        {Array.from({ length: pageCount }).map((_, index) => {
+          const isSelected = activeDotIndex === index;
+          return (
+            <div
+              key={`dot-${index}`}
+              style={{
+                width: isSelected ? "16px" : "6px",
+                height: "6px",
+                borderRadius: "999px",
+                backgroundColor: isSelected ? "#D4A054" : "rgba(200,120,80,0.2)",
+                transition: "all 0.2s",
+              }}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function BottomPanel({
+  canContinue,
+  isUploading,
+  onContinue,
+  onPrivacy,
+}: {
+  canContinue: boolean;
+  isUploading: boolean;
+  onContinue?: () => void;
+  onPrivacy?: () => void;
+}) {
+  return (
+    <div
+      style={{
+        padding: "10px 24px 12px",
+        backgroundColor: "#F0E6D6",
+        borderTopWidth: "1px",
+        borderTopStyle: "solid",
+        borderTopColor: "rgba(200, 120, 80, 0.1)",
+      }}
+    >
+      <button
+        type="button"
+        className="am-upload-bottom-cta"
+        style={{
+          width: "100%",
+          height: "50px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+          borderRadius: "999px",
+          border: "none",
+          background: "linear-gradient(135deg, #9B4030 0%, #C87850 30%, #D4A054 60%, #C87850 85%, #9B4030 100%)",
+          boxShadow: "0 4px 18px rgba(155, 64, 48, 0.3), 0 1px 3px rgba(0,0,0,0.1)",
+          cursor: canContinue && !isUploading ? "pointer" : "not-allowed",
+        }}
+        onClick={() => {
+          if (!canContinue || isUploading) return;
+          onContinue?.();
+        }}
+        disabled={!canContinue || isUploading}
+      >
+        {isUploading ? (
+          <>
+            <LucideIcon
+              iconNode={ICON_LOADER}
+              size={18}
+              color="#F5EFE2"
+              className="am-lucide-spin"
+            />
+            <span
+              style={{
+                fontFamily: "'Noto Serif SC', serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                letterSpacing: "0.08em",
+                color: "#F5EFE2",
+              }}
+            >
+              上传中...
+            </span>
+          </>
+        ) : (
+          <>
+            <LucideIcon iconNode={ICON_BOOK_OPEN} size={18} color="#F5EFE2" />
+            <span
+              style={{
+                fontFamily: "'Noto Serif SC', serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                letterSpacing: "0.08em",
+                color: "#F5EFE2",
+              }}
+            >
+              开始解读
+            </span>
+          </>
+        )}
+      </button>
+
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: "6px", marginTop: "8px" }}>
+        <LucideIcon iconNode={ICON_LOCK} size={11} color="#9B7A5A" style={{ marginTop: "2px", flexShrink: 0 }} />
+        <p
+          style={{
+            fontFamily: "'Noto Sans SC', sans-serif",
+            fontSize: "11px",
+            color: "#9B7A5A",
+            lineHeight: 1.5,
+            textAlign: "center",
+            margin: 0,
+          }}
+        >
+          上传即表示您同意{" "}
+          <button
+            type="button"
+            style={{
+              color: "#C87850",
+              textDecoration: "underline",
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              font: "inherit",
+            }}
+            onClick={onPrivacy}
+          >
+            隐私政策
+          </button>
+          ，画作将被加密存储并仅用于解读
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const detectToneClassMap = {
+  idle: "is-idle",
+  pending: "is-pending",
+  success: "is-success",
+  error: "is-error",
+} as const;
 
 export function MobileWebUploadPage({
   draft,
@@ -31,90 +812,637 @@ export function MobileWebUploadPage({
   detectError = null,
   environmentLabel,
   environmentDetail,
-  environmentTone,
+  environmentTone = "preview",
   onDraftChange,
   onContinue,
   onPreviewDetect,
+  onBack,
 }: MobileWebUploadPageProps) {
-  const descriptor = createUploadPageDescriptor(draft, detection);
-  const themeSection = descriptor.sections.find((section) => section.id === "theme");
-  const detectionSection = descriptor.sections.find((section) => section.id === "circles");
-  const canContinue = Boolean(descriptor.draft.imagePath && descriptor.detection);
-  const footerHint = descriptor.draft.imagePath
-    ? descriptor.detection
-      ? "三圈建议已就绪，可以进入当前解读流程。"
-      : "先完成三圈检测，再进入当前解读流程。"
-    : "请先选择一张画作。";
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [previewImageScale, setPreviewImageScale] = useState(1);
+  const [previewImageOffset, setPreviewImageOffset] = useState({ x: 0, y: 0 });
+  const [guideImageScale, setGuideImageScale] = useState(1);
+  const [guideImageOffset, setGuideImageOffset] = useState({ x: 0, y: 0 });
+  const [isDraggingGuideImage, setIsDraggingGuideImage] = useState(false);
+  const guideDragRef = useRef<{ x: number; y: number; baseX: number; baseY: number } | null>(null);
+  const guideDiscRef = useRef<HTMLDivElement | null>(null);
 
-  function handleUseSampleAsset() {
-    if (descriptor.draft.imagePath) {
+  useEffect(() => {
+    if (!draft.browserFile) {
+      setLocalPreview(null);
       return;
     }
 
+    const objectUrl = URL.createObjectURL(draft.browserFile);
+    setLocalPreview(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [draft.browserFile]);
+
+  const previewSrc = localPreview || (draft.imagePath && !draft.imagePath.startsWith("/tmp/") ? draft.imagePath : null);
+  const innerRadius = Math.round((draft.innerRadius ?? detection?.inner_radius ?? DEFAULT_INNER_RADIUS) * 100);
+  const middleRadius = Math.round((draft.middleRadius ?? detection?.middle_radius ?? DEFAULT_MIDDLE_RADIUS) * 100);
+  const canContinue = Boolean(draft.imagePath);
+  const detectTone = detectError ? "error" : detection ? "success" : isDetecting ? "pending" : "idle";
+  const detectSummary = useMemo(() => {
+    if (detectError) return detectError;
+    if (isDetecting) return "AI 正在识别三圈边界...";
+    if (detection) {
+      return `AI 识别把握度 ${Math.round((detection.confidence ?? 0) * 100)}%，可继续微调。`;
+    }
+    if (previewSrc) return "跟随你的直觉，也可以先让 AI 帮你识别三圈范围。";
+    return "上传画作后可调节三圈范围并开始解读。";
+  }, [detectError, detection, isDetecting, previewSrc]);
+
+  const discStyle = {
+    ["--am-upload-inner" as string]: `${innerRadius}%`,
+    ["--am-upload-middle" as string]: `${middleRadius}%`,
+  } as CSSProperties;
+
+  useEffect(() => {
+    if (!isGuideOpen) return;
+    setGuideImageScale(previewImageScale);
+    setGuideImageOffset(previewImageOffset);
+    setIsDraggingGuideImage(false);
+  }, [isGuideOpen, previewImageOffset, previewImageScale, previewSrc]);
+
+  const openFileDialog = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleSelectedFile = (file: File) => {
     onDraftChange?.({
-      imagePath: "/tmp/example-mandala.png",
+      imagePath: file.name,
+      browserFile: file,
+      uploadAsset: null,
+      innerRadius: DEFAULT_INNER_RADIUS,
+      middleRadius: DEFAULT_MIDDLE_RADIUS,
     });
-  }
+    setPreviewImageScale(1);
+    setPreviewImageOffset({ x: 0, y: 0 });
+    setIsDragOver(false);
+    setIsGuideOpen(true);
+  };
+
+  const handleDiscClick = () => {
+    openFileDialog();
+  };
+
+  const clampGuideScale = (value: number) => Math.max(0.3, Math.min(2.2, value));
+
+  const applyGuideScale = (nextScale: number) => {
+    const clamped = clampGuideScale(nextScale);
+    if (guideImageScale <= 0) {
+      setGuideImageScale(clamped);
+      return;
+    }
+    const ratio = clamped / guideImageScale;
+    setGuideImageScale(clamped);
+    setGuideImageOffset((current) => ({
+      x: current.x * ratio,
+      y: current.y * ratio,
+    }));
+  };
+
+  const handleGuidePointerDown = (event: React.PointerEvent<HTMLImageElement>) => {
+    event.preventDefault();
+    guideDragRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      baseX: guideImageOffset.x,
+      baseY: guideImageOffset.y,
+    };
+    setIsDraggingGuideImage(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleGuidePointerMove = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (!guideDragRef.current) return;
+    const deltaX = event.clientX - guideDragRef.current.x;
+    const deltaY = event.clientY - guideDragRef.current.y;
+    setGuideImageOffset({
+      x: guideDragRef.current.baseX + deltaX,
+      y: guideDragRef.current.baseY + deltaY,
+    });
+  };
+
+  const handleGuidePointerEnd = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    guideDragRef.current = null;
+    setIsDraggingGuideImage(false);
+  };
+
+  const handleGuideWheel = (event: React.WheelEvent<HTMLImageElement>) => {
+    event.preventDefault();
+    const nextScale = guideImageScale + (event.deltaY < 0 ? 0.03 : -0.03);
+    applyGuideScale(nextScale);
+  };
+
+  const exportGuideAdjustedFile = async (): Promise<File | null> => {
+    const sourceFile = draft.browserFile;
+    if (!sourceFile || !previewSrc) return null;
+
+    const imageElement = await new Promise<HTMLImageElement | null>((resolve) => {
+      const nextImage = new Image();
+      nextImage.onload = () => resolve(nextImage);
+      nextImage.onerror = () => resolve(null);
+      nextImage.src = previewSrc;
+    });
+    if (!imageElement) return null;
+
+    const outputSize = 1200;
+    const canvas = document.createElement("canvas");
+    canvas.width = outputSize;
+    canvas.height = outputSize;
+    const context = canvas.getContext("2d");
+    if (!context) return null;
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, outputSize, outputSize);
+
+    const baseContainScale = Math.min(
+      outputSize / imageElement.naturalWidth,
+      outputSize / imageElement.naturalHeight,
+    );
+    const drawWidth = imageElement.naturalWidth * baseContainScale * guideImageScale;
+    const drawHeight = imageElement.naturalHeight * baseContainScale * guideImageScale;
+    const guideSize = guideDiscRef.current?.getBoundingClientRect().width ?? 360;
+    const scaleRatio = outputSize / Math.max(guideSize, 1);
+    const drawX = outputSize / 2 - drawWidth / 2 + guideImageOffset.x * scaleRatio;
+    const drawY = outputSize / 2 - drawHeight / 2 + guideImageOffset.y * scaleRatio;
+
+    context.drawImage(imageElement, drawX, drawY, drawWidth, drawHeight);
+
+    const getRoundnessEnhancedCanvas = (source: HTMLCanvasElement): HTMLCanvasElement => {
+      const size = source.width;
+      const sourceContext = source.getContext("2d");
+      if (!sourceContext) return source;
+      const sourceImageData = sourceContext.getImageData(0, 0, size, size);
+      const { data, width, height } = sourceImageData;
+      const background = buildBackgroundModel(data, width, height);
+
+      let minX = width;
+      let minY = height;
+      let maxX = -1;
+      let maxY = -1;
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const index = (y * width + x) * 4;
+          const red = data[index];
+          const green = data[index + 1];
+          const blue = data[index + 2];
+          const alpha = data[index + 3];
+          const isForeground = isForegroundPixel(red, green, blue, alpha, background);
+          if (!isForeground) continue;
+          if (x < minX) minX = x;
+          if (y < minY) minY = y;
+          if (x > maxX) maxX = x;
+          if (y > maxY) maxY = y;
+        }
+      }
+
+      if (maxX < minX || maxY < minY) return source;
+
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const leftExtent = Math.max(1, centerX - minX);
+      const rightExtent = Math.max(1, maxX - centerX);
+      const topExtent = Math.max(1, centerY - minY);
+      const bottomExtent = Math.max(1, maxY - centerY);
+
+      const horizontalDiff = Math.abs(leftExtent - rightExtent);
+      const verticalDiff = Math.abs(topExtent - bottomExtent);
+      const diffThreshold = size * 0.015;
+      if (horizontalDiff < diffThreshold && verticalDiff < diffThreshold) return source;
+
+      const edgePadding = size * 0.03;
+      const maxExtent = size / 2 - edgePadding;
+      const targetX = Math.min(maxExtent, Math.max(leftExtent, rightExtent));
+      const targetY = Math.min(maxExtent, Math.max(topExtent, bottomExtent));
+
+      const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+      const leftScale = clamp(targetX / leftExtent, 1, 1.2);
+      const rightScale = clamp(targetX / rightExtent, 1, 1.2);
+      const topScale = clamp(targetY / topExtent, 1, 1.2);
+      const bottomScale = clamp(targetY / bottomExtent, 1, 1.2);
+
+      const enhancedCanvas = document.createElement("canvas");
+      enhancedCanvas.width = size;
+      enhancedCanvas.height = size;
+      const enhancedContext = enhancedCanvas.getContext("2d");
+      if (!enhancedContext) return source;
+      const output = enhancedContext.createImageData(size, size);
+      const outputData = output.data;
+
+      for (let index = 0; index < outputData.length; index += 4) {
+        outputData[index] = 255;
+        outputData[index + 1] = 255;
+        outputData[index + 2] = 255;
+        outputData[index + 3] = 255;
+      }
+
+      for (let y = 0; y < size; y += 1) {
+        const deltaY = y - centerY;
+        const sourceYScale = deltaY >= 0 ? bottomScale : topScale;
+        const sourceY = centerY + deltaY / sourceYScale;
+        const sourceYIndex = Math.round(sourceY);
+        if (sourceYIndex < 0 || sourceYIndex >= size) continue;
+
+        for (let x = 0; x < size; x += 1) {
+          const deltaX = x - centerX;
+          const sourceXScale = deltaX >= 0 ? rightScale : leftScale;
+          const sourceX = centerX + deltaX / sourceXScale;
+          const sourceXIndex = Math.round(sourceX);
+          if (sourceXIndex < 0 || sourceXIndex >= size) continue;
+
+          const sourceIndex = (sourceYIndex * size + sourceXIndex) * 4;
+          const targetIndex = (y * size + x) * 4;
+          outputData[targetIndex] = data[sourceIndex];
+          outputData[targetIndex + 1] = data[sourceIndex + 1];
+          outputData[targetIndex + 2] = data[sourceIndex + 2];
+          outputData[targetIndex + 3] = data[sourceIndex + 3];
+        }
+      }
+
+      enhancedContext.putImageData(output, 0, 0);
+      return enhancedCanvas;
+    };
+
+    const normalizeForegroundToDisc = (source: HTMLCanvasElement): HTMLCanvasElement => {
+      const size = source.width;
+      const sourceContext = source.getContext("2d");
+      if (!sourceContext) return source;
+      const { data, width, height } = sourceContext.getImageData(0, 0, size, size);
+      const background = buildBackgroundModel(data, width, height);
+
+      let minX = width;
+      let minY = height;
+      let maxX = -1;
+      let maxY = -1;
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const index = (y * width + x) * 4;
+          const red = data[index];
+          const green = data[index + 1];
+          const blue = data[index + 2];
+          const alpha = data[index + 3];
+          const isForeground = isForegroundPixel(red, green, blue, alpha, background);
+          if (!isForeground) continue;
+          if (x < minX) minX = x;
+          if (y < minY) minY = y;
+          if (x > maxX) maxX = x;
+          if (y > maxY) maxY = y;
+        }
+      }
+
+      if (maxX < minX || maxY < minY) return source;
+      const foregroundCenterX = (minX + maxX) / 2;
+      const foregroundCenterY = (minY + maxY) / 2;
+
+      let maxRadius = 1;
+      for (let y = minY; y <= maxY; y += 2) {
+        for (let x = minX; x <= maxX; x += 2) {
+          const index = (y * width + x) * 4;
+          const red = data[index];
+          const green = data[index + 1];
+          const blue = data[index + 2];
+          const alpha = data[index + 3];
+          const isForeground = isForegroundPixel(red, green, blue, alpha, background);
+          if (!isForeground) continue;
+          const dx = x - foregroundCenterX;
+          const dy = y - foregroundCenterY;
+          const radius = Math.sqrt(dx * dx + dy * dy);
+          if (radius > maxRadius) maxRadius = radius;
+        }
+      }
+
+      const targetCenterX = size / 2;
+      const targetCenterY = size / 2;
+      // 以上半径最长的方向为基准，让归一化后的主体更贴近圆盘边界，
+      // 但仍保留极小安全边距避免最终显示时切边。
+      const targetRadius = size * 0.502;
+      const scale = Math.max(1, Math.min(1.8, targetRadius / maxRadius));
+
+      const normalizedCanvas = document.createElement("canvas");
+      normalizedCanvas.width = size;
+      normalizedCanvas.height = size;
+      const normalizedContext = normalizedCanvas.getContext("2d");
+      if (!normalizedContext) return source;
+      normalizedContext.fillStyle = "#ffffff";
+      normalizedContext.fillRect(0, 0, size, size);
+      normalizedContext.save();
+      normalizedContext.translate(targetCenterX, targetCenterY);
+      normalizedContext.scale(scale, scale);
+      normalizedContext.translate(-foregroundCenterX, -foregroundCenterY);
+      normalizedContext.drawImage(source, 0, 0);
+      normalizedContext.restore();
+      return normalizedCanvas;
+    };
+
+    const finalCanvas = normalizeForegroundToDisc(getRoundnessEnhancedCanvas(canvas));
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      finalCanvas.toBlob((nextBlob) => resolve(nextBlob), sourceFile.type || "image/jpeg", 0.95);
+    });
+    if (!blob) return null;
+
+    const dotIndex = sourceFile.name.lastIndexOf(".");
+    const baseName = dotIndex > 0 ? sourceFile.name.slice(0, dotIndex) : sourceFile.name;
+    const extension = dotIndex > 0 ? sourceFile.name.slice(dotIndex) : ".jpg";
+
+    return new File([blob], `${baseName}_guide_adjusted${extension}`, {
+      type: blob.type || sourceFile.type || "image/jpeg",
+      lastModified: Date.now(),
+    });
+  };
 
   return (
-    <MobileWebAppShell
-      route={mobileWebRoutes[0]}
-      environmentLabel={environmentLabel}
-      environmentDetail={environmentDetail}
-      environmentTone={environmentTone}
-    >
-      <section className="mw-hero-card">
-        <p className="mw-kicker">起点</p>
-        <h2>{descriptor.title}</h2>
-        <p>{descriptor.subtitle}</p>
-      </section>
+    <div className="am-page am-upload-page">
+      <div className="am-upload-hero">
+        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
 
-      <section className="mw-stack">
-        <UploadAssetCard
-          imagePath={descriptor.draft.imagePath}
-          onUseSample={handleUseSampleAsset}
-          onSelectBrowserFile={(filePath, file) => {
-            onDraftChange?.({
-              imagePath: filePath,
-              browserFile: file,
-            });
-          }}
-        />
-      </section>
+        <div className="am-upload-topbar">
+          <button type="button" className="am-upload-back" onClick={onBack} aria-label="返回首页">
+            <NavBackIcon />
+          </button>
+          <div className="am-upload-brandmark">
+            <span>一镜一梳</span>
+          </div>
+          {environmentLabel ? (
+            <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
+              <strong>{environmentLabel}</strong>
+              <span>{environmentDetail}</span>
+            </div>
+          ) : (
+            <div className="am-upload-topbar__spacer" aria-hidden="true" />
+          )}
+        </div>
 
-      <section className="mw-card-grid">
-        <UploadFormCard
-          draft={descriptor.draft}
-          onDraftChange={onDraftChange}
-        />
-        <UploadChecklistCard checklist={descriptor.checklist} />
-      </section>
+        <div className="am-upload-preview-zone">
+          <div className="am-upload-disc-shell">
+            <div className="am-upload-disc-shell__halo" />
+            <div className="am-upload-disc-shell__rim" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--right" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--bottom" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--left" />
+            <div
+              className={`am-upload-disc${isDragOver ? " is-dragover" : ""}${previewSrc ? " has-image" : ""}`}
+              style={discStyle}
+              role="button"
+              tabIndex={0}
+              aria-label="上传画作"
+              onClick={handleDiscClick}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  handleDiscClick();
+                }
+              }}
+              onDragOver={(event) => {
+                event.preventDefault();
+                setIsDragOver(true);
+              }}
+              onDragLeave={(event) => {
+                if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  return;
+                }
+                setIsDragOver(false);
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                const file = event.dataTransfer.files?.[0];
+                if (!file) {
+                  setIsDragOver(false);
+                  return;
+                }
+                handleSelectedFile(file);
+              }}
+            >
+              <div className="am-upload-disc__surface" />
+              {previewSrc ? (
+                <img
+                  src={previewSrc}
+                  alt="曼陀罗预览"
+                  className="am-upload-disc__image"
+                  style={{
+                    transform: `translate(${previewImageOffset.x}px, ${previewImageOffset.y}px) scale(${previewImageScale})`,
+                  }}
+                />
+              ) : null}
+              {!previewSrc ? (
+                <button
+                  type="button"
+                  className="am-upload-disc__placeholder"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    openFileDialog();
+                  }}
+                >
+                  <span className="am-upload-disc__placeholder-icon"><UploadGlyph /></span>
+                  <span className="am-upload-disc__placeholder-text">{isDragOver ? "释放以上传" : "点击上传"}</span>
+                </button>
+              ) : null}
+              {previewSrc ? (
+                <>
+                  <div className="am-upload-disc__hover-mask" aria-hidden="true">
+                    <div className="am-upload-disc__hover-copy">
+                      <span className="am-upload-disc__placeholder-icon am-upload-disc__placeholder-icon--hover"><UploadGlyph /></span>
+                      <span className="am-upload-disc__hover-text">点击更换图片</span>
+                    </div>
+                  </div>
+                  <div className="am-upload-disc__rings" aria-hidden="true">
+                    <span className="am-upload-disc__ring am-upload-disc__ring--inner" />
+                    <span className="am-upload-disc__ring am-upload-disc__ring--middle" />
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
 
-      <section className="mw-card-grid">
-        <UploadDraftSummaryCard
-          fields={descriptor.fields}
-          section={themeSection}
-        />
-        <UploadDetectionCard
-          detection={descriptor.detection}
-          isDetecting={isDetecting}
-          detectError={detectError}
-          section={detectionSection}
-          onPreviewDetect={onPreviewDetect}
-        />
-      </section>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="am-hidden-input"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              handleSelectedFile(file);
+              event.currentTarget.value = "";
+            }}
+          />
+        </div>
 
-      <footer className="mw-footer-action">
-        <p className="mw-footer-hint">{footerHint}</p>
-        <button
-          type="button"
-          className="mw-primary-button"
-          onClick={onContinue}
-          disabled={!canContinue}
-        >
-          进入当前解读流程
-        </button>
-      </footer>
-    </MobileWebAppShell>
+        <div className="am-upload-sliders">
+          <UploadSlider
+            label="内中圈分界线"
+            value={innerRadius}
+            min={10}
+            max={82}
+            color="#D4A054"
+            onChange={(nextInner) => {
+              const inner = Math.min(nextInner, middleRadius - 8);
+              const nextMiddle = Math.max(inner + 8, middleRadius);
+              onDraftChange?.({ innerRadius: inner / 100, middleRadius: nextMiddle / 100 });
+            }}
+          />
+          <UploadSlider
+            label="中外圈分界线"
+            value={middleRadius}
+            min={18}
+            max={90}
+            color="#C87850"
+            onChange={(nextMiddle) => {
+              const middle = Math.max(nextMiddle, innerRadius + 8);
+              const nextInner = Math.min(innerRadius, middle - 8);
+              onDraftChange?.({ innerRadius: nextInner / 100, middleRadius: middle / 100 });
+            }}
+          />
+        </div>
+
+        <p className="am-upload-guidance">跟随你的直觉，调节三圈范围</p>
+
+        {previewSrc ? (
+          <div className={`am-upload-detect-status ${detectToneClassMap[detectTone]}`}>
+            <p>{detectSummary}</p>
+            <button type="button" onClick={onPreviewDetect} disabled={isDetecting}>
+              {isDetecting ? "识别中..." : detection ? "重新识别" : "AI识别"}
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="am-upload-bottom-sheet">
+        <section className="am-upload-form-surface">
+          <ThemeSelector
+            value={draft.theme}
+            onChange={(nextValue) => onDraftChange?.({ theme: nextValue })}
+          />
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "20px" }}>
+            <TextInputField
+              placeholder="记录绘画前设定的意图"
+              value={draft.paintingIntention}
+              onChange={(event) => onDraftChange?.({ paintingIntention: event.target.value })}
+            />
+            <TextInputField
+              placeholder="记录绘画时的感受"
+              value={draft.paintingFeeling}
+              onChange={(event) => onDraftChange?.({ paintingFeeling: event.target.value })}
+            />
+          </div>
+
+          <div style={{ height: "16px" }} />
+          <BottomPanel
+            canContinue={canContinue}
+            isUploading={false}
+            onContinue={onContinue}
+          />
+        </section>
+      </div>
+
+      {isGuideOpen && previewSrc ? (
+        <div className="am-upload-guide-overlay" role="dialog" aria-modal="true" aria-label="画作校准">
+          <div className="am-upload-guide-copy">
+            <p>第一步：拖动画作到画面中心</p>
+            <p>第二步：调整画作到适合大小</p>
+          </div>
+
+          <div className="am-upload-guide-stage">
+            <div ref={guideDiscRef} className="am-upload-guide-disc">
+              <img
+                src={previewSrc}
+                alt="校准中的曼陀罗画作"
+                className="am-upload-guide-disc__image"
+                style={{
+                  transform: `translate(${guideImageOffset.x}px, ${guideImageOffset.y}px) scale(${guideImageScale})`,
+                  cursor: isDraggingGuideImage ? "grabbing" : "grab",
+                }}
+                draggable={false}
+                onPointerDown={handleGuidePointerDown}
+                onPointerMove={handleGuidePointerMove}
+                onPointerUp={handleGuidePointerEnd}
+                onPointerCancel={handleGuidePointerEnd}
+                onPointerLeave={handleGuidePointerEnd}
+                onWheel={handleGuideWheel}
+              />
+            </div>
+            <div className="am-upload-guide-disc__rim" aria-hidden="true" />
+            <div className="am-upload-guide-disc__cross" aria-hidden="true">
+              <span />
+              <span />
+            </div>
+          </div>
+
+          <div className="am-upload-guide-zoom">
+            <button
+              type="button"
+              className="am-upload-guide-zoom__button"
+              onClick={() => applyGuideScale(guideImageScale - 0.02)}
+            >
+              -
+            </button>
+            <span className="am-upload-guide-zoom__value">{Math.round(guideImageScale * 100)}%</span>
+            <button
+              type="button"
+              className="am-upload-guide-zoom__button"
+              onClick={() => applyGuideScale(guideImageScale + 0.02)}
+            >
+              +
+            </button>
+            <button
+              type="button"
+              className="am-upload-guide-zoom__button am-upload-guide-zoom__button--reset"
+              onClick={() => {
+                setGuideImageScale(1);
+                setGuideImageOffset({ x: 0, y: 0 });
+              }}
+            >
+              重置
+            </button>
+          </div>
+
+          <div className="am-upload-guide-actions">
+            <button
+              type="button"
+              className="am-upload-guide-action am-upload-guide-action--secondary"
+              onClick={() => {
+                setIsGuideOpen(false);
+                openFileDialog();
+              }}
+            >
+              返回
+            </button>
+            <button
+              type="button"
+              className="am-upload-guide-action am-upload-guide-action--primary"
+              onClick={async () => {
+                const adjustedFile = await exportGuideAdjustedFile();
+                if (adjustedFile) {
+                  setPreviewImageScale(1);
+                  setPreviewImageOffset({ x: 0, y: 0 });
+                  onDraftChange?.({
+                    imagePath: adjustedFile.name,
+                    browserFile: adjustedFile,
+                    uploadAsset: null,
+                  });
+                } else {
+                  setPreviewImageScale(guideImageScale);
+                  setPreviewImageOffset(guideImageOffset);
+                }
+                setIsGuideOpen(false);
+              }}
+            >
+              下一步
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
