@@ -32,6 +32,10 @@ export interface MandalaFlowState {
 export interface StartCreatePayload {
   userId: string;
   imagePath: string;
+  imageUrl?: string | null;
+  storageBackend?: string | null;
+  storageKey?: string | null;
+  imageLocalExpiresAt?: string | null;
   theme?: string;
   paintingIntention?: string;
   paintingFeeling?: string;

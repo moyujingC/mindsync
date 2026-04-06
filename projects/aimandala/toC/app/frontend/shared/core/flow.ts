@@ -4,6 +4,7 @@ import type {
   InterpretationStatusResponse,
   LiteStructuredReport,
   MandalaFlowState,
+  ProStructuredReport,
   ReportResponse,
   SelectedImageRef,
   UpgradePlaceholderResponse,
@@ -134,4 +135,22 @@ export function getLiteStructuredReport(
   }
 
   return structured as LiteStructuredReport;
+}
+
+export function getProStructuredReport(
+  report: ReportResponse | null,
+): ProStructuredReport | null {
+  if (!report?.structured || report.version !== "pro") {
+    return null;
+  }
+
+  const structured = report.structured as Partial<ProStructuredReport>;
+  if (
+    typeof structured !== "object" ||
+    structured === null
+  ) {
+    return null;
+  }
+
+  return structured as ProStructuredReport;
 }
