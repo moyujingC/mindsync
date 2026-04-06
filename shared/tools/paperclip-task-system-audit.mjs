@@ -196,10 +196,14 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
   const now = Date.now();
   const staleThresholdMs = staleHours * 60 * 60 * 1000;
   const reviewThresholdMs = reviewHours * 60 * 60 * 1000;
+  const openChildCountByParentId = new Map();
 
   const byStatus = {};
   for (const issue of openIssues) {
     byStatus[issue.status] = (byStatus[issue.status] ?? 0) + 1;
+    if (issue.parentId) {
+      openChildCountByParentId.set(issue.parentId, (openChildCountByParentId.get(issue.parentId) ?? 0) + 1);
+    }
   }
 
   const needsTriage = openIssues.filter((issue) =>
@@ -226,7 +230,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
 
   const topLevelActive = openIssues.filter((issue) =>
     !issue.parentId && ["todo", "in_progress", "in_review", "blocked"].includes(issue.status),
-  );
+  ).filter((issue) => (openChildCountByParentId.get(issue.id) ?? 0) === 0);
 
   return {
     openCount: openIssues.length,
@@ -282,7 +286,7 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   printIssueGroup("待开始任务", report.issues.readyToStart, "已分配 owner、处于 todo，可直接启动。");
   printIssueGroup(`卡住的执行任务（>${staleHours}h）`, report.issues.staleInProgress, "处于 in_progress，但最近活动已超过阈值。");
   printIssueGroup(`久置 review（>${reviewHours}h）`, report.issues.agingReview, "处于 in_review，且最近活动已超过阈值。");
-  printIssueGroup("仍在顶层直接推进的活跃任务", report.issues.topLevelActive, "用于识别仍未收束成父子结构的顶层活跃任务。");
+  printIssueGroup("仍在顶层直接推进的活跃任务", report.issues.topLevelActive, "用于识别仍未收束成父子结构、且没有活跃子任务承接的顶层活跃任务。");
 
   console.log("## Project / Goal 漂移");
   if (report.projects.goalDrift.length === 0) {
