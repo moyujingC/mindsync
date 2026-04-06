@@ -201,19 +201,33 @@ function getTypeLabel(issue) {
   return "type:multiple";
 }
 
+function getReviewLabel(issue) {
+  const reviewLabels = (issue.labels ?? [])
+    .map((label) => label?.name)
+    .filter((name) => typeof name === "string" && name.startsWith("review:"));
+
+  if (reviewLabels.length === 0) return null;
+  if (reviewLabels.length === 1) return reviewLabels[0];
+  return "review:multiple";
+}
+
 function summarizeIssues(issues, { staleHours, reviewHours }) {
   const openIssues = issues.filter((issue) => !["done", "cancelled"].includes(issue.status));
   const now = Date.now();
   const staleThresholdMs = staleHours * 60 * 60 * 1000;
   const reviewThresholdMs = reviewHours * 60 * 60 * 1000;
   const openChildCountByParentId = new Map();
+  const issuesById = new Map(issues.map((issue) => [issue.id, issue]));
 
   const byStatus = {};
   const byType = {};
+  const byReview = {};
   for (const issue of openIssues) {
     byStatus[issue.status] = (byStatus[issue.status] ?? 0) + 1;
     const typeLabel = getTypeLabel(issue) ?? "untyped";
+    const reviewLabel = getReviewLabel(issue) ?? "no-review-label";
     byType[typeLabel] = (byType[typeLabel] ?? 0) + 1;
+    byReview[reviewLabel] = (byReview[reviewLabel] ?? 0) + 1;
     if (issue.parentId) {
       openChildCountByParentId.set(issue.parentId, (openChildCountByParentId.get(issue.parentId) ?? 0) + 1);
     }
@@ -223,7 +237,8 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     !issue.parentId &&
     !issue.assigneeAgentId &&
     !issue.assigneeUserId &&
-    (issue.status === "todo" || issue.status === "backlog"),
+    (issue.status === "todo" || issue.status === "backlog") &&
+    getTypeLabel(issue) !== "type:epic",
   );
 
   const readyToStart = openIssues.filter((issue) =>
@@ -242,6 +257,20 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
   );
 
   const missingTypeLabel = openIssues.filter((issue) => !getTypeLabel(issue));
+  const reviewWithoutReviewLabel = openIssues.filter((issue) =>
+    issue.status === "in_review" &&
+    !getReviewLabel(issue),
+  );
+  const reviewLabelOutsideReview = openIssues.filter((issue) =>
+    issue.status !== "in_review" &&
+    Boolean(getReviewLabel(issue)),
+  );
+  const openChildUnderClosedParent = openIssues.filter((issue) => {
+    if (!issue.parentId) return false;
+    const parent = issuesById.get(issue.parentId);
+    if (!parent) return false;
+    return ["done", "cancelled"].includes(parent.status);
+  });
 
   const topLevelActive = openIssues.filter((issue) =>
     !issue.parentId && ["todo", "in_progress", "in_review", "blocked"].includes(issue.status),
@@ -255,11 +284,15 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     openCount: openIssues.length,
     byStatus,
     byType,
+    byReview,
     needsTriage,
     readyToStart,
     staleInProgress,
     agingReview,
     missingTypeLabel,
+    reviewWithoutReviewLabel,
+    reviewLabelOutsideReview,
+    openChildUnderClosedParent,
     topLevelActive,
   };
 }
@@ -288,6 +321,7 @@ function compactIssue(issue) {
     title: issue.title,
     status: issue.status,
     typeLabel: getTypeLabel(issue),
+    reviewLabel: getReviewLabel(issue),
     parentId: issue.parentId,
     assigneeAgentId: issue.assigneeAgentId,
     assigneeUserId: issue.assigneeUserId,
@@ -302,6 +336,7 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   console.log(`- open issues: ${report.issues.openCount}`);
   console.log(`- by status: ${Object.entries(report.issues.byStatus).map(([status, count]) => `${status}=${count}`).join(", ") || "none"}`);
   console.log(`- by type: ${Object.entries(report.issues.byType).map(([type, count]) => `${type}=${count}`).join(", ") || "none"}`);
+  console.log(`- by review: ${Object.entries(report.issues.byReview).map(([review, count]) => `${review}=${count}`).join(", ") || "none"}`);
   console.log(`- project->goal drift: ${report.projects.goalDrift.length}`);
   console.log("");
 
@@ -310,6 +345,9 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   printIssueGroup(`卡住的执行任务（>${staleHours}h）`, report.issues.staleInProgress, "处于 in_progress，但最近活动已超过阈值。");
   printIssueGroup(`久置 review（>${reviewHours}h）`, report.issues.agingReview, "处于 in_review，且最近活动已超过阈值。");
   printIssueGroup("缺少类型标签的打开任务", report.issues.missingTypeLabel, "已打开但尚未标记 `type:*` 语义的任务。");
+  printIssueGroup("缺少 review 标签的审阅任务", report.issues.reviewWithoutReviewLabel, "处于 in_review，但尚未标记 `review:*` 语义的任务。");
+  printIssueGroup("review 标签脱离审阅语境的任务", report.issues.reviewLabelOutsideReview, "已带 `review:*`，但当前并不处于 in_review 的任务。");
+  printIssueGroup("打开子任务挂在已关闭父任务下", report.issues.openChildUnderClosedParent, "用于识别父任务已 done/cancelled，但子任务仍保持打开的结构异常。");
   printIssueGroup("仍在顶层直接推进的活跃任务", report.issues.topLevelActive, "用于识别仍未收束成父子结构、且没有活跃子任务承接的顶层活跃任务。");
 
   console.log("## Project / Goal 漂移");
@@ -334,7 +372,8 @@ function printIssueGroup(title, issues, description) {
   }
   for (const issue of issues.map(compactIssue)) {
     const typePart = issue.typeLabel ? ` | ${issue.typeLabel}` : "";
-    console.log(`- ${issue.identifier} | ${issue.status}${typePart} | ${issue.title}`);
+    const reviewPart = issue.reviewLabel ? ` | ${issue.reviewLabel}` : "";
+    console.log(`- ${issue.identifier} | ${issue.status}${typePart}${reviewPart} | ${issue.title}`);
   }
   console.log("");
 }
