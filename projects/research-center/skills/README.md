@@ -19,6 +19,8 @@
 当前首批样例：
 
 - `reference-intake-routing`
+- `media-link-intake`
+- `media-transcribe`
 - `research-brief`
 - `research-synthesis`
 - `handoff-packaging`
