@@ -33,6 +33,8 @@ handoff_to:
 
 - 抖音视频链接
 - 小红书视频链接
+- YouTube 链接
+- X 链接
 - 其他短视频或中长视频链接
 - 用户提供本地视频文件
 
@@ -51,22 +53,32 @@ handoff_to:
 ## 执行步骤
 
 1. 判断平台和输入类型。
-2. 优先尝试自动获取媒体文件或正文。
+2. 先按平台分流：
+   - 抖音 / 小红书：
+     - 优先接收 `Get 笔记` 公开链接或人工确认后的文字版
+     - 默认不要求当前链路直接完成自动转写
+   - YouTube / X：
+     - 进入自动媒体摄取主链
+3. 若进入自动链路，则优先尝试自动获取媒体文件或正文。
    - 当前 baseline：先试 `yt-dlp`
    - 若通用下载失败，再考虑平台专用 downloader
-3. 若失败，切换到半自动 fallback：
+4. 若失败，切换到半自动 fallback：
    - 截图
    - 文案
    - 口播摘要
    - 评论区关键信息
-4. 将当前可得材料整理成 source-pack。
-5. 明确下一步是否可进入 `media-transcribe` 或正式研究。
+5. 将当前可得材料整理成 source-pack。
+6. 明确下一步是否可进入 `media-transcribe`、中文化处理或正式研究。
 
 ## 输出格式
 
 建议基于：
 
 - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/media-link-intake/templates/source-pack-模板.md`
+
+当前可用本地工具：
+
+- `/Users/xinran/Downloads/dev/mindsync/shared/tools/media-link-intake.sh`
 
 ## 质量检查项
 
@@ -79,5 +91,6 @@ handoff_to:
 ## Handoff 规则
 
 - 若已获取媒体文件，优先交给 `media-transcribe`
+- 若输入已经是 `Get 笔记` 文字版，可直接交给 Research
 - 若未获取媒体文件但 source-pack 已足够，也可交给 Research 继续
 - 若 source-pack 仍不足，必须明确写出阻塞点
