@@ -191,6 +191,16 @@ function lastActivityTs(issue) {
   return parseDate(issue.lastActivityAt) ?? parseDate(issue.updatedAt) ?? 0;
 }
 
+function getTypeLabel(issue) {
+  const typeLabels = (issue.labels ?? [])
+    .map((label) => label?.name)
+    .filter((name) => typeof name === "string" && name.startsWith("type:"));
+
+  if (typeLabels.length === 0) return null;
+  if (typeLabels.length === 1) return typeLabels[0];
+  return "type:multiple";
+}
+
 function summarizeIssues(issues, { staleHours, reviewHours }) {
   const openIssues = issues.filter((issue) => !["done", "cancelled"].includes(issue.status));
   const now = Date.now();
@@ -199,8 +209,11 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
   const openChildCountByParentId = new Map();
 
   const byStatus = {};
+  const byType = {};
   for (const issue of openIssues) {
     byStatus[issue.status] = (byStatus[issue.status] ?? 0) + 1;
+    const typeLabel = getTypeLabel(issue) ?? "untyped";
+    byType[typeLabel] = (byType[typeLabel] ?? 0) + 1;
     if (issue.parentId) {
       openChildCountByParentId.set(issue.parentId, (openChildCountByParentId.get(issue.parentId) ?? 0) + 1);
     }
@@ -228,17 +241,25 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     now - lastActivityTs(issue) >= reviewThresholdMs,
   );
 
+  const missingTypeLabel = openIssues.filter((issue) => !getTypeLabel(issue));
+
   const topLevelActive = openIssues.filter((issue) =>
     !issue.parentId && ["todo", "in_progress", "in_review", "blocked"].includes(issue.status),
-  ).filter((issue) => (openChildCountByParentId.get(issue.id) ?? 0) === 0);
+  ).filter((issue) => {
+    const hasOpenChildren = (openChildCountByParentId.get(issue.id) ?? 0) > 0;
+    const typeLabel = getTypeLabel(issue);
+    return !hasOpenChildren && typeLabel !== "type:epic";
+  });
 
   return {
     openCount: openIssues.length,
     byStatus,
+    byType,
     needsTriage,
     readyToStart,
     staleInProgress,
     agingReview,
+    missingTypeLabel,
     topLevelActive,
   };
 }
@@ -266,6 +287,7 @@ function compactIssue(issue) {
     identifier: issue.identifier ?? issue.id,
     title: issue.title,
     status: issue.status,
+    typeLabel: getTypeLabel(issue),
     parentId: issue.parentId,
     assigneeAgentId: issue.assigneeAgentId,
     assigneeUserId: issue.assigneeUserId,
@@ -279,6 +301,7 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   console.log("## 概览");
   console.log(`- open issues: ${report.issues.openCount}`);
   console.log(`- by status: ${Object.entries(report.issues.byStatus).map(([status, count]) => `${status}=${count}`).join(", ") || "none"}`);
+  console.log(`- by type: ${Object.entries(report.issues.byType).map(([type, count]) => `${type}=${count}`).join(", ") || "none"}`);
   console.log(`- project->goal drift: ${report.projects.goalDrift.length}`);
   console.log("");
 
@@ -286,6 +309,7 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   printIssueGroup("待开始任务", report.issues.readyToStart, "已分配 owner、处于 todo，可直接启动。");
   printIssueGroup(`卡住的执行任务（>${staleHours}h）`, report.issues.staleInProgress, "处于 in_progress，但最近活动已超过阈值。");
   printIssueGroup(`久置 review（>${reviewHours}h）`, report.issues.agingReview, "处于 in_review，且最近活动已超过阈值。");
+  printIssueGroup("缺少类型标签的打开任务", report.issues.missingTypeLabel, "已打开但尚未标记 `type:*` 语义的任务。");
   printIssueGroup("仍在顶层直接推进的活跃任务", report.issues.topLevelActive, "用于识别仍未收束成父子结构、且没有活跃子任务承接的顶层活跃任务。");
 
   console.log("## Project / Goal 漂移");
@@ -309,7 +333,8 @@ function printIssueGroup(title, issues, description) {
     return;
   }
   for (const issue of issues.map(compactIssue)) {
-    console.log(`- ${issue.identifier} | ${issue.status} | ${issue.title}`);
+    const typePart = issue.typeLabel ? ` | ${issue.typeLabel}` : "";
+    console.log(`- ${issue.identifier} | ${issue.status}${typePart} | ${issue.title}`);
   }
   console.log("");
 }
