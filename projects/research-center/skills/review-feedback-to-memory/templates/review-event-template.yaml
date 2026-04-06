@@ -1,0 +1,18 @@
+review_event:
+  source_id: ""
+  reviewed_at: YYYY-MM-DD
+  value_type: insight
+  system_guess: ""
+  final_decision: approve
+  keep: []
+  remove: []
+  rewrite_direction: []
+  feedback_notes: ""
+
+stable_pattern_candidate:
+  pattern_id: ""
+  pattern_type: judgment
+  description: ""
+  evidence_count: 1
+  confidence: 0.5
+  last_seen: YYYY-MM-DD

@@ -43,11 +43,42 @@ handoff_to:
 - 当前只有链接或素材清单，没有足够事实基础
 - 当前任务的重点已经是知识入库或商业判断
 
+## 特别规则
+
+### 1. 当前 issue 的研究对象不可被项目样例覆盖
+
+如果你是在 Paperclip 的正式 issue 中执行 synthesis：
+
+- 当前 issue 的研究对象、问题、评论纠偏、已有 issue documents 是最高优先级
+- `PROJECT.md` 的“当前下一步”、历史样例研究、已有 handoff 文件都不能替代当前 issue 的研究对象
+
+如果你发现项目目录中存在：
+
+- 首批样例研究
+- 历史研究综合结论
+- 现成 handoff 产物
+
+这些内容只能作为格式和方法参考，不能直接当作本轮任务的研究主题继续写下去。
+
+### 2. 缺少 issue 上下文时不要自动补成通用样例任务
+
+如果当前 run 无法明确确认具体 issue，只能：
+
+- 做最小范围的上下文识别
+- 明确指出当前上下文不足以继续正式 synthesis
+
+不能：
+
+- 自行挑选一个开源项目作为研究对象
+- 自行补做“研究中心首批样例任务”
+- 输出与当前 issue 无关的综合结论、知识入库或 handoff
+
 ## 必读上下文
 
-1. 当前研究任务或 brief
-2. 当前研究材料与拆解文档
-3. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
+1. 当前 issue 的 title / description / comments / issue documents
+2. 当前研究任务或 brief
+3. 当前研究材料与拆解文档
+4. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
 
 ## 执行步骤
 
@@ -83,6 +114,7 @@ handoff_to:
 - 是否给出“适合借鉴 / 不适合照搬”的边界
 - 是否明确服务对象
 - 是否能支撑下游直接继续推进
+- 当前综合结论是否仍然紧扣当前 issue，而不是被项目级样例任务带偏
 
 ## Handoff 规则
 

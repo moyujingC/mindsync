@@ -43,6 +43,20 @@ handoff_to:
 
 ## 特别规则
 
+### 0. 当前 issue 高于项目级默认待办
+
+如果你是在 Paperclip 的正式 issue / heartbeat 中使用本 skill，则：
+
+- 当前 issue 的 title、description、comments、documents 是主上下文
+- `PROJECT.md`、历史样例任务、目录里的现成 brief 只能作为背景和模板参考
+- 不能因为 `PROJECT.md` 写了“优先完成某个样例”，就把当前 issue 改写成那个样例任务
+
+如果当前上下文不能唯一确定本轮 issue，则：
+
+- 不应擅自创建新的样例 brief
+- 不应默认执行项目目录里的通用研究计划
+- 只允许做最小范围的上下文确认与风险提示
+
 ### 1. brief 不是默认终点
 
 除非任务明确只要求“先出一份 brief”，否则：
@@ -85,10 +99,11 @@ handoff_to:
 
 开始前优先读取：
 
-1. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
-2. `/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md`
-3. `/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-04-研究方向与任务模型.md`
-4. 如果任务已挂到具体项目，还要读对应项目 `PROJECT.md`
+1. 当前 issue 的 title / description / comments / issue documents
+2. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
+3. `/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md`
+4. `/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-04-研究方向与任务模型.md`
+5. 如果任务已挂到具体项目，还要读对应项目 `PROJECT.md`
 
 ## 执行步骤
 

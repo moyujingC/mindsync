@@ -18,11 +18,15 @@
 
 当前首批样例：
 
+- `reference-intake-routing`
 - `research-brief`
 - `research-synthesis`
 - `handoff-packaging`
+- `insight-extraction`
+- `expression-extraction`
 - `product-framing-spec`
 - `knowledge-ingest`
+- `fact-check-gate`
 - `qa-gate-review`
 - `task-routing`
 - `artifact-readiness-check`
@@ -30,6 +34,8 @@
 - `architecture-boundary-plan`
 - `insight-handoff`
 - `content-grounded-transform`
+- `review-feedback-to-memory`
+- `knowledge-relink-maintenance`
 
 ## 配套文档
 

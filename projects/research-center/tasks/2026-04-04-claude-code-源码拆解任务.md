@@ -1,7 +1,7 @@
 # Claude Code 源码拆解任务
 
-> 状态：draft
-> 版本：0.1.0
+> 状态：completed
+> 版本：1.0.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-04-claude-code-源码拆解任务.md

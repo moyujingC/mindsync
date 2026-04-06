@@ -1,9 +1,9 @@
 # 研究中心项目工作区
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：Research & Knowledge Lead
-> last_updated：2026-04-04
+> last_updated：2026-04-06
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
 
@@ -46,7 +46,7 @@
 - `notes/`
   - 临时笔记，不替代正式 artifact
 - `templates/`
-  - 研究任务模板与内容选题研究模板
+  - 研究任务模板、review 模板、入库前检查清单等
 
 ## 4. 默认工作流
 
@@ -55,8 +55,9 @@
 1. `problem-framing`
 2. `research`
 3. `synthesis`
-4. `knowledge-ingest`
-5. `handoff`
+4. `review`
+5. `knowledge-ingest`
+6. `handoff`
 
 对应最小产物：
 
@@ -66,10 +67,25 @@
   - 事实材料与拆解记录
 - `synthesis`
   - 摘要、模式和启发
+- `review`
+  - 创作者 / 用户 review 结论
 - `knowledge-ingest`
   - 结构化知识条目
 - `handoff`
   - 面向产品、架构、内容或商业的交接说明
+
+对“研究中心生成内容准备进入知识库”的场景，默认还要在 `synthesis` 与 `review` 之间插入一层事实核查：
+
+`research-draft` -> `fact-check` -> `review` -> `knowledge-ingest`
+
+约束如下：
+
+- 核查不通过：
+  - 退回 `research-draft` 修改
+- 核查通过：
+  - 才允许进入创作者 / 用户 review
+- review 未通过：
+  - 不进入知识库
 
 ## 5. 当前下一步
 
