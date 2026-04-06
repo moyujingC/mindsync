@@ -107,6 +107,11 @@ class InterpretationStore:
             image_hash=data.get("image_hash", ""),
             theme=data.get("theme", "general"),
             created_at=data.get("created_at", ""),
+            image_url=data.get("image_url"),
+            image_storage_backend=data.get("image_storage_backend"),
+            image_storage_key=data.get("image_storage_key"),
+            image_local_path=data.get("image_local_path"),
+            image_local_expires_at=data.get("image_local_expires_at"),
             painting_intention=data.get("painting_intention"),
             painting_feeling=data.get("painting_feeling"),
             three_circles=data.get("three_circles"),
@@ -190,6 +195,7 @@ class InterpretationStore:
 
         layer = Layer1LiteDraft(
             description=data.get("description", ""),
+            prompt_preview=data.get("prompt_preview", ""),
             title=data.get("title", ""),
             overall_impression=data.get("overall_impression", ""),
             experiment=data.get("experiment", {}),
@@ -225,6 +231,7 @@ class InterpretationStore:
         """字典转Layer3ProDraft"""
         return Layer3ProDraft(
             description=data.get("description", ""),
+            prompt_preview=data.get("prompt_preview", ""),
             first_impression=data.get("first_impression", ""),
             core_insight_table=data.get("core_insight_table", {}),
             three_circles_detailed=data.get("three_circles_detailed", {}),

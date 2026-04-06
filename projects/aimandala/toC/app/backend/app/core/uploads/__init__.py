@@ -1,6 +1,7 @@
 """Upload storage strategies for AI-Mandala To C backend."""
 
 from .storage import (
+    COSUploadStorage,
     LocalUploadStorage,
     OSSUploadStorage,
     S3UploadStorage,
@@ -11,6 +12,7 @@ from .storage import (
 )
 
 __all__ = [
+    "COSUploadStorage",
     "LocalUploadStorage",
     "OSSUploadStorage",
     "S3UploadStorage",

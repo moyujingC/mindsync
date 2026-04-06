@@ -3,6 +3,7 @@
 import os
 import sys
 import shutil
+import types
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
@@ -99,6 +100,13 @@ def test_upload_image_endpoint():
     assert data["content_type"] == "image/png"
     assert data["size_bytes"] == len(b"mock-upload-image")
     assert os.path.exists(data["image_path"])
+    assert data["image_url"].endswith(f"/api/v2/uploads/{data['storage_key']}")
+    assert data["image_local_expires_at"] is not None
+
+    upload_response = client.get(data["image_url"])
+    assert upload_response.status_code == 200
+    assert upload_response.content == b"mock-upload-image"
+    assert upload_response.headers["content-type"] == "image/png"
 
 
 def test_upload_image_endpoint_cleans_expired_temp_uploads():
@@ -128,6 +136,17 @@ def test_upload_image_endpoint_cleans_expired_temp_uploads():
     assert response.status_code == 200
     assert not expired_file.exists()
     assert fresh_file.exists()
+
+
+def test_get_uploaded_image_endpoint_404_for_missing_file():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.get("/api/v2/uploads/missing-upload.png")
+
+    assert response.status_code == 404
 
 
 def test_upload_image_endpoint_returns_s3_dry_run_metadata():
@@ -160,6 +179,61 @@ def test_upload_image_endpoint_returns_s3_dry_run_metadata():
         f"https://demo-bucket.s3.ap-southeast-1.amazonaws.com/{data['storage_key']}"
     )
     assert os.path.exists(data["image_path"])
+    assert data["image_local_expires_at"] is not None
+
+
+def test_upload_image_endpoint_returns_cos_metadata():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    upload_calls = []
+
+    class FakeCosConfig:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    class FakeCosClient:
+        def __init__(self, config):
+            self.config = config
+
+        def put_object(self, **kwargs):
+            upload_calls.append(kwargs)
+
+    fake_qcloud_module = types.SimpleNamespace(
+        CosConfig=FakeCosConfig,
+        CosS3Client=FakeCosClient,
+    )
+
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_UPLOAD_BACKEND": "cos",
+            "AIMANDALA_UPLOAD_COS_SECRET_ID": "secret-id",
+            "AIMANDALA_UPLOAD_COS_SECRET_KEY": "secret-key",
+            "AIMANDALA_UPLOAD_COS_BUCKET": "demo-bucket",
+            "AIMANDALA_UPLOAD_COS_REGION": "ap-shanghai",
+            "AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL": "https://img.example.com/mandala",
+        },
+        clear=False,
+    ), patch.dict(sys.modules, {"qcloud_cos": fake_qcloud_module}):
+        response = client.post(
+            "/api/v2/upload-image",
+            files={
+                "file": ("mandala-upload.png", b"mock-upload-image", "image/png"),
+            },
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["storage_backend"] == "cos"
+    assert data["storage_key"].startswith("aimandala/uploads/")
+    assert data["image_url"] == f"https://img.example.com/mandala/{data['storage_key']}"
+    assert os.path.exists(data["image_path"])
+    assert data["image_local_expires_at"] is not None
+    assert len(upload_calls) == 1
+    assert upload_calls[0]["Bucket"] == "demo-bucket"
+    assert upload_calls[0]["Key"] == data["storage_key"]
 
 
 def test_upload_image_endpoint_returns_501_for_missing_remote_backend_config():
@@ -186,6 +260,61 @@ def test_upload_image_endpoint_returns_501_for_missing_remote_backend_config():
 
     assert response.status_code == 501
     assert "Missing required upload storage config" in response.json()["detail"]
+
+
+def test_detect_circles_returns_501_for_invalid_prompt_runtime_config(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "detect.png"
+    image_path.write_bytes(b"mock-image")
+
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_PROMPT_RUNTIME_BACKEND": "http",
+            "AIMANDALA_PROMPT_RUNTIME_HTTP_URL": "",
+        },
+        clear=False,
+    ):
+        response = client.post(
+            "/api/v2/detect-circles",
+            json={
+                "image_path": str(image_path),
+            },
+        )
+
+    assert response.status_code == 501
+    assert "AIMANDALA_PROMPT_RUNTIME_HTTP_URL" in response.json()["detail"]
+
+
+def test_upload_image_endpoint_returns_501_when_cos_sdk_missing():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_UPLOAD_BACKEND": "cos",
+            "AIMANDALA_UPLOAD_COS_SECRET_ID": "secret-id",
+            "AIMANDALA_UPLOAD_COS_SECRET_KEY": "secret-key",
+            "AIMANDALA_UPLOAD_COS_BUCKET": "demo-bucket",
+            "AIMANDALA_UPLOAD_COS_REGION": "ap-shanghai",
+        },
+        clear=False,
+    ), patch.dict(sys.modules, {"qcloud_cos": None}):
+        response = client.post(
+            "/api/v2/upload-image",
+            files={
+                "file": ("mandala-upload.png", b"mock-upload-image", "image/png"),
+            },
+        )
+
+    assert response.status_code == 501
+    assert "cos-python-sdk-v5" in response.json()["detail"]
 
 
 def test_detect_circles_endpoint_for_missing_file():
@@ -235,6 +364,37 @@ def test_create_interpretation_endpoint(tmp_path):
     assert data["three_circles"]["inner_radius"] == 33
     assert data["three_circles"]["middle_radius"] == 66
     assert data["interpretation_id"]
+
+
+def test_create_interpretation_persists_upload_metadata(tmp_path):
+    from app.api.main import app
+    from app.api import routes_v2
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-meta.png"
+    image_path.write_bytes(b"mock-image")
+
+    response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-meta",
+            "image_path": str(image_path),
+            "image_url": "https://img.example.com/mandala/demo.png",
+            "storage_backend": "cos",
+            "storage_key": "aimandala/uploads/demo.png",
+            "image_local_expires_at": "2026-04-06T00:00:00+00:00",
+        },
+    )
+
+    assert response.status_code == 200
+    interpretation_id = response.json()["interpretation_id"]
+    record = routes_v2.get_orchestrator().store.load(interpretation_id)
+    assert record is not None
+    assert record.image_url == "https://img.example.com/mandala/demo.png"
+    assert record.image_storage_backend == "cos"
+    assert record.image_storage_key == "aimandala/uploads/demo.png"
+    assert record.image_local_expires_at == "2026-04-06T00:00:00+00:00"
 
 
 def test_create_interpretation_requires_complete_manual_circles(tmp_path):
@@ -501,11 +661,13 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
     assert response.status_code == 200
     data = response.json()
     assert data["version"] == "lite"
-    assert data["title"] == "一镜 Lite 版占位报告"
+    assert data["title"] == "慢慢亮起来的中心"
     assert data["overall_impression"] is not None
-    assert data["structured"]["title"] == "一镜 Lite 版占位报告"
+    assert data["structured"]["title"] == "慢慢亮起来的中心"
+    assert data["structured"]["prompt_schema_validation_issues"] == []
     assert "pro_teaser" in data["structured"]
-    assert "一镜 Lite 版占位报告" in data["report"]
+    assert "六个核心洞察" in data["report"]
+    assert "重要声明" in data["report"]
     assert data["error"] is None
 
 
@@ -540,9 +702,20 @@ def test_upgrade_placeholder_endpoint(tmp_path):
 
     assert response.status_code == 200
     data = response.json()
-    assert data["success"] is False
-    assert data["enabled"] is False
-    assert data["status"] == "not_enabled"
+    assert data["success"] is True
+    assert data["enabled"] is True
+    assert data["status"] == "completed"
+
+    report_response = client.get(
+        f"/api/v2/interpretations/{interpretation_id}/report",
+        params={"version": "pro"},
+    )
+    assert report_response.status_code == 200
+    report_data = report_response.json()
+    assert report_data["version"] == "pro"
+    assert report_data["error"] is None
+    assert "一梳 Pro 版报告" in report_data["report"]
+    assert "重要声明" in report_data["report"]
 
 
 def test_upgrade_placeholder_endpoint_404_for_unknown_record():

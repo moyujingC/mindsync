@@ -188,6 +188,7 @@ class Layer1LiteDraft:
     """
 
     description: str = "Lite版结构化输出（未润色）"
+    prompt_preview: str = ""
 
     # 画像标题（诗意，3-8字）
     title: str = ""
@@ -225,6 +226,7 @@ class Layer1LiteDraft:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "description": self.description,
+            "prompt_preview": self.prompt_preview,
             "title": self.title,
             "overall_impression": self.overall_impression,
             "visual_elements": self.visual_elements,
@@ -343,6 +345,7 @@ class Layer3ProDraft:
     """
 
     description: str = "Pro版增量内容（未润色）"
+    prompt_preview: str = ""
 
     # 第一眼直觉（艺术疗愈师的专业直觉）
     first_impression: str = ""
@@ -371,6 +374,7 @@ class Layer3ProDraft:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "description": self.description,
+            "prompt_preview": self.prompt_preview,
             "first_impression": self.first_impression,
             "core_insight_table": self.core_insight_table,
             "three_circles_detailed": self.three_circles_detailed,
@@ -448,6 +452,10 @@ class InterpretationRecord:
 
     # 图片 COS URL（持久化存储地址）
     image_url: Optional[str] = None
+    image_storage_backend: Optional[str] = None
+    image_storage_key: Optional[str] = None
+    image_local_path: Optional[str] = None
+    image_local_expires_at: Optional[str] = None
 
     # 三圈配置（用户设定的内圈、中圈半径百分比）
     three_circles: Optional[Dict] = None  # {"inner_radius": 35, "middle_radius": 65}
@@ -496,6 +504,10 @@ class InterpretationRecord:
             "theme": self.theme,
             "created_at": self.created_at,
             "image_url": self.image_url,
+            "image_storage_backend": self.image_storage_backend,
+            "image_storage_key": self.image_storage_key,
+            "image_local_path": self.image_local_path,
+            "image_local_expires_at": self.image_local_expires_at,
             "painting_intention": self.painting_intention,
             "painting_feeling": self.painting_feeling,
             "three_circles": self.three_circles,

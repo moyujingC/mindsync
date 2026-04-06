@@ -3,10 +3,12 @@
 from typing import Literal, Optional
 
 from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
-from app.core.uploads import UploadStorage, create_upload_storage_from_env
+from app.core.pipeline.prompt_runtime import create_prompt_runtime_from_env
+from app.core.uploads import LocalUploadStorage, UploadStorage, create_upload_storage_from_env
 
 from .rate_limiter import pricing_endpoint_limit
 
@@ -16,6 +18,22 @@ class CreateInterpretationRequest(BaseModel):
 
     user_id: str = Field(..., description="User identifier")
     image_path: str = Field(..., description="Local image path used during migration")
+    image_url: Optional[str] = Field(
+        default=None,
+        description="Public image URL returned by upload storage backend",
+    )
+    storage_backend: Optional[str] = Field(
+        default=None,
+        description="Upload storage backend name (local/s3/oss/cos/path)",
+    )
+    storage_key: Optional[str] = Field(
+        default=None,
+        description="Upload storage key for lifecycle tracking",
+    )
+    image_local_expires_at: Optional[str] = Field(
+        default=None,
+        description="Local temporary file expiry timestamp in ISO-8601 format",
+    )
     theme: str = Field(default="general", description="Interpretation theme")
     painting_intention: Optional[str] = Field(
         default=None,
@@ -146,6 +164,7 @@ class UploadImageResponse(BaseModel):
     content_type: Optional[str] = None
     size_bytes: int
     image_url: Optional[str] = None
+    image_local_expires_at: Optional[str] = None
 
 
 router = APIRouter(prefix="/api/v2", tags=["aimandala-v2"])
@@ -156,7 +175,12 @@ _upload_storage: Optional[UploadStorage] = None
 def get_orchestrator() -> LayeredOrchestrator:
     global _orchestrator
     if _orchestrator is None:
-        _orchestrator = LayeredOrchestrator()
+        try:
+            _orchestrator = LayeredOrchestrator(
+                prompt_runtime=create_prompt_runtime_from_env(),
+            )
+        except ValueError as error:
+            raise HTTPException(status_code=501, detail=str(error)) from error
     return _orchestrator
 
 
@@ -198,8 +222,27 @@ async def detect_circles(payload: DetectCirclesRequest):
     return DetectCirclesResponse(**result.to_dict())
 
 
+@router.get("/uploads/{storage_key}", name="get_uploaded_image")
+async def get_uploaded_image(storage_key: str):
+    """Serve a locally stored migration-time browser upload back to the client."""
+
+    storage = get_upload_storage()
+    if not isinstance(storage, LocalUploadStorage):
+        raise HTTPException(status_code=404, detail="Local upload serving is not enabled")
+
+    try:
+        file_path = storage.resolve_storage_path(storage_key)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Uploaded file not found")
+
+    return FileResponse(path=file_path, filename=file_path.name)
+
+
 @router.post("/upload-image", response_model=UploadImageResponse)
-async def upload_image(file: UploadFile = File(...)):
+async def upload_image(request: Request, file: UploadFile = File(...)):
     """Store a browser-uploaded image locally and return a migrated image path."""
 
     try:
@@ -214,7 +257,13 @@ async def upload_image(file: UploadFile = File(...)):
         original_filename=stored.original_filename,
         content_type=stored.content_type,
         size_bytes=stored.size_bytes,
-        image_url=stored.image_url,
+        image_local_expires_at=stored.local_expires_at,
+        image_url=(
+            stored.image_url
+            or str(request.url_for("get_uploaded_image", storage_key=stored.storage_key))
+            if stored.storage_backend == "local"
+            else stored.image_url
+        ),
     )
 
 
@@ -249,6 +298,10 @@ async def create_interpretation(payload: CreateInterpretationRequest):
             image_path=payload.image_path,
             user_id=payload.user_id,
             theme=payload.theme,
+            image_url=payload.image_url,
+            image_storage_backend=payload.storage_backend,
+            image_storage_key=payload.storage_key,
+            image_local_expires_at=payload.image_local_expires_at,
             painting_intention=payload.painting_intention,
             painting_feeling=payload.painting_feeling,
             three_circles=manual_three_circles,
@@ -345,9 +398,12 @@ async def get_report(interpretation_id: str, version: Optional[str] = None):
     response_model=UpgradePlaceholderResponse,
 )
 async def upgrade_interpretation_placeholder(interpretation_id: str):
-    """Expose a compatibility-only placeholder for the legacy V2 upgrade route."""
+    """Upgrade a migrated Lite record into the current Pro placeholder flow."""
 
-    result = get_orchestrator().get_upgrade_placeholder(interpretation_id)
+    try:
+        result = get_orchestrator().upgrade_to_pro(interpretation_id)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
     return UpgradePlaceholderResponse(**result)
