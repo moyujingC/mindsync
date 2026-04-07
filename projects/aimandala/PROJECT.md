@@ -1,12 +1,13 @@
 # 一镜一梳项目工作区
 
-> 状态：draft
-> 版本：0.2.0
+> 状态：in_review
+> 版本：0.2.1
 > owner：CEO / Orchestrator
-> last_updated：2026-04-04
+> last_updated：2026-04-07
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
 > 历史来源仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
+> reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 这是 `一镜一梳` 在 Monorepo 中的项目工作区入口。
 

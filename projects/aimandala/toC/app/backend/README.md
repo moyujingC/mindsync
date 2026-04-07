@@ -31,6 +31,69 @@
 
 当前这批实现的目标不是复刻旧仓库全部能力，而是先打通一条最小可验证的 To C 主路径。
 
+## 当前目录约定
+
+- `app/`
+  - 当前后端实现主入口
+- `tests/`
+  - 后端自动化测试
+- `data/interpretations/`
+  - 本地联调时生成的运行时解读记录
+- `data/uploads/`
+  - 本地联调时保存的临时上传文件
+
+其中：
+
+- `data/interpretations/` 和 `data/uploads/` 都属于运行时目录
+- 它们不是正式 fixture，也不是应进入 Git 的项目资产
+- 需要长期保留的样本应转移到项目级 `fixtures/` 或 `toC/data/`
+
+## 最小运行前提
+
+当前后端还没有单独收口为完整 Python 工程文件，因此最小运行前提先以文档明确：
+
+- Python `3.11+`
+- 当前至少需要可用的 Python 包：
+  - `fastapi`
+  - `pydantic`
+  - `PyYAML`
+  - `pytest`
+  - `anyio`
+- 如需启用腾讯云 COS，还需要：
+  - `cos-python-sdk-v5`
+
+说明：
+
+- 当前这些依赖仍主要由本地开发环境承接
+- 这份 README 先把“最小可运行前提”显式写出，避免继续依赖隐含本机环境
+- 如果后续正式收口后端工作区，应补独立依赖文件
+
+## 最小启动方式
+
+当前最小本地启动方式：
+
+```bash
+cd /Users/xinran/Downloads/dev/mindsync
+export PYTHONPATH=/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend
+uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+如果本机没有 `uvicorn`，应先在当前 Python 环境中安装对应依赖。
+
+## 最小测试方式
+
+当前建议至少保留下面两条验证命令：
+
+```bash
+cd /Users/xinran/Downloads/dev/mindsync
+pytest projects/aimandala/toC/app/backend/tests/unit
+```
+
+```bash
+cd /Users/xinran/Downloads/dev/mindsync
+pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py
+```
+
 ## 当前可用接口
 
 当前最小 `V2` API 包含：
@@ -105,8 +168,8 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 
 最近一轮迁移验证通过的单测规模是：
 
-- `73 passed`
-- `test_api_health.py + test_pipeline_orchestrator.py + test_prompt_builder.py + test_report_blueprints.py + test_upload_storage.py` 当前为 `73 passed`
+- `128 passed`
+- 当前覆盖 `test_api_health.py`、`test_circle_detector.py`、`test_pipeline_data_models.py`、`test_pipeline_orchestrator.py`、`test_prompt_builder.py`、`test_prompt_runtime.py`、`test_report_blueprints.py`、`test_safety_protocol.py`、`test_upload_storage.py`
 
 ## COS 配置
 

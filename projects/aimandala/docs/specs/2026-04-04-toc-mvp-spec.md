@@ -1,9 +1,9 @@
 # 一镜一梳 To C MVP Spec
 
-> 状态：draft
-> 版本：0.1.0
+> 状态：in_review
+> 版本：0.1.1
 > owner：Product Spec Lead
-> last_updated：2026-04-04
+> last_updated：2026-04-07
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md
 > 项目：aimandala
 > 阶段：spec

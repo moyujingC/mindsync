@@ -1,9 +1,9 @@
 # 一镜一梳 To C MVP 验收与测试清单
 
-> 状态：draft
-> 版本：0.1.0
+> 状态：in_review
+> 版本：0.1.1
 > owner：Test / QA
-> last_updated：2026-04-04
+> last_updated：2026-04-07
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md
 > 项目：aimandala
 > 阶段：verification
