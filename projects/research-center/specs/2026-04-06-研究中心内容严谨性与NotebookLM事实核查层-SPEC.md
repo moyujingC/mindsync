@@ -88,12 +88,13 @@
 
 当前建议把 `NotebookLM` 放在：
 
-`research-draft` -> `NotebookLM核查` -> `creator/user review` -> `knowledge-ingest`
+`research-draft` -> `NotebookLM核查` -> `machine-review` -> `creator/user review` -> `knowledge-ingest`
 
 这里的原则不是用核查替代你的 review，而是：
 
 - 先核查
-- 核查通过后再给你 review
+- 核查通过后先做机器预审
+- 机器预审通过后再给你 review
 - review 通过后再入知识库
 
 其职责边界如下：
@@ -165,13 +166,35 @@
 - 缺来源句子清单
 - 高风险硬数字清单
 
-### 5.3 Review 阶段
+### 5.3 Machine Review 阶段
+
+在这一阶段，`NotebookLM` 或其接入层负责产出一份机器预审结论。
+
+机器预审的目标不是替代你的判断，而是进一步收束：
+
+- 当前草案是否还有明显高风险事实问题
+- 当前草案是否已经达到“值得交给人审”的程度
+- 当前草案是否应继续回改，而不是提前进入人工 review
+
+机器预审结论分为：
+
+- `pass`
+- `pass_with_conditions`
+- `fail`
+
+如果机器预审不是 `pass`，则：
+
+- 返回研究草案继续修改
+- 暂不进入人工 review
+
+### 5.4 Review 阶段
 
 只有当以下条件满足时，才允许把研究草案交给你 review：
 
 - 高风险句子已删除或改写
 - 关键事实已标明来源状态
 - 不存在明显“像真的但无出处”的硬数据
+- 机器预审结论为 `pass`
 
 你的 review 结论分为：
 
@@ -179,12 +202,13 @@
 - 有条件入库
 - 不入库
 
-### 5.4 知识入库阶段
+### 5.5 知识入库阶段
 
 只有在以下条件同时满足时，才允许进入 `knowledge-ingest`：
 
 - `fact-check-note` 已完成
-- 核查结论不是“不通过”
+- `machine-review-note` 已完成
+- 机器预审结论为 `pass`
 - 你的 review 已明确允许入库
 
 如果 review 未通过，则：
@@ -200,9 +224,11 @@
    - 研究草案、结论与判断
 2. `fact-check-note`
    - 事实核查笔记
-3. `review-note`
+3. `machine-review-note`
+   - 机器预审结论
+4. `review-note`
    - 创作者 / 用户 review 结论
-4. `knowledge-entry`
+5. `knowledge-entry`
    - 已确认可入库的结构化条目
 
 ## 7. 对现阶段系统的最小落地方式
@@ -216,8 +242,10 @@
 3. 人工拿回核查结果
 4. 将核查结果整理成 `fact-check-note`
 5. 核查不通过则退回研究草案修改
-6. 核查通过后再进入创作者 / 用户 review
-7. review 通过后再进入 `knowledge-ingest`
+6. 核查通过后生成 `machine-review-note`
+7. 机器预审不通过则继续回改
+8. 机器预审通过后再进入创作者 / 用户 review
+9. review 通过后再进入 `knowledge-ingest`
 
 ### 7.2 为什么先这样做
 

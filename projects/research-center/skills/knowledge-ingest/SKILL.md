@@ -13,6 +13,7 @@ when_to_use: >
 inputs:
   - 研究结论
   - fact-check-note
+  - machine-review-note
   - review-note
   - 入库前检查清单
   - 模式抽象
@@ -50,24 +51,26 @@ handoff_to:
 1. 当前研究任务文档
 2. 当前研究结论文档
 3. `fact-check-note`
-4. `review-note`
-5. 入库前检查清单
-6. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
+4. `machine-review-note`
+5. `review-note`
+6. 入库前检查清单
+7. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
 
 ## 执行步骤
 
 1. 先检查 `fact-check-note` 是否完整。
-2. 再检查 `review-note` 的 `final_decision` 是否为 `approve_for_ingest`。
-3. 再核对入库前检查清单是否允许进入 `knowledge-ingest`。
-4. 只有当前三项都满足时，才继续判断哪些结论具备长期复用价值。
-5. 区分哪些是事实、哪些是模式、哪些是启发。
-6. 判断更适合做：
+2. 再检查 `machine-review-note` 的 `final_decision` 是否为 `pass`。
+3. 再检查 `review-note` 的 `final_decision` 是否为 `approve_for_ingest`。
+4. 再核对入库前检查清单是否允许进入 `knowledge-ingest`。
+5. 只有当前四项都满足时，才继续判断哪些结论具备长期复用价值。
+6. 区分哪些是事实、哪些是模式、哪些是启发。
+7. 判断更适合做：
    - 方法条目
    - 模式条目
    - 案例条目
    - 观点条目
-7. 写清来源、适用范围和不适用范围。
-8. 记录后续可能的维护责任。
+8. 写清来源、适用范围和不适用范围。
+9. 记录后续可能的维护责任。
 
 ## 输出格式
 
@@ -82,14 +85,17 @@ handoff_to:
 - 是否明确可复用范围
 - 是否避免把一次性状态记成长期知识
 - 是否保留来源路径
+- 是否保留机器预审依据
 - 是否保留核查与 review 依据
 - 是否存在明确的 `approve_for_ingest`
 
 ## Handoff 规则
 
 - 入库后应回链到原始研究文档
+- 入库后应回链到 `machine-review-note`
 - 入库后应回链到 `fact-check-note` 与 review 结论
 - 如果条目仍高度依赖上下文，应先保留在研究文档，不强行入库
+- 如果 `machine-review-note` 不是 `pass`，不得产出知识条目
 - 如果 `review-note` 不是 `approve_for_ingest`，不得产出知识条目
 
 ## 示例调用

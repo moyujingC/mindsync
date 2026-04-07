@@ -11,7 +11,7 @@
 
 它服务于以下链路：
 
-`research-draft` -> `fact-check-note` -> `review-note` -> `knowledge-ingest`
+`research-draft` -> `fact-check-note` -> `machine-review-note` -> `review-note` -> `knowledge-ingest`
 
 ## 1. 基本信息
 
@@ -21,6 +21,7 @@
 - reviewer：
 - 对应 `research-draft`：
 - 对应 `fact-check-note`：
+- 对应 `machine-review-note`：
 
 ## 2. review 目标
 

@@ -55,9 +55,10 @@
 1. `problem-framing`
 2. `research`
 3. `synthesis`
-4. `review`
-5. `knowledge-ingest`
-6. `handoff`
+4. `machine-review`
+5. `review`
+6. `knowledge-ingest`
+7. `handoff`
 
 对应最小产物：
 
@@ -67,6 +68,8 @@
   - 事实材料与拆解记录
 - `synthesis`
   - 摘要、模式和启发
+- `machine-review`
+  - 机器预审结论
 - `review`
   - 创作者 / 用户 review 结论
 - `knowledge-ingest`
@@ -76,14 +79,16 @@
 
 对“研究中心生成内容准备进入知识库”的场景，默认还要在 `synthesis` 与 `review` 之间插入一层事实核查：
 
-`research-draft` -> `fact-check` -> `review` -> `knowledge-ingest`
+`research-draft` -> `fact-check` -> `machine-review` -> `review` -> `knowledge-ingest`
 
 约束如下：
 
 - 核查不通过：
   - 退回 `research-draft` 修改
 - 核查通过：
-  - 才允许进入创作者 / 用户 review
+  - 才允许进入机器预审
+- 机器预审未通过：
+  - 退回 `research-draft` 修改
 - review 未通过：
   - 不进入知识库
 

@@ -11,14 +11,16 @@
 
 默认服务于以下主链路：
 
-`research-draft` -> `fact-check` -> `review` -> `knowledge-ingest`
+`research-draft` -> `fact-check` -> `machine-review` -> `review` -> `knowledge-ingest`
 
 其中：
 
 - 核查不通过：
   - 退回研究草案修改
 - 核查通过：
-  - 才进入你的 review
+  - 才进入机器预审
+- 机器预审不通过：
+  - 退回研究草案修改
 - review 不通过：
   - 不入知识库
 
@@ -137,7 +139,31 @@
 - `不通过`
   - 退回研究草案继续修改，本轮不进入你的 review
 
-### 第七步：交给你 review
+### 第七步：生成 machine-review note
+
+在这一阶段，基于：
+
+- `fact-check-note`
+- 当前回改后的研究草案
+
+生成一份 `machine-review-note`。
+
+机器预审结论只分三种：
+
+1. `pass`
+2. `pass_with_conditions`
+3. `fail`
+
+处理规则：
+
+- `pass`
+  - 允许进入你的 review
+- `pass_with_conditions`
+  - 先完成指定修改，再重跑本步
+- `fail`
+  - 退回研究草案继续修改
+
+### 第八步：交给你 review
 
 只有在以下条件成立时，才进入你的 review：
 
@@ -145,8 +171,9 @@
 - 事实主张状态已明确
 - 稿子已经完成核查回写
 - 当前版本适合判断“是否值得入知识库”
+- `machine-review-note` 结论为 `pass`
 
-### 第八步：review 后再决定是否入知识库
+### 第九步：review 后再决定是否入知识库
 
 只有在你的 review 明确通过时，才允许进入 `knowledge-ingest`。
 
