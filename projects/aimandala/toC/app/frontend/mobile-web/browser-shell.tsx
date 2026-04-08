@@ -10,215 +10,39 @@ import {
   refreshMobileWebReport,
   runMobileWebLiteFlow,
 } from "./controller";
+import {
+  createPreviewRouteInput,
+  DEFAULT_PREVIEW_DRAFT,
+  finalizePreviewSelectedReport,
+  getRouteFromPathname,
+  PREVIEW_POLLING_INTERVAL_MS,
+  PREVIEW_POLLING_MAX_ATTEMPTS,
+  PREVIEW_ROUTE_OPTIONS,
+} from "./preview-shell-support";
 import { MobileWebRuntime } from "./runtime";
-import type { MobileWebRouteInput } from "./router-plan";
 import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
 import {
-  getDraftUploadImageResponse,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
   type MobileWebUploadDraft,
 } from "./state";
+import { ensureUploadedImagePath } from "./upload-runtime";
 import type { HistoryFilterId } from "./components/history-cards";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
   MandalaFlowState,
-  UploadImageResponse,
 } from "../shared/types";
-import { detectCircles, getInterpretationList, uploadImage } from "../shared/api";
+import { detectCircles, getInterpretationList } from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
-
-const defaultDraft: MobileWebUploadDraft = {
-  imagePath: "/tmp/example-mandala.png",
-  theme: "general",
-  reportVariant: "lite",
-  paintingIntention: "",
-  paintingFeeling: "",
-};
-
-const routeOptions: Array<{ label: string; value: MobileWebRouteId }> = [
-  { label: "落地页", value: "landing" },
-  { label: "上传", value: "upload" },
-  { label: "报告选择", value: "reportEntry" },
-  { label: "加载", value: "loading" },
-  { label: "报告旧版", value: "report" },
-  { label: "报告旧版对照", value: "reportLegacy" },
-  { label: "历史", value: "history" },
-  { label: "Pro 报告", value: "upgrade" },
-];
-
-const previewPollingIntervalMs = 1500;
-const previewPollingMaxAttempts = 8;
-
-async function finalizePreviewSelectedReport(args: {
-  interpretationId: string;
-  state: MandalaFlowState;
-  draft: MobileWebUploadDraft;
-  userId: string;
-  historyQuery: InterpretationListQuery;
-  setPreviewFlowState: (state: MandalaFlowState) => void;
-  setPreviewHistoryRecords: (records: InterpretationRecordResponse[] | null) => void;
-  setPreviewHistoryStatusLabel: (label: string | null) => void;
-  setPreviewHistoryStatusDetail: (detail: string | null) => void;
-  setPreviewHistoryStatusTone: (tone: "preview" | "runtime") => void;
-  setRoute: (route: MobileWebRouteId) => void;
-}) {
-  const {
-    interpretationId,
-    state,
-    draft,
-    userId,
-    historyQuery,
-    setPreviewFlowState,
-    setPreviewHistoryRecords,
-    setPreviewHistoryStatusLabel,
-    setPreviewHistoryStatusDetail,
-    setPreviewHistoryStatusTone,
-    setRoute,
-  } = args;
-
-  let finalState = state;
-  if ((draft.reportVariant ?? "lite") === "pro") {
-    const upgraded = await openMobileWebUpgradeEntry(
-      interpretationId,
-      state,
-    );
-    const proReport = await refreshMobileWebProReport(
-      interpretationId,
-      upgraded.state,
-    );
-    const proReady =
-      proReport.report?.version === "pro" &&
-      typeof proReport.report.report === "string" &&
-      proReport.report.report.trim();
-
-    finalState = proReport.state;
-    setPreviewFlowState(finalState);
-    setRoute(proReady ? "upgrade" : "loading");
-  } else {
-    setPreviewFlowState(finalState);
-    setRoute("report");
-  }
-
-  try {
-    const records = await getInterpretationList(userId, {
-      filter: historyQuery.filter as HistoryFilterId | undefined,
-      limit: historyQuery.limit,
-      theme: historyQuery.theme,
-    });
-    setPreviewHistoryRecords(records);
-    setPreviewHistoryStatusLabel("当前显示真实历史记录");
-    setPreviewHistoryStatusDetail("刚完成的主路径结果已尝试回流到真实历史列表。");
-    setPreviewHistoryStatusTone("runtime");
-  } catch {
-    setPreviewHistoryRecords(null);
-    setPreviewHistoryStatusLabel("历史记录暂时回退到占位数据");
-    setPreviewHistoryStatusDetail("真实主路径已执行，但历史列表拉取失败，因此仍显示 fixture。");
-    setPreviewHistoryStatusTone("preview");
-  }
-}
-
-function getRouteFromPathname(pathname: string): MobileWebRouteId {
-  const matched = mobileWebRoutes.find((route) => route.path === pathname);
-  return matched?.id ?? "landing";
-}
-
-async function ensureUploadedImagePath(
-  draft: MobileWebUploadDraft,
-  onResolved: (uploaded: UploadImageResponse) => void,
-): Promise<UploadImageResponse> {
-  const existingUpload = getDraftUploadImageResponse(draft);
-  if (existingUpload) {
-    return existingUpload;
-  }
-
-  if (draft.browserFile) {
-    const uploaded = await uploadImage(draft.browserFile);
-    onResolved(uploaded);
-    return uploaded;
-  }
-
-  const fallbackUpload = {
-    success: true,
-    image_path: draft.imagePath,
-    storage_backend: "path",
-    storage_key: draft.imagePath,
-    original_filename: draft.imagePath.split("/").pop() || draft.imagePath,
-    content_type: null,
-    size_bytes: 0,
-    image_url: null,
-  };
-  onResolved(fallbackUpload);
-  return fallbackUpload;
-}
-
-function createInput(
-  route: MobileWebRouteId,
-  draft: MobileWebUploadDraft,
-  interpretationId: string,
-  userId: string,
-  historyQuery: InterpretationListQuery,
-): MobileWebRouteInput {
-  switch (route) {
-    case "landing":
-      return {
-        route,
-        params: {
-          draft,
-          userId,
-        },
-      };
-
-    case "upload":
-    case "reportEntry":
-      return {
-        route,
-        params: {
-          draft,
-          userId,
-        },
-      };
-
-    case "loading":
-      return {
-        route,
-        params: {
-          draft,
-          userId,
-        },
-      };
-
-    case "report":
-    case "reportLegacy":
-    case "upgrade":
-      return {
-        route,
-        params: {
-          interpretationId,
-          uploadDraft: draft,
-        },
-      };
-
-    case "history":
-      return {
-        route,
-        params: {
-          userId,
-          uploadDraft: draft,
-          historyQuery,
-        },
-      };
-  }
-}
 
 export function MobileWebBrowserShell() {
   const [route, setRoute] = useState<MobileWebRouteId>(() =>
     typeof window === "undefined" ? "landing" : getRouteFromPathname(window.location.pathname),
   );
-  const [draft, setDraft] = useState<MobileWebUploadDraft>(defaultDraft);
+  const [draft, setDraft] = useState<MobileWebUploadDraft>(DEFAULT_PREVIEW_DRAFT);
   const [interpretationId, setInterpretationId] = useState("demo-interpretation-id");
   const [userId, setUserId] = useState("demo-user-id");
   const [previewMode, setPreviewMode] = useState(true);
@@ -244,7 +68,7 @@ export function MobileWebBrowserShell() {
     useState<string | null>(null);
 
   const input = useMemo(
-    () => createInput(route, draft, interpretationId, userId, {
+    () => createPreviewRouteInput(route, draft, interpretationId, userId, {
       filter: (previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all",
       limit: previewHistoryQuery.limit ?? 20,
       theme: previewHistoryQuery.theme,
@@ -328,8 +152,8 @@ export function MobileWebBrowserShell() {
                 currentInterpretationId,
                 previewFlowState,
                 {
-                  intervalMs: previewPollingIntervalMs,
-                  maxAttempts: previewPollingMaxAttempts,
+                  intervalMs: PREVIEW_POLLING_INTERVAL_MS,
+                  maxAttempts: PREVIEW_POLLING_MAX_ATTEMPTS,
                   onTick: handleTick,
                 },
               )
@@ -350,8 +174,8 @@ export function MobileWebBrowserShell() {
             currentInterpretationId,
             upgradeSnapshot.state,
             {
-              intervalMs: previewPollingIntervalMs,
-              maxAttempts: previewPollingMaxAttempts,
+              intervalMs: PREVIEW_POLLING_INTERVAL_MS,
+              maxAttempts: PREVIEW_POLLING_MAX_ATTEMPTS,
               onTick: handleTick,
             },
           );
@@ -360,8 +184,8 @@ export function MobileWebBrowserShell() {
           currentInterpretationId,
           previewFlowState,
           {
-            intervalMs: previewPollingIntervalMs,
-            maxAttempts: previewPollingMaxAttempts,
+            intervalMs: PREVIEW_POLLING_INTERVAL_MS,
+            maxAttempts: PREVIEW_POLLING_MAX_ATTEMPTS,
             onTick: handleTick,
           },
         );
@@ -630,7 +454,7 @@ export function MobileWebBrowserShell() {
                     setRoute(event.target.value as MobileWebRouteId);
                   }}
                 >
-                  {routeOptions.map((option) => (
+                  {PREVIEW_ROUTE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>

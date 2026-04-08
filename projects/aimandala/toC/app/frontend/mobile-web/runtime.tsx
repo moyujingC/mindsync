@@ -16,16 +16,15 @@ import {
   runMobileWebLiteFlow,
   refreshMobileWebReport,
 } from "./controller";
-import { detectCircles, uploadImage } from "../shared/api";
+import { ensureUploadedImagePath } from "./upload-runtime";
+import { detectCircles } from "../shared/api";
 import { applyDetection, initialMandalaFlowState, selectImage } from "../shared/core";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
   MandalaFlowState,
 } from "../shared/types";
-import type { UploadImageResponse } from "../shared/types";
 import {
-  getDraftUploadImageResponse,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
@@ -113,35 +112,6 @@ function createRuntimeLoadingState(
     ...detected,
     step: "liteGenerating",
   };
-}
-
-async function ensureUploadedImagePath(
-  draft: MobileWebUploadDraft,
-  onResolved: (uploaded: UploadImageResponse) => void,
-): Promise<UploadImageResponse> {
-  const existingUpload = getDraftUploadImageResponse(draft);
-  if (existingUpload) {
-    return existingUpload;
-  }
-
-  if (draft.browserFile) {
-    const uploaded = await uploadImage(draft.browserFile);
-    onResolved(uploaded);
-    return uploaded;
-  }
-
-  const fallbackUpload = {
-    success: true,
-    image_path: draft.imagePath,
-    storage_backend: "path",
-    storage_key: draft.imagePath,
-    original_filename: draft.imagePath.split("/").pop() || draft.imagePath,
-    content_type: null,
-    size_bytes: 0,
-    image_url: null,
-  };
-  onResolved(fallbackUpload);
-  return fallbackUpload;
 }
 
 function getDraftFromInput(
