@@ -14,3 +14,11 @@
 - 不把浏览器临时上传文件放到这里
 
 如果样本来自一次联调或人工验收，应先脱敏，再整理成可复用 fixture 再进入本目录。
+
+当前已沉淀：
+
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/manifest.yaml`
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/README.md`
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-a-lite-general.yaml`
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-b-lite-to-pro-career.yaml`
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-c-existing-reuse.yaml`

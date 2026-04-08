@@ -1,0 +1,27 @@
+id: toc-mvp-sample-b-lite-to-pro-career
+status: in_review
+owner: Test / QA
+scope: To C MVP
+theme: career
+fixture_type: pro-upgrade-path
+asset_ref:
+  kind: descriptor-only
+  note: 当前仓库先固定样本描述，真实脱敏图片待补
+input:
+  user_profile: qa-fixture-user-b
+  image_label: 已完成 Lite 的职业主题曼陀罗图片
+  painting_intention: 理清当前职业推进中的拉扯
+  painting_feeling: 想前进，但也担心失控
+  expected_report_version: pro
+coverage:
+  - TC-03
+  - TC-04
+expected_observations:
+  - Lite 完成后可继续进入 Pro 升级链路
+  - 默认 report 读取返回最佳可用版本 pro
+  - 显式请求 version=lite 时仍保留 lite 契约
+  - version_purchased 应为 ["lite", "pro"]
+review_entrypoints:
+  - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/frontend/mobile-web/controller.ts
+  - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/tests/unit/test_report_contracts.py
+  - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/tests/unit/test_api_health.py

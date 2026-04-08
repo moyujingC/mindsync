@@ -127,8 +127,10 @@
   - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-first-pass-verification.md`
 - 第一轮样本验证记录已补：
   - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-sample-validation.md`
+- 第一批固定样本描述已补：
+  - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/manifest.yaml`
 - history 页当前已能直接打开已有 `Lite + Pro` 记录并落到 Pro 报告页，不再重复走 Lite 刷新
 - Lite / Pro 报告当前都已开始向旧主线正式报告的文案组织靠拢，但仍未接入旧主线完整 AI 生成链路
 - 当前仍缺：
   - 更贴近旧主线正式内容的 Lite / Pro 生成验证结果
-  - 更贴近长期接口契约的固定样本固化
+  - 固定样本对应的真实脱敏图片与截图资产

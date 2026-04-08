@@ -24,11 +24,14 @@
 - `toC/data/` 用于可复用结构化样本或示例输出
 - `toC/app/backend/data/interpretations/` 与 `uploads/` 属于运行时目录，不作为正式样本目录
 
-本轮由于尚未补齐脱敏固定样本文件，因此先记录样本类型与验证口径。
+本轮已补第一批固定样本描述文件，但真实脱敏图片资产与截图仍待继续补齐。
 
 ## 3. 第一轮样本记录
 
 ### 样本 A：正常上传并生成 Lite
+
+- fixture_id：`toc-mvp-sample-a-lite-general`
+- fixture_path：`/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-a-lite-general.yaml`
 
 - 样本类型：单张正常曼陀罗图片，主题为 `general`
 - 目标：覆盖 `TC-01` 与 `TC-02`
@@ -43,6 +46,9 @@
 
 ### 样本 B：Lite 成功后升级到 Pro
 
+- fixture_id：`toc-mvp-sample-b-lite-to-pro-career`
+- fixture_path：`/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-b-lite-to-pro-career.yaml`
+
 - 样本类型：已生成 Lite 的记录继续进入 Pro 升级
 - 目标：覆盖 `TC-03`
 - 观察结果：
@@ -56,6 +62,9 @@
 
 ### 样本 C：命中已有记录并复用
 
+- fixture_id：`toc-mvp-sample-c-existing-reuse`
+- fixture_path：`/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-c-existing-reuse.yaml`
+
 - 样本类型：同一用户、相同输入再次发起解读
 - 目标：覆盖 `TC-04` 与 `TC-05`
 - 观察结果：
@@ -66,7 +75,7 @@
 
 ## 4. 本轮样本验证结论
 
-当前已经有了第一轮样本验证记录，但还不算完整样本资产。它的作用主要是：
+当前已经有了第一轮样本验证记录和固定样本描述文件，但还不算完整样本资产。它的作用主要是：
 
 1. 让 QA 文档不再只停留在“建议覆盖哪些样本”
 2. 明确区分正式样本目录与运行时目录
@@ -74,6 +83,6 @@
 
 ## 5. 下一步建议
 
-1. 在 `fixtures/` 中补 2 到 3 组脱敏固定样本
+1. 为现有 fixture 补真实脱敏图片或截图资产
 2. 为命中已有记录场景补更直接的复查证据
-3. 把样本 A / B / C 映射到具体 fixture 文件名与验收截图
+3. 把 fixture 清单继续接到自动化验证脚本
