@@ -3,7 +3,7 @@
 > 状态：in_review
 > 版本：0.1.1
 > owner：Test / QA
-> last_updated：2026-04-07
+> last_updated：2026-04-08
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md
 > 项目：aimandala
 > 阶段：verification
@@ -118,11 +118,15 @@
 - `一镜 Lite 版 -> 一梳 Pro 版` 当前最小正式链路已可重复验证
 - 最近一轮命令级验证已通过：
   - `pytest projects/aimandala/toC/app/backend/tests/unit/test_api_health.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py`
+  - `npm test`
   - `npm run typecheck`
   - `npm run build:mobile-web`
+- 第一轮纸面验收记录已补：
+  - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-first-pass-verification.md`
+- 第一轮样本验证记录已补：
+  - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-sample-validation.md`
 - history 页当前已能直接打开已有 `Lite + Pro` 记录并落到 Pro 报告页，不再重复走 Lite 刷新
 - Lite / Pro 报告当前都已开始向旧主线正式报告的文案组织靠拢，但仍未接入旧主线完整 AI 生成链路
 - 当前仍缺：
-  - 第一轮纸面验证记录
-  - 第一批迁入后的样本验证结果
   - 更贴近旧主线正式内容的 Lite / Pro 生成验证结果
+  - 更贴近长期接口契约的前端与后端样本固化

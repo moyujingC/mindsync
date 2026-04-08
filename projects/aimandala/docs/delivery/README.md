@@ -8,3 +8,10 @@
 - 暂不迁什么
 - 目录如何调整
 - 当前仍未解决的风险和后续动作
+
+当前已沉淀：
+
+- `2026-04-04-frontend-baseline-delivery.md`
+- `2026-04-04-mobile-web-interaction-baseline.md`
+- `2026-04-04-report-content-iteration-guide.md`
+- `2026-04-08-architecture-remediation-delivery.md`

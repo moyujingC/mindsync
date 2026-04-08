@@ -11,9 +11,9 @@
 当前已沉淀：
 
 - `2026-04-04-toc-mvp-qa-checklist.md`
+- `2026-04-08-toc-mvp-first-pass-verification.md`
+- `2026-04-08-toc-mvp-sample-validation.md`
 
 后续新增：
 
-- 第一轮纸面验收记录
-- 第一批样本验证记录
 - 结构调整后的补充验证记录
