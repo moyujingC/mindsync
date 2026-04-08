@@ -194,6 +194,7 @@ class ReportContractAssembler:
                         lite_report.theme_insights.to_dict() if lite_report.theme_insights else None
                     ),
                     "three_awareness": [item.to_dict() for item in lite_report.three_awareness],
+                    "self_understanding_blocks": self._build_self_understanding_blocks(lite_report),
                     "six_insights_rendered": lite_report.six_insights_rendered,
                     "experiment_rendered": lite_report.experiment_rendered,
                     "pro_teaser": lite_report.pro_teaser,
@@ -207,4 +208,46 @@ class ReportContractAssembler:
             "error": "lite report not generated yet",
             "can_upgrade": False,
             "upgrade_price": None,
+        }
+
+    def _build_self_understanding_blocks(self, lite_report: Any) -> dict[str, Any]:
+        story = lite_report.story if getattr(lite_report, "story", None) else None
+        theme_insights = (
+            lite_report.theme_insights.to_dict()
+            if getattr(lite_report, "theme_insights", None)
+            else {"scene": "", "impact": "", "awareness": ""}
+        )
+        daily_awareness = [
+            item.to_dict()
+            for item in getattr(lite_report, "three_awareness", []) or []
+        ]
+
+        return {
+            "title": getattr(lite_report, "title", ""),
+            "opening_hit": getattr(lite_report, "overall_impression", ""),
+            "visual_evidence": {
+                "summary": getattr(lite_report, "visual_elements_rendered", ""),
+                "anchors": [],
+            },
+            "state_interpretation": {
+                "current_state": story.base.content if story and story.base else "",
+                "emotional_tension": story.contradiction.content if story and story.contradiction else "",
+                "explanation_chain": getattr(lite_report, "emotion_portrait_rendered", ""),
+            },
+            "pattern_naming": {
+                "pattern_name": "",
+                "pattern_description": story.pattern.content if story and story.pattern else "",
+                "protective_logic": story.defense.content if story and story.defense else "",
+            },
+            "reality_connection": {
+                "life_dimension": "",
+                "typical_scene": theme_insights.get("scene", ""),
+                "current_impact": theme_insights.get("impact", ""),
+            },
+            "next_step": {
+                "direction": theme_insights.get("awareness", ""),
+                "action": daily_awareness[0]["content"] if daily_awareness else "",
+            },
+            "theme_insights": theme_insights,
+            "daily_awareness": daily_awareness,
         }

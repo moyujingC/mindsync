@@ -196,6 +196,10 @@ def test_http_prompt_runtime_normalizes_lite_alias_keys():
                 "主题场景": "别名主题场景",
                 "主题影响": "别名主题影响",
                 "主题觉察": "别名主题觉察",
+                "三个日常小觉察": [
+                    {"day": 1, "title": "先停一下", "content": "先看见自己在赶什么。"},
+                    {"day": 2, "title": "留一点白", "content": "今天只保留一件最重要的事。"},
+                ],
                 "pro预告": "别名 Pro 预告",
             },
         }
@@ -215,10 +219,80 @@ def test_http_prompt_runtime_normalizes_lite_alias_keys():
     assert result.get("theme_scene") == "别名主题场景"
     assert result.get("theme_impact") == "别名主题影响"
     assert result.get("theme_awareness") == "别名主题觉察"
+    assert isinstance(result.get("three_awareness"), list)
+    assert result["three_awareness"][0]["title"] == "先停一下"
     assert result.get("pro_teaser") == "别名 Pro 预告"
     assert isinstance(result.get("story"), dict)
     assert result["story"].get("base") == "别名故事底色"
     assert result["story"].get("contradiction") == "别名故事矛盾"
+
+
+def test_http_prompt_runtime_normalizes_self_understanding_canonical_keys():
+    runtime = HTTPPromptRuntime(
+        HTTPPromptRuntimeConfig(
+            endpoint_url="https://example.com/runtime",
+            timeout_seconds=5,
+        )
+    )
+    response_payload = json.dumps(
+        {
+            "report_type": "lite",
+            "structured": {
+                "self_understanding_report": {
+                    "title": "慢慢归位",
+                    "opening_hit": "你最近像是在一边往前，一边确认自己还能不能稳稳站住。",
+                    "visual_evidence": {
+                        "summary": "画面里明显能看到收束和试探并存，所以这不是停住，而是在重新校准。",
+                    },
+                    "state_interpretation": {
+                        "current_state": "你正在进入一种重新整理自己的阶段。",
+                        "emotional_tension": "你既想推进，又怕再次把自己耗空。",
+                        "explanation_chain": "这种判断来自画面里的收束感、停顿感和谨慎展开的节奏。",
+                    },
+                    "pattern_naming": {
+                        "pattern_name": "先稳住再前进",
+                        "pattern_description": "你习惯先把内部秩序理顺，再决定如何往外走。",
+                        "protective_logic": "这是一种避免再次透支自己的保护方式。",
+                    },
+                    "reality_connection": {
+                        "typical_scene": "在事业里，你会在想答应机会时又先停下来确认节奏。",
+                        "current_impact": "这会让你外表看起来慢一点，但内在其实是在避免失控。",
+                    },
+                    "next_step": {
+                        "direction": "先分清什么是真想推进，什么只是怕落后。",
+                        "action": "今天只保留一件真正重要的推进动作。",
+                    },
+                    "theme_insights": {
+                        "scene": "在事业里，你最近更常出现在想推进又想保留空间的状态。",
+                        "impact": "这会影响你答应任务和安排节奏的方式。",
+                        "awareness": "先别逼自己全开，先确认最值得投入的一件事。",
+                    },
+                    "daily_awareness": [
+                        {"day": 1, "title": "先收一点", "content": "把今天最消耗你的事情写下来。"},
+                    ],
+                },
+                "pro_teaser": "如果继续往下看，你还可以知道这种模式为什么会反复出现。",
+            },
+        }
+    )
+
+    with patch(
+        "app.core.pipeline.prompt_runtime.urlopen",
+        return_value=_FakeHTTPResponse(response_payload),
+    ):
+        result = runtime.generate_lite(prompt="hello", schema={"type": "lite"})
+
+    assert isinstance(result, dict)
+    assert result.get("title") == "慢慢归位"
+    assert "重新校准" in (result.get("visual_elements") or "")
+    assert "重新整理自己" in (result.get("emotion_portrait") or "")
+    assert result.get("theme_scene", "").startswith("在事业里")
+    assert result.get("theme_impact", "").startswith("这会影响")
+    assert result.get("theme_awareness", "").startswith("先别逼自己")
+    assert isinstance(result.get("three_awareness"), list)
+    assert result["three_awareness"][0]["title"] == "先收一点"
+    assert isinstance(result.get("story"), dict)
+    assert result["story"].get("pattern", "").startswith("先稳住再前进")
 
 
 def test_http_prompt_runtime_normalizes_pro_alias_keys():

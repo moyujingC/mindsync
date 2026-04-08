@@ -2,7 +2,11 @@ import { useMemo, useState } from "react";
 
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
-import { getLiteStructuredReport } from "../../shared/core";
+import {
+  getLiteStructuredReport,
+  hasProReportAccess,
+  resolveSelfUnderstandingReportCta,
+} from "../../shared/core";
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebRouteId } from "../routes";
 import type { MobileWebUploadDraft } from "../state";
@@ -382,14 +386,22 @@ export function MobileWebLegacyReportPage({
   uploadDraft,
   onPrimaryAction,
   onSecondaryAction,
+  primaryDisabled = false,
 }: MobileWebLegacyReportPageProps) {
   const [saved, setSaved] = useState(false);
   const displayReport = useMemo(() => parseLegacyReport(state), [state]);
+  const structured = getLiteStructuredReport(state.report);
+  const resultCta = resolveSelfUnderstandingReportCta({
+    theme: uploadDraft?.theme,
+    canUpgrade: Boolean(state.report?.can_upgrade || state.status?.can_upgrade),
+    hasProAccess: hasProReportAccess(state),
+    structured,
+  });
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const innerRadius = state.status?.three_circles?.inner_radius ?? state.interpretation?.three_circles?.inner_radius ?? 0.3;
   const middleRadius = state.status?.three_circles?.middle_radius ?? state.interpretation?.three_circles?.middle_radius ?? 0.68;
   const isUpgrade = route === "upgrade" || state.step === "upgradePlaceholder";
-  const canOpenSiblingReport = !isUpgrade;
+  const primaryCtaDisabled = primaryDisabled || isUpgrade;
 
   if (state.step === "error" && state.lastError) {
     return (
@@ -537,18 +549,21 @@ export function MobileWebLegacyReportPage({
             <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${brandPattern})`, backgroundSize: 250, backgroundRepeat: "repeat", opacity: 0.03 }} />
             <div style={{ position: "relative", padding: 20 }}>
               <div style={{ textAlign: "center", marginBottom: 18 }}>
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 16, fontWeight: 600, color: "#E8DCC8", letterSpacing: "0.1em", lineHeight: 1.6 }}>你的画里，还藏着这些答案</span>
+                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 16, fontWeight: 600, color: "#E8DCC8", letterSpacing: "0.1em", lineHeight: 1.6 }}>{resultCta.legacyCardTitle}</span>
               </div>
               <div style={{ display: "grid", gap: 10, marginBottom: 18, fontSize: 13, color: "rgba(232,220,200,0.85)", lineHeight: 1.7 }}>
-                <div style={{ display: "flex", gap: 10 }}><span style={{ color: "#D4A054", minWidth: 20 }}>✦</span><span>这种模式的童年根源是什么？</span></div>
-                <div style={{ display: "flex", gap: 10 }}><span style={{ color: "#D4A054", minWidth: 20 }}>✦</span><span>它在日常生活中还有哪些表现？</span></div>
-                <div style={{ display: "flex", gap: 10 }}><span style={{ color: "#D4A054", minWidth: 20 }}>✦</span><span>一份专属于你的21天转变方案</span></div>
+                {resultCta.legacyBulletPoints.map((item) => (
+                  <div key={item} style={{ display: "flex", gap: 10 }}>
+                    <span style={{ color: "#D4A054", minWidth: 20 }}>✦</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
-              <button type="button" onClick={onPrimaryAction} disabled={!canOpenSiblingReport} style={{ width: "100%", minHeight: 48, borderRadius: 12, border: "1px solid rgba(212,160,84,0.4)", background: canOpenSiblingReport ? "linear-gradient(135deg, rgba(212,160,84,0.25) 0%, rgba(200,120,80,0.2) 100%)" : "rgba(232,220,200,0.08)", color: canOpenSiblingReport ? "#E8DCC8" : "rgba(232,220,200,0.45)", fontSize: 14, letterSpacing: "0.05em", cursor: canOpenSiblingReport ? "pointer" : "default" }}>
-                {isUpgrade ? "当前正在查看 Pro 报告" : "看看 Pro 报告适不适合你"}
+              <button type="button" onClick={onPrimaryAction} disabled={primaryCtaDisabled} style={{ width: "100%", minHeight: 48, borderRadius: 12, border: "1px solid rgba(212,160,84,0.4)", background: primaryCtaDisabled ? "rgba(232,220,200,0.08)" : "linear-gradient(135deg, rgba(212,160,84,0.25) 0%, rgba(200,120,80,0.2) 100%)", color: primaryCtaDisabled ? "rgba(232,220,200,0.45)" : "#E8DCC8", fontSize: 14, letterSpacing: "0.05em", cursor: primaryCtaDisabled ? "default" : "pointer" }}>
+                {isUpgrade ? "当前正在查看更深层报告" : resultCta.primaryLabel}
               </button>
               <div style={{ textAlign: "center", marginTop: 10 }}>
-                <span style={{ fontSize: 11, color: "rgba(212,160,84,0.6)", letterSpacing: "0.03em" }}>Lite 与 Pro 现在是并列入口，可回到选择页切换</span>
+                <span style={{ fontSize: 11, color: "rgba(212,160,84,0.6)", letterSpacing: "0.03em" }}>{resultCta.legacyCaption}</span>
               </div>
             </div>
           </div>

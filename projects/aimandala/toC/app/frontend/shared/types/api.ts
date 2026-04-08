@@ -112,6 +112,43 @@ export interface LiteStructuredReport {
   overall_impression: string;
   visual_elements_rendered: string;
   emotion_portrait_rendered: string;
+  self_understanding_blocks?: {
+    title?: string;
+    opening_hit?: string;
+    visual_evidence?: {
+      summary?: string;
+      anchors?: string[];
+    } | null;
+    state_interpretation?: {
+      current_state?: string;
+      emotional_tension?: string;
+      explanation_chain?: string;
+    } | null;
+    pattern_naming?: {
+      pattern_name?: string;
+      pattern_description?: string;
+      protective_logic?: string;
+    } | null;
+    reality_connection?: {
+      life_dimension?: string;
+      typical_scene?: string;
+      current_impact?: string;
+    } | null;
+    next_step?: {
+      direction?: string;
+      action?: string;
+    } | null;
+    theme_insights?: {
+      scene?: string;
+      impact?: string;
+      awareness?: string;
+    } | null;
+    daily_awareness?: Array<{
+      day?: number;
+      title?: string;
+      content?: string;
+    }> | null;
+  } | null;
   story?: {
     base?: { content?: string; connector?: string | null } | null;
     contradiction?: { content?: string; connector?: string | null } | null;

@@ -7,7 +7,11 @@ import {
   StructuredReportCards,
   UploadAssetStatusCard,
 } from "../components/report-cards";
-import { getLiteStructuredReport } from "../../shared/core";
+import {
+  getLiteStructuredReport,
+  hasProReportAccess,
+  resolveSelfUnderstandingReportCta,
+} from "../../shared/core";
 import type { MandalaFlowState } from "../../shared/types";
 import { getUploadAssetRef, type MobileWebUploadDraft } from "../state";
 import type { ReportPageSection } from "../pages";
@@ -83,6 +87,73 @@ function parseReportSections(markdown: string | null | undefined): ReportPageSec
   return sections;
 }
 
+function buildSelfUnderstandingSections(structured: NonNullable<ReturnType<typeof getLiteStructuredReport>>): ReportPageSection[] {
+  const blocks = structured.self_understanding_blocks;
+  if (!blocks) {
+    return [];
+  }
+
+  const sections: ReportPageSection[] = [];
+
+  const pushSection = (id: string, heading: string, body: string | null | undefined) => {
+    if (typeof body !== "string" || !body.trim()) {
+      return;
+    }
+    sections.push({
+      id,
+      heading,
+      body: body.trim(),
+    });
+  };
+
+  pushSection("opening-hit", "整体命中", blocks.opening_hit);
+  pushSection("visual-evidence", "画面依据", blocks.visual_evidence?.summary);
+  pushSection(
+    "state-interpretation",
+    "状态解释",
+    [
+      blocks.state_interpretation?.current_state,
+      blocks.state_interpretation?.emotional_tension,
+      blocks.state_interpretation?.explanation_chain,
+    ]
+      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
+      .join("\n\n"),
+  );
+  pushSection(
+    "pattern-naming",
+    "模式命名",
+    [
+      blocks.pattern_naming?.pattern_name,
+      blocks.pattern_naming?.pattern_description,
+      blocks.pattern_naming?.protective_logic,
+    ]
+      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
+      .join("\n\n"),
+  );
+  pushSection(
+    "reality-connection",
+    "现实连接",
+    [
+      blocks.reality_connection?.typical_scene,
+      blocks.reality_connection?.current_impact,
+    ]
+      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
+      .join("\n\n"),
+  );
+  pushSection(
+    "next-step",
+    "一个下一步",
+    [
+      blocks.next_step?.direction,
+      blocks.next_step?.action,
+    ]
+      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
+      .join("\n\n"),
+  );
+
+  return sections;
+}
+
 export function MobileWebReportPage({
   route = "report",
   state,
@@ -100,26 +171,31 @@ export function MobileWebReportPage({
   const isError = state.step === "error";
   const isUpgradeRoute = route === "upgrade" || state.step === "upgradePlaceholder";
   const canRetryRefresh = Boolean(isError && state.interpretation?.interpretation_id);
-  const canOpenUpgrade = Boolean(
-    !isLoading && !isError && !isUpgradeRoute && (state.report?.can_upgrade || state.status?.can_upgrade),
-  );
+  const resultCta = resolveSelfUnderstandingReportCta({
+    theme: uploadDraft?.theme,
+    canUpgrade: Boolean(state.report?.can_upgrade || state.status?.can_upgrade),
+    hasProAccess: hasProReportAccess(state),
+    structured,
+  });
   const existingHint = state.interpretation?.existing
     ? "当前命中了已有解读记录，本次直接复用了同一用户、同一图片、同一主题下的现有结果。"
     : null;
   const reportSections = parseReportSections(typeof state.report?.report === "string" ? state.report.report : null);
+  const selfUnderstandingSections = structured ? buildSelfUnderstandingSections(structured) : [];
   const reportTitle = structured?.title || state.report?.title || (isUpgradeRoute ? "一梳 Pro 版入口" : "你的曼陀罗解读");
   const reportSubtitle = isUpgradeRoute
     ? "当前先进入 Pro 版兼容入口，后续再补正式升级页设计；这里先把报告内容和主路径缝顺。"
-    : structured?.overall_impression || state.report?.overall_impression || "曼曼已经把这一轮 Lite 版解读整理好了。";
+    : structured?.self_understanding_blocks?.opening_hit ||
+      structured?.overall_impression ||
+      state.report?.overall_impression ||
+      "曼曼已经把这一轮 Lite 版解读整理好了。";
   const primaryLabel = isLoading
     ? "继续查看生成进度"
     : canRetryRefresh
       ? "重试刷新结果"
       : isUpgradeRoute
         ? "查看历史记录"
-        : canOpenUpgrade
-          ? "查看一梳 Pro 版入口"
-          : "开始新一轮上传";
+        : resultCta.primaryLabel;
   const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
   const footerHint = isLoading
     ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
@@ -127,11 +203,9 @@ export function MobileWebReportPage({
       ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
       : isUpgradeRoute
         ? "当前已经进入一梳 Pro 版兼容入口页，可以先回看历史记录，后续再继续补齐正式 Pro 主路径。"
-        : canOpenUpgrade
-          ? "一镜 Lite 版已经准备好，当前可以继续进入一梳 Pro 版入口，也可以重新上传新的画作。"
-          : isError
-            ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
-            : "Lite 结果已经准备好。现在先以内容为准，后续再对齐 Figma 设计稿。";
+        : isError
+          ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
+          : resultCta.footerHint;
   const metrics = [
     {
       label: "当前版本",
@@ -157,11 +231,13 @@ export function MobileWebReportPage({
 
   const contentSections: ReportPageSection[] = reportSections.length
     ? reportSections
+    : selfUnderstandingSections.length
+      ? selfUnderstandingSections
     : structured
       ? [
           {
             id: "fallback-impression",
-            heading: "整体感受",
+            heading: "整体命中",
             body: structured.overall_impression,
           },
         ]

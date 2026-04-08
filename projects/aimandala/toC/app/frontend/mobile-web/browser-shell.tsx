@@ -15,6 +15,7 @@ import {
   DEFAULT_PREVIEW_DRAFT,
   finalizePreviewSelectedReport,
   getRouteFromPathname,
+  isLocalDebugHost,
   PREVIEW_POLLING_INTERVAL_MS,
   PREVIEW_POLLING_MAX_ATTEMPTS,
   PREVIEW_ROUTE_OPTIONS,
@@ -22,9 +23,11 @@ import {
 import { MobileWebRuntime } from "./runtime";
 import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
 import {
+  getDraftReportVariant,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
+  type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "./state";
 import { ensureUploadedImagePath } from "./upload-runtime";
@@ -36,17 +39,25 @@ import type {
   MandalaFlowState,
 } from "../shared/types";
 import { detectCircles, getInterpretationList } from "../shared/api";
-import { initialMandalaFlowState } from "../shared/core";
+import {
+  applyError,
+  getLiteStructuredReport,
+  hasProReportAccess,
+  initialMandalaFlowState,
+  resolveSelfUnderstandingReportCta,
+} from "../shared/core";
 
 export function MobileWebBrowserShell() {
+  const localDebugEnabled =
+    typeof window !== "undefined" && isLocalDebugHost(window.location.hostname);
   const [route, setRoute] = useState<MobileWebRouteId>(() =>
     typeof window === "undefined" ? "landing" : getRouteFromPathname(window.location.pathname),
   );
   const [draft, setDraft] = useState<MobileWebUploadDraft>(DEFAULT_PREVIEW_DRAFT);
   const [interpretationId, setInterpretationId] = useState("demo-interpretation-id");
   const [userId, setUserId] = useState("demo-user-id");
-  const [previewMode, setPreviewMode] = useState(true);
-  const [controlsOpen, setControlsOpen] = useState(false);
+  const [previewMode, setPreviewMode] = useState(import.meta.env.DEV);
+  const [controlsOpen, setControlsOpen] = useState(import.meta.env.DEV || localDebugEnabled);
   const [previewDetection, setPreviewDetection] =
     useState<DetectCirclesResponse | null>(null);
   const [previewDetecting, setPreviewDetecting] = useState(false);
@@ -134,7 +145,7 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    const selectedVariant = draft.reportVariant ?? "lite";
+    const selectedVariant = getDraftReportVariant(draft);
 
     let cancelled = false;
 
@@ -161,6 +172,18 @@ export function MobileWebBrowserShell() {
 
           if (liteSnapshot.state.step === "liteGenerating" || liteSnapshot.state.step === "error") {
             return liteSnapshot;
+          }
+
+          if (hasProReportAccess(liteSnapshot.state)) {
+            return pollMobileWebProReportUntilReady(
+              currentInterpretationId,
+              liteSnapshot.state,
+              {
+                intervalMs: PREVIEW_POLLING_INTERVAL_MS,
+                maxAttempts: PREVIEW_POLLING_MAX_ATTEMPTS,
+                onTick: handleTick,
+              },
+            );
           }
 
           const upgradeSnapshot =
@@ -204,7 +227,7 @@ export function MobileWebBrowserShell() {
             typeof snapshot.report.report === "string" &&
             snapshot.report.report.trim();
 
-          if (proReady) {
+          if (proReady || snapshot.state.step === "error") {
             setRoute("upgrade");
           }
           return;
@@ -300,6 +323,30 @@ export function MobileWebBrowserShell() {
         return;
       }
 
+      const resultCta = resolveSelfUnderstandingReportCta({
+        theme: draft.theme,
+        canUpgrade: Boolean(
+          previewFlowState?.report?.can_upgrade ||
+            previewFlowState?.status?.can_upgrade,
+        ),
+        hasProAccess: hasProReportAccess(previewFlowState ?? initialMandalaFlowState),
+        structured: getLiteStructuredReport(previewFlowState?.report ?? null),
+      });
+
+      if (resultCta.intent === "open_upgrade_report") {
+        setDraft((current) => mergeMobileWebUploadDraft(current, {
+          reportVariant: "pro",
+        }));
+        setRoute("loading");
+        return;
+      }
+
+      if (resultCta.intent === "restart_upload") {
+        setPreviewFlowState(null);
+        setRoute("upload");
+        return;
+      }
+
       setRoute("reportEntry");
       return;
     }
@@ -367,6 +414,7 @@ export function MobileWebBrowserShell() {
       setDraft((current) => ({
         ...current,
         reportVariant,
+        reportType: reportVariant === "pro" ? "deep_pattern" : "self_understanding",
       }));
 
       if (reportVariant === "pro") {
@@ -376,6 +424,7 @@ export function MobileWebBrowserShell() {
           draft: {
             ...draft,
             reportVariant: "pro",
+            reportType: "deep_pattern",
           },
           userId,
           historyQuery: previewHistoryQuery,
@@ -402,8 +451,8 @@ export function MobileWebBrowserShell() {
 
   return (
     <div className="browser-shell">
-      <section className={`browser-shell__viewport${import.meta.env.DEV ? "" : " browser-shell__viewport--clean"}`}>
-        {import.meta.env.DEV ? (
+      <section className={`browser-shell__viewport${localDebugEnabled ? "" : " browser-shell__viewport--clean"}`}>
+        {localDebugEnabled ? (
           <div className="browser-shell__devbar">
           <div className="browser-shell__devbar-copy">
             <p className="eyebrow">一镜一梳 To C</p>
@@ -425,120 +474,121 @@ export function MobileWebBrowserShell() {
           </div>
         ) : null}
 
-        {import.meta.env.DEV && controlsOpen ? (
-          <aside className="browser-shell__panel browser-shell__panel--inline">
-            <div className="browser-shell__panel-header">
-              <h2>开发控制台</h2>
-              <p className="muted">
-                这里只用于本地预览和联调，不属于正式 mobile-web 页面。
-              </p>
-            </div>
+        <div className={`browser-shell__workspace${localDebugEnabled && controlsOpen ? " browser-shell__workspace--with-panel" : ""}`}>
+          {localDebugEnabled && controlsOpen ? (
+            <aside className="browser-shell__panel browser-shell__panel--side">
+              <div className="browser-shell__panel-header">
+                <h2>开发控制台</h2>
+                <p className="muted">
+                  这里只用于本地预览和联调，不属于正式 mobile-web 页面。
+                </p>
+              </div>
 
-            <div className="browser-shell__controls">
-              <label className="field field--checkbox">
-                <input
-                  type="checkbox"
-                  checked={previewMode}
-                  onChange={(event) => {
-                    setPreviewMode(event.target.checked);
-                  }}
-                />
-                <span>使用本地预览模式（不请求后端）</span>
-              </label>
+              <div className="browser-shell__controls">
+                <label className="field field--checkbox">
+                  <input
+                    type="checkbox"
+                    checked={previewMode}
+                    onChange={(event) => {
+                      setPreviewMode(event.target.checked);
+                    }}
+                  />
+                  <span>使用本地预览模式（不请求后端）</span>
+                </label>
 
-              <label className="field">
-                <span>路由</span>
-                <select
-                  value={route}
-                  onChange={(event) => {
-                    setRoute(event.target.value as MobileWebRouteId);
-                  }}
-                >
-                  {PREVIEW_ROUTE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                <label className="field">
+                  <span>路由</span>
+                  <select
+                    value={route}
+                    onChange={(event) => {
+                      setRoute(event.target.value as MobileWebRouteId);
+                    }}
+                  >
+                    {PREVIEW_ROUTE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-              <label className="field">
-                <span>图片路径</span>
-                <input
-                  value={draft.imagePath}
-                  onChange={(event) => {
-                    setDraft((current) => mergeMobileWebUploadDraft(current, {
-                      imagePath: event.target.value,
-                    }));
-                  }}
-                />
-              </label>
+                <label className="field">
+                  <span>图片路径</span>
+                  <input
+                    value={draft.imagePath}
+                    onChange={(event) => {
+                      setDraft((current) => mergeMobileWebUploadDraft(current, {
+                        imagePath: event.target.value,
+                      }));
+                    }}
+                  />
+                </label>
 
-              <label className="field">
-                <span>主题</span>
-                <input
-                  value={draft.theme}
-                  onChange={(event) => {
-                    setDraft((current) => ({
-                      ...current,
-                      theme: event.target.value,
-                    }));
-                  }}
-                />
-              </label>
+                <label className="field">
+                  <span>主题</span>
+                  <input
+                    value={draft.theme}
+                    onChange={(event) => {
+                      setDraft((current) => ({
+                        ...current,
+                        theme: event.target.value,
+                      }));
+                    }}
+                  />
+                </label>
 
-              <label className="field">
-                <span>创作意图</span>
-                <textarea
-                  rows={3}
-                  value={draft.paintingIntention}
-                  onChange={(event) => {
-                    setDraft((current) => ({
-                      ...current,
-                      paintingIntention: event.target.value,
-                    }));
-                  }}
-                />
-              </label>
+                <label className="field">
+                  <span>创作意图</span>
+                  <textarea
+                    rows={3}
+                    value={draft.paintingIntention}
+                    onChange={(event) => {
+                      setDraft((current) => ({
+                        ...current,
+                        paintingIntention: event.target.value,
+                      }));
+                    }}
+                  />
+                </label>
 
-              <label className="field">
-                <span>创作感受</span>
-                <textarea
-                  rows={3}
-                  value={draft.paintingFeeling}
-                  onChange={(event) => {
-                    setDraft((current) => ({
-                      ...current,
-                      paintingFeeling: event.target.value,
-                    }));
-                  }}
-                />
-              </label>
+                <label className="field">
+                  <span>创作感受</span>
+                  <textarea
+                    rows={3}
+                    value={draft.paintingFeeling}
+                    onChange={(event) => {
+                      setDraft((current) => ({
+                        ...current,
+                        paintingFeeling: event.target.value,
+                      }));
+                    }}
+                  />
+                </label>
 
-              <label className="field">
-                <span>interpretationId</span>
-                <input
-                  value={interpretationId}
-                  onChange={(event) => {
-                    setInterpretationId(event.target.value);
-                  }}
-                />
-              </label>
+                <label className="field">
+                  <span>interpretationId</span>
+                  <input
+                    value={interpretationId}
+                    onChange={(event) => {
+                      setInterpretationId(event.target.value);
+                    }}
+                  />
+                </label>
 
-              <label className="field">
-                <span>userId</span>
-                <input
-                  value={userId}
-                  onChange={(event) => {
-                    setUserId(event.target.value);
-                  }}
-                />
-              </label>
-            </div>
-          </aside>
-        ) : null}
+                <label className="field">
+                  <span>userId</span>
+                  <input
+                    value={userId}
+                    onChange={(event) => {
+                      setUserId(event.target.value);
+                    }}
+                  />
+                </label>
+              </div>
+            </aside>
+          ) : null}
 
-        <div className="browser-shell__phone">
+          <div className="browser-shell__phone">
           {previewMode ? (
             <MobileWebApp
               {...previewProps}
@@ -591,8 +641,10 @@ export function MobileWebBrowserShell() {
               onReportEntryBack={() => {
                 setRoute("upload");
               }}
-              onReportEntryChooseLite={async () => {
-                const nextDraft = { ...draft, reportVariant: "lite" as const };
+              onReportEntryChooseReportType={async (reportType: MobileWebReportProductType) => {
+                const nextDraft = mergeMobileWebUploadDraft(draft, {
+                  reportType,
+                });
                 setDraft(nextDraft);
                 setPreviewFlowState(null);
                 setRoute("loading");
@@ -637,58 +689,14 @@ export function MobileWebBrowserShell() {
                     setPreviewHistoryStatusTone,
                     setRoute,
                   });
-                } catch {
-                } finally {
-                  setPreviewFlowRunning(false);
-                }
-              }}
-              onReportEntryChoosePro={async () => {
-                const nextDraft = { ...draft, reportVariant: "pro" as const };
-                setDraft(nextDraft);
-                setPreviewFlowState(null);
-                setRoute("loading");
-
-                setPreviewFlowRunning(true);
-                try {
-                  const resolvedImagePath = await ensureUploadedImagePath(
-                    nextDraft,
-                    (uploaded) => {
-                      setDraft((current) => ({
-                        ...current,
-                        uploadAsset: toMobileWebUploadAssetRef(uploaded),
-                      }));
-                    },
-                  );
-                  const result = await runMobileWebLiteFlow(
-                    toStartCreatePayload(
-                      {
-                        ...nextDraft,
-                        uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-                        innerRadius: previewDetection?.inner_radius ?? nextDraft.innerRadius,
-                        middleRadius: previewDetection?.middle_radius ?? nextDraft.middleRadius,
-                      },
-                      userId,
+                } catch (error) {
+                  setPreviewFlowState(
+                    applyError(
+                      initialMandalaFlowState,
+                      error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
                     ),
                   );
-                  setPreviewFlowState(result.state);
-                  if (result.state.step === "liteGenerating") {
-                    setRoute("loading");
-                    return;
-                  }
-                  await finalizePreviewSelectedReport({
-                    interpretationId: result.state.interpretation?.interpretation_id ?? "demo-interpretation-id",
-                    state: result.state,
-                    draft: { ...nextDraft, uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath) },
-                    userId,
-                    historyQuery: previewHistoryQuery,
-                    setPreviewFlowState,
-                    setPreviewHistoryRecords,
-                    setPreviewHistoryStatusLabel,
-                    setPreviewHistoryStatusDetail,
-                    setPreviewHistoryStatusTone,
-                    setRoute,
-                  });
-                } catch {
+                  setRoute(getDraftReportVariant(nextDraft) === "pro" ? "upgrade" : "report");
                 } finally {
                   setPreviewFlowRunning(false);
                 }
@@ -792,6 +800,7 @@ export function MobileWebBrowserShell() {
               environmentTone={import.meta.env.DEV ? "runtime" : undefined}
             />
           )}
+          </div>
         </div>
       </section>
     </div>

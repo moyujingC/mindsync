@@ -16,7 +16,11 @@ import type {
   InterpretationRecordResponse,
   MandalaFlowState,
 } from "../shared/types";
-import type { MobileWebUploadDraft } from "./state";
+import type {
+  MobileWebReportProductType,
+  MobileWebUploadDraft,
+} from "./state";
+import { getDraftReportVariant } from "./state";
 
 export interface MobileWebAppProps {
   route: MobileWebRouteId;
@@ -44,8 +48,7 @@ export interface MobileWebAppProps {
   onUploadPreviewDetect?: () => void;
   onUploadBack?: () => void;
   onReportEntryBack?: () => void;
-  onReportEntryChooseLite?: () => void;
-  onReportEntryChoosePro?: () => void;
+  onReportEntryChooseReportType?: (reportType: MobileWebReportProductType) => void;
   onReportPrimaryAction?: () => void;
   onReportSecondaryAction?: () => void;
   onReportBackAction?: () => void;
@@ -87,8 +90,7 @@ export function MobileWebApp({
   onUploadPreviewDetect,
   onUploadBack,
   onReportEntryBack,
-  onReportEntryChooseLite,
-  onReportEntryChoosePro,
+  onReportEntryChooseReportType,
   onReportPrimaryAction,
   onReportSecondaryAction,
   onReportBackAction,
@@ -136,8 +138,7 @@ export function MobileWebApp({
         <MobileWebReportEntryPage
           draft={uploadDraft}
           onBack={onReportEntryBack}
-          onChooseLite={onReportEntryChooseLite}
-          onChoosePro={onReportEntryChoosePro}
+          onChooseReportType={onReportEntryChooseReportType}
         />
       );
 
@@ -148,7 +149,7 @@ export function MobileWebApp({
       return (
         <MobileWebLoadingPage
           state={flowState}
-          isPro={uploadDraft?.reportVariant === "pro"}
+          isPro={uploadDraft ? getDraftReportVariant(uploadDraft) === "pro" : false}
           onBack={onReportSecondaryAction}
           onClose={onReportSecondaryAction}
         />
@@ -159,7 +160,7 @@ export function MobileWebApp({
         return "Missing flow state";
       }
       return (
-        <MobileWebLegacyReportPage
+        <MobileWebReportPage
           route={route}
           state={flowState}
           uploadDraft={uploadDraft}

@@ -11,11 +11,15 @@ import {
 } from "./controller";
 import type { MobileWebRouteInput } from "./router-plan";
 import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
-import type { MobileWebUploadDraft } from "./state";
+import {
+  getDraftReportVariant,
+  type MobileWebUploadDraft,
+} from "./state";
 
 export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
   theme: "general",
+  reportType: "self_understanding",
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
@@ -27,12 +31,12 @@ export const PREVIEW_ROUTE_OPTIONS: Array<{
 }> = [
   { label: "落地页", value: "landing" },
   { label: "上传", value: "upload" },
-  { label: "报告选择", value: "reportEntry" },
+  { label: "报告矩阵入口", value: "reportEntry" },
   { label: "加载", value: "loading" },
-  { label: "报告旧版", value: "report" },
+  { label: "自我理解报告", value: "report" },
   { label: "报告旧版对照", value: "reportLegacy" },
   { label: "历史", value: "history" },
-  { label: "Pro 报告", value: "upgrade" },
+  { label: "深层模式报告", value: "upgrade" },
 ];
 
 export const PREVIEW_POLLING_INTERVAL_MS = 1500;
@@ -140,7 +144,7 @@ export async function finalizePreviewSelectedReport(
   } = args;
 
   let finalState = state;
-  if ((draft.reportVariant ?? "lite") === "pro") {
+  if (getDraftReportVariant(draft) === "pro") {
     const upgraded = await openMobileWebUpgradeEntry(
       interpretationId,
       state,

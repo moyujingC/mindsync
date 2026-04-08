@@ -39,6 +39,11 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     assert payload["version"] == "lite"
     assert payload["title"] == "向前先稳住的人"
     assert payload["structured"]["prompt_schema_validation_issues"] == []
+    assert payload["structured"]["self_understanding_blocks"]["opening_hit"] == payload["overall_impression"]
+    assert (
+        payload["structured"]["self_understanding_blocks"]["visual_evidence"]["summary"]
+        == payload["structured"]["visual_elements_rendered"]
+    )
     assert payload["can_upgrade"] is True
     assert payload["upgrade_price"] == orchestrator.get_upgrade_diff()
 

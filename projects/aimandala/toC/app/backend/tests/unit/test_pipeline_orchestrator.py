@@ -9,13 +9,19 @@ sys.path.insert(
 )
 
 from app.core.analysis.circle_detector import CircleDetectionResult
-from app.core.pipeline.data_models import GenerationStatus
+from app.core.pipeline.data_models import GenerationStatus, Layer1LiteDraft
+from app.core.pipeline.prompt_runtime import NoopPromptRuntime
 from app.core.pipeline.orchestrator_v2 import (
     GenerationStage,
     LayeredOrchestrator,
     PricingSnapshot,
 )
-from app.core.pipeline.generation_runtime import LiteGenerationBundle, ProGenerationBundle
+from app.core.pipeline.generation_runtime import (
+    LiteGenerationBundle,
+    ProGenerationBundle,
+    PromptBackedReportGenerationRuntime,
+)
+from app.core.pipeline.report_contracts import PromptSchemaValidator
 from app.core.pipeline.store import InterpretationStore
 
 
@@ -250,6 +256,27 @@ def test_get_status_returns_compact_snapshot(tmp_path):
     assert status["report_ready"] is True
 
 
+def test_prompt_backed_runtime_applies_three_awareness_payload():
+    runtime = PromptBackedReportGenerationRuntime(prompt_runtime=NoopPromptRuntime())
+    layer = Layer1LiteDraft()
+
+    runtime._apply_lite_payload(
+        layer,
+        {
+            "three_awareness": [
+                {"day": 1, "title": "先慢下来", "content": "今天先不要同时推进三件事。"},
+                {"title": "看见拉扯", "content": "留意你是在想前进，还是想先保护自己。"},
+            ]
+        },
+    )
+
+    assert len(layer.three_awareness) == 2
+    assert layer.three_awareness[0].day == 1
+    assert layer.three_awareness[0].title == "先慢下来"
+    assert layer.three_awareness[1].day == 2
+    assert layer.three_awareness[1].content == "留意你是在想前进，还是想先保护自己。"
+
+
 def test_select_pro_imbalance_type_uses_configured_rules():
     orchestrator = LayeredOrchestrator(enable_vision=False)
 
@@ -323,6 +350,7 @@ def test_upgrade_to_pro_generates_placeholder_report(tmp_path):
 
 def test_prompt_schema_validation_reports_missing_required_fields():
     orchestrator = LayeredOrchestrator(enable_vision=False)
+    validator = PromptSchemaValidator(orchestrator.prompt_builder)
     lite_layer = orchestrator._build_layer1_placeholder(
         type(
             "RecordStub",
@@ -355,8 +383,8 @@ def test_prompt_schema_validation_reports_missing_required_fields():
     )
     pro_layer.first_impression = ""
 
-    assert "title" in orchestrator._validate_lite_prompt_schema(lite_layer)
-    assert "first_impression" in orchestrator._validate_pro_prompt_schema(pro_layer)
+    assert "title" in validator.validate_lite(lite_layer)
+    assert "first_impression" in validator.validate_pro(pro_layer)
 
 
 def test_generate_lite_placeholder_supports_custom_generation_runtime(tmp_path):

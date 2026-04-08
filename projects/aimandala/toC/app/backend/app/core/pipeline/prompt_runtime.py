@@ -180,16 +180,17 @@ class HTTPPromptRuntime:
         return self._normalize_lite_payload(payload)
 
     def _normalize_lite_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        payload = self._extract_lite_source_payload(payload)
         alias_map = {
             "title": ["title", "标题", "report_title"],
-            "overall_impression": ["overall_impression", "整体印象", "overall"],
+            "overall_impression": ["overall_impression", "整体印象", "overall", "opening_hit", "openingHit"],
             "visual_elements": ["visual_elements", "画面元素分析", "visual"],
             "emotion_portrait": ["emotion_portrait", "情绪画像", "emotion"],
             "story": ["story", "心灵画像故事"],
             "theme_scene": ["theme_scene", "themeScene", "主题场景", "scene"],
             "theme_impact": ["theme_impact", "themeImpact", "主题影响", "impact"],
             "theme_awareness": ["theme_awareness", "themeAwareness", "主题觉察", "awareness"],
-            "three_awareness": ["three_awareness", "threeAwareness", "三个日常小觉察"],
+            "three_awareness": ["three_awareness", "threeAwareness", "三个日常小觉察", "daily_awareness", "dailyAwareness"],
             "pro_teaser": ["pro_teaser", "proTeaser", "pro预告", "pro_teaser_text"],
         }
         normalized: Dict[str, Any] = {}
@@ -198,10 +199,83 @@ class HTTPPromptRuntime:
             if value is not None:
                 normalized[canonical_key] = value
 
+        visual_evidence = self._pick_alias_value(payload, ["visual_evidence", "visualEvidence"])
+        if "visual_elements" not in normalized and isinstance(visual_evidence, dict):
+            summary = visual_evidence.get("summary")
+            if isinstance(summary, str) and summary.strip():
+                normalized["visual_elements"] = summary.strip()
+
+        state_interpretation = self._pick_alias_value(
+            payload,
+            ["state_interpretation", "stateInterpretation"],
+        )
+        if "emotion_portrait" not in normalized and isinstance(state_interpretation, dict):
+            combined = self._compose_text_sections(
+                [
+                    state_interpretation.get("current_state"),
+                    state_interpretation.get("emotional_tension"),
+                    state_interpretation.get("explanation_chain"),
+                ]
+            )
+            if combined:
+                normalized["emotion_portrait"] = combined
+
+        pattern_naming = self._pick_alias_value(payload, ["pattern_naming", "patternNaming"])
+        reality_connection = self._pick_alias_value(
+            payload,
+            ["reality_connection", "realityConnection"],
+        )
+        next_step = self._pick_alias_value(payload, ["next_step", "nextStep"])
+        theme_insights = self._pick_alias_value(payload, ["theme_insights", "themeInsights"])
+
+        if "story" not in normalized:
+            story = self._build_story_from_self_understanding_blocks(
+                state_interpretation=state_interpretation,
+                pattern_naming=pattern_naming,
+                reality_connection=reality_connection,
+                next_step=next_step,
+            )
+            if story:
+                normalized["story"] = story
+
+        if "theme_scene" not in normalized:
+            theme_scene = self._pick_nested_string(theme_insights, "scene") or self._pick_nested_string(
+                reality_connection,
+                "typical_scene",
+            )
+            if theme_scene:
+                normalized["theme_scene"] = theme_scene
+
+        if "theme_impact" not in normalized:
+            theme_impact = self._pick_nested_string(theme_insights, "impact") or self._pick_nested_string(
+                reality_connection,
+                "current_impact",
+            )
+            if theme_impact:
+                normalized["theme_impact"] = theme_impact
+
+        if "theme_awareness" not in normalized:
+            theme_awareness = self._pick_nested_string(theme_insights, "awareness")
+            if not theme_awareness:
+                theme_awareness = self._pick_nested_string(next_step, "direction")
+            if not theme_awareness:
+                theme_awareness = self._pick_nested_string(next_step, "action")
+            if theme_awareness:
+                normalized["theme_awareness"] = theme_awareness
+
         story = normalized.get("story")
         if isinstance(story, dict):
             normalized["story"] = self._normalize_story_payload(story)
         return normalized
+
+    def _extract_lite_source_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        nested = payload.get("self_understanding_report")
+        if not isinstance(nested, dict):
+            return payload
+        merged = dict(payload)
+        for key, value in nested.items():
+            merged.setdefault(key, value)
+        return merged
 
     def _normalize_story_payload(self, story: Dict[str, Any]) -> Dict[str, Any]:
         alias_map = {
@@ -218,6 +292,44 @@ class HTTPPromptRuntime:
             if value is not None:
                 normalized[canonical_key] = value
         return normalized
+
+    def _build_story_from_self_understanding_blocks(
+        self,
+        *,
+        state_interpretation: Any,
+        pattern_naming: Any,
+        reality_connection: Any,
+        next_step: Any,
+    ) -> Dict[str, Any]:
+        if not any(
+            isinstance(item, dict)
+            for item in [state_interpretation, pattern_naming, reality_connection, next_step]
+        ):
+            return {}
+
+        story: Dict[str, Any] = {}
+        base = self._pick_nested_string(state_interpretation, "current_state")
+        contradiction = self._pick_nested_string(state_interpretation, "emotional_tension")
+        pattern_name = self._pick_nested_string(pattern_naming, "pattern_name")
+        pattern_description = self._pick_nested_string(pattern_naming, "pattern_description")
+        protective_logic = self._pick_nested_string(pattern_naming, "protective_logic")
+        current_impact = self._pick_nested_string(reality_connection, "current_impact")
+        direction = self._pick_nested_string(next_step, "direction")
+
+        if base:
+            story["base"] = base
+        if contradiction:
+            story["contradiction"] = contradiction
+        pattern_text = self._compose_text_sections([pattern_name, pattern_description], separator="：")
+        if pattern_text:
+            story["pattern"] = pattern_text
+        if protective_logic:
+            story["defense"] = protective_logic
+        if current_impact:
+            story["block"] = current_impact
+        if direction:
+            story["light"] = direction
+        return story
 
     def _normalize_pro_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         alias_map = {
@@ -241,6 +353,23 @@ class HTTPPromptRuntime:
             if key in payload:
                 return payload[key]
         return None
+
+    def _pick_nested_string(self, payload: Any, key: str) -> str | None:
+        if not isinstance(payload, dict):
+            return None
+        value = payload.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+        return None
+
+    def _compose_text_sections(
+        self,
+        values: list[Any],
+        *,
+        separator: str = "\n\n",
+    ) -> str:
+        parts = [value.strip() for value in values if isinstance(value, str) and value.strip()]
+        return separator.join(parts)
 
     def _looks_like_pro_payload(self, payload: Dict[str, Any]) -> bool:
         pro_markers = {

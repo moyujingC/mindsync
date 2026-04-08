@@ -4,6 +4,13 @@ import type {
   UploadImageResponse,
 } from "../shared/types";
 
+export type MobileWebReportVariant = "lite" | "pro";
+export type MobileWebReportProductType =
+  | "current_mirroring"
+  | "self_understanding"
+  | "issue_focus"
+  | "deep_pattern";
+
 export interface MobileWebUploadAssetRef {
   runtimeImagePath: string;
   storageBackend: string;
@@ -14,13 +21,38 @@ export interface MobileWebUploadAssetRef {
 export interface MobileWebUploadDraft {
   imagePath: string;
   theme: string;
-  reportVariant?: "lite" | "pro";
+  reportVariant?: MobileWebReportVariant;
+  reportType?: MobileWebReportProductType;
   paintingIntention: string;
   paintingFeeling: string;
   innerRadius?: number;
   middleRadius?: number;
   browserFile?: File | null;
   uploadAsset?: MobileWebUploadAssetRef | null;
+}
+
+export function inferReportTypeFromVariant(
+  reportVariant?: MobileWebReportVariant,
+): MobileWebReportProductType {
+  return reportVariant === "pro" ? "deep_pattern" : "self_understanding";
+}
+
+export function inferReportVariantFromType(
+  reportType?: MobileWebReportProductType,
+): MobileWebReportVariant {
+  return reportType === "deep_pattern" ? "pro" : "lite";
+}
+
+export function getDraftReportType(
+  draft: Pick<MobileWebUploadDraft, "reportType" | "reportVariant">,
+): MobileWebReportProductType {
+  return draft.reportType ?? inferReportTypeFromVariant(draft.reportVariant);
+}
+
+export function getDraftReportVariant(
+  draft: Pick<MobileWebUploadDraft, "reportType" | "reportVariant">,
+): MobileWebReportVariant {
+  return draft.reportVariant ?? inferReportVariantFromType(draft.reportType);
 }
 
 export function toMobileWebUploadAssetRef(
@@ -84,6 +116,14 @@ export function mergeMobileWebUploadDraft(
 
   if (patch.imagePath !== undefined || patch.browserFile !== undefined) {
     nextDraft.uploadAsset = patch.uploadAsset !== undefined ? patch.uploadAsset : null;
+  }
+
+  if (patch.reportType !== undefined && patch.reportVariant === undefined) {
+    nextDraft.reportVariant = inferReportVariantFromType(patch.reportType);
+  }
+
+  if (patch.reportVariant !== undefined && patch.reportType === undefined) {
+    nextDraft.reportType = inferReportTypeFromVariant(patch.reportVariant);
   }
 
   return nextDraft;

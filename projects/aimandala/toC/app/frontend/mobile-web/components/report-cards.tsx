@@ -3,6 +3,10 @@ import type { ReportPageMetric, ReportPageSection } from "../pages";
 import type { LiteStructuredReport, MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadAssetRef } from "../state";
 
+function joinSections(parts: Array<string | null | undefined>): string {
+  return parts.map((part) => (typeof part === "string" ? part.trim() : "")).filter(Boolean).join("\n\n");
+}
+
 export interface ReportMetricsRowProps {
   metrics: ReportPageMetric[];
 }
@@ -27,28 +31,133 @@ export interface StructuredReportCardsProps {
 export function StructuredReportCards({
   structured,
 }: StructuredReportCardsProps) {
+  const blocks = structured.self_understanding_blocks;
+  const openingHit = blocks?.opening_hit || structured.overall_impression;
+  const visualEvidence = blocks?.visual_evidence?.summary || structured.visual_elements_rendered;
+  const stateInterpretation =
+    joinSections([
+      blocks?.state_interpretation?.current_state,
+      blocks?.state_interpretation?.emotional_tension,
+      blocks?.state_interpretation?.explanation_chain,
+    ]) || structured.emotion_portrait_rendered;
+  const patternNaming =
+    joinSections([
+      blocks?.pattern_naming?.pattern_name,
+      blocks?.pattern_naming?.pattern_description,
+      blocks?.pattern_naming?.protective_logic,
+    ]) ||
+    joinSections([
+      structured.story?.pattern?.content,
+      structured.story?.defense?.content,
+    ]);
+  const realityConnection =
+    joinSections([
+      blocks?.reality_connection?.typical_scene,
+      blocks?.reality_connection?.current_impact,
+    ]) ||
+    joinSections([
+      structured.theme_insights?.scene,
+      structured.theme_insights?.impact,
+    ]);
+  const nextStep =
+    joinSections([
+      blocks?.next_step?.direction,
+      blocks?.next_step?.action,
+    ]) ||
+    joinSections([
+      structured.theme_insights?.awareness,
+      structured.three_awareness?.[0]?.content,
+    ]);
+
   return (
     <section className="mw-stack">
       <article className="mw-card">
         <div className="mw-card__header">
-          <h3>整体感受</h3>
+          <h3>整体命中</h3>
         </div>
-        <p>{structured.overall_impression}</p>
+        <p>{openingHit}</p>
       </article>
 
       <article className="mw-card">
         <div className="mw-card__header">
-          <h3>视觉元素</h3>
+          <h3>画面依据</h3>
         </div>
-        <p>{structured.visual_elements_rendered}</p>
+        <p>{visualEvidence}</p>
       </article>
 
       <article className="mw-card">
         <div className="mw-card__header">
-          <h3>情绪画像</h3>
+          <h3>状态解释</h3>
         </div>
-        <p>{structured.emotion_portrait_rendered}</p>
+        <p className="mw-prewrap">{stateInterpretation}</p>
       </article>
+
+      {patternNaming ? (
+        <article className="mw-card">
+          <div className="mw-card__header">
+            <h3>模式命名</h3>
+          </div>
+          <p className="mw-prewrap">{patternNaming}</p>
+        </article>
+      ) : null}
+
+      {realityConnection ? (
+        <article className="mw-card">
+          <div className="mw-card__header">
+            <h3>现实连接</h3>
+          </div>
+          <p className="mw-prewrap">{realityConnection}</p>
+        </article>
+      ) : null}
+
+      {nextStep ? (
+        <article className="mw-card">
+          <div className="mw-card__header">
+            <h3>一个下一步</h3>
+          </div>
+          <p className="mw-prewrap">{nextStep}</p>
+        </article>
+      ) : null}
+
+      {structured.three_awareness?.length ? (
+        <article className="mw-card">
+          <div className="mw-card__header">
+            <h3>日常小觉察</h3>
+          </div>
+          <div className="mw-stack" style={{ gap: 10 }}>
+            {structured.three_awareness.map((item, index) => (
+              <div key={`${item.day ?? index}-${item.title ?? index}`}>
+                <strong>{item.title || `第 ${item.day ?? index + 1} 条`}</strong>
+                <p className="mw-prewrap">{item.content || ""}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      ) : null}
+
+      {structured.theme_insights?.scene || structured.theme_insights?.impact || structured.theme_insights?.awareness ? (
+        <article className="mw-card">
+          <div className="mw-card__header">
+            <h3>主题洞察</h3>
+          </div>
+          <p className="mw-prewrap">
+            {joinSections([
+              structured.theme_insights?.scene,
+              structured.theme_insights?.impact,
+              structured.theme_insights?.awareness,
+            ])}
+          </p>
+        </article>
+      ) : null}
+
+      {!patternNaming && !realityConnection && !nextStep ? (
+        <article className="mw-card">
+          <div className="mw-card__header">
+            <h3>情绪画像</h3>
+          </div>
+          <p>{structured.emotion_portrait_rendered}</p>
+        </article>
+      ) : null}
 
       <article className="mw-card mw-card--accent">
         <div className="mw-card__header">

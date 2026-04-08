@@ -2,7 +2,7 @@
 
 这里放 `一镜一梳` 当前手机端 Web 版的实现入口。
 
-当前阶段这里还没有恢复页面层实现，但默认应按下面方式接共享层：
+当前这里已经恢复了 mobile-web 的页面层、运行时层和浏览器宿主层，但默认仍应按下面方式接共享层：
 
 - 从 `../shared/types` 读取 DTO 和流程类型
 - 从 `../shared/api` 调用当前 `V2` 后端接口
@@ -221,7 +221,7 @@
 - 提供一个开发辅助层，用来切换 `upload / loading / report / history / upgrade`
 - 保持 `runtime -> router-plan -> app` 这条装配链不变
 
-它不是正式 UI，也不是最终路由方案，但已经足够承担：
+它不是最终路由方案，但已经足够承担：
 
 1. 本地跑通 mobile-web 骨架
 2. 继续往上传页、结果页、历史页长真实组件
@@ -235,9 +235,10 @@
 
 当前开发壳还补了一层本地预览模式：
 
-- 默认开启
+- 仅在 `Vite dev` 下默认开启
 - 不请求后端
 - 可以直接切换 `upload / loading / report / history / upgrade`
+- `vite preview` / 生产构建默认走真实 runtime，不再静默停留在 preview 模式
 
 ## 当前上传对象状态约定
 

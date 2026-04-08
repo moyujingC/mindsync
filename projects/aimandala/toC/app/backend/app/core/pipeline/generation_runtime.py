@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, Optional, Protocol
 
 from .data_models import (
+    DailyAwareness,
     InterpretationRecord,
     Layer0Raw,
     Layer1LiteDraft,
@@ -183,6 +184,10 @@ class PromptBackedReportGenerationRuntime:
             payload.get("theme_awareness"),
             layer.theme_insights.awareness,
         )
+        layer.three_awareness = self._coerce_daily_awareness(
+            payload.get("three_awareness"),
+            layer.three_awareness,
+        )
 
     def _apply_pro_payload(self, layer: Layer3ProDraft, payload: Dict[str, Any]) -> None:
         layer.first_impression = self._coerce_string(
@@ -225,4 +230,34 @@ class PromptBackedReportGenerationRuntime:
             if not item.strip():
                 continue
             result[key] = item.strip()
+        return result or fallback
+
+    def _coerce_daily_awareness(
+        self,
+        value: Any,
+        fallback: list[DailyAwareness],
+    ) -> list[DailyAwareness]:
+        if not isinstance(value, list):
+            return fallback
+
+        result: list[DailyAwareness] = []
+        for index, item in enumerate(value, start=1):
+            if not isinstance(item, dict):
+                continue
+            title = item.get("title")
+            content = item.get("content")
+            if not isinstance(title, str) or not title.strip():
+                continue
+            if not isinstance(content, str) or not content.strip():
+                continue
+            day_raw = item.get("day")
+            day = day_raw if isinstance(day_raw, int) and day_raw > 0 else index
+            result.append(
+                DailyAwareness(
+                    day=day,
+                    title=title.strip(),
+                    content=content.strip(),
+                )
+            )
+
         return result or fallback

@@ -233,6 +233,16 @@ export async function pollMobileWebReportUntilReady(
     }
   }
 
+  if (latest.step === "liteGenerating") {
+    latestSnapshot = {
+      ...latestSnapshot,
+      state: applyError(
+        latest,
+        "Lite 报告生成超时，请稍后重试。",
+      ),
+    };
+  }
+
   return latestSnapshot;
 }
 
@@ -268,6 +278,16 @@ export async function pollMobileWebProReportUntilReady(
     if (attempt < maxAttempts - 1) {
       await wait(intervalMs);
     }
+  }
+
+  if (latest.step !== "error") {
+    latestSnapshot = {
+      ...latestSnapshot,
+      state: applyError(
+        latest,
+        "Pro 报告生成超时，请稍后重试。",
+      ),
+    };
   }
 
   return latestSnapshot;
