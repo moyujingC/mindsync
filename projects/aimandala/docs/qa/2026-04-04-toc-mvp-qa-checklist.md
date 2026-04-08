@@ -118,6 +118,8 @@
 - `一镜 Lite 版 -> 一梳 Pro 版` 当前最小正式链路已可重复验证
 - 最近一轮命令级验证已通过：
   - `pytest projects/aimandala/toC/app/backend/tests/unit/test_api_health.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py`
+  - `pytest projects/aimandala/toC/app/backend/tests/unit/test_report_contracts.py`
+  - `pytest projects/aimandala/toC/app/backend/tests/unit/test_api_health.py`
   - `npm test`
   - `npm run typecheck`
   - `npm run build:mobile-web`
@@ -129,4 +131,4 @@
 - Lite / Pro 报告当前都已开始向旧主线正式报告的文案组织靠拢，但仍未接入旧主线完整 AI 生成链路
 - 当前仍缺：
   - 更贴近旧主线正式内容的 Lite / Pro 生成验证结果
-  - 更贴近长期接口契约的前端与后端样本固化
+  - 更贴近长期接口契约的固定样本固化

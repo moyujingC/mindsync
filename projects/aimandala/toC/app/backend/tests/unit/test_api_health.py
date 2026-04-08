@@ -612,6 +612,50 @@ def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_pa
     assert all(item["theme"] == "career" for item in theme_data)
 
 
+def test_get_user_interpretations_endpoint_distinguishes_lite_and_lite_plus_pro(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    lite_image = tmp_path / "history-lite.png"
+    pro_image = tmp_path / "history-pro.png"
+    lite_image.write_bytes(b"mock-image-1")
+    pro_image.write_bytes(b"mock-image-2")
+
+    lite_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-history-version",
+            "image_path": str(lite_image),
+            "theme": "general",
+        },
+    )
+    pro_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-history-version",
+            "image_path": str(pro_image),
+            "theme": "career",
+        },
+    )
+
+    pro_interpretation_id = pro_response.json()["interpretation_id"]
+    upgrade_response = client.post(f"/api/v2/interpretations/{pro_interpretation_id}/upgrade")
+    assert upgrade_response.status_code == 200
+
+    response = client.get("/api/v2/users/user-api-history-version/interpretations")
+
+    assert response.status_code == 200
+    data = response.json()
+    versions_by_id = {
+        item["interpretation_id"]: item["version_purchased"]
+        for item in data
+    }
+
+    assert versions_by_id[lite_response.json()["interpretation_id"]] == ["lite"]
+    assert versions_by_id[pro_interpretation_id] == ["lite", "pro"]
+
+
 def test_get_interpretation_status_endpoint(tmp_path):
     from app.api.main import app
 
@@ -716,6 +760,48 @@ def test_upgrade_placeholder_endpoint(tmp_path):
     assert report_data["error"] is None
     assert "一梳 Pro 版报告" in report_data["report"]
     assert "重要声明" in report_data["report"]
+
+
+def test_get_report_endpoint_defaults_to_best_available_version_after_upgrade(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-upgrade-default-report.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-upgrade-default-report",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
+    assert upgrade_response.status_code == 200
+
+    default_report_response = client.get(
+        f"/api/v2/interpretations/{interpretation_id}/report"
+    )
+    lite_report_response = client.get(
+        f"/api/v2/interpretations/{interpretation_id}/report",
+        params={"version": "lite"},
+    )
+
+    assert default_report_response.status_code == 200
+    assert lite_report_response.status_code == 200
+
+    default_report = default_report_response.json()
+    lite_report = lite_report_response.json()
+
+    assert default_report["version"] == "pro"
+    assert default_report["structured"]["prompt_schema_validation_issues"] == []
+    assert default_report["can_upgrade"] is False
+    assert lite_report["version"] == "lite"
+    assert lite_report["structured"]["prompt_schema_validation_issues"] == []
+    assert lite_report["can_upgrade"] is False
 
 
 def test_upgrade_placeholder_endpoint_404_for_unknown_record():

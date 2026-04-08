@@ -69,6 +69,55 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     assert payload["upgrade_price"] is None
 
 
+def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_path):
+    orchestrator, image_path = _create_orchestrator(tmp_path)
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="report-contract-lite-after-pro",
+        )
+    )
+    orchestrator.upgrade_to_pro(record.interpretation_id)
+
+    upgraded = orchestrator.store.load(record.interpretation_id)
+    assert upgraded is not None
+
+    assembler = ReportContractAssembler(orchestrator.prompt_builder)
+    payload = assembler.build_report_payload(
+        record=upgraded,
+        requested_version="lite",
+        upgrade_diff=orchestrator.get_upgrade_diff(),
+    )
+
+    assert payload["version"] == "lite"
+    assert payload["structured"]["title"] == payload["title"]
+    assert payload["structured"]["prompt_schema_validation_issues"] == []
+    assert payload["can_upgrade"] is False
+    assert payload["upgrade_price"] is None
+
+
+def test_orchestrator_prefers_best_available_report_version(tmp_path):
+    orchestrator, image_path = _create_orchestrator(tmp_path)
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="report-contract-best-version",
+        )
+    )
+
+    lite_payload = orchestrator.get_report(record.interpretation_id)
+    assert lite_payload is not None
+    assert lite_payload["version"] == "lite"
+
+    orchestrator.upgrade_to_pro(record.interpretation_id)
+    best_available_payload = orchestrator.get_report(record.interpretation_id)
+
+    assert best_available_payload is not None
+    assert best_available_payload["version"] == "pro"
+    assert best_available_payload["structured"]["prompt_schema_validation_issues"] == []
+    assert best_available_payload["can_upgrade"] is False
+
+
 def test_report_contract_assembler_rejects_unsupported_version(tmp_path):
     orchestrator, image_path = _create_orchestrator(tmp_path)
     record = asyncio.run(
