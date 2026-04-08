@@ -15,6 +15,7 @@ from .prompt_runtime import (
     create_prompt_runtime_from_env,
     load_http_prompt_runtime_config_from_env,
 )
+from .report_contracts import PromptSchemaValidator, ReportContractAssembler
 from .report_blueprints import (
     BLUEPRINT_VALIDATION_ISSUES,
     DEFAULT_PRO_TEASER,
@@ -47,6 +48,8 @@ __all__ = [
     "PRO_IMBALANCE_SELECTION_RULES",
     "PRO_REPORT_BLUEPRINT",
     "ProGenerationBundle",
+    "PromptSchemaValidator",
+    "ReportContractAssembler",
     "ReportGenerationRuntime",
     "PRO_SECTION_TITLES",
 ]
