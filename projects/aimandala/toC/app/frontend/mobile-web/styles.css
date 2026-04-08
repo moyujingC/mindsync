@@ -68,10 +68,30 @@ select {
   margin: 0 auto 20px;
 }
 
+.browser-shell__panel--side {
+  width: min(100%, 420px);
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+}
+
 .browser-shell__viewport {
   display: grid;
   gap: 18px;
   padding: 24px;
+}
+
+.browser-shell__workspace {
+  width: min(100%, 960px);
+  margin: 0 auto;
+  display: grid;
+  justify-items: center;
+}
+
+.browser-shell__workspace--with-panel {
+  grid-template-columns: minmax(320px, 420px) minmax(320px, 430px);
+  align-items: start;
+  justify-content: center;
+  gap: 20px;
 }
 
 .browser-shell__phone {
@@ -708,6 +728,15 @@ select {
 @media (max-width: 920px) {
   .browser-shell__viewport {
     padding-top: 0;
+  }
+
+  .browser-shell__workspace--with-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .browser-shell__panel--side {
+    width: min(100%, 960px);
+    max-height: none;
   }
 
   .browser-shell__phone {
@@ -1925,10 +1954,11 @@ body {
 .am-history-pill {
   top: 24px;
   right: 16px;
-  padding: 7px 12px;
+  padding: 7px 10px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1;
+  letter-spacing: 0.02em;
   color: rgba(232, 220, 200, 0.85);
   background: rgba(26, 40, 68, 0.5);
   border-color: rgba(212, 160, 84, 0.2);
@@ -1971,43 +2001,53 @@ body {
 
 .am-hero-copy {
   padding: 0 24px;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
 }
 
 .am-hero-copy h1 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 600;
-  letter-spacing: 0.15em;
-  line-height: 1.4;
+  letter-spacing: 0.04em;
+  line-height: 1.32;
   color: #e8dcc8;
+  white-space: nowrap;
 }
 
 .am-hero-subtitle {
-  margin-top: 8px;
-  font-size: 14px;
-  line-height: 1.4;
-  letter-spacing: 0.06em;
-  color: rgba(232, 220, 200, 0.65);
+  margin-top: 0;
+  max-width: 17em;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: rgba(232, 220, 200, 0.72);
+  text-wrap: balance;
 }
 
 .am-hero-price {
-  margin-top: 12px;
-  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 10px;
+  border: 1px solid rgba(212, 160, 84, 0.18);
+  border-radius: 999px;
+  background: rgba(212, 160, 84, 0.06);
+  font-size: 11px;
   line-height: 1.4;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   color: #d4a054;
 }
 
 .am-primary-cta {
   position: relative;
   overflow: hidden;
-  width: 220px;
+  width: 196px;
   height: 50px;
   margin-top: 28px;
   border-radius: 999px;
   font-family: 'Noto Serif SC', serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   background: linear-gradient(135deg, #9b4030 0%, #c87850 30%, #d4a054 60%, #c87850 85%, #9b4030 100%);
   color: #f5efe2;
   box-shadow: 0 4px 24px rgba(155, 64, 48, 0.35), 0 0 40px rgba(212, 160, 84, 0.15);
@@ -2155,9 +2195,10 @@ body {
 
 .am-step-flow-card__title {
   margin-top: 10px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #4a3d30;
+  line-height: 1.35;
 }
 
 .am-step-flow-card__desc {
@@ -2165,7 +2206,7 @@ body {
   white-space: pre-line;
   text-align: center;
   font-size: 11px;
-  line-height: 1.5;
+  line-height: 1.45;
   color: #8a7c6c;
 }
 
@@ -2264,8 +2305,9 @@ body {
 .am-pricing-panel__desc {
   margin: 8px 0 0;
   font-size: 11px;
-  line-height: 1.6;
+  line-height: 1.5;
   color: rgba(232, 220, 200, 0.5);
+  text-wrap: balance;
 }
 
 .am-pricing-panel__title-row {
@@ -2625,7 +2667,7 @@ body {
 }
 
 .am-primary-cta--compact {
-  width: 240px;
+  width: 196px;
   height: 52px;
   margin-top: 28px;
 }

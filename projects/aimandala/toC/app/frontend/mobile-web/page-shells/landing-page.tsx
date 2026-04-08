@@ -143,12 +143,12 @@ function PriceCompare({ open, onClose }: { open: boolean; onClose: () => void })
   if (!open) return null;
 
   const rows = [
-    { feature: "AI色彩解读", lite: true, pro: true },
+    { feature: "AI 色彩解读", lite: true, pro: true },
     { feature: "结构分析", lite: true, pro: true },
     { feature: "基础情绪洞察", lite: true, pro: true },
     { feature: "深度心理分析", lite: false, pro: true },
     { feature: "进阶行动建议", lite: false, pro: true },
-    { feature: "个性化建议报告", lite: false, pro: true },
+    { feature: "个性化深度报告", lite: false, pro: true },
     { feature: "历史记录存档", lite: false, pro: true },
   ];
 
@@ -185,53 +185,53 @@ function PriceCompare({ open, onClose }: { open: boolean; onClose: () => void })
 const faqItems: FAQItemData[] = [
   {
     question: "曼陀罗解读是什么？",
-    shortAnswer: "AI分析你的曼陀罗绘画，解读颜色、形状背后的潜意识信息",
+    shortAnswer: "上传你的曼陀罗画作，获得一份关于情绪、关系与内在状态的探索性报告",
     content: (
       <>
         <FAQPara>
-          曼陀罗解读是一种结合传统五行理论与现代 AI 技术的图像分析方式。你上传自己画的曼陀罗后，系统会识别其中的颜色分布、几何结构与三圈布局，生成关于情绪状态、人际关系与内在需求的探索性报告。
+          曼陀罗解读是一种结合传统五行视角与现代 AI 图像分析的自我探索方式。你上传自己画的曼陀罗后，系统会识别颜色分布、几何结构与三圈布局，生成一份帮助你整理当下感受、关系状态与内在需求的阅读报告。
         </FAQPara>
-        <FAQNote>解读不替代专业心理咨询，但可以作为自我探索的辅助工具。</FAQNote>
+        <FAQNote>它不替代专业心理咨询，更适合作为一次温和的自我觉察与整理。</FAQNote>
       </>
     ),
   },
   {
     question: "需要准备什么样的画作？",
-    shortAnswer: "手绘的圆形图案即可，没有绘画基础要求",
+    shortAnswer: "手绘的圆形作品即可，不需要绘画基础，也没有标准答案",
     content: (
       <>
         <FAQBullets
           items={[
-            <><strong>形式：</strong>手绘的圆形对称图案，可以是彩色或黑白</>,
-            <><strong>工具：</strong>彩铅、水彩、马克笔、数字绘画均可</>,
-            <><strong>大小：</strong>建议直径不小于 10cm，方便 AI 识别细节</>,
-            <><strong>内容：</strong>没有固定要求，跟随直觉绘制即可</>,
+            <><strong>形式：</strong>手绘的圆形图案即可，可以是彩色，也可以是黑白</>,
+            <><strong>工具：</strong>彩铅、水彩、马克笔或数字绘画都可以</>,
+            <><strong>大小：</strong>建议直径不小于 10cm，方便识别细节</>,
+            <><strong>内容：</strong>不需要按模板画，跟着当下感觉去画就好</>,
           ]}
         />
         <FAQSubtitle>拍摄建议</FAQSubtitle>
-        <FAQBullets items={["在自然光下拍摄", "画面完整、不裁剪", "避免阴影和反光"]} />
+        <FAQBullets items={["尽量在自然光下拍摄", "保持画面完整，不要裁切圆形边缘", "尽量避免阴影、反光和模糊"]} />
       </>
     ),
   },
   {
     question: "解读结果准确吗？",
-    shortAnswer: "基于五行理论和 AI 分析，作为自我探索的参考",
+    shortAnswer: "它更适合作为启发与参照，而不是对你状态的最终定论",
     content: (
       <>
-        <FAQPara>我们的解读系统会综合以下维度：</FAQPara>
+        <FAQPara>解读会综合几个维度来生成，因此适合帮助你打开视角，而不是替你下结论：</FAQPara>
         <FAQBullets
           items={[
-            <><strong>传统五行理论：</strong>颜色与五行的对应关系</>,
-            <><strong>心理学研究：</strong>色彩心理学与投射理论</>,
-            <><strong>AI 视觉识别：</strong>颜色分布、形状特征与三圈结构</>,
+            <><strong>传统五行视角：</strong>观察颜色与五行之间的对应关系</>,
+            <><strong>心理学参考：</strong>结合色彩心理学与投射式理解</>,
+            <><strong>AI 视觉识别：</strong>分析颜色分布、形状特征与三圈结构</>,
           ]}
         />
-        <FAQSubtitle>关于准确率</FAQSubtitle>
+        <FAQSubtitle>怎么理解“准确”</FAQSubtitle>
         <FAQBullets
           items={[
-            "颜色识别和五行映射相对稳定",
-            "心理状态解读是启发式参考，而非确定性诊断",
-            "建议结合你自己的当下感受一起理解",
+            "颜色识别和结构分析相对稳定",
+            "对心理状态的理解是启发式阅读，不是医学或心理诊断",
+            "最重要的是结合你此刻的真实感受一起阅读",
           ]}
         />
         <FAQNote>如有严重心理困扰，请及时寻求专业帮助。</FAQNote>
@@ -240,15 +240,15 @@ const faqItems: FAQItemData[] = [
   },
   {
     question: "我的隐私如何保护？",
-    shortAnswer: "画作仅用于生成解读报告，不会用于其他用途",
+    shortAnswer: "你的画作只用于本次解读链路，不会被挪作无关用途",
     content: (
       <>
         <FAQBullets
           items={[
-            <><strong>加密处理：</strong>上传画作会按当前产品链路安全传输</>,
-            <><strong>仅用于解读：</strong>内容不会被用于无关用途</>,
-            <><strong>访问受限：</strong>只在本次解读与历史记录中可见</>,
-            <><strong>删除策略：</strong>正式政策页会补充完整留存说明</>,
+            <><strong>安全传输：</strong>上传画作会按当前产品链路进行安全传输</>,
+            <><strong>用途限定：</strong>内容仅用于生成你的解读报告</>,
+            <><strong>访问受限：</strong>默认只在你的解读流程与历史记录中可见</>,
+            <><strong>规则补充：</strong>完整留存与删除策略会在正式政策页说明</>,
           ]}
         />
       </>
@@ -256,26 +256,26 @@ const faqItems: FAQItemData[] = [
   },
   {
     question: "如何使用优惠券？",
-    shortAnswer: "Lite版 9.9 元；优惠券将通过各引流渠道发放",
+    shortAnswer: "一镜 Lite 版固定 9.9 元，优惠券会通过活动或渠道发放",
     content: (
       <>
         <FAQSubtitle>优惠信息</FAQSubtitle>
-        <FAQBullets items={["Lite 体验版固定为 9.9 元", "优惠券会通过活动或渠道发放"]} />
+        <FAQBullets items={["一镜 Lite 版当前固定为 9.9 元/次", "优惠券会通过活动页、合作渠道或社群发放"]} />
         <FAQSubtitle>版本方案</FAQSubtitle>
         <div className="am-faq-price-row">
           <div className="am-faq-price-card am-faq-price-card--lite">
-            <p>Lite 版</p>
+            <p>一镜 Lite 版</p>
             <strong>
               9.9<span>元/次</span>
             </strong>
-            <span>基础解读，5-6 个核心洞察</span>
+            <span>适合第一次体验，获得 5-6 个核心洞察</span>
           </div>
           <div className="am-faq-price-card am-faq-price-card--pro">
-            <p>Pro 版</p>
+            <p>一梳 Pro 版</p>
             <strong>
               49<span>元/次</span>
             </strong>
-            <span>深度解读，20+ 条分析与调节建议</span>
+            <span>适合继续深入，获得 20+ 条分析与调节建议</span>
           </div>
         </div>
       </>
@@ -310,7 +310,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         <FloatingParticles />
 
         <button type="button" className="am-history-pill" onClick={onOpenHistory}>
-          历史解读
+          历史记录
         </button>
 
         <div className="am-logo-ring">
@@ -322,14 +322,14 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         </div>
 
         <div className="am-hero-copy">
-          <h1>画出你的潜意识</h1>
-          <p className="am-hero-subtitle">AI解读曼陀罗画作 · 探索内心世界</p>
-          <p className="am-hero-price">Lite体验版 ¥9.9 开启探索</p>
+          <h1>一镜照见，一梳知心</h1>
+          <p className="am-hero-subtitle">以曼陀罗为镜，读懂潜意识里的情绪、关系与内在节律</p>
+          <p className="am-hero-price">融合阴阳、五行、三才的东方解读视角</p>
         </div>
 
         <button type="button" className="am-primary-cta" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
-          <span className="am-primary-cta__label">开始体验</span>
+          <span className="am-primary-cta__label">上传画作</span>
         </button>
 
         <div className={`am-scroll-cue${showScrollCue ? "" : " is-hidden"}`}>
@@ -340,38 +340,38 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
 
       <section className="am-landing-section am-landing-section--steps">
         <div className="am-landing-section__glow am-landing-section__glow--steps" />
-        <h2>三步探索内心世界</h2>
+        <h2>三步开始解读</h2>
         <div className="am-step-flow">
           <div className="am-step-flow__line" aria-hidden="true" />
-          <StepCard num={1} icon={<IconUpload />} title="上传画作" desc={"拍摄或上传\n曼陀罗图像"} />
-          <StepCard num={2} icon={<IconAnalyze />} title="AI分析" desc={"智能识别\n颜色与结构"} />
-          <StepCard num={3} icon={<IconReport />} title="获得解读" desc={"个性化报告\n与疗愈建议"} />
+          <StepCard num={1} icon={<IconUpload />} title="上传画作" desc={"拍清整幅\n即可开始"} />
+          <StepCard num={2} icon={<IconAnalyze />} title="AI识别" desc={"读取颜色\n与结构"} />
+          <StepCard num={3} icon={<IconReport />} title="查看报告" desc={"先看 Lite\n再决定深入"} />
         </div>
       </section>
 
       <section className="am-landing-section am-landing-section--pricing">
         <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
-        <h2>简单透明的价格</h2>
+        <h2>先轻体验，再决定深入</h2>
         <div className="am-pricing-grid am-pricing-grid--landing">
           <article className="am-pricing-panel am-pricing-panel--lite">
-            <p className="am-pricing-panel__eyebrow">Lite 体验版</p>
+            <p className="am-pricing-panel__eyebrow">一镜 Lite 版</p>
             <div className="am-pricing-panel__badge">体验版</div>
             <p className="am-pricing-panel__meta">价格 9.9 元/次</p>
-            <p className="am-pricing-panel__desc">基础解读，5-6个核心洞察</p>
+            <p className="am-pricing-panel__desc">首次体验，5-6 个核心洞察</p>
           </article>
           <article className="am-pricing-panel am-pricing-panel--pro">
             <div className="am-pricing-panel__title-row">
-              <p className="am-pricing-panel__eyebrow am-pricing-panel__eyebrow--pro">Pro 深度版</p>
-              <span className="am-pricing-panel__tag">推荐</span>
+              <p className="am-pricing-panel__eyebrow am-pricing-panel__eyebrow--pro">一梳 Pro 版</p>
+              <span className="am-pricing-panel__tag">更深入</span>
             </div>
             <p className="am-pricing-panel__price">
               49<span>元/次</span>
             </p>
-            <p className="am-pricing-panel__desc">深度解读，20+条深度分析与调节建议</p>
+            <p className="am-pricing-panel__desc">继续深入，20+ 条分析与建议</p>
           </article>
         </div>
         <button type="button" className={`am-compare-toggle${compareOpen ? " is-open" : ""}`} onClick={() => setCompareOpen((value) => !value)}>
-          <span>{compareOpen ? "收起详细对比" : "查看详细对比"}</span>
+          <span>{compareOpen ? "收起版本对比" : "查看版本对比"}</span>
           <i aria-hidden="true">›</i>
         </button>
         <PriceCompare open={compareOpen} onClose={() => setCompareOpen(false)} />
@@ -390,10 +390,10 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
       <section className="am-landing-section am-landing-section--final">
         <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
         <div className="am-landing-section__glow am-landing-section__glow--final" />
-        <h2>准备好探索内心了吗？</h2>
+        <h2>准备好读读这幅画了吗？</h2>
         <button type="button" className="am-primary-cta am-primary-cta--compact" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
-          <span className="am-primary-cta__label">开始体验</span>
+          <span className="am-primary-cta__label">上传画作</span>
         </button>
         <div className="am-landing-footer-divider" />
         <div className="am-landing-footer-brand">
