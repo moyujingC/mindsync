@@ -29,6 +29,11 @@ python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/validate
   - `review_entrypoints`
   - `asset_ref.kind`
 
+当前不会检查：
+
+- `asset_ref.asset_path` 与 `asset_ref.evidence_path` 是否已经指向真实图片
+- 证据文件里的内容是否足以放行
+
 ## 2. 当前已固化的样本
 
 - `toc-mvp-sample-a-lite-general`

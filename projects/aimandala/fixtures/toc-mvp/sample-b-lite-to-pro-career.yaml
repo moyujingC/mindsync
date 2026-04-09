@@ -5,8 +5,10 @@ scope: To C MVP
 theme: career
 fixture_type: pro-upgrade-path
 asset_ref:
-  kind: descriptor-only
-  note: 当前仓库先固定样本描述，真实脱敏图片待补
+  kind: placeholder-asset
+  asset_path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/sample-b-lite-to-pro-career.md
+  evidence_path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/evidence/sample-b-lite-to-pro-career.md
+  note: 当前已固定资产与证据占位路径，真实脱敏图片待补
 input:
   user_profile: qa-fixture-user-b
   image_label: 已完成 Lite 的职业主题曼陀罗图片
