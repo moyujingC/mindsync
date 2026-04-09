@@ -13,6 +13,7 @@
 - `sample-a-lite-general.yaml`
 - `sample-b-lite-to-pro-career.yaml`
 - `sample-c-existing-reuse.yaml`
+- `VALIDATION.md`
 
 使用规则：
 
@@ -23,3 +24,7 @@
 最小校验命令：
 
 - `python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/validate_fixtures.py`
+
+推荐先读：
+
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/VALIDATION.md`
