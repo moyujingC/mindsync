@@ -56,3 +56,18 @@ python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/validate
 - 自动判定 AI 生成内容质量
 
 这些属于下一轮可以继续叠加的验证层。
+
+## 5. 当前已脚本化的样本复查
+
+- `toc-mvp-sample-c-existing-reuse`
+
+执行命令：
+
+```bash
+python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/verify_sample_c_existing_reuse.py
+```
+
+当前验证目标：
+
+- 第二次 create 返回 `existing=true`
+- 第二次返回的 `interpretation_id` 与第一次一致
