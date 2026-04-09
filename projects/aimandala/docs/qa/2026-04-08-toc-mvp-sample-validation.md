@@ -44,17 +44,17 @@
   - `refreshMobileWebReport`
   - `report_contracts.py`
 
-### 样本 B：Lite 成功后升级到 Pro
+### 样本 B：打开已有 Pro 记录
 
 - fixture_id：`toc-mvp-sample-b-lite-to-pro-career`
 - fixture_path：`/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-b-lite-to-pro-career.yaml`
 
-- 样本类型：已生成 Lite 的记录继续进入 Pro 升级
+- 样本类型：已有 `Pro` 记录被再次打开
 - 目标：覆盖 `TC-03`
 - 观察结果：
-  - 当前存在 `upgrade` 路由
-  - 可继续读取 `version=pro` 报告
-  - preview shell 与 runtime 都保留 Pro 升级装配链
+  - history 打开已有 `Pro` 记录逻辑存在
+  - 可直接读取 `version=pro` 报告
+  - 已有 `Pro` 记录不需要再回落到 `Lite`
 - 复查入口：
   - `openMobileWebUpgradeEntry`
   - `refreshMobileWebProReport`
@@ -69,6 +69,7 @@
 - 目标：覆盖 `TC-04` 与 `TC-05`
 - 观察结果：
   - 当前代码与 QA 口径保留了 `existing` 语义
+  - 当前主路径更适合直接 `打开已有记录`
   - 本轮未补固定脱敏样本文件，也未形成一份单独的命中复用截图记录
 - 结论：
   - 视为“已确认存在目标语义，但验证证据仍偏弱”

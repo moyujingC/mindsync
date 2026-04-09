@@ -25,34 +25,34 @@
 
 ## 3. 主路径走查结果
 
-### TC-01 上传图片并创建一镜 Lite 版解读
+### TC-01 上传图片并创建 Lite 解读
 
 - 结论：通过
 - 依据：
-  - `mobile-web` 当前已具备 upload -> reportEntry -> loading 的装配链
-  - `runMobileWebLiteFlow` 已作为当前 Lite 主路径入口
+  - `mobile-web` 当前已具备 upload -> detect -> reportEntry / loading 的装配链
+  - Lite 主路径读取链存在
   - 后端健康检查和报告契约相关测试已通过
 
-### TC-02 获取一镜 Lite 版报告
+### TC-02 获取 Lite 报告
 
 - 结论：通过
 - 依据：
   - 当前存在 Lite 报告读取与刷新路径
   - `mobile-web/runtime` 与 `browser-shell` 都能进入 Lite 报告读取链
 
-### TC-03 进入一梳 Pro 版
+### TC-03 选择并生成 Pro
 
 - 结论：通过
 - 依据：
-  - 当前流程支持从 Lite 结果进入 Pro 升级读取
-  - preview shell 与 runtime 都保留 `upgrade` 路由与 `version=pro` 读取逻辑
+  - 当前流程支持进入 `Lite / Pro` 选择链路，并读取 `version=pro` 报告
+  - preview shell 与 runtime 都保留 `version=pro` 读取逻辑
 
 ### TC-04 获取用户历史记录
 
 - 结论：通过
 - 依据：
   - history 页当前支持读取真实记录
-  - 已有记录可区分 `Lite` 与 `Lite + Pro`
+  - 已有记录可区分 `Lite` 与 `Pro`
   - QA 清单中的“可直接打开已有 Pro 记录”已在当前代码路径中体现
 
 ### TC-05 命中已有记录

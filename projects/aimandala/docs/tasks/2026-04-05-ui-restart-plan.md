@@ -4,9 +4,9 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/docs/tasks/2026-04-05-ui-restart-plan.md
-> 分支：codex/aimandala-ui-restart
-> 工作树：/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart
+> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-05-ui-restart-plan.md
+> 当前主线分支：main
+> 当前主工作区：/Users/xinran/Downloads/dev/mindsync
 
 ## 1. 重启结论
 
