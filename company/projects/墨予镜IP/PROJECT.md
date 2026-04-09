@@ -91,3 +91,9 @@
 - [content/怀瑾握瑜/墨予镜-个人号内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-个人号内容策略简报.md)
 - [content/怀瑾握瑜/墨予镜-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-首批选题清单.md)
 - [content/怀瑾握瑜/墨予镜-立项首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/怀瑾握瑜/墨予镜-立项首发内容大纲.md)
+
+目前也已把 `一镜一梳` 相关、但目标账号属于 `墨予镜` 的内容资产，收束到：
+
+- [content/一镜一梳/墨予镜-一镜一梳-build-in-public-内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-build-in-public-内容策略简报.md)
+- [content/一镜一梳/墨予镜-一镜一梳-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-首批选题清单.md)
+- [content/一镜一梳/墨予镜-一镜一梳-启号首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-启号首发内容大纲.md)

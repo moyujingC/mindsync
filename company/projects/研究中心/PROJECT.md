@@ -83,16 +83,18 @@
 
 1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
 2. [2026-04-04-研究方向与任务模型.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-04-研究方向与任务模型.md)
-3. 对应项目工作区入口：[projects/research-center/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md)
-4. [agents/research-knowledge-lead/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/research-knowledge-lead/AGENTS.md)
+3. [2026-04-08-研究入库连续产出运行方案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-08-研究入库连续产出运行方案.md)
+4. [2026-04-08-本周研究执行清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-08-本周研究执行清单.md)
+5. 对应项目工作区入口：[projects/research-center/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md)
+6. [agents/research-knowledge-lead/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/research-knowledge-lead/AGENTS.md)
 
 如果任务明确偏技术抽象，还应补读：
 
-5. [agents/architect/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/architect/AGENTS.md)
+7. [agents/architect/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/architect/AGENTS.md)
 
 如果任务明确需要转化为产品判断，还应补读：
 
-6. [agents/product-spec-lead/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/product-spec-lead/AGENTS.md)
+8. [agents/product-spec-lead/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/product-spec-lead/AGENTS.md)
 
 ## 5. 这里应该放什么
 

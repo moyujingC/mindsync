@@ -80,6 +80,7 @@
 1. 让 QA 文档不再只停留在“建议覆盖哪些样本”
 2. 明确区分正式样本目录与运行时目录
 3. 为下一轮补固定 fixture 和自动化测试提供命名与口径基础
+4. 当前可用 `python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/validate_fixtures.py` 做最小一致性校验
 
 ## 5. 下一步建议
 

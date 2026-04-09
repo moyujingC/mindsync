@@ -19,3 +19,7 @@
 - 优先按样本 ID 在 QA、delivery、测试脚本中引用
 - 若后续补真实图片资产，应放在本目录下对应子路径，并更新 `asset_ref`
 - 不要把 `toC/app/backend/data/uploads/` 或 `interpretations/` 里的运行时文件回填到这里
+
+最小校验命令：
+
+- `python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/validate_fixtures.py`

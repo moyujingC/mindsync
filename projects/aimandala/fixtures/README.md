@@ -22,3 +22,7 @@
 - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-a-lite-general.yaml`
 - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-b-lite-to-pro-career.yaml`
 - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-c-existing-reuse.yaml`
+
+最小校验命令：
+
+- `python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/validate_fixtures.py`
