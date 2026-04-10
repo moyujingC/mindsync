@@ -1,0 +1,47 @@
+services:
+  aimandala-release-backend:
+    container_name: aimandala-release-backend
+    build:
+      context: ../..
+      dockerfile: deploy/docker/backend.Dockerfile
+    environment:
+      AIMANDALA_LLM_BACKEND: ${AIMANDALA_LLM_BACKEND:-noop}
+      AIMANDALA_UPLOAD_BACKEND: ${AIMANDALA_UPLOAD_BACKEND:-local}
+      AIMANDALA_UPLOAD_COS_SECRET_ID: ${AIMANDALA_UPLOAD_COS_SECRET_ID:-}
+      AIMANDALA_UPLOAD_COS_SECRET_KEY: ${AIMANDALA_UPLOAD_COS_SECRET_KEY:-}
+      AIMANDALA_UPLOAD_COS_BUCKET: ${AIMANDALA_UPLOAD_COS_BUCKET:-}
+      AIMANDALA_UPLOAD_COS_REGION: ${AIMANDALA_UPLOAD_COS_REGION:-ap-shanghai}
+      AIMANDALA_UPLOAD_COS_KEY_PREFIX: ${AIMANDALA_UPLOAD_COS_KEY_PREFIX:-aimandala/uploads}
+      AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL: ${AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL:-}
+      AIMANDALA_LLM_BASE_URL: ${AIMANDALA_LLM_BASE_URL:-}
+      AIMANDALA_LLM_API_KEY: ${AIMANDALA_LLM_API_KEY:-}
+      AIMANDALA_LLM_API_KEY_HEADER: ${AIMANDALA_LLM_API_KEY_HEADER:-Authorization}
+      AIMANDALA_LLM_MODEL: ${AIMANDALA_LLM_MODEL:-}
+      AIMANDALA_LLM_REPORT_MODEL: ${AIMANDALA_LLM_REPORT_MODEL:-}
+      AIMANDALA_LLM_CHAT_MODEL: ${AIMANDALA_LLM_CHAT_MODEL:-}
+      AIMANDALA_LLM_VISION_MODEL: ${AIMANDALA_LLM_VISION_MODEL:-}
+      AIMANDALA_LLM_TIMEOUT_SECONDS: ${AIMANDALA_LLM_TIMEOUT_SECONDS:-30}
+      AIMANDALA_LLM_MAX_RETRIES: ${AIMANDALA_LLM_MAX_RETRIES:-2}
+      AIMANDALA_LLM_RETRY_BACKOFF_MS: ${AIMANDALA_LLM_RETRY_BACKOFF_MS:-400}
+    ports:
+      - "${HOST_BACKEND_PORT:-8100}:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  aimandala-release-frontend:
+    container_name: aimandala-release-frontend
+    build:
+      context: ../..
+      dockerfile: deploy/docker/frontend.Dockerfile
+      args:
+        VITE_AIMANDALA_API_BASE_URL: ${VITE_AIMANDALA_API_BASE_URL:-http://web-api.jingshu.cc}
+    ports:
+      - "${HOST_FRONTEND_PORT:-8101}:80"
+    restart: unless-stopped
+    depends_on:
+      - aimandala-release-backend

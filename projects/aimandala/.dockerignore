@@ -1,0 +1,13 @@
+.git
+.gitignore
+node_modules
+dist
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+toC/app/backend/data
+toC/app/frontend/node_modules
+toC/app/frontend/dist
+fixtures/toc-mvp/assets/previews

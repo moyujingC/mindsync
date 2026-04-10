@@ -7,6 +7,12 @@
 - `aimandala-backend.service.example`
 - `aimandala-api.nginx.conf.example`
 
+如果后续正式机改走 Docker 发布，而不是宿主机直接运行 `uvicorn`，请优先参考：
+
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/README.md`
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/docker-compose.release.yml`
+- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/aimandala-release.nginx.conf.example`
+
 使用方式：
 
 1. 复制 `.example` 文件并按你的机器路径、域名、证书路径替换占位符。
