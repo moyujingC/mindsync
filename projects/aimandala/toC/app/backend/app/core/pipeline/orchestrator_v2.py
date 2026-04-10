@@ -563,6 +563,247 @@ class LayeredOrchestrator:
             },
         ]
 
+        lite_schema = self.prompt_builder.get_template("1.6", "lite").load_schema()
+        pro_schema = self.prompt_builder.get_template("1.6", "pro").load_schema()
+        lite_validation_issues = (
+            self.report_contracts.validator.validate_lite(record.layer_1_lite_draft)
+            if record.layer_1_lite_draft
+            else ["missing_layer_1_lite_draft"]
+        )
+        pro_validation_issues = (
+            self.report_contracts.validator.validate_pro(record.layer_3_pro_draft)
+            if record.layer_3_pro_draft
+            else ["missing_layer_3_pro_draft"]
+        )
+
+        def build_schema_field_debug(
+            schema: Dict[str, Any],
+            issues: list[str],
+            mapped_fields: Dict[str, str],
+        ) -> list[Dict[str, Any]]:
+            result: list[Dict[str, Any]] = []
+            for field in schema.get("fields", []) if isinstance(schema, dict) else []:
+                if not isinstance(field, dict):
+                    continue
+                name = field.get("name")
+                if not isinstance(name, str) or not name:
+                    continue
+                result.append(
+                    {
+                        "name": name,
+                        "required": bool(field.get("required")),
+                        "type": field.get("type"),
+                        "semantic_role": field.get("semantic_role"),
+                        "status": "missing" if name in issues else "hit",
+                        "mapped_final_field": mapped_fields.get(name),
+                    }
+                )
+            return result
+
+        def classify_source_category(source_name: Optional[str]) -> str:
+            source_text = (source_name or "").strip()
+            if not source_text:
+                return "unknown"
+            if "template_fallback" in source_text or "default_" in source_text:
+                return "fallback"
+            if "template_merge" in source_text:
+                return "template_merge"
+            if "user." in source_text:
+                return "user_input"
+            if "layer_0_raw" in source_text or "knowledge_signal" in source_text or "theme_summary" in source_text:
+                return "layer0_or_knowledge"
+            if "layer_1_lite_draft" in source_text or "layer_3_pro_draft" in source_text:
+                return "prompt_draft"
+            if "layer_2_lite_final" in source_text or "layer_4_pro_final" in source_text:
+                return "final_render"
+            return "unknown"
+
+        def build_field_diagnostics(
+            items: list[Dict[str, Any]],
+            schema_fields: list[Dict[str, Any]],
+        ) -> list[Dict[str, Any]]:
+            schema_status_map = {
+                str(field.get("name")): str(field.get("status"))
+                for field in schema_fields
+                if isinstance(field, dict) and field.get("name")
+            }
+            diagnostics: list[Dict[str, Any]] = []
+            for item in items:
+                field_name = str(item.get("field"))
+                main_source = item.get("main_source")
+                upstream_inputs = item.get("upstream_inputs") if isinstance(item.get("upstream_inputs"), list) else []
+                dependency_categories = sorted(
+                    {
+                        classify_source_category(
+                            upstream.get("source") if isinstance(upstream, dict) else None,
+                        )
+                        for upstream in upstream_inputs
+                    }
+                    - {"unknown"}
+                )
+                source_category = classify_source_category(
+                    main_source if isinstance(main_source, str) else None,
+                )
+                final_value = item.get("final_value")
+                final_missing = final_value in (None, "", [], {})
+                schema_status = schema_status_map.get(field_name, "unknown")
+                issue_tags: list[str] = []
+                if source_category == "fallback":
+                    issue_tags.append("fallback")
+                if schema_status == "missing":
+                    issue_tags.append("schema_missing")
+                if final_missing:
+                    issue_tags.append("final_missing")
+                if "user_input" in dependency_categories:
+                    issue_tags.append("depends_on_user_input")
+                if "layer0_or_knowledge" in dependency_categories:
+                    issue_tags.append("depends_on_layer0")
+                if "prompt_draft" in dependency_categories or source_category == "prompt_draft":
+                    issue_tags.append("depends_on_prompt_draft")
+                risk_score = 0
+                if "fallback" in issue_tags:
+                    risk_score += 40
+                if "schema_missing" in issue_tags:
+                    risk_score += 35
+                if "final_missing" in issue_tags:
+                    risk_score += 30
+                if source_category == "template_merge":
+                    risk_score += 10
+                if "depends_on_layer0" in issue_tags:
+                    risk_score += 8
+                if "depends_on_user_input" in issue_tags:
+                    risk_score += 6
+                if "depends_on_prompt_draft" in issue_tags:
+                    risk_score += 5
+                if risk_score >= 65:
+                    risk_level = "high"
+                elif risk_score >= 30:
+                    risk_level = "medium"
+                else:
+                    risk_level = "low"
+                suggested_action = self._build_field_suggested_action(
+                    field=field_name,
+                    source_category=source_category,
+                    schema_status=schema_status,
+                    final_missing=final_missing,
+                    dependency_categories=dependency_categories,
+                    issue_tags=issue_tags,
+                )
+                diagnostics.append(
+                    {
+                        "field": field_name,
+                        "main_source": main_source,
+                        "main_source_category": source_category,
+                        "dependency_categories": dependency_categories,
+                        "schema_status": schema_status,
+                        "final_missing": final_missing,
+                        "issue_tags": issue_tags,
+                        "risk_score": risk_score,
+                        "risk_level": risk_level,
+                        "suggested_action": suggested_action,
+                        "diagnosis": self._build_field_diagnosis_text(
+                            field=field_name,
+                            source_category=source_category,
+                            schema_status=schema_status,
+                            final_missing=final_missing,
+                            dependency_categories=dependency_categories,
+                        ),
+                    }
+                )
+            return sorted(
+                diagnostics,
+                key=lambda item: (
+                    -int(item.get("risk_score", 0)),
+                    str(item.get("field", "")),
+                ),
+            )
+
+        lite_mapped_fields = {
+            "title": "layer_2_lite_final.title",
+            "overall_impression": "layer_2_lite_final.overall_impression",
+            "visual_elements": "layer_2_lite_final.visual_elements_rendered",
+            "emotion_portrait": "layer_2_lite_final.emotion_portrait_rendered",
+            "story": "layer_2_lite_final.story",
+            "theme_scene": "layer_2_lite_final.theme_insights.scene",
+            "theme_impact": "layer_2_lite_final.theme_insights.impact",
+            "theme_awareness": "layer_2_lite_final.theme_insights.awareness",
+            "three_awareness": "layer_2_lite_final.three_awareness",
+            "pro_teaser": "layer_2_lite_final.pro_teaser",
+        }
+        pro_mapped_fields = {
+            "first_impression": "layer_3_pro_draft.first_impression / report.summary",
+            "core_insight_table": "layer_3_pro_draft.core_insight_table",
+            "three_circles_detailed": "layer_3_pro_draft.three_circles_detailed",
+            "micro_analysis_detailed": "layer_3_pro_draft.micro_analysis_detailed",
+            "imbalance_confirmed": "layer_3_pro_draft.imbalance_confirmed",
+            "root_cause": "layer_3_pro_draft.root_cause",
+            "healing_suggestions": "layer_3_pro_draft.healing_suggestions",
+        }
+        lite_schema_fields = build_schema_field_debug(
+            lite_schema,
+            lite_validation_issues,
+            lite_mapped_fields,
+        )
+        pro_schema_fields = build_schema_field_debug(
+            pro_schema,
+            pro_validation_issues,
+            pro_mapped_fields,
+        )
+        lite_field_diagnostics = build_field_diagnostics(
+            lite_field_provenance,
+            lite_schema_fields,
+        )
+        pro_field_diagnostics = build_field_diagnostics(
+            pro_field_provenance,
+            pro_schema_fields,
+        )
+
+        def build_diagnostic_summary(
+            lite_items: list[Dict[str, Any]],
+            pro_items: list[Dict[str, Any]],
+        ) -> Dict[str, Any]:
+            combined = lite_items + pro_items
+            fallback_fields = [item["field"] for item in combined if "fallback" in item.get("issue_tags", [])]
+            schema_missing_fields = [item["field"] for item in combined if "schema_missing" in item.get("issue_tags", [])]
+            user_input_driven = [item["field"] for item in combined if "depends_on_user_input" in item.get("issue_tags", [])]
+            layer0_driven = [item["field"] for item in combined if "depends_on_layer0" in item.get("issue_tags", [])]
+            prompt_draft_driven = [item["field"] for item in combined if "depends_on_prompt_draft" in item.get("issue_tags", [])]
+            high_risk_fields = [item["field"] for item in combined if item.get("risk_level") == "high"]
+            medium_risk_fields = [item["field"] for item in combined if item.get("risk_level") == "medium"]
+            low_risk_fields = [item["field"] for item in combined if item.get("risk_level") == "low"]
+            recommended_first_actions = [
+                {
+                    "field": item["field"],
+                    "risk_level": item["risk_level"],
+                    "suggested_action": item.get("suggested_action"),
+                }
+                for item in combined[:5]
+            ]
+            return {
+                "fallback_count": len(fallback_fields),
+                "schema_missing_count": len(schema_missing_fields),
+                "user_input_driven_count": len(user_input_driven),
+                "layer0_driven_count": len(layer0_driven),
+                "prompt_draft_driven_count": len(prompt_draft_driven),
+                "high_risk_count": len(high_risk_fields),
+                "medium_risk_count": len(medium_risk_fields),
+                "low_risk_count": len(low_risk_fields),
+                "fallback_fields": fallback_fields,
+                "schema_missing_fields": schema_missing_fields,
+                "user_input_driven_fields": user_input_driven,
+                "layer0_driven_fields": layer0_driven,
+                "prompt_draft_driven_fields": prompt_draft_driven,
+                "high_risk_fields": high_risk_fields,
+                "medium_risk_fields": medium_risk_fields,
+                "low_risk_fields": low_risk_fields,
+                "recommended_first_actions": recommended_first_actions,
+            }
+
+        diagnostic_summary = build_diagnostic_summary(
+            lite_field_diagnostics,
+            pro_field_diagnostics,
+        )
+
         steps = [
             {
                 "key": "input",
@@ -652,10 +893,41 @@ class LayeredOrchestrator:
                 "lite": lite_field_provenance,
                 "pro": pro_field_provenance,
             },
+            "diagnostics": {
+                "summary": diagnostic_summary,
+                "fields": {
+                    "lite": lite_field_diagnostics,
+                    "pro": pro_field_diagnostics,
+                },
+            },
+            "prompt_debug": {
+                "lite": {
+                    "prompt_preview": layer1.get("prompt_preview") if layer1 else None,
+                    "schema": lite_schema,
+                    "validation_issues": lite_validation_issues,
+                    "schema_fields": lite_schema_fields,
+                },
+                "pro": {
+                    "prompt_preview": layer3.get("prompt_preview") if layer3 else None,
+                    "schema": pro_schema,
+                    "validation_issues": pro_validation_issues,
+                    "schema_fields": pro_schema_fields,
+                },
+            },
         }
 
     def upgrade_to_pro(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Generate the migrated Pro placeholder report for an existing Lite record."""
+
+        started = self.start_pro_upgrade(interpretation_id)
+        if started is None:
+            return None
+        if started["status"] == "completed":
+            return started
+        return self.complete_pro_upgrade(interpretation_id)
+
+    def start_pro_upgrade(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
+        """Mark a Pro upgrade as started so the client can begin polling immediately."""
 
         record = self.store.load(interpretation_id)
         if record is None:
@@ -671,21 +943,63 @@ class LayeredOrchestrator:
                 "message": PRO_REPORT_BLUEPRINT.status_messages["already_available"],
             }
 
-        upgraded = self.store.upgrade_to_pro(
-            interpretation_id,
-            price_diff=self.get_upgrade_diff(),
-        )
-        if upgraded is None:
-            return None
+        if "pro" in record.version_purchased:
+            upgraded = record
+        else:
+            upgraded = self.store.upgrade_to_pro(
+                interpretation_id,
+                price_diff=self.get_upgrade_diff(),
+            )
+            if upgraded is None:
+                return None
 
         upgraded.status = GenerationStatus.PROCESSING
         upgraded.update_progress(GenerationStage.GENERATING.value, 85)
-        pro_bundle = self.generation_runtime.generate_pro(self, upgraded)
-        upgraded.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
-        upgraded.layer_4_pro_final = pro_bundle.layer_4_pro_final
-        upgraded.status = GenerationStatus.COMPLETED
-        upgraded.update_progress(GenerationStage.COMPLETED.value, 100)
         self.store.save(upgraded)
+
+        return {
+            "success": True,
+            "interpretation_id": interpretation_id,
+            "version": "pro",
+            "enabled": True,
+            "status": "processing",
+            "message": "一梳 Pro 版正在生成中，请稍候查看。",
+        }
+
+    def complete_pro_upgrade(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
+        """Finish a previously started Pro upgrade."""
+
+        record = self.store.load(interpretation_id)
+        if record is None:
+            return None
+
+        if record.get_pro_report():
+            return {
+                "success": True,
+                "interpretation_id": interpretation_id,
+                "version": "pro",
+                "enabled": True,
+                "status": "completed",
+                "message": PRO_REPORT_BLUEPRINT.status_messages["already_available"],
+            }
+
+        if "pro" not in record.version_purchased:
+            started = self.start_pro_upgrade(interpretation_id)
+            if started is None:
+                return None
+            record = self.store.load(interpretation_id)
+            if record is None:
+                return None
+
+        record.status = GenerationStatus.PROCESSING
+        record.update_progress(GenerationStage.GENERATING.value, 85)
+        self.store.save(record)
+        pro_bundle = self.generation_runtime.generate_pro(self, record)
+        record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
+        record.layer_4_pro_final = pro_bundle.layer_4_pro_final
+        record.status = GenerationStatus.COMPLETED
+        record.update_progress(GenerationStage.COMPLETED.value, 100)
+        self.store.save(record)
 
         return {
             "success": True,
@@ -694,6 +1008,100 @@ class LayeredOrchestrator:
             "enabled": True,
             "status": "completed",
             "message": PRO_REPORT_BLUEPRINT.status_messages["generated_success"],
+        }
+
+    def _build_field_diagnosis_text(
+        self,
+        *,
+        field: str,
+        source_category: str,
+        schema_status: str,
+        final_missing: bool,
+        dependency_categories: list[str],
+    ) -> str:
+        parts = [f"{field}"]
+        if final_missing:
+            parts.append("当前最终值缺失")
+        if schema_status == "missing":
+            parts.append("schema 必填字段未命中")
+        if source_category == "fallback":
+            parts.append("主要走了 fallback 产出")
+        elif source_category == "prompt_draft":
+            parts.append("主要来自 prompt draft")
+        elif source_category == "layer0_or_knowledge":
+            parts.append("主要依赖 Layer0 / knowledge")
+        elif source_category == "template_merge":
+            parts.append("主要由最终模板拼装")
+        if "user_input" in dependency_categories:
+            parts.append("对用户输入较敏感")
+        if "layer0_or_knowledge" in dependency_categories:
+            parts.append("对 Layer0 知识层较敏感")
+        if "prompt_draft" in dependency_categories:
+            parts.append("对 prompt draft 较敏感")
+        return "；".join(parts)
+
+    def _build_field_suggested_action(
+        self,
+        *,
+        field: str,
+        source_category: str,
+        schema_status: str,
+        final_missing: bool,
+        dependency_categories: list[str],
+        issue_tags: list[str],
+    ) -> Dict[str, Any]:
+        if "schema_missing" in issue_tags and "fallback" in issue_tags:
+            return {
+                "priority": "p0",
+                "owner": "prompt",
+                "action": f"先检查 {field} 的 prompt 输出字段是否命中 schema，再确认 fallback 是否误触发。",
+            }
+        if "schema_missing" in issue_tags:
+            return {
+                "priority": "p0",
+                "owner": "prompt",
+                "action": f"优先修改 {field} 对应 prompt/schema 对齐，确保模型稳定返回该字段。",
+            }
+        if final_missing:
+            return {
+                "priority": "p0",
+                "owner": "template",
+                "action": f"先检查 {field} 在最终模板拼装时是否被正确带入最终 report。",
+            }
+        if source_category == "fallback":
+            return {
+                "priority": "p1",
+                "owner": "prompt",
+                "action": f"{field} 当前主要走 fallback，优先提高 prompt draft 对该字段的稳定产出。",
+            }
+        if "depends_on_layer0" in issue_tags:
+            return {
+                "priority": "p1",
+                "owner": "layer0",
+                "action": f"{field} 强依赖 Layer0，先检查颜色分析、三圈能量和失衡候选是否合理。",
+            }
+        if "depends_on_user_input" in issue_tags:
+            return {
+                "priority": "p2",
+                "owner": "input",
+                "action": f"{field} 对用户输入敏感，先确认意图/感受是否缺失或质量不足。",
+            }
+        if "depends_on_prompt_draft" in issue_tags:
+            return {
+                "priority": "p2",
+                "owner": "prompt",
+                "action": f"{field} 主要依赖 prompt draft，优先比对 draft 和 final 是否发生不必要改写。",
+            }
+        if source_category == "template_merge":
+            return {
+                "priority": "p2",
+                "owner": "template",
+                "action": f"{field} 主要由模板拼装，优先检查 Layer2/Layer3 到最终 Markdown 的组装逻辑。",
+            }
+        return {
+            "priority": "p3",
+            "owner": "review",
+            "action": f"{field} 当前链路相对稳定，优先做抽样复核即可。",
         }
 
     def _build_lite_placeholder_report(self, record: InterpretationRecord) -> Layer2LiteFinal:
@@ -1279,10 +1687,55 @@ class LayeredOrchestrator:
         )
         ai_qa_context = "\n".join(
             [
-                f"theme={record.theme}",
-                f"interpretation_id={record.interpretation_id}",
-                f"lite_ready={record.layer_2_lite_final is not None}",
-                "pro_placeholder=true",
+                f"主题：{record.theme}",
+                f"解读记录ID：{record.interpretation_id}",
+                f"Lite 标题：{lite_report.title if lite_report and lite_report.title else ''}",
+                f"Lite 整体印象：{lite_report.overall_impression if lite_report and lite_report.overall_impression else ''}",
+                (
+                    f"第一眼直觉：{pro_draft.first_impression}"
+                    if pro_draft and pro_draft.first_impression
+                    else ""
+                ),
+                (
+                    "核心洞察："
+                    + "；".join(
+                        f"{key}={value}"
+                        for key, value in list((pro_draft.core_insight_table or {}).items())[:4]
+                        if isinstance(value, str) and value.strip()
+                    )
+                    if pro_draft and pro_draft.core_insight_table
+                    else ""
+                ),
+                (
+                    "主要失衡："
+                    + "；".join(
+                        f"{key}={value}"
+                        for key, value in (pro_draft.imbalance_confirmed or {}).items()
+                        if isinstance(value, str) and value.strip()
+                    )
+                    if pro_draft and pro_draft.imbalance_confirmed
+                    else ""
+                ),
+                (
+                    "根源线索："
+                    + "；".join(
+                        f"{key}={value}"
+                        for key, value in list((pro_draft.root_cause or {}).items())[:3]
+                        if isinstance(value, str) and value.strip()
+                    )
+                    if pro_draft and pro_draft.root_cause
+                    else ""
+                ),
+                (
+                    "可继续追问："
+                    + "；".join(
+                        item.get("practice", "")
+                        for item in (pro_draft.healing_suggestions or [])
+                        if isinstance(item, dict) and isinstance(item.get("practice"), str) and item.get("practice", "").strip()
+                    )
+                    if pro_draft and pro_draft.healing_suggestions
+                    else ""
+                ),
             ]
         )
 

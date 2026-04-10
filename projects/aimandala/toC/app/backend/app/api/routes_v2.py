@@ -1,5 +1,6 @@
 """Minimal V2 API slice for the first AI-Mandala migration batch."""
 
+import threading
 from typing import Literal, Optional
 
 from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
@@ -13,7 +14,8 @@ from app.core.llm import (
     NoopLLMClient,
     create_llm_client_from_env,
 )
-from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
+from app.core.pipeline.data_models import GenerationStatus
+from app.core.pipeline.orchestrator_v2 import GenerationStage, LayeredOrchestrator
 from app.core.pipeline.prompt_runtime import create_prompt_runtime_from_env
 from app.core.uploads import LocalUploadStorage, UploadStorage, create_upload_storage_from_env
 
@@ -153,6 +155,8 @@ class ReportDebugProfileResponse(BaseModel):
     steps: list[dict]
     layers: dict
     field_provenance: dict
+    diagnostics: dict
+    prompt_debug: dict
 
 
 class ReportChatMessage(BaseModel):
@@ -215,6 +219,8 @@ class UploadImageResponse(BaseModel):
 router = APIRouter(prefix="/api/v2", tags=["aimandala-v2"])
 _orchestrator: Optional[LayeredOrchestrator] = None
 _upload_storage: Optional[UploadStorage] = None
+_active_pro_upgrade_jobs: set[str] = set()
+_pro_upgrade_jobs_lock = threading.Lock()
 
 
 def get_orchestrator() -> LayeredOrchestrator:
@@ -251,6 +257,41 @@ def get_upload_storage() -> UploadStorage:
         except ValueError as error:
             raise HTTPException(status_code=501, detail=str(error)) from error
     return _upload_storage
+
+
+def _mark_pro_upgrade_failed(interpretation_id: str, error: Exception) -> None:
+    orchestrator = get_orchestrator()
+    record = orchestrator.store.load(interpretation_id)
+    if record is None:
+        return
+
+    record.status = GenerationStatus.FAILED
+    record.update_progress(GenerationStage.FAILED.value, record.generation_progress or 85)
+    orchestrator.store.save(record)
+    print(f"Pro upgrade failed for {interpretation_id}: {error}")
+
+
+def _run_pro_upgrade_job(interpretation_id: str) -> None:
+    try:
+        get_orchestrator().complete_pro_upgrade(interpretation_id)
+    except Exception as error:  # pragma: no cover - defensive background fallback
+        _mark_pro_upgrade_failed(interpretation_id, error)
+    finally:
+        with _pro_upgrade_jobs_lock:
+            _active_pro_upgrade_jobs.discard(interpretation_id)
+
+
+def _ensure_pro_upgrade_job(interpretation_id: str) -> None:
+    with _pro_upgrade_jobs_lock:
+        if interpretation_id in _active_pro_upgrade_jobs:
+            return
+        _active_pro_upgrade_jobs.add(interpretation_id)
+
+    threading.Thread(
+        target=_run_pro_upgrade_job,
+        args=(interpretation_id,),
+        daemon=True,
+    ).start()
 
 
 def to_record_response(record) -> InterpretationRecordResponse:
@@ -498,11 +539,13 @@ async def upgrade_interpretation_placeholder(interpretation_id: str):
     """Upgrade a migrated Lite record into the current Pro placeholder flow."""
 
     try:
-        result = get_orchestrator().upgrade_to_pro(interpretation_id)
+        result = get_orchestrator().start_pro_upgrade(interpretation_id)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
+    if result["status"] != "completed":
+        _ensure_pro_upgrade_job(interpretation_id)
     return UpgradePlaceholderResponse(**result)
 
 

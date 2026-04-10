@@ -127,6 +127,18 @@ function createRuntimeLoadingState(
     step: "liteGenerating",
   };
 }
+
+function buildDeferredHistoryQuery(
+  query: InterpretationListQuery,
+  draft: MobileWebUploadDraft | null,
+): InterpretationListQuery {
+  return {
+    ...query,
+    filter: "pending",
+    theme: draft?.theme ?? query.theme,
+  };
+}
+
 function getDraftFromInput(
   input: MobileWebRouteInput,
 ): MobileWebUploadDraft | null {
@@ -816,6 +828,50 @@ export function MobileWebRuntime({
     });
   }
 
+  async function handleLoadingLeaveLater() {
+    const draftForHistory =
+      currentUploadDraft ?? currentRuntimeProps.uploadDraft ?? uploadDraftForReturn ?? defaultUploadDraft;
+    const nextQuery = buildDeferredHistoryQuery(runtimeHistoryQuery, draftForHistory);
+
+    if (!userId || runtimeHistoryBusy) {
+      setRuntimeProps({
+        route: "upload",
+        uploadDraft: draftForHistory,
+      });
+      return;
+    }
+
+    setRuntimeHistoryBusy(true);
+    setRuntimeHistoryQuery(nextQuery);
+    try {
+      const history = await loadHistoryPage(userId, nextQuery);
+      setRuntimeProps({
+        route: "history",
+        records: history.records,
+        uploadDraft: draftForHistory,
+        historyQuery: nextQuery,
+        historyStatusLabel: "Pro 解读仍在生成中",
+        historyStatusDetail: "你已经离开等待页，系统会继续在后台生成。稍后可直接从这里返回查看完整 Pro 报告。",
+        historyStatusTone: "runtime",
+      });
+    } catch (historyError) {
+      setRuntimeProps({
+        route: "history",
+        records: [],
+        uploadDraft: draftForHistory,
+        historyQuery: nextQuery,
+        historyStatusLabel: "历史记录拉取失败",
+        historyStatusDetail:
+          historyError instanceof Error
+            ? historyError.message
+            : "Failed to load interpretation history",
+        historyStatusTone: "runtime",
+      });
+    } finally {
+      setRuntimeHistoryBusy(false);
+    }
+  }
+
   function handleHistoryBackToUpload() {
     setRuntimeProps({
       route: "upload",
@@ -1051,6 +1107,7 @@ export function MobileWebRuntime({
         setRuntimeUploadDraft(nextDraft);
         void handleUploadContinue(nextDraft);
       }}
+      onLoadingLeaveLater={handleLoadingLeaveLater}
       onReportPrimaryAction={handleReportPrimaryAction}
       onReportSecondaryAction={handleReportSecondaryAction}
       onReportBackAction={handleReportBackAction}

@@ -229,6 +229,8 @@ export interface ReportDebugProfileResponse {
   steps: ReportDebugStep[];
   layers: Record<string, unknown>;
   field_provenance: Record<string, unknown>;
+  diagnostics: Record<string, unknown>;
+  prompt_debug: Record<string, unknown>;
 }
 
 export interface UpgradePlaceholderResponse {

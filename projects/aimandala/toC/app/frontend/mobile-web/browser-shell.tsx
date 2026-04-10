@@ -666,6 +666,21 @@ export function MobileWebBrowserShell() {
     }
   }
 
+  async function handlePreviewLeaveLoadingLater() {
+    const nextQuery = {
+      ...previewHistoryQuery,
+      filter: "pending" as const,
+      theme: draft.theme,
+    };
+
+    setPreviewHistoryQuery(nextQuery);
+    setRoute("history");
+    await refreshPreviewHistory(nextQuery);
+    setPreviewHistoryStatusLabel("Pro 解读仍在生成中");
+    setPreviewHistoryStatusDetail("你已经离开等待页，系统会继续生成。稍后可从历史记录回来查看完整 Pro 报告。");
+    setPreviewHistoryStatusTone(previewMode ? "preview" : "runtime");
+  }
+
   function handlePreviewSecondaryAction() {
     if (route === "loading") {
       setRoute("reportEntry");
@@ -1056,6 +1071,9 @@ export function MobileWebBrowserShell() {
                 } finally {
                   setPreviewFlowRunning(false);
                 }
+              }}
+              onLoadingLeaveLater={() => {
+                void handlePreviewLeaveLoadingLater();
               }}
               onUploadPreviewDetect={async () => {
                 if (!draft.imagePath) {

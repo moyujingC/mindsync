@@ -78,11 +78,12 @@ function getLayerRecord(
 function buildLayerComparisonRows(input: {
   draftLayer: Record<string, unknown> | null;
   finalLayer: Record<string, unknown> | null;
-  pairs: Array<{ label: string; draftKey: string; finalKey: string }>;
-}): Array<{ label: string; draftValue: string; finalValue: string }> {
+  pairs: Array<{ fieldKey: string; label: string; draftKey: string; finalKey: string }>;
+}): Array<{ fieldKey: string; label: string; draftValue: string; finalValue: string }> {
   const { draftLayer, finalLayer, pairs } = input;
 
   return pairs.map((pair) => ({
+    fieldKey: pair.fieldKey,
     label: pair.label,
     draftValue: formatUnknownText(draftLayer?.[pair.draftKey]),
     finalValue: formatUnknownText(finalLayer?.[pair.finalKey]),
@@ -98,6 +99,110 @@ function getFieldProvenanceList(
     return [];
   }
   return raw.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object");
+}
+
+function getPromptDebugRecord(
+  profile: ReportDebugProfileResponse | null,
+  key: "lite" | "pro",
+): Record<string, unknown> | null {
+  const raw = profile?.prompt_debug?.[key];
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return null;
+  }
+  return raw as Record<string, unknown>;
+}
+
+function getDiagnosticsRecord(
+  profile: ReportDebugProfileResponse | null,
+): Record<string, unknown> | null {
+  const raw = profile?.diagnostics;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return null;
+  }
+  return raw as Record<string, unknown>;
+}
+
+function includesNormalized(haystack: string, needle: string): boolean {
+  return haystack.toLowerCase().includes(needle.toLowerCase());
+}
+
+function getPromptFieldRecord(
+  promptDebug: Record<string, unknown> | null,
+  fieldKey: string | null,
+): Record<string, unknown> | null {
+  if (!promptDebug || !fieldKey || !Array.isArray(promptDebug.schema_fields)) {
+    return null;
+  }
+
+  for (const item of promptDebug.schema_fields as unknown[]) {
+    if (!item || typeof item !== "object") {
+      continue;
+    }
+    const field = item as Record<string, unknown>;
+    const name = formatUnknownText(field.name);
+    const mapped = formatUnknownText(field.mapped_final_field);
+    if (
+      includesNormalized(name, fieldKey) ||
+      includesNormalized(mapped, fieldKey)
+    ) {
+      return field;
+    }
+  }
+
+  return null;
+}
+
+function buildPromptMatchKeywords(
+  fieldRecord: Record<string, unknown> | null,
+  fieldKey: string | null,
+): string[] {
+  const keywords = new Set<string>();
+  if (fieldKey) {
+    keywords.add(fieldKey);
+  }
+  if (fieldRecord) {
+    for (const candidate of [
+      fieldRecord.name,
+      fieldRecord.semantic_role,
+      fieldRecord.mapped_final_field,
+    ]) {
+      if (typeof candidate === "string" && candidate.trim()) {
+        candidate
+          .split(/[\/,]/)
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .forEach((part) => keywords.add(part));
+      }
+    }
+  }
+  return Array.from(keywords);
+}
+
+function getPromptRelevantLines(
+  promptText: string,
+  keywords: string[],
+): Array<{ line: string; highlighted: boolean }> {
+  const lines = promptText.split("\n");
+  const matchedIndexes = new Set<number>();
+
+  lines.forEach((line, index) => {
+    if (keywords.some((keyword) => keyword && includesNormalized(line, keyword))) {
+      for (let cursor = Math.max(0, index - 1); cursor <= Math.min(lines.length - 1, index + 1); cursor += 1) {
+        matchedIndexes.add(cursor);
+      }
+    }
+  });
+
+  if (matchedIndexes.size === 0) {
+    return lines.slice(0, 16).map((line) => ({ line, highlighted: false }));
+  }
+
+  return Array.from(matchedIndexes)
+    .sort((a, b) => a - b)
+    .map((index) => ({
+      line: lines[index],
+      highlighted: keywords.some((keyword) => keyword && includesNormalized(lines[index], keyword)),
+    }));
 }
 
 function findLatestTrace(
@@ -364,17 +469,18 @@ export function BrowserDebugPanel({
     useState<ReportDebugProfileResponse | null>(null);
   const [reportDebugLoading, setReportDebugLoading] = useState(false);
   const [reportDebugError, setReportDebugError] = useState<string | null>(null);
+  const [selectedDebugField, setSelectedDebugField] = useState<string | null>(null);
   const liteComparisonRows = useMemo(
     () =>
       buildLayerComparisonRows({
         draftLayer: getLayerRecord(reportDebugProfile, "layer_1_lite_draft"),
         finalLayer: getLayerRecord(reportDebugProfile, "layer_2_lite_final"),
         pairs: [
-          { label: "标题", draftKey: "title", finalKey: "title" },
-          { label: "整体印象", draftKey: "overall_impression", finalKey: "overall_impression" },
-          { label: "画面元素", draftKey: "visual_elements", finalKey: "visual_elements_rendered" },
-          { label: "情绪画像", draftKey: "emotion_portrait", finalKey: "emotion_portrait_rendered" },
-          { label: "Pro 引导", draftKey: "pro_teaser", finalKey: "pro_teaser" },
+          { fieldKey: "title", label: "标题", draftKey: "title", finalKey: "title" },
+          { fieldKey: "overall_impression", label: "整体印象", draftKey: "overall_impression", finalKey: "overall_impression" },
+          { fieldKey: "visual_elements", label: "画面元素", draftKey: "visual_elements", finalKey: "visual_elements_rendered" },
+          { fieldKey: "emotion_portrait", label: "情绪画像", draftKey: "emotion_portrait", finalKey: "emotion_portrait_rendered" },
+          { fieldKey: "pro_teaser", label: "Pro 引导", draftKey: "pro_teaser", finalKey: "pro_teaser" },
         ],
       }),
     [reportDebugProfile],
@@ -385,10 +491,10 @@ export function BrowserDebugPanel({
         draftLayer: getLayerRecord(reportDebugProfile, "layer_3_pro_draft"),
         finalLayer: getLayerRecord(reportDebugProfile, "layer_4_pro_final"),
         pairs: [
-          { label: "第一眼直觉", draftKey: "first_impression", finalKey: "ai_qa_context" },
-          { label: "核心洞察表", draftKey: "core_insight_table", finalKey: "full_report_markdown" },
-          { label: "根源分析", draftKey: "root_cause", finalKey: "full_report_markdown" },
-          { label: "疗愈建议", draftKey: "healing_suggestions", finalKey: "full_report_markdown" },
+          { fieldKey: "first_impression", label: "第一眼直觉", draftKey: "first_impression", finalKey: "ai_qa_context" },
+          { fieldKey: "core_insight_table", label: "核心洞察表", draftKey: "core_insight_table", finalKey: "full_report_markdown" },
+          { fieldKey: "root_cause", label: "根源分析", draftKey: "root_cause", finalKey: "full_report_markdown" },
+          { fieldKey: "healing_suggestions", label: "疗愈建议", draftKey: "healing_suggestions", finalKey: "full_report_markdown" },
         ],
       }),
     [reportDebugProfile],
@@ -401,6 +507,59 @@ export function BrowserDebugPanel({
     () => getFieldProvenanceList(reportDebugProfile, "pro"),
     [reportDebugProfile],
   );
+  const litePromptDebug = useMemo(
+    () => getPromptDebugRecord(reportDebugProfile, "lite"),
+    [reportDebugProfile],
+  );
+  const proPromptDebug = useMemo(
+    () => getPromptDebugRecord(reportDebugProfile, "pro"),
+    [reportDebugProfile],
+  );
+  const diagnostics = useMemo(
+    () => getDiagnosticsRecord(reportDebugProfile),
+    [reportDebugProfile],
+  );
+  const combinedDiagnosticFields = useMemo(() => {
+    const fieldsRoot = diagnostics?.fields;
+    if (!fieldsRoot || typeof fieldsRoot !== "object") {
+      return [];
+    }
+    const lite = Array.isArray((fieldsRoot as Record<string, unknown>).lite)
+      ? ((fieldsRoot as Record<string, unknown>).lite as unknown[])
+      : [];
+    const pro = Array.isArray((fieldsRoot as Record<string, unknown>).pro)
+      ? ((fieldsRoot as Record<string, unknown>).pro as unknown[])
+      : [];
+    return [...lite, ...pro]
+      .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object")
+      .sort(
+        (a, b) =>
+          Number(b.risk_score ?? 0) - Number(a.risk_score ?? 0) ||
+          formatUnknownText(a.field).localeCompare(formatUnknownText(b.field), "zh-CN"),
+      );
+  }, [diagnostics]);
+  const activePromptDebug = selectedDebugField && [
+    "first_impression",
+    "core_insight_table",
+    "root_cause",
+    "healing_suggestions",
+  ].includes(selectedDebugField)
+    ? proPromptDebug
+    : litePromptDebug;
+  const selectedPromptField = useMemo(
+    () => getPromptFieldRecord(activePromptDebug, selectedDebugField),
+    [activePromptDebug, selectedDebugField],
+  );
+  const selectedPromptKeywords = useMemo(
+    () => buildPromptMatchKeywords(selectedPromptField, selectedDebugField),
+    [selectedDebugField, selectedPromptField],
+  );
+  const selectedPromptLines = useMemo(() => {
+    const promptText = typeof activePromptDebug?.prompt_preview === "string"
+      ? activePromptDebug.prompt_preview
+      : "";
+    return getPromptRelevantLines(promptText, selectedPromptKeywords);
+  }, [activePromptDebug, selectedPromptKeywords]);
 
   useEffect(() => {
     if (!sessionGroups.length) {
@@ -478,6 +637,20 @@ export function BrowserDebugPanel({
       cancelled = true;
     };
   }, [activeInterpretationId, previewMode]);
+
+  useEffect(() => {
+    if (!selectedDebugField) {
+      return;
+    }
+
+    const knownFields = new Set([
+      ...liteComparisonRows.map((row) => row.fieldKey),
+      ...proComparisonRows.map((row) => row.fieldKey),
+    ]);
+    if (!knownFields.has(selectedDebugField)) {
+      setSelectedDebugField(null);
+    }
+  }, [liteComparisonRows, proComparisonRows, selectedDebugField]);
 
   return (
     <aside className="browser-shell__panel browser-shell__panel--side browser-shell__panel--observer">
@@ -765,6 +938,145 @@ export function BrowserDebugPanel({
                 <strong>{reportDebugProfile.version_purchased.join(", ") || "--"}</strong>
               </div>
             </div>
+            {diagnostics ? (
+              <article className="browser-debug-compare-card">
+                <div className="browser-debug-section__header">
+                  <h4>问题定位模式</h4>
+                  <span>diagnostic summary</span>
+                </div>
+                <div className="browser-debug-metrics">
+                  <div className="browser-debug-chip">
+                    <strong>高风险</strong>
+                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.high_risk_count)}</span>
+                  </div>
+                  <div className="browser-debug-chip">
+                    <strong>中风险</strong>
+                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.medium_risk_count)}</span>
+                  </div>
+                  <div className="browser-debug-chip">
+                    <strong>Fallback 字段</strong>
+                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.fallback_count)}</span>
+                  </div>
+                  <div className="browser-debug-chip">
+                    <strong>Schema 缺口</strong>
+                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.schema_missing_count)}</span>
+                  </div>
+                  <div className="browser-debug-chip">
+                    <strong>依赖用户输入</strong>
+                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.user_input_driven_count)}</span>
+                  </div>
+                  <div className="browser-debug-chip">
+                    <strong>依赖 Layer0</strong>
+                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.layer0_driven_count)}</span>
+                  </div>
+                </div>
+                <div className="browser-debug-tag-list">
+                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.recommended_first_actions)
+                    ? ((diagnostics.summary as Record<string, unknown>).recommended_first_actions as unknown[]).map((item, index) => {
+                        const actionItem = item as Record<string, unknown>;
+                        const action = actionItem.suggested_action as Record<string, unknown> | undefined;
+                        return (
+                          <button
+                            key={`action-${formatUnknownText(actionItem.field)}-${index}`}
+                            type="button"
+                            className={`browser-debug-tag browser-debug-tag--ok${selectedDebugField === formatUnknownText(actionItem.field) ? " browser-debug-tag--active" : ""}`}
+                            onClick={() => {
+                              setSelectedDebugField(formatUnknownText(actionItem.field));
+                            }}
+                          >
+                            {formatUnknownText(action?.priority)}: {formatUnknownText(actionItem.field)}
+                          </button>
+                        );
+                      })
+                    : null}
+                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.high_risk_fields)
+                    ? ((diagnostics.summary as Record<string, unknown>).high_risk_fields as unknown[]).map((item, index) => (
+                        <button
+                          key={`high-${String(item)}-${index}`}
+                          type="button"
+                          className={`browser-debug-tag browser-debug-tag--risk-high${selectedDebugField === formatUnknownText(item) ? " browser-debug-tag--active" : ""}`}
+                          onClick={() => {
+                            setSelectedDebugField(formatUnknownText(item));
+                          }}
+                        >
+                          high: {formatUnknownText(item)}
+                        </button>
+                      ))
+                    : null}
+                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.fallback_fields)
+                    ? ((diagnostics.summary as Record<string, unknown>).fallback_fields as unknown[]).map((item, index) => (
+                        <button
+                          key={`fallback-${String(item)}-${index}`}
+                          type="button"
+                          className={`browser-debug-tag browser-debug-tag--warn${selectedDebugField === formatUnknownText(item) ? " browser-debug-tag--active" : ""}`}
+                          onClick={() => {
+                            setSelectedDebugField(formatUnknownText(item));
+                          }}
+                        >
+                          fallback: {formatUnknownText(item)}
+                        </button>
+                      ))
+                    : null}
+                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.schema_missing_fields)
+                    ? ((diagnostics.summary as Record<string, unknown>).schema_missing_fields as unknown[]).map((item, index) => (
+                        <button
+                          key={`schema-${String(item)}-${index}`}
+                          type="button"
+                          className={`browser-debug-tag browser-debug-tag--warn${selectedDebugField === formatUnknownText(item) ? " browser-debug-tag--active" : ""}`}
+                          onClick={() => {
+                            setSelectedDebugField(formatUnknownText(item));
+                          }}
+                        >
+                          schema: {formatUnknownText(item)}
+                        </button>
+                      ))
+                    : null}
+                </div>
+                <div className="browser-debug-provenance-list">
+                  {combinedDiagnosticFields.length > 0
+                    ? combinedDiagnosticFields.map((field, index) => {
+                        const tags = Array.isArray(field.issue_tags) ? field.issue_tags : [];
+                        return (
+                          <details
+                            key={`diag-${formatUnknownText(field.field)}-${index}`}
+                            className={`browser-debug-provenance-item${selectedDebugField === formatUnknownText(field.field) ? " browser-debug-provenance-item--active" : ""}`}
+                          >
+                            <summary>
+                              <div
+                                onClick={() => {
+                                  setSelectedDebugField(formatUnknownText(field.field));
+                                }}
+                              >
+                                <strong>{formatUnknownText(field.field)}</strong>
+                                <span>
+                                  {formatUnknownText(field.risk_level)} · score {formatUnknownText(field.risk_score)} · {formatUnknownText(field.diagnosis)}
+                                </span>
+                              </div>
+                            </summary>
+                            <div className="browser-debug-provenance-body">
+                              <div className="browser-debug-provenance-block">
+                                <span>建议动作</span>
+                                <pre>{formatJson(field.suggested_action)}</pre>
+                              </div>
+                              <div className="browser-debug-tag-list">
+                                {tags.map((tag, tagIndex) => (
+                                  <span key={`${String(tag)}-${tagIndex}`} className="browser-debug-tag">
+                                    {formatUnknownText(tag)}
+                                  </span>
+                                ))}
+                              </div>
+                              <div className="browser-debug-provenance-block">
+                                <span>诊断详情</span>
+                                <pre>{formatJson(field)}</pre>
+                              </div>
+                            </div>
+                          </details>
+                        );
+                      })
+                    : null}
+                </div>
+              </article>
+            ) : null}
             {getLayerRecord(reportDebugProfile, "layer_0_raw") ? (
               <div className="browser-debug-layer-grid">
                 <article className="browser-debug-layer-card">
@@ -827,7 +1139,14 @@ export function BrowserDebugPanel({
                 </div>
                 <div className="browser-debug-compare-table">
                   {liteComparisonRows.map((row) => (
-                    <div key={row.label} className="browser-debug-compare-row">
+                    <button
+                      key={row.label}
+                      type="button"
+                      className={`browser-debug-compare-row${selectedDebugField === row.fieldKey ? " browser-debug-compare-row--active" : ""}`}
+                      onClick={() => {
+                        setSelectedDebugField(row.fieldKey);
+                      }}
+                    >
                       <strong>{row.label}</strong>
                       <div>
                         <span>Draft</span>
@@ -837,8 +1156,81 @@ export function BrowserDebugPanel({
                         <span>Final</span>
                         <pre>{row.finalValue}</pre>
                       </div>
-                    </div>
+                    </button>
                   ))}
+                </div>
+              </article>
+            ) : null}
+            {litePromptDebug ? (
+              <article className="browser-debug-compare-card">
+                <div className="browser-debug-section__header">
+                  <h4>Lite Prompt 与 Schema</h4>
+                  <span>preview + field hit</span>
+                </div>
+                {selectedDebugField ? (
+                  <div className="browser-debug-focus-bar">
+                    <strong>当前联动字段</strong>
+                    <span>{selectedDebugField}</span>
+                  </div>
+                ) : null}
+                <details className="browser-debug-json" open>
+                  <summary>prompt preview 全文</summary>
+                  <pre>{formatUnknownText(litePromptDebug.prompt_preview)}</pre>
+                </details>
+                {selectedDebugField && activePromptDebug === litePromptDebug ? (
+                  <details className="browser-debug-json" open>
+                    <summary>与当前字段最相关的 Prompt 片段</summary>
+                    <div className="browser-debug-prompt-snippets">
+                      {selectedPromptLines.map((item, index) => (
+                        <pre
+                          key={`${item.line}-${index}`}
+                          className={`browser-debug-prompt-line${item.highlighted ? " browser-debug-prompt-line--active" : ""}`}
+                        >
+                          {item.line || " "}
+                        </pre>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+                <div className="browser-debug-tag-list">
+                  {Array.isArray(litePromptDebug.validation_issues) &&
+                  litePromptDebug.validation_issues.length > 0 ? (
+                    (litePromptDebug.validation_issues as unknown[]).map((item, index) => (
+                      <span key={`${String(item)}-${index}`} className="browser-debug-tag browser-debug-tag--warn">
+                        {formatUnknownText(item)}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="browser-debug-tag browser-debug-tag--ok">schema 全部命中</span>
+                  )}
+                </div>
+                <div className="browser-debug-schema-list">
+                  {Array.isArray(litePromptDebug.schema_fields)
+                    ? (litePromptDebug.schema_fields as unknown[]).map((item, index) => {
+                        const field = item as Record<string, unknown>;
+                        const status = formatUnknownText(field.status);
+                        return (
+                          <div key={`${formatUnknownText(field.name)}-${index}`} className="browser-debug-schema-item">
+                            <button
+                              type="button"
+                              className={`browser-debug-schema-item__button${selectedDebugField && (includesNormalized(formatUnknownText(field.name), selectedDebugField) || includesNormalized(formatUnknownText(field.mapped_final_field), selectedDebugField)) ? " browser-debug-schema-item__button--active" : ""}`}
+                              onClick={() => {
+                                setSelectedDebugField(formatUnknownText(field.name));
+                              }}
+                            >
+                              <div className="browser-debug-schema-item__head">
+                                <strong>{formatUnknownText(field.name)}</strong>
+                                <span className={`browser-debug-badge${status === "hit" ? " browser-debug-badge--ok" : " browser-debug-badge--warn"}`}>
+                                  {status}
+                                </span>
+                              </div>
+                              <small>{formatUnknownText(field.semantic_role)}</small>
+                              <p>映射目标：{formatUnknownText(field.mapped_final_field)}</p>
+                            </button>
+                          </div>
+                        );
+                      })
+                    : null}
                 </div>
               </article>
             ) : null}
@@ -850,9 +1242,16 @@ export function BrowserDebugPanel({
                 </div>
                 <div className="browser-debug-provenance-list">
                   {liteProvenance.map((item, index) => (
-                    <details key={`${String(item.field)}-${index}`} className="browser-debug-provenance-item">
+                    <details
+                      key={`${String(item.field)}-${index}`}
+                      className={`browser-debug-provenance-item${selectedDebugField === formatUnknownText(item.field) ? " browser-debug-provenance-item--active" : ""}`}
+                    >
                       <summary>
-                        <div>
+                        <div
+                          onClick={() => {
+                            setSelectedDebugField(formatUnknownText(item.field));
+                          }}
+                        >
                           <strong>{formatUnknownText(item.field)}</strong>
                           <span>{formatUnknownText(item.main_source)}</span>
                         </div>
@@ -881,7 +1280,14 @@ export function BrowserDebugPanel({
                 </div>
                 <div className="browser-debug-compare-table">
                   {proComparisonRows.map((row) => (
-                    <div key={row.label} className="browser-debug-compare-row">
+                    <button
+                      key={row.label}
+                      type="button"
+                      className={`browser-debug-compare-row${selectedDebugField === row.fieldKey ? " browser-debug-compare-row--active" : ""}`}
+                      onClick={() => {
+                        setSelectedDebugField(row.fieldKey);
+                      }}
+                    >
                       <strong>{row.label}</strong>
                       <div>
                         <span>Draft</span>
@@ -891,8 +1297,81 @@ export function BrowserDebugPanel({
                         <span>Final</span>
                         <pre>{row.finalValue}</pre>
                       </div>
-                    </div>
+                    </button>
                   ))}
+                </div>
+              </article>
+            ) : null}
+            {proPromptDebug ? (
+              <article className="browser-debug-compare-card">
+                <div className="browser-debug-section__header">
+                  <h4>Pro Prompt 与 Schema</h4>
+                  <span>preview + field hit</span>
+                </div>
+                {selectedDebugField ? (
+                  <div className="browser-debug-focus-bar">
+                    <strong>当前联动字段</strong>
+                    <span>{selectedDebugField}</span>
+                  </div>
+                ) : null}
+                <details className="browser-debug-json" open>
+                  <summary>prompt preview 全文</summary>
+                  <pre>{formatUnknownText(proPromptDebug.prompt_preview)}</pre>
+                </details>
+                {selectedDebugField && activePromptDebug === proPromptDebug ? (
+                  <details className="browser-debug-json" open>
+                    <summary>与当前字段最相关的 Prompt 片段</summary>
+                    <div className="browser-debug-prompt-snippets">
+                      {selectedPromptLines.map((item, index) => (
+                        <pre
+                          key={`${item.line}-${index}`}
+                          className={`browser-debug-prompt-line${item.highlighted ? " browser-debug-prompt-line--active" : ""}`}
+                        >
+                          {item.line || " "}
+                        </pre>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+                <div className="browser-debug-tag-list">
+                  {Array.isArray(proPromptDebug.validation_issues) &&
+                  proPromptDebug.validation_issues.length > 0 ? (
+                    (proPromptDebug.validation_issues as unknown[]).map((item, index) => (
+                      <span key={`${String(item)}-${index}`} className="browser-debug-tag browser-debug-tag--warn">
+                        {formatUnknownText(item)}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="browser-debug-tag browser-debug-tag--ok">schema 全部命中</span>
+                  )}
+                </div>
+                <div className="browser-debug-schema-list">
+                  {Array.isArray(proPromptDebug.schema_fields)
+                    ? (proPromptDebug.schema_fields as unknown[]).map((item, index) => {
+                        const field = item as Record<string, unknown>;
+                        const status = formatUnknownText(field.status);
+                        return (
+                          <div key={`${formatUnknownText(field.name)}-${index}`} className="browser-debug-schema-item">
+                            <button
+                              type="button"
+                              className={`browser-debug-schema-item__button${selectedDebugField && (includesNormalized(formatUnknownText(field.name), selectedDebugField) || includesNormalized(formatUnknownText(field.mapped_final_field), selectedDebugField)) ? " browser-debug-schema-item__button--active" : ""}`}
+                              onClick={() => {
+                                setSelectedDebugField(formatUnknownText(field.name));
+                              }}
+                            >
+                              <div className="browser-debug-schema-item__head">
+                                <strong>{formatUnknownText(field.name)}</strong>
+                                <span className={`browser-debug-badge${status === "hit" ? " browser-debug-badge--ok" : " browser-debug-badge--warn"}`}>
+                                  {status}
+                                </span>
+                              </div>
+                              <small>{formatUnknownText(field.semantic_role)}</small>
+                              <p>映射目标：{formatUnknownText(field.mapped_final_field)}</p>
+                            </button>
+                          </div>
+                        );
+                      })
+                    : null}
                 </div>
               </article>
             ) : null}
@@ -904,9 +1383,16 @@ export function BrowserDebugPanel({
                 </div>
                 <div className="browser-debug-provenance-list">
                   {proProvenance.map((item, index) => (
-                    <details key={`${String(item.field)}-${index}`} className="browser-debug-provenance-item">
+                    <details
+                      key={`${String(item.field)}-${index}`}
+                      className={`browser-debug-provenance-item${selectedDebugField === formatUnknownText(item.field) ? " browser-debug-provenance-item--active" : ""}`}
+                    >
                       <summary>
-                        <div>
+                        <div
+                          onClick={() => {
+                            setSelectedDebugField(formatUnknownText(item.field));
+                          }}
+                        >
                           <strong>{formatUnknownText(item.field)}</strong>
                           <span>{formatUnknownText(item.main_source)}</span>
                         </div>
