@@ -15,3 +15,4 @@
 - `2026-04-04-mobile-web-interaction-baseline.md`
 - `2026-04-04-report-content-iteration-guide.md`
 - `2026-04-08-architecture-remediation-delivery.md`
+- `2026-04-10-开发测试机初始化与部署记录.md`
