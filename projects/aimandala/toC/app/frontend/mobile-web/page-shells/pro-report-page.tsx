@@ -2,6 +2,7 @@ import { Fragment, useMemo, useState } from "react";
 
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
+import { getThemeDisplayName } from "../../shared/core";
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 
@@ -157,6 +158,39 @@ function parseQaQuestions(state: MandalaFlowState): string[] {
       .filter(Boolean);
   }
   return [];
+}
+
+function stripMarkdownText(text: string): string {
+  return text
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^\s*[-*]\s+/gm, "")
+    .replace(/^\s*\d+\.\s+/gm, "")
+    .replace(/\|/g, " ")
+    .trim();
+}
+
+function extractFirstParagraph(text: string): string {
+  return text
+    .split(/\n\s*\n/)
+    .map((part) => stripMarkdownText(part).trim())
+    .find(Boolean) ?? "";
+}
+
+function extractProSummary(state: MandalaFlowState, sections: ProMarkdownSection[]): string {
+  const overallImpression = stripMarkdownText(state.report?.overall_impression ?? "");
+  if (overallImpression) {
+    return overallImpression;
+  }
+
+  const firstParagraph = extractFirstParagraph(sections[0]?.body ?? "");
+  if (firstParagraph) {
+    return firstParagraph;
+  }
+
+  return "这份 Pro 报告会把 Lite 里已经看到的主线，继续向更深的结构与现实连接展开。";
 }
 
 function ProMandalaPreview({
@@ -656,9 +690,11 @@ export function MobileWebProReportPage({
   const title = useMemo(() => extractProTitle(state), [state]);
   const sections = useMemo(() => parseProMarkdown(state), [state]);
   const qaQuestions = useMemo(() => parseQaQuestions(state), [state]);
+  const summary = useMemo(() => extractProSummary(state, sections), [sections, state]);
   const hasProReport = state.report?.version === "pro" && sections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;
+  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "全面解读";
   const generatedAt = useMemo(
     () =>
       new Date().toLocaleDateString("zh-CN", {
@@ -727,21 +763,47 @@ export function MobileWebProReportPage({
       <div style={{ flex: 1, overflowY: "auto", scrollbarWidth: "none" as const }}>
       <div style={{ background: "linear-gradient(180deg, #1A2844 0%, #1E2D4D 50%, #223358 80%, #2A3D65 100%)", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${brandPattern})`, backgroundSize: 300, backgroundRepeat: "repeat", opacity: 0.02 }} />
-        <div style={{ position: "relative", padding: "32px 24px 14px" }}>
+        <div style={{ position: "relative", padding: "32px 24px 28px" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
             <h1 style={{ margin: 0, textAlign: "center", fontFamily: "'Noto Serif SC', serif", fontSize: 24, fontWeight: 600, color: "#E8DCC8", letterSpacing: "0.15em", lineHeight: 1.4 }}>{title}</h1>
             <div style={{ width: 56, height: 1, marginTop: 12, background: "linear-gradient(90deg, rgba(212,160,84,0), rgba(212,160,84,0.8), rgba(212,160,84,0))" }} />
             <span style={{ marginTop: 8, fontSize: 12, color: "rgba(232,220,200,0.45)", letterSpacing: "0.08em" }}>
               {generatedAt}生成
             </span>
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, marginTop: 14 }}>
+              <span style={{ padding: "5px 10px", borderRadius: 999, fontSize: 11, color: "#E8DCC8", background: "rgba(212,160,84,0.14)", border: "1px solid rgba(212,160,84,0.18)" }}>
+                Pro 完整报告
+              </span>
+              <span style={{ padding: "5px 10px", borderRadius: 999, fontSize: 11, color: "rgba(232,220,200,0.82)", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                {themeLabel}
+              </span>
+            </div>
+            <div style={{ marginTop: 22, display: "flex", justifyContent: "center" }}>
+              <ProMandalaPreview imagePath={previewImage} innerRadius={innerRadius} middleRadius={middleRadius} />
+            </div>
+            {summary ? (
+              <div
+                style={{
+                  width: "100%",
+                  maxWidth: 368,
+                  marginTop: 20,
+                  padding: "18px 18px 16px",
+                  borderRadius: 22,
+                  background: "linear-gradient(180deg, rgba(245,239,226,0.14) 0%, rgba(245,239,226,0.08) 100%)",
+                  border: "1px solid rgba(232,220,200,0.12)",
+                  boxShadow: "0 18px 36px rgba(8,14,28,0.18)",
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", color: "rgba(212,160,84,0.86)", marginBottom: 10 }}>一眼总结</div>
+                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "rgba(232,220,200,0.88)" }}>{summary}</p>
+              </div>
+            ) : null}
           </div>
-        </div>
-        <div style={{ position: "sticky", top: 0, zIndex: 2, padding: "8px 16px 14px", display: "flex", justifyContent: "center", background: "linear-gradient(180deg, rgba(30,45,77,0.94) 0%, rgba(34,51,88,0.78) 58%, rgba(34,51,88,0) 100%)" }}>
-          <ProMandalaPreview imagePath={previewImage} innerRadius={innerRadius} middleRadius={middleRadius} />
         </div>
       </div>
 
-          <div style={{ position: "relative", marginTop: -28, padding: "30px 20px 26px", background: "#F0E6D6", borderTopLeftRadius: 28, borderTopRightRadius: 28, boxShadow: "0 -6px 28px rgba(26,40,68,0.16)" }}>
+          <div style={{ position: "relative", marginTop: -18, padding: "30px 20px 26px", background: "#F0E6D6", borderTopLeftRadius: 28, borderTopRightRadius: 28, boxShadow: "0 -6px 28px rgba(26,40,68,0.16)" }}>
         <div style={{ position: "absolute", top: 10, left: "50%", width: 44, height: 4, borderRadius: 999, transform: "translateX(-50%)", background: "rgba(138,124,108,0.18)" }} />
         <div style={{ display: "grid", gap: 22, maxWidth: 420, margin: "0 auto" }}>
           {isGenerating ? (
@@ -760,12 +822,6 @@ export function MobileWebProReportPage({
           ) : null}
 
           {hasProReport ? <ProReportMarkdown sections={sections} /> : null}
-
-          <div style={{ borderRadius: 20, padding: "17px 16px", background: "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(245,239,226,0.8) 100%)", border: "1px solid rgba(138,124,108,0.12)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)" }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#5E5046", lineHeight: 1.85 }}>
-              21天疗愈方案为独立服务（49元），MVP阶段暂不上线。
-            </p>
-          </div>
 
           {qaQuestions.length > 0 ? (
             <div style={{ borderRadius: 20, overflow: "hidden", background: "linear-gradient(135deg, #1A2844 0%, #1E2D4D 50%, #253860 100%)", border: "1px solid rgba(212,160,84,0.2)", boxShadow: "0 14px 28px rgba(26,40,68,0.16)" }}>
@@ -815,6 +871,12 @@ export function MobileWebProReportPage({
               <RestartGlyph />
               <span>再画一幅</span>
             </button>
+          </div>
+
+          <div style={{ borderRadius: 16, padding: "15px 16px", background: "rgba(255,255,255,0.58)", border: "1px solid rgba(138,124,108,0.1)" }}>
+            <p style={{ margin: 0, fontSize: 12.5, color: "#8A7C6C", lineHeight: 1.8 }}>
+              更多延展服务会在后续版本逐步开放，当前 MVP 先聚焦把单次 Pro 报告阅读体验做好。
+            </p>
           </div>
 
           <div style={{ borderRadius: 14, padding: 16, background: "rgba(200,120,80,0.05)", border: "1px solid rgba(200,120,80,0.1)" }}>

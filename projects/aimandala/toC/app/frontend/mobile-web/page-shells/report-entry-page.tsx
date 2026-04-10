@@ -64,11 +64,13 @@ function EntryCard({
         cursor: isAvailable ? "pointer" : "default",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: isPro ? "rgba(212,160,84,0.86)" : accentColor }}>解读版本</div>
+      <div style={{ fontSize: 11, letterSpacing: "0.18em", color: isPro ? "rgba(212,160,84,0.86)" : accentColor }}>解读版本</div>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginTop: 8 }}>
+        <h2 style={{ margin: 0, fontFamily: "'Noto Serif SC', serif", fontSize: 24, fontWeight: 600, lineHeight: 1.35 }}>{title}</h2>
         <span
           style={{
             flexShrink: 0,
+            marginTop: 2,
             padding: "5px 10px",
             borderRadius: 999,
             fontSize: 11,
@@ -81,12 +83,11 @@ function EntryCard({
           {priceLabel}
         </span>
       </div>
-      <h2 style={{ margin: "10px 0 10px", fontFamily: "'Noto Serif SC', serif", fontSize: 24, fontWeight: 600, lineHeight: 1.35 }}>{title}</h2>
-      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.8, color: isPro ? "rgba(232,220,200,0.82)" : "#67594E" }}>{description}</p>
+      <p style={{ margin: "10px 0 0", fontSize: 14, lineHeight: 1.8, color: isPro ? "rgba(232,220,200,0.82)" : "#67594E" }}>{description}</p>
       <div style={{ display: "grid", gap: 8, marginTop: 16 }}>
         {bullets.map((item) => (
           <div key={item} style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, lineHeight: 1.7, color: isPro ? "rgba(232,220,200,0.74)" : "#7A6A5A" }}>
-            <span style={{ color: isPro ? "#D4A054" : accentColor }}>•</span>
+            <span style={{ color: isPro ? "#D4A054" : accentColor }}>·</span>
             <span>{item}</span>
           </div>
         ))}
@@ -95,14 +96,14 @@ function EntryCard({
       <div
         style={{
           marginTop: 18,
-          minHeight: 46,
+          minHeight: 44,
           borderRadius: 14,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           background: isPro
-            ? "linear-gradient(135deg, rgba(212,160,84,0.22) 0%, rgba(200,120,80,0.18) 100%)"
-            : `linear-gradient(135deg, color-mix(in srgb, ${accentColor} 14%, white) 0%, color-mix(in srgb, ${accentColor} 6%, white) 100%)`,
+            ? "linear-gradient(135deg, rgba(212,160,84,0.18) 0%, rgba(200,120,80,0.14) 100%)"
+            : `linear-gradient(135deg, color-mix(in srgb, ${accentColor} 10%, white) 0%, color-mix(in srgb, ${accentColor} 4%, white) 100%)`,
           color: isPro ? "#E8DCC8" : accentColor,
           fontSize: 14,
           fontWeight: 600,

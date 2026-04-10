@@ -2,13 +2,12 @@ import { MobileWebAppShell } from "../app-shell";
 import { mobileWebRoutes, type MobileWebRouteId } from "../routes";
 import {
   LoadingProgressCard,
-  ReportMetricsRow,
   ReportSections,
-  StructuredReportCards,
   UploadAssetStatusCard,
 } from "../components/report-cards";
 import {
   getLiteStructuredReport,
+  getThemeDisplayName,
   hasProReportAccess,
   resolveSelfUnderstandingReportCta,
 } from "../../shared/core";
@@ -167,10 +166,12 @@ export function MobileWebReportPage({
 }: MobileWebReportPageProps) {
   const structured = getLiteStructuredReport(state.report);
   const uploadAsset = uploadDraft ? getUploadAssetRef(uploadDraft) : null;
+  const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const isLoading = state.step === "liteGenerating";
   const isError = state.step === "error";
   const isUpgradeRoute = route === "upgrade" || state.step === "upgradePlaceholder";
   const canRetryRefresh = Boolean(isError && state.interpretation?.interpretation_id);
+  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "全面解读";
   const resultCta = resolveSelfUnderstandingReportCta({
     theme: uploadDraft?.theme,
     canUpgrade: Boolean(state.report?.can_upgrade || state.status?.can_upgrade),
@@ -189,6 +190,16 @@ export function MobileWebReportPage({
       structured?.overall_impression ||
       state.report?.overall_impression ||
       "曼曼已经把这一轮 Lite 版解读整理好了。";
+  const generatedAt = new Date().toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const statusLabel = isLoading
+    ? `生成中 ${state.status?.generation_progress ?? state.interpretation?.generation_progress ?? 0}%`
+    : isError
+      ? "等待重试"
+      : "已完成";
   const primaryLabel = isLoading
     ? "继续查看生成进度"
       : canRetryRefresh
@@ -206,48 +217,38 @@ export function MobileWebReportPage({
         : isError
           ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
           : resultCta.footerHint;
-  const metrics = [
-    {
-      label: "当前版本",
-      value: isUpgradeRoute ? "Pro 结果" : "Lite 结果",
-    },
-    {
-      label: "解读状态",
-      value: isLoading
-        ? `生成中 ${state.status?.generation_progress ?? state.interpretation?.generation_progress ?? 0}%`
-        : isError
-          ? "等待重试"
-          : "已完成",
-    },
-    {
-      label: "日期",
-      value: new Date().toLocaleDateString("zh-CN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-    },
-  ];
-
-  const contentSections: ReportPageSection[] = reportSections.length
-    ? reportSections
-    : selfUnderstandingSections.length
+  const readingSections: ReportPageSection[] = selfUnderstandingSections.length
       ? selfUnderstandingSections
-    : structured
-      ? [
-          {
-            id: "fallback-impression",
-            heading: "整体命中",
-            body: structured.overall_impression,
-          },
-        ]
-      : [
-          {
-            id: "empty-report",
-            heading: "报告内容待补齐",
-            body: "当前还没有可展示的完整正文内容。我们先把主路径和内容承载位置缝顺，后续再按 Figma 设计稿复刻正式报告页。",
-          },
-        ];
+      : reportSections.length
+        ? reportSections
+        : structured
+          ? [
+              {
+                id: "fallback-impression",
+                heading: "整体命中",
+                body: structured.overall_impression,
+              },
+            ]
+          : [
+              {
+                id: "empty-report",
+                heading: "报告内容待补齐",
+                body: "当前还没有可展示的完整正文内容。我们先把主路径和内容承载位置缝顺，后续再按 Figma 设计稿复刻正式报告页。",
+              },
+            ];
+  const summaryComparable = stripMarkdown(reportSubtitle);
+  const dedupedSections = readingSections.filter(
+    (section, index) =>
+      !(index === 0 && stripMarkdown(section.body) === summaryComparable),
+  );
+  const contentSections =
+    dedupedSections.length > 0 ? dedupedSections : readingSections;
+  const readingPath =
+    contentSections
+      .map((section) => section.heading)
+      .filter(Boolean)
+      .join(" · ") || "整体命中 · 画面依据 · 状态解释";
+  const reportToneLabel = isUpgradeRoute ? "一梳 Pro 版" : "一镜 Lite 版";
 
   return (
     <MobileWebAppShell
@@ -260,13 +261,31 @@ export function MobileWebReportPage({
       environmentTone={environmentTone}
       hideHeader
     >
-      <section className="mw-hero-card">
-        <p className="mw-kicker">{isUpgradeRoute ? "一梳 Pro 版" : "一镜 Lite 版"}</p>
-        <h2>{reportTitle}</h2>
-        <p>{reportSubtitle}</p>
+      <section className="mw-report-hero">
+        <div className="mw-report-hero__copy">
+          <p className="mw-kicker">{reportToneLabel}</p>
+          <h2>{reportTitle}</h2>
+          <p>{reportSubtitle}</p>
+          <div className="mw-report-hero__meta">
+            <span className="mw-badge">{isUpgradeRoute ? "Pro" : "Lite"}</span>
+            <span className="mw-badge">{themeLabel}</span>
+            <span className="mw-badge">{statusLabel}</span>
+            <span className="mw-report-hero__date">{generatedAt}</span>
+          </div>
+          {!isLoading && !isError ? (
+            <p className="mw-report-hero__path">阅读路径：{readingPath}</p>
+          ) : null}
+        </div>
+        {previewImage ? (
+          <div className="mw-report-hero__preview">
+            <img
+              className="mw-report-hero__image"
+              src={previewImage}
+              alt="当前曼陀罗"
+            />
+          </div>
+        ) : null}
       </section>
-
-      <ReportMetricsRow metrics={metrics} />
 
       {existingHint ? (
         <section className="mw-inline-banner mw-inline-banner--runtime">
@@ -276,12 +295,6 @@ export function MobileWebReportPage({
       ) : null}
 
       {isLoading ? <LoadingProgressCard state={state} /> : null}
-
-      {environmentLabel && uploadDraft ? (
-        <UploadAssetStatusCard imagePath={uploadDraft.imagePath} uploadAsset={uploadAsset} />
-      ) : null}
-
-      {structured ? <StructuredReportCards structured={structured} /> : null}
 
       <ReportSections sections={contentSections} />
 
@@ -303,6 +316,10 @@ export function MobileWebReportPage({
           </button>
         </div>
       </footer>
+
+      {environmentLabel && uploadDraft ? (
+        <UploadAssetStatusCard imagePath={uploadDraft.imagePath} uploadAsset={uploadAsset} />
+      ) : null}
     </MobileWebAppShell>
   );
 }

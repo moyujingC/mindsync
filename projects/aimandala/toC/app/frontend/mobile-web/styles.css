@@ -340,6 +340,13 @@ select {
   gap: 8px;
 }
 
+.mw-report-hero__path {
+  margin-top: 16px;
+  color: #6f5f4d;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
 .mw-report-hero__date {
   color: #7c6850;
   font-size: 12px;
@@ -426,6 +433,10 @@ select {
 .mw-card__header h3 {
   margin: 0;
   font-size: 18px;
+}
+
+.mw-card__header--section {
+  align-items: baseline;
 }
 
 .mw-badge {
@@ -638,6 +649,29 @@ select {
 .mw-prewrap {
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.mw-card--report-section {
+  padding-top: 20px;
+}
+
+.mw-card--report-section-lead {
+  background:
+    radial-gradient(circle at top right, rgba(184, 144, 86, 0.14), transparent 34%),
+    rgba(255, 252, 247, 0.98);
+}
+
+.mw-section-index {
+  flex-shrink: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #9b8160;
+}
+
+.mw-card--debug {
+  margin-top: 6px;
+  background: rgba(255, 252, 247, 0.82);
+  box-shadow: none;
 }
 
 .mw-meta {

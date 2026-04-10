@@ -25,6 +25,6 @@ describe("report-entry page descriptor", () => {
 
     expect(descriptor.themeLabel).toBe("亲密关系");
     expect(ids).toEqual(["lite", "pro"]);
-    expect(descriptor.description).toContain("Lite 更轻、更快");
+    expect(descriptor.description).toContain("先选这次想看的深度");
   });
 });

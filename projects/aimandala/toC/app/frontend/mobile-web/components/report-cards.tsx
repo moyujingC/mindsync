@@ -177,9 +177,13 @@ export interface ReportSectionsProps {
 export function ReportSections({ sections }: ReportSectionsProps) {
   return (
     <section className="mw-stack">
-      {sections.map((section) => (
-        <article key={section.id} className="mw-card">
-          <div className="mw-card__header">
+      {sections.map((section, index) => (
+        <article
+          key={section.id}
+          className={`mw-card mw-card--report-section ${index === 0 ? "mw-card--report-section-lead" : ""}`}
+        >
+          <div className="mw-card__header mw-card__header--section">
+            <span className="mw-section-index">{String(index + 1).padStart(2, "0")}</span>
             <h3>{section.heading}</h3>
           </div>
           <p className="mw-prewrap">{section.body}</p>
@@ -199,16 +203,16 @@ export function UploadAssetStatusCard({
   uploadAsset = null,
 }: UploadAssetStatusCardProps) {
   return (
-    <article className="mw-card">
+    <article className="mw-card mw-card--debug">
       <div className="mw-card__header">
-        <h3>当前图片对象</h3>
+        <h3>调试信息</h3>
         <span className="mw-badge">
           {uploadAsset ? "已换到运行时对象" : "仍使用当前路径"}
         </span>
       </div>
       <dl className="mw-field-list">
         <div className="mw-field-list__row">
-          <dt>当前画作路径</dt>
+          <dt>原始画作路径</dt>
           <dd>{imagePath || "暂未选择"}</dd>
         </div>
         <div className="mw-field-list__row">

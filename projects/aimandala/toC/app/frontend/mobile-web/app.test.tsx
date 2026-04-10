@@ -101,7 +101,9 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("整体命中");
+    expect(html).toContain("你最近更想先稳住自己，再决定要不要继续靠近。");
+    expect(html).toContain("阅读路径：画面依据 · 状态解释 · 模式命名 · 现实连接 · 一个下一步");
+    expect(html).not.toContain("<h3>整体命中</h3>");
     expect(html).toContain("模式命名");
     expect(html).toContain("一个下一步");
     expect(html).toContain("看看 Pro 版解读");
