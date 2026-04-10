@@ -74,14 +74,34 @@ class LiteReportBlueprint:
             _validate_required_mapping_keys(
                 "lite.theme_labels",
                 self.theme_labels,
-                ("general", "career", "relationship", "emotion"),
+                (
+                    "general",
+                    "father_relationship",
+                    "mother_relationship",
+                    "intimate_relationship",
+                    "parent_child_relationship",
+                    "wealth_career",
+                    "health_wellness",
+                    "personal_growth",
+                ),
             )
         )
         issues.extend(
             _validate_required_mapping_keys(
                 "lite.title_templates",
                 self.title_templates,
-                ("inner_high", "middle_high", "emotion", "relationship", "career", "default"),
+                (
+                    "inner_high",
+                    "middle_high",
+                    "father_relationship",
+                    "mother_relationship",
+                    "intimate_relationship",
+                    "parent_child_relationship",
+                    "wealth_career",
+                    "health_wellness",
+                    "personal_growth",
+                    "default",
+                ),
             )
         )
         issues.extend(
@@ -514,17 +534,25 @@ _DEFAULT_LITE_THEME_INSIGHT_TEMPLATES = {
     "awareness": "当你不再逼自己立刻进入最优状态，反而更容易找到真正可持续的推进方式。",
 }
 _DEFAULT_LITE_THEME_LABELS = {
-    "general": "整体",
-    "career": "事业",
-    "relationship": "关系",
-    "emotion": "情绪",
+    "general": "通用解读",
+    "father_relationship": "与父亲的关系",
+    "mother_relationship": "与母亲的关系",
+    "intimate_relationship": "亲密关系",
+    "parent_child_relationship": "亲子关系",
+    "wealth_career": "财富事业",
+    "health_wellness": "身体健康",
+    "personal_growth": "个人成长",
 }
 _DEFAULT_LITE_TITLE_TEMPLATES = {
     "inner_high": "{theme_label}里的守心者",
     "middle_high": "{theme_label}中的重连者",
-    "emotion": "回潮时刻的自己",
-    "relationship": "关系里的慢热光",
-    "career": "向前先稳住的人",
+    "father_relationship": "父影里的回声",
+    "mother_relationship": "还想靠近的地方",
+    "intimate_relationship": "关系里的慢热光",
+    "parent_child_relationship": "牵挂中的边界感",
+    "wealth_career": "向前先稳住的人",
+    "health_wellness": "身体在说的话",
+    "personal_growth": "回潮时刻的自己",
     "default": "慢慢亮起来的中心",
 }
 _DEFAULT_LITE_STRUCTURE_LABELS = {

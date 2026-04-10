@@ -560,7 +560,7 @@ export function MobileWebLegacyReportPage({
                 ))}
               </div>
               <button type="button" onClick={onPrimaryAction} disabled={primaryCtaDisabled} style={{ width: "100%", minHeight: 48, borderRadius: 12, border: "1px solid rgba(212,160,84,0.4)", background: primaryCtaDisabled ? "rgba(232,220,200,0.08)" : "linear-gradient(135deg, rgba(212,160,84,0.25) 0%, rgba(200,120,80,0.2) 100%)", color: primaryCtaDisabled ? "rgba(232,220,200,0.45)" : "#E8DCC8", fontSize: 14, letterSpacing: "0.05em", cursor: primaryCtaDisabled ? "default" : "pointer" }}>
-                {isUpgrade ? "当前正在查看更深层报告" : resultCta.primaryLabel}
+                {isUpgrade ? "当前正在查看 Pro 版解读" : resultCta.primaryLabel}
               </button>
               <div style={{ textAlign: "center", marginTop: 10 }}>
                 <span style={{ fontSize: 11, color: "rgba(212,160,84,0.6)", letterSpacing: "0.03em" }}>{resultCta.legacyCaption}</span>

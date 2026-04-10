@@ -3,25 +3,28 @@ import { describe, expect, it } from "vitest";
 import { createReportEntryPageDescriptor } from "./report-entry-page";
 
 describe("report-entry page descriptor", () => {
-  it("在 general 主题下提示议题聚焦报告需要具体主题", () => {
+  it("在 general 主题下仍显示 Lite / Pro 两种可选版本", () => {
     const descriptor = createReportEntryPageDescriptor({
       theme: "general",
     });
-    const issueFocus = descriptor.cards.find((card) => card.id === "issue_focus");
+    const lite = descriptor.cards.find((card) => card.id === "lite");
+    const pro = descriptor.cards.find((card) => card.id === "pro");
 
-    expect(issueFocus?.availability).toBe("theme_required");
-    expect(issueFocus?.cta).toBe("先选一个具体主题");
+    expect(descriptor.themeLabel).toBe("全面解读");
+    expect(lite?.availability).toBe("available");
+    expect(lite?.priceLabel).toBe("9.9 元");
+    expect(pro?.availability).toBe("available");
+    expect(pro?.priceLabel).toBe("39 元");
   });
 
-  it("默认推荐自我理解报告，并开放深层模式报告", () => {
+  it("在具体主题下保留当前主题提示并展示两个版本", () => {
     const descriptor = createReportEntryPageDescriptor({
       theme: "intimate_relationship",
     });
-    const selfUnderstanding = descriptor.cards.find((card) => card.id === "self_understanding");
-    const deepPattern = descriptor.cards.find((card) => card.id === "deep_pattern");
+    const ids = descriptor.cards.map((card) => card.id);
 
-    expect(selfUnderstanding?.recommended).toBe(true);
-    expect(selfUnderstanding?.availability).toBe("available");
-    expect(deepPattern?.availability).toBe("available");
+    expect(descriptor.themeLabel).toBe("亲密关系");
+    expect(ids).toEqual(["lite", "pro"]);
+    expect(descriptor.description).toContain("Lite 更轻、更快");
   });
 });

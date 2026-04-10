@@ -5,11 +5,7 @@ import type {
 } from "../shared/types";
 
 export type MobileWebReportVariant = "lite" | "pro";
-export type MobileWebReportProductType =
-  | "current_mirroring"
-  | "self_understanding"
-  | "issue_focus"
-  | "deep_pattern";
+export type MobileWebReportProductType = MobileWebReportVariant;
 
 export interface MobileWebUploadAssetRef {
   runtimeImagePath: string;
@@ -34,13 +30,13 @@ export interface MobileWebUploadDraft {
 export function inferReportTypeFromVariant(
   reportVariant?: MobileWebReportVariant,
 ): MobileWebReportProductType {
-  return reportVariant === "pro" ? "deep_pattern" : "self_understanding";
+  return reportVariant === "pro" ? "pro" : "lite";
 }
 
 export function inferReportVariantFromType(
   reportType?: MobileWebReportProductType,
 ): MobileWebReportVariant {
-  return reportType === "deep_pattern" ? "pro" : "lite";
+  return reportType === "pro" ? "pro" : "lite";
 }
 
 export function getDraftReportType(
@@ -133,14 +129,26 @@ export function toStartCreatePayload(
   draft: MobileWebUploadDraft,
   userId: string,
 ): StartCreatePayload {
+  const normalizeCirclePercent = (value?: number): number | undefined => {
+    if (typeof value !== "number" || Number.isNaN(value)) {
+      return undefined;
+    }
+
+    if (value <= 1) {
+      return Math.round(value * 100);
+    }
+
+    return Math.round(value);
+  };
+
   return {
     userId,
     imagePath: getDraftRuntimeImagePath(draft),
     theme: draft.theme,
     paintingIntention: draft.paintingIntention,
     paintingFeeling: draft.paintingFeeling,
-    innerRadius: draft.innerRadius,
-    middleRadius: draft.middleRadius,
+    innerRadius: normalizeCirclePercent(draft.innerRadius),
+    middleRadius: normalizeCirclePercent(draft.middleRadius),
   };
 }
 
@@ -155,7 +163,7 @@ export function getMobileWebPrimaryAction(state: MandalaFlowState): string {
     case "liteReady":
       return "查看一镜 Lite 版";
     case "upgradePlaceholder":
-      return "查看一梳 Pro 版入口";
+      return "查看一梳 Pro 版";
     case "error":
       return "重新开始";
     default:

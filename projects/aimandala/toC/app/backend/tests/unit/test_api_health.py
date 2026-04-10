@@ -501,7 +501,7 @@ def test_get_user_interpretations_endpoint(tmp_path):
         json={
             "user_id": "user-api-4",
             "image_path": str(second_image),
-            "theme": "relationships",
+            "theme": "intimate_relationship",
         },
     )
 
@@ -571,8 +571,8 @@ def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_pa
     _reset_api_state()
     client = TestClient(app)
     first_image = tmp_path / "history-general.png"
-    second_image = tmp_path / "history-career.png"
-    third_image = tmp_path / "history-relationship.png"
+    second_image = tmp_path / "history-wealth-career.png"
+    third_image = tmp_path / "history-intimate-relationship.png"
     first_image.write_bytes(b"mock-image-1")
     second_image.write_bytes(b"mock-image-2")
     third_image.write_bytes(b"mock-image-3")
@@ -590,7 +590,7 @@ def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_pa
         json={
             "user_id": "user-api-theme-limit",
             "image_path": str(second_image),
-            "theme": "career",
+            "theme": "wealth_career",
         },
     )
     client.post(
@@ -598,18 +598,18 @@ def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_pa
         json={
             "user_id": "user-api-theme-limit",
             "image_path": str(third_image),
-            "theme": "career",
+            "theme": "wealth_career",
         },
     )
 
     theme_response = client.get(
-        "/api/v2/users/user-api-theme-limit/interpretations?theme=career&limit=1"
+        "/api/v2/users/user-api-theme-limit/interpretations?theme=wealth_career&limit=1"
     )
 
     assert theme_response.status_code == 200
     theme_data = theme_response.json()
     assert len(theme_data) == 1
-    assert all(item["theme"] == "career" for item in theme_data)
+    assert all(item["theme"] == "wealth_career" for item in theme_data)
 
 
 def test_get_user_interpretations_endpoint_distinguishes_lite_and_lite_plus_pro(tmp_path):
@@ -635,7 +635,7 @@ def test_get_user_interpretations_endpoint_distinguishes_lite_and_lite_plus_pro(
         json={
             "user_id": "user-api-history-version",
             "image_path": str(pro_image),
-            "theme": "career",
+            "theme": "wealth_career",
         },
     )
 

@@ -312,7 +312,7 @@ curl -s http://127.0.0.1:8000/api/v2/interpretations \
   -d '{
     "user_id": "debug-user-1",
     "image_path": "/absolute/path/to/mandala.png",
-    "theme": "career"
+    "theme": "wealth_career"
   }'
 
 # 5) 拉取 Lite 报告（把 <interpretation_id> 替换成上一步返回值）

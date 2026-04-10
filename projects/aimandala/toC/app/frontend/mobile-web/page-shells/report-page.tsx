@@ -182,34 +182,34 @@ export function MobileWebReportPage({
     : null;
   const reportSections = parseReportSections(typeof state.report?.report === "string" ? state.report.report : null);
   const selfUnderstandingSections = structured ? buildSelfUnderstandingSections(structured) : [];
-  const reportTitle = structured?.title || state.report?.title || (isUpgradeRoute ? "一梳 Pro 版入口" : "你的曼陀罗解读");
+  const reportTitle = structured?.title || state.report?.title || (isUpgradeRoute ? "一梳 Pro 版" : "你的曼陀罗解读");
   const reportSubtitle = isUpgradeRoute
-    ? "当前先进入 Pro 版兼容入口，后续再补正式升级页设计；这里先把报告内容和主路径缝顺。"
+    ? "当前正在查看 Pro 版解读。"
     : structured?.self_understanding_blocks?.opening_hit ||
       structured?.overall_impression ||
       state.report?.overall_impression ||
       "曼曼已经把这一轮 Lite 版解读整理好了。";
   const primaryLabel = isLoading
     ? "继续查看生成进度"
-    : canRetryRefresh
-      ? "重试刷新结果"
-      : isUpgradeRoute
+      : canRetryRefresh
+        ? "重试刷新结果"
+        : isUpgradeRoute
         ? "查看历史记录"
         : resultCta.primaryLabel;
   const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
   const footerHint = isLoading
-    ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
+      ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
     : canRetryRefresh
       ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
       : isUpgradeRoute
-        ? "当前已经进入一梳 Pro 版兼容入口页，可以先回看历史记录，后续再继续补齐正式 Pro 主路径。"
+        ? "当前已经进入一梳 Pro 版，可以先回看历史记录，或返回上传页重新开始。"
         : isError
           ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
           : resultCta.footerHint;
   const metrics = [
     {
       label: "当前版本",
-      value: isUpgradeRoute ? "Pro 入口" : "Lite 结果",
+      value: isUpgradeRoute ? "Pro 结果" : "Lite 结果",
     },
     {
       label: "解读状态",
@@ -258,9 +258,10 @@ export function MobileWebReportPage({
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}
+      hideHeader
     >
       <section className="mw-hero-card">
-        <p className="mw-kicker">{isUpgradeRoute ? "一梳 Pro 版兼容入口" : "一镜 Lite 版"}</p>
+        <p className="mw-kicker">{isUpgradeRoute ? "一梳 Pro 版" : "一镜 Lite 版"}</p>
         <h2>{reportTitle}</h2>
         <p>{reportSubtitle}</p>
       </section>

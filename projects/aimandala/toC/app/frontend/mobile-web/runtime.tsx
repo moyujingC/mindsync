@@ -107,7 +107,7 @@ export interface MobileWebRuntimeProps {
 const defaultUploadDraft: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
   theme: "general",
-  reportType: "self_understanding",
+  reportType: "lite",
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
@@ -157,9 +157,9 @@ export function MobileWebRuntime({
   input,
   loadingFallback = "Loading mobile web route...",
   errorFallback,
-  environmentLabel = "当前为联调运行时",
-  environmentDetail = "页面会按当前 loader 和接口装配真实路由结果，具体表现取决于本地后端是否可用。",
-  environmentTone = "runtime",
+  environmentLabel,
+  environmentDetail,
+  environmentTone,
 }: MobileWebRuntimeProps) {
   const { loading, error, props } = useMobileWebRouteLoader(input);
   const [runtimeProps, setRuntimeProps] = useState<MobileWebAppProps | null>(null);

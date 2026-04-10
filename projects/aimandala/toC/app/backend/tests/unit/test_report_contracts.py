@@ -25,7 +25,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="report-contract-lite",
-            theme="career",
+            theme="wealth_career",
         )
     )
 

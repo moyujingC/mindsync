@@ -19,7 +19,7 @@ import {
 export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
   theme: "general",
-  reportType: "self_understanding",
+  reportType: "lite",
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
@@ -31,12 +31,12 @@ export const PREVIEW_ROUTE_OPTIONS: Array<{
 }> = [
   { label: "落地页", value: "landing" },
   { label: "上传", value: "upload" },
-  { label: "报告矩阵入口", value: "reportEntry" },
+  { label: "Lite / Pro 选择页", value: "reportEntry" },
   { label: "加载", value: "loading" },
-  { label: "自我理解报告", value: "report" },
+  { label: "Lite 解读报告", value: "report" },
   { label: "报告旧版对照", value: "reportLegacy" },
   { label: "历史", value: "history" },
-  { label: "深层模式报告", value: "upgrade" },
+  { label: "Pro 解读报告", value: "upgrade" },
 ];
 
 export const PREVIEW_POLLING_INTERVAL_MS = 1500;

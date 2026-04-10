@@ -121,7 +121,7 @@ function createMockRecords(): InterpretationRecordResponse[] {
     {
       interpretation_id: "demo-002",
       user_id: "demo-user-id",
-      theme: "career",
+      theme: "wealth_career",
       status: "processing",
       generation_stage: "generating_lite",
       generation_progress: 64,

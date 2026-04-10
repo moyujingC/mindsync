@@ -15,39 +15,33 @@ export interface MobileWebReportEntryPageProps {
 }
 
 function EntryCard({
-  eyebrow,
   title,
   description,
   bullets,
   tone,
   cta,
   note,
-  statusLabel,
+  priceLabel,
   availability,
   onClick,
 }: {
-  eyebrow: string;
   title: string;
   description: string;
   bullets: string[];
-  tone: "soft" | "core" | "focus" | "deep";
+  tone: "lite" | "pro";
   cta: string;
   note: string;
-  statusLabel: string;
+  priceLabel: string;
   availability: ReportEntryAvailability;
   onClick?: () => void;
 }) {
-  const isDeep = tone === "deep";
+  const isPro = tone === "pro";
   const isAvailable = availability === "available";
   const accentColor =
-    tone === "soft"
-      ? "#8CA497"
-      : tone === "core"
-        ? "#7A8EA8"
-        : tone === "focus"
-          ? "#8B6C9D"
-          : "#D4A054";
-  const borderColor = isDeep
+    tone === "lite"
+      ? "#7A8EA8"
+      : "#D4A054";
+  const borderColor = isPro
     ? "rgba(212,160,84,0.24)"
     : `color-mix(in srgb, ${accentColor} 22%, transparent)`;
   return (
@@ -61,17 +55,17 @@ function EntryCard({
         border: `1px solid ${borderColor}`,
         borderRadius: 24,
         padding: 20,
-        background: isDeep
+        background: isPro
           ? "linear-gradient(135deg, rgba(26,40,68,0.98) 0%, rgba(37,56,96,0.96) 100%)"
           : "linear-gradient(135deg, rgba(255,255,255,0.82) 0%, rgba(245,239,226,0.92) 100%)",
-        boxShadow: isDeep ? "0 14px 36px rgba(26,40,68,0.18)" : "0 14px 32px rgba(74,61,48,0.08)",
-        color: isDeep ? "#E8DCC8" : "#4A3D30",
+        boxShadow: isPro ? "0 14px 36px rgba(26,40,68,0.18)" : "0 14px 32px rgba(74,61,48,0.08)",
+        color: isPro ? "#E8DCC8" : "#4A3D30",
         opacity: isAvailable ? 1 : 0.88,
         cursor: isAvailable ? "pointer" : "default",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.14em", color: isDeep ? "rgba(212,160,84,0.86)" : accentColor }}>{eyebrow}</div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: isPro ? "rgba(212,160,84,0.86)" : accentColor }}>解读版本</div>
         <span
           style={{
             flexShrink: 0,
@@ -79,25 +73,25 @@ function EntryCard({
             borderRadius: 999,
             fontSize: 11,
             letterSpacing: "0.04em",
-            color: isDeep ? "#E8DCC8" : accentColor,
-            background: isDeep ? "rgba(212,160,84,0.12)" : `color-mix(in srgb, ${accentColor} 12%, white)`,
-            border: isDeep ? "1px solid rgba(212,160,84,0.18)" : `1px solid color-mix(in srgb, ${accentColor} 18%, transparent)`,
+            color: isPro ? "#E8DCC8" : accentColor,
+            background: isPro ? "rgba(212,160,84,0.12)" : `color-mix(in srgb, ${accentColor} 12%, white)`,
+            border: isPro ? "1px solid rgba(212,160,84,0.18)" : `1px solid color-mix(in srgb, ${accentColor} 18%, transparent)`,
           }}
         >
-          {statusLabel}
+          {priceLabel}
         </span>
       </div>
       <h2 style={{ margin: "10px 0 10px", fontFamily: "'Noto Serif SC', serif", fontSize: 24, fontWeight: 600, lineHeight: 1.35 }}>{title}</h2>
-      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.8, color: isDeep ? "rgba(232,220,200,0.82)" : "#67594E" }}>{description}</p>
+      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.8, color: isPro ? "rgba(232,220,200,0.82)" : "#67594E" }}>{description}</p>
       <div style={{ display: "grid", gap: 8, marginTop: 16 }}>
         {bullets.map((item) => (
-          <div key={item} style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, lineHeight: 1.7, color: isDeep ? "rgba(232,220,200,0.74)" : "#7A6A5A" }}>
-            <span style={{ color: isDeep ? "#D4A054" : accentColor }}>•</span>
+          <div key={item} style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, lineHeight: 1.7, color: isPro ? "rgba(232,220,200,0.74)" : "#7A6A5A" }}>
+            <span style={{ color: isPro ? "#D4A054" : accentColor }}>•</span>
             <span>{item}</span>
           </div>
         ))}
       </div>
-      <p style={{ margin: "16px 0 0", fontSize: 12, lineHeight: 1.75, color: isDeep ? "rgba(232,220,200,0.58)" : "#8A7C6C" }}>{note}</p>
+      <p style={{ margin: "16px 0 0", fontSize: 12, lineHeight: 1.75, color: isPro ? "rgba(232,220,200,0.58)" : "#8A7C6C" }}>{note}</p>
       <div
         style={{
           marginTop: 18,
@@ -106,10 +100,10 @@ function EntryCard({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: isDeep
+          background: isPro
             ? "linear-gradient(135deg, rgba(212,160,84,0.22) 0%, rgba(200,120,80,0.18) 100%)"
             : `linear-gradient(135deg, color-mix(in srgb, ${accentColor} 14%, white) 0%, color-mix(in srgb, ${accentColor} 6%, white) 100%)`,
-          color: isDeep ? "#E8DCC8" : accentColor,
+          color: isPro ? "#E8DCC8" : accentColor,
           fontSize: 14,
           fontWeight: 600,
           letterSpacing: "0.04em",
@@ -137,7 +131,7 @@ export function MobileWebReportEntryPage({
           返回
         </button>
         <div style={{ position: "relative", marginTop: 28 }}>
-          <div style={{ fontSize: 11, color: "rgba(212,160,84,0.86)", letterSpacing: "0.16em" }}>报告矩阵入口</div>
+          <div style={{ fontSize: 11, color: "rgba(212,160,84,0.86)", letterSpacing: "0.16em" }}>{descriptor.statusLabel}</div>
           <h1 style={{ margin: "10px 0 10px", fontFamily: "'Noto Serif SC', serif", fontSize: 30, lineHeight: 1.28, color: "#E8DCC8" }}>
             {descriptor.title}
           </h1>
@@ -145,7 +139,7 @@ export function MobileWebReportEntryPage({
             {descriptor.description}
           </p>
           <div style={{ marginTop: 14, fontSize: 12, color: "rgba(212,160,84,0.72)" }}>
-            当前主题：{descriptor.themeLabel}
+            这次你更想重点看：{descriptor.themeLabel}
           </div>
         </div>
       </div>
@@ -154,14 +148,13 @@ export function MobileWebReportEntryPage({
         {descriptor.cards.map((card) => (
           <EntryCard
             key={card.id}
-            eyebrow={card.eyebrow}
             title={card.title}
             description={card.description}
             bullets={card.bullets}
             tone={card.tone}
             cta={card.cta}
             note={card.note}
-            statusLabel={card.statusLabel}
+            priceLabel={card.priceLabel}
             availability={card.availability}
             onClick={
               card.availability === "available" && onChooseReportType
@@ -170,6 +163,20 @@ export function MobileWebReportEntryPage({
             }
           />
         ))}
+
+        <section
+          style={{
+            borderRadius: 18,
+            padding: "16px 18px",
+            background: "rgba(255,255,255,0.72)",
+            border: "1px solid rgba(122,142,168,0.12)",
+            color: "#6D604F",
+            fontSize: 13,
+            lineHeight: 1.8,
+          }}
+        >
+          {descriptor.footnote}
+        </section>
       </div>
     </div>
   );

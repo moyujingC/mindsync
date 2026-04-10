@@ -8,6 +8,7 @@ export interface MobileWebAppShellProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  hideHeader?: boolean;
 }
 
 export function MobileWebAppShell({
@@ -16,22 +17,18 @@ export function MobileWebAppShell({
   environmentLabel,
   environmentDetail,
   environmentTone = "preview",
+  hideHeader = false,
 }: MobileWebAppShellProps) {
   return (
     <main className="mw-app-shell">
-      <header className="mw-app-shell__header">
-        <div>
-          <small className="mw-app-shell__eyebrow">一镜一梳</small>
-          <h1>{route.title}</h1>
-          <p className="mw-app-shell__subtitle">
-            当前先以内容结构与主路径衔接为主，视觉稿后续按 Figma 设计复刻。
-          </p>
-        </div>
-
-        <nav className="mw-route-nav" aria-label="Mobile web routes">
-          内容过渡页
-        </nav>
-      </header>
+      {hideHeader ? null : (
+        <header className="mw-app-shell__header">
+          <div>
+            <small className="mw-app-shell__eyebrow">一镜一梳</small>
+            <h1>{route.title}</h1>
+          </div>
+        </header>
+      )}
       {environmentLabel ? (
         <section
           className={`mw-environment-banner mw-environment-banner--${environmentTone}`}

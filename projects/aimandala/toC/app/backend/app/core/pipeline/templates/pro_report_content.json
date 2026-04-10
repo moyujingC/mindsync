@@ -97,13 +97,13 @@
     {
       "type": "emotion-congestion",
       "when": {
-        "theme_in": ["emotion"]
+        "theme_in": ["health_wellness"]
       }
     },
     {
       "type": "action-block",
       "when": {
-        "theme_in": ["career"]
+        "theme_in": ["wealth_career"]
       }
     },
     {

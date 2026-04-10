@@ -1,5 +1,6 @@
 import type { HistoryPageDescriptor } from "../pages";
 import type { ReactNode } from "react";
+import { getThemeDisplayName } from "../../shared/core";
 
 export type HistoryFilterId = "all" | "ready" | "pending";
 
@@ -92,15 +93,15 @@ export function HistoryThemeTabs({
             key={theme}
             type="button"
             className={`mw-filter-chip ${selected ? "mw-filter-chip--active" : ""}`}
-            onClick={() => {
-              onChange?.(isAll ? undefined : theme);
-            }}
-            disabled={disabled}
-          >
-            {isAll ? "全部主题" : theme}
-          </button>
-        );
-      })}
+          onClick={() => {
+            onChange?.(isAll ? undefined : theme);
+          }}
+          disabled={disabled}
+        >
+          {isAll ? "全部主题" : getThemeDisplayName(theme) ?? theme}
+        </button>
+      );
+    })}
     </section>
   );
 }
@@ -152,18 +153,20 @@ export interface HistoryRecordsListProps {
 }
 
 function getEmptyStateCopy(activeFilter: HistoryFilterId, activeTheme?: string): ReactNode {
+  const themeLabel = activeTheme ? (getThemeDisplayName(activeTheme) ?? activeTheme) : null;
+
   switch (activeFilter) {
     case "ready":
-      return activeTheme
-        ? `当前主题“${activeTheme}”下还没有可直接打开的报告，可以先回到上传主路径生成一条记录。`
+      return themeLabel
+        ? `当前主题“${themeLabel}”下还没有可直接打开的报告，可以先回到上传主路径生成一条记录。`
         : "当前还没有可直接打开的报告，可以先回到上传主路径生成一条记录。";
     case "pending":
-      return activeTheme
-        ? `当前主题“${activeTheme}”下没有生成中的记录，后续新的解读流程会出现在这里。`
+      return themeLabel
+        ? `当前主题“${themeLabel}”下没有生成中的记录，后续新的解读流程会出现在这里。`
         : "当前没有生成中的记录，后续新的解读流程会出现在这里。";
     case "all":
-      return activeTheme
-        ? `当前主题“${activeTheme}”下还没有生成过 To C 解读，后续可从上传主路径进入。`
+      return themeLabel
+        ? `当前主题“${themeLabel}”下还没有生成过 To C 解读，后续可从上传主路径进入。`
         : "当前用户还没有生成过 To C 解读，后续可从上传主路径进入。";
   }
 }
@@ -203,6 +206,7 @@ export function HistoryRecordsList({
             </div>
             <p>{item.subtitle}</p>
             <p>{item.statusDetail}</p>
+            <p className="mw-meta">主题：{item.themeLabel} · 版本：{item.reportVariant === "pro" ? "Pro" : "Lite"}</p>
             <p className="mw-meta">Interpretation ID: {item.interpretationId}</p>
             <div className="mw-button-row">
               {actionBusy && activeRecordId === item.interpretationId ? (

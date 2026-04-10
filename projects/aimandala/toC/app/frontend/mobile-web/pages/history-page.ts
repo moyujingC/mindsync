@@ -1,9 +1,11 @@
 import { getGenerationPresentation } from "../../shared/core";
+import { getThemeDisplayName } from "../../shared/core";
 import type { InterpretationRecordResponse } from "../../shared/types";
 
 export interface HistoryPageItemDescriptor {
   interpretationId: string;
   theme: string;
+  themeLabel: string;
   title: string;
   subtitle: string;
   canOpenReport: boolean;
@@ -47,7 +49,7 @@ export function createHistoryPageDescriptor(
   return {
     pageId: "history-page",
     title: "历史解读",
-    subtitle: "查看当前用户已经生成的 To C 记录。",
+    subtitle: "查看已经生成的 Lite / Pro 解读记录。",
     summary: {
       total: records.length,
       ready,
@@ -55,14 +57,17 @@ export function createHistoryPageDescriptor(
     },
     items: records.map((record) => {
       const presentation = getGenerationPresentation(record);
+      const themeLabel = getThemeDisplayName(record.theme) ?? record.theme;
+      const reportVariant = record.version_purchased.includes("pro") ? "pro" : "lite";
 
       return {
         interpretationId: record.interpretation_id,
         theme: record.theme,
-        title: `${record.theme} 主题解读`,
+        themeLabel,
+        title: `${themeLabel} · ${reportVariant === "pro" ? "Pro" : "Lite"}`,
         subtitle: `创建于 ${formatHistoryCreatedAt(record.created_at)}`,
         canOpenReport: presentation.isReady,
-        reportVariant: record.version_purchased.includes("pro") ? "pro" : "lite",
+        reportVariant,
         statusLabel: presentation.statusLabel,
         statusDetail: presentation.statusDetail,
       };

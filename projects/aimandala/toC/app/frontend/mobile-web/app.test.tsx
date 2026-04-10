@@ -43,14 +43,14 @@ const flowState: MandalaFlowState = {
   report: {
     interpretation_id: "ipt-report-1",
     version: "lite",
-    title: "自我理解报告",
+    title: "Lite 解读报告",
     overall_impression: "你正在把注意力收回自己身上。",
     structured: {
-      title: "自我理解报告",
+      title: "Lite 解读报告",
       overall_impression: "你正在把注意力收回自己身上。",
       visual_elements_rendered: "中心更聚拢，外围更松。",
       emotion_portrait_rendered: "你在靠近和迟疑之间来回摆动。",
-      pro_teaser: "可以继续看更深层报告。",
+      pro_teaser: "可以继续看 Pro 版解读。",
       self_understanding_blocks: {
         opening_hit: "你最近更想先稳住自己，再决定要不要继续靠近。",
         visual_evidence: {
@@ -87,7 +87,7 @@ const flowState: MandalaFlowState = {
 };
 
 describe("MobileWebApp", () => {
-  it("report 主路由默认渲染自我理解报告页壳", () => {
+  it("report 主路由默认渲染 Lite 解读报告页壳", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="report"
@@ -104,7 +104,7 @@ describe("MobileWebApp", () => {
     expect(html).toContain("整体命中");
     expect(html).toContain("模式命名");
     expect(html).toContain("一个下一步");
-    expect(html).toContain("看看更深层模式");
+    expect(html).toContain("看看 Pro 版解读");
   });
 
   it("reportLegacy 仍保留旧报告页壳", () => {

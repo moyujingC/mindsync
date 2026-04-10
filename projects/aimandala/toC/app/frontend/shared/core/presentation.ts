@@ -109,7 +109,7 @@ export function getFlowStepLabel(
     case "liteReady":
       return "Lite 结果已就绪";
     case "upgradePlaceholder":
-      return "Pro 入口待开启";
+      return "Pro 结果已就绪";
     case "error":
       return "结果拉取失败";
     default:

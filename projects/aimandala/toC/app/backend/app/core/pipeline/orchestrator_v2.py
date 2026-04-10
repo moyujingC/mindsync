@@ -8,6 +8,37 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from app.core.analysis.circle_detector import CircleDetectionResult, CircleDetector
+try:
+    from app.core.analysis.three_circle_colors import extract_colors_by_circles
+except Exception:  # pragma: no cover - migration-time fallback
+    extract_colors_by_circles = None
+
+try:
+    from app.core.knowledge import KnowledgeQueryEngine, get_theme_summary
+    from app.core.knowledge.themes import (
+        get_insight_templates,
+        get_pro_upgrade_teaser,
+        get_theme_config,
+    )
+    from app.core.knowledge.three_circles import analyze_energy_flow
+except Exception:  # pragma: no cover - migration-time fallback
+    KnowledgeQueryEngine = None
+
+    def get_insight_templates(theme: str) -> Dict[str, Any]:
+        return {}
+
+    def get_pro_upgrade_teaser(theme: str) -> str:
+        return ""
+
+    def get_theme_config(theme: str) -> Dict[str, Any]:
+        return {}
+
+    def get_theme_summary(theme: str) -> Dict[str, Any]:
+        return {}
+
+    def analyze_energy_flow(inner_elements: list, middle_elements: list, outer_elements: list) -> Dict[str, Any]:
+        return {}
+
 from app.core.prompt.builder_v2 import PromptBuilder
 from app.core.safety.protocol import SafetyProtocol, quick_safety_check
 
@@ -39,6 +70,20 @@ from .report_blueprints import (
 )
 from .report_contracts import ReportContractAssembler
 from .store import InterpretationStore
+
+ELEMENT_KEY_TO_CN = {
+    "wood": "木",
+    "fire": "火",
+    "earth": "土",
+    "metal": "金",
+    "water": "水",
+}
+
+CIRCLE_KEY_TO_CN = {
+    "inner": "内圈",
+    "middle": "中圈",
+    "outer": "外圈",
+}
 
 
 class GenerationStage(str, Enum):
@@ -94,7 +139,12 @@ class LayeredOrchestrator:
         prompt_runtime: Optional[PromptRuntime] = None,
         enable_vision: bool = True,
     ) -> None:
-        self.knowledge_engine = knowledge_engine
+        if knowledge_engine is not None:
+            self.knowledge_engine = knowledge_engine
+        elif KnowledgeQueryEngine is not None:
+            self.knowledge_engine = KnowledgeQueryEngine(version="toc")
+        else:
+            self.knowledge_engine = None
         self.store = store or InterpretationStore()
         self.circle_detector = circle_detector or CircleDetector()
         if generation_runtime is not None:
@@ -459,6 +509,12 @@ class LayeredOrchestrator:
         return layer2
 
     def _build_layer0_placeholder(self, record: InterpretationRecord) -> Layer0Raw:
+        layer = self._build_layer0_from_knowledge(record)
+        if layer is not None:
+            return layer
+        return self._build_layer0_fallback(record)
+
+    def _build_layer0_fallback(self, record: InterpretationRecord) -> Layer0Raw:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         layer = Layer0Raw()
         layer.imbalance_candidates = ["transition-overload"]
@@ -492,113 +548,347 @@ class LayeredOrchestrator:
         layer.micro_analysis.wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
         return layer
 
+    def _build_layer0_from_knowledge(self, record: InterpretationRecord) -> Optional[Layer0Raw]:
+        if extract_colors_by_circles is None:
+            return None
+
+        image_path = (record.image_local_path or "").strip()
+        if not image_path:
+            return None
+
+        path = Path(image_path)
+        if not path.exists():
+            return None
+
+        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
+        inner_ratio = circles.get("inner_radius", 33) / 100.0
+        middle_ratio = circles.get("middle_radius", 66) / 100.0
+
+        try:
+            circle_colors = extract_colors_by_circles(
+                str(path),
+                inner_radius=inner_ratio,
+                middle_radius=middle_ratio,
+            )
+        except Exception:
+            return None
+
+        if not isinstance(circle_colors, dict) or not circle_colors:
+            return None
+
+        element_distribution = self._aggregate_five_elements(circle_colors, circles)
+        layer = Layer0Raw(description="V2知识库原始查询结果（迁移期）")
+        layer.circle_colors = circle_colors
+        layer.color_analysis = self._build_layer0_color_analysis(
+            circle_colors,
+            element_distribution,
+            theme=record.theme,
+        )
+        self._apply_layer0_five_elements(layer, element_distribution)
+        self._apply_layer0_three_circles(layer, circle_colors, circles)
+        self._apply_layer0_micro_analysis(layer, circle_colors)
+        layer.imbalance_candidates = self._identify_knowledge_imbalances(
+            element_distribution,
+            circle_colors,
+        ) or ["transition-overload"]
+        return layer
+
+    def _aggregate_five_elements(
+        self,
+        circle_colors: Dict[str, Any],
+        circles: Dict[str, int],
+    ) -> Dict[str, Dict[str, Any]]:
+        inner_ratio = circles.get("inner_radius", 33) / 100.0
+        middle_ratio = circles.get("middle_radius", 66) / 100.0
+        weights = {
+            "inner": max(inner_ratio**2, 0.0001),
+            "middle": max(middle_ratio**2 - inner_ratio**2, 0.0001),
+            "outer": max(1 - middle_ratio**2, 0.0001),
+        }
+
+        aggregate = {key: 0.0 for key in ELEMENT_KEY_TO_CN}
+        areas = {key: [] for key in ELEMENT_KEY_TO_CN}
+
+        for circle_key, weight in weights.items():
+            circle_data = circle_colors.get(circle_key, {})
+            distribution = circle_data.get("five_elements", {})
+            for element_key, percentage in distribution.items():
+                if element_key not in aggregate:
+                    continue
+                aggregate[element_key] += weight * (float(percentage) / 100.0)
+
+            dominant = circle_data.get("dominant_element")
+            if dominant in areas:
+                areas[dominant].append(CIRCLE_KEY_TO_CN.get(circle_key, circle_key))
+
+        total = sum(aggregate.values()) or 1.0
+        result: Dict[str, Dict[str, Any]] = {}
+        for element_key, value in aggregate.items():
+            percentage = round(value / total * 100.0, 2)
+            result[element_key] = {
+                "percentage": percentage,
+                "proportion": round(percentage / 100.0, 4),
+                "areas": areas.get(element_key, []),
+                "element_cn": ELEMENT_KEY_TO_CN[element_key],
+            }
+        return result
+
+    def _build_layer0_color_analysis(
+        self,
+        circle_colors: Dict[str, Any],
+        element_distribution: Dict[str, Dict[str, Any]],
+        *,
+        theme: Optional[str],
+    ) -> Dict[str, Any]:
+        metrics = self._derive_color_risk_metrics(circle_colors)
+        dominant = max(
+            element_distribution.items(),
+            key=lambda item: item[1].get("percentage", 0.0),
+        )[0]
+
+        return {
+            "summary": f"V2知识库已基于三圈颜色提取完成五行聚合，当前主导元素更接近「{ELEMENT_KEY_TO_CN.get(dominant, dominant)}」。",
+            "overall_saturation": metrics["overall_saturation"],
+            "black_ratio": metrics["black_ratio"],
+            "red_ratio": metrics["red_ratio"],
+            "theme_summary": self.get_knowledge_theme_summary(theme),
+            "element_distribution": {
+                key: {
+                    "element": item["element_cn"],
+                    "percentage": item["percentage"],
+                    "proportion": item["proportion"],
+                    "areas": item["areas"],
+                }
+                for key, item in element_distribution.items()
+            },
+        }
+
+    def _derive_color_risk_metrics(self, circle_colors: Dict[str, Any]) -> Dict[str, float]:
+        weighted_saturation = 0.0
+        weighted_black = 0.0
+        weighted_red = 0.0
+        total_weight = 0.0
+
+        for circle_data in circle_colors.values():
+            for color in circle_data.get("colors", []):
+                percentage = float(color.get("percentage", 0.0)) / 100.0
+                rgb = color.get("rgb") or []
+                if len(rgb) != 3:
+                    continue
+                r, g, b = [float(v) for v in rgb]
+                max_c = max(r, g, b)
+                min_c = min(r, g, b)
+                saturation = 0.0 if max_c == 0 else (max_c - min_c) / max_c
+                brightness = 0.299 * r + 0.587 * g + 0.114 * b
+
+                weighted_saturation += saturation * percentage
+                if brightness < 40:
+                    weighted_black += percentage
+                if r > 120 and r > g * 1.15 and r > b * 1.15:
+                    weighted_red += percentage
+                total_weight += percentage
+
+        if total_weight <= 0:
+            return {
+                "overall_saturation": 0.42,
+                "black_ratio": 0.18,
+                "red_ratio": 0.11,
+            }
+
+        return {
+            "overall_saturation": round(weighted_saturation / total_weight, 4),
+            "black_ratio": round(weighted_black / total_weight, 4),
+            "red_ratio": round(weighted_red / total_weight, 4),
+        }
+
+    def _apply_layer0_five_elements(
+        self,
+        layer: Layer0Raw,
+        element_distribution: Dict[str, Dict[str, Any]],
+    ) -> None:
+        for element_key, item in element_distribution.items():
+            setattr(
+                layer.five_elements,
+                element_key,
+                {
+                    "percentage": item["percentage"],
+                    "areas": item["areas"],
+                    "element_cn": item["element_cn"],
+                },
+            )
+
+    def _apply_layer0_three_circles(
+        self,
+        layer: Layer0Raw,
+        circle_colors: Dict[str, Any],
+        circles: Dict[str, int],
+    ) -> None:
+        radius_map = {
+            "inner": circles.get("inner_radius", 33),
+            "middle": circles.get("middle_radius", 66),
+            "outer": 100,
+        }
+        meaning_map = {
+            "inner": LITE_REPORT_BLUEPRINT.structure_labels["layer0_inner_meaning"],
+            "middle": LITE_REPORT_BLUEPRINT.structure_labels["layer0_middle_meaning"],
+            "outer": LITE_REPORT_BLUEPRINT.structure_labels["layer0_outer_meaning"],
+        }
+
+        for circle_key in ["inner", "middle", "outer"]:
+            circle_data = circle_colors.get(circle_key, {})
+            dominant_key = circle_data.get("dominant_element")
+            dominant_cn = ELEMENT_KEY_TO_CN.get(dominant_key, dominant_key or "")
+            knowledge_reading = self._get_circle_knowledge_reading(
+                CIRCLE_KEY_TO_CN[circle_key],
+                dominant_cn,
+            )
+            target = getattr(layer.three_circles, circle_key)
+            target.update(
+                {
+                    "radius_percent": radius_map[circle_key],
+                    "meaning": meaning_map[circle_key],
+                    "dominant": dominant_cn,
+                    "dominant_color": circle_data.get("dominant_color"),
+                    "five_elements": circle_data.get("five_elements", {}),
+                    "colors": [item.get("hex") for item in circle_data.get("colors", [])[:3]],
+                    "knowledge_reading": knowledge_reading,
+                }
+            )
+
+    def _get_circle_knowledge_reading(self, circle_name: str, dominant_element: str) -> str:
+        if not self.knowledge_engine or not dominant_element:
+            return ""
+
+        try:
+            result = self.knowledge_engine.get_circle_interpretation(circle_name, dominant_element)
+        except Exception:
+            return ""
+
+        if not getattr(result, "found", False):
+            return ""
+        data = getattr(result, "data", "")
+        return data if isinstance(data, str) else ""
+
+    def _apply_layer0_micro_analysis(
+        self,
+        layer: Layer0Raw,
+        circle_colors: Dict[str, Any],
+    ) -> None:
+        inner = ELEMENT_KEY_TO_CN.get(circle_colors.get("inner", {}).get("dominant_element"), "")
+        middle = ELEMENT_KEY_TO_CN.get(circle_colors.get("middle", {}).get("dominant_element"), "")
+        outer = ELEMENT_KEY_TO_CN.get(circle_colors.get("outer", {}).get("dominant_element"), "")
+
+        flow_analysis = analyze_energy_flow(
+            [inner] if inner else [],
+            [middle] if middle else [],
+            [outer] if outer else [],
+        )
+
+        path_analysis = flow_analysis.get("path_analysis", {}) if isinstance(flow_analysis, dict) else {}
+        blockages = flow_analysis.get("blockages", []) if isinstance(flow_analysis, dict) else []
+        recommendations = flow_analysis.get("recommendations", []) if isinstance(flow_analysis, dict) else []
+
+        adjacent = [
+            item.get("description", "")
+            for item in path_analysis.values()
+            if isinstance(item, dict) and item.get("description")
+        ]
+        if not adjacent:
+            adjacent = [
+                LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_left"],
+                LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_right"],
+            ]
+
+        wrap = [item for item in [*blockages, *recommendations] if isinstance(item, str) and item]
+        if not wrap:
+            wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
+
+        layer.micro_analysis.adjacent = adjacent
+        layer.micro_analysis.wrap = wrap
+
+    def _identify_knowledge_imbalances(
+        self,
+        element_distribution: Dict[str, Dict[str, Any]],
+        circle_colors: Dict[str, Any],
+    ) -> list[str]:
+        if not self.knowledge_engine:
+            return []
+
+        color_analysis = {
+            key: {
+                "element": item["element_cn"],
+                "proportion": item["proportion"],
+            }
+            for key, item in element_distribution.items()
+        }
+        circle_elements = {
+            circle_key: ELEMENT_KEY_TO_CN.get(circle_data.get("dominant_element"), "")
+            for circle_key, circle_data in circle_colors.items()
+            if isinstance(circle_data, dict)
+        }
+
+        try:
+            return self.knowledge_engine.identify_imbalances(color_analysis, circle_elements)
+        except Exception:
+            return []
+
     def _build_layer1_placeholder(self, record: InterpretationRecord) -> Layer1LiteDraft:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(record.theme)
         lite_prompt_preview = self._build_lite_prompt_preview(record)
+        story_sections = self._build_lite_story_sections(record, theme_label)
+        theme_insights = self._build_lite_theme_insights(record, theme_label)
         layer = Layer1LiteDraft(
             title=self._build_lite_title(record, theme_label),
             overall_impression=self._build_lite_overall_impression(record, theme_label, circles),
             visual_elements=self._build_lite_visual_elements(record, record.theme or "general", circles),
             emotion_portrait=self._build_lite_emotion_portrait(record, theme_label),
-            pro_teaser=DEFAULT_PRO_TEASER,
+            pro_teaser=self._build_lite_pro_teaser(record),
         )
-        layer.story.base.content = LITE_REPORT_BLUEPRINT.story_content_templates["base"].format(
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
+        layer.story.base.content = story_sections["base"]
         layer.story.base.connector = LITE_REPORT_BLUEPRINT.story_connectors["base"]
-        layer.story.contradiction.content = LITE_REPORT_BLUEPRINT.story_content_templates["contradiction"].format(
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
+        layer.story.contradiction.content = story_sections["contradiction"]
         layer.story.contradiction.connector = LITE_REPORT_BLUEPRINT.story_connectors["contradiction"]
-        layer.story.pattern.content = LITE_REPORT_BLUEPRINT.story_content_templates["pattern"].format(
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
+        layer.story.pattern.content = story_sections["pattern"]
         layer.story.pattern.connector = LITE_REPORT_BLUEPRINT.story_connectors["pattern"]
-        layer.story.defense.content = LITE_REPORT_BLUEPRINT.story_content_templates["defense"].format(
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
+        layer.story.defense.content = story_sections["defense"]
         layer.story.defense.connector = LITE_REPORT_BLUEPRINT.story_connectors["defense"]
-        layer.story.block.content = LITE_REPORT_BLUEPRINT.story_content_templates["block"].format(
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
+        layer.story.block.content = story_sections["block"]
         layer.story.block.connector = LITE_REPORT_BLUEPRINT.story_connectors["block"]
-        layer.story.light.content = LITE_REPORT_BLUEPRINT.story_content_templates["light"].format(
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
-        layer.theme_insights.scene = render_lite_template_text(
-            LITE_REPORT_BLUEPRINT.theme_insight_templates["scene"],
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
-        layer.theme_insights.impact = render_lite_template_text(
-            LITE_REPORT_BLUEPRINT.theme_insight_templates["impact"],
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
-        layer.theme_insights.awareness = render_lite_template_text(
-            LITE_REPORT_BLUEPRINT.theme_insight_templates["awareness"],
-            theme_label=theme_label,
-            feeling_hint=self._build_feeling_hint(record),
-        )
-        layer.three_awareness = [
-            DailyAwareness(
-                day=1,
-                title=LITE_REPORT_BLUEPRINT.awareness_titles[0],
-                content=render_lite_template_text(
-                    LITE_REPORT_BLUEPRINT.awareness_content_templates[0],
-                    theme_label=theme_label,
-                    feeling_hint=self._build_feeling_hint(record),
-                ),
-            ),
-            DailyAwareness(
-                day=2,
-                title=LITE_REPORT_BLUEPRINT.awareness_titles[1],
-                content=render_lite_template_text(
-                    LITE_REPORT_BLUEPRINT.awareness_content_templates[1],
-                    theme_label=theme_label,
-                    feeling_hint=self._build_feeling_hint(record),
-                ),
-            ),
-            DailyAwareness(
-                day=3,
-                title=LITE_REPORT_BLUEPRINT.awareness_titles[2],
-                content=render_lite_template_text(
-                    LITE_REPORT_BLUEPRINT.awareness_content_templates[2],
-                    theme_label=theme_label,
-                    feeling_hint=self._build_feeling_hint(record),
-                ),
-            ),
-        ]
+        layer.story.light.content = story_sections["light"]
+        layer.theme_insights.scene = theme_insights["scene"]
+        layer.theme_insights.impact = theme_insights["impact"]
+        layer.theme_insights.awareness = theme_insights["awareness"]
+        layer.three_awareness = self._build_lite_three_awareness(record, theme_label)
+        story_title_map = {
+            "base": "base",
+            "contradiction": "contradiction",
+            "pattern": "pattern",
+            "defense": "defense",
+            "block": "block",
+            "light": "light",
+        }
         for key, template in LITE_REPORT_BLUEPRINT.six_insight_layer1_templates.items():
+            story_content = story_sections.get(story_title_map.get(key, ""), "")
+            angle = self._get_knowledge_story_angle(record.theme, key)
+            base_title = template.get("title", key)
+            title = f"{base_title}：{angle}" if angle else base_title
             getattr(layer.six_insights, key).update(
                 {
-                    "title": template.get("title", key),
-                    "content": render_lite_template_text(
+                    "title": title,
+                    "content": story_content or render_lite_template_text(
                         template.get("content", ""),
                         theme_label=theme_label,
                         feeling_hint=self._build_feeling_hint(record),
                     ),
-                    "summary": render_lite_template_text(
+                    "summary": story_content or render_lite_template_text(
                         template.get("summary", ""),
                         theme_label=theme_label,
                         feeling_hint=self._build_feeling_hint(record),
                     ),
                 }
             )
-        layer.experiment = {
-            "title": LITE_REPORT_BLUEPRINT.structure_labels["experiment_title"],
-            "content": build_lite_experiment_content(
-                theme_label=theme_label,
-                title=layer.title,
-            ),
-        }
+        layer.experiment = self._build_lite_experiment_payload(record, theme_label, layer.title)
         layer.prompt_preview = lite_prompt_preview
         return layer
 
@@ -616,7 +906,7 @@ class LayeredOrchestrator:
         layer = Layer3ProDraft(
             first_impression=self._build_pro_first_impression(record, theme_label, lite_title),
             core_insight_table={
-                "能量本质": self._build_pro_energy_essence(theme_label, circles),
+                "能量本质": self._build_pro_energy_essence(record, theme_label, circles),
                 "核心失衡": imbalance_profile["summary"],
                 "关键卡点": self._build_pro_block_point(record, imbalance_profile),
                 "转化方向": PRO_REPORT_BLUEPRINT.narrative_templates["core_direction"].format(theme_label=theme_label),
@@ -625,26 +915,34 @@ class LayeredOrchestrator:
             three_circles_detailed={
                 "inner": {
                     "label": PRO_REPORT_BLUEPRINT.structure_labels["circle_inner"],
-                    "reading": PRO_REPORT_BLUEPRINT.narrative_templates["circle_inner_reading"].format(
-                        inner=circles["inner_radius"]
+                    "reading": self._build_pro_circle_reading(
+                        record,
+                        "inner",
+                        PRO_REPORT_BLUEPRINT.narrative_templates["circle_inner_reading"].format(
+                            inner=circles["inner_radius"]
+                        ),
                     ),
                 },
                 "middle": {
                     "label": PRO_REPORT_BLUEPRINT.structure_labels["circle_middle"],
-                    "reading": PRO_REPORT_BLUEPRINT.narrative_templates["circle_middle_reading"].format(
-                        middle=circles["middle_radius"]
+                    "reading": self._build_pro_circle_reading(
+                        record,
+                        "middle",
+                        PRO_REPORT_BLUEPRINT.narrative_templates["circle_middle_reading"].format(
+                            middle=circles["middle_radius"]
+                        ),
                     ),
                 },
                 "outer": {
                     "label": PRO_REPORT_BLUEPRINT.structure_labels["circle_outer"],
-                    "reading": PRO_REPORT_BLUEPRINT.narrative_templates["circle_outer_reading"],
+                    "reading": self._build_pro_circle_reading(
+                        record,
+                        "outer",
+                        PRO_REPORT_BLUEPRINT.narrative_templates["circle_outer_reading"],
+                    ),
                 },
             },
-            micro_analysis_detailed={
-                PRO_REPORT_BLUEPRINT.structure_labels["micro_rhythm"]: PRO_REPORT_BLUEPRINT.narrative_templates["micro_rhythm"],
-                PRO_REPORT_BLUEPRINT.structure_labels["micro_relationship"]: PRO_REPORT_BLUEPRINT.narrative_templates["micro_relationship"],
-                PRO_REPORT_BLUEPRINT.structure_labels["micro_action"]: PRO_REPORT_BLUEPRINT.narrative_templates["micro_action"],
-            },
+            micro_analysis_detailed=self._build_pro_micro_sections_from_knowledge(record),
             imbalance_confirmed=imbalance_profile,
             root_cause={
                 "surface": self._build_surface_root_cause(record),
@@ -712,22 +1010,22 @@ class LayeredOrchestrator:
         )
 
     def _get_theme_label(self, theme: Optional[str]) -> str:
+        summary = self.get_knowledge_theme_summary(theme)
+        if summary.get("name"):
+            return str(summary["name"])
         return LITE_REPORT_BLUEPRINT.theme_labels.get(theme or "general", theme or "整体")
 
     def _build_lite_title(self, record: InterpretationRecord, theme_label: str) -> str:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
+        theme_key = self._get_record_theme(record)
         inner = circles["inner_radius"]
         middle = circles["middle_radius"]
         if inner >= 42:
             return LITE_REPORT_BLUEPRINT.title_templates["inner_high"].format(theme_label=theme_label)
         if middle >= 74:
             return LITE_REPORT_BLUEPRINT.title_templates["middle_high"].format(theme_label=theme_label)
-        if theme_label == "情绪":
-            return LITE_REPORT_BLUEPRINT.title_templates["emotion"]
-        if theme_label == "关系":
-            return LITE_REPORT_BLUEPRINT.title_templates["relationship"]
-        if theme_label == "事业":
-            return LITE_REPORT_BLUEPRINT.title_templates["career"]
+        if theme_key in LITE_REPORT_BLUEPRINT.title_templates:
+            return LITE_REPORT_BLUEPRINT.title_templates[theme_key]
         return LITE_REPORT_BLUEPRINT.title_templates["default"]
 
     def _build_lite_overall_impression(
@@ -736,15 +1034,26 @@ class LayeredOrchestrator:
         theme_label: str,
         circle_info: Dict[str, int],
     ) -> str:
-        inner = circle_info["inner_radius"]
-        middle = circle_info["middle_radius"]
-        return (
-            LITE_REPORT_BLUEPRINT.narrative_templates["overall_impression"].format(
-                theme_label=theme_label,
-                inner=inner,
-                middle=middle,
-            )
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        secondary = distribution[1] if len(distribution) > 1 else dominant
+        theme = self._get_record_theme(record)
+        dominant_theme = self._get_element_theme_phrase(theme, dominant["name"])
+        secondary_keywords = self._get_element_core_keywords(theme, secondary["name"])
+        transition = self._describe_circle_transition(layer0)
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
+        parts = [
+            f"这幅画首先给人的感觉，是一种以「{dominant['name']}」为主的底色；它更在意的是{dominant_theme}。",
+        ]
+        if transition:
+            parts.append(transition)
+        parts.append(
+            f"整体来看，这不是单纯往外冲的状态，而更像先把内在安顿住，再慢慢把「{secondary['name']}」相关的{secondary_keywords}带回现实。"
         )
+        if signal_text:
+            parts.append(signal_text)
+        return " ".join(parts)
 
     def _build_lite_visual_elements(
         self,
@@ -752,30 +1061,213 @@ class LayeredOrchestrator:
         theme: str,
         circle_info: Dict[str, int],
     ) -> str:
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        secondary = distribution[1] if len(distribution) > 1 else {"name": "金", "percentage": 0.0}
+        inner = layer0.three_circles.inner
+        middle = layer0.three_circles.middle
+        outer = layer0.three_circles.outer
         circle_pattern = self._describe_circle_pattern(circle_info)
-        context_hint = self._build_user_context_hint(record)
-        return (
-            LITE_REPORT_BLUEPRINT.narrative_templates["visual_elements"].format(
-                theme=theme,
-                inner=circle_info["inner_radius"],
-                middle=circle_info["middle_radius"],
-                circle_pattern=circle_pattern,
-                context_hint=context_hint,
-            )
-        ).strip()
+        lines = [
+            f"从三圈颜色聚合来看，五行里以「{dominant['name']}」({dominant['percentage']:.2f}%) 和「{secondary['name']}」({secondary['percentage']:.2f}%) 最突出。",
+            f"内圈主导为「{inner.get('dominant', '未识别')}」，中圈主导为「{middle.get('dominant', '未识别')}」，外圈主导为「{outer.get('dominant', '未识别')}」。{circle_pattern}",
+        ]
+        reading_segments = [
+            inner.get("knowledge_reading", ""),
+            middle.get("knowledge_reading", ""),
+            outer.get("knowledge_reading", ""),
+        ]
+        reading_text = "；".join(segment for segment in reading_segments if isinstance(segment, str) and segment.strip())
+        if reading_text:
+            lines.append(reading_text + "。")
+        return " ".join(lines).strip()
 
     def _build_lite_emotion_portrait(
         self,
         record: InterpretationRecord,
         theme_label: str,
     ) -> str:
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
+        outer = layer0.three_circles.outer
+        theme = self._get_record_theme(record)
         feeling_hint = self._build_feeling_hint(record)
-        return (
-            LITE_REPORT_BLUEPRINT.narrative_templates["emotion_portrait"].format(
-                theme_label=theme_label,
-                feeling_hint=feeling_hint,
+        dominant_theme = self._get_element_theme_phrase(theme, dominant["name"])
+        weakest_theme = self._get_element_theme_phrase(theme, weakest["name"])
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
+        parts = [
+            f"情绪层面上，你现在更像在优先处理「{dominant['name']}」相关的课题，也就是{dominant_theme}。",
+            f"而外圈出现的「{outer.get('dominant', '金')}」，又说明你并不是想完全退回去，而是在重新整理自己要用什么样的边界、判断和回应方式与世界接触。",
+        ]
+        if weakest.get("percentage", 0.0) < 12:
+            parts.append(
+                f"相比之下，「{weakest['name']}」相关的{weakest_theme}资源暂时收得比较里面，所以当节奏一快，你更容易先想停下来整理自己。"
             )
+        if signal_text:
+            parts.append(signal_text)
+        parts.append(feeling_hint)
+        return " ".join(part for part in parts if part).strip()
+
+    def _build_lite_story_sections(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+    ) -> Dict[str, str]:
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        secondary = distribution[1] if len(distribution) > 1 else dominant
+        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
+        theme = self._get_record_theme(record)
+        dominant_theme = self._get_element_theme_phrase(theme, dominant["name"])
+        secondary_theme = self._get_element_theme_phrase(theme, secondary["name"])
+        weakest_theme = self._get_element_theme_phrase(theme, weakest["name"])
+        transition = self._describe_circle_transition(layer0)
+        adjacent = layer0.micro_analysis.adjacent or []
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
+        outer_dominant = layer0.three_circles.outer.get("dominant", secondary["name"])
+
+        base = (
+            f"你的底色更接近「{dominant['name']}」所代表的{dominant_theme}。"
+            f"{transition or ''} 这也让你做很多事之前，会先确认自己是不是已经站稳。"
+        ).strip()
+        contradiction = (
+            f"你内里更需要{dominant_theme}，但外在已经开始调用「{outer_dominant}」的力量去整理边界、秩序或方向。"
+            f"这会让你一边想继续向外，一边又不愿再用没有承载感的方式消耗自己。"
         )
+        if adjacent:
+            pattern = f"从圈间关系看，{adjacent[0]}。所以你的推进方式往往不是一下子冲出去，而是先在内部整合，等感觉对了才继续往前。"
+        else:
+            pattern = "你的模式更像先在内部整合，再决定往外投入多少能量。"
+        defense = (
+            f"当外圈更偏向「{outer_dominant}」时，你会更倾向用清晰、距离感或判断标准保护自己。"
+            f"这不是冷下来，而是在替现在的自己筛选什么值得继续打开。"
+        )
+        block_parts = [
+            f"当前最容易卡住你的，是主导能量和现实节奏还没完全接上。"
+        ]
+        if weakest.get("percentage", 0.0) < 12:
+            block_parts.append(
+                f"尤其是「{weakest['name']}」相关的{weakest_theme}资源暂时偏少时，你会更容易在快要推进时先退回来。"
+            )
+        if signal_text:
+            block_parts.append(signal_text)
+        light = (
+            f"你的光并不只在稳定里，也在于你已经开始把「{secondary['name']}」所代表的{secondary_theme}慢慢带出来。"
+            f"这说明你不是被困住，而是在学习用更适合自己的方式向前。"
+        )
+        return {
+            "base": " ".join(part for part in [base] if part).strip(),
+            "contradiction": contradiction.strip(),
+            "pattern": pattern.strip(),
+            "defense": defense.strip(),
+            "block": " ".join(block_parts).strip(),
+            "light": light.strip(),
+        }
+
+    def _build_lite_theme_insights(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+    ) -> Dict[str, str]:
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
+        theme = self._get_record_theme(record)
+        dominant_theme = self._get_element_theme_phrase(theme, dominant["name"])
+        weakest_theme = self._get_element_theme_phrase(theme, weakest["name"])
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
+        scene = (
+            f"在「{theme_label}」这个角度里，你更容易出现在“先确认自己有没有站稳，再决定要不要继续投入”的场景里。"
+            f"这和画面里「{dominant['name']}」更强有关，因为它会先把注意力拉回{dominant_theme}。"
+        )
+        impact = (
+            f"这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。"
+        )
+        if weakest.get("percentage", 0.0) < 12:
+            impact += f" 当「{weakest['name']}」相关的{weakest_theme}资源偏少时，你也会更需要一点缓冲和回收。"
+        awareness = (
+            f"这幅画提醒你的，不是逼自己立刻变得更强，而是看见：只要先把内在安顿好，后面的行动会自然长出来。"
+        )
+        if signal_text:
+            awareness += f" {signal_text}"
+        return {
+            "scene": scene.strip(),
+            "impact": impact.strip(),
+            "awareness": awareness.strip(),
+        }
+
+    def _build_lite_three_awareness(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+    ) -> list[DailyAwareness]:
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
+        theme = self._get_record_theme(record)
+        dominant_keywords = self._get_element_core_keywords(theme, dominant["name"])
+        weakest_theme = self._get_element_theme_phrase(theme, weakest["name"])
+        outer_dominant = layer0.three_circles.outer.get("dominant", "金")
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
+        signal_short = signal_text.rstrip("。") if signal_text else "想推进却又停住的那个瞬间"
+        return [
+            DailyAwareness(
+                day=1,
+                title="先安顿自己",
+                content=f"今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。那往往是「{dominant['name']}」在提醒你：先照顾好{dominant_keywords}。",
+            ),
+            DailyAwareness(
+                day=2,
+                title="看见边界变化",
+                content=f"当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。外圈的「{outer_dominant}」不是要你拒绝，而是提醒你先看清楚。",
+            ),
+            DailyAwareness(
+                day=3,
+                title="捕捉卡住瞬间",
+                content=f"如果今天又出现{signal_short}的时刻，别急着评价自己。把那个瞬间记下来，你会更看清自己何时需要补回与「{weakest['name']}」相关的{weakest_theme}。",
+            ),
+        ]
+
+    def _build_lite_experiment_payload(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+        title: str,
+    ) -> Dict[str, str]:
+        content = build_lite_experiment_content(
+            theme_label=theme_label,
+            title=title,
+        )
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        dominant_keywords = self._get_element_core_keywords(self._get_record_theme(record), dominant["name"])
+        content = (
+            f"{content}\n补充观察：如果今天只顺着这幅画练习一件事，可以试着把「{dominant['name']}」的品质带进生活里，例如先给自己一点{dominant_keywords}。"
+        ).strip()
+        return {
+            "title": LITE_REPORT_BLUEPRINT.structure_labels["experiment_title"],
+            "content": content,
+        }
+
+    def _build_lite_pro_teaser(self, record: InterpretationRecord) -> str:
+        theme = self._get_record_theme(record)
+        try:
+            raw_teaser = get_pro_upgrade_teaser(theme)
+        except Exception:
+            raw_teaser = ""
+        cleaned = self._clean_knowledge_text_block(raw_teaser)
+        if not cleaned:
+            return DEFAULT_PRO_TEASER
+        if cleaned in DEFAULT_PRO_TEASER:
+            return DEFAULT_PRO_TEASER
+        return f"{DEFAULT_PRO_TEASER}\n\n{cleaned}".strip()
 
     def _build_pro_first_impression(
         self,
@@ -783,51 +1275,134 @@ class LayeredOrchestrator:
         theme_label: str,
         lite_title: str,
     ) -> str:
-        context_hint = self._build_user_context_hint(record)
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        secondary = distribution[1] if len(distribution) > 1 else dominant
+        transition = self._describe_circle_transition(layer0)
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         lite_contradiction = (
             record.layer_1_lite_draft.story.contradiction.content
             if record.layer_1_lite_draft and record.layer_1_lite_draft.story.contradiction.content
             else ""
         )
-        return (
-            PRO_REPORT_BLUEPRINT.narrative_templates["first_impression"].format(
-                lite_title=lite_title,
-                lite_contradiction=lite_contradiction[:56] if lite_contradiction else "",
-                context_hint=context_hint,
-            )
+        parts = [
+            f"第一眼看这张画，最明显的是「{dominant['name']}」和「{secondary['name']}」共同撑起了整张画的骨架。",
+        ]
+        if transition:
+            parts.append(transition)
+        parts.append(
+            f"所以 Lite 里那份《{lite_title}》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。"
         )
+        if lite_contradiction:
+            contradiction = lite_contradiction[:96].strip()
+            if contradiction and contradiction[-1] not in "。！？":
+                contradiction += "。"
+            parts.append(contradiction)
+        if signal_text:
+            parts.append(signal_text)
+        return " ".join(parts)
 
     def _build_pro_energy_essence(
         self,
+        record: InterpretationRecord,
         theme_label: str,
         circles: Dict[str, int],
     ) -> str:
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        secondary = distribution[1] if len(distribution) > 1 else dominant
+        transition = self._describe_circle_transition(layer0)
         return (
-            PRO_REPORT_BLUEPRINT.narrative_templates["energy_essence"].format(
-                theme_label=theme_label,
-                inner=circles["inner_radius"],
-                middle=circles["middle_radius"],
-            )
-        )
+            f"{theme_label}主题下，这张画的能量核心更接近「{dominant['name']}」({dominant['percentage']:.2f}%)"
+            f" 与「{secondary['name']}」({secondary['percentage']:.2f}%) 的组合。"
+            f"{transition or ''} 这说明你现在最重要的功课，不是更快，而是让内在承载、外在边界和现实动作重新接上。"
+        ).strip()
 
     def _build_pro_block_point(
         self,
         record: InterpretationRecord,
         imbalance_profile: Optional[Dict[str, str]] = None,
     ) -> str:
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
         lite_block = (
             record.layer_1_lite_draft.story.block.content
             if record.layer_1_lite_draft and record.layer_1_lite_draft.story.block.content
             else ""
         )
         primary = imbalance_profile.get("primary", "") if imbalance_profile else ""
-        return (
-            PRO_REPORT_BLUEPRINT.narrative_templates["block_point"].format(
-                lite_block=f"{lite_block[:70]} " if lite_block else "",
-                primary=primary,
-                feeling_hint=self._build_feeling_hint(record),
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
+        parts: list[str] = []
+        if lite_block:
+            parts.append(lite_block[:96].strip())
+        if primary:
+            parts.append(f"{primary}让你很难一边往前推进，一边仍然感觉自己是安全的。")
+        if weakest.get("percentage", 0.0) < 12:
+            weakest_theme = self._get_element_theme_phrase(self._get_record_theme(record), weakest["name"])
+            parts.append(
+                f"再加上「{weakest['name']}」相关的{weakest_theme}资源暂时偏少，所以你在快要真正启动时更容易先想缓一缓。"
             )
+        if signal_text:
+            parts.append(signal_text)
+        parts.append(self._build_feeling_hint(record))
+        return " ".join(part for part in parts if part).strip()
+
+    def _build_pro_circle_reading(
+        self,
+        record: InterpretationRecord,
+        circle_key: str,
+        fallback_text: str,
+    ) -> str:
+        layer0 = self._get_layer0_view(record)
+        circle = getattr(layer0.three_circles, circle_key, {}) if hasattr(layer0.three_circles, circle_key) else {}
+        if not isinstance(circle, dict):
+            return fallback_text
+        meaning = circle.get("meaning", "")
+        radius_percent = circle.get("radius_percent")
+        dominant = circle.get("dominant", "")
+        colors = [item for item in circle.get("colors", []) if isinstance(item, str) and item]
+        knowledge_reading = circle.get("knowledge_reading", "")
+        parts: list[str] = []
+        if meaning and radius_percent:
+            parts.append(f"{meaning}当前约占 {radius_percent}%，主导元素更偏「{dominant or '未识别'}」。")
+        elif dominant:
+            parts.append(f"当前主导元素更偏「{dominant}」。")
+        if knowledge_reading:
+            parts.append(knowledge_reading.rstrip("。") + "。")
+        if colors:
+            parts.append(f"代表性色彩集中在 {'、'.join(colors[:3])}。")
+        return " ".join(parts).strip() or fallback_text
+
+    def _build_pro_micro_sections_from_knowledge(
+        self,
+        record: InterpretationRecord,
+    ) -> Dict[str, str]:
+        layer0 = self._get_layer0_view(record)
+        adjacent = layer0.micro_analysis.adjacent or []
+        wrap = layer0.micro_analysis.wrap or []
+        rhythm = (
+            f"圈间节奏首先显示：{adjacent[0]}。这说明当前能量更像在调整承接，而不是剧烈摆荡。"
+            if adjacent
+            else PRO_REPORT_BLUEPRINT.narrative_templates["micro_rhythm"]
         )
+        relationship = (
+            f"继续往外看，{adjacent[1]}。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。"
+            if len(adjacent) > 1
+            else PRO_REPORT_BLUEPRINT.narrative_templates["micro_relationship"]
+        )
+        action = (
+            f"当前最明显的行动提示是：{wrap[0]}。与其一次性猛推，不如让行动和承载一起增长。"
+            if wrap
+            else PRO_REPORT_BLUEPRINT.narrative_templates["micro_action"]
+        )
+        return {
+            PRO_REPORT_BLUEPRINT.structure_labels["micro_rhythm"]: rhythm,
+            PRO_REPORT_BLUEPRINT.structure_labels["micro_relationship"]: relationship,
+            PRO_REPORT_BLUEPRINT.structure_labels["micro_action"]: action,
+        }
 
     def _render_lite_six_insights(
         self,
@@ -960,6 +1535,182 @@ class LayeredOrchestrator:
             cleaned = cleaned.replace(disclaimer, "").strip()
         return cleaned
 
+    def _get_record_theme(self, record: InterpretationRecord) -> str:
+        return getattr(record, "theme", None) or "general"
+
+    def _get_layer0_view(self, record: InterpretationRecord) -> Layer0Raw:
+        layer0 = getattr(record, "layer_0_raw", None)
+        if isinstance(layer0, Layer0Raw):
+            return layer0
+        try:
+            return self._build_layer0_fallback(record)
+        except Exception:
+            return Layer0Raw()
+
+    def _get_layer0_element_distribution(self, layer0: Layer0Raw) -> list[Dict[str, Any]]:
+        source = {
+            "wood": getattr(layer0.five_elements, "wood", {}),
+            "fire": getattr(layer0.five_elements, "fire", {}),
+            "earth": getattr(layer0.five_elements, "earth", {}),
+            "metal": getattr(layer0.five_elements, "metal", {}),
+            "water": getattr(layer0.five_elements, "water", {}),
+        }
+        distribution: list[Dict[str, Any]] = []
+        for key, item in source.items():
+            raw_item = item if isinstance(item, dict) else {}
+            try:
+                percentage = float(raw_item.get("percentage", 0.0) or 0.0)
+            except (TypeError, ValueError):
+                percentage = 0.0
+            distribution.append(
+                {
+                    "key": key,
+                    "name": raw_item.get("element_cn") or ELEMENT_KEY_TO_CN.get(key, key),
+                    "percentage": round(percentage, 2),
+                    "areas": raw_item.get("areas", []) if isinstance(raw_item.get("areas", []), list) else [],
+                }
+            )
+        return sorted(distribution, key=lambda item: item["percentage"], reverse=True)
+
+    def _get_primary_knowledge_signal(self, record: InterpretationRecord) -> str:
+        layer0 = self._get_layer0_view(record)
+        candidates = getattr(layer0, "imbalance_candidates", []) or []
+        for item in candidates:
+            if isinstance(item, str) and item.strip():
+                return item.strip()
+        return ""
+
+    def _get_signal_label(self, signal: str) -> str:
+        labels = {
+            "transition-overload": "过渡负荷",
+            "boundary-constriction": "边界紧绷",
+            "relational-drain": "关系耗散",
+            "emotion-congestion": "情绪淤积",
+            "action-block": "行动受阻",
+            "energy-block": "能量受阻",
+        }
+        return labels.get(signal, signal.replace("-", " ").strip())
+
+    def _describe_signal(self, signal: str) -> str:
+        descriptions = {
+            "transition-overload": "你正处在旧节奏尚未完全退场、新节奏又开始拉扯的过渡期。",
+            "boundary-constriction": "你更容易先收紧边界来维持安全感。",
+            "relational-drain": "很多能量已经流向外部关系与任务，回补速度暂时还没跟上。",
+            "emotion-congestion": "情绪更多停留在内部循环，还没有找到稳定的出口。",
+            "action-block": "行动能量在启动前被过多顾虑和自我保护截住了。",
+            "energy-block": "内外能量的转换还不够顺畅，所以你会时常感觉想推进却又被拉住。",
+        }
+        return descriptions.get(signal, "")
+
+    def _get_knowledge_theme_config(self, theme: Optional[str]) -> Dict[str, Any]:
+        theme_key = theme or "general"
+        try:
+            config = get_theme_config(theme_key)
+        except Exception:
+            config = {}
+        if isinstance(config, dict) and config:
+            return config
+        if theme_key != "general":
+            try:
+                fallback = get_theme_config("general")
+            except Exception:
+                fallback = {}
+            return fallback if isinstance(fallback, dict) else {}
+        return {}
+
+    def _get_knowledge_insight_templates(self, theme: Optional[str]) -> Dict[str, Any]:
+        theme_key = theme or "general"
+        try:
+            templates = get_insight_templates(theme_key)
+        except Exception:
+            templates = {}
+        if isinstance(templates, dict) and templates:
+            return templates
+        if theme_key != "general":
+            try:
+                fallback = get_insight_templates("general")
+            except Exception:
+                fallback = {}
+            return fallback if isinstance(fallback, dict) else {}
+        return {}
+
+    def _get_theme_element_profile(self, theme: Optional[str], element_name: str) -> Dict[str, Any]:
+        config = self._get_knowledge_theme_config(theme)
+        meanings = config.get("element_meanings", {}) if isinstance(config, dict) else {}
+        if isinstance(meanings, dict):
+            profile = meanings.get(element_name)
+            if isinstance(profile, dict):
+                return profile
+        return {}
+
+    def _get_element_theme_phrase(self, theme: Optional[str], element_name: str) -> str:
+        profile = self._get_theme_element_profile(theme, element_name)
+        psychological_theme = profile.get("psychological_theme")
+        if isinstance(psychological_theme, str) and psychological_theme.strip():
+            return psychological_theme.strip()
+        core_concept = profile.get("core_concept")
+        if isinstance(core_concept, str) and core_concept.strip():
+            return core_concept.strip()
+        return f"{element_name}元素的状态"
+
+    def _get_element_core_keywords(self, theme: Optional[str], element_name: str) -> str:
+        profile = self._get_theme_element_profile(theme, element_name)
+        keywords = profile.get("keywords")
+        if isinstance(keywords, list) and keywords:
+            filtered = [str(item).strip() for item in keywords if isinstance(item, str) and item.strip()]
+            if filtered:
+                return "、".join(filtered[:3])
+        return self._get_element_theme_phrase(theme, element_name)
+
+    def _describe_circle_transition(self, layer0: Layer0Raw) -> str:
+        inner = layer0.three_circles.inner.get("dominant", "")
+        middle = layer0.three_circles.middle.get("dominant", "")
+        outer = layer0.three_circles.outer.get("dominant", "")
+        if inner and middle and outer:
+            if inner == middle == outer:
+                return f"三圈目前都围绕「{inner}」展开。"
+            if inner == middle and outer != inner:
+                return f"内圈和中圈都更偏「{inner}」，外圈则开始转向「{outer}」。"
+            return f"三圈依次呈现出「{inner} -> {middle} -> {outer}」的变化。"
+        return ""
+
+    def _get_knowledge_story_angle(self, theme: Optional[str], section_key: str) -> str:
+        label_map = {
+            "base": "你的底色",
+            "contradiction": "你的矛盾",
+            "pattern": "你的模式",
+            "defense": "你的防御",
+            "block": "你的卡点",
+            "light": "你的光",
+        }
+        templates = self._get_knowledge_insight_templates(theme)
+        label = label_map.get(section_key, "")
+        payload = templates.get(label, {}) if isinstance(templates, dict) else {}
+        if isinstance(payload, dict):
+            angle = payload.get("角度")
+            if isinstance(angle, str) and angle.strip():
+                return angle.strip()
+        return ""
+
+    def _clean_knowledge_text_block(self, content: str) -> str:
+        if not isinstance(content, str):
+            return ""
+        lines = []
+        for raw_line in content.strip().splitlines():
+            line = raw_line.strip()
+            if not line:
+                if lines and lines[-1]:
+                    lines.append("")
+                continue
+            if line.startswith("💡 "):
+                line = line[2:].strip()
+            if line.startswith("🔓 "):
+                line = line[2:].strip()
+            if line.startswith("👉 "):
+                line = line[2:].strip()
+            lines.append(line)
+        return "\n".join(lines).strip()
+
     def _build_user_context_hint(self, record: InterpretationRecord) -> str:
         intention = (record.painting_intention or "").strip()
         feeling = (record.painting_feeling or "").strip()
@@ -1000,15 +1751,55 @@ class LayeredOrchestrator:
         intention = (record.painting_intention or "").strip() or "未填写"
         feeling = (record.painting_feeling or "").strip() or "未填写"
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
-        return "\n".join(
-            [
-                f"- 当前主题：{theme_label}",
-                f"- 创作前意图：{intention}",
-                f"- 创作时感受：{feeling}",
-                f"- 内圈半径：{circles.get('inner_radius', 33)}%",
-                f"- 中圈半径：{circles.get('middle_radius', 66)}%",
-            ]
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else None
+        secondary = distribution[1] if len(distribution) > 1 else None
+        signal = self._get_primary_knowledge_signal(record)
+        lines = [
+            f"- 当前主题：{theme_label}",
+            f"- 创作前意图：{intention}",
+            f"- 创作时感受：{feeling}",
+            f"- 内圈半径：{circles.get('inner_radius', 33)}%",
+            f"- 中圈半径：{circles.get('middle_radius', 66)}%",
+        ]
+        if dominant:
+            line = f"- 五行主导：{dominant['name']} {dominant['percentage']:.2f}%"
+            if secondary:
+                line += f"，其次是 {secondary['name']} {secondary['percentage']:.2f}%"
+            lines.append(line)
+        lines.append(
+            "- 三圈主导："
+            f"内圈{layer0.three_circles.inner.get('dominant', '未识别')} / "
+            f"中圈{layer0.three_circles.middle.get('dominant', '未识别')} / "
+            f"外圈{layer0.three_circles.outer.get('dominant', '未识别')}"
         )
+        if signal:
+            lines.append(f"- 知识库失衡候选：{self._get_signal_label(signal)}")
+
+        summary = self.get_knowledge_theme_summary(record.theme)
+        if summary:
+            knowledge_theme_name = summary.get("name")
+            core_issues = summary.get("core_issues") or []
+            if knowledge_theme_name:
+                lines.append(f"- V2知识主题：{knowledge_theme_name}")
+            if core_issues:
+                lines.append(f"- V2主题核心议题：{' / '.join(core_issues[:4])}")
+            if summary.get("focus_element"):
+                lines.append(f"- V2主题关注元素：{summary['focus_element']}")
+
+        return "\n".join(lines)
+
+    def get_knowledge_theme_summary(self, theme: Optional[str]) -> Dict[str, Any]:
+        if not self.knowledge_engine:
+            return {}
+
+        try:
+            summary = get_theme_summary(theme or "general")
+        except Exception:
+            return {}
+
+        return summary if isinstance(summary, dict) else {}
 
     def _build_pro_prompt_preview(self, record: InterpretationRecord) -> str:
         vision_payload = {
@@ -1038,23 +1829,35 @@ class LayeredOrchestrator:
 
     def _build_surface_root_cause(self, record: InterpretationRecord) -> str:
         intention = (record.painting_intention or "").strip()
+        signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         lite_contradiction = (
             record.layer_1_lite_draft.story.contradiction.content
             if record.layer_1_lite_draft and record.layer_1_lite_draft.story.contradiction.content
             else ""
         )
         if not intention:
-            return (
+            base = (
                 PRO_REPORT_BLUEPRINT.narrative_templates["surface_root_without_intention"].format(
                     lite_contradiction=f"{lite_contradiction[:72]} " if lite_contradiction else ""
                 )
             )
-        return (
+            return f"{base} {signal_text}".strip() if signal_text else base
+        base = (
             PRO_REPORT_BLUEPRINT.narrative_templates["surface_root_with_intention"].format(
                 lite_contradiction=f"{lite_contradiction[:72]} " if lite_contradiction else "",
                 intention=intention,
             )
         )
+        return f"{base} {signal_text}".strip() if signal_text else base
+
+    def _map_knowledge_signal_to_profile(self, signal: str) -> str:
+        direct_profiles = set(PRO_REPORT_BLUEPRINT.imbalance_profiles.keys())
+        if signal in direct_profiles:
+            return signal
+        mapping = {
+            "transition-overload": "energy-block",
+        }
+        return mapping.get(signal, "")
 
     def _build_pro_imbalance_profile(
         self,
@@ -1069,26 +1872,36 @@ class LayeredOrchestrator:
             inner=inner,
             middle=middle,
         )
+        signal = self._get_primary_knowledge_signal(record)
+        signal_label = self._get_signal_label(signal) if signal else ""
+        signal_text = self._describe_signal(signal)
 
         template = PRO_REPORT_BLUEPRINT.imbalance_profiles.get(
             profile_key,
             PRO_REPORT_BLUEPRINT.imbalance_profiles.get("energy-block", {}),
         )
+        summary = render_template_text(
+            template.get("summary", ""),
+            inner=str(inner),
+            middle=str(middle),
+            theme_label=theme_label,
+        )
+        evidence = render_template_text(
+            template.get("evidence", ""),
+            inner=str(inner),
+            middle=str(middle),
+            theme_label=theme_label,
+        )
+        if signal and signal != profile_key:
+            summary = f"{summary} 同时，Layer 0 的知识候选更接近「{signal_label}」，说明这不是单点问题，而更像阶段性的能量转折。"
+            evidence = f"{evidence} 知识库原始候选同时提示为「{signal_label}」。"
+        elif signal_text:
+            evidence = f"{evidence} {signal_text}".strip()
         return {
             "type": profile_key,
             "primary": template.get("primary", "能量受阻型失衡"),
-            "summary": render_template_text(
-                template.get("summary", ""),
-                inner=str(inner),
-                middle=str(middle),
-                theme_label=theme_label,
-            ),
-            "evidence": render_template_text(
-                template.get("evidence", ""),
-                inner=str(inner),
-                middle=str(middle),
-                theme_label=theme_label,
-            ),
+            "summary": summary,
+            "evidence": evidence,
             "energy_level": render_template_text(
                 template.get("energy_level", ""),
                 inner=str(inner),
@@ -1116,6 +1929,11 @@ class LayeredOrchestrator:
         inner: int,
         middle: int,
     ) -> str:
+        signal = self._get_primary_knowledge_signal(record)
+        mapped_signal = self._map_knowledge_signal_to_profile(signal)
+        if mapped_signal:
+            return mapped_signal
+
         for rule in PRO_REPORT_BLUEPRINT.imbalance_selection_rules:
             if rule.inner_gte is not None and inner < rule.inner_gte:
                 continue

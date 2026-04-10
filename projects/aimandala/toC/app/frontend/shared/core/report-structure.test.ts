@@ -7,11 +7,11 @@ import {
 import type { LiteStructuredReport } from "../types";
 
 const baseStructuredReport: LiteStructuredReport = {
-  title: "自我理解报告",
+  title: "Lite 解读报告",
   overall_impression: "整体命中",
   visual_elements_rendered: "画面依据",
   emotion_portrait_rendered: "情绪画像",
-  pro_teaser: "更深层报告",
+  pro_teaser: "Pro 版解读",
   self_understanding_blocks: {
     pattern_naming: {
       pattern_name: "先靠近又缩回去",
@@ -27,7 +27,7 @@ const baseStructuredReport: LiteStructuredReport = {
 };
 
 describe("shared/core report-structure", () => {
-  it("识别已经拥有更深层访问权限的状态", () => {
+  it("识别已经拥有 Pro 访问权限的状态", () => {
     expect(
       hasProReportAccess({
         status: {
@@ -49,7 +49,7 @@ describe("shared/core report-structure", () => {
     ).toBe(true);
   });
 
-  it("对已有更深层权限返回直接查看 CTA", () => {
+  it("对已有 Pro 权限返回直接查看 CTA", () => {
     const cta = resolveSelfUnderstandingReportCta({
       theme: "intimate_relationship",
       hasProAccess: true,
@@ -58,7 +58,7 @@ describe("shared/core report-structure", () => {
     });
 
     expect(cta.intent).toBe("open_upgrade_report");
-    expect(cta.primaryLabel).toBe("查看更深层报告");
+    expect(cta.primaryLabel).toBe("查看 Pro 版解读");
     expect(cta.footerHint).toContain("先靠近又缩回去");
     expect(cta.footerHint).toContain("亲密关系");
   });
@@ -72,8 +72,8 @@ describe("shared/core report-structure", () => {
     });
 
     expect(cta.intent).toBe("open_report_entry");
-    expect(cta.primaryLabel).toBe("看看更深层模式");
-    expect(cta.legacyCaption).toContain("下一步选择页");
+    expect(cta.primaryLabel).toBe("看看 Pro 版解读");
+    expect(cta.legacyCaption).toContain("Lite / Pro 选择页");
   });
 
   it("对 general 主题且不可升级结果返回再画一幅 CTA", () => {

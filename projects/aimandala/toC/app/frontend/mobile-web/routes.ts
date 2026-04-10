@@ -17,10 +17,10 @@ export interface MobileWebRouteDefinition {
 export const mobileWebRoutes: MobileWebRouteDefinition[] = [
   { id: "landing", path: "/", title: "一镜一梳" },
   { id: "upload", path: "/upload", title: "上传画作" },
-  { id: "reportEntry", path: "/report-entry", title: "报告矩阵入口" },
+  { id: "reportEntry", path: "/report-entry", title: "Lite / Pro 选择页" },
   { id: "loading", path: "/loading", title: "解读生成中" },
-  { id: "report", path: "/report", title: "自我理解报告" },
+  { id: "report", path: "/report", title: "Lite 解读报告" },
   { id: "reportLegacy", path: "/report-legacy", title: "报告旧版对照" },
   { id: "history", path: "/history", title: "历史解读" },
-  { id: "upgrade", path: "/upgrade", title: "深层模式报告" },
+  { id: "upgrade", path: "/upgrade", title: "Pro 解读报告" },
 ];

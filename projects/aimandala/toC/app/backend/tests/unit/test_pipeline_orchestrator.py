@@ -184,7 +184,7 @@ def test_generate_lite_placeholder_creates_report(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-4",
-            theme="career",
+            theme="wealth_career",
         )
     )
 
@@ -195,7 +195,7 @@ def test_generate_lite_placeholder_creates_report(tmp_path):
     assert record.layer_2_lite_final is not None
     assert "向前先稳住的人" in record.layer_2_lite_final.full_report_markdown
     assert "你的心灵画像故事" in record.layer_2_lite_final.full_report_markdown
-    assert "在「事业」中的具体表现" in record.layer_2_lite_final.full_report_markdown
+    assert "在「财富事业」中的具体表现" in record.layer_2_lite_final.full_report_markdown
     assert "重要声明" in record.layer_2_lite_final.full_report_markdown
     assert "一镜 Lite 版解读报告模板 v1.6" in record.layer_1_lite_draft.prompt_preview
 
@@ -281,7 +281,7 @@ def test_select_pro_imbalance_type_uses_configured_rules():
     orchestrator = LayeredOrchestrator(enable_vision=False)
 
     class RecordStub:
-        theme = "career"
+        theme = "wealth_career"
 
     assert (
         orchestrator._select_pro_imbalance_type(
@@ -298,6 +298,26 @@ def test_select_pro_imbalance_type_uses_configured_rules():
             middle=78,
         )
         == "relational-drain"
+    )
+    assert (
+        orchestrator._select_pro_imbalance_type(
+            record=RecordStub(),
+            inner=35,
+            middle=60,
+        )
+        == "action-block"
+    )
+
+    class HealthRecordStub:
+        theme = "health_wellness"
+
+    assert (
+        orchestrator._select_pro_imbalance_type(
+            record=HealthRecordStub(),
+            inner=35,
+            middle=60,
+        )
+        == "emotion-congestion"
     )
 
 

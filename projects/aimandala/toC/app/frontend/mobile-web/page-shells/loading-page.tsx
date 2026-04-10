@@ -146,10 +146,10 @@ export function MobileWebLoadingPage({
     state.status?.generation_stage === "report_ready"
       ? "解读完成，即将跳转..."
       : stages[currentStageIndex];
-  const versionTitle = isPro ? "Pro 版深度解读" : "Lite 版基础解读";
+  const versionTitle = isPro ? "Pro 版完整解读" : "Lite 版基础解读";
   const versionDescription = isPro
     ? "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。"
-    : "Lite 版先展示核心线索，完整版可查看更深层的成因与建议。";
+    : "Lite 版先展示核心线索，Pro 版会补上更完整的成因与建议。";
   const estimatedTime = isPro ? "预计约 2 分钟" : "预计约 90 秒";
   const estimatedSeconds = Math.max(0, (isPro ? 120 : 90) - Math.floor((progress / 100) * (isPro ? 120 : 90)));
 
@@ -207,8 +207,8 @@ export function MobileWebLoadingPage({
           )}
           <div className={`am-loading-speed-note am-loading-speed-note--${isPro ? "pro" : "lite"}`}>
             {isPro
-              ? "Pro版深度分析需要约2分钟，包含三圈能量与失衡诊断"
-              : "Lite版基础解读约需90秒，完整版可查看深层成因与调节建议"}
+              ? "Pro版完整解读需要约2分钟，包含三圈能量与失衡诊断"
+              : "Lite版基础解读约需90秒，Pro版可查看更完整的成因与调节建议"}
           </div>
         </div>
 

@@ -3,6 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { MobileWebApp } from "./app";
 import { createPreviewAppProps } from "./fixtures";
 import {
+  createBrowserFileFromFixture,
+  mobileWebDevFixturePresets,
+} from "./dev-fixtures";
+import {
   openMobileWebUpgradeEntry,
   pollMobileWebProReportUntilReady,
   pollMobileWebReportUntilReady,
@@ -47,17 +51,71 @@ import {
   resolveSelfUnderstandingReportCta,
 } from "../shared/core";
 
+function readBrowserShellInitialState() {
+  const defaultDraft = DEFAULT_PREVIEW_DRAFT;
+
+  if (typeof window === "undefined") {
+    return {
+      route: "landing" as MobileWebRouteId,
+      draft: defaultDraft,
+      interpretationId: "demo-interpretation-id",
+      userId: "demo-user-id",
+      previewMode: import.meta.env.DEV,
+      controlsOpen: import.meta.env.DEV,
+      cleanMode: false,
+      presetId: null as string | null,
+    };
+  }
+
+  const url = new URL(window.location.href);
+  const previewParam = url.searchParams.get("preview");
+  const controlsParam = url.searchParams.get("controls");
+  const cleanMode = url.searchParams.get("clean") === "1";
+  const reportVariantParam = url.searchParams.get("reportVariant");
+  const reportTypeParam = url.searchParams.get("reportType");
+  const route = getRouteFromPathname(url.pathname);
+  const localDebugEnabled = isLocalDebugHost(url.hostname) && !cleanMode;
+
+  return {
+    route,
+    draft: {
+      ...defaultDraft,
+      imagePath: url.searchParams.get("imagePath") ?? defaultDraft.imagePath,
+      theme: url.searchParams.get("theme") ?? defaultDraft.theme,
+      reportVariant: reportVariantParam === "pro" ? "pro" : "lite",
+      reportType: reportTypeParam === "pro"
+        ? "pro"
+        : reportTypeParam === "lite"
+          ? "lite"
+          : reportVariantParam === "pro"
+            ? "pro"
+            : "lite",
+      paintingIntention: url.searchParams.get("paintingIntention") ?? defaultDraft.paintingIntention,
+      paintingFeeling: url.searchParams.get("paintingFeeling") ?? defaultDraft.paintingFeeling,
+    } satisfies MobileWebUploadDraft,
+    interpretationId: url.searchParams.get("interpretationId") ?? "demo-interpretation-id",
+    userId: url.searchParams.get("userId") ?? "demo-user-id",
+    previewMode: previewParam === "0" ? false : previewParam === "1" ? true : import.meta.env.DEV,
+    controlsOpen: controlsParam === "0" ? false : controlsParam === "1" ? true : (import.meta.env.DEV || localDebugEnabled),
+    cleanMode,
+    presetId: url.searchParams.get("preset"),
+  };
+}
+
 export function MobileWebBrowserShell() {
+  const initialState = readBrowserShellInitialState();
+  const [forceCleanMode] = useState(initialState.cleanMode);
+  const [pendingPresetId] = useState<string | null>(initialState.presetId);
   const localDebugEnabled =
-    typeof window !== "undefined" && isLocalDebugHost(window.location.hostname);
-  const [route, setRoute] = useState<MobileWebRouteId>(() =>
-    typeof window === "undefined" ? "landing" : getRouteFromPathname(window.location.pathname),
-  );
-  const [draft, setDraft] = useState<MobileWebUploadDraft>(DEFAULT_PREVIEW_DRAFT);
-  const [interpretationId, setInterpretationId] = useState("demo-interpretation-id");
-  const [userId, setUserId] = useState("demo-user-id");
-  const [previewMode, setPreviewMode] = useState(import.meta.env.DEV);
-  const [controlsOpen, setControlsOpen] = useState(import.meta.env.DEV || localDebugEnabled);
+    typeof window !== "undefined" &&
+    isLocalDebugHost(window.location.hostname) &&
+    !forceCleanMode;
+  const [route, setRoute] = useState<MobileWebRouteId>(initialState.route);
+  const [draft, setDraft] = useState<MobileWebUploadDraft>(initialState.draft);
+  const [interpretationId, setInterpretationId] = useState(initialState.interpretationId);
+  const [userId, setUserId] = useState(initialState.userId);
+  const [previewMode, setPreviewMode] = useState(initialState.previewMode);
+  const [controlsOpen, setControlsOpen] = useState(initialState.controlsOpen);
   const [previewDetection, setPreviewDetection] =
     useState<DetectCirclesResponse | null>(null);
   const [previewDetecting, setPreviewDetecting] = useState(false);
@@ -76,6 +134,8 @@ export function MobileWebBrowserShell() {
   const [previewHistoryStatusTone, setPreviewHistoryStatusTone] =
     useState<"preview" | "runtime">("preview");
   const [previewHistoryOpeningId, setPreviewHistoryOpeningId] =
+    useState<string | null>(null);
+  const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
 
   const input = useMemo(
@@ -130,9 +190,17 @@ export function MobileWebBrowserShell() {
 
     const nextPath = mobileWebRoutes.find((item) => item.id === route)?.path ?? "/";
     if (window.location.pathname !== nextPath) {
-      window.history.replaceState(null, "", nextPath);
+      window.history.replaceState(null, "", `${nextPath}${window.location.search}`);
     }
   }, [route]);
+
+  useEffect(() => {
+    if (!pendingPresetId) {
+      return;
+    }
+
+    void handleApplyFixturePreset(pendingPresetId);
+  }, [pendingPresetId]);
 
   useEffect(() => {
     if (!previewMode || route !== "loading") {
@@ -414,7 +482,7 @@ export function MobileWebBrowserShell() {
       setDraft((current) => ({
         ...current,
         reportVariant,
-        reportType: reportVariant === "pro" ? "deep_pattern" : "self_understanding",
+        reportType: reportVariant === "pro" ? "pro" : "lite",
       }));
 
       if (reportVariant === "pro") {
@@ -424,7 +492,7 @@ export function MobileWebBrowserShell() {
           draft: {
             ...draft,
             reportVariant: "pro",
-            reportType: "deep_pattern",
+            reportType: "pro",
           },
           userId,
           historyQuery: previewHistoryQuery,
@@ -446,6 +514,38 @@ export function MobileWebBrowserShell() {
     } finally {
       setPreviewHistoryOpeningId(null);
       setPreviewFlowRunning(false);
+    }
+  }
+
+  async function handleApplyFixturePreset(presetId: string) {
+    const preset = mobileWebDevFixturePresets.find((item) => item.id === presetId);
+    if (!preset || fixtureLoadingId) {
+      return;
+    }
+
+    setFixtureLoadingId(presetId);
+    try {
+      const browserFile = await createBrowserFileFromFixture(preset);
+      setDraft((current) => mergeMobileWebUploadDraft(current, {
+        imagePath: preset.imageUrl,
+        browserFile,
+        uploadAsset: null,
+        innerRadius: undefined,
+        middleRadius: undefined,
+        ...preset.draftPatch,
+      }));
+      setPreviewDetection(null);
+      setPreviewDetectError(null);
+      setPreviewFlowState(null);
+      setPreviewHistoryRecords(null);
+      setPreviewHistoryQuery({ filter: "all", limit: 20 });
+      setPreviewHistoryStatusLabel(`已载入 ${preset.label}`);
+      setPreviewHistoryStatusDetail("当前已填入测试图与默认主题，可直接在上传页做三圈识别并进入 Lite / Pro 选择。");
+      setPreviewHistoryStatusTone("preview");
+      setPreviewHistoryOpeningId(null);
+      setRoute("upload");
+    } finally {
+      setFixtureLoadingId(null);
     }
   }
 
@@ -485,6 +585,34 @@ export function MobileWebBrowserShell() {
               </div>
 
               <div className="browser-shell__controls">
+                <div className="field">
+                  <span>测试样本</span>
+                  <div style={{ display: "grid", gap: 8 }}>
+                    {mobileWebDevFixturePresets.map((preset) => {
+                      const isLoadingFixture = fixtureLoadingId === preset.id;
+
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          className="mw-secondary-button mw-secondary-button--inline"
+                          onClick={() => {
+                            void handleApplyFixturePreset(preset.id);
+                          }}
+                          disabled={Boolean(fixtureLoadingId)}
+                          style={{
+                            justifyContent: "space-between",
+                            width: "100%",
+                          }}
+                        >
+                          <span>{preset.label}</span>
+                          <span>{isLoadingFixture ? "载入中..." : "一键填充"}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <label className="field field--checkbox">
                   <input
                     type="checkbox"

@@ -26,8 +26,8 @@ def test_lite_awareness_titles_load_from_template():
     assert len(LITE_AWARENESS_TITLES) == 3
     assert LITE_AWARENESS_TITLES[0] == "倾听身体的悄悄话"
     assert LITE_REPORT_BLUEPRINT.story_section_headings[0] == ("base", "### 【起】你的底色")
-    assert LITE_REPORT_BLUEPRINT.theme_labels["career"] == "事业"
-    assert LITE_REPORT_BLUEPRINT.title_templates["career"] == "向前先稳住的人"
+    assert LITE_REPORT_BLUEPRINT.theme_labels["wealth_career"] == "财富事业"
+    assert LITE_REPORT_BLUEPRINT.title_templates["wealth_career"] == "向前先稳住的人"
     assert LITE_REPORT_BLUEPRINT.structure_labels["experiment_title"] == "曼曼的疗愈仪式：给自己一个稳稳的小空间"
     assert LITE_REPORT_BLUEPRINT.structure_labels["layer0_color_summary"] == "迁移阶段先保留结构位，后续再替换成正式颜色分析。"
     assert LITE_REPORT_BLUEPRINT.structure_labels["section_story"] == "## 你的心灵画像故事"
@@ -51,6 +51,10 @@ def test_pro_imbalance_selection_rules_are_normalized():
     assert PRO_IMBALANCE_SELECTION_RULES[0].inner_gte == 42
     assert PRO_IMBALANCE_SELECTION_RULES[1].type == "relational-drain"
     assert PRO_IMBALANCE_SELECTION_RULES[1].middle_gte == 74
+    assert PRO_IMBALANCE_SELECTION_RULES[2].type == "emotion-congestion"
+    assert PRO_IMBALANCE_SELECTION_RULES[2].theme_in == ("health_wellness",)
+    assert PRO_IMBALANCE_SELECTION_RULES[3].type == "action-block"
+    assert PRO_IMBALANCE_SELECTION_RULES[3].theme_in == ("wealth_career",)
 
 
 def test_pro_fallback_texts_load_as_dict():
@@ -94,7 +98,7 @@ def test_lite_blueprint_validation_reports_missing_keys():
             "awareness_titles": ["只有一个"],
             "awareness_content_templates": ["只写一条"],
             "story_connectors": {"base": ""},
-            "theme_labels": {"career": ""},
+            "theme_labels": {"wealth_career": ""},
             "title_templates": {"default": ""},
             "structure_labels": {"experiment_title": ""},
             "narrative_templates": {"overall_impression": ""},
@@ -110,7 +114,7 @@ def test_lite_blueprint_validation_reports_missing_keys():
     ) in issues
     assert any(issue.path == "lite.awareness_titles" for issue in issues)
     assert any(issue.path == "lite.awareness_content_templates" for issue in issues)
-    assert any(issue.path == "lite.theme_labels.career" for issue in issues)
+    assert any(issue.path == "lite.theme_labels.wealth_career" for issue in issues)
     assert any(issue.path == "lite.title_templates.default" for issue in issues)
     assert any(issue.path == "lite.structure_labels.experiment_title" for issue in issues)
     assert any(issue.path == "lite.narrative_templates.overall_impression" for issue in issues)

@@ -109,9 +109,9 @@ function extractProTitle(state: MandalaFlowState): string {
   const markdown =
     typeof state.report?.report === "string" ? state.report.report : "";
   const markdownTitle = markdown.match(/^#\s+(.+)$/m)?.[1]?.trim();
-  const raw = markdownTitle || titleFromReport || "深度诊断报告";
+  const raw = markdownTitle || titleFromReport || "Pro 解读报告";
   const withoutPrefix = raw.includes("：") ? raw.split("：").slice(1).join("：").trim() : raw;
-  return withoutPrefix.replace(/\s*-\s*Pro\s*版?\s*$/i, "").trim() || "深度诊断报告";
+  return withoutPrefix.replace(/\s*-\s*Pro\s*版?\s*$/i, "").trim() || "Pro 解读报告";
 }
 
 function parseProMarkdown(state: MandalaFlowState): ProMarkdownSection[] {
@@ -680,7 +680,7 @@ export function MobileWebProReportPage({
       { role: "user", content: next },
       {
         role: "assistant",
-        content: "我先陪你把这段感受接住。当前 mobile-web 里先复刻了旧版入口，后续我们再把真正的 AI 对话链路接回。",
+        content: "我先陪你把这段感受接住。当前 AI 问答还在预览阶段，我会先基于这份 Pro 解读继续回应你。",
       },
     ]);
     setChatInput("");
@@ -717,7 +717,7 @@ export function MobileWebProReportPage({
         </button>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <img src={logoNiwu} alt="一镜一梳" style={{ width: 22, height: 22, objectFit: "contain" }} />
-          <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 16, fontWeight: 600, letterSpacing: "0.12em", color: "#D4A054" }}>Pro版深度解读</span>
+          <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 16, fontWeight: 600, letterSpacing: "0.12em", color: "#D4A054" }}>Pro版完整解读</span>
         </div>
         <button type="button" style={{ padding: 4, background: "transparent", border: 0, color: "rgba(232,220,200,0.5)" }}>
           <ShareGlyph />

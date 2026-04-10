@@ -4,6 +4,11 @@ import type {
   ProStructuredReport,
   ReportResponse,
 } from "../types";
+import {
+  getThemeDisplayName,
+  isKnownThemeId,
+  normalizeThemeId,
+} from "./themes";
 
 export const liteReportSectionTitles = {
   overall: "整体感受",
@@ -54,7 +59,7 @@ export const proImbalanceLabels: Record<string, string> = {
 
 export const proRootCauseLabels: Record<string, string> = {
   surface: "表面现象",
-  deeper: "深层模式",
+  deeper: "形成机制",
   core: "核心信念",
 };
 
@@ -64,16 +69,6 @@ export const proMicroLabels: Record<string, string> = {
   "节奏关系": "节奏关系",
   "关系模式": "关系模式",
   "行动模式": "行动模式",
-};
-
-const themeDisplayNames: Record<string, string> = {
-  father_relationship: "父亲关系",
-  mother_relationship: "母亲关系",
-  intimate_relationship: "亲密关系",
-  parent_child_relationship: "亲子关系",
-  wealth_career: "财富与事业",
-  health_wellness: "身体与健康",
-  personal_growth: "个人成长",
 };
 
 export type SelfUnderstandingReportActionIntent =
@@ -99,18 +94,19 @@ function cleanText(value: unknown): string | null {
   return normalized ? normalized : null;
 }
 
-function getThemeDisplayName(theme?: string | null): string | null {
-  const normalized = cleanText(theme);
-  if (!normalized) {
+function getThemeContextLabel(theme?: string | null): string | null {
+  const normalized = normalizeThemeId(theme);
+  if (!normalized || normalized === "general") {
     return null;
   }
 
-  const lowered = normalized.toLowerCase();
-  if (lowered === "general") {
-    return null;
+  if (!isKnownThemeId(normalized) && /[_a-z]/i.test(normalized)) {
+    return "这个主题";
   }
 
-  return themeDisplayNames[lowered] ?? (/[_a-z]/i.test(normalized) ? "这个主题" : normalized);
+  return getThemeDisplayName(normalized, {
+    generalLabel: null,
+  });
 }
 
 function getSelfUnderstandingFocus(structured?: LiteStructuredReport | null): string | null {
@@ -151,7 +147,7 @@ export function resolveSelfUnderstandingReportCta(input: {
   hasProAccess?: boolean | null;
   structured?: LiteStructuredReport | null;
 }): SelfUnderstandingReportCta {
-  const themeDisplayName = getThemeDisplayName(input.theme);
+  const themeDisplayName = getThemeContextLabel(input.theme);
   const focus = getSelfUnderstandingFocus(input.structured);
   const dimension = getSelfUnderstandingDimension(input.structured) ?? themeDisplayName ?? "日常生活";
   const focusText = focus ? `“${focus}”` : "这层模式";
@@ -159,34 +155,34 @@ export function resolveSelfUnderstandingReportCta(input: {
   if (input.hasProAccess) {
     return {
       intent: "open_upgrade_report",
-      primaryLabel: "查看更深层报告",
+      primaryLabel: "查看 Pro 版解读",
       footerHint: focus
-        ? `你已经拥有更深层版本，可以继续看清${focusText}的来源、它在${dimension}中的延续方式，以及下一步如何展开。`
-        : "你已经拥有更深层版本，可以直接继续进入更深层报告。",
-      legacyCardTitle: focus ? `${focusText}背后，还有更深一层` : "你的画里，还有更深一层",
+        ? `你已经拥有 Pro 版，可以继续看清${focusText}的来源、它在${dimension}中的延续方式，以及下一步如何展开。`
+        : "你已经拥有 Pro 版，可以直接继续进入更完整的解读。",
+      legacyCardTitle: focus ? `${focusText}背后，还有更完整的一层` : "你的画里，还有更完整的一层",
       legacyBulletPoints: [
         "这种模式为什么会反复出现",
         `它在${dimension}里还会怎样显现`,
         "接下来可以怎样走得更稳一点",
       ],
-      legacyCaption: "你已经拥有更深层版本，当前可以直接继续查看。",
+      legacyCaption: "你已经拥有 Pro 版，当前可以直接继续查看。",
     };
   }
 
   if (input.canUpgrade) {
     return {
       intent: "open_report_entry",
-      primaryLabel: "看看更深层模式",
+      primaryLabel: "看看 Pro 版解读",
       footerHint: focus
-        ? `这一轮已经帮你看见了${focusText}。如果你想继续往下走，可以进入下一步选择，看看更深层报告是否适合你。`
-        : "这次自我理解已经成形。如果你想继续往下走，可以进入下一步选择，看看更深层报告是否适合你。",
-      legacyCardTitle: focus ? `如果继续往下看，${focusText}会更清楚` : "你的画里，还藏着这些答案",
+        ? `这一轮已经帮你看见了${focusText}。如果你想继续往下走，可以进入下一步选择，看看 Pro 版是否适合你。`
+        : "这次 Lite 解读已经成形。如果你想继续往下走，可以进入下一步选择，看看 Pro 版是否适合你。",
+      legacyCardTitle: focus ? `如果继续往下看，${focusText}会更清楚` : "你的画里，还可以再往下看一步",
       legacyBulletPoints: [
-        "这种模式的更深层来源是什么",
+        "这种模式更完整的来源是什么",
         `它在${dimension}里还有哪些延伸`,
         "下一步该先做什么，才不只是看懂",
       ],
-      legacyCaption: "先进入下一步选择页，再决定这次是否继续往更深层走。",
+      legacyCaption: "先进入 Lite / Pro 选择页，再决定这次是否继续往下看。",
     };
   }
 
@@ -203,8 +199,8 @@ export function resolveSelfUnderstandingReportCta(input: {
       "用连续两次创作看清变化，而不是急着下结论",
     ],
     legacyCaption: themeDisplayName
-      ? "当前先不往更深层分流，建议围绕同一主题继续画一幅。"
-      : "当前先不往更深层分流，建议把这次理解带回下一幅画里。",
+      ? "当前先不继续切换版本，建议围绕同一主题继续画一幅。"
+      : "当前先不继续切换版本，建议把这次理解带回下一幅画里。",
   };
 }
 
