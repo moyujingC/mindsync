@@ -40,6 +40,7 @@ import {
   type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "./state";
+import type { MobileWebRuntimeDebugSnapshot } from "./debug-observer";
 
 export interface MobileWebRouteLoaderState {
   loading: boolean;
@@ -102,6 +103,7 @@ export interface MobileWebRuntimeProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  onDebugSnapshotChange?: (snapshot: MobileWebRuntimeDebugSnapshot | null) => void;
 }
 
 const defaultUploadDraft: MobileWebUploadDraft = {
@@ -160,6 +162,7 @@ export function MobileWebRuntime({
   environmentLabel,
   environmentDetail,
   environmentTone,
+  onDebugSnapshotChange,
 }: MobileWebRuntimeProps) {
   const { loading, error, props } = useMobileWebRouteLoader(input);
   const [runtimeProps, setRuntimeProps] = useState<MobileWebAppProps | null>(null);
@@ -370,6 +373,55 @@ export function MobileWebRuntime({
     runtimeProps?.flowState?.report?.version,
     runtimeUploadDraft?.reportVariant,
     runtimeProps?.uploadDraft?.reportVariant,
+  ]);
+
+  useEffect(() => {
+    if (!onDebugSnapshotChange) {
+      return;
+    }
+
+    if (!runtimeProps) {
+      onDebugSnapshotChange(null);
+      return;
+    }
+
+    const flowState = runtimeProps.flowState ?? null;
+    const report = flowState?.report ?? null;
+
+    onDebugSnapshotChange({
+      route: runtimeProps.route,
+      runtimeBusy,
+      historyBusy: runtimeHistoryBusy,
+      uploadDetecting: runtimeUploadDetecting,
+      uploadDetectError: runtimeUploadDetectError,
+      uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft ?? null,
+      flowState,
+      reportSummary: report
+        ? {
+            version: report.version,
+            title: report.title,
+            canUpgrade: report.can_upgrade,
+            hasStructured: Boolean(report.structured),
+            hasMarkdown:
+              typeof report.report === "string" && report.report.trim().length > 0,
+            aiQaContext:
+              typeof report.ai_qa_context === "string" &&
+              report.ai_qa_context.trim().length > 0,
+          }
+        : null,
+      detection: runtimeUploadDetection,
+      status: flowState?.status ?? null,
+      report,
+    });
+  }, [
+    onDebugSnapshotChange,
+    runtimeBusy,
+    runtimeHistoryBusy,
+    runtimeProps,
+    runtimeUploadDetectError,
+    runtimeUploadDetecting,
+    runtimeUploadDetection,
+    runtimeUploadDraft,
   ]);
 
   if (loading) {

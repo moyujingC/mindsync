@@ -40,6 +40,28 @@ def test_create_prompt_runtime_from_env_defaults_to_noop():
     assert isinstance(runtime, NoopPromptRuntime)
 
 
+def test_create_prompt_runtime_from_env_uses_shared_llm_runtime_when_available():
+    class FakeLLMClient:
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            return {"title": "来自统一 LLM runtime"}
+
+        def generate_text(self, *, task, system_prompt, user_prompt):
+            return "unused"
+
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+        },
+        clear=False,
+    ):
+        runtime = create_prompt_runtime_from_env(llm_client=FakeLLMClient())
+
+    result = runtime.generate_lite(prompt="hello", schema={"type": "lite"})
+    assert isinstance(result, dict)
+    assert result.get("title") == "来自统一 LLM runtime"
+
+
 def test_load_http_prompt_runtime_config_requires_url():
     with patch.dict(
         os.environ,

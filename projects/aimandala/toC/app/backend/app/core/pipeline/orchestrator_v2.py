@@ -137,6 +137,7 @@ class LayeredOrchestrator:
         circle_detector: Optional[CircleDetector] = None,
         generation_runtime: Optional[ReportGenerationRuntime] = None,
         prompt_runtime: Optional[PromptRuntime] = None,
+        report_chat_runtime: Optional[Any] = None,
         enable_vision: bool = True,
     ) -> None:
         if knowledge_engine is not None:
@@ -155,6 +156,7 @@ class LayeredOrchestrator:
             )
         else:
             self.generation_runtime = DeterministicReportGenerationRuntime()
+        self.report_chat_runtime = report_chat_runtime
         self.enable_vision = enable_vision
         self.prompt_builder = PromptBuilder()
         self.report_contracts = ReportContractAssembler(self.prompt_builder)
@@ -348,6 +350,42 @@ class LayeredOrchestrator:
             upgrade_diff=self.get_upgrade_diff(),
         )
 
+    def answer_report_chat(
+        self,
+        interpretation_id: str,
+        *,
+        message: str,
+        history: Optional[list[Dict[str, str]]] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """Generate a follow-up reply grounded in the existing report."""
+
+        record = self.store.load(interpretation_id)
+        if record is None:
+            return None
+        if self.report_chat_runtime is None:
+            raise ValueError("report chat runtime is not configured")
+
+        report_markdown = record.get_pro_report() or record.get_lite_report()
+        if not report_markdown:
+            raise ValueError("report is not ready")
+
+        reply = self.report_chat_runtime.reply(
+            report_markdown=report_markdown,
+            ai_qa_context=record.get_ai_qa_context(),
+            theme=record.theme,
+            painting_intention=record.painting_intention,
+            painting_feeling=record.painting_feeling,
+            message=message,
+            history=history,
+        )
+        if not isinstance(reply, str) or not reply.strip():
+            raise ValueError("report chat runtime returned empty reply")
+
+        return {
+            "interpretation_id": interpretation_id,
+            "reply": reply.strip(),
+        }
+
     def _resolve_best_available_version(self, record: InterpretationRecord) -> str:
         if record.get_pro_report():
             return "pro"
@@ -370,6 +408,250 @@ class LayeredOrchestrator:
             "three_circles": record.three_circles or {},
             "auto_detected": record.three_circles_auto_detect is not None,
             "can_upgrade": record.can_upgrade_to_pro(),
+        }
+
+    def get_report_debug_profile(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
+        """Return a development-only profile of how the current report was produced."""
+
+        record = self.store.load(interpretation_id)
+        if record is None:
+            return None
+
+        def excerpt(value: Optional[str], limit: int = 220) -> Optional[str]:
+            if not isinstance(value, str):
+                return value
+            compact = value.strip()
+            if not compact:
+                return ""
+            if len(compact) <= limit:
+                return compact
+            return f"{compact[:limit]}..."
+
+        layer0 = record.layer_0_raw.to_dict() if record.layer_0_raw else None
+        layer1 = record.layer_1_lite_draft.to_dict() if record.layer_1_lite_draft else None
+        layer2 = record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else None
+        layer3 = record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else None
+        layer4 = record.layer_4_pro_final.to_dict() if record.layer_4_pro_final else None
+        layer0_view = self._get_layer0_view(record) if record.layer_0_raw else None
+        knowledge_signal = self._get_primary_knowledge_signal(record)
+        theme_summary = self.get_knowledge_theme_summary(record.theme)
+
+        def non_empty_text(value: Optional[str]) -> str:
+            if not isinstance(value, str):
+                return ""
+            return value.strip()
+
+        lite_field_provenance = [
+            {
+                "field": "title",
+                "final_value": layer2.get("title") if layer2 else None,
+                "main_source": "layer_1_lite_draft.title" if non_empty_text(layer1.get("title") if layer1 else None) else "template_fallback",
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.title", "value": layer1.get("title") if layer1 else None},
+                    {"source": "theme_label", "value": self._get_theme_label(record.theme)},
+                    {"source": "user.theme", "value": record.theme},
+                ],
+            },
+            {
+                "field": "overall_impression",
+                "final_value": layer2.get("overall_impression") if layer2 else None,
+                "main_source": (
+                    "layer_1_lite_draft.overall_impression"
+                    if non_empty_text(layer1.get("overall_impression") if layer1 else None)
+                    else "template_fallback"
+                ),
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.overall_impression", "value": layer1.get("overall_impression") if layer1 else None},
+                    {"source": "user.painting_intention", "value": record.painting_intention},
+                    {"source": "user.painting_feeling", "value": record.painting_feeling},
+                    {"source": "layer_0_raw.imbalance_candidates", "value": layer0.get("imbalance_candidates") if layer0 else None},
+                ],
+            },
+            {
+                "field": "visual_elements_rendered",
+                "final_value": layer2.get("visual_elements_rendered") if layer2 else None,
+                "main_source": (
+                    "layer_1_lite_draft.visual_elements"
+                    if non_empty_text(layer1.get("visual_elements") if layer1 else None)
+                    else "layer_0_raw.color_analysis"
+                ),
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.visual_elements", "value": layer1.get("visual_elements") if layer1 else None},
+                    {"source": "layer_0_raw.color_analysis", "value": layer0.get("color_analysis") if layer0 else None},
+                    {"source": "layer_0_raw.circle_colors", "value": layer0.get("circle_colors") if layer0 else None},
+                    {"source": "user.three_circles", "value": record.three_circles},
+                ],
+            },
+            {
+                "field": "emotion_portrait_rendered",
+                "final_value": layer2.get("emotion_portrait_rendered") if layer2 else None,
+                "main_source": (
+                    "layer_1_lite_draft.emotion_portrait"
+                    if non_empty_text(layer1.get("emotion_portrait") if layer1 else None)
+                    else "template_fallback"
+                ),
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.emotion_portrait", "value": layer1.get("emotion_portrait") if layer1 else None},
+                    {"source": "user.painting_feeling", "value": record.painting_feeling},
+                    {"source": "knowledge_signal", "value": self._get_signal_label(knowledge_signal) if knowledge_signal else None},
+                    {"source": "theme_summary", "value": theme_summary},
+                ],
+            },
+            {
+                "field": "pro_teaser",
+                "final_value": layer2.get("pro_teaser") if layer2 else None,
+                "main_source": "layer_1_lite_draft.pro_teaser" if non_empty_text(layer1.get("pro_teaser") if layer1 else None) else "default_pro_teaser",
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.pro_teaser", "value": layer1.get("pro_teaser") if layer1 else None},
+                    {"source": "user.theme", "value": record.theme},
+                ],
+            },
+        ]
+
+        pro_field_provenance = [
+            {
+                "field": "first_impression",
+                "final_value": layer3.get("first_impression") if layer3 else None,
+                "main_source": "layer_3_pro_draft.first_impression" if non_empty_text(layer3.get("first_impression") if layer3 else None) else "template_fallback",
+                "upstream_inputs": [
+                    {"source": "layer_3_pro_draft.first_impression", "value": layer3.get("first_impression") if layer3 else None},
+                    {"source": "layer_1_lite_draft.story", "value": layer1.get("story") if layer1 else None},
+                    {"source": "layer_0_raw.imbalance_candidates", "value": layer0.get("imbalance_candidates") if layer0 else None},
+                ],
+            },
+            {
+                "field": "core_insight_table",
+                "final_value": layer3.get("core_insight_table") if layer3 else None,
+                "main_source": "layer_3_pro_draft.core_insight_table",
+                "upstream_inputs": [
+                    {"source": "layer_3_pro_draft.core_insight_table", "value": layer3.get("core_insight_table") if layer3 else None},
+                    {"source": "layer_0_raw.five_elements", "value": layer0.get("five_elements") if layer0 else None},
+                    {"source": "layer_0_raw.three_circles", "value": layer0.get("three_circles") if layer0 else None},
+                ],
+            },
+            {
+                "field": "root_cause",
+                "final_value": layer3.get("root_cause") if layer3 else None,
+                "main_source": "layer_3_pro_draft.root_cause",
+                "upstream_inputs": [
+                    {"source": "layer_3_pro_draft.root_cause", "value": layer3.get("root_cause") if layer3 else None},
+                    {"source": "user.painting_intention", "value": record.painting_intention},
+                    {"source": "layer_1_lite_draft.story.contradiction", "value": layer1.get("story", {}).get("contradiction") if isinstance(layer1.get("story") if layer1 else None, dict) else None},
+                    {"source": "knowledge_signal", "value": self._get_signal_label(knowledge_signal) if knowledge_signal else None},
+                ],
+            },
+            {
+                "field": "healing_suggestions",
+                "final_value": layer3.get("healing_suggestions") if layer3 else None,
+                "main_source": "layer_3_pro_draft.healing_suggestions",
+                "upstream_inputs": [
+                    {"source": "layer_3_pro_draft.healing_suggestions", "value": layer3.get("healing_suggestions") if layer3 else None},
+                    {"source": "layer_0_raw.imbalance_candidates", "value": layer0.get("imbalance_candidates") if layer0 else None},
+                    {"source": "theme_summary.core_issues", "value": theme_summary.get("core_issues") if isinstance(theme_summary, dict) else None},
+                    {"source": "layer_1_lite_draft.theme_insights", "value": layer1.get("theme_insights") if layer1 else None},
+                ],
+            },
+            {
+                "field": "full_report_markdown",
+                "final_value": layer4.get("full_report_markdown") if layer4 else None,
+                "main_source": "template_merge_layer2_plus_layer3" if layer4 else "missing_layer_4_pro_final",
+                "upstream_inputs": [
+                    {"source": "layer_2_lite_final.full_report_markdown", "value": layer2.get("full_report_markdown") if layer2 else None},
+                    {"source": "layer_3_pro_draft", "value": layer3},
+                    {"source": "layer_4_pro_final.ai_qa_context", "value": layer4.get("ai_qa_context") if layer4 else None},
+                ],
+            },
+        ]
+
+        steps = [
+            {
+                "key": "input",
+                "label": "用户输入与三圈参数",
+                "status": "done",
+                "created_at": record.created_at,
+                "summary": {
+                    "theme": record.theme,
+                    "painting_intention": record.painting_intention,
+                    "painting_feeling": record.painting_feeling,
+                    "three_circles": record.three_circles,
+                    "auto_detect": record.three_circles_auto_detect,
+                },
+            },
+            {
+                "key": "layer0",
+                "label": "Layer0 原始知识层",
+                "status": "done" if layer0 else "missing",
+                "created_at": layer0.get("created_at") if layer0 else None,
+                "summary": {
+                    "imbalance_candidates": layer0.get("imbalance_candidates") if layer0 else [],
+                    "color_analysis": layer0.get("color_analysis") if layer0 else None,
+                    "circle_colors": layer0.get("circle_colors") if layer0 else None,
+                },
+            },
+            {
+                "key": "lite_prompt",
+                "label": "Lite Prompt 预览",
+                "status": "done" if layer1 else "missing",
+                "created_at": layer1.get("created_at") if layer1 else None,
+                "summary": {
+                    "prompt_preview": excerpt(layer1.get("prompt_preview")) if layer1 else None,
+                    "title": layer1.get("title") if layer1 else None,
+                    "overall_impression": excerpt(layer1.get("overall_impression")) if layer1 else None,
+                },
+            },
+            {
+                "key": "lite_final",
+                "label": "Lite 最终报告",
+                "status": "done" if layer2 else "missing",
+                "created_at": layer2.get("created_at") if layer2 else None,
+                "summary": {
+                    "title": layer2.get("title") if layer2 else None,
+                    "overall_impression": excerpt(layer2.get("overall_impression")) if layer2 else None,
+                    "markdown_excerpt": excerpt(layer2.get("full_report_markdown")) if layer2 else None,
+                },
+            },
+            {
+                "key": "pro_prompt",
+                "label": "Pro Prompt 预览",
+                "status": "done" if layer3 else "missing",
+                "created_at": layer3.get("created_at") if layer3 else None,
+                "summary": {
+                    "prompt_preview": excerpt(layer3.get("prompt_preview")) if layer3 else None,
+                    "first_impression": excerpt(layer3.get("first_impression")) if layer3 else None,
+                    "core_insight_table": layer3.get("core_insight_table") if layer3 else None,
+                },
+            },
+            {
+                "key": "pro_final",
+                "label": "Pro 最终报告",
+                "status": "done" if layer4 else "missing",
+                "created_at": layer4.get("created_at") if layer4 else None,
+                "summary": {
+                    "markdown_excerpt": excerpt(layer4.get("full_report_markdown")) if layer4 else None,
+                    "ai_qa_context_excerpt": excerpt(layer4.get("ai_qa_context")) if layer4 else None,
+                },
+            },
+        ]
+
+        return {
+            "interpretation_id": record.interpretation_id,
+            "theme": record.theme,
+            "status": record.status,
+            "generation_stage": record.generation_stage,
+            "generation_progress": record.generation_progress,
+            "version_purchased": record.version_purchased,
+            "steps": steps,
+            "layers": {
+                "layer_0_raw": layer0,
+                "layer_1_lite_draft": layer1,
+                "layer_2_lite_final": layer2,
+                "layer_3_pro_draft": layer3,
+                "layer_4_pro_final": layer4,
+            },
+            "field_provenance": {
+                "lite": lite_field_provenance,
+                "pro": pro_field_provenance,
+            },
         }
 
     def upgrade_to_pro(self, interpretation_id: str) -> Optional[Dict[str, Any]]:

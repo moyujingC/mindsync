@@ -1,7 +1,8 @@
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
+import { chatWithInterpretationReport } from "../../shared/api/services";
 import { getThemeDisplayName } from "../../shared/core";
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
@@ -562,6 +563,8 @@ function MobileWebAiChatModal({
   questions,
   messages,
   input,
+  error,
+  sending,
   onInputChange,
   onClose,
   onSend,
@@ -570,6 +573,8 @@ function MobileWebAiChatModal({
   questions: string[];
   messages: ChatMessage[];
   input: string;
+  error: string | null;
+  sending: boolean;
   onInputChange: (value: string) => void;
   onClose: () => void;
   onSend: (message?: string) => void;
@@ -642,20 +647,36 @@ function MobileWebAiChatModal({
           {messages.length === 0 && questions.length > 0 ? (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginLeft: 44 }}>
               {questions.map((question) => (
-                <button key={question} type="button" onClick={() => onSend(question)} style={{ padding: "8px 12px", borderRadius: 999, border: "1px solid rgba(212,160,84,0.15)", background: "rgba(212,160,84,0.08)", color: "#7A6A5A", fontSize: 12, lineHeight: 1.5 }}>
+                <button key={question} type="button" disabled={sending} onClick={() => onSend(question)} style={{ padding: "8px 12px", borderRadius: 999, border: "1px solid rgba(212,160,84,0.15)", background: "rgba(212,160,84,0.08)", color: "#7A6A5A", fontSize: 12, lineHeight: 1.5, opacity: sending ? 0.5 : 1 }}>
                   {question}
                 </button>
               ))}
             </div>
           ) : null}
+          {sending ? (
+            <div style={{ display: "flex", gap: 12, justifyContent: "flex-start" }}>
+              <div style={{ width: 32, height: 32, borderRadius: 999, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(212,160,84,0.2)", color: "#D4A054", fontSize: 14 }}>
+                <LoadingGlyph />
+              </div>
+              <div style={{ maxWidth: "78%", borderRadius: 18, borderTopLeftRadius: 6, padding: "12px 14px", background: "rgba(255,255,255,0.82)", border: "1px solid rgba(212,160,84,0.1)", fontSize: 14, color: "#7A6A5A", lineHeight: 1.6 }}>
+                曼曼正在结合这份报告继续想一想……
+              </div>
+            </div>
+          ) : null}
         </div>
         <div style={{ padding: 16, borderTop: "1px solid rgba(138,124,108,0.12)", background: "rgba(245,239,226,0.96)" }}>
+          {error ? (
+            <div style={{ marginBottom: 10, fontSize: 12, lineHeight: 1.6, color: "#9B4030" }}>
+              {error}
+            </div>
+          ) : null}
           <div style={{ display: "flex", gap: 10 }}>
             <input
               value={input}
+              disabled={sending}
               onChange={(event) => onInputChange(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === "Enter") {
+                if (event.key === "Enter" && !sending) {
                   event.preventDefault();
                   onSend();
                 }
@@ -663,8 +684,8 @@ function MobileWebAiChatModal({
               placeholder="输入你想继续追问的问题"
               style={{ flex: 1, minHeight: 46, borderRadius: 14, border: "1px solid rgba(138,124,108,0.16)", background: "rgba(255,255,255,0.88)", padding: "0 14px", fontSize: 14, color: "#4A3D30", outline: "none" }}
             />
-            <button type="button" onClick={() => onSend()} style={{ width: 46, height: 46, borderRadius: 14, border: 0, background: "linear-gradient(135deg, #9B4030 0%, #C87850 50%, #D4A054 100%)", color: "#F5EFE2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <SendGlyph />
+            <button type="button" disabled={sending} onClick={() => onSend()} style={{ width: 46, height: 46, borderRadius: 14, border: 0, background: "linear-gradient(135deg, #9B4030 0%, #C87850 50%, #D4A054 100%)", color: "#F5EFE2", display: "flex", alignItems: "center", justifyContent: "center", opacity: sending ? 0.5 : 1 }}>
+              {sending ? <LoadingGlyph /> : <SendGlyph />}
             </button>
           </div>
         </div>
@@ -684,6 +705,8 @@ export function MobileWebProReportPage({
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [chatSending, setChatSending] = useState(false);
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const innerRadius = state.status?.three_circles?.inner_radius ?? state.interpretation?.three_circles?.inner_radius ?? 0.3;
   const middleRadius = state.status?.three_circles?.middle_radius ?? state.interpretation?.three_circles?.middle_radius ?? 0.68;
@@ -705,27 +728,67 @@ export function MobileWebProReportPage({
     [],
   );
 
-  function handleSendChat(message?: string) {
+  useEffect(() => {
+    setChatMessages([]);
+    setChatInput("");
+    setChatError(null);
+    setChatSending(false);
+  }, [state.report?.interpretation_id]);
+
+  async function handleSendChat(message?: string) {
     const next = (message ?? chatInput).trim();
     if (!next) {
       return;
     }
+    if (chatSending) {
+      return;
+    }
 
-    setChatMessages((current) => [
-      ...current,
-      { role: "user", content: next },
-      {
-        role: "assistant",
-        content: "我先陪你把这段感受接住。当前 AI 问答还在预览阶段，我会先基于这份 Pro 解读继续回应你。",
-      },
-    ]);
+    const interpretationId = state.report?.interpretation_id;
+    if (!interpretationId) {
+      setChatError("当前报告还没有可用的解读记录，暂时无法继续追问。");
+      return;
+    }
+
+    const history = chatMessages.map((item) => ({
+      role: item.role,
+      content: item.content,
+    }));
+    const userMessage: ChatMessage = { role: "user", content: next };
+    setChatMessages((current) => [...current, userMessage]);
     setChatInput("");
+    setChatError(null);
+    setChatSending(true);
+
+    try {
+      const response = await chatWithInterpretationReport(interpretationId, {
+        message: next,
+        history,
+      });
+      setChatMessages((current) => [
+        ...current,
+        { role: "assistant", content: response.reply },
+      ]);
+    } catch (error) {
+      const messageText =
+        error instanceof Error ? error.message : "AI 问答暂时没有连上，请稍后再试。";
+      setChatError(messageText);
+      setChatMessages((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content: `这次追问暂时没有顺利返回：${messageText}`,
+        },
+      ]);
+    } finally {
+      setChatSending(false);
+    }
   }
 
   function openChatWithQuestion(question?: string) {
     setChatOpen(true);
     if (question) {
-      handleSendChat(question);
+      void handleSendChat(question);
     }
   }
 
@@ -765,6 +828,7 @@ export function MobileWebProReportPage({
         <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${brandPattern})`, backgroundSize: 300, backgroundRepeat: "repeat", opacity: 0.02 }} />
         <div style={{ position: "relative", padding: "32px 24px 28px" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+            <div style={{ marginBottom: 12, fontSize: 11, letterSpacing: "0.18em", color: "rgba(212,160,84,0.72)" }}>一镜一梳 · 深度疗愈阅读</div>
             <h1 style={{ margin: 0, textAlign: "center", fontFamily: "'Noto Serif SC', serif", fontSize: 24, fontWeight: 600, color: "#E8DCC8", letterSpacing: "0.15em", lineHeight: 1.4 }}>{title}</h1>
             <div style={{ width: 56, height: 1, marginTop: 12, background: "linear-gradient(90deg, rgba(212,160,84,0), rgba(212,160,84,0.8), rgba(212,160,84,0))" }} />
             <span style={{ marginTop: 8, fontSize: 12, color: "rgba(232,220,200,0.45)", letterSpacing: "0.08em" }}>
@@ -797,6 +861,7 @@ export function MobileWebProReportPage({
               >
                 <div style={{ fontSize: 11, letterSpacing: "0.12em", color: "rgba(212,160,84,0.86)", marginBottom: 10 }}>一眼总结</div>
                 <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "rgba(232,220,200,0.88)" }}>{summary}</p>
+                <p style={{ margin: "10px 0 0", fontSize: 12, lineHeight: 1.7, color: "rgba(232,220,200,0.56)" }}>让这份解读先陪你停一下，再继续往更深处看。</p>
               </div>
             ) : null}
           </div>
@@ -819,6 +884,20 @@ export function MobileWebProReportPage({
                 刷新 Pro 报告
               </button>
             </div>
+          ) : null}
+
+          {hasProReport ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#8A7C6C" }}>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(138,124,108,0), rgba(138,124,108,0.18))" }} />
+              <span style={{ fontSize: 11, letterSpacing: "0.16em" }}>完整解读</span>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(138,124,108,0.18), rgba(138,124,108,0))" }} />
+            </div>
+          ) : null}
+
+          {hasProReport ? (
+            <p style={{ margin: "-10px 0 2px", textAlign: "center", fontSize: 12.5, color: "#8F8071", lineHeight: 1.8 }}>
+              慢一点读，你会更容易看见那些原本藏在反应背后的结构。
+            </p>
           ) : null}
 
           {hasProReport ? <ProReportMarkdown sections={sections} /> : null}
@@ -862,12 +941,12 @@ export function MobileWebProReportPage({
                 setSaved(true);
                 window.setTimeout(() => setSaved(false), 1800);
               }}
-              style={{ flex: 1, minHeight: 50, borderRadius: 999, border: "1px solid rgba(200,160,102,0.3)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "rgba(255,255,255,0.78)", color: "#8A7C6C", fontSize: 14, fontWeight: 500, boxShadow: "0 8px 18px rgba(26,40,68,0.06), inset 0 1px 0 rgba(255,255,255,0.35)" }}
+              style={{ flex: 1, minHeight: 50, borderRadius: 999, border: "1px solid rgba(212,160,84,0.24)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "linear-gradient(135deg, #9B4030 0%, #C87850 56%, #D4A054 100%)", color: "#F5EFE2", fontSize: 14, fontWeight: 500, boxShadow: "0 12px 24px rgba(155,64,48,0.16)" }}
             >
               <SaveGlyph />
               <span>{saved ? "已保存到相册" : "保存报告"}</span>
             </button>
-            <button type="button" onClick={onRestartAction} style={{ flex: 1, minHeight: 50, borderRadius: 999, border: "1px solid rgba(200,160,102,0.3)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "rgba(255,255,255,0.78)", color: "#8A7C6C", fontSize: 14, fontWeight: 500, boxShadow: "0 8px 18px rgba(26,40,68,0.06), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
+            <button type="button" onClick={onRestartAction} style={{ flex: 1, minHeight: 50, borderRadius: 999, border: "1px solid rgba(200,160,102,0.3)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "rgba(255,255,255,0.82)", color: "#8A7C6C", fontSize: 14, fontWeight: 500, boxShadow: "0 8px 18px rgba(26,40,68,0.06), inset 0 1px 0 rgba(255,255,255,0.35)" }}>
               <RestartGlyph />
               <span>再画一幅</span>
             </button>
@@ -904,9 +983,13 @@ export function MobileWebProReportPage({
         questions={qaQuestions}
         messages={chatMessages}
         input={chatInput}
+        error={chatError}
+        sending={chatSending}
         onInputChange={setChatInput}
         onClose={() => setChatOpen(false)}
-        onSend={handleSendChat}
+        onSend={(message) => {
+          void handleSendChat(message);
+        }}
       />
     </div>
   );

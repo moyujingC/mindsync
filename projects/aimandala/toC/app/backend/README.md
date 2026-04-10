@@ -104,6 +104,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - `GET /api/v2/interpretations/{interpretation_id}`
 - `GET /api/v2/interpretations/{interpretation_id}/status`
 - `GET /api/v2/interpretations/{interpretation_id}/report`
+- `POST /api/v2/interpretations/{interpretation_id}/chat`
 - `POST /api/v2/interpretations/{interpretation_id}/upgrade`
 - `GET /api/v2/users/{user_id}/interpretations`
 - `GET /api/v2/pricing`
@@ -139,6 +140,8 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - Lite / Pro `report.structured` 已开始透出 `prompt_schema_validation_issues`，可直接检查当前输出是否满足 prompt schema 必填字段
 - Lite / Pro 生成流程已接入可替换 `generation runtime`（默认 deterministic），后续接真实模型调用时可在不改主链 API 的前提下替换实现
 - 生成链路已补充 `prompt_runtime` 注入点，可用 `prompt + schema -> structured payload` 覆写 Lite / Pro 关键字段，并保留 deterministic 兜底
+- 后端现已补上统一 LLM client，可用一套配置同时驱动 Lite / Pro 结构生成、三圈 AI 识别、Pro 报告内 AI 追问
+- Pro 报告页对应的 AI 问答现已补上真实接口，基于当前报告 markdown、QA 上下文和历史对话生成延展回答
 
 ## 当前边界
 
@@ -147,16 +150,11 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - 正式对象存储 / CDN 上传链路
 - 基于 `s3 / oss` dry-run 升级为真实远程上传实现
 - 更完整的上传生命周期治理（例如引用计数、后台清理任务、持久化策略）
-- 真实的 Lite 分析链路
-- 基于迁回 Prompt 的真实 Lite 模型调用
-- 旧主线里的正式 Pro 生成内容链路
-- 迁回 Prompt 主干后的真实模型调用编排
 - knowledge engine
-- AI model runtime
-- OpenCV / 远程视觉模型驱动的正式三圈检测
+- 更精细的 CV/OpenCV 几何检测与多模型路由策略
 - To B / Studio / V3
 
-也就是说，当前 Lite / Pro `report` 都已经能沿正式主路径读取，而且结构比最初的骨架更完整；Lite / Pro 的呈现方式也已经开始向旧主线正式报告靠拢；但 Lite / Pro 内容本身仍然不是旧主线完整 AI 生成结果，不应当被当成最终正式用户解读内容。
+也就是说，当前 Lite / Pro `report`、三圈 AI 识别和 Pro 内追问都已经能沿统一 LLM 主路径运行，而且结构比最初的骨架更完整；但模型质量、提示词细修、provider 选择和正式线上配置仍未最终收口，不应当被当成最终正式用户解读质量。
 
 ## 验证
 
@@ -189,7 +187,45 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 - `COS` 当前会真实上传远端对象，同时保留本地临时文件，避免现有 `image_path` 主链断掉
 - 若未安装 `cos-python-sdk-v5`，接口会返回 `501`
 
-## Prompt Runtime 配置
+## Unified LLM 配置
+
+如需把报告生成、三圈识别和报告内 AI 问答统一接到真实模型，优先使用下面这组环境变量：
+
+- `AIMANDALA_LLM_BACKEND`（可选，默认 `noop`；当前支持 `openai_compatible`）
+- `AIMANDALA_LLM_BASE_URL`（`openai_compatible` 模式必填，例如 `https://<host>/v1`）
+- `AIMANDALA_LLM_API_KEY`（可选，取决于网关要求）
+- `AIMANDALA_LLM_API_KEY_HEADER`（可选，默认 `Authorization`）
+- `AIMANDALA_LLM_MODEL`（必填，默认模型）
+- `AIMANDALA_LLM_REPORT_MODEL`（可选，报告生成专用模型）
+- `AIMANDALA_LLM_CHAT_MODEL`（可选，报告追问专用模型）
+- `AIMANDALA_LLM_VISION_MODEL`（可选，三圈识别专用视觉模型）
+- `AIMANDALA_LLM_TIMEOUT_SECONDS`（可选，默认 `30`）
+- `AIMANDALA_LLM_MAX_RETRIES`（可选，默认 `2`）
+- `AIMANDALA_LLM_RETRY_BACKOFF_MS`（可选，默认 `400`）
+
+说明：
+
+- `AIMANDALA_LLM_BACKEND=noop` 时，Lite / Pro 仍走 deterministic 兜底，三圈识别回落为默认几何建议，report chat 不会得到真实模型回复
+- `openai_compatible` 当前基于 `/chat/completions` 协议，支持文本生成、JSON 结构生成和图片输入
+- `AIMANDALA_LLM_REPORT_MODEL / CHAT_MODEL / VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
+- 当前推荐把这组变量作为主配置；如果只想兼容旧报告网关，也仍可继续使用下面的 Prompt Runtime 配置
+
+最小示例：
+
+```bash
+export AIMANDALA_LLM_BACKEND=openai_compatible
+export AIMANDALA_LLM_BASE_URL="https://<your-gateway>/v1"
+export AIMANDALA_LLM_API_KEY="<your-api-key>"
+export AIMANDALA_LLM_MODEL="gpt-4.1"
+export AIMANDALA_LLM_REPORT_MODEL="gpt-4.1"
+export AIMANDALA_LLM_CHAT_MODEL="gpt-4.1-mini"
+export AIMANDALA_LLM_VISION_MODEL="gpt-4.1"
+export AIMANDALA_LLM_TIMEOUT_SECONDS=30
+export AIMANDALA_LLM_MAX_RETRIES=2
+export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
+```
+
+## Legacy Prompt Runtime 配置
 
 如需把 Lite / Pro 结构生成接到外部模型网关，当前可用环境变量如下：
 

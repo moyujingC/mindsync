@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MobileWebApp } from "./app";
+import { BrowserDebugPanel } from "./browser-debug-panel";
 import { createPreviewAppProps } from "./fixtures";
 import {
   createBrowserFileFromFixture,
@@ -25,6 +26,11 @@ import {
   PREVIEW_ROUTE_OPTIONS,
 } from "./preview-shell-support";
 import { MobileWebRuntime } from "./runtime";
+import type {
+  DebugTimelineEntry,
+  DebugTimelineSnapshot,
+  MobileWebRuntimeDebugSnapshot,
+} from "./debug-observer";
 import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
 import {
   getDraftReportVariant,
@@ -36,6 +42,11 @@ import {
 } from "./state";
 import { ensureUploadedImagePath } from "./upload-runtime";
 import type { HistoryFilterId } from "./components/history-cards";
+import {
+  clearApiDebugTrace,
+  subscribeApiDebugTrace,
+  type ApiDebugTraceEntry,
+} from "../shared/api/debugTrace";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
@@ -137,6 +148,16 @@ export function MobileWebBrowserShell() {
     useState<string | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
+  const [apiTraces, setApiTraces] = useState<ApiDebugTraceEntry[]>([]);
+  const [runtimeDebugSnapshot, setRuntimeDebugSnapshot] =
+    useState<MobileWebRuntimeDebugSnapshot | null>(null);
+  const [timelineEntries, setTimelineEntries] = useState<DebugTimelineEntry[]>([]);
+  const previewTimelineSignatureRef = useRef<string>("");
+  const runtimeTimelineSignatureRef = useRef<string>("");
+  const previewSessionRef = useRef<string>("preview-idle");
+  const runtimeSessionRef = useRef<string>("runtime-idle");
+  const previewLastStepRef = useRef<string>("idle");
+  const runtimeLastStepRef = useRef<string>("idle");
 
   const input = useMemo(
     () => createPreviewRouteInput(route, draft, interpretationId, userId, {
@@ -193,6 +214,213 @@ export function MobileWebBrowserShell() {
       window.history.replaceState(null, "", `${nextPath}${window.location.search}`);
     }
   }, [route]);
+
+  useEffect(() => subscribeApiDebugTrace(setApiTraces), []);
+
+  function appendTimelineEntry(
+    source: "preview" | "runtime",
+    sessionId: string,
+    snapshot: DebugTimelineSnapshot,
+  ) {
+    const flowStep = snapshot.flowState?.step ?? "idle";
+    const reportVersion = snapshot.report?.version ?? "none";
+    const title = `${flowStep}${reportVersion !== "none" ? ` / ${reportVersion}` : ""}`;
+    const subtitleParts = [
+      `route=${snapshot.route}`,
+      snapshot.status
+        ? `progress=${snapshot.status.generation_progress}%`
+        : snapshot.uploadDetecting
+          ? "detecting"
+          : null,
+      snapshot.detectError ? `detectError=${snapshot.detectError}` : null,
+    ].filter(Boolean);
+
+    const entry: DebugTimelineEntry = {
+      id:
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      sessionId,
+      createdAt: new Date().toISOString(),
+      source,
+      title,
+      subtitle: subtitleParts.join(" · ") || "状态快照",
+      snapshot,
+    };
+
+    setTimelineEntries((current) => [entry, ...current].slice(0, 80));
+  }
+
+  function createDebugSessionId(prefix: "preview" | "runtime"): string {
+    return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+  }
+
+  function resolveSessionId(input: {
+    source: "preview" | "runtime";
+    currentSessionId: string;
+    currentStep: string;
+    lastStep: string;
+    interpretationId?: string | null;
+    route: string;
+    previewMode: boolean;
+  }): string {
+    const {
+      source,
+      currentSessionId,
+      currentStep,
+      lastStep,
+      interpretationId,
+      route,
+      previewMode,
+    } = input;
+
+    const taskStarting =
+      route === "loading" &&
+      ["idle", "liteReady", "upgradePlaceholder", "error"].includes(lastStep) &&
+      ["detectingCircles", "liteGenerating", "liteReady", "upgradePlaceholder"].includes(currentStep);
+    const gainedInterpretation =
+      !currentSessionId.includes(interpretationId ?? "") &&
+      Boolean(interpretationId);
+    const restartedAfterIdle =
+      lastStep === "idle" &&
+      currentStep !== "idle" &&
+      (route === "loading" || (!previewMode && route === "upload"));
+
+    if (taskStarting || gainedInterpretation || restartedAfterIdle) {
+      return createDebugSessionId(source);
+    }
+
+    return currentSessionId;
+  }
+
+  useEffect(() => {
+    if (!localDebugEnabled) {
+      return;
+    }
+
+    const snapshot: DebugTimelineSnapshot = {
+      route,
+      previewMode: true,
+      uploadDraft: draft,
+      flowState: previewFlowState,
+      detection: previewDetection,
+      detectError: previewDetectError,
+      report: previewFlowState?.report ?? null,
+      status: previewFlowState?.status ?? null,
+      runtimeBusy: previewFlowRunning,
+      historyBusy: Boolean(previewHistoryOpeningId),
+      uploadDetecting: previewDetecting,
+    };
+    const signature = JSON.stringify({
+      route,
+      draft,
+      step: previewFlowState?.step ?? null,
+      interpretationId: previewFlowState?.interpretation?.interpretation_id ?? null,
+      statusStage: previewFlowState?.status?.generation_stage ?? null,
+      statusProgress: previewFlowState?.status?.generation_progress ?? null,
+      reportVersion: previewFlowState?.report?.version ?? null,
+      detect: previewDetection
+        ? {
+            inner: previewDetection.inner_radius,
+            middle: previewDetection.middle_radius,
+            confidence: previewDetection.confidence,
+          }
+        : null,
+      detectError: previewDetectError,
+      previewDetecting,
+      previewFlowRunning,
+    });
+
+    if (signature === previewTimelineSignatureRef.current) {
+      return;
+    }
+
+    previewTimelineSignatureRef.current = signature;
+    const nextSessionId = resolveSessionId({
+      source: "preview",
+      currentSessionId: previewSessionRef.current,
+      currentStep: previewFlowState?.step ?? "idle",
+      lastStep: previewLastStepRef.current,
+      interpretationId: previewFlowState?.interpretation?.interpretation_id,
+      route,
+      previewMode: true,
+    });
+
+    previewSessionRef.current = nextSessionId;
+    previewLastStepRef.current = previewFlowState?.step ?? "idle";
+    appendTimelineEntry("preview", nextSessionId, snapshot);
+  }, [
+    draft,
+    localDebugEnabled,
+    previewDetectError,
+    previewDetecting,
+    previewDetection,
+    previewFlowRunning,
+    previewFlowState,
+    previewHistoryOpeningId,
+    route,
+  ]);
+
+  useEffect(() => {
+    if (!localDebugEnabled || !runtimeDebugSnapshot) {
+      return;
+    }
+
+    const snapshot: DebugTimelineSnapshot = {
+      route: runtimeDebugSnapshot.route,
+      previewMode: false,
+      uploadDraft: runtimeDebugSnapshot.uploadDraft,
+      flowState: runtimeDebugSnapshot.flowState,
+      detection: runtimeDebugSnapshot.detection,
+      detectError: runtimeDebugSnapshot.uploadDetectError,
+      report: runtimeDebugSnapshot.report,
+      status: runtimeDebugSnapshot.status,
+      runtimeBusy: runtimeDebugSnapshot.runtimeBusy,
+      historyBusy: runtimeDebugSnapshot.historyBusy,
+      uploadDetecting: runtimeDebugSnapshot.uploadDetecting,
+    };
+    const signature = JSON.stringify({
+      route: runtimeDebugSnapshot.route,
+      uploadDraft: runtimeDebugSnapshot.uploadDraft,
+      step: runtimeDebugSnapshot.flowState?.step ?? null,
+      interpretationId:
+        runtimeDebugSnapshot.flowState?.interpretation?.interpretation_id ?? null,
+      statusStage: runtimeDebugSnapshot.status?.generation_stage ?? null,
+      statusProgress: runtimeDebugSnapshot.status?.generation_progress ?? null,
+      reportVersion: runtimeDebugSnapshot.report?.version ?? null,
+      detect: runtimeDebugSnapshot.detection
+        ? {
+            inner: runtimeDebugSnapshot.detection.inner_radius,
+            middle: runtimeDebugSnapshot.detection.middle_radius,
+            confidence: runtimeDebugSnapshot.detection.confidence,
+          }
+        : null,
+      detectError: runtimeDebugSnapshot.uploadDetectError,
+      uploadDetecting: runtimeDebugSnapshot.uploadDetecting,
+      runtimeBusy: runtimeDebugSnapshot.runtimeBusy,
+      historyBusy: runtimeDebugSnapshot.historyBusy,
+    });
+
+    if (signature === runtimeTimelineSignatureRef.current) {
+      return;
+    }
+
+    runtimeTimelineSignatureRef.current = signature;
+    const nextSessionId = resolveSessionId({
+      source: "runtime",
+      currentSessionId: runtimeSessionRef.current,
+      currentStep: runtimeDebugSnapshot.flowState?.step ?? "idle",
+      lastStep: runtimeLastStepRef.current,
+      interpretationId:
+        runtimeDebugSnapshot.flowState?.interpretation?.interpretation_id,
+      route: runtimeDebugSnapshot.route,
+      previewMode: false,
+    });
+
+    runtimeSessionRef.current = nextSessionId;
+    runtimeLastStepRef.current = runtimeDebugSnapshot.flowState?.step ?? "idle";
+    appendTimelineEntry("runtime", nextSessionId, snapshot);
+  }, [localDebugEnabled, runtimeDebugSnapshot]);
 
   useEffect(() => {
     if (!pendingPresetId) {
@@ -926,9 +1154,30 @@ export function MobileWebBrowserShell() {
                   : undefined
               }
               environmentTone={import.meta.env.DEV ? "runtime" : undefined}
+              onDebugSnapshotChange={setRuntimeDebugSnapshot}
             />
           )}
           </div>
+
+          {localDebugEnabled && controlsOpen ? (
+            <BrowserDebugPanel
+              route={route}
+              previewMode={previewMode}
+              draft={draft}
+              interpretationId={interpretationId}
+              userId={userId}
+              flowState={previewFlowState}
+              detection={previewDetection}
+              detectError={previewDetectError}
+              detecting={previewDetecting}
+              runtimeSnapshot={runtimeDebugSnapshot}
+              apiTraces={apiTraces}
+              timelineEntries={timelineEntries}
+              onClearApiTraces={() => {
+                clearApiDebugTrace();
+              }}
+            />
+          ) : null}
         </div>
       </section>
     </div>

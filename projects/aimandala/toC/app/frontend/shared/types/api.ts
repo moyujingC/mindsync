@@ -196,6 +196,41 @@ export interface ReportResponse {
   error?: string | null;
 }
 
+export interface ReportChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface ReportChatRequest {
+  message: string;
+  history?: ReportChatMessage[];
+}
+
+export interface ReportChatResponse {
+  interpretation_id: string;
+  reply: string;
+}
+
+export interface ReportDebugStep {
+  key: string;
+  label: string;
+  status: string;
+  created_at?: string | null;
+  summary?: Record<string, unknown> | null;
+}
+
+export interface ReportDebugProfileResponse {
+  interpretation_id: string;
+  theme: string;
+  status: string;
+  generation_stage: string;
+  generation_progress: number;
+  version_purchased: string[];
+  steps: ReportDebugStep[];
+  layers: Record<string, unknown>;
+  field_provenance: Record<string, unknown>;
+}
+
 export interface UpgradePlaceholderResponse {
   success: boolean;
   interpretation_id: string;

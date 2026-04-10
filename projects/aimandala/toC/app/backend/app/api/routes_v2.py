@@ -6,6 +6,13 @@ from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from app.core.analysis.circle_detector import CircleDetector
+from app.core.llm import (
+    LLMCircleDetectionBackend,
+    LLMReportChatRuntime,
+    NoopLLMClient,
+    create_llm_client_from_env,
+)
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.prompt_runtime import create_prompt_runtime_from_env
 from app.core.uploads import LocalUploadStorage, UploadStorage, create_upload_storage_from_env
@@ -134,6 +141,44 @@ class ReportResponse(BaseModel):
     error: Optional[str] = None
 
 
+class ReportDebugProfileResponse(BaseModel):
+    """Development-oriented payload describing report generation internals."""
+
+    interpretation_id: str
+    theme: str
+    status: str
+    generation_stage: str
+    generation_progress: int
+    version_purchased: list[str]
+    steps: list[dict]
+    layers: dict
+    field_provenance: dict
+
+
+class ReportChatMessage(BaseModel):
+    """Minimal chat message used by the Pro report follow-up QA endpoint."""
+
+    role: Literal["user", "assistant"]
+    content: str = Field(..., description="Chat message content")
+
+
+class ReportChatRequest(BaseModel):
+    """Request payload for report-grounded follow-up QA."""
+
+    message: str = Field(..., description="Current user question about the report")
+    history: list[ReportChatMessage] = Field(
+        default_factory=list,
+        description="Previous chat messages, ordered from oldest to newest",
+    )
+
+
+class ReportChatResponse(BaseModel):
+    """LLM reply grounded in the interpretation report."""
+
+    interpretation_id: str
+    reply: str
+
+
 class UpgradePlaceholderResponse(BaseModel):
     """Compatibility-only response for the legacy V2 upgrade endpoint."""
 
@@ -176,8 +221,22 @@ def get_orchestrator() -> LayeredOrchestrator:
     global _orchestrator
     if _orchestrator is None:
         try:
+            llm_client = create_llm_client_from_env()
+            prompt_runtime = create_prompt_runtime_from_env(llm_client=llm_client)
+            circle_detector = (
+                CircleDetector(detector_backend=LLMCircleDetectionBackend(llm_client))
+                if not isinstance(llm_client, NoopLLMClient)
+                else CircleDetector()
+            )
+            report_chat_runtime = (
+                LLMReportChatRuntime(llm_client)
+                if not isinstance(llm_client, NoopLLMClient)
+                else None
+            )
             _orchestrator = LayeredOrchestrator(
-                prompt_runtime=create_prompt_runtime_from_env(),
+                circle_detector=circle_detector,
+                prompt_runtime=prompt_runtime,
+                report_chat_runtime=report_chat_runtime,
             )
         except ValueError as error:
             raise HTTPException(status_code=501, detail=str(error)) from error
@@ -391,6 +450,44 @@ async def get_report(interpretation_id: str, version: Optional[str] = None):
         upgrade_price=result.get("upgrade_price"),
         error=result.get("error"),
     )
+
+
+@router.get(
+    "/interpretations/{interpretation_id}/report-debug",
+    response_model=ReportDebugProfileResponse,
+)
+async def get_report_debug_profile(interpretation_id: str):
+    """Return development-only insight into intermediate report generation layers."""
+
+    result = get_orchestrator().get_report_debug_profile(interpretation_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="interpretation not found")
+    return ReportDebugProfileResponse(**result)
+
+
+@router.post(
+    "/interpretations/{interpretation_id}/chat",
+    response_model=ReportChatResponse,
+)
+async def chat_with_report(interpretation_id: str, payload: ReportChatRequest):
+    """Answer follow-up questions grounded in the current interpretation report."""
+
+    serialized_history = [
+        item.model_dump() if hasattr(item, "model_dump") else item.dict()
+        for item in payload.history
+    ]
+    try:
+        result = get_orchestrator().answer_report_chat(
+            interpretation_id,
+            message=payload.message,
+            history=serialized_history,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+
+    if result is None:
+        raise HTTPException(status_code=404, detail="interpretation not found")
+    return ReportChatResponse(**result)
 
 
 @router.post(

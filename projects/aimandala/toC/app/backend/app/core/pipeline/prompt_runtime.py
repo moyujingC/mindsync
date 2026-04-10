@@ -412,13 +412,31 @@ class HTTPPromptRuntime:
         return headers
 
 
-def create_prompt_runtime_from_env() -> PromptRuntime:
-    backend = os.getenv("AIMANDALA_PROMPT_RUNTIME_BACKEND", "noop").strip().lower()
-    if backend in {"", "noop", "none"}:
+def create_prompt_runtime_from_env(llm_client: Optional[Any] = None) -> PromptRuntime:
+    backend = os.getenv("AIMANDALA_PROMPT_RUNTIME_BACKEND", "").strip().lower()
+    if backend in {"noop", "none"}:
         return NoopPromptRuntime()
     if backend == "http":
         return HTTPPromptRuntime(load_http_prompt_runtime_config_from_env())
-    raise ValueError(f"Unsupported prompt runtime backend: {backend}")
+    if backend:
+        raise ValueError(f"Unsupported prompt runtime backend: {backend}")
+
+    llm_backend = os.getenv("AIMANDALA_LLM_BACKEND", "").strip().lower()
+    if llm_backend not in {"", "noop", "none"}:
+        from app.core.llm import LLMPromptRuntime, NoopLLMClient, create_llm_client_from_env
+
+        resolved_client = llm_client or create_llm_client_from_env()
+        if isinstance(resolved_client, NoopLLMClient):
+            return NoopPromptRuntime()
+        return LLMPromptRuntime(resolved_client)
+
+    if llm_client is not None:
+        from app.core.llm import LLMPromptRuntime, NoopLLMClient
+
+        if not isinstance(llm_client, NoopLLMClient):
+            return LLMPromptRuntime(llm_client)
+
+    return NoopPromptRuntime()
 
 
 def load_http_prompt_runtime_config_from_env() -> HTTPPromptRuntimeConfig:

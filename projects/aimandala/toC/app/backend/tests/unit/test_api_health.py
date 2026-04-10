@@ -1,5 +1,6 @@
 """Smoke tests for the migrated AI-Mandala To C backend API shell."""
 
+import json
 import os
 import sys
 import shutil
@@ -812,3 +813,110 @@ def test_upgrade_placeholder_endpoint_404_for_unknown_record():
     response = client.post("/api/v2/interpretations/not-found/upgrade")
 
     assert response.status_code == 404
+
+
+def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path):
+    from app.api.main import app
+
+    class FakeLLMClient:
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            if task == "vision":
+                return {
+                    "inner_radius": 0.28,
+                    "middle_radius": 0.61,
+                    "confidence": 0.91,
+                    "method": "fake_vision",
+                    "summary": "识别到了比较清晰的内中圈边界",
+                }
+            if "first_impression" in json.dumps(schema, ensure_ascii=False):
+                return {
+                    "first_impression": "这张画在收与放之间保持了一种克制的张力。",
+                    "core_insight_table": {
+                        "能量本质": "先收住自己，再慢慢向外表达。",
+                    },
+                    "micro_analysis_detailed": {
+                        "相邻关系": "内外之间有明显缓冲带。",
+                    },
+                    "root_cause": {
+                        "核心牵引": "你在安全感不足时会先保护边界。",
+                    },
+                    "imbalance_confirmed": {
+                        "primary": "边界收缩型",
+                        "evidence": "内圈较紧，外圈表达更谨慎。",
+                    },
+                    "healing_suggestions": [
+                        {"phase": "1-7天", "focus": "放慢", "practice": "每天留三分钟只看画面中心。"},
+                    ],
+                }
+            return {
+                "title": "来自真实 LLM 的 Lite 标题",
+                "overall_impression": "这幅画先把自己轻轻收拢，再试着向外试探。",
+                "visual_elements": "画面中心更凝聚，中圈保留了过渡空间。",
+                "emotion_portrait": "你像是在保护自己，也在等待一个更稳的出口。",
+                "story": {
+                    "base": "你先把感受收回自己这里。",
+                    "contradiction": "你想表达，但还在观察外界是否安全。",
+                },
+                "theme_scene": "当你需要先确认环境是否稳定时",
+                "theme_impact": "你会放慢表达节奏，避免自己过早暴露。",
+                "theme_awareness": "不是不想靠近，而是需要更稳的节奏。",
+                "three_awareness": [
+                    {"day": 1, "title": "先停一下", "content": "先看见自己在收紧什么。"},
+                ],
+                "pro_teaser": "如果继续进入 Pro，可以看到这份收缩背后的保护逻辑。",
+            }
+
+        def generate_text(self, *, task, system_prompt, user_prompt):
+            assert task == "chat"
+            assert "用户当前问题" in user_prompt
+            return "基于这份报告来看，你现在最值得继续追问的是：你在什么时候开始先收住自己。"
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-llm-powered.png"
+    image_path.write_bytes(b"mock-image")
+
+    with patch("app.api.routes_v2.create_llm_client_from_env", return_value=FakeLLMClient()):
+        detect_response = client.post(
+            "/api/v2/detect-circles",
+            json={"image_path": str(image_path)},
+        )
+        assert detect_response.status_code == 200
+        detect_data = detect_response.json()
+        assert detect_data["method"] == "fake_vision"
+        assert detect_data["inner_radius"] == 0.28
+        assert detect_data["middle_radius"] == 0.61
+
+        create_response = client.post(
+            "/api/v2/interpretations",
+            json={
+                "user_id": "user-api-llm-shared",
+                "image_path": str(image_path),
+                "theme": "general",
+            },
+        )
+        assert create_response.status_code == 200
+        interpretation_id = create_response.json()["interpretation_id"]
+
+        lite_report = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
+        assert lite_report.status_code == 200
+        lite_data = lite_report.json()
+        assert lite_data["title"] == "来自真实 LLM 的 Lite 标题"
+        assert lite_data["overall_impression"] == "这幅画先把自己轻轻收拢，再试着向外试探。"
+
+        upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
+        assert upgrade_response.status_code == 200
+
+        chat_response = client.post(
+            f"/api/v2/interpretations/{interpretation_id}/chat",
+            json={
+                "message": "我为什么总觉得自己要先收住？",
+                "history": [
+                    {"role": "user", "content": "我最在意边界感。"},
+                ],
+            },
+        )
+        assert chat_response.status_code == 200
+        chat_data = chat_response.json()
+        assert chat_data["interpretation_id"] == interpretation_id
+        assert "最值得继续追问" in chat_data["reply"]

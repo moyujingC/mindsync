@@ -10,6 +10,9 @@ import type {
   InterpretationRecordResponse,
   InterpretationStatusResponse,
   PricingInfo,
+  ReportChatRequest,
+  ReportChatResponse,
+  ReportDebugProfileResponse,
   ReportResponse,
   UploadImageResponse,
   UpgradePlaceholderResponse,
@@ -81,6 +84,30 @@ export async function getInterpretationReport(
   }
 
   return fetchJson<ReportResponse>(url.toString());
+}
+
+export async function getInterpretationReportDebug(
+  interpretationId: string,
+): Promise<ReportDebugProfileResponse> {
+  return fetchJson<ReportDebugProfileResponse>(
+    buildUrl(`/api/v2/interpretations/${encodeURIComponent(interpretationId)}/report-debug`),
+  );
+}
+
+export async function chatWithInterpretationReport(
+  interpretationId: string,
+  payload: ReportChatRequest,
+): Promise<ReportChatResponse> {
+  return fetchJson<ReportChatResponse>(
+    buildUrl(`/api/v2/interpretations/${encodeURIComponent(interpretationId)}/chat`),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    },
+  );
 }
 
 export async function getInterpretationList(

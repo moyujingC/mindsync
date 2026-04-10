@@ -263,9 +263,10 @@ export function MobileWebReportPage({
     >
       <section className="mw-report-hero">
         <div className="mw-report-hero__copy">
+          <p className="mw-report-hero__brandline">一镜一梳 · 曼曼陪你慢一点看见这幅画</p>
           <p className="mw-kicker">{reportToneLabel}</p>
           <h2>{reportTitle}</h2>
-          <p>{reportSubtitle}</p>
+          <p className="mw-report-hero__summary">{reportSubtitle}</p>
           <div className="mw-report-hero__meta">
             <span className="mw-badge">{isUpgradeRoute ? "Pro" : "Lite"}</span>
             <span className="mw-badge">{themeLabel}</span>
@@ -274,6 +275,9 @@ export function MobileWebReportPage({
           </div>
           {!isLoading && !isError ? (
             <p className="mw-report-hero__path">阅读路径：{readingPath}</p>
+          ) : null}
+          {!isLoading && !isError ? (
+            <p className="mw-report-hero__whisper">先看见，再理解，最后才是决定下一步。</p>
           ) : null}
         </div>
         {previewImage ? (
@@ -296,7 +300,13 @@ export function MobileWebReportPage({
 
       {isLoading ? <LoadingProgressCard state={state} /> : null}
 
-      <ReportSections sections={contentSections} />
+      <section className="mw-report-story">
+        <div className="mw-report-story__intro">
+          <span className="mw-report-story__eyebrow">疗愈阅读</span>
+          <p>下面这一段，会沿着画面的线索，慢慢把这次状态展开。</p>
+        </div>
+        <ReportSections sections={contentSections} />
+      </section>
 
       {state.lastError ? (
         <section className="mw-inline-banner mw-inline-banner--preview">
@@ -306,14 +316,16 @@ export function MobileWebReportPage({
       ) : null}
 
       <footer className="mw-footer-action">
-        <p className="mw-footer-hint">{footerHint}</p>
-        <div className="mw-button-row">
-          <button type="button" className="mw-secondary-button" onClick={onSecondaryAction}>
-            {secondaryLabel}
-          </button>
-          <button type="button" className="mw-primary-button" onClick={onPrimaryAction} disabled={primaryDisabled}>
-            {primaryLabel}
-          </button>
+        <div className="mw-footer-panel">
+          <p className="mw-footer-hint">{footerHint}</p>
+          <div className="mw-button-row">
+            <button type="button" className="mw-secondary-button" onClick={onSecondaryAction}>
+              {secondaryLabel}
+            </button>
+            <button type="button" className="mw-primary-button" onClick={onPrimaryAction} disabled={primaryDisabled}>
+              {primaryLabel}
+            </button>
+          </div>
         </div>
       </footer>
 
