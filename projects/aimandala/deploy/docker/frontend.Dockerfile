@@ -5,7 +5,7 @@ WORKDIR /app
 COPY toC/app/frontend/package.json /app/package.json
 COPY toC/app/frontend/package-lock.json /app/package-lock.json
 
-RUN npm ci
+RUN npm install
 
 COPY toC/app/frontend /app
 
