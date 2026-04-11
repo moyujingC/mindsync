@@ -396,6 +396,11 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
     assert upgraded is not None
     assert upgraded.layer_3_pro_draft is not None
     assert upgraded.layer_3_pro_draft.healing_suggestions
+    assert "恐惧压制行动" in upgraded.layer_3_pro_draft.core_insight_table["关键卡点"]
+    assert "72小时决策" in upgraded.layer_3_pro_draft.core_insight_table["转化方向"]
+    assert "财富是能量的流动" in upgraded.layer_3_pro_draft.core_insight_table["疗愈核心"]
+    assert "水多火灭" in upgraded.layer_3_pro_draft.root_cause["deeper"]
+    assert "财富焦虑" in upgraded.layer_3_pro_draft.root_cause["core"]
     assert "财富焦虑" in upgraded.layer_3_pro_draft.healing_suggestions[0]["focus"]
     assert "72小时决策" not in upgraded.layer_3_pro_draft.healing_suggestions[0]["practice"]
 
