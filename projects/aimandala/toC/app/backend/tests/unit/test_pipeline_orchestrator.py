@@ -555,6 +555,40 @@ def test_upgrade_to_pro_generates_placeholder_report(tmp_path):
     assert pro_report["structured"]["prompt_schema_validation_issues"] == []
 
 
+def test_build_pro_placeholder_report_prefers_runtime_ai_qa_context():
+    class StubNarrativeService:
+        def build_ai_qa_context(self, **kwargs):
+            assert kwargs["record_theme"] == "general"
+            assert kwargs["lite_title"] == "Lite-Title"
+            return "Runtime-AI-QA-Context"
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.narrative_service = StubNarrativeService()
+    record = InterpretationRecord(theme="general")
+    record.layer_2_lite_final = Layer2LiteFinal(
+        title="Lite-Title",
+        overall_impression="Lite-Overall",
+        full_report_markdown="Lite-Markdown",
+    )
+    record.layer_3_pro_draft = type(
+        "ProDraftStub",
+        (),
+        {
+            "first_impression": "Pro-First",
+            "core_insight_table": {"能量本质": "Core"},
+            "three_circles_detailed": {},
+            "micro_analysis_detailed": {},
+            "imbalance_confirmed": {},
+            "root_cause": {},
+            "healing_suggestions": [],
+        },
+    )()
+
+    layer4 = orchestrator._build_pro_placeholder_report(record)
+
+    assert layer4.ai_qa_context == "Runtime-AI-QA-Context"
+
+
 def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
     image_path = tmp_path / "runtime-healing-image.png"
     image_path.write_bytes(b"mock-image")
