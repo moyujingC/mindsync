@@ -46,6 +46,11 @@ class StubCircleDetector:
         )
 
 
+def _assert_bound_method(actual, expected):
+    assert actual.__self__ is expected.__self__
+    assert actual.__func__ is expected.__func__
+
+
 def test_generation_stage_values():
     assert GenerationStage.PENDING == "pending"
     assert GenerationStage.DETECTING == "detecting"
@@ -79,6 +84,28 @@ def test_layered_orchestrator_exposes_fixed_pricing(tmp_path):
     assert pricing.lite == 9.9
     assert pricing.pro == 49.0
     assert pricing.upgrade_diff == 39.1
+
+
+def test_layered_orchestrator_installs_legacy_report_bindings(tmp_path):
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(store=store, enable_vision=False)
+
+    _assert_bound_method(
+        orchestrator._build_layer0_placeholder,
+        orchestrator.report_layer0_support.build_placeholder,
+    )
+    _assert_bound_method(
+        orchestrator._build_lite_title,
+        orchestrator.report_lite_narrative_builder.build_title,
+    )
+    _assert_bound_method(
+        orchestrator._build_pro_micro_sections_from_knowledge,
+        orchestrator.report_pro_narrative_builder.build_micro_sections_from_knowledge,
+    )
+    _assert_bound_method(
+        orchestrator.get_knowledge_theme_summary,
+        orchestrator.report_knowledge_adapter.get_knowledge_theme_summary,
+    )
 
 
 def test_normalize_circle_payload():
