@@ -1,0 +1,91 @@
+name: aimandala-deploy
+
+on:
+  push:
+    branches:
+      - main
+      - release
+    paths:
+      - "projects/aimandala/toC/**"
+      - "projects/aimandala/deploy/**"
+      - ".github/workflows/aimandala-deploy.yml"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Choose which environment to deploy"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+
+concurrency:
+  group: aimandala-deploy-${{ github.ref_name }}-${{ github.event.inputs.target || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-dev:
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'dev')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Prepare SSH key
+        env:
+          SSH_KEY: ${{ secrets.AIMANDALA_DEV_SSH_KEY }}
+          SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/aimandala_dev
+          chmod 600 ~/.ssh/aimandala_dev
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy main to dev server
+        env:
+          SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
+          SSH_USER: ${{ secrets.AIMANDALA_DEV_USER }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/aimandala_dev "$SSH_USER@$SSH_HOST" '
+            set -e
+            cd /opt/aimandala-main/app/mindsync
+            git fetch origin main
+            git reset --hard origin/main
+            /opt/aimandala-main/scripts/deploy-main.sh
+          '
+
+  deploy-prod:
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'release') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'prod')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Prepare SSH key
+        env:
+          SSH_KEY: ${{ secrets.AIMANDALA_PROD_SSH_KEY }}
+          SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/aimandala_prod
+          chmod 600 ~/.ssh/aimandala_prod
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy release to production server
+        env:
+          SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
+          SSH_USER: ${{ secrets.AIMANDALA_PROD_USER }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/aimandala_prod "$SSH_USER@$SSH_HOST" '
+            set -e
+            cd /opt/aimandala-release/app/mindsync
+            git fetch origin release
+            git reset --hard origin/release
+            cd projects/aimandala/deploy/docker
+            docker compose -f docker-compose.release.yml --env-file .env.release build
+            docker compose -f docker-compose.release.yml --env-file .env.release up -d
+          '

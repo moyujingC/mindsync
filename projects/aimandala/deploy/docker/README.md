@@ -34,6 +34,11 @@
 - `web.jingshu.cc -> 127.0.0.1:8101`
 - `web-api.jingshu.cc -> 127.0.0.1:8100`
 
+当前正式机已经切流完成，并已启用 HTTPS：
+
+- `https://web.jingshu.cc`
+- `https://web-api.jingshu.cc/health`
+
 ## 最小使用方式
 
 在正式机的新版代码目录中：
@@ -45,8 +50,14 @@ docker compose -f docker-compose.release.yml --env-file .env.release build
 docker compose -f docker-compose.release.yml --env-file .env.release up -d
 ```
 
+说明：
+
+- `.env.release` 中的 `VITE_AIMANDALA_API_BASE_URL` 应保持为 `https://web-api.jingshu.cc`
+- 否则正式前端在 HTTPS 页面下会请求 HTTP API，浏览器会触发 mixed content 拦截
+
 ## 当前约束
 
 1. 这套骨架默认以 `mindsync/projects/aimandala` 为构建上下文，不复用旧版 `ai-mandala` 根目录
 2. 当前 release Docker 仍假设后端使用本地上传或显式传入 COS/LLM 环境变量
 3. 当前宿主机 TLS、证书和最终域名切流仍由宿主机 `nginx` 负责，不在容器里终结证书
+4. 证书当前由宿主机 `certbot + nginx` 管理，自动续期依赖系统内置 `certbot.timer`

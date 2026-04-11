@@ -45,7 +45,7 @@ services:
       context: ../..
       dockerfile: deploy/docker/frontend.Dockerfile
       args:
-        VITE_AIMANDALA_API_BASE_URL: ${VITE_AIMANDALA_API_BASE_URL:-http://web-api.jingshu.cc}
+        VITE_AIMANDALA_API_BASE_URL: ${VITE_AIMANDALA_API_BASE_URL:-https://web-api.jingshu.cc}
     ports:
       - "${HOST_FRONTEND_PORT:-8101}:80"
     restart: unless-stopped

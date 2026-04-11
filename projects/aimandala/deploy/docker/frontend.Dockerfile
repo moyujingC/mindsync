@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . /workspace/projects/aimandala
 
-ARG VITE_AIMANDALA_API_BASE_URL=http://web-api.jingshu.cc
+ARG VITE_AIMANDALA_API_BASE_URL=https://web-api.jingshu.cc
 ENV VITE_AIMANDALA_API_BASE_URL=${VITE_AIMANDALA_API_BASE_URL}
 
 RUN npm run build:mobile-web
