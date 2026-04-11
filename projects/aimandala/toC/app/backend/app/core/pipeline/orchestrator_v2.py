@@ -52,6 +52,7 @@ from .report_contracts import ReportContractAssembler
 from .report_debug_profile import ReportDebugProfileBuilder
 from .report_draft_assembler import ReportDraftAssembler
 from .report_knowledge_adapter import ReportKnowledgeAdapter
+from .report_layer0_support import ReportLayer0Support
 from .report_lite_narrative_builder import ReportLiteNarrativeBuilder
 from .report_placeholder_assembler import ReportPlaceholderAssembler
 from .report_projection_resolver import ReportProjectionResolver
@@ -59,14 +60,6 @@ from .report_pro_narrative_builder import ReportProNarrativeBuilder
 from .report_prompt_preview import ReportPromptPreviewBuilder
 from .report_section_renderer import ReportSectionRenderer
 from .store import InterpretationStore, UnsupportedInterpretationSchemaError
-
-ELEMENT_KEY_TO_CN = {
-    "wood": "木",
-    "fire": "火",
-    "earth": "土",
-    "metal": "金",
-    "water": "水",
-}
 
 _UNSET = object()
 
@@ -132,6 +125,11 @@ class LayeredOrchestrator:
         self.circle_detector = circle_detector or CircleDetector()
         self.knowledge_runtime = (
             get_knowledge_runtime() if get_knowledge_runtime is not None else None
+        )
+        self.report_layer0_support = ReportLayer0Support(
+            get_layer0_assembler=lambda: self.layer0_assembler,
+            extract_colors_by_circles=extract_colors_by_circles,
+            analyze_energy_flow=analyze_energy_flow,
         )
         self.layer0_assembler = (
             self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
@@ -639,51 +637,10 @@ class LayeredOrchestrator:
         return self.report_placeholder_assembler.build_lite(record)
 
     def _build_layer0_placeholder(self, record: InterpretationRecord) -> Layer0Raw:
-        if self.layer0_assembler is not None:
-            layer = self.layer0_assembler.build_from_record(
-                record,
-                extract_colors_by_circles=extract_colors_by_circles,
-                analyze_energy_flow=analyze_energy_flow,
-            )
-            if layer is not None:
-                return layer
-            return self.layer0_assembler.build_fallback(record)
-
-        return self._build_layer0_fallback(record)
+        return self.report_layer0_support.build_placeholder(record)
 
     def _build_layer0_fallback(self, record: InterpretationRecord) -> Layer0Raw:
-        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
-        layer = Layer0Raw()
-        layer.imbalance_candidates = ["transition-overload"]
-        layer.color_analysis = {
-            "summary": LITE_REPORT_BLUEPRINT.structure_labels["layer0_color_summary"],
-            "overall_saturation": 0.42,
-            "black_ratio": 0.18,
-            "red_ratio": 0.11,
-        }
-        layer.circle_colors = {
-            "inner": {"focus": "self-protection"},
-            "middle": {"focus": "relationship-adjustment"},
-            "outer": {"focus": "external-expression"},
-        }
-        layer.three_circles.inner = {
-            "radius_percent": circles["inner_radius"],
-            "meaning": LITE_REPORT_BLUEPRINT.structure_labels["layer0_inner_meaning"],
-        }
-        layer.three_circles.middle = {
-            "radius_percent": circles["middle_radius"],
-            "meaning": LITE_REPORT_BLUEPRINT.structure_labels["layer0_middle_meaning"],
-        }
-        layer.three_circles.outer = {
-            "radius_percent": 100,
-            "meaning": LITE_REPORT_BLUEPRINT.structure_labels["layer0_outer_meaning"],
-        }
-        layer.micro_analysis.adjacent = [
-            LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_left"],
-            LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_right"],
-        ]
-        layer.micro_analysis.wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
-        return layer
+        return self.report_layer0_support.build_fallback(record)
 
     def _build_layer1_placeholder(self, record: InterpretationRecord) -> Layer1LiteDraft:
         return self.report_draft_assembler.build_lite(record)
@@ -1051,41 +1008,13 @@ class LayeredOrchestrator:
         return cleaned
 
     def _get_record_theme(self, record: InterpretationRecord) -> str:
-        return getattr(record, "theme", None) or "general"
+        return self.report_layer0_support.get_record_theme(record)
 
     def _get_layer0_view(self, record: InterpretationRecord) -> Layer0Raw:
-        layer0 = getattr(record, "layer_0_raw", None)
-        if isinstance(layer0, Layer0Raw):
-            return layer0
-        try:
-            return self._build_layer0_fallback(record)
-        except Exception:
-            return Layer0Raw()
+        return self.report_layer0_support.get_layer0_view(record)
 
     def _get_layer0_element_distribution(self, layer0: Layer0Raw) -> list[Dict[str, Any]]:
-        source = {
-            "wood": getattr(layer0.five_elements, "wood", {}),
-            "fire": getattr(layer0.five_elements, "fire", {}),
-            "earth": getattr(layer0.five_elements, "earth", {}),
-            "metal": getattr(layer0.five_elements, "metal", {}),
-            "water": getattr(layer0.five_elements, "water", {}),
-        }
-        distribution: list[Dict[str, Any]] = []
-        for key, item in source.items():
-            raw_item = item if isinstance(item, dict) else {}
-            try:
-                percentage = float(raw_item.get("percentage", 0.0) or 0.0)
-            except (TypeError, ValueError):
-                percentage = 0.0
-            distribution.append(
-                {
-                    "key": key,
-                    "name": raw_item.get("element_cn") or ELEMENT_KEY_TO_CN.get(key, key),
-                    "percentage": round(percentage, 2),
-                    "areas": raw_item.get("areas", []) if isinstance(raw_item.get("areas", []), list) else [],
-                }
-            )
-        return sorted(distribution, key=lambda item: item["percentage"], reverse=True)
+        return self.report_layer0_support.get_layer0_element_distribution(layer0)
 
     def _get_primary_knowledge_signal(self, record: InterpretationRecord) -> str:
         return self.report_knowledge_adapter.get_primary_knowledge_signal(record)
