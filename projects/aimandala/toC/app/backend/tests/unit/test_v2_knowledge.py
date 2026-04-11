@@ -12,6 +12,7 @@ sys.path.insert(
 
 from app.core.knowledge import KnowledgeQueryEngine, get_theme_summary, list_themes
 from app.core.pipeline.data_models import InterpretationRecord
+from app.core.pipeline import orchestrator_v2 as orchestrator_module
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 
 
@@ -51,6 +52,50 @@ def test_orchestrator_initializes_v2_knowledge_engine_and_builds_theme_context()
     assert "当前主题：财富事业" in context
     assert "V2知识主题：财富事业" in context
     assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
+
+
+def test_orchestrator_lazily_initializes_compat_knowledge_engine(monkeypatch):
+    created_versions = []
+
+    class StubKnowledgeQueryEngine:
+        def __init__(self, version="toc"):
+            created_versions.append(version)
+
+    monkeypatch.setattr(
+        orchestrator_module,
+        "KnowledgeQueryEngine",
+        StubKnowledgeQueryEngine,
+    )
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+
+    assert created_versions == []
+    assert isinstance(orchestrator.knowledge_engine, StubKnowledgeQueryEngine)
+    assert created_versions == ["toc"]
+    assert orchestrator.knowledge_engine is orchestrator.knowledge_engine
+    assert created_versions == ["toc"]
+
+
+def test_orchestrator_explicit_none_keeps_compat_knowledge_engine_disabled(monkeypatch):
+    created_versions = []
+
+    class StubKnowledgeQueryEngine:
+        def __init__(self, version="toc"):
+            created_versions.append(version)
+
+    monkeypatch.setattr(
+        orchestrator_module,
+        "KnowledgeQueryEngine",
+        StubKnowledgeQueryEngine,
+    )
+
+    orchestrator = LayeredOrchestrator(
+        knowledge_engine=None,
+        enable_vision=False,
+    )
+
+    assert orchestrator.knowledge_engine is None
+    assert created_versions == []
 
 
 def test_orchestrator_theme_context_uses_runtime_even_without_legacy_engine():

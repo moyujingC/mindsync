@@ -66,6 +66,8 @@ ELEMENT_KEY_TO_CN = {
     "water": "水",
 }
 
+_UNSET = object()
+
 class GenerationStage(str, Enum):
     """Execution stages for the migrated V2 interpretation pipeline."""
 
@@ -112,7 +114,7 @@ class LayeredOrchestrator:
 
     def __init__(
         self,
-        knowledge_engine: Optional[Any] = None,
+        knowledge_engine: Any = _UNSET,
         store: Optional[InterpretationStore] = None,
         circle_detector: Optional[CircleDetector] = None,
         generation_runtime: Optional[ReportGenerationRuntime] = None,
@@ -120,17 +122,17 @@ class LayeredOrchestrator:
         report_chat_runtime: Optional[Any] = None,
         enable_vision: bool = True,
     ) -> None:
-        if knowledge_engine is not None:
-            self.knowledge_engine = knowledge_engine
-        elif KnowledgeQueryEngine is not None:
-            self.knowledge_engine = KnowledgeQueryEngine(version="toc")
-        else:
-            self.knowledge_engine = None
+        self._knowledge_engine_explicit = knowledge_engine is not _UNSET
+        self._knowledge_engine = (
+            knowledge_engine if knowledge_engine is not _UNSET else None
+        )
         self.store = store or InterpretationStore()
         self.circle_detector = circle_detector or CircleDetector()
         self.knowledge_runtime = (
             get_knowledge_runtime() if get_knowledge_runtime is not None else None
         )
+        self._theme_summary_cache: Dict[str, Dict[str, Any]] = {}
+        self._theme_element_profile_cache: Dict[tuple[str, str], Dict[str, Any]] = {}
         self.layer0_assembler = (
             self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
         )
@@ -149,6 +151,21 @@ class LayeredOrchestrator:
         self.enable_vision = enable_vision
         self.prompt_builder = PromptBuilder()
         self.report_contracts = ReportContractAssembler(self.prompt_builder)
+
+    @property
+    def knowledge_engine(self) -> Optional[Any]:
+        if (
+            self._knowledge_engine is None
+            and not self._knowledge_engine_explicit
+            and KnowledgeQueryEngine is not None
+        ):
+            self._knowledge_engine = KnowledgeQueryEngine(version="toc")
+        return self._knowledge_engine
+
+    @knowledge_engine.setter
+    def knowledge_engine(self, value: Optional[Any]) -> None:
+        self._knowledge_engine = value
+        self._knowledge_engine_explicit = True
 
     @classmethod
     def get_pricing(cls) -> PricingSnapshot:
@@ -1470,15 +1487,12 @@ class LayeredOrchestrator:
         theme_label: str,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
-        runtime_title = (
-            runtime_projection.get("title")
-            if isinstance(runtime_projection, dict)
-            else ""
-        )
+        runtime_title = self._get_projection_text(runtime_projection, "title")
         if isinstance(runtime_title, str) and runtime_title.strip():
             return runtime_title.strip()
 
@@ -1508,14 +1522,14 @@ class LayeredOrchestrator:
         circle_info: Dict[str, int],
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
-        runtime_overall = (
-            runtime_projection.get("overall_impression")
-            if isinstance(runtime_projection, dict)
-            else ""
+        runtime_overall = self._get_projection_text(
+            runtime_projection,
+            "overall_impression",
         )
         if isinstance(runtime_overall, str) and runtime_overall.strip():
             return runtime_overall.strip()
@@ -1548,14 +1562,14 @@ class LayeredOrchestrator:
         circle_info: Dict[str, int],
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             self._get_theme_label(theme),
+            projection=projection,
         )
-        runtime_visual = (
-            runtime_projection.get("visual_elements")
-            if isinstance(runtime_projection, dict)
-            else ""
+        runtime_visual = self._get_projection_text(
+            runtime_projection,
+            "visual_elements",
         )
         if isinstance(runtime_visual, str) and runtime_visual.strip():
             return runtime_visual.strip()
@@ -1642,20 +1656,62 @@ class LayeredOrchestrator:
 
         return projection if isinstance(projection, dict) else {}
 
+    def _resolve_runtime_lite_projection(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        if isinstance(projection, dict):
+            return projection
+        return self._build_runtime_lite_narrative_projection(record, theme_label)
+
+    def _get_projection_text(
+        self,
+        projection: Optional[Dict[str, Any]],
+        key: str,
+    ) -> str:
+        if not isinstance(projection, dict):
+            return ""
+        value = projection.get(key)
+        if isinstance(value, str):
+            return value
+        return ""
+
+    def _get_projection_mapping(
+        self,
+        projection: Optional[Dict[str, Any]],
+        key: str,
+    ) -> Dict[str, Any]:
+        if not isinstance(projection, dict):
+            return {}
+        value = projection.get(key)
+        return value if isinstance(value, dict) else {}
+
+    def _get_projection_list(
+        self,
+        projection: Optional[Dict[str, Any]],
+        key: str,
+    ) -> list[Any]:
+        if not isinstance(projection, dict):
+            return []
+        value = projection.get(key)
+        return value if isinstance(value, list) else []
+
     def _build_lite_emotion_portrait(
         self,
         record: InterpretationRecord,
         theme_label: str,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
-        runtime_emotion = (
-            runtime_projection.get("emotion_portrait")
-            if isinstance(runtime_projection, dict)
-            else ""
+        runtime_emotion = self._get_projection_text(
+            runtime_projection,
+            "emotion_portrait",
         )
         if isinstance(runtime_emotion, str) and runtime_emotion.strip():
             return runtime_emotion.strip()
@@ -1689,9 +1745,10 @@ class LayeredOrchestrator:
         theme_label: str,
         projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
 
         layer0 = self._get_layer0_view(record)
@@ -1745,10 +1802,9 @@ class LayeredOrchestrator:
             "block": " ".join(block_parts).strip(),
             "light": light.strip(),
         }
-        runtime_sections = (
-            runtime_projection.get("story_sections")
-            if isinstance(runtime_projection, dict)
-            else None
+        runtime_sections = self._get_projection_mapping(
+            runtime_projection,
+            "story_sections",
         )
         if isinstance(runtime_sections, dict):
             for key in sections:
@@ -1763,9 +1819,10 @@ class LayeredOrchestrator:
         theme_label: str,
         projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
 
         layer0 = self._get_layer0_view(record)
@@ -1795,10 +1852,9 @@ class LayeredOrchestrator:
             "impact": impact.strip(),
             "awareness": awareness.strip(),
         }
-        runtime_insights = (
-            runtime_projection.get("theme_insights")
-            if isinstance(runtime_projection, dict)
-            else None
+        runtime_insights = self._get_projection_mapping(
+            runtime_projection,
+            "theme_insights",
         )
         if isinstance(runtime_insights, dict):
             for key in insights:
@@ -1813,9 +1869,10 @@ class LayeredOrchestrator:
         theme_label: str,
         projection: Optional[Dict[str, Any]] = None,
     ) -> list[DailyAwareness]:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
 
         layer0 = self._get_layer0_view(record)
@@ -1845,10 +1902,9 @@ class LayeredOrchestrator:
                 content=f"如果今天又出现{signal_short}的时刻，别急着评价自己。把那个瞬间记下来，你会更看清自己何时需要补回与「{weakest['name']}」相关的{weakest_theme}。",
             ),
         ]
-        runtime_awareness = (
-            runtime_projection.get("three_awareness")
-            if isinstance(runtime_projection, dict)
-            else None
+        runtime_awareness = self._get_projection_list(
+            runtime_projection,
+            "three_awareness",
         )
         if isinstance(runtime_awareness, list) and runtime_awareness:
             merged: list[DailyAwareness] = []
@@ -1894,14 +1950,14 @@ class LayeredOrchestrator:
         story_sections: Dict[str, str],
         projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Dict[str, str]]:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
-        runtime_six_insights = (
-            runtime_projection.get("six_insights")
-            if isinstance(runtime_projection, dict)
-            else None
+        runtime_six_insights = self._get_projection_mapping(
+            runtime_projection,
+            "six_insights",
         )
         if isinstance(runtime_six_insights, dict) and runtime_six_insights:
             normalized: Dict[str, Dict[str, str]] = {}
@@ -1928,10 +1984,9 @@ class LayeredOrchestrator:
             if normalized:
                 return normalized
 
-        story_angles = (
-            runtime_projection.get("story_angles")
-            if isinstance(runtime_projection, dict)
-            else None
+        story_angles = self._get_projection_mapping(
+            runtime_projection,
+            "story_angles",
         )
         payloads: Dict[str, Dict[str, str]] = {}
         for key, template in LITE_REPORT_BLUEPRINT.six_insight_layer1_templates.items():
@@ -1965,14 +2020,14 @@ class LayeredOrchestrator:
         title: str,
         projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             theme_label,
+            projection=projection,
         )
-        runtime_experiment = (
-            runtime_projection.get("experiment")
-            if isinstance(runtime_projection, dict)
-            else None
+        runtime_experiment = self._get_projection_mapping(
+            runtime_projection,
+            "experiment",
         )
         if isinstance(runtime_experiment, dict):
             experiment_title = runtime_experiment.get("title")
@@ -2009,14 +2064,14 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
-        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+        runtime_projection = self._resolve_runtime_lite_projection(
             record,
             self._get_theme_label(record.theme),
+            projection=projection,
         )
-        runtime_teaser = (
-            runtime_projection.get("pro_teaser")
-            if isinstance(runtime_projection, dict)
-            else ""
+        runtime_teaser = self._get_projection_text(
+            runtime_projection,
+            "pro_teaser",
         )
         if isinstance(runtime_teaser, str) and runtime_teaser.strip():
             return runtime_teaser.strip()
@@ -2415,15 +2470,7 @@ class LayeredOrchestrator:
         return descriptions.get(signal, "")
 
     def _get_element_theme_phrase(self, theme: Optional[str], element_name: str) -> str:
-        profile: Dict[str, Any] = {}
-        if self.knowledge_runtime is not None:
-            try:
-                profile = self.knowledge_runtime.theme_service.get_element_meaning(
-                    theme or "general",
-                    element_name,
-                )
-            except Exception:
-                profile = {}
+        profile = self._get_theme_element_profile(theme, element_name)
         psychological_theme = profile.get("psychological_theme")
         if isinstance(psychological_theme, str) and psychological_theme.strip():
             return psychological_theme.strip()
@@ -2433,21 +2480,39 @@ class LayeredOrchestrator:
         return f"{element_name}元素的状态"
 
     def _get_element_core_keywords(self, theme: Optional[str], element_name: str) -> str:
-        profile: Dict[str, Any] = {}
-        if self.knowledge_runtime is not None:
-            try:
-                profile = self.knowledge_runtime.theme_service.get_element_meaning(
-                    theme or "general",
-                    element_name,
-                )
-            except Exception:
-                profile = {}
+        profile = self._get_theme_element_profile(theme, element_name)
         keywords = profile.get("keywords")
         if isinstance(keywords, list) and keywords:
             filtered = [str(item).strip() for item in keywords if isinstance(item, str) and item.strip()]
             if filtered:
                 return "、".join(filtered[:3])
         return self._get_element_theme_phrase(theme, element_name)
+
+    def _get_theme_element_profile(
+        self,
+        theme: Optional[str],
+        element_name: str,
+    ) -> Dict[str, Any]:
+        theme_key = (theme or "general").strip() or "general"
+        cache_key = (theme_key, element_name)
+        cached = self._theme_element_profile_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        profile: Dict[str, Any] = {}
+        if self.knowledge_runtime is not None:
+            try:
+                result = self.knowledge_runtime.theme_service.get_element_meaning(
+                    theme_key,
+                    element_name,
+                )
+            except Exception:
+                result = {}
+            if isinstance(result, dict):
+                profile = result
+
+        self._theme_element_profile_cache[cache_key] = profile
+        return profile
 
     def _describe_circle_transition(self, layer0: Layer0Raw) -> str:
         inner = layer0.three_circles.inner.get("dominant", "")
@@ -2560,16 +2625,22 @@ class LayeredOrchestrator:
         return "\n".join(lines)
 
     def get_knowledge_theme_summary(self, theme: Optional[str]) -> Dict[str, Any]:
+        theme_key = (theme or "general").strip() or "general"
+        cached = self._theme_summary_cache.get(theme_key)
+        if cached is not None:
+            return cached
+
+        summary: Dict[str, Any] = {}
         if self.knowledge_runtime is not None:
             try:
-                summary = self.knowledge_runtime.theme_service.get_theme_summary(
-                    theme or "general"
-                )
+                result = self.knowledge_runtime.theme_service.get_theme_summary(theme_key)
             except Exception:
-                summary = {}
-            if isinstance(summary, dict) and summary:
-                return summary
-        return {}
+                result = {}
+            if isinstance(result, dict) and result:
+                summary = result
+
+        self._theme_summary_cache[theme_key] = summary
+        return summary
 
     def _build_pro_prompt_preview(self, record: InterpretationRecord) -> str:
         vision_payload = {
