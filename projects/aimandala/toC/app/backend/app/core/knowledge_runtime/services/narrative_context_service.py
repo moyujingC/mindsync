@@ -408,6 +408,219 @@ class NarrativeContextService:
             "pro_teaser": self._build_pro_teaser(resolved_theme, default_pro_teaser),
         }
 
+    def build_pro_narrative_projection(
+        self,
+        *,
+        theme: str,
+        theme_label: str = "",
+        lite_title: str = "",
+        lite_contradiction: str = "",
+        lite_block: str = "",
+        intention: str = "",
+        feeling_hint: str = "",
+        dominant_element: str = "",
+        dominant_percentage: float = 0.0,
+        secondary_element: str = "",
+        secondary_percentage: float = 0.0,
+        weakest_element: str = "",
+        weakest_percentage: float = 0.0,
+        signal: str = "",
+        primary_imbalance: str = "",
+        transition: str = "",
+        circles: dict[str, dict[str, Any]] | None = None,
+        adjacent: list[str] | None = None,
+        wrap: list[str] | None = None,
+        narrative_templates: dict[str, str] | None = None,
+        structure_labels: dict[str, str] | None = None,
+        circle_fallbacks: dict[str, str] | None = None,
+        imbalance_projection: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        resolved_theme = theme or "general"
+        theme_summary = self.theme_service.get_theme_summary(resolved_theme)
+        resolved_theme_label = (
+            theme_label
+            or str(theme_summary.get("name") or "").strip()
+            or resolved_theme
+            or "当前主题"
+        )
+        templates = narrative_templates if isinstance(narrative_templates, dict) else {}
+        labels = structure_labels if isinstance(structure_labels, dict) else {}
+        circle_defaults = (
+            circle_fallbacks if isinstance(circle_fallbacks, dict) else {}
+        )
+
+        dominant = dominant_element or "土"
+        secondary = secondary_element or dominant or "金"
+        weakest = weakest_element or "水"
+        signal_text = self._describe_signal(signal)
+        weakest_theme = self._get_element_theme_phrase(resolved_theme, weakest)
+        resolved_intention = str(intention or "").strip()
+        contradiction_text = str(lite_contradiction or "").strip()
+        block_text = str(lite_block or "").strip()
+        resolved_feeling_hint = str(feeling_hint or "").strip()
+        runtime_imbalance_projection = self._resolve_imbalance_projection(
+            theme=resolved_theme,
+            theme_label=resolved_theme_label,
+            signal=signal,
+            projection=imbalance_projection,
+        )
+        mapped_contradiction = self._projection_text(
+            runtime_imbalance_projection,
+            "contradiction",
+        )
+        mapped_manifestation = self._projection_text(
+            runtime_imbalance_projection,
+            "manifestation",
+        )
+        mapped_direction = self._projection_text(
+            runtime_imbalance_projection,
+            "direction",
+        )
+        mapped_healing_core = self._projection_text(
+            runtime_imbalance_projection,
+            "healing_core",
+        )
+        mapped_deeper_root = self._projection_text(
+            runtime_imbalance_projection,
+            "deeper_root",
+        )
+        mapped_core_root = self._projection_text(
+            runtime_imbalance_projection,
+            "core_root",
+        )
+
+        first_impression_parts = [
+            f"第一眼看这张画，最明显的是「{dominant}」和「{secondary}」共同撑起了整张画的骨架。",
+        ]
+        if transition:
+            first_impression_parts.append(str(transition).strip())
+        first_impression_parts.append(
+            f"所以 Lite 里那份《{lite_title}》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。"
+        )
+        if contradiction_text:
+            normalized_contradiction = contradiction_text[:96].strip()
+            if normalized_contradiction and normalized_contradiction[-1] not in "。！？":
+                normalized_contradiction += "。"
+            first_impression_parts.append(normalized_contradiction)
+        if signal_text:
+            first_impression_parts.append(signal_text)
+
+        energy_essence = (
+            f"{resolved_theme_label}主题下，这张画的能量核心更接近「{dominant}」({dominant_percentage:.2f}%)"
+            f" 与「{secondary}」({secondary_percentage:.2f}%) 的组合。"
+            f"{transition or ''} 这说明你现在最重要的功课，不是更快，而是让内在承载、外在边界和现实动作重新接上。"
+        ).strip()
+
+        block_parts: list[str] = []
+        if mapped_contradiction:
+            block_parts.append(f"当前更核心的卡点，其实是「{mapped_contradiction}」。")
+        if mapped_manifestation:
+            block_parts.append(mapped_manifestation.rstrip("。") + "。")
+        if block_text:
+            block_parts.append(block_text[:96].strip())
+        if primary_imbalance:
+            block_parts.append(
+                f"{primary_imbalance}让你很难一边往前推进，一边仍然感觉自己是安全的。"
+            )
+        if weakest_percentage < 12:
+            block_parts.append(
+                f"再加上「{weakest}」相关的{weakest_theme}资源暂时偏少，所以你在快要真正启动时更容易先想缓一缓。"
+            )
+        if signal_text:
+            block_parts.append(signal_text)
+        if resolved_feeling_hint:
+            block_parts.append(resolved_feeling_hint)
+
+        base_direction = self._render_runtime_template(
+            str(templates.get("core_direction") or "").strip(),
+            theme_label=resolved_theme_label,
+        )
+        direction = (
+            f"{mapped_direction}。{base_direction}".strip()
+            if mapped_direction and base_direction
+            else mapped_direction or base_direction
+        )
+        healing_core = (
+            mapped_healing_core
+            or str(templates.get("core_healing") or "").strip()
+        )
+
+        surface_root = self._build_surface_root_text(
+            lite_contradiction=contradiction_text,
+            intention=resolved_intention,
+            manifestation=mapped_manifestation,
+            signal_text=signal_text,
+            without_intention_template=str(
+                templates.get("surface_root_without_intention") or ""
+            ).strip(),
+            with_intention_template=str(
+                templates.get("surface_root_with_intention") or ""
+            ).strip(),
+        )
+
+        circle_payload = circles if isinstance(circles, dict) else {}
+        circle_readings = {
+            key: self._build_pro_circle_text(
+                circle=circle_payload.get(key, {}),
+                fallback_text=str(circle_defaults.get(key) or "").strip(),
+            )
+            for key in ["inner", "middle", "outer"]
+        }
+
+        adjacent_relations = [
+            str(item).strip()
+            for item in (adjacent or [])
+            if isinstance(item, str) and str(item).strip()
+        ]
+        wrap_relations = [
+            str(item).strip()
+            for item in (wrap or [])
+            if isinstance(item, str) and str(item).strip()
+        ]
+        rhythm_label = str(labels.get("micro_rhythm") or "节奏关系").strip()
+        relationship_label = str(labels.get("micro_relationship") or "关系模式").strip()
+        action_label = str(labels.get("micro_action") or "行动提示").strip()
+        micro_sections = {
+            rhythm_label: (
+                f"圈间节奏首先显示：{adjacent_relations[0]}。这说明当前能量更像在调整承接，而不是剧烈摆荡。"
+                if adjacent_relations
+                else str(templates.get("micro_rhythm") or "").strip()
+            ),
+            relationship_label: (
+                f"继续往外看，{adjacent_relations[1]}。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。"
+                if len(adjacent_relations) > 1
+                else str(templates.get("micro_relationship") or "").strip()
+            ),
+            action_label: (
+                f"当前最明显的行动提示是：{wrap_relations[0]}。与其一次性猛推，不如让行动和承载一起增长。"
+                if wrap_relations
+                else str(templates.get("micro_action") or "").strip()
+            ),
+        }
+
+        return {
+            "first_impression": " ".join(
+                part
+                for part in first_impression_parts
+                if isinstance(part, str) and part.strip()
+            ).strip(),
+            "energy_essence": energy_essence,
+            "block_point": " ".join(
+                part for part in block_parts if isinstance(part, str) and part.strip()
+            ).strip(),
+            "direction": direction,
+            "healing_core": healing_core,
+            "circle_readings": circle_readings,
+            "micro_sections": micro_sections,
+            "root_cause": {
+                "surface": surface_root,
+                "deeper": mapped_deeper_root
+                or str(templates.get("root_deeper") or "").strip(),
+                "core": mapped_core_root
+                or str(templates.get("root_core") or "").strip(),
+            },
+        }
+
     def _extract_phase_labels(self, phases: list[Any]) -> list[str]:
         labels: list[str] = []
         for item in phases:
@@ -607,3 +820,102 @@ class NarrativeContextService:
                 line = line[2:].strip()
             lines.append(line)
         return "\n".join(lines).strip()
+
+    def _resolve_imbalance_projection(
+        self,
+        *,
+        theme: str,
+        theme_label: str,
+        signal: str,
+        projection: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        if isinstance(projection, dict) and projection:
+            return projection
+        if not signal:
+            return {}
+        return self.build_imbalance_projection(
+            theme=theme,
+            imbalance_type=signal,
+            theme_label=theme_label,
+        )
+
+    def _projection_text(
+        self,
+        projection: dict[str, Any] | None,
+        key: str,
+    ) -> str:
+        if not isinstance(projection, dict):
+            return ""
+        value = projection.get(key)
+        return value.strip() if isinstance(value, str) else ""
+
+    def _render_runtime_template(
+        self,
+        template: str,
+        **kwargs: Any,
+    ) -> str:
+        if not template:
+            return ""
+        try:
+            return template.format(**kwargs).strip()
+        except Exception:
+            return template.strip()
+
+    def _build_surface_root_text(
+        self,
+        *,
+        lite_contradiction: str,
+        intention: str,
+        manifestation: str,
+        signal_text: str,
+        without_intention_template: str,
+        with_intention_template: str,
+    ) -> str:
+        contradiction_preview = (
+            f"{lite_contradiction[:72]} " if lite_contradiction else ""
+        )
+        if not intention:
+            base = self._render_runtime_template(
+                without_intention_template,
+                lite_contradiction=contradiction_preview,
+            )
+            if manifestation:
+                base = f"{base} 更落到现实里看，它常会表现成：{manifestation}。"
+            return f"{base} {signal_text}".strip() if signal_text else base
+        base = self._render_runtime_template(
+            with_intention_template,
+            lite_contradiction=contradiction_preview,
+            intention=intention,
+        )
+        if manifestation:
+            base = f"{base} 现实层面也常会表现成：{manifestation}。"
+        return f"{base} {signal_text}".strip() if signal_text else base
+
+    def _build_pro_circle_text(
+        self,
+        *,
+        circle: dict[str, Any] | Any,
+        fallback_text: str,
+    ) -> str:
+        payload = circle if isinstance(circle, dict) else {}
+        meaning = str(payload.get("meaning") or "").strip()
+        radius_percent = payload.get("radius_percent")
+        dominant = str(payload.get("dominant") or "").strip()
+        colors = [
+            item
+            for item in payload.get("colors", [])
+            if isinstance(item, str) and item.strip()
+        ]
+        knowledge_reading = str(payload.get("knowledge_reading") or "").strip()
+        parts: list[str] = []
+        if meaning and radius_percent:
+            parts.append(
+                f"{meaning}当前约占 {radius_percent}%，主导元素更偏「{dominant or '未识别'}」。"
+            )
+        elif dominant:
+            parts.append(f"当前主导元素更偏「{dominant}」。")
+        if knowledge_reading:
+            parts.append(knowledge_reading.rstrip("。") + "。")
+        if colors:
+            parts.append(f"代表性色彩集中在 {'、'.join(colors[:3])}。")
+        return " ".join(parts).strip() or fallback_text

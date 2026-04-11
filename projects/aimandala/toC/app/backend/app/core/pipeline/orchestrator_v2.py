@@ -1351,23 +1351,43 @@ class LayeredOrchestrator:
             if record.layer_2_lite_final and record.layer_2_lite_final.title
             else self._build_lite_title(record, theme_label)
         )
+        pro_projection = self._build_runtime_pro_narrative_projection(
+            record,
+            theme_label=theme_label,
+            lite_title=lite_title,
+            imbalance_profile=imbalance_profile,
+            imbalance_projection=imbalance_projection,
+        )
         layer = Layer3ProDraft(
-            first_impression=self._build_pro_first_impression(record, theme_label, lite_title),
+            first_impression=self._build_pro_first_impression(
+                record,
+                theme_label,
+                lite_title,
+                projection=pro_projection,
+            ),
             core_insight_table={
-                "能量本质": self._build_pro_energy_essence(record, theme_label, circles),
+                "能量本质": self._build_pro_energy_essence(
+                    record,
+                    theme_label,
+                    circles,
+                    projection=pro_projection,
+                ),
                 "核心失衡": imbalance_profile["summary"],
                 "关键卡点": self._build_pro_block_point(
                     record,
                     imbalance_profile,
+                    narrative_projection=pro_projection,
                     projection=imbalance_projection,
                 ),
                 "转化方向": self._build_pro_direction(
                     record,
                     theme_label,
+                    narrative_projection=pro_projection,
                     projection=imbalance_projection,
                 ),
                 "疗愈核心": self._build_pro_healing_core(
                     record,
+                    narrative_projection=pro_projection,
                     projection=imbalance_projection,
                 ),
             },
@@ -1380,6 +1400,7 @@ class LayeredOrchestrator:
                         PRO_REPORT_BLUEPRINT.narrative_templates["circle_inner_reading"].format(
                             inner=circles["inner_radius"]
                         ),
+                        projection=pro_projection,
                     ),
                 },
                 "middle": {
@@ -1390,6 +1411,7 @@ class LayeredOrchestrator:
                         PRO_REPORT_BLUEPRINT.narrative_templates["circle_middle_reading"].format(
                             middle=circles["middle_radius"]
                         ),
+                        projection=pro_projection,
                     ),
                 },
                 "outer": {
@@ -1398,22 +1420,29 @@ class LayeredOrchestrator:
                         record,
                         "outer",
                         PRO_REPORT_BLUEPRINT.narrative_templates["circle_outer_reading"],
+                        projection=pro_projection,
                     ),
                 },
             },
-            micro_analysis_detailed=self._build_pro_micro_sections_from_knowledge(record),
+            micro_analysis_detailed=self._build_pro_micro_sections_from_knowledge(
+                record,
+                projection=pro_projection,
+            ),
             imbalance_confirmed=imbalance_profile,
             root_cause={
                 "surface": self._build_surface_root_cause(
                     record,
+                    narrative_projection=pro_projection,
                     projection=imbalance_projection,
                 ),
                 "deeper": self._build_deeper_root_cause(
                     record,
+                    narrative_projection=pro_projection,
                     projection=imbalance_projection,
                 ),
                 "core": self._build_core_root_cause(
                     record,
+                    narrative_projection=pro_projection,
                     projection=imbalance_projection,
                 ),
             },
@@ -1425,6 +1454,88 @@ class LayeredOrchestrator:
         )
         layer.prompt_preview = pro_prompt_preview
         return layer
+
+    def _build_runtime_pro_narrative_projection(
+        self,
+        record: InterpretationRecord,
+        *,
+        theme_label: str,
+        lite_title: str,
+        imbalance_profile: Dict[str, str],
+        imbalance_projection: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        if self.narrative_service is None:
+            return {}
+
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        secondary = distribution[1] if len(distribution) > 1 else dominant
+        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
+        lite_contradiction = (
+            record.layer_1_lite_draft.story.contradiction.content
+            if record.layer_1_lite_draft and record.layer_1_lite_draft.story.contradiction.content
+            else ""
+        )
+        lite_block = (
+            record.layer_1_lite_draft.story.block.content
+            if record.layer_1_lite_draft and record.layer_1_lite_draft.story.block.content
+            else ""
+        )
+        circles = {
+            "inner": layer0.three_circles.inner,
+            "middle": layer0.three_circles.middle,
+            "outer": layer0.three_circles.outer,
+        }
+        adjacent = [
+            str(item).strip()
+            for item in (layer0.micro_analysis.adjacent or [])
+            if isinstance(item, str) and str(item).strip()
+        ]
+        wrap = [
+            str(item).strip()
+            for item in (layer0.micro_analysis.wrap or [])
+            if isinstance(item, str) and str(item).strip()
+        ]
+
+        try:
+            projection = self.narrative_service.build_pro_narrative_projection(
+                theme=self._get_record_theme(record),
+                theme_label=theme_label,
+                lite_title=lite_title,
+                lite_contradiction=lite_contradiction,
+                lite_block=lite_block,
+                intention=(record.painting_intention or "").strip(),
+                feeling_hint=self._build_feeling_hint(record),
+                dominant_element=dominant["name"],
+                dominant_percentage=float(dominant.get("percentage", 0.0) or 0.0),
+                secondary_element=secondary["name"],
+                secondary_percentage=float(secondary.get("percentage", 0.0) or 0.0),
+                weakest_element=weakest["name"],
+                weakest_percentage=float(weakest.get("percentage", 0.0) or 0.0),
+                signal=self._get_primary_knowledge_signal(record),
+                primary_imbalance=str(imbalance_profile.get("primary") or "").strip(),
+                transition=self._describe_circle_transition(layer0),
+                circles=circles,
+                adjacent=adjacent,
+                wrap=wrap,
+                narrative_templates=dict(PRO_REPORT_BLUEPRINT.narrative_templates),
+                structure_labels=dict(PRO_REPORT_BLUEPRINT.structure_labels),
+                circle_fallbacks={
+                    "inner": PRO_REPORT_BLUEPRINT.narrative_templates["circle_inner_reading"].format(
+                        inner=(record.three_circles or {}).get("inner_radius", 33)
+                    ),
+                    "middle": PRO_REPORT_BLUEPRINT.narrative_templates["circle_middle_reading"].format(
+                        middle=(record.three_circles or {}).get("middle_radius", 66)
+                    ),
+                    "outer": PRO_REPORT_BLUEPRINT.narrative_templates["circle_outer_reading"],
+                },
+                imbalance_projection=imbalance_projection,
+            )
+        except Exception:
+            return {}
+
+        return projection if isinstance(projection, dict) else {}
 
     def _build_pro_placeholder_report(self, record: InterpretationRecord) -> Layer4ProFinal:
         lite_report = record.layer_2_lite_final
@@ -2126,7 +2237,15 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         theme_label: str,
         lite_title: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_first_impression = self._get_projection_text(
+            projection,
+            "first_impression",
+        )
+        if runtime_first_impression.strip():
+            return runtime_first_impression.strip()
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -2160,7 +2279,15 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         theme_label: str,
         circles: Dict[str, int],
+        projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_energy_essence = self._get_projection_text(
+            projection,
+            "energy_essence",
+        )
+        if runtime_energy_essence.strip():
+            return runtime_energy_essence.strip()
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -2176,8 +2303,16 @@ class LayeredOrchestrator:
         self,
         record: InterpretationRecord,
         imbalance_profile: Optional[Dict[str, str]] = None,
+        narrative_projection: Optional[Dict[str, Any]] = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_block_point = self._get_projection_text(
+            narrative_projection,
+            "block_point",
+        )
+        if runtime_block_point.strip():
+            return runtime_block_point.strip()
+
         runtime_projection = projection or self._get_runtime_imbalance_projection(record)
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
@@ -2220,8 +2355,16 @@ class LayeredOrchestrator:
         self,
         record: InterpretationRecord,
         theme_label: str,
+        narrative_projection: Optional[Dict[str, Any]] = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_direction = self._get_projection_text(
+            narrative_projection,
+            "direction",
+        )
+        if runtime_direction.strip():
+            return runtime_direction.strip()
+
         runtime_projection = projection or self._get_runtime_imbalance_projection(record)
         mapped_direction = self._get_projection_text(
             runtime_projection,
@@ -2237,8 +2380,16 @@ class LayeredOrchestrator:
     def _build_pro_healing_core(
         self,
         record: InterpretationRecord,
+        narrative_projection: Optional[Dict[str, Any]] = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_healing_core = self._get_projection_text(
+            narrative_projection,
+            "healing_core",
+        )
+        if runtime_healing_core.strip():
+            return runtime_healing_core.strip()
+
         runtime_projection = projection or self._get_runtime_imbalance_projection(record)
         return (
             self._get_projection_text(runtime_projection, "healing_core").strip()
@@ -2248,8 +2399,17 @@ class LayeredOrchestrator:
     def _build_deeper_root_cause(
         self,
         record: InterpretationRecord,
+        narrative_projection: Optional[Dict[str, Any]] = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_root_cause = self._get_projection_mapping(
+            narrative_projection,
+            "root_cause",
+        )
+        deeper_root = str(runtime_root_cause.get("deeper") or "").strip()
+        if deeper_root:
+            return deeper_root
+
         runtime_projection = projection or self._get_runtime_imbalance_projection(record)
         deeper_root = self._get_projection_text(runtime_projection, "deeper_root").strip()
         if deeper_root:
@@ -2259,8 +2419,17 @@ class LayeredOrchestrator:
     def _build_core_root_cause(
         self,
         record: InterpretationRecord,
+        narrative_projection: Optional[Dict[str, Any]] = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_root_cause = self._get_projection_mapping(
+            narrative_projection,
+            "root_cause",
+        )
+        core_root = str(runtime_root_cause.get("core") or "").strip()
+        if core_root:
+            return core_root
+
         runtime_projection = projection or self._get_runtime_imbalance_projection(record)
         core_root = self._get_projection_text(runtime_projection, "core_root").strip()
         if core_root:
@@ -2297,7 +2466,16 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         circle_key: str,
         fallback_text: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_circle_readings = self._get_projection_mapping(
+            projection,
+            "circle_readings",
+        )
+        runtime_circle_reading = str(runtime_circle_readings.get(circle_key) or "").strip()
+        if runtime_circle_reading:
+            return runtime_circle_reading
+
         layer0 = self._get_layer0_view(record)
         circle = getattr(layer0.three_circles, circle_key, {}) if hasattr(layer0.three_circles, circle_key) else {}
         if not isinstance(circle, dict):
@@ -2321,7 +2499,19 @@ class LayeredOrchestrator:
     def _build_pro_micro_sections_from_knowledge(
         self,
         record: InterpretationRecord,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
+        runtime_micro_sections = self._get_projection_mapping(
+            projection,
+            "micro_sections",
+        )
+        if runtime_micro_sections:
+            return {
+                str(key): str(value).strip()
+                for key, value in runtime_micro_sections.items()
+                if str(key).strip() and isinstance(value, str) and value.strip()
+            }
+
         layer0 = self._get_layer0_view(record)
         adjacent = layer0.micro_analysis.adjacent or []
         wrap = layer0.micro_analysis.wrap or []
@@ -2746,8 +2936,17 @@ class LayeredOrchestrator:
     def _build_surface_root_cause(
         self,
         record: InterpretationRecord,
+        narrative_projection: Optional[Dict[str, Any]] = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_root_cause = self._get_projection_mapping(
+            narrative_projection,
+            "root_cause",
+        )
+        surface_root = str(runtime_root_cause.get("surface") or "").strip()
+        if surface_root:
+            return surface_root
+
         intention = (record.painting_intention or "").strip()
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         runtime_projection = projection or self._get_runtime_imbalance_projection(record)

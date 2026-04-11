@@ -13,6 +13,7 @@ from app.core.pipeline.data_models import (
     GenerationStatus,
     InterpretationRecord,
     Layer1LiteDraft,
+    Layer2LiteFinal,
 )
 from app.core.pipeline.prompt_runtime import NoopPromptRuntime
 from app.core.pipeline.orchestrator_v2 import (
@@ -535,6 +536,73 @@ def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
     assert "先把行动拆成能承接的小单位" in pro_layer.core_insight_table["转化方向"]
     assert pro_layer.root_cause["deeper"] == "更深层是你还在确认自己能不能稳稳接住变化"
     assert pro_layer.root_cause["core"] == "核心根因是对失控的担心还没有真正放松"
+
+
+def test_layer3_placeholder_prefers_runtime_pro_projection():
+    class StubNarrativeService:
+        def build_imbalance_projection(self, **kwargs):
+            return {
+                "contradiction": "Runtime-Imbalance-Primary",
+                "manifestation": "Runtime-Imbalance-Manifestation",
+                "direction": "Runtime-Imbalance-Direction",
+                "healing_core": "Runtime-Imbalance-Healing-Core",
+                "summary": "Runtime-Imbalance-Summary",
+                "evidence": "Runtime-Imbalance-Evidence",
+            }
+
+        def build_pro_narrative_projection(self, **kwargs):
+            assert kwargs["theme"] == "general"
+            assert kwargs["lite_title"] == "Runtime-Lite-Title"
+            assert kwargs["circle_fallbacks"]["inner"]
+            return {
+                "first_impression": "Runtime-Pro-First-Impression",
+                "energy_essence": "Runtime-Pro-Energy-Essence",
+                "block_point": "Runtime-Pro-Block-Point",
+                "direction": "Runtime-Pro-Direction",
+                "healing_core": "Runtime-Pro-Healing-Core",
+                "circle_readings": {
+                    "inner": "Runtime-Pro-Inner-Reading",
+                    "middle": "Runtime-Pro-Middle-Reading",
+                    "outer": "Runtime-Pro-Outer-Reading",
+                },
+                "micro_sections": {
+                    "节奏关系": "Runtime-Pro-Micro-Rhythm",
+                    "关系模式": "Runtime-Pro-Micro-Relationship",
+                    "行动模式": "Runtime-Pro-Micro-Action",
+                },
+                "root_cause": {
+                    "surface": "Runtime-Pro-Root-Surface",
+                    "deeper": "Runtime-Pro-Root-Deeper",
+                    "core": "Runtime-Pro-Root-Core",
+                },
+            }
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.narrative_service = StubNarrativeService()
+    record = InterpretationRecord(
+        theme="general",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+    record.layer_0_raw = orchestrator._build_layer0_placeholder(record)
+    record.layer_1_lite_draft = Layer1LiteDraft()
+    record.layer_1_lite_draft.story.contradiction.content = "Lite contradiction"
+    record.layer_1_lite_draft.story.block.content = "Lite block"
+    record.layer_2_lite_final = Layer2LiteFinal(title="Runtime-Lite-Title")
+
+    layer3 = orchestrator._build_pro_placeholder_draft(record)
+
+    assert layer3.first_impression == "Runtime-Pro-First-Impression"
+    assert layer3.core_insight_table["能量本质"] == "Runtime-Pro-Energy-Essence"
+    assert layer3.core_insight_table["关键卡点"] == "Runtime-Pro-Block-Point"
+    assert layer3.core_insight_table["转化方向"] == "Runtime-Pro-Direction"
+    assert layer3.core_insight_table["疗愈核心"] == "Runtime-Pro-Healing-Core"
+    assert layer3.three_circles_detailed["inner"]["reading"] == "Runtime-Pro-Inner-Reading"
+    assert layer3.three_circles_detailed["middle"]["reading"] == "Runtime-Pro-Middle-Reading"
+    assert layer3.three_circles_detailed["outer"]["reading"] == "Runtime-Pro-Outer-Reading"
+    assert layer3.micro_analysis_detailed["节奏关系"] == "Runtime-Pro-Micro-Rhythm"
+    assert layer3.root_cause["surface"] == "Runtime-Pro-Root-Surface"
+    assert layer3.root_cause["deeper"] == "Runtime-Pro-Root-Deeper"
+    assert layer3.root_cause["core"] == "Runtime-Pro-Root-Core"
 
 
 def test_prompt_schema_validation_reports_missing_required_fields():
