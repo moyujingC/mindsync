@@ -8,8 +8,7 @@ WORKDIR /app
 
 COPY toC/app/backend/requirements.release.txt /tmp/requirements.release.txt
 
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r /tmp/requirements.release.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.release.txt
 
 COPY toC/app/backend /app/backend
 
