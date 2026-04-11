@@ -192,6 +192,8 @@ class NarrativeContextService:
         inner_radius: int = 33,
         middle_radius: int = 66,
         title_templates: dict[str, str] | None = None,
+        experiment_title: str = "",
+        experiment_content: str = "",
         dominant_element: str = "",
         dominant_percentage: float = 0.0,
         secondary_element: str = "",
@@ -340,6 +342,12 @@ class NarrativeContextService:
                 part for part in visual_parts if isinstance(part, str) and part.strip()
             ).strip(),
             "story_angles": self._build_story_angles(resolved_theme),
+            "experiment": self._build_lite_experiment(
+                experiment_title=experiment_title,
+                experiment_content=experiment_content,
+                dominant_element=dominant,
+                dominant_keywords=dominant_keywords,
+            ),
             "story_sections": {
                 "base": base,
                 "contradiction": contradiction.strip(),
@@ -494,6 +502,25 @@ class NarrativeContextService:
             return default_title
 
         return "慢慢亮起来的中心"
+
+    def _build_lite_experiment(
+        self,
+        *,
+        experiment_title: str,
+        experiment_content: str,
+        dominant_element: str,
+        dominant_keywords: str,
+    ) -> dict[str, str]:
+        content = str(experiment_content or "").strip()
+        if content:
+            content = (
+                f"{content}\n补充观察：如果今天只顺着这幅画练习一件事，可以试着把「{dominant_element}」的品质带进生活里，"
+                f"例如先给自己一点{dominant_keywords}。"
+            ).strip()
+        return {
+            "title": str(experiment_title or "").strip(),
+            "content": content,
+        }
 
     def _clean_text_block(self, content: str) -> str:
         if not isinstance(content, str):

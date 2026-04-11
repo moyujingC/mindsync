@@ -1345,7 +1345,12 @@ class LayeredOrchestrator:
                     ),
                 }
             )
-        layer.experiment = self._build_lite_experiment_payload(record, theme_label, layer.title)
+        layer.experiment = self._build_lite_experiment_payload(
+            record,
+            theme_label,
+            layer.title,
+            projection=lite_projection,
+        )
         layer.prompt_preview = lite_prompt_preview
         return layer
 
@@ -1518,6 +1523,13 @@ class LayeredOrchestrator:
         if isinstance(runtime_title, str) and runtime_title.strip():
             return runtime_title.strip()
 
+        return self._build_lite_title_fallback(record, theme_label)
+
+    def _build_lite_title_fallback(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+    ) -> str:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_key = self._get_record_theme(record)
         inner = circles["inner_radius"]
@@ -1637,6 +1649,11 @@ class LayeredOrchestrator:
                 inner_radius=int((record.three_circles or {}).get("inner_radius", 33)),
                 middle_radius=int((record.three_circles or {}).get("middle_radius", 66)),
                 title_templates=dict(LITE_REPORT_BLUEPRINT.title_templates),
+                experiment_title=LITE_REPORT_BLUEPRINT.structure_labels["experiment_title"],
+                experiment_content=build_lite_experiment_content(
+                    theme_label=theme_label,
+                    title=self._build_lite_title_fallback(record, theme_label),
+                ),
                 dominant_element=dominant["name"],
                 dominant_percentage=float(dominant.get("percentage", 0.0) or 0.0),
                 secondary_element=secondary["name"],
@@ -1915,7 +1932,31 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         theme_label: str,
         title: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+        runtime_experiment = (
+            runtime_projection.get("experiment")
+            if isinstance(runtime_projection, dict)
+            else None
+        )
+        if isinstance(runtime_experiment, dict):
+            experiment_title = runtime_experiment.get("title")
+            experiment_content = runtime_experiment.get("content")
+            if (
+                isinstance(experiment_title, str)
+                and experiment_title.strip()
+                and isinstance(experiment_content, str)
+                and experiment_content.strip()
+            ):
+                return {
+                    "title": experiment_title.strip(),
+                    "content": experiment_content.strip(),
+                }
+
         content = build_lite_experiment_content(
             theme_label=theme_label,
             title=title,
