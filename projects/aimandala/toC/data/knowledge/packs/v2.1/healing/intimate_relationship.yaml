@@ -1,0 +1,65 @@
+id: healing.intimate_relationship
+type: healing
+version: v2.1
+status: active
+source: legacy_v2_python
+review_status: migrated
+payload:
+  theme_id: intimate_relationship
+  healing_prescriptions:
+    issue_types:
+      依恋焦虑:
+        symptoms: 关系中患得患失，过度依赖，害怕被抛弃，常通过'作'来寻求关注
+        mandala_prescription: 绘制以粉色、黄色为主，蓝色为辅的曼陀罗，中心稳定，外围柔和。建议每天冥想15分钟，持续21天
+        daily_practice: 每天写下3件伴侣让你感到被爱的小事，并表达感谢。练习正念呼吸，稳定情绪
+        cognitive_upgrade: 认识到安全感源于内在，而非伴侣的过度关注。学习自我安抚，相信自己值得被爱
+      沟通障碍:
+        symptoms: 难以表达真实情感，或沟通时情绪化，导致冷战或争吵，无法有效解决问题
+        mandala_prescription: 绘制以蓝色、绿色为主，辅以少量红色的曼陀罗，线条流畅，色彩过渡自然。建议每天冥想10分钟，持续14天
+        daily_practice: 每天与伴侣进行一次'心流对话'，分享当天感受，不带评判地倾听。练习非暴力沟通
+        cognitive_upgrade: 理解沟通是双向的，表达与倾听同等重要。学习区分事实与感受，用'我'开头表达
+      亲密恐惧:
+        symptoms: 害怕深度亲密，对承诺感到不安，常在关系稳定后退缩，或保持距离
+        mandala_prescription: 绘制以绿色、蓝色为主，中心有稳定黄色，外围有开放空间感的曼陀罗。建议每天冥想20分钟，持续28天
+        daily_practice: 每天与伴侣进行一次身体接触（拥抱、牵手），逐步增加亲密行为。写下对亲密的积极感受
+        cognitive_upgrade: 认识到亲密是连接而非束缚，是共同成长而非失去自我。探索亲密带来的安全感和支持
+      信任问题:
+        symptoms: 关系中多疑，捕风捉影，难以相信伴侣，或因过往经历而对关系缺乏信心
+        mandala_prescription: 绘制以黄色、白色为主，中心稳定，线条清晰，色彩明亮的曼陀罗。建议每天冥想15分钟，持续21天
+        daily_practice: 每天记录伴侣让你感到信任的3个行为。与伴侣坦诚沟通不安全感，寻求支持
+        cognitive_upgrade: 理解信任是建立在行动和时间上的，放下过去，专注于当下关系的积极面
+      边界模糊:
+        symptoms: 在关系中没有底线，过度付出，或被伴侣控制，失去自我，感到委屈
+        mandala_prescription: 绘制以绿色、白色为主，线条清晰有力，中心稳定，外围有明确界限的曼陀罗。建议每天冥想10分钟，持续14天
+        daily_practice: 每天练习对伴侣说'不'一次（从小事开始）。写下自己的需求和底线，并与伴侣分享
+        cognitive_upgrade: 认识到健康的边界是保护自我和关系的基础。尊重自己，才能赢得伴侣的尊重
+      情感冷淡:
+        symptoms: 关系缺乏激情和活力，双方互动平淡，感到无聊或麻木
+        mandala_prescription: 绘制以红色、橙色为主，辅以少量绿色，色彩鲜明，充满活力的曼陀罗。建议每天冥想15分钟，持续21天
+        daily_practice: 每天与伴侣进行一次有创意的约会，或尝试新的共同活动。主动表达爱意和赞美
+        cognitive_upgrade: 理解激情需要经营和创造，关系活力来源于双方的共同投入和新鲜感
+      冲突模式:
+        symptoms: 关系中频繁争吵，或陷入冷战，难以有效解决冲突，导致关系恶化
+        mandala_prescription: 绘制以蓝色、黄色为主，辅以少量绿色，色彩和谐，线条流畅的曼陀罗。建议每天冥想10分钟，持续14天
+        daily_practice: 学习'积极暂停'技巧，在冲突升级前冷静下来。练习换位思考，理解伴侣立场
+        cognitive_upgrade: 认识到冲突是关系成长的机会，而非破坏。学习建设性地解决问题，寻求共赢
+  healing_template:
+    duration_days: 30
+    phases:
+    - phase: 1
+      days: 1-10
+      theme: 觉察亲密关系模式
+      color: 粉色
+      frequency: 每天7张
+    - phase: 2
+      days: 11-20
+      theme: 疗愈过往情伤
+      color: 蓝色+紫色
+      frequency: 每天7-14张
+    - phase: 3
+      days: 21-30
+      theme: 建立健康亲密关系
+      color: 红色+黄色
+      frequency: 每天3-7张
+relations:
+  theme: theme.intimate_relationship

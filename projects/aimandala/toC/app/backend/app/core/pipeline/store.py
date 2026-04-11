@@ -21,6 +21,10 @@ from .data_models import (
 )
 
 
+class UnsupportedInterpretationSchemaError(ValueError):
+    """Raised when a stored interpretation uses an unsupported schema version."""
+
+
 class InterpretationStore:
     """
     解读记录存储管理器
@@ -31,6 +35,7 @@ class InterpretationStore:
     # 数据保留期限（天）- 所有数据保留10年用于研究分析
     RAW_DATA_RETENTION_DAYS = 365 * 10  # layer_0和layer_1保留10年
     FINAL_DATA_RETENTION_DAYS = 365 * 10  # layer_2和layer_4保留10年
+    SUPPORTED_SCHEMA_VERSION = "v2.1"
 
     def __init__(self, storage_dir: str = None):
         """
@@ -88,8 +93,7 @@ class InterpretationStore:
             return None
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            data = self._read_json_file(file_path)
 
             record = self._dict_to_record(data)
             self._cache[interpretation_id] = record
@@ -97,12 +101,16 @@ class InterpretationStore:
 
         except Exception as e:
             print(f"加载解读记录失败: {e}")
+            if isinstance(e, UnsupportedInterpretationSchemaError):
+                raise
             return None
 
     def _dict_to_record(self, data: Dict) -> InterpretationRecord:
         """将字典转换为InterpretationRecord对象"""
+        self._assert_supported_schema(data)
         record = InterpretationRecord(
             interpretation_id=data.get("interpretation_id", ""),
+            schema_version=data.get("schema_version", ""),
             user_id=data.get("user_id", ""),
             image_hash=data.get("image_hash", ""),
             theme=data.get("theme", "general"),
@@ -159,6 +167,13 @@ class InterpretationStore:
             description=data.get("description", ""),
             imbalance_candidates=data.get("imbalance_candidates", []),
             color_analysis=data.get("color_analysis", {}),
+            circle_colors=data.get("circle_colors"),
+            visual_facts=data.get("visual_facts", {}),
+            knowledge_hits=data.get("knowledge_hits", {}),
+            rule_evaluations=data.get("rule_evaluations", {}),
+            theme_projection=data.get("theme_projection", {}),
+            quality_flags=data.get("quality_flags", []),
+            fallback_summary=data.get("fallback_summary", {}),
             created_at=data.get("created_at", ""),
         )
 
@@ -326,8 +341,9 @@ class InterpretationStore:
 
         for file_path in self.storage_dir.glob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
+                data = self._read_json_file(file_path, strict_schema=False)
+                if not self._is_supported_schema(data):
+                    continue
 
                 if data.get("user_id") == user_id:
                     record = self._dict_to_record(data)
@@ -354,8 +370,9 @@ class InterpretationStore:
 
         for file_path in self.storage_dir.glob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
+                data = self._read_json_file(file_path, strict_schema=False)
+                if not self._is_supported_schema(data):
+                    continue
 
                 created_at = datetime.fromisoformat(data.get("created_at", ""))
 
@@ -397,8 +414,9 @@ class InterpretationStore:
         """
         for file_path in self.storage_dir.glob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
+                data = self._read_json_file(file_path, strict_schema=False)
+                if not self._is_supported_schema(data):
+                    continue
 
                 if (
                     data.get("image_hash") == image_hash
@@ -420,8 +438,9 @@ class InterpretationStore:
 
         for file_path in self.storage_dir.glob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
+                data = self._read_json_file(file_path, strict_schema=False)
+                if not self._is_supported_schema(data):
+                    continue
 
                 if (
                     data.get("image_hash") == image_hash
@@ -456,8 +475,9 @@ class InterpretationStore:
         """
         for file_path in self.storage_dir.glob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
+                data = self._read_json_file(file_path, strict_schema=False)
+                if not self._is_supported_schema(data):
+                    continue
 
                 if (
                     data.get("image_hash") != image_hash
@@ -479,3 +499,26 @@ class InterpretationStore:
                 continue
 
         return None
+
+    def _read_json_file(
+        self,
+        file_path: Path,
+        *,
+        strict_schema: bool = True,
+    ) -> Dict:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if strict_schema:
+            self._assert_supported_schema(data)
+        return data
+
+    def _assert_supported_schema(self, data: Dict) -> None:
+        if self._is_supported_schema(data):
+            return
+        schema_version = data.get("schema_version") or "legacy"
+        raise UnsupportedInterpretationSchemaError(
+            f"unsupported interpretation schema: {schema_version}; only {self.SUPPORTED_SCHEMA_VERSION} is supported"
+        )
+
+    def _is_supported_schema(self, data: Dict) -> bool:
+        return data.get("schema_version") == self.SUPPORTED_SCHEMA_VERSION

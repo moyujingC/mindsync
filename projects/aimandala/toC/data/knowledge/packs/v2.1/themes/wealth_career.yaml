@@ -1,0 +1,366 @@
+id: theme.wealth_career
+type: theme
+version: v2.1
+status: active
+source: legacy_v2_python
+review_status: migrated
+payload:
+  theme_id: wealth_career
+  theme_name_cn: 财富事业
+  core_issues:
+  - 金钱信念与匮乏感
+  - 事业成就与价值感
+  - 权力与责任
+  - 创造与接收
+  element_meanings:
+    木:
+      core_concept: 事业发展与成长潜力
+      keywords:
+      - 发展
+      - 成长
+      - 创新
+      - 突破
+      psychological_theme: 事业的成长与开拓
+    火:
+      core_concept: 对成功的热情与动力
+      keywords:
+      - 热情
+      - 动力
+      - 目标
+      - 成就
+      psychological_theme: 成就动机与事业热情
+    土:
+      core_concept: 财富的积累与稳定
+      keywords:
+      - 积累
+      - 稳定
+      - 承载
+      - 丰收
+      psychological_theme: 财富安全感与物质基础
+    金:
+      core_concept: 价值认可与专业能力
+      keywords:
+      - 价值
+      - 专业
+      - 精准
+      - 收获
+      psychological_theme: 自我价值与专业成就
+    水:
+      core_concept: 财富流动与机会把握
+      keywords:
+      - 流动
+      - 机会
+      - 智慧
+      - 资源
+      psychological_theme: 财富流动与机会感知
+  healing_template:
+    duration_days: 30
+    phases:
+    - phase: 1
+      days: 1-10
+      theme: 觉察金钱信念与模式
+      color: 黑色
+      frequency: 每天7-14张
+    - phase: 2
+      days: 11-20
+      theme: 释放匮乏感与恐惧
+      color: 蓝色+绿色
+      frequency: 每天7张
+    - phase: 3
+      days: 21-30
+      theme: 建立丰盛意识
+      color: 黄色+红色
+      frequency: 每天3-7张
+  color_meanings:
+    木:
+      shades:
+        深绿:
+          inner:
+            interpretation: 童年时期对独立和自由的渴望强烈，可能导致对财富的过度追求或反叛
+            manifestation: 渴望通过事业证明自己，不愿受金钱束缚，可能频繁跳槽或创业
+            healing: 探索内在驱动力，平衡独立与合作，培养耐心与韧性
+          middle:
+            interpretation: 当下事业心强，渴望突破，但可能过于急躁或固执己见
+            manifestation: 工作中积极进取，但可能不听取他人意见，容易与同事产生摩擦
+            healing: 学习倾听与合作，培养灵活变通的能力，平衡事业与人际
+          outer:
+            interpretation: 事业发展迅速，社会影响力大，但可能过于强势或扩张过快
+            manifestation: 在行业内有较高地位，但可能因过度扩张导致资金链紧张或人际关系受损
+            healing: 学习稳健发展，培养团队协作精神，平衡事业与生活
+        中绿:
+          inner:
+            interpretation: 童年时期对独立成长有健康认知，能够平衡个人发展与家庭关系
+            manifestation: 事业发展较为顺利，既有自主性也懂得合作
+            healing: 继续保持这种平衡，在拓展事业的同时注重人际关系的维护
+          middle:
+            interpretation: 当下事业发展状态良好，有明确的方向感和行动力
+            manifestation: 工作中能够积极进取，同时保持良好的人际关系
+            healing: 保持当前状态，持续学习成长，为未来发展打好基础
+          outer:
+            interpretation: 事业发展稳健，社会认可度良好，能够持续创造价值
+            manifestation: 职业地位稳定，收入持续增长，社会资源较为丰富
+            healing: 在稳健发展的基础上适度创新，拓展更广阔的发展空间
+        淡绿:
+          inner:
+            interpretation: 童年缺乏自主选择，对财富增长缺乏信心，可能不敢追求事业发展
+            manifestation: 事业发展受限，缺乏创新和拓展的勇气，容易安于现状
+            healing: 鼓励自我表达，培养决策能力，从小目标开始建立成就感
+          middle:
+            interpretation: 当下事业发展停滞，缺乏方向感，容易感到迷茫和无力
+            manifestation: 工作中缺乏主动性，难以做出决策，对职业发展感到困惑
+            healing: 明确职业目标，培养学习新技能的意愿，寻求导师指导
+          outer:
+            interpretation: 事业发展受阻，社会认可度不高，难以实现财富变现
+            manifestation: 职业发展停滞不前，收入增长缓慢，难以获得社会资源支持
+            healing: 积极拓展人脉，学习市场营销，提升个人品牌影响力
+    火:
+      shades:
+        深红:
+          inner:
+            interpretation: 童年对金钱的感受强烈，可能经历过物质匮乏或过度满足，对金钱有强烈的情绪反应
+            manifestation: 赚钱动力强但容易冲动消费，对金钱有焦虑感，可能用花钱来缓解压力
+            healing: 觉察消费背后的情绪，学习情绪管理，培养延迟满足的能力
+          middle:
+            interpretation: 当下赚钱欲望强烈，行动力十足，但可能冲动消费或投资
+            manifestation: 积极寻找赚钱机会，但可能盲目投资，容易因冲动而损失财富
+            healing: 培养理性消费习惯，学习风险管理，提升财务决策的成熟度
+          outer:
+            interpretation: 财富显化能力强，容易吸引金钱，但可能过度消费或炫耀
+            manifestation: 收入高，消费大手大脚，可能通过炫富来获得关注，财务状况不稳定
+            healing: 培养理性消费观，学习财富管理，将财富用于更有意义的方面
+        中红:
+          inner:
+            interpretation: 童年对金钱有健康的情绪体验，能够平衡物质需求与精神追求
+            manifestation: 赚钱动力适中，消费理性，能够享受金钱带来的便利而不被控制
+            healing: 继续保持这种健康状态，培养对财富的感恩之心
+          middle:
+            interpretation: 当下对赚钱有积极的热情和行动力，能够理性把握机会
+            manifestation: 工作努力，收入稳定增长，能够平衡支出与储蓄
+            healing: 保持积极的工作态度，同时注重财富的积累和保值
+          outer:
+            interpretation: 财富显化能力良好，能够将想法转化为实际收入
+            manifestation: 收入与付出相匹配，能够获得社会认可，财务状况健康
+            healing: 在现有基础上进一步提升财富创造能力，实现更大的价值
+        淡红:
+          inner:
+            interpretation: 童年对金钱的感受模糊，缺乏对财富的积极追求，对赚钱缺乏热情
+            manifestation: 对赚钱缺乏动力，容易错失机会，对金钱的得失表现冷淡
+            healing: 激发内在热情，培养对财富的积极信念，从小行动开始积累
+          middle:
+            interpretation: 当下对赚钱缺乏热情，行动力不足，容易错过机会
+            manifestation: 对赚钱机会不敏感，缺乏行动力，收入增长缓慢或停滞
+            healing: 激发内在动力，培养积极心态，从小额投资或副业开始尝试
+          outer:
+            interpretation: 财富显化能力弱，难以将想法变为实际收入，缺乏社会反馈
+            manifestation: 收入与付出不成正比，难以获得社会认可，对财富的追求感到无力
+            healing: 提升执行力，学习市场推广，将创意转化为实际价值
+    土:
+      shades:
+        深黄:
+          inner:
+            interpretation: 童年家庭环境稳定，对财富有较强的安全感，但可能过于保守
+            manifestation: 财富积累稳健，但可能过于保守，不敢冒险投资，错失增值机会
+            healing: 适度挑战舒适区，学习风险评估，培养对变化的适应性
+          middle:
+            interpretation: 当下财富积累稳健，注重资产保值，但可能过于保守谨慎
+            manifestation: 财务状况稳定，但可能不敢尝试新的投资，错失财富增值机会
+            healing: 适度拓展投资视野，学习多元化配置，培养对市场变化的适应性
+          outer:
+            interpretation: 财富积累稳固，社会地位受人尊敬，但可能过于保守或固执
+            manifestation: 拥有大量不动产或稳定投资，但可能不愿尝试新事物，错失发展机会
+            healing: 适度开放心态，学习创新思维，将财富用于社会回馈
+        中黄:
+          inner:
+            interpretation: 童年时期对财富积累有健康认知，能够平衡储蓄与消费
+            manifestation: 财富基础稳固，既有安全感也懂得适度享受生活
+            healing: 继续保持稳健的财务习惯，同时培养对财富的丰盛意识
+          middle:
+            interpretation: 当下财富积累良好，能够平衡稳定与增长
+            manifestation: 财务状况健康，既有稳定收入也有适度的投资增值
+            healing: 在保持稳健的基础上，适度拓展投资渠道，实现财富的持续增长
+          outer:
+            interpretation: 财富积累稳固，社会地位良好，能够获得他人的信任和支持
+            manifestation: 拥有稳定的财富基础和社会资源，能够持续发展
+            healing: 在稳固的基础上适度创新，拓展更广阔的发展空间
+        淡黄:
+          inner:
+            interpretation: 童年缺乏安全感，对财富积累感到焦虑，容易患得患失
+            manifestation: 财富基础不稳固，容易受外界影响，对金钱缺乏掌控感
+            healing: 建立内在安全感，学习理性消费，培养财富规划意识
+          middle:
+            interpretation: 当下财富基础不稳，容易感到财务压力，缺乏安全感
+            manifestation: 收入不稳定，容易入不敷出，对未来财务状况感到担忧
+            healing: 建立应急储蓄，学习预算管理，培养财务规划的习惯
+          outer:
+            interpretation: 财富基础薄弱，社会认可度低，难以获得外部支持
+            manifestation: 财务状况不稳定，难以获得贷款或投资，社会资源匮乏
+            healing: 建立良好信用，积极寻求合作，提升社会责任感
+    金:
+      shades:
+        深白:
+          inner:
+            interpretation: 童年对规则和秩序敏感，对金钱有严格的道德标准或自我要求
+            manifestation: 财务纪律性强，但可能过于严苛，对自我价值和财富有完美主义倾向
+            healing: 接受不完美，培养自我宽恕，学习弹性处理财务问题
+          middle:
+            interpretation: 当下财务纪律严明，注重规则和效率，但可能过于挑剔或自我批评
+            manifestation: 严格执行财务计划，但可能对他人或自己过于苛刻，影响人际关系
+            healing: 学习包容与弹性，培养积极的自我对话，平衡纪律与放松
+          outer:
+            interpretation: 财务管理能力强，在行业内有权威性，但可能过于严苛或挑剔
+            manifestation: 财务决策精准，但可能对合作伙伴或员工过于严厉，影响团队氛围
+            healing: 学习柔性管理，培养同理心，平衡效率与人情味
+        中白:
+          inner:
+            interpretation: 童年时期对自我价值有健康认知，能够平衡原则与灵活
+            manifestation: 财务规划有序，既懂得自律也能够享受生活
+            healing: 继续保持健康的自我价值观，在原则性与灵活性之间找到平衡
+          middle:
+            interpretation: 当下财务规划良好，既有纪律性也懂得变通
+            manifestation: 能够制定并执行财务计划，同时保持开放的心态
+            healing: 在保持纪律的基础上，培养更多的灵活性，提升财务决策的智慧
+          outer:
+            interpretation: 财务管理能力良好，在社会上有一定认可度
+            manifestation: 能够做出明智的财务决策，获得他人的信任和尊重
+            healing: 在现有基础上进一步提升财务管理能力，实现更大的价值
+        淡白:
+          inner:
+            interpretation: 童年缺乏对自我价值的肯定，对金钱规则模糊，容易自我批评
+            manifestation: 缺乏财务规划，容易自我否定，对财富的获取感到不配得
+            healing: 肯定自我价值，学习财务知识，培养积极的财富信念
+          middle:
+            interpretation: 当下财务规划混乱，缺乏自律，对自我价值感到迷茫
+            manifestation: 财务支出随意，容易负债，对自己的赚钱能力缺乏信心
+            healing: 建立清晰的财务目标，培养自律习惯，提升自我价值感
+          outer:
+            interpretation: 财务管理混乱，缺乏社会认可，容易被他人利用
+            manifestation: 容易被骗或投资失误，缺乏财务保护意识，社会地位不稳定
+            healing: 提升风险意识，学习法律知识，保护自身合法权益
+    水:
+      shades:
+        深蓝:
+          inner:
+            interpretation: 童年对金钱有深刻的直觉或困惑，可能经历过财富的起伏
+            manifestation: 对财富有深刻的洞察力，但可能过于敏感，容易陷入金钱的恐惧或担忧
+            healing: 学习区分直觉与恐惧，培养理性分析能力，建立健康的金钱观
+          middle:
+            interpretation: 当下对财富有深刻的直觉和洞察，但可能过于情绪化或担忧
+            manifestation: 能够预感到市场风险，但可能因过度担忧而错失良机，或因情绪波动影响决策
+            healing: 学习情绪管理，培养理性分析能力，相信自己的直觉但也要验证
+          outer:
+            interpretation: 对市场趋势有敏锐洞察力，容易抓住机遇，但可能过于敏感或多疑
+            manifestation: 能够预判行业发展方向，但可能因过度分析而犹豫不决，错失良机
+            healing: 培养果断决策能力，学习信任直觉，平衡分析与行动
+        中蓝:
+          inner:
+            interpretation: 童年时期对金钱有健康的直觉，能够平衡感性与理性
+            manifestation: 对财富有较好的洞察力，既能够感知机会也懂得理性分析
+            healing: 继续保持这种平衡，培养对财富的敏感度和理性判断力
+          middle:
+            interpretation: 当下对财富有较好的直觉和判断力，能够把握机会
+            manifestation: 在投资和理财方面有一定的直觉，能够做出明智的决策
+            healing: 在直觉的基础上加强理性分析，提升财富决策的准确性
+          outer:
+            interpretation: 对市场变化有较好的感知能力，能够适应环境变化
+            manifestation: 能够根据市场变化调整策略，保持一定的竞争优势
+            healing: 在适应变化的基础上，培养前瞻性思维，引领行业发展
+        淡蓝:
+          inner:
+            interpretation: 童年对金钱的理解肤浅，缺乏对财富深层意义的思考
+            manifestation: 对金钱缺乏直觉，容易盲目跟风，对财富的风险评估不足
+            healing: 培养深度思考能力，学习财务知识，提升对金钱的洞察力
+          middle:
+            interpretation: 当下对财富缺乏深度思考，容易随波逐流，缺乏风险意识
+            manifestation: 投资决策缺乏主见，容易听信他人，对财务风险评估不足
+            healing: 培养独立思考能力，学习财务知识，提升对金钱的洞察力
+          outer:
+            interpretation: 对市场变化不敏感，容易随波逐流，缺乏前瞻性
+            manifestation: 投资决策滞后，容易错失市场红利，对未来发展感到迷茫
+            healing: 学习行业知识，培养前瞻性思维，提升对市场变化的适应性
+  interactions:
+    generating:
+      木生火:
+        theme_meaning: 事业拓展激发赚钱动力
+        healthy: 积极开拓新业务，收入随之增长，事业与财富良性循环
+        imbalanced: 盲目扩张导致资金链断裂，或过度消费导致入不敷出
+      火生土:
+        theme_meaning: 赚钱动力促进财富积累
+        healthy: 努力工作带来财富积累，消费有度，资产稳步增长
+        imbalanced: 冲动消费导致财富流失，或过度投资造成财务危机
+      土生金:
+        theme_meaning: 财富积累提升自我价值
+        healthy: 财富稳固带来安全感和自信，投资决策更明智，自我价值感提升
+        imbalanced: 财富积累缓慢导致自我怀疑，或过于保守不敢投资，价值感停滞
+      金生水:
+        theme_meaning: 自我价值引导财富直觉
+        healthy: 清晰的自我价值带来对财富的敏锐直觉，风险评估准确，投资决策智慧
+        imbalanced: 缺乏自我价值导致金钱观混乱，或过度担忧风险而错失机会
+      水生木:
+        theme_meaning: 财富直觉助力事业发展
+        healthy: 敏锐的市场洞察力指导事业方向，创新能力强，事业蓬勃发展
+        imbalanced: 过于情绪化导致事业决策失误，或逃避现实不敢面对挑战
+    restraining:
+      木克土:
+        theme_meaning: 事业拓展挑战财富稳定
+        healthy: 追求事业发展可能打破财富的稳定，带来新的机遇与风险
+        imbalanced: 盲目扩张导致财富基础动摇，或过度冒险造成财务损失
+      土克水:
+        theme_meaning: 财富稳定限制财富直觉
+        healthy: 稳健的财富积累可能让人过于保守，缺乏对新机遇的敏锐洞察
+        imbalanced: 过于固执己见，不愿接受新观念，导致财富增长停滞
+      水克火:
+        theme_meaning: 财富直觉抑制赚钱动力
+        healthy: 对风险的敏锐感知可能让人在赚钱上过于谨慎，缺乏行动力
+        imbalanced: 过度担忧或恐惧导致不敢行动，错失赚钱机会，陷入财务困境
+      火克金:
+        theme_meaning: 赚钱动力挑战自我价值
+        healthy: 赚钱的欲望可能让人忽视内在价值，过度追求物质而迷失自我
+        imbalanced: 冲动消费或投资导致自我价值感降低，或通过金钱寻求认同
+      金克木:
+        theme_meaning: 自我价值限制事业发展
+        healthy: 严格的自我要求可能让人在事业上过于谨慎，不敢尝试新领域
+        imbalanced: 过于挑剔或自我批评导致事业发展受阻，缺乏创新和突破
+  imbalance_mappings:
+    水多木漂:
+      核心矛盾: 想法多但难落地
+      具体表现: 商业想法很多，但总是停留在计划阶段，难以执行
+      转变方向: 降低理想化，从真实行动开始
+    火多土焦:
+      核心矛盾: 急躁消耗稳定
+      具体表现: 急于求成，频繁跳槽或换项目，难以积累
+      转变方向: 培养稳定感，给事业时间沉淀
+    木多火塞:
+      核心矛盾: 创意难转化为价值
+      具体表现: 有很多创意，但难以转化为实际产品或服务
+      转变方向: 聚焦执行，将创意落地
+    土多金埋:
+      核心矛盾: 务实压抑价值
+      具体表现: 过于保守，不敢为自己定价，价值被低估
+      转变方向: 主动展示价值，敢于定价
+    金多水浊:
+      核心矛盾: 分析阻碍决策
+      具体表现: 过度分析市场数据，错失投资或创业机会
+      转变方向: 放下分析，相信直觉
+    水多火灭:
+      核心矛盾: 恐惧压制行动
+      具体表现: 害怕失败，总是在准备，从不真正开始
+      转变方向: 72小时决策，不再等待完美时机
+    火多金熔:
+      核心矛盾: 冲动消耗理性
+      具体表现: 冲动投资或消费，缺乏财务规划
+      转变方向: 培养理性，建立财务纪律
+    金多木折:
+      核心矛盾: 完美拖延机会
+      具体表现: 追求完美方案，导致项目迟迟无法启动
+      转变方向: 先完成再完美，小步快跑
+    木多土陷:
+      核心矛盾: 扩张消耗根基
+      具体表现: 业务扩张过快，资金链或管理跟不上
+      转变方向: 稳扎稳打，夯实基础
+    土多水干:
+      核心矛盾: 固执错失机会
+      具体表现: 固守旧有模式，不愿尝试新渠道或新方法
+      转变方向: 开放心态，拥抱变化
+relations:
+  healing_asset: healing.wealth_career
+  narrative_asset: narrative.wealth_career

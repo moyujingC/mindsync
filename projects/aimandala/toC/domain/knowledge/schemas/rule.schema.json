@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aimandala Rule Asset",
+  "type": "object",
+  "properties": {
+    "type": { "const": "rule" },
+    "payload": { "type": "object" }
+  },
+  "required": ["type", "payload"]
+}

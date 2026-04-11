@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aimandala Knowledge Asset",
+  "type": "object",
+  "required": ["id", "type", "version", "status", "source", "review_status", "payload", "relations"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "type": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "const": "v2.1" },
+    "status": { "type": "string", "minLength": 1 },
+    "source": { "type": "string", "minLength": 1 },
+    "review_status": { "type": "string", "minLength": 1 },
+    "payload": { "type": "object" },
+    "relations": { "type": "object" }
+  },
+  "additionalProperties": true
+}

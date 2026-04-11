@@ -14,15 +14,18 @@ except Exception:  # pragma: no cover - migration-time fallback
     extract_colors_by_circles = None
 
 try:
-    from app.core.knowledge import KnowledgeQueryEngine, get_theme_summary
-    from app.core.knowledge.themes import (
+    from app.core.knowledge import (
+        KnowledgeQueryEngine,
+        get_theme_summary,
         get_insight_templates,
         get_pro_upgrade_teaser,
         get_theme_config,
     )
+    from app.core.knowledge_runtime.runtime import get_knowledge_runtime
     from app.core.knowledge.three_circles import analyze_energy_flow
 except Exception:  # pragma: no cover - migration-time fallback
     KnowledgeQueryEngine = None
+    get_knowledge_runtime = None
 
     def get_insight_templates(theme: str) -> Dict[str, Any]:
         return {}
@@ -69,7 +72,7 @@ from .report_blueprints import (
     render_template_text,
 )
 from .report_contracts import ReportContractAssembler
-from .store import InterpretationStore
+from .store import InterpretationStore, UnsupportedInterpretationSchemaError
 
 ELEMENT_KEY_TO_CN = {
     "wood": "木",
@@ -78,13 +81,6 @@ ELEMENT_KEY_TO_CN = {
     "metal": "金",
     "water": "水",
 }
-
-CIRCLE_KEY_TO_CN = {
-    "inner": "内圈",
-    "middle": "中圈",
-    "outer": "外圈",
-}
-
 
 class GenerationStage(str, Enum):
     """Execution stages for the migrated V2 interpretation pipeline."""
@@ -148,6 +144,15 @@ class LayeredOrchestrator:
             self.knowledge_engine = None
         self.store = store or InterpretationStore()
         self.circle_detector = circle_detector or CircleDetector()
+        self.knowledge_runtime = (
+            get_knowledge_runtime() if get_knowledge_runtime is not None else None
+        )
+        self.layer0_assembler = (
+            self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
+        )
+        self.narrative_service = (
+            self.knowledge_runtime.narrative_service if self.knowledge_runtime else None
+        )
         if generation_runtime is not None:
             self.generation_runtime = generation_runtime
         elif prompt_runtime is not None:
@@ -1199,9 +1204,16 @@ class LayeredOrchestrator:
         return layer2
 
     def _build_layer0_placeholder(self, record: InterpretationRecord) -> Layer0Raw:
-        layer = self._build_layer0_from_knowledge(record)
-        if layer is not None:
-            return layer
+        if self.layer0_assembler is not None:
+            layer = self.layer0_assembler.build_from_record(
+                record,
+                extract_colors_by_circles=extract_colors_by_circles,
+                analyze_energy_flow=analyze_energy_flow,
+            )
+            if layer is not None:
+                return layer
+            return self.layer0_assembler.build_fallback(record)
+
         return self._build_layer0_fallback(record)
 
     def _build_layer0_fallback(self, record: InterpretationRecord) -> Layer0Raw:
@@ -1237,290 +1249,6 @@ class LayeredOrchestrator:
         ]
         layer.micro_analysis.wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
         return layer
-
-    def _build_layer0_from_knowledge(self, record: InterpretationRecord) -> Optional[Layer0Raw]:
-        if extract_colors_by_circles is None:
-            return None
-
-        image_path = (record.image_local_path or "").strip()
-        if not image_path:
-            return None
-
-        path = Path(image_path)
-        if not path.exists():
-            return None
-
-        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
-        inner_ratio = circles.get("inner_radius", 33) / 100.0
-        middle_ratio = circles.get("middle_radius", 66) / 100.0
-
-        try:
-            circle_colors = extract_colors_by_circles(
-                str(path),
-                inner_radius=inner_ratio,
-                middle_radius=middle_ratio,
-            )
-        except Exception:
-            return None
-
-        if not isinstance(circle_colors, dict) or not circle_colors:
-            return None
-
-        element_distribution = self._aggregate_five_elements(circle_colors, circles)
-        layer = Layer0Raw(description="V2知识库原始查询结果（迁移期）")
-        layer.circle_colors = circle_colors
-        layer.color_analysis = self._build_layer0_color_analysis(
-            circle_colors,
-            element_distribution,
-            theme=record.theme,
-        )
-        self._apply_layer0_five_elements(layer, element_distribution)
-        self._apply_layer0_three_circles(layer, circle_colors, circles)
-        self._apply_layer0_micro_analysis(layer, circle_colors)
-        layer.imbalance_candidates = self._identify_knowledge_imbalances(
-            element_distribution,
-            circle_colors,
-        ) or ["transition-overload"]
-        return layer
-
-    def _aggregate_five_elements(
-        self,
-        circle_colors: Dict[str, Any],
-        circles: Dict[str, int],
-    ) -> Dict[str, Dict[str, Any]]:
-        inner_ratio = circles.get("inner_radius", 33) / 100.0
-        middle_ratio = circles.get("middle_radius", 66) / 100.0
-        weights = {
-            "inner": max(inner_ratio**2, 0.0001),
-            "middle": max(middle_ratio**2 - inner_ratio**2, 0.0001),
-            "outer": max(1 - middle_ratio**2, 0.0001),
-        }
-
-        aggregate = {key: 0.0 for key in ELEMENT_KEY_TO_CN}
-        areas = {key: [] for key in ELEMENT_KEY_TO_CN}
-
-        for circle_key, weight in weights.items():
-            circle_data = circle_colors.get(circle_key, {})
-            distribution = circle_data.get("five_elements", {})
-            for element_key, percentage in distribution.items():
-                if element_key not in aggregate:
-                    continue
-                aggregate[element_key] += weight * (float(percentage) / 100.0)
-
-            dominant = circle_data.get("dominant_element")
-            if dominant in areas:
-                areas[dominant].append(CIRCLE_KEY_TO_CN.get(circle_key, circle_key))
-
-        total = sum(aggregate.values()) or 1.0
-        result: Dict[str, Dict[str, Any]] = {}
-        for element_key, value in aggregate.items():
-            percentage = round(value / total * 100.0, 2)
-            result[element_key] = {
-                "percentage": percentage,
-                "proportion": round(percentage / 100.0, 4),
-                "areas": areas.get(element_key, []),
-                "element_cn": ELEMENT_KEY_TO_CN[element_key],
-            }
-        return result
-
-    def _build_layer0_color_analysis(
-        self,
-        circle_colors: Dict[str, Any],
-        element_distribution: Dict[str, Dict[str, Any]],
-        *,
-        theme: Optional[str],
-    ) -> Dict[str, Any]:
-        metrics = self._derive_color_risk_metrics(circle_colors)
-        dominant = max(
-            element_distribution.items(),
-            key=lambda item: item[1].get("percentage", 0.0),
-        )[0]
-
-        return {
-            "summary": f"V2知识库已基于三圈颜色提取完成五行聚合，当前主导元素更接近「{ELEMENT_KEY_TO_CN.get(dominant, dominant)}」。",
-            "overall_saturation": metrics["overall_saturation"],
-            "black_ratio": metrics["black_ratio"],
-            "red_ratio": metrics["red_ratio"],
-            "theme_summary": self.get_knowledge_theme_summary(theme),
-            "element_distribution": {
-                key: {
-                    "element": item["element_cn"],
-                    "percentage": item["percentage"],
-                    "proportion": item["proportion"],
-                    "areas": item["areas"],
-                }
-                for key, item in element_distribution.items()
-            },
-        }
-
-    def _derive_color_risk_metrics(self, circle_colors: Dict[str, Any]) -> Dict[str, float]:
-        weighted_saturation = 0.0
-        weighted_black = 0.0
-        weighted_red = 0.0
-        total_weight = 0.0
-
-        for circle_data in circle_colors.values():
-            for color in circle_data.get("colors", []):
-                percentage = float(color.get("percentage", 0.0)) / 100.0
-                rgb = color.get("rgb") or []
-                if len(rgb) != 3:
-                    continue
-                r, g, b = [float(v) for v in rgb]
-                max_c = max(r, g, b)
-                min_c = min(r, g, b)
-                saturation = 0.0 if max_c == 0 else (max_c - min_c) / max_c
-                brightness = 0.299 * r + 0.587 * g + 0.114 * b
-
-                weighted_saturation += saturation * percentage
-                if brightness < 40:
-                    weighted_black += percentage
-                if r > 120 and r > g * 1.15 and r > b * 1.15:
-                    weighted_red += percentage
-                total_weight += percentage
-
-        if total_weight <= 0:
-            return {
-                "overall_saturation": 0.42,
-                "black_ratio": 0.18,
-                "red_ratio": 0.11,
-            }
-
-        return {
-            "overall_saturation": round(weighted_saturation / total_weight, 4),
-            "black_ratio": round(weighted_black / total_weight, 4),
-            "red_ratio": round(weighted_red / total_weight, 4),
-        }
-
-    def _apply_layer0_five_elements(
-        self,
-        layer: Layer0Raw,
-        element_distribution: Dict[str, Dict[str, Any]],
-    ) -> None:
-        for element_key, item in element_distribution.items():
-            setattr(
-                layer.five_elements,
-                element_key,
-                {
-                    "percentage": item["percentage"],
-                    "areas": item["areas"],
-                    "element_cn": item["element_cn"],
-                },
-            )
-
-    def _apply_layer0_three_circles(
-        self,
-        layer: Layer0Raw,
-        circle_colors: Dict[str, Any],
-        circles: Dict[str, int],
-    ) -> None:
-        radius_map = {
-            "inner": circles.get("inner_radius", 33),
-            "middle": circles.get("middle_radius", 66),
-            "outer": 100,
-        }
-        meaning_map = {
-            "inner": LITE_REPORT_BLUEPRINT.structure_labels["layer0_inner_meaning"],
-            "middle": LITE_REPORT_BLUEPRINT.structure_labels["layer0_middle_meaning"],
-            "outer": LITE_REPORT_BLUEPRINT.structure_labels["layer0_outer_meaning"],
-        }
-
-        for circle_key in ["inner", "middle", "outer"]:
-            circle_data = circle_colors.get(circle_key, {})
-            dominant_key = circle_data.get("dominant_element")
-            dominant_cn = ELEMENT_KEY_TO_CN.get(dominant_key, dominant_key or "")
-            knowledge_reading = self._get_circle_knowledge_reading(
-                CIRCLE_KEY_TO_CN[circle_key],
-                dominant_cn,
-            )
-            target = getattr(layer.three_circles, circle_key)
-            target.update(
-                {
-                    "radius_percent": radius_map[circle_key],
-                    "meaning": meaning_map[circle_key],
-                    "dominant": dominant_cn,
-                    "dominant_color": circle_data.get("dominant_color"),
-                    "five_elements": circle_data.get("five_elements", {}),
-                    "colors": [item.get("hex") for item in circle_data.get("colors", [])[:3]],
-                    "knowledge_reading": knowledge_reading,
-                }
-            )
-
-    def _get_circle_knowledge_reading(self, circle_name: str, dominant_element: str) -> str:
-        if not self.knowledge_engine or not dominant_element:
-            return ""
-
-        try:
-            result = self.knowledge_engine.get_circle_interpretation(circle_name, dominant_element)
-        except Exception:
-            return ""
-
-        if not getattr(result, "found", False):
-            return ""
-        data = getattr(result, "data", "")
-        return data if isinstance(data, str) else ""
-
-    def _apply_layer0_micro_analysis(
-        self,
-        layer: Layer0Raw,
-        circle_colors: Dict[str, Any],
-    ) -> None:
-        inner = ELEMENT_KEY_TO_CN.get(circle_colors.get("inner", {}).get("dominant_element"), "")
-        middle = ELEMENT_KEY_TO_CN.get(circle_colors.get("middle", {}).get("dominant_element"), "")
-        outer = ELEMENT_KEY_TO_CN.get(circle_colors.get("outer", {}).get("dominant_element"), "")
-
-        flow_analysis = analyze_energy_flow(
-            [inner] if inner else [],
-            [middle] if middle else [],
-            [outer] if outer else [],
-        )
-
-        path_analysis = flow_analysis.get("path_analysis", {}) if isinstance(flow_analysis, dict) else {}
-        blockages = flow_analysis.get("blockages", []) if isinstance(flow_analysis, dict) else []
-        recommendations = flow_analysis.get("recommendations", []) if isinstance(flow_analysis, dict) else []
-
-        adjacent = [
-            item.get("description", "")
-            for item in path_analysis.values()
-            if isinstance(item, dict) and item.get("description")
-        ]
-        if not adjacent:
-            adjacent = [
-                LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_left"],
-                LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_right"],
-            ]
-
-        wrap = [item for item in [*blockages, *recommendations] if isinstance(item, str) and item]
-        if not wrap:
-            wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
-
-        layer.micro_analysis.adjacent = adjacent
-        layer.micro_analysis.wrap = wrap
-
-    def _identify_knowledge_imbalances(
-        self,
-        element_distribution: Dict[str, Dict[str, Any]],
-        circle_colors: Dict[str, Any],
-    ) -> list[str]:
-        if not self.knowledge_engine:
-            return []
-
-        color_analysis = {
-            key: {
-                "element": item["element_cn"],
-                "proportion": item["proportion"],
-            }
-            for key, item in element_distribution.items()
-        }
-        circle_elements = {
-            circle_key: ELEMENT_KEY_TO_CN.get(circle_data.get("dominant_element"), "")
-            for circle_key, circle_data in circle_colors.items()
-            if isinstance(circle_data, dict)
-        }
-
-        try:
-            return self.knowledge_engine.identify_imbalances(color_analysis, circle_elements)
-        except Exception:
-            return []
 
     def _build_layer1_placeholder(self, record: InterpretationRecord) -> Layer1LiteDraft:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
@@ -1685,59 +1413,42 @@ class LayeredOrchestrator:
                 ]
             ),
         )
-        ai_qa_context = "\n".join(
-            [
-                f"主题：{record.theme}",
-                f"解读记录ID：{record.interpretation_id}",
-                f"Lite 标题：{lite_report.title if lite_report and lite_report.title else ''}",
-                f"Lite 整体印象：{lite_report.overall_impression if lite_report and lite_report.overall_impression else ''}",
-                (
-                    f"第一眼直觉：{pro_draft.first_impression}"
-                    if pro_draft and pro_draft.first_impression
+        if self.narrative_service is not None:
+            ai_qa_context = self.narrative_service.build_ai_qa_context(
+                record_theme=record.theme,
+                interpretation_id=record.interpretation_id,
+                lite_title=lite_report.title if lite_report and lite_report.title else "",
+                lite_overall_impression=(
+                    lite_report.overall_impression
+                    if lite_report and lite_report.overall_impression
                     else ""
                 ),
-                (
-                    "核心洞察："
-                    + "；".join(
-                        f"{key}={value}"
-                        for key, value in list((pro_draft.core_insight_table or {}).items())[:4]
-                        if isinstance(value, str) and value.strip()
-                    )
-                    if pro_draft and pro_draft.core_insight_table
-                    else ""
-                ),
-                (
-                    "主要失衡："
-                    + "；".join(
-                        f"{key}={value}"
-                        for key, value in (pro_draft.imbalance_confirmed or {}).items()
-                        if isinstance(value, str) and value.strip()
-                    )
-                    if pro_draft and pro_draft.imbalance_confirmed
-                    else ""
-                ),
-                (
-                    "根源线索："
-                    + "；".join(
-                        f"{key}={value}"
-                        for key, value in list((pro_draft.root_cause or {}).items())[:3]
-                        if isinstance(value, str) and value.strip()
-                    )
-                    if pro_draft and pro_draft.root_cause
-                    else ""
-                ),
-                (
-                    "可继续追问："
-                    + "；".join(
-                        item.get("practice", "")
-                        for item in (pro_draft.healing_suggestions or [])
-                        if isinstance(item, dict) and isinstance(item.get("practice"), str) and item.get("practice", "").strip()
-                    )
-                    if pro_draft and pro_draft.healing_suggestions
-                    else ""
-                ),
-            ]
-        )
+                pro_draft=pro_draft,
+            )
+        else:
+            ai_qa_context = "\n".join(
+                [
+                    f"主题：{record.theme}",
+                    f"解读记录ID：{record.interpretation_id}",
+                    f"Lite 标题：{lite_report.title if lite_report and lite_report.title else ''}",
+                    f"Lite 整体印象：{lite_report.overall_impression if lite_report and lite_report.overall_impression else ''}",
+                    (
+                        f"第一眼直觉：{pro_draft.first_impression}"
+                        if pro_draft and pro_draft.first_impression
+                        else ""
+                    ),
+                    (
+                        "核心洞察："
+                        + "；".join(
+                            f"{key}={value}"
+                            for key, value in list((pro_draft.core_insight_table or {}).items())[:4]
+                            if isinstance(value, str) and value.strip()
+                        )
+                        if pro_draft and pro_draft.core_insight_table
+                        else ""
+                    ),
+                ]
+            )
 
         return Layer4ProFinal(
             full_report_markdown=full_report_markdown,

@@ -1,0 +1,55 @@
+id: healing.father_relationship
+type: healing
+version: v2.1
+status: active
+source: legacy_v2_python
+review_status: migrated
+payload:
+  theme_id: father_relationship
+  healing_prescriptions:
+    issue_types:
+      权威恐惧与自我价值受损:
+        symptoms: 面对父亲或权威人士时感到紧张、自卑，不敢表达真实想法，认为自己不够好
+        mandala_prescription: 绘制以**黄色**和**绿色**为主的曼陀罗，内圈多用黄色（滋养自我），中圈多用绿色（建立边界），外圈可点缀少量白色（接纳规则）。每天冥想15分钟，想象自己被温暖的黄色光芒包围，内心充满力量
+        daily_practice: 每天写下3件自己做得好的事情，肯定自我价值；练习在小事上做出独立选择并坚持
+        cognitive_upgrade: 认识到父亲的权威是其个人局限性的体现，而非对你价值的否定；你的价值由你自己定义，与他人无关
+      父爱渴望与缺失:
+        symptoms: 感到与父亲情感疏离，内心孤独，渴望父爱却不知如何表达或接受，对亲密关系有障碍
+        mandala_prescription: 绘制以**粉色**和**浅蓝色**为主的曼陀罗，内圈用粉色（疗愈创伤），中圈用浅蓝色（温和沟通），外圈可加入少量红色（表达爱意）。每天睡前凝视曼陀罗，想象与父亲温暖拥抱的场景
+        daily_practice: 每天给父亲发一条表达关心的信息，或主动与父亲进行一次简短的温和对话；练习自我安抚，满足内在对爱的需求
+        cognitive_upgrade: 理解父爱可能以不同形式存在，不一定是你期待的方式；学会接纳和感恩现有的一切，并主动创造连接
+      成长受阻与金克木:
+        symptoms: 感觉自己的成长和发展受到父亲的限制或批评，难以突破，内心压抑，缺乏自信
+        mandala_prescription: 绘制以**绿色**和**少量金色**点缀的曼陀罗，内圈用深绿色（生命力），中圈用绿色（突破），外圈用少量金色（转化规则为力量）。每天在曼陀罗前进行深呼吸练习，感受生命能量的流动
+        daily_practice: 设定一个小的个人目标并努力实现，体验成功的喜悦；学习将父亲的批评转化为自我提升的动力，而非打击
+        cognitive_upgrade: 认识到真正的成长是内在的，任何外部力量都无法真正阻碍你的生命力；将父亲的'克'转化为'磨砺'，成就更强大的自我
+      情绪压抑与沟通障碍:
+        symptoms: 面对父亲时情绪容易激动或完全压抑，无法有效沟通，导致误解和隔阂
+        mandala_prescription: 绘制以**蓝色**和**少量红色**为主的曼陀罗，内圈用深蓝色（释放情绪），中圈用蓝色（清晰沟通），外圈用少量红色（温和表达）。每天花10分钟，在曼陀罗前写下想对父亲说的话，不带评判
+        daily_practice: 练习'我信息'沟通法，表达自己的感受和需求，而非指责；在情绪激动时，先深呼吸，给自己留出冷静的时间
+        cognitive_upgrade: 认识到沟通是双向的，需要耐心和理解；父亲也有其情感模式和局限，尝试从其角度理解，同时坚持表达自我
+      社会认同与金钱观受父辈影响:
+        symptoms: 对社会认同和金钱的看法深受父亲影响，可能过于追求物质成就或对金钱感到焦虑
+        mandala_prescription: 绘制以**黄色**和**白色**为主的曼陀罗，内圈用黄色（内在富足），中圈用白色（清晰价值观），外圈可点缀少量金色（健康财富观）。每天冥想财富的流动，感受内在的丰盛
+        daily_practice: 审视自己的金钱观，区分哪些是自己的，哪些是父亲的；设定符合自己价值观的职业和金钱目标
+        cognitive_upgrade: 认识到真正的社会认同和金钱价值来源于内在的满足和贡献，而非单纯的外部标准；摆脱对父亲金钱观的束缚，建立健康的财富关系
+  healing_template:
+    duration_days: 30
+    phases:
+    - phase: 1
+      days: 1-10
+      theme: 释放对父亲的愤怒和恐惧
+      color: 黑色
+      frequency: 每天14张
+    - phase: 2
+      days: 11-20
+      theme: 理解父亲的局限
+      color: 蓝色
+      frequency: 每天7张
+    - phase: 3
+      days: 21-30
+      theme: 重建内在父亲
+      color: 黄色+绿色
+      frequency: 每天3-7张
+relations:
+  theme: theme.father_relationship

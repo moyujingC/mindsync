@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aimandala Theme Asset",
+  "type": "object",
+  "properties": {
+    "type": { "const": "theme" },
+    "payload": {
+      "type": "object",
+      "required": ["theme_id", "theme_name_cn", "core_issues"],
+      "properties": {
+        "theme_id": { "type": "string", "minLength": 1 },
+        "theme_name_cn": { "type": "string", "minLength": 1 },
+        "core_issues": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+  "required": ["type", "payload"]
+}

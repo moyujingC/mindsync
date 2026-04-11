@@ -84,6 +84,14 @@ class Layer0Raw:
     # 结构: {"inner": {...}, "middle": {...}, "outer": {...}}
     circle_colors: Optional[Dict[str, Any]] = None
 
+    # v2.1 正式结构化证据字段
+    visual_facts: Dict[str, Any] = field(default_factory=dict)
+    knowledge_hits: Dict[str, Any] = field(default_factory=dict)
+    rule_evaluations: Dict[str, Any] = field(default_factory=dict)
+    theme_projection: Dict[str, Any] = field(default_factory=dict)
+    quality_flags: List[str] = field(default_factory=list)
+    fallback_summary: Dict[str, Any] = field(default_factory=dict)
+
     # 生成时间戳
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -109,6 +117,12 @@ class Layer0Raw:
             "imbalance_candidates": self.imbalance_candidates,
             "color_analysis": self.color_analysis,
             "circle_colors": self.circle_colors,
+            "visual_facts": self.visual_facts,
+            "knowledge_hits": self.knowledge_hits,
+            "rule_evaluations": self.rule_evaluations,
+            "theme_projection": self.theme_projection,
+            "quality_flags": self.quality_flags,
+            "fallback_summary": self.fallback_summary,
             "created_at": self.created_at,
         }
 
@@ -441,6 +455,7 @@ class InterpretationRecord:
     """
 
     interpretation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    schema_version: str = "v2.1"
     user_id: str = ""
     image_hash: str = ""
     theme: str = "general"
@@ -499,6 +514,7 @@ class InterpretationRecord:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "interpretation_id": self.interpretation_id,
+            "schema_version": self.schema_version,
             "user_id": self.user_id,
             "image_hash": self.image_hash,
             "theme": self.theme,

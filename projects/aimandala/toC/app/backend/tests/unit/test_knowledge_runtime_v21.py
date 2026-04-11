@@ -1,0 +1,218 @@
+"""Tests for the v2.1 knowledge runtime, pack assets, and legacy record handling."""
+
+import json
+import os
+import shutil
+import sys
+from pathlib import Path
+
+import cv2
+import numpy as np
+import yaml
+from fastapi.testclient import TestClient
+
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+
+from app.core.knowledge import KnowledgeQueryEngine
+from app.core.knowledge_runtime.adapters.legacy_v2_python_pack import (
+    LegacyV2PythonPackExporter,
+)
+from app.core.knowledge_runtime.checks import check_knowledge_pack_v21
+from app.core.knowledge_runtime.compiler import KnowledgePackCompiler
+from app.core.knowledge_runtime.repository import KnowledgeRepository
+from app.core.knowledge_runtime.runtime import get_knowledge_runtime
+from app.core.knowledge_runtime.validators import KnowledgePackValidator
+from app.core.pipeline.data_models import InterpretationRecord
+from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
+from app.core.pipeline.store import InterpretationStore, UnsupportedInterpretationSchemaError
+
+
+def _reset_api_state():
+    from app.api import routes_v2
+
+    routes_v2._orchestrator = None
+    routes_v2._upload_storage = None
+    routes_v2._active_pro_upgrade_jobs.clear()
+    shutil.rmtree(
+        Path(__file__).resolve().parents[2] / "data",
+        ignore_errors=True,
+    )
+
+
+def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
+    pack_root = tmp_path / "packs" / "v2.1"
+    build_dir = tmp_path / "builds" / "current"
+
+    exporter = LegacyV2PythonPackExporter(pack_root=pack_root)
+    exporter.export()
+
+    validator = KnowledgePackValidator()
+    compiler = KnowledgePackCompiler(
+        pack_root=pack_root,
+        build_dir=build_dir,
+        validator=validator,
+    )
+    index_path = compiler.build()
+
+    assert (pack_root / "manifest.yaml").exists()
+    assert index_path.exists()
+
+    manifest = yaml.safe_load((pack_root / "manifest.yaml").read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == "v2.1"
+    assert "themes/wealth_career.yaml" in manifest["entries"]["themes"]
+    assert "narrative/intimate_relationship.yaml" in manifest["entries"]["narrative"]
+
+    wealth_theme = yaml.safe_load(
+        (pack_root / "themes" / "wealth_career.yaml").read_text(encoding="utf-8")
+    )
+    assert wealth_theme["payload"]["theme_name_cn"] == "财富事业"
+    assert "事业成就与价值感" in wealth_theme["payload"]["core_issues"]
+
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    assert index["schema_version"] == "v2.1"
+    assert "general" in index["stats"]["theme_ids"]
+    assert "wealth_career" in index["stats"]["theme_ids"]
+    assert "intimate_relationship" in index["stats"]["theme_ids"]
+    assert index["assets"]["rules"]["rule.imbalance_types"]["payload"]["imbalances"]["水多火灭"]["warning"]
+
+
+def test_v21_check_reports_clean_state():
+    report = check_knowledge_pack_v21()
+
+    assert report.ok is True
+    assert report.differences == []
+    assert any("packs/v2.1" in path for path in report.checked_paths)
+
+
+def test_v21_compiler_rebuilds_when_pack_changes(tmp_path):
+    pack_root = tmp_path / "packs" / "v2.1"
+    build_dir = tmp_path / "builds" / "current"
+
+    exporter = LegacyV2PythonPackExporter(pack_root=pack_root)
+    exporter.export()
+
+    compiler = KnowledgePackCompiler(
+        pack_root=pack_root,
+        build_dir=build_dir,
+        validator=KnowledgePackValidator(),
+    )
+    index_path = compiler.build()
+    original = index_path.read_text(encoding="utf-8")
+
+    general_theme = pack_root / "themes" / "general.yaml"
+    payload = yaml.safe_load(general_theme.read_text(encoding="utf-8"))
+    payload["payload"]["description"] = "updated by rebuild test"
+    general_theme.write_text(
+        yaml.safe_dump(payload, allow_unicode=True, sort_keys=False),
+        encoding="utf-8",
+    )
+
+    compiler.ensure_index()
+    rebuilt = index_path.read_text(encoding="utf-8")
+
+    assert original != rebuilt
+    assert "updated by rebuild test" in rebuilt
+
+
+def test_v21_query_engine_returns_structured_query_result():
+    runtime = get_knowledge_runtime()
+    repository = runtime.repository
+    assert isinstance(repository, KnowledgeRepository)
+    assert repository.get_manifest()["schema_version"] == "v2.1"
+
+    engine = KnowledgeQueryEngine(version="toc")
+    circle_result = engine.get_circle_interpretation("内圈", "火", theme="general")
+    imbalance_result = engine.get_imbalance_detail("水多火灭")
+
+    assert circle_result.found is True
+    assert circle_result.entity_id == "circle.内圈"
+    assert circle_result.source_pack == "v2.1"
+    assert circle_result.fallback_level == "none"
+    assert circle_result.evidence[0]["source_path"] == "circles/three_circles.yaml"
+
+    assert imbalance_result.found is True
+    assert imbalance_result.entity_id == "imbalance.水多火灭"
+    assert imbalance_result.value["warning"]
+    assert imbalance_result.evidence[0]["source_path"] == "rules/imbalance_types.yaml"
+
+
+def test_v21_layer0_contains_structured_evidence(tmp_path):
+    image_path = tmp_path / "knowledge-layer0.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (0, 255, 255), -1)
+    cv2.circle(image, center, 90, (0, 200, 0), -1)
+    cv2.circle(image, center, 45, (0, 0, 255), -1)
+    cv2.imwrite(str(image_path), image)
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    record = InterpretationRecord(
+        theme="wealth_career",
+        image_local_path=str(image_path),
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+
+    assert layer0.visual_facts["dominant_element"] in {"木", "火", "土", "金", "水"}
+    assert layer0.knowledge_hits["circle_readings"]["inner"]
+    assert layer0.rule_evaluations["imbalance_candidates"]
+    assert layer0.theme_projection["theme_id"] == "wealth_career"
+    assert isinstance(layer0.quality_flags, list)
+    assert "used" in layer0.fallback_summary
+
+
+def test_store_rejects_legacy_schema_record(tmp_path):
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    legacy_id = "legacy-record"
+    legacy_path = Path(store.storage_dir) / f"{legacy_id}.json"
+    legacy_path.write_text(
+        json.dumps(
+            {
+                "interpretation_id": legacy_id,
+                "user_id": "user-legacy",
+                "theme": "general",
+                "created_at": "2026-04-11T00:00:00",
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    try:
+        store.load(legacy_id)
+    except UnsupportedInterpretationSchemaError as error:
+        assert "unsupported interpretation schema" in str(error)
+    else:  # pragma: no cover - defensive assertion
+        raise AssertionError("expected UnsupportedInterpretationSchemaError")
+
+
+def test_api_returns_410_for_legacy_record():
+    from app.api.main import app
+
+    _reset_api_state()
+    data_dir = Path(__file__).resolve().parents[2] / "data" / "interpretations"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    legacy_id = "legacy-route-record"
+    (data_dir / f"{legacy_id}.json").write_text(
+        json.dumps(
+            {
+                "interpretation_id": legacy_id,
+                "user_id": "legacy-user",
+                "theme": "general",
+                "created_at": "2026-04-11T00:00:00",
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    client = TestClient(app)
+    response = client.get(f"/api/v2/interpretations/{legacy_id}")
+
+    assert response.status_code == 410
+    assert "unsupported interpretation schema" in response.json()["detail"]

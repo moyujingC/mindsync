@@ -17,6 +17,7 @@ from app.core.llm import (
 from app.core.pipeline.data_models import GenerationStatus
 from app.core.pipeline.orchestrator_v2 import GenerationStage, LayeredOrchestrator
 from app.core.pipeline.prompt_runtime import create_prompt_runtime_from_env
+from app.core.pipeline.store import UnsupportedInterpretationSchemaError
 from app.core.uploads import LocalUploadStorage, UploadStorage, create_upload_storage_from_env
 
 from .rate_limiter import pricing_endpoint_limit
@@ -261,7 +262,10 @@ def get_upload_storage() -> UploadStorage:
 
 def _mark_pro_upgrade_failed(interpretation_id: str, error: Exception) -> None:
     orchestrator = get_orchestrator()
-    record = orchestrator.store.load(interpretation_id)
+    try:
+        record = orchestrator.store.load(interpretation_id)
+    except UnsupportedInterpretationSchemaError:
+        return
     if record is None:
         return
 
@@ -309,6 +313,16 @@ def to_record_response(record) -> InterpretationRecordResponse:
         can_upgrade=record.can_upgrade_to_pro(),
         created_at=record.created_at,
     )
+
+
+def _load_record_or_http_error(interpretation_id: str):
+    try:
+        record = get_orchestrator().store.load(interpretation_id)
+    except UnsupportedInterpretationSchemaError as error:
+        raise HTTPException(status_code=410, detail=str(error)) from error
+    if record is None:
+        raise HTTPException(status_code=404, detail="interpretation not found")
+    return record
 
 
 @router.post("/detect-circles", response_model=DetectCirclesResponse)
@@ -427,10 +441,7 @@ async def create_interpretation(payload: CreateInterpretationRequest):
 async def get_interpretation(interpretation_id: str):
     """Fetch a single migrated interpretation record."""
 
-    record = get_orchestrator().store.load(interpretation_id)
-    if record is None:
-        raise HTTPException(status_code=404, detail="interpretation not found")
-    return to_record_response(record)
+    return to_record_response(_load_record_or_http_error(interpretation_id))
 
 
 @router.get(
@@ -440,7 +451,10 @@ async def get_interpretation(interpretation_id: str):
 async def get_interpretation_status(interpretation_id: str):
     """Fetch a polling-friendly status snapshot for a migrated record."""
 
-    result = get_orchestrator().get_status(interpretation_id)
+    try:
+        result = get_orchestrator().get_status(interpretation_id)
+    except UnsupportedInterpretationSchemaError as error:
+        raise HTTPException(status_code=410, detail=str(error)) from error
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
     return InterpretationStatusResponse(**result)
@@ -475,7 +489,10 @@ async def get_user_interpretations(
 async def get_report(interpretation_id: str, version: Optional[str] = None):
     """Fetch the currently available report view for a migrated record."""
 
-    result = get_orchestrator().get_report(interpretation_id, version)
+    try:
+        result = get_orchestrator().get_report(interpretation_id, version)
+    except UnsupportedInterpretationSchemaError as error:
+        raise HTTPException(status_code=410, detail=str(error)) from error
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
 
@@ -500,7 +517,10 @@ async def get_report(interpretation_id: str, version: Optional[str] = None):
 async def get_report_debug_profile(interpretation_id: str):
     """Return development-only insight into intermediate report generation layers."""
 
-    result = get_orchestrator().get_report_debug_profile(interpretation_id)
+    try:
+        result = get_orchestrator().get_report_debug_profile(interpretation_id)
+    except UnsupportedInterpretationSchemaError as error:
+        raise HTTPException(status_code=410, detail=str(error)) from error
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
     return ReportDebugProfileResponse(**result)
@@ -523,6 +543,8 @@ async def chat_with_report(interpretation_id: str, payload: ReportChatRequest):
             message=payload.message,
             history=serialized_history,
         )
+    except UnsupportedInterpretationSchemaError as error:
+        raise HTTPException(status_code=410, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
 
@@ -540,6 +562,8 @@ async def upgrade_interpretation_placeholder(interpretation_id: str):
 
     try:
         result = get_orchestrator().start_pro_upgrade(interpretation_id)
+    except UnsupportedInterpretationSchemaError as error:
+        raise HTTPException(status_code=410, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     if result is None:
