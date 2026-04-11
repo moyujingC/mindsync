@@ -1267,8 +1267,18 @@ class LayeredOrchestrator:
         )
         layer = Layer1LiteDraft(
             title=self._build_lite_title(record, theme_label),
-            overall_impression=self._build_lite_overall_impression(record, theme_label, circles),
-            visual_elements=self._build_lite_visual_elements(record, record.theme or "general", circles),
+            overall_impression=self._build_lite_overall_impression(
+                record,
+                theme_label,
+                circles,
+                projection=lite_projection,
+            ),
+            visual_elements=self._build_lite_visual_elements(
+                record,
+                record.theme or "general",
+                circles,
+                projection=lite_projection,
+            ),
             emotion_portrait=self._build_lite_emotion_portrait(
                 record,
                 theme_label,
@@ -1499,7 +1509,20 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         theme_label: str,
         circle_info: Dict[str, int],
+        projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+        runtime_overall = (
+            runtime_projection.get("overall_impression")
+            if isinstance(runtime_projection, dict)
+            else ""
+        )
+        if isinstance(runtime_overall, str) and runtime_overall.strip():
+            return runtime_overall.strip()
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -1526,7 +1549,20 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         theme: str,
         circle_info: Dict[str, int],
+        projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            self._get_theme_label(theme),
+        )
+        runtime_visual = (
+            runtime_projection.get("visual_elements")
+            if isinstance(runtime_projection, dict)
+            else ""
+        )
+        if isinstance(runtime_visual, str) and runtime_visual.strip():
+            return runtime_visual.strip()
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -1573,10 +1609,22 @@ class LayeredOrchestrator:
                 theme=self._get_record_theme(record),
                 theme_label=theme_label,
                 dominant_element=dominant["name"],
+                dominant_percentage=float(dominant.get("percentage", 0.0) or 0.0),
                 secondary_element=secondary["name"],
+                secondary_percentage=float(secondary.get("percentage", 0.0) or 0.0),
                 weakest_element=weakest["name"],
                 weakest_percentage=float(weakest.get("percentage", 0.0) or 0.0),
+                inner_dominant=layer0.three_circles.inner.get("dominant", dominant["name"]),
+                middle_dominant=layer0.three_circles.middle.get("dominant", secondary["name"]),
                 outer_dominant=layer0.three_circles.outer.get("dominant", secondary["name"]),
+                circle_pattern=self._describe_circle_pattern(
+                    record.three_circles or {"inner_radius": 33, "middle_radius": 66}
+                ),
+                circle_readings=[
+                    layer0.three_circles.inner.get("knowledge_reading", ""),
+                    layer0.three_circles.middle.get("knowledge_reading", ""),
+                    layer0.three_circles.outer.get("knowledge_reading", ""),
+                ],
                 transition=self._describe_circle_transition(layer0),
                 adjacent=adjacent,
                 signal=self._get_primary_knowledge_signal(record),

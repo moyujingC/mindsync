@@ -240,6 +240,8 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
             assert kwargs["theme"] == "general"
             assert kwargs["default_pro_teaser"]
             return {
+                "overall_impression": "Runtime-Overall-Impression",
+                "visual_elements": "Runtime-Visual-Elements",
                 "story_sections": {
                     "base": "Runtime-Story-Base",
                     "contradiction": "Runtime-Story-Contradiction",
@@ -274,6 +276,8 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
 
     layer1 = orchestrator._build_layer1_placeholder(record)
 
+    assert layer1.overall_impression == "Runtime-Overall-Impression"
+    assert layer1.visual_elements == "Runtime-Visual-Elements"
     assert layer1.story.base.content == "Runtime-Story-Base"
     assert layer1.story.light.content == "Runtime-Story-Light"
     assert layer1.theme_insights.scene == "Runtime-Theme-Scene"

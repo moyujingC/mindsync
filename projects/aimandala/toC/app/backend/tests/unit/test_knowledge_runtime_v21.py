@@ -199,10 +199,16 @@ def test_v21_narrative_service_builds_lite_projection():
         theme="general",
         theme_label="通用解读",
         dominant_element="土",
+        dominant_percentage=42.5,
         secondary_element="金",
+        secondary_percentage=21.25,
         weakest_element="水",
         weakest_percentage=8.0,
+        inner_dominant="火",
+        middle_dominant="木",
         outer_dominant="金",
+        circle_pattern="这说明你更像先稳住自己，再慢慢把外部秩序整理出来。",
+        circle_readings=["内圈阅读", "中圈阅读", "外圈阅读"],
         transition="三圈依次呈现出「火 -> 木 -> 金」的变化。",
         adjacent=["内外节奏正在重新对齐"],
         signal="transition-overload",
@@ -210,6 +216,10 @@ def test_v21_narrative_service_builds_lite_projection():
         default_pro_teaser="默认 Pro 预告",
     )
 
+    assert "以「土」为主的底色" in projection["overall_impression"]
+    assert "42.50%" in projection["visual_elements"]
+    assert "内圈主导为「火」" in projection["visual_elements"]
+    assert "内圈阅读；中圈阅读；外圈阅读。" in projection["visual_elements"]
     assert "你的底色更接近「土」" in projection["story_sections"]["base"]
     assert "内外节奏正在重新对齐" in projection["story_sections"]["pattern"]
     assert "过渡期" in projection["theme_insights"]["awareness"]

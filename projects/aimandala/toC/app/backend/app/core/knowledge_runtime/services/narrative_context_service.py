@@ -190,10 +190,16 @@ class NarrativeContextService:
         theme: str,
         theme_label: str = "",
         dominant_element: str = "",
+        dominant_percentage: float = 0.0,
         secondary_element: str = "",
+        secondary_percentage: float = 0.0,
         weakest_element: str = "",
         weakest_percentage: float = 0.0,
+        inner_dominant: str = "",
+        middle_dominant: str = "",
         outer_dominant: str = "",
+        circle_pattern: str = "",
+        circle_readings: list[str] | None = None,
         transition: str = "",
         adjacent: list[str] | None = None,
         signal: str = "",
@@ -223,7 +229,39 @@ class NarrativeContextService:
         secondary_theme = self._get_element_theme_phrase(resolved_theme, secondary)
         weakest_theme = self._get_element_theme_phrase(resolved_theme, weakest)
         dominant_keywords = self._get_element_core_keywords(resolved_theme, dominant)
+        secondary_keywords = self._get_element_core_keywords(resolved_theme, secondary)
         signal_text = self._describe_signal(signal)
+        inner = inner_dominant or dominant
+        middle = middle_dominant or secondary
+        readings_text = "；".join(
+            item.strip()
+            for item in (circle_readings or [])
+            if isinstance(item, str) and item.strip()
+        )
+
+        overall_parts = [
+            f"这幅画首先给人的感觉，是一种以「{dominant}」为主的底色；它更在意的是{dominant_theme}。",
+        ]
+        if transition:
+            overall_parts.append(transition)
+        overall_parts.append(
+            f"整体来看，这不是单纯往外冲的状态，而更像先把内在安顿住，再慢慢把「{secondary}」相关的{secondary_keywords}带回现实。"
+        )
+        if signal_text:
+            overall_parts.append(signal_text)
+
+        visual_parts = [
+            (
+                f"从三圈颜色聚合来看，五行里以「{dominant}」({dominant_percentage:.2f}%) "
+                f"和「{secondary}」({secondary_percentage:.2f}%) 最突出。"
+            ),
+            (
+                f"内圈主导为「{inner or '未识别'}」，中圈主导为「{middle or '未识别'}」，"
+                f"外圈主导为「{outer or '未识别'}」。{circle_pattern}"
+            ),
+        ]
+        if readings_text:
+            visual_parts.append(readings_text + "。")
 
         base = (
             f"你的底色更接近「{dominant}」所代表的{dominant_theme}。"
@@ -285,6 +323,12 @@ class NarrativeContextService:
         )
 
         return {
+            "overall_impression": " ".join(
+                part for part in overall_parts if isinstance(part, str) and part.strip()
+            ).strip(),
+            "visual_elements": " ".join(
+                part for part in visual_parts if isinstance(part, str) and part.strip()
+            ).strip(),
             "story_sections": {
                 "base": base,
                 "contradiction": contradiction.strip(),
