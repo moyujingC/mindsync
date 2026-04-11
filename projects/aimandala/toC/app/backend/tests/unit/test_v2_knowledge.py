@@ -68,6 +68,16 @@ def test_orchestrator_theme_context_uses_runtime_even_without_legacy_engine():
     assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
 
 
+def test_orchestrator_element_meaning_uses_runtime_service():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+
+    phrase = orchestrator._get_element_theme_phrase("wealth_career", "金")
+    keywords = orchestrator._get_element_core_keywords("wealth_career", "金")
+
+    assert phrase == "自我价值与专业成就"
+    assert keywords == "价值、专业、精准"
+
+
 def test_orchestrator_builds_knowledge_backed_layer0_for_valid_image(tmp_path):
     image_path = tmp_path / "knowledge-layer0.png"
     image = np.full((300, 300, 3), 255, dtype=np.uint8)

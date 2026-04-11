@@ -2414,28 +2414,16 @@ class LayeredOrchestrator:
         }
         return descriptions.get(signal, "")
 
-    def _get_knowledge_theme_config(self, theme: Optional[str]) -> Dict[str, Any]:
-        theme_key = theme or "general"
+    def _get_element_theme_phrase(self, theme: Optional[str], element_name: str) -> str:
+        profile: Dict[str, Any] = {}
         if self.knowledge_runtime is not None:
             try:
-                config = self.knowledge_runtime.theme_service.get_theme_config(theme_key)
+                profile = self.knowledge_runtime.theme_service.get_element_meaning(
+                    theme or "general",
+                    element_name,
+                )
             except Exception:
-                config = {}
-            if isinstance(config, dict) and config:
-                return config
-        return {}
-
-    def _get_theme_element_profile(self, theme: Optional[str], element_name: str) -> Dict[str, Any]:
-        config = self._get_knowledge_theme_config(theme)
-        meanings = config.get("element_meanings", {}) if isinstance(config, dict) else {}
-        if isinstance(meanings, dict):
-            profile = meanings.get(element_name)
-            if isinstance(profile, dict):
-                return profile
-        return {}
-
-    def _get_element_theme_phrase(self, theme: Optional[str], element_name: str) -> str:
-        profile = self._get_theme_element_profile(theme, element_name)
+                profile = {}
         psychological_theme = profile.get("psychological_theme")
         if isinstance(psychological_theme, str) and psychological_theme.strip():
             return psychological_theme.strip()
@@ -2445,7 +2433,15 @@ class LayeredOrchestrator:
         return f"{element_name}元素的状态"
 
     def _get_element_core_keywords(self, theme: Optional[str], element_name: str) -> str:
-        profile = self._get_theme_element_profile(theme, element_name)
+        profile: Dict[str, Any] = {}
+        if self.knowledge_runtime is not None:
+            try:
+                profile = self.knowledge_runtime.theme_service.get_element_meaning(
+                    theme or "general",
+                    element_name,
+                )
+            except Exception:
+                profile = {}
         keywords = profile.get("keywords")
         if isinstance(keywords, list) and keywords:
             filtered = [str(item).strip() for item in keywords if isinstance(item, str) and item.strip()]
