@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, Awaitable, Callable
+from typing import Awaitable, Callable
 
 from app.core.analysis.circle_detector import CircleDetectionResult
 
 from .data_models import GenerationStatus, InterpretationRecord
-from .generation_runtime import ReportGenerationRuntime
+from .generation_runtime import ReportGenerationContext, ReportGenerationRuntime
 from .store import InterpretationStore
 
 
@@ -101,8 +101,9 @@ class ReportLiteRecordWorkflow:
 
     async def generate_placeholder(
         self,
-        orchestrator: Any,
+        generation_context: ReportGenerationContext,
         *,
+        detect_three_circles: Callable[..., Awaitable[CircleDetectionResult]],
         image_path: str,
         user_id: str,
         theme: str = "general",
@@ -126,7 +127,7 @@ class ReportLiteRecordWorkflow:
                 return existing
 
         record = await self.prepare_record(
-            detect_three_circles=orchestrator.detect_three_circles,
+            detect_three_circles=detect_three_circles,
             image_path=image_path,
             user_id=user_id,
             theme=theme,
@@ -140,7 +141,7 @@ class ReportLiteRecordWorkflow:
         )
 
         record.update_progress(self.generating_stage, 70)
-        lite_bundle = self.generation_runtime.generate_lite(orchestrator, record)
+        lite_bundle = self.generation_runtime.generate_lite(generation_context, record)
         record.layer_0_raw = lite_bundle.layer_0_raw
         record.layer_1_lite_draft = lite_bundle.layer_1_lite_draft
         record.layer_2_lite_final = lite_bundle.layer_2_lite_final

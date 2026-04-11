@@ -223,6 +223,7 @@ class LayeredOrchestrator:
         """Create a migrated Lite record with a placeholder report."""
         return await self.report_lite_record_workflow.generate_placeholder(
             self,
+            detect_three_circles=self.detect_three_circles,
             image_path=image_path,
             user_id=user_id,
             theme=theme,
