@@ -2425,6 +2425,15 @@ class LayeredOrchestrator:
             middle=middle,
         )
         signal = self._get_primary_knowledge_signal(record)
+        runtime_profile = self._build_runtime_imbalance_profile(
+            record,
+            profile_key=profile_key,
+            signal=signal,
+            theme_label=theme_label,
+        )
+        if runtime_profile:
+            return runtime_profile
+
         signal_label = self._get_signal_label(signal) if signal else ""
         signal_text = self._describe_signal(signal)
 
@@ -2472,6 +2481,60 @@ class LayeredOrchestrator:
                 middle=str(middle),
                 theme_label=theme_label,
             ),
+        }
+
+    def _build_runtime_imbalance_profile(
+        self,
+        record: InterpretationRecord,
+        *,
+        profile_key: str,
+        signal: str,
+        theme_label: str,
+    ) -> Dict[str, str]:
+        if not signal or not self.knowledge_runtime:
+            return {}
+
+        mapping = self._get_runtime_theme_mapping(record)
+        imbalance = self._get_runtime_imbalance_detail(record)
+        if not mapping and not imbalance:
+            return {}
+
+        contradiction = str(mapping.get("核心矛盾") or "").strip()
+        manifestation = str(mapping.get("具体表现") or imbalance.get("description") or "").strip()
+        direction = str(mapping.get("转变方向") or "").strip()
+        category = str(imbalance.get("category") or "").strip()
+        warning = str(imbalance.get("warning") or "").strip()
+        signal_text = self._describe_signal(signal)
+
+        summary_parts = [f"当前更接近的核心失衡是「{signal}」"]
+        if category:
+            summary_parts.append(f"（{category}）")
+        if contradiction:
+            summary_parts.append(f"：{contradiction}")
+        elif manifestation:
+            summary_parts.append(f"：{manifestation}")
+        summary = "".join(summary_parts).strip()
+        if summary and summary[-1] not in "。！？":
+            summary += "。"
+
+        evidence_parts: list[str] = []
+        if manifestation:
+            evidence_parts.append(f"在{theme_label}主题里，它更容易表现成：{manifestation}。")
+        if direction:
+            evidence_parts.append(f"当前更适合的转向是：{direction}。")
+        if signal_text:
+            evidence_parts.append(signal_text)
+        if warning:
+            evidence_parts.append(warning)
+
+        return {
+            "type": profile_key,
+            "primary": contradiction or self._get_signal_label(signal),
+            "summary": summary,
+            "evidence": " ".join(part for part in evidence_parts if part).strip(),
+            "energy_level": manifestation or signal_text,
+            "psychological_level": contradiction or signal_text,
+            "life_manifestation": manifestation or direction or signal_text,
         }
 
     def _select_pro_imbalance_type(
