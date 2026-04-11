@@ -192,6 +192,34 @@ def test_v21_narrative_service_builds_imbalance_projection():
     assert "财富焦虑" in projection["core_root"]
 
 
+def test_v21_narrative_service_builds_lite_projection():
+    runtime = get_knowledge_runtime()
+
+    projection = runtime.narrative_service.build_lite_narrative_projection(
+        theme="general",
+        theme_label="通用解读",
+        dominant_element="土",
+        secondary_element="金",
+        weakest_element="水",
+        weakest_percentage=8.0,
+        outer_dominant="金",
+        transition="三圈依次呈现出「火 -> 木 -> 金」的变化。",
+        adjacent=["内外节奏正在重新对齐"],
+        signal="transition-overload",
+        feeling_hint="这也和你最近画画时写下的感觉有关。",
+        default_pro_teaser="默认 Pro 预告",
+    )
+
+    assert "你的底色更接近「土」" in projection["story_sections"]["base"]
+    assert "内外节奏正在重新对齐" in projection["story_sections"]["pattern"]
+    assert "过渡期" in projection["theme_insights"]["awareness"]
+    assert "重新整理自己" in projection["emotion_portrait"]
+    assert "过渡期" in projection["emotion_portrait"]
+    assert len(projection["three_awareness"]) == 3
+    assert projection["three_awareness"][0]["title"] == "先安顿自己"
+    assert "默认 Pro 预告" in projection["pro_teaser"]
+
+
 def test_v21_layer0_contains_structured_evidence(tmp_path):
     image_path = tmp_path / "knowledge-layer0.png"
     image = np.full((300, 300, 3), 255, dtype=np.uint8)

@@ -1254,14 +1254,30 @@ class LayeredOrchestrator:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(record.theme)
         lite_prompt_preview = self._build_lite_prompt_preview(record)
-        story_sections = self._build_lite_story_sections(record, theme_label)
-        theme_insights = self._build_lite_theme_insights(record, theme_label)
+        lite_projection = self._build_runtime_lite_narrative_projection(record, theme_label)
+        story_sections = self._build_lite_story_sections(
+            record,
+            theme_label,
+            projection=lite_projection,
+        )
+        theme_insights = self._build_lite_theme_insights(
+            record,
+            theme_label,
+            projection=lite_projection,
+        )
         layer = Layer1LiteDraft(
             title=self._build_lite_title(record, theme_label),
             overall_impression=self._build_lite_overall_impression(record, theme_label, circles),
             visual_elements=self._build_lite_visual_elements(record, record.theme or "general", circles),
-            emotion_portrait=self._build_lite_emotion_portrait(record, theme_label),
-            pro_teaser=self._build_lite_pro_teaser(record),
+            emotion_portrait=self._build_lite_emotion_portrait(
+                record,
+                theme_label,
+                projection=lite_projection,
+            ),
+            pro_teaser=self._build_lite_pro_teaser(
+                record,
+                projection=lite_projection,
+            ),
         )
         layer.story.base.content = story_sections["base"]
         layer.story.base.connector = LITE_REPORT_BLUEPRINT.story_connectors["base"]
@@ -1277,7 +1293,11 @@ class LayeredOrchestrator:
         layer.theme_insights.scene = theme_insights["scene"]
         layer.theme_insights.impact = theme_insights["impact"]
         layer.theme_insights.awareness = theme_insights["awareness"]
-        layer.three_awareness = self._build_lite_three_awareness(record, theme_label)
+        layer.three_awareness = self._build_lite_three_awareness(
+            record,
+            theme_label,
+            projection=lite_projection,
+        )
         story_title_map = {
             "base": "base",
             "contradiction": "contradiction",
@@ -1529,11 +1549,63 @@ class LayeredOrchestrator:
             lines.append(reading_text + "。")
         return " ".join(lines).strip()
 
+    def _build_runtime_lite_narrative_projection(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+    ) -> Dict[str, Any]:
+        if self.narrative_service is None:
+            return {}
+
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
+        secondary = distribution[1] if len(distribution) > 1 else dominant
+        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
+        adjacent = [
+            str(item).strip()
+            for item in (layer0.micro_analysis.adjacent or [])
+            if isinstance(item, str) and str(item).strip()
+        ]
+
+        try:
+            projection = self.narrative_service.build_lite_narrative_projection(
+                theme=self._get_record_theme(record),
+                theme_label=theme_label,
+                dominant_element=dominant["name"],
+                secondary_element=secondary["name"],
+                weakest_element=weakest["name"],
+                weakest_percentage=float(weakest.get("percentage", 0.0) or 0.0),
+                outer_dominant=layer0.three_circles.outer.get("dominant", secondary["name"]),
+                transition=self._describe_circle_transition(layer0),
+                adjacent=adjacent,
+                signal=self._get_primary_knowledge_signal(record),
+                feeling_hint=self._build_feeling_hint(record),
+                default_pro_teaser=DEFAULT_PRO_TEASER,
+            )
+        except Exception:
+            return {}
+
+        return projection if isinstance(projection, dict) else {}
+
     def _build_lite_emotion_portrait(
         self,
         record: InterpretationRecord,
         theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> str:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+        runtime_emotion = (
+            runtime_projection.get("emotion_portrait")
+            if isinstance(runtime_projection, dict)
+            else ""
+        )
+        if isinstance(runtime_emotion, str) and runtime_emotion.strip():
+            return runtime_emotion.strip()
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -1561,7 +1633,13 @@ class LayeredOrchestrator:
         self,
         record: InterpretationRecord,
         theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -1605,7 +1683,7 @@ class LayeredOrchestrator:
             f"你的光并不只在稳定里，也在于你已经开始把「{secondary['name']}」所代表的{secondary_theme}慢慢带出来。"
             f"这说明你不是被困住，而是在学习用更适合自己的方式向前。"
         )
-        return {
+        sections = {
             "base": " ".join(part for part in [base] if part).strip(),
             "contradiction": contradiction.strip(),
             "pattern": pattern.strip(),
@@ -1613,12 +1691,29 @@ class LayeredOrchestrator:
             "block": " ".join(block_parts).strip(),
             "light": light.strip(),
         }
+        runtime_sections = (
+            runtime_projection.get("story_sections")
+            if isinstance(runtime_projection, dict)
+            else None
+        )
+        if isinstance(runtime_sections, dict):
+            for key in sections:
+                value = runtime_sections.get(key)
+                if isinstance(value, str) and value.strip():
+                    sections[key] = value.strip()
+        return sections
 
     def _build_lite_theme_insights(
         self,
         record: InterpretationRecord,
         theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -1641,17 +1736,34 @@ class LayeredOrchestrator:
         )
         if signal_text:
             awareness += f" {signal_text}"
-        return {
+        insights = {
             "scene": scene.strip(),
             "impact": impact.strip(),
             "awareness": awareness.strip(),
         }
+        runtime_insights = (
+            runtime_projection.get("theme_insights")
+            if isinstance(runtime_projection, dict)
+            else None
+        )
+        if isinstance(runtime_insights, dict):
+            for key in insights:
+                value = runtime_insights.get(key)
+                if isinstance(value, str) and value.strip():
+                    insights[key] = value.strip()
+        return insights
 
     def _build_lite_three_awareness(
         self,
         record: InterpretationRecord,
         theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> list[DailyAwareness]:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
@@ -1662,7 +1774,7 @@ class LayeredOrchestrator:
         outer_dominant = layer0.three_circles.outer.get("dominant", "金")
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         signal_short = signal_text.rstrip("。") if signal_text else "想推进却又停住的那个瞬间"
-        return [
+        awareness_items = [
             DailyAwareness(
                 day=1,
                 title="先安顿自己",
@@ -1679,6 +1791,47 @@ class LayeredOrchestrator:
                 content=f"如果今天又出现{signal_short}的时刻，别急着评价自己。把那个瞬间记下来，你会更看清自己何时需要补回与「{weakest['name']}」相关的{weakest_theme}。",
             ),
         ]
+        runtime_awareness = (
+            runtime_projection.get("three_awareness")
+            if isinstance(runtime_projection, dict)
+            else None
+        )
+        if isinstance(runtime_awareness, list) and runtime_awareness:
+            merged: list[DailyAwareness] = []
+            for index, item in enumerate(runtime_awareness[:3], start=1):
+                if isinstance(item, DailyAwareness):
+                    merged.append(item)
+                    continue
+                if not isinstance(item, dict):
+                    continue
+                title = item.get("title")
+                content = item.get("content")
+                if not isinstance(title, str) or not title.strip():
+                    continue
+                if not isinstance(content, str) or not content.strip():
+                    continue
+                day = item.get("day", index)
+                if not isinstance(day, int):
+                    day = index
+                merged.append(
+                    DailyAwareness(
+                        day=day,
+                        title=title.strip(),
+                        content=content.strip(),
+                    )
+                )
+            if merged:
+                used_days = {item.day for item in merged}
+                for fallback_item in awareness_items:
+                    if len(merged) >= 3:
+                        break
+                    if fallback_item.day in used_days:
+                        continue
+                    merged.append(fallback_item)
+                    used_days.add(fallback_item.day)
+                merged.sort(key=lambda item: item.day)
+                return merged[:3]
+        return awareness_items
 
     def _build_lite_experiment_payload(
         self,
@@ -1702,7 +1855,23 @@ class LayeredOrchestrator:
             "content": content,
         }
 
-    def _build_lite_pro_teaser(self, record: InterpretationRecord) -> str:
+    def _build_lite_pro_teaser(
+        self,
+        record: InterpretationRecord,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            self._get_theme_label(record.theme),
+        )
+        runtime_teaser = (
+            runtime_projection.get("pro_teaser")
+            if isinstance(runtime_projection, dict)
+            else ""
+        )
+        if isinstance(runtime_teaser, str) and runtime_teaser.strip():
+            return runtime_teaser.strip()
+
         theme = self._get_record_theme(record)
         try:
             raw_teaser = get_pro_upgrade_teaser(theme)

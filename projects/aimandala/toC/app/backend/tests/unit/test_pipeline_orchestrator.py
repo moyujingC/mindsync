@@ -9,7 +9,11 @@ sys.path.insert(
 )
 
 from app.core.analysis.circle_detector import CircleDetectionResult
-from app.core.pipeline.data_models import GenerationStatus, Layer1LiteDraft
+from app.core.pipeline.data_models import (
+    GenerationStatus,
+    InterpretationRecord,
+    Layer1LiteDraft,
+)
 from app.core.pipeline.prompt_runtime import NoopPromptRuntime
 from app.core.pipeline.orchestrator_v2 import (
     GenerationStage,
@@ -228,6 +232,55 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert "失衡类型与对应疗愈建议" in report["structured"]["pro_teaser"]
     assert "【你的底色" in report["structured"]["six_insights_rendered"]["base"]
     assert report["can_upgrade"] is True
+
+
+def test_layer1_placeholder_prefers_runtime_lite_projection():
+    class StubNarrativeService:
+        def build_lite_narrative_projection(self, **kwargs):
+            assert kwargs["theme"] == "general"
+            assert kwargs["default_pro_teaser"]
+            return {
+                "story_sections": {
+                    "base": "Runtime-Story-Base",
+                    "contradiction": "Runtime-Story-Contradiction",
+                    "pattern": "Runtime-Story-Pattern",
+                    "defense": "Runtime-Story-Defense",
+                    "block": "Runtime-Story-Block",
+                    "light": "Runtime-Story-Light",
+                },
+                "theme_insights": {
+                    "scene": "Runtime-Theme-Scene",
+                    "impact": "Runtime-Theme-Impact",
+                    "awareness": "Runtime-Theme-Awareness",
+                },
+                "emotion_portrait": "Runtime-Emotion-Portrait",
+                "pro_teaser": "Runtime-Pro-Teaser",
+                "three_awareness": [
+                    {
+                        "day": 1,
+                        "title": "Runtime-Awareness-1",
+                        "content": "Runtime-Awareness-Content-1",
+                    }
+                ],
+            }
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.narrative_service = StubNarrativeService()
+    record = InterpretationRecord(
+        theme="general",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+    record.layer_0_raw = orchestrator._build_layer0_placeholder(record)
+
+    layer1 = orchestrator._build_layer1_placeholder(record)
+
+    assert layer1.story.base.content == "Runtime-Story-Base"
+    assert layer1.story.light.content == "Runtime-Story-Light"
+    assert layer1.theme_insights.scene == "Runtime-Theme-Scene"
+    assert layer1.emotion_portrait == "Runtime-Emotion-Portrait"
+    assert layer1.pro_teaser == "Runtime-Pro-Teaser"
+    assert layer1.three_awareness[0].title == "Runtime-Awareness-1"
+    assert layer1.three_awareness[1].title == "看见边界变化"
 
 
 def test_get_status_returns_compact_snapshot(tmp_path):
