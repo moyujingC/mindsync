@@ -7,6 +7,7 @@ import json
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from .adapters.legacy_v2_python_pack import LegacyV2PythonPackExporter
 from .compiler import KnowledgePackCompiler
@@ -20,6 +21,9 @@ class KnowledgeDriftReport:
     ok: bool
     differences: list[str] = field(default_factory=list)
     checked_paths: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    fallback_hotspots: list[dict[str, Any]] = field(default_factory=list)
+    quality_stats: dict[str, Any] = field(default_factory=dict)
 
 
 def check_knowledge_pack_v21(
@@ -63,10 +67,17 @@ def check_knowledge_pack_v21(
                 temp_build_dir / "index.json",
             )
         )
+        quality_payload = json.loads(
+            (temp_build_dir / "index.json").read_text(encoding="utf-8")
+        )
+        quality_stats = quality_payload.get("stats", {}).get("quality", {})
         return KnowledgeDriftReport(
             ok=len(differences) == 0,
             differences=differences,
             checked_paths=checked_paths,
+            warnings=_build_quality_warnings(quality_stats),
+            fallback_hotspots=quality_stats.get("fallback_hotspots", []),
+            quality_stats=quality_stats,
         )
 
 
@@ -106,3 +117,36 @@ def _compare_files(expected: Path, actual: Path) -> list[str]:
 
 def _strip_volatile_fields(payload: dict) -> None:
     payload.pop("generated_at", None)
+
+
+def _build_quality_warnings(quality_stats: dict[str, Any]) -> list[str]:
+    warnings: list[str] = []
+
+    healing_hotspots = [
+        item
+        for item in quality_stats.get("fallback_hotspots", [])
+        if item.get("kind") == "healing_template_fallback"
+    ]
+    if healing_hotspots:
+        themes = ", ".join(sorted(item.get("theme_id", "") for item in healing_hotspots))
+        warnings.append(
+            "healing service direct issue lookup currently falls back to templates for "
+            f"{len(healing_hotspots)} themes: {themes}"
+        )
+
+    mapping_gaps = [
+        item
+        for item in quality_stats.get("fallback_hotspots", [])
+        if item.get("kind") == "theme_mapping_gap"
+    ]
+    if mapping_gaps:
+        themes = ", ".join(sorted(item.get("theme_id", "") for item in mapping_gaps))
+        warnings.append(
+            "theme mapping coverage has toc-supported gaps for "
+            f"{len(mapping_gaps)} themes: {themes}"
+        )
+
+    if not quality_stats.get("high_risk_warning_paths", []):
+        warnings.append("no high-risk warning paths were indexed")
+
+    return warnings

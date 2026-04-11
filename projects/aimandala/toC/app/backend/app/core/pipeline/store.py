@@ -5,9 +5,11 @@
 """
 
 import json
+import threading
 from typing import Optional, Dict, List
 from datetime import datetime, timedelta
 from pathlib import Path
+from uuid import uuid4
 
 from .data_models import (
     InterpretationRecord,
@@ -53,6 +55,7 @@ class InterpretationStore:
 
         # 内存缓存（用于活跃会话）
         self._cache: Dict[str, InterpretationRecord] = {}
+        self._io_lock = threading.RLock()
 
     def _get_file_path(self, interpretation_id: str) -> Path:
         """获取记录文件路径"""
@@ -70,8 +73,7 @@ class InterpretationStore:
 
         # 持久化到文件
         file_path = self._get_file_path(record.interpretation_id)
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(record.to_dict(), f, ensure_ascii=False, indent=2)
+        self._write_json_file(file_path, record.to_dict())
 
     def load(self, interpretation_id: str) -> Optional[InterpretationRecord]:
         """
@@ -337,7 +339,11 @@ class InterpretationStore:
         Returns:
             解读记录列表
         """
-        records = []
+        records_by_id: Dict[str, InterpretationRecord] = {}
+
+        for record in self._cache.values():
+            if record.user_id == user_id:
+                records_by_id[record.interpretation_id] = record
 
         for file_path in self.storage_dir.glob("*.json"):
             try:
@@ -345,12 +351,20 @@ class InterpretationStore:
                 if not self._is_supported_schema(data):
                     continue
 
-                if data.get("user_id") == user_id:
-                    record = self._dict_to_record(data)
-                    records.append(record)
+                if data.get("user_id") != user_id:
+                    continue
+
+                interpretation_id = data.get("interpretation_id", "")
+                if interpretation_id in records_by_id:
+                    continue
+
+                record = self._dict_to_record(data)
+                records_by_id[record.interpretation_id] = record
 
             except Exception:
                 continue
+
+        records = list(records_by_id.values())
 
         # 按创建时间排序，最新的在前
         records.sort(key=lambda r: r.created_at, reverse=True)
@@ -386,8 +400,7 @@ class InterpretationStore:
                     if data.get("layer_1_lite_draft"):
                         data["layer_1_lite_draft"] = {"description": "数据已过期清理"}
 
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        json.dump(data, f, ensure_ascii=False, indent=2)
+                    self._write_json_file(file_path, data)
 
                     cleaned_count += 1
 
@@ -430,6 +443,21 @@ class InterpretationStore:
                 continue
 
         return None
+
+    def _write_json_file(self, file_path: Path, payload: Dict) -> None:
+        """Atomically persist JSON records to avoid partial reads during upgrades."""
+
+        with self._io_lock:
+            try:
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+            except FileExistsError:
+                if not file_path.parent.is_dir():
+                    raise
+
+            temp_path = file_path.with_name(f"{file_path.name}.{uuid4().hex}.tmp")
+            with open(temp_path, "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False, indent=2)
+            temp_path.replace(file_path)
 
     def find_existing_record(
         self, image_hash: str, user_id: str, theme: str

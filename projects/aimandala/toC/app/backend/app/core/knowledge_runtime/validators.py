@@ -59,14 +59,56 @@ class KnowledgePackValidator:
             if isinstance(asset.get("payload"), dict)
         }
         theme_ids.discard(None)
+        healing_theme_ids = {
+            asset.get("payload", {}).get("theme_id")
+            for asset in assets_by_category.get("healing", [])
+            if isinstance(asset.get("payload"), dict)
+        }
+        healing_theme_ids.discard(None)
+        narrative_theme_ids = {
+            asset.get("payload", {}).get("theme_id")
+            for asset in assets_by_category.get("narrative", [])
+            if isinstance(asset.get("payload"), dict)
+        }
+        narrative_theme_ids.discard(None)
 
         imbalance_ids = set()
+        toc_supported_imbalance_ids = set()
+        warning_imbalance_ids = set()
         for asset in assets_by_category.get("rules", []):
             payload = asset.get("payload", {})
             if not isinstance(payload, dict):
                 continue
             if asset.get("id") == "rule.imbalance_types":
-                imbalance_ids.update((payload.get("imbalances") or {}).keys())
+                imbalances = payload.get("imbalances") or {}
+                imbalance_ids.update(imbalances.keys())
+                toc_supported_imbalance_ids.update(
+                    imbalance_id
+                    for imbalance_id, definition in imbalances.items()
+                    if definition.get("toc_supported")
+                )
+                warning_imbalance_ids.update(
+                    imbalance_id
+                    for imbalance_id, definition in imbalances.items()
+                    if definition.get("warning")
+                )
+
+        missing_healing = sorted(theme_ids - healing_theme_ids)
+        if missing_healing:
+            raise KnowledgeValidationError(
+                "themes missing healing assets: " + ", ".join(missing_healing)
+            )
+
+        missing_narrative = sorted(theme_ids - narrative_theme_ids)
+        if missing_narrative:
+            raise KnowledgeValidationError(
+                "themes missing narrative assets: " + ", ".join(missing_narrative)
+            )
+
+        if not warning_imbalance_ids:
+            raise KnowledgeValidationError(
+                "rule.imbalance_types must include at least one high-risk warning path"
+            )
 
         for asset in assets_by_category.get("healing", []):
             payload = asset.get("payload", {})
@@ -88,6 +130,11 @@ class KnowledgePackValidator:
             if asset.get("id") != "rule.theme_mappings":
                 continue
             mappings = asset.get("payload", {}).get("mappings", {})
+            for theme_id in theme_ids:
+                if theme_id not in mappings:
+                    raise KnowledgeValidationError(
+                        f"rule.theme_mappings missing theme entry for {theme_id}"
+                    )
             for theme_id, theme_mapping in mappings.items():
                 if theme_id not in theme_ids:
                     raise KnowledgeValidationError(
@@ -98,6 +145,14 @@ class KnowledgePackValidator:
                         raise KnowledgeValidationError(
                             f"rule.theme_mappings references unknown imbalance {imbalance_id}"
                         )
+                missing_supported = sorted(
+                    toc_supported_imbalance_ids - set(theme_mapping.keys())
+                )
+                if missing_supported:
+                    raise KnowledgeValidationError(
+                        "rule.theme_mappings missing toc-supported imbalances for "
+                        f"{theme_id}: {', '.join(missing_supported)}"
+                    )
 
         declared_entries = manifest.get("entries", {})
         for category, assets in assets_by_category.items():
@@ -129,4 +184,3 @@ class KnowledgePackValidator:
                 schema_path.read_text(encoding="utf-8")
             )
         return self._schema_cache[schema_name]
-

@@ -76,6 +76,21 @@ def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
     assert "wealth_career" in index["stats"]["theme_ids"]
     assert "intimate_relationship" in index["stats"]["theme_ids"]
     assert index["assets"]["rules"]["rule.imbalance_types"]["payload"]["imbalances"]["水多火灭"]["warning"]
+    quality = index["stats"]["quality"]
+    assert quality["theme_mapping_coverage"]["general"]["mapped_count"] == len(
+        index["stats"]["toc_supported_imbalances"]
+    )
+    assert quality["healing_lookup_coverage"]["general"]["fallback_risk"] == "high"
+    assert any(
+        item["imbalance_id"] == "水多火灭"
+        for item in quality["high_risk_warning_paths"]
+    )
+    hotspot_themes = {
+        item["theme_id"]
+        for item in quality["fallback_hotspots"]
+        if item["kind"] == "healing_template_fallback"
+    }
+    assert {"general", "wealth_career", "intimate_relationship"}.issubset(hotspot_themes)
 
 
 def test_v21_check_reports_clean_state():
@@ -84,6 +99,11 @@ def test_v21_check_reports_clean_state():
     assert report.ok is True
     assert report.differences == []
     assert any("packs/v2.1" in path for path in report.checked_paths)
+    assert any("healing service direct issue lookup" in item for item in report.warnings)
+    assert any(
+        item["kind"] == "healing_template_fallback" and item["theme_id"] == "general"
+        for item in report.fallback_hotspots
+    )
 
 
 def test_v21_compiler_rebuilds_when_pack_changes(tmp_path):

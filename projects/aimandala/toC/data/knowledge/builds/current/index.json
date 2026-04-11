@@ -1,7 +1,7 @@
 {
   "schema_version": "v2.1",
   "pack_id": "aimandala-v2.1",
-  "generated_at": "2026-04-11T10:53:24.579404",
+  "generated_at": "2026-04-11T12:06:35.686654",
   "manifest": {
     "pack_id": "aimandala-v2.1",
     "schema_version": "v2.1",
@@ -21135,6 +21135,277 @@
       "火多金熔",
       "金多木折",
       "金多水浊"
-    ]
+    ],
+    "quality": {
+      "theme_asset_coverage": {
+        "father_relationship": {
+          "has_healing": true,
+          "has_narrative": true
+        },
+        "general": {
+          "has_healing": true,
+          "has_narrative": true
+        },
+        "health_wellness": {
+          "has_healing": true,
+          "has_narrative": true
+        },
+        "intimate_relationship": {
+          "has_healing": true,
+          "has_narrative": true
+        },
+        "mother_relationship": {
+          "has_healing": true,
+          "has_narrative": true
+        },
+        "parent_child_relationship": {
+          "has_healing": true,
+          "has_narrative": true
+        },
+        "personal_growth": {
+          "has_healing": true,
+          "has_narrative": true
+        },
+        "wealth_career": {
+          "has_healing": true,
+          "has_narrative": true
+        }
+      },
+      "theme_mapping_coverage": {
+        "father_relationship": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        },
+        "general": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        },
+        "health_wellness": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        },
+        "intimate_relationship": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        },
+        "mother_relationship": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        },
+        "parent_child_relationship": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        },
+        "personal_growth": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        },
+        "wealth_career": {
+          "mapped_count": 10,
+          "toc_supported_total": 10,
+          "missing": []
+        }
+      },
+      "healing_lookup_coverage": {
+        "father_relationship": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        },
+        "general": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        },
+        "health_wellness": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        },
+        "intimate_relationship": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        },
+        "mother_relationship": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        },
+        "parent_child_relationship": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        },
+        "personal_growth": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        },
+        "wealth_career": {
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ],
+          "fallback_risk": "high"
+        }
+      },
+      "high_risk_warning_paths": [
+        {
+          "imbalance_id": "水多火灭",
+          "warning": "⚠️ 高危抑郁信号，强烈建议转介专业心理咨询",
+          "toc_supported": true,
+          "mapped_theme_count": 8,
+          "mapped_theme_sample": [
+            "father_relationship",
+            "general",
+            "health_wellness"
+          ]
+        }
+      ],
+      "fallback_hotspots": [
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "father_relationship",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        },
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "general",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        },
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "health_wellness",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        },
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "intimate_relationship",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        },
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "mother_relationship",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        },
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "parent_child_relationship",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        },
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "personal_growth",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        },
+        {
+          "kind": "healing_template_fallback",
+          "theme_id": "wealth_career",
+          "severity": "medium",
+          "direct_issue_match_count": 0,
+          "toc_supported_total": 10,
+          "missing_issue_sample": [
+            "土多水干",
+            "土多金埋",
+            "木多土陷"
+          ]
+        }
+      ]
+    }
   }
 }

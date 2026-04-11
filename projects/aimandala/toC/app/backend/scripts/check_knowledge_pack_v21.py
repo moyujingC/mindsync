@@ -18,6 +18,11 @@ def main() -> int:
         print("knowledge pack v2.1 check passed")
         for path in report.checked_paths:
             print(f"- checked: {path}")
+        for item in report.warnings:
+            print(f"- warning: {item}")
+        high_risk_paths = report.quality_stats.get("high_risk_warning_paths", [])
+        if high_risk_paths:
+            print(f"- high-risk warning paths: {len(high_risk_paths)}")
         return 0
 
     print("knowledge pack v2.1 check failed")
@@ -25,6 +30,8 @@ def main() -> int:
         print(f"- checked: {path}")
     for item in report.differences:
         print(f"- {item}")
+    for item in report.warnings:
+        print(f"- warning: {item}")
     return 1
 
 

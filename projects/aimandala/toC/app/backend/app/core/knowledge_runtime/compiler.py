@@ -133,6 +133,8 @@ class KnowledgePackCompiler:
         for asset in assets_by_category.get("circles", []):
             lookups["circles"][asset.get("id", "")] = asset.get("payload", {})
 
+        quality_stats = self._build_quality_stats(lookups)
+
         return {
             "schema_version": manifest.get("schema_version", "v2.1"),
             "pack_id": manifest.get("pack_id", "aimandala-v2.1"),
@@ -161,7 +163,138 @@ class KnowledgePackCompiler:
                         if definition.get("toc_supported")
                     ]
                 ),
+                "quality": quality_stats,
             },
+        }
+
+    def _build_quality_stats(self, lookups: dict[str, Any]) -> dict[str, Any]:
+        theme_ids = sorted(lookups["themes"].keys())
+        theme_healing = lookups["theme_healing"]
+        theme_narrative = lookups["theme_narrative"]
+        imbalance_definitions = (
+            lookups["rules"].get("rule.imbalance_types", {}).get("imbalances", {})
+        )
+        toc_supported_imbalances = sorted(
+            imbalance_id
+            for imbalance_id, definition in imbalance_definitions.items()
+            if definition.get("toc_supported")
+        )
+        theme_mappings = lookups["rules"].get("rule.theme_mappings", {}).get("mappings", {})
+
+        theme_asset_coverage: dict[str, dict[str, Any]] = {}
+        theme_mapping_coverage: dict[str, dict[str, Any]] = {}
+        healing_lookup_coverage: dict[str, dict[str, Any]] = {}
+        fallback_hotspots: list[dict[str, Any]] = []
+
+        for theme_id in theme_ids:
+            has_healing = theme_id in theme_healing
+            has_narrative = theme_id in theme_narrative
+            theme_asset_coverage[theme_id] = {
+                "has_healing": has_healing,
+                "has_narrative": has_narrative,
+            }
+
+            if not has_healing:
+                fallback_hotspots.append(
+                    {
+                        "kind": "missing_healing_asset",
+                        "theme_id": theme_id,
+                        "severity": "high",
+                    }
+                )
+            if not has_narrative:
+                fallback_hotspots.append(
+                    {
+                        "kind": "missing_narrative_asset",
+                        "theme_id": theme_id,
+                        "severity": "high",
+                    }
+                )
+
+            theme_mapping = theme_mappings.get(theme_id, {})
+            missing_supported = [
+                imbalance_id
+                for imbalance_id in toc_supported_imbalances
+                if imbalance_id not in theme_mapping
+            ]
+            theme_mapping_coverage[theme_id] = {
+                "mapped_count": len(toc_supported_imbalances) - len(missing_supported),
+                "toc_supported_total": len(toc_supported_imbalances),
+                "missing": missing_supported,
+            }
+            if missing_supported:
+                fallback_hotspots.append(
+                    {
+                        "kind": "theme_mapping_gap",
+                        "theme_id": theme_id,
+                        "severity": "high",
+                        "missing_count": len(missing_supported),
+                        "missing_sample": missing_supported[:3],
+                    }
+                )
+
+            issue_types = set(
+                (
+                    theme_healing.get(theme_id, {})
+                    .get("healing_prescriptions", {})
+                    .get("issue_types", {})
+                ).keys()
+            )
+            direct_matches = sorted(issue_types.intersection(toc_supported_imbalances))
+            healing_lookup_coverage[theme_id] = {
+                "direct_issue_match_count": len(direct_matches),
+                "toc_supported_total": len(toc_supported_imbalances),
+                "missing_issue_sample": [
+                    imbalance_id
+                    for imbalance_id in toc_supported_imbalances
+                    if imbalance_id not in issue_types
+                ][:3],
+                "fallback_risk": (
+                    "high"
+                    if toc_supported_imbalances and not direct_matches
+                    else "low"
+                ),
+            }
+            if toc_supported_imbalances and not direct_matches:
+                fallback_hotspots.append(
+                    {
+                        "kind": "healing_template_fallback",
+                        "theme_id": theme_id,
+                        "severity": "medium",
+                        "direct_issue_match_count": 0,
+                        "toc_supported_total": len(toc_supported_imbalances),
+                        "missing_issue_sample": healing_lookup_coverage[theme_id][
+                            "missing_issue_sample"
+                        ],
+                    }
+                )
+
+        high_risk_warning_paths = []
+        for imbalance_id, definition in imbalance_definitions.items():
+            warning = str(definition.get("warning") or "").strip()
+            if not warning:
+                continue
+            mapped_themes = sorted(
+                theme_id
+                for theme_id in theme_ids
+                if imbalance_id in theme_mappings.get(theme_id, {})
+            )
+            high_risk_warning_paths.append(
+                {
+                    "imbalance_id": imbalance_id,
+                    "warning": warning,
+                    "toc_supported": bool(definition.get("toc_supported")),
+                    "mapped_theme_count": len(mapped_themes),
+                    "mapped_theme_sample": mapped_themes[:3],
+                }
+            )
+
+        return {
+            "theme_asset_coverage": theme_asset_coverage,
+            "theme_mapping_coverage": theme_mapping_coverage,
+            "healing_lookup_coverage": healing_lookup_coverage,
+            "high_risk_warning_paths": high_risk_warning_paths,
+            "fallback_hotspots": fallback_hotspots,
         }
 
     def _load_yaml(self, path: Path) -> dict[str, Any]:
