@@ -252,6 +252,18 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
                     "base": "Runtime-Base-Angle",
                     "light": "Runtime-Light-Angle",
                 },
+                "six_insights": {
+                    "base": {
+                        "title": "Runtime-Six-Base-Title",
+                        "content": "Runtime-Six-Base-Content",
+                        "summary": "Runtime-Six-Base-Summary",
+                    },
+                    "light": {
+                        "title": "Runtime-Six-Light-Title",
+                        "content": "Runtime-Six-Light-Content",
+                        "summary": "Runtime-Six-Light-Summary",
+                    },
+                },
                 "story_sections": {
                     "base": "Runtime-Story-Base",
                     "contradiction": "Runtime-Story-Contradiction",
@@ -293,8 +305,10 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
     assert layer1.experiment["content"] == "Runtime-Experiment-Content"
     assert layer1.story.base.content == "Runtime-Story-Base"
     assert layer1.story.light.content == "Runtime-Story-Light"
-    assert layer1.six_insights.base["title"] == "你的底色：先稳住中心的人：Runtime-Base-Angle"
-    assert layer1.six_insights.light["title"] == "你的光：你已经知道什么更适合自己：Runtime-Light-Angle"
+    assert layer1.six_insights.base["title"] == "Runtime-Six-Base-Title"
+    assert layer1.six_insights.base["content"] == "Runtime-Six-Base-Content"
+    assert layer1.six_insights.light["title"] == "Runtime-Six-Light-Title"
+    assert layer1.six_insights.light["summary"] == "Runtime-Six-Light-Summary"
     assert layer1.theme_insights.scene == "Runtime-Theme-Scene"
     assert layer1.emotion_portrait == "Runtime-Emotion-Portrait"
     assert layer1.pro_teaser == "Runtime-Pro-Teaser"

@@ -1308,43 +1308,14 @@ class LayeredOrchestrator:
             theme_label,
             projection=lite_projection,
         )
-        story_title_map = {
-            "base": "base",
-            "contradiction": "contradiction",
-            "pattern": "pattern",
-            "defense": "defense",
-            "block": "block",
-            "light": "light",
-        }
-        story_angles = (
-            lite_projection.get("story_angles")
-            if isinstance(lite_projection, dict)
-            else None
+        six_insights = self._build_lite_six_insights_payload(
+            record,
+            theme_label,
+            story_sections,
+            projection=lite_projection,
         )
-        for key, template in LITE_REPORT_BLUEPRINT.six_insight_layer1_templates.items():
-            story_content = story_sections.get(story_title_map.get(key, ""), "")
-            angle = ""
-            if isinstance(story_angles, dict):
-                value = story_angles.get(key)
-                if isinstance(value, str) and value.strip():
-                    angle = value.strip()
-            base_title = template.get("title", key)
-            title = f"{base_title}：{angle}" if angle else base_title
-            getattr(layer.six_insights, key).update(
-                {
-                    "title": title,
-                    "content": story_content or render_lite_template_text(
-                        template.get("content", ""),
-                        theme_label=theme_label,
-                        feeling_hint=self._build_feeling_hint(record),
-                    ),
-                    "summary": story_content or render_lite_template_text(
-                        template.get("summary", ""),
-                        theme_label=theme_label,
-                        feeling_hint=self._build_feeling_hint(record),
-                    ),
-                }
-            )
+        for key, payload in six_insights.items():
+            getattr(layer.six_insights, key).update(payload)
         layer.experiment = self._build_lite_experiment_payload(
             record,
             theme_label,
@@ -1649,6 +1620,7 @@ class LayeredOrchestrator:
                 inner_radius=int((record.three_circles or {}).get("inner_radius", 33)),
                 middle_radius=int((record.three_circles or {}).get("middle_radius", 66)),
                 title_templates=dict(LITE_REPORT_BLUEPRINT.title_templates),
+                six_insight_templates=dict(LITE_REPORT_BLUEPRINT.six_insight_layer1_templates),
                 experiment_title=LITE_REPORT_BLUEPRINT.structure_labels["experiment_title"],
                 experiment_content=build_lite_experiment_content(
                     theme_label=theme_label,
@@ -1926,6 +1898,77 @@ class LayeredOrchestrator:
                 merged.sort(key=lambda item: item.day)
                 return merged[:3]
         return awareness_items
+
+    def _build_lite_six_insights_payload(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+        story_sections: Dict[str, str],
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Dict[str, str]]:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+        runtime_six_insights = (
+            runtime_projection.get("six_insights")
+            if isinstance(runtime_projection, dict)
+            else None
+        )
+        if isinstance(runtime_six_insights, dict) and runtime_six_insights:
+            normalized: Dict[str, Dict[str, str]] = {}
+            for key in LITE_REPORT_BLUEPRINT.six_insight_layer1_templates.keys():
+                payload = runtime_six_insights.get(key)
+                if not isinstance(payload, dict):
+                    continue
+                title = payload.get("title")
+                content = payload.get("content")
+                summary = payload.get("summary")
+                if not isinstance(title, str) or not title.strip():
+                    continue
+                if not isinstance(content, str) or not content.strip():
+                    continue
+                normalized[key] = {
+                    "title": title.strip(),
+                    "content": content.strip(),
+                    "summary": (
+                        summary.strip()
+                        if isinstance(summary, str) and summary.strip()
+                        else content.strip()
+                    ),
+                }
+            if normalized:
+                return normalized
+
+        story_angles = (
+            runtime_projection.get("story_angles")
+            if isinstance(runtime_projection, dict)
+            else None
+        )
+        payloads: Dict[str, Dict[str, str]] = {}
+        for key, template in LITE_REPORT_BLUEPRINT.six_insight_layer1_templates.items():
+            story_content = story_sections.get(key, "")
+            angle = ""
+            if isinstance(story_angles, dict):
+                value = story_angles.get(key)
+                if isinstance(value, str) and value.strip():
+                    angle = value.strip()
+            base_title = template.get("title", key)
+            title = f"{base_title}：{angle}" if angle else base_title
+            payloads[key] = {
+                "title": title,
+                "content": story_content or render_lite_template_text(
+                    template.get("content", ""),
+                    theme_label=theme_label,
+                    feeling_hint=self._build_feeling_hint(record),
+                ),
+                "summary": story_content or render_lite_template_text(
+                    template.get("summary", ""),
+                    theme_label=theme_label,
+                    feeling_hint=self._build_feeling_hint(record),
+                ),
+            }
+        return payloads
 
     def _build_lite_experiment_payload(
         self,

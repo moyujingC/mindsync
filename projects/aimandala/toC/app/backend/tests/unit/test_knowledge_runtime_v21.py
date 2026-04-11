@@ -206,6 +206,18 @@ def test_v21_narrative_service_builds_lite_projection():
             "default": "慢慢亮起来的中心",
             "general": "General-Theme-Title",
         },
+        six_insight_templates={
+            "base": {
+                "title": "你的底色：先稳住中心的人",
+                "content": "Base {theme_label}",
+                "summary": "Base Summary",
+            },
+            "light": {
+                "title": "你的光：你已经知道什么更适合自己",
+                "content": "Light {theme_label}",
+                "summary": "Light Summary",
+            },
+        },
         experiment_title="曼曼的疗愈仪式：给自己一个稳稳的小空间",
         experiment_content="今天先给自己十分钟，练习回到画里的节奏。",
         dominant_element="土",
@@ -231,6 +243,9 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "42.50%" in projection["visual_elements"]
     assert "内圈主导为「火」" in projection["visual_elements"]
     assert "内圈阅读；中圈阅读；外圈阅读。" in projection["visual_elements"]
+    assert projection["six_insights"]["base"]["title"] == "你的底色：先稳住中心的人：你当前的生命能量基调"
+    assert projection["six_insights"]["base"]["content"] == projection["story_sections"]["base"]
+    assert projection["six_insights"]["light"]["title"] == "你的光：你已经知道什么更适合自己：你独特的内在资源与转变可能"
     assert projection["experiment"]["title"] == "曼曼的疗愈仪式：给自己一个稳稳的小空间"
     assert "今天先给自己十分钟" in projection["experiment"]["content"]
     assert "先给自己一点安全、稳定、接纳" in projection["experiment"]["content"]
@@ -274,6 +289,7 @@ def test_v21_narrative_service_builds_lite_title_variants():
 
     assert inner_high["title"] == "通用解读里的守心者"
     assert middle_high["title"] == "通用解读中的重连者"
+    assert inner_high["six_insights"] == {}
     assert inner_high["experiment"] == {"title": "", "content": ""}
 
 

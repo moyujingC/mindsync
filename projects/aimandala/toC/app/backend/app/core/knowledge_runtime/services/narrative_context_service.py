@@ -192,6 +192,7 @@ class NarrativeContextService:
         inner_radius: int = 33,
         middle_radius: int = 66,
         title_templates: dict[str, str] | None = None,
+        six_insight_templates: dict[str, dict[str, str]] | None = None,
         experiment_title: str = "",
         experiment_content: str = "",
         dominant_element: str = "",
@@ -342,6 +343,20 @@ class NarrativeContextService:
                 part for part in visual_parts if isinstance(part, str) and part.strip()
             ).strip(),
             "story_angles": self._build_story_angles(resolved_theme),
+            "six_insights": self._build_lite_six_insights(
+                theme=resolved_theme,
+                theme_label=resolved_theme_label,
+                feeling_hint=feeling_hint,
+                story_sections={
+                    "base": base,
+                    "contradiction": contradiction.strip(),
+                    "pattern": pattern.strip(),
+                    "defense": defense.strip(),
+                    "block": " ".join(block_parts).strip(),
+                    "light": light.strip(),
+                },
+                six_insight_templates=six_insight_templates or {},
+            ),
             "experiment": self._build_lite_experiment(
                 experiment_title=experiment_title,
                 experiment_content=experiment_content,
@@ -521,6 +536,58 @@ class NarrativeContextService:
             "title": str(experiment_title or "").strip(),
             "content": content,
         }
+
+    def _build_lite_six_insights(
+        self,
+        *,
+        theme: str,
+        theme_label: str,
+        feeling_hint: str,
+        story_sections: dict[str, str],
+        six_insight_templates: dict[str, dict[str, str]],
+    ) -> dict[str, dict[str, str]]:
+        story_angles = self._build_story_angles(theme)
+        insights: dict[str, dict[str, str]] = {}
+        for key, template in six_insight_templates.items():
+            if not isinstance(template, dict):
+                continue
+            story_content = str(story_sections.get(key) or "").strip()
+            base_title = str(template.get("title") or key).strip()
+            angle = str(story_angles.get(key) or "").strip()
+            title = f"{base_title}：{angle}" if angle else base_title
+            fallback_content = self._render_lite_template(
+                str(template.get("content") or "").strip(),
+                theme_label=theme_label,
+                feeling_hint=feeling_hint,
+            )
+            fallback_summary = self._render_lite_template(
+                str(template.get("summary") or "").strip(),
+                theme_label=theme_label,
+                feeling_hint=feeling_hint,
+            )
+            insights[key] = {
+                "title": title,
+                "content": story_content or fallback_content,
+                "summary": story_content or fallback_summary,
+            }
+        return insights
+
+    def _render_lite_template(
+        self,
+        template: str,
+        *,
+        theme_label: str,
+        feeling_hint: str,
+    ) -> str:
+        if not template:
+            return ""
+        try:
+            return template.format(
+                theme_label=theme_label,
+                feeling_hint=feeling_hint,
+            ).strip()
+        except Exception:
+            return template.strip()
 
     def _clean_text_block(self, content: str) -> str:
         if not isinstance(content, str):
