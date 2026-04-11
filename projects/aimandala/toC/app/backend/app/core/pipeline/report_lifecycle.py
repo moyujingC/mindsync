@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from .data_models import GenerationStatus, InterpretationRecord
-from .generation_runtime import ReportGenerationRuntime
+from .generation_runtime import ReportGenerationContext, ReportGenerationRuntime
 from .report_blueprints import PRO_REPORT_BLUEPRINT
 from .report_contracts import ReportContractAssembler
 from .store import InterpretationStore
@@ -67,7 +67,7 @@ class ReportLifecycleManager:
 
     def upgrade_to_pro(
         self,
-        orchestrator: Any,
+        generation_context: ReportGenerationContext,
         interpretation_id: str,
     ) -> dict[str, Any] | None:
         started = self.start_pro_upgrade(interpretation_id)
@@ -75,7 +75,7 @@ class ReportLifecycleManager:
             return None
         if started["status"] == "completed":
             return started
-        return self.complete_pro_upgrade(orchestrator, interpretation_id)
+        return self.complete_pro_upgrade(generation_context, interpretation_id)
 
     def start_pro_upgrade(self, interpretation_id: str) -> dict[str, Any] | None:
         record = self.store.load(interpretation_id)
@@ -108,7 +108,7 @@ class ReportLifecycleManager:
 
     def complete_pro_upgrade(
         self,
-        orchestrator: Any,
+        generation_context: ReportGenerationContext,
         interpretation_id: str,
     ) -> dict[str, Any] | None:
         record = self.store.load(interpretation_id)
@@ -131,7 +131,7 @@ class ReportLifecycleManager:
                 return None
 
         self._mark_processing(record)
-        pro_bundle = self.generation_runtime.generate_pro(orchestrator, record)
+        pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
         record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
         record.layer_4_pro_final = pro_bundle.layer_4_pro_final
         self._mark_completed(record)

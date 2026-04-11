@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, Optional, Protocol
+from typing import Any, Dict, Optional, Protocol
 
 from .data_models import (
     DailyAwareness,
@@ -15,9 +15,6 @@ from .data_models import (
     Layer4ProFinal,
 )
 from .prompt_runtime import PromptRuntime
-
-if TYPE_CHECKING:
-    from .orchestrator_v2 import LayeredOrchestrator
 
 
 @dataclass(frozen=True)
@@ -33,19 +30,52 @@ class ProGenerationBundle:
     layer_4_pro_final: Layer4ProFinal
 
 
+class ReportGenerationContext(Protocol):
+    """Minimal collaborator surface required by report generation runtimes."""
+
+    prompt_builder: Any
+
+    def _build_layer0_placeholder(self, record: InterpretationRecord) -> Layer0Raw:
+        ...
+
+    def _build_layer1_placeholder(
+        self,
+        record: InterpretationRecord,
+    ) -> Layer1LiteDraft:
+        ...
+
+    def _build_lite_placeholder_report(
+        self,
+        record: InterpretationRecord,
+    ) -> Layer2LiteFinal:
+        ...
+
+    def _build_pro_placeholder_draft(
+        self,
+        record: InterpretationRecord,
+    ) -> Layer3ProDraft:
+        ...
+
+    def _build_pro_placeholder_report(
+        self,
+        record: InterpretationRecord,
+    ) -> Layer4ProFinal:
+        ...
+
+
 class ReportGenerationRuntime(Protocol):
     """Runtime contract for generating migrated Lite/Pro layers."""
 
     def generate_lite(
         self,
-        orchestrator: LayeredOrchestrator,
+        generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
         ...
 
     def generate_pro(
         self,
-        orchestrator: LayeredOrchestrator,
+        generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> ProGenerationBundle:
         ...
@@ -60,14 +90,14 @@ class DeterministicReportGenerationRuntime:
 
     def generate_lite(
         self,
-        orchestrator: LayeredOrchestrator,
+        generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
-        layer_0_raw = orchestrator._build_layer0_placeholder(record)
+        layer_0_raw = generation_context._build_layer0_placeholder(record)
         record.layer_0_raw = layer_0_raw
-        layer_1_lite_draft = orchestrator._build_layer1_placeholder(record)
+        layer_1_lite_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = layer_1_lite_draft
-        layer_2_lite_final = orchestrator._build_lite_placeholder_report(record)
+        layer_2_lite_final = generation_context._build_lite_placeholder_report(record)
         return LiteGenerationBundle(
             layer_0_raw=layer_0_raw,
             layer_1_lite_draft=layer_1_lite_draft,
@@ -76,12 +106,12 @@ class DeterministicReportGenerationRuntime:
 
     def generate_pro(
         self,
-        orchestrator: LayeredOrchestrator,
+        generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> ProGenerationBundle:
-        layer_3_pro_draft = orchestrator._build_pro_placeholder_draft(record)
+        layer_3_pro_draft = generation_context._build_pro_placeholder_draft(record)
         record.layer_3_pro_draft = layer_3_pro_draft
-        layer_4_pro_final = orchestrator._build_pro_placeholder_report(record)
+        layer_4_pro_final = generation_context._build_pro_placeholder_report(record)
         return ProGenerationBundle(
             layer_3_pro_draft=layer_3_pro_draft,
             layer_4_pro_final=layer_4_pro_final,
@@ -102,11 +132,14 @@ class PromptBackedReportGenerationRuntime:
 
     def generate_lite(
         self,
-        orchestrator: LayeredOrchestrator,
+        generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
-        base = self.fallback_runtime.generate_lite(orchestrator, record)
-        schema = orchestrator.prompt_builder.get_template("1.6", "lite").load_schema()
+        base = self.fallback_runtime.generate_lite(generation_context, record)
+        schema = generation_context.prompt_builder.get_template(
+            "1.6",
+            "lite",
+        ).load_schema()
         payload = self.prompt_runtime.generate_lite(
             prompt=base.layer_1_lite_draft.prompt_preview,
             schema=schema,
@@ -117,7 +150,7 @@ class PromptBackedReportGenerationRuntime:
         layer1 = base.layer_1_lite_draft
         self._apply_lite_payload(layer1, payload)
         record.layer_1_lite_draft = layer1
-        layer2 = orchestrator._build_lite_placeholder_report(record)
+        layer2 = generation_context._build_lite_placeholder_report(record)
         return LiteGenerationBundle(
             layer_0_raw=base.layer_0_raw,
             layer_1_lite_draft=layer1,
@@ -126,11 +159,14 @@ class PromptBackedReportGenerationRuntime:
 
     def generate_pro(
         self,
-        orchestrator: LayeredOrchestrator,
+        generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> ProGenerationBundle:
-        base = self.fallback_runtime.generate_pro(orchestrator, record)
-        schema = orchestrator.prompt_builder.get_template("1.6", "pro").load_schema()
+        base = self.fallback_runtime.generate_pro(generation_context, record)
+        schema = generation_context.prompt_builder.get_template(
+            "1.6",
+            "pro",
+        ).load_schema()
         payload = self.prompt_runtime.generate_pro(
             prompt=base.layer_3_pro_draft.prompt_preview,
             schema=schema,
@@ -141,7 +177,7 @@ class PromptBackedReportGenerationRuntime:
         layer3 = base.layer_3_pro_draft
         self._apply_pro_payload(layer3, payload)
         record.layer_3_pro_draft = layer3
-        layer4 = orchestrator._build_pro_placeholder_report(record)
+        layer4 = generation_context._build_pro_placeholder_report(record)
         return ProGenerationBundle(
             layer_3_pro_draft=layer3,
             layer_4_pro_final=layer4,
