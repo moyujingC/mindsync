@@ -4,6 +4,7 @@
 管理解读记录的分层存储，支持Lite生成和Pro升级
 """
 
+import errno
 import json
 import threading
 from typing import Optional, Dict, List
@@ -38,6 +39,10 @@ class InterpretationStore:
     RAW_DATA_RETENTION_DAYS = 365 * 10  # layer_0和layer_1保留10年
     FINAL_DATA_RETENTION_DAYS = 365 * 10  # layer_2和layer_4保留10年
     SUPPORTED_SCHEMA_VERSION = "v2.1"
+    ATOMIC_WRITE_RETRIES = 1
+    RETRYABLE_WRITE_ERRNOS = {errno.ENOENT, errno.EINVAL}
+    _shared_io_locks: Dict[str, threading.RLock] = {}
+    _shared_io_locks_guard = threading.Lock()
 
     def __init__(self, storage_dir: str = None):
         """
@@ -55,7 +60,20 @@ class InterpretationStore:
 
         # 内存缓存（用于活跃会话）
         self._cache: Dict[str, InterpretationRecord] = {}
-        self._io_lock = threading.RLock()
+        self._io_lock = self._get_shared_io_lock(self.storage_dir)
+
+    @classmethod
+    def _get_shared_io_lock(cls, storage_dir: Path) -> threading.RLock:
+        """Share the same I/O lock across store instances targeting one directory."""
+
+        key = str(storage_dir.expanduser().resolve())
+        with cls._shared_io_locks_guard:
+            existing = cls._shared_io_locks.get(key)
+            if existing is not None:
+                return existing
+            lock = threading.RLock()
+            cls._shared_io_locks[key] = lock
+            return lock
 
     def _get_file_path(self, interpretation_id: str) -> Path:
         """获取记录文件路径"""
@@ -448,16 +466,37 @@ class InterpretationStore:
         """Atomically persist JSON records to avoid partial reads during upgrades."""
 
         with self._io_lock:
-            try:
-                file_path.parent.mkdir(parents=True, exist_ok=True)
-            except FileExistsError:
-                if not file_path.parent.is_dir():
-                    raise
+            attempts_remaining = self.ATOMIC_WRITE_RETRIES + 1
+            last_error: Optional[OSError] = None
 
-            temp_path = file_path.with_name(f"{file_path.name}.{uuid4().hex}.tmp")
-            with open(temp_path, "w", encoding="utf-8") as f:
-                json.dump(payload, f, ensure_ascii=False, indent=2)
-            temp_path.replace(file_path)
+            while attempts_remaining > 0:
+                attempts_remaining -= 1
+                temp_path = file_path.with_name(f"{file_path.name}.{uuid4().hex}.tmp")
+                try:
+                    try:
+                        file_path.parent.mkdir(parents=True, exist_ok=True)
+                    except FileExistsError:
+                        if not file_path.parent.is_dir():
+                            raise
+
+                    with open(temp_path, "w", encoding="utf-8") as f:
+                        json.dump(payload, f, ensure_ascii=False, indent=2)
+                    temp_path.replace(file_path)
+                    return
+                except OSError as error:
+                    last_error = error
+                    try:
+                        temp_path.unlink(missing_ok=True)
+                    except OSError:
+                        pass
+
+                    if error.errno not in self.RETRYABLE_WRITE_ERRNOS:
+                        raise
+                    if attempts_remaining <= 0:
+                        raise
+
+            if last_error is not None:
+                raise last_error
 
     def find_existing_record(
         self, image_hash: str, user_id: str, theme: str
