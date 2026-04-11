@@ -57,6 +57,7 @@ from .report_debug_profile import ReportDebugProfileBuilder
 from .report_draft_assembler import ReportDraftAssembler
 from .report_knowledge_adapter import ReportKnowledgeAdapter
 from .report_placeholder_assembler import ReportPlaceholderAssembler
+from .report_projection_resolver import ReportProjectionResolver
 from .report_prompt_preview import ReportPromptPreviewBuilder
 from .report_section_renderer import ReportSectionRenderer
 from .store import InterpretationStore, UnsupportedInterpretationSchemaError
@@ -134,10 +135,6 @@ class LayeredOrchestrator:
         self.knowledge_runtime = (
             get_knowledge_runtime() if get_knowledge_runtime is not None else None
         )
-        self._imbalance_projection_cache: Dict[
-            tuple[str, str, str],
-            Dict[str, Any],
-        ] = {}
         self.layer0_assembler = (
             self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
         )
@@ -176,6 +173,18 @@ class LayeredOrchestrator:
             get_narrative_service=lambda: self.narrative_service,
             get_knowledge_runtime=lambda: self.knowledge_runtime,
             get_layer0_view=self._get_layer0_view,
+        )
+        self.report_projection_resolver = ReportProjectionResolver(
+            get_narrative_service=lambda: self.narrative_service,
+            get_record_theme=self._get_record_theme,
+            get_layer0_view=self._get_layer0_view,
+            get_layer0_element_distribution=self._get_layer0_element_distribution,
+            describe_circle_transition=self._describe_circle_transition,
+            get_primary_knowledge_signal=self._get_primary_knowledge_signal,
+            build_feeling_hint=self._build_feeling_hint,
+            build_lite_title_fallback=self._build_lite_title_fallback,
+            get_theme_label=self._get_theme_label,
+            describe_circle_pattern=self._describe_circle_pattern,
         )
         self.report_draft_assembler = ReportDraftAssembler(
             get_theme_label=self._get_theme_label,
@@ -660,78 +669,13 @@ class LayeredOrchestrator:
         imbalance_profile: Dict[str, str],
         imbalance_projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        if self.narrative_service is None:
-            return {}
-
-        layer0 = self._get_layer0_view(record)
-        distribution = self._get_layer0_element_distribution(layer0)
-        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
-        secondary = distribution[1] if len(distribution) > 1 else dominant
-        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
-        lite_contradiction = (
-            record.layer_1_lite_draft.story.contradiction.content
-            if record.layer_1_lite_draft and record.layer_1_lite_draft.story.contradiction.content
-            else ""
+        return self.report_projection_resolver.build_runtime_pro_narrative_projection(
+            record,
+            theme_label=theme_label,
+            lite_title=lite_title,
+            imbalance_profile=imbalance_profile,
+            imbalance_projection=imbalance_projection,
         )
-        lite_block = (
-            record.layer_1_lite_draft.story.block.content
-            if record.layer_1_lite_draft and record.layer_1_lite_draft.story.block.content
-            else ""
-        )
-        circles = {
-            "inner": layer0.three_circles.inner,
-            "middle": layer0.three_circles.middle,
-            "outer": layer0.three_circles.outer,
-        }
-        adjacent = [
-            str(item).strip()
-            for item in (layer0.micro_analysis.adjacent or [])
-            if isinstance(item, str) and str(item).strip()
-        ]
-        wrap = [
-            str(item).strip()
-            for item in (layer0.micro_analysis.wrap or [])
-            if isinstance(item, str) and str(item).strip()
-        ]
-
-        try:
-            projection = self.narrative_service.build_pro_narrative_projection(
-                theme=self._get_record_theme(record),
-                theme_label=theme_label,
-                lite_title=lite_title,
-                lite_contradiction=lite_contradiction,
-                lite_block=lite_block,
-                intention=(record.painting_intention or "").strip(),
-                feeling_hint=self._build_feeling_hint(record),
-                dominant_element=dominant["name"],
-                dominant_percentage=float(dominant.get("percentage", 0.0) or 0.0),
-                secondary_element=secondary["name"],
-                secondary_percentage=float(secondary.get("percentage", 0.0) or 0.0),
-                weakest_element=weakest["name"],
-                weakest_percentage=float(weakest.get("percentage", 0.0) or 0.0),
-                signal=self._get_primary_knowledge_signal(record),
-                primary_imbalance=str(imbalance_profile.get("primary") or "").strip(),
-                transition=self._describe_circle_transition(layer0),
-                circles=circles,
-                adjacent=adjacent,
-                wrap=wrap,
-                narrative_templates=dict(PRO_REPORT_BLUEPRINT.narrative_templates),
-                structure_labels=dict(PRO_REPORT_BLUEPRINT.structure_labels),
-                circle_fallbacks={
-                    "inner": PRO_REPORT_BLUEPRINT.narrative_templates["circle_inner_reading"].format(
-                        inner=(record.three_circles or {}).get("inner_radius", 33)
-                    ),
-                    "middle": PRO_REPORT_BLUEPRINT.narrative_templates["circle_middle_reading"].format(
-                        middle=(record.three_circles or {}).get("middle_radius", 66)
-                    ),
-                    "outer": PRO_REPORT_BLUEPRINT.narrative_templates["circle_outer_reading"],
-                },
-                imbalance_projection=imbalance_projection,
-            )
-        except Exception:
-            return {}
-
-        return projection if isinstance(projection, dict) else {}
 
     def _build_pro_placeholder_report(self, record: InterpretationRecord) -> Layer4ProFinal:
         return self.report_placeholder_assembler.build_pro(record)
@@ -859,60 +803,10 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         theme_label: str,
     ) -> Dict[str, Any]:
-        if self.narrative_service is None:
-            return {}
-
-        layer0 = self._get_layer0_view(record)
-        distribution = self._get_layer0_element_distribution(layer0)
-        dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
-        secondary = distribution[1] if len(distribution) > 1 else dominant
-        weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
-        adjacent = [
-            str(item).strip()
-            for item in (layer0.micro_analysis.adjacent or [])
-            if isinstance(item, str) and str(item).strip()
-        ]
-
-        try:
-            projection = self.narrative_service.build_lite_narrative_projection(
-                theme=self._get_record_theme(record),
-                theme_label=theme_label,
-                inner_radius=int((record.three_circles or {}).get("inner_radius", 33)),
-                middle_radius=int((record.three_circles or {}).get("middle_radius", 66)),
-                title_templates=dict(LITE_REPORT_BLUEPRINT.title_templates),
-                six_insight_templates=dict(LITE_REPORT_BLUEPRINT.six_insight_layer1_templates),
-                experiment_title=LITE_REPORT_BLUEPRINT.structure_labels["experiment_title"],
-                experiment_content=build_lite_experiment_content(
-                    theme_label=theme_label,
-                    title=self._build_lite_title_fallback(record, theme_label),
-                ),
-                dominant_element=dominant["name"],
-                dominant_percentage=float(dominant.get("percentage", 0.0) or 0.0),
-                secondary_element=secondary["name"],
-                secondary_percentage=float(secondary.get("percentage", 0.0) or 0.0),
-                weakest_element=weakest["name"],
-                weakest_percentage=float(weakest.get("percentage", 0.0) or 0.0),
-                inner_dominant=layer0.three_circles.inner.get("dominant", dominant["name"]),
-                middle_dominant=layer0.three_circles.middle.get("dominant", secondary["name"]),
-                outer_dominant=layer0.three_circles.outer.get("dominant", secondary["name"]),
-                circle_pattern=self._describe_circle_pattern(
-                    record.three_circles or {"inner_radius": 33, "middle_radius": 66}
-                ),
-                circle_readings=[
-                    layer0.three_circles.inner.get("knowledge_reading", ""),
-                    layer0.three_circles.middle.get("knowledge_reading", ""),
-                    layer0.three_circles.outer.get("knowledge_reading", ""),
-                ],
-                transition=self._describe_circle_transition(layer0),
-                adjacent=adjacent,
-                signal=self._get_primary_knowledge_signal(record),
-                feeling_hint=self._build_feeling_hint(record),
-                default_pro_teaser=DEFAULT_PRO_TEASER,
-            )
-        except Exception:
-            return {}
-
-        return projection if isinstance(projection, dict) else {}
+        return self.report_projection_resolver.build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
 
     def _resolve_runtime_lite_projection(
         self,
@@ -920,41 +814,35 @@ class LayeredOrchestrator:
         theme_label: str,
         projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        if isinstance(projection, dict):
-            return projection
-        return self._build_runtime_lite_narrative_projection(record, theme_label)
+        return self.report_projection_resolver.resolve_runtime_lite_projection(
+            record,
+            theme_label,
+            projection=projection,
+        )
 
     def _get_projection_text(
         self,
         projection: Optional[Dict[str, Any]],
         key: str,
     ) -> str:
-        if not isinstance(projection, dict):
-            return ""
-        value = projection.get(key)
-        if isinstance(value, str):
-            return value
-        return ""
+        return self.report_projection_resolver.get_projection_text(projection, key)
 
     def _get_projection_mapping(
         self,
         projection: Optional[Dict[str, Any]],
         key: str,
     ) -> Dict[str, Any]:
-        if not isinstance(projection, dict):
-            return {}
-        value = projection.get(key)
-        return value if isinstance(value, dict) else {}
+        return self.report_projection_resolver.get_projection_mapping(
+            projection,
+            key,
+        )
 
     def _get_projection_list(
         self,
         projection: Optional[Dict[str, Any]],
         key: str,
     ) -> list[Any]:
-        if not isinstance(projection, dict):
-            return []
-        value = projection.get(key)
-        return value if isinstance(value, list) else []
+        return self.report_projection_resolver.get_projection_list(projection, key)
 
     def _build_lite_emotion_portrait(
         self,
@@ -1554,29 +1442,7 @@ class LayeredOrchestrator:
         return PRO_REPORT_BLUEPRINT.narrative_templates["root_core"]
 
     def _get_runtime_imbalance_projection(self, record: InterpretationRecord) -> Dict[str, Any]:
-        if not self.narrative_service:
-            return {}
-        imbalance_type = self._get_primary_knowledge_signal(record)
-        if not imbalance_type:
-            return {}
-        theme_key = self._get_record_theme(record)
-        theme_label = self._get_theme_label(record.theme)
-        cache_key = (theme_key, imbalance_type, theme_label)
-        cached = self._imbalance_projection_cache.get(cache_key)
-        if cached is not None:
-            return cached
-
-        try:
-            result = self.narrative_service.build_imbalance_projection(
-                theme=theme_key,
-                imbalance_type=imbalance_type,
-                theme_label=theme_label,
-            )
-        except Exception:
-            result = {}
-        projection = result if isinstance(result, dict) else {}
-        self._imbalance_projection_cache[cache_key] = projection
-        return projection
+        return self.report_projection_resolver.get_runtime_imbalance_projection(record)
 
     def _build_pro_circle_reading(
         self,
