@@ -239,7 +239,9 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
         def build_lite_narrative_projection(self, **kwargs):
             assert kwargs["theme"] == "general"
             assert kwargs["default_pro_teaser"]
+            assert kwargs["title_templates"]["default"] == "慢慢亮起来的中心"
             return {
+                "title": "Runtime-Lite-Title",
                 "overall_impression": "Runtime-Overall-Impression",
                 "visual_elements": "Runtime-Visual-Elements",
                 "story_angles": {
@@ -280,6 +282,7 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
 
     layer1 = orchestrator._build_layer1_placeholder(record)
 
+    assert layer1.title == "Runtime-Lite-Title"
     assert layer1.overall_impression == "Runtime-Overall-Impression"
     assert layer1.visual_elements == "Runtime-Visual-Elements"
     assert layer1.story.base.content == "Runtime-Story-Base"

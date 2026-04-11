@@ -1262,7 +1262,11 @@ class LayeredOrchestrator:
             projection=lite_projection,
         )
         layer = Layer1LiteDraft(
-            title=self._build_lite_title(record, theme_label),
+            title=self._build_lite_title(
+                record,
+                theme_label,
+                projection=lite_projection,
+            ),
             overall_impression=self._build_lite_overall_impression(
                 record,
                 theme_label,
@@ -1496,7 +1500,24 @@ class LayeredOrchestrator:
             return str(summary["name"])
         return LITE_REPORT_BLUEPRINT.theme_labels.get(theme or "general", theme or "整体")
 
-    def _build_lite_title(self, record: InterpretationRecord, theme_label: str) -> str:
+    def _build_lite_title(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        runtime_projection = projection or self._build_runtime_lite_narrative_projection(
+            record,
+            theme_label,
+        )
+        runtime_title = (
+            runtime_projection.get("title")
+            if isinstance(runtime_projection, dict)
+            else ""
+        )
+        if isinstance(runtime_title, str) and runtime_title.strip():
+            return runtime_title.strip()
+
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_key = self._get_record_theme(record)
         inner = circles["inner_radius"]
@@ -1613,6 +1634,9 @@ class LayeredOrchestrator:
             projection = self.narrative_service.build_lite_narrative_projection(
                 theme=self._get_record_theme(record),
                 theme_label=theme_label,
+                inner_radius=int((record.three_circles or {}).get("inner_radius", 33)),
+                middle_radius=int((record.three_circles or {}).get("middle_radius", 66)),
+                title_templates=dict(LITE_REPORT_BLUEPRINT.title_templates),
                 dominant_element=dominant["name"],
                 dominant_percentage=float(dominant.get("percentage", 0.0) or 0.0),
                 secondary_element=secondary["name"],

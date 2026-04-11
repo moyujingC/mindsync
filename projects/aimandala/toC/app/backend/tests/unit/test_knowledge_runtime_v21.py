@@ -198,6 +198,14 @@ def test_v21_narrative_service_builds_lite_projection():
     projection = runtime.narrative_service.build_lite_narrative_projection(
         theme="general",
         theme_label="通用解读",
+        inner_radius=35,
+        middle_radius=67,
+        title_templates={
+            "inner_high": "{theme_label}里的守心者",
+            "middle_high": "{theme_label}中的重连者",
+            "default": "慢慢亮起来的中心",
+            "general": "General-Theme-Title",
+        },
         dominant_element="土",
         dominant_percentage=42.5,
         secondary_element="金",
@@ -216,6 +224,7 @@ def test_v21_narrative_service_builds_lite_projection():
         default_pro_teaser="默认 Pro 预告",
     )
 
+    assert projection["title"] == "General-Theme-Title"
     assert "以「土」为主的底色" in projection["overall_impression"]
     assert "42.50%" in projection["visual_elements"]
     assert "内圈主导为「火」" in projection["visual_elements"]
@@ -230,6 +239,36 @@ def test_v21_narrative_service_builds_lite_projection():
     assert len(projection["three_awareness"]) == 3
     assert projection["three_awareness"][0]["title"] == "先安顿自己"
     assert "默认 Pro 预告" in projection["pro_teaser"]
+
+
+def test_v21_narrative_service_builds_lite_title_variants():
+    runtime = get_knowledge_runtime()
+
+    inner_high = runtime.narrative_service.build_lite_narrative_projection(
+        theme="general",
+        theme_label="通用解读",
+        inner_radius=42,
+        middle_radius=66,
+        title_templates={
+            "inner_high": "{theme_label}里的守心者",
+            "middle_high": "{theme_label}中的重连者",
+            "default": "慢慢亮起来的中心",
+        },
+    )
+    middle_high = runtime.narrative_service.build_lite_narrative_projection(
+        theme="general",
+        theme_label="通用解读",
+        inner_radius=35,
+        middle_radius=74,
+        title_templates={
+            "inner_high": "{theme_label}里的守心者",
+            "middle_high": "{theme_label}中的重连者",
+            "default": "慢慢亮起来的中心",
+        },
+    )
+
+    assert inner_high["title"] == "通用解读里的守心者"
+    assert middle_high["title"] == "通用解读中的重连者"
 
 
 def test_v21_layer0_contains_structured_evidence(tmp_path):

@@ -189,6 +189,9 @@ class NarrativeContextService:
         *,
         theme: str,
         theme_label: str = "",
+        inner_radius: int = 33,
+        middle_radius: int = 66,
+        title_templates: dict[str, str] | None = None,
         dominant_element: str = "",
         dominant_percentage: float = 0.0,
         secondary_element: str = "",
@@ -323,6 +326,13 @@ class NarrativeContextService:
         )
 
         return {
+            "title": self._build_lite_title(
+                theme=resolved_theme,
+                theme_label=resolved_theme_label,
+                inner_radius=inner_radius,
+                middle_radius=middle_radius,
+                title_templates=title_templates or {},
+            ),
             "overall_impression": " ".join(
                 part for part in overall_parts if isinstance(part, str) and part.strip()
             ).strip(),
@@ -456,6 +466,34 @@ class NarrativeContextService:
             if isinstance(angle, str) and angle.strip():
                 angles[key] = angle.strip()
         return angles
+
+    def _build_lite_title(
+        self,
+        *,
+        theme: str,
+        theme_label: str,
+        inner_radius: int,
+        middle_radius: int,
+        title_templates: dict[str, str],
+    ) -> str:
+        if inner_radius >= 42:
+            template = title_templates.get("inner_high", "")
+            if isinstance(template, str) and template.strip():
+                return template.format(theme_label=theme_label)
+        if middle_radius >= 74:
+            template = title_templates.get("middle_high", "")
+            if isinstance(template, str) and template.strip():
+                return template.format(theme_label=theme_label)
+
+        themed_title = title_templates.get(theme, "")
+        if isinstance(themed_title, str) and themed_title.strip():
+            return themed_title
+
+        default_title = title_templates.get("default", "")
+        if isinstance(default_title, str) and default_title.strip():
+            return default_title
+
+        return "慢慢亮起来的中心"
 
     def _clean_text_block(self, content: str) -> str:
         if not isinstance(content, str):
