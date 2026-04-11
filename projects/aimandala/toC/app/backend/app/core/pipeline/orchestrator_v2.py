@@ -1617,6 +1617,23 @@ class LayeredOrchestrator:
         )
 
     def _get_theme_label(self, theme: Optional[str]) -> str:
+        if self.narrative_service is not None and hasattr(
+            self.narrative_service,
+            "get_theme_label",
+        ):
+            try:
+                runtime_label = self.narrative_service.get_theme_label(
+                    theme or "general",
+                    fallback_label=LITE_REPORT_BLUEPRINT.theme_labels.get(
+                        theme or "general",
+                        theme or "整体",
+                    ),
+                )
+            except Exception:
+                runtime_label = ""
+            if isinstance(runtime_label, str) and runtime_label.strip():
+                return runtime_label.strip()
+
         summary = self.get_knowledge_theme_summary(theme)
         if summary.get("name"):
             return str(summary["name"])
@@ -2713,6 +2730,17 @@ class LayeredOrchestrator:
         return ""
 
     def _get_signal_label(self, signal: str) -> str:
+        if self.narrative_service is not None and hasattr(
+            self.narrative_service,
+            "get_signal_label",
+        ):
+            try:
+                runtime_label = self.narrative_service.get_signal_label(signal)
+            except Exception:
+                runtime_label = ""
+            if isinstance(runtime_label, str) and runtime_label.strip():
+                return runtime_label.strip()
+
         labels = {
             "transition-overload": "过渡负荷",
             "boundary-constriction": "边界紧绷",
@@ -2724,6 +2752,17 @@ class LayeredOrchestrator:
         return labels.get(signal, signal.replace("-", " ").strip())
 
     def _describe_signal(self, signal: str) -> str:
+        if self.narrative_service is not None and hasattr(
+            self.narrative_service,
+            "describe_signal",
+        ):
+            try:
+                runtime_description = self.narrative_service.describe_signal(signal)
+            except Exception:
+                runtime_description = ""
+            if isinstance(runtime_description, str) and runtime_description.strip():
+                return runtime_description.strip()
+
         descriptions = {
             "transition-overload": "你正处在旧节奏尚未完全退场、新节奏又开始拉扯的过渡期。",
             "boundary-constriction": "你更容易先收紧边界来维持安全感。",
@@ -2735,6 +2774,20 @@ class LayeredOrchestrator:
         return descriptions.get(signal, "")
 
     def _get_element_theme_phrase(self, theme: Optional[str], element_name: str) -> str:
+        if self.narrative_service is not None and hasattr(
+            self.narrative_service,
+            "get_element_theme_phrase",
+        ):
+            try:
+                runtime_phrase = self.narrative_service.get_element_theme_phrase(
+                    theme or "general",
+                    element_name,
+                )
+            except Exception:
+                runtime_phrase = ""
+            if isinstance(runtime_phrase, str) and runtime_phrase.strip():
+                return runtime_phrase.strip()
+
         profile = self._get_theme_element_profile(theme, element_name)
         psychological_theme = profile.get("psychological_theme")
         if isinstance(psychological_theme, str) and psychological_theme.strip():
@@ -2745,6 +2798,20 @@ class LayeredOrchestrator:
         return f"{element_name}元素的状态"
 
     def _get_element_core_keywords(self, theme: Optional[str], element_name: str) -> str:
+        if self.narrative_service is not None and hasattr(
+            self.narrative_service,
+            "get_element_core_keywords",
+        ):
+            try:
+                runtime_keywords = self.narrative_service.get_element_core_keywords(
+                    theme or "general",
+                    element_name,
+                )
+            except Exception:
+                runtime_keywords = ""
+            if isinstance(runtime_keywords, str) and runtime_keywords.strip():
+                return runtime_keywords.strip()
+
         profile = self._get_theme_element_profile(theme, element_name)
         keywords = profile.get("keywords")
         if isinstance(keywords, list) and keywords:
@@ -2780,6 +2847,21 @@ class LayeredOrchestrator:
         return profile
 
     def _describe_circle_transition(self, layer0: Layer0Raw) -> str:
+        if self.narrative_service is not None and hasattr(
+            self.narrative_service,
+            "describe_circle_transition",
+        ):
+            try:
+                runtime_transition = self.narrative_service.describe_circle_transition(
+                    inner_dominant=layer0.three_circles.inner.get("dominant", ""),
+                    middle_dominant=layer0.three_circles.middle.get("dominant", ""),
+                    outer_dominant=layer0.three_circles.outer.get("dominant", ""),
+                )
+            except Exception:
+                runtime_transition = ""
+            if isinstance(runtime_transition, str) and runtime_transition.strip():
+                return runtime_transition.strip()
+
         inner = layer0.three_circles.inner.get("dominant", "")
         middle = layer0.three_circles.middle.get("dominant", "")
         outer = layer0.three_circles.outer.get("dominant", "")
@@ -2792,6 +2874,17 @@ class LayeredOrchestrator:
         return ""
 
     def _clean_knowledge_text_block(self, content: str) -> str:
+        if self.narrative_service is not None and hasattr(
+            self.narrative_service,
+            "clean_text_block",
+        ):
+            try:
+                runtime_cleaned = self.narrative_service.clean_text_block(content)
+            except Exception:
+                runtime_cleaned = ""
+            if isinstance(runtime_cleaned, str):
+                return runtime_cleaned
+
         if not isinstance(content, str):
             return ""
         lines = []

@@ -224,6 +224,26 @@ def test_v21_narrative_service_builds_theme_prompt_context():
     assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
 
 
+def test_v21_narrative_service_exposes_helper_apis():
+    runtime = get_knowledge_runtime()
+    service = runtime.narrative_service
+
+    assert service.get_theme_label("wealth_career", fallback_label="整体") == "财富事业"
+    assert service.get_signal_label("transition-overload") == "过渡负荷"
+    assert "过渡期" in service.describe_signal("transition-overload")
+    assert service.get_element_theme_phrase("wealth_career", "金") == "自我价值与专业成就"
+    assert service.get_element_core_keywords("wealth_career", "金") == "价值、专业、精准"
+    assert (
+        service.describe_circle_transition(
+            inner_dominant="火",
+            middle_dominant="木",
+            outer_dominant="金",
+        )
+        == "三圈依次呈现出「火 -> 木 -> 金」的变化。"
+    )
+    assert service.clean_text_block("💡 第一行\n\n👉 第二行") == "第一行\n\n第二行"
+
+
 def test_v21_narrative_service_builds_lite_projection():
     runtime = get_knowledge_runtime()
 

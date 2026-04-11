@@ -342,6 +342,46 @@ def test_theme_prompt_context_prefers_runtime_builder():
     assert context == "Runtime-Theme-Prompt-Context"
 
 
+def test_orchestrator_helper_methods_delegate_to_runtime_service():
+    class StubNarrativeService:
+        def get_theme_label(self, theme, fallback_label=""):
+            return "Runtime-Theme-Label"
+
+        def get_signal_label(self, signal):
+            return "Runtime-Signal-Label"
+
+        def describe_signal(self, signal):
+            return "Runtime-Signal-Description"
+
+        def get_element_theme_phrase(self, theme, element_name):
+            return "Runtime-Element-Phrase"
+
+        def get_element_core_keywords(self, theme, element_name):
+            return "Runtime-Element-Keywords"
+
+        def describe_circle_transition(self, **kwargs):
+            return "Runtime-Circle-Transition"
+
+        def clean_text_block(self, content):
+            return "Runtime-Clean-Text"
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.narrative_service = StubNarrativeService()
+    record = InterpretationRecord(
+        theme="general",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+    record.layer_0_raw = orchestrator._build_layer0_placeholder(record)
+
+    assert orchestrator._get_theme_label("general") == "Runtime-Theme-Label"
+    assert orchestrator._get_signal_label("transition-overload") == "Runtime-Signal-Label"
+    assert orchestrator._describe_signal("transition-overload") == "Runtime-Signal-Description"
+    assert orchestrator._get_element_theme_phrase("general", "土") == "Runtime-Element-Phrase"
+    assert orchestrator._get_element_core_keywords("general", "土") == "Runtime-Element-Keywords"
+    assert orchestrator._describe_circle_transition(record.layer_0_raw) == "Runtime-Circle-Transition"
+    assert orchestrator._clean_knowledge_text_block("💡 test") == "Runtime-Clean-Text"
+
+
 def test_get_status_returns_compact_snapshot(tmp_path):
     image_path = tmp_path / "image.png"
     image_path.write_bytes(b"mock-image")

@@ -150,6 +150,47 @@ class NarrativeContextService:
 
         return "\n".join(lines)
 
+    def get_theme_label(self, theme: str, fallback_label: str = "") -> str:
+        summary = self.theme_service.get_theme_summary(theme or "general")
+        name = str(summary.get("name") or "").strip()
+        if name:
+            return name
+        fallback = str(fallback_label or "").strip()
+        return fallback or (theme or "整体")
+
+    def get_signal_label(self, signal: str) -> str:
+        return self._get_signal_label(signal)
+
+    def describe_signal(self, signal: str) -> str:
+        return self._describe_signal(signal)
+
+    def get_element_theme_phrase(self, theme: str, element_name: str) -> str:
+        return self._get_element_theme_phrase(theme or "general", element_name)
+
+    def get_element_core_keywords(self, theme: str, element_name: str) -> str:
+        return self._get_element_core_keywords(theme or "general", element_name)
+
+    def describe_circle_transition(
+        self,
+        *,
+        inner_dominant: str = "",
+        middle_dominant: str = "",
+        outer_dominant: str = "",
+    ) -> str:
+        inner = str(inner_dominant or "").strip()
+        middle = str(middle_dominant or "").strip()
+        outer = str(outer_dominant or "").strip()
+        if inner and middle and outer:
+            if inner == middle == outer:
+                return f"三圈目前都围绕「{inner}」展开。"
+            if inner == middle and outer != inner:
+                return f"内圈和中圈都更偏「{inner}」，外圈则开始转向「{outer}」。"
+            return f"三圈依次呈现出「{inner} -> {middle} -> {outer}」的变化。"
+        return ""
+
+    def clean_text_block(self, content: str) -> str:
+        return self._clean_text_block(content)
+
     def build_imbalance_projection(
         self,
         *,
