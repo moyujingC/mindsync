@@ -8,7 +8,18 @@ from typing import Any
 def install_report_pipeline_legacy_bindings(orchestrator: Any) -> None:
     """Preserve legacy private entry points while helpers own the logic."""
 
-    legacy_bindings = {
+    legacy_bindings: dict[str, Any] = {}
+    legacy_bindings.update(_build_legacy_entrypoint_bindings(orchestrator))
+    legacy_bindings.update(_build_legacy_lite_bindings(orchestrator))
+    legacy_bindings.update(_build_legacy_pro_bindings(orchestrator))
+    legacy_bindings.update(_build_legacy_knowledge_bindings(orchestrator))
+    legacy_bindings.update(_build_legacy_renderer_bindings(orchestrator))
+    for name, method in legacy_bindings.items():
+        setattr(orchestrator, name, method)
+
+
+def _build_legacy_entrypoint_bindings(orchestrator: Any) -> dict[str, Any]:
+    return {
         "_build_lite_placeholder_report": orchestrator.report_placeholder_assembler.build_lite,
         "_build_layer0_placeholder": orchestrator.report_layer0_support.build_placeholder,
         "_build_layer0_fallback": orchestrator.report_layer0_support.build_fallback,
@@ -18,7 +29,11 @@ def install_report_pipeline_legacy_bindings(orchestrator: Any) -> None:
             orchestrator.report_projection_resolver.build_runtime_pro_narrative_projection
         ),
         "_build_pro_placeholder_report": orchestrator.report_placeholder_assembler.build_pro,
-        "_get_theme_label": orchestrator.report_knowledge_adapter.get_theme_label,
+    }
+
+
+def _build_legacy_lite_bindings(orchestrator: Any) -> dict[str, Any]:
+    return {
         "_build_lite_title": orchestrator.report_lite_narrative_builder.build_title,
         "_build_lite_title_fallback": (
             orchestrator.report_lite_narrative_builder.build_title_fallback
@@ -61,6 +76,14 @@ def install_report_pipeline_legacy_bindings(orchestrator: Any) -> None:
         "_build_lite_pro_teaser": (
             orchestrator.report_lite_narrative_builder.build_pro_teaser
         ),
+        "_describe_circle_pattern": (
+            orchestrator.report_lite_narrative_builder.describe_circle_pattern
+        ),
+    }
+
+
+def _build_legacy_pro_bindings(orchestrator: Any) -> dict[str, Any]:
+    return {
         "_build_pro_first_impression": (
             orchestrator.report_pro_narrative_builder.build_first_impression
         ),
@@ -89,28 +112,33 @@ def install_report_pipeline_legacy_bindings(orchestrator: Any) -> None:
         "_build_pro_micro_sections_from_knowledge": (
             orchestrator.report_pro_narrative_builder.build_micro_sections_from_knowledge
         ),
-        "_render_lite_six_insights": (
-            orchestrator.report_section_renderer.render_lite_six_insights
+        "_build_surface_root_cause": (
+            orchestrator.report_pro_narrative_builder.build_surface_root_cause
         ),
-        "_render_lite_experiment_card": (
-            orchestrator.report_section_renderer.render_lite_experiment_card
+        "_map_knowledge_signal_to_profile": (
+            orchestrator.report_pro_narrative_builder.map_knowledge_signal_to_profile
         ),
-        "_render_pro_core_table": orchestrator.report_section_renderer.render_pro_core_table,
-        "_render_pro_circle_sections": (
-            orchestrator.report_section_renderer.render_pro_circle_sections
+        "_build_pro_imbalance_profile": (
+            orchestrator.report_pro_narrative_builder.build_pro_imbalance_profile
         ),
-        "_render_pro_micro_sections": (
-            orchestrator.report_section_renderer.render_pro_micro_sections
+        "_build_runtime_imbalance_profile": (
+            orchestrator.report_pro_narrative_builder.build_runtime_imbalance_profile
         ),
-        "_render_pro_root_sections": (
-            orchestrator.report_section_renderer.render_pro_root_sections
+        "_select_pro_imbalance_type": (
+            orchestrator.report_pro_narrative_builder.select_pro_imbalance_type
         ),
-        "_render_pro_imbalance_sections": (
-            orchestrator.report_section_renderer.render_pro_imbalance_sections
+        "_build_pro_healing_suggestions": (
+            orchestrator.report_pro_narrative_builder.build_pro_healing_suggestions
         ),
-        "_render_pro_healing_sections": (
-            orchestrator.report_section_renderer.render_pro_healing_sections
+        "_build_runtime_healing_suggestions": (
+            orchestrator.report_pro_narrative_builder.build_runtime_healing_suggestions
         ),
+    }
+
+
+def _build_legacy_knowledge_bindings(orchestrator: Any) -> dict[str, Any]:
+    return {
+        "_get_theme_label": orchestrator.report_knowledge_adapter.get_theme_label,
         "_get_record_theme": orchestrator.report_layer0_support.get_record_theme,
         "_get_layer0_view": orchestrator.report_layer0_support.get_layer0_view,
         "_get_layer0_element_distribution": (
@@ -152,33 +180,34 @@ def install_report_pipeline_legacy_bindings(orchestrator: Any) -> None:
             orchestrator.report_prompt_preview_builder.build_pro_prompt_preview
         ),
         "_build_feeling_hint": orchestrator.report_prompt_preview_builder.build_feeling_hint,
-        "_build_surface_root_cause": (
-            orchestrator.report_pro_narrative_builder.build_surface_root_cause
+    }
+
+
+def _build_legacy_renderer_bindings(orchestrator: Any) -> dict[str, Any]:
+    return {
+        "_render_lite_six_insights": (
+            orchestrator.report_section_renderer.render_lite_six_insights
         ),
-        "_map_knowledge_signal_to_profile": (
-            orchestrator.report_pro_narrative_builder.map_knowledge_signal_to_profile
+        "_render_lite_experiment_card": (
+            orchestrator.report_section_renderer.render_lite_experiment_card
         ),
-        "_build_pro_imbalance_profile": (
-            orchestrator.report_pro_narrative_builder.build_pro_imbalance_profile
+        "_render_pro_core_table": orchestrator.report_section_renderer.render_pro_core_table,
+        "_render_pro_circle_sections": (
+            orchestrator.report_section_renderer.render_pro_circle_sections
         ),
-        "_build_runtime_imbalance_profile": (
-            orchestrator.report_pro_narrative_builder.build_runtime_imbalance_profile
+        "_render_pro_micro_sections": (
+            orchestrator.report_section_renderer.render_pro_micro_sections
         ),
-        "_select_pro_imbalance_type": (
-            orchestrator.report_pro_narrative_builder.select_pro_imbalance_type
+        "_render_pro_root_sections": (
+            orchestrator.report_section_renderer.render_pro_root_sections
         ),
-        "_build_pro_healing_suggestions": (
-            orchestrator.report_pro_narrative_builder.build_pro_healing_suggestions
+        "_render_pro_imbalance_sections": (
+            orchestrator.report_section_renderer.render_pro_imbalance_sections
         ),
-        "_build_runtime_healing_suggestions": (
-            orchestrator.report_pro_narrative_builder.build_runtime_healing_suggestions
-        ),
-        "_describe_circle_pattern": (
-            orchestrator.report_lite_narrative_builder.describe_circle_pattern
+        "_render_pro_healing_sections": (
+            orchestrator.report_section_renderer.render_pro_healing_sections
         ),
         "_render_story_sections": orchestrator.report_section_renderer.render_story_sections,
         "_render_awareness_lines": orchestrator.report_section_renderer.render_awareness_lines,
         "_render_experiment_text": orchestrator.report_section_renderer.render_experiment_text,
     }
-    for name, method in legacy_bindings.items():
-        setattr(orchestrator, name, method)
