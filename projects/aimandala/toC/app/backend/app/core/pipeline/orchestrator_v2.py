@@ -133,6 +133,10 @@ class LayeredOrchestrator:
         )
         self._theme_summary_cache: Dict[str, Dict[str, Any]] = {}
         self._theme_element_profile_cache: Dict[tuple[str, str], Dict[str, Any]] = {}
+        self._imbalance_projection_cache: Dict[
+            tuple[str, str, str],
+            Dict[str, Any],
+        ] = {}
         self.layer0_assembler = (
             self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
         )
@@ -1335,7 +1339,13 @@ class LayeredOrchestrator:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(theme)
         pro_prompt_preview = self._build_pro_prompt_preview(record)
-        imbalance_profile = self._build_pro_imbalance_profile(record, theme_label, circles)
+        imbalance_projection = self._get_runtime_imbalance_projection(record)
+        imbalance_profile = self._build_pro_imbalance_profile(
+            record,
+            theme_label,
+            circles,
+            projection=imbalance_projection,
+        )
         lite_title = (
             record.layer_2_lite_final.title
             if record.layer_2_lite_final and record.layer_2_lite_final.title
@@ -1346,9 +1356,20 @@ class LayeredOrchestrator:
             core_insight_table={
                 "能量本质": self._build_pro_energy_essence(record, theme_label, circles),
                 "核心失衡": imbalance_profile["summary"],
-                "关键卡点": self._build_pro_block_point(record, imbalance_profile),
-                "转化方向": self._build_pro_direction(record, theme_label),
-                "疗愈核心": self._build_pro_healing_core(record),
+                "关键卡点": self._build_pro_block_point(
+                    record,
+                    imbalance_profile,
+                    projection=imbalance_projection,
+                ),
+                "转化方向": self._build_pro_direction(
+                    record,
+                    theme_label,
+                    projection=imbalance_projection,
+                ),
+                "疗愈核心": self._build_pro_healing_core(
+                    record,
+                    projection=imbalance_projection,
+                ),
             },
             three_circles_detailed={
                 "inner": {
@@ -1383,9 +1404,18 @@ class LayeredOrchestrator:
             micro_analysis_detailed=self._build_pro_micro_sections_from_knowledge(record),
             imbalance_confirmed=imbalance_profile,
             root_cause={
-                "surface": self._build_surface_root_cause(record),
-                "deeper": self._build_deeper_root_cause(record),
-                "core": self._build_core_root_cause(record),
+                "surface": self._build_surface_root_cause(
+                    record,
+                    projection=imbalance_projection,
+                ),
+                "deeper": self._build_deeper_root_cause(
+                    record,
+                    projection=imbalance_projection,
+                ),
+                "core": self._build_core_root_cause(
+                    record,
+                    projection=imbalance_projection,
+                ),
             },
             healing_suggestions=self._build_pro_healing_suggestions(
                 record,
@@ -2146,8 +2176,9 @@ class LayeredOrchestrator:
         self,
         record: InterpretationRecord,
         imbalance_profile: Optional[Dict[str, str]] = None,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> str:
-        projection = self._get_runtime_imbalance_projection(record)
+        runtime_projection = projection or self._get_runtime_imbalance_projection(record)
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
@@ -2159,8 +2190,14 @@ class LayeredOrchestrator:
         primary = imbalance_profile.get("primary", "") if imbalance_profile else ""
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         parts: list[str] = []
-        mapped_contradiction = str(projection.get("contradiction") or "").strip()
-        mapped_manifestation = str(projection.get("manifestation") or "").strip()
+        mapped_contradiction = self._get_projection_text(
+            runtime_projection,
+            "contradiction",
+        ).strip()
+        mapped_manifestation = self._get_projection_text(
+            runtime_projection,
+            "manifestation",
+        ).strip()
         if mapped_contradiction:
             parts.append(f"当前更核心的卡点，其实是「{mapped_contradiction}」。")
         if mapped_manifestation:
@@ -2179,9 +2216,17 @@ class LayeredOrchestrator:
         parts.append(self._build_feeling_hint(record))
         return " ".join(part for part in parts if part).strip()
 
-    def _build_pro_direction(self, record: InterpretationRecord, theme_label: str) -> str:
-        projection = self._get_runtime_imbalance_projection(record)
-        mapped_direction = str(projection.get("direction") or "").strip()
+    def _build_pro_direction(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        runtime_projection = projection or self._get_runtime_imbalance_projection(record)
+        mapped_direction = self._get_projection_text(
+            runtime_projection,
+            "direction",
+        ).strip()
         base = PRO_REPORT_BLUEPRINT.narrative_templates["core_direction"].format(
             theme_label=theme_label
         )
@@ -2189,20 +2234,37 @@ class LayeredOrchestrator:
             return base
         return f"{mapped_direction}。{base}".strip()
 
-    def _build_pro_healing_core(self, record: InterpretationRecord) -> str:
-        projection = self._get_runtime_imbalance_projection(record)
-        return str(projection.get("healing_core") or "").strip() or PRO_REPORT_BLUEPRINT.narrative_templates["core_healing"]
+    def _build_pro_healing_core(
+        self,
+        record: InterpretationRecord,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        runtime_projection = projection or self._get_runtime_imbalance_projection(record)
+        return (
+            self._get_projection_text(runtime_projection, "healing_core").strip()
+            or PRO_REPORT_BLUEPRINT.narrative_templates["core_healing"]
+        )
 
-    def _build_deeper_root_cause(self, record: InterpretationRecord) -> str:
-        projection = self._get_runtime_imbalance_projection(record)
-        if projection.get("deeper_root"):
-            return str(projection["deeper_root"])
+    def _build_deeper_root_cause(
+        self,
+        record: InterpretationRecord,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        runtime_projection = projection or self._get_runtime_imbalance_projection(record)
+        deeper_root = self._get_projection_text(runtime_projection, "deeper_root").strip()
+        if deeper_root:
+            return deeper_root
         return PRO_REPORT_BLUEPRINT.narrative_templates["root_deeper"]
 
-    def _build_core_root_cause(self, record: InterpretationRecord) -> str:
-        projection = self._get_runtime_imbalance_projection(record)
-        if projection.get("core_root"):
-            return str(projection["core_root"])
+    def _build_core_root_cause(
+        self,
+        record: InterpretationRecord,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        runtime_projection = projection or self._get_runtime_imbalance_projection(record)
+        core_root = self._get_projection_text(runtime_projection, "core_root").strip()
+        if core_root:
+            return core_root
         return PRO_REPORT_BLUEPRINT.narrative_templates["root_core"]
 
     def _get_runtime_imbalance_projection(self, record: InterpretationRecord) -> Dict[str, Any]:
@@ -2211,11 +2273,24 @@ class LayeredOrchestrator:
         imbalance_type = self._get_primary_knowledge_signal(record)
         if not imbalance_type:
             return {}
-        return self.narrative_service.build_imbalance_projection(
-            theme=self._get_record_theme(record),
-            imbalance_type=imbalance_type,
-            theme_label=self._get_theme_label(record.theme),
-        )
+        theme_key = self._get_record_theme(record)
+        theme_label = self._get_theme_label(record.theme)
+        cache_key = (theme_key, imbalance_type, theme_label)
+        cached = self._imbalance_projection_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        try:
+            result = self.narrative_service.build_imbalance_projection(
+                theme=theme_key,
+                imbalance_type=imbalance_type,
+                theme_label=theme_label,
+            )
+        except Exception:
+            result = {}
+        projection = result if isinstance(result, dict) else {}
+        self._imbalance_projection_cache[cache_key] = projection
+        return projection
 
     def _build_pro_circle_reading(
         self,
@@ -2668,11 +2743,18 @@ class LayeredOrchestrator:
             feeling=feeling,
         )
 
-    def _build_surface_root_cause(self, record: InterpretationRecord) -> str:
+    def _build_surface_root_cause(
+        self,
+        record: InterpretationRecord,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> str:
         intention = (record.painting_intention or "").strip()
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
-        projection = self._get_runtime_imbalance_projection(record)
-        mapped_manifestation = str(projection.get("manifestation") or "").strip()
+        runtime_projection = projection or self._get_runtime_imbalance_projection(record)
+        mapped_manifestation = self._get_projection_text(
+            runtime_projection,
+            "manifestation",
+        ).strip()
         lite_contradiction = (
             record.layer_1_lite_draft.story.contradiction.content
             if record.layer_1_lite_draft and record.layer_1_lite_draft.story.contradiction.content
@@ -2711,6 +2793,7 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         theme_label: str,
         circles: Dict[str, int],
+        projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
         inner = circles.get("inner_radius", 33)
         middle = circles.get("middle_radius", 66)
@@ -2725,6 +2808,7 @@ class LayeredOrchestrator:
             profile_key=profile_key,
             signal=signal,
             theme_label=theme_label,
+            projection=projection,
         )
         if runtime_profile:
             return runtime_profile
@@ -2785,25 +2869,34 @@ class LayeredOrchestrator:
         profile_key: str,
         signal: str,
         theme_label: str,
+        projection: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, str]:
         if not signal or not self.narrative_service:
             return {}
-        projection = self._get_runtime_imbalance_projection(record)
-        if not projection:
+        runtime_projection = projection or self._get_runtime_imbalance_projection(record)
+        if not runtime_projection:
             return {}
-        if not projection.get("contradiction") and not projection.get("manifestation"):
+        mapped_contradiction = self._get_projection_text(
+            runtime_projection,
+            "contradiction",
+        ).strip()
+        mapped_manifestation = self._get_projection_text(
+            runtime_projection,
+            "manifestation",
+        ).strip()
+        if not mapped_contradiction and not mapped_manifestation:
             return {}
 
         return {
             "type": profile_key,
-            "primary": str(projection.get("contradiction") or self._get_signal_label(signal)),
-            "summary": str(projection.get("summary") or ""),
-            "evidence": str(projection.get("evidence") or ""),
-            "energy_level": str(projection.get("manifestation") or self._describe_signal(signal)),
-            "psychological_level": str(projection.get("contradiction") or self._describe_signal(signal)),
+            "primary": mapped_contradiction or self._get_signal_label(signal),
+            "summary": self._get_projection_text(runtime_projection, "summary"),
+            "evidence": self._get_projection_text(runtime_projection, "evidence"),
+            "energy_level": mapped_manifestation or self._describe_signal(signal),
+            "psychological_level": mapped_contradiction or self._describe_signal(signal),
             "life_manifestation": str(
-                projection.get("manifestation")
-                or projection.get("direction")
+                mapped_manifestation
+                or self._get_projection_text(runtime_projection, "direction")
                 or self._describe_signal(signal)
             ),
         }

@@ -495,6 +495,48 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
     assert "72小时决策" not in upgraded.layer_3_pro_draft.healing_suggestions[0]["practice"]
 
 
+def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
+    class StubNarrativeService:
+        def __init__(self):
+            self.imbalance_projection_calls = 0
+
+        def build_imbalance_projection(self, **kwargs):
+            self.imbalance_projection_calls += 1
+            return {
+                "contradiction": "明明想推进，却总在最后一步先收回来",
+                "manifestation": "现实里容易在快要行动时突然犹豫",
+                "direction": "先把行动拆成能承接的小单位",
+                "healing_core": "把承载感放在速度前面",
+                "deeper_root": "更深层是你还在确认自己能不能稳稳接住变化",
+                "core_root": "核心根因是对失控的担心还没有真正放松",
+                "summary": "当前更像是过渡阶段里的自我保护",
+                "evidence": "边想靠近边想后退，说明能量转换还没完全顺起来",
+            }
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    stub_service = StubNarrativeService()
+    orchestrator.narrative_service = stub_service
+
+    record = InterpretationRecord(
+        theme="wealth_career",
+        painting_feeling="想往前，但是有点卡",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+    record.layer_0_raw = orchestrator._build_layer0_fallback(record)
+    record.layer_0_raw.imbalance_candidates = ["transition-overload"]
+    record.layer_1_lite_draft = Layer1LiteDraft()
+    record.layer_1_lite_draft.story.contradiction.content = "一边想继续，一边又会先缩回来。"
+    record.layer_1_lite_draft.story.block.content = "临门一脚前会先停顿一下。"
+
+    pro_layer = orchestrator._build_pro_placeholder_draft(record)
+
+    assert stub_service.imbalance_projection_calls == 1
+    assert "明明想推进，却总在最后一步先收回来" in pro_layer.core_insight_table["关键卡点"]
+    assert "先把行动拆成能承接的小单位" in pro_layer.core_insight_table["转化方向"]
+    assert pro_layer.root_cause["deeper"] == "更深层是你还在确认自己能不能稳稳接住变化"
+    assert pro_layer.root_cause["core"] == "核心根因是对失控的担心还没有真正放松"
+
+
 def test_prompt_schema_validation_reports_missing_required_fields():
     orchestrator = LayeredOrchestrator(enable_vision=False)
     validator = PromptSchemaValidator(orchestrator.prompt_builder)
