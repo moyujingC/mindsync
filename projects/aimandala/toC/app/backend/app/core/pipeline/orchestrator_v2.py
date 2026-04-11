@@ -20,10 +20,12 @@ except Exception:  # pragma: no cover - migration-time fallback
     KnowledgeQueryEngine = None
     get_knowledge_runtime = None
 
-    def analyze_energy_flow(inner_elements: list, middle_elements: list, outer_elements: list) -> Dict[str, Any]:
+    def analyze_energy_flow(
+        inner_elements: list,
+        middle_elements: list,
+        outer_elements: list,
+    ) -> Dict[str, Any]:
         return {}
-
-from app.core.prompt.builder_v2 import PromptBuilder
 
 from .data_models import InterpretationRecord
 from .generation_runtime import (
@@ -32,24 +34,11 @@ from .generation_runtime import (
     ReportGenerationRuntime,
 )
 from .prompt_runtime import PromptRuntime
-from .report_contracts import ReportContractAssembler
-from .report_debug_profile import ReportDebugProfileBuilder
-from .report_draft_assembler import ReportDraftAssembler
-from .report_interaction_support import ReportInteractionSupport
-from .report_knowledge_adapter import ReportKnowledgeAdapter
-from .report_layer0_support import ReportLayer0Support
-from .report_lifecycle import ReportLifecycleManager
-from .report_lite_record_workflow import ReportLiteRecordWorkflow
-from .report_lite_narrative_builder import ReportLiteNarrativeBuilder
-from .report_placeholder_assembler import ReportPlaceholderAssembler
-from .report_projection_resolver import ReportProjectionResolver
-from .report_pro_narrative_builder import ReportProNarrativeBuilder
-from .report_prompt_preview import ReportPromptPreviewBuilder
-from .report_safety_wrapper import ReportSafetyWrapper
-from .report_section_renderer import ReportSectionRenderer
+from .report_pipeline_components import install_report_pipeline_components
 from .store import InterpretationStore
 
 _UNSET = object()
+
 
 class GenerationStage(str, Enum):
     """Execution stages for the migrated V2 interpretation pipeline."""
@@ -114,11 +103,6 @@ class LayeredOrchestrator:
         self.knowledge_runtime = (
             get_knowledge_runtime() if get_knowledge_runtime is not None else None
         )
-        self.report_layer0_support = ReportLayer0Support(
-            get_layer0_assembler=lambda: self.layer0_assembler,
-            extract_colors_by_circles=extract_colors_by_circles,
-            analyze_energy_flow=analyze_energy_flow,
-        )
         self.layer0_assembler = (
             self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
         )
@@ -135,413 +119,15 @@ class LayeredOrchestrator:
             self.generation_runtime = DeterministicReportGenerationRuntime()
         self.report_chat_runtime = report_chat_runtime
         self.enable_vision = enable_vision
-        self.prompt_builder = PromptBuilder()
-        self.report_contracts = ReportContractAssembler(self.prompt_builder)
-        self.report_section_renderer = ReportSectionRenderer()
-        self.report_knowledge_adapter = ReportKnowledgeAdapter(
-            get_narrative_service=lambda: self.narrative_service,
-            get_knowledge_runtime=lambda: self.knowledge_runtime,
-            get_layer0_view=self.report_layer0_support.get_layer0_view,
-        )
-        self.report_prompt_preview_builder = ReportPromptPreviewBuilder(
-            prompt_builder=self.prompt_builder,
-            get_narrative_service=lambda: self.narrative_service,
-            get_theme_label=self.report_knowledge_adapter.get_theme_label,
-            get_record_theme=self.report_layer0_support.get_record_theme,
-            get_layer0_view=self.report_layer0_support.get_layer0_view,
-            get_layer0_element_distribution=(
-                self.report_layer0_support.get_layer0_element_distribution
-            ),
-            get_primary_knowledge_signal=(
-                self.report_knowledge_adapter.get_primary_knowledge_signal
-            ),
-            get_signal_label=self.report_knowledge_adapter.get_signal_label,
-            get_knowledge_theme_summary=(
-                self.report_knowledge_adapter.get_knowledge_theme_summary
-            ),
-        )
-        self.report_debug_builder = ReportDebugProfileBuilder(
-            prompt_builder=self.prompt_builder,
-            validator=self.report_contracts.validator,
-        )
-        self.report_interaction_support = ReportInteractionSupport(
-            store=self.store,
-            report_debug_builder=self.report_debug_builder,
-            get_report_chat_runtime=lambda: self.report_chat_runtime,
-            get_primary_knowledge_signal=(
-                self.report_knowledge_adapter.get_primary_knowledge_signal
-            ),
-            get_theme_label=self.report_knowledge_adapter.get_theme_label,
-            get_signal_label=self.report_knowledge_adapter.get_signal_label,
-            get_knowledge_theme_summary=(
-                self.report_knowledge_adapter.get_knowledge_theme_summary
-            ),
-        )
-        self.report_safety_wrapper = ReportSafetyWrapper()
-        self.report_lifecycle_manager = ReportLifecycleManager(
-            store=self.store,
-            report_contracts=self.report_contracts,
-            generation_runtime=self.generation_runtime,
-            get_upgrade_diff=self.get_upgrade_diff,
+        install_report_pipeline_components(
+            self,
+            extract_colors_by_circles=extract_colors_by_circles,
+            analyze_energy_flow=analyze_energy_flow,
+            detecting_stage=GenerationStage.DETECTING.value,
+            generating_stage=GenerationStage.GENERATING.value,
             processing_stage=GenerationStage.GENERATING.value,
             completed_stage=GenerationStage.COMPLETED.value,
         )
-        self.report_lite_record_workflow = ReportLiteRecordWorkflow(
-            store=self.store,
-            generation_runtime=self.generation_runtime,
-            detecting_stage=GenerationStage.DETECTING.value,
-            generating_stage=GenerationStage.GENERATING.value,
-            completed_stage=GenerationStage.COMPLETED.value,
-        )
-        self.report_projection_resolver = ReportProjectionResolver(
-            get_narrative_service=lambda: self.narrative_service,
-            get_record_theme=self.report_layer0_support.get_record_theme,
-            get_layer0_view=self.report_layer0_support.get_layer0_view,
-            get_layer0_element_distribution=(
-                self.report_layer0_support.get_layer0_element_distribution
-            ),
-            describe_circle_transition=(
-                self.report_knowledge_adapter.describe_circle_transition
-            ),
-            get_primary_knowledge_signal=(
-                self.report_knowledge_adapter.get_primary_knowledge_signal
-            ),
-            build_feeling_hint=self.report_prompt_preview_builder.build_feeling_hint,
-            build_lite_title_fallback=lambda record, theme_label: (
-                self.report_lite_narrative_builder.build_title_fallback(
-                    record,
-                    theme_label,
-                )
-            ),
-            get_theme_label=self.report_knowledge_adapter.get_theme_label,
-            describe_circle_pattern=lambda circles: (
-                self.report_lite_narrative_builder.describe_circle_pattern(circles)
-            ),
-        )
-        self.report_lite_narrative_builder = ReportLiteNarrativeBuilder(
-            get_record_theme=self.report_layer0_support.get_record_theme,
-            get_layer0_view=self.report_layer0_support.get_layer0_view,
-            get_layer0_element_distribution=(
-                self.report_layer0_support.get_layer0_element_distribution
-            ),
-            get_element_theme_phrase=(
-                self.report_knowledge_adapter.get_element_theme_phrase
-            ),
-            get_element_core_keywords=(
-                self.report_knowledge_adapter.get_element_core_keywords
-            ),
-            describe_circle_transition=(
-                self.report_knowledge_adapter.describe_circle_transition
-            ),
-            describe_signal=self.report_knowledge_adapter.describe_signal,
-            get_primary_knowledge_signal=(
-                self.report_knowledge_adapter.get_primary_knowledge_signal
-            ),
-            resolve_runtime_lite_projection=(
-                self.report_projection_resolver.resolve_runtime_lite_projection
-            ),
-            get_projection_text=self.report_projection_resolver.get_projection_text,
-            get_projection_mapping=self.report_projection_resolver.get_projection_mapping,
-            get_projection_list=self.report_projection_resolver.get_projection_list,
-            build_feeling_hint=self.report_prompt_preview_builder.build_feeling_hint,
-            get_narrative_service=lambda: self.narrative_service,
-            clean_knowledge_text_block=(
-                self.report_knowledge_adapter.clean_knowledge_text_block
-            ),
-            get_theme_label=self.report_knowledge_adapter.get_theme_label,
-        )
-        self.report_pro_narrative_builder = ReportProNarrativeBuilder(
-            get_record_theme=self.report_layer0_support.get_record_theme,
-            get_layer0_view=self.report_layer0_support.get_layer0_view,
-            get_layer0_element_distribution=(
-                self.report_layer0_support.get_layer0_element_distribution
-            ),
-            describe_circle_transition=(
-                self.report_knowledge_adapter.describe_circle_transition
-            ),
-            describe_signal=self.report_knowledge_adapter.describe_signal,
-            get_primary_knowledge_signal=(
-                self.report_knowledge_adapter.get_primary_knowledge_signal
-            ),
-            get_signal_label=self.report_knowledge_adapter.get_signal_label,
-            get_element_theme_phrase=(
-                self.report_knowledge_adapter.get_element_theme_phrase
-            ),
-            get_projection_text=self.report_projection_resolver.get_projection_text,
-            get_projection_mapping=self.report_projection_resolver.get_projection_mapping,
-            get_runtime_imbalance_projection=(
-                self.report_projection_resolver.get_runtime_imbalance_projection
-            ),
-            build_feeling_hint=self.report_prompt_preview_builder.build_feeling_hint,
-            get_knowledge_runtime=lambda: self.knowledge_runtime,
-        )
-        self.report_draft_assembler = ReportDraftAssembler(
-            get_theme_label=self.report_knowledge_adapter.get_theme_label,
-            build_lite_prompt_preview=(
-                self.report_prompt_preview_builder.build_lite_prompt_preview
-            ),
-            build_runtime_lite_narrative_projection=(
-                self.report_projection_resolver.build_runtime_lite_narrative_projection
-            ),
-            build_lite_story_sections=(
-                self.report_lite_narrative_builder.build_story_sections
-            ),
-            build_lite_theme_insights=(
-                self.report_lite_narrative_builder.build_theme_insights
-            ),
-            build_lite_title=self.report_lite_narrative_builder.build_title,
-            build_lite_overall_impression=(
-                self.report_lite_narrative_builder.build_overall_impression
-            ),
-            build_lite_visual_elements=(
-                self.report_lite_narrative_builder.build_visual_elements
-            ),
-            build_lite_emotion_portrait=(
-                self.report_lite_narrative_builder.build_emotion_portrait
-            ),
-            build_lite_pro_teaser=self.report_lite_narrative_builder.build_pro_teaser,
-            build_lite_three_awareness=(
-                self.report_lite_narrative_builder.build_three_awareness
-            ),
-            build_lite_six_insights_payload=(
-                self.report_lite_narrative_builder.build_six_insights_payload
-            ),
-            build_lite_experiment_payload=(
-                self.report_lite_narrative_builder.build_experiment_payload
-            ),
-            build_pro_prompt_preview=(
-                self.report_prompt_preview_builder.build_pro_prompt_preview
-            ),
-            get_runtime_imbalance_projection=(
-                self.report_projection_resolver.get_runtime_imbalance_projection
-            ),
-            build_pro_imbalance_profile=(
-                self.report_pro_narrative_builder.build_pro_imbalance_profile
-            ),
-            build_runtime_pro_narrative_projection=(
-                self.report_projection_resolver.build_runtime_pro_narrative_projection
-            ),
-            build_pro_first_impression=(
-                self.report_pro_narrative_builder.build_first_impression
-            ),
-            build_pro_energy_essence=(
-                self.report_pro_narrative_builder.build_energy_essence
-            ),
-            build_pro_block_point=self.report_pro_narrative_builder.build_block_point,
-            build_pro_direction=self.report_pro_narrative_builder.build_direction,
-            build_pro_healing_core=(
-                self.report_pro_narrative_builder.build_healing_core
-            ),
-            build_pro_circle_reading=(
-                self.report_pro_narrative_builder.build_circle_reading
-            ),
-            build_pro_micro_sections_from_knowledge=(
-                self.report_pro_narrative_builder.build_micro_sections_from_knowledge
-            ),
-            build_surface_root_cause=(
-                self.report_pro_narrative_builder.build_surface_root_cause
-            ),
-            build_deeper_root_cause=(
-                self.report_pro_narrative_builder.build_deeper_root_cause
-            ),
-            build_core_root_cause=(
-                self.report_pro_narrative_builder.build_core_root_cause
-            ),
-            build_pro_healing_suggestions=(
-                self.report_pro_narrative_builder.build_pro_healing_suggestions
-            ),
-        )
-        self.report_placeholder_assembler = ReportPlaceholderAssembler(
-            section_renderer=self.report_section_renderer,
-            get_narrative_service=lambda: self.narrative_service,
-            get_theme_label=self.report_knowledge_adapter.get_theme_label,
-            build_lite_title=self.report_lite_narrative_builder.build_title,
-            build_lite_overall_impression=(
-                self.report_lite_narrative_builder.build_overall_impression
-            ),
-            build_lite_visual_elements=(
-                self.report_lite_narrative_builder.build_visual_elements
-            ),
-            build_lite_emotion_portrait=(
-                self.report_lite_narrative_builder.build_emotion_portrait
-            ),
-            wrap_report_with_safety=self.report_safety_wrapper.wrap_report,
-            strip_safety_wrappers=self.report_safety_wrapper.strip_wrappers,
-        )
-        legacy_bindings = {
-            "_build_lite_placeholder_report": self.report_placeholder_assembler.build_lite,
-            "_build_layer0_placeholder": self.report_layer0_support.build_placeholder,
-            "_build_layer0_fallback": self.report_layer0_support.build_fallback,
-            "_build_layer1_placeholder": self.report_draft_assembler.build_lite,
-            "_build_pro_placeholder_draft": self.report_draft_assembler.build_pro,
-            "_build_runtime_pro_narrative_projection": (
-                self.report_projection_resolver.build_runtime_pro_narrative_projection
-            ),
-            "_build_pro_placeholder_report": self.report_placeholder_assembler.build_pro,
-            "_get_theme_label": self.report_knowledge_adapter.get_theme_label,
-            "_build_lite_title": self.report_lite_narrative_builder.build_title,
-            "_build_lite_title_fallback": (
-                self.report_lite_narrative_builder.build_title_fallback
-            ),
-            "_build_lite_overall_impression": (
-                self.report_lite_narrative_builder.build_overall_impression
-            ),
-            "_build_lite_visual_elements": (
-                self.report_lite_narrative_builder.build_visual_elements
-            ),
-            "_build_runtime_lite_narrative_projection": (
-                self.report_projection_resolver.build_runtime_lite_narrative_projection
-            ),
-            "_resolve_runtime_lite_projection": (
-                self.report_projection_resolver.resolve_runtime_lite_projection
-            ),
-            "_get_projection_text": self.report_projection_resolver.get_projection_text,
-            "_get_projection_mapping": (
-                self.report_projection_resolver.get_projection_mapping
-            ),
-            "_get_projection_list": self.report_projection_resolver.get_projection_list,
-            "_build_lite_emotion_portrait": (
-                self.report_lite_narrative_builder.build_emotion_portrait
-            ),
-            "_build_lite_story_sections": (
-                self.report_lite_narrative_builder.build_story_sections
-            ),
-            "_build_lite_theme_insights": (
-                self.report_lite_narrative_builder.build_theme_insights
-            ),
-            "_build_lite_three_awareness": (
-                self.report_lite_narrative_builder.build_three_awareness
-            ),
-            "_build_lite_six_insights_payload": (
-                self.report_lite_narrative_builder.build_six_insights_payload
-            ),
-            "_build_lite_experiment_payload": (
-                self.report_lite_narrative_builder.build_experiment_payload
-            ),
-            "_build_lite_pro_teaser": (
-                self.report_lite_narrative_builder.build_pro_teaser
-            ),
-            "_build_pro_first_impression": (
-                self.report_pro_narrative_builder.build_first_impression
-            ),
-            "_build_pro_energy_essence": (
-                self.report_pro_narrative_builder.build_energy_essence
-            ),
-            "_build_pro_block_point": (
-                self.report_pro_narrative_builder.build_block_point
-            ),
-            "_build_pro_direction": self.report_pro_narrative_builder.build_direction,
-            "_build_pro_healing_core": (
-                self.report_pro_narrative_builder.build_healing_core
-            ),
-            "_build_deeper_root_cause": (
-                self.report_pro_narrative_builder.build_deeper_root_cause
-            ),
-            "_build_core_root_cause": (
-                self.report_pro_narrative_builder.build_core_root_cause
-            ),
-            "_get_runtime_imbalance_projection": (
-                self.report_projection_resolver.get_runtime_imbalance_projection
-            ),
-            "_build_pro_circle_reading": (
-                self.report_pro_narrative_builder.build_circle_reading
-            ),
-            "_build_pro_micro_sections_from_knowledge": (
-                self.report_pro_narrative_builder.build_micro_sections_from_knowledge
-            ),
-            "_render_lite_six_insights": (
-                self.report_section_renderer.render_lite_six_insights
-            ),
-            "_render_lite_experiment_card": (
-                self.report_section_renderer.render_lite_experiment_card
-            ),
-            "_render_pro_core_table": self.report_section_renderer.render_pro_core_table,
-            "_render_pro_circle_sections": (
-                self.report_section_renderer.render_pro_circle_sections
-            ),
-            "_render_pro_micro_sections": (
-                self.report_section_renderer.render_pro_micro_sections
-            ),
-            "_render_pro_root_sections": (
-                self.report_section_renderer.render_pro_root_sections
-            ),
-            "_render_pro_imbalance_sections": (
-                self.report_section_renderer.render_pro_imbalance_sections
-            ),
-            "_render_pro_healing_sections": (
-                self.report_section_renderer.render_pro_healing_sections
-            ),
-            "_get_record_theme": self.report_layer0_support.get_record_theme,
-            "_get_layer0_view": self.report_layer0_support.get_layer0_view,
-            "_get_layer0_element_distribution": (
-                self.report_layer0_support.get_layer0_element_distribution
-            ),
-            "_get_primary_knowledge_signal": (
-                self.report_knowledge_adapter.get_primary_knowledge_signal
-            ),
-            "_get_signal_label": self.report_knowledge_adapter.get_signal_label,
-            "_describe_signal": self.report_knowledge_adapter.describe_signal,
-            "_get_element_theme_phrase": (
-                self.report_knowledge_adapter.get_element_theme_phrase
-            ),
-            "_get_element_core_keywords": (
-                self.report_knowledge_adapter.get_element_core_keywords
-            ),
-            "_get_theme_element_profile": (
-                self.report_knowledge_adapter.get_theme_element_profile
-            ),
-            "_describe_circle_transition": (
-                self.report_knowledge_adapter.describe_circle_transition
-            ),
-            "_clean_knowledge_text_block": (
-                self.report_knowledge_adapter.clean_knowledge_text_block
-            ),
-            "_build_user_context_hint": (
-                self.report_prompt_preview_builder.build_user_context_hint
-            ),
-            "_build_lite_prompt_preview": (
-                self.report_prompt_preview_builder.build_lite_prompt_preview
-            ),
-            "_build_theme_prompt_context": (
-                self.report_prompt_preview_builder.build_theme_prompt_context
-            ),
-            "get_knowledge_theme_summary": (
-                self.report_knowledge_adapter.get_knowledge_theme_summary
-            ),
-            "_build_pro_prompt_preview": (
-                self.report_prompt_preview_builder.build_pro_prompt_preview
-            ),
-            "_build_feeling_hint": self.report_prompt_preview_builder.build_feeling_hint,
-            "_build_surface_root_cause": (
-                self.report_pro_narrative_builder.build_surface_root_cause
-            ),
-            "_map_knowledge_signal_to_profile": (
-                self.report_pro_narrative_builder.map_knowledge_signal_to_profile
-            ),
-            "_build_pro_imbalance_profile": (
-                self.report_pro_narrative_builder.build_pro_imbalance_profile
-            ),
-            "_build_runtime_imbalance_profile": (
-                self.report_pro_narrative_builder.build_runtime_imbalance_profile
-            ),
-            "_select_pro_imbalance_type": (
-                self.report_pro_narrative_builder.select_pro_imbalance_type
-            ),
-            "_build_pro_healing_suggestions": (
-                self.report_pro_narrative_builder.build_pro_healing_suggestions
-            ),
-            "_build_runtime_healing_suggestions": (
-                self.report_pro_narrative_builder.build_runtime_healing_suggestions
-            ),
-            "_describe_circle_pattern": (
-                self.report_lite_narrative_builder.describe_circle_pattern
-            ),
-            "_render_story_sections": self.report_section_renderer.render_story_sections,
-            "_render_awareness_lines": self.report_section_renderer.render_awareness_lines,
-            "_render_experiment_text": self.report_section_renderer.render_experiment_text,
-        }
-        for name, method in legacy_bindings.items():
-            setattr(self, name, method)
 
     @property
     def knowledge_engine(self) -> Optional[Any]:
