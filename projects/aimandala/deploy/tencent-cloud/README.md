@@ -1,13 +1,18 @@
-# 腾讯云单机部署样例（systemd + nginx）
+# 腾讯云部署说明（systemd + nginx / Docker + nginx）
 
 > 适用范围：`AI-Mandala To C` 当前迁移期后端（FastAPI）与 mobile-web 静态前端
 
-本目录提供最小可执行样例：
+当前项目已经形成两种部署路径：
+
+- 开发测试机：`systemd + nginx`
+- 正式发布机：`Docker + nginx`
+
+本目录保留宿主机直跑样例：
 
 - `aimandala-backend.service.example`
 - `aimandala-api.nginx.conf.example`
 
-如果后续正式机改走 Docker 发布，而不是宿主机直接运行 `uvicorn`，请优先参考：
+正式机当前已经改走 Docker 发布，请优先参考：
 
 - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/README.md`
 - `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/docker-compose.release.yml`

@@ -35,6 +35,7 @@ from .generation_runtime import (
 )
 from .prompt_runtime import PromptRuntime
 from .report_pipeline_components import install_report_pipeline_components
+from .report_pipeline_stage_config import ReportPipelineStageConfig
 from .store import InterpretationStore
 
 _UNSET = object()
@@ -123,10 +124,12 @@ class LayeredOrchestrator:
             self,
             extract_colors_by_circles=extract_colors_by_circles,
             analyze_energy_flow=analyze_energy_flow,
-            detecting_stage=GenerationStage.DETECTING.value,
-            generating_stage=GenerationStage.GENERATING.value,
-            processing_stage=GenerationStage.GENERATING.value,
-            completed_stage=GenerationStage.COMPLETED.value,
+            stages=ReportPipelineStageConfig(
+                detecting=GenerationStage.DETECTING.value,
+                generating=GenerationStage.GENERATING.value,
+                processing=GenerationStage.GENERATING.value,
+                completed=GenerationStage.COMPLETED.value,
+            ),
         )
 
     @property

@@ -13,6 +13,7 @@ from .report_knowledge_adapter import ReportKnowledgeAdapter
 from .report_layer0_support import ReportLayer0Support
 from .report_lifecycle import ReportLifecycleManager
 from .report_lite_record_workflow import ReportLiteRecordWorkflow
+from .report_pipeline_stage_config import ReportPipelineStageConfig
 from .report_prompt_preview import ReportPromptPreviewBuilder
 from .report_safety_wrapper import ReportSafetyWrapper
 from .report_section_renderer import ReportSectionRenderer
@@ -23,10 +24,7 @@ def install_report_foundation_components(
     *,
     extract_colors_by_circles: Any,
     analyze_energy_flow: Callable[[list, list, list], dict[str, Any]],
-    detecting_stage: str,
-    generating_stage: str,
-    processing_stage: str,
-    completed_stage: str,
+    stages: ReportPipelineStageConfig,
 ) -> None:
     """Attach report foundation services shared by all downstream helpers."""
 
@@ -83,13 +81,13 @@ def install_report_foundation_components(
         report_contracts=orchestrator.report_contracts,
         generation_runtime=orchestrator.generation_runtime,
         get_upgrade_diff=orchestrator.get_upgrade_diff,
-        processing_stage=processing_stage,
-        completed_stage=completed_stage,
+        processing_stage=stages.processing,
+        completed_stage=stages.completed,
     )
     orchestrator.report_lite_record_workflow = ReportLiteRecordWorkflow(
         store=orchestrator.store,
         generation_runtime=orchestrator.generation_runtime,
-        detecting_stage=detecting_stage,
-        generating_stage=generating_stage,
-        completed_stage=completed_stage,
+        detecting_stage=stages.detecting,
+        generating_stage=stages.generating,
+        completed_stage=stages.completed,
     )
