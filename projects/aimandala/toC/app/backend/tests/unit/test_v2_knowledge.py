@@ -53,6 +53,21 @@ def test_orchestrator_initializes_v2_knowledge_engine_and_builds_theme_context()
     assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
 
 
+def test_orchestrator_theme_context_uses_runtime_even_without_legacy_engine():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.knowledge_engine = None
+    record = InterpretationRecord(
+        theme="wealth_career",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    context = orchestrator._build_theme_prompt_context(record)
+
+    assert "当前主题：财富事业" in context
+    assert "V2知识主题：财富事业" in context
+    assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
+
+
 def test_orchestrator_builds_knowledge_backed_layer0_for_valid_image(tmp_path):
     image_path = tmp_path / "knowledge-layer0.png"
     image = np.full((300, 300, 3), 255, dtype=np.uint8)

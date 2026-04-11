@@ -16,24 +16,12 @@ except Exception:  # pragma: no cover - migration-time fallback
 try:
     from app.core.knowledge import (
         KnowledgeQueryEngine,
-        get_theme_summary,
-        get_pro_upgrade_teaser,
-        get_theme_config,
     )
     from app.core.knowledge_runtime.runtime import get_knowledge_runtime
     from app.core.knowledge.three_circles import analyze_energy_flow
 except Exception:  # pragma: no cover - migration-time fallback
     KnowledgeQueryEngine = None
     get_knowledge_runtime = None
-
-    def get_pro_upgrade_teaser(theme: str) -> str:
-        return ""
-
-    def get_theme_config(theme: str) -> Dict[str, Any]:
-        return {}
-
-    def get_theme_summary(theme: str) -> Dict[str, Any]:
-        return {}
 
     def analyze_energy_flow(inner_elements: list, middle_elements: list, outer_elements: list) -> Dict[str, Any]:
         return {}
@@ -2033,11 +2021,14 @@ class LayeredOrchestrator:
         if isinstance(runtime_teaser, str) and runtime_teaser.strip():
             return runtime_teaser.strip()
 
-        theme = self._get_record_theme(record)
-        try:
-            raw_teaser = get_pro_upgrade_teaser(theme)
-        except Exception:
-            raw_teaser = ""
+        raw_teaser = ""
+        if self.narrative_service is not None:
+            try:
+                raw_teaser = self.narrative_service.get_pro_upgrade_teaser(
+                    self._get_record_theme(record)
+                )
+            except Exception:
+                raw_teaser = ""
         cleaned = self._clean_knowledge_text_block(raw_teaser)
         if not cleaned:
             return DEFAULT_PRO_TEASER
@@ -2425,18 +2416,13 @@ class LayeredOrchestrator:
 
     def _get_knowledge_theme_config(self, theme: Optional[str]) -> Dict[str, Any]:
         theme_key = theme or "general"
-        try:
-            config = get_theme_config(theme_key)
-        except Exception:
-            config = {}
-        if isinstance(config, dict) and config:
-            return config
-        if theme_key != "general":
+        if self.knowledge_runtime is not None:
             try:
-                fallback = get_theme_config("general")
+                config = self.knowledge_runtime.theme_service.get_theme_config(theme_key)
             except Exception:
-                fallback = {}
-            return fallback if isinstance(fallback, dict) else {}
+                config = {}
+            if isinstance(config, dict) and config:
+                return config
         return {}
 
     def _get_theme_element_profile(self, theme: Optional[str], element_name: str) -> Dict[str, Any]:
@@ -2578,15 +2564,16 @@ class LayeredOrchestrator:
         return "\n".join(lines)
 
     def get_knowledge_theme_summary(self, theme: Optional[str]) -> Dict[str, Any]:
-        if not self.knowledge_engine:
-            return {}
-
-        try:
-            summary = get_theme_summary(theme or "general")
-        except Exception:
-            return {}
-
-        return summary if isinstance(summary, dict) else {}
+        if self.knowledge_runtime is not None:
+            try:
+                summary = self.knowledge_runtime.theme_service.get_theme_summary(
+                    theme or "general"
+                )
+            except Exception:
+                summary = {}
+            if isinstance(summary, dict) and summary:
+                return summary
+        return {}
 
     def _build_pro_prompt_preview(self, record: InterpretationRecord) -> str:
         vision_payload = {
