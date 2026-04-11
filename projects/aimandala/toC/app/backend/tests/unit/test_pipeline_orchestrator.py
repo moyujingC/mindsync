@@ -555,6 +555,74 @@ def test_upgrade_to_pro_generates_placeholder_report(tmp_path):
     assert pro_report["structured"]["prompt_schema_validation_issues"] == []
 
 
+def test_start_and_complete_pro_upgrade_support_polling_flow(tmp_path):
+    image_path = tmp_path / "polling-upgrade-image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-upgrade-polling",
+        )
+    )
+
+    started = orchestrator.start_pro_upgrade(record.interpretation_id)
+
+    assert started is not None
+    assert started["success"] is True
+    assert started["status"] == "processing"
+
+    mid_record = store.load(record.interpretation_id)
+    assert mid_record is not None
+    assert mid_record.status == GenerationStatus.PROCESSING
+    assert mid_record.generation_stage == GenerationStage.GENERATING.value
+    assert mid_record.generation_progress == 85
+
+    completed = orchestrator.complete_pro_upgrade(record.interpretation_id)
+
+    assert completed is not None
+    assert completed["success"] is True
+    assert completed["status"] == "completed"
+
+    upgraded = store.load(record.interpretation_id)
+    assert upgraded is not None
+    assert upgraded.layer_4_pro_final is not None
+    assert upgraded.status == GenerationStatus.COMPLETED
+    assert upgraded.generation_stage == GenerationStage.COMPLETED.value
+    assert upgraded.generation_progress == 100
+
+
+def test_report_safety_wrapper_strips_lite_disclaimer_for_embedding(tmp_path):
+    image_path = tmp_path / "lite-safety-image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-lite-safety",
+        )
+    )
+
+    stripped = orchestrator.report_safety_wrapper.strip_wrappers(
+        record.layer_2_lite_final.full_report_markdown,
+    )
+
+    assert "重要声明" not in stripped
+    assert stripped.startswith("# ")
+
+
 def test_build_pro_placeholder_report_prefers_runtime_ai_qa_context():
     class StubNarrativeService:
         def build_ai_qa_context(self, **kwargs):

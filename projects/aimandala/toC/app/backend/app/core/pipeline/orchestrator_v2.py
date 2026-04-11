@@ -26,7 +26,6 @@ except Exception:  # pragma: no cover - migration-time fallback
         return {}
 
 from app.core.prompt.builder_v2 import PromptBuilder
-from app.core.safety.protocol import SafetyProtocol, quick_safety_check
 
 from .data_models import (
     DailyAwareness,
@@ -44,22 +43,20 @@ from .generation_runtime import (
     ReportGenerationRuntime,
 )
 from .prompt_runtime import PromptRuntime
-from .report_blueprints import (
-    LITE_REPORT_BLUEPRINT,
-    PRO_REPORT_BLUEPRINT,
-)
 from .report_contracts import ReportContractAssembler
 from .report_debug_profile import ReportDebugProfileBuilder
 from .report_draft_assembler import ReportDraftAssembler
 from .report_knowledge_adapter import ReportKnowledgeAdapter
 from .report_layer0_support import ReportLayer0Support
+from .report_lifecycle import ReportLifecycleManager
 from .report_lite_narrative_builder import ReportLiteNarrativeBuilder
 from .report_placeholder_assembler import ReportPlaceholderAssembler
 from .report_projection_resolver import ReportProjectionResolver
 from .report_pro_narrative_builder import ReportProNarrativeBuilder
 from .report_prompt_preview import ReportPromptPreviewBuilder
+from .report_safety_wrapper import ReportSafetyWrapper
 from .report_section_renderer import ReportSectionRenderer
-from .store import InterpretationStore, UnsupportedInterpretationSchemaError
+from .store import InterpretationStore
 
 _UNSET = object()
 
@@ -164,6 +161,15 @@ class LayeredOrchestrator:
             prompt_builder=self.prompt_builder,
             validator=self.report_contracts.validator,
         )
+        self.report_safety_wrapper = ReportSafetyWrapper()
+        self.report_lifecycle_manager = ReportLifecycleManager(
+            store=self.store,
+            report_contracts=self.report_contracts,
+            generation_runtime=self.generation_runtime,
+            get_upgrade_diff=self.get_upgrade_diff,
+            processing_stage=GenerationStage.GENERATING.value,
+            completed_stage=GenerationStage.COMPLETED.value,
+        )
         self.report_section_renderer = ReportSectionRenderer()
         self.report_knowledge_adapter = ReportKnowledgeAdapter(
             get_narrative_service=lambda: self.narrative_service,
@@ -253,8 +259,8 @@ class LayeredOrchestrator:
             build_lite_overall_impression=self._build_lite_overall_impression,
             build_lite_visual_elements=self._build_lite_visual_elements,
             build_lite_emotion_portrait=self._build_lite_emotion_portrait,
-            wrap_report_with_safety=self._wrap_report_with_safety,
-            strip_safety_wrappers=self._strip_safety_wrappers,
+            wrap_report_with_safety=self.report_safety_wrapper.wrap_report,
+            strip_safety_wrappers=self.report_safety_wrapper.strip_wrappers,
         )
 
     @property
@@ -449,16 +455,9 @@ class LayeredOrchestrator:
         version: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         """Return the currently available report view for a migrated record."""
-
-        record = self.store.load(interpretation_id)
-        if record is None:
-            return None
-
-        requested_version = version or self._resolve_best_available_version(record)
-        return self.report_contracts.build_report_payload(
-            record=record,
-            requested_version=requested_version,
-            upgrade_diff=self.get_upgrade_diff(),
+        return self.report_lifecycle_manager.get_report(
+            interpretation_id,
+            version=version,
         )
 
     def answer_report_chat(
@@ -497,29 +496,9 @@ class LayeredOrchestrator:
             "reply": reply.strip(),
         }
 
-    def _resolve_best_available_version(self, record: InterpretationRecord) -> str:
-        if record.get_pro_report():
-            return "pro"
-        return "lite"
-
     def get_status(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Return a compact status snapshot for polling clients."""
-
-        record = self.store.load(interpretation_id)
-        if record is None:
-            return None
-
-        return {
-            "interpretation_id": record.interpretation_id,
-            "status": record.status,
-            "generation_stage": record.generation_stage,
-            "generation_progress": record.generation_progress,
-            "report_ready": record.layer_2_lite_final is not None,
-            "version_purchased": record.version_purchased,
-            "three_circles": record.three_circles or {},
-            "auto_detected": record.three_circles_auto_detect is not None,
-            "can_upgrade": record.can_upgrade_to_pro(),
-        }
+        return self.report_lifecycle_manager.get_status(interpretation_id)
 
     def get_report_debug_profile(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Return a development-only profile of how the current report was produced."""
@@ -541,97 +520,18 @@ class LayeredOrchestrator:
 
     def upgrade_to_pro(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Generate the migrated Pro placeholder report for an existing Lite record."""
-
-        started = self.start_pro_upgrade(interpretation_id)
-        if started is None:
-            return None
-        if started["status"] == "completed":
-            return started
-        return self.complete_pro_upgrade(interpretation_id)
+        return self.report_lifecycle_manager.upgrade_to_pro(self, interpretation_id)
 
     def start_pro_upgrade(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Mark a Pro upgrade as started so the client can begin polling immediately."""
-
-        record = self.store.load(interpretation_id)
-        if record is None:
-            return None
-
-        if record.get_pro_report():
-            return {
-                "success": True,
-                "interpretation_id": interpretation_id,
-                "version": "pro",
-                "enabled": True,
-                "status": "completed",
-                "message": PRO_REPORT_BLUEPRINT.status_messages["already_available"],
-            }
-
-        if "pro" in record.version_purchased:
-            upgraded = record
-        else:
-            upgraded = self.store.upgrade_to_pro(
-                interpretation_id,
-                price_diff=self.get_upgrade_diff(),
-            )
-            if upgraded is None:
-                return None
-
-        upgraded.status = GenerationStatus.PROCESSING
-        upgraded.update_progress(GenerationStage.GENERATING.value, 85)
-        self.store.save(upgraded)
-
-        return {
-            "success": True,
-            "interpretation_id": interpretation_id,
-            "version": "pro",
-            "enabled": True,
-            "status": "processing",
-            "message": "一梳 Pro 版正在生成中，请稍候查看。",
-        }
+        return self.report_lifecycle_manager.start_pro_upgrade(interpretation_id)
 
     def complete_pro_upgrade(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Finish a previously started Pro upgrade."""
-
-        record = self.store.load(interpretation_id)
-        if record is None:
-            return None
-
-        if record.get_pro_report():
-            return {
-                "success": True,
-                "interpretation_id": interpretation_id,
-                "version": "pro",
-                "enabled": True,
-                "status": "completed",
-                "message": PRO_REPORT_BLUEPRINT.status_messages["already_available"],
-            }
-
-        if "pro" not in record.version_purchased:
-            started = self.start_pro_upgrade(interpretation_id)
-            if started is None:
-                return None
-            record = self.store.load(interpretation_id)
-            if record is None:
-                return None
-
-        record.status = GenerationStatus.PROCESSING
-        record.update_progress(GenerationStage.GENERATING.value, 85)
-        self.store.save(record)
-        pro_bundle = self.generation_runtime.generate_pro(self, record)
-        record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
-        record.layer_4_pro_final = pro_bundle.layer_4_pro_final
-        record.status = GenerationStatus.COMPLETED
-        record.update_progress(GenerationStage.COMPLETED.value, 100)
-        self.store.save(record)
-
-        return {
-            "success": True,
-            "interpretation_id": interpretation_id,
-            "version": "pro",
-            "enabled": True,
-            "status": "completed",
-            "message": PRO_REPORT_BLUEPRINT.status_messages["generated_success"],
-        }
+        return self.report_lifecycle_manager.complete_pro_upgrade(
+            self,
+            interpretation_id,
+        )
 
     def _build_lite_placeholder_report(self, record: InterpretationRecord) -> Layer2LiteFinal:
         return self.report_placeholder_assembler.build_lite(record)
@@ -999,14 +899,6 @@ class LayeredOrchestrator:
     def _render_pro_healing_sections(self, pro_draft: Optional[Layer3ProDraft]) -> str:
         return self.report_section_renderer.render_pro_healing_sections(pro_draft)
 
-    def _strip_safety_wrappers(self, content: str) -> str:
-        cleaned = content
-        protocol = SafetyProtocol()
-        for disclaimer_type in ["basic", "with_crisis_hotline", "high_risk"]:
-            disclaimer = protocol.get_disclaimer(disclaimer_type).strip()
-            cleaned = cleaned.replace(disclaimer, "").strip()
-        return cleaned
-
     def _get_record_theme(self, record: InterpretationRecord) -> str:
         return self.report_layer0_support.get_record_theme(record)
 
@@ -1169,23 +1061,3 @@ class LayeredOrchestrator:
 
     def _render_experiment_text(self, layer1: Optional[Layer1LiteDraft]) -> str:
         return self.report_section_renderer.render_experiment_text(layer1)
-
-    def _wrap_report_with_safety(self, record: InterpretationRecord, content: str) -> str:
-        safety = quick_safety_check(
-            imbalance_type=(
-                record.layer_0_raw.imbalance_candidates[0]
-                if record.layer_0_raw and record.layer_0_raw.imbalance_candidates
-                else None
-            ),
-            color_analysis=record.layer_0_raw.color_analysis if record.layer_0_raw else None,
-            text_content=" ".join(
-                part
-                for part in [
-                    record.painting_intention or "",
-                    record.painting_feeling or "",
-                    content,
-                ]
-                if part
-            ),
-        )
-        return SafetyProtocol().wrap_output(content, safety.risk_level, context="toc")
