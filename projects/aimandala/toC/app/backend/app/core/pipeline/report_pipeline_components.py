@@ -36,6 +36,30 @@ def install_report_pipeline_components(
 ) -> None:
     """Attach report pipeline collaborators and compatibility bindings."""
 
+    _install_report_foundation_components(
+        orchestrator,
+        extract_colors_by_circles=extract_colors_by_circles,
+        analyze_energy_flow=analyze_energy_flow,
+        detecting_stage=detecting_stage,
+        generating_stage=generating_stage,
+        processing_stage=processing_stage,
+        completed_stage=completed_stage,
+    )
+    _install_report_narrative_components(orchestrator)
+    _install_report_output_components(orchestrator)
+    install_report_pipeline_legacy_bindings(orchestrator)
+
+
+def _install_report_foundation_components(
+    orchestrator: Any,
+    *,
+    extract_colors_by_circles: Any,
+    analyze_energy_flow: Callable[[list, list, list], dict[str, Any]],
+    detecting_stage: str,
+    generating_stage: str,
+    processing_stage: str,
+    completed_stage: str,
+) -> None:
     orchestrator.report_layer0_support = ReportLayer0Support(
         get_layer0_assembler=lambda: orchestrator.layer0_assembler,
         extract_colors_by_circles=extract_colors_by_circles,
@@ -99,6 +123,9 @@ def install_report_pipeline_components(
         generating_stage=generating_stage,
         completed_stage=completed_stage,
     )
+
+
+def _install_report_narrative_components(orchestrator: Any) -> None:
     orchestrator.report_projection_resolver = ReportProjectionResolver(
         get_narrative_service=lambda: orchestrator.narrative_service,
         get_record_theme=orchestrator.report_layer0_support.get_record_theme,
@@ -185,6 +212,9 @@ def install_report_pipeline_components(
         build_feeling_hint=orchestrator.report_prompt_preview_builder.build_feeling_hint,
         get_knowledge_runtime=lambda: orchestrator.knowledge_runtime,
     )
+
+
+def _install_report_output_components(orchestrator: Any) -> None:
     orchestrator.report_draft_assembler = ReportDraftAssembler(
         get_theme_label=orchestrator.report_knowledge_adapter.get_theme_label,
         build_lite_prompt_preview=(
@@ -278,4 +308,3 @@ def install_report_pipeline_components(
         wrap_report_with_safety=orchestrator.report_safety_wrapper.wrap_report,
         strip_safety_wrappers=orchestrator.report_safety_wrapper.strip_wrappers,
     )
-    install_report_pipeline_legacy_bindings(orchestrator)
