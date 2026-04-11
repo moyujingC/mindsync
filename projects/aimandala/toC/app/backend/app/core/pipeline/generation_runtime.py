@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from .data_models import (
-    DailyAwareness,
     InterpretationRecord,
     Layer1LiteDraft,
+    Layer3ProDraft,
 )
 from .prompt_runtime import PromptRuntime
 from .report_generation_contracts import (
@@ -15,6 +15,10 @@ from .report_generation_contracts import (
     ProGenerationBundle,
     ReportGenerationContext,
     ReportGenerationRuntime,
+)
+from .report_generation_payload_applier import (
+    apply_lite_generation_payload,
+    apply_pro_generation_payload,
 )
 
 
@@ -85,7 +89,7 @@ class PromptBackedReportGenerationRuntime:
             return base
 
         layer1 = base.layer_1_lite_draft
-        self._apply_lite_payload(layer1, payload)
+        apply_lite_generation_payload(layer1, payload)
         record.layer_1_lite_draft = layer1
         layer2 = generation_context._build_lite_placeholder_report(record)
         return LiteGenerationBundle(
@@ -112,7 +116,7 @@ class PromptBackedReportGenerationRuntime:
             return base
 
         layer3 = base.layer_3_pro_draft
-        self._apply_pro_payload(layer3, payload)
+        apply_pro_generation_payload(layer3, payload)
         record.layer_3_pro_draft = layer3
         layer4 = generation_context._build_pro_placeholder_report(record)
         return ProGenerationBundle(
@@ -120,117 +124,8 @@ class PromptBackedReportGenerationRuntime:
             layer_4_pro_final=layer4,
         )
 
-    def _apply_lite_payload(self, layer: Layer1LiteDraft, payload: Dict[str, Any]) -> None:
-        layer.title = self._coerce_string(payload.get("title"), layer.title)
-        layer.overall_impression = self._coerce_string(
-            payload.get("overall_impression"),
-            layer.overall_impression,
-        )
-        layer.visual_elements = self._coerce_string(payload.get("visual_elements"), layer.visual_elements)
-        layer.emotion_portrait = self._coerce_string(
-            payload.get("emotion_portrait"),
-            layer.emotion_portrait,
-        )
-        layer.pro_teaser = self._coerce_string(payload.get("pro_teaser"), layer.pro_teaser)
+    def _apply_lite_payload(self, layer: Layer1LiteDraft, payload: dict[str, Any]) -> None:
+        apply_lite_generation_payload(layer, payload)
 
-        story = payload.get("story")
-        if isinstance(story, dict):
-            layer.story.base.content = self._coerce_string(story.get("base"), layer.story.base.content)
-            layer.story.contradiction.content = self._coerce_string(
-                story.get("contradiction"),
-                layer.story.contradiction.content,
-            )
-            layer.story.pattern.content = self._coerce_string(story.get("pattern"), layer.story.pattern.content)
-            layer.story.defense.content = self._coerce_string(story.get("defense"), layer.story.defense.content)
-            layer.story.block.content = self._coerce_string(story.get("block"), layer.story.block.content)
-            layer.story.light.content = self._coerce_string(story.get("light"), layer.story.light.content)
-
-        layer.theme_insights.scene = self._coerce_string(
-            payload.get("theme_scene"),
-            layer.theme_insights.scene,
-        )
-        layer.theme_insights.impact = self._coerce_string(
-            payload.get("theme_impact"),
-            layer.theme_insights.impact,
-        )
-        layer.theme_insights.awareness = self._coerce_string(
-            payload.get("theme_awareness"),
-            layer.theme_insights.awareness,
-        )
-        layer.three_awareness = self._coerce_daily_awareness(
-            payload.get("three_awareness"),
-            layer.three_awareness,
-        )
-
-    def _apply_pro_payload(self, layer: Layer3ProDraft, payload: Dict[str, Any]) -> None:
-        layer.first_impression = self._coerce_string(
-            payload.get("first_impression"),
-            layer.first_impression,
-        )
-        layer.core_insight_table = self._coerce_str_dict(
-            payload.get("core_insight_table"),
-            layer.core_insight_table,
-        )
-        layer.micro_analysis_detailed = self._coerce_str_dict(
-            payload.get("micro_analysis_detailed"),
-            layer.micro_analysis_detailed,
-        )
-        layer.root_cause = self._coerce_str_dict(
-            payload.get("root_cause"),
-            layer.root_cause,
-        )
-        if isinstance(payload.get("three_circles_detailed"), dict):
-            layer.three_circles_detailed = payload["three_circles_detailed"]
-        if isinstance(payload.get("imbalance_confirmed"), dict):
-            layer.imbalance_confirmed = payload["imbalance_confirmed"]
-        if isinstance(payload.get("healing_suggestions"), list):
-            layer.healing_suggestions = payload["healing_suggestions"]
-
-    def _coerce_string(self, value: Any, fallback: str) -> str:
-        if isinstance(value, str) and value.strip():
-            return value.strip()
-        return fallback
-
-    def _coerce_str_dict(self, value: Any, fallback: Dict[str, str]) -> Dict[str, str]:
-        if not isinstance(value, dict):
-            return fallback
-        result: Dict[str, str] = {}
-        for key, item in value.items():
-            if not isinstance(key, str):
-                continue
-            if not isinstance(item, str):
-                continue
-            if not item.strip():
-                continue
-            result[key] = item.strip()
-        return result or fallback
-
-    def _coerce_daily_awareness(
-        self,
-        value: Any,
-        fallback: list[DailyAwareness],
-    ) -> list[DailyAwareness]:
-        if not isinstance(value, list):
-            return fallback
-
-        result: list[DailyAwareness] = []
-        for index, item in enumerate(value, start=1):
-            if not isinstance(item, dict):
-                continue
-            title = item.get("title")
-            content = item.get("content")
-            if not isinstance(title, str) or not title.strip():
-                continue
-            if not isinstance(content, str) or not content.strip():
-                continue
-            day_raw = item.get("day")
-            day = day_raw if isinstance(day_raw, int) and day_raw > 0 else index
-            result.append(
-                DailyAwareness(
-                    day=day,
-                    title=title.strip(),
-                    content=content.strip(),
-                )
-            )
-
-        return result or fallback
+    def _apply_pro_payload(self, layer: Layer3ProDraft, payload: dict[str, Any]) -> None:
+        apply_pro_generation_payload(layer, payload)
