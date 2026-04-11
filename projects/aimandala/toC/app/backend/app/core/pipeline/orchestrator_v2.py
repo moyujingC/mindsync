@@ -2,8 +2,6 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from hashlib import sha256
-from pathlib import Path
 from typing import Any, Dict, Optional
 
 from app.core.analysis.circle_detector import CircleDetectionResult, CircleDetector
@@ -29,7 +27,6 @@ from app.core.prompt.builder_v2 import PromptBuilder
 
 from .data_models import (
     DailyAwareness,
-    GenerationStatus,
     InterpretationRecord,
     Layer0Raw,
     Layer1LiteDraft,
@@ -49,6 +46,7 @@ from .report_draft_assembler import ReportDraftAssembler
 from .report_knowledge_adapter import ReportKnowledgeAdapter
 from .report_layer0_support import ReportLayer0Support
 from .report_lifecycle import ReportLifecycleManager
+from .report_lite_record_workflow import ReportLiteRecordWorkflow
 from .report_lite_narrative_builder import ReportLiteNarrativeBuilder
 from .report_placeholder_assembler import ReportPlaceholderAssembler
 from .report_projection_resolver import ReportProjectionResolver
@@ -168,6 +166,13 @@ class LayeredOrchestrator:
             generation_runtime=self.generation_runtime,
             get_upgrade_diff=self.get_upgrade_diff,
             processing_stage=GenerationStage.GENERATING.value,
+            completed_stage=GenerationStage.COMPLETED.value,
+        )
+        self.report_lite_record_workflow = ReportLiteRecordWorkflow(
+            store=self.store,
+            generation_runtime=self.generation_runtime,
+            detecting_stage=GenerationStage.DETECTING.value,
+            generating_stage=GenerationStage.GENERATING.value,
             completed_stage=GenerationStage.COMPLETED.value,
         )
         self.report_section_renderer = ReportSectionRenderer()
@@ -325,59 +330,19 @@ class LayeredOrchestrator:
         three_circles: Optional[Dict[str, int]] = None,
     ) -> InterpretationRecord:
         """Create a minimal Lite record and persist normalized circle settings."""
-
-        image_hash = self._hash_image(image_path)
-        record = self.store.create_record(
+        return await self.report_lite_record_workflow.prepare_record(
+            detect_three_circles=self.detect_three_circles,
+            image_path=image_path,
             user_id=user_id,
-            image_hash=image_hash,
             theme=theme,
+            image_url=image_url,
+            image_storage_backend=image_storage_backend,
+            image_storage_key=image_storage_key,
+            image_local_expires_at=image_local_expires_at,
+            painting_intention=painting_intention,
+            painting_feeling=painting_feeling,
+            three_circles=three_circles,
         )
-        record.image_url = image_url
-        record.image_storage_backend = image_storage_backend
-        record.image_storage_key = image_storage_key
-        record.image_local_path = image_path
-        record.image_local_expires_at = image_local_expires_at
-        record.painting_intention = painting_intention
-        record.painting_feeling = painting_feeling
-        record.status = GenerationStatus.PROCESSING
-
-        if three_circles:
-            normalized = self._normalize_circle_payload(three_circles)
-            record.three_circles = normalized
-            record.three_circles_user_adjusted = True
-            record.three_circles_adjust_history.append(
-                {
-                    "from": {"inner": 33, "middle": 66},
-                    "to": normalized.copy(),
-                    "source": "manual",
-                }
-            )
-        else:
-            detection = await self.detect_three_circles(image_path=image_path)
-            normalized = self._normalize_circle_payload(
-                {
-                    "inner_radius": int(round(detection.inner_radius * 100)),
-                    "middle_radius": int(round(detection.middle_radius * 100)),
-                }
-            )
-            record.three_circles = normalized
-            record.three_circles_auto_detect = {
-                "inner_radius": detection.inner_radius,
-                "middle_radius": detection.middle_radius,
-                "confidence": detection.confidence,
-                "method": detection.method,
-            }
-            record.three_circles_adjust_history.append(
-                {
-                    "from": {"inner": 33, "middle": 66},
-                    "to": normalized.copy(),
-                    "source": "auto",
-                }
-            )
-
-        record.update_progress(GenerationStage.DETECTING.value, 10)
-        self.store.save(record)
-        return record
 
     async def generate_lite_placeholder(
         self,
@@ -395,18 +360,8 @@ class LayeredOrchestrator:
         check_existing: bool = True,
     ) -> InterpretationRecord:
         """Create a migrated Lite record with a placeholder report."""
-
-        image_hash = self._hash_image(image_path)
-        if check_existing:
-            existing = self.store.find_existing_record(
-                image_hash=image_hash,
-                user_id=user_id,
-                theme=theme,
-            )
-            if existing is not None:
-                return existing
-
-        record = await self.prepare_lite_record(
+        return await self.report_lite_record_workflow.generate_placeholder(
+            self,
             image_path=image_path,
             user_id=user_id,
             theme=theme,
@@ -417,37 +372,14 @@ class LayeredOrchestrator:
             painting_intention=painting_intention,
             painting_feeling=painting_feeling,
             three_circles=three_circles,
+            check_existing=check_existing,
         )
 
-        record.update_progress(GenerationStage.GENERATING.value, 70)
-        lite_bundle = self.generation_runtime.generate_lite(self, record)
-        record.layer_0_raw = lite_bundle.layer_0_raw
-        record.layer_1_lite_draft = lite_bundle.layer_1_lite_draft
-        record.layer_2_lite_final = lite_bundle.layer_2_lite_final
-
-        if "lite" not in record.version_purchased:
-            record.version_purchased.append("lite")
-
-        record.status = GenerationStatus.COMPLETED
-        record.update_progress(GenerationStage.COMPLETED.value, 100)
-        self.store.save(record)
-        return record
-
     def _hash_image(self, image_path: str) -> str:
-        path = Path(image_path)
-        if not path.exists():
-            return f"missing:{path.name}"
-        return sha256(path.read_bytes()).hexdigest()[:16]
+        return self.report_lite_record_workflow.hash_image(image_path)
 
     def _normalize_circle_payload(self, circle_payload: Dict[str, int]) -> Dict[str, int]:
-        inner = int(circle_payload.get("inner_radius", 33))
-        middle = int(circle_payload.get("middle_radius", 66))
-        inner = max(10, min(inner, 90))
-        middle = max(inner + 5, min(middle, 90))
-        return {
-            "inner_radius": inner,
-            "middle_radius": middle,
-        }
+        return self.report_lite_record_workflow.normalize_circle_payload(circle_payload)
 
     def get_report(
         self,
