@@ -3,9 +3,12 @@
 from .orchestrator_v2 import GenerationStage, LayeredOrchestrator, PricingSnapshot
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
-    LiteGenerationBundle,
     PromptBackedReportGenerationRuntime,
+)
+from .report_generation_contracts import (
+    LiteGenerationBundle,
     ProGenerationBundle,
+    ReportGenerationContext,
     ReportGenerationRuntime,
 )
 from .prompt_runtime import NoopPromptRuntime, PromptRuntime
@@ -50,6 +53,7 @@ __all__ = [
     "ProGenerationBundle",
     "PromptSchemaValidator",
     "ReportContractAssembler",
+    "ReportGenerationContext",
     "ReportGenerationRuntime",
     "PRO_SECTION_TITLES",
 ]

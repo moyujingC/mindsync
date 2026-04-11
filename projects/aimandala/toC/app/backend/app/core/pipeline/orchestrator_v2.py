@@ -31,9 +31,9 @@ from .data_models import InterpretationRecord
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
     PromptBackedReportGenerationRuntime,
-    ReportGenerationRuntime,
 )
 from .prompt_runtime import PromptRuntime
+from .report_generation_contracts import ReportGenerationRuntime
 from .report_pipeline_components import install_report_pipeline_components
 from .report_pipeline_stage_config import ReportPipelineStageConfig
 from .store import InterpretationStore

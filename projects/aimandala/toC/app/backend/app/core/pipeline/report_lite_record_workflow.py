@@ -9,7 +9,10 @@ from typing import Awaitable, Callable
 from app.core.analysis.circle_detector import CircleDetectionResult
 
 from .data_models import GenerationStatus, InterpretationRecord
-from .generation_runtime import ReportGenerationContext, ReportGenerationRuntime
+from .report_generation_contracts import (
+    ReportGenerationContext,
+    ReportGenerationRuntime,
+)
 from .store import InterpretationStore
 
 

@@ -5,7 +5,10 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from .data_models import GenerationStatus, InterpretationRecord
-from .generation_runtime import ReportGenerationContext, ReportGenerationRuntime
+from .report_generation_contracts import (
+    ReportGenerationContext,
+    ReportGenerationRuntime,
+)
 from .report_blueprints import PRO_REPORT_BLUEPRINT
 from .report_contracts import ReportContractAssembler
 from .store import InterpretationStore
