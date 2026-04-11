@@ -83,6 +83,73 @@ class NarrativeContextService:
                 lines.append("可继续追问：" + "；".join(item for item in practices if item.strip()))
         return "\n".join(line for line in lines if line)
 
+    def build_theme_prompt_context(
+        self,
+        *,
+        theme: str,
+        theme_label: str = "",
+        painting_intention: str = "",
+        painting_feeling: str = "",
+        inner_radius: int = 33,
+        middle_radius: int = 66,
+        dominant_element: str = "",
+        dominant_percentage: float = 0.0,
+        secondary_element: str = "",
+        secondary_percentage: float = 0.0,
+        inner_dominant: str = "",
+        middle_dominant: str = "",
+        outer_dominant: str = "",
+        signal: str = "",
+    ) -> str:
+        resolved_theme = theme or "general"
+        theme_summary = self.theme_service.get_theme_summary(resolved_theme)
+        resolved_theme_label = (
+            theme_label
+            or str(theme_summary.get("name") or "").strip()
+            or resolved_theme
+            or "当前主题"
+        )
+        intention = str(painting_intention or "").strip() or "未填写"
+        feeling = str(painting_feeling or "").strip() or "未填写"
+        lines = [
+            f"- 当前主题：{resolved_theme_label}",
+            f"- 创作前意图：{intention}",
+            f"- 创作时感受：{feeling}",
+            f"- 内圈半径：{inner_radius}%",
+            f"- 中圈半径：{middle_radius}%",
+        ]
+        if dominant_element:
+            line = f"- 五行主导：{dominant_element} {dominant_percentage:.2f}%"
+            if secondary_element:
+                line += f"，其次是 {secondary_element} {secondary_percentage:.2f}%"
+            lines.append(line)
+        lines.append(
+            "- 三圈主导："
+            f"内圈{inner_dominant or '未识别'} / "
+            f"中圈{middle_dominant or '未识别'} / "
+            f"外圈{outer_dominant or '未识别'}"
+        )
+        if signal:
+            lines.append(f"- 知识库失衡候选：{self._get_signal_label(signal)}")
+
+        knowledge_theme_name = str(theme_summary.get("name") or "").strip()
+        core_issues = theme_summary.get("core_issues") or []
+        focus_element = str(theme_summary.get("focus_element") or "").strip()
+        if knowledge_theme_name:
+            lines.append(f"- V2知识主题：{knowledge_theme_name}")
+        if isinstance(core_issues, list) and core_issues:
+            normalized_issues = [
+                str(item).strip()
+                for item in core_issues[:4]
+                if isinstance(item, str) and str(item).strip()
+            ]
+            if normalized_issues:
+                lines.append(f"- V2主题核心议题：{' / '.join(normalized_issues)}")
+        if focus_element:
+            lines.append(f"- V2主题关注元素：{focus_element}")
+
+        return "\n".join(lines)
+
     def build_imbalance_projection(
         self,
         *,
@@ -671,6 +738,17 @@ class NarrativeContextService:
             "energy-block": "内外能量的转换还不够顺畅，所以你会时常感觉想推进却又被拉住。",
         }
         return descriptions.get(signal, "")
+
+    def _get_signal_label(self, signal: str) -> str:
+        labels = {
+            "transition-overload": "过渡负荷",
+            "boundary-constriction": "边界紧绷",
+            "relational-drain": "关系耗散",
+            "emotion-congestion": "情绪淤积",
+            "action-block": "行动受阻",
+            "energy-block": "能量受阻",
+        }
+        return labels.get(signal, signal.replace("-", " ").strip())
 
     def _build_pro_teaser(self, theme: str, default_pro_teaser: str) -> str:
         cleaned = self._clean_text_block(self.get_pro_upgrade_teaser(theme))

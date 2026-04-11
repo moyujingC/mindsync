@@ -2846,6 +2846,10 @@ class LayeredOrchestrator:
         )
 
     def _build_theme_prompt_context(self, record: InterpretationRecord) -> str:
+        runtime_context = self._build_runtime_theme_prompt_context(record)
+        if runtime_context:
+            return runtime_context
+
         theme_label = self._get_theme_label(record.theme)
         intention = (record.painting_intention or "").strip() or "未填写"
         feeling = (record.painting_feeling or "").strip() or "未填写"
@@ -2888,6 +2892,48 @@ class LayeredOrchestrator:
                 lines.append(f"- V2主题关注元素：{summary['focus_element']}")
 
         return "\n".join(lines)
+
+    def _build_runtime_theme_prompt_context(
+        self,
+        record: InterpretationRecord,
+    ) -> str:
+        if self.narrative_service is None or not hasattr(
+            self.narrative_service,
+            "build_theme_prompt_context",
+        ):
+            return ""
+
+        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
+        layer0 = self._get_layer0_view(record)
+        distribution = self._get_layer0_element_distribution(layer0)
+        dominant = distribution[0] if distribution else None
+        secondary = distribution[1] if len(distribution) > 1 else None
+
+        try:
+            context = self.narrative_service.build_theme_prompt_context(
+                theme=self._get_record_theme(record),
+                theme_label=self._get_theme_label(record.theme),
+                painting_intention=(record.painting_intention or "").strip(),
+                painting_feeling=(record.painting_feeling or "").strip(),
+                inner_radius=int(circles.get("inner_radius", 33)),
+                middle_radius=int(circles.get("middle_radius", 66)),
+                dominant_element=str(dominant["name"]) if dominant else "",
+                dominant_percentage=float(dominant.get("percentage", 0.0) or 0.0)
+                if dominant
+                else 0.0,
+                secondary_element=str(secondary["name"]) if secondary else "",
+                secondary_percentage=float(secondary.get("percentage", 0.0) or 0.0)
+                if secondary
+                else 0.0,
+                inner_dominant=str(layer0.three_circles.inner.get("dominant", "") or ""),
+                middle_dominant=str(layer0.three_circles.middle.get("dominant", "") or ""),
+                outer_dominant=str(layer0.three_circles.outer.get("dominant", "") or ""),
+                signal=self._get_primary_knowledge_signal(record),
+            )
+        except Exception:
+            return ""
+
+        return context.strip() if isinstance(context, str) else ""
 
     def get_knowledge_theme_summary(self, theme: Optional[str]) -> Dict[str, Any]:
         theme_key = (theme or "general").strip() or "general"

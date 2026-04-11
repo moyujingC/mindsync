@@ -237,6 +237,9 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
 
 def test_layer1_placeholder_prefers_runtime_lite_projection():
     class StubNarrativeService:
+        def build_theme_prompt_context(self, **kwargs):
+            return "Runtime-Theme-Prompt-Context"
+
         def build_lite_narrative_projection(self, **kwargs):
             assert kwargs["theme"] == "general"
             assert kwargs["default_pro_teaser"]
@@ -315,6 +318,28 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
     assert layer1.pro_teaser == "Runtime-Pro-Teaser"
     assert layer1.three_awareness[0].title == "Runtime-Awareness-1"
     assert layer1.three_awareness[1].title == "看见边界变化"
+
+
+def test_theme_prompt_context_prefers_runtime_builder():
+    class StubNarrativeService:
+        def build_theme_prompt_context(self, **kwargs):
+            assert kwargs["theme"] == "wealth_career"
+            assert kwargs["theme_label"] == "财富事业"
+            assert kwargs["inner_radius"] == 35
+            assert kwargs["middle_radius"] == 67
+            return "Runtime-Theme-Prompt-Context"
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.narrative_service = StubNarrativeService()
+    record = InterpretationRecord(
+        theme="wealth_career",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+    record.layer_0_raw = orchestrator._build_layer0_placeholder(record)
+
+    context = orchestrator._build_theme_prompt_context(record)
+
+    assert context == "Runtime-Theme-Prompt-Context"
 
 
 def test_get_status_returns_compact_snapshot(tmp_path):

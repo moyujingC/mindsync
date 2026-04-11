@@ -192,6 +192,38 @@ def test_v21_narrative_service_builds_imbalance_projection():
     assert "财富焦虑" in projection["core_root"]
 
 
+def test_v21_narrative_service_builds_theme_prompt_context():
+    runtime = get_knowledge_runtime()
+
+    context = runtime.narrative_service.build_theme_prompt_context(
+        theme="wealth_career",
+        theme_label="财富事业",
+        painting_intention="想知道怎么更稳定地往前",
+        painting_feeling="有点想冲，但也有点卡",
+        inner_radius=35,
+        middle_radius=67,
+        dominant_element="土",
+        dominant_percentage=42.5,
+        secondary_element="金",
+        secondary_percentage=21.25,
+        inner_dominant="火",
+        middle_dominant="木",
+        outer_dominant="金",
+        signal="transition-overload",
+    )
+
+    assert "当前主题：财富事业" in context
+    assert "创作前意图：想知道怎么更稳定地往前" in context
+    assert "创作时感受：有点想冲，但也有点卡" in context
+    assert "内圈半径：35%" in context
+    assert "中圈半径：67%" in context
+    assert "五行主导：土 42.50%，其次是 金 21.25%" in context
+    assert "三圈主导：内圈火 / 中圈木 / 外圈金" in context
+    assert "知识库失衡候选：过渡负荷" in context
+    assert "V2知识主题：财富事业" in context
+    assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
+
+
 def test_v21_narrative_service_builds_lite_projection():
     runtime = get_knowledge_runtime()
 
