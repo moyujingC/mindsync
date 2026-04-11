@@ -25,15 +25,7 @@ except Exception:  # pragma: no cover - migration-time fallback
 
 from app.core.prompt.builder_v2 import PromptBuilder
 
-from .data_models import (
-    DailyAwareness,
-    InterpretationRecord,
-    Layer0Raw,
-    Layer1LiteDraft,
-    Layer2LiteFinal,
-    Layer3ProDraft,
-    Layer4ProFinal,
-)
+from .data_models import InterpretationRecord
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
     PromptBackedReportGenerationRuntime,
@@ -145,16 +137,28 @@ class LayeredOrchestrator:
         self.enable_vision = enable_vision
         self.prompt_builder = PromptBuilder()
         self.report_contracts = ReportContractAssembler(self.prompt_builder)
+        self.report_section_renderer = ReportSectionRenderer()
+        self.report_knowledge_adapter = ReportKnowledgeAdapter(
+            get_narrative_service=lambda: self.narrative_service,
+            get_knowledge_runtime=lambda: self.knowledge_runtime,
+            get_layer0_view=self.report_layer0_support.get_layer0_view,
+        )
         self.report_prompt_preview_builder = ReportPromptPreviewBuilder(
             prompt_builder=self.prompt_builder,
             get_narrative_service=lambda: self.narrative_service,
-            get_theme_label=self._get_theme_label,
-            get_record_theme=self._get_record_theme,
-            get_layer0_view=self._get_layer0_view,
-            get_layer0_element_distribution=self._get_layer0_element_distribution,
-            get_primary_knowledge_signal=self._get_primary_knowledge_signal,
-            get_signal_label=self._get_signal_label,
-            get_knowledge_theme_summary=self.get_knowledge_theme_summary,
+            get_theme_label=self.report_knowledge_adapter.get_theme_label,
+            get_record_theme=self.report_layer0_support.get_record_theme,
+            get_layer0_view=self.report_layer0_support.get_layer0_view,
+            get_layer0_element_distribution=(
+                self.report_layer0_support.get_layer0_element_distribution
+            ),
+            get_primary_knowledge_signal=(
+                self.report_knowledge_adapter.get_primary_knowledge_signal
+            ),
+            get_signal_label=self.report_knowledge_adapter.get_signal_label,
+            get_knowledge_theme_summary=(
+                self.report_knowledge_adapter.get_knowledge_theme_summary
+            ),
         )
         self.report_debug_builder = ReportDebugProfileBuilder(
             prompt_builder=self.prompt_builder,
@@ -164,10 +168,14 @@ class LayeredOrchestrator:
             store=self.store,
             report_debug_builder=self.report_debug_builder,
             get_report_chat_runtime=lambda: self.report_chat_runtime,
-            get_primary_knowledge_signal=self._get_primary_knowledge_signal,
-            get_theme_label=self._get_theme_label,
-            get_signal_label=self._get_signal_label,
-            get_knowledge_theme_summary=self.get_knowledge_theme_summary,
+            get_primary_knowledge_signal=(
+                self.report_knowledge_adapter.get_primary_knowledge_signal
+            ),
+            get_theme_label=self.report_knowledge_adapter.get_theme_label,
+            get_signal_label=self.report_knowledge_adapter.get_signal_label,
+            get_knowledge_theme_summary=(
+                self.report_knowledge_adapter.get_knowledge_theme_summary
+            ),
         )
         self.report_safety_wrapper = ReportSafetyWrapper()
         self.report_lifecycle_manager = ReportLifecycleManager(
@@ -185,98 +193,355 @@ class LayeredOrchestrator:
             generating_stage=GenerationStage.GENERATING.value,
             completed_stage=GenerationStage.COMPLETED.value,
         )
-        self.report_section_renderer = ReportSectionRenderer()
-        self.report_knowledge_adapter = ReportKnowledgeAdapter(
-            get_narrative_service=lambda: self.narrative_service,
-            get_knowledge_runtime=lambda: self.knowledge_runtime,
-            get_layer0_view=self._get_layer0_view,
-        )
         self.report_projection_resolver = ReportProjectionResolver(
             get_narrative_service=lambda: self.narrative_service,
-            get_record_theme=self._get_record_theme,
-            get_layer0_view=self._get_layer0_view,
-            get_layer0_element_distribution=self._get_layer0_element_distribution,
-            describe_circle_transition=self._describe_circle_transition,
-            get_primary_knowledge_signal=self._get_primary_knowledge_signal,
-            build_feeling_hint=self._build_feeling_hint,
-            build_lite_title_fallback=self._build_lite_title_fallback,
-            get_theme_label=self._get_theme_label,
-            describe_circle_pattern=self._describe_circle_pattern,
+            get_record_theme=self.report_layer0_support.get_record_theme,
+            get_layer0_view=self.report_layer0_support.get_layer0_view,
+            get_layer0_element_distribution=(
+                self.report_layer0_support.get_layer0_element_distribution
+            ),
+            describe_circle_transition=(
+                self.report_knowledge_adapter.describe_circle_transition
+            ),
+            get_primary_knowledge_signal=(
+                self.report_knowledge_adapter.get_primary_knowledge_signal
+            ),
+            build_feeling_hint=self.report_prompt_preview_builder.build_feeling_hint,
+            build_lite_title_fallback=lambda record, theme_label: (
+                self.report_lite_narrative_builder.build_title_fallback(
+                    record,
+                    theme_label,
+                )
+            ),
+            get_theme_label=self.report_knowledge_adapter.get_theme_label,
+            describe_circle_pattern=lambda circles: (
+                self.report_lite_narrative_builder.describe_circle_pattern(circles)
+            ),
         )
         self.report_lite_narrative_builder = ReportLiteNarrativeBuilder(
-            get_record_theme=self._get_record_theme,
-            get_layer0_view=self._get_layer0_view,
-            get_layer0_element_distribution=self._get_layer0_element_distribution,
-            get_element_theme_phrase=self._get_element_theme_phrase,
-            get_element_core_keywords=self._get_element_core_keywords,
-            describe_circle_transition=self._describe_circle_transition,
-            describe_signal=self._describe_signal,
-            get_primary_knowledge_signal=self._get_primary_knowledge_signal,
-            resolve_runtime_lite_projection=self._resolve_runtime_lite_projection,
-            get_projection_text=self._get_projection_text,
-            get_projection_mapping=self._get_projection_mapping,
-            get_projection_list=self._get_projection_list,
-            build_feeling_hint=self._build_feeling_hint,
+            get_record_theme=self.report_layer0_support.get_record_theme,
+            get_layer0_view=self.report_layer0_support.get_layer0_view,
+            get_layer0_element_distribution=(
+                self.report_layer0_support.get_layer0_element_distribution
+            ),
+            get_element_theme_phrase=(
+                self.report_knowledge_adapter.get_element_theme_phrase
+            ),
+            get_element_core_keywords=(
+                self.report_knowledge_adapter.get_element_core_keywords
+            ),
+            describe_circle_transition=(
+                self.report_knowledge_adapter.describe_circle_transition
+            ),
+            describe_signal=self.report_knowledge_adapter.describe_signal,
+            get_primary_knowledge_signal=(
+                self.report_knowledge_adapter.get_primary_knowledge_signal
+            ),
+            resolve_runtime_lite_projection=(
+                self.report_projection_resolver.resolve_runtime_lite_projection
+            ),
+            get_projection_text=self.report_projection_resolver.get_projection_text,
+            get_projection_mapping=self.report_projection_resolver.get_projection_mapping,
+            get_projection_list=self.report_projection_resolver.get_projection_list,
+            build_feeling_hint=self.report_prompt_preview_builder.build_feeling_hint,
             get_narrative_service=lambda: self.narrative_service,
-            clean_knowledge_text_block=self._clean_knowledge_text_block,
-            get_theme_label=self._get_theme_label,
+            clean_knowledge_text_block=(
+                self.report_knowledge_adapter.clean_knowledge_text_block
+            ),
+            get_theme_label=self.report_knowledge_adapter.get_theme_label,
         )
         self.report_pro_narrative_builder = ReportProNarrativeBuilder(
-            get_record_theme=self._get_record_theme,
-            get_layer0_view=self._get_layer0_view,
-            get_layer0_element_distribution=self._get_layer0_element_distribution,
-            describe_circle_transition=self._describe_circle_transition,
-            describe_signal=self._describe_signal,
-            get_primary_knowledge_signal=self._get_primary_knowledge_signal,
-            get_signal_label=self._get_signal_label,
-            get_element_theme_phrase=self._get_element_theme_phrase,
-            get_projection_text=self._get_projection_text,
-            get_projection_mapping=self._get_projection_mapping,
-            get_runtime_imbalance_projection=self._get_runtime_imbalance_projection,
-            build_feeling_hint=self._build_feeling_hint,
+            get_record_theme=self.report_layer0_support.get_record_theme,
+            get_layer0_view=self.report_layer0_support.get_layer0_view,
+            get_layer0_element_distribution=(
+                self.report_layer0_support.get_layer0_element_distribution
+            ),
+            describe_circle_transition=(
+                self.report_knowledge_adapter.describe_circle_transition
+            ),
+            describe_signal=self.report_knowledge_adapter.describe_signal,
+            get_primary_knowledge_signal=(
+                self.report_knowledge_adapter.get_primary_knowledge_signal
+            ),
+            get_signal_label=self.report_knowledge_adapter.get_signal_label,
+            get_element_theme_phrase=(
+                self.report_knowledge_adapter.get_element_theme_phrase
+            ),
+            get_projection_text=self.report_projection_resolver.get_projection_text,
+            get_projection_mapping=self.report_projection_resolver.get_projection_mapping,
+            get_runtime_imbalance_projection=(
+                self.report_projection_resolver.get_runtime_imbalance_projection
+            ),
+            build_feeling_hint=self.report_prompt_preview_builder.build_feeling_hint,
             get_knowledge_runtime=lambda: self.knowledge_runtime,
         )
         self.report_draft_assembler = ReportDraftAssembler(
-            get_theme_label=self._get_theme_label,
-            build_lite_prompt_preview=self._build_lite_prompt_preview,
-            build_runtime_lite_narrative_projection=self._build_runtime_lite_narrative_projection,
-            build_lite_story_sections=self._build_lite_story_sections,
-            build_lite_theme_insights=self._build_lite_theme_insights,
-            build_lite_title=self._build_lite_title,
-            build_lite_overall_impression=self._build_lite_overall_impression,
-            build_lite_visual_elements=self._build_lite_visual_elements,
-            build_lite_emotion_portrait=self._build_lite_emotion_portrait,
-            build_lite_pro_teaser=self._build_lite_pro_teaser,
-            build_lite_three_awareness=self._build_lite_three_awareness,
-            build_lite_six_insights_payload=self._build_lite_six_insights_payload,
-            build_lite_experiment_payload=self._build_lite_experiment_payload,
-            build_pro_prompt_preview=self._build_pro_prompt_preview,
-            get_runtime_imbalance_projection=self._get_runtime_imbalance_projection,
-            build_pro_imbalance_profile=self._build_pro_imbalance_profile,
-            build_runtime_pro_narrative_projection=self._build_runtime_pro_narrative_projection,
-            build_pro_first_impression=self._build_pro_first_impression,
-            build_pro_energy_essence=self._build_pro_energy_essence,
-            build_pro_block_point=self._build_pro_block_point,
-            build_pro_direction=self._build_pro_direction,
-            build_pro_healing_core=self._build_pro_healing_core,
-            build_pro_circle_reading=self._build_pro_circle_reading,
-            build_pro_micro_sections_from_knowledge=self._build_pro_micro_sections_from_knowledge,
-            build_surface_root_cause=self._build_surface_root_cause,
-            build_deeper_root_cause=self._build_deeper_root_cause,
-            build_core_root_cause=self._build_core_root_cause,
-            build_pro_healing_suggestions=self._build_pro_healing_suggestions,
+            get_theme_label=self.report_knowledge_adapter.get_theme_label,
+            build_lite_prompt_preview=(
+                self.report_prompt_preview_builder.build_lite_prompt_preview
+            ),
+            build_runtime_lite_narrative_projection=(
+                self.report_projection_resolver.build_runtime_lite_narrative_projection
+            ),
+            build_lite_story_sections=(
+                self.report_lite_narrative_builder.build_story_sections
+            ),
+            build_lite_theme_insights=(
+                self.report_lite_narrative_builder.build_theme_insights
+            ),
+            build_lite_title=self.report_lite_narrative_builder.build_title,
+            build_lite_overall_impression=(
+                self.report_lite_narrative_builder.build_overall_impression
+            ),
+            build_lite_visual_elements=(
+                self.report_lite_narrative_builder.build_visual_elements
+            ),
+            build_lite_emotion_portrait=(
+                self.report_lite_narrative_builder.build_emotion_portrait
+            ),
+            build_lite_pro_teaser=self.report_lite_narrative_builder.build_pro_teaser,
+            build_lite_three_awareness=(
+                self.report_lite_narrative_builder.build_three_awareness
+            ),
+            build_lite_six_insights_payload=(
+                self.report_lite_narrative_builder.build_six_insights_payload
+            ),
+            build_lite_experiment_payload=(
+                self.report_lite_narrative_builder.build_experiment_payload
+            ),
+            build_pro_prompt_preview=(
+                self.report_prompt_preview_builder.build_pro_prompt_preview
+            ),
+            get_runtime_imbalance_projection=(
+                self.report_projection_resolver.get_runtime_imbalance_projection
+            ),
+            build_pro_imbalance_profile=(
+                self.report_pro_narrative_builder.build_pro_imbalance_profile
+            ),
+            build_runtime_pro_narrative_projection=(
+                self.report_projection_resolver.build_runtime_pro_narrative_projection
+            ),
+            build_pro_first_impression=(
+                self.report_pro_narrative_builder.build_first_impression
+            ),
+            build_pro_energy_essence=(
+                self.report_pro_narrative_builder.build_energy_essence
+            ),
+            build_pro_block_point=self.report_pro_narrative_builder.build_block_point,
+            build_pro_direction=self.report_pro_narrative_builder.build_direction,
+            build_pro_healing_core=(
+                self.report_pro_narrative_builder.build_healing_core
+            ),
+            build_pro_circle_reading=(
+                self.report_pro_narrative_builder.build_circle_reading
+            ),
+            build_pro_micro_sections_from_knowledge=(
+                self.report_pro_narrative_builder.build_micro_sections_from_knowledge
+            ),
+            build_surface_root_cause=(
+                self.report_pro_narrative_builder.build_surface_root_cause
+            ),
+            build_deeper_root_cause=(
+                self.report_pro_narrative_builder.build_deeper_root_cause
+            ),
+            build_core_root_cause=(
+                self.report_pro_narrative_builder.build_core_root_cause
+            ),
+            build_pro_healing_suggestions=(
+                self.report_pro_narrative_builder.build_pro_healing_suggestions
+            ),
         )
         self.report_placeholder_assembler = ReportPlaceholderAssembler(
             section_renderer=self.report_section_renderer,
             get_narrative_service=lambda: self.narrative_service,
-            get_theme_label=self._get_theme_label,
-            build_lite_title=self._build_lite_title,
-            build_lite_overall_impression=self._build_lite_overall_impression,
-            build_lite_visual_elements=self._build_lite_visual_elements,
-            build_lite_emotion_portrait=self._build_lite_emotion_portrait,
+            get_theme_label=self.report_knowledge_adapter.get_theme_label,
+            build_lite_title=self.report_lite_narrative_builder.build_title,
+            build_lite_overall_impression=(
+                self.report_lite_narrative_builder.build_overall_impression
+            ),
+            build_lite_visual_elements=(
+                self.report_lite_narrative_builder.build_visual_elements
+            ),
+            build_lite_emotion_portrait=(
+                self.report_lite_narrative_builder.build_emotion_portrait
+            ),
             wrap_report_with_safety=self.report_safety_wrapper.wrap_report,
             strip_safety_wrappers=self.report_safety_wrapper.strip_wrappers,
         )
+        legacy_bindings = {
+            "_build_lite_placeholder_report": self.report_placeholder_assembler.build_lite,
+            "_build_layer0_placeholder": self.report_layer0_support.build_placeholder,
+            "_build_layer0_fallback": self.report_layer0_support.build_fallback,
+            "_build_layer1_placeholder": self.report_draft_assembler.build_lite,
+            "_build_pro_placeholder_draft": self.report_draft_assembler.build_pro,
+            "_build_runtime_pro_narrative_projection": (
+                self.report_projection_resolver.build_runtime_pro_narrative_projection
+            ),
+            "_build_pro_placeholder_report": self.report_placeholder_assembler.build_pro,
+            "_get_theme_label": self.report_knowledge_adapter.get_theme_label,
+            "_build_lite_title": self.report_lite_narrative_builder.build_title,
+            "_build_lite_title_fallback": (
+                self.report_lite_narrative_builder.build_title_fallback
+            ),
+            "_build_lite_overall_impression": (
+                self.report_lite_narrative_builder.build_overall_impression
+            ),
+            "_build_lite_visual_elements": (
+                self.report_lite_narrative_builder.build_visual_elements
+            ),
+            "_build_runtime_lite_narrative_projection": (
+                self.report_projection_resolver.build_runtime_lite_narrative_projection
+            ),
+            "_resolve_runtime_lite_projection": (
+                self.report_projection_resolver.resolve_runtime_lite_projection
+            ),
+            "_get_projection_text": self.report_projection_resolver.get_projection_text,
+            "_get_projection_mapping": (
+                self.report_projection_resolver.get_projection_mapping
+            ),
+            "_get_projection_list": self.report_projection_resolver.get_projection_list,
+            "_build_lite_emotion_portrait": (
+                self.report_lite_narrative_builder.build_emotion_portrait
+            ),
+            "_build_lite_story_sections": (
+                self.report_lite_narrative_builder.build_story_sections
+            ),
+            "_build_lite_theme_insights": (
+                self.report_lite_narrative_builder.build_theme_insights
+            ),
+            "_build_lite_three_awareness": (
+                self.report_lite_narrative_builder.build_three_awareness
+            ),
+            "_build_lite_six_insights_payload": (
+                self.report_lite_narrative_builder.build_six_insights_payload
+            ),
+            "_build_lite_experiment_payload": (
+                self.report_lite_narrative_builder.build_experiment_payload
+            ),
+            "_build_lite_pro_teaser": (
+                self.report_lite_narrative_builder.build_pro_teaser
+            ),
+            "_build_pro_first_impression": (
+                self.report_pro_narrative_builder.build_first_impression
+            ),
+            "_build_pro_energy_essence": (
+                self.report_pro_narrative_builder.build_energy_essence
+            ),
+            "_build_pro_block_point": (
+                self.report_pro_narrative_builder.build_block_point
+            ),
+            "_build_pro_direction": self.report_pro_narrative_builder.build_direction,
+            "_build_pro_healing_core": (
+                self.report_pro_narrative_builder.build_healing_core
+            ),
+            "_build_deeper_root_cause": (
+                self.report_pro_narrative_builder.build_deeper_root_cause
+            ),
+            "_build_core_root_cause": (
+                self.report_pro_narrative_builder.build_core_root_cause
+            ),
+            "_get_runtime_imbalance_projection": (
+                self.report_projection_resolver.get_runtime_imbalance_projection
+            ),
+            "_build_pro_circle_reading": (
+                self.report_pro_narrative_builder.build_circle_reading
+            ),
+            "_build_pro_micro_sections_from_knowledge": (
+                self.report_pro_narrative_builder.build_micro_sections_from_knowledge
+            ),
+            "_render_lite_six_insights": (
+                self.report_section_renderer.render_lite_six_insights
+            ),
+            "_render_lite_experiment_card": (
+                self.report_section_renderer.render_lite_experiment_card
+            ),
+            "_render_pro_core_table": self.report_section_renderer.render_pro_core_table,
+            "_render_pro_circle_sections": (
+                self.report_section_renderer.render_pro_circle_sections
+            ),
+            "_render_pro_micro_sections": (
+                self.report_section_renderer.render_pro_micro_sections
+            ),
+            "_render_pro_root_sections": (
+                self.report_section_renderer.render_pro_root_sections
+            ),
+            "_render_pro_imbalance_sections": (
+                self.report_section_renderer.render_pro_imbalance_sections
+            ),
+            "_render_pro_healing_sections": (
+                self.report_section_renderer.render_pro_healing_sections
+            ),
+            "_get_record_theme": self.report_layer0_support.get_record_theme,
+            "_get_layer0_view": self.report_layer0_support.get_layer0_view,
+            "_get_layer0_element_distribution": (
+                self.report_layer0_support.get_layer0_element_distribution
+            ),
+            "_get_primary_knowledge_signal": (
+                self.report_knowledge_adapter.get_primary_knowledge_signal
+            ),
+            "_get_signal_label": self.report_knowledge_adapter.get_signal_label,
+            "_describe_signal": self.report_knowledge_adapter.describe_signal,
+            "_get_element_theme_phrase": (
+                self.report_knowledge_adapter.get_element_theme_phrase
+            ),
+            "_get_element_core_keywords": (
+                self.report_knowledge_adapter.get_element_core_keywords
+            ),
+            "_get_theme_element_profile": (
+                self.report_knowledge_adapter.get_theme_element_profile
+            ),
+            "_describe_circle_transition": (
+                self.report_knowledge_adapter.describe_circle_transition
+            ),
+            "_clean_knowledge_text_block": (
+                self.report_knowledge_adapter.clean_knowledge_text_block
+            ),
+            "_build_user_context_hint": (
+                self.report_prompt_preview_builder.build_user_context_hint
+            ),
+            "_build_lite_prompt_preview": (
+                self.report_prompt_preview_builder.build_lite_prompt_preview
+            ),
+            "_build_theme_prompt_context": (
+                self.report_prompt_preview_builder.build_theme_prompt_context
+            ),
+            "get_knowledge_theme_summary": (
+                self.report_knowledge_adapter.get_knowledge_theme_summary
+            ),
+            "_build_pro_prompt_preview": (
+                self.report_prompt_preview_builder.build_pro_prompt_preview
+            ),
+            "_build_feeling_hint": self.report_prompt_preview_builder.build_feeling_hint,
+            "_build_surface_root_cause": (
+                self.report_pro_narrative_builder.build_surface_root_cause
+            ),
+            "_map_knowledge_signal_to_profile": (
+                self.report_pro_narrative_builder.map_knowledge_signal_to_profile
+            ),
+            "_build_pro_imbalance_profile": (
+                self.report_pro_narrative_builder.build_pro_imbalance_profile
+            ),
+            "_build_runtime_imbalance_profile": (
+                self.report_pro_narrative_builder.build_runtime_imbalance_profile
+            ),
+            "_select_pro_imbalance_type": (
+                self.report_pro_narrative_builder.select_pro_imbalance_type
+            ),
+            "_build_pro_healing_suggestions": (
+                self.report_pro_narrative_builder.build_pro_healing_suggestions
+            ),
+            "_build_runtime_healing_suggestions": (
+                self.report_pro_narrative_builder.build_runtime_healing_suggestions
+            ),
+            "_describe_circle_pattern": (
+                self.report_lite_narrative_builder.describe_circle_pattern
+            ),
+            "_render_story_sections": self.report_section_renderer.render_story_sections,
+            "_render_awareness_lines": self.report_section_renderer.render_awareness_lines,
+            "_render_experiment_text": self.report_section_renderer.render_experiment_text,
+        }
+        for name, method in legacy_bindings.items():
+            setattr(self, name, method)
 
     @property
     def knowledge_engine(self) -> Optional[Any]:
@@ -440,532 +705,3 @@ class LayeredOrchestrator:
             self,
             interpretation_id,
         )
-
-    def _build_lite_placeholder_report(self, record: InterpretationRecord) -> Layer2LiteFinal:
-        return self.report_placeholder_assembler.build_lite(record)
-
-    def _build_layer0_placeholder(self, record: InterpretationRecord) -> Layer0Raw:
-        return self.report_layer0_support.build_placeholder(record)
-
-    def _build_layer0_fallback(self, record: InterpretationRecord) -> Layer0Raw:
-        return self.report_layer0_support.build_fallback(record)
-
-    def _build_layer1_placeholder(self, record: InterpretationRecord) -> Layer1LiteDraft:
-        return self.report_draft_assembler.build_lite(record)
-
-    def _build_pro_placeholder_draft(self, record: InterpretationRecord) -> Layer3ProDraft:
-        return self.report_draft_assembler.build_pro(record)
-
-    def _build_runtime_pro_narrative_projection(
-        self,
-        record: InterpretationRecord,
-        *,
-        theme_label: str,
-        lite_title: str,
-        imbalance_profile: Dict[str, str],
-        imbalance_projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        return self.report_projection_resolver.build_runtime_pro_narrative_projection(
-            record,
-            theme_label=theme_label,
-            lite_title=lite_title,
-            imbalance_profile=imbalance_profile,
-            imbalance_projection=imbalance_projection,
-        )
-
-    def _build_pro_placeholder_report(self, record: InterpretationRecord) -> Layer4ProFinal:
-        return self.report_placeholder_assembler.build_pro(record)
-
-    def _get_theme_label(self, theme: Optional[str]) -> str:
-        return self.report_knowledge_adapter.get_theme_label(theme)
-
-    def _build_lite_title(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_lite_narrative_builder.build_title(
-            record,
-            theme_label,
-            projection=projection,
-        )
-
-    def _build_lite_title_fallback(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-    ) -> str:
-        return self.report_lite_narrative_builder.build_title_fallback(
-            record,
-            theme_label,
-        )
-
-    def _build_lite_overall_impression(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        circle_info: Dict[str, int],
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_lite_narrative_builder.build_overall_impression(
-            record,
-            theme_label,
-            circle_info,
-            projection=projection,
-        )
-
-    def _build_lite_visual_elements(
-        self,
-        record: InterpretationRecord,
-        theme: str,
-        circle_info: Dict[str, int],
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_lite_narrative_builder.build_visual_elements(
-            record,
-            theme,
-            circle_info,
-            projection=projection,
-        )
-
-    def _build_runtime_lite_narrative_projection(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-    ) -> Dict[str, Any]:
-        return self.report_projection_resolver.build_runtime_lite_narrative_projection(
-            record,
-            theme_label,
-        )
-
-    def _resolve_runtime_lite_projection(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        return self.report_projection_resolver.resolve_runtime_lite_projection(
-            record,
-            theme_label,
-            projection=projection,
-        )
-
-    def _get_projection_text(
-        self,
-        projection: Optional[Dict[str, Any]],
-        key: str,
-    ) -> str:
-        return self.report_projection_resolver.get_projection_text(projection, key)
-
-    def _get_projection_mapping(
-        self,
-        projection: Optional[Dict[str, Any]],
-        key: str,
-    ) -> Dict[str, Any]:
-        return self.report_projection_resolver.get_projection_mapping(
-            projection,
-            key,
-        )
-
-    def _get_projection_list(
-        self,
-        projection: Optional[Dict[str, Any]],
-        key: str,
-    ) -> list[Any]:
-        return self.report_projection_resolver.get_projection_list(projection, key)
-
-    def _build_lite_emotion_portrait(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_lite_narrative_builder.build_emotion_portrait(
-            record,
-            theme_label,
-            projection=projection,
-        )
-
-    def _build_lite_story_sections(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, str]:
-        return self.report_lite_narrative_builder.build_story_sections(
-            record,
-            theme_label,
-            projection=projection,
-        )
-
-    def _build_lite_theme_insights(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, str]:
-        return self.report_lite_narrative_builder.build_theme_insights(
-            record,
-            theme_label,
-            projection=projection,
-        )
-
-    def _build_lite_three_awareness(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> list[DailyAwareness]:
-        return self.report_lite_narrative_builder.build_three_awareness(
-            record,
-            theme_label,
-            projection=projection,
-        )
-
-    def _build_lite_six_insights_payload(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        story_sections: Dict[str, str],
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Dict[str, str]]:
-        return self.report_lite_narrative_builder.build_six_insights_payload(
-            record,
-            theme_label,
-            story_sections,
-            projection=projection,
-        )
-
-    def _build_lite_experiment_payload(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        title: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, str]:
-        return self.report_lite_narrative_builder.build_experiment_payload(
-            record,
-            theme_label,
-            title,
-            projection=projection,
-        )
-
-    def _build_lite_pro_teaser(
-        self,
-        record: InterpretationRecord,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_lite_narrative_builder.build_pro_teaser(
-            record,
-            projection=projection,
-        )
-
-    def _build_pro_first_impression(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        lite_title: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_first_impression(
-            record,
-            theme_label,
-            lite_title,
-            projection=projection,
-        )
-
-    def _build_pro_energy_essence(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        circles: Dict[str, int],
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_energy_essence(
-            record,
-            theme_label,
-            circles,
-            projection=projection,
-        )
-
-    def _build_pro_block_point(
-        self,
-        record: InterpretationRecord,
-        imbalance_profile: Optional[Dict[str, str]] = None,
-        narrative_projection: Optional[Dict[str, Any]] = None,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_block_point(
-            record,
-            imbalance_profile=imbalance_profile,
-            narrative_projection=narrative_projection,
-            projection=projection,
-        )
-
-    def _build_pro_direction(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        narrative_projection: Optional[Dict[str, Any]] = None,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_direction(
-            record,
-            theme_label,
-            narrative_projection=narrative_projection,
-            projection=projection,
-        )
-
-    def _build_pro_healing_core(
-        self,
-        record: InterpretationRecord,
-        narrative_projection: Optional[Dict[str, Any]] = None,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_healing_core(
-            record,
-            narrative_projection=narrative_projection,
-            projection=projection,
-        )
-
-    def _build_deeper_root_cause(
-        self,
-        record: InterpretationRecord,
-        narrative_projection: Optional[Dict[str, Any]] = None,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_deeper_root_cause(
-            record,
-            narrative_projection=narrative_projection,
-            projection=projection,
-        )
-
-    def _build_core_root_cause(
-        self,
-        record: InterpretationRecord,
-        narrative_projection: Optional[Dict[str, Any]] = None,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_core_root_cause(
-            record,
-            narrative_projection=narrative_projection,
-            projection=projection,
-        )
-
-    def _get_runtime_imbalance_projection(self, record: InterpretationRecord) -> Dict[str, Any]:
-        return self.report_projection_resolver.get_runtime_imbalance_projection(record)
-
-    def _build_pro_circle_reading(
-        self,
-        record: InterpretationRecord,
-        circle_key: str,
-        fallback_text: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_circle_reading(
-            record,
-            circle_key,
-            fallback_text,
-            projection=projection,
-        )
-
-    def _build_pro_micro_sections_from_knowledge(
-        self,
-        record: InterpretationRecord,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, str]:
-        return self.report_pro_narrative_builder.build_micro_sections_from_knowledge(
-            record,
-            projection=projection,
-        )
-
-    def _render_lite_six_insights(
-        self,
-        layer1: Optional[Layer1LiteDraft],
-    ) -> Dict[str, str]:
-        return self.report_section_renderer.render_lite_six_insights(layer1)
-
-    def _render_lite_experiment_card(self, layer1: Optional[Layer1LiteDraft]) -> str:
-        return self.report_section_renderer.render_lite_experiment_card(layer1)
-
-    def _render_pro_core_table(self, pro_draft: Optional[Layer3ProDraft]) -> str:
-        return self.report_section_renderer.render_pro_core_table(pro_draft)
-
-    def _render_pro_circle_sections(self, pro_draft: Optional[Layer3ProDraft]) -> str:
-        return self.report_section_renderer.render_pro_circle_sections(pro_draft)
-
-    def _render_pro_micro_sections(self, pro_draft: Optional[Layer3ProDraft]) -> str:
-        return self.report_section_renderer.render_pro_micro_sections(pro_draft)
-
-    def _render_pro_root_sections(self, pro_draft: Optional[Layer3ProDraft]) -> str:
-        return self.report_section_renderer.render_pro_root_sections(pro_draft)
-
-    def _render_pro_imbalance_sections(self, pro_draft: Optional[Layer3ProDraft]) -> str:
-        return self.report_section_renderer.render_pro_imbalance_sections(pro_draft)
-
-    def _render_pro_healing_sections(self, pro_draft: Optional[Layer3ProDraft]) -> str:
-        return self.report_section_renderer.render_pro_healing_sections(pro_draft)
-
-    def _get_record_theme(self, record: InterpretationRecord) -> str:
-        return self.report_layer0_support.get_record_theme(record)
-
-    def _get_layer0_view(self, record: InterpretationRecord) -> Layer0Raw:
-        return self.report_layer0_support.get_layer0_view(record)
-
-    def _get_layer0_element_distribution(self, layer0: Layer0Raw) -> list[Dict[str, Any]]:
-        return self.report_layer0_support.get_layer0_element_distribution(layer0)
-
-    def _get_primary_knowledge_signal(self, record: InterpretationRecord) -> str:
-        return self.report_knowledge_adapter.get_primary_knowledge_signal(record)
-
-    def _get_signal_label(self, signal: str) -> str:
-        return self.report_knowledge_adapter.get_signal_label(signal)
-
-    def _describe_signal(self, signal: str) -> str:
-        return self.report_knowledge_adapter.describe_signal(signal)
-
-    def _get_element_theme_phrase(self, theme: Optional[str], element_name: str) -> str:
-        return self.report_knowledge_adapter.get_element_theme_phrase(
-            theme,
-            element_name,
-        )
-
-    def _get_element_core_keywords(self, theme: Optional[str], element_name: str) -> str:
-        return self.report_knowledge_adapter.get_element_core_keywords(
-            theme,
-            element_name,
-        )
-
-    def _get_theme_element_profile(
-        self,
-        theme: Optional[str],
-        element_name: str,
-    ) -> Dict[str, Any]:
-        return self.report_knowledge_adapter.get_theme_element_profile(
-            theme,
-            element_name,
-        )
-
-    def _describe_circle_transition(self, layer0: Layer0Raw) -> str:
-        return self.report_knowledge_adapter.describe_circle_transition(layer0)
-
-    def _clean_knowledge_text_block(self, content: str) -> str:
-        return self.report_knowledge_adapter.clean_knowledge_text_block(content)
-
-    def _build_user_context_hint(self, record: InterpretationRecord) -> str:
-        return self.report_prompt_preview_builder.build_user_context_hint(record)
-
-    def _build_lite_prompt_preview(self, record: InterpretationRecord) -> str:
-        return self.report_prompt_preview_builder.build_lite_prompt_preview(record)
-
-    def _build_theme_prompt_context(self, record: InterpretationRecord) -> str:
-        return self.report_prompt_preview_builder.build_theme_prompt_context(record)
-
-    def get_knowledge_theme_summary(self, theme: Optional[str]) -> Dict[str, Any]:
-        return self.report_knowledge_adapter.get_knowledge_theme_summary(theme)
-
-    def _build_pro_prompt_preview(self, record: InterpretationRecord) -> str:
-        return self.report_prompt_preview_builder.build_pro_prompt_preview(record)
-
-    def _build_feeling_hint(self, record: InterpretationRecord) -> str:
-        return self.report_prompt_preview_builder.build_feeling_hint(record)
-
-    def _build_surface_root_cause(
-        self,
-        record: InterpretationRecord,
-        narrative_projection: Optional[Dict[str, Any]] = None,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        return self.report_pro_narrative_builder.build_surface_root_cause(
-            record,
-            narrative_projection=narrative_projection,
-            projection=projection,
-        )
-
-    def _map_knowledge_signal_to_profile(self, signal: str) -> str:
-        return self.report_pro_narrative_builder.map_knowledge_signal_to_profile(
-            signal,
-        )
-
-    def _build_pro_imbalance_profile(
-        self,
-        record: InterpretationRecord,
-        theme_label: str,
-        circles: Dict[str, int],
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, str]:
-        return self.report_pro_narrative_builder.build_pro_imbalance_profile(
-            record,
-            theme_label,
-            circles,
-            projection=projection,
-        )
-
-    def _build_runtime_imbalance_profile(
-        self,
-        record: InterpretationRecord,
-        *,
-        profile_key: str,
-        signal: str,
-        theme_label: str,
-        projection: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, str]:
-        return self.report_pro_narrative_builder.build_runtime_imbalance_profile(
-            record,
-            profile_key=profile_key,
-            signal=signal,
-            theme_label=theme_label,
-            projection=projection,
-        )
-
-    def _select_pro_imbalance_type(
-        self,
-        *,
-        record: InterpretationRecord,
-        inner: int,
-        middle: int,
-    ) -> str:
-        return self.report_pro_narrative_builder.select_pro_imbalance_type(
-            record=record,
-            inner=inner,
-            middle=middle,
-        )
-
-    def _build_pro_healing_suggestions(
-        self,
-        record: InterpretationRecord,
-        *,
-        imbalance_profile: Dict[str, str],
-        theme_label: str,
-    ) -> list[Dict[str, str]]:
-        return self.report_pro_narrative_builder.build_pro_healing_suggestions(
-            record,
-            imbalance_profile=imbalance_profile,
-            theme_label=theme_label,
-        )
-
-    def _build_runtime_healing_suggestions(
-        self,
-        record: InterpretationRecord,
-        *,
-        primary: str,
-        theme_label: str,
-    ) -> list[Dict[str, str]]:
-        return self.report_pro_narrative_builder.build_runtime_healing_suggestions(
-            record,
-            primary=primary,
-            theme_label=theme_label,
-        )
-
-    def _describe_circle_pattern(self, circles: Dict[str, int]) -> str:
-        return self.report_lite_narrative_builder.describe_circle_pattern(circles)
-
-    def _render_story_sections(self, layer1: Optional[Layer1LiteDraft]) -> str:
-        return self.report_section_renderer.render_story_sections(layer1)
-
-    def _render_awareness_lines(self, layer1: Optional[Layer1LiteDraft]) -> str:
-        return self.report_section_renderer.render_awareness_lines(layer1)
-
-    def _render_experiment_text(self, layer1: Optional[Layer1LiteDraft]) -> str:
-        return self.report_section_renderer.render_experiment_text(layer1)
