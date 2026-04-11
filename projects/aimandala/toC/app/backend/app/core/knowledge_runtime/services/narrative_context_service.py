@@ -329,6 +329,7 @@ class NarrativeContextService:
             "visual_elements": " ".join(
                 part for part in visual_parts if isinstance(part, str) and part.strip()
             ).strip(),
+            "story_angles": self._build_story_angles(resolved_theme),
             "story_sections": {
                 "base": base,
                 "contradiction": contradiction.strip(),
@@ -435,6 +436,26 @@ class NarrativeContextService:
         if default_text:
             return f"{default_text}\n\n{cleaned}".strip()
         return cleaned
+
+    def _build_story_angles(self, theme: str) -> dict[str, str]:
+        label_map = {
+            "base": "你的底色",
+            "contradiction": "你的矛盾",
+            "pattern": "你的模式",
+            "defense": "你的防御",
+            "block": "你的卡点",
+            "light": "你的光",
+        }
+        templates = self.get_insight_templates(theme)
+        angles: dict[str, str] = {}
+        for key, label in label_map.items():
+            payload = templates.get(label, {}) if isinstance(templates, dict) else {}
+            if not isinstance(payload, dict):
+                continue
+            angle = payload.get("角度")
+            if isinstance(angle, str) and angle.strip():
+                angles[key] = angle.strip()
+        return angles
 
     def _clean_text_block(self, content: str) -> str:
         if not isinstance(content, str):

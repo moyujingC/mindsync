@@ -17,7 +17,6 @@ try:
     from app.core.knowledge import (
         KnowledgeQueryEngine,
         get_theme_summary,
-        get_insight_templates,
         get_pro_upgrade_teaser,
         get_theme_config,
     )
@@ -26,9 +25,6 @@ try:
 except Exception:  # pragma: no cover - migration-time fallback
     KnowledgeQueryEngine = None
     get_knowledge_runtime = None
-
-    def get_insight_templates(theme: str) -> Dict[str, Any]:
-        return {}
 
     def get_pro_upgrade_teaser(theme: str) -> str:
         return ""
@@ -1316,9 +1312,18 @@ class LayeredOrchestrator:
             "block": "block",
             "light": "light",
         }
+        story_angles = (
+            lite_projection.get("story_angles")
+            if isinstance(lite_projection, dict)
+            else None
+        )
         for key, template in LITE_REPORT_BLUEPRINT.six_insight_layer1_templates.items():
             story_content = story_sections.get(story_title_map.get(key, ""), "")
-            angle = self._get_knowledge_story_angle(record.theme, key)
+            angle = ""
+            if isinstance(story_angles, dict):
+                value = story_angles.get(key)
+                if isinstance(value, str) and value.strip():
+                    angle = value.strip()
             base_title = template.get("title", key)
             title = f"{base_title}：{angle}" if angle else base_title
             getattr(layer.six_insights, key).update(
@@ -2326,22 +2331,6 @@ class LayeredOrchestrator:
             return fallback if isinstance(fallback, dict) else {}
         return {}
 
-    def _get_knowledge_insight_templates(self, theme: Optional[str]) -> Dict[str, Any]:
-        theme_key = theme or "general"
-        try:
-            templates = get_insight_templates(theme_key)
-        except Exception:
-            templates = {}
-        if isinstance(templates, dict) and templates:
-            return templates
-        if theme_key != "general":
-            try:
-                fallback = get_insight_templates("general")
-            except Exception:
-                fallback = {}
-            return fallback if isinstance(fallback, dict) else {}
-        return {}
-
     def _get_theme_element_profile(self, theme: Optional[str], element_name: str) -> Dict[str, Any]:
         config = self._get_knowledge_theme_config(theme)
         meanings = config.get("element_meanings", {}) if isinstance(config, dict) else {}
@@ -2380,24 +2369,6 @@ class LayeredOrchestrator:
             if inner == middle and outer != inner:
                 return f"内圈和中圈都更偏「{inner}」，外圈则开始转向「{outer}」。"
             return f"三圈依次呈现出「{inner} -> {middle} -> {outer}」的变化。"
-        return ""
-
-    def _get_knowledge_story_angle(self, theme: Optional[str], section_key: str) -> str:
-        label_map = {
-            "base": "你的底色",
-            "contradiction": "你的矛盾",
-            "pattern": "你的模式",
-            "defense": "你的防御",
-            "block": "你的卡点",
-            "light": "你的光",
-        }
-        templates = self._get_knowledge_insight_templates(theme)
-        label = label_map.get(section_key, "")
-        payload = templates.get(label, {}) if isinstance(templates, dict) else {}
-        if isinstance(payload, dict):
-            angle = payload.get("角度")
-            if isinstance(angle, str) and angle.strip():
-                return angle.strip()
         return ""
 
     def _clean_knowledge_text_block(self, content: str) -> str:

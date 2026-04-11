@@ -220,6 +220,8 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "42.50%" in projection["visual_elements"]
     assert "内圈主导为「火」" in projection["visual_elements"]
     assert "内圈阅读；中圈阅读；外圈阅读。" in projection["visual_elements"]
+    assert projection["story_angles"]["base"] == "你当前的生命能量基调"
+    assert projection["story_angles"]["light"] == "你独特的内在资源与转变可能"
     assert "你的底色更接近「土」" in projection["story_sections"]["base"]
     assert "内外节奏正在重新对齐" in projection["story_sections"]["pattern"]
     assert "过渡期" in projection["theme_insights"]["awareness"]
