@@ -35,9 +35,13 @@ class LLMClientConfig:
 
     default: LLMTaskConfig
     lite_report: Optional[LLMTaskConfig] = None
+    lite_report_fallback: Optional[LLMTaskConfig] = None
     pro_report: Optional[LLMTaskConfig] = None
+    pro_report_fallback: Optional[LLMTaskConfig] = None
     chat: Optional[LLMTaskConfig] = None
+    chat_fallback: Optional[LLMTaskConfig] = None
     vision: Optional[LLMTaskConfig] = None
+    vision_fallback: Optional[LLMTaskConfig] = None
     timeout_seconds: int = 30
     max_retries: int = 2
     retry_backoff_ms: int = 400
@@ -52,6 +56,16 @@ class LLMClientConfig:
             "report": self.lite_report or self.pro_report,
         }
         return task_mapping.get(normalized) or self.default
+
+    def resolve_fallback_task_config(self, task: str) -> Optional[LLMTaskConfig]:
+        normalized = task.strip().lower()
+        fallback_mapping = {
+            "lite_report": self.lite_report_fallback,
+            "pro_report": self.pro_report_fallback,
+            "chat": self.chat_fallback,
+            "vision": self.vision_fallback,
+        }
+        return fallback_mapping.get(normalized)
 
 
 class LLMClient(Protocol):
@@ -115,6 +129,7 @@ class OpenAICompatibleLLMClient:
         image_path: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         task_config = self.config.resolve_task_config(task)
+        fallback_task_config = self.config.resolve_fallback_task_config(task)
         schema_json = json.dumps(schema, ensure_ascii=False, indent=2)
         system_prompt = (
             "你是一名严格输出 JSON 的助手。"
@@ -132,6 +147,7 @@ class OpenAICompatibleLLMClient:
         )
         raw = self._request_chat_completion(
             task_config=task_config,
+            fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=True,
         )
@@ -147,6 +163,7 @@ class OpenAICompatibleLLMClient:
         user_prompt: str,
     ) -> Optional[str]:
         task_config = self.config.resolve_task_config(task)
+        fallback_task_config = self.config.resolve_fallback_task_config(task)
         messages = self._build_messages(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
@@ -154,6 +171,7 @@ class OpenAICompatibleLLMClient:
         )
         raw = self._request_chat_completion(
             task_config=task_config,
+            fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=False,
         )
@@ -200,6 +218,31 @@ class OpenAICompatibleLLMClient:
         return f"data:{mime_type};base64,{encoded}"
 
     def _request_chat_completion(
+        self,
+        *,
+        task_config: LLMTaskConfig,
+        fallback_task_config: Optional[LLMTaskConfig],
+        messages: Sequence[Dict[str, Any]],
+        expect_json: bool,
+    ) -> Optional[str]:
+        configs_to_try = [task_config]
+        if (
+            fallback_task_config is not None
+            and fallback_task_config != task_config
+        ):
+            configs_to_try.append(fallback_task_config)
+
+        for active_config in configs_to_try:
+            result = self._request_single_chat_completion(
+                task_config=active_config,
+                messages=messages,
+                expect_json=expect_json,
+            )
+            if result is not None:
+                return result
+        return None
+
+    def _request_single_chat_completion(
         self,
         *,
         task_config: LLMTaskConfig,
@@ -399,7 +442,8 @@ class LLMCircleDetectionBackend:
         prompt = (
             "请识别一张曼陀罗绘画中的三圈结构。\n"
             "输出内圈和中圈相对于整张图外圈半径的比例，范围 0-1。\n"
-            "如果图中不够清晰，也请给出最合理估计，并在 confidence 中体现不确定性。"
+            "如果图中不够清晰，也请给出最合理估计，并在 confidence 中体现不确定性。\n"
+            "method 字段只能输出以下固定值之一：llm_vision、llm_vision_estimated。"
         )
         payload = await asyncio.to_thread(
             self.llm_client.generate_structured,
@@ -419,7 +463,7 @@ class LLMCircleDetectionBackend:
         middle = max(middle, inner + 0.05)
         middle = min(middle, 0.9)
         confidence = self._normalize_confidence(payload.get("confidence"), default=0.55)
-        method = str(payload.get("method") or "llm_vision").strip() or "llm_vision"
+        method = self._normalize_method(payload.get("method"))
         summary = payload.get("summary")
 
         return {
@@ -451,6 +495,16 @@ class LLMCircleDetectionBackend:
         if confidence > 1.0:
             confidence = confidence / 100.0
         return max(0.0, min(confidence, 1.0))
+
+    def _normalize_method(self, value: Any) -> str:
+        raw = str(value or "").strip().lower()
+        if raw in {"llm_vision", "ai_vision"}:
+            return "llm_vision"
+        if raw in {"llm_vision_estimated", "estimated", "estimate"}:
+            return "llm_vision_estimated"
+        if any(token in raw for token in ["估计", "estimate", "unclear", "不够清晰"]):
+            return "llm_vision_estimated"
+        return "llm_vision"
 
     def _build_fallback_payload(
         self,
@@ -523,6 +577,9 @@ class LLMReportChatRuntime:
             "你的回答要温柔、具体、 grounded，并且只能基于当前这份报告做延展。"
             "不要编造报告里没有出现的重大诊断，不要给出医疗或心理治疗结论。"
             "如果用户的问题超出当前报告，请明确说明边界，并邀请对方回到画面、颜色、三圈结构和报告内容本身。"
+            "回答优先用 2-4 段短段落。"
+            "先回应用户为什么会有这种感受，再引用报告里的具体依据，最后给一个温和的小追问或小觉察方向。"
+            "不要把整份报告重新复述一遍，不要堆概念，不要机械分点。"
         )
         return self.llm_client.generate_text(
             task="chat",
@@ -578,9 +635,13 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
     return LLMClientConfig(
         default=default_task,
         lite_report=_load_task_config_from_env("AIMANDALA_LLM_LITE", fallback=default_task),
+        lite_report_fallback=_load_task_config_from_env("AIMANDALA_LLM_LITE_FALLBACK", fallback=default_task),
         pro_report=_load_task_config_from_env("AIMANDALA_LLM_PRO", fallback=default_task),
+        pro_report_fallback=_load_task_config_from_env("AIMANDALA_LLM_PRO_FALLBACK", fallback=default_task),
         chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task),
+        chat_fallback=_load_task_config_from_env("AIMANDALA_LLM_CHAT_FALLBACK", fallback=default_task),
         vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task),
+        vision_fallback=_load_task_config_from_env("AIMANDALA_LLM_VISION_FALLBACK", fallback=default_task),
         timeout_seconds=timeout_seconds,
         max_retries=max_retries,
         retry_backoff_ms=retry_backoff_ms,
@@ -630,6 +691,15 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
         if doubao_key
         else None
     )
+    pro_report_fallback = (
+        _build_legacy_task_config(
+            base_url="https://open.bigmodel.cn/api/paas/v4",
+            api_key=glm_key,
+            model="glm-4-plus",
+        )
+        if glm_key
+        else None
+    )
     chat = (
         _build_legacy_task_config(
             base_url="https://api.moonshot.cn/v1",
@@ -648,13 +718,26 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
         if doubao_key
         else None
     )
+    vision_fallback = (
+        _build_legacy_task_config(
+            base_url="https://api.moonshot.cn/v1",
+            api_key=moonshot_key,
+            model="moonshot-v1-8k-vision-preview",
+        )
+        if moonshot_key
+        else None
+    )
 
     return LLMClientConfig(
         default=default_task,
         lite_report=lite_report,
+        lite_report_fallback=None,
         pro_report=pro_report,
+        pro_report_fallback=pro_report_fallback,
         chat=chat,
+        chat_fallback=lite_report,
         vision=vision,
+        vision_fallback=vision_fallback,
         timeout_seconds=timeout_seconds,
         max_retries=max_retries,
         retry_backoff_ms=retry_backoff_ms,

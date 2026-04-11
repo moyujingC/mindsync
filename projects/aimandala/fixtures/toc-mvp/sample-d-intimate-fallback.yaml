@@ -1,0 +1,42 @@
+id: toc-mvp-sample-d-intimate-fallback
+status: in_review
+owner: Test / QA
+scope: To C MVP
+theme: intimate_relationship
+fixture_type: fallback-case
+asset_ref:
+  kind: placeholder-asset
+  asset_path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/sample-b-lite-to-pro-career.md
+  evidence_path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/evidence/sample-b-lite-to-pro-career.md
+  note: 复用现有脱敏占位资产，只用于 fallback 回归
+input:
+  user_profile: qa-fixture-user-d
+  image_path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/mandala-test-02.jpeg
+  image_label: 亲密关系主题 fallback 样本
+  painting_intention: 看清关系里为什么会反复拉扯
+  painting_feeling: 想靠近，但也有点退缩
+  expected_report_version: lite
+execution:
+  create_twice: false
+  upgrade_to_pro: false
+validation:
+  report_version: lite
+  existing_on_repeat: false
+  fallback_used: true
+  warning_ids: []
+  required_structured_fields:
+    - title
+    - overall_impression
+    - visual_elements_rendered
+    - emotion_portrait_rendered
+coverage:
+  - TC-02
+  - TC-03
+expected_observations:
+  - 当前主题应命中 transition-overload fallback
+  - Layer0 fallback_summary.used 应为 true
+  - Lite structured 字段不应因 fallback 缺失
+review_entrypoints:
+  - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/app/core/knowledge_runtime/services/layer0_assembler.py
+  - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/app/core/pipeline/report_layer0_support.py
+  - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/app/api/routes_v2.py

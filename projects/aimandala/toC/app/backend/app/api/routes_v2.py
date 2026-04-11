@@ -1,5 +1,6 @@
 """Minimal V2 API slice for the first AI-Mandala migration batch."""
 
+import os
 import threading
 from typing import Literal, Optional
 
@@ -14,6 +15,7 @@ from app.core.llm import (
     NoopLLMClient,
     create_llm_client_from_env,
 )
+from app.core.knowledge_runtime.workbench import KnowledgeWorkbench
 from app.core.pipeline.data_models import GenerationStatus
 from app.core.pipeline.orchestrator_v2 import GenerationStage, LayeredOrchestrator
 from app.core.pipeline.prompt_runtime import create_prompt_runtime_from_env
@@ -158,6 +160,33 @@ class ReportDebugProfileResponse(BaseModel):
     field_provenance: dict
     diagnostics: dict
     prompt_debug: dict
+    knowledge_debug: Optional[dict] = None
+
+
+class KnowledgeBuildSummaryResponse(BaseModel):
+    """Knowledge workbench summary for one compiled build selector."""
+
+    build_info: dict
+    quality: dict
+    eval_summary: Optional[dict] = None
+
+
+class KnowledgeFixturePreviewRequest(BaseModel):
+    """Input for local fixture preview against one build selector."""
+
+    fixture_id: str
+    build_selector: str
+    version: Literal["lite", "pro"] = "lite"
+
+
+class KnowledgeFixturePreviewResponse(BaseModel):
+    """Local fixture preview output for the knowledge workbench."""
+
+    fixture_meta: dict
+    report_summary: dict
+    knowledge_summary: dict
+    regression_flags: list[str]
+    diff_from_current: Optional[dict] = None
 
 
 class ReportChatMessage(BaseModel):
@@ -220,6 +249,7 @@ class UploadImageResponse(BaseModel):
 router = APIRouter(prefix="/api/v2", tags=["aimandala-v2"])
 _orchestrator: Optional[LayeredOrchestrator] = None
 _upload_storage: Optional[UploadStorage] = None
+_knowledge_workbench: Optional[KnowledgeWorkbench] = None
 _active_pro_upgrade_jobs: set[str] = set()
 _pro_upgrade_jobs_lock = threading.Lock()
 
@@ -258,6 +288,19 @@ def get_upload_storage() -> UploadStorage:
         except ValueError as error:
             raise HTTPException(status_code=501, detail=str(error)) from error
     return _upload_storage
+
+
+def get_knowledge_workbench() -> KnowledgeWorkbench:
+    global _knowledge_workbench
+    if _knowledge_workbench is None:
+        _knowledge_workbench = KnowledgeWorkbench()
+    return _knowledge_workbench
+
+
+def _ensure_debug_workbench_enabled() -> None:
+    enabled = str(os.getenv("AIMANDALA_ENABLE_DEBUG_WORKBENCH", "")).strip().lower()
+    if enabled not in {"1", "true", "yes", "on"}:
+        raise HTTPException(status_code=404, detail="knowledge debug workbench is disabled")
 
 
 def _mark_pro_upgrade_failed(interpretation_id: str, error: Exception) -> None:
@@ -299,7 +342,7 @@ def _ensure_pro_upgrade_job(interpretation_id: str) -> None:
 
 
 def to_record_response(record) -> InterpretationRecordResponse:
-    report_ready = record.layer_2_lite_final is not None
+    report_ready = _is_history_record_ready(record)
     return InterpretationRecordResponse(
         interpretation_id=record.interpretation_id,
         user_id=record.user_id,
@@ -313,6 +356,16 @@ def to_record_response(record) -> InterpretationRecordResponse:
         can_upgrade=record.can_upgrade_to_pro(),
         created_at=record.created_at,
     )
+
+
+def _has_pro_generation_in_progress(record) -> bool:
+    return "pro" in record.version_purchased and record.get_pro_report() is None
+
+
+def _is_history_record_ready(record) -> bool:
+    if _has_pro_generation_in_progress(record):
+        return False
+    return record.layer_2_lite_final is not None
 
 
 def _load_record_or_http_error(interpretation_id: str):
@@ -476,9 +529,9 @@ async def get_user_interpretations(
     if theme:
         records = [record for record in records if record.theme == theme]
     if filter == "ready":
-        records = [record for record in records if record.layer_2_lite_final is not None]
+        records = [record for record in records if _is_history_record_ready(record)]
     elif filter == "pending":
-        records = [record for record in records if record.layer_2_lite_final is None]
+        records = [record for record in records if not _is_history_record_ready(record)]
     return [to_record_response(record) for record in records[:limit]]
 
 
@@ -524,6 +577,43 @@ async def get_report_debug_profile(interpretation_id: str):
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
     return ReportDebugProfileResponse(**result)
+
+
+@router.get(
+    "/debug/knowledge/build-summary",
+    response_model=KnowledgeBuildSummaryResponse,
+)
+async def get_knowledge_build_summary(
+    build: str = Query(default="current"),
+):
+    """Return one build summary for the local knowledge debug workbench."""
+
+    _ensure_debug_workbench_enabled()
+    try:
+        result = await get_knowledge_workbench().ensure_build_summary(build)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    return KnowledgeBuildSummaryResponse(**result)
+
+
+@router.post(
+    "/debug/knowledge/fixture-preview",
+    response_model=KnowledgeFixturePreviewResponse,
+)
+async def preview_knowledge_fixture(payload: KnowledgeFixturePreviewRequest):
+    """Run one fixed fixture against one build selector for local diff/debug."""
+
+    _ensure_debug_workbench_enabled()
+    try:
+        result = await get_knowledge_workbench().preview_fixture(
+            fixture_id=payload.fixture_id,
+            build_selector=payload.build_selector,
+            version=payload.version,
+            compare_to_current=payload.build_selector != "current",
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    return KnowledgeFixturePreviewResponse(**result)
 
 
 @router.post(

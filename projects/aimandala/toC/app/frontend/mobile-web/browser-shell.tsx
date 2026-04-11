@@ -56,6 +56,7 @@ import type {
 import { detectCircles, getInterpretationList } from "../shared/api";
 import {
   applyError,
+  getGenerationPresentation,
   getLiteStructuredReport,
   hasProReportAccess,
   initialMandalaFlowState,
@@ -113,6 +114,15 @@ function readBrowserShellInitialState() {
   };
 }
 
+function formatHistoryRefreshHint(date = new Date()): string {
+  return `最近更新于 ${new Intl.DateTimeFormat("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date)}`;
+}
+
 export function MobileWebBrowserShell() {
   const initialState = readBrowserShellInitialState();
   const [forceCleanMode] = useState(initialState.cleanMode);
@@ -144,6 +154,10 @@ export function MobileWebBrowserShell() {
     useState<string | null>(null);
   const [previewHistoryStatusTone, setPreviewHistoryStatusTone] =
     useState<"preview" | "runtime">("preview");
+  const [previewHistoryRefreshHint, setPreviewHistoryRefreshHint] =
+    useState<string | null>(null);
+  const [previewHistoryRefreshing, setPreviewHistoryRefreshing] =
+    useState(false);
   const [previewHistoryOpeningId, setPreviewHistoryOpeningId] =
     useState<string | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
@@ -179,7 +193,18 @@ export function MobileWebBrowserShell() {
     [draft, previewDetection, previewFlowState, previewHistoryRecords, route],
   );
 
-  async function refreshPreviewHistory(nextQuery: InterpretationListQuery) {
+  async function refreshPreviewHistory(
+    nextQuery: InterpretationListQuery,
+    options?: {
+      successLabel?: string;
+      successDetail?: string;
+      successTone?: "preview" | "runtime";
+      failureLabel?: string;
+      failureDetail?: string;
+      failureTone?: "preview" | "runtime";
+      preserveRecordsOnError?: boolean;
+    },
+  ) {
     if (draft.browserFile && !draft.uploadAsset) {
       setPreviewHistoryStatusLabel("当前显示占位历史记录");
       setPreviewHistoryStatusDetail("当前浏览器文件还没完成上传换路径，因此历史页先不请求真实接口。");
@@ -191,17 +216,130 @@ export function MobileWebBrowserShell() {
     try {
       const records = await getInterpretationList(userId, nextQuery);
       setPreviewHistoryRecords(records);
-      setPreviewHistoryStatusLabel("当前显示真实历史记录");
-      setPreviewHistoryStatusDetail("历史页已按当前查询条件重新请求真实记录。");
-      setPreviewHistoryStatusTone("runtime");
+      setPreviewHistoryStatusLabel(options?.successLabel ?? "当前显示真实历史记录");
+      setPreviewHistoryStatusDetail(options?.successDetail ?? "历史页已按当前查询条件重新请求真实记录。");
+      setPreviewHistoryStatusTone(options?.successTone ?? "runtime");
+      setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
     } catch (error) {
-      setPreviewHistoryRecords(null);
-      setPreviewHistoryStatusLabel("历史记录已回退到占位数据");
+      if (!options?.preserveRecordsOnError) {
+        setPreviewHistoryRecords(null);
+      }
+      setPreviewHistoryStatusLabel(options?.failureLabel ?? "历史记录已回退到占位数据");
       setPreviewHistoryStatusDetail(
-        `真实历史拉取失败：${error instanceof Error ? error.message : "unknown error"}`,
+        options?.failureDetail ?? `真实历史拉取失败：${error instanceof Error ? error.message : "unknown error"}`,
       );
-      setPreviewHistoryStatusTone("preview");
+      setPreviewHistoryStatusTone(options?.failureTone ?? "preview");
     }
+  }
+
+  useEffect(() => {
+    if (
+      route !== "history" ||
+      previewHistoryRefreshing ||
+      previewFlowRunning ||
+      previewHistoryOpeningId ||
+      !previewHistoryRecords?.some((record) => !getGenerationPresentation(record).isReady)
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const refreshHistory = async () => {
+      setPreviewHistoryRefreshing(true);
+
+      try {
+        let resolvedQuery = previewHistoryQuery;
+        let records = await getInterpretationList(userId, resolvedQuery);
+        let switchedToReady = false;
+
+        if (cancelled) {
+          return;
+        }
+
+        if (resolvedQuery.filter === "pending" && records.length === 0) {
+          const readyQuery: InterpretationListQuery = {
+            ...resolvedQuery,
+            filter: "ready",
+          };
+          const readyRecords = await getInterpretationList(userId, readyQuery);
+          if (cancelled) {
+            return;
+          }
+
+          if (readyRecords.length > 0) {
+            resolvedQuery = readyQuery;
+            records = readyRecords;
+            switchedToReady = true;
+          }
+        }
+
+        const stillPending = records.some(
+          (record) => !getGenerationPresentation(record).isReady,
+        );
+
+        setPreviewHistoryQuery(resolvedQuery);
+        setPreviewHistoryRecords(records);
+        setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
+        setPreviewHistoryStatusLabel(
+          switchedToReady ? "已有新的完整报告可查看" : "已自动刷新历史记录",
+        );
+        setPreviewHistoryStatusDetail(
+          switchedToReady
+            ? "刚才生成中的解读已完成，历史页已自动切到“可查看”，方便你直接打开报告。"
+            : stillPending
+              ? "检测到仍有生成中的解读，已为你更新最新状态。"
+              : "历史记录已更新到最新状态。",
+        );
+        setPreviewHistoryStatusTone("runtime");
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        setPreviewHistoryStatusLabel("自动刷新暂时失败");
+        setPreviewHistoryStatusDetail(
+          error instanceof Error ? error.message : "真实历史自动刷新失败",
+        );
+        setPreviewHistoryStatusTone("preview");
+      } finally {
+        if (!cancelled) {
+          setPreviewHistoryRefreshing(false);
+        }
+      }
+    };
+
+    const timer = window.setInterval(() => {
+      void refreshHistory();
+    }, 10000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [
+    previewFlowRunning,
+    previewHistoryOpeningId,
+    previewHistoryQuery,
+    previewHistoryRecords,
+    previewHistoryRefreshing,
+    route,
+    userId,
+  ]);
+
+  async function handlePreviewHistoryRefresh() {
+    if (previewFlowRunning || previewHistoryRefreshing) {
+      return;
+    }
+
+    await refreshPreviewHistory(previewHistoryQuery, {
+      successLabel: "已手动刷新历史记录",
+      successDetail: "当前已按现有筛选条件重新请求真实历史记录。",
+      successTone: previewMode ? "preview" : "runtime",
+      failureLabel: "手动刷新失败",
+      failureTone: "preview",
+      preserveRecordsOnError: true,
+    });
   }
 
   useEffect(() => {
@@ -693,6 +831,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
       setPreviewHistoryStatusLabel(null);
       setPreviewHistoryStatusDetail(null);
+      setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);
       setRoute("upload");
     }
@@ -785,6 +924,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryStatusLabel(`已载入 ${preset.label}`);
       setPreviewHistoryStatusDetail("当前已填入测试图与默认主题，可直接在上传页做三圈识别并进入 Lite / Pro 选择。");
       setPreviewHistoryStatusTone("preview");
+      setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);
       setRoute("upload");
     } finally {
@@ -974,6 +1114,8 @@ export function MobileWebBrowserShell() {
               historyStatusLabel={previewHistoryStatusLabel ?? undefined}
               historyStatusDetail={previewHistoryStatusDetail ?? undefined}
               historyStatusTone={previewHistoryStatusTone}
+              historyRefreshHint={previewHistoryRefreshHint ?? undefined}
+              historyRefreshBusy={previewHistoryRefreshing}
               environmentLabel={import.meta.env.DEV && route === "upload" ? "当前为本地预览模式" : undefined}
               environmentDetail={
                 import.meta.env.DEV && route === "upload"
@@ -1000,6 +1142,7 @@ export function MobileWebBrowserShell() {
                   setPreviewHistoryQuery({ filter: "all", limit: 20 });
                   setPreviewHistoryStatusLabel(null);
                   setPreviewHistoryStatusDetail(null);
+                  setPreviewHistoryRefreshHint(null);
                 }
               }}
               onUploadContinue={async () => {
@@ -1152,6 +1295,9 @@ export function MobileWebBrowserShell() {
                 if (route === "history") {
                   void refreshPreviewHistory(nextQuery);
                 }
+              }}
+              onHistoryRefresh={() => {
+                void handlePreviewHistoryRefresh();
               }}
               onHistoryOpenRecord={handlePreviewOpenHistoryRecord}
             />

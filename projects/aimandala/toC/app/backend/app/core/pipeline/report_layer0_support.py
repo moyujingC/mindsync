@@ -76,6 +76,19 @@ class ReportLayer0Support:
             LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_right"],
         ]
         layer.micro_analysis.wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
+        layer.visual_facts = {"generated": True, "circle_boundaries": circles}
+        layer.knowledge_hits = {"circle_readings": {}}
+        layer.rule_evaluations = {
+            "imbalance_candidates": ["transition-overload"],
+            "theme_mappings": {},
+        }
+        layer.theme_projection = {"theme_id": getattr(record, "theme", "general")}
+        layer.quality_flags = ["fallback:generated"]
+        layer.fallback_summary = {
+            "used": True,
+            "levels": ["generated"],
+            "warnings": ["layer0 assembler unavailable; using report-layer0 fallback"],
+        }
         return layer
 
     def get_record_theme(self, record: InterpretationRecord) -> str:

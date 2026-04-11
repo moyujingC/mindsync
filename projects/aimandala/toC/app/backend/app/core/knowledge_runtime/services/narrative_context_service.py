@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..contracts import FallbackLevel, QueryResult
 from ..repository import KnowledgeRepository
 from .healing_service import HealingService
 from .imbalance_service import ImbalanceService
@@ -32,6 +33,45 @@ class NarrativeContextService:
             return payload.get("insight_templates", {})
         return self.repository.get_lookup("theme_narrative").get("general", {}).get(
             "insight_templates", {}
+        )
+
+    def query_narrative(self, theme: str) -> QueryResult:
+        payload = self.repository.get_lookup("theme_narrative").get(theme, {})
+        if payload:
+            return QueryResult(
+                value=payload,
+                entity_id=f"narrative.{theme}",
+                evidence=[
+                    {
+                        "entity_id": f"narrative.{theme}",
+                        "source_path": f"narrative/{theme}.yaml",
+                        "kind": "theme_narrative",
+                    }
+                ],
+            )
+
+        general = self.repository.get_lookup("theme_narrative").get("general", {})
+        if general:
+            return QueryResult(
+                value=general,
+                entity_id="narrative.general",
+                fallback_level=FallbackLevel.GENERAL.value,
+                fallback_used=True,
+                source="fallback",
+                evidence=[
+                    {
+                        "entity_id": "narrative.general",
+                        "source_path": "narrative/general.yaml",
+                        "kind": "theme_narrative",
+                    }
+                ],
+                warnings=[f"theme {theme} missing narrative asset; used general"],
+            )
+
+        return QueryResult.not_found(
+            f"narrative {theme} not found",
+            entity_id=f"narrative.{theme}",
+            warnings=[f"theme {theme} missing narrative asset"],
         )
 
     def get_pro_upgrade_teaser(self, theme: str) -> str:

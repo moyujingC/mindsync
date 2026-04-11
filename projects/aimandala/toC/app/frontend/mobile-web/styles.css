@@ -1162,6 +1162,38 @@ select {
   font-size: 12px;
 }
 
+.mw-badge--ready {
+  background: rgba(74, 140, 104, 0.14);
+  color: #2f6a4a;
+}
+
+.mw-badge--pending {
+  background: rgba(172, 129, 72, 0.12);
+  color: #7c5627;
+}
+
+.mw-badge--proReady {
+  background: rgba(100, 84, 173, 0.14);
+  color: #53439a;
+}
+
+.mw-badge--proPending {
+  background: rgba(200, 120, 80, 0.14);
+  color: #944b2f;
+}
+
+.mw-card--history-proPending {
+  background:
+    radial-gradient(circle at top right, rgba(200, 120, 80, 0.12), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+}
+
+.mw-card--history-proReady {
+  background:
+    radial-gradient(circle at top right, rgba(111, 92, 190, 0.12), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+}
+
 .mw-field-list {
   display: grid;
   gap: 10px;
@@ -1443,6 +1475,54 @@ select {
 .mw-meta {
   color: #7c6850;
   font-size: 12px;
+}
+
+.mw-meta--soft {
+  color: #a06c46;
+}
+
+.mw-history-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 250, 244, 0.9);
+}
+
+.mw-history-progress--pro {
+  background: rgba(255, 244, 237, 0.92);
+}
+
+.mw-history-progress__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mw-history-progress__row .mw-meta {
+  margin: 0;
+}
+
+.mw-history-progress__value {
+  white-space: nowrap;
+}
+
+.mw-history-progress--pro .mw-progress__bar {
+  background: linear-gradient(90deg, #ba6e48, #f0b179);
+}
+
+.mw-history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 0 2px;
+}
+
+.mw-history-toolbar .mw-meta {
+  margin: 0;
 }
 
 .mw-progress {

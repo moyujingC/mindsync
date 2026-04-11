@@ -231,6 +231,27 @@ export interface ReportDebugProfileResponse {
   field_provenance: Record<string, unknown>;
   diagnostics: Record<string, unknown>;
   prompt_debug: Record<string, unknown>;
+  knowledge_debug?: Record<string, unknown> | null;
+}
+
+export interface KnowledgeBuildSummaryResponse {
+  build_info: Record<string, unknown>;
+  quality: Record<string, unknown>;
+  eval_summary?: Record<string, unknown> | null;
+}
+
+export interface KnowledgeFixturePreviewRequest {
+  fixture_id: string;
+  build_selector: string;
+  version: InterpretationVersion;
+}
+
+export interface KnowledgeFixturePreviewResponse {
+  fixture_meta: Record<string, unknown>;
+  report_summary: Record<string, unknown>;
+  knowledge_summary: Record<string, unknown>;
+  regression_flags: string[];
+  diff_from_current?: Record<string, unknown> | null;
 }
 
 export interface UpgradePlaceholderResponse {

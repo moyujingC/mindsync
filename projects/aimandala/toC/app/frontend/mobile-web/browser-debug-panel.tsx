@@ -1,16 +1,42 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { getInterpretationReportDebug } from "../shared/api";
-import type { DetectCirclesResponse, MandalaFlowState } from "../shared/types";
+import {
+  getInterpretationReportDebug,
+  getKnowledgeBuildSummary,
+  previewKnowledgeFixture,
+} from "../shared/api";
 import type { ApiDebugTraceEntry } from "../shared/api/debugTrace";
-import type { ReportDebugProfileResponse } from "../shared/types";
+import type {
+  DetectCirclesResponse,
+  InterpretationVersion,
+  KnowledgeBuildSummaryResponse,
+  KnowledgeFixturePreviewResponse,
+  MandalaFlowState,
+  ReportDebugProfileResponse,
+} from "../shared/types";
 import type {
   DebugTimelineEntry,
-  DebugTimelineSnapshot,
   MobileWebRuntimeDebugSnapshot,
 } from "./debug-observer";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
+
+export type DebugWorkbenchTabId =
+  | "pipeline"
+  | "knowledge"
+  | "report-trace"
+  | "samples";
+
+export const DEBUG_WORKBENCH_TABS: Array<{
+  id: DebugWorkbenchTabId;
+  label: string;
+  description: string;
+}> = [
+  { id: "pipeline", label: "Pipeline", description: "链路时间线、任务回放、API traces、runtime snapshot" },
+  { id: "knowledge", label: "Knowledge", description: "build summary、Layer0 evidence、source refs、字段到知识映射" },
+  { id: "report-trace", label: "Report Trace", description: "field -> knowledge -> prompt snippet -> final field" },
+  { id: "samples", label: "Samples", description: "固定 fixtures 回归摘要与 current / candidate diff" },
+];
 
 interface BrowserDebugPanelProps {
   route: MobileWebRouteId;
@@ -26,6 +52,13 @@ interface BrowserDebugPanelProps {
   apiTraces: ApiDebugTraceEntry[];
   timelineEntries: DebugTimelineEntry[];
   onClearApiTraces: () => void;
+  initialTab?: DebugWorkbenchTabId;
+  preloadedReportDebugProfile?: ReportDebugProfileResponse | null;
+  preloadedCurrentBuildSummary?: KnowledgeBuildSummaryResponse | null;
+  preloadedCandidateBuildSummary?: KnowledgeBuildSummaryResponse | null;
+  preloadedSamplePreview?: KnowledgeFixturePreviewResponse | null;
+  preloadedCandidateBuildId?: string | null;
+  disableWorkbenchFetch?: boolean;
 }
 
 interface StageDescriptor {
@@ -36,11 +69,23 @@ interface StageDescriptor {
   detail: string;
 }
 
+interface FixtureComparisonRow {
+  fixtureId: string;
+  theme: string;
+  currentVersion?: string | null;
+  candidateVersion?: string | null;
+  currentFallbackUsed?: boolean;
+  candidateFallbackUsed?: boolean;
+  currentWarningHitCount?: number;
+  candidateWarningHitCount?: number;
+  currentRegressionFlags: string[];
+  candidateRegressionFlags: string[];
+}
+
 function formatClock(iso: string | undefined): string {
   if (!iso) {
     return "--";
   }
-
   const date = new Date(iso);
   return Number.isNaN(date.getTime())
     ? iso
@@ -64,62 +109,20 @@ function formatUnknownText(value: unknown): string {
   return formatJson(value);
 }
 
-function getLayerRecord(
-  profile: ReportDebugProfileResponse | null,
-  key: string,
-): Record<string, unknown> | null {
-  const raw = profile?.layers?.[key];
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    return null;
+function toRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
   }
-  return raw as Record<string, unknown>;
+  return value as Record<string, unknown>;
 }
 
-function buildLayerComparisonRows(input: {
-  draftLayer: Record<string, unknown> | null;
-  finalLayer: Record<string, unknown> | null;
-  pairs: Array<{ fieldKey: string; label: string; draftKey: string; finalKey: string }>;
-}): Array<{ fieldKey: string; label: string; draftValue: string; finalValue: string }> {
-  const { draftLayer, finalLayer, pairs } = input;
-
-  return pairs.map((pair) => ({
-    fieldKey: pair.fieldKey,
-    label: pair.label,
-    draftValue: formatUnknownText(draftLayer?.[pair.draftKey]),
-    finalValue: formatUnknownText(finalLayer?.[pair.finalKey]),
-  }));
-}
-
-function getFieldProvenanceList(
-  profile: ReportDebugProfileResponse | null,
-  key: "lite" | "pro",
-): Array<Record<string, unknown>> {
-  const raw = profile?.field_provenance?.[key];
-  if (!Array.isArray(raw)) {
+function toArrayRecords(value: unknown): Array<Record<string, unknown>> {
+  if (!Array.isArray(value)) {
     return [];
   }
-  return raw.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object");
-}
-
-function getPromptDebugRecord(
-  profile: ReportDebugProfileResponse | null,
-  key: "lite" | "pro",
-): Record<string, unknown> | null {
-  const raw = profile?.prompt_debug?.[key];
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    return null;
-  }
-  return raw as Record<string, unknown>;
-}
-
-function getDiagnosticsRecord(
-  profile: ReportDebugProfileResponse | null,
-): Record<string, unknown> | null {
-  const raw = profile?.diagnostics;
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    return null;
-  }
-  return raw as Record<string, unknown>;
+  return value.filter(
+    (item): item is Record<string, unknown> => Boolean(item) && typeof item === "object" && !Array.isArray(item),
+  );
 }
 
 function includesNormalized(haystack: string, needle: string): boolean {
@@ -133,7 +136,6 @@ function getPromptFieldRecord(
   if (!promptDebug || !fieldKey || !Array.isArray(promptDebug.schema_fields)) {
     return null;
   }
-
   for (const item of promptDebug.schema_fields as unknown[]) {
     if (!item || typeof item !== "object") {
       continue;
@@ -141,14 +143,10 @@ function getPromptFieldRecord(
     const field = item as Record<string, unknown>;
     const name = formatUnknownText(field.name);
     const mapped = formatUnknownText(field.mapped_final_field);
-    if (
-      includesNormalized(name, fieldKey) ||
-      includesNormalized(mapped, fieldKey)
-    ) {
+    if (includesNormalized(name, fieldKey) || includesNormalized(mapped, fieldKey)) {
       return field;
     }
   }
-
   return null;
 }
 
@@ -184,7 +182,6 @@ function getPromptRelevantLines(
 ): Array<{ line: string; highlighted: boolean }> {
   const lines = promptText.split("\n");
   const matchedIndexes = new Set<number>();
-
   lines.forEach((line, index) => {
     if (keywords.some((keyword) => keyword && includesNormalized(line, keyword))) {
       for (let cursor = Math.max(0, index - 1); cursor <= Math.min(lines.length - 1, index + 1); cursor += 1) {
@@ -192,11 +189,9 @@ function getPromptRelevantLines(
       }
     }
   });
-
   if (matchedIndexes.size === 0) {
     return lines.slice(0, 16).map((line) => ({ line, highlighted: false }));
   }
-
   return Array.from(matchedIndexes)
     .sort((a, b) => a - b)
     .map((index) => ({
@@ -281,11 +276,11 @@ function createStageDescriptors(input: {
         ? "done"
         : createTrace?.phase === "success"
           ? "done"
-        : createTrace?.phase === "error"
-          ? "error"
-          : createTrace
-            ? "running"
-            : "idle",
+          : createTrace?.phase === "error"
+            ? "error"
+            : createTrace
+              ? "running"
+              : "idle",
       detail: activeFlowState?.interpretation
         ? `${activeFlowState.interpretation.interpretation_id} · ${activeFlowState.interpretation.generation_stage}`
         : createTrace?.errorMessage ?? "等待 create",
@@ -373,16 +368,106 @@ function createStageDescriptors(input: {
   ];
 }
 
-function getActiveReportSnapshot(
-  previewMode: boolean,
-  flowState: MandalaFlowState | null,
-  runtimeSnapshot: MobileWebRuntimeDebugSnapshot | null,
-): unknown {
-  if (previewMode) {
-    return flowState?.report ?? null;
+function groupSessions(entries: DebugTimelineEntry[]) {
+  const groups = new Map<
+    string,
+    { sessionId: string; entries: DebugTimelineEntry[]; latest: DebugTimelineEntry }
+  >();
+  for (const entry of entries) {
+    const existing = groups.get(entry.sessionId);
+    if (existing) {
+      existing.entries.push(entry);
+      if (new Date(entry.createdAt).getTime() > new Date(existing.latest.createdAt).getTime()) {
+        existing.latest = entry;
+      }
+      continue;
+    }
+    groups.set(entry.sessionId, {
+      sessionId: entry.sessionId,
+      entries: [entry],
+      latest: entry,
+    });
+  }
+  return Array.from(groups.values()).map((group) => ({
+    ...group,
+    entries: [...group.entries].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    ),
+  }));
+}
+
+function getFieldEntries(profile: ReportDebugProfileResponse | null) {
+  const lite = toArrayRecords(profile?.field_provenance ? toRecord(profile.field_provenance).lite : null).map((item) => ({
+    version: "lite" as InterpretationVersion,
+    field: String(item.field ?? ""),
+    record: item,
+  }));
+  const pro = toArrayRecords(profile?.field_provenance ? toRecord(profile.field_provenance).pro : null).map((item) => ({
+    version: "pro" as InterpretationVersion,
+    field: String(item.field ?? ""),
+    record: item,
+  }));
+  return [...lite, ...pro].filter((item) => item.field);
+}
+
+function getBuildSummaryFixtures(summary: KnowledgeBuildSummaryResponse | null) {
+  return toArrayRecords(summary?.eval_summary ? toRecord(summary.eval_summary).fixtures : null);
+}
+
+function mergeFixtureRows(
+  currentSummary: KnowledgeBuildSummaryResponse | null,
+  candidateSummary: KnowledgeBuildSummaryResponse | null,
+): FixtureComparisonRow[] {
+  const currentFixtures = getBuildSummaryFixtures(currentSummary);
+  const candidateFixtures = getBuildSummaryFixtures(candidateSummary);
+  const rows = new Map<string, FixtureComparisonRow>();
+
+  for (const item of currentFixtures) {
+    const id = String(item.fixture_id ?? "");
+    if (!id) {
+      continue;
+    }
+    rows.set(id, {
+      fixtureId: id,
+      theme: String(item.theme ?? ""),
+      currentVersion: String(item.version ?? ""),
+      currentFallbackUsed: Boolean(item.fallback_used),
+      currentWarningHitCount: Number(item.warning_hit_count ?? 0),
+      currentRegressionFlags: Array.isArray(item.regression_flags)
+        ? (item.regression_flags as string[])
+        : [],
+      candidateRegressionFlags: [],
+    });
   }
 
-  return runtimeSnapshot?.report ?? null;
+  for (const item of candidateFixtures) {
+    const id = String(item.fixture_id ?? "");
+    if (!id) {
+      continue;
+    }
+    const existing = rows.get(id);
+    const nextRow: FixtureComparisonRow = existing ?? {
+      fixtureId: id,
+      theme: String(item.theme ?? ""),
+      currentRegressionFlags: [],
+      candidateRegressionFlags: [],
+    };
+    nextRow.theme = nextRow.theme || String(item.theme ?? "");
+    nextRow.candidateVersion = String(item.version ?? "");
+    nextRow.candidateFallbackUsed = Boolean(item.fallback_used);
+    nextRow.candidateWarningHitCount = Number(item.warning_hit_count ?? 0);
+    nextRow.candidateRegressionFlags = Array.isArray(item.regression_flags)
+      ? (item.regression_flags as string[])
+      : [];
+    rows.set(id, nextRow);
+  }
+
+  return Array.from(rows.values()).sort((a, b) => a.fixtureId.localeCompare(b.fixtureId, "zh-CN"));
+}
+
+function getFixturePreviewVersion(row: FixtureComparisonRow): InterpretationVersion {
+  const version = row.candidateVersion ?? row.currentVersion ?? "lite";
+  return version === "pro" ? "pro" : "lite";
 }
 
 export function BrowserDebugPanel({
@@ -399,12 +484,17 @@ export function BrowserDebugPanel({
   apiTraces,
   timelineEntries,
   onClearApiTraces,
+  initialTab = "pipeline",
+  preloadedReportDebugProfile = null,
+  preloadedCurrentBuildSummary = null,
+  preloadedCandidateBuildSummary = null,
+  preloadedSamplePreview = null,
+  preloadedCandidateBuildId = null,
+  disableWorkbenchFetch = false,
 }: BrowserDebugPanelProps) {
   const activeFlowState = previewMode ? flowState : runtimeSnapshot?.flowState ?? null;
-  const activeDetection = previewMode ? detection : runtimeSnapshot?.detection ?? null;
-  const activeDetectError = previewMode ? detectError : runtimeSnapshot?.uploadDetectError ?? null;
-  const activeDetecting = previewMode ? detecting : runtimeSnapshot?.uploadDetecting ?? false;
-  const activeReport = getActiveReportSnapshot(previewMode, flowState, runtimeSnapshot);
+  const activeInterpretationId =
+    activeFlowState?.interpretation?.interpretation_id ?? interpretationId;
   const stages = createStageDescriptors({
     previewMode,
     draft,
@@ -415,40 +505,38 @@ export function BrowserDebugPanel({
     runtimeSnapshot,
     traces: apiTraces,
   });
-  const [selectedTimelineId, setSelectedTimelineId] = useState<string | null>(null);
-  const [isReplaying, setIsReplaying] = useState(false);
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
-  const sessionGroups = useMemo(() => {
-    const groups = new Map<
-      string,
-      { sessionId: string; entries: DebugTimelineEntry[]; latest: DebugTimelineEntry }
-    >();
+  const sessionGroups = useMemo(() => groupSessions(timelineEntries), [timelineEntries]);
 
-    for (const entry of timelineEntries) {
-      const current = groups.get(entry.sessionId);
-      if (current) {
-        current.entries.push(entry);
-      } else {
-        groups.set(entry.sessionId, {
-          sessionId: entry.sessionId,
-          entries: [entry],
-          latest: entry,
-        });
-      }
-    }
+  const [activeTab, setActiveTab] = useState<DebugWorkbenchTabId>(initialTab);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
+    sessionGroups[0]?.sessionId ?? null,
+  );
+  const [selectedTimelineId, setSelectedTimelineId] = useState<string | null>(
+    sessionGroups[0]?.entries[0]?.id ?? null,
+  );
+  const [reportDebugProfile, setReportDebugProfile] =
+    useState<ReportDebugProfileResponse | null>(preloadedReportDebugProfile);
+  const [reportDebugLoading, setReportDebugLoading] = useState(false);
+  const [reportDebugError, setReportDebugError] = useState<string | null>(null);
+  const [currentBuildSummary, setCurrentBuildSummary] =
+    useState<KnowledgeBuildSummaryResponse | null>(preloadedCurrentBuildSummary);
+  const [candidateBuildSummary, setCandidateBuildSummary] =
+    useState<KnowledgeBuildSummaryResponse | null>(preloadedCandidateBuildSummary);
+  const [candidateBuildIdInput, setCandidateBuildIdInput] =
+    useState(preloadedCandidateBuildId ?? "");
+  const [buildSummaryLoading, setBuildSummaryLoading] = useState(false);
+  const [candidateBuildLoading, setCandidateBuildLoading] = useState(false);
+  const [buildSummaryError, setBuildSummaryError] = useState<string | null>(null);
+  const [selectedField, setSelectedField] = useState<string | null>(null);
+  const [samplePreview, setSamplePreview] =
+    useState<KnowledgeFixturePreviewResponse | null>(preloadedSamplePreview);
+  const [sampleLoadingId, setSampleLoadingId] = useState<string | null>(null);
+  const [sampleError, setSampleError] = useState<string | null>(null);
+  const [selectedSampleId, setSelectedSampleId] = useState<string | null>(null);
 
-    return Array.from(groups.values()).map((group) => ({
-      ...group,
-      entries: [...group.entries].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      ),
-      latest: group.latest,
-    }));
-  }, [timelineEntries]);
-  const activeSessionId = selectedSessionId ?? sessionGroups[0]?.sessionId ?? null;
   const activeSessionEntries = useMemo(
-    () => sessionGroups.find((group) => group.sessionId === activeSessionId)?.entries ?? [],
-    [activeSessionId, sessionGroups],
+    () => sessionGroups.find((group) => group.sessionId === selectedSessionId)?.entries ?? [],
+    [selectedSessionId, sessionGroups],
   );
   const selectedTimelineEntry = useMemo(
     () =>
@@ -457,206 +545,228 @@ export function BrowserDebugPanel({
       null,
     [activeSessionEntries, selectedTimelineId],
   );
-  const replaySnapshot: DebugTimelineSnapshot | null =
-    selectedTimelineEntry?.snapshot ?? null;
-  const replayFlowState = replaySnapshot?.flowState ?? activeFlowState;
-  const replayReport = replaySnapshot?.report ?? activeReport;
-  const activeInterpretationId =
-    replayFlowState?.interpretation?.interpretation_id ??
-    activeFlowState?.interpretation?.interpretation_id ??
-    interpretationId;
-  const [reportDebugProfile, setReportDebugProfile] =
-    useState<ReportDebugProfileResponse | null>(null);
-  const [reportDebugLoading, setReportDebugLoading] = useState(false);
-  const [reportDebugError, setReportDebugError] = useState<string | null>(null);
-  const [selectedDebugField, setSelectedDebugField] = useState<string | null>(null);
-  const liteComparisonRows = useMemo(
-    () =>
-      buildLayerComparisonRows({
-        draftLayer: getLayerRecord(reportDebugProfile, "layer_1_lite_draft"),
-        finalLayer: getLayerRecord(reportDebugProfile, "layer_2_lite_final"),
-        pairs: [
-          { fieldKey: "title", label: "标题", draftKey: "title", finalKey: "title" },
-          { fieldKey: "overall_impression", label: "整体印象", draftKey: "overall_impression", finalKey: "overall_impression" },
-          { fieldKey: "visual_elements", label: "画面元素", draftKey: "visual_elements", finalKey: "visual_elements_rendered" },
-          { fieldKey: "emotion_portrait", label: "情绪画像", draftKey: "emotion_portrait", finalKey: "emotion_portrait_rendered" },
-          { fieldKey: "pro_teaser", label: "Pro 引导", draftKey: "pro_teaser", finalKey: "pro_teaser" },
-        ],
-      }),
+
+  const knowledgeDebug = useMemo(
+    () => toRecord(reportDebugProfile?.knowledge_debug),
     [reportDebugProfile],
   );
-  const proComparisonRows = useMemo(
-    () =>
-      buildLayerComparisonRows({
-        draftLayer: getLayerRecord(reportDebugProfile, "layer_3_pro_draft"),
-        finalLayer: getLayerRecord(reportDebugProfile, "layer_4_pro_final"),
-        pairs: [
-          { fieldKey: "first_impression", label: "第一眼直觉", draftKey: "first_impression", finalKey: "ai_qa_context" },
-          { fieldKey: "core_insight_table", label: "核心洞察表", draftKey: "core_insight_table", finalKey: "full_report_markdown" },
-          { fieldKey: "root_cause", label: "根源分析", draftKey: "root_cause", finalKey: "full_report_markdown" },
-          { fieldKey: "healing_suggestions", label: "疗愈建议", draftKey: "healing_suggestions", finalKey: "full_report_markdown" },
-        ],
-      }),
-    [reportDebugProfile],
+  const knowledgeFieldMap = useMemo(
+    () => toRecord(knowledgeDebug.field_to_knowledge_map),
+    [knowledgeDebug],
   );
-  const liteProvenance = useMemo(
-    () => getFieldProvenanceList(reportDebugProfile, "lite"),
-    [reportDebugProfile],
+  const sourceRefs = useMemo(
+    () => toArrayRecords(knowledgeDebug.source_refs),
+    [knowledgeDebug],
   );
-  const proProvenance = useMemo(
-    () => getFieldProvenanceList(reportDebugProfile, "pro"),
-    [reportDebugProfile],
-  );
-  const litePromptDebug = useMemo(
-    () => getPromptDebugRecord(reportDebugProfile, "lite"),
-    [reportDebugProfile],
-  );
-  const proPromptDebug = useMemo(
-    () => getPromptDebugRecord(reportDebugProfile, "pro"),
+  const fieldEntries = useMemo(
+    () => getFieldEntries(reportDebugProfile),
     [reportDebugProfile],
   );
   const diagnostics = useMemo(
-    () => getDiagnosticsRecord(reportDebugProfile),
+    () => toRecord(reportDebugProfile?.diagnostics),
     [reportDebugProfile],
   );
-  const combinedDiagnosticFields = useMemo(() => {
-    const fieldsRoot = diagnostics?.fields;
-    if (!fieldsRoot || typeof fieldsRoot !== "object") {
-      return [];
+  const fieldList = useMemo(() => {
+    const keys = new Set<string>([
+      ...fieldEntries.map((item) => item.field),
+      ...Object.keys(knowledgeFieldMap),
+    ]);
+    return Array.from(keys).sort((a, b) => a.localeCompare(b, "zh-CN"));
+  }, [fieldEntries, knowledgeFieldMap]);
+  const selectedFieldEntry = useMemo(
+    () => fieldEntries.find((item) => item.field === selectedField) ?? null,
+    [fieldEntries, selectedField],
+  );
+  const selectedFieldMapping = useMemo(
+    () => toRecord(selectedField ? knowledgeFieldMap[selectedField] : null),
+    [knowledgeFieldMap, selectedField],
+  );
+  const selectedSourceRefs = useMemo(() => {
+    const sourcePaths = new Set(
+      Array.isArray(selectedFieldMapping.source_paths)
+        ? (selectedFieldMapping.source_paths as string[])
+        : [],
+    );
+    return sourceRefs.filter((item) => sourcePaths.has(String(item.source_path ?? "")));
+  }, [selectedFieldMapping, sourceRefs]);
+  const activePromptDebug = useMemo(() => {
+    const promptDebug = toRecord(reportDebugProfile?.prompt_debug);
+    if (selectedFieldEntry?.version === "pro") {
+      return toRecord(promptDebug.pro);
     }
-    const lite = Array.isArray((fieldsRoot as Record<string, unknown>).lite)
-      ? ((fieldsRoot as Record<string, unknown>).lite as unknown[])
-      : [];
-    const pro = Array.isArray((fieldsRoot as Record<string, unknown>).pro)
-      ? ((fieldsRoot as Record<string, unknown>).pro as unknown[])
-      : [];
-    return [...lite, ...pro]
-      .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object")
-      .sort(
-        (a, b) =>
-          Number(b.risk_score ?? 0) - Number(a.risk_score ?? 0) ||
-          formatUnknownText(a.field).localeCompare(formatUnknownText(b.field), "zh-CN"),
-      );
-  }, [diagnostics]);
-  const activePromptDebug = selectedDebugField && [
-    "first_impression",
-    "core_insight_table",
-    "root_cause",
-    "healing_suggestions",
-  ].includes(selectedDebugField)
-    ? proPromptDebug
-    : litePromptDebug;
+    return toRecord(promptDebug.lite);
+  }, [reportDebugProfile, selectedFieldEntry]);
   const selectedPromptField = useMemo(
-    () => getPromptFieldRecord(activePromptDebug, selectedDebugField),
-    [activePromptDebug, selectedDebugField],
+    () => getPromptFieldRecord(activePromptDebug, selectedField),
+    [activePromptDebug, selectedField],
   );
   const selectedPromptKeywords = useMemo(
-    () => buildPromptMatchKeywords(selectedPromptField, selectedDebugField),
-    [selectedDebugField, selectedPromptField],
+    () => buildPromptMatchKeywords(selectedPromptField, selectedField),
+    [selectedPromptField, selectedField],
   );
   const selectedPromptLines = useMemo(() => {
-    const promptText = typeof activePromptDebug?.prompt_preview === "string"
+    const promptText = typeof activePromptDebug.prompt_preview === "string"
       ? activePromptDebug.prompt_preview
       : "";
     return getPromptRelevantLines(promptText, selectedPromptKeywords);
   }, [activePromptDebug, selectedPromptKeywords]);
+  const mergedFixtureRows = useMemo(
+    () => mergeFixtureRows(currentBuildSummary, candidateBuildSummary),
+    [currentBuildSummary, candidateBuildSummary],
+  );
+  const candidateBuildSelector = useMemo(() => {
+    const raw = String(toRecord(candidateBuildSummary?.build_info).build_selector ?? "").trim();
+    if (raw) {
+      return raw;
+    }
+    const buildId = candidateBuildIdInput.trim();
+    return buildId ? `candidate:${buildId}` : null;
+  }, [candidateBuildIdInput, candidateBuildSummary]);
 
   useEffect(() => {
     if (!sessionGroups.length) {
       setSelectedSessionId(null);
       setSelectedTimelineId(null);
-      setIsReplaying(false);
       return;
     }
-
     setSelectedSessionId((current) => current ?? sessionGroups[0].sessionId);
+    setSelectedTimelineId((current) => current ?? sessionGroups[0].entries[0]?.id ?? null);
   }, [sessionGroups]);
 
   useEffect(() => {
-    if (!activeSessionEntries.length) {
-      setSelectedTimelineId(null);
+    if (!fieldList.length) {
+      setSelectedField(null);
       return;
     }
-
-    setSelectedTimelineId((current) => {
-      const exists = activeSessionEntries.some((entry) => entry.id === current);
-      return exists ? current : activeSessionEntries[0].id;
-    });
-  }, [activeSessionEntries]);
+    setSelectedField((current) => (current && fieldList.includes(current) ? current : fieldList[0]));
+  }, [fieldList]);
 
   useEffect(() => {
-    if (!isReplaying || activeSessionEntries.length <= 1) {
+    if (!mergedFixtureRows.length) {
+      setSelectedSampleId(null);
       return;
     }
-
-    const timer = window.setInterval(() => {
-      setSelectedTimelineId((current) => {
-        const index = activeSessionEntries.findIndex((entry) => entry.id === current);
-        if (index < 0 || index === activeSessionEntries.length - 1) {
-          return activeSessionEntries[0].id;
-        }
-        return activeSessionEntries[index + 1].id;
-      });
-    }, 1400);
-
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, [activeSessionEntries, isReplaying]);
+    setSelectedSampleId((current) =>
+      current && mergedFixtureRows.some((row) => row.fixtureId === current)
+        ? current
+        : mergedFixtureRows[0].fixtureId,
+    );
+  }, [mergedFixtureRows]);
 
   useEffect(() => {
-    if (!activeInterpretationId || previewMode) {
+    if (disableWorkbenchFetch || previewMode || !activeInterpretationId) {
       return;
     }
-
     let cancelled = false;
     setReportDebugLoading(true);
     setReportDebugError(null);
-
     void getInterpretationReportDebug(activeInterpretationId)
       .then((profile) => {
-        if (cancelled) {
-          return;
+        if (!cancelled) {
+          setReportDebugProfile(profile);
         }
-        setReportDebugProfile(profile);
       })
       .catch((error) => {
-        if (cancelled) {
-          return;
+        if (!cancelled) {
+          setReportDebugProfile(null);
+          setReportDebugError(error instanceof Error ? error.message : "拉取 report-debug 失败");
         }
-        setReportDebugProfile(null);
-        setReportDebugError(error instanceof Error ? error.message : "拉取报告剖面失败");
       })
       .finally(() => {
         if (!cancelled) {
           setReportDebugLoading(false);
         }
       });
-
     return () => {
       cancelled = true;
     };
-  }, [activeInterpretationId, previewMode]);
+  }, [activeInterpretationId, disableWorkbenchFetch, previewMode]);
 
   useEffect(() => {
-    if (!selectedDebugField) {
+    if (disableWorkbenchFetch || currentBuildSummary) {
       return;
     }
+    let cancelled = false;
+    setBuildSummaryLoading(true);
+    setBuildSummaryError(null);
+    void getKnowledgeBuildSummary("current")
+      .then((summary) => {
+        if (!cancelled) {
+          setCurrentBuildSummary(summary);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setBuildSummaryError(error instanceof Error ? error.message : "拉取 current build summary 失败");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setBuildSummaryLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentBuildSummary, disableWorkbenchFetch]);
 
-    const knownFields = new Set([
-      ...liteComparisonRows.map((row) => row.fieldKey),
-      ...proComparisonRows.map((row) => row.fieldKey),
-    ]);
-    if (!knownFields.has(selectedDebugField)) {
-      setSelectedDebugField(null);
+  async function handleLoadCandidateBuild() {
+    if (disableWorkbenchFetch || !candidateBuildIdInput.trim()) {
+      return;
     }
-  }, [liteComparisonRows, proComparisonRows, selectedDebugField]);
+    setCandidateBuildLoading(true);
+    setBuildSummaryError(null);
+    try {
+      const summary = await getKnowledgeBuildSummary(`candidate:${candidateBuildIdInput.trim()}`);
+      setCandidateBuildSummary(summary);
+    } catch (error) {
+      setCandidateBuildSummary(null);
+      setBuildSummaryError(error instanceof Error ? error.message : "载入 candidate build 失败");
+    } finally {
+      setCandidateBuildLoading(false);
+    }
+  }
+
+  async function handlePreviewFixture(row: FixtureComparisonRow) {
+    if (disableWorkbenchFetch) {
+      setSelectedSampleId(row.fixtureId);
+      return;
+    }
+    const buildSelector = candidateBuildSelector ?? "current";
+    setSelectedSampleId(row.fixtureId);
+    setSampleLoadingId(row.fixtureId);
+    setSampleError(null);
+    try {
+      const preview = await previewKnowledgeFixture({
+        fixture_id: row.fixtureId,
+        build_selector: buildSelector,
+        version: getFixturePreviewVersion(row),
+      });
+      setSamplePreview(preview);
+    } catch (error) {
+      setSamplePreview(null);
+      setSampleError(error instanceof Error ? error.message : "拉取 fixture preview 失败");
+    } finally {
+      setSampleLoadingId(null);
+    }
+  }
+
+  useEffect(() => {
+    if (disableWorkbenchFetch || !selectedSampleId || samplePreview) {
+      return;
+    }
+    const row = mergedFixtureRows.find((item) => item.fixtureId === selectedSampleId);
+    if (!row) {
+      return;
+    }
+    void handlePreviewFixture(row);
+  }, [disableWorkbenchFetch, mergedFixtureRows, samplePreview, selectedSampleId]);
 
   return (
     <aside className="browser-shell__panel browser-shell__panel--side browser-shell__panel--observer">
       <div className="browser-shell__panel-header">
-        <h2>生成观测面板</h2>
-        <p className="muted">右侧专门看报告生成过程、接口来回和当前数据快照。</p>
+        <h2>本地知识工作台</h2>
+        <p className="muted">右侧只服务本地调试：看链路、看知识、看字段追踪、看固定样本回放。</p>
       </div>
 
       <section className="browser-debug-section">
@@ -670,796 +780,452 @@ export function BrowserDebugPanel({
             <span>{route}</span>
           </div>
           <div className="browser-debug-chip">
-            <strong>阶段</strong>
-            <span>{activeFlowState?.step ?? "--"}</span>
+            <strong>解读</strong>
+            <span>{activeInterpretationId || "--"}</span>
           </div>
           <div className="browser-debug-chip">
-            <strong>报告</strong>
-            <span>{draft.reportVariant ?? draft.reportType ?? "lite"}</span>
+            <strong>当前主题</strong>
+            <span>{draft.theme || "--"}</span>
           </div>
         </div>
-      </section>
-
-      <section className="browser-debug-section">
-        <div className="browser-debug-section__header">
-          <h3>链路时间线</h3>
-          <span>{stages.filter((item) => item.state === "done").length}/{stages.length}</span>
-        </div>
-        <div className="browser-debug-stage-list">
-          {stages.map((stage) => (
-            <article key={stage.key} className={`browser-debug-stage browser-debug-stage--${stage.state}`}>
-              <div className="browser-debug-stage__head">
-                <strong>{stage.label}</strong>
-                <span>{stage.description}</span>
-              </div>
-              <p>{stage.detail}</p>
-            </article>
+        <div className="browser-debug-tabs" role="tablist" aria-label="Knowledge Workbench Tabs">
+          {DEBUG_WORKBENCH_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              className={`browser-debug-tab${activeTab === tab.id ? " browser-debug-tab--active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <strong>{tab.label}</strong>
+              <span>{tab.description}</span>
+            </button>
           ))}
         </div>
       </section>
 
-      <section className="browser-debug-section">
-        <div className="browser-debug-section__header">
-          <h3>任务分组与回放</h3>
-          <button
-            type="button"
-            className="browser-debug-link"
-            onClick={() => {
-              setIsReplaying((current) => !current);
-            }}
-            disabled={activeSessionEntries.length <= 1}
-          >
-            {isReplaying ? "暂停" : "自动回放"}
-          </button>
-        </div>
-        <div className="browser-debug-session-list">
-          {sessionGroups.length === 0 ? (
-            <p className="muted">还没有任务 session，先触发一次解读。</p>
-          ) : (
-            sessionGroups.map((group, index) => (
-              <button
-                key={group.sessionId}
-                type="button"
-                className={`browser-debug-session-item${activeSessionId === group.sessionId ? " browser-debug-session-item--active" : ""}`}
-                onClick={() => {
-                  setIsReplaying(false);
-                  setSelectedSessionId(group.sessionId);
-                  setSelectedTimelineId(group.entries[0]?.id ?? null);
-                }}
-              >
-                <strong>任务 {sessionGroups.length - index}</strong>
-                <span>{group.latest.title}</span>
-                <small>
-                  {group.entries.length} 步 · {formatClock(group.latest.createdAt)} · {group.latest.source}
-                </small>
-              </button>
-            ))
-          )}
-        </div>
-        <div className="browser-debug-replay-toolbar">
-          <button
-            type="button"
-            className="browser-debug-mini-button"
-            onClick={() => {
-              if (!activeSessionEntries.length) {
-                return;
-              }
-              setIsReplaying(false);
-              setSelectedTimelineId((current) => {
-                const index = activeSessionEntries.findIndex((entry) => entry.id === current);
-                if (index <= 0) {
-                  return activeSessionEntries[0].id;
-                }
-                return activeSessionEntries[index - 1].id;
-              });
-            }}
-            disabled={activeSessionEntries.length === 0}
-          >
-            上一步
-          </button>
-          <button
-            type="button"
-            className="browser-debug-mini-button"
-            onClick={() => {
-              if (!activeSessionEntries.length) {
-                return;
-              }
-              setIsReplaying(false);
-              setSelectedTimelineId((current) => {
-                const index = activeSessionEntries.findIndex((entry) => entry.id === current);
-                if (index < 0 || index === activeSessionEntries.length - 1) {
-                  return activeSessionEntries[activeSessionEntries.length - 1].id;
-                }
-                return activeSessionEntries[index + 1].id;
-              });
-            }}
-            disabled={activeSessionEntries.length === 0}
-          >
-            下一步
-          </button>
-          <span className="muted">
-            {selectedTimelineEntry
-              ? `${formatClock(selectedTimelineEntry.createdAt)} · ${selectedTimelineEntry.source}`
-              : "暂无快照"}
-          </span>
-        </div>
-        <div className="browser-debug-timeline-list">
-          {activeSessionEntries.length === 0 ? (
-            <p className="muted">还没有可回放事件，先触发一次检测或报告生成。</p>
-          ) : (
-            activeSessionEntries.map((entry, index) => (
-              <button
-                key={entry.id}
-                type="button"
-                className={`browser-debug-timeline-item${selectedTimelineEntry?.id === entry.id ? " browser-debug-timeline-item--active" : ""}`}
-                onClick={() => {
-                  setIsReplaying(false);
-                  setSelectedTimelineId(entry.id);
-                }}
-              >
-                <span>{activeSessionEntries.length - index}</span>
-                <div>
-                  <strong>{entry.title}</strong>
-                  <small>{entry.subtitle}</small>
-                </div>
-                <time>{formatClock(entry.createdAt)}</time>
-              </button>
-            ))
-          )}
-        </div>
-      </section>
-
-      <section className="browser-debug-section">
-        <div className="browser-debug-section__header">
-          <h3>当前数据流</h3>
-        </div>
-        <div className="browser-debug-kv">
-          <div>
-            <span>userId</span>
-            <strong>{userId}</strong>
-          </div>
-          <div>
-            <span>interpretationId</span>
-            <strong>{activeFlowState?.interpretation?.interpretation_id ?? interpretationId}</strong>
-          </div>
-          <div>
-            <span>imagePath</span>
-            <strong>{draft.uploadAsset?.runtimeImagePath ?? draft.imagePath}</strong>
-          </div>
-          <div>
-            <span>上传后端</span>
-            <strong>{draft.uploadAsset?.storageBackend ?? "--"}</strong>
-          </div>
-          <div>
-            <span>状态进度</span>
-            <strong>{replayFlowState?.status ? `${replayFlowState.status.generation_progress}%` : "--"}</strong>
-          </div>
-          <div>
-            <span>检测状态</span>
-            <strong>
-              {(replaySnapshot?.detection ?? activeDetection)
-                ? `ok (${(replaySnapshot?.detection ?? activeDetection)?.method})`
-                : (replaySnapshot?.uploadDetecting ?? activeDetecting)
-                  ? "running"
-                  : replaySnapshot?.detectError ?? activeDetectError ?? "--"}
-            </strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="browser-debug-section">
-        <div className="browser-debug-section__header">
-          <h3>后台请求流</h3>
-          <button type="button" className="browser-debug-link" onClick={onClearApiTraces}>
-            清空
-          </button>
-        </div>
-        <div className="browser-debug-request-list">
-          {apiTraces.length === 0 ? (
-            <p className="muted">当前还没有请求记录。切到 runtime 或触发检测后，这里会展示接口来回。</p>
-          ) : (
-            apiTraces.map((trace) => (
-              <details key={trace.id} className={`browser-debug-request browser-debug-request--${trace.phase}`}>
-                <summary>
-                  <div>
-                    <strong>{trace.method}</strong>
-                    <span>{trace.url.split("/api/")[1] ?? trace.url}</span>
-                  </div>
-                  <div>
-                    <span>{trace.phase}</span>
-                    <span>{trace.durationMs ?? 0}ms</span>
-                    <span>{formatClock(trace.finishedAt ?? trace.startedAt)}</span>
-                  </div>
-                </summary>
-                <pre>{formatJson({
-                  statusCode: trace.statusCode,
-                  errorMessage: trace.errorMessage,
-                  requestSummary: trace.requestSummary,
-                  responseSummary: trace.responseSummary,
-                })}</pre>
-              </details>
-            ))
-          )}
-        </div>
-      </section>
-
-      <section className="browser-debug-section">
-        <div className="browser-debug-section__header">
-          <h3>报告产生过程</h3>
-          <button
-            type="button"
-            className="browser-debug-link"
-            onClick={() => {
-              if (!activeInterpretationId) {
-                return;
-              }
-              setReportDebugProfile(null);
-              setReportDebugError(null);
-              setReportDebugLoading(true);
-              void getInterpretationReportDebug(activeInterpretationId)
-                .then((profile) => {
-                  setReportDebugProfile(profile);
-                })
-                .catch((error) => {
-                  setReportDebugError(error instanceof Error ? error.message : "拉取报告剖面失败");
-                })
-                .finally(() => {
-                  setReportDebugLoading(false);
-                });
-            }}
-            disabled={!activeInterpretationId}
-          >
-            刷新剖面
-          </button>
-        </div>
-        {previewMode ? (
-          <p className="muted">当前是 preview 模式，切到 runtime 并生成真实 interpretation 后，这里会显示后端分层产物。</p>
-        ) : reportDebugLoading ? (
-          <p className="muted">正在拉取 Layer0/Prompt/Draft/Final 剖面...</p>
-        ) : reportDebugError ? (
-          <p className="muted">{reportDebugError}</p>
-        ) : reportDebugProfile ? (
-          <>
-            <div className="browser-debug-kv">
-              <div>
-                <span>主题</span>
-                <strong>{reportDebugProfile.theme}</strong>
-              </div>
-              <div>
-                <span>生成阶段</span>
-                <strong>{reportDebugProfile.generation_stage}</strong>
-              </div>
-              <div>
-                <span>进度</span>
-                <strong>{reportDebugProfile.generation_progress}%</strong>
-              </div>
-              <div>
-                <span>已购版本</span>
-                <strong>{reportDebugProfile.version_purchased.join(", ") || "--"}</strong>
-              </div>
+      {activeTab === "pipeline" ? (
+        <>
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>链路时间线</h3>
+              <span>{stages.filter((item) => item.state === "done").length}/{stages.length}</span>
             </div>
-            {diagnostics ? (
-              <article className="browser-debug-compare-card">
-                <div className="browser-debug-section__header">
-                  <h4>问题定位模式</h4>
-                  <span>diagnostic summary</span>
+            <div className="browser-debug-stage-list">
+              {stages.map((stage) => (
+                <article key={stage.key} className={`browser-debug-stage browser-debug-stage--${stage.state}`}>
+                  <div className="browser-debug-stage__head">
+                    <strong>{stage.label}</strong>
+                    <span>{stage.description}</span>
+                  </div>
+                  <p>{stage.detail}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>任务回放</h3>
+              <span>{sessionGroups.length} 组</span>
+            </div>
+            <div className="browser-debug-session-list">
+              {sessionGroups.length === 0 ? (
+                <p className="muted">还没有 timeline entry，先触发一次链路。</p>
+              ) : (
+                sessionGroups.map((group) => (
+                  <button
+                    key={group.sessionId}
+                    type="button"
+                    className={`browser-debug-session-item${selectedSessionId === group.sessionId ? " browser-debug-session-item--active" : ""}`}
+                    onClick={() => {
+                      setSelectedSessionId(group.sessionId);
+                      setSelectedTimelineId(group.entries[0]?.id ?? null);
+                    }}
+                  >
+                    <strong>{group.latest.title}</strong>
+                    <span>{group.latest.subtitle}</span>
+                    <small>{group.entries.length} 步 · {formatClock(group.latest.createdAt)}</small>
+                  </button>
+                ))
+              )}
+            </div>
+            {activeSessionEntries.length > 0 ? (
+              <>
+                <div className="browser-debug-timeline-list">
+                  {activeSessionEntries.map((entry) => (
+                    <button
+                      key={entry.id}
+                      type="button"
+                      className={`browser-debug-timeline-item${selectedTimelineId === entry.id ? " browser-debug-timeline-item--active" : ""}`}
+                      onClick={() => setSelectedTimelineId(entry.id)}
+                    >
+                      <strong>{entry.title}</strong>
+                      <span>{entry.subtitle}</span>
+                      <time>{formatClock(entry.createdAt)}</time>
+                    </button>
+                  ))}
                 </div>
-                <div className="browser-debug-metrics">
-                  <div className="browser-debug-chip">
-                    <strong>高风险</strong>
-                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.high_risk_count)}</span>
-                  </div>
-                  <div className="browser-debug-chip">
-                    <strong>中风险</strong>
-                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.medium_risk_count)}</span>
-                  </div>
-                  <div className="browser-debug-chip">
-                    <strong>Fallback 字段</strong>
-                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.fallback_count)}</span>
-                  </div>
-                  <div className="browser-debug-chip">
-                    <strong>Schema 缺口</strong>
-                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.schema_missing_count)}</span>
-                  </div>
-                  <div className="browser-debug-chip">
-                    <strong>依赖用户输入</strong>
-                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.user_input_driven_count)}</span>
-                  </div>
-                  <div className="browser-debug-chip">
-                    <strong>依赖 Layer0</strong>
-                    <span>{formatUnknownText((diagnostics.summary as Record<string, unknown> | undefined)?.layer0_driven_count)}</span>
-                  </div>
+                <div className="browser-debug-json">
+                  <summary>选中快照</summary>
+                  <pre>{formatJson(selectedTimelineEntry?.snapshot ?? null)}</pre>
                 </div>
-                <div className="browser-debug-tag-list">
-                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.recommended_first_actions)
-                    ? ((diagnostics.summary as Record<string, unknown>).recommended_first_actions as unknown[]).map((item, index) => {
-                        const actionItem = item as Record<string, unknown>;
-                        const action = actionItem.suggested_action as Record<string, unknown> | undefined;
-                        return (
-                          <button
-                            key={`action-${formatUnknownText(actionItem.field)}-${index}`}
-                            type="button"
-                            className={`browser-debug-tag browser-debug-tag--ok${selectedDebugField === formatUnknownText(actionItem.field) ? " browser-debug-tag--active" : ""}`}
-                            onClick={() => {
-                              setSelectedDebugField(formatUnknownText(actionItem.field));
-                            }}
-                          >
-                            {formatUnknownText(action?.priority)}: {formatUnknownText(actionItem.field)}
-                          </button>
-                        );
-                      })
-                    : null}
-                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.high_risk_fields)
-                    ? ((diagnostics.summary as Record<string, unknown>).high_risk_fields as unknown[]).map((item, index) => (
-                        <button
-                          key={`high-${String(item)}-${index}`}
-                          type="button"
-                          className={`browser-debug-tag browser-debug-tag--risk-high${selectedDebugField === formatUnknownText(item) ? " browser-debug-tag--active" : ""}`}
-                          onClick={() => {
-                            setSelectedDebugField(formatUnknownText(item));
-                          }}
-                        >
-                          high: {formatUnknownText(item)}
-                        </button>
-                      ))
-                    : null}
-                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.fallback_fields)
-                    ? ((diagnostics.summary as Record<string, unknown>).fallback_fields as unknown[]).map((item, index) => (
-                        <button
-                          key={`fallback-${String(item)}-${index}`}
-                          type="button"
-                          className={`browser-debug-tag browser-debug-tag--warn${selectedDebugField === formatUnknownText(item) ? " browser-debug-tag--active" : ""}`}
-                          onClick={() => {
-                            setSelectedDebugField(formatUnknownText(item));
-                          }}
-                        >
-                          fallback: {formatUnknownText(item)}
-                        </button>
-                      ))
-                    : null}
-                  {Array.isArray((diagnostics.summary as Record<string, unknown> | undefined)?.schema_missing_fields)
-                    ? ((diagnostics.summary as Record<string, unknown>).schema_missing_fields as unknown[]).map((item, index) => (
-                        <button
-                          key={`schema-${String(item)}-${index}`}
-                          type="button"
-                          className={`browser-debug-tag browser-debug-tag--warn${selectedDebugField === formatUnknownText(item) ? " browser-debug-tag--active" : ""}`}
-                          onClick={() => {
-                            setSelectedDebugField(formatUnknownText(item));
-                          }}
-                        >
-                          schema: {formatUnknownText(item)}
-                        </button>
-                      ))
-                    : null}
-                </div>
-                <div className="browser-debug-provenance-list">
-                  {combinedDiagnosticFields.length > 0
-                    ? combinedDiagnosticFields.map((field, index) => {
-                        const tags = Array.isArray(field.issue_tags) ? field.issue_tags : [];
-                        return (
-                          <details
-                            key={`diag-${formatUnknownText(field.field)}-${index}`}
-                            className={`browser-debug-provenance-item${selectedDebugField === formatUnknownText(field.field) ? " browser-debug-provenance-item--active" : ""}`}
-                          >
-                            <summary>
-                              <div
-                                onClick={() => {
-                                  setSelectedDebugField(formatUnknownText(field.field));
-                                }}
-                              >
-                                <strong>{formatUnknownText(field.field)}</strong>
-                                <span>
-                                  {formatUnknownText(field.risk_level)} · score {formatUnknownText(field.risk_score)} · {formatUnknownText(field.diagnosis)}
-                                </span>
-                              </div>
-                            </summary>
-                            <div className="browser-debug-provenance-body">
-                              <div className="browser-debug-provenance-block">
-                                <span>建议动作</span>
-                                <pre>{formatJson(field.suggested_action)}</pre>
-                              </div>
-                              <div className="browser-debug-tag-list">
-                                {tags.map((tag, tagIndex) => (
-                                  <span key={`${String(tag)}-${tagIndex}`} className="browser-debug-tag">
-                                    {formatUnknownText(tag)}
-                                  </span>
-                                ))}
-                              </div>
-                              <div className="browser-debug-provenance-block">
-                                <span>诊断详情</span>
-                                <pre>{formatJson(field)}</pre>
-                              </div>
-                            </div>
-                          </details>
-                        );
-                      })
-                    : null}
-                </div>
-              </article>
+              </>
             ) : null}
-            {getLayerRecord(reportDebugProfile, "layer_0_raw") ? (
-              <div className="browser-debug-layer-grid">
-                <article className="browser-debug-layer-card">
-                  <h4>五行分布</h4>
-                  <div className="browser-debug-layer-stack">
-                    {Object.entries(
-                      (getLayerRecord(reportDebugProfile, "layer_0_raw")?.five_elements as Record<string, unknown>) ?? {},
-                    ).map(([elementKey, elementValue]) => (
-                      <details key={elementKey} className="browser-debug-layer-detail">
-                        <summary>
-                          <strong>{elementKey}</strong>
-                        </summary>
-                        <pre>{formatJson(elementValue)}</pre>
-                      </details>
-                    ))}
-                  </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>API Traces</h3>
+              <button type="button" className="browser-debug-link" onClick={onClearApiTraces}>
+                清空 traces
+              </button>
+            </div>
+            <div className="browser-debug-request-list">
+              {apiTraces.length === 0 ? (
+                <p className="muted">暂无 API trace。</p>
+              ) : (
+                apiTraces.map((trace) => (
+                  <details
+                    key={trace.id}
+                    className={`browser-debug-request browser-debug-request--${trace.phase}`}
+                  >
+                    <summary>
+                      <div>
+                        <strong>{trace.method} {trace.url}</strong>
+                        <span>{trace.phase} · {trace.durationMs ?? 0}ms</span>
+                      </div>
+                    </summary>
+                    <pre>{formatJson(trace)}</pre>
+                  </details>
+                ))
+              )}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Runtime Snapshot</h3>
+              <span>{runtimeSnapshot ? "ready" : "empty"}</span>
+            </div>
+            <div className="browser-debug-json">
+              <pre>{formatJson(runtimeSnapshot)}</pre>
+            </div>
+          </section>
+        </>
+      ) : null}
+
+      {activeTab === "knowledge" ? (
+        <>
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Build Summary</h3>
+              <span>{buildSummaryLoading || candidateBuildLoading ? "loading" : "ready"}</span>
+            </div>
+            <div className="browser-debug-inline-form">
+              <input
+                className="browser-debug-input"
+                value={candidateBuildIdInput}
+                onChange={(event) => setCandidateBuildIdInput(event.target.value)}
+                placeholder="candidate build id，例如 20260412-001"
+              />
+              <button
+                type="button"
+                className="browser-debug-mini-button"
+                onClick={() => void handleLoadCandidateBuild()}
+                disabled={candidateBuildLoading || !candidateBuildIdInput.trim()}
+              >
+                {candidateBuildLoading ? "载入中..." : "载入 Candidate"}
+              </button>
+            </div>
+            {buildSummaryError ? <p className="mw-inline-error">{buildSummaryError}</p> : null}
+            <div className="browser-debug-grid">
+              {[currentBuildSummary, candidateBuildSummary].filter(Boolean).map((summary, index) => {
+                const buildInfo = toRecord((summary as KnowledgeBuildSummaryResponse).build_info);
+                const quality = toRecord((summary as KnowledgeBuildSummaryResponse).quality);
+                const qualitySummary = toRecord(quality.summary);
+                return (
+                  <article key={String(buildInfo.build_selector ?? index)} className="browser-debug-card">
+                    <h4>{String(buildInfo.build_selector ?? `build-${index + 1}`)}</h4>
+                    <div className="browser-debug-kv">
+                      <div><strong>pack</strong><span>{String(buildInfo.pack_id ?? "--")}</span></div>
+                      <div><strong>build_id</strong><span>{String(buildInfo.build_id ?? "--")}</span></div>
+                      <div><strong>generated_at</strong><span>{String(buildInfo.generated_at ?? "--")}</span></div>
+                      <div><strong>themes</strong><span>{String(qualitySummary.theme_count ?? "--")}</span></div>
+                      <div><strong>fallback hotspots</strong><span>{String(qualitySummary.fallback_hotspot_count ?? "--")}</span></div>
+                      <div><strong>warning paths</strong><span>{String(qualitySummary.high_risk_warning_count ?? "--")}</span></div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Quality Signals</h3>
+              <span>fallback / warning / coverage</span>
+            </div>
+            <div className="browser-debug-grid">
+              {[currentBuildSummary, candidateBuildSummary].filter(Boolean).map((summary, index) => {
+                const quality = toRecord((summary as KnowledgeBuildSummaryResponse).quality);
+                const hotspots = toArrayRecords(quality.fallback_hotspots);
+                const warnings = toArrayRecords(quality.high_risk_warning_paths);
+                return (
+                  <article key={`quality-${index}`} className="browser-debug-card">
+                    <h4>{String(toRecord((summary as KnowledgeBuildSummaryResponse).build_info).build_selector ?? `build-${index + 1}`)}</h4>
+                    <strong className="browser-debug-subtitle">Fallback Hotspots</strong>
+                    <pre>{formatJson(hotspots.slice(0, 8))}</pre>
+                    <strong className="browser-debug-subtitle">High Risk Warning Paths</strong>
+                    <pre>{formatJson(warnings.slice(0, 8))}</pre>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Layer0 Evidence</h3>
+              <span>{reportDebugLoading ? "loading" : "ready"}</span>
+            </div>
+            {reportDebugError ? <p className="mw-inline-error">{reportDebugError}</p> : null}
+            <div className="browser-debug-grid">
+              {[
+                { label: "visual_facts", value: toRecord(knowledgeDebug.layer0_evidence).visual_facts },
+                { label: "knowledge_hits", value: toRecord(knowledgeDebug.layer0_evidence).knowledge_hits },
+                { label: "rule_evaluations", value: toRecord(knowledgeDebug.layer0_evidence).rule_evaluations },
+                { label: "theme_projection", value: toRecord(knowledgeDebug.layer0_evidence).theme_projection },
+                { label: "fallback_summary", value: toRecord(knowledgeDebug.layer0_evidence).fallback_summary },
+              ].map(({ label, value }) => (
+                <article key={label} className="browser-debug-card">
+                  <h4>{label}</h4>
+                  <pre>{formatJson(value)}</pre>
                 </article>
-                <article className="browser-debug-layer-card">
-                  <h4>三圈能量</h4>
-                  <div className="browser-debug-layer-stack">
-                    {Object.entries(
-                      (getLayerRecord(reportDebugProfile, "layer_0_raw")?.three_circles as Record<string, unknown>) ?? {},
-                    ).map(([circleKey, circleValue]) => (
-                      <details key={circleKey} className="browser-debug-layer-detail">
-                        <summary>
-                          <strong>{circleKey}</strong>
-                        </summary>
-                        <pre>{formatJson(circleValue)}</pre>
-                      </details>
-                    ))}
-                  </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Field To Knowledge</h3>
+              <span>{fieldList.length} fields</span>
+            </div>
+            <div className="browser-debug-field-list">
+              {fieldList.map((field) => (
+                <button
+                  key={field}
+                  type="button"
+                  className={`browser-debug-field-button${selectedField === field ? " browser-debug-field-button--active" : ""}`}
+                  onClick={() => setSelectedField(field)}
+                >
+                  {field}
+                </button>
+              ))}
+            </div>
+            {selectedField ? (
+              <div className="browser-debug-grid">
+                <article className="browser-debug-card">
+                  <h4>{selectedField}</h4>
+                  <pre>{formatJson(selectedFieldMapping)}</pre>
                 </article>
-                <article className="browser-debug-layer-card">
-                  <h4>颜色分析</h4>
-                  <pre>{formatJson(getLayerRecord(reportDebugProfile, "layer_0_raw")?.color_analysis ?? null)}</pre>
-                </article>
-                <article className="browser-debug-layer-card">
-                  <h4>失衡候选</h4>
-                  <div className="browser-debug-tag-list">
-                    {Array.isArray(getLayerRecord(reportDebugProfile, "layer_0_raw")?.imbalance_candidates) &&
-                    (getLayerRecord(reportDebugProfile, "layer_0_raw")?.imbalance_candidates as unknown[]).length > 0 ? (
-                      (getLayerRecord(reportDebugProfile, "layer_0_raw")?.imbalance_candidates as unknown[]).map((item, index) => (
-                        <span key={`${String(item)}-${index}`} className="browser-debug-tag">
-                          {formatUnknownText(item)}
-                        </span>
-                      ))
+                <article className="browser-debug-card">
+                  <h4>Source Refs</h4>
+                  <div className="browser-debug-source-list">
+                    {selectedSourceRefs.length === 0 ? (
+                      <p className="muted">当前字段还没有 source ref。</p>
                     ) : (
-                      <span className="browser-debug-tag">--</span>
+                      selectedSourceRefs.map((ref) => (
+                        <div key={`${String(ref.entity_id)}-${String(ref.source_path)}`} className="browser-debug-source-item">
+                          <strong>{String(ref.entity_id ?? "--")}</strong>
+                          <span>{String(ref.source_path ?? "--")}</span>
+                          <small>{String(ref.absolute_path ?? "--")}</small>
+                        </div>
+                      ))
                     )}
                   </div>
                 </article>
               </div>
             ) : null}
-            {getLayerRecord(reportDebugProfile, "layer_1_lite_draft") ||
-            getLayerRecord(reportDebugProfile, "layer_2_lite_final") ? (
-              <article className="browser-debug-compare-card">
-                <div className="browser-debug-section__header">
-                  <h4>Lite 结构字段 {"->"} 最终展示</h4>
-                  <span>Layer1 vs Layer2</span>
+          </section>
+        </>
+      ) : null}
+
+      {activeTab === "report-trace" ? (
+        <>
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Diagnostics</h3>
+              <span>{fieldEntries.length} fields</span>
+            </div>
+            <div className="browser-debug-kv">
+              {Object.entries(toRecord(diagnostics.summary)).slice(0, 8).map(([key, value]) => (
+                <div key={key}>
+                  <strong>{key}</strong>
+                  <span>{formatUnknownText(value)}</span>
                 </div>
-                <div className="browser-debug-compare-table">
-                  {liteComparisonRows.map((row) => (
-                    <button
-                      key={row.label}
-                      type="button"
-                      className={`browser-debug-compare-row${selectedDebugField === row.fieldKey ? " browser-debug-compare-row--active" : ""}`}
-                      onClick={() => {
-                        setSelectedDebugField(row.fieldKey);
-                      }}
-                    >
-                      <strong>{row.label}</strong>
-                      <div>
-                        <span>Draft</span>
-                        <pre>{row.draftValue}</pre>
-                      </div>
-                      <div>
-                        <span>Final</span>
-                        <pre>{row.finalValue}</pre>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </article>
-            ) : null}
-            {litePromptDebug ? (
-              <article className="browser-debug-compare-card">
-                <div className="browser-debug-section__header">
-                  <h4>Lite Prompt 与 Schema</h4>
-                  <span>preview + field hit</span>
-                </div>
-                {selectedDebugField ? (
-                  <div className="browser-debug-focus-bar">
-                    <strong>当前联动字段</strong>
-                    <span>{selectedDebugField}</span>
-                  </div>
-                ) : null}
-                <details className="browser-debug-json" open>
-                  <summary>prompt preview 全文</summary>
-                  <pre>{formatUnknownText(litePromptDebug.prompt_preview)}</pre>
-                </details>
-                {selectedDebugField && activePromptDebug === litePromptDebug ? (
-                  <details className="browser-debug-json" open>
-                    <summary>与当前字段最相关的 Prompt 片段</summary>
-                    <div className="browser-debug-prompt-snippets">
-                      {selectedPromptLines.map((item, index) => (
-                        <pre
-                          key={`${item.line}-${index}`}
-                          className={`browser-debug-prompt-line${item.highlighted ? " browser-debug-prompt-line--active" : ""}`}
-                        >
-                          {item.line || " "}
-                        </pre>
-                      ))}
-                    </div>
-                  </details>
-                ) : null}
-                <div className="browser-debug-tag-list">
-                  {Array.isArray(litePromptDebug.validation_issues) &&
-                  litePromptDebug.validation_issues.length > 0 ? (
-                    (litePromptDebug.validation_issues as unknown[]).map((item, index) => (
-                      <span key={`${String(item)}-${index}`} className="browser-debug-tag browser-debug-tag--warn">
-                        {formatUnknownText(item)}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="browser-debug-tag browser-debug-tag--ok">schema 全部命中</span>
-                  )}
-                </div>
-                <div className="browser-debug-schema-list">
-                  {Array.isArray(litePromptDebug.schema_fields)
-                    ? (litePromptDebug.schema_fields as unknown[]).map((item, index) => {
-                        const field = item as Record<string, unknown>;
-                        const status = formatUnknownText(field.status);
-                        return (
-                          <div key={`${formatUnknownText(field.name)}-${index}`} className="browser-debug-schema-item">
-                            <button
-                              type="button"
-                              className={`browser-debug-schema-item__button${selectedDebugField && (includesNormalized(formatUnknownText(field.name), selectedDebugField) || includesNormalized(formatUnknownText(field.mapped_final_field), selectedDebugField)) ? " browser-debug-schema-item__button--active" : ""}`}
-                              onClick={() => {
-                                setSelectedDebugField(formatUnknownText(field.name));
-                              }}
-                            >
-                              <div className="browser-debug-schema-item__head">
-                                <strong>{formatUnknownText(field.name)}</strong>
-                                <span className={`browser-debug-badge${status === "hit" ? " browser-debug-badge--ok" : " browser-debug-badge--warn"}`}>
-                                  {status}
-                                </span>
-                              </div>
-                              <small>{formatUnknownText(field.semantic_role)}</small>
-                              <p>映射目标：{formatUnknownText(field.mapped_final_field)}</p>
-                            </button>
-                          </div>
-                        );
-                      })
-                    : null}
-                </div>
-              </article>
-            ) : null}
-            {liteProvenance.length > 0 ? (
-              <article className="browser-debug-compare-card">
-                <div className="browser-debug-section__header">
-                  <h4>Lite 字段来源追踪</h4>
-                  <span>final field provenance</span>
-                </div>
-                <div className="browser-debug-provenance-list">
-                  {liteProvenance.map((item, index) => (
-                    <details
-                      key={`${String(item.field)}-${index}`}
-                      className={`browser-debug-provenance-item${selectedDebugField === formatUnknownText(item.field) ? " browser-debug-provenance-item--active" : ""}`}
-                    >
-                      <summary>
-                        <div
-                          onClick={() => {
-                            setSelectedDebugField(formatUnknownText(item.field));
-                          }}
-                        >
-                          <strong>{formatUnknownText(item.field)}</strong>
-                          <span>{formatUnknownText(item.main_source)}</span>
-                        </div>
-                      </summary>
-                      <div className="browser-debug-provenance-body">
-                        <div className="browser-debug-provenance-block">
-                          <span>Final</span>
-                          <pre>{formatUnknownText(item.final_value)}</pre>
-                        </div>
-                        <div className="browser-debug-provenance-block">
-                          <span>Upstream Inputs</span>
-                          <pre>{formatJson(item.upstream_inputs)}</pre>
-                        </div>
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </article>
-            ) : null}
-            {getLayerRecord(reportDebugProfile, "layer_3_pro_draft") ||
-            getLayerRecord(reportDebugProfile, "layer_4_pro_final") ? (
-              <article className="browser-debug-compare-card">
-                <div className="browser-debug-section__header">
-                  <h4>Pro 结构字段 {"->"} 最终展示</h4>
-                  <span>Layer3 vs Layer4</span>
-                </div>
-                <div className="browser-debug-compare-table">
-                  {proComparisonRows.map((row) => (
-                    <button
-                      key={row.label}
-                      type="button"
-                      className={`browser-debug-compare-row${selectedDebugField === row.fieldKey ? " browser-debug-compare-row--active" : ""}`}
-                      onClick={() => {
-                        setSelectedDebugField(row.fieldKey);
-                      }}
-                    >
-                      <strong>{row.label}</strong>
-                      <div>
-                        <span>Draft</span>
-                        <pre>{row.draftValue}</pre>
-                      </div>
-                      <div>
-                        <span>Final</span>
-                        <pre>{row.finalValue}</pre>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </article>
-            ) : null}
-            {proPromptDebug ? (
-              <article className="browser-debug-compare-card">
-                <div className="browser-debug-section__header">
-                  <h4>Pro Prompt 与 Schema</h4>
-                  <span>preview + field hit</span>
-                </div>
-                {selectedDebugField ? (
-                  <div className="browser-debug-focus-bar">
-                    <strong>当前联动字段</strong>
-                    <span>{selectedDebugField}</span>
-                  </div>
-                ) : null}
-                <details className="browser-debug-json" open>
-                  <summary>prompt preview 全文</summary>
-                  <pre>{formatUnknownText(proPromptDebug.prompt_preview)}</pre>
-                </details>
-                {selectedDebugField && activePromptDebug === proPromptDebug ? (
-                  <details className="browser-debug-json" open>
-                    <summary>与当前字段最相关的 Prompt 片段</summary>
-                    <div className="browser-debug-prompt-snippets">
-                      {selectedPromptLines.map((item, index) => (
-                        <pre
-                          key={`${item.line}-${index}`}
-                          className={`browser-debug-prompt-line${item.highlighted ? " browser-debug-prompt-line--active" : ""}`}
-                        >
-                          {item.line || " "}
-                        </pre>
-                      ))}
-                    </div>
-                  </details>
-                ) : null}
-                <div className="browser-debug-tag-list">
-                  {Array.isArray(proPromptDebug.validation_issues) &&
-                  proPromptDebug.validation_issues.length > 0 ? (
-                    (proPromptDebug.validation_issues as unknown[]).map((item, index) => (
-                      <span key={`${String(item)}-${index}`} className="browser-debug-tag browser-debug-tag--warn">
-                        {formatUnknownText(item)}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="browser-debug-tag browser-debug-tag--ok">schema 全部命中</span>
-                  )}
-                </div>
-                <div className="browser-debug-schema-list">
-                  {Array.isArray(proPromptDebug.schema_fields)
-                    ? (proPromptDebug.schema_fields as unknown[]).map((item, index) => {
-                        const field = item as Record<string, unknown>;
-                        const status = formatUnknownText(field.status);
-                        return (
-                          <div key={`${formatUnknownText(field.name)}-${index}`} className="browser-debug-schema-item">
-                            <button
-                              type="button"
-                              className={`browser-debug-schema-item__button${selectedDebugField && (includesNormalized(formatUnknownText(field.name), selectedDebugField) || includesNormalized(formatUnknownText(field.mapped_final_field), selectedDebugField)) ? " browser-debug-schema-item__button--active" : ""}`}
-                              onClick={() => {
-                                setSelectedDebugField(formatUnknownText(field.name));
-                              }}
-                            >
-                              <div className="browser-debug-schema-item__head">
-                                <strong>{formatUnknownText(field.name)}</strong>
-                                <span className={`browser-debug-badge${status === "hit" ? " browser-debug-badge--ok" : " browser-debug-badge--warn"}`}>
-                                  {status}
-                                </span>
-                              </div>
-                              <small>{formatUnknownText(field.semantic_role)}</small>
-                              <p>映射目标：{formatUnknownText(field.mapped_final_field)}</p>
-                            </button>
-                          </div>
-                        );
-                      })
-                    : null}
-                </div>
-              </article>
-            ) : null}
-            {proProvenance.length > 0 ? (
-              <article className="browser-debug-compare-card">
-                <div className="browser-debug-section__header">
-                  <h4>Pro 字段来源追踪</h4>
-                  <span>final field provenance</span>
-                </div>
-                <div className="browser-debug-provenance-list">
-                  {proProvenance.map((item, index) => (
-                    <details
-                      key={`${String(item.field)}-${index}`}
-                      className={`browser-debug-provenance-item${selectedDebugField === formatUnknownText(item.field) ? " browser-debug-provenance-item--active" : ""}`}
-                    >
-                      <summary>
-                        <div
-                          onClick={() => {
-                            setSelectedDebugField(formatUnknownText(item.field));
-                          }}
-                        >
-                          <strong>{formatUnknownText(item.field)}</strong>
-                          <span>{formatUnknownText(item.main_source)}</span>
-                        </div>
-                      </summary>
-                      <div className="browser-debug-provenance-body">
-                        <div className="browser-debug-provenance-block">
-                          <span>Final</span>
-                          <pre>{formatUnknownText(item.final_value)}</pre>
-                        </div>
-                        <div className="browser-debug-provenance-block">
-                          <span>Upstream Inputs</span>
-                          <pre>{formatJson(item.upstream_inputs)}</pre>
-                        </div>
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </article>
-            ) : null}
-            <div className="browser-debug-stage-list">
-              {reportDebugProfile.steps.map((step) => (
-                <details key={step.key} className={`browser-debug-request browser-debug-request--${step.status === "done" ? "success" : "error"}`}>
-                  <summary>
-                    <div>
-                      <strong>{step.label}</strong>
-                      <span>{step.key}</span>
-                    </div>
-                    <div>
-                      <span>{step.status}</span>
-                      <span>{formatClock(step.created_at ?? undefined)}</span>
-                    </div>
-                  </summary>
-                  <pre>{formatJson(step.summary)}</pre>
-                </details>
               ))}
             </div>
-            <details className="browser-debug-json">
-              <summary>完整 layers 原始数据</summary>
-              <pre>{formatJson(reportDebugProfile.layers)}</pre>
-            </details>
-          </>
-        ) : (
-          <p className="muted">当前还没有 report 剖面数据。</p>
-        )}
-      </section>
+          </section>
 
-      <section className="browser-debug-section">
-        <div className="browser-debug-section__header">
-          <h3>原始快照</h3>
-        </div>
-        <details className="browser-debug-json" open>
-          <summary>flow state</summary>
-          <pre>{formatJson(replayFlowState)}</pre>
-        </details>
-        <details className="browser-debug-json">
-          <summary>report payload</summary>
-          <pre>{formatJson(replayReport)}</pre>
-        </details>
-        <details className="browser-debug-json">
-          <summary>selected replay snapshot</summary>
-          <pre>{formatJson(replaySnapshot)}</pre>
-        </details>
-        <details className="browser-debug-json">
-          <summary>runtime snapshot</summary>
-          <pre>{formatJson(runtimeSnapshot)}</pre>
-        </details>
-      </section>
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Field Trace</h3>
+              <span>按字段聚焦</span>
+            </div>
+            <div className="browser-debug-field-list">
+              {fieldList.map((field) => (
+                <button
+                  key={field}
+                  type="button"
+                  className={`browser-debug-field-button${selectedField === field ? " browser-debug-field-button--active" : ""}`}
+                  onClick={() => setSelectedField(field)}
+                >
+                  {field}
+                </button>
+              ))}
+            </div>
+            {selectedField ? (
+              <div className="browser-debug-grid">
+                <article className="browser-debug-card">
+                  <h4>Field Provenance</h4>
+                  <pre>{formatJson(selectedFieldEntry?.record ?? null)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Knowledge Mapping</h4>
+                  <pre>{formatJson(selectedFieldMapping)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Prompt Schema Match</h4>
+                  <pre>{formatJson(selectedPromptField)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Prompt Snippet</h4>
+                  <div className="browser-debug-prompt-snippets">
+                    {selectedPromptLines.map((item, index) => (
+                      <div
+                        key={`${selectedField ?? "field"}-${index}`}
+                        className={`browser-debug-prompt-line${item.highlighted ? " browser-debug-prompt-line--active" : ""}`}
+                      >
+                        {item.line || " "}
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : null}
+          </section>
+        </>
+      ) : null}
+
+      {activeTab === "samples" ? (
+        <>
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Regression Summary</h3>
+              <span>current / candidate</span>
+            </div>
+            <div className="browser-debug-grid">
+              {[currentBuildSummary, candidateBuildSummary].filter(Boolean).map((summary, index) => {
+                const evalSummary = toRecord((summary as KnowledgeBuildSummaryResponse).eval_summary);
+                const evalMeta = toRecord(evalSummary.summary);
+                return (
+                  <article key={`eval-${index}`} className="browser-debug-card">
+                    <h4>{String(toRecord((summary as KnowledgeBuildSummaryResponse).build_info).build_selector ?? `build-${index + 1}`)}</h4>
+                    <div className="browser-debug-kv">
+                      <div><strong>fixtures</strong><span>{String(evalMeta.fixture_count ?? "--")}</span></div>
+                      <div><strong>fallbacks</strong><span>{String(evalMeta.fixture_fallback_count ?? "--")}</span></div>
+                      <div><strong>warnings</strong><span>{String(evalMeta.warning_hit_count ?? "--")}</span></div>
+                      <div><strong>structured missing</strong><span>{String(evalMeta.structured_missing_count ?? "--")}</span></div>
+                      <div><strong>regression flags</strong><span>{String(evalMeta.regression_flag_count ?? "--")}</span></div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Fixture List</h3>
+              <span>{mergedFixtureRows.length}</span>
+            </div>
+            <div className="browser-debug-sample-list">
+              {mergedFixtureRows.length === 0 ? (
+                <p className="muted">当前还没有 eval summary。build-summary 成功后这里会显示固定样本。</p>
+              ) : (
+                mergedFixtureRows.map((row) => (
+                  <button
+                    key={row.fixtureId}
+                    type="button"
+                    className={`browser-debug-sample-item${selectedSampleId === row.fixtureId ? " browser-debug-sample-item--active" : ""}`}
+                    onClick={() => void handlePreviewFixture(row)}
+                  >
+                    <strong>{row.fixtureId}</strong>
+                    <span>{row.theme || "--"}</span>
+                    <small>
+                      current:{row.currentVersion ?? "--"} / candidate:{row.candidateVersion ?? "--"}
+                    </small>
+                    <small>
+                      fallback {String(row.currentFallbackUsed ?? false)} {" to "} {String(row.candidateFallbackUsed ?? row.currentFallbackUsed ?? false)}
+                    </small>
+                    <small>
+                      warning {row.currentWarningHitCount ?? 0} {" to "} {row.candidateWarningHitCount ?? row.currentWarningHitCount ?? 0}
+                    </small>
+                  </button>
+                ))
+              )}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Selected Sample</h3>
+              <span>{sampleLoadingId ? "loading" : "ready"}</span>
+            </div>
+            {sampleError ? <p className="mw-inline-error">{sampleError}</p> : null}
+            {samplePreview ? (
+              <div className="browser-debug-grid">
+                <article className="browser-debug-card">
+                  <h4>Fixture Meta</h4>
+                  <pre>{formatJson(samplePreview.fixture_meta)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Report Summary</h4>
+                  <pre>{formatJson(samplePreview.report_summary)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Knowledge Summary</h4>
+                  <pre>{formatJson(samplePreview.knowledge_summary.summary ?? samplePreview.knowledge_summary)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Regression Flags</h4>
+                  <pre>{formatJson(samplePreview.regression_flags)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Diff From Current</h4>
+                  <pre>{formatJson(samplePreview.diff_from_current)}</pre>
+                </article>
+                <article className="browser-debug-card">
+                  <h4>Source Paths</h4>
+                  <div className="browser-debug-source-list">
+                    {toArrayRecords(toRecord(samplePreview.knowledge_summary).source_refs).map((ref) => (
+                      <div key={`${String(ref.entity_id)}-${String(ref.source_path)}`} className="browser-debug-source-item">
+                        <strong>{String(ref.entity_id ?? "--")}</strong>
+                        <span>{String(ref.source_path ?? "--")}</span>
+                        <small>{String(ref.absolute_path ?? "--")}</small>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              </div>
+            ) : (
+              <p className="muted">选一个 fixture 后，这里会显示 current / candidate 的回归摘要和 diff。</p>
+            )}
+          </section>
+        </>
+      ) : null}
     </aside>
   );
 }

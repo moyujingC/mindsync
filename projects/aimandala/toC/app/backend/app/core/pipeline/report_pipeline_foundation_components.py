@@ -10,6 +10,7 @@ from .report_contracts import ReportContractAssembler
 from .report_debug_profile import ReportDebugProfileBuilder
 from .report_interaction_support import ReportInteractionSupport
 from .report_knowledge_adapter import ReportKnowledgeAdapter
+from .report_knowledge_debug import KnowledgeDebugBlockBuilder
 from .report_layer0_support import ReportLayer0Support
 from .report_lifecycle import ReportLifecycleManager
 from .report_lite_record_workflow import ReportLiteRecordWorkflow
@@ -62,9 +63,16 @@ def install_report_foundation_components(
         prompt_builder=orchestrator.prompt_builder,
         validator=orchestrator.report_contracts.validator,
     )
+    orchestrator.knowledge_debug_builder = KnowledgeDebugBlockBuilder(
+        get_knowledge_runtime=lambda: orchestrator.knowledge_runtime,
+        get_primary_knowledge_signal=(
+            orchestrator.report_knowledge_adapter.get_primary_knowledge_signal
+        ),
+    )
     orchestrator.report_interaction_support = ReportInteractionSupport(
         store=orchestrator.store,
         report_debug_builder=orchestrator.report_debug_builder,
+        knowledge_debug_builder=orchestrator.knowledge_debug_builder,
         get_report_chat_runtime=lambda: orchestrator.report_chat_runtime,
         get_primary_knowledge_signal=(
             orchestrator.report_knowledge_adapter.get_primary_knowledge_signal

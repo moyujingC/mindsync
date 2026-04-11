@@ -10,6 +10,7 @@ export interface MobileWebLoadingPageProps {
   isPro?: boolean;
   onBack?: () => void;
   onClose?: () => void;
+  onLeaveLater?: () => void;
 }
 
 const tips = [
@@ -20,7 +21,200 @@ const tips = [
   "绘画时的直觉选择，常常最能反映内心真实状态。",
 ];
 
-const stages = ["准备中...", "识别画面结构...", "AI 分析画面能量...", "构建解读框架...", "润色文字表达...", "解读完成！"];
+const liteStages = [
+  "接收画作与主题...",
+  "识别画面结构...",
+  "提炼主要视觉线索...",
+  "连接主题知识库...",
+  "润色文字表达...",
+  "解读完成！",
+];
+
+const proStages = [
+  "接收画作与主题...",
+  "识别画面结构...",
+  "生成 Lite 基础线索...",
+  "展开 Pro 深度分析...",
+  "整理完整解读与问答上下文...",
+  "解读完成！",
+];
+
+interface LoadingUiState {
+  stages: string[];
+  progress: number;
+  currentStageIndex: number;
+  currentMessage: string;
+  estimatedTime: string;
+  versionDescription: string;
+  speedNote: string;
+}
+
+function hasReadyReport(state: MandalaFlowState, isPro: boolean): boolean {
+  const reportText =
+    typeof state.report?.report === "string" ? state.report.report.trim() : "";
+
+  if (isPro) {
+    return state.report?.version === "pro" && reportText.length > 0;
+  }
+
+  return (
+    state.step === "liteReady" ||
+    state.status?.report_ready === true ||
+    (state.report?.version === "lite" && reportText.length > 0)
+  );
+}
+
+function clampProgress(value: number): number {
+  return Math.max(0, Math.min(100, value));
+}
+
+function resolveLoadingUiState(
+  state: MandalaFlowState,
+  isPro: boolean,
+): LoadingUiState {
+  const stages = isPro ? proStages : liteStages;
+  const generationStage =
+    state.status?.generation_stage ?? state.interpretation?.generation_stage ?? null;
+  const rawProgress =
+    state.status?.generation_progress ?? state.interpretation?.generation_progress ?? null;
+  const detectionReady = Boolean(state.detection);
+  const ready = hasReadyReport(state, isPro);
+
+  if (ready) {
+    return {
+      stages,
+      progress: 100,
+      currentStageIndex: stages.length - 1,
+      currentMessage: "解读完成，即将跳转...",
+      estimatedTime: isPro ? "预计约 2 分钟" : "预计约 60-90 秒",
+      versionDescription: isPro
+        ? "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。"
+        : "Lite 版会先整理核心线索与总体印象。",
+      speedNote: isPro
+        ? "Pro 版会在 Lite 基础上继续生成三圈能量、失衡诊断与问答上下文"
+        : "Lite 版先呈现关键线索与总体印象，帮助你快速进入这次解读",
+    };
+  }
+
+  if (isPro) {
+    if (state.step === "upgradePlaceholder") {
+      return {
+        stages,
+        progress: 82,
+        currentStageIndex: 4,
+        currentMessage: "正在整理 Pro 完整解读与问答上下文...",
+        estimatedTime: "预计约 2 分钟",
+        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        speedNote: "Lite 核心结果已经完成，当前正在补充更深层的能量结构与解释。",
+      };
+    }
+
+    if (state.step === "liteReady") {
+      return {
+        stages,
+        progress: 64,
+        currentStageIndex: 3,
+        currentMessage: "Lite 已完成，正在进入 Pro 深度分析...",
+        estimatedTime: "预计约 2 分钟",
+        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        speedNote: "基础线索已经准备好，接下来会展开更完整的深层解读。",
+      };
+    }
+
+    if (generationStage === "generating" || state.step === "liteGenerating") {
+      return {
+        stages,
+        progress: clampProgress(rawProgress == null ? 42 : Math.max(36, Math.min(58, rawProgress))),
+        currentStageIndex: 2,
+        currentMessage: "正在生成基础线索，随后展开 Pro 深度分析...",
+        estimatedTime: "预计约 2 分钟",
+        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        speedNote: "深度版会先完成基础骨架，再继续生成更深入的结构判断。",
+      };
+    }
+
+    if (generationStage === "detecting" || detectionReady) {
+      return {
+        stages,
+        progress: 18,
+        currentStageIndex: 1,
+        currentMessage: "识别画面结构与三圈能量...",
+        estimatedTime: "预计约 2 分钟",
+        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        speedNote: "正在确认三圈结构，为后续深度解读建立基础。",
+      };
+    }
+
+    return {
+      stages,
+      progress: 8,
+      currentStageIndex: 0,
+      currentMessage: "准备解读任务...",
+      estimatedTime: "预计约 2 分钟",
+      versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+      speedNote: "正在接收画作与主题信息。",
+    };
+  }
+
+  if (generationStage === "generating" || state.step === "liteGenerating") {
+    const progress = clampProgress(rawProgress == null ? 38 : Math.max(28, Math.min(92, rawProgress)));
+    if (progress >= 70) {
+      return {
+        stages,
+        progress,
+        currentStageIndex: 4,
+        currentMessage: "润色文字表达...",
+        estimatedTime: "预计约 60-90 秒",
+        versionDescription: "Lite 版会先整理核心线索与总体印象。",
+        speedNote: "核心结构已经完成，正在把线索整理成可阅读的报告文本。",
+      };
+    }
+
+    if (progress >= 50) {
+      return {
+        stages,
+        progress,
+        currentStageIndex: 3,
+        currentMessage: "连接主题知识库...",
+        estimatedTime: "预计约 60-90 秒",
+        versionDescription: "Lite 版会先整理核心线索与总体印象。",
+        speedNote: "正在把画面信息与你选择的解读主题连接起来。",
+      };
+    }
+
+    return {
+      stages,
+      progress,
+      currentStageIndex: 2,
+      currentMessage: "提炼主要视觉线索...",
+      estimatedTime: "预计约 60-90 秒",
+      versionDescription: "Lite 版会先整理核心线索与总体印象。",
+      speedNote: "系统正在总结这幅画最关键的视觉与情绪线索。",
+    };
+  }
+
+  if (generationStage === "detecting" || detectionReady) {
+    return {
+      stages,
+      progress: 18,
+      currentStageIndex: 1,
+      currentMessage: "识别画面结构与三圈能量...",
+      estimatedTime: "预计约 60-90 秒",
+      versionDescription: "Lite 版会先整理核心线索与总体印象。",
+      speedNote: "正在确认三圈结构，为后续解读建立基础。",
+    };
+  }
+
+  return {
+    stages,
+    progress: 8,
+    currentStageIndex: 0,
+    currentMessage: "准备解读任务...",
+    estimatedTime: "预计约 60-90 秒",
+    versionDescription: "Lite 版会先整理核心线索与总体印象。",
+    speedNote: "正在接收画作与主题信息。",
+  };
+}
 
 function FloatingParticlesSmall() {
   const particles = [
@@ -117,6 +311,7 @@ export function MobileWebLoadingPage({
   isPro = false,
   onBack,
   onClose,
+  onLeaveLater,
 }: MobileWebLoadingPageProps) {
   const [tipIndex, setTipIndex] = useState(0);
 
@@ -128,30 +323,14 @@ export function MobileWebLoadingPage({
     return () => window.clearInterval(timer);
   }, []);
 
-  const progress = Math.max(
-    5,
-    Math.min(100, state.status?.generation_progress ?? state.interpretation?.generation_progress ?? 64),
-  );
-
-  const currentStageIndex = useMemo(() => {
-    if (progress >= 100) return 5;
-    if (progress >= 75) return 4;
-    if (progress >= 45) return 3;
-    if (progress >= 25) return 2;
-    if (progress >= 10) return 1;
-    return 0;
-  }, [progress]);
-
-  const currentMessage =
-    state.status?.generation_stage === "report_ready"
-      ? "解读完成，即将跳转..."
-      : stages[currentStageIndex];
+  const loadingUi = useMemo(() => resolveLoadingUiState(state, isPro), [state, isPro]);
+  const { currentMessage, currentStageIndex, estimatedTime, progress, stages, speedNote, versionDescription } = loadingUi;
   const versionTitle = isPro ? "Pro 版完整解读" : "Lite 版基础解读";
-  const versionDescription = isPro
-    ? "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。"
-    : "Lite 版先展示核心线索，Pro 版会补上更完整的成因与建议。";
-  const estimatedTime = isPro ? "预计约 2 分钟" : "预计约 90 秒";
-  const estimatedSeconds = Math.max(0, (isPro ? 120 : 90) - Math.floor((progress / 100) * (isPro ? 120 : 90)));
+  const showLeaveLater = isPro && !hasReadyReport(state, isPro);
+  const estimatedSeconds = Math.max(
+    0,
+    (isPro ? 120 : 90) - Math.floor((progress / 100) * (isPro ? 120 : 90)),
+  );
 
   return (
     <div className="am-page am-loading-page">
@@ -206,11 +385,25 @@ export function MobileWebLoadingPage({
             <div className="am-loading-progress-note">即将完成，请稍候</div>
           )}
           <div className={`am-loading-speed-note am-loading-speed-note--${isPro ? "pro" : "lite"}`}>
-            {isPro
-              ? "Pro版完整解读需要约2分钟，包含三圈能量与失衡诊断"
-              : "Lite版基础解读约需90秒，Pro版可查看更完整的成因与调节建议"}
+            {speedNote}
           </div>
         </div>
+
+        {showLeaveLater ? (
+          <div className="am-loading-action-card">
+            <div className="am-loading-action-card__copy">
+              <strong>不用一直停留在这里</strong>
+              <p>Pro 解读会继续在后台生成。你可以先离开，稍后从历史记录回来查看；历史页也会自动刷新，并支持你手动立即刷新。</p>
+            </div>
+            <button
+              type="button"
+              className="am-loading-action-button"
+              onClick={onLeaveLater}
+            >
+              稍后去历史记录查看
+            </button>
+          </div>
+        ) : null}
 
         <div className="am-loading-log-card">
           <div className="am-loading-log-title">正在分析：</div>

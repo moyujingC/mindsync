@@ -11,10 +11,25 @@ asset_ref:
   note: 当前已固定资产与证据占位路径，真实脱敏图片待补
 input:
   user_profile: qa-fixture-user-a
+  image_path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/mandala-test-01.JPG
   image_label: 单张正常曼陀罗图片
   painting_intention: 看见自己当下的节奏
   painting_feeling: 平静，但有一点迟疑
   expected_report_version: lite
+execution:
+  create_twice: false
+  upgrade_to_pro: false
+validation:
+  report_version: lite
+  existing_on_repeat: false
+  fallback_used: false
+  warning_ids: []
+  required_structured_fields:
+    - title
+    - overall_impression
+    - visual_elements_rendered
+    - emotion_portrait_rendered
+    - pro_teaser
 coverage:
   - TC-01
   - TC-02

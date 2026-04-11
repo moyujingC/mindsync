@@ -17,6 +17,7 @@ class ReportInteractionSupport:
         *,
         store: InterpretationStore,
         report_debug_builder: ReportDebugProfileBuilder,
+        knowledge_debug_builder: Any | None,
         get_report_chat_runtime: Callable[[], Any],
         get_primary_knowledge_signal: Callable[[InterpretationRecord], str | None],
         get_theme_label: Callable[[str | None], str],
@@ -25,6 +26,7 @@ class ReportInteractionSupport:
     ) -> None:
         self.store = store
         self.report_debug_builder = report_debug_builder
+        self.knowledge_debug_builder = knowledge_debug_builder
         self._get_report_chat_runtime = get_report_chat_runtime
         self._get_primary_knowledge_signal = get_primary_knowledge_signal
         self._get_theme_label = get_theme_label
@@ -76,7 +78,7 @@ class ReportInteractionSupport:
             return None
 
         knowledge_signal = self._get_primary_knowledge_signal(record)
-        return self.report_debug_builder.build(
+        payload = self.report_debug_builder.build(
             record=record,
             theme_label=self._get_theme_label(record.theme),
             signal_label=(
@@ -86,3 +88,6 @@ class ReportInteractionSupport:
             ),
             theme_summary=self._get_knowledge_theme_summary(record.theme),
         )
+        if self.knowledge_debug_builder is not None:
+            payload["knowledge_debug"] = self.knowledge_debug_builder.build(record)
+        return payload

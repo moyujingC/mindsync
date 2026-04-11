@@ -152,6 +152,20 @@ export interface HistoryRecordsListProps {
   activeRecordId?: string | null;
 }
 
+function getProgressPercent(progressLabel: string): number | null {
+  const match = progressLabel.match(/(\d{1,3})/);
+  if (!match) {
+    return null;
+  }
+
+  const value = Number(match[1]);
+  if (Number.isNaN(value)) {
+    return null;
+  }
+
+  return Math.min(100, Math.max(0, value));
+}
+
 function getEmptyStateCopy(activeFilter: HistoryFilterId, activeTheme?: string): ReactNode {
   const themeLabel = activeTheme ? (getThemeDisplayName(activeTheme) ?? activeTheme) : null;
 
@@ -198,41 +212,67 @@ export function HistoryRecordsList({
   return (
     <section className="mw-stack">
       {filteredItems.length ? (
-        filteredItems.map((item) => (
-          <article key={item.interpretationId} className="mw-card">
-            <div className="mw-card__header">
-              <h3>{item.title}</h3>
-              <span className="mw-badge">{item.statusLabel}</span>
-            </div>
-            <p>{item.subtitle}</p>
-            <p>{item.statusDetail}</p>
-            <p className="mw-meta">主题：{item.themeLabel} · 版本：{item.reportVariant === "pro" ? "Pro" : "Lite"}</p>
-            <p className="mw-meta">Interpretation ID: {item.interpretationId}</p>
-            <div className="mw-button-row">
-              {actionBusy && activeRecordId === item.interpretationId ? (
-                <p className="mw-meta">当前正在刷新这条记录的真实状态。</p>
+        filteredItems.map((item) => {
+          const progressPercent = getProgressPercent(item.progressLabel);
+
+          return (
+            <article
+              key={item.interpretationId}
+              className={`mw-card mw-card--history-${item.statusTone}`}
+            >
+              <div className="mw-card__header">
+                <h3>{item.title}</h3>
+                <span className={`mw-badge mw-badge--${item.statusTone}`}>{item.statusLabel}</span>
+              </div>
+              <p>{item.subtitle}</p>
+              <p>{item.statusDetail}</p>
+              {!item.canOpenReport ? (
+                <section
+                  className={`mw-history-progress ${item.statusTone === "proPending" ? "mw-history-progress--pro" : ""}`}
+                >
+                  <div className="mw-history-progress__row">
+                    <p className="mw-meta">阶段：{item.stageLabel}</p>
+                    <p className="mw-meta mw-history-progress__value">进度：{item.progressLabel}</p>
+                  </div>
+                  {progressPercent !== null ? (
+                    <div className="mw-progress">
+                      <div
+                        className="mw-progress__bar"
+                        style={{ width: `${Math.max(8, progressPercent)}%` }}
+                      />
+                    </div>
+                  ) : null}
+                </section>
               ) : null}
-              <button
-                type="button"
-                className="mw-secondary-button mw-secondary-button--inline"
-                onClick={() => {
-                  onOpenRecord?.(
-                    item.interpretationId,
-                    item.canOpenReport,
-                    item.reportVariant,
-                  );
-                }}
-                disabled={actionDisabled}
-              >
-                {actionBusy && activeRecordId === item.interpretationId
-                  ? "正在打开..."
-                  : item.canOpenReport
-                    ? "打开报告"
-                    : "查看进度"}
-              </button>
-            </div>
-          </article>
-        ))
+              {item.helperNote ? (
+                <p className="mw-meta mw-meta--soft">{item.helperNote}</p>
+              ) : null}
+              <p className="mw-meta">主题：{item.themeLabel} · 版本：{item.reportVariant === "pro" ? "Pro" : "Lite"}</p>
+              <p className="mw-meta">Interpretation ID: {item.interpretationId}</p>
+              <div className="mw-button-row">
+                {actionBusy && activeRecordId === item.interpretationId ? (
+                  <p className="mw-meta">当前正在刷新这条记录的真实状态。</p>
+                ) : null}
+                <button
+                  type="button"
+                  className="mw-secondary-button mw-secondary-button--inline"
+                  onClick={() => {
+                    onOpenRecord?.(
+                      item.interpretationId,
+                      item.canOpenReport,
+                      item.reportVariant,
+                    );
+                  }}
+                  disabled={actionDisabled}
+                >
+                  {actionBusy && activeRecordId === item.interpretationId
+                    ? "正在打开..."
+                    : item.actionLabel}
+                </button>
+              </div>
+            </article>
+          );
+        })
       ) : (
         <article className="mw-card">
           <div className="mw-card__header">

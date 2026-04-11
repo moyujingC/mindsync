@@ -88,6 +88,7 @@ class LayeredOrchestrator:
     def __init__(
         self,
         knowledge_engine: Any = _UNSET,
+        knowledge_runtime: Any = _UNSET,
         store: Optional[InterpretationStore] = None,
         circle_detector: Optional[CircleDetector] = None,
         generation_runtime: Optional[ReportGenerationRuntime] = None,
@@ -101,9 +102,13 @@ class LayeredOrchestrator:
         )
         self.store = store or InterpretationStore()
         self.circle_detector = circle_detector or CircleDetector()
-        self.knowledge_runtime = (
-            get_knowledge_runtime() if get_knowledge_runtime is not None else None
-        )
+        self._knowledge_runtime_explicit = knowledge_runtime is not _UNSET
+        if knowledge_runtime is _UNSET:
+            self.knowledge_runtime = (
+                get_knowledge_runtime() if get_knowledge_runtime is not None else None
+            )
+        else:
+            self.knowledge_runtime = knowledge_runtime
         self.layer0_assembler = (
             self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
         )

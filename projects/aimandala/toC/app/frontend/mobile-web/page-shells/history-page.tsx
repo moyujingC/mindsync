@@ -19,8 +19,10 @@ export interface MobileWebHistoryPageProps {
   historyStatusLabel?: string;
   historyStatusDetail?: string;
   historyStatusTone?: "preview" | "runtime";
+  historyRefreshHint?: string;
   actionBusy?: boolean;
   activeRecordId?: string | null;
+  refreshBusy?: boolean;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
@@ -28,6 +30,7 @@ export interface MobileWebHistoryPageProps {
   onFilterChange?: (filter: HistoryFilterId) => void;
   onThemeChange?: (theme?: string) => void;
   onLimitChange?: (limit: number) => void;
+  onRefresh?: () => void;
   onOpenRecord?: (
     interpretationId: string,
     canOpenReport: boolean,
@@ -43,8 +46,10 @@ export function MobileWebHistoryPage({
   historyStatusLabel,
   historyStatusDetail,
   historyStatusTone = "preview",
+  historyRefreshHint,
   actionBusy = false,
   activeRecordId = null,
+  refreshBusy = false,
   environmentLabel,
   environmentDetail,
   environmentTone,
@@ -52,6 +57,7 @@ export function MobileWebHistoryPage({
   onFilterChange,
   onThemeChange,
   onLimitChange,
+  onRefresh,
   onOpenRecord,
 }: MobileWebHistoryPageProps) {
   const descriptor = createHistoryPageDescriptor(records);
@@ -78,6 +84,20 @@ export function MobileWebHistoryPage({
           <p>{historyStatusDetail}</p>
         </section>
       ) : null}
+
+      <section className="mw-history-toolbar">
+        <p className="mw-meta">
+          {historyRefreshHint ?? "进入历史页后会自动更新生成中的记录。"}
+        </p>
+        <button
+          type="button"
+          className="mw-secondary-button mw-secondary-button--inline"
+          onClick={onRefresh}
+          disabled={refreshBusy || filterBusy || actionBusy}
+        >
+          {refreshBusy ? "刷新中..." : "立即刷新"}
+        </button>
+      </section>
 
       <HistorySummaryRow summary={descriptor.summary} />
       <HistoryFilterTabs

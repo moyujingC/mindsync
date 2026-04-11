@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { MobileWebApp } from "./app";
-import type { MandalaFlowState } from "../shared/types";
+import type { InterpretationRecordResponse, MandalaFlowState } from "../shared/types";
 
 const flowState: MandalaFlowState = {
   step: "liteReady",
@@ -86,6 +86,23 @@ const flowState: MandalaFlowState = {
   lastError: null,
 };
 
+const historyRecord: InterpretationRecordResponse = {
+  interpretation_id: "ipt-history-1",
+  user_id: "demo-user",
+  theme: "general",
+  status: "processing",
+  generation_stage: "generating_lite",
+  generation_progress: 52,
+  version_purchased: ["pro"],
+  three_circles: {
+    inner_radius: 0.3,
+    middle_radius: 0.62,
+  },
+  auto_detected: true,
+  can_upgrade: false,
+  created_at: "2026-04-11T08:00:00.000Z",
+};
+
 describe("MobileWebApp", () => {
   it("report 主路由默认渲染 Lite 解读报告页壳", () => {
     const html = renderToStaticMarkup(
@@ -125,5 +142,62 @@ describe("MobileWebApp", () => {
 
     expect(html).toContain("Lite版基础解读");
     expect(html).toContain("保存报告");
+  });
+
+  it("loading 路由在 Pro 等待中明确提示可去历史记录查看", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="loading"
+        flowState={{
+          ...flowState,
+          step: "liteGenerating",
+          status: {
+            ...flowState.status!,
+            status: "processing",
+            generation_stage: "generating",
+            generation_progress: 46,
+            report_ready: false,
+            version_purchased: ["lite", "pro"],
+          },
+          report: {
+            ...flowState.report!,
+            version: "lite",
+            report: null,
+          },
+        }}
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "general",
+          reportType: "pro",
+          reportVariant: "pro",
+          paintingIntention: "",
+          paintingFeeling: "",
+        }}
+      />,
+    );
+
+    expect(html).toContain("Pro 解读会继续在后台生成");
+    expect(html).toContain("历史页也会自动刷新，并支持你手动立即刷新");
+    expect(html).toContain("稍后去历史记录查看");
+  });
+
+  it("history 路由会渲染刷新提示与生成中的阶段进度", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="history"
+        records={[historyRecord]}
+        historyQuery={{ filter: "pending", limit: 20, theme: "general" }}
+        historyStatusLabel="Pro 解读仍在生成中"
+        historyStatusDetail="你已经离开等待页，系统会继续在后台生成。"
+        historyStatusTone="runtime"
+        historyRefreshHint="最近更新于 16:20:00"
+      />,
+    );
+
+    expect(html).toContain("立即刷新");
+    expect(html).toContain("最近更新于 16:20:00");
+    expect(html).toContain("阶段：正在生成 Lite 解读");
+    expect(html).toContain("进度：约 52%");
+    expect(html).toContain("继续查看进度");
   });
 });

@@ -126,6 +126,7 @@ class Layer0Assembler:
         layer.imbalance_candidates = imbalances
 
         theme_summary = self.theme_service.get_theme_summary(getattr(record, "theme", "general"))
+        build_info = self.repository.get_build_info()
         dominant_key = max(
             element_distribution.items(),
             key=lambda item: item[1].get("percentage", 0.0),
@@ -135,6 +136,12 @@ class Layer0Assembler:
             "circle_boundaries": circles,
             "dominant_element": ELEMENT_KEY_TO_CN.get(dominant_key, dominant_key),
             "circle_colors_detected": sorted(circle_colors.keys()),
+            "knowledge_build": {
+                "build_selector": build_info.get("build_selector"),
+                "build_source": build_info.get("build_source"),
+                "build_id": build_info.get("build_id"),
+                "pack_id": build_info.get("pack_id"),
+            },
         }
         layer.knowledge_hits = {
             "circle_readings": {
@@ -142,6 +149,7 @@ class Layer0Assembler:
                 for circle_key in ["inner", "middle", "outer"]
             },
             "theme_summary": theme_summary,
+            "build_info": build_info,
         }
         layer.rule_evaluations = {
             "imbalance_candidates": imbalances,
@@ -167,6 +175,8 @@ class Layer0Assembler:
         from app.core.pipeline.report_blueprints import LITE_REPORT_BLUEPRINT
 
         circles = getattr(record, "three_circles", None) or {"inner_radius": 33, "middle_radius": 66}
+        theme = getattr(record, "theme", "general")
+        theme_summary = self.theme_service.get_theme_summary(theme)
         layer = Layer0Raw()
         layer.imbalance_candidates = ["transition-overload"]
         layer.color_analysis = {
@@ -200,6 +210,26 @@ class Layer0Assembler:
         layer.visual_facts = {
             "generated": True,
             "circle_boundaries": circles,
+            "knowledge_build": self.repository.get_build_info(),
+        }
+        layer.knowledge_hits = {
+            "build_info": self.repository.get_build_info(),
+            "theme_summary": theme_summary,
+            "circle_readings": {
+                "inner": layer.three_circles.inner.get("meaning", ""),
+                "middle": layer.three_circles.middle.get("meaning", ""),
+                "outer": layer.three_circles.outer.get("meaning", ""),
+            },
+        }
+        layer.rule_evaluations = {
+            "imbalance_candidates": ["transition-overload"],
+            "theme_mappings": {},
+        }
+        layer.theme_projection = {
+            "theme_id": theme,
+            "theme_name": theme_summary.get("name", ""),
+            "core_issues": theme_summary.get("core_issues", []),
+            "focus_element": theme_summary.get("focus_element", ""),
         }
         layer.fallback_summary = {
             "used": True,

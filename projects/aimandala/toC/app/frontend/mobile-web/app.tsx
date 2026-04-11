@@ -38,6 +38,8 @@ export interface MobileWebAppProps {
   historyStatusLabel?: string;
   historyStatusDetail?: string;
   historyStatusTone?: "preview" | "runtime";
+  historyRefreshHint?: string;
+  historyRefreshBusy?: boolean;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
@@ -49,6 +51,7 @@ export interface MobileWebAppProps {
   onUploadBack?: () => void;
   onReportEntryBack?: () => void;
   onReportEntryChooseReportType?: (reportType: MobileWebReportProductType) => void;
+  onLoadingLeaveLater?: () => void;
   onReportPrimaryAction?: () => void;
   onReportSecondaryAction?: () => void;
   onReportBackAction?: () => void;
@@ -57,6 +60,7 @@ export interface MobileWebAppProps {
   onHistoryFilterChange?: (filter: HistoryFilterId) => void;
   onHistoryThemeChange?: (theme?: string) => void;
   onHistoryLimitChange?: (limit: number) => void;
+  onHistoryRefresh?: () => void;
   onHistoryOpenRecord?: (
     interpretationId: string,
     canOpenReport: boolean,
@@ -80,6 +84,8 @@ export function MobileWebApp({
   historyStatusLabel,
   historyStatusDetail,
   historyStatusTone,
+  historyRefreshHint,
+  historyRefreshBusy = false,
   environmentLabel,
   environmentDetail,
   environmentTone,
@@ -91,6 +97,7 @@ export function MobileWebApp({
   onUploadBack,
   onReportEntryBack,
   onReportEntryChooseReportType,
+  onLoadingLeaveLater,
   onReportPrimaryAction,
   onReportSecondaryAction,
   onReportBackAction,
@@ -99,6 +106,7 @@ export function MobileWebApp({
   onHistoryFilterChange,
   onHistoryThemeChange,
   onHistoryLimitChange,
+  onHistoryRefresh,
   onHistoryOpenRecord,
 }: MobileWebAppProps): ReactNode {
   switch (route) {
@@ -152,6 +160,7 @@ export function MobileWebApp({
           isPro={uploadDraft ? getDraftReportVariant(uploadDraft) === "pro" : false}
           onBack={onReportSecondaryAction}
           onClose={onReportSecondaryAction}
+          onLeaveLater={onLoadingLeaveLater}
         />
       );
 
@@ -217,6 +226,8 @@ export function MobileWebApp({
           historyStatusLabel={historyStatusLabel}
           historyStatusDetail={historyStatusDetail}
           historyStatusTone={historyStatusTone}
+          historyRefreshHint={historyRefreshHint}
+          refreshBusy={historyRefreshBusy}
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}
@@ -224,6 +235,7 @@ export function MobileWebApp({
           onFilterChange={onHistoryFilterChange}
           onThemeChange={onHistoryThemeChange}
           onLimitChange={onHistoryLimitChange}
+          onRefresh={onHistoryRefresh}
           onOpenRecord={onHistoryOpenRecord}
         />
       );

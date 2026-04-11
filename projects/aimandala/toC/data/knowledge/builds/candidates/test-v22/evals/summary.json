@@ -1,0 +1,58 @@
+{
+  "build_selector": "candidate:test-v22",
+  "generated_at": "2026-04-12T00:04:21.978845",
+  "summary": {
+    "fixture_count": 5,
+    "fixture_fallback_count": 2,
+    "warning_hit_count": 1,
+    "structured_missing_count": 0,
+    "regression_flag_count": 0
+  },
+  "fixtures": [
+    {
+      "fixture_id": "toc-mvp-sample-a-lite-general",
+      "theme": "general",
+      "version": "lite",
+      "fallback_used": false,
+      "warning_hit_count": 0,
+      "regression_flags": [],
+      "structured_missing_fields": []
+    },
+    {
+      "fixture_id": "toc-mvp-sample-b-lite-to-pro-career",
+      "theme": "wealth_career",
+      "version": "pro",
+      "fallback_used": true,
+      "warning_hit_count": 0,
+      "regression_flags": [],
+      "structured_missing_fields": []
+    },
+    {
+      "fixture_id": "toc-mvp-sample-c-existing-reuse",
+      "theme": "general",
+      "version": "lite",
+      "fallback_used": false,
+      "warning_hit_count": 0,
+      "regression_flags": [],
+      "structured_missing_fields": []
+    },
+    {
+      "fixture_id": "toc-mvp-sample-d-intimate-fallback",
+      "theme": "intimate_relationship",
+      "version": "lite",
+      "fallback_used": true,
+      "warning_hit_count": 0,
+      "regression_flags": [],
+      "structured_missing_fields": []
+    },
+    {
+      "fixture_id": "toc-mvp-sample-e-warning-general",
+      "theme": "general",
+      "version": "lite",
+      "fallback_used": false,
+      "warning_hit_count": 1,
+      "regression_flags": [],
+      "structured_missing_fields": []
+    }
+  ]
+}

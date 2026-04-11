@@ -11,10 +11,22 @@ asset_ref:
   note: 当前已固定资产与证据占位路径，真实脱敏图片待补
 input:
   user_profile: qa-fixture-user-c
+  image_path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/mandala-test-01.JPG
   image_label: 与既有记录完全相同的图片与主题输入
   same_user: true
   same_theme: true
   expected_existing: true
+execution:
+  create_twice: true
+  upgrade_to_pro: false
+validation:
+  report_version: lite
+  existing_on_repeat: true
+  fallback_used: false
+  warning_ids: []
+  required_structured_fields:
+    - title
+    - overall_impression
 coverage:
   - TC-04
   - TC-05

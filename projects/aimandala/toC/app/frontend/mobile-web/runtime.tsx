@@ -20,6 +20,7 @@ import { ensureUploadedImagePath } from "./upload-runtime";
 import { detectCircles } from "../shared/api";
 import {
   applyDetection,
+  getGenerationPresentation,
   getLiteStructuredReport,
   hasProReportAccess,
   initialMandalaFlowState,
@@ -167,6 +168,15 @@ function getUserIdFromInput(input: MobileWebRouteInput): string | null {
   return null;
 }
 
+function formatHistoryRefreshHint(date = new Date()): string {
+  return `最近更新于 ${new Intl.DateTimeFormat("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date)}`;
+}
+
 export function MobileWebRuntime({
   input,
   loadingFallback = "Loading mobile web route...",
@@ -192,7 +202,10 @@ export function MobileWebRuntime({
   const [runtimeHistoryQuery, setRuntimeHistoryQuery] =
     useState<InterpretationListQuery>({ filter: "all", limit: 20 });
   const [runtimeHistoryBusy, setRuntimeHistoryBusy] = useState(false);
+  const [runtimeHistoryRefreshing, setRuntimeHistoryRefreshing] = useState(false);
   const [runtimeHistoryOpeningId, setRuntimeHistoryOpeningId] = useState<string | null>(null);
+  const [runtimeHistoryRefreshHint, setRuntimeHistoryRefreshHint] = useState<string | null>(null);
+  const activeRuntimeUploadDraft = runtimeUploadDraft ?? runtimeProps?.uploadDraft ?? null;
 
   useEffect(() => {
     setRuntimeProps(props);
@@ -225,6 +238,7 @@ export function MobileWebRuntime({
     setRuntimeUploadDetectError(null);
     setRuntimeHistoryQuery({ filter: "all", limit: 20 });
     setRuntimeHistoryOpeningId(null);
+    setRuntimeHistoryRefreshHint(null);
   }, [
     inputUploadDraft?.imagePath,
     inputUploadDraft?.paintingFeeling,
@@ -234,6 +248,130 @@ export function MobileWebRuntime({
     inputUploadDraft?.uploadAsset?.storageBackend,
     inputUploadDraft?.uploadAsset?.storageKey,
     inputUploadDraft?.uploadAsset?.imageUrl,
+  ]);
+
+  useEffect(() => {
+    if (
+      !runtimeProps ||
+      runtimeProps.route !== "history" ||
+      !userId ||
+      runtimeBusy ||
+      runtimeHistoryBusy ||
+      runtimeHistoryRefreshing
+    ) {
+      return;
+    }
+
+    const activeQuery = runtimeProps.historyQuery ?? runtimeHistoryQuery;
+    const historyRecords = runtimeProps.records ?? [];
+    const hasPendingRecords = historyRecords.some(
+      (record) => !getGenerationPresentation(record).isReady,
+    );
+    if (!hasPendingRecords) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const refreshHistory = async () => {
+      setRuntimeHistoryRefreshing(true);
+
+      try {
+        let resolvedQuery = activeQuery;
+        let history = await loadHistoryPage(userId, resolvedQuery);
+        let switchedToReady = false;
+
+        if (cancelled) {
+          return;
+        }
+
+        if (resolvedQuery.filter === "pending" && history.records.length === 0) {
+          const readyQuery: InterpretationListQuery = {
+            ...resolvedQuery,
+            filter: "ready",
+          };
+          const readyHistory = await loadHistoryPage(userId, readyQuery);
+          if (cancelled) {
+            return;
+          }
+
+          if (readyHistory.records.length > 0) {
+            resolvedQuery = readyQuery;
+            history = readyHistory;
+            switchedToReady = true;
+          }
+        }
+
+        const stillPending = history.records.some(
+          (record) => !getGenerationPresentation(record).isReady,
+        );
+
+        setRuntimeHistoryQuery(resolvedQuery);
+        setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
+        setRuntimeProps((current) => {
+          if (!current || current.route !== "history") {
+            return current;
+          }
+
+          return {
+            route: "history",
+            records: history.records,
+            uploadDraft: activeRuntimeUploadDraft ?? current.uploadDraft ?? undefined,
+            historyQuery: resolvedQuery,
+            historyStatusLabel: switchedToReady
+              ? "已有新的完整报告可查看"
+              : "已自动刷新历史记录",
+            historyStatusDetail: switchedToReady
+              ? "刚才生成中的解读已完成，历史页已自动切到“可查看”，方便你直接打开报告。"
+              : stillPending
+                ? "检测到仍有生成中的解读，已为你更新最新状态。"
+                : "历史记录已更新到最新状态。",
+            historyStatusTone: "runtime",
+          };
+        });
+      } catch (historyError) {
+        if (cancelled) {
+          return;
+        }
+
+        setRuntimeProps((current) => {
+          if (!current || current.route !== "history") {
+            return current;
+          }
+
+          return {
+            ...current,
+            historyStatusLabel: "自动刷新暂时失败",
+            historyStatusDetail:
+              historyError instanceof Error
+                ? historyError.message
+                : "Failed to refresh interpretation history",
+            historyStatusTone: "runtime",
+          };
+        });
+      } finally {
+        if (!cancelled) {
+          setRuntimeHistoryRefreshing(false);
+        }
+      }
+    };
+
+    const timer = window.setInterval(() => {
+      void refreshHistory();
+    }, 10000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [
+    activeRuntimeUploadDraft,
+    runtimeBusy,
+    runtimeHistoryBusy,
+    runtimeHistoryQuery,
+    runtimeHistoryRefreshing,
+    runtimeProps,
+    userId,
   ]);
 
   useEffect(() => {
@@ -456,7 +594,7 @@ export function MobileWebRuntime({
   }
 
   const currentRuntimeProps = runtimeProps;
-  const currentUploadDraft = runtimeUploadDraft ?? runtimeProps.uploadDraft ?? null;
+  const currentUploadDraft = activeRuntimeUploadDraft;
   const uploadDraftForReturn = currentUploadDraft ?? defaultUploadDraft;
 
   async function finalizeSelectedReport(
@@ -641,6 +779,7 @@ export function MobileWebRuntime({
     setRuntimeHistoryQuery(nextQuery);
     try {
       const history = await loadHistoryPage(userId, nextQuery);
+      setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
       setRuntimeProps({
         route: "history",
         records: history.records,
@@ -683,6 +822,7 @@ export function MobileWebRuntime({
     setRuntimeHistoryQuery(nextQuery);
     try {
       const history = await loadHistoryPage(userId, nextQuery);
+      setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
       setRuntimeProps({
         route: "history",
         records: history.records,
@@ -725,6 +865,7 @@ export function MobileWebRuntime({
     setRuntimeHistoryQuery(nextQuery);
     try {
       const history = await loadHistoryPage(userId, nextQuery);
+      setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
       setRuntimeProps({
         route: "history",
         records: history.records,
@@ -747,6 +888,48 @@ export function MobileWebRuntime({
             : "Failed to load interpretation history",
         historyStatusTone: "runtime",
       });
+    } finally {
+      setRuntimeHistoryBusy(false);
+    }
+  }
+
+  async function handleHistoryRefresh() {
+    if (!userId || runtimeBusy || runtimeHistoryBusy || runtimeHistoryRefreshing) {
+      return;
+    }
+
+    const nextQuery =
+      currentRuntimeProps.route === "history"
+        ? (currentRuntimeProps.historyQuery ?? runtimeHistoryQuery)
+        : runtimeHistoryQuery;
+
+    setRuntimeHistoryBusy(true);
+    try {
+      const history = await loadHistoryPage(userId, nextQuery);
+      setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
+      setRuntimeProps({
+        route: "history",
+        records: history.records,
+        uploadDraft: currentUploadDraft ?? undefined,
+        historyQuery: nextQuery,
+        historyStatusLabel: "已手动刷新历史记录",
+        historyStatusDetail: "当前已按现有筛选条件重新请求真实历史记录。",
+        historyStatusTone: "runtime",
+      });
+    } catch (historyError) {
+      setRuntimeProps((current) => (
+        current && current.route === "history"
+          ? {
+              ...current,
+              historyStatusLabel: "手动刷新失败",
+              historyStatusDetail:
+                historyError instanceof Error
+                  ? historyError.message
+                  : "Failed to load interpretation history",
+              historyStatusTone: "runtime",
+            }
+          : current
+      ));
     } finally {
       setRuntimeHistoryBusy(false);
     }
@@ -845,6 +1028,7 @@ export function MobileWebRuntime({
     setRuntimeHistoryQuery(nextQuery);
     try {
       const history = await loadHistoryPage(userId, nextQuery);
+      setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
       setRuntimeProps({
         route: "history",
         records: history.records,
@@ -1024,6 +1208,7 @@ export function MobileWebRuntime({
         setRuntimeHistoryBusy(true);
         void loadHistoryPage(userId, runtimeHistoryQuery)
           .then((history) => {
+            setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
             setRuntimeProps({
               route: "history",
               records: history.records,
@@ -1118,9 +1303,12 @@ export function MobileWebRuntime({
       historyFilterBusy={runtimeHistoryBusy}
       historyActionBusy={runtimeBusy && currentRuntimeProps.route === "history"}
       activeHistoryRecordId={runtimeHistoryOpeningId}
+      historyRefreshHint={runtimeHistoryRefreshHint ?? undefined}
+      historyRefreshBusy={runtimeHistoryBusy || runtimeHistoryRefreshing}
       onHistoryFilterChange={handleHistoryFilterChange}
       onHistoryThemeChange={handleHistoryThemeChange}
       onHistoryLimitChange={handleHistoryLimitChange}
+      onHistoryRefresh={handleHistoryRefresh}
       onHistoryOpenRecord={handleHistoryOpenRecord}
     />
   );

@@ -34,6 +34,7 @@ def _reset_api_state():
 
     routes_v2._orchestrator = None
     routes_v2._upload_storage = None
+    routes_v2._knowledge_workbench = None
     routes_v2._active_pro_upgrade_jobs.clear()
     shutil.rmtree(
         Path(__file__).resolve().parents[2] / "data",

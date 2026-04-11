@@ -9,6 +9,9 @@ import type {
   InterpretationListQuery,
   InterpretationRecordResponse,
   InterpretationStatusResponse,
+  KnowledgeBuildSummaryResponse,
+  KnowledgeFixturePreviewRequest,
+  KnowledgeFixturePreviewResponse,
   PricingInfo,
   ReportChatRequest,
   ReportChatResponse,
@@ -91,6 +94,29 @@ export async function getInterpretationReportDebug(
 ): Promise<ReportDebugProfileResponse> {
   return fetchJson<ReportDebugProfileResponse>(
     buildUrl(`/api/v2/interpretations/${encodeURIComponent(interpretationId)}/report-debug`),
+  );
+}
+
+export async function getKnowledgeBuildSummary(
+  buildSelector: string,
+): Promise<KnowledgeBuildSummaryResponse> {
+  const url = new URL(buildUrl("/api/v2/debug/knowledge/build-summary"));
+  url.searchParams.set("build", buildSelector);
+  return fetchJson<KnowledgeBuildSummaryResponse>(url.toString());
+}
+
+export async function previewKnowledgeFixture(
+  payload: KnowledgeFixturePreviewRequest,
+): Promise<KnowledgeFixturePreviewResponse> {
+  return fetchJson<KnowledgeFixturePreviewResponse>(
+    buildUrl("/api/v2/debug/knowledge/fixture-preview"),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    },
   );
 }
 

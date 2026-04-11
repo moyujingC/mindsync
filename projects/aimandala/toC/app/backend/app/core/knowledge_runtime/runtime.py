@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .compiler import KnowledgePackCompiler
-from .repository import KnowledgeRepository
+from .repository import KnowledgeRepository, resolve_build_dir
 from .services.circle_service import CircleService
 from .services.element_service import ElementService
 from .services.healing_service import HealingService
@@ -33,40 +33,52 @@ class KnowledgeRuntime:
 _runtime: KnowledgeRuntime | None = None
 
 
+def create_knowledge_runtime(*, build_selector: str = "current") -> KnowledgeRuntime:
+    """Create a runtime bound to a specific compiled build selector."""
+
+    validator = KnowledgePackValidator()
+    compiler = KnowledgePackCompiler(
+        validator=validator,
+        build_dir=resolve_build_dir(build_selector),
+    )
+    repository = KnowledgeRepository(
+        build_selector=build_selector,
+        compiler=compiler,
+    )
+    theme_service = ThemeService(repository)
+    element_service = ElementService(repository)
+    circle_service = CircleService(repository)
+    imbalance_service = ImbalanceService(repository)
+    healing_service = HealingService(repository)
+    narrative_service = NarrativeContextService(
+        repository=repository,
+        theme_service=theme_service,
+        healing_service=healing_service,
+        imbalance_service=imbalance_service,
+    )
+    layer0_assembler = Layer0Assembler(
+        repository=repository,
+        element_service=element_service,
+        circle_service=circle_service,
+        theme_service=theme_service,
+        imbalance_service=imbalance_service,
+    )
+    return KnowledgeRuntime(
+        repository=repository,
+        element_service=element_service,
+        circle_service=circle_service,
+        theme_service=theme_service,
+        imbalance_service=imbalance_service,
+        healing_service=healing_service,
+        narrative_service=narrative_service,
+        layer0_assembler=layer0_assembler,
+    )
+
+
 def get_knowledge_runtime() -> KnowledgeRuntime:
-    """Return the shared runtime instance."""
+    """Return the shared runtime instance for the current build."""
 
     global _runtime
     if _runtime is None:
-        validator = KnowledgePackValidator()
-        compiler = KnowledgePackCompiler(validator=validator)
-        repository = KnowledgeRepository(compiler=compiler)
-        theme_service = ThemeService(repository)
-        element_service = ElementService(repository)
-        circle_service = CircleService(repository)
-        imbalance_service = ImbalanceService(repository)
-        healing_service = HealingService(repository)
-        narrative_service = NarrativeContextService(
-            repository=repository,
-            theme_service=theme_service,
-            healing_service=healing_service,
-            imbalance_service=imbalance_service,
-        )
-        layer0_assembler = Layer0Assembler(
-            repository=repository,
-            element_service=element_service,
-            circle_service=circle_service,
-            theme_service=theme_service,
-            imbalance_service=imbalance_service,
-        )
-        _runtime = KnowledgeRuntime(
-            repository=repository,
-            element_service=element_service,
-            circle_service=circle_service,
-            theme_service=theme_service,
-            imbalance_service=imbalance_service,
-            healing_service=healing_service,
-            narrative_service=narrative_service,
-            layer0_assembler=layer0_assembler,
-        )
+        _runtime = create_knowledge_runtime(build_selector="current")
     return _runtime

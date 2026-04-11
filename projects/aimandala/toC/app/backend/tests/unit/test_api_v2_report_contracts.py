@@ -18,6 +18,7 @@ def _reset_api_state() -> None:
 
     routes_v2._orchestrator = None
     routes_v2._upload_storage = None
+    routes_v2._knowledge_workbench = None
     routes_v2._active_pro_upgrade_jobs.clear()
     shutil.rmtree(
         os.path.join(
@@ -130,6 +131,18 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert debug_payload["field_provenance"]["lite"]
     assert debug_payload["diagnostics"]["summary"]["layer0_driven_count"] >= 1
     assert debug_payload["prompt_debug"]["lite"]["validation_issues"] == []
+    knowledge_debug = debug_payload["knowledge_debug"]
+    assert knowledge_debug["build_info"]["build_selector"] == "current"
+    assert knowledge_debug["layer0_evidence"]["visual_facts"]
+    assert knowledge_debug["layer0_evidence"]["knowledge_hits"]
+    assert knowledge_debug["layer0_evidence"]["rule_evaluations"]
+    assert knowledge_debug["layer0_evidence"]["theme_projection"]
+    assert knowledge_debug["layer0_evidence"]["fallback_summary"] is not None
+    assert knowledge_debug["query_results"]["theme"]["entity_id"] == "theme.wealth_career"
+    assert knowledge_debug["query_results"]["healing"]["entity_id"]
+    assert knowledge_debug["query_results"]["narrative"]["entity_id"] == "narrative.wealth_career"
+    assert isinstance(knowledge_debug["source_refs"], list)
+    assert "overall_impression" in knowledge_debug["field_to_knowledge_map"]
 
     upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
     assert upgrade_response.status_code == 200

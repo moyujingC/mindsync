@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import shutil
+import time
 import types
 from datetime import datetime, timedelta
 from unittest.mock import patch
@@ -20,12 +21,31 @@ def _reset_api_state():
 
     routes_v2._orchestrator = None
     routes_v2._upload_storage = None
+    routes_v2._active_pro_upgrade_jobs.clear()
     shutil.rmtree(
         os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
             "data",
         ),
         ignore_errors=True,
+    )
+
+
+def _wait_for_pro_report(client: TestClient, interpretation_id: str, attempts: int = 20):
+    last_response = None
+    for _ in range(attempts):
+        last_response = client.get(
+            f"/api/v2/interpretations/{interpretation_id}/report",
+            params={"version": "pro"},
+        )
+        assert last_response.status_code == 200
+        payload = last_response.json()
+        if payload.get("version") == "pro" and not payload.get("error"):
+            return payload
+        time.sleep(0.05)
+
+    raise AssertionError(
+        f"Pro report did not become ready in time: {last_response.json() if last_response else None}"
     )
 
 
@@ -566,6 +586,47 @@ def test_get_user_interpretations_endpoint_supports_filter_query(tmp_path):
     assert all(item["generation_stage"] == "completed" for item in ready_data)
 
 
+def test_get_user_interpretations_endpoint_keeps_pro_generating_records_in_pending(tmp_path):
+    from app.api.main import app
+    from app.api import routes_v2
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "history-pro-generating.png"
+    image_path.write_bytes(b"mock-image-pro-generating")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-pro-pending",
+            "image_path": str(image_path),
+            "theme": "general",
+        },
+    )
+    assert create_response.status_code == 200
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    with patch.object(routes_v2, "_ensure_pro_upgrade_job", lambda _: None):
+        upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
+    assert upgrade_response.status_code == 200
+
+    ready_response = client.get("/api/v2/users/user-api-pro-pending/interpretations?filter=ready")
+    pending_response = client.get("/api/v2/users/user-api-pro-pending/interpretations?filter=pending")
+
+    assert ready_response.status_code == 200
+    assert pending_response.status_code == 200
+
+    ready_data = ready_response.json()
+    pending_data = pending_response.json()
+
+    assert ready_data == []
+    assert len(pending_data) == 1
+    assert pending_data[0]["interpretation_id"] == interpretation_id
+    assert pending_data[0]["version_purchased"] == ["lite", "pro"]
+    assert pending_data[0]["generation_stage"] == "generating"
+    assert pending_data[0]["generation_progress"] == 85
+
+
 def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_path):
     from app.api.main import app
 
@@ -749,14 +810,9 @@ def test_upgrade_placeholder_endpoint(tmp_path):
     data = response.json()
     assert data["success"] is True
     assert data["enabled"] is True
-    assert data["status"] == "completed"
+    assert data["status"] in {"processing", "completed"}
 
-    report_response = client.get(
-        f"/api/v2/interpretations/{interpretation_id}/report",
-        params={"version": "pro"},
-    )
-    assert report_response.status_code == 200
-    report_data = report_response.json()
+    report_data = _wait_for_pro_report(client, interpretation_id)
     assert report_data["version"] == "pro"
     assert report_data["error"] is None
     assert "一梳 Pro 版报告" in report_data["report"]
@@ -782,6 +838,8 @@ def test_get_report_endpoint_defaults_to_best_available_version_after_upgrade(tm
 
     upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
     assert upgrade_response.status_code == 200
+
+    _wait_for_pro_report(client, interpretation_id)
 
     default_report_response = client.get(
         f"/api/v2/interpretations/{interpretation_id}/report"
@@ -883,7 +941,7 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
         )
         assert detect_response.status_code == 200
         detect_data = detect_response.json()
-        assert detect_data["method"] == "fake_vision"
+        assert detect_data["method"] == "llm_vision"
         assert detect_data["inner_radius"] == 0.28
         assert detect_data["middle_radius"] == 0.61
 

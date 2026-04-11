@@ -20,3 +20,17 @@ fixtures:
       - tc-04
       - tc-05
     kind: existing-record-reuse
+  - id: toc-mvp-sample-d-intimate-fallback
+    path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-d-intimate-fallback.yaml
+    scope: toc-mvp
+    purpose:
+      - tc-02
+      - tc-03
+    kind: fallback-case
+  - id: toc-mvp-sample-e-warning-general
+    path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-e-warning-general.yaml
+    scope: toc-mvp
+    purpose:
+      - tc-02
+      - tc-06
+    kind: warning-case

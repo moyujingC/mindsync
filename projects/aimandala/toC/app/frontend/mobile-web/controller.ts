@@ -38,6 +38,53 @@ export interface MobileWebReportPollingOptions {
   onTick?: (snapshot: MobileWebFlowSnapshot) => void | Promise<void>;
 }
 
+function hasResolvedCircleRadii(
+  payload: StartCreatePayload,
+): payload is StartCreatePayload & { innerRadius: number; middleRadius: number } {
+  return (
+    typeof payload.innerRadius === "number" &&
+    !Number.isNaN(payload.innerRadius) &&
+    typeof payload.middleRadius === "number" &&
+    !Number.isNaN(payload.middleRadius)
+  );
+}
+
+function normalizeCirclePercent(value: number): number {
+  return value <= 1 ? Math.round(value * 100) : Math.round(value);
+}
+
+function normalizeCircleRatio(value: number): number {
+  const normalized = value <= 1 ? value : value / 100;
+  return Math.max(0, Math.min(1, normalized));
+}
+
+function buildManualDetection(
+  innerRadius: number,
+  middleRadius: number,
+): DetectCirclesResponse {
+  return {
+    inner_radius: normalizeCircleRatio(innerRadius),
+    middle_radius: normalizeCircleRatio(middleRadius),
+    confidence: 1,
+    method: "manual_confirmed",
+    geometry_suggestion: null,
+    debug_info: null,
+  };
+}
+
+function buildUpgradeProcessingPlaceholder(
+  interpretationId: string,
+) {
+  return {
+    success: true,
+    interpretation_id: interpretationId,
+    version: "pro" as const,
+    enabled: true,
+    status: "processing",
+    message: "一梳 Pro 版正在生成中，请稍候查看。",
+  };
+}
+
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -57,10 +104,21 @@ export async function runMobileWebLiteFlow(
   let state = selectImage(initialMandalaFlowState, payload.imagePath);
 
   try {
-    const detection = await detectCircles({
-      image_path: payload.imagePath,
-    });
-    state = applyDetection(state, detection);
+    let detection: DetectCirclesResponse | undefined;
+    let innerRadius = payload.innerRadius;
+    let middleRadius = payload.middleRadius;
+
+    if (hasResolvedCircleRadii(payload)) {
+      detection = buildManualDetection(payload.innerRadius, payload.middleRadius);
+      state = applyDetection(state, detection);
+    } else {
+      detection = await detectCircles({
+        image_path: payload.imagePath,
+      });
+      state = applyDetection(state, detection);
+      innerRadius = normalizeCirclePercent(detection.inner_radius);
+      middleRadius = normalizeCirclePercent(detection.middle_radius);
+    }
 
     const interpretation = await createInterpretation({
       user_id: payload.userId,
@@ -68,8 +126,8 @@ export async function runMobileWebLiteFlow(
       theme: payload.theme,
       painting_intention: payload.paintingIntention,
       painting_feeling: payload.paintingFeeling,
-      inner_radius: payload.innerRadius,
-      middle_radius: payload.middleRadius,
+      inner_radius: innerRadius,
+      middle_radius: middleRadius,
     });
     state = applyInterpretationCreated(state, interpretation);
 
@@ -151,8 +209,11 @@ export async function openMobileWebUpgradeEntry(
   let state = currentState;
 
   try {
-    const upgrade = await upgradeInterpretation(interpretationId);
-    state = applyUpgradePlaceholder(state, upgrade);
+    state = applyUpgradePlaceholder(
+      state,
+      buildUpgradeProcessingPlaceholder(interpretationId),
+    );
+    void upgradeInterpretation(interpretationId).catch(() => undefined);
 
     return {
       state,
@@ -251,7 +312,7 @@ export async function pollMobileWebProReportUntilReady(
   currentState: MandalaFlowState = initialMandalaFlowState,
   options: MobileWebReportPollingOptions = {},
 ): Promise<MobileWebFlowSnapshot> {
-  const { intervalMs = 1500, maxAttempts = 8, onTick } = options;
+  const { intervalMs = 3000, maxAttempts = 60, onTick } = options;
   let latest = currentState;
   let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
 
@@ -285,7 +346,7 @@ export async function pollMobileWebProReportUntilReady(
       ...latestSnapshot,
       state: applyError(
         latest,
-        "Pro 报告生成超时，请稍后重试。",
+        "Pro 报告生成时间较长，请稍后到历史记录中继续查看。",
       ),
     };
   }
