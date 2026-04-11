@@ -269,6 +269,43 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
     assert profile["prompt_debug"]["pro"]["schema_fields"]
 
 
+def test_answer_report_chat_returns_runtime_reply(tmp_path):
+    image_path = tmp_path / "chat-image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+
+    class StubReportChatRuntime:
+        def reply(self, **kwargs):
+            assert kwargs["theme"] == "general"
+            assert kwargs["message"] == "现在我最该注意什么？"
+            assert kwargs["report_markdown"]
+            return "  先把节奏放慢一点。  "
+
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        report_chat_runtime=StubReportChatRuntime(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-chat",
+        )
+    )
+
+    reply = orchestrator.answer_report_chat(
+        record.interpretation_id,
+        message="现在我最该注意什么？",
+    )
+
+    assert reply == {
+        "interpretation_id": record.interpretation_id,
+        "reply": "先把节奏放慢一点。",
+    }
+
+
 def test_layer1_placeholder_prefers_runtime_lite_projection():
     class StubNarrativeService:
         def build_theme_prompt_context(self, **kwargs):

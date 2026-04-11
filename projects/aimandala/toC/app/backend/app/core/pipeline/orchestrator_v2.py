@@ -43,6 +43,7 @@ from .prompt_runtime import PromptRuntime
 from .report_contracts import ReportContractAssembler
 from .report_debug_profile import ReportDebugProfileBuilder
 from .report_draft_assembler import ReportDraftAssembler
+from .report_interaction_support import ReportInteractionSupport
 from .report_knowledge_adapter import ReportKnowledgeAdapter
 from .report_layer0_support import ReportLayer0Support
 from .report_lifecycle import ReportLifecycleManager
@@ -158,6 +159,15 @@ class LayeredOrchestrator:
         self.report_debug_builder = ReportDebugProfileBuilder(
             prompt_builder=self.prompt_builder,
             validator=self.report_contracts.validator,
+        )
+        self.report_interaction_support = ReportInteractionSupport(
+            store=self.store,
+            report_debug_builder=self.report_debug_builder,
+            get_report_chat_runtime=lambda: self.report_chat_runtime,
+            get_primary_knowledge_signal=self._get_primary_knowledge_signal,
+            get_theme_label=self._get_theme_label,
+            get_signal_label=self._get_signal_label,
+            get_knowledge_theme_summary=self.get_knowledge_theme_summary,
         )
         self.report_safety_wrapper = ReportSafetyWrapper()
         self.report_lifecycle_manager = ReportLifecycleManager(
@@ -400,33 +410,11 @@ class LayeredOrchestrator:
         history: Optional[list[Dict[str, str]]] = None,
     ) -> Optional[Dict[str, Any]]:
         """Generate a follow-up reply grounded in the existing report."""
-
-        record = self.store.load(interpretation_id)
-        if record is None:
-            return None
-        if self.report_chat_runtime is None:
-            raise ValueError("report chat runtime is not configured")
-
-        report_markdown = record.get_pro_report() or record.get_lite_report()
-        if not report_markdown:
-            raise ValueError("report is not ready")
-
-        reply = self.report_chat_runtime.reply(
-            report_markdown=report_markdown,
-            ai_qa_context=record.get_ai_qa_context(),
-            theme=record.theme,
-            painting_intention=record.painting_intention,
-            painting_feeling=record.painting_feeling,
+        return self.report_interaction_support.answer_report_chat(
+            interpretation_id,
             message=message,
             history=history,
         )
-        if not isinstance(reply, str) or not reply.strip():
-            raise ValueError("report chat runtime returned empty reply")
-
-        return {
-            "interpretation_id": interpretation_id,
-            "reply": reply.strip(),
-        }
 
     def get_status(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Return a compact status snapshot for polling clients."""
@@ -434,20 +422,8 @@ class LayeredOrchestrator:
 
     def get_report_debug_profile(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Return a development-only profile of how the current report was produced."""
-
-        record = self.store.load(interpretation_id)
-        if record is None:
-            return None
-        knowledge_signal = self._get_primary_knowledge_signal(record)
-        return self.report_debug_builder.build(
-            record=record,
-            theme_label=self._get_theme_label(record.theme),
-            signal_label=(
-                self._get_signal_label(knowledge_signal)
-                if knowledge_signal
-                else None
-            ),
-            theme_summary=self.get_knowledge_theme_summary(record.theme),
+        return self.report_interaction_support.get_report_debug_profile(
+            interpretation_id,
         )
 
     def upgrade_to_pro(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
