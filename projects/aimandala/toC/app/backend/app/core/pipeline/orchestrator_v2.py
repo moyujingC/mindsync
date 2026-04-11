@@ -1771,7 +1771,7 @@ class LayeredOrchestrator:
         record: InterpretationRecord,
         imbalance_profile: Optional[Dict[str, str]] = None,
     ) -> str:
-        mapping = self._get_runtime_theme_mapping(record)
+        projection = self._get_runtime_imbalance_projection(record)
         layer0 = self._get_layer0_view(record)
         distribution = self._get_layer0_element_distribution(layer0)
         weakest = distribution[-1] if distribution else {"name": "水", "percentage": 0.0}
@@ -1783,8 +1783,8 @@ class LayeredOrchestrator:
         primary = imbalance_profile.get("primary", "") if imbalance_profile else ""
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         parts: list[str] = []
-        mapped_contradiction = str(mapping.get("核心矛盾") or "").strip()
-        mapped_manifestation = str(mapping.get("具体表现") or "").strip()
+        mapped_contradiction = str(projection.get("contradiction") or "").strip()
+        mapped_manifestation = str(projection.get("manifestation") or "").strip()
         if mapped_contradiction:
             parts.append(f"当前更核心的卡点，其实是「{mapped_contradiction}」。")
         if mapped_manifestation:
@@ -1804,8 +1804,8 @@ class LayeredOrchestrator:
         return " ".join(part for part in parts if part).strip()
 
     def _build_pro_direction(self, record: InterpretationRecord, theme_label: str) -> str:
-        mapping = self._get_runtime_theme_mapping(record)
-        mapped_direction = str(mapping.get("转变方向") or "").strip()
+        projection = self._get_runtime_imbalance_projection(record)
+        mapped_direction = str(projection.get("direction") or "").strip()
         base = PRO_REPORT_BLUEPRINT.narrative_templates["core_direction"].format(
             theme_label=theme_label
         )
@@ -1814,87 +1814,32 @@ class LayeredOrchestrator:
         return f"{mapped_direction}。{base}".strip()
 
     def _build_pro_healing_core(self, record: InterpretationRecord) -> str:
-        healing = self._get_runtime_healing_payload(record)
-        imbalance = self._get_runtime_imbalance_detail(record)
-        issue_type = str(healing.get("issue_type") or "").strip()
-        cognitive_upgrade = str(healing.get("cognitive_upgrade") or "").strip()
-        healing_direction = str(imbalance.get("healing_direction") or "").strip()
-        warning = str(imbalance.get("warning") or "").strip()
-
-        parts: list[str] = []
-        if issue_type and cognitive_upgrade:
-            parts.append(f"围绕「{issue_type}」真正要慢慢建立的新体验是：{cognitive_upgrade}。")
-        elif cognitive_upgrade:
-            parts.append(cognitive_upgrade.rstrip("。") + "。")
-        if healing_direction:
-            parts.append(f"当前调节方向更接近：{healing_direction}。")
-        if warning:
-            parts.append(warning)
-        if not parts:
-            parts.append(PRO_REPORT_BLUEPRINT.narrative_templates["core_healing"])
-        return " ".join(part for part in parts if part).strip()
+        projection = self._get_runtime_imbalance_projection(record)
+        return str(projection.get("healing_core") or "").strip() or PRO_REPORT_BLUEPRINT.narrative_templates["core_healing"]
 
     def _build_deeper_root_cause(self, record: InterpretationRecord) -> str:
-        imbalance_type = self._get_primary_knowledge_signal(record)
-        imbalance = self._get_runtime_imbalance_detail(record)
-        manifestation = str(imbalance.get("description") or "").strip()
-        manifestations = imbalance.get("manifestations") or []
-        psychology = "、".join(
-            str(item).strip()
-            for item in manifestations
-            if isinstance(item, str) and item.strip()
-        )
-        if imbalance_type and manifestation:
-            sentence = f"更深一层看，这更接近「{imbalance_type}」的模式：{manifestation}。"
-            if psychology:
-                sentence += f" 它常会让人落进「{psychology}」这样的内在循环。"
-            return sentence
+        projection = self._get_runtime_imbalance_projection(record)
+        if projection.get("deeper_root"):
+            return str(projection["deeper_root"])
         return PRO_REPORT_BLUEPRINT.narrative_templates["root_deeper"]
 
     def _build_core_root_cause(self, record: InterpretationRecord) -> str:
-        healing = self._get_runtime_healing_payload(record)
-        issue_type = str(healing.get("issue_type") or "").strip()
-        cognitive_upgrade = str(healing.get("cognitive_upgrade") or "").strip()
-        if issue_type and cognitive_upgrade:
-            return f"更深层的位置，是你正在重新学习：在「{issue_type}」这里，{cognitive_upgrade}"
-        if cognitive_upgrade:
-            return f"更深层的位置，是你正在重新学习：{cognitive_upgrade}"
+        projection = self._get_runtime_imbalance_projection(record)
+        if projection.get("core_root"):
+            return str(projection["core_root"])
         return PRO_REPORT_BLUEPRINT.narrative_templates["root_core"]
 
-    def _get_runtime_theme_mapping(self, record: InterpretationRecord) -> Dict[str, Any]:
-        if not self.knowledge_runtime:
+    def _get_runtime_imbalance_projection(self, record: InterpretationRecord) -> Dict[str, Any]:
+        if not self.narrative_service:
             return {}
         imbalance_type = self._get_primary_knowledge_signal(record)
         if not imbalance_type:
             return {}
-        result = self.knowledge_runtime.imbalance_service.get_theme_mapping(
-            self._get_record_theme(record),
-            imbalance_type,
+        return self.narrative_service.build_imbalance_projection(
+            theme=self._get_record_theme(record),
+            imbalance_type=imbalance_type,
+            theme_label=self._get_theme_label(record.theme),
         )
-        return result.value if isinstance(result.value, dict) else {}
-
-    def _get_runtime_healing_payload(self, record: InterpretationRecord) -> Dict[str, Any]:
-        if not self.knowledge_runtime:
-            return {}
-        imbalance_type = self._get_primary_knowledge_signal(record)
-        if not imbalance_type:
-            return {}
-        result = self.knowledge_runtime.healing_service.get_healing_plan(
-            imbalance_type,
-            self._get_record_theme(record),
-        )
-        return result.value if isinstance(result.value, dict) else {}
-
-    def _get_runtime_imbalance_detail(self, record: InterpretationRecord) -> Dict[str, Any]:
-        if not self.knowledge_runtime:
-            return {}
-        imbalance_type = self._get_primary_knowledge_signal(record)
-        if not imbalance_type:
-            return {}
-        result = self.knowledge_runtime.imbalance_service.get_imbalance_detail(
-            imbalance_type,
-        )
-        return result.value if isinstance(result.value, dict) else {}
 
     def _build_pro_circle_reading(
         self,
@@ -2376,8 +2321,8 @@ class LayeredOrchestrator:
     def _build_surface_root_cause(self, record: InterpretationRecord) -> str:
         intention = (record.painting_intention or "").strip()
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
-        mapping = self._get_runtime_theme_mapping(record)
-        mapped_manifestation = str(mapping.get("具体表现") or "").strip()
+        projection = self._get_runtime_imbalance_projection(record)
+        mapped_manifestation = str(projection.get("manifestation") or "").strip()
         lite_contradiction = (
             record.layer_1_lite_draft.story.contradiction.content
             if record.layer_1_lite_draft and record.layer_1_lite_draft.story.contradiction.content
@@ -2491,50 +2436,26 @@ class LayeredOrchestrator:
         signal: str,
         theme_label: str,
     ) -> Dict[str, str]:
-        if not signal or not self.knowledge_runtime:
+        if not signal or not self.narrative_service:
             return {}
-
-        mapping = self._get_runtime_theme_mapping(record)
-        imbalance = self._get_runtime_imbalance_detail(record)
-        if not mapping and not imbalance:
+        projection = self._get_runtime_imbalance_projection(record)
+        if not projection:
             return {}
-
-        contradiction = str(mapping.get("核心矛盾") or "").strip()
-        manifestation = str(mapping.get("具体表现") or imbalance.get("description") or "").strip()
-        direction = str(mapping.get("转变方向") or "").strip()
-        category = str(imbalance.get("category") or "").strip()
-        warning = str(imbalance.get("warning") or "").strip()
-        signal_text = self._describe_signal(signal)
-
-        summary_parts = [f"当前更接近的核心失衡是「{signal}」"]
-        if category:
-            summary_parts.append(f"（{category}）")
-        if contradiction:
-            summary_parts.append(f"：{contradiction}")
-        elif manifestation:
-            summary_parts.append(f"：{manifestation}")
-        summary = "".join(summary_parts).strip()
-        if summary and summary[-1] not in "。！？":
-            summary += "。"
-
-        evidence_parts: list[str] = []
-        if manifestation:
-            evidence_parts.append(f"在{theme_label}主题里，它更容易表现成：{manifestation}。")
-        if direction:
-            evidence_parts.append(f"当前更适合的转向是：{direction}。")
-        if signal_text:
-            evidence_parts.append(signal_text)
-        if warning:
-            evidence_parts.append(warning)
+        if not projection.get("contradiction") and not projection.get("manifestation"):
+            return {}
 
         return {
             "type": profile_key,
-            "primary": contradiction or self._get_signal_label(signal),
-            "summary": summary,
-            "evidence": " ".join(part for part in evidence_parts if part).strip(),
-            "energy_level": manifestation or signal_text,
-            "psychological_level": contradiction or signal_text,
-            "life_manifestation": manifestation or direction or signal_text,
+            "primary": str(projection.get("contradiction") or self._get_signal_label(signal)),
+            "summary": str(projection.get("summary") or ""),
+            "evidence": str(projection.get("evidence") or ""),
+            "energy_level": str(projection.get("manifestation") or self._describe_signal(signal)),
+            "psychological_level": str(projection.get("contradiction") or self._describe_signal(signal)),
+            "life_manifestation": str(
+                projection.get("manifestation")
+                or projection.get("direction")
+                or self._describe_signal(signal)
+            ),
         }
 
     def _select_pro_imbalance_type(

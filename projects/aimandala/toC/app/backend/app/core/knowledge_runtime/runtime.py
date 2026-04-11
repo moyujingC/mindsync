@@ -50,6 +50,7 @@ def get_knowledge_runtime() -> KnowledgeRuntime:
             repository=repository,
             theme_service=theme_service,
             healing_service=healing_service,
+            imbalance_service=imbalance_service,
         )
         layer0_assembler = Layer0Assembler(
             repository=repository,

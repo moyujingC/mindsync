@@ -175,6 +175,23 @@ def test_v21_healing_plan_uses_structured_issue_mapping():
     assert result.warnings == []
 
 
+def test_v21_narrative_service_builds_imbalance_projection():
+    runtime = get_knowledge_runtime()
+
+    projection = runtime.narrative_service.build_imbalance_projection(
+        theme="wealth_career",
+        imbalance_type="水多火灭",
+        theme_label="财富事业",
+    )
+
+    assert "水多火灭" in projection["summary"]
+    assert "恐惧压制行动" in projection["summary"]
+    assert "72小时决策" in projection["direction"]
+    assert "财富是能量的流动" in projection["healing_core"]
+    assert "水多火灭" in projection["deeper_root"]
+    assert "财富焦虑" in projection["core_root"]
+
+
 def test_v21_layer0_contains_structured_evidence(tmp_path):
     image_path = tmp_path / "knowledge-layer0.png"
     image = np.full((300, 300, 3), 255, dtype=np.uint8)
