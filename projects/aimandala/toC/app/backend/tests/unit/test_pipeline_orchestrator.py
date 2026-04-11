@@ -235,6 +235,40 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert report["can_upgrade"] is True
 
 
+def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
+    image_path = tmp_path / "debug-image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-debug",
+            theme="wealth_career",
+        )
+    )
+    orchestrator.upgrade_to_pro(record.interpretation_id)
+
+    profile = orchestrator.get_report_debug_profile(record.interpretation_id)
+
+    assert profile is not None
+    assert profile["theme"] == "wealth_career"
+    assert len(profile["steps"]) == 6
+    assert "lite" in profile["field_provenance"]
+    assert "pro" in profile["field_provenance"]
+    assert "summary" in profile["diagnostics"]
+    assert "recommended_first_actions" in profile["diagnostics"]["summary"]
+    assert "lite" in profile["prompt_debug"]
+    assert "pro" in profile["prompt_debug"]
+    assert profile["prompt_debug"]["lite"]["schema_fields"]
+    assert profile["prompt_debug"]["pro"]["schema_fields"]
+
+
 def test_layer1_placeholder_prefers_runtime_lite_projection():
     class StubNarrativeService:
         def build_theme_prompt_context(self, **kwargs):
