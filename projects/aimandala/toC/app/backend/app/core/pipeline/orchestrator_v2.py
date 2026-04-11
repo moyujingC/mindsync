@@ -2399,6 +2399,14 @@ class LayeredOrchestrator:
         theme_label: str,
     ) -> list[Dict[str, str]]:
         primary = imbalance_profile.get("primary", "能量受阻型失衡")
+        runtime_rendered = self._build_runtime_healing_suggestions(
+            record,
+            primary=primary,
+            theme_label=theme_label,
+        )
+        if runtime_rendered:
+            return runtime_rendered
+
         type_code = imbalance_profile.get("type", "energy-block")
         templates = PRO_REPORT_BLUEPRINT.healing_suggestion_templates.get(type_code) or PRO_REPORT_BLUEPRINT.healing_suggestion_templates.get("energy-block", [])
         rendered = [
@@ -2438,6 +2446,74 @@ class LayeredOrchestrator:
             ),
         }
         return [*rendered, common_tail]
+
+    def _build_runtime_healing_suggestions(
+        self,
+        record: InterpretationRecord,
+        *,
+        primary: str,
+        theme_label: str,
+    ) -> list[Dict[str, str]]:
+        if not self.knowledge_runtime:
+            return []
+
+        imbalance_type = self._get_primary_knowledge_signal(record)
+        if not imbalance_type:
+            return []
+
+        healing_result = self.knowledge_runtime.healing_service.get_healing_plan(
+            imbalance_type,
+            self._get_record_theme(record),
+        )
+        payload = healing_result.value if isinstance(healing_result.value, dict) else {}
+        if not payload:
+            return []
+
+        issue_type = str(payload.get("issue_type") or "").strip()
+        symptoms = str(payload.get("symptoms") or "").strip()
+        mandala_prescription = str(payload.get("mandala_prescription") or "").strip()
+        daily_practice = str(payload.get("daily_practice") or "").strip()
+        cognitive_upgrade = str(payload.get("cognitive_upgrade") or "").strip()
+
+        if not any([issue_type, symptoms, mandala_prescription, daily_practice, cognitive_upgrade]):
+            return []
+
+        phase_one_focus = symptoms or f"这次更需要先看见「{issue_type or primary}」在你当下的具体表现。"
+        if issue_type:
+            phase_one_focus = f"当前更接近的疗愈议题是「{issue_type}」。{phase_one_focus}"
+
+        phase_two_focus = (
+            mandala_prescription
+            or f"围绕「{primary}」先做小幅但稳定的调节，而不是期待一次性把所有问题解决。"
+        )
+        phase_three_focus = (
+            cognitive_upgrade
+            or f"真正的转化，不是立刻变成另一个人，而是在{theme_label}里慢慢长出更稳的节奏。"
+        )
+
+        return [
+            {
+                "phase": f"建议一：先识别「{issue_type or primary}」",
+                "focus": phase_one_focus,
+                "practice": daily_practice
+                or "先用一句话写下你最近最常出现的感受，再决定要不要马上处理它。",
+            },
+            {
+                "phase": "建议二：把绘画当成调节容器",
+                "focus": phase_two_focus,
+                "practice": daily_practice
+                or f"本周只围绕{theme_label}做一个最小动作，让身体先适应新的节奏。",
+            },
+            {
+                "phase": "建议三：把理解落回现实生活",
+                "focus": phase_three_focus,
+                "practice": render_template_text(
+                    "这周在{theme_label}里保留少量但稳定的承诺，围绕「{primary}」练习不过度用力，也不完全退回去。",
+                    primary=primary,
+                    theme_label=theme_label,
+                ),
+            },
+        ]
 
     def _describe_circle_pattern(self, circles: Dict[str, int]) -> str:
         inner = circles.get("inner_radius", 33)

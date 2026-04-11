@@ -353,6 +353,7 @@ def test_upgrade_to_pro_generates_placeholder_report(tmp_path):
     assert upgraded.layer_3_pro_draft.imbalance_confirmed["primary"]
     assert upgraded.layer_3_pro_draft.imbalance_confirmed["evidence"]
     assert len(upgraded.layer_3_pro_draft.healing_suggestions) == 3
+    assert upgraded.layer_3_pro_draft.healing_suggestions[0]["focus"]
     assert upgraded.layer_3_pro_draft.healing_suggestions[0]["practice"]
     assert "一梳 Pro 版解读报告模板 v1.6" in upgraded.layer_3_pro_draft.prompt_preview
     assert "第一眼直觉" in upgraded.layer_4_pro_final.full_report_markdown
@@ -366,6 +367,37 @@ def test_upgrade_to_pro_generates_placeholder_report(tmp_path):
     assert pro_report is not None
     assert "一梳 Pro 版解读报告模板 v1.6" in pro_report["structured"]["prompt_preview"]
     assert pro_report["structured"]["prompt_schema_validation_issues"] == []
+
+
+def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
+    image_path = tmp_path / "runtime-healing-image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-runtime-healing",
+            theme="wealth_career",
+        )
+    )
+    record.layer_0_raw.imbalance_candidates = ["水多火灭"]
+    store.save(record)
+
+    result = orchestrator.upgrade_to_pro(record.interpretation_id)
+
+    assert result is not None
+    upgraded = store.load(record.interpretation_id)
+    assert upgraded is not None
+    assert upgraded.layer_3_pro_draft is not None
+    assert upgraded.layer_3_pro_draft.healing_suggestions
+    assert "财富焦虑" in upgraded.layer_3_pro_draft.healing_suggestions[0]["focus"]
+    assert "72小时决策" not in upgraded.layer_3_pro_draft.healing_suggestions[0]["practice"]
 
 
 def test_prompt_schema_validation_reports_missing_required_fields():

@@ -174,6 +174,9 @@ class KnowledgePackCompiler:
         imbalance_definitions = (
             lookups["rules"].get("rule.imbalance_types", {}).get("imbalances", {})
         )
+        healing_issue_mappings = (
+            lookups["rules"].get("rule.healing_issue_mappings", {}).get("mappings", {})
+        )
         toc_supported_imbalances = sorted(
             imbalance_id
             for imbalance_id, definition in imbalance_definitions.items()
@@ -240,32 +243,54 @@ class KnowledgePackCompiler:
                     .get("issue_types", {})
                 ).keys()
             )
-            direct_matches = sorted(issue_types.intersection(toc_supported_imbalances))
+            healing_issue_mapping = healing_issue_mappings.get(theme_id, {})
+            missing_healing_mappings = [
+                imbalance_id
+                for imbalance_id in toc_supported_imbalances
+                if imbalance_id not in healing_issue_mapping
+            ]
+            invalid_issue_targets = []
+            for imbalance_id, mapping in healing_issue_mapping.items():
+                issue_type = mapping.get("issue_type") if isinstance(mapping, dict) else None
+                if issue_type not in issue_types:
+                    invalid_issue_targets.append(
+                        {
+                            "imbalance_id": imbalance_id,
+                            "issue_type": issue_type or "",
+                        }
+                    )
             healing_lookup_coverage[theme_id] = {
-                "direct_issue_match_count": len(direct_matches),
+                "mapped_count": len(toc_supported_imbalances) - len(missing_healing_mappings),
                 "toc_supported_total": len(toc_supported_imbalances),
-                "missing_issue_sample": [
-                    imbalance_id
-                    for imbalance_id in toc_supported_imbalances
-                    if imbalance_id not in issue_types
-                ][:3],
+                "missing_mapping_sample": missing_healing_mappings[:3],
+                "invalid_issue_targets": invalid_issue_targets[:3],
                 "fallback_risk": (
                     "high"
-                    if toc_supported_imbalances and not direct_matches
+                    if missing_healing_mappings or invalid_issue_targets
                     else "low"
                 ),
             }
-            if toc_supported_imbalances and not direct_matches:
+            if missing_healing_mappings:
                 fallback_hotspots.append(
                     {
-                        "kind": "healing_template_fallback",
+                        "kind": "healing_issue_mapping_gap",
                         "theme_id": theme_id,
-                        "severity": "medium",
-                        "direct_issue_match_count": 0,
+                        "severity": "high",
+                        "missing_count": len(missing_healing_mappings),
                         "toc_supported_total": len(toc_supported_imbalances),
                         "missing_issue_sample": healing_lookup_coverage[theme_id][
-                            "missing_issue_sample"
+                            "missing_mapping_sample"
                         ],
+                    }
+                )
+            if invalid_issue_targets:
+                fallback_hotspots.append(
+                    {
+                        "kind": "healing_issue_target_missing",
+                        "theme_id": theme_id,
+                        "severity": "high",
+                        "missing_count": len(invalid_issue_targets),
+                        "invalid_issue_sample": invalid_issue_targets[:3],
                     }
                 )
 

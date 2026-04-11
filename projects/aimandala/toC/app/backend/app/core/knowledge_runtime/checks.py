@@ -125,12 +125,12 @@ def _build_quality_warnings(quality_stats: dict[str, Any]) -> list[str]:
     healing_hotspots = [
         item
         for item in quality_stats.get("fallback_hotspots", [])
-        if item.get("kind") == "healing_template_fallback"
+        if item.get("kind") in {"healing_issue_mapping_gap", "healing_issue_target_missing"}
     ]
     if healing_hotspots:
         themes = ", ".join(sorted(item.get("theme_id", "") for item in healing_hotspots))
         warnings.append(
-            "healing service direct issue lookup currently falls back to templates for "
+            "healing issue mappings remain incomplete for "
             f"{len(healing_hotspots)} themes: {themes}"
         )
 

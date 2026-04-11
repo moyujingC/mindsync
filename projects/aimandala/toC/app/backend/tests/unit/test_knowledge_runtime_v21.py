@@ -76,21 +76,23 @@ def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
     assert "wealth_career" in index["stats"]["theme_ids"]
     assert "intimate_relationship" in index["stats"]["theme_ids"]
     assert index["assets"]["rules"]["rule.imbalance_types"]["payload"]["imbalances"]["水多火灭"]["warning"]
+    assert "rule.healing_issue_mappings" in index["assets"]["rules"]
     quality = index["stats"]["quality"]
     assert quality["theme_mapping_coverage"]["general"]["mapped_count"] == len(
         index["stats"]["toc_supported_imbalances"]
     )
-    assert quality["healing_lookup_coverage"]["general"]["fallback_risk"] == "high"
+    assert quality["healing_lookup_coverage"]["general"]["fallback_risk"] == "low"
+    assert quality["healing_lookup_coverage"]["general"]["mapped_count"] == len(
+        index["stats"]["toc_supported_imbalances"]
+    )
     assert any(
         item["imbalance_id"] == "水多火灭"
         for item in quality["high_risk_warning_paths"]
     )
-    hotspot_themes = {
-        item["theme_id"]
+    assert not any(
+        item["kind"] in {"healing_issue_mapping_gap", "healing_issue_target_missing"}
         for item in quality["fallback_hotspots"]
-        if item["kind"] == "healing_template_fallback"
-    }
-    assert {"general", "wealth_career", "intimate_relationship"}.issubset(hotspot_themes)
+    )
 
 
 def test_v21_check_reports_clean_state():
@@ -99,9 +101,9 @@ def test_v21_check_reports_clean_state():
     assert report.ok is True
     assert report.differences == []
     assert any("packs/v2.1" in path for path in report.checked_paths)
-    assert any("healing service direct issue lookup" in item for item in report.warnings)
-    assert any(
-        item["kind"] == "healing_template_fallback" and item["theme_id"] == "general"
+    assert report.warnings == []
+    assert not any(
+        item["kind"] in {"healing_issue_mapping_gap", "healing_issue_target_missing"}
         for item in report.fallback_hotspots
     )
 
@@ -156,6 +158,21 @@ def test_v21_query_engine_returns_structured_query_result():
     assert imbalance_result.entity_id == "imbalance.水多火灭"
     assert imbalance_result.value["warning"]
     assert imbalance_result.evidence[0]["source_path"] == "rules/imbalance_types.yaml"
+
+
+def test_v21_healing_plan_uses_structured_issue_mapping():
+    engine = KnowledgeQueryEngine(version="toc")
+
+    result = engine.get_healing_plan("水多火灭", theme="wealth_career")
+
+    assert result.found is True
+    assert result.fallback_level == "none"
+    assert result.value["issue_type"] == "财富焦虑"
+    assert result.value["imbalance"] == "水多火灭"
+    evidence_paths = [item["source_path"] for item in result.evidence]
+    assert "rules/healing_issue_mappings.yaml" in evidence_paths
+    assert "healing/wealth_career.yaml" in evidence_paths
+    assert result.warnings == []
 
 
 def test_v21_layer0_contains_structured_evidence(tmp_path):
