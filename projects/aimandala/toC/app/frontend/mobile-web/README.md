@@ -23,9 +23,9 @@
    - 调用用户历史列表
 5. Upgrade 页
    - 当前已走真实 `upgrade + report(version=pro)` 最小闭环
-   - 但内容仍是迁移期 Pro 报告，还不是旧主线完整生成内容
+   - 正式生成链路已切到当前 prompt/schema 主干，可继续围绕内容质量迭代
 
-当前不建议在这里直接复制旧仓库 `app/ui` 的整套结构，而是优先按共享层边界重组。
+当前不建议在这里直接复制历史前端结构，而是优先按共享层边界重组。
 
 ## 生产环境变量模板
 
@@ -93,7 +93,7 @@
 - `storageKey`
 - `imageUrl`
 
-因此后端即使从 `local` 切到 `cos`，页面层也不需要因为存储后端变化而改状态结构。
+其中 `imageUrl` 表示当前可用的短期访问 URL；长期权威定位应以 `storageBackend + storageKey` 为准。
 
 如果需要更接近页面层的数据结构，还可以继续走：
 
@@ -342,7 +342,7 @@
 - report / history 仍保留部分前端占位语义
 - 上传接口当前只落本地临时文件，并带最小过期清理；还没有正式对象存储 / CDN / 完整生命周期治理
 
-## 迁移收口状态
+## 当前收口状态
 
 如果当前目标是“先把旧主线迁完”，那 mobile-web 现在可以按下面理解：
 
@@ -356,13 +356,13 @@
 - Lite / Pro richer structured report 展示
 - Lite / Pro 输入驱动的 richer 报告文案
 - 当前仍需继续替换的部分：
-  - `一梳 Pro 版` 当前已恢复最小正式闭环，但报告内容仍是迁移期文本，还不是旧主线的正式 Pro 生成内容
+  - `一梳 Pro 版` 当前已恢复正式主链，可继续围绕提示词、知识质量和结构质量迭代
 
-当前迁移期上传对象契约也先固定为：
+当前上传对象契约固定为：
 
 1. 浏览器文件先走 `upload-image`
 2. 前端把返回结果收口到 `MobileWebUploadDraft.uploadAsset`
 3. 后续 `detect / create / report` 一律消费 `uploadAsset.runtimeImagePath`
 4. `create` 会同步透传 `image_url / storage_backend / storage_key / image_local_expires_at` 给后端入库，保证后续生命周期治理有追踪字段
 
-在正式对象存储接入前，先按这套契约继续推进，不把存储升级本身作为 Lite 主链路迁移的阻塞项。
+当前正式对象存储已切到 `COS` 私有读 + 签名 URL；页面层继续按这套契约推进，不需要自己拼接远程对象地址。

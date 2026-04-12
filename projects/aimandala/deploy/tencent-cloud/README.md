@@ -1,6 +1,6 @@
 # 腾讯云部署说明（systemd + nginx / Docker + nginx）
 
-> 适用范围：`AI-Mandala To C` 当前迁移期后端（FastAPI）与 mobile-web 静态前端
+> 适用范围：`一镜一梳 To C` 后端（FastAPI）与 mobile-web 静态前端
 
 当前项目已经形成两种部署路径：
 

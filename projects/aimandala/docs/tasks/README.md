@@ -19,3 +19,5 @@
 - `2026-04-11-v21-knowledge-remaining-execution-plan.md`
 - `2026-04-12-迁移收官与正式版收口总计划.md`
 - `2026-04-12-v22-knowledge-workbench-execution-plan.md`
+
+其中带“迁移”字样的阶段文档已转入历史参考口径，不再作为默认任务入口。

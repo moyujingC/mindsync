@@ -17,7 +17,7 @@
 
 ## 当前状态
 
-当前这里承接的是 `AI-Mandala / 一镜一梳` To C 主线在 `mindsync` 里的第一批 `V2` 迁移骨架。
+当前这里承接的是 `一镜一梳` To C 主线在 `mindsync` 里的正式后端入口。
 
 已经迁入并可运行的内容：
 
@@ -29,7 +29,7 @@
 - `app/api/main.py`
 - `app/api/routes_v2.py`
 
-当前这批实现的目标不是复刻旧仓库全部能力，而是先打通一条最小可验证的 To C 主路径。
+当前这批实现的目标不是复刻历史仓库全部能力，而是维护当前正式 To C 主路径，并持续迭代质量。
 
 ## 当前目录约定
 
@@ -113,7 +113,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 其中当前已经打通的最小行为：
 
 - 浏览器上传文件可以先落到后端本地临时路径
-- 本地上传现在也会返回可直接访问的 `image_url`，用于把迁移期 `local` 上传契约先收口到和远程对象存储一致的消费方式
+- 本地上传会返回可直接访问的本地读取地址，供开发与 smoke test 使用
 - 本地临时上传目录会清理超过 24 小时的旧文件
 - 上传存储已经抽成独立策略层；本地开发默认走 `local`，正式 `release` 明确走 `cos`
 - `s3 / oss` 已有 dry-run 远程元数据语义，可先产出稳定的 `storage_key / image_url`
@@ -131,7 +131,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - Lite 报告文案与结构已开始明显向旧主线正式报告靠拢，包含更接近正式产品口吻的标题、整体印象、心灵画像故事、主题表现、六个核心洞察与小实验
 - 同一用户 / 同一图片 / 同一主题会复用已有记录
 - 记录、状态、报告、历史列表都可以查询
-- `upgrade` 已能写入并读取迁移期 `一梳 Pro 版` 报告
+- `upgrade` 已能写入并读取 `一梳 Pro 版` 报告
 - Pro 报告已经开始按 `layer_3 / layer_4` 输出第一眼直觉、核心洞察、三圈画像、根源分析与调节建议
 - Pro 报告内容也已经开始受 `theme / painting_intention / painting_feeling / 三圈参数` 影响，不再只是固定模板
 - Pro 报告文案与结构也已开始向旧主线正式深度报告靠拢，包含第一眼直觉、核心洞察表格、Lite 基础承接、三圈深度诊断、失衡识别、根源探索与针对失衡问题的疗愈建议
@@ -209,7 +209,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 说明：
 
 - `AIMANDALA_LLM_BACKEND=noop` 时，Lite / Pro 仍走 deterministic 兜底，三圈识别回落为默认几何建议，report chat 不会得到真实模型回复
-- `release` 环境不应使用 `noop`，否则会退回迁移期心智而不满足正式版交付要求
+- `release` 环境不应使用 `noop`，否则会退回开发兜底路径而不满足正式版交付要求
 - `openai_compatible` 当前基于 `/chat/completions` 协议，支持文本生成、JSON 结构生成和图片输入
 - `AIMANDALA_LLM_REPORT_MODEL / CHAT_MODEL / VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
 - 当前推荐把这组变量作为主配置；如果只想兼容旧报告网关，也仍可继续使用下面的 Prompt Runtime 配置

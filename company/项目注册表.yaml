@@ -10,15 +10,14 @@ objects:
     name: "一镜一梳"
     slug: "aimandala"
     kind: "product"
-    status: "planned_migration"
+    status: "active"
     goal: "一镜一梳上线"
     company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md"
     workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md"
     runtime_directory: "projects/aimandala"
-    legacy_repository: "https://github.com/MindSyncHub/ai-mandala"
     purpose:
       - "曼陀罗疗愈方向的核心产品项目"
-      - "作为后续迁入 Monorepo 的正式产品工作区"
+      - "以 `projects/aimandala` 作为唯一正式开发与发布工作区"
       - "为研究中心与墨予镜 IP 提供产品素材"
 
   - id: "00403f31-add0-4b19-b715-6652a4b3dfe3"
