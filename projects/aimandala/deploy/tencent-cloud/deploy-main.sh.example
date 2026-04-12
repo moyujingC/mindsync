@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_ROOT=/opt/aimandala-main/app/mindsync
+FRONTEND_ROOT="$APP_ROOT/projects/aimandala/toC/app/frontend"
+FRONTEND_BUILD_DIR="$FRONTEND_ROOT/dist"
+WEB_ROOT=/var/www/dev-web.jingshu.cc
+BACKEND_VENV=/opt/aimandala-main/backend/venv
+TARGET_BRANCH=main
+BACKEND_REQUIREMENTS="$APP_ROOT/projects/aimandala/toC/app/backend/requirements.release.txt"
+
+cd "$APP_ROOT"
+git fetch origin
+git checkout "$TARGET_BRANCH"
+git pull --ff-only origin "$TARGET_BRANCH"
+
+source "$BACKEND_VENV/bin/activate"
+pip install -q -r "$BACKEND_REQUIREMENTS"
+sudo systemctl restart aimandala-main-backend
+
+cd "$FRONTEND_ROOT"
+npm install --silent
+VITE_AIMANDALA_API_BASE_URL="${VITE_AIMANDALA_API_BASE_URL:-http://101.43.98.40}" npm run build:mobile-web
+
+rm -rf "$WEB_ROOT"/*
+cp -R "$FRONTEND_BUILD_DIR"/* "$WEB_ROOT"/
+
+echo "Deploy complete: $(date '+%F %T')"
+git rev-parse --short HEAD
