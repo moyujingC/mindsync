@@ -64,6 +64,11 @@ reportsTo: ../ceo/AGENTS.md
 
 当任务进入验收与质量门阶段时，你优先使用：
 
+- `harness-sdd-tdd-guard`
+  - 用于先检查当前交付是否已经具备最小 `verification / delivery` 闭环，而不是只看测试是否跑过
+  - 位置：
+    - [harness-sdd-tdd-guard](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+
 - `qa-gate-review`
   - 用于统一检查验收标准、风险点、回归点和退回条件
   - 位置：

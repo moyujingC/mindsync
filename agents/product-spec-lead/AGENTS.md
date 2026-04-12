@@ -76,6 +76,11 @@ reportsTo: ../ceo/AGENTS.md
 
 当任务已经进入产品定义阶段时，你优先使用：
 
+- `harness-sdd-tdd-guard`
+  - 用于先判断当前任务属于 brainstorming、spec、implementation-plan 还是更后阶段，并避免把聊天直接推进成实现
+  - 位置：
+    - [harness-sdd-tdd-guard](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+
 - `product-framing-spec`
   - 用于把模糊方向、研究输入和业务判断收束成明确的 framing / spec
   - 位置：

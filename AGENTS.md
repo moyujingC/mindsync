@@ -74,6 +74,76 @@
 - 先以 `company/项目注册表.yaml` 判断对象类型，再决定进入公司侧入口或 `projects/` 工作区
 - 若要让 Paperclip 使用这套内核，优先基于 `COMPANY.md`、`.paperclip.yaml` 与 `agents/` 对齐
 
+## IDE 默认开发纪律
+
+当你直接在 `Claude Code`、`Codex` 等 IDE 代理中工作，而不是依赖 Paperclip 派活时，也必须默认遵守 `Harness Engineering + SDD + TDD`。
+
+### 什么属于重要工作
+
+满足任一项时，默认视为重要工作：
+
+- 新功能或新能力
+- 主链路行为变化
+- 架构、模块边界或目录结构变化
+- 影响接口合同、数据结构或运行时语义的改动
+- 大型 refactor
+- 新增或重做调试台、workbench、评估脚本、fixture、运维链路
+
+### 重要工作的默认阶段门
+
+重要工作默认走下面这条最小闭环，而不是直接开始实现：
+
+1. `spec` 或问题定义
+2. `task` / `implementation plan`
+3. `qa basis`
+4. `implementation`
+5. `verification`
+6. `delivery`
+
+这里的最小要求不是每次都写长文档，而是每一阶段都要有能交接的正式 artifact。
+
+### 缺失 artifact 时的默认动作
+
+如果任务已经进入实现、重构或交付阶段，但缺少关键 artifact：
+
+- 不默认“边做边补”
+- 不用聊天记录代替正式 artifact
+- 应先补最小 `spec`、`task` 或 `qa basis`
+- 如当前角色不适合补齐，应显式回退给对应 owner
+
+### TDD 的默认执行方式
+
+进入实现前，至少先写清：
+
+1. 目标行为
+2. 验收标准
+3. 边界情况
+4. 验证方式
+
+测试不一定都先表现为自动化测试文件，但不能没有验证口径。
+
+### 完成实现后的默认要求
+
+完成代码修改后，不应直接宣称任务完成。
+
+至少还要补齐或同步：
+
+- `qa` 或验证记录
+- `delivery` 或交付说明
+- 当前残留风险
+- 下一阶段 handoff 对象
+
+### 推荐 skill
+
+遇到“需求讨论 -> 开发 -> 验证 -> 交付”的链路时，优先使用：
+
+- `product-framing-spec`
+- `artifact-readiness-check`
+- `qa-gate-review`
+- `harness-sdd-tdd-guard`
+
+其中 `harness-sdd-tdd-guard` 用于统一判断当前处于哪一阶段、最小 artifact 是否齐全，以及是否允许直接进入实现或宣布完成。
+
 ## Paperclip Notes
 
 - `COMPANY.md` 是公司包入口

@@ -53,6 +53,20 @@ reportsTo: ../ceo/AGENTS.md
 - `Product Spec Lead` 的产品 spec
 - CEO 下发的明确实现任务
 
+## 你优先使用的 skill
+
+当任务已经进入实现、重构、联调或收尾阶段时，你优先使用：
+
+- `harness-sdd-tdd-guard`
+  - 用于先判断当前是否已经具备最小 `spec / task / qa basis / verification / delivery` 闭环
+  - 位置：
+    - [harness-sdd-tdd-guard](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+
+- `artifact-readiness-check`
+  - 当你怀疑当前输入还不足以直接进入实现时，先检查 artifact 是否 ready
+  - 位置：
+    - [artifact-readiness-check](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/artifact-readiness-check/SKILL.md)
+
 ## 你的默认输出
 
 你默认应输出以下一种或多种 artifact：

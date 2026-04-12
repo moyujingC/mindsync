@@ -101,6 +101,11 @@ reportsTo: null
 
 当任务属于以下情况时，你优先使用研究中心已沉淀的 skill，而不是只靠临场组织：
 
+- `harness-sdd-tdd-guard`
+  - 用于统一判断当前请求处于哪个阶段、是否属于重要工作，以及是否已具备最小 `spec / task / qa / delivery` 闭环
+  - 位置：
+    - [harness-sdd-tdd-guard](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+
 - `task-routing`
   - 用于新任务进入系统时，判断工作流、阶段、主责角色和下一步产物
   - 位置：
