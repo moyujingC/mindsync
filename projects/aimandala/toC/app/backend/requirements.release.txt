@@ -7,3 +7,4 @@ anyio==4.13.0
 python-multipart==0.0.20
 numpy==2.4.4
 opencv-python-headless==4.13.0.92
+cos-python-sdk-v5==1.9.38
