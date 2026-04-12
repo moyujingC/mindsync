@@ -10,8 +10,8 @@ def resolve_knowledge_toc_root(from_file: str | Path) -> Path:
 
     path = Path(from_file).resolve()
     for candidate in [path.parent, *path.parents]:
-        if (candidate / "data" / "knowledge").exists() and (
-            candidate / "domain" / "knowledge" / "schemas"
-        ).exists():
+        if (candidate / "domain" / "knowledge" / "schemas").exists():
+            return candidate
+        if (candidate / "data" / "knowledge").exists():
             return candidate
     raise RuntimeError(f"unable to resolve knowledge ToC root from {path}")

@@ -114,11 +114,15 @@ def test_v21_runtime_paths_resolve_in_local_and_container_layouts(tmp_path):
     local_file = tmp_path / "toC" / "app" / "backend" / "app" / "core" / "knowledge_runtime" / "validators.py"
     container_file = tmp_path / "app" / "backend" / "app" / "core" / "knowledge_runtime" / "validators.py"
 
-    for toc_root, source_file in (
-        (local_file.parents[5], local_file),
-        (container_file.parents[4], container_file),
+    for toc_root, source_file, create_data_root in (
+        (local_file.parents[5], local_file, True),
+        (container_file.parents[4], container_file, False),
     ):
-        (toc_root / "data" / "knowledge" / "packs" / "v2.1").mkdir(parents=True, exist_ok=True)
+        if create_data_root:
+            (toc_root / "data" / "knowledge" / "packs" / "v2.1").mkdir(
+                parents=True,
+                exist_ok=True,
+            )
         schema_dir = toc_root / "domain" / "knowledge" / "schemas"
         schema_dir.mkdir(parents=True, exist_ok=True)
         (schema_dir / "knowledge_pack.schema.json").write_text("{}", encoding="utf-8")
