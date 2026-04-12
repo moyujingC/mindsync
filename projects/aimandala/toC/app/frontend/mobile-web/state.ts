@@ -11,6 +11,7 @@ export interface MobileWebUploadAssetRef {
   runtimeImagePath: string;
   storageBackend: string;
   storageKey: string;
+  imageLocalExpiresAt?: string | null;
   imageUrl?: string | null;
 }
 
@@ -54,13 +55,14 @@ export function getDraftReportVariant(
 export function toMobileWebUploadAssetRef(
   uploaded: Pick<
     UploadImageResponse,
-    "image_path" | "storage_backend" | "storage_key" | "image_url"
+    "image_path" | "storage_backend" | "storage_key" | "image_local_expires_at" | "image_url"
   >,
 ): MobileWebUploadAssetRef {
   return {
     runtimeImagePath: uploaded.image_path,
     storageBackend: uploaded.storage_backend,
     storageKey: uploaded.storage_key,
+    imageLocalExpiresAt: uploaded.image_local_expires_at || null,
     imageUrl: uploaded.image_url || null,
   };
 }
@@ -93,6 +95,7 @@ export function getDraftUploadImageResponse(
     original_filename: draft.browserFile?.name || draft.imagePath,
     content_type: draft.browserFile?.type || null,
     size_bytes: draft.browserFile?.size || 0,
+    image_local_expires_at: uploadAsset.imageLocalExpiresAt || null,
     image_url: uploadAsset.imageUrl || null,
   };
 }
@@ -144,6 +147,9 @@ export function toStartCreatePayload(
   return {
     userId,
     imagePath: getDraftRuntimeImagePath(draft),
+    storageBackend: getUploadAssetRef(draft)?.storageBackend,
+    storageKey: getUploadAssetRef(draft)?.storageKey,
+    imageLocalExpiresAt: getUploadAssetRef(draft)?.imageLocalExpiresAt,
     theme: draft.theme,
     paintingIntention: draft.paintingIntention,
     paintingFeeling: draft.paintingFeeling,

@@ -32,15 +32,15 @@ class CreateInterpretationRequest(BaseModel):
     image_path: str = Field(..., description="Runtime-readable local image cache path")
     image_url: Optional[str] = Field(
         default=None,
-        description="Formal remote image URL returned by the upload storage backend",
+        description="Temporary image access URL kept only for backward compatibility",
     )
     storage_backend: Optional[str] = Field(
         default=None,
-        description="Formal upload storage backend name (local/s3/oss/cos/path)",
+        description="Formal upload storage backend name (long-lived identity field)",
     )
     storage_key: Optional[str] = Field(
         default=None,
-        description="Formal upload storage key for lifecycle tracking",
+        description="Formal upload storage key for lifecycle tracking and URL refresh",
     )
     image_local_expires_at: Optional[str] = Field(
         default=None,
@@ -115,6 +115,10 @@ class InterpretationRecordResponse(BaseModel):
     auto_detected: bool
     can_upgrade: bool
     created_at: str
+    image_url: Optional[str] = None
+    storage_backend: Optional[str] = None
+    storage_key: Optional[str] = None
+    image_local_expires_at: Optional[str] = None
 
 
 class InterpretationStatusResponse(BaseModel):
@@ -129,6 +133,10 @@ class InterpretationStatusResponse(BaseModel):
     three_circles: dict
     auto_detected: bool
     can_upgrade: bool
+    image_url: Optional[str] = None
+    storage_backend: Optional[str] = None
+    storage_key: Optional[str] = None
+    image_local_expires_at: Optional[str] = None
 
 
 class ReportResponse(BaseModel):
@@ -144,6 +152,10 @@ class ReportResponse(BaseModel):
     can_upgrade: bool = False
     upgrade_price: Optional[float] = None
     error: Optional[str] = None
+    image_url: Optional[str] = None
+    storage_backend: Optional[str] = None
+    storage_key: Optional[str] = None
+    image_local_expires_at: Optional[str] = None
 
 
 class ReportDebugProfileResponse(BaseModel):
@@ -245,6 +257,7 @@ class UploadImageResponse(BaseModel):
     original_filename: str
     content_type: Optional[str] = None
     size_bytes: int
+    # Temporary access URL. Long-lived identity lives in storage_backend + storage_key.
     image_url: Optional[str] = None
     image_local_expires_at: Optional[str] = None
 
@@ -344,7 +357,28 @@ def _ensure_pro_upgrade_job(interpretation_id: str) -> None:
     ).start()
 
 
-def to_record_response(record) -> InterpretationRecordResponse:
+def _resolve_record_image_url(
+    request: Request | None,
+    *,
+    storage_backend: str | None,
+    storage_key: str | None,
+) -> str | None:
+    if not storage_backend or not storage_key:
+        return None
+
+    if storage_backend == "local":
+        if request is None:
+            return None
+        return str(request.url_for("get_uploaded_image", storage_key=storage_key))
+
+    storage = get_upload_storage()
+    if storage_backend == "cos" and hasattr(storage, "build_temporary_url"):
+        return storage.build_temporary_url(storage_key)
+
+    return None
+
+
+def to_record_response(request: Request | None, record) -> InterpretationRecordResponse:
     report_ready = _is_history_record_ready(record)
     return InterpretationRecordResponse(
         interpretation_id=record.interpretation_id,
@@ -358,6 +392,14 @@ def to_record_response(record) -> InterpretationRecordResponse:
         auto_detected=record.three_circles_auto_detect is not None,
         can_upgrade=record.can_upgrade_to_pro(),
         created_at=record.created_at,
+        image_url=_resolve_record_image_url(
+            request,
+            storage_backend=record.image_storage_backend,
+            storage_key=record.image_storage_key,
+        ),
+        storage_backend=record.image_storage_backend,
+        storage_key=record.image_storage_key,
+        image_local_expires_at=record.image_local_expires_at,
     )
 
 
@@ -494,17 +536,17 @@ async def create_interpretation(payload: CreateInterpretationRequest):
     "/interpretations/{interpretation_id}",
     response_model=InterpretationRecordResponse,
 )
-async def get_interpretation(interpretation_id: str):
+async def get_interpretation(interpretation_id: str, request: Request):
     """Fetch a single migrated interpretation record."""
 
-    return to_record_response(_load_record_or_http_error(interpretation_id))
+    return to_record_response(request, _load_record_or_http_error(interpretation_id))
 
 
 @router.get(
     "/interpretations/{interpretation_id}/status",
     response_model=InterpretationStatusResponse,
 )
-async def get_interpretation_status(interpretation_id: str):
+async def get_interpretation_status(interpretation_id: str, request: Request):
     """Fetch a polling-friendly status snapshot for a migrated record."""
 
     try:
@@ -513,7 +555,18 @@ async def get_interpretation_status(interpretation_id: str):
         raise HTTPException(status_code=410, detail=str(error)) from error
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
-    return InterpretationStatusResponse(**result)
+    record = _load_record_or_http_error(interpretation_id)
+    return InterpretationStatusResponse(
+        **result,
+        image_url=_resolve_record_image_url(
+            request,
+            storage_backend=record.image_storage_backend,
+            storage_key=record.image_storage_key,
+        ),
+        storage_backend=record.image_storage_backend,
+        storage_key=record.image_storage_key,
+        image_local_expires_at=record.image_local_expires_at,
+    )
 
 
 @router.get(
@@ -521,6 +574,7 @@ async def get_interpretation_status(interpretation_id: str):
     response_model=list[InterpretationRecordResponse],
 )
 async def get_user_interpretations(
+    request: Request,
     user_id: str,
     filter: Literal["all", "ready", "pending"] = "all",
     limit: int = Query(default=10, ge=1, le=100),
@@ -535,14 +589,18 @@ async def get_user_interpretations(
         records = [record for record in records if _is_history_record_ready(record)]
     elif filter == "pending":
         records = [record for record in records if not _is_history_record_ready(record)]
-    return [to_record_response(record) for record in records[:limit]]
+    return [to_record_response(request, record) for record in records[:limit]]
 
 
 @router.get(
     "/interpretations/{interpretation_id}/report",
     response_model=ReportResponse,
 )
-async def get_report(interpretation_id: str, version: Optional[str] = None):
+async def get_report(
+    interpretation_id: str,
+    request: Request,
+    version: Optional[str] = None,
+):
     """Fetch the currently available report view for a migrated record."""
 
     try:
@@ -551,6 +609,7 @@ async def get_report(interpretation_id: str, version: Optional[str] = None):
         raise HTTPException(status_code=410, detail=str(error)) from error
     if result is None:
         raise HTTPException(status_code=404, detail="interpretation not found")
+    record = _load_record_or_http_error(interpretation_id)
 
     return ReportResponse(
         interpretation_id=interpretation_id,
@@ -563,6 +622,14 @@ async def get_report(interpretation_id: str, version: Optional[str] = None):
         can_upgrade=result.get("can_upgrade", False),
         upgrade_price=result.get("upgrade_price"),
         error=result.get("error"),
+        image_url=_resolve_record_image_url(
+            request,
+            storage_backend=record.image_storage_backend,
+            storage_key=record.image_storage_key,
+        ),
+        storage_backend=record.image_storage_backend,
+        storage_key=record.image_storage_key,
+        image_local_expires_at=record.image_local_expires_at,
     )
 
 

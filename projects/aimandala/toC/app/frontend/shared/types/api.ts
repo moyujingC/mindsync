@@ -40,6 +40,7 @@ export interface UploadImageResponse {
   original_filename: string;
   content_type?: string | null;
   size_bytes: number;
+  // Temporary access URL. Long-lived identity lives in storage_backend + storage_key.
   image_url?: string | null;
   image_local_expires_at?: string | null;
 }
@@ -47,6 +48,7 @@ export interface UploadImageResponse {
 export interface CreateInterpretationRequest {
   user_id: string;
   image_path: string;
+  // Compatibility-only temporary URL; formal creation should rely on storage_key.
   image_url?: string | null;
   storage_backend?: string | null;
   storage_key?: string | null;
@@ -89,6 +91,10 @@ export interface InterpretationRecordResponse {
   auto_detected: boolean;
   can_upgrade: boolean;
   created_at: string;
+  image_url?: string | null;
+  storage_backend?: string | null;
+  storage_key?: string | null;
+  image_local_expires_at?: string | null;
 }
 
 export interface InterpretationStatusResponse {
@@ -104,6 +110,10 @@ export interface InterpretationStatusResponse {
   };
   auto_detected: boolean;
   can_upgrade: boolean;
+  image_url?: string | null;
+  storage_backend?: string | null;
+  storage_key?: string | null;
+  image_local_expires_at?: string | null;
 }
 
 export interface LiteStructuredReport {
@@ -196,6 +206,10 @@ export interface ReportResponse {
   can_upgrade: boolean;
   upgrade_price?: number | null;
   error?: string | null;
+  image_url?: string | null;
+  storage_backend?: string | null;
+  storage_key?: string | null;
+  image_local_expires_at?: string | null;
 }
 
 export interface ReportChatMessage {

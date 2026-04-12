@@ -251,6 +251,7 @@ def test_upload_image_endpoint_returns_cos_metadata():
     _reset_api_state()
     client = TestClient(app)
     upload_calls = []
+    presigned_calls = []
 
     class FakeCosConfig:
         def __init__(self, **kwargs):
@@ -262,6 +263,13 @@ def test_upload_image_endpoint_returns_cos_metadata():
 
         def put_object(self, **kwargs):
             upload_calls.append(kwargs)
+
+        def get_presigned_download_url(self, **kwargs):
+            presigned_calls.append(kwargs)
+            return (
+                f"https://{self.config.kwargs.get('Domain') or 'demo-bucket.cos.ap-shanghai.myqcloud.com'}/"
+                f"{kwargs['Key']}?sign=demo"
+            )
 
     fake_qcloud_module = types.SimpleNamespace(
         CosConfig=FakeCosConfig,
@@ -277,6 +285,7 @@ def test_upload_image_endpoint_returns_cos_metadata():
             "AIMANDALA_UPLOAD_COS_BUCKET": "demo-bucket",
             "AIMANDALA_UPLOAD_COS_REGION": "ap-shanghai",
             "AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL": "https://img.example.com/mandala",
+            "AIMANDALA_COS_SIGNED_URL_TTL_SECONDS": "900",
         },
         clear=False,
     ), patch.dict(sys.modules, {"qcloud_cos": fake_qcloud_module}):
@@ -291,12 +300,14 @@ def test_upload_image_endpoint_returns_cos_metadata():
     data = response.json()
     assert data["storage_backend"] == "cos"
     assert data["storage_key"].startswith("aimandala/uploads/")
-    assert data["image_url"] == f"https://img.example.com/mandala/{data['storage_key']}"
+    assert data["image_url"] == f"https://img.example.com/{data['storage_key']}?sign=demo"
     assert os.path.exists(data["image_path"])
     assert data["image_local_expires_at"] is not None
     assert len(upload_calls) == 1
+    assert len(presigned_calls) == 1
     assert upload_calls[0]["Bucket"] == "demo-bucket"
     assert upload_calls[0]["Key"] == data["storage_key"]
+    assert presigned_calls[0]["Expired"] == 900
 
 
 def test_upload_image_endpoint_returns_501_for_missing_remote_backend_config():
@@ -458,6 +469,104 @@ def test_create_interpretation_persists_upload_metadata(tmp_path):
     assert record.image_storage_backend == "cos"
     assert record.image_storage_key == "aimandala/uploads/demo.png"
     assert record.image_local_expires_at == "2026-04-06T00:00:00+00:00"
+
+
+def test_read_endpoints_refresh_cos_image_url_from_storage_key(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-cos-refresh.png"
+    image_path.write_bytes(b"mock-image")
+    presigned_calls = []
+
+    class FakeCosConfig:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    class FakeCosClient:
+        def __init__(self, config):
+            self.config = config
+
+        def get_presigned_download_url(self, **kwargs):
+            presigned_calls.append(kwargs)
+            return (
+                f"https://{self.config.kwargs.get('Domain') or 'demo-bucket.cos.ap-shanghai.myqcloud.com'}/"
+                f"{kwargs['Key']}?refresh=1"
+            )
+
+    fake_qcloud_module = types.SimpleNamespace(
+        CosConfig=FakeCosConfig,
+        CosS3Client=FakeCosClient,
+    )
+
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_UPLOAD_BACKEND": "cos",
+            "AIMANDALA_UPLOAD_COS_SECRET_ID": "secret-id",
+            "AIMANDALA_UPLOAD_COS_SECRET_KEY": "secret-key",
+            "AIMANDALA_UPLOAD_COS_BUCKET": "demo-bucket",
+            "AIMANDALA_UPLOAD_COS_REGION": "ap-shanghai",
+            "AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL": "https://img.example.com/mandala",
+            "AIMANDALA_COS_SIGNED_URL_TTL_SECONDS": "900",
+        },
+        clear=False,
+    ), patch.dict(sys.modules, {"qcloud_cos": fake_qcloud_module}):
+        create_response = client.post(
+            "/api/v2/interpretations",
+            json={
+                "user_id": "user-api-read-refresh",
+                "image_path": str(image_path),
+                "storage_backend": "cos",
+                "storage_key": "aimandala/uploads/demo.png",
+                "image_url": "https://expired.example.com/demo.png",
+                "image_local_expires_at": "2026-04-06T00:00:00+00:00",
+            },
+        )
+
+        interpretation_id = create_response.json()["interpretation_id"]
+        status_response = client.get(f"/api/v2/interpretations/{interpretation_id}/status")
+        report_response = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
+        history_response = client.get("/api/v2/users/user-api-read-refresh/interpretations")
+
+    assert status_response.status_code == 200
+    assert report_response.status_code == 200
+    assert history_response.status_code == 200
+    assert status_response.json()["image_url"] == "https://img.example.com/aimandala/uploads/demo.png?refresh=1"
+    assert report_response.json()["image_url"] == "https://img.example.com/aimandala/uploads/demo.png?refresh=1"
+    assert history_response.json()[0]["image_url"] == "https://img.example.com/aimandala/uploads/demo.png?refresh=1"
+    assert all(call["Key"] == "aimandala/uploads/demo.png" for call in presigned_calls)
+
+
+def test_read_endpoints_return_null_image_url_when_storage_identity_missing(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-missing-storage.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-missing-storage",
+            "image_path": str(image_path),
+            "image_url": "https://expired.example.com/demo.png",
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    status_response = client.get(f"/api/v2/interpretations/{interpretation_id}/status")
+    report_response = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
+    history_response = client.get("/api/v2/users/user-api-missing-storage/interpretations")
+
+    assert status_response.status_code == 200
+    assert report_response.status_code == 200
+    assert history_response.status_code == 200
+    assert status_response.json()["image_url"] is None
+    assert report_response.json()["image_url"] is None
+    assert history_response.json()[0]["image_url"] is None
 
 
 def test_create_interpretation_requires_complete_manual_circles(tmp_path):

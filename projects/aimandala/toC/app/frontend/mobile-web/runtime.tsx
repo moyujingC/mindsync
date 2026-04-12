@@ -248,6 +248,7 @@ export function MobileWebRuntime({
     inputUploadDraft?.uploadAsset?.runtimeImagePath,
     inputUploadDraft?.uploadAsset?.storageBackend,
     inputUploadDraft?.uploadAsset?.storageKey,
+    inputUploadDraft?.uploadAsset?.imageLocalExpiresAt,
     inputUploadDraft?.uploadAsset?.imageUrl,
   ]);
 

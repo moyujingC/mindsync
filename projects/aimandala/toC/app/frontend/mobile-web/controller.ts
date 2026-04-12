@@ -123,6 +123,9 @@ export async function runMobileWebLiteFlow(
     const interpretation = await createInterpretation({
       user_id: payload.userId,
       image_path: payload.imagePath,
+      storage_backend: payload.storageBackend,
+      storage_key: payload.storageKey,
+      image_local_expires_at: payload.imageLocalExpiresAt,
       theme: payload.theme,
       painting_intention: payload.paintingIntention,
       painting_feeling: payload.paintingFeeling,

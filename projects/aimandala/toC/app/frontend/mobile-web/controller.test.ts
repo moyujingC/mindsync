@@ -73,6 +73,9 @@ describe("mobile-web controller", () => {
     const snapshot = await runMobileWebLiteFlow({
       userId: "user-1",
       imagePath: "/tmp/sample.png",
+      storageBackend: "cos",
+      storageKey: "aimandala/uploads/sample.png",
+      imageLocalExpiresAt: "2026-04-13T00:00:00+00:00",
       theme: "general",
       paintingIntention: "看见自己",
       paintingFeeling: "平静",
@@ -85,6 +88,9 @@ describe("mobile-web controller", () => {
     expect(snapshot.report?.version).toBe("lite");
     expect(api.createInterpretation).toHaveBeenCalledWith(
       expect.objectContaining({
+        storage_backend: "cos",
+        storage_key: "aimandala/uploads/sample.png",
+        image_local_expires_at: "2026-04-13T00:00:00+00:00",
         inner_radius: 10,
         middle_radius: 20,
       }),

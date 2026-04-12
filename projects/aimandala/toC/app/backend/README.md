@@ -181,11 +181,13 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 - `AIMANDALA_UPLOAD_COS_REGION`
 - `AIMANDALA_UPLOAD_COS_KEY_PREFIX`（可选，默认 `aimandala/uploads`）
 - `AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL`（可选，可指向备案后的正式域名或 CDN 域名）
+- `AIMANDALA_COS_SIGNED_URL_TTL_SECONDS`（可选，默认 `900`，控制前端读取图片时的签名 URL 有效期）
 - `AIMANDALA_UPLOAD_LOCAL_RETENTION_HOURS`（可选，默认 `24`，控制本地临时文件过期窗口）
 
 说明：
 
 - `COS` 当前会真实上传远端对象，同时保留本地临时文件，避免现有 `image_path` 主链断掉
+- `image_url` 在 `COS` 下是临时签名 URL；长期定位以 `storage_backend + storage_key` 为准
 - 若未安装 `cos-python-sdk-v5`，接口会返回 `501`
 
 ## Unified LLM 配置

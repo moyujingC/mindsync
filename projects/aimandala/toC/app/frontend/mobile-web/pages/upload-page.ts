@@ -97,7 +97,7 @@ export function createUploadPageDescriptor(
         value: uploadAsset?.storageKey || "尚未生成",
       },
       {
-        label: "远程图片 URL",
+        label: "当前签名访问 URL",
         value: uploadAsset?.imageUrl || "当前未返回",
       },
     ],

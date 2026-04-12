@@ -71,7 +71,7 @@ export function UploadAssetStatusCard({
           <dd>{uploadAsset?.storageKey || "当前未生成"}</dd>
         </div>
         <div className="mw-field-list__row">
-          <dt>远程图片 URL</dt>
+          <dt>当前签名访问 URL</dt>
           <dd>{uploadAsset?.imageUrl || "当前未返回"}</dd>
         </div>
       </dl>
