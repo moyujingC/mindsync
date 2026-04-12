@@ -115,7 +115,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - 浏览器上传文件可以先落到后端本地临时路径
 - 本地上传现在也会返回可直接访问的 `image_url`，用于把迁移期 `local` 上传契约先收口到和远程对象存储一致的消费方式
 - 本地临时上传目录会清理超过 24 小时的旧文件
-- 上传存储已经抽成独立策略层，当前默认走 `local` 工厂实现
+- 上传存储已经抽成独立策略层；本地开发默认走 `local`，正式 `release` 明确走 `cos`
 - `s3 / oss` 已有 dry-run 远程元数据语义，可先产出稳定的 `storage_key / image_url`
 - `cos` 已接入真实上传实现；即使走腾讯云 COS，后端也仍会保留本地 `image_path`，保证当前 detect/create/report 主链无需改契约
 - 远程上传后端现在已补上环境变量配置校验，能区分“缺配置”和“实现未接入”
@@ -138,8 +138,10 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - Lite / Pro 最终 markdown 都已接入 safety disclaimer 包装
 - Lite / Pro 正式 Prompt 主干已开始迁回，当前后端已内置 `PromptBuilder + lite_v1.6/pro_v1.6` 模板，并能在 `layer_1_lite_draft.prompt_preview` / `layer_3_pro_draft.prompt_preview` 输出当前 prompt 预览
 - Lite / Pro `report.structured` 已开始透出 `prompt_schema_validation_issues`，可直接检查当前输出是否满足 prompt schema 必填字段
-- Lite / Pro 生成流程已接入可替换 `generation runtime`（默认 deterministic），后续接真实模型调用时可在不改主链 API 的前提下替换实现
+- Lite / Pro 生成流程已收为 `PromptBuilder + schema + PromptBackedReportGenerationRuntime + Unified LLM client` 的正式主链
+- deterministic runtime 仍保留，但只作为开发/QA/失败场景下的受控 fallback，不再是正式 release 口径下的默认内容来源
 - 生成链路已补充 `prompt_runtime` 注入点，可用 `prompt + schema -> structured payload` 覆写 Lite / Pro 关键字段，并保留 deterministic 兜底
+- Lite / Pro 的最终 `report.structured` 字段契约现已集中在 `app/core/pipeline/structured_report_schema.py`
 - 后端现已补上统一 LLM client，可用一套配置同时驱动 Lite / Pro 结构生成、三圈 AI 识别、Pro 报告内 AI 追问
 - Pro 报告页对应的 AI 问答现已补上真实接口，基于当前报告 markdown、QA 上下文和历史对话生成延展回答
 
@@ -147,7 +149,6 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 
 当前实现明确还没有接入：
 
-- 正式对象存储 / CDN 上传链路
 - 基于 `s3 / oss` dry-run 升级为真实远程上传实现
 - 更完整的上传生命周期治理（例如引用计数、后台清理任务、持久化策略）
 - knowledge engine
@@ -191,7 +192,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 
 如需把报告生成、三圈识别和报告内 AI 问答统一接到真实模型，优先使用下面这组环境变量：
 
-- `AIMANDALA_LLM_BACKEND`（可选，默认 `noop`；当前支持 `openai_compatible`）
+- `AIMANDALA_LLM_BACKEND`（本地可缺省为 `noop`；正式 `release` 应显式设为 `openai_compatible`）
 - `AIMANDALA_LLM_BASE_URL`（`openai_compatible` 模式必填，例如 `https://<host>/v1`）
 - `AIMANDALA_LLM_API_KEY`（可选，取决于网关要求）
 - `AIMANDALA_LLM_API_KEY_HEADER`（可选，默认 `Authorization`）
@@ -206,6 +207,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 说明：
 
 - `AIMANDALA_LLM_BACKEND=noop` 时，Lite / Pro 仍走 deterministic 兜底，三圈识别回落为默认几何建议，report chat 不会得到真实模型回复
+- `release` 环境不应使用 `noop`，否则会退回迁移期心智而不满足正式版交付要求
 - `openai_compatible` 当前基于 `/chat/completions` 协议，支持文本生成、JSON 结构生成和图片输入
 - `AIMANDALA_LLM_REPORT_MODEL / CHAT_MODEL / VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
 - 当前推荐把这组变量作为主配置；如果只想兼容旧报告网关，也仍可继续使用下面的 Prompt Runtime 配置

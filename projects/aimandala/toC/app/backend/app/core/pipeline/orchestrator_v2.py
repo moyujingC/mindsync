@@ -228,8 +228,8 @@ class LayeredOrchestrator:
         three_circles: Optional[Dict[str, int]] = None,
         check_existing: bool = True,
     ) -> InterpretationRecord:
-        """Create a migrated Lite record with a placeholder report."""
-        return await self.report_lite_record_workflow.generate_placeholder(
+        """Compatibility entrypoint that now runs the formal Lite generation path."""
+        result = await self.insight_agent.generate_lite_report(
             self,
             detect_three_circles=self.detect_three_circles,
             image_path=image_path,
@@ -244,6 +244,7 @@ class LayeredOrchestrator:
             three_circles=three_circles,
             check_existing=check_existing,
         )
+        return result.record
 
     def _hash_image(self, image_path: str) -> str:
         return self.report_lite_record_workflow.hash_image(image_path)
@@ -256,8 +257,8 @@ class LayeredOrchestrator:
         interpretation_id: str,
         version: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
-        """Return the currently available report view for a migrated record."""
-        return self.report_lifecycle_manager.get_report(
+        """Return the best available formal report view for one record."""
+        return self.insight_agent.get_report(
             interpretation_id,
             version=version,
         )
@@ -270,11 +271,12 @@ class LayeredOrchestrator:
         history: Optional[list[Dict[str, str]]] = None,
     ) -> Optional[Dict[str, Any]]:
         """Generate a follow-up reply grounded in the existing report."""
-        return self.report_interaction_support.answer_report_chat(
+        result = self.insight_agent.answer_report_question(
             interpretation_id,
             message=message,
             history=history,
         )
+        return result.to_dict() if result is not None else None
 
     def get_status(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Return a compact status snapshot for polling clients."""
@@ -282,7 +284,7 @@ class LayeredOrchestrator:
 
     def get_report_debug_profile(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Return a development-only profile of how the current report was produced."""
-        return self.report_interaction_support.get_report_debug_profile(
+        return self.insight_agent.get_report_debug_profile(
             interpretation_id,
         )
 
@@ -296,7 +298,8 @@ class LayeredOrchestrator:
 
     def complete_pro_upgrade(self, interpretation_id: str) -> Optional[Dict[str, Any]]:
         """Finish a previously started Pro upgrade."""
-        return self.report_lifecycle_manager.complete_pro_upgrade(
+        result = self.insight_agent.generate_pro_report(
             self,
             interpretation_id,
         )
+        return result.status_payload if result is not None else None

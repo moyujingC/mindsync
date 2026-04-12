@@ -56,6 +56,18 @@ jobs:
             /opt/aimandala-main/scripts/deploy-main.sh
           '
 
+      - name: Smoke check dev server
+        env:
+          SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
+          SSH_USER: ${{ secrets.AIMANDALA_DEV_USER }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/aimandala_dev "$SSH_USER@$SSH_HOST" '
+            set -e
+            curl -fsS http://127.0.0.1:8000/health
+            curl -fsSI http://127.0.0.1/
+          '
+
   deploy-prod:
     if: |
       (github.event_name == 'push' && github.ref_name == 'release') ||
@@ -89,3 +101,17 @@ jobs:
             docker compose -f docker-compose.release.yml --env-file .env.release build
             docker compose -f docker-compose.release.yml --env-file .env.release up -d
           '
+
+      - name: Smoke check production containers and public entrypoints
+        env:
+          SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
+          SSH_USER: ${{ secrets.AIMANDALA_PROD_USER }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/aimandala_prod "$SSH_USER@$SSH_HOST" '
+            set -e
+            curl -fsS http://127.0.0.1:8100/health
+            curl -fsSI http://127.0.0.1:8101/
+          '
+          curl -fsS https://web-api.jingshu.cc/health
+          curl -fsSI https://web.jingshu.cc/

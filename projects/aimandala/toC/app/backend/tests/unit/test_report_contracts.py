@@ -2,6 +2,7 @@ import asyncio
 
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.report_contracts import ReportContractAssembler
+from app.core.pipeline.structured_report_schema import get_structured_report_contract
 from app.core.pipeline.store import InterpretationStore
 
 from .test_pipeline_orchestrator import StubCircleDetector
@@ -35,9 +36,11 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
         requested_version="lite",
         upgrade_diff=orchestrator.get_upgrade_diff(),
     )
+    lite_contract = get_structured_report_contract("lite")
 
     assert payload["version"] == "lite"
     assert payload["title"] == "向前先稳住的人"
+    assert tuple(payload["structured"].keys()) == lite_contract.field_names
     assert payload["structured"]["prompt_schema_validation_issues"] == []
     assert payload["structured"]["self_understanding_blocks"]["opening_hit"] == payload["overall_impression"]
     assert (
@@ -67,8 +70,10 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
         requested_version="pro",
         upgrade_diff=orchestrator.get_upgrade_diff(),
     )
+    pro_contract = get_structured_report_contract("pro")
 
     assert payload["version"] == "pro"
+    assert tuple(payload["structured"].keys()) == pro_contract.field_names
     assert payload["structured"]["prompt_schema_validation_issues"] == []
     assert payload["can_upgrade"] is False
     assert payload["upgrade_price"] is None
@@ -145,3 +150,34 @@ def test_report_contract_assembler_rejects_unsupported_version(tmp_path):
         "can_upgrade": False,
         "upgrade_price": None,
     }
+
+
+def test_structured_report_contract_defines_required_fields():
+    lite_contract = get_structured_report_contract("lite")
+    pro_contract = get_structured_report_contract("pro")
+
+    assert lite_contract.schema_version == "2026-04-12"
+    assert lite_contract.required_field_names == (
+        "prompt_schema_validation_issues",
+        "title",
+        "overall_impression",
+        "visual_elements_rendered",
+        "emotion_portrait_rendered",
+        "story",
+        "theme_insights",
+        "three_awareness",
+        "self_understanding_blocks",
+        "six_insights_rendered",
+        "experiment_rendered",
+        "pro_teaser",
+    )
+    assert pro_contract.required_field_names == (
+        "prompt_schema_validation_issues",
+        "first_impression",
+        "core_insight_table",
+        "three_circles_detailed",
+        "micro_analysis_detailed",
+        "imbalance_confirmed",
+        "root_cause",
+        "healing_suggestions",
+    )

@@ -294,6 +294,10 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
     assert "pro" in profile["prompt_debug"]
     assert profile["prompt_debug"]["lite"]["schema_fields"]
     assert profile["prompt_debug"]["pro"]["schema_fields"]
+    assert profile["insight_context_summary"]["theme"] == "wealth_career"
+    assert profile["insight_context_summary"]["constraints"]["scope"] == "single_interpretation"
+    assert profile["evidence_summary"]["agent"]["name"] == "InsightAgent"
+    assert profile["fallback_summary"]["used"] in {True, False}
 
 
 def test_answer_report_chat_returns_runtime_reply(tmp_path):
@@ -330,6 +334,82 @@ def test_answer_report_chat_returns_runtime_reply(tmp_path):
     assert reply == {
         "interpretation_id": record.interpretation_id,
         "reply": "先把节奏放慢一点。",
+    }
+
+
+def test_insight_agent_wraps_lite_generation_and_context(tmp_path):
+    image_path = tmp_path / "insight-lite.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
+    )
+
+    result = asyncio.run(
+        orchestrator.insight_agent.generate_lite_report(
+            orchestrator,
+            detect_three_circles=orchestrator.detect_three_circles,
+            image_path=str(image_path),
+            user_id="user-insight-lite",
+            theme="wealth_career",
+            check_existing=False,
+        )
+    )
+
+    assert result.record.interpretation_id
+    assert result.context.theme == "wealth_career"
+    assert result.context.constraints["scope"] == "single_interpretation"
+    assert "knowledge_hits" in result.context.layer0
+    assert result.report_payload is not None
+    assert result.report_payload["version"] == "lite"
+
+
+def test_insight_agent_wraps_pro_generation_and_report_chat(tmp_path):
+    image_path = tmp_path / "insight-pro.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+
+    class StubReportChatRuntime:
+        def reply(self, **kwargs):
+            assert kwargs["message"] == "请只围绕本次报告解释。"
+            return "好的，我们只围绕这次报告展开。"
+
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        report_chat_runtime=StubReportChatRuntime(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-insight-pro",
+            theme="general",
+        )
+    )
+
+    pro_result = orchestrator.insight_agent.generate_pro_report(
+        orchestrator,
+        record.interpretation_id,
+    )
+    assert pro_result is not None
+    assert pro_result.context.theme == "general"
+    assert pro_result.status_payload["status"] == "completed"
+    assert pro_result.report_payload is not None
+    assert pro_result.report_payload["version"] == "pro"
+
+    answer = orchestrator.insight_agent.answer_report_question(
+        record.interpretation_id,
+        message="请只围绕本次报告解释。",
+    )
+    assert answer is not None
+    assert answer.context.constraints["chat_scope"] == "current_report_only"
+    assert answer.to_dict() == {
+        "interpretation_id": record.interpretation_id,
+        "reply": "好的，我们只围绕这次报告展开。",
     }
 
 

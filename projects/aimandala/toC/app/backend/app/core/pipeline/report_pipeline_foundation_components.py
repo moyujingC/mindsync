@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from app.core.insight import InsightAgent
 from app.core.prompt.builder_v2 import PromptBuilder
 
 from .report_contracts import ReportContractAssembler
@@ -98,4 +99,19 @@ def install_report_foundation_components(
         detecting_stage=stages.detecting,
         generating_stage=stages.generating,
         completed_stage=stages.completed,
+    )
+    orchestrator.insight_agent = InsightAgent(
+        store=orchestrator.store,
+        report_lite_record_workflow=orchestrator.report_lite_record_workflow,
+        report_lifecycle_manager=orchestrator.report_lifecycle_manager,
+        report_interaction_support=orchestrator.report_interaction_support,
+        knowledge_debug_builder=orchestrator.knowledge_debug_builder,
+        get_primary_knowledge_signal=(
+            orchestrator.report_knowledge_adapter.get_primary_knowledge_signal
+        ),
+        get_theme_label=orchestrator.report_knowledge_adapter.get_theme_label,
+        get_signal_label=orchestrator.report_knowledge_adapter.get_signal_label,
+        get_knowledge_theme_summary=(
+            orchestrator.report_knowledge_adapter.get_knowledge_theme_summary
+        ),
     )

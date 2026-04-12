@@ -131,6 +131,11 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert debug_payload["field_provenance"]["lite"]
     assert debug_payload["diagnostics"]["summary"]["layer0_driven_count"] >= 1
     assert debug_payload["prompt_debug"]["lite"]["validation_issues"] == []
+    assert debug_payload["insight_context_summary"]["theme"] == "wealth_career"
+    assert debug_payload["insight_context_summary"]["constraints"]["scope"] == "single_interpretation"
+    assert debug_payload["evidence_summary"]["agent"]["name"] == "InsightAgent"
+    assert "knowledge_sources" in debug_payload["evidence_summary"]
+    assert "used" in debug_payload["fallback_summary"]
     knowledge_debug = debug_payload["knowledge_debug"]
     assert knowledge_debug["build_info"]["build_selector"] == "current"
     assert knowledge_debug["layer0_evidence"]["visual_facts"]

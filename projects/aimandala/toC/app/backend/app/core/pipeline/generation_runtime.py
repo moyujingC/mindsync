@@ -23,10 +23,11 @@ from .report_generation_payload_applier import (
 
 
 class DeterministicReportGenerationRuntime:
-    """Current migration-time deterministic runtime.
+    """Deterministic fallback runtime for Lite/Pro generation.
 
-    This preserves the existing placeholder behavior while exposing a clean
-    replacement seam for future model-backed generation.
+    The formal chain is now prompt/schema-driven. This runtime remains as a
+    controlled fallback for local development, QA observation, and failure-safe
+    completion when prompt-backed generation cannot return structured payloads.
     """
 
     def generate_lite(
@@ -60,7 +61,12 @@ class DeterministicReportGenerationRuntime:
 
 
 class PromptBackedReportGenerationRuntime:
-    """Runtime that tries prompt-runtime output before falling back deterministically."""
+    """Formal Lite/Pro runtime that prefers prompt/schema output.
+
+    Deterministic generation is still invoked first to prepare a safe draft and
+    prompt preview, but the returned structured payload becomes the primary
+    content source whenever the prompt runtime succeeds.
+    """
 
     def __init__(
         self,

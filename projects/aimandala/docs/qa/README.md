@@ -13,6 +13,8 @@
 1. `2026-04-04-toc-mvp-qa-checklist.md`
 2. `2026-04-08-toc-mvp-first-pass-verification.md`
 3. `2026-04-08-toc-mvp-sample-validation.md`
+4. `2026-04-12-v22-knowledge-workbench-verification.md`
+5. `2026-04-12-迁移收官与正式版收口验证记录.md`
 
 ## 各文档作用
 
@@ -43,6 +45,26 @@
 
 - 不同样本输入会落到哪些已知页面
 - 历史记录打开与已有报告复用是否成立
+
+### `2026-04-12-v22-knowledge-workbench-verification.md`
+
+`v2.2 knowledge workbench` 的专项验证记录。
+
+适合确认：
+
+- 本地 debug workbench 是否真的可运行
+- `report-debug` 的 insight / evidence / fallback 摘要是否可读
+- 当前 build eval 是否仍维持在可接受风险内
+
+### `2026-04-12-迁移收官与正式版收口验证记录.md`
+
+`aimandala` 迁移收官与正式版收口的专项验证记录。
+
+适合确认：
+
+- 新生成 Lite / Pro 是否已走正式主链
+- structured schema、upload contract、部署口径是否真正收口
+- 本轮本地验证与线上 smoke check 到了什么程度
 
 ## 当前验证重点
 

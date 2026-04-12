@@ -26,25 +26,25 @@ from .rate_limiter import pricing_endpoint_limit
 
 
 class CreateInterpretationRequest(BaseModel):
-    """Minimal request to initialize a To C interpretation record."""
+    """Request to initialize one formal To C interpretation record."""
 
     user_id: str = Field(..., description="User identifier")
-    image_path: str = Field(..., description="Local image path used during migration")
+    image_path: str = Field(..., description="Runtime-readable local image cache path")
     image_url: Optional[str] = Field(
         default=None,
-        description="Public image URL returned by upload storage backend",
+        description="Formal remote image URL returned by the upload storage backend",
     )
     storage_backend: Optional[str] = Field(
         default=None,
-        description="Upload storage backend name (local/s3/oss/cos/path)",
+        description="Formal upload storage backend name (local/s3/oss/cos/path)",
     )
     storage_key: Optional[str] = Field(
         default=None,
-        description="Upload storage key for lifecycle tracking",
+        description="Formal upload storage key for lifecycle tracking",
     )
     image_local_expires_at: Optional[str] = Field(
         default=None,
-        description="Local temporary file expiry timestamp in ISO-8601 format",
+        description="Local runtime cache expiry timestamp in ISO-8601 format",
     )
     theme: str = Field(default="general", description="Interpretation theme")
     painting_intention: Optional[str] = Field(
@@ -161,6 +161,9 @@ class ReportDebugProfileResponse(BaseModel):
     diagnostics: dict
     prompt_debug: dict
     knowledge_debug: Optional[dict] = None
+    insight_context_summary: Optional[dict] = None
+    evidence_summary: Optional[dict] = None
+    fallback_summary: Optional[dict] = None
 
 
 class KnowledgeBuildSummaryResponse(BaseModel):
@@ -233,7 +236,7 @@ class PricingInfo(BaseModel):
 
 
 class UploadImageResponse(BaseModel):
-    """Response returned after storing a browser-uploaded image locally."""
+    """Response returned after persisting one browser upload under the formal contract."""
 
     success: bool = True
     image_path: str
@@ -410,7 +413,7 @@ async def get_uploaded_image(storage_key: str):
 
 @router.post("/upload-image", response_model=UploadImageResponse)
 async def upload_image(request: Request, file: UploadFile = File(...)):
-    """Store a browser-uploaded image locally and return a migrated image path."""
+    """Store a browser upload and return the long-lived storage contract metadata."""
 
     try:
         stored = await get_upload_storage().save_upload(file)
@@ -436,7 +439,7 @@ async def upload_image(request: Request, file: UploadFile = File(...)):
 
 @router.post("/interpretations", response_model=CreateInterpretationResponse)
 async def create_interpretation(payload: CreateInterpretationRequest):
-    """Initialize the migrated Lite record flow for a local image path."""
+    """Initialize one Lite interpretation using the formal upload/report contract."""
 
     orchestrator = get_orchestrator()
     manual_three_circles = None

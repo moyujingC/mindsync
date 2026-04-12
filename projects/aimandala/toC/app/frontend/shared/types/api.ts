@@ -107,6 +107,7 @@ export interface InterpretationStatusResponse {
 }
 
 export interface LiteStructuredReport {
+  prompt_preview?: string | null;
   prompt_schema_validation_issues?: string[] | null;
   title: string;
   overall_impression: string;
@@ -173,6 +174,7 @@ export interface LiteStructuredReport {
 }
 
 export interface ProStructuredReport {
+  prompt_preview?: string | null;
   prompt_schema_validation_issues?: string[] | null;
   first_impression?: string | null;
   core_insight_table?: Record<string, string> | null;
@@ -232,6 +234,9 @@ export interface ReportDebugProfileResponse {
   diagnostics: Record<string, unknown>;
   prompt_debug: Record<string, unknown>;
   knowledge_debug?: Record<string, unknown> | null;
+  insight_context_summary?: Record<string, unknown> | null;
+  evidence_summary?: Record<string, unknown> | null;
+  fallback_summary?: Record<string, unknown> | null;
 }
 
 export interface KnowledgeBuildSummaryResponse {

@@ -64,6 +64,33 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
       schema_fields: [],
     },
   },
+  insight_context_summary: {
+    interpretation_id: "ipt-debug-1",
+    theme: "wealth_career",
+    theme_label: "财富事业",
+    knowledge_signal: "imbalance.fire_deficiency",
+    image: {
+      storage_backend: "local",
+    },
+    constraints: {
+      scope: "single_interpretation",
+      fallback_present: true,
+    },
+  },
+  evidence_summary: {
+    agent: {
+      name: "InsightAgent",
+      version: "v1",
+    },
+    knowledge_sources: {
+      source_ref_count: 1,
+    },
+  },
+  fallback_summary: {
+    used: true,
+    levels: ["themed"],
+    warnings: ["healing fallback"],
+  },
   knowledge_debug: {
     build_info: {
       build_selector: "current",
@@ -360,6 +387,7 @@ describe("BrowserDebugPanel", () => {
 
     await clickButton("Knowledge");
     expect(normalizedText()).toContain("Build Summary");
+    expect(normalizedText()).toContain("Insight Context");
     expect(normalizedText()).toContain("Field To Knowledge");
 
     await clickButton("Report Trace");
@@ -378,6 +406,7 @@ describe("BrowserDebugPanel", () => {
     });
 
     expect(normalizedText()).toContain("overall_impression");
+    expect(normalizedText()).toContain("InsightAgent");
     expect(normalizedText()).toContain("themes/wealth_career.yaml");
     expect(normalizedText()).toContain("/abs/themes/wealth_career.yaml");
 

@@ -16,3 +16,6 @@
 - `2026-04-05-腾讯云部署环境模板.md`
 - `2026-04-07-架构质量整改清单.md`
 - `2026-04-10-服务器部署与运维手册.md`
+- `2026-04-11-v21-knowledge-remaining-execution-plan.md`
+- `2026-04-12-迁移收官与正式版收口总计划.md`
+- `2026-04-12-v22-knowledge-workbench-execution-plan.md`

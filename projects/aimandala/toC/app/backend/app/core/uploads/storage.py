@@ -299,13 +299,10 @@ class LocalUploadStorage:
 def create_upload_storage_from_env() -> UploadStorage:
     """Create the currently configured upload storage backend.
 
-    Current supported modes:
-    - `local`: store uploads under backend-local `data/uploads/`
-
-    Reserved for future backends:
-    - `s3`
-    - `oss`
-    - `cos`
+    Local development still defaults to `local`. Formal release environments
+    should set `AIMANDALA_UPLOAD_BACKEND=cos` explicitly so remote object
+    metadata becomes the long-lived source of truth while local files remain a
+    runtime cache/fallback only.
     """
 
     backend = os.getenv("AIMANDALA_UPLOAD_BACKEND", "local").strip().lower()

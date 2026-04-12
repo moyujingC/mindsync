@@ -566,6 +566,18 @@ export function BrowserDebugPanel({
     () => toRecord(reportDebugProfile?.diagnostics),
     [reportDebugProfile],
   );
+  const insightContextSummary = useMemo(
+    () => toRecord(reportDebugProfile?.insight_context_summary),
+    [reportDebugProfile],
+  );
+  const evidenceSummary = useMemo(
+    () => toRecord(reportDebugProfile?.evidence_summary),
+    [reportDebugProfile],
+  );
+  const fallbackSummary = useMemo(
+    () => toRecord(reportDebugProfile?.fallback_summary),
+    [reportDebugProfile],
+  );
   const fieldList = useMemo(() => {
     const keys = new Set<string>([
       ...fieldEntries.map((item) => item.field),
@@ -787,6 +799,14 @@ export function BrowserDebugPanel({
             <strong>当前主题</strong>
             <span>{draft.theme || "--"}</span>
           </div>
+          <div className="browser-debug-chip">
+            <strong>Insight</strong>
+            <span>{String(toRecord(evidenceSummary.agent).name ?? "--")}</span>
+          </div>
+          <div className="browser-debug-chip">
+            <strong>Fallback</strong>
+            <span>{fallbackSummary.used ? "used" : "clean"}</span>
+          </div>
         </div>
         <div className="browser-debug-tabs" role="tablist" aria-label="Knowledge Workbench Tabs">
           {DEBUG_WORKBENCH_TABS.map((tab) => (
@@ -982,6 +1002,28 @@ export function BrowserDebugPanel({
                   </article>
                 );
               })}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Insight Context</h3>
+              <span>{reportDebugLoading ? "loading" : "ready"}</span>
+            </div>
+            {reportDebugError ? <p className="mw-inline-error">{reportDebugError}</p> : null}
+            <div className="browser-debug-grid">
+              <article className="browser-debug-card">
+                <h4>Context Summary</h4>
+                <pre>{formatJson(insightContextSummary)}</pre>
+              </article>
+              <article className="browser-debug-card">
+                <h4>Evidence Summary</h4>
+                <pre>{formatJson(evidenceSummary)}</pre>
+              </article>
+              <article className="browser-debug-card">
+                <h4>Fallback Summary</h4>
+                <pre>{formatJson(fallbackSummary)}</pre>
+              </article>
             </div>
           </section>
 

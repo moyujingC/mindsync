@@ -16,3 +16,5 @@
 - `2026-04-04-report-content-iteration-guide.md`
 - `2026-04-08-architecture-remediation-delivery.md`
 - `2026-04-10-开发测试机初始化与部署记录.md`
+- `2026-04-12-迁移收官与正式版收口交付记录.md`
+- `2026-04-12-v22-knowledge-workbench-delivery.md`

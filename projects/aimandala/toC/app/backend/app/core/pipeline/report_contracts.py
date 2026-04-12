@@ -8,6 +8,7 @@ from app.core.prompt.builder_v2 import PromptBuilder
 
 from .data_models import InterpretationRecord, Layer1LiteDraft, Layer3ProDraft
 from .report_blueprints import PRO_REPORT_BLUEPRINT
+from .structured_report_schema import get_structured_report_contract
 
 
 class PromptSchemaValidator:
@@ -119,11 +120,12 @@ class ReportContractAssembler:
         report = record.get_pro_report()
         pro_draft = record.layer_3_pro_draft
         if report:
+            contract = get_structured_report_contract("pro")
             return {
                 "version": "pro",
                 "title": PRO_REPORT_BLUEPRINT.structure_labels["report_title"],
                 "overall_impression": pro_draft.first_impression if pro_draft else None,
-                "structured": {
+                "structured": contract.build_payload({
                     "prompt_preview": pro_draft.prompt_preview if pro_draft else "",
                     "prompt_schema_validation_issues": (
                         self.validator.validate_pro(pro_draft)
@@ -137,7 +139,7 @@ class ReportContractAssembler:
                     "imbalance_confirmed": pro_draft.imbalance_confirmed if pro_draft else {},
                     "root_cause": pro_draft.root_cause if pro_draft else {},
                     "healing_suggestions": pro_draft.healing_suggestions if pro_draft else [],
-                },
+                }),
                 "report": report,
                 "ai_qa_context": record.get_ai_qa_context(),
                 "can_upgrade": False,
@@ -159,11 +161,12 @@ class ReportContractAssembler:
         lite_report = record.layer_2_lite_final
         report = record.get_lite_report()
         if report and lite_report:
+            contract = get_structured_report_contract("lite")
             return {
                 "version": "lite",
                 "title": lite_report.title,
                 "overall_impression": lite_report.overall_impression,
-                "structured": {
+                "structured": contract.build_payload({
                     "prompt_preview": (
                         record.layer_1_lite_draft.prompt_preview
                         if record.layer_1_lite_draft
@@ -198,7 +201,7 @@ class ReportContractAssembler:
                     "six_insights_rendered": lite_report.six_insights_rendered,
                     "experiment_rendered": lite_report.experiment_rendered,
                     "pro_teaser": lite_report.pro_teaser,
-                },
+                }),
                 "report": report,
                 "can_upgrade": record.can_upgrade_to_pro(),
                 "upgrade_price": upgrade_diff if record.can_upgrade_to_pro() else None,

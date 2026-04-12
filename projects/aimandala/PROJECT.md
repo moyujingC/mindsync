@@ -1,9 +1,9 @@
 # 一镜一梳项目工作区
 
-> 状态：in_review
-> 版本：0.2.1
+> 状态：current
+> 版本：0.3.0
 > owner：CEO / Orchestrator
-> last_updated：2026-04-07
+> last_updated：2026-04-12
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
 > 历史来源仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
@@ -11,7 +11,7 @@
 
 这是 `一镜一梳` 在 Monorepo 中的项目工作区入口。
 
-当前阶段先建立稳定目录锚点，后续在这里逐步承接：
+当前项目工作区已经完成主工作区迁移，后续新功能应直接在这里继续推进：
 
 - 项目实现代码
 - 项目专属需求与设计文档
@@ -27,6 +27,37 @@
 - 在 `projects/aimandala/` 中建立正式项目工作区
 - 使用 Codex / Claude Code 直接开发
 - 暂缓把 `AI-Mandala` 作为 Paperclip 面板开发试点
+- 所有新的 Lite / Pro 正式能力、部署配置与交付记录，都优先回写到这个工作区
+
+### 1.1 当前正式状态
+
+截至 `2026-04-12`，当前项目状态应理解为：
+
+- `projects/aimandala` 已是唯一开发与发布主入口
+- 新生成 Lite / Pro 已按正式主链在新工作区收口
+- 历史 `interpretation` 继续兼容读取，不做全量回填
+- 发布流固定为 `main -> dev`、`release -> prod`
+
+这不等于“所有内容质量都已经终局”。
+
+更准确的口径是：
+
+- 主工作区迁移完成
+- 正式版主链收口完成
+- 后续继续在新工作区做质量迭代
+
+### 1.2 旧仓库角色
+
+旧仓库 `/Users/xinran/Downloads/dev/ai-mandala` 现在只保留两种用途：
+
+- 查询历史行为
+- 抽取仍有参考价值的旧实现或文档
+
+它不再承接：
+
+- 新功能开发
+- 正式发布
+- 长期协作入口
 
 ## 2. 固定必读
 
