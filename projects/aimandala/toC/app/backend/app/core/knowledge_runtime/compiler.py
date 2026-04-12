@@ -9,6 +9,7 @@ from typing import Any
 
 import yaml
 
+from .paths import resolve_knowledge_toc_root
 from .validators import KnowledgePackValidator
 
 
@@ -26,7 +27,7 @@ class KnowledgePackCompiler:
         build_dir: Path | None = None,
         validator: KnowledgePackValidator | None = None,
     ) -> None:
-        toc_root = Path(__file__).resolve().parents[5]
+        toc_root = resolve_knowledge_toc_root(__file__)
         self.pack_root = pack_root or (toc_root / "data" / "knowledge" / "packs" / "v2.1")
         self.build_dir = build_dir or (toc_root / "data" / "knowledge" / "builds" / "current")
         self.validator = validator or KnowledgePackValidator()

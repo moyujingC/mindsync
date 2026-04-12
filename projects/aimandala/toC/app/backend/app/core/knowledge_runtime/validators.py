@@ -8,6 +8,8 @@ from typing import Any
 
 import jsonschema
 
+from .paths import resolve_knowledge_toc_root
+
 
 class KnowledgeValidationError(ValueError):
     """Raised when a knowledge pack or asset fails validation."""
@@ -17,9 +19,8 @@ class KnowledgePackValidator:
     """Validate manifest and asset files with JSON Schema plus cross checks."""
 
     def __init__(self, schema_dir: Path | None = None) -> None:
-        self.schema_dir = schema_dir or (
-            Path(__file__).resolve().parents[5] / "domain" / "knowledge" / "schemas"
-        )
+        toc_root = resolve_knowledge_toc_root(__file__)
+        self.schema_dir = schema_dir or (toc_root / "domain" / "knowledge" / "schemas")
         self._schema_cache: dict[str, dict[str, Any]] = {}
 
     def validate_manifest(self, manifest: dict[str, Any]) -> None:

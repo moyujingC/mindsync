@@ -11,6 +11,7 @@ from typing import Any
 
 from .adapters.legacy_v2_python_pack import LegacyV2PythonPackExporter
 from .compiler import KnowledgePackCompiler
+from .paths import resolve_knowledge_toc_root
 from .validators import KnowledgePackValidator
 
 
@@ -33,7 +34,7 @@ def check_knowledge_pack_v21(
 ) -> KnowledgeDriftReport:
     """Check that committed YAML pack and JSON build match a fresh export."""
 
-    toc_root = Path(__file__).resolve().parents[5]
+    toc_root = resolve_knowledge_toc_root(__file__)
     expected_pack_root = expected_pack_root or (
         toc_root / "data" / "knowledge" / "packs" / "v2.1"
     )

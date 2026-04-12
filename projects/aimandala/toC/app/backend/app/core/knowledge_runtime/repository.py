@@ -7,12 +7,13 @@ from pathlib import Path
 from typing import Any
 
 from .compiler import KnowledgePackCompiler
+from .paths import resolve_knowledge_toc_root
 
 
 def get_knowledge_toc_root() -> Path:
     """Return the To C workspace root for knowledge assets and builds."""
 
-    return Path(__file__).resolve().parents[5]
+    return resolve_knowledge_toc_root(__file__)
 
 
 def parse_build_selector(build_selector: str) -> tuple[str, str]:

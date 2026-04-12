@@ -21,6 +21,7 @@ from app.core.knowledge_runtime.adapters.legacy_v2_python_pack import (
 )
 from app.core.knowledge_runtime.checks import check_knowledge_pack_v21
 from app.core.knowledge_runtime.compiler import KnowledgePackCompiler
+from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root
 from app.core.knowledge_runtime.repository import KnowledgeRepository
 from app.core.knowledge_runtime.runtime import get_knowledge_runtime
 from app.core.knowledge_runtime.validators import KnowledgePackValidator
@@ -107,6 +108,22 @@ def test_v21_check_reports_clean_state():
         item["kind"] in {"healing_issue_mapping_gap", "healing_issue_target_missing"}
         for item in report.fallback_hotspots
     )
+
+
+def test_v21_runtime_paths_resolve_in_local_and_container_layouts(tmp_path):
+    local_file = tmp_path / "toC" / "app" / "backend" / "app" / "core" / "knowledge_runtime" / "validators.py"
+    container_file = tmp_path / "app" / "backend" / "app" / "core" / "knowledge_runtime" / "validators.py"
+
+    for toc_root, source_file in (
+        (local_file.parents[5], local_file),
+        (container_file.parents[4], container_file),
+    ):
+        (toc_root / "data" / "knowledge" / "packs" / "v2.1").mkdir(parents=True, exist_ok=True)
+        schema_dir = toc_root / "domain" / "knowledge" / "schemas"
+        schema_dir.mkdir(parents=True, exist_ok=True)
+        (schema_dir / "knowledge_pack.schema.json").write_text("{}", encoding="utf-8")
+
+        assert resolve_knowledge_toc_root(source_file) == toc_root
 
 
 def test_v21_compiler_rebuilds_when_pack_changes(tmp_path):
