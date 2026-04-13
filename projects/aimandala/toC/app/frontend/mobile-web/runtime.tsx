@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { MobileWebApp } from "./app";
+import { resolveMobileWebCanonicalUserId } from "./identity";
 import { loadHistoryPage } from "./loaders";
 import type { HistoryFilterId } from "./components/history-cards";
 import {
@@ -162,7 +163,7 @@ function getUserIdFromInput(input: MobileWebRouteInput): string | null {
     input.route === "loading" ||
     input.route === "history"
   ) {
-    return input.params.userId ?? null;
+    return resolveMobileWebCanonicalUserId(input.params);
   }
 
   return null;
