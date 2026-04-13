@@ -1,0 +1,55 @@
+name: auto-repair
+
+on:
+  workflow_run:
+    workflows:
+      - ci
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+env:
+  PAPERCLIP_COMPANY_ID: "be191a6e-7447-4821-a93d-9114214c4a64"
+
+jobs:
+  auto-repair:
+    name: auto-repair
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Auto Repair
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PAPERCLIP_API_BASE: ${{ secrets.PAPERCLIP_API_BASE }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
+          AIMANDALA_AUTO_REPAIR_COMMAND: ${{ vars.AIMANDALA_AUTO_REPAIR_COMMAND }}
+          AIMANDALA_AUTO_REPAIR_CREATE_PR: ${{ vars.AIMANDALA_AUTO_REPAIR_CREATE_PR }}
+          AIMANDALA_AUTO_REPAIR_PUSH: ${{ vars.AIMANDALA_AUTO_REPAIR_PUSH }}
+        run: |
+          set -euo pipefail
+          node shared/tools/ci/aimandala-auto-repair.mjs \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --repository "${{ github.repository }}" \
+            --company-id "$PAPERCLIP_COMPANY_ID"

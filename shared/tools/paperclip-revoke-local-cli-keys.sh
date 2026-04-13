@@ -2,7 +2,7 @@
 set -euo pipefail
 
 API_URL="${PAPERCLIP_API_URL:-http://127.0.0.1:3100}"
-COMPANY_ID="${PAPERCLIP_COMPANY_ID:-e53a86d4-299d-4a9c-8db5-6e82c77b76c8}"
+COMPANY_ID="${PAPERCLIP_COMPANY_ID:-be191a6e-7447-4821-a93d-9114214c4a64}"
 
 usage() {
   cat <<'EOF'
