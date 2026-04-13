@@ -1,17 +1,16 @@
 # 一镜一梳项目工作区
 
 > 状态：current
-> 版本：0.3.0
+> 版本：0.4.1
 > owner：CEO / Orchestrator
-> last_updated：2026-04-12
+> last_updated：2026-04-13
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
-> 历史来源仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 这是 `一镜一梳` 在 Monorepo 中的项目工作区入口。
 
-当前项目工作区已经完成主工作区迁移，后续新功能应直接在这里继续推进：
+当前后续新功能应直接在这里继续推进：
 
 - 项目实现代码
 - 项目专属需求与设计文档
@@ -20,13 +19,13 @@
 
 ## 1. 当前工作方式
 
-当前把 `AI-Mandala` 迁入 `mindsync`，是为了恢复受治理的直接开发，而不是立即切到 Paperclip 面板流程。
+当前默认工作方式是受治理的直接开发，而不是依赖额外面板流程。
 
 因此当前默认工作方式是：
 
 - 在 `projects/aimandala/` 中建立正式项目工作区
 - 使用 Codex / Claude Code 直接开发
-- 暂缓把 `AI-Mandala` 作为 Paperclip 面板开发试点
+- 如需接 Paperclip，以本工作区与公司入口文档为准对齐
 - 所有新的 Lite / Pro 正式能力、部署配置与交付记录，都优先回写到这个工作区
 
 ### 1.1 当前正式状态
@@ -39,29 +38,25 @@
 - 发布流固定为 `main -> dev`、`release -> prod`
 - 公网业务链路已恢复可运行，可继续只在新工作区做后续开发
 - 生产环境 LLM 已切到真实 `openai_compatible` provider
+- 上传对象访问已切到 `COS` 私有读 + 签名 URL 主链
 
-这不等于“所有内容质量都已经终局”。
-也不等于“生产环境已经完成 `cos` 资产链路的最终正式配置”。
+这不等于“所有内容质量都已经终局”，但意味着默认开发、发布、联调和文档入口都已经稳定。
 
 更准确的口径是：
 
-- 主工作区迁移完成
 - 正式版主链收口完成
 - 后续继续在新工作区做质量迭代
-- 生产环境仍需补齐真实 COS 配置，才能算正式环境完全收口
+- 历史记录继续兼容读取，但不作为后续功能设计基线
 
-### 1.2 旧仓库角色
+### 1.2 历史资料位置
 
-旧仓库 `/Users/xinran/Downloads/dev/ai-mandala` 现在只保留两种用途：
+如需追溯历史行为、旧实现细节或阶段性收口过程，可查：
 
-- 查询历史行为
-- 抽取仍有参考价值的旧实现或文档
+- 历史仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
+- 项目历史资料：[/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs)
+- 公司侧历史草案：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
 
-它不再承接：
-
-- 新功能开发
-- 正式发布
-- 长期协作入口
+这些材料仅作历史追溯，不再作为默认开发入口。
 
 ## 2. 固定必读
 
@@ -69,13 +64,17 @@
 
 1. [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
 2. [公司侧项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
-3. [AI-Mandala-迁移范围与工作区草案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
-4. [2026-04-04-首批迁移清单.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-04-首批迁移清单.md)
-5. [2026-04-04-toc-mvp-spec.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md)
-6. [2026-04-04-toc-mvp-architecture.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-architecture.md)
-7. [2026-04-04-toc-mvp-qa-checklist.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md)
+3. [2026-04-04-toc-mvp-spec.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md)
+4. [2026-04-04-toc-mvp-architecture.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-architecture.md)
+5. [2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+6. [2026-04-12-ci-cd-实施计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-12-ci-cd-实施计划.md)
+7. [2026-04-12-ci-cd-验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-ci-cd-验证记录.md)
+8. [2026-04-13-paperclip-automation-节点实施计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-13-paperclip-automation-节点实施计划.md)
+9. [2026-04-13-paperclip-automation-节点验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-paperclip-automation-节点验证记录.md)
+10. [2026-04-12-v22-knowledge-workbench-execution-plan.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-12-v22-knowledge-workbench-execution-plan.md)
+11. [2026-04-12-v22-knowledge-workbench-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-v22-knowledge-workbench-verification.md)
 
-## 3. 当前迁移范围
+## 3. 当前正式范围
 
 当前默认只承接：
 

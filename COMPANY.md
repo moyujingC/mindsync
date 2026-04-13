@@ -33,6 +33,7 @@ goals:
 
 当前公司至少覆盖以下职能：
 
+- Idea Clarifier
 - CEO / Orchestrator
 - Business Lead
 - Product Spec Lead

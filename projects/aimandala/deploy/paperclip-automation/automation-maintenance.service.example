@@ -1,0 +1,11 @@
+[Unit]
+Description=Automation node daily maintenance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+EnvironmentFile=-/etc/default/automation-maintenance
+WorkingDirectory=/opt/automation/app/mindsync
+ExecStart=/usr/bin/env bash -lc 'shared/tools/ci/automation-node-maintenance.sh'

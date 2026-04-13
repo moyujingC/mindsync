@@ -21,6 +21,12 @@ agents:
     adapter: "claude_local"
     directory: "agents/ceo"
 
+  - id: "dbd5d3ec-e163-4405-8f0b-f8944884e891"
+    name: "Idea Clarifier"
+    role: "idea_clarifier"
+    adapter: "pi_local"
+    directory: "agents/idea-clarifier"
+
   - id: "8ee8ca86-8478-43e7-b22e-9878315a1271"
     name: "Business Lead"
     role: "business"

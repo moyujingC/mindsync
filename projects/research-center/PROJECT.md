@@ -1,9 +1,9 @@
 # 研究中心项目工作区
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.2.1
 > owner：Research & Knowledge Lead
-> last_updated：2026-04-06
+> last_updated：2026-04-13
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
 
@@ -91,6 +91,10 @@
   - 退回 `research-draft` 修改
 - review 未通过：
   - 不进入知识库
+- 若 `fact-check-note`、`machine-review-note`、`review-note` 任一缺失正式 artifact：
+  - 不得写“已核查”“已审核通过”“可入库”
+  - 不得仅用一句摘要代替正式文档
+  - 不得把知识条目标记为已完成质量门
 
 ## 5. 当前下一步
 

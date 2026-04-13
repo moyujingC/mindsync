@@ -1,0 +1,11 @@
+[Unit]
+Description=Run automation node maintenance daily
+
+[Timer]
+OnBootSec=20m
+OnCalendar=*-*-* 04:30:00
+Persistent=true
+Unit=automation-maintenance.service
+
+[Install]
+WantedBy=timers.target

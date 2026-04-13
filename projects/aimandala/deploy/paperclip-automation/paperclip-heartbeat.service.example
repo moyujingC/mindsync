@@ -1,0 +1,11 @@
+[Unit]
+Description=Paperclip runner heartbeat sync
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+EnvironmentFile=/etc/default/paperclip-heartbeat
+WorkingDirectory=/opt/automation/app/mindsync
+ExecStart=/usr/bin/env bash -lc 'node shared/tools/ci/check-runner-heartbeat.mjs --repository "$GITHUB_REPOSITORY" --github-token "$GITHUB_TOKEN" --company-id "$PAPERCLIP_COMPANY_ID" --api-base "$PAPERCLIP_API_BASE" --api-key "$PAPERCLIP_API_KEY" --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" --branch "${RUNNER_HEARTBEAT_BRANCH:-main}" --workflow-file "${RUNNER_HEARTBEAT_WORKFLOW_FILE:-aimandala-ci.yml}"'

@@ -1,26 +1,29 @@
 # 知识条目：幸福流（Flow）理论核心框架
+
+> 说明：当前条目已回链到正式 `fact-check-note` 与 `machine-review-note`，但机器预审结论为 `fail`。以下内容暂保留为待回改草稿，不应视为已通过质量门的知识定稿。
+
 ## 1. 条目信息
 - 标题：幸福流（Flow）理论核心框架
 - 条目类型：理论框架
 - 来源研究：[CMPA-31 黄有璨个人IP与幸福流研究综合结论](https://paperclip.ing/CMPA/issues/CMPA-31#document-research-synthesis)
-- fact-check-note：所有事实均来自米哈里·契克森米哈赖公开著作及心理学领域共识结论
-- review-note：approve_for_ingest
+- fact-check-note：[CMPA-31 Fact Check Note](/Users/xinran/Downloads/dev/mindsync/projects/research-center/output/2026-04-13-CMPA-31-fact-check-note.md)
+- machine-review-note：[CMPA-31 Machine Review Note](/Users/xinran/Downloads/dev/mindsync/projects/research-center/output/2026-04-13-CMPA-31-machine-review-note.md)
+- review-note：待补正式 artifact，当前尚未进入人工 review
 - 入库前检查清单：[知识入库前检查清单_黄有璨幸福流研究](../行业研究/幸福流/知识入库前检查清单_黄有璨幸福流研究.md)
 - 服务对象：Product Spec Lead、Content Lead、Architect、Business Lead
 ## 2. 核心内容
 - 事实：
-  1. 理论提出者：积极心理学家米哈里·契克森米哈赖（Mihaly Csikszentmihalyi）于1975年正式提出
-  2. 核心定义：幸福流是一种高度专注、完全投入、忘我的最优体验状态
-  3. 核心要素：明确的目标、即时的反馈、技能与挑战的平衡、行动与意识融合、自我意识消失、时间感知扭曲
-  4. 产生条件：当个人技能水平与面临的挑战难度恰好匹配时进入
+  1. 当前研究草稿将幸福流描述为一种高度专注、完全投入的最优体验状态
+  2. 当前研究草稿将其常见要素概括为明确目标、即时反馈、技能与挑战平衡等维度
+  3. 当前研究草稿认为其发生条件与“技能水平和挑战难度匹配”有关
 - 模式：
   1. 个人成长应用模式：通过调整任务挑战难度与自身技能水平的匹配度，主动创造幸福流体验，提升学习和工作效能
   2. 商业产品应用模式：将幸福流核心要素嵌入产品设计，提升用户使用体验和粘性
   3. 组织管理应用模式：通过匹配员工技能与任务挑战，提升团队整体效能和工作幸福感
 - 判断：
-  1. 幸福流理论是经过半个世纪验证的成熟心理学理论，具有广泛的应用场景
-  2. 该理论在职业发展、产品设计、组织管理等领域的应用已被大量实践验证有效
-  3. 与国内职场环境结合可以产生适合本土的实践方法论
+  1. 幸福流是一个值得继续补理论来源并长期跟踪的核心概念
+  2. 它在职业发展、产品设计、组织管理中的适用性目前更适合作为研究判断，而非已核实定论
+  3. 与国内职场环境结合可能产生适合本土的实践方法论
 ## 3. 适用范围
 - 适用场景：
   1. 职业规划类产品设计，帮助用户找到适合自己的职业发展路径

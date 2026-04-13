@@ -1,9 +1,9 @@
 # Machine Review Note 模板
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Research & Knowledge Lead
-> last_updated：2026-04-07
+> last_updated：2026-04-13
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/machine-review-note-模板.md
 > 项目：研究中心
 

@@ -1,0 +1,19 @@
+[Unit]
+Description=Paperclip automation node
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=ubuntu
+WorkingDirectory=/opt/automation/app/mindsync/projects/aimandala/deploy/paperclip-automation
+EnvironmentFile=/etc/default/paperclip-automation
+ExecStart=/usr/bin/env bash -lc 'docker compose -f docker-compose.paperclip.yml up -d --build'
+ExecStop=/usr/bin/env bash -lc 'docker compose -f docker-compose.paperclip.yml down'
+TimeoutStartSec=900
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target
