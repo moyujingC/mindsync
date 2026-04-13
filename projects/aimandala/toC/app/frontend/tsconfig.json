@@ -23,6 +23,18 @@
       "@aimandala/shared/*": [
         "./shared/*"
       ],
+      "@aimandala/design-system": [
+        "./shared/design-system/index.ts"
+      ],
+      "@aimandala/design-system/*": [
+        "./shared/design-system/*"
+      ],
+      "@aimandala/shared-ui": [
+        "./shared/ui/index.ts"
+      ],
+      "@aimandala/shared-ui/*": [
+        "./shared/ui/*"
+      ],
       "@aimandala/mobile-web": [
         "./mobile-web/index.ts"
       ],
@@ -32,6 +44,10 @@
     }
   },
   "include": [
+    "./shared/design-system/**/*.ts",
+    "./shared/design-system/**/*.tsx",
+    "./shared/ui/**/*.ts",
+    "./shared/ui/**/*.tsx",
     "./shared/**/*.ts",
     "./shared/**/*.tsx",
     "./mobile-web/**/*.ts",

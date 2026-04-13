@@ -1,6 +1,7 @@
 import { getAimandalaApiBaseUrl } from "./config";
 import { fetchJson } from "./httpClient";
 import type {
+  CreateMiniappOrderRequest,
   CreateInterpretationRequest,
   CreateInterpretationResponse,
   DetectCirclesRequest,
@@ -12,7 +13,12 @@ import type {
   KnowledgeBuildSummaryResponse,
   KnowledgeFixturePreviewRequest,
   KnowledgeFixturePreviewResponse,
+  MiniappOrderResponse,
+  MiniappSessionExchangeRequest,
+  MiniappSessionExchangeResponse,
+  NotifyMiniappWechatPaymentRequest,
   PricingInfo,
+  ReconcileMiniappOrderResponse,
   ReportChatRequest,
   ReportChatResponse,
   ReportDebugProfileResponse,
@@ -45,6 +51,21 @@ export async function uploadImage(file: File): Promise<UploadImageResponse> {
     method: "POST",
     body,
   });
+}
+
+export async function exchangeMiniappSession(
+  payload: MiniappSessionExchangeRequest,
+): Promise<MiniappSessionExchangeResponse> {
+  return fetchJson<MiniappSessionExchangeResponse>(
+    buildUrl("/api/v2/miniapp/session/exchange"),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    },
+  );
 }
 
 export async function createInterpretation(
@@ -170,4 +191,50 @@ export async function upgradeInterpretation(
 
 export async function getPricing(): Promise<PricingInfo> {
   return fetchJson<PricingInfo>(buildUrl("/api/v2/pricing"));
+}
+
+export async function createMiniappOrder(
+  payload: CreateMiniappOrderRequest,
+): Promise<MiniappOrderResponse> {
+  return fetchJson<MiniappOrderResponse>(buildUrl("/api/v2/miniapp/orders"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getMiniappOrder(
+  orderId: string,
+): Promise<MiniappOrderResponse> {
+  return fetchJson<MiniappOrderResponse>(
+    buildUrl(`/api/v2/miniapp/orders/${encodeURIComponent(orderId)}`),
+  );
+}
+
+export async function reconcileMiniappOrder(
+  orderId: string,
+): Promise<ReconcileMiniappOrderResponse> {
+  return fetchJson<ReconcileMiniappOrderResponse>(
+    buildUrl(`/api/v2/miniapp/orders/${encodeURIComponent(orderId)}/reconcile`),
+    {
+      method: "POST",
+    },
+  );
+}
+
+export async function notifyMiniappWechatPayment(
+  payload: NotifyMiniappWechatPaymentRequest,
+): Promise<MiniappOrderResponse> {
+  return fetchJson<MiniappOrderResponse>(
+    buildUrl("/api/v2/miniapp/payments/wechat/notify"),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    },
+  );
 }
