@@ -143,7 +143,10 @@ export async function runMobileWebLiteFlow(
       };
     }
 
-    const report = await getInterpretationReport(interpretation.interpretation_id);
+    const report = await getInterpretationReport(
+      interpretation.interpretation_id,
+      "lite",
+    );
     state = applyReport(state, report);
 
     return {
@@ -182,7 +185,8 @@ export async function refreshMobileWebReport(
       };
     }
 
-    const report = await getInterpretationReport(interpretationId);
+    // The `/report` route must stay on the Lite experience even after Pro exists.
+    const report = await getInterpretationReport(interpretationId, "lite");
     state = applyReport(state, report);
 
     return {
