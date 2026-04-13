@@ -7,6 +7,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "check:shared": "tsc --noEmit -p tsconfig.json",
+    "check:shared-ui": "tsc --noEmit -p tsconfig.json",
     "dev:mobile-web": "vite",
     "build:mobile-web": "vite build",
     "preview:mobile-web": "vite preview",

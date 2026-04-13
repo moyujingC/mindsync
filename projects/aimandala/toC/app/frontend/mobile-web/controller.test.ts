@@ -11,6 +11,7 @@ vi.mock("../shared/api", () => ({
 import * as api from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
 import {
+  refreshMobileWebReport,
   refreshMobileWebProReport,
   runMobileWebLiteFlow,
 } from "./controller";
@@ -88,7 +89,7 @@ describe("mobile-web controller", () => {
         middle_radius: 20,
       }),
     );
-    expect(api.getInterpretationReport).toHaveBeenCalledWith("ipt-1");
+    expect(api.getInterpretationReport).toHaveBeenCalledWith("ipt-1", "lite");
   });
 
   it("runMobileWebLiteFlow 在缺少三圈参数时只调用一次 detect 并复用结果", async () => {
@@ -210,5 +211,46 @@ describe("mobile-web controller", () => {
     expect(api.getInterpretationReport).toHaveBeenCalledWith("ipt-2", "pro");
     expect(snapshot.state.step).toBe("liteReady");
     expect(snapshot.report?.version).toBe("lite");
+  });
+
+  it("refreshMobileWebReport 显式请求 lite 版本，避免 report 路由误落到 Pro", async () => {
+    vi.mocked(api.getInterpretationStatus).mockResolvedValue({
+      interpretation_id: "ipt-lite-route",
+      status: "completed",
+      generation_stage: "report_ready",
+      generation_progress: 100,
+      report_ready: true,
+      version_purchased: ["lite", "pro"],
+      three_circles: {
+        inner_radius: 8,
+        middle_radius: 16,
+      },
+      auto_detected: true,
+      can_upgrade: false,
+    });
+    vi.mocked(api.getInterpretationReport).mockResolvedValue({
+      interpretation_id: "ipt-lite-route",
+      version: "lite",
+      title: "一镜 Lite 版",
+      overall_impression: "lite only",
+      structured: null,
+      report: "lite body",
+      ai_qa_context: null,
+      can_upgrade: false,
+      upgrade_price: null,
+      error: null,
+    });
+
+    const snapshot = await refreshMobileWebReport(
+      "ipt-lite-route",
+      initialMandalaFlowState,
+    );
+
+    expect(api.getInterpretationReport).toHaveBeenCalledWith(
+      "ipt-lite-route",
+      "lite",
+    );
+    expect(snapshot.report?.version).toBe("lite");
+    expect(snapshot.state.step).toBe("liteReady");
   });
 });

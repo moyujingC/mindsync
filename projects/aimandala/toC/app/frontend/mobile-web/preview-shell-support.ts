@@ -1,5 +1,6 @@
 import { getInterpretationList } from "../shared/api";
 import type {
+  FrontendUserSession,
   InterpretationListQuery,
   InterpretationRecordResponse,
   MandalaFlowState,
@@ -57,7 +58,7 @@ export function createPreviewRouteInput(
   route: MobileWebRouteId,
   draft: MobileWebUploadDraft,
   interpretationId: string,
-  userId: string,
+  session: FrontendUserSession,
   historyQuery: InterpretationListQuery,
 ): MobileWebRouteInput {
   switch (route) {
@@ -66,7 +67,7 @@ export function createPreviewRouteInput(
         route,
         params: {
           draft,
-          userId,
+          session,
         },
       };
 
@@ -76,7 +77,7 @@ export function createPreviewRouteInput(
         route,
         params: {
           draft,
-          userId,
+          session,
         },
       };
 
@@ -85,7 +86,7 @@ export function createPreviewRouteInput(
         route,
         params: {
           draft,
-          userId,
+          session,
         },
       };
 
@@ -104,7 +105,7 @@ export function createPreviewRouteInput(
       return {
         route,
         params: {
-          userId,
+          session,
           uploadDraft: draft,
           historyQuery,
         },

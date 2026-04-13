@@ -268,6 +268,70 @@ export interface UpgradePlaceholderResponse {
   message: string;
 }
 
+export type PurchaseState =
+  | "created"
+  | "pending"
+  | "paid"
+  | "failed"
+  | "cancelled"
+  | "fulfilled";
+
+export interface StubWechatPayPayload {
+  mode: "stub";
+  order_id: string;
+  next_action: "reconcile_after_host_payment";
+}
+
+export interface WechatPayRequestPaymentArgs {
+  timeStamp: string;
+  nonceStr: string;
+  package: string;
+  signType: string;
+  paySign: string;
+}
+
+export interface WechatPayHostPayload {
+  mode: "wechatpay";
+  order_id: string;
+  next_action: "wait_for_payment_confirmation";
+  dry_run: boolean;
+  request_payment_args: WechatPayRequestPaymentArgs;
+}
+
+export type MiniappWechatPayPayload = StubWechatPayPayload | WechatPayHostPayload;
+
+export interface CreateMiniappOrderRequest {
+  interpretation_id: string;
+  product_type: InterpretationVersion;
+  channel: "miniapp";
+  open_id?: string | null;
+  debug_canonical_user_id?: string | null;
+}
+
+export interface MiniappOrderResponse {
+  order_id: string;
+  interpretation_id: string;
+  product_type: InterpretationVersion;
+  channel: "miniapp";
+  purchase_state: PurchaseState;
+  payable_amount: number;
+  currency: string;
+  version_granted?: InterpretationVersion[] | null;
+  latest_purchase_updated_at?: string | null;
+  wechat_pay_payload?: MiniappWechatPayPayload | null;
+}
+
+export interface ReconcileMiniappOrderResponse extends MiniappOrderResponse {
+  reconciled: boolean;
+}
+
+export interface NotifyMiniappWechatPaymentRequest {
+  order_id: string;
+  event: "paid" | "failed" | "cancelled";
+  payment_reference?: string | null;
+  raw_payload?: Record<string, unknown> | null;
+}
+
 export interface PricingInfo {
   lite: number;
   pro: number;

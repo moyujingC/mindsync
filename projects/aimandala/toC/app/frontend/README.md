@@ -28,6 +28,8 @@ frontend/
     core/
     api/
     types/
+    design-system/
+    ui/
   mobile-web/
   miniapp/
   native-app/
@@ -41,17 +43,22 @@ frontend/
   - 多渠道共享的 API service、请求封装和错误翻译
 - `shared/types/`
   - 多渠道共享的类型定义和 DTO 镜像
+- `shared/design-system/`
+  - 多渠道共享的设计令牌、视觉语义和主题基线
+- `shared/ui/`
+  - 尽早开始共享的展示 UI 主体
 - `mobile-web/`
   - 手机端 Web 版实现
 - `miniapp/`
-  - 小程序端实现
+  - 小程序端后续实现入口
 - `native-app/`
   - 原生 App 端实现
 
 默认原则是：
 
 - 共享“业务决策和流程语义”
-- 不强行共享“页面组件和平台能力”
+- 尽早共享“展示主体与高复用 UI”
+- 不强行共享“平台能力”
 
 当前阶段不必提前把空目录都建出来，但目录设计与文档命名应默认兼容这种扩展方式。
 
@@ -65,14 +72,25 @@ frontend/
   - 多渠道可复用的请求封装和 service
 - `shared/core/`
   - 不依赖平台能力的流程状态定义与纯函数
+- `shared/design-system/`
+  - 共享设计令牌与视觉基线
+- `shared/ui/`
+  - 报告页、历史页、上传页等可复用展示主体
 - `mobile-web/`
   - 当前主入口的页面层骨架、路由装配和运行时层
 - `miniapp/`
-  - 小程序端正式占位入口
+  - 未来小程序渠道入口，当前不作为 Web 上线阻塞项
 - `native-app/`
   - 原生 App 端正式占位入口
 
-当前这一步的目标不是直接恢复 mobile-web UI，而是先把“接口契约”和“共享语义层”立住。
+当前这一步的目标不是直接复刻任何历史 UI，而是先把：
+
+- 接口契约
+- 共享语义层
+- 共享设计系统
+- 第一批共享展示 UI
+
+立住。
 
 ## 当前共享层重点
 
@@ -89,20 +107,18 @@ frontend/
 
 当前明确不在这一批里做：
 
-- React 页面
-- mobile-web 路由
-- 小程序适配
-- 原生 App 适配
-- 文件上传 UI / 支付 UI / 登录 UI
+- 上传、登录、支付、分享等平台强依赖能力的共享化
+- 小程序原生宿主与支付 live 运行时
+- 任何会提高当前 Web 主线部署复杂度的渠道配置
 
 ## 当前渠道落位
 
 现在三个渠道都已经有正式落点：
 
 - `mobile-web/`
-  - 已经补到 runtime 层
+  - 当前正式主入口，已开始消费 `shared/core + shared/ui`
 - `miniapp/`
-  - 已有目录入口与说明
+  - 继续保留为未来渠道入口，不进入这次 Web 上线主线
 - `native-app/`
   - 已有目录入口与说明
 
@@ -118,6 +134,8 @@ frontend/
 - `index.html`
 - `vite.config.ts`
 - `mobile-web/browser-entry.tsx`
+- `shared/design-system/*`
+- `shared/ui/*`
 
 这意味着现在 `frontend/` 已经是一个明确的 TypeScript 前端工作区入口，而不只是文档目录。
 
@@ -125,6 +143,7 @@ frontend/
 
 - `npm run typecheck`
 - `npm run check:shared`
+- `npm run check:shared-ui`
 - `npm run dev:mobile-web`
 - `npm run build:mobile-web`
 - `npm run preview:mobile-web`
@@ -141,6 +160,6 @@ frontend/
 
 前端后续建议顺序：
 
-1. 先让 `mobile-web` 接共享 `api + types + core`
-2. 再补最小上传页 / 结果页 / 历史页
-3. 后续如需接小程序或 App，优先复用共享层，不复制业务决策
+1. 继续在 `shared/*` 上修 Web 上线前发现的共性 bug
+2. 让 Web 主线先进入测试、修 bug、准备上线
+3. Web 上线后，再把 miniapp 宿主、支付与灰度链按独立 worktree 继续推进

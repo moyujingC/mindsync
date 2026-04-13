@@ -1,17 +1,24 @@
 import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUpgradePage, loadUploadPage } from "./loaders";
+import { resolveMobileWebCanonicalUserId } from "./identity";
 import type { MobileWebAppProps } from "./app";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
-import type { InterpretationListQuery } from "../shared/types";
+import type {
+  FrontendUserSession,
+  InterpretationListQuery,
+} from "../shared/types";
 
-export interface UploadRouteInput {
-  draft: MobileWebUploadDraft;
+interface MobileWebSessionRouteInput {
+  session?: FrontendUserSession;
   userId?: string;
 }
 
-export interface LiteReportRouteInput {
+export interface UploadRouteInput extends MobileWebSessionRouteInput {
   draft: MobileWebUploadDraft;
-  userId: string;
+}
+
+export interface LiteReportRouteInput extends MobileWebSessionRouteInput {
+  draft: MobileWebUploadDraft;
 }
 
 export interface ExistingReportRouteInput {
@@ -19,8 +26,7 @@ export interface ExistingReportRouteInput {
   uploadDraft?: MobileWebUploadDraft;
 }
 
-export interface HistoryRouteInput {
-  userId: string;
+export interface HistoryRouteInput extends MobileWebSessionRouteInput {
   uploadDraft?: MobileWebUploadDraft;
   historyQuery?: InterpretationListQuery;
 }
@@ -62,7 +68,14 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "loading": {
-      const report = await loadLiteReportPage(input.params);
+      const userId = resolveMobileWebCanonicalUserId(input.params);
+      if (!userId) {
+        throw new Error("Mobile web loading route requires a canonical user session.");
+      }
+      const report = await loadLiteReportPage({
+        ...input.params,
+        userId,
+      });
       return {
         route: "loading",
         flowState: report.state,
@@ -89,8 +102,12 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "history": {
+      const userId = resolveMobileWebCanonicalUserId(input.params);
+      if (!userId) {
+        throw new Error("Mobile web history route requires a canonical user session.");
+      }
       const history = await loadHistoryPage(
-        input.params.userId,
+        userId,
         input.params.historyQuery,
       );
       return {

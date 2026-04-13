@@ -26,6 +26,12 @@ import {
   PREVIEW_ROUTE_OPTIONS,
 } from "./preview-shell-support";
 import { MobileWebRuntime } from "./runtime";
+import {
+  createMobileWebGuestSession,
+  persistMobileWebSession,
+  resolveMobileWebSession,
+  updateMobileWebSessionCanonicalUserId,
+} from "./identity";
 import type {
   DebugTimelineEntry,
   DebugTimelineSnapshot,
@@ -49,6 +55,7 @@ import {
 } from "../shared/api/debugTrace";
 import type {
   DetectCirclesResponse,
+  FrontendUserSession,
   InterpretationListQuery,
   InterpretationRecordResponse,
   MandalaFlowState,
@@ -71,7 +78,7 @@ function readBrowserShellInitialState() {
       route: "landing" as MobileWebRouteId,
       draft: defaultDraft,
       interpretationId: "demo-interpretation-id",
-      userId: "demo-user-id",
+      session: createMobileWebGuestSession("ssr"),
       previewMode: import.meta.env.DEV,
       controlsOpen: import.meta.env.DEV,
       cleanMode: false,
@@ -106,7 +113,9 @@ function readBrowserShellInitialState() {
       paintingFeeling: url.searchParams.get("paintingFeeling") ?? defaultDraft.paintingFeeling,
     } satisfies MobileWebUploadDraft,
     interpretationId: url.searchParams.get("interpretationId") ?? "demo-interpretation-id",
-    userId: url.searchParams.get("userId") ?? "demo-user-id",
+    session: resolveMobileWebSession({
+      locationHref: url.toString(),
+    }),
     previewMode: previewParam === "0" ? false : previewParam === "1" ? true : import.meta.env.DEV,
     controlsOpen: controlsParam === "0" ? false : controlsParam === "1" ? true : (import.meta.env.DEV || localDebugEnabled),
     cleanMode,
@@ -134,7 +143,8 @@ export function MobileWebBrowserShell() {
   const [route, setRoute] = useState<MobileWebRouteId>(initialState.route);
   const [draft, setDraft] = useState<MobileWebUploadDraft>(initialState.draft);
   const [interpretationId, setInterpretationId] = useState(initialState.interpretationId);
-  const [userId, setUserId] = useState(initialState.userId);
+  const [session, setSession] = useState<FrontendUserSession>(initialState.session);
+  const [userIdInput, setUserIdInput] = useState(initialState.session.canonicalUserId);
   const [previewMode, setPreviewMode] = useState(initialState.previewMode);
   const [controlsOpen, setControlsOpen] = useState(initialState.controlsOpen);
   const [previewDetection, setPreviewDetection] =
@@ -172,14 +182,15 @@ export function MobileWebBrowserShell() {
   const runtimeSessionRef = useRef<string>("runtime-idle");
   const previewLastStepRef = useRef<string>("idle");
   const runtimeLastStepRef = useRef<string>("idle");
+  const userId = session.canonicalUserId;
 
   const input = useMemo(
-    () => createPreviewRouteInput(route, draft, interpretationId, userId, {
+    () => createPreviewRouteInput(route, draft, interpretationId, session, {
       filter: (previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all",
       limit: previewHistoryQuery.limit ?? 20,
       theme: previewHistoryQuery.theme,
     }),
-    [draft, interpretationId, previewHistoryQuery.filter, previewHistoryQuery.limit, previewHistoryQuery.theme, route, userId],
+    [draft, interpretationId, previewHistoryQuery.filter, previewHistoryQuery.limit, previewHistoryQuery.theme, route, session],
   );
   const previewProps = useMemo(
     () =>
@@ -192,6 +203,20 @@ export function MobileWebBrowserShell() {
       ),
     [draft, previewDetection, previewFlowState, previewHistoryRecords, route],
   );
+
+  useEffect(() => {
+    setUserIdInput(session.canonicalUserId);
+    persistMobileWebSession(session);
+  }, [session]);
+
+  function commitUserIdInput(nextValue: string) {
+    setUserIdInput(nextValue);
+
+    const nextSession = updateMobileWebSessionCanonicalUserId(session, nextValue);
+    if (nextSession) {
+      setSession(nextSession);
+    }
+  }
 
   async function refreshPreviewHistory(
     nextQuery: InterpretationListQuery,
@@ -1089,9 +1114,12 @@ export function MobileWebBrowserShell() {
                 <label className="field">
                   <span>userId</span>
                   <input
-                    value={userId}
+                    value={userIdInput}
                     onChange={(event) => {
-                      setUserId(event.target.value);
+                      commitUserIdInput(event.target.value);
+                    }}
+                    onBlur={() => {
+                      setUserIdInput(session.canonicalUserId);
                     }}
                   />
                 </label>
