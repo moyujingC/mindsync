@@ -215,7 +215,7 @@ export async function syncPaperclipIssue(options) {
     };
   }
 
-  const targetStatus = options.result === "resolved" ? "done" : config.status;
+  const targetStatus = options.statusOverride ?? (options.result === "resolved" ? "done" : config.status);
   const title = buildFailureTitle(config, options);
   const description = buildDescription(config, {
     ...options,

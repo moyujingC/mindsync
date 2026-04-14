@@ -203,6 +203,27 @@ async function main() {
     return;
   }
 
+  await syncPaperclipIssue({
+    apiBase: paperclipApiBase,
+    apiKey: paperclipApiKey,
+    companyId,
+    projectName: "一镜一梳",
+    kind,
+    workflow: "ci",
+    repository,
+    branch: workflowRun.head_branch,
+    job: failedJob.name,
+    sha: workflowRun.head_sha,
+    runUrl,
+    failedStep,
+    reproCommand: profile.reproCommand,
+    result: "failed",
+    statusOverride: "in_progress",
+    ownerAgentId,
+    ownerLabel: "Engineer",
+    note: "自动修复已接手，正在隔离分支尝试修复并复跑。",
+  });
+
   const branchName = `codex/auto-fix/${workflowRun.id}`;
   const checkout = await runShellCommand(`git checkout -B ${branchName} ${workflowRun.head_sha}`);
   if (checkout.code !== 0) {
@@ -238,6 +259,7 @@ async function main() {
       failedStep,
       reproCommand: profile.reproCommand,
       result: "failed",
+      statusOverride: "in_progress",
       ownerAgentId,
       ownerLabel: "Engineer",
       note: "自动修复命令执行失败，已保留问题单等待人工处理。",
@@ -263,6 +285,7 @@ async function main() {
       failedStep,
       reproCommand: profile.reproCommand,
       result: "failed",
+      statusOverride: "in_progress",
       ownerAgentId,
       ownerLabel: "Engineer",
       note: "自动修复后复跑仍失败，问题单继续保留。",
@@ -288,6 +311,7 @@ async function main() {
       failedStep,
       reproCommand: profile.reproCommand,
       result: "failed",
+      statusOverride: "in_progress",
       ownerAgentId,
       ownerLabel: "Engineer",
       note: "自动修复复跑已通过，但工作区没有产生可提交 diff，问题单继续保留。",
@@ -356,6 +380,7 @@ async function main() {
     failedStep,
     reproCommand: profile.reproCommand,
     result: "failed",
+    statusOverride: "in_review",
     ownerAgentId,
     ownerLabel: "Engineer",
     repairBranch: branchName,
