@@ -2,8 +2,8 @@
 import argparse
 import csv
 import json
-import math
 import os
+import random
 import re
 import time
 import urllib.error
@@ -84,6 +84,21 @@ def load_manifest(path: Path):
 def save_manifest(path: Path, manifest: dict):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
+
+
+def sleep_with_log(seconds: float, reason: str):
+    if seconds <= 0:
+        return
+    print(f"  sleeping {round(seconds, 1)}s: {reason}", flush=True)
+    time.sleep(seconds)
+
+
+def note_spacing_seconds(base_seconds: int, jitter_seconds: int):
+    if base_seconds <= 0:
+        return 0.0
+    if jitter_seconds <= 0:
+        return float(base_seconds)
+    return float(base_seconds + random.uniform(0, jitter_seconds))
 
 
 def submit_link_note(item: dict, retry_429_seconds: int = 70, max_attempts: int = 4):
@@ -189,6 +204,8 @@ def main():
     parser.add_argument("--poll-seconds", type=int, default=12)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--submit-interval-seconds", type=int, default=0)
+    parser.add_argument("--note-spacing-seconds", type=int, default=90)
+    parser.add_argument("--note-spacing-jitter-seconds", type=int, default=45)
     parser.add_argument("--retry-failed-only", action="store_true")
     parser.add_argument("--retry-429-seconds", type=int, default=70)
     parser.add_argument("--save-max-attempts", type=int, default=4)
@@ -219,6 +236,7 @@ def main():
     for index, item in enumerate(rows, start=1):
         key = item["note_id"]
         entry = manifest.get(key, {})
+        processed_this_round = False
         print(f"[{index}/{len(rows)}] {item['published_at']} {item['title']}")
         if args.retry_failed_only and entry and entry.get("status") not in {"failed", "submitted"}:
             continue
@@ -236,6 +254,7 @@ def main():
                 retry_429_seconds=args.retry_429_seconds,
                 max_attempts=args.save_max_attempts,
             )
+            processed_this_round = True
             manifest[key] = {**entry, **item, "task_id": task_id, "status": "submitted", "updated_at": datetime.now().isoformat(timespec="seconds")}
             save_manifest(manifest_path, manifest)
 
@@ -260,9 +279,8 @@ def main():
             }
             save_manifest(manifest_path, manifest)
             created_note_ids.append(getnote_note_id)
-            if args.submit_interval_seconds > 0:
-                time.sleep(args.submit_interval_seconds)
         except Exception as exc:
+            processed_this_round = True
             manifest[key] = {
                 **entry,
                 **item,
@@ -272,6 +290,13 @@ def main():
             }
             save_manifest(manifest_path, manifest)
             print(f"  FAILED: {exc}", flush=True)
+        finally:
+            delay = max(
+                args.submit_interval_seconds,
+                note_spacing_seconds(args.note_spacing_seconds, args.note_spacing_jitter_seconds),
+            )
+            if processed_this_round:
+                sleep_with_log(delay, "before next link submission")
 
     unique_note_ids = []
     seen = set()
