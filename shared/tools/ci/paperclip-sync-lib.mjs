@@ -74,16 +74,22 @@ function formatIssueTime(value) {
   return date.toISOString().slice(0, 16).replace("T", " ");
 }
 
-function buildContextSuffix(options) {
-  const segments = [];
-  if (options.sha) {
-    segments.push(shortSha(options.sha));
+function formatTitleLabel(value) {
+  const normalized = String(value ?? "").trim();
+  if (!normalized) {
+    return "Unknown";
   }
-  segments.push(formatIssueTime(options.eventTime));
-  if (options.branch) {
-    segments.push(options.branch);
-  }
-  return segments.join(" · ");
+  return normalized
+    .split(/[-_]/g)
+    .filter(Boolean)
+    .map((part) => {
+      const lower = part.toLowerCase();
+      if (["ci", "qa", "api", "ui", "ux"].includes(lower)) {
+        return lower.toUpperCase();
+      }
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join("-");
 }
 
 function resolveIssueSeverity(config, options) {
@@ -122,13 +128,23 @@ function buildCommitSummaryAutomationKey(options) {
 }
 
 function buildFailureTitle(_config, options) {
-  const jobPart = options.job ? `${options.job}` : "unknown-job";
-  return `${jobPart} · ${buildContextSuffix(options)}`;
+  const segments = [];
+  if (options.sha) {
+    segments.push(shortSha(options.sha));
+  }
+  segments.push(formatTitleLabel(options.job ?? "unknown-job"));
+  segments.push(formatIssueTime(options.eventTime));
+  return segments.join(" · ");
 }
 
 function buildCommitSummaryTitle(options) {
-  const workflowPart = options.workflow ? `${options.workflow}` : "workflow";
-  return `${workflowPart} · ${buildContextSuffix(options)}`;
+  const segments = [];
+  if (options.sha) {
+    segments.push(shortSha(options.sha));
+  }
+  segments.push(formatTitleLabel(options.workflow ?? "workflow"));
+  segments.push(formatIssueTime(options.eventTime));
+  return segments.join(" · ");
 }
 
 function buildCommitSummaryDescription(options) {
