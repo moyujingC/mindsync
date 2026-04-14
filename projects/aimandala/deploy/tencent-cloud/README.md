@@ -38,3 +38,7 @@
 - 样例没有覆盖高可用、滚动发布、WAF、灰度发布，仅用于“先上线可用”。
 - 当前正式机 TLS 已经由宿主机 `certbot + nginx` 接管。
 - 如果前端要在正式域名下工作，构建时的 API 基地址必须使用 `https://web-api.jingshu.cc`。
+- 开发测试机当前应默认使用：
+  - 前端：`http://dev-web.jingshu.cc`
+  - API：`http://dev-web-api.jingshu.cc`
+- `http://101.43.98.40` 只保留给历史直连排障，不再作为 dev 前端默认 API base。
