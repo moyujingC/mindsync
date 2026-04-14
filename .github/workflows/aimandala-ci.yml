@@ -180,8 +180,9 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          python3 -m pip install --upgrade pip 2>&1 | tee "$RUNNER_TEMP/backend-pip-upgrade.log"
-          python3 -m pip install -r projects/aimandala/toC/app/backend/requirements.release.txt pytest 2>&1 | tee "$RUNNER_TEMP/backend-install.log"
+          bash shared/tools/ci/ensure-python-ci-venv.sh \
+            projects/aimandala/toC/app/backend/requirements.release.txt \
+            pytest 2>&1 | tee "$RUNNER_TEMP/backend-install.log"
 
       - name: Run Pytest
         id: backend_pytest
@@ -190,7 +191,7 @@ jobs:
         run: |
           set -euo pipefail
           export PYTHONPATH=projects/aimandala/toC/app/backend
-          pytest -q projects/aimandala/toC/app/backend/tests/unit 2>&1 | tee "$RUNNER_TEMP/backend-pytest.log"
+          "${{ steps.backend_install.outputs.venv_dir }}/bin/python" -m pytest -q projects/aimandala/toC/app/backend/tests/unit 2>&1 | tee "$RUNNER_TEMP/backend-pytest.log"
 
       - name: Resolve Backend Result
         id: backend_result
@@ -284,8 +285,9 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          python3 -m pip install --upgrade pip 2>&1 | tee "$RUNNER_TEMP/knowledge-pip-upgrade.log"
-          python3 -m pip install -r projects/aimandala/toC/app/backend/requirements.release.txt pytest 2>&1 | tee "$RUNNER_TEMP/knowledge-install.log"
+          bash shared/tools/ci/ensure-python-ci-venv.sh \
+            projects/aimandala/toC/app/backend/requirements.release.txt \
+            pytest 2>&1 | tee "$RUNNER_TEMP/knowledge-install.log"
 
       - name: Run Knowledge Validation
         id: knowledge_validate
@@ -294,7 +296,7 @@ jobs:
         run: |
           set -euo pipefail
           export PYTHONPATH=projects/aimandala/toC/app/backend
-          python3 projects/aimandala/toC/app/backend/scripts/validate_knowledge_workbench.py 2>&1 | tee "$RUNNER_TEMP/knowledge-validate.log"
+          "${{ steps.knowledge_install.outputs.venv_dir }}/bin/python" projects/aimandala/toC/app/backend/scripts/validate_knowledge_workbench.py 2>&1 | tee "$RUNNER_TEMP/knowledge-validate.log"
 
       - name: Run Knowledge Evals
         id: knowledge_evals
@@ -303,7 +305,7 @@ jobs:
         run: |
           set -euo pipefail
           export PYTHONPATH=projects/aimandala/toC/app/backend
-          python3 projects/aimandala/toC/app/backend/scripts/run_knowledge_evals.py --build-selector current 2>&1 | tee "$RUNNER_TEMP/knowledge-evals.log"
+          "${{ steps.knowledge_install.outputs.venv_dir }}/bin/python" projects/aimandala/toC/app/backend/scripts/run_knowledge_evals.py --build-selector current 2>&1 | tee "$RUNNER_TEMP/knowledge-evals.log"
 
       - name: Resolve Knowledge Result
         id: knowledge_result
