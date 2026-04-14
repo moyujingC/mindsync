@@ -13,6 +13,24 @@ import {
 } from "./common.mjs";
 
 const ISSUE_KIND_CONFIG = {
+  "lint-failure": {
+    status: "todo",
+    priority: "high",
+    labelNames: ["type:execution"],
+    severity: "error",
+  },
+  "format-failure": {
+    status: "todo",
+    priority: "high",
+    labelNames: ["type:execution"],
+    severity: "error",
+  },
+  "coverage-failure": {
+    status: "todo",
+    priority: "high",
+    labelNames: ["type:execution"],
+    severity: "error",
+  },
   "ci-test-failure": {
     status: "todo",
     priority: "high",
@@ -40,12 +58,10 @@ const ISSUE_KIND_CONFIG = {
 };
 
 const PARENT_LABEL_NAMES = ["type:epic"];
-const SEVERITY_EMOJI = {
-  success: "✅",
-  warning: "⚠️",
-  error: "❌",
-};
 const KIND_DIAGNOSIS = {
+  "lint-failure": "代码规范问题",
+  "format-failure": "格式规范问题",
+  "coverage-failure": "测试覆盖率问题",
   "ci-test-failure": "代码问题",
   "build-failure": "代码问题",
   "deploy-or-smoke-failure": "发布风险",
@@ -111,8 +127,13 @@ function resolveIssueSeverity(config, options) {
 }
 
 function prefixTitleWithSeverity(title, severity) {
-  const emoji = SEVERITY_EMOJI[severity] ?? SEVERITY_EMOJI.error;
-  return `${emoji} ${title}`;
+  const normalized = String(title ?? "")
+    .replace(/^(✅|⚠️|❌)\s+/, "")
+    .trim();
+  if (!normalized) {
+    return String(title ?? "").trim();
+  }
+  return normalized;
 }
 
 function buildAutomationKey(options) {
@@ -317,7 +338,7 @@ function buildDescription(config, options) {
     lines.push("");
     lines.push("约束：");
     lines.push("- 不直接修改 main / release");
-    lines.push("- 自动修复只允许测试、类型检查、构建和确定性脚本范围");
+    lines.push("- 自动修复只允许 lint、format、测试、类型检查、构建和确定性脚本范围");
   } else {
     lines.push("输入材料：");
     lines.push(`- repository: ${options.repository ?? "unknown"}`);

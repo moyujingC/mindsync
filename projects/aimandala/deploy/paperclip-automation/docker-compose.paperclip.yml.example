@@ -15,6 +15,7 @@ services:
     ports:
       - "${PAPERCLIP_PORT:-3100}:3100"
     environment:
+      TZ: "${TZ:-Asia/Shanghai}"
       HOST: "0.0.0.0"
       PAPERCLIP_HOME: "/paperclip"
       PAPERCLIP_BIND: "${PAPERCLIP_BIND:-tailnet}"

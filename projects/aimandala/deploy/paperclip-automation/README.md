@@ -1,7 +1,7 @@
 # Aimandala Paperclip Automation 节点
 
 > 状态：current
-> 版本：0.1.1
+> 版本：0.1.2
 > owner：Engineer
 > last_updated：2026-04-14
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md
@@ -89,6 +89,7 @@
 10. 若使用 Docker bridge 网络，优先让容器监听 `lan` / `0.0.0.0`，再通过宿主机的 Tailscale 域名对外访问；`tailnet` 绑定更适合直接跑在宿主机进程上，而不是容器内
 11. `paperclip-automation.service` 的日常启动命令不应再附带 `--build`；镜像构建应作为独立运维步骤执行，避免 systemd 长时间卡在 Docker build 阶段导致 `3100` 端口不可用
 12. `/data/paperclip` 下的持久化文件应保持为宿主机运维用户可读写；若发现 `/paperclip/instances/default/.env` 为 `root:root 600`，容器内应用会因为 `EACCES` 反复重启
+13. automation 宿主机与容器默认统一使用 `Asia/Shanghai`，避免 Paperclip、日志与定时任务时间继续显示为 UTC
 
 当前推荐角色口径：
 
@@ -168,12 +169,13 @@ bash shared/tools/ci/runner-doctor.sh --strict
    - `paperclip-automation.env.example -> /etc/default/paperclip-automation`
    - `paperclip-heartbeat.env.example -> /etc/default/paperclip-heartbeat`
    - `automation-maintenance.env.example -> /etc/default/automation-maintenance`
-4. 启动 Paperclip service
-5. 完成私有网络访问与 board claim
-6. 注册 `mindsync-ci` runner
-7. 启动 heartbeat timer
-8. 启动 maintenance timer
-9. 回到 GitHub / Paperclip 做联调验收
+4. 在宿主机执行 `sudo timedatectl set-timezone Asia/Shanghai`，再用 `timedatectl` 确认系统时区已切到北京时间
+5. 启动 Paperclip service
+6. 完成私有网络访问与 board claim
+7. 注册 `mindsync-ci` runner
+8. 启动 heartbeat timer
+9. 启动 maintenance timer
+10. 回到 GitHub / Paperclip 做联调验收
 
 ## 8. 日常启动与更新策略
 

@@ -39,8 +39,9 @@
 13. `company/标签与状态使用说明.md`
 14. `MONOREPO.md`
 15. `DOCS_GOVERNANCE.md`
-16. `agents/*/AGENTS.md`
-17. `company/项目与仓库映射.md`
+16. `company/服务器与基础设施入口.md`
+17. `agents/*/AGENTS.md`
+18. `company/项目与仓库映射.md`
 
 如果任务与某个具体角色有关，应继续读取对应的 `agents/<role>/AGENTS.md`。
 
