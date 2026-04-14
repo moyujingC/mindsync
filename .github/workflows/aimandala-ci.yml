@@ -168,10 +168,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Verify Python Runtime
+        id: backend_python
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 -m pip --version
 
       - name: Install Backend Dependencies
         id: backend_install
@@ -201,7 +203,12 @@ jobs:
           REPRO_COMMAND=""
           SUMMARY_FILE=""
 
-          if [[ "${{ steps.backend_install.outcome }}" != "success" ]]; then
+          if [[ "${{ steps.backend_python.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="build-failure"
+            FAILED_STEP="Verify Python Runtime"
+            REPRO_COMMAND="python3 --version && python3 -m pip --version"
+          elif [[ "${{ steps.backend_install.outcome }}" != "success" ]]; then
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Install Backend Dependencies"
@@ -265,10 +272,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Verify Python Runtime
+        id: knowledge_python
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 -m pip --version
 
       - name: Install Knowledge Dependencies
         id: knowledge_install
@@ -307,7 +316,12 @@ jobs:
           REPRO_COMMAND=""
           SUMMARY_FILE=""
 
-          if [[ "${{ steps.knowledge_install.outcome }}" != "success" ]]; then
+          if [[ "${{ steps.knowledge_python.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="build-failure"
+            FAILED_STEP="Verify Python Runtime"
+            REPRO_COMMAND="python3 --version && python3 -m pip --version"
+          elif [[ "${{ steps.knowledge_install.outcome }}" != "success" ]]; then
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Install Knowledge Dependencies"
