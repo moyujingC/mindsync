@@ -92,6 +92,17 @@ function formatTitleLabel(value) {
     .join("-");
 }
 
+function formatWorkflowTitleLabel(value) {
+  const normalized = String(value ?? "").trim().toLowerCase();
+  if (normalized === "ci") {
+    return "Aimandala-CI";
+  }
+  if (normalized === "deploy") {
+    return "Aimandala-Deploy";
+  }
+  return formatTitleLabel(value);
+}
+
 function resolveIssueSeverity(config, options) {
   if (options.result === "resolved") {
     return "success";
@@ -142,7 +153,7 @@ function buildCommitSummaryTitle(options) {
   if (options.sha) {
     segments.push(shortSha(options.sha));
   }
-  segments.push(formatTitleLabel(options.workflow ?? "workflow"));
+  segments.push(formatWorkflowTitleLabel(options.workflow ?? "workflow"));
   segments.push(formatIssueTime(options.eventTime));
   return segments.join(" · ");
 }
