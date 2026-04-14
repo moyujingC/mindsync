@@ -33,7 +33,7 @@
       "index_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
       "pack_id": "aimandala-v2.1",
       "schema_version": "v2.1",
-      "generated_at": "2026-04-11T13:00:35.966164",
+      "generated_at": "2026-04-14T21:00:21.289309",
       "manifest_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/manifest.yaml",
       "build_kind": "current"
     },
@@ -87,7 +87,7 @@
           "index_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
           "pack_id": "aimandala-v2.1",
           "schema_version": "v2.1",
-          "generated_at": "2026-04-11T13:00:35.966164"
+          "generated_at": "2026-04-14T21:00:21.289309"
         }
       },
       "rule_evaluations": {

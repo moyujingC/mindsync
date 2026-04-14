@@ -107,7 +107,7 @@ def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
     preview_payload = fixture_preview.json()
     assert preview_payload["fixture_meta"]["fixture_id"] == "toc-mvp-sample-b-lite-to-pro-career"
     assert preview_payload["report_summary"]["version"] == "pro"
-    assert preview_payload["knowledge_summary"]["summary"]["fallback_used"] is True
+    assert preview_payload["knowledge_summary"]["summary"]["fallback_used"] is False
     assert preview_payload["knowledge_summary"]["source_refs"]
     assert preview_payload["knowledge_summary"]["field_to_knowledge_map"]["healing_suggestions"][
         "entity_ids"

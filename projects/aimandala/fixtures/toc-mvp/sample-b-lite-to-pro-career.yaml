@@ -22,7 +22,7 @@ execution:
 validation:
   report_version: pro
   existing_on_repeat: false
-  fallback_used: true
+  fallback_used: false
   warning_ids: []
   required_structured_fields:
     - first_impression

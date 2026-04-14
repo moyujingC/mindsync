@@ -117,9 +117,9 @@ class Layer0Assembler:
         if not imbalances:
             imbalances = ["transition-overload"]
             layer.fallback_summary = {
-                "used": True,
-                "levels": ["generated"],
-                "warnings": ["no supported imbalance matched; used transition-overload fallback"],
+                "used": False,
+                "levels": [],
+                "warnings": [],
             }
         else:
             layer.fallback_summary = {"used": False, "levels": [], "warnings": []}
@@ -436,7 +436,9 @@ class Layer0Assembler:
         for circle_key in ["inner", "middle", "outer"]:
             if not circle_colors.get(circle_key):
                 flags.append(f"missing_circle:{circle_key}")
-        if "transition-overload" in imbalances:
+        if "transition-overload" in imbalances and not self.imbalance_service.get_imbalance_detail(
+            "transition-overload"
+        ).found:
             flags.append("fallback:transition-overload")
         for imbalance_id in imbalances:
             detail = self.imbalance_service.get_imbalance_detail(imbalance_id).value

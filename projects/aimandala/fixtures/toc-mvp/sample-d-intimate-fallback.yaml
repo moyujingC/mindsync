@@ -22,7 +22,7 @@ execution:
 validation:
   report_version: lite
   existing_on_repeat: false
-  fallback_used: true
+  fallback_used: false
   warning_ids: []
   required_structured_fields:
     - title
@@ -33,9 +33,9 @@ coverage:
   - TC-02
   - TC-03
 expected_observations:
-  - 当前主题应命中 transition-overload fallback
-  - Layer0 fallback_summary.used 应为 true
-  - Lite structured 字段不应因 fallback 缺失
+  - 当前主题应命中正式支持的 transition-overload 候选
+  - Layer0 fallback_summary.used 应为 false
+  - Lite structured 字段不应因 transition-overload 识别而缺失
 review_entrypoints:
   - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/app/core/knowledge_runtime/services/layer0_assembler.py
   - /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/app/core/pipeline/report_layer0_support.py

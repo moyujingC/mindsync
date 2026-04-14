@@ -33,7 +33,7 @@
       "index_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
       "pack_id": "aimandala-v2.1",
       "schema_version": "v2.1",
-      "generated_at": "2026-04-11T13:00:35.966164",
+      "generated_at": "2026-04-14T21:00:21.289309",
       "manifest_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/manifest.yaml",
       "build_kind": "current"
     },
@@ -87,7 +87,7 @@
           "index_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
           "pack_id": "aimandala-v2.1",
           "schema_version": "v2.1",
-          "generated_at": "2026-04-11T13:00:35.966164"
+          "generated_at": "2026-04-14T21:00:21.289309"
         }
       },
       "rule_evaluations": {
@@ -95,7 +95,11 @@
           "transition-overload"
         ],
         "theme_mappings": {
-          "transition-overload": {}
+          "transition-overload": {
+            "核心矛盾": "想靠近又怕失衡",
+            "具体表现": "关系节奏在切换时，你会一边想推进亲密，一边又先把自己收回来",
+            "转变方向": "先把感受说清楚，再让靠近和退回都变得可沟通"
+          }
         }
       },
       "theme_projection": {
@@ -112,17 +116,11 @@
       "imbalance_candidates": [
         "transition-overload"
       ],
-      "quality_flags": [
-        "fallback:transition-overload"
-      ],
+      "quality_flags": [],
       "fallback_summary": {
-        "used": true,
-        "levels": [
-          "generated"
-        ],
-        "warnings": [
-          "no supported imbalance matched; used transition-overload fallback"
-        ]
+        "used": false,
+        "levels": [],
+        "warnings": []
       }
     },
     "query_results": {
@@ -1897,114 +1895,128 @@
       },
       "imbalance": {
         "primary": {
-          "value": "imbalance transition-overload not found",
+          "value": {
+            "type": "transition-overload",
+            "category": "阶段迁移",
+            "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+            "manifestations": [
+              "既想继续往前",
+              "又担心自己暂时接不住变化",
+              "容易在推进与回撤之间来回拉扯"
+            ],
+            "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+            "toc_supported": true,
+            "warning": null
+          },
           "entity_id": "imbalance.transition-overload",
           "source_pack": "v2.1",
-          "fallback_level": "generated",
-          "evidence": [],
-          "warnings": [
-            "imbalance transition-overload not found"
+          "fallback_level": "none",
+          "evidence": [
+            {
+              "entity_id": "rule.imbalance_types",
+              "source_path": "rules/imbalance_types.yaml",
+              "kind": "imbalance_rule"
+            }
           ],
-          "found": false,
-          "data": "imbalance transition-overload not found",
-          "source": "none",
-          "fallback_used": true
+          "warnings": [],
+          "found": true,
+          "data": {
+            "type": "transition-overload",
+            "category": "阶段迁移",
+            "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+            "manifestations": [
+              "既想继续往前",
+              "又担心自己暂时接不住变化",
+              "容易在推进与回撤之间来回拉扯"
+            ],
+            "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+            "toc_supported": true,
+            "warning": null
+          },
+          "source": "primary",
+          "fallback_used": false
         },
         "candidates": [
           {
-            "value": "imbalance transition-overload not found",
+            "value": {
+              "type": "transition-overload",
+              "category": "阶段迁移",
+              "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+              "manifestations": [
+                "既想继续往前",
+                "又担心自己暂时接不住变化",
+                "容易在推进与回撤之间来回拉扯"
+              ],
+              "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+              "toc_supported": true,
+              "warning": null
+            },
             "entity_id": "imbalance.transition-overload",
             "source_pack": "v2.1",
-            "fallback_level": "generated",
-            "evidence": [],
-            "warnings": [
-              "imbalance transition-overload not found"
+            "fallback_level": "none",
+            "evidence": [
+              {
+                "entity_id": "rule.imbalance_types",
+                "source_path": "rules/imbalance_types.yaml",
+                "kind": "imbalance_rule"
+              }
             ],
-            "found": false,
-            "data": "imbalance transition-overload not found",
-            "source": "none",
-            "fallback_used": true
+            "warnings": [],
+            "found": true,
+            "data": {
+              "type": "transition-overload",
+              "category": "阶段迁移",
+              "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+              "manifestations": [
+                "既想继续往前",
+                "又担心自己暂时接不住变化",
+                "容易在推进与回撤之间来回拉扯"
+              ],
+              "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+              "toc_supported": true,
+              "warning": null
+            },
+            "source": "primary",
+            "fallback_used": false
           }
         ]
       },
       "healing": {
         "value": {
+          "symptoms": "难以表达真实情感，或沟通时情绪化，导致冷战或争吵，无法有效解决问题",
+          "mandala_prescription": "绘制以蓝色、绿色为主，辅以少量红色的曼陀罗，线条流畅，色彩过渡自然。建议每天冥想10分钟，持续14天",
+          "daily_practice": "每天与伴侣进行一次'心流对话'，分享当天感受，不带评判地倾听。练习非暴力沟通",
+          "cognitive_upgrade": "理解沟通是双向的，表达与倾听同等重要。学习区分事实与感受，用'我'开头表达",
           "imbalance": "transition-overload",
-          "issue_type": "",
-          "direction": "先稳定，再观察，再调节",
-          "daily_practices": [],
-          "phases": [
-            {
-              "phase": 1,
-              "days": "1-10",
-              "theme": "觉察亲密关系模式",
-              "color": "粉色",
-              "frequency": "每天7张"
-            },
-            {
-              "phase": 2,
-              "days": "11-20",
-              "theme": "疗愈过往情伤",
-              "color": "蓝色+紫色",
-              "frequency": "每天7-14张"
-            },
-            {
-              "phase": 3,
-              "days": "21-30",
-              "theme": "建立健康亲密关系",
-              "color": "红色+黄色",
-              "frequency": "每天3-7张"
-            }
-          ],
-          "duration_days": 30
+          "issue_type": "沟通障碍"
         },
-        "entity_id": "healing.intimate_relationship",
+        "entity_id": "healing.intimate_relationship.沟通障碍",
         "source_pack": "v2.1",
-        "fallback_level": "general",
+        "fallback_level": "none",
         "evidence": [
           {
-            "entity_id": "healing.templates",
-            "source_path": "healing/templates.yaml",
-            "kind": "template_fallback"
+            "entity_id": "rule.healing_issue_mappings",
+            "source_path": "rules/healing_issue_mappings.yaml",
+            "kind": "healing_issue_mapping"
+          },
+          {
+            "entity_id": "healing.intimate_relationship",
+            "source_path": "healing/intimate_relationship.yaml",
+            "kind": "theme_healing"
           }
         ],
-        "warnings": [
-          "healing issue mapping missing for intimate_relationship:transition-overload",
-          "theme intimate_relationship missing healing prescription for transition-overload"
-        ],
+        "warnings": [],
         "found": true,
         "data": {
+          "symptoms": "难以表达真实情感，或沟通时情绪化，导致冷战或争吵，无法有效解决问题",
+          "mandala_prescription": "绘制以蓝色、绿色为主，辅以少量红色的曼陀罗，线条流畅，色彩过渡自然。建议每天冥想10分钟，持续14天",
+          "daily_practice": "每天与伴侣进行一次'心流对话'，分享当天感受，不带评判地倾听。练习非暴力沟通",
+          "cognitive_upgrade": "理解沟通是双向的，表达与倾听同等重要。学习区分事实与感受，用'我'开头表达",
           "imbalance": "transition-overload",
-          "issue_type": "",
-          "direction": "先稳定，再观察，再调节",
-          "daily_practices": [],
-          "phases": [
-            {
-              "phase": 1,
-              "days": "1-10",
-              "theme": "觉察亲密关系模式",
-              "color": "粉色",
-              "frequency": "每天7张"
-            },
-            {
-              "phase": 2,
-              "days": "11-20",
-              "theme": "疗愈过往情伤",
-              "color": "蓝色+紫色",
-              "frequency": "每天7-14张"
-            },
-            {
-              "phase": 3,
-              "days": "21-30",
-              "theme": "建立健康亲密关系",
-              "color": "红色+黄色",
-              "frequency": "每天3-7张"
-            }
-          ],
-          "duration_days": 30
+          "issue_type": "沟通障碍"
         },
-        "source": "fallback",
-        "fallback_used": true
+        "source": "primary",
+        "fallback_used": false
       },
       "narrative": {
         "value": {
@@ -2084,47 +2096,11 @@
       }
     },
     "fallback_analysis": {
-      "used": true,
-      "levels": [
-        "general",
-        "generated"
-      ],
-      "warnings": [
-        "no supported imbalance matched; used transition-overload fallback",
-        "healing issue mapping missing for intimate_relationship:transition-overload",
-        "theme intimate_relationship missing healing prescription for transition-overload",
-        "imbalance transition-overload not found"
-      ],
-      "quality_flags": [
-        "fallback:transition-overload"
-      ],
-      "query_fallbacks": [
-        {
-          "query_key": "healing",
-          "entity_id": "healing.intimate_relationship",
-          "fallback_level": "general",
-          "warnings": [
-            "healing issue mapping missing for intimate_relationship:transition-overload",
-            "theme intimate_relationship missing healing prescription for transition-overload"
-          ]
-        },
-        {
-          "query_key": "imbalance.primary",
-          "entity_id": "imbalance.transition-overload",
-          "fallback_level": "generated",
-          "warnings": [
-            "imbalance transition-overload not found"
-          ]
-        },
-        {
-          "query_key": "imbalance.imbalance.transition-overload",
-          "entity_id": "imbalance.transition-overload",
-          "fallback_level": "generated",
-          "warnings": [
-            "imbalance transition-overload not found"
-          ]
-        }
-      ]
+      "used": false,
+      "levels": [],
+      "warnings": [],
+      "quality_flags": [],
+      "query_fallbacks": []
     },
     "warning_analysis": {
       "warning_hits": [],
@@ -2159,10 +2135,10 @@
         ]
       },
       {
-        "entity_id": "healing.templates",
-        "kind": "template_fallback",
-        "source_path": "healing/templates.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/healing/templates.yaml",
+        "entity_id": "healing.intimate_relationship",
+        "kind": "theme_healing",
+        "source_path": "healing/intimate_relationship.yaml",
+        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/healing/intimate_relationship.yaml",
         "query_keys": [
           "healing"
         ]
@@ -2174,6 +2150,24 @@
         "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/narrative/intimate_relationship.yaml",
         "query_keys": [
           "narrative"
+        ]
+      },
+      {
+        "entity_id": "rule.healing_issue_mappings",
+        "kind": "healing_issue_mapping",
+        "source_path": "rules/healing_issue_mappings.yaml",
+        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/rules/healing_issue_mappings.yaml",
+        "query_keys": [
+          "healing"
+        ]
+      },
+      {
+        "entity_id": "rule.imbalance_types",
+        "kind": "imbalance_rule",
+        "source_path": "rules/imbalance_types.yaml",
+        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/rules/imbalance_types.yaml",
+        "query_keys": [
+          "imbalance.primary"
         ]
       },
       {
@@ -2219,11 +2213,10 @@
         ],
         "source_paths": [
           "themes/intimate_relationship.yaml",
+          "rules/imbalance_types.yaml",
           "circles/three_circles.yaml"
         ],
-        "warnings": [
-          "imbalance transition-overload not found"
-        ]
+        "warnings": []
       },
       "visual_elements_rendered": {
         "query_keys": [
@@ -2257,11 +2250,10 @@
         ],
         "source_paths": [
           "themes/intimate_relationship.yaml",
+          "rules/imbalance_types.yaml",
           "narrative/intimate_relationship.yaml"
         ],
-        "warnings": [
-          "imbalance transition-overload not found"
-        ]
+        "warnings": []
       },
       "pro_teaser": {
         "query_keys": [
@@ -2290,12 +2282,11 @@
           "theme.intimate_relationship"
         ],
         "source_paths": [
+          "rules/imbalance_types.yaml",
           "narrative/intimate_relationship.yaml",
           "themes/intimate_relationship.yaml"
         ],
-        "warnings": [
-          "imbalance transition-overload not found"
-        ]
+        "warnings": []
       },
       "core_insight_table": {
         "query_keys": [
@@ -2314,11 +2305,10 @@
         ],
         "source_paths": [
           "themes/intimate_relationship.yaml",
+          "rules/imbalance_types.yaml",
           "circles/three_circles.yaml"
         ],
-        "warnings": [
-          "imbalance transition-overload not found"
-        ]
+        "warnings": []
       },
       "root_cause": {
         "query_keys": [
@@ -2332,12 +2322,11 @@
           "narrative.intimate_relationship"
         ],
         "source_paths": [
+          "rules/imbalance_types.yaml",
           "themes/intimate_relationship.yaml",
           "narrative/intimate_relationship.yaml"
         ],
-        "warnings": [
-          "imbalance transition-overload not found"
-        ]
+        "warnings": []
       },
       "healing_suggestions": {
         "query_keys": [
@@ -2346,19 +2335,17 @@
           "narrative"
         ],
         "entity_ids": [
-          "healing.intimate_relationship",
+          "healing.intimate_relationship.沟通障碍",
           "imbalance.transition-overload",
           "narrative.intimate_relationship"
         ],
         "source_paths": [
-          "healing/templates.yaml",
+          "rules/healing_issue_mappings.yaml",
+          "healing/intimate_relationship.yaml",
+          "rules/imbalance_types.yaml",
           "narrative/intimate_relationship.yaml"
         ],
-        "warnings": [
-          "healing issue mapping missing for intimate_relationship:transition-overload",
-          "theme intimate_relationship missing healing prescription for transition-overload",
-          "imbalance transition-overload not found"
-        ]
+        "warnings": []
       },
       "full_report_markdown": {
         "query_keys": [
@@ -2373,7 +2360,7 @@
         "entity_ids": [
           "theme.intimate_relationship",
           "imbalance.transition-overload",
-          "healing.intimate_relationship",
+          "healing.intimate_relationship.沟通障碍",
           "narrative.intimate_relationship",
           "circle.内圈",
           "circle.中圈",
@@ -2381,25 +2368,20 @@
         ],
         "source_paths": [
           "themes/intimate_relationship.yaml",
-          "healing/templates.yaml",
+          "rules/imbalance_types.yaml",
+          "rules/healing_issue_mappings.yaml",
+          "healing/intimate_relationship.yaml",
           "narrative/intimate_relationship.yaml",
           "circles/three_circles.yaml"
         ],
-        "warnings": [
-          "imbalance transition-overload not found",
-          "healing issue mapping missing for intimate_relationship:transition-overload",
-          "theme intimate_relationship missing healing prescription for transition-overload"
-        ]
+        "warnings": []
       }
     },
     "summary": {
-      "fallback_used": true,
-      "fallback_levels": [
-        "general",
-        "generated"
-      ],
+      "fallback_used": false,
+      "fallback_levels": [],
       "warning_hit_count": 0,
-      "source_ref_count": 6
+      "source_ref_count": 8
     }
   },
   "regression_flags": [],

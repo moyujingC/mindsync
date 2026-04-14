@@ -148,6 +148,9 @@ def test_orchestrator_builds_knowledge_backed_layer0_for_valid_image(tmp_path):
     assert layer0.five_elements.fire["percentage"] > 0
     assert layer0.three_circles.inner["knowledge_reading"]
     assert layer0.color_analysis["element_distribution"]["fire"]["element"] == "火"
+    assert layer0.imbalance_candidates == ["transition-overload"]
+    assert layer0.fallback_summary["used"] is False
+    assert "fallback:transition-overload" not in layer0.quality_flags
 
 
 def test_lite_and_pro_texts_use_knowledge_backed_layer0(tmp_path):
