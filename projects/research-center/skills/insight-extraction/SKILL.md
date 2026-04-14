@@ -68,7 +68,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/insight-extraction/templates/reference-analysis-card.md`
+- `templates/reference-analysis-card.md`
 
 最小结果至少包含：
 

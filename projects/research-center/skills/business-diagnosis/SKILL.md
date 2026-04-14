@@ -37,7 +37,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/business-diagnosis/templates/商业诊断模板.md`
+- `templates/商业诊断模板.md`
 
 ## 示例调用
 

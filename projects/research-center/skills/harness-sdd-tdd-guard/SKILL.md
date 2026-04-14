@@ -187,9 +187,9 @@ handoff_to:
 
 当需要直接补最小 artifact 时，优先复用：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/templates/最小任务模板.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/templates/最小QA模板.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/templates/最小交付模板.md`
+- `templates/最小任务模板.md`
+- `templates/最小QA模板.md`
+- `templates/最小交付模板.md`
 
 如果当前任务更适合进入正式产品定义、阶段就绪判断或质量门评审，继续转用：
 

@@ -120,7 +120,7 @@ handoff_to:
 
 默认输出为一份正式研究 brief，建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-brief/templates/研究任务-brief-模板.md`
+- `templates/研究任务-brief-模板.md`
 
 至少写清：
 

@@ -63,7 +63,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/handoff-packaging/templates/HANDOFF-模板.md`
+- `templates/HANDOFF-模板.md`
 
 默认至少包含：
 

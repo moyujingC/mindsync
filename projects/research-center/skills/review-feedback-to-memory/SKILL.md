@@ -67,7 +67,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/review-feedback-to-memory/templates/review-event-template.yaml`
+- `templates/review-event-template.yaml`
 
 最小结果至少包含：
 

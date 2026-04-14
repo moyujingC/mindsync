@@ -69,7 +69,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/knowledge-relink-maintenance/templates/maintenance-report-template.md`
+- `templates/maintenance-report-template.md`
 
 最小结果至少包含：
 

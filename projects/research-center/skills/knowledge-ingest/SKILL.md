@@ -78,7 +78,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/knowledge-ingest/templates/知识条目-模板.md`
+- `templates/知识条目-模板.md`
 - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/知识入库前检查清单.md`
 
 ## 质量检查项

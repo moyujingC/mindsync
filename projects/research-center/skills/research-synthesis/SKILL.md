@@ -97,7 +97,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-synthesis/templates/研究综合结论-模板.md`
+- `templates/研究综合结论-模板.md`
 
 至少写清：
 

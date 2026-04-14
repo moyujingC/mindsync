@@ -70,7 +70,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/expression-extraction/templates/expression-analysis-card.md`
+- `templates/expression-analysis-card.md`
 
 最小结果至少包含：
 

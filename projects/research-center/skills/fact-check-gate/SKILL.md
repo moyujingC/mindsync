@@ -72,7 +72,7 @@ handoff_to:
 建议基于：
 
 - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/事实核查笔记模板.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/fact-check-gate/templates/事实核查质量门-快速检查清单.md`
+- `templates/事实核查质量门-快速检查清单.md`
 
 ## 质量检查项
 

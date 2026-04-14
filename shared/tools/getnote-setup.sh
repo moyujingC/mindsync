@@ -9,6 +9,7 @@ PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-http://localhost:3100}"
 PAPERCLIP_COMPANY_ID="${PAPERCLIP_COMPANY_ID:-be191a6e-7447-4821-a93d-9114214c4a64}"
 PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
 GENERIC_SYNC_SCRIPT="${REPO_ROOT}/shared/tools/sync-paperclip-agent-skills.sh"
+GETNOTE_BINDINGS_FILE="${REPO_ROOT}/company/paperclip-agent-skill-bindings.yaml"
 
 RESEARCH_AGENT_ID="da3da98c-79a7-4990-b26d-3530d2711c2e"
 CONTENT_AGENT_ID="2faf9d77-9454-44ec-97c2-dbd24d34a9e6"
@@ -49,6 +50,22 @@ require_cmd() {
   }
 }
 
+normalize_value() {
+  VALUE_TO_NORMALIZE="${1:-}" ruby -e '
+value = ENV.fetch("VALUE_TO_NORMALIZE", "").to_s.strip
+if value.empty?
+  puts ""
+  exit 0
+end
+value = value.sub(/\A~(?=\/|$)/, ENV["HOME"].to_s)
+value = value.gsub(/\$([A-Za-z_][A-Za-z0-9_]*)|\$\{([^}]+)\}/) do
+  key = Regexp.last_match(1) || Regexp.last_match(2)
+  ENV[key].to_s
+end
+puts value
+'
+}
+
 api_curl() {
   if [[ "${#AUTH_HEADER_ARGS[@]}" -gt 0 ]]; then
     curl -sS "${AUTH_HEADER_ARGS[@]}" "$@"
@@ -76,6 +93,110 @@ python_json() {
   local script="$1"
   shift
   python3 -c "$script" "$@"
+}
+
+list_expected_skill_keys_for_agent() {
+  local agent_name="$1"
+  local company_skills_json="$2"
+
+  AGENT_NAME="$agent_name" \
+  BINDINGS_FILE="$GETNOTE_BINDINGS_FILE" \
+  COMPANY_SKILLS_JSON="$company_skills_json" \
+  ruby -e '
+require "json"
+require "yaml"
+
+agent_name = ENV.fetch("AGENT_NAME")
+bindings_file = ENV.fetch("BINDINGS_FILE")
+company_skills = JSON.parse(ENV.fetch("COMPANY_SKILLS_JSON", "[]"))
+data = YAML.load_file(bindings_file) || {}
+bindings = Array(data["bindings"])
+
+def normalize(value)
+  value = value.to_s.strip
+  return "" if value.empty?
+  value = value.sub(/\A~(?=\/|$)/, ENV["HOME"].to_s)
+  value.gsub(/\$([A-Za-z_][A-Za-z0-9_]*)|\$\{([^}]+)\}/) do
+    key = Regexp.last_match(1) || Regexp.last_match(2)
+    ENV[key].to_s
+  end
+end
+
+agent_binding = bindings.find { |item| item["agent_name"].to_s == agent_name }
+desired_skills = Array(agent_binding && agent_binding["desired_skills"])
+
+resolved = []
+desired_skills.each do |item|
+  source_type = item["source_type"].to_s.strip
+  source_locator = normalize(item["source_locator"])
+  skill_alias = item["skill_alias"].to_s.strip.downcase
+
+  exact = company_skills.select do |skill|
+    normalize(skill["sourceLocator"]) == source_locator &&
+      (source_type.empty? || skill["sourceType"].to_s == source_type) &&
+      !skill["key"].to_s.empty?
+  end
+
+  if exact.length == 1
+    resolved << exact.first["key"].to_s
+    next
+  end
+
+  alias_matches = company_skills.select do |skill|
+    candidates = [skill["key"], skill["name"], skill["slug"]].compact.map { |value| value.to_s.strip.downcase }
+    !skill_alias.empty? && candidates.include?(skill_alias) && !skill["key"].to_s.empty?
+  end
+
+  resolved << alias_matches.first["key"].to_s if alias_matches.length == 1
+end
+
+puts resolved.uniq
+'
+}
+
+find_skill_key_by_binding() {
+  local company_skills_json="$1"
+  local source_type="$2"
+  local source_locator="$3"
+  local skill_alias="$4"
+  local normalized_locator
+  normalized_locator="$(normalize_value "$source_locator")"
+
+  COMPANY_SKILLS_JSON="$company_skills_json" \
+  SOURCE_TYPE="$source_type" \
+  SOURCE_LOCATOR="$normalized_locator" \
+  SKILL_ALIAS="$skill_alias" \
+  python3 - <<'PY'
+import json
+import os
+
+skills = json.loads(os.environ.get("COMPANY_SKILLS_JSON", "[]"))
+source_type = os.environ.get("SOURCE_TYPE", "").strip()
+source_locator = os.environ.get("SOURCE_LOCATOR", "").strip()
+skill_alias = os.environ.get("SKILL_ALIAS", "").strip().lower()
+
+def matches_alias(item):
+    candidates = [
+        str(item.get("key") or "").strip().lower(),
+        str(item.get("name") or "").strip().lower(),
+        str(item.get("slug") or "").strip().lower(),
+    ]
+    return bool(skill_alias) and skill_alias in candidates and item.get("key")
+
+exact = [
+    item.get("key", "")
+    for item in skills
+    if str(item.get("sourceLocator") or "").strip() == source_locator
+    and ((not source_type) or str(item.get("sourceType") or "").strip() == source_type)
+    and item.get("key")
+]
+if len(exact) == 1:
+    print(exact[0])
+else:
+    alias_matches = [item.get("key", "") for item in skills if matches_alias(item)]
+    if len(alias_matches) == 1:
+        print(alias_matches[0])
+PY
 }
 
 install_one() {
@@ -160,18 +281,70 @@ print(json.dumps({
 status_one_agent() {
   local name="$1"
   local agent_id="$2"
-  local payload desired
+  local company_skills_payload payload current desired expected display
+  local source_type source_locator skill_alias expected_keys=()
+  company_skills_payload="$(api_curl "${PAPERCLIP_API_URL}/api/companies/${PAPERCLIP_COMPANY_ID}/skills")"
   payload="$(api_curl "${PAPERCLIP_API_URL}/api/agents/${agent_id}/skills")"
-  desired="$(python_json '
+  current="$(python_json '
 import json, sys
 data = json.loads(sys.stdin.read())
-vals = [item for item in data.get("desiredSkills", []) if "get" in item.lower()]
+vals = [item for item in data.get("desiredSkills", []) if item]
 print(",".join(vals))
 ' <<<"$payload")"
+
+  while IFS=$'\t' read -r binding_agent skill_alias source_type source_locator env_patch_required; do
+    [[ "$binding_agent" == "$name" ]] || continue
+    key="$(find_skill_key_by_binding "$company_skills_payload" "$source_type" "$source_locator" "$skill_alias")"
+    [[ -n "$key" ]] && expected_keys+=("$key")
+  done < <(
+    ruby -e '
+      require "yaml"
+      data = YAML.load_file(ARGV[0]) || {}
+      Array(data["bindings"]).each do |binding|
+        agent_name = binding["agent_name"].to_s
+        Array(binding["desired_skills"]).each do |skill|
+          puts [
+            agent_name,
+            skill["skill_alias"].to_s,
+            skill["source_type"].to_s,
+            skill["source_locator"].to_s,
+            skill["env_patch_required"] ? "true" : "false"
+          ].join("\t")
+        end
+      end
+    ' "$GETNOTE_BINDINGS_FILE"
+  )
+
+  expected="$(printf '%s\n' "${expected_keys[@]:-}" | sed '/^$/d' | paste -sd ',' -)"
+
+  desired="$(CURRENT_KEYS="$current" EXPECTED_KEYS="$expected" python3 - <<'PY'
+import os
+
+current = [item.strip() for item in os.environ.get("CURRENT_KEYS", "").split(",") if item.strip()]
+expected = [item.strip() for item in os.environ.get("EXPECTED_KEYS", "").split(",") if item.strip()]
+matched = [item for item in current if item in expected]
+print(",".join(matched))
+PY
+)"
+
   if [[ -n "$desired" ]]; then
     printf '%-28s %s\n' "${name}" "paperclip-skill=${desired}"
+    return
+  fi
+
+  if [[ -n "$expected" ]]; then
+    display="$(EXPECTED_KEYS="$expected" CURRENT_KEYS="$current" python3 - <<'PY'
+import os
+
+expected = [item.strip() for item in os.environ.get("EXPECTED_KEYS", "").split(",") if item.strip()]
+current = [item.strip() for item in os.environ.get("CURRENT_KEYS", "").split(",") if item.strip()]
+missing = [item for item in expected if item not in current]
+print(",".join(missing) if missing else ",".join(expected))
+PY
+)"
+    printf '%-28s %s\n' "${name}" "paperclip-skill=missing expected=${display}"
   else
-    printf '%-28s %s\n' "${name}" "paperclip-skill=missing"
+    printf '%-28s %s\n' "${name}" "paperclip-skill=unresolved-binding"
   fi
 }
 

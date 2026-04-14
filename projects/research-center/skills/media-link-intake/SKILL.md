@@ -74,7 +74,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/media-link-intake/templates/source-pack-模板.md`
+- `templates/source-pack-模板.md`
 
 当前可用本地工具：
 

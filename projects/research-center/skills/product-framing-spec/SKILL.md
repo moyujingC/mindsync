@@ -62,8 +62,8 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/product-framing-spec/templates/产品定义-SPEC-模板.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/product-framing-spec/templates/产品定义-SPEC-快速检查清单.md`
+- `templates/产品定义-SPEC-模板.md`
+- `templates/产品定义-SPEC-快速检查清单.md`
 
 至少写清：
 

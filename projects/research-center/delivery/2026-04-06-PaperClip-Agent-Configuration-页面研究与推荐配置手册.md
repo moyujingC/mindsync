@@ -23,13 +23,19 @@
 
 根据 [/.paperclip.yaml](/Users/xinran/Downloads/dev/mindsync/.paperclip.yaml)：
 
-- `CEO`、`Business Lead`、`Product Spec Lead`、`UI / UX`、`Research & Knowledge Lead`、`Architect`、`Content Lead`
+- `Idea Clarifier`
+  - `pi_local`
+- `Business Lead`、`Product Spec Lead`、`UI / UX`、`Research & Knowledge Lead`、`Architect`、`Content Lead`
   - `claude_local`
 - `Engineer`、`Test / QA`
   - `codex_local`
+- `CEO`
+  - `hermes_local`
 
 因此当前最重要的两类 adapter 是：
 
+- `pi_local`
+  - 适合 `Idea Clarifier` 这类高频澄清与连续追问场景
 - `claude_local`
   - 适合研究、判断、写作、路由与组织协作
 - `codex_local`
@@ -190,6 +196,9 @@
 
 ## 4. 对 `墨予镜` 的推荐总口径
 
+- `Idea Clarifier` 优先 `pi_local`
+  - 标准兜底：`claude_local`
+  - 不再默认由 `CEO` 代跑
 - 研究、产品、架构、内容、商业角色优先 `claude_local`
 - 实现、测试角色优先 `codex_local`
 - 第一轮优先保证：
@@ -200,6 +209,10 @@
   - 只有 `CEO` 拥有管理权限
 
 ## 5. 本次核对中最需要记住的两个差异
+
+- `*_local`
+  - 当前含义是“Paperclip 所在宿主机本地”
+  - 不是操作者这台电脑本地
 
 - `Cooldown`
   - 当前不应作为可靠保护机制依赖
