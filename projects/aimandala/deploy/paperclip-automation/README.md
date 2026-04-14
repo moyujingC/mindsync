@@ -1,9 +1,9 @@
 # Aimandala Paperclip Automation 节点
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer
-> last_updated：2026-04-13
+> last_updated：2026-04-14
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md
 > 项目：aimandala
 > 阶段：ops-runbook
@@ -80,10 +80,21 @@
 1. 容器必须挂载 `mindsync` 仓库目录
 2. 挂载路径应保持与宿主机一致，避免 local adapter 找不到工作目录
 3. `OPENAI_API_KEY` 至少要能在容器里使用，供 `codex_local` 执行 auto-fix
-4. `BETTER_AUTH_SECRET` 必须配置
-5. 如果 automation 节点直连 GitHub / npm / Debian 源很慢，可在 `/etc/default/paperclip-automation` 中配置 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY`，模板已支持同时透传到 Docker build 与容器运行时
-6. `USER_UID` / `USER_GID` 需要与宿主机实际运维用户一致，否则 `/data/paperclip` 等挂载目录可能因为 UID 不匹配而报权限错误
-7. 若使用 Docker bridge 网络，优先让容器监听 `lan` / `0.0.0.0`，再通过宿主机的 Tailscale 域名对外访问；`tailnet` 绑定更适合直接跑在宿主机进程上，而不是容器内
+4. 若 `CEO` 使用 `hermes_local`，镜像内必须内置真实 Hermes CLI，而不是临时占位脚本
+5. `hermes_local` 第一阶段默认直接复用容器环境中的 `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL`
+6. 当检测到 `OPENAI_BASE_URL` 时，容器启动时应自动为 `~/.hermes/config.yaml` 写入 `provider: main`
+7. `BETTER_AUTH_SECRET` 必须配置
+8. 如果 automation 节点直连 GitHub / npm / Debian 源很慢，可在 `/etc/default/paperclip-automation` 中配置 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY`，模板已支持同时透传到 Docker build 与容器运行时
+9. `USER_UID` / `USER_GID` 需要与宿主机实际运维用户一致，否则 `/data/paperclip` 等挂载目录可能因为 UID 不匹配而报权限错误
+10. 若使用 Docker bridge 网络，优先让容器监听 `lan` / `0.0.0.0`，再通过宿主机的 Tailscale 域名对外访问；`tailnet` 绑定更适合直接跑在宿主机进程上，而不是容器内
+11. `paperclip-automation.service` 的日常启动命令不应再附带 `--build`；镜像构建应作为独立运维步骤执行，避免 systemd 长时间卡在 Docker build 阶段导致 `3100` 端口不可用
+12. `/data/paperclip` 下的持久化文件应保持为宿主机运维用户可读写；若发现 `/paperclip/instances/default/.env` 为 `root:root 600`，容器内应用会因为 `EACCES` 反复重启
+
+当前推荐角色口径：
+
+- `CEO`: `hermes_local`
+- `Engineer`: `codex_local`
+- `Test / QA`: `codex_local`
 
 ## 5. Runner 角色
 
@@ -150,7 +161,41 @@
 8. 启动 maintenance timer
 9. 回到 GitHub / Paperclip 做联调验收
 
-## 8. 最小验收
+## 8. 日常启动与更新策略
+
+当前固定采用：
+
+- 启动不构建
+- 构建独立执行
+
+推荐命令：
+
+```bash
+sudo systemctl start paperclip-automation
+sudo systemctl stop paperclip-automation
+```
+
+需要更新镜像时，先显式加载 `/etc/default/paperclip-automation`，再手动执行：
+
+```bash
+set -a
+. /etc/default/paperclip-automation
+set +a
+
+docker compose -f docker-compose.paperclip.yml build
+docker compose -f docker-compose.paperclip.yml up -d
+```
+
+如果容器启动后反复重启，优先检查：
+
+```bash
+systemctl status paperclip-automation --no-pager
+docker ps
+docker logs paperclip-automation-paperclip-1
+curl http://127.0.0.1:3100/api/health
+sudo chown -R ubuntu:ubuntu /data/paperclip
+```
+## 9. 最小验收
 
 完成部署后，至少确认：
 

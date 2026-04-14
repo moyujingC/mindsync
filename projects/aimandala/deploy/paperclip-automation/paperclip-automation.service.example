@@ -10,9 +10,9 @@ RemainAfterExit=yes
 User=ubuntu
 WorkingDirectory=/opt/automation/app/mindsync/projects/aimandala/deploy/paperclip-automation
 EnvironmentFile=/etc/default/paperclip-automation
-ExecStart=/usr/bin/env bash -lc 'docker compose -f docker-compose.paperclip.yml up -d --build'
+ExecStart=/usr/bin/env bash -lc 'docker compose -f docker-compose.paperclip.yml up -d'
 ExecStop=/usr/bin/env bash -lc 'docker compose -f docker-compose.paperclip.yml down'
-TimeoutStartSec=900
+TimeoutStartSec=1800
 TimeoutStopSec=120
 
 [Install]
