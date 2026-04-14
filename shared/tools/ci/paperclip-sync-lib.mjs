@@ -160,23 +160,15 @@ function buildCommitSummaryAutomationKey(options) {
 }
 
 function buildFailureTitle(_config, options) {
-  const segments = [];
-  if (options.sha) {
-    segments.push(shortSha(options.sha));
-  }
-  segments.push(formatTitleLabel(options.job ?? "unknown-job"));
-  segments.push(formatIssueTime(options.eventTime));
-  return segments.join(" · ");
+  const jobLabel = formatTitleLabel(options.job ?? "unknown-job");
+  const branch = options.branch ?? "unknown";
+  return `CI失败：${jobLabel} / ${branch}`;
 }
 
 function buildCommitSummaryTitle(options) {
-  const segments = [];
-  if (options.sha) {
-    segments.push(shortSha(options.sha));
-  }
-  segments.push(formatWorkflowTitleLabel(options.workflow ?? "workflow"));
-  segments.push(formatIssueTime(options.eventTime));
-  return segments.join(" · ");
+  const workflow = formatWorkflowTitleLabel(options.workflow ?? "workflow");
+  const branch = options.branch ?? "unknown";
+  return `${workflow} 失败汇总 / ${branch}`;
 }
 
 function buildCommitSummaryDescription(options) {
@@ -201,6 +193,9 @@ function buildCommitSummaryDescription(options) {
   lines.push("任务目标：");
   lines.push(`- 汇总本次 ${options.workflow ?? "workflow"} 在当前 commit 下的 CI/CD 执行情况`);
   lines.push(`- 作为同一提交下各失败 job 的父任务入口`);
+  lines.push("");
+  lines.push("review goal：");
+  lines.push("- 请确认当前失败拆分是否完整、阻塞路由是否正确；此 review 只作用于父任务，不代表子任务已验收完成");
   lines.push("");
   lines.push("done when：");
   lines.push("- 本次提交对应 workflow 的失败项已全部恢复为绿色，或确认无需继续处理");
@@ -282,13 +277,22 @@ function buildDescription(config, options) {
   const issueMode = config.labelNames.includes("type:artifact") ? "artifact" : "execution";
   const lines = [];
   const owner = options.ownerLabel ?? options.ownerAgentId ?? "待指派";
+  const semanticLabels = [];
+
+  if (issueMode === "execution") {
+    semanticLabels.push("type:execution");
+  } else {
+    semanticLabels.push("type:artifact");
+  }
+  if (config.labelNames.includes("review:deliverable")) {
+    semanticLabels.push("review:deliverable");
+  }
 
   lines.push(`automation_key: ${options.automationKey}`);
   lines.push(`severity: ${config.severity}`);
   lines.push(`diagnosis: ${resolveDiagnosis(options)}`);
-  lines.push(`type:${issueMode}`);
-  if (config.labelNames.includes("review:deliverable")) {
-    lines.push("review:deliverable");
+  for (const label of semanticLabels) {
+    lines.push(label);
   }
   lines.push(`project: ${options.projectName}`);
   if (options.parentAutomationKey) {
@@ -325,16 +329,17 @@ function buildDescription(config, options) {
       lines.push(`- repro: ${options.reproCommand}`);
     }
     lines.push("");
-    lines.push("artifact：");
+    lines.push("预期 artifact：");
     lines.push("- 修复 diff、修复分支或 PR");
     lines.push("- 对应 GitHub check 重新通过");
     lines.push("");
-    lines.push("review goal：");
-    lines.push("- 请确认对应检查已恢复为绿色，且根因与修复说明足以交接");
+    lines.push("完成标准：");
+    lines.push("- 对应 job 在当前分支恢复为绿色");
+    lines.push("- 根因、修复方式与残留风险已回写");
     lines.push("");
     lines.push("done when：");
-    lines.push("- 同类失败在当前分支恢复为绿色");
-    lines.push("- 根因、修复方式与残留风险已回写");
+    lines.push("- 达到完成标准");
+    lines.push("- 产物已提交并可进入 review");
     lines.push("");
     lines.push("约束：");
     lines.push("- 不直接修改 main / release");
@@ -356,7 +361,7 @@ function buildDescription(config, options) {
       lines.push(`- repro: ${options.reproCommand}`);
     }
     lines.push("");
-    lines.push("artifact：");
+    lines.push("预期 artifact：");
     lines.push(`- ${options.environment ?? "unknown"} 环境部署 / smoke 恢复说明`);
     lines.push("");
     lines.push("review goal：");

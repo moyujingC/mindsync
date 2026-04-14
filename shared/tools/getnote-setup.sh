@@ -7,10 +7,17 @@ CODEX_SKILL_DIR="${HOME}/.codex/skills/getnote"
 CLAUDE_SKILL_DIR="${HOME}/.claude/skills/getnote"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-http://localhost:3100}"
 PAPERCLIP_COMPANY_ID="${PAPERCLIP_COMPANY_ID:-be191a6e-7447-4821-a93d-9114214c4a64}"
+PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
+GENERIC_SYNC_SCRIPT="${REPO_ROOT}/shared/tools/sync-paperclip-agent-skills.sh"
 
 RESEARCH_AGENT_ID="da3da98c-79a7-4990-b26d-3530d2711c2e"
 CONTENT_AGENT_ID="2faf9d77-9454-44ec-97c2-dbd24d34a9e6"
 ENGINEER_AGENT_ID="fd835fc1-7e14-487f-ba02-45eed5f6c221"
+
+AUTH_HEADER_ARGS=()
+if [[ -n "$PAPERCLIP_API_TOKEN" ]]; then
+  AUTH_HEADER_ARGS=(-H "Authorization: Bearer ${PAPERCLIP_API_TOKEN}")
+fi
 
 usage() {
   cat <<'EOF'
@@ -42,6 +49,29 @@ require_cmd() {
   }
 }
 
+api_curl() {
+  if [[ "${#AUTH_HEADER_ARGS[@]}" -gt 0 ]]; then
+    curl -sS "${AUTH_HEADER_ARGS[@]}" "$@"
+    return
+  fi
+  curl -sS "$@"
+}
+
+api_json_request() {
+  local method="$1"
+  local url="$2"
+  local payload="${3:-}"
+  local args=(-sS -X "$method" -H 'Content-Type: application/json')
+  if [[ "${#AUTH_HEADER_ARGS[@]}" -gt 0 ]]; then
+    args+=("${AUTH_HEADER_ARGS[@]}")
+  fi
+  if [[ -n "$payload" ]]; then
+    curl "${args[@]}" "$url" -d "$payload"
+    return
+  fi
+  curl "${args[@]}" "$url"
+}
+
 python_json() {
   local script="$1"
   shift
@@ -61,7 +91,7 @@ install_one() {
 
 get_company_skill_key() {
   local payload
-  payload="$(curl -sS "${PAPERCLIP_API_URL}/api/companies/${PAPERCLIP_COMPANY_ID}/skills")"
+  payload="$(api_curl "${PAPERCLIP_API_URL}/api/companies/${PAPERCLIP_COMPANY_ID}/skills")"
   python_json '
 import json, sys
 locator = sys.argv[1]
@@ -81,9 +111,7 @@ import_company_skill() {
     return
   fi
 
-  curl -sS -X POST "${PAPERCLIP_API_URL}/api/companies/${PAPERCLIP_COMPANY_ID}/skills/import" \
-    -H 'Content-Type: application/json' \
-    -d "{\"source\":\"${CODEX_SKILL_DIR}\"}" | \
+  api_json_request POST "${PAPERCLIP_API_URL}/api/companies/${PAPERCLIP_COMPANY_ID}/skills/import" "{\"source\":\"${CODEX_SKILL_DIR}\"}" | \
     python_json '
 import json, sys
 payload = json.loads(sys.stdin.read())
@@ -94,9 +122,7 @@ print(payload["imported"][0]["key"])
 sync_agent_skill() {
   local agent_id="$1"
   local skill_key="$2"
-  curl -sS -X POST "${PAPERCLIP_API_URL}/api/agents/${agent_id}/skills/sync" \
-    -H 'Content-Type: application/json' \
-    -d "{\"desiredSkills\":[\"${skill_key}\"]}" >/dev/null
+  api_json_request POST "${PAPERCLIP_API_URL}/api/agents/${agent_id}/skills/sync" "{\"desiredSkills\":[\"${skill_key}\"]}" >/dev/null
 }
 
 patch_agent_env() {
@@ -104,7 +130,7 @@ patch_agent_env() {
   [[ -n "${GETNOTE_API_KEY:-}" && -n "${GETNOTE_CLIENT_ID:-}" ]] || return 0
 
   local current payload
-  current="$(curl -sS "${PAPERCLIP_API_URL}/api/agents/${agent_id}")"
+  current="$(api_curl "${PAPERCLIP_API_URL}/api/agents/${agent_id}")"
   payload="$(
     printf '%s' "$current" | \
     GETNOTE_API_KEY="${GETNOTE_API_KEY}" \
@@ -128,16 +154,14 @@ print(json.dumps({
 '
   )"
 
-  curl -sS -X PATCH "${PAPERCLIP_API_URL}/api/agents/${agent_id}" \
-    -H 'Content-Type: application/json' \
-    -d "$payload" >/dev/null
+  api_json_request PATCH "${PAPERCLIP_API_URL}/api/agents/${agent_id}" "$payload" >/dev/null
 }
 
 status_one_agent() {
   local name="$1"
   local agent_id="$2"
   local payload desired
-  payload="$(curl -sS "${PAPERCLIP_API_URL}/api/agents/${agent_id}/skills")"
+  payload="$(api_curl "${PAPERCLIP_API_URL}/api/agents/${agent_id}/skills")"
   desired="$(python_json '
 import json, sys
 data = json.loads(sys.stdin.read())
@@ -176,18 +200,15 @@ install_local() {
 
 sync_paperclip() {
   require_cmd python3
-  [[ -d "$CODEX_SKILL_DIR" ]] || {
-    echo "Missing local Codex skill at ${CODEX_SKILL_DIR}. Run install-local first." >&2
+  [[ -f "$GENERIC_SYNC_SCRIPT" ]] || {
+    echo "Missing generic Paperclip skill sync script at ${GENERIC_SYNC_SCRIPT}" >&2
     exit 1
   }
 
-  local skill_key
-  skill_key="$(import_company_skill)"
-  echo "Paperclip company skill key: ${skill_key}"
-
-  sync_agent_skill "$RESEARCH_AGENT_ID" "$skill_key"
-  sync_agent_skill "$CONTENT_AGENT_ID" "$skill_key"
-  sync_agent_skill "$ENGINEER_AGENT_ID" "$skill_key"
+  PAPERCLIP_API_URL="$PAPERCLIP_API_URL" \
+  PAPERCLIP_API_TOKEN="$PAPERCLIP_API_TOKEN" \
+  PAPERCLIP_API_KEY="$PAPERCLIP_API_TOKEN" \
+  bash "$GENERIC_SYNC_SCRIPT" sync
 
   patch_agent_env "$RESEARCH_AGENT_ID"
   patch_agent_env "$CONTENT_AGENT_ID"

@@ -289,5 +289,6 @@ done <<<"$RUNTIME_STATUS"
 
 echo ""
 echo "✅ Missing runtime agents created."
-echo "后续如需同步 instructions，再执行："
+echo "后续建议按下面顺序继续同步："
 echo "  bash shared/tools/sync-agents.sh import"
+echo "  bash shared/tools/sync-paperclip-agent-skills.sh sync"

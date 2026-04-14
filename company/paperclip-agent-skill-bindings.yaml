@@ -1,0 +1,40 @@
+version: 0.1.0
+last_updated: 2026-04-14
+source_of_truth: /Users/xinran/Downloads/dev/mindsync/company/paperclip-agent-skill-bindings.yaml
+description: >
+  Paperclip agent skill 绑定治理清单。用于在公司导入、运行时重建或服务器迁移后，
+  按稳定来源标识恢复 agent 的 desiredSkills，而不是依赖会变化的运行时 skill key。
+
+bindings:
+  - agent_name: "Research & Knowledge Lead"
+    desired_skills:
+      - skill_alias: "iswalle/getnote-openclaw/get"
+        source_type: "github"
+        source_locator: "https://github.com/iswalle/getnote-openclaw"
+        env_patch_required: true
+      - skill_alias: "local/dd0084eb12/get"
+        source_type: "catalog"
+        source_locator: "/paperclip/instances/default/skills/be191a6e-7447-4821-a93d-9114214c4a64/__catalog__/get--3b3e2990dd"
+        env_patch_required: true
+
+  - agent_name: "Content Lead"
+    desired_skills:
+      - skill_alias: "iswalle/getnote-openclaw/get"
+        source_type: "github"
+        source_locator: "https://github.com/iswalle/getnote-openclaw"
+        env_patch_required: true
+      - skill_alias: "local/dd0084eb12/get"
+        source_type: "catalog"
+        source_locator: "/paperclip/instances/default/skills/be191a6e-7447-4821-a93d-9114214c4a64/__catalog__/get--3b3e2990dd"
+        env_patch_required: true
+
+  - agent_name: "Engineer"
+    desired_skills:
+      - skill_alias: "iswalle/getnote-openclaw/get"
+        source_type: "github"
+        source_locator: "https://github.com/iswalle/getnote-openclaw"
+        env_patch_required: true
+      - skill_alias: "local/dd0084eb12/get"
+        source_type: "catalog"
+        source_locator: "/paperclip/instances/default/skills/be191a6e-7447-4821-a93d-9114214c4a64/__catalog__/get--3b3e2990dd"
+        env_patch_required: true
