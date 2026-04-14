@@ -94,8 +94,43 @@
 当前推荐角色口径：
 
 - `CEO`: `hermes_local`
+- `Idea Clarifier`: `pi_local` 主链路，`claude_local` 兜底链路
 - `Engineer`: `codex_local`
 - `Test / QA`: `codex_local`
+
+## 4.1 `pi_local` 额外要求
+
+`Idea Clarifier` 当前保留 `pi_local` 作为正式主链路，因此 automation 节点必须把 `pi` 当作正式运行时依赖，而不是临时试验能力。
+
+最小要求：
+
+1. 当前 Paperclip 实际运行在哪里，`pi` 就必须装在哪里
+2. 如果 Paperclip 跑在 Docker 容器里，`pi` 必须在容器镜像内可执行，不能只装在宿主机
+3. 如果 Paperclip 跑在宿主机 systemd 进程里，`pi` 必须装在同一用户环境，并确保 service `PATH` 可见
+4. `Idea Clarifier` 不应再默认改派给 `CEO` 代跑；标准兜底应是 `claude_local`
+
+最小检查：
+
+```bash
+which pi
+pi --version
+```
+
+同时应在 Paperclip 的 Agent Configuration 页面执行：
+
+- `Idea Clarifier -> Test environment`
+
+通过口径：
+
+1. `which pi` 能返回真实可执行路径
+2. `pi --version` 或等价健康检查成功
+3. `Test environment` 通过
+
+如果这三项任一失败：
+
+- 不应把问题理解为“用户电脑没装 pi”
+- 应先按“automation 服务器当前实际执行环境缺失 `pi`”排障
+- 运行时应自动回退到 `claude_local`，避免澄清任务直接卡死
 
 ## 5. Runner 角色
 

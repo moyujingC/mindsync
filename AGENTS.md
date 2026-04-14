@@ -42,8 +42,14 @@
 16. `company/服务器与基础设施入口.md`
 17. `agents/*/AGENTS.md`
 18. `company/项目与仓库映射.md`
+19. `company/knowledge-base/README.md`
 
 如果任务与某个具体角色有关，应继续读取对应的 `agents/<role>/AGENTS.md`。
+
+如果任务属于“系统机制理解、工具设计机制分析、使用说明整理”，应继续读取：
+
+1. `company/knowledge-base/README.md`
+2. `company/knowledge-base/system/README.md`
 
 如果任务明确属于某个具体项目，还应继续读取：
 

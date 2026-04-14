@@ -1,0 +1,49 @@
+# 公司知识库
+
+> 状态：current
+> 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-04-15
+> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md
+
+这份索引用于收口 `墨予镜` 的公司级知识库入口。
+
+它存放的是可长期复用、跨项目复用、跨角色复用的知识，而不是某个项目的一次性执行计划或临时排障记录。
+
+## 1. 适合放在这里的内容
+
+- 公司级方法论
+- 系统机制分析
+- 核心工具使用说明
+- 跨项目共用的设计判断
+- 从多个项目中沉淀出来的稳定经验
+
+## 2. 不适合放在这里的内容
+
+- 单个项目的 spec / task / qa / delivery
+- 单次故障处理纪要
+- 某台服务器的临时排障步骤
+- 只能服务一个项目的 runbook
+
+这类内容仍应留在对应项目目录中。
+
+## 3. 当前目录
+
+- `product/`
+  - 产品方法论与产品研究模板
+- `system/`
+  - Paperclip、MindSync、CI/CD 等系统机制分析与使用说明
+
+## 4. 当前重点入口
+
+- [system/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/README.md)
+- [product/方法论/产品可行性研究报告标准模板.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/product/方法论/产品可行性研究报告标准模板.md)
+
+## 5. 与项目文档的分工
+
+- 公司知识库：
+  - 回答“这套系统是什么、为什么这样设计、应该如何理解和使用”
+- 项目文档：
+  - 回答“这个项目具体怎么做、现在做到哪一步、如何部署、如何验证”
+
+如果一个问题只在某个项目里成立，就不要直接提升到公司知识库。

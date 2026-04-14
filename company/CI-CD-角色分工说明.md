@@ -12,6 +12,10 @@
 它是公司级协作规则，不是某一个项目的临时说明。
 当前内容以 `aimandala` 已落地的 CI/CD、Paperclip 故障路由与自动修复链路为首个正式样例。
 
+如果需要先理解“当前这套 CI/CD 系统本身由哪些组件构成、如何流转”，应先看：
+
+- [company/knowledge-base/system/当前CI-CD系统机制总览.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/当前CI-CD系统机制总览.md)
+
 ## 1. 为什么这份文档存在
 
 在 `墨予镜` 中，CI/CD 不只是“跑个 workflow 看红绿”。

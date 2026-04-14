@@ -12,6 +12,8 @@ company:
   mode: "remote_authenticated"
   host: "vm-0-11-opencloudos.tail176582.ts.net"
   port: 3100
+  # 当前口径：automation 节点不仅是控制面，也承载 UI / API / 调度 / 大多数 local adapter 的实际执行。
+  # 因此 *_local 表示“运行 Paperclip 的宿主机本地”，不是用户当前这台 Mac 本地。
 
 # Agent 配置
 agents:
@@ -24,6 +26,8 @@ agents:
   - id: "81c0b428-1016-42b6-8393-9f23cb1dca49"
     name: "Idea Clarifier"
     role: "idea_clarifier"
+    # 正式主链路：服务器侧 pi_local
+    # 运行时兜底：当 pi_local 因环境缺失失败时，Paperclip 应自动回退到 claude_local
     adapter: "pi_local"
     directory: "agents/idea-clarifier"
 

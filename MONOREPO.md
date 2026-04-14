@@ -28,6 +28,7 @@ Monorepo 的目标不是把所有东西混在一起，而是做到：
   - 角色定义与角色本地运行时入口
 - `company/`
   - 公司级治理、蓝图、研究沉淀、项目映射
+  - 其中 `company/knowledge-base/` 用于收口公司级长期知识与系统机制解释
 - `projects/`
   - `product` 类型对象的实际工作区与项目级入口
 - `shared/`
