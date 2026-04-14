@@ -36,7 +36,7 @@
 1. [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
 2. [公司侧项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md)
 3. [可行性研究报告](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md)
-4. [任务状态纪要](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-任务状态纪要.md)
+4. [任务状态纪要](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-任务状态纪要.md)
 5. [当前产品 spec](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-spec.md)
 6. [当前实现计划](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/tasks/2026-04-02-mvp-implementation-plan.md)
 7. [当前验收清单](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-02-mvp-qa-checklist.md)

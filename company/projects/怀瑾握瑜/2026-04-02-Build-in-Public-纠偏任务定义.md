@@ -1,4 +1,4 @@
-# CMPA-3 Build in Public 纠偏任务定义
+# Build in Public 纠偏任务定义（历史任务：CMPA-3）
 
 > 适用任务：`CMPA-3`
 > 项目：`怀瑾握瑜`
@@ -52,7 +52,7 @@
 - `怀瑾握瑜` 项目名称与项目背景
 - 当前阶段说明：已立项，正在进入产品化推进
 - [2026-04-02-可行性研究报告.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md)
-- [2026-04-02-CMPA-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-任务状态纪要.md)
+- [2026-04-02-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-任务状态纪要.md)
 - 明确账号拆分要求：`墨予镜` / `怀瑾握瑜`
 - 如果涉及 `墨予镜` 个人号，还必须补充 [company/projects/墨予镜IP/个人真实信息与表达基线.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/个人真实信息与表达基线.md)
 
@@ -142,7 +142,7 @@
 > 输入材料：
 >
 > - [2026-04-02-可行性研究报告.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md)
-> - [2026-04-02-CMPA-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-任务状态纪要.md)
+> - [2026-04-02-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-任务状态纪要.md)
 > - [company/projects/墨予镜IP/个人真实信息与表达基线.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/个人真实信息与表达基线.md)（如涉及 `墨予镜` 账号）
 >
 > 注意：

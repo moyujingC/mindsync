@@ -61,8 +61,8 @@
 
 如果任务明确来自某次历史纠偏或需要追溯当时的流转背景，再补读下面这些历史参考材料：
 
-12. [2026-04-02-CMPA-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-任务状态纪要.md)
-13. [2026-04-02-CMPA-3-Build-in-Public-纠偏任务定义.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-CMPA-3-Build-in-Public-纠偏任务定义.md)
+12. [2026-04-02-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-任务状态纪要.md)
+13. [2026-04-02-Build-in-Public-纠偏任务定义.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-Build-in-Public-纠偏任务定义.md)
 
 ## 3. 项目级材料放什么
 
