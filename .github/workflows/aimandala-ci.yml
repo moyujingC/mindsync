@@ -33,8 +33,106 @@ env:
   PAPERCLIP_PROJECT_NAME: "一镜一梳"
 
 jobs:
-  frontend-ci:
-    name: frontend-ci
+  workflow-quality:
+    name: workflow-quality
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify actionlint Availability
+        id: actionlint_check
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          if ! command -v actionlint >/dev/null 2>&1; then
+            echo "actionlint is not installed on this runner" | tee "$RUNNER_TEMP/actionlint-availability.log"
+            exit 1
+          fi
+
+      - name: Run actionlint
+        id: actionlint_run
+        if: steps.actionlint_check.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          actionlint .github/workflows/aimandala-*.yml 2>&1 | tee "$RUNNER_TEMP/actionlint.log"
+
+      - name: Resolve Workflow Result
+        id: workflow_result
+        if: always()
+        run: |
+          set -euo pipefail
+          FAILED=0
+          KIND="build-failure"
+          FAILED_STEP=""
+          REPRO_COMMAND=""
+          SUMMARY_FILE=""
+
+          if [[ "${{ steps.actionlint_check.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="build-failure"
+            FAILED_STEP="Verify actionlint Availability"
+            REPRO_COMMAND="actionlint .github/workflows/aimandala-*.yml"
+            SUMMARY_FILE="$RUNNER_TEMP/actionlint-availability.log"
+          elif [[ "${{ steps.actionlint_run.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="lint-failure"
+            FAILED_STEP="Run actionlint"
+            REPRO_COMMAND="actionlint .github/workflows/aimandala-*.yml"
+            SUMMARY_FILE="$RUNNER_TEMP/actionlint.log"
+          fi
+
+          printf 'failed=%s\n' "$FAILED" >> "$GITHUB_OUTPUT"
+          printf 'kind=%s\n' "$KIND" >> "$GITHUB_OUTPUT"
+          printf 'failed_step=%s\n' "$FAILED_STEP" >> "$GITHUB_OUTPUT"
+          printf 'repro_command=%s\n' "$REPRO_COMMAND" >> "$GITHUB_OUTPUT"
+          printf 'summary_file=%s\n' "$SUMMARY_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Sync Workflow Paperclip Issue
+        if: always()
+        env:
+          PAPERCLIP_API_BASE: ${{ secrets.PAPERCLIP_API_BASE }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
+        run: |
+          set -euo pipefail
+          SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          RESULT="resolved"
+          if [[ "${{ steps.workflow_result.outputs.failed }}" == "1" ]]; then
+            RESULT="failed"
+          fi
+          node shared/tools/ci/paperclip-ci-issue.mjs \
+            --soft-fail \
+            --company-id "$PAPERCLIP_COMPANY_ID" \
+            --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --kind "${{ steps.workflow_result.outputs.kind }}" \
+            --workflow "ci" \
+            --repository "${{ github.repository }}" \
+            --branch "${{ github.head_ref || github.ref_name }}" \
+            --job "workflow-quality" \
+            --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --event-time "$SYNC_TIME" \
+            --commit-parent \
+            --failed-step "${{ steps.workflow_result.outputs.failed_step }}" \
+            --repro-command "${{ steps.workflow_result.outputs.repro_command }}" \
+            --summary-file "${{ steps.workflow_result.outputs.summary_file }}" \
+            --result "$RESULT" \
+            --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" \
+            --owner-label "Engineer"
+
+      - name: Fail Workflow Job
+        if: steps.workflow_result.outputs.failed == '1'
+        run: exit 1
+
+  frontend-quality:
+    name: frontend-quality
     runs-on:
       - self-hosted
       - linux
@@ -58,17 +156,41 @@ jobs:
           set -euo pipefail
           npm --prefix projects/aimandala/toC/app/frontend ci 2>&1 | tee "$RUNNER_TEMP/frontend-install.log"
 
+      - name: Run Frontend Lint
+        id: frontend_lint
+        if: steps.frontend_install.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          npm --prefix projects/aimandala/toC/app/frontend run lint 2>&1 | tee "$RUNNER_TEMP/frontend-lint.log"
+
+      - name: Run Frontend Format Check
+        id: frontend_format
+        if: steps.frontend_lint.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          npm --prefix projects/aimandala/toC/app/frontend run format:check 2>&1 | tee "$RUNNER_TEMP/frontend-format.log"
+
       - name: Run Vitest
         id: frontend_vitest
-        if: steps.frontend_install.outcome == 'success'
+        if: steps.frontend_format.outcome == 'success'
         continue-on-error: true
         run: |
           set -euo pipefail
           npm --prefix projects/aimandala/toC/app/frontend test 2>&1 | tee "$RUNNER_TEMP/frontend-vitest.log"
 
+      - name: Run Vitest Coverage
+        id: frontend_coverage
+        if: steps.frontend_vitest.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          npm --prefix projects/aimandala/toC/app/frontend run test:coverage 2>&1 | tee "$RUNNER_TEMP/frontend-coverage.log"
+
       - name: Run Typecheck
         id: frontend_typecheck
-        if: steps.frontend_vitest.outcome == 'success'
+        if: steps.frontend_coverage.outcome == 'success'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -99,11 +221,29 @@ jobs:
             FAILED_STEP="Install Frontend Dependencies"
             REPRO_COMMAND="npm --prefix projects/aimandala/toC/app/frontend ci"
             SUMMARY_FILE="$RUNNER_TEMP/frontend-install.log"
+          elif [[ "${{ steps.frontend_lint.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="lint-failure"
+            FAILED_STEP="Run Frontend Lint"
+            REPRO_COMMAND="npm --prefix projects/aimandala/toC/app/frontend run lint"
+            SUMMARY_FILE="$RUNNER_TEMP/frontend-lint.log"
+          elif [[ "${{ steps.frontend_format.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="format-failure"
+            FAILED_STEP="Run Frontend Format Check"
+            REPRO_COMMAND="npm --prefix projects/aimandala/toC/app/frontend run format:check"
+            SUMMARY_FILE="$RUNNER_TEMP/frontend-format.log"
           elif [[ "${{ steps.frontend_vitest.outcome }}" != "success" ]]; then
             FAILED=1
             FAILED_STEP="Run Vitest"
             REPRO_COMMAND="npm --prefix projects/aimandala/toC/app/frontend test"
             SUMMARY_FILE="$RUNNER_TEMP/frontend-vitest.log"
+          elif [[ "${{ steps.frontend_coverage.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="coverage-failure"
+            FAILED_STEP="Run Vitest Coverage"
+            REPRO_COMMAND="npm --prefix projects/aimandala/toC/app/frontend run test:coverage"
+            SUMMARY_FILE="$RUNNER_TEMP/frontend-coverage.log"
           elif [[ "${{ steps.frontend_typecheck.outcome }}" != "success" ]]; then
             FAILED=1
             FAILED_STEP="Run Typecheck"
@@ -144,7 +284,7 @@ jobs:
             --workflow "ci" \
             --repository "${{ github.repository }}" \
             --branch "${{ github.head_ref || github.ref_name }}" \
-            --job "frontend-ci" \
+            --job "frontend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
@@ -160,8 +300,8 @@ jobs:
         if: steps.frontend_result.outputs.failed == '1'
         run: exit 1
 
-  backend-ci:
-    name: backend-ci
+  backend-quality:
+    name: backend-quality
     runs-on:
       - self-hosted
       - linux
@@ -185,11 +325,24 @@ jobs:
           set -euo pipefail
           bash shared/tools/ci/ensure-python-ci-venv.sh \
             projects/aimandala/toC/app/backend/requirements.release.txt \
-            pytest 2>&1 | tee "$RUNNER_TEMP/backend-install.log"
+            pytest ruff 2>&1 | tee "$RUNNER_TEMP/backend-install.log"
+
+      - name: Run Ruff Check
+        id: backend_ruff
+        if: steps.backend_install.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=projects/aimandala/toC/app/backend
+          "${{ steps.backend_install.outputs.venv_dir }}/bin/ruff" check \
+            --config projects/aimandala/toC/app/backend/ruff.toml \
+            projects/aimandala/toC/app/backend/app \
+            projects/aimandala/toC/app/backend/tests \
+            projects/aimandala/toC/app/backend/scripts 2>&1 | tee "$RUNNER_TEMP/backend-ruff.log"
 
       - name: Run Pytest
         id: backend_pytest
-        if: steps.backend_install.outcome == 'success'
+        if: steps.backend_ruff.outcome == 'success'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -216,8 +369,14 @@ jobs:
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Install Backend Dependencies"
-            REPRO_COMMAND="python3 -m pip install -r projects/aimandala/toC/app/backend/requirements.release.txt pytest"
+            REPRO_COMMAND="python3 -m pip install -r projects/aimandala/toC/app/backend/requirements.release.txt pytest ruff"
             SUMMARY_FILE="$RUNNER_TEMP/backend-install.log"
+          elif [[ "${{ steps.backend_ruff.outcome }}" != "success" ]]; then
+            FAILED=1
+            KIND="lint-failure"
+            FAILED_STEP="Run Ruff Check"
+            REPRO_COMMAND="PYTHONPATH=projects/aimandala/toC/app/backend ruff check --config projects/aimandala/toC/app/backend/ruff.toml projects/aimandala/toC/app/backend/app projects/aimandala/toC/app/backend/tests projects/aimandala/toC/app/backend/scripts"
+            SUMMARY_FILE="$RUNNER_TEMP/backend-ruff.log"
           elif [[ "${{ steps.backend_pytest.outcome }}" != "success" ]]; then
             FAILED=1
             FAILED_STEP="Run Pytest"
@@ -252,7 +411,7 @@ jobs:
             --workflow "ci" \
             --repository "${{ github.repository }}" \
             --branch "${{ github.head_ref || github.ref_name }}" \
-            --job "backend-ci" \
+            --job "backend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
@@ -268,8 +427,8 @@ jobs:
         if: steps.backend_result.outputs.failed == '1'
         run: exit 1
 
-  knowledge-ci:
-    name: knowledge-ci
+  knowledge-quality:
+    name: knowledge-quality
     runs-on:
       - self-hosted
       - linux
@@ -293,7 +452,7 @@ jobs:
           set -euo pipefail
           bash shared/tools/ci/ensure-python-ci-venv.sh \
             projects/aimandala/toC/app/backend/requirements.release.txt \
-            pytest 2>&1 | tee "$RUNNER_TEMP/knowledge-install.log"
+            pytest ruff 2>&1 | tee "$RUNNER_TEMP/knowledge-install.log"
 
       - name: Run Knowledge Validation
         id: knowledge_validate
@@ -374,7 +533,7 @@ jobs:
             --workflow "ci" \
             --repository "${{ github.repository }}" \
             --branch "${{ github.head_ref || github.ref_name }}" \
-            --job "knowledge-ci" \
+            --job "knowledge-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
@@ -390,13 +549,14 @@ jobs:
         if: steps.knowledge_result.outputs.failed == '1'
         run: exit 1
 
-  ci-paperclip-summary:
-    name: ci-paperclip-summary
+  ci-summary:
+    name: ci-summary
     if: always()
     needs:
-      - frontend-ci
-      - backend-ci
-      - knowledge-ci
+      - workflow-quality
+      - frontend-quality
+      - backend-quality
+      - knowledge-quality
     runs-on:
       - self-hosted
       - linux
@@ -423,24 +583,29 @@ jobs:
           RESULT="resolved"
           FAILED_JOBS=()
 
-          if [[ "${{ needs.frontend-ci.result }}" == "failure" ]]; then
+          if [[ "${{ needs.workflow-quality.result }}" == "failure" ]]; then
             RESULT="failed"
-            FAILED_JOBS+=("frontend-ci")
+            FAILED_JOBS+=("workflow-quality")
           fi
-          if [[ "${{ needs.backend-ci.result }}" == "failure" ]]; then
+          if [[ "${{ needs.frontend-quality.result }}" == "failure" ]]; then
             RESULT="failed"
-            FAILED_JOBS+=("backend-ci")
+            FAILED_JOBS+=("frontend-quality")
           fi
-          if [[ "${{ needs.knowledge-ci.result }}" == "failure" ]]; then
+          if [[ "${{ needs.backend-quality.result }}" == "failure" ]]; then
             RESULT="failed"
-            FAILED_JOBS+=("knowledge-ci")
+            FAILED_JOBS+=("backend-quality")
+          fi
+          if [[ "${{ needs.knowledge-quality.result }}" == "failure" ]]; then
+            RESULT="failed"
+            FAILED_JOBS+=("knowledge-quality")
           fi
 
           SUMMARY_FILE="$RUNNER_TEMP/ci-paperclip-summary.txt"
           {
-            echo "frontend-ci=${{ needs.frontend-ci.result }}"
-            echo "backend-ci=${{ needs.backend-ci.result }}"
-            echo "knowledge-ci=${{ needs.knowledge-ci.result }}"
+            echo "workflow-quality=${{ needs.workflow-quality.result }}"
+            echo "frontend-quality=${{ needs.frontend-quality.result }}"
+            echo "backend-quality=${{ needs.backend-quality.result }}"
+            echo "knowledge-quality=${{ needs.knowledge-quality.result }}"
             echo "result=${RESULT}"
           } > "$SUMMARY_FILE"
 
@@ -460,7 +625,7 @@ jobs:
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
-            --job-count "3" \
+            --job-count "4" \
             --summary-file "$SUMMARY_FILE" \
             --result "$RESULT" \
             --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" \

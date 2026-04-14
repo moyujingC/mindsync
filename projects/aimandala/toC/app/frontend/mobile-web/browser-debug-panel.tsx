@@ -166,7 +166,7 @@ function buildPromptMatchKeywords(
     ]) {
       if (typeof candidate === "string" && candidate.trim()) {
         candidate
-          .split(/[\/,]/)
+          .split(/[/,]/)
           .map((part) => part.trim())
           .filter(Boolean)
           .forEach((part) => keywords.add(part));
@@ -475,7 +475,7 @@ export function BrowserDebugPanel({
   previewMode,
   draft,
   interpretationId,
-  userId,
+  userId: _userId,
   flowState,
   detection,
   detectError,

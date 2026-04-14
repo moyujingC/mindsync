@@ -107,5 +107,6 @@
 - `Engineer` 是失败建单、修复、联调和运行时回写的主执行者
 - `Test / QA` 主要在验证、回归、review 和放行环节介入
 - `Test / QA` 目前不直接承接 nightly smoke、runner heartbeat 或自动修复执行主链
+- `PR` 质量门默认服务于 merge / release 前质量判断，不等于 deploy smoke 已恢复或线上环境已可放行
 
 如果未来要让 `Test / QA` 直接承接验收型巡检、nightly smoke 结果判定或更强的发布质量门，应在新的项目文档或公司级规则中另行扩展，而不是默认为当前已生效职责。

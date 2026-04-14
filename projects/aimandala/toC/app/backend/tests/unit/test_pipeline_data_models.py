@@ -14,15 +14,11 @@ sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
-import pytest
-from datetime import datetime
-
 from app.core.pipeline.data_models import (
     InterpretationVersion,
     GenerationStatus,
     FiveElementsData,
     ThreeCirclesData,
-    MicroAnalysisData,
     Layer0Raw,
     SixInsights,
     Layer1LiteDraft,

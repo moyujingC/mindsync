@@ -22,6 +22,7 @@
 当前已沉淀：
 
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
+- `2026-04-14-miniapp-batch-a-shared-foundation-audit.md`
 - `2026-04-04-首批迁移清单.md`
 - `2026-04-04-迁移剩余主功能清单.md`
 - `2026-04-05-ui-restart-plan.md`

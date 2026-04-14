@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
+
+if TYPE_CHECKING:
+    from app.core.pipeline.data_models import Layer0Raw
 
 from ..repository import KnowledgeRepository
 from .circle_service import CircleService

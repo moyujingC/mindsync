@@ -21,10 +21,11 @@
 
 1. `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md`
 2. `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md`
-3. `2026-04-12-迁移收官与正式版收口验证记录.md`
-4. `2026-04-12-v22-knowledge-workbench-verification.md`
-5. `2026-04-12-ci-cd-验证记录.md`
-6. `2026-04-13-paperclip-automation-节点验证记录.md`
+3. `2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md`
+4. `2026-04-12-迁移收官与正式版收口验证记录.md`
+5. `2026-04-12-v22-knowledge-workbench-verification.md`
+6. `2026-04-12-ci-cd-验证记录.md`
+7. `2026-04-13-paperclip-automation-节点验证记录.md`
 
 `2026-04-08-toc-mvp-first-pass-verification.md` 与 `2026-04-08-toc-mvp-sample-validation.md` 仍可用于追溯早期验证背景，但默认不再作为当前首轮入口。
 
@@ -49,6 +50,16 @@
 - 当前自动化质量门是否已经通过
 - `dev / prod smoke` 和 `prod` 深烟测是否已经落盘
 - 手机端人工主路径验收还缺什么、应如何执行
+
+### `2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md`
+
+批次 A 审计验证记录。
+
+适合确认：
+
+- `main` 与小程序 worktree 在 shared foundation 上是否已大体对齐
+- 当前 shared boundary 是否已经包含后续批次语义
+- 为什么当前不需要再做一笔“批次 A 重复摘入”提交
 
 ### `2026-04-12-迁移收官与正式版收口验证记录.md`
 

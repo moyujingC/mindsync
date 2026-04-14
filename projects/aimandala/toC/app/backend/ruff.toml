@@ -1,0 +1,12 @@
+target-version = "py311"
+line-length = 100
+
+extend-exclude = [
+  ".pytest_cache",
+]
+
+[lint]
+select = ["F"]
+
+[lint.per-file-ignores]
+"scripts/*.py" = ["E402"]
