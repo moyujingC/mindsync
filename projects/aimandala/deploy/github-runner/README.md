@@ -90,6 +90,22 @@ node /Users/xinran/Downloads/dev/mindsync/shared/tools/ci/check-runner-heartbeat
   --branch main
 ```
 
+需要人工深挖时，统一先跑：
+
+```bash
+GITHUB_REPOSITORY=moyujingC/mindsync \
+GITHUB_TOKEN=<token> \
+bash /Users/xinran/Downloads/dev/mindsync/shared/tools/ci/runner-doctor.sh --strict
+```
+
+`runner-doctor.sh` 会同时输出：
+
+- `mindsync-ci-runner.service`
+- `paperclip-heartbeat.service / timer`
+- 当前仓库基线（cwd / branch / sha / dirty）
+- GitHub workflow 最新状态
+- GitHub runner 注册状态、在线状态与 labels 对账
+
 建议频率：
 
 - 每 15 分钟一次
@@ -99,3 +115,11 @@ node /Users/xinran/Downloads/dev/mindsync/shared/tools/ci/check-runner-heartbeat
 - 这种做法能覆盖大多数“runner 卡住或长期无成功运行”的异常
 - 但不能覆盖整台 `automation` 节点完全宕机
 - 整机宕机时，仍应以 GitHub 上的 `Waiting for a runner` 为最终兜底信号
+
+### 6.1 `queued` 超时的固定判定
+
+当 `ci` 长时间停在 `Queued / Waiting for a runner to pick up this job` 时，统一按基础设施故障处理：
+
+- 直接归类为 `infra-runner-failure`
+- 不再混用成 `build-failure` 或 `ci-test-failure`
+- 先检查 runner 在线状态、labels、heartbeat token 权限，再看代码层问题

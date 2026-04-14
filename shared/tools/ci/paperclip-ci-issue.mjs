@@ -3,6 +3,7 @@
 import process from "node:process";
 
 import {
+  collectGitBaseline,
   getStringArray,
   getOption,
   logError,
@@ -11,6 +12,7 @@ import {
   parseArgs,
   readTextIfExists,
   requireOption,
+  summarizeExecutionBaseline,
   truthy,
 } from "./common.mjs";
 import { syncPaperclipCommitSummary, syncPaperclipIssue } from "./paperclip-sync-lib.mjs";
@@ -29,6 +31,7 @@ async function main() {
   const summaryFile = getOption(options, "summary-file", "");
   const summary = summaryText || (await readTextIfExists(summaryFile));
   const mode = getOption(options, "mode", "issue");
+  const rawExecutionBaseline = await collectGitBaseline(process.cwd());
 
   try {
     const baseOptions = {
@@ -45,8 +48,18 @@ async function main() {
       ownerAgentId: getOption(options, "owner-agent-id", null),
       ownerLabel: getOption(options, "owner-label", null),
       note: getOption(options, "note", null),
+      diagnosis: getOption(options, "diagnosis", null),
+      blockedReason: getOption(options, "blocked-reason", null),
+      actionTaken: getOption(options, "action-taken", null),
+      nextStep: getOption(options, "next-step", null),
+      unblockOwner: getOption(options, "unblock-owner", null),
+      phase: getOption(options, "phase", null),
       summary,
       eventTime: getOption(options, "event-time", null),
+      executionBaseline: summarizeExecutionBaseline(rawExecutionBaseline, {
+        expectedSha: getOption(options, "sha", process.env.GITHUB_SHA ?? null),
+        expectedBranch: getOption(options, "branch", null),
+      }),
     };
 
     const result =

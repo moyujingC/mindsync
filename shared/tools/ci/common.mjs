@@ -332,6 +332,91 @@ export async function getChangedFiles(cwd) {
     .map((line) => line.slice(3).trim());
 }
 
+function parseStatusPorcelain(output) {
+  const lines = String(output ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .filter(Boolean);
+
+  const untrackedFiles = [];
+  let dirty = false;
+
+  for (const line of lines) {
+    if (line.startsWith("?? ")) {
+      untrackedFiles.push(line.slice(3).trim());
+      dirty = true;
+      continue;
+    }
+    dirty = true;
+  }
+
+  return {
+    dirty,
+    untrackedFiles,
+  };
+}
+
+export async function collectGitBaseline(cwd = process.cwd()) {
+  const [headSha, branchName, status] = await Promise.all([
+    runShellCommand("git rev-parse HEAD", { cwd }),
+    runShellCommand("git symbolic-ref --short -q HEAD || git branch --show-current || true", { cwd }),
+    runShellCommand("git status --porcelain", { cwd }),
+  ]);
+
+  if (headSha.code !== 0) {
+    return {
+      available: false,
+      cwd,
+      error: truncateText(headSha.stderr || headSha.stdout, 800),
+    };
+  }
+
+  const baseline = parseStatusPorcelain(status.stdout);
+  return {
+    available: true,
+    cwd,
+    headSha: headSha.stdout.trim() || null,
+    branch: branchName.code === 0 ? branchName.stdout.trim() || null : null,
+    dirty: baseline.dirty,
+    untrackedFiles: baseline.untrackedFiles,
+  };
+}
+
+export function summarizeExecutionBaseline(baseline, options = {}) {
+  if (!baseline || baseline.available === false) {
+    return {
+      available: false,
+      cwd: baseline?.cwd ?? options.cwd ?? process.cwd(),
+      error: baseline?.error ?? "baseline unavailable",
+      headMatchesExpected: null,
+      branchMatchesExpected: null,
+      driftReasons: [],
+    };
+  }
+
+  const expectedSha = options.expectedSha ?? null;
+  const expectedBranch = options.expectedBranch ?? null;
+  const headMatchesExpected = expectedSha ? baseline.headSha === expectedSha : null;
+  const branchMatchesExpected = expectedBranch ? baseline.branch === expectedBranch : null;
+  const driftReasons = [];
+
+  if (headMatchesExpected === false) {
+    driftReasons.push("sha_mismatch");
+  }
+  if (branchMatchesExpected === false) {
+    driftReasons.push("branch_mismatch");
+  }
+
+  return {
+    ...baseline,
+    expectedSha,
+    expectedBranch,
+    headMatchesExpected,
+    branchMatchesExpected,
+    driftReasons,
+  };
+}
+
 export function createGitHubApiHeaders(token) {
   return {
     Accept: "application/vnd.github+json",

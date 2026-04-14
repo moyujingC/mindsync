@@ -45,6 +45,18 @@ const SEVERITY_EMOJI = {
   warning: "⚠️",
   error: "❌",
 };
+const KIND_DIAGNOSIS = {
+  "ci-test-failure": "代码问题",
+  "build-failure": "代码问题",
+  "deploy-or-smoke-failure": "发布风险",
+  "infra-runner-failure": "基础设施问题",
+};
+const BLOCKED_REASON_LABEL = {
+  infra_missing: "infra_missing",
+  credential_missing: "credential_missing",
+  workspace_drift: "workspace_drift",
+  human_action_required: "human_action_required",
+};
 
 function shortSha(sha) {
   const normalized = String(sha ?? "").trim();
@@ -181,6 +193,43 @@ function buildCommitSummaryComment(options) {
   return `${lines.join("\n")}\n`;
 }
 
+function resolveDiagnosis(options) {
+  return options.diagnosis ?? KIND_DIAGNOSIS[options.kind] ?? "待判断";
+}
+
+function formatExecutionBaselineLines(options) {
+  const baseline = options.executionBaseline;
+  if (!baseline) {
+    return [];
+  }
+
+  const lines = [];
+  lines.push("执行基线：");
+  lines.push(`- cwd: ${baseline.cwd ?? "unknown"}`);
+
+  if (baseline.available === false) {
+    lines.push(`- baseline: unavailable (${baseline.error ?? "unknown error"})`);
+    return lines;
+  }
+
+  lines.push(`- branch: ${baseline.branch ?? "detached"}`);
+  lines.push(`- head: ${baseline.headSha ?? "unknown"}`);
+  lines.push(`- dirty: ${baseline.dirty ? "true" : "false"}`);
+  lines.push(`- untracked files: ${baseline.untrackedFiles?.length ?? 0}`);
+  if (baseline.expectedBranch) {
+    lines.push(`- expected branch: ${baseline.expectedBranch}`);
+  }
+  if (baseline.expectedSha) {
+    lines.push(`- expected commit: ${baseline.expectedSha}`);
+  }
+  if (Array.isArray(baseline.driftReasons) && baseline.driftReasons.length > 0) {
+    lines.push(`- drift: ${baseline.driftReasons.join(", ")}`);
+  } else {
+    lines.push("- drift: none");
+  }
+  return lines;
+}
+
 function buildDescription(config, options) {
   const issueMode = config.labelNames.includes("type:artifact") ? "artifact" : "execution";
   const lines = [];
@@ -188,6 +237,7 @@ function buildDescription(config, options) {
 
   lines.push(`automation_key: ${options.automationKey}`);
   lines.push(`severity: ${config.severity}`);
+  lines.push(`diagnosis: ${resolveDiagnosis(options)}`);
   lines.push(`type:${issueMode}`);
   if (config.labelNames.includes("review:deliverable")) {
     lines.push("review:deliverable");
@@ -197,6 +247,9 @@ function buildDescription(config, options) {
     lines.push(`parent: ${options.parentAutomationKey}`);
   }
   lines.push(`owner: ${owner}`);
+  if (options.blockedReason) {
+    lines.push(`blocked_reason: ${BLOCKED_REASON_LABEL[options.blockedReason] ?? options.blockedReason}`);
+  }
   if (options.goalTitle) {
     lines.push(`goal: ${options.goalTitle}`);
   }
@@ -273,6 +326,12 @@ function buildDescription(config, options) {
     lines.push("- 风险说明、根因和后续动作已回写");
   }
 
+  const baselineLines = formatExecutionBaselineLines(options);
+  if (baselineLines.length > 0) {
+    lines.push("");
+    lines.push(...baselineLines);
+  }
+
   if (options.summary) {
     lines.push("");
     lines.push("摘要日志：");
@@ -288,6 +347,13 @@ function buildComment(options) {
   const lines = [];
   lines.push(`CI同步时间：${isoNow()}`);
   lines.push(`- 结果：${options.result}`);
+  lines.push(`- 当前判断：${resolveDiagnosis(options)}`);
+  if (options.phase) {
+    lines.push(`- 当前阶段：${options.phase}`);
+  }
+  if (options.blockedReason) {
+    lines.push(`- blocked reason: ${BLOCKED_REASON_LABEL[options.blockedReason] ?? options.blockedReason}`);
+  }
   if (options.runUrl) {
     lines.push(`- run: ${options.runUrl}`);
   }
@@ -302,6 +368,26 @@ function buildComment(options) {
   }
   if (options.note) {
     lines.push(`- note: ${options.note}`);
+  }
+  if (options.actionTaken) {
+    lines.push("");
+    lines.push("已做动作：");
+    lines.push(`- ${options.actionTaken}`);
+  }
+  if (options.nextStep) {
+    lines.push("");
+    lines.push("下一步动作：");
+    lines.push(`- ${options.nextStep}`);
+  }
+  if (options.unblockOwner) {
+    lines.push("");
+    lines.push("谁来解除阻塞：");
+    lines.push(`- ${options.unblockOwner}`);
+  }
+  const baselineLines = formatExecutionBaselineLines(options);
+  if (baselineLines.length > 0) {
+    lines.push("");
+    lines.push(...baselineLines);
   }
   if (options.summary) {
     lines.push("");

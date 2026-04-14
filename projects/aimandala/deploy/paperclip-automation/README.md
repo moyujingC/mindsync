@@ -132,6 +132,20 @@
 - 本地 timer 负责大多数异常
 - GitHub 上的 `Waiting for a runner` 仍是整机故障的最终兜底信号
 
+同时，heartbeat timer 现在还应补一层执行健康巡检：
+
+- `check-paperclip-execution-health.mjs`
+  - 用于发现 `activeRun=running` 但长期没有评论或状态回写的疑似卡住任务
+  - 默认把这类任务转为 `blocked`，并回写标准化说明
+
+人工排障统一先跑：
+
+```bash
+GITHUB_REPOSITORY=moyujingC/mindsync \
+GITHUB_TOKEN=<token> \
+bash shared/tools/ci/runner-doctor.sh --strict
+```
+
 日常清理由：
 
 - `/Users/xinran/Downloads/dev/mindsync/shared/tools/ci/automation-node-maintenance.sh`
@@ -204,3 +218,5 @@ sudo chown -R ubuntu:ubuntu /data/paperclip
 3. Paperclip 面板能登录并看到公司数据
 4. 触发一次 `ci` 后，job 实际落到这台机器执行
 5. `check-runner-heartbeat.mjs` 可以本机手动执行成功
+6. `runner-doctor.sh --strict` 返回成功，且 labels / token / 最新 workflow 诊断一致
+7. `paperclip-heartbeat.timer` 会同时完成 runner 巡检和执行健康巡检

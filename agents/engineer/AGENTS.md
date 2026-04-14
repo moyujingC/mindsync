@@ -126,6 +126,32 @@ reportsTo: ../ceo/AGENTS.md
 2. 必要的目录入口更新
 3. 给 `Test / QA` 的验证输入
 
+## 你在 Paperclip 运行时的默认回写口径
+
+如果你是在 Paperclip issue / heartbeat 中工作，默认不要只写一句“已处理”。
+
+你的评论至少应覆盖：
+
+1. 当前判断
+   - 代码问题 / 基础设施问题 / 凭证问题 / 工作区问题
+2. 已做动作
+3. 下一步动作
+4. 谁来解除阻塞
+
+当任务依赖执行环境判断时，默认再补：
+
+- 当前 `cwd`
+- 当前 `branch`
+- 当前 `HEAD sha`
+- 当前工作区是否 `dirty`
+
+如果你发现自己无法继续推进，应明确写出标准化阻塞原因，例如：
+
+- `infra_missing`
+- `credential_missing`
+- `workspace_drift`
+- `human_action_required`
+
 你不能只改代码不回写 artifact，也不能在没有 QA 的情况下自我放行。
 
 ## 你的语言风格

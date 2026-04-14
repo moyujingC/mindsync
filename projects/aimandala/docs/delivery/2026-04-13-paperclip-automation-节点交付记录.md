@@ -56,6 +56,7 @@
 - heartbeat / maintenance 的 systemd timer 模板
 - automation 节点的日常清理脚本
 - 三台机分工明确的 ops runbook
+- runner-doctor 与 Paperclip 执行健康巡检入口
 
 ## 3. 未完成但已留好入口
 
@@ -66,6 +67,18 @@
 5. 真机启动 Paperclip / heartbeat / maintenance service
 6. 真机注册 GitHub runner
 7. 真机导入或同步公司 / 项目配置到 Paperclip 运行时
+8. 真机验证 `runner-doctor.sh --strict`
+9. 真机验证 heartbeat timer 会同时执行 runner 巡检与执行健康巡检
+
+## 3.1 上线完成定义
+
+只有同时满足下面条件，才算 automation 节点真正上线：
+
+1. `mindsync-ci` runner 已注册完成且 labels 正确
+2. `paperclip-heartbeat.service / timer` 在线
+3. heartbeat 使用的 GitHub token 已通过 runner 读取权限验证
+4. `runner-doctor.sh --strict` 通过
+5. 至少一条真实 workflow 已被该 runner 拾取并完成
 
 ## 4. 当前残留风险
 

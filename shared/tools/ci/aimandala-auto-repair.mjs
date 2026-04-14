@@ -5,6 +5,7 @@ import process from "node:process";
 
 import {
   buildRunUrl,
+  collectGitBaseline,
   createGitHubApiHeaders,
   fetchJson,
   getChangedFiles,
@@ -15,6 +16,7 @@ import {
   parseArgs,
   runShellCommand,
   truncateText,
+  summarizeExecutionBaseline,
   truthy,
 } from "./common.mjs";
 import { syncPaperclipIssue } from "./paperclip-sync-lib.mjs";
@@ -191,6 +193,12 @@ async function main() {
     ownerLabel: "Engineer",
     summary: `workflow=${workflowRun.name}\njob=${failedJob.name}\nstep=${failedStep ?? "unknown"}\nconclusion=${failedJob.conclusion}`,
     note,
+    diagnosis: "代码问题",
+    actionTaken: "读取 workflow_run 失败 job，识别失败 step，并建立对应的修复 issue。",
+    nextStep: profile
+      ? "进入自动修复白名单流程，隔离分支执行修复命令并复跑。"
+      : "等待人工排查；当前失败点不在自动修复白名单内。",
+    phase: profile ? "auto-repair intake" : "manual-follow-up",
   });
 
   if (!profile) {
@@ -222,6 +230,10 @@ async function main() {
     ownerAgentId,
     ownerLabel: "Engineer",
     note: "自动修复已接手，正在隔离分支尝试修复并复跑。",
+    diagnosis: "代码问题",
+    actionTaken: "创建自动修复执行上下文，准备切换隔离分支并运行修复命令。",
+    nextStep: "执行修复命令，随后用对应 repro command 做本地复跑。",
+    phase: "auto-repair started",
   });
 
   const branchName = `codex/auto-fix/${workflowRun.id}`;
@@ -244,6 +256,10 @@ async function main() {
   });
 
   if (repairRun.code !== 0) {
+    const baseline = summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+      expectedSha: workflowRun.head_sha,
+      expectedBranch: workflowRun.head_branch,
+    });
     await syncPaperclipIssue({
       apiBase: paperclipApiBase,
       apiKey: paperclipApiKey,
@@ -263,6 +279,13 @@ async function main() {
       ownerAgentId,
       ownerLabel: "Engineer",
       note: "自动修复命令执行失败，已保留问题单等待人工处理。",
+      diagnosis: "代码问题",
+      blockedReason: "human_action_required",
+      actionTaken: "已执行自动修复命令，但命令本身失败。",
+      nextStep: "人工查看修复命令输出，确认是否需要补依赖、修脚本或转人工修复分支。",
+      unblockOwner: "Engineer",
+      phase: "auto-repair command failed",
+      executionBaseline: baseline,
       summary: repairRun.stderr || repairRun.stdout,
     });
     throw new Error(`Auto-repair command failed: ${truncateText(repairRun.stderr || repairRun.stdout, 1600)}`);
@@ -270,6 +293,10 @@ async function main() {
 
   const reproResult = await runShellCommand(profile.reproCommand);
   if (reproResult.code !== 0) {
+    const baseline = summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+      expectedSha: workflowRun.head_sha,
+      expectedBranch: workflowRun.head_branch,
+    });
     await syncPaperclipIssue({
       apiBase: paperclipApiBase,
       apiKey: paperclipApiKey,
@@ -289,6 +316,12 @@ async function main() {
       ownerAgentId,
       ownerLabel: "Engineer",
       note: "自动修复后复跑仍失败，问题单继续保留。",
+      diagnosis: "代码问题",
+      actionTaken: "自动修复命令已执行完成，但本地 repro command 仍未通过。",
+      nextStep: "人工继续排查失败根因，并决定是否保留自动修复分支作为半成品。",
+      unblockOwner: "Engineer",
+      phase: "auto-repair repro failed",
+      executionBaseline: baseline,
       summary: reproResult.stderr || reproResult.stdout,
     });
     throw new Error(`Auto-repair repro command still fails: ${truncateText(reproResult.stderr || reproResult.stdout, 1600)}`);
@@ -296,6 +329,10 @@ async function main() {
 
   const changedFiles = await getChangedFiles(process.cwd());
   if (changedFiles.length === 0) {
+    const baseline = summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+      expectedSha: workflowRun.head_sha,
+      expectedBranch: workflowRun.head_branch,
+    });
     await syncPaperclipIssue({
       apiBase: paperclipApiBase,
       apiKey: paperclipApiKey,
@@ -315,6 +352,13 @@ async function main() {
       ownerAgentId,
       ownerLabel: "Engineer",
       note: "自动修复复跑已通过，但工作区没有产生可提交 diff，问题单继续保留。",
+      diagnosis: "工作区问题",
+      blockedReason: "workspace_drift",
+      actionTaken: "修复命令和 repro 已通过，但工作区没有产出可提交 diff。",
+      nextStep: "检查当前执行目录、缓存命中和工作树基线，确认是否发生 workspace drift 或修复已在别处分支存在。",
+      unblockOwner: "Engineer / 运维执行方",
+      phase: "auto-repair no diff",
+      executionBaseline: baseline,
     });
     return;
   }
@@ -386,6 +430,16 @@ async function main() {
     repairBranch: branchName,
     repairPrUrl: prUrl,
     note: "自动修复已在隔离分支完成复跑并产出待审结果。",
+    diagnosis: "代码问题",
+    actionTaken: "修复命令和本地 repro 已通过，已产出隔离分支并准备评审。",
+    nextStep: prUrl
+      ? "由 Engineer / Test QA 在 PR 中确认 diff 边界、复跑结果与残留风险。"
+      : "推送隔离分支或创建 PR 后再进入评审。",
+    phase: "auto-repair ready for review",
+    executionBaseline: summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+      expectedSha: workflowRun.head_sha,
+      expectedBranch: workflowRun.head_branch,
+    }),
   });
 
   logInfo(`Auto-repair branch ready: ${branchName}`);

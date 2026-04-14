@@ -251,6 +251,13 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     now - lastActivityTs(issue) >= staleThresholdMs,
   );
 
+  const staleRunningWithoutHeartbeat = openIssues.filter((issue) => {
+    if (!issue.activeRun || issue.activeRun.status !== "running") {
+      return false;
+    }
+    return now - lastActivityTs(issue) >= staleThresholdMs;
+  });
+
   const agingReview = openIssues.filter((issue) =>
     issue.status === "in_review" &&
     now - lastActivityTs(issue) >= reviewThresholdMs,
@@ -288,6 +295,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     needsTriage,
     readyToStart,
     staleInProgress,
+    staleRunningWithoutHeartbeat,
     agingReview,
     missingTypeLabel,
     reviewWithoutReviewLabel,
@@ -326,6 +334,7 @@ function compactIssue(issue) {
     assigneeAgentId: issue.assigneeAgentId,
     assigneeUserId: issue.assigneeUserId,
     lastActivityAt: issue.lastActivityAt ?? issue.updatedAt,
+    activeRunStatus: issue.activeRun?.status ?? null,
   };
 }
 
@@ -343,6 +352,7 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   printIssueGroup("待分诊输入", report.issues.needsTriage, "顶层、无 owner、仍在 backlog/todo 的输入。");
   printIssueGroup("待开始任务", report.issues.readyToStart, "已分配 owner、处于 todo，可直接启动。");
   printIssueGroup(`卡住的执行任务（>${staleHours}h）`, report.issues.staleInProgress, "处于 in_progress，但最近活动已超过阈值。");
+  printIssueGroup(`运行中但无回写（>${staleHours}h）`, report.issues.staleRunningWithoutHeartbeat, "存在 activeRun=running，但最近活动已超过阈值的任务。");
   printIssueGroup(`久置 review（>${reviewHours}h）`, report.issues.agingReview, "处于 in_review，且最近活动已超过阈值。");
   printIssueGroup("缺少类型标签的打开任务", report.issues.missingTypeLabel, "已打开但尚未标记 `type:*` 语义的任务。");
   printIssueGroup("缺少 review 标签的审阅任务", report.issues.reviewWithoutReviewLabel, "处于 in_review，但尚未标记 `review:*` 语义的任务。");
@@ -373,7 +383,8 @@ function printIssueGroup(title, issues, description) {
   for (const issue of issues.map(compactIssue)) {
     const typePart = issue.typeLabel ? ` | ${issue.typeLabel}` : "";
     const reviewPart = issue.reviewLabel ? ` | ${issue.reviewLabel}` : "";
-    console.log(`- ${issue.identifier} | ${issue.status}${typePart}${reviewPart} | ${issue.title}`);
+    const runPart = issue.activeRunStatus ? ` | run=${issue.activeRunStatus}` : "";
+    console.log(`- ${issue.identifier} | ${issue.status}${typePart}${reviewPart}${runPart} | ${issue.title}`);
   }
   console.log("");
 }
