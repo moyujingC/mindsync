@@ -1,0 +1,20 @@
+{
+  "order_id": "miniapp-order-cf7569729112",
+  "interpretation_id": "8cbcdeac-0c3d-455c-8970-3c95a7f86a07",
+  "product_type": "pro",
+  "channel": "miniapp",
+  "purchase_state": "paid",
+  "payable_amount": 39.1,
+  "currency": "CNY",
+  "version_granted": null,
+  "latest_purchase_updated_at": "2026-04-15T07:19:14.566264",
+  "wechat_pay_payload": {
+    "mode": "stub",
+    "order_id": "miniapp-order-cf7569729112",
+    "next_action": "reconcile_after_host_payment"
+  },
+  "open_id": null,
+  "debug_canonical_user_id": null,
+  "payment_reference": "ref-paid",
+  "raw_payload": null
+}
