@@ -75,7 +75,7 @@
 
 命名建议：
 
-- `CMPA-21-fact-check`
+- `历史任务-fact-check`
 - 或 `2026-04-06-agent-software-data-asset-check`
 
 只上传与本轮任务直接相关的材料。

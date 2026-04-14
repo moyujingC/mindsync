@@ -20,7 +20,7 @@
 
 ## 4. 当前输入材料
 - 商业诊断报告：[AI职业能力诊断服务商业诊断报告.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/docs/business/AI职业能力诊断服务商业诊断报告.md)
-- 项目背景：CMPA-14「策划并落实这项服务」母任务上下文
+- 项目背景：历史母任务「策划并落实这项服务」的上下文
 
 ## 5. 下游任务定义
 - 建议交给谁：Product Spec Lead
