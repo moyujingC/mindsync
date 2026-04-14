@@ -53,10 +53,36 @@ runner 主机至少应具备：
 - `npm`
 - `python3`
 - `python3-venv`
+- `actionlint`
 - `docker`（仅当需要在同机联调构建）
 
 GitHub Actions 里的 `actions/setup-node` 和 `actions/setup-python` 仍会继续负责版本对齐；
 这里要求的是系统级最小运行前提。
+
+### 3.1 `actionlint` 安装要求
+
+从 `workflow-quality` 进入 PR 质量门后，runner 还必须满足：
+
+```bash
+actionlint .github/workflows/aimandala-*.yml
+```
+
+推荐要求：
+
+- `actionlint` 直接安装到系统 PATH
+- 安装后能通过 `actionlint -version`
+
+建议安装完成后立即执行：
+
+```bash
+cd /opt/automation/app/mindsync
+actionlint .github/workflows/aimandala-*.yml
+```
+
+说明：
+
+- 如果 runner 上没有 `actionlint`，`workflow-quality` 会明确失败
+- 这类失败应视为 runner 环境缺口，而不是代码测试失败
 
 ## 4. 初始化步骤
 
@@ -70,6 +96,7 @@ self-hosted,linux,mindsync-ci,aimandala
 ```
 
 5. 使用本目录的 systemd service 示例注册常驻服务
+6. 确认 `actionlint -version` 可执行
 
 ## 5. systemd
 
