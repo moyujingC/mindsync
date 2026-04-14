@@ -249,6 +249,7 @@ describe("mobile-web controller", () => {
 
     const snapshot = await refreshMobileWebReport(
       "ipt-lite-route",
+      "lite",
       initialMandalaFlowState,
     );
 

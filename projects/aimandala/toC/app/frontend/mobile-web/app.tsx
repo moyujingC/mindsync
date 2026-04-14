@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { MobileWebLandingPage } from "./page-shells/landing-page";
 import { MobileWebLoadingPage } from "./page-shells/loading-page";
 import { MobileWebHistoryPage } from "./page-shells/history-page";
+import { MobileWebHistoryRecordDetailPage } from "./page-shells/history-record-detail-page";
 import { MobileWebProReportPage } from "./page-shells/pro-report-page";
 import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
@@ -14,6 +15,7 @@ import type {
   DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
+  InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
 import type {
@@ -31,10 +33,12 @@ export interface MobileWebAppProps {
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
   historyQuery?: InterpretationListQuery;
+  record?: InterpretationRecordResponse;
   activeHistoryFilter?: HistoryFilterId;
   historyFilterBusy?: boolean;
   historyActionBusy?: boolean;
   activeHistoryRecordId?: string | null;
+  activeHistoryRecordReportType?: InterpretationVersion | null;
   historyStatusLabel?: string;
   historyStatusDetail?: string;
   historyStatusTone?: "preview" | "runtime";
@@ -61,11 +65,9 @@ export interface MobileWebAppProps {
   onHistoryThemeChange?: (theme?: string) => void;
   onHistoryLimitChange?: (limit: number) => void;
   onHistoryRefresh?: () => void;
-  onHistoryOpenRecord?: (
-    interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
-  ) => void;
+  onHistoryOpenRecord?: (interpretationId: string) => void;
+  onHistoryRecordDetailBack?: () => void;
+  onHistoryRecordDetailOpenReport?: (reportType: InterpretationVersion) => void;
 }
 
 export function MobileWebApp({
@@ -77,10 +79,12 @@ export function MobileWebApp({
   flowState,
   records = [],
   historyQuery,
+  record,
   activeHistoryFilter = "all",
   historyFilterBusy = false,
   historyActionBusy = false,
   activeHistoryRecordId = null,
+  activeHistoryRecordReportType = null,
   historyStatusLabel,
   historyStatusDetail,
   historyStatusTone,
@@ -108,6 +112,8 @@ export function MobileWebApp({
   onHistoryLimitChange,
   onHistoryRefresh,
   onHistoryOpenRecord,
+  onHistoryRecordDetailBack,
+  onHistoryRecordDetailOpenReport,
 }: MobileWebAppProps): ReactNode {
   switch (route) {
     case "landing":
@@ -237,6 +243,22 @@ export function MobileWebApp({
           onLimitChange={onHistoryLimitChange}
           onRefresh={onHistoryRefresh}
           onOpenRecord={onHistoryOpenRecord}
+        />
+      );
+
+    case "historyRecordDetail":
+      if (!record) {
+        return "Missing history record";
+      }
+      return (
+        <MobileWebHistoryRecordDetailPage
+          record={record}
+          openingReportType={activeHistoryRecordReportType}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
+          onBackToHistory={onHistoryRecordDetailBack}
+          onOpenReportType={onHistoryRecordDetailOpenReport}
         />
       );
 

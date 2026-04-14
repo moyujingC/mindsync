@@ -22,10 +22,11 @@
 1. `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md`
 2. `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md`
 3. `2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md`
-4. `2026-04-12-迁移收官与正式版收口验证记录.md`
-5. `2026-04-12-v22-knowledge-workbench-verification.md`
-6. `2026-04-12-ci-cd-验证记录.md`
-7. `2026-04-13-paperclip-automation-节点验证记录.md`
+4. `2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md`
+5. `2026-04-12-迁移收官与正式版收口验证记录.md`
+6. `2026-04-12-v22-knowledge-workbench-verification.md`
+7. `2026-04-12-ci-cd-验证记录.md`
+8. `2026-04-13-paperclip-automation-节点验证记录.md`
 
 `2026-04-08-toc-mvp-first-pass-verification.md` 与 `2026-04-08-toc-mvp-sample-validation.md` 仍可用于追溯早期验证背景，但默认不再作为当前首轮入口。
 
@@ -60,6 +61,16 @@
 - `main` 与小程序 worktree 在 shared foundation 上是否已大体对齐
 - 当前 shared boundary 是否已经包含后续批次语义
 - 为什么当前不需要再做一笔“批次 A 重复摘入”提交
+
+### `2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md`
+
+批次 B 当前验证基线。
+
+适合确认：
+
+- 报告读取接口是否已强制显式 report type
+- history / reopen 是否已切到 detail -> report 模型
+- 新解读主链路是否仍保持当前产品语义
 
 ### `2026-04-12-迁移收官与正式版收口验证记录.md`
 

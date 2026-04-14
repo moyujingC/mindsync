@@ -30,6 +30,7 @@ async function example() {
   if (result.interpretation?.interpretation_id) {
     const refreshed = await refreshMobileWebReport(
       result.interpretation.interpretation_id,
+      "lite",
       result.state,
     );
     console.log("refreshed step", refreshed.state.step);

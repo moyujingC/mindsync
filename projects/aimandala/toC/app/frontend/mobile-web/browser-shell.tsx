@@ -58,6 +58,7 @@ import type {
   FrontendUserSession,
   InterpretationListQuery,
   InterpretationRecordResponse,
+  InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
 import { detectCircles, getInterpretationList } from "../shared/api";
@@ -170,6 +171,8 @@ export function MobileWebBrowserShell() {
     useState(false);
   const [previewHistoryOpeningId, setPreviewHistoryOpeningId] =
     useState<string | null>(null);
+  const [previewHistoryOpeningReportType, setPreviewHistoryOpeningReportType] =
+    useState<InterpretationVersion | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
   const [apiTraces, setApiTraces] = useState<ApiDebugTraceEntry[]>([]);
@@ -730,6 +733,7 @@ export function MobileWebBrowserShell() {
         try {
           const refreshed = await refreshMobileWebReport(
             interpretationId,
+            "lite",
             previewFlowState,
           );
           setPreviewFlowState(refreshed.state);
@@ -765,6 +769,7 @@ export function MobileWebBrowserShell() {
           try {
             const refreshed = await refreshMobileWebReport(
               interpretationId,
+              "lite",
               previewFlowState,
             );
             setPreviewFlowState(refreshed.state);
@@ -870,56 +875,51 @@ export function MobileWebBrowserShell() {
 
   async function handlePreviewOpenHistoryRecord(
     interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
+  ) {
+    if (previewFlowRunning) {
+      return;
+    }
+
+    setPreviewHistoryOpeningId(interpretationId);
+    try {
+      setInterpretationId(interpretationId);
+      setRoute("historyRecordDetail");
+    } finally {
+      setPreviewHistoryOpeningId(null);
+    }
+  }
+
+  async function handlePreviewOpenHistoryRecordReport(
+    reportType: InterpretationVersion,
   ) {
     if (previewFlowRunning) {
       return;
     }
 
     setPreviewFlowRunning(true);
-    setPreviewHistoryOpeningId(interpretationId);
+    setPreviewHistoryOpeningReportType(reportType);
     try {
       const refreshed = await refreshMobileWebReport(
         interpretationId,
+        reportType,
         initialMandalaFlowState,
       );
       setPreviewFlowState(refreshed.state);
       setInterpretationId(interpretationId);
-      setDraft((current) => ({
-        ...current,
-        reportVariant,
-        reportType: reportVariant === "pro" ? "pro" : "lite",
-      }));
+      setDraft((current) => mergeMobileWebUploadDraft(current, { reportType }));
 
-      if (reportVariant === "pro") {
-        await finalizePreviewSelectedReport({
-          interpretationId,
-          state: refreshed.state,
-          draft: {
-            ...draft,
-            reportVariant: "pro",
-            reportType: "pro",
-          },
-          userId,
-          historyQuery: previewHistoryQuery,
-          setPreviewFlowState,
-          setPreviewHistoryRecords,
-          setPreviewHistoryStatusLabel,
-          setPreviewHistoryStatusDetail,
-          setPreviewHistoryStatusTone,
-          setRoute,
-        });
+      if (reportType === "pro") {
+        const proReady =
+          refreshed.report?.version === "pro" &&
+          typeof refreshed.report.report === "string" &&
+          refreshed.report.report.trim();
+        setRoute(proReady ? "upgrade" : "loading");
         return;
       }
 
-      setRoute(
-        canOpenReport || refreshed.state.step !== "liteGenerating"
-          ? "report"
-          : "loading",
-      );
+      setRoute(refreshed.state.step === "liteGenerating" ? "loading" : "report");
     } finally {
-      setPreviewHistoryOpeningId(null);
+      setPreviewHistoryOpeningReportType(null);
       setPreviewFlowRunning(false);
     }
   }
@@ -1137,8 +1137,12 @@ export function MobileWebBrowserShell() {
               uploadDetectError={previewDetectError}
               activeHistoryFilter={(previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
               historyQuery={previewHistoryQuery}
-              historyActionBusy={previewFlowRunning && route === "history"}
+              historyActionBusy={
+                previewFlowRunning &&
+                (route === "history" || route === "historyRecordDetail")
+              }
               activeHistoryRecordId={previewHistoryOpeningId}
+              activeHistoryRecordReportType={previewHistoryOpeningReportType}
               historyStatusLabel={previewHistoryStatusLabel ?? undefined}
               historyStatusDetail={previewHistoryStatusDetail ?? undefined}
               historyStatusTone={previewHistoryStatusTone}
@@ -1328,6 +1332,10 @@ export function MobileWebBrowserShell() {
                 void handlePreviewHistoryRefresh();
               }}
               onHistoryOpenRecord={handlePreviewOpenHistoryRecord}
+              onHistoryRecordDetailBack={() => {
+                setRoute("history");
+              }}
+              onHistoryRecordDetailOpenReport={handlePreviewOpenHistoryRecordReport}
             />
           ) : (
             <MobileWebRuntime

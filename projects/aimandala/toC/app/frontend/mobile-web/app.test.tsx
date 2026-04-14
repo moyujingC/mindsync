@@ -101,6 +101,14 @@ const historyRecord: InterpretationRecordResponse = {
   auto_detected: true,
   can_upgrade: false,
   created_at: "2026-04-11T08:00:00.000Z",
+  upgrade_history: [
+    {
+      from: "lite",
+      to: "pro",
+      price_diff: 29,
+      at: "2026-04-11T08:20:00.000Z",
+    },
+  ],
 };
 
 describe("MobileWebApp", () => {
@@ -198,6 +206,27 @@ describe("MobileWebApp", () => {
     expect(html).toContain("最近更新于 16:20:00");
     expect(html).toContain("阶段：正在生成 Lite 解读");
     expect(html).toContain("进度：约 52%");
-    expect(html).toContain("继续查看进度");
+    expect(html).toContain("查看详情与进度");
+  });
+
+  it("historyRecordDetail 路由会渲染版本选择与升级历史", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="historyRecordDetail"
+        record={{
+          ...historyRecord,
+          status: "completed",
+          generation_stage: "completed",
+          generation_progress: 100,
+          version_purchased: ["lite", "pro"],
+        }}
+      />,
+    );
+
+    expect(html).toContain("历史记录详情");
+    expect(html).toContain("打开 Lite 报告");
+    expect(html).toContain("打开 Pro 报告");
+    expect(html).toContain("版本演进");
+    expect(html).toContain("Lite -&gt; Pro");
   });
 });

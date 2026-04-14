@@ -177,11 +177,7 @@ export interface SharedHistoryRecordsListProps {
   items: SharedHistoryRecordItem[];
   activeFilter: SharedHistoryFilterId;
   activeTheme?: string;
-  onOpenRecord?: (
-    interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
-  ) => void;
+  onOpenRecord?: (interpretationId: string) => void;
   actionDisabled?: boolean;
   actionBusy?: boolean;
   activeRecordId?: string | null;
@@ -203,9 +199,9 @@ export function SharedHistoryRecordsList({
 
     switch (activeFilter) {
       case "ready":
-        return item.canOpenReport;
+        return item.recordReady;
       case "pending":
-        return !item.canOpenReport;
+        return !item.recordReady;
       case "all":
         return true;
     }
@@ -228,7 +224,7 @@ export function SharedHistoryRecordsList({
               </div>
               <p>{item.subtitle}</p>
               <p>{item.statusDetail}</p>
-              {!item.canOpenReport ? (
+              {!item.recordReady ? (
                 <section
                   className={`mw-history-progress ${item.statusTone === "proPending" ? "mw-history-progress--pro" : ""}`}
                 >
@@ -249,7 +245,7 @@ export function SharedHistoryRecordsList({
               {item.helperNote ? (
                 <p className="mw-meta mw-meta--soft">{item.helperNote}</p>
               ) : null}
-              <p className="mw-meta">主题：{item.themeLabel} · 版本：{item.reportVariant === "pro" ? "Pro" : "Lite"}</p>
+              <p className="mw-meta">主题：{item.themeLabel} · 可查看版本：{item.versionSummary}</p>
               <p className="mw-meta">Interpretation ID: {item.interpretationId}</p>
               <div className="mw-button-row">
                 {actionBusy && activeRecordId === item.interpretationId ? (
@@ -259,11 +255,7 @@ export function SharedHistoryRecordsList({
                   type="button"
                   className="mw-secondary-button mw-secondary-button--inline"
                   onClick={() => {
-                    onOpenRecord?.(
-                      item.interpretationId,
-                      item.canOpenReport,
-                      item.reportVariant,
-                    );
+                    onOpenRecord?.(item.interpretationId);
                   }}
                   disabled={actionDisabled}
                 >

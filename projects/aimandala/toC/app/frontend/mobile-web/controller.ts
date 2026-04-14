@@ -18,6 +18,7 @@ import {
 import type {
   CreateInterpretationResponse,
   DetectCirclesResponse,
+  InterpretationVersion,
   InterpretationStatusResponse,
   MandalaFlowState,
   ReportResponse,
@@ -173,6 +174,7 @@ export async function runMobileWebLiteFlow(
 
 export async function refreshMobileWebReport(
   interpretationId: string,
+  reportType: InterpretationVersion,
   currentState: MandalaFlowState = initialMandalaFlowState,
 ): Promise<MobileWebFlowSnapshot> {
   let state = currentState;
@@ -188,8 +190,7 @@ export async function refreshMobileWebReport(
       };
     }
 
-    // The `/report` route must stay on the Lite experience even after Pro exists.
-    const report = await getInterpretationReport(interpretationId, "lite");
+    const report = await getInterpretationReport(interpretationId, reportType);
     state = applyReport(state, report);
 
     return {
@@ -241,38 +242,7 @@ export async function refreshMobileWebProReport(
   interpretationId: string,
   currentState: MandalaFlowState = initialMandalaFlowState,
 ): Promise<MobileWebFlowSnapshot> {
-  let state = currentState;
-
-  try {
-    const status = await getInterpretationStatus(interpretationId);
-    state = applyStatus(state, status);
-
-    const report = await getInterpretationReport(interpretationId, "pro");
-    if (report?.version === "pro" && report.report) {
-      state = applyReport(state, report);
-
-      return {
-        state,
-        status,
-        report,
-      };
-    }
-
-    return {
-      state,
-      status,
-      report,
-    };
-  } catch (error) {
-    state = applyError(
-      state,
-      error instanceof Error ? error.message : "Failed to refresh pro report",
-    );
-
-    return {
-      state,
-    };
-  }
+  return refreshMobileWebReport(interpretationId, "pro", currentState);
 }
 
 export async function pollMobileWebReportUntilReady(
@@ -285,7 +255,7 @@ export async function pollMobileWebReportUntilReady(
   let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    latestSnapshot = await refreshMobileWebReport(interpretationId, latest);
+    latestSnapshot = await refreshMobileWebReport(interpretationId, "lite", latest);
     latest = latestSnapshot.state;
 
     if (onTick) {

@@ -6,6 +6,7 @@ import type {
   CreateInterpretationResponse,
   DetectCirclesRequest,
   DetectCirclesResponse,
+  InterpretationVersion,
   InterpretationListFilter,
   InterpretationListQuery,
   InterpretationRecordResponse,
@@ -98,14 +99,12 @@ export async function getInterpretationStatus(
 
 export async function getInterpretationReport(
   interpretationId: string,
-  version?: string,
+  version: InterpretationVersion,
 ): Promise<ReportResponse> {
   const url = new URL(
     buildUrl(`/api/v2/interpretations/${encodeURIComponent(interpretationId)}/report`),
   );
-  if (version) {
-    url.searchParams.set("version", version);
-  }
+  url.searchParams.set("version", version);
 
   return fetchJson<ReportResponse>(url.toString());
 }

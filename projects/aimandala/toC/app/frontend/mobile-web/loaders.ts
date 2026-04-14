@@ -42,9 +42,11 @@ export async function loadLiteReportPage(input: {
 
 export async function loadExistingReportPage(
   interpretationId: string,
+  reportType: "lite" | "pro" = "lite",
 ): Promise<MobileWebReportPageProps> {
   const refreshed = await refreshMobileWebReport(
     interpretationId,
+    reportType,
     initialMandalaFlowState,
   );
 
@@ -56,7 +58,7 @@ export async function loadExistingReportPage(
 export async function loadUpgradePage(
   interpretationId: string,
 ): Promise<MobileWebReportPageProps> {
-  const report = await loadExistingReportPage(interpretationId);
+  const report = await loadExistingReportPage(interpretationId, "lite");
   const upgrade = await openMobileWebUpgradeEntry(
     interpretationId,
     report.state,

@@ -1,3 +1,5 @@
+import type { InterpretationVersion } from "../types";
+
 export interface SharedMetricItem {
   label: string;
   value: string;
@@ -23,8 +25,10 @@ export interface SharedHistoryRecordItem {
   interpretationId: string;
   title: string;
   subtitle: string;
-  canOpenReport: boolean;
-  reportVariant: "lite" | "pro";
+  recordReady: boolean;
+  availableReportTypes: InterpretationVersion[];
+  focusReportType: InterpretationVersion;
+  versionSummary: string;
   statusLabel: string;
   statusDetail: string;
   actionLabel: string;

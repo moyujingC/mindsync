@@ -143,11 +143,13 @@ describe("shared ui", () => {
             interpretationId: "ipt-history-1",
             title: "关系主题 · Pro",
             subtitle: "创建于 04/12 16:20",
-            canOpenReport: false,
-            reportVariant: "pro",
+            recordReady: false,
+            availableReportTypes: ["lite", "pro"],
+            focusReportType: "pro",
+            versionSummary: "Lite / Pro",
             statusLabel: "Pro 生成中",
             statusDetail: "仍在后台生成。",
-            actionLabel: "继续查看进度",
+            actionLabel: "查看详情与进度",
             statusTone: "proPending",
             helperNote: "无需一直停留在等待页。",
             stageLabel: "正在生成 Lite 解读",
@@ -160,7 +162,7 @@ describe("shared ui", () => {
     );
 
     expect(html).toContain("Pro 生成中");
-    expect(html).toContain("继续查看进度");
+    expect(html).toContain("查看详情与进度");
     expect(html).toContain("Interpretation ID");
   });
 

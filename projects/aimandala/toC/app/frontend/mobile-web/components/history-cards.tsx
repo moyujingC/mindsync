@@ -68,11 +68,7 @@ export interface HistoryRecordsListProps {
   descriptor: HistoryPageDescriptor;
   activeFilter: HistoryFilterId;
   activeTheme?: string;
-  onOpenRecord?: (
-    interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
-  ) => void;
+  onOpenRecord?: (interpretationId: string) => void;
   actionDisabled?: boolean;
   actionBusy?: boolean;
   activeRecordId?: string | null;

@@ -1,3 +1,4 @@
+import { getInterpretation } from "../shared/api";
 import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUpgradePage, loadUploadPage } from "./loaders";
 import { resolveMobileWebCanonicalUserId } from "./identity";
 import type { MobileWebAppProps } from "./app";
@@ -26,6 +27,11 @@ export interface ExistingReportRouteInput {
   uploadDraft?: MobileWebUploadDraft;
 }
 
+export interface HistoryRecordDetailRouteInput {
+  interpretationId: string;
+  uploadDraft?: MobileWebUploadDraft;
+}
+
 export interface HistoryRouteInput extends MobileWebSessionRouteInput {
   uploadDraft?: MobileWebUploadDraft;
   historyQuery?: InterpretationListQuery;
@@ -39,6 +45,7 @@ export type MobileWebRouteInput =
   | { route: "report"; params: ExistingReportRouteInput }
   | { route: "reportLegacy"; params: ExistingReportRouteInput }
   | { route: "history"; params: HistoryRouteInput }
+  | { route: "historyRecordDetail"; params: HistoryRecordDetailRouteInput }
   | { route: "upgrade"; params: ExistingReportRouteInput };
 
 export async function resolveMobileWebRouteProps(
@@ -115,6 +122,15 @@ export async function resolveMobileWebRouteProps(
         records: history.records,
         uploadDraft: input.params.uploadDraft,
         historyQuery: input.params.historyQuery,
+      };
+    }
+
+    case "historyRecordDetail": {
+      const record = await getInterpretation(input.params.interpretationId);
+      return {
+        route: "historyRecordDetail",
+        record,
+        uploadDraft: input.params.uploadDraft,
       };
     }
 

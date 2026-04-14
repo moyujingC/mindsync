@@ -115,6 +115,7 @@ class InterpretationRecordResponse(BaseModel):
     auto_detected: bool
     can_upgrade: bool
     created_at: str
+    upgrade_history: list[dict] = []
     image_url: Optional[str] = None
     storage_backend: Optional[str] = None
     storage_key: Optional[str] = None
@@ -392,6 +393,7 @@ def to_record_response(request: Request | None, record) -> InterpretationRecordR
         auto_detected=record.three_circles_auto_detect is not None,
         can_upgrade=record.can_upgrade_to_pro(),
         created_at=record.created_at,
+        upgrade_history=[history.to_dict() for history in record.upgrade_history],
         image_url=_resolve_record_image_url(
             request,
             storage_backend=record.image_storage_backend,

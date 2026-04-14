@@ -37,6 +37,7 @@ export const PREVIEW_ROUTE_OPTIONS: Array<{
   { label: "Lite 解读报告", value: "report" },
   { label: "报告旧版对照", value: "reportLegacy" },
   { label: "历史", value: "history" },
+  { label: "历史记录详情", value: "historyRecordDetail" },
   { label: "Pro 解读报告", value: "upgrade" },
 ];
 
@@ -108,6 +109,15 @@ export function createPreviewRouteInput(
           session,
           uploadDraft: draft,
           historyQuery,
+        },
+      };
+
+    case "historyRecordDetail":
+      return {
+        route,
+        params: {
+          interpretationId,
+          uploadDraft: draft,
         },
       };
   }

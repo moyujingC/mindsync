@@ -6,3 +6,4 @@ export * from "./report-page";
 export * from "./report-page-legacy";
 export * from "./pro-report-page";
 export * from "./history-page";
+export * from "./history-record-detail-page";

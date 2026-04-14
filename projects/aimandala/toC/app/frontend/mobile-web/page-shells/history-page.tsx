@@ -31,11 +31,7 @@ export interface MobileWebHistoryPageProps {
   onThemeChange?: (theme?: string) => void;
   onLimitChange?: (limit: number) => void;
   onRefresh?: () => void;
-  onOpenRecord?: (
-    interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
-  ) => void;
+  onOpenRecord?: (interpretationId: string) => void;
 }
 
 export function MobileWebHistoryPage({

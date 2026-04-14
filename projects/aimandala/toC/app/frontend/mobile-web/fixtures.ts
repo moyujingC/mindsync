@@ -213,6 +213,13 @@ export function createPreviewAppProps(
         records: historyRecordsOverride ?? createMockRecords(),
       };
 
+    case "historyRecordDetail":
+      return {
+        route,
+        uploadDraft: draft,
+        record: (historyRecordsOverride ?? createMockRecords())[0],
+      };
+
     case "upgrade":
       return {
         route,

@@ -1,6 +1,13 @@
 export type InterpretationVersion = "lite" | "pro";
 export type InterpretationListFilter = "all" | "ready" | "pending";
 
+export interface InterpretationUpgradeHistoryEntry {
+  from: InterpretationVersion | string;
+  to: InterpretationVersion | string;
+  price_diff: number;
+  at: string;
+}
+
 export interface InterpretationListQuery {
   filter?: InterpretationListFilter;
   limit?: number;
@@ -91,6 +98,7 @@ export interface InterpretationRecordResponse {
   auto_detected: boolean;
   can_upgrade: boolean;
   created_at: string;
+  upgrade_history?: InterpretationUpgradeHistoryEntry[];
   image_url?: string | null;
   storage_backend?: string | null;
   storage_key?: string | null;

@@ -31,11 +31,12 @@ import {
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
+  InterpretationRecordResponse,
+  InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
 import {
   getDraftReportVariant,
-  inferReportTypeFromVariant,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
@@ -148,7 +149,13 @@ function getDraftFromInput(
     return input.params.draft;
   }
 
-  if (input.route === "report" || input.route === "reportLegacy" || input.route === "history" || input.route === "upgrade") {
+  if (
+    input.route === "report" ||
+    input.route === "reportLegacy" ||
+    input.route === "history" ||
+    input.route === "historyRecordDetail" ||
+    input.route === "upgrade"
+  ) {
     return input.params.uploadDraft ?? null;
   }
 
@@ -205,6 +212,8 @@ export function MobileWebRuntime({
   const [runtimeHistoryBusy, setRuntimeHistoryBusy] = useState(false);
   const [runtimeHistoryRefreshing, setRuntimeHistoryRefreshing] = useState(false);
   const [runtimeHistoryOpeningId, setRuntimeHistoryOpeningId] = useState<string | null>(null);
+  const [runtimeHistoryOpeningReportType, setRuntimeHistoryOpeningReportType] =
+    useState<InterpretationVersion | null>(null);
   const [runtimeHistoryRefreshHint, setRuntimeHistoryRefreshHint] = useState<string | null>(null);
   const activeRuntimeUploadDraft = runtimeUploadDraft ?? runtimeProps?.uploadDraft ?? null;
 
@@ -239,6 +248,7 @@ export function MobileWebRuntime({
     setRuntimeUploadDetectError(null);
     setRuntimeHistoryQuery({ filter: "all", limit: 20 });
     setRuntimeHistoryOpeningId(null);
+    setRuntimeHistoryOpeningReportType(null);
     setRuntimeHistoryRefreshHint(null);
   }, [
     inputUploadDraft?.imagePath,
@@ -653,6 +663,7 @@ export function MobileWebRuntime({
       try {
         const refreshed = await refreshMobileWebReport(
           interpretationId,
+          "lite",
           currentRuntimeProps.flowState,
         );
         if (refreshed.state.step === "liteGenerating") {
@@ -684,6 +695,7 @@ export function MobileWebRuntime({
         try {
           const refreshed = await refreshMobileWebReport(
             interpretationId,
+            "lite",
             currentRuntimeProps.flowState,
           );
           if (refreshed.state.step === "liteGenerating") {
@@ -937,47 +949,88 @@ export function MobileWebRuntime({
     }
   }
 
+  function findHistoryRecord(
+    interpretationId: string,
+  ): InterpretationRecordResponse | null {
+    const records = currentRuntimeProps.records ?? [];
+    return records.find((record) => record.interpretation_id === interpretationId) ?? null;
+  }
+
   async function handleHistoryOpenRecord(
     interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
   ) {
     if (runtimeBusy || runtimeHistoryBusy) {
       return;
     }
 
-    setRuntimeBusy(true);
     setRuntimeHistoryOpeningId(interpretationId);
     try {
-      const nextDraft = {
-        ...(currentUploadDraft ?? uploadDraftForReturn),
-        reportVariant,
-        reportType: inferReportTypeFromVariant(reportVariant),
-      };
-      const refreshed = await refreshMobileWebReport(
-        interpretationId,
-        initialMandalaFlowState,
-      );
-
-      if (reportVariant === "pro") {
-        await finalizeSelectedReport(
-          interpretationId,
-          refreshed.state,
-          nextDraft,
-        );
+      const record = findHistoryRecord(interpretationId);
+      if (!record) {
         return;
       }
 
       setRuntimeProps({
-        route:
-          canOpenReport || refreshed.state.step !== "liteGenerating"
-            ? "report"
-            : "loading",
+        route: "historyRecordDetail",
+        record,
+        uploadDraft: currentUploadDraft ?? undefined,
+      });
+    } finally {
+      setRuntimeHistoryOpeningId(null);
+    }
+  }
+
+  async function handleHistoryRecordDetailOpenReport(
+    reportType: InterpretationVersion,
+  ) {
+    if (
+      runtimeBusy ||
+      runtimeHistoryBusy ||
+      currentRuntimeProps.route !== "historyRecordDetail" ||
+      !currentRuntimeProps.record
+    ) {
+      return;
+    }
+
+    const record = currentRuntimeProps.record;
+    const nextDraft = mergeMobileWebUploadDraft(
+      currentUploadDraft ?? uploadDraftForReturn,
+      { reportType },
+    );
+
+    setRuntimeBusy(true);
+    setRuntimeHistoryOpeningId(record.interpretation_id);
+    setRuntimeHistoryOpeningReportType(reportType);
+    try {
+      const refreshed = await refreshMobileWebReport(
+        record.interpretation_id,
+        reportType,
+        initialMandalaFlowState,
+      );
+      setRuntimeUploadDraft(nextDraft);
+
+      if (reportType === "pro") {
+        const proReady =
+          refreshed.report?.version === "pro" &&
+          typeof refreshed.report.report === "string" &&
+          refreshed.report.report.trim();
+
+        setRuntimeProps({
+          route: proReady ? "upgrade" : "loading",
+          flowState: refreshed.state,
+          uploadDraft: nextDraft,
+        });
+        return;
+      }
+
+      setRuntimeProps({
+        route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
         flowState: refreshed.state,
         uploadDraft: nextDraft,
       });
     } finally {
       setRuntimeHistoryOpeningId(null);
+      setRuntimeHistoryOpeningReportType(null);
       setRuntimeBusy(false);
     }
   }
@@ -1062,6 +1115,19 @@ export function MobileWebRuntime({
     setRuntimeProps({
       route: "upload",
       uploadDraft: uploadDraftForReturn,
+    });
+  }
+
+  function handleHistoryRecordDetailBack() {
+    setRuntimeHistoryOpeningReportType(null);
+    setRuntimeProps({
+      route: "history",
+      records: runtimeProps?.records ?? [],
+      uploadDraft: uploadDraftForReturn,
+      historyQuery: runtimeHistoryQuery,
+      historyStatusLabel: "已返回历史记录",
+      historyStatusDetail: "你可以继续切换其他记录，或刷新查看最新状态。",
+      historyStatusTone: "runtime",
     });
   }
 
@@ -1303,8 +1369,12 @@ export function MobileWebRuntime({
       historyQuery={runtimeProps.historyQuery ?? runtimeHistoryQuery}
       activeHistoryFilter={(runtimeProps.historyQuery?.filter as HistoryFilterId | undefined) ?? (runtimeHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
       historyFilterBusy={runtimeHistoryBusy}
-      historyActionBusy={runtimeBusy && currentRuntimeProps.route === "history"}
+      historyActionBusy={
+        runtimeBusy &&
+        (currentRuntimeProps.route === "history" || currentRuntimeProps.route === "historyRecordDetail")
+      }
       activeHistoryRecordId={runtimeHistoryOpeningId}
+      activeHistoryRecordReportType={runtimeHistoryOpeningReportType}
       historyRefreshHint={runtimeHistoryRefreshHint ?? undefined}
       historyRefreshBusy={runtimeHistoryBusy || runtimeHistoryRefreshing}
       onHistoryFilterChange={handleHistoryFilterChange}
@@ -1312,6 +1382,8 @@ export function MobileWebRuntime({
       onHistoryLimitChange={handleHistoryLimitChange}
       onHistoryRefresh={handleHistoryRefresh}
       onHistoryOpenRecord={handleHistoryOpenRecord}
+      onHistoryRecordDetailBack={handleHistoryRecordDetailBack}
+      onHistoryRecordDetailOpenReport={handleHistoryRecordDetailOpenReport}
     />
   );
 }
