@@ -1,6 +1,6 @@
 # 一镜一梳 To C MVP 验收与测试清单
 
-> 状态：in_review
+> 状态：current
 > 版本：0.1.1
 > owner：Test / QA
 > last_updated：2026-04-08

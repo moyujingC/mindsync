@@ -1,9 +1,9 @@
 # 一镜一梳项目工作区
 
 > 状态：current
-> 版本：0.4.1
+> 版本：0.4.2
 > owner：CEO / Orchestrator
-> last_updated：2026-04-13
+> last_updated：2026-04-14
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
@@ -27,6 +27,25 @@
 - 使用 Codex / Claude Code 直接开发
 - 如需接 Paperclip，以本工作区与公司入口文档为准对齐
 - 所有新的 Lite / Pro 正式能力、部署配置与交付记录，都优先回写到这个工作区
+- 重要工作默认遵守 `Harness Engineering + SDD + TDD`
+- 计划模式结论应优先落到 `docs/tasks/`，再进入实现
+
+### 1.0 当前阶段门
+
+当前默认阶段门为：
+
+1. `spec / problem`
+2. `task / implementation plan`
+3. `qa basis`
+4. `implementation`
+5. `verification`
+6. `delivery`
+
+当前围绕 `Web MVP` 公开首发与小程序渐进并入，默认入口是：
+
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md)
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md)
 
 ### 1.1 当前正式状态
 
@@ -73,6 +92,17 @@
 9. [2026-04-13-paperclip-automation-节点验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-paperclip-automation-节点验证记录.md)
 10. [2026-04-12-v22-knowledge-workbench-execution-plan.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-12-v22-knowledge-workbench-execution-plan.md)
 11. [2026-04-12-v22-knowledge-workbench-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-v22-knowledge-workbench-verification.md)
+12. [2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md)
+13. [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
+
+## 2.1 双端并行约束
+
+当前默认约束是：
+
+- `main` 继续承接 Web MVP 首发和生产稳定
+- 小程序 worktree 可继续并行开发
+- 小程序相关改动默认采用“分批摘入 main”，不整支直接合并
+- 主工作区上的新改动，除非明确是 Web 宿主专属，否则应尽量保持 shared-friendly
 
 ## 3. 当前正式范围
 

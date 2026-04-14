@@ -1,6 +1,6 @@
 # 一镜一梳架构整改第一轮交付记录
 
-> 状态：in_review
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-08

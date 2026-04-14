@@ -1,6 +1,6 @@
 # 一镜一梳报告内容迭代指南
 
-> 状态：draft
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-04

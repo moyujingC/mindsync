@@ -1,6 +1,6 @@
 # 一镜一梳 To C MVP Spec
 
-> 状态：in_review
+> 状态：current
 > 版本：0.1.1
 > owner：Product Spec Lead
 > last_updated：2026-04-07
