@@ -16,6 +16,7 @@ from app.core.llm import (
     create_llm_client_from_env,
 )
 from app.core.knowledge_runtime.workbench import KnowledgeWorkbench
+from app.core.miniapp_stub_store import MiniappStubStore
 from app.core.pipeline.data_models import GenerationStatus
 from app.core.pipeline.orchestrator_v2 import GenerationStage, LayeredOrchestrator
 from app.core.pipeline.prompt_runtime import create_prompt_runtime_from_env
@@ -248,6 +249,59 @@ class PricingInfo(BaseModel):
     upgrade_diff: float = Field(default=39.1, description="Legacy diff field kept for V2 compatibility")
 
 
+class MiniappSessionExchangeRequest(BaseModel):
+    code: Optional[str] = None
+    open_id: Optional[str] = None
+    debug_canonical_user_id: Optional[str] = None
+
+
+class MiniappSessionExchangeResponse(BaseModel):
+    canonical_user_id: str
+    open_id: str
+    session_id: Optional[str] = None
+    linked: bool
+    is_new_user: Optional[bool] = None
+    display_label: Optional[str] = None
+
+
+class StubWechatPayPayload(BaseModel):
+    mode: Literal["stub"] = "stub"
+    order_id: str
+    next_action: Literal["reconcile_after_host_payment"] = "reconcile_after_host_payment"
+
+
+class CreateMiniappOrderRequest(BaseModel):
+    interpretation_id: str
+    product_type: Literal["lite", "pro"]
+    channel: Literal["miniapp"]
+    open_id: Optional[str] = None
+    debug_canonical_user_id: Optional[str] = None
+
+
+class MiniappOrderResponse(BaseModel):
+    order_id: str
+    interpretation_id: str
+    product_type: Literal["lite", "pro"]
+    channel: Literal["miniapp"]
+    purchase_state: Literal["created", "pending", "paid", "failed", "cancelled", "fulfilled"]
+    payable_amount: float
+    currency: str
+    version_granted: Optional[list[Literal["lite", "pro"]]] = None
+    latest_purchase_updated_at: Optional[str] = None
+    wechat_pay_payload: Optional[StubWechatPayPayload] = None
+
+
+class ReconcileMiniappOrderResponse(MiniappOrderResponse):
+    reconciled: bool
+
+
+class NotifyMiniappWechatPaymentRequest(BaseModel):
+    order_id: str
+    event: Literal["paid", "failed", "cancelled"]
+    payment_reference: Optional[str] = None
+    raw_payload: Optional[dict] = None
+
+
 class UploadImageResponse(BaseModel):
     """Response returned after persisting one browser upload under the formal contract."""
 
@@ -267,6 +321,7 @@ router = APIRouter(prefix="/api/v2", tags=["aimandala-v2"])
 _orchestrator: Optional[LayeredOrchestrator] = None
 _upload_storage: Optional[UploadStorage] = None
 _knowledge_workbench: Optional[KnowledgeWorkbench] = None
+_miniapp_stub_store: Optional[MiniappStubStore] = None
 _active_pro_upgrade_jobs: set[str] = set()
 _pro_upgrade_jobs_lock = threading.Lock()
 
@@ -312,6 +367,13 @@ def get_knowledge_workbench() -> KnowledgeWorkbench:
     if _knowledge_workbench is None:
         _knowledge_workbench = KnowledgeWorkbench()
     return _knowledge_workbench
+
+
+def get_miniapp_stub_store() -> MiniappStubStore:
+    global _miniapp_stub_store
+    if _miniapp_stub_store is None:
+        _miniapp_stub_store = MiniappStubStore()
+    return _miniapp_stub_store
 
 
 def _ensure_debug_workbench_enabled() -> None:
@@ -379,6 +441,34 @@ def _resolve_record_image_url(
     return None
 
 
+def _to_miniapp_order_response(record) -> MiniappOrderResponse:
+    return MiniappOrderResponse(
+        order_id=record.order_id,
+        interpretation_id=record.interpretation_id,
+        product_type=record.product_type,
+        channel=record.channel,
+        purchase_state=record.purchase_state,
+        payable_amount=record.payable_amount,
+        currency=record.currency,
+        version_granted=record.version_granted,
+        latest_purchase_updated_at=record.latest_purchase_updated_at,
+        wechat_pay_payload=(
+            StubWechatPayPayload(**record.wechat_pay_payload)
+            if record.wechat_pay_payload
+            else None
+        ),
+    )
+
+
+def _resolve_stub_purchase_amount(record, product_type: str) -> float:
+    pricing = get_orchestrator().get_pricing()
+    if product_type == "lite":
+        return pricing.lite
+    if "lite" in record.version_purchased:
+        return pricing.upgrade_diff
+    return pricing.pro
+
+
 def to_record_response(request: Request | None, record) -> InterpretationRecordResponse:
     report_ready = _is_history_record_ready(record)
     return InterpretationRecordResponse(
@@ -436,6 +526,46 @@ async def detect_circles(payload: DetectCirclesRequest):
     return DetectCirclesResponse(**result.to_dict())
 
 
+@router.post(
+    "/miniapp/session/exchange",
+    response_model=MiniappSessionExchangeResponse,
+)
+async def exchange_miniapp_session(payload: MiniappSessionExchangeRequest):
+    code = (payload.code or "").strip()
+    open_id = (payload.open_id or "").strip()
+    debug_canonical_user_id = (payload.debug_canonical_user_id or "").strip()
+
+    if not code and not open_id and not debug_canonical_user_id:
+        raise HTTPException(
+            status_code=400,
+            detail="At least one of code, open_id, or debug_canonical_user_id is required",
+        )
+
+    resolved_open_id = open_id or MiniappStubStore.build_stub_open_id(code)
+    if debug_canonical_user_id:
+        canonical_user_id = debug_canonical_user_id
+        linked = True
+        is_new_user = False
+        display_label = debug_canonical_user_id
+    else:
+        canonical_user_id = f"wechat:{resolved_open_id}"
+        linked = False
+        is_new_user = True
+        display_label = f"微信访客 {resolved_open_id[-6:]}"
+
+    return MiniappSessionExchangeResponse(
+        canonical_user_id=canonical_user_id,
+        open_id=resolved_open_id,
+        session_id=MiniappStubStore.build_session_id(
+            resolved_open_id,
+            canonical_user_id,
+        ),
+        linked=linked,
+        is_new_user=is_new_user,
+        display_label=display_label,
+    )
+
+
 @router.get("/uploads/{storage_key}", name="get_uploaded_image")
 async def get_uploaded_image(storage_key: str):
     """Serve a locally stored migration-time browser upload back to the client."""
@@ -479,6 +609,35 @@ async def upload_image(request: Request, file: UploadFile = File(...)):
             else stored.image_url
         ),
     )
+
+
+@router.post(
+    "/miniapp/orders",
+    response_model=MiniappOrderResponse,
+)
+async def create_miniapp_order(payload: CreateMiniappOrderRequest):
+    record = _load_record_or_http_error(payload.interpretation_id)
+    order = get_miniapp_stub_store().create_order(
+        interpretation_id=payload.interpretation_id,
+        product_type=payload.product_type,
+        channel=payload.channel,
+        payable_amount=_resolve_stub_purchase_amount(record, payload.product_type),
+        currency="CNY",
+        wechat_pay_payload={
+            "mode": "stub",
+            "order_id": "",
+            "next_action": "reconcile_after_host_payment",
+        },
+        open_id=payload.open_id,
+        debug_canonical_user_id=payload.debug_canonical_user_id,
+    )
+    order.wechat_pay_payload = {
+        "mode": "stub",
+        "order_id": order.order_id,
+        "next_action": "reconcile_after_host_payment",
+    }
+    get_miniapp_stub_store().save_order(order)
+    return _to_miniapp_order_response(order)
 
 
 @router.post("/interpretations", response_model=CreateInterpretationResponse)
@@ -592,6 +751,59 @@ async def get_user_interpretations(
     elif filter == "pending":
         records = [record for record in records if not _is_history_record_ready(record)]
     return [to_record_response(request, record) for record in records[:limit]]
+
+
+@router.get(
+    "/miniapp/orders/{order_id}",
+    response_model=MiniappOrderResponse,
+)
+async def get_miniapp_order(order_id: str):
+    record = get_miniapp_stub_store().load_order(order_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="miniapp order not found")
+    return _to_miniapp_order_response(record)
+
+
+@router.post(
+    "/miniapp/orders/{order_id}/reconcile",
+    response_model=ReconcileMiniappOrderResponse,
+)
+async def reconcile_miniapp_order(order_id: str):
+    record = get_miniapp_stub_store().load_order(order_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="miniapp order not found")
+
+    reconciled = False
+    if record.purchase_state == "paid":
+        record = get_miniapp_stub_store().update_order_state(
+            order_id,
+            purchase_state="fulfilled",
+            version_granted=[record.product_type],
+        )
+        reconciled = True
+
+    assert record is not None
+    response = _to_miniapp_order_response(record)
+    return ReconcileMiniappOrderResponse(
+        **response.model_dump(),
+        reconciled=reconciled,
+    )
+
+
+@router.post(
+    "/miniapp/payments/wechat/notify",
+    response_model=MiniappOrderResponse,
+)
+async def notify_miniapp_wechat_payment(payload: NotifyMiniappWechatPaymentRequest):
+    record = get_miniapp_stub_store().update_order_state(
+        payload.order_id,
+        purchase_state=payload.event,
+        payment_reference=payload.payment_reference,
+        raw_payload=payload.raw_payload,
+    )
+    if record is None:
+        raise HTTPException(status_code=404, detail="miniapp order not found")
+    return _to_miniapp_order_response(record)
 
 
 @router.get(

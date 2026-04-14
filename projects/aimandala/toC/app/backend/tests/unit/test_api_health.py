@@ -21,6 +21,7 @@ def _reset_api_state():
 
     routes_v2._orchestrator = None
     routes_v2._upload_storage = None
+    routes_v2._miniapp_stub_store = None
     routes_v2._active_pro_upgrade_jobs.clear()
     shutil.rmtree(
         os.path.join(
@@ -116,6 +117,65 @@ def test_pricing_endpoint():
     assert data["lite"] == 9.9
     assert data["pro"] == 49.0
     assert data["upgrade_diff"] == 39.1
+
+
+def test_miniapp_session_exchange_supports_debug_canonical_user():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/session/exchange",
+        json={
+            "debug_canonical_user_id": "debug-miniapp-user",
+            "open_id": "wx-open-1",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["canonical_user_id"] == "debug-miniapp-user"
+    assert data["open_id"] == "wx-open-1"
+    assert data["linked"] is True
+    assert data["is_new_user"] is False
+    assert data["session_id"]
+
+
+def test_miniapp_session_exchange_supports_code_only_stub():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/session/exchange",
+        json={
+            "code": "miniapp-code-only",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["open_id"].startswith("stub-openid-")
+    assert data["canonical_user_id"].startswith("wechat:stub-openid-")
+    assert data["linked"] is False
+    assert data["is_new_user"] is True
+
+
+def test_miniapp_session_exchange_requires_any_identity_signal():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/session/exchange",
+        json={},
+    )
+
+    assert response.status_code == 400
+    assert "code" in response.json()["detail"]
 
 
 def test_detect_circles_endpoint(tmp_path):
@@ -926,6 +986,281 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
     assert "六个核心洞察" in data["report"]
     assert "重要声明" in data["report"]
     assert data["error"] is None
+
+
+def test_create_miniapp_order_endpoint_creates_pending_stub_order(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-lite.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-lite",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "lite",
+            "channel": "miniapp",
+            "open_id": "wx-open-lite",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["interpretation_id"] == interpretation_id
+    assert data["product_type"] == "lite"
+    assert data["channel"] == "miniapp"
+    assert data["purchase_state"] == "pending"
+    assert data["payable_amount"] == 9.9
+    assert data["currency"] == "CNY"
+    assert data["version_granted"] is None
+    assert data["wechat_pay_payload"]["mode"] == "stub"
+    assert data["wechat_pay_payload"]["next_action"] == "reconcile_after_host_payment"
+
+
+def test_create_miniapp_order_endpoint_uses_upgrade_diff_for_existing_lite_record(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-pro.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-pro",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["payable_amount"] == 39.1
+
+
+def test_create_miniapp_order_endpoint_returns_404_for_unknown_record():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": "missing-interpretation",
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+
+    assert response.status_code == 404
+
+
+def test_get_miniapp_order_endpoint_returns_created_order(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-get.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-get",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "lite",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    response = client.get(f"/api/v2/miniapp/orders/{order_id}")
+
+    assert response.status_code == 200
+    assert response.json()["order_id"] == order_id
+
+
+def test_get_miniapp_order_endpoint_returns_404_for_unknown_order():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.get("/api/v2/miniapp/orders/missing-order")
+
+    assert response.status_code == 404
+
+
+def test_notify_miniapp_wechat_payment_updates_purchase_state(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-notify.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-notify",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    for event, expected_state in (
+        ("paid", "paid"),
+        ("failed", "failed"),
+        ("cancelled", "cancelled"),
+    ):
+        recreate_response = client.post(
+            "/api/v2/miniapp/orders",
+            json={
+                "interpretation_id": interpretation_id,
+                "product_type": "pro",
+                "channel": "miniapp",
+            },
+        )
+        current_order_id = recreate_response.json()["order_id"]
+        notify_response = client.post(
+            "/api/v2/miniapp/payments/wechat/notify",
+            json={
+                "order_id": current_order_id,
+                "event": event,
+                "payment_reference": f"ref-{event}",
+            },
+        )
+
+        assert notify_response.status_code == 200
+        assert notify_response.json()["purchase_state"] == expected_state
+
+    notify_response = client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+            "payment_reference": "ref-paid",
+        },
+    )
+    assert notify_response.status_code == 200
+
+
+def test_reconcile_miniapp_order_requires_paid_state(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-reconcile-pending.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-reconcile-pending",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "lite",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    response = client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["purchase_state"] == "pending"
+    assert data["reconciled"] is False
+    assert data["version_granted"] is None
+
+
+def test_reconcile_miniapp_order_marks_paid_order_fulfilled(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-reconcile-paid.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-reconcile-paid",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    notify_response = client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+            "payment_reference": "miniapp-paid",
+        },
+    )
+    assert notify_response.status_code == 200
+
+    response = client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["purchase_state"] == "fulfilled"
+    assert data["reconciled"] is True
+    assert data["version_granted"] == ["pro"]
 
 
 def test_get_report_endpoint_404_for_unknown_record():
