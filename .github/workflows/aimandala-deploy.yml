@@ -59,9 +59,23 @@ jobs:
           SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
         run: |
           set -euo pipefail
+          if [[ -z "${SSH_KEY:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_DEV_SSH_KEY" | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
+            exit 1
+          fi
+          if [[ -z "${SSH_HOST:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_DEV_HOST" | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
+            exit 1
+          fi
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/aimandala_dev
+          NORMALIZED_KEY="$(printf '%s' "$SSH_KEY" | tr -d '\r')"
+          if printf '%s' "$NORMALIZED_KEY" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%s\n' "$NORMALIZED_KEY" > ~/.ssh/aimandala_dev
+          else
+            printf '%s' "$NORMALIZED_KEY" | base64 --decode > ~/.ssh/aimandala_dev
+          fi
           chmod 600 ~/.ssh/aimandala_dev
+          ssh-keygen -y -f ~/.ssh/aimandala_dev >/dev/null 2>>"$RUNNER_TEMP/deploy-dev-prepare.log"
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>&1 | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
 
       - name: Deploy Main To Dev Server
@@ -180,9 +194,23 @@ jobs:
           SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
         run: |
           set -euo pipefail
+          if [[ -z "${SSH_KEY:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_PROD_SSH_KEY" | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
+            exit 1
+          fi
+          if [[ -z "${SSH_HOST:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_PROD_HOST" | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
+            exit 1
+          fi
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/aimandala_prod
+          NORMALIZED_KEY="$(printf '%s' "$SSH_KEY" | tr -d '\r')"
+          if printf '%s' "$NORMALIZED_KEY" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%s\n' "$NORMALIZED_KEY" > ~/.ssh/aimandala_prod
+          else
+            printf '%s' "$NORMALIZED_KEY" | base64 --decode > ~/.ssh/aimandala_prod
+          fi
           chmod 600 ~/.ssh/aimandala_prod
+          ssh-keygen -y -f ~/.ssh/aimandala_prod >/dev/null 2>>"$RUNNER_TEMP/deploy-prod-prepare.log"
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>&1 | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
 
       - name: Deploy Release To Production Server
