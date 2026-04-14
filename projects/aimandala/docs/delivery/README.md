@@ -18,6 +18,7 @@
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md`
 - `2026-04-14-miniapp-batch-a-shared-foundation-audit-delivery.md`
 - `2026-04-14-batch-b-历史记录详情与显式报告类型交付记录.md`
+- `2026-04-15-miniapp-batch-c-静态壳与页面闭环交付记录.md`
 - `2026-04-12-迁移收官与正式版收口交付记录.md`
 - `2026-04-12-v22-knowledge-workbench-delivery.md`
 - `2026-04-12-ci-cd-与自动修复交付记录.md`
@@ -27,6 +28,7 @@
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md`
 - `2026-04-14-miniapp-batch-a-shared-foundation-audit-delivery.md`
 - `2026-04-14-batch-b-历史记录详情与显式报告类型交付记录.md`
+- `2026-04-15-miniapp-batch-c-静态壳与页面闭环交付记录.md`
 - `2026-04-04-frontend-baseline-delivery.md`
 - `2026-04-04-mobile-web-interaction-baseline.md`
 - `2026-04-04-report-content-iteration-guide.md`

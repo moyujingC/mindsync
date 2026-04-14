@@ -26,6 +26,7 @@ export default defineConfig({
         "mobile-web/identity.ts",
         "mobile-web/state.ts",
         "mobile-web/pages/history-page.ts",
+        "miniapp/app.tsx",
         "mobile-web/pages/report-entry-page.ts",
         "mobile-web/page-shells/history-page.tsx",
         "mobile-web/page-shells/loading-page.tsx",
