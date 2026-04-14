@@ -131,6 +131,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           if [[ "${{ steps.frontend_result.outputs.failed }}" == "1" ]]; then
             RESULT="failed"
@@ -146,6 +147,8 @@ jobs:
             --job "frontend-ci" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --event-time "$SYNC_TIME" \
+            --commit-parent \
             --failed-step "${{ steps.frontend_result.outputs.failed_step }}" \
             --repro-command "${{ steps.frontend_result.outputs.repro_command }}" \
             --summary-file "${{ steps.frontend_result.outputs.summary_file }}" \
@@ -236,6 +239,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           if [[ "${{ steps.backend_result.outputs.failed }}" == "1" ]]; then
             RESULT="failed"
@@ -251,6 +255,8 @@ jobs:
             --job "backend-ci" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --event-time "$SYNC_TIME" \
+            --commit-parent \
             --failed-step "${{ steps.backend_result.outputs.failed_step }}" \
             --repro-command "${{ steps.backend_result.outputs.repro_command }}" \
             --summary-file "${{ steps.backend_result.outputs.summary_file }}" \
@@ -355,6 +361,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           if [[ "${{ steps.knowledge_result.outputs.failed }}" == "1" ]]; then
             RESULT="failed"
@@ -370,6 +377,8 @@ jobs:
             --job "knowledge-ci" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --event-time "$SYNC_TIME" \
+            --commit-parent \
             --failed-step "${{ steps.knowledge_result.outputs.failed_step }}" \
             --repro-command "${{ steps.knowledge_result.outputs.repro_command }}" \
             --summary-file "${{ steps.knowledge_result.outputs.summary_file }}" \
@@ -380,3 +389,80 @@ jobs:
       - name: Fail Knowledge Job
         if: steps.knowledge_result.outputs.failed == '1'
         run: exit 1
+
+  ci-paperclip-summary:
+    name: ci-paperclip-summary
+    if: always()
+    needs:
+      - frontend-ci
+      - backend-ci
+      - knowledge-ci
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Sync CI Commit Summary Issue
+        env:
+          PAPERCLIP_API_BASE: ${{ secrets.PAPERCLIP_API_BASE }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
+        run: |
+          set -euo pipefail
+          SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          RESULT="resolved"
+          FAILED_JOBS=()
+
+          if [[ "${{ needs.frontend-ci.result }}" == "failure" ]]; then
+            RESULT="failed"
+            FAILED_JOBS+=("frontend-ci")
+          fi
+          if [[ "${{ needs.backend-ci.result }}" == "failure" ]]; then
+            RESULT="failed"
+            FAILED_JOBS+=("backend-ci")
+          fi
+          if [[ "${{ needs.knowledge-ci.result }}" == "failure" ]]; then
+            RESULT="failed"
+            FAILED_JOBS+=("knowledge-ci")
+          fi
+
+          SUMMARY_FILE="$RUNNER_TEMP/ci-paperclip-summary.txt"
+          {
+            echo "frontend-ci=${{ needs.frontend-ci.result }}"
+            echo "backend-ci=${{ needs.backend-ci.result }}"
+            echo "knowledge-ci=${{ needs.knowledge-ci.result }}"
+            echo "result=${RESULT}"
+          } > "$SUMMARY_FILE"
+
+          EXTRA_ARGS=()
+          for job in "${FAILED_JOBS[@]}"; do
+            EXTRA_ARGS+=(--failed-job "$job")
+          done
+
+          node shared/tools/ci/paperclip-ci-issue.mjs \
+            --soft-fail \
+            --mode commit-summary \
+            --company-id "$PAPERCLIP_COMPANY_ID" \
+            --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --workflow "ci" \
+            --repository "${{ github.repository }}" \
+            --branch "${{ github.head_ref || github.ref_name }}" \
+            --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --event-time "$SYNC_TIME" \
+            --job-count "3" \
+            --summary-file "$SUMMARY_FILE" \
+            --result "$RESULT" \
+            --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" \
+            --owner-label "Engineer" \
+            "${EXTRA_ARGS[@]}"

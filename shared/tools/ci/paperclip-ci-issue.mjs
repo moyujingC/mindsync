@@ -3,6 +3,7 @@
 import process from "node:process";
 
 import {
+  getStringArray,
   getOption,
   logError,
   logInfo,
@@ -12,13 +13,14 @@ import {
   requireOption,
   truthy,
 } from "./common.mjs";
-import { syncPaperclipIssue } from "./paperclip-sync-lib.mjs";
+import { syncPaperclipCommitSummary, syncPaperclipIssue } from "./paperclip-sync-lib.mjs";
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help || options.h) {
     console.log(`Usage:
   node shared/tools/ci/paperclip-ci-issue.mjs --company-id <id> --project-name <name> --kind <kind> --workflow <workflow> --branch <branch> --job <job> [--result failed|resolved]
+  node shared/tools/ci/paperclip-ci-issue.mjs --mode commit-summary --company-id <id> --project-name <name> --workflow <workflow> --branch <branch> --sha <sha> [--failed-job <job> ...]
 `);
     return;
   }
@@ -26,31 +28,45 @@ async function main() {
   const summaryText = getOption(options, "summary-text", "");
   const summaryFile = getOption(options, "summary-file", "");
   const summary = summaryText || (await readTextIfExists(summaryFile));
+  const mode = getOption(options, "mode", "issue");
 
   try {
-    const result = await syncPaperclipIssue({
+    const baseOptions = {
       apiBase: getOption(options, "api-base", process.env.PAPERCLIP_API_BASE ?? "http://127.0.0.1:3100"),
       apiKey: getOption(options, "api-key", process.env.PAPERCLIP_API_KEY ?? null),
       companyId: requireOption(options, "company-id"),
       projectName: requireOption(options, "project-name"),
-      kind: requireOption(options, "kind"),
       workflow: requireOption(options, "workflow"),
       repository: getOption(options, "repository", process.env.GITHUB_REPOSITORY ?? null),
       branch: requireOption(options, "branch"),
-      job: requireOption(options, "job"),
       sha: getOption(options, "sha", process.env.GITHUB_SHA ?? null),
       runUrl: getOption(options, "run-url", null),
-      failedStep: getOption(options, "failed-step", null),
-      reproCommand: getOption(options, "repro-command", null),
       result: getOption(options, "result", "failed"),
       ownerAgentId: getOption(options, "owner-agent-id", null),
       ownerLabel: getOption(options, "owner-label", null),
-      environment: getOption(options, "environment", null),
-      repairBranch: getOption(options, "repair-branch", null),
-      repairPrUrl: getOption(options, "repair-pr-url", null),
       note: getOption(options, "note", null),
       summary,
-    });
+      eventTime: getOption(options, "event-time", null),
+    };
+
+    const result =
+      mode === "commit-summary"
+        ? await syncPaperclipCommitSummary({
+            ...baseOptions,
+            failedJobs: getStringArray(getOption(options, "failed-job", [])),
+            jobCount: Number(getOption(options, "job-count", "0")) || null,
+          })
+        : await syncPaperclipIssue({
+            ...baseOptions,
+            kind: requireOption(options, "kind"),
+            job: requireOption(options, "job"),
+            failedStep: getOption(options, "failed-step", null),
+            reproCommand: getOption(options, "repro-command", null),
+            environment: getOption(options, "environment", null),
+            repairBranch: getOption(options, "repair-branch", null),
+            repairPrUrl: getOption(options, "repair-pr-url", null),
+            enableCommitParent: truthy(getOption(options, "commit-parent", false)),
+          });
     logInfo(`Paperclip issue sync: ${result.action}`);
     if (result.identifier) {
       logInfo(`Paperclip issue: ${result.identifier}`);

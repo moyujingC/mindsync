@@ -14,30 +14,77 @@ import {
 
 const ISSUE_KIND_CONFIG = {
   "ci-test-failure": {
-    titlePrefix: "CI失败",
     status: "todo",
     priority: "high",
     labelNames: ["type:execution"],
+    severity: "error",
   },
   "build-failure": {
-    titlePrefix: "构建失败",
     status: "todo",
     priority: "high",
     labelNames: ["type:execution"],
+    severity: "error",
   },
   "deploy-or-smoke-failure": {
-    titlePrefix: "部署风险",
     status: "in_review",
     priority: "critical",
     labelNames: ["type:artifact", "review:deliverable"],
+    severity: "warning",
   },
   "infra-runner-failure": {
-    titlePrefix: "CI基础设施异常",
     status: "todo",
     priority: "critical",
     labelNames: ["type:execution"],
+    severity: "error",
   },
 };
+
+const PARENT_LABEL_NAMES = ["type:epic"];
+const SEVERITY_EMOJI = {
+  success: "✅",
+  warning: "⚠️",
+  error: "❌",
+};
+
+function shortSha(sha) {
+  const normalized = String(sha ?? "").trim();
+  if (!normalized) {
+    return "no-sha";
+  }
+  return normalized.slice(0, 8);
+}
+
+function formatIssueTime(value) {
+  const date = value ? new Date(value) : new Date();
+  if (Number.isNaN(date.getTime())) {
+    return isoNow().slice(0, 16).replace("T", " ");
+  }
+  return date.toISOString().slice(0, 16).replace("T", " ");
+}
+
+function buildContextSuffix(options) {
+  const segments = [];
+  if (options.sha) {
+    segments.push(shortSha(options.sha));
+  }
+  segments.push(formatIssueTime(options.eventTime));
+  if (options.branch) {
+    segments.push(options.branch);
+  }
+  return segments.join(" · ");
+}
+
+function resolveIssueSeverity(config, options) {
+  if (options.result === "resolved") {
+    return "success";
+  }
+  return config?.severity ?? "error";
+}
+
+function prefixTitleWithSeverity(title, severity) {
+  const emoji = SEVERITY_EMOJI[severity] ?? SEVERITY_EMOJI.error;
+  return `${emoji} ${title}`;
+}
 
 function buildAutomationKey(options) {
   const parts = [
@@ -45,15 +92,93 @@ function buildAutomationKey(options) {
     options.workflow ?? "unknown-workflow",
     options.branch ?? "unknown-branch",
     options.job ?? "unknown-job",
+    options.sha ?? "no-sha",
     options.kind,
   ];
   return parts.join("::");
 }
 
-function buildFailureTitle(config, options) {
+function buildCommitSummaryAutomationKey(options) {
+  const parts = [
+    options.repository ?? "unknown-repo",
+    options.workflow ?? "unknown-workflow",
+    options.branch ?? "unknown-branch",
+    options.sha ?? "no-sha",
+    "commit-summary",
+  ];
+  return parts.join("::");
+}
+
+function buildFailureTitle(_config, options) {
   const jobPart = options.job ? `${options.job}` : "unknown-job";
-  const branchPart = options.branch ? ` / ${options.branch}` : "";
-  return `${config.titlePrefix}：${jobPart}${branchPart}`;
+  return `${jobPart} · ${buildContextSuffix(options)}`;
+}
+
+function buildCommitSummaryTitle(options) {
+  const workflowPart = options.workflow ? `${options.workflow}` : "workflow";
+  return `${workflowPart} · ${buildContextSuffix(options)}`;
+}
+
+function buildCommitSummaryDescription(options) {
+  const lines = [];
+  const owner = options.ownerLabel ?? options.ownerAgentId ?? "待指派";
+
+  lines.push(`automation_key: ${options.parentAutomationKey}`);
+  lines.push("type:epic");
+  lines.push(`project: ${options.projectName}`);
+  lines.push(`owner: ${owner}`);
+  if (options.goalTitle) {
+    lines.push(`goal: ${options.goalTitle}`);
+  }
+  lines.push(`workflow: ${options.workflow ?? "unknown"}`);
+  lines.push(`branch: ${options.branch ?? "unknown"}`);
+  if (options.sha) {
+    lines.push(`commit: ${options.sha}`);
+  }
+  lines.push(`observed_at: ${formatIssueTime(options.eventTime)}Z`);
+  lines.push(`updated_at: ${isoNow()}`);
+  lines.push("");
+  lines.push("任务目标：");
+  lines.push(`- 汇总本次 ${options.workflow ?? "workflow"} 在当前 commit 下的 CI/CD 执行情况`);
+  lines.push(`- 作为同一提交下各失败 job 的父任务入口`);
+  lines.push("");
+  lines.push("done when：");
+  lines.push("- 本次提交对应 workflow 的失败项已全部恢复为绿色，或确认无需继续处理");
+  lines.push("- 根因、修复方式与残留风险已能从子任务与评论中追溯");
+
+  if (options.summary) {
+    lines.push("");
+    lines.push("摘要：");
+    lines.push("```text");
+    lines.push(truncateText(options.summary, 2000) || "(empty)");
+    lines.push("```");
+  }
+
+  return `${lines.join("\n")}\n`;
+}
+
+function buildCommitSummaryComment(options) {
+  const failedJobs = Array.isArray(options.failedJobs) ? options.failedJobs : [];
+  const lines = [];
+  lines.push(`CI汇总时间：${isoNow()}`);
+  lines.push(`- 结果：${options.result}`);
+  if (options.runUrl) {
+    lines.push(`- run: ${options.runUrl}`);
+  }
+  if (typeof options.jobCount === "number" && Number.isFinite(options.jobCount)) {
+    lines.push(`- jobs: ${failedJobs.length}/${options.jobCount} failed`);
+  }
+  if (failedJobs.length > 0) {
+    lines.push(`- failed jobs: ${failedJobs.join(", ")}`);
+  }
+  if (options.summary) {
+    lines.push("");
+    lines.push("汇总摘要：");
+    lines.push("```text");
+    lines.push(truncateText(options.summary, 1500) || "(empty)");
+    lines.push("```");
+  }
+  return `${lines.join("\n")}\n`;
 }
 
 function buildDescription(config, options) {
@@ -62,12 +187,15 @@ function buildDescription(config, options) {
   const owner = options.ownerLabel ?? options.ownerAgentId ?? "待指派";
 
   lines.push(`automation_key: ${options.automationKey}`);
+  lines.push(`severity: ${config.severity}`);
   lines.push(`type:${issueMode}`);
   if (config.labelNames.includes("review:deliverable")) {
     lines.push("review:deliverable");
   }
   lines.push(`project: ${options.projectName}`);
-  lines.push(`parent: ${options.automationKey}`);
+  if (options.parentAutomationKey) {
+    lines.push(`parent: ${options.parentAutomationKey}`);
+  }
   lines.push(`owner: ${owner}`);
   if (options.goalTitle) {
     lines.push(`goal: ${options.goalTitle}`);
@@ -203,7 +331,40 @@ export async function syncPaperclipIssue(options) {
     .map((name) => labelsByName.get(name)?.id)
     .filter(Boolean);
   const automationKey = options.automationKey ?? buildAutomationKey(options);
+  const parentAutomationKey =
+    options.parentAutomationKey ?? (options.enableCommitParent ? buildCommitSummaryAutomationKey(options) : null);
   const issues = await listProjectIssues(api, options.companyId, project.id);
+  const parentLabelIds = PARENT_LABEL_NAMES.map((name) => labelsByName.get(name)?.id).filter(Boolean);
+  let parentIssue =
+    parentAutomationKey != null ? findIssueByAutomationKey(issues, parentAutomationKey) : null;
+
+  if (options.enableCommitParent && (options.result === "failed" || parentIssue)) {
+    const parentPayload = {
+      title: prefixTitleWithSeverity(
+        buildCommitSummaryTitle(options),
+        options.result === "resolved" ? "success" : "error",
+      ),
+      description: buildCommitSummaryDescription({
+        ...options,
+        parentAutomationKey,
+        goalTitle: project.goals?.[0]?.title ?? null,
+      }),
+      status: options.result === "failed" ? "in_progress" : parentIssue?.status ?? "todo",
+      priority: config.priority === "critical" ? "critical" : "high",
+      projectId: project.id,
+      goalId: project.goals?.[0]?.id ?? project.goalId ?? null,
+      assigneeAgentId: options.ownerAgentId ?? null,
+      labelIds: parentLabelIds,
+    };
+
+    if (!parentIssue) {
+      parentIssue = await api.post(`/api/companies/${options.companyId}/issues`, parentPayload);
+      issues.push(parentIssue);
+    } else {
+      parentIssue = await api.patch(`/api/issues/${parentIssue.id}`, parentPayload);
+    }
+  }
+
   const existing = findIssueByAutomationKey(issues, automationKey);
 
   if (!existing && options.result === "resolved") {
@@ -216,7 +377,10 @@ export async function syncPaperclipIssue(options) {
   }
 
   const targetStatus = options.statusOverride ?? (options.result === "resolved" ? "done" : config.status);
-  const title = buildFailureTitle(config, options);
+  const title = prefixTitleWithSeverity(
+    buildFailureTitle(config, options),
+    resolveIssueSeverity(config, options),
+  );
   const description = buildDescription(config, {
     ...options,
     automationKey,
@@ -231,6 +395,7 @@ export async function syncPaperclipIssue(options) {
     goalId: project.goals?.[0]?.id ?? project.goalId ?? null,
     assigneeAgentId: options.ownerAgentId ?? null,
     labelIds,
+    parentId: parentIssue?.id ?? options.parentId ?? null,
   };
 
   if (!existing) {
@@ -255,6 +420,62 @@ export async function syncPaperclipIssue(options) {
     issueId: updated.id,
     identifier: updated.identifier,
     automationKey,
+  };
+}
+
+export async function syncPaperclipCommitSummary(options) {
+  const api = new PaperclipApi({
+    apiBase: options.apiBase,
+    apiKey: options.apiKey,
+    companyId: options.companyId,
+  });
+  const project = await resolveProjectByName(api, options.companyId, options.projectName);
+  const labels = await listLabels(api, options.companyId);
+  const labelsByName = mapLabelsByName(labels);
+  const parentLabelIds = PARENT_LABEL_NAMES.map((name) => labelsByName.get(name)?.id).filter(Boolean);
+  const parentAutomationKey = options.parentAutomationKey ?? buildCommitSummaryAutomationKey(options);
+  const issues = await listProjectIssues(api, options.companyId, project.id);
+  const existing = findIssueByAutomationKey(issues, parentAutomationKey);
+  const payload = {
+    title: prefixTitleWithSeverity(
+      buildCommitSummaryTitle(options),
+      options.result === "resolved" ? "success" : "error",
+    ),
+    description: buildCommitSummaryDescription({
+      ...options,
+      parentAutomationKey,
+      goalTitle: project.goals?.[0]?.title ?? null,
+    }),
+    status: options.result === "failed" ? "in_progress" : "done",
+    priority: options.result === "failed" ? "high" : "medium",
+    projectId: project.id,
+    goalId: project.goals?.[0]?.id ?? project.goalId ?? null,
+    assigneeAgentId: options.ownerAgentId ?? null,
+    labelIds: parentLabelIds,
+  };
+
+  if (!existing) {
+    const created = await api.post(`/api/companies/${options.companyId}/issues`, payload);
+    return {
+      ok: true,
+      action: "created",
+      issueId: created.id,
+      identifier: created.identifier,
+      automationKey: parentAutomationKey,
+    };
+  }
+
+  const updated = await api.patch(`/api/issues/${existing.id}`, {
+    ...payload,
+    comment: buildCommitSummaryComment(options),
+  });
+
+  return {
+    ok: true,
+    action: "updated",
+    issueId: updated.id,
+    identifier: updated.identifier,
+    automationKey: parentAutomationKey,
   };
 }
 
