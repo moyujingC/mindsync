@@ -259,6 +259,7 @@ class NarrativeContextService:
         manifestation = str(mapping.get("具体表现") or imbalance.get("description") or "").strip()
         direction = str(mapping.get("转变方向") or "").strip()
         category = str(imbalance.get("category") or "").strip()
+        display_imbalance = self._get_signal_label(imbalance_type) or imbalance_type
         issue_type = str(healing.get("issue_type") or "").strip()
         cognitive_upgrade = str(healing.get("cognitive_upgrade") or "").strip()
         healing_direction = str(imbalance.get("healing_direction") or "").strip()
@@ -270,7 +271,7 @@ class NarrativeContextService:
             if isinstance(item, str) and str(item).strip()
         )
 
-        summary_parts = [f"当前更接近的核心失衡是「{imbalance_type}」"]
+        summary_parts = [f"当前更接近的核心失衡是「{display_imbalance}」"]
         if category:
             summary_parts.append(f"（{category}）")
         if contradiction:
@@ -308,7 +309,7 @@ class NarrativeContextService:
 
         deeper_root = ""
         if manifestation:
-            deeper_root = f"更深一层看，这更接近「{imbalance_type}」的模式：{manifestation}。"
+            deeper_root = f"更深一层看，这更接近「{display_imbalance}」的模式：{manifestation}。"
             if psychology:
                 deeper_root += f" 它常会让人落进「{psychology}」这样的内在循环。"
 

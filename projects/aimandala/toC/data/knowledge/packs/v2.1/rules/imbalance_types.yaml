@@ -287,6 +287,20 @@ payload:
       healing_direction: 减负，释放生长空间
       color_prescription: 减少黄色，增加绿色和青色
       toc_supported: false
+    transition-overload:
+      category: 阶段迁移
+      relation: 旧节奏与新节奏切换
+      mechanism: 旧有模式尚未完全退出，新阶段的拉力又提前进入，导致内在承载出现拥堵
+      color_features: 主导元素正在切换，三圈推进速度不一致，常见于画面节奏处在重新整理的阶段
+      psychology: 既想继续往前，又担心自己暂时接不住变化，容易在推进与回撤之间来回拉扯
+      manifestation: 过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态
+      three_circles:
+        inner: 内心仍在确认新的安全感和承载边界
+        middle: 与关系或任务的连接方式正在重组，容易出现节奏卡顿
+        outer: 对外表达开始调整，但旧惯性还会把你拉回熟悉模式
+      healing_direction: 先稳住承载，再分段推进，让新节奏有空间慢慢落地
+      color_prescription: 增加黄色和绿色稳定根基，辅以少量蓝色帮助过渡期降噪
+      toc_supported: true
   toc_supported:
   - 水多木漂
   - 火多土焦
@@ -298,6 +312,7 @@ payload:
   - 金多木折
   - 木多土陷
   - 土多水干
+  - transition-overload
   tob_exclusive:
   - 水多金沉
   - 火多木焚
@@ -334,4 +349,6 @@ payload:
     - 火多水灼
     - 水多土荡
     - 土多木折
+    阶段迁移:
+    - transition-overload
 relations: {}

@@ -27,6 +27,8 @@ payload:
         issue_type: 父爱渴望与缺失
       土多水干:
         issue_type: 情绪压抑与沟通障碍
+      transition-overload:
+        issue_type: 情绪压抑与沟通障碍
     general:
       水多木漂:
         issue_type: 缺乏方向
@@ -48,6 +50,8 @@ payload:
         issue_type: 能量失衡
       土多水干:
         issue_type: 情绪压抑
+      transition-overload:
+        issue_type: 能量失衡
     health_wellness:
       水多木漂:
         issue_type: 深层恐惧
@@ -69,6 +73,8 @@ payload:
         issue_type: 能量耗竭
       土多水干:
         issue_type: 身体僵硬
+      transition-overload:
+        issue_type: 能量耗竭
     intimate_relationship:
       水多木漂:
         issue_type: 依恋焦虑
@@ -90,6 +96,8 @@ payload:
         issue_type: 边界模糊
       土多水干:
         issue_type: 冲突模式
+      transition-overload:
+        issue_type: 沟通障碍
     mother_relationship:
       水多木漂:
         issue_type: 安全感不足
@@ -111,6 +119,8 @@ payload:
         issue_type: 过度依赖
       土多水干:
         issue_type: 情感缺失
+      transition-overload:
+        issue_type: 情绪冲突
     parent_child_relationship:
       水多木漂:
         issue_type: 孩子缺乏独立性/自信
@@ -132,6 +142,8 @@ payload:
         issue_type: 孩子缺乏独立性/自信
       土多水干:
         issue_type: 代际创伤传递
+      transition-overload:
+        issue_type: 亲子沟通模式障碍
     personal_growth:
       水多木漂:
         issue_type: 成长停滞/迷茫
@@ -153,6 +165,8 @@ payload:
         issue_type: 成长停滞/迷茫
       土多水干:
         issue_type: 情绪压抑/冷漠
+      transition-overload:
+        issue_type: 成长停滞/迷茫
     wealth_career:
       水多木漂:
         issue_type: 事业停滞
@@ -173,5 +187,7 @@ payload:
       木多土陷:
         issue_type: 财务混乱
       土多水干:
+        issue_type: 事业停滞
+      transition-overload:
         issue_type: 事业停滞
 relations: {}

@@ -182,4 +182,5 @@ def test_lite_and_pro_texts_use_knowledge_backed_layer0(tmp_path):
     assert "过渡期" in layer1.emotion_portrait
     assert "主导元素更偏" in layer3.three_circles_detailed["inner"]["reading"]
     assert "圈间节奏首先显示" in layer3.micro_analysis_detailed["节奏关系"]
-    assert "Layer 0 的知识候选更接近「过渡负荷」" in layer3.imbalance_confirmed["summary"]
+    assert "过渡负荷" in layer3.imbalance_confirmed["summary"]
+    assert "阶段迁移" in layer3.imbalance_confirmed["summary"]

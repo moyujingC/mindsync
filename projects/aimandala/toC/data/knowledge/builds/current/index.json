@@ -1,7 +1,7 @@
 {
   "schema_version": "v2.1",
   "pack_id": "aimandala-v2.1",
-  "generated_at": "2026-04-11T13:00:35.966164",
+  "generated_at": "2026-04-14T21:00:21.289309",
   "manifest": {
     "pack_id": "aimandala-v2.1",
     "schema_version": "v2.1",
@@ -8819,6 +8819,9 @@
               },
               "土多水干": {
                 "issue_type": "情绪压抑与沟通障碍"
+              },
+              "transition-overload": {
+                "issue_type": "情绪压抑与沟通障碍"
               }
             },
             "general": {
@@ -8851,6 +8854,9 @@
               },
               "土多水干": {
                 "issue_type": "情绪压抑"
+              },
+              "transition-overload": {
+                "issue_type": "能量失衡"
               }
             },
             "health_wellness": {
@@ -8883,6 +8889,9 @@
               },
               "土多水干": {
                 "issue_type": "身体僵硬"
+              },
+              "transition-overload": {
+                "issue_type": "能量耗竭"
               }
             },
             "intimate_relationship": {
@@ -8915,6 +8924,9 @@
               },
               "土多水干": {
                 "issue_type": "冲突模式"
+              },
+              "transition-overload": {
+                "issue_type": "沟通障碍"
               }
             },
             "mother_relationship": {
@@ -8947,6 +8959,9 @@
               },
               "土多水干": {
                 "issue_type": "情感缺失"
+              },
+              "transition-overload": {
+                "issue_type": "情绪冲突"
               }
             },
             "parent_child_relationship": {
@@ -8979,6 +8994,9 @@
               },
               "土多水干": {
                 "issue_type": "代际创伤传递"
+              },
+              "transition-overload": {
+                "issue_type": "亲子沟通模式障碍"
               }
             },
             "personal_growth": {
@@ -9011,6 +9029,9 @@
               },
               "土多水干": {
                 "issue_type": "情绪压抑/冷漠"
+              },
+              "transition-overload": {
+                "issue_type": "成长停滞/迷茫"
               }
             },
             "wealth_career": {
@@ -9042,6 +9063,9 @@
                 "issue_type": "财务混乱"
               },
               "土多水干": {
+                "issue_type": "事业停滞"
+              },
+              "transition-overload": {
                 "issue_type": "事业停滞"
               }
             }
@@ -9378,6 +9402,22 @@
               "healing_direction": "减负，释放生长空间",
               "color_prescription": "减少黄色，增加绿色和青色",
               "toc_supported": false
+            },
+            "transition-overload": {
+              "category": "阶段迁移",
+              "relation": "旧节奏与新节奏切换",
+              "mechanism": "旧有模式尚未完全退出，新阶段的拉力又提前进入，导致内在承载出现拥堵",
+              "color_features": "主导元素正在切换，三圈推进速度不一致，常见于画面节奏处在重新整理的阶段",
+              "psychology": "既想继续往前，又担心自己暂时接不住变化，容易在推进与回撤之间来回拉扯",
+              "manifestation": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+              "three_circles": {
+                "inner": "内心仍在确认新的安全感和承载边界",
+                "middle": "与关系或任务的连接方式正在重组，容易出现节奏卡顿",
+                "outer": "对外表达开始调整，但旧惯性还会把你拉回熟悉模式"
+              },
+              "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+              "color_prescription": "增加黄色和绿色稳定根基，辅以少量蓝色帮助过渡期降噪",
+              "toc_supported": true
             }
           },
           "toc_supported": [
@@ -9390,7 +9430,8 @@
             "火多金熔",
             "金多木折",
             "木多土陷",
-            "土多水干"
+            "土多水干",
+            "transition-overload"
           ],
           "tob_exclusive": [
             "水多金沉",
@@ -9432,6 +9473,9 @@
               "火多水灼",
               "水多土荡",
               "土多木折"
+            ],
+            "阶段迁移": [
+              "transition-overload"
             ]
           }
         },
@@ -9496,6 +9540,11 @@
                 "核心矛盾": "固执导致情感干涸",
                 "具体表现": "过于固执，情感表达困难，人际关系僵硬",
                 "转变方向": "学会柔软，表达情感"
+              },
+              "transition-overload": {
+                "核心矛盾": "新旧节奏暂时不同步",
+                "具体表现": "一部分自己已经想往前走，另一部分自己还在回头确认安全感",
+                "转变方向": "先稳住节奏，再让变化分段落地"
               }
             },
             "father_relationship": {
@@ -9548,6 +9597,11 @@
                 "核心矛盾": "固执阻碍和解",
                 "具体表现": "对父亲有固化的负面看法，难以和解",
                 "转变方向": "放下固执，尝试理解"
+              },
+              "transition-overload": {
+                "核心矛盾": "想靠近却又先退回",
+                "具体表现": "关系节奏正在变化，但你和父亲都还没找到新的相处方式",
+                "转变方向": "先稳定沟通节奏，再让新的连接慢慢落地"
               }
             },
             "mother_relationship": {
@@ -9600,6 +9654,11 @@
                 "核心矛盾": "固执阻碍亲密",
                 "具体表现": "对母亲有固化的负面看法，难以亲密",
                 "转变方向": "放下固执，尝试理解"
+              },
+              "transition-overload": {
+                "核心矛盾": "依赖与独立同时拉扯",
+                "具体表现": "旧的依赖方式在退出，但新的边界和亲密方式还没完全建立",
+                "转变方向": "允许关系缓慢重组，用更稳定的节奏表达真实需要"
               }
             },
             "intimate_relationship": {
@@ -9652,6 +9711,11 @@
                 "核心矛盾": "固执阻碍情感流动",
                 "具体表现": "在关系中过于固执，不愿妥协，情感停滞",
                 "转变方向": "学会妥协，让关系流动"
+              },
+              "transition-overload": {
+                "核心矛盾": "想靠近又怕失衡",
+                "具体表现": "关系节奏在切换时，你会一边想推进亲密，一边又先把自己收回来",
+                "转变方向": "先把感受说清楚，再让靠近和退回都变得可沟通"
               }
             },
             "parent_child_relationship": {
@@ -9704,6 +9768,11 @@
                 "核心矛盾": "固执阻碍孩子流动",
                 "具体表现": "固守教育方法，不愿根据孩子调整",
                 "转变方向": "开放心态，灵活调整"
+              },
+              "transition-overload": {
+                "核心矛盾": "旧养育节奏跟不上孩子变化",
+                "具体表现": "孩子的阶段在变化，但家庭沟通和支持方式还停留在旧模式里",
+                "转变方向": "先更新沟通方式，再逐步调整期待和边界"
               }
             },
             "wealth_career": {
@@ -9756,6 +9825,11 @@
                 "核心矛盾": "固执错失机会",
                 "具体表现": "固守旧有模式，不愿尝试新渠道或新方法",
                 "转变方向": "开放心态，拥抱变化"
+              },
+              "transition-overload": {
+                "核心矛盾": "旧节奏退出时承载跟不上",
+                "具体表现": "旧项目或旧路径正在退场，但新阶段真正推进前你又会先迟疑和回撤",
+                "转变方向": "先稳住基本盘，把变化拆成可承接的小步动作"
               }
             },
             "health_wellness": {
@@ -9808,6 +9882,11 @@
                 "核心矛盾": "固执阻碍疗愈",
                 "具体表现": "固守不健康习惯，不愿改变生活方式",
                 "转变方向": "开放心态，尝试新方法"
+              },
+              "transition-overload": {
+                "核心矛盾": "身体节奏切换时承载超负荷",
+                "具体表现": "作息、压力或生活方式正在变化，身体还没完成适配，容易感到疲惫和卡顿",
+                "转变方向": "先降噪和减负，让身体有空间重新建立稳定节律"
               }
             },
             "personal_growth": {
@@ -9860,6 +9939,11 @@
                 "核心矛盾": "固执阻碍蜕变",
                 "具体表现": "固执于旧有身份，不愿接受新的自己",
                 "转变方向": "拥抱变化，允许蜕变"
+              },
+              "transition-overload": {
+                "核心矛盾": "旧身份放不下，新自我又还没站稳",
+                "具体表现": "你已经察觉自己要进入下一个阶段，但行动和内在认同还没有完全同步",
+                "转变方向": "先允许自己处在过渡期，再用小实验把新节奏慢慢坐实"
               }
             }
           }
@@ -18630,6 +18714,9 @@
             },
             "土多水干": {
               "issue_type": "情绪压抑与沟通障碍"
+            },
+            "transition-overload": {
+              "issue_type": "情绪压抑与沟通障碍"
             }
           },
           "general": {
@@ -18662,6 +18749,9 @@
             },
             "土多水干": {
               "issue_type": "情绪压抑"
+            },
+            "transition-overload": {
+              "issue_type": "能量失衡"
             }
           },
           "health_wellness": {
@@ -18694,6 +18784,9 @@
             },
             "土多水干": {
               "issue_type": "身体僵硬"
+            },
+            "transition-overload": {
+              "issue_type": "能量耗竭"
             }
           },
           "intimate_relationship": {
@@ -18726,6 +18819,9 @@
             },
             "土多水干": {
               "issue_type": "冲突模式"
+            },
+            "transition-overload": {
+              "issue_type": "沟通障碍"
             }
           },
           "mother_relationship": {
@@ -18758,6 +18854,9 @@
             },
             "土多水干": {
               "issue_type": "情感缺失"
+            },
+            "transition-overload": {
+              "issue_type": "情绪冲突"
             }
           },
           "parent_child_relationship": {
@@ -18790,6 +18889,9 @@
             },
             "土多水干": {
               "issue_type": "代际创伤传递"
+            },
+            "transition-overload": {
+              "issue_type": "亲子沟通模式障碍"
             }
           },
           "personal_growth": {
@@ -18822,6 +18924,9 @@
             },
             "土多水干": {
               "issue_type": "情绪压抑/冷漠"
+            },
+            "transition-overload": {
+              "issue_type": "成长停滞/迷茫"
             }
           },
           "wealth_career": {
@@ -18853,6 +18958,9 @@
               "issue_type": "财务混乱"
             },
             "土多水干": {
+              "issue_type": "事业停滞"
+            },
+            "transition-overload": {
               "issue_type": "事业停滞"
             }
           }
@@ -19180,6 +19288,22 @@
             "healing_direction": "减负，释放生长空间",
             "color_prescription": "减少黄色，增加绿色和青色",
             "toc_supported": false
+          },
+          "transition-overload": {
+            "category": "阶段迁移",
+            "relation": "旧节奏与新节奏切换",
+            "mechanism": "旧有模式尚未完全退出，新阶段的拉力又提前进入，导致内在承载出现拥堵",
+            "color_features": "主导元素正在切换，三圈推进速度不一致，常见于画面节奏处在重新整理的阶段",
+            "psychology": "既想继续往前，又担心自己暂时接不住变化，容易在推进与回撤之间来回拉扯",
+            "manifestation": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+            "three_circles": {
+              "inner": "内心仍在确认新的安全感和承载边界",
+              "middle": "与关系或任务的连接方式正在重组，容易出现节奏卡顿",
+              "outer": "对外表达开始调整，但旧惯性还会把你拉回熟悉模式"
+            },
+            "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+            "color_prescription": "增加黄色和绿色稳定根基，辅以少量蓝色帮助过渡期降噪",
+            "toc_supported": true
           }
         },
         "toc_supported": [
@@ -19192,7 +19316,8 @@
           "火多金熔",
           "金多木折",
           "木多土陷",
-          "土多水干"
+          "土多水干",
+          "transition-overload"
         ],
         "tob_exclusive": [
           "水多金沉",
@@ -19234,6 +19359,9 @@
             "火多水灼",
             "水多土荡",
             "土多木折"
+          ],
+          "阶段迁移": [
+            "transition-overload"
           ]
         }
       },
@@ -19289,6 +19417,11 @@
               "核心矛盾": "固执导致情感干涸",
               "具体表现": "过于固执，情感表达困难，人际关系僵硬",
               "转变方向": "学会柔软，表达情感"
+            },
+            "transition-overload": {
+              "核心矛盾": "新旧节奏暂时不同步",
+              "具体表现": "一部分自己已经想往前走，另一部分自己还在回头确认安全感",
+              "转变方向": "先稳住节奏，再让变化分段落地"
             }
           },
           "father_relationship": {
@@ -19341,6 +19474,11 @@
               "核心矛盾": "固执阻碍和解",
               "具体表现": "对父亲有固化的负面看法，难以和解",
               "转变方向": "放下固执，尝试理解"
+            },
+            "transition-overload": {
+              "核心矛盾": "想靠近却又先退回",
+              "具体表现": "关系节奏正在变化，但你和父亲都还没找到新的相处方式",
+              "转变方向": "先稳定沟通节奏，再让新的连接慢慢落地"
             }
           },
           "mother_relationship": {
@@ -19393,6 +19531,11 @@
               "核心矛盾": "固执阻碍亲密",
               "具体表现": "对母亲有固化的负面看法，难以亲密",
               "转变方向": "放下固执，尝试理解"
+            },
+            "transition-overload": {
+              "核心矛盾": "依赖与独立同时拉扯",
+              "具体表现": "旧的依赖方式在退出，但新的边界和亲密方式还没完全建立",
+              "转变方向": "允许关系缓慢重组，用更稳定的节奏表达真实需要"
             }
           },
           "intimate_relationship": {
@@ -19445,6 +19588,11 @@
               "核心矛盾": "固执阻碍情感流动",
               "具体表现": "在关系中过于固执，不愿妥协，情感停滞",
               "转变方向": "学会妥协，让关系流动"
+            },
+            "transition-overload": {
+              "核心矛盾": "想靠近又怕失衡",
+              "具体表现": "关系节奏在切换时，你会一边想推进亲密，一边又先把自己收回来",
+              "转变方向": "先把感受说清楚，再让靠近和退回都变得可沟通"
             }
           },
           "parent_child_relationship": {
@@ -19497,6 +19645,11 @@
               "核心矛盾": "固执阻碍孩子流动",
               "具体表现": "固守教育方法，不愿根据孩子调整",
               "转变方向": "开放心态，灵活调整"
+            },
+            "transition-overload": {
+              "核心矛盾": "旧养育节奏跟不上孩子变化",
+              "具体表现": "孩子的阶段在变化，但家庭沟通和支持方式还停留在旧模式里",
+              "转变方向": "先更新沟通方式，再逐步调整期待和边界"
             }
           },
           "wealth_career": {
@@ -19549,6 +19702,11 @@
               "核心矛盾": "固执错失机会",
               "具体表现": "固守旧有模式，不愿尝试新渠道或新方法",
               "转变方向": "开放心态，拥抱变化"
+            },
+            "transition-overload": {
+              "核心矛盾": "旧节奏退出时承载跟不上",
+              "具体表现": "旧项目或旧路径正在退场，但新阶段真正推进前你又会先迟疑和回撤",
+              "转变方向": "先稳住基本盘，把变化拆成可承接的小步动作"
             }
           },
           "health_wellness": {
@@ -19601,6 +19759,11 @@
               "核心矛盾": "固执阻碍疗愈",
               "具体表现": "固守不健康习惯，不愿改变生活方式",
               "转变方向": "开放心态，尝试新方法"
+            },
+            "transition-overload": {
+              "核心矛盾": "身体节奏切换时承载超负荷",
+              "具体表现": "作息、压力或生活方式正在变化，身体还没完成适配，容易感到疲惫和卡顿",
+              "转变方向": "先降噪和减负，让身体有空间重新建立稳定节律"
             }
           },
           "personal_growth": {
@@ -19653,6 +19816,11 @@
               "核心矛盾": "固执阻碍蜕变",
               "具体表现": "固执于旧有身份，不愿接受新的自己",
               "转变方向": "拥抱变化，允许蜕变"
+            },
+            "transition-overload": {
+              "核心矛盾": "旧身份放不下，新自我又还没站稳",
+              "具体表现": "你已经察觉自己要进入下一个阶段，但行动和内在认同还没有完全同步",
+              "转变方向": "先允许自己处在过渡期，再用小实验把新节奏慢慢坐实"
             }
           }
         }
@@ -21655,6 +21823,7 @@
       "wealth_career"
     ],
     "toc_supported_imbalances": [
+      "transition-overload",
       "土多水干",
       "土多金埋",
       "木多土陷",
@@ -21703,99 +21872,99 @@
       },
       "theme_mapping_coverage": {
         "father_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         },
         "general": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         },
         "health_wellness": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         },
         "intimate_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         },
         "mother_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         },
         "parent_child_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         },
         "personal_growth": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         },
         "wealth_career": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing": []
         }
       },
       "healing_lookup_coverage": {
         "father_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"
         },
         "general": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"
         },
         "health_wellness": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"
         },
         "intimate_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"
         },
         "mother_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"
         },
         "parent_child_relationship": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"
         },
         "personal_growth": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"
         },
         "wealth_career": {
-          "mapped_count": 10,
-          "toc_supported_total": 10,
+          "mapped_count": 11,
+          "toc_supported_total": 11,
           "missing_mapping_sample": [],
           "invalid_issue_targets": [],
           "fallback_risk": "low"

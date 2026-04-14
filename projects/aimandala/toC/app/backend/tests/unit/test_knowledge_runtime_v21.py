@@ -182,6 +182,19 @@ def test_v21_query_engine_returns_structured_query_result():
     assert imbalance_result.evidence[0]["source_path"] == "rules/imbalance_types.yaml"
 
 
+def test_v21_query_engine_exposes_transition_overload_as_supported_imbalance():
+    engine = KnowledgeQueryEngine(version="toc")
+
+    result = engine.get_imbalance_detail("transition-overload")
+
+    assert result.found is True
+    assert result.fallback_level == "none"
+    assert result.entity_id == "imbalance.transition-overload"
+    assert result.value["type"] == "transition-overload"
+    assert result.value["warning"] is None
+    assert result.evidence[0]["source_path"] == "rules/imbalance_types.yaml"
+
+
 def test_v21_healing_plan_uses_structured_issue_mapping():
     engine = KnowledgeQueryEngine(version="toc")
 
@@ -194,6 +207,36 @@ def test_v21_healing_plan_uses_structured_issue_mapping():
     evidence_paths = [item["source_path"] for item in result.evidence]
     assert "rules/healing_issue_mappings.yaml" in evidence_paths
     assert "healing/wealth_career.yaml" in evidence_paths
+    assert result.warnings == []
+
+
+def test_v21_healing_plan_resolves_transition_overload_for_wealth_career():
+    engine = KnowledgeQueryEngine(version="toc")
+
+    result = engine.get_healing_plan("transition-overload", theme="wealth_career")
+
+    assert result.found is True
+    assert result.fallback_level == "none"
+    assert result.value["issue_type"] == "事业停滞"
+    assert result.value["imbalance"] == "transition-overload"
+    evidence_paths = [item["source_path"] for item in result.evidence]
+    assert "rules/healing_issue_mappings.yaml" in evidence_paths
+    assert "healing/wealth_career.yaml" in evidence_paths
+    assert result.warnings == []
+
+
+def test_v21_healing_plan_resolves_transition_overload_for_intimate_relationship():
+    engine = KnowledgeQueryEngine(version="toc")
+
+    result = engine.get_healing_plan("transition-overload", theme="intimate_relationship")
+
+    assert result.found is True
+    assert result.fallback_level == "none"
+    assert result.value["issue_type"] == "沟通障碍"
+    assert result.value["imbalance"] == "transition-overload"
+    evidence_paths = [item["source_path"] for item in result.evidence]
+    assert "rules/healing_issue_mappings.yaml" in evidence_paths
+    assert "healing/intimate_relationship.yaml" in evidence_paths
     assert result.warnings == []
 
 
