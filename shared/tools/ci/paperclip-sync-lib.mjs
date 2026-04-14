@@ -621,3 +621,11 @@ export async function syncPaperclipCommitSummary(options) {
 export function maybeParseAutomationKey(description) {
   return extractAutomationKey(description);
 }
+
+export const __testables = {
+  buildFailureTitle,
+  buildCommitSummaryTitle,
+  buildCommitSummaryDescription,
+  buildDescription,
+  prefixTitleWithSeverity,
+};
