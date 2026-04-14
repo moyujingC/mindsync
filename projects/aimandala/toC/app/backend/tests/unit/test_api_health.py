@@ -80,6 +80,30 @@ def test_local_dev_cors_allows_vite_ports():
     assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:4174"
 
 
+def test_public_web_origins_are_allowed_for_runtime_api_calls():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    for origin in (
+        "http://dev-web.jingshu.cc",
+        "https://dev-web.jingshu.cc",
+        "https://web.jingshu.cc",
+        "http://101.43.98.40",
+    ):
+        response = client.options(
+            "/api/v2/pricing",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.headers["access-control-allow-origin"] == origin
+
+
 def test_pricing_endpoint():
     from app.api.main import app
 
