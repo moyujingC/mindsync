@@ -61,6 +61,22 @@ function main() {
   const resolvedTitle = __testables.prefixTitleWithSeverity("❌ CI失败：Knowledge-CI / main", "success");
   assert(resolvedTitle === "CI失败：Knowledge-CI / main", `resolved title should strip emoji: ${resolvedTitle}`);
 
+  const safePatchPayload = __testables.buildSafeIssuePatchPayload({
+    title: "CI失败：Knowledge-CI / main",
+    description: "new description",
+    goalId: "123e4567-e89b-12d3-a456-426614174000",
+    parentId: "parent-1",
+    comment: "comment body",
+  });
+  assert(!("description" in safePatchPayload), "safe patch payload should drop description");
+  assert(!("goalId" in safePatchPayload), "safe patch payload should drop goalId");
+  assert(safePatchPayload.title === "CI失败：Knowledge-CI / main", "safe patch payload should keep title");
+  assert(safePatchPayload.parentId === "parent-1", "safe patch payload should keep parentId");
+  assert(safePatchPayload.comment === "comment body", "safe patch payload should keep comment");
+
+  assert(__testables.isRuntimePatchCompatibilityError(new Error("HTTP 500 Internal Server Error")), "500 should be treated as compatibility error");
+  assert(!__testables.isRuntimePatchCompatibilityError(new Error("HTTP 422 Unprocessable Entity")), "422 should not be treated as compatibility error");
+
   process.stdout.write("paperclip-sync-lib smoke ok\n");
 }
 

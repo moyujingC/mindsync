@@ -452,6 +452,32 @@ function buildComment(options) {
   return `${lines.join("\n")}\n`;
 }
 
+function isRuntimePatchCompatibilityError(error) {
+  return /HTTP 500\b/.test(String(error?.message ?? error ?? ""));
+}
+
+function buildSafeIssuePatchPayload(payload) {
+  const {
+    description: _description,
+    goalId: _goalId,
+    ...safePayload
+  } = payload ?? {};
+  return safePayload;
+}
+
+async function patchIssueWithRuntimeCompatibility(api, issueId, payload) {
+  try {
+    return await api.patch(`/api/issues/${issueId}`, payload);
+  } catch (error) {
+    const hasUnsafeFields = Object.prototype.hasOwnProperty.call(payload ?? {}, "description")
+      || Object.prototype.hasOwnProperty.call(payload ?? {}, "goalId");
+    if (!hasUnsafeFields || !isRuntimePatchCompatibilityError(error)) {
+      throw error;
+    }
+    return api.patch(`/api/issues/${issueId}`, buildSafeIssuePatchPayload(payload));
+  }
+}
+
 export async function syncPaperclipIssue(options) {
   const config = ISSUE_KIND_CONFIG[options.kind];
   if (!config) {
@@ -500,7 +526,7 @@ export async function syncPaperclipIssue(options) {
       parentIssue = await api.post(`/api/companies/${options.companyId}/issues`, parentPayload);
       issues.push(parentIssue);
     } else {
-      parentIssue = await api.patch(`/api/issues/${parentIssue.id}`, parentPayload);
+      parentIssue = await patchIssueWithRuntimeCompatibility(api, parentIssue.id, parentPayload);
     }
   }
 
@@ -548,7 +574,7 @@ export async function syncPaperclipIssue(options) {
     };
   }
 
-  const updated = await api.patch(`/api/issues/${existing.id}`, {
+  const updated = await patchIssueWithRuntimeCompatibility(api, existing.id, {
     ...payload,
     comment: buildComment(options),
   });
@@ -604,7 +630,7 @@ export async function syncPaperclipCommitSummary(options) {
     };
   }
 
-  const updated = await api.patch(`/api/issues/${existing.id}`, {
+  const updated = await patchIssueWithRuntimeCompatibility(api, existing.id, {
     ...payload,
     comment: buildCommitSummaryComment(options),
   });
@@ -627,5 +653,8 @@ export const __testables = {
   buildCommitSummaryTitle,
   buildCommitSummaryDescription,
   buildDescription,
+  buildSafeIssuePatchPayload,
+  isRuntimePatchCompatibilityError,
+  patchIssueWithRuntimeCompatibility,
   prefixTitleWithSeverity,
 };
