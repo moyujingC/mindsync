@@ -18,3 +18,7 @@
 - [墨予镜9个Agent建议配置总表](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-墨予镜9个Agent建议配置总表.md)
 - [墨予镜9个Agent的Capabilities可粘贴文案](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-墨予镜9个Agent的Capabilities可粘贴文案.md)
 - [墨予镜9个Agent面板逐项填写模板](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-墨予镜9个Agent面板逐项填写模板.md)
+
+## 2026-04-14 Agent 运行时补建
+
+- [Idea Clarifier 运行时缺失排查与修复说明](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-14-Idea-Clarifier-运行时缺失排查与修复说明.md)
