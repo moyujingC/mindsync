@@ -20,7 +20,7 @@ sudo systemctl restart aimandala-main-backend
 
 cd "$FRONTEND_ROOT"
 npm install --silent
-VITE_AIMANDALA_API_BASE_URL="${VITE_AIMANDALA_API_BASE_URL:-http://101.43.98.40}" npm run build:mobile-web
+VITE_AIMANDALA_API_BASE_URL="${VITE_AIMANDALA_API_BASE_URL:-http://dev-web-api.jingshu.cc}" npm run build:mobile-web
 
 rm -rf "$WEB_ROOT"/*
 cp -R "$FRONTEND_BUILD_DIR"/* "$WEB_ROOT"/
