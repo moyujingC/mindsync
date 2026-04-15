@@ -79,6 +79,19 @@
   - 当前已经从“和 CEO 用同一模型”的尝试中回退，固定为 `gpt-5.3-codex`
   - 这是当前更稳的工程执行口径
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
+- 人工接管口径：
+  - 当前允许用户在成本敏感阶段手动暂停 `Engineer`
+  - 当公共卡点被人工清除后，再恢复 `Engineer` 继续运行
+  - 后续推荐补成自动升级规则：
+    - 同一任务连续失败 `3` 次
+    - 或累计运行超过 `90` 分钟
+    - 或失败原因命中 `infra / auth / env / dependency / external service`
+  - 命中上述任一条件后，`Engineer` 不应继续重复燃烧 token
+  - 推荐动作是：
+    - 停止继续自动尝试
+    - 将任务转为 `blocked`
+    - 自动 assign 给用户本人
+    - 附带已尝试次数、最后失败摘要、建议先处理的公共卡点
 
 ### 3.3 Test / QA
 
@@ -201,6 +214,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - `Engineer`
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
+  - 成本压力较高或遇到公共卡点时，允许用户手动暂停；后续再补“多次失败自动转人工”
 - `Test / QA`
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`

@@ -319,6 +319,12 @@ NO_PROXY=127.0.0.1,localhost,vm-0-11-opencloudos.tail176582.ts.net
 - `check-paperclip-execution-health.mjs`
   - 用于发现 `activeRun=running` 但长期没有评论或状态回写的疑似卡住任务
   - 默认把这类任务转为 `blocked`，并回写标准化说明
+- `escalate-engineer-stuck-issues.mjs`
+  - 用于识别已经由 `Engineer` 多次失败、适合转人工的任务
+  - 当前默认只按“失败信号达到阈值”做候选，不默认按任务年龄或公共卡点批量升级
+  - 当前推荐先用 dry-run 观察输出，再决定是否加到 maintenance timer
+  - 若后续提供 `PAPERCLIP_ESCALATION_USER_ID`，可在转 `blocked` 的同时直接 assign 给用户本人
+  - maintenance 已可选接入这条巡检；默认 `PAPERCLIP_ENGINEER_ESCALATE_APPLY=0`，只输出候选报告
 
 人工排障统一先跑：
 
