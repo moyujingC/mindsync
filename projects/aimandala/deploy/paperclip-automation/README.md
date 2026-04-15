@@ -139,8 +139,8 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 11. `paperclip-automation.service` 的日常启动命令不应再附带 `--build`；镜像构建应作为独立运维步骤执行，避免 systemd 长时间卡在 Docker build 阶段导致 `3100` 端口不可用
 12. `/data/paperclip` 下的持久化文件应保持为宿主机运维用户可读写；若发现 `/paperclip/instances/default/.env` 为 `root:root 600`，容器内应用会因为 `EACCES` 反复重启
 13. automation 宿主机与容器默认统一使用 `Asia/Shanghai`，避免 Paperclip、日志与定时任务时间继续显示为 UTC
-14. 若整张 Paperclip 镜像重建过慢，可先采用“宿主机注入 Hermes”方案：在宿主机安装 `/opt/hermes-agent/venv/bin/hermes`，再通过 compose 只读挂载 `/opt/hermes-agent:/opt/hermes-agent` 并为容器补齐 `PATH`
-15. “宿主机注入 Hermes”只适用于 `hermes_local` 这类本地 CLI 依赖；它不是临时假命令，仍然必须是可实际执行任务的真实 Hermes 安装
+14. `CEO` 的 `hermes_local` 默认必须走容器内原生安装，不再复用宿主机 Python venv
+15. 当前推荐做法是在部署目录维护自定义 Dockerfile，通过扩展 Paperclip 官方构建流程把 Hermes CLI 与 Python 依赖直接装进容器
 
 当前推荐角色口径：
 
@@ -169,44 +169,72 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 - `agent` 只在最终解析出的 execution workspace 中运行
 - `adapter` 不再被当作工作目录治理边界本体
 
-## 4.2 `hermes_local` 宿主机注入方案
+## 4.2 `hermes_local` 容器原生方案
 
-当 `CEO` 已切到 `hermes_local`，但 Paperclip Docker 镜像重建耗时过长时，第一阶段允许先走宿主机注入方案，让任务尽快真正可跑。
+当前默认方案是：不改 `paperclip` 主仓源码，只在本部署目录维护一份自定义 Dockerfile，把 Hermes 安装进与 Paperclip 同一容器运行时。
 
-推荐宿主机安装位置：
+当前固定文件：
 
-```bash
-/opt/hermes-agent/venv/bin/hermes
-```
+- `Dockerfile.paperclip-with-hermes`
+- `docker-compose.paperclip.yml`
+- `docker-compose.paperclip.yml.example`
 
-最小落地方式：
+为什么必须这么做：
 
-1. 在 automation 宿主机创建 Python venv，例如 `/opt/hermes-agent/venv`
-2. 在该 venv 中安装真实 Hermes Agent，而不是占位脚本
-3. 在 `docker-compose.paperclip.yml` 中挂载：
+1. `hermes_local` 实际在 Paperclip 容器内执行
+2. 如果把宿主机 `/opt/hermes-agent/venv` 只读挂进容器，本质上是在复用“别的 Python 解释器创建出来的 venv”
+3. 本次线上事故已证明这会导致 Python 版本错配
+   - 宿主机 venv: `Python 3.11`
+   - 容器运行时: `Python 3.13`
+   - 结果：`hermes` 可执行文件存在，但 `import hermes_cli` 失败
+4. 因此 `CEO bug` 的真实修复口径不是补权限，而是让 Hermes 与容器 Python 保持同源构建
+
+当前最小实现：
+
+1. `build.context` 继续指向 `/opt/paperclip/app/paperclip`
+2. `dockerfile` 改为本目录下的 `Dockerfile.paperclip-with-hermes`
+3. 在该 Dockerfile 的 production stage 中：
+   - 安装 `python3-venv`
+   - 创建 `/opt/hermes` 虚拟环境
+   - 安装 `hermes-agent==${HERMES_AGENT_VERSION}`
+   - 链接 `/usr/local/bin/hermes`
+4. compose 不再挂载：
    - `/opt/hermes-agent:/opt/hermes-agent:ro`
    - `/opt/hermes-agent/venv/bin/hermes:/usr/local/bin/hermes:ro`
-4. 在容器环境中补齐：
-   - `PATH=/opt/hermes-agent/venv/bin:...`
-5. 保持 `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL` 继续通过 `/etc/default/paperclip-automation` 注入容器
+5. `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL` 仍继续由 `/etc/default/paperclip-automation` 注入容器
 
-说明：
-
-- 某些基础镜像或运行时会覆盖 compose 中注入的 `PATH`
-- 因此第一阶段推荐同时把宿主机 Hermes 可执行文件直接挂到容器内的 `/usr/local/bin/hermes`
-- 这样即使 `PATH` 回退到系统默认值，`hermes_local` 仍然能找到真实 CLI
-
-通过口径：
+推荐重建：
 
 ```bash
-docker exec paperclip-automation-paperclip-1 sh -lc 'command -v hermes && hermes --version'
+cd /opt/automation/app/mindsync/projects/aimandala/deploy/paperclip-automation
+docker compose -f docker-compose.paperclip.yml build --no-cache paperclip
+docker compose -f docker-compose.paperclip.yml up -d paperclip
 ```
 
-如果这一步通过，再去 Paperclip 的 Agent Configuration 页面执行：
+最小验收：
+
+```bash
+docker exec paperclip-automation-paperclip-1 sh -lc 'python3 --version && command -v hermes && hermes --version'
+docker exec paperclip-automation-paperclip-1 sh -lc 'python3 - <<\"PY\"\nimport hermes_cli\nprint(\"hermes_cli ok\")\nPY'
+```
+
+如果以上两步都通过，再到 Paperclip 面板执行：
 
 - `CEO -> Test environment`
 
-只有当这两步都通过，才算 `CEO` 真正具备 `hermes_local` 执行能力。
+只有容器内健康检查和面板测试都通过，才算 `CEO` 真正恢复 `hermes_local` 能力。
+
+## 4.2.1 宿主机注入方案的当前结论
+
+“宿主机注入 Hermes”现在不再作为推荐路径。
+
+原因不是它理念上绝对错误，而是当前 automation 节点已经实际踩中下面这个高概率故障：
+
+- 宿主机 venv 的 shebang 指向 `/opt/hermes-agent/venv/bin/python3`
+- 该路径进入容器后会落到容器自己的 Python 解释器
+- 一旦容器 Python 主版本不同，整个 venv 就会失效
+
+因此除非后续明确把宿主机与容器改成完全同版本同布局运行时，并重新验证过兼容性，否则不要再把宿主机注入当成默认修复手段。
 
 ## 4.1 `pi_local` 额外要求
 

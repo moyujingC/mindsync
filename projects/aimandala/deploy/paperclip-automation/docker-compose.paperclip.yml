@@ -2,10 +2,11 @@ services:
   paperclip:
     build:
       context: /opt/paperclip/app/paperclip
-      dockerfile: Dockerfile
+      dockerfile: /opt/automation/app/mindsync/projects/aimandala/deploy/paperclip-automation/Dockerfile.paperclip-with-hermes
       args:
         USER_UID: "${USER_UID:-1000}"
         USER_GID: "${USER_GID:-1000}"
+        HERMES_AGENT_VERSION: "${HERMES_AGENT_VERSION:-0.9.0}"
         HTTP_PROXY: "${HTTP_PROXY:-}"
         HTTPS_PROXY: "${HTTPS_PROXY:-}"
         NO_PROXY: "${NO_PROXY:-}"
@@ -18,7 +19,6 @@ services:
       TZ: "${TZ:-Asia/Shanghai}"
       HOST: "0.0.0.0"
       PAPERCLIP_HOME: "/paperclip"
-      PATH: "/opt/hermes-agent/venv/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin"
       PAPERCLIP_BIND: "${PAPERCLIP_BIND:-tailnet}"
       PAPERCLIP_TAILNET_BIND_HOST: "${PAPERCLIP_TAILNET_BIND_HOST:-}"
       PAPERCLIP_DEPLOYMENT_MODE: "authenticated"
@@ -43,6 +43,4 @@ services:
       - "${MINDSYNC_REPO:-/opt/automation/app/mindsync}:${MINDSYNC_REPO:-/opt/automation/app/mindsync}"
       - "${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}:${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}"
       - "${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}:${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
-      - "/opt/hermes-agent:/opt/hermes-agent:ro"
-      - "/opt/hermes-agent/venv/bin/hermes:/usr/local/bin/hermes:ro"
     restart: unless-stopped

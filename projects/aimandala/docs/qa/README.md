@@ -42,6 +42,7 @@
 
 当前优先阅读：
 
+- [2026-04-16-ceo-hermes-container-runtime-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-16-ceo-hermes-container-runtime-verification.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
 - [2026-04-15-min33-human-unblock-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-min33-human-unblock-verification.md)
@@ -52,6 +53,7 @@
 
 说明：
 
+- `2026-04-16-ceo-hermes-container-runtime-verification.md` 是当前 `CEO bug` 的正式验证入口，收束了“旧权限截图”与“当前 Hermes 运行时根因”之间的区分。
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md` 仍是当前 Web 首发窗口的正式 QA baseline。
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md` 是与之配套的当前验证总入口。
 - `2026-04-15-min33-human-unblock-verification.md` 是当前 `MIN-33` 转人工清障的验证结论入口，明确说明为何继续保持 `blocked`，且不应因旧本地记录缺失而直接关成 `done`。

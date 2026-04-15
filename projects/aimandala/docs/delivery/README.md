@@ -35,6 +35,7 @@
 
 当前窗口默认优先阅读：
 
+- [2026-04-16-ceo-hermes-container-runtime-fix-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-16-ceo-hermes-container-runtime-fix-handoff.md)
 - [2026-04-16-min80-idea-clarifier-to-ceo-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-16-min80-idea-clarifier-to-ceo-handoff.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md)
 - [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md)
@@ -45,6 +46,7 @@
 
 说明：
 
+- `2026-04-16-ceo-hermes-container-runtime-fix-handoff.md` 是当前 `CEO bug` 的正式交付入口，收束了根因、部署修复方案与后续服务器侧执行动作。
 - `2026-04-16-min80-idea-clarifier-to-ceo-handoff.md` 收束了 `MIN-80` 从模糊输入到 CEO 可接手总任务的当前结论，可作为当前窗口的补充交接入口。
 - `2026-04-14` 与 `2026-04-15 batch E` 组成当前 Web 首发与 miniapp 渐进并入窗口的主交付链。
 - `2026-04-15-min33-human-unblock-handoff.md` 收束 `MIN-33` 的当前正式结论：继续保持 `blocked`、停止重复自动重试、先转人工清障。
