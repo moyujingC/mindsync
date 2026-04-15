@@ -120,6 +120,7 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "workflow-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -291,6 +292,7 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "frontend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -420,6 +422,7 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "backend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -544,6 +547,7 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "knowledge-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -634,6 +638,7 @@ jobs:
             --repository "${{ github.repository }}" \
             --branch "$PAPERCLIP_BRANCH" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --job-count "4" \

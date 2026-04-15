@@ -94,7 +94,9 @@ jobs:
             --branch "main" \
             --job "nightly-dev-smoke" \
             --sha "${{ github.sha }}" \
+            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --commit-parent \
             --failed-step "Run Dev Smoke" \
             --summary-file "$RUNNER_TEMP/nightly-dev-smoke.log" \
             --result "$RESULT" \
@@ -176,7 +178,9 @@ jobs:
             --branch "release" \
             --job "nightly-prod-smoke" \
             --sha "${{ github.sha }}" \
+            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --commit-parent \
             --failed-step "Run Prod Smoke" \
             --summary-file "$RUNNER_TEMP/nightly-prod-smoke.log" \
             --result "$RESULT" \

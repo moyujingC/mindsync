@@ -100,17 +100,13 @@
 
 1. 同一提交的 `ci` 先创建一个父任务
 2. `frontend-ci / backend-ci / knowledge-ci` 等失败项作为子任务挂到该父任务下
-3. 标题默认改为 emoji 三态：
-   - 父任务：`<emoji> 短 sha · Aimandala-CI / Aimandala-Deploy · 时间`
-   - 子任务：`<emoji> 短 sha · Job · 时间`
-   - 示例：
-     - `❌ a9f90119 · Aimandala-CI · 2026-04-14 10:56`
-     - `⚠️ a9f90119 · Aimandala-Deploy · 2026-04-14 12:21`
-     - `⚠️ a9f90119 · Deploy-Dev · 2026-04-14 12:21`
-4. emoji 与严重度映射固定为：
-   - `✅`：`resolved / success`
-   - `⚠️`：`deploy-or-smoke-failure / warning`
-   - `❌`：`build-failure / ci-test-failure / infra-runner-failure / error`
+3. 标题默认对齐 GitHub：
+   - 父任务：直接使用 GitHub workflow run 编号，例如 `#24`
+   - 子任务：直接使用 GitHub job 名，例如 `knowledge-quality`、`deploy-dev`
+   - 标题中不再额外写 `成功 / 失败 / 汇总` 等状态描述
+4. 层级默认对齐 GitHub：
+   - workflow 分组下先看到 run 父任务
+   - 展开 run 父任务后，再看到该次 run 下的 job 子任务
 5. 同一个 job 在不同提交下必须形成不同子任务，不能跨 commit 复用旧单
 
 补充治理约束：

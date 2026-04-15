@@ -58,6 +58,7 @@ WORKDIR /app
 COPY --chown=node:node --from=build /app /app
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai @mariozechner/pi-coding-agent \
   && python3 -m venv /opt/hermes \
+  && ln -sf /opt/hermes/bin/python /opt/hermes/bin/python3 \
   && /opt/hermes/bin/pip install --no-cache-dir --upgrade pip \
   && /opt/hermes/bin/pip install --no-cache-dir "git+https://github.com/NousResearch/hermes-agent.git@${HERMES_GIT_REF}" \
   && ln -sf /opt/hermes/bin/hermes /usr/local/bin/hermes \

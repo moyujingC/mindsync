@@ -43,6 +43,7 @@ async function main() {
       repository: getOption(options, "repository", process.env.GITHUB_REPOSITORY ?? null),
       branch: requireOption(options, "branch"),
       sha: getOption(options, "sha", process.env.GITHUB_SHA ?? null),
+      runNumber: getOption(options, "run-number", process.env.GITHUB_RUN_NUMBER ?? null),
       runUrl: getOption(options, "run-url", null),
       result: getOption(options, "result", "failed"),
       ownerAgentId: getOption(options, "owner-agent-id", null),

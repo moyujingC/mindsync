@@ -173,6 +173,25 @@
 
 - [company/CI-CD-角色分工说明.md](/Users/xinran/Downloads/dev/mindsync/company/CI-CD-角色分工说明.md)
 
+## 6.1 当前 workflow 面板的正确阅读方式
+
+`Paperclip` 中的 workflow 面板，不应被理解成“所有历史 run 都是当前待处理问题”。
+
+更接近 GitHub 的正确理解应是：
+
+1. 首先看最近几次 run 是否健康
+2. 再看当前主链是否仍被失败阻塞
+3. 更早的失败默认作为历史追溯材料，而不是首屏待办
+
+因此：
+
+- 较早提交上的单次失败，如果已被后续成功 run 覆盖，默认不应继续作为当前红灯占据首屏
+- 只有最新失败、连续失败、或当前基础设施阻塞，才应继续升级为当前行动信号
+
+这条规则的正式 spec 见：
+
+- [projects/aimandala/docs/specs/2026-04-16-ci-cd-面板视图与收束规则.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-16-ci-cd-面板视图与收束规则.md)
+
 ## 7. 如果你想快速知道“当前系统包含什么”
 
 最短答案是：

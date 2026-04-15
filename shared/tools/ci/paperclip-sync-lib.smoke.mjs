@@ -21,6 +21,7 @@ const baseOptions = {
   automationKey: "repo::ci::main::knowledge-ci::sha::build-failure",
   repository: "moyujingC/mindsync",
   runUrl: "https://example.test/run/1",
+  runNumber: "24",
   failedStep: "Install Knowledge Dependencies",
   reproCommand: "python3 -m pip install -r requirements.txt pytest",
   kind: "build-failure",
@@ -30,10 +31,10 @@ const baseOptions = {
 
 function main() {
   const failureTitle = __testables.buildFailureTitle({}, baseOptions);
-  assert(failureTitle === "CI失败：Knowledge-CI / main", `unexpected failure title: ${failureTitle}`);
+  assert(failureTitle === "knowledge-ci", `unexpected failure title: ${failureTitle}`);
 
   const commitTitle = __testables.buildCommitSummaryTitle(baseOptions);
-  assert(commitTitle === "Aimandala-CI 失败汇总 / main", `unexpected commit title: ${commitTitle}`);
+  assert(commitTitle === "#24", `unexpected commit title: ${commitTitle}`);
 
   const commitDescription = __testables.buildCommitSummaryDescription({
     ...baseOptions,
@@ -58,11 +59,11 @@ function main() {
   assert(executionDescription.includes("完成标准："), "execution description should include completion criteria");
   assert(executionDescription.includes("done when："), "execution description should include done when");
 
-  const resolvedTitle = __testables.prefixTitleWithSeverity("❌ CI失败：Knowledge-CI / main", "success");
-  assert(resolvedTitle === "CI失败：Knowledge-CI / main", `resolved title should strip emoji: ${resolvedTitle}`);
+  const resolvedTitle = __testables.prefixTitleWithSeverity("❌ knowledge-ci", "success");
+  assert(resolvedTitle === "knowledge-ci", `resolved title should strip emoji: ${resolvedTitle}`);
 
   const safePatchPayload = __testables.buildSafeIssuePatchPayload({
-    title: "CI失败：Knowledge-CI / main",
+    title: "knowledge-ci",
     description: "new description",
     goalId: "123e4567-e89b-12d3-a456-426614174000",
     parentId: "parent-1",
@@ -70,7 +71,7 @@ function main() {
   });
   assert(!("description" in safePatchPayload), "safe patch payload should drop description");
   assert(!("goalId" in safePatchPayload), "safe patch payload should drop goalId");
-  assert(safePatchPayload.title === "CI失败：Knowledge-CI / main", "safe patch payload should keep title");
+  assert(safePatchPayload.title === "knowledge-ci", "safe patch payload should keep title");
   assert(safePatchPayload.parentId === "parent-1", "safe patch payload should keep parentId");
   assert(safePatchPayload.comment === "comment body", "safe patch payload should keep comment");
 

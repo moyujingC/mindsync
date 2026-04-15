@@ -82,6 +82,14 @@ function shortSha(sha) {
   return normalized.slice(0, 8);
 }
 
+function normalizeRunNumber(value) {
+  const normalized = String(value ?? "").trim();
+  if (!normalized) {
+    return null;
+  }
+  return normalized.replace(/^#/, "");
+}
+
 function formatIssueTime(value) {
   const date = value ? new Date(value) : new Date();
   if (Number.isNaN(date.getTime())) {
@@ -160,15 +168,15 @@ function buildCommitSummaryAutomationKey(options) {
 }
 
 function buildFailureTitle(_config, options) {
-  const jobLabel = formatTitleLabel(options.job ?? "unknown-job");
-  const branch = options.branch ?? "unknown";
-  return `CI失败：${jobLabel} / ${branch}`;
+  return String(options.job ?? "unknown-job").trim() || "unknown-job";
 }
 
 function buildCommitSummaryTitle(options) {
-  const workflow = formatWorkflowTitleLabel(options.workflow ?? "workflow");
-  const branch = options.branch ?? "unknown";
-  return `${workflow} 失败汇总 / ${branch}`;
+  const runNumber = normalizeRunNumber(options.runNumber);
+  if (runNumber) {
+    return `#${runNumber}`;
+  }
+  return formatWorkflowTitleLabel(options.workflow ?? "workflow");
 }
 
 function buildCommitSummaryDescription(options) {
@@ -183,6 +191,9 @@ function buildCommitSummaryDescription(options) {
     lines.push(`goal: ${options.goalTitle}`);
   }
   lines.push(`workflow: ${options.workflow ?? "unknown"}`);
+  if (options.runNumber) {
+    lines.push(`run_number: ${normalizeRunNumber(options.runNumber)}`);
+  }
   lines.push(`branch: ${options.branch ?? "unknown"}`);
   if (options.sha) {
     lines.push(`commit: ${options.sha}`);
@@ -221,6 +232,9 @@ function buildCommitSummaryComment(options) {
   lines.push(...formatExecutionSourceLines(options));
   if (options.runUrl) {
     lines.push(`- run: ${options.runUrl}`);
+  }
+  if (options.runNumber) {
+    lines.push(`- run number: #${normalizeRunNumber(options.runNumber)}`);
   }
   if (typeof options.jobCount === "number" && Number.isFinite(options.jobCount)) {
     lines.push(`- jobs: ${failedJobs.length}/${options.jobCount} failed`);
@@ -328,6 +342,9 @@ function buildDescription(config, options) {
     lines.push("输入材料：");
     lines.push(`- repository: ${options.repository ?? "unknown"}`);
     lines.push(`- branch: ${options.branch ?? "unknown"}`);
+    if (options.runNumber) {
+      lines.push(`- run number: #${normalizeRunNumber(options.runNumber)}`);
+    }
     if (options.sha) {
       lines.push(`- commit: ${options.sha}`);
     }
@@ -360,6 +377,9 @@ function buildDescription(config, options) {
     lines.push("输入材料：");
     lines.push(`- repository: ${options.repository ?? "unknown"}`);
     lines.push(`- branch: ${options.branch ?? "unknown"}`);
+    if (options.runNumber) {
+      lines.push(`- run number: #${normalizeRunNumber(options.runNumber)}`);
+    }
     if (options.sha) {
       lines.push(`- commit: ${options.sha}`);
     }
@@ -423,6 +443,9 @@ function buildComment(options) {
   }
   if (options.runUrl) {
     lines.push(`- run: ${options.runUrl}`);
+  }
+  if (options.runNumber) {
+    lines.push(`- run number: #${normalizeRunNumber(options.runNumber)}`);
   }
   if (options.failedStep) {
     lines.push(`- failed step: ${options.failedStep}`);
@@ -510,14 +533,15 @@ export async function syncPaperclipIssue(options) {
     .map((name) => labelsByName.get(name)?.id)
     .filter(Boolean);
   const automationKey = options.automationKey ?? buildAutomationKey(options);
+  const shouldCreateParent = options.enableCommitParent ?? true;
   const parentAutomationKey =
-    options.parentAutomationKey ?? (options.enableCommitParent ? buildCommitSummaryAutomationKey(options) : null);
+    options.parentAutomationKey ?? (shouldCreateParent ? buildCommitSummaryAutomationKey(options) : null);
   const issues = await listProjectIssues(api, options.companyId, project.id);
   const parentLabelIds = PARENT_LABEL_NAMES.map((name) => labelsByName.get(name)?.id).filter(Boolean);
   let parentIssue =
     parentAutomationKey != null ? findIssueByAutomationKey(issues, parentAutomationKey) : null;
 
-  if (options.enableCommitParent && (options.result === "failed" || parentIssue)) {
+  if (shouldCreateParent && (options.result === "failed" || parentIssue)) {
     const parentPayload = {
       title: prefixTitleWithSeverity(
         buildCommitSummaryTitle(options),
