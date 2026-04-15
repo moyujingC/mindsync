@@ -44,6 +44,7 @@
 
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
+- [2026-04-15-min33-human-unblock-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-min33-human-unblock-verification.md)
 - [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md)
 - [2026-04-13-miniapp-native-gray-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-miniapp-native-gray-verification.md)
 - [2026-04-13-miniapp-wechatpay-live-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-miniapp-wechatpay-live-verification.md)
@@ -53,6 +54,7 @@
 
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md` 仍是当前 Web 首发窗口的正式 QA baseline。
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md` 是与之配套的当前验证总入口。
+- `2026-04-15-min33-human-unblock-verification.md` 是当前 `MIN-33` 转人工清障的验证结论入口，明确说明为何继续保持 `blocked`，且不应因旧本地记录缺失而直接关成 `done`。
 - `2026-04-15 batch E` 和 `2026-04-13` gray 系列主要服务 miniapp 渐进并入，不取代 Web 默认质量门。
 
 ## 历史资料入口
