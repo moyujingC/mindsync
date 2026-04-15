@@ -75,8 +75,9 @@ goals:
 11. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
 12. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
 13. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
-14. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
-15. [company/knowledge-base/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md)
+14. [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
+15. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+16. [company/knowledge-base/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md)
 
 其中：
 
@@ -93,6 +94,7 @@ goals:
 - `MONOREPO` 定义仓库分层、对象类型与目录归属原则
 - `DOCS_GOVERNANCE` 定义正式文档的状态、元数据和 artifact 规则
 - `服务器与基础设施入口` 定义当前可运维宿主机的公司级登录入口与项目 runbook 索引
+- `Paperclip Agent 模型配置总表` 用于解释当前各 Agent 的运行时模型、adapter、base URL、鉴权方式和面板状态解读
 - `项目与仓库映射` 解释注册表中的对象如何映射到当前 Monorepo 与历史仓库
 - `公司知识库` 收口公司级方法论、系统机制分析与跨项目长期可复用知识
 

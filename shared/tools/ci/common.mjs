@@ -406,6 +406,9 @@ export function summarizeExecutionBaseline(baseline, options = {}) {
   if (branchMatchesExpected === false) {
     driftReasons.push("branch_mismatch");
   }
+  if (baseline.dirty) {
+    driftReasons.push("dirty_worktree");
+  }
 
   return {
     ...baseline,

@@ -77,6 +77,26 @@ function main() {
   assert(__testables.isRuntimePatchCompatibilityError(new Error("HTTP 500 Internal Server Error")), "500 should be treated as compatibility error");
   assert(!__testables.isRuntimePatchCompatibilityError(new Error("HTTP 422 Unprocessable Entity")), "422 should not be treated as compatibility error");
 
+  const comment = __testables.buildComment({
+    ...baseOptions,
+    result: "failed",
+    diagnosis: "代码问题",
+    executionAdapter: "codex_local",
+    executionHost: "automation-host",
+  });
+  assert(comment.includes("执行来源："), "comment should include execution source section");
+  assert(comment.includes("- adapter: codex_local"), "comment should include execution adapter");
+  assert(comment.includes("- host: automation-host"), "comment should include execution host");
+
+  const commitSummaryComment = __testables.buildCommitSummaryComment({
+    ...baseOptions,
+    result: "failed",
+    executionAdapter: "claude_local",
+    executionHost: "automation-host",
+  });
+  assert(commitSummaryComment.includes("- adapter: claude_local"), "commit summary comment should include execution adapter");
+  assert(commitSummaryComment.includes("- host: automation-host"), "commit summary comment should include execution host");
+
   process.stdout.write("paperclip-sync-lib smoke ok\n");
 }
 

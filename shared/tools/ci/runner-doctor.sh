@@ -9,13 +9,14 @@ RUNNER_NAME="${RUNNER_HEARTBEAT_RUNNER_NAME:-mindsync-ci}"
 EXPECT_LABELS="${RUNNER_HEARTBEAT_EXPECT_LABELS:-self-hosted,linux,mindsync-ci,aimandala}"
 WORKFLOW_FILE="${RUNNER_HEARTBEAT_WORKFLOW_FILE:-aimandala-ci.yml}"
 BRANCH="${RUNNER_HEARTBEAT_BRANCH:-main}"
+ENV_FILE="${RUNNER_DOCTOR_ENV_FILE:-}"
 STRICT_MODE=0
 JSON_ONLY=0
 
 usage() {
   cat <<'EOF'
 Usage:
-  shared/tools/ci/runner-doctor.sh [--strict] [--json-only]
+  shared/tools/ci/runner-doctor.sh [--strict] [--json-only] [--env-file <path>]
 
 Environment:
   GITHUB_REPOSITORY
@@ -24,6 +25,7 @@ Environment:
   RUNNER_HEARTBEAT_EXPECT_LABELS
   RUNNER_HEARTBEAT_WORKFLOW_FILE
   RUNNER_HEARTBEAT_BRANCH
+  RUNNER_DOCTOR_ENV_FILE
 EOF
 }
 
@@ -37,6 +39,15 @@ while [[ $# -gt 0 ]]; do
       JSON_ONLY=1
       shift
       ;;
+    --env-file)
+      ENV_FILE="${2:-}"
+      if [[ -z "$ENV_FILE" ]]; then
+        echo "--env-file requires a path" >&2
+        usage >&2
+        exit 1
+      fi
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -48,6 +59,17 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+if [[ -n "$ENV_FILE" ]]; then
+  if [[ ! -r "$ENV_FILE" ]]; then
+    echo "env file is not readable: $ENV_FILE" >&2
+    exit 1
+  fi
+  set -a
+  # shellcheck disable=SC1090
+  . "$ENV_FILE"
+  set +a
+fi
 
 if [[ -z "${GITHUB_REPOSITORY:-}" || -z "${GITHUB_TOKEN:-}" ]]; then
   echo "GITHUB_REPOSITORY and GITHUB_TOKEN are required" >&2

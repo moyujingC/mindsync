@@ -40,9 +40,10 @@
 14. `MONOREPO.md`
 15. `DOCS_GOVERNANCE.md`
 16. `company/服务器与基础设施入口.md`
-17. `agents/*/AGENTS.md`
-18. `company/项目与仓库映射.md`
-19. `company/knowledge-base/README.md`
+17. `company/Paperclip-Agent-模型配置总表.md`
+18. `agents/*/AGENTS.md`
+19. `company/项目与仓库映射.md`
+20. `company/knowledge-base/README.md`
 
 如果任务与某个具体角色有关，应继续读取对应的 `agents/<role>/AGENTS.md`。
 

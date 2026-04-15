@@ -87,6 +87,7 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:nightly-smoke" \
             --kind "deploy-or-smoke-failure" \
             --workflow "nightly-smoke" \
             --repository "${{ github.repository }}" \
@@ -168,6 +169,7 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:nightly-smoke" \
             --kind "deploy-or-smoke-failure" \
             --workflow "nightly-smoke" \
             --repository "${{ github.repository }}" \

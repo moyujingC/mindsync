@@ -21,6 +21,14 @@ import {
 } from "./common.mjs";
 import { syncPaperclipIssue } from "./paperclip-sync-lib.mjs";
 
+function sanitizeWorktreeSegment(value) {
+  return String(value ?? "")
+    .trim()
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "unknown";
+}
+
 const REPAIR_PROFILES = [
   {
     jobName: "frontend-quality",
@@ -176,6 +184,21 @@ async function main() {
   const paperclipApiKey = getOption(options, "api-key", process.env.PAPERCLIP_API_KEY ?? null);
   const companyId = getOption(options, "company-id", process.env.PAPERCLIP_COMPANY_ID ?? "be191a6e-7447-4821-a93d-9114214c4a64");
   const ownerAgentId = getOption(options, "owner-agent-id", process.env.PAPERCLIP_ENGINEER_AGENT_ID ?? null);
+  const executionWorktreeRoot = getOption(
+    options,
+    "execution-worktree-root",
+    process.env.PAPERCLIP_EXECUTION_WORKTREE_ROOT ?? "/opt/automation/worktrees",
+  );
+  const executionAdapter = getOption(
+    options,
+    "execution-adapter",
+    process.env.PAPERCLIP_EXECUTION_ADAPTER ?? "github-actions/self-hosted-runner:auto-repair",
+  );
+  const executionHost = getOption(
+    options,
+    "execution-host",
+    process.env.PAPERCLIP_EXECUTION_HOST ?? process.env.HOSTNAME ?? null,
+  );
 
   if (!repository || !githubToken || !eventPath) {
     throw new Error("repository, github token, and event path are required");
@@ -227,6 +250,8 @@ async function main() {
       ? "进入自动修复白名单流程，隔离分支执行修复命令并复跑。"
       : "等待人工排查；当前失败点不在自动修复白名单内。",
     phase: profile ? "auto-repair intake" : "manual-follow-up",
+    executionAdapter,
+    executionHost,
   });
 
   if (!profile) {
@@ -262,15 +287,23 @@ async function main() {
     actionTaken: "创建自动修复执行上下文，准备切换隔离分支并运行修复命令。",
     nextStep: "执行修复命令，随后用对应 repro command 做本地复跑。",
     phase: "auto-repair started",
+    executionAdapter,
+    executionHost,
   });
 
   const branchName = `codex/auto-fix/${workflowRun.id}`;
-  const checkout = await runShellCommand(`git checkout -B ${branchName} ${workflowRun.head_sha}`);
+  const worktreeDir = `${executionWorktreeRoot}/${sanitizeWorktreeSegment(`auto-repair-${workflowRun.id}-${failedJob.name}`)}`;
+  await runShellCommand(`mkdir -p ${JSON.stringify(executionWorktreeRoot)}`);
+  await runShellCommand(`rm -rf ${JSON.stringify(worktreeDir)}`);
+  const checkout = await runShellCommand(
+    `git worktree add -B ${branchName} ${JSON.stringify(worktreeDir)} ${workflowRun.head_sha}`,
+  );
   if (checkout.code !== 0) {
     throw new Error(`Failed to create auto-repair branch: ${truncateText(checkout.stderr || checkout.stdout, 1200)}`);
   }
 
   const repairRun = await runShellCommand(autoRepairCommand, {
+    cwd: worktreeDir,
     env: {
       AIMANDALA_FAILED_JOB: failedJob.name,
       AIMANDALA_FAILED_STEP: failedStep ?? "",
@@ -284,7 +317,7 @@ async function main() {
   });
 
   if (repairRun.code !== 0) {
-    const baseline = summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+    const baseline = summarizeExecutionBaseline(await collectGitBaseline(worktreeDir), {
       expectedSha: workflowRun.head_sha,
       expectedBranch: workflowRun.head_branch,
     });
@@ -314,14 +347,17 @@ async function main() {
       unblockOwner: "Engineer",
       phase: "auto-repair command failed",
       executionBaseline: baseline,
+      executionAdapter,
+      executionHost,
+      note: `自动修复命令执行失败，隔离 worktree: ${worktreeDir}`,
       summary: repairRun.stderr || repairRun.stdout,
     });
     throw new Error(`Auto-repair command failed: ${truncateText(repairRun.stderr || repairRun.stdout, 1600)}`);
   }
 
-  const reproResult = await runShellCommand(profile.reproCommand);
+  const reproResult = await runShellCommand(profile.reproCommand, { cwd: worktreeDir });
   if (reproResult.code !== 0) {
-    const baseline = summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+    const baseline = summarizeExecutionBaseline(await collectGitBaseline(worktreeDir), {
       expectedSha: workflowRun.head_sha,
       expectedBranch: workflowRun.head_branch,
     });
@@ -350,14 +386,17 @@ async function main() {
       unblockOwner: "Engineer",
       phase: "auto-repair repro failed",
       executionBaseline: baseline,
+      executionAdapter,
+      executionHost,
+      note: `自动修复复跑仍失败，隔离 worktree: ${worktreeDir}`,
       summary: reproResult.stderr || reproResult.stdout,
     });
     throw new Error(`Auto-repair repro command still fails: ${truncateText(reproResult.stderr || reproResult.stdout, 1600)}`);
   }
 
-  const changedFiles = await getChangedFiles(process.cwd());
+  const changedFiles = await getChangedFiles(worktreeDir);
   if (changedFiles.length === 0) {
-    const baseline = summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+    const baseline = summarizeExecutionBaseline(await collectGitBaseline(worktreeDir), {
       expectedSha: workflowRun.head_sha,
       expectedBranch: workflowRun.head_branch,
     });
@@ -387,6 +426,9 @@ async function main() {
       unblockOwner: "Engineer / 运维执行方",
       phase: "auto-repair no diff",
       executionBaseline: baseline,
+      executionAdapter,
+      executionHost,
+      note: `自动修复无可提交 diff，隔离 worktree: ${worktreeDir}`,
     });
     return;
   }
@@ -395,11 +437,12 @@ async function main() {
     throw new Error(`Auto-repair touched files outside allowlist: ${changedFiles.join(", ")}`);
   }
 
-  await runShellCommand("git config user.name 'github-actions[bot]'");
-  await runShellCommand("git config user.email '41898282+github-actions[bot]@users.noreply.github.com'");
-  await runShellCommand("git add .");
+  await runShellCommand("git config user.name 'github-actions[bot]'", { cwd: worktreeDir });
+  await runShellCommand("git config user.email '41898282+github-actions[bot]@users.noreply.github.com'", { cwd: worktreeDir });
+  await runShellCommand("git add .", { cwd: worktreeDir });
   const commit = await runShellCommand(
     `git commit -m ${JSON.stringify(`chore: auto-repair ${failedJob.name} (${failedStep ?? "unknown-step"})`)}`,
+    { cwd: worktreeDir },
   );
   if (commit.code !== 0) {
     throw new Error(`Failed to create auto-repair commit: ${truncateText(commit.stderr || commit.stdout, 1200)}`);
@@ -407,7 +450,7 @@ async function main() {
 
   let prUrl = null;
   if (autoRepairPush) {
-    const push = await runShellCommand(`git push origin ${branchName} --force-with-lease`);
+    const push = await runShellCommand(`git push origin ${branchName} --force-with-lease`, { cwd: worktreeDir });
     if (push.code !== 0) {
       throw new Error(`Failed to push auto-repair branch: ${truncateText(push.stderr || push.stdout, 1200)}`);
     }
@@ -464,10 +507,13 @@ async function main() {
       ? "由 Engineer / Test QA 在 PR 中确认 diff 边界、复跑结果与残留风险。"
       : "推送隔离分支或创建 PR 后再进入评审。",
     phase: "auto-repair ready for review",
-    executionBaseline: summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
+    executionBaseline: summarizeExecutionBaseline(await collectGitBaseline(worktreeDir), {
       expectedSha: workflowRun.head_sha,
       expectedBranch: workflowRun.head_branch,
     }),
+    executionAdapter,
+    executionHost,
+    note: `自动修复已在隔离 worktree 完成：${worktreeDir}`,
   });
 
   logInfo(`Auto-repair branch ready: ${branchName}`);

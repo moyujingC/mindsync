@@ -7,5 +7,5 @@ Wants=network-online.target
 Type=oneshot
 User=ubuntu
 EnvironmentFile=-/etc/default/automation-maintenance
-WorkingDirectory=/opt/automation/app/mindsync
+WorkingDirectory=/opt/automation/app/mindsync-heartbeat
 ExecStart=/usr/bin/env bash -lc 'shared/tools/ci/automation-node-maintenance.sh'

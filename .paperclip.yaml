@@ -27,6 +27,10 @@ agents:
     name: "Idea Clarifier"
     role: "idea_clarifier"
     # 正式主链路：服务器侧 pi_local
+    # 当前已验证通过的模型口径：
+    # - provider/model: volcengine-coding-plan/Doubao-Seed-2.0-pro
+    # - pi 运行时 HOME: /paperclip
+    # - 通过自定义 Pi provider 走火山兼容的 openai-completions 链路
     # 运行时兜底：当 pi_local 因环境缺失失败时，Paperclip 应自动回退到 claude_local
     adapter: "pi_local"
     directory: "agents/idea-clarifier"
@@ -119,6 +123,14 @@ projects:
     directory: "projects/aimandala"
     repository: "https://github.com/MindSyncHub/ai-mandala"
     source_subdirectory: "."
+    # 运行态治理口径：
+    # - agent 的执行工作目录由 project / issue 级 execution workspace policy 决定
+    # - agent 自身 adapter 配置里的 cwd 仅保留为 legacy fallback
+    # - 一镜一梳当前默认策略应为：
+    #   - executionWorkspacePolicy.enabled = true
+    #   - defaultMode = isolated_workspace
+    #   - workspaceStrategy.type = git_worktree
+    #   - workspaceStrategy.worktreeParentDir = /opt/automation/worktrees
 
   - id: "00403f31-add0-4b19-b715-6652a4b3dfe3"
     name: "怀瑾握瑜"
@@ -153,6 +165,8 @@ sync:
 # 工作空间配置
 workspace:
   # 默认主工作区是 Monorepo 根目录；项目任务进入对应 projects/<slug>
+  # 这里的“进入”表示 Paperclip 在 project / issue 层解析执行工作区后，
+  # 再把最终 cwd 注入 agent 运行上下文；不要把它理解成 agent 自己写死工作目录。
   # 运行态 Agent 应优先读取：
   # 1. COMPANY.md
   # 2. company/项目注册表.yaml

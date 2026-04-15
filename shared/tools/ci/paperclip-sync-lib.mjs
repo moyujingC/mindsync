@@ -217,6 +217,8 @@ function buildCommitSummaryComment(options) {
   const lines = [];
   lines.push(`CI汇总时间：${isoNow()}`);
   lines.push(`- 结果：${options.result}`);
+  lines.push("");
+  lines.push(...formatExecutionSourceLines(options));
   if (options.runUrl) {
     lines.push(`- run: ${options.runUrl}`);
   }
@@ -238,6 +240,16 @@ function buildCommitSummaryComment(options) {
 
 function resolveDiagnosis(options) {
   return options.diagnosis ?? KIND_DIAGNOSIS[options.kind] ?? "待判断";
+}
+
+function formatExecutionSourceLines(options) {
+  const adapter = String(options.executionAdapter ?? "").trim() || "unknown";
+  const host = String(options.executionHost ?? "").trim() || "unknown";
+  return [
+    "执行来源：",
+    `- adapter: ${adapter}`,
+    `- host: ${host}`,
+  ];
 }
 
 function formatExecutionBaselineLines(options) {
@@ -401,6 +413,8 @@ function buildComment(options) {
   lines.push(`CI同步时间：${isoNow()}`);
   lines.push(`- 结果：${options.result}`);
   lines.push(`- 当前判断：${resolveDiagnosis(options)}`);
+  lines.push("");
+  lines.push(...formatExecutionSourceLines(options));
   if (options.phase) {
     lines.push(`- 当前阶段：${options.phase}`);
   }
@@ -652,8 +666,11 @@ export const __testables = {
   buildFailureTitle,
   buildCommitSummaryTitle,
   buildCommitSummaryDescription,
+  buildCommitSummaryComment,
   buildDescription,
+  buildComment,
   buildSafeIssuePatchPayload,
+  formatExecutionSourceLines,
   isRuntimePatchCompatibilityError,
   patchIssueWithRuntimeCompatibility,
   prefixTitleWithSeverity,

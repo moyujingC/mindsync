@@ -3,12 +3,15 @@ set -euo pipefail
 
 RUNNER_ROOT="${RUNNER_ROOT:-/opt/mindsync-ci/actions-runner}"
 REPO_ROOT="${REPO_ROOT:-/opt/automation/app/mindsync}"
+HEARTBEAT_REPO_ROOT="${HEARTBEAT_REPO_ROOT:-/opt/automation/app/mindsync-heartbeat}"
+EXECUTION_WORKTREE_ROOT="${EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
 PAPERCLIP_HOME="${PAPERCLIP_HOME:-/data/paperclip}"
 MIN_FREE_GB="${MIN_FREE_GB:-12}"
 TEMP_RETENTION_DAYS="${TEMP_RETENTION_DAYS:-3}"
 RUNNER_LOG_RETENTION_DAYS="${RUNNER_LOG_RETENTION_DAYS:-7}"
 PAPERCLIP_LOG_RETENTION_DAYS="${PAPERCLIP_LOG_RETENTION_DAYS:-30}"
 PAPERCLIP_LOG_GZIP_AFTER_DAYS="${PAPERCLIP_LOG_GZIP_AFTER_DAYS:-3}"
+WORKTREE_RETENTION_DAYS="${WORKTREE_RETENTION_DAYS:-3}"
 
 usage() {
   cat <<'EOF'
@@ -18,12 +21,15 @@ Usage:
 Environment overrides:
   RUNNER_ROOT
   REPO_ROOT
+  HEARTBEAT_REPO_ROOT
+  EXECUTION_WORKTREE_ROOT
   PAPERCLIP_HOME
   MIN_FREE_GB
   TEMP_RETENTION_DAYS
   RUNNER_LOG_RETENTION_DAYS
   PAPERCLIP_LOG_RETENTION_DAYS
   PAPERCLIP_LOG_GZIP_AFTER_DAYS
+  WORKTREE_RETENTION_DAYS
 EOF
 }
 
@@ -53,6 +59,16 @@ cleanup_runner_temp() {
 cleanup_git_worktrees() {
   if [[ -d "${REPO_ROOT}/.git" ]]; then
     git -C "${REPO_ROOT}" worktree prune --verbose || true
+  fi
+
+  if [[ -d "${HEARTBEAT_REPO_ROOT}/.git" ]]; then
+    git -C "${HEARTBEAT_REPO_ROOT}" fetch origin --prune || true
+    git -C "${HEARTBEAT_REPO_ROOT}" reset --hard origin/main || true
+    git -C "${HEARTBEAT_REPO_ROOT}" clean -fd || true
+  fi
+
+  if [[ -d "${EXECUTION_WORKTREE_ROOT}" ]]; then
+    find "${EXECUTION_WORKTREE_ROOT}" -mindepth 1 -maxdepth 1 -type d -mtime +"${WORKTREE_RETENTION_DAYS}" -exec rm -rf {} +
   fi
 }
 

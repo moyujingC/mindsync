@@ -55,6 +55,16 @@ async function main() {
       unblockOwner: getOption(options, "unblock-owner", null),
       phase: getOption(options, "phase", null),
       summary,
+      executionAdapter: getOption(
+        options,
+        "execution-adapter",
+        process.env.PAPERCLIP_EXECUTION_ADAPTER ?? process.env.PAPERCLIP_ADAPTER ?? null,
+      ),
+      executionHost: getOption(
+        options,
+        "execution-host",
+        process.env.PAPERCLIP_EXECUTION_HOST ?? process.env.HOSTNAME ?? null,
+      ),
       eventTime: getOption(options, "event-time", null),
       executionBaseline: summarizeExecutionBaseline(rawExecutionBaseline, {
         expectedSha: getOption(options, "sha", process.env.GITHUB_SHA ?? null),

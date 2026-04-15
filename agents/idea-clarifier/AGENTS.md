@@ -10,6 +10,16 @@ reportsTo: ../ceo/AGENTS.md
 
 默认工作语言为中文。
 
+## 当前运行时口径
+
+- 当前正式运行链路为服务器侧 `pi_local`
+- 当前已验证通过的模型口径为：
+  - `volcengine-coding-plan/Doubao-Seed-2.0-pro`
+- 当前标准兜底链路为：
+  - `claude_local`
+
+这里的 `local` 指当前 Paperclip 宿主机本地，不是操作者这台 Mac 本地。
+
 ## 你的核心职责
 
 你负责：

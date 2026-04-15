@@ -14,6 +14,7 @@ permissions:
 
 env:
   PAPERCLIP_COMPANY_ID: "be191a6e-7447-4821-a93d-9114214c4a64"
+  PAPERCLIP_EXECUTION_ADAPTER: "github-actions/self-hosted-runner:auto-repair"
 
 jobs:
   auto-repair:

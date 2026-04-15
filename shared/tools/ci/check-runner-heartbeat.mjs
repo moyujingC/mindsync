@@ -166,6 +166,16 @@ async function main() {
   const apiBase = getOption(options, "api-base", process.env.PAPERCLIP_API_BASE ?? "http://127.0.0.1:3100");
   const apiKey = getOption(options, "api-key", process.env.PAPERCLIP_API_KEY ?? null);
   const ownerAgentId = getOption(options, "owner-agent-id", process.env.PAPERCLIP_ENGINEER_AGENT_ID ?? null);
+  const executionAdapter = getOption(
+    options,
+    "execution-adapter",
+    process.env.PAPERCLIP_EXECUTION_ADAPTER ?? "github-actions/self-hosted-runner:runner-heartbeat",
+  );
+  const executionHost = getOption(
+    options,
+    "execution-host",
+    process.env.PAPERCLIP_EXECUTION_HOST ?? process.env.HOSTNAME ?? null,
+  );
   const softFail = truthy(getOption(options, "soft-fail", "1"));
   const mode = getOption(options, "mode", "sync");
   const printJson = truthy(getOption(options, "print-json", mode === "doctor" ? "1" : "0"));
@@ -249,6 +259,8 @@ async function main() {
         ,
       unblockOwner: unhealthy ? "运维侧 / 具备 GitHub runner 管理权限的执行方" : null,
       phase: unhealthy ? "runner-heartbeat blocked" : "runner-heartbeat resolved",
+      executionAdapter,
+      executionHost,
       executionBaseline,
       summary: JSON.stringify(diagnosis, null, 2),
     });

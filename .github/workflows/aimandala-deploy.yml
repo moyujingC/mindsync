@@ -149,6 +149,7 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:deploy" \
             --kind "deploy-or-smoke-failure" \
             --workflow "deploy" \
             --repository "${{ github.repository }}" \
@@ -286,6 +287,7 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:deploy" \
             --kind "deploy-or-smoke-failure" \
             --workflow "deploy" \
             --repository "${{ github.repository }}" \

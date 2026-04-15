@@ -82,8 +82,8 @@
 任何 Agent 第一次进入 `研究中心` 项目时，默认优先读取以下材料：
 
 1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
-2. [2026-04-04-研究方向与任务模型.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-04-研究方向与任务模型.md)
-3. [2026-04-08-研究入库连续产出运行方案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-08-研究入库连续产出运行方案.md)
+2. [研究方向与任务模型.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/研究方向与任务模型.md)
+3. [研究入库连续产出运行方案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/研究入库连续产出运行方案.md)
 4. [2026-04-08-本周研究执行清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-08-本周研究执行清单.md)
 5. 对应项目工作区入口：[projects/research-center/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md)
 6. [agents/research-knowledge-lead/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/research-knowledge-lead/AGENTS.md)

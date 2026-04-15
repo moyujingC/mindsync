@@ -120,9 +120,12 @@ node /Users/xinran/Downloads/dev/mindsync/shared/tools/ci/check-runner-heartbeat
 需要人工深挖时，统一先跑：
 
 ```bash
-GITHUB_REPOSITORY=moyujingC/mindsync \
-GITHUB_TOKEN=<token> \
-bash /Users/xinran/Downloads/dev/mindsync/shared/tools/ci/runner-doctor.sh --strict
+sudo bash -lc '
+  cd /opt/automation/app/mindsync &&
+  bash shared/tools/ci/runner-doctor.sh \
+    --env-file /etc/default/paperclip-heartbeat \
+    --strict
+'
 ```
 
 `runner-doctor.sh` 会同时输出：
@@ -138,6 +141,10 @@ bash /Users/xinran/Downloads/dev/mindsync/shared/tools/ci/runner-doctor.sh --str
 - 每 15 分钟一次
 
 注意：
+
+- `paperclip-heartbeat.service` 当前通过 `/etc/default/paperclip-heartbeat` 注入 `GITHUB_TOKEN`、`GITHUB_REPOSITORY` 与 Paperclip API 凭证
+- 若人工排障时只加载 `/etc/default/paperclip-automation`，`runner-doctor.sh` 会因为缺少 GitHub 变量直接失败；这不代表 runner 本身异常
+- 若诊断输出出现 `expected commit != head`、`dirty_worktree` 或大量未跟踪文件，应优先按 `workspace_drift` 处理 automation 节点工作区，再决定是否继续追代码层失败
 
 - 这种做法能覆盖大多数“runner 卡住或长期无成功运行”的异常
 - 但不能覆盖整台 `automation` 节点完全宕机

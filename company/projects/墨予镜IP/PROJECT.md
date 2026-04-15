@@ -47,8 +47,9 @@
 
 1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md)
 2. [个人真实信息与表达基线.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/个人真实信息与表达基线.md)
-3. [company/内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
-4. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+3. [个人号内容协作规则.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/个人号内容协作规则.md)
+4. [company/内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
+5. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 
 进入个人号正式写作前，还必须确认：
 

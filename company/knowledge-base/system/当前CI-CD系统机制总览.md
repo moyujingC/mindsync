@@ -113,7 +113,22 @@
 - 已做动作
 - 下一步动作
 - 谁来解除阻塞
+- `adapter / host`
 - `cwd / branch / sha / dirty`
+
+其中：
+
+- `adapter`
+  - 表示哪条服务器端执行链回写了 comment
+  - 对 GitHub Actions 链路，当前固定命名为：
+    - `github-actions/self-hosted-runner:ci`
+    - `github-actions/self-hosted-runner:deploy`
+    - `github-actions/self-hosted-runner:nightly-smoke`
+    - `github-actions/self-hosted-runner:auto-repair`
+    - `github-actions/self-hosted-runner:runner-heartbeat`
+- `host`
+  - 表示真实执行宿主
+  - 当前推荐固定写法：`automation@150.158.9.95`
 
 ### 4.4 基础设施问题和代码问题会被区分
 
