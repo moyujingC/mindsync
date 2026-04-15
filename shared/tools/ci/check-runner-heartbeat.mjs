@@ -88,8 +88,10 @@ async function fetchRunnerDiagnosis({ repository, runnerName, expectedLabels, gi
 
   const runner = (payload.runners ?? []).find((item) => item.name === runnerName) ?? null;
   const labels = runner?.labels?.map((label) => label.name) ?? [];
+  const normalizedLabels = labels.map((label) => label.toLowerCase());
+  const normalizedExpectedLabels = expectedLabels.map((label) => label.toLowerCase());
   const labelsMatch = runner
-    ? expectedLabels.every((label) => labels.includes(label))
+    ? normalizedExpectedLabels.every((label) => normalizedLabels.includes(label))
     : false;
 
   return {
