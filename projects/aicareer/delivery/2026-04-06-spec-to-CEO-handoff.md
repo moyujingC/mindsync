@@ -27,7 +27,7 @@
 
 - 公司侧项目定义：/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md
 - 项目工作区入口：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md
-- MVP 产品 spec 初稿：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-spec.md
+- MVP 产品 spec 初稿：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md
 - 架构 readiness 检查报告：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-06-spec-to-architecture-readiness-check.md
 
 ## 5. 下游任务定义

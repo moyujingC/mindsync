@@ -7,7 +7,7 @@
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-02-mvp-qa-checklist.md
 > 项目：aicareer
 > 阶段：verification
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-spec.md
+> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md
 > reviewers：CEO / Orchestrator, Product Spec Lead, Engineer
 
 ## 1. 目标行为

@@ -7,7 +7,7 @@
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/decisions/ADR-0002-mvp-code-layout.md
 > 项目：aicareer
 > 阶段：architecture
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-architecture.md
+> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP技术方案.md
 
 ## 1. 背景
 

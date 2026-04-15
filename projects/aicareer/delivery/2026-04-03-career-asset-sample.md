@@ -1,9 +1,9 @@
 # Career Asset Sample
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Product Spec Lead
-> last_updated：2026-04-03
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-03-career-asset-sample.md
 > 项目：aicareer
 > 阶段：delivery-sample

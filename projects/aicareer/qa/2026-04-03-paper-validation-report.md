@@ -1,9 +1,9 @@
 # 怀瑾握瑜 MVP 纸面验证报告
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Test / QA
-> last_updated：2026-04-03
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-03-paper-validation-report.md
 > 项目：aicareer
 > 阶段：verification
@@ -27,8 +27,8 @@
 
 验证依据来自：
 
-- [MVP 产品 Spec](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-spec.md)
-- [MVP 技术方案](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-architecture.md)
+- [MVP 产品 Spec](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md)
+- [MVP 技术方案](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP技术方案.md)
 - [MVP 验收与测试清单](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-02-mvp-qa-checklist.md)
 
 ## 2. 总体结论

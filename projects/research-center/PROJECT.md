@@ -26,7 +26,7 @@
 
 1. [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md)
 2. [公司侧项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
-3. [研究方向与任务模型](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-04-研究方向与任务模型.md)
+3. [研究方向与任务模型](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/研究方向与任务模型.md)
 4. [Research & Knowledge Lead 角色说明](/Users/xinran/Downloads/dev/mindsync/agents/research-knowledge-lead/AGENTS.md)
 5. [研究任务模板](/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/研究任务模板.md)
 6. [内容选题研究模板](/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/内容选题研究模板.md)
@@ -98,7 +98,7 @@
 
 ## 5. 当前下一步
 
-1. 严格按 [2026-04-08-研究入库连续产出运行方案](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-08-研究入库连续产出运行方案.md) 跑每周最小闭环。
+1. 严格按 [研究入库连续产出运行方案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/研究入库连续产出运行方案.md) 跑每周最小闭环。
 2. 优先形成“可转给内容侧”的研究上游输入，而不是只停留在综合结论。
 3. 每周至少沉一条正式知识条目或知识候选，避免研究只留在 `research/`。
 4. 继续围绕业务线、内容线和 Agent 方法线维持 `研究 -> 入库 -> handoff` 节奏。
