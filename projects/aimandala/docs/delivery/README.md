@@ -35,6 +35,7 @@
 
 当前窗口默认优先阅读：
 
+- [2026-04-15-min77-frontend-quality-main-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-15-min77-frontend-quality-main-delivery.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md)
 - [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md)
 - [2026-04-13-miniapp-native-gray-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-13-miniapp-native-gray-delivery.md)
@@ -43,6 +44,7 @@
 
 说明：
 
+- `2026-04-15-min77-frontend-quality-main-delivery.md` 记录本轮前端质量最小修复与线上观察口径。
 - `2026-04-14` 与 `2026-04-15 batch E` 组成当前 Web 首发与 miniapp 渐进并入窗口的主交付链。
 - `2026-04-13` 的 miniapp gray / wechatpay live 文档仍可作为当前灰度与回退参考，但更接近专项交付记录，不代表长期默认入口。
 - `2026-04-12-ci-cd-与自动修复交付记录.md` 仍服务当前基础设施主线，因此继续作为当前专项交付入口保留。
