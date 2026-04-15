@@ -81,3 +81,36 @@
 2. miniapp live on 时，真实微信联调或沙箱可走通最小闭环
 3. `Lite / Pro` 价格与购买语义在文档、合同、UI、测试中一致
 4. batch E 可并入 `main`，但默认灰度关闭
+
+## 7. 灰度联调顺序与回退口径
+
+联调固定顺序：
+
+1. 先在后端打开：
+   - `AIMANDALA_MINIAPP_LIVE_ENABLED=1`
+   - `AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED=1`
+   - `AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED=1`
+2. 再在前端 miniapp 预览宿主打开：
+   - `VITE_AIMANDALA_MINIAPP_LIVE_ENABLED=1`
+   - `VITE_AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED=1`
+   - `VITE_AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED=1`
+3. 再补齐微信联调必要配置：
+   - `AIMANDALA_MINIAPP_WECHAT_APP_ID`
+   - `AIMANDALA_MINIAPP_WECHAT_APP_SECRET`
+   - `AIMANDALA_MINIAPP_WECHAT_PAY_MCH_ID`
+   - `AIMANDALA_MINIAPP_WECHAT_PAY_API_V3_KEY`
+4. 按最小闭环执行：
+   - `login`
+   - `session exchange`
+   - `create order`
+   - `requestPayment`
+   - `notify`
+   - `reconcile`
+   - `open report`
+
+失败回退固定为：
+
+1. 先关闭全部 miniapp live 开关
+2. 确认 miniapp runtime 回退到 stub session / stub payment
+3. 确认 Web 主链 `upload -> detect -> report-choice -> report -> history -> reopen` 不受影响
+4. 不通过恢复 `upgrade` 主路径来规避批次 E 问题

@@ -71,6 +71,21 @@ npm --prefix projects/aimandala/toC/app/frontend run build:mobile-web
 2. miniapp live on：微信联调或沙箱最小支付闭环
 3. 历史记录详情页在 Lite-only / Lite+Pro / Pro 处理中三种状态下的表现
 
+联调记录至少写清：
+
+1. 打开的灰度开关与环境变量集合
+2. 使用的是微信开发者工具、真机还是宿主注入联调
+3. `requestPayment` 是真实拉起还是 dry-run
+4. 若失败，失败点位于：
+   - login
+   - session exchange
+   - create order
+   - requestPayment
+   - notify
+   - reconcile
+   - open report
+5. 回退后 `miniapp live off` 的 Web smoke 是否仍通过
+
 ## 5. 当前不在本轮验证范围
 
 1. 分享、裂变、客服

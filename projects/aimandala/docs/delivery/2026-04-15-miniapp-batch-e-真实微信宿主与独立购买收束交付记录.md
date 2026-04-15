@@ -87,3 +87,36 @@
 2. miniapp live runtime 已可联调，但真实微信宿主能力仍缺少本轮人工联调记录，因此不能宣称“已完成线上可用验证”。
 3. 当前前端 dev shell 复用同一宿主承载 miniapp runtime，适合并主干和联调，不等于已经形成独立可发布的小程序工程。
 4. 当前自动化验证证明“默认灰度关闭时不影响 Web 主链”；打开灰度后的真实风险仍需在微信环境中单独确认。
+
+## 7. 联调与回退 runbook
+
+联调前置条件：
+
+1. 后端显式打开：
+   - `AIMANDALA_MINIAPP_LIVE_ENABLED=1`
+   - `AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED=1`
+   - `AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED=1`
+2. 前端显式打开：
+   - `VITE_AIMANDALA_MINIAPP_LIVE_ENABLED=1`
+   - `VITE_AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED=1`
+   - `VITE_AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED=1`
+3. 微信配置齐备：
+   - `AIMANDALA_MINIAPP_WECHAT_APP_ID`
+   - `AIMANDALA_MINIAPP_WECHAT_APP_SECRET`
+   - `AIMANDALA_MINIAPP_WECHAT_PAY_MCH_ID`
+   - `AIMANDALA_MINIAPP_WECHAT_PAY_API_V3_KEY`
+
+联调顺序：
+
+1. 先确认 miniapp runtime 环境标识从“灰度关闭联调”变为“live 联调”
+2. 执行 `login -> session exchange`
+3. 执行 `create order -> requestPayment`
+4. 执行 `notify -> reconcile`
+5. 确认目标报告可打开，且历史记录详情页反映对应版本可查看性
+
+失败回退：
+
+1. 关闭全部 miniapp live / session / pay 开关
+2. 确认 miniapp runtime 回到 stub session / stub payment
+3. 复跑 Web 主链 smoke，确认 Web MVP 不受影响
+4. 在 delivery 中记录失败点和回退结果，不通过恢复 `upgrade` 入口规避问题

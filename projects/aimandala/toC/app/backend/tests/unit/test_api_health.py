@@ -1120,6 +1120,42 @@ def test_create_miniapp_order_endpoint_uses_direct_pro_price_for_existing_lite_r
     assert data["payable_amount"] == 39.0
 
 
+def test_create_miniapp_order_endpoint_defaults_to_stub_payload_when_live_gray_is_off(
+    tmp_path,
+):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-gray-off.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-gray-off",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+            "open_id": "wx-gray-off-open-1",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["payable_amount"] == 39.0
+    assert data["wechat_pay_payload"]["mode"] == "stub"
+    assert data["wechat_pay_payload"]["next_action"] == "reconcile_after_host_payment"
+
+
 def test_create_miniapp_order_endpoint_returns_wechatpay_payload_when_gray_enabled(
     tmp_path,
     monkeypatch,

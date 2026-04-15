@@ -73,6 +73,22 @@
 4. 只支持微信小程序宿主
 5. `PROJECT.md`、README、task / qa / delivery 已明确记录“已并主干、默认 off”
 
+当前灰度与回退约束固定为：
+
+1. 后端 live 开关：
+   - `AIMANDALA_MINIAPP_LIVE_ENABLED`
+   - `AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED`
+   - `AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED`
+2. 前端 miniapp runtime 开关：
+   - `VITE_AIMANDALA_MINIAPP_LIVE_ENABLED`
+   - `VITE_AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED`
+   - `VITE_AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED`
+3. 任一环境未明确打开上述开关时，miniapp runtime 默认只允许：
+   - session fallback
+   - stub payment payload
+   - 不触达真实微信 session / requestPayment
+4. 出现联调异常时，标准回退动作是把上述开关全部关闭，而不是回滚 Web 主链代码或重新打开 `upgrade` 购买语义
+
 ## 6. 当前结论
 
 批次 E 的产品收束结论固定为：
