@@ -725,6 +725,15 @@ class KnowledgeWorkbench:
     def _resolve_path(self, raw_path: Any) -> Path:
         path = Path(str(raw_path))
         if path.is_absolute():
+            if path.exists():
+                return path
+            parts = path.parts
+            project_anchor = ("projects", "aimandala")
+            for index in range(len(parts) - 1):
+                if tuple(parts[index : index + 2]) == project_anchor:
+                    remapped = (self.project_root / Path(*parts[index + 2 :])).resolve()
+                    if remapped.exists():
+                        return remapped
             return path
         return (self.project_root / path).resolve()
 
