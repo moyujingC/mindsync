@@ -1,0 +1,28 @@
+.runtime-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f6f0e8 0%, #f1e6d6 100%);
+}
+
+.runtime-page__state {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20rpx;
+  padding: 64rpx 48rpx;
+  color: #2f2620;
+}
+
+.runtime-page__state--error {
+  color: #7a3023;
+}
+
+.runtime-page__title {
+  font-size: 40rpx;
+  font-weight: 600;
+}
+
+.runtime-page__copy {
+  font-size: 28rpx;
+  line-height: 1.6;
+}

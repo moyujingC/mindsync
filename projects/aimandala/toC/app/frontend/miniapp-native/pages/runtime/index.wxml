@@ -1,0 +1,17 @@
+<view class="runtime-page">
+  <view wx:if="{{booting}}" class="runtime-page__state">
+    <text class="runtime-page__title">正在恢复微信会话</text>
+    <text class="runtime-page__copy">准备接入一镜一梳 miniapp runtime…</text>
+  </view>
+
+  <view wx:elif="{{errorMessage}}" class="runtime-page__state runtime-page__state--error">
+    <text class="runtime-page__title">小程序壳初始化失败</text>
+    <text class="runtime-page__copy">{{errorMessage}}</text>
+  </view>
+
+  <web-view
+    wx:else
+    src="{{runtimeSrc}}"
+    bindmessage="handleRuntimeMessage"
+  />
+</view>

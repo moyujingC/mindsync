@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/runtime/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "一镜一梳",
+    "navigationBarBackgroundColor": "#f6f0e8",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f6f0e8"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
