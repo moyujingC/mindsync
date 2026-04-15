@@ -41,18 +41,24 @@
 
 ## 3. 当前已存在但尚未迁目录的架构文档
 
-当前 `aimandala` 其实已经有正式架构内容，只是历史上放在 `specs/` 里。
+当前 `aimandala` 其实已经有正式架构内容，现已开始收口到本目录。
+
+总览入口：
+
+- [架构总览.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/架构总览.md)
 
 优先阅读：
 
-1. [../specs/2026-04-04-toc-mvp-architecture.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-architecture.md)
-2. [../specs/2026-04-11-报告生成分层与信息流说明.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-11-报告生成分层与信息流说明.md)
-3. [../specs/2026-04-10-V2知识库长期架构方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-10-V2知识库长期架构方案.md)
-4. [../decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md)
+1. [ToC-MVP-技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
+2. [报告生成分层与信息流说明.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/报告生成分层与信息流说明.md)
+3. [V2知识库长期架构方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/V2知识库长期架构方案.md)
+4. [CI-CD与自动修复架构.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/CI-CD与自动修复架构.md)
+5. [Paperclip-Automation-节点方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/Paperclip-Automation-节点方案.md)
+6. [../decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md)
 
 ## 4. 当前建议的架构阅读顺序
 
-1. 先看 `toc-mvp-architecture`
+1. 先看 `ToC-MVP-技术方案`
    - 建立主系统边界
 2. 再看 `报告生成分层与信息流说明`
    - 理解主链信息如何流转

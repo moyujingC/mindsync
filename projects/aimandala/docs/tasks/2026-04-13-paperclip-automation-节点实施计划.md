@@ -7,7 +7,7 @@
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-13-paperclip-automation-节点实施计划.md
 > 项目：aimandala
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-13-paperclip-automation-节点方案.md
+> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/Paperclip-Automation-节点方案.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 本轮目标

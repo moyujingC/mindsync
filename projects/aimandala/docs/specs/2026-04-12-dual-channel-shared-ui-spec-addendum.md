@@ -7,7 +7,7 @@
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-12-dual-channel-shared-ui-spec-addendum.md
 > 项目：aimandala
 > 阶段：spec
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-architecture.md
+> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 ## 1. 当前目标

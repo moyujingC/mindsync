@@ -7,7 +7,7 @@
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-first-pass-verification.md
 > 项目：aimandala
 > 阶段：verification
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-architecture.md
+> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md
 > reviewers：CEO / Orchestrator, Product Spec Lead, Engineer, Test / QA
 
 ## 1. 验收日期与方式
@@ -18,8 +18,8 @@
 
 ## 2. 本轮使用依据
 
-- spec：`2026-04-04-toc-mvp-spec.md`
-- architecture：`2026-04-04-toc-mvp-architecture.md`
+- spec：`ToC-MVP-产品规范.md`
+- architecture：`ToC-MVP-技术方案.md`
 - qa checklist：`2026-04-04-toc-mvp-qa-checklist.md`
 - 本轮整改交付：`2026-04-08-architecture-remediation-delivery.md`
 

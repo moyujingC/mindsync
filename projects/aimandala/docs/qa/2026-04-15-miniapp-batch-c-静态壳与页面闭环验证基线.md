@@ -1,6 +1,6 @@
 # AI Mandala 批次 C Miniapp 静态壳与页面闭环验证基线
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-15

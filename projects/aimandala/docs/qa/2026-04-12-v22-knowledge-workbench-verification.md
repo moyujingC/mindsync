@@ -1,9 +1,9 @@
 # 一镜一梳 v2.2 knowledge workbench 验证记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Test / QA
-> last_updated：2026-04-12
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-v22-knowledge-workbench-verification.md
 > 项目：aimandala
 > 阶段：verification

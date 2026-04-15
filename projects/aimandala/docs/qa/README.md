@@ -6,7 +6,32 @@
 
 - 验证新的 `上传 -> 三圈识别 -> Lite / Pro 选择 -> loading -> 结果页` 主链路是否成立
 
-## 当前默认入口
+这个目录天然也会保留很多带日期文件，因为验证材料需要保留证据链；
+但按治理规则，只有当前正式验收基线才应长期保留 `current`。
+
+## 放什么
+
+- QA baseline
+- 验证记录
+- 纸面验证与样本验证
+- smoke、专项验证、回归检查
+
+## 不放什么
+
+- 长期产品范围定义
+- 长期技术方案
+- 交付总结
+- 当前唯一执行计划
+
+## 当前 canonical 文档
+
+进入本目录前，先对齐这些长期入口：
+
+- [ToC-MVP-产品规范.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md)
+- [ToC-MVP-技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
+- [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
+
+## 当前阶段性文档
 
 当前默认优先区分两类文档：
 
@@ -15,117 +40,38 @@
 - `verification record`
   - 记录某一轮已经执行过的自动化、smoke 和人工验收结果
 
-## 当前阅读顺序
+当前优先阅读：
 
-建议按下面顺序阅读：
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
+- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md)
+- [2026-04-13-miniapp-native-gray-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-miniapp-native-gray-verification.md)
+- [2026-04-13-miniapp-wechatpay-live-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-miniapp-wechatpay-live-verification.md)
+- [2026-04-12-ci-cd-验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-ci-cd-验证记录.md)
 
-1. `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md`
-2. `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md`
-3. `2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md`
-4. `2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md`
-5. `2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md`
-6. `2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md`
-7. `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md`
-8. `2026-04-13-miniapp-native-gray-verification.md`
-9. `2026-04-13-miniapp-wechatpay-live-verification.md`
-10. `2026-04-12-迁移收官与正式版收口验证记录.md`
-11. `2026-04-12-v22-knowledge-workbench-verification.md`
-12. `2026-04-12-ci-cd-验证记录.md`
-13. `2026-04-13-paperclip-automation-节点验证记录.md`
+说明：
 
-`2026-04-08-toc-mvp-first-pass-verification.md` 与 `2026-04-08-toc-mvp-sample-validation.md` 仍可用于追溯早期验证背景，但默认不再作为当前首轮入口。
+- `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md` 仍是当前 Web 首发窗口的正式 QA baseline。
+- `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md` 是与之配套的当前验证总入口。
+- `2026-04-15 batch E` 和 `2026-04-13` gray 系列主要服务 miniapp 渐进并入，不取代 Web 默认质量门。
 
-其中：
+## 历史资料入口
 
-- `2026-04-14` 与 `2026-04-15 batch E` 仍是 Web 首发与 miniapp live-ready 的当前正式质量门入口
-- `2026-04-13` gray 系列已并主干、默认灰度关闭；当前只作为 miniapp native gray 联调与回退参考，不作为 Web 默认放行门
+以下文档主要用于追溯背景，不再作为当前首轮入口：
 
-## 各文档作用
+- [2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md)
+- [2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md)
+- [2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md)
+- [2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md)
+- [2026-04-12-迁移收官与正式版收口验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-迁移收官与正式版收口验证记录.md)
+- [2026-04-12-v22-knowledge-workbench-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-v22-knowledge-workbench-verification.md)
+- [2026-04-13-paperclip-automation-节点验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-paperclip-automation-节点验证记录.md)
+- [2026-04-04-toc-mvp-qa-checklist.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md)
+- [2026-04-08-toc-mvp-first-pass-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-first-pass-verification.md)
+- [2026-04-08-toc-mvp-sample-validation.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-sample-validation.md)
 
-### `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md`
+## 默认阅读顺序
 
-本轮 `qa basis`。
-
-适合确认：
-
-- 当前公开首发质量门
-- 小程序渐进并入的批次验证口径
-- 本轮 artifact 治理检查项
-
-### `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md`
-
-本轮当前 `verification record`。
-
-适合确认：
-
-- 当前自动化质量门是否已经通过
-- `dev / prod smoke` 和 `prod` 深烟测是否已经落盘
-- 手机端人工主路径验收还缺什么、应如何执行
-
-### `2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md`
-
-批次 A 审计验证记录。
-
-适合确认：
-
-- `main` 与小程序 worktree 在 shared foundation 上是否已大体对齐
-- 当前 shared boundary 是否已经包含后续批次语义
-- 为什么当前不需要再做一笔“批次 A 重复摘入”提交
-
-### `2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md`
-
-批次 B 当前验证基线。
-
-适合确认：
-
-- 报告读取接口是否已强制显式 report type
-- history / reopen 是否已切到 detail -> report 模型
-- 新解读主链路是否仍保持当前产品语义
-
-### `2026-04-12-迁移收官与正式版收口验证记录.md`
-
-当前正式主链收口的专项验证记录。
-
-适合确认：
-
-- 新生成 Lite / Pro 是否已走正式主链
-- structured schema、upload contract、部署口径是否真正收口
-- 本地验证与线上 smoke check 到了什么程度
-
-### `2026-04-12-v22-knowledge-workbench-verification.md`
-
-`v2.2 knowledge workbench` 的专项验证记录。
-
-适合确认：
-
-- 本地 debug workbench 是否真的可运行
-- `report-debug` 的 insight / evidence / fallback 摘要是否可读
-- 当前 build eval 是否仍维持在可接受风险内
-
-### `2026-04-12-ci-cd-验证记录.md`
-
-CI/CD、nightly smoke 与自动修复基础设施验证记录。
-
-适合确认：
-
-- 当前 smoke 脚本与 workflow 的实际验证口径
-- deploy / smoke / auto-repair 的基础闭环是否成立
-
-### `2026-04-04-toc-mvp-qa-checklist.md`
-
-主清单文件。
-
-适合确认：
-
-- 当前主链路的标准验证步骤
-- 价格、跳转、结果页是否与 spec 一致
-- 异常与回退状态是否被覆盖
-
-## 当前验证重点
-
-- 不再按“先 Lite 再 Pro”的旧链路验证
-- 重点验证用户主动选择 `Lite / Pro` 的新链路
-- `Lite = 9.9`，`Pro = 39`
-- loading 页只承接等待，不承担再次分流
-- 结果页 CTA 只写 MVP 当前能走通的动作
-- 当前公开首发前，优先关注 `fallback / smoke / 主路径人工验收`
+1. 先看当前 QA baseline，确认质量门。
+2. 再看与之配套的验证记录，确认实际执行结果。
+3. 最后按专项主题回看历史验证链。

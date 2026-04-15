@@ -1,9 +1,9 @@
 # 一镜一梳 To C 双端共享 UI 统一身份前端契约交付记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-04-12
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-12-dual-channel-shared-ui-identity-session-delivery.md
 > 项目：aimandala
 > 阶段：delivery

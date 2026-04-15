@@ -39,9 +39,10 @@
 
 ## 3. 当前重点入口
 
-1. [本地联调手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/本地联调手册.md)
-2. [../tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-3. [../tasks/aimandala-pr-质量门-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
+1. [开发与联调总入口.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/开发与联调总入口.md)
+2. [本地联调手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/本地联调手册.md)
+3. [../tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+4. [../tasks/aimandala-pr-质量门-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
 
 ## 4. 当前治理判断
 

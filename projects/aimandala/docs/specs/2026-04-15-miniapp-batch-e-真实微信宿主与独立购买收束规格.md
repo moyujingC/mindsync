@@ -7,7 +7,7 @@
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束规格.md
 > 项目：aimandala
 > 阶段：spec
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-08-Lite与Pro选择后支付与跳转规则.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-15-miniapp-batch-d-api-contract-stub-only-实施计划.md
+> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-08-Lite与Pro选择后支付与跳转规则.md, /Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-15-miniapp-batch-d-api-contract-stub-only-实施计划.md
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 ## 1. 目标

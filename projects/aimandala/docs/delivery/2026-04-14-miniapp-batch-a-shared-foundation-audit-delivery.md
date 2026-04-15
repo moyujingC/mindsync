@@ -1,9 +1,9 @@
 # AI Mandala 小程序渐进并入批次 A 共享基础层审计交付记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-04-14
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-miniapp-batch-a-shared-foundation-audit-delivery.md
 > 项目：aimandala
 > 阶段：delivery
