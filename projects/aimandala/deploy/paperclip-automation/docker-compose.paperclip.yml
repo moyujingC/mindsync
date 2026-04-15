@@ -6,7 +6,7 @@ services:
       args:
         USER_UID: "${USER_UID:-1000}"
         USER_GID: "${USER_GID:-1000}"
-        HERMES_AGENT_VERSION: "${HERMES_AGENT_VERSION:-0.9.0}"
+        HERMES_GIT_REF: "${HERMES_GIT_REF:-v2026.4.13}"
         HTTP_PROXY: "${HTTP_PROXY:-}"
         HTTPS_PROXY: "${HTTPS_PROXY:-}"
         NO_PROXY: "${NO_PROXY:-}"

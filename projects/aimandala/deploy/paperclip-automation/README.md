@@ -196,7 +196,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 3. 在该 Dockerfile 的 production stage 中：
    - 安装 `python3-venv`
    - 创建 `/opt/hermes` 虚拟环境
-   - 安装 `hermes-agent==${HERMES_AGENT_VERSION}`
+   - 通过 `git+https://github.com/NousResearch/hermes-agent.git@${HERMES_GIT_REF}` 安装 Hermes 官方源码
    - 链接 `/usr/local/bin/hermes`
 4. compose 不再挂载：
    - `/opt/hermes-agent:/opt/hermes-agent:ro`
@@ -235,6 +235,33 @@ docker exec paperclip-automation-paperclip-1 sh -lc 'python3 - <<\"PY\"\nimport 
 - 一旦容器 Python 主版本不同，整个 venv 就会失效
 
 因此除非后续明确把宿主机与容器改成完全同版本同布局运行时，并重新验证过兼容性，否则不要再把宿主机注入当成默认修复手段。
+
+## 4.2.2 Hermes 来源口径
+
+当前 Hermes 不应被理解为“稳定发布在 PyPI 的 `hermes-agent==0.9.0` 包”。
+
+本次线上复核已确认：
+
+- 宿主机现有可用环境实际是 `hermes-agent @ file:///tmp/hermes-agent`
+- 该目录内容对应 `NousResearch/hermes-agent`
+- 官方仓库存在可用 tag，例如 `v2026.4.13`
+
+因此当前更稳的容器构建口径是：
+
+1. 不依赖宿主机临时目录 `/tmp/hermes-agent`
+2. 不假设存在可安装的 PyPI 发行包
+3. 直接在 Docker build 中按固定 Git ref 安装官方 Hermes 源码
+
+当前 compose 默认值：
+
+- `HERMES_GIT_REF=v2026.4.13`
+
+如果后续要升级 Hermes，应优先改这个 ref，并重新执行：
+
+```bash
+docker compose -f docker-compose.paperclip.yml build --no-cache paperclip
+docker compose -f docker-compose.paperclip.yml up -d paperclip
+```
 
 ## 4.1 `pi_local` 额外要求
 
