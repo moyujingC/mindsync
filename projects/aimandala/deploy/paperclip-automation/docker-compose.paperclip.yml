@@ -1,0 +1,48 @@
+services:
+  paperclip:
+    build:
+      context: /opt/paperclip/app/paperclip
+      dockerfile: Dockerfile
+      args:
+        USER_UID: "${USER_UID:-1000}"
+        USER_GID: "${USER_GID:-1000}"
+        HTTP_PROXY: "${HTTP_PROXY:-}"
+        HTTPS_PROXY: "${HTTPS_PROXY:-}"
+        NO_PROXY: "${NO_PROXY:-}"
+        http_proxy: "${http_proxy:-}"
+        https_proxy: "${https_proxy:-}"
+        no_proxy: "${no_proxy:-}"
+    ports:
+      - "${PAPERCLIP_PORT:-3100}:3100"
+    environment:
+      TZ: "${TZ:-Asia/Shanghai}"
+      HOST: "0.0.0.0"
+      PAPERCLIP_HOME: "/paperclip"
+      PATH: "/opt/hermes-agent/venv/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin"
+      PAPERCLIP_BIND: "${PAPERCLIP_BIND:-tailnet}"
+      PAPERCLIP_TAILNET_BIND_HOST: "${PAPERCLIP_TAILNET_BIND_HOST:-}"
+      PAPERCLIP_DEPLOYMENT_MODE: "authenticated"
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: "private"
+      PAPERCLIP_PUBLIC_URL: "${PAPERCLIP_PUBLIC_URL:?PAPERCLIP_PUBLIC_URL must be set}"
+      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      OPENAI_BASE_URL: "${OPENAI_BASE_URL:-}"
+      OPENAI_MODEL: "${OPENAI_MODEL:-}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      HTTP_PROXY: "${HTTP_PROXY:-}"
+      HTTPS_PROXY: "${HTTPS_PROXY:-}"
+      NO_PROXY: "${NO_PROXY:-}"
+      http_proxy: "${http_proxy:-}"
+      https_proxy: "${https_proxy:-}"
+      no_proxy: "${no_proxy:-}"
+      PAPERCLIP_HEARTBEAT_REPO: "${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}"
+      PAPERCLIP_EXECUTION_WORKTREE_ROOT: "${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
+      PAPERCLIP_EXECUTION_HOST: "${PAPERCLIP_EXECUTION_HOST:-automation@150.158.9.95}"
+    volumes:
+      - "${PAPERCLIP_DATA_DIR:-/data/paperclip}:/paperclip"
+      - "${MINDSYNC_REPO:-/opt/automation/app/mindsync}:${MINDSYNC_REPO:-/opt/automation/app/mindsync}"
+      - "${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}:${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}"
+      - "${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}:${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
+      - "/opt/hermes-agent:/opt/hermes-agent:ro"
+      - "/opt/hermes-agent/venv/bin/hermes:/usr/local/bin/hermes:ro"
+    restart: unless-stopped
