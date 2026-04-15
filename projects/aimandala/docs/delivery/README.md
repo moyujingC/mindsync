@@ -21,9 +21,16 @@
 - `2026-04-15-miniapp-batch-c-静态壳与页面闭环交付记录.md`
 - `2026-04-15-miniapp-batch-d-api-contract-stub-only-交付记录.md`
 - `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md`
+- `2026-04-13-miniapp-native-gray-delivery.md`
+- `2026-04-13-miniapp-wechatpay-live-delivery.md`
 - `2026-04-12-迁移收官与正式版收口交付记录.md`
 - `2026-04-12-v22-knowledge-workbench-delivery.md`
 - `2026-04-12-ci-cd-与自动修复交付记录.md`
+
+说明：
+
+- `2026-04-14` 与 `2026-04-15 batch E` 仍是 Web 首发与 miniapp live-ready 的当前正式交付入口
+- `2026-04-13` gray 系列已并入 `main`，但默认灰度关闭；当前只用于记录 miniapp native gray 联调与回退口径
 
 当前已沉淀：
 
@@ -33,6 +40,10 @@
 - `2026-04-15-miniapp-batch-c-静态壳与页面闭环交付记录.md`
 - `2026-04-15-miniapp-batch-d-api-contract-stub-only-交付记录.md`
 - `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md`
+- `2026-04-13-miniapp-gray-cancel-chain-record.md`
+- `2026-04-13-miniapp-gray-success-chain-record.md`
+- `2026-04-13-miniapp-native-gray-delivery.md`
+- `2026-04-13-miniapp-wechatpay-live-delivery.md`
 - `2026-04-04-frontend-baseline-delivery.md`
 - `2026-04-04-mobile-web-interaction-baseline.md`
 - `2026-04-04-report-content-iteration-guide.md`

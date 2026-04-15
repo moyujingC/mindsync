@@ -26,12 +26,19 @@
 5. `2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md`
 6. `2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md`
 7. `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md`
-8. `2026-04-12-迁移收官与正式版收口验证记录.md`
-9. `2026-04-12-v22-knowledge-workbench-verification.md`
-10. `2026-04-12-ci-cd-验证记录.md`
-11. `2026-04-13-paperclip-automation-节点验证记录.md`
+8. `2026-04-13-miniapp-native-gray-verification.md`
+9. `2026-04-13-miniapp-wechatpay-live-verification.md`
+10. `2026-04-12-迁移收官与正式版收口验证记录.md`
+11. `2026-04-12-v22-knowledge-workbench-verification.md`
+12. `2026-04-12-ci-cd-验证记录.md`
+13. `2026-04-13-paperclip-automation-节点验证记录.md`
 
 `2026-04-08-toc-mvp-first-pass-verification.md` 与 `2026-04-08-toc-mvp-sample-validation.md` 仍可用于追溯早期验证背景，但默认不再作为当前首轮入口。
+
+其中：
+
+- `2026-04-14` 与 `2026-04-15 batch E` 仍是 Web 首发与 miniapp live-ready 的当前正式质量门入口
+- `2026-04-13` gray 系列已并主干、默认灰度关闭；当前只作为 miniapp native gray 联调与回退参考，不作为 Web 默认放行门
 
 ## 各文档作用
 

@@ -62,6 +62,13 @@
 2. miniapp live 相关能力必须在明确环境下打开，不作为当前 Web MVP 放行阻塞项
 3. 当前只支持微信小程序宿主，不支持多宿主抽象
 
+截至 `2026-04-15` 的当前状态补充：
+
+1. batch E 主线能力已实际并入 `main`
+2. `miniapp-native` 灰度壳、灰度配置样例与 `2026-04-13` gray 文档链也已摘入 `main`
+3. 这些能力当前都按“已并主干、默认灰度关闭”处理，不代表小程序已正式上线
+4. 后续继续开发与分批摘入时，Aimandala 只保留 `codex/aimandala-dual-channel-ui` 作为并行来源分支
+
 ## 5. 自动化结果
 
 已通过：
@@ -120,3 +127,8 @@
 2. 确认 miniapp runtime 回到 stub session / stub payment
 3. 复跑 Web 主链 smoke，确认 Web MVP 不受影响
 4. 在 delivery 中记录失败点和回退结果，不通过恢复 `upgrade` 入口规避问题
+
+补充纪律：
+
+1. 若后续继续做真实微信联调，应直接沿本交付记录与 batch E `task / qa / delivery` 链回写
+2. 不再为同一条 miniapp live-ready 主线重开第二套平级总线计划

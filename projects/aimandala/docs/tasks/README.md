@@ -15,10 +15,17 @@
 
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
 - `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md`
+- `2026-04-13-miniapp-gray-checklist.md`
+- `2026-04-13-miniapp-gray-config-manifest.md`
 - `2026-04-13-paperclip-automation-节点实施计划.md`
 - `2026-04-12-ci-cd-实施计划.md`
 - `2026-04-12-v22-knowledge-workbench-execution-plan.md`
 - `2026-04-10-服务器部署与运维手册.md`
+
+说明：
+
+- `2026-04-14` 与 `2026-04-15 batch E` 仍是 Web 首发与 miniapp live-ready 的正式主入口
+- `2026-04-13` 系列已并入 `main`，但默认灰度关闭；当前只作为 miniapp native gray 联调参考，不作为 Web 默认放行门
 
 当前已沉淀：
 
@@ -28,6 +35,10 @@
 - `2026-04-15-miniapp-batch-c-静态壳与页面闭环实施计划.md`
 - `2026-04-15-miniapp-batch-d-api-contract-stub-only-实施计划.md`
 - `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md`
+- `2026-04-13-miniapp-gray-checklist.md`
+- `2026-04-13-miniapp-gray-config-manifest.md`
+- `2026-04-13-miniapp-native-gray-execution-plan.md`
+- `2026-04-13-miniapp-wechatpay-live-execution-plan.md`
 - `2026-04-04-首批迁移清单.md`
 - `2026-04-04-迁移剩余主功能清单.md`
 - `2026-04-05-ui-restart-plan.md`
