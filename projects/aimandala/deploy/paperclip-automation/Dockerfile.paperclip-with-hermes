@@ -60,8 +60,8 @@ RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/cod
   && python3 -m venv /opt/hermes \
   && /opt/hermes/bin/python -m pip install --no-cache-dir --upgrade pip \
   && /opt/hermes/bin/python -m pip install --no-cache-dir "git+https://github.com/NousResearch/hermes-agent.git@${HERMES_GIT_REF}" \
-  && sed -i '1s|^#!.*python3$|#!/opt/hermes/bin/python|' /opt/hermes/bin/hermes \
-  && ln -sf /opt/hermes/bin/hermes /usr/local/bin/hermes \
+  && printf '%s\n' '#!/bin/sh' 'exec /opt/hermes/bin/python -m hermes_cli.main "$@"' > /usr/local/bin/hermes \
+  && chmod +x /usr/local/bin/hermes \
   && mkdir -p /paperclip \
   && chown -R node:node /paperclip /opt/hermes
 
