@@ -61,7 +61,8 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          actionlint .github/workflows/aimandala-*.yml 2>&1 | tee "$RUNNER_TEMP/actionlint.log"
+          actionlint -config-file .github/actionlint.yaml \
+            .github/workflows/aimandala-*.yml 2>&1 | tee "$RUNNER_TEMP/actionlint.log"
 
       - name: Resolve Workflow Result
         id: workflow_result
@@ -78,13 +79,13 @@ jobs:
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Verify actionlint Availability"
-            REPRO_COMMAND="actionlint .github/workflows/aimandala-*.yml"
+            REPRO_COMMAND="actionlint -config-file .github/actionlint.yaml .github/workflows/aimandala-*.yml"
             SUMMARY_FILE="$RUNNER_TEMP/actionlint-availability.log"
           elif [[ "${{ steps.actionlint_run.outcome }}" != "success" ]]; then
             FAILED=1
             KIND="lint-failure"
             FAILED_STEP="Run actionlint"
-            REPRO_COMMAND="actionlint .github/workflows/aimandala-*.yml"
+            REPRO_COMMAND="actionlint -config-file .github/actionlint.yaml .github/workflows/aimandala-*.yml"
             SUMMARY_FILE="$RUNNER_TEMP/actionlint.log"
           fi
 
@@ -102,6 +103,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          PAPERCLIP_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
           SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           if [[ "${{ steps.workflow_result.outputs.failed }}" == "1" ]]; then
@@ -111,10 +113,11 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:ci" \
             --kind "${{ steps.workflow_result.outputs.kind }}" \
             --workflow "ci" \
             --repository "${{ github.repository }}" \
-            --branch "${{ github.head_ref || github.ref_name }}" \
+            --branch "$PAPERCLIP_BRANCH" \
             --job "workflow-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
@@ -271,6 +274,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          PAPERCLIP_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
           SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           if [[ "${{ steps.frontend_result.outputs.failed }}" == "1" ]]; then
@@ -280,10 +284,11 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:ci" \
             --kind "${{ steps.frontend_result.outputs.kind }}" \
             --workflow "ci" \
             --repository "${{ github.repository }}" \
-            --branch "${{ github.head_ref || github.ref_name }}" \
+            --branch "$PAPERCLIP_BRANCH" \
             --job "frontend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
@@ -398,6 +403,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          PAPERCLIP_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
           SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           if [[ "${{ steps.backend_result.outputs.failed }}" == "1" ]]; then
@@ -407,10 +413,11 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:ci" \
             --kind "${{ steps.backend_result.outputs.kind }}" \
             --workflow "ci" \
             --repository "${{ github.repository }}" \
-            --branch "${{ github.head_ref || github.ref_name }}" \
+            --branch "$PAPERCLIP_BRANCH" \
             --job "backend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
@@ -520,6 +527,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          PAPERCLIP_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
           SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           if [[ "${{ steps.knowledge_result.outputs.failed }}" == "1" ]]; then
@@ -529,10 +537,11 @@ jobs:
             --soft-fail \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:ci" \
             --kind "${{ steps.knowledge_result.outputs.kind }}" \
             --workflow "ci" \
             --repository "${{ github.repository }}" \
-            --branch "${{ github.head_ref || github.ref_name }}" \
+            --branch "$PAPERCLIP_BRANCH" \
             --job "knowledge-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
@@ -579,6 +588,7 @@ jobs:
           PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
         run: |
           set -euo pipefail
+          PAPERCLIP_BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
           SYNC_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           RESULT="resolved"
           FAILED_JOBS=()
@@ -619,9 +629,10 @@ jobs:
             --mode commit-summary \
             --company-id "$PAPERCLIP_COMPANY_ID" \
             --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:ci" \
             --workflow "ci" \
             --repository "${{ github.repository }}" \
-            --branch "${{ github.head_ref || github.ref_name }}" \
+            --branch "$PAPERCLIP_BRANCH" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
