@@ -62,11 +62,11 @@ def test_generation_stage_values():
 
 
 def test_pricing_snapshot_to_dict():
-    snapshot = PricingSnapshot(lite=9.9, pro=49.0, upgrade_diff=39.1)
+    snapshot = PricingSnapshot(lite=9.9, pro=39.0, upgrade_diff=39.1)
 
     assert snapshot.to_dict() == {
         "lite": 9.9,
-        "pro": 49.0,
+        "pro": 39.0,
         "upgrade_diff": 39.1,
     }
 
@@ -82,7 +82,7 @@ def test_layered_orchestrator_exposes_fixed_pricing(tmp_path):
 
     pricing = LayeredOrchestrator.get_pricing()
     assert pricing.lite == 9.9
-    assert pricing.pro == 49.0
+    assert pricing.pro == 39.0
     assert pricing.upgrade_diff == 39.1
 
 

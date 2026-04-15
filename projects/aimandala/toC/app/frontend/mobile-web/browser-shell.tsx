@@ -10,10 +10,7 @@ import {
   mobileWebDevFixturePresets,
 } from "./dev-fixtures";
 import {
-  openMobileWebUpgradeEntry,
-  pollMobileWebProReportUntilReady,
   pollMobileWebReportUntilReady,
-  refreshMobileWebProReport,
   refreshMobileWebReport,
   runMobileWebLiteFlow,
 } from "./controller";
@@ -445,8 +442,8 @@ export function MobileWebBrowserShell() {
 
     const taskStarting =
       route === "loading" &&
-      ["idle", "liteReady", "upgradePlaceholder", "error"].includes(lastStep) &&
-      ["detectingCircles", "liteGenerating", "liteReady", "upgradePlaceholder"].includes(currentStep);
+      ["idle", "liteReady", "proReady", "error"].includes(lastStep) &&
+      ["detectingCircles", "liteGenerating", "liteReady", "proReady"].includes(currentStep);
     const gainedInterpretation =
       !currentSessionId.includes(interpretationId ?? "") &&
       Boolean(interpretationId);
@@ -626,6 +623,7 @@ export function MobileWebBrowserShell() {
           let liteSnapshot = previewFlowState?.step === "liteGenerating"
             ? await pollMobileWebReportUntilReady(
                 currentInterpretationId,
+                "lite",
                 previewFlowState,
                 {
                   intervalMs: PREVIEW_POLLING_INTERVAL_MS,
@@ -640,8 +638,9 @@ export function MobileWebBrowserShell() {
           }
 
           if (hasProReportAccess(liteSnapshot.state)) {
-            return pollMobileWebProReportUntilReady(
+            return pollMobileWebReportUntilReady(
               currentInterpretationId,
+              "pro",
               liteSnapshot.state,
               {
                 intervalMs: PREVIEW_POLLING_INTERVAL_MS,
@@ -651,16 +650,10 @@ export function MobileWebBrowserShell() {
             );
           }
 
-          const upgradeSnapshot =
-            liteSnapshot.state.step === "upgradePlaceholder"
-              ? liteSnapshot
-              : await openMobileWebUpgradeEntry(currentInterpretationId, liteSnapshot.state);
-
-          handleTick(upgradeSnapshot);
-
-          return pollMobileWebProReportUntilReady(
+          return pollMobileWebReportUntilReady(
             currentInterpretationId,
-            upgradeSnapshot.state,
+            "pro",
+            liteSnapshot.state,
             {
               intervalMs: PREVIEW_POLLING_INTERVAL_MS,
               maxAttempts: PREVIEW_POLLING_MAX_ATTEMPTS,
@@ -670,6 +663,7 @@ export function MobileWebBrowserShell() {
         })()
       : pollMobileWebReportUntilReady(
           currentInterpretationId,
+          "lite",
           previewFlowState,
           {
             intervalMs: PREVIEW_POLLING_INTERVAL_MS,
@@ -693,7 +687,7 @@ export function MobileWebBrowserShell() {
             snapshot.report.report.trim();
 
           if (proReady || snapshot.state.step === "error") {
-            setRoute("upgrade");
+            setRoute("report");
           }
           return;
         }
@@ -800,9 +794,9 @@ export function MobileWebBrowserShell() {
         structured: getLiteStructuredReport(previewFlowState?.report ?? null),
       });
 
-      if (resultCta.intent === "open_upgrade_report") {
+      if (resultCta.intent === "open_pro_report") {
         setDraft((current) => mergeMobileWebUploadDraft(current, {
-          reportVariant: "pro",
+          reportType: "pro",
         }));
         setRoute("loading");
         return;
@@ -818,23 +812,6 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "upgrade") {
-      const interpretationId = previewFlowState?.interpretation?.interpretation_id;
-      if (!interpretationId || previewFlowRunning) {
-        return;
-      }
-
-      setPreviewFlowRunning(true);
-      try {
-        const refreshed = await refreshMobileWebProReport(
-          interpretationId,
-          previewFlowState ?? initialMandalaFlowState,
-        );
-        setPreviewFlowState(refreshed.state);
-      } finally {
-        setPreviewFlowRunning(false);
-      }
-    }
   }
 
   async function handlePreviewLeaveLoadingLater() {
@@ -858,7 +835,7 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "report" || route === "upgrade") {
+    if (route === "report") {
       setPreviewFlowState(null);
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
@@ -870,11 +847,7 @@ export function MobileWebBrowserShell() {
     }
   }
 
-  function handlePreviewBackAction() {
-    if (route === "upgrade") {
-      setRoute("reportEntry");
-    }
-  }
+  function handlePreviewBackAction() {}
 
   async function handlePreviewOpenHistoryRecord(
     interpretationId: string,
@@ -916,7 +889,7 @@ export function MobileWebBrowserShell() {
           refreshed.report?.version === "pro" &&
           typeof refreshed.report.report === "string" &&
           refreshed.report.report.trim();
-        setRoute(proReady ? "upgrade" : "loading");
+        setRoute(proReady ? "report" : "loading");
         return;
       }
 
@@ -1059,7 +1032,7 @@ export function MobileWebBrowserShell() {
                     {PREVIEW_ROUTE_OPTIONS.filter((option) => (
                       previewChannel === "mobile-web"
                         ? true
-                        : option.value !== "reportLegacy" && option.value !== "upgrade"
+                        : option.value !== "reportLegacy"
                     )).map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -1150,7 +1123,12 @@ export function MobileWebBrowserShell() {
           <div className="browser-shell__phone">
           {previewMode ? (
             previewChannel === "miniapp" ? (
-              <MiniappApp route={route as MiniappRouteId} />
+              <MiniappApp
+                route={route as MiniappRouteId}
+                mode="runtime"
+                initialDraft={draft}
+                initialSession={session}
+              />
             ) : (
               <MobileWebApp
                 {...previewProps}
@@ -1265,7 +1243,7 @@ export function MobileWebBrowserShell() {
                         error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
                       ),
                     );
-                    setRoute(getDraftReportVariant(nextDraft) === "pro" ? "upgrade" : "report");
+                    setRoute("report");
                   } finally {
                     setPreviewFlowRunning(false);
                   }

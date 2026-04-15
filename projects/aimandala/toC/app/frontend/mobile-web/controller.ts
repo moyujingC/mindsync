@@ -4,7 +4,6 @@ import {
   applyInterpretationCreated,
   applyReport,
   applyStatus,
-  applyUpgradePlaceholder,
   initialMandalaFlowState,
   selectImage,
 } from "../shared/core";
@@ -13,7 +12,6 @@ import {
   detectCircles,
   getInterpretationReport,
   getInterpretationStatus,
-  upgradeInterpretation,
 } from "../shared/api";
 import type {
   CreateInterpretationResponse,
@@ -70,19 +68,6 @@ function buildManualDetection(
     method: "manual_confirmed",
     geometry_suggestion: null,
     debug_info: null,
-  };
-}
-
-function buildUpgradeProcessingPlaceholder(
-  interpretationId: string,
-) {
-  return {
-    success: true,
-    interpretation_id: interpretationId,
-    version: "pro" as const,
-    enabled: true,
-    status: "processing",
-    message: "一梳 Pro 版正在生成中，请稍候查看。",
   };
 }
 
@@ -210,43 +195,9 @@ export async function refreshMobileWebReport(
   }
 }
 
-export async function openMobileWebUpgradeEntry(
-  interpretationId: string,
-  currentState: MandalaFlowState = initialMandalaFlowState,
-): Promise<MobileWebFlowSnapshot> {
-  let state = currentState;
-
-  try {
-    state = applyUpgradePlaceholder(
-      state,
-      buildUpgradeProcessingPlaceholder(interpretationId),
-    );
-    void upgradeInterpretation(interpretationId).catch(() => undefined);
-
-    return {
-      state,
-    };
-  } catch (error) {
-    state = applyError(
-      state,
-      error instanceof Error ? error.message : "Failed to open upgrade entry",
-    );
-
-    return {
-      state,
-    };
-  }
-}
-
-export async function refreshMobileWebProReport(
-  interpretationId: string,
-  currentState: MandalaFlowState = initialMandalaFlowState,
-): Promise<MobileWebFlowSnapshot> {
-  return refreshMobileWebReport(interpretationId, "pro", currentState);
-}
-
 export async function pollMobileWebReportUntilReady(
   interpretationId: string,
+  reportType: InterpretationVersion = "lite",
   currentState: MandalaFlowState = initialMandalaFlowState,
   options: MobileWebReportPollingOptions = {},
 ): Promise<MobileWebFlowSnapshot> {
@@ -255,14 +206,21 @@ export async function pollMobileWebReportUntilReady(
   let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    latestSnapshot = await refreshMobileWebReport(interpretationId, "lite", latest);
+    latestSnapshot = await refreshMobileWebReport(interpretationId, reportType, latest);
     latest = latestSnapshot.state;
 
     if (onTick) {
       await onTick(latestSnapshot);
     }
 
-    if (latest.step !== "liteGenerating") {
+    const readyForType =
+      reportType === "pro"
+        ? latestSnapshot.report?.version === "pro" &&
+          typeof latestSnapshot.report.report === "string" &&
+          latestSnapshot.report.report.trim().length > 0
+        : latest.step !== "liteGenerating";
+
+    if (readyForType) {
       return latestSnapshot;
     }
 
@@ -271,59 +229,14 @@ export async function pollMobileWebReportUntilReady(
     }
   }
 
-  if (latest.step === "liteGenerating") {
+  if (latest.step === "liteGenerating" || reportType === "pro") {
     latestSnapshot = {
       ...latestSnapshot,
       state: applyError(
         latest,
-        "Lite 报告生成超时，请稍后重试。",
-      ),
-    };
-  }
-
-  return latestSnapshot;
-}
-
-export async function pollMobileWebProReportUntilReady(
-  interpretationId: string,
-  currentState: MandalaFlowState = initialMandalaFlowState,
-  options: MobileWebReportPollingOptions = {},
-): Promise<MobileWebFlowSnapshot> {
-  const { intervalMs = 3000, maxAttempts = 60, onTick } = options;
-  let latest = currentState;
-  let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
-
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    latestSnapshot = await refreshMobileWebProReport(interpretationId, latest);
-    latest = latestSnapshot.state;
-
-    if (onTick) {
-      await onTick(latestSnapshot);
-    }
-
-    if (
-      latestSnapshot.report?.version === "pro" &&
-      typeof latestSnapshot.report.report === "string" &&
-      latestSnapshot.report.report.trim()
-    ) {
-      return latestSnapshot;
-    }
-
-    if (latest.step === "error") {
-      return latestSnapshot;
-    }
-
-    if (attempt < maxAttempts - 1) {
-      await wait(intervalMs);
-    }
-  }
-
-  if (latest.step !== "error") {
-    latestSnapshot = {
-      ...latestSnapshot,
-      state: applyError(
-        latest,
-        "Pro 报告生成时间较长，请稍后到历史记录中继续查看。",
+        reportType === "pro"
+          ? "Pro 报告生成时间较长，请稍后到历史记录中继续查看。"
+          : "Lite 报告生成超时，请稍后重试。",
       ),
     };
   }

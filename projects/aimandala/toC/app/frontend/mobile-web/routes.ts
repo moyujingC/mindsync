@@ -6,8 +6,7 @@ export type MobileWebRouteId =
   | "report"
   | "reportLegacy"
   | "history"
-  | "historyRecordDetail"
-  | "upgrade";
+  | "historyRecordDetail";
 
 export interface MobileWebRouteDefinition {
   id: MobileWebRouteId;
@@ -24,5 +23,4 @@ export const mobileWebRoutes: MobileWebRouteDefinition[] = [
   { id: "reportLegacy", path: "/report-legacy", title: "报告旧版对照" },
   { id: "history", path: "/history", title: "历史解读" },
   { id: "historyRecordDetail", path: "/history-record-detail", title: "历史记录详情" },
-  { id: "upgrade", path: "/upgrade", title: "Pro 解读报告" },
 ];

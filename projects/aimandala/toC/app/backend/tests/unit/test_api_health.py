@@ -115,7 +115,7 @@ def test_pricing_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["lite"] == 9.9
-    assert data["pro"] == 49.0
+    assert data["pro"] == 39.0
     assert data["upgrade_diff"] == 39.1
 
 
@@ -161,6 +161,37 @@ def test_miniapp_session_exchange_supports_code_only_stub():
     assert data["canonical_user_id"].startswith("wechat:stub-openid-")
     assert data["linked"] is False
     assert data["is_new_user"] is True
+
+
+def test_miniapp_session_exchange_uses_live_wechat_path_when_gray_enabled(monkeypatch):
+    from app.api.main import app
+    from app.api import routes_v2
+
+    _reset_api_state()
+    monkeypatch.setenv("AIMANDALA_MINIAPP_LIVE_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED", "1")
+    client = TestClient(app)
+
+    with patch.object(
+        routes_v2,
+        "exchange_wechat_session",
+        return_value=types.SimpleNamespace(
+            open_id="wx-live-openid",
+            union_id="wx-union",
+            session_key="session-key",
+        ),
+    ):
+        response = client.post(
+            "/api/v2/miniapp/session/exchange",
+            json={
+                "code": "live-code",
+            },
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["open_id"] == "wx-live-openid"
+    assert data["canonical_user_id"] == "wechat:wx-live-openid"
 
 
 def test_miniapp_session_exchange_requires_any_identity_signal():
@@ -797,9 +828,8 @@ def test_get_user_interpretations_endpoint_supports_filter_query(tmp_path):
     assert all(item["generation_stage"] == "completed" for item in ready_data)
 
 
-def test_get_user_interpretations_endpoint_keeps_pro_generating_records_in_pending(tmp_path):
+def test_get_user_interpretations_endpoint_marks_direct_pro_purchase_ready_after_reconcile(tmp_path):
     from app.api.main import app
-    from app.api import routes_v2
 
     _reset_api_state()
     client = TestClient(app)
@@ -817,9 +847,24 @@ def test_get_user_interpretations_endpoint_keeps_pro_generating_records_in_pendi
     assert create_response.status_code == 200
     interpretation_id = create_response.json()["interpretation_id"]
 
-    with patch.object(routes_v2, "_ensure_pro_upgrade_job", lambda _: None):
-        upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    assert client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    ).status_code == 200
+    assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
     ready_response = client.get("/api/v2/users/user-api-pro-pending/interpretations?filter=ready")
     pending_response = client.get("/api/v2/users/user-api-pro-pending/interpretations?filter=pending")
@@ -830,12 +875,12 @@ def test_get_user_interpretations_endpoint_keeps_pro_generating_records_in_pendi
     ready_data = ready_response.json()
     pending_data = pending_response.json()
 
-    assert ready_data == []
-    assert len(pending_data) == 1
-    assert pending_data[0]["interpretation_id"] == interpretation_id
-    assert pending_data[0]["version_purchased"] == ["lite", "pro"]
-    assert pending_data[0]["generation_stage"] == "generating"
-    assert pending_data[0]["generation_progress"] == 85
+    assert len(ready_data) == 1
+    assert ready_data[0]["interpretation_id"] == interpretation_id
+    assert ready_data[0]["version_purchased"] == ["lite", "pro"]
+    assert ready_data[0]["generation_stage"] == "completed"
+    assert ready_data[0]["generation_progress"] == 100
+    assert pending_data == []
 
 
 def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_path):
@@ -913,8 +958,24 @@ def test_get_user_interpretations_endpoint_distinguishes_lite_and_lite_plus_pro(
     )
 
     pro_interpretation_id = pro_response.json()["interpretation_id"]
-    upgrade_response = client.post(f"/api/v2/interpretations/{pro_interpretation_id}/upgrade")
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": pro_interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    assert client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    ).status_code == 200
+    assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
     response = client.get("/api/v2/users/user-api-history-version/interpretations")
 
@@ -1028,7 +1089,7 @@ def test_create_miniapp_order_endpoint_creates_pending_stub_order(tmp_path):
     assert data["wechat_pay_payload"]["next_action"] == "reconcile_after_host_payment"
 
 
-def test_create_miniapp_order_endpoint_uses_upgrade_diff_for_existing_lite_record(tmp_path):
+def test_create_miniapp_order_endpoint_uses_direct_pro_price_for_existing_lite_record(tmp_path):
     from app.api.main import app
 
     _reset_api_state()
@@ -1056,7 +1117,50 @@ def test_create_miniapp_order_endpoint_uses_upgrade_diff_for_existing_lite_recor
 
     assert response.status_code == 200
     data = response.json()
-    assert data["payable_amount"] == 39.1
+    assert data["payable_amount"] == 39.0
+
+
+def test_create_miniapp_order_endpoint_returns_wechatpay_payload_when_gray_enabled(
+    tmp_path,
+    monkeypatch,
+):
+    from app.api.main import app
+
+    _reset_api_state()
+    monkeypatch.setenv("AIMANDALA_MINIAPP_LIVE_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_APP_ID", "wx-app")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_PAY_MCH_ID", "mch-1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_PAY_API_V3_KEY", "api-key")
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-live-pro.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-live-order-pro",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+            "open_id": "wx-live-open-1",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["payable_amount"] == 39.0
+    assert data["wechat_pay_payload"]["mode"] == "wechatpay"
+    assert data["wechat_pay_payload"]["next_action"] == "wait_for_payment_confirmation"
+    assert data["wechat_pay_payload"]["request_payment_args"]["package"].startswith("prepay_id=")
 
 
 def test_create_miniapp_order_endpoint_returns_404_for_unknown_record():
@@ -1262,6 +1366,10 @@ def test_reconcile_miniapp_order_marks_paid_order_fulfilled(tmp_path):
     assert data["reconciled"] is True
     assert data["version_granted"] == ["pro"]
 
+    interpretation = client.get(f"/api/v2/interpretations/{interpretation_id}")
+    assert interpretation.status_code == 200
+    assert "pro" in interpretation.json()["version_purchased"]
+
 
 def test_get_report_endpoint_404_for_unknown_record():
     from app.api.main import app
@@ -1295,14 +1403,9 @@ def test_upgrade_placeholder_endpoint(tmp_path):
     assert response.status_code == 200
     data = response.json()
     assert data["success"] is True
-    assert data["enabled"] is True
-    assert data["status"] in {"processing", "completed"}
-
-    report_data = _wait_for_pro_report(client, interpretation_id)
-    assert report_data["version"] == "pro"
-    assert report_data["error"] is None
-    assert "一梳 Pro 版报告" in report_data["report"]
-    assert "重要声明" in report_data["report"]
+    assert data["enabled"] is False
+    assert data["status"] == "disabled"
+    assert "独立购买" in data["message"]
 
 
 def test_get_report_endpoint_defaults_to_best_available_version_after_upgrade(tmp_path):
@@ -1322,8 +1425,24 @@ def test_get_report_endpoint_defaults_to_best_available_version_after_upgrade(tm
     )
     interpretation_id = create_response.json()["interpretation_id"]
 
-    upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    assert client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    ).status_code == 200
+    assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
     _wait_for_pro_report(client, interpretation_id)
 
@@ -1448,8 +1567,24 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
         assert lite_data["title"] == "来自真实 LLM 的 Lite 标题"
         assert lite_data["overall_impression"] == "这幅画先把自己轻轻收拢，再试着向外试探。"
 
-        upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
-        assert upgrade_response.status_code == 200
+        order_response = client.post(
+            "/api/v2/miniapp/orders",
+            json={
+                "interpretation_id": interpretation_id,
+                "product_type": "pro",
+                "channel": "miniapp",
+            },
+        )
+        assert order_response.status_code == 200
+        order_id = order_response.json()["order_id"]
+        assert client.post(
+            "/api/v2/miniapp/payments/wechat/notify",
+            json={
+                "order_id": order_id,
+                "event": "paid",
+            },
+        ).status_code == 200
+        assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
         chat_response = client.post(
             f"/api/v2/interpretations/{interpretation_id}/chat",

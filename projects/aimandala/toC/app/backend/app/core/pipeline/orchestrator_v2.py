@@ -79,7 +79,7 @@ class LayeredOrchestrator:
 
     PRICING = PricingSnapshot(
         lite=9.9,
-        pro=49.0,
+        pro=39.0,
         # Kept only for legacy V2 response compatibility. Product semantics remain
         # "independent purchase" unless a later decision explicitly changes them.
         upgrade_diff=39.1,
@@ -303,3 +303,13 @@ class LayeredOrchestrator:
             interpretation_id,
         )
         return result.status_payload if result is not None else None
+
+    def fulfill_direct_pro_purchase(
+        self,
+        interpretation_id: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Generate Pro after a direct Pro purchase without using upgrade semantics."""
+        return self.report_lifecycle_manager.fulfill_direct_pro_purchase(
+            self,
+            interpretation_id,
+        )

@@ -5,7 +5,6 @@ import {
   applyInterpretationCreated,
   applyReport,
   applyStatus,
-  applyUpgradePlaceholder,
   getLiteStructuredReport,
   getProStructuredReport,
   initialMandalaFlowState,
@@ -16,7 +15,6 @@ import type {
   DetectCirclesResponse,
   InterpretationStatusResponse,
   ReportResponse,
-  UpgradePlaceholderResponse,
 } from "../types";
 
 const detection: DetectCirclesResponse = {
@@ -103,18 +101,8 @@ describe("shared/core flow", () => {
     expect(getLiteStructuredReport(completed.report)?.pro_teaser).toBe("可继续查看 Pro");
   });
 
-  it("对 pro 报告和 upgrade placeholder 保持独立语义", () => {
-    const upgrade: UpgradePlaceholderResponse = {
-      success: true,
-      interpretation_id: "ipt-pro-1",
-      version: "pro",
-      enabled: true,
-      status: "upgrade_available",
-      message: "可进入一梳 Pro 版",
-    };
-
-    const placeholderState = applyUpgradePlaceholder(initialMandalaFlowState, upgrade);
-    const proState = applyReport(placeholderState, {
+  it("对 pro 报告直接进入 proReady 语义", () => {
+    const proState = applyReport(initialMandalaFlowState, {
       interpretation_id: "ipt-pro-1",
       version: "pro",
       title: "一梳 Pro 版",
@@ -132,9 +120,8 @@ describe("shared/core flow", () => {
       error: null,
     });
 
-    expect(placeholderState.step).toBe("upgradePlaceholder");
-    expect(placeholderState.report?.version).toBe("pro");
-    expect(proState.step).toBe("upgradePlaceholder");
+    expect(proState.step).toBe("proReady");
+    expect(proState.report?.version).toBe("pro");
     expect(getProStructuredReport(proState.report)?.first_impression).toBe("边界感偏强");
   });
 });

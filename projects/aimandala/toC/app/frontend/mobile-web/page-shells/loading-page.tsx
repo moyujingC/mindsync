@@ -97,7 +97,7 @@ function resolveLoadingUiState(
   }
 
   if (isPro) {
-    if (state.step === "upgradePlaceholder") {
+    if (state.step === "proReady") {
       return {
         stages,
         progress: 82,

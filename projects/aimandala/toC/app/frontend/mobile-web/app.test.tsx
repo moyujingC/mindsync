@@ -80,7 +80,7 @@ const flowState: MandalaFlowState = {
     report: null,
     ai_qa_context: null,
     can_upgrade: true,
-    upgrade_price: 49,
+    upgrade_price: 39,
     error: null,
   },
   lastError: null,
@@ -105,7 +105,7 @@ const historyRecord: InterpretationRecordResponse = {
     {
       from: "lite",
       to: "pro",
-      price_diff: 29,
+      price_diff: 39,
       at: "2026-04-11T08:20:00.000Z",
     },
   ],
@@ -227,6 +227,6 @@ describe("MobileWebApp", () => {
     expect(html).toContain("打开 Lite 报告");
     expect(html).toContain("打开 Pro 报告");
     expect(html).toContain("版本演进");
-    expect(html).toContain("Lite -&gt; Pro");
+    expect(html).toContain("Lite / Pro");
   });
 });

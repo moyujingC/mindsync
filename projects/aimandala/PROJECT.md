@@ -44,6 +44,7 @@
 当前围绕 `Web MVP` 公开首发与小程序渐进并入，默认入口是：
 
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md)
+- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md)
 
@@ -106,6 +107,7 @@
 - 小程序 worktree 可继续并行开发
 - 小程序相关改动默认采用“分批摘入 main”，不整支直接合并
 - 主工作区上的新改动，除非明确是 Web 宿主专属，否则应尽量保持 shared-friendly
+- 批次 E 的 miniapp live 能力允许并入 `main`，但必须默认灰度关闭
 
 ## 3. 当前正式范围
 

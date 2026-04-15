@@ -5,14 +5,12 @@ vi.mock("../shared/api", () => ({
   detectCircles: vi.fn(),
   getInterpretationReport: vi.fn(),
   getInterpretationStatus: vi.fn(),
-  upgradeInterpretation: vi.fn(),
 }));
 
 import * as api from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
 import {
   refreshMobileWebReport,
-  refreshMobileWebProReport,
   runMobileWebLiteFlow,
 } from "./controller";
 
@@ -179,44 +177,6 @@ describe("mobile-web controller", () => {
 
     expect(snapshot.state.step).toBe("error");
     expect(snapshot.state.lastError).toContain("detect failed");
-  });
-
-  it("refreshMobileWebProReport 在 pro 未就绪时保留回落语义", async () => {
-    vi.mocked(api.getInterpretationStatus).mockResolvedValue({
-      interpretation_id: "ipt-2",
-      status: "completed",
-      generation_stage: "report_ready",
-      generation_progress: 100,
-      report_ready: true,
-      version_purchased: ["lite", "pro"],
-      three_circles: {
-        inner_radius: 8,
-        middle_radius: 16,
-      },
-      auto_detected: true,
-      can_upgrade: false,
-    });
-    vi.mocked(api.getInterpretationReport).mockResolvedValue({
-      interpretation_id: "ipt-2",
-      version: "lite",
-      title: "一镜 Lite 版",
-      overall_impression: "仍返回 lite",
-      structured: null,
-      report: "lite body",
-      ai_qa_context: null,
-      can_upgrade: false,
-      upgrade_price: null,
-      error: null,
-    });
-
-    const snapshot = await refreshMobileWebProReport(
-      "ipt-2",
-      initialMandalaFlowState,
-    );
-
-    expect(api.getInterpretationReport).toHaveBeenCalledWith("ipt-2", "pro");
-    expect(snapshot.state.step).toBe("liteReady");
-    expect(snapshot.report?.version).toBe("lite");
   });
 
   it("refreshMobileWebReport 显式请求 lite 版本，避免 report 路由误落到 Pro", async () => {

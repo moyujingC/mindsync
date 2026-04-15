@@ -145,6 +145,38 @@ class ReportLifecycleManager:
             message=PRO_REPORT_BLUEPRINT.status_messages["generated_success"],
         )
 
+    def fulfill_direct_pro_purchase(
+        self,
+        generation_context: ReportGenerationContext,
+        interpretation_id: str,
+    ) -> dict[str, Any] | None:
+        record = self.store.load(interpretation_id)
+        if record is None:
+            return None
+
+        if "pro" not in record.version_purchased:
+            record.version_purchased.append("pro")
+            self.store.save(record)
+
+        if record.get_pro_report():
+            return self._build_pro_response(
+                interpretation_id=interpretation_id,
+                status="completed",
+                message=PRO_REPORT_BLUEPRINT.status_messages["already_available"],
+            )
+
+        self._mark_processing(record)
+        pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
+        record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
+        record.layer_4_pro_final = pro_bundle.layer_4_pro_final
+        self._mark_completed(record)
+
+        return self._build_pro_response(
+            interpretation_id=interpretation_id,
+            status="completed",
+            message=PRO_REPORT_BLUEPRINT.status_messages["generated_success"],
+        )
+
     def _resolve_best_available_version(self, record: InterpretationRecord) -> str:
         if record.get_pro_report():
             return "pro"

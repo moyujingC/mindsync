@@ -238,15 +238,13 @@ function createStageDescriptors(input: {
     (trace) =>
       trace.url.includes("/interpretations") &&
       !trace.url.includes("/status") &&
-      !trace.url.includes("/report") &&
-      !trace.url.includes("/upgrade"),
+      !trace.url.includes("/report"),
   );
   const statusTrace = findLatestTrace(traces, (trace) => trace.url.includes("/status"));
   const liteReportTrace = findLatestTrace(
     traces,
     (trace) => trace.url.includes("/report") && !trace.url.includes("version=pro"),
   );
-  const upgradeTrace = findLatestTrace(traces, (trace) => trace.url.includes("/upgrade"));
   const proReportTrace = findLatestTrace(
     traces,
     (trace) => trace.url.includes("/report") && trace.url.includes("version=pro"),
@@ -324,29 +322,8 @@ function createStageDescriptors(input: {
           : liteReportTrace?.errorMessage ?? "等待 Lite report",
     },
     {
-      key: "upgrade",
-      label: "5. Pro 升级入口",
-      description: "upgradeInterpretation",
-      state:
-        reportVariant !== "pro"
-          ? "idle"
-          : upgradeTrace?.phase === "error"
-            ? "error"
-            : activeFlowState?.step === "upgradePlaceholder" || upgradeTrace?.phase === "success"
-              ? "done"
-              : activeFlowState?.step === "liteGenerating"
-                ? "running"
-                : "idle",
-      detail:
-        reportVariant !== "pro"
-          ? "当前未选择 Pro 链路"
-          : activeFlowState?.step === "upgradePlaceholder"
-            ? "升级入口已打开"
-            : upgradeTrace?.errorMessage ?? "等待 upgrade",
-    },
-    {
       key: "pro-report",
-      label: "6. Pro 报告",
+      label: "5. Pro 报告",
       description: "report(version=pro)",
       state:
         reportVariant !== "pro"

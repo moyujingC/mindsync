@@ -57,7 +57,7 @@ describe("shared/core report-structure", () => {
       structured: baseStructuredReport,
     });
 
-    expect(cta.intent).toBe("open_upgrade_report");
+    expect(cta.intent).toBe("open_pro_report");
     expect(cta.primaryLabel).toBe("查看 Pro 版解读");
     expect(cta.footerHint).toContain("先靠近又缩回去");
     expect(cta.footerHint).toContain("亲密关系");

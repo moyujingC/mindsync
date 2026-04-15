@@ -3,8 +3,6 @@ import { initialMandalaFlowState } from "../shared/core";
 
 import {
   bootstrapMobileWebFlow,
-  openMobileWebUpgradeEntry,
-  refreshMobileWebProReport,
   refreshMobileWebReport,
   runMobileWebLiteFlow,
 } from "./controller";
@@ -58,15 +56,7 @@ export async function loadExistingReportPage(
 export async function loadUpgradePage(
   interpretationId: string,
 ): Promise<MobileWebReportPageProps> {
-  const report = await loadExistingReportPage(interpretationId, "lite");
-  const upgrade = await openMobileWebUpgradeEntry(
-    interpretationId,
-    report.state,
-  );
-  const proReport = await refreshMobileWebProReport(
-    interpretationId,
-    upgrade.state,
-  );
+  const proReport = await loadExistingReportPage(interpretationId, "pro");
 
   return {
     state: proReport.state,

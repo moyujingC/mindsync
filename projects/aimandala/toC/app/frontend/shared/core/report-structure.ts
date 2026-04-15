@@ -72,7 +72,7 @@ export const proMicroLabels: Record<string, string> = {
 };
 
 export type SelfUnderstandingReportActionIntent =
-  | "open_upgrade_report"
+  | "open_pro_report"
   | "open_report_entry"
   | "restart_upload";
 
@@ -154,7 +154,7 @@ export function resolveSelfUnderstandingReportCta(input: {
 
   if (input.hasProAccess) {
     return {
-      intent: "open_upgrade_report",
+      intent: "open_pro_report",
       primaryLabel: "查看 Pro 版解读",
       footerHint: focus
         ? `你已经拥有 Pro 版，可以继续看清${focusText}的来源、它在${dimension}中的延续方式，以及下一步如何展开。`
@@ -182,7 +182,7 @@ export function resolveSelfUnderstandingReportCta(input: {
         `它在${dimension}里还有哪些延伸`,
         "下一步该先做什么，才不只是看懂",
       ],
-      legacyCaption: "先进入 Lite / Pro 选择页，再决定这次是否继续往下看。",
+      legacyCaption: "先进入 Lite / Pro 选择页，再决定这次是否直接购买 Pro 解读。",
     };
   }
 

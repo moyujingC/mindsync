@@ -27,6 +27,7 @@ class MiniappOrderRecord:
     debug_canonical_user_id: str | None = None
     payment_reference: str | None = None
     raw_payload: dict[str, Any] | None = None
+    canonical_user_id: str | None = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -44,6 +45,7 @@ class MiniappOrderRecord:
             "debug_canonical_user_id": self.debug_canonical_user_id,
             "payment_reference": self.payment_reference,
             "raw_payload": self.raw_payload,
+            "canonical_user_id": self.canonical_user_id,
         }
 
 
@@ -104,6 +106,7 @@ class MiniappStubStore:
             debug_canonical_user_id=data.get("debug_canonical_user_id"),
             payment_reference=data.get("payment_reference"),
             raw_payload=data.get("raw_payload"),
+            canonical_user_id=data.get("canonical_user_id"),
         )
         self._cache[order_id] = record
         return record
@@ -119,6 +122,7 @@ class MiniappStubStore:
         wechat_pay_payload: dict[str, Any],
         open_id: str | None = None,
         debug_canonical_user_id: str | None = None,
+        canonical_user_id: str | None = None,
     ) -> MiniappOrderRecord:
         timestamp = datetime.now().isoformat()
         record = MiniappOrderRecord(
@@ -134,6 +138,7 @@ class MiniappStubStore:
             wechat_pay_payload=wechat_pay_payload,
             open_id=open_id,
             debug_canonical_user_id=debug_canonical_user_id,
+            canonical_user_id=canonical_user_id,
         )
         self.save_order(record)
         return record

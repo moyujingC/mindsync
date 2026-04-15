@@ -82,8 +82,8 @@ function buildTimeline(
     const typedEntry = entry as InterpretationUpgradeHistoryEntry;
     timeline.push({
       id: `upgrade-${index}`,
-      title: `${formatVersionLabel(typedEntry.from as InterpretationVersion)} -> ${formatVersionLabel(typedEntry.to as InterpretationVersion)}`,
-      detail: `${formatHistoryCreatedAt(typedEntry.at)} · 补差价 ${typedEntry.price_diff} 元`,
+      title: `${formatVersionLabel(typedEntry.from as InterpretationVersion)} / ${formatVersionLabel(typedEntry.to as InterpretationVersion)}`,
+      detail: `${formatHistoryCreatedAt(typedEntry.at)} · 历史兼容记录 ${typedEntry.price_diff} 元`,
     });
   });
 
@@ -109,7 +109,7 @@ export function createHistoryRecordDetailPageDescriptor(
     versionSummary: formatVersionSummary(availableReportTypes),
     statusLabel: hasPro && !proReady ? "Pro 生成中" : presentation.statusLabel,
     statusDetail: hasPro && !proReady
-      ? "这条记录已经进入 Pro 升级流程，但完整 Pro 正文还在后台生成。"
+      ? "这条记录已经拥有 Pro，可完整 Pro 正文仍在后台生成。"
       : availableReportTypes.length > 1
         ? "这条画作记录下已经有多个可查看版本，请明确选择本次要打开哪一个。"
         : "这条画作记录当前只有一个版本，也建议先从详情页确认后再进入。",

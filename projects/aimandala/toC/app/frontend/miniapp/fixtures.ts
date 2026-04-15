@@ -9,7 +9,7 @@ import type {
   ReportResponse,
 } from "../shared/types";
 
-function createMiniappDraft(
+export function createMiniappDraft(
   patch: Partial<MobileWebUploadDraft> = {},
 ): MobileWebUploadDraft {
   return {
@@ -157,7 +157,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         {
           from: "lite",
           to: "pro",
-          price_diff: 29,
+          price_diff: 39,
           at: "2026-04-15T08:25:00+08:00",
         },
       ],
@@ -181,7 +181,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         {
           from: "lite",
           to: "pro",
-          price_diff: 29,
+          price_diff: 39,
           at: "2026-04-15T07:55:00+08:00",
         },
       ],

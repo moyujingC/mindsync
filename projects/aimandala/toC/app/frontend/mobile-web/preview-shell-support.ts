@@ -7,8 +7,7 @@ import type {
 } from "../shared/types";
 import type { HistoryFilterId } from "./components/history-cards";
 import {
-  openMobileWebUpgradeEntry,
-  refreshMobileWebProReport,
+  refreshMobileWebReport,
 } from "./controller";
 import type { MobileWebRouteInput } from "./router-plan";
 import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
@@ -38,7 +37,6 @@ export const PREVIEW_ROUTE_OPTIONS: Array<{
   { label: "报告旧版对照", value: "reportLegacy" },
   { label: "历史", value: "history" },
   { label: "历史记录详情", value: "historyRecordDetail" },
-  { label: "Pro 解读报告", value: "upgrade" },
 ];
 
 export const PREVIEW_POLLING_INTERVAL_MS = 1500;
@@ -93,7 +91,6 @@ export function createPreviewRouteInput(
 
     case "report":
     case "reportLegacy":
-    case "upgrade":
       return {
         route,
         params: {
@@ -156,13 +153,10 @@ export async function finalizePreviewSelectedReport(
 
   let finalState = state;
   if (getDraftReportVariant(draft) === "pro") {
-    const upgraded = await openMobileWebUpgradeEntry(
+    const proReport = await refreshMobileWebReport(
       interpretationId,
+      "pro",
       state,
-    );
-    const proReport = await refreshMobileWebProReport(
-      interpretationId,
-      upgraded.state,
     );
     const proReady =
       proReport.report?.version === "pro" &&
@@ -171,7 +165,7 @@ export async function finalizePreviewSelectedReport(
 
     finalState = proReport.state;
     setPreviewFlowState(finalState);
-    setRoute(proReady ? "upgrade" : "loading");
+    setRoute(proReady ? "report" : "loading");
   } else {
     setPreviewFlowState(finalState);
     setRoute("report");

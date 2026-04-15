@@ -108,7 +108,7 @@ export function getFlowStepLabel(
       ).stageLabel;
     case "liteReady":
       return "Lite 结果已就绪";
-    case "upgradePlaceholder":
+    case "proReady":
       return "Pro 结果已就绪";
     case "error":
       return "结果拉取失败";

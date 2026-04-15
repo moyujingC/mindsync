@@ -15,6 +15,11 @@ from app.core.llm import (
     NoopLLMClient,
     create_llm_client_from_env,
 )
+from app.core.miniapp_runtime import (
+    build_wechatpay_payload,
+    exchange_wechat_session,
+    get_miniapp_gray_config,
+)
 from app.core.knowledge_runtime.workbench import KnowledgeWorkbench
 from app.core.miniapp_stub_store import MiniappStubStore
 from app.core.pipeline.data_models import GenerationStatus
@@ -245,7 +250,7 @@ class PricingInfo(BaseModel):
     """Current public pricing for the To C V2 flow."""
 
     lite: float = Field(default=9.9, description="一镜 Lite 版 price")
-    pro: float = Field(default=49.0, description="一梳 Pro 版 price")
+    pro: float = Field(default=39.0, description="一梳 Pro 版 price")
     upgrade_diff: float = Field(default=39.1, description="Legacy diff field kept for V2 compatibility")
 
 
@@ -270,6 +275,22 @@ class StubWechatPayPayload(BaseModel):
     next_action: Literal["reconcile_after_host_payment"] = "reconcile_after_host_payment"
 
 
+class WechatPayRequestPaymentArgs(BaseModel):
+    timeStamp: str
+    nonceStr: str
+    package: str
+    signType: str
+    paySign: str
+
+
+class WechatPayHostPayload(BaseModel):
+    mode: Literal["wechatpay"] = "wechatpay"
+    order_id: str
+    next_action: Literal["wait_for_payment_confirmation"] = "wait_for_payment_confirmation"
+    dry_run: bool
+    request_payment_args: WechatPayRequestPaymentArgs
+
+
 class CreateMiniappOrderRequest(BaseModel):
     interpretation_id: str
     product_type: Literal["lite", "pro"]
@@ -288,7 +309,7 @@ class MiniappOrderResponse(BaseModel):
     currency: str
     version_granted: Optional[list[Literal["lite", "pro"]]] = None
     latest_purchase_updated_at: Optional[str] = None
-    wechat_pay_payload: Optional[StubWechatPayPayload] = None
+    wechat_pay_payload: Optional[StubWechatPayPayload | WechatPayHostPayload] = None
 
 
 class ReconcileMiniappOrderResponse(MiniappOrderResponse):
@@ -442,6 +463,13 @@ def _resolve_record_image_url(
 
 
 def _to_miniapp_order_response(record) -> MiniappOrderResponse:
+    payload = None
+    if record.wechat_pay_payload:
+        if record.wechat_pay_payload.get("mode") == "wechatpay":
+            payload = WechatPayHostPayload(**record.wechat_pay_payload)
+        else:
+            payload = StubWechatPayPayload(**record.wechat_pay_payload)
+
     return MiniappOrderResponse(
         order_id=record.order_id,
         interpretation_id=record.interpretation_id,
@@ -452,11 +480,7 @@ def _to_miniapp_order_response(record) -> MiniappOrderResponse:
         currency=record.currency,
         version_granted=record.version_granted,
         latest_purchase_updated_at=record.latest_purchase_updated_at,
-        wechat_pay_payload=(
-            StubWechatPayPayload(**record.wechat_pay_payload)
-            if record.wechat_pay_payload
-            else None
-        ),
+        wechat_pay_payload=payload,
     )
 
 
@@ -464,9 +488,24 @@ def _resolve_stub_purchase_amount(record, product_type: str) -> float:
     pricing = get_orchestrator().get_pricing()
     if product_type == "lite":
         return pricing.lite
-    if "lite" in record.version_purchased:
-        return pricing.upgrade_diff
     return pricing.pro
+
+
+def _resolve_canonical_user_id(
+    *,
+    open_id: str | None,
+    debug_canonical_user_id: str | None,
+) -> str | None:
+    if debug_canonical_user_id:
+        return debug_canonical_user_id
+    if open_id:
+        return f"wechat:{open_id}"
+    return None
+
+
+def _apply_miniapp_purchase(record, product_type: str) -> None:
+    if product_type not in record.version_purchased:
+        record.version_purchased.append(product_type)
 
 
 def to_record_response(request: Request | None, record) -> InterpretationRecordResponse:
@@ -541,7 +580,17 @@ async def exchange_miniapp_session(payload: MiniappSessionExchangeRequest):
             detail="At least one of code, open_id, or debug_canonical_user_id is required",
         )
 
-    resolved_open_id = open_id or MiniappStubStore.build_stub_open_id(code)
+    gray = get_miniapp_gray_config()
+    if debug_canonical_user_id:
+        resolved_open_id = open_id or MiniappStubStore.build_stub_open_id(code or debug_canonical_user_id)
+    elif open_id:
+        resolved_open_id = open_id
+    elif gray.miniapp_live_enabled and gray.wechat_session_enabled and code:
+        session_info = exchange_wechat_session(code)
+        resolved_open_id = session_info.open_id
+    else:
+        resolved_open_id = MiniappStubStore.build_stub_open_id(code)
+
     if debug_canonical_user_id:
         canonical_user_id = debug_canonical_user_id
         linked = True
@@ -617,25 +666,34 @@ async def upload_image(request: Request, file: UploadFile = File(...)):
 )
 async def create_miniapp_order(payload: CreateMiniappOrderRequest):
     record = _load_record_or_http_error(payload.interpretation_id)
+    gray = get_miniapp_gray_config()
+    canonical_user_id = _resolve_canonical_user_id(
+        open_id=payload.open_id,
+        debug_canonical_user_id=payload.debug_canonical_user_id,
+    )
     order = get_miniapp_stub_store().create_order(
         interpretation_id=payload.interpretation_id,
         product_type=payload.product_type,
         channel=payload.channel,
         payable_amount=_resolve_stub_purchase_amount(record, payload.product_type),
         currency="CNY",
-        wechat_pay_payload={
-            "mode": "stub",
-            "order_id": "",
-            "next_action": "reconcile_after_host_payment",
-        },
+        wechat_pay_payload={},
         open_id=payload.open_id,
         debug_canonical_user_id=payload.debug_canonical_user_id,
+        canonical_user_id=canonical_user_id,
     )
-    order.wechat_pay_payload = {
-        "mode": "stub",
-        "order_id": order.order_id,
-        "next_action": "reconcile_after_host_payment",
-    }
+    if gray.miniapp_live_enabled and gray.wechat_pay_enabled:
+        order.wechat_pay_payload = build_wechatpay_payload(
+            order_id=order.order_id,
+            payable_amount=order.payable_amount,
+            dry_run=not bool(payload.open_id),
+        ).to_dict()
+    else:
+        order.wechat_pay_payload = {
+            "mode": "stub",
+            "order_id": order.order_id,
+            "next_action": "reconcile_after_host_payment",
+        }
     get_miniapp_stub_store().save_order(order)
     return _to_miniapp_order_response(order)
 
@@ -775,6 +833,11 @@ async def reconcile_miniapp_order(order_id: str):
 
     reconciled = False
     if record.purchase_state == "paid":
+        interpretation_record = _load_record_or_http_error(record.interpretation_id)
+        _apply_miniapp_purchase(interpretation_record, record.product_type)
+        get_orchestrator().store.save(interpretation_record)
+        if record.product_type == "pro":
+            get_orchestrator().fulfill_direct_pro_purchase(record.interpretation_id)
         record = get_miniapp_stub_store().update_order_state(
             order_id,
             purchase_state="fulfilled",
@@ -932,19 +995,17 @@ async def chat_with_report(interpretation_id: str, payload: ReportChatRequest):
     response_model=UpgradePlaceholderResponse,
 )
 async def upgrade_interpretation_placeholder(interpretation_id: str):
-    """Upgrade a migrated Lite record into the current Pro placeholder flow."""
+    """Compatibility-only placeholder for the retired upgrade purchase path."""
 
-    try:
-        result = get_orchestrator().start_pro_upgrade(interpretation_id)
-    except UnsupportedInterpretationSchemaError as error:
-        raise HTTPException(status_code=410, detail=str(error)) from error
-    except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
-    if result is None:
-        raise HTTPException(status_code=404, detail="interpretation not found")
-    if result["status"] != "completed":
-        _ensure_pro_upgrade_job(interpretation_id)
-    return UpgradePlaceholderResponse(**result)
+    _load_record_or_http_error(interpretation_id)
+    return UpgradePlaceholderResponse(
+        success=True,
+        interpretation_id=interpretation_id,
+        version="pro",
+        enabled=False,
+        status="disabled",
+        message="当前产品语义已收束为 Lite / Pro 独立购买，请通过版本选择页或 miniapp 订单链路直接购买 Pro。",
+    )
 
 
 @router.get("/pricing", response_model=PricingInfo)

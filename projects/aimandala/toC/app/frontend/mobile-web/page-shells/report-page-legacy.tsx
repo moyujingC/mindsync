@@ -400,7 +400,7 @@ export function MobileWebLegacyReportPage({
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const innerRadius = state.status?.three_circles?.inner_radius ?? state.interpretation?.three_circles?.inner_radius ?? 0.3;
   const middleRadius = state.status?.three_circles?.middle_radius ?? state.interpretation?.three_circles?.middle_radius ?? 0.68;
-  const isUpgrade = route === "upgrade" || state.step === "upgradePlaceholder";
+  const isUpgrade = state.report?.version === "pro" || state.step === "proReady";
   const primaryCtaDisabled = primaryDisabled || isUpgrade;
 
   if (state.step === "error" && state.lastError) {

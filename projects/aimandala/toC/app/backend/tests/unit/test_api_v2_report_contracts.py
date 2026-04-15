@@ -4,7 +4,6 @@ import os
 import shutil
 import sys
 import time
-from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -19,6 +18,7 @@ def _reset_api_state() -> None:
     routes_v2._orchestrator = None
     routes_v2._upload_storage = None
     routes_v2._knowledge_workbench = None
+    routes_v2._miniapp_stub_store = None
     routes_v2._active_pro_upgrade_jobs.clear()
     shutil.rmtree(
         os.path.join(
@@ -155,22 +155,9 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert upgrade_payload["success"] is True
     assert upgrade_payload["interpretation_id"] == interpretation_id
     assert upgrade_payload["version"] == "pro"
-    assert upgrade_payload["enabled"] is True
-    assert upgrade_payload["status"] in {"processing", "completed"}
-
-    pro_report = _wait_for_pro_report(client, interpretation_id)
-    assert pro_report["version"] == "pro"
-    assert pro_report["structured"]["prompt_schema_validation_issues"] == []
-    assert pro_report["ai_qa_context"]
-    assert pro_report["can_upgrade"] is False
-    assert pro_report["upgrade_price"] is None
-    assert pro_report["error"] is None
-
-    best_available_response = client.get(
-        f"/api/v2/interpretations/{interpretation_id}/report"
-    )
-    assert best_available_response.status_code == 200
-    assert best_available_response.json()["version"] == "pro"
+    assert upgrade_payload["enabled"] is False
+    assert upgrade_payload["status"] == "disabled"
+    assert "独立购买" in upgrade_payload["message"]
 
 
 def test_api_v2_report_chat_returns_controlled_400_without_runtime(tmp_path):
@@ -192,8 +179,26 @@ def test_api_v2_report_chat_returns_controlled_400_without_runtime(tmp_path):
     assert create_response.status_code == 200
     interpretation_id = create_response.json()["interpretation_id"]
 
-    upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    notify_response = client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    )
+    assert notify_response.status_code == 200
+    reconcile_response = client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile")
+    assert reconcile_response.status_code == 200
     _wait_for_pro_report(client, interpretation_id)
 
     chat_response = client.post(
@@ -209,8 +214,7 @@ def test_api_v2_report_chat_returns_controlled_400_without_runtime(tmp_path):
     }
 
 
-def test_api_v2_history_filters_keep_pro_generating_records_pending(tmp_path):
-    from app.api import routes_v2
+def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):
     from app.api.main import app
 
     _reset_api_state()
@@ -253,11 +257,24 @@ def test_api_v2_history_filters_keep_pro_generating_records_pending(tmp_path):
     assert relationship_response.status_code == 200
 
     pending_interpretation_id = relationship_response.json()["interpretation_id"]
-    with patch.object(routes_v2, "_ensure_pro_upgrade_job", lambda _: None):
-        upgrade_response = client.post(
-            f"/api/v2/interpretations/{pending_interpretation_id}/upgrade"
-        )
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": pending_interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    assert client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    ).status_code == 200
+    assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
     all_response = client.get("/api/v2/users/user-contract-history/interpretations")
     ready_response = client.get(
@@ -284,10 +301,13 @@ def test_api_v2_history_filters_keep_pro_generating_records_pending(tmp_path):
     assert {item["theme"] for item in ready_payload} == {
         "general",
         "wealth_career",
+        "intimate_relationship",
     }
-    assert len(pending_payload) == 1
-    assert pending_payload[0]["interpretation_id"] == pending_interpretation_id
-    assert pending_payload[0]["theme"] == "intimate_relationship"
-    assert pending_payload[0]["version_purchased"] == ["lite", "pro"]
-    assert pending_payload[0]["generation_stage"] == "generating"
-    assert pending_payload[0]["generation_progress"] == 85
+    ready_by_id = {
+        item["interpretation_id"]: item
+        for item in ready_payload
+    }
+    assert ready_by_id[pending_interpretation_id]["version_purchased"] == ["lite", "pro"]
+    assert ready_by_id[pending_interpretation_id]["generation_stage"] == "completed"
+    assert ready_by_id[pending_interpretation_id]["generation_progress"] == 100
+    assert pending_payload == []

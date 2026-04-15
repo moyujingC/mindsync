@@ -95,7 +95,7 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
         ? "这个模式更像长期形成，还是最近被触发？\n我怎样减少过度消耗？\n什么环境最支持我的表达？"
         : null,
     can_upgrade: true,
-    upgrade_price: 49,
+    upgrade_price: 39,
     error: null,
   };
 }
@@ -218,17 +218,6 @@ export function createPreviewAppProps(
         route,
         uploadDraft: draft,
         record: (historyRecordsOverride ?? createMockRecords())[0],
-      };
-
-    case "upgrade":
-      return {
-        route,
-        uploadDraft: draft,
-        flowState: flowStateOverride ?? {
-          ...baseFlowState,
-          step: "upgradePlaceholder",
-          report: createMockReport("pro"),
-        },
       };
   }
 }

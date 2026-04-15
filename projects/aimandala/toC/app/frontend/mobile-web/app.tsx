@@ -4,7 +4,6 @@ import { MobileWebLandingPage } from "./page-shells/landing-page";
 import { MobileWebLoadingPage } from "./page-shells/loading-page";
 import { MobileWebHistoryPage } from "./page-shells/history-page";
 import { MobileWebHistoryRecordDetailPage } from "./page-shells/history-record-detail-page";
-import { MobileWebProReportPage } from "./page-shells/pro-report-page";
 import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
 import { MobileWebLegacyReportPage } from "./page-shells/report-page-legacy";
@@ -203,20 +202,6 @@ export function MobileWebApp({
           onPrimaryAction={onReportPrimaryAction}
           onSecondaryAction={onReportSecondaryAction}
           primaryDisabled={reportPrimaryDisabled}
-        />
-      );
-
-    case "upgrade":
-      if (!flowState) {
-        return "Missing flow state";
-      }
-      return (
-        <MobileWebProReportPage
-          state={flowState}
-          uploadDraft={uploadDraft}
-          onBackAction={onReportBackAction}
-          onRestartAction={onReportSecondaryAction}
-          onRetryAction={onReportPrimaryAction}
         />
       );
 

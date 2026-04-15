@@ -168,7 +168,7 @@ export function getMobileWebPrimaryAction(state: MandalaFlowState): string {
       return "等待一镜 Lite 版";
     case "liteReady":
       return "查看一镜 Lite 版";
-    case "upgradePlaceholder":
+    case "proReady":
       return "查看一梳 Pro 版";
     case "error":
       return "重新开始";

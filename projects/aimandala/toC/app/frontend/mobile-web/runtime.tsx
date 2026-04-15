@@ -10,10 +10,7 @@ import {
 } from "./router-plan";
 import type { MobileWebAppProps } from "./app";
 import {
-  openMobileWebUpgradeEntry,
-  pollMobileWebProReportUntilReady,
   pollMobileWebReportUntilReady,
-  refreshMobileWebProReport,
   runMobileWebLiteFlow,
   refreshMobileWebReport,
 } from "./controller";
@@ -153,8 +150,7 @@ function getDraftFromInput(
     input.route === "report" ||
     input.route === "reportLegacy" ||
     input.route === "history" ||
-    input.route === "historyRecordDetail" ||
-    input.route === "upgrade"
+    input.route === "historyRecordDetail"
   ) {
     return input.params.uploadDraft ?? null;
   }
@@ -430,6 +426,7 @@ export function MobileWebRuntime({
           const liteSnapshot = loadingState.step === "liteGenerating"
             ? await pollMobileWebReportUntilReady(
                 interpretationId,
+                "lite",
                 loadingState,
                 { onTick: handleTick },
               )
@@ -440,28 +437,24 @@ export function MobileWebRuntime({
           }
 
           if (hasProReportAccess(liteSnapshot.state)) {
-            return pollMobileWebProReportUntilReady(
+            return pollMobileWebReportUntilReady(
               interpretationId,
+              "pro",
               liteSnapshot.state,
               { onTick: handleTick },
             );
           }
 
-          const upgradeSnapshot =
-            liteSnapshot.state.step === "upgradePlaceholder"
-              ? liteSnapshot
-              : await openMobileWebUpgradeEntry(interpretationId, liteSnapshot.state);
-
-          handleTick(upgradeSnapshot);
-
-          return pollMobileWebProReportUntilReady(
+          return pollMobileWebReportUntilReady(
             interpretationId,
-            upgradeSnapshot.state,
+            "pro",
+            liteSnapshot.state,
             { onTick: handleTick },
           );
         })()
       : pollMobileWebReportUntilReady(
           interpretationId,
+          "lite",
           loadingState,
           { onTick: handleTick },
         );
@@ -480,7 +473,7 @@ export function MobileWebRuntime({
 
           if (snapshot.state.step === "error") {
             setRuntimeProps({
-              route: "upgrade",
+              route: "report",
               flowState: snapshot.state,
               uploadDraft: currentUploadDraft ?? undefined,
             });
@@ -497,7 +490,7 @@ export function MobileWebRuntime({
           }
 
           setRuntimeProps({
-            route: "upgrade",
+            route: "report",
             flowState: snapshot.state,
             uploadDraft: currentUploadDraft ?? undefined,
           });
@@ -615,8 +608,7 @@ export function MobileWebRuntime({
     draft: MobileWebUploadDraft | null,
   ) {
     if (getDraftReportVariant(draft ?? defaultUploadDraft) === "pro" && interpretationId) {
-      const upgraded = await openMobileWebUpgradeEntry(interpretationId, state);
-      const proReport = await refreshMobileWebProReport(interpretationId, upgraded.state);
+      const proReport = await refreshMobileWebReport(interpretationId, "pro", state);
       const proReady =
         proReport.report?.version === "pro" &&
         typeof proReport.report.report === "string" &&
@@ -632,7 +624,7 @@ export function MobileWebRuntime({
       }
 
       setRuntimeProps({
-        route: "upgrade",
+        route: "report",
         flowState: proReport.state,
         uploadDraft: draft ?? undefined,
       });
@@ -727,10 +719,10 @@ export function MobileWebRuntime({
         structured: getLiteStructuredReport(currentRuntimeProps.flowState.report),
       });
 
-      if (resultCta.intent === "open_upgrade_report") {
+      if (resultCta.intent === "open_pro_report") {
         const nextDraft = currentUploadDraft
-          ? mergeMobileWebUploadDraft(currentUploadDraft, { reportVariant: "pro" })
-          : mergeMobileWebUploadDraft(uploadDraftForReturn, { reportVariant: "pro" });
+          ? mergeMobileWebUploadDraft(currentUploadDraft, { reportType: "pro" })
+          : mergeMobileWebUploadDraft(uploadDraftForReturn, { reportType: "pro" });
 
         setRuntimeUploadDraft(nextDraft);
         setRuntimeProps({
@@ -756,26 +748,6 @@ export function MobileWebRuntime({
       return;
     }
 
-    if (currentRuntimeProps.route === "upgrade") {
-      if (!interpretationId) {
-        return;
-      }
-
-      setRuntimeBusy(true);
-      try {
-        const refreshed = await refreshMobileWebProReport(
-          interpretationId,
-          currentRuntimeProps.flowState,
-        );
-        setRuntimeProps({
-          route: "upgrade",
-          flowState: refreshed.state,
-          uploadDraft: currentUploadDraft ?? undefined,
-        });
-      } finally {
-        setRuntimeBusy(false);
-      }
-    }
   }
 
   async function handleHistoryFilterChange(filter: HistoryFilterId) {
@@ -1016,7 +988,7 @@ export function MobileWebRuntime({
           refreshed.report.report.trim();
 
         setRuntimeProps({
-          route: proReady ? "upgrade" : "loading",
+          route: proReady ? "report" : "loading",
           flowState: refreshed.state,
           uploadDraft: nextDraft,
         });
@@ -1051,14 +1023,6 @@ export function MobileWebRuntime({
   }
 
   function handleReportBackAction() {
-    if (currentRuntimeProps.route === "upgrade") {
-      setRuntimeProps({
-        route: "reportEntry",
-        uploadDraft: uploadDraftForReturn,
-      });
-      return;
-    }
-
     setRuntimeProps({
       route: "report",
       flowState: currentRuntimeProps.flowState,
