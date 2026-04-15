@@ -211,6 +211,22 @@ function getReviewLabel(issue) {
   return "review:multiple";
 }
 
+function getPriorityLabel(issue) {
+  const priorityLabels = (issue.labels ?? [])
+    .map((label) => label?.name)
+    .filter((name) => typeof name === "string" && ["P0", "P1", "P2"].includes(name));
+
+  if (priorityLabels.length === 0) return null;
+  if (priorityLabels.length === 1) return priorityLabels[0];
+  return "priority:multiple";
+}
+
+function hasHumanInterventionLabel(issue) {
+  return (issue.labels ?? [])
+    .map((label) => label?.name)
+    .some((name) => name === "Human");
+}
+
 function summarizeIssues(issues, { staleHours, reviewHours }) {
   const openIssues = issues.filter((issue) => !["done", "cancelled"].includes(issue.status));
   const now = Date.now();
@@ -222,12 +238,15 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
   const byStatus = {};
   const byType = {};
   const byReview = {};
+  const byPriority = {};
   for (const issue of openIssues) {
     byStatus[issue.status] = (byStatus[issue.status] ?? 0) + 1;
     const typeLabel = getTypeLabel(issue) ?? "untyped";
     const reviewLabel = getReviewLabel(issue) ?? "no-review-label";
+    const priorityLabel = getPriorityLabel(issue) ?? "no-priority-label";
     byType[typeLabel] = (byType[typeLabel] ?? 0) + 1;
     byReview[reviewLabel] = (byReview[reviewLabel] ?? 0) + 1;
+    byPriority[priorityLabel] = (byPriority[priorityLabel] ?? 0) + 1;
     if (issue.parentId) {
       openChildCountByParentId.set(issue.parentId, (openChildCountByParentId.get(issue.parentId) ?? 0) + 1);
     }
@@ -238,7 +257,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     !issue.assigneeAgentId &&
     !issue.assigneeUserId &&
     (issue.status === "todo" || issue.status === "backlog") &&
-    getTypeLabel(issue) !== "type:epic",
+    getTypeLabel(issue) !== "Epic",
   );
 
   const readyToStart = openIssues.filter((issue) =>
@@ -272,6 +291,10 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     issue.status !== "in_review" &&
     Boolean(getReviewLabel(issue)),
   );
+  const highPriorityHumanIntervention = openIssues.filter((issue) => {
+    const priorityLabel = getPriorityLabel(issue);
+    return hasHumanInterventionLabel(issue) && ["P0", "P1"].includes(priorityLabel);
+  });
   const openChildUnderClosedParent = openIssues.filter((issue) => {
     if (!issue.parentId) return false;
     const parent = issuesById.get(issue.parentId);
@@ -284,7 +307,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
   ).filter((issue) => {
     const hasOpenChildren = (openChildCountByParentId.get(issue.id) ?? 0) > 0;
     const typeLabel = getTypeLabel(issue);
-    return !hasOpenChildren && typeLabel !== "type:epic";
+    return !hasOpenChildren && typeLabel !== "Epic";
   });
 
   return {
@@ -292,6 +315,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     byStatus,
     byType,
     byReview,
+    byPriority,
     needsTriage,
     readyToStart,
     staleInProgress,
@@ -300,6 +324,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     missingTypeLabel,
     reviewWithoutReviewLabel,
     reviewLabelOutsideReview,
+    highPriorityHumanIntervention,
     openChildUnderClosedParent,
     topLevelActive,
   };
@@ -330,6 +355,8 @@ function compactIssue(issue) {
     status: issue.status,
     typeLabel: getTypeLabel(issue),
     reviewLabel: getReviewLabel(issue),
+    priorityLabel: getPriorityLabel(issue),
+    humanIntervention: hasHumanInterventionLabel(issue),
     parentId: issue.parentId,
     assigneeAgentId: issue.assigneeAgentId,
     assigneeUserId: issue.assigneeUserId,
@@ -346,6 +373,7 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   console.log(`- by status: ${Object.entries(report.issues.byStatus).map(([status, count]) => `${status}=${count}`).join(", ") || "none"}`);
   console.log(`- by type: ${Object.entries(report.issues.byType).map(([type, count]) => `${type}=${count}`).join(", ") || "none"}`);
   console.log(`- by review: ${Object.entries(report.issues.byReview).map(([review, count]) => `${review}=${count}`).join(", ") || "none"}`);
+  console.log(`- by priority: ${Object.entries(report.issues.byPriority).map(([priority, count]) => `${priority}=${count}`).join(", ") || "none"}`);
   console.log(`- project->goal drift: ${report.projects.goalDrift.length}`);
   console.log("");
 
@@ -354,6 +382,7 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   printIssueGroup(`卡住的执行任务（>${staleHours}h）`, report.issues.staleInProgress, "处于 in_progress，但最近活动已超过阈值。");
   printIssueGroup(`运行中但无回写（>${staleHours}h）`, report.issues.staleRunningWithoutHeartbeat, "存在 activeRun=running，但最近活动已超过阈值的任务。");
   printIssueGroup(`久置 review（>${reviewHours}h）`, report.issues.agingReview, "处于 in_review，且最近活动已超过阈值。");
+  printIssueGroup("高优先级人工介入", report.issues.highPriorityHumanIntervention, "同时带 `Human` 与 `P0/P1` 的打开任务。");
   printIssueGroup("缺少类型标签的打开任务", report.issues.missingTypeLabel, "已打开但尚未标记 `type:*` 语义的任务。");
   printIssueGroup("缺少 review 标签的审阅任务", report.issues.reviewWithoutReviewLabel, "处于 in_review，但尚未标记 `review:*` 语义的任务。");
   printIssueGroup("review 标签脱离审阅语境的任务", report.issues.reviewLabelOutsideReview, "已带 `review:*`，但当前并不处于 in_review 的任务。");
@@ -383,8 +412,10 @@ function printIssueGroup(title, issues, description) {
   for (const issue of issues.map(compactIssue)) {
     const typePart = issue.typeLabel ? ` | ${issue.typeLabel}` : "";
     const reviewPart = issue.reviewLabel ? ` | ${issue.reviewLabel}` : "";
+    const priorityPart = issue.priorityLabel ? ` | ${issue.priorityLabel}` : "";
+    const interventionPart = issue.humanIntervention ? " | Human" : "";
     const runPart = issue.activeRunStatus ? ` | run=${issue.activeRunStatus}` : "";
-    console.log(`- ${issue.identifier} | ${issue.status}${typePart}${reviewPart}${runPart} | ${issue.title}`);
+    console.log(`- ${issue.identifier} | ${issue.status}${typePart}${reviewPart}${priorityPart}${interventionPart}${runPart} | ${issue.title}`);
   }
   console.log("");
 }

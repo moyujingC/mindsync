@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：CEO / Orchestrator
-> last_updated：2026-04-05
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md
 
 这份文档定义 `墨予镜` 当前阶段对 Paperclip 任务系统的优化方向。
@@ -84,7 +84,7 @@
 - `issue documents`
   - 表达 `plan`、`research-brief`、正式 handoff、阶段产物
 - `labels`
-  - 后续用于补充 `type:*` 与 `review:*` 语义
+  - 当前用于补充 `type:*`、`review:*`、`priority:*` 与 `intervention:*` 语义
 
 当前约定以：
 
@@ -154,6 +154,8 @@
    - 处于 in_review 的任务
 5. `配置或结构漂移`
    - project / goal 映射、workspace 路径、入口文档等与治理源不一致
+6. `高优先级人工介入`
+   - 已明确需要人亲自处理，且优先级不应继续埋在普通队列里的任务
 
 ### 6.1 为什么先做这一层
 
@@ -196,11 +198,13 @@
 
 当前已经进一步升级为：
 
-- 不再把健康的顶层 `type:epic` 误报成结构问题
+- 不再把健康的顶层 `Epic` 误报成结构问题
 - 可直接暴露当前打开任务按 `type:*` 的分布
 - 可直接暴露当前打开任务按 `review:*` 的分布
+- 可直接暴露当前打开任务按 `priority:*` 的分布
 - 可直接暴露哪些打开任务还没有补齐类型语义
 - 可直接暴露哪些 `in_review` 任务还没有补齐 `review:*` 语义
+- 可直接暴露哪些打开任务同时具备 `Human` 与高优先级语义
 - 可直接暴露哪些任务出现了“父任务已关闭但子任务仍打开”的结构异常
 - 可直接暴露哪些任务出现了“activeRun 仍在 running，但长期没有评论或状态回写”的执行健康问题
 
@@ -246,14 +250,20 @@
 下一步建议：
 
 - 建立 `type:*` 标签族
-  - `type:intake`
-  - `type:epic`
-  - `type:execution`
-  - `type:artifact`
+  - `Intake`
+  - `Epic`
+  - `Exec`
+  - `Art`
 - 建立 `review:*` 标签族
-  - `review:direction`
-  - `review:deliverable`
-  - `review:decision`
+  - `Dir`
+  - `Deliv`
+  - `Decide`
+- 建立最小 `priority:*` 标签族
+  - `P0`
+  - `P1`
+  - `P2`
+- 建立 `intervention:*` 标签族
+  - `Human`
 - 在 New Issue / handoff 中加入默认模板
 
 当前已先在治理层补齐：
@@ -267,7 +277,7 @@
 当前运行态已经部分落地：
 
 - 已创建最小 `type:*` 标签集
-- 已为当前打开任务补上 `type:epic` / `type:execution`
+- 已为当前打开任务补上 `Epic` / `Exec`
 - 审计脚本已开始把缺标签任务当成治理问题主动暴露
 
 下一步的默认重点不是继续手工整理某一批历史任务，而是让系统具备以下自维护能力：

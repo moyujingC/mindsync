@@ -16,48 +16,48 @@ const ISSUE_KIND_CONFIG = {
   "lint-failure": {
     status: "todo",
     priority: "high",
-    labelNames: ["type:execution"],
+    labelNames: ["Exec"],
     severity: "error",
   },
   "format-failure": {
     status: "todo",
     priority: "high",
-    labelNames: ["type:execution"],
+    labelNames: ["Exec"],
     severity: "error",
   },
   "coverage-failure": {
     status: "todo",
     priority: "high",
-    labelNames: ["type:execution"],
+    labelNames: ["Exec"],
     severity: "error",
   },
   "ci-test-failure": {
     status: "todo",
     priority: "high",
-    labelNames: ["type:execution"],
+    labelNames: ["Exec"],
     severity: "error",
   },
   "build-failure": {
     status: "todo",
     priority: "high",
-    labelNames: ["type:execution"],
+    labelNames: ["Exec"],
     severity: "error",
   },
   "deploy-or-smoke-failure": {
     status: "in_review",
     priority: "critical",
-    labelNames: ["type:artifact", "review:deliverable"],
+    labelNames: ["Art", "Deliv"],
     severity: "warning",
   },
   "infra-runner-failure": {
     status: "todo",
     priority: "critical",
-    labelNames: ["type:execution"],
+    labelNames: ["Exec"],
     severity: "error",
   },
 };
 
-const PARENT_LABEL_NAMES = ["type:epic"];
+const PARENT_LABEL_NAMES = ["Epic"];
 const KIND_DIAGNOSIS = {
   "lint-failure": "代码规范问题",
   "format-failure": "格式规范问题",
@@ -176,7 +176,7 @@ function buildCommitSummaryDescription(options) {
   const owner = options.ownerLabel ?? options.ownerAgentId ?? "待指派";
 
   lines.push(`automation_key: ${options.parentAutomationKey}`);
-  lines.push("type:epic");
+  lines.push("Epic");
   lines.push(`project: ${options.projectName}`);
   lines.push(`owner: ${owner}`);
   if (options.goalTitle) {
@@ -286,18 +286,18 @@ function formatExecutionBaselineLines(options) {
 }
 
 function buildDescription(config, options) {
-  const issueMode = config.labelNames.includes("type:artifact") ? "artifact" : "execution";
+  const issueMode = config.labelNames.includes("Art") ? "artifact" : "execution";
   const lines = [];
   const owner = options.ownerLabel ?? options.ownerAgentId ?? "待指派";
   const semanticLabels = [];
 
   if (issueMode === "execution") {
-    semanticLabels.push("type:execution");
+    semanticLabels.push("Exec");
   } else {
-    semanticLabels.push("type:artifact");
+    semanticLabels.push("Art");
   }
-  if (config.labelNames.includes("review:deliverable")) {
-    semanticLabels.push("review:deliverable");
+  if (config.labelNames.includes("Deliv")) {
+    semanticLabels.push("Deliv");
   }
 
   lines.push(`automation_key: ${options.automationKey}`);

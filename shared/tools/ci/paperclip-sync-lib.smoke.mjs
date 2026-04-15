@@ -39,13 +39,13 @@ function main() {
     ...baseOptions,
     goalTitle: "一镜一梳上线",
   });
-  assert(commitDescription.includes("type:epic"), "commit summary should include type:epic");
+  assert(commitDescription.includes("Epic"), "commit summary should include Epic");
   assert(commitDescription.includes("goal: 一镜一梳上线"), "commit summary should include goal");
   assert(commitDescription.includes("review goal："), "commit summary should include review goal");
 
   const executionDescription = __testables.buildDescription(
     {
-      labelNames: ["type:execution"],
+      labelNames: ["Exec"],
       severity: "error",
     },
     {
@@ -53,7 +53,7 @@ function main() {
       goalTitle: "一镜一梳上线",
     },
   );
-  assert(executionDescription.includes("type:execution"), "execution description should include type:execution");
+  assert(executionDescription.includes("Exec"), "execution description should include Exec");
   assert(executionDescription.includes("预期 artifact："), "execution description should include expected artifact");
   assert(executionDescription.includes("完成标准："), "execution description should include completion criteria");
   assert(executionDescription.includes("done when："), "execution description should include done when");
