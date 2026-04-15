@@ -26,7 +26,7 @@
    - `miniappHost=native`
    - `userId`
    - `openId`
-   带进 H5 runtime
+     带进 H5 runtime
 
 示例启动 query：
 

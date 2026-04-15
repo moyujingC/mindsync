@@ -16,8 +16,14 @@ function joinBaseAndPath(baseUrl, path) {
 
 function buildQueryString(params) {
   return Object.keys(params)
-    .filter((key) => params[key] !== undefined && params[key] !== null && params[key] !== "")
-    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(String(params[key]))}`)
+    .filter(
+      (key) =>
+        params[key] !== undefined && params[key] !== null && params[key] !== "",
+    )
+    .map(
+      (key) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(params[key]))}`,
+    )
     .join("&");
 }
 

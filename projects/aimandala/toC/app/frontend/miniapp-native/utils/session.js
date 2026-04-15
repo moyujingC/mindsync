@@ -51,7 +51,12 @@ function exchangeSession(config, payload) {
       data: payload,
       success(response) {
         if (response.statusCode >= 400) {
-          reject(new Error((response.data && response.data.detail) || "miniapp session exchange failed"));
+          reject(
+            new Error(
+              (response.data && response.data.detail) ||
+                "miniapp session exchange failed",
+            ),
+          );
           return;
         }
         resolve(response.data);
@@ -85,7 +90,8 @@ async function ensureMiniappSession(config, query) {
   const code = await requestLoginCode();
   const response = await exchangeSession(config, {
     code,
-    debug_canonical_user_id: normalizeValue(query && query.debugCanonicalUserId) || null,
+    debug_canonical_user_id:
+      normalizeValue(query && query.debugCanonicalUserId) || null,
   });
   const session = {
     canonicalUserId: response.canonical_user_id,

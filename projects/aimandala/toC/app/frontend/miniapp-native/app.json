@@ -1,7 +1,5 @@
 {
-  "pages": [
-    "pages/runtime/index"
-  ],
+  "pages": ["pages/runtime/index"],
   "window": {
     "navigationBarTitleText": "一镜一梳",
     "navigationBarBackgroundColor": "#f6f0e8",

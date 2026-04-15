@@ -10,6 +10,7 @@ export default tseslint.config(
       "coverage/**",
       "node_modules/**",
       "miniapp/**",
+      "miniapp-native/**",
       "native-app/**",
       "vite.config.ts",
     ],

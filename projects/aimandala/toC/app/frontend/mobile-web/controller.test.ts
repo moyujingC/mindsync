@@ -9,10 +9,7 @@ vi.mock("../shared/api", () => ({
 
 import * as api from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
-import {
-  refreshMobileWebReport,
-  runMobileWebLiteFlow,
-} from "./controller";
+import { refreshMobileWebReport, runMobileWebLiteFlow } from "./controller";
 
 describe("mobile-web controller", () => {
   beforeEach(() => {

@@ -1,4 +1,7 @@
-import { getGenerationPresentation, getThemeDisplayName } from "../../shared/core";
+import {
+  getGenerationPresentation,
+  getThemeDisplayName,
+} from "../../shared/core";
 import type {
   InterpretationRecordResponse,
   InterpretationUpgradeHistoryEntry,
@@ -38,7 +41,8 @@ function getAvailableReportTypes(
   record: InterpretationRecordResponse,
 ): InterpretationVersion[] {
   const available = record.version_purchased.filter(
-    (version): version is InterpretationVersion => version === "lite" || version === "pro",
+    (version): version is InterpretationVersion =>
+      version === "lite" || version === "pro",
   );
 
   return available.length ? available : ["lite"];
@@ -108,11 +112,12 @@ export function createHistoryRecordDetailPageDescriptor(
     themeLabel,
     versionSummary: formatVersionSummary(availableReportTypes),
     statusLabel: hasPro && !proReady ? "Pro 生成中" : presentation.statusLabel,
-    statusDetail: hasPro && !proReady
-      ? "这条记录已经拥有 Pro，可完整 Pro 正文仍在后台生成。"
-      : availableReportTypes.length > 1
-        ? "这条画作记录下已经有多个可查看版本，请明确选择本次要打开哪一个。"
-        : "这条画作记录当前只有一个版本，也建议先从详情页确认后再进入。",
+    statusDetail:
+      hasPro && !proReady
+        ? "这条记录已经拥有 Pro，可完整 Pro 正文仍在后台生成。"
+        : availableReportTypes.length > 1
+          ? "这条画作记录下已经有多个可查看版本，请明确选择本次要打开哪一个。"
+          : "这条画作记录当前只有一个版本，也建议先从详情页确认后再进入。",
     progressLabel: presentation.progressLabel,
     actions: [
       {
@@ -130,9 +135,9 @@ export function createHistoryRecordDetailPageDescriptor(
         label: proReady ? "打开 Pro 报告" : "查看 Pro 状态",
         statusLabel: hasPro ? (proReady ? "可查看" : "生成中") : "未购买",
         statusDetail: hasPro
-          ? (proReady
+          ? proReady
             ? "当前 Pro 已可查看，会进入完整 Pro 报告页。"
-            : "当前 Pro 仍在生成，会进入对应的等待 / 进度态。")
+            : "当前 Pro 仍在生成，会进入对应的等待 / 进度态。"
           : "当前记录还没有 Pro 权限，不会在这轮直接生成新的 Pro。",
         enabled: hasPro,
         emphasis: "primary",

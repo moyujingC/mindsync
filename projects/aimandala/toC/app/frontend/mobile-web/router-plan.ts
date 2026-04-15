@@ -1,5 +1,5 @@
 import { getInterpretation } from "../shared/api";
-import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUpgradePage, loadUploadPage } from "./loaders";
+import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUploadPage } from "./loaders";
 import { resolveMobileWebCanonicalUserId } from "./identity";
 import type { MobileWebAppProps } from "./app";
 import type { MobileWebRouteId } from "./routes";

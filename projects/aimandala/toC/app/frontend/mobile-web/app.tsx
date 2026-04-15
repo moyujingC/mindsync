@@ -103,7 +103,6 @@ export function MobileWebApp({
   onLoadingLeaveLater,
   onReportPrimaryAction,
   onReportSecondaryAction,
-  onReportBackAction,
   reportPrimaryDisabled = false,
   onHistoryBackToUpload,
   onHistoryFilterChange,

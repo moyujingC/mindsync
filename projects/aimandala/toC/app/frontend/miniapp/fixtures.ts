@@ -62,9 +62,7 @@ function createMiniappStatus(
   };
 }
 
-function createMiniappReport(
-  version: "lite" | "pro" = "lite",
-): ReportResponse {
+function createMiniappReport(version: "lite" | "pro" = "lite"): ReportResponse {
   return {
     interpretation_id: "miniapp-ipt-1",
     version,
@@ -77,9 +75,10 @@ function createMiniappReport(
       emotion_portrait_rendered: "你在想整理自己，也在想如何继续往前。",
       pro_teaser: "如果想继续深入，可在正式链路里查看 Pro 版。",
     },
-    report: version === "pro"
-      ? "# Miniapp Pro 预览\n\n当前只展示静态壳，不代表真实小程序运行态。"
-      : "这是一份 miniapp Lite 静态预览报告，用于页面与 shared/ui 消费审阅。",
+    report:
+      version === "pro"
+        ? "# Miniapp Pro 预览\n\n当前只展示静态壳，不代表真实小程序运行态。"
+        : "这是一份 miniapp Lite 静态预览报告，用于页面与 shared/ui 消费审阅。",
     ai_qa_context: version === "pro" ? "示例问答上下文" : null,
     can_upgrade: version !== "pro",
     upgrade_price: version !== "pro" ? 39 : null,
@@ -214,7 +213,10 @@ export function createMiniappPreviewProps(
     case "loading":
       return {
         route: "loading",
-        uploadDraft: createMiniappDraft({ reportType: "pro", reportVariant: "pro" }),
+        uploadDraft: createMiniappDraft({
+          reportType: "pro",
+          reportVariant: "pro",
+        }),
         flowState: createMiniappFlowState({
           step: "liteGenerating",
           status: createMiniappStatus({
@@ -243,7 +245,8 @@ export function createMiniappPreviewProps(
         },
         records,
         historyStatusLabel: "当前为 miniapp 静态壳预览",
-        historyStatusDetail: "当前记录和状态都来自本地 fixture，不代表真实小程序运行态。",
+        historyStatusDetail:
+          "当前记录和状态都来自本地 fixture，不代表真实小程序运行态。",
         historyStatusTone: "preview",
       };
     case "historyRecordDetail":

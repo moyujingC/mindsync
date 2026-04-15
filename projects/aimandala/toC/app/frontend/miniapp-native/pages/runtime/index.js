@@ -1,4 +1,7 @@
-const { resolveRuntimeConfig, isRuntimeConfigReady } = require("../../utils/config");
+const {
+  resolveRuntimeConfig,
+  isRuntimeConfigReady,
+} = require("../../utils/config");
 const { ensureMiniappSession } = require("../../utils/session");
 const { requestWechatPayment } = require("../../utils/payment");
 const { buildRuntimeUrl } = require("../../utils/runtime-url");
@@ -25,9 +28,12 @@ function extractPostedMessages(rawData) {
 
 function resolvePaymentRequestMessage(rawData) {
   const messages = extractPostedMessages(rawData);
-  return messages.find(
-    (message) => message && message.type === "aimandala-miniapp-payment-request",
-  ) || null;
+  return (
+    messages.find(
+      (message) =>
+        message && message.type === "aimandala-miniapp-payment-request",
+    ) || null
+  );
 }
 
 Page({
@@ -43,17 +49,20 @@ Page({
 
   onShow() {
     if (
-      !this.data.booting
-      && this.runtimeConfig
-      && this.linkedSession
-      && this.lastRuntimeOptions
+      !this.data.booting &&
+      this.runtimeConfig &&
+      this.linkedSession &&
+      this.lastRuntimeOptions
     ) {
-      console.info("[aimandala-miniapp-native] page onShow -> refresh runtime", {
-        route: this.lastRuntimeOptions.route,
-        interpretationId: this.lastRuntimeOptions.interpretationId,
-        autoRecover: this.lastRuntimeOptions.autoRecover,
-        paymentResult: this.lastRuntimeOptions.paymentResult,
-      });
+      console.info(
+        "[aimandala-miniapp-native] page onShow -> refresh runtime",
+        {
+          route: this.lastRuntimeOptions.route,
+          interpretationId: this.lastRuntimeOptions.interpretationId,
+          autoRecover: this.lastRuntimeOptions.autoRecover,
+          paymentResult: this.lastRuntimeOptions.paymentResult,
+        },
+      );
       this.reloadRuntime(this.lastRuntimeOptions);
     }
   },
@@ -63,7 +72,8 @@ Page({
     if (!isRuntimeConfigReady(config)) {
       this.setData({
         booting: false,
-        errorMessage: "请在微信开发者工具启动参数里提供 apiBaseUrl 与 runtimeBaseUrl。",
+        errorMessage:
+          "请在微信开发者工具启动参数里提供 apiBaseUrl 与 runtimeBaseUrl。",
       });
       return;
     }
@@ -88,7 +98,8 @@ Page({
     } catch (error) {
       this.setData({
         booting: false,
-        errorMessage: error instanceof Error ? error.message : "无法恢复微信会话",
+        errorMessage:
+          error instanceof Error ? error.message : "无法恢复微信会话",
       });
     }
   },
@@ -113,7 +124,10 @@ Page({
       autoRecover: options.autoRecover,
       paymentResult: options.paymentResult,
     });
-    console.info("[aimandala-miniapp-native] runtime reload", this.lastRuntimeOptions);
+    console.info(
+      "[aimandala-miniapp-native] runtime reload",
+      this.lastRuntimeOptions,
+    );
 
     this.setData({
       booting: false,
@@ -131,8 +145,15 @@ Page({
     }
 
     const hostPayload = paymentRequest.payload.hostPayload;
-    if (!hostPayload || hostPayload.mode !== "wechatpay" || !hostPayload.request_payment_args) {
-      console.warn("[aimandala-miniapp-native] invalid payment payload", paymentRequest);
+    if (
+      !hostPayload ||
+      hostPayload.mode !== "wechatpay" ||
+      !hostPayload.request_payment_args
+    ) {
+      console.warn(
+        "[aimandala-miniapp-native] invalid payment payload",
+        paymentRequest,
+      );
       this.setData({
         errorMessage: "当前原生壳收到的支付消息不完整，无法拉起微信支付。",
       });

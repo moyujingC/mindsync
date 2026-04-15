@@ -30,7 +30,9 @@ function getStorage(): Storage | null {
   }
 }
 
-function parseStoredSession(rawValue: string | null): StoredMiniappSession | null {
+function parseStoredSession(
+  rawValue: string | null,
+): StoredMiniappSession | null {
   if (!rawValue) {
     return null;
   }
@@ -47,7 +49,10 @@ function parseStoredSession(rawValue: string | null): StoredMiniappSession | nul
 }
 
 function createDefaultToken(): string {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return crypto.randomUUID().slice(0, 8);
   }
 
@@ -92,7 +97,9 @@ export function persistMiniappSession(session: FrontendUserSession): void {
       platformUserId: session.platformUserId ?? null,
       displayLabel: session.displayLabel,
       provider:
-        session.provider === "linked-wechat" ? "linked-wechat" : "miniapp-preview",
+        session.provider === "linked-wechat"
+          ? "linked-wechat"
+          : "miniapp-preview",
       isAnonymous: session.isAnonymous,
     } satisfies StoredMiniappSession),
   );
@@ -107,6 +114,8 @@ export function sessionFromMiniappExchange(
     provider: payload.linked ? "linked-wechat" : "miniapp-preview",
     platformUserId: payload.open_id,
     displayLabel: payload.display_label ?? payload.canonical_user_id,
-    isAnonymous: payload.linked ? false : payload.canonical_user_id.startsWith("guest:"),
+    isAnonymous: payload.linked
+      ? false
+      : payload.canonical_user_id.startsWith("guest:"),
   });
 }

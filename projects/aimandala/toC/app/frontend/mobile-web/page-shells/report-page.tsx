@@ -154,7 +154,6 @@ function buildSelfUnderstandingSections(structured: NonNullable<ReturnType<typeo
 }
 
 export function MobileWebReportPage({
-  route = "report",
   state,
   uploadDraft,
   environmentLabel,

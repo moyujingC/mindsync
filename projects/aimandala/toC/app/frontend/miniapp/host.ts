@@ -90,7 +90,9 @@ export function resolveMiniappHostAdapter(): MiniappHostAdapter {
             resolve();
           },
           fail(error) {
-            reject(error instanceof Error ? error : new Error("微信支付拉起失败"));
+            reject(
+              error instanceof Error ? error : new Error("微信支付拉起失败"),
+            );
           },
         });
       });

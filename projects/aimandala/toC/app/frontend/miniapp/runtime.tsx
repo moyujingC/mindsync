@@ -76,21 +76,39 @@ export function MiniappRuntime({
   const environmentDetail = config.miniappLiveEnabled
     ? "当前会优先尝试走 miniapp session / order / payment / reconcile 真实链路；如宿主能力缺失，会回退到联调 stub。"
     : "miniapp live 能力默认关闭；当前仍可在联调环境中复用 API 合同和宿主占位能力。";
-  const environmentTone = config.miniappLiveEnabled ? "runtime" : "preview";
+  const environmentTone: "preview" | "runtime" = config.miniappLiveEnabled
+    ? "runtime"
+    : "preview";
 
   const [activeRoute, setActiveRoute] = useState<MiniappRouteId>(route);
-  const [draft, setDraft] = useState<MobileWebUploadDraft>(initialDraft ?? createMiniappDraft());
-  const [session, setSession] = useState<FrontendUserSession>(initialSession ?? resolveMiniappSession());
+  const [draft, setDraft] = useState<MobileWebUploadDraft>(
+    initialDraft ?? createMiniappDraft(),
+  );
+  const [session, setSession] = useState<FrontendUserSession>(
+    initialSession ?? resolveMiniappSession(),
+  );
   const [flowState, setFlowState] = useState<MandalaFlowState | null>(null);
   const [busy, setBusy] = useState(false);
-  const [historyQuery, setHistoryQuery] = useState<InterpretationListQuery>({ filter: "all", limit: 20 });
+  const [historyQuery, setHistoryQuery] = useState<InterpretationListQuery>({
+    filter: "all",
+    limit: 20,
+  });
   const [records, setRecords] = useState<InterpretationRecordResponse[]>([]);
-  const [record, setRecord] = useState<InterpretationRecordResponse | null>(null);
-  const [historyStatusLabel, setHistoryStatusLabel] = useState<string | undefined>();
-  const [historyStatusDetail, setHistoryStatusDetail] = useState<string | undefined>();
-  const [historyRefreshHint, setHistoryRefreshHint] = useState<string | undefined>();
+  const [record, setRecord] = useState<InterpretationRecordResponse | null>(
+    null,
+  );
+  const [historyStatusLabel, setHistoryStatusLabel] = useState<
+    string | undefined
+  >();
+  const [historyStatusDetail, setHistoryStatusDetail] = useState<
+    string | undefined
+  >();
+  const [historyRefreshHint, setHistoryRefreshHint] = useState<
+    string | undefined
+  >();
   const [historyRefreshBusy, setHistoryRefreshBusy] = useState(false);
-  const [openingReportType, setOpeningReportType] = useState<InterpretationVersion | null>(null);
+  const [openingReportType, setOpeningReportType] =
+    useState<InterpretationVersion | null>(null);
 
   useEffect(() => {
     setActiveRoute(route);
@@ -113,7 +131,11 @@ export function MiniappRuntime({
     if (initialSession) {
       setSession(initialSession);
     }
-  }, [initialSession?.canonicalUserId, initialSession?.platformUserId, initialSession?.provider]);
+  }, [
+    initialSession?.canonicalUserId,
+    initialSession?.platformUserId,
+    initialSession?.provider,
+  ]);
 
   useEffect(() => {
     persistMiniappSession(session);
@@ -150,7 +172,10 @@ export function MiniappRuntime({
     setHistoryRefreshBusy(true);
     try {
       const activeSession = await ensureRuntimeSession();
-      const nextRecords = await getInterpretationList(activeSession.canonicalUserId, query);
+      const nextRecords = await getInterpretationList(
+        activeSession.canonicalUserId,
+        query,
+      );
       setRecords(nextRecords);
       setHistoryStatusLabel("当前显示真实 miniapp 历史");
       setHistoryStatusDetail("历史记录已按 miniapp 当前用户与筛选条件刷新。");
@@ -162,7 +187,11 @@ export function MiniappRuntime({
 
   async function createOrReuseLiteFlow(
     reportType: MobileWebReportProductType,
-  ): Promise<{ interpretationId: string; state: MandalaFlowState; runtimeDraft: MobileWebUploadDraft }> {
+  ): Promise<{
+    interpretationId: string;
+    state: MandalaFlowState;
+    runtimeDraft: MobileWebUploadDraft;
+  }> {
     const runtimeDraft = mergeMobileWebUploadDraft(draft, { reportType });
     setDraft(runtimeDraft);
 
@@ -239,7 +268,9 @@ export function MiniappRuntime({
     await reconcileMiniappOrder(order.order_id);
   }
 
-  async function handleChooseReportType(reportType: MobileWebReportProductType) {
+  async function handleChooseReportType(
+    reportType: MobileWebReportProductType,
+  ) {
     if (busy) {
       return;
     }
@@ -247,11 +278,16 @@ export function MiniappRuntime({
     setBusy(true);
     setActiveRoute("loading");
     try {
-      const { interpretationId, state, runtimeDraft } = await createOrReuseLiteFlow(reportType);
+      const { interpretationId, state, runtimeDraft } =
+        await createOrReuseLiteFlow(reportType);
 
       if (reportType === "pro") {
         await purchaseProReport(interpretationId);
-        const refreshed = await refreshMobileWebReport(interpretationId, "pro", state);
+        const refreshed = await refreshMobileWebReport(
+          interpretationId,
+          "pro",
+          state,
+        );
         setFlowState(refreshed.state);
         setDraft(runtimeDraft);
         const proReady =
@@ -283,7 +319,11 @@ export function MiniappRuntime({
   }
 
   useEffect(() => {
-    if (activeRoute !== "loading" || !flowState?.interpretation?.interpretation_id || busy) {
+    if (
+      activeRoute !== "loading" ||
+      !flowState?.interpretation?.interpretation_id ||
+      busy
+    ) {
       return;
     }
 
@@ -324,32 +364,34 @@ export function MiniappRuntime({
     };
   }, [activeRoute, busy, flowState, selectedVariant]);
 
-  const appProps = activeRoute === "history"
-    ? {
-        route: "history" as const,
-        uploadDraft: draft,
-        records,
-        historyQuery,
-        activeHistoryFilter: (historyQuery.filter as HistoryFilterId | undefined) ?? "all",
-        historyActionBusy: busy,
-        historyRefreshBusy,
-        historyStatusLabel,
-        historyStatusDetail,
-        historyStatusTone: environmentTone,
-        historyRefreshHint,
-      }
-    : activeRoute === "historyRecordDetail"
+  const appProps =
+    activeRoute === "history"
       ? {
-          route: "historyRecordDetail" as const,
+          route: "history" as const,
           uploadDraft: draft,
-          record: record ?? fallbackPreviewProps.record,
-          activeHistoryRecordReportType: openingReportType,
+          records,
+          historyQuery,
+          activeHistoryFilter:
+            (historyQuery.filter as HistoryFilterId | undefined) ?? "all",
+          historyActionBusy: busy,
+          historyRefreshBusy,
+          historyStatusLabel,
+          historyStatusDetail,
+          historyStatusTone: environmentTone,
+          historyRefreshHint,
         }
-      : {
-          route: activeRoute,
-          uploadDraft: draft,
-          flowState: flowState ?? fallbackPreviewProps.flowState,
-        };
+      : activeRoute === "historyRecordDetail"
+        ? {
+            route: "historyRecordDetail" as const,
+            uploadDraft: draft,
+            record: record ?? fallbackPreviewProps.record,
+            activeHistoryRecordReportType: openingReportType,
+          }
+        : {
+            route: activeRoute,
+            uploadDraft: draft,
+            flowState: flowState ?? fallbackPreviewProps.flowState,
+          };
 
   return (
     <MobileWebApp
@@ -402,13 +444,20 @@ export function MiniappRuntime({
 
         const resultCta = resolveSelfUnderstandingReportCta({
           theme: draft.theme,
-          canUpgrade: Boolean(flowState.report?.can_upgrade || flowState.status?.can_upgrade),
+          canUpgrade: Boolean(
+            flowState.report?.can_upgrade || flowState.status?.can_upgrade,
+          ),
           hasProAccess: hasProReportAccess(flowState),
           structured: getLiteStructuredReport(flowState.report),
         });
 
-        if (resultCta.intent === "open_pro_report" && flowState.interpretation?.interpretation_id) {
-          setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "pro" }));
+        if (
+          resultCta.intent === "open_pro_report" &&
+          flowState.interpretation?.interpretation_id
+        ) {
+          setDraft((current) =>
+            mergeMobileWebUploadDraft(current, { reportType: "pro" }),
+          );
           setActiveRoute("loading");
           return;
         }
@@ -478,7 +527,9 @@ export function MiniappRuntime({
               reportType,
               flowState ?? initialMandalaFlowState,
             );
-            setDraft((current) => mergeMobileWebUploadDraft(current, { reportType }));
+            setDraft((current) =>
+              mergeMobileWebUploadDraft(current, { reportType }),
+            );
             setFlowState(refreshed.state);
             const ready =
               reportType === "pro"

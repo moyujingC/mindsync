@@ -381,7 +381,6 @@ export interface MobileWebLegacyReportPageProps {
 }
 
 export function MobileWebLegacyReportPage({
-  route = "reportLegacy",
   state,
   uploadDraft,
   onPrimaryAction,

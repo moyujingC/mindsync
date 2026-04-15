@@ -37,9 +37,15 @@ function persistRuntimeConfig(config) {
 function resolveRuntimeConfig(query) {
   const stored = readStoredConfig();
   const resolved = {
-    apiBaseUrl: normalizeValue((query && query.apiBaseUrl) || stored.apiBaseUrl),
-    runtimeBaseUrl: normalizeValue((query && query.runtimeBaseUrl) || stored.runtimeBaseUrl),
-    runtimePath: normalizePath((query && query.runtimePath) || stored.runtimePath || "/"),
+    apiBaseUrl: normalizeValue(
+      (query && query.apiBaseUrl) || stored.apiBaseUrl,
+    ),
+    runtimeBaseUrl: normalizeValue(
+      (query && query.runtimeBaseUrl) || stored.runtimeBaseUrl,
+    ),
+    runtimePath: normalizePath(
+      (query && query.runtimePath) || stored.runtimePath || "/",
+    ),
   };
 
   if (resolved.apiBaseUrl || resolved.runtimeBaseUrl) {
