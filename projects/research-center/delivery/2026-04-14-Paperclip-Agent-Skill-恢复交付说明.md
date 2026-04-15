@@ -80,6 +80,10 @@ bash shared/tools/getnote-setup.sh sync-paperclip
 - 同时保留业务层 skill：
   - `external-knowledge-intake`
 - 已验证统一状态输出为 aligned
+- 已验证第二次重复执行恢复命令时：
+  - `Research & Knowledge Lead` 为 `sync: no-op`
+  - `Content Lead` 为 `sync: no-op`
+  - `Engineer` 为 `sync: no-op`
 
 ## 5. automation 节点前置要求
 

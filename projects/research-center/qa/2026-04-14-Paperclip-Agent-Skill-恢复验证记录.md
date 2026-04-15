@@ -78,13 +78,27 @@
   - 已确认 `status` 最终显示三位 agent 均解析到：
     - `local/a40e6d0efe/getnote-codex-local`
 
+### 2.7 幂等回归验证
+
+- 结果：通过
+- 证据：
+  - 已在 automation 节点再次执行：
+    - `bash /opt/automation/app/mindsync/shared/tools/getnote-setup.sh sync-paperclip`
+  - 第二次执行对以下 agent 均返回：
+    - `sync: no-op`
+  - 覆盖对象：
+    - `Research & Knowledge Lead`
+    - `Content Lead`
+    - `Engineer`
+  - 再次执行统一状态检查后，research-center 链与 getnote 链均保持：
+    - `status: aligned`
+
 ## 3. 建议补跑场景
 
 - 本地导出的公司导入到服务器后，company skills 存在但 agent `desiredSkills` 为空
 - 导入后 runtime skill key 改变，但来源标识不变
 - agent 额外挂了其他非 `Get笔记` skill
 - 某一条 `Get笔记` company skill 缺失
-- 重复执行两次 `sync`
 
 ## 4. 结论
 
