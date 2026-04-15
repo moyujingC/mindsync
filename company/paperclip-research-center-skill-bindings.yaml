@@ -26,6 +26,9 @@ bindings:
 
   - agent_name: "Research & Knowledge Lead"
     desired_skills:
+      - skill_alias: "external-knowledge-intake"
+        source_type: "local_path"
+        source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/external-knowledge-intake"
       - skill_alias: "research-brief"
         source_type: "local_path"
         source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/research-brief"
@@ -104,6 +107,9 @@ bindings:
 
   - agent_name: "Content Lead"
     desired_skills:
+      - skill_alias: "external-knowledge-intake"
+        source_type: "local_path"
+        source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/external-knowledge-intake"
       - skill_alias: "content-grounded-transform"
         source_type: "local_path"
         source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/content-grounded-transform"
@@ -113,3 +119,9 @@ bindings:
       - skill_alias: "handoff-packaging"
         source_type: "local_path"
         source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/handoff-packaging"
+
+  - agent_name: "Engineer"
+    desired_skills:
+      - skill_alias: "external-knowledge-intake"
+        source_type: "local_path"
+        source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/external-knowledge-intake"

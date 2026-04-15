@@ -58,7 +58,8 @@ read_config_value() {
   local key_path="$1"
   ruby -e '
     require "yaml"
-    data = YAML.load_file(ARGV[0])
+    require "date"
+    data = YAML.safe_load(File.read(ARGV[0]), permitted_classes: [Date, Time], aliases: true)
     value = ARGV[1].split(".").reduce(data) { |acc, key| acc.is_a?(Hash) ? acc[key] : nil }
     puts value.to_s
   ' "$PAPERCLIP_YAML" "$key_path"
@@ -142,7 +143,8 @@ PY
 list_agent_bindings() {
   ruby -e '
     require "yaml"
-    data = YAML.load_file(ARGV[0]) || {}
+    require "date"
+    data = YAML.safe_load(File.read(ARGV[0]), permitted_classes: [Date, Time], aliases: true) || {}
     Array(data["bindings"]).each do |binding|
       agent_name = binding["agent_name"].to_s
       Array(binding["desired_skills"]).each do |skill|

@@ -1,9 +1,9 @@
 # Aimandala Paperclip Automation 节点
 
 > 状态：current
-> 版本：0.1.2
+> 版本：0.1.3
 > owner：Engineer
-> last_updated：2026-04-14
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md
 > 项目：aimandala
 > 阶段：ops-runbook
@@ -42,6 +42,8 @@
 - `mindsync` 仓库用于 runner、smoke、Paperclip 同步与 auto-fix
 - `paperclip` 仓库用于构建 Docker 镜像
 - `/data/paperclip` 作为 Paperclip 单机持久化目录
+- `mindsync` 仓库的 `origin` 应统一使用 GitHub SSH：
+  - `git@github.com:moyujingC/mindsync.git`
 
 ## 3. 部署组件
 
@@ -65,6 +67,20 @@
   - maintenance 环境变量模板
 - `automation-maintenance.timer.example`
   - 每日清理计划模板
+
+## 3.1 automation 节点登录口径
+
+默认主路径：
+
+```bash
+ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95
+```
+
+说明：
+
+- 公网 SSH key 是 automation 节点默认主入口
+- 若该入口失效，应视为运维 bug 并立即修复
+- Tailscale SSH 只作为人工协同兜底
 
 ## 4. Paperclip 部署方式
 
@@ -108,6 +124,7 @@
 2. 如果 Paperclip 跑在 Docker 容器里，`pi` 必须在容器镜像内可执行，不能只装在宿主机
 3. 如果 Paperclip 跑在宿主机 systemd 进程里，`pi` 必须装在同一用户环境，并确保 service `PATH` 可见
 4. `Idea Clarifier` 不应再默认改派给 `CEO` 代跑；标准兜底应是 `claude_local`
+5. 如果需要借助阿里云美国节点改善访问 OpenAI / npm / Debian 源，只应把它当作当前 automation 宿主的代理 / VPN；不要把 `Idea Clarifier` 或 `pi_local` 迁移到阿里云机器执行
 
 最小检查：
 
@@ -257,3 +274,8 @@ sudo chown -R ubuntu:ubuntu /data/paperclip
 5. `check-runner-heartbeat.mjs` 可以本机手动执行成功
 6. `runner-doctor.sh --strict` 返回成功，且 labels / token / 最新 workflow 诊断一致
 7. `paperclip-heartbeat.timer` 会同时完成 runner 巡检和执行健康巡检
+## Automation Node Prerequisites
+
+- 同步 `mindsync` 的 Paperclip skill 恢复脚本前，automation 节点必须安装 `python3`、`ruby`、`curl`。
+- `shared/tools/getnote-setup.sh` 与 `shared/tools/sync-paperclip-agent-skills.sh` 都会调用 `ruby` 解析 YAML；缺少 `ruby` 时，服务器无法自恢复 agent skill 绑定。
+- 公网 SSH Key 登录后，如需补依赖，优先在节点上执行 `sudo dnf install -y ruby`。

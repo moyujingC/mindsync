@@ -50,6 +50,20 @@ require_cmd() {
   }
 }
 
+resolve_installer() {
+  if [[ -f "$INSTALLER" ]]; then
+    echo "$INSTALLER"
+    return 0
+  fi
+
+  if [[ -f "${REPO_ROOT}/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py" ]]; then
+    echo "${REPO_ROOT}/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py"
+    return 0
+  fi
+
+  echo ""
+}
+
 normalize_value() {
   VALUE_TO_NORMALIZE="${1:-}" ruby -e '
 value = ENV.fetch("VALUE_TO_NORMALIZE", "").to_s.strip
@@ -105,11 +119,12 @@ list_expected_skill_keys_for_agent() {
   ruby -e '
 require "json"
 require "yaml"
+require "date"
 
 agent_name = ENV.fetch("AGENT_NAME")
 bindings_file = ENV.fetch("BINDINGS_FILE")
 company_skills = JSON.parse(ENV.fetch("COMPANY_SKILLS_JSON", "[]"))
-data = YAML.load_file(bindings_file) || {}
+data = YAML.safe_load(File.read(bindings_file), permitted_classes: [Date, Time], aliases: true) || {}
 bindings = Array(data["bindings"])
 
 def normalize(value)
@@ -202,12 +217,20 @@ PY
 install_one() {
   local dest="$1"
   local target="${dest}/getnote"
+  local installer_path
+  installer_path="$(resolve_installer)"
   mkdir -p "$dest"
   if [[ -d "$target" ]]; then
     echo "Already installed: $target"
     return
   fi
-  python3 "$INSTALLER" --repo iswalle/getnote-openclaw --path . --name getnote --dest "$dest"
+
+  if [[ -n "$installer_path" ]]; then
+    python3 "$installer_path" --repo iswalle/getnote-openclaw --path . --name getnote --dest "$dest"
+    return
+  fi
+
+  git clone --depth=1 https://github.com/iswalle/getnote-openclaw.git "$target"
 }
 
 get_company_skill_key() {
@@ -299,7 +322,8 @@ print(",".join(vals))
   done < <(
     ruby -e '
       require "yaml"
-      data = YAML.load_file(ARGV[0]) || {}
+      require "date"
+      data = YAML.safe_load(File.read(ARGV[0]), permitted_classes: [Date, Time], aliases: true) || {}
       Array(data["bindings"]).each do |binding|
         agent_name = binding["agent_name"].to_s
         Array(binding["desired_skills"]).each do |skill|

@@ -16,6 +16,8 @@
   - `research-center` repo skill 扫描与 agent 挂载
   - `Get笔记` company skill / desiredSkills / agent env 同步
 
+自第二阶段起，`research-center` repo skill 同步链中已包含 `external-knowledge-intake`，而 `Get笔记` 继续作为底层工具层 skill 由专项链恢复。
+
 ## 2. 标准用法
 
 ### 2.1 查看当前状态
@@ -45,6 +47,11 @@ bash /Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh s
 3. 再执行 `Get笔记` 的专项恢复
 4. 保留 Paperclip 自带 required skills
 
+执行完成后，目标 agent 当前应同时看到：
+
+- 业务层 `external-knowledge-intake`
+- 底层工具层 `getnote`
+
 ## 4. 后续维护方式
 
 当研究中心 skill 有新增或更新时：
@@ -54,6 +61,8 @@ bash /Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh s
   - `/Users/xinran/Downloads/dev/mindsync/company/paperclip-research-center-skill-bindings.yaml`
 - 然后重新执行：
   - `bash shared/tools/sync-mindsync-skills.sh sync`
+
+若新增的是 `external-knowledge-intake` 这类正式业务层 skill，也按同一条 research-center repo-local 同步链处理，不进入 `Get笔记` 专项绑定清单。
 
 当 `Get笔记` 的目标 agent 或来源规则变化时：
 
