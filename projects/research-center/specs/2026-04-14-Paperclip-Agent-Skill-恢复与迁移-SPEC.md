@@ -1,9 +1,9 @@
 # Paperclip Agent Skill 恢复与迁移 SPEC
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：Engineer / Research & Knowledge Lead
-> last_updated：2026-04-14
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-14-Paperclip-Agent-Skill-恢复与迁移-SPEC.md
 > 项目：研究中心
 > 阶段：spec
@@ -95,10 +95,30 @@
 - `Content Lead`
 - `Engineer`
 
-每个目标 agent 当前都托管两条 `Get笔记` skill 来源：
+每个目标 agent 当前都托管底层 `getnote` 恢复链，正式治理源固定为：
 
-- `${HOME}/.codex/skills/getnote`
-- `${HOME}/.claude/skills/getnote`
+- `/opt/automation/app/mindsync/shared/skills/getnote`
+
+说明：
+
+- 不再把 IDE 私有目录 `~/.codex/skills/getnote` / `~/.claude/skills/getnote` 当作服务器端 Paperclip 导入源
+- IDE 本地目录仍可继续作为开发机安装位置
+- 服务器侧恢复必须引用 Paperclip 进程可见的仓库受管路径
+
+## 5.1 服务器兼容性要求
+
+automation 节点在执行恢复脚本前，至少需要：
+
+- `python3`
+- `ruby`
+- `curl`
+
+其中：
+
+- `shared/tools/sync-paperclip-agent-skills.sh`
+- `shared/tools/getnote-setup.sh`
+
+都会解析 YAML；若缺少 `ruby`，服务器侧恢复链视为不可用。
 
 ## 6. 验收标准
 

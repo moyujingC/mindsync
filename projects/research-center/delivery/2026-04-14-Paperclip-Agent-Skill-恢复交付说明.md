@@ -1,9 +1,9 @@
 # Paperclip Agent Skill 恢复交付说明
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：Engineer / Research & Knowledge Lead
-> last_updated：2026-04-14
+> last_updated：2026-04-15
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-14-Paperclip-Agent-Skill-恢复交付说明.md
 > 项目：研究中心
 > 阶段：delivery
@@ -17,6 +17,8 @@
   - `/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-agent-skills.sh`
 - 更新 `Get笔记` 运维脚本：
   - `/Users/xinran/Downloads/dev/mindsync/shared/tools/getnote-setup.sh`
+- 新增仓库受管底层 skill 包：
+  - `/Users/xinran/Downloads/dev/mindsync/shared/skills/getnote/`
 
 ## 2. 标准恢复顺序
 
@@ -31,10 +33,13 @@
 如果是带鉴权的远端实例：
 
 ```bash
-PAPERCLIP_API_URL='https://<server>' \
+PAPERCLIP_API_URL='http://vm-0-11-opencloudos.tail176582.ts.net:3100' \
+PAPERCLIP_COMPANY_ID='be191a6e-7447-4821-a93d-9114214c4a64' \
 PAPERCLIP_API_TOKEN='<token>' \
 bash shared/tools/sync-paperclip-agent-skills.sh sync
 ```
+
+本次真实服务器恢复已按上述模式完成。
 
 ## 3. Get笔记 专项入口
 
@@ -51,15 +56,51 @@ bash shared/tools/getnote-setup.sh sync-paperclip
 
 它不再被视为“完整公司导入恢复”的唯一入口。
 
-## 4. 当前残留风险
+服务器端 `getnote` company skill 的标准导入源现已固定为：
 
-- 当前会话未完成在线恢复验证，因为 `Paperclip API` 不可连接
+```text
+/opt/automation/app/mindsync/shared/skills/getnote
+```
+
+不要再把服务器恢复链建立在：
+
+- `~/.codex/skills/getnote`
+- `~/.claude/skills/getnote`
+
+这类 IDE 私有目录上。
+
+## 4. 本次真实恢复结果
+
+- company skill 已成功导入：
+  - `local/a40e6d0efe/getnote-codex-local`
+- 以下 agent 已恢复底层 `getnote` skill：
+  - `Research & Knowledge Lead`
+  - `Content Lead`
+  - `Engineer`
+- 同时保留业务层 skill：
+  - `external-knowledge-intake`
+- 已验证统一状态输出为 aligned
+
+## 5. automation 节点前置要求
+
+- `python3`
+- `ruby`
+- `curl`
+
+若 automation 节点缺少 `ruby`，`getnote` 恢复链不可用，应先补：
+
+```bash
+sudo dnf install -y ruby
+```
+
+## 6. 当前残留风险
+
 - 自动导入暂只覆盖 `local_path` 来源
 - 若运行时出现同一来源被导入成多条 company skill，脚本会报冲突并停止自动挂载
 
-## 5. 下一棒 handoff
+## 7. 下一棒 handoff
 
 - `Engineer`
-  - 在服务器端执行一次真实 `status -> sync`，把结果补进交付记录
+  - 后续若改动 `shared/skills/getnote`，执行一次服务器侧 `status -> sync`
 - `Test / QA`
-  - 补跑“导入后 key 改变但来源不变”的真实验证
+  - 补跑“重复执行两次 sync 结果不变”的回归验证
