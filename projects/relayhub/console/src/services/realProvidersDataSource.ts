@@ -3,7 +3,6 @@ import type {
   ProviderCollectionContract,
   ProviderDetailContract,
   ProviderFilterSnapshot,
-  ProviderRecordContract,
 } from "../contracts";
 import type {
   MockRequestOptions,
@@ -12,31 +11,18 @@ import type {
   TransparencyState,
 } from "../models/console";
 import type { ConsoleReadonlyDataSource } from "./consoleDataSource";
-
-type RequestScope = "collection" | "detail";
-
-interface ProvidersReadonlyRequestInput {
-  resource: "providers";
-  scope: RequestScope;
-  path: string;
-  providerId?: string;
-  filters?: ProviderFilterSnapshot;
-  forceError?: boolean;
-}
-
-interface ProvidersCollectionPayload {
-  items: ProviderRecordContract[];
-}
-
-interface ProvidersDetailPayload {
-  item: ProviderRecordContract | null;
-}
-
-type ProvidersReadonlyRequestPayload = ProvidersCollectionPayload | ProvidersDetailPayload;
-
-export type ProvidersReadonlyRequest = (
-  input: ProvidersReadonlyRequestInput,
-) => Promise<ProvidersReadonlyRequestPayload>;
+import {
+  adaptProviderDetailWirePayload,
+  adaptProvidersCollectionWirePayload,
+} from "./realProvidersAdapter";
+import type {
+  ProviderDetailWirePayload,
+  ProvidersCollectionWirePayload,
+} from "./realProvidersAdapter";
+import type {
+  ProvidersReadonlyTransport,
+  ProvidersReadonlyTransportRequest,
+} from "./realProvidersTransport";
 
 const PROVIDER_KIND_OPTIONS: ProviderKind[] = ["第三方中转", "国产模型", "免费国外 API"];
 const PROVIDER_ENVIRONMENT_OPTIONS = ["开发版", "心理疗愈生产版", "评测版"] as const;
@@ -44,7 +30,10 @@ const PROVIDER_HEALTH_OPTIONS = ["healthy", "degraded", "risk", "idle"] as const
 const PROVIDER_TRANSPARENCY_OPTIONS: TransparencyState[] = ["完整", "部分缺失", "暂无"];
 const PROVIDERS_BASE_PATH = "/providers";
 
-function isAllowedValue<T extends readonly string[]>(value: string | undefined, options: T): value is T[number] {
+function isAllowedValue<T extends readonly string[]>(
+  value: string | undefined,
+  options: T,
+): value is T[number] {
   return value !== undefined && options.includes(value as T[number]);
 }
 
@@ -125,51 +114,53 @@ function createDetailMeta(status: "ready" | "not-found"): ContractMeta {
   };
 }
 
-function isCollectionPayload(
-  payload: ProvidersReadonlyRequestPayload,
-): payload is ProvidersCollectionPayload {
-  return "items" in payload;
+interface CreateRealProvidersReadonlyDataSourceOptions {
+  transport: ProvidersReadonlyTransport;
+  adapters?: {
+    collection?: (payload: unknown) => ProvidersCollectionWirePayload;
+    detail?: (payload: unknown) => ProviderDetailWirePayload;
+  };
 }
 
 export function createRealProvidersReadonlyDataSource(
-  request: ProvidersReadonlyRequest,
+  options: CreateRealProvidersReadonlyDataSourceOptions,
 ): Pick<ConsoleReadonlyDataSource, "listProviders" | "getProvider"> {
+  const collectionAdapter = options.adapters?.collection ?? adaptProvidersCollectionWirePayload;
+  const detailAdapter = options.adapters?.detail ?? adaptProviderDetailWirePayload;
+
   return {
     async listProviders(
       filters: ProviderFilters = {},
-      options?: MockRequestOptions,
+      requestOptions?: MockRequestOptions,
     ): Promise<ProviderCollectionContract> {
       const sanitizedFilters = sanitizeProviderFiltersForRequest(filters);
-      const payload = await request({
+      const response = await options.transport({
         resource: "providers",
         scope: "collection",
         path: buildProvidersCollectionPath(sanitizedFilters),
         filters: sanitizedFilters,
-        forceError: options?.forceError,
+        forceError: requestOptions?.forceError,
       });
-
-      if (!isCollectionPayload(payload)) {
-        throw new Error("Providers readonly request returned detail payload for collection scope");
-      }
+      const payload = collectionAdapter(response.data);
 
       return {
-        meta: createCollectionMeta(payload.items.length > 0 ? "ready" : "empty", sanitizedFilters),
+        meta: createCollectionMeta(
+          payload.items.length > 0 ? "ready" : "empty",
+          sanitizedFilters,
+        ),
         items: payload.items,
       };
     },
 
-    async getProvider(id: string, options?: MockRequestOptions): Promise<ProviderDetailContract> {
-      const payload = await request({
+    async getProvider(id: string, requestOptions?: MockRequestOptions): Promise<ProviderDetailContract> {
+      const response = await options.transport({
         resource: "providers",
         scope: "detail",
         path: buildProviderDetailPath(id),
         providerId: id,
-        forceError: options?.forceError,
+        forceError: requestOptions?.forceError,
       });
-
-      if (isCollectionPayload(payload)) {
-        throw new Error("Providers readonly request returned collection payload for detail scope");
-      }
+      const payload = detailAdapter(response.data);
 
       return {
         meta: createDetailMeta(payload.item ? "ready" : "not-found"),
@@ -179,8 +170,8 @@ export function createRealProvidersReadonlyDataSource(
   };
 }
 
-export const realProvidersReadonlyDataSourceStub = createRealProvidersReadonlyDataSource(
-  async (input) => {
+export const realProvidersReadonlyDataSourceStub = createRealProvidersReadonlyDataSource({
+  transport: async (input: ProvidersReadonlyTransportRequest) => {
     if (input.forceError) {
       throw new Error("RelayHub providers readonly request error");
     }
@@ -214,36 +205,42 @@ export const realProvidersReadonlyDataSourceStub = createRealProvidersReadonlyDa
             ]
           : [];
 
-      return { items };
+      return {
+        data: { items },
+      };
     }
 
     if (input.providerId !== "provider-real-stub") {
-      return { item: null };
+      return {
+        data: { item: null },
+      };
     }
 
     return {
-      item: {
-        id: "provider-real-stub",
-        name: "Providers Real Stub",
-        kind: "国产模型",
-        availableEnvironments: ["评测版"],
-        health: "healthy",
-        transparency: "完整",
-        errorRate: 0.4,
-        p95Latency: 880,
-        description: "用于验证 providers datasource 可替换，不代表真实网络请求。",
-        recommendation: "仅作为只读 API 骨架验证",
-        recommendationNote: "当前仍由本地 stub 提供，不接真实后端。",
-        models: [{ name: "stub-provider-model", useCase: "providers datasource seam" }],
-        metrics: {
-          requests: 120,
-          tokens: 48000,
-          avgLatency: 520,
-          p95Latency: 880,
+      data: {
+        item: {
+          id: "provider-real-stub",
+          name: "Providers Real Stub",
+          kind: "国产模型",
+          availableEnvironments: ["评测版"],
+          health: "healthy",
+          transparency: "完整",
           errorRate: 0.4,
-          cost: 12,
+          p95Latency: 880,
+          description: "用于验证 providers datasource 可替换，不代表真实网络请求。",
+          recommendation: "仅作为只读 API 骨架验证",
+          recommendationNote: "当前仍由本地 stub 提供，不接真实后端。",
+          models: [{ name: "stub-provider-model", useCase: "providers datasource seam" }],
+          metrics: {
+            requests: 120,
+            tokens: 48000,
+            avgLatency: 520,
+            p95Latency: 880,
+            errorRate: 0.4,
+            cost: 12,
+          },
         },
       },
     };
   },
-);
+});

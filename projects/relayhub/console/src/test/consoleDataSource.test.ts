@@ -4,6 +4,10 @@ import {
   defaultConsoleReadonlyDataSource,
 } from "../services/mockConsoleDataSource";
 import {
+  adaptProviderDetailWirePayload,
+  adaptProvidersCollectionWirePayload,
+} from "../services/realProvidersAdapter";
+import {
   buildProviderDetailPath,
   buildProvidersCollectionPath,
   createRealProvidersReadonlyDataSource,
@@ -17,10 +21,7 @@ import type {
   ProviderCollectionContract,
   ProviderDetailContract,
 } from "../contracts";
-
-type ProvidersReadonlyRequestInput = Parameters<
-  Parameters<typeof createRealProvidersReadonlyDataSource>[0]
->[0];
+import type { ProvidersReadonlyTransportRequest } from "../services/realProvidersTransport";
 
 describe("console readonly data source", () => {
   it("returns dashboard contract response from default datasource", async () => {
@@ -168,36 +169,113 @@ describe("console readonly data source", () => {
     expect(buildProviderDetailPath("provider-real-stub")).toBe("/providers/provider-real-stub");
   });
 
-  it("creates a real providers datasource that maps ready collection responses", async () => {
-    const requestCalls: ProvidersReadonlyRequestInput[] = [];
-    const datasource = createRealProvidersReadonlyDataSource(async (input) => {
-      requestCalls.push(input);
-      return {
-        items: [
-          {
-            id: "provider-fetch-stub",
-            name: "Providers Fetch Stub",
-            kind: "国产模型",
-            availableEnvironments: ["评测版"],
-            health: "healthy",
-            transparency: "完整",
-            errorRate: 0.1,
-            p95Latency: 640,
-            description: "fetch trial",
-            recommendation: "试点可用",
-            recommendationNote: "仍为本地测试 request",
-            models: [{ name: "fetch-stub-model", useCase: "fetch seam" }],
-            metrics: {
-              requests: 88,
-              tokens: 12000,
-              avgLatency: 480,
-              p95Latency: 640,
-              errorRate: 0.1,
-              cost: 9,
-            },
+  it("adapts collection wire payload into items", () => {
+    const payload = adaptProvidersCollectionWirePayload({
+      items: [
+        {
+          id: "provider-wire-stub",
+          name: "Providers Wire Stub",
+          kind: "国产模型",
+          availableEnvironments: ["评测版"],
+          health: "healthy",
+          transparency: "完整",
+          errorRate: 0.2,
+          p95Latency: 720,
+          description: "wire collection payload",
+          recommendation: "适合作为 adapter 验证样本",
+          recommendationNote: "仅用于测试",
+          models: [{ name: "wire-model", useCase: "adapter" }],
+          metrics: {
+            requests: 11,
+            tokens: 2200,
+            avgLatency: 300,
+            p95Latency: 720,
+            errorRate: 0.2,
+            cost: 3,
           },
-        ],
-      };
+        },
+      ],
+    });
+
+    expect(payload.items).toHaveLength(1);
+    expect(payload.items[0]?.id).toBe("provider-wire-stub");
+  });
+
+  it("throws a clear error for invalid collection wire payload", () => {
+    expect(() => adaptProvidersCollectionWirePayload({ item: null })).toThrow(
+      "Providers collection wire payload is invalid",
+    );
+  });
+
+  it("adapts detail wire payload into item", () => {
+    const payload = adaptProviderDetailWirePayload({
+      item: {
+        id: "provider-detail-wire-stub",
+        name: "Provider Detail Wire Stub",
+        kind: "国产模型",
+        availableEnvironments: ["评测版"],
+        health: "healthy",
+        transparency: "完整",
+        errorRate: 0.1,
+        p95Latency: 540,
+        description: "wire detail payload",
+        recommendation: "适合作为 detail adapter 样本",
+        recommendationNote: "仅用于测试",
+        models: [{ name: "detail-wire-model", useCase: "adapter" }],
+        metrics: {
+          requests: 8,
+          tokens: 1400,
+          avgLatency: 280,
+          p95Latency: 540,
+          errorRate: 0.1,
+          cost: 2,
+        },
+      },
+    });
+
+    expect(payload.item?.id).toBe("provider-detail-wire-stub");
+  });
+
+  it("throws a clear error for invalid detail wire payload", () => {
+    expect(() => adaptProviderDetailWirePayload({ items: [] })).toThrow(
+      "Providers detail wire payload is invalid",
+    );
+  });
+
+  it("creates a real providers datasource that maps ready collection responses", async () => {
+    const requestCalls: ProvidersReadonlyTransportRequest[] = [];
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async (input) => {
+        requestCalls.push(input);
+        return {
+          data: {
+            items: [
+              {
+                id: "provider-fetch-stub",
+                name: "Providers Fetch Stub",
+                kind: "国产模型",
+                availableEnvironments: ["评测版"],
+                health: "healthy",
+                transparency: "完整",
+                errorRate: 0.1,
+                p95Latency: 640,
+                description: "fetch trial",
+                recommendation: "试点可用",
+                recommendationNote: "仍为本地测试 request",
+                models: [{ name: "fetch-stub-model", useCase: "fetch seam" }],
+                metrics: {
+                  requests: 88,
+                  tokens: 12000,
+                  avgLatency: 480,
+                  p95Latency: 640,
+                  errorRate: 0.1,
+                  cost: 9,
+                },
+              },
+            ],
+          },
+        };
+      },
     });
 
     const response = await datasource.listProviders({
@@ -220,7 +298,9 @@ describe("console readonly data source", () => {
   });
 
   it("creates a real providers datasource that maps empty collection responses", async () => {
-    const datasource = createRealProvidersReadonlyDataSource(async () => ({ items: [] }));
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async () => ({ data: { items: [] } }),
+    });
 
     const response = await datasource.listProviders({
       kind: "第三方中转",
@@ -230,11 +310,13 @@ describe("console readonly data source", () => {
     expect(response.items).toHaveLength(0);
   });
 
-  it("does not pass mock error query semantics as request-specific fields beyond forceError", async () => {
-    const requestCalls: ProvidersReadonlyRequestInput[] = [];
-    const datasource = createRealProvidersReadonlyDataSource(async (input) => {
-      requestCalls.push(input);
-      return { items: [] };
+  it("does not pass mock error query semantics as transport-specific fields beyond forceError", async () => {
+    const requestCalls: ProvidersReadonlyTransportRequest[] = [];
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async (input) => {
+        requestCalls.push(input);
+        return { data: { items: [] } };
+      },
     });
 
     await datasource.listProviders({}, { forceError: true });
@@ -249,7 +331,9 @@ describe("console readonly data source", () => {
   });
 
   it("creates a real providers datasource that maps not-found detail responses", async () => {
-    const datasource = createRealProvidersReadonlyDataSource(async () => ({ item: null }));
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async () => ({ data: { item: null } }),
+    });
 
     const response = await datasource.getProvider("missing-provider");
 
@@ -257,13 +341,115 @@ describe("console readonly data source", () => {
     expect(response.item).toBeNull();
   });
 
-  it("rethrows request errors from the real providers datasource", async () => {
-    const datasource = createRealProvidersReadonlyDataSource(async () => {
-      throw new Error("Providers fetch request failed");
+  it("rethrows transport errors from the real providers datasource", async () => {
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async () => {
+        throw new Error("Providers transport request failed");
+      },
     });
 
     await expect(datasource.getProvider("provider-real-stub")).rejects.toThrow(
-      "Providers fetch request failed",
+      "Providers transport request failed",
     );
+  });
+
+  it("rethrows adapter errors from the real providers datasource", async () => {
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async () => ({ data: { invalid: true } }),
+    });
+
+    await expect(datasource.listProviders({ kind: "国产模型" })).rejects.toThrow(
+      "Providers collection wire payload is invalid",
+    );
+  });
+
+  it("supports custom wire adapters when creating the real providers datasource", async () => {
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async () => ({
+        data: {
+          records: [
+            {
+              id: "provider-custom-adapter",
+              name: "Provider Custom Adapter",
+              kind: "国产模型",
+              availableEnvironments: ["评测版"],
+              health: "healthy",
+              transparency: "完整",
+              errorRate: 0.3,
+              p95Latency: 660,
+              description: "custom adapter payload",
+              recommendation: "适合作为 adapter 扩展入口",
+              recommendationNote: "仅用于测试自定义 adapter",
+              models: [{ name: "custom-adapter-model", useCase: "adapter seam" }],
+              metrics: {
+                requests: 25,
+                tokens: 5000,
+                avgLatency: 330,
+                p95Latency: 660,
+                errorRate: 0.3,
+                cost: 5,
+              },
+            },
+          ],
+        },
+      }),
+      adapters: {
+        collection: (payload) => ({
+          items:
+            typeof payload === "object" && payload !== null && "records" in payload
+              ? (payload.records as ProviderCollectionContract["items"])
+              : [],
+        }),
+      },
+    });
+
+    const response = await datasource.listProviders({ kind: "国产模型" });
+
+    expect(response.meta.status).toBe("ready");
+    expect(response.items[0]?.id).toBe("provider-custom-adapter");
+  });
+
+  it("supports custom detail adapters when creating the real providers datasource", async () => {
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async () => ({
+        data: {
+          record: {
+            id: "provider-custom-detail-adapter",
+            name: "Provider Custom Detail Adapter",
+            kind: "国产模型",
+            availableEnvironments: ["评测版"],
+            health: "healthy",
+            transparency: "完整",
+            errorRate: 0.2,
+            p95Latency: 610,
+            description: "custom detail adapter payload",
+            recommendation: "适合作为 detail adapter 扩展入口",
+            recommendationNote: "仅用于测试自定义 detail adapter",
+            models: [{ name: "custom-detail-model", useCase: "adapter seam" }],
+            metrics: {
+              requests: 18,
+              tokens: 3600,
+              avgLatency: 310,
+              p95Latency: 610,
+              errorRate: 0.2,
+              cost: 4,
+            },
+          },
+        },
+      }),
+      adapters: {
+        detail: (payload) => ({
+          item:
+            typeof payload === "object" && payload !== null && "record" in payload
+              ? (payload.record as ProviderDetailContract["item"])
+              : null,
+        }),
+      },
+    });
+
+    const response = await datasource.getProvider("provider-custom-detail-adapter");
+
+    expect(response.meta.status).toBe("ready");
+    expect(response.item?.id).toBe("provider-custom-detail-adapter");
   });
 });
