@@ -93,19 +93,34 @@
 - 停止挂载宿主机 `/opt/hermes-agent`
 - 改为在 Paperclip 容器内创建 `/opt/hermes` 并安装 `hermes-agent`
 
-## 6. 待执行验证
+## 6. 已完成线上复验
 
-部署完成后，应至少补齐以下检查：
+2026-04-16 已在 automation 节点完成重建与运行时复验，结果如下：
 
-1. 容器内 `python3 --version`
-2. 容器内 `command -v hermes`
-3. 容器内 `hermes --version`
-4. 容器内 `python3 -c 'import hermes_cli'`
-5. Paperclip 面板 `CEO -> Test environment`
-6. 手动触发一次 CEO heartbeat，确认不再出现 `ModuleNotFoundError: hermes_cli`
+1. 新镜像已重建并生效：
+   - `paperclip-automation-paperclip:latest`
+   - image id：`sha256:e5a1147113a3d4effb3e7578985a7cd4c73383cee16495972c003d8632218def`
+2. 运行中的 `paperclip-automation-paperclip-1` 已切换到新镜像
+3. 容器内 `/usr/local/bin/hermes` 已不再依赖 pip 生成的 shebang，而是显式 wrapper：
+   - `#!/bin/sh`
+   - `exec /opt/hermes/bin/python -m hermes_cli.main "$@"`
+4. 容器内执行 `command -v hermes` 正常返回 `/usr/local/bin/hermes`
+5. 容器内执行 `hermes --help` 正常返回 Hermes CLI 帮助信息
+6. 容器内执行 `/opt/hermes/bin/python - <<'PY'` 导入 `hermes_cli` 成功，输出：
+   - `opt hermes import ok`
+7. 容器内系统 `python3` 仍然无法直接 `import hermes_cli`
+   - 这是符合预期的，因为 Hermes 现已固定通过 `/opt/hermes/bin/python` 运行
 
-在以上检查完成前，本记录只确认：
+## 7. 当前结论
+
+当前已确认：
 
 - 根因已定位
-- 部署修复口径已落文档与配置
-- 最终运行恢复仍需服务器侧重建镜像并复验
+- 线上新镜像已部署
+- Hermes 容器运行时已恢复
+- `ModuleNotFoundError: hermes_cli` 这一层阻塞已解除
+
+仍待补的只剩业务级验证：
+
+1. Paperclip 面板 `CEO -> Test environment`
+2. 手动触发一次 CEO heartbeat，确认不再出现新的模型配置或鉴权错误
