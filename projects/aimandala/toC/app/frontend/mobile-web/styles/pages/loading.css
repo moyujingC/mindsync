@@ -1,0 +1,60 @@
+.am-loading-page {
+  --am-pattern-image: none;
+  background: linear-gradient(
+    180deg,
+    var(--am-color-ink-950) 0%,
+    var(--am-color-ink-900) 30%,
+    var(--am-color-ink-800) 60%,
+    var(--am-color-ink-900) 100%
+  );
+}
+
+.am-loading-body {
+  --am-pattern-image: none;
+  min-height: calc(100vh - 56px);
+}
+
+.am-loading-surface-pattern {
+  position: absolute;
+  inset: 0;
+}
+
+.am-icon-button,
+.am-loading-action-button {
+  appearance: none;
+}
+
+.am-icon-button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(212, 160, 84, 0.16);
+  background: rgba(26, 40, 68, 0.38);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: rgba(232, 220, 200, 0.88);
+}
+
+.am-loading-version {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.am-loading-progress-card,
+.am-loading-log-card,
+.am-loading-tip-card,
+.am-loading-action-card,
+.am-loading-error-card {
+  box-shadow: var(--am-shadow-card);
+}
+
+.am-loading-progress-track,
+.am-loading-progress-fill,
+.am-loading-progress-shimmer {
+  border-radius: var(--am-radius-pill);
+}
+
+.am-loading-progress-shimmer {
+  pointer-events: none;
+}

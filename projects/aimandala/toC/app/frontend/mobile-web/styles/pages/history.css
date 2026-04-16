@@ -1,0 +1,153 @@
+.mw-hero-card {
+  padding: 22px 18px;
+  border: 1px solid rgba(106, 82, 50, 0.12);
+  border-radius: var(--am-radius-xl);
+  background:
+    radial-gradient(circle at top right, rgba(184, 144, 86, 0.22), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+  box-shadow: 0 16px 40px rgba(75, 50, 19, 0.06);
+}
+
+.mw-hero-card h2 {
+  margin: 0 0 10px;
+  color: var(--am-text-primary);
+  font-size: var(--am-text-2xl);
+}
+
+.mw-hero-card p:last-child {
+  margin-bottom: 0;
+}
+
+.mw-kicker {
+  margin: 0 0 8px;
+  color: #8a6641;
+  font-size: var(--am-text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mw-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mw-filter-chip {
+  padding: 10px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.18);
+  border-radius: var(--am-radius-pill);
+  background: rgba(255, 255, 255, 0.72);
+  color: #6a5435;
+  font-weight: 600;
+}
+
+.mw-filter-chip--active,
+.mw-filter-chip.is-active {
+  background: rgba(139, 103, 55, 0.14);
+  color: #704d24;
+}
+
+.mw-filter-chip:disabled {
+  opacity: 0.58;
+}
+
+.mw-card--history-ready {
+  background:
+    radial-gradient(circle at top right, rgba(74, 140, 104, 0.1), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+}
+
+.mw-card--history-pending {
+  background:
+    radial-gradient(circle at top right, rgba(172, 129, 72, 0.1), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+}
+
+.mw-card--history-proPending {
+  background:
+    radial-gradient(circle at top right, rgba(200, 120, 80, 0.12), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+}
+
+.mw-card--history-proReady {
+  background:
+    radial-gradient(circle at top right, rgba(111, 92, 190, 0.12), transparent 34%),
+    rgba(255, 251, 245, 0.96);
+}
+
+.mw-badge--ready {
+  background: rgba(74, 140, 104, 0.14);
+  color: #2f6a4a;
+}
+
+.mw-badge--pending {
+  background: rgba(172, 129, 72, 0.12);
+  color: #7c5627;
+}
+
+.mw-badge--proReady {
+  background: rgba(100, 84, 173, 0.14);
+  color: #53439a;
+}
+
+.mw-badge--proPending {
+  background: rgba(200, 120, 80, 0.14);
+  color: #944b2f;
+}
+
+.mw-history-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 250, 244, 0.9);
+}
+
+.mw-history-progress--pro,
+.mw-history-progress.is-pro {
+  background: rgba(255, 244, 237, 0.92);
+}
+
+.mw-history-progress__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--am-space-3);
+}
+
+.mw-history-progress__row .mw-meta {
+  margin: 0;
+}
+
+.mw-history-progress__value {
+  white-space: nowrap;
+}
+
+.mw-history-progress--pro .mw-progress__bar,
+.mw-history-progress.is-pro .mw-progress__bar {
+  background: linear-gradient(90deg, #ba6e48, #f0b179);
+}
+
+.mw-history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--am-space-3);
+  margin: 6px 0 2px;
+}
+
+.mw-history-toolbar .mw-meta {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .mw-history-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mw-history-toolbar .mw-secondary-button--inline {
+    width: 100%;
+  }
+}

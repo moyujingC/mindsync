@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { MobileWebBrowserShell } from "./browser-shell";
-import "./styles.css";
+import "./styles/index.css";
 
 const container = document.getElementById("root");
 

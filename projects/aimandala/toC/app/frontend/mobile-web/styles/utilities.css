@@ -1,0 +1,25 @@
+.am-hidden {
+  display: none !important;
+}
+
+.am-text-balance {
+  text-wrap: balance;
+}
+
+.am-surface-stack {
+  display: grid;
+  gap: var(--am-space-3);
+}
+
+.am-stack-gap-sm {
+  gap: 10px !important;
+}
+
+.am-scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.am-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

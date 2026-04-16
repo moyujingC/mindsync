@@ -1,0 +1,15 @@
+.browser-shell__viewport--clean {
+  padding: 0;
+}
+
+.browser-shell__phone {
+  background: var(--am-surface-app);
+  box-shadow: 0 24px 80px rgba(15, 27, 51, 0.28);
+}
+
+.browser-shell__panel,
+.browser-shell__devbar,
+.browser-debug-card,
+.browser-debug-chip {
+  backdrop-filter: blur(14px);
+}
