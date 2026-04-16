@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   createConsoleReadonlyDataSource,
   defaultConsoleReadonlyDataSource,
+  mockProvidersReadonlyDataSource,
 } from "../services/mockConsoleDataSource";
+import {
+  createProvidersRuntimeDataSource,
+  getProvidersRuntimeDataSource,
+} from "../services/providersRuntimeDataSource";
 import {
   adaptProviderDetailWirePayload,
   adaptProvidersCollectionWirePayload,
@@ -99,6 +104,92 @@ describe("console readonly data source", () => {
     });
 
     expect(response.items.some((item) => item.id === "deepseek-direct")).toBe(true);
+  });
+
+  it("returns mock providers source from the default runtime seam", async () => {
+    const runtimeDataSource = getProvidersRuntimeDataSource();
+    const response = await runtimeDataSource.listProviders({
+      kind: "国产模型",
+      environment: "评测版",
+    });
+
+    expect(response.items.some((item) => item.id === "deepseek-direct")).toBe(true);
+  });
+
+  it("returns mock providers source when runtime mode is mock", async () => {
+    const runtimeDataSource = createProvidersRuntimeDataSource({
+      mode: "mock",
+    });
+    const response = await runtimeDataSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("switches providers runtime seam to real-fetch when requested", async () => {
+    const runtimeDataSource = createProvidersRuntimeDataSource({
+      mode: "real-fetch",
+      fetchTransport: {
+        baseUrl: "https://relayhub.internal/api",
+        fetchImpl: async () => ({
+          status: 200,
+          json: async () => ({
+            items: [
+              {
+                id: "provider-runtime-real-fetch",
+                name: "Provider Runtime Real Fetch",
+                kind: "国产模型",
+                availableEnvironments: ["评测版"],
+                health: "healthy",
+                transparency: "完整",
+                errorRate: 0.2,
+                p95Latency: 610,
+                description: "runtime seam real-fetch payload",
+                recommendation: "适合作为 runtime seam 验证样本",
+                recommendationNote: "仅用于测试",
+                models: [{ name: "runtime-real-model", useCase: "runtime seam" }],
+                metrics: {
+                  requests: 22,
+                  tokens: 4800,
+                  avgLatency: 340,
+                  p95Latency: 610,
+                  errorRate: 0.2,
+                  cost: 4,
+                },
+              },
+            ],
+          }),
+        }),
+      },
+    });
+
+    const response = await runtimeDataSource.listProviders({ kind: "国产模型" });
+
+    expect(response.items[0]?.id).toBe("provider-runtime-real-fetch");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("keeps providers runtime seam scoped to providers only", async () => {
+    const runtimeDataSource = createProvidersRuntimeDataSource({
+      mode: "real-fetch",
+      fetchTransport: {
+        baseUrl: "https://relayhub.internal/api",
+        fetchImpl: async () => ({
+          status: 200,
+          json: async () => ({ items: [] }),
+        }),
+      },
+    });
+
+    const dashboardResponse = await defaultConsoleReadonlyDataSource.getDashboardOverview();
+    const environmentResponse = await defaultConsoleReadonlyDataSource.getEnvironment("dev-relay");
+    const providersResponse = await runtimeDataSource.listProviders();
+    const evalResponse = await defaultConsoleReadonlyDataSource.getEvalOverview();
+
+    expect(dashboardResponse.meta.resource).toBe("dashboard");
+    expect(environmentResponse.item?.id).toBe("dev-relay");
+    expect(providersResponse.meta.resource).toBe("providers");
+    expect(evalResponse.meta.resource).toBe("eval");
   });
 
   it("can switch provider list reads to the providers trial stub", async () => {
@@ -682,5 +773,105 @@ describe("console readonly data source", () => {
 
     expect(response.meta.status).toBe("ready");
     expect(response.items[0]?.id).toBe("provider-fetch-helper");
+  });
+
+  it("keeps explicit providersSource overrides above the runtime seam default", async () => {
+    const datasource = createConsoleReadonlyDataSource({
+      providersSource: {
+        listProviders: async () => ({
+          meta: {
+            source: "local-mock",
+            generatedAt: "2026-04-16T00:00:00+08:00",
+            version: "v1",
+            resource: "providers",
+            scope: "collection",
+            status: "ready",
+          },
+          items: [
+            {
+              id: "provider-explicit-override",
+              name: "Provider Explicit Override",
+              kind: "国产模型",
+              availableEnvironments: ["评测版"],
+              health: "healthy",
+              transparency: "完整",
+              errorRate: 0.1,
+              p95Latency: 500,
+              description: "explicit override payload",
+              recommendation: "优先使用显式覆盖",
+              recommendationNote: "仅用于测试显式覆盖优先级",
+              models: [{ name: "override-model", useCase: "override seam" }],
+              metrics: {
+                requests: 9,
+                tokens: 1200,
+                avgLatency: 250,
+                p95Latency: 500,
+                errorRate: 0.1,
+                cost: 1,
+              },
+            },
+          ],
+        }),
+        getProvider: async () => ({
+          meta: {
+            source: "local-mock",
+            generatedAt: "2026-04-16T00:00:00+08:00",
+            version: "v1",
+            resource: "providers",
+            scope: "detail",
+            status: "ready",
+          },
+          item: {
+            id: "provider-explicit-override",
+            name: "Provider Explicit Override",
+            kind: "国产模型",
+            availableEnvironments: ["评测版"],
+            health: "healthy",
+            transparency: "完整",
+            errorRate: 0.1,
+            p95Latency: 500,
+            description: "explicit override payload",
+            recommendation: "优先使用显式覆盖",
+            recommendationNote: "仅用于测试显式覆盖优先级",
+            models: [{ name: "override-model", useCase: "override seam" }],
+            metrics: {
+              requests: 9,
+              tokens: 1200,
+              avgLatency: 250,
+              p95Latency: 500,
+              errorRate: 0.1,
+              cost: 1,
+            },
+          },
+        }),
+      },
+    });
+
+    const response = await datasource.listProviders();
+
+    expect(response.items[0]?.id).toBe("provider-explicit-override");
+  });
+
+  it("rethrows real-fetch runtime errors without fallback", async () => {
+    const runtimeDataSource = createProvidersRuntimeDataSource({
+      mode: "real-fetch",
+      fetchTransport: {
+        baseUrl: "https://relayhub.internal/api",
+        fetchImpl: async () => {
+          throw new Error("runtime real-fetch failed");
+        },
+      },
+    });
+
+    await expect(runtimeDataSource.listProviders()).rejects.toThrow("runtime real-fetch failed");
+  });
+
+  it("keeps the standalone mock providers datasource behavior unchanged", async () => {
+    const response = await mockProvidersReadonlyDataSource.listProviders({
+      kind: "国产模型",
+      environment: "评测版",
+    });
+
+    expect(response.items.some((item) => item.id === "deepseek-direct")).toBe(true);
   });
 });
