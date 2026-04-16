@@ -1,8 +1,21 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import {
+  bootstrapConsoleAppRuntime,
+  createConsoleAppRuntime,
+  getDefaultConsoleAppRuntime,
+} from "../app/consoleAppRuntime";
+import {
+  getDashboardOverviewRaw,
+  getEnvironmentRaw,
+  getEvalOverviewRaw,
+  getProviderRaw,
+  listProvidersRaw,
+} from "../services/consoleData";
 import {
   createConsoleReadonlyDataSource,
   defaultConsoleReadonlyDataSource,
   mockProvidersReadonlyDataSource,
+  resetConsoleReadonlyDataSource,
 } from "../services/mockConsoleDataSource";
 import {
   createProvidersRuntimeBootstrap,
@@ -53,6 +66,10 @@ import type {
 import type { ProvidersReadonlyTransportRequest } from "../services/realProvidersTransport";
 
 describe("console readonly data source", () => {
+  afterEach(() => {
+    resetConsoleReadonlyDataSource();
+  });
+
   it("returns dashboard contract response from default datasource", async () => {
     const response = await defaultConsoleReadonlyDataSource.getDashboardOverview();
     const typedResponse: DashboardOverviewContract = response;
@@ -141,6 +158,24 @@ describe("console readonly data source", () => {
   it("creates a providers runtime bootstrap with default mock behavior", async () => {
     const bootstrap = createProvidersRuntimeBootstrap();
     const response = await bootstrap.providersSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("returns mock providers from the default console app runtime", async () => {
+    const runtime = getDefaultConsoleAppRuntime();
+    const response = await runtime.dataSource.listProviders({
+      kind: "国产模型",
+      environment: "评测版",
+    });
+
+    expect(response.items.some((item) => item.id === "deepseek-direct")).toBe(true);
+  });
+
+  it("creates a console app runtime with default mock behavior", async () => {
+    const runtime = createConsoleAppRuntime();
+    const response = await runtime.dataSource.getProvider("deepseek-direct");
 
     expect(response.item?.id).toBe("deepseek-direct");
     expect(response.meta.status).toBe("ready");
@@ -374,6 +409,23 @@ describe("console readonly data source", () => {
       },
     });
     const response = await bootstrap.providersSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("creates a console app runtime with static mock providers options", async () => {
+    const runtime = createConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "static",
+          config: {
+            mode: "mock",
+          },
+        },
+      },
+    });
+    const response = await runtime.dataSource.getProvider("deepseek-direct");
 
     expect(response.item?.id).toBe("deepseek-direct");
     expect(response.meta.status).toBe("ready");
@@ -616,6 +668,35 @@ describe("console readonly data source", () => {
     expect(response.meta.status).toBe("empty");
   });
 
+  it("creates a console app runtime with static real-fetch providers options", async () => {
+    const fetchCalls: string[] = [];
+    const runtime = createConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "static",
+          config: {
+            mode: "real-fetch",
+            baseUrl: "https://relayhub.internal/api",
+            fetchImpl: async (input) => {
+              fetchCalls.push(input);
+              return {
+                status: 200,
+                json: async () => ({ items: [] }),
+              };
+            },
+          },
+        },
+      },
+    });
+
+    const response = await runtime.dataSource.listProviders({ kind: "国产模型" });
+
+    expect(fetchCalls[0]).toBe(
+      "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+    );
+    expect(response.meta.status).toBe("empty");
+  });
+
   it("creates a runtime config source from env that can switch to real-fetch", async () => {
     const fetchCalls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
     const runtimeDataSource = getProvidersRuntimeDataSourceFromConfigSource(
@@ -728,6 +809,35 @@ describe("console readonly data source", () => {
     expect(response.meta.status).toBe("empty");
   });
 
+  it("creates a console app runtime with env real-fetch providers options", async () => {
+    const fetchCalls: string[] = [];
+    const runtime = createConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "env",
+          env: {
+            RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+            RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+          },
+          fetchImpl: async (input) => {
+            fetchCalls.push(input);
+            return {
+              status: 200,
+              json: async () => ({ items: [] }),
+            };
+          },
+        },
+      },
+    });
+
+    const response = await runtime.dataSource.listProviders({ kind: "国产模型" });
+
+    expect(fetchCalls[0]).toBe(
+      "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+    );
+    expect(response.meta.status).toBe("empty");
+  });
+
   it("creates an env runtime config source that falls back to mock when required fields are missing", async () => {
     const runtimeDataSource = getProvidersRuntimeDataSourceFromFactory({
       mode: "env",
@@ -751,6 +861,23 @@ describe("console readonly data source", () => {
       },
     });
     const response = await bootstrap.providersSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("creates a console app runtime that falls back to mock for incomplete env options", async () => {
+    const runtime = createConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "env",
+          env: {
+            RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+          },
+        },
+      },
+    });
+    const response = await runtime.dataSource.getProvider("deepseek-direct");
 
     expect(response.item?.id).toBe("deepseek-direct");
     expect(response.meta.status).toBe("ready");
@@ -803,6 +930,155 @@ describe("console readonly data source", () => {
     expect(environmentResponse.item?.id).toBe("dev-relay");
     expect(providersResponse.meta.resource).toBe("providers");
     expect(evalResponse.meta.resource).toBe("eval");
+  });
+
+  it("keeps console app runtime scoped to providers only", async () => {
+    const runtime = createConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "static",
+          config: {
+            mode: "real-fetch",
+            baseUrl: "https://relayhub.internal/api",
+            fetchImpl: async () => ({
+              status: 200,
+              json: async () => ({ items: [] }),
+            }),
+          },
+        },
+      },
+    });
+
+    const dashboardResponse = await runtime.dataSource.getDashboardOverview();
+    const environmentResponse = await runtime.dataSource.getEnvironment("dev-relay");
+    const providersResponse = await runtime.dataSource.listProviders();
+    const evalResponse = await runtime.dataSource.getEvalOverview();
+
+    expect(dashboardResponse.meta.resource).toBe("dashboard");
+    expect(environmentResponse.item?.id).toBe("dev-relay");
+    expect(providersResponse.meta.resource).toBe("providers");
+    expect(providersResponse.meta.status).toBe("empty");
+    expect(evalResponse.meta.resource).toBe("eval");
+  });
+
+  it("installs console app runtime datasource for consoleData helpers", async () => {
+    const fetchCalls: string[] = [];
+    bootstrapConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "static",
+          config: {
+            mode: "real-fetch",
+            baseUrl: "https://relayhub.internal/api",
+            fetchImpl: async (input) => {
+              fetchCalls.push(input);
+              if (input.endsWith("/missing-provider")) {
+                return {
+                  status: 200,
+                  json: async () => ({
+                    item: null,
+                  }),
+                };
+              }
+
+              return {
+                status: 200,
+                json: async () => ({
+                  items: [
+                    {
+                      id: "provider-app-runtime-installed",
+                      name: "Provider App Runtime Installed",
+                      kind: "国产模型",
+                      availableEnvironments: ["评测版"],
+                      health: "healthy",
+                      transparency: "完整",
+                      errorRate: 0.2,
+                      p95Latency: 610,
+                      description: "app runtime installed datasource payload",
+                      recommendation: "适合作为 app runtime 验证样本",
+                      recommendationNote: "仅用于测试",
+                      models: [{ name: "app-runtime-model", useCase: "app runtime" }],
+                      metrics: {
+                        requests: 22,
+                        tokens: 4800,
+                        avgLatency: 340,
+                        p95Latency: 610,
+                        errorRate: 0.2,
+                        cost: 4,
+                      },
+                    },
+                  ],
+                }),
+              };
+            },
+          },
+        },
+      },
+    });
+
+    const providersResponse = await listProvidersRaw({ kind: "国产模型" });
+    const providerResponse = await getProviderRaw("missing-provider");
+
+    expect(fetchCalls[0]).toBe(
+      "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+    );
+    expect(fetchCalls[1]).toBe("https://relayhub.internal/api/providers/missing-provider");
+    expect(providersResponse.items[0]?.id).toBe("provider-app-runtime-installed");
+    expect(providerResponse.meta.status).toBe("not-found");
+  });
+
+  it("keeps non-provider consoleData helpers on mock after app runtime bootstrap", async () => {
+    bootstrapConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "static",
+          config: {
+            mode: "real-fetch",
+            baseUrl: "https://relayhub.internal/api",
+            fetchImpl: async () => ({
+              status: 200,
+              json: async () => ({ items: [] }),
+            }),
+          },
+        },
+      },
+    });
+
+    const dashboardResponse = await getDashboardOverviewRaw();
+    const environmentResponse = await getEnvironmentRaw("dev-relay");
+    const evalResponse = await getEvalOverviewRaw();
+
+    expect(dashboardResponse.meta.resource).toBe("dashboard");
+    expect(environmentResponse.item?.id).toBe("dev-relay");
+    expect(evalResponse.meta.resource).toBe("eval");
+  });
+
+  it("resets the installed console datasource back to default mock behavior", async () => {
+    bootstrapConsoleAppRuntime({
+      providersBootstrapOptions: {
+        sourceFactoryOptions: {
+          mode: "static",
+          config: {
+            mode: "real-fetch",
+            baseUrl: "https://relayhub.internal/api",
+            fetchImpl: async () => ({
+              status: 200,
+              json: async () => ({ items: [] }),
+            }),
+          },
+        },
+      },
+    });
+
+    const installedResponse = await listProvidersRaw({ kind: "国产模型" });
+    resetConsoleReadonlyDataSource();
+    const resetResponse = await listProvidersRaw({
+      kind: "国产模型",
+      environment: "评测版",
+    });
+
+    expect(installedResponse.meta.status).toBe("empty");
+    expect(resetResponse.items.some((item) => item.id === "deepseek-direct")).toBe(true);
   });
 
   it("can switch provider list reads to the providers trial stub", async () => {

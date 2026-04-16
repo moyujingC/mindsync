@@ -46,6 +46,16 @@ export function createConsoleReadonlyDataSource(
 
 export const defaultConsoleReadonlyDataSource = createConsoleReadonlyDataSource();
 
+let currentConsoleReadonlyDataSource = defaultConsoleReadonlyDataSource;
+
+export function setConsoleReadonlyDataSource(dataSource: ConsoleReadonlyDataSource): void {
+  currentConsoleReadonlyDataSource = dataSource;
+}
+
+export function resetConsoleReadonlyDataSource(): void {
+  currentConsoleReadonlyDataSource = defaultConsoleReadonlyDataSource;
+}
+
 export function getConsoleReadonlyDataSource(): ConsoleReadonlyDataSource {
-  return defaultConsoleReadonlyDataSource;
+  return currentConsoleReadonlyDataSource;
 }
