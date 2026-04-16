@@ -1,4 +1,4 @@
-import type { ContractOverviewResponse } from "./base";
+import type { ContractOverviewResponse, ReadonlyApiResponse } from "./base";
 
 export interface EvalScoreRowContract {
   task: string;
@@ -42,3 +42,4 @@ export interface EvalOverviewPayloadContract {
 }
 
 export type EvalOverviewContract = ContractOverviewResponse<EvalOverviewPayloadContract>;
+export type EvalOverviewReadonlyApiResponse = ReadonlyApiResponse<EvalOverviewPayloadContract>;

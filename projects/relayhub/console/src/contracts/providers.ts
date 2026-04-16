@@ -1,4 +1,8 @@
-import type { ContractCollectionResponse, ContractDetailResponse } from "./base";
+import type {
+  ContractCollectionResponse,
+  ContractDetailResponse,
+  ReadonlyApiResponse,
+} from "./base";
 import type { ContractHealthState, ContractMetricsSnapshot } from "./environments";
 
 export type ContractProviderKind = "第三方中转" | "国产模型" | "免费国外 API";
@@ -37,3 +41,8 @@ export type ProviderCollectionContract = ContractCollectionResponse<
   ProviderFilterSnapshot
 >;
 export type ProviderDetailContract = ContractDetailResponse<ProviderRecordContract>;
+export type ProviderCollectionReadonlyApiResponse = ReadonlyApiResponse<
+  ProviderRecordContract[],
+  ProviderFilterSnapshot
+>;
+export type ProviderDetailReadonlyApiResponse = ReadonlyApiResponse<ProviderRecordContract | null>;

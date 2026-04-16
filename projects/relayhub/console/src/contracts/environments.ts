@@ -1,4 +1,8 @@
-import type { ContractCollectionResponse, ContractDetailResponse } from "./base";
+import type {
+  ContractCollectionResponse,
+  ContractDetailResponse,
+  ReadonlyApiResponse,
+} from "./base";
 
 export type ContractHealthState = "healthy" | "degraded" | "risk" | "idle";
 
@@ -48,3 +52,7 @@ export interface EnvironmentRecordContract {
 
 export type EnvironmentCollectionContract = ContractCollectionResponse<EnvironmentRecordContract>;
 export type EnvironmentDetailContract = ContractDetailResponse<EnvironmentRecordContract>;
+export type EnvironmentCollectionReadonlyApiResponse =
+  ReadonlyApiResponse<EnvironmentRecordContract[]>;
+export type EnvironmentDetailReadonlyApiResponse =
+  ReadonlyApiResponse<EnvironmentRecordContract | null>;

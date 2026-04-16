@@ -1,22 +1,34 @@
 import { describe, expect, it } from "vitest";
 import {
   getDashboardOverview,
+  getDashboardOverviewReadonlyApiResponse,
   getDashboardOverviewRaw,
   getEnvironment,
+  getEnvironmentReadonlyApiResponse,
   getEnvironmentRaw,
   getEvalOverview,
+  getEvalOverviewReadonlyApiResponse,
   getEvalOverviewRaw,
   getProvider,
+  getProviderReadonlyApiResponse,
   listEnvironmentsRaw,
+  listEnvironmentsReadonlyApiResponse,
   listProviders,
+  listProvidersReadonlyApiResponse,
   listProvidersRaw,
 } from "../services/consoleData";
 import type {
   DashboardOverviewContract,
+  DashboardOverviewReadonlyApiResponse,
   EnvironmentCollectionContract,
+  EnvironmentCollectionReadonlyApiResponse,
   EnvironmentDetailContract,
+  EnvironmentDetailReadonlyApiResponse,
   EvalOverviewContract,
+  EvalOverviewReadonlyApiResponse,
   ProviderCollectionContract,
+  ProviderCollectionReadonlyApiResponse,
+  ProviderDetailReadonlyApiResponse,
 } from "../contracts";
 
 describe("consoleData service", () => {
@@ -38,6 +50,15 @@ describe("consoleData service", () => {
     expect(typedResponse.meta.version).toBe("v1");
   });
 
+  it("adapts dashboard raw helper into readonly api response shape", async () => {
+    const response = await getDashboardOverviewReadonlyApiResponse();
+    const typedResponse: DashboardOverviewReadonlyApiResponse = response;
+
+    expect(typedResponse.meta.resource).toBe("dashboard");
+    expect(typedResponse.data.environments.length).toBeGreaterThan(0);
+    expect(typedResponse.data.decisions.length).toBeGreaterThan(0);
+  });
+
   it("exposes environment collection meta semantics through raw helper", async () => {
     const response = await listEnvironmentsRaw();
     const typedResponse: EnvironmentCollectionContract = response;
@@ -45,6 +66,15 @@ describe("consoleData service", () => {
     expect(typedResponse.meta.resource).toBe("environments");
     expect(typedResponse.meta.scope).toBe("collection");
     expect(typedResponse.meta.status).toBe("ready");
+  });
+
+  it("adapts environment collection into readonly api response shape", async () => {
+    const response = await listEnvironmentsReadonlyApiResponse();
+    const typedResponse: EnvironmentCollectionReadonlyApiResponse = response;
+
+    expect(typedResponse.meta.resource).toBe("environments");
+    expect(Array.isArray(typedResponse.data)).toBe(true);
+    expect(typedResponse.data.length).toBeGreaterThan(0);
   });
 
   it("returns null for missing environment detail", async () => {
@@ -65,6 +95,14 @@ describe("consoleData service", () => {
 
     expect(typedResponse.item).toBeNull();
     expect(typedResponse.meta.scope).toBe("detail");
+    expect(typedResponse.meta.status).toBe("not-found");
+  });
+
+  it("adapts missing environment detail into readonly api response shape", async () => {
+    const response = await getEnvironmentReadonlyApiResponse("missing-environment");
+    const typedResponse: EnvironmentDetailReadonlyApiResponse = response;
+
+    expect(typedResponse.data).toBeNull();
     expect(typedResponse.meta.status).toBe("not-found");
   });
 
@@ -94,6 +132,20 @@ describe("consoleData service", () => {
     });
   });
 
+  it("adapts provider collection into readonly api response shape", async () => {
+    const response = await listProvidersReadonlyApiResponse({
+      kind: "国产模型",
+      environment: "评测版",
+    });
+    const typedResponse: ProviderCollectionReadonlyApiResponse = response;
+
+    expect(Array.isArray(typedResponse.data)).toBe(true);
+    expect(typedResponse.meta.filters).toEqual({
+      kind: "国产模型",
+      environment: "评测版",
+    });
+  });
+
   it("marks empty provider collections as empty in raw meta", async () => {
     const response = await listProvidersRaw({
       kind: "免费国外 API",
@@ -105,12 +157,30 @@ describe("consoleData service", () => {
     expect(typedResponse.meta.status).toBe("empty");
   });
 
+  it("keeps empty provider collections as empty in readonly api response shape", async () => {
+    const response = await listProvidersReadonlyApiResponse({
+      kind: "免费国外 API",
+      environment: "心理疗愈生产版",
+    });
+
+    expect(response.data).toHaveLength(0);
+    expect(response.meta.status).toBe("empty");
+  });
+
   it("maps provider detail contract into the page model shape", async () => {
     const provider = await getProvider("deepseek-direct");
 
     expect(provider?.name).toBe("DeepSeek Direct");
     expect(provider?.models.length).toBeGreaterThan(0);
     expect(provider?.metrics?.requests).toBeGreaterThan(0);
+  });
+
+  it("adapts missing provider detail into readonly api response shape", async () => {
+    const response = await getProviderReadonlyApiResponse("missing-provider");
+    const typedResponse: ProviderDetailReadonlyApiResponse = response;
+
+    expect(typedResponse.data).toBeNull();
+    expect(typedResponse.meta.status).toBe("not-found");
   });
 
   it("unwraps eval overview payload", async () => {
@@ -127,5 +197,14 @@ describe("consoleData service", () => {
     expect(typedResponse.meta.resource).toBe("eval");
     expect(typedResponse.meta.scope).toBe("overview");
     expect(typedResponse.meta.status).toBe("ready");
+  });
+
+  it("adapts eval overview into readonly api response shape", async () => {
+    const response = await getEvalOverviewReadonlyApiResponse();
+    const typedResponse: EvalOverviewReadonlyApiResponse = response;
+
+    expect(typedResponse.meta.resource).toBe("eval");
+    expect(typedResponse.data.recommendations.length).toBeGreaterThan(0);
+    expect(typedResponse.data.reports.length).toBeGreaterThan(0);
   });
 });

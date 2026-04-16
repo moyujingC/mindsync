@@ -19,18 +19,24 @@ import type {
   DashboardDecisionContract,
   DashboardOverviewContract,
   DashboardOverviewPayloadContract,
+  DashboardOverviewReadonlyApiResponse,
   DashboardRiskContract,
   ContractMetricsSnapshot,
   ContractRouteRecord,
   ContractRunRecord,
   EnvironmentCollectionContract,
+  EnvironmentCollectionReadonlyApiResponse,
   EnvironmentDetailContract,
+  EnvironmentDetailReadonlyApiResponse,
   EnvironmentRecordContract,
   EvalOverviewContract,
   EvalOverviewPayloadContract,
+  EvalOverviewReadonlyApiResponse,
   ProviderModelContract,
   ProviderCollectionContract,
+  ProviderCollectionReadonlyApiResponse,
   ProviderDetailContract,
+  ProviderDetailReadonlyApiResponse,
   ProviderRecordContract,
 } from "../contracts";
 
@@ -119,10 +125,43 @@ function mapEvalOverview(overview: EvalOverviewPayloadContract): EvalOverview {
   };
 }
 
+function adaptOverviewResponse<T extends { meta: unknown; overview: unknown }>(
+  response: T,
+): { meta: T["meta"]; data: T["overview"] } {
+  return {
+    meta: response.meta,
+    data: response.overview,
+  };
+}
+
+function adaptCollectionResponse<T extends { meta: unknown; items: unknown }>(
+  response: T,
+): { meta: T["meta"]; data: T["items"] } {
+  return {
+    meta: response.meta,
+    data: response.items,
+  };
+}
+
+function adaptDetailResponse<T extends { meta: unknown; item: unknown }>(
+  response: T,
+): { meta: T["meta"]; data: T["item"] } {
+  return {
+    meta: response.meta,
+    data: response.item,
+  };
+}
+
 export function getDashboardOverviewRaw(
   options?: MockRequestOptions,
 ): Promise<DashboardOverviewContract> {
   return mockApi.getDashboardOverview(options);
+}
+
+export function getDashboardOverviewReadonlyApiResponse(
+  options?: MockRequestOptions,
+): Promise<DashboardOverviewReadonlyApiResponse> {
+  return getDashboardOverviewRaw(options).then(adaptOverviewResponse);
 }
 
 export function getDashboardOverview(options?: MockRequestOptions): Promise<DashboardOverview> {
@@ -135,6 +174,12 @@ export function listEnvironmentsRaw(
   return mockApi.listEnvironments(options);
 }
 
+export function listEnvironmentsReadonlyApiResponse(
+  options?: MockRequestOptions,
+): Promise<EnvironmentCollectionReadonlyApiResponse> {
+  return listEnvironmentsRaw(options).then(adaptCollectionResponse);
+}
+
 export function listEnvironments(options?: MockRequestOptions): Promise<EnvironmentRecord[]> {
   return listEnvironmentsRaw(options).then((response) => response.items.map(mapEnvironmentRecord));
 }
@@ -144,6 +189,13 @@ export function getEnvironmentRaw(
   options?: MockRequestOptions,
 ): Promise<EnvironmentDetailContract> {
   return mockApi.getEnvironment(id, options);
+}
+
+export function getEnvironmentReadonlyApiResponse(
+  id: string,
+  options?: MockRequestOptions,
+): Promise<EnvironmentDetailReadonlyApiResponse> {
+  return getEnvironmentRaw(id, options).then(adaptDetailResponse);
 }
 
 export function getEnvironment(
@@ -162,6 +214,13 @@ export function listProvidersRaw(
   return mockApi.listProviders(filters, options);
 }
 
+export function listProvidersReadonlyApiResponse(
+  filters: ProviderFilters = {},
+  options?: MockRequestOptions,
+): Promise<ProviderCollectionReadonlyApiResponse> {
+  return listProvidersRaw(filters, options).then(adaptCollectionResponse);
+}
+
 export function listProviders(
   filters: ProviderFilters = {},
   options?: MockRequestOptions,
@@ -174,6 +233,13 @@ export function getProviderRaw(
   options?: MockRequestOptions,
 ): Promise<ProviderDetailContract> {
   return mockApi.getProvider(id, options);
+}
+
+export function getProviderReadonlyApiResponse(
+  id: string,
+  options?: MockRequestOptions,
+): Promise<ProviderDetailReadonlyApiResponse> {
+  return getProviderRaw(id, options).then(adaptDetailResponse);
 }
 
 export function getProvider(
@@ -189,6 +255,12 @@ export function getEvalOverviewRaw(
   options?: MockRequestOptions,
 ): Promise<EvalOverviewContract> {
   return mockApi.getEvalOverview(options);
+}
+
+export function getEvalOverviewReadonlyApiResponse(
+  options?: MockRequestOptions,
+): Promise<EvalOverviewReadonlyApiResponse> {
+  return getEvalOverviewRaw(options).then(adaptOverviewResponse);
 }
 
 export function getEvalOverview(options?: MockRequestOptions): Promise<EvalOverview> {

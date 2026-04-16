@@ -1,4 +1,4 @@
-import type { ContractOverviewResponse } from "./base";
+import type { ContractOverviewResponse, ReadonlyApiResponse } from "./base";
 import type {
   ContractMetricsSnapshot,
   ContractRunRecord,
@@ -29,3 +29,5 @@ export interface DashboardOverviewPayloadContract {
 }
 
 export type DashboardOverviewContract = ContractOverviewResponse<DashboardOverviewPayloadContract>;
+export type DashboardOverviewReadonlyApiResponse =
+  ReadonlyApiResponse<DashboardOverviewPayloadContract>;

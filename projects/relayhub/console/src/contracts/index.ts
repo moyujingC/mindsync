@@ -6,11 +6,17 @@ export type {
   ContractResource,
   ContractScope,
   ContractStatus,
+  ReadonlyApiMeta,
+  ReadonlyApiResponse,
+  ReadonlyApiResource,
+  ReadonlyApiScope,
+  ReadonlyApiStatus,
 } from "./base";
 export type {
   DashboardDecisionContract,
   DashboardOverviewContract,
   DashboardOverviewPayloadContract,
+  DashboardOverviewReadonlyApiResponse,
   DashboardRiskContract,
 } from "./dashboard";
 export type {
@@ -19,14 +25,18 @@ export type {
   ContractRouteRecord,
   ContractRunRecord,
   EnvironmentCollectionContract,
+  EnvironmentCollectionReadonlyApiResponse,
   EnvironmentDetailContract,
+  EnvironmentDetailReadonlyApiResponse,
   EnvironmentRecordContract,
 } from "./environments";
 export type {
   ContractProviderKind,
   ContractTransparencyState,
   ProviderCollectionContract,
+  ProviderCollectionReadonlyApiResponse,
   ProviderDetailContract,
+  ProviderDetailReadonlyApiResponse,
   ProviderFilterSnapshot,
   ProviderModelContract,
   ProviderRecordContract,
@@ -35,6 +45,7 @@ export type {
   EvalComparisonContract,
   EvalOverviewContract,
   EvalOverviewPayloadContract,
+  EvalOverviewReadonlyApiResponse,
   EvalRecommendationContract,
   EvalReportContract,
   EvalScoreRowContract,
