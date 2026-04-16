@@ -7,11 +7,17 @@ import {
 import {
   createProvidersRuntimeDataSource,
   getProvidersRuntimeDataSource,
+  getProvidersRuntimeDataSourceFromConfigSource,
 } from "../services/providersRuntimeDataSource";
 import {
   getDefaultProvidersRuntimeConfig,
   resolveProvidersRuntimeDataSourceOptions,
 } from "../services/providersRuntimeConfig";
+import {
+  createStaticProvidersRuntimeConfigSource,
+  defaultProvidersRuntimeConfigSource,
+  resolveProvidersRuntimeConfigFromSource,
+} from "../services/providersRuntimeConfigSource";
 import {
   adaptProviderDetailWirePayload,
   adaptProvidersCollectionWirePayload,
@@ -126,6 +132,12 @@ describe("console readonly data source", () => {
     });
   });
 
+  it("resolves the default providers runtime config source to mock", () => {
+    expect(resolveProvidersRuntimeConfigFromSource(defaultProvidersRuntimeConfigSource)).toEqual({
+      mode: "mock",
+    });
+  });
+
   it("returns mock providers source when runtime mode is mock", async () => {
     const runtimeDataSource = createProvidersRuntimeDataSource({
       mode: "mock",
@@ -140,6 +152,26 @@ describe("console readonly data source", () => {
     const runtimeDataSource = getProvidersRuntimeDataSource({
       mode: "mock",
     });
+    const response = await runtimeDataSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("returns mock providers source from the default runtime config source seam", async () => {
+    const runtimeDataSource = getProvidersRuntimeDataSourceFromConfigSource();
+    const response = await runtimeDataSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("returns mock providers source from a static mock runtime config source", async () => {
+    const runtimeDataSource = getProvidersRuntimeDataSourceFromConfigSource(
+      createStaticProvidersRuntimeConfigSource({
+        mode: "mock",
+      }),
+    );
     const response = await runtimeDataSource.getProvider("deepseek-direct");
 
     expect(response.item?.id).toBe("deepseek-direct");
@@ -269,6 +301,65 @@ describe("console readonly data source", () => {
       },
     });
     expect(response.items[0]?.id).toBe("provider-runtime-config-real-fetch");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("switches providers runtime config source to real-fetch when requested", async () => {
+    const fetchCalls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
+    const runtimeDataSource = getProvidersRuntimeDataSourceFromConfigSource(
+      createStaticProvidersRuntimeConfigSource({
+        mode: "real-fetch",
+        baseUrl: "https://relayhub.internal/api",
+        defaultHeaders: {
+          "x-relayhub-scope": "providers-readonly",
+        },
+        fetchImpl: async (input, init) => {
+          fetchCalls.push({ input, init });
+          return {
+            status: 200,
+            json: async () => ({
+              items: [
+                {
+                  id: "provider-runtime-config-source-real-fetch",
+                  name: "Provider Runtime Config Source Real Fetch",
+                  kind: "国产模型",
+                  availableEnvironments: ["评测版"],
+                  health: "healthy",
+                  transparency: "完整",
+                  errorRate: 0.2,
+                  p95Latency: 610,
+                  description: "runtime config source real-fetch payload",
+                  recommendation: "适合作为 runtime config source 验证样本",
+                  recommendationNote: "仅用于测试",
+                  models: [{ name: "runtime-config-source-model", useCase: "runtime config source seam" }],
+                  metrics: {
+                    requests: 22,
+                    tokens: 4800,
+                    avgLatency: 340,
+                    p95Latency: 610,
+                    errorRate: 0.2,
+                    cost: 4,
+                  },
+                },
+              ],
+            }),
+          };
+        },
+      }),
+    );
+
+    const response = await runtimeDataSource.listProviders({ kind: "国产模型" });
+
+    expect(fetchCalls[0]).toEqual({
+      input: "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+      init: {
+        method: "GET",
+        headers: {
+          "x-relayhub-scope": "providers-readonly",
+        },
+      },
+    });
+    expect(response.items[0]?.id).toBe("provider-runtime-config-source-real-fetch");
     expect(response.meta.status).toBe("ready");
   });
 
@@ -967,6 +1058,22 @@ describe("console readonly data source", () => {
     });
 
     await expect(runtimeDataSource.listProviders()).rejects.toThrow("runtime real-fetch failed");
+  });
+
+  it("rethrows real-fetch config source runtime errors without fallback", async () => {
+    const runtimeDataSource = getProvidersRuntimeDataSourceFromConfigSource(
+      createStaticProvidersRuntimeConfigSource({
+        mode: "real-fetch",
+        baseUrl: "https://relayhub.internal/api",
+        fetchImpl: async () => {
+          throw new Error("runtime config source real-fetch failed");
+        },
+      }),
+    );
+
+    await expect(runtimeDataSource.listProviders()).rejects.toThrow(
+      "runtime config source real-fetch failed",
+    );
   });
 
   it("keeps the standalone mock providers datasource behavior unchanged", async () => {
