@@ -1,9 +1,9 @@
-import * as mockApi from "../mocks/consoleApi";
 import {
   adaptCollectionContractToReadonlyApiResponse,
   adaptDetailContractToReadonlyApiResponse,
   adaptOverviewContractToReadonlyApiResponse,
 } from "./readonlyApiAdapters";
+import { getConsoleReadonlyDataSource } from "./mockConsoleDataSource";
 import type {
   DashboardOverview,
   EnvironmentRecord,
@@ -130,10 +130,12 @@ function mapEvalOverview(overview: EvalOverviewPayloadContract): EvalOverview {
   };
 }
 
+const consoleReadonlyDataSource = getConsoleReadonlyDataSource();
+
 export function getDashboardOverviewRaw(
   options?: MockRequestOptions,
 ): Promise<DashboardOverviewContract> {
-  return mockApi.getDashboardOverview(options);
+  return consoleReadonlyDataSource.getDashboardOverview(options);
 }
 
 export function getDashboardOverviewReadonlyApiResponse(
@@ -149,7 +151,7 @@ export function getDashboardOverview(options?: MockRequestOptions): Promise<Dash
 export function listEnvironmentsRaw(
   options?: MockRequestOptions,
 ): Promise<EnvironmentCollectionContract> {
-  return mockApi.listEnvironments(options);
+  return consoleReadonlyDataSource.listEnvironments(options);
 }
 
 export function listEnvironmentsReadonlyApiResponse(
@@ -166,7 +168,7 @@ export function getEnvironmentRaw(
   id: string,
   options?: MockRequestOptions,
 ): Promise<EnvironmentDetailContract> {
-  return mockApi.getEnvironment(id, options);
+  return consoleReadonlyDataSource.getEnvironment(id, options);
 }
 
 export function getEnvironmentReadonlyApiResponse(
@@ -189,7 +191,7 @@ export function listProvidersRaw(
   filters: ProviderFilters = {},
   options?: MockRequestOptions,
 ): Promise<ProviderCollectionContract> {
-  return mockApi.listProviders(filters, options);
+  return consoleReadonlyDataSource.listProviders(filters, options);
 }
 
 export function listProvidersReadonlyApiResponse(
@@ -210,7 +212,7 @@ export function getProviderRaw(
   id: string,
   options?: MockRequestOptions,
 ): Promise<ProviderDetailContract> {
-  return mockApi.getProvider(id, options);
+  return consoleReadonlyDataSource.getProvider(id, options);
 }
 
 export function getProviderReadonlyApiResponse(
@@ -232,7 +234,7 @@ export function getProvider(
 export function getEvalOverviewRaw(
   options?: MockRequestOptions,
 ): Promise<EvalOverviewContract> {
-  return mockApi.getEvalOverview(options);
+  return consoleReadonlyDataSource.getEvalOverview(options);
 }
 
 export function getEvalOverviewReadonlyApiResponse(
