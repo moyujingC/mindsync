@@ -52,7 +52,7 @@
 
 .am-pro-report-error-card__message {
   margin: var(--am-space-3) 0 var(--am-space-5);
-  color: #7a6a5a;
+  color: var(--am-text-soft);
   font-size: var(--am-text-md);
   line-height: 1.8;
 }
@@ -377,7 +377,7 @@
 
 .am-pro-report-waiting-card__body {
   margin: 12px 0 18px;
-  color: #7a6a5a;
+  color: var(--am-text-soft);
   font-size: var(--am-text-md);
   line-height: 1.8;
 }
@@ -418,7 +418,7 @@
 
 .am-pro-report-reading-note {
   margin: -10px 0 2px;
-  color: #8f8071;
+  color: var(--am-text-soft-muted);
   text-align: center;
   font-size: 12.5px;
   line-height: 1.8;
@@ -462,7 +462,7 @@
 
 .am-pro-report-markdown__heading3 {
   margin: 0;
-  color: #5a4938;
+  color: var(--am-text-primary);
   font-family: var(--am-font-display);
   font-size: var(--am-text-md);
   font-weight: 600;
@@ -684,7 +684,7 @@
   align-items: flex-start;
   gap: 8px;
   margin: 0;
-  color: #a89c8e;
+  color: var(--am-text-tertiary);
   font-size: 11.5px;
   line-height: 1.75;
 }
@@ -722,7 +722,7 @@
 
 .am-pro-report-footer-brand__text {
   margin-top: 6px;
-  color: #a89c8e;
+  color: var(--am-text-tertiary);
   opacity: 0.6;
   font-family: var(--am-font-display);
   font-size: var(--am-text-xs);
@@ -858,7 +858,7 @@
 }
 
 .am-pro-chat-bubble.is-loading {
-  color: #7a6a5a;
+  color: var(--am-text-soft);
 }
 
 .am-pro-chat-suggestions {
@@ -869,7 +869,7 @@
 }
 
 .am-pro-chat-suggestions__chip {
-  color: #7a6a5a;
+  color: var(--am-text-soft);
 }
 
 .am-pro-chat-suggestions__chip:disabled {

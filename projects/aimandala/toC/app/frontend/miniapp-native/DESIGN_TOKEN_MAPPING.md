@@ -82,4 +82,5 @@
 - `app.json` 中的 `navigationBarBackgroundColor` / `backgroundColor` 仍保持硬编码 `#f6f0e8`
   - 这是微信配置 JSON 不支持 `var()` 的平台限制
   - 语义上仍对应 `--am-surface-primary`
+- miniapp token 文件只同步当前 runtime 壳已实际消费的最小语义，不追求一次性复制全部 Web token
 - miniapp 后续新增样式应优先补 token 变量，再写页面规则；不要重新发明一套只存在于小程序端的颜色命名

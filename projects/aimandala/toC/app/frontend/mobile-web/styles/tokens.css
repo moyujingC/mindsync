@@ -98,17 +98,34 @@
   --am-surface-primary: var(--am-color-sand-150);
   --am-surface-card: rgba(255, 251, 245, 0.88);
   --am-surface-card-strong: rgba(255, 252, 247, 0.98);
+  --am-surface-card-soft: rgba(255, 255, 255, 0.78);
+  --am-surface-card-warm: rgba(255, 250, 244, 0.9);
+  --am-surface-card-warm-strong: rgba(255, 244, 237, 0.92);
   --am-surface-overlay: rgba(20, 30, 56, 0.6);
   --am-surface-success: rgba(22, 53, 53, 0.96);
   --am-surface-error: rgba(68, 28, 28, 0.96);
+  --am-surface-success-soft: rgba(74, 140, 104, 0.14);
+  --am-surface-warning-soft: rgba(172, 129, 72, 0.12);
+  --am-surface-copper-soft: rgba(200, 120, 80, 0.14);
+  --am-surface-pro-soft: rgba(100, 84, 173, 0.14);
   --am-text-primary: var(--am-color-clay-800);
   --am-text-secondary: var(--am-color-clay-700);
   --am-text-tertiary: var(--am-color-clay-500);
+  --am-text-quaternary: #7c6850;
+  --am-text-soft: #7a6a5a;
+  --am-text-soft-muted: #8f8071;
+  --am-text-warm: #9b7b52;
+  --am-text-warm-muted: #9b8160;
+  --am-text-on-light-strong: #2e2418;
   --am-text-on-dark: var(--am-color-sand-300);
   --am-text-on-dark-muted: rgba(232, 220, 200, 0.64);
+  --am-text-on-dark-soft: rgba(232, 220, 200, 0.56);
+  --am-text-on-dark-faint: rgba(232, 220, 200, 0.45);
   --am-text-accent: var(--am-color-gold-300);
   --am-border-soft: rgba(200, 120, 80, 0.14);
   --am-border-strong: rgba(212, 160, 84, 0.24);
+  --am-border-neutral: rgba(112, 90, 63, 0.18);
+  --am-border-warm-soft: rgba(106, 82, 50, 0.12);
   --am-action-primary-bg: linear-gradient(
     135deg,
     var(--am-color-copper-500) 0%,
@@ -121,6 +138,17 @@
   --am-action-secondary-bg: rgba(255, 255, 255, 0.86);
   --am-action-secondary-text: #5d4d37;
   --am-action-secondary-border: rgba(112, 90, 63, 0.18);
+  --am-status-success: var(--am-color-success-600);
+  --am-status-success-strong: #2f6a4a;
+  --am-status-warning: #7c5627;
+  --am-status-warning-strong: #704d24;
+  --am-status-pro: #53439a;
+  --am-status-copper: #944b2f;
+  --am-status-info-soft: rgba(122, 142, 168, 0.82);
+  --am-status-accent-soft: rgba(212, 160, 84, 0.82);
+  --am-status-error-soft: #f1b0ad;
   --am-badge-bg: rgba(26, 40, 68, 0.42);
   --am-badge-text: rgba(232, 220, 200, 0.76);
+  --am-progress-warm: linear-gradient(90deg, #8f6939, #d0aa73);
+  --am-progress-copper: linear-gradient(90deg, #ba6e48, #f0b179);
 }

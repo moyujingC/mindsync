@@ -35,7 +35,7 @@
 
 .mw-kicker {
   margin: 0 0 8px;
-  color: #8a6641;
+  color: var(--am-text-warm);
   font-size: var(--am-text-sm);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -52,14 +52,14 @@
   border: 1px solid rgba(112, 90, 63, 0.18);
   border-radius: var(--am-radius-pill);
   background: rgba(255, 255, 255, 0.72);
-  color: #6a5435;
+  color: var(--am-action-secondary-text);
   font-weight: 600;
 }
 
 .mw-filter-chip--active,
 .mw-filter-chip.is-active {
   background: rgba(139, 103, 55, 0.14);
-  color: #704d24;
+  color: var(--am-status-warning-strong);
 }
 
 .mw-filter-chip:disabled {
@@ -91,23 +91,23 @@
 }
 
 .mw-badge--ready {
-  background: rgba(74, 140, 104, 0.14);
-  color: #2f6a4a;
+  background: var(--am-surface-success-soft);
+  color: var(--am-status-success-strong);
 }
 
 .mw-badge--pending {
-  background: rgba(172, 129, 72, 0.12);
-  color: #7c5627;
+  background: var(--am-surface-warning-soft);
+  color: var(--am-status-warning);
 }
 
 .mw-badge--proReady {
-  background: rgba(100, 84, 173, 0.14);
-  color: #53439a;
+  background: var(--am-surface-pro-soft);
+  color: var(--am-status-pro);
 }
 
 .mw-badge--proPending {
-  background: rgba(200, 120, 80, 0.14);
-  color: #944b2f;
+  background: var(--am-surface-copper-soft);
+  color: var(--am-status-copper);
 }
 
 .mw-history-progress {
@@ -116,12 +116,12 @@
   margin-top: 12px;
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(255, 250, 244, 0.9);
+  background: var(--am-surface-card-warm);
 }
 
 .mw-history-progress--pro,
 .mw-history-progress.is-pro {
-  background: rgba(255, 244, 237, 0.92);
+  background: var(--am-surface-card-warm-strong);
 }
 
 .mw-history-progress__row {
@@ -141,7 +141,7 @@
 
 .mw-history-progress--pro .mw-progress__bar,
 .mw-history-progress.is-pro .mw-progress__bar {
-  background: linear-gradient(90deg, #ba6e48, #f0b179);
+  background: var(--am-progress-copper);
 }
 
 .mw-history-toolbar {

@@ -13,6 +13,7 @@ page {
   --am-text-secondary: var(--am-color-clay-700);
   --am-text-accent: var(--am-color-gold-300);
   --am-status-danger: var(--am-color-danger-600);
+  --am-text-soft: #7a6a5a;
 
   --am-font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
   --am-font-display: "Noto Serif SC", "Songti SC", serif;

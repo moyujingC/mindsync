@@ -51,7 +51,7 @@
 
 .mw-report-hero__brandline {
   margin: 0 0 10px;
-  color: #9b7b52;
+  color: var(--am-text-warm);
   font-size: 11px;
   letter-spacing: 0.14em;
 }
@@ -98,7 +98,7 @@
 }
 
 .mw-report-hero__date {
-  color: #7c6850;
+  color: var(--am-text-quaternary);
   font-size: 12px;
 }
 
@@ -127,7 +127,7 @@
 .mw-badge {
   background: rgba(212, 160, 84, 0.1);
   border: 1px solid rgba(212, 160, 84, 0.2);
-  color: #7b5a2f;
+  color: var(--am-status-warning);
 }
 
 .mw-report-story {
@@ -148,7 +148,7 @@
 }
 
 .mw-report-story__eyebrow {
-  color: #9b7b52;
+  color: var(--am-text-warm);
   font-size: 11px;
   letter-spacing: 0.14em;
 }
@@ -180,7 +180,7 @@
   flex-shrink: 0;
   min-width: 34px;
   padding-left: 8px;
-  color: #9b8160;
+  color: var(--am-text-warm-muted);
   font-size: 11px;
   letter-spacing: 0.12em;
 }
@@ -192,13 +192,13 @@
 .mw-card--report-section p {
   margin: 0;
   padding-left: 18px;
-  color: #514234;
+  color: var(--am-text-primary);
   font-size: 14px;
   line-height: 1.92;
 }
 
 .mw-card--report-section-lead p {
-  color: #47382b;
+  color: var(--am-text-on-light-strong);
   font-size: 15px;
 }
 

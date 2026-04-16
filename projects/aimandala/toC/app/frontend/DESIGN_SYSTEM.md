@@ -154,6 +154,13 @@
 - `app.json` 中的 `navigationBarBackgroundColor` 与 `backgroundColor` 由于平台限制仍保持硬编码，并在 mapping 文档中视为允许例外
 - miniapp 仍不做自动同步脚本；当前目标是让代码层与文档层使用同一套命名和语义
 
+## CSS Token 消费扫尾规则
+
+- 重复出现在多个页面或组件层的正文色、弱正文色、暖色标题色、状态 badge 色、表层卡片色、表单边框色，应优先收进 semantic token
+- `components.css`、`loading.css`、`history.css`、`report-lite.css`、`report-pro.css` 中的重复语义色应优先消费 token，而不是继续各自保留独立十六进制值
+- 装饰性渐变、halo、ring、图片容器高光与页面级氛围色可以暂留页面 CSS，等后续视觉重设计时再统一
+- `report-legacy.css` 继续视为隔离历史页，不纳入本轮 token 清扫目标
+
 ## 最终 Inline Style 边界
 
 - 允许保留：
