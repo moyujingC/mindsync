@@ -15,6 +15,16 @@
   gap: 10px !important;
 }
 
+.mw-stack {
+  display: grid;
+  gap: var(--am-space-4);
+}
+
+.mw-prewrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .am-scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;

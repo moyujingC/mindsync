@@ -13,3 +13,51 @@
 .browser-debug-chip {
   backdrop-filter: blur(14px);
 }
+
+.muted {
+  color: #6f624f;
+}
+
+.field {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.field--checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.field--checkbox span {
+  margin-bottom: 0;
+}
+
+.field span {
+  display: block;
+  margin-bottom: 6px;
+  color: #5d4d37;
+  font-size: 13px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.runtime-state {
+  padding: 24px;
+}
+
+.runtime-state--error {
+  color: #8f2d2d;
+}

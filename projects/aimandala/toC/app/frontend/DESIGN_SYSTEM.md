@@ -104,6 +104,14 @@
 - `mw-card`、`mw-meta`、`mw-progress` 等跨页面稳定基础样式进入 `components.css`
 - History 链路允许保留进度条宽度这类运行时 inline style，但筛选、状态卡、toolbar、hero 与 badge 的静态视觉必须进入 CSS 层
 
+## 外围链路收口约束
+
+- `MobileWebAppShell`、shared upload/report 小组件、`History Detail` 这类外围产品链路，优先复用 `components.css` 中的稳定基础样式，再由页面层补最小专属 class
+- `mw-form-*`、`mw-upload-*`、`mw-checklist`、`mw-stage-list`、`mw-stack`、`mw-prewrap` 这类 shared/product 过渡样式，不再继续留在 `styles.css`
+- `styles.css` 兼容层应逐步只保留 legacy page、browser shell、debug panel 等未完成迁移的大块历史样式
+- `.field`、`.runtime-state`、`.muted` 这类仅供开发壳和调试态使用的规则，应进入 `dev-shell.css`，避免污染正式产品页面
+- 草图页在进入视觉重设计前，先完成样式归属和 class 语义收口，不再通过兼容层继续扩写新视觉
+
 ## Miniapp 映射
 
 miniapp 的 token 映射说明见：
