@@ -1,9 +1,16 @@
 import type { ConsoleReadonlyDataSource } from "./consoleDataSource";
 import { mockProvidersReadonlyDataSource } from "./mockProvidersDataSource";
+import {
+  resolveProvidersRuntimeDataSourceOptions,
+} from "./providersRuntimeConfig";
+import type {
+  ProvidersRuntimeConfig,
+  ProvidersRuntimeConfigMode,
+} from "./providersRuntimeConfig";
 import { createRealProvidersFetchDataSource } from "./realProvidersDataSource";
 import type { ProvidersReadonlyTransportConfig } from "./realProvidersFetchTransport";
 
-export type ProvidersRuntimeMode = "mock" | "real-fetch";
+export type ProvidersRuntimeMode = ProvidersRuntimeConfigMode;
 
 export type ProvidersRuntimeDataSourceOptions =
   | {
@@ -27,7 +34,7 @@ export function createProvidersRuntimeDataSource(
 }
 
 export function getProvidersRuntimeDataSource(
-  options?: ProvidersRuntimeDataSourceOptions,
+  config?: ProvidersRuntimeConfig,
 ): ProvidersRuntimeSource {
-  return createProvidersRuntimeDataSource(options);
+  return createProvidersRuntimeDataSource(resolveProvidersRuntimeDataSourceOptions(config));
 }

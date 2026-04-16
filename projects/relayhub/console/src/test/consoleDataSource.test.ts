@@ -9,6 +9,10 @@ import {
   getProvidersRuntimeDataSource,
 } from "../services/providersRuntimeDataSource";
 import {
+  getDefaultProvidersRuntimeConfig,
+  resolveProvidersRuntimeDataSourceOptions,
+} from "../services/providersRuntimeConfig";
+import {
   adaptProviderDetailWirePayload,
   adaptProvidersCollectionWirePayload,
 } from "../services/realProvidersAdapter";
@@ -116,6 +120,12 @@ describe("console readonly data source", () => {
     expect(response.items.some((item) => item.id === "deepseek-direct")).toBe(true);
   });
 
+  it("resolves the default providers runtime config to mock", () => {
+    expect(resolveProvidersRuntimeDataSourceOptions(getDefaultProvidersRuntimeConfig())).toEqual({
+      mode: "mock",
+    });
+  });
+
   it("returns mock providers source when runtime mode is mock", async () => {
     const runtimeDataSource = createProvidersRuntimeDataSource({
       mode: "mock",
@@ -124,6 +134,42 @@ describe("console readonly data source", () => {
 
     expect(response.item?.id).toBe("deepseek-direct");
     expect(response.meta.status).toBe("ready");
+  });
+
+  it("returns mock providers source when runtime config mode is mock", async () => {
+    const runtimeDataSource = getProvidersRuntimeDataSource({
+      mode: "mock",
+    });
+    const response = await runtimeDataSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("resolves real-fetch providers runtime config into datasource options", () => {
+    const fetchImpl = async () => ({
+      status: 200,
+      json: async () => ({ items: [] }),
+    });
+    const options = resolveProvidersRuntimeDataSourceOptions({
+      mode: "real-fetch",
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl,
+      defaultHeaders: {
+        "x-relayhub-scope": "providers-readonly",
+      },
+    });
+
+    expect(options).toEqual({
+      mode: "real-fetch",
+      fetchTransport: {
+        baseUrl: "https://relayhub.internal/api",
+        fetchImpl,
+        defaultHeaders: {
+          "x-relayhub-scope": "providers-readonly",
+        },
+      },
+    });
   });
 
   it("switches providers runtime seam to real-fetch when requested", async () => {
@@ -166,6 +212,63 @@ describe("console readonly data source", () => {
     const response = await runtimeDataSource.listProviders({ kind: "国产模型" });
 
     expect(response.items[0]?.id).toBe("provider-runtime-real-fetch");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("switches providers runtime config to real-fetch when requested", async () => {
+    const fetchCalls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
+    const runtimeDataSource = getProvidersRuntimeDataSource({
+      mode: "real-fetch",
+      baseUrl: "https://relayhub.internal/api",
+      defaultHeaders: {
+        "x-relayhub-scope": "providers-readonly",
+      },
+      fetchImpl: async (input, init) => {
+        fetchCalls.push({ input, init });
+        return {
+          status: 200,
+          json: async () => ({
+            items: [
+              {
+                id: "provider-runtime-config-real-fetch",
+                name: "Provider Runtime Config Real Fetch",
+                kind: "国产模型",
+                availableEnvironments: ["评测版"],
+                health: "healthy",
+                transparency: "完整",
+                errorRate: 0.2,
+                p95Latency: 610,
+                description: "runtime config real-fetch payload",
+                recommendation: "适合作为 runtime config 验证样本",
+                recommendationNote: "仅用于测试",
+                models: [{ name: "runtime-config-real-model", useCase: "runtime config seam" }],
+                metrics: {
+                  requests: 22,
+                  tokens: 4800,
+                  avgLatency: 340,
+                  p95Latency: 610,
+                  errorRate: 0.2,
+                  cost: 4,
+                },
+              },
+            ],
+          }),
+        };
+      },
+    });
+
+    const response = await runtimeDataSource.listProviders({ kind: "国产模型" });
+
+    expect(fetchCalls[0]).toEqual({
+      input: "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+      init: {
+        method: "GET",
+        headers: {
+          "x-relayhub-scope": "providers-readonly",
+        },
+      },
+    });
+    expect(response.items[0]?.id).toBe("provider-runtime-config-real-fetch");
     expect(response.meta.status).toBe("ready");
   });
 
