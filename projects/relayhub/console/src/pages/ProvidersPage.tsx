@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { Section } from "../components/Section";
@@ -7,17 +7,60 @@ import { useAsyncResource } from "../hooks/useAsyncResource";
 import type { HealthFilter, ProviderKind, TransparencyState } from "../models/console";
 import { getProvider, listProviders } from "../services/consoleData";
 
+const PROVIDER_KIND_OPTIONS = ["全部", "第三方中转", "国产模型", "免费国外 API"] as const;
+const PROVIDER_ENVIRONMENT_OPTIONS = ["全部", "开发版", "心理疗愈生产版", "评测版"] as const;
+const PROVIDER_HEALTH_OPTIONS = ["全部", "healthy", "degraded", "risk", "idle"] as const;
+const PROVIDER_TRANSPARENCY_OPTIONS = ["全部", "完整", "部分缺失", "暂无"] as const;
+
+function readQueryValue<T extends readonly string[]>(
+  raw: string | null,
+  options: T,
+): T[number] {
+  return options.includes((raw ?? "全部") as T[number]) ? ((raw ?? "全部") as T[number]) : "全部";
+}
+
+function applyQueryValue(
+  searchParams: URLSearchParams,
+  key: string,
+  value: string,
+) {
+  if (value === "全部") {
+    searchParams.delete(key);
+    return;
+  }
+
+  searchParams.set(key, value);
+}
+
 export function ProvidersPage() {
   const { providerId } = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const forceError = searchParams.get("mock") === "error";
-  const [selectedId, setSelectedId] = useState(providerId ?? "xinghe-relay-a");
-  const [typeFilter, setTypeFilter] = useState<ProviderKind | "全部">("全部");
-  const [environmentFilter, setEnvironmentFilter] = useState<string>("全部");
-  const [healthFilter, setHealthFilter] = useState<HealthFilter>("全部");
-  const [transparencyFilter, setTransparencyFilter] = useState<TransparencyState | "全部">("全部");
+  const selectedId = providerId ?? "xinghe-relay-a";
+  const typeFilter = readQueryValue(searchParams.get("kind"), PROVIDER_KIND_OPTIONS) as ProviderKind | "全部";
+  const environmentFilter = readQueryValue(
+    searchParams.get("environment"),
+    PROVIDER_ENVIRONMENT_OPTIONS,
+  );
+  const healthFilter = readQueryValue(searchParams.get("health"), PROVIDER_HEALTH_OPTIONS) as HealthFilter;
+  const transparencyFilter = readQueryValue(
+    searchParams.get("transparency"),
+    PROVIDER_TRANSPARENCY_OPTIONS,
+  ) as TransparencyState | "全部";
 
-  const environmentOptions = ["全部", "开发版", "心理疗愈生产版", "评测版"];
+  const updateFilter = (key: "kind" | "environment" | "health" | "transparency", value: string) => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    applyQueryValue(nextSearchParams, key, value);
+    setSearchParams(nextSearchParams);
+  };
+
+  const providerDetailSearch = useMemo(() => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete("mock");
+    const queryString = nextSearchParams.toString();
+    return queryString.length > 0 ? `?${queryString}` : "";
+  }, [searchParams]);
+
   const filters = useMemo(
     () => ({
       kind: typeFilter,
@@ -55,43 +98,43 @@ export function ProvidersPage() {
               key={item}
               type="button"
               className={`filter-chip${typeFilter === item ? " is-active" : ""}`}
-              onClick={() => setTypeFilter(item)}
+              onClick={() => updateFilter("kind", item)}
             >
               {item}
             </button>
           ))}
         </div>
         <div className="filter-row">
-          {environmentOptions.map((item) => (
+          {PROVIDER_ENVIRONMENT_OPTIONS.map((item) => (
             <button
               key={item}
               type="button"
               className={`filter-chip${environmentFilter === item ? " is-active" : ""}`}
-              onClick={() => setEnvironmentFilter(item)}
+              onClick={() => updateFilter("environment", item)}
             >
               {item}
             </button>
           ))}
         </div>
         <div className="filter-row">
-          {(["全部", "healthy", "degraded", "risk", "idle"] as const).map((item) => (
+          {PROVIDER_HEALTH_OPTIONS.map((item) => (
             <button
               key={item}
               type="button"
               className={`filter-chip${healthFilter === item ? " is-active" : ""}`}
-              onClick={() => setHealthFilter(item)}
+              onClick={() => updateFilter("health", item)}
             >
               {item === "全部" ? item : `状态:${item}`}
             </button>
           ))}
         </div>
         <div className="filter-row">
-          {(["全部", "完整", "部分缺失", "暂无"] as const).map((item) => (
+          {PROVIDER_TRANSPARENCY_OPTIONS.map((item) => (
             <button
               key={item}
               type="button"
               className={`filter-chip${transparencyFilter === item ? " is-active" : ""}`}
-              onClick={() => setTransparencyFilter(item)}
+              onClick={() => updateFilter("transparency", item)}
             >
               {item === "全部" ? item : `透明度:${item}`}
             </button>
@@ -134,11 +177,10 @@ export function ProvidersPage() {
                 {filteredProviders.data.map((provider) => (
                   <tr
                     key={provider.id}
-                    className={provider.id === (providerId ?? selectedId) ? "row-selected" : ""}
-                    onClick={() => setSelectedId(provider.id)}
+                    className={provider.id === selectedId ? "row-selected" : ""}
                   >
                     <td>
-                      <Link to={`/providers/${provider.id}`}>{provider.name}</Link>
+                      <Link to={`/providers/${provider.id}${providerDetailSearch}`}>{provider.name}</Link>
                     </td>
                     <td>{provider.kind}</td>
                     <td>{provider.availableEnvironments.join(" / ")}</td>
