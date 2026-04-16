@@ -292,12 +292,25 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
   const [compareOpen, setCompareOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollCue(window.scrollY < 50);
+    const dismissScrollCue = () => {
+      setShowScrollCue(false);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " " || event.key === "Spacebar") {
+        dismissScrollCue();
+      }
+    };
+
+    window.addEventListener("wheel", dismissScrollCue, { passive: true });
+    window.addEventListener("touchmove", dismissScrollCue, { passive: true });
+    window.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      window.removeEventListener("wheel", dismissScrollCue);
+      window.removeEventListener("touchmove", dismissScrollCue);
+      window.removeEventListener("keydown", handleKeydown);
+    };
   }, []);
 
   return (
@@ -335,7 +348,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         <div className={`am-scroll-cue${showScrollCue ? "" : " is-hidden"}`}>
           <span>滑动了解详情</span>
           <i className="am-scroll-cue__arrow" aria-hidden="true">
-            ↓
+            ⌄
           </i>
         </div>
       </section>
