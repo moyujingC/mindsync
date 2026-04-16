@@ -128,19 +128,22 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 4. 若 `CEO` 使用 `hermes_local`，镜像内必须内置真实 Hermes CLI，而不是临时占位脚本
 5. `hermes_local` 第一阶段默认直接复用容器环境中的 `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL`
 6. 当检测到 `OPENAI_BASE_URL` 时，容器启动时应自动为 `~/.hermes/config.yaml` 写入 `provider: main`
-7. `BETTER_AUTH_SECRET` 必须配置
-8. 如果 automation 节点直连 GitHub / npm / Debian 源很慢，可在 `/etc/default/paperclip-automation` 中配置 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY`，模板已支持同时透传到 Docker build 与容器运行时
+7. 同时必须为 `auxiliary.compression` 写入同一套 `base_url` / `api_key` / `model`
+8. 否则 `CEO` 在 Hermes 触发 context compression 时会报：
+   - `No auxiliary LLM provider configured`
+9. `BETTER_AUTH_SECRET` 必须配置
+10. 如果 automation 节点直连 GitHub / npm / Debian 源很慢，可在 `/etc/default/paperclip-automation` 中配置 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY`，模板已支持同时透传到 Docker build 与容器运行时
    - 当前公司已确认可用的共享代理是阿里云美国节点上的 `tinyproxy`：`47.253.255.110:18888`
    - 标准写法：
      - `HTTP_PROXY=http://47.253.255.110:18888`
      - `HTTPS_PROXY=http://47.253.255.110:18888`
-9. `USER_UID` / `USER_GID` 需要与宿主机实际运维用户一致，否则 `/data/paperclip` 等挂载目录可能因为 UID 不匹配而报权限错误
-10. 若使用 Docker bridge 网络，优先让容器监听 `lan` / `0.0.0.0`，再通过宿主机的 Tailscale 域名对外访问；`tailnet` 绑定更适合直接跑在宿主机进程上，而不是容器内
-11. `paperclip-automation.service` 的日常启动命令不应再附带 `--build`；镜像构建应作为独立运维步骤执行，避免 systemd 长时间卡在 Docker build 阶段导致 `3100` 端口不可用
-12. `/data/paperclip` 下的持久化文件应保持为宿主机运维用户可读写；若发现 `/paperclip/instances/default/.env` 为 `root:root 600`，容器内应用会因为 `EACCES` 反复重启
-13. automation 宿主机与容器默认统一使用 `Asia/Shanghai`，避免 Paperclip、日志与定时任务时间继续显示为 UTC
-14. `CEO` 的 `hermes_local` 默认必须走容器内原生安装，不再复用宿主机 Python venv
-15. 当前推荐做法是在部署目录维护自定义 Dockerfile，通过扩展 Paperclip 官方构建流程把 Hermes CLI 与 Python 依赖直接装进容器
+11. `USER_UID` / `USER_GID` 需要与宿主机实际运维用户一致，否则 `/data/paperclip` 等挂载目录可能因为 UID 不匹配而报权限错误
+12. 若使用 Docker bridge 网络，优先让容器监听 `lan` / `0.0.0.0`，再通过宿主机的 Tailscale 域名对外访问；`tailnet` 绑定更适合直接跑在宿主机进程上，而不是容器内
+13. `paperclip-automation.service` 的日常启动命令不应再附带 `--build`；镜像构建应作为独立运维步骤执行，避免 systemd 长时间卡在 Docker build 阶段导致 `3100` 端口不可用
+14. `/data/paperclip` 下的持久化文件应保持为宿主机运维用户可读写；若发现 `/paperclip/instances/default/.env` 为 `root:root 600`，容器内应用会因为 `EACCES` 反复重启
+15. automation 宿主机与容器默认统一使用 `Asia/Shanghai`，避免 Paperclip、日志与定时任务时间继续显示为 UTC
+16. `CEO` 的 `hermes_local` 默认必须走容器内原生安装，不再复用宿主机 Python venv
+17. 当前推荐做法是在部署目录维护自定义 Dockerfile，通过扩展 Paperclip 官方构建流程把 Hermes CLI 与 Python 依赖直接装进容器
 
 当前推荐角色口径：
 
@@ -202,6 +205,12 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - `/opt/hermes-agent:/opt/hermes-agent:ro`
    - `/opt/hermes-agent/venv/bin/hermes:/usr/local/bin/hermes:ro`
 5. `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL` 仍继续由 `/etc/default/paperclip-automation` 注入容器
+6. 容器启动时自动把以上配置同步到 `/paperclip/.hermes/config.yaml`
+   - `default_provider: main`
+   - `providers.main`
+   - `auxiliary.compression`
+7. 这样可以避免 Hermes 在 context compression 时再次报：
+   - `No auxiliary LLM provider configured`
 
 推荐重建：
 

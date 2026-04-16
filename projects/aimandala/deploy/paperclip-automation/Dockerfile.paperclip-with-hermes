@@ -65,7 +65,56 @@ RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/cod
   && mkdir -p /paperclip \
   && chown -R node:node /paperclip /opt/hermes
 
-COPY scripts/docker-entrypoint.sh /usr/local/bin/
+COPY scripts/docker-entrypoint.sh /usr/local/bin/paperclip-entrypoint.sh
+RUN chmod +x /usr/local/bin/paperclip-entrypoint.sh \
+  && cat <<'EOF' > /usr/local/bin/docker-entrypoint.sh
+#!/bin/sh
+set -eu
+
+if [ -n "${OPENAI_BASE_URL:-}" ] && [ -n "${OPENAI_API_KEY:-}" ]; then
+  mkdir -p /paperclip/.hermes
+  /opt/hermes/bin/python - <<'PY'
+from pathlib import Path
+import os
+
+import yaml
+
+config_path = Path("/paperclip/.hermes/config.yaml")
+config = {}
+if config_path.exists():
+    existing = yaml.safe_load(config_path.read_text()) or {}
+    if isinstance(existing, dict):
+        config = existing
+
+base_url = os.environ["OPENAI_BASE_URL"]
+api_key = os.environ["OPENAI_API_KEY"]
+model = os.environ.get("OPENAI_MODEL", "").strip()
+
+config["default_provider"] = "main"
+providers = config.setdefault("providers", {})
+providers["main"] = {
+    "base_url": base_url,
+    "api_key": api_key,
+    "model": model,
+}
+
+auxiliary = config.setdefault("auxiliary", {})
+compression = auxiliary.setdefault("compression", {})
+compression.update(
+    {
+        "provider": "custom",
+        "base_url": base_url,
+        "api_key": api_key,
+        "model": model,
+    }
+)
+
+config_path.write_text(yaml.safe_dump(config, sort_keys=False))
+PY
+fi
+
+exec /usr/local/bin/paperclip-entrypoint.sh "$@"
+EOF
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENV NODE_ENV=production \

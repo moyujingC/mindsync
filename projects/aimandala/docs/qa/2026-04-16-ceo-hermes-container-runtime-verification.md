@@ -120,6 +120,24 @@
 - Hermes 容器运行时已恢复
 - `ModuleNotFoundError: hermes_cli` 这一层阻塞已解除
 
+后续复跑又进一步确认了一层新的真实阻塞：
+
+- Hermes 在触发 context compression 时，如果没有可用的 `auxiliary.compression` provider，会报：
+  - `No auxiliary LLM provider configured`
+
+本轮线上已确认：
+
+1. 仅设置容器环境变量 `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`，不足以让 Hermes 的 compression auxiliary client 自动可用
+2. Hermes 当前这条链路默认优先认：
+   - `OPENROUTER_API_KEY`
+   - 或 `config.yaml` 中显式配置的 `auxiliary.compression`
+3. 将 `/paperclip/.hermes/config.yaml` 补为现有 Ark/OpenAI 兼容 provider 后，
+   - `get_text_auxiliary_client("compression")` 已可返回有效 client
+   - model 为 `minimax-m2.5`
+4. 因此本问题当前的正式修复口径应升级为：
+   - 不仅要修 Hermes CLI 运行时
+   - 还要在容器启动时自动写入 `providers.main` 与 `auxiliary.compression`
+
 仍待补的只剩业务级验证：
 
 1. Paperclip 面板 `CEO -> Test environment`
