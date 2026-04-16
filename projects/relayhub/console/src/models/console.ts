@@ -130,6 +130,26 @@ export interface EvalOverview {
   reports: EvalReport[];
 }
 
+export interface MockResponseMeta {
+  source: "local-mock";
+  generatedAt: string;
+}
+
+export interface CollectionResponse<T> {
+  meta: MockResponseMeta;
+  items: T[];
+}
+
+export interface DetailResponse<T> {
+  meta: MockResponseMeta;
+  item: T | null;
+}
+
+export interface OverviewResponse<T> {
+  meta: MockResponseMeta;
+  overview: T;
+}
+
 export interface ProviderFilters {
   kind?: ProviderKind | "全部";
   environment?: string;
