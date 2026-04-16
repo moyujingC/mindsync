@@ -43,6 +43,12 @@ goals:
 - Test / QA
 - Content Lead
 
+当前公司至少覆盖以下长期对象类型：
+
+- `product`
+- `capability`
+- `brand`
+
 ## 仓库说明
 
 本仓库既是公司包，也是 Monorepo 工作空间：
@@ -52,6 +58,11 @@ goals:
 - `projects/` 保存项目级实现入口与项目工作区
 - `shared/` 保存共享工具
 - `.paperclip.yaml` 保存 Paperclip 运行时侧边配置
+
+当前已经显式项目化的公司级 capability 包括：
+
+- `研究中心`
+- `模型接入与评测中心`
 
 对象主数据以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为唯一权威清单。
 其他文档只解释结构、治理与协作方式，不重复维护对象主数据。

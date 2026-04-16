@@ -110,6 +110,11 @@ Monorepo 的目标不是把所有东西混在一起，而是做到：
   - 公司侧入口：`company/projects/研究中心/`
   - 项目工作区：`projects/research-center/`
   - 历史来源：无，直接在 Monorepo 内启动
+- `模型接入与评测中心`
+  - 类型：`capability`
+  - 公司侧入口：`company/projects/模型接入与评测中心/`
+  - 项目工作区：`projects/model-gateway-eval-center/`
+  - 历史来源：无，直接在 Monorepo 内启动
 
 更完整的对象清单、状态、入口路径与历史来源，以 `company/项目注册表.yaml` 为准。
 

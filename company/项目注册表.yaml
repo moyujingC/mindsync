@@ -49,6 +49,20 @@ objects:
       - "作为多个 Agent 的共享能力底座"
       - "为各产品项目提供可复用洞察和研究输入"
 
+  - id: "model-gateway-eval-center"
+    name: "模型接入与评测中心"
+    slug: "model-gateway-eval-center"
+    kind: "capability"
+    status: "active"
+    goal: "模型接入、评测与优化决策能力建设"
+    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/模型接入与评测中心/PROJECT.md"
+    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/PROJECT.md"
+    runtime_directory: "projects/model-gateway-eval-center"
+    purpose:
+      - "承接公司级共享模型接入、路由与观测能力建设"
+      - "提供个人开发版 relay、产品生产版 relay 与旁路 eval 的统一底座"
+      - "为中转站续费决策、国产模型替代判断和任务级优化提供正式评测入口"
+
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
     name: "墨予镜 IP"
     slug: "moyujing-ip"
