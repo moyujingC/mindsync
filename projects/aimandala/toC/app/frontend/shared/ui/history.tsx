@@ -57,7 +57,7 @@ export function SharedHistoryFilterTabs({
         <button
           key={option.id}
           type="button"
-          className={`am-filter-chip mw-filter-chip ${activeFilter === option.id ? "mw-filter-chip--active" : ""}`}
+          className={`am-filter-chip mw-filter-chip ${activeFilter === option.id ? "mw-filter-chip--active is-active" : ""}`}
           onClick={() => {
             onChange?.(option.id);
           }}
@@ -94,7 +94,7 @@ export function SharedHistoryThemeTabs({
           <button
             key={theme}
             type="button"
-            className={`am-filter-chip mw-filter-chip ${selected ? "mw-filter-chip--active" : ""}`}
+            className={`am-filter-chip mw-filter-chip ${selected ? "mw-filter-chip--active is-active" : ""}`}
             onClick={() => {
               onChange?.(isAll ? undefined : theme);
             }}
@@ -127,7 +127,7 @@ export function SharedHistoryLimitTabs({
         <button
           key={limit}
           type="button"
-          className={`am-filter-chip mw-filter-chip ${activeLimit === limit ? "mw-filter-chip--active" : ""}`}
+          className={`am-filter-chip mw-filter-chip ${activeLimit === limit ? "mw-filter-chip--active is-active" : ""}`}
           onClick={() => {
             onChange?.(limit);
           }}
@@ -226,7 +226,7 @@ export function SharedHistoryRecordsList({
               <p>{item.statusDetail}</p>
               {!item.recordReady ? (
                 <section
-                  className={`mw-history-progress ${item.statusTone === "proPending" ? "mw-history-progress--pro" : ""}`}
+                  className={`mw-history-progress ${item.statusTone === "proPending" ? "mw-history-progress--pro is-pro" : ""}`}
                 >
                   <div className="mw-history-progress__row">
                     <p className="mw-meta">阶段：{item.stageLabel}</p>
