@@ -204,7 +204,7 @@ function UploadSlider({
 }) {
   const percentage = ((value - min) / (max - min)) * 100;
   return (
-    <label className="am-upload-slider">
+    <label className="am-upload-slider" style={{ ["--am-upload-slider-value-color" as string]: color }}>
       <span className="am-upload-slider__label">{label}</span>
       <div className="am-upload-slider__track-wrap">
         <div className="am-upload-slider__track" />
@@ -218,7 +218,7 @@ function UploadSlider({
           onChange={(event) => onChange(Number(event.target.value))}
         />
       </div>
-      <strong style={{ color }}>{value}%</strong>
+      <strong>{value}%</strong>
     </label>
   );
 }

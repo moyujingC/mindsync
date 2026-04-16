@@ -133,6 +133,25 @@
 - legacy 页面允许保留少量运行时几何值，例如三圈预览尺寸、pattern CSS variable 注入；不允许继续扩张大段静态 inline style
 - `styles.css` 不再承载 legacy 页面以外的视觉规则；legacy 页面即使继续保留，也应优先走 `pages/*.css`，而不是回写兼容层
 
+## 共享 Token 对齐规则
+
+- Web CSS token 仍是设计系统真理源；命名与语义以 `mobile-web/styles/tokens.css` 为准
+- `shared/design-system/tokens.ts` 是跨端程序化对照源，用于 shared 代码、miniapp 映射和文档校对，不反向生成 Web CSS
+- miniapp 本轮继续手工映射 token，不引入自动编译或运行时注入流程
+- miniapp 当前已落地的 `app.wxss` 与 `pages/runtime/index.wxss`，至少应覆盖页面背景、正文、标题和错误态语义，不允许重新发明独立配色体系
+
+## 最终 Inline Style 边界
+
+- 允许保留：
+  - CSS variable 注入型 pattern，例如 `heroPatternStyle`、`--am-pattern-image`
+  - 动态宽度，例如进度条 fill
+  - 动态 transform / scale / translate
+  - 粒子位置与动画时序
+- 不再接受新增：
+  - 静态颜色、边框、阴影、背景、排版
+  - 可直接用 CSS variable 或状态类表达的小额视觉值
+- `SharedReportEntrySelectionPage` 的 `heroPatternStyle` 明确视为 CSS variable 注入接口，不算静态视觉逃逸
+
 ## Miniapp 映射
 
 miniapp 的 token 映射说明见：
