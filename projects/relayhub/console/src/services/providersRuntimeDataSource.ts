@@ -11,6 +11,10 @@ import {
   resolveProvidersRuntimeConfigFromSource,
 } from "./providersRuntimeConfigSource";
 import type { ProvidersRuntimeConfigSource } from "./providersRuntimeConfigSource";
+import {
+  createProvidersRuntimeConfigSource,
+} from "./providersRuntimeConfigSourceFactory";
+import type { ProvidersRuntimeConfigSourceFactoryOptions } from "./providersRuntimeConfigSourceFactory";
 import { createRealProvidersFetchDataSource } from "./realProvidersDataSource";
 import type { ProvidersReadonlyTransportConfig } from "./realProvidersFetchTransport";
 
@@ -47,4 +51,10 @@ export function getProvidersRuntimeDataSourceFromConfigSource(
   source?: ProvidersRuntimeConfigSource,
 ): ProvidersRuntimeSource {
   return getProvidersRuntimeDataSource(resolveProvidersRuntimeConfigFromSource(source));
+}
+
+export function getProvidersRuntimeDataSourceFromFactory(
+  options?: ProvidersRuntimeConfigSourceFactoryOptions,
+): ProvidersRuntimeSource {
+  return getProvidersRuntimeDataSourceFromConfigSource(createProvidersRuntimeConfigSource(options));
 }
