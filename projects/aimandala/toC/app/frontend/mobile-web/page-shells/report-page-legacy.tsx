@@ -10,6 +10,7 @@ import {
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebRouteId } from "../routes";
 import type { MobileWebUploadDraft } from "../state";
+import type { CSSProperties } from "react";
 
 type LooseStructuredReport = Record<string, unknown>;
 
@@ -338,7 +339,7 @@ function parseLegacyReport(state: MandalaFlowState): LegacyReportData {
 }
 
 function LegacyIcon({ children }: { children: string }) {
-  return <span style={{ fontSize: 16, lineHeight: 1 }}>{children}</span>;
+  return <span className="am-legacy-report-inline-icon">{children}</span>;
 }
 
 function LegacyTopIcon({ path }: { path: string }) {
@@ -355,15 +356,21 @@ function LegacyMandalaPreview({ imagePath, innerRadius = 0.3, middleRadius = 0.6
   const outer = 148;
   const middleSize = Math.max(outer * middleRadius, 18);
   const innerSize = Math.max(outer * innerRadius, 12);
+  const previewStyle = {
+    "--am-legacy-preview-size": `${outer}px`,
+    "--am-legacy-middle-size": `${middleSize}px`,
+    "--am-legacy-inner-size": `${innerSize}px`,
+  } as CSSProperties;
+
   return (
-    <div style={{ position: "relative", width: outer, height: outer, marginTop: 14, marginBottom: -24 }}>
-      <div style={{ position: "absolute", inset: -8, borderRadius: "50%", background: "conic-gradient(from 0deg, rgba(212,160,84,0.26), rgba(200,120,80,0.14), rgba(212,160,84,0.26))", filter: "blur(5px)" }} />
-      <div style={{ position: "absolute", inset: 0, borderRadius: "50%", overflow: "hidden", border: "2.5px solid #C8A066", boxShadow: "0 0 20px rgba(200,160,102,0.22), inset 0 0 18px rgba(200,160,102,0.08)" }}>
-        <img src={imagePath} alt="当前曼陀罗" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <div className="am-legacy-mandala-preview" style={previewStyle}>
+      <div className="am-legacy-mandala-preview__glow" />
+      <div className="am-legacy-mandala-preview__image-wrap">
+        <img src={imagePath} alt="当前曼陀罗" className="am-legacy-mandala-preview__image" />
       </div>
-      <div style={{ position: "absolute", width: middleSize, height: middleSize, top: "50%", left: "50%", transform: "translate(-50%, -50%)", borderRadius: "50%", border: "1.6px solid rgba(255,208,0,0.96)", boxShadow: "0 0 8px rgba(255,208,0,0.55)" }} />
-      <div style={{ position: "absolute", width: innerSize, height: innerSize, top: "50%", left: "50%", transform: "translate(-50%, -50%)", borderRadius: "50%", border: "1.6px solid rgba(0,255,208,0.96)", boxShadow: "0 0 8px rgba(0,255,208,0.55)" }} />
-      <div style={{ position: "absolute", right: -6, bottom: -4, padding: "2px 8px", borderRadius: 999, background: "linear-gradient(135deg, #1E2D4D 0%, #253860 100%)", border: "1px solid rgba(212,160,84,0.3)", fontSize: 10, fontWeight: 500, color: "#D4A054", letterSpacing: "0.05em" }}>当前画作</div>
+      <div className="am-legacy-mandala-preview__ring am-legacy-mandala-preview__ring--middle" />
+      <div className="am-legacy-mandala-preview__ring am-legacy-mandala-preview__ring--inner" />
+      <div className="am-legacy-mandala-preview__badge">当前画作</div>
     </div>
   );
 }
@@ -401,94 +408,97 @@ export function MobileWebLegacyReportPage({
   const middleRadius = state.status?.three_circles?.middle_radius ?? state.interpretation?.three_circles?.middle_radius ?? 0.68;
   const isUpgrade = state.report?.version === "pro" || state.step === "proReady";
   const primaryCtaDisabled = primaryDisabled || isUpgrade;
+  const patternStyle = {
+    "--am-legacy-pattern-image": `url(${brandPattern})`,
+  } as CSSProperties;
 
   if (state.step === "error" && state.lastError) {
     return (
-      <div style={{ minHeight: "100%", backgroundColor: "#F5EFE2", fontFamily: "'Noto Sans SC', sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-        <div style={{ width: "100%", maxWidth: 360, borderRadius: 20, padding: 24, background: "rgba(255,255,255,0.75)", border: "1px solid rgba(195,91,86,0.18)", boxShadow: "0 12px 30px rgba(26,40,68,0.08)", textAlign: "center" }}>
-          <div style={{ fontSize: 28, lineHeight: 1, color: "#C25B56", marginBottom: 12 }}>!</div>
-          <h2 style={{ margin: 0, fontFamily: "'Noto Serif SC', serif", fontSize: 20, color: "#4A3D30" }}>报告暂时没有顺利打开</h2>
-          <p style={{ margin: "12px 0 20px", fontSize: 14, color: "#7A6A5A", lineHeight: 1.8 }}>{state.lastError}</p>
-          <button type="button" onClick={onSecondaryAction} style={{ width: "100%", minHeight: 46, borderRadius: 12, border: 0, background: "linear-gradient(135deg, #9B4030 0%, #C87850 50%, #D4A054 100%)", color: "#F5EFE2", fontSize: 14 }}>返回上传页</button>
+      <div className="am-legacy-report-error">
+        <div className="am-legacy-report-error__card">
+          <div className="am-legacy-report-error__mark">!</div>
+          <h2 className="am-legacy-report-error__title">报告暂时没有顺利打开</h2>
+          <p className="am-legacy-report-error__message">{state.lastError}</p>
+          <button type="button" onClick={onSecondaryAction} className="am-legacy-report-button am-legacy-report-button--error">返回上传页</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100%", backgroundColor: "#F5EFE2", fontFamily: "'Noto Sans SC', sans-serif" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "linear-gradient(135deg, #1A2844 0%, #1E2D4D 50%, #1A2844 100%)", borderBottom: "1px solid rgba(212,160,84,0.15)" }}>
-        <button type="button" onClick={onSecondaryAction} style={{ padding: 4, background: "transparent", border: 0, color: "rgba(232,220,200,0.5)" }}>
+    <div className="am-legacy-report-page" style={patternStyle}>
+      <div className="am-legacy-report-topbar">
+        <button type="button" onClick={onSecondaryAction} className="am-legacy-report-icon-button">
           <LegacyTopIcon path="M14.5 6.5L9 12L14.5 17.5" />
         </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img src={logoNiwu} alt="一镜一梳" style={{ width: 22, height: 22, objectFit: "contain" }} />
-          <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 16, fontWeight: 600, letterSpacing: "0.12em", color: "#D4A054" }}>Lite版基础解读</span>
+        <div className="am-legacy-report-brand">
+          <img src={logoNiwu} alt="一镜一梳" className="am-legacy-report-brand__logo" />
+          <span className="am-legacy-report-brand__label">Lite版基础解读</span>
         </div>
-        <button type="button" style={{ padding: 4, background: "transparent", border: 0, color: "rgba(232,220,200,0.5)" }}>
+        <button type="button" className="am-legacy-report-icon-button">
           <LegacyTopIcon path="M15 8.5A3.5 3.5 0 1 1 8.8 10.7L4.5 13.2M15.2 13.3L19.5 10.8M13.5 15.3L16.8 17.2" />
         </button>
       </div>
 
-      <div style={{ background: "linear-gradient(180deg, #1A2844 0%, #1E2D4D 50%, #223358 80%, #2A3D65 100%)", position: "relative" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${brandPattern})`, backgroundSize: 300, backgroundRepeat: "repeat", opacity: 0.02 }} />
-        <div style={{ position: "relative", padding: "32px 24px 0" }}>
-          <div style={{ position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)", width: 200, height: 150, background: "radial-gradient(ellipse, rgba(212,160,84,0.1) 0%, transparent 60%)", borderRadius: "50%" }} />
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
-            <h1 style={{ margin: 0, textAlign: "center", fontFamily: "'Noto Serif SC', serif", fontSize: 22, fontWeight: 600, color: "#E8DCC8", letterSpacing: "0.15em", lineHeight: 1.4 }}>{displayReport.title}</h1>
-            <span style={{ marginTop: 8, fontSize: 12, color: "rgba(232,220,200,0.5)", letterSpacing: "0.1em" }}>{displayReport.date}</span>
+      <div className="am-legacy-report-hero">
+        <div className="am-legacy-report-pattern" />
+        <div className="am-legacy-report-hero__inner">
+          <div className="am-legacy-report-hero__glow" />
+          <div className="am-legacy-report-hero__content">
+            <h1 className="am-legacy-report-title">{displayReport.title}</h1>
+            <span className="am-legacy-report-date">{displayReport.date}</span>
             <LegacyMandalaPreview imagePath={previewImage} innerRadius={innerRadius} middleRadius={middleRadius} />
           </div>
         </div>
       </div>
 
-      <div style={{ position: "relative", marginTop: -4, padding: "0 20px 24px", background: "linear-gradient(180deg, #F5EFE2 0%, #FAF8F5 100%)", borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
-        <div style={{ position: "absolute", inset: 0, opacity: 0.03, background: "radial-gradient(circle at 20% 20%, rgba(158,170,155,0.3), transparent 30%)" }} />
+      <div className="am-legacy-report-body">
+        <div className="am-legacy-report-body__texture" />
 
-        <div style={{ paddingTop: 24, display: "grid", gap: 18, position: "relative" }}>
-          <div style={{ borderRadius: 18, padding: 20, background: "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(245,239,226,0.8) 100%)", border: "1px solid rgba(138,124,108,0.12)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <div style={{ width: 4, height: 20, borderRadius: 999, background: "linear-gradient(180deg, #9EAA9B, #9EAA9B88)" }} />
-              <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#4A3D30", letterSpacing: "0.08em" }}>整体印象</span>
+        <div className="am-legacy-report-stack">
+          <div className="am-legacy-report-card am-legacy-report-card--impression">
+            <div className="am-legacy-report-heading">
+              <div className="am-legacy-report-accent" />
+              <span className="am-legacy-report-heading__title am-legacy-report-heading__title--tracked">整体印象</span>
             </div>
-            <p style={{ margin: 0, fontSize: 13.5, color: "#5E5046", lineHeight: 1.9 }}>{displayReport.impression}</p>
+            <p className="am-legacy-report-body-text">{displayReport.impression}</p>
           </div>
 
           {displayReport.visualElements ? (
-            <div style={{ borderRadius: 18, padding: 20, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(138,124,108,0.12)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 4, height: 20, borderRadius: 999, background: "linear-gradient(180deg, #7A8EA8, #7A8EA888)" }} />
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#4A3D30" }}>画面元素分析</span>
+            <div className="am-legacy-report-card">
+              <div className="am-legacy-report-heading">
+                <div className="am-legacy-report-accent am-legacy-report-accent--visual" />
+                <span className="am-legacy-report-heading__title">画面元素分析</span>
               </div>
-              <p style={{ margin: 0, fontSize: 13.5, color: "#5E5046", lineHeight: 1.9 }}>{displayReport.visualElements}</p>
+              <p className="am-legacy-report-body-text">{displayReport.visualElements}</p>
             </div>
           ) : null}
 
           {displayReport.emotionPortrait ? (
-            <div style={{ borderRadius: 18, padding: 20, background: "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(245,239,226,0.9) 100%)", border: "1px solid rgba(200,120,80,0.15)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 4, height: 20, borderRadius: 999, background: "linear-gradient(180deg, #C87850, #D4A054)" }} />
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#4A3D30" }}>情绪画像</span>
+            <div className="am-legacy-report-card am-legacy-report-card--emotion">
+              <div className="am-legacy-report-heading">
+                <div className="am-legacy-report-accent am-legacy-report-accent--emotion" />
+                <span className="am-legacy-report-heading__title">情绪画像</span>
               </div>
-              <p style={{ margin: 0, fontSize: 13.5, color: "#5E5046", lineHeight: 1.9 }}>{displayReport.emotionPortrait}</p>
+              <p className="am-legacy-report-body-text">{displayReport.emotionPortrait}</p>
             </div>
           ) : null}
 
           {displayReport.story.length > 0 ? (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div className="am-legacy-report-story-heading">
                 <LegacyIcon>✦</LegacyIcon>
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#4A3D30" }}>你的心灵画像故事</span>
-                <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(200,120,80,0.2) 0%, transparent 100%)" }} />
+                <span className="am-legacy-report-heading__title">你的心灵画像故事</span>
+                <div className="am-legacy-report-story-rule" />
               </div>
-              <div style={{ display: "grid", gap: 14 }}>
+              <div className="am-legacy-report-story-list">
                 {displayReport.story.map((part) => (
-                  <div key={part.key} style={{ borderRadius: 18, padding: 20, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(138,124,108,0.1)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-                      <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#C87850" }}>{part.title}</span>
-                      <span style={{ fontSize: 12, color: "#8A7C6C" }}>{part.subtitle}</span>
+                  <div key={part.key} className="am-legacy-report-story-card">
+                    <div className="am-legacy-report-story-card__head">
+                      <span className="am-legacy-report-story-card__title">{part.title}</span>
+                      <span className="am-legacy-report-story-card__subtitle">{part.subtitle}</span>
                     </div>
-                    <p style={{ margin: 0, fontSize: 14, color: "#5E5046", lineHeight: 1.9 }}>{part.content}</p>
+                    <p className="am-legacy-report-body-text">{part.content}</p>
                   </div>
                 ))}
               </div>
@@ -496,31 +506,31 @@ export function MobileWebLegacyReportPage({
           ) : null}
 
           {(displayReport.themeScene || displayReport.themeImpact || displayReport.themeAwareness) ? (
-            <div style={{ borderRadius: 18, padding: 20, background: "rgba(250,248,245,0.9)", border: "1px solid rgba(138,124,108,0.1)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                <div style={{ width: 4, height: 20, borderRadius: 999, background: "linear-gradient(180deg, #9B7CB6, #9B7CB688)" }} />
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#4A3D30" }}>具体表现</span>
+            <div className="am-legacy-report-card am-legacy-report-card--theme">
+              <div className="am-legacy-report-heading am-legacy-report-heading--theme">
+                <div className="am-legacy-report-accent am-legacy-report-accent--theme" />
+                <span className="am-legacy-report-heading__title">具体表现</span>
               </div>
-              {displayReport.themeScene ? <div style={{ marginBottom: 14 }}><p style={{ margin: "0 0 4px", fontSize: 13, color: "#8A7C6C" }}>典型场景</p><p style={{ margin: 0, fontSize: 14, color: "#5E5046", lineHeight: 1.8 }}>{displayReport.themeScene}</p></div> : null}
-              {displayReport.themeImpact ? <div style={{ marginBottom: 14 }}><p style={{ margin: "0 0 4px", fontSize: 13, color: "#8A7C6C" }}>具体影响</p><p style={{ margin: 0, fontSize: 14, color: "#5E5046", lineHeight: 1.8 }}>{displayReport.themeImpact}</p></div> : null}
-              {displayReport.themeAwareness ? <div><p style={{ margin: "0 0 4px", fontSize: 13, color: "#8A7C6C" }}>觉察点</p><p style={{ margin: 0, fontSize: 14, color: "#5E5046", lineHeight: 1.8 }}>{displayReport.themeAwareness}</p></div> : null}
+              {displayReport.themeScene ? <div className="am-legacy-report-theme-item"><p className="am-legacy-report-theme-item__label">典型场景</p><p className="am-legacy-report-body-text am-legacy-report-body-text--compact">{displayReport.themeScene}</p></div> : null}
+              {displayReport.themeImpact ? <div className="am-legacy-report-theme-item"><p className="am-legacy-report-theme-item__label">具体影响</p><p className="am-legacy-report-body-text am-legacy-report-body-text--compact">{displayReport.themeImpact}</p></div> : null}
+              {displayReport.themeAwareness ? <div className="am-legacy-report-theme-item"><p className="am-legacy-report-theme-item__label">觉察点</p><p className="am-legacy-report-body-text am-legacy-report-body-text--compact">{displayReport.themeAwareness}</p></div> : null}
             </div>
           ) : null}
 
           {displayReport.awareness.length > 0 ? (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 4, height: 20, borderRadius: 999, background: "linear-gradient(180deg, #5A9B6E, #5A9B6E88)" }} />
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#4A3D30" }}>三个日常小觉察</span>
+              <div className="am-legacy-report-story-heading">
+                <div className="am-legacy-report-accent am-legacy-report-accent--awareness" />
+                <span className="am-legacy-report-heading__title">三个日常小觉察</span>
               </div>
-              <div style={{ display: "grid", gap: 12 }}>
+              <div className="am-legacy-report-awareness-list">
                 {displayReport.awareness.map((item) => (
-                  <div key={item.day} style={{ borderRadius: 14, padding: 16, background: "rgba(255,255,255,0.6)", border: "1px solid rgba(90,155,110,0.15)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                      <span style={{ fontSize: 14 }}>{item.day === 1 ? "🌿" : item.day === 2 ? "🌸" : "✨"}</span>
-                      <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 14, fontWeight: 600, color: "#5A9B6E" }}>第{item.day}天：{item.title}</span>
+                  <div key={item.day} className="am-legacy-report-awareness-card">
+                    <div className="am-legacy-report-awareness-card__head">
+                      <span className="am-legacy-report-awareness-card__icon">{item.day === 1 ? "🌿" : item.day === 2 ? "🌸" : "✨"}</span>
+                      <span className="am-legacy-report-awareness-card__title">第{item.day}天：{item.title}</span>
                     </div>
-                    <p style={{ margin: 0, fontSize: 13, color: "#5E5046", lineHeight: 1.8 }}>{item.content}</p>
+                    <p className="am-legacy-report-body-text am-legacy-report-body-text--compact">{item.content}</p>
                   </div>
                 ))}
               </div>
@@ -528,67 +538,72 @@ export function MobileWebLegacyReportPage({
           ) : null}
 
           {displayReport.proTeaser ? (
-            <div style={{ borderRadius: 18, padding: 20, background: "linear-gradient(135deg, rgba(212,160,84,0.1) 0%, rgba(200,120,80,0.05) 100%)", border: "1px solid rgba(212,160,84,0.2)" }}>
-              <p style={{ margin: "0 0 8px", fontFamily: "'Noto Serif SC', serif", fontSize: 14, fontWeight: 600, color: "#C87850" }}>给你的一个小预告</p>
-              <p style={{ margin: 0, fontSize: 13, color: "#5E5046", lineHeight: 1.8 }}>{displayReport.proTeaser}</p>
+            <div className="am-legacy-report-card am-legacy-report-card--teaser">
+              <p className="am-legacy-report-teaser__title">给你的一个小预告</p>
+              <p className="am-legacy-report-body-text am-legacy-report-body-text--compact">{displayReport.proTeaser}</p>
             </div>
           ) : null}
 
           {displayReport.healingExperiment ? (
-            <div style={{ borderRadius: 18, padding: 20, background: "linear-gradient(135deg, #1A2844 0%, #1E2D4D 50%, #223358 100%)", border: "1px solid rgba(212,160,84,0.15)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <div className="am-legacy-report-card am-legacy-report-card--ritual">
+              <div className="am-legacy-report-heading">
                 <LegacyIcon>🎨</LegacyIcon>
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 15, fontWeight: 600, color: "#E8DCC8" }}>曼曼的疗愈仪式：{displayReport.healingExperiment.title}</span>
+                <span className="am-legacy-report-heading__title am-legacy-report-heading__title--ritual">曼曼的疗愈仪式：{displayReport.healingExperiment.title}</span>
               </div>
-              <p style={{ margin: 0, fontSize: 13, color: "rgba(232,220,200,0.9)", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{displayReport.healingExperiment.content}</p>
+              <p className="am-legacy-report-body-text am-legacy-report-body-text--ritual">{displayReport.healingExperiment.content}</p>
             </div>
           ) : null}
 
-          <div style={{ borderRadius: 18, overflow: "hidden", background: "linear-gradient(135deg, #1A2844 0%, #1E2D4D 40%, #253860 100%)", border: "1px solid rgba(212,160,84,0.2)", position: "relative" }}>
-            <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${brandPattern})`, backgroundSize: 250, backgroundRepeat: "repeat", opacity: 0.03 }} />
-            <div style={{ position: "relative", padding: 20 }}>
-              <div style={{ textAlign: "center", marginBottom: 18 }}>
-                <span style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 16, fontWeight: 600, color: "#E8DCC8", letterSpacing: "0.1em", lineHeight: 1.6 }}>{resultCta.legacyCardTitle}</span>
+          <div className="am-legacy-report-cta-card">
+            <div className="am-legacy-report-pattern am-legacy-report-pattern--cta" />
+            <div className="am-legacy-report-cta-card__inner">
+              <div className="am-legacy-report-cta-card__title-wrap">
+                <span className="am-legacy-report-cta-card__title">{resultCta.legacyCardTitle}</span>
               </div>
-              <div style={{ display: "grid", gap: 10, marginBottom: 18, fontSize: 13, color: "rgba(232,220,200,0.85)", lineHeight: 1.7 }}>
+              <div className="am-legacy-report-cta-card__bullets">
                 {resultCta.legacyBulletPoints.map((item) => (
-                  <div key={item} style={{ display: "flex", gap: 10 }}>
-                    <span style={{ color: "#D4A054", minWidth: 20 }}>✦</span>
+                  <div key={item} className="am-legacy-report-cta-card__bullet">
+                    <span className="am-legacy-report-cta-card__bullet-icon">✦</span>
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
-              <button type="button" onClick={onPrimaryAction} disabled={primaryCtaDisabled} style={{ width: "100%", minHeight: 48, borderRadius: 12, border: "1px solid rgba(212,160,84,0.4)", background: primaryCtaDisabled ? "rgba(232,220,200,0.08)" : "linear-gradient(135deg, rgba(212,160,84,0.25) 0%, rgba(200,120,80,0.2) 100%)", color: primaryCtaDisabled ? "rgba(232,220,200,0.45)" : "#E8DCC8", fontSize: 14, letterSpacing: "0.05em", cursor: primaryCtaDisabled ? "default" : "pointer" }}>
+              <button
+                type="button"
+                onClick={onPrimaryAction}
+                disabled={primaryCtaDisabled}
+                className={`am-legacy-report-button am-legacy-report-button--cta${primaryCtaDisabled ? " is-disabled" : ""}${isUpgrade ? " is-upgrade" : ""}`}
+              >
                 {isUpgrade ? "当前正在查看 Pro 版解读" : resultCta.primaryLabel}
               </button>
-              <div style={{ textAlign: "center", marginTop: 10 }}>
-                <span style={{ fontSize: 11, color: "rgba(212,160,84,0.6)", letterSpacing: "0.03em" }}>{resultCta.legacyCaption}</span>
+              <div className="am-legacy-report-cta-card__caption">
+                <span>{resultCta.legacyCaption}</span>
               </div>
             </div>
           </div>
 
-          <div style={{ display: "grid", gap: 12 }}>
+          <div className="am-legacy-report-bottom-actions">
             <button
               type="button"
               onClick={() => {
                 setSaved(true);
                 window.setTimeout(() => setSaved(false), 1800);
               }}
-              style={{ width: "100%", minHeight: 50, borderRadius: 12, border: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "linear-gradient(135deg, #9B4030 0%, #C87850 50%, #D4A054 100%)", color: "#F5EFE2", fontSize: 15, boxShadow: "0 4px 15px rgba(155,64,48,0.3)" }}
+              className={`am-legacy-report-button am-legacy-report-button--save${saved ? " is-saved" : ""}`}
             >
               <LegacyIcon>{saved ? "✓" : "↓"}</LegacyIcon>
               <span>{saved ? "已保存到相册" : "保存报告"}</span>
             </button>
-            <button type="button" onClick={onSecondaryAction} style={{ width: "100%", minHeight: 46, borderRadius: 12, border: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "rgba(138,124,108,0.1)", color: "#8A7C6C", fontSize: 14 }}>
+            <button type="button" onClick={onSecondaryAction} className="am-legacy-report-button am-legacy-report-button--secondary">
               <LegacyIcon>↻</LegacyIcon>
               <span>再画一幅</span>
             </button>
           </div>
 
-          <div style={{ borderRadius: 12, padding: 16, background: "rgba(90,123,155,0.08)", border: "1px solid rgba(90,123,155,0.15)" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <div className="am-legacy-report-card am-legacy-report-card--disclaimer">
+            <div className="am-legacy-report-disclaimer">
               <LegacyIcon>i</LegacyIcon>
-              <p style={{ margin: 0, fontSize: 12, color: "#5A7B9B", lineHeight: 1.7 }}>本解读基于AI分析，仅供参考。如遇心理困扰，建议寻求专业心理咨询师帮助。</p>
+              <p className="am-legacy-report-disclaimer__text">本解读基于AI分析，仅供参考。如遇心理困扰，建议寻求专业心理咨询师帮助。</p>
             </div>
           </div>
         </div>

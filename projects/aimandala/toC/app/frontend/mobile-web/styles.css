@@ -30,11 +30,3 @@ select {
 #root {
   min-height: 100vh;
 }
-
-.mw-route-nav {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(139, 103, 55, 0.12);
-  color: #704d24;
-  font-size: 13px;
-}
