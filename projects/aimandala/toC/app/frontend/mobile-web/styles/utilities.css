@@ -33,3 +33,13 @@
 .am-scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+.am-lucide-spin {
+  animation: am-lucide-spin 1s linear infinite;
+}
+
+@keyframes am-lucide-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

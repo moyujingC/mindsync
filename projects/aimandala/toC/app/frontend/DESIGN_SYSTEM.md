@@ -91,6 +91,14 @@
 - 主链页面的品牌纹理统一通过 `--am-pattern-image` 这类 CSS variable 注入到页面或区块容器，再由 CSS 类消费；不要在 JSX 中继续写静态 `backgroundImage`
 - `SharedReportEntrySelectionPage` 使用 `heroPatternClassName` / `heroPatternStyle` 承载 hero 纹理，不再通过 `heroBackground` 塞纯视觉节点
 
+## 主链 `am-*` 迁出规则
+
+- `Landing / Upload / Loading` 中仍属于正式产品视觉的 `am-*` 类，不再允许继续留在 `mobile-web/styles.css`
+- 跨页面复用的 `am-*` 基础块，例如页面骨架、pattern overlay、ambient glow、主 CTA、icon button、history/dev pill、logo ring 等，应进入 `components.css` 或 `utilities.css`
+- 页面专属的 `am-*` 视觉，例如 `Landing` 的 steps/pricing/faq，`Upload` 的圆盘/滑杆/引导层，`Loading` 的进度卡/日志卡/提示卡，应进入各自 `pages/*.css`
+- `styles.css` 之后只保留 legacy report、browser shell、debug panel 与未迁移历史块；新增正式产品 `am-*` 样式不得再写回兼容层
+- 删除兼容层旧规则前，必须先确认新分层已接管对应类名，避免新旧双写或覆盖来源不清
+
 ## Pro Report 约束
 
 - `Pro Report` 的页面专属样式统一进入 `mobile-web/styles/pages/report-pro.css`

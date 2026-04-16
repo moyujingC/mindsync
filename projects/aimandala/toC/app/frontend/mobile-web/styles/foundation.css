@@ -34,16 +34,3 @@ button:hover:not(:disabled) {
 button:disabled {
   cursor: not-allowed;
 }
-
-.am-pattern-overlay {
-  background-image: var(--am-pattern-image);
-}
-
-.am-page {
-  background: var(--am-surface-app);
-  color: var(--am-text-on-dark);
-}
-
-.am-page--light {
-  color: var(--am-text-primary);
-}
