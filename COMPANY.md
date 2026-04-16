@@ -62,7 +62,7 @@ goals:
 当前已经显式项目化的公司级 capability 包括：
 
 - `研究中心`
-- `模型接入与评测中心`
+- `RelayHub`
 
 对象主数据以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为唯一权威清单。
 其他文档只解释结构、治理与协作方式，不重复维护对象主数据。

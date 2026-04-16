@@ -1,20 +1,22 @@
-# 模型接入与评测中心项目入口
+# RelayHub 项目入口
 
 > 状态：current
 > 版本：0.1.0
 > owner：Architect / Engineer
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/模型接入与评测中心/PROJECT.md
-> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center)
+> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md
+> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/relayhub](/Users/xinran/Downloads/dev/mindsync/projects/relayhub)
 > 项目类型：公司级模型接入、评测与优化能力项目
 
-这份文档是 `模型接入与评测中心` 在 `mindsync` 中的公司侧项目入口。
+这份文档是 `RelayHub` 在 `mindsync` 中的公司侧项目入口。
 
 它用于把原本分散在个人开发、产品生产、供应商比较和模型优化决策里的模型能力治理，升级成一个可长期维护、可跨产品复用、可被正式派活的公司级 capability。
 
 ## 1. 这个项目是什么
 
-`模型接入与评测中心` 不是某一个具体产品的附属模块，也不是一次性中转 API 试验。
+`RelayHub` 不是某一个具体产品的附属模块，也不是一次性中转 API 试验。
+
+这里保留“模型接入与评测中心”作为中文能力解释，但不再把它当成正式项目名使用。
 
 它是 `墨予镜` 的共享模型基础设施项目。
 
@@ -49,7 +51,7 @@
 
 因此这里采用：
 
-- `模型接入与评测中心`
+- `RelayHub`
   - 作为公司级 capability，承接文档、任务、阶段产物和长期基础设施演进
 - 具体产品
   - 继续拥有自己的生产版 relay 配置、任务路由和合规约束
@@ -58,7 +60,7 @@
 
 - `研究中心`
   - 负责知识、方法、外部研究与长期判断沉淀
-- `模型接入与评测中心`
+- `RelayHub`
   - 负责模型接入、评测基础设施、路由策略、观测与优化治理
 - `一镜一梳` 及后续产品
   - 负责把本能力提供的接入、评测与优化结论，转成各自产品的正式生产策略
@@ -66,7 +68,7 @@
 默认协作方式：
 
 - 研究框架、评测方法和长期判断可由 `研究中心` 提供上游输入
-- provider 接入、环境隔离、路由能力和评测执行由 `模型接入与评测中心` 负责
+- provider 接入、环境隔离、路由能力和评测执行由 `RelayHub` 负责
 - 产品级生产流量治理由对应产品项目承接与落地
 
 ## 4. 当前硬边界
@@ -101,13 +103,13 @@
 
 ## 6. 固定必读
 
-任何 Agent 第一次进入 `模型接入与评测中心` 项目时，默认优先读取以下材料：
+任何 Agent 第一次进入 `RelayHub` 项目时，默认优先读取以下材料：
 
-1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/模型接入与评测中心/PROJECT.md)
-2. [项目工作区入口](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/PROJECT.md)
-3. [2026-04-16-模型接入与评测中心-v1-架构与产品定义.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/specs/2026-04-16-模型接入与评测中心-v1-架构与产品定义.md)
-4. [2026-04-16-v1-最小立项与实现准备任务.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
-5. [2026-04-16-v1-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/qa/2026-04-16-v1-qa-basis.md)
+1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md)
+2. [项目工作区入口](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/PROJECT.md)
+3. [2026-04-16-RelayHub-v1-架构与产品定义.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
+4. [2026-04-16-v1-最小立项与实现准备任务.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
+5. [2026-04-16-v1-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-qa-basis.md)
 6. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
 7. [agents/architect/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/architect/AGENTS.md)
 8. [agents/engineer/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/engineer/AGENTS.md)
@@ -132,6 +134,6 @@
 
 ## 8. 当前一句话结论
 
-从现在开始，`模型接入与评测中心` 应作为 `墨予镜` 的正式 capability 存在。
+从现在开始，`RelayHub` 应作为 `墨予镜` 的正式 capability 存在。
 
 以后凡是“需要统一模型接入、正式评测、产出优化建议，且可被多个产品或多个工作流复用”的任务，都优先进入这个项目，而不是继续零散挂在单个产品或临时脚本上。

@@ -1,19 +1,19 @@
-# 模型接入与评测中心项目工作区
+# RelayHub 项目工作区
 
 > 状态：current
 > 版本：0.1.0
 > owner：Architect / Engineer
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/PROJECT.md
-> 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/模型接入与评测中心/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/模型接入与评测中心/PROJECT.md)
+> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/PROJECT.md
+> 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md)
 
-这是 `模型接入与评测中心` 在 Monorepo 中的正式项目工作区入口。
+这是 `RelayHub` 在 Monorepo 中的正式项目工作区入口。
 
 它用于承接共享模型接入底座、开发版 relay、产品生产版 relay 和旁路 eval 的正式 artifact 与后续实现工作。
 
 ## 1. 项目是什么
 
-`模型接入与评测中心` 是 `墨予镜` 的公司级共享模型能力项目。
+`RelayHub` 是 `墨予镜` 的公司级共享模型能力项目。
 
 它负责把原本零散存在于个人开发、产品生产和供应商对比里的模型使用问题，收束成：
 
@@ -63,17 +63,17 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/specs/README.md)
-- [tasks/README.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/tasks/README.md)
-- [qa/README.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/qa/README.md)
+- [specs/README.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/README.md)
+- [tasks/README.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/README.md)
+- [qa/README.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/README.md)
 
 ## 6. 当前窗口入口
 
 当前执行窗口默认从这些入口进入：
 
-- [2026-04-16-模型接入与评测中心-v1-架构与产品定义.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/specs/2026-04-16-模型接入与评测中心-v1-架构与产品定义.md)
-- [2026-04-16-v1-最小立项与实现准备任务.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
-- [2026-04-16-v1-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/model-gateway-eval-center/qa/2026-04-16-v1-qa-basis.md)
+- [2026-04-16-RelayHub-v1-架构与产品定义.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
+- [2026-04-16-v1-最小立项与实现准备任务.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
+- [2026-04-16-v1-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-qa-basis.md)
 
 ## 7. 目录说明
 
