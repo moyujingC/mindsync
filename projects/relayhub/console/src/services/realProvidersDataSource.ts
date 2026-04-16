@@ -23,6 +23,10 @@ import type {
   ProvidersReadonlyTransport,
   ProvidersReadonlyTransportRequest,
 } from "./realProvidersTransport";
+import {
+  createRealProvidersFetchTransport,
+} from "./realProvidersFetchTransport";
+import type { ProvidersReadonlyTransportConfig } from "./realProvidersFetchTransport";
 
 const PROVIDER_KIND_OPTIONS: ProviderKind[] = ["第三方中转", "国产模型", "免费国外 API"];
 const PROVIDER_ENVIRONMENT_OPTIONS = ["开发版", "心理疗愈生产版", "评测版"] as const;
@@ -160,6 +164,12 @@ export function createRealProvidersReadonlyDataSource(
         providerId: id,
         forceError: requestOptions?.forceError,
       });
+      if (response.statusCode === 404 && response.data === null) {
+        return {
+          meta: createDetailMeta("not-found"),
+          item: null,
+        };
+      }
       const payload = detailAdapter(response.data);
 
       return {
@@ -244,3 +254,11 @@ export const realProvidersReadonlyDataSourceStub = createRealProvidersReadonlyDa
     };
   },
 });
+
+export function createRealProvidersFetchDataSource(
+  config: ProvidersReadonlyTransportConfig,
+): Pick<ConsoleReadonlyDataSource, "listProviders" | "getProvider"> {
+  return createRealProvidersReadonlyDataSource({
+    transport: createRealProvidersFetchTransport(config),
+  });
+}

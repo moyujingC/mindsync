@@ -7,9 +7,11 @@ import {
   adaptProviderDetailWirePayload,
   adaptProvidersCollectionWirePayload,
 } from "../services/realProvidersAdapter";
+import { createRealProvidersFetchTransport } from "../services/realProvidersFetchTransport";
 import {
   buildProviderDetailPath,
   buildProvidersCollectionPath,
+  createRealProvidersFetchDataSource,
   createRealProvidersReadonlyDataSource,
   realProvidersReadonlyDataSourceStub,
 } from "../services/realProvidersDataSource";
@@ -451,5 +453,234 @@ describe("console readonly data source", () => {
 
     expect(response.meta.status).toBe("ready");
     expect(response.item?.id).toBe("provider-custom-detail-adapter");
+  });
+
+  it("creates a real providers fetch transport for collection requests", async () => {
+    const fetchCalls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
+    const transport = createRealProvidersFetchTransport({
+      baseUrl: "https://relayhub.internal/api",
+      defaultHeaders: {
+        "x-relayhub-scope": "providers-readonly",
+      },
+      fetchImpl: async (input, init) => {
+        fetchCalls.push({ input, init });
+        return {
+          status: 200,
+          headers: {
+            forEach: (callback) => {
+              callback("application/json", "content-type");
+            },
+          },
+          json: async () => ({ items: [] }),
+        };
+      },
+    });
+
+    const response = await transport({
+      resource: "providers",
+      scope: "collection",
+      path: "/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+      filters: { kind: "国产模型" },
+    });
+
+    expect(fetchCalls[0]).toEqual({
+      input: "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+      init: {
+        method: "GET",
+        headers: {
+          "x-relayhub-scope": "providers-readonly",
+        },
+      },
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.data).toEqual({ items: [] });
+    expect(response.headers).toEqual({
+      "content-type": "application/json",
+    });
+  });
+
+  it("creates a real providers fetch transport for detail requests", async () => {
+    const fetchCalls: string[] = [];
+    const transport = createRealProvidersFetchTransport({
+      baseUrl: "https://relayhub.internal/api/",
+      fetchImpl: async (input) => {
+        fetchCalls.push(input);
+        return {
+          status: 200,
+          json: async () => ({ item: null }),
+        };
+      },
+    });
+
+    await transport({
+      resource: "providers",
+      scope: "detail",
+      path: "/providers/provider-real-stub",
+      providerId: "provider-real-stub",
+    });
+
+    expect(fetchCalls[0]).toBe("https://relayhub.internal/api/providers/provider-real-stub");
+  });
+
+  it("returns null data for 204 responses from the real providers fetch transport", async () => {
+    const transport = createRealProvidersFetchTransport({
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl: async () => ({
+        status: 204,
+        json: async () => {
+          throw new Error("json should not be called");
+        },
+      }),
+    });
+
+    const response = await transport({
+      resource: "providers",
+      scope: "collection",
+      path: "/providers",
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.data).toBeNull();
+  });
+
+  it("returns null data for 404 responses from the real providers fetch transport", async () => {
+    const transport = createRealProvidersFetchTransport({
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl: async () => ({
+        status: 404,
+        json: async () => {
+          throw new Error("json should not be called");
+        },
+      }),
+    });
+
+    const response = await transport({
+      resource: "providers",
+      scope: "detail",
+      path: "/providers/missing-provider",
+      providerId: "missing-provider",
+    });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.data).toBeNull();
+  });
+
+  it("throws a clear error for non-success fetch transport statuses", async () => {
+    const transport = createRealProvidersFetchTransport({
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl: async () => ({
+        status: 500,
+        json: async () => ({ message: "server error" }),
+      }),
+    });
+
+    await expect(
+      transport({
+        resource: "providers",
+        scope: "collection",
+        path: "/providers",
+      }),
+    ).rejects.toThrow("RelayHub providers fetch transport failed with status 500");
+  });
+
+  it("throws a clear error for invalid JSON from the real providers fetch transport", async () => {
+    const transport = createRealProvidersFetchTransport({
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl: async () => ({
+        status: 200,
+        json: async () => {
+          throw new Error("invalid json");
+        },
+      }),
+    });
+
+    await expect(
+      transport({
+        resource: "providers",
+        scope: "collection",
+        path: "/providers",
+      }),
+    ).rejects.toThrow("RelayHub providers fetch transport returned invalid JSON");
+  });
+
+  it("does not let mock error semantics enter the real fetch transport URL", async () => {
+    const fetchCalls: string[] = [];
+    const transport = createRealProvidersFetchTransport({
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl: async (input) => {
+        fetchCalls.push(input);
+        return {
+          status: 200,
+          json: async () => ({ items: [] }),
+        };
+      },
+    });
+
+    await transport({
+      resource: "providers",
+      scope: "collection",
+      path: "/providers",
+      forceError: false,
+    });
+
+    expect(fetchCalls[0]).toBe("https://relayhub.internal/api/providers");
+    expect(fetchCalls[0]).not.toContain("mock=error");
+  });
+
+  it("maps detail 404 into not-found through the fetch datasource helper", async () => {
+    const datasource = createRealProvidersFetchDataSource({
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl: async () => ({
+        status: 404,
+        json: async () => {
+          throw new Error("json should not be called");
+        },
+      }),
+    });
+
+    const response = await datasource.getProvider("missing-provider");
+
+    expect(response.meta.status).toBe("not-found");
+    expect(response.item).toBeNull();
+  });
+
+  it("creates a usable datasource from the fetch transport helper", async () => {
+    const datasource = createRealProvidersFetchDataSource({
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl: async () => ({
+        status: 200,
+        json: async () => ({
+          items: [
+            {
+              id: "provider-fetch-helper",
+              name: "Provider Fetch Helper",
+              kind: "国产模型",
+              availableEnvironments: ["评测版"],
+              health: "healthy",
+              transparency: "完整",
+              errorRate: 0.2,
+              p95Latency: 620,
+              description: "fetch datasource helper payload",
+              recommendation: "适合作为 helper 验证样本",
+              recommendationNote: "仅用于测试",
+              models: [{ name: "fetch-helper-model", useCase: "transport helper" }],
+              metrics: {
+                requests: 19,
+                tokens: 4100,
+                avgLatency: 320,
+                p95Latency: 620,
+                errorRate: 0.2,
+                cost: 4,
+              },
+            },
+          ],
+        }),
+      }),
+    });
+
+    const response = await datasource.listProviders({ kind: "国产模型" });
+
+    expect(response.meta.status).toBe("ready");
+    expect(response.items[0]?.id).toBe("provider-fetch-helper");
   });
 });
