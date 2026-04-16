@@ -2,10 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./app/AppRoutes";
-import { bootstrapConsoleDeploymentRuntime } from "./app/consoleDeploymentRuntime";
+import { bootstrapDefaultConsoleEnvDeploymentRuntime } from "./app/consoleEnvDeploymentRuntime";
 import "./styles.css";
 
-bootstrapConsoleDeploymentRuntime();
+bootstrapDefaultConsoleEnvDeploymentRuntime();
 
 function App() {
   return (

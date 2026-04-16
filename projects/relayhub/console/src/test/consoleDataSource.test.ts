@@ -9,6 +9,11 @@ import {
   resolveConsoleAppRuntimeOptions,
 } from "../app/consoleDeploymentRuntime";
 import {
+  bootstrapConsoleEnvDeploymentRuntime,
+  bootstrapDefaultConsoleEnvDeploymentRuntime,
+  resolveConsoleDeploymentRuntimeInputFromEnv,
+} from "../app/consoleEnvDeploymentRuntime";
+import {
   getDashboardOverviewRaw,
   getEnvironmentRaw,
   getEvalOverviewRaw,
@@ -197,6 +202,141 @@ describe("console readonly data source", () => {
 
     expect(response.item?.id).toBe("deepseek-direct");
     expect(response.meta.status).toBe("ready");
+  });
+
+  it("resolves missing env deployment input to default-mock", () => {
+    expect(resolveConsoleDeploymentRuntimeInputFromEnv({})).toEqual({
+      mode: "default-mock",
+    });
+  });
+
+  it("resolves mock env deployment input to default-mock", () => {
+    expect(
+      resolveConsoleDeploymentRuntimeInputFromEnv({
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "mock",
+      }),
+    ).toEqual({
+      mode: "default-mock",
+    });
+  });
+
+  it("resolves invalid env runtime mode to default-mock", () => {
+    expect(
+      resolveConsoleDeploymentRuntimeInputFromEnv({
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "bad-mode",
+      }),
+    ).toEqual({
+      mode: "default-mock",
+    });
+  });
+
+  it("resolves real-fetch env without baseUrl to default-mock", () => {
+    const fetchImpl = async () => ({
+      status: 200,
+      json: async () => ({ items: [] }),
+    });
+
+    expect(
+      resolveConsoleDeploymentRuntimeInputFromEnv(
+        {
+          RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        },
+        fetchImpl,
+      ),
+    ).toEqual({
+      mode: "default-mock",
+    });
+  });
+
+  it("resolves real-fetch env without fetchImpl to default-mock", () => {
+    expect(
+      resolveConsoleDeploymentRuntimeInputFromEnv({
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+      }),
+    ).toEqual({
+      mode: "default-mock",
+    });
+  });
+
+  it("resolves real-fetch env into env deployment input", () => {
+    const fetchImpl = async () => ({
+      status: 200,
+      json: async () => ({ items: [] }),
+    });
+
+    expect(
+      resolveConsoleDeploymentRuntimeInputFromEnv(
+        {
+          RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+          RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+          RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON:
+            '{"x-relayhub-scope":"providers-readonly"}',
+        },
+        fetchImpl,
+      ),
+    ).toEqual({
+      mode: "env",
+      env: {
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON:
+          '{"x-relayhub-scope":"providers-readonly"}',
+      },
+      fetchImpl,
+    });
+  });
+
+  it("keeps invalid default headers JSON in env deployment input unresolved at this layer", () => {
+    const fetchImpl = async () => ({
+      status: 200,
+      json: async () => ({ items: [] }),
+    });
+
+    expect(
+      resolveConsoleDeploymentRuntimeInputFromEnv(
+        {
+          RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+          RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+          RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: '{"x-relayhub-scope":',
+        },
+        fetchImpl,
+      ),
+    ).toEqual({
+      mode: "env",
+      env: {
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: '{"x-relayhub-scope":',
+      },
+      fetchImpl,
+    });
+  });
+
+  it("keeps non-object default headers JSON in env deployment input unresolved at this layer", () => {
+    const fetchImpl = async () => ({
+      status: 200,
+      json: async () => ({ items: [] }),
+    });
+
+    expect(
+      resolveConsoleDeploymentRuntimeInputFromEnv(
+        {
+          RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+          RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+          RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: '["x-relayhub-scope"]',
+        },
+        fetchImpl,
+      ),
+    ).toEqual({
+      mode: "env",
+      env: {
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: '["x-relayhub-scope"]',
+      },
+      fetchImpl,
+    });
   });
 
   it("returns mock providers source from the default runtime seam", async () => {
@@ -1217,6 +1357,75 @@ describe("console readonly data source", () => {
     expect(fetchCalls[1]).toBe("https://relayhub.internal/api/providers/missing-provider");
     expect(providersResponse.items[0]?.id).toBe("provider-deployment-runtime-installed");
     expect(providerResponse.meta.status).toBe("not-found");
+  });
+
+  it("installs env deployment runtime datasource for consoleData helpers", async () => {
+    const fetchCalls: string[] = [];
+    bootstrapConsoleEnvDeploymentRuntime(
+      {
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+      },
+      async (input) => {
+        fetchCalls.push(input);
+        if (input.endsWith("/missing-provider")) {
+          return {
+            status: 200,
+            json: async () => ({
+              item: null,
+            }),
+          };
+        }
+
+        return {
+          status: 200,
+          json: async () => ({
+            items: [
+              {
+                id: "provider-env-deployment-runtime-installed",
+                name: "Provider Env Deployment Runtime Installed",
+                kind: "国产模型",
+                availableEnvironments: ["评测版"],
+                health: "healthy",
+                transparency: "完整",
+                errorRate: 0.2,
+                p95Latency: 610,
+                description: "env deployment runtime installed datasource payload",
+                recommendation: "适合作为 env deployment runtime 验证样本",
+                recommendationNote: "仅用于测试",
+                models: [{ name: "env-deployment-runtime-model", useCase: "env deployment runtime" }],
+                metrics: {
+                  requests: 22,
+                  tokens: 4800,
+                  avgLatency: 340,
+                  p95Latency: 610,
+                  errorRate: 0.2,
+                  cost: 4,
+                },
+              },
+            ],
+          }),
+        };
+      },
+    );
+
+    const providersResponse = await listProvidersRaw({ kind: "国产模型" });
+    const providerResponse = await getProviderRaw("missing-provider");
+
+    expect(fetchCalls[0]).toBe(
+      "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+    );
+    expect(fetchCalls[1]).toBe("https://relayhub.internal/api/providers/missing-provider");
+    expect(providersResponse.items[0]?.id).toBe("provider-env-deployment-runtime-installed");
+    expect(providerResponse.meta.status).toBe("not-found");
+  });
+
+  it("keeps default env deployment runtime on mock providers behavior", async () => {
+    const runtime = bootstrapDefaultConsoleEnvDeploymentRuntime();
+    const response = await runtime.dataSource.getProvider("deepseek-direct");
+
+    expect(response.item?.id).toBe("deepseek-direct");
+    expect(response.meta.status).toBe("ready");
   });
 
   it("keeps deployment runtime scoped to providers only", async () => {
