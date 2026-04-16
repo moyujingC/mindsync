@@ -26,4 +26,37 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("中转站续费建议")).toBeInTheDocument();
     expect(await screen.findByText("任务级替代建议")).toBeInTheDocument();
   });
+
+  it("renders environment policies route with production boundary copy", async () => {
+    renderRoute("/environments/prod-aimandala/policies");
+
+    expect(await screen.findByText("当前生产版只允许国产模型。")).toBeInTheDocument();
+    const policyLinks = await screen.findAllByRole("link", { name: "Policies" });
+
+    expect(
+      policyLinks.some(
+        (link) =>
+          link.getAttribute("href") === "/environments/prod-aimandala/policies" &&
+          link.classList.contains("is-active"),
+      ),
+    ).toBe(true);
+  });
+
+  it("renders environment runs route with empty state", async () => {
+    renderRoute("/environments/prod-aimandala/runs");
+
+    expect(await screen.findByText("当前还没有可展示的运行记录")).toBeInTheDocument();
+  });
+
+  it("renders environment not-found route", async () => {
+    renderRoute("/environments/missing-environment/overview");
+
+    expect(await screen.findByText("没有找到对应环境")).toBeInTheDocument();
+  });
+
+  it("renders environment mock error route", async () => {
+    renderRoute("/environments/dev-relay/overview?mock=error");
+
+    expect(await screen.findByText("环境详情加载失败")).toBeInTheDocument();
+  });
 });
