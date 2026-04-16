@@ -10,6 +10,13 @@ import {
   listProviders,
   listProvidersRaw,
 } from "../services/consoleData";
+import type {
+  DashboardOverviewContract,
+  EnvironmentCollectionContract,
+  EnvironmentDetailContract,
+  EvalOverviewContract,
+  ProviderCollectionContract,
+} from "../contracts/console";
 
 describe("consoleData service", () => {
   it("unwraps dashboard overview payload", async () => {
@@ -22,19 +29,21 @@ describe("consoleData service", () => {
 
   it("exposes dashboard meta semantics through raw helper", async () => {
     const response = await getDashboardOverviewRaw();
+    const typedResponse: DashboardOverviewContract = response;
 
-    expect(response.meta.resource).toBe("dashboard");
-    expect(response.meta.scope).toBe("overview");
-    expect(response.meta.status).toBe("ready");
-    expect(response.meta.version).toBe("v1");
+    expect(typedResponse.meta.resource).toBe("dashboard");
+    expect(typedResponse.meta.scope).toBe("overview");
+    expect(typedResponse.meta.status).toBe("ready");
+    expect(typedResponse.meta.version).toBe("v1");
   });
 
   it("exposes environment collection meta semantics through raw helper", async () => {
     const response = await listEnvironmentsRaw();
+    const typedResponse: EnvironmentCollectionContract = response;
 
-    expect(response.meta.resource).toBe("environments");
-    expect(response.meta.scope).toBe("collection");
-    expect(response.meta.status).toBe("ready");
+    expect(typedResponse.meta.resource).toBe("environments");
+    expect(typedResponse.meta.scope).toBe("collection");
+    expect(typedResponse.meta.status).toBe("ready");
   });
 
   it("returns null for missing environment detail", async () => {
@@ -43,10 +52,11 @@ describe("consoleData service", () => {
 
   it("marks missing environment detail as not-found in raw meta", async () => {
     const response = await getEnvironmentRaw("missing-environment");
+    const typedResponse: EnvironmentDetailContract = response;
 
-    expect(response.item).toBeNull();
-    expect(response.meta.scope).toBe("detail");
-    expect(response.meta.status).toBe("not-found");
+    expect(typedResponse.item).toBeNull();
+    expect(typedResponse.meta.scope).toBe("detail");
+    expect(typedResponse.meta.status).toBe("not-found");
   });
 
   it("preserves provider filters after response unwrapping", async () => {
@@ -64,11 +74,12 @@ describe("consoleData service", () => {
       kind: "国产模型",
       environment: "评测版",
     });
+    const typedResponse: ProviderCollectionContract = response;
 
-    expect(response.meta.resource).toBe("providers");
-    expect(response.meta.scope).toBe("collection");
-    expect(response.meta.status).toBe("ready");
-    expect(response.meta.filters).toEqual({
+    expect(typedResponse.meta.resource).toBe("providers");
+    expect(typedResponse.meta.scope).toBe("collection");
+    expect(typedResponse.meta.status).toBe("ready");
+    expect(typedResponse.meta.filters).toEqual({
       kind: "国产模型",
       environment: "评测版",
     });
@@ -79,9 +90,10 @@ describe("consoleData service", () => {
       kind: "免费国外 API",
       environment: "心理疗愈生产版",
     });
+    const typedResponse: ProviderCollectionContract = response;
 
-    expect(response.items).toHaveLength(0);
-    expect(response.meta.status).toBe("empty");
+    expect(typedResponse.items).toHaveLength(0);
+    expect(typedResponse.meta.status).toBe("empty");
   });
 
   it("unwraps eval overview payload", async () => {
@@ -93,9 +105,10 @@ describe("consoleData service", () => {
 
   it("exposes eval meta semantics through raw helper", async () => {
     const response = await getEvalOverviewRaw();
+    const typedResponse: EvalOverviewContract = response;
 
-    expect(response.meta.resource).toBe("eval");
-    expect(response.meta.scope).toBe("overview");
-    expect(response.meta.status).toBe("ready");
+    expect(typedResponse.meta.resource).toBe("eval");
+    expect(typedResponse.meta.scope).toBe("overview");
+    expect(typedResponse.meta.status).toBe("ready");
   });
 });

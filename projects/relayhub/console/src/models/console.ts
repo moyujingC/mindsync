@@ -1,9 +1,6 @@
 export type HealthState = "healthy" | "degraded" | "risk" | "idle";
 export type ProviderKind = "第三方中转" | "国产模型" | "免费国外 API";
 export type TransparencyState = "完整" | "部分缺失" | "暂无";
-export type MockResource = "dashboard" | "environments" | "providers" | "eval";
-export type MockScope = "overview" | "collection" | "detail";
-export type MockStatus = "ready" | "empty" | "not-found";
 
 export type EnvironmentTab = "overview" | "providers" | "routes" | "usage" | "policies" | "runs";
 export type EvalTab = "scoreboard" | "comparisons" | "recommendations" | "reports";
@@ -131,31 +128,6 @@ export interface EvalOverview {
   comparisons: EvalComparison[];
   recommendations: EvalRecommendation[];
   reports: EvalReport[];
-}
-
-export interface MockResponseMeta {
-  source: "local-mock";
-  generatedAt: string;
-  version: "v1";
-  resource: MockResource;
-  scope: MockScope;
-  status: MockStatus;
-  filters?: ProviderFilters;
-}
-
-export interface CollectionResponse<T> {
-  meta: MockResponseMeta;
-  items: T[];
-}
-
-export interface DetailResponse<T> {
-  meta: MockResponseMeta;
-  item: T | null;
-}
-
-export interface OverviewResponse<T> {
-  meta: MockResponseMeta;
-  overview: T;
 }
 
 export interface ProviderFilters {

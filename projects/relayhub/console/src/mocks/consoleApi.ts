@@ -11,19 +11,21 @@ import {
   recentRuns,
 } from "../fixtures/data";
 import type {
-  CollectionResponse,
-  DashboardOverview,
-  DetailResponse,
-  EnvironmentRecord,
-  EvalOverview,
-  MockResource,
-  MockScope,
-  MockStatus,
   MockRequestOptions,
-  OverviewResponse,
   ProviderFilters,
-  ProviderRecord,
 } from "../models/console";
+import type {
+  ContractMeta,
+  ContractResource,
+  ContractScope,
+  ContractStatus,
+  DashboardOverviewContract,
+  EnvironmentCollectionContract,
+  EnvironmentDetailContract,
+  EvalOverviewContract,
+  ProviderCollectionContract,
+  ProviderDetailContract,
+} from "../contracts/console";
 
 const MOCK_LATENCY_MS = 120;
 const MOCK_GENERATED_AT = "2026-04-16T00:00:00+08:00";
@@ -58,11 +60,11 @@ function sanitizeProviderFilters(filters: ProviderFilters = {}): ProviderFilters
 }
 
 function createMeta(
-  resource: MockResource,
-  scope: MockScope,
-  status: MockStatus,
+  resource: ContractResource,
+  scope: ContractScope,
+  status: ContractStatus,
   filters?: ProviderFilters,
-) {
+): ContractMeta {
   return {
     source: "local-mock" as const,
     generatedAt: MOCK_GENERATED_AT,
@@ -76,7 +78,7 @@ function createMeta(
 
 export async function getDashboardOverview(
   options?: MockRequestOptions,
-): Promise<OverviewResponse<DashboardOverview>> {
+): Promise<DashboardOverviewContract> {
   return delayed(
     {
       meta: createMeta("dashboard", "overview", "ready"),
@@ -94,7 +96,7 @@ export async function getDashboardOverview(
 
 export async function listEnvironments(
   options?: MockRequestOptions,
-): Promise<CollectionResponse<EnvironmentRecord>> {
+): Promise<EnvironmentCollectionContract> {
   return delayed(
     {
       meta: createMeta("environments", "collection", "ready"),
@@ -107,7 +109,7 @@ export async function listEnvironments(
 export async function getEnvironment(
   id: string,
   options?: MockRequestOptions,
-): Promise<DetailResponse<EnvironmentRecord>> {
+): Promise<EnvironmentDetailContract> {
   const environment = environments.find((item) => item.id === id) ?? null;
   return delayed(
     {
@@ -121,7 +123,7 @@ export async function getEnvironment(
 export async function listProviders(
   filters: ProviderFilters = {},
   options?: MockRequestOptions,
-): Promise<CollectionResponse<ProviderRecord>> {
+): Promise<ProviderCollectionContract> {
   const filteredProviders = providers.filter((provider) => {
     const matchesEnvironment =
       !filters.environment ||
@@ -153,7 +155,7 @@ export async function listProviders(
 export async function getProvider(
   id: string,
   options?: MockRequestOptions,
-): Promise<DetailResponse<ProviderRecord>> {
+): Promise<ProviderDetailContract> {
   const provider = providers.find((item) => item.id === id) ?? null;
   return delayed(
     {
@@ -166,7 +168,7 @@ export async function getProvider(
 
 export async function getEvalOverview(
   options?: MockRequestOptions,
-): Promise<OverviewResponse<EvalOverview>> {
+): Promise<EvalOverviewContract> {
   return delayed(
     {
       meta: createMeta("eval", "overview", "ready"),
