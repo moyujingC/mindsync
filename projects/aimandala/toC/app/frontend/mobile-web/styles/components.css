@@ -554,6 +554,26 @@
   color: rgba(232, 220, 200, 0.88);
 }
 
+.am-icon-tone-accent {
+  color: var(--am-text-accent);
+}
+
+.am-icon-tone-on-dark {
+  color: rgba(232, 220, 200, 0.88);
+}
+
+.am-icon-tone-on-dark-muted {
+  color: rgba(232, 220, 200, 0.86);
+}
+
+.am-icon-tone-success {
+  color: var(--am-color-success-600);
+}
+
+.am-icon-tone-muted {
+  color: rgba(113, 128, 150, 0.5);
+}
+
 .am-dev-pill {
   display: grid;
   gap: 2px;

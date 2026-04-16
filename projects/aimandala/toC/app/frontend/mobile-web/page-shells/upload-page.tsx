@@ -31,7 +31,7 @@ const DEFAULT_MIDDLE_RADIUS = 0.65;
 function NavBackIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="rgba(232,220,200,0.86)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -39,9 +39,9 @@ function NavBackIcon() {
 function UploadGlyph() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="6" y="8" width="12" height="9" rx="2.2" stroke="#D4A054" strokeWidth="1.5" />
-      <path d="M9 8.5L10.2 6.8C10.6 6.2 11.2 5.9 11.9 5.9H12.1C12.8 5.9 13.4 6.2 13.8 6.8L15 8.5" stroke="#D4A054" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="12" cy="12.5" r="2.3" stroke="#D4A054" strokeWidth="1.5" />
+      <rect x="6" y="8" width="12" height="9" rx="2.2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M9 8.5L10.2 6.8C10.6 6.2 11.2 5.9 11.9 5.9H12.1C12.8 5.9 13.4 6.2 13.8 6.8L15 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="12.5" r="2.3" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -192,19 +192,19 @@ function UploadSlider({
   value,
   min,
   max,
-  color,
+  tone,
   onChange,
 }: {
   label: string;
   value: number;
   min: number;
   max: number;
-  color: string;
+  tone: "gold" | "copper";
   onChange: (nextValue: number) => void;
 }) {
   const percentage = ((value - min) / (max - min)) * 100;
   return (
-    <label className="am-upload-slider" style={{ ["--am-upload-slider-value-color" as string]: color }}>
+    <label className={`am-upload-slider am-upload-slider--${tone}`}>
       <span className="am-upload-slider__label">{label}</span>
       <div className="am-upload-slider__track-wrap">
         <div className="am-upload-slider__track" />
@@ -369,7 +369,6 @@ function TextInputField({
         <LucideIcon
           iconNode={ICON_PENCIL}
           size={16}
-          color="rgba(200, 120, 80, 0.3)"
           strokeWidth={2}
           className="am-upload-text-input__icon"
         />
@@ -505,7 +504,7 @@ function ThemeSelector({
 
               {isSelected ? (
                 <div className="am-theme-selector__check">
-                  <LucideIcon iconNode={ICON_CHECK} size={10} color="#1E2D4D" strokeWidth={3} />
+                  <LucideIcon iconNode={ICON_CHECK} size={10} strokeWidth={3} />
                 </div>
               ) : null}
 
@@ -513,7 +512,6 @@ function ThemeSelector({
                 <LucideIcon
                   iconNode={theme.icon}
                   size={22}
-                  color={isSelected ? "#D4A054" : "#9B6840"}
                   strokeWidth={1.5}
                 />
               </span>
@@ -570,7 +568,6 @@ function BottomPanel({
             <LucideIcon
               iconNode={ICON_LOADER}
               size={18}
-              color="#F5EFE2"
               className="am-lucide-spin"
             />
             <span className="am-upload-bottom-cta__label">
@@ -579,7 +576,7 @@ function BottomPanel({
           </>
         ) : (
           <>
-            <LucideIcon iconNode={ICON_BOOK_OPEN} size={18} color="#F5EFE2" />
+            <LucideIcon iconNode={ICON_BOOK_OPEN} size={18} />
             <span className="am-upload-bottom-cta__label">
               开始解读
             </span>
@@ -588,7 +585,7 @@ function BottomPanel({
       </button>
 
       <div className="am-upload-bottom-panel__privacy">
-        <LucideIcon iconNode={ICON_LOCK} size={11} color="#9B7A5A" className="am-upload-bottom-panel__lock" />
+        <LucideIcon iconNode={ICON_LOCK} size={11} className="am-upload-bottom-panel__lock" />
         <p className="am-upload-bottom-panel__copy">
           上传即表示您同意{" "}
           <button
@@ -1094,7 +1091,7 @@ export function MobileWebUploadPage({
             value={innerRadius}
             min={10}
             max={82}
-            color="#D4A054"
+            tone="gold"
             onChange={(nextInner) => {
               const inner = Math.min(nextInner, middleRadius - 8);
               const nextMiddle = Math.max(inner + 8, middleRadius);
@@ -1106,7 +1103,7 @@ export function MobileWebUploadPage({
             value={middleRadius}
             min={18}
             max={90}
-            color="#C87850"
+            tone="copper"
             onChange={(nextMiddle) => {
               const middle = Math.max(nextMiddle, innerRadius + 8);
               const nextInner = Math.min(innerRadius, middle - 8);

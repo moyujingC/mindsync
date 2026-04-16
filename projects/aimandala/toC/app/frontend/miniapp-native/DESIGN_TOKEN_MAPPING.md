@@ -9,6 +9,7 @@
 - Web CSS token 是设计语义真理源
 - `shared/design-system/tokens.ts` 是跨端程序化对照源
 - miniapp 本轮继续手工映射，不做自动编译
+- `miniapp-native/styles/tokens.wxss` 是 miniapp 当前代码侧 token 入口
 
 ## 可直接映射到 WXSS 的 token
 
@@ -74,3 +75,11 @@
   - 错误态文字色
 
 这些语义已能映射到当前 token 命名，不需要再单独发明一套颜色语言。
+
+## 当前代码侧落地规则
+
+- `app.wxss` 与 `pages/runtime/index.wxss` 现已直接消费 `styles/tokens.wxss` 中的 `--am-*` 变量
+- `app.json` 中的 `navigationBarBackgroundColor` / `backgroundColor` 仍保持硬编码 `#f6f0e8`
+  - 这是微信配置 JSON 不支持 `var()` 的平台限制
+  - 语义上仍对应 `--am-surface-primary`
+- miniapp 后续新增样式应优先补 token 变量，再写页面规则；不要重新发明一套只存在于小程序端的颜色命名

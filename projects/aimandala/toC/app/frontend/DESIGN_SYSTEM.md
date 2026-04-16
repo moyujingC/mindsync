@@ -140,6 +140,20 @@
 - miniapp 本轮继续手工映射 token，不引入自动编译或运行时注入流程
 - miniapp 当前已落地的 `app.wxss` 与 `pages/runtime/index.wxss`，至少应覆盖页面背景、正文、标题和错误态语义，不允许重新发明独立配色体系
 
+## 图标颜色语义化规则
+
+- 纯视觉 SVG 与 icon 默认优先使用 `currentColor`，由外层 class、状态类或稳定 token 决定颜色
+- 品牌强调、暗底按钮、成功态、弱提示态等颜色，应优先复用 semantic token 或稳定 class，例如 `am-icon-tone-*`
+- 只有确实存在运行时状态差异时，才允许通过 CSS variable 或条件 class 切换图标颜色
+- 不再接受在 JSX 中继续扩张硬编码品牌色 `stroke`、`fill` 或 icon `color`
+
+## Miniapp WXSS Token 使用规则
+
+- miniapp 当前代码侧 token 入口为 `miniapp-native/styles/tokens.wxss`
+- `app.wxss`、`pages/runtime/index.wxss` 等样式文件应优先消费 `--am-*` 变量，而不是继续直接写硬编码颜色
+- `app.json` 中的 `navigationBarBackgroundColor` 与 `backgroundColor` 由于平台限制仍保持硬编码，并在 mapping 文档中视为允许例外
+- miniapp 仍不做自动同步脚本；当前目标是让代码层与文档层使用同一套命名和语义
+
 ## 最终 Inline Style 边界
 
 - 允许保留：

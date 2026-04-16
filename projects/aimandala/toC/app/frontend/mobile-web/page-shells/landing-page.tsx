@@ -48,9 +48,9 @@ function FloatingParticles() {
 function IconUpload() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 16V6" stroke="#C87850" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M8.5 9.5L12 6L15.5 9.5" stroke="#C87850" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6 18.5H18" stroke="#C87850" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M12 16V6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M8.5 9.5L12 6L15.5 9.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 18.5H18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -58,10 +58,10 @@ function IconUpload() {
 function IconAnalyze() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="5" y="5" width="4" height="4" rx="1" stroke="#C87850" strokeWidth="1.6" />
-      <rect x="15" y="5" width="4" height="4" rx="1" stroke="#C87850" strokeWidth="1.6" />
-      <rect x="5" y="15" width="4" height="4" rx="1" stroke="#C87850" strokeWidth="1.6" />
-      <circle cx="15.5" cy="15.5" r="3.5" stroke="#C87850" strokeWidth="1.6" />
+      <rect x="5" y="5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="15" y="5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="5" y="15" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="15.5" cy="15.5" r="3.5" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   );
 }
@@ -69,10 +69,10 @@ function IconAnalyze() {
 function IconReport() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M8 5.5H14L18 9.5V18a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 7 18V7A1.5 1.5 0 0 1 8.5 5.5Z" stroke="#C87850" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M14 5.5V9.5H18" stroke="#C87850" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M10 12H15" stroke="#C87850" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M10 15H15" stroke="#C87850" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M8 5.5H14L18 9.5V18a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 7 18V7A1.5 1.5 0 0 1 8.5 5.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M14 5.5V9.5H18" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M10 12H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M10 15H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }

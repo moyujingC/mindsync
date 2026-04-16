@@ -25,11 +25,11 @@ export interface SharedReportEntryDescriptor {
   cards: SharedReportEntryCardDescriptor[];
 }
 
-function EntryArrowGlyph({ color }: { color: string }) {
+function EntryArrowGlyph() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 12h12" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m13 7 5 5-5 5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m13 7 5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -47,7 +47,6 @@ function SharedReportEntryCard({
 }: SharedReportEntryCardDescriptor & {
   onClick?: () => void;
 }) {
-  const isPro = tone === "pro";
   const isAvailable = availability === "available";
 
   return (
@@ -77,7 +76,7 @@ function SharedReportEntryCard({
       <p className="am-report-entry-card__note">{note}</p>
       <div className="am-report-entry-card__cta">
         <span>{cta}</span>
-        <EntryArrowGlyph color={isPro ? "#E8DCC8" : "#7A8EA8"} />
+        <EntryArrowGlyph />
       </div>
     </button>
   );

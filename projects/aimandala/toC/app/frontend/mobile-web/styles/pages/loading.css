@@ -379,6 +379,10 @@
   background: rgba(72, 187, 120, 0.15);
 }
 
+.am-loading-log-item.is-done .am-loading-log-dot svg {
+  color: var(--am-color-success-600);
+}
+
 .am-loading-log-item.is-active {
   color: #d4a853;
   font-weight: 500;
@@ -394,6 +398,10 @@
 
 .am-loading-log-item.is-waiting .am-loading-log-dot {
   background: transparent;
+}
+
+.am-loading-log-item.is-waiting .am-loading-log-dot svg {
+  color: rgba(113, 128, 150, 0.5);
 }
 
 .am-loading-log-dot__pulse {
@@ -416,6 +424,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--am-color-copper-400);
 }
 
 .am-loading-tip-title {

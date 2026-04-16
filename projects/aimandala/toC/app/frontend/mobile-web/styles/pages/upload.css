@@ -49,6 +49,7 @@
   display: grid;
   place-items: center;
   background: transparent;
+  color: rgba(232, 220, 200, 0.86);
 }
 
 .am-upload-brandmark {
@@ -232,6 +233,7 @@
     rgba(200, 120, 80, 0.1)
   );
   box-shadow: 0 4px 20px rgba(212, 160, 84, 0.15);
+  color: var(--am-text-accent);
 }
 
 .am-upload-disc__placeholder-icon--hover {
@@ -324,6 +326,14 @@
   grid-template-columns: 88px 1fr 34px;
   align-items: center;
   gap: 8px;
+}
+
+.am-upload-slider--gold {
+  --am-upload-slider-value-color: var(--am-color-gold-300);
+}
+
+.am-upload-slider--copper {
+  --am-upload-slider-value-color: var(--am-color-copper-400);
 }
 
 .am-upload-slider__label {
@@ -561,6 +571,7 @@
 .am-upload-text-input__icon {
   margin-left: 8px;
   flex-shrink: 0;
+  color: rgba(200, 120, 80, 0.3);
 }
 
 .am-theme-selector__title {
@@ -639,6 +650,7 @@
   justify-content: center;
   border-radius: var(--am-radius-pill);
   background: rgba(212, 160, 84, 0.5);
+  color: var(--am-color-ink-800);
 }
 
 .am-theme-selector__icon,
@@ -649,7 +661,15 @@
 }
 
 .am-theme-selector__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 4px;
+  color: #9b6840;
+}
+
+.am-theme-selector__card.is-active .am-theme-selector__icon {
+  color: var(--am-color-gold-300);
 }
 
 .am-theme-selector__label,
@@ -731,6 +751,7 @@
 .am-upload-bottom-panel__lock {
   flex-shrink: 0;
   margin-top: 2px;
+  color: #9b7a5a;
 }
 
 .am-upload-bottom-panel__copy {
