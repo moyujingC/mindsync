@@ -1,17 +1,133 @@
+body {
+  background: #141e38;
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+}
+
+.browser-shell {
+  min-height: 100vh;
+}
+
+.browser-shell__panel {
+  padding: 32px 24px;
+  background: rgba(255, 250, 242, 0.82);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(88, 67, 43, 0.12);
+  border-radius: 24px;
+}
+
+.browser-shell__panel-header {
+  margin-bottom: 24px;
+}
+
+.browser-shell__panel-header h2 {
+  margin: 0 0 8px;
+}
+
+.browser-shell__panel--inline {
+  width: min(100%, 1400px);
+  margin: 0 auto 20px;
+}
+
+.browser-shell__panel--side {
+  width: min(100%, 420px);
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+}
+
+.browser-shell__panel--observer {
+  background: rgba(248, 244, 238, 0.92);
+}
+
+.browser-shell__viewport {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
 .browser-shell__viewport--clean {
   padding: 0;
 }
 
-.browser-shell__phone {
-  background: var(--am-surface-app);
-  box-shadow: 0 24px 80px rgba(15, 27, 51, 0.28);
+.browser-shell__workspace {
+  width: min(100%, 1400px);
+  margin: 0 auto;
+  display: grid;
+  justify-items: center;
 }
 
-.browser-shell__panel,
-.browser-shell__devbar,
-.browser-debug-card,
-.browser-debug-chip {
+.browser-shell__workspace--with-panel {
+  grid-template-columns: minmax(280px, 360px) minmax(320px, 430px) minmax(300px, 420px);
+  align-items: start;
+  justify-content: center;
+  gap: 20px;
+}
+
+.browser-shell__phone {
+  width: min(100%, 430px);
+  margin: 0 auto;
+  min-height: 780px;
+  padding: 0;
+  border: 0;
+  border-radius: 32px;
+  background: #141e38;
+  box-shadow: 0 24px 80px rgba(15, 27, 51, 0.28);
+  overflow: hidden;
+}
+
+.browser-shell__devbar {
+  width: min(100%, 1400px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid rgba(88, 67, 43, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 250, 242, 0.82);
   backdrop-filter: blur(14px);
+}
+
+.browser-shell__devbar-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.browser-shell__devbar-copy strong {
+  color: #2e2418;
+}
+
+.browser-shell__toggle {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(139, 103, 55, 0.14);
+  color: #704d24;
+  font-weight: 600;
+}
+
+.browser-shell__controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.browser-shell__fixture-list {
+  display: grid;
+  gap: 8px;
+}
+
+.browser-shell__fixture-button {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #8a6641;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .muted {
@@ -60,4 +176,473 @@
 
 .runtime-state--error {
   color: #8f2d2d;
+}
+
+.browser-debug-section {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(88, 67, 43, 0.1);
+}
+
+.browser-debug-section:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.browser-debug-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.browser-debug-section__header h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #2e2418;
+}
+
+.browser-debug-section__header span {
+  color: #8a6641;
+  font-size: 12px;
+}
+
+.browser-debug-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.browser-debug-chip {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  backdrop-filter: blur(14px);
+}
+
+.browser-debug-chip strong,
+.browser-debug-kv span {
+  font-size: 12px;
+  color: #8a6641;
+}
+
+.browser-debug-chip span,
+.browser-debug-kv strong {
+  color: #2e2418;
+  word-break: break-word;
+}
+
+.browser-debug-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.browser-debug-tab {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  text-align: left;
+  cursor: pointer;
+}
+
+.browser-debug-tab strong {
+  color: #2e2418;
+  font-size: 13px;
+}
+
+.browser-debug-tab span {
+  color: #6f624f;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.browser-debug-tab--active {
+  border-color: rgba(193, 143, 73, 0.35);
+  background: rgba(255, 246, 230, 0.92);
+}
+
+.browser-debug-stage-list,
+.browser-debug-request-list,
+.browser-debug-field-list,
+.browser-debug-source-list,
+.browser-debug-sample-list {
+  display: grid;
+  gap: 10px;
+}
+
+.browser-debug-replay-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.browser-debug-session-list {
+  display: grid;
+  gap: 8px;
+}
+
+.browser-debug-session-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.74);
+  text-align: left;
+  cursor: pointer;
+}
+
+.browser-debug-session-item--active {
+  border-color: rgba(193, 143, 73, 0.35);
+  background: rgba(255, 246, 230, 0.92);
+}
+
+.browser-debug-session-item strong {
+  color: #2e2418;
+  font-size: 13px;
+}
+
+.browser-debug-session-item span,
+.browser-debug-session-item small {
+  color: #6f624f;
+  font-size: 12px;
+}
+
+.browser-debug-mini-button {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(112, 90, 63, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  color: #5d4d37;
+  cursor: pointer;
+}
+
+.browser-debug-mini-button:disabled,
+.browser-debug-link:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.browser-debug-timeline-list {
+  display: grid;
+  gap: 8px;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.browser-debug-timeline-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  text-align: left;
+  cursor: pointer;
+}
+
+.browser-debug-timeline-item--active {
+  border-color: rgba(193, 143, 73, 0.35);
+  background: rgba(255, 246, 230, 0.92);
+}
+
+.browser-debug-timeline-item strong {
+  display: block;
+  color: #2e2418;
+  font-size: 13px;
+}
+
+.browser-debug-timeline-item span,
+.browser-debug-timeline-item small,
+.browser-debug-timeline-item time {
+  color: #6f624f;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.browser-debug-stage {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.browser-debug-stage--done {
+  background: rgba(235, 246, 240, 0.9);
+  border-color: rgba(77, 120, 91, 0.24);
+}
+
+.browser-debug-stage--running {
+  background: rgba(255, 246, 230, 0.9);
+  border-color: rgba(193, 143, 73, 0.28);
+}
+
+.browser-debug-stage--error {
+  background: rgba(255, 238, 235, 0.9);
+  border-color: rgba(185, 93, 73, 0.24);
+}
+
+.browser-debug-stage__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.browser-debug-stage__head strong {
+  color: #2e2418;
+  font-size: 14px;
+}
+
+.browser-debug-stage__head span {
+  color: #8a6641;
+  font-size: 12px;
+}
+
+.browser-debug-stage p {
+  margin: 8px 0 0;
+  color: #5d4d37;
+  font-size: 13px;
+}
+
+.browser-debug-grid,
+.browser-debug-kv {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.browser-debug-card,
+.browser-debug-kv > div {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(112, 90, 63, 0.12);
+}
+
+.browser-debug-card {
+  gap: 10px;
+  backdrop-filter: blur(14px);
+}
+
+.browser-debug-card h4,
+.browser-debug-subtitle {
+  margin: 0;
+  color: #2e2418;
+  font-size: 14px;
+}
+
+.browser-debug-subtitle {
+  font-size: 12px;
+  color: #8a6641;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.browser-debug-inline-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.browser-debug-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #2e2418;
+}
+
+.browser-debug-field-button,
+.browser-debug-sample-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.74);
+  text-align: left;
+  cursor: pointer;
+}
+
+.browser-debug-field-button--active,
+.browser-debug-sample-item--active {
+  border-color: rgba(193, 143, 73, 0.35);
+  background: rgba(255, 246, 230, 0.92);
+}
+
+.browser-debug-source-item {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(250, 248, 244, 0.88);
+  border: 1px solid rgba(112, 90, 63, 0.1);
+}
+
+.browser-debug-source-item strong,
+.browser-debug-sample-item strong {
+  color: #2e2418;
+  font-size: 13px;
+}
+
+.browser-debug-source-item span,
+.browser-debug-source-item small,
+.browser-debug-sample-item span,
+.browser-debug-sample-item small {
+  color: #6f624f;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.browser-debug-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8a6641;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.browser-debug-request {
+  border-radius: 16px;
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+}
+
+.browser-debug-request--success {
+  border-color: rgba(77, 120, 91, 0.24);
+}
+
+.browser-debug-request--error {
+  border-color: rgba(185, 93, 73, 0.24);
+}
+
+.browser-debug-request summary,
+.browser-debug-json summary {
+  padding: 12px 14px;
+  cursor: pointer;
+  color: #2e2418;
+  font-weight: 600;
+  list-style: none;
+}
+
+.browser-debug-request summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.browser-debug-request summary::-webkit-details-marker {
+  display: none;
+}
+
+.browser-debug-request summary > div {
+  display: grid;
+  gap: 4px;
+}
+
+.browser-debug-request summary strong {
+  color: #2e2418;
+}
+
+.browser-debug-request summary span {
+  color: #6f624f;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.browser-debug-request pre,
+.browser-debug-json pre,
+.browser-debug-card pre {
+  margin: 0;
+  overflow: auto;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #2b3245;
+}
+
+.browser-debug-request pre,
+.browser-debug-json pre {
+  padding: 0 14px 14px;
+}
+
+.browser-debug-json {
+  border-radius: 16px;
+  border: 1px solid rgba(112, 90, 63, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.browser-debug-prompt-snippets {
+  padding: 10px 14px 14px;
+}
+
+.browser-debug-prompt-line {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #465069;
+}
+
+.browser-debug-prompt-line--active {
+  background: rgba(255, 246, 230, 0.92);
+  color: #2b3245;
+  border-radius: 8px;
+}
+
+@media (max-width: 920px) {
+  .browser-shell__viewport {
+    padding-top: 0;
+  }
+
+  .browser-shell__workspace--with-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .browser-shell__panel--side {
+    width: min(100%, 960px);
+    max-height: none;
+  }
+
+  .browser-shell__phone {
+    min-height: auto;
+  }
+
+  .browser-shell__controls,
+  .browser-debug-tabs,
+  .browser-debug-inline-form,
+  .browser-debug-grid,
+  .browser-debug-kv,
+  .browser-debug-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .browser-shell__devbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

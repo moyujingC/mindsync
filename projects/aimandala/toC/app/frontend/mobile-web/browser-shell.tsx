@@ -971,7 +971,7 @@ export function MobileWebBrowserShell() {
               <div className="browser-shell__controls">
                 <div className="field">
                   <span>测试样本</span>
-                  <div style={{ display: "grid", gap: 8 }}>
+                  <div className="browser-shell__fixture-list">
                     {mobileWebDevFixturePresets.map((preset) => {
                       const isLoadingFixture = fixtureLoadingId === preset.id;
 
@@ -979,15 +979,11 @@ export function MobileWebBrowserShell() {
                         <button
                           key={preset.id}
                           type="button"
-                          className="mw-secondary-button mw-secondary-button--inline"
+                          className="mw-secondary-button mw-secondary-button--inline browser-shell__fixture-button"
                           onClick={() => {
                             void handleApplyFixturePreset(preset.id);
                           }}
                           disabled={Boolean(fixtureLoadingId)}
-                          style={{
-                            justifyContent: "space-between",
-                            width: "100%",
-                          }}
                         >
                           <span>{preset.label}</span>
                           <span>{isLoadingFixture ? "载入中..." : "一键填充"}</span>

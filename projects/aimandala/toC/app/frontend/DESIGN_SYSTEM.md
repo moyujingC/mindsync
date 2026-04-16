@@ -120,6 +120,13 @@
 - `.field`、`.runtime-state`、`.muted` 这类仅供开发壳和调试态使用的规则，应进入 `dev-shell.css`，避免污染正式产品页面
 - 草图页在进入视觉重设计前，先完成样式归属和 class 语义收口，不再通过兼容层继续扩写新视觉
 
+## 开发壳与兼容层最终瘦身规则
+
+- `styles.css` 后续只保留 legacy page、未迁移历史块与必要兼容规则，不再承载 `browser-shell`、`browser-debug-panel` 或开发壳基础类
+- `browser-shell`、`browser-debug-panel` 的静态视觉统一进入 `mobile-web/styles/dev-shell.css`
+- `.mw-visually-hidden` 这类稳定辅助类统一进入 `utilities.css`；`.field`、`.muted`、`.runtime-state`、`.eyebrow` 等开发壳基础类统一进入 `dev-shell.css`
+- 开发壳静态布局不得继续使用大段 inline style；仅运行时动态值允许保留在 JSX 中
+
 ## Miniapp 映射
 
 miniapp 的 token 映射说明见：
