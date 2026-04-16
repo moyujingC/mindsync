@@ -1,26 +1,50 @@
 import * as mockApi from "../mocks/consoleApi";
 import type { MockRequestOptions, ProviderFilters } from "../models/console";
 
+export function getDashboardOverviewRaw(options?: MockRequestOptions) {
+  return mockApi.getDashboardOverview(options);
+}
+
 export function getDashboardOverview(options?: MockRequestOptions) {
-  return mockApi.getDashboardOverview(options).then((response) => response.overview);
+  return getDashboardOverviewRaw(options).then((response) => response.overview);
+}
+
+export function listEnvironmentsRaw(options?: MockRequestOptions) {
+  return mockApi.listEnvironments(options);
 }
 
 export function listEnvironments(options?: MockRequestOptions) {
-  return mockApi.listEnvironments(options).then((response) => response.items);
+  return listEnvironmentsRaw(options).then((response) => response.items);
+}
+
+export function getEnvironmentRaw(id: string, options?: MockRequestOptions) {
+  return mockApi.getEnvironment(id, options);
 }
 
 export function getEnvironment(id: string, options?: MockRequestOptions) {
-  return mockApi.getEnvironment(id, options).then((response) => response.item);
+  return getEnvironmentRaw(id, options).then((response) => response.item);
+}
+
+export function listProvidersRaw(filters: ProviderFilters = {}, options?: MockRequestOptions) {
+  return mockApi.listProviders(filters, options);
 }
 
 export function listProviders(filters: ProviderFilters = {}, options?: MockRequestOptions) {
-  return mockApi.listProviders(filters, options).then((response) => response.items);
+  return listProvidersRaw(filters, options).then((response) => response.items);
+}
+
+export function getProviderRaw(id: string, options?: MockRequestOptions) {
+  return mockApi.getProvider(id, options);
 }
 
 export function getProvider(id: string, options?: MockRequestOptions) {
-  return mockApi.getProvider(id, options).then((response) => response.item);
+  return getProviderRaw(id, options).then((response) => response.item);
+}
+
+export function getEvalOverviewRaw(options?: MockRequestOptions) {
+  return mockApi.getEvalOverview(options);
 }
 
 export function getEvalOverview(options?: MockRequestOptions) {
-  return mockApi.getEvalOverview(options).then((response) => response.overview);
+  return getEvalOverviewRaw(options).then((response) => response.overview);
 }

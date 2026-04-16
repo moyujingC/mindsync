@@ -16,6 +16,9 @@ import type {
   DetailResponse,
   EnvironmentRecord,
   EvalOverview,
+  MockResource,
+  MockScope,
+  MockStatus,
   MockRequestOptions,
   OverviewResponse,
   ProviderFilters,
@@ -46,10 +49,28 @@ function matchesFilter<T extends string>(value: T, current?: T | "全部") {
   return !current || current === "全部" || current === value;
 }
 
-function createMeta() {
+function sanitizeProviderFilters(filters: ProviderFilters = {}): ProviderFilters | undefined {
+  const nextFilters = Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== undefined && value !== "全部"),
+  ) as ProviderFilters;
+
+  return Object.keys(nextFilters).length > 0 ? nextFilters : undefined;
+}
+
+function createMeta(
+  resource: MockResource,
+  scope: MockScope,
+  status: MockStatus,
+  filters?: ProviderFilters,
+) {
   return {
     source: "local-mock" as const,
     generatedAt: MOCK_GENERATED_AT,
+    version: "v1" as const,
+    resource,
+    scope,
+    status,
+    ...(filters ? { filters } : {}),
   };
 }
 
@@ -58,7 +79,7 @@ export async function getDashboardOverview(
 ): Promise<OverviewResponse<DashboardOverview>> {
   return delayed(
     {
-      meta: createMeta(),
+      meta: createMeta("dashboard", "overview", "ready"),
       overview: {
         environments,
         decisions: dashboardDecisions,
@@ -76,7 +97,7 @@ export async function listEnvironments(
 ): Promise<CollectionResponse<EnvironmentRecord>> {
   return delayed(
     {
-      meta: createMeta(),
+      meta: createMeta("environments", "collection", "ready"),
       items: environments,
     },
     options,
@@ -90,7 +111,7 @@ export async function getEnvironment(
   const environment = environments.find((item) => item.id === id) ?? null;
   return delayed(
     {
-      meta: createMeta(),
+      meta: createMeta("environments", "detail", environment ? "ready" : "not-found"),
       item: environment,
     },
     options,
@@ -117,7 +138,12 @@ export async function listProviders(
 
   return delayed(
     {
-      meta: createMeta(),
+      meta: createMeta(
+        "providers",
+        "collection",
+        filteredProviders.length > 0 ? "ready" : "empty",
+        sanitizeProviderFilters(filters),
+      ),
       items: filteredProviders,
     },
     options,
@@ -131,7 +157,7 @@ export async function getProvider(
   const provider = providers.find((item) => item.id === id) ?? null;
   return delayed(
     {
-      meta: createMeta(),
+      meta: createMeta("providers", "detail", provider ? "ready" : "not-found"),
       item: provider,
     },
     options,
@@ -143,7 +169,7 @@ export async function getEvalOverview(
 ): Promise<OverviewResponse<EvalOverview>> {
   return delayed(
     {
-      meta: createMeta(),
+      meta: createMeta("eval", "overview", "ready"),
       overview: {
         scoreboard: evalScoreboard,
         comparisons: evalComparisons,
