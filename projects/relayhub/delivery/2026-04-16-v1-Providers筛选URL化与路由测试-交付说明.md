@@ -19,6 +19,9 @@
 - `console/src/app/AppRoutes.tsx`
 - `Vitest + Testing Library + jsdom` 最小测试基础设施
 - `Dashboard` / `Providers` / `Eval` 路由级测试
+- `Providers` 点击筛选后的 URL 更新回归
+- `Providers` 详情深链保留查询参数回归
+- `Providers?mock=error` 组合错误态回归
 
 ## 2. 本轮仍明确不做
 
@@ -42,10 +45,9 @@
 
 下一棒建议按下面顺序继续：
 
-1. 为 `Providers` 查询参数增加更细的交互测试
-2. 补 `Environments` 深链测试
-3. 抽 mock API response shape，使其更接近未来真实接口
-4. 再决定是否接真实只读 API
+1. 为 `Providers` 查询参数补更细的边界组合测试，例如清除筛选与非法值回退
+2. 继续扩展 `meta` 契约语义占位
+3. 再决定是否引入更显式的只读 contract 文件
 
 ## 5. handoff 提醒
 

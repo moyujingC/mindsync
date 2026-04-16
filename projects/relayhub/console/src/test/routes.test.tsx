@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { renderRoute } from "./renderRoute";
 
@@ -18,6 +18,44 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("当前没有 24 小时样本")).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: "免费国外 API" })).toHaveClass("is-active");
     expect(await screen.findByRole("button", { name: "开发版" })).toHaveClass("is-active");
+  });
+
+  it("updates provider filters in the URL after interaction", async () => {
+    renderRoute("/providers");
+
+    fireEvent.click(await screen.findByRole("button", { name: "国产模型" }));
+    fireEvent.click(await screen.findByRole("button", { name: "评测版" }));
+    fireEvent.click(await screen.findByRole("button", { name: "状态:degraded" }));
+    fireEvent.click(await screen.findByRole("button", { name: "透明度:完整" }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("current-location")).toHaveTextContent(
+        "/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B&environment=%E8%AF%84%E6%B5%8B%E7%89%88&health=degraded&transparency=%E5%AE%8C%E6%95%B4",
+      );
+    });
+  });
+
+  it("preserves provider filter query when opening provider detail links", async () => {
+    renderRoute(
+      "/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B&environment=%E5%BF%83%E7%90%86%E7%96%97%E6%84%88%E7%94%9F%E4%BA%A7%E7%89%88",
+    );
+
+    fireEvent.click(await screen.findByRole("link", { name: "DeepSeek Direct" }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("current-location")).toHaveTextContent(
+        "/providers/deepseek-direct?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B&environment=%E5%BF%83%E7%90%86%E7%96%97%E6%84%88%E7%94%9F%E4%BA%A7%E7%89%88",
+      );
+    });
+
+    expect(await screen.findByRole("heading", { name: "DeepSeek Direct" })).toBeInTheDocument();
+  });
+
+  it("renders provider list error state when using mock error query", async () => {
+    renderRoute("/providers?mock=error");
+
+    expect(await screen.findByText("provider 列表加载失败")).toBeInTheDocument();
+    expect(await screen.findByText("provider 详情加载失败")).toBeInTheDocument();
   });
 
   it("renders eval recommendations route", async () => {
