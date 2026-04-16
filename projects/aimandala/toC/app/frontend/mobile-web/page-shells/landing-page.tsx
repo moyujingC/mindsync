@@ -310,7 +310,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         <FloatingParticles />
 
         <button type="button" className="am-history-pill" onClick={onOpenHistory}>
-          历史记录
+          历史解读
         </button>
 
         <div className="am-logo-ring">
@@ -322,19 +322,21 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         </div>
 
         <div className="am-hero-copy">
-          <h1>一镜照见，一梳知心</h1>
-          <p className="am-hero-subtitle">以曼陀罗为镜，读懂潜意识里的情绪、关系与内在节律</p>
-          <p className="am-hero-price">融合阴阳、五行、三才的东方解读视角</p>
+          <h1>画出你的潜意识</h1>
+          <p className="am-hero-subtitle">AI 解读曼陀罗画作  ·  探索内心世界</p>
+          <p className="am-hero-price">融合阴阳五行三才的东方解读视角</p>
         </div>
 
         <button type="button" className="am-primary-cta" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
-          <span className="am-primary-cta__label">上传画作</span>
+          <span className="am-primary-cta__label">开始体验</span>
         </button>
 
         <div className={`am-scroll-cue${showScrollCue ? "" : " is-hidden"}`}>
           <span>滑动了解详情</span>
-          <i aria-hidden="true">⌄</i>
+          <i className="am-scroll-cue__arrow" aria-hidden="true">
+            ↓
+          </i>
         </div>
       </section>
 
@@ -393,7 +395,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         <h2>准备好读读这幅画了吗？</h2>
         <button type="button" className="am-primary-cta am-primary-cta--compact" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
-          <span className="am-primary-cta__label">上传画作</span>
+          <span className="am-primary-cta__label">开始体验</span>
         </button>
         <div className="am-landing-footer-divider" />
         <div className="am-landing-footer-brand">

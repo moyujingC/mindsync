@@ -112,6 +112,17 @@ const historyRecord: InterpretationRecordResponse = {
 };
 
 describe("MobileWebApp", () => {
+  it("landing 路由渲染首屏新文案与入口标签", () => {
+    const html = renderToStaticMarkup(<MobileWebApp route="landing" />);
+
+    expect(html).toContain("画出你的潜意识");
+    expect(html).toContain("AI 解读曼陀罗画作  ·  探索内心世界");
+    expect(html).toContain("融合阴阳五行三才的东方解读视角");
+    expect(html).toContain("开始体验");
+    expect(html).toContain("历史解读");
+    expect(html).toContain("滑动了解详情");
+  });
+
   it("report 主路由默认渲染 Lite 解读报告页壳", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
