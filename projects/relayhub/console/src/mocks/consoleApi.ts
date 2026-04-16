@@ -25,6 +25,7 @@ import type {
   EvalOverviewContract,
   ProviderCollectionContract,
   ProviderDetailContract,
+  ProviderFilterSnapshot,
 } from "../contracts";
 
 const MOCK_LATENCY_MS = 120;
@@ -51,20 +52,20 @@ function matchesFilter<T extends string>(value: T, current?: T | "全部") {
   return !current || current === "全部" || current === value;
 }
 
-function sanitizeProviderFilters(filters: ProviderFilters = {}): ProviderFilters | undefined {
+function sanitizeProviderFilters(filters: ProviderFilters = {}): ProviderFilterSnapshot | undefined {
   const nextFilters = Object.fromEntries(
     Object.entries(filters).filter(([, value]) => value !== undefined && value !== "全部"),
-  ) as ProviderFilters;
+  ) as ProviderFilterSnapshot;
 
   return Object.keys(nextFilters).length > 0 ? nextFilters : undefined;
 }
 
-function createMeta(
+function createMeta<TFilters = undefined>(
   resource: ContractResource,
   scope: ContractScope,
   status: ContractStatus,
-  filters?: ProviderFilters,
-): ContractMeta {
+  filters?: TFilters,
+): ContractMeta<TFilters> {
   return {
     source: "local-mock" as const,
     generatedAt: MOCK_GENERATED_AT,

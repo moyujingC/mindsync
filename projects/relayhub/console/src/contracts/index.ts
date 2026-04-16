@@ -7,7 +7,36 @@ export type {
   ContractScope,
   ContractStatus,
 } from "./base";
-export type { DashboardOverviewContract } from "./dashboard";
-export type { EnvironmentCollectionContract, EnvironmentDetailContract } from "./environments";
-export type { ProviderCollectionContract, ProviderDetailContract } from "./providers";
-export type { EvalOverviewContract } from "./eval";
+export type {
+  DashboardDecisionContract,
+  DashboardOverviewContract,
+  DashboardOverviewPayloadContract,
+  DashboardRiskContract,
+} from "./dashboard";
+export type {
+  ContractHealthState,
+  ContractMetricsSnapshot,
+  ContractRouteRecord,
+  ContractRunRecord,
+  EnvironmentCollectionContract,
+  EnvironmentDetailContract,
+  EnvironmentRecordContract,
+} from "./environments";
+export type {
+  ContractProviderKind,
+  ContractTransparencyState,
+  ProviderCollectionContract,
+  ProviderDetailContract,
+  ProviderFilterSnapshot,
+  ProviderModelContract,
+  ProviderRecordContract,
+} from "./providers";
+export type {
+  EvalComparisonContract,
+  EvalOverviewContract,
+  EvalOverviewPayloadContract,
+  EvalRecommendationContract,
+  EvalReportContract,
+  EvalScoreRowContract,
+  EvalScoreboardContract,
+} from "./eval";

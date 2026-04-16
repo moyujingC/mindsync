@@ -6,6 +6,7 @@ import {
   getEnvironmentRaw,
   getEvalOverview,
   getEvalOverviewRaw,
+  getProvider,
   listEnvironmentsRaw,
   listProviders,
   listProvidersRaw,
@@ -48,6 +49,14 @@ describe("consoleData service", () => {
 
   it("returns null for missing environment detail", async () => {
     await expect(getEnvironment("missing-environment")).resolves.toBeNull();
+  });
+
+  it("maps environment detail contract into the page model shape", async () => {
+    const environment = await getEnvironment("prod-aimandala");
+
+    expect(environment?.name).toBe("心理疗愈生产版");
+    expect(environment?.policySummary).toContain("当前生产版只允许国产模型。");
+    expect(environment?.runs).toEqual([]);
   });
 
   it("marks missing environment detail as not-found in raw meta", async () => {
@@ -94,6 +103,14 @@ describe("consoleData service", () => {
 
     expect(typedResponse.items).toHaveLength(0);
     expect(typedResponse.meta.status).toBe("empty");
+  });
+
+  it("maps provider detail contract into the page model shape", async () => {
+    const provider = await getProvider("deepseek-direct");
+
+    expect(provider?.name).toBe("DeepSeek Direct");
+    expect(provider?.models.length).toBeGreaterThan(0);
+    expect(provider?.metrics?.requests).toBeGreaterThan(0);
   });
 
   it("unwraps eval overview payload", async () => {
