@@ -1,6 +1,6 @@
 import * as mockApi from "../mocks/consoleApi";
 import type { ConsoleReadonlyDataSource } from "./consoleDataSource";
-import { getProvidersRuntimeDataSourceFromFactory } from "./providersRuntimeDataSource";
+import { getDefaultProvidersRuntimeBootstrap } from "./providersRuntimeBootstrap";
 
 export const mockDashboardReadonlyDataSource = {
   getDashboardOverview: (options?: Parameters<typeof mockApi.getDashboardOverview>[0]) =>
@@ -30,16 +30,16 @@ interface ConsoleReadonlyDataSourceOverrides {
 export function createConsoleReadonlyDataSource(
   overrides: ConsoleReadonlyDataSourceOverrides = {},
 ): ConsoleReadonlyDataSource {
-  const providersRuntimeDataSource = getProvidersRuntimeDataSourceFromFactory();
+  const { providersSource } = getDefaultProvidersRuntimeBootstrap();
 
   return {
     getDashboardOverview: mockDashboardReadonlyDataSource.getDashboardOverview,
     listEnvironments: mockEnvironmentsReadonlyDataSource.listEnvironments,
     getEnvironment: mockEnvironmentsReadonlyDataSource.getEnvironment,
     listProviders:
-      overrides.providersSource?.listProviders ?? providersRuntimeDataSource.listProviders,
+      overrides.providersSource?.listProviders ?? providersSource.listProviders,
     getProvider:
-      overrides.providersSource?.getProvider ?? providersRuntimeDataSource.getProvider,
+      overrides.providersSource?.getProvider ?? providersSource.getProvider,
     getEvalOverview: mockEvalReadonlyDataSource.getEvalOverview,
   };
 }
