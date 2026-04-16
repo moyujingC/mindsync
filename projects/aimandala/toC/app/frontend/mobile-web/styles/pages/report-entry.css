@@ -1,4 +1,10 @@
 .am-report-entry-page {
+  --am-report-entry-info-border: color-mix(in srgb, var(--am-status-info) 22%, transparent);
+  --am-report-entry-info-border-soft: color-mix(in srgb, var(--am-status-info) 18%, transparent);
+  --am-report-entry-info-border-faint: color-mix(in srgb, var(--am-status-info) 12%, transparent);
+  --am-report-entry-info-surface: color-mix(in srgb, var(--am-status-info) 12%, white);
+  --am-report-entry-info-surface-soft: color-mix(in srgb, var(--am-status-info) 10%, white);
+  --am-report-entry-info-surface-faint: color-mix(in srgb, var(--am-status-info) 4%, white);
   min-height: 100%;
   background: linear-gradient(180deg, #f4eedf 0%, #faf8f5 100%);
   font-family: var(--am-font-body);
@@ -27,7 +33,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: rgba(232, 220, 200, 0.72);
+  color: var(--am-text-on-dark-muted);
   font-size: 14px;
 }
 
@@ -38,13 +44,13 @@
 
 .am-report-entry-hero__eyebrow {
   font-size: 11px;
-  color: rgba(212, 160, 84, 0.86);
+  color: color-mix(in srgb, var(--am-text-accent) 86%, transparent);
   letter-spacing: 0.16em;
 }
 
 .am-report-entry-hero__title {
   margin: 10px 0;
-  color: #e8dcc8;
+  color: var(--am-text-on-dark);
   font-family: var(--am-font-display);
   font-size: 30px;
   line-height: 1.28;
@@ -58,14 +64,14 @@
 }
 
 .am-report-entry-hero__description {
-  color: rgba(232, 220, 200, 0.72);
+  color: var(--am-text-on-dark-muted);
   font-size: 14px;
 }
 
 .am-report-entry-hero__hint {
   margin-top: 12px;
   max-width: 318px;
-  color: rgba(232, 220, 200, 0.56);
+  color: var(--am-text-on-dark-soft);
   font-size: 12.5px;
   line-height: 1.85;
 }
@@ -79,12 +85,12 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--am-radius-pill);
   background: rgba(255, 255, 255, 0.08);
-  color: rgba(232, 220, 200, 0.8);
+  color: color-mix(in srgb, var(--am-text-on-dark) 80%, transparent);
   font-size: 12px;
 }
 
 .am-report-entry-theme-pill__label {
-  color: rgba(212, 160, 84, 0.82);
+  color: var(--am-status-accent-soft);
   letter-spacing: 0.08em;
 }
 
@@ -116,15 +122,15 @@
 }
 
 .am-report-entry-card--lite {
-  border-color: color-mix(in srgb, #7a8ea8 22%, transparent);
-  color: #4a3d30;
+  border-color: var(--am-report-entry-info-border);
+  color: var(--am-text-primary);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.84) 0%, rgba(245, 239, 226, 0.94) 100%);
   box-shadow: 0 16px 36px rgba(74, 61, 48, 0.09);
 }
 
 .am-report-entry-card--pro {
-  border-color: rgba(212, 160, 84, 0.24);
-  color: #e8dcc8;
+  border-color: var(--am-border-strong);
+  color: var(--am-text-on-dark);
   background: linear-gradient(135deg, rgba(26, 40, 68, 0.98) 0%, rgba(37, 56, 96, 0.96) 100%);
   box-shadow: 0 18px 40px rgba(26, 40, 68, 0.2);
 }
@@ -137,11 +143,19 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__topline {
-  background: linear-gradient(90deg, color-mix(in srgb, #7a8ea8 62%, white), rgba(122, 142, 168, 0.06));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--am-status-info) 62%, white),
+    color-mix(in srgb, var(--am-status-info) 6%, transparent)
+  );
 }
 
 .am-report-entry-card--pro .am-report-entry-card__topline {
-  background: linear-gradient(90deg, rgba(212, 160, 84, 0.7), rgba(212, 160, 84, 0.06));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--am-text-accent) 70%, transparent),
+    color-mix(in srgb, var(--am-text-accent) 6%, transparent)
+  );
 }
 
 .am-report-entry-card__eyebrow {
@@ -150,11 +164,11 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__eyebrow {
-  color: #7a8ea8;
+  color: var(--am-status-info);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__eyebrow {
-  color: rgba(212, 160, 84, 0.86);
+  color: color-mix(in srgb, var(--am-text-accent) 86%, transparent);
 }
 
 .am-report-entry-card__head {
@@ -183,15 +197,15 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__price {
-  color: #7a8ea8;
-  background: color-mix(in srgb, #7a8ea8 12%, white);
-  border: 1px solid color-mix(in srgb, #7a8ea8 18%, transparent);
+  color: var(--am-status-info);
+  background: var(--am-report-entry-info-surface);
+  border: 1px solid var(--am-report-entry-info-border-soft);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__price {
-  color: #e8dcc8;
-  background: rgba(212, 160, 84, 0.12);
-  border: 1px solid rgba(212, 160, 84, 0.18);
+  color: var(--am-text-on-dark);
+  background: var(--am-surface-warning-soft);
+  border: 1px solid var(--am-border-strong);
 }
 
 .am-report-entry-card__description {
@@ -201,11 +215,11 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__description {
-  color: #67594e;
+  color: var(--am-text-secondary);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__description {
-  color: rgba(232, 220, 200, 0.82);
+  color: color-mix(in srgb, var(--am-text-on-dark) 82%, transparent);
 }
 
 .am-report-entry-card__bullets {
@@ -216,11 +230,11 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__bullets {
-  border-top: 1px solid rgba(122, 142, 168, 0.12);
+  border-top: 1px solid var(--am-report-entry-info-border-faint);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__bullets {
-  border-top: 1px solid rgba(232, 220, 200, 0.1);
+  border-top: 1px solid color-mix(in srgb, var(--am-text-on-dark) 10%, transparent);
 }
 
 .am-report-entry-card__bullet {
@@ -232,11 +246,11 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__bullet {
-  color: #7a6a5a;
+  color: var(--am-text-soft);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__bullet {
-  color: rgba(232, 220, 200, 0.74);
+  color: color-mix(in srgb, var(--am-text-on-dark) 74%, transparent);
 }
 
 .am-report-entry-card__bullet-dot {
@@ -244,7 +258,7 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__bullet-dot {
-  color: #7a8ea8;
+  color: var(--am-status-info);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__bullet-dot {
@@ -258,11 +272,11 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__note {
-  color: #8a7c6c;
+  color: var(--am-text-tertiary);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__note {
-  color: rgba(232, 220, 200, 0.58);
+  color: color-mix(in srgb, var(--am-text-on-dark) 58%, transparent);
 }
 
 .am-report-entry-card__cta {
@@ -284,21 +298,25 @@
 }
 
 .am-report-entry-card--lite .am-report-entry-card__cta {
-  color: #7a8ea8;
-  background: linear-gradient(135deg, color-mix(in srgb, #7a8ea8 10%, white) 0%, color-mix(in srgb, #7a8ea8 4%, white) 100%);
+  color: var(--am-status-info);
+  background: linear-gradient(135deg, var(--am-report-entry-info-surface-soft) 0%, var(--am-report-entry-info-surface-faint) 100%);
 }
 
 .am-report-entry-card--pro .am-report-entry-card__cta {
-  color: #e8dcc8;
-  background: linear-gradient(135deg, rgba(212, 160, 84, 0.18) 0%, rgba(200, 120, 80, 0.14) 100%);
+  color: var(--am-text-on-dark);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--am-text-accent) 18%, transparent) 0%,
+    color-mix(in srgb, var(--am-color-copper-400) 14%, transparent) 100%
+  );
 }
 
 .am-report-entry-footnote {
   padding: 16px 18px;
-  border: 1px solid rgba(122, 142, 168, 0.12);
+  border: 1px solid var(--am-report-entry-info-border-faint);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.74);
-  color: #6d604f;
+  color: var(--am-text-secondary);
   font-size: 13px;
   line-height: 1.8;
   box-shadow: 0 12px 28px rgba(74, 61, 48, 0.05);
@@ -306,7 +324,7 @@
 
 .am-report-entry-footnote__label {
   margin-bottom: 6px;
-  color: #9b7b52;
+  color: var(--am-text-warm);
   font-size: 11px;
   letter-spacing: 0.14em;
 }

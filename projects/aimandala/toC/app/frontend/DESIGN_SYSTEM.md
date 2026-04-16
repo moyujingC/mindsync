@@ -161,6 +161,13 @@
 - 装饰性渐变、halo、ring、图片容器高光与页面级氛围色可以暂留页面 CSS，等后续视觉重设计时再统一
 - `report-legacy.css` 继续视为隔离历史页，不纳入本轮 token 清扫目标
 
+## Report Entry 与 Dev Shell Token 规则
+
+- `report-entry.css` 中 Lite / Pro 选择卡、price pill、footnote、弱文本和暗底文字层级，应优先消费产品级 semantic token，例如 `--am-text-*`、`--am-border-*`、`--am-status-info`，不要继续重复书写同一组语义色
+- `Report Entry` 的页面级渐变、暗底氛围背景和 hero 纹理仍可留在页面层；只有重复语义色需要优先收进 token
+- `dev-shell.css` 可定义少量 Web 本地 token，例如 panel surface、panel border、muted text、warning/error text、active surface；这些 token 只服务开发壳，不进入 `shared/design-system/tokens.ts`
+- `browser-shell`、`browser-debug-panel` 新增静态视觉应继续优先复用 `--am-dev-*` 本地 token，不再把重复色直接写回 `dev-shell.css`
+
 ## 最终 Inline Style 边界
 
 - 允许保留：

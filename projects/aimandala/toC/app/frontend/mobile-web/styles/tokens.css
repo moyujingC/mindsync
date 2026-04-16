@@ -142,6 +142,7 @@
   --am-status-success-strong: #2f6a4a;
   --am-status-warning: #7c5627;
   --am-status-warning-strong: #704d24;
+  --am-status-info: var(--am-color-info-500);
   --am-status-pro: #53439a;
   --am-status-copper: #944b2f;
   --am-status-info-soft: rgba(122, 142, 168, 0.82);
@@ -151,4 +152,33 @@
   --am-badge-text: rgba(232, 220, 200, 0.76);
   --am-progress-warm: linear-gradient(90deg, #8f6939, #d0aa73);
   --am-progress-copper: linear-gradient(90deg, #ba6e48, #f0b179);
+
+  /* Dev-shell local tokens */
+  --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
+  --am-dev-surface-panel-strong: rgba(248, 244, 238, 0.92);
+  --am-dev-surface-raised: rgba(255, 255, 255, 0.78);
+  --am-dev-surface-field: rgba(255, 255, 255, 0.72);
+  --am-dev-surface-field-strong: rgba(255, 255, 255, 0.86);
+  --am-dev-surface-active: rgba(255, 246, 230, 0.92);
+  --am-dev-surface-source: rgba(250, 248, 244, 0.88);
+  --am-dev-surface-stage: rgba(255, 255, 255, 0.68);
+  --am-dev-surface-stage-success: rgba(235, 246, 240, 0.9);
+  --am-dev-surface-stage-running: rgba(255, 246, 230, 0.9);
+  --am-dev-surface-stage-error: rgba(255, 238, 235, 0.9);
+  --am-dev-border-panel: rgba(88, 67, 43, 0.12);
+  --am-dev-border-panel-soft: rgba(88, 67, 43, 0.1);
+  --am-dev-border-subtle: rgba(112, 90, 63, 0.12);
+  --am-dev-border-strong: rgba(112, 90, 63, 0.18);
+  --am-dev-border-active: rgba(193, 143, 73, 0.35);
+  --am-dev-border-running: rgba(193, 143, 73, 0.28);
+  --am-dev-border-success: rgba(77, 120, 91, 0.24);
+  --am-dev-border-error: rgba(185, 93, 73, 0.24);
+  --am-dev-text-primary: #2e2418;
+  --am-dev-text-secondary: #5d4d37;
+  --am-dev-text-muted: #6f624f;
+  --am-dev-text-eyebrow: #8a6641;
+  --am-dev-text-warning: #704d24;
+  --am-dev-text-error: #8f2d2d;
+  --am-dev-text-code: #2b3245;
+  --am-dev-text-code-soft: #465069;
 }
