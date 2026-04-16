@@ -89,3 +89,59 @@
 
 - Hermes 容器运行时修复已完成
 - CEO 的业务级可用性验证仍待最后一跳复跑
+
+## 7. 最新补充结论
+
+在 Hermes 容器运行时恢复、`auxiliary.compression` 补齐，以及 CEO `adapter_config.model` 热修为 `minimax-m2.5` 后，继续复跑又确认了新的真实阻塞：
+
+- 旧 Hermes session 会污染新 provider 配置
+
+线上证据链如下：
+
+1. 最新失败 run 的 transcript 只显示：
+   - `Resumed session 20260416_082421_0f1570 (...)`
+2. 对应 request dump 已明确带上：
+   - `model: minimax-m2.5`
+3. 容器环境和 `/paperclip/.hermes/config.yaml` 已明确为 Ark：
+   - `OPENAI_BASE_URL=https://ark.cn-beijing.volces.com/api/coding/v3`
+   - `default_provider: main`
+   - `providers.main`
+   - `auxiliary.compression`
+4. 但 Hermes 实际请求仍打到了：
+   - `https://openrouter.ai/api/v1/chat/completions`
+5. provider 返回：
+   - `401 Missing Authentication header`
+
+因此本轮新增结论是：
+
+- 当前失败并不是“resume 文字本身失败”
+- 也不是“Ark 环境变量未注入”
+- 而是旧 session `20260416_082421_0f1570` 仍残留历史 OpenRouter provider 状态，被新 run 继续复用
+
+## 8. 已执行止血
+
+为避免 CEO 持续续跑被污染的旧 session，已在线执行：
+
+1. 清空 CEO `agent_runtime_state.session_id`
+2. 删除 CEO 的全部 `agent_task_sessions`
+
+执行后已确认：
+
+- CEO 当前 runtime session 为 `null`
+- CEO 当前 task session 为空
+
+这意味着下一次复跑将从全新 session 启动，而不是继续使用：
+
+- `20260416_082421_0f1570`
+
+## 9. 当前建议动作
+
+当前 runbook 口径应升级为：
+
+1. 当 `hermes_local` 的 provider / model / base_url 发生变化后，不要直接复跑旧 session
+2. 应先 reset 对应 agent 的 runtime session / task session
+3. 再执行：
+   - `CEO -> Test environment`
+   - 下一次 heartbeat
+
+只有在“新 session 启动成功且不再访问历史 provider”之后，才应继续排查更上层业务逻辑。

@@ -142,3 +142,75 @@
 
 1. Paperclip 面板 `CEO -> Test environment`
 2. 手动触发一次 CEO heartbeat，确认不再出现新的模型配置或鉴权错误
+
+## 8. 新一轮复跑的最新根因
+
+在修复下面两层后：
+
+- `ModuleNotFoundError: hermes_cli`
+- `No auxiliary LLM provider configured`
+
+继续复跑 `CEO -> Test environment`，又确认了一层新的真实阻塞：
+
+- Paperclip UI 显示 run transcript 只有：
+  - `Resumed session 20260416_082421_0f1570 (...)`
+- failure details 为：
+  - `Error: Adapter failed`
+
+进一步查看 automation 容器内 Hermes session dump 后，已确认：
+
+1. 当前 run 已不再是“model 空值”问题
+   - 最新 request dump 中 `model` 已为：
+     - `minimax-m2.5`
+2. 当前 run 也不是“容器环境变量没注入”问题
+   - 容器内已存在：
+     - `OPENAI_API_KEY`
+     - `OPENAI_BASE_URL=https://ark.cn-beijing.volces.com/api/coding/v3`
+     - `OPENAI_MODEL=minimax-m2.5`
+   - `/paperclip/.hermes/config.yaml` 也已正确写入：
+     - `default_provider: main`
+     - `providers.main`
+     - `auxiliary.compression`
+3. 但 Hermes 实际请求仍发到了：
+   - `https://openrouter.ai/api/v1/chat/completions`
+4. provider 返回的真实错误为：
+   - `401 Missing Authentication header`
+
+结论：
+
+- 当前这轮失败不是因为 Ark 配置无效
+- 而是因为 Hermes 在 `--resume 20260416_082421_0f1570` 时复用了旧 session 中残留的 provider / base_url 状态
+- 该旧 session 仍指向历史的 OpenRouter 链路
+- 所以即使容器和 config 已切到 Ark，新 run 仍会被旧 session 污染
+
+## 9. 当前止血动作
+
+为避免 CEO 继续复用这条已污染的 Hermes session，2026-04-16 已在 automation 节点执行线上止血：
+
+1. 清空 `agent_runtime_state.session_id`
+2. 删除 CEO 对应的 `agent_task_sessions`
+
+执行后已确认：
+
+- CEO 当前 runtime session 为 `null`
+- CEO 当前 task session 列表为空
+
+因此下一次 `CEO -> Test environment` / heartbeat 应从全新 session 启动，不再续用：
+
+- `20260416_082421_0f1570`
+
+## 10. 当前正式口径
+
+截至本轮，`CEO bug` 的分层结论应更新为：
+
+1. Hermes 容器运行时修复已完成
+2. Hermes compression auxiliary provider 修复已完成
+3. CEO 的 `adapter_config.model` 空值问题已完成线上热修
+4. 当前新增的真实运行时风险是：
+   - 当 Hermes provider / model / base_url 已变更，但 Paperclip 仍续跑旧 session 时，旧 session 可能携带历史 provider 状态，导致新配置不生效
+
+因此当前默认复验动作不应再只是“直接重跑”，而应改为：
+
+1. 先 reset CEO 的 runtime session
+2. 再触发 `CEO -> Test environment`
+3. 再看是否还有新的业务级错误

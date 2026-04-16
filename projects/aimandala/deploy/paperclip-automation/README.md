@@ -233,6 +233,39 @@ docker exec paperclip-automation-paperclip-1 sh -lc 'python3 - <<\"PY\"\nimport 
 
 只有容器内健康检查和面板测试都通过，才算 `CEO` 真正恢复 `hermes_local` 能力。
 
+### 4.2.0.1 变更 provider / model 后必须先 reset session
+
+2026-04-16 的线上复跑又额外确认了一条重要经验：
+
+1. 即使容器环境变量和 `/paperclip/.hermes/config.yaml` 都已经切到新 provider
+2. 只要 Paperclip 继续给 Hermes 传旧的 `--resume <session_id>`
+3. Hermes 仍可能沿用旧 session 内残留的 provider / base_url 状态
+4. 从而出现：
+   - 当前配置已经是 Ark
+   - 但真实请求仍打到历史 OpenRouter
+   - 最终报：
+     - `401 Missing Authentication header`
+
+因此只要下面任一项发生变化：
+
+- `adapter_config.model`
+- provider / base URL
+- Hermes 认证方式
+- `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`
+- `/paperclip/.hermes/config.yaml`
+
+都不要直接复跑旧 session，而应先 reset 该 agent 的 session。
+
+当前最低要求：
+
+1. 清空 `agent_runtime_state.session_id`
+2. 清空该 agent 在 `agent_task_sessions` 中的旧会话
+3. 再执行：
+   - `CEO -> Test environment`
+   - 或下一次 heartbeat
+
+这一步不是可选优化，而是当前 `hermes_local` 切 provider 后的默认复验前置动作。
+
 ## 4.2.1 宿主机注入方案的当前结论
 
 “宿主机注入 Hermes”现在不再作为推荐路径。
