@@ -1,14 +1,9 @@
-import { useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { Section } from "../components/Section";
-import {
-  evalComparisons,
-  evalRecommendations,
-  evalReports,
-  evalScoreboard,
-} from "../fixtures/data";
-
-type EvalTab = "scoreboard" | "comparisons" | "recommendations" | "reports";
+import { useAsyncResource } from "../hooks/useAsyncResource";
+import type { EvalTab } from "../models/console";
+import { getEvalOverview } from "../services/consoleData";
 
 const tabs: Array<{ id: EvalTab; label: string }> = [
   { id: "scoreboard", label: "Scoreboard" },
@@ -18,7 +13,15 @@ const tabs: Array<{ id: EvalTab; label: string }> = [
 ];
 
 export function EvalPage() {
-  const [activeTab, setActiveTab] = useState<EvalTab>("scoreboard");
+  const { tab } = useParams();
+  const [searchParams] = useSearchParams();
+  const forceError = searchParams.get("mock") === "error";
+  const activeTab = (tab as EvalTab | undefined) ?? "scoreboard";
+  const isValidTab = tabs.some((item) => item.id === activeTab);
+  const evaluation = useAsyncResource(
+    () => getEvalOverview({ forceError }),
+    [forceError],
+  );
 
   return (
     <div className="page-grid">
@@ -35,18 +38,33 @@ export function EvalPage() {
       <Section title="Eval 子页" description="四个子页都以静态内容承接，不隐藏在别的模块里。">
         <div className="tabs">
           {tabs.map((tab) => (
-            <button
+            <Link
               key={tab.id}
               className={`tab${activeTab === tab.id ? " is-active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
-              type="button"
+              to={`/eval/${tab.id}`}
             >
               {tab.label}
-            </button>
+            </Link>
           ))}
         </div>
 
-        {activeTab === "scoreboard" ? (
+        {evaluation.status === "loading" ? (
+          <EmptyState title="正在加载 Eval 数据" description="只读 mock API 正在返回评测数据。" />
+        ) : null}
+        {evaluation.status === "error" ? (
+          <EmptyState
+            title="Eval 数据加载失败"
+            description={evaluation.error ?? "请稍后重试 mock API。"}
+          />
+        ) : null}
+        {evaluation.status === "success" && evaluation.data && !isValidTab ? (
+          <EmptyState
+            title="Eval 子页不存在"
+            description="请使用 Scoreboard / Comparisons / Recommendations / Reports 中的有效深链。"
+          />
+        ) : null}
+
+        {evaluation.status === "success" && evaluation.data && isValidTab && activeTab === "scoreboard" ? (
           <div className="stack">
             <div className="data-card">
               <span className="mini-label">编码代理任务</span>
@@ -63,7 +81,7 @@ export function EvalPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {evalScoreboard.coding.map((row) => (
+                    {evaluation.data.scoreboard.coding.map((row) => (
                       <tr key={`${row.task}-${row.contender}`}>
                         <td>{row.task}</td>
                         <td>{row.contender}</td>
@@ -93,7 +111,7 @@ export function EvalPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {evalScoreboard.therapy.map((row) => (
+                    {evaluation.data.scoreboard.therapy.map((row) => (
                       <tr key={`${row.task}-${row.contender}`}>
                         <td>{row.task}</td>
                         <td>{row.contender}</td>
@@ -110,9 +128,9 @@ export function EvalPage() {
           </div>
         ) : null}
 
-        {activeTab === "comparisons" ? (
+        {evaluation.status === "success" && evaluation.data && isValidTab && activeTab === "comparisons" ? (
           <div className="card-grid card-grid-3">
-            {evalComparisons.map((comparison) => (
+            {evaluation.data.comparisons.map((comparison) => (
               <article key={comparison.title} className="data-card">
                 <span className="mini-label">{comparison.task}</span>
                 <h4>{comparison.title}</h4>
@@ -123,9 +141,9 @@ export function EvalPage() {
           </div>
         ) : null}
 
-        {activeTab === "recommendations" ? (
+        {evaluation.status === "success" && evaluation.data && isValidTab && activeTab === "recommendations" ? (
           <div className="card-grid card-grid-2">
-            {evalRecommendations.map((item) => (
+            {evaluation.data.recommendations.map((item) => (
               <article key={item.headline} className="data-card">
                 <span className="mini-label">{item.category}</span>
                 <h4>{item.headline}</h4>
@@ -135,9 +153,9 @@ export function EvalPage() {
           </div>
         ) : null}
 
-        {activeTab === "reports" ? (
+        {evaluation.status === "success" && evaluation.data && isValidTab && activeTab === "reports" ? (
           <div className="card-grid card-grid-2">
-            {evalReports.map((report) =>
+            {evaluation.data.reports.map((report) =>
               report.status === "暂无数据" ? (
                 <EmptyState
                   key={report.name}

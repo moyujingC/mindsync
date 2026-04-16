@@ -17,9 +17,12 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/environments" element={<EnvironmentsPage />} />
-          <Route path="/environments/:environmentId" element={<EnvironmentsPage />} />
+          <Route path="/environments/:environmentId" element={<Navigate to="overview" replace />} />
+          <Route path="/environments/:environmentId/:tab" element={<EnvironmentsPage />} />
           <Route path="/providers" element={<ProvidersPage />} />
-          <Route path="/eval" element={<EvalPage />} />
+          <Route path="/providers/:providerId" element={<ProvidersPage />} />
+          <Route path="/eval" element={<Navigate to="/eval/scoreboard" replace />} />
+          <Route path="/eval/:tab" element={<EvalPage />} />
           <Route
             path="/routes"
             element={

@@ -1,4 +1,4 @@
-import { HealthState } from "../fixtures/data";
+import type { HealthState } from "../models/console";
 
 const labelMap: Record<HealthState, string> = {
   healthy: "正常",

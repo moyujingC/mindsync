@@ -1,66 +1,15 @@
-export type HealthState = "healthy" | "degraded" | "risk" | "idle";
-export type ProviderKind = "第三方中转" | "国产模型" | "免费国外 API";
-export type TransparencyState = "完整" | "部分缺失" | "暂无";
-
-export interface MetricsSnapshot {
-  requests: number;
-  tokens: number;
-  avgLatency: number;
-  p95Latency: number;
-  errorRate: number;
-  cost: number;
-}
-
-export interface RunRecord {
-  id: string;
-  name: string;
-  type: string;
-  status: HealthState;
-  startedAt: string;
-  environment: string;
-}
-
-export interface RouteRecord {
-  taskType: string;
-  model: string;
-  provider: string;
-  note: string;
-}
-
-export interface EnvironmentRecord {
-  id: string;
-  name: string;
-  mode: string;
-  purpose: string;
-  providerScope: string;
-  status: HealthState;
-  providerCount: number;
-  requests24h: number;
-  successRate: number;
-  recentStatus: string;
-  targetNote: string;
-  recommendation: string;
-  policySummary: string[];
-  routes: RouteRecord[];
-  metrics: MetricsSnapshot;
-  runs: RunRecord[];
-}
-
-export interface ProviderRecord {
-  id: string;
-  name: string;
-  kind: ProviderKind;
-  availableEnvironments: string[];
-  health: HealthState;
-  transparency: TransparencyState;
-  errorRate: number;
-  p95Latency: number;
-  description: string;
-  recommendation: string;
-  recommendationNote: string;
-  models: Array<{ name: string; useCase: string }>;
-  metrics: MetricsSnapshot | null;
-}
+import type {
+  DashboardDecision,
+  DashboardRisk,
+  EnvironmentRecord,
+  EvalComparison,
+  EvalRecommendation,
+  EvalReport,
+  EvalScoreboard,
+  MetricsSnapshot,
+  ProviderRecord,
+  RunRecord,
+} from "../models/console";
 
 const dashboardMetrics: MetricsSnapshot = {
   requests: 18436,
@@ -399,7 +348,7 @@ export const providers: ProviderRecord[] = [
   },
 ];
 
-export const dashboardDecisions = [
+export const dashboardDecisions: DashboardDecision[] = [
   {
     title: "中转站续费建议",
     type: "开发版",
@@ -416,7 +365,7 @@ export const dashboardDecisions = [
   },
 ];
 
-export const dashboardRisks = [
+export const dashboardRisks: DashboardRisk[] = [
   {
     title: "生产边界风险",
     level: "高",
@@ -472,7 +421,7 @@ export const recentRuns: RunRecord[] = [
   },
 ];
 
-export const evalScoreboard = {
+export const evalScoreboard: EvalScoreboard = {
   coding: [
     {
       task: "Claude Code 主链路",
@@ -527,7 +476,7 @@ export const evalScoreboard = {
   ],
 };
 
-export const evalComparisons = [
+export const evalComparisons: EvalComparison[] = [
   {
     title: "星河中转 A vs Atlas Relay",
     task: "Claude Code 流式编码",
@@ -548,7 +497,7 @@ export const evalComparisons = [
   },
 ];
 
-export const evalRecommendations = [
+export const evalRecommendations: EvalRecommendation[] = [
   {
     category: "中转站续费建议",
     headline: "优先续费 星河中转 A",
@@ -561,7 +510,7 @@ export const evalRecommendations = [
   },
 ];
 
-export const evalReports = [
+export const evalReports: EvalReport[] = [
   {
     name: "开发版中转续费日报",
     status: "已生成",
