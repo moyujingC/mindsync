@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { defaultConsoleReadonlyDataSource } from "../services/mockConsoleDataSource";
+import {
+  createConsoleReadonlyDataSource,
+  defaultConsoleReadonlyDataSource,
+} from "../services/mockConsoleDataSource";
+import { realProvidersReadonlyDataSourceStub } from "../services/realProvidersDataSource";
 import type {
   DashboardOverviewContract,
   EnvironmentCollectionContract,
@@ -73,5 +77,65 @@ describe("console readonly data source", () => {
 
     expect(typedResponse.meta.resource).toBe("eval");
     expect(typedResponse.overview.recommendations.length).toBeGreaterThan(0);
+  });
+
+  it("keeps mock providers behavior in the default datasource factory", async () => {
+    const datasource = createConsoleReadonlyDataSource();
+    const response = await datasource.listProviders({
+      kind: "国产模型",
+      environment: "评测版",
+    });
+
+    expect(response.items.some((item) => item.id === "deepseek-direct")).toBe(true);
+  });
+
+  it("can switch provider list reads to the providers trial stub", async () => {
+    const datasource = createConsoleReadonlyDataSource({
+      providersSource: realProvidersReadonlyDataSourceStub,
+    });
+    const response = await datasource.listProviders({
+      kind: "国产模型",
+    });
+
+    expect(response.items).toHaveLength(1);
+    expect(response.items[0]?.id).toBe("provider-real-stub");
+    expect(response.meta.filters).toEqual({
+      kind: "国产模型",
+    });
+  });
+
+  it("keeps empty provider list semantics when switched to the providers trial stub", async () => {
+    const datasource = createConsoleReadonlyDataSource({
+      providersSource: realProvidersReadonlyDataSourceStub,
+    });
+    const response = await datasource.listProviders({
+      kind: "第三方中转",
+    });
+
+    expect(response.items).toHaveLength(0);
+    expect(response.meta.status).toBe("empty");
+    expect(response.meta.filters).toEqual({
+      kind: "第三方中转",
+    });
+  });
+
+  it("can switch provider detail reads to the providers trial stub", async () => {
+    const datasource = createConsoleReadonlyDataSource({
+      providersSource: realProvidersReadonlyDataSourceStub,
+    });
+    const response = await datasource.getProvider("provider-real-stub");
+
+    expect(response.item?.id).toBe("provider-real-stub");
+    expect(response.meta.status).toBe("ready");
+  });
+
+  it("keeps not-found provider detail semantics when switched to the providers trial stub", async () => {
+    const datasource = createConsoleReadonlyDataSource({
+      providersSource: realProvidersReadonlyDataSourceStub,
+    });
+    const response = await datasource.getProvider("missing-provider");
+
+    expect(response.item).toBeNull();
+    expect(response.meta.status).toBe("not-found");
   });
 });
