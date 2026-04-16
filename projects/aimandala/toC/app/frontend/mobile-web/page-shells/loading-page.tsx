@@ -314,6 +314,9 @@ export function MobileWebLoadingPage({
   onLeaveLater,
 }: MobileWebLoadingPageProps) {
   const [tipIndex, setTipIndex] = useState(0);
+  const loadingPatternStyle = {
+    ["--am-pattern-image" as string]: `url(${brandPattern})`,
+  } as React.CSSProperties;
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -347,8 +350,8 @@ export function MobileWebLoadingPage({
         </button>
       </div>
 
-      <div className="am-loading-body">
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+      <div className="am-loading-body" style={loadingPatternStyle}>
+        <div className="am-pattern-overlay am-loading-surface-pattern" />
         <div className="am-ambient-glow am-ambient-glow--right" />
         <div className="am-ambient-glow am-ambient-glow--left" />
         <div className="am-loading-topbar__ornament" aria-hidden="true" />

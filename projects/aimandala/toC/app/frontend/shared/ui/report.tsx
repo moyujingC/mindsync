@@ -138,7 +138,7 @@ export function SharedStructuredReportCards({
           <div className="am-card__header mw-card__header">
             <h3>日常小觉察</h3>
           </div>
-          <div className="am-stack mw-stack" style={{ gap: 10 }}>
+          <div className="am-stack mw-stack am-stack-gap-sm">
             {structured.three_awareness.map((item, index) => (
               <div key={`${item.day ?? index}-${item.title ?? index}`}>
                 <strong>{item.title || `第 ${item.day ?? index + 1} 条`}</strong>
@@ -203,7 +203,7 @@ function renderKeyValueRows(
   labels?: Record<string, string>,
 ) {
   return (
-    <div className="am-stack mw-stack" style={{ gap: 10 }}>
+    <div className="am-stack mw-stack am-stack-gap-sm">
       {entries.map(([key, value]) => (
         <div key={key}>
           <strong>{toDisplayLabel(key, labels)}</strong>
@@ -256,7 +256,7 @@ export function SharedProStructuredReportCards({
           <div className="am-card__header mw-card__header">
             <h3>{proReportSectionTitles.circles}</h3>
           </div>
-          <div className="am-stack mw-stack" style={{ gap: 10 }}>
+          <div className="am-stack mw-stack am-stack-gap-sm">
             {circleEntries.map((item, index) => (
               <div key={`${item.label ?? index}-${index}`}>
                 <strong>{item.label ?? `第 ${index + 1} 圈`}</strong>
@@ -299,7 +299,7 @@ export function SharedProStructuredReportCards({
           <div className="am-card__header mw-card__header">
             <h3>{proReportSectionTitles.healing}</h3>
           </div>
-          <div className="am-stack mw-stack" style={{ gap: 10 }}>
+          <div className="am-stack mw-stack am-stack-gap-sm">
             {healingSuggestions.map((item, index) => (
               <div key={`${item.phase ?? index}-${index}`}>
                 <strong>{item.phase || `阶段 ${index + 1}`}</strong>

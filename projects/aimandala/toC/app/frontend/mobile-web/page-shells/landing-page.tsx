@@ -314,9 +314,9 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
   }, []);
 
   return (
-    <div className="am-page am-landing-page">
-      <section className="am-landing-hero" style={heroRingStyle}>
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+    <div className="am-page am-landing-page" style={heroRingStyle}>
+      <section className="am-landing-hero">
+        <div className="am-pattern-overlay" />
         <div className="am-ambient-glow am-ambient-glow--right" />
         <div className="am-ambient-glow am-ambient-glow--left" />
         <div className="am-ambient-glow am-ambient-glow--bottom" />
@@ -365,7 +365,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
       </section>
 
       <section className="am-landing-section am-landing-section--pricing">
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+        <div className="am-pattern-overlay" />
         <h2>先轻体验，再决定深入</h2>
         <div className="am-pricing-grid am-pricing-grid--landing">
           <article className="am-pricing-panel am-pricing-panel--lite">
@@ -403,7 +403,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
       </section>
 
       <section className="am-landing-section am-landing-section--final">
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+        <div className="am-pattern-overlay" />
         <div className="am-landing-section__glow am-landing-section__glow--final" />
         <h2>准备好读读这幅画了吗？</h2>
         <button type="button" className="am-primary-cta am-primary-cta--compact" onClick={onStart}>
