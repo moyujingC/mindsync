@@ -16,7 +16,7 @@ import type {
   EnvironmentDetailContract,
   EvalOverviewContract,
   ProviderCollectionContract,
-} from "../contracts/console";
+} from "../contracts";
 
 describe("consoleData service", () => {
   it("unwraps dashboard overview payload", async () => {

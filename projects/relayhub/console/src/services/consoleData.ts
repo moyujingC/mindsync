@@ -7,7 +7,7 @@ import type {
   EvalOverviewContract,
   ProviderCollectionContract,
   ProviderDetailContract,
-} from "../contracts/console";
+} from "../contracts";
 
 export function getDashboardOverviewRaw(
   options?: MockRequestOptions,

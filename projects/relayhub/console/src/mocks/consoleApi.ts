@@ -25,7 +25,7 @@ import type {
   EvalOverviewContract,
   ProviderCollectionContract,
   ProviderDetailContract,
-} from "../contracts/console";
+} from "../contracts";
 
 const MOCK_LATENCY_MS = 120;
 const MOCK_GENERATED_AT = "2026-04-16T00:00:00+08:00";

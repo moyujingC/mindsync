@@ -1,10 +1,4 @@
-import type {
-  DashboardOverview,
-  EnvironmentRecord,
-  EvalOverview,
-  ProviderFilters,
-  ProviderRecord,
-} from "../models/console";
+import type { ProviderFilters } from "../models/console";
 
 export type ContractResource = "dashboard" | "environments" | "providers" | "eval";
 export type ContractScope = "overview" | "collection" | "detail";
@@ -34,10 +28,3 @@ export interface ContractOverviewResponse<T> {
   meta: ContractMeta;
   overview: T;
 }
-
-export type DashboardOverviewContract = ContractOverviewResponse<DashboardOverview>;
-export type EnvironmentCollectionContract = ContractCollectionResponse<EnvironmentRecord>;
-export type EnvironmentDetailContract = ContractDetailResponse<EnvironmentRecord>;
-export type ProviderCollectionContract = ContractCollectionResponse<ProviderRecord>;
-export type ProviderDetailContract = ContractDetailResponse<ProviderRecord>;
-export type EvalOverviewContract = ContractOverviewResponse<EvalOverview>;
