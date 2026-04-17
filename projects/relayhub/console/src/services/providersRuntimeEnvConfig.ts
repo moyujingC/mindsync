@@ -15,6 +15,11 @@ export interface ProvidersRuntimeEnv {
   RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON?: string;
 }
 
+// Runtime config governance:
+// - real-fetch is explicit opt-in via RELAYHUB_PROVIDERS_RUNTIME_MODE = "real-fetch".
+// - real-fetch still requires an explicit baseUrl plus fetchImpl; missing either keeps mock.
+// - default headers are optional JSON object values; invalid or non-string values are ignored.
+// - auth is only accepted as an explicit authHeadersResolver and is not read from env keys.
 function isSupportedRuntimeMode(
   value: string | undefined,
 ): value is NonNullable<ProvidersRuntimeConfig["mode"]> {
@@ -38,7 +43,7 @@ function parseDefaultHeaders(
       (entry): entry is [string, string] => typeof entry[0] === "string" && typeof entry[1] === "string",
     );
 
-    return entries.length > 0 ? Object.fromEntries(entries) : {};
+    return entries.length > 0 ? Object.fromEntries(entries) : undefined;
   } catch {
     return undefined;
   }

@@ -4560,6 +4560,28 @@ describe("console readonly data source", () => {
     });
   });
 
+  it("ignores empty default headers JSON in runtime env", () => {
+    const fetchImpl = async () => ({
+      status: 200,
+      json: async () => ({ items: [] }),
+    });
+
+    expect(
+      resolveProvidersRuntimeConfigFromEnv(
+        {
+          RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+          RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+          RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: "{}",
+        },
+        fetchImpl,
+      ),
+    ).toEqual({
+      mode: "real-fetch",
+      baseUrl: "https://relayhub.internal/api",
+      fetchImpl,
+    });
+  });
+
   it("returns mock providers source when runtime mode is mock", async () => {
     const runtimeDataSource = createProvidersRuntimeDataSource({
       mode: "mock",
