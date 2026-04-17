@@ -73,6 +73,15 @@ const BLOCKED_REASON_LABEL = {
   workspace_drift: "workspace_drift",
   human_action_required: "human_action_required",
 };
+const AUTOMATION_ROUTE_SOURCES = new Set([
+  "lint-failure",
+  "format-failure",
+  "coverage-failure",
+  "ci-test-failure",
+  "build-failure",
+  "deploy-or-smoke-failure",
+  "infra-runner-failure",
+]);
 
 function shortSha(sha) {
   const normalized = String(sha ?? "").trim();
@@ -185,11 +194,14 @@ function buildCommitSummaryDescription(options) {
 
   lines.push(`automation_key: ${options.parentAutomationKey}`);
   lines.push("type:epic");
+  lines.push("task_class: manual-review-required");
+  lines.push("execution_route: local_manual_review");
   lines.push(`project: ${options.projectName}`);
   lines.push(`owner: ${owner}`);
   if (options.goalTitle) {
     lines.push(`goal: ${options.goalTitle}`);
   }
+  lines.push("source: automation-summary");
   lines.push(`workflow: ${options.workflow ?? "unknown"}`);
   if (options.runNumber) {
     lines.push(`run_number: ${normalizeRunNumber(options.runNumber)}`);
@@ -211,6 +223,9 @@ function buildCommitSummaryDescription(options) {
   lines.push("done when：");
   lines.push("- 本次提交对应 workflow 的失败项已全部恢复为绿色，或确认无需继续处理");
   lines.push("- 根因、修复方式与残留风险已能从子任务与评论中追溯");
+  lines.push("");
+  lines.push("约束：");
+  lines.push("- 此父任务只承担汇总和阻塞路由，不进入服务器端可写执行链");
 
   if (options.summary) {
     lines.push("");
@@ -304,6 +319,8 @@ function buildDescription(config, options) {
   const lines = [];
   const owner = options.ownerLabel ?? options.ownerAgentId ?? "待指派";
   const semanticLabels = [];
+  const taskClass = AUTOMATION_ROUTE_SOURCES.has(options.kind) ? "automation-execution" : "manual-review-required";
+  const executionRoute = taskClass === "automation-execution" ? "server_automation" : "local_manual_review";
 
   if (issueMode === "execution") {
     semanticLabels.push("type:execution");
@@ -317,6 +334,8 @@ function buildDescription(config, options) {
   lines.push(`automation_key: ${options.automationKey}`);
   lines.push(`severity: ${config.severity}`);
   lines.push(`diagnosis: ${resolveDiagnosis(options)}`);
+  lines.push(`task_class: ${taskClass}`);
+  lines.push(`execution_route: ${executionRoute}`);
   for (const label of semanticLabels) {
     lines.push(label);
   }
@@ -373,6 +392,8 @@ function buildDescription(config, options) {
     lines.push("约束：");
     lines.push("- 不直接修改 main / release");
     lines.push("- 自动修复只允许 lint、format、测试、类型检查、构建和确定性脚本范围");
+    lines.push("- 服务器自动提交只允许进入 automation/aimandala/<task-scope> 固定自动化分支命名空间");
+    lines.push("- 若未 materialize 到 execution workspace，不得继续执行写操作");
   } else {
     lines.push("输入材料：");
     lines.push(`- repository: ${options.repository ?? "unknown"}`);
@@ -409,6 +430,10 @@ function buildDescription(config, options) {
     lines.push("done when：");
     lines.push("- 对应环境 smoke 恢复为绿色");
     lines.push("- 风险说明、根因和后续动作已回写");
+    lines.push("");
+    lines.push("约束：");
+    lines.push("- 服务器自动提交只允许进入 automation/aimandala/<task-scope> 固定自动化分支命名空间");
+    lines.push("- 若未 materialize 到 execution workspace，不得继续执行写操作");
   }
 
   const baselineLines = formatExecutionBaselineLines(options);

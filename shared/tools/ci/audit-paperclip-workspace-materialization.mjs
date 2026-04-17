@@ -12,19 +12,53 @@ import {
   runShellCommand,
 } from "./common.mjs";
 
+const AUTOMATION_ROUTE_SOURCES = new Set([
+  "lint-failure",
+  "format-failure",
+  "coverage-failure",
+  "ci-test-failure",
+  "build-failure",
+  "deploy-or-smoke-failure",
+  "infra-runner-failure",
+]);
+const ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
+
 function hasExecutionWorkspaceBinding(issue) {
   return Boolean(issue.executionWorkspaceId || issue.currentExecutionWorkspace?.id);
 }
 
-function issueLooksActiveWithoutWorkspace(issue) {
+function parseIssueMetadata(description) {
+  const metadata = {};
+  for (const rawLine of String(description ?? "").split(/\r?\n/)) {
+    const match = rawLine.match(/^([a-z_]+):\s*(.+)$/);
+    if (!match) {
+      continue;
+    }
+    metadata[match[1]] = match[2].trim();
+  }
+  return metadata;
+}
+
+function resolveExecutionRoute(metadata) {
+  const explicit = String(metadata.execution_route ?? "").trim();
+  if (explicit) {
+    return explicit;
+  }
+  const source = String(metadata.source ?? "").trim();
+  return AUTOMATION_ROUTE_SOURCES.has(source) ? "server_automation" : "local_manual_review";
+}
+
+function issueLooksActiveWithoutWorkspace(issue, executionRoute) {
   if (hasExecutionWorkspaceBinding(issue)) {
     return false;
   }
   if (!issue.assigneeAgentId) {
     return false;
   }
-  const activeStatuses = new Set(["in_progress", "in_review", "blocked", "done"]);
-  if (!activeStatuses.has(issue.status)) {
+  if (executionRoute !== "server_automation") {
+    return false;
+  }
+  if (!ACTIVE_STATUSES.has(issue.status)) {
     return false;
   }
   return Boolean(issue.checkoutRunId || issue.startedAt || issue.completedAt || issue.updatedAt);
@@ -63,6 +97,23 @@ async function listHostWorktrees(repoRoot, worktreeRoot) {
   return entries.filter((entry) => normalizePath(entry.path).startsWith(expectedRoot));
 }
 
+function getWorkspaceBinding(issue, workspaceById) {
+  if (issue.currentExecutionWorkspace?.id) {
+    return issue.currentExecutionWorkspace;
+  }
+  if (issue.executionWorkspaceId) {
+    return workspaceById.get(issue.executionWorkspaceId) ?? null;
+  }
+  return null;
+}
+
+function workspaceUsesExpectedRoot(workspace, expectedRoot) {
+  const expectedPrefix = `${normalizePath(expectedRoot)}/`;
+  return [workspace?.cwd, workspace?.providerRef, workspace?.worktreePath].some((value) =>
+    normalizePath(value ?? "").startsWith(expectedPrefix),
+  );
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help || options.h) {
@@ -91,22 +142,65 @@ async function main() {
   const executionWorkspaces = await api.get(
     `/api/companies/${companyId}/execution-workspaces?projectId=${encodeURIComponent(project.id)}`,
   );
+  const workspaceById = new Map((executionWorkspaces ?? []).map((workspace) => [workspace.id, workspace]));
 
   const activeIssuesMissingWorkspace = (issues ?? [])
-    .filter((issue) => project.executionWorkspacePolicy?.enabled === true && issueLooksActiveWithoutWorkspace(issue))
-    .map((issue) => ({
-      issueId: issue.id,
-      identifier: issue.identifier,
-      title: issue.title,
-      status: issue.status,
-      reason: "execution_workspace_policy_not_materialized",
-      executionWorkspaceId: issue.executionWorkspaceId ?? null,
-      currentExecutionWorkspaceId: issue.currentExecutionWorkspace?.id ?? null,
-      checkoutRunId: issue.checkoutRunId ?? null,
-      startedAt: issue.startedAt ?? null,
-      completedAt: issue.completedAt ?? null,
-      updatedAt: issue.updatedAt ?? null,
-    }));
+    .filter((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      return (
+        project.executionWorkspacePolicy?.enabled === true &&
+        issueLooksActiveWithoutWorkspace(issue, resolveExecutionRoute(metadata))
+      );
+    })
+    .map((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      return {
+        issueId: issue.id,
+        identifier: issue.identifier,
+        title: issue.title,
+        status: issue.status,
+        reason: "execution_workspace_policy_not_materialized",
+        taskClass: metadata.task_class ?? null,
+        executionRoute: resolveExecutionRoute(metadata),
+        executionWorkspaceId: issue.executionWorkspaceId ?? null,
+        currentExecutionWorkspaceId: issue.currentExecutionWorkspace?.id ?? null,
+        checkoutRunId: issue.checkoutRunId ?? null,
+        startedAt: issue.startedAt ?? null,
+        completedAt: issue.completedAt ?? null,
+        updatedAt: issue.updatedAt ?? null,
+      };
+    });
+
+  const serverWritableExecutionRejectedIssues = (issues ?? [])
+    .filter((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      if (resolveExecutionRoute(metadata) === "server_automation") {
+        return false;
+      }
+      if (!ACTIVE_STATUSES.has(issue.status)) {
+        return false;
+      }
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return Boolean(workspace) && workspaceUsesExpectedRoot(workspace, expectedRoot);
+    })
+    .map((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return {
+        issueId: issue.id,
+        identifier: issue.identifier,
+        title: issue.title,
+        status: issue.status,
+        reason: "server_writable_execution_not_allowed",
+        taskClass: metadata.task_class ?? "manual-review-required",
+        executionRoute: resolveExecutionRoute(metadata),
+        source: metadata.source ?? null,
+        executionWorkspaceId: issue.executionWorkspaceId ?? issue.currentExecutionWorkspace?.id ?? null,
+        workspaceCwd: workspace?.cwd ?? null,
+        workspaceProviderRef: workspace?.providerRef ?? null,
+        workspacePath: workspace?.worktreePath ?? null,
+      };
+    });
 
   const executionWorkspacesOutsideExpectedRoot = (executionWorkspaces ?? [])
     .filter((workspace) => {
@@ -155,12 +249,13 @@ async function main() {
     expectedRoot,
     repoRoot,
     activeIssuesMissingWorkspace,
+    serverWritableExecutionRejectedIssues,
     executionWorkspacesOutsideExpectedRoot,
     hostWorktreesWithoutBoundIssue,
   };
 
   logInfo(
-    `Workspace audit completed: missing=${activeIssuesMissingWorkspace.length}, outside_root=${executionWorkspacesOutsideExpectedRoot.length}, host_unbound=${hostWorktreesWithoutBoundIssue.length}`,
+    `Workspace audit completed: missing=${activeIssuesMissingWorkspace.length}, rejected=${serverWritableExecutionRejectedIssues.length}, outside_root=${executionWorkspacesOutsideExpectedRoot.length}, host_unbound=${hostWorktreesWithoutBoundIssue.length}`,
   );
   console.log(JSON.stringify(summary, null, 2));
 }

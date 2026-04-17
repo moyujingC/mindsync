@@ -17,6 +17,13 @@
 - `ci / deploy / nightly-smoke / auto-repair`
 - runner heartbeat 与日常清理
 
+从 `2026-04-18` 起，`aimandala` 额外固定一条执行边界：
+
+- 服务器端只承接 `automation-execution` 任务
+- 其他 `manual-review-required` 任务默认回到本地执行
+- 服务器自动提交只允许进入 `automation/aimandala/<task-scope>` 固定自动化分支命名空间
+- `main` 只能通过人工审核后合并，不接受服务器默认直推
+
 ## 1. 当前机器口径
 
 截至 `2026-04-13`，第一阶段默认以新增腾讯云服务器作为 `automation` 节点：
@@ -51,7 +58,8 @@
   - 默认要求始终对齐 `origin/main` 且保持干净
 - `/opt/automation/worktrees`
   - 隔离执行区
-  - 用于 `codex_local`、`claude_local`、`pi_local`、auto-repair 等会真实写文件的执行任务
+  - 用于真正允许服务器写文件的 `automation-execution` 任务
+  - 包括 auto-repair、deploy / smoke、maintenance 相关的隔离执行
 - `/data/paperclip/instances/default/workspaces`
   - Paperclip 历史兼容工作区目录
   - 只观测，不再作为 `aimandala` 新执行的可信落点
@@ -67,6 +75,8 @@
 1. heartbeat / maintenance / runner-doctor 不再使用主镜像区作为 `WorkingDirectory`
 2. 普通 agent 不应把正式改动直接写回 `/opt/automation/app/mindsync`
 3. 会写文件的执行任务必须进入 `/opt/automation/worktrees/<issue-or-run>/...` 这类隔离目录
+4. 即使项目启用了 `executionWorkspacePolicy`，也不代表所有任务都可在服务器端写入
+5. 只有 `task_class: automation-execution` 且 `execution_route: server_automation` 的任务，才允许进入服务器端可写执行链
 
 这条边界的目标不是把 agent 全部降成只读，而是避免多个执行链长期共享同一个可写 checkout。
 
@@ -87,6 +97,18 @@
 2. local adapter 只负责消费 Paperclip 注入的最终 `cwd`、`paperclipWorkspace` 与相关环境变量
 3. agent 配置中的固定 `cwd` 只保留为 legacy fallback 或非项目任务兜底
 4. 对 `aimandala` 项目，默认应通过 project policy 把普通工程任务落到 `git_worktree` 隔离目录
+
+补充分流口径：
+
+1. `automation-execution`
+   - CI 失败修复、deploy、smoke、runner、maintenance、infra 巡检
+   - 允许服务器端执行和自动提交
+2. `manual-review-required`
+   - 产品功能开发、UI / 文案、一般业务逻辑、普通研发任务
+   - 默认回到本地执行，不允许服务器 Adapter 自动闭环
+3. CI 汇总父任务只负责汇总和阻塞路由
+   - 不进入服务器端可写执行链
+   - 真正允许服务器执行的仅限具体 Automation 子任务
 
 ### 2.2 2026-04-17 已确认的失配现象
 
@@ -174,12 +196,19 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 如果前 4 步显示项目 policy 已开，但第 5 步没有对应 worktree，或者 issue 仍无 workspace 绑定，就不要再把问题归咎为“忘了配 policy”；应直接按运行时 checkout / adapter 消费链路失配处理。
 
+如果工作区再次变脏，固定按下面顺序排查：
+
+1. 是否有本应 `manual-review-required` 的任务被错误路由到服务器
+2. 是否有 `automation-execution` 任务未 materialize 到 execution workspace
+3. 是否有 Adapter 在 shared checkout 上执行写操作
+
 ### 2.4 运行时治理与 fail-fast 口径
 
 从 `2026-04-17` 起，`mindsync` 侧运维链路按下面口径执行，不依赖 Paperclip 内核兜底：
 
 1. `shared/tools/ci/check-paperclip-execution-health.mjs`
    - 新增稳定原因码：`execution_workspace_policy_not_materialized`
+   - 新增稳定原因码：`server_writable_execution_not_allowed`
    - 默认只输出告警和 JSON，不自动修补 issue workspace 绑定
    - 开启 `--strict` 或 `PAPERCLIP_EXECUTION_HEALTH_STRICT=1` 时
    - 只要发现 `policy enabled + active issue + executionWorkspaceId = null`
@@ -188,6 +217,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 只读审计入口
    - 输出：
      - `activeIssuesMissingWorkspace`
+     - `serverWritableExecutionRejectedIssues`
      - `executionWorkspacesOutsideExpectedRoot`
      - `hostWorktreesWithoutBoundIssue`
    - 对 `aimandala` 默认以 `/opt/automation/worktrees` 作为期望根目录
@@ -199,6 +229,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 先跑 runner heartbeat
    - 再跑 execution health check strict gate
    - 若发现 workspace materialization 漂移，本轮服务直接失败
+   - 若发现本应本地执行的任务进入了服务器可写路径，本轮服务同样直接失败
    - 不继续后续 maintenance 或会触发写文件的自动动作
 
 ### 2.5 推荐巡检命令
@@ -212,6 +243,7 @@ node shared/tools/ci/check-paperclip-execution-health.mjs \
   --api-base "$PAPERCLIP_API_BASE" \
   --api-key "$PAPERCLIP_API_KEY" \
   --stale-minutes "${PAPERCLIP_EXECUTION_STALE_MINUTES:-15}" \
+  --expected-root "${PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT:-/opt/automation/worktrees}" \
   --strict
 ```
 
@@ -226,6 +258,20 @@ node shared/tools/ci/audit-paperclip-workspace-materialization.mjs \
   --expected-root /opt/automation/worktrees \
   --repo-root /opt/automation/app/mindsync
 ```
+
+## 2.7 自动提交边界
+
+`aimandala-auto-repair.mjs` 当前固定遵守下面边界：
+
+1. 自动提交分支只允许使用 `automation/aimandala/<task-scope>` 命名空间
+2. 不允许默认直推 `main`
+3. 只允许在 `/opt/automation/worktrees` 下创建隔离 worktree
+4. 只允许提交白名单范围内的 CI / deploy / 运维相关改动
+5. 明确禁止自动提交下列路径：
+   - `projects/aimandala/toC/app/backend/data/uploads/**`
+   - `projects/aimandala/toC/app/backend/data/interpretations/**`
+   - `coverage/**`
+   - 普通 shared checkout 漂移文件
 
 ### 2.6 主镜像区脏仓收尾口径
 

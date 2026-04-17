@@ -12,6 +12,17 @@ import {
   truthy,
 } from "./common.mjs";
 
+const AUTOMATION_ROUTE_SOURCES = new Set([
+  "lint-failure",
+  "format-failure",
+  "coverage-failure",
+  "ci-test-failure",
+  "build-failure",
+  "deploy-or-smoke-failure",
+  "infra-runner-failure",
+]);
+const ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
+
 function minutesSince(isoTimestamp) {
   return (Date.now() - new Date(isoTimestamp).getTime()) / (1000 * 60);
 }
@@ -20,13 +31,58 @@ function hasExecutionWorkspaceBinding(issue) {
   return Boolean(issue.executionWorkspaceId || issue.currentExecutionWorkspace?.id);
 }
 
+function parseIssueMetadata(description) {
+  const metadata = {};
+  for (const rawLine of String(description ?? "").split(/\r?\n/)) {
+    const match = rawLine.match(/^([a-z_]+):\s*(.+)$/);
+    if (!match) {
+      continue;
+    }
+    metadata[match[1]] = match[2].trim();
+  }
+  return metadata;
+}
+
+function resolveExecutionRoute(metadata) {
+  const explicit = String(metadata.execution_route ?? "").trim();
+  if (explicit) {
+    return explicit;
+  }
+  const source = String(metadata.source ?? "").trim();
+  return AUTOMATION_ROUTE_SOURCES.has(source) ? "server_automation" : "local_manual_review";
+}
+
+function getWorkspaceBinding(issue, workspaceById) {
+  if (issue.currentExecutionWorkspace?.id) {
+    return issue.currentExecutionWorkspace;
+  }
+  if (issue.executionWorkspaceId) {
+    return workspaceById.get(issue.executionWorkspaceId) ?? null;
+  }
+  return null;
+}
+
+function normalizePath(value) {
+  return String(value ?? "").replace(/\/+$/, "");
+}
+
+function workspaceUsesExpectedRoot(workspace, expectedRoot) {
+  const prefix = `${normalizePath(expectedRoot)}/`;
+  return [workspace?.cwd, workspace?.providerRef, workspace?.worktreePath].some((value) =>
+    normalizePath(value).startsWith(prefix),
+  );
+}
+
 function classifyExecutionWorkspaceDrift(issue) {
+  const metadata = parseIssueMetadata(issue.description);
   return {
     issueId: issue.id,
     identifier: issue.identifier,
     title: issue.title,
     status: issue.status,
     reason: "execution_workspace_policy_not_materialized",
+    taskClass: metadata.task_class ?? null,
+    executionRoute: resolveExecutionRoute(metadata),
     executionWorkspaceId: issue.executionWorkspaceId ?? null,
     currentExecutionWorkspaceId: issue.currentExecutionWorkspace?.id ?? null,
     checkoutRunId: issue.checkoutRunId ?? null,
@@ -36,7 +92,7 @@ function classifyExecutionWorkspaceDrift(issue) {
   };
 }
 
-function issueLooksActiveWithoutWorkspace(issue) {
+function issueLooksActiveWithoutWorkspace(issue, executionRoute) {
   if (hasExecutionWorkspaceBinding(issue)) {
     return false;
   }
@@ -45,19 +101,39 @@ function issueLooksActiveWithoutWorkspace(issue) {
     return false;
   }
 
-  const activeStatuses = new Set(["in_progress", "in_review", "blocked", "done"]);
-  if (!activeStatuses.has(issue.status)) {
+  if (executionRoute !== "server_automation") {
+    return false;
+  }
+
+  if (!ACTIVE_STATUSES.has(issue.status)) {
     return false;
   }
 
   return Boolean(issue.checkoutRunId || issue.startedAt || issue.completedAt || issue.updatedAt);
 }
 
+function classifyServerWritableExecutionRejected(issue, metadata, workspace) {
+  return {
+    issueId: issue.id,
+    identifier: issue.identifier,
+    title: issue.title,
+    status: issue.status,
+    reason: "server_writable_execution_not_allowed",
+    taskClass: metadata.task_class ?? "manual-review-required",
+    executionRoute: resolveExecutionRoute(metadata),
+    source: metadata.source ?? null,
+    executionWorkspaceId: issue.executionWorkspaceId ?? issue.currentExecutionWorkspace?.id ?? null,
+    workspaceCwd: workspace?.cwd ?? null,
+    workspaceProviderRef: workspace?.providerRef ?? null,
+    workspacePath: workspace?.worktreePath ?? null,
+  };
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help || options.h) {
     console.log(`Usage:
-  node shared/tools/ci/check-paperclip-execution-health.mjs --company-id <id> --project-name <name> [--stale-minutes 15] [--apply] [--strict]
+  node shared/tools/ci/check-paperclip-execution-health.mjs --company-id <id> --project-name <name> [--stale-minutes 15] [--apply] [--strict] [--expected-root /opt/automation/worktrees]
 `);
     return;
   }
@@ -67,6 +143,11 @@ async function main() {
   const companyId = getOption(options, "company-id", process.env.PAPERCLIP_COMPANY_ID ?? null);
   const projectName = getOption(options, "project-name", process.env.PAPERCLIP_PROJECT_NAME ?? "一镜一梳");
   const staleMinutes = Number(getOption(options, "stale-minutes", process.env.PAPERCLIP_EXECUTION_STALE_MINUTES ?? "15"));
+  const expectedRoot = getOption(
+    options,
+    "expected-root",
+    process.env.PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT ?? process.env.PAPERCLIP_EXECUTION_WORKTREE_ROOT ?? "/opt/automation/worktrees",
+  );
   const apply = truthy(getOption(options, "apply", "0"));
   const strict = truthy(getOption(options, "strict", process.env.PAPERCLIP_EXECUTION_HEALTH_STRICT ?? "0"));
 
@@ -82,6 +163,10 @@ async function main() {
   }
 
   const issues = await api.get(`/api/companies/${companyId}/issues?projectId=${encodeURIComponent(project.id)}`);
+  const executionWorkspaces = await api.get(
+    `/api/companies/${companyId}/execution-workspaces?projectId=${encodeURIComponent(project.id)}`,
+  );
+  const workspaceById = new Map((executionWorkspaces ?? []).map((workspace) => [workspace.id, workspace]));
   const candidates = (issues ?? []).filter((issue) => {
     if (!issue.activeRun || issue.activeRun.status !== "running") {
       return false;
@@ -141,9 +226,30 @@ async function main() {
   const workspaceDriftIssues =
     project.executionWorkspacePolicy?.enabled === true
       ? (issues ?? [])
-          .filter((issue) => issueLooksActiveWithoutWorkspace(issue))
+          .filter((issue) => {
+            const metadata = parseIssueMetadata(issue.description);
+            return issueLooksActiveWithoutWorkspace(issue, resolveExecutionRoute(metadata));
+          })
           .map(classifyExecutionWorkspaceDrift)
       : [];
+
+  const serverWritableExecutionRejectedIssues = (issues ?? [])
+    .filter((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      if (resolveExecutionRoute(metadata) === "server_automation") {
+        return false;
+      }
+      if (!ACTIVE_STATUSES.has(issue.status)) {
+        return false;
+      }
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return Boolean(workspace) && workspaceUsesExpectedRoot(workspace, expectedRoot);
+    })
+    .map((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return classifyServerWritableExecutionRejected(issue, metadata, workspace);
+    });
 
   const staleRunningIssues = staleIssues.map((issue) => ({
     ...issue,
@@ -153,19 +259,23 @@ async function main() {
   const summary = {
     checkedAt: isoNow(),
     strict,
+    expectedRoot,
     staleRunningIssues,
     workspaceDriftIssues,
+    serverWritableExecutionRejectedIssues,
   };
 
   if (staleIssues.length === 0) {
-    if (workspaceDriftIssues.length === 0) {
+    if (workspaceDriftIssues.length === 0 && serverWritableExecutionRejectedIssues.length === 0) {
       logInfo("No stale running issues detected");
       return;
     }
 
-    logInfo(`Detected ${workspaceDriftIssues.length} issue(s) missing execution workspace binding`);
+    logInfo(
+      `Detected ${workspaceDriftIssues.length} issue(s) missing execution workspace binding and ${serverWritableExecutionRejectedIssues.length} issue(s) rejected for server writable execution`,
+    );
     console.log(JSON.stringify(summary, null, 2));
-    if (strict) {
+    if (strict && (workspaceDriftIssues.length > 0 || serverWritableExecutionRejectedIssues.length > 0)) {
       process.exitCode = 2;
     }
     return;
@@ -173,7 +283,7 @@ async function main() {
 
   logInfo(`Detected ${staleIssues.length} stale running issue(s)`);
   console.log(JSON.stringify(summary, null, 2));
-  if (strict && workspaceDriftIssues.length > 0) {
+  if (strict && (workspaceDriftIssues.length > 0 || serverWritableExecutionRejectedIssues.length > 0)) {
     process.exitCode = 2;
   }
 }
