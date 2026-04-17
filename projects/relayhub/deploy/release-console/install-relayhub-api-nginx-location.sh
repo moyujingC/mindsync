@@ -16,6 +16,7 @@ sudo cp "$NGINX_SITE" "$BACKUP_PATH"
 
 python3 - "$NGINX_SITE" "$UPSTREAM_BASE_URL" <<'PY' > /tmp/relayhub-api-nginx-site
 from pathlib import Path
+import re
 import sys
 
 site_path = Path(sys.argv[1])
@@ -37,7 +38,15 @@ block = f"""
     }}
 """
 
-if "location /relayhub-api/" not in text:
+pattern = re.compile(
+    r"\n    location = /relayhub-api \{.*?\n    \}\n\n"
+    r"    location /relayhub-api/ \{.*?\n    \}\n",
+    re.DOTALL,
+)
+
+if pattern.search(text):
+    text = pattern.sub(block + "\n", text, count=1)
+else:
     marker = "    location / {\n"
     if marker not in text:
         raise SystemExit("Could not find primary web.jingshu.cc location marker")

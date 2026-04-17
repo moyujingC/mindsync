@@ -103,6 +103,7 @@ curl -k -I https://web.jingshu.cc/relayhub-api/providers
 
 - `/relayhub-api` 真实 readonly upstream 反代
 - 原因：`UPSTREAM_BASE_URL` 尚未提供
+- release 当前已安装 disabled guard，`/relayhub-api/*` 在 upstream 未配置前返回 `503`，避免误落到主站 HTML
 
 ## 7. reload 与回滚
 

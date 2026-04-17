@@ -61,9 +61,10 @@ rg -n "保存策略|立即切流|发布到生产|启用自动路由|编辑生产
 
 - Git 推送已完成：`4a8e0afe` 已推送到 `origin/codex/relayhub-readonly-trial`
 - 已补充 `/relayhub-api` nginx 反代样例与参数化安装脚本
-- release 线上 nginx 尚未安装 `/relayhub-api` location
+- release 线上 nginx 已安装 `/relayhub-api` disabled guard
 - 阻塞原因：真实 `UPSTREAM_BASE_URL` 尚未提供，不能把占位 upstream 写入生效配置
 - 当前 trial 构建推荐配置已收敛为 `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
+- 当前 `https://web.jingshu.cc/relayhub-api/providers` 返回 `503`，避免误落到主站 HTML 造成 API 可用假阳性
 
 本轮接入准备验证：
 
