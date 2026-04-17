@@ -55,9 +55,10 @@ import type { ProvidersBrowserFetch } from "./consoleBrowserFetch";
 import type { ProvidersBrowserFetchSource } from "./consoleBrowserFetchSource";
 
 // Recommended app entry policy:
-// - Preferred browser trial path is ConsoleBrowserDeploymentRuntimeInput.mode = "browser-fetch"
+// - Preferred browser real-fetch trial path is ConsoleBrowserDeploymentRuntimeInput.mode = "browser-fetch"
 //   or "browser-fetch-source".
-// - Higher-level auth/token/security wrappers stay available for compatibility, not as new default seams.
+// - Use this file as the explicit app/browser entry when validating readonly Providers integration.
+// - Higher-level auth/token wrappers stay available for compatibility, not as new default seams.
 export type ConsoleBrowserDeploymentRuntimeInputMode =
   | "default-mock"
   | "browser-fetch"

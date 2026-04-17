@@ -342,6 +342,105 @@ describe("console readonly data source", () => {
     );
   });
 
+  it("supports the recommended browser-fetch-source real-fetch smoke path", async () => {
+    const calls: Array<{
+      input: string;
+      init?: { method?: string; headers?: Record<string, string> };
+    }> = [];
+    const runtime = bootstrapConsoleBrowserDeploymentRuntime({
+      mode: "browser-fetch-source",
+      env: {
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: "{\"x-env\":\"browser-source-smoke\"}",
+      },
+      authHeadersResolver: async () => ({
+        authorization: "Bearer browser-source-smoke",
+      }),
+      browserFetchSource: createStaticProvidersBrowserFetchSource(async (input, init) => {
+        calls.push({ input, init });
+
+        if (input.endsWith("/providers")) {
+          return {
+            status: 200,
+            json: async () => ({
+              items: [
+                {
+                  id: "provider-browser-source-smoke",
+                  name: "Providers Browser Source Smoke",
+                  kind: "国产模型",
+                  availableEnvironments: ["评测版"],
+                  health: "healthy",
+                  transparency: "完整",
+                  errorRate: 0.1,
+                  p95Latency: 300,
+                  recommendation: "用于验证 browser-fetch-source 推荐入口",
+                },
+              ],
+            }),
+          };
+        }
+
+        if (input.endsWith("/providers/provider-browser-source-smoke")) {
+          return {
+            status: 200,
+            json: async () => ({
+              item: {
+                id: "provider-browser-source-smoke",
+                name: "Providers Browser Source Smoke",
+                kind: "国产模型",
+                availableEnvironments: ["评测版"],
+                health: "healthy",
+                transparency: "完整",
+                errorRate: 0.1,
+                p95Latency: 300,
+                description: "推荐 browser-fetch-source 入口 smoke test",
+                recommendation: "用于验证 browser-fetch-source 推荐入口",
+                recommendationNote: "不代表真实后端接入完成。",
+                models: [{ name: "browser-source-smoke-model", useCase: "smoke test" }],
+                metrics: {
+                  requests: 16,
+                  tokens: 3200,
+                  avgLatency: 210,
+                  p95Latency: 300,
+                  errorRate: 0.1,
+                  cost: 2,
+                },
+              },
+            }),
+          };
+        }
+
+        return {
+          status: 404,
+          json: async () => null,
+        };
+      }),
+    });
+
+    const collection = await runtime.dataSource.listProviders();
+    const detail = await runtime.dataSource.getProvider("provider-browser-source-smoke");
+    const notFound = await runtime.dataSource.getProvider("missing-provider");
+
+    expect(collection.items[0]?.id).toBe("provider-browser-source-smoke");
+    expect(detail.item?.id).toBe("provider-browser-source-smoke");
+    expect(notFound.item).toBeNull();
+    expect(notFound.meta.status).toBe("not-found");
+    expect(calls[0]).toEqual({
+      input: "https://relayhub.internal/api/providers",
+      init: {
+        method: "GET",
+        headers: {
+          "x-env": "browser-source-smoke",
+          authorization: "Bearer browser-source-smoke",
+        },
+      },
+    });
+    expect(calls[1]?.input).toBe(
+      "https://relayhub.internal/api/providers/provider-browser-source-smoke",
+    );
+  });
+
   it("returns eval overview contract response from default datasource", async () => {
     const response = await defaultConsoleReadonlyDataSource.getEvalOverview();
     const typedResponse: EvalOverviewContract = response;

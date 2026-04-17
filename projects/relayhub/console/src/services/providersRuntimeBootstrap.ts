@@ -9,6 +9,10 @@ import type { ProvidersRuntimeConfigSourceFactoryOptions } from "./providersRunt
 
 type ProvidersRuntimeSource = Pick<ConsoleReadonlyDataSource, "listProviders" | "getProvider">;
 
+// Bootstrap policy:
+// - Keep bootstrap as a thin runtime container.
+// - New real-fetch trials should prefer explicit sourceFactoryOptions over adding higher-level wrappers here.
+
 export interface ProvidersRuntimeBootstrapOptions {
   sourceFactoryOptions?: ProvidersRuntimeConfigSourceFactoryOptions;
 }

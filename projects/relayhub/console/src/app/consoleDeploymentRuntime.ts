@@ -33,8 +33,9 @@ import type { ProvidersRuntimeEnv } from "../services/providersRuntimeEnvConfig"
 import type { ProvidersFetchLike } from "../services/realProvidersFetchTransport";
 
 // Recommended app entry policy:
-// - Preferred deployment trial path is ConsoleDeploymentRuntimeInput.mode = "env".
-// - Existing auth/token/security wrappers remain compatibility-only during the current reduction phase.
+// - Preferred deployment real-fetch trial path is ConsoleDeploymentRuntimeInput.mode = "env".
+// - Use this file as the explicit app/deployment entry when validating readonly Providers integration.
+// - Existing auth/token wrappers remain compatibility-only during the current reduction phase.
 export type ConsoleDeploymentRuntimeInputMode = "default-mock" | "static" | "env";
 
 export type ConsoleDeploymentRuntimeInput =

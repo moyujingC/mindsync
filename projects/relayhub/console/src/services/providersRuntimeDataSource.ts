@@ -20,6 +20,10 @@ import type { ProvidersReadonlyTransportConfig } from "./realProvidersFetchTrans
 
 export type ProvidersRuntimeMode = ProvidersRuntimeConfigMode;
 
+// Runtime datasource policy:
+// - Keep mock as the default.
+// - Switch to real-fetch only through explicit resolved runtime config or config source inputs.
+
 export type ProvidersRuntimeDataSourceOptions =
   | {
       mode?: "mock";

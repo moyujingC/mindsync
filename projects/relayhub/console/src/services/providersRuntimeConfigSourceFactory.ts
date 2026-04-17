@@ -31,6 +31,7 @@ import type { ProvidersFetchLike } from "./realProvidersFetchTransport";
 
 // Recommended entry policy:
 // - Preferred services entry for new Providers runtime wiring is ProvidersRuntimeConfigSourceFactoryOptions.
+// - Use mode = "env" or "static" here to drive explicit readonly real-fetch trials from services/runtime.
 // - New Input / Option / SourceFactory / CompositionFactory / StartupInput wrappers should not be added
 //   unless a real integration trial proves a concrete missing seam.
 export type ProvidersRuntimeConfigSourceMode = "default-mock" | "static" | "env";

@@ -12,6 +12,10 @@ import {
 import type { ProvidersBrowserFetch } from "./consoleBrowserFetch";
 import type { ProvidersFetchLike } from "../services/realProvidersFetchTransport";
 
+// Startup helper policy:
+// - Keep default startup mock-only.
+// - Use these helpers only for explicit readonly real-fetch trials after passing env + fetch/browserFetch.
+// - Do not add auth env keys here; callers must pass authHeadersResolver explicitly.
 export interface ConsoleDeploymentRuntimeEnv {
   readonly RELAYHUB_PROVIDERS_RUNTIME_MODE?: string;
   readonly RELAYHUB_PROVIDERS_READONLY_BASE_URL?: string;
