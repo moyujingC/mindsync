@@ -52,6 +52,7 @@
 - 已新增 `ProvidersRuntimeConfigSource`、`defaultProvidersRuntimeConfigSource`、`createStaticProvidersRuntimeConfigSource(config?)`、`resolveProvidersRuntimeConfigFromSource(source?)`、`getProvidersRuntimeDataSourceFromConfigSource(source?)`。
 - 默认 source 会返回 `{ mode: "mock" }`，`getProvidersRuntimeDataSourceFromConfigSource()` 在未传 source 时保持现有 mock providers 行为。
 - static `mode = "real-fetch"` source 会先解析为 runtime config，再继续进入 runtime datasource / fetch datasource 链路。
+- 默认 runtime bootstrap 主链已复用 runtime config source seam，而不是把 source factory 当作这轮默认入口。
 
 ### 3.2 默认行为与透传
 
@@ -69,7 +70,7 @@
 
 说明：
 
-- `npm test` 通过，累计 `90` 条测试通过。
+- `npm test` 通过，4 个测试文件、313 个测试全部通过。
 - `npm run build` 通过，控制台静态构建成功。
 
 ### 3.4 边界表达

@@ -19,6 +19,7 @@
 - 默认 config 固定为 mock
 - `real-fetch` 显式 config 到 datasource options 的映射
 - `baseUrl / fetchImpl / defaultHeaders` 透传验证
+- `ProvidersRuntimeConfig` 公开接口未吸收 auth/token/security app 层输入
 
 ## 2. 本轮仍明确不做
 
@@ -26,7 +27,7 @@
 
 - 环境变量接入
 - runtime 自动切换
-- 认证头字段决策
+- 把认证头、token provider 或 security input 纳入 runtime config 公开接口
 - 其他资源的 runtime config
 - 页面层感知 runtime config
 - 任何真实控制动作

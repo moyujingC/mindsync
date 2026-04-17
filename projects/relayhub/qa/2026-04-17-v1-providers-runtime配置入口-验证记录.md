@@ -51,6 +51,7 @@
 - 已新增 `ProvidersRuntimeConfigMode`、`ProvidersRuntimeConfig`、`getDefaultProvidersRuntimeConfig()`、`resolveProvidersRuntimeDataSourceOptions(config?)`。
 - 默认 config 会解析为 `{ mode: "mock" }`，`getProvidersRuntimeDataSource()` 在未传 config 时保持现有 mock providers 行为。
 - `mode = "real-fetch"` 时，config 会被解析为 `ProvidersRuntimeDataSourceOptions` 并继续交给 `createRealProvidersFetchDataSource(config)`，本轮未自动启用。
+- `ProvidersRuntimeConfig` 公开形态继续只承载 `baseUrl / fetchImpl / defaultHeaders?`，未把 auth/token/security app 层输入并入 runtime config 接口。
 
 ### 3.2 默认行为与透传
 
@@ -68,7 +69,7 @@
 
 说明：
 
-- `npm test` 通过，累计 `85` 条测试通过。
+- `npm test` 通过，4 个测试文件、312 个测试全部通过。
 - `npm run build` 通过，控制台静态构建成功。
 
 ### 3.4 边界表达

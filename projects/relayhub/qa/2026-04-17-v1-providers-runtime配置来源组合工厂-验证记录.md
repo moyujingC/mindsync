@@ -52,6 +52,7 @@
 - 已新增 `ProvidersRuntimeConfigSourceMode`、`ProvidersRuntimeConfigSourceFactoryOptions`、`createProvidersRuntimeConfigSource(options?)`、`getProvidersRuntimeDataSourceFromFactory(options?)`。
 - 默认 factory 与 `mode = "default-mock"` 都会返回 mock source。
 - `static` 与 `env` 两种模式均可通过 factory 显式创建对应 source，并继续进入 Providers runtime datasource 链路。
+- 默认 runtime bootstrap 与默认 providers 拼装主链均已对齐到 factory 默认值入口。
 
 ### 3.2 默认行为与覆盖优先级
 
@@ -69,7 +70,7 @@
 
 说明：
 
-- `npm test` 通过，累计 `105` 条测试通过。
+- `npm test` 通过，4 个测试文件、314 个测试全部通过。
 - `npm run build` 通过，控制台静态构建成功。
 
 ### 3.4 边界表达

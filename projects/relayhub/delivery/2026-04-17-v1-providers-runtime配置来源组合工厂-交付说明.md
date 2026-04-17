@@ -19,6 +19,7 @@
 - default mock、static、env 三类 source 创建入口
 - 默认 providers 拼装改经由 factory 默认 source
 - factory 到 datasource 的 real-fetch 串接验证
+- 默认 runtime bootstrap 主链已与 factory 默认入口对齐
 
 ## 2. 本轮仍明确不做
 
@@ -28,6 +29,7 @@
 - 读取真实环境变量
 - 认证头字段决策
 - runtime 自动切换
+- 把更高层 app runtime input 进一步收束为 factory options 来源治理
 - 其他资源的 source factory
 - 任何真实控制动作
 

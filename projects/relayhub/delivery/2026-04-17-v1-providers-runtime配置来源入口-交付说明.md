@@ -19,6 +19,7 @@
 - 默认 source 固定返回 mock config
 - static real-fetch source 到 runtime datasource 的串接
 - `baseUrl / fetchImpl / defaultHeaders` 透传验证
+- 默认 runtime bootstrap 主链已改经由 runtime config source seam
 
 ## 2. 本轮仍明确不做
 
@@ -27,6 +28,7 @@
 - 环境变量接入
 - runtime 自动切换
 - 认证头字段决策
+- 把 runtime config source factory 提升为这轮默认主链入口
 - 其他资源的 runtime config source
 - 页面层感知 runtime config source
 - 任何真实控制动作
