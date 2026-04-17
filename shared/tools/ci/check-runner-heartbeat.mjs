@@ -42,6 +42,35 @@ function buildDiagnosisNote(diagnosis, maxQueuedMinutes, maxSuccessAgeHours) {
   return "runner heartbeat healthy";
 }
 
+function shouldTreatSuccessAgeAsUnhealthy(diagnosis, maxSuccessAgeHours) {
+  if (!(diagnosis.latestSuccessAgeHours >= maxSuccessAgeHours)) {
+    return false;
+  }
+
+  // 最新 run 已结束时，runner 至少仍可被调度，不应直接按 infra 阻塞。
+  if (diagnosis.latestRun?.status === "completed") {
+    return false;
+  }
+
+  return true;
+}
+
+function deriveBlockedReason({ unhealthy, diagnosis, executionBaseline }) {
+  if (!unhealthy) {
+    return null;
+  }
+
+  if (Array.isArray(executionBaseline?.driftReasons) && executionBaseline.driftReasons.length > 0) {
+    return "workspace_drift";
+  }
+
+  if (diagnosis.runnerDiagnosis.accessDenied) {
+    return "credential_missing";
+  }
+
+  return "infra_missing";
+}
+
 async function fetchLatestWorkflowState({ repository, workflowFile, branch, githubToken }) {
   const payload = await fetchJson(
     `https://api.github.com/repos/${repository}/actions/workflows/${workflowFile}/runs?branch=${encodeURIComponent(branch)}&per_page=10`,
@@ -200,12 +229,17 @@ async function main() {
       diagnosis.runnerDiagnosis.online === false ||
       diagnosis.runnerDiagnosis.labelsMatch === false ||
       (diagnosis.latestRun && diagnosis.latestRun.status !== "completed" && diagnosis.queuedMinutes >= maxQueuedMinutes) ||
-      diagnosis.latestSuccessAgeHours >= maxSuccessAgeHours;
+      shouldTreatSuccessAgeAsUnhealthy(diagnosis, maxSuccessAgeHours);
 
     const note = buildDiagnosisNote(diagnosis, maxQueuedMinutes, maxSuccessAgeHours);
     const executionBaseline = summarizeExecutionBaseline(await collectGitBaseline(process.cwd()), {
       expectedBranch: branch,
       expectedSha: diagnosis.latestRun?.head_sha ?? null,
+    });
+    const blockedReason = deriveBlockedReason({
+      unhealthy,
+      diagnosis,
+      executionBaseline,
     });
 
     if (printJson) {
@@ -248,7 +282,7 @@ async function main() {
       ownerLabel: "Engineer",
       note,
       diagnosis: "基础设施问题",
-      blockedReason: unhealthy ? "infra_missing" : null,
+      blockedReason,
       actionTaken: unhealthy
         ? "读取 workflow 最新运行状态、检查 runner 注册状态、比对 labels，并回写 Paperclip 基础设施异常单。"
         : "确认 runner 在线、labels 匹配，且最近 workflow 状态恢复正常。"

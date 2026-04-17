@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 
-import { act, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
 
 import { BrowserDebugPanel } from "./browser-debug-panel";
@@ -340,19 +341,20 @@ describe("BrowserDebugPanel", () => {
   });
 
   afterEach(async () => {
-    await act(async () => {
+    flushSync(() => {
       root.unmount();
     });
+    await Promise.resolve();
     container.remove();
   });
 
   async function renderPanel(
     overrides: Partial<ComponentProps<typeof BrowserDebugPanel>> = {},
   ) {
-    await act(async () => {
+    flushSync(() => {
       root.render(<BrowserDebugPanel {...createProps(overrides)} />);
-      await Promise.resolve();
     });
+    await Promise.resolve();
   }
 
   function getButton(label: string): HTMLButtonElement {
@@ -364,10 +366,10 @@ describe("BrowserDebugPanel", () => {
   }
 
   async function clickButton(label: string) {
-    await act(async () => {
+    flushSync(() => {
       getButton(label).dispatchEvent(new MouseEvent("click", { bubbles: true }));
-      await Promise.resolve();
     });
+    await Promise.resolve();
   }
 
   function normalizedText() {
@@ -407,6 +409,7 @@ describe("BrowserDebugPanel", () => {
 
     expect(normalizedText()).toContain("overall_impression");
     expect(normalizedText()).toContain("InsightAgent");
+    await clickButton("overall_impression");
     expect(normalizedText()).toContain("themes/wealth_career.yaml");
     expect(normalizedText()).toContain("/abs/themes/wealth_career.yaml");
 
