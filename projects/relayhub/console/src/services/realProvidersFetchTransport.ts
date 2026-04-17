@@ -25,6 +25,10 @@ export interface ProvidersReadonlyTransportConfig {
   authHeadersResolver?: ProvidersAuthHeaderResolver;
 }
 
+// Transport error contract:
+// - 204 and 404 return null data for datasource-level mapping.
+// - other non-2xx statuses throw and do not fallback to mock.
+// - auth headers are resolved explicitly; no credential store or env auth lookup happens here.
 function joinBaseUrlAndPath(baseUrl: string, path: string): string {
   const normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
   return `${normalizedBaseUrl}${path}`;

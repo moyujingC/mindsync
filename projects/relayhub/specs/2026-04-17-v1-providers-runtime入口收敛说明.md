@@ -50,6 +50,14 @@
 
 用于浏览器 fetch 注入试点，推荐作为 browser 场景的新接入起点。
 
+### 3.4 正式试点说明
+
+- `projects/relayhub/specs/2026-04-17-v1-providers-real-fetch-readonly-trial接入说明.md`
+- `projects/relayhub/specs/2026-04-17-v1-providers-readonly-trial-config-governance说明.md`
+- `projects/relayhub/specs/2026-04-17-v1-providers-readonly-wire-contract说明.md`
+
+用于本阶段 Providers readonly real-fetch trial 的正式接入、配置治理、wire contract 与验证口径说明。
+
 ## 4. 兼容入口
 
 以下入口保留，但当前视为 compatibility-only：

@@ -5825,6 +5825,14 @@ describe("console readonly data source", () => {
     expect(payload.items[0]?.id).toBe("provider-wire-stub");
   });
 
+  it("adapts empty collection wire payload into empty items", () => {
+    const payload = adaptProvidersCollectionWirePayload({
+      items: [],
+    });
+
+    expect(payload.items).toEqual([]);
+  });
+
   it("throws a clear error for invalid collection wire payload", () => {
     expect(() => adaptProvidersCollectionWirePayload({ item: null })).toThrow(
       "Providers collection wire payload is invalid",
@@ -5858,6 +5866,14 @@ describe("console readonly data source", () => {
     });
 
     expect(payload.item?.id).toBe("provider-detail-wire-stub");
+  });
+
+  it("adapts null detail wire payload into not-found item", () => {
+    const payload = adaptProviderDetailWirePayload({
+      item: null,
+    });
+
+    expect(payload.item).toBeNull();
   });
 
   it("throws a clear error for invalid detail wire payload", () => {
@@ -5957,6 +5973,25 @@ describe("console readonly data source", () => {
   it("creates a real providers datasource that maps not-found detail responses", async () => {
     const datasource = createRealProvidersReadonlyDataSource({
       transport: async () => ({ data: { item: null } }),
+    });
+
+    const response = await datasource.getProvider("missing-provider");
+
+    expect(response.meta.status).toBe("not-found");
+    expect(response.item).toBeNull();
+  });
+
+  it("maps transport 404 null detail into not-found without invoking detail adapter", async () => {
+    const datasource = createRealProvidersReadonlyDataSource({
+      transport: async () => ({
+        statusCode: 404,
+        data: null,
+      }),
+      adapters: {
+        detail: () => {
+          throw new Error("detail adapter should not run for transport 404");
+        },
+      },
     });
 
     const response = await datasource.getProvider("missing-provider");

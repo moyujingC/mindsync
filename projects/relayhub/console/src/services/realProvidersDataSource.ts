@@ -34,6 +34,10 @@ const PROVIDER_HEALTH_OPTIONS = ["healthy", "degraded", "risk", "idle"] as const
 const PROVIDER_TRANSPARENCY_OPTIONS: TransparencyState[] = ["完整", "部分缺失", "暂无"];
 const PROVIDERS_BASE_PATH = "/providers";
 
+// Default real Providers datasource contract:
+// - collection path is /providers plus sanitized query filters
+// - detail path is /providers/:id
+// - transport 404 + null maps to contract-level not-found
 function isAllowedValue<T extends readonly string[]>(
   value: string | undefined,
   options: T,

@@ -1,5 +1,9 @@
 import type { ProviderRecordContract } from "../contracts";
 
+// Default Providers readonly wire contract:
+// - collection responses are { items: ProviderRecordContract[] }
+// - detail responses are { item: ProviderRecordContract | null }
+// Custom adapters may translate other backend shapes, but the default real-fetch trial expects this shape.
 export interface ProvidersCollectionWirePayload {
   items: ProviderRecordContract[];
 }
