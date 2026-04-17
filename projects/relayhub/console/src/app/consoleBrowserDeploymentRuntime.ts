@@ -17,9 +17,6 @@ import {
   resolveProvidersTokenDeploymentInputFromBrowserRuntimeOption,
 } from "./consoleProvidersTokenBrowserRuntime";
 import {
-  resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput,
-} from "./consoleProvidersSecurityBrowserRuntime";
-import {
   createProvidersAuthHeadersSource,
   createProvidersAuthHeadersSourceFactory,
   createProvidersAuthTokenSource,
@@ -38,9 +35,6 @@ import type {
 import type {
   ConsoleProvidersTokenBrowserRuntimeOption,
 } from "./consoleProvidersTokenBrowserRuntime";
-import type {
-  ConsoleProvidersSecurityBrowserRuntimeInput,
-} from "./consoleProvidersSecurityBrowserRuntime";
 import type {
   ProvidersAuthHeaderResolver,
   ProvidersAuthHeadersSource,
@@ -90,7 +84,6 @@ export type ConsoleBrowserDeploymentRuntimeInput =
       authTokenSourceCompositionOptions?: ProvidersAuthTokenSourceCompositionOptions;
       tokenDeploymentInput?: ConsoleProvidersTokenDeploymentInput;
       tokenBrowserRuntimeOption?: ConsoleProvidersTokenBrowserRuntimeOption;
-      securityBrowserRuntimeInput?: ConsoleProvidersSecurityBrowserRuntimeInput;
     }
   | {
       mode: "browser-fetch-source";
@@ -108,7 +101,6 @@ export type ConsoleBrowserDeploymentRuntimeInput =
       authTokenSourceCompositionOptions?: ProvidersAuthTokenSourceCompositionOptions;
       tokenDeploymentInput?: ConsoleProvidersTokenDeploymentInput;
       tokenBrowserRuntimeOption?: ConsoleProvidersTokenBrowserRuntimeOption;
-      securityBrowserRuntimeInput?: ConsoleProvidersSecurityBrowserRuntimeInput;
     }
   | {
       mode: "global-browser-fetch";
@@ -125,7 +117,6 @@ export type ConsoleBrowserDeploymentRuntimeInput =
       authTokenSourceCompositionOptions?: ProvidersAuthTokenSourceCompositionOptions;
       tokenDeploymentInput?: ConsoleProvidersTokenDeploymentInput;
       tokenBrowserRuntimeOption?: ConsoleProvidersTokenBrowserRuntimeOption;
-      securityBrowserRuntimeInput?: ConsoleProvidersSecurityBrowserRuntimeInput;
     };
 
 export interface ConsoleEnvDeploymentRuntimeArgs {
@@ -147,7 +138,6 @@ function resolveAuthHeadersResolver(
   authTokenSourceCompositionOptions?: ProvidersAuthTokenSourceCompositionOptions,
   tokenDeploymentInput?: ConsoleProvidersTokenDeploymentInput,
   tokenBrowserRuntimeOption?: ConsoleProvidersTokenBrowserRuntimeOption,
-  securityBrowserRuntimeInput?: ConsoleProvidersSecurityBrowserRuntimeInput,
 ): ProvidersAuthHeaderResolver | undefined {
   return (
     authHeadersResolver ??
@@ -194,9 +184,6 @@ function resolveAuthHeadersResolver(
                     resolveProvidersTokenDeploymentInputFromBrowserRuntimeOption(
                       tokenBrowserRuntimeOption,
                     ),
-                ) ??
-                resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput(
-                  securityBrowserRuntimeInput,
                 )
           )
     )
@@ -223,7 +210,6 @@ export function resolveConsoleEnvDeploymentRuntimeArgs(
         input.authTokenSourceCompositionOptions,
         input.tokenDeploymentInput,
         input.tokenBrowserRuntimeOption,
-        input.securityBrowserRuntimeInput,
       ),
     };
   }
@@ -247,7 +233,6 @@ export function resolveConsoleEnvDeploymentRuntimeArgs(
         input.authTokenSourceCompositionOptions,
         input.tokenDeploymentInput,
         input.tokenBrowserRuntimeOption,
-        input.securityBrowserRuntimeInput,
       ),
     };
   }
@@ -271,7 +256,6 @@ export function resolveConsoleEnvDeploymentRuntimeArgs(
         input.authTokenSourceCompositionOptions,
         input.tokenDeploymentInput,
         input.tokenBrowserRuntimeOption,
-        input.securityBrowserRuntimeInput,
       ),
     };
   }

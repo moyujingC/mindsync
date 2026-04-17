@@ -35,12 +35,6 @@ import {
   resolveProvidersTokenDeploymentInputFromBrowserRuntimeOption,
 } from "../app/consoleProvidersTokenBrowserRuntime";
 import {
-  resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput,
-} from "../app/consoleProvidersSecurityBrowserRuntime";
-import {
-  resolveProvidersAuthHeadersResolverFromSecurityDeploymentInput,
-} from "../app/consoleProvidersSecurityDeployment";
-import {
   bootstrapConsoleEnvDeploymentRuntime,
   bootstrapConsoleEnvDeploymentRuntimeWithBrowserFetch,
   bootstrapDefaultConsoleEnvDeploymentRuntime,
@@ -1086,138 +1080,6 @@ describe("console readonly data source", () => {
     ).toEqual(tokenDeploymentInput);
   });
 
-  it("returns undefined from the default security browser runtime input", () => {
-    expect(resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput()).toBeUndefined();
-  });
-
-  it("maps auth-deployment-input security browser runtime input into auth resolver", async () => {
-    const resolver = resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput({
-      mode: "auth-deployment-input",
-      authDeploymentInput: {
-        mode: "resolver",
-        authHeadersResolver: async () => ({
-          authorization: "Bearer security-auth-deployment-token",
-        }),
-      },
-    });
-
-    await expect(resolver?.()).resolves.toEqual({
-      authorization: "Bearer security-auth-deployment-token",
-    });
-  });
-
-  it("maps auth-browser-runtime-option security browser runtime input into auth resolver", async () => {
-    const resolver = resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput({
-      mode: "auth-browser-runtime-option",
-      authBrowserRuntimeOption: {
-        mode: "source-composition",
-        authHeadersSourceCompositionOptions: {
-          mode: "static",
-          resolver: async () => ({
-            authorization: "Bearer security-auth-browser-option-token",
-          }),
-        },
-      },
-    });
-
-    await expect(resolver?.()).resolves.toEqual({
-      authorization: "Bearer security-auth-browser-option-token",
-    });
-  });
-
-  it("maps token-deployment-input security browser runtime input into auth resolver", async () => {
-    const resolver = resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput({
-      mode: "token-deployment-input",
-      tokenDeploymentInput: {
-        mode: "source-composition",
-        authTokenSourceCompositionOptions: {
-          mode: "static",
-          provider: async () => "Bearer security-token-deployment-token",
-        },
-      },
-    });
-
-    await expect(resolver?.()).resolves.toEqual({
-      authorization: "Bearer security-token-deployment-token",
-    });
-  });
-
-  it("maps token-browser-runtime-option security browser runtime input into auth resolver", async () => {
-    const resolver = resolveProvidersAuthHeadersResolverFromSecurityBrowserRuntimeInput({
-      mode: "token-browser-runtime-option",
-      tokenBrowserRuntimeOption: {
-        mode: "source-composition",
-        authTokenSourceCompositionOptions: {
-          mode: "static",
-          provider: async () => "Bearer security-token-browser-option-token",
-        },
-      },
-    });
-
-    await expect(resolver?.()).resolves.toEqual({
-      authorization: "Bearer security-token-browser-option-token",
-    });
-  });
-
-  it("returns undefined from the default security deployment input", () => {
-    expect(resolveProvidersAuthHeadersResolverFromSecurityDeploymentInput()).toBeUndefined();
-  });
-
-  it("maps auth-deployment-input security deployment input into auth resolver", async () => {
-    const resolver = resolveProvidersAuthHeadersResolverFromSecurityDeploymentInput({
-      mode: "auth-deployment-input",
-      authDeploymentInput: {
-        mode: "resolver",
-        authHeadersResolver: async () => ({
-          authorization: "Bearer security-deployment-auth-token",
-        }),
-      },
-    });
-
-    await expect(resolver?.()).resolves.toEqual({
-      authorization: "Bearer security-deployment-auth-token",
-    });
-  });
-
-  it("maps token-deployment-input security deployment input into auth resolver", async () => {
-    const resolver = resolveProvidersAuthHeadersResolverFromSecurityDeploymentInput({
-      mode: "token-deployment-input",
-      tokenDeploymentInput: {
-        mode: "source-composition",
-        authTokenSourceCompositionOptions: {
-          mode: "static",
-          provider: async () => "Bearer security-deployment-token-token",
-        },
-      },
-    });
-
-    await expect(resolver?.()).resolves.toEqual({
-      authorization: "Bearer security-deployment-token-token",
-    });
-  });
-
-  it("maps security-browser-runtime-input security deployment input into auth resolver", async () => {
-    const resolver = resolveProvidersAuthHeadersResolverFromSecurityDeploymentInput({
-      mode: "security-browser-runtime-input",
-      securityBrowserRuntimeInput: {
-        mode: "auth-browser-runtime-option",
-        authBrowserRuntimeOption: {
-          mode: "source-composition",
-          authHeadersSourceCompositionOptions: {
-            mode: "static",
-            resolver: async () => ({
-              authorization: "Bearer security-deployment-browser-input-token",
-            }),
-          },
-        },
-      },
-    });
-
-    await expect(resolver?.()).resolves.toEqual({
-      authorization: "Bearer security-deployment-browser-input-token",
-    });
-  });
-
   it("maps auth token provider into auth headers resolver", async () => {
     const resolver = resolveProvidersAuthHeadersResolverFromTokenProvider(async () =>
       "Bearer token-provider-token",
@@ -2096,45 +1958,6 @@ describe("console readonly data source", () => {
     expect(response.meta.status).toBe("empty");
   });
 
-  it("uses security deployment input with env deployment runtime", async () => {
-    const calls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
-
-    const runtime = bootstrapConsoleDeploymentRuntime({
-      mode: "env",
-      env: {
-        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
-      },
-      fetchImpl: async (input, init) => {
-        calls.push({ input, init });
-        return {
-          status: 200,
-          json: async () => ({ items: [] }),
-        };
-      },
-      securityDeploymentInput: {
-        mode: "security-browser-runtime-input",
-        securityBrowserRuntimeInput: {
-          mode: "token-browser-runtime-option",
-          tokenBrowserRuntimeOption: {
-            mode: "source-composition",
-            authTokenSourceCompositionOptions: {
-              mode: "static",
-              provider: async () => "Bearer env-security-deployment-token",
-            },
-          },
-        },
-      },
-    });
-
-    const response = await runtime.dataSource.listProviders();
-
-    expect(calls[0]?.init?.headers).toEqual({
-      authorization: "Bearer env-security-deployment-token",
-    });
-    expect(response.meta.status).toBe("empty");
-  });
-
   it("falls back to mock when env deployment runtime browser fetch injection is missing", async () => {
     const runtime = bootstrapConsoleEnvDeploymentRuntimeWithBrowserFetch({
       RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
@@ -2581,41 +2404,6 @@ describe("console readonly data source", () => {
 
     expect(calls[0]?.init?.headers).toEqual({
       authorization: "Bearer browser-token-browser-option-token",
-    });
-    expect(response.meta.status).toBe("empty");
-  });
-
-  it("uses security browser runtime input with browser-fetch runtime input", async () => {
-    const calls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
-    const runtime = bootstrapConsoleBrowserDeploymentRuntime({
-      mode: "browser-fetch",
-      env: {
-        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
-      },
-      securityBrowserRuntimeInput: {
-        mode: "token-browser-runtime-option",
-        tokenBrowserRuntimeOption: {
-          mode: "source-composition",
-          authTokenSourceCompositionOptions: {
-            mode: "static",
-            provider: async () => "Bearer security-browser-fetch-token",
-          },
-        },
-      },
-      browserFetch: async (input, init) => {
-        calls.push({ input, init });
-        return {
-          status: 200,
-          json: async () => ({ items: [] }),
-        };
-      },
-    });
-
-    const response = await runtime.dataSource.listProviders();
-
-    expect(calls[0]?.init?.headers).toEqual({
-      authorization: "Bearer security-browser-fetch-token",
     });
     expect(response.meta.status).toBe("empty");
   });
@@ -3078,7 +2866,7 @@ describe("console readonly data source", () => {
     expect(response.meta.status).toBe("empty");
   });
 
-  it("uses security browser runtime input with browser-fetch-source runtime input", async () => {
+  it("uses auth browser runtime option with browser-fetch-source runtime input", async () => {
     const calls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
     const runtime = bootstrapConsoleBrowserDeploymentRuntime({
       mode: "browser-fetch-source",
@@ -3086,16 +2874,13 @@ describe("console readonly data source", () => {
         RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
         RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
       },
-      securityBrowserRuntimeInput: {
-        mode: "auth-browser-runtime-option",
-        authBrowserRuntimeOption: {
-          mode: "source-composition",
-          authHeadersSourceCompositionOptions: {
-            mode: "static",
-            resolver: async () => ({
-              authorization: "Bearer security-browser-fetch-source-token",
-            }),
-          },
+      authBrowserRuntimeOption: {
+        mode: "source-composition",
+        authHeadersSourceCompositionOptions: {
+          mode: "static",
+          resolver: async () => ({
+            authorization: "Bearer security-browser-fetch-source-token",
+          }),
         },
       },
       browserFetchSource: createStaticProvidersBrowserFetchSource(async (input, init) => {
@@ -3113,6 +2898,53 @@ describe("console readonly data source", () => {
       authorization: "Bearer security-browser-fetch-source-token",
     });
     expect(response.meta.status).toBe("empty");
+  });
+
+  it("uses token deployment input with global-browser-fetch runtime input", async () => {
+    const originalFetch = globalThis.fetch;
+    const calls: Array<{
+      input: string;
+      init?: { method?: string; headers?: Record<string, string> };
+    }> = [];
+
+    globalThis.fetch = (async (input, init) => {
+      calls.push({
+        input: String(input),
+        init: init as { method?: string; headers?: Record<string, string> } | undefined,
+      });
+
+      return {
+        status: 200,
+        headers: new Headers(),
+        json: async () => ({ items: [] }),
+      } as unknown as Response;
+    }) as typeof fetch;
+
+    try {
+      const runtime = bootstrapConsoleBrowserDeploymentRuntime({
+        mode: "global-browser-fetch",
+        env: {
+          RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+          RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        },
+        tokenDeploymentInput: {
+          mode: "source-composition",
+          authTokenSourceCompositionOptions: {
+            mode: "static",
+            provider: async () => "Bearer security-global-browser-fetch-token",
+          },
+        },
+      });
+
+      const response = await runtime.dataSource.listProviders();
+
+      expect(calls[0]?.init?.headers).toEqual({
+        authorization: "Bearer security-global-browser-fetch-token",
+      });
+      expect(response.meta.status).toBe("empty");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 
   it("falls back to mock when browser fetch source mode resolves to undefined", async () => {
@@ -3693,53 +3525,6 @@ describe("console readonly data source", () => {
     }
   });
 
-  it("uses security browser runtime input with global browser fetch runtime option", async () => {
-    const originalFetch = globalThis.fetch;
-    const calls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
-
-    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-      calls.push({
-        input: String(input),
-        init: init as { method?: string; headers?: Record<string, string> } | undefined,
-      });
-
-      return {
-        status: 200,
-        headers: new Headers(),
-        json: async () => ({ items: [] }),
-      } as unknown as Response;
-    }) as typeof fetch;
-
-    try {
-      const runtime = bootstrapConsoleBrowserDeploymentRuntime({
-        mode: "global-browser-fetch",
-        env: {
-          RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-          RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
-        },
-        securityBrowserRuntimeInput: {
-          mode: "token-deployment-input",
-          tokenDeploymentInput: {
-            mode: "source-composition",
-            authTokenSourceCompositionOptions: {
-              mode: "static",
-              provider: async () => "Bearer security-global-browser-fetch-token",
-            },
-          },
-        },
-      });
-
-      const response = await runtime.dataSource.listProviders();
-
-      expect(calls[0]?.init?.headers).toEqual({
-        authorization: "Bearer security-global-browser-fetch-token",
-      });
-      expect(response.meta.status).toBe("empty");
-    } finally {
-      globalThis.fetch = originalFetch;
-    }
-  });
-
   it("falls back to mock when global browser fetch runtime option lacks baseUrl", async () => {
     const runtime = bootstrapConsoleBrowserDeploymentRuntime({
       mode: "global-browser-fetch",
@@ -4306,48 +4091,6 @@ describe("console readonly data source", () => {
     expect(response.meta.status).toBe("empty");
   });
 
-  it("keeps existing lower-level deployment inputs precedence over security deployment input", async () => {
-    const calls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
-
-    const runtime = bootstrapConsoleDeploymentRuntime({
-      mode: "env",
-      env: {
-        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
-      },
-      fetchImpl: async (input, init) => {
-        calls.push({ input, init });
-        return {
-          status: 200,
-          json: async () => ({ items: [] }),
-        };
-      },
-      tokenDeploymentInput: {
-        mode: "source-composition",
-        authTokenSourceCompositionOptions: {
-          mode: "static",
-          provider: async () => "Bearer env-token-deployment-wins-over-security-deployment",
-        },
-      },
-      securityDeploymentInput: {
-        mode: "auth-deployment-input",
-        authDeploymentInput: {
-          mode: "resolver",
-          authHeadersResolver: async () => ({
-            authorization: "Bearer security-deployment-should-not-win",
-          }),
-        },
-      },
-    });
-
-    const response = await runtime.dataSource.listProviders();
-
-    expect(calls[0]?.init?.headers).toEqual({
-      authorization: "Bearer env-token-deployment-wins-over-security-deployment",
-    });
-    expect(response.meta.status).toBe("empty");
-  });
-
   it("keeps token deployment input precedence over token browser runtime option", async () => {
     const calls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
     const runtime = bootstrapConsoleBrowserDeploymentRuntime({
@@ -4423,50 +4166,6 @@ describe("console readonly data source", () => {
         }
       ).__RELAYHUB_PROVIDERS_AUTH_TOKEN_PROVIDER__ = originalProvider;
     }
-  });
-
-  it("keeps existing lower-level inputs precedence over security browser runtime input", async () => {
-    const calls: Array<{ input: string; init?: { method?: string; headers?: Record<string, string> } }> = [];
-    const runtime = bootstrapConsoleBrowserDeploymentRuntime({
-      mode: "browser-fetch",
-      env: {
-        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
-      },
-      tokenBrowserRuntimeOption: {
-        mode: "source-composition",
-        authTokenSourceCompositionOptions: {
-          mode: "static",
-          provider: async () => "Bearer token-browser-option-wins-over-security-input",
-        },
-      },
-      securityBrowserRuntimeInput: {
-        mode: "auth-browser-runtime-option",
-        authBrowserRuntimeOption: {
-          mode: "source-composition",
-          authHeadersSourceCompositionOptions: {
-            mode: "static",
-            resolver: async () => ({
-              authorization: "Bearer security-input-should-not-win",
-            }),
-          },
-        },
-      },
-      browserFetch: async (input, init) => {
-        calls.push({ input, init });
-        return {
-          status: 200,
-          json: async () => ({ items: [] }),
-        };
-      },
-    });
-
-    const response = await runtime.dataSource.listProviders();
-
-    expect(calls[0]?.init?.headers).toEqual({
-      authorization: "Bearer token-browser-option-wins-over-security-input",
-    });
-    expect(response.meta.status).toBe("empty");
   });
 
   it("keeps lower-level auth inputs precedence over auth browser runtime option", async () => {

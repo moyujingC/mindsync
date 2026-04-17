@@ -70,6 +70,8 @@
 - `ConsoleProvidersAppRuntimeInput`
 - `ConsoleProvidersAppRuntimeStartupInput`
 - `ConsoleProvidersSecurityStartupInput`
+- `ConsoleProvidersSecurityBrowserRuntimeInput`
+- `ConsoleProvidersSecurityDeploymentInput`
 - `createConsoleAppRuntimeFromInput(...)`
 - `bootstrapConsoleAppRuntimeFromInput(...)`
 - `bootstrapConsoleAppRuntimeFromStartupInput(...)`
@@ -77,3 +79,4 @@
 
 当前 `ConsoleAppRuntime` 已收敛回较低层 bootstrap 容器，只承载 `providersBootstrapOptions?` 与 `providersBootstrapInput?`。
 当前 startup helper 也已收敛回 env + fetch/browserFetch 装配入口，不再承载额外 security 聚合语义。
+当前 browser/deployment 主链也已不再保留额外 security 聚合层。

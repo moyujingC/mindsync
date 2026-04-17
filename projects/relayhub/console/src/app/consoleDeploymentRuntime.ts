@@ -8,9 +8,6 @@ import {
   resolveProvidersAuthHeadersResolverFromTokenDeploymentInput,
 } from "./consoleProvidersTokenDeployment";
 import {
-  resolveProvidersAuthHeadersResolverFromSecurityDeploymentInput,
-} from "./consoleProvidersSecurityDeployment";
-import {
   createProvidersAuthTokenSource,
   createProvidersAuthTokenSourceFactory,
   resolveProvidersAuthHeadersResolverFromTokenProvider,
@@ -21,9 +18,6 @@ import type { ConsoleProvidersAuthDeploymentInput } from "./consoleProvidersAuth
 import type {
   ConsoleProvidersTokenDeploymentInput,
 } from "./consoleProvidersTokenDeployment";
-import type {
-  ConsoleProvidersSecurityDeploymentInput,
-} from "./consoleProvidersSecurityDeployment";
 import type {
   ProvidersAuthHeaderResolver,
   ProvidersAuthHeadersSource,
@@ -65,7 +59,6 @@ export type ConsoleDeploymentRuntimeInput =
       authTokenSourceFactoryOptions?: ProvidersAuthTokenSourceFactoryOptions;
       authTokenSourceCompositionOptions?: ProvidersAuthTokenSourceCompositionOptions;
       tokenDeploymentInput?: ConsoleProvidersTokenDeploymentInput;
-      securityDeploymentInput?: ConsoleProvidersSecurityDeploymentInput;
     };
 
 export function resolveConsoleAppRuntimeOptions(
@@ -113,9 +106,6 @@ export function resolveConsoleAppRuntimeOptions(
                       )
                   : resolveProvidersAuthHeadersResolverFromTokenDeploymentInput(
                       input.tokenDeploymentInput,
-                    ) ??
-                    resolveProvidersAuthHeadersResolverFromSecurityDeploymentInput(
-                      input.securityDeploymentInput,
                     )
               )
             )
