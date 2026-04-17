@@ -13,9 +13,15 @@ function LocationProbe() {
   );
 }
 
-export function renderRoute(initialEntry: string) {
+export function renderRoute(
+  initialEntry: string,
+  options?: {
+    basename?: string;
+  },
+) {
   return render(
     <MemoryRouter
+      basename={options?.basename}
       initialEntries={[initialEntry]}
       future={{
         v7_startTransition: true,

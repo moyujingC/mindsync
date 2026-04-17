@@ -1,8 +1,37 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { getConsoleRouterBasename } from "../app/consoleRouter";
 import { renderRoute } from "./renderRoute";
 
 describe("RelayHub console routes", () => {
+  it("normalizes router basename for release subpath deployment", () => {
+    expect(getConsoleRouterBasename("/relayhub/")).toBe("/relayhub");
+    expect(getConsoleRouterBasename("relayhub")).toBe("/relayhub");
+    expect(getConsoleRouterBasename("/")).toBe("/");
+  });
+
+  it("renders provider route under /relayhub basename", async () => {
+    renderRoute("/relayhub/providers", { basename: "/relayhub" });
+
+    expect(
+      await screen.findByText("按上游治理看 provider，而不是按模型商店看 provider"),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId("current-location")).toHaveTextContent("/providers");
+    });
+  });
+
+  it("renders provider detail route under /relayhub basename", async () => {
+    renderRoute("/relayhub/providers/deepseek-direct", { basename: "/relayhub" });
+
+    expect(await screen.findByRole("heading", { name: "DeepSeek Direct" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId("current-location")).toHaveTextContent(
+        "/providers/deepseek-direct",
+      );
+    });
+  });
+
   it("renders dashboard overview", async () => {
     renderRoute("/dashboard");
 

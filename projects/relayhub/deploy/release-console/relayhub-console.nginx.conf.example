@@ -1,0 +1,9 @@
+location = /relayhub {
+    return 301 /relayhub/;
+}
+
+location /relayhub/ {
+    alias /var/www/web.jingshu.cc/relayhub/;
+    index index.html;
+    try_files $uri $uri/ /relayhub/index.html;
+}
