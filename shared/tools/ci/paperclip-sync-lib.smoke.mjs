@@ -1,12 +1,41 @@
 #!/usr/bin/env node
 
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import process from "node:process";
 
+import { assertProjectRegistered } from "./common.mjs";
 import { __testables } from "./paperclip-sync-lib.mjs";
 
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
+  }
+}
+
+async function withTempRegistry(run) {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "mindsync-paperclip-smoke-"));
+  const companyDir = path.join(tempDir, "company");
+  await fs.mkdir(companyDir, { recursive: true });
+  await fs.writeFile(
+    path.join(companyDir, "项目注册表.yaml"),
+    [
+      "version: 0.1.0",
+      "objects:",
+      '  - id: "p1"',
+      '    name: "一镜一梳"',
+      '    slug: "aimandala"',
+      '    kind: "product"',
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+
+  try {
+    await run(tempDir);
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true });
   }
 }
 
@@ -29,7 +58,7 @@ const baseOptions = {
   summary: "sample log",
 };
 
-function main() {
+async function main() {
   const failureTitle = __testables.buildFailureTitle({}, baseOptions);
   assert(failureTitle === "knowledge-ci", `unexpected failure title: ${failureTitle}`);
 
@@ -98,7 +127,23 @@ function main() {
   assert(commitSummaryComment.includes("- adapter: claude_local"), "commit summary comment should include execution adapter");
   assert(commitSummaryComment.includes("- host: automation-host"), "commit summary comment should include execution host");
 
+  await withTempRegistry(async (tempDir) => {
+    const registered = await assertProjectRegistered("一镜一梳", tempDir);
+    assert(registered.slug === "aimandala", "registered project should resolve from registry");
+
+    let threw = false;
+    try {
+      await assertProjectRegistered("Onboarding", tempDir);
+    } catch (error) {
+      threw = String(error?.message ?? error).includes("Project is not registered");
+    }
+    assert(threw, "unregistered runtime project should be rejected");
+  });
+
   process.stdout.write("paperclip-sync-lib smoke ok\n");
 }
 
-main();
+main().catch((error) => {
+  process.stderr.write(`${error instanceof Error ? error.stack ?? error.message : String(error)}\n`);
+  process.exit(1);
+});
