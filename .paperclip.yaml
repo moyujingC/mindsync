@@ -20,7 +20,8 @@ agents:
   - id: "2014e2cd-af7a-4be1-bb60-e6a324b7c3c1"
     name: "CEO"
     role: "ceo"
-    adapter: "hermes_local"
+    # 临时回退口径：Hermes session resume 存在上游 bug，先切回 claude_local 保证 CEO 可用。
+    adapter: "claude_local"
     directory: "agents/ceo"
 
   - id: "81c0b428-1016-42b6-8393-9f23cb1dca49"

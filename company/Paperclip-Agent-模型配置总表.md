@@ -38,7 +38,7 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `hermes_local` | `https://ark.cn-beijing.volces.com/api/coding/v3` | `minimax-m2.5` | 服务器环境变量 `OPENAI_*` | 当前主决策链路 |
+| CEO | CEO | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 临时回退链路，等待 `hermes_local` 上游修复 |
 | 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主工程链路 |
 | 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主测试链路 |
 | 需求澄清 | Idea Clarifier | `pi_local` | `https://ark.cn-beijing.volces.com/api/coding/v3` | `volcengine-coding-plan/Doubao-Seed-2.0-pro` | `pi` 自定义 provider + 服务器环境变量 `OPENAI_API_KEY` | 当前为独立链路，不与 CEO 强制统一 |
@@ -49,15 +49,17 @@
 ### 3.1 CEO
 
 - Agent：`CEO`
-- Adapter：`hermes_local`
-- Base URL：`https://ark.cn-beijing.volces.com/api/coding/v3`
-- Model：`minimax-m2.5`
+- Adapter：`claude_local`
+- Base URL：`https://ark.cn-beijing.volces.com/api/coding`
+- Model：`ark-code-latest`
 - 模型来源：
-  - automation 节点 `/etc/default/paperclip-automation`
-  - 当前使用服务器级 `OPENAI_BASE_URL` / `OPENAI_MODEL`
+  - Agent 级 `ANTHROPIC_BASE_URL`
+  - Agent 级 `ANTHROPIC_MODEL`
+  - Agent 级 `ANTHROPIC_API_KEY`
 - 当前语义：
-  - 这条链路是目前最稳定的“老板台/总控台”链路
-  - 如果 CEO 在面板中测试通过，说明 `Hermes + Volcengine` 主链路正常
+  - 这是当前为了绕开 `hermes_local` session resume 上游 bug 的临时回退链路
+  - 当前目标不是保留 Hermes 实验链路，而是先恢复 CEO 可用性
+  - 等 `paperclip` 上游修复后，再评估是否切回 `hermes_local`
 
 ### 3.2 Engineer
 
