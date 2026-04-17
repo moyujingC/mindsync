@@ -29,13 +29,13 @@
 - Providers：`https://web.jingshu.cc/relayhub/providers`
 - Provider detail 示例：`https://web.jingshu.cc/relayhub/providers/deepseek-direct`
 
-当前部署产物为 trial 构建入口，但由于尚未配置真实 readonly target，Providers 数据仍按既有 mock fallback 展示。后续接真实 readonly target 时，只需在执行 `npm run build:trial` 前显式传入：
+当前部署产物为 trial 构建入口，但由于尚未配置真实 readonly target，Providers 数据仍按既有 mock fallback 展示。后续接真实 readonly target 时，推荐先安装 `/relayhub-api` 同源反代，再执行 trial 构建：
 
 ```bash
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch
-RELAYHUB_PROVIDERS_READONLY_BASE_URL=<readonly-target>
+RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api
 ```
 
 ## 5. 后续 handoff
 
-下一步进入最小 readonly real-fetch 接入联调：确定 readonly target 地址与 CORS / 同源代理策略后，重新执行 trial 构建并同步静态目录。
+下一步进入最小 readonly real-fetch 接入联调：提供 `UPSTREAM_BASE_URL` 后，执行 `install-relayhub-api-nginx-location.sh` 安装 `/relayhub-api` 反代，再重新执行 trial 构建并同步静态目录。

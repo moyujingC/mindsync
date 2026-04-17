@@ -56,3 +56,18 @@ rg -n "保存策略|立即切流|发布到生产|启用自动路由|编辑生产
 
 - 命中均位于“不提供 / 禁止 / QA检查项 / 验证记录”语境
 - 未发现新增可执行控制动作文案
+
+## 5. `/relayhub-api` 接入准备
+
+- Git 推送已完成：`4a8e0afe` 已推送到 `origin/codex/relayhub-readonly-trial`
+- 已补充 `/relayhub-api` nginx 反代样例与参数化安装脚本
+- release 线上 nginx 尚未安装 `/relayhub-api` location
+- 阻塞原因：真实 `UPSTREAM_BASE_URL` 尚未提供，不能把占位 upstream 写入生效配置
+- 当前 trial 构建推荐配置已收敛为 `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
+
+本轮接入准备验证：
+
+- `npm test` 通过：`317 passed`
+- `npm run build` 通过
+- `RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api npm run build:trial` 通过
+- 误导表达全文搜索完成，命中仍位于“不提供 / 禁止 / QA检查项 / 验证记录”语境

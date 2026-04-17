@@ -7,3 +7,16 @@ location /relayhub/ {
     index index.html;
     try_files $uri $uri/ /relayhub/index.html;
 }
+
+location = /relayhub-api {
+    return 301 /relayhub-api/;
+}
+
+location /relayhub-api/ {
+    proxy_pass https://<readonly-upstream>/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $proxy_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
