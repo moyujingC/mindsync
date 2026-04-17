@@ -5,13 +5,16 @@ import {
 } from "../services/mockConsoleDataSource";
 import {
   createProvidersRuntimeBootstrap,
+  createProvidersRuntimeBootstrapFromInput,
 } from "../services/providersRuntimeBootstrap";
 import type {
+  ProvidersRuntimeBootstrapInput,
   ProvidersRuntimeBootstrapOptions,
 } from "../services/providersRuntimeBootstrap";
 
 export interface ConsoleAppRuntimeOptions {
   providersBootstrapOptions?: ProvidersRuntimeBootstrapOptions;
+  providersBootstrapInput?: ProvidersRuntimeBootstrapInput;
 }
 
 export interface ConsoleAppRuntime {
@@ -21,7 +24,11 @@ export interface ConsoleAppRuntime {
 export function createConsoleAppRuntime(
   options: ConsoleAppRuntimeOptions = {},
 ): ConsoleAppRuntime {
-  const providersBootstrap = createProvidersRuntimeBootstrap(options.providersBootstrapOptions);
+  const providersBootstrap = options.providersBootstrapOptions
+    ? createProvidersRuntimeBootstrap(options.providersBootstrapOptions)
+    : createProvidersRuntimeBootstrapFromInput(
+        options.providersBootstrapInput,
+      );
 
   return {
     dataSource: createConsoleReadonlyDataSource({

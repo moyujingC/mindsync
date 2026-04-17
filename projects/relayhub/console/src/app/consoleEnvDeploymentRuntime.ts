@@ -5,6 +5,11 @@ import type {
   ConsoleDeploymentRuntimeInput,
 } from "./consoleDeploymentRuntime";
 import type { ConsoleAppRuntime } from "./consoleAppRuntime";
+import type { ProvidersAuthHeaderResolver } from "../services/providersAuthHeaders";
+import {
+  createProvidersBrowserFetchLike,
+} from "./consoleBrowserFetch";
+import type { ProvidersBrowserFetch } from "./consoleBrowserFetch";
 import type { ProvidersFetchLike } from "../services/realProvidersFetchTransport";
 
 export interface ConsoleDeploymentRuntimeEnv {
@@ -20,6 +25,7 @@ export function getDefaultConsoleDeploymentRuntimeEnv(): ConsoleDeploymentRuntim
 export function resolveConsoleDeploymentRuntimeInputFromEnv(
   env: ConsoleDeploymentRuntimeEnv,
   fetchImpl?: ProvidersFetchLike,
+  authHeadersResolver?: ProvidersAuthHeaderResolver,
 ): ConsoleDeploymentRuntimeInput {
   if (env.RELAYHUB_PROVIDERS_RUNTIME_MODE === "mock") {
     return { mode: "default-mock" };
@@ -46,15 +52,33 @@ export function resolveConsoleDeploymentRuntimeInputFromEnv(
         : {}),
     },
     fetchImpl,
+    authHeadersResolver,
   };
 }
 
 export function bootstrapConsoleEnvDeploymentRuntime(
   env: ConsoleDeploymentRuntimeEnv,
   fetchImpl?: ProvidersFetchLike,
+  authHeadersResolver?: ProvidersAuthHeaderResolver,
 ): ConsoleAppRuntime {
   return bootstrapConsoleDeploymentRuntime(
-    resolveConsoleDeploymentRuntimeInputFromEnv(env, fetchImpl),
+    resolveConsoleDeploymentRuntimeInputFromEnv(
+      env,
+      fetchImpl,
+      authHeadersResolver,
+    ),
+  );
+}
+
+export function bootstrapConsoleEnvDeploymentRuntimeWithBrowserFetch(
+  env: ConsoleDeploymentRuntimeEnv,
+  browserFetch?: ProvidersBrowserFetch,
+  authHeadersResolver?: ProvidersAuthHeaderResolver,
+): ConsoleAppRuntime {
+  return bootstrapConsoleEnvDeploymentRuntime(
+    env,
+    browserFetch ? createProvidersBrowserFetchLike(browserFetch) : undefined,
+    authHeadersResolver,
   );
 }
 

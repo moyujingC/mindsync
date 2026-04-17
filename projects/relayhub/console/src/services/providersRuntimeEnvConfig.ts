@@ -2,6 +2,7 @@ import {
   getDefaultProvidersRuntimeConfig,
 } from "./providersRuntimeConfig";
 import type { ProvidersRuntimeConfig } from "./providersRuntimeConfig";
+import type { ProvidersAuthHeaderResolver } from "./providersAuthHeaders";
 import {
   createStaticProvidersRuntimeConfigSource,
 } from "./providersRuntimeConfigSource";
@@ -46,6 +47,7 @@ function parseDefaultHeaders(
 export function resolveProvidersRuntimeConfigFromEnv(
   env: ProvidersRuntimeEnv,
   fetchImpl?: ProvidersFetchLike,
+  authHeadersResolver?: ProvidersAuthHeaderResolver,
 ): ProvidersRuntimeConfig {
   const mode = isSupportedRuntimeMode(env.RELAYHUB_PROVIDERS_RUNTIME_MODE)
     ? env.RELAYHUB_PROVIDERS_RUNTIME_MODE
@@ -62,12 +64,16 @@ export function resolveProvidersRuntimeConfigFromEnv(
     baseUrl: env.RELAYHUB_PROVIDERS_READONLY_BASE_URL,
     fetchImpl,
     ...(defaultHeaders ? { defaultHeaders } : {}),
+    ...(authHeadersResolver ? { authHeadersResolver } : {}),
   };
 }
 
 export function createProvidersRuntimeConfigSourceFromEnv(
   env: ProvidersRuntimeEnv,
   fetchImpl?: ProvidersFetchLike,
+  authHeadersResolver?: ProvidersAuthHeaderResolver,
 ): ProvidersRuntimeConfigSource {
-  return createStaticProvidersRuntimeConfigSource(resolveProvidersRuntimeConfigFromEnv(env, fetchImpl));
+  return createStaticProvidersRuntimeConfigSource(
+    resolveProvidersRuntimeConfigFromEnv(env, fetchImpl, authHeadersResolver),
+  );
 }

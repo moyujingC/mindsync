@@ -1,7 +1,10 @@
 import type { ConsoleReadonlyDataSource } from "./consoleDataSource";
 import {
-  getProvidersRuntimeDataSourceFromFactory,
+  getProvidersRuntimeDataSourceFromConfigSource,
 } from "./providersRuntimeDataSource";
+import {
+  createProvidersRuntimeConfigSource,
+} from "./providersRuntimeConfigSourceFactory";
 import type { ProvidersRuntimeConfigSourceFactoryOptions } from "./providersRuntimeConfigSourceFactory";
 
 type ProvidersRuntimeSource = Pick<ConsoleReadonlyDataSource, "listProviders" | "getProvider">;
@@ -10,18 +13,53 @@ export interface ProvidersRuntimeBootstrapOptions {
   sourceFactoryOptions?: ProvidersRuntimeConfigSourceFactoryOptions;
 }
 
+export type ProvidersRuntimeBootstrapInputMode =
+  | "default-mock"
+  | "source-factory-options";
+
+export type ProvidersRuntimeBootstrapInput =
+  | {
+      mode?: "default-mock";
+    }
+  | {
+      mode: "source-factory-options";
+      sourceFactoryOptions?: ProvidersRuntimeConfigSourceFactoryOptions;
+    };
+
 export interface ProvidersRuntimeBootstrap {
   providersSource: ProvidersRuntimeSource;
+}
+
+export function resolveProvidersRuntimeBootstrapOptions(
+  input: ProvidersRuntimeBootstrapInput = { mode: "default-mock" },
+): ProvidersRuntimeBootstrapOptions {
+  if (input.mode === "source-factory-options") {
+    return {
+      ...(input.sourceFactoryOptions
+        ? { sourceFactoryOptions: input.sourceFactoryOptions }
+        : {}),
+    };
+  }
+
+  return {};
 }
 
 export function createProvidersRuntimeBootstrap(
   options: ProvidersRuntimeBootstrapOptions = {},
 ): ProvidersRuntimeBootstrap {
   return {
-    providersSource: getProvidersRuntimeDataSourceFromFactory(options.sourceFactoryOptions),
+    providersSource: getProvidersRuntimeDataSourceFromConfigSource(
+      createProvidersRuntimeConfigSource(options.sourceFactoryOptions),
+    ),
   };
 }
 
+export function createProvidersRuntimeBootstrapFromInput(
+  input: ProvidersRuntimeBootstrapInput = { mode: "default-mock" },
+): ProvidersRuntimeBootstrap {
+  return createProvidersRuntimeBootstrap(resolveProvidersRuntimeBootstrapOptions(input));
+}
+
 export function getDefaultProvidersRuntimeBootstrap(): ProvidersRuntimeBootstrap {
-  return createProvidersRuntimeBootstrap();
+  return createProvidersRuntimeBootstrapFromInput();
 }

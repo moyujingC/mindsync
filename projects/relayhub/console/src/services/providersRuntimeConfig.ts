@@ -1,4 +1,5 @@
 import type { ProvidersRuntimeDataSourceOptions } from "./providersRuntimeDataSource";
+import type { ProvidersAuthHeaderResolver } from "./providersAuthHeaders";
 import type {
   ProvidersFetchLike,
   ProvidersReadonlyTransportConfig,
@@ -17,22 +18,43 @@ export type ProvidersRuntimeConfig =
       defaultHeaders?: Record<string, string>;
     };
 
+type ProvidersRuntimeResolvedConfig =
+  | ProvidersRuntimeConfig
+  | {
+      mode: "real-fetch";
+      baseUrl: string;
+      fetchImpl: ProvidersFetchLike;
+      defaultHeaders?: Record<string, string>;
+      authHeadersResolver?: ProvidersAuthHeaderResolver;
+    };
+
 export function getDefaultProvidersRuntimeConfig(): ProvidersRuntimeConfig {
   return { mode: "mock" };
 }
 
+function hasAuthHeadersResolver(
+  config: Extract<ProvidersRuntimeResolvedConfig, { mode: "real-fetch" }>,
+): config is Extract<ProvidersRuntimeResolvedConfig, { mode: "real-fetch" }> & {
+  authHeadersResolver?: ProvidersAuthHeaderResolver;
+} {
+  return "authHeadersResolver" in config;
+}
+
 function toFetchTransportConfig(
-  config: Extract<ProvidersRuntimeConfig, { mode: "real-fetch" }>,
+  config: Extract<ProvidersRuntimeResolvedConfig, { mode: "real-fetch" }>,
 ): ProvidersReadonlyTransportConfig {
   return {
     baseUrl: config.baseUrl,
     fetchImpl: config.fetchImpl,
     ...(config.defaultHeaders ? { defaultHeaders: config.defaultHeaders } : {}),
+    ...(hasAuthHeadersResolver(config) && config.authHeadersResolver
+      ? { authHeadersResolver: config.authHeadersResolver }
+      : {}),
   };
 }
 
 export function resolveProvidersRuntimeDataSourceOptions(
-  config: ProvidersRuntimeConfig = getDefaultProvidersRuntimeConfig(),
+  config: ProvidersRuntimeResolvedConfig = getDefaultProvidersRuntimeConfig(),
 ): ProvidersRuntimeDataSourceOptions {
   if (config.mode === "real-fetch") {
     return {

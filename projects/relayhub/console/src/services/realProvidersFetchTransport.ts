@@ -1,4 +1,6 @@
 import type { ProvidersReadonlyTransport, ProvidersReadonlyTransportRequest } from "./realProvidersTransport";
+import { resolveProvidersAuthHeaders } from "./providersAuthHeaders";
+import type { ProvidersAuthHeaderResolver } from "./providersAuthHeaders";
 
 interface ProvidersFetchResponseLike {
   status: number;
@@ -20,6 +22,7 @@ export interface ProvidersReadonlyTransportConfig {
   baseUrl: string;
   fetchImpl: ProvidersFetchLike;
   defaultHeaders?: Record<string, string>;
+  authHeadersResolver?: ProvidersAuthHeaderResolver;
 }
 
 function joinBaseUrlAndPath(baseUrl: string, path: string): string {
@@ -49,9 +52,18 @@ export function createRealProvidersFetchTransport(
       throw new Error("RelayHub providers fetch transport forced error");
     }
 
+    const authHeaders = await resolveProvidersAuthHeaders(config.authHeadersResolver);
+    const requestHeaders =
+      config.defaultHeaders || authHeaders
+        ? {
+            ...(config.defaultHeaders ?? {}),
+            ...(authHeaders ?? {}),
+          }
+        : undefined;
+
     const response = await config.fetchImpl(joinBaseUrlAndPath(config.baseUrl, request.path), {
       method: "GET",
-      headers: config.defaultHeaders,
+      headers: requestHeaders,
     });
     const headers = normalizeHeaders(response.headers);
 
