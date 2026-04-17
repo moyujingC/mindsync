@@ -16,11 +16,48 @@ function minutesSince(isoTimestamp) {
   return (Date.now() - new Date(isoTimestamp).getTime()) / (1000 * 60);
 }
 
+function hasExecutionWorkspaceBinding(issue) {
+  return Boolean(issue.executionWorkspaceId || issue.currentExecutionWorkspace?.id);
+}
+
+function classifyExecutionWorkspaceDrift(issue) {
+  return {
+    issueId: issue.id,
+    identifier: issue.identifier,
+    title: issue.title,
+    status: issue.status,
+    reason: "execution_workspace_policy_not_materialized",
+    executionWorkspaceId: issue.executionWorkspaceId ?? null,
+    currentExecutionWorkspaceId: issue.currentExecutionWorkspace?.id ?? null,
+    checkoutRunId: issue.checkoutRunId ?? null,
+    startedAt: issue.startedAt ?? null,
+    completedAt: issue.completedAt ?? null,
+    updatedAt: issue.updatedAt ?? null,
+  };
+}
+
+function issueLooksActiveWithoutWorkspace(issue) {
+  if (hasExecutionWorkspaceBinding(issue)) {
+    return false;
+  }
+
+  if (!issue.assigneeAgentId) {
+    return false;
+  }
+
+  const activeStatuses = new Set(["in_progress", "in_review", "blocked", "done"]);
+  if (!activeStatuses.has(issue.status)) {
+    return false;
+  }
+
+  return Boolean(issue.checkoutRunId || issue.startedAt || issue.completedAt || issue.updatedAt);
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help || options.h) {
     console.log(`Usage:
-  node shared/tools/ci/check-paperclip-execution-health.mjs --company-id <id> --project-name <name> [--stale-minutes 15] [--apply]
+  node shared/tools/ci/check-paperclip-execution-health.mjs --company-id <id> --project-name <name> [--stale-minutes 15] [--apply] [--strict]
 `);
     return;
   }
@@ -31,6 +68,7 @@ async function main() {
   const projectName = getOption(options, "project-name", process.env.PAPERCLIP_PROJECT_NAME ?? "一镜一梳");
   const staleMinutes = Number(getOption(options, "stale-minutes", process.env.PAPERCLIP_EXECUTION_STALE_MINUTES ?? "15"));
   const apply = truthy(getOption(options, "apply", "0"));
+  const strict = truthy(getOption(options, "strict", process.env.PAPERCLIP_EXECUTION_HEALTH_STRICT ?? "0"));
 
   if (!companyId) {
     throw new Error("company id is required");
@@ -100,13 +138,44 @@ async function main() {
     });
   }
 
+  const workspaceDriftIssues =
+    project.executionWorkspacePolicy?.enabled === true
+      ? (issues ?? [])
+          .filter((issue) => issueLooksActiveWithoutWorkspace(issue))
+          .map(classifyExecutionWorkspaceDrift)
+      : [];
+
+  const staleRunningIssues = staleIssues.map((issue) => ({
+    ...issue,
+    reason: "stale_running_issue",
+  }));
+
+  const summary = {
+    checkedAt: isoNow(),
+    strict,
+    staleRunningIssues,
+    workspaceDriftIssues,
+  };
+
   if (staleIssues.length === 0) {
-    logInfo("No stale running issues detected");
+    if (workspaceDriftIssues.length === 0) {
+      logInfo("No stale running issues detected");
+      return;
+    }
+
+    logInfo(`Detected ${workspaceDriftIssues.length} issue(s) missing execution workspace binding`);
+    console.log(JSON.stringify(summary, null, 2));
+    if (strict) {
+      process.exitCode = 2;
+    }
     return;
   }
 
   logInfo(`Detected ${staleIssues.length} stale running issue(s)`);
-  console.log(JSON.stringify({ checkedAt: isoNow(), staleIssues }, null, 2));
+  console.log(JSON.stringify(summary, null, 2));
+  if (strict && workspaceDriftIssues.length > 0) {
+    process.exitCode = 2;
+  }
 }
 
 main().catch((error) => {

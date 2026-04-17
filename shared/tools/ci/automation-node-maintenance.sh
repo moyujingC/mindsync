@@ -64,6 +64,33 @@ log() {
   printf '[automation-maintenance] %s\n' "$*"
 }
 
+git_status_short() {
+  local repo_root="$1"
+  git -C "${repo_root}" status --short --untracked-files=normal 2>/dev/null || return 1
+}
+
+ensure_clean_checkout_or_exit() {
+  local repo_root="$1"
+  local label="$2"
+  local status_output
+
+  if [[ ! -d "${repo_root}/.git" ]]; then
+    log "Skip ${label} cleanliness check: ${repo_root} is not a git checkout"
+    return 0
+  fi
+
+  status_output="$(git_status_short "${repo_root}")"
+  if [[ -z "${status_output}" ]]; then
+    log "${label} is clean: ${repo_root}"
+    return 0
+  fi
+
+  log "Detected dirty checkout drift in ${label}: ${repo_root}"
+  printf '%s\n' "${status_output}" >&2
+  log "Refuse to continue maintenance: main mirror and heartbeat checkout are observe-only and must stay clean"
+  exit 20
+}
+
 free_gb() {
   df -Pk / | awk 'NR==2 { print int($4 / 1024 / 1024) }'
 }
@@ -81,12 +108,6 @@ cleanup_runner_temp() {
 cleanup_git_worktrees() {
   if [[ -d "${REPO_ROOT}/.git" ]]; then
     git -C "${REPO_ROOT}" worktree prune --verbose || true
-  fi
-
-  if [[ -d "${HEARTBEAT_REPO_ROOT}/.git" ]]; then
-    git -C "${HEARTBEAT_REPO_ROOT}" fetch origin --prune || true
-    git -C "${HEARTBEAT_REPO_ROOT}" reset --hard origin/main || true
-    git -C "${HEARTBEAT_REPO_ROOT}" clean -fd || true
   fi
 
   if [[ -d "${EXECUTION_WORKTREE_ROOT}" ]]; then
@@ -159,6 +180,8 @@ run_engineer_escalation_audit() {
 
 main() {
   log "Free disk before cleanup: $(free_gb)G"
+  ensure_clean_checkout_or_exit "${REPO_ROOT}" "main mirror checkout"
+  ensure_clean_checkout_or_exit "${HEARTBEAT_REPO_ROOT}" "heartbeat checkout"
   cleanup_runner_temp
   cleanup_git_worktrees
   cleanup_package_caches

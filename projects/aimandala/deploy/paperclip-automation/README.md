@@ -1,9 +1,9 @@
 # Aimandala Paperclip Automation 节点
 
 > 状态：current
-> 版本：0.1.3
+> 版本：0.1.4
 > owner：Engineer
-> last_updated：2026-04-15
+> last_updated：2026-04-17
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md
 > 项目：aimandala
 > 阶段：ops-runbook
@@ -52,6 +52,9 @@
 - `/opt/automation/worktrees`
   - 隔离执行区
   - 用于 `codex_local`、`claude_local`、`pi_local`、auto-repair 等会真实写文件的执行任务
+- `/data/paperclip/instances/default/workspaces`
+  - Paperclip 历史兼容工作区目录
+  - 只观测，不再作为 `aimandala` 新执行的可信落点
 - `paperclip` 仓库用于构建 Docker 镜像
 - `/data/paperclip` 作为 Paperclip 单机持久化目录
 - `mindsync` 仓库的 `origin` 应统一使用 GitHub SSH：
@@ -67,12 +70,220 @@
 
 这条边界的目标不是把 agent 全部降成只读，而是避免多个执行链长期共享同一个可写 checkout。
 
+补充可信信号：
+
+1. 看到 `project.executionWorkspacePolicy.enabled = true` 不代表当前 issue 已真正隔离
+2. 对 `一镜一梳`，真正可信的隔离信号是：
+   - issue 上已有 `executionWorkspaceId`
+   - 或 `currentExecutionWorkspace.id`
+   - 且宿主机 `/opt/automation/worktrees` 下存在对应 worktree
+3. 如果 issue 已进入 `in_progress / in_review / blocked / done`，但 `executionWorkspaceId = null`
+   - 应直接按 `execution_workspace_policy_not_materialized` 处理
+   - 不再把它视为“正常但稍后 heartbeat 会补齐”的状态
+
 补充治理口径：
 
 1. agent 的执行工作目录由 `project / issue` 级 execution workspace policy 决定，不由 adapter 单独决定
 2. local adapter 只负责消费 Paperclip 注入的最终 `cwd`、`paperclipWorkspace` 与相关环境变量
 3. agent 配置中的固定 `cwd` 只保留为 legacy fallback 或非项目任务兜底
 4. 对 `aimandala` 项目，默认应通过 project policy 把普通工程任务落到 `git_worktree` 隔离目录
+
+### 2.2 2026-04-17 已确认的失配现象
+
+截至 `2026-04-17`，线上已确认过一类需要单独治理的失配：
+
+1. `一镜一梳` 项目在 Paperclip 运行时里已经配置了：
+   - `executionWorkspacePolicy.enabled = true`
+   - `defaultMode = isolated_workspace`
+   - `workspaceStrategy.type = git_worktree`
+   - `worktreeParentDir = /opt/automation/worktrees`
+2. 但部分实际 issue 仍表现为：
+   - `executionWorkspaceId = null`
+   - `currentExecutionWorkspace = null`
+   - 同时任务已经进入 `in_progress / in_review / done`
+3. 这说明问题不一定是“项目没配 policy”，而更可能是：
+   - issue checkout 没真正绑定 execution workspace
+   - 某条执行链在消费 project policy 时退回到了 shared / legacy cwd
+   - 巡检链路仍在基于主镜像区或 heartbeat 巡检区判断健康
+
+这个现象的危险性在于：
+
+1. 主镜像区 `/opt/automation/app/mindsync` 会继续被真实任务写脏
+2. 巡检区 `/opt/automation/app/mindsync-heartbeat` 也可能被误写
+3. 面板上虽然显示项目已启用 `isolated_workspace`，但实际执行仍可能没真正隔离
+
+因此今后排查 “automation 工作区又脏了” 时，不要只检查 `project.executionWorkspacePolicy` 是否存在；还必须继续检查 issue 和 execution workspace 的真实绑定状态。
+
+### 2.3 排障最小检查集
+
+出现 “automation 工作区变脏 / heartbeat 基线漂移 / Paperclip 说启用了隔离但仓库还在被写” 时，按下面顺序检查：
+
+1. 检查主镜像区和巡检区是否变脏
+
+```bash
+ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
+  cd /opt/automation/app/mindsync && git status --short
+  cd /opt/automation/app/mindsync-heartbeat && git status --short
+'
+```
+
+2. 检查 `一镜一梳` 项目运行态是否真的开启了隔离策略
+
+```bash
+ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
+  API_KEY=$(sudo awk -F= "/^PAPERCLIP_API_KEY=/{print \$2}" /etc/default/paperclip-heartbeat)
+  curl -fsS -H "Authorization: Bearer $API_KEY" \
+    http://127.0.0.1:3100/api/companies/be191a6e-7447-4821-a93d-9114214c4a64/projects
+'
+```
+
+3. 检查问题单是否真正绑定 execution workspace
+
+说明：
+- 若项目已启用 `isolated_workspace`
+- 但目标 issue 长期是 `executionWorkspaceId = null`
+- 同时它又已经有 `checkoutRunId / startedAt / completedAt`
+- 应直接判定为 “workspace policy 已配置但未兑现到 issue checkout”
+
+```bash
+ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
+  API_KEY=$(sudo awk -F= "/^PAPERCLIP_API_KEY=/{print \$2}" /etc/default/paperclip-heartbeat)
+  curl -fsS -H "Authorization: Bearer $API_KEY" \
+    "http://127.0.0.1:3100/api/issues/MIN-102?companyId=be191a6e-7447-4821-a93d-9114214c4a64"
+'
+```
+
+4. 检查当前 execution workspace 实体是否真的存在
+
+```bash
+ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
+  API_KEY=$(sudo awk -F= "/^PAPERCLIP_API_KEY=/{print \$2}" /etc/default/paperclip-heartbeat)
+  curl -fsS -H "Authorization: Bearer $API_KEY" \
+    "http://127.0.0.1:3100/api/companies/be191a6e-7447-4821-a93d-9114214c4a64/execution-workspaces?projectId=56826c21-e9c6-408a-804b-039990c90a53"
+'
+```
+
+5. 再对照宿主机上的真实目录
+
+```bash
+ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
+  git -C /opt/automation/app/mindsync worktree list
+  find /opt/automation/worktrees -maxdepth 2 -type d | sort
+'
+```
+
+如果前 4 步显示项目 policy 已开，但第 5 步没有对应 worktree，或者 issue 仍无 workspace 绑定，就不要再把问题归咎为“忘了配 policy”；应直接按运行时 checkout / adapter 消费链路失配处理。
+
+### 2.4 运行时治理与 fail-fast 口径
+
+从 `2026-04-17` 起，`mindsync` 侧运维链路按下面口径执行，不依赖 Paperclip 内核兜底：
+
+1. `shared/tools/ci/check-paperclip-execution-health.mjs`
+   - 新增稳定原因码：`execution_workspace_policy_not_materialized`
+   - 默认只输出告警和 JSON，不自动修补 issue workspace 绑定
+   - 开启 `--strict` 或 `PAPERCLIP_EXECUTION_HEALTH_STRICT=1` 时
+   - 只要发现 `policy enabled + active issue + executionWorkspaceId = null`
+   - 就返回非零，供 heartbeat / automation gate 直接失败
+2. `shared/tools/ci/audit-paperclip-workspace-materialization.mjs`
+   - 只读审计入口
+   - 输出：
+     - `activeIssuesMissingWorkspace`
+     - `executionWorkspacesOutsideExpectedRoot`
+     - `hostWorktreesWithoutBoundIssue`
+   - 对 `aimandala` 默认以 `/opt/automation/worktrees` 作为期望根目录
+3. `shared/tools/ci/automation-node-maintenance.sh`
+   - 维护前先检查 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat`
+   - 任一 checkout 变脏即直接失败退出，不再静默 `reset --hard` 或自动清理
+   - 日常自动清理只允许作用于 `/opt/automation/worktrees`
+4. heartbeat / 巡检编排
+   - 先跑 runner heartbeat
+   - 再跑 execution health check strict gate
+   - 若发现 workspace materialization 漂移，本轮服务直接失败
+   - 不继续后续 maintenance 或会触发写文件的自动动作
+
+### 2.5 推荐巡检命令
+
+```bash
+cd /opt/automation/app/mindsync-heartbeat
+source /etc/default/paperclip-heartbeat
+node shared/tools/ci/check-paperclip-execution-health.mjs \
+  --company-id "$PAPERCLIP_COMPANY_ID" \
+  --project-name "一镜一梳" \
+  --api-base "$PAPERCLIP_API_BASE" \
+  --api-key "$PAPERCLIP_API_KEY" \
+  --stale-minutes "${PAPERCLIP_EXECUTION_STALE_MINUTES:-15}" \
+  --strict
+```
+
+```bash
+cd /opt/automation/app/mindsync-heartbeat
+source /etc/default/paperclip-heartbeat
+node shared/tools/ci/audit-paperclip-workspace-materialization.mjs \
+  --company-id "$PAPERCLIP_COMPANY_ID" \
+  --project-name "一镜一梳" \
+  --api-base "$PAPERCLIP_API_BASE" \
+  --api-key "$PAPERCLIP_API_KEY" \
+  --expected-root /opt/automation/worktrees \
+  --repo-root /opt/automation/app/mindsync
+```
+
+### 2.6 主镜像区脏仓收尾口径
+
+如果 `automation-node-maintenance.sh` 因主镜像区或 heartbeat 巡检区变脏而失败，不要直接把所有文件都当成“运行时垃圾”处理；先区分下面两类问题：
+
+1. 运行时写脏
+   - 典型信号：
+     - 主镜像区出现业务文件被改写
+     - `knowledge/builds/current/*` 这类受版本管理的编译产物被改写或删除
+     - heartbeat strict gate 同时报出 `execution_workspace_policy_not_materialized`
+   - 处理口径：
+     - 先保留现场
+     - 先跑 execution health strict 与 workspace audit
+     - 确认是否存在活动 issue 未真正绑定 execution workspace
+2. checkout 基线漂移
+   - 典型信号：
+     - `git status -sb` 显示 `main...origin/main [behind N]`
+     - 本地仓库已受版本管理的文件，在服务器上表现为 `??`
+     - 例如 `Dockerfile.paperclip-with-hermes`、`docker-compose.paperclip.yml` 这种“本应被跟踪但服务器基线太旧”的文件
+   - 处理口径：
+     - 不要把它们当作临时垃圾删除
+     - 先确认这些文件已经存在于当前权威仓库，再决定是否更新 checkout 基线
+
+推荐收尾顺序：
+
+```bash
+ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
+  cd /opt/automation/app/mindsync &&
+  git status -sb &&
+  git rev-parse HEAD &&
+  git rev-parse origin/main
+'
+```
+
+1. 如果 checkout 已落后 `origin/main`
+   - 先把服务器上的人工修复和新增文档回收到本地 `mindsync`
+   - 确认不再有“只存在于服务器、尚未入库”的必要内容
+2. 如果仍有受版本管理文件被删除或改写
+   - 先判断它是正式资产还是运行时垃圾
+   - 像 `toC/data/knowledge/builds/current/index.json` 这类正式编译产物，应先恢复到仓库基线，再继续排查为什么会被执行链写脏
+3. 只有在“服务器现场已完成回收、本地权威仓库已有对应内容”之后
+   - 才允许做 checkout 收敛
+   - 否则 maintenance 的 fail-fast 应继续保留
+
+明确禁止：
+
+1. 在未完成差异回收前，直接对 `/opt/automation/app/mindsync` 或 `/opt/automation/app/mindsync-heartbeat` 执行 `reset --hard` / `clean -fd`
+2. 把所有 `??` 文件都视为一次性垃圾
+3. 看到项目 policy 已开启，就跳过 issue workspace 绑定检查
+
+本次 `2026-04-17` 的线上排查中，主镜像区同时存在这两类问题：
+
+1. `execution_workspace_policy_not_materialized`
+   - 导致活动 issue 没真正落到 `/opt/automation/worktrees`
+2. `/opt/automation/app/mindsync` 落后 `origin/main`
+   - 导致部分已经进入权威仓库的部署文件，在服务器上被显示成 `??`
+
+因此今后收尾时，必须同时检查“运行时漂移”和“checkout 基线漂移”，不能只盯 dirty worktree 表象。
 
 ## 3. 部署组件
 
