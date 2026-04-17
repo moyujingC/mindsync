@@ -168,7 +168,7 @@ def _build_legacy_knowledge_bindings(orchestrator: Any) -> dict[str, Any]:
             orchestrator.report_prompt_preview_builder.build_user_context_hint
         ),
         "_build_lite_prompt_preview": (
-            orchestrator.report_prompt_preview_builder.build_lite_prompt_preview
+            orchestrator.report_prompt_preview_builder.build_lite_prompt_preview_with_projection
         ),
         "_build_theme_prompt_context": (
             orchestrator.report_prompt_preview_builder.build_theme_prompt_context

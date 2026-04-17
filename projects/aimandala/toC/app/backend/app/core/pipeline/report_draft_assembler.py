@@ -81,10 +81,13 @@ class ReportDraftAssembler:
     def build_lite(self, record: InterpretationRecord) -> Layer1LiteDraft:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(record.theme)
-        lite_prompt_preview = self._build_lite_prompt_preview(record)
         lite_projection = self._build_runtime_lite_narrative_projection(
             record,
             theme_label,
+        )
+        lite_prompt_preview = self._build_lite_prompt_preview(
+            record,
+            projection=lite_projection,
         )
         story_sections = self._build_lite_story_sections(
             record,
@@ -170,7 +173,6 @@ class ReportDraftAssembler:
         theme = record.theme or "general"
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(theme)
-        pro_prompt_preview = self._build_pro_prompt_preview(record)
         imbalance_projection = self._get_runtime_imbalance_projection(record)
         imbalance_profile = self._build_pro_imbalance_profile(
             record,
@@ -189,6 +191,12 @@ class ReportDraftAssembler:
             lite_title=lite_title,
             imbalance_profile=imbalance_profile,
             imbalance_projection=imbalance_projection,
+        )
+        pro_prompt_preview = self._build_pro_prompt_preview(
+            record,
+            narrative_projection=pro_projection,
+            imbalance_projection=imbalance_projection,
+            imbalance_profile=imbalance_profile,
         )
         layer = Layer3ProDraft(
             first_impression=self._build_pro_first_impression(

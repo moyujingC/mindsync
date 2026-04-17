@@ -51,10 +51,12 @@ class KnowledgeDebugBlockBuilder:
     def build(self, record: InterpretationRecord) -> dict[str, Any]:
         runtime = self._get_knowledge_runtime()
         layer0 = record.layer_0_raw.to_dict() if record.layer_0_raw else {}
+        knowledge_projections = self._build_knowledge_projections(record)
         if runtime is None:
             return {
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
+                "knowledge_projections": knowledge_projections,
                 "query_results": {},
                 "fallback_analysis": {
                     "used": bool(layer0.get("fallback_summary", {}).get("used")),
@@ -138,6 +140,7 @@ class KnowledgeDebugBlockBuilder:
                 "build_kind": build_info.get("build_source"),
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
+            "knowledge_projections": knowledge_projections,
             "query_results": query_results,
             "fallback_analysis": fallback_analysis,
             "warning_analysis": warning_analysis,
@@ -154,6 +157,47 @@ class KnowledgeDebugBlockBuilder:
             "imbalance_candidates": layer0.get("imbalance_candidates", []),
             "quality_flags": layer0.get("quality_flags", []),
             "fallback_summary": layer0.get("fallback_summary", {}),
+        }
+
+    def _build_knowledge_projections(
+        self,
+        record: InterpretationRecord,
+    ) -> dict[str, Any]:
+        lite_projection: dict[str, Any] = {}
+        if record.layer_1_lite_draft is not None:
+            lite_projection = {
+                "title": record.layer_1_lite_draft.title,
+                "overall_impression": record.layer_1_lite_draft.overall_impression,
+                "story_sections": {
+                    "base": record.layer_1_lite_draft.story.base.content,
+                    "contradiction": record.layer_1_lite_draft.story.contradiction.content,
+                    "pattern": record.layer_1_lite_draft.story.pattern.content,
+                    "defense": record.layer_1_lite_draft.story.defense.content,
+                    "block": record.layer_1_lite_draft.story.block.content,
+                    "light": record.layer_1_lite_draft.story.light.content,
+                },
+                "theme_insights": record.layer_1_lite_draft.theme_insights.to_dict(),
+                "three_awareness": [
+                    item.to_dict() for item in record.layer_1_lite_draft.three_awareness
+                ],
+                "pro_teaser": record.layer_1_lite_draft.pro_teaser,
+            }
+
+        pro_projection: dict[str, Any] = {}
+        if record.layer_3_pro_draft is not None:
+            pro_projection = {
+                "first_impression": record.layer_3_pro_draft.first_impression,
+                "core_insight_table": record.layer_3_pro_draft.core_insight_table,
+                "three_circles_detailed": record.layer_3_pro_draft.three_circles_detailed,
+                "micro_analysis_detailed": record.layer_3_pro_draft.micro_analysis_detailed,
+                "imbalance_confirmed": record.layer_3_pro_draft.imbalance_confirmed,
+                "root_cause": record.layer_3_pro_draft.root_cause,
+                "healing_suggestions": record.layer_3_pro_draft.healing_suggestions,
+            }
+
+        return {
+            "lite": lite_projection,
+            "pro": pro_projection,
         }
 
     def _build_circle_results(

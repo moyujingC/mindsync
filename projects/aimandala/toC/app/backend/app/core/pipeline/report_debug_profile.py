@@ -40,6 +40,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "title",
                 "final_value": layer2.get("title") if layer2 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": (
                     "layer_1_lite_draft.title"
                     if self._non_empty_text(layer1.get("title") if layer1 else None)
@@ -54,6 +55,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "overall_impression",
                 "final_value": layer2.get("overall_impression") if layer2 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": (
                     "layer_1_lite_draft.overall_impression"
                     if self._non_empty_text(layer1.get("overall_impression") if layer1 else None)
@@ -69,6 +71,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "visual_elements_rendered",
                 "final_value": layer2.get("visual_elements_rendered") if layer2 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": (
                     "layer_1_lite_draft.visual_elements"
                     if self._non_empty_text(layer1.get("visual_elements") if layer1 else None)
@@ -84,6 +87,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "emotion_portrait_rendered",
                 "final_value": layer2.get("emotion_portrait_rendered") if layer2 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": (
                     "layer_1_lite_draft.emotion_portrait"
                     if self._non_empty_text(layer1.get("emotion_portrait") if layer1 else None)
@@ -99,6 +103,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "pro_teaser",
                 "final_value": layer2.get("pro_teaser") if layer2 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": (
                     "layer_1_lite_draft.pro_teaser"
                     if self._non_empty_text(layer1.get("pro_teaser") if layer1 else None)
@@ -115,6 +120,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "first_impression",
                 "final_value": layer3.get("first_impression") if layer3 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": (
                     "layer_3_pro_draft.first_impression"
                     if self._non_empty_text(layer3.get("first_impression") if layer3 else None)
@@ -129,6 +135,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "core_insight_table",
                 "final_value": layer3.get("core_insight_table") if layer3 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": "layer_3_pro_draft.core_insight_table",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.core_insight_table", "value": layer3.get("core_insight_table") if layer3 else None},
@@ -139,6 +146,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "root_cause",
                 "final_value": layer3.get("root_cause") if layer3 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": "layer_3_pro_draft.root_cause",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.root_cause", "value": layer3.get("root_cause") if layer3 else None},
@@ -155,6 +163,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "healing_suggestions",
                 "final_value": layer3.get("healing_suggestions") if layer3 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": "layer_3_pro_draft.healing_suggestions",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.healing_suggestions", "value": layer3.get("healing_suggestions") if layer3 else None},
@@ -169,6 +178,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "full_report_markdown",
                 "final_value": layer4.get("full_report_markdown") if layer4 else None,
+                "generation_mode": "knowledge_skeleton_then_polish",
                 "main_source": (
                     "template_merge_layer2_plus_layer3"
                     if layer4
@@ -317,6 +327,11 @@ class ReportDebugProfileBuilder:
             "generation_stage": record.generation_stage,
             "generation_progress": record.generation_progress,
             "version_purchased": record.version_purchased,
+            "generation_mode": {
+                "strategy": "knowledge_first_llm_polish",
+                "llm_role": "polish_only",
+                "shared_basis": "layer0_theme_projection_plus_narrative_projection",
+            },
             "steps": steps,
             "layers": {
                 "layer_0_raw": layer0,
@@ -339,12 +354,18 @@ class ReportDebugProfileBuilder:
             "prompt_debug": {
                 "lite": {
                     "prompt_preview": layer1.get("prompt_preview") if layer1 else None,
+                    "knowledge_skeleton_excerpt": self._extract_knowledge_skeleton_excerpt(
+                        layer1.get("prompt_preview") if layer1 else None
+                    ),
                     "schema": lite_schema,
                     "validation_issues": lite_validation_issues,
                     "schema_fields": lite_schema_fields,
                 },
                 "pro": {
                     "prompt_preview": layer3.get("prompt_preview") if layer3 else None,
+                    "knowledge_skeleton_excerpt": self._extract_knowledge_skeleton_excerpt(
+                        layer3.get("prompt_preview") if layer3 else None
+                    ),
                     "schema": pro_schema,
                     "validation_issues": pro_validation_issues,
                     "schema_fields": pro_schema_fields,
@@ -361,6 +382,16 @@ class ReportDebugProfileBuilder:
         if len(compact) <= limit:
             return compact
         return f"{compact[:limit]}..."
+
+    def _extract_knowledge_skeleton_excerpt(self, prompt_preview: Any) -> str:
+        if not isinstance(prompt_preview, str):
+            return ""
+        marker = "## 知识骨架（已确定，不要改写判断）"
+        if marker not in prompt_preview:
+            return ""
+        after_marker = prompt_preview.split(marker, 1)[1]
+        section = after_marker.split("---", 1)[0].strip()
+        return self._excerpt(section, limit=320) or ""
 
     def _non_empty_text(self, value: Any) -> str:
         if not isinstance(value, str):
@@ -555,6 +586,7 @@ class ReportDebugProfileBuilder:
             "user_input_driven_count": len(user_input_driven),
             "layer0_driven_count": len(layer0_driven),
             "prompt_draft_driven_count": len(prompt_draft_driven),
+            "no_llm_override_on_structured_fields": True,
             "high_risk_count": len(high_risk_fields),
             "medium_risk_count": len(medium_risk_fields),
             "low_risk_count": len(low_risk_fields),
