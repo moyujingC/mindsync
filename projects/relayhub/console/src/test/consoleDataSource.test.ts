@@ -119,6 +119,14 @@ import type {
   ProviderDetailContract,
 } from "../contracts";
 import type { ProvidersReadonlyTransportRequest } from "../services/realProvidersTransport";
+import {
+  createProvidersReadonlyCollectionEmptyPayload,
+  createProvidersReadonlyCollectionSuccessPayload,
+  createProvidersReadonlyDetailNotFoundPayload,
+  createProvidersReadonlyDetailSuccessPayload,
+  createProvidersReadonlyJsonResponse,
+  PROVIDERS_READONLY_TRIAL_BASE_URL,
+} from "./providersReadonlyContractFixtures";
 
 describe("console readonly data source", () => {
   afterEach(() => {
@@ -187,11 +195,12 @@ describe("console readonly data source", () => {
       input: string;
       headers?: Record<string, string>;
     }> = [];
+    const providerId = "provider-real-smoke";
     const runtime = bootstrapConsoleDeploymentRuntime({
       mode: "env",
       env: {
         RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: PROVIDERS_READONLY_TRIAL_BASE_URL,
       },
       fetchImpl: async (input, init) => {
         requests.push({
@@ -200,60 +209,29 @@ describe("console readonly data source", () => {
         });
 
         if (input.endsWith("/providers")) {
-          return {
-            status: 200,
-            json: async () => ({
-              items: [
-                {
-                  id: "provider-real-smoke",
-                  name: "Providers Real Smoke",
-                  kind: "国产模型",
-                  availableEnvironments: ["评测版"],
-                  health: "healthy",
-                  transparency: "完整",
-                  errorRate: 0.2,
-                  p95Latency: 320,
-                  recommendation: "用于验证推荐入口",
-                },
-              ],
+          return createProvidersReadonlyJsonResponse(
+            200,
+            createProvidersReadonlyCollectionSuccessPayload({
+              id: providerId,
+              name: "Providers Real Smoke",
+              recommendation: "用于验证推荐入口",
             }),
-          };
+          );
         }
 
-        if (input.endsWith("/providers/provider-real-smoke")) {
-          return {
-            status: 200,
-            json: async () => ({
-              item: {
-                id: "provider-real-smoke",
-                name: "Providers Real Smoke",
-                kind: "国产模型",
-                availableEnvironments: ["评测版"],
-                health: "healthy",
-                transparency: "完整",
-                errorRate: 0.2,
-                p95Latency: 320,
-                description: "推荐 deployment env 入口 smoke test",
-                recommendation: "用于验证推荐入口",
-                recommendationNote: "不代表真实后端接入完成。",
-                models: [{ name: "smoke-model", useCase: "smoke test" }],
-                metrics: {
-                  requests: 12,
-                  tokens: 2400,
-                  avgLatency: 240,
-                  p95Latency: 320,
-                  errorRate: 0.2,
-                  cost: 1,
-                },
-              },
+        if (input.endsWith(`/providers/${providerId}`)) {
+          return createProvidersReadonlyJsonResponse(
+            200,
+            createProvidersReadonlyDetailSuccessPayload({
+              id: providerId,
+              name: "Providers Real Smoke",
+              description: "推荐 deployment env 入口 smoke test",
+              recommendation: "用于验证推荐入口",
             }),
-          };
+          );
         }
 
-        return {
-          status: 404,
-          json: async () => null,
-        };
+        return createProvidersReadonlyJsonResponse(404, null);
       },
       authHeadersResolver: async () => ({
         authorization: "Bearer deployment-smoke",
@@ -261,20 +239,18 @@ describe("console readonly data source", () => {
     });
 
     const collection = await runtime.dataSource.listProviders();
-    const detail = await runtime.dataSource.getProvider("provider-real-smoke");
+    const detail = await runtime.dataSource.getProvider(providerId);
     const notFound = await runtime.dataSource.getProvider("missing-provider");
 
-    expect(collection.items[0]?.id).toBe("provider-real-smoke");
-    expect(detail.item?.id).toBe("provider-real-smoke");
+    expect(collection.items[0]?.id).toBe(providerId);
+    expect(detail.item?.id).toBe(providerId);
     expect(notFound.item).toBeNull();
     expect(notFound.meta.status).toBe("not-found");
     expect(requests[0]?.headers).toEqual({
       authorization: "Bearer deployment-smoke",
     });
-    expect(requests[0]?.input).toBe("https://relayhub.internal/api/providers");
-    expect(requests[1]?.input).toBe(
-      "https://relayhub.internal/api/providers/provider-real-smoke",
-    );
+    expect(requests[0]?.input).toBe(`${PROVIDERS_READONLY_TRIAL_BASE_URL}/providers`);
+    expect(requests[1]?.input).toBe(`${PROVIDERS_READONLY_TRIAL_BASE_URL}/providers/${providerId}`);
   });
 
   it("supports the recommended browser-fetch real-fetch smoke path with default and auth headers", async () => {
@@ -286,7 +262,7 @@ describe("console readonly data source", () => {
       mode: "browser-fetch",
       env: {
         RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: PROVIDERS_READONLY_TRIAL_BASE_URL,
         RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: "{\"x-env\":\"browser-smoke\"}",
       },
       browserFetch: async (input, init) => {
@@ -296,30 +272,19 @@ describe("console readonly data source", () => {
         });
 
         if (input.endsWith("/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B")) {
-          return {
-            status: 200,
-            json: async () => ({
-              items: [
-                {
-                  id: "provider-browser-smoke",
-                  name: "Providers Browser Smoke",
-                  kind: "国产模型",
-                  availableEnvironments: ["开发版"],
-                  health: "healthy",
-                  transparency: "完整",
-                  errorRate: 0.1,
-                  p95Latency: 280,
-                  recommendation: "用于验证 browser 推荐入口",
-                },
-              ],
+          return createProvidersReadonlyJsonResponse(
+            200,
+            createProvidersReadonlyCollectionSuccessPayload({
+              id: "provider-browser-smoke",
+              name: "Providers Browser Smoke",
+              availableEnvironments: ["开发版"],
+              p95Latency: 280,
+              recommendation: "用于验证 browser 推荐入口",
             }),
-          };
+          );
         }
 
-        return {
-          status: 500,
-          json: async () => ({ message: "server error" }),
-        };
+        return createProvidersReadonlyJsonResponse(500, { message: "server error" });
       },
       authHeadersResolver: async () => ({
         authorization: "Bearer browser-smoke",
@@ -338,7 +303,7 @@ describe("console readonly data source", () => {
       authorization: "Bearer browser-smoke",
     });
     expect(requests[0]?.input).toBe(
-      "https://relayhub.internal/api/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B",
+      `${PROVIDERS_READONLY_TRIAL_BASE_URL}/providers?kind=%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B`,
     );
   });
 
@@ -351,7 +316,7 @@ describe("console readonly data source", () => {
       mode: "browser-fetch-source",
       env: {
         RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
-        RELAYHUB_PROVIDERS_READONLY_BASE_URL: "https://relayhub.internal/api",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: PROVIDERS_READONLY_TRIAL_BASE_URL,
         RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON: "{\"x-env\":\"browser-source-smoke\"}",
       },
       authHeadersResolver: async () => ({
@@ -361,60 +326,29 @@ describe("console readonly data source", () => {
         calls.push({ input, init });
 
         if (input.endsWith("/providers")) {
-          return {
-            status: 200,
-            json: async () => ({
-              items: [
-                {
-                  id: "provider-browser-source-smoke",
-                  name: "Providers Browser Source Smoke",
-                  kind: "国产模型",
-                  availableEnvironments: ["评测版"],
-                  health: "healthy",
-                  transparency: "完整",
-                  errorRate: 0.1,
-                  p95Latency: 300,
-                  recommendation: "用于验证 browser-fetch-source 推荐入口",
-                },
-              ],
+          return createProvidersReadonlyJsonResponse(
+            200,
+            createProvidersReadonlyCollectionSuccessPayload({
+              id: "provider-browser-source-smoke",
+              name: "Providers Browser Source Smoke",
+              recommendation: "用于验证 browser-fetch-source 推荐入口",
             }),
-          };
+          );
         }
 
         if (input.endsWith("/providers/provider-browser-source-smoke")) {
-          return {
-            status: 200,
-            json: async () => ({
-              item: {
-                id: "provider-browser-source-smoke",
-                name: "Providers Browser Source Smoke",
-                kind: "国产模型",
-                availableEnvironments: ["评测版"],
-                health: "healthy",
-                transparency: "完整",
-                errorRate: 0.1,
-                p95Latency: 300,
-                description: "推荐 browser-fetch-source 入口 smoke test",
-                recommendation: "用于验证 browser-fetch-source 推荐入口",
-                recommendationNote: "不代表真实后端接入完成。",
-                models: [{ name: "browser-source-smoke-model", useCase: "smoke test" }],
-                metrics: {
-                  requests: 16,
-                  tokens: 3200,
-                  avgLatency: 210,
-                  p95Latency: 300,
-                  errorRate: 0.1,
-                  cost: 2,
-                },
-              },
+          return createProvidersReadonlyJsonResponse(
+            200,
+            createProvidersReadonlyDetailSuccessPayload({
+              id: "provider-browser-source-smoke",
+              name: "Providers Browser Source Smoke",
+              description: "推荐 browser-fetch-source 入口 smoke test",
+              recommendation: "用于验证 browser-fetch-source 推荐入口",
             }),
-          };
+          );
         }
 
-        return {
-          status: 404,
-          json: async () => null,
-        };
+        return createProvidersReadonlyJsonResponse(404, null);
       }),
     });
 
@@ -427,7 +361,7 @@ describe("console readonly data source", () => {
     expect(notFound.item).toBeNull();
     expect(notFound.meta.status).toBe("not-found");
     expect(calls[0]).toEqual({
-      input: "https://relayhub.internal/api/providers",
+      input: `${PROVIDERS_READONLY_TRIAL_BASE_URL}/providers`,
       init: {
         method: "GET",
         headers: {
@@ -437,7 +371,7 @@ describe("console readonly data source", () => {
       },
     });
     expect(calls[1]?.input).toBe(
-      "https://relayhub.internal/api/providers/provider-browser-source-smoke",
+      `${PROVIDERS_READONLY_TRIAL_BASE_URL}/providers/provider-browser-source-smoke`,
     );
   });
 
@@ -5826,9 +5760,7 @@ describe("console readonly data source", () => {
   });
 
   it("adapts empty collection wire payload into empty items", () => {
-    const payload = adaptProvidersCollectionWirePayload({
-      items: [],
-    });
+    const payload = adaptProvidersCollectionWirePayload(createProvidersReadonlyCollectionEmptyPayload());
 
     expect(payload.items).toEqual([]);
   });
@@ -5869,9 +5801,7 @@ describe("console readonly data source", () => {
   });
 
   it("adapts null detail wire payload into not-found item", () => {
-    const payload = adaptProviderDetailWirePayload({
-      item: null,
-    });
+    const payload = adaptProviderDetailWirePayload(createProvidersReadonlyDetailNotFoundPayload());
 
     expect(payload.item).toBeNull();
   });
