@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
-    "build:trial": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && RELAYHUB_CONSOLE_BASE_PATH=/relayhub/ vite build --mode trial && mv dist/trial.html dist/index.html",
+    "build:trial": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && RELAYHUB_CONSOLE_BASE_PATH=${RELAYHUB_CONSOLE_BASE_PATH:-/relayhub/} vite build --mode trial && mv dist/trial.html dist/index.html",
     "test": "vitest run",
     "preview": "vite preview"
   },

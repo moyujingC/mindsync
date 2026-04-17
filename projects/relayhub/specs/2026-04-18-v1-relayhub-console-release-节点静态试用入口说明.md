@@ -11,7 +11,8 @@
 
 固定口径：
 
-- 访问入口挂在现有域名子路径 `/relayhub`
+- 推荐访问入口改为独立子域 `https://relayhub.jingshu.cc/`
+- 现有 `https://web.jingshu.cc/relayhub/` 保留为兼容入口
 - 默认主入口与 `main.tsx` 继续保持 mock
 - 只新增一个显式 readonly real-fetch trial 构建入口
 - 不新增后端常驻进程
@@ -23,8 +24,9 @@
 采用：
 
 - 静态构建产物
-- release 宿主机 `nginx` 子路径承接
-- `/relayhub` 做 SPA fallback
+- release 宿主机 `nginx` 独立子域承接
+- 子域根路径 `/` 做 SPA fallback
+- 旧 `/relayhub` 子路径继续可用
 
 不采用：
 
@@ -43,21 +45,23 @@
   - 显式使用 `ConsoleBrowserDeploymentRuntimeInput.mode = "browser-fetch"`
   - 只在部署试用构建中使用
 
-## 4. 子路径部署约定
+## 4. 域名部署约定
 
-trial 构建固定：
+子域 trial 构建固定：
 
-- `base = /relayhub/`
-- router basename = `/relayhub`
+- `base = /`
+- router basename = `/`
 
 因此部署后应满足：
 
-- `/relayhub`
-- `/relayhub/dashboard`
-- `/relayhub/providers`
-- `/relayhub/providers/:id`
+- `https://relayhub.jingshu.cc/`
+- `https://relayhub.jingshu.cc/dashboard`
+- `https://relayhub.jingshu.cc/providers`
+- `https://relayhub.jingshu.cc/providers/:id`
 
 刷新都不返回 404。
+
+兼容子路径构建仍可使用 `base = /relayhub/`，用于 `https://web.jingshu.cc/relayhub/`。
 
 ## 5. readonly real-fetch 口径
 
@@ -83,8 +87,9 @@ trial 构建固定：
 
 - 代码目录：`/opt/aimandala-release/app/mindsync`
 - RelayHub 构建目录：`/opt/aimandala-release/app/mindsync/projects/relayhub/console/dist`
-- 静态发布目录：`/var/www/web.jingshu.cc/relayhub`
-- nginx 站点配置：宿主机正式站点下新增 `/relayhub` location
+- 推荐静态发布目录：`/var/www/relayhub.jingshu.cc`
+- 兼容静态发布目录：`/var/www/web.jingshu.cc/relayhub`
+- nginx 站点配置：新增 `relayhub.jingshu.cc` server block，旧站点保留 `/relayhub` location
 
 说明：
 
@@ -96,9 +101,9 @@ trial 构建固定：
 
 部署后按以下口径验证：
 
-1. 打开 `https://web.jingshu.cc/relayhub`
-2. 刷新 `https://web.jingshu.cc/relayhub/providers`
-3. 刷新 `https://web.jingshu.cc/relayhub/providers/deepseek-direct`
+1. 打开 `https://relayhub.jingshu.cc/`
+2. 刷新 `https://relayhub.jingshu.cc/providers`
+3. 刷新 `https://relayhub.jingshu.cc/providers/deepseek-direct`
 4. 确认页面静态资源不回到站点根路径
 5. 若配置了 readonly real-fetch base URL，则验证 Providers list/detail/not-found
 

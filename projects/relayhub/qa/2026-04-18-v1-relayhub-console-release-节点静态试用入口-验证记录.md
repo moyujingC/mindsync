@@ -24,7 +24,8 @@
 ## 3. release 节点验证结果
 
 - release 主机：`42.192.65.145`
-- 静态目录：`/var/www/web.jingshu.cc/relayhub`
+- 推荐子域静态目录：`/var/www/relayhub.jingshu.cc`
+- 兼容子路径静态目录：`/var/www/web.jingshu.cc/relayhub`
 - nginx 配置：`/etc/nginx/sites-available/ai-mandala`
 - nginx 备份：`/etc/nginx/sites-available/ai-mandala.relayhub-backup-20260418-044113`
 - `nginx -t` 通过
@@ -32,6 +33,12 @@
 
 HTTP 验证：
 
+- `relayhub.jingshu.cc` nginx HTTP server block 已安装
+- `/var/www/relayhub.jingshu.cc` 静态目录已同步 trial 根路径构建产物
+- `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/` 返回 `200`
+- `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/providers` 返回 `200`
+- `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/relayhub-api/providers` 返回 `503`
+- `certbot --nginx -d relayhub.jingshu.cc` 暂未成功，原因是公网权威 DNS 仍返回 `NXDOMAIN`
 - `https://web.jingshu.cc/relayhub/` 返回 `200`
 - `https://web.jingshu.cc/relayhub/providers` 返回 `200`
 - `https://web.jingshu.cc/relayhub/providers/deepseek-direct` 返回 `200`
@@ -65,6 +72,8 @@ rg -n "保存策略|立即切流|发布到生产|启用自动路由|编辑生产
 - 阻塞原因：真实 `UPSTREAM_BASE_URL` 尚未提供，不能把占位 upstream 写入生效配置
 - 当前 trial 构建推荐配置已收敛为 `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
 - 当前 `https://web.jingshu.cc/relayhub-api/providers` 返回 `503`，避免误落到主站 HTML 造成 API 可用假阳性
+- 子域切换后，`http://relayhub.jingshu.cc/relayhub-api/providers` 在 upstream 未配置前也返回 `503`
+- 等 `relayhub.jingshu.cc -> 42.192.65.145` 的公网 DNS 生效后，需要重跑 certbot 并验证 HTTPS
 
 本轮接入准备验证：
 

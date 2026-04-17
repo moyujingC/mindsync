@@ -4,7 +4,8 @@
 
 为 `RelayHub console` 提供 release 宿主机上的最小静态试用入口：
 
-- 域名子路径：`/relayhub`
+- 推荐入口：`https://relayhub.jingshu.cc/`
+- 兼容入口：`https://web.jingshu.cc/relayhub/`
 - 默认入口仍为 mock
 - 显式 trial 构建用于 Providers readonly real-fetch 试用
 
@@ -13,7 +14,8 @@
 - 代码目录：`/opt/aimandala-release/app/mindsync`
 - console 目录：`/opt/aimandala-release/app/mindsync/projects/relayhub/console`
 - 构建目录：`/opt/aimandala-release/app/mindsync/projects/relayhub/console/dist`
-- 静态发布目录：`/var/www/web.jingshu.cc/relayhub`
+- 子域静态发布目录：`/var/www/relayhub.jingshu.cc`
+- 兼容子路径静态发布目录：`/var/www/web.jingshu.cc/relayhub`
 - nginx 站点样例：`/etc/nginx/sites-available/web.jingshu.cc`
 
 ## 3. 构建方式
@@ -31,6 +33,7 @@ release trial 构建：
 ```bash
 cd /opt/aimandala-release/app/mindsync/projects/relayhub/console
 npm ci
+RELAYHUB_CONSOLE_BASE_PATH=/ \
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch \
 RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api \
 npm run build:trial
@@ -44,14 +47,27 @@ RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON='{"x-relayhub-scope":"providers
 
 ## 4. 同步方式
 
-使用 `deploy-relayhub-console-trial.sh`：
+推荐子域发布：
 
 ```bash
-sudo mkdir -p /var/www/web.jingshu.cc/relayhub
-sudo bash deploy-relayhub-console-trial.sh
+sudo mkdir -p /var/www/relayhub.jingshu.cc
+sudo PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
+  BACKUP_DIR=/var/www/relayhub.jingshu.cc.previous \
+  bash deploy-relayhub-console-trial.sh
 ```
 
-## 5. nginx 子路径要求
+兼容子路径发布仍可使用默认 `PUBLISH_DIR=/var/www/web.jingshu.cc/relayhub`。
+
+## 5. nginx 要求
+
+独立子域：
+
+- `server_name relayhub.jingshu.cc`
+- `location /` 使用 `root /var/www/relayhub.jingshu.cc`
+- 子路由刷新时 fallback 到 `/index.html`
+- `location = /relayhub-api` 与 `location /relayhub-api/` 保留 disabled guard，直到真实 upstream 提供
+
+兼容子路径：
 
 - `location = /relayhub` 重定向到 `/relayhub/`
 - `location /relayhub/` 使用 alias 指向静态目录
@@ -89,7 +105,10 @@ curl -k -I https://web.jingshu.cc/relayhub-api/providers
 
 截至 `2026-04-18`，release 节点已经安装：
 
+- 子域服务器侧配置：`relayhub.jingshu.cc` nginx server block 已安装
+- 子域公网 DNS：待生效；Let’s Encrypt 当前仍看到 `NXDOMAIN`
 - 静态目录：`/var/www/web.jingshu.cc/relayhub`
+- 子域静态目录：`/var/www/relayhub.jingshu.cc`
 - nginx 配置：`/etc/nginx/sites-available/ai-mandala`
 - nginx 配置备份：`/etc/nginx/sites-available/ai-mandala.relayhub-backup-20260418-044113`
 

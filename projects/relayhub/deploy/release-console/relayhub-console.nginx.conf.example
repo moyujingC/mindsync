@@ -1,3 +1,24 @@
+server {
+    listen 80;
+    server_name relayhub.jingshu.cc;
+
+    root /var/www/relayhub.jingshu.cc;
+    index index.html;
+
+    location = /relayhub-api {
+        return 503;
+    }
+
+    location /relayhub-api/ {
+        default_type application/json;
+        return 503;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
 location = /relayhub {
     return 301 /relayhub/;
 }
