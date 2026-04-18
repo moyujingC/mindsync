@@ -10,14 +10,12 @@ sys.path.insert(
 
 from app.core.analysis.circle_detector import CircleDetectionResult
 from app.core.pipeline.data_models import (
-    DailyAwareness,
     GenerationStatus,
     InterpretationRecord,
     Layer1LiteDraft,
     Layer2LiteFinal,
     Layer3ProDraft,
 )
-from app.core.pipeline.prompt_runtime import NoopPromptRuntime
 from app.core.pipeline.orchestrator_v2 import (
     GenerationStage,
     LayeredOrchestrator,
@@ -26,11 +24,6 @@ from app.core.pipeline.orchestrator_v2 import (
 from app.core.pipeline.generation_runtime import (
     LiteGenerationBundle,
     ProGenerationBundle,
-    PromptBackedReportGenerationRuntime,
-)
-from app.core.pipeline.report_generation_payload_applier import (
-    apply_lite_generation_payload,
-    apply_pro_generation_payload,
 )
 from app.core.pipeline.report_contracts import PromptSchemaValidator
 from app.core.pipeline.store import InterpretationStore
@@ -304,12 +297,12 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
     assert profile["insight_context_summary"]["constraints"]["scope"] == "single_interpretation"
     assert profile["evidence_summary"]["agent"]["name"] == "InsightAgent"
     assert profile["fallback_summary"]["used"] in {True, False}
-    assert profile["generation_mode"]["strategy"] == "knowledge_first_llm_polish"
-    assert profile["generation_mode"]["llm_role"] == "polish_only"
+    assert profile["generation_mode"]["strategy"] == "knowledge_first"
+    assert profile["generation_mode"]["llm_role"] == "none"
     assert profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
     assert profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
-    assert profile["field_provenance"]["lite"][0]["generation_mode"] == "knowledge_skeleton_then_polish"
-    assert profile["field_provenance"]["pro"][0]["generation_mode"] == "knowledge_skeleton_then_polish"
+    assert profile["field_provenance"]["lite"][0]["generation_mode"] == "knowledge_only"
+    assert profile["field_provenance"]["pro"][0]["generation_mode"] == "knowledge_only"
     assert "story_sections" in profile["knowledge_debug"]["knowledge_projections"]["lite"]
     assert "root_cause" in profile["knowledge_debug"]["knowledge_projections"]["pro"]
     assert profile["diagnostics"]["summary"]["no_llm_override_on_structured_fields"] is True
@@ -601,98 +594,7 @@ def test_get_status_returns_compact_snapshot(tmp_path):
     assert status["report_ready"] is True
 
 
-def test_prompt_backed_runtime_applies_three_awareness_payload():
-    runtime = PromptBackedReportGenerationRuntime(prompt_runtime=NoopPromptRuntime())
-    layer = Layer1LiteDraft()
-
-    runtime._apply_lite_payload(
-        layer,
-        {
-            "three_awareness": [
-                {"day": 1, "title": "先慢下来", "content": "今天先不要同时推进三件事。"},
-                {"title": "看见拉扯", "content": "留意你是在想前进，还是想先保护自己。"},
-            ]
-        },
-    )
-
-    assert len(layer.three_awareness) == 2
-    assert layer.three_awareness[0].day == 1
-    assert layer.three_awareness[0].title == "先慢下来"
-    assert layer.three_awareness[1].day == 2
-    assert layer.three_awareness[1].content == "留意你是在想前进，还是想先保护自己。"
-
-
-def test_lite_generation_payload_does_not_override_knowledge_backbone_fields():
-    layer = Layer1LiteDraft(
-        title="知识骨架里的 Lite 标题",
-        overall_impression="知识骨架里的整体判断",
-        visual_elements="知识骨架里的画面依据",
-        emotion_portrait="知识骨架里的情绪画像",
-        pro_teaser="知识骨架里的 Pro 引导",
-    )
-    layer.story.base.content = "知识骨架里的故事底色"
-    layer.story.contradiction.content = "知识骨架里的故事矛盾"
-    layer.story.pattern.content = "知识骨架里的故事模式"
-    layer.story.defense.content = "知识骨架里的故事防御"
-    layer.story.block.content = "知识骨架里的故事卡点"
-    layer.story.light.content = "知识骨架里的故事光"
-    layer.theme_insights.scene = "知识骨架里的主题场景"
-    layer.theme_insights.impact = "知识骨架里的主题影响"
-    layer.theme_insights.awareness = "知识骨架里的主题觉察"
-    layer.three_awareness = [
-        DailyAwareness(
-            day=1,
-            title="知识骨架里的觉察标题",
-            content="知识骨架里的觉察内容",
-        )
-    ]
-    apply_lite_generation_payload(
-        layer,
-        {
-            "title": "模型试图改写的 Lite 标题",
-            "overall_impression": "模型试图改写的整体判断",
-            "visual_elements": "模型试图改写的画面依据",
-            "emotion_portrait": "模型试图改写的情绪画像",
-            "pro_teaser": "模型试图改写的 Pro 引导",
-            "story": {
-                "base": "模型试图改写的故事底色",
-                "contradiction": "模型试图改写的故事矛盾",
-                "pattern": "模型试图改写的故事模式",
-                "defense": "模型试图改写的故事防御",
-                "block": "模型试图改写的故事卡点",
-                "light": "模型试图改写的故事光",
-            },
-            "theme_scene": "模型试图改写的主题场景",
-            "theme_impact": "模型试图改写的主题影响",
-            "theme_awareness": "模型试图改写的主题觉察",
-            "three_awareness": [
-                {
-                    "day": 1,
-                    "title": "模型试图改写的觉察标题",
-                    "content": "模型试图改写的觉察内容",
-                }
-            ],
-        },
-    )
-
-    assert layer.title == "知识骨架里的 Lite 标题"
-    assert layer.overall_impression == "知识骨架里的整体判断"
-    assert layer.visual_elements == "知识骨架里的画面依据"
-    assert layer.emotion_portrait == "知识骨架里的情绪画像"
-    assert layer.pro_teaser == "知识骨架里的 Pro 引导"
-    assert layer.story.base.content == "知识骨架里的故事底色"
-    assert layer.story.contradiction.content == "知识骨架里的故事矛盾"
-    assert layer.story.pattern.content == "知识骨架里的故事模式"
-    assert layer.story.defense.content == "知识骨架里的故事防御"
-    assert layer.story.block.content == "知识骨架里的故事卡点"
-    assert layer.story.light.content == "知识骨架里的故事光"
-    assert layer.theme_insights.scene == "知识骨架里的主题场景"
-    assert layer.theme_insights.impact == "知识骨架里的主题影响"
-    assert layer.theme_insights.awareness == "知识骨架里的主题觉察"
-    assert layer.three_awareness[0].title == "知识骨架里的觉察标题"
-    assert layer.three_awareness[0].content == "知识骨架里的觉察内容"
-
-def test_pro_generation_payload_does_not_override_knowledge_backbone_fields():
+def test_pro_generation_payload_structured_fields_are_local_knowledge_values():
     layer = Layer3ProDraft(
         core_insight_table={
             "能量本质": "知识骨架里的能量本质",
@@ -724,42 +626,6 @@ def test_pro_generation_payload_does_not_override_knowledge_backbone_fields():
                 "practice": "知识骨架里的动作",
             }
         ],
-    )
-
-    apply_pro_generation_payload(
-        layer,
-        {
-            "core_insight_table": {
-                "能量本质": "模型试图改写的能量本质",
-                "核心失衡": "模型试图改写的核心失衡",
-            },
-            "three_circles_detailed": {
-                "inner": {
-                    "label": "内圈",
-                    "reading": "模型试图改写的内圈判断",
-                }
-            },
-            "micro_analysis_detailed": {
-                "节奏关系": "模型试图改写的节奏关系",
-            },
-            "imbalance_confirmed": {
-                "type": "llm-type",
-                "summary": "模型试图改写的整体判断",
-                "primary": "模型试图改写的主失衡",
-            },
-            "root_cause": {
-                "surface": "模型试图改写的表层根源",
-                "deeper": "模型试图改写的深层根源",
-                "core": "模型试图改写的核心根源",
-            },
-            "healing_suggestions": [
-                {
-                    "phase": "当前阶段",
-                    "focus": "模型试图改写的聚焦点",
-                    "practice": "模型试图改写的动作",
-                }
-            ],
-        },
     )
 
     assert layer.core_insight_table["能量本质"] == "知识骨架里的能量本质"
@@ -1246,67 +1112,24 @@ def test_upgrade_to_pro_supports_custom_generation_runtime(tmp_path):
     assert upgraded.layer_4_pro_final.full_report_markdown == "Runtime-Pro-Report"
 
 
-def test_prompt_runtime_polishes_without_overriding_knowledge_backbone(tmp_path):
-    class StubPromptRuntime:
-        def generate_lite(self, *, prompt, schema):
-            assert "一镜 Lite 版解读报告模板 v1.6" in prompt
-            assert schema.get("type") == "lite"
-            assert "知识骨架（已确定，不要改写判断）" in prompt
-            return {
-                "title": "Prompt-Lite-Title",
-                "overall_impression": "Prompt-Lite-Overall",
-                "visual_elements": "Prompt-Lite-Visual",
-                "emotion_portrait": "Prompt-Lite-Emotion",
-                "story": {
-                    "base": "Prompt-Story-Base",
-                    "contradiction": "Prompt-Story-Contradiction",
-                    "pattern": "Prompt-Story-Pattern",
-                    "defense": "Prompt-Story-Defense",
-                    "block": "Prompt-Story-Block",
-                    "light": "Prompt-Story-Light",
-                },
-                "theme_scene": "Prompt-Theme-Scene",
-                "theme_impact": "Prompt-Theme-Impact",
-                "theme_awareness": "Prompt-Theme-Awareness",
-                "pro_teaser": "Prompt-Pro-Teaser",
-            }
-
-        def generate_pro(self, *, prompt, schema):
-            assert "一梳 Pro 版解读报告模板 v1.6" in prompt
-            assert schema.get("type") == "pro"
-            assert "知识骨架（已确定，不要改写判断）" in prompt
-            return {
-                "first_impression": "Prompt-Pro-First-Impression",
-                "core_insight_table": {
-                    "能量本质": "Prompt-Core-Essence",
-                },
-                "root_cause": {
-                    "surface": "Prompt-Root-Surface",
-                },
-            }
-
+def test_generation_runtime_is_deterministic_by_default(tmp_path):
     image_path = tmp_path / "image.png"
     image_path.write_bytes(b"mock-image")
     store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
     orchestrator = LayeredOrchestrator(
         store=store,
         circle_detector=StubCircleDetector(),
-        prompt_runtime=StubPromptRuntime(),
         enable_vision=True,
     )
 
     record = asyncio.run(
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
-            user_id="user-prompt-runtime",
+            user_id="user-runtime-default",
         )
     )
     assert record.layer_1_lite_draft is not None
     assert record.layer_2_lite_final is not None
-    assert record.layer_1_lite_draft.title != "Prompt-Lite-Title"
-    assert record.layer_2_lite_final.title != "Prompt-Lite-Title"
-    assert "Prompt-Lite-Overall" not in record.layer_2_lite_final.full_report_markdown
-    assert "Prompt-Theme-Scene" not in record.layer_2_lite_final.full_report_markdown
 
     upgraded = orchestrator.upgrade_to_pro(record.interpretation_id)
     assert upgraded is not None
@@ -1314,15 +1137,6 @@ def test_prompt_runtime_polishes_without_overriding_knowledge_backbone(tmp_path)
     assert record_after_upgrade is not None
     assert record_after_upgrade.layer_3_pro_draft is not None
     assert record_after_upgrade.layer_4_pro_final is not None
-    assert (
-        record_after_upgrade.layer_3_pro_draft.first_impression
-        != "Prompt-Pro-First-Impression"
-    )
-    assert "Prompt-Pro-First-Impression" not in record_after_upgrade.layer_4_pro_final.full_report_markdown
-    assert (
-        record_after_upgrade.layer_3_pro_draft.core_insight_table.get("能量本质")
-        != "Prompt-Core-Essence"
-    )
     assert (
         record_after_upgrade.layer_3_pro_draft.root_cause.get("surface")
         != "Prompt-Root-Surface"

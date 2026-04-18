@@ -30,9 +30,7 @@ except Exception:  # pragma: no cover - migration-time fallback
 from .data_models import InterpretationRecord
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
-    PromptBackedReportGenerationRuntime,
 )
-from .prompt_runtime import PromptRuntime
 from .report_generation_contracts import ReportGenerationRuntime
 from .report_pipeline_components import install_report_pipeline_components
 from .report_pipeline_stage_config import ReportPipelineStageConfig
@@ -92,7 +90,6 @@ class LayeredOrchestrator:
         store: Optional[InterpretationStore] = None,
         circle_detector: Optional[CircleDetector] = None,
         generation_runtime: Optional[ReportGenerationRuntime] = None,
-        prompt_runtime: Optional[PromptRuntime] = None,
         report_chat_runtime: Optional[Any] = None,
         enable_vision: bool = True,
     ) -> None:
@@ -117,10 +114,6 @@ class LayeredOrchestrator:
         )
         if generation_runtime is not None:
             self.generation_runtime = generation_runtime
-        elif prompt_runtime is not None:
-            self.generation_runtime = PromptBackedReportGenerationRuntime(
-                prompt_runtime=prompt_runtime,
-            )
         else:
             self.generation_runtime = DeterministicReportGenerationRuntime()
         self.report_chat_runtime = report_chat_runtime

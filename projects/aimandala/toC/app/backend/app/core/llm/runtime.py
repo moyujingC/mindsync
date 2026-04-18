@@ -34,10 +34,6 @@ class LLMClientConfig:
     """Configuration for the shared LLM client."""
 
     default: LLMTaskConfig
-    lite_report: Optional[LLMTaskConfig] = None
-    lite_report_fallback: Optional[LLMTaskConfig] = None
-    pro_report: Optional[LLMTaskConfig] = None
-    pro_report_fallback: Optional[LLMTaskConfig] = None
     chat: Optional[LLMTaskConfig] = None
     chat_fallback: Optional[LLMTaskConfig] = None
     vision: Optional[LLMTaskConfig] = None
@@ -49,19 +45,14 @@ class LLMClientConfig:
     def resolve_task_config(self, task: str) -> LLMTaskConfig:
         normalized = task.strip().lower()
         task_mapping = {
-            "lite_report": self.lite_report,
-            "pro_report": self.pro_report,
             "chat": self.chat,
             "vision": self.vision,
-            "report": self.lite_report or self.pro_report,
         }
         return task_mapping.get(normalized) or self.default
 
     def resolve_fallback_task_config(self, task: str) -> Optional[LLMTaskConfig]:
         normalized = task.strip().lower()
         fallback_mapping = {
-            "lite_report": self.lite_report_fallback,
-            "pro_report": self.pro_report_fallback,
             "chat": self.chat_fallback,
             "vision": self.vision_fallback,
         }
@@ -377,37 +368,6 @@ class OpenAICompatibleLLMClient:
         time.sleep(wait_seconds)
 
 
-class LLMPromptRuntime:
-    """Prompt-runtime adapter that reuses the shared LLM client."""
-
-    def __init__(self, llm_client: LLMClient) -> None:
-        self.llm_client = llm_client
-
-    def generate_lite(
-        self,
-        *,
-        prompt: str,
-        schema: Dict[str, Any],
-    ) -> Optional[Dict[str, Any]]:
-        return self.llm_client.generate_structured(
-            task="lite_report",
-            prompt=prompt,
-            schema=schema,
-        )
-
-    def generate_pro(
-        self,
-        *,
-        prompt: str,
-        schema: Dict[str, Any],
-    ) -> Optional[Dict[str, Any]]:
-        return self.llm_client.generate_structured(
-            task="pro_report",
-            prompt=prompt,
-            schema=schema,
-        )
-
-
 class LLMCircleDetectionBackend:
     """Vision-backed three-circle detection using the shared LLM client."""
 
@@ -634,10 +594,6 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
 
     return LLMClientConfig(
         default=default_task,
-        lite_report=_load_task_config_from_env("AIMANDALA_LLM_LITE", fallback=default_task),
-        lite_report_fallback=_load_task_config_from_env("AIMANDALA_LLM_LITE_FALLBACK", fallback=default_task),
-        pro_report=_load_task_config_from_env("AIMANDALA_LLM_PRO", fallback=default_task),
-        pro_report_fallback=_load_task_config_from_env("AIMANDALA_LLM_PRO_FALLBACK", fallback=default_task),
         chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task),
         chat_fallback=_load_task_config_from_env("AIMANDALA_LLM_CHAT_FALLBACK", fallback=default_task),
         vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task),
@@ -673,33 +629,6 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
         api_key=glm_key or doubao_key or moonshot_key or None,
         model="glm-4",
     )
-    lite_report = (
-        _build_legacy_task_config(
-            base_url="https://open.bigmodel.cn/api/paas/v4",
-            api_key=glm_key,
-            model="glm-4",
-        )
-        if glm_key
-        else None
-    )
-    pro_report = (
-        _build_legacy_task_config(
-            base_url="https://ark.cn-beijing.volces.com/api/v3",
-            api_key=doubao_key,
-            model=os.getenv("DOUBAO_ENDPOINT_ID", "").strip() or "ep-20260315225748-rsztm",
-        )
-        if doubao_key
-        else None
-    )
-    pro_report_fallback = (
-        _build_legacy_task_config(
-            base_url="https://open.bigmodel.cn/api/paas/v4",
-            api_key=glm_key,
-            model="glm-4-plus",
-        )
-        if glm_key
-        else None
-    )
     chat = (
         _build_legacy_task_config(
             base_url="https://api.moonshot.cn/v1",
@@ -707,7 +636,7 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
             model="moonshot-v1-8k",
         )
         if moonshot_key
-        else lite_report
+        else default_task
     )
     vision = (
         _build_legacy_task_config(
@@ -730,12 +659,8 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
 
     return LLMClientConfig(
         default=default_task,
-        lite_report=lite_report,
-        lite_report_fallback=None,
-        pro_report=pro_report,
-        pro_report_fallback=pro_report_fallback,
         chat=chat,
-        chat_fallback=lite_report,
+        chat_fallback=default_task,
         vision=vision,
         vision_fallback=vision_fallback,
         timeout_seconds=timeout_seconds,

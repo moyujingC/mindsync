@@ -191,7 +191,7 @@ class ReportPromptPreviewBuilder:
         primary_signal = self._get_primary_knowledge_signal(record)
         projection_payload = projection if isinstance(projection, dict) else {}
         skeleton = {
-            "generation_mode": "knowledge_first_llm_polish",
+            "generation_mode": "knowledge_first",
             "theme": record.theme or "general",
             "theme_label": theme_label,
             "user_input": {
@@ -221,7 +221,6 @@ class ReportPromptPreviewBuilder:
                 "three_awareness": projection_payload.get("three_awareness", []),
                 "pro_teaser": projection_payload.get("pro_teaser", ""),
             },
-            "llm_instruction": "polish_only_do_not_change_judgment",
         }
         return json.dumps(skeleton, ensure_ascii=False, indent=2)
 
@@ -247,7 +246,7 @@ class ReportPromptPreviewBuilder:
         )
         profile_payload = imbalance_profile if isinstance(imbalance_profile, dict) else {}
         skeleton = {
-            "generation_mode": "knowledge_first_llm_polish",
+            "generation_mode": "knowledge_first",
             "theme": record.theme or "general",
             "theme_label": theme_label,
             "user_input": {
@@ -280,7 +279,6 @@ class ReportPromptPreviewBuilder:
                 "imbalance_projection": imbalance_payload,
                 "root_cause": narrative_payload.get("root_cause", {}),
             },
-            "llm_instruction": "polish_only_do_not_change_judgment",
         }
         return json.dumps(skeleton, ensure_ascii=False, indent=2)
 

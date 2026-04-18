@@ -40,7 +40,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "title",
                 "final_value": layer2.get("title") if layer2 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.title"
                     if self._non_empty_text(layer1.get("title") if layer1 else None)
@@ -55,7 +55,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "overall_impression",
                 "final_value": layer2.get("overall_impression") if layer2 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.overall_impression"
                     if self._non_empty_text(layer1.get("overall_impression") if layer1 else None)
@@ -71,7 +71,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "visual_elements_rendered",
                 "final_value": layer2.get("visual_elements_rendered") if layer2 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.visual_elements"
                     if self._non_empty_text(layer1.get("visual_elements") if layer1 else None)
@@ -87,7 +87,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "emotion_portrait_rendered",
                 "final_value": layer2.get("emotion_portrait_rendered") if layer2 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.emotion_portrait"
                     if self._non_empty_text(layer1.get("emotion_portrait") if layer1 else None)
@@ -103,7 +103,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "pro_teaser",
                 "final_value": layer2.get("pro_teaser") if layer2 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.pro_teaser"
                     if self._non_empty_text(layer1.get("pro_teaser") if layer1 else None)
@@ -120,7 +120,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "first_impression",
                 "final_value": layer3.get("first_impression") if layer3 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_3_pro_draft.first_impression"
                     if self._non_empty_text(layer3.get("first_impression") if layer3 else None)
@@ -135,7 +135,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "core_insight_table",
                 "final_value": layer3.get("core_insight_table") if layer3 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": "layer_3_pro_draft.core_insight_table",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.core_insight_table", "value": layer3.get("core_insight_table") if layer3 else None},
@@ -146,7 +146,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "root_cause",
                 "final_value": layer3.get("root_cause") if layer3 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": "layer_3_pro_draft.root_cause",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.root_cause", "value": layer3.get("root_cause") if layer3 else None},
@@ -163,7 +163,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "healing_suggestions",
                 "final_value": layer3.get("healing_suggestions") if layer3 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": "layer_3_pro_draft.healing_suggestions",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.healing_suggestions", "value": layer3.get("healing_suggestions") if layer3 else None},
@@ -178,7 +178,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "full_report_markdown",
                 "final_value": layer4.get("full_report_markdown") if layer4 else None,
-                "generation_mode": "knowledge_skeleton_then_polish",
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "template_merge_layer2_plus_layer3"
                     if layer4
@@ -328,8 +328,8 @@ class ReportDebugProfileBuilder:
             "generation_progress": record.generation_progress,
             "version_purchased": record.version_purchased,
             "generation_mode": {
-                "strategy": "knowledge_first_llm_polish",
-                "llm_role": "polish_only",
+                "strategy": "knowledge_first",
+                "llm_role": "none",
                 "shared_basis": "layer0_theme_projection_plus_narrative_projection",
             },
             "steps": steps,
