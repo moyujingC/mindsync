@@ -41,6 +41,6 @@
 
 - `npm test`
 - `npm run build`
-- `RELAYHUB_CONSOLE_BASE_PATH=/ RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models npm run build:trial`
-- release `/relayhub-api/models` 验证
+- `RELAYHUB_CONSOLE_BASE_PATH=/ RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models npm run build:trial`
+- release `/api/models` 验证
 - `https://relayhub.jingshu.cc/providers` 与详情页 smoke

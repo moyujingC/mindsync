@@ -21,7 +21,7 @@
 
 ## 2. release 验收
 
-- `/relayhub-api/models` 经 nginx 固定认证头后返回真实模型列表。
+- `/api/models` 经 nginx 固定认证头后返回真实模型列表。
 - `https://relayhub.jingshu.cc/providers` 显示真实 model-derived 列表。
 - `https://relayhub.jingshu.cc/providers/:id` 可显示真实 model-derived detail。
 - 默认 mock 主入口语义不变。

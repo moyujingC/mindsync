@@ -12,7 +12,7 @@
 
 - 新增 OpenAI-compatible `/v1/models -> ProviderRecordContract` 适配链。
 - 在现有 Providers real-fetch 主链上新增 `openai-models` wire contract。
-- 让 release trial 能通过同源 `/relayhub-api/models` 读取真实模型目录。
+- 让 release trial 能通过同源 `/api/models` 读取真实模型目录。
 
 ## 2. 保持不变
 
@@ -24,9 +24,9 @@
 
 - `npm test` 通过，`5` 个 test file、`325` 个测试全部通过。
 - `npm run build` 通过。
-- `openai-models` trial 构建通过，可显式生成同源 `/relayhub-api` 的真实只读试用入口。
+- `openai-models` trial 构建通过，可显式生成同源 `/api` 的真实只读试用入口。
 - release 线上已验证：
-  - `/relayhub-api/models` 返回真实 OpenAI-compatible 模型目录
+  - `/api/models` 返回真实 OpenAI-compatible 模型目录
   - `/providers` 列表页显示真实 model-derived provider
   - `/providers/gpt-5` 详情页显示真实 model-derived detail
 

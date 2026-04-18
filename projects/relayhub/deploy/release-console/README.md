@@ -35,7 +35,7 @@ cd /opt/aimandala-release/app/mindsync/projects/relayhub/console
 npm ci
 RELAYHUB_CONSOLE_BASE_PATH=/ \
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch \
-RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api \
+RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api \
 RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models \
 npm run build:trial
 ```
@@ -66,21 +66,21 @@ sudo PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
 - `server_name relayhub.jingshu.cc`
 - `location /` 使用 `root /var/www/relayhub.jingshu.cc`
 - 子路由刷新时 fallback 到 `/index.html`
-- `location = /relayhub-api` 与 `location /relayhub-api/` 保留 disabled guard，直到真实 upstream 提供
+- `location = /api` 与 `location /api/` 保留 disabled guard，直到真实 upstream 提供
 
 兼容子路径：
 
 - `location = /relayhub` 重定向到 `/relayhub/`
 - `location /relayhub/` 使用 alias 指向静态目录
 - 子路由刷新时 fallback 到 `/relayhub/index.html`
-- `location = /relayhub-api` 重定向到 `/relayhub-api/`
-- `location /relayhub-api/` 反代到真实 Providers readonly upstream
+- `location = /api` 重定向到 `/api/`
+- `location /api/` 反代到真实 Providers readonly upstream
 
 参考：`relayhub-console.nginx.conf.example`
 
 ## 5.1 Providers readonly upstream
 
-`/relayhub-api` 必须等真实 upstream URL 与认证方式明确后再安装，不能把占位符写入正在生效的 nginx 配置。
+`/api` 必须等真实 upstream URL 与认证方式明确后再安装，不能把占位符写入正在生效的 nginx 配置。
 
 约定：
 
@@ -104,7 +104,7 @@ sudo UPSTREAM_BASE_URL=https://<readonly-upstream> \
 安装后验证：
 
 ```bash
-curl -k -I https://relayhub.jingshu.cc/relayhub-api/models
+curl -k -I https://relayhub.jingshu.cc/api/models
 ```
 
 ## 6. 当前 release 实装记录
@@ -126,9 +126,9 @@ curl -k -I https://relayhub.jingshu.cc/relayhub-api/models
 
 尚未安装：
 
-- `/relayhub-api` 真实 readonly upstream 反代认证
+- `/api` 真实 readonly upstream 反代认证
 - 原因：真实 upstream 与 token 注入策略在上一阶段尚未收口
-- release 当前已安装 disabled guard，`/relayhub-api/*` 在 upstream 未配置前返回 `503`，避免误落到主站 HTML
+- release 当前已安装 disabled guard，`/api/*` 在 upstream 未配置前返回 `503`，避免误落到主站 HTML
 
 ## 7. reload 与回滚
 

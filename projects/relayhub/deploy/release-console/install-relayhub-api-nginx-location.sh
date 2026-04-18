@@ -31,11 +31,11 @@ bearer = sys.argv[3]
 text = site_path.read_text()
 
 block = f"""
-    location = /relayhub-api {{
-        return 301 /relayhub-api/;
+    location = /api {{
+        return 301 /api/;
     }}
 
-    location /relayhub-api/ {{
+    location /api/ {{
         proxy_pass {upstream}/;
         proxy_http_version 1.1;
         proxy_set_header Host $proxy_host;
@@ -47,8 +47,8 @@ block = f"""
 """
 
 pattern = re.compile(
-    r"\n    location = /relayhub-api \{.*?\n    \}\n\n"
-    r"    location /relayhub-api/ \{.*?\n    \}\n",
+    r"\n    location = /api \{.*?\n    \}\n\n"
+    r"    location /api/ \{.*?\n    \}\n",
     re.DOTALL,
 )
 

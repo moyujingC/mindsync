@@ -5,11 +5,11 @@ server {
     root /var/www/relayhub.jingshu.cc;
     index index.html;
 
-    location = /relayhub-api {
+    location = /api {
         return 503;
     }
 
-    location /relayhub-api/ {
+    location /api/ {
         default_type application/json;
         return 503;
     }
@@ -29,11 +29,11 @@ location /relayhub/ {
     try_files $uri $uri/ /relayhub/index.html;
 }
 
-location = /relayhub-api {
-    return 301 /relayhub-api/;
+location = /api {
+    return 301 /api/;
 }
 
-location /relayhub-api/ {
+location /api/ {
     proxy_pass https://<readonly-upstream>/;
     proxy_http_version 1.1;
     proxy_set_header Host $proxy_host;

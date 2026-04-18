@@ -33,11 +33,11 @@
 - 兼容 Providers：`https://web.jingshu.cc/relayhub/providers`
 - 兼容 Provider detail 示例：`https://web.jingshu.cc/relayhub/providers/deepseek-direct`
 
-当前部署产物为 trial 构建入口，但由于尚未配置真实 readonly target，Providers 数据仍按既有 mock fallback 展示。后续接真实 readonly target 时，推荐先安装 `/relayhub-api` 同源反代，再执行 trial 构建：
+当前部署产物为 trial 构建入口，但由于尚未配置真实 readonly target，Providers 数据仍按既有 mock fallback 展示。后续接真实 readonly target 时，推荐先安装 `/api` 同源反代，再执行 trial 构建：
 
 ```bash
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch
-RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api
+RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api
 RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models
 ```
 
@@ -49,7 +49,7 @@ RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models
 
 当前 release 已完成真实只读试点接入：
 
-- `https://relayhub.jingshu.cc/relayhub-api/models` 返回真实模型目录
+- `https://relayhub.jingshu.cc/api/models` 返回真实模型目录
 - `https://relayhub.jingshu.cc/providers` 显示 model-derived provider 列表
 - `https://relayhub.jingshu.cc/providers/gpt-5` 显示 model-derived provider 详情
 

@@ -16,11 +16,11 @@
 
 ## 2. 推荐接入形态
 
-- release 同源代理：`/relayhub-api`
+- release 同源代理：`/api`
 - upstream 目录接口：`GET /v1/models`
 - 前端 trial 构建：
   - `RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch`
-  - `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
+  - `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api`
   - `RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models`
 
 默认 `main.tsx` 与默认 bootstrap 继续保持 mock，不自动切到真实链路。
@@ -72,7 +72,7 @@
 
 - 浏览器端不保存 token
 - 前端构建不注入 token
-- release nginx 在 `/relayhub-api/` 固定注入：
+- release nginx 在 `/api/` 固定注入：
 
 ```http
 Authorization: Bearer <token>

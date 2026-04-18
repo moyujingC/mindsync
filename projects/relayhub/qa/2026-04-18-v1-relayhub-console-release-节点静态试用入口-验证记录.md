@@ -37,13 +37,13 @@ HTTP 验证：
 - `/var/www/relayhub.jingshu.cc` 静态目录已同步 trial 根路径构建产物
 - `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/` 返回 `200`
 - `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/providers` 返回 `200`
-- `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/relayhub-api/providers` 返回 `503`
+- `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/api/models` 返回 `200`
 - `relayhub.jingshu.cc -> 42.192.65.145` 公网 DNS 已生效
 - `certbot --nginx -d relayhub.jingshu.cc` 已成功
 - 证书路径：`/etc/letsencrypt/live/relayhub.jingshu.cc/fullchain.pem`
 - `https://relayhub.jingshu.cc/` 返回 `200`
 - `https://relayhub.jingshu.cc/providers` 返回 `200`
-- `https://relayhub.jingshu.cc/relayhub-api/models` 返回 `200`
+- `https://relayhub.jingshu.cc/api/models` 返回 `200`
 - `http://relayhub.jingshu.cc/` 返回 `301` 重定向到 HTTPS
 - `https://web.jingshu.cc/relayhub/` 返回 `200`
 - `https://web.jingshu.cc/relayhub/providers` 返回 `200`
@@ -74,18 +74,18 @@ rg -n "保存策略|立即切流|发布到生产|启用自动路由|编辑生产
 - 命中均位于“不提供 / 禁止 / QA检查项 / 验证记录”语境
 - 未发现新增可执行控制动作文案
 
-## 5. `/relayhub-api` 接入结果
+## 5. `/api` 接入结果
 
 - Git 推送已完成：既有 release trial 分支已推送
-- 已补充 `/relayhub-api` nginx 反代样例与参数化安装脚本
+- 已补充 `/api` nginx 反代样例与参数化安装脚本
 - release 线上 nginx 已切换为同源反代：
   - upstream：`https://code.ppchat.vip/v1/`
   - 固定认证头：`Authorization: Bearer <release-only token>`
 - 当前 trial 构建已收敛为：
-  - `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
+  - `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api`
   - `RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models`
 - 当前主验证路径为：
-  - `https://relayhub.jingshu.cc/relayhub-api/models`
+  - `https://relayhub.jingshu.cc/api/models`
   - `https://relayhub.jingshu.cc/providers`
   - `https://relayhub.jingshu.cc/providers/gpt-5`
 
@@ -93,5 +93,5 @@ rg -n "保存策略|立即切流|发布到生产|启用自动路由|编辑生产
 
 - `npm test` 通过：`325 passed`
 - `npm run build` 通过
-- `RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models npm run build:trial` 通过
+- `RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models npm run build:trial` 通过
 - 误导表达全文搜索完成，命中仍位于“不提供 / 禁止 / QA检查项 / 验证记录”语境
