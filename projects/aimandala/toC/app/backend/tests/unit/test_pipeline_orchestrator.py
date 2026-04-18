@@ -851,6 +851,21 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
         )
     )
     record.layer_0_raw.imbalance_candidates = ["水多火灭"]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["primary_candidates"] = [
+        {
+            "id": "水多火灭",
+            "category": "相乘",
+            "toc_supported": True,
+            "score": 0.91,
+            "selected_for_primary": True,
+            "reason_codes": ["attacker_excess", "target_deficient"],
+        }
+    ]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["synthetic_signal"] = {
+        "id": "transition-overload",
+        "used": False,
+        "reason": "",
+    }
     store.save(record)
 
     result = orchestrator.upgrade_to_pro(record.interpretation_id)
@@ -902,6 +917,21 @@ def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
     )
     record.layer_0_raw = orchestrator._build_layer0_fallback(record)
     record.layer_0_raw.imbalance_candidates = ["transition-overload"]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["primary_candidates"] = [
+        {
+            "id": "transition-overload",
+            "category": "synthetic",
+            "toc_supported": True,
+            "score": 1.0,
+            "selected_for_primary": True,
+            "reason_codes": ["fallback_signal"],
+        }
+    ]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["synthetic_signal"] = {
+        "id": "transition-overload",
+        "used": True,
+        "reason": "fallback_signal",
+    }
     record.layer_1_lite_draft = Layer1LiteDraft()
     record.layer_1_lite_draft.story.contradiction.content = "一边想继续，一边又会先缩回来。"
     record.layer_1_lite_draft.story.block.content = "临门一脚前会先停顿一下。"

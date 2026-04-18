@@ -192,7 +192,8 @@ class InterpretationStore:
             knowledge_hits=data.get("knowledge_hits", {}),
             rule_evaluations=data.get("rule_evaluations", {}),
             theme_projection=data.get("theme_projection", {}),
-            quality_flags=data.get("quality_flags", []),
+            fidelity_flags=data.get("fidelity_flags", data.get("quality_flags", [])),
+            quality_flags=data.get("quality_flags", data.get("fidelity_flags", [])),
             fallback_summary=data.get("fallback_summary", {}),
             created_at=data.get("created_at", ""),
         )

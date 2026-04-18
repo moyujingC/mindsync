@@ -48,6 +48,26 @@ class ReportLayer0Support:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         layer = Layer0Raw()
         layer.imbalance_candidates = ["transition-overload"]
+        layer0_assembler = self._get_layer0_assembler()
+        fallback_trace = (
+            layer0_assembler.imbalance_service.evaluate_imbalance_trace(
+                {
+                    "wood": {"element": "木", "proportion": 0.20},
+                    "fire": {"element": "火", "proportion": 0.20},
+                    "earth": {"element": "土", "proportion": 0.20},
+                    "metal": {"element": "金", "proportion": 0.20},
+                    "water": {"element": "水", "proportion": 0.20},
+                },
+                {},
+                version="toc",
+            )
+            if layer0_assembler is not None
+            else {
+                "element_states": [],
+                "triad_states": [],
+                "imbalance_trace": {"all_candidates": []},
+            }
+        )
         layer.color_analysis = {
             "summary": LITE_REPORT_BLUEPRINT.structure_labels["layer0_color_summary"],
             "overall_saturation": 0.42,
@@ -76,14 +96,65 @@ class ReportLayer0Support:
             LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_right"],
         ]
         layer.micro_analysis.wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
-        layer.visual_facts = {"generated": True, "circle_boundaries": circles}
-        layer.knowledge_hits = {"circle_readings": {}}
+        synthetic_signal = {
+            "id": "transition-overload",
+            "used": True,
+            "reason": "report_layer0_fallback",
+        }
+        layer.visual_facts = {
+            "generated": True,
+            "circle_boundaries": circles,
+            "circle_colors": layer.circle_colors,
+            "dominant_elements": {},
+            "weighted_element_distribution": {},
+            "extracted_color_metrics": {
+                "overall_saturation": 0.42,
+                "black_ratio": 0.18,
+                "red_ratio": 0.11,
+            },
+        }
+        layer.knowledge_hits = {
+            "circle_readings": {},
+            "source_refs": [
+                {
+                    "entity_id": "generated.report_layer0",
+                    "source_path": "generated:report_layer0_fallback",
+                    "kind": "generated_fallback",
+                }
+            ],
+        }
         layer.rule_evaluations = {
+            "element_states": fallback_trace.get("element_states", []),
+            "triad_states": [
+                {
+                    **item,
+                    "source_hit": "generated",
+                }
+                for item in fallback_trace.get("triad_states", [])
+            ],
+            "imbalance_trace": {
+                "all_candidates": fallback_trace.get("imbalance_trace", {}).get("all_candidates", []),
+                "primary_candidates": [
+                    {
+                        "id": "transition-overload",
+                        "category": "阶段迁移",
+                        "toc_supported": True,
+                        "score": 1.0,
+                        "selected_for_primary": True,
+                        "reason_codes": ["report_layer0_fallback"],
+                        "decision": "synthetic",
+                        "warning": None,
+                    }
+                ],
+                "synthetic_signal": synthetic_signal,
+            },
+            "primary_candidates": ["transition-overload"],
+            "synthetic_signal": synthetic_signal,
             "imbalance_candidates": ["transition-overload"],
             "theme_mappings": {},
         }
         layer.theme_projection = {"theme_id": getattr(record, "theme", "general")}
-        layer.quality_flags = ["fallback:generated"]
+        layer.fidelity_flags = ["fallback:generated"]
         layer.fallback_summary = {
             "used": True,
             "levels": ["generated"],

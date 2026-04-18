@@ -99,17 +99,32 @@ class TestLayer0Raw:
         assert isinstance(layer.five_elements, FiveElementsData)
         assert isinstance(layer.three_circles, ThreeCirclesData)
         assert layer.imbalance_candidates == []
+        assert layer.fidelity_flags == []
+        assert layer.quality_flags == []
 
     def test_to_dict(self):
         """测试转换为字典"""
         layer = Layer0Raw(
             five_elements=FiveElementsData(wood={"ratio": 0.5}),
             imbalance_candidates=["水多木漂"],
+            fidelity_flags=["warning:水多火灭"],
         )
         data = layer.to_dict()
         assert "five_elements" in data
         assert data["imbalance_candidates"] == ["水多木漂"]
+        assert data["fidelity_flags"] == ["warning:水多火灭"]
+        assert data["quality_flags"] == ["warning:水多火灭"]
         assert "created_at" in data
+
+    def test_quality_flags_aliases_fidelity_flags(self):
+        """测试 quality_flags 兼容 fidelity_flags"""
+        layer = Layer0Raw()
+
+        layer.fidelity_flags = ["trace:tob_only_candidate_present"]
+        assert layer.quality_flags == ["trace:tob_only_candidate_present"]
+
+        layer.quality_flags = ["fallback:generated"]
+        assert layer.fidelity_flags == ["fallback:generated"]
 
 
 class TestSixInsights:

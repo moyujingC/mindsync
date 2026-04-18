@@ -112,21 +112,14 @@ class Layer0Assembler:
             for circle_key, circle_data in circle_colors.items()
             if isinstance(circle_data, dict)
         }
-        imbalances = self.imbalance_service.identify_imbalances(
+        trace = self.imbalance_service.evaluate_imbalance_trace(
             color_analysis,
             circle_elements,
             version="toc",
         )
-        if not imbalances:
-            imbalances = ["transition-overload"]
-            layer.fallback_summary = {
-                "used": False,
-                "levels": [],
-                "warnings": [],
-            }
-        else:
-            layer.fallback_summary = {"used": False, "levels": [], "warnings": []}
-        layer.imbalance_candidates = imbalances
+        primary_candidates = trace.get("primary_candidates", [])
+        synthetic_signal = trace.get("synthetic_signal", {})
+        layer.imbalance_candidates = list(primary_candidates)
 
         theme_summary = self.theme_service.get_theme_summary(getattr(record, "theme", "general"))
         build_info = self.repository.get_build_info()
@@ -134,11 +127,33 @@ class Layer0Assembler:
             element_distribution.items(),
             key=lambda item: item[1].get("percentage", 0.0),
         )[0]
+        dominant_elements = {
+            circle_key: ELEMENT_KEY_TO_CN.get(circle_data.get("dominant_element"), "")
+            for circle_key, circle_data in circle_colors.items()
+            if isinstance(circle_data, dict)
+        }
+        extracted_color_metrics = {
+            "overall_saturation": layer.color_analysis.get("overall_saturation"),
+            "black_ratio": layer.color_analysis.get("black_ratio"),
+            "red_ratio": layer.color_analysis.get("red_ratio"),
+        }
         layer.visual_facts = {
             "image_path": str(path),
             "circle_boundaries": circles,
             "dominant_element": ELEMENT_KEY_TO_CN.get(dominant_key, dominant_key),
+            "dominant_elements": dominant_elements,
+            "circle_colors": circle_colors,
             "circle_colors_detected": sorted(circle_colors.keys()),
+            "weighted_element_distribution": {
+                key: {
+                    "element": item["element_cn"],
+                    "proportion": item["proportion"],
+                    "percentage": item["percentage"],
+                    "areas": item["areas"],
+                }
+                for key, item in element_distribution.items()
+            },
+            "extracted_color_metrics": extracted_color_metrics,
             "knowledge_build": {
                 "build_selector": build_info.get("build_selector"),
                 "build_source": build_info.get("build_source"),
@@ -153,24 +168,60 @@ class Layer0Assembler:
             },
             "theme_summary": theme_summary,
             "build_info": build_info,
+            "source_refs": [
+                {
+                    "entity_id": f"theme.{theme_summary.get('theme_id', getattr(record, 'theme', 'general'))}",
+                    "source_path": f"themes/{theme_summary.get('theme_id', getattr(record, 'theme', 'general'))}.yaml",
+                    "kind": "theme_config",
+                },
+                {
+                    "entity_id": "circle.三圈",
+                    "source_path": "circles/three_circles.yaml",
+                    "kind": "circle_runtime",
+                },
+                {
+                    "entity_id": "rule.imbalance_types",
+                    "source_path": "rules/imbalance_types.yaml",
+                    "kind": "imbalance_rule",
+                },
+            ],
         }
+        primary_theme_mappings = {
+            imbalance_id: self.imbalance_service.get_theme_mapping(
+                getattr(record, "theme", "general"),
+                imbalance_id,
+            ).value
+            for imbalance_id in primary_candidates
+        }
+        trace["theme_mappings"] = primary_theme_mappings
+        trace["primary_candidates"] = list(primary_candidates)
+        trace["synthetic_signal"] = synthetic_signal
+        trace["imbalance_candidates"] = list(primary_candidates)
         layer.rule_evaluations = {
-            "imbalance_candidates": imbalances,
-            "theme_mappings": {
-                imbalance_id: self.imbalance_service.get_theme_mapping(
-                    getattr(record, "theme", "general"),
-                    imbalance_id,
-                ).value
-                for imbalance_id in imbalances
-            },
+            **trace,
+            "theme_mappings": primary_theme_mappings,
         }
         layer.theme_projection = {
             "theme_id": getattr(record, "theme", "general"),
             "theme_name": theme_summary.get("name", ""),
             "core_issues": theme_summary.get("core_issues", []),
             "focus_element": theme_summary.get("focus_element", ""),
+            "related_circles": theme_summary.get("related_circles", []),
+            "issue_type_count": theme_summary.get("issue_type_count", 0),
         }
-        layer.quality_flags = self._collect_quality_flags(circle_colors, imbalances)
+        layer.fidelity_flags = self._collect_fidelity_flags(
+            circle_colors=circle_colors,
+            trace=trace,
+        )
+        layer.fallback_summary = {
+            "used": False,
+            "levels": [],
+            "warnings": (
+                ["no toc primary candidate; using transition-overload synthetic signal"]
+                if synthetic_signal.get("used")
+                else []
+            ),
+        }
         return layer
 
     def build_fallback(self, record: Any) -> Layer0Raw:
@@ -182,6 +233,17 @@ class Layer0Assembler:
         theme_summary = self.theme_service.get_theme_summary(theme)
         layer = Layer0Raw()
         layer.imbalance_candidates = ["transition-overload"]
+        fallback_trace = self.imbalance_service.evaluate_imbalance_trace(
+            {
+                "wood": {"element": "木", "proportion": 0.20},
+                "fire": {"element": "火", "proportion": 0.20},
+                "earth": {"element": "土", "proportion": 0.20},
+                "metal": {"element": "金", "proportion": 0.20},
+                "water": {"element": "水", "proportion": 0.20},
+            },
+            {},
+            version="toc",
+        )
         layer.color_analysis = {
             "summary": LITE_REPORT_BLUEPRINT.structure_labels["layer0_color_summary"],
             "overall_saturation": 0.42,
@@ -210,9 +272,22 @@ class Layer0Assembler:
             LITE_REPORT_BLUEPRINT.structure_labels["layer0_adjacent_right"],
         ]
         layer.micro_analysis.wrap = [LITE_REPORT_BLUEPRINT.structure_labels["layer0_wrap"]]
+        synthetic_signal = {
+            "id": "transition-overload",
+            "used": True,
+            "reason": "generated_fallback",
+        }
         layer.visual_facts = {
             "generated": True,
             "circle_boundaries": circles,
+            "circle_colors": layer.circle_colors,
+            "dominant_elements": {},
+            "weighted_element_distribution": {},
+            "extracted_color_metrics": {
+                "overall_saturation": 0.42,
+                "black_ratio": 0.18,
+                "red_ratio": 0.11,
+            },
             "knowledge_build": self.repository.get_build_info(),
         }
         layer.knowledge_hits = {
@@ -223,23 +298,63 @@ class Layer0Assembler:
                 "middle": layer.three_circles.middle.get("meaning", ""),
                 "outer": layer.three_circles.outer.get("meaning", ""),
             },
+            "source_refs": [
+                {
+                    "entity_id": "generated.layer0",
+                    "source_path": "generated:layer0_fallback",
+                    "kind": "generated_fallback",
+                }
+            ],
         }
         layer.rule_evaluations = {
+            "element_states": fallback_trace.get("element_states", []),
+            "triad_states": [
+                {
+                    **item,
+                    "source_hit": "generated",
+                }
+                for item in fallback_trace.get("triad_states", [])
+            ],
+            "imbalance_trace": {
+                "all_candidates": fallback_trace.get("imbalance_trace", {}).get("all_candidates", []),
+                "primary_candidates": [
+                    {
+                        "id": "transition-overload",
+                        "category": "阶段迁移",
+                        "toc_supported": True,
+                        "score": 1.0,
+                        "selected_for_primary": True,
+                        "reason_codes": ["generated_fallback"],
+                        "decision": "synthetic",
+                        "warning": None,
+                    }
+                ],
+                "synthetic_signal": synthetic_signal,
+            },
+            "primary_candidates": ["transition-overload"],
+            "synthetic_signal": synthetic_signal,
             "imbalance_candidates": ["transition-overload"],
-            "theme_mappings": {},
+            "theme_mappings": {
+                "transition-overload": self.imbalance_service.get_theme_mapping(
+                    theme,
+                    "transition-overload",
+                ).value
+            },
         }
         layer.theme_projection = {
             "theme_id": theme,
             "theme_name": theme_summary.get("name", ""),
             "core_issues": theme_summary.get("core_issues", []),
             "focus_element": theme_summary.get("focus_element", ""),
+            "related_circles": theme_summary.get("related_circles", []),
+            "issue_type_count": theme_summary.get("issue_type_count", 0),
         }
         layer.fallback_summary = {
             "used": True,
             "levels": ["generated"],
             "warnings": ["vision extraction unavailable; using deterministic fallback layer0"],
         }
-        layer.quality_flags = ["fallback:generated"]
+        layer.fidelity_flags = ["fallback:generated"]
         return layer
 
     def _aggregate_five_elements(
@@ -430,22 +545,27 @@ class Layer0Assembler:
         layer.micro_analysis.adjacent = adjacent
         layer.micro_analysis.wrap = wrap
 
-    def _collect_quality_flags(
+    def _collect_fidelity_flags(
         self,
         circle_colors: dict[str, Any],
-        imbalances: list[str],
+        trace: dict[str, Any],
     ) -> list[str]:
         flags: list[str] = []
         for circle_key in ["inner", "middle", "outer"]:
             if not circle_colors.get(circle_key):
                 flags.append(f"missing_circle:{circle_key}")
-        if "transition-overload" in imbalances and not self.imbalance_service.get_imbalance_detail(
-            "transition-overload"
-        ).found:
-            flags.append("fallback:transition-overload")
-        for imbalance_id in imbalances:
-            detail = self.imbalance_service.get_imbalance_detail(imbalance_id).value
-            warning = detail.get("warning") if isinstance(detail, dict) else None
-            if warning:
-                flags.append(f"warning:{imbalance_id}")
+        all_candidates = trace.get("imbalance_trace", {}).get("all_candidates", [])
+        if any(
+            not bool(candidate.get("toc_supported", False))
+            and float(candidate.get("score", 0.0)) >= self.imbalance_service.MIN_VISIBLE_SCORE
+            for candidate in all_candidates
+            if isinstance(candidate, dict)
+        ):
+            flags.append("trace:tob_only_candidate_present")
+        for candidate in all_candidates:
+            if not isinstance(candidate, dict):
+                continue
+            warning = str(candidate.get("warning") or "").strip()
+            if warning and float(candidate.get("score", 0.0)) >= self.imbalance_service.MIN_VISIBLE_SCORE:
+                flags.append(f"warning:{candidate.get('id')}")
         return flags

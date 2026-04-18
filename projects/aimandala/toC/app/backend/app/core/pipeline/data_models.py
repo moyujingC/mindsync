@@ -89,11 +89,44 @@ class Layer0Raw:
     knowledge_hits: Dict[str, Any] = field(default_factory=dict)
     rule_evaluations: Dict[str, Any] = field(default_factory=dict)
     theme_projection: Dict[str, Any] = field(default_factory=dict)
+    fidelity_flags: List[str] = field(default_factory=list)
     quality_flags: List[str] = field(default_factory=list)
     fallback_summary: Dict[str, Any] = field(default_factory=dict)
 
     # 生成时间戳
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+
+    def __post_init__(self) -> None:
+        flags = self.fidelity_flags if self.fidelity_flags else self.quality_flags
+        normalized = self._normalize_flag_list(flags)
+        object.__setattr__(self, "fidelity_flags", normalized)
+        object.__setattr__(self, "quality_flags", list(normalized))
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in {"fidelity_flags", "quality_flags"}:
+            normalized = self._normalize_flag_list(value)
+            counterpart_name = "quality_flags" if name == "fidelity_flags" else "fidelity_flags"
+            counterpart = list(object.__getattribute__(self, "__dict__").get(counterpart_name, []))
+            if (
+                not normalized
+                and counterpart
+                and "created_at" not in object.__getattribute__(self, "__dict__")
+            ):
+                normalized = counterpart
+            object.__setattr__(self, "fidelity_flags", normalized)
+            object.__setattr__(self, "quality_flags", list(normalized))
+            return
+        object.__setattr__(self, name, value)
+
+    @staticmethod
+    def _normalize_flag_list(value: Any) -> List[str]:
+        if not isinstance(value, list):
+            return []
+        return [
+            str(item).strip()
+            for item in value
+            if isinstance(item, str) and str(item).strip()
+        ]
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -121,6 +154,7 @@ class Layer0Raw:
             "knowledge_hits": self.knowledge_hits,
             "rule_evaluations": self.rule_evaluations,
             "theme_projection": self.theme_projection,
+            "fidelity_flags": self.fidelity_flags,
             "quality_flags": self.quality_flags,
             "fallback_summary": self.fallback_summary,
             "created_at": self.created_at,

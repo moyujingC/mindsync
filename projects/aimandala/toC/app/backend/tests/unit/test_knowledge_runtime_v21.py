@@ -521,10 +521,63 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
 
     assert layer0.visual_facts["dominant_element"] in {"木", "火", "土", "金", "水"}
     assert layer0.knowledge_hits["circle_readings"]["inner"]
-    assert layer0.rule_evaluations["imbalance_candidates"]
+    assert layer0.rule_evaluations["element_states"]
+    assert layer0.rule_evaluations["triad_states"]
+    assert layer0.rule_evaluations["imbalance_trace"]["all_candidates"]
+    assert layer0.rule_evaluations["imbalance_trace"]["primary_candidates"]
+    assert "used" in layer0.rule_evaluations["imbalance_trace"]["synthetic_signal"]
     assert layer0.theme_projection["theme_id"] == "wealth_career"
-    assert isinstance(layer0.quality_flags, list)
+    assert isinstance(layer0.fidelity_flags, list)
+    assert layer0.quality_flags == layer0.fidelity_flags
     assert "used" in layer0.fallback_summary
+
+
+def test_v21_imbalance_service_emits_full_trace_but_filters_primary_candidates():
+    runtime = get_knowledge_runtime()
+
+    trace = runtime.imbalance_service.evaluate_imbalance_trace(
+        color_analysis={
+            "water": {"element": "水", "proportion": 0.42},
+            "fire": {"element": "火", "proportion": 0.08},
+            "wood": {"element": "木", "proportion": 0.20},
+            "earth": {"element": "土", "proportion": 0.18},
+            "metal": {"element": "金", "proportion": 0.12},
+        },
+        circle_elements={"inner": "水", "middle": "水", "outer": "土"},
+        version="toc",
+    )
+
+    all_candidates = trace["imbalance_trace"]["all_candidates"]
+    primary_ids = [item["id"] for item in trace["imbalance_trace"]["primary_candidates"]]
+
+    assert len(all_candidates) == 20
+    assert "水多火灭" in primary_ids
+    assert all(item["score"] >= 0.0 for item in all_candidates)
+    assert any(not item["toc_supported"] for item in all_candidates)
+    assert all(item["toc_supported"] for item in trace["imbalance_trace"]["primary_candidates"])
+    assert trace["imbalance_trace"]["synthetic_signal"]["used"] is False
+
+
+def test_v21_imbalance_service_uses_transition_signal_only_when_no_primary_candidate():
+    runtime = get_knowledge_runtime()
+
+    trace = runtime.imbalance_service.evaluate_imbalance_trace(
+        color_analysis={
+            "wood": {"element": "木", "proportion": 0.22},
+            "fire": {"element": "火", "proportion": 0.21},
+            "earth": {"element": "土", "proportion": 0.19},
+            "metal": {"element": "金", "proportion": 0.18},
+            "water": {"element": "水", "proportion": 0.20},
+        },
+        circle_elements={"inner": "木", "middle": "火", "outer": "水"},
+        version="toc",
+    )
+
+    primary_ids = [item["id"] for item in trace["imbalance_trace"]["primary_candidates"]]
+
+    assert primary_ids == ["transition-overload"]
+    assert trace["imbalance_trace"]["synthetic_signal"]["used"] is True
+    assert trace["imbalance_trace"]["synthetic_signal"]["id"] == "transition-overload"
 
 
 def test_store_rejects_legacy_schema_record(tmp_path):
