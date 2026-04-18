@@ -7,12 +7,12 @@ const navGroups = [
       { to: "/models", label: "模型库" },
       { to: "/tasks", label: "任务库" },
       { to: "/runs", label: "运行记录" },
-      { to: "/dashboard", label: "Dashboard" },
     ],
   },
   {
     label: "支持模块",
     items: [
+      { to: "/dashboard", label: "Dashboard" },
       { to: "/providers", label: "外部模型源" },
       { to: "/environments", label: "Environments" },
       { to: "/eval", label: "Eval" },
@@ -36,24 +36,42 @@ export function AppShell() {
           </p>
         </div>
 
-        {navGroups.map((group) => (
-          <section key={group.label} className="nav-group">
-            <p className="nav-group-label">{group.label}</p>
-            <nav className="nav-list" aria-label={group.label}>
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `nav-link${isActive ? " is-active" : ""}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
-          </section>
-        ))}
+        <section className="nav-group">
+          <p className="nav-group-label">核心模块</p>
+          <nav className="nav-list" aria-label="核心模块">
+            {navGroups[0]!.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `nav-link${isActive ? " is-active" : ""}`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        </section>
+
+        <details className="nav-group nav-group-support" open={false}>
+          <summary className="nav-group-summary">
+            <span className="nav-group-label">支持模块</span>
+            <span className="nav-group-summary-note">按需展开</span>
+          </summary>
+          <nav className="nav-list nav-list-support" aria-label="支持模块">
+            {navGroups[1]!.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `nav-link nav-link-support${isActive ? " is-active" : ""}`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        </details>
 
         <div className="sidebar-note">
           <strong>v1 边界</strong>

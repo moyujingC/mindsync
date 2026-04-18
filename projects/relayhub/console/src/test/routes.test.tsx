@@ -1,13 +1,20 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { getConsoleRouterBasename } from "../app/consoleRouter";
+import { seedModelEntries } from "../fixtures/controlPlaneData";
+import * as controlPlaneService from "../services/controlPlane";
 import { renderRoute } from "./renderRoute";
+
+afterEach(() => {
+  controlPlaneService.resetMockControlPlaneState();
+  vi.restoreAllMocks();
+});
 
 describe("RelayHub console routes", () => {
   it("redirects root route to the model library", async () => {
     renderRoute("/");
 
-    expect(await screen.findByText("先把模型资产收进来，再谈任务选型和治理判断")).toBeInTheDocument();
+    expect(await screen.findByText("先看哪些模型已经可用，哪些还差最后一步激活")).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByTestId("current-location")).toHaveTextContent("/models");
     });
@@ -33,14 +40,14 @@ describe("RelayHub console routes", () => {
   it("renders task library route with built-in task copy", async () => {
     renderRoute("/tasks");
 
-    expect(await screen.findByText("任务决定模型怎么用，不是反过来先让用户猜路由")).toBeInTheDocument();
+    expect(await screen.findByText("先绑定默认模型，再开始积累可比较的任务记录")).toBeInTheDocument();
     expect(await screen.findByText("Claude Code Web Coding")).toBeInTheDocument();
   });
 
   it("renders runs route with governance overview", async () => {
     renderRoute("/runs");
 
-    expect(await screen.findByText("基础统计先从人工运行记录开始，不等外部自动接入")).toBeInTheDocument();
+    expect(await screen.findByText("先把一次次真实使用记下来，再谈模型比较")).toBeInTheDocument();
     expect(await screen.findByText("治理概览")).toBeInTheDocument();
   });
 
@@ -61,6 +68,96 @@ describe("RelayHub console routes", () => {
 
     expect(await screen.findByText("当前闭环进度")).toBeInTheDocument();
     expect(await screen.findByText("下一步入口")).toBeInTheDocument();
+  });
+
+  it("keeps dashboard available but moves it out of core navigation", async () => {
+    renderRoute("/dashboard");
+
+    expect(await screen.findByText("当前闭环进度")).toBeInTheDocument();
+
+    const coreNav = screen.getByLabelText("核心模块");
+    const supportNav = screen.getByLabelText("支持模块");
+
+    expect(within(coreNav).queryByRole("link", { name: "Dashboard" })).not.toBeInTheDocument();
+    expect(within(coreNav).getByRole("link", { name: "模型库" })).toBeInTheDocument();
+    expect(within(coreNav).getByRole("link", { name: "任务库" })).toBeInTheDocument();
+    expect(within(coreNav).getByRole("link", { name: "运行记录" })).toBeInTheDocument();
+    expect(within(supportNav).getByRole("link", { name: "Dashboard" })).toBeInTheDocument();
+  });
+
+  it("blocks model submission when required fields are missing", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("模型条目总览")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "新增模型" }));
+
+    expect(
+      await screen.findByText("请先补全必填项：名称、Provider、Base URL、模型标识。"),
+    ).toBeInTheDocument();
+  });
+
+  it("shows task guidance when there are no active models to bind", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([]);
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByText("先绑定默认模型，再开始积累可比较的任务记录")).toBeInTheDocument();
+    expect(await screen.findByText("当前还没有可绑定的已激活模型")).toBeInTheDocument();
+    expect(await screen.findByText("先回模型库完成激活，再回来绑定任务。")).toBeInTheDocument();
+  });
+
+  it("blocks run submission when required fields are missing", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/runs");
+
+    expect(await screen.findByText("治理概览")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "记录一次运行" }));
+
+    expect(await screen.findByText("请先补全必填项：任务、模型、结果摘要。")).toBeInTheDocument();
+  });
+
+  it("switches task stats to the submitted task after recording a run", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/runs");
+
+    expect(await screen.findByText("治理概览")).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "Claude Code Web Coding" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "PPChat 中转" })).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("任务"), {
+      target: { value: "task-claude-code" },
+    });
+    fireEvent.change(screen.getByLabelText("模型"), {
+      target: { value: "preset-ppchat-relay" },
+    });
+    fireEvent.change(screen.getByLabelText("结果摘要"), {
+      target: { value: "这次网页编码结果稳定，可继续作为默认候选。" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "记录一次运行" }));
+
+    expect(
+      await screen.findByText("运行记录已保存，任务统计已切换到这次提交的任务。"),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Claude Code Web Coding" })).toHaveClass(
+        "is-active",
+      );
+    });
   });
 
   it("renders provider route with empty-state provider metrics and restored filters", async () => {

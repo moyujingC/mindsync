@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { ResultGradePill } from "../components/ResultGradePill";
 import { Section } from "../components/Section";
@@ -25,10 +25,27 @@ const emptyForm: TaskRunRecordInput = {
   note: "",
 };
 
+function resolvePreferredTaskId(
+  tasks: Array<{ id: string }> | undefined,
+  runs: Array<{ taskId: string }> | undefined,
+) {
+  if (!tasks || tasks.length === 0) {
+    return "";
+  }
+
+  const mostRecentTaskId = runs?.[0]?.taskId;
+  if (mostRecentTaskId && tasks.some((task) => task.id === mostRecentTaskId)) {
+    return mostRecentTaskId;
+  }
+
+  return tasks[0]!.id;
+}
+
 export function RunsPage() {
   const [version, setVersion] = useState(0);
-  const [selectedTaskId, setSelectedTaskId] = useState<string>("task-claude-code");
-  const [form, setForm] = useState<TaskRunRecordInput>(emptyForm);
+  const [selectedTaskId, setSelectedTaskId] = useState<string>("");
+  const [hasManualSelection, setHasManualSelection] = useState(false);
+  const [form, setForm] = useState<TaskRunRecordInput>({ ...emptyForm });
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,20 +53,56 @@ export function RunsPage() {
   const runs = useAsyncResource(() => listTaskRunRecords(), [version]);
   const tasks = useAsyncResource(() => listTaskTemplates(), [version]);
   const models = useAsyncResource(() => listActiveModelEntries(), [version]);
-  const selectedStats = useAsyncResource(() => getTaskStats(selectedTaskId), [selectedTaskId, version]);
+  const selectedStats = useAsyncResource(
+    () => (selectedTaskId ? getTaskStats(selectedTaskId) : Promise.resolve(null)),
+    [selectedTaskId, version],
+  );
 
   const taskOptions = useMemo(() => tasks.data ?? [], [tasks.data]);
   const modelOptions = useMemo(() => models.data ?? [], [models.data]);
+
+  useEffect(() => {
+    if (hasManualSelection) {
+      return;
+    }
+
+    const preferredTaskId = resolvePreferredTaskId(taskOptions, runs.data ?? undefined);
+    if (preferredTaskId && preferredTaskId !== selectedTaskId) {
+      setSelectedTaskId(preferredTaskId);
+    }
+  }, [hasManualSelection, runs.data, selectedTaskId, taskOptions]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFeedback(null);
     setError(null);
 
+    const missing: string[] = [];
+    if (!form.taskId) {
+      missing.push("任务");
+    }
+    if (!form.modelEntryId) {
+      missing.push("模型");
+    }
+    if (!form.summary.trim()) {
+      missing.push("结果摘要");
+    }
+
+    if (missing.length > 0) {
+      setError(`请先补全必填项：${missing.join("、")}。`);
+      return;
+    }
+
     try {
-      await recordTaskRun(form);
+      await recordTaskRun({
+        ...form,
+        summary: form.summary.trim(),
+      });
+      const submittedTaskId = form.taskId;
       setVersion((current) => current + 1);
-      setFeedback("运行记录已新增，统计已刷新。");
+      setSelectedTaskId(submittedTaskId);
+      setHasManualSelection(true);
+      setFeedback("运行记录已保存，任务统计已切换到这次提交的任务。");
       setForm({ ...emptyForm });
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : "运行记录保存失败。");
@@ -61,14 +114,14 @@ export function RunsPage() {
       <section className="hero-card">
         <div>
           <span className="eyebrow">Run Records</span>
-          <h1>基础统计先从人工运行记录开始，不等外部自动接入</h1>
+          <h1>先把一次次真实使用记下来，再谈模型比较</h1>
           <p>
-            下一阶段只回答“哪个任务最近用过哪些模型、结果更好的是谁、切换频率高不高”。这是一层帮助选型的最小观察面，不是正式评测系统。
+            当前统计只基于控制台里的运行记录。先用最小表单把任务、模型和结果摘要记下来，再用这些记录看哪个模型更适合继续用。
           </p>
         </div>
       </section>
 
-      <Section title="治理概览" description="先看模型激活、任务绑定和最近运行记录是否已经形成闭环。">
+      <Section title="治理概览" description="先确认模型激活、任务绑定和运行记录是否已经形成最小闭环。">
         {overview.status === "loading" ? (
           <EmptyState title="正在加载治理概览" description="正在读取模型、任务与运行记录摘要。" />
         ) : null}
@@ -115,11 +168,12 @@ export function RunsPage() {
         ) : null}
       </Section>
 
-      <Section title="新增运行记录" description="先用控制台录入最小结果，再形成任务维度的比较数据。">
+      <Section title="新增运行记录" description="表单按“先选任务，再选模型，再记录结果”收口，不让用户自己猜顺序。">
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
             <span>任务</span>
             <select
+              aria-label="任务"
               value={form.taskId}
               onChange={(event) => setForm((current) => ({ ...current, taskId: event.target.value }))}
             >
@@ -134,6 +188,7 @@ export function RunsPage() {
           <label className="field">
             <span>模型</span>
             <select
+              aria-label="模型"
               value={form.modelEntryId}
               onChange={(event) =>
                 setForm((current) => ({ ...current, modelEntryId: event.target.value }))
@@ -165,8 +220,18 @@ export function RunsPage() {
               ))}
             </select>
           </label>
+          <label className="field field-wide">
+            <span>结果摘要</span>
+            <textarea
+              aria-label="结果摘要"
+              rows={3}
+              value={form.summary}
+              onChange={(event) => setForm((current) => ({ ...current, summary: event.target.value }))}
+              placeholder="说明这次运行的结果是否好用，以及它适不适合继续做默认模型。"
+            />
+          </label>
           <label className="field">
-            <span>成本（元）</span>
+            <span>可选成本（元）</span>
             <input
               type="number"
               step="0.01"
@@ -180,7 +245,7 @@ export function RunsPage() {
             />
           </label>
           <label className="field">
-            <span>耗时（ms）</span>
+            <span>可选耗时（ms）</span>
             <input
               type="number"
               value={form.latencyMs ?? ""}
@@ -190,15 +255,6 @@ export function RunsPage() {
                   latencyMs: event.target.value === "" ? null : Number(event.target.value),
                 }))
               }
-            />
-          </label>
-          <label className="field field-wide">
-            <span>结果摘要</span>
-            <textarea
-              rows={3}
-              value={form.summary}
-              onChange={(event) => setForm((current) => ({ ...current, summary: event.target.value }))}
-              placeholder="说明这次运行的结果是否好用，以及它适不适合继续做默认模型。"
             />
           </label>
           <label className="field field-wide">
@@ -214,33 +270,39 @@ export function RunsPage() {
             <button type="submit" className="button-link">
               记录一次运行
             </button>
-            {feedback ? <span className="supporting-text">{feedback}</span> : null}
+            {feedback ? <span className="supporting-text feedback-inline">{feedback}</span> : null}
             {error ? <span className="error-inline">{error}</span> : null}
           </div>
         </form>
       </Section>
 
-      <Section title="任务统计" description="统计只基于任务运行记录，不依赖外部程序自动回传。">
+      <Section title="任务统计" description="优先打开最近有记录的任务；提交新记录后，会自动切到对应任务。">
         <div className="tabs">
           {taskOptions.map((task) => (
             <button
               key={task.id}
               type="button"
               className={`tab${selectedTaskId === task.id ? " is-active" : ""}`}
-              onClick={() => setSelectedTaskId(task.id)}
+              onClick={() => {
+                setSelectedTaskId(task.id);
+                setHasManualSelection(true);
+              }}
             >
               {task.name}
             </button>
           ))}
         </div>
 
-        {selectedStats.status === "loading" ? (
+        {selectedTaskId === "" ? (
+          <EmptyState title="当前还没有可展示的任务统计" description="先去任务库创建任务，或先录入一条运行记录。" />
+        ) : null}
+        {selectedTaskId !== "" && selectedStats.status === "loading" ? (
           <EmptyState title="正在加载任务统计" description="正在汇总该任务下的模型对比结果。" />
         ) : null}
-        {selectedStats.status === "not-found" ? (
+        {selectedTaskId !== "" && selectedStats.status === "not-found" ? (
           <EmptyState title="没有找到对应任务" description="请从任务库重新绑定模型后再查看。" />
         ) : null}
-        {selectedStats.status === "success" && selectedStats.data ? (
+        {selectedTaskId !== "" && selectedStats.status === "success" && selectedStats.data ? (
           <div className="stack">
             <article className="data-card">
               <span className="mini-label">{selectedStats.data.taskName}</span>
@@ -287,7 +349,7 @@ export function RunsPage() {
         ) : null}
       </Section>
 
-      <Section title="最近运行记录" description="先看最新样本，不急着做自动 benchmark。">
+      <Section title="最近运行记录" description="先看最近样本，不在这一轮扩自动 benchmark 或外部自动采集。">
         {runs.status === "loading" ? (
           <EmptyState title="正在加载运行记录" description="正在读取最近样本。" />
         ) : null}
