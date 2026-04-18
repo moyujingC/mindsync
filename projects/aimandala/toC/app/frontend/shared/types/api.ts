@@ -186,9 +186,24 @@ export interface LiteStructuredReport {
     title?: string;
     content?: string;
   }> | null;
+  lite_healing_guidance?: {
+    directions?: Array<{
+      title?: string;
+      content?: string;
+    }> | null;
+    micro_practices?: Array<{
+      title?: string;
+      content?: string;
+    }> | null;
+  } | null;
   six_insights_rendered?: Record<string, string> | null;
   experiment_rendered?: string | null;
-  pro_teaser: string;
+  pro_report_entry: {
+    title?: string;
+    summary?: string;
+    product_note?: string;
+  };
+  pro_teaser?: string | null;
 }
 
 export interface ProStructuredReport {

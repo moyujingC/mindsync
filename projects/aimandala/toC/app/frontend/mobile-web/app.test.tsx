@@ -50,6 +50,25 @@ const flowState: MandalaFlowState = {
       overall_impression: "你正在把注意力收回自己身上。",
       visual_elements_rendered: "中心更聚拢，外围更松。",
       emotion_portrait_rendered: "你在靠近和迟疑之间来回摆动。",
+      lite_healing_guidance: {
+        directions: [
+          {
+            title: "轻量调节方向",
+            content: "先让自己慢一点，再决定要不要继续靠近。",
+          },
+        ],
+        micro_practices: [
+          {
+            title: "一句小练习",
+            content: "先把真实感受说出一句就好。",
+          },
+        ],
+      },
+      pro_report_entry: {
+        title: "另一份更深的独立报告",
+        summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
+        product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
+      },
       pro_teaser: "可以继续看 Pro 版解读。",
       self_understanding_blocks: {
         opening_hit: "你最近更想先稳住自己，再决定要不要继续靠近。",
@@ -142,7 +161,8 @@ describe("MobileWebApp", () => {
     expect(html).not.toContain("<h3>整体命中</h3>");
     expect(html).toContain("模式命名");
     expect(html).toContain("一个下一步");
-    expect(html).toContain("看看 Pro 版解读");
+    expect(html).toContain("看看另一份更深的 Pro 报告");
+    expect(html).toContain("更深层结构继续理解这张画");
   });
 
   it("reportLegacy 仍保留旧报告页壳", () => {

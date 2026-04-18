@@ -11,6 +11,15 @@ const baseStructuredReport: LiteStructuredReport = {
   overall_impression: "整体命中",
   visual_elements_rendered: "画面依据",
   emotion_portrait_rendered: "情绪画像",
+  lite_healing_guidance: {
+    directions: [{ title: "轻一点", content: "先把节奏放慢。" }],
+    micro_practices: [{ title: "先写一句", content: "先写下一句真实感受。" }],
+  },
+  pro_report_entry: {
+    title: "另一份更深的独立报告",
+    summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro。",
+    product_note: "Pro 是独立购买、独立成立的深度完整解读。",
+  },
   pro_teaser: "Pro 版解读",
   self_understanding_blocks: {
     pattern_naming: {
@@ -72,8 +81,9 @@ describe("shared/core report-structure", () => {
     });
 
     expect(cta.intent).toBe("open_report_entry");
-    expect(cta.primaryLabel).toBe("看看 Pro 版解读");
-    expect(cta.legacyCaption).toContain("Lite / Pro 选择页");
+    expect(cta.primaryLabel).toBe("看看另一份更深的 Pro 报告");
+    expect(cta.footerHint).toContain("更深层结构");
+    expect(cta.legacyCaption).toContain("单独购买 Pro 深度报告");
   });
 
   it("对 general 主题且不可升级结果返回再画一幅 CTA", () => {
@@ -99,5 +109,6 @@ describe("shared/core report-structure", () => {
     expect(cta.intent).toBe("restart_upload");
     expect(cta.primaryLabel).toBe("带着这个主题再画一幅");
     expect(cta.footerHint).toContain("父亲关系");
+    expect(cta.footerHint).not.toContain("升级");
   });
 });

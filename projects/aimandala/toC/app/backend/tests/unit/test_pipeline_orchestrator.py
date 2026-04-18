@@ -256,7 +256,10 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert report["title"] == "慢慢亮起来的中心"
     assert "一镜 Lite 版解读报告模板 v1.6" in report["structured"]["prompt_preview"]
     assert report["structured"]["prompt_schema_validation_issues"] == []
-    assert "失衡类型与对应疗愈建议" in report["structured"]["pro_teaser"]
+    assert report["structured"]["lite_healing_guidance"]["directions"]
+    assert report["structured"]["lite_healing_guidance"]["micro_practices"]
+    assert report["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
+    assert "更深层结构" in report["structured"]["pro_report_entry"]["summary"]
     assert "【你的底色" in report["structured"]["six_insights_rendered"]["base"]
     assert report["can_upgrade"] is True
 

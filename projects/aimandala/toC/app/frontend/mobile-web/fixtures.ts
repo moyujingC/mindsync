@@ -83,8 +83,37 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
         "中心颜色密度更高，外围线条更轻，说明你正在把主要能量压缩到一个更可控的范围里。",
       emotion_portrait_rendered:
         "既有想进一步整理内在感受的需求，也保留了对外部变化的敏感度，因此画面同时出现稳住与扩张的张力。",
+      lite_healing_guidance: {
+        directions: [
+          {
+            title: "先把节奏放缓一点",
+            content: "这次先不急着回应外部变化，先确认自己真正想守住的是什么。",
+          },
+          {
+            title: "把理解放回现实场景",
+            content: "留意你在哪些场景里最容易重新被外部节奏带走。",
+          },
+        ],
+        micro_practices: [
+          {
+            title: "一句停顿",
+            content: "遇到想立刻回应的时候，先停三秒，再决定要不要开口。",
+          },
+          {
+            title: "一句记录",
+            content: "把今天最明显的一次收紧感写下来，只记录，不分析。",
+          },
+        ],
+      },
+      pro_report_entry: {
+        title: "另一份更深的独立报告",
+        summary:
+          "如果你希望从更深层结构继续理解这张画，Pro 会提供更完整的结构、根因与疗愈视角。",
+        product_note:
+          "Pro 不是 Lite 的升级版，而是另一份独立购买、独立成立的深度完整解读。",
+      },
       pro_teaser:
-        "如果想看更完整的层次拆解，后续可以从现有入口继续进入一梳 Pro 版路径。",
+        "如果你希望从更深层结构继续理解这张画，可以单独进入 Pro 报告。",
     },
     report:
       version === "pro"

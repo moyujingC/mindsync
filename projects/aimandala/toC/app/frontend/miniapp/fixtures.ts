@@ -73,7 +73,26 @@ function createMiniappReport(version: "lite" | "pro" = "lite"): ReportResponse {
       overall_impression: "你正在把注意力慢慢收回中心。",
       visual_elements_rendered: "中心更聚拢，外围更松开。",
       emotion_portrait_rendered: "你在想整理自己，也在想如何继续往前。",
-      pro_teaser: "如果想继续深入，可在正式链路里查看 Pro 版。",
+      lite_healing_guidance: {
+        directions: [
+          {
+            title: "先做轻量调节",
+            content: "先让自己停一下，辨认此刻最想守住的感受。",
+          },
+        ],
+        micro_practices: [
+          {
+            title: "一句记录",
+            content: "先写下一句真实感受，不做额外解释。",
+          },
+        ],
+      },
+      pro_report_entry: {
+        title: "另一份更深的独立报告",
+        summary: "如果你希望从更深层结构继续理解这张画，可以查看 Pro 报告。",
+        product_note: "Pro 是独立购买、独立成立的深度完整解读。",
+      },
+      pro_teaser: "如果你希望从更深层结构继续理解这张画，可以查看 Pro 报告。",
     },
     report:
       version === "pro"

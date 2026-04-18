@@ -38,7 +38,7 @@ class StructuredReportContract:
         return payload
 
 
-STRUCTURED_REPORT_SCHEMA_VERSION = "2026-04-12"
+STRUCTURED_REPORT_SCHEMA_VERSION = "2026-04-18"
 
 LITE_STRUCTURED_REPORT_CONTRACT = StructuredReportContract(
     report_version="lite",
@@ -54,9 +54,10 @@ LITE_STRUCTURED_REPORT_CONTRACT = StructuredReportContract(
         StructuredFieldSpec("theme_insights", required=True),
         StructuredFieldSpec("three_awareness", required=True),
         StructuredFieldSpec("self_understanding_blocks", required=True),
+        StructuredFieldSpec("lite_healing_guidance", required=True),
         StructuredFieldSpec("six_insights_rendered", required=True),
         StructuredFieldSpec("experiment_rendered", required=True),
-        StructuredFieldSpec("pro_teaser", required=True),
+        StructuredFieldSpec("pro_report_entry", required=True),
     ),
 )
 

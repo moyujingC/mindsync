@@ -1037,7 +1037,9 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
     assert data["overall_impression"] is not None
     assert data["structured"]["title"] == "慢慢亮起来的中心"
     assert data["structured"]["prompt_schema_validation_issues"] == []
-    assert "pro_teaser" in data["structured"]
+    assert "lite_healing_guidance" in data["structured"]
+    assert "pro_report_entry" in data["structured"]
+    assert data["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
     assert "六个核心洞察" in data["report"]
     assert "重要声明" in data["report"]
     assert data["error"] is None

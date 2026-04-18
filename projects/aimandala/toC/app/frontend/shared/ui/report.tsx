@@ -82,6 +82,13 @@ export function SharedStructuredReportCards({
       structured.theme_insights?.awareness,
       structured.three_awareness?.[0]?.content,
     ]);
+  const healingDirections = (structured.lite_healing_guidance?.directions ?? []).filter(
+    (item) => item?.title || item?.content,
+  );
+  const microPractices = (structured.lite_healing_guidance?.micro_practices ?? []).filter(
+    (item) => item?.title || item?.content,
+  );
+  const proReportEntry = structured.pro_report_entry;
 
   return (
     <section className="am-stack mw-stack">
@@ -173,12 +180,45 @@ export function SharedStructuredReportCards({
         </article>
       ) : null}
 
+      {healingDirections.length ? (
+        <article className="am-card mw-card">
+          <div className="am-card__header mw-card__header">
+            <h3>轻量调节方向</h3>
+          </div>
+          <div className="am-stack mw-stack am-stack-gap-sm">
+            {healingDirections.map((item, index) => (
+              <div key={`${item.title ?? index}-${index}`}>
+                <strong>{item.title || `方向 ${index + 1}`}</strong>
+                <p className="mw-prewrap">{item.content || ""}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      ) : null}
+
+      {microPractices.length ? (
+        <article className="am-card mw-card">
+          <div className="am-card__header mw-card__header">
+            <h3>现在可以先做的小练习</h3>
+          </div>
+          <div className="am-stack mw-stack am-stack-gap-sm">
+            {microPractices.map((item, index) => (
+              <div key={`${item.title ?? index}-${index}`}>
+                <strong>{item.title || `练习 ${index + 1}`}</strong>
+                <p className="mw-prewrap">{item.content || ""}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      ) : null}
+
       <article className="am-card am-card--accent mw-card mw-card--accent">
         <div className="am-card__header mw-card__header">
-          <h3>进一步解读入口</h3>
-          <span className="am-badge mw-badge">仅保留入口语义</span>
+          <h3>{proReportEntry?.title || "另一份更深的独立报告"}</h3>
+          <span className="am-badge mw-badge">独立产品入口</span>
         </div>
-        <p>{structured.pro_teaser}</p>
+        <p>{proReportEntry?.summary || structured.pro_teaser || ""}</p>
+        {proReportEntry?.product_note ? <p>{proReportEntry.product_note}</p> : null}
       </article>
     </section>
   );

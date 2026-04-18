@@ -22,6 +22,25 @@ const structured: LiteStructuredReport = {
   overall_impression: "你最近在慢慢收拢自己的注意力。",
   visual_elements_rendered: "中心更稳，外围更轻。",
   emotion_portrait_rendered: "你在想靠近与想退后之间摆动。",
+  lite_healing_guidance: {
+    directions: [
+      {
+        title: "先稳住自己",
+        content: "先把注意力放回到自己此刻最想守住的部分。",
+      },
+    ],
+    micro_practices: [
+      {
+        title: "一句真实感受",
+        content: "先说出一句真实感受，而不是立刻解释。",
+      },
+    ],
+  },
+  pro_report_entry: {
+    title: "另一份更深的独立报告",
+    summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
+    product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
+  },
   pro_teaser: "可以继续查看 Pro 解读。",
   self_understanding_blocks: {
     opening_hit: "你正在先稳住自己，再决定要不要继续往前。",
@@ -113,7 +132,9 @@ describe("shared ui", () => {
 
     expect(html).toContain("模式命名");
     expect(html).toContain("一个下一步");
-    expect(html).toContain("进一步解读入口");
+    expect(html).toContain("轻量调节方向");
+    expect(html).toContain("现在可以先做的小练习");
+    expect(html).toContain("独立产品入口");
   });
 
   it("渲染 pro structured report cards", () => {

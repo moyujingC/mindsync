@@ -443,7 +443,8 @@ class KnowledgeWorkbench:
             "overall_impression",
             "visual_elements_rendered",
             "emotion_portrait_rendered",
-            "pro_teaser",
+            "lite_healing_guidance",
+            "pro_report_entry",
         ]
         pro_fields = [
             "first_impression",

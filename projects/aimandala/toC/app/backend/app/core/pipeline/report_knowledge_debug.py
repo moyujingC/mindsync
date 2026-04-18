@@ -23,7 +23,8 @@ class KnowledgeDebugBlockBuilder:
         ],
         "visual_elements_rendered": ["theme", "circles.inner", "circles.middle", "circles.outer"],
         "emotion_portrait_rendered": ["theme", "imbalance.primary", "narrative"],
-        "pro_teaser": ["narrative", "theme"],
+        "lite_healing_guidance": ["theme", "healing", "narrative"],
+        "pro_report_entry": ["narrative", "theme"],
         "first_impression": ["imbalance.primary", "narrative", "theme"],
         "core_insight_table": ["theme", "imbalance.primary", "circles.inner", "circles.middle", "circles.outer"],
         "root_cause": ["imbalance.primary", "theme", "narrative"],
@@ -180,7 +181,10 @@ class KnowledgeDebugBlockBuilder:
                 "three_awareness": [
                     item.to_dict() for item in record.layer_1_lite_draft.three_awareness
                 ],
-                "pro_teaser": record.layer_1_lite_draft.pro_teaser,
+                "pro_report_entry": {
+                    "title": "另一份更深的独立报告",
+                    "summary": record.layer_1_lite_draft.pro_teaser,
+                },
             }
 
         pro_projection: dict[str, Any] = {}

@@ -56,6 +56,15 @@ describe("mobile-web controller", () => {
         overall_impression: "稳定",
         visual_elements_rendered: "视觉清晰",
         emotion_portrait_rendered: "情绪稳定",
+        lite_healing_guidance: {
+          directions: [{ title: "轻量方向", content: "先停一下，再回应。" }],
+          micro_practices: [{ title: "小练习", content: "先写下一句话。" }],
+        },
+        pro_report_entry: {
+          title: "另一份更深的独立报告",
+          summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
+          product_note: "Pro 是独立购买的深度完整解读。",
+        },
         pro_teaser: "继续看 Pro",
       },
       report: "lite body",
@@ -139,6 +148,15 @@ describe("mobile-web controller", () => {
         overall_impression: "稳定",
         visual_elements_rendered: "视觉清晰",
         emotion_portrait_rendered: "情绪稳定",
+        lite_healing_guidance: {
+          directions: [{ title: "轻量方向", content: "先停一下，再回应。" }],
+          micro_practices: [{ title: "小练习", content: "先写下一句话。" }],
+        },
+        pro_report_entry: {
+          title: "另一份更深的独立报告",
+          summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
+          product_note: "Pro 是独立购买的深度完整解读。",
+        },
         pro_teaser: "继续看 Pro",
       },
       report: "lite body",

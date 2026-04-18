@@ -40,6 +40,7 @@ class PromptSchemaValidator:
             "theme_awareness": layer.theme_insights.awareness if layer.theme_insights else "",
             "three_awareness": layer.three_awareness,
             "pro_teaser": layer.pro_teaser,
+            "pro_report_entry": layer.pro_teaser,
         }
         return self._collect_missing_required_fields(values, required_fields)
 
@@ -198,9 +199,10 @@ class ReportContractAssembler:
                     ),
                     "three_awareness": [item.to_dict() for item in lite_report.three_awareness],
                     "self_understanding_blocks": self._build_self_understanding_blocks(lite_report),
+                    "lite_healing_guidance": self._build_lite_healing_guidance(lite_report),
                     "six_insights_rendered": lite_report.six_insights_rendered,
                     "experiment_rendered": lite_report.experiment_rendered,
-                    "pro_teaser": lite_report.pro_teaser,
+                    "pro_report_entry": self._build_pro_report_entry(lite_report),
                 }),
                 "report": report,
                 "can_upgrade": record.can_upgrade_to_pro(),
@@ -253,4 +255,57 @@ class ReportContractAssembler:
             },
             "theme_insights": theme_insights,
             "daily_awareness": daily_awareness,
+        }
+
+    def _build_lite_healing_guidance(self, lite_report: Any) -> dict[str, Any]:
+        theme_insights = (
+            lite_report.theme_insights.to_dict()
+            if getattr(lite_report, "theme_insights", None)
+            else {"scene": "", "impact": "", "awareness": ""}
+        )
+        awareness_items = [
+            item.to_dict()
+            for item in getattr(lite_report, "three_awareness", []) or []
+        ]
+        experiment_text = str(getattr(lite_report, "experiment_rendered", "") or "").strip()
+        directions = []
+        practices = []
+
+        direction_candidates = [
+            ("先稳住当前节奏", theme_insights.get("awareness", "")),
+            ("把理解放回现实场景", theme_insights.get("impact", "")),
+            ("保留一个更轻的动作方向", theme_insights.get("scene", "")),
+        ]
+        for title, content in direction_candidates:
+            if isinstance(content, str) and content.strip():
+                directions.append({"title": title, "content": content.strip()})
+
+        for item in awareness_items[:3]:
+            title = str(item.get("title") or "").strip()
+            content = str(item.get("content") or "").strip()
+            if title and content:
+                practices.append({"title": title, "content": content})
+
+        if experiment_text:
+            practices.append(
+                {
+                    "title": "现在可以先做的小练习",
+                    "content": experiment_text,
+                }
+            )
+
+        return {
+            "directions": directions[:3],
+            "micro_practices": practices[:3],
+        }
+
+    def _build_pro_report_entry(self, lite_report: Any) -> dict[str, str]:
+        teaser = str(getattr(lite_report, "pro_teaser", "") or "").strip()
+        summary = "如果你希望从更深层结构继续理解这张画，Pro 会提供更完整的结构、根因与疗愈视角。"
+        if teaser and "更深层结构" in teaser:
+            summary = teaser
+        return {
+            "title": "另一份更深的独立报告",
+            "summary": summary,
+            "product_note": "Pro 不是 Lite 的升级版，而是另一份独立购买、独立成立的深度完整解读。",
         }

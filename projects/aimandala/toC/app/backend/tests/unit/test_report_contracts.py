@@ -47,6 +47,10 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
         payload["structured"]["self_understanding_blocks"]["visual_evidence"]["summary"]
         == payload["structured"]["visual_elements_rendered"]
     )
+    assert payload["structured"]["lite_healing_guidance"]["directions"]
+    assert payload["structured"]["lite_healing_guidance"]["micro_practices"]
+    assert payload["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
+    assert "独立购买" in payload["structured"]["pro_report_entry"]["product_note"]
     assert payload["can_upgrade"] is True
     assert payload["upgrade_price"] == orchestrator.get_upgrade_diff()
 
@@ -102,6 +106,7 @@ def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_pat
     assert payload["version"] == "lite"
     assert payload["structured"]["title"] == payload["title"]
     assert payload["structured"]["prompt_schema_validation_issues"] == []
+    assert payload["structured"]["pro_report_entry"]["summary"]
     assert payload["can_upgrade"] is False
     assert payload["upgrade_price"] is None
 
@@ -156,7 +161,7 @@ def test_structured_report_contract_defines_required_fields():
     lite_contract = get_structured_report_contract("lite")
     pro_contract = get_structured_report_contract("pro")
 
-    assert lite_contract.schema_version == "2026-04-12"
+    assert lite_contract.schema_version == "2026-04-18"
     assert lite_contract.required_field_names == (
         "prompt_schema_validation_issues",
         "title",
@@ -167,9 +172,10 @@ def test_structured_report_contract_defines_required_fields():
         "theme_insights",
         "three_awareness",
         "self_understanding_blocks",
+        "lite_healing_guidance",
         "six_insights_rendered",
         "experiment_rendered",
-        "pro_teaser",
+        "pro_report_entry",
     )
     assert pro_contract.required_field_names == (
         "prompt_schema_validation_issues",

@@ -82,6 +82,15 @@ describe("shared/core flow", () => {
         overall_impression: "整体稳定",
         visual_elements_rendered: "线条细密",
         emotion_portrait_rendered: "情绪平稳",
+        lite_healing_guidance: {
+          directions: [{ title: "先稳住节奏", content: "先不要急着推进，保留一点观察空间。" }],
+          micro_practices: [{ title: "一句记录", content: "写下一句此刻最真实的感受。" }],
+        },
+        pro_report_entry: {
+          title: "另一份更深的独立报告",
+          summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
+          product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
+        },
         pro_teaser: "可继续查看 Pro",
       },
       report: "lite body",
@@ -98,7 +107,7 @@ describe("shared/core flow", () => {
     expect(created.step).toBe("liteGenerating");
     expect(ready.step).toBe("liteReady");
     expect(completed.step).toBe("liteReady");
-    expect(getLiteStructuredReport(completed.report)?.pro_teaser).toBe("可继续查看 Pro");
+    expect(getLiteStructuredReport(completed.report)?.pro_report_entry.summary).toContain("更深层结构");
   });
 
   it("对 pro 报告直接进入 proReady 语义", () => {

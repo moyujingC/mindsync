@@ -105,7 +105,8 @@ export function getLiteStructuredReport(
     typeof structured.overall_impression !== "string" ||
     typeof structured.visual_elements_rendered !== "string" ||
     typeof structured.emotion_portrait_rendered !== "string" ||
-    typeof structured.pro_teaser !== "string"
+    typeof structured.pro_report_entry !== "object" ||
+    structured.pro_report_entry === null
   ) {
     return null;
   }

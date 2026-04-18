@@ -101,8 +101,8 @@ class ReportDebugProfileBuilder:
                 ],
             },
             {
-                "field": "pro_teaser",
-                "final_value": layer2.get("pro_teaser") if layer2 else None,
+                "field": "pro_report_entry",
+                "final_value": layer2.get("pro_report_entry") if layer2 else None,
                 "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.pro_teaser"
@@ -112,6 +112,17 @@ class ReportDebugProfileBuilder:
                 "upstream_inputs": [
                     {"source": "layer_1_lite_draft.pro_teaser", "value": layer1.get("pro_teaser") if layer1 else None},
                     {"source": "user.theme", "value": record.theme},
+                ],
+            },
+            {
+                "field": "lite_healing_guidance",
+                "final_value": layer2.get("lite_healing_guidance") if layer2 else None,
+                "generation_mode": "knowledge_only",
+                "main_source": "layer_2_lite_final.lite_healing_guidance",
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.theme_insights", "value": layer1.get("theme_insights") if layer1 else None},
+                    {"source": "layer_1_lite_draft.three_awareness", "value": layer1.get("three_awareness") if layer1 else None},
+                    {"source": "layer_2_lite_final.experiment_rendered", "value": layer2.get("experiment_rendered") if layer2 else None},
                 ],
             },
         ]
@@ -215,7 +226,8 @@ class ReportDebugProfileBuilder:
             "theme_impact": "layer_2_lite_final.theme_insights.impact",
             "theme_awareness": "layer_2_lite_final.theme_insights.awareness",
             "three_awareness": "layer_2_lite_final.three_awareness",
-            "pro_teaser": "layer_2_lite_final.pro_teaser",
+            "lite_healing_guidance": "layer_2_lite_final.lite_healing_guidance",
+            "pro_report_entry": "layer_2_lite_final.pro_report_entry",
         }
         pro_mapped_fields = {
             "first_impression": "layer_3_pro_draft.first_impression / report.summary",

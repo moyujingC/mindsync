@@ -36,6 +36,7 @@
 当前窗口默认优先阅读：
 
 - [2026-04-18-报告链路保真重构交付记录.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/delivery/2026-04-18-报告链路保真重构交付记录.md)
+- [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/delivery/2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
 - [2026-04-16-ceo-hermes-container-runtime-fix-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-16-ceo-hermes-container-runtime-fix-handoff.md)
 - [2026-04-16-min80-idea-clarifier-to-ceo-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-16-min80-idea-clarifier-to-ceo-handoff.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md)
@@ -48,6 +49,7 @@
 说明：
 
 - `2026-04-18-报告链路保真重构交付记录.md` 是当前这轮重大重构的总交付入口，当前首先承接母文档收口，后续继续承接各批次实现结果。
+- `2026-04-18-Lite-Pro-独立报告重定义交付记录.md` 收束本轮 `Lite / Pro` 独立产品语义、轻疗愈区块与 Lite 页面入口语义改造结果。
 - `2026-04-16-ceo-hermes-container-runtime-fix-handoff.md` 是当前 `CEO bug` 的正式交付入口，收束了根因、部署修复方案与后续服务器侧执行动作。
 - `2026-04-16-min80-idea-clarifier-to-ceo-handoff.md` 收束了 `MIN-80` 从模糊输入到 CEO 可接手总任务的当前结论，可作为当前窗口的补充交接入口。
 - `2026-04-14` 与 `2026-04-15 batch E` 组成当前 Web 首发与 miniapp 渐进并入窗口的主交付链。
