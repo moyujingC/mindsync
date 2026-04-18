@@ -752,10 +752,47 @@ class KnowledgeWorkbench:
             if normalized:
                 layer0.imbalance_candidates = normalized
                 layer0.rule_evaluations["imbalance_candidates"] = normalized
-                existing_flags = list(getattr(layer0, "quality_flags", []) or [])
+                layer0.rule_evaluations["primary_candidates"] = normalized
+                trace = layer0.rule_evaluations.get("imbalance_trace", {})
+                trace["primary_candidates"] = [
+                    {
+                        "id": imbalance_id,
+                        "category": "override",
+                        "toc_supported": True,
+                        "score": 1.0,
+                        "selected_for_primary": True,
+                        "reason_codes": ["override_imbalance_candidates"],
+                        "decision": "override",
+                        "warning": None,
+                    }
+                    for imbalance_id in normalized
+                ]
+                existing_all = trace.get("all_candidates", [])
+                if isinstance(existing_all, list):
+                    for item in existing_all:
+                        if not isinstance(item, dict):
+                            continue
+                        item["selected_for_primary"] = str(item.get("id") or "") in normalized
+                        if item["selected_for_primary"]:
+                            item["decision"] = "override"
+                if "transition-overload" in normalized:
+                    trace["synthetic_signal"] = {
+                        "id": "transition-overload",
+                        "used": True,
+                        "reason": "override_imbalance_candidates",
+                    }
+                else:
+                    trace["synthetic_signal"] = {
+                        "id": "transition-overload",
+                        "used": False,
+                        "reason": "",
+                    }
+                layer0.rule_evaluations["imbalance_trace"] = trace
+                layer0.rule_evaluations["synthetic_signal"] = trace["synthetic_signal"]
+                existing_flags = list(getattr(layer0, "fidelity_flags", []) or [])
                 for imbalance_id in normalized:
                     existing_flags.append(f"warning:{imbalance_id}")
-                layer0.quality_flags = list(dict.fromkeys(existing_flags))
+                layer0.fidelity_flags = list(dict.fromkeys(existing_flags))
                 if layer0.fallback_summary.get("used") and "generated" not in (
                     layer0.fallback_summary.get("levels", []) or []
                 ):

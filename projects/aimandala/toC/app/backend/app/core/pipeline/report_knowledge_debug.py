@@ -63,6 +63,7 @@ class KnowledgeDebugBlockBuilder:
                     "used": bool(layer0.get("fallback_summary", {}).get("used")),
                     "levels": layer0.get("fallback_summary", {}).get("levels", []),
                     "warnings": layer0.get("fallback_summary", {}).get("warnings", []),
+                    "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
                     "quality_flags": layer0.get("quality_flags", []),
                     "query_fallbacks": [],
                 },
@@ -156,6 +157,7 @@ class KnowledgeDebugBlockBuilder:
             "rule_evaluations": layer0.get("rule_evaluations", {}),
             "theme_projection": layer0.get("theme_projection", {}),
             "imbalance_candidates": layer0.get("imbalance_candidates", []),
+            "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
             "quality_flags": layer0.get("quality_flags", []),
             "fallback_summary": layer0.get("fallback_summary", {}),
         }
@@ -268,6 +270,7 @@ class KnowledgeDebugBlockBuilder:
             "used": bool(layer0.get("fallback_summary", {}).get("used")) or bool(query_fallbacks),
             "levels": sorted(item for item in levels if item),
             "warnings": self._unique_list(warnings),
+            "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
             "quality_flags": layer0.get("quality_flags", []),
             "query_fallbacks": query_fallbacks,
         }

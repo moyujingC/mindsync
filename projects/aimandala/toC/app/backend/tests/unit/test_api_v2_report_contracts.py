@@ -141,6 +141,9 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert knowledge_debug["layer0_evidence"]["visual_facts"]
     assert knowledge_debug["layer0_evidence"]["knowledge_hits"]
     assert knowledge_debug["layer0_evidence"]["rule_evaluations"]
+    assert knowledge_debug["layer0_evidence"]["fidelity_flags"] == knowledge_debug["layer0_evidence"]["quality_flags"]
+    assert knowledge_debug["layer0_evidence"]["rule_evaluations"]["imbalance_trace"]["all_candidates"]
+    assert knowledge_debug["layer0_evidence"]["rule_evaluations"]["imbalance_trace"]["synthetic_signal"]["id"] == "transition-overload"
     assert knowledge_debug["layer0_evidence"]["theme_projection"]
     assert knowledge_debug["layer0_evidence"]["fallback_summary"] is not None
     assert knowledge_debug["query_results"]["theme"]["entity_id"] == "theme.wealth_career"

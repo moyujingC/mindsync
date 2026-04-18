@@ -89,22 +89,31 @@
 
 ### 4.1 自动化执行结果
 
-待实现完成后回写：
-
 - 执行命令：
+  - `pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_data_models.py projects/aimandala/toC/app/backend/tests/unit/test_v2_knowledge.py projects/aimandala/toC/app/backend/tests/unit/test_knowledge_runtime_v21.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py projects/aimandala/toC/app/backend/tests/unit/test_api_v2_report_contracts.py -q`
 - 结果摘要：
+  - `97 passed`
+  - `Layer0Raw` 已输出 `fidelity_flags` 与 `quality_flags` 兼容镜像
+  - `ImbalanceService` 已输出 20 种全量 trace，并对 `ToC` 主候选做筛选
+  - `Layer0Assembler` 与 fallback 路径都已输出统一 `rule_evaluations` shape
 - 失败项：
+  - 无
 
 ### 4.2 样本观察结果
 
-待实现完成后回写：
-
 - 命中型样本：
+  - 使用高水低火分布与双圈水主导样本，可稳定命中 `水多火灭`
+  - `primary_candidates` 非空
+  - `synthetic_signal.used=false`
 - 回退信号型样本：
+  - 使用五行接近平衡分布样本，会回退到 `transition-overload`
+  - `primary_candidates=["transition-overload"]`
+  - `fallback_summary.used=false`
 
 ### 4.3 结论
 
-待实现完成后回写：
-
 - 是否允许进入 Batch B：
+  - 允许。Batch A 的 evidence-first 中间层已经定型，可作为 Batch B narrative / prompt 重构的稳定输入。
 - 当前残留风险：
+  - narrative / prompt 仍然主要消费旧 projection 语义，需在 Batch B 继续收口
+  - `quality_flags` 仍作为兼容壳保留，需在 Batch C 再决定是否删除

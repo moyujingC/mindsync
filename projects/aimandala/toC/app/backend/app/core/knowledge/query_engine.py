@@ -119,6 +119,17 @@ class KnowledgeQueryEngine:
             version=self.version,
         )
 
+    def evaluate_imbalance_trace(
+        self,
+        color_analysis: Dict,
+        circle_elements: Dict,
+    ) -> Dict[str, Any]:
+        return self.runtime.imbalance_service.evaluate_imbalance_trace(
+            color_analysis,
+            circle_elements,
+            version=self.version,
+        )
+
     def get_imbalance_detail(self, imbalance_type: str) -> QueryResult:
         return self.runtime.imbalance_service.get_imbalance_detail(imbalance_type)
 
