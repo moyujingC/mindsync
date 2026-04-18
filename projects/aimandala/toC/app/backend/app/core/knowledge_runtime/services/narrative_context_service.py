@@ -140,6 +140,14 @@ class NarrativeContextService:
         middle_dominant: str = "",
         outer_dominant: str = "",
         signal: str = "",
+        element_distribution: list[dict[str, Any]] | None = None,
+        element_states: list[dict[str, Any]] | dict[str, Any] | None = None,
+        triad_states: list[dict[str, Any]] | None = None,
+        primary_candidates: list[Any] | None = None,
+        synthetic_signal: dict[str, Any] | None = None,
+        theme_projection: dict[str, Any] | None = None,
+        fidelity_flags: list[str] | None = None,
+        fallback_summary: dict[str, Any] | None = None,
     ) -> str:
         resolved_theme = theme or "general"
         theme_summary = self.theme_service.get_theme_summary(resolved_theme)
@@ -187,6 +195,122 @@ class NarrativeContextService:
                 lines.append(f"- V2主题核心议题：{' / '.join(normalized_issues)}")
         if focus_element:
             lines.append(f"- V2主题关注元素：{focus_element}")
+
+        normalized_distribution = []
+        for item in element_distribution or []:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or item.get("element") or "").strip()
+            if not name:
+                continue
+            try:
+                percentage = float(item.get("percentage", 0.0) or 0.0)
+            except (TypeError, ValueError):
+                percentage = 0.0
+            normalized_distribution.append(f"{name}{percentage:.2f}%")
+        if normalized_distribution:
+            lines.append(f"- 五行分布：{' / '.join(normalized_distribution)}")
+
+        normalized_element_states = (
+            list(element_states.values())
+            if isinstance(element_states, dict)
+            else list(element_states or [])
+        )
+        rendered_element_states: list[str] = []
+        for item in normalized_element_states:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("element") or item.get("name") or "").strip()
+            state = str(item.get("state") or "").strip()
+            if not name or not state:
+                continue
+            rendered_element_states.append(f"{name}={state}")
+        if rendered_element_states:
+            lines.append(f"- 五行状态：{' / '.join(rendered_element_states)}")
+
+        rendered_triad_states: list[str] = []
+        for item in triad_states or []:
+            if not isinstance(item, dict):
+                continue
+            circle = str(item.get("circle") or "").strip()
+            dominant = str(item.get("dominant_element") or "").strip()
+            inferred = str(item.get("inferred_state") or "").strip()
+            if not circle or not dominant:
+                continue
+            if inferred:
+                rendered_triad_states.append(f"{circle}:{dominant}({inferred})")
+            else:
+                rendered_triad_states.append(f"{circle}:{dominant}")
+        if rendered_triad_states:
+            lines.append(f"- 三元结构：{' / '.join(rendered_triad_states)}")
+
+        rendered_primary_candidates: list[str] = []
+        for item in primary_candidates or []:
+            if isinstance(item, dict):
+                candidate_id = str(item.get("id") or "").strip()
+                try:
+                    score = float(item.get("score", 0.0) or 0.0)
+                except (TypeError, ValueError):
+                    score = 0.0
+                if candidate_id:
+                    rendered_primary_candidates.append(f"{candidate_id}({score:.2f})")
+            elif isinstance(item, str) and item.strip():
+                rendered_primary_candidates.append(item.strip())
+        if rendered_primary_candidates:
+            lines.append(f"- 主候选：{' / '.join(rendered_primary_candidates)}")
+
+        synthetic = synthetic_signal if isinstance(synthetic_signal, dict) else {}
+        if synthetic:
+            signal_id = str(synthetic.get("id") or "").strip()
+            used = bool(synthetic.get("used"))
+            reason = str(synthetic.get("reason") or "").strip()
+            signal_parts = []
+            if signal_id:
+                signal_parts.append(signal_id)
+            signal_parts.append(f"used={str(used).lower()}")
+            if reason:
+                signal_parts.append(f"reason={reason}")
+            lines.append(f"- 合成信号：{' / '.join(signal_parts)}")
+
+        projection = theme_projection if isinstance(theme_projection, dict) else {}
+        if projection:
+            projection_summary = str(
+                projection.get("summary")
+                or projection.get("theme_name")
+                or projection.get("theme")
+                or ""
+            ).strip()
+            if projection_summary:
+                lines.append(f"- theme_projection：{projection_summary}")
+
+        normalized_fidelity_flags = [
+            str(item).strip()
+            for item in (fidelity_flags or [])
+            if isinstance(item, str) and str(item).strip()
+        ]
+        if normalized_fidelity_flags:
+            lines.append(f"- 保真标记：{' / '.join(normalized_fidelity_flags)}")
+
+        normalized_fallback = fallback_summary if isinstance(fallback_summary, dict) else {}
+        if normalized_fallback:
+            levels = normalized_fallback.get("levels", []) or []
+            warnings = normalized_fallback.get("warnings", []) or []
+            level_text = ",".join(
+                str(item).strip()
+                for item in levels
+                if isinstance(item, str) and str(item).strip()
+            )
+            warning_text = " / ".join(
+                str(item).strip()
+                for item in warnings
+                if isinstance(item, str) and str(item).strip()
+            )
+            lines.append(
+                "- fallback摘要："
+                f"used={str(bool(normalized_fallback.get('used'))).lower()}"
+                f"; levels={level_text or 'none'}"
+                f"; warnings={warning_text or 'none'}"
+            )
 
         return "\n".join(lines)
 

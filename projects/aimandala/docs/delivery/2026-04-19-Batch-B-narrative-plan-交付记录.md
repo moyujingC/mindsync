@@ -1,7 +1,7 @@
 # 一镜一梳：Batch B Narrative Plan 交付记录
 
-> 状态：working
-> 版本：0.1.0
+> 状态：done
+> 版本：1.0.0
 > owner：Engineer / Architect
 > last_updated：2026-04-19
 > 项目：aimandala
@@ -60,18 +60,23 @@ Batch B 的交付目标不是改动前端或对外合同，而是把 backend 的
 prompt skeleton / debug / 验证：
 
 1. `ReportPromptPreviewBuilder` 输出 canonical skeleton
-2. `report_lite_narrative_builder` / `report_pro_narrative_builder` 改成 plan-first 消费
+2. `build_theme_prompt_context()` 直接承接 `element_states / triad_states / primary_candidates / synthetic_signal / fidelity_flags / fallback_summary`
 3. `report_knowledge_debug.py` 新增 `narrative_plans`
-4. Batch B QA / Delivery 回写真实验证结果
+4. `ReportDebugProfileBuilder` 的 knowledge skeleton excerpt 改为 evidence-first 结构摘要，避免被嵌套 prompt 文本误截
+5. Batch B QA / Delivery 回写真实验证结果
 
 ## 4. 验证结果
 
 1. 自动化测试结果
-   - 待实现后回填
+   - `pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_data_models.py projects/aimandala/toC/app/backend/tests/unit/test_knowledge_runtime_v21.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py -q`
+   - `pytest projects/aimandala/toC/app/backend/tests/unit/test_knowledge_runtime_v21.py projects/aimandala/toC/app/backend/tests/unit/test_prompt_builder.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py projects/aimandala/toC/app/backend/tests/unit/test_api_v2_report_contracts.py projects/aimandala/toC/app/backend/tests/unit/test_report_contracts.py -q`
+   - 结果：`90 passed` + `71 passed`
 2. 样本验证结果
-   - 待实现后回填
+   - Lite / Pro `narrative_plan` 均已进入 draft persistence
+   - prompt skeleton 已稳定暴露 `runtime_evidence + narrative_plan + compatibility_projection`
+   - debug payload 已稳定暴露 `knowledge_debug.narrative_plans.{lite,pro}`，且兼容镜像 `knowledge_projections` 仍可读
 3. 是否允许进入 Batch C
-   - 待实现后回填
+   - 允许进入 Batch C
 
 ## 5. 当前风险
 
@@ -80,6 +85,7 @@ prompt skeleton / debug / 验证：
 1. projection 兼容壳仍需保留到 Batch C
 2. `report_contracts` 仍消费旧 top-level draft 字段，需在 Batch C 继续收口
 3. `three_awareness / experiment / pro_teaser` 仍以兼容字段形式存在，需在 Batch C / D 决定去留
+4. debug profile 中部分 strategy/provenance 文案仍沿用旧 `knowledge_first / knowledge_only` 标签，尚未完全改名为 `evidence_first`
 
 ## 6. 下一步
 

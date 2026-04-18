@@ -291,6 +291,71 @@ def test_v21_narrative_service_builds_theme_prompt_context():
         middle_dominant="木",
         outer_dominant="金",
         signal="transition-overload",
+        element_distribution=[
+            {"name": "土", "percentage": 42.5},
+            {"name": "金", "percentage": 21.25},
+            {"name": "火", "percentage": 18.0},
+            {"name": "木", "percentage": 10.25},
+            {"name": "水", "percentage": 8.0},
+        ],
+        element_states={
+            "earth": {
+                "element": "土",
+                "proportion": 0.425,
+                "state": "excess",
+                "evidence_basis": ["weighted_distribution"],
+            },
+            "metal": {
+                "element": "金",
+                "proportion": 0.2125,
+                "state": "balanced",
+                "evidence_basis": ["weighted_distribution"],
+            },
+            "water": {
+                "element": "水",
+                "proportion": 0.08,
+                "state": "deficient",
+                "evidence_basis": ["weighted_distribution"],
+            },
+        },
+        triad_states=[
+            {
+                "circle": "inner",
+                "dominant_element": "火",
+                "inferred_state": "active",
+                "source_hit": "circles.inner",
+            },
+            {
+                "circle": "middle",
+                "dominant_element": "木",
+                "inferred_state": "growing",
+                "source_hit": "circles.middle",
+            },
+            {
+                "circle": "outer",
+                "dominant_element": "金",
+                "inferred_state": "boundary",
+                "source_hit": "circles.outer",
+            },
+        ],
+        primary_candidates=[
+            {
+                "id": "水多火灭",
+                "score": 0.76,
+                "selected_for_primary": True,
+            }
+        ],
+        synthetic_signal={
+            "id": "transition-overload",
+            "used": False,
+            "reason": "toc_primary_candidate_available",
+        },
+        theme_projection={
+            "theme": "wealth_career",
+            "summary": "当前主题更聚焦金钱信念与价值感。",
+        },
+        fidelity_flags=["trace:toc_only_candidate_present"],
+        fallback_summary={"used": False, "levels": [], "warnings": []},
     )
 
     assert "当前主题：财富事业" in context
@@ -303,6 +368,19 @@ def test_v21_narrative_service_builds_theme_prompt_context():
     assert "知识库失衡候选：过渡负荷" in context
     assert "V2知识主题：财富事业" in context
     assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
+    assert "五行分布：" in context
+    assert "五行状态：" in context
+    assert "土=excess" in context
+    assert "水=deficient" in context
+    assert "三元结构：" in context
+    assert "inner:火(active)" in context
+    assert "主候选：" in context
+    assert "水多火灭" in context
+    assert "合成信号：" in context
+    assert "theme_projection：" in context
+    assert "保真标记：" in context
+    assert "trace:toc_only_candidate_present" in context
+    assert "fallback摘要：" in context
 
 
 def test_v21_narrative_service_exposes_helper_apis():

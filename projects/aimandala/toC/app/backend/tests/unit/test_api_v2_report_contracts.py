@@ -149,6 +149,9 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert knowledge_debug["query_results"]["theme"]["entity_id"] == "theme.wealth_career"
     assert knowledge_debug["query_results"]["healing"]["entity_id"]
     assert knowledge_debug["query_results"]["narrative"]["entity_id"] == "narrative.wealth_career"
+    assert knowledge_debug["narrative_plans"]["lite"]["mode"] == "lite"
+    assert "pro" in knowledge_debug["narrative_plans"]
+    assert knowledge_debug["narrative_plans"]["lite"]["sections"]["pro_report_entry"]
     assert isinstance(knowledge_debug["source_refs"], list)
     assert "overall_impression" in knowledge_debug["field_to_knowledge_map"]
 

@@ -1,7 +1,7 @@
 # 一镜一梳：Batch B Narrative Plan 验证记录
 
-> 状态：working
-> 版本：0.1.0
+> 状态：done
+> 版本：1.0.0
 > owner：Test / QA
 > last_updated：2026-04-19
 > 项目：aimandala
@@ -87,22 +87,29 @@
 ### 4.1 自动化执行结果
 
 - 执行命令：
-  - 待实现后回填
+  - `pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_data_models.py projects/aimandala/toC/app/backend/tests/unit/test_knowledge_runtime_v21.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py -q`
+  - `pytest projects/aimandala/toC/app/backend/tests/unit/test_knowledge_runtime_v21.py projects/aimandala/toC/app/backend/tests/unit/test_prompt_builder.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py projects/aimandala/toC/app/backend/tests/unit/test_api_v2_report_contracts.py projects/aimandala/toC/app/backend/tests/unit/test_report_contracts.py -q`
 - 结果摘要：
-  - 待实现后回填
+  - 第一组回归 `90 passed in 3.04s`
+  - 第二组回归 `71 passed in 3.55s`
+  - Lite / Pro 现有 contract 测试保持通过，未因 `narrative_plan` 与 evidence-first skeleton 改造破坏对外合同
 - 失败项：
-  - 待实现后回填
+  - 无剩余失败项
 
 ### 4.2 样本观察结果
 
 - 命中型样本：
-  - 待实现后回填
+  - `test_v21_narrative_service_builds_pro_narrative_plan()` 验证 Pro canonical `sections + trace` 已生成，且 legacy projection 由 plan 派生
+  - `test_api_v2_report_lifecycle_contract()` 验证 API 调试链可见 `knowledge_debug.narrative_plans.lite`，且 Lite 生命周期不要求提前生成 Pro canonical plan
 - synthetic signal 样本：
-  - 待实现后回填
+  - `test_v21_narrative_service_builds_theme_prompt_context()` 验证 `transition-overload` 相关 `synthetic_signal / fidelity_flags / fallback_summary` 可进入 evidence-first theme context
+  - `test_get_report_debug_profile_returns_structured_diagnostics()` 验证 prompt debug 中的 knowledge skeleton 摘要可见 `runtime_evidence / narrative_plan / compatibility_projection`
 
 ### 4.3 结论
 
 - 是否允许进入 Batch C：
-  - 待实现后回填
+  - 允许。Batch B 的 backend 内部 canonical narrative layer 已成立，Batch C 可以在此基础上收口 `report_contracts`、前端类型与页面语义。
 - 当前残留风险：
-  - 待实现后回填
+  - `knowledge_projections` 与 `legacy_projection` 仍需保留到 Batch C，当前仍承担 compatibility mirror 角色
+  - `generation_mode.strategy`、`field_provenance.generation_mode` 等 debug 文案仍沿用 `knowledge_first / knowledge_only` 旧语义，需在 Batch C 一并治理
+  - `three_awareness / experiment / pro_teaser` 仍存在于 compatibility 路径，尚未从对外 contract 彻底降级

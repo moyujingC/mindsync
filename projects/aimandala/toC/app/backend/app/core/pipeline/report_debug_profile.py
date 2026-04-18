@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from app.core.prompt.builder_v2 import PromptBuilder
@@ -401,9 +402,75 @@ class ReportDebugProfileBuilder:
         marker = "## 知识骨架（已确定，不要改写判断）"
         if marker not in prompt_preview:
             return ""
-        after_marker = prompt_preview.split(marker, 1)[1]
+        after_marker = prompt_preview.rsplit(marker, 1)[1]
         section = after_marker.split("---", 1)[0].strip()
-        return self._excerpt(section, limit=320) or ""
+        json_start = section.find("{")
+        if json_start >= 0:
+            payload = section[json_start:]
+            parsed = self._parse_embedded_json(payload)
+            if parsed is None:
+                return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
+            compact = self._summarize_knowledge_skeleton(parsed)
+            return self._excerpt(compact, limit=1600) or ""
+        return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
+
+    def _parse_embedded_json(self, payload: str) -> Any | None:
+        candidates = [payload]
+        if '\\"' in payload or "\\n" in payload or "\\t" in payload:
+            candidates.append(self._normalize_escaped_block(payload))
+        for candidate in candidates:
+            try:
+                return json.loads(candidate)
+            except Exception:
+                continue
+        return None
+
+    def _normalize_escaped_block(self, value: str) -> str:
+        return (
+            value.replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace('\\"', '"')
+        )
+
+    def _summarize_knowledge_skeleton(self, payload: Any) -> str:
+        if not isinstance(payload, dict):
+            return json.dumps(payload, ensure_ascii=False, indent=2)
+
+        runtime_evidence = payload.get("runtime_evidence", {})
+        narrative_plan = payload.get("narrative_plan", {})
+        compatibility_projection = payload.get("compatibility_projection", {})
+
+        summary = {
+            "generation_mode": payload.get("generation_mode"),
+            "theme": payload.get("theme"),
+            "theme_label": payload.get("theme_label"),
+            "user_input": payload.get("user_input"),
+            "runtime_evidence": {
+                "keys": sorted(runtime_evidence.keys())
+                if isinstance(runtime_evidence, dict)
+                else [],
+                "rule_evaluations_keys": sorted(
+                    (runtime_evidence.get("rule_evaluations") or {}).keys()
+                )
+                if isinstance(runtime_evidence, dict)
+                and isinstance(runtime_evidence.get("rule_evaluations"), dict)
+                else [],
+            },
+            "narrative_plan": {
+                "mode": narrative_plan.get("mode"),
+                "generation_mode": narrative_plan.get("generation_mode"),
+                "section_keys": sorted((narrative_plan.get("sections") or {}).keys())
+                if isinstance(narrative_plan, dict)
+                and isinstance(narrative_plan.get("sections"), dict)
+                else [],
+            },
+            "compatibility_projection": {
+                "keys": sorted(compatibility_projection.keys())
+                if isinstance(compatibility_projection, dict)
+                else [],
+            },
+        }
+        return json.dumps(summary, ensure_ascii=False, indent=2)
 
     def _non_empty_text(self, value: Any) -> str:
         if not isinstance(value, str):

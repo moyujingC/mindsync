@@ -52,11 +52,13 @@ class KnowledgeDebugBlockBuilder:
     def build(self, record: InterpretationRecord) -> dict[str, Any]:
         runtime = self._get_knowledge_runtime()
         layer0 = record.layer_0_raw.to_dict() if record.layer_0_raw else {}
+        narrative_plans = self._build_narrative_plans(record)
         knowledge_projections = self._build_knowledge_projections(record)
         if runtime is None:
             return {
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
+                "narrative_plans": narrative_plans,
                 "knowledge_projections": knowledge_projections,
                 "query_results": {},
                 "fallback_analysis": {
@@ -142,6 +144,7 @@ class KnowledgeDebugBlockBuilder:
                 "build_kind": build_info.get("build_source"),
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
+            "narrative_plans": narrative_plans,
             "knowledge_projections": knowledge_projections,
             "query_results": query_results,
             "fallback_analysis": fallback_analysis,
@@ -204,6 +207,29 @@ class KnowledgeDebugBlockBuilder:
         return {
             "lite": lite_projection,
             "pro": pro_projection,
+        }
+
+    def _build_narrative_plans(
+        self,
+        record: InterpretationRecord,
+    ) -> dict[str, Any]:
+        lite_plan = {}
+        if record.layer_1_lite_draft is not None and isinstance(
+            record.layer_1_lite_draft.narrative_plan,
+            dict,
+        ):
+            lite_plan = record.layer_1_lite_draft.narrative_plan
+
+        pro_plan = {}
+        if record.layer_3_pro_draft is not None and isinstance(
+            record.layer_3_pro_draft.narrative_plan,
+            dict,
+        ):
+            pro_plan = record.layer_3_pro_draft.narrative_plan
+
+        return {
+            "lite": lite_plan,
+            "pro": pro_plan,
         }
 
     def _build_circle_results(

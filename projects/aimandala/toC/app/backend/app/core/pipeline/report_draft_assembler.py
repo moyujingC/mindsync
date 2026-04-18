@@ -104,6 +104,7 @@ class ReportDraftAssembler:
         lite_prompt_preview = self._build_lite_prompt_preview(
             record,
             projection=lite_projection,
+            narrative_plan=lite_plan if isinstance(lite_plan, dict) else {},
         )
         story_sections = self._build_lite_story_sections(
             record,
@@ -230,6 +231,7 @@ class ReportDraftAssembler:
             narrative_projection=pro_projection,
             imbalance_projection=imbalance_projection,
             imbalance_profile=imbalance_profile,
+            narrative_plan=pro_plan if isinstance(pro_plan, dict) else {},
         )
         layer = Layer3ProDraft(
             first_impression=self._build_pro_first_impression(
