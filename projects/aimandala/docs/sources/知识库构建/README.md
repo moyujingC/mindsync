@@ -6,8 +6,7 @@
 > last_updated：2026-04-18
 > 项目：aimandala
 > 阶段：current
-> source_of_truth：/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/README.md
-
+> source_of_truth：projects/aimandala/docs/sources/知识库构建/README.md
 这份索引用于收口 `一镜一梳 / aimandala` 当前已经迁入工作区的“知识库构建”源资料。
 
 这里存放的是：
@@ -20,26 +19,26 @@
 
 ## 1. 当前目录分工
 
-- [原始镜像](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/原始镜像)
+- [原始镜像](原始镜像)
   - 旧仓库 `知识库构建` 目录的原始镜像层
   - 默认不直接等同于当前正式规则入口
-- [当前正式依据与使用说明.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/当前正式依据与使用说明.md)
+- [当前正式依据与使用说明.md](当前正式依据与使用说明.md)
   - 解释哪些源资料当前可作为正式依据，哪些只作支撑或历史样本
-- [最小必读知识源清单.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/最小必读知识源清单.md)
+- [最小必读知识源清单.md](最小必读知识源清单.md)
   - 服务后续报告链路整改和知识保真排查，给出最短阅读路径
-- [V2运行时映射清单.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/V2运行时映射清单.md)
+- [V2运行时映射清单.md](V2运行时映射清单.md)
   - 把原始流派资料与当前 workspace 的 `V2` 运行时资产对齐到同一张表里
 
 ## 2. 使用规则
 
-当前默认不要直接把 [原始镜像](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/原始镜像) 整体当成 `spec`、`architecture` 或运行时规则入口。
+当前默认不要直接把 [原始镜像](原始镜像) 整体当成 `spec`、`architecture` 或运行时规则入口。
 
 正式引用时应遵循：
 
-1. 先从 [当前正式依据与使用说明.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/当前正式依据与使用说明.md) 确认资料分层
-2. 如果当前任务是报告整改或保真排查，先看 [最小必读知识源清单.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/最小必读知识源清单.md)
+1. 先从 [当前正式依据与使用说明.md](当前正式依据与使用说明.md) 确认资料分层
+2. 如果当前任务是报告整改或保真排查，先看 [最小必读知识源清单.md](最小必读知识源清单.md)
 3. 再进入对应原始资料查看具体内容
-4. 如果要判断当前运行时是否保真，优先对照 [V2运行时映射清单.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/V2运行时映射清单.md)
+4. 如果要判断当前运行时是否保真，优先对照 [V2运行时映射清单.md](V2运行时映射清单.md)
 
 ## 3. 适合回答的问题
 

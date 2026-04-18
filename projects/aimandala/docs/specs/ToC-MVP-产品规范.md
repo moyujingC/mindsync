@@ -4,10 +4,10 @@
 > 版本：0.1.1
 > owner：Product Spec Lead
 > last_updated：2026-04-07
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md
+> source_of_truth：projects/aimandala/docs/specs/ToC-MVP-产品规范.md
 > 项目：aimandala
 > 阶段：spec
-> depends_on：/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md
+> depends_on：company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 ## 1. 背景
@@ -200,7 +200,7 @@
 
 都应单独开 spec，不应覆盖当前现状记录。
 
-当前页面状态与页面文案的总映射，以 [2026-04-09-MVP页面状态机与页面映射总表.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-09-MVP页面状态机与页面映射总表.md) 为准。
+当前页面状态与页面文案的总映射，以 [2026-04-09-MVP页面状态机与页面映射总表.md](2026-04-09-MVP页面状态机与页面映射总表.md) 为准。
 
 ## 9. 前端渠道策略
 

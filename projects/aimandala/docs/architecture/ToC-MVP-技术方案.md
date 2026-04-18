@@ -4,10 +4,10 @@
 > 版本：0.1.1
 > owner：Architect
 > last_updated：2026-04-07
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md
+> source_of_truth：projects/aimandala/docs/architecture/ToC-MVP-技术方案.md
 > 项目：aimandala
 > 阶段：architecture
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md
+> depends_on：projects/aimandala/docs/specs/ToC-MVP-产品规范.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 目标

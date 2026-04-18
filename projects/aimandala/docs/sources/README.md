@@ -6,8 +6,7 @@
 > last_updated：2026-04-18
 > 项目：aimandala
 > 阶段：current
-> source_of_truth：/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/README.md
-
+> source_of_truth：projects/aimandala/docs/sources/README.md
 这里收口 `aimandala` 项目中的“源资料”目录。
 
 它回答的问题不是：
@@ -46,10 +45,10 @@
 
 ## 3. 当前入口
 
-- [知识库构建/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/README.md)
+- [知识库构建/README.md](知识库构建/README.md)
 
 如果当前任务直接与“报告链路整改”或“知识保真排查”有关，优先进入：
 
-- [知识库构建/最小必读知识源清单.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/最小必读知识源清单.md)
+- [知识库构建/最小必读知识源清单.md](知识库构建/最小必读知识源清单.md)
 
 当前 `sources/` 只承接 `aimandala` 项目级源资料，不提升到公司级知识库。

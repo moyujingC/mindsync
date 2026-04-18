@@ -6,8 +6,8 @@
 > last_updated：2026-04-18
 > 项目：aimandala
 > 阶段：current
-> source_of_truth：/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/原始镜像/README.md
-> depends_on：/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/README.md
+> source_of_truth：projects/aimandala/docs/sources/知识库构建/原始镜像/README.md
+> depends_on：projects/aimandala/docs/sources/知识库构建/README.md
 
 本目录是旧仓库 `知识库构建` 的原始镜像层。
 
@@ -25,8 +25,8 @@
 
 正式引用时应遵循：
 
-1. 先看 [上级 README](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/README.md)
-2. 再看 [当前正式依据与使用说明.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/当前正式依据与使用说明.md)
+1. 先看 [上级 README](../README.md)
+2. 再看 [当前正式依据与使用说明.md](../当前正式依据与使用说明.md)
 3. 最后进入本目录中的具体原始文件
 
 ## 3. 当前迁入规则

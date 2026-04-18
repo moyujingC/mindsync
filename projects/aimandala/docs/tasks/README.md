@@ -1,62 +1,32 @@
 # Tasks
 
-这里放 `一镜一梳` 的执行计划、阶段任务和实现任务定义。
+这里放 `一镜一梳` 当前正式实施计划与操作型任务文档。
 
 规则：
 
 - 任务应明确输入、输出、边界和验收方式
 - 不用聊天记录替代正式任务定义
-- 实现前应先有对应的 spec 和 QA 依据
-- 计划模式产生的关键结论，必须优先落到 `docs/tasks/`，再进入实现
+- 进入实现前应先有对应 `spec` 和 `qa basis`
+- 默认先看母计划，再看专项 runbook
 
 ## 当前默认入口
 
-当前与 `Web MVP` 公开首发、双端并行和运行稳定性最相关的任务入口是：
+当前只保留以下正式任务入口：
 
-- `2026-04-18-报告链路保真重构实施总计划.md`
-- `2026-04-18-Lite-Pro-独立报告重定义实施计划.md`
-- `2026-04-16-mvp-上线前质量收口总任务草案.md`
-- `2026-04-16-ci-cd-临时运营口径-runbook.md`
-- `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
-- `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md`
-- `2026-04-13-miniapp-gray-checklist.md`
-- `2026-04-13-miniapp-gray-config-manifest.md`
-- `2026-04-13-paperclip-automation-节点实施计划.md`
-- `2026-04-12-ci-cd-实施计划.md`
-- `2026-04-12-v22-knowledge-workbench-execution-plan.md`
-- `2026-04-10-服务器部署与运维手册.md`
+1. [2026-04-18-报告链路保真重构实施总计划.md](2026-04-18-报告链路保真重构实施总计划.md)
+2. [2026-04-18-Lite-Pro-独立报告重定义实施计划.md](2026-04-18-Lite-Pro-独立报告重定义实施计划.md)
+3. [2026-04-10-服务器部署与运维手册.md](2026-04-10-服务器部署与运维手册.md)
+4. [aimandala-pr-质量门-runbook.md](aimandala-pr-质量门-runbook.md)
 
 说明：
 
-- `2026-04-18` 这份总计划是当前“报告链路保真重构”主线的正式任务入口，后续 `Batch A-D` 都应从这里继续拆分。
-- `2026-04-16` 这份草案承接 `MIN-80` 的前置澄清结果，适合作为 CEO 收成正式总任务的当前补充入口。
-- `2026-04-16-ci-cd-临时运营口径-runbook.md` 适用于 Paperclip workflow 面板尚未更新前的值班与巡检口径。
-- `2026-04-14` 与 `2026-04-15 batch E` 仍是 Web 首发与 miniapp live-ready 的正式主入口
-- `2026-04-13` 系列已并入 `main`，但默认灰度关闭；当前只作为 miniapp native gray 联调参考，不作为 Web 默认放行门
+- `2026-04-18-报告链路保真重构实施总计划.md` 是当前“报告链路保真重构”主线的唯一总任务入口
+- `2026-04-18-Lite-Pro-独立报告重定义实施计划.md` 是当前 `Lite / Pro` 独立 SKU 重定义的专项实施入口
+- `2026-04-10-服务器部署与运维手册.md` 承接远端部署、巡检和运维口径
+- `aimandala-pr-质量门-runbook.md` 承接 PR 质量门与联动验证口径
 
-当前已沉淀：
+## 使用规则
 
-- `2026-04-18-报告链路保真重构实施总计划.md`
-- `2026-04-18-Lite-Pro-独立报告重定义实施计划.md`
-- `2026-04-16-mvp-上线前质量收口总任务草案.md`
-- `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
-- `2026-04-14-miniapp-batch-a-shared-foundation-audit.md`
-- `2026-04-14-batch-b-历史记录详情与显式报告类型实施计划.md`
-- `2026-04-15-miniapp-batch-c-静态壳与页面闭环实施计划.md`
-- `2026-04-15-miniapp-batch-d-api-contract-stub-only-实施计划.md`
-- `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md`
-- `2026-04-13-miniapp-gray-checklist.md`
-- `2026-04-13-miniapp-gray-config-manifest.md`
-- `2026-04-13-miniapp-native-gray-execution-plan.md`
-- `2026-04-13-miniapp-wechatpay-live-execution-plan.md`
-- `2026-04-04-首批迁移清单.md`
-- `2026-04-04-迁移剩余主功能清单.md`
-- `2026-04-05-ui-restart-plan.md`
-- `2026-04-05-腾讯云部署环境模板.md`
-- `2026-04-07-架构质量整改清单.md`
-- `2026-04-10-服务器部署与运维手册.md`
-- `2026-04-11-v21-knowledge-remaining-execution-plan.md`
-- `2026-04-12-迁移收官与正式版收口总计划.md`
-- `2026-04-12-v22-knowledge-workbench-execution-plan.md`
-
-其中带“迁移”字样的阶段文档已转入历史参考口径，不再作为默认任务入口。
+- 新批次开始前，先回到总任务母文档补子计划
+- 进入验证前，先对齐 [../qa/README.md](../qa/README.md)
+- 交付收口前，回写 [../delivery/README.md](../delivery/README.md)

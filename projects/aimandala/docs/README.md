@@ -37,12 +37,16 @@
 使用规则：
 
 - `sources/` 不是当前 `spec` 或 `architecture` 的替代目录
-- 需要追溯知识来源、历史原文和运行时保真映射时，优先进入 [sources/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/README.md)
+- 需要追溯知识来源、历史原文和运行时保真映射时，优先进入 [sources/README.md](sources/README.md)
 
 当前如果要推进“报告链路保真重构”，默认从下面这组 artifact 进入：
 
-- [specs/2026-04-18-报告链路保真重构总规格.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md)
-- [architecture/2026-04-18-报告链路保真重构技术方案.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/2026-04-18-报告链路保真重构技术方案.md)
-- [tasks/2026-04-18-报告链路保真重构实施总计划.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/tasks/2026-04-18-报告链路保真重构实施总计划.md)
-- [qa/2026-04-18-报告链路保真重构验证基线.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/qa/2026-04-18-报告链路保真重构验证基线.md)
-- [delivery/2026-04-18-报告链路保真重构交付记录.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/delivery/2026-04-18-报告链路保真重构交付记录.md)
+- [specs/2026-04-18-报告链路保真重构总规格.md](specs/2026-04-18-报告链路保真重构总规格.md)
+- [architecture/2026-04-18-报告链路保真重构技术方案.md](architecture/2026-04-18-报告链路保真重构技术方案.md)
+- [tasks/2026-04-18-报告链路保真重构实施总计划.md](tasks/2026-04-18-报告链路保真重构实施总计划.md)
+- [qa/2026-04-18-报告链路保真重构验证基线.md](qa/2026-04-18-报告链路保真重构验证基线.md)
+- [delivery/2026-04-18-报告链路保真重构交付记录.md](delivery/2026-04-18-报告链路保真重构交付记录.md)
+
+知识源追溯与运行时映射统一从这里进入：
+
+- [sources/知识库构建/README.md](sources/知识库构建/README.md)

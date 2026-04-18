@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Architect
 > last_updated：2026-04-18
-> source_of_truth：/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/README.md
+> source_of_truth：projects/aimandala/docs/architecture/README.md
 
 这里放 `一镜一梳 / aimandala` 的技术架构文档。
 
@@ -39,33 +39,30 @@
 - `../qa/`
 - `../runbooks/`
 
-## 3. 当前已存在但尚未迁目录的架构文档
-
-当前 `aimandala` 其实已经有正式架构内容，现已开始收口到本目录。
+## 3. 当前正式入口
 
 总览入口：
 
-- [架构总览.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/架构总览.md)
+- [架构总览.md](架构总览.md)
 
 优先阅读：
 
-1. [2026-04-18-报告链路保真重构技术方案.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/2026-04-18-报告链路保真重构技术方案.md)
-2. [ToC-MVP-技术方案.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
-3. [报告生成分层与信息流说明.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/报告生成分层与信息流说明.md)
-4. [V2知识库长期架构方案.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/V2知识库长期架构方案.md)
-5. [CI-CD与自动修复架构.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/CI-CD与自动修复架构.md)
-6. [Paperclip-Automation-节点方案.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/Paperclip-Automation-节点方案.md)
-7. [../decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md)
+1. [2026-04-18-报告链路保真重构技术方案.md](2026-04-18-报告链路保真重构技术方案.md)
+2. [ToC-MVP-技术方案.md](ToC-MVP-技术方案.md)
+3. [报告生成分层与信息流说明.md](报告生成分层与信息流说明.md)
+4. [V2知识库长期架构方案.md](V2知识库长期架构方案.md)
+5. [CI-CD与自动修复架构.md](CI-CD与自动修复架构.md)
+6. [Paperclip-Automation-节点方案.md](Paperclip-Automation-节点方案.md)
 
 如需追溯 `V2 knowledge runtime` 背后的源资料、流派出处和原始主题特化文档，请进入：
 
-- [../sources/知识库构建/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/README.md)
+- [../sources/知识库构建/README.md](../sources/知识库构建/README.md)
 
 这里的使用规则是：
 
 - 架构文档默认只把 `sources/知识库构建` 当成源资料入口
 - 不把 `原始镜像/` 整体提升为当前架构规则入口
-- 需要引用具体资料时，应先经过 [../sources/知识库构建/当前正式依据与使用说明.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/当前正式依据与使用说明.md)
+- 需要引用具体资料时，应先经过 [../sources/知识库构建/当前正式依据与使用说明.md](../sources/知识库构建/当前正式依据与使用说明.md)
 
 ## 4. 当前建议的架构阅读顺序
 
@@ -77,12 +74,11 @@
    - 理解主链信息如何流转
 4. 再看 `V2知识库长期架构方案`
    - 理解长期演进方向
-5. 最后看具体 architecture decision
-   - 理解局部结构为什么这么选
+5. 最后看 CI/CD 与 Automation 专项架构
+   - 理解配套基础设施边界
 
-## 5. 当前治理判断
+## 5. 使用规则
 
-现阶段更稳的做法不是立刻大规模搬文档，而是先把“架构是一类独立 artifact”这件事显式化。
-
-后续新增架构文档，应优先直接落到本目录；
-历史文档再按需要逐步迁入，而不是一次性大搬家。
+- `architecture/` 只暴露当前保留的 canonical 文档
+- 历史决策文档仍可保留在 `../decisions/`，但不作为默认主入口
+- 需要追溯知识源时，先回到 [../sources/知识库构建/README.md](../sources/知识库构建/README.md)

@@ -3,11 +3,12 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Architect
-> last_updated：2026-04-12
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md
+> last_updated：2026-04-18
+> source_of_truth：projects/aimandala/docs/decisions/2026-04-12-dual-channel-shared-ui-architecture-decision.md
 > 项目：aimandala
 > 阶段：decision
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-12-dual-channel-shared-ui-spec-addendum.md
+> depends_on：projects/aimandala/docs/specs/ToC-MVP-产品规范.md
+> depends_on：projects/aimandala/docs/architecture/ToC-MVP-技术方案.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 决策结论
