@@ -56,7 +56,7 @@ export function useAsyncResource<T>(
           return;
         }
 
-        const message = error instanceof Error ? error.message : "Unknown mock API error";
+        const message = error instanceof Error ? error.message : "Unknown page data error";
         setResource({
           status: "error",
           data: null,

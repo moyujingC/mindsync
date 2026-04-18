@@ -14,7 +14,7 @@ describe("RelayHub console routes", () => {
     renderRoute("/relayhub/providers", { basename: "/relayhub" });
 
     expect(
-      await screen.findByText("按上游治理看 provider，而不是按模型商店看 provider"),
+      await screen.findByText("OpenAI-compatible 模型目录试用"),
     ).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByTestId("current-location")).toHaveTextContent("/providers");
@@ -24,6 +24,7 @@ describe("RelayHub console routes", () => {
   it("renders provider detail route under /relayhub basename", async () => {
     renderRoute("/relayhub/providers/deepseek-direct", { basename: "/relayhub" });
 
+    expect(await screen.findByText("模型详情")).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "DeepSeek Direct" })).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByTestId("current-location")).toHaveTextContent(
@@ -147,8 +148,8 @@ describe("RelayHub console routes", () => {
   it("renders provider list error state when using mock error query", async () => {
     renderRoute("/providers?mock=error");
 
-    expect(await screen.findByText("provider 列表加载失败")).toBeInTheDocument();
-    expect(await screen.findByText("provider 详情加载失败")).toBeInTheDocument();
+    expect(await screen.findByText("模型目录加载失败")).toBeInTheDocument();
+    expect(await screen.findByText("模型详情加载失败")).toBeInTheDocument();
   });
 
   it("keeps mock error query when provider filters change", async () => {
@@ -162,8 +163,8 @@ describe("RelayHub console routes", () => {
       );
     });
 
-    expect(await screen.findByText("provider 列表加载失败")).toBeInTheDocument();
-    expect(await screen.findByText("provider 详情加载失败")).toBeInTheDocument();
+    expect(await screen.findByText("模型目录加载失败")).toBeInTheDocument();
+    expect(await screen.findByText("模型详情加载失败")).toBeInTheDocument();
   });
 
   it("renders eval recommendations route", async () => {

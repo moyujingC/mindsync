@@ -38,13 +38,13 @@ export function DashboardPage() {
       </section>
 
       {dashboard.status === "loading" ? (
-        <EmptyState title="正在加载首页概览" description="只读 mock API 正在返回 Dashboard 数据。" />
+        <EmptyState title="正在加载首页概览" description="正在加载页面数据。" />
       ) : null}
 
       {dashboard.status === "error" ? (
         <EmptyState
-          title="首页 mock 数据加载失败"
-          description={dashboard.error ?? "请稍后重试 mock API。"}
+          title="首页数据加载失败"
+          description={dashboard.error ?? "请稍后重试。"}
         />
       ) : null}
 

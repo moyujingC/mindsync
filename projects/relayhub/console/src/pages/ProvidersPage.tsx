@@ -83,15 +83,15 @@ export function ProvidersPage() {
     <div className="page-grid">
       <section className="hero-card">
         <div>
-          <span className="eyebrow">Providers</span>
-          <h1>按上游治理看 provider，而不是按模型商店看 provider</h1>
+          <span className="eyebrow">Models Trial</span>
+          <h1>OpenAI-compatible 模型目录试用</h1>
           <p>
-            页面重点是健康度、透明度、可用环境和当前适用建议，而不是引导进入真实配置编辑。
+            当前页面按“模型即 Provider”的试用映射展示目录与详情，用于验证真实只读链路，不代表完整治理视图。
           </p>
         </div>
       </section>
 
-      <Section title="筛选条件" description="覆盖类型、环境、健康状态与透明度四个视角。">
+      <Section title="筛选条件" description="保留最小过滤视角，帮助快速查看当前目录试用结果。">
         <div className="filter-row">
           {(["全部", "第三方中转", "国产模型", "免费国外 API"] as const).map((item) => (
             <button
@@ -142,20 +142,20 @@ export function ProvidersPage() {
         </div>
       </Section>
 
-      <Section title="provider 列表" description="核心字段与当前适用建议必须直接可见。">
+      <Section title="模型列表" description="当前目录项按模型展示，保留最小只读字段。">
         {filteredProviders.status === "loading" ? (
-          <EmptyState title="正在加载 provider 列表" description="只读 mock API 正在返回 provider 数据。" />
+          <EmptyState title="正在加载模型目录" description="正在读取同源 `/api/models` 数据。" />
         ) : null}
         {filteredProviders.status === "error" ? (
           <EmptyState
-            title="provider 列表加载失败"
-            description={filteredProviders.error ?? "请检查 mock API。"}
+            title="模型目录加载失败"
+            description={filteredProviders.error ?? "请稍后重试。"}
           />
         ) : null}
         {filteredProviders.status === "empty" ? (
           <EmptyState
-            title="当前筛选下没有 provider"
-            description="空态保留出来，避免在没有数据时硬造列表。"
+            title="当前筛选下没有模型目录项"
+            description="请调整筛选条件，或稍后重试。"
           />
         ) : null}
         {filteredProviders.status === "success" && filteredProviders.data ? (
@@ -199,20 +199,20 @@ export function ProvidersPage() {
         ) : null}
       </Section>
 
-      <Section title="provider 详情" description="四块结构：基本信息、支持模型、24 小时指标、当前适用建议。">
+      <Section title="模型详情" description="当前详情来自目录映射结果，不依赖单独的模型详情接口。">
         {selectedProvider.status === "loading" ? (
-          <EmptyState title="正在加载 provider 详情" description="只读 mock API 正在返回 provider 详情。" />
+          <EmptyState title="正在加载模型详情" description="正在读取目录映射后的详情信息。" />
         ) : null}
         {selectedProvider.status === "error" ? (
           <EmptyState
-            title="provider 详情加载失败"
-            description={selectedProvider.error ?? "请稍后重试 mock API。"}
+            title="模型详情加载失败"
+            description={selectedProvider.error ?? "请稍后重试。"}
           />
         ) : null}
         {selectedProvider.status === "not-found" ? (
           <EmptyState
-            title="没有找到对应 provider"
-            description="请检查 provider ID，或从列表重新进入。"
+            title="没有找到对应模型"
+            description="请检查模型 ID，或从目录列表重新进入。"
           />
         ) : null}
         {selectedProvider.status === "success" && selectedProvider.data ? (

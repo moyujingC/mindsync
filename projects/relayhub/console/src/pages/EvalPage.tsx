@@ -49,12 +49,12 @@ export function EvalPage() {
         </div>
 
         {evaluation.status === "loading" ? (
-          <EmptyState title="正在加载 Eval 数据" description="只读 mock API 正在返回评测数据。" />
+          <EmptyState title="正在加载 Eval 数据" description="正在加载页面数据。" />
         ) : null}
         {evaluation.status === "error" ? (
           <EmptyState
             title="Eval 数据加载失败"
-            description={evaluation.error ?? "请稍后重试 mock API。"}
+            description={evaluation.error ?? "请稍后重试。"}
           />
         ) : null}
         {evaluation.status === "success" && evaluation.data && !isValidTab ? (

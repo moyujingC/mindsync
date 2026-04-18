@@ -46,12 +46,12 @@ export function EnvironmentsPage() {
 
       <Section title="环境卡列表" description="默认展示 3 类环境，表达它们各自的职责边界。">
         {environmentsResource.status === "loading" ? (
-          <EmptyState title="正在加载环境列表" description="只读 mock API 正在返回环境清单。" />
+          <EmptyState title="正在加载环境列表" description="正在加载页面数据。" />
         ) : null}
         {environmentsResource.status === "error" ? (
           <EmptyState
             title="环境列表加载失败"
-            description={environmentsResource.error ?? "请检查 mock API 状态。"}
+            description={environmentsResource.error ?? "请稍后重试。"}
           />
         ) : null}
         {environmentsResource.status === "success" && environmentsResource.data ? (
@@ -80,12 +80,12 @@ export function EnvironmentsPage() {
       </Section>
 
       {selectedEnvironment.status === "loading" ? (
-        <EmptyState title="正在加载环境详情" description="只读 mock API 正在返回环境详情。" />
+        <EmptyState title="正在加载环境详情" description="正在加载页面数据。" />
       ) : null}
       {selectedEnvironment.status === "error" ? (
         <EmptyState
           title="环境详情加载失败"
-          description={selectedEnvironment.error ?? "请稍后重试 mock API。"}
+          description={selectedEnvironment.error ?? "请稍后重试。"}
         />
       ) : null}
       {selectedEnvironment.status === "not-found" ? (

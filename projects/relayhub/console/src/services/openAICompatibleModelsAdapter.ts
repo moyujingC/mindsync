@@ -67,8 +67,8 @@ export function mapOpenAICompatibleModelToProviderRecord(
     errorRate: 0,
     p95Latency: 0,
     description: `来自 OpenAI-compatible /v1/models 目录适配，owner=${owner}。`,
-    recommendation: "当前仅验证模型目录可见性",
-    recommendationNote: "缺少真实运行指标与治理元数据，不代表正式治理结论。",
+    recommendation: "模型目录试用项",
+    recommendationNote: "当前结果来自目录适配，不代表正式治理结论或运行建议。",
     models: [
       {
         name: model.id,
