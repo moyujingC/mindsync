@@ -94,6 +94,6 @@
 ## 8. 当前下一步
 
 1. 以 `project/relayhub` 作为长期项目分支推进 RelayHub。
-2. 先收口治理控制台下的模型库、任务库、运行记录与最小 control-plane。
-3. 先在 `relayhub.jingshu.cc` 跑通独立项目试用链路，再评估后续正式化。
+2. 当前已在 `relayhub.jingshu.cc` 跑通独立 worktree + 最小 control-plane 试用链路。
+3. 下一步优先深化产品可用性、表单交互细节和预置模型质量，而不是继续解决部署路径。
 4. 保持开发版、生产版、旁路 eval 三类职责分离，不让实现过程侵蚀已确认的边界。

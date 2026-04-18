@@ -21,6 +21,7 @@ logs/
 tmp/
 temp/
 *.tmp
+.playwright-cli/
 
 # Secrets (never commit!)
 *.pem
