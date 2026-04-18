@@ -10,7 +10,8 @@
 
 1. [2026-04-18-报告链路保真重构交付记录.md](2026-04-18-报告链路保真重构交付记录.md)
 2. [2026-04-19-Batch-A-runtime-evidence-交付记录.md](2026-04-19-Batch-A-runtime-evidence-交付记录.md)
-3. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
+3. [2026-04-19-Batch-B-narrative-plan-交付记录.md](2026-04-19-Batch-B-narrative-plan-交付记录.md)
+4. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
 
 分工如下：
 
@@ -18,6 +19,8 @@
   - 收束这轮重大重构的母文档、阶段状态、验证结论和后续 handoff
 - `2026-04-19-Batch-A-runtime-evidence-交付记录.md`
   - 收束 Batch A runtime evidence 重构的实现窗口、验证结果与进入 Batch B 的前置状态
+- `2026-04-19-Batch-B-narrative-plan-交付记录.md`
+  - 收束 Batch B narrative plan、prompt upstream 和 debug 收口的实现窗口与放行状态
 - `2026-04-18-Lite-Pro-独立报告重定义交付记录.md`
   - 收束 `Lite / Pro` 独立 SKU 定义、Lite 轻疗愈区块和 `Pro` 独立入口语义的专项交付
 
