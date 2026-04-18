@@ -1,9 +1,9 @@
 # RelayHub 项目工作区
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Architect / Engineer
-> last_updated：2026-04-16
+> last_updated：2026-04-19
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md)
 
@@ -51,13 +51,16 @@
 - capability 已正式立项
 - 项目工作区已建立最小骨架
 - `spec`、`task`、`qa basis` 已形成最小闭环
-- 尚未进入正式实现
+- 已进入第一轮正式实现与 release 试用收口
+- 当前长期实现分支固定为 `project/relayhub`
+- 短期不并回 `main` / `release`
 
 当前不做：
 
 - 在没有 provider 抽象与 QA 基线的情况下开始接入实现
 - 直接合并个人开发版和生产版配置
 - 把生产路由策略写成开发实验默认值
+- 为 RelayHub 额外拆出 `main / release` 双轨版本
 
 ## 5. 当前长期入口
 
@@ -90,7 +93,7 @@
 
 ## 8. 当前下一步
 
-1. 以当前 `spec`、`task`、`qa basis` 为输入，收束 provider 抽象与运行模式边界。
-2. 先实现共享底座与 `dev-relay` 最小闭环，再进入产品生产版。
-3. 在 automation 与 production 的故障域分离前，不把评测任务和主 Relay API 混跑。
+1. 以 `project/relayhub` 作为长期项目分支推进 RelayHub。
+2. 先收口治理控制台下的模型库、任务库、运行记录与最小 control-plane。
+3. 先在 `relayhub.jingshu.cc` 跑通独立项目试用链路，再评估后续正式化。
 4. 保持开发版、生产版、旁路 eval 三类职责分离，不让实现过程侵蚀已确认的边界。

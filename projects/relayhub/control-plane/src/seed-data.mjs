@@ -1,0 +1,159 @@
+export const seedModelEntries = [
+  {
+    id: "preset-qwen-max",
+    name: "Qwen Max 官方",
+    providerLabel: "阿里云百炼",
+    kind: "domestic-model",
+    source: "preset",
+    baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    modelId: "qwen-max",
+    catalogFamily: "openai-compatible",
+    purchaseUrl: "https://bailian.console.aliyun.com/",
+    status: "preset-unconfigured",
+    statusNote: "预置条目已就位，补充 API Key 后可测试连接。",
+    hasStoredApiKey: false,
+    maskedApiKey: null,
+    lastTestedAt: null,
+    tags: ["国产模型", "通用对话", "正式生产候选"],
+    apiKey: null
+  },
+  {
+    id: "preset-deepseek-v3",
+    name: "DeepSeek V3 官方",
+    providerLabel: "DeepSeek Platform",
+    kind: "domestic-model",
+    source: "preset",
+    baseUrl: "https://api.deepseek.com/v1",
+    modelId: "deepseek-chat",
+    catalogFamily: "openai-compatible",
+    purchaseUrl: "https://platform.deepseek.com/",
+    status: "preset-unconfigured",
+    statusNote: "适合作为国产模型候选，当前尚未配置密钥。",
+    hasStoredApiKey: false,
+    maskedApiKey: null,
+    lastTestedAt: null,
+    tags: ["国产模型", "编码", "摘要"],
+    apiKey: null
+  },
+  {
+    id: "preset-ppchat-relay",
+    name: "PPChat 中转",
+    providerLabel: "code.ppchat.vip",
+    kind: "coding-plan",
+    source: "preset",
+    baseUrl: "https://code.ppchat.vip/v1",
+    modelId: "gpt-5",
+    catalogFamily: "openai-compatible",
+    purchaseUrl: "https://code.ppchat.vip/",
+    status: "configured-pending-test",
+    statusNote: "已录入示例配置，建议手动测试连接后再绑定任务。",
+    hasStoredApiKey: true,
+    maskedApiKey: "sk-ppc...demo",
+    lastTestedAt: "2026-04-18 12:10",
+    tags: ["中转 API", "Coding Plan", "OpenAI-compatible"],
+    apiKey: "seed-api-key"
+  },
+  {
+    id: "preset-siliconflow",
+    name: "SiliconFlow 通用目录",
+    providerLabel: "SiliconFlow",
+    kind: "coding-plan",
+    source: "preset",
+    baseUrl: "https://api.siliconflow.cn/v1",
+    modelId: "deepseek-ai/DeepSeek-V3",
+    catalogFamily: "openai-compatible",
+    purchaseUrl: "https://cloud.siliconflow.cn/",
+    status: "preset-unconfigured",
+    statusNote: "适合作为中转型 coding plan 候选。",
+    hasStoredApiKey: false,
+    maskedApiKey: null,
+    lastTestedAt: null,
+    tags: ["中转 API", "国产模型聚合"],
+    apiKey: null
+  }
+];
+
+export const seedTasks = [
+  {
+    id: "task-claude-code",
+    name: "Claude Code Web Coding",
+    category: "通用工具",
+    description: "偏前端和工作区重构类任务，关注代码生成质量与稳定性。",
+    builtIn: true,
+    defaultModelEntryId: "preset-ppchat-relay",
+    defaultModelEntryName: "PPChat 中转",
+    switchNote: "需要时可切到更便宜的国产候选，但要保留人工复核。"
+  },
+  {
+    id: "task-codex-repo",
+    name: "Codex Repo Coding",
+    category: "通用工具",
+    description: "偏仓库级实现、测试修复和文档收口，关注长上下文和回归稳定性。",
+    builtIn: true,
+    defaultModelEntryId: null,
+    defaultModelEntryName: null,
+    switchNote: "当前还没有默认模型，先完成模型激活再绑定。"
+  },
+  {
+    id: "task-therapy-dialogue",
+    name: "心理疗愈对话",
+    category: "业务任务",
+    description: "偏正式产品对话内容，需要更高质量和更强边界控制。",
+    builtIn: true,
+    defaultModelEntryId: null,
+    defaultModelEntryName: null,
+    switchNote: "生产候选优先考虑国产模型，不直接沿用开发中转。"
+  },
+  {
+    id: "task-therapy-summary",
+    name: "心理疗愈摘要",
+    category: "业务任务",
+    description: "偏摘要和结构化整理，优先关注稳定性与成本效率。",
+    builtIn: true,
+    defaultModelEntryId: "preset-deepseek-v3",
+    defaultModelEntryName: "DeepSeek V3 官方",
+    switchNote: "可以在国产模型之间比较成本和摘要质量。"
+  }
+];
+
+export const seedRuns = [
+  {
+    id: "run-001",
+    taskId: "task-claude-code",
+    taskName: "Claude Code Web Coding",
+    modelEntryId: "preset-ppchat-relay",
+    modelEntryName: "PPChat 中转",
+    ranAt: "2026-04-18 11:20",
+    summary: "成功完成路由和文案收口，生成代码可直接合入。",
+    resultGrade: "优秀",
+    costCny: 3.2,
+    latencyMs: 1180,
+    note: "适合 UI 和文档同步类任务。"
+  },
+  {
+    id: "run-002",
+    taskId: "task-claude-code",
+    taskName: "Claude Code Web Coding",
+    modelEntryId: "preset-deepseek-v3",
+    modelEntryName: "DeepSeek V3 官方",
+    ranAt: "2026-04-18 11:58",
+    summary: "实现速度快，但复杂页面结构需要更多手动修正。",
+    resultGrade: "可用",
+    costCny: 1.4,
+    latencyMs: 980,
+    note: "成本更低，但复杂交互还不稳定。"
+  },
+  {
+    id: "run-003",
+    taskId: "task-therapy-summary",
+    taskName: "心理疗愈摘要",
+    modelEntryId: "preset-deepseek-v3",
+    modelEntryName: "DeepSeek V3 官方",
+    ranAt: "2026-04-18 12:06",
+    summary: "摘要结构完整，可直接进入人工复核。",
+    resultGrade: "优秀",
+    costCny: 0.8,
+    latencyMs: 740,
+    note: "当前是最稳的国产摘要候选。"
+  }
+];

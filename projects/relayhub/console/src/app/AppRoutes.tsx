@@ -3,14 +3,20 @@ import { AppShell } from "../components/AppShell";
 import { DashboardPage } from "../pages/DashboardPage";
 import { EnvironmentsPage } from "../pages/EnvironmentsPage";
 import { EvalPage } from "../pages/EvalPage";
+import { ModelLibraryPage } from "../pages/ModelLibraryPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { ProvidersPage } from "../pages/ProvidersPage";
+import { RunsPage } from "../pages/RunsPage";
+import { TasksPage } from "../pages/TasksPage";
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route index element={<Navigate to="/models" replace />} />
+        <Route path="/models" element={<ModelLibraryPage />} />
+        <Route path="/tasks" element={<TasksPage />} />
+        <Route path="/runs" element={<RunsPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/environments" element={<EnvironmentsPage />} />
         <Route path="/environments/:environmentId" element={<Navigate to="overview" replace />} />
@@ -78,27 +84,6 @@ export function AppRoutes() {
                 "不提供编辑生产白名单",
                 "不提供启用自动路由",
                 "不提供立即应用配置",
-              ]}
-            />
-          }
-        />
-        <Route
-          path="/runs"
-          element={
-            <PlaceholderPage
-              title="Runs"
-              eyebrow="只读占位页"
-              description="这里未来承接 benchmark、探活、日报和失败任务记录，让 eval-sidecar 的执行过程可追溯。"
-              purpose="给评测运行记录一个独立落点，而不是继续埋在日志系统或脚本输出里。"
-              futureSections={[
-                "benchmark 执行记录",
-                "探活与日报运行历史",
-                "失败 run 的只读复盘入口",
-              ]}
-              notIncluded={[
-                "不提供重新执行",
-                "不提供手动调度",
-                "不提供脚本编辑",
               ]}
             />
           }

@@ -4,6 +4,15 @@ import { getConsoleRouterBasename } from "../app/consoleRouter";
 import { renderRoute } from "./renderRoute";
 
 describe("RelayHub console routes", () => {
+  it("redirects root route to the model library", async () => {
+    renderRoute("/");
+
+    expect(await screen.findByText("先把模型资产收进来，再谈任务选型和治理判断")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId("current-location")).toHaveTextContent("/models");
+    });
+  });
+
   it("normalizes router basename for release subpath deployment", () => {
     expect(getConsoleRouterBasename("/relayhub/")).toBe("/relayhub");
     expect(getConsoleRouterBasename("relayhub")).toBe("/relayhub");
@@ -21,6 +30,20 @@ describe("RelayHub console routes", () => {
     });
   });
 
+  it("renders task library route with built-in task copy", async () => {
+    renderRoute("/tasks");
+
+    expect(await screen.findByText("任务决定模型怎么用，不是反过来先让用户猜路由")).toBeInTheDocument();
+    expect(await screen.findByText("Claude Code Web Coding")).toBeInTheDocument();
+  });
+
+  it("renders runs route with governance overview", async () => {
+    renderRoute("/runs");
+
+    expect(await screen.findByText("基础统计先从人工运行记录开始，不等外部自动接入")).toBeInTheDocument();
+    expect(await screen.findByText("治理概览")).toBeInTheDocument();
+  });
+
   it("renders provider detail route under /relayhub basename", async () => {
     renderRoute("/relayhub/providers/deepseek-direct", { basename: "/relayhub" });
 
@@ -36,8 +59,8 @@ describe("RelayHub console routes", () => {
   it("renders dashboard overview", async () => {
     renderRoute("/dashboard");
 
-    expect(await screen.findByText("环境总览")).toBeInTheDocument();
-    expect(await screen.findByText("决策摘要")).toBeInTheDocument();
+    expect(await screen.findByText("当前闭环进度")).toBeInTheDocument();
+    expect(await screen.findByText("下一步入口")).toBeInTheDocument();
   });
 
   it("renders provider route with empty-state provider metrics and restored filters", async () => {

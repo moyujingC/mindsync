@@ -43,6 +43,23 @@ button {
   font: inherit;
 }
 
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f2f2ec;
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
 .shell {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
@@ -253,6 +270,21 @@ button {
   transform: translateY(-1px);
 }
 
+.action-button {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: #f2f2ec;
+  cursor: pointer;
+}
+
+.action-button.danger {
+  border-color: rgba(242, 108, 79, 0.3);
+  color: #ffb39f;
+}
+
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -416,6 +448,40 @@ tbody tr:hover,
   border-color: rgba(193, 199, 191, 0.16);
 }
 
+.pill-model-preset-unconfigured,
+.pill-model-disabled {
+  background: rgba(193, 199, 191, 0.1);
+  color: #d3d8d0;
+  border-color: rgba(193, 199, 191, 0.16);
+}
+
+.pill-model-configured-pending-test,
+.pill-grade-fair {
+  background: rgba(248, 190, 102, 0.14);
+  color: #ffd690;
+  border-color: rgba(248, 190, 102, 0.24);
+}
+
+.pill-model-active,
+.pill-grade-excellent {
+  background: rgba(116, 185, 159, 0.16);
+  color: #a9ecd0;
+  border-color: rgba(116, 185, 159, 0.24);
+}
+
+.pill-model-test-failed,
+.pill-grade-failed {
+  background: rgba(242, 108, 79, 0.16);
+  color: #ffb39f;
+  border-color: rgba(242, 108, 79, 0.26);
+}
+
+.pill-grade-usable {
+  background: rgba(127, 183, 255, 0.16);
+  color: #c5dfff;
+  border-color: rgba(127, 183, 255, 0.24);
+}
+
 .detail-summary {
   display: flex;
   flex-direction: column;
@@ -465,6 +531,44 @@ tbody tr:hover,
   gap: 16px;
 }
 
+.inline-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field span {
+  color: #e5eadf;
+  font-size: 13px;
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.error-inline {
+  color: #ffb39f;
+}
+
 .sub-card {
   padding: 16px;
 }
@@ -502,7 +606,8 @@ tbody tr:hover,
 
   .card-grid-2,
   .card-grid-3,
-  .metrics-grid {
+  .metrics-grid,
+  .form-grid {
     grid-template-columns: 1fr;
   }
 }

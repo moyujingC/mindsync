@@ -1,38 +1,36 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { Section } from "../components/Section";
-import { StatusPill } from "../components/StatusPill";
 import { useAsyncResource } from "../hooks/useAsyncResource";
-import { getDashboardOverview } from "../services/consoleData";
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("zh-CN").format(value);
-}
+import { getGovernanceOverview } from "../services/controlPlane";
 
 export function DashboardPage() {
   const [searchParams] = useSearchParams();
-  const forceError = searchParams.get("mock") === "error";
-  const dashboard = useAsyncResource(
-    () => getDashboardOverview({ forceError }),
-    [forceError],
-  );
+  const version = searchParams.get("mock") === "error" ? "error" : "ready";
+  const dashboard = useAsyncResource(() => {
+    if (version === "error") {
+      return Promise.reject(new Error("RelayHub mock dashboard error"));
+    }
+
+    return getGovernanceOverview();
+  }, [version]);
 
   return (
     <div className="page-grid">
       <section className="hero-card">
         <div>
           <span className="eyebrow">Dashboard</span>
-          <h1>先看环境，再看 provider，最后看建议是否值得执行</h1>
+          <h1>首页先回答三件事：模型激活了没有、任务绑好了没有、运行记录够不够判断</h1>
           <p>
-            首页优先回答哪些环境在跑、当前最重要的建议是什么，以及哪里已经出现越界风险或透明度问题。
+            旧的环境总览和 provider 治理叙事已经降级。当前首页只服务最小闭环，不再假装你已经拥有完整治理后台。
           </p>
         </div>
         <div className="hero-actions">
-          <Link className="button-link" to="/environments">
-            查看环境枢纽
+          <Link className="button-link" to="/models">
+            打开模型库
           </Link>
-          <Link className="button-link secondary" to="/eval">
-            打开 Eval 一级模块
+          <Link className="button-link secondary" to="/tasks">
+            进入任务库
           </Link>
         </div>
       </section>
@@ -50,132 +48,63 @@ export function DashboardPage() {
 
       {dashboard.status === "success" && dashboard.data ? (
         <>
-          <Section
-            title="环境总览"
-            description="控制台首页先展示环境，而不是先展示 provider 列表。"
-          >
-            <div className="card-grid card-grid-3">
-              {dashboard.data.environments.map((environment) => (
-                <Link
-                  key={environment.id}
-                  className="data-card interactive-card"
-                  to={`/environments/${environment.id}/overview`}
-                >
-                  <div className="data-card-top">
-                    <div>
-                      <span className="mini-label">{environment.mode}</span>
-                      <h4>{environment.name}</h4>
-                    </div>
-                    <StatusPill status={environment.status} />
-                  </div>
-                  <p>{environment.providerScope}</p>
-                  <dl className="metric-list">
-                    <div>
-                      <dt>provider 数</dt>
-                      <dd>{environment.providerCount}</dd>
-                    </div>
-                    <div>
-                      <dt>24h 请求量</dt>
-                      <dd>{formatNumber(environment.requests24h)}</dd>
-                    </div>
-                    <div>
-                      <dt>成功率</dt>
-                      <dd>{environment.successRate}%</dd>
-                    </div>
-                  </dl>
-                  <p className="supporting-text">{environment.recentStatus}</p>
-                </Link>
-              ))}
-            </div>
-          </Section>
-
-          <Section
-            title="决策摘要"
-            description="直接给结论，而不是只堆指标。"
-          >
-            <div className="card-grid card-grid-2">
-              {dashboard.data.decisions.map((decision) => (
-                <article key={decision.title} className="data-card">
-                  <span className="mini-label">{decision.type}</span>
-                  <h4>{decision.title}</h4>
-                  <strong className="headline">{decision.target}</strong>
-                  <p>{decision.reason}</p>
-                  <p className="supporting-text">更新时间：{decision.updatedAt}</p>
-                </article>
-              ))}
-            </div>
-          </Section>
-
-          <Section title="风险提示" description="优先暴露越界风险与观测缺口。">
-            <div className="card-grid card-grid-3">
-              {dashboard.data.risks.map((risk) => (
-                <article key={risk.title} className="data-card">
-                  <div className="data-card-top">
-                    <span className="mini-label">{risk.environment}</span>
-                    <span className="pill pill-risk">{risk.level}</span>
-                  </div>
-                  <h4>{risk.title}</h4>
-                  <p>{risk.note}</p>
-                </article>
-              ))}
-            </div>
-          </Section>
-
-          <Section title="运行指标摘要" description="这里只承担观测摘要，不替代 Usage 模块。">
+          <Section title="当前闭环进度" description="先判断模型、任务和记录三件事是否已经连起来。">
             <div className="metrics-grid">
               <article className="metric-tile">
-                <span>总请求数</span>
-                <strong>{formatNumber(dashboard.data.metrics.requests)}</strong>
+                <span>模型条目</span>
+                <strong>{dashboard.data.totalEntries}</strong>
               </article>
               <article className="metric-tile">
-                <span>总 token</span>
-                <strong>{formatNumber(dashboard.data.metrics.tokens)}</strong>
+                <span>已激活模型</span>
+                <strong>{dashboard.data.activeEntries}</strong>
               </article>
               <article className="metric-tile">
-                <span>平均延迟</span>
-                <strong>{dashboard.data.metrics.avgLatency} ms</strong>
+                <span>待测试模型</span>
+                <strong>{dashboard.data.configuredPendingTest}</strong>
               </article>
               <article className="metric-tile">
-                <span>P95 延迟</span>
-                <strong>{dashboard.data.metrics.p95Latency} ms</strong>
+                <span>任务总数</span>
+                <strong>{dashboard.data.totalTasks}</strong>
               </article>
               <article className="metric-tile">
-                <span>错误率</span>
-                <strong>{dashboard.data.metrics.errorRate}%</strong>
+                <span>已绑定任务</span>
+                <strong>{dashboard.data.tasksBound}</strong>
               </article>
               <article className="metric-tile">
-                <span>估算成本</span>
-                <strong>¥{formatNumber(dashboard.data.metrics.cost)}</strong>
+                <span>运行记录</span>
+                <strong>{dashboard.data.recentRunsCount}</strong>
               </article>
             </div>
           </Section>
 
-          <Section title="最近运行记录" description="run 记录独立存在，不躲在日志系统里。">
-            <div className="table-card">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Run 名称</th>
-                    <th>类型</th>
-                    <th>环境</th>
-                    <th>状态</th>
-                    <th>运行时间</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dashboard.data.recentRuns.map((run) => (
-                    <tr key={run.id}>
-                      <td>{run.name}</td>
-                      <td>{run.type}</td>
-                      <td>{run.environment}</td>
-                      <td>
-                        <StatusPill status={run.status} />
-                      </td>
-                      <td>{run.startedAt}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <Section title="收口提示" description="当前首页只给下一步动作，不再讲完整治理哲学。">
+            <div className="card-grid card-grid-3">
+              {dashboard.data.highlights.map((item) => (
+                <article key={item} className="data-card">
+                  <span className="mini-label">当前重点</span>
+                  <p>{item}</p>
+                </article>
+              ))}
+            </div>
+          </Section>
+
+          <Section title="下一步入口" description="首页直接把主路径入口放出来。">
+            <div className="card-grid card-grid-3">
+              <Link className="data-card interactive-card" to="/models">
+                <span className="mini-label">第一步</span>
+                <h4>添加模型并激活</h4>
+                <p>先去模型库补 API Key，然后手动测试连接。</p>
+              </Link>
+              <Link className="data-card interactive-card" to="/tasks">
+                <span className="mini-label">第二步</span>
+                <h4>给任务绑定模型</h4>
+                <p>把通用工具和业务任务收成模板，再确定默认模型。</p>
+              </Link>
+              <Link className="data-card interactive-card" to="/runs">
+                <span className="mini-label">第三步</span>
+                <h4>录入运行记录</h4>
+                <p>先积累最小样本，再看哪个模型更适合继续用。</p>
+              </Link>
             </div>
           </Section>
         </>

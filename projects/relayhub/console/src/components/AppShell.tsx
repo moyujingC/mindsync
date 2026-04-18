@@ -4,19 +4,21 @@ const navGroups = [
   {
     label: "核心模块",
     items: [
+      { to: "/models", label: "模型库" },
+      { to: "/tasks", label: "任务库" },
+      { to: "/runs", label: "运行记录" },
       { to: "/dashboard", label: "Dashboard" },
-      { to: "/environments", label: "Environments" },
-      { to: "/providers", label: "Providers" },
-      { to: "/eval", label: "Eval" },
     ],
   },
   {
-    label: "占位模块",
+    label: "支持模块",
     items: [
+      { to: "/providers", label: "外部模型源" },
+      { to: "/environments", label: "Environments" },
+      { to: "/eval", label: "Eval" },
       { to: "/routes", label: "Routes" },
       { to: "/usage", label: "Usage" },
       { to: "/policies", label: "Policies" },
-      { to: "/runs", label: "Runs" },
       { to: "/settings", label: "Settings" },
     ],
   },
@@ -28,9 +30,9 @@ export function AppShell() {
       <aside className="sidebar">
         <div className="brand-card">
           <span className="eyebrow">RelayHub Console v1</span>
-          <h1>OpenAI-compatible 模型目录试用版</h1>
+          <h1>治理控制台下的模型库试用版</h1>
           <p>
-            当前页面是只读试用版，数据来自同源 `/api/models`，当前重点是验证模型目录可见性与详情可读性。
+            当前主路径是“添加模型并激活”，再进入任务绑定和运行记录。外部模型目录只读 trial 保留，但已经降级为支持能力。
           </p>
         </div>
 
@@ -56,9 +58,9 @@ export function AppShell() {
         <div className="sidebar-note">
           <strong>v1 边界</strong>
           <ul>
-            <li>只读静态页</li>
-            <li>当前仅验证模型目录可见性与详情可读性</li>
-            <li>不提供任何可写入操作</li>
+            <li>优先服务模型库、任务库和运行记录</li>
+            <li>手动测试连接，不做自动续费和余额判断</li>
+            <li>不直接接入外部程序自动回传</li>
           </ul>
         </div>
       </aside>
@@ -66,12 +68,12 @@ export function AppShell() {
       <div className="content">
         <header className="topbar">
           <div>
-            <p className="eyebrow">只读试用版</p>
-            <h2>当前数据来自 OpenAI-compatible 模型目录，不代表完整 provider 治理后台</h2>
+            <p className="eyebrow">治理控制台试用版</p>
+            <h2>先把模型资产和任务绑定收口，再开始积累可比较的运行数据</h2>
           </div>
           <div className="topbar-badges">
-            <span className="pill pill-risk">只读试用版</span>
-            <span className="pill pill-neutral">无真实控制能力</span>
+            <span className="pill pill-degraded">模型资产治理中</span>
+            <span className="pill pill-neutral">默认主入口仍为 mock</span>
           </div>
         </header>
 
