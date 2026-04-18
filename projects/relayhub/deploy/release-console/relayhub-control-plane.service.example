@@ -1,0 +1,20 @@
+[Unit]
+Description=RelayHub Control Plane
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/aimandala-release/app/mindsync/projects/relayhub/control-plane
+EnvironmentFile=/etc/default/relayhub-control-plane
+ExecStart=/usr/bin/env bash -lc 'node src/server.mjs'
+Restart=always
+RestartSec=3
+TimeoutStopSec=30
+KillSignal=SIGINT
+StandardOutput=append:/var/log/relayhub/control-plane.out.log
+StandardError=append:/var/log/relayhub/control-plane.err.log
+
+[Install]
+WantedBy=multi-user.target

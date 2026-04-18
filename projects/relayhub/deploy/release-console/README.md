@@ -2,21 +2,27 @@
 
 ## 1. 目标
 
-为 `RelayHub console` 提供 release 宿主机上的最小静态试用入口：
+为 `RelayHub console` 提供 release 宿主机上的最小试用入口：
 
 - 推荐入口：`https://relayhub.jingshu.cc/`
 - 兼容入口：`https://web.jingshu.cc/relayhub/`
 - 默认入口仍为 mock
-- 显式 trial 构建用于 Providers readonly real-fetch 试用
+- 显式 trial 构建用于：
+  - Providers readonly real-fetch 试用
+  - control-plane 可写试用
 
 ## 2. 目录约定
 
 - 代码目录：`/opt/aimandala-release/app/mindsync`
 - console 目录：`/opt/aimandala-release/app/mindsync/projects/relayhub/console`
 - 构建目录：`/opt/aimandala-release/app/mindsync/projects/relayhub/console/dist`
+- control-plane 目录：`/opt/aimandala-release/app/mindsync/projects/relayhub/control-plane`
 - 子域静态发布目录：`/var/www/relayhub.jingshu.cc`
 - 兼容子路径静态发布目录：`/var/www/web.jingshu.cc/relayhub`
 - nginx 站点样例：`/etc/nginx/sites-available/web.jingshu.cc`
+- control-plane 数据目录：`/var/lib/relayhub/control-plane`
+- control-plane 环境文件：`/etc/default/relayhub-control-plane`
+- control-plane systemd：`/etc/systemd/system/relayhub-control-plane.service`
 
 ## 3. 构建方式
 
@@ -34,6 +40,7 @@ release trial 构建：
 cd /opt/aimandala-release/app/mindsync/projects/relayhub/console
 npm ci
 RELAYHUB_CONSOLE_BASE_PATH=/ \
+RELAYHUB_CONTROL_PLANE_BASE_URL=/api/control-plane \
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch \
 RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api \
 RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models \
@@ -59,6 +66,25 @@ sudo PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
 
 兼容子路径发布仍可使用默认 `PUBLISH_DIR=/var/www/web.jingshu.cc/relayhub`。
 
+## 4.1 control-plane 安装
+
+安装 systemd 服务：
+
+```bash
+cd /opt/aimandala-release/app/mindsync/projects/relayhub/deploy/release-console
+sudo PORT=4318 \
+  DATA_DIR=/var/lib/relayhub/control-plane \
+  bash install-relayhub-control-plane-service.sh
+```
+
+安装 nginx 同源反代：
+
+```bash
+cd /opt/aimandala-release/app/mindsync/projects/relayhub/deploy/release-console
+sudo CONTROL_PLANE_PORT=4318 \
+  bash install-relayhub-control-plane-nginx-location.sh
+```
+
 ## 5. nginx 要求
 
 独立子域：
@@ -66,6 +92,7 @@ sudo PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
 - `server_name relayhub.jingshu.cc`
 - `location /` 使用 `root /var/www/relayhub.jingshu.cc`
 - 子路由刷新时 fallback 到 `/index.html`
+- `location /api/control-plane/` 反代到本机 `relayhub-control-plane`
 - `location = /api` 与 `location /api/` 保留 disabled guard，直到真实 upstream 提供
 
 兼容子路径：
@@ -77,6 +104,24 @@ sudo PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
 - `location /api/` 反代到真实 Providers readonly upstream
 
 参考：`relayhub-console.nginx.conf.example`
+
+## 5.1 control-plane 同源 API
+
+`/api/control-plane/*` 固定承接 RelayHub 自己的可写 API：
+
+- `GET /api/control-plane/health`
+- `GET /api/control-plane/overview`
+- `GET/POST/PATCH/DELETE /api/control-plane/models`
+- `POST /api/control-plane/models/:id/test`
+- `GET/POST/PATCH/DELETE /api/control-plane/tasks`
+- `GET/POST /api/control-plane/runs`
+- `GET /api/control-plane/tasks/:id/stats`
+
+当前口径：
+
+- nginx 去掉 `/api/control-plane` 前缀后，再转给本机 `127.0.0.1:<PORT>`
+- `control-plane` 继续消费自身已有 `/models`、`/tasks`、`/runs`、`/overview` 路径
+- `/api/control-plane/*` 与 `/api/models` 等 readonly 代理不混用
 
 ## 5.1 Providers readonly upstream
 
@@ -107,6 +152,14 @@ sudo UPSTREAM_BASE_URL=https://<readonly-upstream> \
 curl -k -I https://relayhub.jingshu.cc/api/models
 ```
 
+control-plane 安装后验证：
+
+```bash
+curl http://127.0.0.1:4318/health
+curl -k https://relayhub.jingshu.cc/api/control-plane/health
+curl -k https://relayhub.jingshu.cc/api/control-plane/models
+```
+
 ## 6. 当前 release 实装记录
 
 截至 `2026-04-18`，release 节点已经安装：
@@ -127,6 +180,8 @@ curl -k -I https://relayhub.jingshu.cc/api/models
 尚未安装：
 
 - `/api` 真实 readonly upstream 反代认证
+- `/api/control-plane` 真实 control-plane 反代
+- `relayhub-control-plane` systemd 服务
 - 原因：真实 upstream 与 token 注入策略在上一阶段尚未收口
 - release 当前已安装 disabled guard，`/api/*` 在 upstream 未配置前返回 `503`，避免误落到主站 HTML
 
@@ -152,4 +207,11 @@ sudo mv /var/www/web.jingshu.cc/relayhub.previous /var/www/web.jingshu.cc/relayh
 sudo cp /etc/nginx/sites-available/ai-mandala.relayhub-backup-20260418-044113 /etc/nginx/sites-available/ai-mandala
 sudo nginx -t
 sudo systemctl reload nginx
+```
+
+control-plane 服务：
+
+```bash
+sudo systemctl restart relayhub-control-plane
+sudo systemctl status relayhub-control-plane --no-pager
 ```

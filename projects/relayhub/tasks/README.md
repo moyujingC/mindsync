@@ -13,3 +13,5 @@
 - [2026-04-16-v1-最小立项与实现准备任务.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
 - [2026-04-16-v1-控制台静态壳与核心页面实施任务.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-控制台静态壳与核心页面实施任务.md)
 - [2026-04-18-v1-使用场景与用户旅程收束实施任务.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-18-v1-使用场景与用户旅程收束实施任务.md)
+- [2026-04-19-v1-治理控制台下的模型库与任务闭环实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-治理控制台下的模型库与任务闭环实施任务.md)
+- [2026-04-19-v1-control-plane-release-实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-control-plane-release-实施任务.md)
