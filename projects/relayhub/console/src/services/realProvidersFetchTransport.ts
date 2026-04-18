@@ -23,6 +23,7 @@ export interface ProvidersReadonlyTransportConfig {
   fetchImpl: ProvidersFetchLike;
   defaultHeaders?: Record<string, string>;
   authHeadersResolver?: ProvidersAuthHeaderResolver;
+  wireContract?: "providers" | "openai-models";
 }
 
 // Transport error contract:

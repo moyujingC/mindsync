@@ -74,3 +74,28 @@ export function createProvidersReadonlyJsonResponse(status: number, payload: unk
     json: async () => payload,
   };
 }
+
+export function createOpenAICompatibleModelWireRecord(
+  overrides: Record<string, unknown> = {},
+) {
+  return {
+    id: "gpt-5.3-codex",
+    object: "model",
+    created: 1677649963,
+    owned_by: "gpt-5.3-codex",
+    root: "gpt-5.3-codex",
+    parent: null,
+    ...overrides,
+  };
+}
+
+export function createOpenAICompatibleModelsListPayload(
+  overrides: Record<string, unknown> = {},
+) {
+  return {
+    object: "list",
+    success: true,
+    data: [createOpenAICompatibleModelWireRecord()],
+    ...overrides,
+  };
+}

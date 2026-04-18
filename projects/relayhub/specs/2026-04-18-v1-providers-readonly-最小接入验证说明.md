@@ -10,7 +10,7 @@
 
 ## 1. 目标
 
-在不接真实内网地址、真实认证和默认启动切换的前提下，为 Providers readonly real-fetch 补一轮最小接入验证说明。
+在不接真实内网地址治理、真实认证治理和默认启动切换的前提下，为 Providers readonly real-fetch 补一轮最小接入验证说明。
 
 本轮只验证三件事：
 
@@ -56,7 +56,9 @@
 
 services 层继续作为 runtime config source 的推荐入口，但本轮最小接入验证以 deployment/browser 显式入口为主。
 
-## 3. 默认 contract 样例
+## 3. contract 样例
+
+### 3.1 providers
 
 Collection success：
 
@@ -87,15 +89,34 @@ Transport error：
 - `404 + null` 由 datasource 映射为 `not-found`
 - 非 `404` 非 `2xx` 继续向上抛
 
+### 3.2 openai-models
+
+Collection success：
+
+```ts
+{ data: [{ id: "gpt-5.3-codex" }] }
+```
+
+Collection empty：
+
+```ts
+{ data: [] }
+```
+
+Detail 由 collection 结果按 `id` 派生，不额外要求 `/models/:id`。
+
 ## 4. 最小验证步骤
 
 调用方在真实后端接入前，至少应完成：
 
 1. 用本地 fake `fetchImpl`、`browserFetch` 或 `browserFetchSource` 返回上述默认 contract。
-2. 验证 collection path 为 `/providers`，detail path 为 `/providers/:id`。
+2. 验证 collection/detail path 符合当前 wire contract：
+   - `providers` -> `/providers` 与 `/providers/:id`
+   - `openai-models` -> `/models`，detail 由 collection 派生
 3. 验证 query 仅承接允许的 filters：`kind` / `environment` / `health` / `transparency`。
 4. 验证 `RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON` 与显式 `authHeadersResolver` 能进入请求。
 5. 验证 detail `404` 映射为 `not-found`，非 `404` 非 `2xx` 向上抛。
+6. 若使用 `openai-models`，验证未命中 model id 时映射为 `not-found`。
 
 ## 5. 不提供
 

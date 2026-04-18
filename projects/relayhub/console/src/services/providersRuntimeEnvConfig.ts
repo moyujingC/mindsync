@@ -13,6 +13,7 @@ export interface ProvidersRuntimeEnv {
   RELAYHUB_PROVIDERS_RUNTIME_MODE?: string;
   RELAYHUB_PROVIDERS_READONLY_BASE_URL?: string;
   RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON?: string;
+  RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT?: string;
 }
 
 // Runtime config governance:
@@ -69,6 +70,9 @@ export function resolveProvidersRuntimeConfigFromEnv(
     baseUrl: env.RELAYHUB_PROVIDERS_READONLY_BASE_URL,
     fetchImpl,
     ...(defaultHeaders ? { defaultHeaders } : {}),
+    ...(env.RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT === "openai-models"
+      ? { wireContract: "openai-models" as const }
+      : {}),
     ...(authHeadersResolver ? { authHeadersResolver } : {}),
   };
 }

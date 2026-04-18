@@ -3,9 +3,15 @@ set -euo pipefail
 
 NGINX_SITE=${NGINX_SITE:-/etc/nginx/sites-available/ai-mandala}
 UPSTREAM_BASE_URL=${UPSTREAM_BASE_URL:-}
+UPSTREAM_AUTHORIZATION_BEARER=${UPSTREAM_AUTHORIZATION_BEARER:-}
 
 if [ -z "$UPSTREAM_BASE_URL" ]; then
   echo "UPSTREAM_BASE_URL is required, for example: https://readonly.example.internal" >&2
+  exit 1
+fi
+
+if [ -z "$UPSTREAM_AUTHORIZATION_BEARER" ]; then
+  echo "UPSTREAM_AUTHORIZATION_BEARER is required for authenticated upstreams" >&2
   exit 1
 fi
 
@@ -14,13 +20,14 @@ BACKUP_PATH="${NGINX_SITE}.relayhub-api-backup-$(date +%Y%m%d-%H%M%S)"
 
 sudo cp "$NGINX_SITE" "$BACKUP_PATH"
 
-python3 - "$NGINX_SITE" "$UPSTREAM_BASE_URL" <<'PY' > /tmp/relayhub-api-nginx-site
+python3 - "$NGINX_SITE" "$UPSTREAM_BASE_URL" "$UPSTREAM_AUTHORIZATION_BEARER" <<'PY' > /tmp/relayhub-api-nginx-site
 from pathlib import Path
 import re
 import sys
 
 site_path = Path(sys.argv[1])
 upstream = sys.argv[2]
+bearer = sys.argv[3]
 text = site_path.read_text()
 
 block = f"""
@@ -35,6 +42,7 @@ block = f"""
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Authorization "Bearer {bearer}";
     }}
 """
 

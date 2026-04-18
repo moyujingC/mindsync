@@ -16,7 +16,7 @@
 
 ## 2. 本地验证结果
 
-- `npm test` 通过：`317 passed`
+- `npm test` 通过：`325 passed`
 - `npm run build` 通过：默认 mock 构建成功
 - `npm run build:trial` 通过：trial 构建成功，部署入口收口为 `dist/index.html`
 - 新增 basename 测试，确认 `/relayhub/providers` 与 `/relayhub/providers/:id` 在子路径路由下可匹配
@@ -43,7 +43,7 @@ HTTP 验证：
 - 证书路径：`/etc/letsencrypt/live/relayhub.jingshu.cc/fullchain.pem`
 - `https://relayhub.jingshu.cc/` 返回 `200`
 - `https://relayhub.jingshu.cc/providers` 返回 `200`
-- `https://relayhub.jingshu.cc/relayhub-api/providers` 返回 `503`
+- `https://relayhub.jingshu.cc/relayhub-api/models` 返回 `200`
 - `http://relayhub.jingshu.cc/` 返回 `301` 重定向到 HTTPS
 - `https://web.jingshu.cc/relayhub/` 返回 `200`
 - `https://web.jingshu.cc/relayhub/providers` 返回 `200`
@@ -52,10 +52,14 @@ HTTP 验证：
 
 浏览器验证：
 
-- Playwright 打开 `https://web.jingshu.cc/relayhub/providers`
+- Playwright 打开 `https://relayhub.jingshu.cc/providers`
 - 页面标题为 `RelayHub Console Trial`
-- Providers 页面正常渲染
-- 页面内导航链接均带 `/relayhub` 前缀
+- Providers 页面已显示真实 model-derived 列表：
+  - `gpt-5`
+  - `gpt-5.3-codex`
+  - `gpt-5.4-mini`
+- `https://relayhub.jingshu.cc/providers/gpt-5` 已显示真实 model-derived detail
+- 兼容入口 `https://web.jingshu.cc/relayhub/providers` 仍可访问
 
 ## 4. 误导表达搜索
 
@@ -70,19 +74,24 @@ rg -n "保存策略|立即切流|发布到生产|启用自动路由|编辑生产
 - 命中均位于“不提供 / 禁止 / QA检查项 / 验证记录”语境
 - 未发现新增可执行控制动作文案
 
-## 5. `/relayhub-api` 接入准备
+## 5. `/relayhub-api` 接入结果
 
-- Git 推送已完成：`4a8e0afe` 已推送到 `origin/codex/relayhub-readonly-trial`
+- Git 推送已完成：既有 release trial 分支已推送
 - 已补充 `/relayhub-api` nginx 反代样例与参数化安装脚本
-- release 线上 nginx 已安装 `/relayhub-api` disabled guard
-- 阻塞原因：真实 `UPSTREAM_BASE_URL` 尚未提供，不能把占位 upstream 写入生效配置
-- 当前 trial 构建推荐配置已收敛为 `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
-- 当前 `https://web.jingshu.cc/relayhub-api/providers` 返回 `503`，避免误落到主站 HTML 造成 API 可用假阳性
-- 子域切换后，`https://relayhub.jingshu.cc/relayhub-api/providers` 在 upstream 未配置前继续返回 `503`
+- release 线上 nginx 已切换为同源反代：
+  - upstream：`https://code.ppchat.vip/v1/`
+  - 固定认证头：`Authorization: Bearer <release-only token>`
+- 当前 trial 构建已收敛为：
+  - `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
+  - `RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models`
+- 当前主验证路径为：
+  - `https://relayhub.jingshu.cc/relayhub-api/models`
+  - `https://relayhub.jingshu.cc/providers`
+  - `https://relayhub.jingshu.cc/providers/gpt-5`
 
 本轮接入准备验证：
 
-- `npm test` 通过：`317 passed`
+- `npm test` 通过：`325 passed`
 - `npm run build` 通过
-- `RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api npm run build:trial` 通过
+- `RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models npm run build:trial` 通过
 - 误导表达全文搜索完成，命中仍位于“不提供 / 禁止 / QA检查项 / 验证记录”语境

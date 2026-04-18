@@ -38,6 +38,7 @@
 ```bash
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch
 RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api
+RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models
 ```
 
 子域当前已在 release nginx、静态目录与 HTTPS 侧全部就绪：
@@ -46,8 +47,15 @@ RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api
 - `https://relayhub.jingshu.cc/providers`
 - `https://relayhub.jingshu.cc/providers/deepseek-direct`
 
-当前 `https://relayhub.jingshu.cc/relayhub-api/providers` 继续返回 `503` guard，等待真实 upstream 提供后再切换同源反代。
+当前 release 已完成真实只读试点接入：
+
+- `https://relayhub.jingshu.cc/relayhub-api/models` 返回真实模型目录
+- `https://relayhub.jingshu.cc/providers` 显示 model-derived provider 列表
+- `https://relayhub.jingshu.cc/providers/gpt-5` 显示 model-derived provider 详情
 
 ## 5. 后续 handoff
 
-下一步进入最小 readonly real-fetch 接入联调：提供 `UPSTREAM_BASE_URL` 后，执行 `install-relayhub-api-nginx-location.sh` 安装 `/relayhub-api` 反代，再重新执行 trial 构建并同步静态目录。
+下一步进入“真实后端契约对齐后的最小接入验证”延伸阶段：
+
+- 若后续提供真正 `/providers` 目录后端，可继续保留 `openai-models` 作为试用模式
+- 若要引入真实治理元数据，再进入 provider 聚合与指标落位

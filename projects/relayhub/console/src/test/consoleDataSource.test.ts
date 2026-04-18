@@ -125,6 +125,7 @@ import {
   createProvidersReadonlyDetailNotFoundPayload,
   createProvidersReadonlyDetailSuccessPayload,
   createProvidersReadonlyJsonResponse,
+  createOpenAICompatibleModelsListPayload,
   PROVIDERS_READONLY_TRIAL_BASE_URL,
 } from "./providersReadonlyContractFixtures";
 
@@ -251,6 +252,52 @@ describe("console readonly data source", () => {
     });
     expect(requests[0]?.input).toBe(`${PROVIDERS_READONLY_TRIAL_BASE_URL}/providers`);
     expect(requests[1]?.input).toBe(`${PROVIDERS_READONLY_TRIAL_BASE_URL}/providers/${providerId}`);
+  });
+
+  it("supports the openai-models real-fetch smoke path through the recommended deployment env entry", async () => {
+    const requests: Array<{ input: string; headers?: Record<string, string> }> = [];
+    const runtime = bootstrapConsoleDeploymentRuntime({
+      mode: "env",
+      env: {
+        RELAYHUB_PROVIDERS_RUNTIME_MODE: "real-fetch",
+        RELAYHUB_PROVIDERS_READONLY_BASE_URL: PROVIDERS_READONLY_TRIAL_BASE_URL,
+        RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT: "openai-models",
+      },
+      fetchImpl: async (input, init) => {
+        requests.push({
+          input,
+          headers: init?.headers,
+        });
+
+        return createProvidersReadonlyJsonResponse(
+          200,
+          createOpenAICompatibleModelsListPayload({
+            data: [
+              {
+                id: "gpt-5.3-codex",
+                object: "model",
+                created: 1677649963,
+                owned_by: "gpt-5.3-codex",
+                root: "gpt-5.3-codex",
+                parent: null,
+              },
+            ],
+          }),
+        );
+      },
+    });
+
+    const collection = await runtime.dataSource.listProviders();
+    const detail = await runtime.dataSource.getProvider("gpt-5.3-codex");
+    const notFound = await runtime.dataSource.getProvider("missing-model");
+
+    expect(collection.meta.status).toBe("ready");
+    expect(collection.items[0]?.id).toBe("gpt-5.3-codex");
+    expect(detail.item?.id).toBe("gpt-5.3-codex");
+    expect(notFound.item).toBeNull();
+    expect(notFound.meta.status).toBe("not-found");
+    expect(requests).toHaveLength(3);
+    expect(requests.every((request) => request.input.endsWith("/models"))).toBe(true);
   });
 
   it("supports the recommended browser-fetch real-fetch smoke path with default and auth headers", async () => {
@@ -6410,6 +6457,72 @@ describe("console readonly data source", () => {
 
     expect(response.meta.status).toBe("ready");
     expect(response.items[0]?.id).toBe("provider-fetch-helper");
+  });
+
+  it("creates an openai-models datasource from the fetch transport helper", async () => {
+    const datasource = createRealProvidersFetchDataSource({
+      baseUrl: "https://relayhub.internal/api",
+      wireContract: "openai-models",
+      fetchImpl: async () => ({
+        status: 200,
+        json: async () =>
+          createOpenAICompatibleModelsListPayload({
+            data: [
+              {
+                id: "gpt-5.4",
+                object: "model",
+                created: 1677649963,
+                owned_by: "gpt-5.4",
+                root: "gpt-5.4",
+                parent: null,
+              },
+            ],
+          }),
+      }),
+    });
+
+    const listResponse = await datasource.listProviders();
+    const detailResponse = await datasource.getProvider("gpt-5.4");
+    const notFoundResponse = await datasource.getProvider("missing-model");
+
+    expect(listResponse.meta.status).toBe("ready");
+    expect(listResponse.items[0]?.id).toBe("gpt-5.4");
+    expect(detailResponse.item?.id).toBe("gpt-5.4");
+    expect(notFoundResponse.meta.status).toBe("not-found");
+  });
+
+  it("maps openai-models empty list responses into empty providers", async () => {
+    const datasource = createRealProvidersFetchDataSource({
+      baseUrl: "https://relayhub.internal/api",
+      wireContract: "openai-models",
+      fetchImpl: async () => ({
+        status: 200,
+        json: async () =>
+          createOpenAICompatibleModelsListPayload({
+            data: [],
+          }),
+      }),
+    });
+
+    const response = await datasource.listProviders();
+
+    expect(response.meta.status).toBe("empty");
+    expect(response.items).toEqual([]);
+  });
+
+  it("rethrows invalid openai-models payload errors", async () => {
+    const datasource = createRealProvidersFetchDataSource({
+      baseUrl: "https://relayhub.internal/api",
+      wireContract: "openai-models",
+      fetchImpl: async () => ({
+        status: 200,
+        json: async () => ({ items: [] }),
+      }),
+    });
+
+    await expect(datasource.listProviders()).rejects.toThrow(
+      "OpenAI-compatible models wire payload is invalid",
+    );
   });
 
   it("keeps explicit providersSource overrides above the runtime seam default", async () => {

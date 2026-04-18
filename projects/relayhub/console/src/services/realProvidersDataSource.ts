@@ -12,6 +12,11 @@ import type {
 } from "../models/console";
 import type { ConsoleReadonlyDataSource } from "./consoleDataSource";
 import {
+  adaptOpenAICompatibleModelsListWirePayload,
+  filterOpenAICompatibleProviderRecords,
+  mapOpenAICompatibleModelToProviderRecord,
+} from "./openAICompatibleModelsAdapter";
+import {
   adaptProviderDetailWirePayload,
   adaptProvidersCollectionWirePayload,
 } from "./realProvidersAdapter";
@@ -33,6 +38,7 @@ const PROVIDER_ENVIRONMENT_OPTIONS = ["开发版", "心理疗愈生产版", "评
 const PROVIDER_HEALTH_OPTIONS = ["healthy", "degraded", "risk", "idle"] as const;
 const PROVIDER_TRANSPARENCY_OPTIONS: TransparencyState[] = ["完整", "部分缺失", "暂无"];
 const PROVIDERS_BASE_PATH = "/providers";
+const OPENAI_MODELS_BASE_PATH = "/models";
 
 // Default real Providers datasource contract:
 // - collection path is /providers plus sanitized query filters
@@ -94,6 +100,10 @@ export function buildProvidersCollectionPath(filters: ProviderFilterSnapshot = {
 
 export function buildProviderDetailPath(providerId: string): string {
   return `${PROVIDERS_BASE_PATH}/${providerId}`;
+}
+
+export function buildOpenAICompatibleModelsCollectionPath(): string {
+  return OPENAI_MODELS_BASE_PATH;
 }
 
 function createCollectionMeta(
@@ -262,6 +272,52 @@ export const realProvidersReadonlyDataSourceStub = createRealProvidersReadonlyDa
 export function createRealProvidersFetchDataSource(
   config: ProvidersReadonlyTransportConfig,
 ): Pick<ConsoleReadonlyDataSource, "listProviders" | "getProvider"> {
+  if (config.wireContract === "openai-models") {
+    const transport = createRealProvidersFetchTransport(config);
+
+    return {
+      async listProviders(
+        filters: ProviderFilters = {},
+        requestOptions?: MockRequestOptions,
+      ): Promise<ProviderCollectionContract> {
+        const sanitizedFilters = sanitizeProviderFiltersForRequest(filters);
+        const response = await transport({
+          resource: "providers",
+          scope: "collection",
+          path: buildOpenAICompatibleModelsCollectionPath(),
+          filters: sanitizedFilters,
+          forceError: requestOptions?.forceError,
+        });
+        const payload = adaptOpenAICompatibleModelsListWirePayload(response.data);
+        const mappedItems = filterOpenAICompatibleProviderRecords(
+          payload.data.map(mapOpenAICompatibleModelToProviderRecord),
+          sanitizedFilters,
+        );
+
+        return {
+          meta: createCollectionMeta(mappedItems.length > 0 ? "ready" : "empty", sanitizedFilters),
+          items: mappedItems,
+        };
+      },
+
+      async getProvider(id: string, requestOptions?: MockRequestOptions): Promise<ProviderDetailContract> {
+        const response = await transport({
+          resource: "providers",
+          scope: "collection",
+          path: buildOpenAICompatibleModelsCollectionPath(),
+          forceError: requestOptions?.forceError,
+        });
+        const payload = adaptOpenAICompatibleModelsListWirePayload(response.data);
+        const item = payload.data.find((model) => model.id === id);
+
+        return {
+          meta: createDetailMeta(item ? "ready" : "not-found"),
+          item: item ? mapOpenAICompatibleModelToProviderRecord(item) : null,
+        };
+      },
+    };
+  }
+
   return createRealProvidersReadonlyDataSource({
     transport: createRealProvidersFetchTransport(config),
   });

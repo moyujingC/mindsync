@@ -16,6 +16,7 @@ export type ProvidersRuntimeConfig =
       baseUrl: string;
       fetchImpl: ProvidersFetchLike;
       defaultHeaders?: Record<string, string>;
+      wireContract?: "providers" | "openai-models";
     };
 
 type ProvidersRuntimeResolvedConfig =
@@ -26,6 +27,7 @@ type ProvidersRuntimeResolvedConfig =
       fetchImpl: ProvidersFetchLike;
       defaultHeaders?: Record<string, string>;
       authHeadersResolver?: ProvidersAuthHeaderResolver;
+      wireContract?: "providers" | "openai-models";
     };
 
 export function getDefaultProvidersRuntimeConfig(): ProvidersRuntimeConfig {
@@ -47,6 +49,7 @@ function toFetchTransportConfig(
     baseUrl: config.baseUrl,
     fetchImpl: config.fetchImpl,
     ...(config.defaultHeaders ? { defaultHeaders: config.defaultHeaders } : {}),
+    ...(config.wireContract ? { wireContract: config.wireContract } : {}),
     ...(hasAuthHeadersResolver(config) && config.authHeadersResolver
       ? { authHeadersResolver: config.authHeadersResolver }
       : {}),

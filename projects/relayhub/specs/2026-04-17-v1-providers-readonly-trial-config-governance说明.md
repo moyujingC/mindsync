@@ -46,6 +46,7 @@
 可选增强项：
 
 - `RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON`
+- `RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT`
 - 显式 `authHeadersResolver`
 
 不新增：
@@ -62,6 +63,10 @@
 - `mode = "real-fetch"` 但缺少显式 fetch 注入时，默认 mock。
 - `defaultHeaders JSON` 仅接受对象中 string value 的字段。
 - 非法 JSON、数组、空对象或无 string value 的对象会被忽略，不触发异常。
+- `RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT` 当前只接受：
+  - `providers`
+  - `openai-models`
+- 缺失或非法 wire contract 时，继续按默认 `providers` contract 处理。
 - `authHeadersResolver` 只能由调用方显式传入，不从 env 自动读取。
 
 ## 5. compatibility-only 入口

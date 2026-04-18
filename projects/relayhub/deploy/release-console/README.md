@@ -36,6 +36,7 @@ npm ci
 RELAYHUB_CONSOLE_BASE_PATH=/ \
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch \
 RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api \
+RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models \
 npm run build:trial
 ```
 
@@ -79,26 +80,31 @@ sudo PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
 
 ## 5.1 Providers readonly upstream
 
-`/relayhub-api` 必须等真实 upstream URL 明确后再安装，不能把占位符写入正在生效的 nginx 配置。
+`/relayhub-api` 必须等真实 upstream URL 与认证方式明确后再安装，不能把占位符写入正在生效的 nginx 配置。
 
 约定：
 
 - `UPSTREAM_BASE_URL` 不包含最终 `/providers` path
-- upstream collection contract：`GET <UPSTREAM_BASE_URL>/providers -> { items: [...] }`
-- upstream detail contract：`GET <UPSTREAM_BASE_URL>/providers/:id -> { item: {...} }`
-- upstream missing detail：返回 `404` 或 `{ item: null }`
+- `UPSTREAM_AUTHORIZATION_BEARER` 由 release 侧显式注入
+- 若走默认 Providers contract：
+  - upstream collection contract：`GET <UPSTREAM_BASE_URL>/providers -> { items: [...] }`
+  - upstream detail contract：`GET <UPSTREAM_BASE_URL>/providers/:id -> { item: {...} }`
+- 若走 OpenAI-compatible models trial：
+  - upstream collection contract：`GET <UPSTREAM_BASE_URL>/models -> { data: [...] }`
+  - detail 由前端 collection 结果按 `id` 派生，不依赖 `/models/:id`
 
 安装方式：
 
 ```bash
 sudo UPSTREAM_BASE_URL=https://<readonly-upstream> \
+  UPSTREAM_AUTHORIZATION_BEARER=<token> \
   bash install-relayhub-api-nginx-location.sh
 ```
 
 安装后验证：
 
 ```bash
-curl -k -I https://web.jingshu.cc/relayhub-api/providers
+curl -k -I https://relayhub.jingshu.cc/relayhub-api/models
 ```
 
 ## 6. 当前 release 实装记录
@@ -120,8 +126,8 @@ curl -k -I https://web.jingshu.cc/relayhub-api/providers
 
 尚未安装：
 
-- `/relayhub-api` 真实 readonly upstream 反代
-- 原因：`UPSTREAM_BASE_URL` 尚未提供
+- `/relayhub-api` 真实 readonly upstream 反代认证
+- 原因：真实 upstream 与 token 注入策略在上一阶段尚未收口
 - release 当前已安装 disabled guard，`/relayhub-api/*` 在 upstream 未配置前返回 `503`，避免误落到主站 HTML
 
 ## 7. reload 与回滚
