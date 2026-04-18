@@ -51,6 +51,28 @@ class ReportProjectionResolver:
         imbalance_profile: dict[str, str],
         imbalance_projection: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        plan = self.build_runtime_pro_narrative_plan(
+            record,
+            theme_label=theme_label,
+            lite_title=lite_title,
+            imbalance_profile=imbalance_profile,
+            imbalance_projection=imbalance_projection,
+        )
+        if isinstance(plan, dict):
+            legacy_projection = plan.get("legacy_projection")
+            if isinstance(legacy_projection, dict):
+                return legacy_projection
+        return {}
+
+    def build_runtime_pro_narrative_plan(
+        self,
+        record: InterpretationRecord,
+        *,
+        theme_label: str,
+        lite_title: str,
+        imbalance_profile: dict[str, str],
+        imbalance_projection: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         narrative_service = self._get_narrative_service()
         if narrative_service is None:
             return {}
@@ -88,7 +110,7 @@ class ReportProjectionResolver:
         ]
 
         try:
-            projection = narrative_service.build_pro_narrative_projection(
+            plan = narrative_service.build_pro_narrative_plan(
                 theme=self._get_record_theme(record),
                 theme_label=theme_label,
                 lite_title=lite_title,
@@ -128,9 +150,24 @@ class ReportProjectionResolver:
         except Exception:
             return {}
 
-        return projection if isinstance(projection, dict) else {}
+        return plan if isinstance(plan, dict) else {}
 
     def build_runtime_lite_narrative_projection(
+        self,
+        record: InterpretationRecord,
+        theme_label: str,
+    ) -> dict[str, Any]:
+        plan = self.build_runtime_lite_narrative_plan(
+            record,
+            theme_label,
+        )
+        if isinstance(plan, dict):
+            legacy_projection = plan.get("legacy_projection")
+            if isinstance(legacy_projection, dict):
+                return legacy_projection
+        return {}
+
+    def build_runtime_lite_narrative_plan(
         self,
         record: InterpretationRecord,
         theme_label: str,
@@ -151,7 +188,7 @@ class ReportProjectionResolver:
         ]
 
         try:
-            projection = narrative_service.build_lite_narrative_projection(
+            plan = narrative_service.build_lite_narrative_plan(
                 theme=self._get_record_theme(record),
                 theme_label=theme_label,
                 inner_radius=int((record.three_circles or {}).get("inner_radius", 33)),
@@ -199,7 +236,7 @@ class ReportProjectionResolver:
         except Exception:
             return {}
 
-        return projection if isinstance(projection, dict) else {}
+        return plan if isinstance(plan, dict) else {}
 
     def resolve_runtime_lite_projection(
         self,
@@ -247,6 +284,17 @@ class ReportProjectionResolver:
         self,
         record: InterpretationRecord,
     ) -> dict[str, Any]:
+        basis = self.get_runtime_imbalance_narrative_basis(record)
+        if isinstance(basis, dict):
+            projection = basis.get("legacy_projection")
+            if isinstance(projection, dict):
+                return projection
+        return {}
+
+    def get_runtime_imbalance_narrative_basis(
+        self,
+        record: InterpretationRecord,
+    ) -> dict[str, Any]:
         narrative_service = self._get_narrative_service()
         if not narrative_service:
             return {}
@@ -261,13 +309,33 @@ class ReportProjectionResolver:
             return cached
 
         try:
-            result = narrative_service.build_imbalance_projection(
-                theme=theme_key,
-                imbalance_type=imbalance_type,
-                theme_label=theme_label,
-            )
+            if hasattr(narrative_service, "build_imbalance_narrative_basis"):
+                result = narrative_service.build_imbalance_narrative_basis(
+                    theme=theme_key,
+                    imbalance_type=imbalance_type,
+                    theme_label=theme_label,
+                )
+            elif hasattr(narrative_service, "build_imbalance_projection"):
+                legacy_projection = narrative_service.build_imbalance_projection(
+                    theme=theme_key,
+                    imbalance_type=imbalance_type,
+                    theme_label=theme_label,
+                )
+                result = {
+                    "mode": "imbalance_basis",
+                    "generation_mode": "compatibility",
+                    "theme": theme_key,
+                    "theme_label": theme_label,
+                    "imbalance_type": imbalance_type,
+                    "sections": {},
+                    "legacy_projection": (
+                        legacy_projection if isinstance(legacy_projection, dict) else {}
+                    ),
+                }
+            else:
+                result = {}
         except Exception:
             result = {}
-        projection = result if isinstance(result, dict) else {}
-        self._imbalance_projection_cache[cache_key] = projection
-        return projection
+        basis = result if isinstance(result, dict) else {}
+        self._imbalance_projection_cache[cache_key] = basis
+        return basis

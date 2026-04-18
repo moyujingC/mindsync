@@ -231,6 +231,392 @@ class NarrativeContextService:
     def clean_text_block(self, content: str) -> str:
         return self._clean_text_block(content)
 
+    def build_imbalance_narrative_basis(
+        self,
+        *,
+        theme: str,
+        imbalance_type: str,
+        theme_label: str = "",
+    ) -> dict[str, Any]:
+        legacy_projection = self._build_imbalance_projection_payload(
+            theme=theme,
+            imbalance_type=imbalance_type,
+            theme_label=theme_label,
+        )
+        if not legacy_projection:
+            return {}
+
+        resolved_theme = theme or "general"
+        resolved_theme_label = (
+            theme_label
+            or self.get_theme_label(resolved_theme, fallback_label=resolved_theme)
+        )
+        rule_ref = f"rule:imbalance:{imbalance_type}"
+        theme_ref = f"theme:{resolved_theme}"
+
+        return {
+            "mode": "imbalance_basis",
+            "generation_mode": "evidence_first",
+            "theme": resolved_theme,
+            "theme_label": resolved_theme_label,
+            "imbalance_type": imbalance_type,
+            "sections": {
+                "summary": self._make_text_section(
+                    (
+                        f"在{resolved_theme_label}主题下，{legacy_projection.get('summary', '')}"
+                        if legacy_projection.get("summary")
+                        else ""
+                    ),
+                    knowledge_hit_refs=[theme_ref],
+                    rule_refs=[rule_ref],
+                    theme_projection_refs=[f"theme_label:{resolved_theme_label}"],
+                ),
+                "evidence": self._make_text_section(
+                    legacy_projection.get("evidence", ""),
+                    knowledge_hit_refs=[theme_ref],
+                    rule_refs=[rule_ref],
+                    theme_projection_refs=[f"theme_label:{resolved_theme_label}"],
+                ),
+                "block_point": self._make_text_section(
+                    legacy_projection.get("block_point", ""),
+                    knowledge_hit_refs=[theme_ref],
+                    rule_refs=[rule_ref],
+                ),
+                "direction": self._make_text_section(
+                    legacy_projection.get("direction", ""),
+                    knowledge_hit_refs=[theme_ref],
+                    rule_refs=[rule_ref],
+                ),
+                "healing_core": self._make_text_section(
+                    legacy_projection.get("healing_core", ""),
+                    knowledge_hit_refs=[theme_ref, f"healing:{imbalance_type}"],
+                    rule_refs=[rule_ref],
+                ),
+                "deeper_root": self._make_text_section(
+                    legacy_projection.get("deeper_root", ""),
+                    knowledge_hit_refs=[theme_ref],
+                    rule_refs=[rule_ref],
+                ),
+                "core_root": self._make_text_section(
+                    legacy_projection.get("core_root", ""),
+                    knowledge_hit_refs=[theme_ref, f"healing:{imbalance_type}"],
+                    rule_refs=[rule_ref],
+                ),
+            },
+            "legacy_projection": legacy_projection,
+        }
+
+    def build_lite_narrative_plan(
+        self,
+        *,
+        theme: str,
+        theme_label: str = "",
+        inner_radius: int = 33,
+        middle_radius: int = 66,
+        title_templates: dict[str, str] | None = None,
+        six_insight_templates: dict[str, dict[str, str]] | None = None,
+        experiment_title: str = "",
+        experiment_content: str = "",
+        dominant_element: str = "",
+        dominant_percentage: float = 0.0,
+        secondary_element: str = "",
+        secondary_percentage: float = 0.0,
+        weakest_element: str = "",
+        weakest_percentage: float = 0.0,
+        inner_dominant: str = "",
+        middle_dominant: str = "",
+        outer_dominant: str = "",
+        circle_pattern: str = "",
+        circle_readings: list[str] | None = None,
+        transition: str = "",
+        adjacent: list[str] | None = None,
+        signal: str = "",
+        feeling_hint: str = "",
+        default_pro_teaser: str = "",
+    ) -> dict[str, Any]:
+        legacy_projection = self._build_lite_projection_payload(
+            theme=theme,
+            theme_label=theme_label,
+            inner_radius=inner_radius,
+            middle_radius=middle_radius,
+            title_templates=title_templates,
+            six_insight_templates=six_insight_templates,
+            experiment_title=experiment_title,
+            experiment_content=experiment_content,
+            dominant_element=dominant_element,
+            dominant_percentage=dominant_percentage,
+            secondary_element=secondary_element,
+            secondary_percentage=secondary_percentage,
+            weakest_element=weakest_element,
+            weakest_percentage=weakest_percentage,
+            inner_dominant=inner_dominant,
+            middle_dominant=middle_dominant,
+            outer_dominant=outer_dominant,
+            circle_pattern=circle_pattern,
+            circle_readings=circle_readings,
+            transition=transition,
+            adjacent=adjacent,
+            signal=signal,
+            feeling_hint=feeling_hint,
+            default_pro_teaser=default_pro_teaser,
+        )
+        if not legacy_projection:
+            return {}
+
+        resolved_theme = theme or "general"
+        resolved_theme_label = (
+            theme_label
+            or self.get_theme_label(resolved_theme, fallback_label=resolved_theme)
+        )
+        signal_ref = f"signal:{signal}" if signal else ""
+        visual_refs = [
+            ref
+            for ref in [
+                f"dominant:{dominant_element}" if dominant_element else "",
+                f"secondary:{secondary_element}" if secondary_element else "",
+                f"inner:{inner_dominant}" if inner_dominant else "",
+                f"middle:{middle_dominant}" if middle_dominant else "",
+                f"outer:{outer_dominant}" if outer_dominant else "",
+            ]
+            if ref
+        ]
+        story_sections = legacy_projection.get("story_sections", {})
+        theme_insights = legacy_projection.get("theme_insights", {})
+        lite_healing_guidance = {
+            "directions": self._build_lite_directions(
+                theme_insights=theme_insights,
+                signal_text=self._describe_signal(signal),
+            ),
+            "micro_practices": self._build_lite_micro_practices(
+                legacy_projection.get("three_awareness", []),
+                legacy_projection.get("experiment", {}),
+            ),
+        }
+        pro_report_entry = {
+            "title": "另一份更深的独立报告",
+            "summary": (
+                "如果你希望从更深层结构继续理解这张画，"
+                "Pro 会提供更完整的结构、根因与疗愈视角。"
+            ),
+            "product_note": "这是独立购买的深度报告，不是 Lite 的补全版。",
+        }
+
+        return {
+            "mode": "lite",
+            "generation_mode": "evidence_first",
+            "theme": resolved_theme,
+            "theme_label": resolved_theme_label,
+            "evidence_trace_summary": {
+                "visual_fact_refs": visual_refs,
+                "knowledge_hit_refs": [f"theme:{resolved_theme}"],
+                "rule_refs": [signal_ref] if signal_ref else [],
+                "theme_projection_refs": [f"theme_label:{resolved_theme_label}"],
+                "fidelity_flags": [],
+                "fallback_summary": {"used": False, "levels": [], "warnings": []},
+            },
+            "sections": {
+                "title": self._make_text_section(
+                    legacy_projection.get("title", ""),
+                    visual_fact_refs=visual_refs[:1],
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    theme_projection_refs=[f"theme_label:{resolved_theme_label}"],
+                ),
+                "overall_impression": self._make_text_section(
+                    legacy_projection.get("overall_impression", ""),
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "visual_elements": self._make_text_section(
+                    legacy_projection.get("visual_elements", ""),
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[
+                        f"circle:{inner_dominant}" if inner_dominant else "",
+                        f"circle:{middle_dominant}" if middle_dominant else "",
+                        f"circle:{outer_dominant}" if outer_dominant else "",
+                    ],
+                ),
+                "emotion_portrait": self._make_text_section(
+                    legacy_projection.get("emotion_portrait", ""),
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "story_sections": self._make_mapping_section(
+                    story_sections,
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "theme_insights": self._make_mapping_section(
+                    theme_insights,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                    theme_projection_refs=[f"theme_label:{resolved_theme_label}"],
+                ),
+                "lite_healing_guidance": self._make_typed_section(
+                    lite_healing_guidance,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}", f"healing:{signal}" if signal else ""],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "pro_report_entry": self._make_typed_section(
+                    pro_report_entry,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}", "product:pro"],
+                    theme_projection_refs=[f"theme_label:{resolved_theme_label}"],
+                ),
+            },
+            "legacy_projection": legacy_projection,
+        }
+
+    def build_pro_narrative_plan(
+        self,
+        *,
+        theme: str,
+        theme_label: str = "",
+        lite_title: str = "",
+        lite_contradiction: str = "",
+        lite_block: str = "",
+        intention: str = "",
+        feeling_hint: str = "",
+        dominant_element: str = "",
+        dominant_percentage: float = 0.0,
+        secondary_element: str = "",
+        secondary_percentage: float = 0.0,
+        weakest_element: str = "",
+        weakest_percentage: float = 0.0,
+        signal: str = "",
+        primary_imbalance: str = "",
+        transition: str = "",
+        circles: dict[str, dict[str, Any]] | None = None,
+        adjacent: list[str] | None = None,
+        wrap: list[str] | None = None,
+        narrative_templates: dict[str, str] | None = None,
+        structure_labels: dict[str, str] | None = None,
+        circle_fallbacks: dict[str, str] | None = None,
+        imbalance_projection: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        legacy_projection = self._build_pro_projection_payload(
+            theme=theme,
+            theme_label=theme_label,
+            lite_title=lite_title,
+            lite_contradiction=lite_contradiction,
+            lite_block=lite_block,
+            intention=intention,
+            feeling_hint=feeling_hint,
+            dominant_element=dominant_element,
+            dominant_percentage=dominant_percentage,
+            secondary_element=secondary_element,
+            secondary_percentage=secondary_percentage,
+            weakest_element=weakest_element,
+            weakest_percentage=weakest_percentage,
+            signal=signal,
+            primary_imbalance=primary_imbalance,
+            transition=transition,
+            circles=circles,
+            adjacent=adjacent,
+            wrap=wrap,
+            narrative_templates=narrative_templates,
+            structure_labels=structure_labels,
+            circle_fallbacks=circle_fallbacks,
+            imbalance_projection=imbalance_projection,
+        )
+        if not legacy_projection:
+            return {}
+
+        resolved_theme = theme or "general"
+        resolved_theme_label = (
+            theme_label
+            or self.get_theme_label(resolved_theme, fallback_label=resolved_theme)
+        )
+        signal_ref = f"signal:{signal}" if signal else ""
+        visual_refs = [
+            ref
+            for ref in [
+                f"dominant:{dominant_element}" if dominant_element else "",
+                f"secondary:{secondary_element}" if secondary_element else "",
+                f"weakest:{weakest_element}" if weakest_element else "",
+            ]
+            if ref
+        ]
+        healing_suggestions = self._build_pro_healing_suggestion_summary(
+            legacy_projection,
+            primary_imbalance=primary_imbalance,
+            signal=signal,
+            theme_label=resolved_theme_label,
+        )
+
+        return {
+            "mode": "pro",
+            "generation_mode": "evidence_first",
+            "theme": resolved_theme,
+            "theme_label": resolved_theme_label,
+            "evidence_trace_summary": {
+                "visual_fact_refs": visual_refs,
+                "knowledge_hit_refs": [f"theme:{resolved_theme}"],
+                "rule_refs": [signal_ref] if signal_ref else [],
+                "theme_projection_refs": [f"theme_label:{resolved_theme_label}"],
+                "fidelity_flags": [],
+                "fallback_summary": {"used": False, "levels": [], "warnings": []},
+            },
+            "sections": {
+                "first_impression": self._make_text_section(
+                    legacy_projection.get("first_impression", ""),
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "core_insight_table": self._make_typed_section(
+                    {
+                        "能量本质": legacy_projection.get("energy_essence", ""),
+                        "核心失衡": legacy_projection.get("block_point", ""),
+                        "关键卡点": legacy_projection.get("block_point", ""),
+                        "转化方向": legacy_projection.get("direction", ""),
+                        "疗愈核心": legacy_projection.get("healing_core", ""),
+                    },
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "block_point": self._make_text_section(
+                    legacy_projection.get("block_point", ""),
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "three_circles_detailed": self._make_typed_section(
+                    legacy_projection.get("circle_readings", {}),
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                ),
+                "micro_analysis_detailed": self._make_typed_section(
+                    legacy_projection.get("micro_sections", {}),
+                    visual_fact_refs=visual_refs,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "imbalance_confirmed": self._make_typed_section(
+                    self._build_pro_imbalance_confirmed_summary(
+                        legacy_projection,
+                        primary_imbalance=primary_imbalance,
+                        signal=signal,
+                    ),
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "root_cause": self._make_typed_section(
+                    legacy_projection.get("root_cause", {}),
+                    knowledge_hit_refs=[f"theme:{resolved_theme}"],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+                "healing_suggestions": self._make_typed_section(
+                    healing_suggestions,
+                    knowledge_hit_refs=[f"theme:{resolved_theme}", f"healing:{signal}" if signal else ""],
+                    rule_refs=[signal_ref] if signal_ref else [],
+                ),
+            },
+            "legacy_projection": legacy_projection,
+        }
+
     def build_imbalance_projection(
         self,
         *,
@@ -238,102 +624,78 @@ class NarrativeContextService:
         imbalance_type: str,
         theme_label: str = "",
     ) -> dict[str, Any]:
-        if not imbalance_type:
-            return {}
-
-        theme_summary = self.theme_service.get_theme_summary(theme)
-        resolved_theme_label = (
-            theme_label
-            or str(theme_summary.get("name") or "").strip()
-            or theme
-            or "当前主题"
+        basis = self.build_imbalance_narrative_basis(
+            theme=theme,
+            imbalance_type=imbalance_type,
+            theme_label=theme_label,
         )
-        mapping_result = self.imbalance_service.get_theme_mapping(theme, imbalance_type)
-        mapping = mapping_result.value if isinstance(mapping_result.value, dict) else {}
-        imbalance_result = self.imbalance_service.get_imbalance_detail(imbalance_type)
-        imbalance = imbalance_result.value if isinstance(imbalance_result.value, dict) else {}
-        healing_result = self.healing_service.get_healing_plan(imbalance_type, theme)
-        healing = healing_result.value if isinstance(healing_result.value, dict) else {}
-
-        contradiction = str(mapping.get("核心矛盾") or "").strip()
-        manifestation = str(mapping.get("具体表现") or imbalance.get("description") or "").strip()
-        direction = str(mapping.get("转变方向") or "").strip()
-        category = str(imbalance.get("category") or "").strip()
-        display_imbalance = self._get_signal_label(imbalance_type) or imbalance_type
-        issue_type = str(healing.get("issue_type") or "").strip()
-        cognitive_upgrade = str(healing.get("cognitive_upgrade") or "").strip()
-        healing_direction = str(imbalance.get("healing_direction") or "").strip()
-        warning = str(imbalance.get("warning") or "").strip()
-        manifestations = imbalance.get("manifestations") or []
-        psychology = "、".join(
-            str(item).strip()
-            for item in manifestations
-            if isinstance(item, str) and str(item).strip()
+        return (
+            basis.get("legacy_projection", {})
+            if isinstance(basis, dict)
+            else {}
         )
-
-        summary_parts = [f"当前更接近的核心失衡是「{display_imbalance}」"]
-        if category:
-            summary_parts.append(f"（{category}）")
-        if contradiction:
-            summary_parts.append(f"：{contradiction}")
-        elif manifestation:
-            summary_parts.append(f"：{manifestation}")
-        summary = "".join(summary_parts).strip()
-        if summary and summary[-1] not in "。！？":
-            summary += "。"
-
-        evidence_parts: list[str] = []
-        if manifestation:
-            evidence_parts.append(f"在{resolved_theme_label}主题里，它更容易表现成：{manifestation}。")
-        if direction:
-            evidence_parts.append(f"当前更适合的转向是：{direction}。")
-        if warning:
-            evidence_parts.append(warning)
-
-        block_parts: list[str] = []
-        if contradiction:
-            block_parts.append(f"当前更核心的卡点，其实是「{contradiction}」。")
-        if manifestation:
-            block_parts.append(manifestation.rstrip("。") + "。")
-
-        direction_text = direction
-        healing_parts: list[str] = []
-        if issue_type and cognitive_upgrade:
-            healing_parts.append(f"围绕「{issue_type}」真正要慢慢建立的新体验是：{cognitive_upgrade}。")
-        elif cognitive_upgrade:
-            healing_parts.append(cognitive_upgrade.rstrip("。") + "。")
-        if healing_direction:
-            healing_parts.append(f"当前调节方向更接近：{healing_direction}。")
-        if warning:
-            healing_parts.append(warning)
-
-        deeper_root = ""
-        if manifestation:
-            deeper_root = f"更深一层看，这更接近「{display_imbalance}」的模式：{manifestation}。"
-            if psychology:
-                deeper_root += f" 它常会让人落进「{psychology}」这样的内在循环。"
-
-        core_root = ""
-        if issue_type and cognitive_upgrade:
-            core_root = f"更深层的位置，是你正在重新学习：在「{issue_type}」这里，{cognitive_upgrade}"
-        elif cognitive_upgrade:
-            core_root = f"更深层的位置，是你正在重新学习：{cognitive_upgrade}"
-
-        return {
-            "imbalance_type": imbalance_type,
-            "summary": summary,
-            "evidence": " ".join(part for part in evidence_parts if part).strip(),
-            "block_point": " ".join(part for part in block_parts if part).strip(),
-            "direction": direction_text,
-            "healing_core": " ".join(part for part in healing_parts if part).strip(),
-            "deeper_root": deeper_root,
-            "core_root": core_root,
-            "manifestation": manifestation,
-            "contradiction": contradiction,
-            "issue_type": issue_type,
-        }
 
     def build_lite_narrative_projection(
+        self,
+        *,
+        theme: str,
+        theme_label: str = "",
+        inner_radius: int = 33,
+        middle_radius: int = 66,
+        title_templates: dict[str, str] | None = None,
+        six_insight_templates: dict[str, dict[str, str]] | None = None,
+        experiment_title: str = "",
+        experiment_content: str = "",
+        dominant_element: str = "",
+        dominant_percentage: float = 0.0,
+        secondary_element: str = "",
+        secondary_percentage: float = 0.0,
+        weakest_element: str = "",
+        weakest_percentage: float = 0.0,
+        inner_dominant: str = "",
+        middle_dominant: str = "",
+        outer_dominant: str = "",
+        circle_pattern: str = "",
+        circle_readings: list[str] | None = None,
+        transition: str = "",
+        adjacent: list[str] | None = None,
+        signal: str = "",
+        feeling_hint: str = "",
+        default_pro_teaser: str = "",
+    ) -> dict[str, Any]:
+        plan = self.build_lite_narrative_plan(
+            theme=theme,
+            theme_label=theme_label,
+            inner_radius=inner_radius,
+            middle_radius=middle_radius,
+            title_templates=title_templates,
+            six_insight_templates=six_insight_templates,
+            experiment_title=experiment_title,
+            experiment_content=experiment_content,
+            dominant_element=dominant_element,
+            dominant_percentage=dominant_percentage,
+            secondary_element=secondary_element,
+            secondary_percentage=secondary_percentage,
+            weakest_element=weakest_element,
+            weakest_percentage=weakest_percentage,
+            inner_dominant=inner_dominant,
+            middle_dominant=middle_dominant,
+            outer_dominant=outer_dominant,
+            circle_pattern=circle_pattern,
+            circle_readings=circle_readings,
+            transition=transition,
+            adjacent=adjacent,
+            signal=signal,
+            feeling_hint=feeling_hint,
+            default_pro_teaser=default_pro_teaser,
+        )
+        return (
+            plan.get("legacy_projection", {})
+            if isinstance(plan, dict)
+            else {}
+        )
+
+    def _build_lite_projection_payload(
         self,
         *,
         theme: str,
@@ -584,6 +946,64 @@ class NarrativeContextService:
         circle_fallbacks: dict[str, str] | None = None,
         imbalance_projection: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        plan = self.build_pro_narrative_plan(
+            theme=theme,
+            theme_label=theme_label,
+            lite_title=lite_title,
+            lite_contradiction=lite_contradiction,
+            lite_block=lite_block,
+            intention=intention,
+            feeling_hint=feeling_hint,
+            dominant_element=dominant_element,
+            dominant_percentage=dominant_percentage,
+            secondary_element=secondary_element,
+            secondary_percentage=secondary_percentage,
+            weakest_element=weakest_element,
+            weakest_percentage=weakest_percentage,
+            signal=signal,
+            primary_imbalance=primary_imbalance,
+            transition=transition,
+            circles=circles,
+            adjacent=adjacent,
+            wrap=wrap,
+            narrative_templates=narrative_templates,
+            structure_labels=structure_labels,
+            circle_fallbacks=circle_fallbacks,
+            imbalance_projection=imbalance_projection,
+        )
+        return (
+            plan.get("legacy_projection", {})
+            if isinstance(plan, dict)
+            else {}
+        )
+
+    def _build_pro_projection_payload(
+        self,
+        *,
+        theme: str,
+        theme_label: str = "",
+        lite_title: str = "",
+        lite_contradiction: str = "",
+        lite_block: str = "",
+        intention: str = "",
+        feeling_hint: str = "",
+        dominant_element: str = "",
+        dominant_percentage: float = 0.0,
+        secondary_element: str = "",
+        secondary_percentage: float = 0.0,
+        weakest_element: str = "",
+        weakest_percentage: float = 0.0,
+        signal: str = "",
+        primary_imbalance: str = "",
+        transition: str = "",
+        circles: dict[str, dict[str, Any]] | None = None,
+        adjacent: list[str] | None = None,
+        wrap: list[str] | None = None,
+        narrative_templates: dict[str, str] | None = None,
+        structure_labels: dict[str, str] | None = None,
+        circle_fallbacks: dict[str, str] | None = None,
+        imbalance_projection: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         resolved_theme = theme or "general"
         theme_summary = self.theme_service.get_theme_summary(resolved_theme)
         resolved_theme_label = (
@@ -768,6 +1188,108 @@ class NarrativeContextService:
                 "core": mapped_core_root
                 or str(templates.get("root_core") or "").strip(),
             },
+        }
+
+    def _build_imbalance_projection_payload(
+        self,
+        *,
+        theme: str,
+        imbalance_type: str,
+        theme_label: str = "",
+    ) -> dict[str, Any]:
+        if not imbalance_type:
+            return {}
+
+        theme_summary = self.theme_service.get_theme_summary(theme)
+        resolved_theme_label = (
+            theme_label
+            or str(theme_summary.get("name") or "").strip()
+            or theme
+            or "当前主题"
+        )
+        mapping_result = self.imbalance_service.get_theme_mapping(theme, imbalance_type)
+        mapping = mapping_result.value if isinstance(mapping_result.value, dict) else {}
+        imbalance_result = self.imbalance_service.get_imbalance_detail(imbalance_type)
+        imbalance = imbalance_result.value if isinstance(imbalance_result.value, dict) else {}
+        healing_result = self.healing_service.get_healing_plan(imbalance_type, theme)
+        healing = healing_result.value if isinstance(healing_result.value, dict) else {}
+
+        contradiction = str(mapping.get("核心矛盾") or "").strip()
+        manifestation = str(mapping.get("具体表现") or imbalance.get("description") or "").strip()
+        direction = str(mapping.get("转变方向") or "").strip()
+        category = str(imbalance.get("category") or "").strip()
+        display_imbalance = self._get_signal_label(imbalance_type) or imbalance_type
+        issue_type = str(healing.get("issue_type") or "").strip()
+        cognitive_upgrade = str(healing.get("cognitive_upgrade") or "").strip()
+        healing_direction = str(imbalance.get("healing_direction") or "").strip()
+        warning = str(imbalance.get("warning") or "").strip()
+        manifestations = imbalance.get("manifestations") or []
+        psychology = "、".join(
+            str(item).strip()
+            for item in manifestations
+            if isinstance(item, str) and str(item).strip()
+        )
+
+        summary_parts = [f"当前更接近的核心失衡是「{display_imbalance}」"]
+        if category:
+            summary_parts.append(f"（{category}）")
+        if contradiction:
+            summary_parts.append(f"：{contradiction}")
+        elif manifestation:
+            summary_parts.append(f"：{manifestation}")
+        summary = "".join(summary_parts).strip()
+        if summary and summary[-1] not in "。！？":
+            summary += "。"
+
+        evidence_parts: list[str] = []
+        if manifestation:
+            evidence_parts.append(f"在{resolved_theme_label}主题里，它更容易表现成：{manifestation}。")
+        if direction:
+            evidence_parts.append(f"当前更适合的转向是：{direction}。")
+        if warning:
+            evidence_parts.append(warning)
+
+        block_parts: list[str] = []
+        if contradiction:
+            block_parts.append(f"当前更核心的卡点，其实是「{contradiction}」。")
+        if manifestation:
+            block_parts.append(manifestation.rstrip("。") + "。")
+
+        direction_text = direction
+        healing_parts: list[str] = []
+        if issue_type and cognitive_upgrade:
+            healing_parts.append(f"围绕「{issue_type}」真正要慢慢建立的新体验是：{cognitive_upgrade}。")
+        elif cognitive_upgrade:
+            healing_parts.append(cognitive_upgrade.rstrip("。") + "。")
+        if healing_direction:
+            healing_parts.append(f"当前调节方向更接近：{healing_direction}。")
+        if warning:
+            healing_parts.append(warning)
+
+        deeper_root = ""
+        if manifestation:
+            deeper_root = f"更深一层看，这更接近「{display_imbalance}」的模式：{manifestation}。"
+            if psychology:
+                deeper_root += f" 它常会让人落进「{psychology}」这样的内在循环。"
+
+        core_root = ""
+        if issue_type and cognitive_upgrade:
+            core_root = f"更深层的位置，是你正在重新学习：在「{issue_type}」这里，{cognitive_upgrade}"
+        elif cognitive_upgrade:
+            core_root = f"更深层的位置，是你正在重新学习：{cognitive_upgrade}"
+
+        return {
+            "imbalance_type": imbalance_type,
+            "summary": summary,
+            "evidence": " ".join(part for part in evidence_parts if part).strip(),
+            "block_point": " ".join(part for part in block_parts if part).strip(),
+            "direction": direction_text,
+            "healing_core": " ".join(part for part in healing_parts if part).strip(),
+            "deeper_root": deeper_root,
+            "core_root": core_root,
+            "manifestation": manifestation,
+            "contradiction": contradiction,
+            "issue_type": issue_type,
         }
 
     def _extract_phase_labels(self, phases: list[Any]) -> list[str]:
@@ -998,6 +1520,199 @@ class NarrativeContextService:
             imbalance_type=signal,
             theme_label=theme_label,
         )
+
+    def _make_trace(
+        self,
+        *,
+        visual_fact_refs: list[str] | None = None,
+        knowledge_hit_refs: list[str] | None = None,
+        rule_refs: list[str] | None = None,
+        theme_projection_refs: list[str] | None = None,
+        reason_codes: list[str] | None = None,
+        fallback: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "visual_fact_refs": [
+                item for item in (visual_fact_refs or []) if isinstance(item, str) and item
+            ],
+            "knowledge_hit_refs": [
+                item for item in (knowledge_hit_refs or []) if isinstance(item, str) and item
+            ],
+            "rule_refs": [
+                item for item in (rule_refs or []) if isinstance(item, str) and item
+            ],
+            "theme_projection_refs": [
+                item
+                for item in (theme_projection_refs or [])
+                if isinstance(item, str) and item
+            ],
+            "reason_codes": [
+                item for item in (reason_codes or []) if isinstance(item, str) and item
+            ],
+            "fallback": fallback or {"used": False},
+        }
+
+    def _make_text_section(
+        self,
+        content: str,
+        *,
+        visual_fact_refs: list[str] | None = None,
+        knowledge_hit_refs: list[str] | None = None,
+        rule_refs: list[str] | None = None,
+        theme_projection_refs: list[str] | None = None,
+        reason_codes: list[str] | None = None,
+        fallback: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "content": str(content or "").strip(),
+            "trace": self._make_trace(
+                visual_fact_refs=visual_fact_refs,
+                knowledge_hit_refs=knowledge_hit_refs,
+                rule_refs=rule_refs,
+                theme_projection_refs=theme_projection_refs,
+                reason_codes=reason_codes,
+                fallback=fallback,
+            ),
+        }
+
+    def _make_mapping_section(
+        self,
+        content: dict[str, Any] | None,
+        *,
+        visual_fact_refs: list[str] | None = None,
+        knowledge_hit_refs: list[str] | None = None,
+        rule_refs: list[str] | None = None,
+        theme_projection_refs: list[str] | None = None,
+        reason_codes: list[str] | None = None,
+        fallback: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "content": content if isinstance(content, dict) else {},
+            "trace": self._make_trace(
+                visual_fact_refs=visual_fact_refs,
+                knowledge_hit_refs=knowledge_hit_refs,
+                rule_refs=rule_refs,
+                theme_projection_refs=theme_projection_refs,
+                reason_codes=reason_codes,
+                fallback=fallback,
+            ),
+        }
+
+    def _make_typed_section(
+        self,
+        content: Any,
+        *,
+        visual_fact_refs: list[str] | None = None,
+        knowledge_hit_refs: list[str] | None = None,
+        rule_refs: list[str] | None = None,
+        theme_projection_refs: list[str] | None = None,
+        reason_codes: list[str] | None = None,
+        fallback: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "content": content,
+            "trace": self._make_trace(
+                visual_fact_refs=visual_fact_refs,
+                knowledge_hit_refs=knowledge_hit_refs,
+                rule_refs=rule_refs,
+                theme_projection_refs=theme_projection_refs,
+                reason_codes=reason_codes,
+                fallback=fallback,
+            ),
+        }
+
+    def _build_lite_directions(
+        self,
+        *,
+        theme_insights: dict[str, Any],
+        signal_text: str,
+    ) -> list[dict[str, str]]:
+        directions: list[dict[str, str]] = []
+        awareness = str(theme_insights.get("awareness") or "").strip()
+        impact = str(theme_insights.get("impact") or "").strip()
+        scene = str(theme_insights.get("scene") or "").strip()
+        candidates = [
+            ("轻量调节方向", awareness),
+            ("现实中的温和着力点", impact),
+            ("先从一个小场景开始", scene),
+        ]
+        if signal_text:
+            candidates.append(("当前节奏提醒", signal_text))
+        for title, content in candidates:
+            if content:
+                directions.append({"title": title, "content": content})
+            if len(directions) >= 3:
+                break
+        return directions
+
+    def _build_lite_micro_practices(
+        self,
+        awareness_items: list[Any],
+        experiment_payload: dict[str, Any],
+    ) -> list[dict[str, str]]:
+        practices: list[dict[str, str]] = []
+        for item in awareness_items:
+            if not isinstance(item, dict):
+                continue
+            title = str(item.get("title") or "").strip()
+            content = str(item.get("content") or "").strip()
+            if title and content:
+                practices.append({"title": title, "content": content})
+            if len(practices) >= 2:
+                break
+        experiment_title = str(experiment_payload.get("title") or "").strip()
+        experiment_content = str(experiment_payload.get("content") or "").strip()
+        if experiment_title and experiment_content and len(practices) < 3:
+            practices.append({"title": experiment_title, "content": experiment_content})
+        return practices[:3]
+
+    def _build_pro_imbalance_confirmed_summary(
+        self,
+        legacy_projection: dict[str, Any],
+        *,
+        primary_imbalance: str,
+        signal: str,
+    ) -> dict[str, str]:
+        summary = str(legacy_projection.get("block_point") or "").strip()
+        label = primary_imbalance or self._get_signal_label(signal) or signal
+        return {
+            "type": signal,
+            "primary": label,
+            "summary": summary,
+            "evidence": str(legacy_projection.get("direction") or "").strip(),
+        }
+
+    def _build_pro_healing_suggestion_summary(
+        self,
+        legacy_projection: dict[str, Any],
+        *,
+        primary_imbalance: str,
+        signal: str,
+        theme_label: str,
+    ) -> list[dict[str, str]]:
+        healing_core = str(legacy_projection.get("healing_core") or "").strip()
+        direction = str(legacy_projection.get("direction") or "").strip()
+        root_cause = legacy_projection.get("root_cause", {})
+        core_root = str(root_cause.get("core") or "").strip() if isinstance(root_cause, dict) else ""
+        primary = primary_imbalance or self._get_signal_label(signal) or signal or "当前主轴"
+        suggestions = [
+            {
+                "phase": "当前阶段",
+                "focus": primary,
+                "practice": healing_core or f"先围绕「{primary}」建立更稳的承载感。",
+            },
+            {
+                "phase": "下一步",
+                "focus": f"{theme_label}中的行动节奏",
+                "practice": direction or "先把行动拆成可以承接的小单位。",
+            },
+            {
+                "phase": "更深层",
+                "focus": "根因层",
+                "practice": core_root or "观察自己在哪个瞬间会先收回来。",
+            },
+        ]
+        return suggestions
 
     def _projection_text(
         self,

@@ -257,6 +257,22 @@ def test_v21_narrative_service_builds_imbalance_projection():
     assert "财富焦虑" in projection["core_root"]
 
 
+def test_v21_narrative_service_builds_imbalance_narrative_basis():
+    runtime = get_knowledge_runtime()
+
+    basis = runtime.narrative_service.build_imbalance_narrative_basis(
+        theme="wealth_career",
+        imbalance_type="水多火灭",
+        theme_label="财富事业",
+    )
+
+    assert basis["mode"] == "imbalance_basis"
+    assert basis["imbalance_type"] == "水多火灭"
+    assert basis["sections"]["summary"]["content"]
+    assert "rule:imbalance:水多火灭" in basis["sections"]["summary"]["trace"]["rule_refs"]
+    assert "财富事业" in basis["sections"]["summary"]["content"]
+
+
 def test_v21_narrative_service_builds_theme_prompt_context():
     runtime = get_knowledge_runtime()
 
@@ -378,6 +394,61 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "默认 Pro 预告" in projection["pro_teaser"]
 
 
+def test_v21_narrative_service_builds_lite_narrative_plan():
+    runtime = get_knowledge_runtime()
+
+    plan = runtime.narrative_service.build_lite_narrative_plan(
+        theme="general",
+        theme_label="通用解读",
+        inner_radius=35,
+        middle_radius=67,
+        title_templates={
+            "inner_high": "{theme_label}里的守心者",
+            "middle_high": "{theme_label}中的重连者",
+            "default": "慢慢亮起来的中心",
+            "general": "General-Theme-Title",
+        },
+        six_insight_templates={
+            "base": {
+                "title": "你的底色：先稳住中心的人",
+                "content": "Base {theme_label}",
+                "summary": "Base Summary",
+            },
+            "light": {
+                "title": "你的光：你已经知道什么更适合自己",
+                "content": "Light {theme_label}",
+                "summary": "Light Summary",
+            },
+        },
+        experiment_title="曼曼的疗愈仪式：给自己一个稳稳的小空间",
+        experiment_content="今天先给自己十分钟，练习回到画里的节奏。",
+        dominant_element="土",
+        dominant_percentage=42.5,
+        secondary_element="金",
+        secondary_percentage=21.25,
+        weakest_element="水",
+        weakest_percentage=8.0,
+        inner_dominant="火",
+        middle_dominant="木",
+        outer_dominant="金",
+        circle_pattern="这说明你更像先稳住自己，再慢慢把外部秩序整理出来。",
+        circle_readings=["内圈阅读", "中圈阅读", "外圈阅读"],
+        transition="三圈依次呈现出「火 -> 木 -> 金」的变化。",
+        adjacent=["内外节奏正在重新对齐"],
+        signal="transition-overload",
+        feeling_hint="这也和你最近画画时写下的感觉有关。",
+        default_pro_teaser="默认 Pro 预告",
+    )
+
+    assert plan["mode"] == "lite"
+    assert plan["generation_mode"] == "evidence_first"
+    assert plan["sections"]["title"]["content"] == "General-Theme-Title"
+    assert plan["sections"]["lite_healing_guidance"]["content"]["directions"]
+    assert plan["sections"]["pro_report_entry"]["content"]["title"] == "另一份更深的独立报告"
+    assert plan["legacy_projection"]["pro_teaser"]
+    assert "signal:transition-overload" in plan["sections"]["overall_impression"]["trace"]["rule_refs"]
+
+
 def test_v21_narrative_service_builds_pro_projection():
     runtime = get_knowledge_runtime()
 
@@ -458,15 +529,99 @@ def test_v21_narrative_service_builds_pro_projection():
     assert "《慢慢亮起来的中心》" in projection["first_impression"]
     assert "42.50%" in projection["energy_essence"]
     assert "恐惧压制行动让你很难一边往前推进" in projection["block_point"]
-    assert "先把行动拆成能承接的小单位" in projection["direction"]
-    assert "把承载感放在速度前面" in projection["healing_core"]
-    assert "内圈代表核心自我当前约占 35%" in projection["circle_readings"]["inner"]
-    assert projection["micro_sections"]["节奏关系"].startswith("圈间节奏首先显示")
-    assert projection["micro_sections"]["关系模式"].startswith("继续往外看")
-    assert projection["micro_sections"]["行动模式"].startswith("当前最明显的行动提示是")
-    assert "你原本希望“想知道怎么更稳定地往前”" in projection["root_cause"]["surface"]
-    assert projection["root_cause"]["deeper"] == "更深一层是你还在确认自己能不能稳稳接住变化"
-    assert projection["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
+
+
+def test_v21_narrative_service_builds_pro_narrative_plan():
+    runtime = get_knowledge_runtime()
+
+    plan = runtime.narrative_service.build_pro_narrative_plan(
+        theme="wealth_career",
+        theme_label="财富事业",
+        lite_title="慢慢亮起来的中心",
+        lite_contradiction="一边想继续，一边又先收回来。",
+        lite_block="快要出手前，总会先停一下。",
+        intention="想知道怎么更稳定地往前",
+        feeling_hint="这也和你最近画画时写下的感觉有关。",
+        dominant_element="土",
+        dominant_percentage=42.5,
+        secondary_element="金",
+        secondary_percentage=21.25,
+        weakest_element="水",
+        weakest_percentage=8.0,
+        signal="transition-overload",
+        primary_imbalance="恐惧压制行动",
+        transition="三圈依次呈现出「火 -> 木 -> 金」的变化。",
+        circles={
+            "inner": {
+                "meaning": "内圈代表核心自我",
+                "radius_percent": 35,
+                "dominant": "火",
+                "colors": ["红色", "橙色"],
+                "knowledge_reading": "内圈显示你还在确认内在安全感",
+            },
+            "middle": {
+                "meaning": "中圈代表关系模式",
+                "radius_percent": 67,
+                "dominant": "木",
+                "colors": ["绿色"],
+                "knowledge_reading": "中圈说明你正在调整与外界的连接方式",
+            },
+            "outer": {
+                "meaning": "外圈代表外部表达",
+                "radius_percent": 100,
+                "dominant": "金",
+                "colors": ["白色"],
+                "knowledge_reading": "外圈显示你开始重整边界和秩序",
+            },
+        },
+        adjacent=["内外节奏正在重新对齐", "外部表达开始寻找新的边界"],
+        wrap=["先把行动拆成可以承接的小步子"],
+        narrative_templates={
+            "core_direction": "先稳住中心感，再把能量逐步放回{theme_label}相关的关系、行动与表达，而不是一次性全部打开。",
+            "core_healing": "通过边界、身体感受和稳定的小步行动，重建“我可以安全地往前走”的内在体验。",
+            "micro_rhythm": "默认节奏描述。",
+            "micro_relationship": "默认关系描述。",
+            "micro_action": "默认行动描述。",
+            "surface_root_without_intention": "{lite_contradiction}最近的外部任务与内部恢复节奏不一致。",
+            "surface_root_with_intention": "{lite_contradiction}你原本希望“{intention}”，但现实推进方式和这个期待之间还存在落差。",
+            "root_deeper": "默认 deeper。",
+            "root_core": "默认 core。",
+        },
+        structure_labels={
+            "micro_rhythm": "节奏关系",
+            "micro_relationship": "关系模式",
+            "micro_action": "行动模式",
+        },
+        circle_fallbacks={
+            "inner": "内圈 fallback",
+            "middle": "中圈 fallback",
+            "outer": "外圈 fallback",
+        },
+        imbalance_projection={
+            "contradiction": "明明很想往前，却又总在最后一步先收回来",
+            "manifestation": "现实里会在快要行动时突然犹豫",
+            "direction": "先把行动拆成能承接的小单位",
+            "healing_core": "把承载感放在速度前面",
+            "deeper_root": "更深一层是你还在确认自己能不能稳稳接住变化",
+            "core_root": "核心根因是对失控的担心还没有真正放松",
+        },
+    )
+
+    assert plan["mode"] == "pro"
+    assert plan["generation_mode"] == "evidence_first"
+    assert plan["sections"]["first_impression"]["content"]
+    assert plan["sections"]["healing_suggestions"]["content"]
+    assert plan["sections"]["core_insight_table"]["content"]["疗愈核心"]
+    assert "signal:transition-overload" in plan["sections"]["block_point"]["trace"]["rule_refs"]
+    assert "先把行动拆成能承接的小单位" in plan["legacy_projection"]["direction"]
+    assert "把承载感放在速度前面" in plan["legacy_projection"]["healing_core"]
+    assert "内圈代表核心自我当前约占 35%" in plan["legacy_projection"]["circle_readings"]["inner"]
+    assert plan["legacy_projection"]["micro_sections"]["节奏关系"].startswith("圈间节奏首先显示")
+    assert plan["legacy_projection"]["micro_sections"]["关系模式"].startswith("继续往外看")
+    assert plan["legacy_projection"]["micro_sections"]["行动模式"].startswith("当前最明显的行动提示是")
+    assert "你原本希望“想知道怎么更稳定地往前”" in plan["legacy_projection"]["root_cause"]["surface"]
+    assert plan["legacy_projection"]["root_cause"]["deeper"] == "更深一层是你还在确认自己能不能稳稳接住变化"
+    assert plan["legacy_projection"]["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
 
 
 def test_v21_narrative_service_builds_lite_title_variants():

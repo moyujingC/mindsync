@@ -265,6 +265,9 @@ class Layer1LiteDraft:
     # v1.6 新增：Pro版引导文案
     pro_teaser: str = ""
 
+    # Batch B 新增：canonical narrative plan
+    narrative_plan: Dict[str, Any] = field(default_factory=dict)
+
     # 一个情绪调节小实验（旧结构，保留兼容）
     experiment: Dict[str, str] = field(default_factory=dict)
 
@@ -304,6 +307,7 @@ class Layer1LiteDraft:
                 {"day": a.day, "title": a.title, "content": a.content} for a in self.three_awareness
             ],
             "pro_teaser": self.pro_teaser,
+            "narrative_plan": self.narrative_plan,
             "experiment": self.experiment,
             "created_at": self.created_at,
         }
@@ -416,6 +420,9 @@ class Layer3ProDraft:
     # 针对性调节建议（21天简化版）
     healing_suggestions: List[Dict[str, str]] = field(default_factory=list)
 
+    # Batch B 新增：canonical narrative plan
+    narrative_plan: Dict[str, Any] = field(default_factory=dict)
+
     # 生成时间戳
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -430,6 +437,7 @@ class Layer3ProDraft:
             "imbalance_confirmed": self.imbalance_confirmed,
             "root_cause": self.root_cause,
             "healing_suggestions": self.healing_suggestions,
+            "narrative_plan": self.narrative_plan,
             "created_at": self.created_at,
         }
 

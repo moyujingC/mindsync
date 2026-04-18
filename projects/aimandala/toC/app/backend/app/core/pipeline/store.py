@@ -234,6 +234,7 @@ class InterpretationStore:
             prompt_preview=data.get("prompt_preview", ""),
             title=data.get("title", ""),
             overall_impression=data.get("overall_impression", ""),
+            narrative_plan=data.get("narrative_plan", {}),
             experiment=data.get("experiment", {}),
             created_at=data.get("created_at", ""),
         )
@@ -275,6 +276,7 @@ class InterpretationStore:
             imbalance_confirmed=data.get("imbalance_confirmed", {}),
             root_cause=data.get("root_cause", {}),
             healing_suggestions=data.get("healing_suggestions", []),
+            narrative_plan=data.get("narrative_plan", {}),
             created_at=data.get("created_at", ""),
         )
 

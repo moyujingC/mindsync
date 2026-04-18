@@ -173,6 +173,27 @@ class TestLayer1LiteDraft:
         assert layer.title == "燃烧的静默"
         assert layer.six_insights.base["raw"] == "木火主导"
 
+    def test_narrative_plan_serializes(self):
+        """测试 narrative_plan 可序列化"""
+        layer = Layer1LiteDraft(
+            title="燃烧的静默",
+            narrative_plan={
+                "mode": "lite",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "title": {
+                        "content": "燃烧的静默",
+                        "trace": {"rule_refs": ["primary_candidates:水多火灭"]},
+                    }
+                },
+            },
+        )
+
+        data = layer.to_dict()
+
+        assert data["narrative_plan"]["mode"] == "lite"
+        assert data["narrative_plan"]["sections"]["title"]["content"] == "燃烧的静默"
+
 
 class TestLayer2LiteFinal:
     """测试 Layer2 Lite最终模型"""
@@ -223,6 +244,30 @@ class TestLayer3ProDraft:
         )
         assert "自我保护" in layer.first_impression
         assert layer.imbalance_confirmed["confidence"] == 0.85
+
+    def test_narrative_plan_serializes(self):
+        """测试 Pro narrative_plan 可序列化"""
+        layer = Layer3ProDraft(
+            first_impression="画面显示强烈的自我保护",
+            narrative_plan={
+                "mode": "pro",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "first_impression": {
+                        "content": "画面显示强烈的自我保护",
+                        "trace": {"rule_refs": ["primary_candidates:水多火灭"]},
+                    }
+                },
+            },
+        )
+
+        data = layer.to_dict()
+
+        assert data["narrative_plan"]["mode"] == "pro"
+        assert (
+            data["narrative_plan"]["sections"]["first_impression"]["content"]
+            == "画面显示强烈的自我保护"
+        )
 
 
 class TestLayer4ProFinal:
