@@ -40,7 +40,13 @@ RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch
 RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api
 ```
 
-子域当前已在 release nginx 与静态目录侧就绪，但 `relayhub.jingshu.cc` 的公网 DNS 尚未在 Let’s Encrypt 可见，`certbot` 返回 `NXDOMAIN`。DNS 生效前可通过 `--resolve relayhub.jingshu.cc:80:42.192.65.145` 验证 HTTP；DNS 生效后需要重跑 certbot 完成 HTTPS。
+子域当前已在 release nginx、静态目录与 HTTPS 侧全部就绪：
+
+- `https://relayhub.jingshu.cc/`
+- `https://relayhub.jingshu.cc/providers`
+- `https://relayhub.jingshu.cc/providers/deepseek-direct`
+
+当前 `https://relayhub.jingshu.cc/relayhub-api/providers` 继续返回 `503` guard，等待真实 upstream 提供后再切换同源反代。
 
 ## 5. 后续 handoff
 

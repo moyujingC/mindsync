@@ -38,7 +38,13 @@ HTTP 验证：
 - `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/` 返回 `200`
 - `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/providers` 返回 `200`
 - `curl --resolve relayhub.jingshu.cc:80:42.192.65.145 http://relayhub.jingshu.cc/relayhub-api/providers` 返回 `503`
-- `certbot --nginx -d relayhub.jingshu.cc` 暂未成功，原因是公网权威 DNS 仍返回 `NXDOMAIN`
+- `relayhub.jingshu.cc -> 42.192.65.145` 公网 DNS 已生效
+- `certbot --nginx -d relayhub.jingshu.cc` 已成功
+- 证书路径：`/etc/letsencrypt/live/relayhub.jingshu.cc/fullchain.pem`
+- `https://relayhub.jingshu.cc/` 返回 `200`
+- `https://relayhub.jingshu.cc/providers` 返回 `200`
+- `https://relayhub.jingshu.cc/relayhub-api/providers` 返回 `503`
+- `http://relayhub.jingshu.cc/` 返回 `301` 重定向到 HTTPS
 - `https://web.jingshu.cc/relayhub/` 返回 `200`
 - `https://web.jingshu.cc/relayhub/providers` 返回 `200`
 - `https://web.jingshu.cc/relayhub/providers/deepseek-direct` 返回 `200`
@@ -72,8 +78,7 @@ rg -n "保存策略|立即切流|发布到生产|启用自动路由|编辑生产
 - 阻塞原因：真实 `UPSTREAM_BASE_URL` 尚未提供，不能把占位 upstream 写入生效配置
 - 当前 trial 构建推荐配置已收敛为 `RELAYHUB_PROVIDERS_READONLY_BASE_URL=/relayhub-api`
 - 当前 `https://web.jingshu.cc/relayhub-api/providers` 返回 `503`，避免误落到主站 HTML 造成 API 可用假阳性
-- 子域切换后，`http://relayhub.jingshu.cc/relayhub-api/providers` 在 upstream 未配置前也返回 `503`
-- 等 `relayhub.jingshu.cc -> 42.192.65.145` 的公网 DNS 生效后，需要重跑 certbot 并验证 HTTPS
+- 子域切换后，`https://relayhub.jingshu.cc/relayhub-api/providers` 在 upstream 未配置前继续返回 `503`
 
 本轮接入准备验证：
 
