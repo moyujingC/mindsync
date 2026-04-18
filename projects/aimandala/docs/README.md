@@ -44,8 +44,11 @@
 - [specs/2026-04-18-报告链路保真重构总规格.md](specs/2026-04-18-报告链路保真重构总规格.md)
 - [architecture/2026-04-18-报告链路保真重构技术方案.md](architecture/2026-04-18-报告链路保真重构技术方案.md)
 - [tasks/2026-04-18-报告链路保真重构实施总计划.md](tasks/2026-04-18-报告链路保真重构实施总计划.md)
+- [tasks/2026-04-19-Batch-A-源资料到-runtime-evidence-保真重构实施计划.md](tasks/2026-04-19-Batch-A-源资料到-runtime-evidence-保真重构实施计划.md)
 - [qa/2026-04-18-报告链路保真重构验证基线.md](qa/2026-04-18-报告链路保真重构验证基线.md)
+- [qa/2026-04-19-Batch-A-runtime-evidence-验证记录.md](qa/2026-04-19-Batch-A-runtime-evidence-验证记录.md)
 - [delivery/2026-04-18-报告链路保真重构交付记录.md](delivery/2026-04-18-报告链路保真重构交付记录.md)
+- [delivery/2026-04-19-Batch-A-runtime-evidence-交付记录.md](delivery/2026-04-19-Batch-A-runtime-evidence-交付记录.md)
 
 知识源追溯与运行时映射统一从这里进入：
 
