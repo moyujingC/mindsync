@@ -28,11 +28,32 @@
 
 ## 2. release 验证
 
-- 待 release 机执行并记录：
+- 已完成：
+  - release 主 checkout `remote.origin.fetch` 仅拉 `release`
+    - 结果：不能直接 `git checkout project/relayhub`
+  - release 主 checkout 存在脏工作区
+    - 结果：不能直接切换分支，需改用独立 `git worktree`
+  - `git fetch origin refs/heads/project/relayhub:refs/remotes/origin/project/relayhub`
+    - 结果：可显式拉到 RelayHub 长期分支
+  - `git worktree add /opt/aimandala-release/worktrees/relayhub origin/project/relayhub`
+    - 结果：独立 RelayHub worktree 已建立
   - `sudo systemctl status relayhub-control-plane --no-pager`
-  - `curl http://127.0.0.1:<port>/health`
+    - 结果：通过；服务从独立 worktree 路径启动成功
+  - `curl http://127.0.0.1:4318/health`
+    - 结果：通过，返回 `{"ok":true}`
   - `curl -k https://relayhub.jingshu.cc/api/control-plane/health`
+    - 结果：通过，返回 `{"ok":true}`
   - `curl -k https://relayhub.jingshu.cc/api/control-plane/models`
+    - 结果：通过，返回模型条目 JSON
+  - `curl -k https://relayhub.jingshu.cc/api/control-plane/overview`
+    - 结果：通过，返回真实 overview JSON
+  - `curl -kI https://relayhub.jingshu.cc/api/control-plane/health`
+    - 结果：返回 `404`
+    - 说明：当前服务只实现 `GET /health`，未单独处理 `HEAD`
+
+- release 侧实测结论：
+  - RelayHub 当前应通过独立 worktree 部署，而不是直接切主 release checkout
+  - `install-relayhub-control-plane-service.sh` 与 `deploy-relayhub-console-trial.sh` 在旧默认路径下不可直接复用，需显式传 `REPO_ROOT` / `WORKING_DIRECTORY` / `DIST_DIR`
 
 ## 3. 页面验证
 
