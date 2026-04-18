@@ -1,0 +1,211 @@
+{
+  "color_score": 23.121693121693124,
+  "imbalance_score": 61.0,
+  "structural_score": 60,
+  "total_score": 45.64867724867725,
+  "grade": "D (严重不足)",
+  "color_results": [
+    {
+      "color": "粉色",
+      "passed": false,
+      "score": 0.0,
+      "element": "火",
+      "matched_traits": [],
+      "missing_traits": [
+        "弱火",
+        "亲密关系被动",
+        "内心善良",
+        "害怕担当",
+        "行动力"
+      ],
+      "issues": [
+        "缺失特质: 弱火",
+        "缺失特质: 亲密关系被动",
+        "缺失特质: 内心善良",
+        "缺失特质: 害怕担当",
+        "缺失特质: 行动力",
+        "缺少疗愈方向"
+      ],
+      "has_shades": false,
+      "has_circle": true,
+      "has_healing": false
+    },
+    {
+      "color": "红色",
+      "passed": false,
+      "score": 44.44444444444444,
+      "element": "火",
+      "matched_traits": [
+        "深红",
+        "热情",
+        "淡红",
+        "依赖"
+      ],
+      "missing_traits": [
+        "破坏",
+        "毁灭",
+        "半途而废",
+        "中红",
+        "行动力差"
+      ],
+      "issues": [
+        "缺失特质: 破坏",
+        "缺失特质: 毁灭",
+        "缺失特质: 半途而废",
+        "缺失特质: 中红",
+        "缺失特质: 行动力差",
+        "缺少三圈结构解读",
+        "缺少疗愈方向"
+      ],
+      "has_shades": true,
+      "has_circle": false,
+      "has_healing": false
+    },
+    {
+      "color": "紫色",
+      "passed": false,
+      "score": 14.285714285714285,
+      "element": "火",
+      "matched_traits": [
+        "灵性"
+      ],
+      "missing_traits": [
+        "浓重",
+        "自我封闭",
+        "独处",
+        "直觉力",
+        "不好接近",
+        "更高维度"
+      ],
+      "issues": [
+        "缺失特质: 浓重",
+        "缺失特质: 自我封闭",
+        "缺失特质: 独处",
+        "缺失特质: 直觉力",
+        "缺失特质: 不好接近",
+        "缺失特质: 更高维度",
+        "缺少三圈结构解读",
+        "缺少疗愈方向"
+      ],
+      "has_shades": true,
+      "has_circle": false,
+      "has_healing": false
+    },
+    {
+      "color": "黄色",
+      "passed": false,
+      "score": 0.0,
+      "element": "土",
+      "matched_traits": [],
+      "missing_traits": [
+        "沉重",
+        "内敛",
+        "自卑",
+        "压力",
+        "承载"
+      ],
+      "issues": [
+        "缺失特质: 沉重",
+        "缺失特质: 内敛",
+        "缺失特质: 自卑",
+        "缺失特质: 压力",
+        "缺失特质: 承载",
+        "缺少色阶细分（深/中/浅）",
+        "缺少疗愈方向"
+      ],
+      "has_shades": false,
+      "has_circle": true,
+      "has_healing": false
+    },
+    {
+      "color": "蓝色",
+      "passed": false,
+      "score": 40.0,
+      "element": "水",
+      "matched_traits": [
+        "智慧",
+        "沟通"
+      ],
+      "missing_traits": [
+        "沉稳",
+        "静谧",
+        "情绪"
+      ],
+      "issues": [
+        "缺失特质: 沉稳",
+        "缺失特质: 静谧",
+        "缺失特质: 情绪",
+        "缺少色阶细分（深/中/浅）",
+        "缺少疗愈方向"
+      ],
+      "has_shades": false,
+      "has_circle": true,
+      "has_healing": false
+    },
+    {
+      "color": "绿色",
+      "passed": false,
+      "score": 40.0,
+      "element": "木",
+      "matched_traits": [
+        "成长",
+        "敞开"
+      ],
+      "missing_traits": [
+        "生机",
+        "放松",
+        "边界"
+      ],
+      "issues": [
+        "缺失特质: 生机",
+        "缺失特质: 放松",
+        "缺失特质: 边界",
+        "缺少色阶细分（深/中/浅）",
+        "缺少疗愈方向"
+      ],
+      "has_shades": false,
+      "has_circle": true,
+      "has_healing": false
+    }
+  ],
+  "imbalance_results": [
+    {
+      "imbalance": "水多木漂",
+      "name": "水多木漂",
+      "passed": true,
+      "score": 78.0,
+      "issues": [
+        "缺少颜色调整方案"
+      ],
+      "missing_manifestations": [
+        "情绪泛滥"
+      ]
+    },
+    {
+      "imbalance": "火多金熔",
+      "name": "火多金熔",
+      "passed": false,
+      "score": 30.0,
+      "issues": [
+        "缺少颜色调整方案"
+      ],
+      "missing_manifestations": [
+        "消耗",
+        "自我价值",
+        "评判"
+      ]
+    },
+    {
+      "imbalance": "土多金埋",
+      "name": "土多金埋",
+      "passed": true,
+      "score": 75.0,
+      "issues": [
+        "缺少颜色调整方案"
+      ],
+      "missing_manifestations": [
+        "价值掩盖"
+      ]
+    }
+  ]
+}

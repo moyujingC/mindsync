@@ -55,7 +55,8 @@
 当前默认优先看状态为 `current` 或已被当前入口显式点名的母文档，不要把目录里所有 `draft` 都当成当前硬约束。
 
 - `2026-04-09-MVP页面状态机与页面映射总表.md`
-- `2026-04-09-知识库迁移现状与报告生成缺口.md`
+- `2026-04-18-报告链路保真重构总规格.md`
+- `2026-04-18-知识源资料重评估与报告链路判断.md`
 - `ToC-MVP-产品规范.md`
 - `2026-04-06-报告产品-用户任务定义.md`
 - `2026-04-08-三种报告-内容结构与定价方案.md`
@@ -64,11 +65,21 @@
 
 - 当前主链路到底是什么
 - `Lite / Pro / Journey` 的边界怎么切
-- 当前 `V2` 知识库为什么还能跑、但还不是长期结构
+- 这轮报告链路保真重构的正式目标、边界和合同方向是什么
+- 当前知识源资料已经进入 workspace 之后，报告链路为什么仍可能偏离原始流派
 - 当前 `Layer 0-4` 分别是什么、信息是怎样流到最终报告的
 - 当前价格口径是什么
 - 当前为什么还不能直接用现有样稿判断“像不像我们的流派”
 - 哪些是 MVP 现在要写，哪些是以后再做
+
+如需追溯 `V2` 知识库的原始流派资料、主题特化文档和四步法来源，请进入：
+
+- [../sources/知识库构建/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/README.md)
+
+注意：
+
+- `../sources/知识库构建/原始镜像/` 默认不是当前 `spec` 的正式入口
+- 需要引用源资料时，应先看 [../sources/知识库构建/当前正式依据与使用说明.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/知识库构建/当前正式依据与使用说明.md)
 
 ### 2. 页面链路文档
 
@@ -141,10 +152,12 @@
 2. `2026-04-09-MVP页面状态机与页面映射总表.md`
 3. `2026-04-08-三种报告-内容结构与定价方案.md`
 4. `2026-04-08-三种报告下的入口与结果页分流策略.md`
+5. `2026-04-18-报告链路保真重构总规格.md`
+6. `2026-04-18-知识源资料重评估与报告链路判断.md`
 
 如需查看架构母文档，请进入：
 
-- [../architecture/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/README.md)
+- [../architecture/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/README.md)
 
 ## 使用规则
 
