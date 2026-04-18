@@ -13,3 +13,4 @@
 - [2026-04-16-RelayHub-v1-架构与产品定义.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
 - [2026-04-16-RelayHub-v1-控制台信息架构草图.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-16-RelayHub-v1-控制台信息架构草图.md)
 - [2026-04-16-v1-控制台页面级线框与字段草图.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-16-v1-控制台页面级线框与字段草图.md)
+- [2026-04-18-v1-使用场景与用户旅程说明.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-18-v1-使用场景与用户旅程说明.md)

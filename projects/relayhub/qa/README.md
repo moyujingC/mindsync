@@ -12,3 +12,4 @@
 
 - [2026-04-16-v1-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-qa-basis.md)
 - [2026-04-16-v1-控制台静态壳-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-控制台静态壳-qa-basis.md)
+- [2026-04-18-v1-使用场景与用户旅程收束-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-18-v1-使用场景与用户旅程收束-qa-basis.md)
