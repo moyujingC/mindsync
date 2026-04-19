@@ -12,7 +12,8 @@
 4. [2026-04-19-Batch-C-Lite-Pro-合同与前端承接验证记录.md](2026-04-19-Batch-C-Lite-Pro-合同与前端承接验证记录.md)
 5. [2026-04-19-Batch-D-固定样本重建验证记录.md](2026-04-19-Batch-D-固定样本重建验证记录.md)
 6. [2026-04-19-Batch-E-解读教程算法保真验证记录.md](2026-04-19-Batch-E-解读教程算法保真验证记录.md)
-7. [2026-04-18-Lite-Pro-独立报告重定义验证记录.md](2026-04-18-Lite-Pro-独立报告重定义验证记录.md)
+7. [2026-04-19-Batch-F-golden-审阅记录.md](2026-04-19-Batch-F-golden-审阅记录.md)
+8. [2026-04-18-Lite-Pro-独立报告重定义验证记录.md](2026-04-18-Lite-Pro-独立报告重定义验证记录.md)
 
 分工如下：
 
@@ -28,6 +29,8 @@
   - 固定 Batch D 第一块实现中 fixture 重建、workbench/debug 摘要切换和 eval 收口的验证结果
 - `2026-04-19-Batch-E-解读教程算法保真验证记录.md`
   - 固定 Batch E 四步法 trace、教程阈值、Pro 独立语义和算法保真 eval 的验证结果
+- `2026-04-19-Batch-F-golden-审阅记录.md`
+  - 固定 Batch F golden 导出、人工 rubric 审阅、偏差回灌和 evidence 审阅索引页的验证结果
 - `2026-04-18-Lite-Pro-独立报告重定义验证记录.md`
   - 固定 `Lite / Pro` 报告模式、议题上下文、Lite 轻疗愈区块和 `Pro` 入口语义的专项验证结果
 
