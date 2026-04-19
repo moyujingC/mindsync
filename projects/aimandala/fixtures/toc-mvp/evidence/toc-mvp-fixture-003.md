@@ -11,3 +11,6 @@ fixture_id: `toc-mvp-fixture-003`
   - Lite 新合同字段完整
 - actual_excerpt:
   - 待 `verify_fixture_003_existing_reuse.py` 与 workbench 重跑后补充
+- golden_scope:
+  - 本批不纳入第一批人工 golden 主审阅
+  - 后续若扩展复用链路审阅，再补 `fixtures/toc-mvp/golden/toc-mvp-fixture-003/`

@@ -634,14 +634,15 @@ class KnowledgeWorkbench:
             )
             for item in sample_results
         ]
-        golden_reviewed_count = sum(1 for item in golden_reviews if item.get("reviewed"))
-        golden_pass_count = sum(1 for item in golden_reviews if item.get("result") == "pass")
+        all_golden_reviews = self._collect_golden_review_results(golden_review_root)
+        golden_reviewed_count = sum(1 for item in all_golden_reviews if item.get("reviewed"))
+        golden_pass_count = sum(1 for item in all_golden_reviews if item.get("result") == "pass")
         golden_pass_with_drift_count = sum(
-            1 for item in golden_reviews if item.get("result") == "pass_with_drift"
+            1 for item in all_golden_reviews if item.get("result") == "pass_with_drift"
         )
-        golden_fail_count = sum(1 for item in golden_reviews if item.get("result") == "fail")
+        golden_fail_count = sum(1 for item in all_golden_reviews if item.get("result") == "fail")
         open_deviation_count = sum(
-            int(item.get("deviation_count") or 0) for item in golden_reviews
+            int(item.get("deviation_count") or 0) for item in all_golden_reviews
         )
 
         return {
@@ -1026,6 +1027,32 @@ class KnowledgeWorkbench:
             "deviation_count": deviation_count,
             "review_path": self._to_repo_relative(review_path),
         }
+
+    def _collect_golden_review_results(
+        self,
+        golden_review_root: Path | None,
+    ) -> list[dict[str, Any]]:
+        base_root = golden_review_root or self.golden_root
+        if not base_root.exists():
+            return []
+        results: list[dict[str, Any]] = []
+        for review_path in sorted(base_root.glob("*/*.review.md")):
+            metadata = self._parse_markdown_frontmatter(review_path)
+            result = str(metadata.get("result") or "").strip()
+            if not result:
+                continue
+            results.append(
+                {
+                    "reviewed": True,
+                    "fixture_id": str(metadata.get("fixture_id") or review_path.parent.name),
+                    "mode": str(metadata.get("mode") or review_path.name.split(".", 1)[0]),
+                    "topic": str(metadata.get("topic") or ""),
+                    "result": result,
+                    "deviation_count": int(metadata.get("deviation_count") or 0),
+                    "review_path": self._to_repo_relative(review_path),
+                }
+            )
+        return results
 
     def _parse_markdown_frontmatter(self, path: Path) -> dict[str, Any]:
         text = path.read_text(encoding="utf-8")

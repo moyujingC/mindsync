@@ -37,6 +37,14 @@ python3 $REPO_ROOT/projects/aimandala/scripts/validate_fixtures.py
 - evidence 正文里的人工摘录是否足以放行
 - 图片内容本身是否满足业务语义，只检查文件存在性与字段治理
 
+Golden 审阅资产另由 Batch F 导出入口生成：
+
+```bash
+python3 $REPO_ROOT/projects/aimandala/scripts/export_fixture_golden.py --fixture-id toc-mvp-fixture-001 --version lite
+python3 $REPO_ROOT/projects/aimandala/scripts/export_fixture_golden.py --fixture-id toc-mvp-fixture-002 --version pro
+python3 $REPO_ROOT/projects/aimandala/scripts/export_fixture_golden.py --fixture-id toc-mvp-fixture-002 --version lite
+```
+
 ## 2. 当前已固化的样本
 
 当前正式固定样本是：
@@ -75,13 +83,21 @@ python3 $REPO_ROOT/projects/aimandala/scripts/validate_fixtures.py
 
 ## 4. 当前边界
 
-这套校验现在只保证“样本描述资产一致”，还不负责：
+这套最小校验现在只保证“样本描述资产一致”，还不负责：
 
 - 真正请求后端并跑完 Lite / Pro 链路
 - 比对截图或 Markdown 内容
 - 自动判定 AI 生成内容质量
 
-这些属于下一轮可以继续叠加的验证层。
+完整报告快照、debug trace 和人工审阅结论由 `fixtures/toc-mvp/golden/` 承接。
+
+当前首批 golden 审阅结论：
+
+- `toc-mvp-fixture-001 / lite`: `pass_with_drift`
+- `toc-mvp-fixture-002 / pro`: `fail`
+- `toc-mvp-fixture-002 / lite`: `fail`
+
+这表示 golden 闭环已建立，但内容偏差仍需进入后续 Batch G 修复。
 
 ## 5. 当前已脚本化的样本复查
 

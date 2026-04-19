@@ -184,6 +184,22 @@ def test_v22_eval_summary_includes_golden_review_aggregation(tmp_path):
         ),
         encoding="utf-8",
     )
+    (review_dir / "pro.review.md").write_text(
+        "\n".join(
+            [
+                "---",
+                "fixture_id: toc-mvp-fixture-001",
+                "mode: pro",
+                "topic: general",
+                "result: fail",
+                "deviation_count: 1",
+                "---",
+                "",
+                "# review",
+            ]
+        ),
+        encoding="utf-8",
+    )
 
     sample_results = [
         {
@@ -212,9 +228,9 @@ def test_v22_eval_summary_includes_golden_review_aggregation(tmp_path):
         golden_review_root=tmp_path,
     )
 
-    assert summary["summary"]["golden_reviewed_count"] == 1
+    assert summary["summary"]["golden_reviewed_count"] == 2
     assert summary["summary"]["golden_pass_count"] == 0
     assert summary["summary"]["golden_pass_with_drift_count"] == 1
-    assert summary["summary"]["golden_fail_count"] == 0
-    assert summary["summary"]["open_deviation_count"] == 2
+    assert summary["summary"]["golden_fail_count"] == 1
+    assert summary["summary"]["open_deviation_count"] == 3
     assert summary["fixtures"][0]["golden_review"]["result"] == "pass_with_drift"

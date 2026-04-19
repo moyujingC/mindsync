@@ -1,12 +1,20 @@
 {
   "build_selector": "current",
-  "generated_at": "2026-04-19T10:16:25.704200",
+  "generated_at": "2026-04-19T13:08:20.876962",
   "summary": {
     "fixture_count": 4,
     "fixture_fallback_count": 0,
     "warning_hit_count": 1,
+    "algorithm_fidelity_fail_count": 1,
+    "legacy_semantics_found_count": 0,
+    "raw_payload_leak_found_count": 1,
     "structured_missing_count": 0,
-    "regression_flag_count": 0
+    "regression_flag_count": 2,
+    "golden_reviewed_count": 3,
+    "golden_pass_count": 0,
+    "golden_pass_with_drift_count": 1,
+    "golden_fail_count": 2,
+    "open_deviation_count": 5
   },
   "fixtures": [
     {
@@ -15,8 +23,17 @@
       "version": "lite",
       "fallback_used": false,
       "warning_hit_count": 0,
+      "algorithm_fidelity_pass": true,
+      "legacy_semantics_found": false,
+      "raw_payload_leak_found": false,
       "regression_flags": [],
-      "structured_missing_fields": []
+      "structured_missing_fields": [],
+      "golden_review": {
+        "reviewed": true,
+        "result": "pass_with_drift",
+        "deviation_count": 1,
+        "review_path": "fixtures/toc-mvp/golden/toc-mvp-fixture-001/lite.review.md"
+      }
     },
     {
       "fixture_id": "toc-mvp-fixture-002",
@@ -24,8 +41,20 @@
       "version": "pro",
       "fallback_used": false,
       "warning_hit_count": 0,
-      "regression_flags": [],
-      "structured_missing_fields": []
+      "algorithm_fidelity_pass": false,
+      "legacy_semantics_found": false,
+      "raw_payload_leak_found": true,
+      "regression_flags": [
+        "algorithm_fidelity_failed",
+        "raw_payload_leak_found"
+      ],
+      "structured_missing_fields": [],
+      "golden_review": {
+        "reviewed": true,
+        "result": "fail",
+        "deviation_count": 2,
+        "review_path": "fixtures/toc-mvp/golden/toc-mvp-fixture-002/pro.review.md"
+      }
     },
     {
       "fixture_id": "toc-mvp-fixture-003",
@@ -33,8 +62,14 @@
       "version": "lite",
       "fallback_used": false,
       "warning_hit_count": 0,
+      "algorithm_fidelity_pass": true,
+      "legacy_semantics_found": false,
+      "raw_payload_leak_found": false,
       "regression_flags": [],
-      "structured_missing_fields": []
+      "structured_missing_fields": [],
+      "golden_review": {
+        "reviewed": false
+      }
     },
     {
       "fixture_id": "toc-mvp-fixture-004",
@@ -42,8 +77,14 @@
       "version": "lite",
       "fallback_used": false,
       "warning_hit_count": 1,
+      "algorithm_fidelity_pass": true,
+      "legacy_semantics_found": false,
+      "raw_payload_leak_found": false,
       "regression_flags": [],
-      "structured_missing_fields": []
+      "structured_missing_fields": [],
+      "golden_review": {
+        "reviewed": false
+      }
     }
   ]
 }

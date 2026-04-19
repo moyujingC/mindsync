@@ -35,7 +35,7 @@
       "index_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
       "pack_id": "aimandala-v2.1",
       "schema_version": "v2.1",
-      "generated_at": "2026-04-14T21:00:21.289309",
+      "generated_at": "2026-04-19T11:59:26.450352",
       "manifest_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/manifest.yaml",
       "build_kind": "current"
     },
@@ -59,49 +59,49 @@
           "inner": {
             "colors": [
               {
-                "hex": "#c4aec5",
+                "hex": "#c6b0c5",
                 "rgb": [
-                  196,
-                  174,
+                  198,
+                  176,
                   197
                 ],
-                "percentage": 31.13
+                "percentage": 31.38
               },
               {
-                "hex": "#e6b310",
+                "hex": "#e6b511",
                 "rgb": [
                   230,
-                  179,
-                  16
+                  181,
+                  17
                 ],
-                "percentage": 20.19
+                "percentage": 20.97
               },
               {
-                "hex": "#c8b278",
+                "hex": "#c2ae76",
                 "rgb": [
-                  200,
-                  178,
-                  120
+                  194,
+                  174,
+                  118
                 ],
-                "percentage": 17.95
+                "percentage": 18.84
               },
               {
-                "hex": "#907d4b",
+                "hex": "#8c7847",
                 "rgb": [
-                  144,
-                  125,
-                  75
+                  140,
+                  120,
+                  71
                 ],
-                "percentage": 17.44
+                "percentage": 16.12
               },
               {
-                "hex": "#3d2b20",
+                "hex": "#3b291e",
                 "rgb": [
-                  61,
-                  43,
-                  32
+                  59,
+                  41,
+                  30
                 ],
-                "percentage": 13.29
+                "percentage": 12.69
               }
             ],
             "five_elements": {
@@ -111,55 +111,55 @@
               "metal": 28.41,
               "water": 4.82
             },
-            "dominant_color": "#c4aec5",
+            "dominant_color": "#c6b0c5",
             "dominant_element": "fire"
           },
           "middle": {
             "colors": [
               {
-                "hex": "#d5bbc3",
+                "hex": "#d5bdc3",
                 "rgb": [
                   213,
-                  187,
+                  189,
                   195
                 ],
-                "percentage": 27.09
+                "percentage": 27.66
               },
               {
-                "hex": "#aacbce",
+                "hex": "#aacdd1",
                 "rgb": [
                   170,
-                  203,
-                  206
+                  205,
+                  209
                 ],
-                "percentage": 26.06
+                "percentage": 23.99
               },
               {
-                "hex": "#a3a08c",
+                "hex": "#a4a392",
                 "rgb": [
+                  164,
                   163,
-                  160,
-                  140
+                  146
                 ],
-                "percentage": 20.38
+                "percentage": 20.15
               },
               {
-                "hex": "#6f6b54",
+                "hex": "#777359",
                 "rgb": [
-                  111,
-                  107,
-                  84
+                  119,
+                  115,
+                  89
                 ],
-                "percentage": 13.9
+                "percentage": 14.29
               },
               {
-                "hex": "#2f2e28",
+                "hex": "#32322b",
                 "rgb": [
-                  47,
-                  46,
-                  40
+                  50,
+                  50,
+                  43
                 ],
-                "percentage": 12.57
+                "percentage": 13.91
               }
             ],
             "five_elements": {
@@ -169,55 +169,55 @@
               "metal": 45.25,
               "water": 1.75
             },
-            "dominant_color": "#d5bbc3",
+            "dominant_color": "#d5bdc3",
             "dominant_element": "metal"
           },
           "outer": {
             "colors": [
               {
-                "hex": "#6e9a5d",
+                "hex": "#729e61",
                 "rgb": [
-                  110,
-                  154,
-                  93
+                  114,
+                  158,
+                  97
                 ],
-                "percentage": 23.79
+                "percentage": 23.68
               },
               {
-                "hex": "#a3c6af",
-                "rgb": [
-                  163,
-                  198,
-                  175
-                ],
-                "percentage": 23.72
-              },
-              {
-                "hex": "#e1d3a0",
+                "hex": "#e1d39f",
                 "rgb": [
                   225,
                   211,
-                  160
+                  159
                 ],
-                "percentage": 21.94
+                "percentage": 22.39
               },
               {
-                "hex": "#ced025",
+                "hex": "#a5c8b4",
                 "rgb": [
-                  206,
-                  208,
+                  165,
+                  200,
+                  180
+                ],
+                "percentage": 22.29
+              },
+              {
+                "hex": "#cdcf25",
+                "rgb": [
+                  205,
+                  207,
                   37
                 ],
-                "percentage": 15.68
+                "percentage": 16.24
               },
               {
-                "hex": "#2b371e",
+                "hex": "#2e3a20",
                 "rgb": [
-                  43,
-                  55,
-                  30
+                  46,
+                  58,
+                  32
                 ],
-                "percentage": 14.87
+                "percentage": 15.4
               }
             ],
             "five_elements": {
@@ -227,7 +227,7 @@
               "metal": 22.57,
               "water": 2.22
             },
-            "dominant_color": "#6e9a5d",
+            "dominant_color": "#729e61",
             "dominant_element": "wood"
           }
         },
@@ -236,6 +236,191 @@
           "middle",
           "outer"
         ],
+        "per_circle_color_analysis": {
+          "inner": {
+            "circle": "inner",
+            "circle_label": "内圈",
+            "dominant_element": "火",
+            "dominant_color": "#c6b0c5",
+            "colors": [
+              {
+                "hex": "#c6b0c5",
+                "rgb": [
+                  198,
+                  176,
+                  197
+                ],
+                "percentage": 31.38
+              },
+              {
+                "hex": "#e6b511",
+                "rgb": [
+                  230,
+                  181,
+                  17
+                ],
+                "percentage": 20.97
+              },
+              {
+                "hex": "#c2ae76",
+                "rgb": [
+                  194,
+                  174,
+                  118
+                ],
+                "percentage": 18.84
+              },
+              {
+                "hex": "#8c7847",
+                "rgb": [
+                  140,
+                  120,
+                  71
+                ],
+                "percentage": 16.12
+              },
+              {
+                "hex": "#3b291e",
+                "rgb": [
+                  59,
+                  41,
+                  30
+                ],
+                "percentage": 12.69
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.1089,
+              "avg_brightness": 140.21,
+              "avg_saturation": 0.4827,
+              "depth_state": "deep",
+              "fill_state": "filled"
+            }
+          },
+          "middle": {
+            "circle": "middle",
+            "circle_label": "中圈",
+            "dominant_element": "金",
+            "dominant_color": "#d5bdc3",
+            "colors": [
+              {
+                "hex": "#d5bdc3",
+                "rgb": [
+                  213,
+                  189,
+                  195
+                ],
+                "percentage": 27.66
+              },
+              {
+                "hex": "#aacdd1",
+                "rgb": [
+                  170,
+                  205,
+                  209
+                ],
+                "percentage": 23.99
+              },
+              {
+                "hex": "#a4a392",
+                "rgb": [
+                  164,
+                  163,
+                  146
+                ],
+                "percentage": 20.15
+              },
+              {
+                "hex": "#777359",
+                "rgb": [
+                  119,
+                  115,
+                  89
+                ],
+                "percentage": 14.29
+              },
+              {
+                "hex": "#32322b",
+                "rgb": [
+                  50,
+                  50,
+                  43
+                ],
+                "percentage": 13.91
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.3267,
+              "avg_brightness": 143.13,
+              "avg_saturation": 0.1602,
+              "depth_state": "middle",
+              "fill_state": "filled"
+            }
+          },
+          "outer": {
+            "circle": "outer",
+            "circle_label": "外圈",
+            "dominant_element": "木",
+            "dominant_color": "#729e61",
+            "colors": [
+              {
+                "hex": "#729e61",
+                "rgb": [
+                  114,
+                  158,
+                  97
+                ],
+                "percentage": 23.68
+              },
+              {
+                "hex": "#e1d39f",
+                "rgb": [
+                  225,
+                  211,
+                  159
+                ],
+                "percentage": 22.39
+              },
+              {
+                "hex": "#a5c8b4",
+                "rgb": [
+                  165,
+                  200,
+                  180
+                ],
+                "percentage": 22.29
+              },
+              {
+                "hex": "#cdcf25",
+                "rgb": [
+                  205,
+                  207,
+                  37
+                ],
+                "percentage": 16.24
+              },
+              {
+                "hex": "#2e3a20",
+                "rgb": [
+                  46,
+                  58,
+                  32
+                ],
+                "percentage": 15.4
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.5644,
+              "avg_brightness": 154.57,
+              "avg_saturation": 0.4248,
+              "depth_state": "middle",
+              "fill_state": "filled"
+            }
+          }
+        },
         "weighted_element_distribution": {
           "wood": {
             "element": "木",
@@ -275,9 +460,258 @@
           }
         },
         "extracted_color_metrics": {
-          "overall_saturation": 0.3329,
+          "overall_saturation": 0.3323,
           "black_ratio": 0.0,
-          "red_ratio": 0.1254
+          "red_ratio": 0.1236
+        },
+        "interpretation_method_trace": {
+          "direct_judgment": {
+            "summary": "直断先看到「金」更占主体，再结合「木」去判断整体能量的主轴。 当前主判断落在「transition-overload」。",
+            "dominant_element": "金",
+            "secondary_element": "木",
+            "primary_signal": "transition-overload",
+            "source": "tutorial_four_step_method"
+          },
+          "per_circle_color_analysis": {
+            "inner": {
+              "circle": "inner",
+              "circle_label": "内圈",
+              "dominant_element": "火",
+              "dominant_color": "#c6b0c5",
+              "colors": [
+                {
+                  "hex": "#c6b0c5",
+                  "rgb": [
+                    198,
+                    176,
+                    197
+                  ],
+                  "percentage": 31.38
+                },
+                {
+                  "hex": "#e6b511",
+                  "rgb": [
+                    230,
+                    181,
+                    17
+                  ],
+                  "percentage": 20.97
+                },
+                {
+                  "hex": "#c2ae76",
+                  "rgb": [
+                    194,
+                    174,
+                    118
+                  ],
+                  "percentage": 18.84
+                },
+                {
+                  "hex": "#8c7847",
+                  "rgb": [
+                    140,
+                    120,
+                    71
+                  ],
+                  "percentage": 16.12
+                },
+                {
+                  "hex": "#3b291e",
+                  "rgb": [
+                    59,
+                    41,
+                    30
+                  ],
+                  "percentage": 12.69
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.1089,
+                "avg_brightness": 140.21,
+                "avg_saturation": 0.4827,
+                "depth_state": "deep",
+                "fill_state": "filled"
+              }
+            },
+            "middle": {
+              "circle": "middle",
+              "circle_label": "中圈",
+              "dominant_element": "金",
+              "dominant_color": "#d5bdc3",
+              "colors": [
+                {
+                  "hex": "#d5bdc3",
+                  "rgb": [
+                    213,
+                    189,
+                    195
+                  ],
+                  "percentage": 27.66
+                },
+                {
+                  "hex": "#aacdd1",
+                  "rgb": [
+                    170,
+                    205,
+                    209
+                  ],
+                  "percentage": 23.99
+                },
+                {
+                  "hex": "#a4a392",
+                  "rgb": [
+                    164,
+                    163,
+                    146
+                  ],
+                  "percentage": 20.15
+                },
+                {
+                  "hex": "#777359",
+                  "rgb": [
+                    119,
+                    115,
+                    89
+                  ],
+                  "percentage": 14.29
+                },
+                {
+                  "hex": "#32322b",
+                  "rgb": [
+                    50,
+                    50,
+                    43
+                  ],
+                  "percentage": 13.91
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.3267,
+                "avg_brightness": 143.13,
+                "avg_saturation": 0.1602,
+                "depth_state": "middle",
+                "fill_state": "filled"
+              }
+            },
+            "outer": {
+              "circle": "outer",
+              "circle_label": "外圈",
+              "dominant_element": "木",
+              "dominant_color": "#729e61",
+              "colors": [
+                {
+                  "hex": "#729e61",
+                  "rgb": [
+                    114,
+                    158,
+                    97
+                  ],
+                  "percentage": 23.68
+                },
+                {
+                  "hex": "#e1d39f",
+                  "rgb": [
+                    225,
+                    211,
+                    159
+                  ],
+                  "percentage": 22.39
+                },
+                {
+                  "hex": "#a5c8b4",
+                  "rgb": [
+                    165,
+                    200,
+                    180
+                  ],
+                  "percentage": 22.29
+                },
+                {
+                  "hex": "#cdcf25",
+                  "rgb": [
+                    205,
+                    207,
+                    37
+                  ],
+                  "percentage": 16.24
+                },
+                {
+                  "hex": "#2e3a20",
+                  "rgb": [
+                    46,
+                    58,
+                    32
+                  ],
+                  "percentage": 15.4
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.5644,
+                "avg_brightness": 154.57,
+                "avg_saturation": 0.4248,
+                "depth_state": "middle",
+                "fill_state": "filled"
+              }
+            }
+          },
+          "shape_analysis": {
+            "source": "micro_analysis_proxy",
+            "overall_features": [
+              "detected_circle_transition_pattern",
+              "detected_wrap_or_protection_pattern"
+            ],
+            "triggered_analyses": [
+              {
+                "type": "shape_proxy",
+                "circle_count": 3,
+                "adjacent_relations": [
+                  "火克金，认知克制情感表达",
+                  "金克木，情感克制外在表达"
+                ],
+                "wrap_relations": [
+                  "保持当前能量流动状态，继续深化"
+                ]
+              }
+            ]
+          },
+          "circle_relation_analysis": {
+            "source": "circle_energy_flow",
+            "circle_elements": {
+              "inner": "火",
+              "middle": "金",
+              "outer": "木"
+            },
+            "adjacent_relations": [
+              "火克金，认知克制情感表达",
+              "金克木，情感克制外在表达"
+            ],
+            "wrap_relations": [
+              "保持当前能量流动状态，继续深化"
+            ],
+            "synthetic_signal": {
+              "id": "transition-overload",
+              "used": true,
+              "reason": "no_toc_primary_candidate"
+            }
+          },
+          "final_algorithm_basis": {
+            "ordered_steps": [
+              "直断",
+              "逐圈颜色分析",
+              "形状分析",
+              "圈级生克分析"
+            ],
+            "selected_primary_candidates": [
+              "transition-overload"
+            ],
+            "notes": [
+              "tutorial_state_and_runtime_scoring_are_separated",
+              "relationship_diagnosis_follows_element_state_analysis"
+            ]
+          }
         },
         "knowledge_build": {
           "build_selector": "current",
@@ -313,7 +747,7 @@
           "index_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
           "pack_id": "aimandala-v2.1",
           "schema_version": "v2.1",
-          "generated_at": "2026-04-14T21:00:21.289309"
+          "generated_at": "2026-04-19T11:59:26.450352"
         },
         "source_refs": [
           {
@@ -339,11 +773,42 @@
             "element": "木",
             "proportion": 0.2605,
             "state": "balanced",
+            "tutorial_state": {
+              "state": "balanced",
+              "thresholds": {
+                "excess": 0.5,
+                "deficient": 0.1
+              },
+              "evidence_basis": {
+                "proportion_source": "tutorial_weighted_element_distribution",
+                "dominant_circle_count": 1,
+                "thresholds": {
+                  "excess": 0.5,
+                  "deficient": 0.1
+                },
+                "modifiers": []
+              }
+            },
+            "scoring_state": {
+              "state": "balanced",
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              },
+              "evidence_basis": {
+                "proportion_source": "runtime_weighted_element_distribution",
+                "dominant_circle_count": 1,
+                "thresholds": {
+                  "excess": 0.3,
+                  "deficient": 0.12
+                }
+              }
+            },
             "excess_score": 0.3025,
             "deficiency_score": 0.0,
             "presence_score": 1.0,
             "evidence_basis": {
-              "proportion_source": "weighted_element_distribution",
+              "proportion_source": "runtime_weighted_element_distribution",
               "dominant_circle_count": 1,
               "thresholds": {
                 "excess": 0.3,
@@ -355,11 +820,42 @@
             "element": "火",
             "proportion": 0.2215,
             "state": "balanced",
+            "tutorial_state": {
+              "state": "balanced",
+              "thresholds": {
+                "excess": 0.5,
+                "deficient": 0.1
+              },
+              "evidence_basis": {
+                "proportion_source": "tutorial_weighted_element_distribution",
+                "dominant_circle_count": 1,
+                "thresholds": {
+                  "excess": 0.5,
+                  "deficient": 0.1
+                },
+                "modifiers": []
+              }
+            },
+            "scoring_state": {
+              "state": "balanced",
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              },
+              "evidence_basis": {
+                "proportion_source": "runtime_weighted_element_distribution",
+                "dominant_circle_count": 1,
+                "thresholds": {
+                  "excess": 0.3,
+                  "deficient": 0.12
+                }
+              }
+            },
             "excess_score": 0.1075,
             "deficiency_score": 0.0,
             "presence_score": 1.0,
             "evidence_basis": {
-              "proportion_source": "weighted_element_distribution",
+              "proportion_source": "runtime_weighted_element_distribution",
               "dominant_circle_count": 1,
               "thresholds": {
                 "excess": 0.3,
@@ -371,11 +867,42 @@
             "element": "土",
             "proportion": 0.1884,
             "state": "balanced",
+            "tutorial_state": {
+              "state": "balanced",
+              "thresholds": {
+                "excess": 0.5,
+                "deficient": 0.1
+              },
+              "evidence_basis": {
+                "proportion_source": "tutorial_weighted_element_distribution",
+                "dominant_circle_count": 0,
+                "thresholds": {
+                  "excess": 0.5,
+                  "deficient": 0.1
+                },
+                "modifiers": []
+              }
+            },
+            "scoring_state": {
+              "state": "balanced",
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              },
+              "evidence_basis": {
+                "proportion_source": "runtime_weighted_element_distribution",
+                "dominant_circle_count": 0,
+                "thresholds": {
+                  "excess": 0.3,
+                  "deficient": 0.12
+                }
+              }
+            },
             "excess_score": 0.0,
             "deficiency_score": 0.058,
             "presence_score": 0.942,
             "evidence_basis": {
-              "proportion_source": "weighted_element_distribution",
+              "proportion_source": "runtime_weighted_element_distribution",
               "dominant_circle_count": 0,
               "thresholds": {
                 "excess": 0.3,
@@ -387,11 +914,42 @@
             "element": "金",
             "proportion": 0.3062,
             "state": "excess",
+            "tutorial_state": {
+              "state": "balanced",
+              "thresholds": {
+                "excess": 0.5,
+                "deficient": 0.1
+              },
+              "evidence_basis": {
+                "proportion_source": "tutorial_weighted_element_distribution",
+                "dominant_circle_count": 1,
+                "thresholds": {
+                  "excess": 0.5,
+                  "deficient": 0.1
+                },
+                "modifiers": []
+              }
+            },
+            "scoring_state": {
+              "state": "excess",
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              },
+              "evidence_basis": {
+                "proportion_source": "runtime_weighted_element_distribution",
+                "dominant_circle_count": 1,
+                "thresholds": {
+                  "excess": 0.3,
+                  "deficient": 0.12
+                }
+              }
+            },
             "excess_score": 0.531,
             "deficiency_score": 0.0,
             "presence_score": 1.0,
             "evidence_basis": {
-              "proportion_source": "weighted_element_distribution",
+              "proportion_source": "runtime_weighted_element_distribution",
               "dominant_circle_count": 1,
               "thresholds": {
                 "excess": 0.3,
@@ -403,11 +961,42 @@
             "element": "水",
             "proportion": 0.0235,
             "state": "deficient",
+            "tutorial_state": {
+              "state": "deficient",
+              "thresholds": {
+                "excess": 0.5,
+                "deficient": 0.1
+              },
+              "evidence_basis": {
+                "proportion_source": "tutorial_weighted_element_distribution",
+                "dominant_circle_count": 0,
+                "thresholds": {
+                  "excess": 0.5,
+                  "deficient": 0.1
+                },
+                "modifiers": []
+              }
+            },
+            "scoring_state": {
+              "state": "deficient",
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              },
+              "evidence_basis": {
+                "proportion_source": "runtime_weighted_element_distribution",
+                "dominant_circle_count": 0,
+                "thresholds": {
+                  "excess": 0.3,
+                  "deficient": 0.12
+                }
+              }
+            },
             "excess_score": 0.0,
             "deficiency_score": 0.8825,
             "presence_score": 0.1175,
             "evidence_basis": {
-              "proportion_source": "weighted_element_distribution",
+              "proportion_source": "runtime_weighted_element_distribution",
               "dominant_circle_count": 0,
               "thresholds": {
                 "excess": 0.3,
@@ -421,19 +1010,22 @@
             "circle": "inner",
             "dominant_element": "火",
             "inferred_state": "balanced",
-            "source_hit": "dominant:火"
+            "tutorial_state": "balanced",
+            "source_hit": "circle:inner:火"
           },
           {
             "circle": "middle",
             "dominant_element": "金",
             "inferred_state": "excess",
-            "source_hit": "dominant:金"
+            "tutorial_state": "balanced",
+            "source_hit": "circle:middle:金"
           },
           {
             "circle": "outer",
             "dominant_element": "木",
             "inferred_state": "balanced",
-            "source_hit": "dominant:木"
+            "tutorial_state": "balanced",
+            "source_hit": "circle:outer:木"
           }
         ],
         "imbalance_trace": {
@@ -749,6 +1341,440 @@
             "具体表现": "一部分自己已经想往前走，另一部分自己还在回头确认安全感",
             "转变方向": "先稳住节奏，再让变化分段落地"
           }
+        },
+        "per_circle_color_analysis": {
+          "inner": {
+            "circle": "inner",
+            "circle_label": "内圈",
+            "dominant_element": "火",
+            "dominant_color": "#c6b0c5",
+            "colors": [
+              {
+                "hex": "#c6b0c5",
+                "rgb": [
+                  198,
+                  176,
+                  197
+                ],
+                "percentage": 31.38
+              },
+              {
+                "hex": "#e6b511",
+                "rgb": [
+                  230,
+                  181,
+                  17
+                ],
+                "percentage": 20.97
+              },
+              {
+                "hex": "#c2ae76",
+                "rgb": [
+                  194,
+                  174,
+                  118
+                ],
+                "percentage": 18.84
+              },
+              {
+                "hex": "#8c7847",
+                "rgb": [
+                  140,
+                  120,
+                  71
+                ],
+                "percentage": 16.12
+              },
+              {
+                "hex": "#3b291e",
+                "rgb": [
+                  59,
+                  41,
+                  30
+                ],
+                "percentage": 12.69
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.1089,
+              "avg_brightness": 140.21,
+              "avg_saturation": 0.4827,
+              "depth_state": "deep",
+              "fill_state": "filled"
+            }
+          },
+          "middle": {
+            "circle": "middle",
+            "circle_label": "中圈",
+            "dominant_element": "金",
+            "dominant_color": "#d5bdc3",
+            "colors": [
+              {
+                "hex": "#d5bdc3",
+                "rgb": [
+                  213,
+                  189,
+                  195
+                ],
+                "percentage": 27.66
+              },
+              {
+                "hex": "#aacdd1",
+                "rgb": [
+                  170,
+                  205,
+                  209
+                ],
+                "percentage": 23.99
+              },
+              {
+                "hex": "#a4a392",
+                "rgb": [
+                  164,
+                  163,
+                  146
+                ],
+                "percentage": 20.15
+              },
+              {
+                "hex": "#777359",
+                "rgb": [
+                  119,
+                  115,
+                  89
+                ],
+                "percentage": 14.29
+              },
+              {
+                "hex": "#32322b",
+                "rgb": [
+                  50,
+                  50,
+                  43
+                ],
+                "percentage": 13.91
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.3267,
+              "avg_brightness": 143.13,
+              "avg_saturation": 0.1602,
+              "depth_state": "middle",
+              "fill_state": "filled"
+            }
+          },
+          "outer": {
+            "circle": "outer",
+            "circle_label": "外圈",
+            "dominant_element": "木",
+            "dominant_color": "#729e61",
+            "colors": [
+              {
+                "hex": "#729e61",
+                "rgb": [
+                  114,
+                  158,
+                  97
+                ],
+                "percentage": 23.68
+              },
+              {
+                "hex": "#e1d39f",
+                "rgb": [
+                  225,
+                  211,
+                  159
+                ],
+                "percentage": 22.39
+              },
+              {
+                "hex": "#a5c8b4",
+                "rgb": [
+                  165,
+                  200,
+                  180
+                ],
+                "percentage": 22.29
+              },
+              {
+                "hex": "#cdcf25",
+                "rgb": [
+                  205,
+                  207,
+                  37
+                ],
+                "percentage": 16.24
+              },
+              {
+                "hex": "#2e3a20",
+                "rgb": [
+                  46,
+                  58,
+                  32
+                ],
+                "percentage": 15.4
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.5644,
+              "avg_brightness": 154.57,
+              "avg_saturation": 0.4248,
+              "depth_state": "middle",
+              "fill_state": "filled"
+            }
+          }
+        },
+        "interpretation_method_trace": {
+          "direct_judgment": {
+            "summary": "直断先看到「金」更占主体，再结合「木」去判断整体能量的主轴。 当前主判断落在「transition-overload」。",
+            "dominant_element": "金",
+            "secondary_element": "木",
+            "primary_signal": "transition-overload",
+            "source": "tutorial_four_step_method"
+          },
+          "per_circle_color_analysis": {
+            "inner": {
+              "circle": "inner",
+              "circle_label": "内圈",
+              "dominant_element": "火",
+              "dominant_color": "#c6b0c5",
+              "colors": [
+                {
+                  "hex": "#c6b0c5",
+                  "rgb": [
+                    198,
+                    176,
+                    197
+                  ],
+                  "percentage": 31.38
+                },
+                {
+                  "hex": "#e6b511",
+                  "rgb": [
+                    230,
+                    181,
+                    17
+                  ],
+                  "percentage": 20.97
+                },
+                {
+                  "hex": "#c2ae76",
+                  "rgb": [
+                    194,
+                    174,
+                    118
+                  ],
+                  "percentage": 18.84
+                },
+                {
+                  "hex": "#8c7847",
+                  "rgb": [
+                    140,
+                    120,
+                    71
+                  ],
+                  "percentage": 16.12
+                },
+                {
+                  "hex": "#3b291e",
+                  "rgb": [
+                    59,
+                    41,
+                    30
+                  ],
+                  "percentage": 12.69
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.1089,
+                "avg_brightness": 140.21,
+                "avg_saturation": 0.4827,
+                "depth_state": "deep",
+                "fill_state": "filled"
+              }
+            },
+            "middle": {
+              "circle": "middle",
+              "circle_label": "中圈",
+              "dominant_element": "金",
+              "dominant_color": "#d5bdc3",
+              "colors": [
+                {
+                  "hex": "#d5bdc3",
+                  "rgb": [
+                    213,
+                    189,
+                    195
+                  ],
+                  "percentage": 27.66
+                },
+                {
+                  "hex": "#aacdd1",
+                  "rgb": [
+                    170,
+                    205,
+                    209
+                  ],
+                  "percentage": 23.99
+                },
+                {
+                  "hex": "#a4a392",
+                  "rgb": [
+                    164,
+                    163,
+                    146
+                  ],
+                  "percentage": 20.15
+                },
+                {
+                  "hex": "#777359",
+                  "rgb": [
+                    119,
+                    115,
+                    89
+                  ],
+                  "percentage": 14.29
+                },
+                {
+                  "hex": "#32322b",
+                  "rgb": [
+                    50,
+                    50,
+                    43
+                  ],
+                  "percentage": 13.91
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.3267,
+                "avg_brightness": 143.13,
+                "avg_saturation": 0.1602,
+                "depth_state": "middle",
+                "fill_state": "filled"
+              }
+            },
+            "outer": {
+              "circle": "outer",
+              "circle_label": "外圈",
+              "dominant_element": "木",
+              "dominant_color": "#729e61",
+              "colors": [
+                {
+                  "hex": "#729e61",
+                  "rgb": [
+                    114,
+                    158,
+                    97
+                  ],
+                  "percentage": 23.68
+                },
+                {
+                  "hex": "#e1d39f",
+                  "rgb": [
+                    225,
+                    211,
+                    159
+                  ],
+                  "percentage": 22.39
+                },
+                {
+                  "hex": "#a5c8b4",
+                  "rgb": [
+                    165,
+                    200,
+                    180
+                  ],
+                  "percentage": 22.29
+                },
+                {
+                  "hex": "#cdcf25",
+                  "rgb": [
+                    205,
+                    207,
+                    37
+                  ],
+                  "percentage": 16.24
+                },
+                {
+                  "hex": "#2e3a20",
+                  "rgb": [
+                    46,
+                    58,
+                    32
+                  ],
+                  "percentage": 15.4
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.5644,
+                "avg_brightness": 154.57,
+                "avg_saturation": 0.4248,
+                "depth_state": "middle",
+                "fill_state": "filled"
+              }
+            }
+          },
+          "shape_analysis": {
+            "source": "micro_analysis_proxy",
+            "overall_features": [
+              "detected_circle_transition_pattern",
+              "detected_wrap_or_protection_pattern"
+            ],
+            "triggered_analyses": [
+              {
+                "type": "shape_proxy",
+                "circle_count": 3,
+                "adjacent_relations": [
+                  "火克金，认知克制情感表达",
+                  "金克木，情感克制外在表达"
+                ],
+                "wrap_relations": [
+                  "保持当前能量流动状态，继续深化"
+                ]
+              }
+            ]
+          },
+          "circle_relation_analysis": {
+            "source": "circle_energy_flow",
+            "circle_elements": {
+              "inner": "火",
+              "middle": "金",
+              "outer": "木"
+            },
+            "adjacent_relations": [
+              "火克金，认知克制情感表达",
+              "金克木，情感克制外在表达"
+            ],
+            "wrap_relations": [
+              "保持当前能量流动状态，继续深化"
+            ],
+            "synthetic_signal": {
+              "id": "transition-overload",
+              "used": true,
+              "reason": "no_toc_primary_candidate"
+            }
+          },
+          "final_algorithm_basis": {
+            "ordered_steps": [
+              "直断",
+              "逐圈颜色分析",
+              "形状分析",
+              "圈级生克分析"
+            ],
+            "selected_primary_candidates": [
+              "transition-overload"
+            ],
+            "notes": [
+              "tutorial_state_and_runtime_scoring_are_separated",
+              "relationship_diagnosis_follows_element_state_analysis"
+            ]
+          }
         }
       },
       "theme_projection": {
@@ -780,6 +1806,19 @@
           "no toc primary candidate; using transition-overload synthetic signal"
         ]
       }
+    },
+    "algorithm_fidelity_trace": {
+      "method_trace_keys": [
+        "direct_judgment",
+        "per_circle_color_analysis",
+        "shape_analysis",
+        "circle_relation_analysis",
+        "final_algorithm_basis"
+      ],
+      "missing_method_trace_keys": [],
+      "algorithm_fidelity_pass": true,
+      "legacy_semantics_found": false,
+      "raw_payload_leak_found": false
     },
     "query_results": {
       "theme": {
@@ -2476,7 +3515,7 @@
       "healing": {
         "value": {
           "symptoms": "生命能量分布不均，某些领域过度发展而另一些被忽视",
-          "mandala_prescription": "绘制以平衡为主题的曼陀罗，关注各圈能量的协调。建议每天1张，持续21天",
+          "mandala_prescription": "绘制以平衡为主题的曼陀罗，关注各圈能量的协调。建议每天1张，连续练习约三周",
           "daily_practice": "每天进行身体扫描，觉察能量在身体的分布，记录感受",
           "cognitive_upgrade": "认识到生命是一个整体，各领域的平衡比单领域的极致更重要",
           "imbalance": "transition-overload",
@@ -2501,7 +3540,7 @@
         "found": true,
         "data": {
           "symptoms": "生命能量分布不均，某些领域过度发展而另一些被忽视",
-          "mandala_prescription": "绘制以平衡为主题的曼陀罗，关注各圈能量的协调。建议每天1张，持续21天",
+          "mandala_prescription": "绘制以平衡为主题的曼陀罗，关注各圈能量的协调。建议每天1张，连续练习约三周",
           "daily_practice": "每天进行身体扫描，觉察能量在身体的分布，记录感受",
           "cognitive_upgrade": "认识到生命是一个整体，各领域的平衡比单领域的极致更重要",
           "imbalance": "transition-overload",
@@ -2539,7 +3578,7 @@
               "示例": "你拥有罕见的整合力——能将不同的能量融为一体。这意味着你有极强的适应力，这是你的核心天赋..."
             }
           },
-          "pro_upgrade_teaser": "\n🔓 还有6个深层洞察...\n包括：\n- 这种能量模式在亲密关系/财富/健康中的具体表现\n- 童年经历如何塑造了这一模式\n- 21天个人成长定制方案\n\n👉 解锁完整版\n"
+          "pro_upgrade_teaser": "\n还有更多深层洞察，包括：\n- 这种能量模式在亲密关系、财富与健康中的具体表现\n- 童年经历如何塑造了这一模式\n- 更完整的结构、根因与疗愈视角\n"
         },
         "entity_id": "narrative.general",
         "source_pack": "v2.1",
@@ -2581,7 +3620,7 @@
               "示例": "你拥有罕见的整合力——能将不同的能量融为一体。这意味着你有极强的适应力，这是你的核心天赋..."
             }
           },
-          "pro_upgrade_teaser": "\n🔓 还有6个深层洞察...\n包括：\n- 这种能量模式在亲密关系/财富/健康中的具体表现\n- 童年经历如何塑造了这一模式\n- 21天个人成长定制方案\n\n👉 解锁完整版\n"
+          "pro_upgrade_teaser": "\n还有更多深层洞察，包括：\n- 这种能量模式在亲密关系、财富与健康中的具体表现\n- 童年经历如何塑造了这一模式\n- 更完整的结构、根因与疗愈视角\n"
         },
         "source": "primary",
         "fallback_used": false
@@ -2947,7 +3986,10 @@
       "fallback_used": false,
       "fallback_levels": [],
       "warning_hit_count": 0,
-      "source_ref_count": 8
+      "source_ref_count": 8,
+      "algorithm_fidelity_pass": true,
+      "legacy_semantics_found": false,
+      "raw_payload_leak_found": false
     }
   },
   "regression_flags": [],
