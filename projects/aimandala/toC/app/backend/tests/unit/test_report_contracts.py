@@ -295,6 +295,122 @@ def test_algorithm_fidelity_trace_scopes_raw_payload_by_report_mode():
     assert pro_trace["algorithm_fidelity_pass"] is False
 
 
+def test_review_debug_views_group_input_layer0_and_mapping_summaries():
+    builder = KnowledgeDebugBlockBuilder.__new__(KnowledgeDebugBlockBuilder)
+    layer0 = {
+        "visual_facts": {
+            "circle_boundaries": {"inner_radius": 0.35, "middle_radius": 0.65},
+            "circle_colors": {
+                "inner": ["gold", "green"],
+                "middle": ["red"],
+                "outer": ["earth"],
+            },
+            "weighted_element_distribution": {
+                "wood": 0.18,
+                "fire": 0.22,
+                "earth": 0.24,
+                "metal": 0.14,
+                "water": 0.22,
+            },
+        },
+        "rule_evaluations": {
+            "element_states": {
+                "wood": {"tutorial_state": "balanced"},
+            },
+            "triad_states": {
+                "inner": {"circle": "inner", "dominant_element": "fire"},
+            },
+            "imbalance_trace": {
+                "primary_candidates": [
+                    {
+                        "id": "water-fire-conflict",
+                        "score": 0.72,
+                        "toc_supported": True,
+                    }
+                ],
+                "synthetic_signal": {
+                    "id": "transition-overload",
+                    "used": False,
+                    "reason": "",
+                },
+            },
+            "interpretation_method_trace": {
+                "direct_judgment": {
+                    "summary": "先看到中心有聚焦感，外围承接略重。",
+                },
+                "per_circle_color_analysis": {
+                    "inner": {"summary": "内圈偏亮，金火感更突出。"},
+                    "middle": {"summary": "中圈偏深，推进感里带一点压住。"},
+                    "outer": {"summary": "外圈偏厚，承接比扩张更明显。"},
+                },
+                "shape_analysis": {
+                    "summary": "形状辅助支持中心聚焦，但不是主判断。",
+                },
+                "circle_relation_analysis": {
+                    "summary": "圈级关系更像内推与外承接不同步。",
+                },
+                "final_algorithm_basis": {},
+            },
+        },
+        "theme_projection": {
+            "theme": "wealth_career",
+            "theme_label": "财富事业",
+        },
+        "fidelity_flags": ["warning:water-fire-conflict"],
+        "fallback_summary": {"used": False, "levels": [], "warnings": []},
+    }
+    record = SimpleNamespace(
+        interpretation_id="ipt-review-1",
+        image_path="/tmp/review.png",
+        theme="wealth_career",
+        painting_intention="看清工作中的收缩和推进。",
+        painting_feeling="紧绷，但想往前。",
+        three_circles={"inner_radius": 0.35, "middle_radius": 0.65},
+        three_circles_auto_detect={
+            "inner_radius": 0.37,
+            "middle_radius": 0.63,
+        },
+        layer_0_raw=SimpleNamespace(to_dict=lambda: layer0),
+        layer_2_lite_final=SimpleNamespace(
+            overall_impression="你正在一边收紧、一边寻找推进感。",
+            visual_elements_rendered="内圈偏亮，中圈偏深，外圈承接偏厚。",
+            emotion_portrait_rendered="你更像在稳住自己之后再考虑往外推进。",
+            theme_insights=SimpleNamespace(
+                scene="工作场景里先稳后动。",
+                impact="推进速度容易被压力门槛拖住。",
+                awareness="先把价值感收回来，动作会更清楚。",
+            ),
+            story=SimpleNamespace(
+                pattern=SimpleNamespace(content="当前更像先保护、再试探。"),
+                defense=SimpleNamespace(content="你会先把门槛拉高来保护自己。"),
+            ),
+        ),
+        layer_3_pro_draft=SimpleNamespace(
+            first_impression="你有明显的中心聚焦感，但外层承接比向外扩张更强。",
+            to_dict=lambda: {"healing_suggestions": []},
+        ),
+    )
+
+    input_package = builder._build_review_input_package(record)
+    layer0_summary = builder._build_review_layer0_summary(layer0)
+    mapping_summary = builder._build_review_mapping_summary(record, layer0)
+
+    assert input_package["image_path"] == "/tmp/review.png"
+    assert input_package["theme"] == "wealth_career"
+    assert input_package["inner_radius"] == 0.35
+    assert input_package["middle_radius"] == 0.65
+    assert input_package["three_circles_source"] == "mixed"
+
+    assert "中心有聚焦感" in layer0_summary["direct_judgment_summary"]
+    assert "内圈偏亮" in layer0_summary["per_circle_observation_summary"]
+    assert "形状辅助" in layer0_summary["shape_observation_summary"]
+    assert "water-fire-conflict" in layer0_summary["candidate_summary"]
+
+    assert "current_reading" in mapping_summary["lite_blocks"]
+    assert "deep_impression" in mapping_summary["pro_blocks"]
+    assert mapping_summary["lite_blocks"]["visual_basis"]["evidence_trace_refs"]
+
+
 def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_path):
     orchestrator, image_path = _create_orchestrator(tmp_path)
     record = asyncio.run(

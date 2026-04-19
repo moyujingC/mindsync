@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { BrowserDebugPanel } from "./browser-debug-panel";
+import { ManualReviewPanel } from "./manual-review-panel";
 import { MiniappApp } from "../miniapp/app";
 import type { MiniappRouteId } from "../miniapp/routes";
 import { createPreviewAppProps } from "./fixtures";
@@ -1356,6 +1357,17 @@ export function MobileWebBrowserShell() {
             />
           )}
           </div>
+
+          {localDebugEnabled && controlsOpen ? (
+            <ManualReviewPanel
+              route={route}
+              previewMode={previewMode}
+              draft={draft}
+              interpretationId={interpretationId}
+              flowState={previewFlowState}
+              detection={previewDetection}
+            />
+          ) : null}
 
           {localDebugEnabled && controlsOpen ? (
             <BrowserDebugPanel

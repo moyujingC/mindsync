@@ -87,6 +87,7 @@
   z-index: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 24px;
 }
 
@@ -94,6 +95,10 @@
   position: relative;
   width: 280px;
   height: 280px;
+  min-width: 280px;
+  min-height: 280px;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 280px;
 }
 
 .am-upload-disc-shell__halo {
@@ -123,6 +128,9 @@
 .am-upload-disc {
   position: absolute;
   inset: 8px;
+  width: auto;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   overflow: hidden;
   display: grid;
@@ -177,6 +185,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .am-upload-disc__hover-mask {
@@ -256,6 +266,18 @@
   display: grid;
   place-items: center;
   pointer-events: none;
+}
+
+.am-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .am-upload-disc__ring {

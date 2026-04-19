@@ -74,6 +74,8 @@ class KnowledgeDebugBlockBuilder:
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
                 "algorithm_fidelity_trace": algorithm_fidelity_trace,
+                "review_input_package": self._build_review_input_package(record),
+                "review_layer0_summary": self._build_review_layer0_summary(layer0),
                 "narrative_plans": narrative_plans,
                 "knowledge_projections": knowledge_projections,
                 "topic_context_trace": self._build_topic_context_trace(record),
@@ -81,6 +83,11 @@ class KnowledgeDebugBlockBuilder:
                     record=record,
                     layer0=layer0,
                     field_to_knowledge_map={},
+                ),
+                "review_mapping_summary": self._build_review_mapping_summary(
+                    record,
+                    layer0,
+                    {},
                 ),
                 "internal_compatibility": self._build_internal_compatibility(record),
                 "query_results": {},
@@ -168,6 +175,8 @@ class KnowledgeDebugBlockBuilder:
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
             "algorithm_fidelity_trace": algorithm_fidelity_trace,
+            "review_input_package": self._build_review_input_package(record),
+            "review_layer0_summary": self._build_review_layer0_summary(layer0),
             "narrative_plans": narrative_plans,
             "knowledge_projections": knowledge_projections,
             "topic_context_trace": self._build_topic_context_trace(record),
@@ -175,6 +184,11 @@ class KnowledgeDebugBlockBuilder:
                 record=record,
                 layer0=layer0,
                 field_to_knowledge_map=field_to_knowledge_map,
+            ),
+            "review_mapping_summary": self._build_review_mapping_summary(
+                record,
+                layer0,
+                field_to_knowledge_map,
             ),
             "internal_compatibility": self._build_internal_compatibility(record),
             "query_results": query_results,
@@ -185,12 +199,80 @@ class KnowledgeDebugBlockBuilder:
         }
 
     def _build_topic_context_trace(self, record: InterpretationRecord) -> dict[str, Any]:
-        theme = record.theme or "general"
+        theme = getattr(record, "theme", None) or "general"
         return {
             "topic": theme,
-            "report_modes": list(record.version_purchased or []),
+            "report_modes": list(getattr(record, "version_purchased", []) or []),
             "knowledge_route": "general" if theme == "general" else "theme_only",
             "general_mixed": False,
+        }
+
+    def _build_review_input_package(self, record: InterpretationRecord) -> dict[str, Any]:
+        three_circles = getattr(record, "three_circles", None) or {}
+        auto_detect = getattr(record, "three_circles_auto_detect", None) or {}
+        theme_trace = self._build_topic_context_trace(record)
+        image_path = self._record_image_ref(record)
+        return {
+            "image_path": image_path,
+            "image_preview_ref": image_path,
+            "theme": getattr(record, "theme", None) or "general",
+            "topic_label": self._topic_label(getattr(record, "theme", None)),
+            "topic": theme_trace.get("topic"),
+            "report_mode": self._primary_report_mode(record),
+            "painting_intention": getattr(record, "painting_intention", None) or "",
+            "painting_feeling": getattr(record, "painting_feeling", None) or "",
+            "inner_radius": three_circles.get("inner_radius"),
+            "middle_radius": three_circles.get("middle_radius"),
+            "auto_detect_inner_radius": auto_detect.get("inner_radius"),
+            "auto_detect_middle_radius": auto_detect.get("middle_radius"),
+            "three_circles_source": self._resolve_three_circles_source(record),
+        }
+
+    def _build_review_layer0_summary(self, layer0: dict[str, Any]) -> dict[str, Any]:
+        visual_facts = layer0.get("visual_facts", {}) if isinstance(layer0, dict) else {}
+        rule_evaluations = (
+            layer0.get("rule_evaluations", {}) if isinstance(layer0, dict) else {}
+        )
+        method_trace = (
+            rule_evaluations.get("interpretation_method_trace", {})
+            if isinstance(rule_evaluations, dict)
+            else {}
+        )
+        return {
+            "visual_fact_summary": self._summarize_visual_facts(visual_facts),
+            "per_circle_observation_summary": self._build_per_circle_observation_summary(layer0),
+            "shape_observation_summary": self._summarize_shape_analysis(
+                method_trace.get("shape_analysis", {}),
+            ),
+            "direct_judgment_summary": self._summarize_direct_judgment(
+                method_trace.get("direct_judgment", {}),
+            ),
+            "element_state_summary": self._summarize_element_states(
+                rule_evaluations.get("element_states", {}),
+            ),
+            "relation_summary": self._summarize_relation_analysis(
+                method_trace.get("circle_relation_analysis", {}),
+            ),
+            "candidate_summary": self._summarize_candidate_trace(
+                rule_evaluations.get("imbalance_trace", {}),
+            ),
+        }
+
+    def _build_review_mapping_summary(
+        self,
+        record: InterpretationRecord,
+        layer0: dict[str, Any],
+        field_to_knowledge_map: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        field_to_knowledge_map = field_to_knowledge_map or {}
+        product_block_debug = self._build_product_block_debug(
+            record=record,
+            layer0=layer0,
+            field_to_knowledge_map=field_to_knowledge_map,
+        )
+        return {
+            "lite_blocks": self._to_review_block_map(product_block_debug.get("lite", {})),
+            "pro_blocks": self._to_review_block_map(product_block_debug.get("pro", {})),
         }
 
     def _build_product_block_debug(
@@ -319,7 +401,7 @@ class KnowledgeDebugBlockBuilder:
                     compatibility_used=True,
                 ),
                 "healing_plan": self._product_block(
-                    final=pro_draft.healing_suggestions if pro_draft else [],
+                    final=getattr(pro_draft, "healing_suggestions", []) if pro_draft else [],
                     field_key="healing_plan",
                     field_to_knowledge_map=field_to_knowledge_map,
                     fidelity_flags=fidelity_flags,
@@ -421,6 +503,10 @@ class KnowledgeDebugBlockBuilder:
             item = per_circle.get(key)
             if not isinstance(item, dict):
                 continue
+            summary = str(item.get("summary") or "").strip()
+            if summary:
+                parts.append(summary)
+                continue
             circle_label = str(item.get("circle_label") or self._circle_label(key)).strip()
             dominant_element = str(item.get("dominant_element") or "").strip() or "未识别元素"
             state_basis = item.get("state_basis", {})
@@ -433,6 +519,160 @@ class KnowledgeDebugBlockBuilder:
                 f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"
             )
         return "；".join(parts)
+
+    def _summarize_visual_facts(self, visual_facts: Any) -> str:
+        if not isinstance(visual_facts, dict):
+            return ""
+        boundaries = visual_facts.get("circle_boundaries", {})
+        colors = visual_facts.get("circle_colors", {})
+        distribution = visual_facts.get("weighted_element_distribution", {})
+        parts: list[str] = []
+        if isinstance(boundaries, dict):
+            inner_radius = boundaries.get("inner_radius")
+            middle_radius = boundaries.get("middle_radius")
+            if inner_radius is not None or middle_radius is not None:
+                parts.append(
+                    f"三圈边界使用 inner={inner_radius if inner_radius is not None else '未知'} / middle={middle_radius if middle_radius is not None else '未知'}。"
+                )
+        if isinstance(colors, dict):
+            circle_parts = []
+            for key in ["inner", "middle", "outer"]:
+                value = colors.get(key)
+                if isinstance(value, list) and value:
+                    circle_parts.append(f"{self._circle_label(key)}颜色={','.join(str(item) for item in value[:3])}")
+            if circle_parts:
+                parts.append("；".join(circle_parts))
+        if isinstance(distribution, dict) and distribution:
+            ranked = sorted(
+                (
+                    (str(key), value)
+                    for key, value in distribution.items()
+                    if isinstance(value, (int, float))
+                ),
+                key=lambda item: item[1],
+                reverse=True,
+            )
+            if ranked:
+                top = "、".join(
+                    f"{name}:{value:.2f}" for name, value in ranked[:3]
+                )
+                parts.append(f"五行加权分布最高的前三项为 {top}。")
+        return " ".join(part for part in parts if part)
+
+    def _summarize_shape_analysis(self, shape_analysis: Any) -> str:
+        if isinstance(shape_analysis, dict):
+            for key in ["summary", "observation", "result"]:
+                value = shape_analysis.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+        return ""
+
+    def _summarize_direct_judgment(self, direct_judgment: Any) -> str:
+        if isinstance(direct_judgment, dict):
+            for key in ["summary", "judgment", "result"]:
+                value = direct_judgment.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+        if isinstance(direct_judgment, str):
+            return direct_judgment.strip()
+        return ""
+
+    def _summarize_element_states(self, element_states: Any) -> str:
+        if not isinstance(element_states, dict):
+            return ""
+        parts: list[str] = []
+        for key in ["wood", "fire", "earth", "metal", "water"]:
+            state = element_states.get(key)
+            if not isinstance(state, dict):
+                continue
+            tutorial_state = str(state.get("tutorial_state") or state.get("state") or "").strip()
+            scoring_state = str(state.get("scoring_state") or "").strip()
+            if tutorial_state or scoring_state:
+                suffix = f"（评分态 {scoring_state}）" if scoring_state else ""
+                parts.append(f"{key}:{tutorial_state or '未知'}{suffix}")
+        return "；".join(parts)
+
+    def _summarize_relation_analysis(self, relation_analysis: Any) -> str:
+        if isinstance(relation_analysis, dict):
+            for key in ["summary", "judgment", "result"]:
+                value = relation_analysis.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+        if isinstance(relation_analysis, str):
+            return relation_analysis.strip()
+        return ""
+
+    def _summarize_candidate_trace(self, imbalance_trace: Any) -> str:
+        if not isinstance(imbalance_trace, dict):
+            return ""
+        primary_candidates = imbalance_trace.get("primary_candidates", [])
+        all_candidates = imbalance_trace.get("all_candidates", [])
+        candidate_bits: list[str] = []
+        if isinstance(primary_candidates, list):
+            for item in primary_candidates[:3]:
+                if not isinstance(item, dict):
+                    continue
+                candidate_bits.append(
+                    f"{item.get('id', 'unknown')}({item.get('score', 'n/a')})"
+                )
+        if candidate_bits:
+            return f"主候选为 {'、'.join(candidate_bits)}。"
+        if isinstance(all_candidates, list) and all_candidates:
+            return f"当前已评估 {len(all_candidates)} 个失衡候选，但没有可用主候选。"
+        return ""
+
+    def _to_review_block_map(self, blocks: Any) -> dict[str, Any]:
+        if not isinstance(blocks, dict):
+            return {}
+        result: dict[str, Any] = {}
+        for key, block in blocks.items():
+            if not isinstance(block, dict):
+                continue
+            result[key] = {
+                "final_excerpt": block.get("final"),
+                "narrative_trace_refs": block.get("narrative_trace", {}),
+                "evidence_trace_refs": block.get("evidence_trace", {}),
+            }
+        return result
+
+    def _resolve_three_circles_source(self, record: InterpretationRecord) -> str:
+        circles = getattr(record, "three_circles", None)
+        auto_detect = getattr(record, "three_circles_auto_detect", None)
+        has_manual = isinstance(circles, dict) and bool(circles)
+        has_auto = isinstance(auto_detect, dict) and bool(auto_detect)
+        if has_manual and has_auto:
+            return "mixed"
+        if has_manual:
+            return "user_override" if getattr(record, "three_circles_user_adjusted", False) else "user_override"
+        if has_auto:
+            return "auto_detect"
+        return "user_override"
+
+    def _primary_report_mode(self, record: InterpretationRecord) -> str:
+        versions = list(getattr(record, "version_purchased", []) or [])
+        if "pro" in versions:
+            return "pro"
+        return "lite"
+
+    def _record_image_ref(self, record: InterpretationRecord) -> str:
+        for attr in ["image_url", "image_local_path", "image_path"]:
+            value = getattr(record, attr, None)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        return ""
+
+    def _topic_label(self, theme: Any) -> str:
+        labels = {
+            "general": "全面解读",
+            "wealth_career": "财富事业",
+            "father_relationship": "父亲关系",
+            "mother_relationship": "母亲关系",
+            "intimate_relationship": "亲密关系",
+            "parent_child_relationship": "亲子关系",
+            "health_wellness": "身体健康",
+            "personal_growth": "个人成长",
+        }
+        return labels.get(str(theme or "general"), str(theme or "general"))
 
     def _circle_label(self, circle_key: str) -> str:
         return {"inner": "内圈", "middle": "中圈", "outer": "外圈"}.get(
@@ -468,10 +708,9 @@ class KnowledgeDebugBlockBuilder:
     def _build_lite_healing_guidance_debug(self, lite_final: Any) -> dict[str, Any]:
         if lite_final is None:
             return {"directions": [], "micro_practices": []}
-        theme_insights = (
-            lite_final.theme_insights.to_dict()
-            if getattr(lite_final, "theme_insights", None)
-            else {"scene": "", "impact": "", "awareness": ""}
+        theme_insights = self._object_to_dict(
+            getattr(lite_final, "theme_insights", None),
+            default={"scene": "", "impact": "", "awareness": ""},
         )
         directions = []
         for title, content in [
@@ -513,11 +752,27 @@ class KnowledgeDebugBlockBuilder:
             "product_note": "Pro 不是串接在 Lite 后面的补充，而是另一份独立购买、独立成立的深度完整解读。",
         }
 
+    def _object_to_dict(self, value: Any, *, default: dict[str, Any] | None = None) -> dict[str, Any]:
+        if value is None:
+            return default or {}
+        if isinstance(value, dict):
+            return value
+        if hasattr(value, "to_dict"):
+            result = value.to_dict()
+            return result if isinstance(result, dict) else (default or {})
+        if hasattr(value, "__dict__"):
+            return {
+                key: item
+                for key, item in vars(value).items()
+                if not key.startswith("_")
+            }
+        return default or {}
+
     def _build_pro_evidence_digest_debug(self, pro_draft: Any) -> str:
         if pro_draft is None:
             return ""
         circle_parts = []
-        for item in (pro_draft.three_circles_detailed or {}).values():
+        for item in (getattr(pro_draft, "three_circles_detailed", {}) or {}).values():
             if not isinstance(item, dict):
                 continue
             label = str(item.get("label") or "").strip()
@@ -526,12 +781,12 @@ class KnowledgeDebugBlockBuilder:
                 circle_parts.append(f"{label}：{reading}" if label else reading)
         micro_parts = [
             str(value).strip()
-            for value in (pro_draft.micro_analysis_detailed or {}).values()
+            for value in (getattr(pro_draft, "micro_analysis_detailed", {}) or {}).values()
             if isinstance(value, str) and value.strip()
         ]
         core_parts = [
             str(value).strip()
-            for value in (pro_draft.core_insight_table or {}).values()
+            for value in (getattr(pro_draft, "core_insight_table", {}) or {}).values()
             if isinstance(value, str) and value.strip()
         ]
         return self._join_text(core_parts[:2] + circle_parts + micro_parts)
@@ -539,7 +794,7 @@ class KnowledgeDebugBlockBuilder:
     def _build_pro_imbalance_diagnosis_debug(self, pro_draft: Any) -> str:
         if pro_draft is None:
             return ""
-        imbalance = pro_draft.imbalance_confirmed or {}
+        imbalance = getattr(pro_draft, "imbalance_confirmed", {}) or {}
         preferred_keys = ["primary", "summary", "evidence", "energy_level", "psychological_level"]
         parts = [
             str(imbalance.get(key) or "").strip()
@@ -555,7 +810,7 @@ class KnowledgeDebugBlockBuilder:
         ])
 
     def _build_pro_root_cause_chain_debug(self, pro_draft: Any) -> dict[str, str]:
-        root_cause = pro_draft.root_cause if pro_draft else {}
+        root_cause = getattr(pro_draft, "root_cause", {}) if pro_draft else {}
         return {
             "surface": str(root_cause.get("surface") or root_cause.get("表面现象") or "").strip(),
             "mechanism": str(root_cause.get("deeper") or root_cause.get("形成机制") or "").strip(),
