@@ -42,6 +42,7 @@
 
 当前优先阅读：
 
+- [2026-04-19-paperclip-native-execution-routing-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md)
 - [2026-04-16-ceo-hermes-container-runtime-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-16-ceo-hermes-container-runtime-verification.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
 - [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
@@ -53,6 +54,7 @@
 
 说明：
 
+- `2026-04-19-paperclip-native-execution-routing-qa-basis.md` 是当前 execution routing 的正式 QA baseline，定义了 direct routing（直接路由）模型、服务器 heartbeat 边界与历史方案废弃检查。
 - `2026-04-16-ceo-hermes-container-runtime-verification.md` 是当前 `CEO bug` 的正式验证入口，收束了“旧权限截图”与“当前 Hermes 运行时根因”之间的区分。
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md` 仍是当前 Web 首发窗口的正式 QA baseline。
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md` 是与之配套的当前验证总入口。
@@ -63,6 +65,9 @@
 
 以下文档主要用于追溯背景，不再作为当前首轮入口：
 
+- [2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
+- [2026-04-18-automation-and-local-execution-routing-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-and-local-execution-routing-qa-basis.md)
+- [2026-04-18-automation-routing-and-heartbeat-gate-verification.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-routing-and-heartbeat-gate-verification.md)
 - [2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md)
 - [2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md)
 - [2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md)

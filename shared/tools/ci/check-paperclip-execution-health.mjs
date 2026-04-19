@@ -1,16 +1,9 @@
 #!/usr/bin/env node
 
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 
-import {
-  PaperclipApi,
-  getOption,
-  isoNow,
-  logError,
-  logInfo,
-  parseArgs,
-  truthy,
-} from "./common.mjs";
+import { PaperclipApi, getOption, isoNow, logError, logInfo, parseArgs, truthy } from "./common.mjs";
 
 const AUTOMATION_ROUTE_SOURCES = new Set([
   "lint-failure",
@@ -21,7 +14,8 @@ const AUTOMATION_ROUTE_SOURCES = new Set([
   "deploy-or-smoke-failure",
   "infra-runner-failure",
 ]);
-const ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
+const OBSERVED_ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
+const STRICT_BLOCKING_STATUSES = new Set(["in_progress", "in_review", "blocked"]);
 
 function minutesSince(isoTimestamp) {
   return (Date.now() - new Date(isoTimestamp).getTime()) / (1000 * 60);
@@ -105,11 +99,31 @@ function issueLooksActiveWithoutWorkspace(issue, executionRoute) {
     return false;
   }
 
-  if (!ACTIVE_STATUSES.has(issue.status)) {
+  if (!OBSERVED_ACTIVE_STATUSES.has(issue.status)) {
     return false;
   }
 
   return Boolean(issue.checkoutRunId || issue.startedAt || issue.completedAt || issue.updatedAt);
+}
+
+function splitWorkspaceDriftIssues(issues) {
+  const activeBlockingIssues = [];
+  const historicalDoneIssues = [];
+
+  for (const issue of issues) {
+    if (issue.status === "done") {
+      historicalDoneIssues.push(issue);
+      continue;
+    }
+    if (STRICT_BLOCKING_STATUSES.has(issue.status)) {
+      activeBlockingIssues.push(issue);
+    }
+  }
+
+  return {
+    activeBlockingIssues,
+    historicalDoneIssues,
+  };
 }
 
 function classifyServerWritableExecutionRejected(issue, metadata, workspace) {
@@ -127,6 +141,10 @@ function classifyServerWritableExecutionRejected(issue, metadata, workspace) {
     workspaceProviderRef: workspace?.providerRef ?? null,
     workspacePath: workspace?.worktreePath ?? null,
   };
+}
+
+function classifyLocalExecutionRoutingIssue(issue, metadata, workspace) {
+  return classifyServerWritableExecutionRejected(issue, metadata, workspace);
 }
 
 async function main() {
@@ -239,7 +257,7 @@ async function main() {
       if (resolveExecutionRoute(metadata) === "server_automation") {
         return false;
       }
-      if (!ACTIVE_STATUSES.has(issue.status)) {
+      if (!STRICT_BLOCKING_STATUSES.has(issue.status)) {
         return false;
       }
       const workspace = getWorkspaceBinding(issue, workspaceById);
@@ -255,27 +273,40 @@ async function main() {
     ...issue,
     reason: "stale_running_issue",
   }));
+  const {
+    activeBlockingIssues: activeWorkspaceDriftIssues,
+    historicalDoneIssues: historicalDoneWorkspaceDriftIssues,
+  } = splitWorkspaceDriftIssues(workspaceDriftIssues);
 
   const summary = {
     checkedAt: isoNow(),
     strict,
     expectedRoot,
+    counts: {
+      staleRunning: staleRunningIssues.length,
+      serverAutomationBlocking: activeWorkspaceDriftIssues.length,
+      historicalDoneWorkspaceDrift: historicalDoneWorkspaceDriftIssues.length,
+      localExecutionRouting: serverWritableExecutionRejectedIssues.length,
+    },
     staleRunningIssues,
-    workspaceDriftIssues,
-    serverWritableExecutionRejectedIssues,
+    serverAutomationBlockingIssues: activeWorkspaceDriftIssues,
+    historicalDoneWorkspaceDriftIssues,
+    localExecutionRoutingIssues: serverWritableExecutionRejectedIssues,
   };
 
+  const strictShouldFail = activeWorkspaceDriftIssues.length > 0;
+
   if (staleIssues.length === 0) {
-    if (workspaceDriftIssues.length === 0 && serverWritableExecutionRejectedIssues.length === 0) {
+    if (!strictShouldFail && historicalDoneWorkspaceDriftIssues.length === 0) {
       logInfo("No stale running issues detected");
       return;
     }
 
     logInfo(
-      `Detected ${workspaceDriftIssues.length} issue(s) missing execution workspace binding and ${serverWritableExecutionRejectedIssues.length} issue(s) rejected for server writable execution`,
+      `Detected ${activeWorkspaceDriftIssues.length} server automation blocking issue(s), ${historicalDoneWorkspaceDriftIssues.length} historical done workspace drift issue(s), and ${serverWritableExecutionRejectedIssues.length} local execution routing issue(s)`,
     );
     console.log(JSON.stringify(summary, null, 2));
-    if (strict && (workspaceDriftIssues.length > 0 || serverWritableExecutionRejectedIssues.length > 0)) {
+    if (strict && strictShouldFail) {
       process.exitCode = 2;
     }
     return;
@@ -283,12 +314,26 @@ async function main() {
 
   logInfo(`Detected ${staleIssues.length} stale running issue(s)`);
   console.log(JSON.stringify(summary, null, 2));
-  if (strict && (workspaceDriftIssues.length > 0 || serverWritableExecutionRejectedIssues.length > 0)) {
+  if (strict && strictShouldFail) {
     process.exitCode = 2;
   }
 }
 
-main().catch((error) => {
-  logError(error instanceof Error ? error.stack ?? error.message : String(error));
-  process.exit(1);
-});
+export const __testables = {
+  hasExecutionWorkspaceBinding,
+  parseIssueMetadata,
+  resolveExecutionRoute,
+  issueLooksActiveWithoutWorkspace,
+  splitWorkspaceDriftIssues,
+  workspaceUsesExpectedRoot,
+  classifyLocalExecutionRoutingIssue,
+  OBSERVED_ACTIVE_STATUSES,
+  STRICT_BLOCKING_STATUSES,
+};
+
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  main().catch((error) => {
+    logError(error instanceof Error ? error.stack ?? error.message : String(error));
+    process.exit(1);
+  });
+}

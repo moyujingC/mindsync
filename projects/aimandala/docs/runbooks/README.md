@@ -53,3 +53,8 @@
 - 新增运行说明优先落到这里
 - 历史文档先保留原路径，通过索引收口
 - 后续再按需要做目录迁移
+
+当前补充说明：
+
+- `execution routing` 的当前正式入口已转为 `../specs/2026-04-19-paperclip-native-execution-routing-spec.md`、`../tasks/2026-04-19-paperclip-native-execution-routing-plan.md` 与 `../qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md`。
+- `本地人工接手-runbook.md` 与 `本地人工接手-comment-模板规范.md` 保留为旧 phase 2 handoff 模型的历史参考，不再作为当前默认入口。

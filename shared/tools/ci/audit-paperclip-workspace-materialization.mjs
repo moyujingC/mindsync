@@ -21,7 +21,8 @@ const AUTOMATION_ROUTE_SOURCES = new Set([
   "deploy-or-smoke-failure",
   "infra-runner-failure",
 ]);
-const ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
+const OBSERVED_ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
+const STRICT_BLOCKING_STATUSES = new Set(["in_progress", "in_review", "blocked"]);
 
 function hasExecutionWorkspaceBinding(issue) {
   return Boolean(issue.executionWorkspaceId || issue.currentExecutionWorkspace?.id);
@@ -58,10 +59,30 @@ function issueLooksActiveWithoutWorkspace(issue, executionRoute) {
   if (executionRoute !== "server_automation") {
     return false;
   }
-  if (!ACTIVE_STATUSES.has(issue.status)) {
+  if (!OBSERVED_ACTIVE_STATUSES.has(issue.status)) {
     return false;
   }
   return Boolean(issue.checkoutRunId || issue.startedAt || issue.completedAt || issue.updatedAt);
+}
+
+function splitWorkspaceDriftIssues(issues) {
+  const activeIssuesMissingWorkspace = [];
+  const historicalDoneIssuesMissingWorkspace = [];
+
+  for (const issue of issues) {
+    if (issue.status === "done") {
+      historicalDoneIssuesMissingWorkspace.push(issue);
+      continue;
+    }
+    if (STRICT_BLOCKING_STATUSES.has(issue.status)) {
+      activeIssuesMissingWorkspace.push(issue);
+    }
+  }
+
+  return {
+    activeIssuesMissingWorkspace,
+    historicalDoneIssuesMissingWorkspace,
+  };
 }
 
 function normalizePath(value) {
@@ -144,7 +165,7 @@ async function main() {
   );
   const workspaceById = new Map((executionWorkspaces ?? []).map((workspace) => [workspace.id, workspace]));
 
-  const activeIssuesMissingWorkspace = (issues ?? [])
+  const observedWorkspaceDriftIssues = (issues ?? [])
     .filter((issue) => {
       const metadata = parseIssueMetadata(issue.description);
       return (
@@ -170,14 +191,16 @@ async function main() {
         updatedAt: issue.updatedAt ?? null,
       };
     });
+  const { activeIssuesMissingWorkspace, historicalDoneIssuesMissingWorkspace } =
+    splitWorkspaceDriftIssues(observedWorkspaceDriftIssues);
 
-  const serverWritableExecutionRejectedIssues = (issues ?? [])
+  const localExecutionRoutingIssues = (issues ?? [])
     .filter((issue) => {
       const metadata = parseIssueMetadata(issue.description);
       if (resolveExecutionRoute(metadata) === "server_automation") {
         return false;
       }
-      if (!ACTIVE_STATUSES.has(issue.status)) {
+      if (!STRICT_BLOCKING_STATUSES.has(issue.status)) {
         return false;
       }
       const workspace = getWorkspaceBinding(issue, workspaceById);
@@ -248,14 +271,15 @@ async function main() {
     },
     expectedRoot,
     repoRoot,
-    activeIssuesMissingWorkspace,
-    serverWritableExecutionRejectedIssues,
+    serverAutomationBlockingIssues: activeIssuesMissingWorkspace,
+    historicalDoneIssuesMissingWorkspace,
+    localExecutionRoutingIssues,
     executionWorkspacesOutsideExpectedRoot,
     hostWorktreesWithoutBoundIssue,
   };
 
   logInfo(
-    `Workspace audit completed: missing=${activeIssuesMissingWorkspace.length}, rejected=${serverWritableExecutionRejectedIssues.length}, outside_root=${executionWorkspacesOutsideExpectedRoot.length}, host_unbound=${hostWorktreesWithoutBoundIssue.length}`,
+    `Workspace audit completed: server_blocking=${activeIssuesMissingWorkspace.length}, historical_done_missing=${historicalDoneIssuesMissingWorkspace.length}, local_routing=${localExecutionRoutingIssues.length}, outside_root=${executionWorkspacesOutsideExpectedRoot.length}, host_unbound=${hostWorktreesWithoutBoundIssue.length}`,
   );
   console.log(JSON.stringify(summary, null, 2));
 }

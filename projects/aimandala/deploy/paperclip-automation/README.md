@@ -211,13 +211,15 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 新增稳定原因码：`server_writable_execution_not_allowed`
    - 默认只输出告警和 JSON，不自动修补 issue workspace 绑定
    - 开启 `--strict` 或 `PAPERCLIP_EXECUTION_HEALTH_STRICT=1` 时
-   - 只要发现 `policy enabled + active issue + executionWorkspaceId = null`
+   - 只要发现 `policy enabled + 当前活跃的 automation issue + executionWorkspaceId = null`
    - 就返回非零，供 heartbeat / automation gate 直接失败
+   - 历史 `done` 漂移样本继续输出到 JSON，但只作为审计证据，不再阻断 heartbeat
 2. `shared/tools/ci/audit-paperclip-workspace-materialization.mjs`
    - 只读审计入口
    - 输出：
-     - `activeIssuesMissingWorkspace`
-     - `serverWritableExecutionRejectedIssues`
+     - `serverAutomationBlockingIssues`
+     - `historicalDoneIssuesMissingWorkspace`
+     - `localExecutionRoutingIssues`
      - `executionWorkspacesOutsideExpectedRoot`
      - `hostWorktreesWithoutBoundIssue`
    - 对 `aimandala` 默认以 `/opt/automation/worktrees` 作为期望根目录
@@ -228,9 +230,18 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 4. heartbeat / 巡检编排
    - 先跑 runner heartbeat
    - 再跑 execution health check strict gate
-   - 若发现 workspace materialization 漂移，本轮服务直接失败
-   - 若发现本应本地执行的任务进入了服务器可写路径，本轮服务同样直接失败
+   - 若发现当前活跃 Automation issue 的 workspace materialization 漂移，本轮服务直接失败
+   - 历史 `done` 漂移只进入审计，不单独阻断 heartbeat
+   - 若发现本应本地执行的任务进入了服务器可写路径，只记录为 `localExecutionRoutingIssues`
+   - 这类问题属于路由异常审计，不触发服务器代转交，也不单独阻断 heartbeat
+   - `--apply` 只继续用于 stale running issue 的看板纠偏，不再作为普通任务 reject / handoff 处理器
    - 不继续后续 maintenance 或会触发写文件的自动动作
+
+当前补充说明：
+
+1. 本阶段“服务器侧去拒绝化”只改变 automation 节点的 health / audit / heartbeat 口径
+2. 它不等于“本地执行节点已经真实接管普通任务”
+3. 本地执行节点接入与真实回写验证属于下一阶段工作
 
 ### 2.5 推荐巡检命令
 
@@ -733,13 +744,24 @@ sudo bash -lc '
    - `paperclip-heartbeat.env.example -> /etc/default/paperclip-heartbeat`
    - `automation-maintenance.env.example -> /etc/default/automation-maintenance`
    - 其中 `PAPERCLIP_EXECUTION_HOST` 应显式写成当前 automation 宿主标识，例如 `automation@150.158.9.95`
-4. 在宿主机执行 `sudo timedatectl set-timezone Asia/Shanghai`，再用 `timedatectl` 确认系统时区已切到北京时间
-5. 启动 Paperclip service
-6. 完成私有网络访问与 board claim
-7. 注册 `mindsync-ci` runner
-8. 启动 heartbeat timer
-9. 启动 maintenance timer
-10. 回到 GitHub / Paperclip 做联调验收
+4. 安装 systemd 单元前，必须把模板同步到真实路径，并立即核对实际 unit 内容：
+   - `paperclip-heartbeat.service.example -> /etc/systemd/system/paperclip-heartbeat.service`
+   - `paperclip-heartbeat.timer.example -> /etc/systemd/system/paperclip-heartbeat.timer`
+   - `automation-maintenance.service.example -> /etc/systemd/system/automation-maintenance.service`
+   - `automation-maintenance.timer.example -> /etc/systemd/system/automation-maintenance.timer`
+   - 明确禁止继续保留旧的 `/opt/automation/ops/paperclip-ci/*.mjs` 路径
+5. 同步 unit 后必须执行：
+   - `sudo systemctl daemon-reload`
+   - `sudo systemctl cat paperclip-heartbeat.service`
+   - `sudo systemctl cat automation-maintenance.service`
+   - 确认 `WorkingDirectory` 与 `ExecStart` 已指向 `/opt/automation/app/mindsync-heartbeat` 和仓库内 `shared/tools/ci/*`
+6. 在宿主机执行 `sudo timedatectl set-timezone Asia/Shanghai`，再用 `timedatectl` 确认系统时区已切到北京时间
+7. 启动 Paperclip service
+8. 完成私有网络访问与 board claim
+9. 注册 `mindsync-ci` runner
+10. 启动 heartbeat timer
+11. 启动 maintenance timer
+12. 回到 GitHub / Paperclip 做联调验收
 
 ## 7.1 Comment 执行来源口径
 
@@ -802,9 +824,14 @@ sudo chown -R ubuntu:ubuntu /data/paperclip
 2. GitHub 能看到 `mindsync-ci` runner 在线
 3. Paperclip 面板能登录并看到公司数据
 4. 触发一次 `ci` 后，job 实际落到这台机器执行
-5. `check-runner-heartbeat.mjs` 可以本机手动执行成功
-6. `runner-doctor.sh --strict` 返回成功，且 labels / token / 最新 workflow 诊断一致
-7. `paperclip-heartbeat.timer` 会同时完成 runner 巡检和执行健康巡检
+5. `systemctl cat paperclip-heartbeat.service` 显示的 `WorkingDirectory` 与 `ExecStart` 和仓库模板一致，而不是旧的 `/opt/automation/ops/paperclip-ci`
+6. `check-runner-heartbeat.mjs` 可以本机手动执行成功
+7. `runner-doctor.sh --strict` 返回成功，且 labels / token / 最新 workflow 诊断一致
+8. `paperclip-heartbeat.timer` 会同时完成 runner 巡检和执行健康巡检
+9. `paperclip-heartbeat.service` 若失败，需先区分：
+   - systemd unit 路径漂移
+   - strict gate 命中 `execution_workspace_policy_not_materialized`
+   - 其他 runner / token / API 故障
 ## Automation Node Prerequisites
 
 - 同步 `mindsync` 的 Paperclip skill 恢复脚本前，automation 节点必须安装 `python3`、`ruby`、`curl`。

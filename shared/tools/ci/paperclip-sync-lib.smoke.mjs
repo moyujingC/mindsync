@@ -70,6 +70,18 @@ async function main() {
     goalTitle: "一镜一梳上线",
   });
   assert(commitDescription.includes("type:epic"), "commit summary should include type:epic");
+  assert(
+    commitDescription.includes("task_class: manual-review-required"),
+    "commit summary should pin manual-review-required task class",
+  );
+  assert(
+    commitDescription.includes("execution_route: local_manual_review"),
+    "commit summary should pin local_manual_review route",
+  );
+  assert(
+    commitDescription.includes("任务目标："),
+    "commit summary should remain a control-plane coordination artifact",
+  );
   assert(commitDescription.includes("goal: 一镜一梳上线"), "commit summary should include goal");
   assert(commitDescription.includes("review goal："), "commit summary should include review goal");
 
@@ -84,6 +96,14 @@ async function main() {
     },
   );
   assert(executionDescription.includes("type:execution"), "execution description should include type:execution");
+  assert(
+    executionDescription.includes("task_class: automation-execution"),
+    "execution description should include automation-execution task class",
+  );
+  assert(
+    executionDescription.includes("execution_route: server_automation"),
+    "execution description should include server_automation route",
+  );
   assert(executionDescription.includes("预期 artifact："), "execution description should include expected artifact");
   assert(executionDescription.includes("完成标准："), "execution description should include completion criteria");
   assert(executionDescription.includes("done when："), "execution description should include done when");
