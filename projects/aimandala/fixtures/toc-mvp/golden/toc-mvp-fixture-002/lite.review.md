@@ -2,8 +2,8 @@
 fixture_id: toc-mvp-fixture-002
 mode: lite
 topic: wealth_career
-result: fail
-deviation_count: 2
+result: pass
+deviation_count: 0
 ---
 
 # Golden Review: toc-mvp-fixture-002 / lite
@@ -19,13 +19,12 @@ deviation_count: 2
 
 - 直断命中：`pass`
   - Lite 先给出「金」为主、三圈为「火 -> 金 -> 金」的当前判断。
-- 逐圈颜色 / 深浅 / 面积依据：`pass_with_drift`
-  - 报告已写出五行比例、三圈主导元素和圈层主题。
-  - 深浅状态仍没有稳定出现在用户可读报告中。
+- 逐圈颜色 / 深浅 / 面积依据：`pass`
+  - `visual_basis` 已稳定写出三圈主导色 / 元素、深浅状态、填充状态和面积约值。
 - 形状分析：`pass`
   - 当前没有把形状代理信号越权成主判断。
 - 圈级生克：`pass`
-  - 报告在基础圈层状态之后再解释「火克金」。
+  - 报告在基础圈层状态之后再解释圈级关系。
 - 教程来源链：`pass`
   - debug trace 已包含四步法来源 refs。
 
@@ -36,37 +35,19 @@ deviation_count: 2
 - `topic_context.orientation`：`pass`
 - Lite 轻量疗愈：`pass`
 - 旧升级 / 解锁 / 补全语义：`pass`
-- raw dict 或占位泄漏：`fail`
-  - debug trace 对该记录标记 `raw_payload_leak_found=true`。
-  - 当前 `report.json` 内部仍包含 Pro 派生层的 raw payload 泄漏，说明同一 interpretation 的兼容层会污染 debug fidelity 结果。
+- raw dict 或占位泄漏：`pass`
+  - debug trace 使用 `scope=lite`，不再被同一 interpretation 的 Pro draft 污染。
 - fallback 伪装：`pass`
 
 ## 4. 偏差项
 
-```yaml
-deviation_id: BATCH-F-002-LITE-FAIL-001
-fixture_id: toc-mvp-fixture-002
-mode: lite
-topic: wealth_career
-tutorial_step: final_algorithm_basis
-symptom: 显式 Lite 报告正文可读，但同一 interpretation 的 debug fidelity 标记 raw_payload_leak_found=true，说明兼容层仍可能把 Pro raw payload 纳入整体算法保真判断。
-suspected_layer: debug_trace_scope
-severity: high
-next_owner: Batch G debug trace scoping
-```
+无开放偏差。
 
-```yaml
-deviation_id: BATCH-F-002-LITE-FAIL-002
-fixture_id: toc-mvp-fixture-002
-mode: lite
-topic: wealth_career
-tutorial_step: per_circle_color_analysis
-symptom: Lite 已给三圈主导和面积比例，但深浅状态仍没有在用户可读报告中稳定展开。
-suspected_layer: narrative_compression
-severity: medium
-next_owner: Batch G narrative compression fidelity
-```
+已关闭：
+
+- `BATCH-F-002-LITE-FAIL-001`：显式 Lite debug fidelity 已按 `scope=lite` 计算，不再被 Pro draft 污染。
+- `BATCH-F-002-LITE-FAIL-002`：Lite 逐圈深浅状态已稳定进入 `visual_basis`。
 
 ## 5. 总体结论
 
-`fail`。显式 Lite 正文已经可读，但 debug fidelity 仍被同一 interpretation 的 Pro raw payload 污染；该问题必须作为下一批 debug scope 与 contract sanitization 的输入。
+`pass`。当前主题 Lite 报告可作为 Batch G 后的合格 golden 基线。

@@ -109,6 +109,8 @@ def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
     assert preview_payload["fixture_meta"]["fixture_id"] == "toc-mvp-fixture-002"
     assert preview_payload["report_summary"]["version"] == "pro"
     assert preview_payload["knowledge_summary"]["summary"]["fallback_used"] is False
+    assert preview_payload["knowledge_summary"]["summary"]["algorithm_fidelity_pass"] is True
+    assert preview_payload["knowledge_summary"]["summary"]["raw_payload_leak_found"] is False
     assert preview_payload["knowledge_summary"]["source_refs"]
     assert preview_payload["knowledge_summary"]["field_to_knowledge_map"]["healing_plan"]["entity_ids"]
     assert preview_payload["report_summary"]["structured_field_presence"]["deep_impression"] is True

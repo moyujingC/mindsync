@@ -185,6 +185,11 @@ def test_algorithm_fidelity_trace_scopes_raw_payload_by_report_mode():
     record = SimpleNamespace(
         layer_2_lite_final=SimpleNamespace(to_dict=lambda: {"visual_basis": "内圈偏亮，中圈偏深。"}),
         layer_3_pro_draft=SimpleNamespace(
+            healing_suggestions=[
+                {
+                    "focus": ": '金色', 'middle': '红色', 'outer': '土色'}",
+                }
+            ],
             to_dict=lambda: {
                 "healing_suggestions": [
                     {

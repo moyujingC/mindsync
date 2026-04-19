@@ -662,19 +662,19 @@ class KnowledgeDebugBlockBuilder:
             return [
                 knowledge_projections.get("lite", {}),
                 narrative_plans.get("lite", {}),
-                record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
+                self._lite_user_payload(record),
             ]
         if scope == "pro":
             return [
                 knowledge_projections.get("pro", {}),
                 narrative_plans.get("pro", {}),
-                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+                self._pro_user_payload(record),
             ]
         return [
             knowledge_projections,
             narrative_plans,
-            record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
-            record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+            self._lite_user_payload(record),
+            self._pro_user_payload(record),
         ]
 
     def _scoped_raw_payloads(
@@ -689,20 +689,62 @@ class KnowledgeDebugBlockBuilder:
             return [
                 knowledge_projections.get("lite", {}),
                 narrative_plans.get("lite", {}),
-                record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
+                self._lite_user_payload(record),
             ]
         if scope == "pro":
             return [
                 knowledge_projections.get("pro", {}),
                 narrative_plans.get("pro", {}),
-                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+                self._pro_user_payload(record),
             ]
         return [
             knowledge_projections,
             narrative_plans,
-            record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
-            record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+            self._lite_user_payload(record),
+            self._pro_user_payload(record),
         ]
+
+    def _lite_user_payload(self, record: InterpretationRecord) -> dict[str, Any]:
+        layer = record.layer_2_lite_final
+        if layer is None:
+            return {}
+        return {
+            "title": getattr(layer, "title", ""),
+            "overall_impression": getattr(layer, "overall_impression", ""),
+            "visual_elements_rendered": getattr(layer, "visual_elements_rendered", ""),
+            "emotion_portrait_rendered": getattr(layer, "emotion_portrait_rendered", ""),
+            "story": (
+                layer.story.to_dict()
+                if hasattr(getattr(layer, "story", None), "to_dict")
+                else {}
+            ),
+            "theme_insights": (
+                layer.theme_insights.to_dict()
+                if getattr(layer, "theme_insights", None)
+                else {}
+            ),
+            "three_awareness": [
+                item.to_dict() if hasattr(item, "to_dict") else item
+                for item in (getattr(layer, "three_awareness", []) or [])
+            ],
+            "experiment_rendered": getattr(layer, "experiment_rendered", ""),
+            "pro_teaser": getattr(layer, "pro_teaser", ""),
+            "full_report_markdown": getattr(layer, "full_report_markdown", ""),
+        }
+
+    def _pro_user_payload(self, record: InterpretationRecord) -> dict[str, Any]:
+        layer = record.layer_3_pro_draft
+        if layer is None:
+            return {}
+        return {
+            "first_impression": getattr(layer, "first_impression", ""),
+            "core_insight_table": getattr(layer, "core_insight_table", {}),
+            "three_circles_detailed": getattr(layer, "three_circles_detailed", {}),
+            "micro_analysis_detailed": getattr(layer, "micro_analysis_detailed", {}),
+            "imbalance_confirmed": getattr(layer, "imbalance_confirmed", {}),
+            "root_cause": getattr(layer, "root_cause", {}),
+            "healing_suggestions": getattr(layer, "healing_suggestions", []),
+        }
 
     def _contains_legacy_semantics(self, payloads: list[Any]) -> bool:
         banned_phrases = [

@@ -2,8 +2,8 @@
 fixture_id: toc-mvp-fixture-001
 mode: lite
 topic: general
-result: pass_with_drift
-deviation_count: 1
+result: pass
+deviation_count: 0
 ---
 
 # Golden Review: toc-mvp-fixture-001 / lite
@@ -19,13 +19,12 @@ deviation_count: 1
 
 - 直断命中：`pass`
   - 报告先给出「金」为主、三圈为「火 -> 土 -> 金」的当前整体判断。
-- 逐圈颜色 / 深浅 / 面积依据：`pass_with_drift`
-  - 报告已给出五行比例、三圈主导元素和圈层主题。
-  - 但用户可读报告没有把每圈深浅状态明确写出来，仍需要到 debug trace 才能确认。
+- 逐圈颜色 / 深浅 / 面积依据：`pass`
+  - `visual_basis` 已稳定写出内圈、中圈、外圈的主导色 / 元素、深浅状态、填充状态和面积约值。
 - 形状分析：`pass`
   - 当前没有把形状分析越权写成主判断。
 - 圈级生克：`pass`
-  - 报告在基础元素状态之后再解释「火生土」。
+  - 报告在基础元素状态之后再解释圈级关系。
 - 教程来源链：`pass`
   - debug trace 已包含 `source:four_step_method`、`source:five_elements_excess_deficiency`、`source:triad_structure`。
 
@@ -41,18 +40,12 @@ deviation_count: 1
 
 ## 4. 偏差项
 
-```yaml
-deviation_id: BATCH-F-001-LITE-DRIFT-001
-fixture_id: toc-mvp-fixture-001
-mode: lite
-topic: general
-tutorial_step: per_circle_color_analysis
-symptom: 用户可读报告已写面积和圈层主导，但没有明确展开每圈深浅状态；深浅依据仍主要留在 debug。
-suspected_layer: narrative_compression
-severity: medium
-next_owner: Batch G narrative compression fidelity
-```
+无开放偏差。
+
+已关闭：
+
+- `BATCH-F-001-LITE-DRIFT-001`：逐圈深浅状态已从 debug trace 稳定压缩进用户可读 `visual_basis`。
 
 ## 5. 总体结论
 
-`pass_with_drift`。当前 Lite 报告已经可作为第一批人工 golden 基线，但下一批需要把逐圈深浅状态从 debug trace 更稳定地压缩进用户可读报告。
+`pass`。当前 Lite 报告可作为 Batch G 后的合格 golden 基线。
