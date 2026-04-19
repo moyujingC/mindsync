@@ -205,6 +205,7 @@ class KnowledgeDebugBlockBuilder:
         fidelity_flags = layer0.get("fidelity_flags", layer0.get("quality_flags", []))
         fallback_summary = layer0.get("fallback_summary", {})
         color_summary = self._build_per_circle_color_summary(layer0)
+        observation_summary = self._build_per_circle_observation_summary(layer0)
         lite_healing_guidance = self._build_lite_healing_guidance_debug(lite_final)
         pro_report_entry = self._build_pro_report_entry_debug(lite_final)
         return {
@@ -225,6 +226,7 @@ class KnowledgeDebugBlockBuilder:
                     fallback_summary=fallback_summary,
                     narrative_section="visual_elements",
                     color_summary=color_summary,
+                    observation_summary=observation_summary,
                 ),
                 "pattern_interpretation": self._product_block(
                     final=self._join_text([
@@ -287,6 +289,7 @@ class KnowledgeDebugBlockBuilder:
                     narrative_section="core_insight_table|three_circles_detailed|micro_analysis_detailed",
                     compatibility_used=True,
                     color_summary=color_summary,
+                    observation_summary=observation_summary,
                 ),
                 "imbalance_diagnosis": self._product_block(
                     final=self._build_pro_imbalance_diagnosis_debug(pro_draft),
@@ -338,6 +341,7 @@ class KnowledgeDebugBlockBuilder:
         narrative_section: str,
         compatibility_used: bool = False,
         color_summary: str = "",
+        observation_summary: str = "",
     ) -> dict[str, Any]:
         evidence = field_to_knowledge_map.get(field_key, {})
         rule_refs = ["method:per_circle_color_analysis"] if color_summary else []
@@ -352,6 +356,7 @@ class KnowledgeDebugBlockBuilder:
                 "rule_refs": rule_refs,
                 "theme_projection_refs": evidence.get("source_paths", []) if isinstance(evidence, dict) else [],
                 "per_circle_color_summary": color_summary,
+                "per_circle_observation_summary": observation_summary,
             },
             "prompt_trace": {
                 "schema_field": field_key,
@@ -392,6 +397,37 @@ class KnowledgeDebugBlockBuilder:
             ) or "未识别"
             parts.append(
                 f"{circle_label}以{color_element}为主，"
+                f"{self._depth_state_label(state_basis.get('depth_state'))}，"
+                f"{self._fill_state_label(state_basis.get('fill_state'))}，"
+                f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"
+            )
+        return "；".join(parts)
+
+    def _build_per_circle_observation_summary(self, layer0: dict[str, Any]) -> str:
+        method_trace = (
+            layer0.get("rule_evaluations", {}).get("interpretation_method_trace", {})
+            if isinstance(layer0.get("rule_evaluations"), dict)
+            else {}
+        )
+        per_circle = (
+            method_trace.get("per_circle_color_analysis", {})
+            if isinstance(method_trace, dict)
+            else {}
+        )
+        if not isinstance(per_circle, dict):
+            return ""
+        parts: list[str] = []
+        for key in ["inner", "middle", "outer"]:
+            item = per_circle.get(key)
+            if not isinstance(item, dict):
+                continue
+            circle_label = str(item.get("circle_label") or self._circle_label(key)).strip()
+            dominant_element = str(item.get("dominant_element") or "").strip() or "未识别元素"
+            state_basis = item.get("state_basis", {})
+            if not isinstance(state_basis, dict):
+                state_basis = {}
+            parts.append(
+                f"{circle_label}主要呈现「{dominant_element}」的状态，"
                 f"{self._depth_state_label(state_basis.get('depth_state'))}，"
                 f"{self._fill_state_label(state_basis.get('fill_state'))}，"
                 f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"

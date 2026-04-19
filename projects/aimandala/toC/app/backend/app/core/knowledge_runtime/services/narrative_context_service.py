@@ -536,14 +536,14 @@ class NarrativeContextService:
             fidelity_flags=fidelity_flags,
             fallback_summary=fallback_summary,
         )
-        per_circle_color_summary = str(
-            evidence_trace_summary.get("per_circle_color_summary") or ""
+        per_circle_observation_summary = str(
+            evidence_trace_summary.get("per_circle_observation_summary") or ""
         ).strip()
         visual_elements_content = legacy_projection.get("visual_elements", "")
-        if per_circle_color_summary:
+        if per_circle_observation_summary:
             visual_elements_content = self._join_sentence_parts([
                 visual_elements_content,
-                f"逐圈深浅依据：{per_circle_color_summary}",
+                f"从逐圈观察看，{per_circle_observation_summary}",
             ])
             legacy_projection = {
                 **legacy_projection,
@@ -698,15 +698,15 @@ class NarrativeContextService:
             fidelity_flags=fidelity_flags,
             fallback_summary=fallback_summary,
         )
-        per_circle_color_summary = str(
-            evidence_trace_summary.get("per_circle_color_summary") or ""
-        ).strip()
+        per_circle_observations = evidence_trace_summary.get("per_circle_observations", {})
+        if not isinstance(per_circle_observations, dict):
+            per_circle_observations = {}
         circle_readings_for_plan = legacy_projection.get("circle_readings", {})
-        if per_circle_color_summary and isinstance(circle_readings_for_plan, dict):
+        if per_circle_observations and isinstance(circle_readings_for_plan, dict):
             circle_readings_for_plan = {
                 key: self._join_sentence_parts([
                     str(value or ""),
-                    f"逐圈深浅依据：{per_circle_color_summary}",
+                    str(per_circle_observations.get(key) or ""),
                 ])
                 for key, value in circle_readings_for_plan.items()
             }
@@ -1704,6 +1704,17 @@ class NarrativeContextService:
             if isinstance(method_trace, dict)
             else {}
         )
+        per_circle_observations = self._build_per_circle_observations(
+            method_trace.get("per_circle_color_analysis", {})
+            if isinstance(method_trace, dict)
+            else {}
+        )
+        per_circle_observation_summary = "；".join(
+            item
+            for key in ["inner", "middle", "outer"]
+            for item in [per_circle_observations.get(key, "")]
+            if item
+        )
         return {
             "visual_fact_refs": [item for item in visual_refs if item],
             "knowledge_hit_refs": [item for item in knowledge_refs if item],
@@ -1715,6 +1726,8 @@ class NarrativeContextService:
             "circle_relation_refs": ["method:circle_relation_analysis"],
             "tutorial_source_refs": tutorial_source_refs,
             "per_circle_color_summary": per_circle_color_summary,
+            "per_circle_observation_summary": per_circle_observation_summary,
+            "per_circle_observations": per_circle_observations,
             "fidelity_flags": [
                 str(item).strip()
                 for item in (fidelity_flags or [])
@@ -1751,6 +1764,27 @@ class NarrativeContextService:
                 f"{circle_label}以{color_element}为主，{depth_label}，{fill_label}，面积约{area_ratio}"
             )
         return "；".join(parts)
+
+    def _build_per_circle_observations(self, per_circle_analysis: Any) -> dict[str, str]:
+        if not isinstance(per_circle_analysis, dict):
+            return {}
+        observations: dict[str, str] = {}
+        for circle_key in ["inner", "middle", "outer"]:
+            item = per_circle_analysis.get(circle_key)
+            if not isinstance(item, dict):
+                continue
+            circle_label = str(item.get("circle_label") or self._circle_label(circle_key)).strip()
+            dominant_element = str(item.get("dominant_element") or "").strip() or "未识别元素"
+            state_basis = item.get("state_basis", {})
+            if not isinstance(state_basis, dict):
+                state_basis = {}
+            observations[circle_key] = (
+                f"{circle_label}主要呈现「{dominant_element}」的状态，"
+                f"{self._depth_state_label(state_basis.get('depth_state'))}，"
+                f"{self._fill_state_label(state_basis.get('fill_state'))}，"
+                f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"
+            )
+        return observations
 
     def _circle_label(self, circle_key: str) -> str:
         return {

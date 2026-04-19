@@ -790,7 +790,11 @@ def test_v21_narrative_plan_compresses_per_circle_depth_state():
     )
 
     lite_summary = lite_plan["evidence_trace_summary"]["per_circle_color_summary"]
+    lite_observation = lite_plan["evidence_trace_summary"]["per_circle_observation_summary"]
     pro_summary = pro_plan["evidence_trace_summary"]["per_circle_color_summary"]
+    pro_observation = pro_plan["evidence_trace_summary"]["per_circle_observation_summary"]
+    lite_visual = lite_plan["sections"]["visual_elements"]["content"]
+    pro_circles = pro_plan["sections"]["three_circles_detailed"]["content"]
 
     assert "内圈" in lite_summary
     assert "中圈" in lite_summary
@@ -798,8 +802,25 @@ def test_v21_narrative_plan_compresses_per_circle_depth_state():
     assert "偏深" in lite_summary
     assert "偏浅" in lite_summary
     assert "面积约" in lite_summary
-    assert lite_summary in lite_plan["sections"]["visual_elements"]["content"]
-    assert pro_summary in pro_plan["sections"]["three_circles_detailed"]["content"]["inner"]
+    assert "红色" in lite_summary
+    assert "内圈" in lite_observation
+    assert "中圈" in lite_observation
+    assert "外圈" in lite_observation
+    assert "偏深" in lite_observation
+    assert "偏浅" in lite_observation
+    assert "面积约" in lite_observation
+    assert "红色" not in lite_observation
+    assert "逐圈深浅依据" not in lite_visual
+    assert "#" not in lite_visual
+    assert lite_observation in lite_visual
+    assert "逐圈深浅依据" not in pro_circles["inner"]
+    assert "红色" not in pro_circles["inner"]
+    assert pro_observation not in pro_circles["inner"]
+    assert pro_summary not in pro_circles["inner"]
+    assert "内圈" in pro_circles["inner"]
+    assert "偏深" in pro_circles["inner"]
+    assert "中圈" not in pro_circles["inner"]
+    assert "外圈" not in pro_circles["inner"]
 
 
 def test_v21_narrative_service_builds_lite_title_variants():
