@@ -812,6 +812,8 @@ def test_v21_narrative_plan_compresses_per_circle_depth_state():
     assert "红色" not in lite_observation
     assert "逐圈深浅依据" not in lite_visual
     assert "#" not in lite_visual
+    assert "。；" not in lite_visual
+    assert "。。" not in lite_visual
     assert lite_observation in lite_visual
     assert "逐圈深浅依据" not in pro_circles["inner"]
     assert "红色" not in pro_circles["inner"]

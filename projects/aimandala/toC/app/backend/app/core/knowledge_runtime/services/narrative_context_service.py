@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from ..contracts import FallbackLevel, QueryResult
@@ -541,10 +542,12 @@ class NarrativeContextService:
         ).strip()
         visual_elements_content = legacy_projection.get("visual_elements", "")
         if per_circle_observation_summary:
-            visual_elements_content = self._join_sentence_parts([
-                visual_elements_content,
-                f"从逐圈观察看，{per_circle_observation_summary}",
-            ])
+            visual_elements_content = self._clean_user_facing_copy(
+                self._join_sentence_parts([
+                    visual_elements_content,
+                    f"从逐圈观察看，{per_circle_observation_summary}",
+                ])
+            )
             legacy_projection = {
                 **legacy_projection,
                 "visual_elements": visual_elements_content,
@@ -1825,6 +1828,22 @@ class NarrativeContextService:
             if isinstance(part, str) and str(part).strip()
         ]
         return " ".join(cleaned).strip()
+
+    def _clean_user_facing_copy(self, content: str) -> str:
+        cleaned = str(content or "").strip()
+        if not cleaned:
+            return ""
+        replacements = {
+            "。；": "；",
+            "；；": "；",
+            "。。": "。",
+            "。 。": "。",
+            "； 。": "；",
+        }
+        for src, target in replacements.items():
+            cleaned = cleaned.replace(src, target)
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        return cleaned
 
     def _resolve_imbalance_projection(
         self,

@@ -59,49 +59,49 @@
           "inner": {
             "colors": [
               {
-                "hex": "#c5afc5",
+                "hex": "#c6b0c5",
                 "rgb": [
-                  197,
-                  175,
+                  198,
+                  176,
                   197
                 ],
-                "percentage": 31.5
+                "percentage": 31.0
               },
               {
-                "hex": "#e6b310",
+                "hex": "#e7b410",
                 "rgb": [
-                  230,
-                  179,
+                  231,
+                  180,
                   16
                 ],
-                "percentage": 19.84
+                "percentage": 19.82
               },
               {
-                "hex": "#c7b377",
+                "hex": "#c4af74",
                 "rgb": [
-                  199,
-                  179,
-                  119
+                  196,
+                  175,
+                  116
                 ],
-                "percentage": 18.71
+                "percentage": 18.78
               },
               {
-                "hex": "#8d7b4b",
+                "hex": "#8c7947",
                 "rgb": [
-                  141,
-                  123,
-                  75
+                  140,
+                  121,
+                  71
                 ],
-                "percentage": 17.07
+                "percentage": 16.95
               },
               {
-                "hex": "#3b2a1f",
+                "hex": "#3b2a1e",
                 "rgb": [
                   59,
                   42,
-                  31
+                  30
                 ],
-                "percentage": 12.88
+                "percentage": 13.45
               }
             ],
             "five_elements": {
@@ -111,55 +111,55 @@
               "metal": 28.41,
               "water": 4.82
             },
-            "dominant_color": "#c5afc5",
+            "dominant_color": "#c6b0c5",
             "dominant_element": "fire"
           },
           "middle": {
             "colors": [
               {
-                "hex": "#d2bcc1",
+                "hex": "#d1bbc0",
                 "rgb": [
-                  210,
-                  188,
-                  193
+                  209,
+                  187,
+                  192
                 ],
-                "percentage": 30.29
+                "percentage": 31.08
               },
               {
-                "hex": "#a9cdd2",
+                "hex": "#a8ced3",
                 "rgb": [
-                  169,
-                  205,
-                  210
+                  168,
+                  206,
+                  211
                 ],
-                "percentage": 23.33
+                "percentage": 22.41
               },
               {
-                "hex": "#a19e8b",
+                "hex": "#a2a08c",
                 "rgb": [
-                  161,
-                  158,
-                  139
+                  162,
+                  160,
+                  140
                 ],
-                "percentage": 20.78
+                "percentage": 19.9
               },
               {
-                "hex": "#6c6953",
+                "hex": "#706c54",
                 "rgb": [
+                  112,
                   108,
-                  105,
-                  83
+                  84
                 ],
-                "percentage": 13.53
+                "percentage": 14.11
               },
               {
-                "hex": "#2e2e28",
+                "hex": "#2f3029",
                 "rgb": [
-                  46,
-                  46,
-                  40
+                  47,
+                  48,
+                  41
                 ],
-                "percentage": 12.07
+                "percentage": 12.5
               }
             ],
             "five_elements": {
@@ -169,55 +169,55 @@
               "metal": 45.25,
               "water": 1.75
             },
-            "dominant_color": "#d2bcc1",
+            "dominant_color": "#d1bbc0",
             "dominant_element": "metal"
           },
           "outer": {
             "colors": [
               {
-                "hex": "#719d61",
+                "hex": "#6f9b5d",
                 "rgb": [
-                  113,
-                  157,
-                  97
+                  111,
+                  155,
+                  93
                 ],
-                "percentage": 23.4
+                "percentage": 24.31
               },
               {
-                "hex": "#e1d4a0",
+                "hex": "#e1d3a0",
                 "rgb": [
                   225,
-                  212,
+                  211,
                   160
                 ],
-                "percentage": 23.14
+                "percentage": 22.66
               },
               {
-                "hex": "#a5c7b2",
+                "hex": "#a3c6af",
                 "rgb": [
-                  165,
-                  199,
-                  178
+                  163,
+                  198,
+                  175
                 ],
-                "percentage": 22.42
+                "percentage": 22.49
               },
               {
-                "hex": "#2d3920",
-                "rgb": [
-                  45,
-                  57,
-                  32
-                ],
-                "percentage": 15.62
-              },
-              {
-                "hex": "#cdcf25",
+                "hex": "#cdcf27",
                 "rgb": [
                   205,
                   207,
-                  37
+                  39
                 ],
-                "percentage": 15.42
+                "percentage": 15.87
+              },
+              {
+                "hex": "#2b381e",
+                "rgb": [
+                  43,
+                  56,
+                  30
+                ],
+                "percentage": 14.67
               }
             ],
             "five_elements": {
@@ -227,7 +227,7 @@
               "metal": 22.57,
               "water": 2.22
             },
-            "dominant_color": "#719d61",
+            "dominant_color": "#6f9b5d",
             "dominant_element": "wood"
           }
         },
@@ -241,59 +241,59 @@
             "circle": "inner",
             "circle_label": "内圈",
             "dominant_element": "火",
-            "dominant_color": "#c5afc5",
+            "dominant_color": "#c6b0c5",
             "colors": [
               {
-                "hex": "#c5afc5",
+                "hex": "#c6b0c5",
                 "rgb": [
-                  197,
-                  175,
+                  198,
+                  176,
                   197
                 ],
-                "percentage": 31.5
+                "percentage": 31.0
               },
               {
-                "hex": "#e6b310",
+                "hex": "#e7b410",
                 "rgb": [
-                  230,
-                  179,
+                  231,
+                  180,
                   16
                 ],
-                "percentage": 19.84
+                "percentage": 19.82
               },
               {
-                "hex": "#c7b377",
+                "hex": "#c4af74",
                 "rgb": [
-                  199,
-                  179,
-                  119
+                  196,
+                  175,
+                  116
                 ],
-                "percentage": 18.71
+                "percentage": 18.78
               },
               {
-                "hex": "#8d7b4b",
+                "hex": "#8c7947",
                 "rgb": [
-                  141,
-                  123,
-                  75
+                  140,
+                  121,
+                  71
                 ],
-                "percentage": 17.07
+                "percentage": 16.95
               },
               {
-                "hex": "#3b2a1f",
+                "hex": "#3b2a1e",
                 "rgb": [
                   59,
                   42,
-                  31
+                  30
                 ],
-                "percentage": 12.88
+                "percentage": 13.45
               }
             ],
             "state_basis": {
               "source": "tutorial_color_area_depth",
               "area_ratio": 0.1089,
-              "avg_brightness": 141.33,
-              "avg_saturation": 0.4774,
+              "avg_brightness": 140.55,
+              "avg_saturation": 0.4869,
               "depth_state": "deep",
               "fill_state": "filled"
             }
@@ -302,59 +302,59 @@
             "circle": "middle",
             "circle_label": "中圈",
             "dominant_element": "金",
-            "dominant_color": "#d2bcc1",
+            "dominant_color": "#d1bbc0",
             "colors": [
               {
-                "hex": "#d2bcc1",
+                "hex": "#d1bbc0",
                 "rgb": [
-                  210,
-                  188,
-                  193
+                  209,
+                  187,
+                  192
                 ],
-                "percentage": 30.29
+                "percentage": 31.08
               },
               {
-                "hex": "#a9cdd2",
+                "hex": "#a8ced3",
                 "rgb": [
-                  169,
-                  205,
-                  210
+                  168,
+                  206,
+                  211
                 ],
-                "percentage": 23.33
+                "percentage": 22.41
               },
               {
-                "hex": "#a19e8b",
+                "hex": "#a2a08c",
                 "rgb": [
-                  161,
-                  158,
-                  139
+                  162,
+                  160,
+                  140
                 ],
-                "percentage": 20.78
+                "percentage": 19.9
               },
               {
-                "hex": "#6c6953",
+                "hex": "#706c54",
                 "rgb": [
+                  112,
                   108,
-                  105,
-                  83
+                  84
                 ],
-                "percentage": 13.53
+                "percentage": 14.11
               },
               {
-                "hex": "#2e2e28",
+                "hex": "#2f3029",
                 "rgb": [
-                  46,
-                  46,
-                  40
+                  47,
+                  48,
+                  41
                 ],
-                "percentage": 12.07
+                "percentage": 12.5
               }
             ],
             "state_basis": {
               "source": "tutorial_color_area_depth",
               "area_ratio": 0.3267,
-              "avg_brightness": 139.08,
-              "avg_saturation": 0.1597,
+              "avg_brightness": 140.21,
+              "avg_saturation": 0.1681,
               "depth_state": "middle",
               "fill_state": "filled"
             }
@@ -363,59 +363,59 @@
             "circle": "outer",
             "circle_label": "外圈",
             "dominant_element": "木",
-            "dominant_color": "#719d61",
+            "dominant_color": "#6f9b5d",
             "colors": [
               {
-                "hex": "#719d61",
+                "hex": "#6f9b5d",
                 "rgb": [
-                  113,
-                  157,
-                  97
+                  111,
+                  155,
+                  93
                 ],
-                "percentage": 23.4
+                "percentage": 24.31
               },
               {
-                "hex": "#e1d4a0",
+                "hex": "#e1d3a0",
                 "rgb": [
                   225,
-                  212,
+                  211,
                   160
                 ],
-                "percentage": 23.14
+                "percentage": 22.66
               },
               {
-                "hex": "#a5c7b2",
+                "hex": "#a3c6af",
                 "rgb": [
-                  165,
-                  199,
-                  178
+                  163,
+                  198,
+                  175
                 ],
-                "percentage": 22.42
+                "percentage": 22.49
               },
               {
-                "hex": "#2d3920",
-                "rgb": [
-                  45,
-                  57,
-                  32
-                ],
-                "percentage": 15.62
-              },
-              {
-                "hex": "#cdcf25",
+                "hex": "#cdcf27",
                 "rgb": [
                   205,
                   207,
-                  37
+                  39
                 ],
-                "percentage": 15.42
+                "percentage": 15.87
+              },
+              {
+                "hex": "#2b381e",
+                "rgb": [
+                  43,
+                  56,
+                  30
+                ],
+                "percentage": 14.67
               }
             ],
             "state_basis": {
               "source": "tutorial_color_area_depth",
               "area_ratio": 0.5644,
-              "avg_brightness": 154.2,
-              "avg_saturation": 0.4204,
+              "avg_brightness": 153.09,
+              "avg_saturation": 0.4283,
               "depth_state": "middle",
               "fill_state": "filled"
             }
@@ -460,9 +460,9 @@
           }
         },
         "extracted_color_metrics": {
-          "overall_saturation": 0.3262,
+          "overall_saturation": 0.3345,
           "black_ratio": 0.0,
-          "red_ratio": 0.0661
+          "red_ratio": 0.1226
         },
         "interpretation_method_trace": {
           "direct_judgment": {
@@ -477,59 +477,59 @@
               "circle": "inner",
               "circle_label": "内圈",
               "dominant_element": "火",
-              "dominant_color": "#c5afc5",
+              "dominant_color": "#c6b0c5",
               "colors": [
                 {
-                  "hex": "#c5afc5",
+                  "hex": "#c6b0c5",
                   "rgb": [
-                    197,
-                    175,
+                    198,
+                    176,
                     197
                   ],
-                  "percentage": 31.5
+                  "percentage": 31.0
                 },
                 {
-                  "hex": "#e6b310",
+                  "hex": "#e7b410",
                   "rgb": [
-                    230,
-                    179,
+                    231,
+                    180,
                     16
                   ],
-                  "percentage": 19.84
+                  "percentage": 19.82
                 },
                 {
-                  "hex": "#c7b377",
+                  "hex": "#c4af74",
                   "rgb": [
-                    199,
-                    179,
-                    119
+                    196,
+                    175,
+                    116
                   ],
-                  "percentage": 18.71
+                  "percentage": 18.78
                 },
                 {
-                  "hex": "#8d7b4b",
+                  "hex": "#8c7947",
                   "rgb": [
-                    141,
-                    123,
-                    75
+                    140,
+                    121,
+                    71
                   ],
-                  "percentage": 17.07
+                  "percentage": 16.95
                 },
                 {
-                  "hex": "#3b2a1f",
+                  "hex": "#3b2a1e",
                   "rgb": [
                     59,
                     42,
-                    31
+                    30
                   ],
-                  "percentage": 12.88
+                  "percentage": 13.45
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.1089,
-                "avg_brightness": 141.33,
-                "avg_saturation": 0.4774,
+                "avg_brightness": 140.55,
+                "avg_saturation": 0.4869,
                 "depth_state": "deep",
                 "fill_state": "filled"
               }
@@ -538,59 +538,59 @@
               "circle": "middle",
               "circle_label": "中圈",
               "dominant_element": "金",
-              "dominant_color": "#d2bcc1",
+              "dominant_color": "#d1bbc0",
               "colors": [
                 {
-                  "hex": "#d2bcc1",
+                  "hex": "#d1bbc0",
                   "rgb": [
-                    210,
-                    188,
-                    193
+                    209,
+                    187,
+                    192
                   ],
-                  "percentage": 30.29
+                  "percentage": 31.08
                 },
                 {
-                  "hex": "#a9cdd2",
+                  "hex": "#a8ced3",
                   "rgb": [
-                    169,
-                    205,
-                    210
+                    168,
+                    206,
+                    211
                   ],
-                  "percentage": 23.33
+                  "percentage": 22.41
                 },
                 {
-                  "hex": "#a19e8b",
+                  "hex": "#a2a08c",
                   "rgb": [
-                    161,
-                    158,
-                    139
+                    162,
+                    160,
+                    140
                   ],
-                  "percentage": 20.78
+                  "percentage": 19.9
                 },
                 {
-                  "hex": "#6c6953",
+                  "hex": "#706c54",
                   "rgb": [
+                    112,
                     108,
-                    105,
-                    83
+                    84
                   ],
-                  "percentage": 13.53
+                  "percentage": 14.11
                 },
                 {
-                  "hex": "#2e2e28",
+                  "hex": "#2f3029",
                   "rgb": [
-                    46,
-                    46,
-                    40
+                    47,
+                    48,
+                    41
                   ],
-                  "percentage": 12.07
+                  "percentage": 12.5
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.3267,
-                "avg_brightness": 139.08,
-                "avg_saturation": 0.1597,
+                "avg_brightness": 140.21,
+                "avg_saturation": 0.1681,
                 "depth_state": "middle",
                 "fill_state": "filled"
               }
@@ -599,59 +599,59 @@
               "circle": "outer",
               "circle_label": "外圈",
               "dominant_element": "木",
-              "dominant_color": "#719d61",
+              "dominant_color": "#6f9b5d",
               "colors": [
                 {
-                  "hex": "#719d61",
+                  "hex": "#6f9b5d",
                   "rgb": [
-                    113,
-                    157,
-                    97
+                    111,
+                    155,
+                    93
                   ],
-                  "percentage": 23.4
+                  "percentage": 24.31
                 },
                 {
-                  "hex": "#e1d4a0",
+                  "hex": "#e1d3a0",
                   "rgb": [
                     225,
-                    212,
+                    211,
                     160
                   ],
-                  "percentage": 23.14
+                  "percentage": 22.66
                 },
                 {
-                  "hex": "#a5c7b2",
+                  "hex": "#a3c6af",
                   "rgb": [
-                    165,
-                    199,
-                    178
+                    163,
+                    198,
+                    175
                   ],
-                  "percentage": 22.42
+                  "percentage": 22.49
                 },
                 {
-                  "hex": "#2d3920",
-                  "rgb": [
-                    45,
-                    57,
-                    32
-                  ],
-                  "percentage": 15.62
-                },
-                {
-                  "hex": "#cdcf25",
+                  "hex": "#cdcf27",
                   "rgb": [
                     205,
                     207,
-                    37
+                    39
                   ],
-                  "percentage": 15.42
+                  "percentage": 15.87
+                },
+                {
+                  "hex": "#2b381e",
+                  "rgb": [
+                    43,
+                    56,
+                    30
+                  ],
+                  "percentage": 14.67
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.5644,
-                "avg_brightness": 154.2,
-                "avg_saturation": 0.4204,
+                "avg_brightness": 153.09,
+                "avg_saturation": 0.4283,
                 "depth_state": "middle",
                 "fill_state": "filled"
               }
@@ -1347,59 +1347,59 @@
             "circle": "inner",
             "circle_label": "内圈",
             "dominant_element": "火",
-            "dominant_color": "#c5afc5",
+            "dominant_color": "#c6b0c5",
             "colors": [
               {
-                "hex": "#c5afc5",
+                "hex": "#c6b0c5",
                 "rgb": [
-                  197,
-                  175,
+                  198,
+                  176,
                   197
                 ],
-                "percentage": 31.5
+                "percentage": 31.0
               },
               {
-                "hex": "#e6b310",
+                "hex": "#e7b410",
                 "rgb": [
-                  230,
-                  179,
+                  231,
+                  180,
                   16
                 ],
-                "percentage": 19.84
+                "percentage": 19.82
               },
               {
-                "hex": "#c7b377",
+                "hex": "#c4af74",
                 "rgb": [
-                  199,
-                  179,
-                  119
+                  196,
+                  175,
+                  116
                 ],
-                "percentage": 18.71
+                "percentage": 18.78
               },
               {
-                "hex": "#8d7b4b",
+                "hex": "#8c7947",
                 "rgb": [
-                  141,
-                  123,
-                  75
+                  140,
+                  121,
+                  71
                 ],
-                "percentage": 17.07
+                "percentage": 16.95
               },
               {
-                "hex": "#3b2a1f",
+                "hex": "#3b2a1e",
                 "rgb": [
                   59,
                   42,
-                  31
+                  30
                 ],
-                "percentage": 12.88
+                "percentage": 13.45
               }
             ],
             "state_basis": {
               "source": "tutorial_color_area_depth",
               "area_ratio": 0.1089,
-              "avg_brightness": 141.33,
-              "avg_saturation": 0.4774,
+              "avg_brightness": 140.55,
+              "avg_saturation": 0.4869,
               "depth_state": "deep",
               "fill_state": "filled"
             }
@@ -1408,59 +1408,59 @@
             "circle": "middle",
             "circle_label": "中圈",
             "dominant_element": "金",
-            "dominant_color": "#d2bcc1",
+            "dominant_color": "#d1bbc0",
             "colors": [
               {
-                "hex": "#d2bcc1",
+                "hex": "#d1bbc0",
                 "rgb": [
-                  210,
-                  188,
-                  193
+                  209,
+                  187,
+                  192
                 ],
-                "percentage": 30.29
+                "percentage": 31.08
               },
               {
-                "hex": "#a9cdd2",
+                "hex": "#a8ced3",
                 "rgb": [
-                  169,
-                  205,
-                  210
+                  168,
+                  206,
+                  211
                 ],
-                "percentage": 23.33
+                "percentage": 22.41
               },
               {
-                "hex": "#a19e8b",
+                "hex": "#a2a08c",
                 "rgb": [
-                  161,
-                  158,
-                  139
+                  162,
+                  160,
+                  140
                 ],
-                "percentage": 20.78
+                "percentage": 19.9
               },
               {
-                "hex": "#6c6953",
+                "hex": "#706c54",
                 "rgb": [
+                  112,
                   108,
-                  105,
-                  83
+                  84
                 ],
-                "percentage": 13.53
+                "percentage": 14.11
               },
               {
-                "hex": "#2e2e28",
+                "hex": "#2f3029",
                 "rgb": [
-                  46,
-                  46,
-                  40
+                  47,
+                  48,
+                  41
                 ],
-                "percentage": 12.07
+                "percentage": 12.5
               }
             ],
             "state_basis": {
               "source": "tutorial_color_area_depth",
               "area_ratio": 0.3267,
-              "avg_brightness": 139.08,
-              "avg_saturation": 0.1597,
+              "avg_brightness": 140.21,
+              "avg_saturation": 0.1681,
               "depth_state": "middle",
               "fill_state": "filled"
             }
@@ -1469,59 +1469,59 @@
             "circle": "outer",
             "circle_label": "外圈",
             "dominant_element": "木",
-            "dominant_color": "#719d61",
+            "dominant_color": "#6f9b5d",
             "colors": [
               {
-                "hex": "#719d61",
+                "hex": "#6f9b5d",
                 "rgb": [
-                  113,
-                  157,
-                  97
+                  111,
+                  155,
+                  93
                 ],
-                "percentage": 23.4
+                "percentage": 24.31
               },
               {
-                "hex": "#e1d4a0",
+                "hex": "#e1d3a0",
                 "rgb": [
                   225,
-                  212,
+                  211,
                   160
                 ],
-                "percentage": 23.14
+                "percentage": 22.66
               },
               {
-                "hex": "#a5c7b2",
+                "hex": "#a3c6af",
                 "rgb": [
-                  165,
-                  199,
-                  178
+                  163,
+                  198,
+                  175
                 ],
-                "percentage": 22.42
+                "percentage": 22.49
               },
               {
-                "hex": "#2d3920",
-                "rgb": [
-                  45,
-                  57,
-                  32
-                ],
-                "percentage": 15.62
-              },
-              {
-                "hex": "#cdcf25",
+                "hex": "#cdcf27",
                 "rgb": [
                   205,
                   207,
-                  37
+                  39
                 ],
-                "percentage": 15.42
+                "percentage": 15.87
+              },
+              {
+                "hex": "#2b381e",
+                "rgb": [
+                  43,
+                  56,
+                  30
+                ],
+                "percentage": 14.67
               }
             ],
             "state_basis": {
               "source": "tutorial_color_area_depth",
               "area_ratio": 0.5644,
-              "avg_brightness": 154.2,
-              "avg_saturation": 0.4204,
+              "avg_brightness": 153.09,
+              "avg_saturation": 0.4283,
               "depth_state": "middle",
               "fill_state": "filled"
             }
@@ -1540,59 +1540,59 @@
               "circle": "inner",
               "circle_label": "内圈",
               "dominant_element": "火",
-              "dominant_color": "#c5afc5",
+              "dominant_color": "#c6b0c5",
               "colors": [
                 {
-                  "hex": "#c5afc5",
+                  "hex": "#c6b0c5",
                   "rgb": [
-                    197,
-                    175,
+                    198,
+                    176,
                     197
                   ],
-                  "percentage": 31.5
+                  "percentage": 31.0
                 },
                 {
-                  "hex": "#e6b310",
+                  "hex": "#e7b410",
                   "rgb": [
-                    230,
-                    179,
+                    231,
+                    180,
                     16
                   ],
-                  "percentage": 19.84
+                  "percentage": 19.82
                 },
                 {
-                  "hex": "#c7b377",
+                  "hex": "#c4af74",
                   "rgb": [
-                    199,
-                    179,
-                    119
+                    196,
+                    175,
+                    116
                   ],
-                  "percentage": 18.71
+                  "percentage": 18.78
                 },
                 {
-                  "hex": "#8d7b4b",
+                  "hex": "#8c7947",
                   "rgb": [
-                    141,
-                    123,
-                    75
+                    140,
+                    121,
+                    71
                   ],
-                  "percentage": 17.07
+                  "percentage": 16.95
                 },
                 {
-                  "hex": "#3b2a1f",
+                  "hex": "#3b2a1e",
                   "rgb": [
                     59,
                     42,
-                    31
+                    30
                   ],
-                  "percentage": 12.88
+                  "percentage": 13.45
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.1089,
-                "avg_brightness": 141.33,
-                "avg_saturation": 0.4774,
+                "avg_brightness": 140.55,
+                "avg_saturation": 0.4869,
                 "depth_state": "deep",
                 "fill_state": "filled"
               }
@@ -1601,59 +1601,59 @@
               "circle": "middle",
               "circle_label": "中圈",
               "dominant_element": "金",
-              "dominant_color": "#d2bcc1",
+              "dominant_color": "#d1bbc0",
               "colors": [
                 {
-                  "hex": "#d2bcc1",
+                  "hex": "#d1bbc0",
                   "rgb": [
-                    210,
-                    188,
-                    193
+                    209,
+                    187,
+                    192
                   ],
-                  "percentage": 30.29
+                  "percentage": 31.08
                 },
                 {
-                  "hex": "#a9cdd2",
+                  "hex": "#a8ced3",
                   "rgb": [
-                    169,
-                    205,
-                    210
+                    168,
+                    206,
+                    211
                   ],
-                  "percentage": 23.33
+                  "percentage": 22.41
                 },
                 {
-                  "hex": "#a19e8b",
+                  "hex": "#a2a08c",
                   "rgb": [
-                    161,
-                    158,
-                    139
+                    162,
+                    160,
+                    140
                   ],
-                  "percentage": 20.78
+                  "percentage": 19.9
                 },
                 {
-                  "hex": "#6c6953",
+                  "hex": "#706c54",
                   "rgb": [
+                    112,
                     108,
-                    105,
-                    83
+                    84
                   ],
-                  "percentage": 13.53
+                  "percentage": 14.11
                 },
                 {
-                  "hex": "#2e2e28",
+                  "hex": "#2f3029",
                   "rgb": [
-                    46,
-                    46,
-                    40
+                    47,
+                    48,
+                    41
                   ],
-                  "percentage": 12.07
+                  "percentage": 12.5
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.3267,
-                "avg_brightness": 139.08,
-                "avg_saturation": 0.1597,
+                "avg_brightness": 140.21,
+                "avg_saturation": 0.1681,
                 "depth_state": "middle",
                 "fill_state": "filled"
               }
@@ -1662,59 +1662,59 @@
               "circle": "outer",
               "circle_label": "外圈",
               "dominant_element": "木",
-              "dominant_color": "#719d61",
+              "dominant_color": "#6f9b5d",
               "colors": [
                 {
-                  "hex": "#719d61",
+                  "hex": "#6f9b5d",
                   "rgb": [
-                    113,
-                    157,
-                    97
+                    111,
+                    155,
+                    93
                   ],
-                  "percentage": 23.4
+                  "percentage": 24.31
                 },
                 {
-                  "hex": "#e1d4a0",
+                  "hex": "#e1d3a0",
                   "rgb": [
                     225,
-                    212,
+                    211,
                     160
                   ],
-                  "percentage": 23.14
+                  "percentage": 22.66
                 },
                 {
-                  "hex": "#a5c7b2",
+                  "hex": "#a3c6af",
                   "rgb": [
-                    165,
-                    199,
-                    178
+                    163,
+                    198,
+                    175
                   ],
-                  "percentage": 22.42
+                  "percentage": 22.49
                 },
                 {
-                  "hex": "#2d3920",
-                  "rgb": [
-                    45,
-                    57,
-                    32
-                  ],
-                  "percentage": 15.62
-                },
-                {
-                  "hex": "#cdcf25",
+                  "hex": "#cdcf27",
                   "rgb": [
                     205,
                     207,
-                    37
+                    39
                   ],
-                  "percentage": 15.42
+                  "percentage": 15.87
+                },
+                {
+                  "hex": "#2b381e",
+                  "rgb": [
+                    43,
+                    56,
+                    30
+                  ],
+                  "percentage": 14.67
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.5644,
-                "avg_brightness": 154.2,
-                "avg_saturation": 0.4204,
+                "avg_brightness": 153.09,
+                "avg_saturation": 0.4283,
                 "depth_state": "middle",
                 "fill_state": "filled"
               }
