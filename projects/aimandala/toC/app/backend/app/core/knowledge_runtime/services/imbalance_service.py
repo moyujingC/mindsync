@@ -38,6 +38,8 @@ class ImbalanceService:
 
     EXCESS_THRESHOLD = 0.30
     DEFICIENT_THRESHOLD = 0.12
+    TUTORIAL_EXCESS_THRESHOLD = 0.50
+    TUTORIAL_DEFICIENT_THRESHOLD = 0.10
     MIN_VISIBLE_SCORE = 0.55
     SYNTHETIC_SIGNAL_ID = "transition-overload"
 
@@ -283,27 +285,57 @@ class ImbalanceService:
         state_map: dict[str, dict[str, Any]] = {}
         for element in ELEMENT_CN:
             proportion = round(float(proportions.get(element, 0.0) or 0.0), 4)
-            if proportion >= self.EXCESS_THRESHOLD:
-                state = "excess"
-            elif proportion <= self.DEFICIENT_THRESHOLD:
-                state = "deficient"
-            else:
-                state = "balanced"
+            scoring_state = self._classify_state(
+                proportion,
+                excess_threshold=self.EXCESS_THRESHOLD,
+                deficient_threshold=self.DEFICIENT_THRESHOLD,
+            )
+            tutorial_state = self._classify_state(
+                proportion,
+                excess_threshold=self.TUTORIAL_EXCESS_THRESHOLD,
+                deficient_threshold=self.TUTORIAL_DEFICIENT_THRESHOLD,
+            )
+            tutorial_evidence_basis = {
+                "proportion_source": "tutorial_weighted_element_distribution",
+                "dominant_circle_count": circle_counts.get(element, 0),
+                "thresholds": {
+                    "excess": self.TUTORIAL_EXCESS_THRESHOLD,
+                    "deficient": self.TUTORIAL_DEFICIENT_THRESHOLD,
+                },
+                "modifiers": [],
+            }
+            scoring_evidence_basis = {
+                "proportion_source": "runtime_weighted_element_distribution",
+                "dominant_circle_count": circle_counts.get(element, 0),
+                "thresholds": {
+                    "excess": self.EXCESS_THRESHOLD,
+                    "deficient": self.DEFICIENT_THRESHOLD,
+                },
+            }
             state_map[element] = {
                 "element": element,
                 "proportion": proportion,
-                "state": state,
-                "excess_score": round(self._clamp((proportion - 0.20) / 0.20), 4),
-                "deficiency_score": round(self._clamp((0.20 - proportion) / 0.20), 4),
-                "presence_score": round(self._clamp(proportion / 0.20), 4),
-                "evidence_basis": {
-                    "proportion_source": "weighted_element_distribution",
-                    "dominant_circle_count": circle_counts.get(element, 0),
+                "state": scoring_state,
+                "tutorial_state": {
+                    "state": tutorial_state,
+                    "thresholds": {
+                        "excess": self.TUTORIAL_EXCESS_THRESHOLD,
+                        "deficient": self.TUTORIAL_DEFICIENT_THRESHOLD,
+                    },
+                    "evidence_basis": tutorial_evidence_basis,
+                },
+                "scoring_state": {
+                    "state": scoring_state,
                     "thresholds": {
                         "excess": self.EXCESS_THRESHOLD,
                         "deficient": self.DEFICIENT_THRESHOLD,
                     },
+                    "evidence_basis": scoring_evidence_basis,
                 },
+                "excess_score": round(self._clamp((proportion - 0.20) / 0.20), 4),
+                "deficiency_score": round(self._clamp((0.20 - proportion) / 0.20), 4),
+                "presence_score": round(self._clamp(proportion / 0.20), 4),
+                "evidence_basis": scoring_evidence_basis,
             }
         return state_map
 
@@ -321,12 +353,20 @@ class ImbalanceService:
                 if dominant
                 else "unknown"
             )
+            tutorial_state = (
+                element_state_map.get(dominant, {})
+                .get("tutorial_state", {})
+                .get("state", "balanced")
+                if dominant
+                else "unknown"
+            )
             triad_states.append(
                 {
                     "circle": circle,
                     "dominant_element": dominant,
                     "inferred_state": inferred_state,
-                    "source_hit": f"dominant:{dominant}" if dominant else "missing",
+                    "tutorial_state": tutorial_state,
+                    "source_hit": f"circle:{circle}:{dominant}" if dominant else f"circle:{circle}:missing",
                 }
             )
         return triad_states
@@ -456,3 +496,16 @@ class ImbalanceService:
 
     def _clamp(self, value: float) -> float:
         return max(0.0, min(1.0, value))
+
+    def _classify_state(
+        self,
+        proportion: float,
+        *,
+        excess_threshold: float,
+        deficient_threshold: float,
+    ) -> str:
+        if proportion > excess_threshold or proportion == excess_threshold:
+            return "excess"
+        if proportion < deficient_threshold or proportion == deficient_threshold:
+            return "deficient"
+        return "balanced"

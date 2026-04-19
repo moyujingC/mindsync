@@ -434,6 +434,18 @@ class KnowledgeWorkbench:
                 if isinstance(warning_id, str) and warning_id not in actual_warning_ids:
                     flags.append(f"warning_missing:{warning_id}")
 
+        algorithm_trace = (
+            knowledge_debug.get("algorithm_fidelity_trace", {})
+            if isinstance(knowledge_debug.get("algorithm_fidelity_trace"), dict)
+            else {}
+        )
+        if not bool(algorithm_trace.get("algorithm_fidelity_pass")):
+            flags.append("algorithm_fidelity_failed")
+        if bool(algorithm_trace.get("legacy_semantics_found")):
+            flags.append("legacy_semantics_found")
+        if bool(algorithm_trace.get("raw_payload_leak_found")):
+            flags.append("raw_payload_leak_found")
+
         return flags
 
     def _build_report_summary(self, report: dict[str, Any]) -> dict[str, Any]:
@@ -484,6 +496,7 @@ class KnowledgeWorkbench:
             "build_info": knowledge_debug.get("build_info", {}),
             "imbalance_candidates": layer0.get("imbalance_candidates", []),
             "layer0_evidence": layer0,
+            "algorithm_fidelity_trace": knowledge_debug.get("algorithm_fidelity_trace", {}),
             "query_results": knowledge_debug.get("query_results", {}),
             "fallback_analysis": fallback_analysis,
             "warning_analysis": warning_analysis,
@@ -494,6 +507,15 @@ class KnowledgeWorkbench:
                 "fallback_levels": fallback_analysis.get("levels", []),
                 "warning_hit_count": len(warning_analysis.get("warning_hits", [])),
                 "source_ref_count": len(knowledge_debug.get("source_refs", [])),
+                "algorithm_fidelity_pass": bool(
+                    knowledge_debug.get("algorithm_fidelity_trace", {}).get("algorithm_fidelity_pass")
+                ),
+                "legacy_semantics_found": bool(
+                    knowledge_debug.get("algorithm_fidelity_trace", {}).get("legacy_semantics_found")
+                ),
+                "raw_payload_leak_found": bool(
+                    knowledge_debug.get("algorithm_fidelity_trace", {}).get("raw_payload_leak_found")
+                ),
             },
         }
 
@@ -511,6 +533,21 @@ class KnowledgeWorkbench:
         warning_hit_count = sum(
             len(item.get("knowledge_summary", {}).get("warning_analysis", {}).get("warning_hits", []))
             for item in sample_results
+        )
+        algorithm_fidelity_fail_count = sum(
+            1
+            for item in sample_results
+            if not bool(item.get("knowledge_summary", {}).get("summary", {}).get("algorithm_fidelity_pass"))
+        )
+        legacy_semantics_count = sum(
+            1
+            for item in sample_results
+            if bool(item.get("knowledge_summary", {}).get("summary", {}).get("legacy_semantics_found"))
+        )
+        raw_payload_leak_count = sum(
+            1
+            for item in sample_results
+            if bool(item.get("knowledge_summary", {}).get("summary", {}).get("raw_payload_leak_found"))
         )
         structured_missing_count = sum(
             1
@@ -530,6 +567,9 @@ class KnowledgeWorkbench:
                 "fixture_count": len(sample_results),
                 "fixture_fallback_count": fallback_count,
                 "warning_hit_count": warning_hit_count,
+                "algorithm_fidelity_fail_count": algorithm_fidelity_fail_count,
+                "legacy_semantics_found_count": legacy_semantics_count,
+                "raw_payload_leak_found_count": raw_payload_leak_count,
                 "structured_missing_count": structured_missing_count,
                 "regression_flag_count": regression_flag_count,
             },
@@ -540,6 +580,9 @@ class KnowledgeWorkbench:
                     "version": item.get("report_summary", {}).get("version"),
                     "fallback_used": item.get("knowledge_summary", {}).get("summary", {}).get("fallback_used"),
                     "warning_hit_count": item.get("knowledge_summary", {}).get("summary", {}).get("warning_hit_count"),
+                    "algorithm_fidelity_pass": item.get("knowledge_summary", {}).get("summary", {}).get("algorithm_fidelity_pass"),
+                    "legacy_semantics_found": item.get("knowledge_summary", {}).get("summary", {}).get("legacy_semantics_found"),
+                    "raw_payload_leak_found": item.get("knowledge_summary", {}).get("summary", {}).get("raw_payload_leak_found"),
                     "regression_flags": item.get("regression_flags", []),
                     "structured_missing_fields": [
                         field

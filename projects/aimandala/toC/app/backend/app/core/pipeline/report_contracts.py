@@ -229,10 +229,13 @@ class ReportContractAssembler:
         pro_draft = record.layer_3_pro_draft
         if report:
             contract = get_structured_report_contract("pro")
+            deep_impression = self._sanitize_text(
+                pro_draft.first_impression if pro_draft else ""
+            )
             return {
                 "version": "pro",
                 "title": PRO_REPORT_BLUEPRINT.structure_labels["report_title"],
-                "overall_impression": pro_draft.first_impression if pro_draft else None,
+                "overall_impression": deep_impression or None,
                 "structured": contract.build_payload({
                     "prompt_preview": pro_draft.prompt_preview if pro_draft else "",
                     "prompt_schema_validation_issues": (
@@ -241,7 +244,7 @@ class ReportContractAssembler:
                         else ["missing_layer_3_pro_draft"]
                     ),
                     "topic_context": self._build_topic_context(record, "pro"),
-                    "deep_impression": pro_draft.first_impression if pro_draft else "",
+                    "deep_impression": deep_impression,
                     "evidence_digest": self._build_pro_evidence_digest(pro_draft),
                     "imbalance_diagnosis": self._build_pro_imbalance_diagnosis(pro_draft),
                     "root_cause_chain": self._build_pro_root_cause_chain(pro_draft),
@@ -249,7 +252,7 @@ class ReportContractAssembler:
                         record,
                         pro_draft,
                     ),
-                    "healing_plan": pro_draft.healing_suggestions if pro_draft else [],
+                    "healing_plan": self._build_pro_healing_plan(pro_draft),
                 }),
                 "report": report,
                 "ai_qa_context": record.get_ai_qa_context(),
@@ -384,7 +387,7 @@ class ReportContractAssembler:
             for value in (pro_draft.core_insight_table or {}).values()
             if isinstance(value, str) and value.strip()
         ]
-        return self._join_text(core_parts[:2] + circle_parts + micro_parts)
+        return self._sanitize_text(self._join_text(core_parts[:2] + circle_parts + micro_parts))
 
     def _build_pro_imbalance_diagnosis(self, pro_draft: Layer3ProDraft | None) -> str:
         if pro_draft is None:
@@ -397,19 +400,19 @@ class ReportContractAssembler:
             if isinstance(imbalance.get(key), str) and str(imbalance.get(key)).strip()
         ]
         if parts:
-            return self._join_text(parts)
-        return self._join_text([
+            return self._sanitize_text(self._join_text(parts))
+        return self._sanitize_text(self._join_text([
             str(value).strip()
             for value in imbalance.values()
             if isinstance(value, str) and value.strip()
-        ])
+        ]))
 
     def _build_pro_root_cause_chain(self, pro_draft: Layer3ProDraft | None) -> dict[str, str]:
         root_cause = pro_draft.root_cause if pro_draft else {}
         return {
-            "surface": str(root_cause.get("surface") or root_cause.get("表面现象") or "").strip(),
-            "mechanism": str(root_cause.get("deeper") or root_cause.get("形成机制") or "").strip(),
-            "core": str(root_cause.get("core") or root_cause.get("核心信念") or "").strip(),
+            "surface": self._sanitize_text(str(root_cause.get("surface") or root_cause.get("表面现象") or "").strip()),
+            "mechanism": self._sanitize_text(str(root_cause.get("deeper") or root_cause.get("形成机制") or "").strip()),
+            "core": self._sanitize_text(str(root_cause.get("core") or root_cause.get("核心信念") or "").strip()),
         }
 
     def _build_pro_deep_structure_interpretation(
@@ -426,7 +429,7 @@ class ReportContractAssembler:
             root_chain.get("mechanism", ""),
             root_chain.get("core", ""),
         ]
-        return self._join_text(parts)
+        return self._sanitize_text(self._join_text(parts))
 
     def _join_text(self, parts: list[Any]) -> str:
         cleaned = [
@@ -527,6 +530,43 @@ class ReportContractAssembler:
             summary = teaser
         return {
             "title": "另一份更深的独立报告",
-            "summary": summary,
-            "product_note": "Pro 不是 Lite 的升级版，而是另一份独立购买、独立成立的深度完整解读。",
+            "summary": self._sanitize_text(summary),
+            "product_note": "Pro 不是串接在 Lite 后面的补充，而是另一份独立购买、独立成立的深度完整解读。",
         }
+
+    def _build_pro_healing_plan(
+        self,
+        pro_draft: Layer3ProDraft | None,
+    ) -> list[dict[str, str]]:
+        if pro_draft is None:
+            return []
+        plan: list[dict[str, str]] = []
+        for item in pro_draft.healing_suggestions or []:
+            if not isinstance(item, dict):
+                continue
+            normalized = {
+                "phase": self._sanitize_text(str(item.get("phase") or "").strip()),
+                "focus": self._sanitize_text(str(item.get("focus") or "").strip()),
+                "practice": self._sanitize_text(str(item.get("practice") or "").strip()),
+            }
+            if any(normalized.values()):
+                plan.append(normalized)
+        return plan
+
+    def _sanitize_text(self, content: str) -> str:
+        if not isinstance(content, str):
+            return ""
+        cleaned = content
+        banned_phrases = [
+            "Lite" + " 里",
+            "解锁" + "完整版",
+            "补全" + "版",
+            "升级" + "版",
+            "21" + "天",
+            "{'" + "inner'",
+        ]
+        for phrase in banned_phrases:
+            cleaned = cleaned.replace(phrase, "")
+        while "  " in cleaned:
+            cleaned = cleaned.replace("  ", " ")
+        return cleaned.strip()

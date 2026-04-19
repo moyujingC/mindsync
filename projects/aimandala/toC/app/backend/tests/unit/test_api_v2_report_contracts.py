@@ -145,11 +145,22 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert "used" in debug_payload["fallback_summary"]
     knowledge_debug = debug_payload["knowledge_debug"]
     assert knowledge_debug["build_info"]["build_selector"] == "current"
+    assert knowledge_debug["algorithm_fidelity_trace"]["method_trace_keys"] == [
+        "direct_judgment",
+        "per_circle_color_analysis",
+        "shape_analysis",
+        "circle_relation_analysis",
+        "final_algorithm_basis",
+    ]
+    assert knowledge_debug["algorithm_fidelity_trace"]["algorithm_fidelity_pass"] is True
+    assert knowledge_debug["algorithm_fidelity_trace"]["legacy_semantics_found"] is False
+    assert knowledge_debug["algorithm_fidelity_trace"]["raw_payload_leak_found"] is False
     assert knowledge_debug["layer0_evidence"]["visual_facts"]
     assert knowledge_debug["layer0_evidence"]["knowledge_hits"]
     assert knowledge_debug["layer0_evidence"]["rule_evaluations"]
     assert knowledge_debug["layer0_evidence"]["fidelity_flags"] == knowledge_debug["layer0_evidence"]["quality_flags"]
     assert knowledge_debug["layer0_evidence"]["rule_evaluations"]["imbalance_trace"]["all_candidates"]
+    assert knowledge_debug["layer0_evidence"]["rule_evaluations"]["interpretation_method_trace"]
     assert knowledge_debug["layer0_evidence"]["rule_evaluations"]["imbalance_trace"]["synthetic_signal"]["id"] == "transition-overload"
     assert knowledge_debug["layer0_evidence"]["theme_projection"]
     assert knowledge_debug["layer0_evidence"]["fallback_summary"] is not None

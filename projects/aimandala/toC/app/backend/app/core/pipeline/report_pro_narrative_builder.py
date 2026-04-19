@@ -73,7 +73,7 @@ class ReportProNarrativeBuilder:
         if transition:
             parts.append(transition)
         parts.append(
-            f"所以 Lite 里那份《{lite_title}》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。"
+            "这不是表面上的停住，而是这张画正在认真处理一件更底层的事：先把自己安顿住，再决定如何向外表达。"
         )
         if lite_contradiction:
             contradiction = lite_contradiction[:96].strip()

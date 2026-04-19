@@ -105,11 +105,19 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     assert payload["structured"]["topic_context"]["topic_label"] == "全面解读"
     assert payload["structured"]["topic_context"]["report_mode"] == "pro"
     assert payload["structured"]["deep_impression"]
+    assert "Lite" not in payload["structured"]["deep_impression"]
+    assert "慢慢亮起来的中心" not in payload["structured"]["deep_impression"]
     assert payload["structured"]["evidence_digest"]
     assert payload["structured"]["imbalance_diagnosis"]
     assert payload["structured"]["root_cause_chain"]
     assert payload["structured"]["deep_structure_interpretation"]
     assert payload["structured"]["healing_plan"]
+    serialized = str(payload["structured"])
+    assert "{'" + "inner'" not in serialized
+    assert "解锁完整" not in serialized
+    assert "补全" not in serialized
+    assert "升级" not in serialized
+    assert "21" + "天" not in serialized
     assert "first_impression" not in payload["structured"]
     assert "core_insight_table" not in payload["structured"]
     assert "root_cause" not in payload["structured"]

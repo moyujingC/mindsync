@@ -146,6 +146,17 @@ class ReportProjectionResolver:
                     ],
                 },
                 imbalance_projection=imbalance_projection,
+                interpretation_method_trace=(
+                    layer0.rule_evaluations.get("interpretation_method_trace", {})
+                    if isinstance(layer0.rule_evaluations, dict)
+                    else {}
+                ),
+                fidelity_flags=list(getattr(layer0, "fidelity_flags", []) or []),
+                fallback_summary=(
+                    layer0.fallback_summary
+                    if isinstance(layer0.fallback_summary, dict)
+                    else {"used": False, "levels": [], "warnings": []}
+                ),
             )
         except Exception:
             return {}
@@ -232,6 +243,17 @@ class ReportProjectionResolver:
                 signal=self._get_primary_knowledge_signal(record),
                 feeling_hint=self._build_feeling_hint(record),
                 default_pro_teaser=DEFAULT_PRO_TEASER,
+                interpretation_method_trace=(
+                    layer0.rule_evaluations.get("interpretation_method_trace", {})
+                    if isinstance(layer0.rule_evaluations, dict)
+                    else {}
+                ),
+                fidelity_flags=list(getattr(layer0, "fidelity_flags", []) or []),
+                fallback_summary=(
+                    layer0.fallback_summary
+                    if isinstance(layer0.fallback_summary, dict)
+                    else {"used": False, "levels": [], "warnings": []}
+                ),
             )
         except Exception:
             return {}

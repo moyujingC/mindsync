@@ -417,7 +417,7 @@ class Layer3ProDraft:
     # 根源分析
     root_cause: Dict[str, str] = field(default_factory=dict)
 
-    # 针对性调节建议（21天简化版）
+    # 针对性调节建议（完整方案的结构化摘要）
     healing_suggestions: List[Dict[str, str]] = field(default_factory=list)
 
     # Batch B 新增：canonical narrative plan

@@ -57,10 +57,17 @@ class KnowledgeDebugBlockBuilder:
         layer0 = record.layer_0_raw.to_dict() if record.layer_0_raw else {}
         narrative_plans = self._build_narrative_plans(record)
         knowledge_projections = self._build_knowledge_projections(record)
+        algorithm_fidelity_trace = self._build_algorithm_fidelity_trace(
+            layer0=layer0,
+            narrative_plans=narrative_plans,
+            knowledge_projections=knowledge_projections,
+            record=record,
+        )
         if runtime is None:
             return {
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
+                "algorithm_fidelity_trace": algorithm_fidelity_trace,
                 "narrative_plans": narrative_plans,
                 "knowledge_projections": knowledge_projections,
                 "topic_context_trace": self._build_topic_context_trace(record),
@@ -154,6 +161,7 @@ class KnowledgeDebugBlockBuilder:
                 "build_kind": build_info.get("build_source"),
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
+            "algorithm_fidelity_trace": algorithm_fidelity_trace,
             "narrative_plans": narrative_plans,
             "knowledge_projections": knowledge_projections,
             "topic_context_trace": self._build_topic_context_trace(record),
@@ -388,7 +396,7 @@ class KnowledgeDebugBlockBuilder:
         return {
             "title": "另一份更深的独立报告",
             "summary": summary,
-            "product_note": "Pro 不是 Lite 的升级版，而是另一份独立购买、独立成立的深度完整解读。",
+            "product_note": "Pro 不是串接在 Lite 后面的补充，而是另一份独立购买、独立成立的深度完整解读。",
         }
 
     def _build_pro_evidence_digest_debug(self, pro_draft: Any) -> str:
@@ -487,6 +495,90 @@ class KnowledgeDebugBlockBuilder:
             "quality_flags": layer0.get("quality_flags", []),
             "fallback_summary": layer0.get("fallback_summary", {}),
         }
+
+    def _build_algorithm_fidelity_trace(
+        self,
+        *,
+        layer0: dict[str, Any],
+        narrative_plans: dict[str, Any],
+        knowledge_projections: dict[str, Any],
+        record: InterpretationRecord,
+    ) -> dict[str, Any]:
+        canonical_keys = [
+            "direct_judgment",
+            "per_circle_color_analysis",
+            "shape_analysis",
+            "circle_relation_analysis",
+            "final_algorithm_basis",
+        ]
+        method_trace = (
+            layer0.get("rule_evaluations", {}).get("interpretation_method_trace", {})
+            if isinstance(layer0.get("rule_evaluations"), dict)
+            else {}
+        )
+        method_trace_keys = [
+            key for key in canonical_keys if isinstance(method_trace, dict) and key in method_trace
+        ]
+        missing_method_trace_keys = [
+            key for key in canonical_keys if key not in method_trace_keys
+        ]
+        legacy_semantics_found = self._contains_legacy_semantics(
+            [
+                knowledge_projections,
+                narrative_plans,
+                record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
+                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+            ]
+        )
+        raw_payload_leak_found = self._contains_raw_payload_leak(
+            [
+                knowledge_projections,
+                narrative_plans,
+                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+            ]
+        )
+        return {
+            "method_trace_keys": method_trace_keys,
+            "missing_method_trace_keys": missing_method_trace_keys,
+            "algorithm_fidelity_pass": (
+                method_trace_keys == canonical_keys
+                and not legacy_semantics_found
+                and not raw_payload_leak_found
+            ),
+            "legacy_semantics_found": legacy_semantics_found,
+            "raw_payload_leak_found": raw_payload_leak_found,
+        }
+
+    def _contains_legacy_semantics(self, payloads: list[Any]) -> bool:
+        banned_phrases = [
+            "Lite" + " 里",
+            "解锁" + "完整版",
+            "补全" + "版",
+            "升级" + "版",
+            "21" + "天",
+        ]
+        serialized = self._serialize_debug_payload(payloads)
+        return any(phrase in serialized for phrase in banned_phrases)
+
+    def _contains_raw_payload_leak(self, payloads: list[Any]) -> bool:
+        serialized = self._serialize_debug_payload(payloads)
+        raw_dict_marker = "{'" + "inner'"
+        quoted_marker = "\"{\\'" + "inner\\'\""
+        return raw_dict_marker in serialized or quoted_marker in serialized
+
+    def _serialize_debug_payload(self, payload: Any) -> str:
+        if payload is None:
+            return ""
+        if isinstance(payload, str):
+            return payload
+        if isinstance(payload, dict):
+            return " ".join(
+                self._serialize_debug_payload(value)
+                for value in payload.values()
+            )
+        if isinstance(payload, (list, tuple, set)):
+            return " ".join(self._serialize_debug_payload(item) for item in payload)
+        return str(payload)
 
     def _build_knowledge_projections(
         self,

@@ -559,7 +559,7 @@ _DEFAULT_LITE_STRUCTURE_LABELS = {
     "layer0_inner_meaning": "核心自我",
     "layer0_middle_meaning": "关系场域",
     "layer0_outer_meaning": "外在呈现",
-    "layer0_color_summary": "迁移阶段先保留结构位，后续再替换成正式颜色分析。",
+    "layer0_color_summary": "当前颜色分析会按逐圈颜色、面积与深浅状态输出正式证据。",
     "layer0_adjacent_left": "中心收束",
     "layer0_adjacent_right": "外层舒展",
     "layer0_wrap": "保护自己后再重新连接外界",
@@ -736,7 +736,7 @@ _DEFAULT_PRO_STATUS_MESSAGES = {
     "generated_success": "一梳 Pro 版报告已生成，可继续查看完整结果。",
 }
 _DEFAULT_PRO_NARRATIVE_TEMPLATES = {
-    "first_impression": "第一眼看这张画，我感受到一种“慢慢回到自己”的力量。Lite 里那份《{lite_title}》所呈现的底色，在 Pro 里会更清楚地显出：你不是停住了，而是在重新决定，什么样的推进方式才真正适合现在的你。{lite_contradiction}{context_hint}",
+    "first_impression": "第一眼看这张画，我感受到一种“慢慢回到自己”的力量。画面现在更清楚地显出：你不是停住了，而是在重新决定，什么样的推进方式才真正适合现在的你。{lite_contradiction}{context_hint}",
     "energy_essence": "{theme_label}主题下的核心动力，仍围绕“先稳住中心，再逐步恢复向外连接”。内圈 {inner}%、中圈 {middle}% 的分配，说明现在最重要的不是更快，而是更稳。",
     "block_point": "{lite_block}{primary}让你很难一边往前推进，一边仍然感觉自己是安全的。真正的卡点不是没有方向，而是你还在学习：如何不靠透支自己，也能把事情往前推进。{feeling_hint}",
     "core_direction": "先稳住中心感，再把能量逐步放回{theme_label}相关的关系、行动与表达，而不是一次性全部打开。",
@@ -824,7 +824,7 @@ def _build_pro_blueprint(template: dict[str, Any]) -> ProReportBlueprint:
         report_intro=str(
             template.get(
                 "report_intro",
-                "这份 Pro 报告会保留 Lite 里已经看见的底色与主题线索，并继续把它展开成更深一层的结构、根源与调节方向。",
+                "这份 Pro 报告会独立展开这张画更深一层的结构、根源与调节方向。",
             )
         ),
         section_titles=_normalize_string_dict(

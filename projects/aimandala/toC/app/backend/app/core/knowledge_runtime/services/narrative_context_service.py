@@ -457,6 +457,9 @@ class NarrativeContextService:
         signal: str = "",
         feeling_hint: str = "",
         default_pro_teaser: str = "",
+        interpretation_method_trace: dict[str, Any] | None = None,
+        fidelity_flags: list[str] | None = None,
+        fallback_summary: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         legacy_projection = self._build_lite_projection_payload(
             theme=theme,
@@ -522,22 +525,24 @@ class NarrativeContextService:
                 "如果你希望从更深层结构继续理解这张画，"
                 "Pro 会提供更完整的结构、根因与疗愈视角。"
             ),
-            "product_note": "这是独立购买的深度报告，不是 Lite 的补全版。",
+            "product_note": "这是独立购买的深度报告，不依赖 Lite 才成立。",
         }
+        evidence_trace_summary = self._build_algorithm_evidence_trace_summary(
+            interpretation_method_trace=interpretation_method_trace,
+            visual_refs=visual_refs,
+            knowledge_refs=[f"theme:{resolved_theme}"],
+            rule_refs=[signal_ref] if signal_ref else [],
+            theme_refs=[f"theme_label:{resolved_theme_label}"],
+            fidelity_flags=fidelity_flags,
+            fallback_summary=fallback_summary,
+        )
 
         return {
             "mode": "lite",
             "generation_mode": "evidence_first",
             "theme": resolved_theme,
             "theme_label": resolved_theme_label,
-            "evidence_trace_summary": {
-                "visual_fact_refs": visual_refs,
-                "knowledge_hit_refs": [f"theme:{resolved_theme}"],
-                "rule_refs": [signal_ref] if signal_ref else [],
-                "theme_projection_refs": [f"theme_label:{resolved_theme_label}"],
-                "fidelity_flags": [],
-                "fallback_summary": {"used": False, "levels": [], "warnings": []},
-            },
+            "evidence_trace_summary": evidence_trace_summary,
             "sections": {
                 "title": self._make_text_section(
                     legacy_projection.get("title", ""),
@@ -618,6 +623,9 @@ class NarrativeContextService:
         structure_labels: dict[str, str] | None = None,
         circle_fallbacks: dict[str, str] | None = None,
         imbalance_projection: dict[str, Any] | None = None,
+        interpretation_method_trace: dict[str, Any] | None = None,
+        fidelity_flags: list[str] | None = None,
+        fallback_summary: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         legacy_projection = self._build_pro_projection_payload(
             theme=theme,
@@ -668,20 +676,22 @@ class NarrativeContextService:
             signal=signal,
             theme_label=resolved_theme_label,
         )
+        evidence_trace_summary = self._build_algorithm_evidence_trace_summary(
+            interpretation_method_trace=interpretation_method_trace,
+            visual_refs=visual_refs,
+            knowledge_refs=[f"theme:{resolved_theme}"],
+            rule_refs=[signal_ref] if signal_ref else [],
+            theme_refs=[f"theme_label:{resolved_theme_label}"],
+            fidelity_flags=fidelity_flags,
+            fallback_summary=fallback_summary,
+        )
 
         return {
             "mode": "pro",
             "generation_mode": "evidence_first",
             "theme": resolved_theme,
             "theme_label": resolved_theme_label,
-            "evidence_trace_summary": {
-                "visual_fact_refs": visual_refs,
-                "knowledge_hit_refs": [f"theme:{resolved_theme}"],
-                "rule_refs": [signal_ref] if signal_ref else [],
-                "theme_projection_refs": [f"theme_label:{resolved_theme_label}"],
-                "fidelity_flags": [],
-                "fallback_summary": {"used": False, "levels": [], "warnings": []},
-            },
+            "evidence_trace_summary": evidence_trace_summary,
             "sections": {
                 "first_impression": self._make_text_section(
                     legacy_projection.get("first_impression", ""),
@@ -1188,7 +1198,7 @@ class NarrativeContextService:
         if transition:
             first_impression_parts.append(str(transition).strip())
         first_impression_parts.append(
-            f"所以 Lite 里那份《{lite_title}》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。"
+            "这不是表面上的停住，而是画面正在认真处理一件更底层的事：先把自己安顿住，再决定如何向外表达。"
         )
         if contradiction_text:
             normalized_contradiction = contradiction_text[:96].strip()
@@ -1625,7 +1635,62 @@ class NarrativeContextService:
             if line.startswith("👉 "):
                 line = line[2:].strip()
             lines.append(line)
-        return "\n".join(lines).strip()
+        cleaned = "\n".join(lines).strip()
+        banned_phrases = [
+            "Lite" + " 里",
+            "解锁" + "完整版",
+            "补全" + "版",
+            "升级" + "版",
+            "21" + "天",
+        ]
+        for phrase in banned_phrases:
+            cleaned = cleaned.replace(phrase, "")
+        while "  " in cleaned:
+            cleaned = cleaned.replace("  ", " ")
+        return cleaned.strip()
+
+    def _build_algorithm_evidence_trace_summary(
+        self,
+        *,
+        interpretation_method_trace: dict[str, Any] | None,
+        visual_refs: list[str],
+        knowledge_refs: list[str],
+        rule_refs: list[str],
+        theme_refs: list[str],
+        fidelity_flags: list[str] | None,
+        fallback_summary: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        method_trace = (
+            interpretation_method_trace
+            if isinstance(interpretation_method_trace, dict)
+            else {}
+        )
+        tutorial_source_refs = [
+            "source:four_step_method",
+            "source:five_elements_excess_deficiency",
+            "source:triad_structure",
+        ]
+        return {
+            "visual_fact_refs": [item for item in visual_refs if item],
+            "knowledge_hit_refs": [item for item in knowledge_refs if item],
+            "rule_refs": [item for item in rule_refs if item],
+            "theme_projection_refs": [item for item in theme_refs if item],
+            "direct_judgment_refs": ["method:direct_judgment"],
+            "color_analysis_refs": ["method:per_circle_color_analysis"],
+            "shape_analysis_refs": ["method:shape_analysis"],
+            "circle_relation_refs": ["method:circle_relation_analysis"],
+            "tutorial_source_refs": tutorial_source_refs,
+            "fidelity_flags": [
+                str(item).strip()
+                for item in (fidelity_flags or [])
+                if isinstance(item, str) and str(item).strip()
+            ],
+            "fallback_summary": (
+                fallback_summary
+                if isinstance(fallback_summary, dict)
+                else {"used": False, "levels": [], "warnings": []}
+            ),
+        }
 
     def _resolve_imbalance_projection(
         self,

@@ -117,6 +117,13 @@ class Layer0Assembler:
             circle_elements,
             version="toc",
         )
+        interpretation_method_trace = self._build_interpretation_method_trace(
+            circles=circles,
+            circle_colors=circle_colors,
+            element_distribution=element_distribution,
+            rule_trace=trace,
+            micro_analysis=layer.micro_analysis,
+        )
         primary_candidates = trace.get("primary_candidates", [])
         synthetic_signal = trace.get("synthetic_signal", {})
         layer.imbalance_candidates = list(primary_candidates)
@@ -144,6 +151,10 @@ class Layer0Assembler:
             "dominant_elements": dominant_elements,
             "circle_colors": circle_colors,
             "circle_colors_detected": sorted(circle_colors.keys()),
+            "per_circle_color_analysis": interpretation_method_trace.get(
+                "per_circle_color_analysis",
+                {},
+            ),
             "weighted_element_distribution": {
                 key: {
                     "element": item["element_cn"],
@@ -154,6 +165,7 @@ class Layer0Assembler:
                 for key, item in element_distribution.items()
             },
             "extracted_color_metrics": extracted_color_metrics,
+            "interpretation_method_trace": interpretation_method_trace,
             "knowledge_build": {
                 "build_selector": build_info.get("build_selector"),
                 "build_source": build_info.get("build_source"),
@@ -197,6 +209,11 @@ class Layer0Assembler:
         trace["primary_candidates"] = list(primary_candidates)
         trace["synthetic_signal"] = synthetic_signal
         trace["imbalance_candidates"] = list(primary_candidates)
+        trace["per_circle_color_analysis"] = interpretation_method_trace.get(
+            "per_circle_color_analysis",
+            {},
+        )
+        trace["interpretation_method_trace"] = interpretation_method_trace
         layer.rule_evaluations = {
             **trace,
             "theme_mappings": primary_theme_mappings,
@@ -277,10 +294,69 @@ class Layer0Assembler:
             "used": True,
             "reason": "generated_fallback",
         }
+        fallback_method_trace = {
+            "direct_judgment": {
+                "summary": "视觉抽取失败，当前仅保留可审计的生成兜底判断。",
+                "primary_signal": "transition-overload",
+                "source": "generated_fallback",
+            },
+            "per_circle_color_analysis": {
+                "inner": {
+                    "circle": "inner",
+                    "dominant_element": "",
+                    "colors": [],
+                    "state_basis": {
+                        "source": "tutorial_color_area_depth",
+                        "area_ratio": 0.1089,
+                        "depth_state": "unknown",
+                        "fill_state": "generated",
+                    },
+                },
+                "middle": {
+                    "circle": "middle",
+                    "dominant_element": "",
+                    "colors": [],
+                    "state_basis": {
+                        "source": "tutorial_color_area_depth",
+                        "area_ratio": 0.3267,
+                        "depth_state": "unknown",
+                        "fill_state": "generated",
+                    },
+                },
+                "outer": {
+                    "circle": "outer",
+                    "dominant_element": "",
+                    "colors": [],
+                    "state_basis": {
+                        "source": "tutorial_color_area_depth",
+                        "area_ratio": 0.5644,
+                        "depth_state": "unknown",
+                        "fill_state": "generated",
+                    },
+                },
+            },
+            "shape_analysis": {
+                "source": "generated_fallback",
+                "overall_features": [],
+                "triggered_analyses": [],
+            },
+            "circle_relation_analysis": {
+                "source": "generated_fallback",
+                "adjacent_relations": [],
+                "wrap_relations": [],
+                "synthetic_signal": synthetic_signal,
+            },
+            "final_algorithm_basis": {
+                "ordered_steps": ["直断", "逐圈颜色分析", "形状分析", "圈级生克分析"],
+                "selected_primary_candidates": ["transition-overload"],
+                "notes": ["vision_extraction_unavailable"],
+            },
+        }
         layer.visual_facts = {
             "generated": True,
             "circle_boundaries": circles,
             "circle_colors": layer.circle_colors,
+            "per_circle_color_analysis": fallback_method_trace["per_circle_color_analysis"],
             "dominant_elements": {},
             "weighted_element_distribution": {},
             "extracted_color_metrics": {
@@ -288,6 +364,7 @@ class Layer0Assembler:
                 "black_ratio": 0.18,
                 "red_ratio": 0.11,
             },
+            "interpretation_method_trace": fallback_method_trace,
             "knowledge_build": self.repository.get_build_info(),
         }
         layer.knowledge_hits = {
@@ -334,6 +411,8 @@ class Layer0Assembler:
             "primary_candidates": ["transition-overload"],
             "synthetic_signal": synthetic_signal,
             "imbalance_candidates": ["transition-overload"],
+            "per_circle_color_analysis": fallback_method_trace["per_circle_color_analysis"],
+            "interpretation_method_trace": fallback_method_trace,
             "theme_mappings": {
                 "transition-overload": self.imbalance_service.get_theme_mapping(
                     theme,
@@ -569,3 +648,236 @@ class Layer0Assembler:
             if warning and float(candidate.get("score", 0.0)) >= self.imbalance_service.MIN_VISIBLE_SCORE:
                 flags.append(f"warning:{candidate.get('id')}")
         return flags
+
+    def _build_interpretation_method_trace(
+        self,
+        *,
+        circles: dict[str, int],
+        circle_colors: dict[str, Any],
+        element_distribution: dict[str, dict[str, Any]],
+        rule_trace: dict[str, Any],
+        micro_analysis: Any,
+    ) -> dict[str, Any]:
+        per_circle_color_analysis = self._build_per_circle_color_analysis(
+            circles=circles,
+            circle_colors=circle_colors,
+        )
+        primary_candidates = (
+            rule_trace.get("imbalance_trace", {}).get("primary_candidates", [])
+        )
+        synthetic_signal = rule_trace.get("synthetic_signal", {})
+        direct_judgment = self._build_direct_judgment(
+            element_distribution=element_distribution,
+            primary_candidates=primary_candidates,
+            synthetic_signal=synthetic_signal,
+        )
+        shape_analysis = self._build_shape_analysis(
+            micro_analysis=micro_analysis,
+            circle_colors=circle_colors,
+        )
+        circle_relation_analysis = self._build_circle_relation_analysis(
+            micro_analysis=micro_analysis,
+            per_circle_color_analysis=per_circle_color_analysis,
+            synthetic_signal=synthetic_signal,
+        )
+        return {
+            "direct_judgment": direct_judgment,
+            "per_circle_color_analysis": per_circle_color_analysis,
+            "shape_analysis": shape_analysis,
+            "circle_relation_analysis": circle_relation_analysis,
+            "final_algorithm_basis": {
+                "ordered_steps": ["直断", "逐圈颜色分析", "形状分析", "圈级生克分析"],
+                "selected_primary_candidates": [
+                    item.get("id")
+                    for item in primary_candidates
+                    if isinstance(item, dict) and isinstance(item.get("id"), str)
+                ]
+                or [self.imbalance_service.SYNTHETIC_SIGNAL_ID],
+                "notes": [
+                    "tutorial_state_and_runtime_scoring_are_separated",
+                    "relationship_diagnosis_follows_element_state_analysis",
+                ],
+            },
+        }
+
+    def _build_direct_judgment(
+        self,
+        *,
+        element_distribution: dict[str, dict[str, Any]],
+        primary_candidates: list[dict[str, Any]],
+        synthetic_signal: dict[str, Any],
+    ) -> dict[str, Any]:
+        ranked = sorted(
+            element_distribution.values(),
+            key=lambda item: (-float(item.get("percentage", 0.0)), str(item.get("element_cn", ""))),
+        )
+        dominant = ranked[0] if ranked else {}
+        secondary = ranked[1] if len(ranked) > 1 else {}
+        primary_id = ""
+        if primary_candidates and isinstance(primary_candidates[0], dict):
+            primary_id = str(primary_candidates[0].get("id") or "").strip()
+        if not primary_id and bool(synthetic_signal.get("used")):
+            primary_id = str(synthetic_signal.get("id") or "").strip()
+        dominant_label = str(dominant.get("element_cn") or "").strip() or "未识别"
+        secondary_label = str(secondary.get("element_cn") or "").strip()
+        summary = (
+            f"直断先看到「{dominant_label}」更占主体，"
+            f"再结合「{secondary_label or dominant_label}」去判断整体能量的主轴。"
+        )
+        if primary_id:
+            summary += f" 当前主判断落在「{primary_id}」。"
+        return {
+            "summary": summary,
+            "dominant_element": dominant_label,
+            "secondary_element": secondary_label,
+            "primary_signal": primary_id,
+            "source": "tutorial_four_step_method",
+        }
+
+    def _build_per_circle_color_analysis(
+        self,
+        *,
+        circles: dict[str, int],
+        circle_colors: dict[str, Any],
+    ) -> dict[str, Any]:
+        area_ratios = self._calculate_circle_area_ratios(circles)
+        analysis: dict[str, Any] = {}
+        for circle_key in ["inner", "middle", "outer"]:
+            circle_data = circle_colors.get(circle_key, {}) if isinstance(circle_colors, dict) else {}
+            colors = circle_data.get("colors", []) if isinstance(circle_data, dict) else []
+            brightness_values = []
+            saturation_values = []
+            for color in colors:
+                if not isinstance(color, dict):
+                    continue
+                rgb = color.get("rgb") or []
+                if not isinstance(rgb, list) or len(rgb) != 3:
+                    continue
+                r, g, b = [float(value) for value in rgb]
+                brightness_values.append(0.299 * r + 0.587 * g + 0.114 * b)
+                max_c = max(r, g, b)
+                min_c = min(r, g, b)
+                saturation_values.append(0.0 if max_c == 0 else (max_c - min_c) / max_c)
+            avg_brightness = (
+                sum(brightness_values) / len(brightness_values)
+                if brightness_values
+                else 0.0
+            )
+            avg_saturation = (
+                sum(saturation_values) / len(saturation_values)
+                if saturation_values
+                else 0.0
+            )
+            analysis[circle_key] = {
+                "circle": circle_key,
+                "circle_label": CIRCLE_KEY_TO_CN.get(circle_key, circle_key),
+                "dominant_element": ELEMENT_KEY_TO_CN.get(
+                    circle_data.get("dominant_element"),
+                    circle_data.get("dominant_element", ""),
+                ),
+                "dominant_color": circle_data.get("dominant_color", ""),
+                "colors": colors,
+                "state_basis": {
+                    "source": "tutorial_color_area_depth",
+                    "area_ratio": round(area_ratios.get(circle_key, 0.0), 4),
+                    "avg_brightness": round(avg_brightness, 2),
+                    "avg_saturation": round(avg_saturation, 4),
+                    "depth_state": self._classify_depth_state(
+                        brightness=avg_brightness,
+                        saturation=avg_saturation,
+                    ),
+                    "fill_state": self._classify_fill_state(colors),
+                },
+            }
+        return analysis
+
+    def _build_shape_analysis(
+        self,
+        *,
+        micro_analysis: Any,
+        circle_colors: dict[str, Any],
+    ) -> dict[str, Any]:
+        adjacent = list(getattr(micro_analysis, "adjacent", []) or [])
+        wrap = list(getattr(micro_analysis, "wrap", []) or [])
+        overall_features: list[str] = []
+        if adjacent:
+            overall_features.append("detected_circle_transition_pattern")
+        if wrap:
+            overall_features.append("detected_wrap_or_protection_pattern")
+        return {
+            "source": "micro_analysis_proxy",
+            "overall_features": overall_features,
+            "triggered_analyses": [
+                {
+                    "type": "shape_proxy",
+                    "circle_count": len(
+                        [
+                            key for key in ["inner", "middle", "outer"]
+                            if isinstance(circle_colors.get(key), dict)
+                        ]
+                    ),
+                    "adjacent_relations": adjacent,
+                    "wrap_relations": wrap,
+                }
+            ],
+        }
+
+    def _build_circle_relation_analysis(
+        self,
+        *,
+        micro_analysis: Any,
+        per_circle_color_analysis: dict[str, Any],
+        synthetic_signal: dict[str, Any],
+    ) -> dict[str, Any]:
+        circle_elements = {
+            key: str(value.get("dominant_element") or "").strip()
+            for key, value in per_circle_color_analysis.items()
+            if isinstance(value, dict)
+        }
+        return {
+            "source": "circle_energy_flow",
+            "circle_elements": circle_elements,
+            "adjacent_relations": list(getattr(micro_analysis, "adjacent", []) or []),
+            "wrap_relations": list(getattr(micro_analysis, "wrap", []) or []),
+            "synthetic_signal": synthetic_signal,
+        }
+
+    def _calculate_circle_area_ratios(self, circles: dict[str, int]) -> dict[str, float]:
+        inner_ratio = float(circles.get("inner_radius", 33) or 33) / 100.0
+        middle_ratio = float(circles.get("middle_radius", 66) or 66) / 100.0
+        return {
+            "inner": round(max(inner_ratio**2, 0.0), 4),
+            "middle": round(max(middle_ratio**2 - inner_ratio**2, 0.0), 4),
+            "outer": round(max(1 - middle_ratio**2, 0.0), 4),
+        }
+
+    def _classify_depth_state(
+        self,
+        *,
+        brightness: float,
+        saturation: float,
+    ) -> str:
+        if brightness <= 80:
+            return "deep"
+        if brightness >= 185 and saturation <= 0.18:
+            return "light"
+        if saturation >= 0.45 and brightness <= 150:
+            return "deep"
+        return "middle"
+
+    def _classify_fill_state(self, colors: list[Any]) -> str:
+        if not colors:
+            return "sparse"
+        top_percentage = 0.0
+        for color in colors:
+            if not isinstance(color, dict):
+                continue
+            try:
+                top_percentage = max(top_percentage, float(color.get("percentage", 0.0) or 0.0))
+            except (TypeError, ValueError):
+                continue
+        if top_percentage >= 55:
+            return "dense"
+        if top_percentage <= 20:
+            return "mixed"
+        return "filled"

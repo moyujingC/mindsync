@@ -520,6 +520,12 @@ def test_v21_narrative_service_builds_lite_narrative_plan():
 
     assert plan["mode"] == "lite"
     assert plan["generation_mode"] == "evidence_first"
+    evidence_summary = plan["evidence_trace_summary"]
+    assert evidence_summary["direct_judgment_refs"]
+    assert evidence_summary["color_analysis_refs"]
+    assert evidence_summary["shape_analysis_refs"]
+    assert evidence_summary["circle_relation_refs"]
+    assert evidence_summary["tutorial_source_refs"]
     assert plan["sections"]["title"]["content"] == "General-Theme-Title"
     assert plan["sections"]["lite_healing_guidance"]["content"]["directions"]
     assert plan["sections"]["pro_report_entry"]["content"]["title"] == "另一份更深的独立报告"
@@ -604,7 +610,8 @@ def test_v21_narrative_service_builds_pro_projection():
     )
 
     assert "「土」和「金」共同撑起了整张画的骨架" in projection["first_impression"]
-    assert "《慢慢亮起来的中心》" in projection["first_impression"]
+    assert "Lite" not in projection["first_impression"]
+    assert "《慢慢亮起来的中心》" not in projection["first_impression"]
     assert "42.50%" in projection["energy_essence"]
     assert "恐惧压制行动让你很难一边往前推进" in projection["block_point"]
 
@@ -687,7 +694,15 @@ def test_v21_narrative_service_builds_pro_narrative_plan():
 
     assert plan["mode"] == "pro"
     assert plan["generation_mode"] == "evidence_first"
+    evidence_summary = plan["evidence_trace_summary"]
+    assert evidence_summary["direct_judgment_refs"]
+    assert evidence_summary["color_analysis_refs"]
+    assert evidence_summary["shape_analysis_refs"]
+    assert evidence_summary["circle_relation_refs"]
+    assert evidence_summary["tutorial_source_refs"]
     assert plan["sections"]["first_impression"]["content"]
+    assert "Lite" not in plan["sections"]["first_impression"]["content"]
+    assert "慢慢亮起来的中心" not in plan["sections"]["first_impression"]["content"]
     assert plan["sections"]["healing_suggestions"]["content"]
     assert plan["sections"]["core_insight_table"]["content"]["疗愈核心"]
     assert "signal:transition-overload" in plan["sections"]["block_point"]["trace"]["rule_refs"]
@@ -759,10 +774,64 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
     assert layer0.rule_evaluations["imbalance_trace"]["all_candidates"]
     assert layer0.rule_evaluations["imbalance_trace"]["primary_candidates"]
     assert "used" in layer0.rule_evaluations["imbalance_trace"]["synthetic_signal"]
+    method_trace = layer0.rule_evaluations["interpretation_method_trace"]
+    assert set(method_trace) == {
+        "direct_judgment",
+        "per_circle_color_analysis",
+        "shape_analysis",
+        "circle_relation_analysis",
+        "final_algorithm_basis",
+    }
+    assert set(method_trace["per_circle_color_analysis"]) == {"inner", "middle", "outer"}
+    for circle_key, circle_analysis in method_trace["per_circle_color_analysis"].items():
+        assert circle_analysis["circle"] == circle_key
+        assert circle_analysis["dominant_element"] in {"木", "火", "土", "金", "水"}
+        assert circle_analysis["colors"]
+        assert circle_analysis["state_basis"]["source"] == "tutorial_color_area_depth"
+    for element_state in layer0.rule_evaluations["element_states"]:
+        assert element_state["tutorial_state"]["state"] in {"excess", "balanced", "deficient"}
+        assert element_state["tutorial_state"]["thresholds"] == {
+            "excess": 0.5,
+            "deficient": 0.1,
+        }
+        assert "scoring_state" in element_state
+    for triad_state in layer0.rule_evaluations["triad_states"]:
+        assert triad_state["tutorial_state"] in {"excess", "balanced", "deficient", "unknown"}
+        assert triad_state["source_hit"].startswith("circle:")
+    assert layer0.visual_facts["interpretation_method_trace"] == method_trace
     assert layer0.theme_projection["theme_id"] == "wealth_career"
     assert isinstance(layer0.fidelity_flags, list)
     assert layer0.quality_flags == layer0.fidelity_flags
     assert "used" in layer0.fallback_summary
+
+
+def test_v21_imbalance_service_separates_tutorial_state_from_scoring_state():
+    runtime = get_knowledge_runtime()
+
+    trace = runtime.imbalance_service.evaluate_imbalance_trace(
+        color_analysis={
+            "wood": {"element": "木", "proportion": 0.42},
+            "fire": {"element": "火", "proportion": 0.08},
+            "earth": {"element": "土", "proportion": 0.20},
+            "metal": {"element": "金", "proportion": 0.18},
+            "water": {"element": "水", "proportion": 0.12},
+        },
+        circle_elements={"inner": "木", "middle": "木", "outer": "土"},
+        version="toc",
+    )
+
+    states = {item["element"]: item for item in trace["element_states"]}
+
+    assert states["木"]["tutorial_state"]["state"] == "balanced"
+    assert states["木"]["scoring_state"]["state"] == "excess"
+    assert states["火"]["tutorial_state"]["state"] == "deficient"
+    assert states["火"]["scoring_state"]["state"] == "deficient"
+    assert states["木"]["tutorial_state"]["evidence_basis"]["proportion_source"] == (
+        "tutorial_weighted_element_distribution"
+    )
+    assert states["木"]["scoring_state"]["evidence_basis"]["proportion_source"] == (
+        "runtime_weighted_element_distribution"
+    )
 
 
 def test_v21_imbalance_service_emits_full_trace_but_filters_primary_candidates():
