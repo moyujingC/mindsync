@@ -204,6 +204,7 @@ class KnowledgeDebugBlockBuilder:
         pro_draft = record.layer_3_pro_draft
         fidelity_flags = layer0.get("fidelity_flags", layer0.get("quality_flags", []))
         fallback_summary = layer0.get("fallback_summary", {})
+        color_summary = self._build_per_circle_color_summary(layer0)
         lite_healing_guidance = self._build_lite_healing_guidance_debug(lite_final)
         pro_report_entry = self._build_pro_report_entry_debug(lite_final)
         return {
@@ -223,6 +224,7 @@ class KnowledgeDebugBlockBuilder:
                     fidelity_flags=fidelity_flags,
                     fallback_summary=fallback_summary,
                     narrative_section="visual_elements",
+                    color_summary=color_summary,
                 ),
                 "pattern_interpretation": self._product_block(
                     final=self._join_text([
@@ -284,6 +286,7 @@ class KnowledgeDebugBlockBuilder:
                     fallback_summary=fallback_summary,
                     narrative_section="core_insight_table|three_circles_detailed|micro_analysis_detailed",
                     compatibility_used=True,
+                    color_summary=color_summary,
                 ),
                 "imbalance_diagnosis": self._product_block(
                     final=self._build_pro_imbalance_diagnosis_debug(pro_draft),
@@ -334,8 +337,10 @@ class KnowledgeDebugBlockBuilder:
         fallback_summary: dict[str, Any],
         narrative_section: str,
         compatibility_used: bool = False,
+        color_summary: str = "",
     ) -> dict[str, Any]:
         evidence = field_to_knowledge_map.get(field_key, {})
+        rule_refs = ["method:per_circle_color_analysis"] if color_summary else []
         return {
             "final": final,
             "narrative_trace": {
@@ -344,8 +349,9 @@ class KnowledgeDebugBlockBuilder:
             "evidence_trace": {
                 "visual_fact_refs": [],
                 "knowledge_hit_refs": evidence.get("entity_ids", []) if isinstance(evidence, dict) else [],
-                "rule_refs": [],
+                "rule_refs": rule_refs,
                 "theme_projection_refs": evidence.get("source_paths", []) if isinstance(evidence, dict) else [],
+                "per_circle_color_summary": color_summary,
             },
             "prompt_trace": {
                 "schema_field": field_key,
@@ -356,6 +362,72 @@ class KnowledgeDebugBlockBuilder:
                 "compatibility_used": compatibility_used,
             },
         }
+
+    def _build_per_circle_color_summary(self, layer0: dict[str, Any]) -> str:
+        method_trace = (
+            layer0.get("rule_evaluations", {}).get("interpretation_method_trace", {})
+            if isinstance(layer0.get("rule_evaluations"), dict)
+            else {}
+        )
+        per_circle = (
+            method_trace.get("per_circle_color_analysis", {})
+            if isinstance(method_trace, dict)
+            else {}
+        )
+        if not isinstance(per_circle, dict):
+            return ""
+        parts: list[str] = []
+        for key in ["inner", "middle", "outer"]:
+            item = per_circle.get(key)
+            if not isinstance(item, dict):
+                continue
+            circle_label = str(item.get("circle_label") or self._circle_label(key)).strip()
+            dominant_element = str(item.get("dominant_element") or "").strip()
+            dominant_color = str(item.get("dominant_color") or "").strip()
+            state_basis = item.get("state_basis", {})
+            if not isinstance(state_basis, dict):
+                state_basis = {}
+            color_element = " / ".join(
+                value for value in [dominant_color, dominant_element] if value
+            ) or "未识别"
+            parts.append(
+                f"{circle_label}以{color_element}为主，"
+                f"{self._depth_state_label(state_basis.get('depth_state'))}，"
+                f"{self._fill_state_label(state_basis.get('fill_state'))}，"
+                f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"
+            )
+        return "；".join(parts)
+
+    def _circle_label(self, circle_key: str) -> str:
+        return {"inner": "内圈", "middle": "中圈", "outer": "外圈"}.get(
+            circle_key,
+            circle_key,
+        )
+
+    def _format_area_ratio(self, value: Any) -> str:
+        try:
+            ratio = float(value)
+        except (TypeError, ValueError):
+            return "未知"
+        if ratio <= 1:
+            return f"{ratio * 100:.1f}%"
+        return f"{ratio:.1f}%"
+
+    def _depth_state_label(self, value: Any) -> str:
+        return {
+            "deep": "颜色偏深",
+            "light": "颜色偏浅",
+            "middle": "深浅居中",
+            "unknown": "深浅未知",
+        }.get(str(value or "").strip(), "深浅未知")
+
+    def _fill_state_label(self, value: Any) -> str:
+        return {
+            "dense": "填充较密",
+            "filled": "填充稳定",
+            "mixed": "填充较混合",
+            "sparse": "填充较少",
+        }.get(str(value or "").strip(), "填充状态未明")
 
     def _build_lite_healing_guidance_debug(self, lite_final: Any) -> dict[str, Any]:
         if lite_final is None:

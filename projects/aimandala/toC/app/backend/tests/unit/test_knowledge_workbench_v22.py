@@ -158,6 +158,9 @@ def test_v22_workbench_can_export_fixture_golden_assets(tmp_path):
     assert "topic_context_trace" in debug_payload
     assert "narrative_plans" in debug_payload
     assert "field_to_knowledge_map" in debug_payload
+    visual_trace = report_payload["knowledge_debug"]["product_block_debug"]["lite"]["visual_basis"]["evidence_trace"]
+    assert visual_trace["per_circle_color_summary"]
+    assert "method:per_circle_color_analysis" in visual_trace["rule_refs"]
 
     markdown_payload = (export_dir / "lite.report.md").read_text(encoding="utf-8")
     assert "产品区块" in markdown_payload

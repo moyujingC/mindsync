@@ -717,6 +717,91 @@ def test_v21_narrative_service_builds_pro_narrative_plan():
     assert plan["legacy_projection"]["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
 
 
+def test_v21_narrative_plan_compresses_per_circle_depth_state():
+    runtime = get_knowledge_runtime()
+    method_trace = {
+        "direct_judgment": {},
+        "per_circle_color_analysis": {
+            "inner": {
+                "circle_label": "内圈",
+                "dominant_element": "火",
+                "dominant_color": "红色",
+                "state_basis": {
+                    "area_ratio": 0.1225,
+                    "avg_brightness": 68.0,
+                    "avg_saturation": 0.72,
+                    "depth_state": "deep",
+                    "fill_state": "dense",
+                },
+            },
+            "middle": {
+                "circle_label": "中圈",
+                "dominant_element": "木",
+                "dominant_color": "绿色",
+                "state_basis": {
+                    "area_ratio": 0.3264,
+                    "avg_brightness": 142.0,
+                    "avg_saturation": 0.44,
+                    "depth_state": "middle",
+                    "fill_state": "filled",
+                },
+            },
+            "outer": {
+                "circle_label": "外圈",
+                "dominant_element": "金",
+                "dominant_color": "白色",
+                "state_basis": {
+                    "area_ratio": 0.5511,
+                    "avg_brightness": 210.0,
+                    "avg_saturation": 0.08,
+                    "depth_state": "light",
+                    "fill_state": "mixed",
+                },
+            },
+        },
+        "shape_analysis": {},
+        "circle_relation_analysis": {},
+        "final_algorithm_basis": {},
+    }
+
+    lite_plan = runtime.narrative_service.build_lite_narrative_plan(
+        theme="general",
+        theme_label="全面解读",
+        dominant_element="土",
+        secondary_element="金",
+        weakest_element="水",
+        inner_dominant="火",
+        middle_dominant="木",
+        outer_dominant="金",
+        interpretation_method_trace=method_trace,
+    )
+    pro_plan = runtime.narrative_service.build_pro_narrative_plan(
+        theme="wealth_career",
+        theme_label="财富事业",
+        dominant_element="土",
+        secondary_element="金",
+        weakest_element="水",
+        interpretation_method_trace=method_trace,
+        circles={
+            "inner": {"dominant": "火", "knowledge_reading": "内圈显示核心自我较热。"},
+            "middle": {"dominant": "木", "knowledge_reading": "中圈显示关系正在伸展。"},
+            "outer": {"dominant": "金", "knowledge_reading": "外圈显示边界开始变清楚。"},
+        },
+    )
+
+    lite_summary = lite_plan["evidence_trace_summary"]["per_circle_color_summary"]
+    pro_summary = pro_plan["evidence_trace_summary"]["per_circle_color_summary"]
+
+    assert "内圈" in lite_summary
+    assert "中圈" in lite_summary
+    assert "外圈" in lite_summary
+    assert "偏深" in lite_summary
+    assert "偏浅" in lite_summary
+    assert "面积约" in lite_summary
+    assert lite_summary in lite_plan["sections"]["visual_elements"]["content"]
+    assert pro_summary in pro_plan["sections"]["three_circles_detailed"]["content"]["inner"]
+
+
 def test_v21_narrative_service_builds_lite_title_variants():
     runtime = get_knowledge_runtime()
 

@@ -536,6 +536,19 @@ class NarrativeContextService:
             fidelity_flags=fidelity_flags,
             fallback_summary=fallback_summary,
         )
+        per_circle_color_summary = str(
+            evidence_trace_summary.get("per_circle_color_summary") or ""
+        ).strip()
+        visual_elements_content = legacy_projection.get("visual_elements", "")
+        if per_circle_color_summary:
+            visual_elements_content = self._join_sentence_parts([
+                visual_elements_content,
+                f"逐圈深浅依据：{per_circle_color_summary}",
+            ])
+            legacy_projection = {
+                **legacy_projection,
+                "visual_elements": visual_elements_content,
+            }
 
         return {
             "mode": "lite",
@@ -557,7 +570,7 @@ class NarrativeContextService:
                     rule_refs=[signal_ref] if signal_ref else [],
                 ),
                 "visual_elements": self._make_text_section(
-                    legacy_projection.get("visual_elements", ""),
+                    visual_elements_content,
                     visual_fact_refs=visual_refs,
                     knowledge_hit_refs=[
                         f"circle:{inner_dominant}" if inner_dominant else "",
@@ -685,6 +698,22 @@ class NarrativeContextService:
             fidelity_flags=fidelity_flags,
             fallback_summary=fallback_summary,
         )
+        per_circle_color_summary = str(
+            evidence_trace_summary.get("per_circle_color_summary") or ""
+        ).strip()
+        circle_readings_for_plan = legacy_projection.get("circle_readings", {})
+        if per_circle_color_summary and isinstance(circle_readings_for_plan, dict):
+            circle_readings_for_plan = {
+                key: self._join_sentence_parts([
+                    str(value or ""),
+                    f"逐圈深浅依据：{per_circle_color_summary}",
+                ])
+                for key, value in circle_readings_for_plan.items()
+            }
+            legacy_projection = {
+                **legacy_projection,
+                "circle_readings": circle_readings_for_plan,
+            }
 
         return {
             "mode": "pro",
@@ -718,7 +747,7 @@ class NarrativeContextService:
                     rule_refs=[signal_ref] if signal_ref else [],
                 ),
                 "three_circles_detailed": self._make_typed_section(
-                    legacy_projection.get("circle_readings", {}),
+                    circle_readings_for_plan,
                     visual_fact_refs=visual_refs,
                     knowledge_hit_refs=[f"theme:{resolved_theme}"],
                 ),
@@ -1670,6 +1699,11 @@ class NarrativeContextService:
             "source:five_elements_excess_deficiency",
             "source:triad_structure",
         ]
+        per_circle_color_summary = self._build_per_circle_color_summary(
+            method_trace.get("per_circle_color_analysis", {})
+            if isinstance(method_trace, dict)
+            else {}
+        )
         return {
             "visual_fact_refs": [item for item in visual_refs if item],
             "knowledge_hit_refs": [item for item in knowledge_refs if item],
@@ -1680,6 +1714,7 @@ class NarrativeContextService:
             "shape_analysis_refs": ["method:shape_analysis"],
             "circle_relation_refs": ["method:circle_relation_analysis"],
             "tutorial_source_refs": tutorial_source_refs,
+            "per_circle_color_summary": per_circle_color_summary,
             "fidelity_flags": [
                 str(item).strip()
                 for item in (fidelity_flags or [])
@@ -1691,6 +1726,71 @@ class NarrativeContextService:
                 else {"used": False, "levels": [], "warnings": []}
             ),
         }
+
+    def _build_per_circle_color_summary(self, per_circle_analysis: Any) -> str:
+        if not isinstance(per_circle_analysis, dict):
+            return ""
+        parts: list[str] = []
+        for circle_key in ["inner", "middle", "outer"]:
+            item = per_circle_analysis.get(circle_key)
+            if not isinstance(item, dict):
+                continue
+            circle_label = str(item.get("circle_label") or self._circle_label(circle_key)).strip()
+            dominant_element = str(item.get("dominant_element") or "").strip()
+            dominant_color = str(item.get("dominant_color") or "").strip()
+            state_basis = item.get("state_basis", {})
+            if not isinstance(state_basis, dict):
+                state_basis = {}
+            area_ratio = self._format_area_ratio(state_basis.get("area_ratio"))
+            depth_label = self._depth_state_label(state_basis.get("depth_state"))
+            fill_label = self._fill_state_label(state_basis.get("fill_state"))
+            color_element = " / ".join(
+                value for value in [dominant_color, dominant_element] if value
+            ) or "未识别"
+            parts.append(
+                f"{circle_label}以{color_element}为主，{depth_label}，{fill_label}，面积约{area_ratio}"
+            )
+        return "；".join(parts)
+
+    def _circle_label(self, circle_key: str) -> str:
+        return {
+            "inner": "内圈",
+            "middle": "中圈",
+            "outer": "外圈",
+        }.get(circle_key, circle_key)
+
+    def _format_area_ratio(self, value: Any) -> str:
+        try:
+            ratio = float(value)
+        except (TypeError, ValueError):
+            return "未知"
+        if ratio <= 1:
+            return f"{ratio * 100:.1f}%"
+        return f"{ratio:.1f}%"
+
+    def _depth_state_label(self, value: Any) -> str:
+        return {
+            "deep": "颜色偏深",
+            "light": "颜色偏浅",
+            "middle": "深浅居中",
+            "unknown": "深浅未知",
+        }.get(str(value or "").strip(), "深浅未知")
+
+    def _fill_state_label(self, value: Any) -> str:
+        return {
+            "dense": "填充较密",
+            "filled": "填充稳定",
+            "mixed": "填充较混合",
+            "sparse": "填充较少",
+        }.get(str(value or "").strip(), "填充状态未明")
+
+    def _join_sentence_parts(self, parts: list[Any]) -> str:
+        cleaned = [
+            str(part).strip()
+            for part in parts
+            if isinstance(part, str) and str(part).strip()
+        ]
+        return " ".join(cleaned).strip()
 
     def _resolve_imbalance_projection(
         self,
