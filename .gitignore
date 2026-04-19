@@ -21,6 +21,7 @@ logs/
 tmp/
 temp/
 *.tmp
+.playwright-cli/
 
 # Secrets (never commit!)
 *.pem
@@ -31,6 +32,8 @@ secrets/
 
 # Node modules (if any)
 node_modules/
+projects/relayhub/console/dist/
+projects/relayhub/control-plane/data/
 
 # Python cache
 __pycache__/

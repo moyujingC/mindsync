@@ -1,0 +1,561 @@
+import { useMemo, useState } from "react";
+import { EmptyState } from "../components/EmptyState";
+import { ModelStatusPill } from "../components/ModelStatusPill";
+import { Section } from "../components/Section";
+import { useAsyncResource } from "../hooks/useAsyncResource";
+import type {
+  ModelEntry,
+  ModelEntryInput,
+  ModelEntryKind,
+} from "../models/controlPlane";
+import {
+  deleteModelEntry,
+  listModelEntries,
+  saveModelEntry,
+  testModelEntryConnection,
+} from "../services/controlPlane";
+
+const KIND_OPTIONS: Array<{ value: ModelEntryKind; label: string }> = [
+  { value: "coding-plan", label: "Coding Plan" },
+  { value: "domestic-model", label: "国产模型" },
+  { value: "relay-api", label: "中转 API" },
+];
+
+const emptyForm: ModelEntryInput = {
+  name: "",
+  providerLabel: "",
+  kind: "coding-plan",
+  baseUrl: "",
+  modelId: "",
+  purchaseUrl: "",
+  apiKey: "",
+};
+
+export function ModelLibraryPage() {
+  const [version, setVersion] = useState(0);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<ModelEntryInput>({ ...emptyForm });
+  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const dataResource = useAsyncResource(() => listModelEntries(), [version]);
+
+  const sortedEntries = useMemo(() => {
+    if (!dataResource.data) {
+      return [];
+    }
+
+    return [...dataResource.data].sort(compareEntriesForGuidance);
+  }, [dataResource.data]);
+
+  const presetEntries = useMemo(
+    () => sortedEntries.filter((entry) => entry.source === "preset"),
+    [sortedEntries],
+  );
+  const priorityPresetEntries = useMemo(
+    () =>
+      presetEntries.filter(
+        (entry) =>
+          entry.presetPriority === "recommended-first" || entry.presetPriority === "recommended",
+      ),
+    [presetEntries],
+  );
+  const otherPresetEntries = useMemo(
+    () => presetEntries.filter((entry) => entry.presetPriority === "optional"),
+    [presetEntries],
+  );
+  const customEntries = useMemo(
+    () => sortedEntries.filter((entry) => entry.source === "custom"),
+    [sortedEntries],
+  );
+  const activeEntries = useMemo(
+    () => sortedEntries.filter((entry) => entry.status === "active"),
+    [sortedEntries],
+  );
+  const pendingEntries = useMemo(
+    () =>
+      sortedEntries.filter(
+        (entry) => entry.status === "configured-pending-test" || entry.status === "preset-unconfigured",
+      ),
+    [sortedEntries],
+  );
+  const missingApiKeyEntries = useMemo(
+    () => sortedEntries.filter((entry) => !entry.hasStoredApiKey && entry.status !== "disabled"),
+    [sortedEntries],
+  );
+  const failedEntries = useMemo(
+    () => sortedEntries.filter((entry) => entry.status === "test-failed"),
+    [sortedEntries],
+  );
+  const recommendedUnactivatedEntries = useMemo(
+    () =>
+      priorityPresetEntries.filter(
+        (entry) => entry.status !== "active" && entry.status !== "disabled",
+      ),
+    [priorityPresetEntries],
+  );
+
+  function resetForm() {
+    setEditingId(null);
+    setForm({ ...emptyForm });
+  }
+
+  function openEdit(entry: ModelEntry) {
+    setEditingId(entry.id);
+    setForm({
+      id: entry.id,
+      name: entry.name,
+      providerLabel: entry.providerLabel,
+      kind: entry.kind,
+      baseUrl: entry.baseUrl,
+      modelId: entry.modelId,
+      purchaseUrl: entry.purchaseUrl ?? "",
+      apiKey: "",
+    });
+    setSubmitMessage(null);
+    setSubmitError(null);
+  }
+
+  function validateForm() {
+    const missing: string[] = [];
+
+    if (!form.name.trim()) {
+      missing.push("名称");
+    }
+    if (!form.providerLabel.trim()) {
+      missing.push("Provider");
+    }
+    if (!form.baseUrl.trim()) {
+      missing.push("Base URL");
+    }
+    if (!form.modelId.trim()) {
+      missing.push("模型标识");
+    }
+
+    return missing;
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitMessage(null);
+    setSubmitError(null);
+
+    const missing = validateForm();
+    if (missing.length > 0) {
+      setSubmitError(`请先补全必填项：${missing.join("、")}。`);
+      return;
+    }
+
+    try {
+      await saveModelEntry({
+        ...form,
+        id: editingId ?? undefined,
+      });
+      setVersion((current) => current + 1);
+      setSubmitMessage(
+        editingId
+          ? "配置已保存，但模型还未激活。下一步请测试连接确认是否可用。"
+          : "模型已保存，下一步请补齐 API Key 并测试连接完成激活。",
+      );
+      resetForm();
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "模型保存失败。");
+    }
+  }
+
+  async function handleTest(entry: ModelEntry) {
+    setSubmitMessage(null);
+    setSubmitError(null);
+
+    try {
+      const updated = await testModelEntryConnection(entry.id);
+      setVersion((current) => current + 1);
+      if (updated.status === "active") {
+        setSubmitMessage(
+          `“${entry.name}”已激活。下一步可去任务库绑定默认模型。${describeRecommendedTasks(updated)}`,
+        );
+      } else {
+        setSubmitError(`“${entry.name}”测试失败：${updated.lastTestMessage}`);
+      }
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "连接测试失败。");
+    }
+  }
+
+  async function handleDelete(entry: ModelEntry) {
+    setSubmitMessage(null);
+    setSubmitError(null);
+
+    try {
+      await deleteModelEntry(entry.id);
+      setVersion((current) => current + 1);
+      if (editingId === entry.id) {
+        resetForm();
+      }
+      setSubmitMessage(
+        entry.source === "preset"
+          ? `已停用“${entry.name}”，需要时可重新配置并测试连接。`
+          : `已删除“${entry.name}”自定义模型。`,
+      );
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "模型删除失败。");
+    }
+  }
+
+  return (
+    <div className="page-grid">
+      <section className="hero-card">
+        <div>
+          <span className="eyebrow">Model Library</span>
+          <h1>先看哪些模型已经可用，哪些还差最后一步激活</h1>
+          <p>
+            模型库先回答两件事：哪些条目已经可以绑定任务，哪些条目还需要补 API Key、补配置或补测试连接。先完成一个模型激活，再进入任务绑定和运行记录。
+          </p>
+        </div>
+      </section>
+
+      <Section
+        title="模型条目总览"
+        description="先分清哪些模型已经能绑定任务，哪些模型更值得优先激活，避免第一次进入时还要自己猜。"
+      >
+        {dataResource.status === "loading" ? (
+          <EmptyState title="正在加载模型库" description="正在读取模型条目和当前激活状态。" />
+        ) : null}
+        {dataResource.status === "error" ? (
+          <EmptyState title="模型库加载失败" description={dataResource.error ?? "请稍后重试。"} />
+        ) : null}
+        {dataResource.status === "success" ? (
+          <div className="card-grid card-grid-3">
+            <article className="data-card">
+              <span className="mini-label">当前可直接绑定</span>
+              <h4>{activeEntries.length} 个模型已可用</h4>
+              <p>这些模型已经通过测试连接，可以直接作为任务默认模型。</p>
+            </article>
+            <article className="data-card">
+              <span className="mini-label">推荐先激活</span>
+              <h4>{recommendedUnactivatedEntries.length} 个候选值得优先处理</h4>
+              <p>这些预置条目已经给出适合任务和首选理由，适合先完成一条可用链路。</p>
+            </article>
+            <article className="data-card">
+              <span className="mini-label">待补密钥 / 待修正</span>
+              <h4>{missingApiKeyEntries.length} 个模型还缺 API Key</h4>
+              <p>
+                {pendingEntries.length} 个模型待补配置或待测试，{failedEntries.length} 个模型最近测试失败。
+              </p>
+            </article>
+          </div>
+        ) : null}
+      </Section>
+
+      <Section
+        title="优先激活候选"
+        description="先从这里选更适合当前任务的预置模型，完成激活后再进入任务库绑定。"
+      >
+        {dataResource.status === "success" ? (
+          <EntriesTable
+            entries={priorityPresetEntries}
+            onEdit={openEdit}
+            onTest={handleTest}
+            onDelete={handleDelete}
+          />
+        ) : null}
+      </Section>
+
+      <Section
+        title="更多预置模型"
+        description="这些条目先作为备用候选，不抢首屏注意力，但需要时仍可直接激活。"
+      >
+        {dataResource.status === "success" && otherPresetEntries.length === 0 ? (
+          <EmptyState title="当前没有更多预置模型" description="首轮候选已经收敛在上面的优先激活区。" />
+        ) : null}
+        {dataResource.status === "success" && otherPresetEntries.length > 0 ? (
+          <EntriesTable
+            entries={otherPresetEntries}
+            onEdit={openEdit}
+            onTest={handleTest}
+            onDelete={handleDelete}
+          />
+        ) : null}
+      </Section>
+
+      <Section
+        title="我的模型"
+        description="这里放你自己新增或已经激活的模型项，用来承接真实可用的工作入口。"
+      >
+        {dataResource.status === "success" && customEntries.length === 0 ? (
+          <EmptyState title="还没有自定义模型" description="可以先添加你正在使用的中转 API 或自有模型入口。" />
+        ) : null}
+        {dataResource.status === "success" && customEntries.length > 0 ? (
+          <EntriesTable entries={customEntries} onEdit={openEdit} onTest={handleTest} onDelete={handleDelete} />
+        ) : null}
+      </Section>
+
+      <Section
+        title={editingId ? "编辑模式" : "新增模式"}
+        description={
+          editingId
+            ? "当前在编辑已有模型。保存后不会自动激活，仍需要显式测试连接。"
+            : "新增后不会自动探测上游，必须显式点击“测试连接”才会变成可用。"
+        }
+      >
+        <form className="form-grid" onSubmit={handleSubmit}>
+          <label className="field">
+            <span>名称</span>
+            <input
+              aria-label="名称"
+              value={form.name}
+              onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+              placeholder="例如：PPChat 中转"
+            />
+          </label>
+          <label className="field">
+            <span>Provider</span>
+            <input
+              aria-label="Provider"
+              value={form.providerLabel}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, providerLabel: event.target.value }))
+              }
+              placeholder="例如：code.ppchat.vip"
+            />
+          </label>
+          <label className="field">
+            <span>类型</span>
+            <select
+              value={form.kind}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, kind: event.target.value as ModelEntryKind }))
+              }
+            >
+              {KIND_OPTIONS.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>Base URL</span>
+            <input
+              aria-label="Base URL"
+              value={form.baseUrl}
+              onChange={(event) => setForm((current) => ({ ...current, baseUrl: event.target.value }))}
+              placeholder="https://example.com/v1"
+            />
+          </label>
+          <label className="field">
+            <span>模型标识</span>
+            <input
+              aria-label="模型标识"
+              value={form.modelId}
+              onChange={(event) => setForm((current) => ({ ...current, modelId: event.target.value }))}
+              placeholder="gpt-5 / deepseek-chat / qwen-max"
+            />
+          </label>
+          <label className="field">
+            <span>充值或购买链接</span>
+            <input
+              value={form.purchaseUrl ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, purchaseUrl: event.target.value }))
+              }
+              placeholder="可选"
+            />
+          </label>
+          <label className="field field-wide">
+            <span>API Key</span>
+            <input
+              value={form.apiKey ?? ""}
+              onChange={(event) => setForm((current) => ({ ...current, apiKey: event.target.value }))}
+              placeholder={editingId ? "留空则保留原有密钥" : "保存后由服务端脱敏存储"}
+            />
+            <span className="supporting-text">API Key 只在服务端脱敏保存，不进入前端构建产物。</span>
+          </label>
+          {form.purchaseUrl ? (
+            <div className="field field-wide">
+              <span>购买 / 充值入口</span>
+              <a className="button-link secondary" href={form.purchaseUrl} target="_blank" rel="noreferrer">
+                去购买或充值
+              </a>
+            </div>
+          ) : null}
+          <div className="form-actions field-wide">
+            <button type="submit" className="button-link">
+              {editingId ? "保存更新" : "新增模型"}
+            </button>
+            <button type="button" className="button-link secondary" onClick={resetForm}>
+              清空表单
+            </button>
+            {submitMessage ? <span className="supporting-text feedback-inline">{submitMessage}</span> : null}
+            {submitError ? <span className="error-inline">{submitError}</span> : null}
+          </div>
+        </form>
+      </Section>
+    </div>
+  );
+}
+
+function EntriesTable({
+  entries,
+  onEdit,
+  onTest,
+  onDelete,
+}: {
+  entries: ModelEntry[];
+  onEdit: (entry: ModelEntry) => void;
+  onTest: (entry: ModelEntry) => void;
+  onDelete: (entry: ModelEntry) => void;
+}) {
+  return (
+    <div className="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>类型</th>
+            <th>Provider</th>
+            <th>模型标识</th>
+            <th>状态</th>
+            <th>适合任务</th>
+            <th>首选理由</th>
+            <th>密钥</th>
+            <th>最近测试</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map((entry) => (
+            <tr key={entry.id}>
+              <td>
+                <strong>{entry.name}</strong>
+                <div className="supporting-text">{entry.statusNote}</div>
+                <div className="supporting-text">下一步：{describeNextAction(entry)}</div>
+                {entry.activationHint ? (
+                  <div className="supporting-text">激活提示：{entry.activationHint}</div>
+                ) : null}
+                {entry.purchaseUrl ? (
+                  <div className="supporting-text">
+                    <a href={entry.purchaseUrl} target="_blank" rel="noreferrer">
+                      去购买 / 充值
+                    </a>
+                  </div>
+                ) : null}
+              </td>
+              <td>{KIND_OPTIONS.find((item) => item.value === entry.kind)?.label ?? entry.kind}</td>
+              <td>{entry.providerLabel}</td>
+              <td>{entry.modelId}</td>
+              <td>
+                <ModelStatusPill status={entry.status} />
+                {entry.costTier ? <div className="supporting-text">成本：{entry.costTier}</div> : null}
+              </td>
+              <td>
+                <div>{describeRecommendedTasks(entry)}</div>
+                {entry.capabilityTags.length > 0 ? (
+                  <div className="supporting-text">{entry.capabilityTags.join(" / ")}</div>
+                ) : null}
+              </td>
+              <td>
+                {entry.selectionReason ?? "当前没有额外首选理由。"}
+              </td>
+              <td>{entry.maskedApiKey ?? "未保存"}</td>
+              <td>{entry.lastTestedAt ?? "尚未测试"}</td>
+              <td>
+                <div className="inline-actions">
+                  <button type="button" className="action-button" onClick={() => onEdit(entry)}>
+                    编辑
+                  </button>
+                  <button type="button" className="action-button" onClick={() => onTest(entry)}>
+                    测试连接
+                  </button>
+                  <button
+                    type="button"
+                    className="action-button danger"
+                    onClick={() => onDelete(entry)}
+                  >
+                    {entry.source === "preset" ? "停用" : "删除"}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function compareEntriesForGuidance(left: ModelEntry, right: ModelEntry) {
+  const leftRank = entrySortRank(left);
+  const rightRank = entrySortRank(right);
+
+  if (leftRank !== rightRank) {
+    return leftRank - rightRank;
+  }
+
+  return left.name.localeCompare(right.name, "zh-CN");
+}
+
+function entrySortRank(entry: ModelEntry) {
+  if (entry.source === "custom") {
+    return 50;
+  }
+  if (entry.presetPriority === "recommended-first" && entry.status !== "active") {
+    return entry.status === "configured-pending-test" ? 20 : 10;
+  }
+  if (entry.presetPriority === "recommended" && entry.status !== "active") {
+    return entry.status === "configured-pending-test" ? 25 : 15;
+  }
+  if (entry.status === "active") {
+    return 30;
+  }
+  if (entry.presetPriority === "optional") {
+    return 40;
+  }
+  return 45;
+}
+
+function describeNextAction(entry: ModelEntry) {
+  if (entry.status === "active") {
+    return "可以去任务库绑定默认模型。";
+  }
+  if (entry.lastTestResult === "missing-api-key") {
+    return "先补 API Key，再重新测试连接。";
+  }
+  if (entry.lastTestResult === "invalid-base-url") {
+    return "先修正 Base URL，再重新测试连接。";
+  }
+  if (entry.lastTestResult === "upstream-unreachable") {
+    return "检查上游可达性，或稍后重试测试连接。";
+  }
+  if (!entry.hasStoredApiKey) {
+    return "先补 API Key，再测试连接。";
+  }
+  if (entry.status === "disabled") {
+    return "需要时可重新编辑并测试连接。";
+  }
+  return "保存配置后，显式执行测试连接完成激活。";
+}
+
+function describeRecommendedTasks(entry: ModelEntry) {
+  const taskNames = entry.recommendedTaskIds.map(readableTaskName);
+  if (taskNames.length > 0) {
+    return `适合先绑定：${taskNames.join("、")}。`;
+  }
+
+  if (entry.recommendedTaskCategories.length > 0) {
+    return `适合任务：${entry.recommendedTaskCategories.join("、")}。`;
+  }
+
+  return "适合任务：当前未指定。";
+}
+
+function readableTaskName(taskId: string) {
+  const taskNames: Record<string, string> = {
+    "task-claude-code": "Claude Code Web Coding",
+    "task-codex-repo": "Codex Repo Coding",
+    "task-therapy-dialogue": "心理疗愈对话",
+    "task-therapy-summary": "心理疗愈摘要",
+  };
+
+  return taskNames[taskId] ?? taskId;
+}

@@ -1,9 +1,9 @@
 # RelayHub 项目入口
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Architect / Engineer
-> last_updated：2026-04-16
+> last_updated：2026-04-19
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md
 > 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/relayhub](/Users/xinran/Downloads/dev/mindsync/projects/relayhub)
 > 项目类型：公司级模型接入、评测与优化能力项目
@@ -94,12 +94,20 @@
 - 正式 `spec`、`task`、`qa basis` 建立
 - 公司内对该 capability 的边界、部署分层和默认决策说法一致
 
+当前新增现实：
+
+- RelayHub 已进入第一轮正式实现
+- 长期项目分支固定为 `project/relayhub`
+- `relayhub.jingshu.cc` 当前由 `project/relayhub` 分支驱动
+- 它不跟随主业务 `release` 分支节奏推进
+
 当前不做：
 
 - 直接进入 provider 适配实现
 - 直接上线公司级主 Relay
 - 在没有 QA 基线和任务分解前开始编码
 - 把个人开发版和生产版混成同一套无差别运行策略
+- 把 RelayHub 并回 `main` / `release` 作为当前前置条件
 
 ## 6. 固定必读
 
