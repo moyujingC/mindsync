@@ -15,7 +15,9 @@
 5. [2026-04-19-Batch-D-固定样本重建交付记录.md](2026-04-19-Batch-D-固定样本重建交付记录.md)
 6. [2026-04-19-Batch-E-解读教程算法保真交付记录.md](2026-04-19-Batch-E-解读教程算法保真交付记录.md)
 7. [2026-04-19-Batch-F-golden-审阅交付记录.md](2026-04-19-Batch-F-golden-审阅交付记录.md)
-8. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
+8. [2026-04-19-Batch-G-golden-偏差回灌交付记录.md](2026-04-19-Batch-G-golden-偏差回灌交付记录.md)
+9. [2026-04-19-Batch-H-报告表达保真交付记录.md](2026-04-19-Batch-H-报告表达保真交付记录.md)
+10. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
 
 分工如下：
 
@@ -33,6 +35,10 @@
   - 收束 Batch E runtime evidence、narrative/contract、debug/eval 算法保真修复结果
 - `2026-04-19-Batch-F-golden-审阅交付记录.md`
   - 收束 Batch F golden 资产、人工审阅结论、偏差登记和下一批 handoff
+- `2026-04-19-Batch-G-golden-偏差回灌交付记录.md`
+  - 收束 Batch G golden 偏差修复、debug scope、逐圈深浅进入报告和 eval 指标回归
+- `2026-04-19-Batch-H-报告表达保真交付记录.md`
+  - 收束 Batch H 用户可读报告表达压缩、Pro 去重复和 golden 审阅摘录优化
 - `2026-04-18-Lite-Pro-独立报告重定义交付记录.md`
   - 收束 `Lite / Pro` 报告模式、议题模型、Lite 轻疗愈区块和 `Pro` 入口语义的专项交付
 
