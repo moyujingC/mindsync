@@ -154,6 +154,7 @@ def test_v22_workbench_can_export_fixture_golden_assets(tmp_path):
 
     debug_payload = json.loads((export_dir / "lite.debug.json").read_text(encoding="utf-8"))
     assert "algorithm_fidelity_trace" in debug_payload
+    assert debug_payload["algorithm_fidelity_trace"]["scope"] == "lite"
     assert "topic_context_trace" in debug_payload
     assert "narrative_plans" in debug_payload
     assert "field_to_knowledge_map" in debug_payload

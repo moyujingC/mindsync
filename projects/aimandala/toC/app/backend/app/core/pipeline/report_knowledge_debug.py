@@ -52,7 +52,12 @@ class KnowledgeDebugBlockBuilder:
         self._get_knowledge_runtime = get_knowledge_runtime
         self._get_primary_knowledge_signal = get_primary_knowledge_signal
 
-    def build(self, record: InterpretationRecord) -> dict[str, Any]:
+    def build(
+        self,
+        record: InterpretationRecord,
+        *,
+        report_mode: str = "all",
+    ) -> dict[str, Any]:
         runtime = self._get_knowledge_runtime()
         layer0 = record.layer_0_raw.to_dict() if record.layer_0_raw else {}
         narrative_plans = self._build_narrative_plans(record)
@@ -62,6 +67,7 @@ class KnowledgeDebugBlockBuilder:
             narrative_plans=narrative_plans,
             knowledge_projections=knowledge_projections,
             record=record,
+            report_mode=report_mode,
         )
         if runtime is None:
             return {
@@ -503,7 +509,9 @@ class KnowledgeDebugBlockBuilder:
         narrative_plans: dict[str, Any],
         knowledge_projections: dict[str, Any],
         record: InterpretationRecord,
+        report_mode: str = "all",
     ) -> dict[str, Any]:
+        scope = report_mode if report_mode in {"lite", "pro", "all"} else "all"
         canonical_keys = [
             "direct_judgment",
             "per_circle_color_analysis",
@@ -522,22 +530,42 @@ class KnowledgeDebugBlockBuilder:
         missing_method_trace_keys = [
             key for key in canonical_keys if key not in method_trace_keys
         ]
+        legacy_payloads = self._scoped_legacy_payloads(
+            knowledge_projections=knowledge_projections,
+            narrative_plans=narrative_plans,
+            record=record,
+            scope=scope,
+        )
+        raw_payloads = self._scoped_raw_payloads(
+            knowledge_projections=knowledge_projections,
+            narrative_plans=narrative_plans,
+            record=record,
+            scope=scope,
+        )
         legacy_semantics_found = self._contains_legacy_semantics(
-            [
-                knowledge_projections,
-                narrative_plans,
-                record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
-                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
-            ]
+            legacy_payloads
         )
-        raw_payload_leak_found = self._contains_raw_payload_leak(
-            [
-                knowledge_projections,
-                narrative_plans,
-                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
-            ]
-        )
+        raw_payload_leak_found = self._contains_raw_payload_leak(raw_payloads)
+        raw_payload_leak_by_scope = {
+            "lite": self._contains_raw_payload_leak(
+                self._scoped_raw_payloads(
+                    knowledge_projections=knowledge_projections,
+                    narrative_plans=narrative_plans,
+                    record=record,
+                    scope="lite",
+                )
+            ),
+            "pro": self._contains_raw_payload_leak(
+                self._scoped_raw_payloads(
+                    knowledge_projections=knowledge_projections,
+                    narrative_plans=narrative_plans,
+                    record=record,
+                    scope="pro",
+                )
+            ),
+        }
         return {
+            "scope": scope,
             "method_trace_keys": method_trace_keys,
             "missing_method_trace_keys": missing_method_trace_keys,
             "algorithm_fidelity_pass": (
@@ -547,7 +575,62 @@ class KnowledgeDebugBlockBuilder:
             ),
             "legacy_semantics_found": legacy_semantics_found,
             "raw_payload_leak_found": raw_payload_leak_found,
+            "raw_payload_leak_by_scope": raw_payload_leak_by_scope,
         }
+
+    def _scoped_legacy_payloads(
+        self,
+        *,
+        knowledge_projections: dict[str, Any],
+        narrative_plans: dict[str, Any],
+        record: InterpretationRecord,
+        scope: str,
+    ) -> list[Any]:
+        if scope == "lite":
+            return [
+                knowledge_projections.get("lite", {}),
+                narrative_plans.get("lite", {}),
+                record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
+            ]
+        if scope == "pro":
+            return [
+                knowledge_projections.get("pro", {}),
+                narrative_plans.get("pro", {}),
+                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+            ]
+        return [
+            knowledge_projections,
+            narrative_plans,
+            record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
+            record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+        ]
+
+    def _scoped_raw_payloads(
+        self,
+        *,
+        knowledge_projections: dict[str, Any],
+        narrative_plans: dict[str, Any],
+        record: InterpretationRecord,
+        scope: str,
+    ) -> list[Any]:
+        if scope == "lite":
+            return [
+                knowledge_projections.get("lite", {}),
+                narrative_plans.get("lite", {}),
+                record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
+            ]
+        if scope == "pro":
+            return [
+                knowledge_projections.get("pro", {}),
+                narrative_plans.get("pro", {}),
+                record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+            ]
+        return [
+            knowledge_projections,
+            narrative_plans,
+            record.layer_2_lite_final.to_dict() if record.layer_2_lite_final else {},
+            record.layer_3_pro_draft.to_dict() if record.layer_3_pro_draft else {},
+        ]
 
     def _contains_legacy_semantics(self, payloads: list[Any]) -> bool:
         banned_phrases = [
@@ -562,9 +645,21 @@ class KnowledgeDebugBlockBuilder:
 
     def _contains_raw_payload_leak(self, payloads: list[Any]) -> bool:
         serialized = self._serialize_debug_payload(payloads)
-        raw_dict_marker = "{'" + "inner'"
-        quoted_marker = "\"{\\'" + "inner\\'\""
-        return raw_dict_marker in serialized or quoted_marker in serialized
+        raw_markers = [
+            "{'" + "inner'",
+            "\"{\\'" + "inner\\'\"",
+            "'middle':",
+            '"middle":',
+            "'outer':",
+            '"outer":',
+            "'depth_state':",
+            '"depth_state":',
+            "'avg_brightness':",
+            '"avg_brightness":',
+            "'avg_saturation':",
+            '"avg_saturation":',
+        ]
+        return any(marker in serialized for marker in raw_markers)
 
     def _serialize_debug_payload(self, payload: Any) -> str:
         if payload is None:

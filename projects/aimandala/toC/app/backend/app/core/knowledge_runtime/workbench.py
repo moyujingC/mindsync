@@ -424,7 +424,7 @@ class KnowledgeWorkbench:
 
             report = orchestrator.get_report(stored_record.interpretation_id, version=version) or {}
             stored_record = store.load(stored_record.interpretation_id) or stored_record
-            knowledge_debug = debug_builder.build(stored_record)
+            knowledge_debug = debug_builder.build(stored_record, report_mode=version)
             regression_flags = self._build_regression_flags(
                 report=report,
                 record=stored_record,

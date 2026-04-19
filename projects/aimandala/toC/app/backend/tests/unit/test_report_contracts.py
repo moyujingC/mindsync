@@ -3,6 +3,7 @@ from types import SimpleNamespace
 
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.report_contracts import ReportContractAssembler
+from app.core.pipeline.report_knowledge_debug import KnowledgeDebugBlockBuilder
 from app.core.pipeline.structured_report_schema import get_structured_report_contract
 from app.core.pipeline.store import InterpretationStore
 
@@ -156,6 +157,55 @@ def test_pro_healing_plan_removes_truncated_raw_payload_fragments():
     assert "outer':" not in serialized
     assert ": '金色'" not in serialized
     assert "{'" + "inner'" not in serialized
+
+
+def test_algorithm_fidelity_trace_scopes_raw_payload_by_report_mode():
+    builder = KnowledgeDebugBlockBuilder.__new__(KnowledgeDebugBlockBuilder)
+    layer0 = {
+        "rule_evaluations": {
+            "interpretation_method_trace": {
+                "direct_judgment": {},
+                "per_circle_color_analysis": {},
+                "shape_analysis": {},
+                "circle_relation_analysis": {},
+                "final_algorithm_basis": {},
+            }
+        }
+    }
+    record = SimpleNamespace(
+        layer_2_lite_final=SimpleNamespace(to_dict=lambda: {"visual_basis": "内圈偏亮，中圈偏深。"}),
+        layer_3_pro_draft=SimpleNamespace(
+            to_dict=lambda: {
+                "healing_suggestions": [
+                    {
+                        "focus": ": '金色', 'middle': '红色', 'outer': '土色'}",
+                    }
+                ]
+            }
+        ),
+    )
+
+    lite_trace = builder._build_algorithm_fidelity_trace(
+        layer0=layer0,
+        narrative_plans={"lite": {"sections": {}}, "pro": {"sections": {}}},
+        knowledge_projections={"lite": {}, "pro": {}},
+        record=record,
+        report_mode="lite",
+    )
+    pro_trace = builder._build_algorithm_fidelity_trace(
+        layer0=layer0,
+        narrative_plans={"lite": {"sections": {}}, "pro": {"sections": {}}},
+        knowledge_projections={"lite": {}, "pro": {}},
+        record=record,
+        report_mode="pro",
+    )
+
+    assert lite_trace["scope"] == "lite"
+    assert lite_trace["raw_payload_leak_found"] is False
+    assert lite_trace["algorithm_fidelity_pass"] is True
+    assert pro_trace["scope"] == "pro"
+    assert pro_trace["raw_payload_leak_found"] is True
+    assert pro_trace["algorithm_fidelity_pass"] is False
 
 
 def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_path):
