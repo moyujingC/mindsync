@@ -19,6 +19,12 @@
 > 历史 `done` 的 execution workspace 漂移继续作为审计留痕，不再单独阻断服务。
 > 对 `manual-review-required + local_manual_review` 任务，服务器若发现其落入可写 worktree，则必须拒绝执行并转本地人工接手。
 > 本记录已补入 phase 1 closeout 的真实错路由样本 `MIN-119`，并记录远端 `enableIsolatedWorkspaces` 前置修正与 heartbeat checkout 脚本同步事实。
+>
+> 2026-04-19 diagnosis phase 补充说明：
+> 在新的 Paperclip 原生 direct routing（直接路由）模型下，本文档继续保留为 heartbeat / health / audit 远端事实基线来源。
+> 当前需要继承的正式事实是：
+> `serverAutomationBlocking = 34`、`historicalDoneWorkspaceDrift = 8`、`localExecutionRouting = 2`，且 strict gate 只由 `serverAutomationBlocking` 驱动。
+> 下一阶段正式目标已改为只读 diagnosis（诊断）和根因分桶，不再延续本文档中的 server reject / handoff 作为当前主路线。
 
 ## 1. 背景
 

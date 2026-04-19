@@ -242,6 +242,33 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 1. 本阶段“服务器侧去拒绝化”只改变 automation 节点的 health / audit / heartbeat 口径
 2. 它不等于“本地执行节点已经真实接管普通任务”
 3. 本地执行节点接入与真实回写验证属于下一阶段工作
+4. 截至 2026-04-19，heartbeat 继续失败的真实基线已收敛为：
+   - `serverAutomationBlocking = 34`
+   - `historicalDoneWorkspaceDrift = 8`
+   - `localExecutionRouting = 2`
+5. 其中 strict gate 当前只由 `serverAutomationBlocking` 驱动；`localExecutionRouting` 继续只审计，不单独阻断 heartbeat
+6. 因此下一阶段主任务不是再次调整 gate，而是诊断这 34 条活跃 `server_automation` issue 为什么没有真正 materialize 到 execution workspace
+
+### 2.4.1 2026-04-19 diagnosis phase 基线
+
+从 2026-04-19 起，automation 节点关于 execution workspace materialization 的正式基线固定为：
+
+1. `serverAutomationBlocking = 34`
+2. `historicalDoneWorkspaceDrift = 8`
+3. `localExecutionRouting = 2`
+4. `strictShouldFail` 只由活跃 `serverAutomationBlockingIssues` 驱动
+
+当前阶段的正式目标不是：
+
+1. 批量补绑 `executionWorkspaceId`
+2. 批量把 active issue 改状态
+3. 再次把 `local_manual_review` 拉回服务器 reject 主链
+
+而是：
+
+1. 先运行 diagnosis CLI，把 34 条 blocking issue 收敛成根因分桶
+2. 再按桶级抽样补证据
+3. 最后再进入下一轮受控修复计划
 
 ### 2.5 推荐巡检命令
 
@@ -269,6 +296,29 @@ node shared/tools/ci/audit-paperclip-workspace-materialization.mjs \
   --expected-root /opt/automation/worktrees \
   --repo-root /opt/automation/app/mindsync
 ```
+
+当前 diagnosis phase（诊断阶段）推荐补跑：
+
+```bash
+cd /opt/automation/app/mindsync-heartbeat
+source /etc/default/paperclip-heartbeat
+node shared/tools/ci/diagnose-paperclip-server-automation-materialization.mjs \
+  --company-id "$PAPERCLIP_COMPANY_ID" \
+  --project-name "一镜一梳" \
+  --api-base "$PAPERCLIP_API_BASE" \
+  --api-key "$PAPERCLIP_API_KEY" \
+  --expected-root "${PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT:-/opt/automation/worktrees}" \
+  --repo-root /opt/automation/app/mindsync
+```
+
+预期：
+
+1. 输出仍显示：
+   - `serverAutomationBlockingIssues.length = 34`
+   - `historicalDoneWorkspaceDriftIssues.length = 8`
+   - `localExecutionRoutingIssues.length = 2`
+2. 所有 `serverAutomationBlockingIssues` 都已进入且只进入一个 diagnosis bucket
+3. 当前输出可直接作为下一轮修复计划的唯一证据链入口
 
 ## 2.7 自动提交边界
 

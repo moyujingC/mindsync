@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 import {
   PaperclipApi,
   getOption,
@@ -101,7 +102,7 @@ async function listHostWorktrees(repoRoot, worktreeRoot) {
   let current = null;
   for (const line of String(gitResult.stdout).split(/\r?\n/)) {
     if (line.startsWith("worktree ")) {
-      if (current) entries.push(current);
+if (current) entries.push(current);
       current = { path: line.slice("worktree ".length).trim() };
       continue;
     }
@@ -284,7 +285,20 @@ async function main() {
   console.log(JSON.stringify(summary, null, 2));
 }
 
-main().catch((error) => {
-  logError(error instanceof Error ? error.stack ?? error.message : String(error));
-  process.exit(1);
-});
+export const __testables = {
+  parseIssueMetadata,
+  resolveExecutionRoute,
+  issueLooksActiveWithoutWorkspace,
+  splitWorkspaceDriftIssues,
+  normalizePath,
+  listHostWorktrees,
+  getWorkspaceBinding,
+  workspaceUsesExpectedRoot,
+};
+
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  main().catch((error) => {
+    logError(error instanceof Error ? error.stack ?? error.message : String(error));
+    process.exit(1);
+  });
+}

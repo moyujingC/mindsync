@@ -326,6 +326,7 @@ export const __testables = {
   issueLooksActiveWithoutWorkspace,
   splitWorkspaceDriftIssues,
   workspaceUsesExpectedRoot,
+  classifyExecutionWorkspaceDrift,
   classifyLocalExecutionRoutingIssue,
   OBSERVED_ACTIVE_STATUSES,
   STRICT_BLOCKING_STATUSES,

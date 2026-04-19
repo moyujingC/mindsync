@@ -13,6 +13,7 @@
 
 当前与 `Web MVP` 公开首发、双端并行和运行稳定性最相关的任务入口是：
 
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md`
 - `2026-04-19-paperclip-native-execution-routing-plan.md`
 - `2026-04-16-mvp-上线前质量收口总任务草案.md`
 - `2026-04-16-ci-cd-临时运营口径-runbook.md`
@@ -27,6 +28,7 @@
 
 说明：
 
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md` 是当前 heartbeat 卡在 `34` 条活跃 `server_automation` workspace materialization 漂移后的正式诊断入口，先做分桶与取证，不直接修复。
 - `2026-04-19-paperclip-native-execution-routing-plan.md` 是当前 execution routing 的正式任务入口，专门收口“按 Paperclip 原生模型重建双执行宿主机口径”，不进入实现。
 - `2026-04-16` 这份草案承接 `MIN-80` 的前置澄清结果，适合作为 CEO 收成正式总任务的当前补充入口。
 - `2026-04-16-ci-cd-临时运营口径-runbook.md` 适用于 Paperclip workflow 面板尚未更新前的值班与巡检口径。
@@ -35,6 +37,7 @@
 
 当前已沉淀：
 
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md`
 - `2026-04-19-paperclip-native-execution-routing-plan.md`
 - `2026-04-16-mvp-上线前质量收口总任务草案.md`
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
