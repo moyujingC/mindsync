@@ -60,6 +60,21 @@ export function RunsPage() {
 
   const taskOptions = useMemo(() => tasks.data ?? [], [tasks.data]);
   const modelOptions = useMemo(() => models.data ?? [], [models.data]);
+  const selectedTask = useMemo(
+    () => taskOptions.find((task) => task.id === form.taskId) ?? null,
+    [form.taskId, taskOptions],
+  );
+  const selectedTaskDefaultModel = useMemo(
+    () =>
+      modelOptions.find((model) => model.id === selectedTask?.defaultModelEntryId) ?? null,
+    [modelOptions, selectedTask?.defaultModelEntryId],
+  );
+  const selectedModel = useMemo(
+    () => modelOptions.find((model) => model.id === form.modelEntryId) ?? null,
+    [form.modelEntryId, modelOptions],
+  );
+  const isUsingTaskDefaultModel =
+    selectedTaskDefaultModel !== null && form.modelEntryId === selectedTaskDefaultModel.id;
 
   useEffect(() => {
     if (hasManualSelection) {
@@ -68,9 +83,31 @@ export function RunsPage() {
 
     const preferredTaskId = resolvePreferredTaskId(taskOptions, runs.data ?? undefined);
     if (preferredTaskId && preferredTaskId !== selectedTaskId) {
+      const preferredTask = taskOptions.find((task) => task.id === preferredTaskId) ?? null;
+      const preferredDefaultModel =
+        modelOptions.find((model) => model.id === preferredTask?.defaultModelEntryId) ?? null;
       setSelectedTaskId(preferredTaskId);
+      setForm((current) => ({
+        ...current,
+        taskId: preferredTaskId,
+        modelEntryId: preferredDefaultModel?.id ?? "",
+      }));
     }
-  }, [hasManualSelection, runs.data, selectedTaskId, taskOptions]);
+  }, [hasManualSelection, modelOptions, runs.data, selectedTaskId, taskOptions]);
+
+  function handleTaskChange(taskId: string) {
+    const nextTask = taskOptions.find((task) => task.id === taskId) ?? null;
+    const nextDefaultModel =
+      modelOptions.find((model) => model.id === nextTask?.defaultModelEntryId) ?? null;
+
+    setSelectedTaskId(taskId);
+    setHasManualSelection(true);
+    setForm((current) => ({
+      ...current,
+      taskId,
+      modelEntryId: nextDefaultModel?.id ?? "",
+    }));
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -99,11 +136,28 @@ export function RunsPage() {
         summary: form.summary.trim(),
       });
       const submittedTaskId = form.taskId;
+      const submittedModelId = form.modelEntryId;
+      const submittedTask = taskOptions.find((task) => task.id === submittedTaskId) ?? null;
+      const submittedDefaultModelId = submittedTask?.defaultModelEntryId ?? null;
+      const usedTemporaryModel =
+        submittedDefaultModelId === null || submittedModelId !== submittedDefaultModelId;
       setVersion((current) => current + 1);
       setSelectedTaskId(submittedTaskId);
       setHasManualSelection(true);
-      setFeedback("运行记录已保存，任务统计已切换到这次提交的任务。");
-      setForm({ ...emptyForm });
+      setFeedback(
+        usedTemporaryModel
+          ? "运行记录已保存，任务统计已刷新。这次记录使用的是临时选择模型，不会自动改动任务默认模型。"
+          : "运行记录已保存，任务统计已刷新。",
+      );
+      setForm((current) => ({
+        ...current,
+        taskId: submittedTaskId,
+        modelEntryId: submittedDefaultModelId ?? submittedModelId,
+        summary: "",
+        costCny: null,
+        latencyMs: null,
+        note: "",
+      }));
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : "运行记录保存失败。");
     }
@@ -168,14 +222,43 @@ export function RunsPage() {
         ) : null}
       </Section>
 
-      <Section title="新增运行记录" description="表单按“先选任务，再选模型，再记录结果”收口，不让用户自己猜顺序。">
+      <Section title="新增运行记录" description="当前优先服务“任务已绑定模型后，顺手记一次真实结果”，不让用户自己猜下一步。">
+        <article className="data-card">
+          <span className="mini-label">当前任务记录上下文</span>
+          {selectedTask ? (
+            <>
+              <h4>{selectedTask.name}</h4>
+              {selectedTaskDefaultModel ? (
+                <>
+                  <p>当前任务默认模型：{selectedTaskDefaultModel.name}</p>
+                  <p className="supporting-text">
+                    {isUsingTaskDefaultModel
+                      ? "这次会按当前默认模型开始记录。"
+                      : `当前任务默认模型仍是 ${selectedTaskDefaultModel.name}，你这次记录用的是 ${selectedModel?.name ?? "临时选择模型"}。`}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>当前任务尚未绑定默认模型。</p>
+                  <p className="supporting-text">
+                    先去任务库绑定默认模型，或这次临时手动选择一个已激活模型。
+                  </p>
+                </>
+              )}
+            </>
+          ) : (
+            <p>先选一个任务，再开始记录这次真实使用结果。</p>
+          )}
+        </article>
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
             <span>任务</span>
             <select
               aria-label="任务"
               value={form.taskId}
-              onChange={(event) => setForm((current) => ({ ...current, taskId: event.target.value }))}
+              onChange={(event) =>
+                handleTaskChange(event.target.value)
+              }
             >
               <option value="">请选择任务</option>
               {taskOptions.map((task) => (

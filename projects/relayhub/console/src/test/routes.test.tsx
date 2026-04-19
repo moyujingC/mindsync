@@ -276,6 +276,90 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("请先补全必填项：任务、模型、结果摘要。")).toBeInTheDocument();
   });
 
+  it("prefills the bound default model for the preferred task in runs", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/runs");
+
+    expect(await screen.findByText("当前任务记录上下文")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText("任务")).toHaveValue("task-therapy-summary");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v3");
+    });
+    expect(await screen.findByText("当前任务默认模型：DeepSeek V3 官方")).toBeInTheDocument();
+    expect(await screen.findByText("这次会按当前默认模型开始记录。")).toBeInTheDocument();
+  });
+
+  it("syncs the model field to the task default model when switching tasks in runs", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/runs");
+
+    expect(await screen.findByText("当前任务记录上下文")).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "Claude Code Web Coding" })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("任务"), {
+      target: { value: "task-claude-code" },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-ppchat-relay");
+    });
+    expect(await screen.findByText("当前任务默认模型：PPChat 中转")).toBeInTheDocument();
+  });
+
+  it("shows an explicit hint when the selected run task has no default model", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/runs");
+
+    expect(await screen.findByText("当前任务记录上下文")).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "Codex Repo Coding" })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("任务"), {
+      target: { value: "task-codex-repo" },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("模型")).toHaveValue("");
+    });
+    expect(await screen.findByText("当前任务尚未绑定默认模型。")).toBeInTheDocument();
+    expect(
+      await screen.findByText("先去任务库绑定默认模型，或这次临时手动选择一个已激活模型。"),
+    ).toBeInTheDocument();
+  });
+
   it("switches task stats to the submitted task after recording a run", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {
@@ -303,13 +387,61 @@ describe("RelayHub console routes", () => {
     fireEvent.click(screen.getByRole("button", { name: "记录一次运行" }));
 
     expect(
-      await screen.findByText("运行记录已保存，任务统计已切换到这次提交的任务。"),
+      await screen.findByText("运行记录已保存，任务统计已刷新。"),
     ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "Claude Code Web Coding" })).toHaveClass(
         "is-active",
       );
+    });
+  });
+
+  it("keeps the task context and clears only result inputs after recording a run", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/runs");
+
+    expect(await screen.findByText("当前任务记录上下文")).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "Codex Repo Coding" })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("任务"), {
+      target: { value: "task-codex-repo" },
+    });
+    fireEvent.change(screen.getByLabelText("模型"), {
+      target: { value: "preset-deepseek-v3" },
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText("任务")).toHaveValue("task-codex-repo");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v3");
+    });
+    fireEvent.change(screen.getByLabelText("结果摘要"), {
+      target: { value: "这次仓库级实现结果可用，但还需要人工复核。" },
+    });
+    fireEvent.change(screen.getByLabelText("备注"), {
+      target: { value: "临时切到国产模型。" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "记录一次运行" }));
+
+    expect(
+      await screen.findByText("运行记录已保存，任务统计已刷新。这次记录使用的是临时选择模型，不会自动改动任务默认模型。"),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("任务")).toHaveValue("task-codex-repo");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v3");
+      expect(screen.getByLabelText("结果摘要")).toHaveValue("");
+      expect(screen.getByLabelText("备注")).toHaveValue("");
     });
   });
 
