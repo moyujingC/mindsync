@@ -33,6 +33,7 @@ class KnowledgeWorkbench:
         self.pack_root = self.toc_root / "data" / "knowledge" / "packs" / "v2.1"
         self.builds_root = self.toc_root / "data" / "knowledge" / "builds"
         self.fixtures_manifest_path = self.project_root / "fixtures" / "manifest.yaml"
+        self.golden_root = self.project_root / "fixtures" / "toc-mvp" / "golden"
         self.validator = KnowledgePackValidator()
 
     def validate(self) -> dict[str, Any]:
@@ -113,6 +114,7 @@ class KnowledgeWorkbench:
         summary = self._build_eval_summary(
             build_selector=build_selector,
             sample_results=sample_results,
+            golden_review_root=self.golden_root,
         )
         (eval_dir / "summary.json").write_text(
             json.dumps(summary, ensure_ascii=False, indent=2),
@@ -249,6 +251,65 @@ class KnowledgeWorkbench:
             preview["diff_from_current"] = None
         return preview
 
+    async def export_fixture_golden(
+        self,
+        *,
+        fixture_id: str,
+        build_selector: str,
+        version: str,
+        output_dir: Path | str | None = None,
+    ) -> dict[str, Any]:
+        """Export one fixture as human-reviewable golden assets."""
+
+        fixture = self.load_fixture(fixture_id)
+        execution = await self._execute_fixture(
+            fixture=fixture,
+            build_selector=build_selector,
+            version=version,
+            include_details=True,
+        )
+        if output_dir is None:
+            export_dir = self.golden_root / fixture_id
+        else:
+            export_dir = Path(output_dir) / fixture_id
+        export_dir.mkdir(parents=True, exist_ok=True)
+
+        report_payload = self._build_export_report_payload(
+            fixture=fixture,
+            execution=execution,
+        )
+        debug_payload = self._build_export_debug_payload(execution)
+        report_markdown = self._build_export_report_markdown(
+            fixture=fixture,
+            report=report_payload,
+        )
+
+        report_path = export_dir / f"{version}.report.json"
+        debug_path = export_dir / f"{version}.debug.json"
+        markdown_path = export_dir / f"{version}.report.md"
+
+        report_path.write_text(
+            json.dumps(report_payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        debug_path.write_text(
+            json.dumps(debug_payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        markdown_path.write_text(report_markdown, encoding="utf-8")
+
+        return {
+            "fixture_id": fixture_id,
+            "version": version,
+            "build_selector": build_selector,
+            "output_dir": str(export_dir),
+            "artifacts": {
+                "report_json": str(report_path),
+                "debug_json": str(debug_path),
+                "report_markdown": str(markdown_path),
+            },
+        }
+
     def load_fixture_manifest(self) -> list[dict[str, Any]]:
         payload = yaml.safe_load(self.fixtures_manifest_path.read_text(encoding="utf-8")) or {}
         fixtures = payload.get("fixtures", [])
@@ -297,6 +358,7 @@ class KnowledgeWorkbench:
         fixture: dict[str, Any],
         build_selector: str,
         version: str,
+        include_details: bool = False,
     ) -> dict[str, Any]:
         runtime = create_knowledge_runtime(build_selector=build_selector)
         debug_builder = KnowledgeDebugBlockBuilder(
@@ -371,7 +433,7 @@ class KnowledgeWorkbench:
                 knowledge_debug=knowledge_debug,
             )
 
-            return {
+            payload = {
                 "fixture_meta": {
                     "fixture_id": fixture.get("id"),
                     "fixture_path": fixture.get("_fixture_path"),
@@ -385,6 +447,10 @@ class KnowledgeWorkbench:
                 "knowledge_summary": self._build_knowledge_summary(knowledge_debug),
                 "regression_flags": regression_flags,
             }
+            if include_details:
+                payload["report"] = self._sanitize_export_value(report)
+                payload["knowledge_debug"] = self._sanitize_export_value(knowledge_debug)
+            return payload
 
     def _build_regression_flags(
         self,
@@ -524,6 +590,7 @@ class KnowledgeWorkbench:
         *,
         build_selector: str,
         sample_results: list[dict[str, Any]],
+        golden_review_root: Path | None = None,
     ) -> dict[str, Any]:
         fallback_count = sum(
             1
@@ -559,6 +626,23 @@ class KnowledgeWorkbench:
             len(item.get("regression_flags", []))
             for item in sample_results
         )
+        golden_reviews = [
+            self._load_golden_review_result(
+                fixture_id=str(item.get("fixture_meta", {}).get("fixture_id") or ""),
+                version=str(item.get("report_summary", {}).get("version") or "lite"),
+                golden_review_root=golden_review_root,
+            )
+            for item in sample_results
+        ]
+        golden_reviewed_count = sum(1 for item in golden_reviews if item.get("reviewed"))
+        golden_pass_count = sum(1 for item in golden_reviews if item.get("result") == "pass")
+        golden_pass_with_drift_count = sum(
+            1 for item in golden_reviews if item.get("result") == "pass_with_drift"
+        )
+        golden_fail_count = sum(1 for item in golden_reviews if item.get("result") == "fail")
+        open_deviation_count = sum(
+            int(item.get("deviation_count") or 0) for item in golden_reviews
+        )
 
         return {
             "build_selector": build_selector,
@@ -572,6 +656,11 @@ class KnowledgeWorkbench:
                 "raw_payload_leak_found_count": raw_payload_leak_count,
                 "structured_missing_count": structured_missing_count,
                 "regression_flag_count": regression_flag_count,
+                "golden_reviewed_count": golden_reviewed_count,
+                "golden_pass_count": golden_pass_count,
+                "golden_pass_with_drift_count": golden_pass_with_drift_count,
+                "golden_fail_count": golden_fail_count,
+                "open_deviation_count": open_deviation_count,
             },
             "fixtures": [
                 {
@@ -589,8 +678,9 @@ class KnowledgeWorkbench:
                         for field, present in item.get("report_summary", {}).get("structured_field_presence", {}).items()
                         if present is False
                     ],
+                    "golden_review": golden_reviews[index],
                 }
-                for item in sample_results
+                for index, item in enumerate(sample_results)
             ],
         }
 
@@ -767,6 +857,213 @@ class KnowledgeWorkbench:
             if isinstance(item, dict) and str(item.get("fixture_id") or "")
         ]
         return summary_ids == manifest_ids
+
+    def _build_export_report_payload(
+        self,
+        *,
+        fixture: dict[str, Any],
+        execution: dict[str, Any],
+    ) -> dict[str, Any]:
+        report = execution.get("report", {})
+        if not isinstance(report, dict):
+            report = {}
+        return {
+            **report,
+            "fixture_meta": self._sanitize_export_value(execution.get("fixture_meta", {})),
+            "knowledge_debug": self._sanitize_export_value(execution.get("knowledge_debug", {})),
+            "regression_flags": list(execution.get("regression_flags", [])),
+            "asset_ref": self._sanitize_export_value(fixture.get("asset_ref", {})),
+        }
+
+    def _build_export_debug_payload(self, execution: dict[str, Any]) -> dict[str, Any]:
+        knowledge_debug = execution.get("knowledge_debug", {})
+        if not isinstance(knowledge_debug, dict):
+            knowledge_debug = {}
+        payload = {
+            "algorithm_fidelity_trace": knowledge_debug.get("algorithm_fidelity_trace", {}),
+            "topic_context_trace": knowledge_debug.get("topic_context_trace", {}),
+            "narrative_plans": knowledge_debug.get("narrative_plans", {}),
+            "field_to_knowledge_map": knowledge_debug.get("field_to_knowledge_map", {}),
+            "fallback_analysis": knowledge_debug.get("fallback_analysis", {}),
+            "warning_analysis": knowledge_debug.get("warning_analysis", {}),
+        }
+        return self._sanitize_export_value(payload)
+
+    def _build_export_report_markdown(
+        self,
+        *,
+        fixture: dict[str, Any],
+        report: dict[str, Any],
+    ) -> str:
+        structured = report.get("structured", {}) if isinstance(report.get("structured"), dict) else {}
+        version = str(report.get("version") or "lite")
+        topic_context = structured.get("topic_context", {}) if isinstance(structured.get("topic_context"), dict) else {}
+        lines = [
+            f"# Golden Report: {fixture.get('id')} / {version}",
+            "",
+            "## 基本信息",
+            "",
+            f"- 样本：`{fixture.get('id')}`",
+            f"- 模式：`{version}`",
+            f"- 议题：`{topic_context.get('topic') or fixture.get('theme') or 'general'}`",
+            f"- 议题标签：{topic_context.get('topic_label') or ''}",
+            "",
+            "## 产品区块",
+            "",
+        ]
+        field_labels = self._golden_field_labels(version)
+        for field, label in field_labels:
+            value = structured.get(field)
+            rendered = self._render_markdown_value(value)
+            if not rendered:
+                continue
+            lines.extend(
+                [
+                    f"### {label}",
+                    "",
+                    rendered,
+                    "",
+                ]
+            )
+        raw_report = report.get("report")
+        excerpt = self._excerpt(raw_report, limit=600)
+        if excerpt:
+            lines.extend(
+                [
+                    "## 正文摘录",
+                    "",
+                    excerpt,
+                    "",
+                ]
+            )
+        return "\n".join(lines).strip() + "\n"
+
+    def _golden_field_labels(self, version: str) -> list[tuple[str, str]]:
+        if version == "pro":
+            return [
+                ("topic_context", "当前议题"),
+                ("deep_impression", "深度第一印象"),
+                ("evidence_digest", "证据摘要"),
+                ("imbalance_diagnosis", "失衡诊断"),
+                ("root_cause_chain", "根因链"),
+                ("deep_structure_interpretation", "深层结构解读"),
+                ("healing_plan", "疗愈方案"),
+            ]
+        return [
+            ("topic_context", "当前议题"),
+            ("current_reading", "当前整体判断"),
+            ("visual_basis", "画面依据"),
+            ("pattern_interpretation", "模式解释"),
+            ("life_connection", "现实连接"),
+            ("lite_healing_guidance", "轻量疗愈"),
+            ("pro_report_entry", "更深报告入口"),
+        ]
+
+    def _render_markdown_value(self, value: Any) -> str:
+        if value in (None, "", [], {}):
+            return ""
+        if isinstance(value, str):
+            return value.strip()
+        if isinstance(value, list):
+            rendered_items = [self._render_markdown_value(item) for item in value]
+            rendered_items = [item for item in rendered_items if item]
+            return "\n".join(f"- {item}" for item in rendered_items)
+        if isinstance(value, dict):
+            lines: list[str] = []
+            for key, item in value.items():
+                if key in {"prompt_preview", "prompt_schema_validation_issues"}:
+                    continue
+                label = self._humanize_key(str(key))
+                rendered = self._render_markdown_value(item)
+                if not rendered:
+                    continue
+                if "\n" in rendered:
+                    lines.append(f"**{label}**")
+                    lines.append(rendered)
+                else:
+                    lines.append(f"**{label}**：{rendered}")
+            return "\n".join(lines)
+        return str(value).strip()
+
+    def _humanize_key(self, key: str) -> str:
+        mapping = {
+            "topic": "议题",
+            "topic_label": "议题标签",
+            "report_mode": "报告模式",
+            "intro": "导语",
+            "focus": "关注点",
+            "key_terms": "辅助概念",
+            "directions": "调节方向",
+            "micro_practices": "小练习",
+            "title": "标题",
+            "summary": "摘要",
+            "product_note": "产品说明",
+            "term": "术语",
+            "explanation": "解释",
+            "content": "内容",
+        }
+        return mapping.get(key, key.replace("_", " ").strip())
+
+    def _load_golden_review_result(
+        self,
+        *,
+        fixture_id: str,
+        version: str,
+        golden_review_root: Path | None,
+    ) -> dict[str, Any]:
+        if not fixture_id:
+            return {"reviewed": False}
+        base_root = golden_review_root or self.golden_root
+        review_path = base_root / fixture_id / f"{version}.review.md"
+        if not review_path.exists():
+            return {"reviewed": False}
+        metadata = self._parse_markdown_frontmatter(review_path)
+        result = str(metadata.get("result") or "").strip()
+        deviation_count = int(metadata.get("deviation_count") or 0)
+        return {
+            "reviewed": bool(result),
+            "result": result,
+            "deviation_count": deviation_count,
+            "review_path": self._to_repo_relative(review_path),
+        }
+
+    def _parse_markdown_frontmatter(self, path: Path) -> dict[str, Any]:
+        text = path.read_text(encoding="utf-8")
+        if not text.startswith("---\n"):
+            return {}
+        parts = text.split("\n---\n", 1)
+        if len(parts) != 2:
+            return {}
+        payload = yaml.safe_load(parts[0][4:]) or {}
+        return payload if isinstance(payload, dict) else {}
+
+    def _sanitize_export_value(self, value: Any) -> Any:
+        if isinstance(value, dict):
+            return {
+                key: self._sanitize_export_value(item)
+                for key, item in value.items()
+            }
+        if isinstance(value, list):
+            return [self._sanitize_export_value(item) for item in value]
+        if isinstance(value, str):
+            return self._sanitize_export_string(value)
+        return value
+
+    def _sanitize_export_string(self, value: str) -> str:
+        compact = value.strip()
+        if not compact:
+            return value
+        project_prefix = str(self.project_root.resolve())
+        if project_prefix in value:
+            return value.replace(project_prefix + "/", "")
+        return value
+
+    def _to_repo_relative(self, path: Path) -> str:
+        resolved = path.resolve()
+        try:
+            return str(resolved.relative_to(self.project_root))
+        except ValueError:
+            return str(resolved)
 
     def _build_three_circle_override(self, input_payload: dict[str, Any]) -> dict[str, int] | None:
         inner = input_payload.get("inner_radius")

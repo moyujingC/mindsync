@@ -1,6 +1,7 @@
 """Tests for the v2.2 local knowledge workbench and debug endpoints."""
 
 import asyncio
+import json
 import os
 import shutil
 import sys
@@ -122,3 +123,98 @@ def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
     )
     assert preview_payload["report_summary"]["structured_field_presence"]["healing_plan"] is True
     assert preview_payload["diff_from_current"] is None
+
+
+def test_v22_workbench_can_export_fixture_golden_assets(tmp_path):
+    workbench = KnowledgeWorkbench()
+
+    result = asyncio.run(
+        workbench.export_fixture_golden(
+            fixture_id="toc-mvp-fixture-001",
+            build_selector="current",
+            version="lite",
+            output_dir=tmp_path,
+        )
+    )
+
+    export_dir = tmp_path / "toc-mvp-fixture-001"
+    assert result["fixture_id"] == "toc-mvp-fixture-001"
+    assert result["version"] == "lite"
+    assert result["output_dir"] == str(export_dir)
+    assert (export_dir / "lite.report.json").exists()
+    assert (export_dir / "lite.report.md").exists()
+    assert (export_dir / "lite.debug.json").exists()
+
+    report_payload = json.loads((export_dir / "lite.report.json").read_text(encoding="utf-8"))
+    assert report_payload["version"] == "lite"
+    assert report_payload["structured"]["topic_context"]["topic"] == "general"
+    assert "current_reading" in report_payload["structured"]
+    assert "knowledge_debug" in report_payload
+    assert "/Users/xinran" not in json.dumps(report_payload, ensure_ascii=False)
+
+    debug_payload = json.loads((export_dir / "lite.debug.json").read_text(encoding="utf-8"))
+    assert "algorithm_fidelity_trace" in debug_payload
+    assert "topic_context_trace" in debug_payload
+    assert "narrative_plans" in debug_payload
+    assert "field_to_knowledge_map" in debug_payload
+
+    markdown_payload = (export_dir / "lite.report.md").read_text(encoding="utf-8")
+    assert "产品区块" in markdown_payload
+    assert "topic_context" not in markdown_payload
+    assert "current_reading" not in markdown_payload
+
+
+def test_v22_eval_summary_includes_golden_review_aggregation(tmp_path):
+    workbench = KnowledgeWorkbench()
+    review_dir = tmp_path / "toc-mvp-fixture-001"
+    review_dir.mkdir(parents=True)
+    (review_dir / "lite.review.md").write_text(
+        "\n".join(
+            [
+                "---",
+                "fixture_id: toc-mvp-fixture-001",
+                "mode: lite",
+                "topic: general",
+                "result: pass_with_drift",
+                "deviation_count: 2",
+                "---",
+                "",
+                "# review",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    sample_results = [
+        {
+            "fixture_meta": {"fixture_id": "toc-mvp-fixture-001", "theme": "general"},
+            "report_summary": {
+                "version": "lite",
+                "structured_field_presence": {"current_reading": True},
+            },
+            "knowledge_summary": {
+                "warning_analysis": {"warning_hits": []},
+                "summary": {
+                    "fallback_used": False,
+                    "warning_hit_count": 0,
+                    "algorithm_fidelity_pass": True,
+                    "legacy_semantics_found": False,
+                    "raw_payload_leak_found": False,
+                },
+            },
+            "regression_flags": [],
+        }
+    ]
+
+    summary = workbench._build_eval_summary(
+        build_selector="current",
+        sample_results=sample_results,
+        golden_review_root=tmp_path,
+    )
+
+    assert summary["summary"]["golden_reviewed_count"] == 1
+    assert summary["summary"]["golden_pass_count"] == 0
+    assert summary["summary"]["golden_pass_with_drift_count"] == 1
+    assert summary["summary"]["golden_fail_count"] == 0
+    assert summary["summary"]["open_deviation_count"] == 2
+    assert summary["fixtures"][0]["golden_review"]["result"] == "pass_with_drift"
