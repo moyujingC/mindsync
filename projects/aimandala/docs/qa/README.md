@@ -1,47 +1,88 @@
 # QA
 
-这里放 `一镜一梳` 当前主链路的正式验证基线与验证记录。
+这里放 `一镜一梳` 当前主链路的验收清单、验证记录与样本验证文档。
 
-## 当前正式入口
+当前 QA 目录主要服务一件事：
 
-当前只保留以下 QA 文档：
+- 验证新的 `上传 -> 三圈识别 -> Lite / Pro 选择 -> loading -> 结果页` 主链路是否成立
 
-1. [2026-04-18-报告链路保真重构验证基线.md](2026-04-18-报告链路保真重构验证基线.md)
-2. [2026-04-19-Batch-A-runtime-evidence-验证记录.md](2026-04-19-Batch-A-runtime-evidence-验证记录.md)
-3. [2026-04-19-Batch-B-narrative-plan-验证记录.md](2026-04-19-Batch-B-narrative-plan-验证记录.md)
-4. [2026-04-19-Batch-C-Lite-Pro-合同与前端承接验证记录.md](2026-04-19-Batch-C-Lite-Pro-合同与前端承接验证记录.md)
-5. [2026-04-19-Batch-D-固定样本重建验证记录.md](2026-04-19-Batch-D-固定样本重建验证记录.md)
-6. [2026-04-19-Batch-E-解读教程算法保真验证记录.md](2026-04-19-Batch-E-解读教程算法保真验证记录.md)
-7. [2026-04-19-Batch-F-golden-审阅记录.md](2026-04-19-Batch-F-golden-审阅记录.md)
-8. [2026-04-19-Batch-G-golden-偏差回灌验证记录.md](2026-04-19-Batch-G-golden-偏差回灌验证记录.md)
-9. [2026-04-19-Batch-H-报告表达保真验证记录.md](2026-04-19-Batch-H-报告表达保真验证记录.md)
-10. [2026-04-18-Lite-Pro-独立报告重定义验证记录.md](2026-04-18-Lite-Pro-独立报告重定义验证记录.md)
+这个目录天然也会保留很多带日期文件，因为验证材料需要保留证据链；
+但按治理规则，只有当前正式验收基线才应长期保留 `current`。
 
-分工如下：
+## 放什么
 
-- `2026-04-18-报告链路保真重构验证基线.md`
-  - 固定本轮重大重构的质量门、自动化验证矩阵和样本验证矩阵
-- `2026-04-19-Batch-A-runtime-evidence-验证记录.md`
-  - 固定 Batch A runtime evidence 重构的执行结果、样本观察和放行结论
-- `2026-04-19-Batch-B-narrative-plan-验证记录.md`
-  - 固定 Batch B narrative plan、prompt skeleton 和 debug 收口的执行结果与放行结论
-- `2026-04-19-Batch-C-Lite-Pro-合同与前端承接验证记录.md`
-  - 固定 Batch C 报告合同、前端承接和 debug 区块钻取的执行结果与放行结论
-- `2026-04-19-Batch-D-固定样本重建验证记录.md`
-  - 固定 Batch D 第一块实现中 fixture 重建、workbench/debug 摘要切换和 eval 收口的验证结果
-- `2026-04-19-Batch-E-解读教程算法保真验证记录.md`
-  - 固定 Batch E 四步法 trace、教程阈值、Pro 独立语义和算法保真 eval 的验证结果
-- `2026-04-19-Batch-F-golden-审阅记录.md`
-  - 固定 Batch F golden 导出、人工 rubric 审阅、偏差回灌和 evidence 审阅索引页的验证结果
-- `2026-04-19-Batch-G-golden-偏差回灌验证记录.md`
-  - 固定 Batch G raw payload、debug scope、逐圈深浅压缩和 golden 重导的验证结果
-- `2026-04-19-Batch-H-报告表达保真验证记录.md`
-  - 固定 Batch H 报告表达保真、逐圈观察去 debug 化、Pro 去重复和 golden 审阅摘录的验证结果
-- `2026-04-18-Lite-Pro-独立报告重定义验证记录.md`
-  - 固定 `Lite / Pro` 报告模式、议题上下文、Lite 轻疗愈区块和 `Pro` 入口语义的专项验证结果
+- QA baseline
+- 验证记录
+- 纸面验证与样本验证
+- smoke、专项验证、回归检查
 
-## 使用规则
+## 不放什么
 
-- 进入验证前，先对齐 [../specs/2026-04-18-报告链路保真重构总规格.md](../specs/2026-04-18-报告链路保真重构总规格.md)
-- 执行验证时，按基线中的自动化与样本矩阵回写结果
-- 交付时，将最终结论同步到 [../delivery/README.md](../delivery/README.md)
+- 长期产品范围定义
+- 长期技术方案
+- 交付总结
+- 当前唯一执行计划
+
+## 当前 canonical 文档
+
+进入本目录前，先对齐这些长期入口：
+
+- [ToC-MVP-产品规范.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md)
+- [ToC-MVP-技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
+- [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
+
+## 当前阶段性文档
+
+当前默认优先区分两类文档：
+
+- `qa basis`
+  - 定义本轮目标行为、质量门和验证矩阵
+- `verification record`
+  - 记录某一轮已经执行过的自动化、smoke 和人工验收结果
+
+当前优先阅读：
+
+- [2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md)
+- [2026-04-19-paperclip-native-execution-routing-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md)
+- [2026-04-16-ceo-hermes-container-runtime-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-16-ceo-hermes-container-runtime-verification.md)
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
+- [2026-04-15-min33-human-unblock-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-min33-human-unblock-verification.md)
+- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md)
+- [2026-04-13-miniapp-native-gray-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-miniapp-native-gray-verification.md)
+- [2026-04-13-miniapp-wechatpay-live-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-miniapp-wechatpay-live-verification.md)
+- [2026-04-12-ci-cd-验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-ci-cd-验证记录.md)
+
+说明：
+
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md` 是当前 automation heartbeat 仍被 `34` 条活跃 `serverAutomationBlocking` 拦住后的正式 QA baseline，要求先做只读 diagnosis 和单桶归类，不先做批量修复。
+- `2026-04-19-paperclip-native-execution-routing-qa-basis.md` 是当前 execution routing 的正式 QA baseline，定义了 direct routing（直接路由）模型、服务器 heartbeat 边界与历史方案废弃检查。
+- `2026-04-16-ceo-hermes-container-runtime-verification.md` 是当前 `CEO bug` 的正式验证入口，收束了“旧权限截图”与“当前 Hermes 运行时根因”之间的区分。
+- `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md` 仍是当前 Web 首发窗口的正式 QA baseline。
+- `2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md` 是与之配套的当前验证总入口。
+- `2026-04-15-min33-human-unblock-verification.md` 是当前 `MIN-33` 转人工清障的验证结论入口，明确说明为何继续保持 `blocked`，且不应因旧本地记录缺失而直接关成 `done`。
+- `2026-04-15 batch E` 和 `2026-04-13` gray 系列主要服务 miniapp 渐进并入，不取代 Web 默认质量门。
+
+## 历史资料入口
+
+以下文档主要用于追溯背景，不再作为当前首轮入口：
+
+- [2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
+- [2026-04-18-automation-and-local-execution-routing-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-and-local-execution-routing-qa-basis.md)
+- [2026-04-18-automation-routing-and-heartbeat-gate-verification.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-routing-and-heartbeat-gate-verification.md)
+- [2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md)
+- [2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md)
+- [2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md)
+- [2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md)
+- [2026-04-12-迁移收官与正式版收口验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-迁移收官与正式版收口验证记录.md)
+- [2026-04-12-v22-knowledge-workbench-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-12-v22-knowledge-workbench-verification.md)
+- [2026-04-13-paperclip-automation-节点验证记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-13-paperclip-automation-节点验证记录.md)
+- [2026-04-04-toc-mvp-qa-checklist.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md)
+- [2026-04-08-toc-mvp-first-pass-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-first-pass-verification.md)
+- [2026-04-08-toc-mvp-sample-validation.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-08-toc-mvp-sample-validation.md)
+
+## 默认阅读顺序
+
+1. 先看当前 QA baseline，确认质量门。
+2. 再看与之配套的验证记录，确认实际执行结果。
+3. 最后按专项主题回看历史验证链。
