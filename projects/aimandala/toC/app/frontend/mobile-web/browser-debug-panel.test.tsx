@@ -323,7 +323,7 @@ const candidateBuildSummary: KnowledgeBuildSummaryResponse = {
         version: "pro",
         fallback_used: true,
         warning_hit_count: 1,
-        regression_flags: ["structured_missing:healing_suggestions"],
+        regression_flags: ["structured_missing:healing_plan"],
       },
     ],
   },
@@ -340,7 +340,7 @@ const samplePreview: KnowledgeFixturePreviewResponse = {
     version: "pro",
     title: "事业主题 Pro 报告",
     structured_field_presence: {
-      healing_suggestions: false,
+      healing_plan: false,
     },
   },
   knowledge_summary: {
@@ -356,12 +356,12 @@ const samplePreview: KnowledgeFixturePreviewResponse = {
       },
     ],
   },
-  regression_flags: ["structured_missing:healing_suggestions"],
+  regression_flags: ["structured_missing:healing_plan"],
   diff_from_current: {
     fallback_delta: 1,
     warning_ids_added: ["imbalance.fire_deficiency"],
     warning_ids_removed: [],
-    structured_missing_added: ["healing_suggestions"],
+    structured_missing_added: ["healing_plan"],
     structured_missing_removed: [],
     report_excerpt_changed: true,
   },

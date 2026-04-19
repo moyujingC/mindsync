@@ -1,8 +1,8 @@
 {
   "build_selector": "current",
-  "generated_at": "2026-04-14T21:13:31.766507",
+  "generated_at": "2026-04-19T10:16:25.704200",
   "summary": {
-    "fixture_count": 5,
+    "fixture_count": 4,
     "fixture_fallback_count": 0,
     "warning_hit_count": 1,
     "structured_missing_count": 0,
@@ -10,7 +10,7 @@
   },
   "fixtures": [
     {
-      "fixture_id": "toc-mvp-sample-a-lite-general",
+      "fixture_id": "toc-mvp-fixture-001",
       "theme": "general",
       "version": "lite",
       "fallback_used": false,
@@ -19,7 +19,7 @@
       "structured_missing_fields": []
     },
     {
-      "fixture_id": "toc-mvp-sample-b-lite-to-pro-career",
+      "fixture_id": "toc-mvp-fixture-002",
       "theme": "wealth_career",
       "version": "pro",
       "fallback_used": false,
@@ -28,7 +28,7 @@
       "structured_missing_fields": []
     },
     {
-      "fixture_id": "toc-mvp-sample-c-existing-reuse",
+      "fixture_id": "toc-mvp-fixture-003",
       "theme": "general",
       "version": "lite",
       "fallback_used": false,
@@ -37,16 +37,7 @@
       "structured_missing_fields": []
     },
     {
-      "fixture_id": "toc-mvp-sample-d-intimate-fallback",
-      "theme": "intimate_relationship",
-      "version": "lite",
-      "fallback_used": false,
-      "warning_hit_count": 0,
-      "regression_flags": [],
-      "structured_missing_fields": []
-    },
-    {
-      "fixture_id": "toc-mvp-sample-e-warning-general",
+      "fixture_id": "toc-mvp-fixture-004",
       "theme": "general",
       "version": "lite",
       "fallback_used": false,

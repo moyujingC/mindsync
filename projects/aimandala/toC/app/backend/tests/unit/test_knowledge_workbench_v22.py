@@ -45,7 +45,7 @@ def test_v22_workbench_builds_candidate_and_diff():
         assert Path(build_result["quality_path"]).exists()
         assert (build_dir / "evals" / "summary.json").exists()
         assert current_summary["quality"]["build_info"]["build_selector"] == "current"
-        assert candidate_summary["summary"]["fixture_count"] >= 5
+        assert candidate_summary["summary"]["fixture_count"] == 4
         assert candidate_summary["summary"]["warning_hit_count"] >= 1
         assert "quality_diff" in diff_payload
         assert "eval_diff" in diff_payload
@@ -65,7 +65,7 @@ def test_v22_debug_endpoints_are_dev_only(monkeypatch):
     fixture_preview = client.post(
         "/api/v2/debug/knowledge/fixture-preview",
         json={
-            "fixture_id": "toc-mvp-sample-a-lite-general",
+            "fixture_id": "toc-mvp-fixture-001",
             "build_selector": "current",
             "version": "lite",
         },
@@ -91,7 +91,7 @@ def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
     fixture_preview = client.post(
         "/api/v2/debug/knowledge/fixture-preview",
         json={
-            "fixture_id": "toc-mvp-sample-b-lite-to-pro-career",
+            "fixture_id": "toc-mvp-fixture-002",
             "build_selector": "current",
             "version": "pro",
         },
@@ -101,15 +101,24 @@ def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
     build_payload = build_summary.json()
     assert build_payload["build_info"]["build_selector"] == "current"
     assert build_payload["quality"]["summary"]["theme_count"] >= 3
-    assert build_payload["eval_summary"]["summary"]["fixture_count"] >= 5
+    assert build_payload["eval_summary"]["summary"]["fixture_count"] == 4
 
     assert fixture_preview.status_code == 200
     preview_payload = fixture_preview.json()
-    assert preview_payload["fixture_meta"]["fixture_id"] == "toc-mvp-sample-b-lite-to-pro-career"
+    assert preview_payload["fixture_meta"]["fixture_id"] == "toc-mvp-fixture-002"
     assert preview_payload["report_summary"]["version"] == "pro"
     assert preview_payload["knowledge_summary"]["summary"]["fallback_used"] is False
     assert preview_payload["knowledge_summary"]["source_refs"]
-    assert preview_payload["knowledge_summary"]["field_to_knowledge_map"]["healing_suggestions"][
-        "entity_ids"
-    ]
+    assert preview_payload["knowledge_summary"]["field_to_knowledge_map"]["healing_plan"]["entity_ids"]
+    assert preview_payload["report_summary"]["structured_field_presence"]["deep_impression"] is True
+    assert preview_payload["report_summary"]["structured_field_presence"]["evidence_digest"] is True
+    assert preview_payload["report_summary"]["structured_field_presence"]["imbalance_diagnosis"] is True
+    assert preview_payload["report_summary"]["structured_field_presence"]["root_cause_chain"] is True
+    assert (
+        preview_payload["report_summary"]["structured_field_presence"][
+            "deep_structure_interpretation"
+        ]
+        is True
+    )
+    assert preview_payload["report_summary"]["structured_field_presence"]["healing_plan"] is True
     assert preview_payload["diff_from_current"] is None

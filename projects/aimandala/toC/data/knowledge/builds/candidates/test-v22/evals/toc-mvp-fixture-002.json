@@ -1,68 +1,286 @@
 {
   "fixture_meta": {
-    "fixture_id": "toc-mvp-sample-b-lite-to-pro-career",
-    "fixture_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-b-lite-to-pro-career.yaml",
+    "fixture_id": "toc-mvp-fixture-002",
+    "fixture_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/fixtures/toc-mvp/toc-mvp-fixture-002.yaml",
     "theme": "wealth_career",
-    "fixture_type": "pro-upgrade-path",
+    "fixture_type": "pro-purchase",
     "coverage": [
       "TC-03",
       "TC-04"
     ],
-    "build_selector": "current",
+    "build_selector": "candidate:test-v22",
     "version": "pro"
   },
   "report_summary": {
     "version": "pro",
     "title": "一梳 Pro 版报告",
-    "overall_impression": "第一眼看这张画，最明显的是「土」和「金」共同撑起了整张画的骨架。 内圈和中圈都更偏「土」，外圈则开始转向「金」。 所以 Lite 里那份《向前先稳住的人》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。 你内里更需要财富安全感与物质基础，但外在已经开始调用「金」的力量去整理边界、秩序或方向。这会让你一边想继续向外，一边又不愿再用没有承载感的方式消耗自己。 你正处在旧节奏尚未完全退场、新节奏又开始拉扯的过渡期。",
-    "report_excerpt": "---\n\n**⚠️ 重要声明**\n\n1. **非医疗诊断**：本解读基于五行能量理论，反映的是绘画者的能量状态和潜意识模式，**不是医学诊断**，不能替代专业心理咨询或精神科治疗。\n\n2. **仅供参考**：所有解读内容仅供参考，绘画者应结合自身实际情况理性看待。\n\n3. **专业支持**：如您有严重的心理困扰、情绪障碍或精神健康问题，请务必寻求专业心理咨询...",
+    "overall_impression": "第一眼看这张画，最明显的是「金」和「土」共同撑起了整张画的骨架。 三圈依次呈现出「火 -> 金 -> 金」的变化。 所以 Lite 里那份《向前先稳住的人》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。 你内里更需要自我价值与专业成就，但外在已经开始调用「金」的力量去整理边界、秩序或方向。这会让你一边想继续向外，一边又不愿再用没有承载感的方式消耗自己。",
+    "report_excerpt": "---\n\n**⚠️ 重要声明**\n\n1. **非医疗诊断**：本解读基于五行能量理论，**不是医学诊断**。\n\n2. **风险提示**：您的画面显示一些需要关注的信号，这可能超出了本系统的识别范围。\n\n3. **强烈建议**：\n   - 寻求专业心理咨询师评估\n   - 拨打心理援助热线：400-161-9995\n   - 与家人朋友沟通您的状态\n\n4. *...",
     "ai_qa_context_present": true,
     "structured_field_presence": {
-      "first_impression": true,
-      "core_insight_table": true,
-      "root_cause": true,
-      "healing_suggestions": true
+      "topic_context": true,
+      "deep_impression": true,
+      "evidence_digest": true,
+      "imbalance_diagnosis": true,
+      "root_cause_chain": true,
+      "deep_structure_interpretation": true,
+      "healing_plan": true
     }
   },
   "knowledge_summary": {
     "build_info": {
-      "build_selector": "current",
-      "build_source": "current",
-      "build_id": "current",
-      "index_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
+      "build_selector": "candidate:test-v22",
+      "build_source": "candidate",
+      "build_id": "test-v22",
+      "index_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/builds/candidates/test-v22/index.json",
       "pack_id": "aimandala-v2.1",
       "schema_version": "v2.1",
-      "generated_at": "2026-04-14T21:00:21.289309",
-      "manifest_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/manifest.yaml",
-      "build_kind": "current"
+      "generated_at": "2026-04-19T10:16:27.039033",
+      "manifest_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/manifest.yaml",
+      "build_kind": "candidate"
     },
     "imbalance_candidates": [
-      "transition-overload"
+      "金多木折",
+      "金多水浊"
     ],
     "layer0_evidence": {
       "visual_facts": {
-        "image_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/mandala-test-02.jpeg",
+        "image_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5060.jpeg",
         "circle_boundaries": {
           "inner_radius": 33,
           "middle_radius": 66
         },
-        "dominant_element": "土",
+        "dominant_element": "金",
+        "dominant_elements": {
+          "inner": "火",
+          "middle": "金",
+          "outer": "金"
+        },
+        "circle_colors": {
+          "inner": {
+            "colors": [
+              {
+                "hex": "#e4d9af",
+                "rgb": [
+                  228,
+                  217,
+                  175
+                ],
+                "percentage": 47.47
+              },
+              {
+                "hex": "#b9a864",
+                "rgb": [
+                  185,
+                  168,
+                  100
+                ],
+                "percentage": 18.53
+              },
+              {
+                "hex": "#8c7a3a",
+                "rgb": [
+                  140,
+                  122,
+                  58
+                ],
+                "percentage": 15.83
+              },
+              {
+                "hex": "#288abe",
+                "rgb": [
+                  40,
+                  138,
+                  190
+                ],
+                "percentage": 12.38
+              },
+              {
+                "hex": "#262d2c",
+                "rgb": [
+                  38,
+                  45,
+                  44
+                ],
+                "percentage": 5.79
+              }
+            ],
+            "five_elements": {
+              "wood": 3.26,
+              "fire": 38.36,
+              "earth": 14.35,
+              "metal": 38.35,
+              "water": 5.68
+            },
+            "dominant_color": "#e4d9af",
+            "dominant_element": "fire"
+          },
+          "middle": {
+            "colors": [
+              {
+                "hex": "#c3c9b0",
+                "rgb": [
+                  195,
+                  201,
+                  176
+                ],
+                "percentage": 38.68
+              },
+              {
+                "hex": "#799e5f",
+                "rgb": [
+                  121,
+                  158,
+                  95
+                ],
+                "percentage": 28.71
+              },
+              {
+                "hex": "#2a3823",
+                "rgb": [
+                  42,
+                  56,
+                  35
+                ],
+                "percentage": 16.2
+              },
+              {
+                "hex": "#cad128",
+                "rgb": [
+                  202,
+                  209,
+                  40
+                ],
+                "percentage": 11.75
+              }
+            ],
+            "five_elements": {
+              "wood": 18.16,
+              "fire": 10.9,
+              "earth": 11.23,
+              "metal": 56.17,
+              "water": 3.54
+            },
+            "dominant_color": "#c3c9b0",
+            "dominant_element": "metal"
+          },
+          "outer": {
+            "colors": [
+              {
+                "hex": "#c2c6b2",
+                "rgb": [
+                  194,
+                  198,
+                  178
+                ],
+                "percentage": 30.91
+              },
+              {
+                "hex": "#949b74",
+                "rgb": [
+                  148,
+                  155,
+                  116
+                ],
+                "percentage": 24.8
+              },
+              {
+                "hex": "#607245",
+                "rgb": [
+                  96,
+                  114,
+                  69
+                ],
+                "percentage": 17.91
+              },
+              {
+                "hex": "#cbd329",
+                "rgb": [
+                  203,
+                  211,
+                  41
+                ],
+                "percentage": 17.04
+              },
+              {
+                "hex": "#262617",
+                "rgb": [
+                  38,
+                  38,
+                  23
+                ],
+                "percentage": 9.34
+              }
+            ],
+            "five_elements": {
+              "wood": 7.91,
+              "fire": 9.74,
+              "earth": 15.63,
+              "metal": 63.97,
+              "water": 2.76
+            },
+            "dominant_color": "#c2c6b2",
+            "dominant_element": "metal"
+          }
+        },
         "circle_colors_detected": [
           "inner",
           "middle",
           "outer"
         ],
+        "weighted_element_distribution": {
+          "wood": {
+            "element": "木",
+            "proportion": 0.1075,
+            "percentage": 10.75,
+            "areas": []
+          },
+          "fire": {
+            "element": "火",
+            "proportion": 0.1323,
+            "percentage": 13.23,
+            "areas": [
+              "内圈"
+            ]
+          },
+          "earth": {
+            "element": "土",
+            "proportion": 0.1405,
+            "percentage": 14.05,
+            "areas": []
+          },
+          "metal": {
+            "element": "金",
+            "proportion": 0.5863,
+            "percentage": 58.63,
+            "areas": [
+              "中圈",
+              "外圈"
+            ]
+          },
+          "water": {
+            "element": "水",
+            "proportion": 0.0333,
+            "percentage": 3.33,
+            "areas": []
+          }
+        },
+        "extracted_color_metrics": {
+          "overall_saturation": 0.3561,
+          "black_ratio": 0.0316,
+          "red_ratio": 0.0
+        },
         "knowledge_build": {
-          "build_selector": "current",
-          "build_source": "current",
-          "build_id": "current",
+          "build_selector": "candidate:test-v22",
+          "build_source": "candidate",
+          "build_id": "test-v22",
           "pack_id": "aimandala-v2.1"
         }
       },
       "knowledge_hits": {
         "circle_readings": {
-          "inner": "内圈（里圈）主要对应自我关系、原生家庭、过往伤痛、自我价值，当前更显著的是「土」特质。 此圈可以重点观察：对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。",
-          "middle": "中圈主要对应亲密关系、爱人/闺蜜/亲朋，当前更显著的是「土」特质。 此圈可以重点观察：当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。",
+          "inner": "内圈（里圈）主要对应自我关系、原生家庭、过往伤痛、自我价值，当前更显著的是「火」特质。 此圈可以重点观察：对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。",
+          "middle": "中圈主要对应亲密关系、爱人/闺蜜/亲朋，当前更显著的是「金」特质。 此圈可以重点观察：当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。",
           "outer": "外圈主要对应与世界的关系、物质/事业、身体/财富，当前更显著的是「金」特质。 此圈可以重点观察：对外在世界的态度 / 事业发展方向 / 身体健康状况。"
         },
         "theme_summary": {
@@ -80,24 +298,484 @@
           "theme_id": "wealth_career"
         },
         "build_info": {
-          "build_selector": "current",
-          "build_source": "current",
-          "build_id": "current",
-          "index_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/builds/current/index.json",
+          "build_selector": "candidate:test-v22",
+          "build_source": "candidate",
+          "build_id": "test-v22",
+          "index_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/builds/candidates/test-v22/index.json",
           "pack_id": "aimandala-v2.1",
           "schema_version": "v2.1",
-          "generated_at": "2026-04-14T21:00:21.289309"
-        }
+          "generated_at": "2026-04-19T10:16:27.039033"
+        },
+        "source_refs": [
+          {
+            "entity_id": "theme.wealth_career",
+            "source_path": "themes/wealth_career.yaml",
+            "kind": "theme_config"
+          },
+          {
+            "entity_id": "circle.三圈",
+            "source_path": "circles/three_circles.yaml",
+            "kind": "circle_runtime"
+          },
+          {
+            "entity_id": "rule.imbalance_types",
+            "source_path": "rules/imbalance_types.yaml",
+            "kind": "imbalance_rule"
+          }
+        ]
       },
       "rule_evaluations": {
+        "element_states": [
+          {
+            "element": "木",
+            "proportion": 0.1075,
+            "state": "deficient",
+            "excess_score": 0.0,
+            "deficiency_score": 0.4625,
+            "presence_score": 0.5375,
+            "evidence_basis": {
+              "proportion_source": "weighted_element_distribution",
+              "dominant_circle_count": 0,
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              }
+            }
+          },
+          {
+            "element": "火",
+            "proportion": 0.1323,
+            "state": "balanced",
+            "excess_score": 0.0,
+            "deficiency_score": 0.3385,
+            "presence_score": 0.6615,
+            "evidence_basis": {
+              "proportion_source": "weighted_element_distribution",
+              "dominant_circle_count": 1,
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              }
+            }
+          },
+          {
+            "element": "土",
+            "proportion": 0.1405,
+            "state": "balanced",
+            "excess_score": 0.0,
+            "deficiency_score": 0.2975,
+            "presence_score": 0.7025,
+            "evidence_basis": {
+              "proportion_source": "weighted_element_distribution",
+              "dominant_circle_count": 0,
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              }
+            }
+          },
+          {
+            "element": "金",
+            "proportion": 0.5863,
+            "state": "excess",
+            "excess_score": 1.0,
+            "deficiency_score": 0.0,
+            "presence_score": 1.0,
+            "evidence_basis": {
+              "proportion_source": "weighted_element_distribution",
+              "dominant_circle_count": 2,
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              }
+            }
+          },
+          {
+            "element": "水",
+            "proportion": 0.0333,
+            "state": "deficient",
+            "excess_score": 0.0,
+            "deficiency_score": 0.8335,
+            "presence_score": 0.1665,
+            "evidence_basis": {
+              "proportion_source": "weighted_element_distribution",
+              "dominant_circle_count": 0,
+              "thresholds": {
+                "excess": 0.3,
+                "deficient": 0.12
+              }
+            }
+          }
+        ],
+        "triad_states": [
+          {
+            "circle": "inner",
+            "dominant_element": "火",
+            "inferred_state": "balanced",
+            "source_hit": "dominant:火"
+          },
+          {
+            "circle": "middle",
+            "dominant_element": "金",
+            "inferred_state": "excess",
+            "source_hit": "dominant:金"
+          },
+          {
+            "circle": "outer",
+            "dominant_element": "金",
+            "inferred_state": "excess",
+            "source_hit": "dominant:金"
+          }
+        ],
+        "imbalance_trace": {
+          "all_candidates": [
+            {
+              "id": "金多木折",
+              "category": "相乘",
+              "toc_supported": true,
+              "score": 0.935,
+              "selected_for_primary": true,
+              "reason_codes": [
+                "attacker_excess",
+                "target_deficient",
+                "source_dominant_in_two_circles",
+                "affected_absent_from_circles",
+                "toc_supported"
+              ],
+              "decision": "primary",
+              "warning": null
+            },
+            {
+              "id": "金多土虚",
+              "category": "子病犯母",
+              "toc_supported": false,
+              "score": 0.869,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "child_excess",
+                "mother_deficient",
+                "source_dominant_in_two_circles",
+                "affected_absent_from_circles",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "金多水浊",
+              "category": "相生太过",
+              "toc_supported": true,
+              "score": 0.8583,
+              "selected_for_primary": true,
+              "reason_codes": [
+                "producer_excess",
+                "child_presence",
+                "source_dominant_in_two_circles",
+                "affected_absent_from_circles",
+                "toc_supported"
+              ],
+              "decision": "primary",
+              "warning": null
+            },
+            {
+              "id": "金多火熄",
+              "category": "相侮",
+              "toc_supported": false,
+              "score": 0.8354,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "reverse_excess",
+                "controller_deficient",
+                "source_dominant_in_two_circles",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "火多水灼",
+              "category": "相侮",
+              "toc_supported": false,
+              "score": 0.3834,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "controller_deficient",
+                "affected_absent_from_circles",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "土多金埋",
+              "category": "相生太过",
+              "toc_supported": true,
+              "score": 0.35,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "child_presence",
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "火多土焦",
+              "category": "相生太过",
+              "toc_supported": true,
+              "score": 0.2959,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "child_presence",
+                "affected_absent_from_circles",
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "火多木焚",
+              "category": "子病犯母",
+              "toc_supported": false,
+              "score": 0.235,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "mother_deficient",
+                "affected_absent_from_circles",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "土多水干",
+              "category": "相乘",
+              "toc_supported": true,
+              "score": 0.2334,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "target_deficient",
+                "affected_absent_from_circles",
+                "weak_circle_evidence",
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "木多水缩",
+              "category": "子病犯母",
+              "toc_supported": false,
+              "score": 0.2334,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "mother_deficient",
+                "affected_absent_from_circles",
+                "weak_circle_evidence",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "木多火塞",
+              "category": "相生太过",
+              "toc_supported": true,
+              "score": 0.2315,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "child_presence",
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "土多火晦",
+              "category": "子病犯母",
+              "toc_supported": false,
+              "score": 0.1354,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "mother_deficient",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "水多火灭",
+              "category": "相乘",
+              "toc_supported": true,
+              "score": 0.1354,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "target_deficient",
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": "⚠️ 高危抑郁信号，强烈建议转介专业心理咨询"
+            },
+            {
+              "id": "水多木漂",
+              "category": "相生太过",
+              "toc_supported": true,
+              "score": 0.0881,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "child_presence",
+                "affected_absent_from_circles",
+                "weak_circle_evidence",
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "土多木折",
+              "category": "相侮",
+              "toc_supported": false,
+              "score": 0.085,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "controller_deficient",
+                "affected_absent_from_circles",
+                "weak_circle_evidence",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "木多土陷",
+              "category": "相乘",
+              "toc_supported": true,
+              "score": 0.019,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "target_deficient",
+                "affected_absent_from_circles",
+                "weak_circle_evidence",
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "水多土荡",
+              "category": "相侮",
+              "toc_supported": false,
+              "score": 0.019,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "controller_deficient",
+                "affected_absent_from_circles",
+                "weak_circle_evidence",
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "木多金缺",
+              "category": "相侮",
+              "toc_supported": false,
+              "score": 0.0,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "水多金沉",
+              "category": "子病犯母",
+              "toc_supported": false,
+              "score": 0.0,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "tob_only"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            },
+            {
+              "id": "火多金熔",
+              "category": "相乘",
+              "toc_supported": true,
+              "score": 0.0,
+              "selected_for_primary": false,
+              "reason_codes": [
+                "toc_supported"
+              ],
+              "decision": "trace_only",
+              "warning": null
+            }
+          ],
+          "primary_candidates": [
+            {
+              "id": "金多木折",
+              "category": "相乘",
+              "toc_supported": true,
+              "score": 0.935,
+              "selected_for_primary": true,
+              "reason_codes": [
+                "attacker_excess",
+                "target_deficient",
+                "source_dominant_in_two_circles",
+                "affected_absent_from_circles",
+                "toc_supported"
+              ],
+              "decision": "primary",
+              "warning": null
+            },
+            {
+              "id": "金多水浊",
+              "category": "相生太过",
+              "toc_supported": true,
+              "score": 0.8583,
+              "selected_for_primary": true,
+              "reason_codes": [
+                "producer_excess",
+                "child_presence",
+                "source_dominant_in_two_circles",
+                "affected_absent_from_circles",
+                "toc_supported"
+              ],
+              "decision": "primary",
+              "warning": null
+            }
+          ],
+          "synthetic_signal": {
+            "id": "transition-overload",
+            "used": false,
+            "reason": ""
+          }
+        },
+        "primary_candidates": [
+          "金多木折",
+          "金多水浊"
+        ],
+        "synthetic_signal": {
+          "id": "transition-overload",
+          "used": false,
+          "reason": ""
+        },
         "imbalance_candidates": [
-          "transition-overload"
+          "金多木折",
+          "金多水浊"
         ],
         "theme_mappings": {
-          "transition-overload": {
-            "核心矛盾": "旧节奏退出时承载跟不上",
-            "具体表现": "旧项目或旧路径正在退场，但新阶段真正推进前你又会先迟疑和回撤",
-            "转变方向": "先稳住基本盘，把变化拆成可承接的小步动作"
+          "金多木折": {
+            "核心矛盾": "完美拖延机会",
+            "具体表现": "追求完美方案，导致项目迟迟无法启动",
+            "转变方向": "先完成再完美，小步快跑"
+          },
+          "金多水浊": {
+            "核心矛盾": "分析阻碍决策",
+            "具体表现": "过度分析市场数据，错失投资或创业机会",
+            "转变方向": "放下分析，相信直觉"
           }
         }
       },
@@ -110,12 +788,20 @@
           "权力与责任",
           "创造与接收"
         ],
-        "focus_element": ""
+        "focus_element": "",
+        "related_circles": [],
+        "issue_type_count": 6
       },
       "imbalance_candidates": [
-        "transition-overload"
+        "金多木折",
+        "金多水浊"
       ],
-      "quality_flags": [],
+      "fidelity_flags": [
+        "trace:tob_only_candidate_present"
+      ],
+      "quality_flags": [
+        "trace:tob_only_candidate_present"
+      ],
       "fallback_summary": {
         "used": false,
         "levels": [],
@@ -1087,7 +1773,7 @@
       },
       "circles": {
         "inner": {
-          "value": "内圈（里圈）主要对应自我关系、原生家庭、过往伤痛、自我价值，当前更显著的是「土」特质。 此圈可以重点观察：对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。",
+          "value": "内圈（里圈）主要对应自我关系、原生家庭、过往伤痛、自我价值，当前更显著的是「火」特质。 此圈可以重点观察：对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。",
           "entity_id": "circle.内圈",
           "source_pack": "v2.1",
           "fallback_level": "none",
@@ -1101,12 +1787,12 @@
           ],
           "warnings": [],
           "found": true,
-          "data": "内圈（里圈）主要对应自我关系、原生家庭、过往伤痛、自我价值，当前更显著的是「土」特质。 此圈可以重点观察：对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。",
+          "data": "内圈（里圈）主要对应自我关系、原生家庭、过往伤痛、自我价值，当前更显著的是「火」特质。 此圈可以重点观察：对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。",
           "source": "primary",
           "fallback_used": false
         },
         "middle": {
-          "value": "中圈主要对应亲密关系、爱人/闺蜜/亲朋，当前更显著的是「土」特质。 此圈可以重点观察：当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。",
+          "value": "中圈主要对应亲密关系、爱人/闺蜜/亲朋，当前更显著的是「金」特质。 此圈可以重点观察：当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。",
           "entity_id": "circle.中圈",
           "source_pack": "v2.1",
           "fallback_level": "none",
@@ -1120,7 +1806,7 @@
           ],
           "warnings": [],
           "found": true,
-          "data": "中圈主要对应亲密关系、爱人/闺蜜/亲朋，当前更显著的是「土」特质。 此圈可以重点观察：当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。",
+          "data": "中圈主要对应亲密关系、爱人/闺蜜/亲朋，当前更显著的是「金」特质。 此圈可以重点观察：当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。",
           "source": "primary",
           "fallback_used": false
         },
@@ -1147,19 +1833,19 @@
       "imbalance": {
         "primary": {
           "value": {
-            "type": "transition-overload",
-            "category": "阶段迁移",
-            "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+            "type": "金多木折",
+            "category": "相乘",
+            "description": "金太利木会被砍断，过度的规则压制成长",
             "manifestations": [
-              "既想继续往前",
-              "又担心自己暂时接不住变化",
-              "容易在推进与回撤之间来回拉扯"
+              "自我批评严重",
+              "成长被阻碍",
+              "被挑剔伤害"
             ],
-            "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+            "healing_direction": "减少自我批评，重建自信",
             "toc_supported": true,
             "warning": null
           },
-          "entity_id": "imbalance.transition-overload",
+          "entity_id": "imbalance.金多木折",
           "source_pack": "v2.1",
           "fallback_level": "none",
           "evidence": [
@@ -1172,15 +1858,15 @@
           "warnings": [],
           "found": true,
           "data": {
-            "type": "transition-overload",
-            "category": "阶段迁移",
-            "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+            "type": "金多木折",
+            "category": "相乘",
+            "description": "金太利木会被砍断，过度的规则压制成长",
             "manifestations": [
-              "既想继续往前",
-              "又担心自己暂时接不住变化",
-              "容易在推进与回撤之间来回拉扯"
+              "自我批评严重",
+              "成长被阻碍",
+              "被挑剔伤害"
             ],
-            "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+            "healing_direction": "减少自我批评，重建自信",
             "toc_supported": true,
             "warning": null
           },
@@ -1190,19 +1876,19 @@
         "candidates": [
           {
             "value": {
-              "type": "transition-overload",
-              "category": "阶段迁移",
-              "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+              "type": "金多木折",
+              "category": "相乘",
+              "description": "金太利木会被砍断，过度的规则压制成长",
               "manifestations": [
-                "既想继续往前",
-                "又担心自己暂时接不住变化",
-                "容易在推进与回撤之间来回拉扯"
+                "自我批评严重",
+                "成长被阻碍",
+                "被挑剔伤害"
               ],
-              "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+              "healing_direction": "减少自我批评，重建自信",
               "toc_supported": true,
               "warning": null
             },
-            "entity_id": "imbalance.transition-overload",
+            "entity_id": "imbalance.金多木折",
             "source_pack": "v2.1",
             "fallback_level": "none",
             "evidence": [
@@ -1215,15 +1901,57 @@
             "warnings": [],
             "found": true,
             "data": {
-              "type": "transition-overload",
-              "category": "阶段迁移",
-              "description": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+              "type": "金多木折",
+              "category": "相乘",
+              "description": "金太利木会被砍断，过度的规则压制成长",
               "manifestations": [
-                "既想继续往前",
-                "又担心自己暂时接不住变化",
-                "容易在推进与回撤之间来回拉扯"
+                "自我批评严重",
+                "成长被阻碍",
+                "被挑剔伤害"
               ],
-              "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+              "healing_direction": "减少自我批评，重建自信",
+              "toc_supported": true,
+              "warning": null
+            },
+            "source": "primary",
+            "fallback_used": false
+          },
+          {
+            "value": {
+              "type": "金多水浊",
+              "category": "相生太过",
+              "description": "金太多会使水浑浊，过度的标准使智慧受阻",
+              "manifestations": [
+                "标准过多",
+                "智慧被束缚",
+                "思维僵化"
+              ],
+              "healing_direction": "软化金气，恢复流动",
+              "toc_supported": true,
+              "warning": null
+            },
+            "entity_id": "imbalance.金多水浊",
+            "source_pack": "v2.1",
+            "fallback_level": "none",
+            "evidence": [
+              {
+                "entity_id": "rule.imbalance_types",
+                "source_path": "rules/imbalance_types.yaml",
+                "kind": "imbalance_rule"
+              }
+            ],
+            "warnings": [],
+            "found": true,
+            "data": {
+              "type": "金多水浊",
+              "category": "相生太过",
+              "description": "金太多会使水浑浊，过度的标准使智慧受阻",
+              "manifestations": [
+                "标准过多",
+                "智慧被束缚",
+                "思维僵化"
+              ],
+              "healing_direction": "软化金气，恢复流动",
               "toc_supported": true,
               "warning": null
             },
@@ -1234,18 +1962,18 @@
       },
       "healing": {
         "value": {
-          "symptoms": "缺乏事业方向，对职业发展感到迷茫和无力",
+          "symptoms": "缺乏自我价值感，认为自己不配拥有财富或成功",
           "mandala_prescription": {
-            "inner": "绿色",
+            "inner": "金色",
             "middle": "红色",
-            "outer": "黄色"
+            "outer": "土色"
           },
-          "daily_practice": "学习新技能，拓展人脉，寻求职业导师指导，设定短期目标",
-          "cognitive_upgrade": "事业发展是一个持续学习和成长的过程，小步快跑，持续精进",
-          "imbalance": "transition-overload",
-          "issue_type": "事业停滞"
+          "daily_practice": "每日肯定自我价值，记录成就，培养感恩之心，参与志愿活动",
+          "cognitive_upgrade": "每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关",
+          "imbalance": "金多木折",
+          "issue_type": "不配得感"
         },
-        "entity_id": "healing.wealth_career.事业停滞",
+        "entity_id": "healing.wealth_career.不配得感",
         "source_pack": "v2.1",
         "fallback_level": "none",
         "evidence": [
@@ -1263,16 +1991,16 @@
         "warnings": [],
         "found": true,
         "data": {
-          "symptoms": "缺乏事业方向，对职业发展感到迷茫和无力",
+          "symptoms": "缺乏自我价值感，认为自己不配拥有财富或成功",
           "mandala_prescription": {
-            "inner": "绿色",
+            "inner": "金色",
             "middle": "红色",
-            "outer": "黄色"
+            "outer": "土色"
           },
-          "daily_practice": "学习新技能，拓展人脉，寻求职业导师指导，设定短期目标",
-          "cognitive_upgrade": "事业发展是一个持续学习和成长的过程，小步快跑，持续精进",
-          "imbalance": "transition-overload",
-          "issue_type": "事业停滞"
+          "daily_practice": "每日肯定自我价值，记录成就，培养感恩之心，参与志愿活动",
+          "cognitive_upgrade": "每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关",
+          "imbalance": "金多木折",
+          "issue_type": "不配得感"
         },
         "source": "primary",
         "fallback_used": false
@@ -1358,7 +2086,12 @@
       "used": false,
       "levels": [],
       "warnings": [],
-      "quality_flags": [],
+      "fidelity_flags": [
+        "trace:tob_only_candidate_present"
+      ],
+      "quality_flags": [
+        "trace:tob_only_candidate_present"
+      ],
       "query_fallbacks": []
     },
     "warning_analysis": {
@@ -1370,7 +2103,7 @@
         "entity_id": "circle.中圈",
         "kind": "circle_definition",
         "source_path": "circles/three_circles.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/circles/three_circles.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/circles/three_circles.yaml",
         "query_keys": [
           "circles.middle"
         ]
@@ -1379,7 +2112,7 @@
         "entity_id": "circle.内圈",
         "kind": "circle_definition",
         "source_path": "circles/three_circles.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/circles/three_circles.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/circles/three_circles.yaml",
         "query_keys": [
           "circles.inner"
         ]
@@ -1388,7 +2121,7 @@
         "entity_id": "circle.外圈",
         "kind": "circle_definition",
         "source_path": "circles/three_circles.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/circles/three_circles.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/circles/three_circles.yaml",
         "query_keys": [
           "circles.outer"
         ]
@@ -1397,7 +2130,7 @@
         "entity_id": "healing.wealth_career",
         "kind": "theme_healing",
         "source_path": "healing/wealth_career.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/healing/wealth_career.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/healing/wealth_career.yaml",
         "query_keys": [
           "healing"
         ]
@@ -1406,7 +2139,7 @@
         "entity_id": "narrative.wealth_career",
         "kind": "theme_narrative",
         "source_path": "narrative/wealth_career.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/narrative/wealth_career.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/narrative/wealth_career.yaml",
         "query_keys": [
           "narrative"
         ]
@@ -1415,7 +2148,7 @@
         "entity_id": "rule.healing_issue_mappings",
         "kind": "healing_issue_mapping",
         "source_path": "rules/healing_issue_mappings.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/rules/healing_issue_mappings.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/rules/healing_issue_mappings.yaml",
         "query_keys": [
           "healing"
         ]
@@ -1424,7 +2157,7 @@
         "entity_id": "rule.imbalance_types",
         "kind": "imbalance_rule",
         "source_path": "rules/imbalance_types.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/rules/imbalance_types.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/rules/imbalance_types.yaml",
         "query_keys": [
           "imbalance.primary"
         ]
@@ -1433,7 +2166,7 @@
         "entity_id": "theme.wealth_career",
         "kind": "theme_config",
         "source_path": "themes/wealth_career.yaml",
-        "absolute_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/themes/wealth_career.yaml",
+        "absolute_path": "/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/toC/data/knowledge/packs/v2.1/themes/wealth_career.yaml",
         "query_keys": [
           "theme"
         ]
@@ -1455,7 +2188,7 @@
         ],
         "warnings": []
       },
-      "overall_impression": {
+      "current_reading": {
         "query_keys": [
           "theme",
           "imbalance.primary",
@@ -1465,7 +2198,7 @@
         ],
         "entity_ids": [
           "theme.wealth_career",
-          "imbalance.transition-overload",
+          "imbalance.金多木折",
           "circle.内圈",
           "circle.中圈",
           "circle.外圈"
@@ -1477,7 +2210,7 @@
         ],
         "warnings": []
       },
-      "visual_elements_rendered": {
+      "visual_basis": {
         "query_keys": [
           "theme",
           "circles.inner",
@@ -1496,7 +2229,7 @@
         ],
         "warnings": []
       },
-      "emotion_portrait_rendered": {
+      "pattern_interpretation": {
         "query_keys": [
           "theme",
           "imbalance.primary",
@@ -1504,7 +2237,7 @@
         ],
         "entity_ids": [
           "theme.wealth_career",
-          "imbalance.transition-overload",
+          "imbalance.金多木折",
           "narrative.wealth_career"
         ],
         "source_paths": [
@@ -1514,7 +2247,41 @@
         ],
         "warnings": []
       },
-      "pro_teaser": {
+      "life_connection": {
+        "query_keys": [
+          "theme",
+          "narrative"
+        ],
+        "entity_ids": [
+          "theme.wealth_career",
+          "narrative.wealth_career"
+        ],
+        "source_paths": [
+          "themes/wealth_career.yaml",
+          "narrative/wealth_career.yaml"
+        ],
+        "warnings": []
+      },
+      "lite_healing_guidance": {
+        "query_keys": [
+          "theme",
+          "healing",
+          "narrative"
+        ],
+        "entity_ids": [
+          "theme.wealth_career",
+          "healing.wealth_career.不配得感",
+          "narrative.wealth_career"
+        ],
+        "source_paths": [
+          "themes/wealth_career.yaml",
+          "rules/healing_issue_mappings.yaml",
+          "healing/wealth_career.yaml",
+          "narrative/wealth_career.yaml"
+        ],
+        "warnings": []
+      },
+      "pro_report_entry": {
         "query_keys": [
           "narrative",
           "theme"
@@ -1529,14 +2296,14 @@
         ],
         "warnings": []
       },
-      "first_impression": {
+      "deep_impression": {
         "query_keys": [
           "imbalance.primary",
           "narrative",
           "theme"
         ],
         "entity_ids": [
-          "imbalance.transition-overload",
+          "imbalance.金多木折",
           "narrative.wealth_career",
           "theme.wealth_career"
         ],
@@ -1547,7 +2314,7 @@
         ],
         "warnings": []
       },
-      "core_insight_table": {
+      "evidence_digest": {
         "query_keys": [
           "theme",
           "imbalance.primary",
@@ -1557,7 +2324,7 @@
         ],
         "entity_ids": [
           "theme.wealth_career",
-          "imbalance.transition-overload",
+          "imbalance.金多木折",
           "circle.内圈",
           "circle.中圈",
           "circle.外圈"
@@ -1569,14 +2336,29 @@
         ],
         "warnings": []
       },
-      "root_cause": {
+      "imbalance_diagnosis": {
+        "query_keys": [
+          "imbalance.primary",
+          "theme"
+        ],
+        "entity_ids": [
+          "imbalance.金多木折",
+          "theme.wealth_career"
+        ],
+        "source_paths": [
+          "rules/imbalance_types.yaml",
+          "themes/wealth_career.yaml"
+        ],
+        "warnings": []
+      },
+      "root_cause_chain": {
         "query_keys": [
           "imbalance.primary",
           "theme",
           "narrative"
         ],
         "entity_ids": [
-          "imbalance.transition-overload",
+          "imbalance.金多木折",
           "theme.wealth_career",
           "narrative.wealth_career"
         ],
@@ -1587,15 +2369,33 @@
         ],
         "warnings": []
       },
-      "healing_suggestions": {
+      "deep_structure_interpretation": {
+        "query_keys": [
+          "theme",
+          "narrative",
+          "imbalance.primary"
+        ],
+        "entity_ids": [
+          "theme.wealth_career",
+          "narrative.wealth_career",
+          "imbalance.金多木折"
+        ],
+        "source_paths": [
+          "themes/wealth_career.yaml",
+          "narrative/wealth_career.yaml",
+          "rules/imbalance_types.yaml"
+        ],
+        "warnings": []
+      },
+      "healing_plan": {
         "query_keys": [
           "healing",
           "imbalance.primary",
           "narrative"
         ],
         "entity_ids": [
-          "healing.wealth_career.事业停滞",
-          "imbalance.transition-overload",
+          "healing.wealth_career.不配得感",
+          "imbalance.金多木折",
           "narrative.wealth_career"
         ],
         "source_paths": [
@@ -1618,8 +2418,8 @@
         ],
         "entity_ids": [
           "theme.wealth_career",
-          "imbalance.transition-overload",
-          "healing.wealth_career.事业停滞",
+          "imbalance.金多木折",
+          "healing.wealth_career.不配得感",
           "narrative.wealth_career",
           "circle.内圈",
           "circle.中圈",
@@ -1644,5 +2444,12 @@
     }
   },
   "regression_flags": [],
-  "diff_from_current": null
+  "diff_from_current": {
+    "fallback_delta": 0,
+    "warning_ids_added": [],
+    "warning_ids_removed": [],
+    "structured_missing_added": [],
+    "structured_missing_removed": [],
+    "report_excerpt_changed": false
+  }
 }

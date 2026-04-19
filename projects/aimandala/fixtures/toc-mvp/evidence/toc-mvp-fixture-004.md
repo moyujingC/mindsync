@@ -9,5 +9,8 @@ fixture_id: `toc-mvp-fixture-004`
   - warning trace 可见
   - `fallback_summary.used = false`
   - Lite 新产品区块字段完整
+- deterministic_override:
+  - `override_imbalance_candidates = ["水多火灭"]`
+  - 该值与当前 knowledge build 的高风险 warning path 对齐
 - actual_excerpt:
   - 待本批 workbench / eval 重跑后补充

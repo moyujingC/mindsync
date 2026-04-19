@@ -201,7 +201,9 @@ class KnowledgeWorkbench:
         eval_summary_path = build_dir / "evals" / "summary.json"
         eval_summary = None
         if eval_summary_path.exists():
-            eval_summary = json.loads(eval_summary_path.read_text(encoding="utf-8"))
+            candidate = json.loads(eval_summary_path.read_text(encoding="utf-8"))
+            if self._is_eval_summary_current(candidate):
+                eval_summary = candidate
         return {
             "build_info": quality["build_info"],
             "quality": quality,
@@ -439,18 +441,22 @@ class KnowledgeWorkbench:
         report_version = str(report.get("version") or "lite")
         structured_presence = {}
         lite_fields = [
-            "title",
-            "overall_impression",
-            "visual_elements_rendered",
-            "emotion_portrait_rendered",
+            "topic_context",
+            "current_reading",
+            "visual_basis",
+            "pattern_interpretation",
+            "life_connection",
             "lite_healing_guidance",
             "pro_report_entry",
         ]
         pro_fields = [
-            "first_impression",
-            "core_insight_table",
-            "root_cause",
-            "healing_suggestions",
+            "topic_context",
+            "deep_impression",
+            "evidence_digest",
+            "imbalance_diagnosis",
+            "root_cause_chain",
+            "deep_structure_interpretation",
+            "healing_plan",
         ]
         field_set = pro_fields if report_version == "pro" else lite_fields
         for field in field_set:
@@ -700,6 +706,24 @@ class KnowledgeWorkbench:
         if isinstance(input_payload, dict) and input_payload.get("expected_report_version") in {"lite", "pro"}:
             return str(input_payload["expected_report_version"])
         return "lite"
+
+    def _is_eval_summary_current(self, summary: dict[str, Any]) -> bool:
+        if not isinstance(summary, dict):
+            return False
+        fixtures = summary.get("fixtures", [])
+        if not isinstance(fixtures, list):
+            return False
+        manifest_ids = [
+            str(item.get("id") or "")
+            for item in self.load_fixture_manifest()
+            if isinstance(item, dict) and str(item.get("id") or "")
+        ]
+        summary_ids = [
+            str(item.get("fixture_id") or "")
+            for item in fixtures
+            if isinstance(item, dict) and str(item.get("fixture_id") or "")
+        ]
+        return summary_ids == manifest_ids
 
     def _build_three_circle_override(self, input_payload: dict[str, Any]) -> dict[str, int] | None:
         inner = input_payload.get("inner_radius")

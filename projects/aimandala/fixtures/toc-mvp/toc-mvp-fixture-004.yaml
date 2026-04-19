@@ -20,13 +20,13 @@ execution:
   create_twice: false
   upgrade_to_pro: false
   override_imbalance_candidates:
-    - earth-overload
+    - 水多火灭
 validation:
   report_version: lite
   existing_on_repeat: false
   fallback_used: false
   warning_ids:
-    - earth-overload
+    - 水多火灭
   required_structured_fields:
     - topic_context
     - current_reading
