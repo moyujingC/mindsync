@@ -13,7 +13,8 @@
 3. [2026-04-19-Batch-B-narrative-plan-交付记录.md](2026-04-19-Batch-B-narrative-plan-交付记录.md)
 4. [2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md](2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md)
 5. [2026-04-19-Batch-D-固定样本重建交付记录.md](2026-04-19-Batch-D-固定样本重建交付记录.md)
-6. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
+6. [2026-04-19-Batch-E-解读教程算法保真交付记录.md](2026-04-19-Batch-E-解读教程算法保真交付记录.md)
+7. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
 
 分工如下：
 
@@ -27,6 +28,8 @@
   - 收束 Batch C 新报告合同、前端承接与 debug 区块钻取模型的实现窗口与放行状态
 - `2026-04-19-Batch-D-固定样本重建交付记录.md`
   - 收束 Batch D 第一块实现中 fixture 重建、脚本治理、eval 收口和样本验证结果
+- `2026-04-19-Batch-E-解读教程算法保真交付记录.md`
+  - 收束 Batch E runtime evidence、narrative/contract、debug/eval 算法保真修复结果
 - `2026-04-18-Lite-Pro-独立报告重定义交付记录.md`
   - 收束 `Lite / Pro` 报告模式、议题模型、Lite 轻疗愈区块和 `Pro` 入口语义的专项交付
 
