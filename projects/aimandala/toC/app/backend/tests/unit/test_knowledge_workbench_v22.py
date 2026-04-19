@@ -168,6 +168,8 @@ def test_v22_workbench_can_export_fixture_golden_assets(tmp_path):
     assert "产品区块" in markdown_payload
     assert "topic_context" not in markdown_payload
     assert "current_reading" not in markdown_payload
+    excerpt = markdown_payload.split("## 正文摘录", 1)[1]
+    assert "重要声明" not in excerpt[:160]
 
 
 def test_v22_eval_summary_includes_golden_review_aggregation(tmp_path):

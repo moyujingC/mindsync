@@ -169,6 +169,78 @@ def test_pro_healing_plan_removes_truncated_raw_payload_fragments():
     assert "{'" + "inner'" not in serialized
 
 
+def test_pro_root_cause_chain_and_healing_plan_use_clean_bound_topic_tied_copy():
+    assembler = ReportContractAssembler.__new__(ReportContractAssembler)
+    pro_draft = SimpleNamespace(
+        root_cause={
+            "surface": "这会让你一边想继续向外...消耗 你原本希望“理清当前职业推进中的拉扯”。",
+            "deeper": "更深一层看，这更接近「金多木折」的模式。 更深一层看，这更接近「金多木折」的模式。",
+            "core": "更深层的位置，是你正在重新学习：在「不配得感」这里，每个人都值得拥有丰盛的财富和成功",
+        },
+        imbalance_confirmed={
+            "primary": "当前更接近的核心失衡是「金多木折」：完美拖延机会。",
+            "summary": "追求完美方案，导致项目迟迟无法启动。",
+        },
+        healing_suggestions=[
+            {
+                "phase": "建议一",
+                "focus": "围绕「完美拖延机会」先做小幅但稳定的调节。",
+                "practice": "每日肯定自我价值，记录成就。",
+            },
+            {
+                "phase": "建议二",
+                "focus": "围绕「完美拖延机会」先做小幅但稳定的调节。",
+                "practice": "每日肯定自我价值，记录成就。",
+            },
+            {
+                "phase": "建议三",
+                "focus": ": '金色', 'middle': '红色', 'outer': '土色'}",
+                "practice": "",
+            },
+        ],
+        narrative_plan={
+            "theme_label": "财富事业",
+            "sections": {
+                "root_cause": {
+                    "content": {
+                        "surface": "职业推进里，你容易把外部评价当成行动门槛。",
+                        "deeper": "形成机制是先用完美标准保护自己，再推迟真实试错。",
+                        "core": "核心层是把价值感从单次结果中收回来。",
+                    }
+                },
+                "healing_suggestions": {
+                    "content": [
+                        {
+                            "content": {
+                                "practice": "先选一个财富事业目标，把它拆成今天能完成的最小动作。",
+                            }
+                        },
+                        {
+                            "content": {
+                                "practice": "完成后只记录事实进展，不立刻评价成败。",
+                            }
+                        },
+                    ]
+                },
+            },
+        },
+    )
+
+    root_chain = assembler._build_pro_root_cause_chain(pro_draft)
+    plan = assembler._build_pro_healing_plan(pro_draft)
+
+    serialized = str({"root": root_chain, "plan": plan})
+    assert "消耗 你原本" not in serialized
+    assert "..." not in serialized
+    assert "更深一层看，这更接近「金多木折」的模式。 更深一层看" not in serialized
+    assert "middle':" not in serialized
+    assert "outer':" not in serialized
+    practices = [item["practice"] for item in plan]
+    assert len(practices) == len(set(practices))
+    assert any("财富事业" in item["focus"] or "金多木折" in item["focus"] for item in plan)
+    assert all("稳定的调节" not in item["focus"] for item in plan[1:])
+
+
 def test_algorithm_fidelity_trace_scopes_raw_payload_by_report_mode():
     builder = KnowledgeDebugBlockBuilder.__new__(KnowledgeDebugBlockBuilder)
     layer0 = {

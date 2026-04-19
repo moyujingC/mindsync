@@ -411,9 +411,15 @@ class ReportContractAssembler:
     def _build_pro_root_cause_chain(self, pro_draft: Layer3ProDraft | None) -> dict[str, str]:
         root_cause = pro_draft.root_cause if pro_draft else {}
         return {
-            "surface": self._sanitize_text(str(root_cause.get("surface") or root_cause.get("表面现象") or "").strip()),
-            "mechanism": self._sanitize_text(str(root_cause.get("deeper") or root_cause.get("形成机制") or "").strip()),
-            "core": self._sanitize_text(str(root_cause.get("core") or root_cause.get("核心信念") or "").strip()),
+            "surface": self._sanitize_narrative_sentence(
+                str(root_cause.get("surface") or root_cause.get("表面现象") or "").strip()
+            ),
+            "mechanism": self._sanitize_narrative_sentence(
+                str(root_cause.get("deeper") or root_cause.get("形成机制") or "").strip()
+            ),
+            "core": self._sanitize_narrative_sentence(
+                str(root_cause.get("core") or root_cause.get("核心信念") or "").strip()
+            ),
         }
 
     def _build_pro_deep_structure_interpretation(
@@ -542,9 +548,17 @@ class ReportContractAssembler:
         if pro_draft is None:
             return []
         plan: list[dict[str, str]] = []
+        used_practices: set[str] = set()
         for index, item in enumerate(pro_draft.healing_suggestions or []):
             if not isinstance(item, dict):
                 continue
+            practice = self._sanitize_or_rebuild_healing_field(
+                str(item.get("practice") or "").strip(),
+                field_name="practice",
+                pro_draft=pro_draft,
+                item_index=index,
+                used_values=used_practices,
+            )
             normalized = {
                 "phase": self._sanitize_or_rebuild_healing_field(
                     str(item.get("phase") or "").strip(),
@@ -558,13 +572,10 @@ class ReportContractAssembler:
                     pro_draft=pro_draft,
                     item_index=index,
                 ),
-                "practice": self._sanitize_or_rebuild_healing_field(
-                    str(item.get("practice") or "").strip(),
-                    field_name="practice",
-                    pro_draft=pro_draft,
-                    item_index=index,
-                ),
+                "practice": practice,
             }
+            if normalized["practice"]:
+                used_practices.add(normalized["practice"])
             if any(normalized.values()):
                 plan.append(normalized)
         return plan
@@ -576,14 +587,18 @@ class ReportContractAssembler:
         field_name: str,
         pro_draft: Layer3ProDraft,
         item_index: int,
+        used_values: set[str] | None = None,
     ) -> str:
-        cleaned = self._sanitize_text(content)
-        if cleaned:
+        cleaned = self._sanitize_narrative_sentence(content)
+        if field_name == "focus" and "稳定的调节" in cleaned:
+            cleaned = ""
+        if cleaned and (not used_values or cleaned not in used_values):
             return cleaned
         return self._fallback_healing_field(
             field_name=field_name,
             pro_draft=pro_draft,
             item_index=item_index,
+            used_values=used_values,
         )
 
     def _fallback_healing_field(
@@ -592,6 +607,7 @@ class ReportContractAssembler:
         field_name: str,
         pro_draft: Layer3ProDraft,
         item_index: int,
+        used_values: set[str] | None = None,
     ) -> str:
         if field_name == "phase":
             return f"第{item_index + 1}步"
@@ -609,15 +625,20 @@ class ReportContractAssembler:
             root_cause.get("surface") if isinstance(root_cause, dict) else "",
         ]
         clean_candidates = [
-            self._sanitize_text(str(value or "").strip())
+            self._sanitize_narrative_sentence(str(value or "").strip())
             for value in root_candidates
             if isinstance(value, str) and str(value).strip()
         ]
 
         if field_name == "focus":
+            theme_label = str(narrative_plan.get("theme_label") or "").strip()
             if clean_candidates:
-                return clean_candidates[0]
-            return "把当前失衡和根因链放在一起看，先回到能稳定承接的节奏。"
+                base = clean_candidates[min(item_index, len(clean_candidates) - 1)]
+                if theme_label and theme_label not in base:
+                    return f"在{theme_label}议题下，{base}"
+                return base
+            topic_prefix = f"在{theme_label}议题下，" if theme_label else ""
+            return f"{topic_prefix}把当前失衡和根因链放在一起看，先回到能承接的节奏。"
 
         if field_name == "practice":
             healing_sections = sections.get("healing_suggestions", [])
@@ -627,12 +648,46 @@ class ReportContractAssembler:
                         continue
                     payload = item.get("content")
                     if isinstance(payload, dict):
-                        value = self._sanitize_text(str(payload.get("practice") or "").strip())
-                        if value:
+                        value = self._sanitize_narrative_sentence(str(payload.get("practice") or "").strip())
+                        if value and (not used_values or value not in used_values):
                             return value
-            return "每天选择一个低压动作，观察身体是否更容易放松、承接和继续。"
+            fallback_practices = [
+                "先选一个今天能完成的最小动作，把标准从完美改成完成。",
+                "完成后只记录事实进展，不立刻评价成败。",
+                "在下一次推进前，先写下一个可承接的边界和一个可验证的下一步。",
+            ]
+            for value in fallback_practices:
+                if not used_values or value not in used_values:
+                    return value
+            return fallback_practices[-1]
 
         return ""
+
+    def _sanitize_narrative_sentence(self, content: str) -> str:
+        cleaned = self._sanitize_text(content)
+        if not cleaned:
+            return ""
+        cleaned = cleaned.replace("...", "，")
+        cleaned = cleaned.replace("…", "，")
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        cleaned = re.sub(r"消耗\s+你原本", "消耗自己。你原本", cleaned)
+        cleaned = re.sub(r"([。！？])\s*\1+", r"\1", cleaned)
+        cleaned = self._dedupe_sentences(cleaned)
+        return cleaned.strip()
+
+    def _dedupe_sentences(self, content: str) -> str:
+        parts = [part.strip() for part in re.split(r"(?<=[。！？])", content) if part.strip()]
+        if len(parts) <= 1:
+            return content
+        deduped: list[str] = []
+        seen: set[str] = set()
+        for part in parts:
+            normalized = re.sub(r"\s+", "", part)
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            deduped.append(part)
+        return " ".join(deduped)
 
     def _sanitize_text(self, content: str) -> str:
         if not isinstance(content, str):

@@ -11,6 +11,7 @@ import yaml
 
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.report_knowledge_debug import KnowledgeDebugBlockBuilder
+from app.core.pipeline.report_safety_wrapper import ReportSafetyWrapper
 from app.core.pipeline.store import InterpretationStore
 
 from .compiler import KnowledgePackCompiler
@@ -926,7 +927,7 @@ class KnowledgeWorkbench:
                     "",
                 ]
             )
-        raw_report = report.get("report")
+        raw_report = self._strip_safety_wrappers(report.get("report"))
         excerpt = self._excerpt(raw_report, limit=600)
         if excerpt:
             lines.extend(
@@ -938,6 +939,11 @@ class KnowledgeWorkbench:
                 ]
             )
         return "\n".join(lines).strip() + "\n"
+
+    def _strip_safety_wrappers(self, value: Any) -> Any:
+        if not isinstance(value, str):
+            return value
+        return ReportSafetyWrapper().strip_wrappers(value)
 
     def _golden_field_labels(self, version: str) -> list[tuple[str, str]]:
         if version == "pro":
