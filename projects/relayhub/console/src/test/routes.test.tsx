@@ -40,7 +40,9 @@ describe("RelayHub console routes", () => {
   it("renders task library route with built-in task copy", async () => {
     renderRoute("/tasks");
 
-    expect(await screen.findByText("先绑定默认模型，再开始积累可比较的任务记录")).toBeInTheDocument();
+    expect(
+      await screen.findByText("先把每个任务当前默认用的模型说清楚，需要换时直接在这里切"),
+    ).toBeInTheDocument();
     expect(await screen.findByText("Claude Code Web Coding")).toBeInTheDocument();
   });
 
@@ -96,14 +98,132 @@ describe("RelayHub console routes", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows activation-oriented save feedback in model library", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("模型条目总览")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("名称"), {
+      target: { value: "新中转模型" },
+    });
+    fireEvent.change(screen.getByLabelText("Provider"), {
+      target: { value: "example-provider" },
+    });
+    fireEvent.change(screen.getByLabelText("Base URL"), {
+      target: { value: "https://example.com/v1" },
+    });
+    fireEvent.change(screen.getByLabelText("模型标识"), {
+      target: { value: "gpt-5" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "新增模型" }));
+
+    expect(
+      await screen.findByText("模型已保存，下一步请补齐 API Key 并测试连接完成激活。"),
+    ).toBeInTheDocument();
+  });
+
+  it("shows purchase entry for presets with purchaseUrl", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("系统预置")).toBeInTheDocument();
+    expect((await screen.findAllByText("去购买 / 充值")).length).toBeGreaterThan(0);
+  });
+
+  it("shows explicit failure reason when model test is missing api key", async () => {
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("Qwen Max 官方");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "测试连接" }));
+
+    expect(
+      await screen.findByText("“Qwen Max 官方”测试失败：缺少 API Key，先补密钥再重新测试连接。"),
+    ).toBeInTheDocument();
+  });
+
+  it("shows next-step success guidance after model activation succeeds", async () => {
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("PPChat 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "测试连接" }));
+
+    expect(
+      await screen.findByText("“PPChat 中转”已激活。下一步可去任务库绑定默认模型。"),
+    ).toBeInTheDocument();
+  });
+
   it("shows task guidance when there are no active models to bind", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([]);
 
     renderRoute("/tasks");
 
-    expect(await screen.findByText("先绑定默认模型，再开始积累可比较的任务记录")).toBeInTheDocument();
+    expect(
+      await screen.findByText("先把每个任务当前默认用的模型说清楚，需要换时直接在这里切"),
+    ).toBeInTheDocument();
     expect(await screen.findByText("当前还没有可绑定的已激活模型")).toBeInTheDocument();
     expect(await screen.findByText("先回模型库完成激活，再回来绑定任务。")).toBeInTheDocument();
+  });
+
+  it("allows quick switching a task default model from the task table", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/tasks");
+
+    const taskName = await screen.findByText("Claude Code Web Coding");
+    const row = taskName.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.change(within(row!).getByLabelText("Claude Code Web Coding-快速切换默认模型"), {
+      target: { value: "preset-deepseek-v3" },
+    });
+    fireEvent.click(within(row!).getByRole("button", { name: "切换默认模型" }));
+
+    expect(
+      await screen.findByText("“Claude Code Web Coding”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("DeepSeek V3 官方")).toBeInTheDocument();
+  });
+
+  it("allows binding a previously unbound task from the task table", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/tasks");
+
+    const taskName = await screen.findByText("Codex Repo Coding");
+    const row = taskName.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.change(within(row!).getByLabelText("Codex Repo Coding-快速切换默认模型"), {
+      target: { value: "preset-ppchat-relay" },
+    });
+    fireEvent.click(within(row!).getByRole("button", { name: "绑定默认模型" }));
+
+    expect(
+      await screen.findByText("“Codex Repo Coding”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+    ).toBeInTheDocument();
+    expect(await screen.findAllByText("PPChat 中转")).not.toHaveLength(0);
   });
 
   it("blocks run submission when required fields are missing", async () => {

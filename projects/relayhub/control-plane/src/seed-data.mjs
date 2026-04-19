@@ -14,6 +14,9 @@ export const seedModelEntries = [
     hasStoredApiKey: false,
     maskedApiKey: null,
     lastTestedAt: null,
+    lastTestResult: "idle",
+    lastTestCode: "not-tested",
+    lastTestMessage: "还未开始测试连接。",
     tags: ["国产模型", "通用对话", "正式生产候选"],
     apiKey: null
   },
@@ -32,6 +35,9 @@ export const seedModelEntries = [
     hasStoredApiKey: false,
     maskedApiKey: null,
     lastTestedAt: null,
+    lastTestResult: "idle",
+    lastTestCode: "not-tested",
+    lastTestMessage: "还未开始测试连接。",
     tags: ["国产模型", "编码", "摘要"],
     apiKey: null
   },
@@ -50,6 +56,9 @@ export const seedModelEntries = [
     hasStoredApiKey: true,
     maskedApiKey: "sk-ppc...demo",
     lastTestedAt: "2026-04-18 12:10",
+    lastTestResult: "idle",
+    lastTestCode: "not-tested",
+    lastTestMessage: "已保存配置，建议手动测试连接后再绑定任务。",
     tags: ["中转 API", "Coding Plan", "OpenAI-compatible"],
     apiKey: "seed-api-key"
   },
@@ -68,6 +77,9 @@ export const seedModelEntries = [
     hasStoredApiKey: false,
     maskedApiKey: null,
     lastTestedAt: null,
+    lastTestResult: "idle",
+    lastTestCode: "not-tested",
+    lastTestMessage: "还未开始测试连接。",
     tags: ["中转 API", "国产模型聚合"],
     apiKey: null
   }

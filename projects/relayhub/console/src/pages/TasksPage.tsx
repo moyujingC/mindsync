@@ -26,6 +26,8 @@ export function TasksPage() {
   const [form, setForm] = useState<TaskTemplateInput>({ ...emptyForm });
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [rowSavingTaskId, setRowSavingTaskId] = useState<string | null>(null);
+  const [rowDrafts, setRowDrafts] = useState<Record<string, string>>({});
 
   const tasks = useAsyncResource(() => listTaskTemplates(), [version]);
   const activeModels = useAsyncResource(() => listActiveModelEntries(), [version]);
@@ -39,6 +41,14 @@ export function TasksPage() {
     [tasks.data],
   );
   const hasActiveModels = (activeModels.data?.length ?? 0) > 0;
+
+  function resolveDraftValue(task: TaskTemplate) {
+    const draftValue = rowDrafts[task.id];
+    if (draftValue !== undefined) {
+      return draftValue;
+    }
+    return task.defaultModelEntryId ?? "";
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,14 +96,51 @@ export function TasksPage() {
     setError(null);
   }
 
+  async function handleQuickSwitch(task: TaskTemplate, nextModelEntryId: string | null) {
+    if (task.defaultModelEntryId === nextModelEntryId) {
+      return;
+    }
+
+    setFeedback(null);
+    setError(null);
+    setRowSavingTaskId(task.id);
+
+    try {
+      await saveTaskTemplate({
+        id: task.id,
+        name: task.name,
+        category: task.category,
+        description: task.description,
+        defaultModelEntryId: nextModelEntryId,
+        switchNote: task.switchNote,
+      });
+      setVersion((current) => current + 1);
+      setRowDrafts((current) => ({
+        ...current,
+        [task.id]: nextModelEntryId ?? "",
+      }));
+      setFeedback(
+        `“${task.name}”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。`,
+      );
+    } catch (currentError) {
+      setError(currentError instanceof Error ? currentError.message : "默认模型切换失败。");
+      setRowDrafts((current) => ({
+        ...current,
+        [task.id]: task.defaultModelEntryId ?? "",
+      }));
+    } finally {
+      setRowSavingTaskId(null);
+    }
+  }
+
   return (
     <div className="page-grid">
       <section className="hero-card">
         <div>
           <span className="eyebrow">Task Library</span>
-          <h1>先绑定默认模型，再开始积累可比较的任务记录</h1>
+          <h1>先把每个任务当前默认用的模型说清楚，需要换时直接在这里切</h1>
           <p>
-            任务库当前只做一件事：把“这个任务默认用哪个模型”说清楚。先完成绑定，再去运行记录里积累可比较样本。
+            任务库当前优先服务两件事：确认每个任务默认用哪个模型，以及在需要时直接完成切换。先把绑定和切换收口，再去运行记录里积累样本。
           </p>
         </div>
       </section>
@@ -104,7 +151,7 @@ export function TasksPage() {
         </Section>
       ) : null}
 
-      <Section title="任务模板" description="保留“内置任务 / 自定义任务”分区，但当前重点是确认默认模型是否已经绑好。">
+      <Section title="任务模板" description="保留“内置任务 / 自定义任务”分区，但当前重点是直接绑定或切换默认模型。">
         {tasks.status === "loading" ? (
           <EmptyState title="正在加载任务库" description="正在读取任务模板和默认模型绑定。" />
         ) : null}
@@ -115,38 +162,19 @@ export function TasksPage() {
           <div className="stack">
             <article className="data-card">
               <span className="mini-label">系统内置任务</span>
-              <p className="supporting-text">这些任务先代表当前的通用工具和核心业务方向。</p>
-              <div className="table-card embedded">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>任务</th>
-                      <th>分类</th>
-                      <th>默认模型</th>
-                      <th>模型切换说明</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {builtInTasks.map((task) => (
-                      <tr key={task.id}>
-                        <td>
-                          <strong>{task.name}</strong>
-                          <div className="supporting-text">{task.description}</div>
-                        </td>
-                        <td>{task.category}</td>
-                        <td>{task.defaultModelEntryName ?? "尚未绑定"}</td>
-                        <td>{task.switchNote}</td>
-                        <td>
-                          <button type="button" className="action-button" onClick={() => openEdit(task)}>
-                            编辑
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <p className="supporting-text">这些任务先代表当前的通用工具和核心业务方向，优先在这里完成默认模型切换。</p>
+              <TaskTable
+                tasks={builtInTasks}
+                hasActiveModels={hasActiveModels}
+                activeModels={activeModels.data ?? []}
+                rowSavingTaskId={rowSavingTaskId}
+                resolveDraftValue={resolveDraftValue}
+                onDraftChange={(taskId, value) =>
+                  setRowDrafts((current) => ({ ...current, [taskId]: value }))
+                }
+                onQuickSwitch={handleQuickSwitch}
+                onEdit={openEdit}
+              />
             </article>
 
             <article className="data-card">
@@ -154,46 +182,19 @@ export function TasksPage() {
               {customTasks.length === 0 ? (
                 <EmptyState title="还没有自定义任务" description="可以先按你的应用方向补一批任务模板。" />
               ) : (
-                <div className="table-card embedded">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>任务</th>
-                        <th>分类</th>
-                        <th>默认模型</th>
-                        <th>模型切换说明</th>
-                        <th>操作</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {customTasks.map((task) => (
-                        <tr key={task.id}>
-                          <td>
-                            <strong>{task.name}</strong>
-                            <div className="supporting-text">{task.description}</div>
-                          </td>
-                          <td>{task.category}</td>
-                          <td>{task.defaultModelEntryName ?? "尚未绑定"}</td>
-                          <td>{task.switchNote}</td>
-                          <td>
-                            <div className="inline-actions">
-                              <button type="button" className="action-button" onClick={() => openEdit(task)}>
-                                编辑
-                              </button>
-                              <button
-                                type="button"
-                                className="action-button danger"
-                                onClick={() => handleDelete(task)}
-                              >
-                                删除
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <TaskTable
+                  tasks={customTasks}
+                  hasActiveModels={hasActiveModels}
+                  activeModels={activeModels.data ?? []}
+                  rowSavingTaskId={rowSavingTaskId}
+                  resolveDraftValue={resolveDraftValue}
+                  onDraftChange={(taskId, value) =>
+                    setRowDrafts((current) => ({ ...current, [taskId]: value }))
+                  }
+                  onQuickSwitch={handleQuickSwitch}
+                  onEdit={openEdit}
+                  onDelete={handleDelete}
+                />
               )}
             </article>
           </div>
@@ -288,6 +289,109 @@ export function TasksPage() {
           </div>
         </form>
       </Section>
+    </div>
+  );
+}
+
+function TaskTable({
+  tasks,
+  hasActiveModels,
+  activeModels,
+  rowSavingTaskId,
+  resolveDraftValue,
+  onDraftChange,
+  onQuickSwitch,
+  onEdit,
+  onDelete,
+}: {
+  tasks: TaskTemplate[];
+  hasActiveModels: boolean;
+  activeModels: Array<{ id: string; name: string }>;
+  rowSavingTaskId: string | null;
+  resolveDraftValue: (task: TaskTemplate) => string;
+  onDraftChange: (taskId: string, value: string) => void;
+  onQuickSwitch: (task: TaskTemplate, nextModelEntryId: string | null) => Promise<void>;
+  onEdit: (task: TaskTemplate) => void;
+  onDelete?: (task: TaskTemplate) => Promise<void>;
+}) {
+  return (
+    <div className="table-card embedded">
+      <table>
+        <thead>
+          <tr>
+            <th>任务</th>
+            <th>分类</th>
+            <th>当前默认模型</th>
+            <th>快速切换</th>
+            <th>切换提示</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map((task) => {
+            const draftValue = resolveDraftValue(task);
+            const isSaving = rowSavingTaskId === task.id;
+            const nextModelEntryId = draftValue || null;
+
+            return (
+              <tr key={task.id}>
+                <td>
+                  <strong>{task.name}</strong>
+                  <div className="supporting-text">{task.description}</div>
+                </td>
+                <td>{task.category}</td>
+                <td>{task.defaultModelEntryName ?? "尚未绑定"}</td>
+                <td>
+                  {hasActiveModels ? (
+                    <div className="inline-actions">
+                      <select
+                        aria-label={`${task.name}-快速切换默认模型`}
+                        value={draftValue}
+                        onChange={(event) => onDraftChange(task.id, event.target.value)}
+                        disabled={isSaving}
+                      >
+                        <option value="">暂不绑定</option>
+                        {activeModels.map((model) => (
+                          <option key={model.id} value={model.id}>
+                            {model.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="action-button"
+                        onClick={() => onQuickSwitch(task, nextModelEntryId)}
+                        disabled={isSaving || draftValue === (task.defaultModelEntryId ?? "")}
+                      >
+                        {task.defaultModelEntryId ? "切换默认模型" : "绑定默认模型"}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="supporting-text">先回模型库激活可用模型</span>
+                  )}
+                </td>
+                <td>{task.switchNote || "切换后仅对后续使用和后续新运行记录生效。"}</td>
+                <td>
+                  <div className="inline-actions">
+                    <button type="button" className="action-button" onClick={() => onEdit(task)}>
+                      编辑
+                    </button>
+                    {onDelete ? (
+                      <button
+                        type="button"
+                        className="action-button danger"
+                        onClick={() => onDelete(task)}
+                      >
+                        删除
+                      </button>
+                    ) : null}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

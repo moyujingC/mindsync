@@ -103,6 +103,23 @@ function resolveConfiguredStatus(entry: InternalModelEntry): ModelEntryStatus {
   return "configured-pending-test";
 }
 
+function applyTestOutcome(
+  entry: InternalModelEntry,
+  outcome: {
+    result: ModelEntry["lastTestResult"];
+    code: ModelEntry["lastTestCode"];
+    message: string;
+    status: ModelEntryStatus;
+    statusNote: string;
+  },
+) {
+  entry.lastTestResult = outcome.result;
+  entry.lastTestCode = outcome.code;
+  entry.lastTestMessage = outcome.message;
+  entry.status = outcome.status;
+  entry.statusNote = outcome.statusNote;
+}
+
 function activeModelEntries(): ModelEntry[] {
   return mockState.modelEntries
     .filter((item) => item.status === "active")
@@ -348,6 +365,11 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     current.statusNote = current.hasStoredApiKey
       ? "配置已保存，请手动测试连接后再绑定任务。"
       : "已保存基础配置，补 API Key 后可测试连接。";
+    current.lastTestResult = "idle";
+    current.lastTestCode = "not-tested";
+    current.lastTestMessage = current.hasStoredApiKey
+      ? "配置刚更新，请重新测试连接确认是否可用。"
+      : "还缺 API Key，暂时无法开始测试连接。";
 
     return delay(toPublicModelEntry(current));
   }
@@ -371,6 +393,9 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     hasStoredApiKey: apiKey.length > 0,
     maskedApiKey: apiKey.length > 0 ? maskApiKey(apiKey) : null,
     lastTestedAt: null,
+    lastTestResult: "idle",
+    lastTestCode: "not-tested",
+    lastTestMessage: "还未开始测试连接。",
     tags: ["自定义"],
     apiKey: apiKey || null,
   };
@@ -417,19 +442,45 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
   entry.lastTestedAt = nowStamp();
 
   if (!entry.hasStoredApiKey || !entry.apiKey) {
-    entry.status = "test-failed";
-    entry.statusNote = "缺少 API Key，无法完成连接测试。";
+    applyTestOutcome(entry, {
+      result: "missing-api-key",
+      code: "missing_api_key",
+      message: "缺少 API Key，先补密钥再重新测试连接。",
+      status: "test-failed",
+      statusNote: "测试失败：还缺 API Key。下一步先补密钥。",
+    });
     return delay(toPublicModelEntry(entry));
   }
 
-  if (!entry.baseUrl.startsWith("http") || entry.baseUrl.includes("fail")) {
-    entry.status = "test-failed";
-    entry.statusNote = "连接测试失败，请检查 base URL 或上游可达性。";
+  if (!entry.baseUrl.startsWith("http")) {
+    applyTestOutcome(entry, {
+      result: "invalid-base-url",
+      code: "invalid_base_url",
+      message: "Base URL 不合法，需以 http:// 或 https:// 开头。",
+      status: "test-failed",
+      statusNote: "测试失败：Base URL 格式不对。下一步先修正地址。",
+    });
     return delay(toPublicModelEntry(entry));
   }
 
-  entry.status = "active";
-  entry.statusNote = "连接测试通过，可以绑定到任务默认模型。";
+  if (entry.baseUrl.includes("fail")) {
+    applyTestOutcome(entry, {
+      result: "upstream-unreachable",
+      code: "upstream_unreachable",
+      message: "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
+      status: "test-failed",
+      statusNote: "测试失败：上游暂时不可达。下一步检查地址或稍后重试。",
+    });
+    return delay(toPublicModelEntry(entry));
+  }
+
+  applyTestOutcome(entry, {
+    result: "success",
+    code: "success",
+    message: "测试连接通过，这个模型现在可以绑定到任务。",
+    status: "active",
+    statusNote: "连接测试通过，可以绑定到任务默认模型。",
+  });
   return delay(toPublicModelEntry(entry));
 }
 

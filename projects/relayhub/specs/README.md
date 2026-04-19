@@ -17,4 +17,6 @@
 - [2026-04-19-v1-治理控制台下的模型库与任务闭环产品说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-19-v1-治理控制台下的模型库与任务闭环产品说明.md)
 - [2026-04-19-v1-控制台信息架构重排说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-19-v1-控制台信息架构重排说明.md)
 - [2026-04-19-v1-治理控制台主路径可用性收口说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-19-v1-治理控制台主路径可用性收口说明.md)
+- [2026-04-19-v1-模型激活闭环收口说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-19-v1-模型激活闭环收口说明.md)
+- [2026-04-19-v1-任务级默认模型快速切换说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-19-v1-任务级默认模型快速切换说明.md)
 - [2026-04-19-v1-control-plane-release-部署与可写试用说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-19-v1-control-plane-release-部署与可写试用说明.md)

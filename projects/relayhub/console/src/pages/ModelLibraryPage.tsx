@@ -63,6 +63,14 @@ export function ModelLibraryPage() {
       ),
     [sortedEntries],
   );
+  const missingApiKeyEntries = useMemo(
+    () => sortedEntries.filter((entry) => !entry.hasStoredApiKey && entry.status !== "disabled"),
+    [sortedEntries],
+  );
+  const failedEntries = useMemo(
+    () => sortedEntries.filter((entry) => entry.status === "test-failed"),
+    [sortedEntries],
+  );
 
   function resetForm() {
     setEditingId(null);
@@ -121,7 +129,11 @@ export function ModelLibraryPage() {
         id: editingId ?? undefined,
       });
       setVersion((current) => current + 1);
-      setSubmitMessage(editingId ? "模型更新已保存。下一步可重新测试连接确认状态。" : "模型已新增。接下来请补 API Key 并测试连接。");
+      setSubmitMessage(
+        editingId
+          ? "配置已保存，但模型还未激活。下一步请测试连接确认是否可用。"
+          : "模型已保存，下一步请补齐 API Key 并测试连接完成激活。",
+      );
       resetForm();
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "模型保存失败。");
@@ -133,9 +145,13 @@ export function ModelLibraryPage() {
     setSubmitError(null);
 
     try {
-      await testModelEntryConnection(entry.id);
+      const updated = await testModelEntryConnection(entry.id);
       setVersion((current) => current + 1);
-      setSubmitMessage(`已完成“${entry.name}”的测试连接，模型状态已刷新。`);
+      if (updated.status === "active") {
+        setSubmitMessage(`“${entry.name}”已激活。下一步可去任务库绑定默认模型。`);
+      } else {
+        setSubmitError(`“${entry.name}”测试失败：${updated.lastTestMessage}`);
+      }
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "连接测试失败。");
     }
@@ -168,7 +184,7 @@ export function ModelLibraryPage() {
           <span className="eyebrow">Model Library</span>
           <h1>先看哪些模型已经可用，哪些还差最后一步激活</h1>
           <p>
-            模型库先回答两件事：哪些条目已经可以绑定任务，哪些条目还需要补配置或补测试连接。先把这里收口，再进入任务绑定和运行记录。
+            模型库先回答两件事：哪些条目已经可以绑定任务，哪些条目还需要补 API Key、补配置或补测试连接。先完成一个模型激活，再进入任务绑定和运行记录。
           </p>
         </div>
       </section>
@@ -196,9 +212,9 @@ export function ModelLibraryPage() {
               <p>优先处理待测试或未配置条目，完成后再进入任务库。</p>
             </article>
             <article className="data-card">
-              <span className="mini-label">本轮边界</span>
-              <h4>只做手动测试连接</h4>
-              <p>不自动检查余额、续费或健康探测，只确认这条接入现在能不能用。</p>
+              <span className="mini-label">待补密钥 / 待修正</span>
+              <h4>{missingApiKeyEntries.length} 个模型还缺 API Key</h4>
+              <p>{failedEntries.length} 个模型最近测试失败，先修正配置再重新测试。</p>
             </article>
           </div>
         ) : null}
@@ -206,7 +222,7 @@ export function ModelLibraryPage() {
 
       <Section
         title="系统预置"
-        description="系统先给出首批精选预置，帮助你少走一次从零填写的路径。"
+        description="系统先给出首批优先激活候选，帮助你少走一次从零填写的路径。"
       >
         {dataResource.status === "success" ? (
           <EntriesTable entries={presetEntries} onEdit={openEdit} onTest={handleTest} onDelete={handleDelete} />
@@ -304,7 +320,16 @@ export function ModelLibraryPage() {
               onChange={(event) => setForm((current) => ({ ...current, apiKey: event.target.value }))}
               placeholder={editingId ? "留空则保留原有密钥" : "保存后由服务端脱敏存储"}
             />
+            <span className="supporting-text">API Key 只在服务端脱敏保存，不进入前端构建产物。</span>
           </label>
+          {form.purchaseUrl ? (
+            <div className="field field-wide">
+              <span>购买 / 充值入口</span>
+              <a className="button-link secondary" href={form.purchaseUrl} target="_blank" rel="noreferrer">
+                去购买或充值
+              </a>
+            </div>
+          ) : null}
           <div className="form-actions field-wide">
             <button type="submit" className="button-link">
               {editingId ? "保存更新" : "新增模型"}
@@ -353,6 +378,14 @@ function EntriesTable({
               <td>
                 <strong>{entry.name}</strong>
                 <div className="supporting-text">{entry.statusNote}</div>
+                <div className="supporting-text">下一步：{describeNextAction(entry)}</div>
+                {entry.purchaseUrl ? (
+                  <div className="supporting-text">
+                    <a href={entry.purchaseUrl} target="_blank" rel="noreferrer">
+                      去购买 / 充值
+                    </a>
+                  </div>
+                ) : null}
               </td>
               <td>{KIND_OPTIONS.find((item) => item.value === entry.kind)?.label ?? entry.kind}</td>
               <td>{entry.providerLabel}</td>
@@ -385,4 +418,26 @@ function EntriesTable({
       </table>
     </div>
   );
+}
+
+function describeNextAction(entry: ModelEntry) {
+  if (entry.status === "active") {
+    return "可以去任务库绑定默认模型。";
+  }
+  if (entry.lastTestResult === "missing-api-key") {
+    return "先补 API Key，再重新测试连接。";
+  }
+  if (entry.lastTestResult === "invalid-base-url") {
+    return "先修正 Base URL，再重新测试连接。";
+  }
+  if (entry.lastTestResult === "upstream-unreachable") {
+    return "检查上游可达性，或稍后重试测试连接。";
+  }
+  if (!entry.hasStoredApiKey) {
+    return "先补 API Key，再测试连接。";
+  }
+  if (entry.status === "disabled") {
+    return "需要时可重新编辑并测试连接。";
+  }
+  return "保存配置后，显式执行测试连接完成激活。";
 }

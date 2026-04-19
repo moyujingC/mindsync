@@ -44,6 +44,14 @@ function nowStamp() {
   }).format(new Date()).replace(/\//g, "-");
 }
 
+function markTestOutcome(entry, outcome) {
+  entry.lastTestResult = outcome.result;
+  entry.lastTestCode = outcome.code;
+  entry.lastTestMessage = outcome.message;
+  entry.status = outcome.status;
+  entry.statusNote = outcome.statusNote;
+}
+
 async function readJsonBody(request) {
   const chunks = [];
   for await (const chunk of request) {
@@ -204,6 +212,9 @@ async function handleRequest(request, response) {
       hasStoredApiKey: apiKey.length > 0,
       maskedApiKey: apiKey.length > 0 ? maskApiKey(apiKey) : null,
       lastTestedAt: null,
+      lastTestResult: "idle",
+      lastTestCode: "not-tested",
+      lastTestMessage: "还未开始测试连接。",
       tags: ["自定义"],
       apiKey: apiKey || null
     };
@@ -238,6 +249,11 @@ async function handleRequest(request, response) {
       entry.statusNote = entry.hasStoredApiKey
         ? "配置已保存，请手动测试连接后再绑定任务。"
         : "已保存基础配置，补 API Key 后可测试连接。";
+      entry.lastTestResult = "idle";
+      entry.lastTestCode = "not-tested";
+      entry.lastTestMessage = entry.hasStoredApiKey
+        ? "配置刚更新，请重新测试连接确认是否可用。"
+        : "还缺 API Key，暂时无法开始测试连接。";
       await writeState(state);
       return json(response, 200, toPublicModelEntry(entry));
     }
@@ -261,14 +277,37 @@ async function handleRequest(request, response) {
     if (method === "POST" && path === `/models/${id}/test`) {
       entry.lastTestedAt = nowStamp();
       if (!entry.hasStoredApiKey || !entry.apiKey) {
-        entry.status = "test-failed";
-        entry.statusNote = "缺少 API Key，无法完成连接测试。";
-      } else if (!entry.baseUrl.startsWith("http") || entry.baseUrl.includes("fail")) {
-        entry.status = "test-failed";
-        entry.statusNote = "连接测试失败，请检查 base URL 或上游可达性。";
+        markTestOutcome(entry, {
+          result: "missing-api-key",
+          code: "missing_api_key",
+          message: "缺少 API Key，先补密钥再重新测试连接。",
+          status: "test-failed",
+          statusNote: "测试失败：还缺 API Key。下一步先补密钥。"
+        });
+      } else if (!entry.baseUrl.startsWith("http")) {
+        markTestOutcome(entry, {
+          result: "invalid-base-url",
+          code: "invalid_base_url",
+          message: "Base URL 不合法，需以 http:// 或 https:// 开头。",
+          status: "test-failed",
+          statusNote: "测试失败：Base URL 格式不对。下一步先修正地址。"
+        });
+      } else if (entry.baseUrl.includes("fail")) {
+        markTestOutcome(entry, {
+          result: "upstream-unreachable",
+          code: "upstream_unreachable",
+          message: "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
+          status: "test-failed",
+          statusNote: "测试失败：上游暂时不可达。下一步检查地址或稍后重试。"
+        });
       } else {
-        entry.status = "active";
-        entry.statusNote = "连接测试通过，可以绑定到任务默认模型。";
+        markTestOutcome(entry, {
+          result: "success",
+          code: "success",
+          message: "测试连接通过，这个模型现在可以绑定到任务。",
+          status: "active",
+          statusNote: "连接测试通过，可以绑定到任务默认模型。"
+        });
       }
       await writeState(state);
       return json(response, 200, toPublicModelEntry(entry));

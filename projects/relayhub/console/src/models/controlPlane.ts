@@ -6,6 +6,13 @@ export type ModelEntryStatus =
   | "active"
   | "test-failed"
   | "disabled";
+export type ModelEntryTestResult = "idle" | "success" | "missing-api-key" | "invalid-base-url" | "upstream-unreachable";
+export type ModelEntryTestCode =
+  | "not-tested"
+  | "success"
+  | "missing_api_key"
+  | "invalid_base_url"
+  | "upstream_unreachable";
 export type TaskCategory = "通用工具" | "业务任务";
 export type RunResultGrade = "优秀" | "可用" | "一般" | "失败";
 
@@ -24,6 +31,9 @@ export interface ModelEntry {
   hasStoredApiKey: boolean;
   maskedApiKey: string | null;
   lastTestedAt: string | null;
+  lastTestResult: ModelEntryTestResult;
+  lastTestCode: ModelEntryTestCode;
+  lastTestMessage: string;
   tags: string[];
 }
 

@@ -46,4 +46,17 @@ describe("control-plane service release wiring", () => {
     expect(entries.length).toBeGreaterThan(0);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("returns detailed test failure semantics in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
+    vi.resetModules();
+    const service = await import("../services/controlPlane");
+
+    const result = await service.testModelEntryConnection("preset-qwen-max");
+
+    expect(result.status).toBe("test-failed");
+    expect(result.lastTestResult).toBe("missing-api-key");
+    expect(result.lastTestCode).toBe("missing_api_key");
+    expect(result.lastTestMessage).toContain("缺少 API Key");
+  });
 });

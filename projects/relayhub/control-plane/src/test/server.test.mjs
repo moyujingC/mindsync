@@ -48,7 +48,55 @@ test("POST /models/:id/test promotes a configured entry to active", async () => 
     const payload = await response.json();
 
     assert.equal(payload.status, "active");
+    assert.equal(payload.lastTestResult, "success");
+    assert.equal(payload.lastTestCode, "success");
+    assert.match(payload.lastTestMessage, /测试连接通过/);
     assert.match(payload.statusNote, /连接测试通过/);
+  });
+});
+
+test("POST /models/:id/test returns missing API key semantics", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/models/preset-qwen-max/test`, {
+      method: "POST"
+    });
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.status, "test-failed");
+    assert.equal(payload.lastTestResult, "missing-api-key");
+    assert.equal(payload.lastTestCode, "missing_api_key");
+    assert.match(payload.lastTestMessage, /缺少 API Key/);
+  });
+});
+
+test("POST /models/:id/test returns invalid base URL semantics", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const updateResponse = await fetch(`${baseUrl}/models/preset-ppchat-relay`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        baseUrl: "bad-url"
+      })
+    });
+    assert.equal(updateResponse.status, 200);
+
+    const response = await fetch(`${baseUrl}/models/preset-ppchat-relay/test`, {
+      method: "POST"
+    });
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.status, "test-failed");
+    assert.equal(payload.lastTestResult, "invalid-base-url");
+    assert.equal(payload.lastTestCode, "invalid_base_url");
+    assert.match(payload.lastTestMessage, /Base URL 不合法/);
   });
 });
 
