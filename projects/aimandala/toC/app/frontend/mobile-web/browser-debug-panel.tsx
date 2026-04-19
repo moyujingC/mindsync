@@ -38,6 +38,8 @@ export const DEBUG_WORKBENCH_TABS: Array<{
   { id: "samples", label: "Samples", description: "固定 fixtures 回归摘要与 current / candidate diff" },
 ];
 
+const PLACEHOLDER_INTERPRETATION_IDS = new Set(["", "demo-interpretation-id"]);
+
 interface BrowserDebugPanelProps {
   route: MobileWebRouteId;
   previewMode: boolean;
@@ -472,6 +474,11 @@ export function BrowserDebugPanel({
   const activeFlowState = previewMode ? flowState : runtimeSnapshot?.flowState ?? null;
   const activeInterpretationId =
     activeFlowState?.interpretation?.interpretation_id ?? interpretationId;
+  const canFetchReportDebug =
+    !previewMode &&
+    !disableWorkbenchFetch &&
+    Boolean(activeInterpretationId) &&
+    !PLACEHOLDER_INTERPRETATION_IDS.has(activeInterpretationId);
   const stages = createStageDescriptors({
     previewMode,
     draft,
@@ -655,7 +662,7 @@ export function BrowserDebugPanel({
   }, [mergedFixtureRows]);
 
   useEffect(() => {
-    if (disableWorkbenchFetch || previewMode || !activeInterpretationId) {
+    if (!canFetchReportDebug) {
       return;
     }
     let cancelled = false;
@@ -681,7 +688,7 @@ export function BrowserDebugPanel({
     return () => {
       cancelled = true;
     };
-  }, [activeInterpretationId, disableWorkbenchFetch, previewMode]);
+  }, [activeInterpretationId, canFetchReportDebug]);
 
   useEffect(() => {
     if (disableWorkbenchFetch || currentBuildSummary) {

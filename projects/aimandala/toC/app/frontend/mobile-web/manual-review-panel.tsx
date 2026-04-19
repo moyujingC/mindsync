@@ -21,6 +21,8 @@ interface ManualReviewPanelProps {
   runtimeReportDebugProfile?: ReportDebugProfileResponse | null;
 }
 
+const PLACEHOLDER_INTERPRETATION_IDS = new Set(["", "demo-interpretation-id"]);
+
 const REVIEW_STEPS = [
   { id: "input", label: "1. 输入包确认" },
   { id: "visual", label: "2. Layer0 视觉事实" },
@@ -84,7 +86,12 @@ export function ManualReviewPanel({
   }, [runtimeReportDebugProfile]);
 
   useEffect(() => {
-    if (previewMode || !interpretationId || runtimeReportDebugProfile) {
+    if (
+      previewMode ||
+      !interpretationId ||
+      PLACEHOLDER_INTERPRETATION_IDS.has(interpretationId) ||
+      runtimeReportDebugProfile
+    ) {
       return;
     }
     let cancelled = false;
