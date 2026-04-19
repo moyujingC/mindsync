@@ -5,6 +5,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
 
+vi.mock("../shared/api", async () => {
+  const actual = await vi.importActual<typeof import("../shared/api")>("../shared/api");
+  return {
+    ...actual,
+    getInterpretationReportDebug: vi.fn(),
+    getKnowledgeBuildSummary: vi.fn(),
+    previewKnowledgeFixture: vi.fn(),
+  };
+});
+
+import * as sharedApi from "../shared/api";
 import { BrowserDebugPanel } from "./browser-debug-panel";
 import type {
   KnowledgeBuildSummaryResponse,
@@ -399,6 +410,7 @@ describe("BrowserDebugPanel", () => {
         IS_REACT_ACT_ENVIRONMENT?: boolean;
       }
     ).IS_REACT_ACT_ENVIRONMENT = true;
+    vi.clearAllMocks();
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -466,6 +478,15 @@ describe("BrowserDebugPanel", () => {
     await clickButton("Samples");
     expect(normalizedText()).toContain("Regression Summary");
     expect(normalizedText()).toContain("Selected Sample");
+  });
+
+  it("占位 interpretation id 不会触发 report-debug 拉取", async () => {
+    await renderPanel({
+      interpretationId: "demo-interpretation-id",
+      runtimeSnapshot: null,
+    });
+
+    expect(sharedApi.getInterpretationReportDebug).not.toHaveBeenCalled();
   });
 
   it("会把字段映射联动到 source refs 与 prompt trace", async () => {

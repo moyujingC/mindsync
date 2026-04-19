@@ -78,7 +78,7 @@ function readBrowserShellInitialState() {
     return {
       route: "landing" as MobileWebRouteId,
       draft: defaultDraft,
-      interpretationId: "demo-interpretation-id",
+      interpretationId: "",
       session: createMobileWebGuestSession("ssr"),
       previewMode: import.meta.env.DEV,
       controlsOpen: import.meta.env.DEV,
@@ -113,7 +113,7 @@ function readBrowserShellInitialState() {
       paintingIntention: url.searchParams.get("paintingIntention") ?? defaultDraft.paintingIntention,
       paintingFeeling: url.searchParams.get("paintingFeeling") ?? defaultDraft.paintingFeeling,
     } satisfies MobileWebUploadDraft,
-    interpretationId: url.searchParams.get("interpretationId") ?? "demo-interpretation-id",
+    interpretationId: url.searchParams.get("interpretationId") ?? "",
     session: resolveMobileWebSession({
       locationHref: url.toString(),
     }),
