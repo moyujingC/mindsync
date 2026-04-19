@@ -69,10 +69,20 @@ function createMiniappReport(version: "lite" | "pro" = "lite"): ReportResponse {
     title: version === "pro" ? "一镜一梳 Pro 版预览" : "一镜一梳 Lite 版预览",
     overall_impression: "这是一份供 miniapp 静态壳审阅使用的本地示例。",
     structured: {
-      title: version === "pro" ? "一镜一梳 Pro 版预览" : "一镜一梳 Lite 版预览",
-      overall_impression: "你正在把注意力慢慢收回中心。",
-      visual_elements_rendered: "中心更聚拢，外围更松开。",
-      emotion_portrait_rendered: "你在想整理自己，也在想如何继续往前。",
+      topic_context: {
+        topic: "general",
+        topic_label: "全面解读",
+        report_mode: version,
+        orientation: {
+          intro: "这份报告会从全面解读这个议题角度看这张画。",
+          focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+          key_terms: [],
+        },
+      },
+      current_reading: "你正在把注意力慢慢收回中心。",
+      visual_basis: "中心更聚拢，外围更松开。",
+      pattern_interpretation: "你在想整理自己，也在想如何继续往前。",
+      life_connection: "先把感受放回一个现实场景里看。",
       lite_healing_guidance: {
         directions: [
           {
@@ -92,7 +102,6 @@ function createMiniappReport(version: "lite" | "pro" = "lite"): ReportResponse {
         summary: "如果你希望从更深层结构继续理解这张画，可以查看 Pro 报告。",
         product_note: "Pro 是独立购买、独立成立的深度完整解读。",
       },
-      pro_teaser: "如果你希望从更深层结构继续理解这张画，可以查看 Pro 报告。",
     },
     report:
       version === "pro"

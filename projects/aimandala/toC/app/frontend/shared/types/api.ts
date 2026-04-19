@@ -124,13 +124,28 @@ export interface InterpretationStatusResponse {
   image_local_expires_at?: string | null;
 }
 
+export interface ReportTopicContext {
+  topic: string;
+  topic_label: string;
+  report_mode: InterpretationVersion | string;
+  orientation: {
+    intro: string;
+    focus: string;
+    key_terms: Array<{
+      term: string;
+      explanation: string;
+    }>;
+  };
+}
+
 export interface LiteStructuredReport {
   prompt_preview?: string | null;
   prompt_schema_validation_issues?: string[] | null;
-  title: string;
-  overall_impression: string;
-  visual_elements_rendered: string;
-  emotion_portrait_rendered: string;
+  topic_context: ReportTopicContext;
+  current_reading: string;
+  visual_basis: string;
+  pattern_interpretation: string;
+  life_connection: string;
   self_understanding_blocks?: {
     title?: string;
     opening_hit?: string;
@@ -209,6 +224,17 @@ export interface LiteStructuredReport {
 export interface ProStructuredReport {
   prompt_preview?: string | null;
   prompt_schema_validation_issues?: string[] | null;
+  topic_context: ReportTopicContext;
+  deep_impression: string;
+  evidence_digest: string;
+  imbalance_diagnosis: string;
+  root_cause_chain: {
+    surface?: string;
+    mechanism?: string;
+    core?: string;
+  };
+  deep_structure_interpretation: string;
+  healing_plan: Array<{ phase?: string; focus?: string; practice?: string }>;
   first_impression?: string | null;
   core_insight_table?: Record<string, string> | null;
   three_circles_detailed?: Record<string, { label?: string; reading?: string }> | null;

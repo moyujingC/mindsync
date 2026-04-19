@@ -33,7 +33,7 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
   field_provenance: {
     lite: [
       {
-        field: "overall_impression",
+        field: "current_reading",
         source: "layer0",
       },
     ],
@@ -48,15 +48,15 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
   prompt_debug: {
     lite: {
       prompt_preview: [
-        "field: overall_impression",
+        "field: current_reading",
         "knowledge entity: theme.wealth_career",
-        "final field: overall_impression",
+        "final field: current_reading",
       ].join("\n"),
       schema_fields: [
         {
-          name: "overall_impression",
-          semantic_role: "overall impression",
-          mapped_final_field: "overall_impression",
+          name: "current_reading",
+          semantic_role: "current reading",
+          mapped_final_field: "current_reading",
         },
       ],
     },
@@ -118,6 +118,70 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
         warnings: ["healing fallback"],
       },
     },
+    topic_context_trace: {
+      topic: "wealth_career",
+      report_modes: ["lite", "pro"],
+      knowledge_route: "theme_only",
+      general_mixed: false,
+    },
+    product_block_debug: {
+      lite: {
+        current_reading: {
+          final: "当前命中：你正在一边收紧、一边寻找推进感。",
+          narrative_trace: {
+            section: "overall_impression",
+          },
+          evidence_trace: {
+            visual_fact_refs: ["visual.palette"],
+            knowledge_hit_refs: ["theme.wealth_career"],
+            rule_refs: ["imbalance.fire_deficiency"],
+            theme_projection_refs: ["themes/wealth_career.yaml"],
+          },
+          prompt_trace: {
+            schema_field: "current_reading",
+          },
+          quality_trace: {
+            fidelity_flags: ["warning:fire_deficiency"],
+            fallback_summary: {
+              used: true,
+              levels: ["themed"],
+              warnings: ["healing fallback"],
+            },
+            compatibility_used: false,
+          },
+        },
+      },
+      pro: {
+        healing_plan: {
+          final: [{ title: "先恢复节奏", content: "把推进压力拆小。" }],
+          narrative_trace: {
+            section: "healing_suggestions",
+          },
+          evidence_trace: {
+            visual_fact_refs: [],
+            knowledge_hit_refs: ["healing.wealth_career"],
+            rule_refs: ["imbalance.fire_deficiency"],
+            theme_projection_refs: ["healing/wealth_career.yaml"],
+          },
+          prompt_trace: {
+            schema_field: "healing_plan",
+          },
+          quality_trace: {
+            fidelity_flags: ["warning:fire_deficiency"],
+            fallback_summary: {
+              used: true,
+              levels: ["themed"],
+              warnings: ["healing fallback"],
+            },
+            compatibility_used: true,
+          },
+        },
+      },
+    },
+    internal_compatibility: {
+      legacy_fields: ["pro_teaser", "healing_suggestions"],
+      compatibility_used: true,
+    },
     query_results: {
       theme: {
         entity_id: "theme.wealth_career",
@@ -159,7 +223,7 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
       },
     ],
     field_to_knowledge_map: {
-      overall_impression: {
+      current_reading: {
         query_keys: ["theme"],
         entity_ids: ["theme.wealth_career"],
         source_paths: ["themes/wealth_career.yaml"],
@@ -196,7 +260,7 @@ const currentBuildSummary: KnowledgeBuildSummaryResponse = {
   },
   eval_summary: {
     summary: {
-      fixture_count: 5,
+      fixture_count: 4,
       fixture_fallback_count: 1,
       warning_hit_count: 1,
       structured_missing_count: 0,
@@ -204,7 +268,7 @@ const currentBuildSummary: KnowledgeBuildSummaryResponse = {
     },
     fixtures: [
       {
-        fixture_id: "toc-mvp-sample-b-lite-to-pro-career",
+        fixture_id: "toc-mvp-fixture-002",
         theme: "wealth_career",
         version: "pro",
         fallback_used: false,
@@ -246,7 +310,7 @@ const candidateBuildSummary: KnowledgeBuildSummaryResponse = {
   },
   eval_summary: {
     summary: {
-      fixture_count: 5,
+      fixture_count: 4,
       fixture_fallback_count: 2,
       warning_hit_count: 1,
       structured_missing_count: 1,
@@ -254,7 +318,7 @@ const candidateBuildSummary: KnowledgeBuildSummaryResponse = {
     },
     fixtures: [
       {
-        fixture_id: "toc-mvp-sample-b-lite-to-pro-career",
+        fixture_id: "toc-mvp-fixture-002",
         theme: "wealth_career",
         version: "pro",
         fallback_used: true,
@@ -267,7 +331,7 @@ const candidateBuildSummary: KnowledgeBuildSummaryResponse = {
 
 const samplePreview: KnowledgeFixturePreviewResponse = {
   fixture_meta: {
-    fixture_id: "toc-mvp-sample-b-lite-to-pro-career",
+    fixture_id: "toc-mvp-fixture-002",
     theme: "wealth_career",
     build_selector: "candidate:test-v22",
     version: "pro",
@@ -390,10 +454,13 @@ describe("BrowserDebugPanel", () => {
     await clickButton("Knowledge");
     expect(normalizedText()).toContain("Build Summary");
     expect(normalizedText()).toContain("Insight Context");
+    expect(normalizedText()).toContain("Topic Context Trace");
     expect(normalizedText()).toContain("Field To Knowledge");
 
     await clickButton("Report Trace");
     expect(normalizedText()).toContain("Diagnostics");
+    expect(normalizedText()).toContain("Product Block Debug");
+    expect(normalizedText()).toContain("Internal Compatibility");
     expect(normalizedText()).toContain("Prompt Snippet");
 
     await clickButton("Samples");
@@ -407,16 +474,20 @@ describe("BrowserDebugPanel", () => {
       initialTab: "knowledge",
     });
 
-    expect(normalizedText()).toContain("overall_impression");
+    expect(normalizedText()).toContain("current_reading");
     expect(normalizedText()).toContain("InsightAgent");
-    await clickButton("overall_impression");
+    await clickButton("current_reading");
     expect(normalizedText()).toContain("themes/wealth_career.yaml");
     expect(normalizedText()).toContain("/abs/themes/wealth_career.yaml");
 
     await clickButton("Report Trace");
     expect(normalizedText()).toContain("theme.wealth_career");
     expect(normalizedText()).toContain("knowledge entity: theme.wealth_career");
-    expect(normalizedText()).toContain("final field: overall_impression");
+    expect(normalizedText()).toContain("final field: current_reading");
+    expect(normalizedText()).toContain("Product Block Debug");
+    expect(normalizedText()).toContain("healing_plan");
+    expect(normalizedText()).toContain("Internal Compatibility");
+    expect(normalizedText()).toContain("pro_teaser");
   });
 
   it("会渲染固定样本的 current/candidate diff", async () => {
@@ -428,7 +499,7 @@ describe("BrowserDebugPanel", () => {
       initialTab: "samples",
     });
 
-    expect(normalizedText()).toContain("toc-mvp-sample-b-lite-to-pro-career");
+    expect(normalizedText()).toContain("toc-mvp-fixture-002");
     expect(normalizedText()).toContain("current:pro / candidate:pro");
     expect(normalizedText()).toContain("warning 0 to 1");
     expect(normalizedText()).toContain("warning_ids_added");

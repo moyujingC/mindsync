@@ -11,9 +11,12 @@ import {
 } from "./themes";
 
 export const liteReportSectionTitles = {
-  overall: "整体感受",
-  visual: "画面元素",
-  emotion: "情绪画像",
+  topic: "议题理解",
+  current: "当前命中",
+  visual: "画面依据",
+  pattern: "模式解释",
+  life: "现实连接",
+  healing: "轻量疗愈",
   teaser: "给你的一个小预告",
   story: "你的心灵画像故事",
   theme: "在当前主题中的具体表现",
@@ -38,6 +41,12 @@ export const liteThemeInsightLabels: Array<[string, string]> = [
 ];
 
 export const proReportSectionTitles = {
+  deepImpression: "深度第一印象",
+  evidenceDigest: "证据摘要与结构展开",
+  imbalanceDiagnosis: "失衡确认",
+  rootCauseChain: "根因链",
+  deepStructure: "深层结构解释",
+  healingPlan: "完整疗愈方案",
   firstImpression: "第一眼直觉",
   coreTable: "核心洞察表格",
   circles: "三圈深度诊断",
@@ -113,6 +122,7 @@ function getSelfUnderstandingFocus(structured?: LiteStructuredReport | null): st
   const blocks = structured?.self_understanding_blocks;
 
   return (
+    cleanText(structured?.pattern_interpretation) ??
     cleanText(blocks?.pattern_naming?.pattern_name) ??
     cleanText(blocks?.next_step?.direction) ??
     cleanText(blocks?.reality_connection?.life_dimension) ??
@@ -125,6 +135,7 @@ function getSelfUnderstandingDimension(structured?: LiteStructuredReport | null)
   const blocks = structured?.self_understanding_blocks;
 
   return (
+    cleanText(structured?.life_connection) ??
     cleanText(blocks?.reality_connection?.life_dimension) ??
     cleanText(blocks?.theme_insights?.scene) ??
     cleanText(structured?.theme_insights?.scene)
@@ -255,6 +266,12 @@ export function getProImbalanceEntries(
 export function getProRootCauseEntries(
   structured: ProStructuredReport,
 ): Array<[string, string]> {
+  const rootCauseChain = structured.root_cause_chain
+    ? Object.entries(structured.root_cause_chain).filter(([, value]) => Boolean(value))
+    : [];
+  if (rootCauseChain.length) {
+    return rootCauseChain as Array<[string, string]>;
+  }
   return Object.entries(structured.root_cause ?? {}).filter(
     ([, value]) => Boolean(value),
   );

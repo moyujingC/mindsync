@@ -1,11 +1,6 @@
 import {
   getGenerationPresentation,
-  getProCircleEntries,
-  getProCoreInsightEntries,
-  getProImbalanceEntries,
-  getProMicroEntries,
   getProRootCauseEntries,
-  proImbalanceLabels,
   proReportSectionTitles,
   proRootCauseLabels,
 } from "../core";
@@ -45,43 +40,12 @@ export interface SharedStructuredReportCardsProps {
 export function SharedStructuredReportCards({
   structured,
 }: SharedStructuredReportCardsProps) {
-  const blocks = structured.self_understanding_blocks;
-  const openingHit = blocks?.opening_hit || structured.overall_impression;
-  const visualEvidence = blocks?.visual_evidence?.summary || structured.visual_elements_rendered;
-  const stateInterpretation =
-    joinSections([
-      blocks?.state_interpretation?.current_state,
-      blocks?.state_interpretation?.emotional_tension,
-      blocks?.state_interpretation?.explanation_chain,
-    ]) || structured.emotion_portrait_rendered;
-  const patternNaming =
-    joinSections([
-      blocks?.pattern_naming?.pattern_name,
-      blocks?.pattern_naming?.pattern_description,
-      blocks?.pattern_naming?.protective_logic,
-    ]) ||
-    joinSections([
-      structured.story?.pattern?.content,
-      structured.story?.defense?.content,
-    ]);
-  const realityConnection =
-    joinSections([
-      blocks?.reality_connection?.typical_scene,
-      blocks?.reality_connection?.current_impact,
-    ]) ||
-    joinSections([
-      structured.theme_insights?.scene,
-      structured.theme_insights?.impact,
-    ]);
-  const nextStep =
-    joinSections([
-      blocks?.next_step?.direction,
-      blocks?.next_step?.action,
-    ]) ||
-    joinSections([
-      structured.theme_insights?.awareness,
-      structured.three_awareness?.[0]?.content,
-    ]);
+  const orientation = structured.topic_context.orientation;
+  const keyTerms = orientation.key_terms ?? [];
+  const currentReading = structured.current_reading;
+  const visualBasis = structured.visual_basis;
+  const patternInterpretation = structured.pattern_interpretation;
+  const lifeConnection = structured.life_connection;
   const healingDirections = (structured.lite_healing_guidance?.directions ?? []).filter(
     (item) => item?.title || item?.content,
   );
@@ -94,89 +58,49 @@ export function SharedStructuredReportCards({
     <section className="am-stack mw-stack">
       <article className="am-card mw-card">
         <div className="am-card__header mw-card__header">
-          <h3>整体命中</h3>
+          <h3>议题理解</h3>
+          <span className="am-badge mw-badge">{structured.topic_context.topic_label}</span>
         </div>
-        <p>{openingHit}</p>
+        <p className="mw-prewrap">{joinSections([orientation.intro, orientation.focus])}</p>
+        {keyTerms.length ? (
+          <div className="am-stack mw-stack am-stack-gap-sm">
+            {keyTerms.map((item, index) => (
+              <div key={`${item.term || index}-${index}`}>
+                <strong>{item.term || `关键词 ${index + 1}`}</strong>
+                <p className="mw-prewrap">{item.explanation || ""}</p>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </article>
+
+      <article className="am-card mw-card">
+        <div className="am-card__header mw-card__header">
+          <h3>当前命中</h3>
+        </div>
+        <p>{currentReading}</p>
       </article>
 
       <article className="am-card mw-card">
         <div className="am-card__header mw-card__header">
           <h3>画面依据</h3>
         </div>
-        <p>{visualEvidence}</p>
+        <p>{visualBasis}</p>
       </article>
 
       <article className="am-card mw-card">
         <div className="am-card__header mw-card__header">
-          <h3>状态解释</h3>
+          <h3>模式命名</h3>
         </div>
-        <p className="mw-prewrap">{stateInterpretation}</p>
+        <p className="mw-prewrap">{patternInterpretation}</p>
       </article>
 
-      {patternNaming ? (
-        <article className="am-card mw-card">
-          <div className="am-card__header mw-card__header">
-            <h3>模式命名</h3>
-          </div>
-          <p className="mw-prewrap">{patternNaming}</p>
-        </article>
-      ) : null}
-
-      {realityConnection ? (
+      {lifeConnection ? (
         <article className="am-card mw-card">
           <div className="am-card__header mw-card__header">
             <h3>现实连接</h3>
           </div>
-          <p className="mw-prewrap">{realityConnection}</p>
-        </article>
-      ) : null}
-
-      {nextStep ? (
-        <article className="am-card mw-card">
-          <div className="am-card__header mw-card__header">
-            <h3>一个下一步</h3>
-          </div>
-          <p className="mw-prewrap">{nextStep}</p>
-        </article>
-      ) : null}
-
-      {structured.three_awareness?.length ? (
-        <article className="am-card mw-card">
-          <div className="am-card__header mw-card__header">
-            <h3>日常小觉察</h3>
-          </div>
-          <div className="am-stack mw-stack am-stack-gap-sm">
-            {structured.three_awareness.map((item, index) => (
-              <div key={`${item.day ?? index}-${item.title ?? index}`}>
-                <strong>{item.title || `第 ${item.day ?? index + 1} 条`}</strong>
-                <p className="mw-prewrap">{item.content || ""}</p>
-              </div>
-            ))}
-          </div>
-        </article>
-      ) : null}
-
-      {structured.theme_insights?.scene || structured.theme_insights?.impact || structured.theme_insights?.awareness ? (
-        <article className="am-card mw-card">
-          <div className="am-card__header mw-card__header">
-            <h3>主题洞察</h3>
-          </div>
-          <p className="mw-prewrap">
-            {joinSections([
-              structured.theme_insights?.scene,
-              structured.theme_insights?.impact,
-              structured.theme_insights?.awareness,
-            ])}
-          </p>
-        </article>
-      ) : null}
-
-      {!patternNaming && !realityConnection && !nextStep ? (
-        <article className="am-card mw-card">
-          <div className="am-card__header mw-card__header">
-            <h3>情绪画像</h3>
-          </div>
-          <p>{structured.emotion_portrait_rendered}</p>
+          <p className="mw-prewrap">{lifeConnection}</p>
         </article>
       ) : null}
 
@@ -217,7 +141,7 @@ export function SharedStructuredReportCards({
           <h3>{proReportEntry?.title || "另一份更深的独立报告"}</h3>
           <span className="am-badge mw-badge">独立产品入口</span>
         </div>
-        <p>{proReportEntry?.summary || structured.pro_teaser || ""}</p>
+        <p>{proReportEntry?.summary || ""}</p>
         {proReportEntry?.product_note ? <p>{proReportEntry.product_note}</p> : null}
       </article>
     </section>
@@ -261,86 +185,75 @@ export interface SharedProStructuredReportCardsProps {
 export function SharedProStructuredReportCards({
   structured,
 }: SharedProStructuredReportCardsProps) {
-  const coreEntries = getProCoreInsightEntries(structured);
-  const circleEntries = getProCircleEntries(structured);
-  const microEntries = getProMicroEntries(structured);
-  const imbalanceEntries = getProImbalanceEntries(structured);
   const rootCauseEntries = getProRootCauseEntries(structured);
-  const healingSuggestions = (structured.healing_suggestions ?? []).filter(
+  const healingPlan = (structured.healing_plan ?? []).filter(
     (item) => item.phase || item.focus || item.practice,
   );
+  const orientation = structured.topic_context.orientation;
 
   return (
     <section className="am-stack mw-stack">
-      {structured.first_impression ? (
+      <article className="am-card mw-card">
+        <div className="am-card__header mw-card__header">
+          <h3>议题理解</h3>
+          <span className="am-badge mw-badge">{structured.topic_context.topic_label}</span>
+        </div>
+        <p className="mw-prewrap">{joinSections([orientation.intro, orientation.focus])}</p>
+      </article>
+
+      {structured.deep_impression ? (
         <article className="am-card am-card--accent mw-card mw-card--accent">
           <div className="am-card__header mw-card__header">
-            <h3>{proReportSectionTitles.firstImpression}</h3>
+            <h3>{proReportSectionTitles.deepImpression}</h3>
             <span className="am-badge mw-badge">Pro</span>
           </div>
-          <p className="mw-prewrap">{structured.first_impression}</p>
+          <p className="mw-prewrap">{structured.deep_impression}</p>
         </article>
       ) : null}
 
-      {coreEntries.length ? (
+      {structured.evidence_digest ? (
         <article className="am-card mw-card">
           <div className="am-card__header mw-card__header">
-            <h3>{proReportSectionTitles.coreTable}</h3>
+            <h3>{proReportSectionTitles.evidenceDigest}</h3>
           </div>
-          {renderKeyValueRows(coreEntries)}
+          <p className="mw-prewrap">{structured.evidence_digest}</p>
         </article>
       ) : null}
 
-      {circleEntries.length ? (
+      {structured.imbalance_diagnosis ? (
         <article className="am-card mw-card">
           <div className="am-card__header mw-card__header">
-            <h3>{proReportSectionTitles.circles}</h3>
+            <h3>{proReportSectionTitles.imbalanceDiagnosis}</h3>
           </div>
-          <div className="am-stack mw-stack am-stack-gap-sm">
-            {circleEntries.map((item, index) => (
-              <div key={`${item.label ?? index}-${index}`}>
-                <strong>{item.label ?? `第 ${index + 1} 圈`}</strong>
-                <p className="mw-prewrap">{item.reading}</p>
-              </div>
-            ))}
-          </div>
-        </article>
-      ) : null}
-
-      {microEntries.length ? (
-        <article className="am-card mw-card">
-          <div className="am-card__header mw-card__header">
-            <h3>{proReportSectionTitles.micro}</h3>
-          </div>
-          {renderKeyValueRows(microEntries)}
-        </article>
-      ) : null}
-
-      {imbalanceEntries.length ? (
-        <article className="am-card mw-card">
-          <div className="am-card__header mw-card__header">
-            <h3>{proReportSectionTitles.imbalance}</h3>
-          </div>
-          {renderKeyValueRows(imbalanceEntries, proImbalanceLabels)}
+          <p className="mw-prewrap">{structured.imbalance_diagnosis}</p>
         </article>
       ) : null}
 
       {rootCauseEntries.length ? (
         <article className="am-card mw-card">
           <div className="am-card__header mw-card__header">
-            <h3>{proReportSectionTitles.rootCause}</h3>
+            <h3>{proReportSectionTitles.rootCauseChain}</h3>
           </div>
           {renderKeyValueRows(rootCauseEntries, proRootCauseLabels)}
         </article>
       ) : null}
 
-      {healingSuggestions.length ? (
+      {structured.deep_structure_interpretation ? (
         <article className="am-card mw-card">
           <div className="am-card__header mw-card__header">
-            <h3>{proReportSectionTitles.healing}</h3>
+            <h3>{proReportSectionTitles.deepStructure}</h3>
+          </div>
+          <p className="mw-prewrap">{structured.deep_structure_interpretation}</p>
+        </article>
+      ) : null}
+
+      {healingPlan.length ? (
+        <article className="am-card mw-card">
+          <div className="am-card__header mw-card__header">
+            <h3>{proReportSectionTitles.healingPlan}</h3>
           </div>
           <div className="am-stack mw-stack am-stack-gap-sm">
-            {healingSuggestions.map((item, index) => (
+            {healingPlan.map((item, index) => (
               <div key={`${item.phase ?? index}-${index}`}>
                 <strong>{item.phase || `阶段 ${index + 1}`}</strong>
                 <p className="mw-prewrap">
@@ -355,13 +268,12 @@ export function SharedProStructuredReportCards({
         </article>
       ) : null}
 
-      {!structured.first_impression &&
-      !coreEntries.length &&
-      !circleEntries.length &&
-      !microEntries.length &&
-      !imbalanceEntries.length &&
+      {!structured.deep_impression &&
+      !structured.evidence_digest &&
+      !structured.imbalance_diagnosis &&
       !rootCauseEntries.length &&
-      !healingSuggestions.length ? (
+      !structured.deep_structure_interpretation &&
+      !healingPlan.length ? (
         <article className="am-card mw-card">
           <div className="am-card__header mw-card__header">
             <h3>Pro 结构已返回</h3>

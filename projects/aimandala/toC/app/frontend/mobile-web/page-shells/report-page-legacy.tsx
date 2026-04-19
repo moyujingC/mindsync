@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
 import {
-  getLiteStructuredReport,
   hasProReportAccess,
   resolveSelfUnderstandingReportCta,
 } from "../../shared/core";
@@ -275,7 +274,6 @@ function toStructuredAwareness(structured: LooseStructuredReport | null): Awaren
 }
 
 function parseLegacyReport(state: MandalaFlowState): LegacyReportData {
-  const structured = getLiteStructuredReport(state.report);
   const looseStructured = getStructuredRecord(state);
   const markdown = typeof state.report?.report === "string" ? state.report.report : "";
   const structuredStory = toStructuredStory(looseStructured);
@@ -285,16 +283,7 @@ function parseLegacyReport(state: MandalaFlowState): LegacyReportData {
       ? (looseStructured.theme_insights as Record<string, unknown>)
       : null;
   const structuredExperiment = parseExperimentText(looseStructured?.experiment);
-  const base = structured
-    ? {
-        ...DEFAULT_REPORT,
-        title: extractTitle(structured.title) || DEFAULT_REPORT.title,
-        impression: structured.overall_impression || DEFAULT_REPORT.impression,
-        visualElements: structured.visual_elements_rendered || DEFAULT_REPORT.visualElements,
-        emotionPortrait: structured.emotion_portrait_rendered || DEFAULT_REPORT.emotionPortrait,
-        proTeaser: structured.pro_teaser || DEFAULT_REPORT.proTeaser,
-      }
-    : { ...DEFAULT_REPORT };
+  const base = { ...DEFAULT_REPORT };
 
   if (!markdown) {
     return {
@@ -396,7 +385,7 @@ export function MobileWebLegacyReportPage({
 }: MobileWebLegacyReportPageProps) {
   const [saved, setSaved] = useState(false);
   const displayReport = useMemo(() => parseLegacyReport(state), [state]);
-  const structured = getLiteStructuredReport(state.report);
+  const structured = null;
   const resultCta = resolveSelfUnderstandingReportCta({
     theme: uploadDraft?.theme,
     canUpgrade: Boolean(state.report?.can_upgrade || state.status?.can_upgrade),

@@ -18,10 +18,25 @@ import {
 } from "./index";
 
 const structured: LiteStructuredReport = {
-  title: "Lite 报告",
-  overall_impression: "你最近在慢慢收拢自己的注意力。",
-  visual_elements_rendered: "中心更稳，外围更轻。",
-  emotion_portrait_rendered: "你在想靠近与想退后之间摆动。",
+  topic_context: {
+    topic: "intimate_relationship",
+    topic_label: "亲密关系",
+    report_mode: "lite",
+    orientation: {
+      intro: "这份报告会从亲密关系这个议题角度看这张画。",
+      focus: "这个议题通常关注靠近、边界、安全感和依恋模式。",
+      key_terms: [
+        {
+          term: "依恋模式",
+          explanation: "你在靠近与保持安全距离之间形成的惯性。",
+        },
+      ],
+    },
+  },
+  current_reading: "你最近在慢慢收拢自己的注意力。",
+  visual_basis: "中心更稳，外围更轻。",
+  pattern_interpretation: "你在想靠近与想退后之间摆动，这像是先靠近再缩回的保护模式。",
+  life_connection: "在关系里，一段关系更靠近时会先暂停一下。",
   lite_healing_guidance: {
     directions: [
       {
@@ -41,57 +56,29 @@ const structured: LiteStructuredReport = {
     summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
     product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
   },
-  pro_teaser: "可以继续查看 Pro 解读。",
-  self_understanding_blocks: {
-    opening_hit: "你正在先稳住自己，再决定要不要继续往前。",
-    visual_evidence: {
-      summary: "中心颜色更浓，外围留白更多。",
-    },
-    state_interpretation: {
-      current_state: "你在回收注意力。",
-      emotional_tension: "同时又还保留一点试探。",
-      explanation_chain: "于是画面看起来既收又放。",
-    },
-    pattern_naming: {
-      pattern_name: "先靠近再缩回",
-      pattern_description: "你会先有表达冲动，然后又迅速回撤。",
-      protective_logic: "这样能先保住安全感。",
-    },
-    reality_connection: {
-      life_dimension: "关系",
-      typical_scene: "一段关系更靠近时会先暂停一下。",
-      current_impact: "对方会感到你忽近忽远。",
-    },
-    next_step: {
-      direction: "先不急着解释自己。",
-      action: "先说出一句真实感受。",
-    },
-  },
 };
 
 const proStructured: ProStructuredReport = {
-  first_impression: "你正在把原本分散的注意力重新拉回中心。",
-  core_insight_table: {
-    current_state: "外松内紧",
-    relationship_pattern: "想靠近又想保留退路",
-  },
-  three_circles_detailed: {
-    inner: {
-      label: "内圈",
-      reading: "核心感受已经很浓，但暂时不想完全暴露出来。",
+  topic_context: {
+    topic: "intimate_relationship",
+    topic_label: "亲密关系",
+    report_mode: "pro",
+    orientation: {
+      intro: "这份报告会从亲密关系这个议题角度看这张画。",
+      focus: "这个议题通常关注靠近、边界、安全感和依恋模式。",
+      key_terms: [],
     },
   },
-  micro_analysis_detailed: {
-    adjacent: "相邻区域贴得较近，说明感受之间正在互相牵动。",
-  },
-  imbalance_confirmed: {
-    primary: "边界过紧",
-    evidence: "外围张力仍然比较明显。",
-  },
-  root_cause: {
+  deep_impression: "你正在把原本分散的注意力重新拉回中心。",
+  evidence_digest: "核心感受已经很浓，但暂时不想完全暴露出来；相邻区域贴得较近，说明感受之间正在互相牵动。",
+  imbalance_diagnosis: "主要失衡是边界过紧，判断依据是外围张力仍然比较明显。",
+  root_cause_chain: {
+    surface: "关系靠近时先暂停。",
+    mechanism: "你会用回撤保留掌控感。",
     core: "担心主动表达之后失去掌控感。",
   },
-  healing_suggestions: [
+  deep_structure_interpretation: "在亲密关系议题下，这更像是靠近需求与安全边界之间的拉扯。",
+  healing_plan: [
     {
       phase: "第一阶段",
       focus: "先辨认自己最想守住的是什么。",
@@ -131,7 +118,7 @@ describe("shared ui", () => {
     );
 
     expect(html).toContain("模式命名");
-    expect(html).toContain("一个下一步");
+    expect(html).toContain("现实连接");
     expect(html).toContain("轻量调节方向");
     expect(html).toContain("现在可以先做的小练习");
     expect(html).toContain("独立产品入口");
@@ -142,9 +129,9 @@ describe("shared ui", () => {
       <SharedProStructuredReportCards structured={proStructured} />,
     );
 
-    expect(html).toContain("第一眼直觉");
-    expect(html).toContain("三圈深度诊断");
-    expect(html).toContain("疗愈建议");
+    expect(html).toContain("深度第一印象");
+    expect(html).toContain("证据摘要与结构展开");
+    expect(html).toContain("完整疗愈方案");
   });
 
   it("渲染 loading progress card", () => {

@@ -101,10 +101,12 @@ export function getLiteStructuredReport(
 
   const structured = report.structured as Partial<LiteStructuredReport>;
   if (
-    typeof structured.title !== "string" ||
-    typeof structured.overall_impression !== "string" ||
-    typeof structured.visual_elements_rendered !== "string" ||
-    typeof structured.emotion_portrait_rendered !== "string" ||
+    typeof structured.topic_context !== "object" ||
+    structured.topic_context === null ||
+    typeof structured.current_reading !== "string" ||
+    typeof structured.visual_basis !== "string" ||
+    typeof structured.pattern_interpretation !== "string" ||
+    typeof structured.life_connection !== "string" ||
     typeof structured.pro_report_entry !== "object" ||
     structured.pro_report_entry === null
   ) {
@@ -124,7 +126,16 @@ export function getProStructuredReport(
   const structured = report.structured as Partial<ProStructuredReport>;
   if (
     typeof structured !== "object" ||
-    structured === null
+    structured === null ||
+    typeof structured.topic_context !== "object" ||
+    structured.topic_context === null ||
+    typeof structured.deep_impression !== "string" ||
+    typeof structured.evidence_digest !== "string" ||
+    typeof structured.imbalance_diagnosis !== "string" ||
+    typeof structured.root_cause_chain !== "object" ||
+    structured.root_cause_chain === null ||
+    typeof structured.deep_structure_interpretation !== "string" ||
+    !Array.isArray(structured.healing_plan)
   ) {
     return null;
   }

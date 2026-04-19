@@ -42,15 +42,37 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     assert payload["title"] == "向前先稳住的人"
     assert tuple(payload["structured"].keys()) == lite_contract.field_names
     assert payload["structured"]["prompt_schema_validation_issues"] == []
-    assert payload["structured"]["self_understanding_blocks"]["opening_hit"] == payload["overall_impression"]
-    assert (
-        payload["structured"]["self_understanding_blocks"]["visual_evidence"]["summary"]
-        == payload["structured"]["visual_elements_rendered"]
-    )
+    assert payload["structured"]["topic_context"] == {
+        "topic": "wealth_career",
+        "topic_label": "财富事业",
+        "report_mode": "lite",
+        "orientation": {
+            "intro": "这份报告会从财富事业这个议题角度看这张画。",
+            "focus": "这个议题通常关注你如何使用行动力、价值感、资源感和目标节奏。",
+            "key_terms": [
+                {
+                    "term": "价值感",
+                    "explanation": "你是否觉得自己的付出、能力和选择值得被看见。",
+                },
+                {
+                    "term": "行动节奏",
+                    "explanation": "你在推进目标时，是更容易稳定前进，还是在压力下收缩或过度用力。",
+                },
+            ],
+        },
+    }
+    assert payload["structured"]["current_reading"] == payload["overall_impression"]
+    assert payload["structured"]["visual_basis"]
+    assert payload["structured"]["pattern_interpretation"]
+    assert payload["structured"]["life_connection"]
     assert payload["structured"]["lite_healing_guidance"]["directions"]
     assert payload["structured"]["lite_healing_guidance"]["micro_practices"]
     assert payload["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
     assert "独立购买" in payload["structured"]["pro_report_entry"]["product_note"]
+    assert "pro_teaser" not in payload["structured"]
+    assert "story" not in payload["structured"]
+    assert "theme_insights" not in payload["structured"]
+    assert "self_understanding_blocks" not in payload["structured"]
     assert payload["can_upgrade"] is True
     assert payload["upgrade_price"] == orchestrator.get_upgrade_diff()
 
@@ -79,6 +101,19 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     assert payload["version"] == "pro"
     assert tuple(payload["structured"].keys()) == pro_contract.field_names
     assert payload["structured"]["prompt_schema_validation_issues"] == []
+    assert payload["structured"]["topic_context"]["topic"] == "general"
+    assert payload["structured"]["topic_context"]["topic_label"] == "全面解读"
+    assert payload["structured"]["topic_context"]["report_mode"] == "pro"
+    assert payload["structured"]["deep_impression"]
+    assert payload["structured"]["evidence_digest"]
+    assert payload["structured"]["imbalance_diagnosis"]
+    assert payload["structured"]["root_cause_chain"]
+    assert payload["structured"]["deep_structure_interpretation"]
+    assert payload["structured"]["healing_plan"]
+    assert "first_impression" not in payload["structured"]
+    assert "core_insight_table" not in payload["structured"]
+    assert "root_cause" not in payload["structured"]
+    assert "healing_suggestions" not in payload["structured"]
     assert payload["can_upgrade"] is False
     assert payload["upgrade_price"] is None
 
@@ -104,7 +139,7 @@ def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_pat
     )
 
     assert payload["version"] == "lite"
-    assert payload["structured"]["title"] == payload["title"]
+    assert payload["structured"]["current_reading"] == payload["overall_impression"]
     assert payload["structured"]["prompt_schema_validation_issues"] == []
     assert payload["structured"]["pro_report_entry"]["summary"]
     assert payload["can_upgrade"] is False
@@ -164,26 +199,21 @@ def test_structured_report_contract_defines_required_fields():
     assert lite_contract.schema_version == "2026-04-18"
     assert lite_contract.required_field_names == (
         "prompt_schema_validation_issues",
-        "title",
-        "overall_impression",
-        "visual_elements_rendered",
-        "emotion_portrait_rendered",
-        "story",
-        "theme_insights",
-        "three_awareness",
-        "self_understanding_blocks",
+        "topic_context",
+        "current_reading",
+        "visual_basis",
+        "pattern_interpretation",
+        "life_connection",
         "lite_healing_guidance",
-        "six_insights_rendered",
-        "experiment_rendered",
         "pro_report_entry",
     )
     assert pro_contract.required_field_names == (
         "prompt_schema_validation_issues",
-        "first_impression",
-        "core_insight_table",
-        "three_circles_detailed",
-        "micro_analysis_detailed",
-        "imbalance_confirmed",
-        "root_cause",
-        "healing_suggestions",
+        "topic_context",
+        "deep_impression",
+        "evidence_digest",
+        "imbalance_diagnosis",
+        "root_cause_chain",
+        "deep_structure_interpretation",
+        "healing_plan",
     )

@@ -76,13 +76,24 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
     overall_impression:
       "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
     structured: {
-      title: "一镜 Lite 版预览",
-      overall_impression:
+      topic_context: {
+        topic: "general",
+        topic_label: "全面解读",
+        report_mode: "lite",
+        orientation: {
+          intro: "这份报告会从全面解读这个议题角度看这张画。",
+          focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+          key_terms: [],
+        },
+      },
+      current_reading:
         "你当前的表达像是在试着把注意力从外部噪音收回来，先回到自己的中心。",
-      visual_elements_rendered:
+      visual_basis:
         "中心颜色密度更高，外围线条更轻，说明你正在把主要能量压缩到一个更可控的范围里。",
-      emotion_portrait_rendered:
+      pattern_interpretation:
         "既有想进一步整理内在感受的需求，也保留了对外部变化的敏感度，因此画面同时出现稳住与扩张的张力。",
+      life_connection:
+        "留意你在哪些场景里最容易重新被外部节奏带走。",
       lite_healing_guidance: {
         directions: [
           {
@@ -112,8 +123,6 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
         product_note:
           "Pro 不是 Lite 的升级版，而是另一份独立购买、独立成立的深度完整解读。",
       },
-      pro_teaser:
-        "如果你希望从更深层结构继续理解这张画，可以单独进入 Pro 报告。",
     },
     report:
       version === "pro"

@@ -260,7 +260,12 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert report["structured"]["lite_healing_guidance"]["micro_practices"]
     assert report["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
     assert "更深层结构" in report["structured"]["pro_report_entry"]["summary"]
-    assert "【你的底色" in report["structured"]["six_insights_rendered"]["base"]
+    assert report["structured"]["topic_context"]["topic"] == "general"
+    assert report["structured"]["current_reading"] == report["overall_impression"]
+    assert report["structured"]["visual_basis"]
+    assert report["structured"]["pattern_interpretation"]
+    assert report["structured"]["life_connection"]
+    assert "six_insights_rendered" not in report["structured"]
     assert report["can_upgrade"] is True
 
 

@@ -11,6 +11,113 @@ from .report_blueprints import PRO_REPORT_BLUEPRINT
 from .structured_report_schema import get_structured_report_contract
 
 
+TOPIC_ORIENTATION_PRESETS: dict[str, dict[str, Any]] = {
+    "general": {
+        "label": "全面解读",
+        "focus": "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+        "key_terms": [],
+    },
+    "wealth_career": {
+        "label": "财富事业",
+        "focus": "这个议题通常关注你如何使用行动力、价值感、资源感和目标节奏。",
+        "key_terms": [
+            {
+                "term": "价值感",
+                "explanation": "你是否觉得自己的付出、能力和选择值得被看见。",
+            },
+            {
+                "term": "行动节奏",
+                "explanation": "你在推进目标时，是更容易稳定前进，还是在压力下收缩或过度用力。",
+            },
+        ],
+    },
+    "intimate_relationship": {
+        "label": "亲密关系",
+        "focus": "这个议题通常关注靠近、边界、安全感和依恋模式。",
+        "key_terms": [
+            {
+                "term": "安全感",
+                "explanation": "你在关系里能否感到自己可以被接住，同时仍保有自己的边界。",
+            },
+            {
+                "term": "依恋模式",
+                "explanation": "你在靠近、退开、表达需要和保护自己之间形成的惯性。",
+            },
+        ],
+    },
+    "father_relationship": {
+        "label": "与父亲的关系",
+        "focus": "这个议题通常关注权威、规则、行动许可、边界和被认可的经验。",
+        "key_terms": [
+            {
+                "term": "权威关系",
+                "explanation": "你如何感受规则、评价和外部要求，以及它们对行动感的影响。",
+            },
+            {
+                "term": "行动许可",
+                "explanation": "你是否允许自己向外表达、尝试、争取和承担选择。",
+            },
+        ],
+    },
+    "mother_relationship": {
+        "label": "与母亲的关系",
+        "focus": "这个议题通常关注滋养、接纳、依赖、分离和身体层面的安全感。",
+        "key_terms": [
+            {
+                "term": "滋养感",
+                "explanation": "你能否感到自己被照顾，也能否把照顾重新给回自己。",
+            },
+            {
+                "term": "分离与边界",
+                "explanation": "你如何在亲近与成为自己之间找到更舒适的位置。",
+            },
+        ],
+    },
+    "parent_child_relationship": {
+        "label": "亲子关系",
+        "focus": "这个议题通常关注照顾、期待、边界、责任感和代际模式。",
+        "key_terms": [
+            {
+                "term": "代际模式",
+                "explanation": "家庭中重复出现的期待、责任和回应方式。",
+            },
+            {
+                "term": "照顾边界",
+                "explanation": "你如何在爱与责任中保留自己的感受和节奏。",
+            },
+        ],
+    },
+    "health_wellness": {
+        "label": "身体健康",
+        "focus": "这个议题通常关注身体信号、压力调节、休息能力和身心连接。",
+        "key_terms": [
+            {
+                "term": "身体信号",
+                "explanation": "身体用紧绷、疲惫、兴奋或迟钝提示你当前的状态。",
+            },
+            {
+                "term": "压力调节",
+                "explanation": "你如何在外界压力和内在恢复之间重新找到节奏。",
+            },
+        ],
+    },
+    "personal_growth": {
+        "label": "个人成长",
+        "focus": "这个议题通常关注自我认同、改变动力、内在资源和新的选择方式。",
+        "key_terms": [
+            {
+                "term": "自我认同",
+                "explanation": "你如何理解自己是谁，以及现在正在成为怎样的人。",
+            },
+            {
+                "term": "成长边界",
+                "explanation": "你在改变时需要的安全感、节奏和可承受范围。",
+            },
+        ],
+    },
+}
+
+
 class PromptSchemaValidator:
     """Validate Lite/Pro structured payloads against prompt schema requirements."""
 
@@ -133,13 +240,16 @@ class ReportContractAssembler:
                         if pro_draft
                         else ["missing_layer_3_pro_draft"]
                     ),
-                    "first_impression": pro_draft.first_impression if pro_draft else None,
-                    "core_insight_table": pro_draft.core_insight_table if pro_draft else {},
-                    "three_circles_detailed": pro_draft.three_circles_detailed if pro_draft else {},
-                    "micro_analysis_detailed": pro_draft.micro_analysis_detailed if pro_draft else {},
-                    "imbalance_confirmed": pro_draft.imbalance_confirmed if pro_draft else {},
-                    "root_cause": pro_draft.root_cause if pro_draft else {},
-                    "healing_suggestions": pro_draft.healing_suggestions if pro_draft else [],
+                    "topic_context": self._build_topic_context(record, "pro"),
+                    "deep_impression": pro_draft.first_impression if pro_draft else "",
+                    "evidence_digest": self._build_pro_evidence_digest(pro_draft),
+                    "imbalance_diagnosis": self._build_pro_imbalance_diagnosis(pro_draft),
+                    "root_cause_chain": self._build_pro_root_cause_chain(pro_draft),
+                    "deep_structure_interpretation": self._build_pro_deep_structure_interpretation(
+                        record,
+                        pro_draft,
+                    ),
+                    "healing_plan": pro_draft.healing_suggestions if pro_draft else [],
                 }),
                 "report": report,
                 "ai_qa_context": record.get_ai_qa_context(),
@@ -178,30 +288,12 @@ class ReportContractAssembler:
                         if record.layer_1_lite_draft
                         else ["missing_layer_1_lite_draft"]
                     ),
-                    "title": lite_report.title,
-                    "overall_impression": lite_report.overall_impression,
-                    "visual_elements_rendered": lite_report.visual_elements_rendered,
-                    "emotion_portrait_rendered": lite_report.emotion_portrait_rendered,
-                    "story": {
-                        "base": lite_report.story.base.to_dict() if lite_report.story.base else None,
-                        "contradiction": (
-                            lite_report.story.contradiction.to_dict()
-                            if lite_report.story.contradiction
-                            else None
-                        ),
-                        "pattern": lite_report.story.pattern.to_dict() if lite_report.story.pattern else None,
-                        "defense": lite_report.story.defense.to_dict() if lite_report.story.defense else None,
-                        "block": lite_report.story.block.to_dict() if lite_report.story.block else None,
-                        "light": lite_report.story.light.to_dict() if lite_report.story.light else None,
-                    },
-                    "theme_insights": (
-                        lite_report.theme_insights.to_dict() if lite_report.theme_insights else None
-                    ),
-                    "three_awareness": [item.to_dict() for item in lite_report.three_awareness],
-                    "self_understanding_blocks": self._build_self_understanding_blocks(lite_report),
+                    "topic_context": self._build_topic_context(record, "lite"),
+                    "current_reading": lite_report.overall_impression,
+                    "visual_basis": lite_report.visual_elements_rendered,
+                    "pattern_interpretation": self._build_lite_pattern_interpretation(lite_report),
+                    "life_connection": self._build_lite_life_connection(lite_report),
                     "lite_healing_guidance": self._build_lite_healing_guidance(lite_report),
-                    "six_insights_rendered": lite_report.six_insights_rendered,
-                    "experiment_rendered": lite_report.experiment_rendered,
                     "pro_report_entry": self._build_pro_report_entry(lite_report),
                 }),
                 "report": report,
@@ -214,6 +306,135 @@ class ReportContractAssembler:
             "can_upgrade": False,
             "upgrade_price": None,
         }
+
+    def _build_topic_context(
+        self,
+        record: InterpretationRecord,
+        report_mode: str,
+    ) -> dict[str, Any]:
+        topic = (record.theme or "general").strip() or "general"
+        preset = TOPIC_ORIENTATION_PRESETS.get(topic, {})
+        topic_label = str(preset.get("label") or self._fallback_topic_label(topic)).strip()
+        focus = str(preset.get("focus") or f"这个议题会从{topic_label}的角度理解这张画。").strip()
+        key_terms = preset.get("key_terms", [])
+        return {
+            "topic": topic,
+            "topic_label": topic_label,
+            "report_mode": report_mode,
+            "orientation": {
+                "intro": f"这份报告会从{topic_label}这个议题角度看这张画。",
+                "focus": focus,
+                "key_terms": key_terms if isinstance(key_terms, list) else [],
+            },
+        }
+
+    def _fallback_topic_label(self, topic: str) -> str:
+        labels = {
+            "general": "全面解读",
+            "wealth_career": "财富事业",
+            "intimate_relationship": "亲密关系",
+            "father_relationship": "与父亲的关系",
+            "mother_relationship": "与母亲的关系",
+            "parent_child_relationship": "亲子关系",
+            "health_wellness": "身体健康",
+            "personal_growth": "个人成长",
+        }
+        return labels.get(topic, topic.replace("_", " ").strip() or "全面解读")
+
+    def _build_lite_pattern_interpretation(self, lite_report: Any) -> str:
+        story = lite_report.story if getattr(lite_report, "story", None) else None
+        parts = [
+            getattr(lite_report, "emotion_portrait_rendered", ""),
+            story.pattern.content if story and story.pattern else "",
+            story.defense.content if story and story.defense else "",
+            story.block.content if story and story.block else "",
+        ]
+        return self._join_text(parts)
+
+    def _build_lite_life_connection(self, lite_report: Any) -> str:
+        theme_insights = (
+            lite_report.theme_insights.to_dict()
+            if getattr(lite_report, "theme_insights", None)
+            else {}
+        )
+        return self._join_text([
+            theme_insights.get("scene", ""),
+            theme_insights.get("impact", ""),
+            theme_insights.get("awareness", ""),
+        ])
+
+    def _build_pro_evidence_digest(self, pro_draft: Layer3ProDraft | None) -> str:
+        if pro_draft is None:
+            return ""
+        circle_parts = []
+        for item in (pro_draft.three_circles_detailed or {}).values():
+            if not isinstance(item, dict):
+                continue
+            label = str(item.get("label") or "").strip()
+            reading = str(item.get("reading") or "").strip()
+            if reading:
+                circle_parts.append(f"{label}：{reading}" if label else reading)
+        micro_parts = [
+            str(value).strip()
+            for value in (pro_draft.micro_analysis_detailed or {}).values()
+            if isinstance(value, str) and value.strip()
+        ]
+        core_parts = [
+            str(value).strip()
+            for value in (pro_draft.core_insight_table or {}).values()
+            if isinstance(value, str) and value.strip()
+        ]
+        return self._join_text(core_parts[:2] + circle_parts + micro_parts)
+
+    def _build_pro_imbalance_diagnosis(self, pro_draft: Layer3ProDraft | None) -> str:
+        if pro_draft is None:
+            return ""
+        imbalance = pro_draft.imbalance_confirmed or {}
+        preferred_keys = ["primary", "summary", "evidence", "energy_level", "psychological_level"]
+        parts = [
+            str(imbalance.get(key) or "").strip()
+            for key in preferred_keys
+            if isinstance(imbalance.get(key), str) and str(imbalance.get(key)).strip()
+        ]
+        if parts:
+            return self._join_text(parts)
+        return self._join_text([
+            str(value).strip()
+            for value in imbalance.values()
+            if isinstance(value, str) and value.strip()
+        ])
+
+    def _build_pro_root_cause_chain(self, pro_draft: Layer3ProDraft | None) -> dict[str, str]:
+        root_cause = pro_draft.root_cause if pro_draft else {}
+        return {
+            "surface": str(root_cause.get("surface") or root_cause.get("表面现象") or "").strip(),
+            "mechanism": str(root_cause.get("deeper") or root_cause.get("形成机制") or "").strip(),
+            "core": str(root_cause.get("core") or root_cause.get("核心信念") or "").strip(),
+        }
+
+    def _build_pro_deep_structure_interpretation(
+        self,
+        record: InterpretationRecord,
+        pro_draft: Layer3ProDraft | None,
+    ) -> str:
+        topic_label = self._fallback_topic_label(record.theme or "general")
+        if pro_draft is None:
+            return ""
+        root_chain = self._build_pro_root_cause_chain(pro_draft)
+        parts = [
+            f"在{topic_label}这个议题下，这份 Pro 解读会把画面证据、失衡判断和根因链放在一起看。",
+            root_chain.get("mechanism", ""),
+            root_chain.get("core", ""),
+        ]
+        return self._join_text(parts)
+
+    def _join_text(self, parts: list[Any]) -> str:
+        cleaned = [
+            str(part).strip()
+            for part in parts
+            if isinstance(part, str) and str(part).strip()
+        ]
+        return "\n\n".join(cleaned)
 
     def _build_self_understanding_blocks(self, lite_report: Any) -> dict[str, Any]:
         story = lite_report.story if getattr(lite_report, "story", None) else None

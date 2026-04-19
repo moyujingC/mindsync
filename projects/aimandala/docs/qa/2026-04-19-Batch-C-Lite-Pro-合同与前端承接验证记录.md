@@ -1,7 +1,7 @@
 # 一镜一梳：Batch C Lite / Pro 合同与前端承接验证记录
 
-> 状态：working
-> 版本：0.1.0
+> 状态：passed
+> 版本：1.0.0
 > owner：Test / QA
 > last_updated：2026-04-19
 > 项目：aimandala
@@ -51,7 +51,30 @@
 
 ## 4. 当前结果
 
-待 Batch C 实现与自动化执行后回填。
+截至 2026-04-19，本批验证结果：
+
+1. TDD 红灯验证：
+   - `test_api_v2_report_contracts.py` 先失败于 `product_block_debug.lite` 缺少完整产品区块 trace。
+   - `browser-debug-panel.test.tsx` 先失败于面板未渲染 `Topic Context Trace / Product Block Debug / Internal Compatibility`。
+2. TDD 转绿验证：
+   - `pytest projects/aimandala/toC/app/backend/tests/unit/test_api_v2_report_contracts.py -q`
+   - 结果：`3 passed`
+   - `cd projects/aimandala/toC/app/frontend && npm test -- --run mobile-web/browser-debug-panel.test.tsx`
+   - 结果：`1 passed file, 3 passed tests`
+3. 全量目标验证：
+   - `pytest projects/aimandala/toC/app/backend/tests/unit/test_report_contracts.py projects/aimandala/toC/app/backend/tests/unit/test_api_v2_report_contracts.py projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py projects/aimandala/toC/app/backend/tests/unit/test_api_health.py -q`
+   - 结果：`89 passed`
+   - `cd projects/aimandala/toC/app/frontend && npm test -- --run shared/core/flow.test.ts shared/core/report-structure.test.ts shared/ui/shared-ui.test.tsx mobile-web/controller.test.ts mobile-web/app.test.tsx mobile-web/browser-debug-panel.test.tsx`
+   - 结果：`6 passed files, 26 passed tests`
+   - `git diff --check`
+   - 结果：通过
+
+已确认：
+
+1. Lite 正式合同只暴露产品区块字段，旧 `pro_teaser` 仅保留在 debug / compatibility 层。
+2. Pro 正式合同只暴露产品区块字段，旧 `healing_suggestions` 仅作为内部来源和 debug compatibility 信息存在。
+3. debug 已能按产品区块展示 `final / narrative_trace / evidence_trace / prompt_trace / quality_trace`。
+4. `General` 与主题版使用同一 Lite / Pro shape，差异收束到 `topic_context` 与内容。
 
 ## 5. 放行条件
 
@@ -59,3 +82,9 @@
 2. 前端共享类型和结果页测试通过
 3. debug 区块钻取可见且与合同字段对齐
 4. `General` 与主题版只在内容上不同，不在结构上分叉
+
+## 6. 残留观察项
+
+1. `can_upgrade / upgrade_price` 仍是兼容壳字段，不再代表产品真相，后续可在兼容清理批次处理。
+2. prompt schema 仍保持 `1.6`，其内部字段名仍会出现旧写作骨架；本批只保证对外主合同和 debug trace 已切到产品区块模型。
+3. 测试运行可能写动 `projects/aimandala/toC/app/backend/data/interpretations/legacy-route-record.json` 的末尾换行；该文件不纳入本批提交。
