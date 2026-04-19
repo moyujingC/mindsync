@@ -8,8 +8,8 @@
   - 已包含正式入库的脱敏画作资产池。
   - 当前 9 张 `IMG_*.jpeg` 都属于正式纳管资产。
 - descriptor / manifest
-  - 仍是旧 `sample-*` 体系。
-  - 完整切换到 `toc-mvp-fixture-001~004` 属于后续样本重建批次，不在本次完成。
+  - 当前正式体系已经切到 `toc-mvp-fixture-001~004`。
+  - 旧 `sample-*` 不再作为默认正式入口。
 
 当前资产池中的正式脱敏图片：
 
@@ -25,13 +25,12 @@
   - `assets/IMG_5079.jpeg`
   - `assets/IMG_5081.jpeg`
 
-当前仍保留的旧样本描述体系：
+当前正式固定样本：
 
-- `sample-a-lite-general.yaml`
-- `sample-b-lite-to-pro-career.yaml`
-- `sample-c-existing-reuse.yaml`
-- `sample-d-intimate-fallback.yaml`
-- `sample-e-warning-general.yaml`
+- `toc-mvp-fixture-001.yaml`
+- `toc-mvp-fixture-002.yaml`
+- `toc-mvp-fixture-003.yaml`
+- `toc-mvp-fixture-004.yaml`
 
 使用规则：
 

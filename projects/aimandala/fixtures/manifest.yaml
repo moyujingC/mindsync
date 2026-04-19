@@ -1,36 +1,29 @@
 fixtures:
-  - id: toc-mvp-sample-a-lite-general
-    path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-a-lite-general.yaml
+  - id: toc-mvp-fixture-001
+    path: fixtures/toc-mvp/toc-mvp-fixture-001.yaml
     scope: toc-mvp
     purpose:
       - tc-01
       - tc-02
-    kind: lite-happy-path
-  - id: toc-mvp-sample-b-lite-to-pro-career
-    path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-b-lite-to-pro-career.yaml
+    kind: lite-baseline
+  - id: toc-mvp-fixture-002
+    path: fixtures/toc-mvp/toc-mvp-fixture-002.yaml
     scope: toc-mvp
     purpose:
       - tc-03
       - tc-04
-    kind: pro-upgrade-path
-  - id: toc-mvp-sample-c-existing-reuse
-    path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-c-existing-reuse.yaml
+    kind: pro-purchase
+  - id: toc-mvp-fixture-003
+    path: fixtures/toc-mvp/toc-mvp-fixture-003.yaml
     scope: toc-mvp
     purpose:
       - tc-04
       - tc-05
-    kind: existing-record-reuse
-  - id: toc-mvp-sample-d-intimate-fallback
-    path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-d-intimate-fallback.yaml
-    scope: toc-mvp
-    purpose:
-      - tc-02
-      - tc-03
-    kind: fallback-case
-  - id: toc-mvp-sample-e-warning-general
-    path: /Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-e-warning-general.yaml
+    kind: existing-reuse
+  - id: toc-mvp-fixture-004
+    path: fixtures/toc-mvp/toc-mvp-fixture-004.yaml
     scope: toc-mvp
     purpose:
       - tc-02
       - tc-06
-    kind: warning-case
+    kind: warning-trace

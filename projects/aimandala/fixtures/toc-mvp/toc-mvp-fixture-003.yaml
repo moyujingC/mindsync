@@ -1,0 +1,45 @@
+id: toc-mvp-fixture-003
+status: current
+owner: Test / QA
+scope: To C MVP
+theme: general
+fixture_type: existing-reuse
+asset_ref:
+  kind: image-asset
+  asset_path: fixtures/toc-mvp/assets/IMG_5062.jpeg
+  evidence_path: fixtures/toc-mvp/evidence/toc-mvp-fixture-003.md
+  note: 重复创建复用已有 interpretation 的样本
+input:
+  user_profile: qa-fixture-user-003
+  image_path: fixtures/toc-mvp/assets/IMG_5062.jpeg
+  image_label: 脱敏复用验证画作
+  painting_intention: 再次验证相同输入是否复用
+  painting_feeling: 保持不变
+  expected_report_version: lite
+execution:
+  create_twice: true
+  upgrade_to_pro: false
+validation:
+  report_version: lite
+  existing_on_repeat: true
+  fallback_used: false
+  warning_ids: []
+  required_structured_fields:
+    - topic_context
+    - current_reading
+    - visual_basis
+    - pattern_interpretation
+    - life_connection
+    - lite_healing_guidance
+    - pro_report_entry
+coverage:
+  - TC-04
+  - TC-05
+expected_observations:
+  - 第二次 create 返回 existing=true
+  - interpretation_id 稳定复用
+  - Lite 新合同字段仍完整
+review_entrypoints:
+  - projects/aimandala/scripts/verify_fixture_003_existing_reuse.py
+  - projects/aimandala/toC/app/backend/tests/unit/test_api_health.py
+  - projects/aimandala/toC/app/backend/tests/unit/test_knowledge_workbench_v22.py

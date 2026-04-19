@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Verify fixture sample C: existing interpretation reuse semantics."""
+"""Verify fixture 003: existing interpretation reuse semantics."""
 
 from __future__ import annotations
 
 import json
-import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -17,28 +16,39 @@ BACKEND_ROOT = PROJECT_ROOT / "toC" / "app" / "backend"
 sys.path.insert(0, str(BACKEND_ROOT))
 
 
-def reset_api_state() -> None:
+def reset_api_state(*, temp_root: Path | None = None) -> None:
     from app.api import routes_v2
+    from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
+    from app.core.pipeline.store import InterpretationStore
 
-    routes_v2._orchestrator = None
+    routes_v2._active_pro_upgrade_jobs.clear()
     routes_v2._upload_storage = None
-    shutil.rmtree(BACKEND_ROOT / "data", ignore_errors=True)
+    routes_v2._knowledge_workbench = None
+    routes_v2._miniapp_stub_store = None
+    routes_v2._orchestrator = None
+
+    if temp_root is not None:
+        store = InterpretationStore(storage_dir=str(temp_root / "interpretations"))
+        routes_v2._orchestrator = LayeredOrchestrator(
+            store=store,
+            enable_vision=False,
+        )
 
 
 def main() -> int:
     from app.api.main import app
 
-    reset_api_state()
-    client = TestClient(app)
+    with tempfile.TemporaryDirectory(prefix="aimandala-fixture-003-") as temp_dir:
+        reset_api_state(temp_root=Path(temp_dir))
+        client = TestClient(app)
 
-    with tempfile.TemporaryDirectory(prefix="aimandala-sample-c-") as temp_dir:
-        image_path = Path(temp_dir) / "sample-c-existing.png"
-        image_path.write_bytes(b"mock-image-existing")
-
+        image_path = PROJECT_ROOT / "fixtures" / "toc-mvp" / "assets" / "IMG_5062.jpeg"
         payload = {
-            "user_id": "qa-fixture-user-c",
+            "user_id": "qa-fixture-user-003",
             "image_path": str(image_path),
             "theme": "general",
+            "painting_intention": "再次验证相同输入是否复用",
+            "painting_feeling": "保持不变",
         }
 
         first = client.post("/api/v2/interpretations", json=payload)
@@ -69,7 +79,7 @@ def main() -> int:
             json.dumps(
                 {
                     "ok": ok,
-                    "sample_id": "toc-mvp-sample-c-existing-reuse",
+                    "sample_id": "toc-mvp-fixture-003",
                     "first_interpretation_id": first_data.get("interpretation_id"),
                     "second_interpretation_id": second_data.get("interpretation_id"),
                     "second_existing": second_data.get("existing"),
