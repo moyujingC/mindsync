@@ -77,6 +77,18 @@ def parse_manifest(path: Path) -> list[ManifestEntry]:
     return entries
 
 
+def resolve_project_relative_path(raw_path: str) -> Path:
+    path = raw_path.strip()
+    if not path:
+        return Path(path)
+    if path.startswith("$REPO_ROOT/"):
+        return PROJECT_ROOT / path[len("$REPO_ROOT/") :]
+    candidate = Path(path)
+    if candidate.is_absolute():
+        return candidate
+    return PROJECT_ROOT / candidate
+
+
 def parse_descriptor(path: Path) -> dict[str, object]:
     data: dict[str, object] = {}
     current_list_key: str | None = None
@@ -154,7 +166,7 @@ def validate() -> list[str]:
             errors.append(f"{entry.fixture_id}: missing path in manifest")
             continue
 
-        descriptor_path = Path(entry.path)
+        descriptor_path = resolve_project_relative_path(entry.path)
         if not descriptor_path.exists():
             errors.append(f"{entry.fixture_id}: descriptor missing at {descriptor_path}")
             continue
@@ -184,6 +196,25 @@ def validate() -> list[str]:
         asset_ref = descriptor.get("asset_ref")
         if not isinstance(asset_ref, dict) or not asset_ref.get("kind"):
             errors.append(f"{entry.fixture_id}: asset_ref.kind is required")
+        else:
+            for key in ["asset_path", "evidence_path"]:
+                raw_value = asset_ref.get(key)
+                if not isinstance(raw_value, str) or not raw_value.strip():
+                    errors.append(f"{entry.fixture_id}: asset_ref.{key} is required")
+                    continue
+                resolved = resolve_project_relative_path(raw_value)
+                if not resolved.exists():
+                    errors.append(f"{entry.fixture_id}: missing {key} at {resolved}")
+
+        input_payload = descriptor.get("input")
+        if isinstance(input_payload, dict):
+            raw_image_path = input_payload.get("image_path")
+            if not isinstance(raw_image_path, str) or not raw_image_path.strip():
+                errors.append(f"{entry.fixture_id}: input.image_path is required")
+            else:
+                resolved = resolve_project_relative_path(raw_image_path)
+                if not resolved.exists():
+                    errors.append(f"{entry.fixture_id}: missing image_path at {resolved}")
 
     return errors
 

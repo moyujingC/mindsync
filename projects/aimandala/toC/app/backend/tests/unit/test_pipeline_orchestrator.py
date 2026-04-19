@@ -256,8 +256,16 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert report["title"] == "慢慢亮起来的中心"
     assert "一镜 Lite 版解读报告模板 v1.6" in report["structured"]["prompt_preview"]
     assert report["structured"]["prompt_schema_validation_issues"] == []
-    assert "失衡类型与对应疗愈建议" in report["structured"]["pro_teaser"]
-    assert "【你的底色" in report["structured"]["six_insights_rendered"]["base"]
+    assert report["structured"]["lite_healing_guidance"]["directions"]
+    assert report["structured"]["lite_healing_guidance"]["micro_practices"]
+    assert report["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
+    assert "更深层结构" in report["structured"]["pro_report_entry"]["summary"]
+    assert report["structured"]["topic_context"]["topic"] == "general"
+    assert report["structured"]["current_reading"] == report["overall_impression"]
+    assert report["structured"]["visual_basis"]
+    assert report["structured"]["pattern_interpretation"]
+    assert report["structured"]["life_connection"]
+    assert "six_insights_rendered" not in report["structured"]
     assert report["can_upgrade"] is True
 
 
@@ -301,8 +309,19 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
     assert profile["generation_mode"]["llm_role"] == "none"
     assert profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
     assert profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
+    assert '"runtime_evidence"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
+    assert '"narrative_plan"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
+    assert '"compatibility_projection"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
+    assert '"runtime_evidence"' in profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
+    assert '"narrative_plan"' in profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
     assert profile["field_provenance"]["lite"][0]["generation_mode"] == "knowledge_only"
     assert profile["field_provenance"]["pro"][0]["generation_mode"] == "knowledge_only"
+    assert profile["knowledge_debug"]["narrative_plans"]["lite"]["mode"] == "lite"
+    assert profile["knowledge_debug"]["narrative_plans"]["pro"]["mode"] == "pro"
+    assert (
+        profile["knowledge_debug"]["narrative_plans"]["lite"]["sections"]["lite_healing_guidance"]
+    )
+    assert profile["knowledge_debug"]["narrative_plans"]["pro"]["sections"]["healing_suggestions"]
     assert "story_sections" in profile["knowledge_debug"]["knowledge_projections"]["lite"]
     assert "root_cause" in profile["knowledge_debug"]["knowledge_projections"]["pro"]
     assert profile["diagnostics"]["summary"]["no_llm_override_on_structured_fields"] is True
@@ -426,6 +445,99 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
         def build_theme_prompt_context(self, **kwargs):
             return "Runtime-Theme-Prompt-Context"
 
+        def build_lite_narrative_plan(self, **kwargs):
+            return {
+                "mode": "lite",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "title": {"content": "Runtime-Lite-Title", "trace": {}},
+                    "overall_impression": {"content": "Runtime-Overall-Impression", "trace": {}},
+                    "visual_elements": {"content": "Runtime-Visual-Elements", "trace": {}},
+                    "emotion_portrait": {"content": "Runtime-Emotion-Portrait", "trace": {}},
+                    "story_sections": {
+                        "content": {
+                            "base": "Runtime-Story-Base",
+                            "contradiction": "Runtime-Story-Contradiction",
+                            "pattern": "Runtime-Story-Pattern",
+                            "defense": "Runtime-Story-Defense",
+                            "block": "Runtime-Story-Block",
+                            "light": "Runtime-Story-Light",
+                        },
+                        "trace": {},
+                    },
+                    "theme_insights": {
+                        "content": {
+                            "scene": "Runtime-Theme-Scene",
+                            "impact": "Runtime-Theme-Impact",
+                            "awareness": "Runtime-Theme-Awareness",
+                        },
+                        "trace": {},
+                    },
+                    "lite_healing_guidance": {
+                        "content": {
+                            "directions": [{"title": "Direction", "content": "Direction Content"}],
+                            "micro_practices": [{"title": "Practice", "content": "Practice Content"}],
+                        },
+                        "trace": {},
+                    },
+                    "pro_report_entry": {
+                        "content": {
+                            "title": "另一份更深的独立报告",
+                            "summary": "Runtime-Pro-Teaser",
+                            "product_note": "独立购买",
+                        },
+                        "trace": {},
+                    },
+                },
+                "legacy_projection": {
+                    "title": "Runtime-Lite-Title",
+                    "overall_impression": "Runtime-Overall-Impression",
+                    "visual_elements": "Runtime-Visual-Elements",
+                    "experiment": {
+                        "title": "Runtime-Experiment-Title",
+                        "content": "Runtime-Experiment-Content",
+                    },
+                    "story_angles": {
+                        "base": "Runtime-Base-Angle",
+                        "light": "Runtime-Light-Angle",
+                    },
+                    "six_insights": {
+                        "base": {
+                            "title": "Runtime-Six-Base-Title",
+                            "content": "Runtime-Six-Base-Content",
+                            "summary": "Runtime-Six-Base-Summary",
+                        },
+                        "light": {
+                            "title": "Runtime-Six-Light-Title",
+                            "content": "Runtime-Six-Light-Content",
+                            "summary": "Runtime-Six-Light-Summary",
+                        },
+                    },
+                    "story_sections": {
+                        "base": "Runtime-Story-Base",
+                        "contradiction": "Runtime-Story-Contradiction",
+                        "pattern": "Runtime-Story-Pattern",
+                        "defense": "Runtime-Story-Defense",
+                        "block": "Runtime-Story-Block",
+                        "light": "Runtime-Story-Light",
+                    },
+                    "theme_insights": {
+                        "scene": "Runtime-Theme-Scene",
+                        "impact": "Runtime-Theme-Impact",
+                        "awareness": "Runtime-Theme-Awareness",
+                    },
+                    "emotion_portrait": "Runtime-Emotion-Portrait",
+                    "pro_teaser": "Runtime-Pro-Teaser",
+                    "three_awareness": [
+                        {
+                            "day": 1,
+                            "title": "Runtime-Awareness-1",
+                            "content": "Runtime-Awareness-Content-1",
+                        }
+                    ],
+                },
+            }
+
         def build_lite_narrative_projection(self, **kwargs):
             assert kwargs["theme"] == "general"
             assert kwargs["default_pro_teaser"]
@@ -489,6 +601,7 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
     layer1 = orchestrator._build_layer1_placeholder(record)
 
     assert layer1.title == "Runtime-Lite-Title"
+    assert layer1.narrative_plan["mode"] == "lite"
     assert layer1.overall_impression == "Runtime-Overall-Impression"
     assert layer1.visual_elements == "Runtime-Visual-Elements"
     assert layer1.experiment["title"] == "Runtime-Experiment-Title"
@@ -848,6 +961,21 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
         )
     )
     record.layer_0_raw.imbalance_candidates = ["水多火灭"]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["primary_candidates"] = [
+        {
+            "id": "水多火灭",
+            "category": "相乘",
+            "toc_supported": True,
+            "score": 0.91,
+            "selected_for_primary": True,
+            "reason_codes": ["attacker_excess", "target_deficient"],
+        }
+    ]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["synthetic_signal"] = {
+        "id": "transition-overload",
+        "used": False,
+        "reason": "",
+    }
     store.save(record)
 
     result = orchestrator.upgrade_to_pro(record.interpretation_id)
@@ -899,6 +1027,21 @@ def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
     )
     record.layer_0_raw = orchestrator._build_layer0_fallback(record)
     record.layer_0_raw.imbalance_candidates = ["transition-overload"]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["primary_candidates"] = [
+        {
+            "id": "transition-overload",
+            "category": "synthetic",
+            "toc_supported": True,
+            "score": 1.0,
+            "selected_for_primary": True,
+            "reason_codes": ["fallback_signal"],
+        }
+    ]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["synthetic_signal"] = {
+        "id": "transition-overload",
+        "used": True,
+        "reason": "fallback_signal",
+    }
     record.layer_1_lite_draft = Layer1LiteDraft()
     record.layer_1_lite_draft.story.contradiction.content = "一边想继续，一边又会先缩回来。"
     record.layer_1_lite_draft.story.block.content = "临门一脚前会先停顿一下。"
@@ -914,6 +1057,75 @@ def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
 
 def test_layer3_placeholder_prefers_runtime_pro_projection():
     class StubNarrativeService:
+        def build_pro_narrative_plan(self, **kwargs):
+            return {
+                "mode": "pro",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "first_impression": {"content": "Runtime-Pro-First-Impression", "trace": {}},
+                    "core_insight_table": {
+                        "content": {
+                            "能量本质": "Runtime-Pro-Energy-Essence",
+                            "核心失衡": "Runtime-Imbalance-Summary",
+                            "关键卡点": "Runtime-Pro-Block-Point",
+                            "转化方向": "Runtime-Pro-Direction",
+                            "疗愈核心": "Runtime-Pro-Healing-Core",
+                        },
+                        "trace": {},
+                    },
+                    "three_circles_detailed": {
+                        "content": {
+                            "inner": "Runtime-Pro-Inner-Reading",
+                            "middle": "Runtime-Pro-Middle-Reading",
+                            "outer": "Runtime-Pro-Outer-Reading",
+                        },
+                        "trace": {},
+                    },
+                    "micro_analysis_detailed": {
+                        "content": {
+                            "节奏关系": "Runtime-Pro-Micro-Rhythm",
+                            "关系模式": "Runtime-Pro-Micro-Relationship",
+                            "行动模式": "Runtime-Pro-Micro-Action",
+                        },
+                        "trace": {},
+                    },
+                    "root_cause": {
+                        "content": {
+                            "surface": "Runtime-Pro-Root-Surface",
+                            "deeper": "Runtime-Pro-Root-Deeper",
+                            "core": "Runtime-Pro-Root-Core",
+                        },
+                        "trace": {},
+                    },
+                    "healing_suggestions": {
+                        "content": [{"phase": "当前阶段", "focus": "Focus", "practice": "Practice"}],
+                        "trace": {},
+                    },
+                },
+                "legacy_projection": {
+                    "first_impression": "Runtime-Pro-First-Impression",
+                    "energy_essence": "Runtime-Pro-Energy-Essence",
+                    "block_point": "Runtime-Pro-Block-Point",
+                    "direction": "Runtime-Pro-Direction",
+                    "healing_core": "Runtime-Pro-Healing-Core",
+                    "circle_readings": {
+                        "inner": "Runtime-Pro-Inner-Reading",
+                        "middle": "Runtime-Pro-Middle-Reading",
+                        "outer": "Runtime-Pro-Outer-Reading",
+                    },
+                    "micro_sections": {
+                        "节奏关系": "Runtime-Pro-Micro-Rhythm",
+                        "关系模式": "Runtime-Pro-Micro-Relationship",
+                        "行动模式": "Runtime-Pro-Micro-Action",
+                    },
+                    "root_cause": {
+                        "surface": "Runtime-Pro-Root-Surface",
+                        "deeper": "Runtime-Pro-Root-Deeper",
+                        "core": "Runtime-Pro-Root-Core",
+                    },
+                },
+            }
+
         def build_imbalance_projection(self, **kwargs):
             return {
                 "contradiction": "Runtime-Imbalance-Primary",
@@ -965,6 +1177,7 @@ def test_layer3_placeholder_prefers_runtime_pro_projection():
 
     layer3 = orchestrator._build_pro_placeholder_draft(record)
 
+    assert layer3.narrative_plan["mode"] == "pro"
     assert layer3.first_impression == "Runtime-Pro-First-Impression"
     assert layer3.core_insight_table["能量本质"] == "Runtime-Pro-Energy-Essence"
     assert layer3.core_insight_table["关键卡点"] == "Runtime-Pro-Block-Point"

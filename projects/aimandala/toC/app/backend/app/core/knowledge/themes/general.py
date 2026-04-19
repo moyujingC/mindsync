@@ -544,7 +544,7 @@ HEALING_PRESCRIPTIONS = {
     "issue_types": {
         "能量失衡": {
             "symptoms": "生命能量分布不均，某些领域过度发展而另一些被忽视",
-            "mandala_prescription": "绘制以平衡为主题的曼陀罗，关注各圈能量的协调。建议每天1张，持续21天",
+            "mandala_prescription": "绘制以平衡为主题的曼陀罗，关注各圈能量的协调。建议每天1张，连续练习约三周",
             "daily_practice": "每天进行身体扫描，觉察能量在身体的分布，记录感受",
             "cognitive_upgrade": "认识到生命是一个整体，各领域的平衡比单领域的极致更重要",
         },
@@ -556,7 +556,7 @@ HEALING_PRESCRIPTIONS = {
         },
         "缺乏方向": {
             "symptoms": "感到迷茫，缺乏目标感，生活缺乏动力",
-            "mandala_prescription": "绘制以未来愿景为主题的曼陀罗，中心放置代表理想的颜色。建议每天1张，持续21天",
+            "mandala_prescription": "绘制以未来愿景为主题的曼陀罗，中心放置代表理想的颜色。建议每天1张，连续练习约三周",
             "daily_practice": "每天花10分钟想象理想的自己和生活，记录浮现的画面",
             "cognitive_upgrade": "方向不是找出来的，而是在行动中逐渐清晰的",
         },
@@ -568,7 +568,7 @@ HEALING_PRESCRIPTIONS = {
         },
         "行动力不足": {
             "symptoms": "想得多做得少，总是在准备但从不开始",
-            "mandala_prescription": "绘制以行动为主题的曼陀罗，使用红色、绿色。建议每天3张，持续21天",
+            "mandala_prescription": "绘制以行动为主题的曼陀罗，使用红色、绿色。建议每天3张，连续练习约三周",
             "daily_practice": "每天做一件一直想做但没做的事，无论大小",
             "cognitive_upgrade": "完成比完美更重要，行动本身就是答案",
         },
@@ -615,11 +615,8 @@ def get_experiment_template() -> str:
 def get_pro_upgrade_teaser() -> str:
     """获取Pro版引导文案"""
     return """
-🔓 还有6个深层洞察...
-包括：
-- 这种能量模式在亲密关系/财富/健康中的具体表现
+还有更多深层洞察，包括：
+- 这种能量模式在亲密关系、财富与健康中的具体表现
 - 童年经历如何塑造了这一模式
-- 21天个人成长定制方案
-
-👉 解锁完整版
+- 更完整的结构、根因与疗愈视角
 """

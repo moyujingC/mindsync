@@ -14,20 +14,24 @@ class KnowledgeDebugBlockBuilder:
 
     FIELD_QUERY_MAP = {
         "title": ["theme", "narrative"],
-        "overall_impression": [
+        "current_reading": [
             "theme",
             "imbalance.primary",
             "circles.inner",
             "circles.middle",
             "circles.outer",
         ],
-        "visual_elements_rendered": ["theme", "circles.inner", "circles.middle", "circles.outer"],
-        "emotion_portrait_rendered": ["theme", "imbalance.primary", "narrative"],
-        "pro_teaser": ["narrative", "theme"],
-        "first_impression": ["imbalance.primary", "narrative", "theme"],
-        "core_insight_table": ["theme", "imbalance.primary", "circles.inner", "circles.middle", "circles.outer"],
-        "root_cause": ["imbalance.primary", "theme", "narrative"],
-        "healing_suggestions": ["healing", "imbalance.primary", "narrative"],
+        "visual_basis": ["theme", "circles.inner", "circles.middle", "circles.outer"],
+        "pattern_interpretation": ["theme", "imbalance.primary", "narrative"],
+        "life_connection": ["theme", "narrative"],
+        "lite_healing_guidance": ["theme", "healing", "narrative"],
+        "pro_report_entry": ["narrative", "theme"],
+        "deep_impression": ["imbalance.primary", "narrative", "theme"],
+        "evidence_digest": ["theme", "imbalance.primary", "circles.inner", "circles.middle", "circles.outer"],
+        "imbalance_diagnosis": ["imbalance.primary", "theme"],
+        "root_cause_chain": ["imbalance.primary", "theme", "narrative"],
+        "deep_structure_interpretation": ["theme", "narrative", "imbalance.primary"],
+        "healing_plan": ["healing", "imbalance.primary", "narrative"],
         "full_report_markdown": [
             "theme",
             "imbalance.primary",
@@ -48,20 +52,43 @@ class KnowledgeDebugBlockBuilder:
         self._get_knowledge_runtime = get_knowledge_runtime
         self._get_primary_knowledge_signal = get_primary_knowledge_signal
 
-    def build(self, record: InterpretationRecord) -> dict[str, Any]:
+    def build(
+        self,
+        record: InterpretationRecord,
+        *,
+        report_mode: str = "all",
+    ) -> dict[str, Any]:
         runtime = self._get_knowledge_runtime()
         layer0 = record.layer_0_raw.to_dict() if record.layer_0_raw else {}
+        narrative_plans = self._build_narrative_plans(record)
         knowledge_projections = self._build_knowledge_projections(record)
+        algorithm_fidelity_trace = self._build_algorithm_fidelity_trace(
+            layer0=layer0,
+            narrative_plans=narrative_plans,
+            knowledge_projections=knowledge_projections,
+            record=record,
+            report_mode=report_mode,
+        )
         if runtime is None:
             return {
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
+                "algorithm_fidelity_trace": algorithm_fidelity_trace,
+                "narrative_plans": narrative_plans,
                 "knowledge_projections": knowledge_projections,
+                "topic_context_trace": self._build_topic_context_trace(record),
+                "product_block_debug": self._build_product_block_debug(
+                    record=record,
+                    layer0=layer0,
+                    field_to_knowledge_map={},
+                ),
+                "internal_compatibility": self._build_internal_compatibility(record),
                 "query_results": {},
                 "fallback_analysis": {
                     "used": bool(layer0.get("fallback_summary", {}).get("used")),
                     "levels": layer0.get("fallback_summary", {}).get("levels", []),
                     "warnings": layer0.get("fallback_summary", {}).get("warnings", []),
+                    "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
                     "quality_flags": layer0.get("quality_flags", []),
                     "query_fallbacks": [],
                 },
@@ -140,13 +167,436 @@ class KnowledgeDebugBlockBuilder:
                 "build_kind": build_info.get("build_source"),
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
+            "algorithm_fidelity_trace": algorithm_fidelity_trace,
+            "narrative_plans": narrative_plans,
             "knowledge_projections": knowledge_projections,
+            "topic_context_trace": self._build_topic_context_trace(record),
+            "product_block_debug": self._build_product_block_debug(
+                record=record,
+                layer0=layer0,
+                field_to_knowledge_map=field_to_knowledge_map,
+            ),
+            "internal_compatibility": self._build_internal_compatibility(record),
             "query_results": query_results,
             "fallback_analysis": fallback_analysis,
             "warning_analysis": warning_analysis,
             "source_refs": source_refs_list,
             "field_to_knowledge_map": field_to_knowledge_map,
         }
+
+    def _build_topic_context_trace(self, record: InterpretationRecord) -> dict[str, Any]:
+        theme = record.theme or "general"
+        return {
+            "topic": theme,
+            "report_modes": list(record.version_purchased or []),
+            "knowledge_route": "general" if theme == "general" else "theme_only",
+            "general_mixed": False,
+        }
+
+    def _build_product_block_debug(
+        self,
+        *,
+        record: InterpretationRecord,
+        layer0: dict[str, Any],
+        field_to_knowledge_map: dict[str, Any],
+    ) -> dict[str, Any]:
+        lite_final = record.layer_2_lite_final
+        pro_draft = record.layer_3_pro_draft
+        fidelity_flags = layer0.get("fidelity_flags", layer0.get("quality_flags", []))
+        fallback_summary = layer0.get("fallback_summary", {})
+        color_summary = self._build_per_circle_color_summary(layer0)
+        observation_summary = self._build_per_circle_observation_summary(layer0)
+        lite_healing_guidance = self._build_lite_healing_guidance_debug(lite_final)
+        pro_report_entry = self._build_pro_report_entry_debug(lite_final)
+        return {
+            "lite": {
+                "current_reading": self._product_block(
+                    final=lite_final.overall_impression if lite_final else "",
+                    field_key="current_reading",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="overall_impression",
+                ),
+                "visual_basis": self._product_block(
+                    final=lite_final.visual_elements_rendered if lite_final else "",
+                    field_key="visual_basis",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="visual_elements",
+                    color_summary=color_summary,
+                    observation_summary=observation_summary,
+                ),
+                "pattern_interpretation": self._product_block(
+                    final=self._join_text([
+                        lite_final.emotion_portrait_rendered if lite_final else "",
+                        lite_final.story.pattern.content if lite_final else "",
+                        lite_final.story.defense.content if lite_final else "",
+                    ]),
+                    field_key="pattern_interpretation",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="story_sections.pattern",
+                ),
+                "life_connection": self._product_block(
+                    final=self._join_text([
+                        lite_final.theme_insights.scene if lite_final else "",
+                        lite_final.theme_insights.impact if lite_final else "",
+                        lite_final.theme_insights.awareness if lite_final else "",
+                    ]),
+                    field_key="life_connection",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="theme_insights",
+                ),
+                "lite_healing_guidance": self._product_block(
+                    final=lite_healing_guidance,
+                    field_key="lite_healing_guidance",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="lite_healing_guidance",
+                    compatibility_used=True,
+                ),
+                "pro_report_entry": self._product_block(
+                    final=pro_report_entry,
+                    field_key="pro_report_entry",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="pro_report_entry",
+                    compatibility_used=True,
+                ),
+            },
+            "pro": {
+                "deep_impression": self._product_block(
+                    final=pro_draft.first_impression if pro_draft else "",
+                    field_key="deep_impression",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="first_impression",
+                ),
+                "evidence_digest": self._product_block(
+                    final=self._build_pro_evidence_digest_debug(pro_draft),
+                    field_key="evidence_digest",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="core_insight_table|three_circles_detailed|micro_analysis_detailed",
+                    compatibility_used=True,
+                    color_summary=color_summary,
+                    observation_summary=observation_summary,
+                ),
+                "imbalance_diagnosis": self._product_block(
+                    final=self._build_pro_imbalance_diagnosis_debug(pro_draft),
+                    field_key="imbalance_diagnosis",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="imbalance_confirmed",
+                    compatibility_used=True,
+                ),
+                "root_cause_chain": self._product_block(
+                    final=self._build_pro_root_cause_chain_debug(pro_draft),
+                    field_key="root_cause_chain",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="root_cause",
+                    compatibility_used=True,
+                ),
+                "deep_structure_interpretation": self._product_block(
+                    final=self._build_pro_deep_structure_interpretation_debug(record, pro_draft),
+                    field_key="deep_structure_interpretation",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="deep_structure_interpretation",
+                    compatibility_used=True,
+                ),
+                "healing_plan": self._product_block(
+                    final=pro_draft.healing_suggestions if pro_draft else [],
+                    field_key="healing_plan",
+                    field_to_knowledge_map=field_to_knowledge_map,
+                    fidelity_flags=fidelity_flags,
+                    fallback_summary=fallback_summary,
+                    narrative_section="healing_suggestions",
+                    compatibility_used=True,
+                ),
+            },
+        }
+
+    def _product_block(
+        self,
+        *,
+        final: Any,
+        field_key: str,
+        field_to_knowledge_map: dict[str, Any],
+        fidelity_flags: list[Any],
+        fallback_summary: dict[str, Any],
+        narrative_section: str,
+        compatibility_used: bool = False,
+        color_summary: str = "",
+        observation_summary: str = "",
+    ) -> dict[str, Any]:
+        evidence = field_to_knowledge_map.get(field_key, {})
+        rule_refs = ["method:per_circle_color_analysis"] if color_summary else []
+        return {
+            "final": final,
+            "narrative_trace": {
+                "section": narrative_section,
+            },
+            "evidence_trace": {
+                "visual_fact_refs": [],
+                "knowledge_hit_refs": evidence.get("entity_ids", []) if isinstance(evidence, dict) else [],
+                "rule_refs": rule_refs,
+                "theme_projection_refs": evidence.get("source_paths", []) if isinstance(evidence, dict) else [],
+                "per_circle_color_summary": color_summary,
+                "per_circle_observation_summary": observation_summary,
+            },
+            "prompt_trace": {
+                "schema_field": field_key,
+            },
+            "quality_trace": {
+                "fidelity_flags": fidelity_flags,
+                "fallback_summary": fallback_summary,
+                "compatibility_used": compatibility_used,
+            },
+        }
+
+    def _build_per_circle_color_summary(self, layer0: dict[str, Any]) -> str:
+        method_trace = (
+            layer0.get("rule_evaluations", {}).get("interpretation_method_trace", {})
+            if isinstance(layer0.get("rule_evaluations"), dict)
+            else {}
+        )
+        per_circle = (
+            method_trace.get("per_circle_color_analysis", {})
+            if isinstance(method_trace, dict)
+            else {}
+        )
+        if not isinstance(per_circle, dict):
+            return ""
+        parts: list[str] = []
+        for key in ["inner", "middle", "outer"]:
+            item = per_circle.get(key)
+            if not isinstance(item, dict):
+                continue
+            circle_label = str(item.get("circle_label") or self._circle_label(key)).strip()
+            dominant_element = str(item.get("dominant_element") or "").strip()
+            dominant_color = str(item.get("dominant_color") or "").strip()
+            state_basis = item.get("state_basis", {})
+            if not isinstance(state_basis, dict):
+                state_basis = {}
+            color_element = " / ".join(
+                value for value in [dominant_color, dominant_element] if value
+            ) or "未识别"
+            parts.append(
+                f"{circle_label}以{color_element}为主，"
+                f"{self._depth_state_label(state_basis.get('depth_state'))}，"
+                f"{self._fill_state_label(state_basis.get('fill_state'))}，"
+                f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"
+            )
+        return "；".join(parts)
+
+    def _build_per_circle_observation_summary(self, layer0: dict[str, Any]) -> str:
+        method_trace = (
+            layer0.get("rule_evaluations", {}).get("interpretation_method_trace", {})
+            if isinstance(layer0.get("rule_evaluations"), dict)
+            else {}
+        )
+        per_circle = (
+            method_trace.get("per_circle_color_analysis", {})
+            if isinstance(method_trace, dict)
+            else {}
+        )
+        if not isinstance(per_circle, dict):
+            return ""
+        parts: list[str] = []
+        for key in ["inner", "middle", "outer"]:
+            item = per_circle.get(key)
+            if not isinstance(item, dict):
+                continue
+            circle_label = str(item.get("circle_label") or self._circle_label(key)).strip()
+            dominant_element = str(item.get("dominant_element") or "").strip() or "未识别元素"
+            state_basis = item.get("state_basis", {})
+            if not isinstance(state_basis, dict):
+                state_basis = {}
+            parts.append(
+                f"{circle_label}主要呈现「{dominant_element}」的状态，"
+                f"{self._depth_state_label(state_basis.get('depth_state'))}，"
+                f"{self._fill_state_label(state_basis.get('fill_state'))}，"
+                f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"
+            )
+        return "；".join(parts)
+
+    def _circle_label(self, circle_key: str) -> str:
+        return {"inner": "内圈", "middle": "中圈", "outer": "外圈"}.get(
+            circle_key,
+            circle_key,
+        )
+
+    def _format_area_ratio(self, value: Any) -> str:
+        try:
+            ratio = float(value)
+        except (TypeError, ValueError):
+            return "未知"
+        if ratio <= 1:
+            return f"{ratio * 100:.1f}%"
+        return f"{ratio:.1f}%"
+
+    def _depth_state_label(self, value: Any) -> str:
+        return {
+            "deep": "颜色偏深",
+            "light": "颜色偏浅",
+            "middle": "深浅居中",
+            "unknown": "深浅未知",
+        }.get(str(value or "").strip(), "深浅未知")
+
+    def _fill_state_label(self, value: Any) -> str:
+        return {
+            "dense": "填充较密",
+            "filled": "填充稳定",
+            "mixed": "填充较混合",
+            "sparse": "填充较少",
+        }.get(str(value or "").strip(), "填充状态未明")
+
+    def _build_lite_healing_guidance_debug(self, lite_final: Any) -> dict[str, Any]:
+        if lite_final is None:
+            return {"directions": [], "micro_practices": []}
+        theme_insights = (
+            lite_final.theme_insights.to_dict()
+            if getattr(lite_final, "theme_insights", None)
+            else {"scene": "", "impact": "", "awareness": ""}
+        )
+        directions = []
+        for title, content in [
+            ("先稳住当前节奏", theme_insights.get("awareness", "")),
+            ("把理解放回现实场景", theme_insights.get("impact", "")),
+            ("保留一个更轻的动作方向", theme_insights.get("scene", "")),
+        ]:
+            if isinstance(content, str) and content.strip():
+                directions.append({"title": title, "content": content.strip()})
+
+        micro_practices = []
+        for item in getattr(lite_final, "three_awareness", []) or []:
+            practice = item.to_dict() if hasattr(item, "to_dict") else {}
+            title = str(practice.get("title") or "").strip()
+            content = str(practice.get("content") or "").strip()
+            if title and content:
+                micro_practices.append({"title": title, "content": content})
+
+        experiment = str(getattr(lite_final, "experiment_rendered", "") or "").strip()
+        if experiment:
+            micro_practices.append({
+                "title": "现在可以先做的小练习",
+                "content": experiment,
+            })
+
+        return {
+            "directions": directions[:3],
+            "micro_practices": micro_practices[:3],
+        }
+
+    def _build_pro_report_entry_debug(self, lite_final: Any) -> dict[str, str]:
+        teaser = str(getattr(lite_final, "pro_teaser", "") or "").strip() if lite_final else ""
+        summary = "如果你希望从更深层结构继续理解这张画，Pro 会提供更完整的结构、根因与疗愈视角。"
+        if teaser and "更深层结构" in teaser:
+            summary = teaser
+        return {
+            "title": "另一份更深的独立报告",
+            "summary": summary,
+            "product_note": "Pro 不是串接在 Lite 后面的补充，而是另一份独立购买、独立成立的深度完整解读。",
+        }
+
+    def _build_pro_evidence_digest_debug(self, pro_draft: Any) -> str:
+        if pro_draft is None:
+            return ""
+        circle_parts = []
+        for item in (pro_draft.three_circles_detailed or {}).values():
+            if not isinstance(item, dict):
+                continue
+            label = str(item.get("label") or "").strip()
+            reading = str(item.get("reading") or "").strip()
+            if reading:
+                circle_parts.append(f"{label}：{reading}" if label else reading)
+        micro_parts = [
+            str(value).strip()
+            for value in (pro_draft.micro_analysis_detailed or {}).values()
+            if isinstance(value, str) and value.strip()
+        ]
+        core_parts = [
+            str(value).strip()
+            for value in (pro_draft.core_insight_table or {}).values()
+            if isinstance(value, str) and value.strip()
+        ]
+        return self._join_text(core_parts[:2] + circle_parts + micro_parts)
+
+    def _build_pro_imbalance_diagnosis_debug(self, pro_draft: Any) -> str:
+        if pro_draft is None:
+            return ""
+        imbalance = pro_draft.imbalance_confirmed or {}
+        preferred_keys = ["primary", "summary", "evidence", "energy_level", "psychological_level"]
+        parts = [
+            str(imbalance.get(key) or "").strip()
+            for key in preferred_keys
+            if isinstance(imbalance.get(key), str) and str(imbalance.get(key)).strip()
+        ]
+        if parts:
+            return self._join_text(parts)
+        return self._join_text([
+            str(value).strip()
+            for value in imbalance.values()
+            if isinstance(value, str) and value.strip()
+        ])
+
+    def _build_pro_root_cause_chain_debug(self, pro_draft: Any) -> dict[str, str]:
+        root_cause = pro_draft.root_cause if pro_draft else {}
+        return {
+            "surface": str(root_cause.get("surface") or root_cause.get("表面现象") or "").strip(),
+            "mechanism": str(root_cause.get("deeper") or root_cause.get("形成机制") or "").strip(),
+            "core": str(root_cause.get("core") or root_cause.get("核心信念") or "").strip(),
+        }
+
+    def _build_pro_deep_structure_interpretation_debug(
+        self,
+        record: InterpretationRecord,
+        pro_draft: Any,
+    ) -> str:
+        if pro_draft is None:
+            return ""
+        topic = record.theme or "general"
+        root_chain = self._build_pro_root_cause_chain_debug(pro_draft)
+        return self._join_text([
+            f"在 {topic} 这个议题下，这份 Pro 解读会把画面证据、失衡判断和根因链放在一起看。",
+            root_chain.get("mechanism", ""),
+            root_chain.get("core", ""),
+        ])
+
+    def _build_internal_compatibility(self, record: InterpretationRecord) -> dict[str, Any]:
+        legacy_fields = []
+        if record.layer_1_lite_draft and record.layer_1_lite_draft.pro_teaser:
+            legacy_fields.append("pro_teaser")
+        if record.layer_2_lite_final and record.layer_2_lite_final.story:
+            legacy_fields.append("story")
+        if record.layer_3_pro_draft and record.layer_3_pro_draft.healing_suggestions:
+            legacy_fields.append("healing_suggestions")
+        return {
+            "legacy_fields": legacy_fields,
+            "compatibility_used": bool(legacy_fields),
+        }
+
+    def _join_text(self, parts: list[Any]) -> str:
+        cleaned = [
+            str(part).strip()
+            for part in parts
+            if isinstance(part, str) and str(part).strip()
+        ]
+        return "\n\n".join(cleaned)
 
     def _build_layer0_evidence(self, layer0: dict[str, Any]) -> dict[str, Any]:
         return {
@@ -155,9 +605,225 @@ class KnowledgeDebugBlockBuilder:
             "rule_evaluations": layer0.get("rule_evaluations", {}),
             "theme_projection": layer0.get("theme_projection", {}),
             "imbalance_candidates": layer0.get("imbalance_candidates", []),
+            "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
             "quality_flags": layer0.get("quality_flags", []),
             "fallback_summary": layer0.get("fallback_summary", {}),
         }
+
+    def _build_algorithm_fidelity_trace(
+        self,
+        *,
+        layer0: dict[str, Any],
+        narrative_plans: dict[str, Any],
+        knowledge_projections: dict[str, Any],
+        record: InterpretationRecord,
+        report_mode: str = "all",
+    ) -> dict[str, Any]:
+        scope = report_mode if report_mode in {"lite", "pro", "all"} else "all"
+        canonical_keys = [
+            "direct_judgment",
+            "per_circle_color_analysis",
+            "shape_analysis",
+            "circle_relation_analysis",
+            "final_algorithm_basis",
+        ]
+        method_trace = (
+            layer0.get("rule_evaluations", {}).get("interpretation_method_trace", {})
+            if isinstance(layer0.get("rule_evaluations"), dict)
+            else {}
+        )
+        method_trace_keys = [
+            key for key in canonical_keys if isinstance(method_trace, dict) and key in method_trace
+        ]
+        missing_method_trace_keys = [
+            key for key in canonical_keys if key not in method_trace_keys
+        ]
+        legacy_payloads = self._scoped_legacy_payloads(
+            knowledge_projections=knowledge_projections,
+            narrative_plans=narrative_plans,
+            record=record,
+            scope=scope,
+        )
+        raw_payloads = self._scoped_raw_payloads(
+            knowledge_projections=knowledge_projections,
+            narrative_plans=narrative_plans,
+            record=record,
+            scope=scope,
+        )
+        legacy_semantics_found = self._contains_legacy_semantics(
+            legacy_payloads
+        )
+        raw_payload_leak_found = self._contains_raw_payload_leak(raw_payloads)
+        raw_payload_leak_by_scope = {
+            "lite": self._contains_raw_payload_leak(
+                self._scoped_raw_payloads(
+                    knowledge_projections=knowledge_projections,
+                    narrative_plans=narrative_plans,
+                    record=record,
+                    scope="lite",
+                )
+            ),
+            "pro": self._contains_raw_payload_leak(
+                self._scoped_raw_payloads(
+                    knowledge_projections=knowledge_projections,
+                    narrative_plans=narrative_plans,
+                    record=record,
+                    scope="pro",
+                )
+            ),
+        }
+        return {
+            "scope": scope,
+            "method_trace_keys": method_trace_keys,
+            "missing_method_trace_keys": missing_method_trace_keys,
+            "algorithm_fidelity_pass": (
+                method_trace_keys == canonical_keys
+                and not legacy_semantics_found
+                and not raw_payload_leak_found
+            ),
+            "legacy_semantics_found": legacy_semantics_found,
+            "raw_payload_leak_found": raw_payload_leak_found,
+            "raw_payload_leak_by_scope": raw_payload_leak_by_scope,
+        }
+
+    def _scoped_legacy_payloads(
+        self,
+        *,
+        knowledge_projections: dict[str, Any],
+        narrative_plans: dict[str, Any],
+        record: InterpretationRecord,
+        scope: str,
+    ) -> list[Any]:
+        if scope == "lite":
+            return [
+                knowledge_projections.get("lite", {}),
+                narrative_plans.get("lite", {}),
+                self._lite_user_payload(record),
+            ]
+        if scope == "pro":
+            return [
+                knowledge_projections.get("pro", {}),
+                narrative_plans.get("pro", {}),
+                self._pro_user_payload(record),
+            ]
+        return [
+            knowledge_projections,
+            narrative_plans,
+            self._lite_user_payload(record),
+            self._pro_user_payload(record),
+        ]
+
+    def _scoped_raw_payloads(
+        self,
+        *,
+        knowledge_projections: dict[str, Any],
+        narrative_plans: dict[str, Any],
+        record: InterpretationRecord,
+        scope: str,
+    ) -> list[Any]:
+        if scope == "lite":
+            return [
+                knowledge_projections.get("lite", {}),
+                narrative_plans.get("lite", {}),
+                self._lite_user_payload(record),
+            ]
+        if scope == "pro":
+            return [
+                knowledge_projections.get("pro", {}),
+                narrative_plans.get("pro", {}),
+                self._pro_user_payload(record),
+            ]
+        return [
+            knowledge_projections,
+            narrative_plans,
+            self._lite_user_payload(record),
+            self._pro_user_payload(record),
+        ]
+
+    def _lite_user_payload(self, record: InterpretationRecord) -> dict[str, Any]:
+        layer = record.layer_2_lite_final
+        if layer is None:
+            return {}
+        return {
+            "title": getattr(layer, "title", ""),
+            "overall_impression": getattr(layer, "overall_impression", ""),
+            "visual_elements_rendered": getattr(layer, "visual_elements_rendered", ""),
+            "emotion_portrait_rendered": getattr(layer, "emotion_portrait_rendered", ""),
+            "story": (
+                layer.story.to_dict()
+                if hasattr(getattr(layer, "story", None), "to_dict")
+                else {}
+            ),
+            "theme_insights": (
+                layer.theme_insights.to_dict()
+                if getattr(layer, "theme_insights", None)
+                else {}
+            ),
+            "three_awareness": [
+                item.to_dict() if hasattr(item, "to_dict") else item
+                for item in (getattr(layer, "three_awareness", []) or [])
+            ],
+            "experiment_rendered": getattr(layer, "experiment_rendered", ""),
+            "pro_teaser": getattr(layer, "pro_teaser", ""),
+            "full_report_markdown": getattr(layer, "full_report_markdown", ""),
+        }
+
+    def _pro_user_payload(self, record: InterpretationRecord) -> dict[str, Any]:
+        layer = record.layer_3_pro_draft
+        if layer is None:
+            return {}
+        return {
+            "first_impression": getattr(layer, "first_impression", ""),
+            "core_insight_table": getattr(layer, "core_insight_table", {}),
+            "three_circles_detailed": getattr(layer, "three_circles_detailed", {}),
+            "micro_analysis_detailed": getattr(layer, "micro_analysis_detailed", {}),
+            "imbalance_confirmed": getattr(layer, "imbalance_confirmed", {}),
+            "root_cause": getattr(layer, "root_cause", {}),
+            "healing_suggestions": getattr(layer, "healing_suggestions", []),
+        }
+
+    def _contains_legacy_semantics(self, payloads: list[Any]) -> bool:
+        banned_phrases = [
+            "Lite" + " 里",
+            "解锁" + "完整版",
+            "补全" + "版",
+            "升级" + "版",
+            "21" + "天",
+        ]
+        serialized = self._serialize_debug_payload(payloads)
+        return any(phrase in serialized for phrase in banned_phrases)
+
+    def _contains_raw_payload_leak(self, payloads: list[Any]) -> bool:
+        serialized = self._serialize_debug_payload(payloads)
+        raw_markers = [
+            "{'" + "inner'",
+            "\"{\\'" + "inner\\'\"",
+            "'middle':",
+            '"middle":',
+            "'outer':",
+            '"outer":',
+            "'depth_state':",
+            '"depth_state":',
+            "'avg_brightness':",
+            '"avg_brightness":',
+            "'avg_saturation':",
+            '"avg_saturation":',
+        ]
+        return any(marker in serialized for marker in raw_markers)
+
+    def _serialize_debug_payload(self, payload: Any) -> str:
+        if payload is None:
+            return ""
+        if isinstance(payload, str):
+            return payload
+        if isinstance(payload, dict):
+            return " ".join(
+                self._serialize_debug_payload(value)
+                for value in payload.values()
+            )
+        if isinstance(payload, (list, tuple, set)):
+            return " ".join(self._serialize_debug_payload(item) for item in payload)
+        return str(payload)
 
     def _build_knowledge_projections(
         self,
@@ -180,7 +846,10 @@ class KnowledgeDebugBlockBuilder:
                 "three_awareness": [
                     item.to_dict() for item in record.layer_1_lite_draft.three_awareness
                 ],
-                "pro_teaser": record.layer_1_lite_draft.pro_teaser,
+                "pro_report_entry": {
+                    "title": "另一份更深的独立报告",
+                    "summary": record.layer_1_lite_draft.pro_teaser,
+                },
             }
 
         pro_projection: dict[str, Any] = {}
@@ -198,6 +867,29 @@ class KnowledgeDebugBlockBuilder:
         return {
             "lite": lite_projection,
             "pro": pro_projection,
+        }
+
+    def _build_narrative_plans(
+        self,
+        record: InterpretationRecord,
+    ) -> dict[str, Any]:
+        lite_plan = {}
+        if record.layer_1_lite_draft is not None and isinstance(
+            record.layer_1_lite_draft.narrative_plan,
+            dict,
+        ):
+            lite_plan = record.layer_1_lite_draft.narrative_plan
+
+        pro_plan = {}
+        if record.layer_3_pro_draft is not None and isinstance(
+            record.layer_3_pro_draft.narrative_plan,
+            dict,
+        ):
+            pro_plan = record.layer_3_pro_draft.narrative_plan
+
+        return {
+            "lite": lite_plan,
+            "pro": pro_plan,
         }
 
     def _build_circle_results(
@@ -264,6 +956,7 @@ class KnowledgeDebugBlockBuilder:
             "used": bool(layer0.get("fallback_summary", {}).get("used")) or bool(query_fallbacks),
             "levels": sorted(item for item in levels if item),
             "warnings": self._unique_list(warnings),
+            "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
             "quality_flags": layer0.get("quality_flags", []),
             "query_fallbacks": query_fallbacks,
         }

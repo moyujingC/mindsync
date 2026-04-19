@@ -4,11 +4,11 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-13
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/Paperclip-Automation-节点方案.md
+> source_of_truth：projects/aimandala/docs/architecture/Paperclip-Automation-节点方案.md
 > 项目：aimandala
 > 阶段：architecture
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/CI-CD与自动修复架构.md
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md
+> depends_on：projects/aimandala/docs/architecture/CI-CD与自动修复架构.md
+> depends_on：projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 背景

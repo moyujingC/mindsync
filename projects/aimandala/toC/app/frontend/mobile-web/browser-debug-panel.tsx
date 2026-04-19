@@ -555,6 +555,18 @@ export function BrowserDebugPanel({
     () => toRecord(reportDebugProfile?.fallback_summary),
     [reportDebugProfile],
   );
+  const topicContextTrace = useMemo(
+    () => toRecord(knowledgeDebug.topic_context_trace),
+    [knowledgeDebug],
+  );
+  const productBlockDebug = useMemo(
+    () => toRecord(knowledgeDebug.product_block_debug),
+    [knowledgeDebug],
+  );
+  const internalCompatibility = useMemo(
+    () => toRecord(knowledgeDebug.internal_compatibility),
+    [knowledgeDebug],
+  );
   const fieldList = useMemo(() => {
     const keys = new Set<string>([
       ...fieldEntries.map((item) => item.field),
@@ -1006,6 +1018,16 @@ export function BrowserDebugPanel({
 
           <section className="browser-debug-section">
             <div className="browser-debug-section__header">
+              <h3>Topic Context Trace</h3>
+              <span>{String(topicContextTrace.knowledge_route ?? "unknown")}</span>
+            </div>
+            <div className="browser-debug-json">
+              <pre>{formatJson(topicContextTrace)}</pre>
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
               <h3>Layer0 Evidence</h3>
               <span>{reportDebugLoading ? "loading" : "ready"}</span>
             </div>
@@ -1134,6 +1156,31 @@ export function BrowserDebugPanel({
                 </article>
               </div>
             ) : null}
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Product Block Debug</h3>
+              <span>final / narrative / evidence / prompt / quality</span>
+            </div>
+            <div className="browser-debug-grid">
+              {Object.entries(productBlockDebug).map(([mode, blocks]) => (
+                <article key={mode} className="browser-debug-card">
+                  <h4>{mode}</h4>
+                  <pre>{formatJson(blocks)}</pre>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Internal Compatibility</h3>
+              <span>{String(internalCompatibility.compatibility_used ?? false)}</span>
+            </div>
+            <div className="browser-debug-json">
+              <pre>{formatJson(internalCompatibility)}</pre>
+            </div>
           </section>
         </>
       ) : null}

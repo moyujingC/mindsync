@@ -1,7 +1,7 @@
 {
   "upload": {
     "success": true,
-    "image_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/data/uploads/a3f98c8765b84e138baab3ae77065ced.jpeg",
+    "image_path": "toC/app/backend/data/uploads/a3f98c8765b84e138baab3ae77065ced.jpeg",
     "storage_backend": "local",
     "storage_key": "a3f98c8765b84e138baab3ae77065ced.jpeg",
     "original_filename": "mandala-test-02.jpeg",
@@ -27,7 +27,7 @@
     },
     "debug_info": {
       "reason": "backend_not_configured",
-      "image_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/data/uploads/a3f98c8765b84e138baab3ae77065ced.jpeg",
+      "image_path": "toC/app/backend/data/uploads/a3f98c8765b84e138baab3ae77065ced.jpeg",
       "backend": null
     }
   },

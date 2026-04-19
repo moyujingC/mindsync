@@ -73,7 +73,7 @@ class ReportProNarrativeBuilder:
         if transition:
             parts.append(transition)
         parts.append(
-            f"所以 Lite 里那份《{lite_title}》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。"
+            "这不是表面上的停住，而是这张画正在认真处理一件更底层的事：先把自己安顿住，再决定如何向外表达。"
         )
         if lite_contradiction:
             contradiction = lite_contradiction[:96].strip()
@@ -613,11 +613,15 @@ class ReportProNarrativeBuilder:
         if not payload:
             return []
 
-        issue_type = str(payload.get("issue_type") or "").strip()
-        symptoms = str(payload.get("symptoms") or "").strip()
-        mandala_prescription = str(payload.get("mandala_prescription") or "").strip()
-        daily_practice = str(payload.get("daily_practice") or "").strip()
-        cognitive_upgrade = str(payload.get("cognitive_upgrade") or "").strip()
+        issue_type = self._clean_runtime_healing_text(payload.get("issue_type"))
+        symptoms = self._clean_runtime_healing_text(payload.get("symptoms"))
+        mandala_prescription = self._clean_runtime_healing_text(
+            payload.get("mandala_prescription")
+        )
+        daily_practice = self._clean_runtime_healing_text(payload.get("daily_practice"))
+        cognitive_upgrade = self._clean_runtime_healing_text(
+            payload.get("cognitive_upgrade")
+        )
 
         if not any(
             [
@@ -669,3 +673,28 @@ class ReportProNarrativeBuilder:
                 ),
             },
         ]
+
+    def _clean_runtime_healing_text(self, value: Any) -> str:
+        if not isinstance(value, str):
+            return ""
+        text = value.strip()
+        if not text:
+            return ""
+        raw_markers = [
+            "{'" + "inner'",
+            '"inner"',
+            "'inner':",
+            "'middle':",
+            "'outer':",
+            '"middle":',
+            '"outer":',
+            "'depth_state':",
+            '"depth_state":',
+            "'avg_brightness':",
+            '"avg_brightness":',
+            "'avg_saturation':",
+            '"avg_saturation":',
+        ]
+        if any(marker in text for marker in raw_markers):
+            return ""
+        return text

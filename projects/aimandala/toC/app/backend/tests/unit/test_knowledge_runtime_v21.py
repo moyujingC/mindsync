@@ -257,6 +257,22 @@ def test_v21_narrative_service_builds_imbalance_projection():
     assert "财富焦虑" in projection["core_root"]
 
 
+def test_v21_narrative_service_builds_imbalance_narrative_basis():
+    runtime = get_knowledge_runtime()
+
+    basis = runtime.narrative_service.build_imbalance_narrative_basis(
+        theme="wealth_career",
+        imbalance_type="水多火灭",
+        theme_label="财富事业",
+    )
+
+    assert basis["mode"] == "imbalance_basis"
+    assert basis["imbalance_type"] == "水多火灭"
+    assert basis["sections"]["summary"]["content"]
+    assert "rule:imbalance:水多火灭" in basis["sections"]["summary"]["trace"]["rule_refs"]
+    assert "财富事业" in basis["sections"]["summary"]["content"]
+
+
 def test_v21_narrative_service_builds_theme_prompt_context():
     runtime = get_knowledge_runtime()
 
@@ -275,6 +291,71 @@ def test_v21_narrative_service_builds_theme_prompt_context():
         middle_dominant="木",
         outer_dominant="金",
         signal="transition-overload",
+        element_distribution=[
+            {"name": "土", "percentage": 42.5},
+            {"name": "金", "percentage": 21.25},
+            {"name": "火", "percentage": 18.0},
+            {"name": "木", "percentage": 10.25},
+            {"name": "水", "percentage": 8.0},
+        ],
+        element_states={
+            "earth": {
+                "element": "土",
+                "proportion": 0.425,
+                "state": "excess",
+                "evidence_basis": ["weighted_distribution"],
+            },
+            "metal": {
+                "element": "金",
+                "proportion": 0.2125,
+                "state": "balanced",
+                "evidence_basis": ["weighted_distribution"],
+            },
+            "water": {
+                "element": "水",
+                "proportion": 0.08,
+                "state": "deficient",
+                "evidence_basis": ["weighted_distribution"],
+            },
+        },
+        triad_states=[
+            {
+                "circle": "inner",
+                "dominant_element": "火",
+                "inferred_state": "active",
+                "source_hit": "circles.inner",
+            },
+            {
+                "circle": "middle",
+                "dominant_element": "木",
+                "inferred_state": "growing",
+                "source_hit": "circles.middle",
+            },
+            {
+                "circle": "outer",
+                "dominant_element": "金",
+                "inferred_state": "boundary",
+                "source_hit": "circles.outer",
+            },
+        ],
+        primary_candidates=[
+            {
+                "id": "水多火灭",
+                "score": 0.76,
+                "selected_for_primary": True,
+            }
+        ],
+        synthetic_signal={
+            "id": "transition-overload",
+            "used": False,
+            "reason": "toc_primary_candidate_available",
+        },
+        theme_projection={
+            "theme": "wealth_career",
+            "summary": "当前主题更聚焦金钱信念与价值感。",
+        },
+        fidelity_flags=["trace:toc_only_candidate_present"],
+        fallback_summary={"used": False, "levels": [], "warnings": []},
     )
 
     assert "当前主题：财富事业" in context
@@ -287,6 +368,19 @@ def test_v21_narrative_service_builds_theme_prompt_context():
     assert "知识库失衡候选：过渡负荷" in context
     assert "V2知识主题：财富事业" in context
     assert "V2主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in context
+    assert "五行分布：" in context
+    assert "五行状态：" in context
+    assert "土=excess" in context
+    assert "水=deficient" in context
+    assert "三元结构：" in context
+    assert "inner:火(active)" in context
+    assert "主候选：" in context
+    assert "水多火灭" in context
+    assert "合成信号：" in context
+    assert "theme_projection：" in context
+    assert "保真标记：" in context
+    assert "trace:toc_only_candidate_present" in context
+    assert "fallback摘要：" in context
 
 
 def test_v21_narrative_service_exposes_helper_apis():
@@ -378,6 +472,67 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "默认 Pro 预告" in projection["pro_teaser"]
 
 
+def test_v21_narrative_service_builds_lite_narrative_plan():
+    runtime = get_knowledge_runtime()
+
+    plan = runtime.narrative_service.build_lite_narrative_plan(
+        theme="general",
+        theme_label="通用解读",
+        inner_radius=35,
+        middle_radius=67,
+        title_templates={
+            "inner_high": "{theme_label}里的守心者",
+            "middle_high": "{theme_label}中的重连者",
+            "default": "慢慢亮起来的中心",
+            "general": "General-Theme-Title",
+        },
+        six_insight_templates={
+            "base": {
+                "title": "你的底色：先稳住中心的人",
+                "content": "Base {theme_label}",
+                "summary": "Base Summary",
+            },
+            "light": {
+                "title": "你的光：你已经知道什么更适合自己",
+                "content": "Light {theme_label}",
+                "summary": "Light Summary",
+            },
+        },
+        experiment_title="曼曼的疗愈仪式：给自己一个稳稳的小空间",
+        experiment_content="今天先给自己十分钟，练习回到画里的节奏。",
+        dominant_element="土",
+        dominant_percentage=42.5,
+        secondary_element="金",
+        secondary_percentage=21.25,
+        weakest_element="水",
+        weakest_percentage=8.0,
+        inner_dominant="火",
+        middle_dominant="木",
+        outer_dominant="金",
+        circle_pattern="这说明你更像先稳住自己，再慢慢把外部秩序整理出来。",
+        circle_readings=["内圈阅读", "中圈阅读", "外圈阅读"],
+        transition="三圈依次呈现出「火 -> 木 -> 金」的变化。",
+        adjacent=["内外节奏正在重新对齐"],
+        signal="transition-overload",
+        feeling_hint="这也和你最近画画时写下的感觉有关。",
+        default_pro_teaser="默认 Pro 预告",
+    )
+
+    assert plan["mode"] == "lite"
+    assert plan["generation_mode"] == "evidence_first"
+    evidence_summary = plan["evidence_trace_summary"]
+    assert evidence_summary["direct_judgment_refs"]
+    assert evidence_summary["color_analysis_refs"]
+    assert evidence_summary["shape_analysis_refs"]
+    assert evidence_summary["circle_relation_refs"]
+    assert evidence_summary["tutorial_source_refs"]
+    assert plan["sections"]["title"]["content"] == "General-Theme-Title"
+    assert plan["sections"]["lite_healing_guidance"]["content"]["directions"]
+    assert plan["sections"]["pro_report_entry"]["content"]["title"] == "另一份更深的独立报告"
+    assert plan["legacy_projection"]["pro_teaser"]
+    assert "signal:transition-overload" in plan["sections"]["overall_impression"]["trace"]["rule_refs"]
+
+
 def test_v21_narrative_service_builds_pro_projection():
     runtime = get_knowledge_runtime()
 
@@ -455,18 +610,219 @@ def test_v21_narrative_service_builds_pro_projection():
     )
 
     assert "「土」和「金」共同撑起了整张画的骨架" in projection["first_impression"]
-    assert "《慢慢亮起来的中心》" in projection["first_impression"]
+    assert "Lite" not in projection["first_impression"]
+    assert "《慢慢亮起来的中心》" not in projection["first_impression"]
     assert "42.50%" in projection["energy_essence"]
     assert "恐惧压制行动让你很难一边往前推进" in projection["block_point"]
-    assert "先把行动拆成能承接的小单位" in projection["direction"]
-    assert "把承载感放在速度前面" in projection["healing_core"]
-    assert "内圈代表核心自我当前约占 35%" in projection["circle_readings"]["inner"]
-    assert projection["micro_sections"]["节奏关系"].startswith("圈间节奏首先显示")
-    assert projection["micro_sections"]["关系模式"].startswith("继续往外看")
-    assert projection["micro_sections"]["行动模式"].startswith("当前最明显的行动提示是")
-    assert "你原本希望“想知道怎么更稳定地往前”" in projection["root_cause"]["surface"]
-    assert projection["root_cause"]["deeper"] == "更深一层是你还在确认自己能不能稳稳接住变化"
-    assert projection["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
+
+
+def test_v21_narrative_service_builds_pro_narrative_plan():
+    runtime = get_knowledge_runtime()
+
+    plan = runtime.narrative_service.build_pro_narrative_plan(
+        theme="wealth_career",
+        theme_label="财富事业",
+        lite_title="慢慢亮起来的中心",
+        lite_contradiction="一边想继续，一边又先收回来。",
+        lite_block="快要出手前，总会先停一下。",
+        intention="想知道怎么更稳定地往前",
+        feeling_hint="这也和你最近画画时写下的感觉有关。",
+        dominant_element="土",
+        dominant_percentage=42.5,
+        secondary_element="金",
+        secondary_percentage=21.25,
+        weakest_element="水",
+        weakest_percentage=8.0,
+        signal="transition-overload",
+        primary_imbalance="恐惧压制行动",
+        transition="三圈依次呈现出「火 -> 木 -> 金」的变化。",
+        circles={
+            "inner": {
+                "meaning": "内圈代表核心自我",
+                "radius_percent": 35,
+                "dominant": "火",
+                "colors": ["红色", "橙色"],
+                "knowledge_reading": "内圈显示你还在确认内在安全感",
+            },
+            "middle": {
+                "meaning": "中圈代表关系模式",
+                "radius_percent": 67,
+                "dominant": "木",
+                "colors": ["绿色"],
+                "knowledge_reading": "中圈说明你正在调整与外界的连接方式",
+            },
+            "outer": {
+                "meaning": "外圈代表外部表达",
+                "radius_percent": 100,
+                "dominant": "金",
+                "colors": ["白色"],
+                "knowledge_reading": "外圈显示你开始重整边界和秩序",
+            },
+        },
+        adjacent=["内外节奏正在重新对齐", "外部表达开始寻找新的边界"],
+        wrap=["先把行动拆成可以承接的小步子"],
+        narrative_templates={
+            "core_direction": "先稳住中心感，再把能量逐步放回{theme_label}相关的关系、行动与表达，而不是一次性全部打开。",
+            "core_healing": "通过边界、身体感受和稳定的小步行动，重建“我可以安全地往前走”的内在体验。",
+            "micro_rhythm": "默认节奏描述。",
+            "micro_relationship": "默认关系描述。",
+            "micro_action": "默认行动描述。",
+            "surface_root_without_intention": "{lite_contradiction}最近的外部任务与内部恢复节奏不一致。",
+            "surface_root_with_intention": "{lite_contradiction}你原本希望“{intention}”，但现实推进方式和这个期待之间还存在落差。",
+            "root_deeper": "默认 deeper。",
+            "root_core": "默认 core。",
+        },
+        structure_labels={
+            "micro_rhythm": "节奏关系",
+            "micro_relationship": "关系模式",
+            "micro_action": "行动模式",
+        },
+        circle_fallbacks={
+            "inner": "内圈 fallback",
+            "middle": "中圈 fallback",
+            "outer": "外圈 fallback",
+        },
+        imbalance_projection={
+            "contradiction": "明明很想往前，却又总在最后一步先收回来",
+            "manifestation": "现实里会在快要行动时突然犹豫",
+            "direction": "先把行动拆成能承接的小单位",
+            "healing_core": "把承载感放在速度前面",
+            "deeper_root": "更深一层是你还在确认自己能不能稳稳接住变化",
+            "core_root": "核心根因是对失控的担心还没有真正放松",
+        },
+    )
+
+    assert plan["mode"] == "pro"
+    assert plan["generation_mode"] == "evidence_first"
+    evidence_summary = plan["evidence_trace_summary"]
+    assert evidence_summary["direct_judgment_refs"]
+    assert evidence_summary["color_analysis_refs"]
+    assert evidence_summary["shape_analysis_refs"]
+    assert evidence_summary["circle_relation_refs"]
+    assert evidence_summary["tutorial_source_refs"]
+    assert plan["sections"]["first_impression"]["content"]
+    assert "Lite" not in plan["sections"]["first_impression"]["content"]
+    assert "慢慢亮起来的中心" not in plan["sections"]["first_impression"]["content"]
+    assert plan["sections"]["healing_suggestions"]["content"]
+    assert plan["sections"]["core_insight_table"]["content"]["疗愈核心"]
+    assert "signal:transition-overload" in plan["sections"]["block_point"]["trace"]["rule_refs"]
+    assert "先把行动拆成能承接的小单位" in plan["legacy_projection"]["direction"]
+    assert "把承载感放在速度前面" in plan["legacy_projection"]["healing_core"]
+    assert "内圈代表核心自我当前约占 35%" in plan["legacy_projection"]["circle_readings"]["inner"]
+    assert plan["legacy_projection"]["micro_sections"]["节奏关系"].startswith("圈间节奏首先显示")
+    assert plan["legacy_projection"]["micro_sections"]["关系模式"].startswith("继续往外看")
+    assert plan["legacy_projection"]["micro_sections"]["行动模式"].startswith("当前最明显的行动提示是")
+    assert "你原本希望“想知道怎么更稳定地往前”" in plan["legacy_projection"]["root_cause"]["surface"]
+    assert plan["legacy_projection"]["root_cause"]["deeper"] == "更深一层是你还在确认自己能不能稳稳接住变化"
+    assert plan["legacy_projection"]["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
+
+
+def test_v21_narrative_plan_compresses_per_circle_depth_state():
+    runtime = get_knowledge_runtime()
+    method_trace = {
+        "direct_judgment": {},
+        "per_circle_color_analysis": {
+            "inner": {
+                "circle_label": "内圈",
+                "dominant_element": "火",
+                "dominant_color": "红色",
+                "state_basis": {
+                    "area_ratio": 0.1225,
+                    "avg_brightness": 68.0,
+                    "avg_saturation": 0.72,
+                    "depth_state": "deep",
+                    "fill_state": "dense",
+                },
+            },
+            "middle": {
+                "circle_label": "中圈",
+                "dominant_element": "木",
+                "dominant_color": "绿色",
+                "state_basis": {
+                    "area_ratio": 0.3264,
+                    "avg_brightness": 142.0,
+                    "avg_saturation": 0.44,
+                    "depth_state": "middle",
+                    "fill_state": "filled",
+                },
+            },
+            "outer": {
+                "circle_label": "外圈",
+                "dominant_element": "金",
+                "dominant_color": "白色",
+                "state_basis": {
+                    "area_ratio": 0.5511,
+                    "avg_brightness": 210.0,
+                    "avg_saturation": 0.08,
+                    "depth_state": "light",
+                    "fill_state": "mixed",
+                },
+            },
+        },
+        "shape_analysis": {},
+        "circle_relation_analysis": {},
+        "final_algorithm_basis": {},
+    }
+
+    lite_plan = runtime.narrative_service.build_lite_narrative_plan(
+        theme="general",
+        theme_label="全面解读",
+        dominant_element="土",
+        secondary_element="金",
+        weakest_element="水",
+        inner_dominant="火",
+        middle_dominant="木",
+        outer_dominant="金",
+        interpretation_method_trace=method_trace,
+    )
+    pro_plan = runtime.narrative_service.build_pro_narrative_plan(
+        theme="wealth_career",
+        theme_label="财富事业",
+        dominant_element="土",
+        secondary_element="金",
+        weakest_element="水",
+        interpretation_method_trace=method_trace,
+        circles={
+            "inner": {"dominant": "火", "knowledge_reading": "内圈显示核心自我较热。"},
+            "middle": {"dominant": "木", "knowledge_reading": "中圈显示关系正在伸展。"},
+            "outer": {"dominant": "金", "knowledge_reading": "外圈显示边界开始变清楚。"},
+        },
+    )
+
+    lite_summary = lite_plan["evidence_trace_summary"]["per_circle_color_summary"]
+    lite_observation = lite_plan["evidence_trace_summary"]["per_circle_observation_summary"]
+    pro_summary = pro_plan["evidence_trace_summary"]["per_circle_color_summary"]
+    pro_observation = pro_plan["evidence_trace_summary"]["per_circle_observation_summary"]
+    lite_visual = lite_plan["sections"]["visual_elements"]["content"]
+    pro_circles = pro_plan["sections"]["three_circles_detailed"]["content"]
+
+    assert "内圈" in lite_summary
+    assert "中圈" in lite_summary
+    assert "外圈" in lite_summary
+    assert "偏深" in lite_summary
+    assert "偏浅" in lite_summary
+    assert "面积约" in lite_summary
+    assert "红色" in lite_summary
+    assert "内圈" in lite_observation
+    assert "中圈" in lite_observation
+    assert "外圈" in lite_observation
+    assert "偏深" in lite_observation
+    assert "偏浅" in lite_observation
+    assert "面积约" in lite_observation
+    assert "红色" not in lite_observation
+    assert "逐圈深浅依据" not in lite_visual
+    assert "#" not in lite_visual
+    assert "。；" not in lite_visual
+    assert "。。" not in lite_visual
+    assert lite_observation in lite_visual
+    assert "逐圈深浅依据" not in pro_circles["inner"]
+    assert "红色" not in pro_circles["inner"]
+    assert pro_observation not in pro_circles["inner"]
+    assert pro_summary not in pro_circles["inner"]
+    assert "内圈" in pro_circles["inner"]
+    assert "偏深" in pro_circles["inner"]
+    assert "中圈" not in pro_circles["inner"]
+    assert "外圈" not in pro_circles["inner"]
 
 
 def test_v21_narrative_service_builds_lite_title_variants():
@@ -521,10 +877,117 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
 
     assert layer0.visual_facts["dominant_element"] in {"木", "火", "土", "金", "水"}
     assert layer0.knowledge_hits["circle_readings"]["inner"]
-    assert layer0.rule_evaluations["imbalance_candidates"]
+    assert layer0.rule_evaluations["element_states"]
+    assert layer0.rule_evaluations["triad_states"]
+    assert layer0.rule_evaluations["imbalance_trace"]["all_candidates"]
+    assert layer0.rule_evaluations["imbalance_trace"]["primary_candidates"]
+    assert "used" in layer0.rule_evaluations["imbalance_trace"]["synthetic_signal"]
+    method_trace = layer0.rule_evaluations["interpretation_method_trace"]
+    assert set(method_trace) == {
+        "direct_judgment",
+        "per_circle_color_analysis",
+        "shape_analysis",
+        "circle_relation_analysis",
+        "final_algorithm_basis",
+    }
+    assert set(method_trace["per_circle_color_analysis"]) == {"inner", "middle", "outer"}
+    for circle_key, circle_analysis in method_trace["per_circle_color_analysis"].items():
+        assert circle_analysis["circle"] == circle_key
+        assert circle_analysis["dominant_element"] in {"木", "火", "土", "金", "水"}
+        assert circle_analysis["colors"]
+        assert circle_analysis["state_basis"]["source"] == "tutorial_color_area_depth"
+    for element_state in layer0.rule_evaluations["element_states"]:
+        assert element_state["tutorial_state"]["state"] in {"excess", "balanced", "deficient"}
+        assert element_state["tutorial_state"]["thresholds"] == {
+            "excess": 0.5,
+            "deficient": 0.1,
+        }
+        assert "scoring_state" in element_state
+    for triad_state in layer0.rule_evaluations["triad_states"]:
+        assert triad_state["tutorial_state"] in {"excess", "balanced", "deficient", "unknown"}
+        assert triad_state["source_hit"].startswith("circle:")
+    assert layer0.visual_facts["interpretation_method_trace"] == method_trace
     assert layer0.theme_projection["theme_id"] == "wealth_career"
-    assert isinstance(layer0.quality_flags, list)
+    assert isinstance(layer0.fidelity_flags, list)
+    assert layer0.quality_flags == layer0.fidelity_flags
     assert "used" in layer0.fallback_summary
+
+
+def test_v21_imbalance_service_separates_tutorial_state_from_scoring_state():
+    runtime = get_knowledge_runtime()
+
+    trace = runtime.imbalance_service.evaluate_imbalance_trace(
+        color_analysis={
+            "wood": {"element": "木", "proportion": 0.42},
+            "fire": {"element": "火", "proportion": 0.08},
+            "earth": {"element": "土", "proportion": 0.20},
+            "metal": {"element": "金", "proportion": 0.18},
+            "water": {"element": "水", "proportion": 0.12},
+        },
+        circle_elements={"inner": "木", "middle": "木", "outer": "土"},
+        version="toc",
+    )
+
+    states = {item["element"]: item for item in trace["element_states"]}
+
+    assert states["木"]["tutorial_state"]["state"] == "balanced"
+    assert states["木"]["scoring_state"]["state"] == "excess"
+    assert states["火"]["tutorial_state"]["state"] == "deficient"
+    assert states["火"]["scoring_state"]["state"] == "deficient"
+    assert states["木"]["tutorial_state"]["evidence_basis"]["proportion_source"] == (
+        "tutorial_weighted_element_distribution"
+    )
+    assert states["木"]["scoring_state"]["evidence_basis"]["proportion_source"] == (
+        "runtime_weighted_element_distribution"
+    )
+
+
+def test_v21_imbalance_service_emits_full_trace_but_filters_primary_candidates():
+    runtime = get_knowledge_runtime()
+
+    trace = runtime.imbalance_service.evaluate_imbalance_trace(
+        color_analysis={
+            "water": {"element": "水", "proportion": 0.42},
+            "fire": {"element": "火", "proportion": 0.08},
+            "wood": {"element": "木", "proportion": 0.20},
+            "earth": {"element": "土", "proportion": 0.18},
+            "metal": {"element": "金", "proportion": 0.12},
+        },
+        circle_elements={"inner": "水", "middle": "水", "outer": "土"},
+        version="toc",
+    )
+
+    all_candidates = trace["imbalance_trace"]["all_candidates"]
+    primary_ids = [item["id"] for item in trace["imbalance_trace"]["primary_candidates"]]
+
+    assert len(all_candidates) == 20
+    assert "水多火灭" in primary_ids
+    assert all(item["score"] >= 0.0 for item in all_candidates)
+    assert any(not item["toc_supported"] for item in all_candidates)
+    assert all(item["toc_supported"] for item in trace["imbalance_trace"]["primary_candidates"])
+    assert trace["imbalance_trace"]["synthetic_signal"]["used"] is False
+
+
+def test_v21_imbalance_service_uses_transition_signal_only_when_no_primary_candidate():
+    runtime = get_knowledge_runtime()
+
+    trace = runtime.imbalance_service.evaluate_imbalance_trace(
+        color_analysis={
+            "wood": {"element": "木", "proportion": 0.22},
+            "fire": {"element": "火", "proportion": 0.21},
+            "earth": {"element": "土", "proportion": 0.19},
+            "metal": {"element": "金", "proportion": 0.18},
+            "water": {"element": "水", "proportion": 0.20},
+        },
+        circle_elements={"inner": "木", "middle": "火", "outer": "水"},
+        version="toc",
+    )
+
+    primary_ids = [item["id"] for item in trace["imbalance_trace"]["primary_candidates"]]
+
+    assert primary_ids == ["transition-overload"]
+    assert trace["imbalance_trace"]["synthetic_signal"]["used"] is True
+    assert trace["imbalance_trace"]["synthetic_signal"]["id"] == "transition-overload"
 
 
 def test_store_rejects_legacy_schema_record(tmp_path):

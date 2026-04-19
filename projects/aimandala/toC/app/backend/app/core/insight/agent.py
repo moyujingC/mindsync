@@ -190,6 +190,7 @@ class InsightAgent:
             "rule_evaluations": layer0.get("rule_evaluations", {}),
             "theme_projection": layer0.get("theme_projection", {}),
             "fallback_summary": layer0.get("fallback_summary", {}),
+            "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
             "quality_flags": layer0.get("quality_flags", []),
             "imbalance_candidates": layer0.get("imbalance_candidates", []),
         }
@@ -276,6 +277,7 @@ class InsightAgent:
                     context.layer0.get("theme_projection", {}).keys()
                 ),
                 "imbalance_candidates": context.layer0.get("imbalance_candidates", []),
+                "fidelity_flags": context.layer0.get("fidelity_flags", []),
                 "quality_flags": context.layer0.get("quality_flags", []),
             },
         }
@@ -308,5 +310,6 @@ class InsightAgent:
             "levels": levels,
             "warnings": warnings,
             "query_fallbacks": fallback_analysis.get("query_fallbacks", []),
+            "fidelity_flags": context.layer0.get("fidelity_flags", []),
             "quality_flags": context.layer0.get("quality_flags", []),
         }

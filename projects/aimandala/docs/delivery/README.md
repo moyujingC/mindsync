@@ -1,76 +1,49 @@
 # Delivery
 
-这里放 `一镜一梳` 的交付说明、发布记录、阶段总结和对外可交接的交付结论。
+这里放 `一镜一梳` 当前正式交付记录。
 
-`delivery` 不是实现前置文档，而是实现、验证之后的正式交付产物。
-这个目录天然会保留很多带日期文件，因为交付记录本身属于窗口证据链；
-但它们默认不应全部长期维持 `current`。
+`delivery` 不是实现前置文档，而是实现和验证之后的正式收口产物。
 
-## 放什么
+## 当前正式入口
 
-- 每一轮实现完成后的交付记录
-- 阶段发布说明
-- 灰度、回退、上线、收口总结
-- 与特定任务或验证基线对应的交付结论
+当前只保留以下交付文档：
 
-## 不放什么
+1. [2026-04-18-报告链路保真重构交付记录.md](2026-04-18-报告链路保真重构交付记录.md)
+2. [2026-04-19-Batch-A-runtime-evidence-交付记录.md](2026-04-19-Batch-A-runtime-evidence-交付记录.md)
+3. [2026-04-19-Batch-B-narrative-plan-交付记录.md](2026-04-19-Batch-B-narrative-plan-交付记录.md)
+4. [2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md](2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md)
+5. [2026-04-19-Batch-D-固定样本重建交付记录.md](2026-04-19-Batch-D-固定样本重建交付记录.md)
+6. [2026-04-19-Batch-E-解读教程算法保真交付记录.md](2026-04-19-Batch-E-解读教程算法保真交付记录.md)
+7. [2026-04-19-Batch-F-golden-审阅交付记录.md](2026-04-19-Batch-F-golden-审阅交付记录.md)
+8. [2026-04-19-Batch-G-golden-偏差回灌交付记录.md](2026-04-19-Batch-G-golden-偏差回灌交付记录.md)
+9. [2026-04-19-Batch-H-报告表达保真交付记录.md](2026-04-19-Batch-H-报告表达保真交付记录.md)
+10. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
 
-- 长期产品范围定义
-- 长期技术架构方案
-- 当前唯一任务母计划
-- 当前 QA 母基线
+分工如下：
 
-这些内容应分别放在 `specs/`、`architecture/`、`tasks/`、`qa/`。
+- `2026-04-18-报告链路保真重构交付记录.md`
+  - 收束这轮重大重构的母文档、阶段状态、验证结论和后续 handoff
+- `2026-04-19-Batch-A-runtime-evidence-交付记录.md`
+  - 收束 Batch A runtime evidence 重构的实现窗口、验证结果与进入 Batch B 的前置状态
+- `2026-04-19-Batch-B-narrative-plan-交付记录.md`
+  - 收束 Batch B narrative plan、prompt upstream 和 debug 收口的实现窗口与放行状态
+- `2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md`
+  - 收束 Batch C 新报告合同、前端承接与 debug 区块钻取模型的实现窗口与放行状态
+- `2026-04-19-Batch-D-固定样本重建交付记录.md`
+  - 收束 Batch D 第一块实现中 fixture 重建、脚本治理、eval 收口和样本验证结果
+- `2026-04-19-Batch-E-解读教程算法保真交付记录.md`
+  - 收束 Batch E runtime evidence、narrative/contract、debug/eval 算法保真修复结果
+- `2026-04-19-Batch-F-golden-审阅交付记录.md`
+  - 收束 Batch F golden 资产、人工审阅结论、偏差登记和下一批 handoff
+- `2026-04-19-Batch-G-golden-偏差回灌交付记录.md`
+  - 收束 Batch G golden 偏差修复、debug scope、逐圈深浅进入报告和 eval 指标回归
+- `2026-04-19-Batch-H-报告表达保真交付记录.md`
+  - 收束 Batch H 用户可读报告表达压缩、Pro 去重复和 golden 审阅摘录优化
+- `2026-04-18-Lite-Pro-独立报告重定义交付记录.md`
+  - 收束 `Lite / Pro` 报告模式、议题模型、Lite 轻疗愈区块和 `Pro` 入口语义的专项交付
 
-## 当前 canonical 文档
+## 使用规则
 
-阅读本目录前，先对齐这些长期入口：
-
-- [ToC-MVP-产品规范.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/ToC-MVP-产品规范.md)
-- [ToC-MVP-技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
-- [开发与联调总入口.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/开发与联调总入口.md)
-- [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
-
-## 当前阶段性文档
-
-当前窗口默认优先阅读：
-
-- [2026-04-16-ceo-hermes-container-runtime-fix-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-16-ceo-hermes-container-runtime-fix-handoff.md)
-- [2026-04-16-min80-idea-clarifier-to-ceo-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-16-min80-idea-clarifier-to-ceo-handoff.md)
-- [2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-mvp-公开首发收口与小程序渐进并入交付记录.md)
-- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束交付记录.md)
-- [2026-04-15-min33-human-unblock-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-15-min33-human-unblock-handoff.md)
-- [2026-04-13-miniapp-native-gray-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-13-miniapp-native-gray-delivery.md)
-- [2026-04-13-miniapp-wechatpay-live-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-13-miniapp-wechatpay-live-delivery.md)
-- [2026-04-12-ci-cd-与自动修复交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md)
-
-说明：
-
-- `2026-04-16-ceo-hermes-container-runtime-fix-handoff.md` 是当前 `CEO bug` 的正式交付入口，收束了根因、部署修复方案与后续服务器侧执行动作。
-- `2026-04-16-min80-idea-clarifier-to-ceo-handoff.md` 收束了 `MIN-80` 从模糊输入到 CEO 可接手总任务的当前结论，可作为当前窗口的补充交接入口。
-- `2026-04-14` 与 `2026-04-15 batch E` 组成当前 Web 首发与 miniapp 渐进并入窗口的主交付链。
-- `2026-04-15-min33-human-unblock-handoff.md` 收束 `MIN-33` 的当前正式结论：继续保持 `blocked`、停止重复自动重试、先转人工清障。
-- `2026-04-13` 的 miniapp gray / wechatpay live 文档仍可作为当前灰度与回退参考，但更接近专项交付记录，不代表长期默认入口。
-- `2026-04-12-ci-cd-与自动修复交付记录.md` 仍服务当前基础设施主线，因此继续作为当前专项交付入口保留。
-
-## 历史资料入口
-
-以下文档主要用于追溯背景，不再作为当前默认入口：
-
-- [2026-04-14-miniapp-batch-a-shared-foundation-audit-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-miniapp-batch-a-shared-foundation-audit-delivery.md)
-- [2026-04-14-batch-b-历史记录详情与显式报告类型交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-14-batch-b-历史记录详情与显式报告类型交付记录.md)
-- [2026-04-15-miniapp-batch-c-静态壳与页面闭环交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-15-miniapp-batch-c-静态壳与页面闭环交付记录.md)
-- [2026-04-15-miniapp-batch-d-api-contract-stub-only-交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-15-miniapp-batch-d-api-contract-stub-only-交付记录.md)
-- [2026-04-12-迁移收官与正式版收口交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-12-迁移收官与正式版收口交付记录.md)
-- [2026-04-12-v22-knowledge-workbench-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-12-v22-knowledge-workbench-delivery.md)
-- [2026-04-10-开发测试机初始化与部署记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-10-开发测试机初始化与部署记录.md)
-- [2026-04-04-frontend-baseline-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-04-frontend-baseline-delivery.md)
-- [2026-04-04-mobile-web-interaction-baseline.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-04-mobile-web-interaction-baseline.md)
-- [2026-04-04-report-content-iteration-guide.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-04-report-content-iteration-guide.md)
-- [2026-04-08-architecture-remediation-delivery.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-08-architecture-remediation-delivery.md)
-
-## 默认阅读顺序
-
-1. 先读长期 canonical 文档，确认当前产品与架构真相。
-2. 再读当前窗口交付链，确认这一轮到底交付了什么。
-3. 如需追溯背景，再回看历史交付记录。
+- 交付前先确认 [../qa/README.md](../qa/README.md) 中的验证记录已更新
+- 交付内容应明确已完成项、未完成项、风险和下一步
+- 不再把旧窗口交付链作为默认阅读入口

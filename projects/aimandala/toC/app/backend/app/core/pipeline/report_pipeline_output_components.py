@@ -16,6 +16,9 @@ def install_report_output_components(orchestrator: Any) -> None:
         build_lite_prompt_preview=(
             orchestrator.report_prompt_preview_builder.build_lite_prompt_preview
         ),
+        build_runtime_lite_narrative_plan=(
+            orchestrator.report_projection_resolver.build_runtime_lite_narrative_plan
+        ),
         build_runtime_lite_narrative_projection=(
             orchestrator.report_projection_resolver.build_runtime_lite_narrative_projection
         ),
@@ -48,11 +51,17 @@ def install_report_output_components(orchestrator: Any) -> None:
         build_pro_prompt_preview=(
             orchestrator.report_prompt_preview_builder.build_pro_prompt_preview
         ),
+        get_runtime_imbalance_narrative_basis=(
+            orchestrator.report_projection_resolver.get_runtime_imbalance_narrative_basis
+        ),
         get_runtime_imbalance_projection=(
             orchestrator.report_projection_resolver.get_runtime_imbalance_projection
         ),
         build_pro_imbalance_profile=(
             orchestrator.report_pro_narrative_builder.build_pro_imbalance_profile
+        ),
+        build_runtime_pro_narrative_plan=(
+            orchestrator.report_projection_resolver.build_runtime_pro_narrative_plan
         ),
         build_runtime_pro_narrative_projection=(
             orchestrator.report_projection_resolver.build_runtime_pro_narrative_projection

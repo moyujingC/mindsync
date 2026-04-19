@@ -64,10 +64,12 @@ class ReportPromptPreviewBuilder:
         record: InterpretationRecord,
         *,
         projection: dict[str, Any] | None = None,
+        narrative_plan: dict[str, Any] | None = None,
     ) -> str:
         return self.build_lite_prompt_preview_with_projection(
             record,
             projection=projection,
+            narrative_plan=narrative_plan,
         )
 
     def build_lite_prompt_preview_with_projection(
@@ -75,6 +77,7 @@ class ReportPromptPreviewBuilder:
         record: InterpretationRecord,
         *,
         projection: dict[str, Any] | None = None,
+        narrative_plan: dict[str, Any] | None = None,
     ) -> str:
         vision_payload = {
             "theme": record.theme,
@@ -90,6 +93,7 @@ class ReportPromptPreviewBuilder:
             knowledge_skeleton=self.build_lite_knowledge_skeleton(
                 record,
                 projection=projection,
+                narrative_plan=narrative_plan,
             ),
             extra_context={
                 "theme_label": self._get_theme_label(record.theme),
@@ -151,6 +155,7 @@ class ReportPromptPreviewBuilder:
         narrative_projection: dict[str, Any] | None = None,
         imbalance_projection: dict[str, Any] | None = None,
         imbalance_profile: dict[str, Any] | None = None,
+        narrative_plan: dict[str, Any] | None = None,
     ) -> str:
         vision_payload = {
             "theme": record.theme,
@@ -173,6 +178,7 @@ class ReportPromptPreviewBuilder:
                 narrative_projection=narrative_projection,
                 imbalance_projection=imbalance_projection,
                 imbalance_profile=imbalance_profile,
+                narrative_plan=narrative_plan,
             ),
             extra_context={
                 "theme_label": self._get_theme_label(record.theme),
@@ -184,43 +190,30 @@ class ReportPromptPreviewBuilder:
         record: InterpretationRecord,
         *,
         projection: dict[str, Any] | None = None,
+        narrative_plan: dict[str, Any] | None = None,
     ) -> str:
         theme_label = self._get_theme_label(record.theme)
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         layer0 = self._get_layer0_view(record)
         primary_signal = self._get_primary_knowledge_signal(record)
         projection_payload = projection if isinstance(projection, dict) else {}
+        plan_payload = narrative_plan if isinstance(narrative_plan, dict) else {}
+        runtime_evidence = self._build_runtime_evidence_payload(
+            layer0=layer0,
+            circles=circles,
+            primary_signal=primary_signal,
+        )
         skeleton = {
-            "generation_mode": "knowledge_first",
+            "generation_mode": "evidence_first",
             "theme": record.theme or "general",
             "theme_label": theme_label,
             "user_input": {
                 "painting_intention": (record.painting_intention or "").strip(),
                 "painting_feeling": (record.painting_feeling or "").strip(),
             },
-            "four_step_evidence": {
-                "three_circles": circles,
-                "circle_dominants": {
-                    "inner": layer0.three_circles.inner.get("dominant", "未识别"),
-                    "middle": layer0.three_circles.middle.get("dominant", "未识别"),
-                    "outer": layer0.three_circles.outer.get("dominant", "未识别"),
-                },
-                "primary_signal": self._get_signal_label(primary_signal)
-                if primary_signal
-                else "",
-                "theme_projection": getattr(layer0, "theme_projection", {}) or {},
-                "imbalance_candidates": getattr(layer0, "imbalance_candidates", []) or [],
-            },
-            "report_skeleton": {
-                "title": projection_payload.get("title", ""),
-                "overall_impression": projection_payload.get("overall_impression", ""),
-                "visual_elements": projection_payload.get("visual_elements", ""),
-                "emotion_portrait": projection_payload.get("emotion_portrait", ""),
-                "story_sections": projection_payload.get("story_sections", {}),
-                "theme_insights": projection_payload.get("theme_insights", {}),
-                "three_awareness": projection_payload.get("three_awareness", []),
-                "pro_teaser": projection_payload.get("pro_teaser", ""),
-            },
+            "runtime_evidence": runtime_evidence,
+            "narrative_plan": plan_payload,
+            "compatibility_projection": projection_payload,
         }
         return json.dumps(skeleton, ensure_ascii=False, indent=2)
 
@@ -231,13 +224,11 @@ class ReportPromptPreviewBuilder:
         narrative_projection: dict[str, Any] | None = None,
         imbalance_projection: dict[str, Any] | None = None,
         imbalance_profile: dict[str, Any] | None = None,
+        narrative_plan: dict[str, Any] | None = None,
     ) -> str:
         theme_label = self._get_theme_label(record.theme)
         layer0 = self._get_layer0_view(record)
         primary_signal = self._get_primary_knowledge_signal(record)
-        lite_story = (
-            record.layer_1_lite_draft.story if record.layer_1_lite_draft else None
-        )
         narrative_payload = (
             narrative_projection if isinstance(narrative_projection, dict) else {}
         )
@@ -245,39 +236,26 @@ class ReportPromptPreviewBuilder:
             imbalance_projection if isinstance(imbalance_projection, dict) else {}
         )
         profile_payload = imbalance_profile if isinstance(imbalance_profile, dict) else {}
+        plan_payload = narrative_plan if isinstance(narrative_plan, dict) else {}
+        runtime_evidence = self._build_runtime_evidence_payload(
+            layer0=layer0,
+            circles=record.three_circles or {"inner_radius": 33, "middle_radius": 66},
+            primary_signal=primary_signal,
+        )
         skeleton = {
-            "generation_mode": "knowledge_first",
+            "generation_mode": "evidence_first",
             "theme": record.theme or "general",
             "theme_label": theme_label,
             "user_input": {
                 "painting_intention": (record.painting_intention or "").strip(),
                 "painting_feeling": (record.painting_feeling or "").strip(),
             },
-            "shared_knowledge_basis": {
-                "primary_signal": self._get_signal_label(primary_signal)
-                if primary_signal
-                else "",
-                "theme_projection": getattr(layer0, "theme_projection", {}) or {},
-                "imbalance_candidates": getattr(layer0, "imbalance_candidates", []) or [],
-                "lite_story_anchor": {
-                    "contradiction": lite_story.contradiction.content if lite_story else "",
-                    "block": lite_story.block.content if lite_story else "",
-                },
-            },
-            "report_skeleton": {
-                "first_impression": narrative_payload.get("first_impression", ""),
-                "core_insight_table": {
-                    "能量本质": narrative_payload.get("energy_essence", ""),
-                    "核心失衡": profile_payload.get("summary", ""),
-                    "关键卡点": narrative_payload.get("block_point", ""),
-                    "转化方向": narrative_payload.get("direction", ""),
-                    "疗愈核心": narrative_payload.get("healing_core", ""),
-                },
-                "three_circles_detailed": narrative_payload.get("circle_readings", {}),
-                "micro_analysis_detailed": narrative_payload.get("micro_sections", {}),
-                "imbalance_confirmed": profile_payload,
+            "runtime_evidence": runtime_evidence,
+            "narrative_plan": plan_payload,
+            "compatibility_projection": {
+                "narrative_projection": narrative_payload,
                 "imbalance_projection": imbalance_payload,
-                "root_cause": narrative_payload.get("root_cause", {}),
+                "imbalance_profile": profile_payload,
             },
         }
         return json.dumps(skeleton, ensure_ascii=False, indent=2)
@@ -310,6 +288,8 @@ class ReportPromptPreviewBuilder:
         secondary = distribution[1] if len(distribution) > 1 else None
 
         try:
+            rule_evaluations = getattr(layer0, "rule_evaluations", {}) or {}
+            imbalance_trace = rule_evaluations.get("imbalance_trace", {})
             context = narrative_service.build_theme_prompt_context(
                 theme=self._get_record_theme(record),
                 theme_label=self._get_theme_label(record.theme),
@@ -335,8 +315,42 @@ class ReportPromptPreviewBuilder:
                     layer0.three_circles.outer.get("dominant", "") or ""
                 ),
                 signal=self._get_primary_knowledge_signal(record),
+                element_distribution=distribution,
+                element_states=rule_evaluations.get("element_states", []),
+                triad_states=rule_evaluations.get("triad_states", []),
+                primary_candidates=imbalance_trace.get("primary_candidates", []),
+                synthetic_signal=imbalance_trace.get("synthetic_signal", {}),
+                theme_projection=getattr(layer0, "theme_projection", {}) or {},
+                fidelity_flags=getattr(layer0, "fidelity_flags", []),
+                fallback_summary=getattr(layer0, "fallback_summary", {}) or {},
             )
         except Exception:
             return ""
 
         return context.strip() if isinstance(context, str) else ""
+
+    def _build_runtime_evidence_payload(
+        self,
+        *,
+        layer0: Layer0Raw,
+        circles: dict[str, Any],
+        primary_signal: str | None,
+    ) -> dict[str, Any]:
+        return {
+            "three_circles": circles,
+            "circle_dominants": {
+                "inner": layer0.three_circles.inner.get("dominant", "未识别"),
+                "middle": layer0.three_circles.middle.get("dominant", "未识别"),
+                "outer": layer0.three_circles.outer.get("dominant", "未识别"),
+            },
+            "primary_signal": self._get_signal_label(primary_signal)
+            if primary_signal
+            else "",
+            "visual_facts": getattr(layer0, "visual_facts", {}) or {},
+            "knowledge_hits": getattr(layer0, "knowledge_hits", {}) or {},
+            "rule_evaluations": getattr(layer0, "rule_evaluations", {}) or {},
+            "theme_projection": getattr(layer0, "theme_projection", {}) or {},
+            "fidelity_flags": getattr(layer0, "fidelity_flags", []) or [],
+            "fallback_summary": getattr(layer0, "fallback_summary", {}) or {},
+            "imbalance_candidates": getattr(layer0, "imbalance_candidates", []) or [],
+        }

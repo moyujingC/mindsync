@@ -1,0 +1,45 @@
+id: toc-mvp-fixture-001
+status: current
+owner: Test / QA
+scope: To C MVP
+theme: general
+fixture_type: lite-baseline
+asset_ref:
+  kind: image-asset
+  asset_path: fixtures/toc-mvp/assets/IMG_5057.jpeg
+  evidence_path: fixtures/toc-mvp/evidence/toc-mvp-fixture-001.md
+  note: Lite 基线样本，要求无 fallback，Lite 新产品区块字段完整
+input:
+  user_profile: qa-fixture-user-001
+  image_path: fixtures/toc-mvp/assets/IMG_5057.jpeg
+  image_label: 脱敏基线画作
+  painting_intention: 看见自己当下的整体状态
+  painting_feeling: 平静里带一点收紧
+  expected_report_version: lite
+execution:
+  create_twice: false
+  upgrade_to_pro: false
+validation:
+  report_version: lite
+  existing_on_repeat: false
+  fallback_used: false
+  warning_ids: []
+  required_structured_fields:
+    - topic_context
+    - current_reading
+    - visual_basis
+    - pattern_interpretation
+    - life_connection
+    - lite_healing_guidance
+    - pro_report_entry
+coverage:
+  - TC-01
+  - TC-02
+expected_observations:
+  - 可成功进入 Lite 创建链路
+  - Lite 主结构字段完整且无 fallback
+  - topic_context 为 general 且 orientation 存在
+review_entrypoints:
+  - projects/aimandala/toC/app/backend/tests/unit/test_knowledge_workbench_v22.py
+  - projects/aimandala/toC/app/frontend/mobile-web/browser-debug-panel.test.tsx
+  - projects/aimandala/toC/app/backend/app/core/pipeline/report_contracts.py

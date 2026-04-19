@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from app.core.prompt.builder_v2 import PromptBuilder
@@ -101,8 +102,8 @@ class ReportDebugProfileBuilder:
                 ],
             },
             {
-                "field": "pro_teaser",
-                "final_value": layer2.get("pro_teaser") if layer2 else None,
+                "field": "pro_report_entry",
+                "final_value": layer2.get("pro_report_entry") if layer2 else None,
                 "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.pro_teaser"
@@ -112,6 +113,17 @@ class ReportDebugProfileBuilder:
                 "upstream_inputs": [
                     {"source": "layer_1_lite_draft.pro_teaser", "value": layer1.get("pro_teaser") if layer1 else None},
                     {"source": "user.theme", "value": record.theme},
+                ],
+            },
+            {
+                "field": "lite_healing_guidance",
+                "final_value": layer2.get("lite_healing_guidance") if layer2 else None,
+                "generation_mode": "knowledge_only",
+                "main_source": "layer_2_lite_final.lite_healing_guidance",
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.theme_insights", "value": layer1.get("theme_insights") if layer1 else None},
+                    {"source": "layer_1_lite_draft.three_awareness", "value": layer1.get("three_awareness") if layer1 else None},
+                    {"source": "layer_2_lite_final.experiment_rendered", "value": layer2.get("experiment_rendered") if layer2 else None},
                 ],
             },
         ]
@@ -215,7 +227,8 @@ class ReportDebugProfileBuilder:
             "theme_impact": "layer_2_lite_final.theme_insights.impact",
             "theme_awareness": "layer_2_lite_final.theme_insights.awareness",
             "three_awareness": "layer_2_lite_final.three_awareness",
-            "pro_teaser": "layer_2_lite_final.pro_teaser",
+            "lite_healing_guidance": "layer_2_lite_final.lite_healing_guidance",
+            "pro_report_entry": "layer_2_lite_final.pro_report_entry",
         }
         pro_mapped_fields = {
             "first_impression": "layer_3_pro_draft.first_impression / report.summary",
@@ -389,9 +402,75 @@ class ReportDebugProfileBuilder:
         marker = "## 知识骨架（已确定，不要改写判断）"
         if marker not in prompt_preview:
             return ""
-        after_marker = prompt_preview.split(marker, 1)[1]
+        after_marker = prompt_preview.rsplit(marker, 1)[1]
         section = after_marker.split("---", 1)[0].strip()
-        return self._excerpt(section, limit=320) or ""
+        json_start = section.find("{")
+        if json_start >= 0:
+            payload = section[json_start:]
+            parsed = self._parse_embedded_json(payload)
+            if parsed is None:
+                return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
+            compact = self._summarize_knowledge_skeleton(parsed)
+            return self._excerpt(compact, limit=1600) or ""
+        return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
+
+    def _parse_embedded_json(self, payload: str) -> Any | None:
+        candidates = [payload]
+        if '\\"' in payload or "\\n" in payload or "\\t" in payload:
+            candidates.append(self._normalize_escaped_block(payload))
+        for candidate in candidates:
+            try:
+                return json.loads(candidate)
+            except Exception:
+                continue
+        return None
+
+    def _normalize_escaped_block(self, value: str) -> str:
+        return (
+            value.replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace('\\"', '"')
+        )
+
+    def _summarize_knowledge_skeleton(self, payload: Any) -> str:
+        if not isinstance(payload, dict):
+            return json.dumps(payload, ensure_ascii=False, indent=2)
+
+        runtime_evidence = payload.get("runtime_evidence", {})
+        narrative_plan = payload.get("narrative_plan", {})
+        compatibility_projection = payload.get("compatibility_projection", {})
+
+        summary = {
+            "generation_mode": payload.get("generation_mode"),
+            "theme": payload.get("theme"),
+            "theme_label": payload.get("theme_label"),
+            "user_input": payload.get("user_input"),
+            "runtime_evidence": {
+                "keys": sorted(runtime_evidence.keys())
+                if isinstance(runtime_evidence, dict)
+                else [],
+                "rule_evaluations_keys": sorted(
+                    (runtime_evidence.get("rule_evaluations") or {}).keys()
+                )
+                if isinstance(runtime_evidence, dict)
+                and isinstance(runtime_evidence.get("rule_evaluations"), dict)
+                else [],
+            },
+            "narrative_plan": {
+                "mode": narrative_plan.get("mode"),
+                "generation_mode": narrative_plan.get("generation_mode"),
+                "section_keys": sorted((narrative_plan.get("sections") or {}).keys())
+                if isinstance(narrative_plan, dict)
+                and isinstance(narrative_plan.get("sections"), dict)
+                else [],
+            },
+            "compatibility_projection": {
+                "keys": sorted(compatibility_projection.keys())
+                if isinstance(compatibility_projection, dict)
+                else [],
+            },
+        }
+        return json.dumps(summary, ensure_ascii=False, indent=2)
 
     def _non_empty_text(self, value: Any) -> str:
         if not isinstance(value, str):

@@ -3,8 +3,8 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/README.md
+> last_updated：2026-04-18
+> source_of_truth：projects/aimandala/docs/runbooks/README.md
 
 这里放 `一镜一梳 / aimandala` 的运行说明、联调手册和操作型 runbook。
 
@@ -39,23 +39,13 @@
 
 ## 3. 当前重点入口
 
-1. [开发与联调总入口.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/开发与联调总入口.md)
-2. [本地联调手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/本地联调手册.md)
-3. [../tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-4. [../tasks/aimandala-pr-质量门-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
+1. [开发与联调总入口.md](开发与联调总入口.md)
+2. [本地联调手册.md](本地联调手册.md)
+3. [../tasks/2026-04-10-服务器部署与运维手册.md](../tasks/2026-04-10-服务器部署与运维手册.md)
+4. [../tasks/aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
 
-## 4. 当前治理判断
+## 4. 使用规则
 
-历史上 `aimandala` 的 runbook 类内容混在 `tasks/` 和代码 README 中。
-
-当前先建立本目录作为正式入口：
-
-- 新增运行说明优先落到这里
-- 历史文档先保留原路径，通过索引收口
-- 后续再按需要做目录迁移
-
-当前补充说明：
-
-- `execution routing` 的当前正式入口已转为 `../specs/2026-04-19-paperclip-native-execution-routing-spec.md`、`../tasks/2026-04-19-paperclip-native-execution-routing-plan.md` 与 `../qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md`。
-- 当前 heartbeat 剩余 `34` 条活跃 `serverAutomationBlocking` 的下一阶段正式入口，已转为 `../specs/2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md`、`../tasks/2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md` 与 `../qa/2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md`。
-- `本地人工接手-runbook.md` 与 `本地人工接手-comment-模板规范.md` 保留为旧 phase 2 handoff 模型的历史参考，不再作为当前默认入口。
+- 本目录只暴露当前保留的运行入口
+- 远端运维命令统一写成长期有效的路径口径，例如 `$REPO_ROOT`、`$PROJECT_ROOT`、`$HOME/.ssh/...`
+- 如需阅读产品或架构背景，分别回到 [../specs/README.md](../specs/README.md) 和 [../architecture/README.md](../architecture/README.md)
