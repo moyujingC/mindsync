@@ -124,7 +124,7 @@ describe("RelayHub console routes", () => {
   it("shows purchase entry for presets with purchaseUrl", async () => {
     renderRoute("/models");
 
-    expect(await screen.findByText("系统预置")).toBeInTheDocument();
+    expect(await screen.findByText("优先激活候选")).toBeInTheDocument();
     expect((await screen.findAllByText("去购买 / 充值")).length).toBeGreaterThan(0);
   });
 
@@ -150,8 +150,20 @@ describe("RelayHub console routes", () => {
     fireEvent.click(within(row!).getByRole("button", { name: "测试连接" }));
 
     expect(
-      await screen.findByText("“PPChat 中转”已激活。下一步可去任务库绑定默认模型。"),
+      await screen.findByText(
+        "“PPChat 中转”已激活。下一步可去任务库绑定默认模型。适合先绑定：Claude Code Web Coding、Codex Repo Coding。",
+      ),
     ).toBeInTheDocument();
+  });
+
+  it("shows priority preset guidance in the model library", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("优先激活候选")).toBeInTheDocument();
+    expect(await screen.findByText("最适合作为通用工具和编码任务的首个激活候选，先跑通绑定路径最快。")).toBeInTheDocument();
+    expect(
+      (await screen.findAllByText("适合先绑定：Claude Code Web Coding、Codex Repo Coding。")).length,
+    ).toBeGreaterThan(0);
   });
 
   it("shows task guidance when there are no active models to bind", async () => {
@@ -194,6 +206,27 @@ describe("RelayHub console routes", () => {
       await screen.findByText("“Claude Code Web Coding”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
     ).toBeInTheDocument();
     expect(await screen.findByText("DeepSeek V3 官方")).toBeInTheDocument();
+  });
+
+  it("shows recommended candidates for tasks based on active models", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByText("推荐候选")).toBeInTheDocument();
+    expect((await screen.findAllByText("推荐先从这些已激活模型里绑定。")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText("当前绑定已在推荐候选内。")).length).toBeGreaterThan(0);
   });
 
   it("allows binding a previously unbound task from the task table", async () => {

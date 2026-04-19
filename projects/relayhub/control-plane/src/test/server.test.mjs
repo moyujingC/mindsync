@@ -32,8 +32,10 @@ test("GET /models returns public model entries without apiKey", async () => {
     const payload = await response.json();
 
     assert.ok(Array.isArray(payload));
-    assert.ok(payload.length >= 4);
+    assert.ok(payload.length >= 6);
     assert.equal("apiKey" in payload[0], false);
+    assert.equal(payload[0].presetPriority !== undefined, true);
+    assert.equal(Array.isArray(payload[0].recommendedTaskIds), true);
   });
 });
 

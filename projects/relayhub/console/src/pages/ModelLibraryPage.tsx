@@ -3,7 +3,11 @@ import { EmptyState } from "../components/EmptyState";
 import { ModelStatusPill } from "../components/ModelStatusPill";
 import { Section } from "../components/Section";
 import { useAsyncResource } from "../hooks/useAsyncResource";
-import type { ModelEntry, ModelEntryInput, ModelEntryKind } from "../models/controlPlane";
+import type {
+  ModelEntry,
+  ModelEntryInput,
+  ModelEntryKind,
+} from "../models/controlPlane";
 import {
   deleteModelEntry,
   listModelEntries,
@@ -41,12 +45,24 @@ export function ModelLibraryPage() {
       return [];
     }
 
-    return [...dataResource.data].sort((left, right) => left.name.localeCompare(right.name, "zh-CN"));
+    return [...dataResource.data].sort(compareEntriesForGuidance);
   }, [dataResource.data]);
 
   const presetEntries = useMemo(
     () => sortedEntries.filter((entry) => entry.source === "preset"),
     [sortedEntries],
+  );
+  const priorityPresetEntries = useMemo(
+    () =>
+      presetEntries.filter(
+        (entry) =>
+          entry.presetPriority === "recommended-first" || entry.presetPriority === "recommended",
+      ),
+    [presetEntries],
+  );
+  const otherPresetEntries = useMemo(
+    () => presetEntries.filter((entry) => entry.presetPriority === "optional"),
+    [presetEntries],
   );
   const customEntries = useMemo(
     () => sortedEntries.filter((entry) => entry.source === "custom"),
@@ -70,6 +86,13 @@ export function ModelLibraryPage() {
   const failedEntries = useMemo(
     () => sortedEntries.filter((entry) => entry.status === "test-failed"),
     [sortedEntries],
+  );
+  const recommendedUnactivatedEntries = useMemo(
+    () =>
+      priorityPresetEntries.filter(
+        (entry) => entry.status !== "active" && entry.status !== "disabled",
+      ),
+    [priorityPresetEntries],
   );
 
   function resetForm() {
@@ -148,7 +171,9 @@ export function ModelLibraryPage() {
       const updated = await testModelEntryConnection(entry.id);
       setVersion((current) => current + 1);
       if (updated.status === "active") {
-        setSubmitMessage(`“${entry.name}”已激活。下一步可去任务库绑定默认模型。`);
+        setSubmitMessage(
+          `“${entry.name}”已激活。下一步可去任务库绑定默认模型。${describeRecommendedTasks(updated)}`,
+        );
       } else {
         setSubmitError(`“${entry.name}”测试失败：${updated.lastTestMessage}`);
       }
@@ -191,7 +216,7 @@ export function ModelLibraryPage() {
 
       <Section
         title="模型条目总览"
-        description="先分清“已可用”与“待补配置 / 待测试”，避免第一次进入时不知道该从哪一步开始。"
+        description="先分清哪些模型已经能绑定任务，哪些模型更值得优先激活，避免第一次进入时还要自己猜。"
       >
         {dataResource.status === "loading" ? (
           <EmptyState title="正在加载模型库" description="正在读取模型条目和当前激活状态。" />
@@ -207,25 +232,49 @@ export function ModelLibraryPage() {
               <p>这些模型已经通过测试连接，可以直接作为任务默认模型。</p>
             </article>
             <article className="data-card">
-              <span className="mini-label">还差最后一步</span>
-              <h4>{pendingEntries.length} 个模型待补配置</h4>
-              <p>优先处理待测试或未配置条目，完成后再进入任务库。</p>
+              <span className="mini-label">推荐先激活</span>
+              <h4>{recommendedUnactivatedEntries.length} 个候选值得优先处理</h4>
+              <p>这些预置条目已经给出适合任务和首选理由，适合先完成一条可用链路。</p>
             </article>
             <article className="data-card">
               <span className="mini-label">待补密钥 / 待修正</span>
               <h4>{missingApiKeyEntries.length} 个模型还缺 API Key</h4>
-              <p>{failedEntries.length} 个模型最近测试失败，先修正配置再重新测试。</p>
+              <p>
+                {pendingEntries.length} 个模型待补配置或待测试，{failedEntries.length} 个模型最近测试失败。
+              </p>
             </article>
           </div>
         ) : null}
       </Section>
 
       <Section
-        title="系统预置"
-        description="系统先给出首批优先激活候选，帮助你少走一次从零填写的路径。"
+        title="优先激活候选"
+        description="先从这里选更适合当前任务的预置模型，完成激活后再进入任务库绑定。"
       >
         {dataResource.status === "success" ? (
-          <EntriesTable entries={presetEntries} onEdit={openEdit} onTest={handleTest} onDelete={handleDelete} />
+          <EntriesTable
+            entries={priorityPresetEntries}
+            onEdit={openEdit}
+            onTest={handleTest}
+            onDelete={handleDelete}
+          />
+        ) : null}
+      </Section>
+
+      <Section
+        title="更多预置模型"
+        description="这些条目先作为备用候选，不抢首屏注意力，但需要时仍可直接激活。"
+      >
+        {dataResource.status === "success" && otherPresetEntries.length === 0 ? (
+          <EmptyState title="当前没有更多预置模型" description="首轮候选已经收敛在上面的优先激活区。" />
+        ) : null}
+        {dataResource.status === "success" && otherPresetEntries.length > 0 ? (
+          <EntriesTable
+            entries={otherPresetEntries}
+            onEdit={openEdit}
+            onTest={handleTest}
+            onDelete={handleDelete}
+          />
         ) : null}
       </Section>
 
@@ -367,6 +416,8 @@ function EntriesTable({
             <th>Provider</th>
             <th>模型标识</th>
             <th>状态</th>
+            <th>适合任务</th>
+            <th>首选理由</th>
             <th>密钥</th>
             <th>最近测试</th>
             <th>操作</th>
@@ -379,6 +430,9 @@ function EntriesTable({
                 <strong>{entry.name}</strong>
                 <div className="supporting-text">{entry.statusNote}</div>
                 <div className="supporting-text">下一步：{describeNextAction(entry)}</div>
+                {entry.activationHint ? (
+                  <div className="supporting-text">激活提示：{entry.activationHint}</div>
+                ) : null}
                 {entry.purchaseUrl ? (
                   <div className="supporting-text">
                     <a href={entry.purchaseUrl} target="_blank" rel="noreferrer">
@@ -392,6 +446,16 @@ function EntriesTable({
               <td>{entry.modelId}</td>
               <td>
                 <ModelStatusPill status={entry.status} />
+                {entry.costTier ? <div className="supporting-text">成本：{entry.costTier}</div> : null}
+              </td>
+              <td>
+                <div>{describeRecommendedTasks(entry)}</div>
+                {entry.capabilityTags.length > 0 ? (
+                  <div className="supporting-text">{entry.capabilityTags.join(" / ")}</div>
+                ) : null}
+              </td>
+              <td>
+                {entry.selectionReason ?? "当前没有额外首选理由。"}
               </td>
               <td>{entry.maskedApiKey ?? "未保存"}</td>
               <td>{entry.lastTestedAt ?? "尚未测试"}</td>
@@ -420,6 +484,36 @@ function EntriesTable({
   );
 }
 
+function compareEntriesForGuidance(left: ModelEntry, right: ModelEntry) {
+  const leftRank = entrySortRank(left);
+  const rightRank = entrySortRank(right);
+
+  if (leftRank !== rightRank) {
+    return leftRank - rightRank;
+  }
+
+  return left.name.localeCompare(right.name, "zh-CN");
+}
+
+function entrySortRank(entry: ModelEntry) {
+  if (entry.source === "custom") {
+    return 50;
+  }
+  if (entry.presetPriority === "recommended-first" && entry.status !== "active") {
+    return entry.status === "configured-pending-test" ? 20 : 10;
+  }
+  if (entry.presetPriority === "recommended" && entry.status !== "active") {
+    return entry.status === "configured-pending-test" ? 25 : 15;
+  }
+  if (entry.status === "active") {
+    return 30;
+  }
+  if (entry.presetPriority === "optional") {
+    return 40;
+  }
+  return 45;
+}
+
 function describeNextAction(entry: ModelEntry) {
   if (entry.status === "active") {
     return "可以去任务库绑定默认模型。";
@@ -440,4 +534,28 @@ function describeNextAction(entry: ModelEntry) {
     return "需要时可重新编辑并测试连接。";
   }
   return "保存配置后，显式执行测试连接完成激活。";
+}
+
+function describeRecommendedTasks(entry: ModelEntry) {
+  const taskNames = entry.recommendedTaskIds.map(readableTaskName);
+  if (taskNames.length > 0) {
+    return `适合先绑定：${taskNames.join("、")}。`;
+  }
+
+  if (entry.recommendedTaskCategories.length > 0) {
+    return `适合任务：${entry.recommendedTaskCategories.join("、")}。`;
+  }
+
+  return "适合任务：当前未指定。";
+}
+
+function readableTaskName(taskId: string) {
+  const taskNames: Record<string, string> = {
+    "task-claude-code": "Claude Code Web Coding",
+    "task-codex-repo": "Codex Repo Coding",
+    "task-therapy-dialogue": "心理疗愈对话",
+    "task-therapy-summary": "心理疗愈摘要",
+  };
+
+  return taskNames[taskId] ?? taskId;
 }

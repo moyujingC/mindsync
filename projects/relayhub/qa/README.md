@@ -17,4 +17,5 @@
 - [2026-04-19-v1-治理控制台主路径可用性收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-治理控制台主路径可用性收口-qa-basis.md)
 - [2026-04-19-v1-模型激活闭环收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-模型激活闭环收口-qa-basis.md)
 - [2026-04-19-v1-任务级默认模型快速切换-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-任务级默认模型快速切换-qa-basis.md)
+- [2026-04-19-v1-预置模型质量与选型引导收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-预置模型质量与选型引导收口-qa-basis.md)
 - [2026-04-19-v1-control-plane-release-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-control-plane-release-qa-basis.md)

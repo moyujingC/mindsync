@@ -1,5 +1,7 @@
 export type ModelEntryKind = "coding-plan" | "domestic-model" | "relay-api";
 export type ModelEntrySource = "preset" | "custom";
+export type PresetPriority = "recommended-first" | "recommended" | "optional";
+export type CostTier = "高" | "中" | "低";
 export type ModelEntryStatus =
   | "preset-unconfigured"
   | "configured-pending-test"
@@ -34,6 +36,13 @@ export interface ModelEntry {
   lastTestResult: ModelEntryTestResult;
   lastTestCode: ModelEntryTestCode;
   lastTestMessage: string;
+  presetPriority: PresetPriority | null;
+  recommendedTaskCategories: TaskCategory[];
+  recommendedTaskIds: string[];
+  selectionReason: string | null;
+  activationHint: string | null;
+  costTier: CostTier | null;
+  capabilityTags: string[];
   tags: string[];
 }
 

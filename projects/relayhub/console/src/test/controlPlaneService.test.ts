@@ -59,4 +59,19 @@ describe("control-plane service release wiring", () => {
     expect(result.lastTestCode).toBe("missing_api_key");
     expect(result.lastTestMessage).toContain("缺少 API Key");
   });
+
+  it("exposes preset guidance metadata in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
+    vi.resetModules();
+    const service = await import("../services/controlPlane");
+
+    const entries = await service.listModelEntries();
+    const relayPreset = entries.find((entry) => entry.id === "preset-ppchat-relay");
+
+    expect(relayPreset?.presetPriority).toBe("recommended-first");
+    expect(relayPreset?.recommendedTaskIds).toContain("task-claude-code");
+    expect(relayPreset?.selectionReason).toContain("通用工具");
+    expect(relayPreset?.activationHint).toContain("测试连接");
+    expect(relayPreset?.capabilityTags).toContain("编码");
+  });
 });

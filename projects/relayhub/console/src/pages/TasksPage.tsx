@@ -2,7 +2,12 @@ import { useMemo, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { Section } from "../components/Section";
 import { useAsyncResource } from "../hooks/useAsyncResource";
-import type { TaskCategory, TaskTemplate, TaskTemplateInput } from "../models/controlPlane";
+import type {
+  ModelEntry,
+  TaskCategory,
+  TaskTemplate,
+  TaskTemplateInput,
+} from "../models/controlPlane";
 import {
   deleteTaskTemplate,
   listActiveModelEntries,
@@ -306,7 +311,7 @@ function TaskTable({
 }: {
   tasks: TaskTemplate[];
   hasActiveModels: boolean;
-  activeModels: Array<{ id: string; name: string }>;
+  activeModels: ModelEntry[];
   rowSavingTaskId: string | null;
   resolveDraftValue: (task: TaskTemplate) => string;
   onDraftChange: (taskId: string, value: string) => void;
@@ -322,6 +327,7 @@ function TaskTable({
             <th>任务</th>
             <th>分类</th>
             <th>当前默认模型</th>
+            <th>推荐候选</th>
             <th>快速切换</th>
             <th>切换提示</th>
             <th>操作</th>
@@ -332,6 +338,10 @@ function TaskTable({
             const draftValue = resolveDraftValue(task);
             const isSaving = rowSavingTaskId === task.id;
             const nextModelEntryId = draftValue || null;
+            const recommendedModels = resolveRecommendedModels(task, activeModels);
+            const currentBindingIsRecommended =
+              task.defaultModelEntryId === null ||
+              recommendedModels.some((model) => model.id === task.defaultModelEntryId);
 
             return (
               <tr key={task.id}>
@@ -341,6 +351,22 @@ function TaskTable({
                 </td>
                 <td>{task.category}</td>
                 <td>{task.defaultModelEntryName ?? "尚未绑定"}</td>
+                <td>
+                  {hasActiveModels ? (
+                    <div>
+                      <div>{recommendedModels.map((model) => model.name).join("、")}</div>
+                      <div className="supporting-text">
+                        {task.defaultModelEntryId === null
+                          ? "推荐先从这些已激活模型里绑定。"
+                          : currentBindingIsRecommended
+                            ? "当前绑定已在推荐候选内。"
+                            : "当前可继续使用，也可切到更匹配候选。"}
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="supporting-text">先回模型库激活，推荐候选才会出现。</span>
+                  )}
+                </td>
                 <td>
                   {hasActiveModels ? (
                     <div className="inline-actions">
@@ -394,4 +420,20 @@ function TaskTable({
       </table>
     </div>
   );
+}
+
+function resolveRecommendedModels(task: TaskTemplate, activeModels: ModelEntry[]) {
+  const exactMatches = activeModels.filter((model) => model.recommendedTaskIds.includes(task.id));
+  if (exactMatches.length > 0) {
+    return exactMatches;
+  }
+
+  const categoryMatches = activeModels.filter((model) =>
+    model.recommendedTaskCategories.includes(task.category),
+  );
+  if (categoryMatches.length > 0) {
+    return categoryMatches;
+  }
+
+  return activeModels;
 }

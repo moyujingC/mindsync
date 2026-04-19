@@ -17,4 +17,5 @@
 - [2026-04-19-v1-治理控制台主路径可用性收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-治理控制台主路径可用性收口实施任务.md)
 - [2026-04-19-v1-模型激活闭环收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-模型激活闭环收口实施任务.md)
 - [2026-04-19-v1-任务级默认模型快速切换实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-任务级默认模型快速切换实施任务.md)
+- [2026-04-19-v1-预置模型质量与选型引导收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-预置模型质量与选型引导收口实施任务.md)
 - [2026-04-19-v1-control-plane-release-实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-control-plane-release-实施任务.md)

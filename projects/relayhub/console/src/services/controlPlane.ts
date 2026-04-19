@@ -396,6 +396,13 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    presetPriority: null,
+    recommendedTaskCategories: [],
+    recommendedTaskIds: [],
+    selectionReason: null,
+    activationHint: null,
+    costTier: null,
+    capabilityTags: [],
     tags: ["自定义"],
     apiKey: apiKey || null,
   };
