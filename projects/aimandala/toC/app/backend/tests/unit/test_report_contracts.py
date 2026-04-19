@@ -1,4 +1,5 @@
 import asyncio
+from types import SimpleNamespace
 
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.report_contracts import ReportContractAssembler
@@ -124,6 +125,37 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     assert "healing_suggestions" not in payload["structured"]
     assert payload["can_upgrade"] is False
     assert payload["upgrade_price"] is None
+
+
+def test_pro_healing_plan_removes_truncated_raw_payload_fragments():
+    assembler = ReportContractAssembler.__new__(ReportContractAssembler)
+    pro_draft = SimpleNamespace(
+        healing_suggestions=[
+            {
+                "phase": "第二步",
+                "focus": ": '金色', 'middle': '红色', 'outer': '土色'}",
+                "practice": "把注意力放回当下可以承接的身体节奏。",
+            }
+        ],
+        root_cause={
+            "surface": "行动节奏被外部评价牵动。",
+            "deeper": "需要重新建立稳定推进感。",
+            "core": "把价值感从单次结果中收回来。",
+        },
+        imbalance_confirmed={
+            "primary": "当前主要失衡是外推动力与稳定承接之间不同步。",
+        },
+        narrative_plan={},
+    )
+
+    plan = assembler._build_pro_healing_plan(pro_draft)
+
+    assert plan[0]["focus"]
+    serialized = str(plan)
+    assert "middle':" not in serialized
+    assert "outer':" not in serialized
+    assert ": '金色'" not in serialized
+    assert "{'" + "inner'" not in serialized
 
 
 def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_path):

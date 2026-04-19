@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from app.core.prompt.builder_v2 import PromptBuilder
@@ -541,22 +542,105 @@ class ReportContractAssembler:
         if pro_draft is None:
             return []
         plan: list[dict[str, str]] = []
-        for item in pro_draft.healing_suggestions or []:
+        for index, item in enumerate(pro_draft.healing_suggestions or []):
             if not isinstance(item, dict):
                 continue
             normalized = {
-                "phase": self._sanitize_text(str(item.get("phase") or "").strip()),
-                "focus": self._sanitize_text(str(item.get("focus") or "").strip()),
-                "practice": self._sanitize_text(str(item.get("practice") or "").strip()),
+                "phase": self._sanitize_or_rebuild_healing_field(
+                    str(item.get("phase") or "").strip(),
+                    field_name="phase",
+                    pro_draft=pro_draft,
+                    item_index=index,
+                ),
+                "focus": self._sanitize_or_rebuild_healing_field(
+                    str(item.get("focus") or "").strip(),
+                    field_name="focus",
+                    pro_draft=pro_draft,
+                    item_index=index,
+                ),
+                "practice": self._sanitize_or_rebuild_healing_field(
+                    str(item.get("practice") or "").strip(),
+                    field_name="practice",
+                    pro_draft=pro_draft,
+                    item_index=index,
+                ),
             }
             if any(normalized.values()):
                 plan.append(normalized)
         return plan
 
+    def _sanitize_or_rebuild_healing_field(
+        self,
+        content: str,
+        *,
+        field_name: str,
+        pro_draft: Layer3ProDraft,
+        item_index: int,
+    ) -> str:
+        cleaned = self._sanitize_text(content)
+        if cleaned:
+            return cleaned
+        return self._fallback_healing_field(
+            field_name=field_name,
+            pro_draft=pro_draft,
+            item_index=item_index,
+        )
+
+    def _fallback_healing_field(
+        self,
+        *,
+        field_name: str,
+        pro_draft: Layer3ProDraft,
+        item_index: int,
+    ) -> str:
+        if field_name == "phase":
+            return f"第{item_index + 1}步"
+
+        root_cause = pro_draft.root_cause or {}
+        imbalance = pro_draft.imbalance_confirmed or {}
+        narrative_plan = pro_draft.narrative_plan or {}
+        sections = narrative_plan.get("sections", {}) if isinstance(narrative_plan, dict) else {}
+
+        root_candidates = [
+            imbalance.get("primary") if isinstance(imbalance, dict) else "",
+            imbalance.get("summary") if isinstance(imbalance, dict) else "",
+            root_cause.get("deeper") if isinstance(root_cause, dict) else "",
+            root_cause.get("core") if isinstance(root_cause, dict) else "",
+            root_cause.get("surface") if isinstance(root_cause, dict) else "",
+        ]
+        clean_candidates = [
+            self._sanitize_text(str(value or "").strip())
+            for value in root_candidates
+            if isinstance(value, str) and str(value).strip()
+        ]
+
+        if field_name == "focus":
+            if clean_candidates:
+                return clean_candidates[0]
+            return "把当前失衡和根因链放在一起看，先回到能稳定承接的节奏。"
+
+        if field_name == "practice":
+            healing_sections = sections.get("healing_suggestions", [])
+            if isinstance(healing_sections, list):
+                for item in healing_sections:
+                    if not isinstance(item, dict):
+                        continue
+                    payload = item.get("content")
+                    if isinstance(payload, dict):
+                        value = self._sanitize_text(str(payload.get("practice") or "").strip())
+                        if value:
+                            return value
+            return "每天选择一个低压动作，观察身体是否更容易放松、承接和继续。"
+
+        return ""
+
     def _sanitize_text(self, content: str) -> str:
         if not isinstance(content, str):
             return ""
+        if self._looks_like_raw_payload(content):
+            return ""
         cleaned = content
+        cleaned = self._strip_raw_payload_fragments(cleaned)
         banned_phrases = [
             "Lite" + " 里",
             "解锁" + "完整版",
@@ -570,3 +654,41 @@ class ReportContractAssembler:
         while "  " in cleaned:
             cleaned = cleaned.replace("  ", " ")
         return cleaned.strip()
+
+    def _looks_like_raw_payload(self, content: str) -> bool:
+        text = content.strip()
+        if not text:
+            return False
+        key_markers = (
+            "'inner':",
+            '"inner":',
+            "'middle':",
+            '"middle":',
+            "'outer':",
+            '"outer":',
+            "'color':",
+            '"color":',
+            "'depth_state':",
+            '"depth_state":',
+            "'avg_brightness':",
+            '"avg_brightness":',
+            "'avg_saturation':",
+            '"avg_saturation":',
+        )
+        marker_count = sum(1 for marker in key_markers if marker in text)
+        if marker_count >= 2:
+            return True
+        if marker_count >= 1 and (text.startswith("{") or text.startswith(":") or text.endswith("}")):
+            return True
+        return False
+
+    def _strip_raw_payload_fragments(self, content: str) -> str:
+        patterns = [
+            r"\{[^{}]*(?:'|\")?(?:inner|middle|outer|depth_state|avg_brightness|avg_saturation)(?:'|\")?\s*:[^{}]*\}",
+            r":\s*'[^']+'\s*,\s*'(?:inner|middle|outer)'\s*:[^\n。；]*",
+            r":\s*\"[^\"]+\"\s*,\s*\"(?:inner|middle|outer)\"\s*:[^\n。；]*",
+        ]
+        cleaned = content
+        for pattern in patterns:
+            cleaned = re.sub(pattern, "", cleaned)
+        return cleaned
