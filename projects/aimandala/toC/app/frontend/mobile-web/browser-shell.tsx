@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { BrowserDebugPanel } from "./browser-debug-panel";
-import { ManualReviewPanel } from "./manual-review-panel";
 import { MiniappApp } from "../miniapp/app";
 import type { MiniappRouteId } from "../miniapp/routes";
 import { createPreviewAppProps } from "./fixtures";
@@ -945,6 +944,10 @@ export function MobileWebBrowserShell() {
             <span className="muted">
               开发辅助层，正式产品界面只看手机画面。
             </span>
+            <div className="browser-shell__version-badge" aria-label="当前联调壳层版本">
+              <span className="browser-shell__version-label">Local Debug</span>
+              <strong>v2026-04-20-layer0-first</strong>
+            </div>
           </div>
 
           <button
@@ -1357,17 +1360,6 @@ export function MobileWebBrowserShell() {
             />
           )}
           </div>
-
-          {localDebugEnabled && controlsOpen ? (
-            <ManualReviewPanel
-              route={route}
-              previewMode={previewMode}
-              draft={draft}
-              interpretationId={interpretationId}
-              flowState={previewFlowState}
-              detection={previewDetection}
-            />
-          ) : null}
 
           {localDebugEnabled && controlsOpen ? (
             <BrowserDebugPanel

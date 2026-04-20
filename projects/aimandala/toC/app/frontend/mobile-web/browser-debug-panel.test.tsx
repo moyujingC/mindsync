@@ -104,11 +104,120 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
     warnings: ["healing fallback"],
   },
   knowledge_debug: {
+    input_package: {
+      image: {
+        image_ref: "data/uploads/calibrated-mandala.png",
+      },
+      topic_input: {
+        topic: "wealth_career",
+        topic_label: "财富事业",
+      },
+      user_context: {
+        painting_intention: "看见自己的工作状态",
+        painting_feeling: "有点紧但也想推进",
+      },
+      circle_config: {
+        inner_radius: 35,
+        middle_radius: 66,
+        source: "user_calibrated",
+      },
+    },
+    visual_analysis_basis: {
+      global_visual_summary: "内圈以金色和白色为主，中圈可见稳定的绿色块，外圈留有较明显的白色空隙。",
+      llm_color_observation: {
+        summary: "多模态判断内圈偏金白，中圈偏绿，外圈有白色留白。",
+      },
+      program_color_measurement: {
+        summary: "程序聚类可回看 hex 与 rgb。",
+      },
+      direct_judgment_hits: {
+        catalog_version: "merged-manual6-runtime9.v1",
+        catalog_items: [
+          { judgment_id: "outer_decorative_fragmented", judgment_label: "外圈花边/碎花边" },
+          { judgment_id: "outer_red_mass", judgment_label: "外圈红色多" },
+          { judgment_id: "outer_single_color_large_mass", judgment_label: "外圈颜色单一且面积大" },
+          { judgment_id: "gradient_transition", judgment_label: "渐变色" },
+          { judgment_id: "heavy_dark_filled", judgment_label: "颜色浓郁深重/整体涂满深色" },
+          { judgment_id: "light_pale_whitish", judgment_label: "颜色浅轻/整体泛白偏淡" },
+          { judgment_id: "blue_green_expression", judgment_label: "蓝色+绿色" },
+          { judgment_id: "inner_outer_same_color", judgment_label: "内圈和外圈颜色一致" },
+          { judgment_id: "overall_whitespace", judgment_label: "整张留白较多" },
+          { judgment_id: "outer_whitespace_inner_colored", judgment_label: "外圈留白多但内中圈上色较多" },
+        ],
+        hits: [
+          {
+            judgment_id: "overall_whitespace",
+            judgment_label: "整张留白较多",
+            matched: true,
+            confidence: 0.81,
+            evidence_excerpt: "外圈存在连续白色留白带。",
+            evidence_type: "overall_whitespace",
+            source: "multimodal_observation",
+          },
+        ],
+      },
+      circle_band_metrics: {
+        inner: { band_ratio: 0.35 },
+        middle: { band_ratio: 0.31 },
+        outer: { band_ratio: 0.34 },
+      },
+      circles: {
+        inner: {
+          observation_summary: "内圈以金色和白色为主，中心视觉较集中。",
+          palette: {
+            canonical_color_labels: ["金色", "白色"],
+          },
+          blocks: [
+            {
+              llm_color_label: "金色",
+              program_color: { hex: "#d6b56a", rgb: [214, 181, 106] },
+              shape: { label: "色块" },
+              mass_ratio: 0.42,
+              position: { region_label: "中心区域" },
+              edge_contour: { clarity: "unknown" },
+              brushwork: { quality: "unknown" },
+              adjacent_relations: [],
+              white_source: "none",
+            },
+            {
+              llm_color_label: "白色",
+              program_color: { hex: "#f5f4ef", rgb: [245, 244, 239] },
+              shape: { label: "留白块" },
+              mass_ratio: 0.18,
+              position: { region_label: "中心区域" },
+              edge_contour: { clarity: "soft" },
+              brushwork: { quality: "blank" },
+              adjacent_relations: [],
+              white_source: "paper_blank",
+            },
+          ],
+        },
+      },
+      cross_circle_relations: [
+        {
+          from_circle: "middle",
+          to_circle: "outer",
+          relation_type: "whitespace_transition",
+          description: "中圈颜色向外圈白色留白过渡。",
+        },
+      ],
+      prompt_meta: {
+        prompt_version: "visual-analysis-basis.v1",
+      },
+    },
     build_info: {
       build_selector: "current",
       pack_id: "aimandala.v2.1",
     },
     layer0_evidence: {
+      input_package: {
+        image: {
+          image_ref: "data/uploads/calibrated-mandala.png",
+        },
+      },
+      visual_analysis_basis: {
+        global_visual_summary: "内圈可见金色块，中圈可见绿色块，外圈有较浅的边缘色。",
+      },
       visual_facts: {
         palette: ["gold", "green"],
       },
@@ -458,9 +567,19 @@ describe("BrowserDebugPanel", () => {
       preloadedCurrentBuildSummary: currentBuildSummary,
       preloadedCandidateBuildSummary: candidateBuildSummary,
       preloadedSamplePreview: samplePreview,
-      initialTab: "pipeline",
     });
 
+    expect(normalizedText()).toContain("首层数据质量审阅");
+    expect(normalizedText()).toContain("input_package");
+    expect(normalizedText()).toContain("data/uploads/calibrated-mandala.png");
+    expect(normalizedText()).toContain("global_visual_summary");
+    expect(normalizedText()).toContain("direct_judgment_hits");
+    expect(normalizedText()).toContain("整张留白较多");
+    expect(normalizedText()).toContain("内圈以金色和白色为主");
+    expect(normalizedText()).toContain("白色");
+    expect(normalizedText()).toContain("cross_circle_relations");
+
+    await clickButton("Pipeline");
     expect(normalizedText()).toContain("链路时间线");
 
     await clickButton("Knowledge");
@@ -478,6 +597,18 @@ describe("BrowserDebugPanel", () => {
     await clickButton("Samples");
     expect(normalizedText()).toContain("Regression Summary");
     expect(normalizedText()).toContain("Selected Sample");
+  });
+
+  it("首层面板不再展示旧 review_input_package 命名", async () => {
+    await renderPanel({
+      preloadedReportDebugProfile: baseReportDebugProfile,
+    });
+
+    const text = normalizedText();
+    expect(text).toContain("input_package");
+    expect(text).toContain("global_visual_summary");
+    expect(text).toContain("direct_judgment_hits");
+    expect(text).not.toContain("review_input_package");
   });
 
   it("占位 interpretation id 不会触发 report-debug 拉取", async () => {
