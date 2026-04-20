@@ -391,15 +391,16 @@ def test_review_debug_views_group_input_layer0_and_mapping_summaries():
         ),
     )
 
-    input_package = builder._build_review_input_package(record)
+    input_package = builder._build_input_package(record)
     layer0_summary = builder._build_review_layer0_summary(layer0)
     mapping_summary = builder._build_review_mapping_summary(record, layer0)
 
-    assert input_package["image_path"] == "/tmp/review.png"
-    assert input_package["theme"] == "wealth_career"
-    assert input_package["inner_radius"] == 0.35
-    assert input_package["middle_radius"] == 0.65
-    assert input_package["three_circles_source"] == "mixed"
+    assert input_package["image"]["image_ref"] == "/tmp/review.png"
+    assert input_package["topic_input"]["topic"] == "wealth_career"
+    assert input_package["topic_input"]["topic_label"] == "财富事业"
+    assert input_package["circle_config"]["inner_radius"] == 0.35
+    assert input_package["circle_config"]["middle_radius"] == 0.65
+    assert input_package["circle_config"]["source"] == "mixed"
 
     assert "中心有聚焦感" in layer0_summary["direct_judgment_summary"]
     assert "内圈偏亮" in layer0_summary["per_circle_observation_summary"]

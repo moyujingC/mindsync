@@ -176,18 +176,9 @@ def extract_dominant_colors(
     if len(pixels) == 0:
         return []
 
-    # 排除白色背景（亮度很高的像素）
-    # 计算像素的亮度（使用相对亮度公式）
-    brightness = 0.299 * pixels[:, 0] + 0.587 * pixels[:, 1] + 0.114 * pixels[:, 2]
-    saturation = np.max(pixels, axis=1) - np.min(pixels, axis=1)
-
-    # 过滤掉白色/灰色背景（高亮度且低饱和度）
-    non_bg_mask = ~((brightness > 200) & (saturation < 30))
-    pixels = pixels[non_bg_mask]
-
-    if len(pixels) == 0:
-        # 如果过滤后没有像素，使用原始像素
-        pixels = image_rgb[mask > 0]
+    # 注意：这里不再过滤掉高亮低饱和像素。
+    # 按当前 Layer0 首层口径，圆盘内白色、留白、镂空白块都要作为正常白色色块参与统计；
+    # 圆盘外背景已经由 mask 排除，因此这里直接保留圆盘内全部像素。
 
     # K-means聚类
     pixels = np.float32(pixels)

@@ -875,6 +875,65 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
 
     layer0 = orchestrator._build_layer0_placeholder(record)
 
+    assert layer0.input_package["image"]["image_ref"]
+    assert not Path(layer0.input_package["image"]["image_ref"]).is_absolute()
+    assert layer0.input_package["topic_input"] == {
+        "topic": "wealth_career",
+        "topic_label": "财富事业",
+    }
+    assert layer0.input_package["circle_config"]["inner_radius"] == 35
+    assert layer0.input_package["circle_config"]["middle_radius"] == 67
+    visual_basis = layer0.visual_analysis_basis
+    assert "knowledge_hits" not in visual_basis
+    assert "imbalance_trace" not in visual_basis
+    assert "element_states" not in visual_basis
+    assert "llm_color_observation" in visual_basis
+    assert "program_color_measurement" in visual_basis
+    assert "direct_judgment_hits" in visual_basis
+    assert set(visual_basis["circles"]) == {"inner", "middle", "outer"}
+    assert visual_basis["circle_band_metrics"]["inner"]["band_ratio"] == 0.35
+    assert visual_basis["circle_band_metrics"]["middle"]["band_ratio"] == 0.32
+    assert visual_basis["circle_band_metrics"]["outer"]["band_ratio"] == 0.33
+    assert visual_basis["prompt_meta"]["prompt_version"] == "visual-analysis-basis.v1"
+    assert "#" not in visual_basis["global_visual_summary"]
+    assert "filled" not in visual_basis["global_visual_summary"]
+    assert "middle" not in visual_basis["global_visual_summary"]
+    catalog_ids = [
+        item["judgment_id"] for item in visual_basis["direct_judgment_hits"]["catalog_items"]
+    ]
+    assert visual_basis["direct_judgment_hits"]["catalog_version"] == "merged-manual6-runtime9.v1"
+    assert len(catalog_ids) == 10
+    assert "large_yellow_mass" not in catalog_ids
+    assert "outer_decorative_fragmented" in catalog_ids
+    assert "heavy_dark_filled" in catalog_ids
+    assert "light_pale_whitish" in catalog_ids
+    for circle in visual_basis["circles"].values():
+        assert circle["observation_summary"]
+        assert set(circle) >= {
+            "palette",
+            "color_stats",
+            "shape_features",
+            "composition",
+            "brushwork",
+            "blocks",
+        }
+        assert circle["palette"]["canonical_color_labels"]
+        assert 1 <= len(circle["blocks"]) <= 5
+        for block in circle["blocks"]:
+            assert set(block) >= {
+                "llm_color_label",
+                "program_color",
+                "shape",
+                "mass_ratio",
+                "position",
+                "edge_contour",
+                "brushwork",
+                "adjacent_relations",
+                "white_source",
+            }
+            assert set(block["program_color"]) >= {"hex", "rgb"}
+    assert layer0.visual_facts["input_package"] == layer0.input_package
+    assert layer0.visual_facts["visual_analysis_basis"] == layer0.visual_analysis_basis
     assert layer0.visual_facts["dominant_element"] in {"木", "火", "土", "金", "水"}
     assert layer0.knowledge_hits["circle_readings"]["inner"]
     assert layer0.rule_evaluations["element_states"]
@@ -911,6 +970,57 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
     assert isinstance(layer0.fidelity_flags, list)
     assert layer0.quality_flags == layer0.fidelity_flags
     assert "used" in layer0.fallback_summary
+
+
+def test_v21_layer0_input_package_image_ref_prefers_projects_relative_path():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path="/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/fixtures/toc-mvp/assets/sample01.jpg",
+        three_circles={"inner_radius": 46, "middle_radius": 72},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+
+    assert (
+        layer0.input_package["image"]["image_ref"]
+        == "projects/aimandala/fixtures/toc-mvp/assets/sample01.jpg"
+    )
+
+
+def test_v21_layer0_counts_white_as_normal_visual_blocks(tmp_path):
+    image_path = tmp_path / "knowledge-layer0-white.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (235, 235, 235), -1)
+    cv2.circle(image, center, 90, (255, 255, 255), -1)
+    cv2.circle(image, center, 45, (0, 0, 255), -1)
+    cv2.circle(image, center, 90, (255, 255, 255), 18, -1)
+    cv2.imwrite(str(image_path), image)
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=str(image_path),
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+
+    all_blocks = [
+        block
+        for circle in layer0.visual_analysis_basis["circles"].values()
+        for block in circle["blocks"]
+    ]
+    white_blocks = [block for block in all_blocks if block["llm_color_label"] == "白色"]
+
+    assert white_blocks
+    assert any(block["white_source"] != "none" for block in white_blocks)
+    assert any(block["mass_ratio"] > 0 for block in white_blocks)
+    assert any(
+        "白色" in circle["palette"]["canonical_color_labels"]
+        for circle in layer0.visual_analysis_basis["circles"].values()
+    )
 
 
 def test_v21_imbalance_service_separates_tutorial_state_from_scoring_state():

@@ -15,6 +15,12 @@ ELEMENT_KEY_TO_CN = {
     "water": "水",
 }
 
+CIRCLE_KEY_TO_CN = {
+    "inner": "内圈",
+    "middle": "中圈",
+    "outer": "外圈",
+}
+
 
 class ReportLayer0Support:
     """Build and normalize Layer0 payloads for report assembly."""
@@ -101,7 +107,11 @@ class ReportLayer0Support:
             "used": True,
             "reason": "report_layer0_fallback",
         }
+        layer.input_package = self._build_input_package(record, circles)
+        layer.visual_analysis_basis = self._build_visual_analysis_basis(circles, layer.circle_colors)
         layer.visual_facts = {
+            "input_package": layer.input_package,
+            "visual_analysis_basis": layer.visual_analysis_basis,
             "generated": True,
             "circle_boundaries": circles,
             "circle_colors": layer.circle_colors,
@@ -161,6 +171,94 @@ class ReportLayer0Support:
             "warnings": ["layer0 assembler unavailable; using report-layer0 fallback"],
         }
         return layer
+
+    def _build_input_package(
+        self,
+        record: InterpretationRecord,
+        circles: dict[str, Any],
+    ) -> dict[str, Any]:
+        theme = getattr(record, "theme", None) or "general"
+        image_ref = getattr(record, "image_local_path", None) or getattr(record, "image_path", None) or ""
+        return {
+            "image": {"image_ref": image_ref},
+            "topic_input": {
+                "topic": theme,
+                "topic_label": theme if theme != "general" else "全面解读",
+            },
+            "user_context": {
+                "painting_intention": getattr(record, "painting_intention", None) or "",
+                "painting_feeling": getattr(record, "painting_feeling", None) or "",
+            },
+            "circle_config": {
+                "inner_radius": circles.get("inner_radius"),
+                "middle_radius": circles.get("middle_radius"),
+                "source": "user_calibrated",
+            },
+        }
+
+    def _build_visual_analysis_basis(
+        self,
+        circles: dict[str, Any],
+        circle_colors: dict[str, Any],
+    ) -> dict[str, Any]:
+        inner = self._normalize_radius(circles.get("inner_radius", 33))
+        middle = self._normalize_radius(circles.get("middle_radius", 66))
+        circle_payloads = {
+            circle_key: {
+                "observation_summary": f"{CIRCLE_KEY_TO_CN[circle_key]}当前为兜底视觉占位，需重新完成图像抽取。",
+                "palette": {"dominant_color": "", "main_colors": [], "color_concentration": "unknown", "color_richness": 0},
+                "color_stats": {"avg_brightness": 0.0, "avg_saturation": 0.0, "depth_state": "unknown", "distribution": "generated"},
+                "shape_features": {"primary_shapes": [], "boundary_style": "unknown", "source": "fallback"},
+                "composition": {"density": "generated", "visual_weight": "unknown", "position_bias": circle_key},
+                "brushwork": {"stroke_quality": "unknown", "pressure": "unknown", "outline_crossing": "unknown", "source": "fallback"},
+                "blocks": [],
+            }
+            for circle_key in ["inner", "middle", "outer"]
+        }
+        return {
+            "global_visual_summary": "当前使用兜底视觉层，未完成真实画作视觉转述。",
+            "llm_color_observation": {
+                "summary": "当前为兜底视觉占位，尚未生成正式的圈级客观观察。",
+                "per_circle": {},
+                "canonical_palette": [],
+                "source": "fallback",
+            },
+            "program_color_measurement": {
+                "summary": "当前为兜底视觉占位，没有真实的程序聚类色值。",
+                "per_circle": {},
+                "source": "fallback",
+            },
+            "direct_judgment_hits": {
+                "catalog_version": "merged-manual6-runtime9.v1",
+                "catalog_items": [],
+                "hits": [],
+            },
+            "circle_band_metrics": {
+                "inner": {"inner_radius": 0.0, "outer_radius": inner, "band_ratio": inner},
+                "middle": {"inner_radius": inner, "outer_radius": middle, "band_ratio": max(middle - inner, 0.0)},
+                "outer": {"inner_radius": middle, "outer_radius": 1.0, "band_ratio": max(1.0 - middle, 0.0)},
+            },
+            "circles": circle_payloads,
+            "cross_circle_relations": [],
+            "prompt_meta": {
+                "model_role": "objective_visual_transcription",
+                "prompt_version": "visual-analysis-basis.v1",
+                "prompt_text": "请只描述画面中可见事实，不做五行、失衡、主题含义或心理结论。",
+                "prompt_constraints": ["只描述可见事实", "不解释意义"],
+                "analysis_scope": ["global", "inner", "middle", "outer"],
+                "generated_at": "",
+                "source": "fallback",
+            },
+        }
+
+    def _normalize_radius(self, value: Any) -> float:
+        try:
+            radius = float(value)
+        except (TypeError, ValueError):
+            radius = 33.0
+        if radius > 1:
+            radius = radius / 100.0
+        return max(0.0, min(radius, 1.0))
 
     def get_record_theme(self, record: InterpretationRecord) -> str:
         return getattr(record, "theme", None) or "general"

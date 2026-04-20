@@ -188,6 +188,8 @@ class InterpretationStore:
             imbalance_candidates=data.get("imbalance_candidates", []),
             color_analysis=data.get("color_analysis", {}),
             circle_colors=data.get("circle_colors"),
+            input_package=data.get("input_package", {}),
+            visual_analysis_basis=data.get("visual_analysis_basis", {}),
             visual_facts=data.get("visual_facts", {}),
             knowledge_hits=data.get("knowledge_hits", {}),
             rule_evaluations=data.get("rule_evaluations", {}),

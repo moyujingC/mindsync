@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from colorsys import rgb_to_hsv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:
     from app.core.pipeline.data_models import Layer0Raw
 
+from app.core.knowledge.color_meanings import normalize_color_name
 from ..repository import KnowledgeRepository
 from .circle_service import CircleService
 from .element_service import ElementService
@@ -27,6 +29,119 @@ CIRCLE_KEY_TO_CN = {
     "middle": "中圈",
     "outer": "外圈",
 }
+
+CIRCLE_POSITION_HINTS = {
+    "inner": "中心区域",
+    "middle": "中间环带",
+    "outer": "外侧环带",
+}
+
+VISUAL_ANALYSIS_PROMPT_VERSION = "visual-analysis-basis.v1"
+VISUAL_ANALYSIS_PROMPT_TEXT = (
+    "请只描述画面中可见事实，不做五行、失衡、主题含义或心理结论。"
+    "请分别观察内圈、中圈、外圈，记录颜色、形状、量感、位置、边缘轮廓、笔触和色块关系。"
+)
+
+CANONICAL_24_COLOR_SWATCHES = [
+    {"label": "白色", "rgb": (248, 246, 240)},
+    {"label": "黑色", "rgb": (20, 20, 20)},
+    {"label": "金色", "rgb": (212, 180, 92)},
+    {"label": "朱红", "rgb": (206, 56, 56)},
+    {"label": "大红", "rgb": (231, 40, 45)},
+    {"label": "玫红", "rgb": (216, 74, 114)},
+    {"label": "粉红", "rgb": (244, 182, 196)},
+    {"label": "橙色", "rgb": (235, 142, 58)},
+    {"label": "橘黄", "rgb": (238, 176, 52)},
+    {"label": "柠檬黄", "rgb": (244, 226, 84)},
+    {"label": "中黄", "rgb": (215, 184, 54)},
+    {"label": "土黄", "rgb": (173, 141, 73)},
+    {"label": "咖色", "rgb": (118, 84, 58)},
+    {"label": "草绿", "rgb": (91, 160, 82)},
+    {"label": "翠绿", "rgb": (74, 188, 120)},
+    {"label": "淡绿", "rgb": (170, 220, 145)},
+    {"label": "深绿", "rgb": (46, 101, 56)},
+    {"label": "青绿", "rgb": (65, 163, 152)},
+    {"label": "天蓝", "rgb": (133, 191, 237)},
+    {"label": "湖蓝", "rgb": (81, 143, 205)},
+    {"label": "深蓝", "rgb": (41, 87, 150)},
+    {"label": "群青", "rgb": (62, 78, 165)},
+    {"label": "紫色", "rgb": (136, 88, 173)},
+    {"label": "紫罗兰", "rgb": (177, 120, 205)},
+]
+
+MERGED_DIRECT_JUDGMENT_CATALOG_VERSION = "merged-manual6-runtime9.v1"
+MERGED_DIRECT_JUDGMENT_CATALOG = [
+    {
+        "judgment_id": "outer_decorative_fragmented",
+        "judgment_label": "外圈花边/碎花边",
+        "source_family": "merged",
+        "merged_from": ["manual_6:外圈花边、星星点点", "runtime_9:外圈颜色五颜六色、零零碎碎、花边"],
+        "pattern_summary": "外圈出现碎小装饰、零散点状或花边式分布。",
+    },
+    {
+        "judgment_id": "outer_red_mass",
+        "judgment_label": "外圈红色多",
+        "source_family": "merged",
+        "merged_from": ["manual_6:外圈红色多", "runtime_9:外圈有成片红色"],
+        "pattern_summary": "外圈红色或红调色块成片出现，量感明显。",
+    },
+    {
+        "judgment_id": "outer_single_color_large_mass",
+        "judgment_label": "外圈颜色单一且面积大",
+        "source_family": "merged",
+        "merged_from": ["manual_6:外圈颜色单一且面积大"],
+        "pattern_summary": "外圈以单一主色为主，且量感明显压过其他颜色。",
+    },
+    {
+        "judgment_id": "gradient_transition",
+        "judgment_label": "渐变色",
+        "source_family": "merged",
+        "merged_from": ["manual_6:渐变色"],
+        "pattern_summary": "颜色从内向外或相邻圈之间呈连续过渡。",
+    },
+    {
+        "judgment_id": "heavy_dark_filled",
+        "judgment_label": "颜色浓郁深重/整体涂满深色",
+        "source_family": "merged",
+        "merged_from": ["manual_6:颜色浓郁、深重", "runtime_9:画面整体涂得很满，深色为主"],
+        "pattern_summary": "整体颜色偏深且铺陈较满，重色量感明显。",
+    },
+    {
+        "judgment_id": "light_pale_whitish",
+        "judgment_label": "颜色浅轻/整体泛白偏淡",
+        "source_family": "merged",
+        "merged_from": ["manual_6:颜色浅、轻", "runtime_9:整体泛白，颜色偏淡"],
+        "pattern_summary": "画面整体偏浅、偏淡，白色或留白感明显。",
+    },
+    {
+        "judgment_id": "blue_green_expression",
+        "judgment_label": "蓝色+绿色",
+        "source_family": "merged",
+        "merged_from": ["runtime_9:明显有蓝色+绿色"],
+        "pattern_summary": "画面内能稳定看到蓝色与绿色同时出现。",
+    },
+    {
+        "judgment_id": "inner_outer_same_color",
+        "judgment_label": "内圈和外圈颜色一致",
+        "source_family": "merged",
+        "merged_from": ["runtime_9:内圈和外圈颜色完全一致"],
+        "pattern_summary": "内圈和外圈的主色或主色家族保持一致。",
+    },
+    {
+        "judgment_id": "overall_whitespace",
+        "judgment_label": "整张留白较多",
+        "source_family": "merged",
+        "merged_from": ["runtime_9:整张留白较多"],
+        "pattern_summary": "圆盘内白色、留白或镂空区域占比明显。",
+    },
+    {
+        "judgment_id": "outer_whitespace_inner_colored",
+        "judgment_label": "外圈留白多但内中圈上色较多",
+        "source_family": "merged",
+        "merged_from": ["runtime_9:外圈留白多，但里圈或中圈涂的颜色3个以上"],
+        "pattern_summary": "外圈白色明显，而内圈或中圈仍保持较丰富的上色。",
+    },
+]
 
 
 class Layer0Assembler:
@@ -144,7 +259,19 @@ class Layer0Assembler:
             "black_ratio": layer.color_analysis.get("black_ratio"),
             "red_ratio": layer.color_analysis.get("red_ratio"),
         }
+        layer.input_package = self._build_input_package(
+            record=record,
+            image_ref=str(path),
+            circles=circles,
+        )
+        layer.visual_analysis_basis = self._build_visual_analysis_basis(
+            circles=circles,
+            circle_colors=circle_colors,
+            generated=False,
+        )
         layer.visual_facts = {
+            "input_package": layer.input_package,
+            "visual_analysis_basis": layer.visual_analysis_basis,
             "image_path": str(path),
             "circle_boundaries": circles,
             "dominant_element": ELEMENT_KEY_TO_CN.get(dominant_key, dominant_key),
@@ -352,7 +479,19 @@ class Layer0Assembler:
                 "notes": ["vision_extraction_unavailable"],
             },
         }
+        layer.input_package = self._build_input_package(
+            record=record,
+            image_ref=str(getattr(record, "image_local_path", "") or ""),
+            circles=circles,
+        )
+        layer.visual_analysis_basis = self._build_visual_analysis_basis(
+            circles=circles,
+            circle_colors=layer.circle_colors,
+            generated=True,
+        )
         layer.visual_facts = {
+            "input_package": layer.input_package,
+            "visual_analysis_basis": layer.visual_analysis_basis,
             "generated": True,
             "circle_boundaries": circles,
             "circle_colors": layer.circle_colors,
@@ -648,6 +787,830 @@ class Layer0Assembler:
             if warning and float(candidate.get("score", 0.0)) >= self.imbalance_service.MIN_VISIBLE_SCORE:
                 flags.append(f"warning:{candidate.get('id')}")
         return flags
+
+    def _build_input_package(
+        self,
+        *,
+        record: Any,
+        image_ref: str,
+        circles: dict[str, Any],
+    ) -> dict[str, Any]:
+        theme = getattr(record, "theme", None) or "general"
+        return {
+            "image": {
+                "image_ref": self._repo_relative_image_ref(image_ref),
+            },
+            "topic_input": {
+                "topic": theme,
+                "topic_label": self._topic_label(theme),
+            },
+            "user_context": {
+                "painting_intention": getattr(record, "painting_intention", None) or "",
+                "painting_feeling": getattr(record, "painting_feeling", None) or "",
+            },
+            "circle_config": {
+                "inner_radius": circles.get("inner_radius"),
+                "middle_radius": circles.get("middle_radius"),
+                "source": self._resolve_circle_config_source(record),
+            },
+        }
+
+    def _build_visual_analysis_basis(
+        self,
+        *,
+        circles: dict[str, Any],
+        circle_colors: dict[str, Any],
+        generated: bool,
+    ) -> dict[str, Any]:
+        band_metrics = self._calculate_circle_band_metrics(circles)
+        circle_payloads = {
+            circle_key: self._build_visual_circle_basis(
+                circle_key=circle_key,
+                circle_data=circle_colors.get(circle_key, {})
+                if isinstance(circle_colors, dict)
+                else {},
+            )
+            for circle_key in ["inner", "middle", "outer"]
+        }
+        llm_color_observation = self._build_llm_color_observation(circle_payloads)
+        program_color_measurement = self._build_program_color_measurement(circle_payloads)
+        direct_judgment_hits = self._build_direct_judgment_hits(circle_payloads)
+        return {
+            "global_visual_summary": self._build_global_visual_summary(circle_payloads),
+            "llm_color_observation": llm_color_observation,
+            "program_color_measurement": program_color_measurement,
+            "direct_judgment_hits": direct_judgment_hits,
+            "circle_band_metrics": band_metrics,
+            "circles": circle_payloads,
+            "cross_circle_relations": self._build_visual_cross_circle_relations(
+                circle_payloads,
+                generated=generated,
+            ),
+            "prompt_meta": {
+                "model_role": "objective_visual_transcription",
+                "prompt_version": VISUAL_ANALYSIS_PROMPT_VERSION,
+                "prompt_text": VISUAL_ANALYSIS_PROMPT_TEXT,
+                "prompt_constraints": [
+                    "只描述可见事实",
+                    "不解释意义",
+                    "不输出五行、失衡或主题结论",
+                ],
+                "analysis_scope": ["global", "inner", "middle", "outer"],
+                "generated_at": "",
+                "source": "deterministic_visual_observation",
+            },
+        }
+
+    def _build_visual_circle_basis(
+        self,
+        *,
+        circle_key: str,
+        circle_data: dict[str, Any],
+    ) -> dict[str, Any]:
+        colors = circle_data.get("colors", []) if isinstance(circle_data, dict) else []
+        color_items = [item for item in colors if isinstance(item, dict)]
+        top_colors = color_items[:5]
+        avg_brightness, avg_saturation = self._average_color_stats(top_colors)
+        blocks = [
+            self._build_visual_color_block(
+                circle_key=circle_key,
+                color=color,
+                index=index,
+            )
+            for index, color in enumerate(top_colors[:5], start=1)
+        ]
+        canonical_color_labels = [
+            label
+            for label in dict.fromkeys(
+                block.get("llm_color_label", "")
+                for block in blocks
+                if isinstance(block, dict) and block.get("llm_color_label")
+            )
+        ]
+        palette = {
+            "dominant_color": canonical_color_labels[0] if canonical_color_labels else "",
+            "main_colors": [
+                {
+                    "hex": item.get("hex", ""),
+                    "rgb": item.get("rgb", []),
+                    "percentage": item.get("percentage", 0.0),
+                }
+                for item in top_colors
+            ],
+            "canonical_color_labels": canonical_color_labels,
+            "color_concentration": self._classify_color_concentration(top_colors),
+            "color_richness": len(top_colors),
+        }
+        color_stats = {
+            "avg_brightness": round(avg_brightness, 2),
+            "avg_saturation": round(avg_saturation, 4),
+            "depth_state": self._classify_depth_state(
+                brightness=avg_brightness,
+                saturation=avg_saturation,
+            )
+            if top_colors
+            else "unknown",
+            "distribution": self._classify_fill_state(top_colors),
+            "program_hex_values": [item.get("hex", "") for item in top_colors if item.get("hex")],
+            "program_rgb_values": [item.get("rgb", []) for item in top_colors if item.get("rgb")],
+        }
+        return {
+            "observation_summary": self._build_circle_observation_summary(
+                circle_key=circle_key,
+                palette=palette,
+                color_stats=color_stats,
+                blocks=blocks,
+            ),
+            "palette": palette,
+            "color_stats": color_stats,
+            "shape_features": {
+                "primary_shapes": self._derive_shape_labels(blocks),
+                "boundary_style": self._derive_boundary_style(blocks),
+                "source": "deterministic_visual_observation",
+            },
+            "composition": {
+                "density": self._fill_state_label(color_stats["distribution"]),
+                "visual_weight": self._classify_visual_weight(top_colors),
+                "position_bias": CIRCLE_POSITION_HINTS.get(circle_key, circle_key),
+                "whitespace_state": self._summarize_whitespace_state(blocks),
+            },
+            "brushwork": {
+                "stroke_quality": self._derive_brushwork_quality(blocks),
+                "pressure": self._derive_brushwork_pressure(blocks),
+                "outline_crossing": self._derive_outline_crossing(blocks),
+                "source": "deterministic_visual_observation",
+            },
+            "blocks": blocks,
+        }
+
+    def _build_visual_color_block(
+        self,
+        *,
+        circle_key: str,
+        color: dict[str, Any],
+        index: int,
+    ) -> dict[str, Any]:
+        percentage = self._safe_float(color.get("percentage"), 0.0)
+        rgb = color.get("rgb", [])
+        llm_color_label = self._canonical_color_label_from_rgb(rgb)
+        white_source = self._infer_white_source(llm_color_label=llm_color_label, rgb=rgb)
+        shape_label = self._shape_label_for_block(llm_color_label=llm_color_label, white_source=white_source)
+        return {
+            "llm_color_label": llm_color_label,
+            "program_color": {
+                "hex": color.get("hex", ""),
+                "rgb": rgb,
+                "percentage": round(percentage, 2),
+            },
+            "shape": shape_label,
+            "mass_ratio": round(percentage / 100.0, 4),
+            "position": {
+                "region_label": CIRCLE_POSITION_HINTS.get(circle_key, circle_key),
+                "coordinate_summary": {
+                    "circle": circle_key,
+                    "cluster_rank": index,
+                },
+            },
+            "edge_contour": {
+                "clarity": self._edge_clarity_from_rgb(rgb, white_source=white_source),
+                "description": self._edge_description_from_rgb(rgb, white_source=white_source),
+            },
+            "brushwork": {
+                "quality": self._brushwork_quality_from_rgb(rgb, white_source=white_source),
+                "description": self._brushwork_description_from_rgb(rgb, white_source=white_source),
+            },
+            "adjacent_relations": self._adjacent_relations_for_block(
+                circle_key=circle_key,
+                llm_color_label=llm_color_label,
+                index=index,
+            ),
+            "white_source": white_source,
+        }
+
+    def _build_global_visual_summary(
+        self,
+        circles: dict[str, dict[str, Any]],
+    ) -> str:
+        parts = []
+        for circle_key in ["inner", "middle", "outer"]:
+            circle = circles.get(circle_key, {})
+            summary = str(circle.get("observation_summary") or "").strip()
+            if summary:
+                parts.append(summary)
+        return "；".join(parts)
+
+    def _build_visual_cross_circle_relations(
+        self,
+        circles: dict[str, dict[str, Any]],
+        *,
+        generated: bool,
+    ) -> list[dict[str, Any]]:
+        if generated:
+            return []
+        relations: list[dict[str, Any]] = []
+        keys = ["inner", "middle", "outer"]
+        for left, right in zip(keys, keys[1:]):
+            left_color = self._dominant_visual_color(circles.get(left, {}))
+            right_color = self._dominant_visual_color(circles.get(right, {}))
+            relation_type = "same_color_continuity" if left_color and left_color == right_color else "adjacent_band_transition"
+            relations.append(
+                {
+                    "from_circle": left,
+                    "to_circle": right,
+                    "relation_type": relation_type,
+                    "description": (
+                        f"{CIRCLE_KEY_TO_CN[left]}与{CIRCLE_KEY_TO_CN[right]}"
+                        f"在主色上{'延续' if relation_type == 'same_color_continuity' else '相邻过渡'}。"
+                    ),
+                }
+            )
+        return relations
+
+    def _calculate_circle_band_metrics(self, circles: dict[str, Any]) -> dict[str, Any]:
+        inner_ratio = self._normalize_radius(circles.get("inner_radius", 33))
+        middle_ratio = self._normalize_radius(circles.get("middle_radius", 66))
+        return {
+            "inner": {
+                "inner_radius": 0.0,
+                "outer_radius": round(inner_ratio, 4),
+                "band_ratio": round(max(inner_ratio, 0.0), 4),
+            },
+            "middle": {
+                "inner_radius": round(inner_ratio, 4),
+                "outer_radius": round(middle_ratio, 4),
+                "band_ratio": round(max(middle_ratio - inner_ratio, 0.0), 4),
+            },
+            "outer": {
+                "inner_radius": round(middle_ratio, 4),
+                "outer_radius": 1.0,
+                "band_ratio": round(max(1.0 - middle_ratio, 0.0), 4),
+            },
+        }
+
+    def _build_circle_observation_summary(
+        self,
+        *,
+        circle_key: str,
+        palette: dict[str, Any],
+        color_stats: dict[str, Any],
+        blocks: list[dict[str, Any]],
+    ) -> str:
+        label = CIRCLE_KEY_TO_CN.get(circle_key, circle_key)
+        labels = list(palette.get("canonical_color_labels", []) or [])
+        main_colors = "、".join(labels[:3]) if labels else "颜色不明显"
+        depth = self._depth_state_label(color_stats.get("depth_state"))
+        density = self._fill_state_label(color_stats.get("distribution"))
+        whitespace = self._summarize_whitespace_state(blocks)
+        shape_phrase = self._derive_shape_phrase(blocks)
+        return f"{label}以{main_colors}为主，整体{depth}，{density}，{whitespace}，可见{shape_phrase}。"
+
+    def _average_color_stats(self, colors: list[dict[str, Any]]) -> tuple[float, float]:
+        brightness_values = []
+        saturation_values = []
+        for color in colors:
+            rgb = color.get("rgb") or []
+            if not isinstance(rgb, list) or len(rgb) != 3:
+                continue
+            r, g, b = [float(value) for value in rgb]
+            brightness_values.append(0.299 * r + 0.587 * g + 0.114 * b)
+            max_c = max(r, g, b)
+            min_c = min(r, g, b)
+            saturation_values.append(0.0 if max_c == 0 else (max_c - min_c) / max_c)
+        avg_brightness = sum(brightness_values) / len(brightness_values) if brightness_values else 0.0
+        avg_saturation = sum(saturation_values) / len(saturation_values) if saturation_values else 0.0
+        return avg_brightness, avg_saturation
+
+    def _classify_color_concentration(self, colors: list[dict[str, Any]]) -> str:
+        if not colors:
+            return "unknown"
+        top = max((self._safe_float(item.get("percentage"), 0.0) for item in colors), default=0.0)
+        if top >= 60:
+            return "concentrated"
+        if top <= 25:
+            return "dispersed"
+        return "mixed"
+
+    def _classify_visual_weight(self, colors: list[dict[str, Any]]) -> str:
+        total = sum(self._safe_float(item.get("percentage"), 0.0) for item in colors)
+        if total >= 80:
+            return "heavy"
+        if total <= 35:
+            return "light"
+        return "medium"
+
+    def _depth_state_label(self, value: Any) -> str:
+        return {
+            "deep": "颜色偏深",
+            "light": "颜色偏浅",
+            "middle": "深浅居中",
+            "unknown": "深浅未知",
+        }.get(str(value or "").strip(), "深浅未知")
+
+    def _fill_state_label(self, value: Any) -> str:
+        return {
+            "dense": "填充较密",
+            "filled": "填充稳定",
+            "mixed": "填充较混合",
+            "sparse": "填充较少",
+        }.get(str(value or "").strip(), "填充状态未明")
+
+    def _dominant_visual_color(self, circle: dict[str, Any]) -> str:
+        palette = circle.get("palette", {}) if isinstance(circle, dict) else {}
+        return str(palette.get("dominant_color") or "").strip()
+
+    def _build_llm_color_observation(
+        self,
+        circles: dict[str, dict[str, Any]],
+    ) -> dict[str, Any]:
+        per_circle = {
+            circle_key: {
+                "summary": str(tools.get("observation_summary") or "").strip(),
+                "canonical_color_labels": list(
+                    to_palette.get("canonical_color_labels", [])
+                    if isinstance((to_palette := tools.get("palette", {})), dict)
+                    else []
+                ),
+            }
+            for circle_key, tools in circles.items()
+            if isinstance(tools, dict)
+        }
+        return {
+            "summary": self._build_global_visual_summary(circles),
+            "per_circle": per_circle,
+            "source": "deterministic_visual_observation",
+            "canonical_palette": list(
+                dict.fromkeys(
+                    label
+                    for circle_key in ["inner", "middle", "outer"]
+                    for label in (
+                        circles.get(circle_key, {})
+                        .get("palette", {})
+                        .get("canonical_color_labels", [])
+                        if isinstance(circles.get(circle_key, {}), dict)
+                        else []
+                    )
+                )
+            ),
+        }
+
+    def _build_program_color_measurement(
+        self,
+        circles: dict[str, dict[str, Any]],
+    ) -> dict[str, Any]:
+        per_circle: dict[str, Any] = {}
+        total_blocks = 0
+        for circle_key in ["inner", "middle", "outer"]:
+            circle = circles.get(circle_key, {})
+            blocks = list(circle.get("blocks", []) or []) if isinstance(circle, dict) else []
+            total_blocks += len(blocks)
+            per_circle[circle_key] = {
+                "dominant_hex": self._first_non_empty(
+                    block.get("program_color", {}).get("hex", "")
+                    for block in blocks
+                    if isinstance(block, dict)
+                ),
+                "blocks": [
+                    {
+                        "hex": block.get("program_color", {}).get("hex", ""),
+                        "rgb": block.get("program_color", {}).get("rgb", []),
+                        "mass_ratio": block.get("mass_ratio", 0.0),
+                        "position": block.get("position", {}),
+                    }
+                    for block in blocks
+                    if isinstance(block, dict)
+                ],
+            }
+        return {
+            "summary": f"程序分圈聚类共记录 {total_blocks} 个显著色块，可回看每块的 hex、rgb、占比与位置。",
+            "per_circle": per_circle,
+            "source": "program_cluster_measurement",
+        }
+
+    def _build_direct_judgment_hits(
+        self,
+        circles: dict[str, dict[str, Any]],
+    ) -> dict[str, Any]:
+        hits: list[dict[str, Any]] = []
+        for item in MERGED_DIRECT_JUDGMENT_CATALOG:
+            hit = self._evaluate_direct_judgment(item["judgment_id"], circles)
+            hits.append(
+                {
+                    "judgment_id": item["judgment_id"],
+                    "judgment_label": item["judgment_label"],
+                    **hit,
+                    "source": "multimodal_observation",
+                }
+            )
+        return {
+            "catalog_version": MERGED_DIRECT_JUDGMENT_CATALOG_VERSION,
+            "catalog_items": MERGED_DIRECT_JUDGMENT_CATALOG,
+            "hits": hits,
+        }
+
+    def _evaluate_direct_judgment(
+        self,
+        judgment_id: str,
+        circles: dict[str, dict[str, Any]],
+    ) -> dict[str, Any]:
+        inner = circles.get("inner", {}) if isinstance(circles.get("inner"), dict) else {}
+        middle = circles.get("middle", {}) if isinstance(circles.get("middle"), dict) else {}
+        outer = circles.get("outer", {}) if isinstance(circles.get("outer"), dict) else {}
+        inner_labels = list(inner.get("palette", {}).get("canonical_color_labels", []) or [])
+        middle_labels = list(middle.get("palette", {}).get("canonical_color_labels", []) or [])
+        outer_labels = list(outer.get("palette", {}).get("canonical_color_labels", []) or [])
+        all_labels = inner_labels + middle_labels + outer_labels
+        whitespace_score = self._circle_whitespace_score(outer) + self._circle_whitespace_score(middle) + self._circle_whitespace_score(inner)
+        heavy_score = sum(self._block_mass_sum(circle) for circle in [inner, middle, outer])
+        deep_count = sum(
+            1
+            for circle in [inner, middle, outer]
+            if str(circle.get("color_stats", {}).get("depth_state") or "") == "deep"
+        )
+        if judgment_id == "outer_decorative_fragmented":
+            matched = len(outer.get("blocks", [])) >= 4 and len(outer_labels) >= 2
+            return {
+                "matched": matched,
+                "confidence": 0.76 if matched else 0.22,
+                "evidence_excerpt": "外圈显著块数量较多，颜色分布零散。" if matched else "外圈主色较集中，没有明显碎花边特征。",
+                "evidence_type": "outer_block_fragmentation",
+            }
+        if judgment_id == "outer_red_mass":
+            matched = any(label in {"朱红", "大红", "玫红"} for label in outer_labels) and self._top_block_mass_ratio(outer) >= 0.25
+            return {
+                "matched": matched,
+                "confidence": 0.82 if matched else 0.18,
+                "evidence_excerpt": "外圈可见成片红调色块。" if matched else "外圈没有形成明显红色成片区域。",
+                "evidence_type": "outer_red_mass",
+            }
+        if judgment_id == "outer_single_color_large_mass":
+            matched = len(outer_labels) == 1 and self._top_block_mass_ratio(outer) >= 0.45
+            return {
+                "matched": matched,
+                "confidence": 0.84 if matched else 0.2,
+                "evidence_excerpt": "外圈主要由单一颜色占据较大比例。" if matched else "外圈颜色并非单一大面积主导。",
+                "evidence_type": "outer_single_color_large_mass",
+            }
+        if judgment_id == "gradient_transition":
+            matched = self._has_gradient_transition(circles)
+            return {
+                "matched": matched,
+                "confidence": 0.73 if matched else 0.24,
+                "evidence_excerpt": "三圈主色存在连续过渡感。" if matched else "相邻圈之间主色切换较明显，没有稳定渐变。",
+                "evidence_type": "gradient_transition",
+            }
+        if judgment_id == "heavy_dark_filled":
+            matched = deep_count >= 2 and heavy_score >= 0.75
+            return {
+                "matched": matched,
+                "confidence": 0.8 if matched else 0.26,
+                "evidence_excerpt": "多圈颜色偏深且上色量感较满。" if matched else "整体深色与填充感未形成重压式特征。",
+                "evidence_type": "heavy_dark_filled",
+            }
+        if judgment_id == "light_pale_whitish":
+            matched = whitespace_score >= 0.45 or all(label in {"白色", "粉红", "淡绿", "天蓝", "金色"} for label in all_labels[:4] if label)
+            return {
+                "matched": matched,
+                "confidence": 0.81 if matched else 0.25,
+                "evidence_excerpt": "画面内白色、浅色或留白感明显。" if matched else "画面整体并不偏浅或泛白。",
+                "evidence_type": "light_pale_whitish",
+            }
+        if judgment_id == "blue_green_expression":
+            matched = any(label in {"天蓝", "湖蓝", "深蓝", "群青"} for label in all_labels) and any(label in {"草绿", "翠绿", "淡绿", "深绿", "青绿"} for label in all_labels)
+            return {
+                "matched": matched,
+                "confidence": 0.79 if matched else 0.19,
+                "evidence_excerpt": "画面内能同时看到蓝调与绿调色块。" if matched else "蓝绿组合不明显。",
+                "evidence_type": "blue_green_expression",
+            }
+        if judgment_id == "inner_outer_same_color":
+            matched = bool(inner_labels and outer_labels and inner_labels[0] == outer_labels[0])
+            return {
+                "matched": matched,
+                "confidence": 0.78 if matched else 0.21,
+                "evidence_excerpt": "内圈与外圈的主色家族一致。" if matched else "内外圈主色并不一致。",
+                "evidence_type": "inner_outer_same_color",
+            }
+        if judgment_id == "overall_whitespace":
+            matched = whitespace_score >= 0.35
+            return {
+                "matched": matched,
+                "confidence": 0.83 if matched else 0.22,
+                "evidence_excerpt": "圆盘内存在连续白色留白或镂空区域。" if matched else "白色留白未达到明显主导程度。",
+                "evidence_type": "overall_whitespace",
+            }
+        matched = self._circle_whitespace_score(outer) >= 0.2 and (len(inner_labels) >= 2 or len(middle_labels) >= 2)
+        return {
+            "matched": matched,
+            "confidence": 0.77 if matched else 0.2,
+            "evidence_excerpt": "外圈白色较多，但内圈或中圈仍保持较丰富上色。" if matched else "外圈留白与内中圈上色丰富度未同时满足。",
+            "evidence_type": "outer_whitespace_inner_colored",
+        }
+
+    def _canonical_color_label_from_rgb(self, rgb: Any) -> str:
+        if not isinstance(rgb, list) or len(rgb) != 3:
+            return "白色"
+        try:
+            r, g, b = [int(value) for value in rgb]
+        except (TypeError, ValueError):
+            return "白色"
+        best = min(
+            CANONICAL_24_COLOR_SWATCHES,
+            key=lambda item: self._rgb_distance((r, g, b), item["rgb"]),
+        )
+        return normalize_color_name(str(best["label"]))
+
+    def _rgb_distance(self, left: tuple[int, int, int], right: tuple[int, int, int]) -> float:
+        return sum((float(a) - float(b)) ** 2 for a, b in zip(left, right))
+
+    def _infer_white_source(self, *, llm_color_label: str, rgb: Any) -> str:
+        if llm_color_label != "白色":
+            return "none"
+        if not isinstance(rgb, list) or len(rgb) != 3:
+            return "paper_blank"
+        try:
+            r, g, b = [int(value) for value in rgb]
+        except (TypeError, ValueError):
+            return "paper_blank"
+        brightness = 0.299 * r + 0.587 * g + 0.114 * b
+        spread = max(r, g, b) - min(r, g, b)
+        if brightness >= 248 and spread <= 5:
+            return "paper_blank"
+        if brightness >= 240 and spread <= 12:
+            return "hollow_gap"
+        return "painted_white"
+
+    def _shape_label_for_block(self, *, llm_color_label: str, white_source: str) -> dict[str, Any]:
+        if white_source == "paper_blank":
+            return {"label": "留白块", "source": "deterministic_visual_observation"}
+        if white_source == "hollow_gap":
+            return {"label": "镂空块", "source": "deterministic_visual_observation"}
+        if llm_color_label in {"白色", "黑色"}:
+            return {"label": "不规则色块", "source": "deterministic_visual_observation"}
+        return {"label": "色块", "source": "deterministic_visual_observation"}
+
+    def _edge_clarity_from_rgb(self, rgb: Any, *, white_source: str) -> str:
+        if white_source in {"paper_blank", "hollow_gap"}:
+            return "soft"
+        saturation = self._rgb_saturation(rgb)
+        if saturation >= 0.5:
+            return "clear"
+        if saturation <= 0.12:
+            return "soft"
+        return "medium"
+
+    def _edge_description_from_rgb(self, rgb: Any, *, white_source: str) -> str:
+        if white_source == "paper_blank":
+            return "边缘较柔和，像纸面留出的白色空位。"
+        if white_source == "hollow_gap":
+            return "边缘较轻，像被颜色包围出的白色空隙。"
+        saturation = self._rgb_saturation(rgb)
+        if saturation >= 0.5:
+            return "轮廓感较清楚，边缘比较利落。"
+        if saturation <= 0.12:
+            return "边缘过渡较轻，轮廓感不强。"
+        return "边缘和轮廓感中等，可见但不尖锐。"
+
+    def _brushwork_quality_from_rgb(self, rgb: Any, *, white_source: str) -> str:
+        if white_source == "paper_blank":
+            return "blank"
+        saturation = self._rgb_saturation(rgb)
+        if saturation >= 0.55:
+            return "firm"
+        if saturation <= 0.12:
+            return "light"
+        return "even"
+
+    def _brushwork_description_from_rgb(self, rgb: Any, *, white_source: str) -> str:
+        if white_source == "paper_blank":
+            return "更像纸面本身的空白，没有明显笔触。"
+        if white_source == "hollow_gap":
+            return "更像颜色之间留出的白色缝隙，笔触感较弱。"
+        saturation = self._rgb_saturation(rgb)
+        if saturation >= 0.55:
+            return "颜色压得较实，笔触力量感更强。"
+        if saturation <= 0.12:
+            return "颜色较轻，笔触存在感偏弱。"
+        return "颜色铺陈较均匀，笔触观感相对稳定。"
+
+    def _adjacent_relations_for_block(
+        self,
+        *,
+        circle_key: str,
+        llm_color_label: str,
+        index: int,
+    ) -> list[str]:
+        relations = [f"位于{CIRCLE_KEY_TO_CN.get(circle_key, circle_key)}第{index}显著块"]
+        if llm_color_label == "白色":
+            relations.append("与相邻色块形成留白间隔")
+        return relations
+
+    def _rgb_saturation(self, rgb: Any) -> float:
+        if not isinstance(rgb, list) or len(rgb) != 3:
+            return 0.0
+        try:
+            r, g, b = [float(value) / 255.0 for value in rgb]
+        except (TypeError, ValueError):
+            return 0.0
+        return rgb_to_hsv(r, g, b)[1]
+
+    def _derive_shape_labels(self, blocks: list[dict[str, Any]]) -> list[str]:
+        labels = []
+        for block in blocks:
+            if not isinstance(block, dict):
+                continue
+            label = str(block.get("shape", {}).get("label") or "").strip()
+            if label:
+                labels.append(label)
+        return list(dict.fromkeys(labels)) or ["未观察到足够依据"]
+
+    def _derive_boundary_style(self, blocks: list[dict[str, Any]]) -> str:
+        clarity = [
+            str(block.get("edge_contour", {}).get("clarity") or "").strip()
+            for block in blocks
+            if isinstance(block, dict)
+        ]
+        if any(item == "clear" for item in clarity):
+            return "轮廓较清楚"
+        if all(item == "soft" for item in clarity if item):
+            return "轮廓较柔和"
+        return "轮廓感中等"
+
+    def _summarize_whitespace_state(self, blocks: list[dict[str, Any]]) -> str:
+        white_ratio = sum(
+            float(block.get("mass_ratio", 0.0) or 0.0)
+            for block in blocks
+            if isinstance(block, dict) and block.get("llm_color_label") == "白色"
+        )
+        if white_ratio >= 0.35:
+            return "白色留白感明显"
+        if white_ratio >= 0.15:
+            return "能看到一定白色空隙"
+        return "留白不算突出"
+
+    def _derive_brushwork_quality(self, blocks: list[dict[str, Any]]) -> str:
+        qualities = [
+            str(block.get("brushwork", {}).get("quality") or "").strip()
+            for block in blocks
+            if isinstance(block, dict)
+        ]
+        if any(item == "firm" for item in qualities):
+            return "偏重"
+        if any(item == "light" for item in qualities):
+            return "偏轻"
+        if qualities:
+            return "较均匀"
+        return "未观察到足够依据"
+
+    def _derive_brushwork_pressure(self, blocks: list[dict[str, Any]]) -> str:
+        qualities = [
+            str(block.get("brushwork", {}).get("quality") or "").strip()
+            for block in blocks
+            if isinstance(block, dict)
+        ]
+        if any(item == "firm" for item in qualities):
+            return "偏重"
+        if any(item == "light" for item in qualities):
+            return "偏轻"
+        return "中等"
+
+    def _derive_outline_crossing(self, blocks: list[dict[str, Any]]) -> str:
+        if any(
+            isinstance(block, dict) and block.get("white_source") == "hollow_gap"
+            for block in blocks
+        ):
+            return "能看到颜色之间的白色断口"
+        return "未观察到明显出块线框"
+
+    def _derive_shape_phrase(self, blocks: list[dict[str, Any]]) -> str:
+        labels = self._derive_shape_labels(blocks)
+        if labels == ["未观察到足够依据"]:
+            return "形状依据仍不足"
+        return "、".join(labels[:3])
+
+    def _circle_whitespace_score(self, circle: dict[str, Any]) -> float:
+        blocks = list(circle.get("blocks", []) or []) if isinstance(circle, dict) else []
+        return round(
+            sum(
+                float(block.get("mass_ratio", 0.0) or 0.0)
+                for block in blocks
+                if isinstance(block, dict) and block.get("llm_color_label") == "白色"
+            ),
+            4,
+        )
+
+    def _block_mass_sum(self, circle: dict[str, Any]) -> float:
+        blocks = list(circle.get("blocks", []) or []) if isinstance(circle, dict) else []
+        return round(
+            sum(float(block.get("mass_ratio", 0.0) or 0.0) for block in blocks if isinstance(block, dict)),
+            4,
+        )
+
+    def _top_block_mass_ratio(self, circle: dict[str, Any]) -> float:
+        blocks = list(circle.get("blocks", []) or []) if isinstance(circle, dict) else []
+        return max(
+            (float(block.get("mass_ratio", 0.0) or 0.0) for block in blocks if isinstance(block, dict)),
+            default=0.0,
+        )
+
+    def _has_gradient_transition(self, circles: dict[str, dict[str, Any]]) -> bool:
+        family_sets = []
+        for circle_key in ["inner", "middle", "outer"]:
+            labels = list(circles.get(circle_key, {}).get("palette", {}).get("canonical_color_labels", []) or [])
+            family_sets.append(set(self._color_family(label) for label in labels))
+        return all(family_sets) and (
+            bool(family_sets[0].intersection(family_sets[1]))
+            or bool(family_sets[1].intersection(family_sets[2]))
+        )
+
+    def _color_family(self, label: str) -> str:
+        mapping = {
+            "白色": "white",
+            "黑色": "dark",
+            "金色": "yellow",
+            "朱红": "red",
+            "大红": "red",
+            "玫红": "red",
+            "粉红": "red",
+            "橙色": "orange",
+            "橘黄": "yellow",
+            "柠檬黄": "yellow",
+            "中黄": "yellow",
+            "土黄": "yellow",
+            "咖色": "brown",
+            "草绿": "green",
+            "翠绿": "green",
+            "淡绿": "green",
+            "深绿": "green",
+            "青绿": "green",
+            "天蓝": "blue",
+            "湖蓝": "blue",
+            "深蓝": "blue",
+            "群青": "blue",
+            "紫色": "purple",
+            "紫罗兰": "purple",
+        }
+        return mapping.get(label, label)
+
+    def _first_non_empty(self, values: Any) -> str:
+        for value in values:
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        return ""
+
+    def _repo_relative_image_ref(self, image_ref: str) -> str:
+        if not image_ref:
+            return ""
+        path = Path(image_ref)
+        if not path.is_absolute():
+            return image_ref
+        parts = path.parts
+        if "projects" in parts:
+            project_index = parts.index("projects")
+            return "/".join(parts[project_index:])
+        cwd = Path.cwd().resolve()
+        candidates = [cwd, *cwd.parents]
+        for root in candidates:
+            try:
+                return str(path.relative_to(root))
+            except ValueError:
+                continue
+        return path.name
+
+    def _resolve_circle_config_source(self, record: Any) -> str:
+        has_manual = bool(getattr(record, "three_circles", None))
+        has_auto = bool(getattr(record, "three_circles_auto_detect", None))
+        if has_manual and has_auto:
+            return "mixed"
+        if has_manual:
+            return "user_calibrated"
+        if has_auto:
+            return "auto_detect"
+        return "user_calibrated"
+
+    def _topic_label(self, theme: str) -> str:
+        labels = {
+            "general": "全面解读",
+            "wealth_career": "财富事业",
+            "father_relationship": "父亲关系",
+            "mother_relationship": "母亲关系",
+            "intimate_relationship": "亲密关系",
+            "parent_child_relationship": "亲子关系",
+            "health_wellness": "身体健康",
+            "personal_growth": "个人成长",
+        }
+        return labels.get(theme, theme)
+
+    def _normalize_radius(self, value: Any) -> float:
+        radius = self._safe_float(value, 33.0)
+        if radius > 1:
+            radius = radius / 100.0
+        return max(0.0, min(radius, 1.0))
+
+    def _safe_float(self, value: Any, fallback: float) -> float:
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return fallback
 
     def _build_interpretation_method_trace(
         self,

@@ -156,6 +156,9 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert knowledge_debug["algorithm_fidelity_trace"]["legacy_semantics_found"] is False
     assert knowledge_debug["algorithm_fidelity_trace"]["raw_payload_leak_found"] is False
     assert knowledge_debug["layer0_evidence"]["visual_facts"]
+    assert knowledge_debug["layer0_evidence"]["input_package"]
+    assert knowledge_debug["layer0_evidence"]["visual_analysis_basis"]
+    assert knowledge_debug["input_package"]
     assert knowledge_debug["layer0_evidence"]["knowledge_hits"]
     assert knowledge_debug["layer0_evidence"]["rule_evaluations"]
     assert knowledge_debug["layer0_evidence"]["fidelity_flags"] == knowledge_debug["layer0_evidence"]["quality_flags"]

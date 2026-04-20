@@ -74,7 +74,8 @@ class KnowledgeDebugBlockBuilder:
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
                 "algorithm_fidelity_trace": algorithm_fidelity_trace,
-                "review_input_package": self._build_review_input_package(record),
+                "input_package": self._build_input_package(record, layer0),
+                "review_input_package": self._build_input_package(record, layer0),
                 "review_layer0_summary": self._build_review_layer0_summary(layer0),
                 "narrative_plans": narrative_plans,
                 "knowledge_projections": knowledge_projections,
@@ -175,7 +176,8 @@ class KnowledgeDebugBlockBuilder:
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
             "algorithm_fidelity_trace": algorithm_fidelity_trace,
-            "review_input_package": self._build_review_input_package(record),
+            "input_package": self._build_input_package(record, layer0),
+            "review_input_package": self._build_input_package(record, layer0),
             "review_layer0_summary": self._build_review_layer0_summary(layer0),
             "narrative_plans": narrative_plans,
             "knowledge_projections": knowledge_projections,
@@ -207,29 +209,47 @@ class KnowledgeDebugBlockBuilder:
             "general_mixed": False,
         }
 
-    def _build_review_input_package(self, record: InterpretationRecord) -> dict[str, Any]:
+    def _build_input_package(
+        self,
+        record: InterpretationRecord,
+        layer0: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        layer0 = layer0 if isinstance(layer0, dict) else {}
+        existing = layer0.get("input_package")
+        if isinstance(existing, dict) and existing:
+            return existing
         three_circles = getattr(record, "three_circles", None) or {}
         auto_detect = getattr(record, "three_circles_auto_detect", None) or {}
-        theme_trace = self._build_topic_context_trace(record)
         image_path = self._record_image_ref(record)
         return {
-            "image_path": image_path,
-            "image_preview_ref": image_path,
-            "theme": getattr(record, "theme", None) or "general",
-            "topic_label": self._topic_label(getattr(record, "theme", None)),
-            "topic": theme_trace.get("topic"),
-            "report_mode": self._primary_report_mode(record),
-            "painting_intention": getattr(record, "painting_intention", None) or "",
-            "painting_feeling": getattr(record, "painting_feeling", None) or "",
-            "inner_radius": three_circles.get("inner_radius"),
-            "middle_radius": three_circles.get("middle_radius"),
-            "auto_detect_inner_radius": auto_detect.get("inner_radius"),
-            "auto_detect_middle_radius": auto_detect.get("middle_radius"),
-            "three_circles_source": self._resolve_three_circles_source(record),
+            "image": {
+                "image_ref": image_path,
+            },
+            "topic_input": {
+                "topic": getattr(record, "theme", None) or "general",
+                "topic_label": self._topic_label(getattr(record, "theme", None)),
+            },
+            "user_context": {
+                "painting_intention": getattr(record, "painting_intention", None) or "",
+                "painting_feeling": getattr(record, "painting_feeling", None) or "",
+            },
+            "circle_config": {
+                "inner_radius": three_circles.get("inner_radius"),
+                "middle_radius": three_circles.get("middle_radius"),
+                "auto_detect_inner_radius": auto_detect.get("inner_radius"),
+                "auto_detect_middle_radius": auto_detect.get("middle_radius"),
+                "source": self._resolve_three_circles_source(record).replace("user_override", "user_calibrated"),
+            },
         }
+
+    def _build_review_input_package(self, record: InterpretationRecord) -> dict[str, Any]:
+        return self._build_input_package(record)
 
     def _build_review_layer0_summary(self, layer0: dict[str, Any]) -> dict[str, Any]:
         visual_facts = layer0.get("visual_facts", {}) if isinstance(layer0, dict) else {}
+        visual_analysis_basis = (
+            layer0.get("visual_analysis_basis", {}) if isinstance(layer0, dict) else {}
+        )
         rule_evaluations = (
             layer0.get("rule_evaluations", {}) if isinstance(layer0, dict) else {}
         )
@@ -239,8 +259,12 @@ class KnowledgeDebugBlockBuilder:
             else {}
         )
         return {
-            "visual_fact_summary": self._summarize_visual_facts(visual_facts),
-            "per_circle_observation_summary": self._build_per_circle_observation_summary(layer0),
+            "visual_fact_summary": self._summarize_visual_analysis_basis(visual_analysis_basis)
+            or self._summarize_visual_facts(visual_facts),
+            "per_circle_observation_summary": self._summarize_visual_analysis_circles(
+                visual_analysis_basis
+            )
+            or self._build_per_circle_observation_summary(layer0),
             "shape_observation_summary": self._summarize_shape_analysis(
                 method_trace.get("shape_analysis", {}),
             ),
@@ -559,6 +583,28 @@ class KnowledgeDebugBlockBuilder:
                 parts.append(f"五行加权分布最高的前三项为 {top}。")
         return " ".join(part for part in parts if part)
 
+    def _summarize_visual_analysis_basis(self, visual_analysis_basis: Any) -> str:
+        if not isinstance(visual_analysis_basis, dict):
+            return ""
+        summary = str(visual_analysis_basis.get("global_visual_summary") or "").strip()
+        return summary
+
+    def _summarize_visual_analysis_circles(self, visual_analysis_basis: Any) -> str:
+        if not isinstance(visual_analysis_basis, dict):
+            return ""
+        circles = visual_analysis_basis.get("circles", {})
+        if not isinstance(circles, dict):
+            return ""
+        parts: list[str] = []
+        for key in ["inner", "middle", "outer"]:
+            circle = circles.get(key)
+            if not isinstance(circle, dict):
+                continue
+            summary = str(circle.get("observation_summary") or "").strip()
+            if summary:
+                parts.append(summary)
+        return "；".join(parts)
+
     def _summarize_shape_analysis(self, shape_analysis: Any) -> str:
         if isinstance(shape_analysis, dict):
             for key in ["summary", "observation", "result"]:
@@ -855,6 +901,8 @@ class KnowledgeDebugBlockBuilder:
 
     def _build_layer0_evidence(self, layer0: dict[str, Any]) -> dict[str, Any]:
         return {
+            "input_package": layer0.get("input_package", {}),
+            "visual_analysis_basis": layer0.get("visual_analysis_basis", {}),
             "visual_facts": layer0.get("visual_facts", {}),
             "knowledge_hits": layer0.get("knowledge_hits", {}),
             "rule_evaluations": layer0.get("rule_evaluations", {}),

@@ -85,6 +85,8 @@ class Layer0Raw:
     circle_colors: Optional[Dict[str, Any]] = None
 
     # v2.1 正式结构化证据字段
+    input_package: Dict[str, Any] = field(default_factory=dict)
+    visual_analysis_basis: Dict[str, Any] = field(default_factory=dict)
     visual_facts: Dict[str, Any] = field(default_factory=dict)
     knowledge_hits: Dict[str, Any] = field(default_factory=dict)
     rule_evaluations: Dict[str, Any] = field(default_factory=dict)
@@ -150,6 +152,8 @@ class Layer0Raw:
             "imbalance_candidates": self.imbalance_candidates,
             "color_analysis": self.color_analysis,
             "circle_colors": self.circle_colors,
+            "input_package": self.input_package,
+            "visual_analysis_basis": self.visual_analysis_basis,
             "visual_facts": self.visual_facts,
             "knowledge_hits": self.knowledge_hits,
             "rule_evaluations": self.rule_evaluations,

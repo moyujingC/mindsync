@@ -111,6 +111,8 @@ class TestLayer0Raw:
         )
         data = layer.to_dict()
         assert "five_elements" in data
+        assert "input_package" in data
+        assert "visual_analysis_basis" in data
         assert data["imbalance_candidates"] == ["水多木漂"]
         assert data["fidelity_flags"] == ["warning:水多火灭"]
         assert data["quality_flags"] == ["warning:水多火灭"]
