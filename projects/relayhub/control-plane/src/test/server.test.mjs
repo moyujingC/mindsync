@@ -130,13 +130,13 @@ test("PATCH /models/:id keeps preset base url and model id locked", async () => 
     const payload = await response.json();
 
     assert.equal(payload.baseUrl, "https://code.ppchat.vip/v1");
-    assert.equal(payload.modelId, "gpt-5");
+    assert.equal(payload.modelId, "changed-model");
     assert.equal(payload.kind, "coding-plan");
     assert.equal(payload.providerLabel, "new-provider");
   });
 });
 
-test("PATCH /models/:id keeps AITechFlux preset base url, model id, and kind locked", async () => {
+test("PATCH /models/:id keeps AITechFlux preset base url and kind locked but allows model id update", async () => {
   await resetState();
 
   await withServer(async (baseUrl) => {
@@ -156,10 +156,167 @@ test("PATCH /models/:id keeps AITechFlux preset base url, model id, and kind loc
     const payload = await response.json();
 
     assert.equal(payload.baseUrl, "https://aitechflux.com/v1");
-    assert.equal(payload.modelId, "claude-sonnet");
+    assert.equal(payload.modelId, "changed-model");
     assert.equal(payload.kind, "relay-api");
     assert.equal(payload.providerLabel, "custom-provider");
   });
+});
+
+test("GET /models/:id/catalog returns upstream model list for preset relay entry with api key", async () => {
+  await resetState();
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (input, init) => {
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/models") {
+      assert.equal(init?.headers?.Authorization, "Bearer sk-aitechflux-test");
+      return new Response(
+        JSON.stringify({
+          data: [
+            { id: "高性能极速模型" },
+            { id: "高性能低价模型" },
+            { id: "Claude混合版" },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+
+    return originalFetch(input, init);
+  };
+
+  try {
+    await withServer(async (baseUrl) => {
+      const saveResponse = await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          apiKey: "sk-aitechflux-test",
+        }),
+      });
+      assert.equal(saveResponse.status, 200);
+
+      const response = await fetch(`${baseUrl}/models/preset-aitechflux-relay/catalog`);
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      assert.ok(Array.isArray(payload.items));
+      assert.deepEqual(
+        payload.items.map((item) => item.id),
+        ["高性能极速模型", "高性能低价模型", "Claude混合版"],
+      );
+      assert.match(payload.fetchedAt, /\d{4}-\d{2}-\d{2}/);
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("GET /models/:id/catalog fails clearly when api key is missing", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/models/preset-aitechflux-relay/catalog`);
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+
+    assert.match(payload.message, /先补 API Key/);
+  });
+});
+
+test("GET /models/:id/catalog rejects unsupported non-relay presets", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/models/preset-qwen-max/catalog`);
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+
+    assert.match(payload.message, /仅支持中转预置入口/);
+  });
+});
+
+test("GET /models/:id/catalog returns upstream error summary when upstream is non-2xx", async () => {
+  await resetState();
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (input, init) => {
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/models") {
+      assert.equal(init?.headers?.Authorization, "Bearer sk-aitechflux-test");
+      return new Response(JSON.stringify({ error: { message: "无可用通道" } }), {
+        status: 503,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    return originalFetch(input, init);
+  };
+
+  try {
+    await withServer(async (baseUrl) => {
+      await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          apiKey: "sk-aitechflux-test",
+        }),
+      });
+
+      const response = await fetch(`${baseUrl}/models/preset-aitechflux-relay/catalog`);
+      assert.equal(response.status, 502);
+      const payload = await response.json();
+
+      assert.match(payload.message, /上游返回异常/);
+      assert.match(payload.message, /503/);
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("GET /models/:id/catalog rejects invalid upstream payload", async () => {
+  await resetState();
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (input, init) => {
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/models") {
+      assert.equal(init?.headers?.Authorization, "Bearer sk-aitechflux-test");
+      return new Response(JSON.stringify({ items: "not-an-array" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    return originalFetch(input, init);
+  };
+
+  try {
+    await withServer(async (baseUrl) => {
+      await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          apiKey: "sk-aitechflux-test",
+        }),
+      });
+
+      const response = await fetch(`${baseUrl}/models/preset-aitechflux-relay/catalog`);
+      assert.equal(response.status, 502);
+      const payload = await response.json();
+
+      assert.match(payload.message, /返回结构不合法/);
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("GET /tasks/:id/stats returns aggregated task stats", async () => {

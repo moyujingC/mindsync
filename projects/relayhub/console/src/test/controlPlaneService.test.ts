@@ -74,4 +74,67 @@ describe("control-plane service release wiring", () => {
     expect(relayPreset?.activationHint).toContain("测试连接");
     expect(relayPreset?.capabilityTags).toContain("编码");
   });
+
+  it("targets /api/control-plane model catalog endpoint when server mode is enabled", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "/api/control-plane");
+    const fetchMock = vi.fn(async () =>
+      new Response(
+        JSON.stringify({
+          items: [{ id: "高性能低价模型", label: "高性能低价模型" }],
+          fetchedAt: "2026-04-21 10:30",
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      ),
+    );
+    globalThis.fetch = fetchMock as typeof fetch;
+
+    vi.resetModules();
+    const service = await import("../services/controlPlane");
+    await service.getModelCatalog("preset-aitechflux-relay");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/control-plane/models/preset-aitechflux-relay/catalog",
+      expect.objectContaining({
+        headers: {
+          "content-type": "application/json",
+        },
+      }),
+    );
+  });
+
+  it("returns mock catalog entries for AITechFlux in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
+    vi.resetModules();
+    const service = await import("../services/controlPlane");
+
+    await service.saveModelEntry({
+      id: "preset-aitechflux-relay",
+      name: "AITechFlux 中转",
+      providerLabel: "AITechFlux",
+      kind: "relay-api",
+      baseUrl: "https://aitechflux.com/v1",
+      modelId: "claude-sonnet",
+      apiKey: "sk-aitechflux-test",
+    });
+
+    const result = await service.getModelCatalog("preset-aitechflux-relay");
+
+    expect(result.items.map((item) => item.id)).toEqual([
+      "高性能极速模型",
+      "高性能低价模型",
+      "Claude混合版",
+    ]);
+    expect(result.items[1]?.label).toBe("高性能低价模型");
+  });
+
+  it("fails clearly when preset relay catalog is requested without api key in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
+    vi.resetModules();
+    const service = await import("../services/controlPlane");
+
+    await expect(service.getModelCatalog("preset-aitechflux-relay")).rejects.toThrow(/先补 API Key/);
+  });
 });

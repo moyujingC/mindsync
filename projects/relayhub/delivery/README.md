@@ -25,3 +25,6 @@
 - [2026-04-19-v1-运行记录主路径收口-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-19-v1-运行记录主路径收口-交付说明.md)
 - [2026-04-20-v1-中转入口优先的模型库与任务切换收口-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-20-v1-中转入口优先的模型库与任务切换收口-交付说明.md)
 - [2026-04-21-v1-AITechFlux-中转入口预置接入-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-21-v1-AITechFlux-中转入口预置接入-交付说明.md)
+- [2026-04-21-v1-中转入口可用模型列表拉取与-modelId-切换-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-21-v1-中转入口可用模型列表拉取与-modelId-切换-交付说明.md)
+- [2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入-交付说明.md)
+- [2026-04-21-v1-Claude-Code-Anthropic兼容接入-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-21-v1-Claude-Code-Anthropic兼容接入-交付说明.md)

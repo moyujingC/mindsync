@@ -1,10 +1,12 @@
 import {
+  presetModelCatalogs,
   seedModelEntries,
   seedTaskRunRecords,
   seedTaskTemplates,
 } from "../fixtures/controlPlaneData";
 import type {
   GovernanceOverview,
+  ModelCatalogResponse,
   ModelEntry,
   ModelEntryInput,
   ModelEntryStatus,
@@ -280,6 +282,10 @@ async function testModelEntryConnectionFromServer(id: string): Promise<ModelEntr
   });
 }
 
+async function getModelCatalogFromServer(id: string): Promise<ModelCatalogResponse> {
+  return requestJson<ModelCatalogResponse>(`/models/${id}/catalog`);
+}
+
 async function listTaskTemplatesFromServer(): Promise<TaskTemplate[]> {
   return requestJson<TaskTemplate[]>("/tasks");
 }
@@ -491,6 +497,32 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
     statusNote: "连接测试通过，可以绑定到任务默认模型。",
   });
   return delay(toPublicModelEntry(entry));
+}
+
+export async function getModelCatalog(id: string): Promise<ModelCatalogResponse> {
+  if (shouldUseServer()) {
+    return getModelCatalogFromServer(id);
+  }
+
+  const entry = mockState.modelEntries.find((item) => item.id === id);
+  if (!entry) {
+    throw new Error("没有找到要获取可用模型列表的入口。");
+  }
+
+  if (entry.source !== "preset" || entry.kind !== "relay-api" || entry.catalogFamily !== "openai-compatible") {
+    throw new Error("当前仅支持中转预置入口获取可用模型列表。");
+  }
+
+  if (!entry.hasStoredApiKey || !entry.apiKey) {
+    throw new Error("请先补 API Key，再获取可用模型列表。");
+  }
+
+  const catalog = presetModelCatalogs[id];
+  if (!catalog) {
+    throw new Error("当前入口还没有可用模型列表样本。");
+  }
+
+  return delay(catalog);
 }
 
 export async function listTaskTemplates(): Promise<TaskTemplate[]> {

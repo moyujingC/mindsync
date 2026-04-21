@@ -25,6 +25,10 @@ function badRequest(response, message) {
   json(response, 400, { message });
 }
 
+function badGateway(response, message) {
+  json(response, 502, { message });
+}
+
 function maskApiKey(apiKey) {
   const trimmed = apiKey.trim();
   if (trimmed.length <= 8) {
@@ -52,13 +56,150 @@ function markTestOutcome(entry, outcome) {
   entry.statusNote = outcome.statusNote;
 }
 
+function canFetchCatalog(entry) {
+  return (
+    entry.source === "preset" &&
+    entry.kind === "relay-api" &&
+    entry.catalogFamily === "openai-compatible"
+  );
+}
+
+function buildCatalogUrl(baseUrl) {
+  return `${baseUrl.replace(/\/+$/, "")}/models`;
+}
+
+function summarizeUpstreamErrorBody(payload) {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  if (typeof payload.message === "string" && payload.message.trim()) {
+    return payload.message.trim();
+  }
+
+  if (
+    "error" in payload &&
+    payload.error &&
+    typeof payload.error === "object" &&
+    typeof payload.error.message === "string" &&
+    payload.error.message.trim()
+  ) {
+    return payload.error.message.trim();
+  }
+
+  return null;
+}
+
+function normalizeCatalogItems(payload) {
+  const sourceItems = Array.isArray(payload?.data)
+    ? payload.data
+    : Array.isArray(payload?.items)
+      ? payload.items
+      : null;
+
+  if (!sourceItems) {
+    return null;
+  }
+
+  const items = sourceItems
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const id = typeof item.id === "string" ? item.id.trim() : "";
+      if (!id) {
+        return null;
+      }
+
+      const label = typeof item.label === "string" && item.label.trim() ? item.label.trim() : id;
+      const supportedEndpointTypes = Array.isArray(item.supportedEndpointTypes)
+        ? item.supportedEndpointTypes.filter((value) => typeof value === "string")
+        : undefined;
+
+      return {
+        id,
+        label,
+        ...(supportedEndpointTypes ? { supportedEndpointTypes } : {}),
+      };
+    })
+    .filter(Boolean);
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  return items;
+}
+
+async function fetchModelCatalog(entry) {
+  if (!entry.hasStoredApiKey || !entry.apiKey) {
+    return {
+      ok: false,
+      statusCode: 400,
+      message: "请先补 API Key，再获取可用模型列表。",
+    };
+  }
+
+  let upstreamResponse;
+  try {
+    upstreamResponse = await fetch(buildCatalogUrl(entry.baseUrl), {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${entry.apiKey}`,
+      },
+    });
+  } catch {
+    return {
+      ok: false,
+      statusCode: 502,
+      message: "上游暂时不可达，暂时无法拉取可用模型列表。",
+    };
+  }
+
+  let payload = null;
+  try {
+    payload = await upstreamResponse.json();
+  } catch {
+    payload = null;
+  }
+
+  if (!upstreamResponse.ok) {
+    const upstreamMessage = summarizeUpstreamErrorBody(payload);
+    return {
+      ok: false,
+      statusCode: 502,
+      message: upstreamMessage
+        ? `上游返回异常（${upstreamResponse.status}）：${upstreamMessage}`
+        : `上游返回异常（${upstreamResponse.status}），暂时无法拉取可用模型列表。`,
+    };
+  }
+
+  const items = normalizeCatalogItems(payload);
+  if (!items) {
+    return {
+      ok: false,
+      statusCode: 502,
+      message: "上游 /models 返回结构不合法，暂时无法识别可用模型列表。",
+    };
+  }
+
+  return {
+    ok: true,
+    payload: {
+      items,
+      fetchedAt: nowStamp(),
+    },
+  };
+}
+
 async function readJsonBody(request) {
   const chunks = [];
   for await (const chunk of request) {
     chunks.push(chunk);
   }
   const raw = Buffer.concat(chunks).toString("utf8");
-  return raw.length > 0 ? JSON.parse(raw) : {};
+  return raw.trim().length > 0 ? JSON.parse(raw) : {};
 }
 
 function updateTaskNames(state) {
@@ -237,7 +378,14 @@ async function handleRequest(request, response) {
       if (entry.source !== "preset") {
         entry.kind = body.kind ?? entry.kind;
         entry.baseUrl = String(body.baseUrl ?? entry.baseUrl).trim();
+      }
+      if (typeof body.modelId === "string" && body.modelId.trim().length > 0) {
+        entry.modelId = body.modelId.trim();
+      } else if (entry.source !== "preset") {
         entry.modelId = String(body.modelId ?? entry.modelId).trim();
+      }
+      if (entry.source !== "preset") {
+        entry.baseUrl = String(body.baseUrl ?? entry.baseUrl).trim();
       }
       entry.purchaseUrl = body.purchaseUrl ? String(body.purchaseUrl).trim() : entry.purchaseUrl;
       if (typeof body.apiKey === "string" && body.apiKey.trim().length > 0) {
@@ -258,6 +406,22 @@ async function handleRequest(request, response) {
         : "还缺 API Key，暂时无法开始测试连接。";
       await writeState(state);
       return json(response, 200, toPublicModelEntry(entry));
+    }
+
+    if (method === "GET" && path === `/models/${id}/catalog`) {
+      if (!canFetchCatalog(entry)) {
+        return badRequest(response, "当前仅支持中转预置入口获取可用模型列表。");
+      }
+
+      const result = await fetchModelCatalog(entry);
+      if (!result.ok) {
+        if (result.statusCode === 400) {
+          return badRequest(response, result.message);
+        }
+        return badGateway(response, result.message);
+      }
+
+      return json(response, 200, result.payload);
     }
 
     if (method === "DELETE" && path === `/models/${id}`) {

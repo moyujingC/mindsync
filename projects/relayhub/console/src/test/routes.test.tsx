@@ -147,6 +147,17 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("这些预置入口已经给好 URL、模型标识和购买入口，目标是让你少填一次配置。")).toBeInTheDocument();
   });
 
+  it("shows explicit first-time setup steps in the model library hero", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("第一次接入可以按这 5 步走")).toBeInTheDocument();
+    expect(await screen.findByText("1. 先选一个预置入口")).toBeInTheDocument();
+    expect(await screen.findByText("2. 去购买 / 开通，拿到 API Key")).toBeInTheDocument();
+    expect(await screen.findByText("3. 回来只补 API Key")).toBeInTheDocument();
+    expect(await screen.findByText("4. 保存后手动测试连接")).toBeInTheDocument();
+    expect(await screen.findByText("5. 激活后去任务库绑定")).toBeInTheDocument();
+  });
+
   it("locks base url and model id editing for preset entries", async () => {
     renderRoute("/models");
 
@@ -158,10 +169,11 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByDisplayValue("https://code.ppchat.vip/v1")).toBeDisabled();
     expect(await screen.findByDisplayValue("gpt-5")).toBeDisabled();
     expect(await screen.findByDisplayValue("Coding Plan")).toBeDisabled();
-    expect(await screen.findByText("系统预置入口已锁定 URL、模型标识和类型；这里只需要补 Key、保存并测试连接。")).toBeInTheDocument();
+    expect(await screen.findByText("URL 和默认模型标识已经配好；当前只需要补 API Key。保存后还不算激活，仍需要显式点击“测试连接”。")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "获取可用模型" })).not.toBeInTheDocument();
   });
 
-  it("locks AITechFlux preset base url and model id while allowing key-based activation", async () => {
+  it("keeps AITechFlux preset base url locked and uses fetched catalog for modelId selection", async () => {
     renderRoute("/models");
 
     const nameCell = await screen.findByText("AITechFlux 中转");
@@ -170,9 +182,123 @@ describe("RelayHub console routes", () => {
     fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
 
     expect(await screen.findByDisplayValue("https://aitechflux.com/v1")).toBeDisabled();
-    expect(await screen.findByDisplayValue("claude-sonnet")).toBeDisabled();
     expect(await screen.findByDisplayValue("中转 API")).toBeDisabled();
-    expect(await screen.findByText("系统预置入口已锁定 URL、模型标识和类型；这里只需要补 Key、保存并测试连接。")).toBeInTheDocument();
+    expect(await screen.findByText("URL 已经配好；当前先补 API Key。若默认模型不确定，先获取可用模型列表，再切当前模型。保存后还不算激活，仍需要显式点击“测试连接”。")).toBeInTheDocument();
+    expect(await screen.findByText("这里填写的是你从对应平台拿回来的 API Key；它只在服务端脱敏保存，不会进入前端构建产物。")).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "还没有 Key？先去开通 / 充值" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("模型标识")).not.toBeInTheDocument();
+    expect(await screen.findByText("当前模型标识")).toBeInTheDocument();
+  });
+
+  it("fetches preset relay catalog and shows selectable upstream models", async () => {
+    vi.spyOn(controlPlaneService, "getModelCatalog").mockResolvedValue({
+      items: [
+        { id: "高性能极速模型", label: "高性能极速模型" },
+        { id: "高性能低价模型", label: "高性能低价模型" },
+        { id: "Claude混合版", label: "Claude混合版" },
+      ],
+      fetchedAt: "2026-04-21 11:00",
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+    fireEvent.change(screen.getByLabelText("API Key"), {
+      target: { value: "sk-aitechflux-test" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "获取可用模型" }));
+
+    expect(await screen.findByLabelText("可用模型列表")).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "高性能低价模型" })).toBeInTheDocument();
+    expect(await screen.findByText("已获取上游可用模型，可从列表中切换当前模型。")).toBeInTheDocument();
+  });
+
+  it("shows clear error when fetching preset relay catalog without api key", async () => {
+    vi.spyOn(controlPlaneService, "getModelCatalog").mockRejectedValue(
+      new Error("请先补 API Key，再获取可用模型列表。"),
+    );
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+    fireEvent.click(screen.getByRole("button", { name: "获取可用模型" }));
+
+    expect(await screen.findByText("请先补 API Key，再获取可用模型列表。")).toBeInTheDocument();
+  });
+
+  it("saves selected preset relay modelId and points to next test step", async () => {
+    vi.spyOn(controlPlaneService, "getModelCatalog").mockResolvedValue({
+      items: [
+        { id: "高性能极速模型", label: "高性能极速模型" },
+        { id: "高性能低价模型", label: "高性能低价模型" },
+        { id: "Claude混合版", label: "Claude混合版" },
+      ],
+      fetchedAt: "2026-04-21 11:00",
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+    fireEvent.change(screen.getByLabelText("API Key"), {
+      target: { value: "sk-aitechflux-test" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "获取可用模型" }));
+    fireEvent.change(await screen.findByLabelText("可用模型列表"), {
+      target: { value: "高性能低价模型" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "保存配置" }));
+
+    expect(
+      await screen.findByText("当前模型已更新，下一步请测试连接确认该入口当前模型是否可用。"),
+    ).toBeInTheDocument();
+  });
+
+  it("copies preset base url from the table and shows success feedback", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", {
+      clipboard: {
+        writeText,
+      },
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "复制 Base URL" }));
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith("https://aitechflux.com/v1");
+    });
+    expect(await screen.findByText("入口地址已复制，可去外部工具粘贴使用。")).toBeInTheDocument();
+  });
+
+  it("shows a non-blocking error when copying base url fails", async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error("clipboard-denied"));
+    vi.stubGlobal("navigator", {
+      clipboard: {
+        writeText,
+      },
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "复制 Base URL" }));
+
+    expect(await screen.findByText("入口地址复制失败，请手动复制。")).toBeInTheDocument();
   });
 
   it("keeps custom entries fully editable in the model library", async () => {
@@ -224,7 +350,7 @@ describe("RelayHub console routes", () => {
 
     expect(
       await screen.findByText(
-        "“PPChat 中转”已激活。下一步可去任务库绑定默认模型。适合先绑定：Claude Code Web Coding、Codex Repo Coding。",
+        "“PPChat 中转”已激活。下一步可去任务库绑定默认模型；这个入口现在也可在外部工具中复用 Base URL + Key。适合先绑定：Claude Code Web Coding、Codex Repo Coding。",
       ),
     ).toBeInTheDocument();
   });

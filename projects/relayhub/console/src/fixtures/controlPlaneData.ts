@@ -1,4 +1,5 @@
 import type {
+  ModelCatalogResponse,
   ModelEntry,
   TaskRunRecord,
   TaskTemplate,
@@ -238,6 +239,25 @@ export const seedTaskTemplates: TaskTemplate[] = [
     switchNote: "可以在国产模型之间比较成本和摘要质量。",
   },
 ];
+
+export const presetModelCatalogs: Record<string, ModelCatalogResponse> = {
+  "preset-aitechflux-relay": {
+    items: [
+      { id: "高性能极速模型", label: "高性能极速模型" },
+      { id: "高性能低价模型", label: "高性能低价模型" },
+      { id: "Claude混合版", label: "Claude混合版" },
+    ],
+    fetchedAt: "2026-04-21 11:00",
+  },
+  "preset-ppchat-relay": {
+    items: [
+      { id: "gpt-5", label: "gpt-5" },
+      { id: "claude-sonnet", label: "claude-sonnet" },
+      { id: "deepseek-v3", label: "deepseek-v3" },
+    ],
+    fetchedAt: "2026-04-21 11:00",
+  },
+};
 
 export const seedTaskRunRecords: TaskRunRecord[] = [
   {

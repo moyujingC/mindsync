@@ -58,6 +58,17 @@ export interface ModelEntryInput {
   apiKey?: string;
 }
 
+export interface ModelCatalogItem {
+  id: string;
+  label: string;
+  supportedEndpointTypes?: string[];
+}
+
+export interface ModelCatalogResponse {
+  items: ModelCatalogItem[];
+  fetchedAt: string;
+}
+
 export interface TaskTemplate {
   id: string;
   name: string;
