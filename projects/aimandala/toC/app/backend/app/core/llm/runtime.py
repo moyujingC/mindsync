@@ -142,6 +142,13 @@ class OpenAICompatibleLLMClient:
             messages=messages,
             expect_json=True,
         )
+        if raw is None and task.strip().lower() == "vision":
+            raw = self._request_chat_completion(
+                task_config=task_config,
+                fallback_task_config=fallback_task_config,
+                messages=messages,
+                expect_json=False,
+            )
         if not raw:
             return None
         return self._parse_json_response(raw)

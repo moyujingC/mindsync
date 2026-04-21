@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(
@@ -153,3 +154,58 @@ def test_openai_compatible_llm_client_parses_code_fenced_json_payload():
 
     assert isinstance(result, dict)
     assert result["title"] == "来自 LLM 的标题"
+
+
+def test_openai_compatible_llm_client_falls_back_when_vision_json_mode_fails(tmp_path: Path):
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
+            "AIMANDALA_LLM_MODEL": "gpt-test",
+            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
+            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
+            "AIMANDALA_LLM_MAX_RETRIES": "0",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
+
+    calls: list[dict[str, object]] = []
+
+    def _fake_urlopen(request, timeout=0):
+        del timeout
+        payload = json.loads(request.data.decode("utf-8"))
+        calls.append(payload)
+        if payload.get("response_format") == {"type": "json_object"}:
+            raise TimeoutError("vision json mode timed out")
+        return _FakeHTTPResponse(
+            json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "{\"global_visual_summary\": \"内圈蓝白，中圈粉白，外圈粉紫与白色留白。\"}",
+                            }
+                        }
+                    ]
+                }
+            )
+        )
+
+    with patch("app.core.llm.runtime.urlopen", side_effect=_fake_urlopen):
+        image_path = tmp_path / "sample01.jpg"
+        image_path.write_bytes(b"fake-image")
+
+        result = client.generate_structured(
+            task="vision",
+            prompt="请生成视觉摘要",
+            schema={"type": "object"},
+            image_path=str(image_path),
+        )
+
+    assert isinstance(result, dict)
+    assert result["global_visual_summary"] == "内圈蓝白，中圈粉白，外圈粉紫与白色留白。"
+    assert len(calls) == 2
+    assert calls[0]["response_format"] == {"type": "json_object"}
+    assert "response_format" not in calls[1]
