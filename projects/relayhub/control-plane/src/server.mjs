@@ -234,9 +234,11 @@ async function handleRequest(request, response) {
       const body = await readJsonBody(request);
       entry.name = String(body.name ?? entry.name).trim();
       entry.providerLabel = String(body.providerLabel ?? entry.providerLabel).trim();
-      entry.kind = body.kind ?? entry.kind;
-      entry.baseUrl = String(body.baseUrl ?? entry.baseUrl).trim();
-      entry.modelId = String(body.modelId ?? entry.modelId).trim();
+      if (entry.source !== "preset") {
+        entry.kind = body.kind ?? entry.kind;
+        entry.baseUrl = String(body.baseUrl ?? entry.baseUrl).trim();
+        entry.modelId = String(body.modelId ?? entry.modelId).trim();
+      }
       entry.purchaseUrl = body.purchaseUrl ? String(body.purchaseUrl).trim() : entry.purchaseUrl;
       if (typeof body.apiKey === "string" && body.apiKey.trim().length > 0) {
         entry.apiKey = body.apiKey.trim();

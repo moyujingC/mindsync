@@ -94,6 +94,11 @@ export function ModelLibraryPage() {
       ),
     [priorityPresetEntries],
   );
+  const editingEntry = useMemo(
+    () => sortedEntries.find((entry) => entry.id === editingId) ?? null,
+    [editingId, sortedEntries],
+  );
+  const isPresetEditing = editingEntry?.source === "preset";
 
   function resetForm() {
     setEditingId(null);
@@ -207,9 +212,9 @@ export function ModelLibraryPage() {
       <section className="hero-card">
         <div>
           <span className="eyebrow">Model Library</span>
-          <h1>先看哪些模型已经可用，哪些还差最后一步激活</h1>
+          <h1>先接入一个可复用入口，再决定入口内当前用哪个模型</h1>
           <p>
-            模型库先回答两件事：哪些条目已经可以绑定任务，哪些条目还需要补 API Key、补配置或补测试连接。先完成一个模型激活，再进入任务绑定和运行记录。
+            模型库当前先服务“入口接入”。无论是国产官方 API 还是第三方中转，都先把 URL、Key 和测试连接收口到这里；之后任务和运行记录只复用这些入口，不再让你到处重复填配置。
           </p>
         </div>
       </section>
@@ -249,7 +254,7 @@ export function ModelLibraryPage() {
 
       <Section
         title="优先激活候选"
-        description="先从这里选更适合当前任务的预置模型，完成激活后再进入任务库绑定。"
+        description="这些预置入口已经给好 URL、模型标识和购买入口，目标是让你少填一次配置。"
       >
         {dataResource.status === "success" ? (
           <EntriesTable
@@ -263,7 +268,7 @@ export function ModelLibraryPage() {
 
       <Section
         title="更多预置模型"
-        description="这些条目先作为备用候选，不抢首屏注意力，但需要时仍可直接激活。"
+        description="这些也是可直接接入的入口，只是当前优先级更低，先作为备用候选。"
       >
         {dataResource.status === "success" && otherPresetEntries.length === 0 ? (
           <EmptyState title="当前没有更多预置模型" description="首轮候选已经收敛在上面的优先激活区。" />
@@ -280,7 +285,7 @@ export function ModelLibraryPage() {
 
       <Section
         title="我的模型"
-        description="这里放你自己新增或已经激活的模型项，用来承接真实可用的工作入口。"
+        description="这里放你自己新增的中转 API 或官方入口；自定义入口保持完整可编辑。"
       >
         {dataResource.status === "success" && customEntries.length === 0 ? (
           <EmptyState title="还没有自定义模型" description="可以先添加你正在使用的中转 API 或自有模型入口。" />
@@ -294,10 +299,18 @@ export function ModelLibraryPage() {
         title={editingId ? "编辑模式" : "新增模式"}
         description={
           editingId
-            ? "当前在编辑已有模型。保存后不会自动激活，仍需要显式测试连接。"
-            : "新增后不会自动探测上游，必须显式点击“测试连接”才会变成可用。"
+            ? isPresetEditing
+              ? "当前在编辑系统预置入口。URL、模型标识和类型已锁定，只需要补 Key、保存并测试连接。"
+              : "当前在编辑自定义入口。保存后不会自动激活，仍需要显式测试连接。"
+            : "新增后不会自动探测上游，必须显式点击“测试连接”才会变成可用入口。"
         }
       >
+        {isPresetEditing ? (
+          <article className="data-card">
+            <span className="mini-label">预置入口锁定</span>
+            <p>系统预置入口已锁定 URL、模型标识和类型；这里只需要补 Key、保存并测试连接。</p>
+          </article>
+        ) : null}
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
             <span>名称</span>
@@ -323,6 +336,7 @@ export function ModelLibraryPage() {
             <span>类型</span>
             <select
               value={form.kind}
+              disabled={isPresetEditing}
               onChange={(event) =>
                 setForm((current) => ({ ...current, kind: event.target.value as ModelEntryKind }))
               }
@@ -339,6 +353,7 @@ export function ModelLibraryPage() {
             <input
               aria-label="Base URL"
               value={form.baseUrl}
+              disabled={isPresetEditing}
               onChange={(event) => setForm((current) => ({ ...current, baseUrl: event.target.value }))}
               placeholder="https://example.com/v1"
             />
@@ -348,6 +363,7 @@ export function ModelLibraryPage() {
             <input
               aria-label="模型标识"
               value={form.modelId}
+              disabled={isPresetEditing}
               onChange={(event) => setForm((current) => ({ ...current, modelId: event.target.value }))}
               placeholder="gpt-5 / deepseek-chat / qwen-max"
             />
@@ -414,7 +430,7 @@ function EntriesTable({
             <th>名称</th>
             <th>类型</th>
             <th>Provider</th>
-            <th>模型标识</th>
+            <th>入口配置</th>
             <th>状态</th>
             <th>适合任务</th>
             <th>首选理由</th>
@@ -443,7 +459,10 @@ function EntriesTable({
               </td>
               <td>{KIND_OPTIONS.find((item) => item.value === entry.kind)?.label ?? entry.kind}</td>
               <td>{entry.providerLabel}</td>
-              <td>{entry.modelId}</td>
+              <td>
+                <div>{entry.baseUrl}</div>
+                <div className="supporting-text">入口内默认模型：{entry.modelId}</div>
+              </td>
               <td>
                 <ModelStatusPill status={entry.status} />
                 {entry.costTier ? <div className="supporting-text">成本：{entry.costTier}</div> : null}

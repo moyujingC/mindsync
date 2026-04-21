@@ -352,9 +352,11 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
 
     current.name = input.name.trim();
     current.providerLabel = input.providerLabel.trim();
-    current.kind = input.kind;
-    current.baseUrl = input.baseUrl.trim();
-    current.modelId = input.modelId.trim();
+    if (current.source !== "preset") {
+      current.kind = input.kind;
+      current.baseUrl = input.baseUrl.trim();
+      current.modelId = input.modelId.trim();
+    }
     current.purchaseUrl = input.purchaseUrl?.trim() || null;
     if (input.apiKey && input.apiKey.trim().length > 0) {
       current.apiKey = input.apiKey.trim();

@@ -19,4 +19,5 @@
 - [2026-04-19-v1-任务级默认模型快速切换实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-任务级默认模型快速切换实施任务.md)
 - [2026-04-19-v1-预置模型质量与选型引导收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-预置模型质量与选型引导收口实施任务.md)
 - [2026-04-19-v1-运行记录主路径收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-运行记录主路径收口实施任务.md)
+- [2026-04-20-v1-中转入口优先的模型库与任务切换收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-20-v1-中转入口优先的模型库与任务切换收口实施任务.md)
 - [2026-04-19-v1-control-plane-release-实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-control-plane-release-实施任务.md)

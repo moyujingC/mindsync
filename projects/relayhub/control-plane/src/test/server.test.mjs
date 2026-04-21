@@ -78,18 +78,25 @@ test("POST /models/:id/test returns invalid base URL semantics", async () => {
   await resetState();
 
   await withServer(async (baseUrl) => {
-    const updateResponse = await fetch(`${baseUrl}/models/preset-ppchat-relay`, {
-      method: "PATCH",
+    const createResponse = await fetch(`${baseUrl}/models`, {
+      method: "POST",
       headers: {
         "content-type": "application/json"
       },
       body: JSON.stringify({
+        name: "Invalid URL Relay",
+        kind: "relay-api",
+        providerLabel: "custom-relay",
         baseUrl: "bad-url"
+        ,
+        modelId: "gpt-5",
+        apiKey: "sk-test-invalid"
       })
     });
-    assert.equal(updateResponse.status, 200);
+    assert.equal(createResponse.status, 201);
+    const created = await createResponse.json();
 
-    const response = await fetch(`${baseUrl}/models/preset-ppchat-relay/test`, {
+    const response = await fetch(`${baseUrl}/models/${created.id}/test`, {
       method: "POST"
     });
     assert.equal(response.status, 200);
@@ -99,6 +106,32 @@ test("POST /models/:id/test returns invalid base URL semantics", async () => {
     assert.equal(payload.lastTestResult, "invalid-base-url");
     assert.equal(payload.lastTestCode, "invalid_base_url");
     assert.match(payload.lastTestMessage, /Base URL 不合法/);
+  });
+});
+
+test("PATCH /models/:id keeps preset base url and model id locked", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/models/preset-ppchat-relay`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        baseUrl: "https://changed.example.com/v1",
+        modelId: "changed-model",
+        kind: "relay-api",
+        providerLabel: "new-provider"
+      })
+    });
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.baseUrl, "https://code.ppchat.vip/v1");
+    assert.equal(payload.modelId, "gpt-5");
+    assert.equal(payload.kind, "coding-plan");
+    assert.equal(payload.providerLabel, "new-provider");
   });
 });
 

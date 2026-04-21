@@ -14,7 +14,9 @@ describe("RelayHub console routes", () => {
   it("redirects root route to the model library", async () => {
     renderRoute("/");
 
-    expect(await screen.findByText("先看哪些模型已经可用，哪些还差最后一步激活")).toBeInTheDocument();
+    expect(
+      await screen.findByText("先接入一个可复用入口，再决定入口内当前用哪个模型"),
+    ).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByTestId("current-location")).toHaveTextContent("/models");
     });
@@ -41,7 +43,7 @@ describe("RelayHub console routes", () => {
     renderRoute("/tasks");
 
     expect(
-      await screen.findByText("先把每个任务当前默认用的模型说清楚，需要换时直接在这里切"),
+      await screen.findByText("先把每个任务当前默认走哪个入口内模型说清楚，需要换时直接在这里切"),
     ).toBeInTheDocument();
     expect(await screen.findByText("Claude Code Web Coding")).toBeInTheDocument();
   });
@@ -128,6 +130,53 @@ describe("RelayHub console routes", () => {
     expect((await screen.findAllByText("去购买 / 充值")).length).toBeGreaterThan(0);
   });
 
+  it("frames presets as reusable access entries in the model library", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("先接入一个可复用入口，再决定入口内当前用哪个模型")).toBeInTheDocument();
+    expect(await screen.findByText("这些预置入口已经给好 URL、模型标识和购买入口，目标是让你少填一次配置。")).toBeInTheDocument();
+  });
+
+  it("locks base url and model id editing for preset entries", async () => {
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("PPChat 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByDisplayValue("https://code.ppchat.vip/v1")).toBeDisabled();
+    expect(await screen.findByDisplayValue("gpt-5")).toBeDisabled();
+    expect(await screen.findByDisplayValue("Coding Plan")).toBeDisabled();
+    expect(await screen.findByText("系统预置入口已锁定 URL、模型标识和类型；这里只需要补 Key、保存并测试连接。")).toBeInTheDocument();
+  });
+
+  it("keeps custom entries fully editable in the model library", async () => {
+    renderRoute("/models");
+
+    fireEvent.change(screen.getByLabelText("名称"), {
+      target: { value: "自定义入口" },
+    });
+    fireEvent.change(screen.getByLabelText("Provider"), {
+      target: { value: "aitechflux.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Base URL"), {
+      target: { value: "https://aitechflux.com/v1" },
+    });
+    fireEvent.change(screen.getByLabelText("模型标识"), {
+      target: { value: "gpt-5" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "新增模型" }));
+
+    const nameCell = await screen.findByText("自定义入口");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByDisplayValue("https://aitechflux.com/v1")).not.toBeDisabled();
+    expect(await screen.findByDisplayValue("gpt-5")).not.toBeDisabled();
+  });
+
   it("shows explicit failure reason when model test is missing api key", async () => {
     renderRoute("/models");
 
@@ -172,7 +221,7 @@ describe("RelayHub console routes", () => {
     renderRoute("/tasks");
 
     expect(
-      await screen.findByText("先把每个任务当前默认用的模型说清楚，需要换时直接在这里切"),
+      await screen.findByText("先把每个任务当前默认走哪个入口内模型说清楚，需要换时直接在这里切"),
     ).toBeInTheDocument();
     expect(await screen.findByText("当前还没有可绑定的已激活模型")).toBeInTheDocument();
     expect(await screen.findByText("先回模型库完成激活，再回来绑定任务。")).toBeInTheDocument();
@@ -200,10 +249,10 @@ describe("RelayHub console routes", () => {
     fireEvent.change(within(row!).getByLabelText("Claude Code Web Coding-快速切换默认模型"), {
       target: { value: "preset-deepseek-v3" },
     });
-    fireEvent.click(within(row!).getByRole("button", { name: "切换默认模型" }));
+    fireEvent.click(within(row!).getByRole("button", { name: "切换入口内默认模型" }));
 
     expect(
-      await screen.findByText("“Claude Code Web Coding”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+      await screen.findByText("“Claude Code Web Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
     ).toBeInTheDocument();
     expect(await screen.findByText("DeepSeek V3 官方")).toBeInTheDocument();
   });
@@ -251,10 +300,10 @@ describe("RelayHub console routes", () => {
     fireEvent.change(within(row!).getByLabelText("Codex Repo Coding-快速切换默认模型"), {
       target: { value: "preset-ppchat-relay" },
     });
-    fireEvent.click(within(row!).getByRole("button", { name: "绑定默认模型" }));
+    fireEvent.click(within(row!).getByRole("button", { name: "绑定入口内默认模型" }));
 
     expect(
-      await screen.findByText("“Codex Repo Coding”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+      await screen.findByText("“Codex Repo Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
     ).toBeInTheDocument();
     expect(await screen.findAllByText("PPChat 中转")).not.toHaveLength(0);
   });
