@@ -32,10 +32,11 @@ test("GET /models returns public model entries without apiKey", async () => {
     const payload = await response.json();
 
     assert.ok(Array.isArray(payload));
-    assert.ok(payload.length >= 6);
+    assert.ok(payload.length >= 7);
     assert.equal("apiKey" in payload[0], false);
     assert.equal(payload[0].presetPriority !== undefined, true);
     assert.equal(Array.isArray(payload[0].recommendedTaskIds), true);
+    assert.ok(payload.some((item) => item.id === "preset-aitechflux-relay"));
   });
 });
 
@@ -132,6 +133,32 @@ test("PATCH /models/:id keeps preset base url and model id locked", async () => 
     assert.equal(payload.modelId, "gpt-5");
     assert.equal(payload.kind, "coding-plan");
     assert.equal(payload.providerLabel, "new-provider");
+  });
+});
+
+test("PATCH /models/:id keeps AITechFlux preset base url, model id, and kind locked", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        baseUrl: "https://changed.example.com/v1",
+        modelId: "changed-model",
+        kind: "coding-plan",
+        providerLabel: "custom-provider"
+      })
+    });
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.baseUrl, "https://aitechflux.com/v1");
+    assert.equal(payload.modelId, "claude-sonnet");
+    assert.equal(payload.kind, "relay-api");
+    assert.equal(payload.providerLabel, "custom-provider");
   });
 });
 

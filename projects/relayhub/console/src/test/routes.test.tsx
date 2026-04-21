@@ -130,6 +130,16 @@ describe("RelayHub console routes", () => {
     expect((await screen.findAllByText("去购买 / 充值")).length).toBeGreaterThan(0);
   });
 
+  it("shows AITechFlux as a preset relay entry with purchase guidance", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("AITechFlux 中转")).toBeInTheDocument();
+    expect(await screen.findByText("第三方中转入口，可复用 URL + Key，并在工具内切换默认模型。")).toBeInTheDocument();
+    expect(
+      (await screen.findAllByText("适合先绑定：Claude Code Web Coding、Codex Repo Coding。")).length,
+    ).toBeGreaterThan(0);
+  });
+
   it("frames presets as reusable access entries in the model library", async () => {
     renderRoute("/models");
 
@@ -148,6 +158,20 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByDisplayValue("https://code.ppchat.vip/v1")).toBeDisabled();
     expect(await screen.findByDisplayValue("gpt-5")).toBeDisabled();
     expect(await screen.findByDisplayValue("Coding Plan")).toBeDisabled();
+    expect(await screen.findByText("系统预置入口已锁定 URL、模型标识和类型；这里只需要补 Key、保存并测试连接。")).toBeInTheDocument();
+  });
+
+  it("locks AITechFlux preset base url and model id while allowing key-based activation", async () => {
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByDisplayValue("https://aitechflux.com/v1")).toBeDisabled();
+    expect(await screen.findByDisplayValue("claude-sonnet")).toBeDisabled();
+    expect(await screen.findByDisplayValue("中转 API")).toBeDisabled();
     expect(await screen.findByText("系统预置入口已锁定 URL、模型标识和类型；这里只需要补 Key、保存并测试连接。")).toBeInTheDocument();
   });
 

@@ -20,4 +20,5 @@
 - [2026-04-19-v1-预置模型质量与选型引导收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-预置模型质量与选型引导收口-qa-basis.md)
 - [2026-04-19-v1-运行记录主路径收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-运行记录主路径收口-qa-basis.md)
 - [2026-04-20-v1-中转入口优先的模型库与任务切换收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-20-v1-中转入口优先的模型库与任务切换收口-qa-basis.md)
+- [2026-04-21-v1-AITechFlux-中转入口预置接入-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-21-v1-AITechFlux-中转入口预置接入-qa-basis.md)
 - [2026-04-19-v1-control-plane-release-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-control-plane-release-qa-basis.md)
