@@ -342,7 +342,7 @@ class ReportDebugProfileBuilder:
             "version_purchased": record.version_purchased,
             "generation_mode": {
                 "strategy": "knowledge_first",
-                "llm_role": "none",
+                "llm_role": "chat_generation_for_draft_and_final_render",
                 "shared_basis": "layer0_theme_projection_plus_narrative_projection",
             },
             "steps": steps,

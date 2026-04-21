@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 from app.core.analysis.circle_detector import CircleDetectionResult, CircleDetector
+from app.core.llm.runtime import create_llm_client_from_env
 try:
     from app.core.analysis.three_circle_colors import extract_colors_by_circles
 except Exception:  # pragma: no cover - migration-time fallback
@@ -30,6 +31,7 @@ except Exception:  # pragma: no cover - migration-time fallback
 from .data_models import InterpretationRecord
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
+    LLMReportGenerationRuntime,
 )
 from .report_generation_contracts import ReportGenerationRuntime
 from .report_pipeline_components import install_report_pipeline_components
@@ -115,7 +117,9 @@ class LayeredOrchestrator:
         if generation_runtime is not None:
             self.generation_runtime = generation_runtime
         else:
-            self.generation_runtime = DeterministicReportGenerationRuntime()
+            self.generation_runtime = LLMReportGenerationRuntime(
+                llm_client=create_llm_client_from_env()
+            )
         self.report_chat_runtime = report_chat_runtime
         self.enable_vision = enable_vision
         install_report_pipeline_components(

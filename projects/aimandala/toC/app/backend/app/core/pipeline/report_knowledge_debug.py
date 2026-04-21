@@ -74,6 +74,7 @@ class KnowledgeDebugBlockBuilder:
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
                 "algorithm_fidelity_trace": algorithm_fidelity_trace,
+                "model_trace": self._build_model_trace(layer0),
                 "input_package": self._build_input_package(record, layer0),
                 "review_input_package": self._build_input_package(record, layer0),
                 "review_layer0_summary": self._build_review_layer0_summary(layer0),
@@ -176,6 +177,7 @@ class KnowledgeDebugBlockBuilder:
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
             "algorithm_fidelity_trace": algorithm_fidelity_trace,
+            "model_trace": self._build_model_trace(layer0),
             "input_package": self._build_input_package(record, layer0),
             "review_input_package": self._build_input_package(record, layer0),
             "review_layer0_summary": self._build_review_layer0_summary(layer0),
@@ -198,6 +200,50 @@ class KnowledgeDebugBlockBuilder:
             "warning_analysis": warning_analysis,
             "source_refs": source_refs_list,
             "field_to_knowledge_map": field_to_knowledge_map,
+        }
+
+    def _build_model_trace(self, layer0: dict[str, Any]) -> dict[str, Any]:
+        visual_analysis_basis = (
+            layer0.get("visual_analysis_basis", {}) if isinstance(layer0, dict) else {}
+        )
+        prompt_meta = (
+            visual_analysis_basis.get("prompt_meta", {})
+            if isinstance(visual_analysis_basis, dict)
+            else {}
+        )
+        theme_projection = (
+            layer0.get("theme_projection", {}) if isinstance(layer0, dict) else {}
+        )
+        projection_model_trace = (
+            theme_projection.get("model_trace", {})
+            if isinstance(theme_projection, dict)
+            else {}
+        )
+        chat_by_mode = (
+            projection_model_trace.get("chat_by_mode", {})
+            if isinstance(projection_model_trace, dict)
+            else {}
+        )
+        chat_trace = {}
+        if isinstance(chat_by_mode, dict):
+            if isinstance(chat_by_mode.get("pro"), dict):
+                chat_trace = chat_by_mode.get("pro", {})
+            elif isinstance(chat_by_mode.get("lite"), dict):
+                chat_trace = chat_by_mode.get("lite", {})
+        return {
+            "vision": {
+                "endpoint_id": prompt_meta.get("endpoint_id", ""),
+                "resolved_model": prompt_meta.get("resolved_model", ""),
+                "source": prompt_meta.get("source", ""),
+            },
+            "chat": {
+                "endpoint_id": chat_trace.get("endpoint_id", ""),
+                "resolved_model": chat_trace.get("resolved_model", ""),
+                "source": chat_trace.get("source", ""),
+                "report_mode": chat_trace.get("report_mode", ""),
+                "prompt_version": chat_trace.get("prompt_version", ""),
+                "error": chat_trace.get("error", ""),
+            },
         }
 
     def _build_topic_context_trace(self, record: InterpretationRecord) -> dict[str, Any]:

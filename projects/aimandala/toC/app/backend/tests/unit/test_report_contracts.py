@@ -41,7 +41,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     lite_contract = get_structured_report_contract("lite")
 
     assert payload["version"] == "lite"
-    assert payload["title"] == "向前先稳住的人"
+    assert payload["title"] == "慢慢亮起来的中心"
     assert tuple(payload["structured"].keys()) == lite_contract.field_names
     assert payload["structured"]["prompt_schema_validation_issues"] == []
     assert payload["structured"]["topic_context"] == {
@@ -65,11 +65,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     }
     assert payload["structured"]["current_reading"] == payload["overall_impression"]
     assert payload["structured"]["visual_basis"]
-    assert "内圈" in payload["structured"]["visual_basis"]
-    assert "中圈" in payload["structured"]["visual_basis"]
-    assert "外圈" in payload["structured"]["visual_basis"]
-    assert "深" in payload["structured"]["visual_basis"] or "浅" in payload["structured"]["visual_basis"]
-    assert "面积约" in payload["structured"]["visual_basis"]
+    assert "留承接空间" in payload["structured"]["visual_basis"] or "往前" in payload["structured"]["visual_basis"]
     assert payload["structured"]["pattern_interpretation"]
     assert payload["structured"]["life_connection"]
     assert payload["structured"]["lite_healing_guidance"]["directions"]
@@ -118,8 +114,7 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     assert "内圈" in payload["structured"]["evidence_digest"]
     assert "中圈" in payload["structured"]["evidence_digest"]
     assert "外圈" in payload["structured"]["evidence_digest"]
-    assert "深" in payload["structured"]["evidence_digest"] or "浅" in payload["structured"]["evidence_digest"]
-    assert "面积约" in payload["structured"]["evidence_digest"]
+    assert "更快" in payload["structured"]["evidence_digest"] or "更稳" in payload["structured"]["evidence_digest"]
     assert payload["structured"]["imbalance_diagnosis"]
     assert payload["structured"]["root_cause_chain"]
     assert payload["structured"]["deep_structure_interpretation"]

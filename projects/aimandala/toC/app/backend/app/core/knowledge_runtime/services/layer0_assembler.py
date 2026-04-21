@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from app.core.pipeline.data_models import Layer0Raw
 
 from app.core.knowledge.color_meanings import normalize_color_name
+from app.core.llm.runtime import LLMClient, NoopLLMClient
 from ..repository import KnowledgeRepository
 from .circle_service import CircleService
 from .element_service import ElementService
@@ -155,12 +156,14 @@ class Layer0Assembler:
         circle_service: CircleService,
         theme_service: ThemeService,
         imbalance_service: ImbalanceService,
+        llm_client: LLMClient | None = None,
     ) -> None:
         self.repository = repository
         self.element_service = element_service
         self.circle_service = circle_service
         self.theme_service = theme_service
         self.imbalance_service = imbalance_service
+        self.llm_client = llm_client or NoopLLMClient()
 
     def build_from_record(
         self,
@@ -265,6 +268,7 @@ class Layer0Assembler:
             circles=circles,
         )
         layer.visual_analysis_basis = self._build_visual_analysis_basis(
+            image_path=str(path),
             circles=circles,
             circle_colors=circle_colors,
             generated=False,
@@ -485,6 +489,7 @@ class Layer0Assembler:
             circles=circles,
         )
         layer.visual_analysis_basis = self._build_visual_analysis_basis(
+            image_path=str(getattr(record, "image_local_path", "") or ""),
             circles=circles,
             circle_colors=layer.circle_colors,
             generated=True,
@@ -818,6 +823,7 @@ class Layer0Assembler:
     def _build_visual_analysis_basis(
         self,
         *,
+        image_path: str,
         circles: dict[str, Any],
         circle_colors: dict[str, Any],
         generated: bool,
@@ -832,11 +838,23 @@ class Layer0Assembler:
             )
             for circle_key in ["inner", "middle", "outer"]
         }
-        llm_color_observation = self._build_llm_color_observation(circle_payloads)
+        vision_observation = self._build_vision_visual_summary(
+            image_path=image_path,
+            circles=circle_payloads,
+            generated=generated,
+        )
+        global_visual_summary = vision_observation.get("global_visual_summary") or self._build_global_visual_summary(circle_payloads)
+        llm_color_observation = self._build_llm_color_observation(
+            circle_payloads,
+            global_visual_summary=global_visual_summary,
+            source=str(vision_observation.get("source") or "deterministic_visual_observation"),
+            confidence=vision_observation.get("confidence"),
+        )
         program_color_measurement = self._build_program_color_measurement(circle_payloads)
         direct_judgment_hits = self._build_direct_judgment_hits(circle_payloads)
+        summary_source = str(vision_observation.get("source") or "deterministic_visual_observation")
         return {
-            "global_visual_summary": self._build_global_visual_summary(circle_payloads),
+            "global_visual_summary": global_visual_summary,
             "llm_color_observation": llm_color_observation,
             "program_color_measurement": program_color_measurement,
             "direct_judgment_hits": direct_judgment_hits,
@@ -847,7 +865,11 @@ class Layer0Assembler:
                 generated=generated,
             ),
             "prompt_meta": {
-                "model_role": "objective_visual_transcription",
+                "model_role": (
+                    "multimodal_visual_observer"
+                    if summary_source == "llm_vision_then_program_confirmation"
+                    else "objective_visual_transcription"
+                ),
                 "prompt_version": VISUAL_ANALYSIS_PROMPT_VERSION,
                 "prompt_text": VISUAL_ANALYSIS_PROMPT_TEXT,
                 "prompt_constraints": [
@@ -857,7 +879,11 @@ class Layer0Assembler:
                 ],
                 "analysis_scope": ["global", "inner", "middle", "outer"],
                 "generated_at": "",
-                "source": "deterministic_visual_observation",
+                "source": summary_source,
+                "confirmation_source": "program_cluster_measurement",
+                "endpoint_id": self._resolve_llm_endpoint_id(task="vision"),
+                "resolved_model": self._resolve_llm_model(task="vision"),
+                "vision_unavailable": summary_source != "llm_vision_then_program_confirmation",
             },
         }
 
@@ -999,6 +1025,92 @@ class Layer0Assembler:
                 parts.append(summary)
         return "；".join(parts)
 
+    def _build_vision_visual_summary(
+        self,
+        *,
+        image_path: str,
+        circles: dict[str, dict[str, Any]],
+        generated: bool,
+    ) -> dict[str, Any]:
+        if generated or not image_path:
+            return {"source": "deterministic_visual_observation"}
+        payload = self._request_visual_summary_from_llm(
+            image_path=image_path,
+            circles=circles,
+        )
+        if not isinstance(payload, dict):
+            return {"source": "deterministic_visual_observation"}
+        summary = str(payload.get("global_visual_summary") or "").strip()
+        if not summary:
+            return {"source": "deterministic_visual_observation"}
+        return {
+            "global_visual_summary": summary,
+            "source": "llm_vision_then_program_confirmation",
+            "confidence": self._safe_float(payload.get("confidence"), 0.0),
+        }
+
+    def _request_visual_summary_from_llm(
+        self,
+        *,
+        image_path: str,
+        circles: dict[str, dict[str, Any]],
+    ) -> dict[str, Any] | None:
+        schema = {
+            "type": "object",
+            "required": ["global_visual_summary"],
+            "properties": {
+                "global_visual_summary": {"type": "string"},
+                "per_circle_summary": {
+                    "type": "object",
+                    "properties": {
+                        "inner": {"type": "string"},
+                        "middle": {"type": "string"},
+                        "outer": {"type": "string"},
+                    },
+                },
+                "confidence": {"type": "number"},
+            },
+        }
+        program_basis = []
+        for circle_key in ["inner", "middle", "outer"]:
+            circle = circles.get(circle_key, {})
+            palette = circle.get("palette", {}) if isinstance(circle, dict) else {}
+            labels = "、".join(palette.get("canonical_color_labels", [])[:4]) if isinstance(palette, dict) else ""
+            program_basis.append(
+                f"{CIRCLE_KEY_TO_CN.get(circle_key, circle_key)}程序提色参考：{labels or '暂无明确标签'}。"
+            )
+        prompt = (
+            "你在做曼陀罗首层视觉观察，只能描述可见事实，不得解释意义。\n"
+            "请先直接观察原图，再参考程序给出的分圈提色结果做确认。\n"
+            "输出一段 global_visual_summary，必须覆盖内圈、中圈、外圈。"
+            "要写颜色、量感、留白/镂空和显著视觉结构；不要写 #hex，不要写五行、主题、失衡。\n"
+            + "\n".join(program_basis)
+        )
+        try:
+            payload = self.llm_client.generate_structured(
+                task="vision",
+                prompt=prompt,
+                schema=schema,
+                image_path=image_path,
+            )
+        except Exception:
+            return None
+        return payload if isinstance(payload, dict) else None
+
+    def _resolve_llm_model(self, *, task: str) -> str:
+        config = getattr(self.llm_client, "config", None)
+        if config is None or not hasattr(config, "resolve_task_config"):
+            return ""
+        try:
+            task_config = config.resolve_task_config(task)
+        except Exception:
+            return ""
+        return str(getattr(task_config, "model", "") or "").strip()
+
+    def _resolve_llm_endpoint_id(self, *, task: str) -> str:
+        model = self._resolve_llm_model(task=task)
+        return model if model.startswith("ep-") else ""
+
     def _build_visual_cross_circle_relations(
         self,
         circles: dict[str, dict[str, Any]],
@@ -1121,6 +1233,10 @@ class Layer0Assembler:
     def _build_llm_color_observation(
         self,
         circles: dict[str, dict[str, Any]],
+        *,
+        global_visual_summary: str,
+        source: str,
+        confidence: Any = None,
     ) -> dict[str, Any]:
         per_circle = {
             circle_key: {
@@ -1134,10 +1250,10 @@ class Layer0Assembler:
             for circle_key, tools in circles.items()
             if isinstance(tools, dict)
         }
-        return {
-            "summary": self._build_global_visual_summary(circles),
+        result = {
+            "summary": global_visual_summary,
             "per_circle": per_circle,
-            "source": "deterministic_visual_observation",
+            "source": source,
             "canonical_palette": list(
                 dict.fromkeys(
                     label
@@ -1152,6 +1268,9 @@ class Layer0Assembler:
                 )
             ),
         }
+        if confidence is not None:
+            result["confidence"] = self._safe_float(confidence, 0.0)
+        return result
 
     def _build_program_color_measurement(
         self,

@@ -210,7 +210,7 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     assert "独立购买" in upgrade_payload["message"]
 
 
-def test_api_v2_report_chat_returns_controlled_400_without_runtime(tmp_path):
+def test_api_v2_report_chat_returns_llm_grounded_reply(tmp_path):
     from app.api.main import app
 
     _reset_api_state()
@@ -258,10 +258,10 @@ def test_api_v2_report_chat_returns_controlled_400_without_runtime(tmp_path):
             "history": [{"role": "user", "content": "我最近有点乱。"}],
         },
     )
-    assert chat_response.status_code == 400
-    assert chat_response.json() == {
-        "detail": "report chat runtime is not configured"
-    }
+    assert chat_response.status_code == 200
+    payload = chat_response.json()
+    assert payload["interpretation_id"] == interpretation_id
+    assert payload["reply"]
 
 
 def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):

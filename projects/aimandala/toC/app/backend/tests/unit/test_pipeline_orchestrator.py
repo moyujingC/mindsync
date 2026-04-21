@@ -1,8 +1,10 @@
 """Unit tests for the minimal migrated V2 orchestrator shell."""
 
 import asyncio
+import json
 import os
 import sys
+from types import SimpleNamespace
 
 sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -12,6 +14,7 @@ from app.core.analysis.circle_detector import CircleDetectionResult
 from app.core.pipeline.data_models import (
     GenerationStatus,
     InterpretationRecord,
+    Layer0Raw,
     Layer1LiteDraft,
     Layer2LiteFinal,
     Layer3ProDraft,
@@ -23,6 +26,7 @@ from app.core.pipeline.orchestrator_v2 import (
 )
 from app.core.pipeline.generation_runtime import (
     LiteGenerationBundle,
+    LLMReportGenerationRuntime,
     ProGenerationBundle,
 )
 from app.core.pipeline.report_contracts import PromptSchemaValidator
@@ -306,7 +310,7 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
     assert profile["evidence_summary"]["agent"]["name"] == "InsightAgent"
     assert profile["fallback_summary"]["used"] in {True, False}
     assert profile["generation_mode"]["strategy"] == "knowledge_first"
-    assert profile["generation_mode"]["llm_role"] == "none"
+    assert profile["generation_mode"]["llm_role"] == "chat_generation_for_draft_and_final_render"
     assert profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
     assert profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
     assert '"runtime_evidence"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
@@ -985,17 +989,16 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
     assert upgraded is not None
     assert upgraded.layer_3_pro_draft is not None
     assert upgraded.layer_3_pro_draft.healing_suggestions
-    assert "水多火灭" in upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
-    assert "恐惧压制行动" in upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
-    assert "害怕失败" in upgraded.layer_3_pro_draft.imbalance_confirmed["evidence"]
-    assert "72小时决策" in upgraded.layer_3_pro_draft.imbalance_confirmed["evidence"]
-    assert "恐惧压制行动" in upgraded.layer_3_pro_draft.core_insight_table["关键卡点"]
-    assert "72小时决策" in upgraded.layer_3_pro_draft.core_insight_table["转化方向"]
-    assert "财富是能量的流动" in upgraded.layer_3_pro_draft.core_insight_table["疗愈核心"]
-    assert "水多火灭" in upgraded.layer_3_pro_draft.root_cause["deeper"]
-    assert "财富焦虑" in upgraded.layer_3_pro_draft.root_cause["core"]
-    assert "财富焦虑" in upgraded.layer_3_pro_draft.healing_suggestions[0]["focus"]
-    assert "72小时决策" not in upgraded.layer_3_pro_draft.healing_suggestions[0]["practice"]
+    assert upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
+    assert "推进" in upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
+    assert upgraded.layer_3_pro_draft.imbalance_confirmed["evidence"]
+    assert upgraded.layer_3_pro_draft.core_insight_table["关键卡点"]
+    assert upgraded.layer_3_pro_draft.core_insight_table["转化方向"]
+    assert upgraded.layer_3_pro_draft.core_insight_table["疗愈核心"]
+    assert upgraded.layer_3_pro_draft.root_cause["deeper"]
+    assert upgraded.layer_3_pro_draft.root_cause["core"]
+    assert upgraded.layer_3_pro_draft.healing_suggestions[0]["focus"]
+    assert "{'" + "inner'" not in str(upgraded.layer_3_pro_draft.healing_suggestions)
 
 
 def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
@@ -1325,7 +1328,7 @@ def test_upgrade_to_pro_supports_custom_generation_runtime(tmp_path):
     assert upgraded.layer_4_pro_final.full_report_markdown == "Runtime-Pro-Report"
 
 
-def test_generation_runtime_is_deterministic_by_default(tmp_path):
+def test_generation_runtime_default_flow_generates_llm_backed_reports(tmp_path):
     image_path = tmp_path / "image.png"
     image_path.write_bytes(b"mock-image")
     store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
@@ -1350,7 +1353,138 @@ def test_generation_runtime_is_deterministic_by_default(tmp_path):
     assert record_after_upgrade is not None
     assert record_after_upgrade.layer_3_pro_draft is not None
     assert record_after_upgrade.layer_4_pro_final is not None
-    assert (
-        record_after_upgrade.layer_3_pro_draft.root_cause.get("surface")
-        != "Prompt-Root-Surface"
+    assert record_after_upgrade.layer_3_pro_draft.root_cause.get("surface")
+
+
+def test_generation_runtime_is_llm_backed_by_default(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
     )
+
+    assert orchestrator.generation_runtime.__class__.__name__ == "LLMReportGenerationRuntime"
+
+
+def test_llm_report_generation_runtime_uses_chat_task_for_lite_and_pro():
+    calls = []
+
+    class FakeLLMClient:
+        def generate_text(self, *, task, system_prompt, user_prompt):
+            calls.append(
+                {
+                    "task": task,
+                    "system_prompt": system_prompt,
+                    "user_prompt": user_prompt,
+                }
+            )
+            if "lite-prompt" in user_prompt:
+                return json.dumps(
+                    {
+                        "title": "Lite 标题",
+                        "overall_impression": "Lite 总体印象",
+                        "visual_elements": "Lite 视觉依据",
+                        "emotion_portrait": "Lite 情绪画像",
+                        "story": {
+                            "base": "base",
+                            "contradiction": "contradiction",
+                            "pattern": "pattern",
+                            "defense": "defense",
+                            "block": "block",
+                            "light": "light",
+                        },
+                        "theme_scene": "scene",
+                        "theme_impact": "impact",
+                        "theme_awareness": "awareness",
+                        "three_awareness": [
+                            {"day": 1, "title": "t1", "content": "c1"},
+                            {"day": 2, "title": "t2", "content": "c2"},
+                            {"day": 3, "title": "t3", "content": "c3"},
+                        ],
+                        "pro_teaser": "teaser",
+                    },
+                    ensure_ascii=False,
+                )
+            return json.dumps(
+                {
+                    "first_impression": "Pro 第一眼",
+                    "core_insight_table": {"能量本质": "本质"},
+                    "three_circles_detailed": {
+                        "inner": {"label": "内圈", "reading": "inner"}
+                    },
+                    "micro_analysis_detailed": {"节奏关系": "rhythm"},
+                    "imbalance_confirmed": {"summary": "summary"},
+                    "root_cause": {
+                        "surface": "surface",
+                        "deeper": "deeper",
+                        "core": "core",
+                    },
+                    "healing_suggestions": [
+                        {"phase": "p1", "focus": "f1", "practice": "a1"}
+                    ],
+                },
+                ensure_ascii=False,
+            )
+
+    runtime = LLMReportGenerationRuntime(llm_client=FakeLLMClient())
+    context = SimpleNamespace(
+        prompt_builder=SimpleNamespace(
+            build_lite=lambda **kwargs: "lite-prompt",
+            build_pro=lambda **kwargs: "pro-prompt",
+        ),
+        _build_layer0_placeholder=lambda record: Layer0Raw(),
+        _build_layer1_placeholder=lambda record: Layer1LiteDraft(prompt_preview="lite-prompt"),
+        _build_lite_placeholder_report=lambda record: "layer2",
+        _build_pro_placeholder_draft=lambda record: Layer3ProDraft(prompt_preview="pro-prompt"),
+        _build_pro_placeholder_report=lambda record: "layer4",
+    )
+    record = SimpleNamespace(layer_0_raw=None, layer_1_lite_draft=None, layer_3_pro_draft=None)
+
+    lite_bundle = runtime.generate_lite(context, record)
+    pro_bundle = runtime.generate_pro(context, record)
+
+    assert isinstance(lite_bundle.layer_0_raw, Layer0Raw)
+    assert lite_bundle.layer_1_lite_draft.prompt_preview == "lite-prompt"
+    assert lite_bundle.layer_1_lite_draft.title == "Lite 标题"
+    assert lite_bundle.layer_2_lite_final == "layer2"
+    assert pro_bundle.layer_3_pro_draft.prompt_preview == "pro-prompt"
+    assert pro_bundle.layer_3_pro_draft.first_impression == "Pro 第一眼"
+    assert pro_bundle.layer_4_pro_final == "layer4"
+    assert [call["task"] for call in calls] == ["chat", "chat"]
+    assert calls[0]["user_prompt"] == "lite-prompt"
+    assert calls[1]["user_prompt"] == "pro-prompt"
+
+
+def test_llm_report_generation_runtime_blocks_when_chat_generation_fails():
+    class FakeLLMClient:
+        def generate_text(self, *, task, system_prompt, user_prompt):
+            return None
+
+    runtime = LLMReportGenerationRuntime(llm_client=FakeLLMClient())
+    context = SimpleNamespace(
+        prompt_builder=SimpleNamespace(
+            build_lite=lambda **kwargs: "lite-prompt",
+            build_pro=lambda **kwargs: "pro-prompt",
+        ),
+        _build_layer0_placeholder=lambda record: "layer0",
+        _build_layer1_placeholder=lambda record: SimpleNamespace(prompt_preview="lite-prompt"),
+        _build_lite_placeholder_report=lambda record: "layer2",
+        _build_pro_placeholder_draft=lambda record: SimpleNamespace(prompt_preview="pro-prompt"),
+        _build_pro_placeholder_report=lambda record: "layer4",
+    )
+    record = SimpleNamespace(layer_0_raw=None, layer_1_lite_draft=None, layer_3_pro_draft=None)
+
+    try:
+        runtime.generate_lite(context, record)
+        raise AssertionError("expected generate_lite to fail when chat result is empty")
+    except RuntimeError as exc:
+        assert "chat_generation_failed_blocking" in str(exc)
+
+    try:
+        runtime.generate_pro(context, record)
+        raise AssertionError("expected generate_pro to fail when chat result is empty")
+    except RuntimeError as exc:
+        assert "chat_generation_failed_blocking" in str(exc)

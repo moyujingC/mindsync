@@ -25,6 +25,7 @@ from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root
 from app.core.knowledge_runtime.repository import KnowledgeRepository
 from app.core.knowledge_runtime.runtime import get_knowledge_runtime
 from app.core.knowledge_runtime.validators import KnowledgePackValidator
+from app.core.llm.runtime import NoopLLMClient
 from app.core.pipeline.data_models import InterpretationRecord
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.store import InterpretationStore, UnsupportedInterpretationSchemaError
@@ -970,6 +971,83 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
     assert isinstance(layer0.fidelity_flags, list)
     assert layer0.quality_flags == layer0.fidelity_flags
     assert "used" in layer0.fallback_summary
+
+
+def test_v21_layer0_global_visual_summary_prefers_multimodal_then_program_confirmation(tmp_path):
+    image_path = tmp_path / "knowledge-layer0-vision-summary.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (220, 190, 230), -1)
+    cv2.circle(image, center, 90, (235, 205, 235), -1)
+    cv2.circle(image, center, 45, (235, 210, 180), -1)
+    cv2.imwrite(str(image_path), image)
+
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            assert task == "vision"
+            assert image_path
+            return {
+                "global_visual_summary": (
+                    "内圈以蓝色为主并夹有白色镂空；"
+                    "中圈以粉色为主并带有白色留空；"
+                    "外圈以粉色、紫色和白色为主，紫色色块量感更重。"
+                ),
+                "per_circle_summary": {
+                    "inner": "内圈以蓝色为主并夹有白色镂空。",
+                    "middle": "中圈以粉色为主并带有白色留空。",
+                    "outer": "外圈以粉色、紫色和白色为主，紫色色块量感更重。",
+                },
+                "confidence": 0.93,
+            }
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.layer0_assembler.llm_client = FakeVisionLLMClient()
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=str(image_path),
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+    visual_basis = layer0.visual_analysis_basis
+
+    assert visual_basis["global_visual_summary"].startswith("内圈以蓝色为主")
+    assert visual_basis["llm_color_observation"]["source"] == "llm_vision_then_program_confirmation"
+    assert visual_basis["llm_color_observation"]["confidence"] == 0.93
+    assert (
+        visual_basis["prompt_meta"]["source"]
+        == "llm_vision_then_program_confirmation"
+    )
+    assert visual_basis["prompt_meta"]["confirmation_source"] == "program_cluster_measurement"
+    assert visual_basis["prompt_meta"]["model_role"] == "multimodal_visual_observer"
+
+
+def test_v21_layer0_global_visual_summary_falls_back_to_program_observation_when_vision_unavailable(
+    tmp_path,
+):
+    image_path = tmp_path / "knowledge-layer0-vision-fallback.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (0, 255, 255), -1)
+    cv2.circle(image, center, 90, (0, 200, 0), -1)
+    cv2.circle(image, center, 45, (0, 0, 255), -1)
+    cv2.imwrite(str(image_path), image)
+
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    orchestrator.layer0_assembler.llm_client = NoopLLMClient()
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=str(image_path),
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+    visual_basis = layer0.visual_analysis_basis
+
+    assert visual_basis["global_visual_summary"]
+    assert visual_basis["llm_color_observation"]["source"] == "deterministic_visual_observation"
+    assert visual_basis["prompt_meta"]["source"] == "deterministic_visual_observation"
+    assert visual_basis["prompt_meta"]["confirmation_source"] == "program_cluster_measurement"
 
 
 def test_v21_layer0_input_package_image_ref_prefers_projects_relative_path():
