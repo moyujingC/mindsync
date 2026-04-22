@@ -84,6 +84,31 @@ async function main() {
   );
   assert(commitDescription.includes("goal: 一镜一梳上线"), "commit summary should include goal");
   assert(commitDescription.includes("review goal："), "commit summary should include review goal");
+  assert(commitDescription.includes("source: automation-summary"), "commit summary should include automation-summary source");
+  assert(commitDescription.includes("workflow: ci"), "commit summary should include workflow field");
+
+  const runnerHeartbeatSummaryDescription = __testables.buildCommitSummaryDescription({
+    ...baseOptions,
+    workflow: "runner-heartbeat",
+    parentAutomationKey: "repo::runner-heartbeat::main::sha::commit-summary",
+    goalTitle: "一镜一梳上线",
+  });
+  assert(
+    runnerHeartbeatSummaryDescription.includes("task_class: manual-review-required"),
+    "runner-heartbeat summary should remain manual-review-required",
+  );
+  assert(
+    runnerHeartbeatSummaryDescription.includes("execution_route: local_manual_review"),
+    "runner-heartbeat summary should remain local_manual_review",
+  );
+  assert(
+    runnerHeartbeatSummaryDescription.includes("source: automation-summary"),
+    "runner-heartbeat summary should keep automation-summary source",
+  );
+  assert(
+    runnerHeartbeatSummaryDescription.includes("workflow: runner-heartbeat"),
+    "runner-heartbeat summary should keep workflow field",
+  );
 
   const executionDescription = __testables.buildDescription(
     {
@@ -107,6 +132,97 @@ async function main() {
   assert(executionDescription.includes("预期 artifact："), "execution description should include expected artifact");
   assert(executionDescription.includes("完成标准："), "execution description should include completion criteria");
   assert(executionDescription.includes("done when："), "execution description should include done when");
+  assert(executionDescription.includes("source: build-failure"), "build failure should include source");
+  assert(executionDescription.includes("diagnosis: 代码问题"), "build failure should include diagnosis");
+
+  const runnerFailureDescription = __testables.buildDescription(
+    {
+      labelNames: ["type:execution"],
+      severity: "error",
+    },
+    {
+      ...baseOptions,
+      workflow: "runner-heartbeat",
+      job: "Runner-Heartbeat",
+      kind: "infra-runner-failure",
+      automationKey: "repo::runner-heartbeat::main::runner-heartbeat::sha::infra-runner-failure",
+      goalTitle: "一镜一梳上线",
+    },
+  );
+  assert(
+    runnerFailureDescription.includes("task_class: automation-execution"),
+    "infra-runner-failure should use automation-execution task class",
+  );
+  assert(
+    runnerFailureDescription.includes("execution_route: server_automation"),
+    "infra-runner-failure should use server_automation route",
+  );
+  assert(
+    runnerFailureDescription.includes("source: infra-runner-failure"),
+    "infra-runner-failure should include source",
+  );
+  assert(
+    runnerFailureDescription.includes("type:execution"),
+    "infra-runner-failure should remain type:execution",
+  );
+
+  const ciTestFailureDescription = __testables.buildDescription(
+    {
+      labelNames: ["type:execution"],
+      severity: "error",
+    },
+    {
+      ...baseOptions,
+      kind: "ci-test-failure",
+      automationKey: "repo::ci::main::knowledge-ci::sha::ci-test-failure",
+      goalTitle: "一镜一梳上线",
+    },
+  );
+  assert(
+    ciTestFailureDescription.includes("task_class: automation-execution"),
+    "ci-test-failure should use automation-execution task class",
+  );
+  assert(
+    ciTestFailureDescription.includes("execution_route: server_automation"),
+    "ci-test-failure should use server_automation route",
+  );
+  assert(ciTestFailureDescription.includes("source: ci-test-failure"), "ci-test-failure should include source");
+  assert(ciTestFailureDescription.includes("type:execution"), "ci-test-failure should remain type:execution");
+
+  const deployFailureDescription = __testables.buildDescription(
+    {
+      labelNames: ["type:artifact", "review:deliverable"],
+      severity: "warning",
+    },
+    {
+      ...baseOptions,
+      workflow: "deploy",
+      kind: "deploy-or-smoke-failure",
+      environment: "dev",
+      automationKey: "repo::deploy::main::aimandala-deploy::sha::deploy-or-smoke-failure",
+      goalTitle: "一镜一梳上线",
+    },
+  );
+  assert(
+    deployFailureDescription.includes("task_class: automation-execution"),
+    "deploy-or-smoke-failure should still use automation-execution task class",
+  );
+  assert(
+    deployFailureDescription.includes("execution_route: server_automation"),
+    "deploy-or-smoke-failure should still use server_automation route",
+  );
+  assert(
+    deployFailureDescription.includes("source: deploy-or-smoke-failure"),
+    "deploy-or-smoke-failure should include source",
+  );
+  assert(
+    deployFailureDescription.includes("type:artifact"),
+    "deploy-or-smoke-failure should preserve type:artifact",
+  );
+  assert(
+    deployFailureDescription.includes("review:deliverable"),
+    "deploy-or-smoke-failure should preserve review:deliverable",
+  );
 
   const resolvedTitle = __testables.prefixTitleWithSeverity("❌ knowledge-ci", "success");
   assert(resolvedTitle === "knowledge-ci", `resolved title should strip emoji: ${resolvedTitle}`);
