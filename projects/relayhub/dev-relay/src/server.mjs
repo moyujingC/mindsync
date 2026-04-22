@@ -315,6 +315,108 @@ function mapOpenAIChoiceToAnthropic(choice) {
   };
 }
 
+function writeSseEvent(response, event, data) {
+  response.write(`event: ${event}\n`);
+  response.write(`data: ${JSON.stringify(data)}\n\n`);
+}
+
+function buildAnthropicMessagePayload(entry, upstreamPayload, body) {
+  const choice = upstreamPayload.choices?.[0] ?? {};
+  const mappedChoice = mapOpenAIChoiceToAnthropic(choice);
+
+  return {
+    id: upstreamPayload.id ?? `msg_${Date.now()}`,
+    type: "message",
+    role: "assistant",
+    model: entry.modelId,
+    content: mappedChoice.content,
+    stop_reason: mappedChoice.stop_reason,
+    stop_sequence: null,
+    usage: {
+      input_tokens: upstreamPayload.usage?.prompt_tokens ?? estimateInputTokens(body),
+      output_tokens: upstreamPayload.usage?.completion_tokens ?? 0
+    }
+  };
+}
+
+function writeAnthropicStreamingResponse(response, anthropicPayload) {
+  response.writeHead(200, {
+    "content-type": "text/event-stream; charset=utf-8",
+    "cache-control": "no-cache",
+    connection: "keep-alive"
+  });
+
+  writeSseEvent(response, "message_start", {
+    type: "message_start",
+    message: {
+      id: anthropicPayload.id,
+      type: "message",
+      role: "assistant",
+      model: anthropicPayload.model,
+      content: [],
+      stop_reason: null,
+      stop_sequence: null,
+      usage: {
+        input_tokens: anthropicPayload.usage.input_tokens,
+        output_tokens: 0
+      }
+    }
+  });
+
+  anthropicPayload.content.forEach((block, index) => {
+    if (block.type === "text") {
+      writeSseEvent(response, "content_block_start", {
+        type: "content_block_start",
+        index,
+        content_block: {
+          type: "text",
+          text: ""
+        }
+      });
+      writeSseEvent(response, "content_block_delta", {
+        type: "content_block_delta",
+        index,
+        delta: {
+          type: "text_delta",
+          text: block.text
+        }
+      });
+      writeSseEvent(response, "content_block_stop", {
+        type: "content_block_stop",
+        index
+      });
+      return;
+    }
+
+    if (block.type === "tool_use") {
+      writeSseEvent(response, "content_block_start", {
+        type: "content_block_start",
+        index,
+        content_block: block
+      });
+      writeSseEvent(response, "content_block_stop", {
+        type: "content_block_stop",
+        index
+      });
+    }
+  });
+
+  writeSseEvent(response, "message_delta", {
+    type: "message_delta",
+    delta: {
+      stop_reason: anthropicPayload.stop_reason,
+      stop_sequence: anthropicPayload.stop_sequence
+    },
+    usage: {
+      output_tokens: anthropicPayload.usage.output_tokens
+    }
+  });
+  writeSseEvent(response, "message_stop", {
+    type: "message_stop"
+  });
+  response.end();
+}
+
 async function proxyChatCompletions(request, response) {
   let body;
   try {
@@ -419,7 +521,7 @@ async function proxyAnthropicMessages(request, response) {
     temperature: body.temperature,
     top_p: body.top_p,
     max_tokens: body.max_tokens,
-    stream: body.stream,
+    stream: false,
     tools: mapAnthropicToolsToOpenAI(body.tools),
     tool_choice: mapAnthropicToolChoiceToOpenAI(body.tool_choice) ?? (body.tools?.length ? "auto" : undefined)
   };
@@ -475,20 +577,12 @@ async function proxyAnthropicMessages(request, response) {
   }
 
   const upstreamPayload = await upstreamResponse.json();
-  const choice = upstreamPayload.choices?.[0] ?? {};
-  const anthropicPayload = {
-    id: upstreamPayload.id ?? `msg_${Date.now()}`,
-    type: "message",
-    role: "assistant",
-    model: entry.modelId,
-    content: mapOpenAIChoiceToAnthropic(choice).content,
-    stop_reason: mapOpenAIChoiceToAnthropic(choice).stop_reason,
-    stop_sequence: null,
-    usage: {
-      input_tokens: upstreamPayload.usage?.prompt_tokens ?? estimateInputTokens(body),
-      output_tokens: upstreamPayload.usage?.completion_tokens ?? 0
-    }
-  };
+  const anthropicPayload = buildAnthropicMessagePayload(entry, upstreamPayload, body);
+
+  if (body.stream) {
+    writeAnthropicStreamingResponse(response, anthropicPayload);
+    return;
+  }
 
   response.writeHead(200, {
     "content-type": "application/json; charset=utf-8"

@@ -534,3 +534,68 @@ test("POST /v1/messages maps anthropic tools to upstream tools and tool calls ba
     assert.equal(observedBody.tool_choice, "auto");
   });
 });
+
+test("POST /v1/messages returns anthropic streaming events when stream=true", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-anthropic-stream",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [
+        {
+          index: 0,
+          message: {
+            role: "assistant",
+            content: "relay stream ok"
+          },
+          finish_reason: "stop"
+        }
+      ],
+      usage: {
+        prompt_tokens: 16,
+        completion_tokens: 4
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          },
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 64,
+            stream: true,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "hello stream" }] }
+            ]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        assert.match(response.headers.get("content-type") ?? "", /text\/event-stream/);
+
+        const text = await response.text();
+        assert.match(text, /event: message_start/);
+        assert.match(text, /event: content_block_start/);
+        assert.match(text, /event: content_block_delta/);
+        assert.match(text, /relay stream ok/);
+        assert.match(text, /event: message_delta/);
+        assert.match(text, /event: message_stop/);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
+    assert.equal(observedBody.stream, false);
+  });
+});
