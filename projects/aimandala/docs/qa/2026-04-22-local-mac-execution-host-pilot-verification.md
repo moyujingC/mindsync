@@ -115,6 +115,9 @@
    - `/opt/automation/...`
    - 服务器 heartbeat checkout
    - 服务器 main mirror checkout
+7. runbook 已明确区分：
+   - `--base` 只负责实例级连接信息
+   - `doctor` / `candidates` 等本地 pilot 助手命令仍需要 agent 身份与 API key
 
 结论：
 

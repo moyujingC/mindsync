@@ -87,7 +87,11 @@ function parseArgs(argv) {
 function requireEnv(keys = REQUIRED_ENV) {
   const missing = keys.filter((key) => !process.env[key]);
   if (missing.length > 0) {
-    fail(`missing required env: ${missing.join(", ")}`);
+    const needsAgentIdentity = missing.includes("PAPERCLIP_AGENT_ID") || missing.includes("PAPERCLIP_API_KEY");
+    const hint = needsAgentIdentity
+      ? 'load a local agent identity first, for example: eval "$(shared/tools/paperclip-local-env.sh engineer)"'
+      : 'load base Paperclip env first, for example: eval "$(shared/tools/paperclip-local-env.sh --base)"';
+    fail(`missing required env: ${missing.join(", ")}; ${hint}`);
   }
 }
 

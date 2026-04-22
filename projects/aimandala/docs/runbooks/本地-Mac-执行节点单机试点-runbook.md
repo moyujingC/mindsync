@@ -71,6 +71,13 @@ eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-loca
 2. 当前公司实例是谁
 3. 这次是本地手工接入，而不是服务器自动运行
 
+注意：
+
+1. `--base` 只提供实例级连接信息
+2. 它不会提供 `PAPERCLIP_AGENT_ID` 或 `PAPERCLIP_API_KEY`
+3. 因此只执行这一步时，`paperclip-local-pilot.mjs doctor` / `candidates` 仍然会失败
+4. 要运行本地 pilot（试点）助手，必须继续执行下面的 agent 身份加载步骤
+
 ### 3.2 生成本地 agent 凭证
 
 若你要以 `Engineer` 身份接入，执行：
@@ -121,6 +128,18 @@ curl -fsS \
 node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-pilot.mjs doctor
 ```
 
+前提是你已经完成：
+
+```bash
+eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh engineer)"
+```
+
+或者：
+
+```bash
+eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh test_qa)"
+```
+
 它会额外确认：
 
 1. 当前环境变量里的 `PAPERCLIP_API_URL`
@@ -156,6 +175,8 @@ node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-p
 ```bash
 node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-pilot.mjs candidates
 ```
+
+同样前提是你已经先加载对应 agent 身份，而不只是执行 `--base`。
 
 该命令会默认排除：
 
