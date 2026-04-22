@@ -24,5 +24,6 @@
 - [2026-04-21-v1-中转入口可用模型列表拉取与-modelId-切换-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-21-v1-中转入口可用模型列表拉取与-modelId-切换-qa-basis.md)
 - [2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入-qa-basis.md)
 - [2026-04-21-v1-Claude-Code-Anthropic兼容接入-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-21-v1-Claude-Code-Anthropic兼容接入-qa-basis.md)
+- [2026-04-22-v1-Claude-Code-CLI-真链路收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-22-v1-Claude-Code-CLI-真链路收口-qa-basis.md)
 - [2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-验证记录.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-验证记录.md)
 - [2026-04-19-v1-control-plane-release-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-control-plane-release-qa-basis.md)

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+USE_CLEAN_SETTINGS="${RELAYHUB_CLAUDE_CLEAN_SETTINGS:-1}"
 
 if ! command -v claude >/dev/null 2>&1; then
   echo "claude command not found" >&2
@@ -17,4 +18,9 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL="${ANTHROPIC_DEFAULT_SONNET_MODEL:-$ANTHRO
 export ANTHROPIC_DEFAULT_HAIKU_MODEL="${ANTHROPIC_DEFAULT_HAIKU_MODEL:-$ANTHROPIC_MODEL}"
 export RELAYHUB_DEV_RELAY_DIR="$SCRIPT_DIR"
 
-exec claude "$@"
+CLAUDE_ARGS=("$@")
+if [[ "$USE_CLEAN_SETTINGS" == "1" ]]; then
+  CLAUDE_ARGS=(--setting-sources local "${CLAUDE_ARGS[@]}")
+fi
+
+exec claude "${CLAUDE_ARGS[@]}"
