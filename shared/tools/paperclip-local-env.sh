@@ -2,6 +2,7 @@
 set -euo pipefail
 
 INSTANCE_ENV="${HOME}/.paperclip/instances/default/.env"
+CONTEXT_FILE="${HOME}/.paperclip/context.json"
 CACHE_DIR="${HOME}/.paperclip/instances/default/local-cli-cache"
 DEFAULT_API_URL="http://127.0.0.1:3100"
 DEFAULT_COMPANY_ID="be191a6e-7447-4821-a93d-9114214c4a64"
@@ -35,6 +36,41 @@ if [[ -f "$INSTANCE_ENV" ]]; then
   # shellcheck disable=SC1090
   source "$INSTANCE_ENV"
 fi
+
+load_context_defaults() {
+  [[ -f "$CONTEXT_FILE" ]] || return 0
+
+  local current_profile profile_block api_base company_id
+  current_profile="$(sed -n 's/.*"currentProfile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$CONTEXT_FILE" | head -n1)"
+  [[ -n "$current_profile" ]] || return 0
+
+  profile_block="$(
+    python3 - "$CONTEXT_FILE" "$current_profile" <<'PY'
+import json
+import sys
+
+context_path, profile_name = sys.argv[1], sys.argv[2]
+with open(context_path, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+profile = (data.get("profiles") or {}).get(profile_name) or {}
+print(profile.get("apiBase") or "")
+print(profile.get("companyId") or "")
+PY
+  )"
+
+  api_base="$(printf '%s\n' "$profile_block" | sed -n '1p')"
+  company_id="$(printf '%s\n' "$profile_block" | sed -n '2p')"
+
+  if [[ -z "${PAPERCLIP_API_URL:-}" && -n "$api_base" ]]; then
+    PAPERCLIP_API_URL="$api_base"
+  fi
+  if [[ -z "${PAPERCLIP_COMPANY_ID:-}" && -n "$company_id" ]]; then
+    PAPERCLIP_COMPANY_ID="$company_id"
+  fi
+}
+
+load_context_defaults
 
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-$DEFAULT_API_URL}"
 PAPERCLIP_COMPANY_ID="${PAPERCLIP_COMPANY_ID:-$DEFAULT_COMPANY_ID}"
