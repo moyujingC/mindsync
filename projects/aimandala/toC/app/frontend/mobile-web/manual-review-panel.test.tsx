@@ -1,11 +1,18 @@
 // @vitest-environment jsdom
 
 import { type ComponentProps } from "react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
+import { act } from "react";
 
+vi.mock("../shared/api", () => ({
+  getInterpretationReportDebug: vi.fn(),
+}));
+
+import * as api from "../shared/api";
 import { ManualReviewPanel } from "./manual-review-panel";
+import type { MobileWebRuntimeDebugSnapshot } from "./debug-observer";
 
 const draft = {
   imagePath: "/tmp/mandala.png",
@@ -116,6 +123,7 @@ describe("ManualReviewPanel", () => {
         IS_REACT_ACT_ENVIRONMENT?: boolean;
       }
     ).IS_REACT_ACT_ENVIRONMENT = true;
+    vi.clearAllMocks();
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -132,6 +140,17 @@ describe("ManualReviewPanel", () => {
   function renderPanel() {
     flushSync(() => {
       root.render(<ManualReviewPanel {...createProps()} />);
+    });
+  }
+
+  async function renderPanelWithProps(
+    overrides: Partial<ComponentProps<typeof ManualReviewPanel>>,
+  ) {
+    await act(async () => {
+      root.render(<ManualReviewPanel {...createProps(overrides)} />);
+    });
+    await act(async () => {
+      await Promise.resolve();
     });
   }
 
@@ -161,5 +180,100 @@ describe("ManualReviewPanel", () => {
       passButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
     expect(normalizedText()).toContain("pass");
+  });
+
+  it("runtime 模式优先跟随 runtime snapshot 的真实输入包和 interpretation", async () => {
+    const runtimeDraft = {
+      imagePath: "/tmp/runtime-mandala.png",
+      theme: "general",
+      reportVariant: "lite" as const,
+      reportType: "lite" as const,
+      paintingIntention: "我想看见真实输入",
+      paintingFeeling: "期待能审证据",
+      innerRadius: 0.36,
+      middleRadius: 0.64,
+    };
+    const runtimeSnapshot: MobileWebRuntimeDebugSnapshot = {
+      route: "report",
+      runtimeBusy: false,
+      historyBusy: false,
+      uploadDetecting: false,
+      uploadDetectError: null,
+      uploadDraft: runtimeDraft,
+      flowState: {
+        step: "liteReady",
+        selectedImage: { imagePath: "/tmp/runtime-mandala.png" },
+        detection: {
+          inner_radius: 0.36,
+          middle_radius: 0.64,
+          confidence: 1,
+          method: "manual_confirmed",
+          geometry_suggestion: null,
+          debug_info: null,
+        },
+        geometry: null,
+        interpretation: {
+          success: true,
+          interpretation_id: "ipt-runtime-real",
+          version: "lite",
+          status: "completed",
+          generation_stage: "report_ready",
+          generation_progress: 100,
+          three_circles: { inner_radius: 36, middle_radius: 64 },
+          auto_detected: false,
+          existing: false,
+          report_ready: true,
+        },
+        status: null,
+        report: null,
+        lastError: null,
+      },
+      reportSummary: null,
+      detection: {
+        inner_radius: 0.36,
+        middle_radius: 0.64,
+        confidence: 1,
+        method: "manual_confirmed",
+        geometry_suggestion: null,
+        debug_info: null,
+      },
+      status: null,
+      report: null,
+    };
+    vi.mocked(api.getInterpretationReportDebug).mockResolvedValue({
+      ...reportDebugProfile,
+      interpretation_id: "ipt-runtime-real",
+      knowledge_debug: {
+        ...reportDebugProfile.knowledge_debug,
+        review_input_package: {
+          image_path: "/tmp/runtime-mandala.png",
+          image_preview_ref: "",
+          theme: "general",
+          topic: "general",
+          topic_label: "全面解读",
+          report_mode: "lite",
+          painting_intention: "我想看见真实输入",
+          painting_feeling: "期待能审证据",
+          inner_radius: null,
+          middle_radius: null,
+          three_circles_source: "",
+        },
+      },
+    });
+
+    await renderPanelWithProps({
+      previewMode: false,
+      interpretationId: "",
+      draft,
+      runtimeSnapshot,
+      runtimeReportDebugProfile: null,
+    });
+
+    expect(api.getInterpretationReportDebug).toHaveBeenCalledWith("ipt-runtime-real");
+    expect(normalizedText()).toContain("ipt-runtime-real");
+    expect(normalizedText()).toContain("/tmp/runtime-mandala.png");
+    expect(normalizedText()).toContain("0.36 / 0.64");
+    expect(normalizedText()).toContain("manual_confirmed");
+    expect(normalizedText()).toContain("我想看见真实输入");
   });
 });

@@ -1366,6 +1366,7 @@ export function MobileWebBrowserShell() {
               interpretationId={interpretationId}
               flowState={previewFlowState}
               detection={previewDetection}
+              runtimeSnapshot={runtimeDebugSnapshot}
             />
           ) : null}
 

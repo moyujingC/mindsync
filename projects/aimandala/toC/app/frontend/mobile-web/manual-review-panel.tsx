@@ -6,6 +6,7 @@ import type {
   MandalaFlowState,
   ReportDebugProfileResponse,
 } from "../shared/types";
+import type { MobileWebRuntimeDebugSnapshot } from "./debug-observer";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
 
@@ -18,6 +19,7 @@ interface ManualReviewPanelProps {
   interpretationId: string;
   flowState: MandalaFlowState | null;
   detection: DetectCirclesResponse | null;
+  runtimeSnapshot?: MobileWebRuntimeDebugSnapshot | null;
   runtimeReportDebugProfile?: ReportDebugProfileResponse | null;
 }
 
@@ -55,6 +57,10 @@ function formatText(value: unknown): string {
   return "";
 }
 
+function firstPresentValue(...values: unknown[]): unknown {
+  return values.find((value) => value !== null && value !== undefined && value !== "");
+}
+
 function resolveImagePreview(reviewInput: Record<string, unknown>, draft: MobileWebUploadDraft): string {
   const preview = formatText(reviewInput.image_preview_ref);
   if (preview) {
@@ -70,8 +76,14 @@ export function ManualReviewPanel({
   interpretationId,
   flowState,
   detection,
+  runtimeSnapshot = null,
   runtimeReportDebugProfile = null,
 }: ManualReviewPanelProps) {
+  const activeDraft = previewMode ? draft : runtimeSnapshot?.uploadDraft ?? draft;
+  const activeFlowState = previewMode ? flowState : runtimeSnapshot?.flowState ?? flowState;
+  const activeDetection = previewMode ? detection : runtimeSnapshot?.detection ?? detection;
+  const activeInterpretationId =
+    activeFlowState?.interpretation?.interpretation_id ?? interpretationId;
   const [reportDebugProfile, setReportDebugProfile] =
     useState<ReportDebugProfileResponse | null>(runtimeReportDebugProfile);
   const [loading, setLoading] = useState(false);
@@ -88,8 +100,8 @@ export function ManualReviewPanel({
   useEffect(() => {
     if (
       previewMode ||
-      !interpretationId ||
-      PLACEHOLDER_INTERPRETATION_IDS.has(interpretationId) ||
+      !activeInterpretationId ||
+      PLACEHOLDER_INTERPRETATION_IDS.has(activeInterpretationId) ||
       runtimeReportDebugProfile
     ) {
       return;
@@ -97,7 +109,8 @@ export function ManualReviewPanel({
     let cancelled = false;
     setLoading(true);
     setError(null);
-    void getInterpretationReportDebug(interpretationId)
+    setReportDebugProfile(null);
+    void getInterpretationReportDebug(activeInterpretationId)
       .then((profile) => {
         if (!cancelled) {
           setReportDebugProfile(profile);
@@ -116,7 +129,7 @@ export function ManualReviewPanel({
     return () => {
       cancelled = true;
     };
-  }, [interpretationId, previewMode, runtimeReportDebugProfile]);
+  }, [activeInterpretationId, previewMode, runtimeReportDebugProfile]);
 
   const knowledgeDebug = useMemo(
     () => toRecord(reportDebugProfile?.knowledge_debug),
@@ -139,23 +152,47 @@ export function ManualReviewPanel({
     [knowledgeDebug],
   );
   const imagePreview = useMemo(
-    () => resolveImagePreview(reviewInput, draft),
-    [draft, reviewInput],
+    () => resolveImagePreview(reviewInput, activeDraft),
+    [activeDraft, reviewInput],
   );
 
   const fallbackInput = {
-    image_path: draft.imagePath,
-    theme: draft.theme,
-    topic: draft.theme,
-    topic_label: draft.theme,
-    report_mode: draft.reportVariant ?? draft.reportType ?? "lite",
-    painting_intention: draft.paintingIntention,
-    painting_feeling: draft.paintingFeeling,
-    inner_radius: detection?.inner_radius ?? draft.innerRadius ?? null,
-    middle_radius: detection?.middle_radius ?? draft.middleRadius ?? null,
-    three_circles_source: detection ? "auto_detect" : "user_override",
+    image_path: activeDraft.imagePath,
+    theme: activeDraft.theme,
+    topic: activeDraft.theme,
+    topic_label: activeDraft.theme,
+    report_mode: activeDraft.reportVariant ?? activeDraft.reportType ?? "lite",
+    painting_intention: activeDraft.paintingIntention,
+    painting_feeling: activeDraft.paintingFeeling,
+    inner_radius: activeDetection?.inner_radius ?? activeDraft.innerRadius ?? null,
+    middle_radius: activeDetection?.middle_radius ?? activeDraft.middleRadius ?? null,
+    three_circles_source: activeDetection ? activeDetection.method : "user_override",
   };
-  const effectiveInput = Object.keys(reviewInput).length ? reviewInput : fallbackInput;
+  const effectiveInput = Object.keys(reviewInput).length
+    ? {
+        ...fallbackInput,
+        ...reviewInput,
+        image_path: firstPresentValue(reviewInput.image_path, fallbackInput.image_path),
+        theme: firstPresentValue(reviewInput.theme, fallbackInput.theme),
+        topic: firstPresentValue(reviewInput.topic, fallbackInput.topic),
+        topic_label: firstPresentValue(reviewInput.topic_label, fallbackInput.topic_label),
+        report_mode: firstPresentValue(reviewInput.report_mode, fallbackInput.report_mode),
+        painting_intention: firstPresentValue(
+          reviewInput.painting_intention,
+          fallbackInput.painting_intention,
+        ),
+        painting_feeling: firstPresentValue(
+          reviewInput.painting_feeling,
+          fallbackInput.painting_feeling,
+        ),
+        inner_radius: firstPresentValue(reviewInput.inner_radius, fallbackInput.inner_radius),
+        middle_radius: firstPresentValue(reviewInput.middle_radius, fallbackInput.middle_radius),
+        three_circles_source: firstPresentValue(
+          reviewInput.three_circles_source,
+          fallbackInput.three_circles_source,
+        ),
+      }
+    : fallbackInput;
 
   return (
     <aside className="browser-shell__panel browser-shell__panel--side browser-shell__panel--review">
@@ -167,7 +204,7 @@ export function ManualReviewPanel({
       <section className="manual-review-meta">
         <div className="browser-debug-chip">
           <strong>interpretation</strong>
-          <span>{reportDebugProfile?.interpretation_id ?? interpretationId ?? "--"}</span>
+          <span>{reportDebugProfile?.interpretation_id ?? activeInterpretationId ?? "--"}</span>
         </div>
         <div className="browser-debug-chip">
           <strong>report_mode</strong>
@@ -359,8 +396,8 @@ export function ManualReviewPanel({
       {previewMode ? (
         <p className="muted">当前处于 preview 模式，审阅页优先显示本地输入和已预载的 debug 数据。</p>
       ) : null}
-      {flowState?.status?.generation_stage ? (
-        <p className="muted">当前生成阶段：{flowState.status.generation_stage}</p>
+      {activeFlowState?.status?.generation_stage ? (
+        <p className="muted">当前生成阶段：{activeFlowState.status.generation_stage}</p>
       ) : null}
     </aside>
   );
