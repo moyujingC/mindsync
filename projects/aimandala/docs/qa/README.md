@@ -42,6 +42,10 @@
 
 当前优先阅读：
 
+- [2026-04-22-local-mac-execution-host-pilot-verification.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-execution-host-pilot-verification.md)
+- [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
+- [2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md)
+- [2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md)
 - [2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md)
 - [2026-04-19-paperclip-native-execution-routing-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md)
 - [2026-04-16-ceo-hermes-container-runtime-verification.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-16-ceo-hermes-container-runtime-verification.md)
@@ -55,7 +59,11 @@
 
 说明：
 
-- `2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md` 是当前 automation heartbeat 仍被 `34` 条活跃 `serverAutomationBlocking` 拦住后的正式 QA baseline，要求先做只读 diagnosis 和单桶归类，不先做批量修复。
+- `2026-04-22-local-mac-execution-host-pilot-verification.md` 是当前本地 Mac 单机试点的正式前置验证记录，固定说明这轮已经完成的是宿主语义改写、连接基础件确认和 runbook 收口，尚未冒充为真实本地 claim / checkout / 回写 已完成。
+- `2026-04-21-local-mac-execution-host-pilot-qa-basis.md` 是当前普通任务接入本地 Mac 执行节点单机试点的正式 QA baseline，固定验证 control plane 与 execution host 宿主语义是否拆开，以及单机 claim / checkout / 执行 / 回写闭环是否已经被完整定义。
+- `2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md` 是当前 automation 远端样本解释的正式 QA baseline，固定以 `35 / 8 / 3` 为当前基线，验证哪些样本属于历史活跃残留、哪些属于真实运行链缺口、哪些属于历史 `done` 漂移和本地任务后续错误绑定。
+- `2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md` 是当前 automation 模板语义修复的正式 QA baseline，固定验证 `paperclip-sync-lib` 输出的模板元数据、头部字段与摘要/自动执行边界是否闭合。
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md` 是当前 diagnosis 分桶的前置 QA baseline；它负责确认样本先被正确分桶，但当前默认主目标已切到样本解释层，不直接从 diagnosis 跳到整改。
 - `2026-04-19-paperclip-native-execution-routing-qa-basis.md` 是当前 execution routing 的正式 QA baseline，定义了 direct routing（直接路由）模型、服务器 heartbeat 边界与历史方案废弃检查。
 - `2026-04-16-ceo-hermes-container-runtime-verification.md` 是当前 `CEO bug` 的正式验证入口，收束了“旧权限截图”与“当前 Hermes 运行时根因”之间的区分。
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md` 仍是当前 Web 首发窗口的正式 QA baseline。

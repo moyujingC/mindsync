@@ -25,6 +25,15 @@
 > 当前需要继承的正式事实是：
 > `serverAutomationBlocking = 34`、`historicalDoneWorkspaceDrift = 8`、`localExecutionRouting = 2`，且 strict gate 只由 `serverAutomationBlocking` 驱动。
 > 下一阶段正式目标已改为只读 diagnosis（诊断）和根因分桶，不再延续本文档中的 server reject / handoff 作为当前主路线。
+>
+> 2026-04-21 sample interpretation phase 补充说明：
+> 当前需要继承的最新远端事实已滚动为：
+> `serverAutomationBlocking = 35`、`historicalDoneWorkspaceDrift = 8`、`localExecutionRouting = 3`。
+> 其中：
+> `35` 条 active blocking 需要再区分为“历史活跃样本或旧语义残留”与“真实运行链绑定缺口”；
+> `8` 条 historical done 继续只保留审计证据；
+> `3` 条 `localExecutionRouting` 继续只作为本地任务后续错误绑定审计对象。
+> 当前主问题已从“模板语义修复”切换为“远端历史样本与后续绑定链解释”，下一轮整改必须建立在这层解释链之上，而不是直接批量补 workspace。
 
 ## 1. 背景
 
@@ -117,7 +126,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes -o BatchMode=y
 结果：
 
 1. 命令退出码为 `2`
-2. 当前真实输出为：
+2. 当时真实输出为：
    - `34 active issue(s) missing execution workspace binding`
    - `8 historical done issue(s) missing execution workspace binding`
    - `0 issue(s) rejected for server writable execution`
@@ -127,7 +136,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes -o BatchMode=y
 解释：
 
 1. 新 strict gate 逻辑本身已经可以在服务器真实运行态中工作
-2. 当前 gate 失败的直接原因不是脚本缺失，而是仍有 34 条活跃 issue 未 materialize 到 execution workspace
+2. 该次 gate 失败的直接原因不是脚本缺失，而是当时仍有 34 条活跃 issue 未 materialize 到 execution workspace
 3. 历史 `done` 样本已从 strict gate 主链中分离，只继续保留 8 条审计证据
 4. 后续恢复 heartbeat 时，应只把当前活跃 Automation issue 视为阻断项，不把历史 `done` 样本继续并入 strict gate
 
@@ -155,7 +164,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes -o BatchMode=y
 解释：
 
 1. 期望根目录口径已经对齐
-2. 当前主要问题不是 worktree 根目录配置错误，而是 34 条活跃 issue 与 execution workspace 绑定没有真正 materialize
+2. 该次审计时的主要问题不是 worktree 根目录配置错误，而是当时 34 条活跃 issue 与 execution workspace 绑定没有真正 materialize
 3. 历史 `done` 样本继续以 8 条审计记录保留为治理债证据链
 4. 上述结果是 cleanup 后的稳态审计，不代表 phase 1 closeout 缺少真实错路由样本；真实样本见 `3.6`
 
@@ -341,13 +350,21 @@ cleanup：
 
 1. “heartbeat 是否按新原因码失败”已经在 systemd 实际执行链上得到确认
 2. `MIN-119` 已在真实 `/opt/automation/worktrees/...` 条件下命中 `server_writable_execution_not_allowed`，并由 `--apply` 成功转为 `blocked + handoff comment`
-3. 当前剩余问题不再是模板未落地，而是运行时仍有 34 条活跃 issue 未 materialize 到 execution workspace
-4. heartbeat 恢复为绿色不等于历史样本已清空；它只意味着当前活跃 Automation issue 已不再命中 strict gate
-5. 普通任务本地执行链在 phase 1 的正式实现是“服务器拒绝 + 人工本地接手”，不是“服务器继续代跑”
+3. 以 2026-04-21 当前口径看，剩余主问题不再是模板未落地，而是远端样本需要进一步区分为：
+   - 历史活跃样本或旧语义残留
+   - 真实当前运行链绑定缺口
+   - 历史 `done` 漂移
+   - 本地任务后续错误绑定
+4. heartbeat 恢复为绿色不等于历史样本已清空；它只意味着当前活跃 `server_automation` issue 已不再命中 strict gate
+5. 当前 `localExecutionRouting` 已被正式改写为审计对象，不再作为服务器 reject / handoff 主路线的当前目标架构
 
 ## 5. 残留风险与下一步
 
-1. 下一步主任务是继续处理当前 34 条活跃 `execution_workspace_policy_not_materialized`
+1. 下一步主任务不是直接处理“全部 active missing”，而是先把当前 `35 / 8 / 3` 样本收成正式解释模型：
+   - 哪些属于 `active_legacy_routing_samples`
+   - 哪些属于 `active_runtime_binding_gap_samples`
+   - 哪些属于 `historical_done_drift_samples`
+   - 哪些属于 `local_execution_misbinding_samples`
 2. phase 1 closeout 额外暴露了一个运行态同步风险：
    - heartbeat checkout 即使 systemd 路径正确，也可能因为脚本版本滞后而导致 `--apply` 行为与仓库不一致
 3. `aimandala-auto-repair.mjs` 的新分支命名空间本轮仍未做真实 push 回归，应单独安排 automation 节点回归

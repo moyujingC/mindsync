@@ -22,6 +22,14 @@
 8. [ToC-MVP-产品规范.md](ToC-MVP-产品规范.md)
 9. [2026-04-09-MVP页面状态机与页面映射总表.md](2026-04-09-MVP页面状态机与页面映射总表.md)
 
+当前与 Paperclip execution routing（执行分流）和 automation 运维治理最相关的 spec 入口补充为：
+
+- [2026-04-21-local-mac-execution-host-pilot-spec.md](2026-04-21-local-mac-execution-host-pilot-spec.md)
+- [2026-04-19-paperclip-native-execution-routing-spec.md](2026-04-19-paperclip-native-execution-routing-spec.md)
+- [2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md](2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md)
+- [2026-04-19-server-automation-blocking-sample-interpretation-spec.md](2026-04-19-server-automation-blocking-sample-interpretation-spec.md)
+- [2026-04-19-服务器自动执行任务模板语义修复规格.md](2026-04-19-服务器自动执行任务模板语义修复规格.md)
+
 这组文档回答：
 
 - 当前报告链路重构的正式目标是什么
@@ -32,6 +40,7 @@
 - 当前解读教程算法为何必须按四步法进入 runtime evidence
 - 当前固定样本为何必须进入人工 golden 审阅与偏差回灌闭环
 - 当前报告表达为何必须在保留 trace 的前提下压缩为用户可读解读
+- 当前 Paperclip direct routing（直接路由）、服务器执行宿主和本地 Mac execution host（执行宿主机）如何分工
 
 ## 使用规则
 

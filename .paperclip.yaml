@@ -12,8 +12,11 @@ company:
   mode: "remote_authenticated"
   host: "vm-0-11-opencloudos.tail176582.ts.net"
   port: 3100
-  # 当前口径：automation 节点不仅是控制面，也承载 UI / API / 调度 / 大多数 local adapter 的实际执行。
-  # 因此 *_local 表示“运行 Paperclip 的宿主机本地”，不是用户当前这台 Mac 本地。
+  # 当前口径：
+  # - control plane host 继续是 automation 节点
+  # - server execution host 继续承接 server_automation
+  # - local execution host 在单机试点下可明确绑定到用户当前这台 Mac
+  # 对普通任务路径，不再把 *_local 默认解释成 automation 服务器本地。
 
 # Agent 配置
 agents:

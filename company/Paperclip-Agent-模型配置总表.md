@@ -25,7 +25,9 @@
 ## 1. 当前总原则
 
 - 当前 `Paperclip` 主宿主为 automation 节点：`150.158.9.95`
-- `*_local` 的含义是“在 Paperclip 服务宿主机本地执行”，不是你当前这台 Mac 本地
+- control plane（控制面）继续运行在 automation 节点
+- `server_automation` 继续由 automation 节点承接
+- 对 `local_manual_review` 单机试点，`*_local` 不再默认等于 automation 服务器本地，而应解释为用户当前这台 Mac 宿主执行
 - 当前不追求所有 Agent 用同一个 `adapter`
 - 当前追求的是：
   - CEO 链路稳定
@@ -38,11 +40,11 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 临时回退链路，等待 `hermes_local` 上游修复 |
-| 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主工程链路 |
-| 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主测试链路 |
+| CEO | CEO | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前仍以服务器宿主为主，临时回退链路 |
+| 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主工程链路；对 `local_manual_review` 单机试点，目标宿主切到用户当前 Mac |
+| 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主测试链路；对 `local_manual_review` 单机试点，目标宿主切到用户当前 Mac |
 | 需求澄清 | Idea Clarifier | `pi_local` | `https://ark.cn-beijing.volces.com/api/coding/v3` | `volcengine-coding-plan/Doubao-Seed-2.0-pro` | `pi` 自定义 provider + 服务器环境变量 `OPENAI_API_KEY` | 当前为独立链路，不与 CEO 强制统一 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前主“火山 Coding Plan”链路 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前主“火山 Coding Plan”链路；普通任务单机试点时不默认继续视为服务器本地 |
 
 ## 3. 分组展开
 
@@ -81,6 +83,7 @@
   - 当前已经从“和 CEO 用同一模型”的尝试中回退，固定为 `gpt-5.3-codex`
   - 这是当前更稳的工程执行口径
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
+  - 对 `manual-review-required + local_manual_review` 单机试点，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 人工接管口径：
   - 当前允许用户在成本敏感阶段手动暂停 `Engineer`
   - 当公共卡点被人工清除后，再恢复 `Engineer` 继续运行
@@ -114,6 +117,7 @@
   - 用于测试、QA、验收
   - 与 `Engineer` 保持同模型口径，方便工程链路一致
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
+  - 对 `manual-review-required + local_manual_review` 单机试点，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 
 ### 3.4 claude_local 系列
 
@@ -216,10 +220,12 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - `Engineer`
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
+  - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
   - 成本压力较高或遇到公共卡点时，允许用户手动暂停；后续再补“多次失败自动转人工”
 - `Test / QA`
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
+  - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
 - 规划/产品/内容/研究类 Agent
   - `claude_local + ark-code-latest`
 - `Idea Clarifier`

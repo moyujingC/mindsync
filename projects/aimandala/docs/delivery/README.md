@@ -18,6 +18,7 @@
 8. [2026-04-19-Batch-G-golden-偏差回灌交付记录.md](2026-04-19-Batch-G-golden-偏差回灌交付记录.md)
 9. [2026-04-19-Batch-H-报告表达保真交付记录.md](2026-04-19-Batch-H-报告表达保真交付记录.md)
 10. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
+11. [2026-04-18-automation-and-local-execution-routing-phase1-delivery.md](2026-04-18-automation-and-local-execution-routing-phase1-delivery.md)
 
 分工如下：
 
@@ -41,6 +42,8 @@
   - 收束 Batch H 用户可读报告表达压缩、Pro 去重复和 golden 审阅摘录优化
 - `2026-04-18-Lite-Pro-独立报告重定义交付记录.md`
   - 收束 `Lite / Pro` 报告模式、议题模型、Lite 轻疗愈区块和 `Pro` 入口语义的专项交付
+- `2026-04-18-automation-and-local-execution-routing-phase1-delivery.md`
+  - 收束 execution routing phase 1 的历史交付证据；当前 direct routing（直接路由）新模型已由 2026-04-19 之后文档链替代
 
 ## 使用规则
 
