@@ -42,6 +42,8 @@
 
 当前优先阅读：
 
+- [2026-04-22-local-mac-automatic-execution-host-verification.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-verification.md)
+- [2026-04-22-local-mac-automatic-execution-host-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-qa-basis.md)
 - [2026-04-22-local-mac-execution-host-pilot-verification.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-execution-host-pilot-verification.md)
 - [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
 - [2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md)
@@ -59,6 +61,8 @@
 
 说明：
 
+- `2026-04-22-local-mac-automatic-execution-host-verification.md` 是当前“普通任务自动在 Mac 上跑”的正式验证入口，明确区分已经落地的本地执行器与 launchd 资产，以及当前 `pi_local` 仍受本机缺少 `pi` 命令约束的真实缺口。
+- `2026-04-22-local-mac-automatic-execution-host-qa-basis.md` 是当前普通任务自动本地执行的正式 QA baseline，固定验证自动筛选、自动 claim、摘要排除、每 agent 单并发和 `in_review / blocked` 终态合同。
 - `2026-04-22-local-mac-execution-host-pilot-verification.md` 是当前本地 Mac 单机试点的正式前置验证记录，固定说明这轮已经完成的是宿主语义改写、连接基础件确认和 runbook 收口，尚未冒充为真实本地 claim / checkout / 回写 已完成。
 - `2026-04-21-local-mac-execution-host-pilot-qa-basis.md` 是当前普通任务接入本地 Mac 执行节点单机试点的正式 QA baseline，固定验证 control plane 与 execution host 宿主语义是否拆开，以及单机 claim / checkout / 执行 / 回写闭环是否已经被完整定义。
 - `2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md` 是当前 automation 远端样本解释的正式 QA baseline，固定以 `35 / 8 / 3` 为当前基线，验证哪些样本属于历史活跃残留、哪些属于真实运行链缺口、哪些属于历史 `done` 漂移和本地任务后续错误绑定。

@@ -15,7 +15,8 @@ company:
   # 当前口径：
   # - control plane host 继续是 automation 节点
   # - server execution host 继续承接 server_automation
-  # - local execution host 在单机试点下可明确绑定到用户当前这台 Mac
+  # - local execution host 正式绑定到用户当前这台 Mac
+  # - codex_local / claude_local / pi_local 对普通任务路径默认由 Mac 本地执行器承接
   # 对普通任务路径，不再把 *_local 默认解释成 automation 服务器本地。
 
 # Agent 配置

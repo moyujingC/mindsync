@@ -24,6 +24,7 @@
 
 当前与 Paperclip execution routing（执行分流）和 automation 运维治理最相关的 spec 入口补充为：
 
+- [2026-04-22-local-mac-automatic-execution-host-spec.md](2026-04-22-local-mac-automatic-execution-host-spec.md)
 - [2026-04-21-local-mac-execution-host-pilot-spec.md](2026-04-21-local-mac-execution-host-pilot-spec.md)
 - [2026-04-19-paperclip-native-execution-routing-spec.md](2026-04-19-paperclip-native-execution-routing-spec.md)
 - [2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md](2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md)
