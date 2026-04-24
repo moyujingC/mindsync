@@ -26,5 +26,6 @@
 - [2026-04-21-v1-Claude-Code-Anthropic兼容接入实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-21-v1-Claude-Code-Anthropic兼容接入实施任务.md)
 - [2026-04-22-v1-Claude-Code-CLI-真链路收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-22-v1-Claude-Code-CLI-真链路收口实施任务.md)
 - [2026-04-24-v1-Claude-Code-任务页一键切模型实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-24-v1-Claude-Code-任务页一键切模型实施任务.md)
+- [2026-04-24-v1-Claude-Code-任务页切后即验实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-24-v1-Claude-Code-任务页切后即验实施任务.md)
 - [2026-04-24-v1-本地可互动控制台开发口径收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-24-v1-本地可互动控制台开发口径收口实施任务.md)
 - [2026-04-19-v1-control-plane-release-实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-control-plane-release-实施任务.md)

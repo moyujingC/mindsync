@@ -440,6 +440,48 @@ describe("RelayHub console routes", () => {
     ).toBeInTheDocument();
   });
 
+  it("verifies Claude Code current model through local dev-relay from the task shortcut", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === "string" ? input : input.toString();
+      if (url === "http://127.0.0.1:4319/chat/completions") {
+        return new Response(
+          JSON.stringify({
+            id: "chatcmpl-relayhub-smoke",
+            choices: [
+              {
+                message: {
+                  content: "relayhub ui verify ok",
+                },
+              },
+            ],
+          }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        );
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    globalThis.fetch = fetchMock as typeof fetch;
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByText("Claude Code 当前模型")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "验证 Claude Code 当前模型" }));
+
+    expect(
+      await screen.findByText("Claude Code 真链路验证成功：relayhub ui verify ok"),
+    ).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://127.0.0.1:4319/chat/completions",
+      expect.objectContaining({
+        method: "POST",
+      }),
+    );
+  });
+
   it("shows recommended candidates for tasks based on active models", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {

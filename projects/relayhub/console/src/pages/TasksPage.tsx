@@ -13,6 +13,7 @@ import {
   listActiveModelEntries,
   listTaskTemplates,
   saveTaskTemplate,
+  verifyClaudeCodeRelay,
 } from "../services/controlPlane";
 
 const CATEGORY_OPTIONS: TaskCategory[] = ["通用工具", "业务任务"];
@@ -33,6 +34,9 @@ export function TasksPage() {
   const [error, setError] = useState<string | null>(null);
   const [rowSavingTaskId, setRowSavingTaskId] = useState<string | null>(null);
   const [rowDrafts, setRowDrafts] = useState<Record<string, string>>({});
+  const [relayVerificationMessage, setRelayVerificationMessage] = useState<string | null>(null);
+  const [relayVerificationError, setRelayVerificationError] = useState<string | null>(null);
+  const [isVerifyingRelay, setIsVerifyingRelay] = useState(false);
 
   const tasks = useAsyncResource(() => listTaskTemplates(), [version]);
   const activeModels = useAsyncResource(() => listActiveModelEntries(), [version]);
@@ -142,6 +146,23 @@ export function TasksPage() {
     }
   }
 
+  async function handleVerifyClaudeCodeRelay() {
+    setRelayVerificationMessage(null);
+    setRelayVerificationError(null);
+    setIsVerifyingRelay(true);
+
+    try {
+      const result = await verifyClaudeCodeRelay();
+      setRelayVerificationMessage(`Claude Code 真链路验证成功：${result}`);
+    } catch (currentError) {
+      setRelayVerificationError(
+        currentError instanceof Error ? currentError.message : "Claude Code 真链路验证失败。",
+      );
+    } finally {
+      setIsVerifyingRelay(false);
+    }
+  }
+
   return (
     <div className="page-grid">
       <section className="hero-card">
@@ -210,6 +231,20 @@ export function TasksPage() {
             ) : (
               <EmptyState title="还没有可切换的已激活模型" description="先去模型库激活一个可用入口，再回来切 Claude Code 当前模型。" />
             )}
+            <div className="inline-actions">
+              <button
+                type="button"
+                className="button-link secondary"
+                onClick={handleVerifyClaudeCodeRelay}
+                disabled={isVerifyingRelay || !claudeCodeTask.defaultModelEntryId}
+              >
+                验证 Claude Code 当前模型
+              </button>
+            </div>
+            {relayVerificationMessage ? (
+              <p className="supporting-text">{relayVerificationMessage}</p>
+            ) : null}
+            {relayVerificationError ? <p className="error-inline">{relayVerificationError}</p> : null}
           </article>
         </Section>
       ) : null}

@@ -36,6 +36,7 @@ interface ControlPlaneState {
 const MOCK_LATENCY_MS = 90;
 const configuredControlPlaneRuntime = (import.meta.env.RELAYHUB_CONTROL_PLANE_RUNTIME ?? "").trim();
 const configuredControlPlaneBaseUrl = (import.meta.env.RELAYHUB_CONTROL_PLANE_BASE_URL ?? "").trim();
+const configuredDevRelayBaseUrl = (import.meta.env.RELAYHUB_DEV_RELAY_BASE_URL ?? "").trim();
 const CONTROL_PLANE_BASE_URL = configuredControlPlaneRuntime === "mock"
   ? ""
   : configuredControlPlaneBaseUrl.length > 0
@@ -43,6 +44,9 @@ const CONTROL_PLANE_BASE_URL = configuredControlPlaneRuntime === "mock"
   : import.meta.env.DEV
     ? "/api/control-plane"
     : "";
+const DEV_RELAY_BASE_URL = configuredDevRelayBaseUrl.length > 0
+  ? configuredDevRelayBaseUrl
+  : "http://127.0.0.1:4319";
 
 function clone<T>(value: T): T {
   return structuredClone(value);
@@ -335,6 +339,40 @@ async function getTaskStatsFromServer(taskId: string): Promise<TaskStats | null>
 
 async function getGovernanceOverviewFromServer(): Promise<GovernanceOverview> {
   return requestJson<GovernanceOverview>("/overview");
+}
+
+export async function verifyClaudeCodeRelay(): Promise<string> {
+  const response = await fetch(`${DEV_RELAY_BASE_URL}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "relayhub-task-claude-code",
+      messages: [
+        {
+          role: "user",
+          content: "Reply with exactly relayhub ui verify ok",
+        },
+      ],
+      stream: false,
+    }),
+  });
+
+  const payload = await response.json().catch(() => null) as
+    | { choices?: Array<{ message?: { content?: string | null } }>; error?: { message?: string } }
+    | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.error?.message || `Claude Code relay verify failed: ${response.status}`);
+  }
+
+  const message = payload?.choices?.[0]?.message?.content?.trim();
+  if (!message) {
+    throw new Error("Claude Code relay 没有返回可读结果。");
+  }
+
+  return message;
 }
 
 function shouldUseServer() {
