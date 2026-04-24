@@ -11,6 +11,7 @@ afterEach(() => {
 
 describe("control-plane service release wiring", () => {
   it("targets /api/control-plane when RELAYHUB_CONTROL_PLANE_BASE_URL is configured", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "/api/control-plane");
     const fetchMock = vi.fn(async () =>
       new Response(JSON.stringify([{ id: "preset-1", status: "active" }]), {
@@ -35,6 +36,7 @@ describe("control-plane service release wiring", () => {
   });
 
   it("falls back to mock state when RELAYHUB_CONTROL_PLANE_BASE_URL is empty", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "mock");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
     const fetchMock = vi.fn();
     globalThis.fetch = fetchMock as typeof fetch;
@@ -48,6 +50,7 @@ describe("control-plane service release wiring", () => {
   });
 
   it("returns detailed test failure semantics in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "mock");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
     vi.resetModules();
     const service = await import("../services/controlPlane");
@@ -61,6 +64,7 @@ describe("control-plane service release wiring", () => {
   });
 
   it("exposes preset guidance metadata in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "mock");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
     vi.resetModules();
     const service = await import("../services/controlPlane");
@@ -76,6 +80,7 @@ describe("control-plane service release wiring", () => {
   });
 
   it("targets /api/control-plane model catalog endpoint when server mode is enabled", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "/api/control-plane");
     const fetchMock = vi.fn(async () =>
       new Response(
@@ -106,6 +111,7 @@ describe("control-plane service release wiring", () => {
   });
 
   it("returns mock catalog entries for AITechFlux in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "mock");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
     vi.resetModules();
     const service = await import("../services/controlPlane");
@@ -131,6 +137,7 @@ describe("control-plane service release wiring", () => {
   });
 
   it("fails clearly when preset relay catalog is requested without api key in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "mock");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
     vi.resetModules();
     const service = await import("../services/controlPlane");

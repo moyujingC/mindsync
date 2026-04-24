@@ -6,6 +6,14 @@ export default defineConfig(({ mode }) => ({
     ?.RELAYHUB_CONSOLE_BASE_PATH ?? "/",
   envPrefix: ["VITE_", "RELAYHUB_"],
   plugins: [react()],
+  server: {
+    proxy: {
+      "/api/control-plane": {
+        target: "http://127.0.0.1:4318",
+        changeOrigin: true,
+      },
+    },
+  },
   build: mode === "trial"
     ? {
         rollupOptions: {

@@ -34,7 +34,15 @@ interface ControlPlaneState {
 }
 
 const MOCK_LATENCY_MS = 90;
-const CONTROL_PLANE_BASE_URL = (import.meta.env.RELAYHUB_CONTROL_PLANE_BASE_URL ?? "").trim();
+const configuredControlPlaneRuntime = (import.meta.env.RELAYHUB_CONTROL_PLANE_RUNTIME ?? "").trim();
+const configuredControlPlaneBaseUrl = (import.meta.env.RELAYHUB_CONTROL_PLANE_BASE_URL ?? "").trim();
+const CONTROL_PLANE_BASE_URL = configuredControlPlaneRuntime === "mock"
+  ? ""
+  : configuredControlPlaneBaseUrl.length > 0
+  ? configuredControlPlaneBaseUrl
+  : import.meta.env.DEV
+    ? "/api/control-plane"
+    : "";
 
 function clone<T>(value: T): T {
   return structuredClone(value);

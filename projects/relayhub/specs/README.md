@@ -27,4 +27,5 @@
 - [2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入说明.md)
 - [2026-04-21-v1-Claude-Code-Anthropic兼容接入收口说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-21-v1-Claude-Code-Anthropic兼容接入收口说明.md)
 - [2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md)
+- [2026-04-24-v1-本地可互动控制台开发口径收口说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-24-v1-本地可互动控制台开发口径收口说明.md)
 - [2026-04-19-v1-control-plane-release-部署与可写试用说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-19-v1-control-plane-release-部署与可写试用说明.md)
