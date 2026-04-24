@@ -266,6 +266,10 @@ function getEnvApiArgsFor(env) {
   ];
 }
 
+function hasRunnableCheckoutContext(env = process.env) {
+  return Boolean(env.PAPERCLIP_RUN_ID);
+}
+
 function resolveAdapterRuntime({ adapter, availableCommands }) {
   const commandByAdapter = {
     codex_local: "codex",
@@ -333,6 +337,21 @@ async function listActiveLocks() {
 
 function getLockPath(agentId) {
   return path.join(getLocksDir(), `${agentId}.json`);
+}
+
+function lockMatchesTarget(lockPayload, target) {
+  if (!target) {
+    return true;
+  }
+  const normalized = String(target).trim();
+  if (!normalized) {
+    return true;
+  }
+  return [
+    lockPayload?.agentId,
+    lockPayload?.issueId,
+    lockPayload?.identifier,
+  ].some((value) => String(value ?? "").includes(normalized));
 }
 
 async function readLock(agentId) {
@@ -643,6 +662,22 @@ function checkoutIssue(issueId, agentId, env = process.env) {
   ], env);
 }
 
+function resolveCheckoutPlan(env = process.env) {
+  if (hasRunnableCheckoutContext(env)) {
+    return {
+      mode: "paperclip_checkout",
+      requiresRunId: true,
+      runId: env.PAPERCLIP_RUN_ID,
+    };
+  }
+  return {
+    mode: "local_lock_only",
+    requiresRunId: false,
+    runId: null,
+    reason: "missing_paperclip_run_id",
+  };
+}
+
 async function doctor(options) {
   await ensureRuntimeDirs();
   const availableCommands = Array.from(getAvailableCommands()).sort();
@@ -726,12 +761,14 @@ async function executeOne(selection, options) {
     adapter: selection.adapter,
     cwd: process.cwd(),
   });
+  const checkoutPlan = resolveCheckoutPlan(agentEnvResult.env ?? process.env);
   const lockPayload = {
     agentId: selection.agentId,
     issueId: issue.id,
     identifier: issue.identifier,
     adapter: selection.adapter,
     host: context.host,
+    checkoutMode: checkoutPlan.mode,
     startedAt: new Date().toISOString(),
   };
 
@@ -745,6 +782,7 @@ async function executeOne(selection, options) {
         hasApiKey: Boolean(agentEnvResult.env?.PAPERCLIP_API_KEY),
         error: agentEnvResult.error || null,
       },
+      checkoutPlan,
       lockPayload,
       plannedTransition: buildStatusTransition({
         issue,
@@ -779,7 +817,9 @@ async function executeOne(selection, options) {
   const agentEnv = agentEnvResult.env;
   const lockPath = await acquireLock(lockPayload);
   try {
-    checkoutIssue(issue.id, selection.agentId, agentEnv);
+    if (checkoutPlan.mode === "paperclip_checkout") {
+      checkoutIssue(issue.id, selection.agentId, agentEnv);
+    }
     const result = await runAdapterCommand({
       adapter: selection.adapter,
       issue,
@@ -797,6 +837,7 @@ async function executeOne(selection, options) {
     return {
       mode: "execute",
       selection,
+      checkoutPlan,
       result,
       transition,
       lockPath,
@@ -844,7 +885,19 @@ async function stop(options) {
   await ensureRuntimeDirs();
   const locks = await listActiveLocks();
   const target = options.agentId || options.issue || "";
-  const matched = locks.filter((lock) => !target || lock.key.includes(target));
+  const lockDetails = await Promise.all(
+    locks.map(async (lock) => {
+      try {
+        const payload = JSON.parse(await fs.readFile(lock.path, "utf8"));
+        return { lock, payload };
+      } catch {
+        return { lock, payload: { agentId: lock.key } };
+      }
+    }),
+  );
+  const matched = lockDetails
+    .filter((item) => lockMatchesTarget(item.payload, target))
+    .map((item) => item.lock);
   for (const lock of matched) {
     await fs.rm(lock.path, { force: true });
   }
@@ -911,8 +964,11 @@ export const __testables = {
   isCommitSummaryIssue,
   isEligibleExecutorIssue,
   parseExportLines,
+  hasRunnableCheckoutContext,
+  resolveCheckoutPlan,
   resolveAdapter,
   selectRunnableIssues,
   buildStatusTransition,
   resolveAdapterRuntime,
+  lockMatchesTarget,
 };

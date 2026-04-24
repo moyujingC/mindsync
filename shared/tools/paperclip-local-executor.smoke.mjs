@@ -174,4 +174,43 @@ const parsedExports = __testables.parseExportLines(
 assert(parsedExports.PAPERCLIP_AGENT_ID === "agent-1", "export parser should extract PAPERCLIP_AGENT_ID");
 assert(parsedExports.PAPERCLIP_API_KEY === "key-1", "export parser should extract PAPERCLIP_API_KEY");
 
+assert(
+  __testables.hasRunnableCheckoutContext({ PAPERCLIP_RUN_ID: "run-123" }),
+  "checkout context should be available when PAPERCLIP_RUN_ID exists",
+);
+assert(
+  !__testables.hasRunnableCheckoutContext({}),
+  "checkout context should be unavailable without PAPERCLIP_RUN_ID",
+);
+
+const localLockPlan = __testables.resolveCheckoutPlan({});
+assert(localLockPlan.mode === "local_lock_only", "manual local mode should skip paperclip checkout");
+assert(localLockPlan.reason === "missing_paperclip_run_id", "local-lock plan should explain why checkout is skipped");
+
+const runCheckoutPlan = __testables.resolveCheckoutPlan({ PAPERCLIP_RUN_ID: "run-123" });
+assert(runCheckoutPlan.mode === "paperclip_checkout", "run-scoped mode should preserve paperclip checkout");
+assert(runCheckoutPlan.runId === "run-123", "run-scoped plan should expose run id");
+
+assert(
+  __testables.lockMatchesTarget(
+    { agentId: "agent-test-1", issueId: "issue-abc", identifier: "MIN-999" },
+    "MIN-999",
+  ),
+  "lock target matching should support issue identifier",
+);
+assert(
+  __testables.lockMatchesTarget(
+    { agentId: "agent-test-1", issueId: "issue-abc", identifier: "MIN-999" },
+    "issue-abc",
+  ),
+  "lock target matching should support issue id",
+);
+assert(
+  !__testables.lockMatchesTarget(
+    { agentId: "agent-test-1", issueId: "issue-abc", identifier: "MIN-999" },
+    "MIN-1000",
+  ),
+  "lock target matching should reject unrelated targets",
+);
+
 console.log("paperclip-local-executor smoke passed");
