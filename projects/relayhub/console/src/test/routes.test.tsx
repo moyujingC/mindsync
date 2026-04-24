@@ -407,6 +407,39 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("DeepSeek V3 官方")).toBeInTheDocument();
   });
 
+  it("lets users switch Claude Code current model from the dedicated task shortcut", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByText("Claude Code 当前模型")).toBeInTheDocument();
+    expect(await screen.findByText("当前绑定：PPChat 中转")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Claude Code 当前模型"), {
+      target: { value: "preset-deepseek-v3" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "切换 Claude Code 当前模型" }));
+
+    expect(
+      await screen.findByText("“Claude Code Web Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("当前绑定：DeepSeek V3 官方")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Claude Code 后续请求会自动跟随这个任务绑定，不需要你在 Claude Code 里再改 URL。"),
+    ).toBeInTheDocument();
+  });
+
   it("shows recommended candidates for tasks based on active models", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {

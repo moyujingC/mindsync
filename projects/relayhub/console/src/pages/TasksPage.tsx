@@ -46,6 +46,10 @@ export function TasksPage() {
     [tasks.data],
   );
   const hasActiveModels = (activeModels.data?.length ?? 0) > 0;
+  const claudeCodeTask = useMemo(
+    () => tasks.data?.find((item) => item.id === "task-claude-code") ?? null,
+    [tasks.data],
+  );
 
   function resolveDraftValue(task: TaskTemplate) {
     const draftValue = rowDrafts[task.id];
@@ -153,6 +157,60 @@ export function TasksPage() {
       {!hasActiveModels && (activeModels.status === "success" || activeModels.status === "empty") ? (
         <Section title="当前还没有可绑定的已激活模型" description="任务可以先建，但如果没有可用模型，下一步会断在绑定这里。">
           <EmptyState title="先回模型库完成激活" description="先回模型库完成激活，再回来绑定任务。" />
+        </Section>
+      ) : null}
+
+      {claudeCodeTask ? (
+        <Section
+          title="Claude Code 当前模型"
+          description="如果你现在的目标是让本地 Claude Code 跟着 RelayHub 切模型，优先改这里。它直接对应 task-claude-code 的当前绑定。"
+        >
+          <article className="data-card">
+            <span className="mini-label">Claude Code 快速切换</span>
+            <p>
+              当前绑定：{claudeCodeTask.defaultModelEntryName ?? "尚未绑定"}
+            </p>
+            <p className="supporting-text">
+              Claude Code 后续请求会自动跟随这个任务绑定，不需要你在 Claude Code 里再改 URL。
+            </p>
+            {hasActiveModels ? (
+              <div className="inline-actions">
+                <select
+                  aria-label="Claude Code 当前模型"
+                  value={resolveDraftValue(claudeCodeTask)}
+                  onChange={(event) =>
+                    setRowDrafts((current) => ({
+                      ...current,
+                      [claudeCodeTask.id]: event.target.value,
+                    }))
+                  }
+                  disabled={rowSavingTaskId === claudeCodeTask.id}
+                >
+                  <option value="">暂不绑定</option>
+                  {activeModels.data?.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="button-link"
+                  onClick={() =>
+                    handleQuickSwitch(claudeCodeTask, resolveDraftValue(claudeCodeTask) || null)
+                  }
+                  disabled={
+                    rowSavingTaskId === claudeCodeTask.id ||
+                    resolveDraftValue(claudeCodeTask) === (claudeCodeTask.defaultModelEntryId ?? "")
+                  }
+                >
+                  切换 Claude Code 当前模型
+                </button>
+              </div>
+            ) : (
+              <EmptyState title="还没有可切换的已激活模型" description="先去模型库激活一个可用入口，再回来切 Claude Code 当前模型。" />
+            )}
+          </article>
         </Section>
       ) : null}
 
