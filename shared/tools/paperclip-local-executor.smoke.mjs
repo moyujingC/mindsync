@@ -174,6 +174,23 @@ const parsedExports = __testables.parseExportLines(
 assert(parsedExports.PAPERCLIP_AGENT_ID === "agent-1", "export parser should extract PAPERCLIP_AGENT_ID");
 assert(parsedExports.PAPERCLIP_API_KEY === "key-1", "export parser should extract PAPERCLIP_API_KEY");
 
+const claudeCommand = __testables.buildAdapterCommand({
+  adapter: "claude_local",
+  prompt: "请总结本地执行结果。",
+  cwd: "/Users/xinran/Downloads/dev/mindsync",
+  issue: localTask,
+  context: {
+    host: "mac:xrMac.local",
+    adapter: "claude_local",
+    cwd: "/Users/xinran/Downloads/dev/mindsync",
+    branch: "main",
+    sha: "abc123",
+  },
+});
+assert(claudeCommand.command === "claude", "claude adapter should use claude binary");
+assert(claudeCommand.args.includes("-"), "claude adapter should read prompt from stdin via '-'");
+assert(typeof claudeCommand.stdin === "string" && claudeCommand.stdin.includes("MIN-200"), "claude adapter should pipe prompt over stdin");
+
 assert(
   __testables.hasRunnableCheckoutContext({ PAPERCLIP_RUN_ID: "run-123" }),
   "checkout context should be available when PAPERCLIP_RUN_ID exists",
@@ -181,6 +198,10 @@ assert(
 assert(
   !__testables.hasRunnableCheckoutContext({}),
   "checkout context should be unavailable without PAPERCLIP_RUN_ID",
+);
+assert(
+  !__testables.hasRunnableCheckoutContext({ PAPERCLIP_RUN_ID: "   " }),
+  "checkout context should be unavailable when PAPERCLIP_RUN_ID is blank",
 );
 
 const localLockPlan = __testables.resolveCheckoutPlan({});

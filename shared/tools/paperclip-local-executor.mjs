@@ -267,7 +267,7 @@ function getEnvApiArgsFor(env) {
 }
 
 function hasRunnableCheckoutContext(env = process.env) {
-  return Boolean(env.PAPERCLIP_RUN_ID);
+  return String(env.PAPERCLIP_RUN_ID ?? "").trim().length > 0;
 }
 
 function resolveAdapterRuntime({ adapter, availableCommands }) {
@@ -470,13 +470,14 @@ function buildAdapterCommand({ adapter, prompt, cwd, issue, context }) {
       command: "claude",
       args: [
         "--print",
+        "-",
         "--output-format",
         "json",
         "--dangerously-skip-permissions",
         "--add-dir",
         cwd,
-        basePrompt,
       ],
+      stdin: basePrompt,
     };
   }
 
@@ -537,10 +538,14 @@ async function runAdapterCommand({ adapter, issue, context, prompt, env = proces
     const child = spawn(execution.command, execution.args, {
       cwd: context.cwd,
       env,
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: ["pipe", "pipe", "pipe"],
     });
     let stdout = "";
     let stderr = "";
+    if (typeof execution.stdin === "string") {
+      child.stdin.write(execution.stdin);
+    }
+    child.stdin.end();
     child.stdout.on("data", (chunk) => {
       stdout += String(chunk);
     });
@@ -964,6 +969,7 @@ export const __testables = {
   isCommitSummaryIssue,
   isEligibleExecutorIssue,
   parseExportLines,
+  buildAdapterCommand,
   hasRunnableCheckoutContext,
   resolveCheckoutPlan,
   resolveAdapter,
