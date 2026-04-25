@@ -34,11 +34,39 @@ function createInitialState() {
   };
 }
 
+function migrateMissingPresetModelEntries(state) {
+  const existingEntries = Array.isArray(state.modelEntries) ? state.modelEntries : [];
+  const existingIds = new Set(existingEntries.map((entry) => entry.id));
+  const missingPresetEntries = seedModelEntries
+    .filter((entry) => entry.source === "preset" && !existingIds.has(entry.id))
+    .map((entry) => clone(entry));
+
+  if (missingPresetEntries.length === 0) {
+    return {
+      changed: false,
+      state
+    };
+  }
+
+  return {
+    changed: true,
+    state: {
+      ...state,
+      modelEntries: [...existingEntries, ...missingPresetEntries]
+    }
+  };
+}
+
 export async function readState() {
   const dataPath = resolveDataPath();
   try {
     const raw = await fs.readFile(dataPath, "utf8");
-    return JSON.parse(raw);
+    const persisted = JSON.parse(raw);
+    const migrated = migrateMissingPresetModelEntries(persisted);
+    if (migrated.changed) {
+      await writeState(migrated.state);
+    }
+    return migrated.state;
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
       const initial = createInitialState();
