@@ -33,3 +33,4 @@
 - [2026-04-24-v1-Claude-Code-任务页切后即验-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-24-v1-Claude-Code-任务页切后即验-交付说明.md)
 - [2026-04-24-v1-本地可互动控制台开发口径收口-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-24-v1-本地可互动控制台开发口径收口-交付说明.md)
 - [2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-交付说明.md)
+- [2026-04-26-v1-Codex-first-原生-Responses-接入-交付说明.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/delivery/2026-04-26-v1-Codex-first-原生-Responses-接入-交付说明.md)

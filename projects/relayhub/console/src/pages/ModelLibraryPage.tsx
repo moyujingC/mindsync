@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { ModelStatusPill } from "../components/ModelStatusPill";
 import { Section } from "../components/Section";
@@ -43,6 +43,9 @@ export function ModelLibraryPage() {
   const [copyError, setCopyError] = useState<string | null>(null);
   const [catalogData, setCatalogData] = useState<ModelCatalogResponse | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(false);
+  const editorSectionRef = useRef<HTMLDivElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const apiKeyInputRef = useRef<HTMLInputElement | null>(null);
 
   const dataResource = useAsyncResource(() => listModelEntries(), [version]);
 
@@ -109,6 +112,19 @@ export function ModelLibraryPage() {
     editingEntry?.source === "preset" &&
     editingEntry.kind === "relay-api" &&
     editingEntry.catalogFamily === "openai-compatible";
+
+  useEffect(() => {
+    if (!editingId) {
+      return;
+    }
+
+    if (typeof editorSectionRef.current?.scrollIntoView === "function") {
+      editorSectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    const targetInput = isPresetEditing ? apiKeyInputRef.current : nameInputRef.current;
+    targetInput?.focus();
+  }, [editingId, isPresetEditing]);
 
   function resetForm() {
     setEditingId(null);
@@ -347,6 +363,7 @@ export function ModelLibraryPage() {
         {dataResource.status === "success" ? (
           <EntriesTable
             entries={priorityPresetEntries}
+            editingId={editingId}
             onEdit={openEdit}
             onTest={handleTest}
             onDelete={handleDelete}
@@ -365,6 +382,7 @@ export function ModelLibraryPage() {
         {dataResource.status === "success" && otherPresetEntries.length > 0 ? (
           <EntriesTable
             entries={otherPresetEntries}
+            editingId={editingId}
             onEdit={openEdit}
             onTest={handleTest}
             onDelete={handleDelete}
@@ -383,6 +401,7 @@ export function ModelLibraryPage() {
         {dataResource.status === "success" && customEntries.length > 0 ? (
           <EntriesTable
             entries={customEntries}
+            editingId={editingId}
             onEdit={openEdit}
             onTest={handleTest}
             onDelete={handleDelete}
@@ -391,185 +410,191 @@ export function ModelLibraryPage() {
         ) : null}
       </Section>
 
-      <Section
-        title={editingId ? "编辑模式" : "新增模式"}
-        description={
-          editingId
-            ? isPresetEditing
-              ? isRelayPresetEditing
-                ? "当前在编辑系统预置中转入口。URL 和类型已锁定；若默认模型不确定，先获取可用模型列表，再保存并测试连接。"
-                : "当前在编辑系统预置入口。URL、模型标识和类型已锁定，只需要补 Key、保存并测试连接。"
-              : "当前在编辑自定义入口。保存后不会自动激活，仍需要显式测试连接。"
-            : "新增后不会自动探测上游，必须显式点击“测试连接”才会变成可用入口。"
-        }
-      >
-        {isPresetEditing ? (
-          <article className="data-card">
-            <span className="mini-label">预置入口锁定</span>
-            <p>
-              {isRelayPresetEditing
-                ? "URL 已经配好；当前先补 API Key。若默认模型不确定，先获取可用模型列表，再切当前模型。保存后还不算激活，仍需要显式点击“测试连接”。"
-                : "URL 和默认模型标识已经配好；当前只需要补 API Key。保存后还不算激活，仍需要显式点击“测试连接”。"}
-            </p>
-          </article>
-        ) : null}
-        <form className="form-grid" onSubmit={handleSubmit}>
-          <label className="field">
-            <span>名称</span>
-            <input
-              aria-label="名称"
-              value={form.name}
-              onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-              placeholder="例如：PPChat 中转"
-            />
-          </label>
-          <label className="field">
-            <span>Provider</span>
-            <input
-              aria-label="Provider"
-              value={form.providerLabel}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, providerLabel: event.target.value }))
-              }
-              placeholder="例如：code.ppchat.vip"
-            />
-          </label>
-          <label className="field">
-            <span>类型</span>
-            <select
-              value={form.kind}
-              disabled={isPresetEditing}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, kind: event.target.value as ModelEntryKind }))
-              }
-            >
-              {KIND_OPTIONS.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>Base URL</span>
-            <input
-              aria-label="Base URL"
-              value={form.baseUrl}
-              disabled={isPresetEditing}
-              onChange={(event) => setForm((current) => ({ ...current, baseUrl: event.target.value }))}
-              placeholder="https://example.com/v1"
-            />
-            {isPresetEditing ? (
-              <button
-                type="button"
-                className="button-link secondary"
-                onClick={() => editingEntry ? handleCopyBaseUrl(editingEntry) : null}
-              >
-                复制 Base URL
-              </button>
-            ) : null}
-          </label>
-          {isRelayPresetEditing ? (
-            <div className="field">
-              <span>当前模型标识</span>
-              <div className="supporting-text">{form.modelId || "尚未选择"}</div>
-              <button
-                type="button"
-                className="button-link secondary"
-                onClick={handleFetchCatalog}
-                disabled={catalogLoading}
-              >
-                {catalogLoading ? "获取中..." : "获取可用模型"}
-              </button>
-              {!catalogData ? (
-                <span className="supporting-text">先获取可用模型，再切当前模型。</span>
-              ) : null}
-            </div>
-          ) : (
+      <div ref={editorSectionRef}>
+        <Section
+          title={editingId ? "编辑模式" : "新增模式"}
+          description={
+            editingId
+              ? isPresetEditing
+                ? isRelayPresetEditing
+                  ? "当前在编辑系统预置中转入口。URL 和类型已锁定；若默认模型不确定，先获取可用模型列表，再保存并测试连接。"
+                  : "当前在编辑系统预置入口。URL、模型标识和类型已锁定，只需要补 Key、保存并测试连接。"
+                : "当前在编辑自定义入口。保存后不会自动激活，仍需要显式测试连接。"
+              : "新增后不会自动探测上游，必须显式点击“测试连接”才会变成可用入口。"
+          }
+        >
+          {isPresetEditing ? (
+            <article className="data-card">
+              <span className="mini-label">预置入口锁定</span>
+              <p>
+                {isRelayPresetEditing
+                  ? "URL 已经配好；当前先补 API Key。若默认模型不确定，先获取可用模型列表，再切当前模型。保存后还不算激活，仍需要显式点击“测试连接”。"
+                  : "URL 和默认模型标识已经配好；当前只需要补 API Key。保存后还不算激活，仍需要显式点击“测试连接”。"}
+              </p>
+            </article>
+          ) : null}
+          <form className="form-grid" onSubmit={handleSubmit}>
             <label className="field">
-              <span>模型标识</span>
+              <span>名称</span>
               <input
-                aria-label="模型标识"
-                value={form.modelId}
-                disabled={isPresetEditing}
-                onChange={(event) => setForm((current) => ({ ...current, modelId: event.target.value }))}
-                placeholder="gpt-5 / deepseek-chat / qwen-max"
+                ref={nameInputRef}
+                aria-label="名称"
+                value={form.name}
+                onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+                placeholder="例如：PPChat 中转"
               />
             </label>
-          )}
-          {isRelayPresetEditing && catalogData ? (
             <label className="field">
-              <span>可用模型列表</span>
-              <select
-                aria-label="可用模型列表"
-                value={form.modelId}
+              <span>Provider</span>
+              <input
+                aria-label="Provider"
+                value={form.providerLabel}
                 onChange={(event) =>
-                  setForm((current) => ({ ...current, modelId: event.target.value }))
+                  setForm((current) => ({ ...current, providerLabel: event.target.value }))
+                }
+                placeholder="例如：code.ppchat.vip"
+              />
+            </label>
+            <label className="field">
+              <span>类型</span>
+              <select
+                value={form.kind}
+                disabled={isPresetEditing}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, kind: event.target.value as ModelEntryKind }))
                 }
               >
-                {catalogData.items.map((item) => (
-                  <option key={item.id} value={item.id}>
+                {KIND_OPTIONS.map((item) => (
+                  <option key={item.value} value={item.value}>
                     {item.label}
                   </option>
                 ))}
               </select>
-              <span className="supporting-text">拉取时间：{catalogData.fetchedAt}</span>
             </label>
-          ) : null}
-          <label className="field">
-            <span>充值或购买链接</span>
-            <input
-              value={form.purchaseUrl ?? ""}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, purchaseUrl: event.target.value }))
-              }
-              placeholder="可选"
-            />
-          </label>
-          <label className="field field-wide">
-            <span>API Key</span>
-            <input
-              aria-label="API Key"
-              value={form.apiKey ?? ""}
-              onChange={(event) => setForm((current) => ({ ...current, apiKey: event.target.value }))}
-              placeholder={editingId ? "留空则保留原有密钥" : "保存后由服务端脱敏存储"}
-            />
-            <span className="supporting-text">这里填写的是你从对应平台拿回来的 API Key；它只在服务端脱敏保存，不会进入前端构建产物。</span>
-          </label>
-          {form.purchaseUrl ? (
-            <div className="field field-wide">
-              <span>购买 / 充值入口</span>
-              <a className="button-link secondary" href={form.purchaseUrl} target="_blank" rel="noreferrer">
-                还没有 Key？先去开通 / 充值
-              </a>
+            <label className="field">
+              <span>Base URL</span>
+              <input
+                aria-label="Base URL"
+                value={form.baseUrl}
+                disabled={isPresetEditing}
+                onChange={(event) => setForm((current) => ({ ...current, baseUrl: event.target.value }))}
+                placeholder="https://example.com/v1"
+              />
+              {isPresetEditing ? (
+                <button
+                  type="button"
+                  className="button-link secondary"
+                  onClick={() => editingEntry ? handleCopyBaseUrl(editingEntry) : null}
+                >
+                  复制 Base URL
+                </button>
+              ) : null}
+            </label>
+            {isRelayPresetEditing ? (
+              <div className="field">
+                <span>当前模型标识</span>
+                <div className="supporting-text">{form.modelId || "尚未选择"}</div>
+                <button
+                  type="button"
+                  className="button-link secondary"
+                  onClick={handleFetchCatalog}
+                  disabled={catalogLoading}
+                >
+                  {catalogLoading ? "获取中..." : "获取可用模型"}
+                </button>
+                {!catalogData ? (
+                  <span className="supporting-text">先获取可用模型，再切当前模型。</span>
+                ) : null}
+              </div>
+            ) : (
+              <label className="field">
+                <span>模型标识</span>
+                <input
+                  aria-label="模型标识"
+                  value={form.modelId}
+                  disabled={isPresetEditing}
+                  onChange={(event) => setForm((current) => ({ ...current, modelId: event.target.value }))}
+                  placeholder="gpt-5 / deepseek-chat / qwen-max"
+                />
+              </label>
+            )}
+            {isRelayPresetEditing && catalogData ? (
+              <label className="field">
+                <span>可用模型列表</span>
+                <select
+                  aria-label="可用模型列表"
+                  value={form.modelId}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, modelId: event.target.value }))
+                  }
+                >
+                  {catalogData.items.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+                <span className="supporting-text">拉取时间：{catalogData.fetchedAt}</span>
+              </label>
+            ) : null}
+            <label className="field">
+              <span>充值或购买链接</span>
+              <input
+                value={form.purchaseUrl ?? ""}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, purchaseUrl: event.target.value }))
+                }
+                placeholder="可选"
+              />
+            </label>
+            <label className="field field-wide">
+              <span>API Key</span>
+              <input
+                ref={apiKeyInputRef}
+                aria-label="API Key"
+                value={form.apiKey ?? ""}
+                onChange={(event) => setForm((current) => ({ ...current, apiKey: event.target.value }))}
+                placeholder={editingId ? "留空则保留原有密钥" : "保存后由服务端脱敏存储"}
+              />
+              <span className="supporting-text">这里填写的是你从对应平台拿回来的 API Key；它只在服务端脱敏保存，不会进入前端构建产物。</span>
+            </label>
+            {form.purchaseUrl ? (
+              <div className="field field-wide">
+                <span>购买 / 充值入口</span>
+                <a className="button-link secondary" href={form.purchaseUrl} target="_blank" rel="noreferrer">
+                  还没有 Key？先去开通 / 充值
+                </a>
+              </div>
+            ) : null}
+            <div className="form-actions field-wide">
+              <button type="submit" className="button-link">
+                {editingId ? "保存配置" : "新增模型"}
+              </button>
+              <button type="button" className="button-link secondary" onClick={resetForm}>
+                清空表单
+              </button>
+              {submitMessage ? <span className="supporting-text feedback-inline">{submitMessage}</span> : null}
+              {submitError ? <span className="error-inline">{submitError}</span> : null}
+              {copyMessage ? <span className="supporting-text feedback-inline">{copyMessage}</span> : null}
+              {copyError ? <span className="error-inline">{copyError}</span> : null}
             </div>
-          ) : null}
-          <div className="form-actions field-wide">
-            <button type="submit" className="button-link">
-              {editingId ? "保存配置" : "新增模型"}
-            </button>
-            <button type="button" className="button-link secondary" onClick={resetForm}>
-              清空表单
-            </button>
-            {submitMessage ? <span className="supporting-text feedback-inline">{submitMessage}</span> : null}
-            {submitError ? <span className="error-inline">{submitError}</span> : null}
-            {copyMessage ? <span className="supporting-text feedback-inline">{copyMessage}</span> : null}
-            {copyError ? <span className="error-inline">{copyError}</span> : null}
-          </div>
-        </form>
-      </Section>
+          </form>
+        </Section>
+      </div>
     </div>
   );
 }
 
 function EntriesTable({
   entries,
+  editingId,
   onEdit,
   onTest,
   onDelete,
   onCopyBaseUrl,
 }: {
   entries: ModelEntry[];
+  editingId: string | null;
   onEdit: (entry: ModelEntry) => void;
   onTest: (entry: ModelEntry) => void;
   onDelete: (entry: ModelEntry) => void;
@@ -594,7 +619,11 @@ function EntriesTable({
         </thead>
         <tbody>
           {entries.map((entry) => (
-            <tr key={entry.id}>
+            <tr
+              key={entry.id}
+              aria-selected={entry.id === editingId}
+              className={entry.id === editingId ? "row-selected" : undefined}
+            >
               <td>
                 <strong>{entry.name}</strong>
                 <div className="supporting-text">{entry.statusNote}</div>
@@ -622,6 +651,7 @@ function EntriesTable({
               <td>
                 <ModelStatusPill status={entry.status} />
                 {entry.costTier ? <div className="supporting-text">成本：{entry.costTier}</div> : null}
+                <div className="supporting-text">Codex：{describeCodexCompatibility(entry)}</div>
               </td>
               <td>
                 <div>{describeRecommendedTasks(entry)}</div>
@@ -722,6 +752,19 @@ function describeRecommendedTasks(entry: ModelEntry) {
   }
 
   return "适合任务：当前未指定。";
+}
+
+function describeCodexCompatibility(entry: ModelEntry) {
+  if (entry.capabilities.responses.ok && entry.capabilities.responses.streamOk) {
+    return "Responses 可用";
+  }
+  if (entry.capabilities.responses.ok && !entry.capabilities.responses.streamOk) {
+    return "Responses 仅非流式可用";
+  }
+  if (entry.capabilities.chatCompletions.ok) {
+    return "仅 Chat 可用";
+  }
+  return "未测试";
 }
 
 function readableTaskName(taskId: string) {

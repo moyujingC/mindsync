@@ -8,15 +8,36 @@ export type ModelEntryStatus =
   | "active"
   | "test-failed"
   | "disabled";
-export type ModelEntryTestResult = "idle" | "success" | "missing-api-key" | "invalid-base-url" | "upstream-unreachable";
+export type ModelEntryTestResult =
+  | "idle"
+  | "success"
+  | "missing-api-key"
+  | "invalid-base-url"
+  | "upstream-unreachable"
+  | "responses-unavailable"
+  | "responses-stream-unavailable";
 export type ModelEntryTestCode =
   | "not-tested"
   | "success"
   | "missing_api_key"
   | "invalid_base_url"
-  | "upstream_unreachable";
+  | "upstream_unreachable"
+  | "responses_unavailable"
+  | "responses_stream_unavailable";
 export type TaskCategory = "通用工具" | "业务任务";
 export type RunResultGrade = "优秀" | "可用" | "一般" | "失败";
+
+export interface ModelEntryCapabilities {
+  responses: {
+    ok: boolean;
+    streamOk: boolean;
+  };
+  chatCompletions: {
+    ok: boolean;
+  };
+  lastProbedAt: string | null;
+  lastErrorMessage: string | null;
+}
 
 export interface ModelEntry {
   id: string;
@@ -36,6 +57,7 @@ export interface ModelEntry {
   lastTestResult: ModelEntryTestResult;
   lastTestCode: ModelEntryTestCode;
   lastTestMessage: string;
+  capabilities: ModelEntryCapabilities;
   presetPriority: PresetPriority | null;
   recommendedTaskCategories: TaskCategory[];
   recommendedTaskIds: string[];

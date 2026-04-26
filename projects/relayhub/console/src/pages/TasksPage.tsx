@@ -432,6 +432,13 @@ function TaskTable({
             const isSaving = rowSavingTaskId === task.id;
             const nextModelEntryId = draftValue || null;
             const recommendedModels = resolveRecommendedModels(task, activeModels);
+            const draftEntry = nextModelEntryId
+              ? activeModels.find((model) => model.id === nextModelEntryId) ?? null
+              : null;
+            const codexBindingBlocked =
+              task.id === "task-codex-repo" &&
+              draftEntry !== null &&
+              (!draftEntry.capabilities.responses.ok || !draftEntry.capabilities.responses.streamOk);
             const currentBindingIsRecommended =
               task.defaultModelEntryId === null ||
               recommendedModels.some((model) => model.id === task.defaultModelEntryId);
@@ -480,16 +487,28 @@ function TaskTable({
                         type="button"
                         className="action-button"
                         onClick={() => onQuickSwitch(task, nextModelEntryId)}
-                        disabled={isSaving || draftValue === (task.defaultModelEntryId ?? "")}
+                        disabled={
+                          isSaving ||
+                          draftValue === (task.defaultModelEntryId ?? "") ||
+                          codexBindingBlocked
+                        }
                       >
                         {task.defaultModelEntryId ? "切换入口内默认模型" : "绑定入口内默认模型"}
                       </button>
+                      {codexBindingBlocked ? (
+                        <span className="error-inline">当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。</span>
+                      ) : null}
                     </div>
                   ) : (
                     <span className="supporting-text">先回模型库激活可用模型</span>
                   )}
                 </td>
-                <td>{task.switchNote || "切换后仅对后续使用和后续新运行记录生效，不影响入口配置。"}</td>
+                <td>
+                  {task.switchNote || "切换后仅对后续使用和后续新运行记录生效，不影响入口配置。"}
+                  {task.id === "task-codex-repo" ? (
+                    <div className="supporting-text">Codex 主链路只接受通过 Responses 流式探测的入口。</div>
+                  ) : null}
+                </td>
                 <td>
                   <div className="inline-actions">
                     <button type="button" className="action-button" onClick={() => onEdit(task)}>

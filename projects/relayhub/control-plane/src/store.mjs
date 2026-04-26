@@ -34,17 +34,45 @@ function createInitialState() {
   };
 }
 
+function defaultCapabilities() {
+  return {
+    responses: {
+      ok: false,
+      streamOk: false
+    },
+    chatCompletions: {
+      ok: false
+    },
+    lastProbedAt: null,
+    lastErrorMessage: null
+  };
+}
+
 function migrateMissingPresetModelEntries(state) {
   const existingEntries = Array.isArray(state.modelEntries) ? state.modelEntries : [];
-  const existingIds = new Set(existingEntries.map((entry) => entry.id));
+  let changed = false;
+  const normalizedExistingEntries = existingEntries.map((entry) => {
+    if (entry && typeof entry === "object" && entry.capabilities) {
+      return entry;
+    }
+    changed = true;
+    return {
+      ...entry,
+      capabilities: defaultCapabilities()
+    };
+  });
+  const existingIds = new Set(normalizedExistingEntries.map((entry) => entry.id));
   const missingPresetEntries = seedModelEntries
     .filter((entry) => entry.source === "preset" && !existingIds.has(entry.id))
     .map((entry) => clone(entry));
 
-  if (missingPresetEntries.length === 0) {
+  if (missingPresetEntries.length === 0 && !changed) {
     return {
       changed: false,
-      state
+      state: {
+        ...state,
+        modelEntries: normalizedExistingEntries
+      }
     };
   }
 
@@ -52,7 +80,7 @@ function migrateMissingPresetModelEntries(state) {
     changed: true,
     state: {
       ...state,
-      modelEntries: [...existingEntries, ...missingPresetEntries]
+      modelEntries: [...normalizedExistingEntries, ...missingPresetEntries]
     }
   };
 }

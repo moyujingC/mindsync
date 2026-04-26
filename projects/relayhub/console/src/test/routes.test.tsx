@@ -190,6 +190,23 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("当前模型标识")).toBeInTheDocument();
   });
 
+  it("moves focus to api key and marks the row when editing a preset entry", async () => {
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByLabelText("API Key")).toHaveFocus();
+    expect(row).toHaveAttribute("aria-selected", "true");
+    expect(row).toHaveClass("row-selected");
+    expect(scrollIntoView).toHaveBeenCalled();
+  });
+
   it("fetches preset relay catalog and shows selectable upstream models", async () => {
     vi.spyOn(controlPlaneService, "getModelCatalog").mockResolvedValue({
       items: [
@@ -503,7 +520,7 @@ describe("RelayHub console routes", () => {
     expect((await screen.findAllByText("当前绑定已在推荐候选内。")).length).toBeGreaterThan(0);
   });
 
-  it("allows binding a previously unbound task from the task table", async () => {
+  it("blocks binding Codex Repo Coding to a model without Responses streaming capability", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {
         ...seedModelEntries[2]!,
@@ -528,9 +545,37 @@ describe("RelayHub console routes", () => {
     fireEvent.click(within(row!).getByRole("button", { name: "绑定入口内默认模型" }));
 
     expect(
+      await screen.findByText("当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("“Codex Repo Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。")).not.toBeInTheDocument();
+  });
+
+  it("allows binding Codex Repo Coding after choosing a Responses-ready model", async () => {
+    await controlPlaneService.saveModelEntry({
+      id: "preset-aitechflux-relay",
+      name: "AITechFlux 中转",
+      providerLabel: "AITechFlux",
+      kind: "relay-api",
+      baseUrl: "https://aitechflux.com/v1",
+      modelId: "claude-sonnet",
+      apiKey: "sk-aitechflux-test",
+    });
+    await controlPlaneService.testModelEntryConnection("preset-aitechflux-relay");
+
+    renderRoute("/tasks");
+
+    const taskName = await screen.findByText("Codex Repo Coding");
+    const row = taskName.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.change(within(row!).getByLabelText("Codex Repo Coding-快速切换默认模型"), {
+      target: { value: "preset-aitechflux-relay" },
+    });
+    fireEvent.click(within(row!).getByRole("button", { name: "绑定入口内默认模型" }));
+
+    expect(
       await screen.findByText("“Codex Repo Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
     ).toBeInTheDocument();
-    expect(await screen.findAllByText("PPChat 中转")).not.toHaveLength(0);
+    expect(await screen.findAllByText("AITechFlux 中转")).not.toHaveLength(0);
   });
 
   it("blocks run submission when required fields are missing", async () => {

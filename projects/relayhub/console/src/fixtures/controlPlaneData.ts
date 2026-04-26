@@ -1,9 +1,26 @@
 import type {
   ModelCatalogResponse,
   ModelEntry,
+  ModelEntryCapabilities,
   TaskRunRecord,
   TaskTemplate,
 } from "../models/controlPlane";
+
+function defaultCapabilities(overrides?: Partial<ModelEntryCapabilities>): ModelEntryCapabilities {
+  return {
+    responses: {
+      ok: false,
+      streamOk: false,
+      ...(overrides?.responses ?? {}),
+    },
+    chatCompletions: {
+      ok: false,
+      ...(overrides?.chatCompletions ?? {}),
+    },
+    lastProbedAt: overrides?.lastProbedAt ?? null,
+    lastErrorMessage: overrides?.lastErrorMessage ?? null,
+  };
+}
 
 export const seedModelEntries: ModelEntry[] = [
   {
@@ -24,6 +41,7 @@ export const seedModelEntries: ModelEntry[] = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: "recommended",
     recommendedTaskCategories: ["业务任务"],
     recommendedTaskIds: ["task-therapy-dialogue"],
@@ -51,6 +69,7 @@ export const seedModelEntries: ModelEntry[] = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: "recommended-first",
     recommendedTaskCategories: ["业务任务"],
     recommendedTaskIds: ["task-therapy-summary", "task-therapy-dialogue"],
@@ -78,6 +97,13 @@ export const seedModelEntries: ModelEntry[] = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "已保存配置，建议手动测试连接后再绑定任务。",
+    capabilities: defaultCapabilities({
+      chatCompletions: {
+        ok: true,
+      },
+      lastProbedAt: "2026-04-18 12:10",
+      lastErrorMessage: "上游可达，但尚未完成 Responses 流式探测。",
+    }),
     presetPriority: "recommended-first",
     recommendedTaskCategories: ["通用工具"],
     recommendedTaskIds: ["task-claude-code", "task-codex-repo"],
@@ -105,6 +131,7 @@ export const seedModelEntries: ModelEntry[] = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: "recommended",
     recommendedTaskCategories: ["通用工具", "业务任务"],
     recommendedTaskIds: ["task-codex-repo", "task-therapy-summary"],
@@ -132,6 +159,7 @@ export const seedModelEntries: ModelEntry[] = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: "recommended",
     recommendedTaskCategories: ["业务任务"],
     recommendedTaskIds: ["task-therapy-dialogue"],
@@ -159,6 +187,7 @@ export const seedModelEntries: ModelEntry[] = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: "optional",
     recommendedTaskCategories: ["通用工具"],
     recommendedTaskIds: ["task-claude-code", "task-codex-repo"],
@@ -186,6 +215,7 @@ export const seedModelEntries: ModelEntry[] = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: "recommended",
     recommendedTaskCategories: ["通用工具"],
     recommendedTaskIds: ["task-claude-code", "task-codex-repo"],

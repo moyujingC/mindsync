@@ -22,6 +22,37 @@ interface InternalModelEntry extends ModelEntry {
   apiKey: string | null;
 }
 
+function defaultCapabilities(overrides?: Partial<ModelEntry["capabilities"]>): ModelEntry["capabilities"] {
+  return {
+    responses: {
+      ok: false,
+      streamOk: false,
+      ...(overrides?.responses ?? {}),
+    },
+    chatCompletions: {
+      ok: false,
+      ...(overrides?.chatCompletions ?? {}),
+    },
+    lastProbedAt: overrides?.lastProbedAt ?? null,
+    lastErrorMessage: overrides?.lastErrorMessage ?? null,
+  };
+}
+
+function canBindTaskToModel(taskId: string, model: InternalModelEntry | undefined | null) {
+  if (!model || taskId !== "task-codex-repo") {
+    return { ok: true as const };
+  }
+
+  if (!model.capabilities.responses.ok || !model.capabilities.responses.streamOk) {
+    return {
+      ok: false as const,
+      message: "当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。",
+    };
+  }
+
+  return { ok: true as const };
+}
+
 interface ControlPlaneState {
   modelEntries: InternalModelEntry[];
   tasks: TaskTemplate[];
@@ -125,6 +156,7 @@ function applyTestOutcome(
     message: string;
     status: ModelEntryStatus;
     statusNote: string;
+    capabilities?: ModelEntry["capabilities"];
   },
 ) {
   entry.lastTestResult = outcome.result;
@@ -132,6 +164,7 @@ function applyTestOutcome(
   entry.lastTestMessage = outcome.message;
   entry.status = outcome.status;
   entry.statusNote = outcome.statusNote;
+  entry.capabilities = outcome.capabilities ?? defaultCapabilities();
 }
 
 function activeModelEntries(): ModelEntry[] {
@@ -253,8 +286,23 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `RelayHub control plane request failed: ${response.status}`);
+    const raw = await response.text();
+    let parsedMessage = "";
+    try {
+      const parsed = raw ? JSON.parse(raw) : null;
+      parsedMessage =
+        (parsed && typeof parsed === "object" && "message" in parsed && typeof parsed.message === "string"
+          ? parsed.message
+          : "") ||
+        (parsed && typeof parsed === "object" && "error" in parsed && parsed.error &&
+        typeof parsed.error === "object" && "message" in parsed.error &&
+        typeof parsed.error.message === "string"
+          ? parsed.error.message
+          : "");
+    } catch {
+      parsedMessage = "";
+    }
+    throw new Error(parsedMessage || raw || `RelayHub control plane request failed: ${response.status}`);
   }
 
   if (response.status === 204) {
@@ -424,6 +472,7 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     current.lastTestMessage = current.hasStoredApiKey
       ? "配置刚更新，请重新测试连接确认是否可用。"
       : "还缺 API Key，暂时无法开始测试连接。";
+    current.capabilities = defaultCapabilities();
 
     return delay(toPublicModelEntry(current));
   }
@@ -450,6 +499,7 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: null,
     recommendedTaskCategories: [],
     recommendedTaskIds: [],
@@ -509,6 +559,7 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
       message: "缺少 API Key，先补密钥再重新测试连接。",
       status: "test-failed",
       statusNote: "测试失败：还缺 API Key。下一步先补密钥。",
+      capabilities: defaultCapabilities(),
     });
     return delay(toPublicModelEntry(entry));
   }
@@ -520,6 +571,7 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
       message: "Base URL 不合法，需以 http:// 或 https:// 开头。",
       status: "test-failed",
       statusNote: "测试失败：Base URL 格式不对。下一步先修正地址。",
+      capabilities: defaultCapabilities(),
     });
     return delay(toPublicModelEntry(entry));
   }
@@ -531,6 +583,10 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
       message: "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
       status: "test-failed",
       statusNote: "测试失败：上游暂时不可达。下一步检查地址或稍后重试。",
+      capabilities: defaultCapabilities({
+        lastProbedAt: nowStamp(),
+        lastErrorMessage: "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
+      }),
     });
     return delay(toPublicModelEntry(entry));
   }
@@ -538,9 +594,20 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
   applyTestOutcome(entry, {
     result: "success",
     code: "success",
-    message: "测试连接通过，这个模型现在可以绑定到任务。",
+    message: "测试连接通过，这个模型可绑定 Claude，也可绑定 Codex。",
     status: "active",
-    statusNote: "连接测试通过，可以绑定到任务默认模型。",
+    statusNote: "连接测试通过：可绑定 Codex。",
+    capabilities: defaultCapabilities({
+      responses: {
+        ok: true,
+        streamOk: true,
+      },
+      chatCompletions: {
+        ok: true,
+      },
+      lastProbedAt: nowStamp(),
+      lastErrorMessage: null,
+    }),
   });
   return delay(toPublicModelEntry(entry));
 }
@@ -590,6 +657,14 @@ export async function saveTaskTemplate(input: TaskTemplateInput): Promise<TaskTe
       throw new Error("没有找到要更新的任务。");
     }
 
+    const nextModel = input.defaultModelEntryId
+      ? mockState.modelEntries.find((item) => item.id === input.defaultModelEntryId)
+      : null;
+    const bindingCheck = canBindTaskToModel(current.id, nextModel);
+    if (!bindingCheck.ok) {
+      throw new Error(bindingCheck.message);
+    }
+
     current.name = input.name.trim();
     current.category = input.category;
     current.description = input.description.trim();
@@ -599,6 +674,13 @@ export async function saveTaskTemplate(input: TaskTemplateInput): Promise<TaskTe
   }
 
   const nextId = `custom-task-${mockState.nextIds.task++}`;
+  const nextModel = input.defaultModelEntryId
+    ? mockState.modelEntries.find((item) => item.id === input.defaultModelEntryId)
+    : null;
+  const bindingCheck = canBindTaskToModel(nextId, nextModel);
+  if (!bindingCheck.ok) {
+    throw new Error(bindingCheck.message);
+  }
   const created: TaskTemplate = withTaskModelName({
     id: nextId,
     name: input.name.trim(),

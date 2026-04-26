@@ -30,3 +30,4 @@
 - [2026-04-24-v1-本地可互动控制台开发口径收口-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-24-v1-本地可互动控制台开发口径收口-qa-basis.md)
 - [2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-验证记录.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-验证记录.md)
 - [2026-04-19-v1-control-plane-release-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-control-plane-release-qa-basis.md)
+- [2026-04-26-v1-Codex-first-原生-Responses-接入-qa-basis.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-26-v1-Codex-first-原生-Responses-接入-qa-basis.md)

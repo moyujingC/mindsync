@@ -4,7 +4,8 @@ import { fileURLToPath } from "node:url";
 import { readState } from "../../control-plane/src/store.mjs";
 
 const port = Number(process.env.PORT ?? 4319);
-const relayTaskId = "task-claude-code";
+const CLAUDE_RELAY_TASK_ID = "task-claude-code";
+const CODEX_RELAY_TASK_ID = "task-codex-repo";
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -21,6 +22,18 @@ function relayError(response, statusCode, code, message, relay = undefined) {
     },
     ...(relay ? { relay } : {})
   });
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function makeRequestId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function logRelayEvent(payload) {
+  process.stdout.write(`${JSON.stringify({ at: nowIso(), ...payload })}\n`);
 }
 
 async function readJsonBody(request) {
@@ -45,6 +58,11 @@ function estimateInputTokens(value) {
 function buildUpstreamUrl(baseUrl) {
   const normalized = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
   return new URL("chat/completions", normalized);
+}
+
+function buildResponsesUpstreamUrl(baseUrl) {
+  const normalized = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  return new URL("responses", normalized);
 }
 
 function copyUpstreamHeaders(upstreamHeaders) {
@@ -81,14 +99,20 @@ function buildForwardHeaders(request, apiKey, bodyText) {
   return headers;
 }
 
-function resolveRelayBinding(state) {
-  const task = state.tasks.find((item) => item.id === relayTaskId);
+function resolveRelayBinding(state, taskId) {
+  const task = state.tasks.find((item) => item.id === taskId);
   if (!task) {
     return {
       ok: false,
       statusCode: 404,
       code: "task_not_found",
-      message: "找不到 task-claude-code，当前 RelayHub 还没有 Claude Code 任务配置。"
+      message:
+        taskId === CODEX_RELAY_TASK_ID
+          ? "找不到 task-codex-repo，当前 RelayHub 还没有 Codex 任务配置。"
+          : "找不到 task-claude-code，当前 RelayHub 还没有 Claude Code 任务配置。",
+      relay: {
+        taskId
+      }
     };
   }
 
@@ -97,7 +121,13 @@ function resolveRelayBinding(state) {
       ok: false,
       statusCode: 409,
       code: "task_not_bound",
-      message: "task-claude-code 还没有绑定默认模型，先去任务库绑定 Claude Code Web Coding。"
+      message:
+        taskId === CODEX_RELAY_TASK_ID
+          ? "task-codex-repo 还没有绑定默认模型，先去任务库绑定 Codex Repo Coding。"
+          : "task-claude-code 还没有绑定默认模型，先去任务库绑定 Claude Code Web Coding。",
+      relay: {
+        taskId: task.id
+      }
     };
   }
 
@@ -107,7 +137,11 @@ function resolveRelayBinding(state) {
       ok: false,
       statusCode: 404,
       code: "model_entry_not_found",
-      message: "任务当前绑定的模型入口不存在，请回任务库重新绑定。"
+      message: "任务当前绑定的模型入口不存在，请回任务库重新绑定。",
+      relay: {
+        taskId: task.id,
+        modelEntryId: task.defaultModelEntryId
+      }
     };
   }
 
@@ -116,7 +150,12 @@ function resolveRelayBinding(state) {
       ok: false,
       statusCode: 409,
       code: "model_not_active",
-      message: "任务当前绑定的模型入口还未激活，先去模型库测试连接。"
+      message: "任务当前绑定的模型入口还未激活，先去模型库测试连接。",
+      relay: {
+        taskId: task.id,
+        modelEntryId: entry.id,
+        baseUrl: entry.baseUrl
+      }
     };
   }
 
@@ -125,8 +164,31 @@ function resolveRelayBinding(state) {
       ok: false,
       statusCode: 409,
       code: "missing_api_key",
-      message: "任务当前绑定的模型入口缺少 API Key，先去模型库补 Key。"
+      message: "任务当前绑定的模型入口缺少 API Key，先去模型库补 Key。",
+      relay: {
+        taskId: task.id,
+        modelEntryId: entry.id,
+        baseUrl: entry.baseUrl
+      }
     };
+  }
+
+  if (taskId === CODEX_RELAY_TASK_ID) {
+    const responsesOk = Boolean(entry.capabilities?.responses?.ok);
+    const responsesStreamOk = Boolean(entry.capabilities?.responses?.streamOk);
+    if (!responsesOk || !responsesStreamOk) {
+      return {
+        ok: false,
+        statusCode: 409,
+        code: "responses_not_ready",
+        message: "当前绑定入口尚未通过 Responses 流式探测，先去模型库完成 Codex 兼容验证。",
+        relay: {
+          taskId: task.id,
+          modelEntryId: entry.id,
+          baseUrl: entry.baseUrl
+        }
+      };
+    }
   }
 
   return {
@@ -426,9 +488,9 @@ async function proxyChatCompletions(request, response) {
   }
 
   const state = await readState();
-  const resolved = resolveRelayBinding(state);
+  const resolved = resolveRelayBinding(state, CLAUDE_RELAY_TASK_ID);
   if (!resolved.ok) {
-    return relayError(response, resolved.statusCode, resolved.code, resolved.message);
+    return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
 
   const { task, entry } = resolved;
@@ -443,6 +505,8 @@ async function proxyChatCompletions(request, response) {
     modelId: entry.modelId,
     baseUrl: entry.baseUrl
   };
+  const requestId = makeRequestId();
+  const startedAt = Date.now();
 
   let upstreamResponse;
   try {
@@ -452,6 +516,15 @@ async function proxyChatCompletions(request, response) {
       body: bodyText
     });
   } catch (error) {
+    logRelayEvent({
+      requestId,
+      route: "/chat/completions",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: 502,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
     return relayError(
       response,
       502,
@@ -478,6 +551,15 @@ async function proxyChatCompletions(request, response) {
         ? upstreamPayload.error.message
         : upstreamText || `upstream returned ${upstreamResponse.status}`;
 
+    logRelayEvent({
+      requestId,
+      route: "/chat/completions",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: upstreamResponse.status,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
     return relayError(
       response,
       upstreamResponse.status,
@@ -489,6 +571,15 @@ async function proxyChatCompletions(request, response) {
 
   response.writeHead(upstreamResponse.status, copyUpstreamHeaders(upstreamResponse.headers));
   if (!upstreamResponse.body) {
+    logRelayEvent({
+      requestId,
+      route: "/chat/completions",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: upstreamResponse.status,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
     response.end();
     return;
   }
@@ -497,6 +588,15 @@ async function proxyChatCompletions(request, response) {
     Readable.fromWeb(upstreamResponse.body).pipe(response);
     response.on("finish", resolve);
     response.on("error", reject);
+  });
+  logRelayEvent({
+    requestId,
+    route: "/chat/completions",
+    taskId: task.id,
+    modelEntryId: entry.id,
+    upstreamStatus: upstreamResponse.status,
+    stream: Boolean(body.stream),
+    durationMs: Date.now() - startedAt
   });
 }
 
@@ -509,9 +609,9 @@ async function proxyAnthropicMessages(request, response) {
   }
 
   const state = await readState();
-  const resolved = resolveRelayBinding(state);
+  const resolved = resolveRelayBinding(state, CLAUDE_RELAY_TASK_ID);
   if (!resolved.ok) {
-    return relayError(response, resolved.statusCode, resolved.code, resolved.message);
+    return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
 
   const { task, entry } = resolved;
@@ -532,6 +632,8 @@ async function proxyAnthropicMessages(request, response) {
     modelId: entry.modelId,
     baseUrl: entry.baseUrl
   };
+  const requestId = makeRequestId();
+  const startedAt = Date.now();
 
   let upstreamResponse;
   try {
@@ -541,6 +643,15 @@ async function proxyAnthropicMessages(request, response) {
       body: bodyText
     });
   } catch (error) {
+    logRelayEvent({
+      requestId,
+      route: "/v1/messages",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: 502,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
     return relayError(
       response,
       502,
@@ -567,6 +678,15 @@ async function proxyAnthropicMessages(request, response) {
         ? upstreamPayload.error.message
         : upstreamText || `upstream returned ${upstreamResponse.status}`;
 
+    logRelayEvent({
+      requestId,
+      route: "/v1/messages",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: upstreamResponse.status,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
     return relayError(
       response,
       upstreamResponse.status,
@@ -581,6 +701,15 @@ async function proxyAnthropicMessages(request, response) {
 
   if (body.stream) {
     writeAnthropicStreamingResponse(response, anthropicPayload);
+    logRelayEvent({
+      requestId,
+      route: "/v1/messages",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: upstreamResponse.status,
+      stream: true,
+      durationMs: Date.now() - startedAt
+    });
     return;
   }
 
@@ -588,6 +717,158 @@ async function proxyAnthropicMessages(request, response) {
     "content-type": "application/json; charset=utf-8"
   });
   response.end(JSON.stringify(anthropicPayload));
+  logRelayEvent({
+    requestId,
+    route: "/v1/messages",
+    taskId: task.id,
+    modelEntryId: entry.id,
+    upstreamStatus: upstreamResponse.status,
+    stream: false,
+    durationMs: Date.now() - startedAt
+  });
+}
+
+async function listCodexModels(response) {
+  const state = await readState();
+  const resolved = resolveRelayBinding(state, CODEX_RELAY_TASK_ID);
+  if (!resolved.ok) {
+    return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
+  }
+
+  const { entry } = resolved;
+  return json(response, 200, {
+    object: "list",
+    data: [
+      {
+        id: entry.modelId,
+        object: "model",
+        created: Math.floor(Date.now() / 1000),
+        owned_by: entry.providerLabel || "relayhub",
+        root: entry.modelId
+      }
+    ]
+  });
+}
+
+async function proxyResponses(request, response) {
+  let body;
+  try {
+    body = await readJsonBody(request);
+  } catch {
+    return relayError(response, 400, "invalid_json", "请求体不是合法 JSON。");
+  }
+
+  const state = await readState();
+  const resolved = resolveRelayBinding(state, CODEX_RELAY_TASK_ID);
+  if (!resolved.ok) {
+    return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
+  }
+
+  const { task, entry } = resolved;
+  const upstreamBody = {
+    ...body,
+    model: entry.modelId
+  };
+  const bodyText = JSON.stringify(upstreamBody);
+  const relayContext = {
+    taskId: task.id,
+    modelEntryId: entry.id,
+    modelId: entry.modelId,
+    baseUrl: entry.baseUrl
+  };
+  const requestId = makeRequestId();
+  const startedAt = Date.now();
+
+  let upstreamResponse;
+  try {
+    upstreamResponse = await fetch(buildResponsesUpstreamUrl(entry.baseUrl), {
+      method: "POST",
+      headers: buildForwardHeaders(request, entry.apiKey, bodyText),
+      body: bodyText
+    });
+  } catch (error) {
+    logRelayEvent({
+      requestId,
+      route: "/v1/responses",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: 502,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
+    return relayError(
+      response,
+      502,
+      "upstream_unreachable",
+      `上游不可达或连接失败：${error instanceof Error ? error.message : "unknown error"}`,
+      relayContext
+    );
+  }
+
+  if (!upstreamResponse.ok) {
+    let upstreamPayload = null;
+    let upstreamText = "";
+
+    try {
+      upstreamText = await upstreamResponse.text();
+      upstreamPayload = upstreamText ? JSON.parse(upstreamText) : null;
+    } catch {
+      upstreamPayload = null;
+    }
+
+    const upstreamMessage =
+      upstreamPayload && typeof upstreamPayload === "object" && upstreamPayload.error &&
+      typeof upstreamPayload.error === "object" && typeof upstreamPayload.error.message === "string"
+        ? upstreamPayload.error.message
+        : upstreamText || `upstream returned ${upstreamResponse.status}`;
+
+    logRelayEvent({
+      requestId,
+      route: "/v1/responses",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: upstreamResponse.status,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
+    return relayError(
+      response,
+      upstreamResponse.status,
+      "upstream_error",
+      `RelayHub 转发失败，上游返回 ${upstreamResponse.status}：${upstreamMessage}`,
+      relayContext
+    );
+  }
+
+  response.writeHead(upstreamResponse.status, copyUpstreamHeaders(upstreamResponse.headers));
+  if (!upstreamResponse.body) {
+    logRelayEvent({
+      requestId,
+      route: "/v1/responses",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: upstreamResponse.status,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
+    response.end();
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
+    Readable.fromWeb(upstreamResponse.body).pipe(response);
+    response.on("finish", resolve);
+    response.on("error", reject);
+  });
+  logRelayEvent({
+    requestId,
+    route: "/v1/responses",
+    taskId: task.id,
+    modelEntryId: entry.id,
+    upstreamStatus: upstreamResponse.status,
+    stream: Boolean(body.stream),
+    durationMs: Date.now() - startedAt
+  });
 }
 
 async function countAnthropicTokens(request, response) {
@@ -615,8 +896,16 @@ async function handleRequest(request, response) {
     return json(response, 200, { ok: true });
   }
 
+  if (method === "GET" && url.pathname === "/v1/models") {
+    return listCodexModels(response);
+  }
+
   if (method === "POST" && (url.pathname === "/chat/completions" || url.pathname === "/v1/chat/completions")) {
     return proxyChatCompletions(request, response);
+  }
+
+  if (method === "POST" && url.pathname === "/v1/responses") {
+    return proxyResponses(request, response);
   }
 
   if (method === "POST" && url.pathname === "/v1/messages") {

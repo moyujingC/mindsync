@@ -42,20 +42,79 @@ test("GET /models returns public model entries without apiKey", async () => {
 
 test("POST /models/:id/test promotes a configured entry to active", async () => {
   await resetState();
+  const originalFetch = globalThis.fetch;
 
-  await withServer(async (baseUrl) => {
-    const response = await fetch(`${baseUrl}/models/preset-ppchat-relay/test`, {
-      method: "POST"
+  globalThis.fetch = async (input, init) => {
+    if (typeof input === "string" && input === "https://code.ppchat.vip/v1/models") {
+      return new Response(JSON.stringify({ data: [{ id: "gpt-5" }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    if (typeof input === "string" && input === "https://code.ppchat.vip/v1/responses") {
+      const body = init?.body ? JSON.parse(String(init.body)) : {};
+      if (body.stream) {
+        return new Response(
+          "event: response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"delta\":\"ok\"}\n\n"
+            + "event: response.completed\ndata: {\"type\":\"response.completed\"}\n\n",
+          {
+            status: 200,
+            headers: { "content-type": "text/event-stream; charset=utf-8" },
+          },
+        );
+      }
+
+      return new Response(
+        JSON.stringify({
+          id: "resp_probe",
+          object: "response",
+          status: "completed",
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+
+    if (typeof input === "string" && input === "https://code.ppchat.vip/v1/chat/completions") {
+      return new Response(
+        JSON.stringify({
+          id: "chatcmpl_probe",
+          object: "chat.completion",
+          choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }],
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+
+    return originalFetch(input, init);
+  };
+
+  try {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/models/preset-ppchat-relay/test`, {
+        method: "POST"
+      });
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      assert.equal(payload.status, "active");
+      assert.equal(payload.lastTestResult, "success");
+      assert.equal(payload.lastTestCode, "success");
+      assert.match(payload.lastTestMessage, /测试连接通过/);
+      assert.match(payload.statusNote, /连接测试通过/);
+      assert.equal(payload.capabilities.responses.ok, true);
+      assert.equal(payload.capabilities.responses.streamOk, true);
+      assert.equal(payload.capabilities.chatCompletions.ok, true);
     });
-    assert.equal(response.status, 200);
-    const payload = await response.json();
-
-    assert.equal(payload.status, "active");
-    assert.equal(payload.lastTestResult, "success");
-    assert.equal(payload.lastTestCode, "success");
-    assert.match(payload.lastTestMessage, /测试连接通过/);
-    assert.match(payload.statusNote, /连接测试通过/);
-  });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("POST /models/:id/test returns missing API key semantics", async () => {
@@ -159,6 +218,33 @@ test("PATCH /models/:id keeps AITechFlux preset base url and kind locked but all
     assert.equal(payload.modelId, "changed-model");
     assert.equal(payload.kind, "relay-api");
     assert.equal(payload.providerLabel, "custom-provider");
+  });
+});
+
+test("PATCH /models/:id resets stale capabilities after config changes", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/models/preset-ppchat-relay`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        providerLabel: "relayhub-managed",
+        modelId: "gpt-5-codex"
+      })
+    });
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.status, "configured-pending-test");
+    assert.equal(payload.lastTestResult, "idle");
+    assert.equal(payload.lastTestCode, "not-tested");
+    assert.equal(payload.lastTestedAt, null);
+    assert.equal(payload.capabilities.responses.ok, false);
+    assert.equal(payload.capabilities.responses.streamOk, false);
+    assert.equal(payload.capabilities.chatCompletions.ok, false);
   });
 });
 
@@ -319,6 +405,158 @@ test("GET /models/:id/catalog rejects invalid upstream payload", async () => {
   }
 });
 
+test("POST /models/:id/test marks chat-only relay as active but not Codex-bindable", async () => {
+  await resetState();
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (input, init) => {
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/models") {
+      return new Response(JSON.stringify({ data: [{ id: "claude-sonnet" }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/responses") {
+      return new Response(JSON.stringify({ error: { message: "responses unavailable" } }), {
+        status: 404,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/chat/completions") {
+      return new Response(
+        JSON.stringify({
+          id: "chatcmpl_chat_only",
+          object: "chat.completion",
+          choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }],
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+
+    return originalFetch(input, init);
+  };
+
+  try {
+    await withServer(async (baseUrl) => {
+      const saveResponse = await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          apiKey: "sk-aitechflux-test",
+        }),
+      });
+      assert.equal(saveResponse.status, 200);
+
+      const response = await fetch(`${baseUrl}/models/preset-aitechflux-relay/test`, {
+        method: "POST"
+      });
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      assert.equal(payload.status, "active");
+      assert.equal(payload.lastTestResult, "responses-unavailable");
+      assert.equal(payload.lastTestCode, "responses_unavailable");
+      assert.match(payload.lastTestMessage, /responses unavailable|仅支持 chat\/completions/);
+      assert.match(payload.statusNote, /仅支持 chat\/completions，不可绑定 Codex/);
+      assert.equal(payload.capabilities.responses.ok, false);
+      assert.equal(payload.capabilities.responses.streamOk, false);
+      assert.equal(payload.capabilities.chatCompletions.ok, true);
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("POST /models/:id/test marks stream-failed relay as test-failed with explicit Codex block reason", async () => {
+  await resetState();
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (input, init) => {
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/models") {
+      return new Response(JSON.stringify({ data: [{ id: "claude-sonnet" }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/responses") {
+      const body = init?.body ? JSON.parse(String(init.body)) : {};
+      if (body.stream) {
+        return new Response("event: response.created\ndata: {\"type\":\"response.created\"}\n\n", {
+          status: 200,
+          headers: { "content-type": "text/event-stream; charset=utf-8" },
+        });
+      }
+
+      return new Response(
+        JSON.stringify({
+          id: "resp_non_stream",
+          object: "response",
+          status: "completed",
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/chat/completions") {
+      return new Response(
+        JSON.stringify({
+          id: "chatcmpl_stream_fail",
+          object: "chat.completion",
+          choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }],
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+
+    return originalFetch(input, init);
+  };
+
+  try {
+    await withServer(async (baseUrl) => {
+      const saveResponse = await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          apiKey: "sk-aitechflux-test",
+        }),
+      });
+      assert.equal(saveResponse.status, 200);
+
+      const response = await fetch(`${baseUrl}/models/preset-aitechflux-relay/test`, {
+        method: "POST"
+      });
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      assert.equal(payload.status, "test-failed");
+      assert.equal(payload.lastTestResult, "responses-stream-unavailable");
+      assert.equal(payload.lastTestCode, "responses_stream_unavailable");
+      assert.match(payload.statusNote, /Responses 流式失败，不可绑定 Codex/);
+      assert.equal(payload.capabilities.responses.ok, true);
+      assert.equal(payload.capabilities.responses.streamOk, false);
+      assert.equal(payload.capabilities.chatCompletions.ok, true);
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("GET /tasks/:id/stats returns aggregated task stats", async () => {
   await resetState();
 
@@ -331,6 +569,100 @@ test("GET /tasks/:id/stats returns aggregated task stats", async () => {
     assert.ok(payload.totalRuns >= 2);
     assert.ok(Array.isArray(payload.modelStats));
   });
+});
+
+test("PATCH /tasks/:id rejects binding incompatible model to task-codex-repo", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/tasks/task-codex-repo`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        defaultModelEntryId: "preset-ppchat-relay"
+      })
+    });
+
+    assert.equal(response.status, 409);
+    const payload = await response.json();
+    assert.equal(payload.code, "incompatible_model_binding");
+    assert.match(payload.message, /Responses 流式探测/);
+  });
+});
+
+test("PATCH /tasks/:id still allows binding chat-only active model to task-claude-code", async () => {
+  await resetState();
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (input, init) => {
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/models") {
+      return new Response(JSON.stringify({ data: [{ id: "claude-sonnet" }] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/responses") {
+      return new Response(JSON.stringify({ error: { message: "responses unavailable" } }), {
+        status: 404,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    if (typeof input === "string" && input === "https://aitechflux.com/v1/chat/completions") {
+      return new Response(
+        JSON.stringify({
+          id: "chatcmpl_chat_only",
+          object: "chat.completion",
+          choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }],
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+
+    return originalFetch(input, init);
+  };
+
+  try {
+    await withServer(async (baseUrl) => {
+      const saveResponse = await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          apiKey: "sk-aitechflux-test",
+        }),
+      });
+      assert.equal(saveResponse.status, 200);
+
+      const testResponse = await fetch(`${baseUrl}/models/preset-aitechflux-relay/test`, {
+        method: "POST"
+      });
+      assert.equal(testResponse.status, 200);
+
+      const response = await fetch(`${baseUrl}/tasks/task-claude-code`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          defaultModelEntryId: "preset-aitechflux-relay"
+        })
+      });
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+      assert.equal(payload.defaultModelEntryId, "preset-aitechflux-relay");
+      assert.equal(payload.defaultModelEntryName, "AITechFlux 中转");
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("GET /api/control-plane/health works behind same-origin reverse proxy prefix", async () => {
