@@ -4,6 +4,13 @@ import { readState, toPublicModelEntry, writeState } from "./store.mjs";
 
 const port = Number(process.env.PORT ?? 4318);
 const proxyBasePath = "/api/control-plane";
+const PROBE_TIMEOUT_MS = 8000;
+const AIMANDALA_TASK_IDS = new Set([
+  "task-aimandala-lite-report",
+  "task-aimandala-pro-report",
+  "task-aimandala-chat",
+  "task-aimandala-vision"
+]);
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -48,12 +55,33 @@ function nowStamp() {
   }).format(new Date()).replace(/\//g, "-");
 }
 
+function defaultCapabilities(overrides = {}) {
+  return {
+    responses: {
+      ok: false,
+      streamOk: false,
+      ...(overrides.responses ?? {})
+    },
+    chatCompletions: {
+      ok: false,
+      ...(overrides.chatCompletions ?? {})
+    },
+    lastProbedAt: overrides.lastProbedAt ?? null,
+    lastErrorMessage: overrides.lastErrorMessage ?? null
+  };
+}
+
 function markTestOutcome(entry, outcome) {
   entry.lastTestResult = outcome.result;
   entry.lastTestCode = outcome.code;
   entry.lastTestMessage = outcome.message;
   entry.status = outcome.status;
   entry.statusNote = outcome.statusNote;
+  entry.capabilities = {
+    ...defaultCapabilities(),
+    ...(entry.capabilities ?? {}),
+    ...(outcome.capabilities ?? {})
+  };
 }
 
 function canFetchCatalog(entry) {
@@ -66,6 +94,305 @@ function canFetchCatalog(entry) {
 
 function buildCatalogUrl(baseUrl) {
   return `${baseUrl.replace(/\/+$/, "")}/models`;
+}
+
+function buildResponsesUrl(baseUrl) {
+  return `${baseUrl.replace(/\/+$/, "")}/responses`;
+}
+
+function buildChatCompletionsUrl(baseUrl) {
+  return `${baseUrl.replace(/\/+$/, "")}/chat/completions`;
+}
+
+function createProbeHeaders(apiKey) {
+  return {
+    Authorization: `Bearer ${apiKey}`,
+    "content-type": "application/json"
+  };
+}
+
+async function fetchWithTimeout(url, init) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
+  try {
+    return await fetch(url, {
+      ...init,
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function tryProbeJson(url, init) {
+  try {
+    const response = await fetchWithTimeout(url, init);
+    const text = await response.text();
+    let payload = null;
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      payload = null;
+    }
+    return {
+      ok: response.ok,
+      status: response.status,
+      payload,
+      text
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: null,
+      payload: null,
+      text: error instanceof Error ? error.message : "unknown error"
+    };
+  }
+}
+
+async function probeResponsesStream(entry) {
+  try {
+    const response = await fetchWithTimeout(buildResponsesUrl(entry.baseUrl), {
+      method: "POST",
+      headers: {
+        ...createProbeHeaders(entry.apiKey),
+        Accept: "text/event-stream"
+      },
+      body: JSON.stringify({
+        model: entry.modelId,
+        input: "Reply with exactly: ok",
+        stream: true
+      })
+    });
+
+    if (!response.ok || !response.body) {
+      const text = await response.text().catch(() => "");
+      return {
+        ok: false,
+        message:
+          summarizeUpstreamErrorBody(text ? safeJsonParse(text) : null) ??
+          text ??
+          `responses stream probe failed: ${response.status}`
+      };
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let aggregated = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+
+      aggregated += decoder.decode(value, { stream: true });
+      if (aggregated.includes("response.completed") || aggregated.includes("[DONE]")) {
+        break;
+      }
+    }
+
+    reader.releaseLock();
+
+    if (!aggregated.trim()) {
+      return {
+        ok: false,
+        message: "Responses 流式返回为空。"
+      };
+    }
+
+    if (!aggregated.includes("response.completed") && !aggregated.includes("response.output_text.delta")) {
+      return {
+        ok: false,
+        message: "Responses 流式返回不完整或无法识别。"
+      };
+    }
+
+    return {
+      ok: true,
+      message: null
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "unknown error"
+    };
+  }
+}
+
+function safeJsonParse(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+async function probeModelEntryCapabilities(entry) {
+  const capabilities = defaultCapabilities({
+    lastProbedAt: nowStamp()
+  });
+
+  if (!entry.hasStoredApiKey || !entry.apiKey) {
+    return {
+      outcome: {
+        result: "missing-api-key",
+        code: "missing_api_key",
+        message: "缺少 API Key，先补密钥再重新测试连接。",
+        status: "test-failed",
+        statusNote: "测试失败：还缺 API Key。下一步先补密钥。",
+        capabilities
+      }
+    };
+  }
+
+  if (!entry.baseUrl.startsWith("http")) {
+    return {
+      outcome: {
+        result: "invalid-base-url",
+        code: "invalid_base_url",
+        message: "Base URL 不合法，需以 http:// 或 https:// 开头。",
+        status: "test-failed",
+        statusNote: "测试失败：Base URL 格式不对。下一步先修正地址。",
+        capabilities
+      }
+    };
+  }
+
+  let catalogMessage = null;
+  if (entry.catalogFamily === "openai-compatible") {
+    const catalogProbe = await tryProbeJson(buildCatalogUrl(entry.baseUrl), {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${entry.apiKey}`
+      }
+    });
+    if (!catalogProbe.ok) {
+      catalogMessage =
+        summarizeUpstreamErrorBody(catalogProbe.payload) ??
+        catalogProbe.text ??
+        "上游 /models 探测失败。";
+    }
+  }
+
+  const responsesProbe = await tryProbeJson(buildResponsesUrl(entry.baseUrl), {
+    method: "POST",
+    headers: createProbeHeaders(entry.apiKey),
+    body: JSON.stringify({
+      model: entry.modelId,
+      input: "Reply with exactly: ok",
+      stream: false
+    })
+  });
+  capabilities.responses.ok = responsesProbe.ok;
+
+  const streamProbe = responsesProbe.ok ? await probeResponsesStream(entry) : { ok: false, message: null };
+  capabilities.responses.streamOk = responsesProbe.ok && streamProbe.ok;
+
+  const chatProbe = await tryProbeJson(buildChatCompletionsUrl(entry.baseUrl), {
+    method: "POST",
+    headers: createProbeHeaders(entry.apiKey),
+    body: JSON.stringify({
+      model: entry.modelId,
+      messages: [{ role: "user", content: "Reply with exactly: ok" }],
+      stream: false
+    })
+  });
+  capabilities.chatCompletions.ok = chatProbe.ok;
+
+  const firstFailure =
+    catalogMessage ??
+    (!responsesProbe.ok
+      ? summarizeUpstreamErrorBody(responsesProbe.payload) ?? responsesProbe.text ?? "Responses 不可用。"
+      : !streamProbe.ok
+        ? streamProbe.message ?? "Responses 流式不可用。"
+        : !chatProbe.ok
+          ? summarizeUpstreamErrorBody(chatProbe.payload) ?? chatProbe.text ?? "chat/completions 不可用。"
+          : null);
+
+  capabilities.lastErrorMessage = firstFailure;
+
+  if (capabilities.responses.ok && capabilities.responses.streamOk) {
+    return {
+      outcome: {
+        result: "success",
+        code: "success",
+        message: "测试连接通过，这个模型可绑定 Claude，也可绑定 Codex。",
+        status: "active",
+        statusNote: "连接测试通过：可绑定 Codex。",
+        capabilities
+      }
+    };
+  }
+
+  if (capabilities.responses.ok && !capabilities.responses.streamOk) {
+    return {
+      outcome: {
+        result: "responses-stream-unavailable",
+        code: "responses_stream_unavailable",
+        message: firstFailure ?? "上游可达，但 Responses 流式不可用。",
+        status: "test-failed",
+        statusNote: "上游可达但 Responses 流式失败，不可绑定 Codex。",
+        capabilities
+      }
+    };
+  }
+
+  if (!capabilities.responses.ok && capabilities.chatCompletions.ok) {
+    return {
+      outcome: {
+        result: "responses-unavailable",
+        code: "responses_unavailable",
+        message: firstFailure ?? "仅支持 chat/completions，不可绑定 Codex。",
+        status: "active",
+        statusNote: "仅支持 chat/completions，不可绑定 Codex。",
+        capabilities
+      }
+    };
+  }
+
+  return {
+    outcome: {
+      result: "upstream-unreachable",
+      code: "upstream_unreachable",
+      message: firstFailure ?? "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
+      status: "test-failed",
+      statusNote: "测试失败：上游暂时不可达。下一步检查地址或稍后重试。",
+      capabilities
+    }
+  };
+}
+
+function canBindTaskToEntry(taskId, entry) {
+  if (!entry) {
+    return {
+      ok: true
+    };
+  }
+
+  if (AIMANDALA_TASK_IDS.has(taskId) && entry.kind !== "domestic-model") {
+    return {
+      ok: false,
+      message: "AI曼陀罗 生产任务只允许绑定国产模型入口。"
+    };
+  }
+
+  if (taskId !== "task-codex-repo") {
+    return {
+      ok: true
+    };
+  }
+
+  if (!entry.capabilities?.responses?.ok || !entry.capabilities?.responses?.streamOk) {
+    return {
+      ok: false,
+      message: "当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。"
+    };
+  }
+
+  return {
+    ok: true
+  };
 }
 
 function summarizeUpstreamErrorBody(payload) {
@@ -356,6 +683,14 @@ async function handleRequest(request, response) {
       lastTestResult: "idle",
       lastTestCode: "not-tested",
       lastTestMessage: "还未开始测试连接。",
+      capabilities: defaultCapabilities(),
+      presetPriority: null,
+      recommendedTaskCategories: [],
+      recommendedTaskIds: [],
+      selectionReason: null,
+      activationHint: null,
+      costTier: null,
+      capabilityTags: [],
       tags: ["自定义"],
       apiKey: apiKey || null
     };
@@ -394,16 +729,18 @@ async function handleRequest(request, response) {
         entry.maskedApiKey = maskApiKey(body.apiKey);
       }
       entry.status = entry.hasStoredApiKey
-        ? entry.status === "active" ? "active" : "configured-pending-test"
+        ? "configured-pending-test"
         : entry.source === "preset" ? "preset-unconfigured" : "configured-pending-test";
       entry.statusNote = entry.hasStoredApiKey
         ? "配置已保存，请手动测试连接后再绑定任务。"
         : "已保存基础配置，补 API Key 后可测试连接。";
+      entry.lastTestedAt = null;
       entry.lastTestResult = "idle";
       entry.lastTestCode = "not-tested";
       entry.lastTestMessage = entry.hasStoredApiKey
         ? "配置刚更新，请重新测试连接确认是否可用。"
         : "还缺 API Key，暂时无法开始测试连接。";
+      entry.capabilities = defaultCapabilities();
       await writeState(state);
       return json(response, 200, toPublicModelEntry(entry));
     }
@@ -442,39 +779,8 @@ async function handleRequest(request, response) {
 
     if (method === "POST" && path === `/models/${id}/test`) {
       entry.lastTestedAt = nowStamp();
-      if (!entry.hasStoredApiKey || !entry.apiKey) {
-        markTestOutcome(entry, {
-          result: "missing-api-key",
-          code: "missing_api_key",
-          message: "缺少 API Key，先补密钥再重新测试连接。",
-          status: "test-failed",
-          statusNote: "测试失败：还缺 API Key。下一步先补密钥。"
-        });
-      } else if (!entry.baseUrl.startsWith("http")) {
-        markTestOutcome(entry, {
-          result: "invalid-base-url",
-          code: "invalid_base_url",
-          message: "Base URL 不合法，需以 http:// 或 https:// 开头。",
-          status: "test-failed",
-          statusNote: "测试失败：Base URL 格式不对。下一步先修正地址。"
-        });
-      } else if (entry.baseUrl.includes("fail")) {
-        markTestOutcome(entry, {
-          result: "upstream-unreachable",
-          code: "upstream_unreachable",
-          message: "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
-          status: "test-failed",
-          statusNote: "测试失败：上游暂时不可达。下一步检查地址或稍后重试。"
-        });
-      } else {
-        markTestOutcome(entry, {
-          result: "success",
-          code: "success",
-          message: "测试连接通过，这个模型现在可以绑定到任务。",
-          status: "active",
-          statusNote: "连接测试通过，可以绑定到任务默认模型。"
-        });
-      }
+      const probeResult = await probeModelEntryCapabilities(entry);
+      markTestOutcome(entry, probeResult.outcome);
       await writeState(state);
       return json(response, 200, toPublicModelEntry(entry));
     }
@@ -517,10 +823,21 @@ async function handleRequest(request, response) {
 
     if (method === "PATCH" && path === `/tasks/${id}`) {
       const body = await readJsonBody(request);
+      const nextEntryId = body.defaultModelEntryId ?? null;
+      const nextEntry = nextEntryId
+        ? state.modelEntries.find((item) => item.id === nextEntryId) ?? null
+        : null;
+      const bindingCheck = canBindTaskToEntry(task.id, nextEntry);
+      if (!bindingCheck.ok) {
+        return json(response, 409, {
+          code: "incompatible_model_binding",
+          message: bindingCheck.message
+        });
+      }
       task.name = String(body.name ?? task.name).trim();
       task.category = body.category ?? task.category;
       task.description = String(body.description ?? task.description).trim();
-      task.defaultModelEntryId = body.defaultModelEntryId ?? null;
+      task.defaultModelEntryId = nextEntryId;
       task.switchNote = String(body.switchNote ?? task.switchNote).trim();
       updateTaskNames(state);
       await writeState(state);

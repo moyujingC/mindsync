@@ -37,6 +37,10 @@
 - control-plane 数据目录：`/var/lib/relayhub/control-plane`
 - control-plane 环境文件：`/etc/default/relayhub-control-plane`
 - control-plane systemd：`/etc/systemd/system/relayhub-control-plane.service`
+- dev-relay 环境文件：`/etc/default/relayhub-dev-relay`
+- dev-relay systemd：`/etc/systemd/system/relayhub-dev-relay.service`
+- aimandala prod-relay 环境文件：`/etc/default/relayhub-prod-relay-aimandala`
+- aimandala prod-relay systemd：`/etc/systemd/system/relayhub-prod-relay-aimandala.service`
 
 ## 3. 构建方式
 
@@ -121,6 +125,50 @@ sudo CONTROL_PLANE_PORT=4318 \
   bash install-relayhub-control-plane-nginx-location.sh
 ```
 
+## 4.2 dev-relay 安装
+
+安装 Codex 专用 relay service：
+
+```bash
+cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
+  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub/projects/relayhub/dev-relay \
+  PORT=4319 \
+  DATA_DIR=/var/lib/relayhub/control-plane \
+  bash install-relayhub-dev-relay-service.sh
+```
+
+安装 nginx 上的 Claude / Codex 开发工作流入口：
+
+```bash
+cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+sudo CLAUDE_RELAY_PORT=4319 \
+  bash install-relayhub-claude-nginx-location.sh
+sudo CODEX_RELAY_PORT=4319 \
+  bash install-relayhub-codex-nginx-location.sh
+```
+
+## 4.3 AI曼陀罗 prod-relay 安装
+
+安装 AI曼陀罗 生产 relay service：
+
+```bash
+cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
+  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub/projects/relayhub/prod-relay/aimandala \
+  PORT=4320 \
+  DATA_DIR=/var/lib/relayhub/control-plane \
+  bash install-relayhub-prod-relay-aimandala-service.sh
+```
+
+安装 nginx 上的 AI曼陀罗 生产入口：
+
+```bash
+cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+sudo AIMANDALA_RELAY_PORT=4320 \
+  bash install-relayhub-prod-relay-aimandala-nginx-location.sh
+```
+
 ## 5. nginx 要求
 
 独立子域：
@@ -129,7 +177,11 @@ sudo CONTROL_PLANE_PORT=4318 \
 - `location /` 使用 `root /var/www/relayhub.jingshu.cc`
 - 子路由刷新时 fallback 到 `/index.html`
 - `location /api/control-plane/` 反代到本机 `relayhub-control-plane`
+- `location /claude/` 反代到本机 `relayhub-dev-relay`
+- `location /codex/v1/` 反代到本机 `relayhub-dev-relay`
+- `location /aimandala/v1/` 反代到本机 `relayhub-prod-relay-aimandala`
 - `location = /api` 与 `location /api/` 保留 disabled guard，直到真实 upstream 提供
+- `/api/control-plane/*`、`/api/* readonly`、`/claude/*`、`/codex/v1/*`、`/aimandala/v1/*` 五类位置必须完全分开
 
 兼容子路径：
 
@@ -159,7 +211,53 @@ sudo CONTROL_PLANE_PORT=4318 \
 - `control-plane` 继续消费自身已有 `/models`、`/tasks`、`/runs`、`/overview` 路径
 - `/api/control-plane/*` 与 `/api/models` 等 readonly 代理不混用
 
-## 5.1 Providers readonly upstream
+## 5.2 Codex 原生入口
+
+`/codex/v1/*` 固定承接 Codex-first 的原生 `Responses API` 路径：
+
+- `GET /codex/v1/models`
+- `POST /codex/v1/responses`
+
+当前口径：
+
+- nginx 去掉 `/codex/v1` 前缀后，再转给本机 `127.0.0.1:4319`
+- `dev-relay` 继续暴露 `/v1/models`、`/v1/responses`
+- 不做 `responses -> chat/completions` 协议转译
+- 该 location 必须显式开启 SSE（Server-Sent Events，服务端事件流）友好配置：
+  - `proxy_http_version 1.1`
+  - `proxy_buffering off`
+  - `proxy_request_buffering off`
+  - `proxy_read_timeout 600s`
+  - `gzip off`
+
+## 5.3 Claude release 入口
+
+`/claude/*` 固定承接 Claude Code 走 Anthropic 兼容的入口：
+
+- `POST /claude/v1/messages`
+- `POST /claude/v1/messages/count_tokens`
+- `POST /claude/chat/completions`
+- `POST /claude/v1/chat/completions`
+
+当前口径：
+
+- nginx 去掉 `/claude` 前缀后，再转给本机 `127.0.0.1:4319`
+- `dev-relay` 继续固定读取 `task-claude-code`
+- 不新增第二套 Claude 专用 service
+
+## 5.4 AI曼陀罗 生产入口
+
+`/aimandala/v1/*` 固定承接 AI曼陀罗 的 OpenAI-compatible 生产请求：
+
+- `POST /aimandala/v1/chat/completions`
+
+当前口径：
+
+- nginx 去掉 `/aimandala/v1` 前缀后，再转给本机 `127.0.0.1:4320`
+- `prod-relay/aimandala` 只接受任务模型别名，不接受直接把真实上游模型名写进产品配置
+- 生产任务只允许绑定 `domestic-model`
+
+## 5.5 Providers readonly upstream
 
 `/api` 必须等真实 upstream URL 与认证方式明确后再安装，不能把占位符写入正在生效的 nginx 配置。
 
@@ -196,6 +294,31 @@ curl -k https://relayhub.jingshu.cc/api/control-plane/health
 curl -k https://relayhub.jingshu.cc/api/control-plane/models
 ```
 
+dev-relay 安装后验证：
+
+```bash
+curl http://127.0.0.1:4319/health
+curl -k https://relayhub.jingshu.cc/claude/v1/messages/count_tokens \
+  -H 'content-type: application/json' \
+  --data '{"model":"relayhub-task-claude-code","messages":[{"role":"user","content":"hello"}]}'
+curl -k https://relayhub.jingshu.cc/codex/v1/models
+curl -k https://relayhub.jingshu.cc/codex/v1/responses \
+  -H 'content-type: application/json' \
+  --data '{"input":"Reply with exactly ok","stream":false}'
+curl -k -N https://relayhub.jingshu.cc/codex/v1/responses \
+  -H 'content-type: application/json' \
+  --data '{"input":"Reply with exactly ok","stream":true}'
+```
+
+AI曼陀罗 prod-relay 安装后验证：
+
+```bash
+curl http://127.0.0.1:4320/health
+curl -k https://relayhub.jingshu.cc/aimandala/v1/chat/completions \
+  -H 'content-type: application/json' \
+  --data '{"model":"relayhub-task-aimandala-lite-report","messages":[{"role":"user","content":"hello"}]}'
+```
+
 ## 6. 当前 release 实装记录
 
 截至 `2026-04-19`，release 节点已确认：
@@ -215,6 +338,9 @@ curl -k https://relayhub.jingshu.cc/api/control-plane/models
 - `relayhub-control-plane` service 可从独立 worktree 拉起
 - `https://relayhub.jingshu.cc/api/control-plane/health` 返回 `{"ok": true}`
 - `https://relayhub.jingshu.cc/api/control-plane/models` 返回模型条目 JSON
+- `https://relayhub.jingshu.cc/claude/*` 作为 Claude Code release 入口，需随本轮一并安装
+- `https://relayhub.jingshu.cc/codex/v1/*` 作为 Codex 原生入口，需随本轮一并安装
+- `https://relayhub.jingshu.cc/aimandala/v1/*` 作为 AI曼陀罗 生产入口，需随本轮一并安装
 
 尚未安装：
 
@@ -251,4 +377,18 @@ control-plane 服务：
 ```bash
 sudo systemctl restart relayhub-control-plane
 sudo systemctl status relayhub-control-plane --no-pager
+```
+
+dev-relay 服务：
+
+```bash
+sudo systemctl restart relayhub-dev-relay
+sudo systemctl status relayhub-dev-relay --no-pager
+```
+
+AI曼陀罗 prod-relay 服务：
+
+```bash
+sudo systemctl restart relayhub-prod-relay-aimandala
+sudo systemctl status relayhub-prod-relay-aimandala --no-pager
 ```

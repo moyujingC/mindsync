@@ -199,7 +199,8 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 - `AIMANDALA_LLM_API_KEY`（可选，取决于网关要求）
 - `AIMANDALA_LLM_API_KEY_HEADER`（可选，默认 `Authorization`）
 - `AIMANDALA_LLM_MODEL`（必填，默认模型）
-- `AIMANDALA_LLM_REPORT_MODEL`（可选，报告生成专用模型）
+- `AIMANDALA_LLM_LITE_MODEL`（可选，Lite 报告生成专用模型）
+- `AIMANDALA_LLM_PRO_MODEL`（可选，Pro 报告生成专用模型）
 - `AIMANDALA_LLM_CHAT_MODEL`（可选，报告追问专用模型）
 - `AIMANDALA_LLM_VISION_MODEL`（可选，三圈识别专用视觉模型）
 - `AIMANDALA_LLM_TIMEOUT_SECONDS`（可选，默认 `30`）
@@ -211,7 +212,8 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 - `AIMANDALA_LLM_BACKEND=noop` 时，Lite / Pro 仍走 deterministic 兜底，三圈识别回落为默认几何建议，report chat 不会得到真实模型回复
 - `release` 环境不应使用 `noop`，否则会退回开发兜底路径而不满足正式版交付要求
 - `openai_compatible` 当前基于 `/chat/completions` 协议，支持文本生成、JSON 结构生成和图片输入
-- `AIMANDALA_LLM_REPORT_MODEL / CHAT_MODEL / VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
+- `AIMANDALA_LLM_LITE_MODEL / PRO_MODEL / CHAT_MODEL / VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
+- 若接入 RelayHub prod-relay，建议把这些 `MODEL` 直接写成 RelayHub 任务别名，而不是上游真实模型名
 - 当前推荐把这组变量作为主配置；如果只想兼容旧报告网关，也仍可继续使用下面的 Prompt Runtime 配置
 
 最小示例：
@@ -221,12 +223,26 @@ export AIMANDALA_LLM_BACKEND=openai_compatible
 export AIMANDALA_LLM_BASE_URL="https://<your-gateway>/v1"
 export AIMANDALA_LLM_API_KEY="<your-api-key>"
 export AIMANDALA_LLM_MODEL="gpt-4.1"
-export AIMANDALA_LLM_REPORT_MODEL="gpt-4.1"
+export AIMANDALA_LLM_LITE_MODEL="gpt-4.1"
+export AIMANDALA_LLM_PRO_MODEL="gpt-4.1"
 export AIMANDALA_LLM_CHAT_MODEL="gpt-4.1-mini"
 export AIMANDALA_LLM_VISION_MODEL="gpt-4.1"
 export AIMANDALA_LLM_TIMEOUT_SECONDS=30
 export AIMANDALA_LLM_MAX_RETRIES=2
 export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
+```
+
+接入 RelayHub prod-relay 的推荐口径：
+
+```bash
+export AIMANDALA_LLM_BACKEND=openai_compatible
+export AIMANDALA_LLM_BASE_URL="https://relayhub.jingshu.cc/aimandala/v1"
+export AIMANDALA_LLM_API_KEY="relayhub-prod-token"
+export AIMANDALA_LLM_MODEL="relayhub-task-aimandala-lite-report"
+export AIMANDALA_LLM_LITE_MODEL="relayhub-task-aimandala-lite-report"
+export AIMANDALA_LLM_PRO_MODEL="relayhub-task-aimandala-pro-report"
+export AIMANDALA_LLM_CHAT_MODEL="relayhub-task-aimandala-chat"
+export AIMANDALA_LLM_VISION_MODEL="relayhub-task-aimandala-vision"
 ```
 
 ## Legacy Prompt Runtime 配置

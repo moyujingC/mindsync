@@ -17,6 +17,17 @@ export const seedModelEntries = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: {
+      responses: {
+        ok: false,
+        streamOk: false
+      },
+      chatCompletions: {
+        ok: false
+      },
+      lastProbedAt: null,
+      lastErrorMessage: null
+    },
     presetPriority: "recommended",
     recommendedTaskCategories: ["业务任务"],
     recommendedTaskIds: ["task-therapy-dialogue"],
@@ -45,6 +56,17 @@ export const seedModelEntries = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: {
+      responses: {
+        ok: false,
+        streamOk: false
+      },
+      chatCompletions: {
+        ok: false
+      },
+      lastProbedAt: null,
+      lastErrorMessage: null
+    },
     presetPriority: "recommended-first",
     recommendedTaskCategories: ["业务任务"],
     recommendedTaskIds: ["task-therapy-summary", "task-therapy-dialogue"],
@@ -73,6 +95,17 @@ export const seedModelEntries = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "已保存配置，建议手动测试连接后再绑定任务。",
+    capabilities: {
+      responses: {
+        ok: false,
+        streamOk: false
+      },
+      chatCompletions: {
+        ok: true
+      },
+      lastProbedAt: "2026-04-18 12:10",
+      lastErrorMessage: "上游可达，但尚未完成 Responses 流式探测。"
+    },
     presetPriority: "recommended-first",
     recommendedTaskCategories: ["通用工具"],
     recommendedTaskIds: ["task-claude-code", "task-codex-repo"],
@@ -101,6 +134,17 @@ export const seedModelEntries = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: {
+      responses: {
+        ok: false,
+        streamOk: false
+      },
+      chatCompletions: {
+        ok: false
+      },
+      lastProbedAt: null,
+      lastErrorMessage: null
+    },
     presetPriority: "recommended",
     recommendedTaskCategories: ["通用工具", "业务任务"],
     recommendedTaskIds: ["task-codex-repo", "task-therapy-summary"],
@@ -129,6 +173,17 @@ export const seedModelEntries = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: {
+      responses: {
+        ok: false,
+        streamOk: false
+      },
+      chatCompletions: {
+        ok: false
+      },
+      lastProbedAt: null,
+      lastErrorMessage: null
+    },
     presetPriority: "recommended",
     recommendedTaskCategories: ["业务任务"],
     recommendedTaskIds: ["task-therapy-dialogue"],
@@ -157,6 +212,17 @@ export const seedModelEntries = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: {
+      responses: {
+        ok: false,
+        streamOk: false
+      },
+      chatCompletions: {
+        ok: false
+      },
+      lastProbedAt: null,
+      lastErrorMessage: null
+    },
     presetPriority: "optional",
     recommendedTaskCategories: ["通用工具"],
     recommendedTaskIds: ["task-claude-code", "task-codex-repo"],
@@ -185,6 +251,17 @@ export const seedModelEntries = [
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: {
+      responses: {
+        ok: false,
+        streamOk: false
+      },
+      chatCompletions: {
+        ok: false
+      },
+      lastProbedAt: null,
+      lastErrorMessage: null
+    },
     presetPriority: "recommended",
     recommendedTaskCategories: ["通用工具"],
     recommendedTaskIds: ["task-claude-code", "task-codex-repo"],
@@ -237,6 +314,46 @@ export const seedTasks = [
     defaultModelEntryId: "preset-deepseek-v3",
     defaultModelEntryName: "DeepSeek V3 官方",
     switchNote: "可以在国产模型之间比较成本和摘要质量。"
+  },
+  {
+    id: "task-aimandala-lite-report",
+    name: "AI曼陀罗 Lite 报告",
+    category: "业务任务",
+    description: "承接 AI曼陀罗 Lite 报告生成，请求必须走国产正式候选。",
+    builtIn: true,
+    defaultModelEntryId: "preset-deepseek-v3",
+    defaultModelEntryName: "DeepSeek V3 官方",
+    switchNote: "只允许绑定国产模型，供 AI曼陀罗 Lite 报告主链路使用。"
+  },
+  {
+    id: "task-aimandala-pro-report",
+    name: "AI曼陀罗 Pro 报告",
+    category: "业务任务",
+    description: "承接 AI曼陀罗 Pro 报告生成，请求必须走国产正式候选。",
+    builtIn: true,
+    defaultModelEntryId: "preset-qwen-max",
+    defaultModelEntryName: "Qwen Max 官方",
+    switchNote: "只允许绑定国产模型，优先关注报告质量和边界稳定性。"
+  },
+  {
+    id: "task-aimandala-chat",
+    name: "AI曼陀罗 报告追问",
+    category: "业务任务",
+    description: "承接 AI曼陀罗 报告追问与对话，请求必须走国产正式候选。",
+    builtIn: true,
+    defaultModelEntryId: "preset-qwen-max",
+    defaultModelEntryName: "Qwen Max 官方",
+    switchNote: "只允许绑定国产模型，优先关注对话质量与边界控制。"
+  },
+  {
+    id: "task-aimandala-vision",
+    name: "AI曼陀罗 三圈识别",
+    category: "业务任务",
+    description: "承接 AI曼陀罗 图片识别与视觉链路，请求必须走国产正式候选。",
+    builtIn: true,
+    defaultModelEntryId: "preset-volcengine-doubao",
+    defaultModelEntryName: "豆包 1.5 Pro 官方",
+    switchNote: "只允许绑定国产模型，优先关注视觉识别稳定性。"
   }
 ];
 

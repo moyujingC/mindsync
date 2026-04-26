@@ -46,7 +46,7 @@ def test_create_llm_client_from_env_returns_openai_compatible_client():
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
             "AIMANDALA_LLM_API_KEY": "secret",
             "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_REPORT_MODEL": "gpt-report",
+            "AIMANDALA_LLM_LITE_MODEL": "gpt-report",
             "AIMANDALA_LLM_CHAT_MODEL": "gpt-chat",
             "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
             "AIMANDALA_LLM_TIMEOUT_SECONDS": "18",
@@ -60,6 +60,8 @@ def test_create_llm_client_from_env_returns_openai_compatible_client():
     assert isinstance(client, OpenAICompatibleLLMClient)
     assert client.config.default.base_url == "https://example.com/v1"
     assert client.config.default.model == "gpt-test"
+    assert client.config.lite_report is not None
+    assert client.config.lite_report.model == "gpt-report"
     assert client.config.chat is not None
     assert client.config.chat.model == "gpt-chat"
     assert client.config.vision is not None
@@ -104,6 +106,33 @@ def test_create_llm_client_from_env_supports_task_specific_overrides():
     assert client.config.chat.model == "moonshot-v1-8k"
     assert client.config.vision is not None
     assert client.config.vision.model == "ep-vision"
+
+
+def test_create_llm_client_from_env_supports_relayhub_task_alias_models():
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://relayhub.jingshu.cc/aimandala/v1",
+            "AIMANDALA_LLM_API_KEY": "relayhub-prod-token",
+            "AIMANDALA_LLM_MODEL": "relayhub-task-aimandala-lite-report",
+            "AIMANDALA_LLM_PRO_MODEL": "relayhub-task-aimandala-pro-report",
+            "AIMANDALA_LLM_CHAT_MODEL": "relayhub-task-aimandala-chat",
+            "AIMANDALA_LLM_VISION_MODEL": "relayhub-task-aimandala-vision",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
+
+    assert isinstance(client, OpenAICompatibleLLMClient)
+    assert client.config.default.base_url == "https://relayhub.jingshu.cc/aimandala/v1"
+    assert client.config.default.model == "relayhub-task-aimandala-lite-report"
+    assert client.config.pro_report is not None
+    assert client.config.pro_report.model == "relayhub-task-aimandala-pro-report"
+    assert client.config.chat is not None
+    assert client.config.chat.model == "relayhub-task-aimandala-chat"
+    assert client.config.vision is not None
+    assert client.config.vision.model == "relayhub-task-aimandala-vision"
 
 
 def test_create_llm_client_from_env_supports_legacy_model_envs():
