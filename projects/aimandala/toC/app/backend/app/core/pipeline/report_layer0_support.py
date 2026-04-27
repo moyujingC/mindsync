@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from .data_models import InterpretationRecord, Layer0Raw
+from .report_generation_contracts import Layer0BuildBlockedError
 from .report_blueprints import LITE_REPORT_BLUEPRINT
 
 ELEMENT_KEY_TO_CN = {
@@ -39,13 +40,18 @@ class ReportLayer0Support:
     def build_placeholder(self, record: InterpretationRecord) -> Layer0Raw:
         layer0_assembler = self._get_layer0_assembler()
         if layer0_assembler is not None:
-            layer = layer0_assembler.build_from_record(
-                record,
-                extract_colors_by_circles=self._extract_colors_by_circles,
-                analyze_energy_flow=self._analyze_energy_flow,
-            )
-            if layer is not None:
-                return layer
+            try:
+                layer = layer0_assembler.build_from_record(
+                    record,
+                    extract_colors_by_circles=self._extract_colors_by_circles,
+                    analyze_energy_flow=self._analyze_energy_flow,
+                )
+                if layer is not None:
+                    return layer
+            except Layer0BuildBlockedError as error:
+                if error.layer_0_raw is not None:
+                    return error.layer_0_raw
+                raise
             return layer0_assembler.build_fallback(record)
 
         return self.build_fallback(record)

@@ -88,6 +88,9 @@ class Layer0Raw:
     input_package: Dict[str, Any] = field(default_factory=dict)
     visual_analysis_basis: Dict[str, Any] = field(default_factory=dict)
     visual_facts: Dict[str, Any] = field(default_factory=dict)
+    layer0_passed: bool = True
+    layer0_failure_reason: str = ""
+    layer0_failure_detail: Dict[str, Any] = field(default_factory=dict)
     knowledge_hits: Dict[str, Any] = field(default_factory=dict)
     rule_evaluations: Dict[str, Any] = field(default_factory=dict)
     theme_projection: Dict[str, Any] = field(default_factory=dict)
@@ -155,6 +158,9 @@ class Layer0Raw:
             "input_package": self.input_package,
             "visual_analysis_basis": self.visual_analysis_basis,
             "visual_facts": self.visual_facts,
+            "layer0_passed": self.layer0_passed,
+            "layer0_failure_reason": self.layer0_failure_reason,
+            "layer0_failure_detail": self.layer0_failure_detail,
             "knowledge_hits": self.knowledge_hits,
             "rule_evaluations": self.rule_evaluations,
             "theme_projection": self.theme_projection,
