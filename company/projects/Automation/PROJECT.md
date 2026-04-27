@@ -147,6 +147,7 @@
 6. [2026-04-27-项目工作区与执行工作区分层-SPEC.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-SPEC.md)
 7. [2026-04-27-项目工作区与执行工作区分层-PLAN.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-PLAN.md)
 8. [2026-04-27-项目工作区与执行工作区分层-QA.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-QA.md)
+9. [2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md)
 
 如果你要看当前首个正式落地项目的部署与运维细节，再进入：
 
