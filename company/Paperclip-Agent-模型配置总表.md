@@ -42,7 +42,7 @@
 | 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主工程链路 |
 | 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主测试链路 |
 | 需求澄清 | Idea Clarifier | `pi_local` | `https://ark.cn-beijing.volces.com/api/coding/v3` | `volcengine-coding-plan/Doubao-Seed-2.0-pro` | `pi` 自定义 provider + 服务器环境变量 `OPENAI_API_KEY` | 当前为独立链路，不与 CEO 强制统一 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前主“火山 Coding Plan”链路 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前主 `PPChat` 链路，`AITechFlux` 为备用 |
 
 ## 3. 分组展开
 
@@ -124,11 +124,11 @@
 - `Research & Knowledge Lead`
 - `Content Lead`
 
-它们当前共享同一组模型入口：
+它们当前共享的主模型入口为：
 
 - Adapter：`claude_local`
-- Base URL：`https://ark.cn-beijing.volces.com/api/coding`
-- Model：`ark-code-latest`
+- Base URL：`https://code.ppchat.vip/v1`
+- Model：`gpt-5.4`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
   - `ANTHROPIC_BASE_URL`
@@ -140,12 +140,22 @@
 
 当前明确口径：
 
-- 这组 Agent 使用的是火山引擎 `Coding Plan` 兼容接口
+- 这组 Agent 当前默认走 `PPChat` 中转
+- 当前主模型固定为 `gpt-5.4`
 - 当前采用 API-key 模式，而不是 Claude 登录态模式
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
   - 且状态为 `warn`
   - 这是预期现象，不单独视为故障
+
+当前备用口径：
+
+- 备用 Base URL：`https://aitechflux.com/v1`
+- 备用模型：`Claude混合版`
+- 说明：
+  - 这是当前按“Claude Sonnet 类入口”理解的 `AITechFlux` 备用模型
+  - 当前文档只把它定义为备用配置口径
+  - 尚不代表 `Paperclip` 已实现自动跨上游失败回退
 
 当前面板解读规则：
 
@@ -194,6 +204,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - 主要吃服务器侧 `OPENAI_*`
 - `claude_local`
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
+  - 当前主链路默认值应为 `PPChat + gpt-5.4`
 - `codex_local`
   - 主要吃自身 provider 配置，当前指向 `https://code.ppchat.vip/v1`
 - automation 节点国际出网当前通过阿里云美国机 `tinyproxy` 辅助
@@ -219,7 +230,8 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
 - 规划/产品/内容/研究类 Agent
-  - `claude_local + ark-code-latest`
+  - `claude_local + PPChat + gpt-5.4`
+  - `AITechFlux + Claude混合版` 作为备用口径保留
 - `Idea Clarifier`
   - `pi_local + volcengine-coding-plan/Doubao-Seed-2.0-pro`
   - `HOME=/paperclip`
