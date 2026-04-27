@@ -39,3 +39,4 @@
 - [2026-04-27-v1-VS-Code-Claude-Code-主路径收口-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-主路径收口-交付说明.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-交付说明.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环-交付说明.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口-交付说明.md)

@@ -29,6 +29,7 @@
 - `ANTHROPIC_DEFAULT_SONNET_MODEL=relayhub-task-claude-code`
 - `ANTHROPIC_DEFAULT_HAIKU_MODEL=relayhub-task-claude-code`
 - 默认追加 `--setting-sources local`
+- 如当前 `Claude Code` 版本支持，才会追加 `--bare`
 
 这套口径的目的很简单：
 
@@ -43,10 +44,17 @@
 - `control-plane`
 - `dev-relay`
 
+当前这台机器上的最短启动方式固定为：
+
+```bash
+cd projects/relayhub/control-plane && npm start
+cd projects/relayhub/dev-relay && npm start
+```
+
 并确认：
 
 - `task-claude-code` 存在
-- `task-claude-code.defaultModelEntryId` 已绑定到一个可用入口
+- `task-claude-code.defaultModelEntryId` 已绑定到一个已测试成功的可用入口
 
 当前默认还要记住：
 
@@ -64,9 +72,11 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 
 这一步会：
 
-1. 读取并回写 `task-claude-code` 当前绑定
+1. 读取 `task-claude-code` 当前绑定
 2. 通过统一入口启动本机 `Claude Code`
 3. 验证请求实际命中本地 `dev-relay`
+
+如果当前绑定入口还没激活，这个 smoke 会直接报清楚原因，而不会再偷偷改绑到别的历史实验入口。
 
 成功标准：
 
@@ -107,13 +117,38 @@ source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
 6. 再让你的本地 `Claude Code` 使用与统一入口相同的环境口径
 7. 如果后台进程行为和前台不一致，优先排查是否仍受用户级 `~/.claude/settings.json` 或旧环境变量污染
 
+### 5.0 当前这台机器的最短可用步骤
+
+今天要尽快在这台 Mac 上顺手用起来，推荐按这条最短路径走：
+
+1. 启动本地 `control-plane`
+2. 启动本地 `dev-relay`
+3. 确认 worktree 根 `.vscode/settings.json` 已落地
+4. 确认 `~/.claude/settings.json` 不再保留 `env.ANTHROPIC_*` 冲突项
+5. 在模型库把 `task-claude-code` 当前绑定入口测试成 `active`
+6. 跑 `bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh`
+7. 跑 `bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh`
+8. 重载 `VS Code` 后再发起真实 `Claude Code` 请求
+
+### 5.1 本机直接可用口径
+
+如果目标是让当前这台机器尽快顺手可用，本轮正式默认动作是：
+
+1. 在 worktree 根落地 `.vscode/settings.json`
+2. 移除或清空 `~/.claude/settings.json` 里会覆盖 relay 的 `env.ANTHROPIC_*`
+3. 启动本地 `control-plane`
+4. 启动本地 `dev-relay`
+5. 跑检查脚本
+6. 跑 `local-claude-code-cli-smoke.sh`
+7. 重载 `VS Code`
+
 这轮文档收口的结论是：
 
 - `CLI` smoke 是底层真链路验证
 - `VS Code` 使用面必须继承同一套 relay 环境
 - 不能把“单次 CLI 跑通”直接当成“后台 Claude Code 已稳定”
 
-### 5.1 模板与本地文件的边界
+### 5.2 模板与本地文件的边界
 
 这里要严格区分两类文件：
 
@@ -126,7 +161,7 @@ source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
 
 因此本轮正式口径不是“仓库帮你自动改 VS Code”，而是“仓库给出唯一推荐模板，你按模板落到本地工作区”。
 
-### 5.2 只读检查脚本
+### 5.3 只读检查脚本
 
 这轮新增的检查入口是：
 

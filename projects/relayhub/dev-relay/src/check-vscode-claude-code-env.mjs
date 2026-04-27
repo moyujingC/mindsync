@@ -17,6 +17,7 @@ const EXPECTED_KEYS = [
 
 const USER_CLAUDE_CONFLICT_KEYS = [
   "ANTHROPIC_BASE_URL",
+  "ANTHROPIC_AUTH_TOKEN",
   "ANTHROPIC_MODEL",
   "ANTHROPIC_DEFAULT_OPUS_MODEL",
   "ANTHROPIC_DEFAULT_SONNET_MODEL",
@@ -118,9 +119,23 @@ function collectUserClaudeConflicts(settings) {
   for (const key of USER_CLAUDE_CONFLICT_KEYS) {
     if (settings[key] !== undefined && settings[key] !== null && settings[key] !== "") {
       conflicts.push({
+        source: "top-level",
         key,
         value: settings[key]
       });
+    }
+  }
+
+  const nestedEnv = settings.env;
+  if (nestedEnv && typeof nestedEnv === "object") {
+    for (const key of USER_CLAUDE_CONFLICT_KEYS) {
+      if (nestedEnv[key] !== undefined && nestedEnv[key] !== null && nestedEnv[key] !== "") {
+        conflicts.push({
+          source: "env",
+          key,
+          value: nestedEnv[key]
+        });
+      }
     }
   }
 
@@ -199,7 +214,7 @@ export async function checkClaudeCodeEnv({
     if (conflicts.length > 0) {
       for (const conflict of conflicts) {
         findings.push(
-          `fix next user-claude conflict ${conflict.key} value=${conflict.value} path=${userClaudeSettingsPath}`
+          `fix next user-claude ${conflict.source} conflict ${conflict.key} value=${conflict.value} path=${userClaudeSettingsPath}`
         );
       }
       status = "fix next";

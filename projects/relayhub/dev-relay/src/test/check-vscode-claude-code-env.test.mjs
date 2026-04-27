@@ -107,8 +107,11 @@ test("reports fix next when user claude settings contain override keys", async (
   await withTempWorkspace(async ({ root, homeDir, workspaceSettingsPath, userClaudeSettingsPath }) => {
     await writeWorkspaceSettings(workspaceSettingsPath);
     await writeUserClaudeSettings(userClaudeSettingsPath, {
-      ANTHROPIC_BASE_URL: "https://aitechflux.com",
-      ANTHROPIC_MODEL: "claude-sonnet"
+      env: {
+        ANTHROPIC_BASE_URL: "https://aitechflux.com/v1",
+        ANTHROPIC_AUTH_TOKEN: "sk-aitechflux",
+        ANTHROPIC_MODEL: "claude-sonnet"
+      }
     });
 
     const result = await checkClaudeCodeEnv({
@@ -118,7 +121,8 @@ test("reports fix next when user claude settings contain override keys", async (
     });
 
     assert.equal(result.status, "fix next");
-    assert.ok(result.findings.some((line) => line.includes("user-claude conflict ANTHROPIC_BASE_URL")));
+    assert.ok(result.findings.some((line) => line.includes("user-claude env conflict ANTHROPIC_BASE_URL")));
+    assert.ok(result.findings.some((line) => line.includes("user-claude env conflict ANTHROPIC_AUTH_TOKEN")));
   });
 });
 
