@@ -36,3 +36,4 @@
 - [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环实施任务.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环实施任务.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口实施任务.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口实施任务.md)
+- [2026-04-27-v1-Claude-Code-双中转入口便捷切换实施任务.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/tasks/2026-04-27-v1-Claude-Code-双中转入口便捷切换实施任务.md)

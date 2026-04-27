@@ -499,6 +499,56 @@ describe("RelayHub console routes", () => {
     );
   });
 
+  it("shows dedicated PPChat and AITechFlux relay candidates for Claude Code", async () => {
+    vi.spyOn(controlPlaneService, "listModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "configured-pending-test",
+      },
+      {
+        ...seedModelEntries[5]!,
+        id: "preset-aitechflux-relay",
+        name: "AITechFlux 中转",
+        providerLabel: "AITechFlux",
+        kind: "relay-api",
+        source: "preset",
+        baseUrl: "https://aitechflux.com/v1",
+        modelId: "高性能低价模型",
+        purchaseUrl: "https://aitechflux.com/",
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+        hasStoredApiKey: true,
+        maskedApiKey: "sk-aite...test",
+        lastTestedAt: "2026-04-27 21:42",
+        lastTestResult: "responses-unavailable",
+        lastTestCode: "responses_unavailable",
+        lastTestMessage: "not implemented",
+        capabilities: {
+          responses: { ok: false, streamOk: false },
+          chatCompletions: { ok: true },
+          lastProbedAt: "2026-04-27 21:42",
+          lastErrorMessage: "not implemented",
+        },
+        presetPriority: "recommended",
+        recommendedTaskCategories: ["通用工具"],
+        recommendedTaskIds: ["task-claude-code", "task-codex-repo"],
+        selectionReason: "第三方中转入口，可复用 URL + Key，并在工具内切换默认模型。",
+        activationHint: "先在 AITechFlux 开通或充值，再填 API Key 测试连接。",
+        costTier: "中",
+        capabilityTags: ["编码", "中转 API", "入口复用"],
+        tags: ["中转 API", "第三方中转", "Claude"],
+      },
+    ]);
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByRole("button", { name: "测试 PPChat 中转" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "当前已绑定" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "测试 AITechFlux 中转" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "切换到 AITechFlux 中转" })).toBeInTheDocument();
+    expect(await screen.findByText("当前推荐直接在这里切 `PPChat` 和 `AITechFlux`，不用先去模型库再回任务库。")).toBeInTheDocument();
+  });
+
   it("shows recommended candidates for tasks based on active models", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {

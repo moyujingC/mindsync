@@ -19,6 +19,10 @@
 
 - `projects/relayhub/dev-relay/run-claude-code-with-relay.sh`
 
+当前 `mindsync` 项目的共享默认配置还应收口到：
+
+- `.claude/settings.json`
+
 默认行为固定为：
 
 - `ANTHROPIC_BASE_URL=http://127.0.0.1:4319`
@@ -36,6 +40,7 @@
 - 让 `Claude Code` 固定命中本地 `dev-relay`
 - 避免用户级 `~/.claude/settings.json` 把请求带去别的上游
 - 保证后续请求统一跟随 `task-claude-code` 当前绑定
+- 让同一个 `mindsync` 仓库下的其他 workspace 也继承同一套 `Claude Code` 项目级配置
 
 ## 3. 使用前提
 
@@ -93,6 +98,7 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 - 不要只改单个 `ANTHROPIC_BASE_URL`
 - 要通过统一入口一次性导出完整 `ANTHROPIC_*`
 - 默认保留 `--setting-sources local`
+- `mindsync` 仓库根 `.claude/settings.json` 作为项目级共享默认值
 
 当前阶段的推荐做法是：
 
@@ -123,43 +129,50 @@ source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
 
 1. 启动本地 `control-plane`
 2. 启动本地 `dev-relay`
-3. 确认 worktree 根 `.vscode/settings.json` 已落地
-4. 确认 `~/.claude/settings.json` 不再保留 `env.ANTHROPIC_*` 冲突项
-5. 在模型库把 `task-claude-code` 当前绑定入口测试成 `active`
+3. 确认仓库根 `.claude/settings.json` 已存在
+4. 确认 worktree 根 `.vscode/settings.json` 已落地
+5. 确认 `~/.claude/settings.json` 不再保留 `env.ANTHROPIC_*` 冲突项
 6. 跑 `bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh`
 7. 跑 `bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh`
 8. 重载 `VS Code` 后再发起真实 `Claude Code` 请求
+
+如果你打开的是同一个 `mindsync` 项目下的其他 workspace，这份仓库根 `.claude/settings.json` 应该继续提供同一套默认 relay 配置。
 
 ### 5.1 本机直接可用口径
 
 如果目标是让当前这台机器尽快顺手可用，本轮正式默认动作是：
 
-1. 在 worktree 根落地 `.vscode/settings.json`
-2. 移除或清空 `~/.claude/settings.json` 里会覆盖 relay 的 `env.ANTHROPIC_*`
-3. 启动本地 `control-plane`
-4. 启动本地 `dev-relay`
-5. 跑检查脚本
-6. 跑 `local-claude-code-cli-smoke.sh`
-7. 重载 `VS Code`
+1. 在仓库根落地 `.claude/settings.json`
+2. 在当前 workspace 根落地 `.vscode/settings.json`
+3. 移除或清空 `~/.claude/settings.json` 里会覆盖 relay 的 `env.ANTHROPIC_*`
+4. 启动本地 `control-plane`
+5. 启动本地 `dev-relay`
+6. 跑检查脚本
+7. 跑 `local-claude-code-cli-smoke.sh`
+8. 重载 `VS Code`
 
 这轮文档收口的结论是：
 
 - `CLI` smoke 是底层真链路验证
-- `VS Code` 使用面必须继承同一套 relay 环境
+- 仓库根 `.claude/settings.json` 是 `mindsync` 级共享默认入口
+- `VS Code` workspace 下的 `.vscode/settings.json` 是补充性的宿主兜底
 - 不能把“单次 CLI 跑通”直接当成“后台 Claude Code 已稳定”
 
 ### 5.2 模板与本地文件的边界
 
-这里要严格区分两类文件：
+这里要严格区分三类文件：
 
+- 仓库根 `.claude/settings.json`
+  - 项目级共享默认配置
+  - 进入同一个 `mindsync` 仓库时应默认生效
 - 仓库内可提交模板：
   - 只用于参考和复制
   - 不会自动改变你的 `VS Code`
 - 你本地工作区下的 `.vscode/settings.json`
-  - 这是实际生效文件
+  - 这是实际宿主进程可能会读取的补充配置
   - 不提交到仓库
 
-因此本轮正式口径不是“仓库帮你自动改 VS Code”，而是“仓库给出唯一推荐模板，你按模板落到本地工作区”。
+因此本轮正式口径不是“只靠某个 workspace 的 `.vscode` 文件”，而是“`mindsync` 根 `.claude/settings.json` + 本地 `.vscode/settings.json` 共同兜底”。
 
 ### 5.3 只读检查脚本
 

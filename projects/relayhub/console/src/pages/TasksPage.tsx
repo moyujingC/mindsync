@@ -9,10 +9,12 @@ import type {
   TaskTemplateInput,
 } from "../models/controlPlane";
 import {
+  listModelEntries,
   deleteTaskTemplate,
   listActiveModelEntries,
   listTaskTemplates,
   saveTaskTemplate,
+  testModelEntryConnection,
   verifyClaudeCodeRelay,
 } from "../services/controlPlane";
 
@@ -37,9 +39,13 @@ export function TasksPage() {
   const [relayVerificationMessage, setRelayVerificationMessage] = useState<string | null>(null);
   const [relayVerificationError, setRelayVerificationError] = useState<string | null>(null);
   const [isVerifyingRelay, setIsVerifyingRelay] = useState(false);
+  const [testingModelEntryId, setTestingModelEntryId] = useState<string | null>(null);
+  const [claudeSwitchFeedback, setClaudeSwitchFeedback] = useState<string | null>(null);
+  const [claudeSwitchError, setClaudeSwitchError] = useState<string | null>(null);
 
   const tasks = useAsyncResource(() => listTaskTemplates(), [version]);
   const activeModels = useAsyncResource(() => listActiveModelEntries(), [version]);
+  const modelEntries = useAsyncResource(() => listModelEntries(), [version]);
 
   const builtInTasks = useMemo(
     () => tasks.data?.filter((item) => item.builtIn) ?? [],
@@ -53,6 +59,13 @@ export function TasksPage() {
   const claudeCodeTask = useMemo(
     () => tasks.data?.find((item) => item.id === "task-claude-code") ?? null,
     [tasks.data],
+  );
+  const claudeRelayCandidates = useMemo(
+    () =>
+      modelEntries.data?.filter((item) =>
+        item.id === "preset-ppchat-relay" || item.id === "preset-aitechflux-relay",
+      ) ?? [],
+    [modelEntries.data],
   );
 
   function resolveDraftValue(task: TaskTemplate) {
@@ -116,6 +129,8 @@ export function TasksPage() {
 
     setFeedback(null);
     setError(null);
+    setClaudeSwitchFeedback(null);
+    setClaudeSwitchError(null);
     setRowSavingTaskId(task.id);
 
     try {
@@ -135,8 +150,16 @@ export function TasksPage() {
       setFeedback(
         `“${task.name}”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。`,
       );
+      if (task.id === "task-claude-code") {
+        const nextModelName =
+          modelEntries.data?.find((item) => item.id === nextModelEntryId)?.name ?? "未命名入口";
+        setClaudeSwitchFeedback(`Claude Code 已切换到 ${nextModelName}。后续请求会跟随这个入口。`);
+      }
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : "默认模型切换失败。");
+      if (task.id === "task-claude-code") {
+        setClaudeSwitchError(currentError instanceof Error ? currentError.message : "Claude Code 当前模型切换失败。");
+      }
       setRowDrafts((current) => ({
         ...current,
         [task.id]: task.defaultModelEntryId ?? "",
@@ -149,6 +172,8 @@ export function TasksPage() {
   async function handleVerifyClaudeCodeRelay() {
     setRelayVerificationMessage(null);
     setRelayVerificationError(null);
+    setClaudeSwitchFeedback(null);
+    setClaudeSwitchError(null);
     setIsVerifyingRelay(true);
 
     try {
@@ -161,6 +186,64 @@ export function TasksPage() {
     } finally {
       setIsVerifyingRelay(false);
     }
+  }
+
+  async function handleTestClaudeRelayCandidate(entryId: string) {
+    setFeedback(null);
+    setError(null);
+    setRelayVerificationMessage(null);
+    setRelayVerificationError(null);
+    setClaudeSwitchFeedback(null);
+    setClaudeSwitchError(null);
+    setTestingModelEntryId(entryId);
+
+    try {
+      const result = await testModelEntryConnection(entryId);
+      setVersion((current) => current + 1);
+      setClaudeSwitchFeedback(`${result.name} 测试完成，当前状态：${result.status}。`);
+    } catch (currentError) {
+      setClaudeSwitchError(currentError instanceof Error ? currentError.message : "入口测试失败。");
+    } finally {
+      setTestingModelEntryId(null);
+    }
+  }
+
+  function renderClaudeRelayCandidate(entry: ModelEntry) {
+    const isBound = claudeCodeTask?.defaultModelEntryId === entry.id;
+    const isActive = entry.status === "active";
+    const isSwitching = rowSavingTaskId === claudeCodeTask?.id;
+
+    return (
+      <article key={entry.id} className="data-card">
+        <span className="mini-label">{entry.name}</span>
+        <p>当前状态：{entry.status}</p>
+        <p className="supporting-text">
+          {isBound ? "当前 Claude Code 正在使用这个入口。" : "当前 Claude Code 没有绑定到这个入口。"}
+        </p>
+        {entry.lastTestMessage ? <p className="supporting-text">最近结果：{entry.lastTestMessage}</p> : null}
+        <div className="inline-actions">
+          <button
+            type="button"
+            className="button-link secondary"
+            onClick={() => handleTestClaudeRelayCandidate(entry.id)}
+            disabled={testingModelEntryId === entry.id}
+          >
+            {testingModelEntryId === entry.id ? "正在测试入口..." : `测试 ${entry.name}`}
+          </button>
+          <button
+            type="button"
+            className="button-link"
+            onClick={() => claudeCodeTask && handleQuickSwitch(claudeCodeTask, entry.id)}
+            disabled={isSwitching || isBound || !isActive}
+          >
+            {isBound ? "当前已绑定" : `切换到 ${entry.name}`}
+          </button>
+        </div>
+        {!isActive ? (
+          <p className="supporting-text">这个入口还不是 active，先点“测试入口”再切换会更稳。</p>
+        ) : null}
+      </article>
+    );
   }
 
   return (
@@ -194,6 +277,14 @@ export function TasksPage() {
             <p className="supporting-text">
               Claude Code 后续请求会自动跟随这个任务绑定，不需要你在 Claude Code 里再改 URL。
             </p>
+            {claudeRelayCandidates.length > 0 ? (
+              <div className="stack">
+                <p className="supporting-text">
+                  当前推荐直接在这里切 `PPChat` 和 `AITechFlux`，不用先去模型库再回任务库。
+                </p>
+                {claudeRelayCandidates.map((entry) => renderClaudeRelayCandidate(entry))}
+              </div>
+            ) : null}
             {hasActiveModels ? (
               <div className="inline-actions">
                 <select
@@ -245,6 +336,8 @@ export function TasksPage() {
               <p className="supporting-text">{relayVerificationMessage}</p>
             ) : null}
             {relayVerificationError ? <p className="error-inline">{relayVerificationError}</p> : null}
+            {claudeSwitchFeedback ? <p className="supporting-text">{claudeSwitchFeedback}</p> : null}
+            {claudeSwitchError ? <p className="error-inline">{claudeSwitchError}</p> : null}
           </article>
         </Section>
       ) : null}
