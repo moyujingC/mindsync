@@ -782,6 +782,125 @@ test("POST /v1/messages maps anthropic tools to upstream tools and tool calls ba
   });
 });
 
+test("POST /v1/messages preserves all anthropic tool_use ids when sending tool results back upstream", async () => {
+  const observedBodies = [];
+
+  await withMockUpstream(async (request, response) => {
+    observedBodies.push(await readRequestJson(request));
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-anthropic-tool-results",
+      object: "chat.completion",
+      model: "model-a",
+      choices: [
+        {
+          index: 0,
+          message: {
+            role: "assistant",
+            content: "done"
+          },
+          finish_reason: "stop"
+        }
+      ],
+      usage: {
+        prompt_tokens: 18,
+        completion_tokens: 6
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          },
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 256,
+            messages: [
+              {
+                role: "assistant",
+                content: [
+                  {
+                    type: "tool_use",
+                    id: "toolu_read",
+                    name: "read_file",
+                    input: { path: "README.md" }
+                  },
+                  {
+                    type: "tool_use",
+                    id: "toolu_search",
+                    name: "search_files",
+                    input: { pattern: "relay" }
+                  }
+                ]
+              },
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "tool_result",
+                    tool_use_id: "toolu_read",
+                    content: [{ type: "text", text: "README body" }]
+                  },
+                  {
+                    type: "tool_result",
+                    tool_use_id: "toolu_search",
+                    content: [{ type: "text", text: "matched server.mjs" }]
+                  }
+                ]
+              }
+            ]
+          })
+        });
+
+        assert.equal(response.status, 200);
+      });
+    }, state);
+  });
+
+  assert.equal(observedBodies.length, 1);
+  assert.deepEqual(observedBodies[0].messages, [
+    {
+      role: "assistant",
+      content: null,
+      tool_calls: [
+        {
+          id: "toolu_read",
+          type: "function",
+          function: {
+            name: "read_file",
+            arguments: "{\"path\":\"README.md\"}"
+          }
+        },
+        {
+          id: "toolu_search",
+          type: "function",
+          function: {
+            name: "search_files",
+            arguments: "{\"pattern\":\"relay\"}"
+          }
+        }
+      ]
+    },
+    {
+      role: "tool",
+      tool_call_id: "toolu_read",
+      content: "README body"
+    },
+    {
+      role: "tool",
+      tool_call_id: "toolu_search",
+      content: "matched server.mjs"
+    }
+  ]);
+});
+
 test("POST /v1/messages returns anthropic streaming events when stream=true", async () => {
   let observedBody = null;
 

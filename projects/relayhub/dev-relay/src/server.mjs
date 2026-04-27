@@ -253,21 +253,19 @@ function mapAnthropicMessagesToOpenAI(body) {
     }
 
     if (message.role === "assistant" && Array.isArray(message.content)) {
-      const toolUseBlock = message.content.find((block) => block?.type === "tool_use");
-      if (toolUseBlock) {
+      const toolUseBlocks = message.content.filter((block) => block?.type === "tool_use");
+      if (toolUseBlocks.length > 0) {
         messages.push({
           role: "assistant",
           content: anthropicBlocksToText(message.content) || null,
-          tool_calls: [
-            {
-              id: toolUseBlock.id ?? `toolu_${Date.now()}`,
-              type: "function",
-              function: {
-                name: toolUseBlock.name,
-                arguments: JSON.stringify(toolUseBlock.input ?? {})
-              }
+          tool_calls: toolUseBlocks.map((toolUseBlock, index) => ({
+            id: toolUseBlock.id ?? `toolu_${Date.now()}_${index}`,
+            type: "function",
+            function: {
+              name: toolUseBlock.name,
+              arguments: JSON.stringify(toolUseBlock.input ?? {})
             }
-          ]
+          }))
         });
         continue;
       }
