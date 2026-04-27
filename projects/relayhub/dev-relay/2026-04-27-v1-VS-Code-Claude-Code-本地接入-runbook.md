@@ -92,14 +92,20 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
    - `projects/relayhub/dev-relay/vscode-settings.template.json`
    - `projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh`
 3. 把 `vscode-settings.template.json` 中需要的字段复制到你本地工作区的 `.vscode/settings.json`
-4. 如果只想先在当前 shell 里模拟同一套环境，可以先执行：
+4. 跑一次只读检查：
+
+```bash
+bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh
+```
+
+5. 如果只想先在当前 shell 里模拟同一套环境，可以先执行：
 
 ```bash
 source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
 ```
 
-5. 再让你的本地 `Claude Code` 使用与统一入口相同的环境口径
-6. 如果后台进程行为和前台不一致，优先排查是否仍受用户级 `~/.claude/settings.json` 或旧环境变量污染
+6. 再让你的本地 `Claude Code` 使用与统一入口相同的环境口径
+7. 如果后台进程行为和前台不一致，优先排查是否仍受用户级 `~/.claude/settings.json` 或旧环境变量污染
 
 这轮文档收口的结论是：
 
@@ -119,6 +125,32 @@ source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
   - 不提交到仓库
 
 因此本轮正式口径不是“仓库帮你自动改 VS Code”，而是“仓库给出唯一推荐模板，你按模板落到本地工作区”。
+
+### 5.2 只读检查脚本
+
+这轮新增的检查入口是：
+
+```bash
+bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh
+```
+
+默认会检查三层：
+
+1. worktree 根 `.vscode/settings.json`
+2. 当前 shell 的 `ANTHROPIC_* / RELAYHUB_*`
+3. 用户级 `~/.claude/settings.json`
+
+输出语义固定为：
+
+- `ok`
+- `warning`
+- `fix next`
+
+如果你不是在整个 worktree 根打开 `VS Code`，可以显式覆盖：
+
+```bash
+bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh --workspace-root /your/workspace/path
+```
 
 ## 6. 切模型后的验证
 

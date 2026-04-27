@@ -35,3 +35,4 @@
 - [2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先-qa-basis.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/qa/2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先-qa-basis.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-主路径收口-qa-basis.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/qa/2026-04-27-v1-VS-Code-Claude-Code-主路径收口-qa-basis.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-qa-basis.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/qa/2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-qa-basis.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环-qa-basis.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/qa/2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环-qa-basis.md)
