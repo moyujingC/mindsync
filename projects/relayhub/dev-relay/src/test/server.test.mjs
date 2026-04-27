@@ -134,6 +134,21 @@ async function withTempState(run, state = createState()) {
   }
 }
 
+async function withCodexRelayEnabled(run) {
+  const previous = process.env.RELAYHUB_ENABLE_CODEX_RELAY;
+  process.env.RELAYHUB_ENABLE_CODEX_RELAY = "1";
+
+  try {
+    await run();
+  } finally {
+    if (previous === undefined) {
+      delete process.env.RELAYHUB_ENABLE_CODEX_RELAY;
+    } else {
+      process.env.RELAYHUB_ENABLE_CODEX_RELAY = previous;
+    }
+  }
+}
+
 async function withServer(server, run) {
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -177,131 +192,50 @@ test("GET /health returns ok", async () => {
   });
 });
 
-test("GET /v1/models returns only the currently bound Codex model", async () => {
+test("GET /v1/models returns disabled by default", async () => {
   await withTempState(async () => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/models`);
-      assert.equal(response.status, 200);
+      assert.equal(response.status, 503);
       const payload = await response.json();
-
-      assert.equal(payload.object, "list");
-      assert.deepEqual(payload.data.map((item) => item.id), ["model-a"]);
+      assert.equal(payload.error.code, "codex_relay_disabled");
     });
   });
 });
 
-test("GET /v1/models returns a clear error when task-codex-repo is not bound", async () => {
+test("GET /v1/models returns only the currently bound Codex model when explicitly enabled", async () => {
+  await withCodexRelayEnabled(async () => {
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/models`);
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+
+        assert.equal(payload.object, "list");
+        assert.deepEqual(payload.data.map((item) => item.id), ["model-a"]);
+      });
+    });
+  });
+});
+
+test("GET /v1/models returns a clear error when task-codex-repo is not bound and explicitly enabled", async () => {
   const state = createState();
   state.tasks[1].defaultModelEntryId = null;
 
-  await withTempState(async () => {
-    await withServer(createDevRelayServer(), async (baseUrl) => {
-      const response = await fetch(`${baseUrl}/v1/models`);
-      assert.equal(response.status, 409);
-      const payload = await response.json();
-      assert.equal(payload.error.code, "task_not_bound");
-      assert.equal(payload.relay.taskId, "task-codex-repo");
-    });
-  }, state);
-});
-
-test("POST /v1/responses forwards non-stream requests to the bound Codex upstream", async () => {
-  let observedBody = null;
-  let observedAuthorization = null;
-
-  await withMockUpstream(async (request, response) => {
-    observedAuthorization = request.headers.authorization ?? null;
-    observedBody = await readRequestJson(request);
-    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
-    response.end(JSON.stringify({
-      object: "response",
-      id: "resp_1",
-      status: "completed",
-      output: [
-        {
-          type: "message",
-          role: "assistant",
-          content: [{ type: "output_text", text: "ok" }]
-        }
-      ]
-    }));
-  }, async (upstreamBaseUrl) => {
-    const state = createState();
-    state.modelEntries[0].baseUrl = upstreamBaseUrl;
-
+  await withCodexRelayEnabled(async () => {
     await withTempState(async () => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/responses`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json"
-          },
-          body: JSON.stringify({
-            model: "should-be-overridden",
-            input: "Reply with exactly: ok",
-            stream: false
-          })
-        });
-        assert.equal(response.status, 200);
+        const response = await fetch(`${baseUrl}/v1/models`);
+        assert.equal(response.status, 409);
         const payload = await response.json();
-        assert.equal(payload.object, "response");
+        assert.equal(payload.error.code, "task_not_bound");
+        assert.equal(payload.relay.taskId, "task-codex-repo");
       });
     }, state);
-
-    assert.equal(observedAuthorization, "Bearer sk-active");
-    assert.equal(observedBody.model, "model-a");
-    assert.equal(observedBody.stream, false);
   });
 });
 
-test("POST /v1/responses forwards stream requests to the bound Codex upstream", async () => {
-  let observedBody = null;
-
-  await withMockUpstream(async (request, response) => {
-    observedBody = await readRequestJson(request);
-    response.writeHead(200, { "content-type": "text/event-stream; charset=utf-8" });
-    response.write("event: response.created\n");
-    response.write('data: {"type":"response.created"}\n\n');
-    response.write("event: response.output_text.delta\n");
-    response.write('data: {"delta":"ok","type":"response.output_text.delta"}\n\n');
-    response.write("event: response.completed\n");
-    response.write('data: {"type":"response.completed"}\n\n');
-    response.end();
-  }, async (upstreamBaseUrl) => {
-    const state = createState();
-    state.modelEntries[0].baseUrl = upstreamBaseUrl;
-
-    await withTempState(async () => {
-      await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/responses`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json"
-          },
-          body: JSON.stringify({
-            model: "ignored",
-            input: "Reply with exactly: ok",
-            stream: true
-          })
-        });
-        assert.equal(response.status, 200);
-        assert.match(response.headers.get("content-type") ?? "", /text\/event-stream/);
-        const text = await response.text();
-        assert.match(text, /response\.created/);
-        assert.match(text, /response\.output_text\.delta/);
-        assert.match(text, /response\.completed/);
-      });
-    }, state);
-
-    assert.equal(observedBody.model, "model-a");
-    assert.equal(observedBody.stream, true);
-  });
-});
-
-test("POST /v1/responses returns a clear error when the Codex entry is not Responses-ready", async () => {
-  const state = createState();
-  state.tasks[1].defaultModelEntryId = "model-chat-only";
-
+test("POST /v1/responses returns disabled by default", async () => {
   await withTempState(async () => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/responses`, {
@@ -315,12 +249,135 @@ test("POST /v1/responses returns a clear error when the Codex entry is not Respo
         })
       });
 
-      assert.equal(response.status, 409);
+      assert.equal(response.status, 503);
       const payload = await response.json();
-      assert.equal(payload.error.code, "responses_not_ready");
-      assert.match(payload.error.message, /Responses 流式探测/);
+      assert.equal(payload.error.code, "codex_relay_disabled");
     });
-  }, state);
+  });
+});
+
+test("POST /v1/responses forwards non-stream requests to the bound Codex upstream when explicitly enabled", async () => {
+  let observedBody = null;
+  let observedAuthorization = null;
+
+  await withCodexRelayEnabled(async () => {
+    await withMockUpstream(async (request, response) => {
+      observedAuthorization = request.headers.authorization ?? null;
+      observedBody = await readRequestJson(request);
+      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        object: "response",
+        id: "resp_1",
+        status: "completed",
+        output: [
+          {
+            type: "message",
+            role: "assistant",
+            content: [{ type: "output_text", text: "ok" }]
+          }
+        ]
+      }));
+    }, async (upstreamBaseUrl) => {
+      const state = createState();
+      state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+      await withTempState(async () => {
+        await withServer(createDevRelayServer(), async (baseUrl) => {
+          const response = await fetch(`${baseUrl}/v1/responses`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              model: "should-be-overridden",
+              input: "Reply with exactly: ok",
+              stream: false
+            })
+          });
+          assert.equal(response.status, 200);
+          const payload = await response.json();
+          assert.equal(payload.object, "response");
+        });
+      }, state);
+
+      assert.equal(observedAuthorization, "Bearer sk-active");
+      assert.equal(observedBody.model, "model-a");
+      assert.equal(observedBody.stream, false);
+    });
+  });
+});
+
+test("POST /v1/responses forwards stream requests to the bound Codex upstream when explicitly enabled", async () => {
+  let observedBody = null;
+
+  await withCodexRelayEnabled(async () => {
+    await withMockUpstream(async (request, response) => {
+      observedBody = await readRequestJson(request);
+      response.writeHead(200, { "content-type": "text/event-stream; charset=utf-8" });
+      response.write("event: response.created\n");
+      response.write('data: {"type":"response.created"}\n\n');
+      response.write("event: response.output_text.delta\n");
+      response.write('data: {"delta":"ok","type":"response.output_text.delta"}\n\n');
+      response.write("event: response.completed\n");
+      response.write('data: {"type":"response.completed"}\n\n');
+      response.end();
+    }, async (upstreamBaseUrl) => {
+      const state = createState();
+      state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+      await withTempState(async () => {
+        await withServer(createDevRelayServer(), async (baseUrl) => {
+          const response = await fetch(`${baseUrl}/v1/responses`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              model: "ignored",
+              input: "Reply with exactly: ok",
+              stream: true
+            })
+          });
+          assert.equal(response.status, 200);
+          assert.match(response.headers.get("content-type") ?? "", /text\/event-stream/);
+          const text = await response.text();
+          assert.match(text, /response\.created/);
+          assert.match(text, /response\.output_text\.delta/);
+          assert.match(text, /response\.completed/);
+        });
+      }, state);
+
+      assert.equal(observedBody.model, "model-a");
+      assert.equal(observedBody.stream, true);
+    });
+  });
+});
+
+test("POST /v1/responses returns a clear error when the Codex entry is not Responses-ready and explicitly enabled", async () => {
+  const state = createState();
+  state.tasks[1].defaultModelEntryId = "model-chat-only";
+
+  await withCodexRelayEnabled(async () => {
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            input: "hello",
+            stream: false
+          })
+        });
+
+        assert.equal(response.status, 409);
+        const payload = await response.json();
+        assert.equal(payload.error.code, "responses_not_ready");
+        assert.match(payload.error.message, /Responses 流式探测/);
+      });
+    }, state);
+  });
 });
 
 test("POST /chat/completions forwards to the bound upstream and overrides model", async () => {

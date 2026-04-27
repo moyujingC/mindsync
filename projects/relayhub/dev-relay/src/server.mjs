@@ -24,6 +24,22 @@ function relayError(response, statusCode, code, message, relay = undefined) {
   });
 }
 
+function codexRelayDisabled(response) {
+  return relayError(
+    response,
+    503,
+    "codex_relay_disabled",
+    "Codex relay 已临时停用，当前请先直连上游 API，不再默认经过 RelayHub。",
+    {
+      taskId: CODEX_RELAY_TASK_ID,
+    },
+  );
+}
+
+function isCodexRelayEnabled() {
+  return process.env.RELAYHUB_ENABLE_CODEX_RELAY === "1";
+}
+
 function nowIso() {
   return new Date().toISOString();
 }
@@ -729,6 +745,9 @@ async function proxyAnthropicMessages(request, response) {
 }
 
 async function listCodexModels(response) {
+  if (!isCodexRelayEnabled()) {
+    return codexRelayDisabled(response);
+  }
   const state = await readState();
   const resolved = resolveRelayBinding(state, CODEX_RELAY_TASK_ID);
   if (!resolved.ok) {
@@ -751,6 +770,9 @@ async function listCodexModels(response) {
 }
 
 async function proxyResponses(request, response) {
+  if (!isCodexRelayEnabled()) {
+    return codexRelayDisabled(response);
+  }
   let body;
   try {
     body = await readJsonBody(request);

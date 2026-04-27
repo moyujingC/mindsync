@@ -545,8 +545,10 @@ describe("RelayHub console routes", () => {
     fireEvent.click(within(row!).getByRole("button", { name: "绑定入口内默认模型" }));
 
     expect(
-      await screen.findByText("当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。"),
-    ).toBeInTheDocument();
+      (
+        await screen.findAllByText("当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。")
+      ).length,
+    ).toBeGreaterThan(0);
     expect(screen.queryByText("“Codex Repo Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。")).not.toBeInTheDocument();
   });
 

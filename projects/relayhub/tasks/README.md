@@ -30,3 +30,5 @@
 - [2026-04-24-v1-本地可互动控制台开发口径收口实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-24-v1-本地可互动控制台开发口径收口实施任务.md)
 - [2026-04-19-v1-control-plane-release-实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-19-v1-control-plane-release-实施任务.md)
 - [2026-04-26-v1-Codex-first-原生-Responses-接入实施任务.md](/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/tasks/2026-04-26-v1-Codex-first-原生-Responses-接入实施任务.md)
+- [2026-04-27-v1-Codex-任务页快捷切换与切后即验实施任务.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/tasks/2026-04-27-v1-Codex-任务页快捷切换与切后即验实施任务.md)
+- [2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先实施任务.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/tasks/2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先实施任务.md)
