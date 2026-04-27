@@ -1488,3 +1488,150 @@ def test_llm_report_generation_runtime_blocks_when_chat_generation_fails():
         raise AssertionError("expected generate_pro to fail when chat result is empty")
     except RuntimeError as exc:
         assert "chat_generation_failed_blocking" in str(exc)
+
+
+def test_generate_lite_placeholder_marks_record_failed_when_layer0_blocks(tmp_path):
+    image_path = tmp_path / "layer0-failed-image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+
+    class FailingLayer0Runtime:
+        def generate_lite(self, generation_context, record):
+            record.layer_0_raw = Layer0Raw(
+                input_package={
+                    "image": {"image_ref": "tmp/layer0-failed-image.png"},
+                    "circle_config": {"inner_radius": 35, "middle_radius": 67, "source": "auto_detect"},
+                },
+                visual_analysis_basis={
+                    "global_visual_summary": "",
+                    "llm_color_observation": {"summary": "", "source": "layer0_failed"},
+                    "program_color_measurement": {
+                        "summary": "程序中间结果仍可查看。",
+                        "source": "program_segmented_block_measurement",
+                    },
+                    "direct_judgment_hits": {"catalog_version": "merged-manual6-runtime9.v1", "catalog_items": [], "hits": []},
+                    "circles": {
+                        "inner": {
+                            "observation_summary": "未观察到足够依据",
+                            "shape_features": {"boundary_style": "未观察到足够依据"},
+                            "brushwork": {"stroke_quality": "未观察到足够依据"},
+                            "blocks": [],
+                        },
+                        "middle": {
+                            "observation_summary": "未观察到足够依据",
+                            "shape_features": {"boundary_style": "未观察到足够依据"},
+                            "brushwork": {"stroke_quality": "未观察到足够依据"},
+                            "blocks": [],
+                        },
+                        "outer": {
+                            "observation_summary": "未观察到足够依据",
+                            "shape_features": {"boundary_style": "未观察到足够依据"},
+                            "brushwork": {"stroke_quality": "未观察到足够依据"},
+                            "blocks": [],
+                        },
+                    },
+                    "prompt_meta": {
+                        "source": "layer0_failed",
+                        "failure_reason": "layer0_vision_unconfigured",
+                        "vision_unavailable": True,
+                    },
+                },
+                visual_facts={"program_color_measurement": {"source": "program_segmented_block_measurement"}},
+                layer0_passed=False,
+                layer0_failure_reason="layer0_vision_unconfigured",
+                layer0_failure_detail={"stage": "vision"},
+                fallback_summary={
+                    "used": True,
+                    "levels": ["layer0_failed"],
+                    "warnings": ["layer0_vision_unconfigured"],
+                },
+            )
+            raise RuntimeError("layer0_generation_failed_blocking:layer0_vision_unconfigured")
+
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        generation_runtime=FailingLayer0Runtime(),
+        enable_vision=True,
+    )
+    orchestrator.report_lite_record_workflow.generation_runtime = orchestrator.generation_runtime
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-layer0-failed",
+            theme="general",
+        )
+    )
+
+    assert record.status == GenerationStatus.FAILED
+    assert record.generation_stage == GenerationStage.FAILED.value
+    assert record.generation_progress == 100
+    assert record.layer_0_raw is not None
+    assert record.layer_0_raw.layer0_passed is False
+    assert record.layer_0_raw.layer0_failure_reason == "layer0_vision_unconfigured"
+    assert record.layer_1_lite_draft is None
+    assert record.layer_2_lite_final is None
+
+    persisted = store.load(record.interpretation_id)
+    assert persisted is not None
+    assert persisted.status == GenerationStatus.FAILED
+    assert persisted.layer_0_raw is not None
+    assert persisted.layer_0_raw.layer0_failure_reason == "layer0_vision_unconfigured"
+
+
+def test_upgrade_to_pro_marks_record_failed_when_layer0_has_failed(tmp_path):
+    image_path = tmp_path / "layer0-failed-pro.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+
+    class FailingLayer0Runtime:
+        def generate_lite(self, generation_context, record):
+            record.layer_0_raw = Layer0Raw(
+                layer0_passed=False,
+                layer0_failure_reason="layer0_vision_unconfigured",
+                layer0_failure_detail={"stage": "vision"},
+                input_package={"image": {"image_ref": "tmp/layer0-failed-pro.png"}},
+                visual_analysis_basis={
+                    "global_visual_summary": "",
+                    "llm_color_observation": {"summary": "", "source": "layer0_failed"},
+                    "program_color_measurement": {"summary": "程序中间结果仍可查看。", "source": "program_segmented_block_measurement"},
+                    "direct_judgment_hits": {"catalog_version": "merged-manual6-runtime9.v1", "catalog_items": [], "hits": []},
+                    "circles": {"inner": {}, "middle": {}, "outer": {}},
+                    "prompt_meta": {"source": "layer0_failed", "failure_reason": "layer0_vision_unconfigured"},
+                },
+                fallback_summary={"used": True, "levels": ["layer0_failed"], "warnings": ["layer0_vision_unconfigured"]},
+            )
+            raise RuntimeError("layer0_generation_failed_blocking:layer0_vision_unconfigured")
+
+        def generate_pro(self, generation_context, record):
+            raise RuntimeError("layer0_generation_failed_blocking:layer0_vision_unconfigured")
+
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        generation_runtime=FailingLayer0Runtime(),
+        enable_vision=True,
+    )
+    orchestrator.report_lite_record_workflow.generation_runtime = orchestrator.generation_runtime
+    orchestrator.report_lifecycle_manager.generation_runtime = orchestrator.generation_runtime
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-layer0-failed-pro",
+            theme="general",
+        )
+    )
+    result = orchestrator.upgrade_to_pro(record.interpretation_id)
+
+    assert result is not None
+    assert result["success"] is False
+    assert result["status"] == "failed"
+
+    persisted = store.load(record.interpretation_id)
+    assert persisted is not None
+    assert persisted.status == GenerationStatus.FAILED
+    assert persisted.generation_stage == GenerationStage.FAILED.value
+    assert persisted.layer_3_pro_draft is None
+    assert persisted.layer_4_pro_final is None

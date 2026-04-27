@@ -16,6 +16,7 @@ from .data_models import (
     ThemeInsights,
 )
 from .report_generation_contracts import (
+    Layer0BuildBlockedError,
     LiteGenerationBundle,
     ProGenerationBundle,
     ReportGenerationContext,
@@ -38,6 +39,12 @@ class DeterministicReportGenerationRuntime:
     ) -> LiteGenerationBundle:
         layer_0_raw = generation_context._build_layer0_placeholder(record)
         record.layer_0_raw = layer_0_raw
+        if getattr(layer_0_raw, "layer0_passed", True) is False:
+            raise Layer0BuildBlockedError(
+                getattr(layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                layer_0_raw=layer_0_raw,
+                detail=getattr(layer_0_raw, "layer0_failure_detail", {}) or {},
+            )
         layer_1_lite_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = layer_1_lite_draft
         layer_2_lite_final = generation_context._build_lite_placeholder_report(record)
@@ -96,6 +103,12 @@ class LLMReportGenerationRuntime:
     ) -> LiteGenerationBundle:
         layer_0_raw = generation_context._build_layer0_placeholder(record)
         record.layer_0_raw = layer_0_raw
+        if getattr(layer_0_raw, "layer0_passed", True) is False:
+            raise Layer0BuildBlockedError(
+                getattr(layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                layer_0_raw=layer_0_raw,
+                detail=getattr(layer_0_raw, "layer0_failure_detail", {}) or {},
+            )
         deterministic_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = deterministic_draft
 
@@ -122,6 +135,12 @@ class LLMReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> ProGenerationBundle:
+        if getattr(getattr(record, "layer_0_raw", None), "layer0_passed", True) is False:
+            raise Layer0BuildBlockedError(
+                getattr(record.layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                layer_0_raw=record.layer_0_raw,
+                detail=getattr(record.layer_0_raw, "layer0_failure_detail", {}) or {},
+            )
         deterministic_draft = generation_context._build_pro_placeholder_draft(record)
         record.layer_3_pro_draft = deterministic_draft
 
