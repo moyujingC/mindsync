@@ -37,3 +37,4 @@
 - [2026-04-27-v1-Codex-任务页快捷切换与切后即验-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-Codex-任务页快捷切换与切后即验-交付说明.md)
 - [2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先-交付说明.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-主路径收口-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-主路径收口-交付说明.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-交付说明.md](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-交付说明.md)

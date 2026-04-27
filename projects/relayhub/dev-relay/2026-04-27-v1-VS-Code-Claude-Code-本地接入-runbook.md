@@ -87,14 +87,38 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 当前阶段的推荐做法是：
 
 1. 先以前台 smoke 确认 relay 主链路正常
-2. 再让你的本地 `Claude Code` 使用与统一入口相同的环境口径
-3. 如果后台进程行为和前台不一致，优先排查是否仍受用户级 `~/.claude/settings.json` 或旧环境变量污染
+2. 先看模板文件：
+   - `projects/relayhub/dev-relay/claude-code-relay.env.example`
+   - `projects/relayhub/dev-relay/vscode-settings.template.json`
+   - `projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh`
+3. 把 `vscode-settings.template.json` 中需要的字段复制到你本地工作区的 `.vscode/settings.json`
+4. 如果只想先在当前 shell 里模拟同一套环境，可以先执行：
+
+```bash
+source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
+```
+
+5. 再让你的本地 `Claude Code` 使用与统一入口相同的环境口径
+6. 如果后台进程行为和前台不一致，优先排查是否仍受用户级 `~/.claude/settings.json` 或旧环境变量污染
 
 这轮文档收口的结论是：
 
 - `CLI` smoke 是底层真链路验证
 - `VS Code` 使用面必须继承同一套 relay 环境
 - 不能把“单次 CLI 跑通”直接当成“后台 Claude Code 已稳定”
+
+### 5.1 模板与本地文件的边界
+
+这里要严格区分两类文件：
+
+- 仓库内可提交模板：
+  - 只用于参考和复制
+  - 不会自动改变你的 `VS Code`
+- 你本地工作区下的 `.vscode/settings.json`
+  - 这是实际生效文件
+  - 不提交到仓库
+
+因此本轮正式口径不是“仓库帮你自动改 VS Code”，而是“仓库给出唯一推荐模板，你按模板落到本地工作区”。
 
 ## 6. 切模型后的验证
 
