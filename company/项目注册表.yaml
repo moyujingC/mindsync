@@ -63,6 +63,18 @@ objects:
       - "提供个人开发版 relay、产品生产版 relay 与旁路 eval 的统一底座"
       - "为中转站续费决策、国产模型替代判断和任务级优化提供正式评测入口"
 
+  - id: "automation-platform"
+    name: "Automation Platform"
+    slug: "automation-platform"
+    kind: "capability"
+    status: "active"
+    goal: "公司级执行与运维底座建设"
+    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md"
+    purpose:
+      - "承接 Paperclip 相关执行路由、服务器 automation、workspace policy、heartbeat 与 maintenance 等共享能力"
+      - "为多个项目提供一致的 server_automation 与 local_manual_review 分流口径"
+      - "当前首个正式落地样例是 aimandala，但能力本体不从属于单一项目"
+
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
     name: "墨予镜 IP"
     slug: "moyujing-ip"

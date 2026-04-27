@@ -42,6 +42,7 @@
 
 当前优先阅读：
 
+- [2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md)
 - [2026-04-22-local-mac-automatic-execution-host-verification.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-verification.md)
 - [2026-04-22-local-mac-automatic-execution-host-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-qa-basis.md)
 - [2026-04-22-local-mac-execution-host-pilot-verification.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-execution-host-pilot-verification.md)
@@ -61,6 +62,7 @@
 
 说明：
 
+- `2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md` 是当前控制面旧任务重置的正式 QA baseline，固定验证历史普通任务与历史 automation 任务都在默认关闭范围内、例外名单极少且显式、以及新基线后先把普通任务自动在本地 Mac 上跑起来。
 - `2026-04-22-local-mac-automatic-execution-host-verification.md` 是当前“普通任务自动在 Mac 上跑”的正式验证入口，明确区分已经落地的本地执行器与 launchd 资产，以及当前 `pi_local` 仍受本机缺少 `pi` 命令约束的真实缺口。
 - `2026-04-22-local-mac-automatic-execution-host-qa-basis.md` 是当前普通任务自动本地执行的正式 QA baseline，固定验证自动筛选、自动 claim、摘要排除、每 agent 单并发和 `in_review / blocked` 终态合同。
 - `2026-04-22-local-mac-execution-host-pilot-verification.md` 是当前本地 Mac 单机试点的正式前置验证记录，固定说明这轮已经完成的是宿主语义改写、连接基础件确认和 runbook 收口，尚未冒充为真实本地 claim / checkout / 回写 已完成。

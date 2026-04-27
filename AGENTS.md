@@ -41,9 +41,10 @@
 15. `DOCS_GOVERNANCE.md`
 16. `company/服务器与基础设施入口.md`
 17. `company/Paperclip-Agent-模型配置总表.md`
-18. `agents/*/AGENTS.md`
-19. `company/项目与仓库映射.md`
-20. `company/knowledge-base/README.md`
+18. `company/projects/Automation/PROJECT.md`
+19. `agents/*/AGENTS.md`
+20. `company/项目与仓库映射.md`
+21. `company/knowledge-base/README.md`
 
 如果任务与某个具体角色有关，应继续读取对应的 `agents/<role>/AGENTS.md`。
 
@@ -51,6 +52,7 @@
 
 1. `company/knowledge-base/README.md`
 2. `company/knowledge-base/system/README.md`
+3. `company/projects/Automation/PROJECT.md`
 
 如果任务明确属于某个具体项目，还应继续读取：
 
@@ -83,6 +85,18 @@
 - 若要让 Paperclip 使用这套内核，优先基于 `COMPANY.md`、`.paperclip.yaml` 与 `agents/` 对齐
 - 只要当前会话产生了文件改动，默认动作就是在当前分支、当前 worktree 直接完成一次提交，而不是把自己的改动留在工作区里等待用户提醒
 - 这条“改完即提交”规则适用于所有分支、所有 worktree；若工作区本来就有他人未提交改动，必须只暂存并提交自己负责的文件，不得把不属于本次任务的脏改一并卷入
+
+## Monorepo 日常工作区约定
+
+- 根工作区 [mindsync](/Users/xinran/Downloads/dev/mindsync) 固定对应 `main`
+- `main` 只承担公司主干、Automation、治理文档与最终收口，不承接 RelayHub 的频繁服务器试错
+- RelayHub 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev`
+- 该 worktree 固定对应 `relayhub/dev`
+- `relayhub/dev` 是 RelayHub 唯一正式服务器测试分支
+- `relayhub.jingshu.cc` 的服务器部署默认从 `relayhub/dev` 拉取，而不是从 `main` 拉取
+- AIMandala 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-dev`
+- 该 worktree 固定对应 `aimandala/dev`
+- `aimandala/dev` 是 AIMandala 默认本地产品开发与本地验证分支，成熟后再合回 `main`
 
 ## IDE 默认开发纪律
 

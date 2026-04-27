@@ -10,6 +10,12 @@
 
 本目录用于收口 `aimandala` 第一阶段 `automation` 节点的部署方式。
 
+它应被理解为：
+
+- `aimandala` 对 [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md) 的项目级落地
+- 当前首个正式项目级实例 runbook
+- 不是公司级 `Automation Platform` 的总入口
+
 这台机器的目标不是承接正式业务流量，而是承接：
 
 - Paperclip UI/API

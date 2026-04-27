@@ -52,7 +52,7 @@
 - 项目工作区已建立最小骨架
 - `spec`、`task`、`qa basis` 已形成最小闭环
 - 已进入第一轮正式实现与 release 试用收口
-- 当前长期实现分支固定为 `project/relayhub`
+- 当前长期服务器测试分支固定为 `relayhub/dev`
 - 短期不并回 `main` / `release`
 
 当前不做：
@@ -93,7 +93,7 @@
 
 ## 8. 当前下一步
 
-1. 以 `project/relayhub` 作为长期项目分支推进 RelayHub。
+1. 以 `relayhub/dev` 作为长期服务器测试分支推进 RelayHub。
 2. 当前已在 `relayhub.jingshu.cc` 跑通独立 worktree + 最小 control-plane 试用链路。
 3. 下一步优先解决“先激活谁、给谁用”的选型引导，以及表单交互细节，而不是继续解决部署路径。
 4. 保持开发版、生产版、旁路 eval 三类职责分离，不让实现过程侵蚀已确认的边界。

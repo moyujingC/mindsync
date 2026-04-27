@@ -4,8 +4,8 @@
 > 版本：0.4.3
 > owner：CEO / Orchestrator
 > last_updated：2026-04-18
-> source_of_truth：/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/PROJECT.md
-> 公司侧入口：[/Users/xinran/.codex/worktrees/0aa2/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/company/projects/一镜一梳/PROJECT.md)
+> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
+> 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 这是 `一镜一梳` 在 Monorepo 中的项目工作区入口。
@@ -43,10 +43,10 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/specs/README.md)
-- [architecture/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/README.md)
-- [docs/sources/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/sources/README.md)
-- [runbooks/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/runbooks/README.md)
+- [specs/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/README.md)
+- [architecture/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/README.md)
+- [docs/sources/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/sources/README.md)
+- [runbooks/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/README.md)
 
 其中：
 
@@ -58,16 +58,16 @@
 
 当前执行窗口默认从这些目录入口进入：
 
-- [tasks/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/tasks/README.md)
-- [qa/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/qa/README.md)
-- [delivery/README.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/delivery/README.md)
+- [tasks/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/README.md)
+- [qa/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/README.md)
+- [delivery/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/README.md)
 
 当前如果要继续推进“报告链路保真重构”，默认顺序固定为：
 
-1. [2026-04-18-报告链路保真重构总规格.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md)
-2. [2026-04-18-报告链路保真重构技术方案.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/architecture/2026-04-18-报告链路保真重构技术方案.md)
-3. [2026-04-18-报告链路保真重构实施总计划.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/tasks/2026-04-18-报告链路保真重构实施总计划.md)
-4. [2026-04-18-报告链路保真重构验证基线.md](/Users/xinran/.codex/worktrees/0aa2/mindsync/projects/aimandala/docs/qa/2026-04-18-报告链路保真重构验证基线.md)
+1. [2026-04-18-报告链路保真重构总规格.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md)
+2. [2026-04-18-报告链路保真重构技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/2026-04-18-报告链路保真重构技术方案.md)
+3. [2026-04-18-报告链路保真重构实施总计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-18-报告链路保真重构实施总计划.md)
+4. [2026-04-18-报告链路保真重构验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-18-报告链路保真重构验证基线.md)
 
 ## 5. 历史资料入口
 
@@ -88,13 +88,16 @@
 - `main` 已吸收 `miniapp-native` 原生灰度壳、灰度配置样例和对应文档链
 - miniapp live 相关能力默认灰度关闭，不构成当前 Web 公开首发阻塞项
 - 历史记录继续兼容读取，但不作为后续功能设计基线
-- 当前 Aimandala 只保留 `codex/aimandala-dual-channel-ui` 作为并行开发 worktree
+- 当前 Aimandala 固定开发 worktree 为 `aimandala/dev`
+- 固定本地路径为 `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-dev`
+- `codex/aimandala-dual-channel-ui` 继续只作为临时并行实验 worktree
 
 ## 7. 协作约束
 
 当前默认约束是：
 
 - `main` 继续承接 Web MVP 首发和生产稳定
+- `aimandala/dev` 继续承接 AIMandala 默认本地开发与本地验证
 - 小程序 worktree 可继续并行开发
 - 小程序相关改动默认采用“分批摘入 main”，不整支直接合并
 - 主工作区上的新改动，除非明确是 Web 宿主专属，否则应尽量保持 shared-friendly
