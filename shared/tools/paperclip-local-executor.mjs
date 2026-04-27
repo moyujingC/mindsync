@@ -17,6 +17,10 @@ const REQUIRED_ENV = [
   "PAPERCLIP_AGENT_ID",
   "PAPERCLIP_API_KEY",
 ];
+const MINDSYNC_RUNTIME_ROOT = path.join(os.homedir(), ".mindsync", "runtime");
+const PAPERCLIP_REPO_FALLBACK = path.join(MINDSYNC_RUNTIME_ROOT, "paperclip");
+const PAPERCLIP_REPO_CLI_ENTRY = path.join(PAPERCLIP_REPO_FALLBACK, "cli", "src", "index.ts");
+const PAPERCLIP_REPO_TSX = path.join(PAPERCLIP_REPO_FALLBACK, "cli", "node_modules", "tsx", "dist", "cli.mjs");
 
 function usage() {
   console.log(`Usage:
@@ -249,10 +253,35 @@ function runPaperclip(args, env = process.env) {
       env,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    throw new Error(
-      `paperclipai command is unavailable on this Mac. Current local executor still requires a working Paperclip CLI. Original error: ${message}`,
-    );
+    if (!pathExistsSync(PAPERCLIP_REPO_CLI_ENTRY) || !pathExistsSync(PAPERCLIP_REPO_TSX)) {
+      const primaryMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(
+        `paperclipai command is unavailable, and runtime repo-local fallback is incomplete. ` +
+        `runtime_repo=${PAPERCLIP_REPO_FALLBACK}; primary_error=${primaryMessage}`,
+      );
+    }
+    try {
+      return execFileSync("node", [PAPERCLIP_REPO_TSX, PAPERCLIP_REPO_CLI_ENTRY, ...args], {
+        encoding: "utf8",
+        env,
+      });
+    } catch (fallbackError) {
+      const primaryMessage = error instanceof Error ? error.message : String(error);
+      const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+      throw new Error(
+        `paperclipai command is unavailable on this Mac, and repo-local fallback also failed. ` +
+        `primary_error=${primaryMessage}; fallback_error=${fallbackMessage}`,
+      );
+    }
+  }
+}
+
+function pathExistsSync(targetPath) {
+  try {
+    execFileSync("test", ["-f", targetPath], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
   }
 }
 
