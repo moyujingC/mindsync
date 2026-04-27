@@ -243,10 +243,17 @@ function buildStatusTransition({ issue, outcome, context, errorSummary = "" }) {
 }
 
 function runPaperclip(args, env = process.env) {
-  return execFileSync("paperclipai", args, {
-    encoding: "utf8",
-    env,
-  });
+  try {
+    return execFileSync("paperclipai", args, {
+      encoding: "utf8",
+      env,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `paperclipai command is unavailable on this Mac. Current local executor still requires a working Paperclip CLI. Original error: ${message}`,
+    );
+  }
 }
 
 function paperclipJson(args, env = process.env) {

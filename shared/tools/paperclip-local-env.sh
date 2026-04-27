@@ -157,6 +157,12 @@ refresh_agent_cache() {
   local cache_file="$2"
   local exports
 
+  if ! command -v paperclipai >/dev/null 2>&1; then
+    echo "paperclip-local-env: paperclipai command is unavailable on this Mac." >&2
+    echo "paperclip-local-env: local agent identity refresh currently requires a working Paperclip CLI." >&2
+    exit 1
+  fi
+
   exports="$(
     paperclipai agent local-cli "$agent_ref" \
       --company-id "$PAPERCLIP_COMPANY_ID" \
