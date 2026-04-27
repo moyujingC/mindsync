@@ -120,6 +120,16 @@ goals:
     projects:
       - "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
 
+  - id: "f2db2682-eb58-4d95-8839-d05518f48d71"
+    title: "馨冉求职推进与交付"
+    projects:
+      - "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
+
+  - id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
+    title: "RelayHub能力建设"
+    projects:
+      - "relayhub"
+
 # Project 配置
 projects:
   - id: "ada487d0-5b78-44c6-b308-b711c13407d8"
@@ -154,6 +164,20 @@ projects:
     directory: "projects/research-center"
     repository: "https://github.com/MindSyncHub/mindsync"
     source_subdirectory: "projects/research-center"
+
+  - id: "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
+    name: "馨冉求职"
+    goal_id: "f2db2682-eb58-4d95-8839-d05518f48d71"
+    directory: "projects/xinran-jobhunt"
+    repository: "https://github.com/MindSyncHub/mindsync"
+    source_subdirectory: "projects/xinran-jobhunt"
+
+  - id: "relayhub"
+    name: "RelayHub"
+    goal_id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
+    directory: "projects/relayhub"
+    repository: "https://github.com/MindSyncHub/mindsync"
+    source_subdirectory: "projects/relayhub"
 
 # 同步配置
 sync:

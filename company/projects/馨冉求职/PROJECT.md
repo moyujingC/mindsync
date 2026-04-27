@@ -1,0 +1,69 @@
+# 馨冉求职项目入口
+
+> 状态：current
+> 版本：0.1.0
+> owner：CEO / Orchestrator
+> 最后更新：2026-04-27
+> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/馨冉求职/PROJECT.md
+> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt](/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt)
+> 项目类型：个人求职执行项目
+
+这份文档是 `馨冉求职` 在 `mindsync` 中的公司侧项目入口。
+
+它的作用是把“馨冉本人当前真实求职”从泛产品讨论中拆出来，作为一个可以持续推进、可被派活、可收束材料与交付物的正式项目对象。
+
+## 1. 项目定位
+
+`馨冉求职` 是 `墨予镜` 当前围绕馨冉本人求职进程建立的正式项目。
+
+它优先服务的是现实求职闭环，而不是先做抽象产品化。
+
+当前默认承接：
+
+- 求职方向梳理
+- 简历、作品集、自述等材料生产
+- 岗位筛选、投递与跟进
+- 面试准备、复盘与下一步动作
+
+## 2. 与怀瑾握瑜的边界
+
+`馨冉求职` 和 `怀瑾握瑜` 相关，但不是同一个对象。
+
+- `馨冉求职`
+  - 面向馨冉本人当前真实求职
+  - 目标是推进求职结果与交付材料
+- `怀瑾握瑜`
+  - 面向更可复用的职业梳理 / 转型支持产品方向
+  - 目标是沉淀方法、服务模型与产品化假设
+
+如果 `馨冉求职` 过程中出现可复用方法、共性流程或产品机会，应再 handoff 到 `怀瑾握瑜`，而不是直接把两个项目混写。
+
+## 3. 公司侧边界
+
+这里默认长期保留：
+
+- 项目定位与边界说明
+- 与其他项目的关系判断
+- 需要公司侧保留的阶段结论与关键纪要
+
+这里不承担：
+
+- 详细执行计划
+- 日常求职材料版本管理
+- 具体交付物生产过程
+
+这些内容应收束到项目工作区。
+
+## 4. 对应项目工作区
+
+项目工作区默认从这里进入：
+
+- [projects/xinran-jobhunt/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt/PROJECT.md)
+
+## 5. 当前默认动作
+
+从现在开始，凡是明确服务“馨冉本人当前求职推进”的任务，都优先挂到 `馨冉求职`。
+
+如果任务转向“把求职方法抽象成产品能力或服务模型”，再转入：
+
+- [company/projects/怀瑾握瑜/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md)
