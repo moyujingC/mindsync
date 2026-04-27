@@ -136,12 +136,34 @@ class OpenAICompatibleLLMClient:
             user_prompt=user_prompt,
             image_path=image_path,
         )
+        is_vision_image_task = task.strip().lower() == "vision" and bool(image_path)
+        if is_vision_image_task:
+            raw = self._request_chat_completion(
+                task_config=task_config,
+                fallback_task_config=fallback_task_config,
+                messages=messages,
+                expect_json=False,
+                disable_thinking=True,
+            )
+            if not raw:
+                return None
+            return self._parse_json_response(raw)
+
         raw = self._request_chat_completion(
             task_config=task_config,
             fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=True,
+            disable_thinking=False,
         )
+        if raw is None and task.strip().lower() == "vision":
+            raw = self._request_chat_completion(
+                task_config=task_config,
+                fallback_task_config=fallback_task_config,
+                messages=messages,
+                expect_json=False,
+                disable_thinking=False,
+            )
         if not raw:
             return None
         return self._parse_json_response(raw)
@@ -165,6 +187,7 @@ class OpenAICompatibleLLMClient:
             fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=False,
+            disable_thinking=False,
         )
         if not raw:
             return None
@@ -215,6 +238,7 @@ class OpenAICompatibleLLMClient:
         fallback_task_config: Optional[LLMTaskConfig],
         messages: Sequence[Dict[str, Any]],
         expect_json: bool,
+        disable_thinking: bool,
     ) -> Optional[str]:
         configs_to_try = [task_config]
         if (
@@ -228,6 +252,7 @@ class OpenAICompatibleLLMClient:
                 task_config=active_config,
                 messages=messages,
                 expect_json=expect_json,
+                disable_thinking=disable_thinking,
             )
             if result is not None:
                 return result
@@ -239,6 +264,7 @@ class OpenAICompatibleLLMClient:
         task_config: LLMTaskConfig,
         messages: Sequence[Dict[str, Any]],
         expect_json: bool,
+        disable_thinking: bool,
     ) -> Optional[str]:
         payload: Dict[str, Any] = {
             "model": task_config.model,
@@ -246,6 +272,8 @@ class OpenAICompatibleLLMClient:
         }
         if expect_json:
             payload["response_format"] = {"type": "json_object"}
+        if disable_thinking:
+            payload["thinking"] = {"type": "disabled"}
 
         total_attempts = self.config.max_retries + 1
         for attempt_index in range(total_attempts):

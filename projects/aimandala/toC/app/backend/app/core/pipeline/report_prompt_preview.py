@@ -346,6 +346,8 @@ class ReportPromptPreviewBuilder:
             "primary_signal": self._get_signal_label(primary_signal)
             if primary_signal
             else "",
+            "input_package": getattr(layer0, "input_package", {}) or {},
+            "visual_analysis_basis": getattr(layer0, "visual_analysis_basis", {}) or {},
             "visual_facts": getattr(layer0, "visual_facts", {}) or {},
             "knowledge_hits": getattr(layer0, "knowledge_hits", {}) or {},
             "rule_evaluations": getattr(layer0, "rule_evaluations", {}) or {},

@@ -74,7 +74,9 @@ class KnowledgeDebugBlockBuilder:
                 "build_info": {},
                 "layer0_evidence": self._build_layer0_evidence(layer0),
                 "algorithm_fidelity_trace": algorithm_fidelity_trace,
-                "review_input_package": self._build_review_input_package(record),
+                "model_trace": self._build_model_trace(layer0),
+                "input_package": self._build_input_package(record, layer0),
+                "review_input_package": self._build_input_package(record, layer0),
                 "review_layer0_summary": self._build_review_layer0_summary(layer0),
                 "narrative_plans": narrative_plans,
                 "knowledge_projections": knowledge_projections,
@@ -175,7 +177,9 @@ class KnowledgeDebugBlockBuilder:
             },
             "layer0_evidence": self._build_layer0_evidence(layer0),
             "algorithm_fidelity_trace": algorithm_fidelity_trace,
-            "review_input_package": self._build_review_input_package(record),
+            "model_trace": self._build_model_trace(layer0),
+            "input_package": self._build_input_package(record, layer0),
+            "review_input_package": self._build_input_package(record, layer0),
             "review_layer0_summary": self._build_review_layer0_summary(layer0),
             "narrative_plans": narrative_plans,
             "knowledge_projections": knowledge_projections,
@@ -198,38 +202,104 @@ class KnowledgeDebugBlockBuilder:
             "field_to_knowledge_map": field_to_knowledge_map,
         }
 
+    def _build_model_trace(self, layer0: dict[str, Any]) -> dict[str, Any]:
+        visual_analysis_basis = (
+            layer0.get("visual_analysis_basis", {}) if isinstance(layer0, dict) else {}
+        )
+        prompt_meta = (
+            visual_analysis_basis.get("prompt_meta", {})
+            if isinstance(visual_analysis_basis, dict)
+            else {}
+        )
+        theme_projection = (
+            layer0.get("theme_projection", {}) if isinstance(layer0, dict) else {}
+        )
+        projection_model_trace = (
+            theme_projection.get("model_trace", {})
+            if isinstance(theme_projection, dict)
+            else {}
+        )
+        chat_by_mode = (
+            projection_model_trace.get("chat_by_mode", {})
+            if isinstance(projection_model_trace, dict)
+            else {}
+        )
+        chat_trace = {}
+        if isinstance(chat_by_mode, dict):
+            if isinstance(chat_by_mode.get("pro"), dict):
+                chat_trace = chat_by_mode.get("pro", {})
+            elif isinstance(chat_by_mode.get("lite"), dict):
+                chat_trace = chat_by_mode.get("lite", {})
+        return {
+            "vision": {
+                "endpoint_id": prompt_meta.get("endpoint_id", ""),
+                "resolved_model": prompt_meta.get("resolved_model", ""),
+                "source": prompt_meta.get("source", ""),
+                "configured": prompt_meta.get("source", "") != "layer0_failed",
+                "failure_reason": prompt_meta.get("failure_reason", ""),
+            },
+            "chat": {
+                "endpoint_id": chat_trace.get("endpoint_id", ""),
+                "resolved_model": chat_trace.get("resolved_model", ""),
+                "source": chat_trace.get("source", ""),
+                "report_mode": chat_trace.get("report_mode", ""),
+                "prompt_version": chat_trace.get("prompt_version", ""),
+                "error": chat_trace.get("error", ""),
+            },
+        }
+
     def _build_topic_context_trace(self, record: InterpretationRecord) -> dict[str, Any]:
         theme = getattr(record, "theme", None) or "general"
+        layer0 = getattr(record, "layer_0_raw", None)
         return {
             "topic": theme,
             "report_modes": list(getattr(record, "version_purchased", []) or []),
             "knowledge_route": "general" if theme == "general" else "theme_only",
             "general_mixed": False,
+            "layer0_passed": getattr(layer0, "layer0_passed", True),
+        }
+
+    def _build_input_package(
+        self,
+        record: InterpretationRecord,
+        layer0: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        layer0 = layer0 if isinstance(layer0, dict) else {}
+        existing = layer0.get("input_package")
+        if isinstance(existing, dict) and existing:
+            return existing
+        three_circles = getattr(record, "three_circles", None) or {}
+        auto_detect = getattr(record, "three_circles_auto_detect", None) or {}
+        image_path = self._record_image_ref(record)
+        return {
+            "image": {
+                "image_ref": image_path,
+            },
+            "topic_input": {
+                "topic": getattr(record, "theme", None) or "general",
+                "topic_label": self._topic_label(getattr(record, "theme", None)),
+            },
+            "user_context": {
+                "painting_intention": getattr(record, "painting_intention", None) or "",
+                "painting_feeling": getattr(record, "painting_feeling", None) or "",
+            },
+            "circle_config": {
+                "inner_radius": three_circles.get("inner_radius"),
+                "middle_radius": three_circles.get("middle_radius"),
+                "auto_detect_inner_radius": auto_detect.get("inner_radius"),
+                "auto_detect_middle_radius": auto_detect.get("middle_radius"),
+                "source": self._resolve_three_circles_source(record).replace("user_override", "user_calibrated"),
+            },
         }
 
     def _build_review_input_package(self, record: InterpretationRecord) -> dict[str, Any]:
-        three_circles = getattr(record, "three_circles", None) or {}
-        auto_detect = getattr(record, "three_circles_auto_detect", None) or {}
-        theme_trace = self._build_topic_context_trace(record)
-        image_path = self._record_image_ref(record)
-        return {
-            "image_path": image_path,
-            "image_preview_ref": image_path,
-            "theme": getattr(record, "theme", None) or "general",
-            "topic_label": self._topic_label(getattr(record, "theme", None)),
-            "topic": theme_trace.get("topic"),
-            "report_mode": self._primary_report_mode(record),
-            "painting_intention": getattr(record, "painting_intention", None) or "",
-            "painting_feeling": getattr(record, "painting_feeling", None) or "",
-            "inner_radius": three_circles.get("inner_radius"),
-            "middle_radius": three_circles.get("middle_radius"),
-            "auto_detect_inner_radius": auto_detect.get("inner_radius"),
-            "auto_detect_middle_radius": auto_detect.get("middle_radius"),
-            "three_circles_source": self._resolve_three_circles_source(record),
-        }
+        return self._build_input_package(record)
 
     def _build_review_layer0_summary(self, layer0: dict[str, Any]) -> dict[str, Any]:
         visual_facts = layer0.get("visual_facts", {}) if isinstance(layer0, dict) else {}
+        visual_analysis_basis = (
+            layer0.get("visual_analysis_basis", {}) if isinstance(layer0, dict) else {}
+        )
         rule_evaluations = (
             layer0.get("rule_evaluations", {}) if isinstance(layer0, dict) else {}
         )
@@ -239,8 +309,12 @@ class KnowledgeDebugBlockBuilder:
             else {}
         )
         return {
-            "visual_fact_summary": self._summarize_visual_facts(visual_facts),
-            "per_circle_observation_summary": self._build_per_circle_observation_summary(layer0),
+            "visual_fact_summary": self._summarize_visual_analysis_basis(visual_analysis_basis)
+            or self._summarize_visual_facts(visual_facts),
+            "per_circle_observation_summary": self._summarize_visual_analysis_circles(
+                visual_analysis_basis
+            )
+            or self._build_per_circle_observation_summary(layer0),
             "shape_observation_summary": self._summarize_shape_analysis(
                 method_trace.get("shape_analysis", {}),
             ),
@@ -559,6 +633,28 @@ class KnowledgeDebugBlockBuilder:
                 parts.append(f"五行加权分布最高的前三项为 {top}。")
         return " ".join(part for part in parts if part)
 
+    def _summarize_visual_analysis_basis(self, visual_analysis_basis: Any) -> str:
+        if not isinstance(visual_analysis_basis, dict):
+            return ""
+        summary = str(visual_analysis_basis.get("global_visual_summary") or "").strip()
+        return summary
+
+    def _summarize_visual_analysis_circles(self, visual_analysis_basis: Any) -> str:
+        if not isinstance(visual_analysis_basis, dict):
+            return ""
+        circles = visual_analysis_basis.get("circles", {})
+        if not isinstance(circles, dict):
+            return ""
+        parts: list[str] = []
+        for key in ["inner", "middle", "outer"]:
+            circle = circles.get(key)
+            if not isinstance(circle, dict):
+                continue
+            summary = str(circle.get("observation_summary") or "").strip()
+            if summary:
+                parts.append(summary)
+        return "；".join(parts)
+
     def _summarize_shape_analysis(self, shape_analysis: Any) -> str:
         if isinstance(shape_analysis, dict):
             for key in ["summary", "observation", "result"]:
@@ -855,7 +951,12 @@ class KnowledgeDebugBlockBuilder:
 
     def _build_layer0_evidence(self, layer0: dict[str, Any]) -> dict[str, Any]:
         return {
+            "input_package": layer0.get("input_package", {}),
+            "visual_analysis_basis": layer0.get("visual_analysis_basis", {}),
             "visual_facts": layer0.get("visual_facts", {}),
+            "layer0_passed": layer0.get("layer0_passed", True),
+            "layer0_failure_reason": layer0.get("layer0_failure_reason", ""),
+            "layer0_failure_detail": layer0.get("layer0_failure_detail", {}),
             "knowledge_hits": layer0.get("knowledge_hits", {}),
             "rule_evaluations": layer0.get("rule_evaluations", {}),
             "theme_projection": layer0.get("theme_projection", {}),
@@ -1128,19 +1229,59 @@ class KnowledgeDebugBlockBuilder:
         self,
         record: InterpretationRecord,
     ) -> dict[str, Any]:
-        lite_plan = {}
+        lite_plan = {"mode": "lite"}
         if record.layer_1_lite_draft is not None and isinstance(
             record.layer_1_lite_draft.narrative_plan,
             dict,
         ):
-            lite_plan = record.layer_1_lite_draft.narrative_plan
+            lite_plan = {
+                "mode": "lite",
+                **record.layer_1_lite_draft.narrative_plan,
+            }
+        if not isinstance(lite_plan.get("sections"), dict) and record.layer_1_lite_draft is not None:
+            lite_plan["sections"] = {
+                "title": record.layer_1_lite_draft.title,
+                "overall_impression": record.layer_1_lite_draft.overall_impression,
+                "visual_elements": record.layer_1_lite_draft.visual_elements,
+                "emotion_portrait": record.layer_1_lite_draft.emotion_portrait,
+                "story_sections": {
+                    "base": record.layer_1_lite_draft.story.base.content,
+                    "contradiction": record.layer_1_lite_draft.story.contradiction.content,
+                    "pattern": record.layer_1_lite_draft.story.pattern.content,
+                    "defense": record.layer_1_lite_draft.story.defense.content,
+                    "block": record.layer_1_lite_draft.story.block.content,
+                    "light": record.layer_1_lite_draft.story.light.content,
+                },
+                "theme_insights": record.layer_1_lite_draft.theme_insights.to_dict(),
+                "lite_healing_guidance": {
+                    "directions": [],
+                    "micro_practices": [],
+                },
+                "pro_report_entry": {
+                    "title": "另一份更深的独立报告",
+                    "summary": record.layer_1_lite_draft.pro_teaser,
+                },
+            }
 
-        pro_plan = {}
+        pro_plan = {"mode": "pro"}
         if record.layer_3_pro_draft is not None and isinstance(
             record.layer_3_pro_draft.narrative_plan,
             dict,
         ):
-            pro_plan = record.layer_3_pro_draft.narrative_plan
+            pro_plan = {
+                "mode": "pro",
+                **record.layer_3_pro_draft.narrative_plan,
+            }
+        if not isinstance(pro_plan.get("sections"), dict) and record.layer_3_pro_draft is not None:
+            pro_plan["sections"] = {
+                "first_impression": record.layer_3_pro_draft.first_impression,
+                "core_insight_table": record.layer_3_pro_draft.core_insight_table,
+                "three_circles_detailed": record.layer_3_pro_draft.three_circles_detailed,
+                "micro_analysis_detailed": record.layer_3_pro_draft.micro_analysis_detailed,
+                "imbalance_confirmed": record.layer_3_pro_draft.imbalance_confirmed,
+                "root_cause": record.layer_3_pro_draft.root_cause,
+                "healing_suggestions": record.layer_3_pro_draft.healing_suggestions,
+            }
 
         return {
             "lite": lite_plan,

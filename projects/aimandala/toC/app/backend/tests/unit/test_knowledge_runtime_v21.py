@@ -23,11 +23,18 @@ from app.core.knowledge_runtime.checks import check_knowledge_pack_v21
 from app.core.knowledge_runtime.compiler import KnowledgePackCompiler
 from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root
 from app.core.knowledge_runtime.repository import KnowledgeRepository
-from app.core.knowledge_runtime.runtime import get_knowledge_runtime
+from app.core.knowledge_runtime.runtime import create_knowledge_runtime, get_knowledge_runtime
 from app.core.knowledge_runtime.validators import KnowledgePackValidator
+from app.core.llm.runtime import NoopLLMClient
 from app.core.pipeline.data_models import InterpretationRecord
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.store import InterpretationStore, UnsupportedInterpretationSchemaError
+
+PROJECT_ROOT = Path(__file__).resolve().parents[5]
+
+
+def _fixture_asset_path(name: str) -> str:
+    return str(PROJECT_ROOT / "fixtures" / "toc-mvp" / "assets" / name)
 
 
 def _reset_api_state():
@@ -866,7 +873,21 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
     cv2.circle(image, center, 45, (0, 0, 255), -1)
     cv2.imwrite(str(image_path), image)
 
-    orchestrator = LayeredOrchestrator(enable_vision=False)
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            return {
+                "global_visual_summary": "内圈以红色为主，中圈偏绿色，外圈偏黄色。",
+                "per_circle_summary": {
+                    "inner": "内圈以红色为主。",
+                    "middle": "中圈偏绿色。",
+                    "outer": "外圈偏黄色。",
+                },
+                "confidence": 0.9,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
     record = InterpretationRecord(
         theme="wealth_career",
         image_local_path=str(image_path),
@@ -875,6 +896,65 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
 
     layer0 = orchestrator._build_layer0_placeholder(record)
 
+    assert layer0.input_package["image"]["image_ref"]
+    assert not Path(layer0.input_package["image"]["image_ref"]).is_absolute()
+    assert layer0.input_package["topic_input"] == {
+        "topic": "wealth_career",
+        "topic_label": "财富事业",
+    }
+    assert layer0.input_package["circle_config"]["inner_radius"] == 35
+    assert layer0.input_package["circle_config"]["middle_radius"] == 67
+    visual_basis = layer0.visual_analysis_basis
+    assert "knowledge_hits" not in visual_basis
+    assert "imbalance_trace" not in visual_basis
+    assert "element_states" not in visual_basis
+    assert "llm_color_observation" in visual_basis
+    assert "program_color_measurement" in visual_basis
+    assert "direct_judgment_hits" in visual_basis
+    assert set(visual_basis["circles"]) == {"inner", "middle", "outer"}
+    assert visual_basis["circle_band_metrics"]["inner"]["band_ratio"] == 0.35
+    assert visual_basis["circle_band_metrics"]["middle"]["band_ratio"] == 0.32
+    assert visual_basis["circle_band_metrics"]["outer"]["band_ratio"] == 0.33
+    assert visual_basis["prompt_meta"]["prompt_version"] == "visual-analysis-basis.v1"
+    assert "#" not in visual_basis["global_visual_summary"]
+    assert "filled" not in visual_basis["global_visual_summary"]
+    assert "middle" not in visual_basis["global_visual_summary"]
+    catalog_ids = [
+        item["judgment_id"] for item in visual_basis["direct_judgment_hits"]["catalog_items"]
+    ]
+    assert visual_basis["direct_judgment_hits"]["catalog_version"] == "merged-manual6-runtime9.v1"
+    assert len(catalog_ids) == 10
+    assert "large_yellow_mass" not in catalog_ids
+    assert "outer_decorative_fragmented" in catalog_ids
+    assert "heavy_dark_filled" in catalog_ids
+    assert "light_pale_whitish" in catalog_ids
+    for circle in visual_basis["circles"].values():
+        assert circle["observation_summary"]
+        assert set(circle) >= {
+            "palette",
+            "color_stats",
+            "shape_features",
+            "composition",
+            "brushwork",
+            "blocks",
+        }
+        assert circle["palette"]["canonical_color_labels"]
+        assert 1 <= len(circle["blocks"]) <= 5
+        for block in circle["blocks"]:
+            assert set(block) >= {
+                "llm_color_label",
+                "program_color",
+                "shape",
+                "mass_ratio",
+                "position",
+                "edge_contour",
+                "brushwork",
+                "adjacent_relations",
+                "white_source",
+            }
+            assert set(block["program_color"]) >= {"hex", "rgb"}
+    assert layer0.visual_facts["input_package"] == layer0.input_package
+    assert layer0.visual_facts["visual_analysis_basis"] == layer0.visual_analysis_basis
     assert layer0.visual_facts["dominant_element"] in {"木", "火", "土", "金", "水"}
     assert layer0.knowledge_hits["circle_readings"]["inner"]
     assert layer0.rule_evaluations["element_states"]
@@ -911,6 +991,607 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
     assert isinstance(layer0.fidelity_flags, list)
     assert layer0.quality_flags == layer0.fidelity_flags
     assert "used" in layer0.fallback_summary
+
+
+def test_v21_layer0_global_visual_summary_prefers_multimodal_then_program_confirmation():
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            assert task == "vision"
+            assert image_path
+            return {
+                "global_visual_summary": (
+                    "内圈以蓝色为主并夹有白色镂空；"
+                    "中圈以粉色为主并带有白色留空；"
+                    "外圈以粉色、紫色和白色为主，紫色色块量感更重。"
+                ),
+                "per_circle_summary": {
+                    "inner": "内圈以蓝色为主并夹有白色镂空。",
+                    "middle": "中圈以粉色为主并带有白色留空。",
+                    "outer": "外圈以粉色、紫色和白色为主，紫色色块量感更重。",
+                },
+                "per_circle_color_labels": {
+                    "inner": ["蓝色", "白色"],
+                    "middle": ["粉色", "白色"],
+                    "outer": ["粉色", "紫色", "白色"],
+                },
+                "per_circle_color_roles": {
+                    "inner": {
+                        "primary_colors": ["蓝色"],
+                        "accent_colors": [],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["蓝色"],
+                                "shape": "莲花花瓣",
+                                "color_pattern": "纯色",
+                                "relative_position": "围绕中心向外展开",
+                            }
+                        ],
+                    },
+                    "middle": {
+                        "primary_colors": ["粉色"],
+                        "accent_colors": [],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["粉色"],
+                                "shape": "花朵",
+                                "color_pattern": "纯色",
+                                "relative_position": "位于中圈主体区域",
+                            }
+                        ],
+                    },
+                    "outer": {
+                        "primary_colors": ["粉色", "紫色"],
+                        "accent_colors": [],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["粉色", "紫色"],
+                                "shape": "外扩花瓣",
+                                "color_pattern": "纯色",
+                                "relative_position": "沿外圈向外扩展",
+                            }
+                        ],
+                    },
+                },
+                "confidence": 0.93,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=_fixture_asset_path("sample01.jpg"),
+        three_circles={"inner_radius": 46, "middle_radius": 72},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+    visual_basis = layer0.visual_analysis_basis
+
+    assert visual_basis["global_visual_summary"].startswith("内圈以蓝色为主")
+    assert visual_basis["llm_color_observation"]["source"] == "llm_vision_then_program_confirmation"
+    assert visual_basis["llm_color_observation"]["confidence"] == 0.93
+    assert (
+        visual_basis["prompt_meta"]["source"]
+        == "llm_vision_then_program_confirmation"
+    )
+    assert (
+        visual_basis["prompt_meta"]["confirmation_source"]
+        == "program_segmented_block_measurement"
+    )
+    assert (
+        visual_basis["program_color_measurement"]["source"]
+        == "program_segmented_block_measurement"
+    )
+    assert visual_basis["prompt_meta"]["model_role"] == "multimodal_visual_observer"
+    assert visual_basis["circles"]["inner"]["observation_summary"] == "主色为蓝色，能看到白色留白，显著图形包括蓝色莲花花瓣（纯色，围绕中心向外展开）。"
+    assert visual_basis["circles"]["middle"]["observation_summary"] == "主色为粉色，能看到白色留白，显著图形包括粉色花朵（纯色，位于中圈主体区域）。"
+    assert (
+        visual_basis["circles"]["outer"]["observation_summary"]
+        == "主色为粉色、紫色，能看到白色留白，显著图形包括粉色、紫色外扩花瓣（纯色，沿外圈向外扩展）。"
+    )
+    assert visual_basis["circles"]["inner"]["palette"]["canonical_color_labels"] == ["蓝色", "白色"]
+    assert visual_basis["circles"]["middle"]["palette"]["canonical_color_labels"] == ["粉色", "白色"]
+    assert visual_basis["circles"]["outer"]["palette"]["canonical_color_labels"] == ["粉色", "紫色", "白色"]
+    assert visual_basis["circles"]["inner"]["palette"]["llm_color_roles"]["primary_colors"] == ["蓝色"]
+    assert visual_basis["circles"]["outer"]["palette"]["llm_color_roles"]["shape_color_pairs"][0]["shape"] == "外扩花瓣"
+    assert visual_basis["prompt_meta"]["validation_status"] == "passed"
+    assert visual_basis["prompt_meta"]["validation_detail"]["circle_color_consistency"] is True
+
+
+def test_v21_layer0_warns_when_vision_circle_colors_conflict_with_program_measurement(tmp_path):
+    image_path = tmp_path / "knowledge-layer0-vision-conflict.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (220, 190, 230), -1)
+    cv2.circle(image, center, 90, (235, 205, 235), -1)
+    cv2.circle(image, center, 45, (235, 210, 180), -1)
+    cv2.imwrite(str(image_path), image)
+
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            return {
+                "global_visual_summary": "内圈绿色，中圈咖色，外圈咖色。",
+                "per_circle_summary": {
+                    "inner": "内圈以绿色为主。",
+                    "middle": "中圈以咖色为主。",
+                    "outer": "外圈以咖色为主。",
+                },
+                "per_circle_color_labels": {
+                    "inner": ["绿色"],
+                    "middle": ["咖色"],
+                    "outer": ["咖色"],
+                },
+                "per_circle_color_roles": {
+                    "inner": {
+                        "primary_colors": ["绿色"],
+                        "accent_colors": [],
+                        "white_presence": "none",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["绿色"],
+                                "shape": "团块",
+                                "color_pattern": "纯色",
+                                "relative_position": "位于内圈中心区域",
+                            }
+                        ],
+                    },
+                    "middle": {
+                        "primary_colors": ["咖色"],
+                        "accent_colors": [],
+                        "white_presence": "none",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["咖色"],
+                                "shape": "团块",
+                                "color_pattern": "纯色",
+                                "relative_position": "位于中圈主体区域",
+                            }
+                        ],
+                    },
+                    "outer": {
+                        "primary_colors": ["咖色"],
+                        "accent_colors": [],
+                        "white_presence": "none",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["咖色"],
+                                "shape": "团块",
+                                "color_pattern": "纯色",
+                                "relative_position": "位于外圈主体区域",
+                            }
+                        ],
+                    },
+                },
+                "confidence": 0.91,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=_fixture_asset_path("sample01.jpg"),
+        three_circles={"inner_radius": 46, "middle_radius": 72},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+    visual_basis = layer0.visual_analysis_basis
+
+    assert layer0.layer0_passed is True
+    assert layer0.layer0_failure_reason == ""
+    assert visual_basis["prompt_meta"]["source"] == "llm_vision_then_program_confirmation"
+    assert visual_basis["prompt_meta"]["validation_status"] == "warning"
+    assert visual_basis["prompt_meta"]["failure_reason"] == ""
+    assert visual_basis["prompt_meta"]["validation_detail"]["circle_color_consistency"] is False
+    assert visual_basis["prompt_meta"]["validation_detail"]["mismatched_circles"] == [
+        "inner",
+        "middle",
+        "outer",
+    ]
+    assert visual_basis["global_visual_summary"] == "内圈绿色，中圈咖色，外圈咖色。"
+    assert visual_basis["circles"]["inner"]["observation_summary"] == "主色为绿色，显著图形包括绿色团块（纯色，位于内圈中心区域）。"
+    assert visual_basis["circles"]["middle"]["observation_summary"] == "主色为咖色，显著图形包括咖色团块（纯色，位于中圈主体区域）。"
+    assert visual_basis["circles"]["outer"]["observation_summary"] == "主色为咖色，显著图形包括咖色团块（纯色，位于外圈主体区域）。"
+    assert visual_basis["circles"]["inner"]["palette"]["canonical_color_labels"] == ["绿色"]
+    assert visual_basis["circles"]["middle"]["palette"]["canonical_color_labels"] == ["咖色"]
+    assert visual_basis["circles"]["outer"]["palette"]["canonical_color_labels"] == ["咖色"]
+    assert visual_basis["llm_color_observation"]["source"] == "llm_vision_then_program_confirmation"
+    assert visual_basis["program_color_measurement"]["source"] == "program_segmented_block_measurement"
+
+
+def test_v21_layer0_marks_failed_when_vision_unavailable(
+    tmp_path,
+):
+    image_path = tmp_path / "knowledge-layer0-vision-fallback.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (0, 255, 255), -1)
+    cv2.circle(image, center, 90, (0, 200, 0), -1)
+    cv2.circle(image, center, 45, (0, 0, 255), -1)
+    cv2.imwrite(str(image_path), image)
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = NoopLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=str(image_path),
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+    visual_basis = layer0.visual_analysis_basis
+
+    assert layer0.layer0_passed is False
+    assert layer0.layer0_failure_reason == "layer0_vision_unconfigured"
+    assert layer0.layer0_failure_detail["stage"] == "vision"
+    assert layer0.input_package["image"]["image_ref"]
+    assert visual_basis["prompt_meta"]["source"] == "layer0_failed"
+    assert visual_basis["prompt_meta"]["failure_reason"] == "layer0_vision_unconfigured"
+    assert visual_basis["prompt_meta"]["vision_unavailable"] is True
+    assert visual_basis["program_color_measurement"]["source"] == "program_segmented_block_measurement"
+    assert visual_basis["global_visual_summary"] == ""
+    assert visual_basis["llm_color_observation"]["source"] == "layer0_failed"
+    assert visual_basis["llm_color_observation"]["summary"] == ""
+    assert visual_basis["direct_judgment_hits"]["hits"] == []
+    assert layer0.visual_facts["visual_analysis_basis"] == visual_basis
+    assert layer0.fallback_summary["used"] is True
+    assert "layer0_failed" in layer0.fallback_summary["levels"]
+    assert "layer0_vision_unconfigured" in layer0.fallback_summary["warnings"]
+    for circle in visual_basis["circles"].values():
+        assert circle["observation_summary"] == "未观察到足够依据"
+        assert circle["shape_features"]["boundary_style"] == "未观察到足够依据"
+        assert circle["brushwork"]["stroke_quality"] == "未观察到足够依据"
+
+
+def test_v21_layer0_requests_compact_multimodal_visual_prompt(tmp_path):
+    image_path = tmp_path / "knowledge-layer0-vision-compact.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (200, 180, 220), -1)
+    cv2.circle(image, center, 90, (220, 200, 210), -1)
+    cv2.circle(image, center, 45, (170, 200, 220), -1)
+    cv2.imwrite(str(image_path), image)
+
+    captured: dict[str, object] = {}
+
+    class FakeVisionLLMClient:
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            captured["task"] = task
+            captured["prompt"] = prompt
+            captured["schema"] = schema
+            captured["image_path"] = image_path
+            return {
+                "global_visual_summary": "内圈蓝白，中圈粉白，外圈紫白。",
+                "per_circle_summary": {
+                    "inner": "内圈蓝白。",
+                    "middle": "中圈粉白。",
+                    "outer": "外圈紫白。",
+                },
+                "per_circle_color_labels": {
+                    "inner": ["蓝色", "白色"],
+                    "middle": ["粉色", "白色"],
+                    "outer": ["紫色", "白色"],
+                },
+                "per_circle_color_roles": {
+                    "inner": {
+                        "primary_colors": ["蓝色"],
+                        "accent_colors": [],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["蓝色"],
+                                "shape": "莲花花瓣",
+                                "color_pattern": "纯色",
+                                "relative_position": "围绕中心向外展开",
+                            }
+                        ],
+                    },
+                    "middle": {
+                        "primary_colors": ["粉色"],
+                        "accent_colors": [],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["粉色"],
+                                "shape": "花朵",
+                                "color_pattern": "纯色",
+                                "relative_position": "位于中圈主体区域",
+                            }
+                        ],
+                    },
+                    "outer": {
+                        "primary_colors": ["紫色"],
+                        "accent_colors": [],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["紫色"],
+                                "shape": "花瓣",
+                                "color_pattern": "纯色",
+                                "relative_position": "沿外圈向外扩展",
+                            }
+                        ],
+                    },
+                },
+                "confidence": 0.88,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=str(image_path),
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    orchestrator._build_layer0_placeholder(record)
+
+    prompt = str(captured.get("prompt") or "")
+    assert captured["task"] == "vision"
+    assert captured["image_path"] == str(image_path)
+    assert "请分别写内圈、中圈、外圈各一句" in prompt
+    assert "每句只写主要颜色、白色/留白、最显著形状" in prompt
+    assert "主色" in prompt
+    assert "点缀色" in prompt
+    assert "white_presence" in prompt
+    assert "shape_color_pairs" in prompt
+    assert "不要把黑色线框单独当作轮廓色" in prompt
+    assert "如果看到淡红或红到淡红的渐变，优先归为红色，不要轻易写成粉色" in prompt
+    assert "如果更接近莲花花瓣，就直接写莲花花瓣" in prompt
+    assert "黄色花朵如果整体纯黄色、靠近花蕊有留白，要明确写出来" in prompt
+    assert "relative_position" in prompt
+    assert "尝试描述色块之间的相对位置" in prompt
+    assert "per_circle_color_labels" in json.dumps(captured["schema"], ensure_ascii=False)
+    assert "per_circle_color_roles" in json.dumps(captured["schema"], ensure_ascii=False)
+    assert "请同时给出每圈的颜色标签列表" in prompt
+    assert "程序提色参考" not in prompt
+
+
+def test_v21_layer0_can_build_circle_summaries_from_llm_roles_without_per_circle_summary():
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            assert task == "vision"
+            return {
+                "global_visual_summary": "画面以红、黄、绿、白为主，整体对称。",
+                "per_circle_color_labels": {
+                    "inner": ["红色", "黄色", "白色"],
+                    "middle": ["黄色", "红色", "绿色", "白色"],
+                    "outer": ["绿色", "红色", "黄色", "白色"],
+                },
+                "per_circle_color_roles": {
+                    "inner": {
+                        "primary_colors": ["红色", "黄色"],
+                        "accent_colors": ["白色"],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["红色"],
+                                "shape": "莲花花瓣",
+                                "color_pattern": "渐变色",
+                                "relative_position": "围绕中心向外展开",
+                            }
+                        ],
+                    },
+                    "middle": {
+                        "primary_colors": ["黄色", "红色"],
+                        "accent_colors": ["绿色", "白色"],
+                        "white_presence": "visible",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["红色", "黄色"],
+                                "shape": "花朵",
+                                "color_pattern": "纯色",
+                                "relative_position": "红色花瓣形边框里包着黄色花朵",
+                            }
+                        ],
+                    },
+                    "outer": {
+                        "primary_colors": ["绿色", "红色"],
+                        "accent_colors": ["黄色", "白色"],
+                        "white_presence": "prominent",
+                        "shape_color_pairs": [
+                            {
+                                "colors": ["绿色"],
+                                "shape": "叶子",
+                                "color_pattern": "纯色",
+                                "relative_position": "沿外圈向外展开",
+                            }
+                        ],
+                    },
+                },
+                "confidence": 0.9,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=_fixture_asset_path("sample02.jpg"),
+        three_circles={"inner_radius": 33, "middle_radius": 66},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+    visual_basis = layer0.visual_analysis_basis
+
+    assert layer0.layer0_passed is True
+    assert visual_basis["circles"]["inner"]["observation_summary"] == "主色为红色、黄色，点缀色为白色，能看到白色留白，显著图形包括红色莲花花瓣（渐变色，围绕中心向外展开）。"
+    assert visual_basis["circles"]["middle"]["observation_summary"] == "主色为黄色、红色，点缀色为绿色、白色，能看到白色留白，显著图形包括红色、黄色花朵（纯色，红色花瓣形边框里包着黄色花朵）。"
+    assert visual_basis["circles"]["outer"]["observation_summary"] == "主色为绿色、红色，点缀色为黄色、白色，白色留白很明显，显著图形包括绿色叶子（纯色，沿外圈向外展开）。"
+
+
+def test_v21_layer0_input_package_image_ref_prefers_projects_relative_path():
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            return {
+                "global_visual_summary": "内圈蓝白，中圈粉白，外圈紫白。",
+                "per_circle_summary": {
+                    "inner": "内圈蓝白。",
+                    "middle": "中圈粉白。",
+                    "outer": "外圈紫白。",
+                },
+                "confidence": 0.9,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=_fixture_asset_path("sample01.jpg"),
+        three_circles={"inner_radius": 46, "middle_radius": 72},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+
+    assert (
+        layer0.input_package["image"]["image_ref"]
+        == "projects/aimandala/fixtures/toc-mvp/assets/sample01.jpg"
+    )
+
+
+def test_v21_layer0_counts_white_as_normal_visual_blocks(tmp_path):
+    image_path = tmp_path / "knowledge-layer0-white.png"
+    image = np.full((300, 300, 3), 255, dtype=np.uint8)
+    center = (150, 150)
+    cv2.circle(image, center, 130, (235, 235, 235), -1)
+    cv2.circle(image, center, 90, (255, 255, 255), -1)
+    cv2.circle(image, center, 45, (0, 0, 255), -1)
+    cv2.circle(image, center, 90, (255, 255, 255), 18, -1)
+    cv2.imwrite(str(image_path), image)
+
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            return {
+                "global_visual_summary": "内圈红白，中圈白色明显，外圈白色为主。",
+                "per_circle_summary": {
+                    "inner": "内圈红白。",
+                    "middle": "中圈白色明显。",
+                    "outer": "外圈白色为主。",
+                },
+                "confidence": 0.9,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=str(image_path),
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+
+    all_blocks = [
+        block
+        for circle in layer0.visual_analysis_basis["circles"].values()
+        for block in circle["blocks"]
+    ]
+    white_blocks = [block for block in all_blocks if block["llm_color_label"] == "白色"]
+
+    assert white_blocks
+    assert any(block["white_source"] != "none" for block in white_blocks)
+    assert any(block["mass_ratio"] > 0 for block in white_blocks)
+    assert any(
+        "白色" in circle["palette"]["canonical_color_labels"]
+        for circle in layer0.visual_analysis_basis["circles"].values()
+    )
+
+
+def test_v21_layer0_sample01_prefers_segmented_circle_blocks_and_calibrated_image_ref():
+    class FakeVisionLLMClient(NoopLLMClient):
+        def generate_structured(self, *, task, prompt, schema, image_path=None):
+            return {
+                "global_visual_summary": "内圈蓝白，中圈粉白，外圈粉紫白。",
+                "per_circle_summary": {
+                    "inner": "内圈蓝白。",
+                    "middle": "中圈粉白。",
+                    "outer": "外圈粉紫白。",
+                },
+                "confidence": 0.93,
+            }
+
+    runtime = create_knowledge_runtime()
+    runtime.layer0_assembler.llm_client = FakeVisionLLMClient()
+    orchestrator = LayeredOrchestrator(enable_vision=False, knowledge_runtime=runtime)
+    record = InterpretationRecord(
+        theme="general",
+        image_local_path=_fixture_asset_path("sample01.jpg"),
+        painting_intention="",
+        painting_feeling="",
+        three_circles={"inner_radius": 46, "middle_radius": 72},
+    )
+
+    layer0 = orchestrator._build_layer0_placeholder(record)
+    input_package = layer0.input_package
+    visual_basis = layer0.visual_analysis_basis
+
+    assert (
+        input_package["image"]["image_ref"]
+        == "projects/aimandala/fixtures/toc-mvp/assets/sample01.jpg"
+    )
+    assert input_package["circle_config"]["source"] == "user_calibrated"
+
+    inner = visual_basis["circles"]["inner"]
+    middle = visual_basis["circles"]["middle"]
+    outer = visual_basis["circles"]["outer"]
+
+    assert set(inner["palette"]["canonical_color_labels"]) == {"蓝色", "白色"}
+    assert set(middle["palette"]["canonical_color_labels"]) == {"粉色", "白色"}
+    assert set(outer["palette"]["canonical_color_labels"]) == {"粉色", "紫色", "白色"}
+    assert {block["llm_color_label"] for block in inner["blocks"]} == {"蓝色", "白色"}
+    assert {block["llm_color_label"] for block in middle["blocks"]} == {"粉色", "白色"}
+    assert {block["llm_color_label"] for block in outer["blocks"]} == {"粉色", "紫色", "白色"}
+
+    assert "绿色" not in inner["palette"]["canonical_color_labels"]
+    assert "咖色" not in middle["palette"]["canonical_color_labels"]
+    assert "咖色" not in outer["palette"]["canonical_color_labels"]
+
+    for circle in [inner, middle, outer]:
+        assert 1 <= len(circle["blocks"]) <= 5
+        for block in circle["blocks"]:
+            assert set(block) >= {
+                "llm_color_label",
+                "program_color",
+                "mass_ratio",
+                "shape",
+                "position",
+                "edge_contour",
+                "brushwork",
+                "adjacent_relations",
+                "white_source",
+                "repeat_pattern",
+                "repeat_count",
+            }
+            assert set(block["position"]) >= {
+                "region_label",
+                "anchor_band_position",
+                "radial_role",
+                "symmetry_hint",
+            }
+            assert not any(
+                key in block["position"]
+                for key in {"x_ratio", "y_ratio", "radius_ratio", "coordinate_summary"}
+            )
+
+    all_blocks = [
+        block
+        for circle in [inner, middle, outer]
+        for block in circle["blocks"]
+    ]
+    white_blocks = [block for block in all_blocks if block["llm_color_label"] == "白色"]
+    assert white_blocks
+    assert any(block["white_source"] in {"paper_blank", "hollow_gap"} for block in white_blocks)
+    assert any(
+        isinstance(block.get("repeat_count"), (int, str))
+        for block in all_blocks
+    )
 
 
 def test_v21_imbalance_service_separates_tutorial_state_from_scoring_state():

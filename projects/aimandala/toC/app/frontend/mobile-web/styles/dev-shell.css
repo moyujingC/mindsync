@@ -105,6 +105,31 @@ body {
   color: var(--am-dev-text-primary);
 }
 
+.browser-shell__version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin-top: 6px;
+  padding: 8px 12px;
+  border: 1px solid rgba(205, 172, 119, 0.28);
+  border-radius: 999px;
+  background: rgba(205, 172, 119, 0.1);
+  color: var(--am-dev-text-primary);
+}
+
+.browser-shell__version-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--am-dev-text-eyebrow);
+}
+
+.browser-shell__version-badge strong {
+  font-size: 12px;
+  line-height: 1;
+}
+
 .browser-shell__toggle {
   border: 0;
   border-radius: 999px;

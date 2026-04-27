@@ -6,6 +6,7 @@
 """
 
 import os
+import math
 import cv2
 import numpy as np
 from typing import Dict, Any, List, Tuple, Optional
@@ -176,18 +177,9 @@ def extract_dominant_colors(
     if len(pixels) == 0:
         return []
 
-    # 排除白色背景（亮度很高的像素）
-    # 计算像素的亮度（使用相对亮度公式）
-    brightness = 0.299 * pixels[:, 0] + 0.587 * pixels[:, 1] + 0.114 * pixels[:, 2]
-    saturation = np.max(pixels, axis=1) - np.min(pixels, axis=1)
-
-    # 过滤掉白色/灰色背景（高亮度且低饱和度）
-    non_bg_mask = ~((brightness > 200) & (saturation < 30))
-    pixels = pixels[non_bg_mask]
-
-    if len(pixels) == 0:
-        # 如果过滤后没有像素，使用原始像素
-        pixels = image_rgb[mask > 0]
+    # 注意：这里不再过滤掉高亮低饱和像素。
+    # 按当前 Layer0 首层口径，圆盘内白色、留白、镂空白块都要作为正常白色色块参与统计；
+    # 圆盘外背景已经由 mask 排除，因此这里直接保留圆盘内全部像素。
 
     # K-means聚类
     pixels = np.float32(pixels)
@@ -233,6 +225,187 @@ def extract_dominant_colors(
     colors.sort(key=lambda x: x["percentage"], reverse=True)
 
     return colors
+
+
+def _pixel_brightness(rgb: tuple[int, int, int]) -> float:
+    red, green, blue = rgb
+    return 0.299 * red + 0.587 * green + 0.114 * blue
+
+
+def _pixel_saturation(rgb: tuple[int, int, int]) -> float:
+    red, green, blue = rgb
+    max_channel = max(red, green, blue)
+    min_channel = min(red, green, blue)
+    if max_channel == 0:
+        return 0.0
+    return ((max_channel - min_channel) / max_channel) * 255.0
+
+
+def _normalize_rgb_bucket(rgb: tuple[int, int, int], *, white_source: str) -> tuple[int, int, int]:
+    if white_source != "none":
+        return (248, 246, 240)
+    red, green, blue = rgb
+    return (
+        int(round(red / 18.0) * 18),
+        int(round(green / 18.0) * 18),
+        int(round(blue / 18.0) * 18),
+    )
+
+
+def _classify_white_source(
+    rgb: tuple[int, int, int],
+    *,
+    background_rgb: tuple[float, float, float],
+) -> str:
+    red, green, blue = rgb
+    brightness = _pixel_brightness(rgb)
+    saturation = _pixel_saturation(rgb)
+    distance = math.sqrt(
+        (red - background_rgb[0]) ** 2
+        + (green - background_rgb[1]) ** 2
+        + (blue - background_rgb[2]) ** 2
+    )
+
+    spread = max(red, green, blue) - min(red, green, blue)
+
+    if brightness >= 244 and saturation <= 16 and spread <= 10:
+        return "paper_blank"
+    if brightness >= 205 and saturation <= 26 and spread <= 10:
+        return "hollow_gap"
+    if brightness >= 188 and saturation <= 18 and spread <= 8:
+        return "painted_white"
+    return "none"
+
+
+def _estimate_background_rgb(image_rgb: np.ndarray) -> tuple[float, float, float]:
+    height, width = image_rgb.shape[:2]
+    border_thickness = max(8, int(min(width, height) * 0.06))
+    border_pixels: list[tuple[int, int, int]] = []
+    for y in range(height):
+        for x in range(width):
+            is_border = (
+                x < border_thickness
+                or x >= width - border_thickness
+                or y < border_thickness
+                or y >= height - border_thickness
+            )
+            if not is_border:
+                continue
+            red, green, blue = image_rgb[y, x]
+            border_pixels.append((int(red), int(green), int(blue)))
+    if not border_pixels:
+        return (245.0, 245.0, 245.0)
+    return (
+        float(sum(pixel[0] for pixel in border_pixels) / len(border_pixels)),
+        float(sum(pixel[1] for pixel in border_pixels) / len(border_pixels)),
+        float(sum(pixel[2] for pixel in border_pixels) / len(border_pixels)),
+    )
+
+
+def _extract_segmented_blocks(
+    image: np.ndarray,
+    mask: np.ndarray,
+    *,
+    circle_name: str,
+    max_blocks: int = 120,
+) -> List[Dict[str, Any]]:
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    height, width = image_rgb.shape[:2]
+    center_x = width / 2.0
+    center_y = height / 2.0
+    max_radius = min(width, height) / 2.0
+    background_rgb = _estimate_background_rgb(image_rgb)
+
+    mask_pixels = int(np.sum(mask > 0))
+    if mask_pixels == 0:
+        return []
+
+    bucket_map: dict[tuple[int, int, int], np.ndarray] = {}
+    white_source_map: dict[tuple[int, int, int], str] = {}
+
+    for y in range(height):
+        for x in range(width):
+            if mask[y, x] == 0:
+                continue
+            rgb = tuple(int(value) for value in image_rgb[y, x])
+            white_source = _classify_white_source(rgb, background_rgb=background_rgb)
+            bucket = _normalize_rgb_bucket(rgb, white_source=white_source)
+            if bucket not in bucket_map:
+                bucket_map[bucket] = np.zeros((height, width), dtype=np.uint8)
+                white_source_map[bucket] = white_source
+            bucket_map[bucket][y, x] = 255
+
+    block_candidates: list[Dict[str, Any]] = []
+    min_area = max(24, int(mask_pixels * 0.00035))
+
+    for bucket, bucket_mask in bucket_map.items():
+        component_count, labels, stats, centroids = cv2.connectedComponentsWithStats(
+            bucket_mask,
+            connectivity=8,
+        )
+        for component_id in range(1, component_count):
+            area = int(stats[component_id, cv2.CC_STAT_AREA])
+            if area < min_area:
+                continue
+            centroid_x, centroid_y = centroids[component_id]
+            component_mask = labels == component_id
+            bucket_rgb = [int(bucket[0]), int(bucket[1]), int(bucket[2])]
+            radial_distance = math.sqrt(
+                (float(centroid_x) - center_x) ** 2 + (float(centroid_y) - center_y) ** 2
+            ) / max_radius
+            block_candidates.append(
+                {
+                    "hex": f"#{bucket[0]:02x}{bucket[1]:02x}{bucket[2]:02x}",
+                    "rgb": bucket_rgb,
+                    "percentage": round(area / mask_pixels * 100.0, 2),
+                    "area": area,
+                    "white_source": white_source_map.get(bucket, "none"),
+                    "repeat_pattern": "radial_repetition",
+                    "repeat_count": "unknown",
+                    "position": {
+                        "anchor_band_position": circle_name,
+                        "radial_role": "representative_motif",
+                        "symmetry_hint": f"{circle_name}_radial_repeat",
+                        "component_centroid": {
+                            "x_ratio": round(float(centroid_x) / width, 4),
+                            "y_ratio": round(float(centroid_y) / height, 4),
+                            "radius_ratio": round(radial_distance, 4),
+                        },
+                    },
+                    "shape_hint": _classify_component_shape(component_mask, area),
+                }
+            )
+
+    block_candidates.sort(key=lambda item: float(item.get("percentage", 0.0)), reverse=True)
+    return block_candidates[:max_blocks]
+
+
+def _classify_component_shape(component_mask: np.ndarray, area: int) -> str:
+    points = np.column_stack(np.where(component_mask))
+    if len(points) < 5:
+        return "未能稳定判断"
+
+    y_values = points[:, 0]
+    x_values = points[:, 1]
+    width = int(x_values.max() - x_values.min() + 1)
+    height = int(y_values.max() - y_values.min() + 1)
+    if width <= 0 or height <= 0:
+        return "未能稳定判断"
+
+    aspect_ratio = max(width, height) / max(1, min(width, height))
+    extent = area / float(width * height)
+
+    if extent <= 0.38:
+        return "镂空"
+    if aspect_ratio >= 2.4:
+        return "条带"
+    if extent >= 0.72 and abs(width - height) <= max(4, int(0.18 * max(width, height))):
+        return "圆斑"
+    if extent >= 0.55 and aspect_ratio <= 1.8:
+        return "团块"
+    if extent >= 0.4:
+        return "花瓣状"
+    return "不规则块"
 
 
 def calculate_five_element_distribution(
@@ -382,12 +555,18 @@ def extract_colors_by_circles(
         # 确定主导颜色和五行
         dominant_color = colors[0]["hex"] if colors else "#000000"
         dominant_element = get_dominant_element(five_elements)
+        segmented_blocks = _extract_segmented_blocks(
+            image,
+            mask,
+            circle_name=circle_name,
+        )
 
         result[circle_name] = {
             "colors": colors,
             "five_elements": five_elements,
             "dominant_color": dominant_color,
             "dominant_element": dominant_element,
+            "segmented_blocks": segmented_blocks,
         }
 
     return result

@@ -108,12 +108,20 @@ class TestLayer0Raw:
             five_elements=FiveElementsData(wood={"ratio": 0.5}),
             imbalance_candidates=["水多木漂"],
             fidelity_flags=["warning:水多火灭"],
+            layer0_passed=False,
+            layer0_failure_reason="layer0_vision_unconfigured",
+            layer0_failure_detail={"stage": "vision"},
         )
         data = layer.to_dict()
         assert "five_elements" in data
+        assert "input_package" in data
+        assert "visual_analysis_basis" in data
         assert data["imbalance_candidates"] == ["水多木漂"]
         assert data["fidelity_flags"] == ["warning:水多火灭"]
         assert data["quality_flags"] == ["warning:水多火灭"]
+        assert data["layer0_passed"] is False
+        assert data["layer0_failure_reason"] == "layer0_vision_unconfigured"
+        assert data["layer0_failure_detail"] == {"stage": "vision"}
         assert "created_at" in data
 
     def test_quality_flags_aliases_fidelity_flags(self):

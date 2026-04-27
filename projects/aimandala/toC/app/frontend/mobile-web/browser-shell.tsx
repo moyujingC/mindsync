@@ -945,6 +945,10 @@ export function MobileWebBrowserShell() {
             <span className="muted">
               开发辅助层，正式产品界面只看手机画面。
             </span>
+            <div className="browser-shell__version-badge" aria-label="当前联调壳层版本">
+              <span className="browser-shell__version-label">Local Debug</span>
+              <strong>v2026-04-20-layer0-first</strong>
+            </div>
           </div>
 
           <button

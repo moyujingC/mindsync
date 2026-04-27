@@ -3,6 +3,7 @@
 from .orchestrator_v2 import GenerationStage, LayeredOrchestrator, PricingSnapshot
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
+    LLMReportGenerationRuntime,
 )
 from .report_generation_contracts import (
     LiteGenerationBundle,
@@ -27,6 +28,7 @@ __all__ = [
     "DEFAULT_PRO_TEASER",
     "DeterministicReportGenerationRuntime",
     "GenerationStage",
+    "LLMReportGenerationRuntime",
     "LITE_REPORT_BLUEPRINT",
     "LITE_AWARENESS_TITLES",
     "LiteGenerationBundle",

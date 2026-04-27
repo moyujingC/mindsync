@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from app.core.llm.runtime import create_llm_client_from_env
+
 from .compiler import KnowledgePackCompiler
 from .repository import KnowledgeRepository, resolve_build_dir
 from .services.circle_service import CircleService
@@ -62,6 +64,7 @@ def create_knowledge_runtime(*, build_selector: str = "current") -> KnowledgeRun
         circle_service=circle_service,
         theme_service=theme_service,
         imbalance_service=imbalance_service,
+        llm_client=create_llm_client_from_env(),
     )
     return KnowledgeRuntime(
         repository=repository,

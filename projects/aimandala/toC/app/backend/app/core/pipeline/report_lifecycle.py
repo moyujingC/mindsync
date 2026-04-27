@@ -6,6 +6,7 @@ from typing import Any, Callable
 
 from .data_models import GenerationStatus, InterpretationRecord
 from .report_generation_contracts import (
+    Layer0BuildBlockedError,
     ReportGenerationContext,
     ReportGenerationRuntime,
 )
@@ -85,6 +86,14 @@ class ReportLifecycleManager:
         if record is None:
             return None
 
+        if getattr(getattr(record, "layer_0_raw", None), "layer0_passed", True) is False:
+            return self._build_pro_response(
+                interpretation_id=interpretation_id,
+                status="failed",
+                message="Layer0 首层未通过，不能继续升级 Pro。",
+                success=False,
+            )
+
         if record.get_pro_report():
             return self._build_pro_response(
                 interpretation_id=interpretation_id,
@@ -134,10 +143,43 @@ class ReportLifecycleManager:
                 return None
 
         self._mark_processing(record)
-        pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
-        record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
-        record.layer_4_pro_final = pro_bundle.layer_4_pro_final
-        self._mark_completed(record)
+        try:
+            if getattr(record.layer_0_raw, "layer0_passed", True) is False:
+                raise Layer0BuildBlockedError(
+                    getattr(record.layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                    layer_0_raw=record.layer_0_raw,
+                    detail=getattr(record.layer_0_raw, "layer0_failure_detail", {}) or {},
+                )
+            pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
+            record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
+            record.layer_4_pro_final = pro_bundle.layer_4_pro_final
+            self._mark_completed(record)
+        except Layer0BuildBlockedError:
+            record.layer_3_pro_draft = None
+            record.layer_4_pro_final = None
+            record.status = GenerationStatus.FAILED
+            record.update_progress("failed", 100)
+            self.store.save(record)
+            return self._build_pro_response(
+                interpretation_id=interpretation_id,
+                status="failed",
+                message="Layer0 首层未通过，已阻断 Pro 生成。",
+                success=False,
+            )
+        except RuntimeError as error:
+            if str(error).startswith("layer0_generation_failed_blocking:"):
+                record.layer_3_pro_draft = None
+                record.layer_4_pro_final = None
+                record.status = GenerationStatus.FAILED
+                record.update_progress("failed", 100)
+                self.store.save(record)
+                return self._build_pro_response(
+                    interpretation_id=interpretation_id,
+                    status="failed",
+                    message="Layer0 首层未通过，已阻断 Pro 生成。",
+                    success=False,
+                )
+            raise
 
         return self._build_pro_response(
             interpretation_id=interpretation_id,
@@ -166,10 +208,43 @@ class ReportLifecycleManager:
             )
 
         self._mark_processing(record)
-        pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
-        record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
-        record.layer_4_pro_final = pro_bundle.layer_4_pro_final
-        self._mark_completed(record)
+        try:
+            if getattr(record.layer_0_raw, "layer0_passed", True) is False:
+                raise Layer0BuildBlockedError(
+                    getattr(record.layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                    layer_0_raw=record.layer_0_raw,
+                    detail=getattr(record.layer_0_raw, "layer0_failure_detail", {}) or {},
+                )
+            pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
+            record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
+            record.layer_4_pro_final = pro_bundle.layer_4_pro_final
+            self._mark_completed(record)
+        except Layer0BuildBlockedError:
+            record.layer_3_pro_draft = None
+            record.layer_4_pro_final = None
+            record.status = GenerationStatus.FAILED
+            record.update_progress("failed", 100)
+            self.store.save(record)
+            return self._build_pro_response(
+                interpretation_id=interpretation_id,
+                status="failed",
+                message="Layer0 首层未通过，已阻断 Pro 生成。",
+                success=False,
+            )
+        except RuntimeError as error:
+            if str(error).startswith("layer0_generation_failed_blocking:"):
+                record.layer_3_pro_draft = None
+                record.layer_4_pro_final = None
+                record.status = GenerationStatus.FAILED
+                record.update_progress("failed", 100)
+                self.store.save(record)
+                return self._build_pro_response(
+                    interpretation_id=interpretation_id,
+                    status="failed",
+                    message="Layer0 首层未通过，已阻断 Pro 生成。",
+                    success=False,
+                )
+            raise
 
         return self._build_pro_response(
             interpretation_id=interpretation_id,
@@ -198,12 +273,13 @@ class ReportLifecycleManager:
         interpretation_id: str,
         status: str,
         message: str,
+        success: bool = True,
     ) -> dict[str, Any]:
         return {
-            "success": True,
+            "success": success,
             "interpretation_id": interpretation_id,
             "version": "pro",
-            "enabled": True,
+            "enabled": success,
             "status": status,
             "message": message,
         }

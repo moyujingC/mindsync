@@ -28,6 +28,22 @@ class ProGenerationBundle:
     layer_4_pro_final: Layer4ProFinal
 
 
+class Layer0BuildBlockedError(RuntimeError):
+    """Raised when Layer0 cannot be accepted as a formal evidence layer."""
+
+    def __init__(
+        self,
+        reason: str,
+        *,
+        layer_0_raw: Layer0Raw | None = None,
+        detail: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(f"layer0_generation_failed_blocking:{reason}")
+        self.reason = reason
+        self.layer_0_raw = layer_0_raw
+        self.detail = detail or {}
+
+
 class ReportGenerationContext(Protocol):
     """Minimal collaborator surface required by report generation runtimes."""
 
