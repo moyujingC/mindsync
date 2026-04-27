@@ -583,6 +583,25 @@ export function BrowserDebugPanel({
     }
     return toRecord(layer0Evidence.visual_analysis_basis);
   }, [knowledgeDebug, layer0Evidence]);
+  const modelTrace = useMemo(
+    () => toRecord(knowledgeDebug.model_trace),
+    [knowledgeDebug],
+  );
+  const visionTrace = useMemo(
+    () => toRecord(modelTrace.vision),
+    [modelTrace],
+  );
+  const layer0Passed = useMemo(() => {
+    const explicit = layer0Evidence.layer0_passed;
+    if (typeof explicit === "boolean") {
+      return explicit;
+    }
+    return true;
+  }, [layer0Evidence]);
+  const layer0FailureReason = useMemo(
+    () => renderSimpleValue(layer0Evidence.layer0_failure_reason || visionTrace.failure_reason),
+    [layer0Evidence, visionTrace],
+  );
   const layer0Summary = useMemo(
     () => toRecord(knowledgeDebug.review_layer0_summary),
     [knowledgeDebug],
@@ -960,6 +979,28 @@ export function BrowserDebugPanel({
             <div className="browser-debug-section__header">
               <h3>visual_analysis_basis</h3>
               <span>客观视觉转述</span>
+            </div>
+            <div className="browser-debug-kv">
+              <div>
+                <span>Layer0 status</span>
+                <strong>{layer0Passed ? "pass" : "fail"}</strong>
+              </div>
+              <div>
+                <span>vision endpoint</span>
+                <strong>{renderSimpleValue(visionTrace.endpoint_id)}</strong>
+              </div>
+              <div>
+                <span>vision model</span>
+                <strong>{renderSimpleValue(visionTrace.resolved_model)}</strong>
+              </div>
+              <div>
+                <span>vision source</span>
+                <strong>{renderSimpleValue(visionTrace.source)}</strong>
+              </div>
+              <div>
+                <span>failure reason</span>
+                <strong>{layer0FailureReason}</strong>
+              </div>
             </div>
             <div className="browser-debug-grid">
               <article className="browser-debug-card">

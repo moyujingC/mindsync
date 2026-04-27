@@ -235,6 +235,8 @@ class KnowledgeDebugBlockBuilder:
                 "endpoint_id": prompt_meta.get("endpoint_id", ""),
                 "resolved_model": prompt_meta.get("resolved_model", ""),
                 "source": prompt_meta.get("source", ""),
+                "configured": prompt_meta.get("source", "") != "layer0_failed",
+                "failure_reason": prompt_meta.get("failure_reason", ""),
             },
             "chat": {
                 "endpoint_id": chat_trace.get("endpoint_id", ""),
@@ -248,11 +250,13 @@ class KnowledgeDebugBlockBuilder:
 
     def _build_topic_context_trace(self, record: InterpretationRecord) -> dict[str, Any]:
         theme = getattr(record, "theme", None) or "general"
+        layer0 = getattr(record, "layer_0_raw", None)
         return {
             "topic": theme,
             "report_modes": list(getattr(record, "version_purchased", []) or []),
             "knowledge_route": "general" if theme == "general" else "theme_only",
             "general_mixed": False,
+            "layer0_passed": getattr(layer0, "layer0_passed", True),
         }
 
     def _build_input_package(
@@ -950,6 +954,9 @@ class KnowledgeDebugBlockBuilder:
             "input_package": layer0.get("input_package", {}),
             "visual_analysis_basis": layer0.get("visual_analysis_basis", {}),
             "visual_facts": layer0.get("visual_facts", {}),
+            "layer0_passed": layer0.get("layer0_passed", True),
+            "layer0_failure_reason": layer0.get("layer0_failure_reason", ""),
+            "layer0_failure_detail": layer0.get("layer0_failure_detail", {}),
             "knowledge_hits": layer0.get("knowledge_hits", {}),
             "rule_evaluations": layer0.get("rule_evaluations", {}),
             "theme_projection": layer0.get("theme_projection", {}),
@@ -1222,19 +1229,59 @@ class KnowledgeDebugBlockBuilder:
         self,
         record: InterpretationRecord,
     ) -> dict[str, Any]:
-        lite_plan = {}
+        lite_plan = {"mode": "lite"}
         if record.layer_1_lite_draft is not None and isinstance(
             record.layer_1_lite_draft.narrative_plan,
             dict,
         ):
-            lite_plan = record.layer_1_lite_draft.narrative_plan
+            lite_plan = {
+                "mode": "lite",
+                **record.layer_1_lite_draft.narrative_plan,
+            }
+        if not isinstance(lite_plan.get("sections"), dict) and record.layer_1_lite_draft is not None:
+            lite_plan["sections"] = {
+                "title": record.layer_1_lite_draft.title,
+                "overall_impression": record.layer_1_lite_draft.overall_impression,
+                "visual_elements": record.layer_1_lite_draft.visual_elements,
+                "emotion_portrait": record.layer_1_lite_draft.emotion_portrait,
+                "story_sections": {
+                    "base": record.layer_1_lite_draft.story.base.content,
+                    "contradiction": record.layer_1_lite_draft.story.contradiction.content,
+                    "pattern": record.layer_1_lite_draft.story.pattern.content,
+                    "defense": record.layer_1_lite_draft.story.defense.content,
+                    "block": record.layer_1_lite_draft.story.block.content,
+                    "light": record.layer_1_lite_draft.story.light.content,
+                },
+                "theme_insights": record.layer_1_lite_draft.theme_insights.to_dict(),
+                "lite_healing_guidance": {
+                    "directions": [],
+                    "micro_practices": [],
+                },
+                "pro_report_entry": {
+                    "title": "另一份更深的独立报告",
+                    "summary": record.layer_1_lite_draft.pro_teaser,
+                },
+            }
 
-        pro_plan = {}
+        pro_plan = {"mode": "pro"}
         if record.layer_3_pro_draft is not None and isinstance(
             record.layer_3_pro_draft.narrative_plan,
             dict,
         ):
-            pro_plan = record.layer_3_pro_draft.narrative_plan
+            pro_plan = {
+                "mode": "pro",
+                **record.layer_3_pro_draft.narrative_plan,
+            }
+        if not isinstance(pro_plan.get("sections"), dict) and record.layer_3_pro_draft is not None:
+            pro_plan["sections"] = {
+                "first_impression": record.layer_3_pro_draft.first_impression,
+                "core_insight_table": record.layer_3_pro_draft.core_insight_table,
+                "three_circles_detailed": record.layer_3_pro_draft.three_circles_detailed,
+                "micro_analysis_detailed": record.layer_3_pro_draft.micro_analysis_detailed,
+                "imbalance_confirmed": record.layer_3_pro_draft.imbalance_confirmed,
+                "root_cause": record.layer_3_pro_draft.root_cause,
+                "healing_suggestions": record.layer_3_pro_draft.healing_suggestions,
+            }
 
         return {
             "lite": lite_plan,

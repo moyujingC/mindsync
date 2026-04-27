@@ -193,6 +193,9 @@ class InsightAgent:
             "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
             "quality_flags": layer0.get("quality_flags", []),
             "imbalance_candidates": layer0.get("imbalance_candidates", []),
+            "layer0_passed": layer0.get("layer0_passed", True),
+            "layer0_failure_reason": layer0.get("layer0_failure_reason", ""),
+            "layer0_failure_detail": layer0.get("layer0_failure_detail", {}),
         }
         build_info: dict[str, Any] = {}
         if self.knowledge_debug_builder is not None:

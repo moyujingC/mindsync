@@ -611,6 +611,55 @@ describe("BrowserDebugPanel", () => {
     expect(text).not.toContain("review_input_package");
   });
 
+  it("Layer0 失败时会展示失败原因与 vision 状态", async () => {
+    await renderPanel({
+      preloadedReportDebugProfile: {
+        ...baseReportDebugProfile,
+        status: "failed",
+        generation_stage: "failed",
+        knowledge_debug: {
+          ...baseReportDebugProfile.knowledge_debug!,
+          model_trace: {
+            vision: {
+              endpoint_id: "",
+              resolved_model: "",
+              source: "layer0_failed",
+              configured: false,
+              failure_reason: "layer0_vision_unconfigured",
+            },
+            chat: {},
+          },
+          layer0_evidence: {
+            ...baseReportDebugProfile.knowledge_debug!.layer0_evidence,
+            layer0_passed: false,
+            layer0_failure_reason: "layer0_vision_unconfigured",
+            visual_analysis_basis: {
+              ...baseReportDebugProfile.knowledge_debug!.layer0_evidence.visual_analysis_basis,
+              global_visual_summary: "",
+              llm_color_observation: {
+                summary: "",
+                source: "layer0_failed",
+              },
+              prompt_meta: {
+                prompt_version: "visual-analysis-basis.v1",
+                source: "layer0_failed",
+                failure_reason: "layer0_vision_unconfigured",
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const text = normalizedText();
+    expect(text).toContain("Layer0 status");
+    expect(text).toContain("fail");
+    expect(text).toContain("failure reason");
+    expect(text).toContain("layer0_vision_unconfigured");
+    expect(text).toContain("vision source");
+    expect(text).toContain("layer0_failed");
+  });
+
   it("占位 interpretation id 不会触发 report-debug 拉取", async () => {
     await renderPanel({
       interpretationId: "demo-interpretation-id",

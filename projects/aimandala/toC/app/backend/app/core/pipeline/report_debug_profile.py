@@ -280,12 +280,17 @@ class ReportDebugProfileBuilder:
             {
                 "key": "layer0",
                 "label": "Layer0 原始知识层",
-                "status": "done" if layer0 else "missing",
+                "status": (
+                    "failed"
+                    if layer0 and layer0.get("layer0_passed") is False
+                    else ("done" if layer0 else "missing")
+                ),
                 "created_at": layer0.get("created_at") if layer0 else None,
                 "summary": {
                     "imbalance_candidates": layer0.get("imbalance_candidates") if layer0 else [],
                     "color_analysis": layer0.get("color_analysis") if layer0 else None,
                     "circle_colors": layer0.get("circle_colors") if layer0 else None,
+                    "layer0_failure_reason": layer0.get("layer0_failure_reason") if layer0 else None,
                 },
             },
             {
