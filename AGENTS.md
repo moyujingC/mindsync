@@ -100,6 +100,9 @@
 - RelayHub 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev`
 - 该 worktree 固定对应 `relayhub/dev`
 - `relayhub/dev` 是 RelayHub 默认本地产品开发与本地验证分支
+- 墨予镜IP 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/moyujing-ip-dev`
+- 该 worktree 固定对应 `moyujing-ip/dev`
+- `moyujing-ip/dev` 是墨予镜IP默认本地内容整理与本地验证分支
 - 馨冉求职固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/xinran-jobhunt-dev`
 - 该 worktree 固定对应 `xinran-jobhunt/dev`
 - `xinran-jobhunt/dev` 是馨冉求职默认本地执行与本地验证分支
