@@ -1,21 +1,21 @@
-# RelayHub v1 VS Code Claude Code 本地接入 Runbook
+# RelayHub v1 VS Code Claude Code release 接入 Runbook
 
 ## 1. 适用范围
 
-这份 runbook 只服务当前 `RelayHub` 的默认本地主路径：
+这份 runbook 只服务当前 `RelayHub` 的默认 release 主路径：
 
 - `VS Code / Claude Code`
-- 本地 `dev-relay`
+- release `dev-relay`
 
 不在这份 runbook 范围内的内容：
 
 - `Paperclip claude_local`
-- release 部署
+- release 机器完整部署细节
 - `Codex relay` 恢复开发
 
 ## 2. 当前唯一默认口径
 
-当前本机 `Claude Code` 的唯一推荐入口是：
+当前 `Claude Code` 的唯一推荐入口是：
 
 - `projects/relayhub/dev-relay/run-claude-code-with-relay.sh`
 
@@ -25,9 +25,9 @@
 
 默认行为固定为：
 
-- `ANTHROPIC_BASE_URL=http://127.0.0.1:4319`
-- `ANTHROPIC_API_KEY=relayhub-local-dev-relay`
-- `ANTHROPIC_AUTH_TOKEN=relayhub-local-dev-relay`
+- `ANTHROPIC_BASE_URL=https://relayhub.jingshu.cc/claude`
+- `ANTHROPIC_API_KEY=relayhub-release-claude`
+- `ANTHROPIC_AUTH_TOKEN=relayhub-release-claude`
 - `ANTHROPIC_MODEL=relayhub-task-claude-code`
 - `ANTHROPIC_DEFAULT_OPUS_MODEL=relayhub-task-claude-code`
 - `ANTHROPIC_DEFAULT_SONNET_MODEL=relayhub-task-claude-code`
@@ -37,24 +37,24 @@
 
 这套口径的目的很简单：
 
-- 让 `Claude Code` 固定命中本地 `dev-relay`
+- 让 `Claude Code` 固定命中 release 上的 `dev-relay`
 - 避免用户级 `~/.claude/settings.json` 把请求带去别的上游
 - 保证后续请求统一跟随 `task-claude-code` 当前绑定
 - 让同一个 `mindsync` 仓库下的其他 workspace 也继承同一套 `Claude Code` 项目级配置
 
+当前主链路补充口径：
+
+- `task-claude-code` 默认应绑定到 `AITechFlux 中转`
+- 该入口固定按原生 `POST /v1/messages` 转发到 `https://aitechflux.com/v1/messages`
+- `POST /v1/messages/count_tokens` 继续由 `RelayHub dev-relay` 本地估算兜底
+- `PPChat` 不再作为 Claude 默认主链路，只保留给 OpenAI / Codex 类入口
+
 ## 3. 使用前提
 
-先确保本地已启动：
+先确保 release 上已部署并可访问：
 
-- `control-plane`
-- `dev-relay`
-
-当前这台机器上的最短启动方式固定为：
-
-```bash
-cd projects/relayhub/control-plane && npm start
-cd projects/relayhub/dev-relay && npm start
-```
+- `https://relayhub.jingshu.cc/api/control-plane/health`
+- `https://relayhub.jingshu.cc/claude/health`
 
 并确认：
 
@@ -69,7 +69,7 @@ cd projects/relayhub/dev-relay && npm start
 
 ## 4. 前台手工 smoke
 
-先用前台命令确认本地主链路是通的：
+先用前台命令确认 release 主链路是通的：
 
 ```bash
 bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
@@ -79,7 +79,7 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 
 1. 读取 `task-claude-code` 当前绑定
 2. 通过统一入口启动本机 `Claude Code`
-3. 验证请求实际命中本地 `dev-relay`
+3. 验证请求实际命中 release 上的 `dev-relay`
 
 如果当前绑定入口还没激活，这个 smoke 会直接报清楚原因，而不会再偷偷改绑到别的历史实验入口。
 
@@ -88,10 +88,12 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 - 命令自然完成
 - 返回不是本地报错或挂起
 - 请求没有被用户级 `~/.claude/settings.json` 覆盖
+- `task-claude-code.defaultModelEntryId` 命中 `preset-aitechflux-relay`
+- 不出现缺少 `count_tokens` 或压缩头解码错误
 
 ## 5. 后台 VS Code / 常驻进程口径
 
-如果你是在 `VS Code` 里使用 `Claude Code`，重点不是手工再改很多地址，而是保证宿主进程继承同一套环境。
+如果你是在 `VS Code` 里使用 `Claude Code`，重点不是手工再改很多地址，而是保证宿主进程继承同一套 release 环境。
 
 当前正式要求是：
 
@@ -102,7 +104,7 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 
 当前阶段的推荐做法是：
 
-1. 先以前台 smoke 确认 relay 主链路正常
+1. 先以前台 smoke 确认 release relay 主链路正常
 2. 先看模板文件：
    - `projects/relayhub/dev-relay/claude-code-relay.env.example`
    - `projects/relayhub/dev-relay/vscode-settings.template.json`
@@ -127,14 +129,13 @@ source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
 
 今天要尽快在这台 Mac 上顺手用起来，推荐按这条最短路径走：
 
-1. 启动本地 `control-plane`
-2. 启动本地 `dev-relay`
-3. 确认仓库根 `.claude/settings.json` 已存在
-4. 确认 worktree 根 `.vscode/settings.json` 已落地
-5. 确认 `~/.claude/settings.json` 不再保留 `env.ANTHROPIC_*` 冲突项
-6. 跑 `bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh`
-7. 跑 `bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh`
-8. 重载 `VS Code` 后再发起真实 `Claude Code` 请求
+1. 确认 release 上 `control-plane` 与 `dev-relay` 已健康
+2. 确认仓库根 `.claude/settings.json` 已存在
+3. 确认 worktree 根 `.vscode/settings.json` 已落地
+4. 确认 `~/.claude/settings.json` 不再保留 `env.ANTHROPIC_*` 冲突项
+5. 跑 `bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh`
+6. 跑 `bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh`
+7. 重载 `VS Code` 后再发起真实 `Claude Code` 请求
 
 如果你打开的是同一个 `mindsync` 项目下的其他 workspace，这份仓库根 `.claude/settings.json` 应该继续提供同一套默认 relay 配置。
 
@@ -145,15 +146,14 @@ source projects/relayhub/dev-relay/setup-vscode-claude-code-env.example.sh
 1. 在仓库根落地 `.claude/settings.json`
 2. 在当前 workspace 根落地 `.vscode/settings.json`
 3. 移除或清空 `~/.claude/settings.json` 里会覆盖 relay 的 `env.ANTHROPIC_*`
-4. 启动本地 `control-plane`
-5. 启动本地 `dev-relay`
-6. 跑检查脚本
-7. 跑 `local-claude-code-cli-smoke.sh`
-8. 重载 `VS Code`
+4. 确认 release 上 `control-plane` 与 `dev-relay` 已健康
+5. 跑检查脚本
+6. 跑 `local-claude-code-cli-smoke.sh`
+7. 重载 `VS Code`
 
 这轮文档收口的结论是：
 
-- `CLI` smoke 是底层真链路验证
+- `CLI` smoke 是 release 真链路验证
 - 仓库根 `.claude/settings.json` 是 `mindsync` 级共享默认入口
 - `VS Code` workspace 下的 `.vscode/settings.json` 是补充性的宿主兜底
 - 不能把“单次 CLI 跑通”直接当成“后台 Claude Code 已稳定”
@@ -206,19 +206,24 @@ bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh --workspace-roo
 
 1. 切换 `task-claude-code.defaultModelEntryId`
 2. 点击 `验证 Claude Code 当前模型`
-3. 或重新跑一次本地 smoke
+3. 或重新跑一次 release smoke
 
 成功标准：
 
 - 后续请求目标跟随新绑定变化
 - 页面验证返回成功或可读错误
 
+当前默认建议：
+
+- Claude 主路径优先维持 `AITechFlux 中转`
+- `PPChat` 仅在 OpenAI / Codex 路径中继续使用
+
 ## 7. 本轮边界
 
 这轮只解决：
 
-- 本地开发期间，`Codex relay` 不再干扰日常使用
-- `VS Code / Claude Code` 的默认本地主路径明确且可复用
+- `VS Code / Claude Code` 的 release 主路径明确且可复用
+- 网页任务切模型与 release relay 真正接上
 
 这轮不解决：
 

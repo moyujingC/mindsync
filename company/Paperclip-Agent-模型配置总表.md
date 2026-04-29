@@ -127,8 +127,8 @@
 它们当前共享的主模型入口为：
 
 - Adapter：`claude_local`
-- Base URL：`https://code.ppchat.vip/v1`
-- Model：`gpt-5.4`
+- Base URL：`https://relayhub.jingshu.cc/claude`
+- Model：`relayhub-task-claude-code`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
   - `ANTHROPIC_BASE_URL`
@@ -140,8 +140,10 @@
 
 当前明确口径：
 
-- 这组 Agent 当前默认走 `PPChat` 中转
-- 当前主模型固定为 `gpt-5.4`
+- 这组 Agent 当前默认走 `RelayHub /claude`
+- `RelayHub` 内部当前默认绑定到 `AITechFlux + Claude混合版`
+- `AITechFlux` 原生承接 `POST /v1/messages`
+- `POST /v1/messages/count_tokens` 由 `RelayHub dev-relay` 本地兜底
 - 当前采用 API-key 模式，而不是 Claude 登录态模式
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
@@ -150,12 +152,11 @@
 
 当前备用口径：
 
-- 备用 Base URL：`https://aitechflux.com/v1`
-- 备用模型：`Claude混合版`
+- 备用 OpenAI-compatible 入口：`https://code.ppchat.vip/v1`
 - 说明：
-  - 这是当前按“Claude Sonnet 类入口”理解的 `AITechFlux` 备用模型
-  - 当前文档只把它定义为备用配置口径
-  - 尚不代表 `Paperclip` 已实现自动跨上游失败回退
+  - `PPChat` 当前不再作为 Claude 默认主链路
+  - 它保留给 OpenAI / Codex 类路径
+  - 不假设它原生支持完整 Anthropic Messages
 
 当前面板解读规则：
 
@@ -204,7 +205,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - 主要吃服务器侧 `OPENAI_*`
 - `claude_local`
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
-  - 当前主链路默认值应为 `PPChat + gpt-5.4`
+  - 当前主链路默认值应为 `RelayHub /claude -> AITechFlux + Claude混合版`
 - `codex_local`
   - 主要吃自身 provider 配置，当前指向 `https://code.ppchat.vip/v1`
 - automation 节点国际出网当前通过阿里云美国机 `tinyproxy` 辅助
@@ -230,8 +231,9 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
 - 规划/产品/内容/研究类 Agent
-  - `claude_local + PPChat + gpt-5.4`
-  - `AITechFlux + Claude混合版` 作为备用口径保留
+  - `claude_local + RelayHub /claude + relayhub-task-claude-code`
+  - 当前默认绑定为 `AITechFlux + Claude混合版`
+  - `PPChat` 仅作为 OpenAI-compatible 备用口径保留
 - `Idea Clarifier`
   - `pi_local + volcengine-coding-plan/Doubao-Seed-2.0-pro`
   - `HOME=/paperclip`

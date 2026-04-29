@@ -72,10 +72,10 @@ describe("control-plane service release wiring", () => {
     const entries = await service.listModelEntries();
     const relayPreset = entries.find((entry) => entry.id === "preset-ppchat-relay");
 
-    expect(relayPreset?.presetPriority).toBe("recommended-first");
-    expect(relayPreset?.recommendedTaskIds).toContain("task-claude-code");
-    expect(relayPreset?.selectionReason).toContain("通用工具");
-    expect(relayPreset?.activationHint).toContain("测试连接");
+    expect(relayPreset?.presetPriority).toBe("recommended");
+    expect(relayPreset?.recommendedTaskIds).toContain("task-codex-repo");
+    expect(relayPreset?.selectionReason).toContain("OpenAI");
+    expect(relayPreset?.activationHint).toContain("OpenAI/Codex");
     expect(relayPreset?.capabilityTags).toContain("编码");
   });
 
@@ -136,12 +136,18 @@ describe("control-plane service release wiring", () => {
     expect(result.items[1]?.label).toBe("高性能低价模型");
   });
 
-  it("fails clearly when preset relay catalog is requested without api key in mock mode", async () => {
+  it("returns built-in mock catalog entries for AITechFlux even without api key in mock mode", async () => {
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "mock");
     vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
     vi.resetModules();
     const service = await import("../services/controlPlane");
 
-    await expect(service.getModelCatalog("preset-aitechflux-relay")).rejects.toThrow(/先补 API Key/);
+    const result = await service.getModelCatalog("preset-aitechflux-relay");
+
+    expect(result.items.map((item) => item.id)).toEqual([
+      "高性能极速模型",
+      "高性能低价模型",
+      "Claude混合版",
+    ]);
   });
 });

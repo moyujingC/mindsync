@@ -104,6 +104,24 @@ git worktree add /opt/aimandala-release/worktrees/relayhub origin/project/relayh
 - 如果主 checkout 存在未提交改动，不要直接在主 checkout 切 `project/relayhub`
 - 一律通过 `git worktree add` 新开 RelayHub 隔离工作树
 
+### 4.0.1 一键部署主路径
+
+如果目标是把 `RelayHub Console + control-plane + dev-relay + /claude + /api/control-plane` 一次性收口到 release，当前推荐直接执行：
+
+```bash
+cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+bash deploy-relayhub-release-stack.sh
+```
+
+这条脚本会顺序完成：
+
+- 准备或更新 RelayHub worktree
+- 构建并发布 console trial
+- 安装 `relayhub-control-plane`
+- 安装 `relayhub-dev-relay`
+- 安装 nginx 的 `/api/control-plane/` 与 `/claude/`
+- 做本机与公网健康检查
+
 ## 4.1 control-plane 安装
 
 安装 systemd 服务：
@@ -244,6 +262,11 @@ sudo AIMANDALA_RELAY_PORT=4320 \
 - nginx 去掉 `/claude` 前缀后，再转给本机 `127.0.0.1:4319`
 - `dev-relay` 继续固定读取 `task-claude-code`
 - 不新增第二套 Claude 专用 service
+- 当 `task-claude-code` 绑定到 `AITechFlux` 时：
+  - `POST /v1/messages` 原生透传到上游 `/messages`
+  - 不再做 `Anthropic -> OpenAI -> Anthropic` 协议转译
+  - `POST /v1/messages/count_tokens` 继续由本机 `dev-relay` 本地估算兜底
+- `PPChat` 不再作为 Claude 默认主链路，只保留给 OpenAI / Codex 类入口
 
 ## 5.4 AI曼陀罗 生产入口
 
@@ -298,9 +321,14 @@ dev-relay 安装后验证：
 
 ```bash
 curl http://127.0.0.1:4319/health
+curl -k https://relayhub.jingshu.cc/claude/health
 curl -k https://relayhub.jingshu.cc/claude/v1/messages/count_tokens \
   -H 'content-type: application/json' \
   --data '{"model":"relayhub-task-claude-code","messages":[{"role":"user","content":"hello"}]}'
+curl -k https://relayhub.jingshu.cc/claude/v1/messages \
+  -H 'content-type: application/json' \
+  -H 'anthropic-version: 2023-06-01' \
+  --data '{"model":"relayhub-task-claude-code","max_tokens":24,"messages":[{"role":"user","content":[{"type":"text","text":"Reply with exactly ok"}]}]}'
 curl -k https://relayhub.jingshu.cc/codex/v1/models
 curl -k https://relayhub.jingshu.cc/codex/v1/responses \
   -H 'content-type: application/json' \
@@ -338,7 +366,7 @@ curl -k https://relayhub.jingshu.cc/aimandala/v1/chat/completions \
 - `relayhub-control-plane` service 可从独立 worktree 拉起
 - `https://relayhub.jingshu.cc/api/control-plane/health` 返回 `{"ok": true}`
 - `https://relayhub.jingshu.cc/api/control-plane/models` 返回模型条目 JSON
-- `https://relayhub.jingshu.cc/claude/*` 作为 Claude Code release 入口，需随本轮一并安装
+- `https://relayhub.jingshu.cc/claude/*` 作为 Claude Code 默认主入口，需随本轮一并安装
 - `https://relayhub.jingshu.cc/codex/v1/*` 作为 Codex 原生入口，需随本轮一并安装
 - `https://relayhub.jingshu.cc/aimandala/v1/*` 作为 AI曼陀罗 生产入口，需随本轮一并安装
 
