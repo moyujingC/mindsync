@@ -92,7 +92,7 @@
 
 本轮只调整本地相关 workspace，不改服务器 primary：
 
-- `moyujing-ip-local-company` -> `/Users/xinran/.mindsync/runtime/mindsync/company/projects/内容创作`
+- `moyujing-ip-local-company` -> `/Users/xinran/.mindsync/runtime/mindsync/company/projects/内容矩阵`
 - `aicareer-local-monorepo` -> `/Users/xinran/.mindsync/runtime/mindsync/projects/aicareer`
 - `research-center-local-monorepo` -> `/Users/xinran/.mindsync/runtime/mindsync/projects/research-center`
 - `xinran-jobhunt-local-monorepo` -> `/Users/xinran/.mindsync/runtime/mindsync/projects/xinran-jobhunt`
@@ -145,7 +145,7 @@ eval "$(/Users/xinran/.mindsync/runtime/mindsync/shared/tools/paperclip-local-en
 
 1. runtime `mindsync` checkout 目前是单独 clone，不会自动跟随根工作区的所有内容变化
 2. 当前只保证 `shared/tools/` 在安装 `launchd` 时会同步；其他目录若需要后台直接读，后续还要继续定义同步策略
-3. `内容创作` 现在的 local company workspace 已指向 runtime 路径，若未来还要补更多 company 侧本地入口，应继续沿用同一策略
+3. `内容矩阵` 现在的 local company workspace 已指向 runtime 路径，若未来还要补更多 company 侧本地入口，应继续沿用同一策略
 
 ## 6. 下一步建议
 
