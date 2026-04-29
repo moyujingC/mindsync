@@ -456,6 +456,40 @@ function mapFinishReasonToAnthropic(finishReason, hasToolUse) {
   return "end_turn";
 }
 
+function collapseThinkBlocks(text) {
+  if (typeof text !== "string" || text.length === 0) {
+    return text;
+  }
+
+  return text.replace(/<think>([\s\S]*?)<\/think>/gi, (_match, inner) => {
+    const trimmed = String(inner ?? "").trim();
+    if (!trimmed) {
+      return "";
+    }
+    return `<details><summary>思考过程（点击展开）</summary>\n\n${trimmed}\n\n</details>`;
+  });
+}
+
+function collapseThinkBlocksInAnthropicPayload(payload) {
+  if (!payload || !Array.isArray(payload.content)) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    content: payload.content.map((block) => {
+      if (!block || block.type !== "text" || typeof block.text !== "string") {
+        return block;
+      }
+
+      return {
+        ...block,
+        text: collapseThinkBlocks(block.text)
+      };
+    })
+  };
+}
+
 function mapOpenAIChoiceToAnthropic(choice) {
   const message = choice?.message ?? {};
   const toolCalls = Array.isArray(message.tool_calls) ? message.tool_calls : [];
@@ -464,7 +498,7 @@ function mapOpenAIChoiceToAnthropic(choice) {
   if (typeof message.content === "string" && message.content.length > 0) {
     content.push({
       type: "text",
-      text: message.content
+      text: collapseThinkBlocks(message.content)
     });
   }
 
@@ -850,13 +884,14 @@ async function proxyAnthropicMessages(request, response) {
     }
 
     const upstreamText = await upstreamResponse.text();
-    response.end(upstreamText);
     let upstreamPayload = null;
     try {
       upstreamPayload = upstreamText ? JSON.parse(upstreamText) : null;
     } catch {
       upstreamPayload = null;
     }
+    upstreamPayload = collapseThinkBlocksInAnthropicPayload(upstreamPayload);
+    response.end(upstreamPayload ? JSON.stringify(upstreamPayload) : upstreamText);
     await logClaudeUpstreamModel({
       requestId,
       taskId: task.id,

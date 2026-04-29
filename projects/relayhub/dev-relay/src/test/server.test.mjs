@@ -884,6 +884,60 @@ test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-st
   });
 });
 
+test("POST /v1/messages collapses think blocks for native anthropic upstream responses", async () => {
+  await withMockUpstream(async (_request, response) => {
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "msg_native_think_1",
+      type: "message",
+      role: "assistant",
+      model: "MiniMax",
+      content: [
+        {
+          type: "text",
+          text: "<think>first line\\nsecond line</think>\\n\\nok"
+        }
+      ],
+      stop_reason: "end_turn",
+      usage: {
+        input_tokens: 10,
+        output_tokens: 6
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.tasks[0].defaultModelEntryId = "model-second";
+    state.modelEntries[1].baseUrl = upstreamBaseUrl;
+    state.modelEntries[1].modelId = "Claude混合版";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          },
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 64,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "hello native think" }] }
+            ]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.match(payload.content[0].text, /<details><summary>思考过程（点击展开）<\/summary>/);
+        assert.match(payload.content[0].text, /first line/);
+        assert.match(payload.content[0].text, /second line/);
+        assert.match(payload.content[0].text, /ok/);
+      });
+    }, state);
+  });
+});
+
 test("POST /v1/messages maps anthropic tools to upstream tools and tool calls back to tool_use", async () => {
   let observedBody = null;
 
@@ -1149,5 +1203,58 @@ test("POST /v1/messages returns anthropic streaming events when stream=true", as
 
     assert.equal(observedBody.model, "model-a");
     assert.equal(observedBody.stream, false);
+  });
+});
+
+test("POST /v1/messages collapses think blocks for mapped OpenAI-compatible responses", async () => {
+  await withMockUpstream(async (_request, response) => {
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-anthropic-think",
+      object: "chat.completion",
+      model: "model-a",
+      choices: [
+        {
+          index: 0,
+          message: {
+            role: "assistant",
+            content: "<think>draft reasoning</think>\\nfinal answer"
+          },
+          finish_reason: "stop"
+        }
+      ],
+      usage: {
+        prompt_tokens: 16,
+        completion_tokens: 4
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          },
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 64,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "hello think cleanup" }] }
+            ]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.match(payload.content[0].text, /<details><summary>思考过程（点击展开）<\/summary>/);
+        assert.match(payload.content[0].text, /draft reasoning/);
+        assert.match(payload.content[0].text, /final answer/);
+      });
+    }, state);
   });
 });
