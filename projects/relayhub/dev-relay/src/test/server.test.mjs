@@ -16,6 +16,7 @@ function createState() {
         status: "active",
         baseUrl: "http://127.0.0.1:1/v1",
         modelId: "model-a",
+        reasoningEffort: null,
         catalogFamily: "openai-compatible",
         apiKey: "sk-active",
         capabilities: {
@@ -31,6 +32,8 @@ function createState() {
         status: "active",
         baseUrl: "http://127.0.0.1:2/v1",
         modelId: "model-b",
+        reasoningEffort: null,
+        providerLabel: "AITechFlux",
         catalogFamily: "openai-compatible",
         apiKey: "sk-second",
         capabilities: {
@@ -46,6 +49,7 @@ function createState() {
         status: "configured-pending-test",
         baseUrl: "http://127.0.0.1:3/v1",
         modelId: "model-c",
+        reasoningEffort: null,
         catalogFamily: "openai-compatible",
         apiKey: "sk-inactive",
         capabilities: {
@@ -61,6 +65,7 @@ function createState() {
         status: "active",
         baseUrl: "http://127.0.0.1:4/v1",
         modelId: "model-d",
+        reasoningEffort: null,
         catalogFamily: "openai-compatible",
         apiKey: null,
         capabilities: {
@@ -76,6 +81,7 @@ function createState() {
         status: "active",
         baseUrl: "http://127.0.0.1:5/v1",
         modelId: "model-chat",
+        reasoningEffort: null,
         catalogFamily: "openai-compatible",
         apiKey: "sk-chat-only",
         capabilities: {
@@ -423,6 +429,86 @@ test("POST /chat/completions forwards to the bound upstream and overrides model"
   });
 });
 
+test("POST /chat/completions forwards reasoning_effort for GPT-5 style models", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-reasoning",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }]
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.modelEntries[0].modelId = "gpt-5.4";
+    state.modelEntries[0].reasoningEffort = "high";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/chat/completions`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: "hello" }]
+          })
+        });
+
+        assert.equal(response.status, 200);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "gpt-5.4");
+    assert.equal(observedBody.reasoning_effort, "high");
+  });
+});
+
+test("POST /v1/responses forwards reasoning.effort for GPT-5 style models when explicitly enabled", async () => {
+  let observedBody = null;
+
+  await withCodexRelayEnabled(async () => {
+    await withMockUpstream(async (request, response) => {
+      observedBody = await readRequestJson(request);
+      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        object: "response",
+        id: "resp_reasoning",
+        status: "completed",
+        output: []
+      }));
+    }, async (upstreamBaseUrl) => {
+      const state = createState();
+      state.modelEntries[0].baseUrl = upstreamBaseUrl;
+      state.modelEntries[0].modelId = "gpt-5.4";
+      state.modelEntries[0].reasoningEffort = "high";
+
+      await withTempState(async () => {
+        await withServer(createDevRelayServer(), async (baseUrl) => {
+          const response = await fetch(`${baseUrl}/v1/responses`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              input: "hello",
+              stream: false
+            })
+          });
+          assert.equal(response.status, 200);
+        });
+      }, state);
+
+      assert.equal(observedBody.model, "gpt-5.4");
+      assert.equal(observedBody.reasoning.effort, "high");
+    });
+  });
+});
+
 test("POST /chat/completions returns a clear error when task-claude-code is not bound", async () => {
   const state = createState();
   state.tasks[0].defaultModelEntryId = null;
@@ -695,6 +781,68 @@ test("POST /v1/messages maps anthropic messages into upstream chat completions a
     assert.equal(observedBody.messages[0].content, "You are a coding assistant.");
     assert.equal(observedBody.messages[1].role, "user");
     assert.equal(observedBody.messages[1].content, "hello relay");
+  });
+});
+
+test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-style entries", async () => {
+  let observedBody = null;
+  let observedHeaders = null;
+  let observedPath = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedPath = request.url;
+    observedHeaders = request.headers;
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "msg_native_1",
+      type: "message",
+      role: "assistant",
+      model: observedBody.model,
+      content: [{ type: "text", text: "ok" }],
+      stop_reason: "end_turn",
+      usage: {
+        input_tokens: 12,
+        output_tokens: 1
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.tasks[0].defaultModelEntryId = "model-second";
+    state.modelEntries[1].baseUrl = upstreamBaseUrl;
+    state.modelEntries[1].modelId = "Claude混合版";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          },
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 64,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "hello native" }] }
+            ]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.equal(payload.type, "message");
+        assert.equal(payload.model, "Claude混合版");
+        assert.equal(payload.content[0].text, "ok");
+      });
+    }, state);
+
+    assert.equal(observedPath, "/messages");
+    assert.equal(observedBody.model, "Claude混合版");
+    assert.equal(observedBody.messages[0].role, "user");
+    assert.equal(observedBody.messages[0].content[0].text, "hello native");
+    assert.equal(observedHeaders["x-api-key"], "sk-second");
+    assert.equal(observedHeaders.authorization, "Bearer sk-second");
   });
 });
 

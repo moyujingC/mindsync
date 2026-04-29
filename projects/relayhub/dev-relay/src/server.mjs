@@ -81,11 +81,53 @@ function buildResponsesUpstreamUrl(baseUrl) {
   return new URL("responses", normalized);
 }
 
+function buildAnthropicMessagesUpstreamUrl(baseUrl) {
+  const normalized = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  return new URL("messages", normalized);
+}
+
+function normalizeReasoningEffort(value) {
+  return value === "low" || value === "medium" || value === "high" ? value : null;
+}
+
+function attachReasoningConfig(payload, entry, endpointKind) {
+  const effort = normalizeReasoningEffort(entry.reasoningEffort);
+  if (!effort) {
+    return payload;
+  }
+
+  const modelId = String(entry.modelId ?? "").trim().toLowerCase();
+  const isReasoningModel =
+    modelId.startsWith("gpt-5") ||
+    modelId.startsWith("o1") ||
+    modelId.startsWith("o3") ||
+    modelId.startsWith("o4");
+
+  if (!isReasoningModel) {
+    return payload;
+  }
+
+  if (endpointKind === "responses") {
+    return {
+      ...payload,
+      reasoning: {
+        effort
+      }
+    };
+  }
+
+  return {
+    ...payload,
+    reasoning_effort: effort
+  };
+}
+
 function copyUpstreamHeaders(upstreamHeaders) {
   const headers = {};
 
   for (const [key, value] of upstreamHeaders.entries()) {
-    if (key.toLowerCase() === "content-length") {
+    const lower = key.toLowerCase();
+    if (lower === "content-length" || lower === "content-encoding") {
       continue;
     }
     headers[key] = value;
@@ -113,6 +155,40 @@ function buildForwardHeaders(request, apiKey, bodyText) {
   headers["content-length"] = Buffer.byteLength(bodyText).toString();
 
   return headers;
+}
+
+function buildAnthropicForwardHeaders(request, apiKey, bodyText) {
+  const headers = {};
+
+  for (const [key, value] of Object.entries(request.headers)) {
+    if (!value) {
+      continue;
+    }
+    const lower = key.toLowerCase();
+    if (
+      lower === "host" ||
+      lower === "authorization" ||
+      lower === "x-api-key" ||
+      lower === "content-length"
+    ) {
+      continue;
+    }
+    headers[key] = Array.isArray(value) ? value.join(", ") : value;
+  }
+
+  headers.authorization = `Bearer ${apiKey}`;
+  headers["x-api-key"] = apiKey;
+  headers["anthropic-version"] = headers["anthropic-version"] ?? "2023-06-01";
+  headers["content-type"] = headers["content-type"] ?? "application/json";
+  headers["content-length"] = Buffer.byteLength(bodyText).toString();
+
+  return headers;
+}
+
+function shouldProxyAnthropicMessagesNatively(entry) {
+  const baseUrl = String(entry?.baseUrl ?? "").toLowerCase();
+  const providerLabel = String(entry?.providerLabel ?? "").toLowerCase();
+  return baseUrl.includes("aitechflux.com") || providerLabel.includes("aitechflux");
 }
 
 function resolveRelayBinding(state, taskId) {
@@ -508,10 +584,10 @@ async function proxyChatCompletions(request, response) {
   }
 
   const { task, entry } = resolved;
-  const upstreamBody = {
+  const upstreamBody = attachReasoningConfig({
     ...body,
     model: entry.modelId
-  };
+  }, entry, "chat-completions");
   const bodyText = JSON.stringify(upstreamBody);
   const relayContext = {
     taskId: task.id,
@@ -629,7 +705,115 @@ async function proxyAnthropicMessages(request, response) {
   }
 
   const { task, entry } = resolved;
-  const upstreamBody = {
+  if (shouldProxyAnthropicMessagesNatively(entry)) {
+    const upstreamBody = {
+      ...body,
+      model: entry.modelId
+    };
+    const bodyText = JSON.stringify(upstreamBody);
+    const relayContext = {
+      taskId: task.id,
+      modelEntryId: entry.id,
+      modelId: entry.modelId,
+      baseUrl: entry.baseUrl
+    };
+    const requestId = makeRequestId();
+    const startedAt = Date.now();
+
+    let upstreamResponse;
+    try {
+      upstreamResponse = await fetch(buildAnthropicMessagesUpstreamUrl(entry.baseUrl), {
+        method: "POST",
+        headers: buildAnthropicForwardHeaders(request, entry.apiKey, bodyText),
+        body: bodyText
+      });
+    } catch (error) {
+      logRelayEvent({
+        requestId,
+        route: "/v1/messages",
+        taskId: task.id,
+        modelEntryId: entry.id,
+        upstreamStatus: 502,
+        stream: Boolean(body.stream),
+        durationMs: Date.now() - startedAt
+      });
+      return relayError(
+        response,
+        502,
+        "upstream_unreachable",
+        `上游不可达或连接失败：${error instanceof Error ? error.message : "unknown error"}`,
+        relayContext
+      );
+    }
+
+    if (!upstreamResponse.ok) {
+      let upstreamPayload = null;
+      let upstreamText = "";
+
+      try {
+        upstreamText = await upstreamResponse.text();
+        upstreamPayload = upstreamText ? JSON.parse(upstreamText) : null;
+      } catch {
+        upstreamPayload = null;
+      }
+
+      const upstreamMessage =
+        upstreamPayload && typeof upstreamPayload === "object" && upstreamPayload.error &&
+        typeof upstreamPayload.error === "object" && typeof upstreamPayload.error.message === "string"
+          ? upstreamPayload.error.message
+          : upstreamText || `upstream returned ${upstreamResponse.status}`;
+
+      logRelayEvent({
+        requestId,
+        route: "/v1/messages",
+        taskId: task.id,
+        modelEntryId: entry.id,
+        upstreamStatus: upstreamResponse.status,
+        stream: Boolean(body.stream),
+        durationMs: Date.now() - startedAt
+      });
+      return relayError(
+        response,
+        upstreamResponse.status,
+        "upstream_error",
+        `RelayHub 转发失败，上游返回 ${upstreamResponse.status}：${upstreamMessage}`,
+        relayContext
+      );
+    }
+
+    response.writeHead(upstreamResponse.status, copyUpstreamHeaders(upstreamResponse.headers));
+    if (!upstreamResponse.body) {
+      logRelayEvent({
+        requestId,
+        route: "/v1/messages",
+        taskId: task.id,
+        modelEntryId: entry.id,
+        upstreamStatus: upstreamResponse.status,
+        stream: Boolean(body.stream),
+        durationMs: Date.now() - startedAt
+      });
+      response.end();
+      return;
+    }
+
+    await new Promise((resolve, reject) => {
+      Readable.fromWeb(upstreamResponse.body).pipe(response);
+      response.on("finish", resolve);
+      response.on("error", reject);
+    });
+    logRelayEvent({
+      requestId,
+      route: "/v1/messages",
+      taskId: task.id,
+      modelEntryId: entry.id,
+      upstreamStatus: upstreamResponse.status,
+      stream: Boolean(body.stream),
+      durationMs: Date.now() - startedAt
+    });
+    return;
+  }
+
+  const upstreamBody = attachReasoningConfig({
     model: entry.modelId,
     messages: mapAnthropicMessagesToOpenAI(body),
     temperature: body.temperature,
@@ -638,7 +822,7 @@ async function proxyAnthropicMessages(request, response) {
     stream: false,
     tools: mapAnthropicToolsToOpenAI(body.tools),
     tool_choice: mapAnthropicToolChoiceToOpenAI(body.tool_choice) ?? (body.tools?.length ? "auto" : undefined)
-  };
+  }, entry, "chat-completions");
   const bodyText = JSON.stringify(upstreamBody);
   const relayContext = {
     taskId: task.id,
@@ -785,10 +969,10 @@ async function proxyResponses(request, response) {
   }
 
   const { task, entry } = resolved;
-  const upstreamBody = {
+  const upstreamBody = attachReasoningConfig({
     ...body,
     model: entry.modelId
-  };
+  }, entry, "responses");
   const bodyText = JSON.stringify(upstreamBody);
   const relayContext = {
     taskId: task.id,
