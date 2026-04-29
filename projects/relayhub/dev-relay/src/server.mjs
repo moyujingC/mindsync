@@ -466,7 +466,7 @@ function collapseThinkBlocks(text) {
     if (!trimmed) {
       return "";
     }
-    return `<details><summary>思考过程（点击展开）</summary>\n\n${trimmed}\n\n</details>`;
+    return "［思考过程已折叠］";
   });
 }
 

@@ -929,9 +929,9 @@ test("POST /v1/messages collapses think blocks for native anthropic upstream res
 
         assert.equal(response.status, 200);
         const payload = await response.json();
-        assert.match(payload.content[0].text, /<details><summary>思考过程（点击展开）<\/summary>/);
-        assert.match(payload.content[0].text, /first line/);
-        assert.match(payload.content[0].text, /second line/);
+        assert.match(payload.content[0].text, /［思考过程已折叠］/);
+        assert.doesNotMatch(payload.content[0].text, /first line/);
+        assert.doesNotMatch(payload.content[0].text, /second line/);
         assert.match(payload.content[0].text, /ok/);
       });
     }, state);
@@ -1251,8 +1251,8 @@ test("POST /v1/messages collapses think blocks for mapped OpenAI-compatible resp
 
         assert.equal(response.status, 200);
         const payload = await response.json();
-        assert.match(payload.content[0].text, /<details><summary>思考过程（点击展开）<\/summary>/);
-        assert.match(payload.content[0].text, /draft reasoning/);
+        assert.match(payload.content[0].text, /［思考过程已折叠］/);
+        assert.doesNotMatch(payload.content[0].text, /draft reasoning/);
         assert.match(payload.content[0].text, /final answer/);
       });
     }, state);
