@@ -18,7 +18,7 @@ objects:
     purpose:
       - "曼陀罗疗愈方向的核心产品项目"
       - "以 `projects/aimandala` 作为唯一正式开发与发布工作区"
-      - "为研究中心与墨予镜 IP 提供产品素材"
+      - "为研究中心与内容创作提供产品素材"
 
   - id: "00403f31-add0-4b19-b715-6652a4b3dfe3"
     name: "怀瑾握瑜"
@@ -90,13 +90,13 @@ objects:
       - "当前首个正式落地样例是 aimandala，但能力本体不从属于单一项目"
 
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
-    name: "墨予镜 IP"
+    name: "内容创作"
     slug: "moyujing-ip"
     kind: "brand"
     status: "active"
-    goal: "墨予镜影响力建设"
+    goal: "多账号内容创作与影响力建设"
     company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md"
     purpose:
-      - "承接墨予镜个人 IP 的统一对外叙事与内容放大"
-      - "汇聚产品项目与研究中心输出，形成外部表达"
-      - "维护个人真实信息、表达边界与第一人称素材"
+      - "承接公司所有账号的统一内容规划、内容转译与内容资产治理"
+      - "汇聚产品项目与研究中心输出，形成多账号外部表达"
+      - "在总项目下分别维护个人号、产品号与其他账号的表达边界与素材体系"

@@ -111,7 +111,7 @@ goals:
       - "00403f31-add0-4b19-b715-6652a4b3dfe3"
 
   - id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
-    title: "墨予镜影响力建设"
+    title: "内容创作与多账号影响力建设"
     projects:
       - "6947ac34-cf22-4a87-bc4c-ded2edc77772"
 
@@ -155,7 +155,7 @@ projects:
     source_subdirectory: "."
 
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
-    name: "墨予镜 IP"
+    name: "内容创作"
     goal_id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
 
   - id: "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
