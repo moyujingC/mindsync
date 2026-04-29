@@ -70,7 +70,7 @@
 
 如果任务明确涉及 `墨予镜` 账号，再继续进入：
 
-- [company/projects/墨予镜IP/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md)
+- [company/projects/内容创作/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/内容创作/PROJECT.md)
 
 ## 5. 历史入口
 

@@ -40,7 +40,7 @@
 - 如果任务沉淀出可复用方法、服务流程或产品能力，再 handoff 给：
   - [projects/aicareer/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
 - 如果任务产出可公开表达的第一人称内容，再 handoff 给：
-  - [company/projects/墨予镜IP/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md)
+  - [company/projects/内容创作/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/内容创作/PROJECT.md)
 
 ## 4. 当前下一步
 
