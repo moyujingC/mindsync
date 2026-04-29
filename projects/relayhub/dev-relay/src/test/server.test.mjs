@@ -140,6 +140,26 @@ async function withTempState(run, state = createState()) {
   }
 }
 
+async function withRelayLogDir(run) {
+  const logDir = await fs.mkdtemp(path.join(os.tmpdir(), "relayhub-dev-relay-log-"));
+  const previous = process.env.RELAYHUB_DEV_RELAY_LOG_DIR;
+  process.env.RELAYHUB_DEV_RELAY_LOG_DIR = logDir;
+
+  try {
+    await run({
+      logDir,
+      logFile: path.join(logDir, "claude-upstream-models.jsonl")
+    });
+  } finally {
+    if (previous === undefined) {
+      delete process.env.RELAYHUB_DEV_RELAY_LOG_DIR;
+    } else {
+      process.env.RELAYHUB_DEV_RELAY_LOG_DIR = previous;
+    }
+    await fs.rm(logDir, { recursive: true, force: true });
+  }
+}
+
 async function withCodexRelayEnabled(run) {
   const previous = process.env.RELAYHUB_ENABLE_CODEX_RELAY;
   process.env.RELAYHUB_ENABLE_CODEX_RELAY = "1";
@@ -748,33 +768,42 @@ test("POST /v1/messages maps anthropic messages into upstream chat completions a
     const state = createState();
     state.modelEntries[0].baseUrl = upstreamBaseUrl;
 
-    await withTempState(async () => {
-      await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/messages`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "anthropic-version": "2023-06-01"
-          },
-          body: JSON.stringify({
-            model: "ignored-by-relay",
-            system: "You are a coding assistant.",
-            max_tokens: 256,
-            messages: [
-              { role: "user", content: [{ type: "text", text: "hello relay" }] }
-            ]
-          })
-        });
+    await withRelayLogDir(async ({ logFile }) => {
+      await withTempState(async () => {
+        await withServer(createDevRelayServer(), async (baseUrl) => {
+          const response = await fetch(`${baseUrl}/v1/messages`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "anthropic-version": "2023-06-01"
+            },
+            body: JSON.stringify({
+              model: "ignored-by-relay",
+              system: "You are a coding assistant.",
+              max_tokens: 256,
+              messages: [
+                { role: "user", content: [{ type: "text", text: "hello relay" }] }
+              ]
+            })
+          });
 
-        assert.equal(response.status, 200);
-        const payload = await response.json();
-        assert.equal(payload.role, "assistant");
-        assert.equal(payload.content[0].type, "text");
-        assert.equal(payload.content[0].text, "relay says hello");
-        assert.equal(payload.model, "model-a");
-        assert.equal(payload.stop_reason, "end_turn");
-      });
-    }, state);
+          assert.equal(response.status, 200);
+          const payload = await response.json();
+          assert.equal(payload.role, "assistant");
+          assert.equal(payload.content[0].type, "text");
+          assert.equal(payload.content[0].text, "relay says hello");
+          assert.equal(payload.model, "model-a");
+          assert.equal(payload.stop_reason, "end_turn");
+        });
+      }, state);
+
+      const logLines = (await fs.readFile(logFile, "utf8")).trim().split("\n");
+      assert.equal(logLines.length, 1);
+      const record = JSON.parse(logLines[0]);
+      assert.equal(record.configuredModelId, "model-a");
+      assert.equal(record.actualModelId, "model-a");
+      assert.equal(record.stream, false);
+    });
 
     assert.equal(observedBody.model, "model-a");
     assert.equal(observedBody.messages[0].role, "system");
@@ -812,30 +841,39 @@ test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-st
     state.modelEntries[1].baseUrl = upstreamBaseUrl;
     state.modelEntries[1].modelId = "Claude混合版";
 
-    await withTempState(async () => {
-      await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/messages`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "anthropic-version": "2023-06-01"
-          },
-          body: JSON.stringify({
-            model: "ignored-by-relay",
-            max_tokens: 64,
-            messages: [
-              { role: "user", content: [{ type: "text", text: "hello native" }] }
-            ]
-          })
-        });
+    await withRelayLogDir(async ({ logFile }) => {
+      await withTempState(async () => {
+        await withServer(createDevRelayServer(), async (baseUrl) => {
+          const response = await fetch(`${baseUrl}/v1/messages`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "anthropic-version": "2023-06-01"
+            },
+            body: JSON.stringify({
+              model: "ignored-by-relay",
+              max_tokens: 64,
+              messages: [
+                { role: "user", content: [{ type: "text", text: "hello native" }] }
+              ]
+            })
+          });
 
-        assert.equal(response.status, 200);
-        const payload = await response.json();
-        assert.equal(payload.type, "message");
-        assert.equal(payload.model, "Claude混合版");
-        assert.equal(payload.content[0].text, "ok");
-      });
-    }, state);
+          assert.equal(response.status, 200);
+          const payload = await response.json();
+          assert.equal(payload.type, "message");
+          assert.equal(payload.model, "Claude混合版");
+          assert.equal(payload.content[0].text, "ok");
+        });
+      }, state);
+
+      const logLines = (await fs.readFile(logFile, "utf8")).trim().split("\n");
+      assert.equal(logLines.length, 1);
+      const record = JSON.parse(logLines[0]);
+      assert.equal(record.configuredModelId, "Claude混合版");
+      assert.equal(record.actualModelId, "Claude混合版");
+      assert.equal(record.stream, false);
+    });
 
     assert.equal(observedPath, "/messages");
     assert.equal(observedBody.model, "Claude混合版");

@@ -1,4 +1,5 @@
 import http from "node:http";
+import { appendFile, mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
 import { readState } from "../../control-plane/src/store.mjs";
@@ -50,6 +51,22 @@ function makeRequestId() {
 
 function logRelayEvent(payload) {
   process.stdout.write(`${JSON.stringify({ at: nowIso(), ...payload })}\n`);
+}
+
+async function logClaudeUpstreamModel(payload) {
+  const relayLogDir = process.env.RELAYHUB_DEV_RELAY_LOG_DIR ?? "/var/log/relayhub";
+  const upstreamModelLogFile = `${relayLogDir}/claude-upstream-models.jsonl`;
+  const record = `${JSON.stringify({ at: nowIso(), ...payload })}\n`;
+  try {
+    await mkdir(relayLogDir, { recursive: true });
+    await appendFile(upstreamModelLogFile, record, "utf8");
+  } catch (error) {
+    logRelayEvent({
+      route: "/v1/messages",
+      type: "claude_upstream_model_log_error",
+      message: error instanceof Error ? error.message : "unknown log error"
+    });
+  }
 }
 
 async function readJsonBody(request) {
@@ -134,6 +151,14 @@ function copyUpstreamHeaders(upstreamHeaders) {
   }
 
   return headers;
+}
+
+async function relayStreamToResponse(upstreamResponse, response) {
+  await new Promise((resolve, reject) => {
+    Readable.fromWeb(upstreamResponse.body).pipe(response);
+    response.on("finish", resolve);
+    response.on("error", reject);
+  });
 }
 
 function buildForwardHeaders(request, apiKey, bodyText) {
@@ -781,7 +806,8 @@ async function proxyAnthropicMessages(request, response) {
       );
     }
 
-    response.writeHead(upstreamResponse.status, copyUpstreamHeaders(upstreamResponse.headers));
+    const upstreamHeaders = copyUpstreamHeaders(upstreamResponse.headers);
+    response.writeHead(upstreamResponse.status, upstreamHeaders);
     if (!upstreamResponse.body) {
       logRelayEvent({
         requestId,
@@ -796,10 +822,55 @@ async function proxyAnthropicMessages(request, response) {
       return;
     }
 
-    await new Promise((resolve, reject) => {
-      Readable.fromWeb(upstreamResponse.body).pipe(response);
-      response.on("finish", resolve);
-      response.on("error", reject);
+    if (body.stream) {
+      await relayStreamToResponse(upstreamResponse, response);
+      await logClaudeUpstreamModel({
+        requestId,
+        taskId: task.id,
+        modelEntryId: entry.id,
+        configuredModelId: entry.modelId,
+        actualModelId: null,
+        providerLabel: entry.providerLabel ?? null,
+        baseUrl: entry.baseUrl,
+        stream: true,
+        upstreamStatus: upstreamResponse.status,
+        durationMs: Date.now() - startedAt,
+        note: "streaming response was proxied without body parsing"
+      });
+      logRelayEvent({
+        requestId,
+        route: "/v1/messages",
+        taskId: task.id,
+        modelEntryId: entry.id,
+        upstreamStatus: upstreamResponse.status,
+        stream: Boolean(body.stream),
+        durationMs: Date.now() - startedAt
+      });
+      return;
+    }
+
+    const upstreamText = await upstreamResponse.text();
+    response.end(upstreamText);
+    let upstreamPayload = null;
+    try {
+      upstreamPayload = upstreamText ? JSON.parse(upstreamText) : null;
+    } catch {
+      upstreamPayload = null;
+    }
+    await logClaudeUpstreamModel({
+      requestId,
+      taskId: task.id,
+      modelEntryId: entry.id,
+      configuredModelId: entry.modelId,
+      actualModelId:
+        upstreamPayload && typeof upstreamPayload === "object" && typeof upstreamPayload.model === "string"
+          ? upstreamPayload.model
+          : null,
+      providerLabel: entry.providerLabel ?? null,
+      baseUrl: entry.baseUrl,
+      stream: false,
+      upstreamStatus: upstreamResponse.status,
+      durationMs: Date.now() - startedAt
     });
     logRelayEvent({
       requestId,
@@ -899,6 +970,19 @@ async function proxyAnthropicMessages(request, response) {
 
   if (body.stream) {
     writeAnthropicStreamingResponse(response, anthropicPayload);
+    await logClaudeUpstreamModel({
+      requestId,
+      taskId: task.id,
+      modelEntryId: entry.id,
+      configuredModelId: entry.modelId,
+      actualModelId:
+        typeof upstreamPayload?.model === "string" ? upstreamPayload.model : entry.modelId,
+      providerLabel: entry.providerLabel ?? null,
+      baseUrl: entry.baseUrl,
+      stream: true,
+      upstreamStatus: upstreamResponse.status,
+      durationMs: Date.now() - startedAt
+    });
     logRelayEvent({
       requestId,
       route: "/v1/messages",
@@ -915,6 +999,19 @@ async function proxyAnthropicMessages(request, response) {
     "content-type": "application/json; charset=utf-8"
   });
   response.end(JSON.stringify(anthropicPayload));
+  await logClaudeUpstreamModel({
+    requestId,
+    taskId: task.id,
+    modelEntryId: entry.id,
+    configuredModelId: entry.modelId,
+    actualModelId:
+      typeof upstreamPayload?.model === "string" ? upstreamPayload.model : entry.modelId,
+    providerLabel: entry.providerLabel ?? null,
+    baseUrl: entry.baseUrl,
+    stream: false,
+    upstreamStatus: upstreamResponse.status,
+    durationMs: Date.now() - startedAt
+  });
   logRelayEvent({
     requestId,
     route: "/v1/messages",

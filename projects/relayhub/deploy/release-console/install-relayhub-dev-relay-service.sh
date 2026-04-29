@@ -8,6 +8,7 @@ SERVICE_TARGET=${SERVICE_TARGET:-/etc/systemd/system/${SERVICE_NAME}.service}
 ENV_TARGET=${ENV_TARGET:-/etc/default/${SERVICE_NAME}}
 PORT=${PORT:-4319}
 DATA_DIR=${DATA_DIR:-/var/lib/relayhub/control-plane}
+LOG_DIR=${LOG_DIR:-/var/log/relayhub}
 WORKING_DIRECTORY=${WORKING_DIRECTORY:-$REPO_ROOT/projects/relayhub/dev-relay}
 
 if [ ! -f "$SERVICE_TEMPLATE" ]; then
@@ -20,13 +21,14 @@ if [ ! -d "$WORKING_DIRECTORY" ]; then
   exit 1
 fi
 
-sudo mkdir -p "$(dirname "$ENV_TARGET")" "$DATA_DIR" /var/log/relayhub
-sudo chown -R www-data:www-data "$DATA_DIR" /var/log/relayhub
+sudo mkdir -p "$(dirname "$ENV_TARGET")" "$DATA_DIR" "$LOG_DIR"
+sudo chown -R www-data:www-data "$DATA_DIR" "$LOG_DIR"
 
 if [ ! -f "$ENV_TARGET" ]; then
   cat <<EOF | sudo tee "$ENV_TARGET" >/dev/null
 PORT=$PORT
 RELAYHUB_CONTROL_PLANE_DATA_DIR=$DATA_DIR
+RELAYHUB_DEV_RELAY_LOG_DIR=$LOG_DIR
 NODE_ENV=production
 EOF
 else
