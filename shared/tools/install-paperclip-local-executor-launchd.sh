@@ -5,6 +5,18 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PLIST_SOURCE="${ROOT_DIR}/shared/tools/paperclip-local-executor.launchd.plist"
 PLIST_TARGET="${HOME}/Library/LaunchAgents/com.moyujing.paperclip-local-executor.plist"
 LOG_DIR="${HOME}/.paperclip-local-executor/logs"
+RUNTIME_ANCHOR_DIR="${HOME}/.mindsync/runtime-anchor"
+RUNTIME_MINDSYNC_DIR="${HOME}/.mindsync/runtime/mindsync"
+
+sync_runtime_tools() {
+  if [[ ! -d "${RUNTIME_MINDSYNC_DIR}/.git" ]]; then
+    echo "⚠️ 未找到 runtime mindsync checkout，跳过脚本同步: ${RUNTIME_MINDSYNC_DIR}" >&2
+    return 0
+  fi
+
+  mkdir -p "${RUNTIME_MINDSYNC_DIR}/shared"
+  rsync -a --delete --exclude '.git/' "${ROOT_DIR}/shared/tools/" "${RUNTIME_MINDSYNC_DIR}/shared/tools/"
+}
 
 usage() {
   cat <<'EOF'
@@ -23,10 +35,11 @@ if [[ -z "$command" || "$command" == "-h" || "$command" == "--help" ]]; then
   exit 0
 fi
 
-mkdir -p "${HOME}/Library/LaunchAgents" "${LOG_DIR}"
+mkdir -p "${HOME}/Library/LaunchAgents" "${LOG_DIR}" "${RUNTIME_ANCHOR_DIR}"
 
 case "$command" in
   install)
+    sync_runtime_tools
     cp "${PLIST_SOURCE}" "${PLIST_TARGET}"
     launchctl bootout "gui/$(id -u)" "${PLIST_TARGET}" >/dev/null 2>&1 || true
     launchctl bootstrap "gui/$(id -u)" "${PLIST_TARGET}"

@@ -10,6 +10,12 @@
 
 本目录用于收口 `aimandala` 第一阶段 `automation` 节点的部署方式。
 
+它应被理解为：
+
+- `aimandala` 对 [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md) 的项目级落地
+- 当前首个正式项目级实例 runbook
+- 不是公司级 `Automation Platform` 的总入口
+
 这台机器的目标不是承接正式业务流量，而是承接：
 
 - Paperclip UI/API
@@ -489,6 +495,59 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 - `issue` 负责决定本次任务是沿用默认隔离目录，还是显式复用 / 改成 shared
 - `agent` 只在最终解析出的 execution workspace 中运行
 - `adapter` 不再被当作工作目录治理边界本体
+
+### 4.0.1 Paperclip 版本基线与升级回归口径
+
+这份 runbook 同时承担 `aimandala` 当前 `Paperclip` 服务端版本基线入口。
+
+截至 `2026-04-27`，当前正式治理口径固定为：
+
+- 当前推荐目标版本：`v2026.416.0`
+- 当前推荐已验证基线：`v2026.416.0`
+- 当前判断证据：
+  - 官方 GitHub Releases
+  - 官方 GitHub Security Advisories
+  - 官方仓库近期高影响 merged changes（已合并改动）
+
+为什么当前要以 `v2026.416.0` 为基线：
+
+1. `2026-04-16` 官方发布了 `v2026.416.0`
+2. 同日公开了多条安全通告
+3. 其中至少一条 critical（严重）级 execution workspace 命令注入问题明确写明修复版本为 `v2026.416.0`
+4. 当前 `aimandala` 已正式依赖 execution workspace policy、`/opt/automation/worktrees` 与 authenticated（鉴权）模式，因此不应继续停留在更低版本口径
+
+当前版本判断规则：
+
+1. 若出现新的安全通告，优先采用首个已修复稳定版或更高稳定版
+2. 若无安全紧急性，默认优先采用最新正式 stable release（稳定正式发布版）
+3. 默认不把 `canary` 当长期目标版本
+4. 只有当 stable 明显不能覆盖当前已命中的关键问题时，才允许短期继续停留在更高 `canary`
+5. 若当前运行实例已经高于稳定版安全修复线，但仍是 `canary`
+   - 应优先把服务端主仓代码收正到对应 stable
+   - 而不是长期把 `canary` 当正式口径
+
+升级后最小回归检查清单：
+
+1. execution workspace 真实绑定仍正常
+   - 重点看 issue 上的 `executionWorkspaceId` / `currentExecutionWorkspace`
+   - 不只看 project policy 是否存在
+2. heartbeat 与 execution health strict gate 通过
+   - 不新增 `execution_workspace_policy_not_materialized`
+   - 不新增 `server_writable_execution_not_allowed`
+3. `manual-review-required` 任务未被误送入 `server_automation`
+4. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
+5. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
+6. 若本轮升级涉及 auth / host / port 相关修复
+   - 同步验证公网入口、Tailscale 入口、`publicBaseUrl` 与回跳行为
+
+当前补充治理要求：
+
+1. 周检报告可作为版本判断证据
+2. 但项目级正式版本口径仍以本 runbook 为 deploy 入口
+3. 若后续推荐目标版本变化，应同步更新：
+   - 本文
+   - [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
 
 ## 4.2 `hermes_local` 容器原生方案
 

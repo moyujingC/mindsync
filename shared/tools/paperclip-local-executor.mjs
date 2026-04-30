@@ -17,6 +17,10 @@ const REQUIRED_ENV = [
   "PAPERCLIP_AGENT_ID",
   "PAPERCLIP_API_KEY",
 ];
+const MINDSYNC_RUNTIME_ROOT = path.join(os.homedir(), ".mindsync", "runtime");
+const PAPERCLIP_REPO_FALLBACK = path.join(MINDSYNC_RUNTIME_ROOT, "paperclip");
+const PAPERCLIP_REPO_CLI_ENTRY = path.join(PAPERCLIP_REPO_FALLBACK, "cli", "src", "index.ts");
+const PAPERCLIP_REPO_TSX = path.join(PAPERCLIP_REPO_FALLBACK, "cli", "node_modules", "tsx", "dist", "cli.mjs");
 
 function usage() {
   console.log(`Usage:
@@ -243,10 +247,42 @@ function buildStatusTransition({ issue, outcome, context, errorSummary = "" }) {
 }
 
 function runPaperclip(args, env = process.env) {
-  return execFileSync("paperclipai", args, {
-    encoding: "utf8",
-    env,
-  });
+  try {
+    return execFileSync("paperclipai", args, {
+      encoding: "utf8",
+      env,
+    });
+  } catch (error) {
+    if (!pathExistsSync(PAPERCLIP_REPO_CLI_ENTRY) || !pathExistsSync(PAPERCLIP_REPO_TSX)) {
+      const primaryMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(
+        `paperclipai command is unavailable, and runtime repo-local fallback is incomplete. ` +
+        `runtime_repo=${PAPERCLIP_REPO_FALLBACK}; primary_error=${primaryMessage}`,
+      );
+    }
+    try {
+      return execFileSync("node", [PAPERCLIP_REPO_TSX, PAPERCLIP_REPO_CLI_ENTRY, ...args], {
+        encoding: "utf8",
+        env,
+      });
+    } catch (fallbackError) {
+      const primaryMessage = error instanceof Error ? error.message : String(error);
+      const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+      throw new Error(
+        `paperclipai command is unavailable on this Mac, and repo-local fallback also failed. ` +
+        `primary_error=${primaryMessage}; fallback_error=${fallbackMessage}`,
+      );
+    }
+  }
+}
+
+function pathExistsSync(targetPath) {
+  try {
+    execFileSync("test", ["-f", targetPath], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function paperclipJson(args, env = process.env) {
@@ -641,6 +677,91 @@ function getIssue(selector) {
   ]);
 }
 
+function getProject(projectId) {
+  requireEnv();
+  if (!projectId) {
+    return null;
+  }
+  return paperclipJson([
+    "project",
+    "get",
+    projectId,
+    ...getEnvApiArgs(),
+    "--json",
+  ]);
+}
+
+function normalizeWorkspaceName(name) {
+  return String(name ?? "").trim().toLowerCase();
+}
+
+function pickPreferredLocalWorkspace(project) {
+  const workspaces = Array.isArray(project?.workspaces) ? project.workspaces : [];
+  if (workspaces.length === 0) {
+    return null;
+  }
+
+  const byName = (workspace) => normalizeWorkspaceName(workspace?.name);
+  const hasCwd = (workspace) => typeof workspace?.cwd === "string" && workspace.cwd.trim().length > 0;
+
+  const localWorktree = workspaces.find((workspace) => hasCwd(workspace) && byName(workspace).includes("local-worktree"));
+  if (localWorktree) {
+    return {
+      source: "local_worktree",
+      workspace: localWorktree,
+    };
+  }
+
+  const localMonorepo = workspaces.find((workspace) => hasCwd(workspace) && byName(workspace).includes("local-monorepo"));
+  if (localMonorepo) {
+    return {
+      source: "local_monorepo",
+      workspace: localMonorepo,
+    };
+  }
+
+  const localPath = workspaces.find(
+    (workspace) => hasCwd(workspace) && String(workspace.cwd).startsWith("/Users/"),
+  );
+  if (localPath) {
+    return {
+      source: "local_path_fallback",
+      workspace: localPath,
+    };
+  }
+
+  return null;
+}
+
+function resolveIssueExecutionCwd(issue, fallbackCwd = process.cwd()) {
+  if (!issue?.projectId) {
+    return {
+      cwd: path.resolve(fallbackCwd),
+      source: "process_cwd",
+      workspace: null,
+      project: null,
+    };
+  }
+
+  const project = getProject(issue.projectId);
+  const preferred = pickPreferredLocalWorkspace(project);
+  if (!preferred?.workspace?.cwd) {
+    return {
+      cwd: path.resolve(fallbackCwd),
+      source: "process_cwd",
+      workspace: null,
+      project,
+    };
+  }
+
+  return {
+    cwd: path.resolve(preferred.workspace.cwd),
+    source: preferred.source,
+    workspace: preferred.workspace,
+    project,
+  };
+}
+
 function updateIssue(issueId, status, comment, env = process.env) {
   requireEnv(REQUIRED_ENV, env);
   runPaperclip([
@@ -762,9 +883,10 @@ async function executeOne(selection, options) {
     name: selection.agentName,
   });
   const issue = getIssue(selection.issue.id);
+  const cwdResolution = resolveIssueExecutionCwd(issue, process.cwd());
   const context = buildExecutionContext({
     adapter: selection.adapter,
-    cwd: process.cwd(),
+    cwd: cwdResolution.cwd,
   });
   const checkoutPlan = resolveCheckoutPlan(agentEnvResult.env ?? process.env);
   const lockPayload = {
@@ -773,6 +895,8 @@ async function executeOne(selection, options) {
     identifier: issue.identifier,
     adapter: selection.adapter,
     host: context.host,
+    cwdSource: cwdResolution.source,
+    workspaceName: cwdResolution.workspace?.name ?? null,
     checkoutMode: checkoutPlan.mode,
     startedAt: new Date().toISOString(),
   };
@@ -788,6 +912,7 @@ async function executeOne(selection, options) {
         error: agentEnvResult.error || null,
       },
       checkoutPlan,
+      cwdResolution,
       lockPayload,
       plannedTransition: buildStatusTransition({
         issue,
@@ -808,6 +933,7 @@ async function executeOne(selection, options) {
     return {
       mode: "execute",
       selection,
+      cwdResolution,
       result: {
         ok: false,
         stdout: "",
@@ -843,6 +969,7 @@ async function executeOne(selection, options) {
       mode: "execute",
       selection,
       checkoutPlan,
+      cwdResolution,
       result,
       transition,
       lockPath,
@@ -977,4 +1104,5 @@ export const __testables = {
   buildStatusTransition,
   resolveAdapterRuntime,
   lockMatchesTarget,
+  pickPreferredLocalWorkspace,
 };

@@ -13,6 +13,7 @@
 
 当前与 `Web MVP` 公开首发、双端并行和运行稳定性最相关的任务入口是：
 
+- `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
 - `2026-04-22-local-mac-automatic-execution-host-plan.md`
 - `2026-04-21-local-mac-execution-host-pilot-plan.md`
 - `2026-04-19-server-automation-blocking-sample-interpretation-plan.md`
@@ -32,6 +33,7 @@
 
 说明：
 
+- `2026-04-26-历史任务全量关闭与新基线切换实施计划.md` 是当前控制面任务面重置的正式实施入口，固定把 `2026-04-26 00:00 Asia/Shanghai` 之前的历史普通任务与历史 automation 任务都视为旧窗口对象，默认全量关闭，只保留极少数显式例外，并把后续第一主线固定为普通任务先在本地 Mac 自动执行。
 - `2026-04-22-local-mac-automatic-execution-host-plan.md` 是当前普通任务自动在本地 Mac 上跑的正式实施入口，固定落本地执行器、launchd、runbook 与 verification，不把服务器 heartbeat 重新拉回普通任务主链。
 - `2026-04-21-local-mac-execution-host-pilot-plan.md` 是当前普通任务接入本地 Mac 执行节点的单机试点正式入口，固定只服务你当前这台 Mac，先收 control plane 与 execution host 的宿主语义、连接合同和最小回写合同，不直接扩成多机方案。
 - `2026-04-19-server-automation-blocking-sample-interpretation-plan.md` 是当前 automation 远端样本解释的正式实施入口，固定以 `35 / 8 / 3` 为当前基线，先收“历史活跃样本 / 真实运行链缺口 / 历史 done 漂移 / 本地任务后续错误绑定”的解释模型，不直接进入整改。
@@ -45,6 +47,7 @@
 
 当前已沉淀：
 
+- `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
 - `2026-04-21-local-mac-execution-host-pilot-plan.md`
 - `2026-04-19-server-automation-blocking-sample-interpretation-plan.md`
 - `2026-04-19-server-automation-task-template-semantics-repair-plan.md`

@@ -63,6 +63,7 @@ goals:
 
 - `研究中心`
 - `RelayHub`
+- `Automation Platform`
 
 对象主数据以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为唯一权威清单。
 其他文档只解释结构、治理与协作方式，不重复维护对象主数据。
@@ -87,8 +88,9 @@ goals:
 12. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
 13. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
 14. [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
-15. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
-16. [company/knowledge-base/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md)
+15. [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md)
+16. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+17. [company/knowledge-base/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md)
 
 其中：
 
@@ -106,6 +108,7 @@ goals:
 - `DOCS_GOVERNANCE` 定义正式文档的状态、元数据和 artifact 规则
 - `服务器与基础设施入口` 定义当前可运维宿主机的公司级登录入口与项目 runbook 索引
 - `Paperclip Agent 模型配置总表` 用于解释当前各 Agent 的运行时模型、adapter、base URL、鉴权方式、面板状态解读，以及 `Engineer` 的成本控制与转人工口径
+- `Automation Platform` 收口公司级执行与运维底座定义，并明确 `server_automation` 与 `local_manual_review` 两条执行链的边界
 - `项目与仓库映射` 解释注册表中的对象如何映射到当前 Monorepo 与历史仓库
 - `公司知识库` 收口公司级方法论、系统机制分析与跨项目长期可复用知识
 

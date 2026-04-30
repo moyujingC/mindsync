@@ -97,8 +97,8 @@
 当前新增现实：
 
 - RelayHub 已进入第一轮正式实现
-- 长期项目分支固定为 `project/relayhub`
-- `relayhub.jingshu.cc` 当前由 `project/relayhub` 分支驱动
+- 长期服务器测试分支固定为 `relayhub/dev`
+- `relayhub.jingshu.cc` 当前由 `relayhub/dev` 分支驱动
 - 它不跟随主业务 `release` 分支节奏推进
 
 当前不做：

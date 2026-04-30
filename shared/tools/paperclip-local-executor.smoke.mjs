@@ -234,4 +234,44 @@ assert(
   "lock target matching should reject unrelated targets",
 );
 
+const workspaceSelection = __testables.pickPreferredLocalWorkspace({
+  workspaces: [
+    {
+      name: "xinran-jobhunt-monorepo",
+      cwd: "/opt/automation/app/mindsync/projects/xinran-jobhunt",
+    },
+    {
+      name: "xinran-jobhunt-local-monorepo",
+      cwd: "/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt",
+    },
+    {
+      name: "xinran-jobhunt-local-worktree",
+      cwd: "/Users/xinran/Downloads/dev/mindsync-worktrees/xinran-jobhunt-dev/projects/xinran-jobhunt",
+    },
+  ],
+});
+assert(workspaceSelection.source === "local_worktree", "workspace selection should prefer local worktree");
+assert(
+  workspaceSelection.workspace.cwd === "/Users/xinran/Downloads/dev/mindsync-worktrees/xinran-jobhunt-dev/projects/xinran-jobhunt",
+  "workspace selection should return local worktree cwd",
+);
+
+const workspaceFallback = __testables.pickPreferredLocalWorkspace({
+  workspaces: [
+    {
+      name: "relayhub-monorepo",
+      cwd: "/opt/automation/app/mindsync/projects/relayhub",
+    },
+    {
+      name: "relayhub-local-monorepo",
+      cwd: "/Users/xinran/Downloads/dev/mindsync/projects/relayhub",
+    },
+  ],
+});
+assert(workspaceFallback.source === "local_monorepo", "workspace selection should fall back to local monorepo");
+assert(
+  workspaceFallback.workspace.cwd === "/Users/xinran/Downloads/dev/mindsync/projects/relayhub",
+  "workspace selection should return local monorepo cwd",
+);
+
 console.log("paperclip-local-executor smoke passed");

@@ -24,6 +24,7 @@
 
 当前与 Paperclip execution routing（执行分流）和 automation 运维治理最相关的 spec 入口补充为：
 
+- [2026-04-26-历史任务全量关闭与新基线切换规格.md](2026-04-26-历史任务全量关闭与新基线切换规格.md)
 - [2026-04-22-local-mac-automatic-execution-host-spec.md](2026-04-22-local-mac-automatic-execution-host-spec.md)
 - [2026-04-21-local-mac-execution-host-pilot-spec.md](2026-04-21-local-mac-execution-host-pilot-spec.md)
 - [2026-04-19-paperclip-native-execution-routing-spec.md](2026-04-19-paperclip-native-execution-routing-spec.md)
@@ -42,6 +43,7 @@
 - 当前固定样本为何必须进入人工 golden 审阅与偏差回灌闭环
 - 当前报告表达为何必须在保留 trace 的前提下压缩为用户可读解读
 - 当前 Paperclip direct routing（直接路由）、服务器执行宿主和本地 Mac execution host（执行宿主机）如何分工
+- 当前为什么应该把 `2026-04-26` 之前的历史普通任务与历史 automation 任务统一收口，并把后续观察窗口切到新基线
 
 ## 使用规则
 
