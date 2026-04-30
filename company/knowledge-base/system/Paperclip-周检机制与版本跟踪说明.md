@@ -105,6 +105,19 @@
 8. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
 9. [projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
 
+若周检结论已经形成稳定治理口径，应继续把结论回写到正式入口，而不是只停留在周检归档里。
+
+当前最常见的回写目标包括：
+
+1. 项目级版本基线与升级回归清单
+   - [projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
+2. `codex_local` 等关键 adapter 的正式安全边界
+   - [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
+   - [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+3. execution policy 与本地治理语义的原则级映射
+   - [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
+   - [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
+
 ## 6. 标准输出问题
 
 每次周检产出都应明确回答下面问题，而不是只罗列 changelog（更新日志）：
