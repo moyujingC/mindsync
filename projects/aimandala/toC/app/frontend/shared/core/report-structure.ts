@@ -11,9 +11,12 @@ import {
 } from "./themes";
 
 export const liteReportSectionTitles = {
-  overall: "整体感受",
-  visual: "画面元素",
-  emotion: "情绪画像",
+  topic: "议题理解",
+  current: "当前命中",
+  visual: "画面依据",
+  pattern: "模式解释",
+  life: "现实连接",
+  healing: "轻量疗愈",
   teaser: "给你的一个小预告",
   story: "你的心灵画像故事",
   theme: "在当前主题中的具体表现",
@@ -38,6 +41,12 @@ export const liteThemeInsightLabels: Array<[string, string]> = [
 ];
 
 export const proReportSectionTitles = {
+  deepImpression: "深度第一印象",
+  evidenceDigest: "证据摘要与结构展开",
+  imbalanceDiagnosis: "失衡确认",
+  rootCauseChain: "根因链",
+  deepStructure: "深层结构解释",
+  healingPlan: "完整疗愈方案",
   firstImpression: "第一眼直觉",
   coreTable: "核心洞察表格",
   circles: "三圈深度诊断",
@@ -113,6 +122,7 @@ function getSelfUnderstandingFocus(structured?: LiteStructuredReport | null): st
   const blocks = structured?.self_understanding_blocks;
 
   return (
+    cleanText(structured?.pattern_interpretation) ??
     cleanText(blocks?.pattern_naming?.pattern_name) ??
     cleanText(blocks?.next_step?.direction) ??
     cleanText(blocks?.reality_connection?.life_dimension) ??
@@ -125,6 +135,7 @@ function getSelfUnderstandingDimension(structured?: LiteStructuredReport | null)
   const blocks = structured?.self_understanding_blocks;
 
   return (
+    cleanText(structured?.life_connection) ??
     cleanText(blocks?.reality_connection?.life_dimension) ??
     cleanText(blocks?.theme_insights?.scene) ??
     cleanText(structured?.theme_insights?.scene)
@@ -157,32 +168,32 @@ export function resolveSelfUnderstandingReportCta(input: {
       intent: "open_pro_report",
       primaryLabel: "查看 Pro 版解读",
       footerHint: focus
-        ? `你已经拥有 Pro 版，可以继续看清${focusText}的来源、它在${dimension}中的延续方式，以及下一步如何展开。`
-        : "你已经拥有 Pro 版，可以直接继续进入更完整的解读。",
-      legacyCardTitle: focus ? `${focusText}背后，还有更完整的一层` : "你的画里，还有更完整的一层",
+        ? `你已经拥有这份更深的独立报告，可以继续看清${focusText}的来源、它在${dimension}中的延续方式，以及接下来如何回应。`
+        : "你已经拥有这份更深的独立报告，可以直接继续进入完整解读。",
+      legacyCardTitle: focus ? `${focusText}背后，还有一份更深的独立报告` : "你的画里，还有一份更深的独立报告",
       legacyBulletPoints: [
         "这种模式为什么会反复出现",
         `它在${dimension}里还会怎样显现`,
         "接下来可以怎样走得更稳一点",
       ],
-      legacyCaption: "你已经拥有 Pro 版，当前可以直接继续查看。",
+      legacyCaption: "你已经拥有 Pro 报告，当前可以直接继续查看这份独立解读。",
     };
   }
 
   if (input.canUpgrade) {
     return {
       intent: "open_report_entry",
-      primaryLabel: "看看 Pro 版解读",
+      primaryLabel: "看看另一份更深的 Pro 报告",
       footerHint: focus
-        ? `这一轮已经帮你看见了${focusText}。如果你想继续往下走，可以进入下一步选择，看看 Pro 版是否适合你。`
-        : "这次 Lite 解读已经成形。如果你想继续往下走，可以进入下一步选择，看看 Pro 版是否适合你。",
-      legacyCardTitle: focus ? `如果继续往下看，${focusText}会更清楚` : "你的画里，还可以再往下看一步",
+        ? `这一轮 Lite 已经帮你看见了${focusText}。如果你希望从更深层结构继续理解这张画，可以看看 Pro 这份独立报告。`
+        : "这次 Lite 解读已经完整成立。如果你希望从更深层结构继续理解这张画，可以看看 Pro 这份独立报告。",
+      legacyCardTitle: focus ? `${focusText}，还可以从更深层结构再看一次` : "你的画里，还可以从更深层结构再看一次",
       legacyBulletPoints: [
         "这种模式更完整的来源是什么",
         `它在${dimension}里还有哪些延伸`,
-        "下一步该先做什么，才不只是看懂",
+        "有哪些更完整的疗愈与调整方向",
       ],
-      legacyCaption: "先进入 Lite / Pro 选择页，再决定这次是否直接购买 Pro 解读。",
+      legacyCaption: "进入 Lite / Pro 选择页后，可以决定这次是否单独购买 Pro 深度报告。",
     };
   }
 
@@ -190,8 +201,8 @@ export function resolveSelfUnderstandingReportCta(input: {
     intent: "restart_upload",
     primaryLabel: themeDisplayName ? "带着这个主题再画一幅" : "带着这份理解再画一幅",
     footerHint: themeDisplayName
-      ? `这轮先不急着继续升级。更好的下一步，是围绕${themeDisplayName}再画一幅，把这次看到的变化继续画出来。`
-      : "这轮先不急着继续升级。更好的下一步，是带着这份理解再画一幅，看看下一次画面会怎样回应你。",
+      ? `这轮先不急着切换到另一份报告。更好的下一步，是围绕${themeDisplayName}再画一幅，把这次看到的变化继续画出来。`
+      : "这轮先不急着切换到另一份报告。更好的下一步，是带着这份理解再画一幅，看看下一次画面会怎样回应你。",
     legacyCardTitle: themeDisplayName ? `下一幅，继续围绕${themeDisplayName}来画` : "下一幅，继续带着这份理解来画",
     legacyBulletPoints: [
       focus ? `把这次看到的${focusText}继续画出来` : "把这次最有感觉的部分继续画出来",
@@ -199,8 +210,8 @@ export function resolveSelfUnderstandingReportCta(input: {
       "用连续两次创作看清变化，而不是急着下结论",
     ],
     legacyCaption: themeDisplayName
-      ? "当前先不继续切换版本，建议围绕同一主题继续画一幅。"
-      : "当前先不继续切换版本，建议把这次理解带回下一幅画里。",
+      ? "当前先不继续切换到另一份报告，建议围绕同一主题继续画一幅。"
+      : "当前先不继续切换到另一份报告，建议把这次理解带回下一幅画里。",
   };
 }
 
@@ -255,6 +266,12 @@ export function getProImbalanceEntries(
 export function getProRootCauseEntries(
   structured: ProStructuredReport,
 ): Array<[string, string]> {
+  const rootCauseChain = structured.root_cause_chain
+    ? Object.entries(structured.root_cause_chain).filter(([, value]) => Boolean(value))
+    : [];
+  if (rootCauseChain.length) {
+    return rootCauseChain as Array<[string, string]>;
+  }
   return Object.entries(structured.root_cause ?? {}).filter(
     ([, value]) => Boolean(value),
   );

@@ -13,6 +13,13 @@
 
 当前与 `Web MVP` 公开首发、双端并行和运行稳定性最相关的任务入口是：
 
+- `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
+- `2026-04-22-local-mac-automatic-execution-host-plan.md`
+- `2026-04-21-local-mac-execution-host-pilot-plan.md`
+- `2026-04-19-server-automation-blocking-sample-interpretation-plan.md`
+- `2026-04-19-server-automation-task-template-semantics-repair-plan.md`
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md`
+- `2026-04-19-paperclip-native-execution-routing-plan.md`
 - `2026-04-16-mvp-上线前质量收口总任务草案.md`
 - `2026-04-16-ci-cd-临时运营口径-runbook.md`
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
@@ -26,6 +33,13 @@
 
 说明：
 
+- `2026-04-26-历史任务全量关闭与新基线切换实施计划.md` 是当前控制面任务面重置的正式实施入口，固定把 `2026-04-26 00:00 Asia/Shanghai` 之前的历史普通任务与历史 automation 任务都视为旧窗口对象，默认全量关闭，只保留极少数显式例外，并把后续第一主线固定为普通任务先在本地 Mac 自动执行。
+- `2026-04-22-local-mac-automatic-execution-host-plan.md` 是当前普通任务自动在本地 Mac 上跑的正式实施入口，固定落本地执行器、launchd、runbook 与 verification，不把服务器 heartbeat 重新拉回普通任务主链。
+- `2026-04-21-local-mac-execution-host-pilot-plan.md` 是当前普通任务接入本地 Mac 执行节点的单机试点正式入口，固定只服务你当前这台 Mac，先收 control plane 与 execution host 的宿主语义、连接合同和最小回写合同，不直接扩成多机方案。
+- `2026-04-19-server-automation-blocking-sample-interpretation-plan.md` 是当前 automation 远端样本解释的正式实施入口，固定以 `35 / 8 / 3` 为当前基线，先收“历史活跃样本 / 真实运行链缺口 / 历史 done 漂移 / 本地任务后续错误绑定”的解释模型，不直接进入整改。
+- `2026-04-19-server-automation-task-template-semantics-repair-plan.md` 是当前 automation 模板语义修复的正式实施入口，固定只改 `paperclip-sync-lib` 模板生成层，不扩张到 heartbeat / diagnosis / 运行态补救。
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md` 是当前 automation heartbeat 诊断分桶的前置入口；它负责“先分桶”，但当前默认主目标已切到样本解释层，而不是直接从 diagnosis 跳到整改。
+- `2026-04-19-paperclip-native-execution-routing-plan.md` 是当前 execution routing 的正式任务入口，专门收口“按 Paperclip 原生模型重建双执行宿主机口径”，不进入实现。
 - `2026-04-16` 这份草案承接 `MIN-80` 的前置澄清结果，适合作为 CEO 收成正式总任务的当前补充入口。
 - `2026-04-16-ci-cd-临时运营口径-runbook.md` 适用于 Paperclip workflow 面板尚未更新前的值班与巡检口径。
 - `2026-04-14` 与 `2026-04-15 batch E` 仍是 Web 首发与 miniapp live-ready 的正式主入口
@@ -33,6 +47,12 @@
 
 当前已沉淀：
 
+- `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
+- `2026-04-21-local-mac-execution-host-pilot-plan.md`
+- `2026-04-19-server-automation-blocking-sample-interpretation-plan.md`
+- `2026-04-19-server-automation-task-template-semantics-repair-plan.md`
+- `2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md`
+- `2026-04-19-paperclip-native-execution-routing-plan.md`
 - `2026-04-16-mvp-上线前质量收口总任务草案.md`
 - `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
 - `2026-04-14-miniapp-batch-a-shared-foundation-audit.md`
@@ -55,3 +75,4 @@
 - `2026-04-12-v22-knowledge-workbench-execution-plan.md`
 
 其中带“迁移”字样的阶段文档已转入历史参考口径，不再作为默认任务入口。
+execution routing 旧 phase 1 / phase 2 文档链也已转入历史参考口径，不再作为默认任务入口。

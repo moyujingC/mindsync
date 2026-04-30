@@ -120,7 +120,6 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "workflow-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
-            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -292,7 +291,6 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "frontend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
-            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -318,18 +316,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Python
+        id: backend_setup_python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Verify Python Runtime
         id: backend_python
         run: |
           set -euo pipefail
-          python3 --version
-          python3 -m pip --version
+          PYTHON_BIN="${{ steps.backend_setup_python.outputs.python-path }}"
+          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
+            PYTHON_BIN="$(command -v python || true)"
+          fi
+          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
+            PYTHON_BIN="$(command -v python3 || true)"
+          fi
+          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
+            echo "Unable to locate a usable Python runtime after setup-python" >&2
+            exit 1
+          fi
+          printf 'python_bin=%s\n' "$PYTHON_BIN" >> "$GITHUB_OUTPUT"
+          "$PYTHON_BIN" --version
+          "$PYTHON_BIN" -m pip --version
 
       - name: Install Backend Dependencies
         id: backend_install
         continue-on-error: true
         run: |
           set -euo pipefail
+          PYTHON_BIN="${{ steps.backend_python.outputs.python_bin }}" \
           bash shared/tools/ci/ensure-python-ci-venv.sh \
             projects/aimandala/toC/app/backend/requirements.release.txt \
             pytest ruff 2>&1 | tee "$RUNNER_TEMP/backend-install.log"
@@ -371,12 +387,12 @@ jobs:
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Verify Python Runtime"
-            REPRO_COMMAND="python3 --version && python3 -m pip --version"
+            REPRO_COMMAND="python --version && python -m pip --version"
           elif [[ "${{ steps.backend_install.outcome }}" != "success" ]]; then
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Install Backend Dependencies"
-            REPRO_COMMAND="python3 -m pip install -r projects/aimandala/toC/app/backend/requirements.release.txt pytest ruff"
+            REPRO_COMMAND="PYTHON_BIN=python bash shared/tools/ci/ensure-python-ci-venv.sh projects/aimandala/toC/app/backend/requirements.release.txt pytest ruff"
             SUMMARY_FILE="$RUNNER_TEMP/backend-install.log"
           elif [[ "${{ steps.backend_ruff.outcome }}" != "success" ]]; then
             FAILED=1
@@ -422,7 +438,6 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "backend-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
-            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -448,18 +463,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Python
+        id: knowledge_setup_python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Verify Python Runtime
         id: knowledge_python
         run: |
           set -euo pipefail
-          python3 --version
-          python3 -m pip --version
+          PYTHON_BIN="${{ steps.knowledge_setup_python.outputs.python-path }}"
+          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
+            PYTHON_BIN="$(command -v python || true)"
+          fi
+          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
+            PYTHON_BIN="$(command -v python3 || true)"
+          fi
+          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
+            echo "Unable to locate a usable Python runtime after setup-python" >&2
+            exit 1
+          fi
+          printf 'python_bin=%s\n' "$PYTHON_BIN" >> "$GITHUB_OUTPUT"
+          "$PYTHON_BIN" --version
+          "$PYTHON_BIN" -m pip --version
 
       - name: Install Knowledge Dependencies
         id: knowledge_install
         continue-on-error: true
         run: |
           set -euo pipefail
+          PYTHON_BIN="${{ steps.knowledge_python.outputs.python_bin }}" \
           bash shared/tools/ci/ensure-python-ci-venv.sh \
             projects/aimandala/toC/app/backend/requirements.release.txt \
             pytest ruff 2>&1 | tee "$RUNNER_TEMP/knowledge-install.log"
@@ -497,12 +530,12 @@ jobs:
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Verify Python Runtime"
-            REPRO_COMMAND="python3 --version && python3 -m pip --version"
+            REPRO_COMMAND="python --version && python -m pip --version"
           elif [[ "${{ steps.knowledge_install.outcome }}" != "success" ]]; then
             FAILED=1
             KIND="build-failure"
             FAILED_STEP="Install Knowledge Dependencies"
-            REPRO_COMMAND="python3 -m pip install -r projects/aimandala/toC/app/backend/requirements.release.txt pytest"
+            REPRO_COMMAND="PYTHON_BIN=python bash shared/tools/ci/ensure-python-ci-venv.sh projects/aimandala/toC/app/backend/requirements.release.txt pytest ruff"
             SUMMARY_FILE="$RUNNER_TEMP/knowledge-install.log"
           elif [[ "${{ steps.knowledge_validate.outcome }}" != "success" ]]; then
             FAILED=1
@@ -547,7 +580,6 @@ jobs:
             --branch "$PAPERCLIP_BRANCH" \
             --job "knowledge-quality" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
-            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --commit-parent \
@@ -638,7 +670,6 @@ jobs:
             --repository "${{ github.repository }}" \
             --branch "$PAPERCLIP_BRANCH" \
             --sha "${{ github.event.pull_request.head.sha || github.sha }}" \
-            --run-number "${{ github.run_number }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --event-time "$SYNC_TIME" \
             --job-count "4" \

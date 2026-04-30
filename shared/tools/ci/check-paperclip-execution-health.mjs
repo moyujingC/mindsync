@@ -1,26 +1,157 @@
 #!/usr/bin/env node
 
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 
-import {
-  PaperclipApi,
-  getOption,
-  isoNow,
-  logError,
-  logInfo,
-  parseArgs,
-  truthy,
-} from "./common.mjs";
+import { PaperclipApi, getOption, isoNow, logError, logInfo, parseArgs, truthy } from "./common.mjs";
+
+const AUTOMATION_ROUTE_SOURCES = new Set([
+  "lint-failure",
+  "format-failure",
+  "coverage-failure",
+  "ci-test-failure",
+  "build-failure",
+  "deploy-or-smoke-failure",
+  "infra-runner-failure",
+]);
+const OBSERVED_ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
+const STRICT_BLOCKING_STATUSES = new Set(["in_progress", "in_review", "blocked"]);
 
 function minutesSince(isoTimestamp) {
   return (Date.now() - new Date(isoTimestamp).getTime()) / (1000 * 60);
+}
+
+function hasExecutionWorkspaceBinding(issue) {
+  return Boolean(issue.executionWorkspaceId || issue.currentExecutionWorkspace?.id);
+}
+
+function parseIssueMetadata(description) {
+  const metadata = {};
+  for (const rawLine of String(description ?? "").split(/\r?\n/)) {
+    const match = rawLine.match(/^([a-z_]+):\s*(.+)$/);
+    if (!match) {
+      continue;
+    }
+    metadata[match[1]] = match[2].trim();
+  }
+  return metadata;
+}
+
+function resolveExecutionRoute(metadata) {
+  const explicit = String(metadata.execution_route ?? "").trim();
+  if (explicit) {
+    return explicit;
+  }
+  const source = String(metadata.source ?? "").trim();
+  return AUTOMATION_ROUTE_SOURCES.has(source) ? "server_automation" : "local_manual_review";
+}
+
+function getWorkspaceBinding(issue, workspaceById) {
+  if (issue.currentExecutionWorkspace?.id) {
+    return issue.currentExecutionWorkspace;
+  }
+  if (issue.executionWorkspaceId) {
+    return workspaceById.get(issue.executionWorkspaceId) ?? null;
+  }
+  return null;
+}
+
+function normalizePath(value) {
+  return String(value ?? "").replace(/\/+$/, "");
+}
+
+function workspaceUsesExpectedRoot(workspace, expectedRoot) {
+  const prefix = `${normalizePath(expectedRoot)}/`;
+  return [workspace?.cwd, workspace?.providerRef, workspace?.worktreePath].some((value) =>
+    normalizePath(value).startsWith(prefix),
+  );
+}
+
+function classifyExecutionWorkspaceDrift(issue) {
+  const metadata = parseIssueMetadata(issue.description);
+  return {
+    issueId: issue.id,
+    identifier: issue.identifier,
+    title: issue.title,
+    status: issue.status,
+    reason: "execution_workspace_policy_not_materialized",
+    taskClass: metadata.task_class ?? null,
+    executionRoute: resolveExecutionRoute(metadata),
+    executionWorkspaceId: issue.executionWorkspaceId ?? null,
+    currentExecutionWorkspaceId: issue.currentExecutionWorkspace?.id ?? null,
+    checkoutRunId: issue.checkoutRunId ?? null,
+    startedAt: issue.startedAt ?? null,
+    completedAt: issue.completedAt ?? null,
+    updatedAt: issue.updatedAt ?? null,
+  };
+}
+
+function issueLooksActiveWithoutWorkspace(issue, executionRoute) {
+  if (hasExecutionWorkspaceBinding(issue)) {
+    return false;
+  }
+
+  if (!issue.assigneeAgentId) {
+    return false;
+  }
+
+  if (executionRoute !== "server_automation") {
+    return false;
+  }
+
+  if (!OBSERVED_ACTIVE_STATUSES.has(issue.status)) {
+    return false;
+  }
+
+  return Boolean(issue.checkoutRunId || issue.startedAt || issue.completedAt || issue.updatedAt);
+}
+
+function splitWorkspaceDriftIssues(issues) {
+  const activeBlockingIssues = [];
+  const historicalDoneIssues = [];
+
+  for (const issue of issues) {
+    if (issue.status === "done") {
+      historicalDoneIssues.push(issue);
+      continue;
+    }
+    if (STRICT_BLOCKING_STATUSES.has(issue.status)) {
+      activeBlockingIssues.push(issue);
+    }
+  }
+
+  return {
+    activeBlockingIssues,
+    historicalDoneIssues,
+  };
+}
+
+function classifyServerWritableExecutionRejected(issue, metadata, workspace) {
+  return {
+    issueId: issue.id,
+    identifier: issue.identifier,
+    title: issue.title,
+    status: issue.status,
+    reason: "server_writable_execution_not_allowed",
+    taskClass: metadata.task_class ?? "manual-review-required",
+    executionRoute: resolveExecutionRoute(metadata),
+    source: metadata.source ?? null,
+    executionWorkspaceId: issue.executionWorkspaceId ?? issue.currentExecutionWorkspace?.id ?? null,
+    workspaceCwd: workspace?.cwd ?? null,
+    workspaceProviderRef: workspace?.providerRef ?? null,
+    workspacePath: workspace?.worktreePath ?? null,
+  };
+}
+
+function classifyLocalExecutionRoutingIssue(issue, metadata, workspace) {
+  return classifyServerWritableExecutionRejected(issue, metadata, workspace);
 }
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help || options.h) {
     console.log(`Usage:
-  node shared/tools/ci/check-paperclip-execution-health.mjs --company-id <id> --project-name <name> [--stale-minutes 15] [--apply]
+  node shared/tools/ci/check-paperclip-execution-health.mjs --company-id <id> --project-name <name> [--stale-minutes 15] [--apply] [--strict] [--expected-root /opt/automation/worktrees]
 `);
     return;
   }
@@ -30,7 +161,13 @@ async function main() {
   const companyId = getOption(options, "company-id", process.env.PAPERCLIP_COMPANY_ID ?? null);
   const projectName = getOption(options, "project-name", process.env.PAPERCLIP_PROJECT_NAME ?? "一镜一梳");
   const staleMinutes = Number(getOption(options, "stale-minutes", process.env.PAPERCLIP_EXECUTION_STALE_MINUTES ?? "15"));
+  const expectedRoot = getOption(
+    options,
+    "expected-root",
+    process.env.PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT ?? process.env.PAPERCLIP_EXECUTION_WORKTREE_ROOT ?? "/opt/automation/worktrees",
+  );
   const apply = truthy(getOption(options, "apply", "0"));
+  const strict = truthy(getOption(options, "strict", process.env.PAPERCLIP_EXECUTION_HEALTH_STRICT ?? "0"));
 
   if (!companyId) {
     throw new Error("company id is required");
@@ -44,6 +181,10 @@ async function main() {
   }
 
   const issues = await api.get(`/api/companies/${companyId}/issues?projectId=${encodeURIComponent(project.id)}`);
+  const executionWorkspaces = await api.get(
+    `/api/companies/${companyId}/execution-workspaces?projectId=${encodeURIComponent(project.id)}`,
+  );
+  const workspaceById = new Map((executionWorkspaces ?? []).map((workspace) => [workspace.id, workspace]));
   const candidates = (issues ?? []).filter((issue) => {
     if (!issue.activeRun || issue.activeRun.status !== "running") {
       return false;
@@ -100,16 +241,100 @@ async function main() {
     });
   }
 
+  const workspaceDriftIssues =
+    project.executionWorkspacePolicy?.enabled === true
+      ? (issues ?? [])
+          .filter((issue) => {
+            const metadata = parseIssueMetadata(issue.description);
+            return issueLooksActiveWithoutWorkspace(issue, resolveExecutionRoute(metadata));
+          })
+          .map(classifyExecutionWorkspaceDrift)
+      : [];
+
+  const serverWritableExecutionRejectedIssues = (issues ?? [])
+    .filter((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      if (resolveExecutionRoute(metadata) === "server_automation") {
+        return false;
+      }
+      if (!STRICT_BLOCKING_STATUSES.has(issue.status)) {
+        return false;
+      }
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return Boolean(workspace) && workspaceUsesExpectedRoot(workspace, expectedRoot);
+    })
+    .map((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return classifyServerWritableExecutionRejected(issue, metadata, workspace);
+    });
+
+  const staleRunningIssues = staleIssues.map((issue) => ({
+    ...issue,
+    reason: "stale_running_issue",
+  }));
+  const {
+    activeBlockingIssues: activeWorkspaceDriftIssues,
+    historicalDoneIssues: historicalDoneWorkspaceDriftIssues,
+  } = splitWorkspaceDriftIssues(workspaceDriftIssues);
+
+  const summary = {
+    checkedAt: isoNow(),
+    strict,
+    expectedRoot,
+    counts: {
+      staleRunning: staleRunningIssues.length,
+      serverAutomationBlocking: activeWorkspaceDriftIssues.length,
+      historicalDoneWorkspaceDrift: historicalDoneWorkspaceDriftIssues.length,
+      localExecutionRouting: serverWritableExecutionRejectedIssues.length,
+    },
+    staleRunningIssues,
+    serverAutomationBlockingIssues: activeWorkspaceDriftIssues,
+    historicalDoneWorkspaceDriftIssues,
+    localExecutionRoutingIssues: serverWritableExecutionRejectedIssues,
+  };
+
+  const strictShouldFail = activeWorkspaceDriftIssues.length > 0;
+
   if (staleIssues.length === 0) {
-    logInfo("No stale running issues detected");
+    if (!strictShouldFail && historicalDoneWorkspaceDriftIssues.length === 0) {
+      logInfo("No stale running issues detected");
+      return;
+    }
+
+    logInfo(
+      `Detected ${activeWorkspaceDriftIssues.length} server automation blocking issue(s), ${historicalDoneWorkspaceDriftIssues.length} historical done workspace drift issue(s), and ${serverWritableExecutionRejectedIssues.length} local execution routing issue(s)`,
+    );
+    console.log(JSON.stringify(summary, null, 2));
+    if (strict && strictShouldFail) {
+      process.exitCode = 2;
+    }
     return;
   }
 
   logInfo(`Detected ${staleIssues.length} stale running issue(s)`);
-  console.log(JSON.stringify({ checkedAt: isoNow(), staleIssues }, null, 2));
+  console.log(JSON.stringify(summary, null, 2));
+  if (strict && strictShouldFail) {
+    process.exitCode = 2;
+  }
 }
 
-main().catch((error) => {
-  logError(error instanceof Error ? error.stack ?? error.message : String(error));
-  process.exit(1);
-});
+export const __testables = {
+  hasExecutionWorkspaceBinding,
+  parseIssueMetadata,
+  resolveExecutionRoute,
+  issueLooksActiveWithoutWorkspace,
+  splitWorkspaceDriftIssues,
+  workspaceUsesExpectedRoot,
+  classifyExecutionWorkspaceDrift,
+  classifyLocalExecutionRoutingIssue,
+  OBSERVED_ACTIVE_STATUSES,
+  STRICT_BLOCKING_STATUSES,
+};
+
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  main().catch((error) => {
+    logError(error instanceof Error ? error.stack ?? error.message : String(error));
+    process.exit(1);
+  });
+}

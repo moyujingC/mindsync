@@ -33,29 +33,29 @@ export function MobileWebHistoryRecordDetailPage({
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}
     >
-      <section className="mw-hero-card">
+      <section className="mw-hero-card mw-history-detail-hero">
         <p className="mw-kicker">历史记录详情</p>
         <h2>{descriptor.title}</h2>
-        <p>{descriptor.subtitle}</p>
-        <p className="mw-meta">
+        <p className="mw-history-detail-hero__subtitle">{descriptor.subtitle}</p>
+        <p className="mw-meta mw-history-detail-hero__meta">
           主题：{descriptor.themeLabel} · 可查看版本：{descriptor.versionSummary}
         </p>
       </section>
 
-      <section className="mw-inline-banner mw-inline-banner--runtime">
+      <section className="mw-inline-banner mw-inline-banner--runtime mw-history-detail-status">
         <strong>{descriptor.statusLabel}</strong>
         <p>{descriptor.statusDetail}</p>
-        <p className="mw-meta">当前进度：{descriptor.progressLabel}</p>
+        <p className="mw-meta mw-history-detail-status__meta">当前进度：{descriptor.progressLabel}</p>
       </section>
 
-      <section className="am-stack mw-stack">
+      <section className="am-stack mw-stack mw-history-detail-actions">
         {descriptor.actions.map((action) => {
           const isBusy = openingReportType === action.reportType;
 
           return (
             <article
               key={action.reportType}
-              className={`am-card mw-card ${action.emphasis === "primary" ? "mw-card--history-proReady" : "mw-card--history-ready"}`}
+              className={`am-card mw-card mw-history-detail-action-card ${action.emphasis === "primary" ? "mw-card--history-proReady is-primary" : "mw-card--history-ready"}${!action.enabled ? " is-disabled" : ""}${isBusy ? " is-busy" : ""}`}
             >
               <div className="am-card__header mw-card__header">
                 <h3>{action.label}</h3>
@@ -63,7 +63,7 @@ export function MobileWebHistoryRecordDetailPage({
                   {action.statusLabel}
                 </span>
               </div>
-              <p>{action.statusDetail}</p>
+              <p className="mw-history-detail-action-card__body">{action.statusDetail}</p>
               <div className="mw-button-row">
                 <button
                   type="button"
@@ -81,21 +81,21 @@ export function MobileWebHistoryRecordDetailPage({
         })}
       </section>
 
-      <section className="am-card mw-card">
+      <section className="am-card mw-card mw-history-detail-timeline">
         <div className="am-card__header mw-card__header">
           <h3>版本演进</h3>
         </div>
-        <div className="am-stack mw-stack">
+        <div className="am-stack mw-stack mw-history-detail-timeline__list">
           {descriptor.timeline.map((entry) => (
-            <article key={entry.id}>
-              <p><strong>{entry.title}</strong></p>
-              <p className="mw-meta">{entry.detail}</p>
+            <article key={entry.id} className="mw-history-detail-timeline__item">
+              <p className="mw-history-detail-timeline__title"><strong>{entry.title}</strong></p>
+              <p className="mw-meta mw-history-detail-timeline__detail">{entry.detail}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <footer className="mw-footer-action">
+      <footer className="mw-footer-action mw-history-detail-footer">
         <button
           type="button"
           className="mw-secondary-button"

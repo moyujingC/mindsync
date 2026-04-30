@@ -2,20 +2,26 @@
 set -euo pipefail
 
 INSTANCE_ENV="${HOME}/.paperclip/instances/default/.env"
+CONTEXT_FILE="${HOME}/.paperclip/context.json"
 CACHE_DIR="${HOME}/.paperclip/instances/default/local-cli-cache"
 DEFAULT_API_URL="http://127.0.0.1:3100"
 DEFAULT_COMPANY_ID="be191a6e-7447-4821-a93d-9114214c4a64"
+MINDSYNC_RUNTIME_ROOT="${HOME}/.mindsync/runtime"
+PAPERCLIP_REPO_FALLBACK="${MINDSYNC_RUNTIME_ROOT}/paperclip"
+PAPERCLIP_REPO_CLI_ENTRY="${PAPERCLIP_REPO_FALLBACK}/cli/src/index.ts"
+PAPERCLIP_REPO_TSX="${PAPERCLIP_REPO_FALLBACK}/cli/node_modules/tsx/dist/cli.mjs"
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 
 usage() {
-  cat <<'EOF'
+  cat <<EOF
 Usage:
-  eval "$(/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-env.sh --base)"
-  eval "$(/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-env.sh <agent-ref>)"
+  eval "$(/absolute/path/to/paperclip-local-env.sh --base)"
+  eval "$(/absolute/path/to/paperclip-local-env.sh <agent-ref>)"
 
 Examples:
-  eval "$(/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-env.sh --base)"
-  eval "$(/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-env.sh ceo)"
-  eval "$(/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-env.sh 44c2d2c2-0b24-4e62-8397-b50ac1a72b2f)"
+  eval "$(${SCRIPT_PATH} --base)"
+  eval "$(${SCRIPT_PATH} ceo)"
+  eval "$(${SCRIPT_PATH} 44c2d2c2-0b24-4e62-8397-b50ac1a72b2f)"
 
 Notes:
   - --base only exports stable instance-level variables.
@@ -35,6 +41,41 @@ if [[ -f "$INSTANCE_ENV" ]]; then
   # shellcheck disable=SC1090
   source "$INSTANCE_ENV"
 fi
+
+load_context_defaults() {
+  [[ -f "$CONTEXT_FILE" ]] || return 0
+
+  local current_profile profile_block api_base company_id
+  current_profile="$(sed -n 's/.*"currentProfile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$CONTEXT_FILE" | head -n1)"
+  [[ -n "$current_profile" ]] || return 0
+
+  profile_block="$(
+    python3 - "$CONTEXT_FILE" "$current_profile" <<'PY'
+import json
+import sys
+
+context_path, profile_name = sys.argv[1], sys.argv[2]
+with open(context_path, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+profile = (data.get("profiles") or {}).get(profile_name) or {}
+print(profile.get("apiBase") or "")
+print(profile.get("companyId") or "")
+PY
+  )"
+
+  api_base="$(printf '%s\n' "$profile_block" | sed -n '1p')"
+  company_id="$(printf '%s\n' "$profile_block" | sed -n '2p')"
+
+  if [[ -z "${PAPERCLIP_API_URL:-}" && -n "$api_base" ]]; then
+    PAPERCLIP_API_URL="$api_base"
+  fi
+  if [[ -z "${PAPERCLIP_COMPANY_ID:-}" && -n "$company_id" ]]; then
+    PAPERCLIP_COMPANY_ID="$company_id"
+  fi
+}
+
+load_context_defaults
 
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-$DEFAULT_API_URL}"
 PAPERCLIP_COMPANY_ID="${PAPERCLIP_COMPANY_ID:-$DEFAULT_COMPANY_ID}"
@@ -121,11 +162,28 @@ refresh_agent_cache() {
   local cache_file="$2"
   local exports
 
-  exports="$(
-    paperclipai agent local-cli "$agent_ref" \
-      --company-id "$PAPERCLIP_COMPANY_ID" \
-      --no-install-skills | awk '/^export / { print }'
-  )"
+  if command -v paperclipai >/dev/null 2>&1; then
+    exports="$(
+      paperclipai agent local-cli "$agent_ref" \
+        --company-id "$PAPERCLIP_COMPANY_ID" \
+        --no-install-skills | awk '/^export / { print }'
+    )"
+  else
+    if [[ ! -f "$PAPERCLIP_REPO_CLI_ENTRY" || ! -f "$PAPERCLIP_REPO_TSX" ]]; then
+      echo "paperclip-local-env: repo-local Paperclip CLI fallback is incomplete: ${PAPERCLIP_REPO_FALLBACK}" >&2
+      echo "paperclip-local-env: ensure runtime paperclip dependencies are installed before using local executor automation." >&2
+      exit 1
+    fi
+    exports="$(
+      node "$PAPERCLIP_REPO_TSX" "$PAPERCLIP_REPO_CLI_ENTRY" agent local-cli "$agent_ref" \
+        --company-id "$PAPERCLIP_COMPANY_ID" \
+        --no-install-skills | awk '/^export / { print }'
+    )" || {
+      echo "paperclip-local-env: paperclipai command is unavailable on this Mac, and repo-local fallback failed." >&2
+      echo "paperclip-local-env: local agent identity refresh currently requires a working Paperclip CLI." >&2
+      exit 1
+    }
+  fi
 
   [[ -n "$exports" ]] || {
     echo "paperclip-local-env: failed to generate local-cli exports for ${agent_ref}" >&2

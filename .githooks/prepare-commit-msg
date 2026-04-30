@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+msg_file="${1:-}"
+
+if [[ -z "${msg_file}" ]]; then
+  exit 0
+fi
+
+if grep -q '[^[:space:]]' "${msg_file}"; then
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+branch_name="$(git rev-parse --abbrev-ref HEAD)"
+staged_files="$(git diff --cached --name-only --diff-filter=ACMR | sed '/^$/d')"
+
+if [[ -z "${staged_files}" ]]; then
+  exit 0
+fi
+
+first_file="$(printf '%s\n' "${staged_files}" | head -n 1)"
+file_count="$(printf '%s\n' "${staged_files}" | wc -l | tr -d ' ')"
+
+if [[ "${file_count}" == "1" ]]; then
+  summary="chore: update ${first_file}"
+else
+  summary="chore: update ${file_count} files"
+fi
+
+{
+  printf '%s\n\n' "${summary}"
+  printf 'branch: %s\n' "${branch_name}"
+  printf 'repo: %s\n' "${repo_root}"
+  printf 'files:\n'
+  printf '%s\n' "${staged_files}" | sed 's/^/- /'
+} > "${msg_file}"

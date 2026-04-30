@@ -46,35 +46,43 @@ const flowState: MandalaFlowState = {
     title: "Lite 解读报告",
     overall_impression: "你正在把注意力收回自己身上。",
     structured: {
-      title: "Lite 解读报告",
-      overall_impression: "你正在把注意力收回自己身上。",
-      visual_elements_rendered: "中心更聚拢，外围更松。",
-      emotion_portrait_rendered: "你在靠近和迟疑之间来回摆动。",
-      pro_teaser: "可以继续看 Pro 版解读。",
-      self_understanding_blocks: {
-        opening_hit: "你最近更想先稳住自己，再决定要不要继续靠近。",
-        visual_evidence: {
-          summary: "中心颜色更浓，外围线条更轻。",
+      topic_context: {
+        topic: "intimate_relationship",
+        topic_label: "亲密关系",
+        report_mode: "lite",
+        orientation: {
+          intro: "这份报告会从亲密关系这个议题角度看这张画。",
+          focus: "这个议题通常关注靠近、边界、安全感和依恋模式。",
+          key_terms: [
+            {
+              term: "安全感",
+              explanation: "你在关系中能否感到自己可以被接住。",
+            },
+          ],
         },
-        state_interpretation: {
-          current_state: "你先把感受往内收。",
-          emotional_tension: "一边想靠近，一边怕暴露太多。",
-          explanation_chain: "所以画面出现了向内聚拢和向外舒展并存。",
-        },
-        pattern_naming: {
-          pattern_name: "先靠近再缩回去",
-          pattern_description: "你会先有表达冲动，随后又迅速回撤。",
-          protective_logic: "这样能先保住安全感。",
-        },
-        reality_connection: {
-          life_dimension: "亲密关系",
-          typical_scene: "关系要更进一步时会想暂停一下。",
-          current_impact: "会让对方感到你忽近忽远。",
-        },
-        next_step: {
-          direction: "下一次先不急着解释自己。",
-          action: "先把真实感受说出一句就好。",
-        },
+      },
+      current_reading: "你最近更想先稳住自己，再决定要不要继续靠近。",
+      visual_basis: "中心颜色更浓，外围线条更轻。",
+      pattern_interpretation: "你会先有表达冲动，随后又迅速回撤；这样能先保住安全感。",
+      life_connection: "关系要更进一步时会想暂停一下，会让对方感到你忽近忽远。",
+      lite_healing_guidance: {
+        directions: [
+          {
+            title: "轻量调节方向",
+            content: "先让自己慢一点，再决定要不要继续靠近。",
+          },
+        ],
+        micro_practices: [
+          {
+            title: "一句小练习",
+            content: "先把真实感受说出一句就好。",
+          },
+        ],
+      },
+      pro_report_entry: {
+        title: "另一份更深的独立报告",
+        summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
+        product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
       },
     },
     report: null,
@@ -112,6 +120,17 @@ const historyRecord: InterpretationRecordResponse = {
 };
 
 describe("MobileWebApp", () => {
+  it("landing 路由渲染首屏新文案与入口标签", () => {
+    const html = renderToStaticMarkup(<MobileWebApp route="landing" />);
+
+    expect(html).toContain("画出你的潜意识");
+    expect(html).toContain("AI 解读曼陀罗画作  ·  探索内心世界");
+    expect(html).toContain("融合阴阳五行三才的东方解读视角");
+    expect(html).toContain("开始体验");
+    expect(html).toContain("历史解读");
+    expect(html).toContain("滑动了解详情");
+  });
+
   it("report 主路由默认渲染 Lite 解读报告页壳", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
@@ -127,11 +146,12 @@ describe("MobileWebApp", () => {
     );
 
     expect(html).toContain("你最近更想先稳住自己，再决定要不要继续靠近。");
-    expect(html).toContain("阅读路径：画面依据 · 状态解释 · 模式命名 · 现实连接 · 一个下一步");
+    expect(html).toContain("阅读路径：议题理解 · 当前命中 · 画面依据 · 模式解释 · 现实连接 · 轻量疗愈");
     expect(html).not.toContain("<h3>整体命中</h3>");
-    expect(html).toContain("模式命名");
-    expect(html).toContain("一个下一步");
-    expect(html).toContain("看看 Pro 版解读");
+    expect(html).toContain("模式解释");
+    expect(html).toContain("议题理解");
+    expect(html).toContain("看看另一份更深的 Pro 报告");
+    expect(html).toContain("更深层结构继续理解这张画");
   });
 
   it("reportLegacy 仍保留旧报告页壳", () => {

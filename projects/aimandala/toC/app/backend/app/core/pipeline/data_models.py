@@ -85,15 +85,53 @@ class Layer0Raw:
     circle_colors: Optional[Dict[str, Any]] = None
 
     # v2.1 正式结构化证据字段
+    input_package: Dict[str, Any] = field(default_factory=dict)
+    visual_analysis_basis: Dict[str, Any] = field(default_factory=dict)
     visual_facts: Dict[str, Any] = field(default_factory=dict)
+    layer0_passed: bool = True
+    layer0_failure_reason: str = ""
+    layer0_failure_detail: Dict[str, Any] = field(default_factory=dict)
     knowledge_hits: Dict[str, Any] = field(default_factory=dict)
     rule_evaluations: Dict[str, Any] = field(default_factory=dict)
     theme_projection: Dict[str, Any] = field(default_factory=dict)
+    fidelity_flags: List[str] = field(default_factory=list)
     quality_flags: List[str] = field(default_factory=list)
     fallback_summary: Dict[str, Any] = field(default_factory=dict)
 
     # 生成时间戳
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+
+    def __post_init__(self) -> None:
+        flags = self.fidelity_flags if self.fidelity_flags else self.quality_flags
+        normalized = self._normalize_flag_list(flags)
+        object.__setattr__(self, "fidelity_flags", normalized)
+        object.__setattr__(self, "quality_flags", list(normalized))
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in {"fidelity_flags", "quality_flags"}:
+            normalized = self._normalize_flag_list(value)
+            counterpart_name = "quality_flags" if name == "fidelity_flags" else "fidelity_flags"
+            counterpart = list(object.__getattribute__(self, "__dict__").get(counterpart_name, []))
+            if (
+                not normalized
+                and counterpart
+                and "created_at" not in object.__getattribute__(self, "__dict__")
+            ):
+                normalized = counterpart
+            object.__setattr__(self, "fidelity_flags", normalized)
+            object.__setattr__(self, "quality_flags", list(normalized))
+            return
+        object.__setattr__(self, name, value)
+
+    @staticmethod
+    def _normalize_flag_list(value: Any) -> List[str]:
+        if not isinstance(value, list):
+            return []
+        return [
+            str(item).strip()
+            for item in value
+            if isinstance(item, str) and str(item).strip()
+        ]
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -117,10 +155,16 @@ class Layer0Raw:
             "imbalance_candidates": self.imbalance_candidates,
             "color_analysis": self.color_analysis,
             "circle_colors": self.circle_colors,
+            "input_package": self.input_package,
+            "visual_analysis_basis": self.visual_analysis_basis,
             "visual_facts": self.visual_facts,
+            "layer0_passed": self.layer0_passed,
+            "layer0_failure_reason": self.layer0_failure_reason,
+            "layer0_failure_detail": self.layer0_failure_detail,
             "knowledge_hits": self.knowledge_hits,
             "rule_evaluations": self.rule_evaluations,
             "theme_projection": self.theme_projection,
+            "fidelity_flags": self.fidelity_flags,
             "quality_flags": self.quality_flags,
             "fallback_summary": self.fallback_summary,
             "created_at": self.created_at,
@@ -231,6 +275,9 @@ class Layer1LiteDraft:
     # v1.6 新增：Pro版引导文案
     pro_teaser: str = ""
 
+    # Batch B 新增：canonical narrative plan
+    narrative_plan: Dict[str, Any] = field(default_factory=dict)
+
     # 一个情绪调节小实验（旧结构，保留兼容）
     experiment: Dict[str, str] = field(default_factory=dict)
 
@@ -270,6 +317,7 @@ class Layer1LiteDraft:
                 {"day": a.day, "title": a.title, "content": a.content} for a in self.three_awareness
             ],
             "pro_teaser": self.pro_teaser,
+            "narrative_plan": self.narrative_plan,
             "experiment": self.experiment,
             "created_at": self.created_at,
         }
@@ -379,8 +427,11 @@ class Layer3ProDraft:
     # 根源分析
     root_cause: Dict[str, str] = field(default_factory=dict)
 
-    # 针对性调节建议（21天简化版）
+    # 针对性调节建议（完整方案的结构化摘要）
     healing_suggestions: List[Dict[str, str]] = field(default_factory=list)
+
+    # Batch B 新增：canonical narrative plan
+    narrative_plan: Dict[str, Any] = field(default_factory=dict)
 
     # 生成时间戳
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -396,6 +447,7 @@ class Layer3ProDraft:
             "imbalance_confirmed": self.imbalance_confirmed,
             "root_cause": self.root_cause,
             "healing_suggestions": self.healing_suggestions,
+            "narrative_plan": self.narrative_plan,
             "created_at": self.created_at,
         }
 

@@ -10,6 +10,7 @@ from app.core.analysis.circle_detector import CircleDetectionResult
 
 from .data_models import GenerationStatus, InterpretationRecord
 from .report_generation_contracts import (
+    Layer0BuildBlockedError,
     ReportGenerationContext,
     ReportGenerationRuntime,
 )
@@ -144,10 +145,29 @@ class ReportLiteRecordWorkflow:
         )
 
         record.update_progress(self.generating_stage, 70)
-        lite_bundle = self.generation_runtime.generate_lite(generation_context, record)
-        record.layer_0_raw = lite_bundle.layer_0_raw
-        record.layer_1_lite_draft = lite_bundle.layer_1_lite_draft
-        record.layer_2_lite_final = lite_bundle.layer_2_lite_final
+        try:
+            lite_bundle = self.generation_runtime.generate_lite(generation_context, record)
+            record.layer_0_raw = lite_bundle.layer_0_raw
+            record.layer_1_lite_draft = lite_bundle.layer_1_lite_draft
+            record.layer_2_lite_final = lite_bundle.layer_2_lite_final
+        except Layer0BuildBlockedError as error:
+            if error.layer_0_raw is not None:
+                record.layer_0_raw = error.layer_0_raw
+            record.layer_1_lite_draft = None
+            record.layer_2_lite_final = None
+            record.status = GenerationStatus.FAILED
+            record.update_progress("failed", 100)
+            self.store.save(record)
+            return record
+        except RuntimeError as error:
+            if str(error).startswith("layer0_generation_failed_blocking:"):
+                record.layer_1_lite_draft = None
+                record.layer_2_lite_final = None
+                record.status = GenerationStatus.FAILED
+                record.update_progress("failed", 100)
+                self.store.save(record)
+                return record
+            raise
 
         if "lite" not in record.version_purchased:
             record.version_purchased.append("lite")

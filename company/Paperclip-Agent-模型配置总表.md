@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-04-15
+> last_updated：2026-04-27
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md
 
 这份文档用于收口 `Paperclip` 当前各类 Agent 的运行时模型配置。
@@ -24,13 +24,18 @@
 
 ## 1. 当前总原则
 
-- 当前 `Paperclip` 主宿主为 automation 节点：`150.158.9.95`
-- `*_local` 的含义是“在 Paperclip 服务宿主机本地执行”，不是你当前这台 Mac 本地
+- 当前 `Paperclip` 控制面主宿主为 automation 节点：`150.158.9.95`
+- control plane（控制面）继续运行在 automation 节点
+- `server_automation` 继续由 automation 节点承接
+- 对 `manual-review-required + local_manual_review`，`*_local` 当前正式宿主已收正为用户当前这台 Mac；不再默认等于 automation 服务器本地
 - 当前不追求所有 Agent 用同一个 `adapter`
 - 当前追求的是：
   - CEO 链路稳定
   - 工程与测试链路稳定
   - 规划/内容/研究类链路稳定
+- 对 `codex_local`
+  - 默认不应继承非 Paperclip 显式批准的外部 connector（连接器）
+  - 若运行宿主无法技术上完全隔离外部已连接能力，应按高风险能力处理，而不是按普通可用性提示处理
 - `warn` 不等于不可用
   - 对 `claude_local` 来说，如果 `hello probe succeeded` 同时存在，则通常表示可用，只是当前在走 API-key 模式
 
@@ -38,26 +43,29 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `hermes_local` | `https://ark.cn-beijing.volces.com/api/coding/v3` | `minimax-m2.5` | 服务器环境变量 `OPENAI_*` | 当前主决策链路 |
-| 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主工程链路 |
-| 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主测试链路 |
+| CEO | CEO | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前目标宿主切到用户当前 Mac；若本地链路失败，应记录为本地运行缺口 |
+| 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主工程链路；对 `local_manual_review` 单机试点，目标宿主切到用户当前 Mac |
+| 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主测试链路；对 `local_manual_review` 单机试点，目标宿主切到用户当前 Mac |
 | 需求澄清 | Idea Clarifier | `pi_local` | `https://ark.cn-beijing.volces.com/api/coding/v3` | `volcengine-coding-plan/Doubao-Seed-2.0-pro` | `pi` 自定义 provider + 服务器环境变量 `OPENAI_API_KEY` | 当前为独立链路，不与 CEO 强制统一 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前主 `PPChat` 链路，`AITechFlux` 为备用 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前主“火山 Coding Plan”链路；普通任务单机试点时不默认继续视为服务器本地 |
 
 ## 3. 分组展开
 
 ### 3.1 CEO
 
 - Agent：`CEO`
-- Adapter：`hermes_local`
-- Base URL：`https://ark.cn-beijing.volces.com/api/coding/v3`
-- Model：`minimax-m2.5`
+- Adapter：`claude_local`
+- Base URL：`https://ark.cn-beijing.volces.com/api/coding`
+- Model：`ark-code-latest`
 - 模型来源：
-  - automation 节点 `/etc/default/paperclip-automation`
-  - 当前使用服务器级 `OPENAI_BASE_URL` / `OPENAI_MODEL`
+  - Agent 级 `ANTHROPIC_BASE_URL`
+  - Agent 级 `ANTHROPIC_MODEL`
+  - Agent 级 `ANTHROPIC_API_KEY`
 - 当前语义：
-  - 这条链路是目前最稳定的“老板台/总控台”链路
-  - 如果 CEO 在面板中测试通过，说明 `Hermes + Volcengine` 主链路正常
+  - 这是当前为了绕开 `hermes_local` session resume 上游 bug 的临时回退链路
+  - 当前目标不是保留 Hermes 实验链路，而是先恢复 CEO 可用性
+  - 等 `paperclip` 上游修复后，再评估是否切回 `hermes_local`
+  - 对普通任务本地自动执行链，CEO 不再保留服务器宿主例外
 
 ### 3.2 Engineer
 
@@ -79,6 +87,13 @@
   - 当前已经从“和 CEO 用同一模型”的尝试中回退，固定为 `gpt-5.3-codex`
   - 这是当前更稳的工程执行口径
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
+  - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
+- 安全边界口径：
+  - `codex_local` 默认不应继承用户在其他 OpenAI / ChatGPT 应用表面已连接、但未在 Paperclip 显式批准的 connector
+  - 若当前运行宿主做不到技术上完全隔离，这类外部读写能力默认按高风险能力处理
+  - 对邮箱、发送消息、外部写入这类 connector，当前默认不视为已纳入 `墨予镜` 正式治理边界
+  - 这类风险不属于普通 `warn`，而属于执行边界与安全边界问题
+  - 若后续要正式启用，必须先单独立 `spec -> plan -> verification -> delivery`
 - 人工接管口径：
   - 当前允许用户在成本敏感阶段手动暂停 `Engineer`
   - 当公共卡点被人工清除后，再恢复 `Engineer` 继续运行
@@ -112,6 +127,10 @@
   - 用于测试、QA、验收
   - 与 `Engineer` 保持同模型口径，方便工程链路一致
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
+  - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
+- 安全边界口径：
+  - 与 `Engineer` 共用同一条 `codex_local` connector 风险边界
+  - 若测试链路可见外部已连接读写能力，默认先按治理缺口处理，而不是把它当作“顺带可用的工具”
 
 ### 3.4 claude_local 系列
 
@@ -124,11 +143,11 @@
 - `Research & Knowledge Lead`
 - `Content Lead`
 
-它们当前共享的主模型入口为：
+它们当前共享同一组模型入口：
 
 - Adapter：`claude_local`
-- Base URL：`https://relayhub.jingshu.cc/claude`
-- Model：`relayhub-task-claude-code`
+- Base URL：`https://ark.cn-beijing.volces.com/api/coding`
+- Model：`ark-code-latest`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
   - `ANTHROPIC_BASE_URL`
@@ -140,23 +159,12 @@
 
 当前明确口径：
 
-- 这组 Agent 当前默认走 `RelayHub /claude`
-- `RelayHub` 内部当前默认绑定到 `AITechFlux + Claude混合版`
-- `AITechFlux` 原生承接 `POST /v1/messages`
-- `POST /v1/messages/count_tokens` 由 `RelayHub dev-relay` 本地兜底
+- 这组 Agent 使用的是火山引擎 `Coding Plan` 兼容接口
 - 当前采用 API-key 模式，而不是 Claude 登录态模式
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
   - 且状态为 `warn`
   - 这是预期现象，不单独视为故障
-
-当前备用口径：
-
-- 备用 OpenAI-compatible 入口：`https://code.ppchat.vip/v1`
-- 说明：
-  - `PPChat` 当前不再作为 Claude 默认主链路
-  - 它保留给 OpenAI / Codex 类路径
-  - 不假设它原生支持完整 Anthropic Messages
 
 当前面板解读规则：
 
@@ -205,7 +213,6 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - 主要吃服务器侧 `OPENAI_*`
 - `claude_local`
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
-  - 当前主链路默认值应为 `RelayHub /claude -> AITechFlux + Claude混合版`
 - `codex_local`
   - 主要吃自身 provider 配置，当前指向 `https://code.ppchat.vip/v1`
 - automation 节点国际出网当前通过阿里云美国机 `tinyproxy` 辅助
@@ -226,14 +233,14 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - `Engineer`
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
+  - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
   - 成本压力较高或遇到公共卡点时，允许用户手动暂停；后续再补“多次失败自动转人工”
 - `Test / QA`
   - `codex_local + gpt-5.3-codex`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
+  - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
 - 规划/产品/内容/研究类 Agent
-  - `claude_local + RelayHub /claude + relayhub-task-claude-code`
-  - 当前默认绑定为 `AITechFlux + Claude混合版`
-  - `PPChat` 仅作为 OpenAI-compatible 备用口径保留
+  - `claude_local + ark-code-latest`
 - `Idea Clarifier`
   - `pi_local + volcengine-coding-plan/Doubao-Seed-2.0-pro`
   - `HOME=/paperclip`
@@ -244,6 +251,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - 不建议为了“面板没有 warning”去改 `paperclip` 仓库语义
 - 不建议为了统一而强行把所有 Agent 都迁成同一个 adapter
 - 不建议把 `claude_local` 的 API-key warning 直接当故障
+- 不建议把 `codex_local` 能访问到的外部已连接 connector 直接当作可默认使用能力
 
 ## 6. 后续变更时怎么更新
 

@@ -1,6 +1,12 @@
+@import "../../styles/tokens.wxss";
+
 .runtime-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f6f0e8 0%, #f1e6d6 100%);
+  background: linear-gradient(
+    180deg,
+    var(--am-surface-primary-soft) 0%,
+    var(--am-surface-primary-elevated) 100%
+  );
 }
 
 .runtime-page__state {
@@ -10,19 +16,22 @@
   justify-content: center;
   gap: 20rpx;
   padding: 64rpx 48rpx;
-  color: #2f2620;
+  color: var(--am-text-primary);
+  font-family: var(--am-font-body);
 }
 
 .runtime-page__state--error {
-  color: #7a3023;
+  color: var(--am-status-danger);
 }
 
 .runtime-page__title {
-  font-size: 40rpx;
+  font-size: var(--am-text-title-rpx);
   font-weight: 600;
+  font-family: var(--am-font-display);
 }
 
 .runtime-page__copy {
-  font-size: 28rpx;
-  line-height: 1.6;
+  font-size: var(--am-text-body-rpx);
+  line-height: var(--am-leading-body);
+  color: var(--am-text-secondary);
 }

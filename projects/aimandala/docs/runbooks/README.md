@@ -41,8 +41,11 @@
 
 1. [开发与联调总入口.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/开发与联调总入口.md)
 2. [本地联调手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/本地联调手册.md)
-3. [../tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-4. [../tasks/aimandala-pr-质量门-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
+3. [历史任务批量关闭-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/历史任务批量关闭-runbook.md)
+4. [本地-Mac-自动执行器-runbook.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md)
+5. [本地-Mac-执行节点单机试点-runbook.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md)
+6. [../tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+7. [../tasks/aimandala-pr-质量门-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
 
 ## 4. 当前治理判断
 
@@ -53,3 +56,13 @@
 - 新增运行说明优先落到这里
 - 历史文档先保留原路径，通过索引收口
 - 后续再按需要做目录迁移
+
+当前补充说明：
+
+- `历史任务批量关闭-runbook.md` 是当前控制面旧任务清噪的正式操作入口，固定使用 `done + 历史基线重置 comment` 的统一收口口径，并把后续第一主线明确切到普通任务本地 Mac 自动执行。
+- `execution routing` 的当前正式入口已转为 `../specs/2026-04-19-paperclip-native-execution-routing-spec.md`、`../tasks/2026-04-19-paperclip-native-execution-routing-plan.md` 与 `../qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md`。
+- `本地-Mac-自动执行器-runbook.md` 是当前普通任务自动在本地 Mac 上跑的正式操作入口；`paperclip-local-pilot.mjs` 退回为人工排障/手动接管工具。
+- 当前 heartbeat 剩余 `34` 条活跃 `serverAutomationBlocking` 的下一阶段正式入口，已转为 `../specs/2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md`、`../tasks/2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md` 与 `../qa/2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md`。
+- `本地-Mac-执行节点单机试点-runbook.md` 是当前普通任务接入本地 Mac execution host（执行宿主机）的正式操作入口，固定复用 `paperclip-local-env.sh` 直连远端控制面。
+- `../qa/2026-04-22-local-mac-execution-host-pilot-verification.md` 是这条单机试点 runbook 当前配套的前置验证记录，明确区分“runbook 与连接合同已经成立”与“真实本地运行闭环仍待执行”。
+- `本地人工接手-runbook.md` 与 `本地人工接手-comment-模板规范.md` 保留为旧 phase 2 handoff 模型的历史参考，不再作为当前默认入口。

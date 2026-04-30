@@ -4,7 +4,7 @@
 > 版本：0.2.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md
+> source_of_truth：DOCS_GOVERNANCE.md
 
 这份文档定义 `墨予镜` 在 `mindsync` Monorepo 中如何落实 `Harness Engineering`、`SDD`、`TDD` 与 `Docs As System`。
 它只负责定义正式文档如何写、如何分类、如何进入 handoff，不负责维护公司对象清单或目录结构主数据。
@@ -167,7 +167,7 @@
 
 推荐直接复用：
 
-- [company/跨角色-Handoff-模板.md](/Users/xinran/Downloads/dev/mindsync/company/跨角色-Handoff-模板.md)
+- [company/跨角色-Handoff-模板.md](company/跨角色-Handoff-模板.md)
 
 ## 7. SDD 阶段门
 
@@ -342,7 +342,45 @@
 
 默认不允许同时存在两份都承担默认入口职责的同义 canonical 文档。
 
-## 13. 阶段文档状态收紧规则
+## 13. 路径引用规则
+
+正式文档中默认不使用机器相关、worktree 相关或会话相关的绝对路径。
+
+统一要求：
+
+- 文档元数据中的 `source_of_truth`、`depends_on`、`superseded_by`
+  - 默认使用 `repo-relative` 路径
+- 文档正文中的文件引用
+  - 默认使用相对路径或相对链接
+- 命令示例中的仓库位置
+  - 默认使用 `$REPO_ROOT`、`$PROJECT_ROOT` 等稳定变量表达
+
+默认禁止：
+
+- `/Users/...`
+- `/home/...`
+- 含 `worktrees/...` 的会话路径
+- 其他随机器、用户名、工作树切换而失效的绝对路径
+
+原因：
+
+- 绝对路径会在切换 worktree、换机器、换用户名后失效
+- 正式文档应表达长期有效的仓库位置，而不是当前会话环境
+
+推荐写法：
+
+- 元数据
+  - `source_of_truth：projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md`
+- 正文链接
+  - `[架构总览](../architecture/架构总览.md)`
+- 命令
+  - `cd "$REPO_ROOT/projects/aimandala/toC/app/frontend"`
+
+例外：
+
+- 聊天界面中的可点击文件引用可继续使用绝对路径，因为那属于客户端展示约束，不属于仓库文档规范
+
+## 14. 阶段文档状态收紧规则
 
 在第二阶段治理中，除了文件名，还必须收紧带日期阶段文档的状态语义。
 
@@ -426,7 +464,7 @@
 - 正文中的默认入口链接也应优先指向无日期 canonical 文件
 - 旧日期 stub 不应继续作为默认上游依赖
 
-## 14. 目录级状态预算
+## 15. 目录级状态预算
 
 状态治理不只看文档类型，也看目录职责。
 
@@ -499,7 +537,7 @@
 - 当前仍作为长期知识资产使用的条目可为 `current`
 - 候选条目、过时版本、临时摘录应使用更保守状态，不应默认全部 `current`
 
-## 15. 入口文档模板
+## 16. 入口文档模板
 
 ### 15.1 `PROJECT.md`
 
@@ -556,7 +594,7 @@
 
 canonical 母文档的职责是承接长期真理源，不应退化成阶段流水账。
 
-## 16. 依赖链清扫完成定义
+## 17. 依赖链清扫完成定义
 
 文档依赖链治理完成，不以“全仓没有旧文件名出现”为标准，而以“默认入口和长期依赖已切到 canonical”为标准。
 
@@ -573,13 +611,13 @@ canonical 母文档的职责是承接长期真理源，不应退化成阶段流�
 - 纯历史叙述中对旧文件名的回顾
 - 工作树路径、证据快照路径、临时输出路径等非治理主路径引用
 
-## 17. 审计清单与迁移批次
+## 18. 审计清单与迁移批次
 
 文档治理不应只靠一次性整改。
 
 后续盘点、收口和复查时，应统一参照：
 
-- [company/文档治理审计清单.md](/Users/xinran/Downloads/dev/mindsync/company/文档治理审计清单.md)
+- [company/文档治理审计清单.md](company/文档治理审计清单.md)
 
 ### 17.1 迁移批次定义
 

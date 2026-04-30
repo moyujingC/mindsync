@@ -1,0 +1,184 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap");
+
+:root {
+  /* Core color tokens */
+  --am-color-ink-950: #141e38;
+  --am-color-ink-900: #1a2844;
+  --am-color-ink-800: #1e2d4d;
+  --am-color-ink-700: #253860;
+  --am-color-ink-600: #2a4070;
+  --am-color-sand-50: #fffbf5;
+  --am-color-sand-100: #f5efe2;
+  --am-color-sand-150: #f0e6d6;
+  --am-color-sand-200: #ede6d8;
+  --am-color-sand-300: #e8dcc8;
+  --am-color-sand-400: #d9c8af;
+  --am-color-gold-300: #d4a054;
+  --am-color-gold-400: #c8a066;
+  --am-color-copper-400: #c87850;
+  --am-color-copper-500: #9b4030;
+  --am-color-clay-500: #8a7c6c;
+  --am-color-clay-700: #5e5046;
+  --am-color-clay-800: #4a3d30;
+  --am-color-success-500: #5b8c5a;
+  --am-color-success-600: #3b7b54;
+  --am-color-danger-500: #c25b56;
+  --am-color-danger-600: #7a3023;
+  --am-color-info-500: #7a8ea8;
+
+  /* Typography tokens */
+  --am-font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --am-font-display: "Noto Serif SC", "Songti SC", serif;
+  --am-text-xs: 11px;
+  --am-text-sm: 12px;
+  --am-text-md: 14px;
+  --am-text-lg: 16px;
+  --am-text-xl: 20px;
+  --am-text-2xl: 24px;
+  --am-text-3xl: 26px;
+  --am-leading-tight: 1.4;
+  --am-leading-body: 1.7;
+  --am-leading-relaxed: 1.85;
+  --am-letter-hero: 0.08em;
+  --am-letter-kicker: 0.12em;
+
+  /* Space tokens */
+  --am-space-1: 4px;
+  --am-space-2: 8px;
+  --am-space-3: 12px;
+  --am-space-4: 16px;
+  --am-space-5: 20px;
+  --am-space-6: 24px;
+  --am-space-7: 28px;
+  --am-space-8: 32px;
+  --am-space-9: 40px;
+
+  /* Radius tokens */
+  --am-radius-sm: 12px;
+  --am-radius-md: 16px;
+  --am-radius-lg: 20px;
+  --am-radius-xl: 24px;
+  --am-radius-pill: 999px;
+
+  /* Shadow tokens */
+  --am-shadow-soft: 0 10px 28px rgba(15, 27, 51, 0.12);
+  --am-shadow-card: 0 18px 38px rgba(15, 27, 51, 0.16);
+  --am-shadow-accent: 0 4px 24px rgba(155, 64, 48, 0.35);
+  --am-shadow-accent-glow: 0 0 40px rgba(212, 160, 84, 0.15);
+
+  /* Motion tokens */
+  --am-motion-fast: 160ms;
+  --am-motion-base: 240ms;
+  --am-motion-slow: 360ms;
+  --am-ease-standard: ease;
+  --am-ease-emphasis: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Layout tokens */
+  --am-layout-max-content: 420px;
+  --am-layout-preview-disc: 264px;
+  --am-layout-hero-logo: 220px;
+  --am-layout-bottom-sheet-gap: -8px;
+
+  /* Z tokens */
+  --am-z-base: 1;
+  --am-z-overlay: 20;
+  --am-z-sticky: 30;
+  --am-z-dev-shell: 40;
+
+  /* Semantic tokens */
+  --am-surface-app: var(--am-color-ink-950);
+  --am-surface-hero: linear-gradient(
+    180deg,
+    var(--am-color-ink-950) 0%,
+    var(--am-color-ink-900) 25%,
+    var(--am-color-ink-800) 50%,
+    #223358 75%,
+    var(--am-color-ink-900) 100%
+  );
+  --am-surface-primary: var(--am-color-sand-150);
+  --am-surface-card: rgba(255, 251, 245, 0.88);
+  --am-surface-card-strong: rgba(255, 252, 247, 0.98);
+  --am-surface-card-soft: rgba(255, 255, 255, 0.78);
+  --am-surface-card-warm: rgba(255, 250, 244, 0.9);
+  --am-surface-card-warm-strong: rgba(255, 244, 237, 0.92);
+  --am-surface-overlay: rgba(20, 30, 56, 0.6);
+  --am-surface-success: rgba(22, 53, 53, 0.96);
+  --am-surface-error: rgba(68, 28, 28, 0.96);
+  --am-surface-success-soft: rgba(74, 140, 104, 0.14);
+  --am-surface-warning-soft: rgba(172, 129, 72, 0.12);
+  --am-surface-copper-soft: rgba(200, 120, 80, 0.14);
+  --am-surface-pro-soft: rgba(100, 84, 173, 0.14);
+  --am-text-primary: var(--am-color-clay-800);
+  --am-text-secondary: var(--am-color-clay-700);
+  --am-text-tertiary: var(--am-color-clay-500);
+  --am-text-quaternary: #7c6850;
+  --am-text-soft: #7a6a5a;
+  --am-text-soft-muted: #8f8071;
+  --am-text-warm: #9b7b52;
+  --am-text-warm-muted: #9b8160;
+  --am-text-on-light-strong: #2e2418;
+  --am-text-on-dark: var(--am-color-sand-300);
+  --am-text-on-dark-muted: rgba(232, 220, 200, 0.64);
+  --am-text-on-dark-soft: rgba(232, 220, 200, 0.56);
+  --am-text-on-dark-faint: rgba(232, 220, 200, 0.45);
+  --am-text-accent: var(--am-color-gold-300);
+  --am-border-soft: rgba(200, 120, 80, 0.14);
+  --am-border-strong: rgba(212, 160, 84, 0.24);
+  --am-border-neutral: rgba(112, 90, 63, 0.18);
+  --am-border-warm-soft: rgba(106, 82, 50, 0.12);
+  --am-action-primary-bg: linear-gradient(
+    135deg,
+    var(--am-color-copper-500) 0%,
+    var(--am-color-copper-400) 30%,
+    var(--am-color-gold-300) 60%,
+    var(--am-color-copper-400) 85%,
+    var(--am-color-copper-500) 100%
+  );
+  --am-action-primary-text: var(--am-color-sand-100);
+  --am-action-secondary-bg: rgba(255, 255, 255, 0.86);
+  --am-action-secondary-text: #5d4d37;
+  --am-action-secondary-border: rgba(112, 90, 63, 0.18);
+  --am-status-success: var(--am-color-success-600);
+  --am-status-success-strong: #2f6a4a;
+  --am-status-warning: #7c5627;
+  --am-status-warning-strong: #704d24;
+  --am-status-info: var(--am-color-info-500);
+  --am-status-pro: #53439a;
+  --am-status-copper: #944b2f;
+  --am-status-info-soft: rgba(122, 142, 168, 0.82);
+  --am-status-accent-soft: rgba(212, 160, 84, 0.82);
+  --am-status-error-soft: #f1b0ad;
+  --am-badge-bg: rgba(26, 40, 68, 0.42);
+  --am-badge-text: rgba(232, 220, 200, 0.76);
+  --am-progress-warm: linear-gradient(90deg, #8f6939, #d0aa73);
+  --am-progress-copper: linear-gradient(90deg, #ba6e48, #f0b179);
+
+  /* Dev-shell local tokens */
+  --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
+  --am-dev-surface-panel-strong: rgba(248, 244, 238, 0.92);
+  --am-dev-surface-raised: rgba(255, 255, 255, 0.78);
+  --am-dev-surface-field: rgba(255, 255, 255, 0.72);
+  --am-dev-surface-field-strong: rgba(255, 255, 255, 0.86);
+  --am-dev-surface-active: rgba(255, 246, 230, 0.92);
+  --am-dev-surface-source: rgba(250, 248, 244, 0.88);
+  --am-dev-surface-stage: rgba(255, 255, 255, 0.68);
+  --am-dev-surface-stage-success: rgba(235, 246, 240, 0.9);
+  --am-dev-surface-stage-running: rgba(255, 246, 230, 0.9);
+  --am-dev-surface-stage-error: rgba(255, 238, 235, 0.9);
+  --am-dev-border-panel: rgba(88, 67, 43, 0.12);
+  --am-dev-border-panel-soft: rgba(88, 67, 43, 0.1);
+  --am-dev-border-subtle: rgba(112, 90, 63, 0.12);
+  --am-dev-border-strong: rgba(112, 90, 63, 0.18);
+  --am-dev-border-active: rgba(193, 143, 73, 0.35);
+  --am-dev-border-running: rgba(193, 143, 73, 0.28);
+  --am-dev-border-success: rgba(77, 120, 91, 0.24);
+  --am-dev-border-error: rgba(185, 93, 73, 0.24);
+  --am-dev-text-primary: #2e2418;
+  --am-dev-text-secondary: #5d4d37;
+  --am-dev-text-muted: #6f624f;
+  --am-dev-text-eyebrow: #8a6641;
+  --am-dev-text-warning: #704d24;
+  --am-dev-text-error: #8f2d2d;
+  --am-dev-text-code: #2b3245;
+  --am-dev-text-code-soft: #465069;
+}

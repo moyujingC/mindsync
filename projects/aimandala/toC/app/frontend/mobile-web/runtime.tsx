@@ -115,6 +115,36 @@ const defaultUploadDraft: MobileWebUploadDraft = {
   paintingFeeling: "",
 };
 
+function hasManualCircleRadii(
+  draft: MobileWebUploadDraft | null,
+): draft is MobileWebUploadDraft & { innerRadius: number; middleRadius: number } {
+  return (
+    typeof draft?.innerRadius === "number" &&
+    !Number.isNaN(draft.innerRadius) &&
+    typeof draft.middleRadius === "number" &&
+    !Number.isNaN(draft.middleRadius)
+  );
+}
+
+function normalizeCircleRatio(value: number): number {
+  const normalized = value <= 1 ? value : value / 100;
+  return Math.max(0, Math.min(1, normalized));
+}
+
+function buildManualDetection(
+  innerRadius: number,
+  middleRadius: number,
+): DetectCirclesResponse {
+  return {
+    inner_radius: normalizeCircleRatio(innerRadius),
+    middle_radius: normalizeCircleRatio(middleRadius),
+    confidence: 1,
+    method: "manual_confirmed",
+    geometry_suggestion: null,
+    debug_info: null,
+  };
+}
+
 function createRuntimeLoadingState(
   draft: MobileWebUploadDraft,
   detection: DetectCirclesResponse,
@@ -1137,11 +1167,6 @@ export function MobileWebRuntime({
       return;
     }
 
-    if (!runtimeUploadDetection) {
-      setRuntimeUploadDetectError("请先完成三圈检测，再进入当前解读流程。");
-      return;
-    }
-
     const draftToUse = forcedDraft ?? currentUploadDraft;
 
     if (!draftToUse) {
@@ -1151,6 +1176,17 @@ export function MobileWebRuntime({
 
     if (!userId) {
       setRuntimeUploadDetectError("当前 runtime 缺少 userId，暂时无法创建真实解读。");
+      return;
+    }
+
+    const resolvedDetection =
+      runtimeUploadDetection ??
+      (hasManualCircleRadii(draftToUse)
+        ? buildManualDetection(draftToUse.innerRadius, draftToUse.middleRadius)
+        : null);
+
+    if (!resolvedDetection) {
+      setRuntimeUploadDetectError("请先完成三圈检测，或手动确认三圈范围后再进入当前解读流程。");
       return;
     }
 
@@ -1178,7 +1214,7 @@ export function MobileWebRuntime({
             ...draftToUse,
             uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
           },
-          runtimeUploadDetection,
+          resolvedDetection,
         ),
         uploadDraft: {
           ...draftToUse,
@@ -1191,8 +1227,8 @@ export function MobileWebRuntime({
           {
             ...draftToUse,
             uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-            innerRadius: runtimeUploadDetection?.inner_radius ?? draftToUse.innerRadius,
-            middleRadius: runtimeUploadDetection?.middle_radius ?? draftToUse.middleRadius,
+            innerRadius: resolvedDetection.inner_radius,
+            middleRadius: resolvedDetection.middle_radius,
           },
           userId,
         ),

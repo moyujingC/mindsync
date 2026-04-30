@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.moyujing.paperclip-local-executor</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /Users/xinran/.mindsync/runtime-anchor &amp;&amp; eval "$(/Users/xinran/.mindsync/runtime/mindsync/shared/tools/paperclip-local-env.sh engineer)" &amp;&amp; node /Users/xinran/.mindsync/runtime/mindsync/shared/tools/paperclip-local-executor.mjs daemon-tick --execute --json</string>
+  </array>
+
+  <key>StartInterval</key>
+  <integer>300</integer>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/xinran/.paperclip-local-executor/logs/launchd.stdout.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/xinran/.paperclip-local-executor/logs/launchd.stderr.log</string>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/xinran/.mindsync/runtime-anchor</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+</dict>
+</plist>

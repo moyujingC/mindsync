@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-14
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md
+> source_of_truth：projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md
 > 项目：aimandala
 > 阶段：delivery
 > reviewers：Engineer, Test / QA

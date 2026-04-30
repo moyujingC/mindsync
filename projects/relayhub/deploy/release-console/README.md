@@ -94,14 +94,14 @@ sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
 
 ```bash
 cd /opt/aimandala-release/app/mindsync
-git fetch origin refs/heads/project/relayhub:refs/remotes/origin/project/relayhub
+git fetch origin refs/heads/relayhub/dev:refs/remotes/origin/relayhub/dev
 mkdir -p /opt/aimandala-release/worktrees
-git worktree add /opt/aimandala-release/worktrees/relayhub origin/project/relayhub
+git worktree add /opt/aimandala-release/worktrees/relayhub origin/relayhub/dev
 ```
 
 说明：
 
-- 如果主 checkout 存在未提交改动，不要直接在主 checkout 切 `project/relayhub`
+- 如果主 checkout 存在未提交改动，不要直接在主 checkout 切 `relayhub/dev`
 - 一律通过 `git worktree add` 新开 RelayHub 隔离工作树
 
 ### 4.0.1 一键部署主路径

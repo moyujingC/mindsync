@@ -154,8 +154,32 @@
    - 处于 in_review 的任务
 5. `配置或结构漂移`
    - project / goal 映射、workspace 路径、入口文档等与治理源不一致
+6. `执行路由漂移`
+   - 任务应走本地人工审核，却被错误送进服务器端可写执行链
+   - 或任务本应是 Automation，但没有真正 materialize 到 execution workspace
 
-### 6.1 为什么先做这一层
+### 6.1 CI/CD / Deploy 类任务的最新窗口规则
+
+对 `CI/CD`、`build`、`test`、`Deploy` 这类由新 run 持续覆盖旧 run 的时序型执行任务，面板默认不应无限展示历史记录。
+
+当前推荐口径：
+
+1. 看板默认只保留同一条流水线语境下“最新 `3` 次”任务作为行动窗口。
+2. 用户与 agent 默认只围绕这最新 `3` 次介入，不再逐条回补更早的历史 run 任务。
+3. 一旦发生修复并 `push`，新的 run 会自然生成新的任务记录，并进入新的最新窗口。
+4. 超过最新 `3` 次之外的同类任务，默认按历史噪音处理，不再作为当前看板待办。
+5. 若某条更早任务已被明确标记为“根因任务”或“唯一仍未闭环的结构性问题”，才允许例外保留在窗口内。
+
+这条规则的目标不是隐藏失败，而是把注意力收束到当前真正可操作的反馈闭环：
+
+- 看最新失败或最新成功
+- 修复
+- push
+- 观察新的 run 结果
+
+而不是让用户在面板中维护一长串已经被后续 run 覆盖的旧记录。
+
+### 6.2 为什么先做这一层
 
 因为这层信息不依赖新数据库字段，且能直接改变使用体验：
 
@@ -203,6 +227,33 @@
 - 可直接暴露哪些 `in_review` 任务还没有补齐 `review:*` 语义
 - 可直接暴露哪些任务出现了“父任务已关闭但子任务仍打开”的结构异常
 - 可直接暴露哪些任务出现了“activeRun 仍在 running，但长期没有评论或状态回写”的执行健康问题
+- 可直接对 `CI/CD / Deploy` 类时序任务应用“仅关注最新 `3` 次”的窗口规则，避免旧 run 长期污染看板
+- 可直接暴露 `execution_workspace_policy_not_materialized`
+- 可直接暴露 `server_writable_execution_not_allowed`
+
+### 7.3 服务器 Automation 与本地任务的正式分流
+
+从 `2026-04-18` 起，`aimandala` 默认把任务分成两类：
+
+1. `automation-execution`
+   - CI 失败修复
+   - deploy / smoke
+   - runner heartbeat
+   - infra / maintenance
+   - 其他明确依赖服务器本地环境、runner、systemd、docker 或服务器凭据的任务
+2. `manual-review-required`
+   - 产品功能开发
+   - UI / 文案
+   - 一般业务逻辑改动
+   - 数据结构与普通研发决策
+
+对应运行约束：
+
+1. 只有 `automation-execution` 才允许走 `execution_route: server_automation`
+2. 其他任务默认必须走 `execution_route: local_manual_review`
+3. 项目开启 `executionWorkspacePolicy` 不是服务器可写执行的充分条件
+4. 服务器端自动提交只允许推到 `automation/aimandala/<task-scope>` 固定自动化分支命名空间
+5. shared checkout 只保留镜像、巡检和运维参考职责，不再是普通任务执行目录
 
 ## 8. Agent 默认行为调整
 
@@ -228,6 +279,10 @@
 - 不把顶层原始输入直接当成可执行任务
 - 不把 `in_review` 自动理解成“可直接 done”
 - 不把局部实验偷偷改写成全局定位
+- 若任务不是 `automation-execution`
+  - 不应把它送进服务器端可写执行链
+- 若任务属于 `automation-execution` 但 `executionWorkspaceId = null`
+  - 应按运行时漂移处理，而不是继续默认执行
 
 ## 9. 建议的三阶段落地路径
 

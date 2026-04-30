@@ -33,8 +33,8 @@ export function createMobileWebPageViewModel(
     return {
       step: getFlowStepLabel(state),
       primaryActionLabel,
-      title: structured.title,
-      subtitle: structured.overall_impression,
+      title: state.report?.title ?? structured.topic_context.topic_label,
+      subtitle: structured.current_reading,
       reportMarkdown: state.report?.report ?? null,
       interpretationId: state.interpretation?.interpretation_id ?? null,
       lastError: null,

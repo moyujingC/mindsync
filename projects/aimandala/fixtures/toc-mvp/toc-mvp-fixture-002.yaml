@@ -1,0 +1,45 @@
+id: toc-mvp-fixture-002
+status: current
+owner: Test / QA
+scope: To C MVP
+theme: wealth_career
+fixture_type: pro-purchase
+asset_ref:
+  kind: image-asset
+  asset_path: fixtures/toc-mvp/assets/IMG_5060.jpeg
+  evidence_path: fixtures/toc-mvp/evidence/toc-mvp-fixture-002.md
+  note: Pro 正式链路样本，默认返回 Pro，显式 Lite 仍可读
+input:
+  user_profile: qa-fixture-user-002
+  image_path: fixtures/toc-mvp/assets/IMG_5060.jpeg
+  image_label: 脱敏财富事业画作
+  painting_intention: 理清当前职业推进中的拉扯
+  painting_feeling: 想往前，但也担心失控
+  expected_report_version: pro
+execution:
+  create_twice: false
+  upgrade_to_pro: true
+validation:
+  report_version: pro
+  existing_on_repeat: false
+  fallback_used: false
+  warning_ids: []
+  required_structured_fields:
+    - topic_context
+    - deep_impression
+    - evidence_digest
+    - imbalance_diagnosis
+    - root_cause_chain
+    - deep_structure_interpretation
+    - healing_plan
+coverage:
+  - TC-03
+  - TC-04
+expected_observations:
+  - 默认 report 读取返回 Pro
+  - 显式请求 Lite 时仍保留 Lite 新合同
+  - topic_context 为 wealth_career 且 Pro 主结构字段完整
+review_entrypoints:
+  - projects/aimandala/toC/app/backend/tests/unit/test_knowledge_workbench_v22.py
+  - projects/aimandala/toC/app/backend/tests/unit/test_report_contracts.py
+  - projects/aimandala/toC/app/frontend/mobile-web/browser-debug-panel.test.tsx

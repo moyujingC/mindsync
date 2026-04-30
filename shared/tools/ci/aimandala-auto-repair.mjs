@@ -29,6 +29,13 @@ function sanitizeWorktreeSegment(value) {
     .slice(0, 80) || "unknown";
 }
 
+const AUTO_REPAIR_DENY_PATHS = [
+  "projects/aimandala/toC/app/backend/data/uploads/",
+  "projects/aimandala/toC/app/backend/data/interpretations/",
+  "coverage/",
+  "projects/aimandala/toC/app/frontend/coverage/",
+];
+
 const REPAIR_PROFILES = [
   {
     jobName: "frontend-quality",
@@ -164,6 +171,17 @@ function changedFilesStayWithinAllowlist(files, allowlist) {
   return files.every((file) => allowlist.some((allowedPath) => file.startsWith(allowedPath)));
 }
 
+function changedFilesTouchDeniedPaths(files) {
+  return files.filter((file) => AUTO_REPAIR_DENY_PATHS.some((deniedPath) => file.startsWith(deniedPath)));
+}
+
+function ensureServerWritableRoot(root) {
+  const normalized = String(root ?? "").replace(/\/+$/, "");
+  if (!normalized.startsWith("/opt/automation/worktrees")) {
+    throw new Error(`Server writable execution root is not allowed: ${normalized}`);
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help || options.h) {
@@ -179,6 +197,11 @@ async function main() {
   const autoRepairPush = truthy(getOption(options, "push", process.env.AIMANDALA_AUTO_REPAIR_PUSH ?? "1"));
   const autoRepairCreatePr = truthy(
     getOption(options, "create-pr", process.env.AIMANDALA_AUTO_REPAIR_CREATE_PR ?? "1"),
+  );
+  const autoRepairBranchPrefix = getOption(
+    options,
+    "branch-prefix",
+    process.env.AIMANDALA_AUTO_REPAIR_BRANCH_PREFIX ?? "automation/aimandala",
   );
   const paperclipApiBase = getOption(options, "api-base", process.env.PAPERCLIP_API_BASE ?? "http://127.0.0.1:3100");
   const paperclipApiKey = getOption(options, "api-key", process.env.PAPERCLIP_API_KEY ?? null);
@@ -203,6 +226,8 @@ async function main() {
   if (!repository || !githubToken || !eventPath) {
     throw new Error("repository, github token, and event path are required");
   }
+
+  ensureServerWritableRoot(executionWorktreeRoot);
 
   const event = JSON.parse(await fs.readFile(eventPath, "utf8"));
   const workflowRun = event.workflow_run;
@@ -291,7 +316,7 @@ async function main() {
     executionHost,
   });
 
-  const branchName = `codex/auto-fix/${workflowRun.id}`;
+  const branchName = `${String(autoRepairBranchPrefix).replace(/\/+$/, "")}/${sanitizeWorktreeSegment(failedJob.name)}`;
   const worktreeDir = `${executionWorktreeRoot}/${sanitizeWorktreeSegment(`auto-repair-${workflowRun.id}-${failedJob.name}`)}`;
   await runShellCommand(`mkdir -p ${JSON.stringify(executionWorktreeRoot)}`);
   await runShellCommand(`rm -rf ${JSON.stringify(worktreeDir)}`);
@@ -435,6 +460,10 @@ async function main() {
 
   if (!changedFilesStayWithinAllowlist(changedFiles, profile.allowedPaths)) {
     throw new Error(`Auto-repair touched files outside allowlist: ${changedFiles.join(", ")}`);
+  }
+  const deniedFiles = changedFilesTouchDeniedPaths(changedFiles);
+  if (deniedFiles.length > 0) {
+    throw new Error(`Auto-repair touched forbidden paths: ${deniedFiles.join(", ")}`);
   }
 
   await runShellCommand("git config user.name 'github-actions[bot]'", { cwd: worktreeDir });

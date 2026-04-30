@@ -48,7 +48,7 @@
 - RelayHub 当前必须通过独立 `git worktree` 部署：
   - 仓库元目录：`/opt/aimandala-release/app/mindsync`
   - RelayHub worktree：`/opt/aimandala-release/worktrees/relayhub`
-  - 运行分支：`project/relayhub`
+  - 运行分支：`relayhub/dev`
 - `relayhub-control-plane` 当前运行方式：
   - `Node + systemd`
   - 监听 `127.0.0.1:4318`
@@ -62,7 +62,7 @@
 ## 5. 当前阶段结论
 
 - RelayHub 当前状态应定义为：
-  - 已在 release 上以独立项目分支 + 独立 worktree 方式跑通的最小治理控制台试用版
+  - 已在 release 上以独立服务器测试分支 + 独立 worktree 方式跑通的最小治理控制台试用版
 - 后续优先级应从“部署路径是否可行”切换到：
   - 产品可用性
   - 表单与交互细节

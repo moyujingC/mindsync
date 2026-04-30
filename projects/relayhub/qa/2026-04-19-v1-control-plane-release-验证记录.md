@@ -30,12 +30,12 @@
 
 - 已完成：
   - release 主 checkout `remote.origin.fetch` 仅拉 `release`
-    - 结果：不能直接 `git checkout project/relayhub`
+    - 结果：不能直接 `git checkout relayhub/dev`
   - release 主 checkout 存在脏工作区
     - 结果：不能直接切换分支，需改用独立 `git worktree`
-  - `git fetch origin refs/heads/project/relayhub:refs/remotes/origin/project/relayhub`
+  - `git fetch origin refs/heads/relayhub/dev:refs/remotes/origin/relayhub/dev`
     - 结果：可显式拉到 RelayHub 长期分支
-  - `git worktree add /opt/aimandala-release/worktrees/relayhub origin/project/relayhub`
+  - `git worktree add /opt/aimandala-release/worktrees/relayhub origin/relayhub/dev`
     - 结果：独立 RelayHub worktree 已建立
   - `sudo systemctl status relayhub-control-plane --no-pager`
     - 结果：通过；服务从独立 worktree 路径启动成功
@@ -52,7 +52,7 @@
     - 说明：当前服务只实现 `GET /health`，未单独处理 `HEAD`
   - `ssh -i /Users/xinran/.ssh/mandala_prod_ed25519 ubuntu@42.192.65.145 'git -C /opt/aimandala-release/worktrees/relayhub branch --show-current; curl -sS http://127.0.0.1:4318/health; systemctl is-active relayhub-control-plane'`
     - 结果：通过，依次返回：
-      - `project/relayhub`
+      - `relayhub/dev`
       - `{"ok":true}`
       - `active`
 

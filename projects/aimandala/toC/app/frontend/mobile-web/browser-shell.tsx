@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { BrowserDebugPanel } from "./browser-debug-panel";
+import { ManualReviewPanel } from "./manual-review-panel";
 import { MiniappApp } from "../miniapp/app";
 import type { MiniappRouteId } from "../miniapp/routes";
 import { createPreviewAppProps } from "./fixtures";
@@ -77,7 +78,7 @@ function readBrowserShellInitialState() {
     return {
       route: "landing" as MobileWebRouteId,
       draft: defaultDraft,
-      interpretationId: "demo-interpretation-id",
+      interpretationId: "",
       session: createMobileWebGuestSession("ssr"),
       previewMode: import.meta.env.DEV,
       controlsOpen: import.meta.env.DEV,
@@ -112,7 +113,7 @@ function readBrowserShellInitialState() {
       paintingIntention: url.searchParams.get("paintingIntention") ?? defaultDraft.paintingIntention,
       paintingFeeling: url.searchParams.get("paintingFeeling") ?? defaultDraft.paintingFeeling,
     } satisfies MobileWebUploadDraft,
-    interpretationId: url.searchParams.get("interpretationId") ?? "demo-interpretation-id",
+    interpretationId: url.searchParams.get("interpretationId") ?? "",
     session: resolveMobileWebSession({
       locationHref: url.toString(),
     }),
@@ -944,6 +945,10 @@ export function MobileWebBrowserShell() {
             <span className="muted">
               开发辅助层，正式产品界面只看手机画面。
             </span>
+            <div className="browser-shell__version-badge" aria-label="当前联调壳层版本">
+              <span className="browser-shell__version-label">Local Debug</span>
+              <strong>v2026-04-20-layer0-first</strong>
+            </div>
           </div>
 
           <button
@@ -971,7 +976,7 @@ export function MobileWebBrowserShell() {
               <div className="browser-shell__controls">
                 <div className="field">
                   <span>测试样本</span>
-                  <div style={{ display: "grid", gap: 8 }}>
+                  <div className="browser-shell__fixture-list">
                     {mobileWebDevFixturePresets.map((preset) => {
                       const isLoadingFixture = fixtureLoadingId === preset.id;
 
@@ -979,15 +984,11 @@ export function MobileWebBrowserShell() {
                         <button
                           key={preset.id}
                           type="button"
-                          className="mw-secondary-button mw-secondary-button--inline"
+                          className="mw-secondary-button mw-secondary-button--inline browser-shell__fixture-button"
                           onClick={() => {
                             void handleApplyFixturePreset(preset.id);
                           }}
                           disabled={Boolean(fixtureLoadingId)}
-                          style={{
-                            justifyContent: "space-between",
-                            width: "100%",
-                          }}
                         >
                           <span>{preset.label}</span>
                           <span>{isLoadingFixture ? "载入中..." : "一键填充"}</span>
@@ -1360,6 +1361,18 @@ export function MobileWebBrowserShell() {
             />
           )}
           </div>
+
+          {localDebugEnabled && controlsOpen ? (
+            <ManualReviewPanel
+              route={route}
+              previewMode={previewMode}
+              draft={draft}
+              interpretationId={interpretationId}
+              flowState={previewFlowState}
+              detection={previewDetection}
+              runtimeSnapshot={runtimeDebugSnapshot}
+            />
+          ) : null}
 
           {localDebugEnabled && controlsOpen ? (
             <BrowserDebugPanel

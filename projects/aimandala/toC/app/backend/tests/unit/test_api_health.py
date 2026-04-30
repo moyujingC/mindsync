@@ -427,7 +427,7 @@ def test_upload_image_endpoint_returns_501_for_missing_remote_backend_config():
     assert "Missing required upload storage config" in response.json()["detail"]
 
 
-def test_detect_circles_returns_501_for_invalid_prompt_runtime_config(tmp_path):
+def test_detect_circles_without_report_runtime_config(tmp_path):
     from app.api.main import app
 
     _reset_api_state()
@@ -435,23 +435,17 @@ def test_detect_circles_returns_501_for_invalid_prompt_runtime_config(tmp_path):
     image_path = tmp_path / "detect.png"
     image_path.write_bytes(b"mock-image")
 
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_PROMPT_RUNTIME_BACKEND": "http",
-            "AIMANDALA_PROMPT_RUNTIME_HTTP_URL": "",
+    response = client.post(
+        "/api/v2/detect-circles",
+        json={
+            "image_path": str(image_path),
         },
-        clear=False,
-    ):
-        response = client.post(
-            "/api/v2/detect-circles",
-            json={
-                "image_path": str(image_path),
-            },
-        )
+    )
 
-    assert response.status_code == 501
-    assert "AIMANDALA_PROMPT_RUNTIME_HTTP_URL" in response.json()["detail"]
+    assert response.status_code == 200
+    data = response.json()
+    assert data["inner_radius"] == 0.33
+    assert data["middle_radius"] == 0.66
 
 
 def test_upload_image_endpoint_returns_501_when_cos_sdk_missing():
@@ -1041,9 +1035,16 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
     assert data["version"] == "lite"
     assert data["title"] == "慢慢亮起来的中心"
     assert data["overall_impression"] is not None
-    assert data["structured"]["title"] == "慢慢亮起来的中心"
+    assert data["structured"]["topic_context"]["topic"] == "general"
+    assert data["structured"]["current_reading"] == data["overall_impression"]
+    assert data["structured"]["visual_basis"]
+    assert data["structured"]["pattern_interpretation"]
+    assert data["structured"]["life_connection"]
     assert data["structured"]["prompt_schema_validation_issues"] == []
-    assert "pro_teaser" in data["structured"]
+    assert "lite_healing_guidance" in data["structured"]
+    assert "pro_report_entry" in data["structured"]
+    assert "title" not in data["structured"]
+    assert data["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
     assert "六个核心洞察" in data["report"]
     assert "重要声明" in data["report"]
     assert data["error"] is None
@@ -1527,43 +1528,7 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
                     "method": "fake_vision",
                     "summary": "识别到了比较清晰的内中圈边界",
                 }
-            if "first_impression" in json.dumps(schema, ensure_ascii=False):
-                return {
-                    "first_impression": "这张画在收与放之间保持了一种克制的张力。",
-                    "core_insight_table": {
-                        "能量本质": "先收住自己，再慢慢向外表达。",
-                    },
-                    "micro_analysis_detailed": {
-                        "相邻关系": "内外之间有明显缓冲带。",
-                    },
-                    "root_cause": {
-                        "核心牵引": "你在安全感不足时会先保护边界。",
-                    },
-                    "imbalance_confirmed": {
-                        "primary": "边界收缩型",
-                        "evidence": "内圈较紧，外圈表达更谨慎。",
-                    },
-                    "healing_suggestions": [
-                        {"phase": "1-7天", "focus": "放慢", "practice": "每天留三分钟只看画面中心。"},
-                    ],
-                }
-            return {
-                "title": "来自真实 LLM 的 Lite 标题",
-                "overall_impression": "这幅画先把自己轻轻收拢，再试着向外试探。",
-                "visual_elements": "画面中心更凝聚，中圈保留了过渡空间。",
-                "emotion_portrait": "你像是在保护自己，也在等待一个更稳的出口。",
-                "story": {
-                    "base": "你先把感受收回自己这里。",
-                    "contradiction": "你想表达，但还在观察外界是否安全。",
-                },
-                "theme_scene": "当你需要先确认环境是否稳定时",
-                "theme_impact": "你会放慢表达节奏，避免自己过早暴露。",
-                "theme_awareness": "不是不想靠近，而是需要更稳的节奏。",
-                "three_awareness": [
-                    {"day": 1, "title": "先停一下", "content": "先看见自己在收紧什么。"},
-                ],
-                "pro_teaser": "如果继续进入 Pro，可以看到这份收缩背后的保护逻辑。",
-            }
+                raise AssertionError(f"unexpected structured LLM task: {task}")
 
         def generate_text(self, *, task, system_prompt, user_prompt):
             assert task == "chat"
@@ -1600,8 +1565,8 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
         lite_report = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
         assert lite_report.status_code == 200
         lite_data = lite_report.json()
-        assert lite_data["title"] == "来自真实 LLM 的 Lite 标题"
-        assert lite_data["overall_impression"] == "这幅画先把自己轻轻收拢，再试着向外试探。"
+        assert lite_data["title"] == "慢慢亮起来的中心"
+        assert lite_data["structured"]["prompt_schema_validation_issues"] == []
 
         order_response = client.post(
             "/api/v2/miniapp/orders",

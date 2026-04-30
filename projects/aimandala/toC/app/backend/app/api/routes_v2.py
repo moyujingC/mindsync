@@ -24,7 +24,6 @@ from app.core.knowledge_runtime.workbench import KnowledgeWorkbench
 from app.core.miniapp_stub_store import MiniappStubStore
 from app.core.pipeline.data_models import GenerationStatus
 from app.core.pipeline.orchestrator_v2 import GenerationStage, LayeredOrchestrator
-from app.core.pipeline.prompt_runtime import create_prompt_runtime_from_env
 from app.core.pipeline.store import UnsupportedInterpretationSchemaError
 from app.core.uploads import LocalUploadStorage, UploadStorage, create_upload_storage_from_env
 
@@ -352,7 +351,6 @@ def get_orchestrator() -> LayeredOrchestrator:
     if _orchestrator is None:
         try:
             llm_client = create_llm_client_from_env()
-            prompt_runtime = create_prompt_runtime_from_env(llm_client=llm_client)
             circle_detector = (
                 CircleDetector(detector_backend=LLMCircleDetectionBackend(llm_client))
                 if not isinstance(llm_client, NoopLLMClient)
@@ -365,7 +363,6 @@ def get_orchestrator() -> LayeredOrchestrator:
             )
             _orchestrator = LayeredOrchestrator(
                 circle_detector=circle_detector,
-                prompt_runtime=prompt_runtime,
                 report_chat_runtime=report_chat_runtime,
             )
         except ValueError as error:

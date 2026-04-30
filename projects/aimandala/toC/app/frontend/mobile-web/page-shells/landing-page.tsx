@@ -48,9 +48,9 @@ function FloatingParticles() {
 function IconUpload() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 16V6" stroke="#C87850" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M8.5 9.5L12 6L15.5 9.5" stroke="#C87850" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6 18.5H18" stroke="#C87850" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M12 16V6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M8.5 9.5L12 6L15.5 9.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 18.5H18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -58,10 +58,10 @@ function IconUpload() {
 function IconAnalyze() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="5" y="5" width="4" height="4" rx="1" stroke="#C87850" strokeWidth="1.6" />
-      <rect x="15" y="5" width="4" height="4" rx="1" stroke="#C87850" strokeWidth="1.6" />
-      <rect x="5" y="15" width="4" height="4" rx="1" stroke="#C87850" strokeWidth="1.6" />
-      <circle cx="15.5" cy="15.5" r="3.5" stroke="#C87850" strokeWidth="1.6" />
+      <rect x="5" y="5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="15" y="5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="5" y="15" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="15.5" cy="15.5" r="3.5" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   );
 }
@@ -69,10 +69,10 @@ function IconAnalyze() {
 function IconReport() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M8 5.5H14L18 9.5V18a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 7 18V7A1.5 1.5 0 0 1 8.5 5.5Z" stroke="#C87850" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M14 5.5V9.5H18" stroke="#C87850" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M10 12H15" stroke="#C87850" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M10 15H15" stroke="#C87850" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M8 5.5H14L18 9.5V18a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 7 18V7A1.5 1.5 0 0 1 8.5 5.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M14 5.5V9.5H18" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M10 12H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M10 15H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
@@ -292,25 +292,38 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
   const [compareOpen, setCompareOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollCue(window.scrollY < 50);
+    const dismissScrollCue = () => {
+      setShowScrollCue(false);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " " || event.key === "Spacebar") {
+        dismissScrollCue();
+      }
+    };
+
+    window.addEventListener("wheel", dismissScrollCue, { passive: true });
+    window.addEventListener("touchmove", dismissScrollCue, { passive: true });
+    window.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      window.removeEventListener("wheel", dismissScrollCue);
+      window.removeEventListener("touchmove", dismissScrollCue);
+      window.removeEventListener("keydown", handleKeydown);
+    };
   }, []);
 
   return (
-    <div className="am-page am-landing-page">
-      <section className="am-landing-hero" style={heroRingStyle}>
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+    <div className="am-page am-landing-page" style={heroRingStyle}>
+      <section className="am-landing-hero">
+        <div className="am-pattern-overlay" />
         <div className="am-ambient-glow am-ambient-glow--right" />
         <div className="am-ambient-glow am-ambient-glow--left" />
         <div className="am-ambient-glow am-ambient-glow--bottom" />
         <FloatingParticles />
 
         <button type="button" className="am-history-pill" onClick={onOpenHistory}>
-          历史记录
+          历史解读
         </button>
 
         <div className="am-logo-ring">
@@ -322,19 +335,21 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         </div>
 
         <div className="am-hero-copy">
-          <h1>一镜照见，一梳知心</h1>
-          <p className="am-hero-subtitle">以曼陀罗为镜，读懂潜意识里的情绪、关系与内在节律</p>
-          <p className="am-hero-price">融合阴阳、五行、三才的东方解读视角</p>
+          <h1>画出你的潜意识</h1>
+          <p className="am-hero-subtitle">AI 解读曼陀罗画作  ·  探索内心世界</p>
+          <p className="am-hero-price">融合阴阳五行三才的东方解读视角</p>
         </div>
 
         <button type="button" className="am-primary-cta" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
-          <span className="am-primary-cta__label">上传画作</span>
+          <span className="am-primary-cta__label">开始体验</span>
         </button>
 
         <div className={`am-scroll-cue${showScrollCue ? "" : " is-hidden"}`}>
           <span>滑动了解详情</span>
-          <i aria-hidden="true">⌄</i>
+          <i className="am-scroll-cue__arrow" aria-hidden="true">
+            ⌄
+          </i>
         </div>
       </section>
 
@@ -350,7 +365,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
       </section>
 
       <section className="am-landing-section am-landing-section--pricing">
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+        <div className="am-pattern-overlay" />
         <h2>先轻体验，再决定深入</h2>
         <div className="am-pricing-grid am-pricing-grid--landing">
           <article className="am-pricing-panel am-pricing-panel--lite">
@@ -388,12 +403,12 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
       </section>
 
       <section className="am-landing-section am-landing-section--final">
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+        <div className="am-pattern-overlay" />
         <div className="am-landing-section__glow am-landing-section__glow--final" />
         <h2>准备好读读这幅画了吗？</h2>
         <button type="button" className="am-primary-cta am-primary-cta--compact" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
-          <span className="am-primary-cta__label">上传画作</span>
+          <span className="am-primary-cta__label">开始体验</span>
         </button>
         <div className="am-landing-footer-divider" />
         <div className="am-landing-footer-brand">

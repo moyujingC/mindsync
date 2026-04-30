@@ -1,0 +1,36 @@
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--am-surface-app);
+  color: var(--am-text-primary);
+  font-family: var(--am-font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  transition:
+    transform var(--am-motion-fast) var(--am-ease-standard),
+    opacity var(--am-motion-fast) var(--am-ease-standard),
+    box-shadow var(--am-motion-fast) var(--am-ease-standard),
+    border-color var(--am-motion-fast) var(--am-ease-standard),
+    background-color var(--am-motion-fast) var(--am-ease-standard);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+}

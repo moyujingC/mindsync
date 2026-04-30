@@ -12,15 +12,20 @@ company:
   mode: "remote_authenticated"
   host: "vm-0-11-opencloudos.tail176582.ts.net"
   port: 3100
-  # 当前口径：automation 节点不仅是控制面，也承载 UI / API / 调度 / 大多数 local adapter 的实际执行。
-  # 因此 *_local 表示“运行 Paperclip 的宿主机本地”，不是用户当前这台 Mac 本地。
+  # 当前口径：
+  # - control plane host 继续是 automation 节点
+  # - server execution host 继续承接 server_automation
+  # - local execution host 正式绑定到用户当前这台 Mac
+  # - codex_local / claude_local / pi_local 对普通任务路径默认由 Mac 本地执行器承接
+  # 对普通任务路径，不再把 *_local 默认解释成 automation 服务器本地。
 
 # Agent 配置
 agents:
   - id: "2014e2cd-af7a-4be1-bb60-e6a324b7c3c1"
     name: "CEO"
     role: "ceo"
-    adapter: "hermes_local"
+    # 临时回退口径：Hermes session resume 存在上游 bug，先切回 claude_local 保证 CEO 可用。
+    adapter: "claude_local"
     directory: "agents/ceo"
 
   - id: "81c0b428-1016-42b6-8393-9f23cb1dca49"
@@ -106,7 +111,7 @@ goals:
       - "00403f31-add0-4b19-b715-6652a4b3dfe3"
 
   - id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
-    title: "墨予镜影响力建设"
+    title: "内容矩阵与多账号影响力建设"
     projects:
       - "6947ac34-cf22-4a87-bc4c-ded2edc77772"
 
@@ -114,6 +119,16 @@ goals:
     title: "研究中心建设"
     projects:
       - "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
+
+  - id: "f2db2682-eb58-4d95-8839-d05518f48d71"
+    title: "馨冉求职推进与交付"
+    projects:
+      - "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
+
+  - id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
+    title: "RelayHub能力建设"
+    projects:
+      - "relayhub"
 
 # Project 配置
 projects:
@@ -140,7 +155,7 @@ projects:
     source_subdirectory: "."
 
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
-    name: "墨予镜 IP"
+    name: "内容矩阵"
     goal_id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
 
   - id: "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
@@ -149,6 +164,20 @@ projects:
     directory: "projects/research-center"
     repository: "https://github.com/MindSyncHub/mindsync"
     source_subdirectory: "projects/research-center"
+
+  - id: "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
+    name: "馨冉求职"
+    goal_id: "f2db2682-eb58-4d95-8839-d05518f48d71"
+    directory: "projects/xinran-jobhunt"
+    repository: "https://github.com/MindSyncHub/mindsync"
+    source_subdirectory: "projects/xinran-jobhunt"
+
+  - id: "relayhub"
+    name: "RelayHub"
+    goal_id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
+    directory: "projects/relayhub"
+    repository: "https://github.com/MindSyncHub/mindsync"
+    source_subdirectory: "projects/relayhub"
 
 # 同步配置
 sync:

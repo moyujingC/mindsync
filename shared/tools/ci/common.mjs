@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs/promises";
+import path from "node:path";
 import { spawn } from "node:child_process";
 import process from "node:process";
 
@@ -103,6 +104,85 @@ export async function readTextIfExists(filePath) {
     }
     throw error;
   }
+}
+
+export async function readProjectRegistry(projectRoot = process.cwd()) {
+  const registryPath = path.resolve(projectRoot, "company/项目注册表.yaml");
+  const content = await readTextIfExists(registryPath);
+  if (!content.trim()) {
+    throw new Error(`Project registry not found or empty: ${registryPath}`);
+  }
+
+  const objects = [];
+  let inObjects = false;
+  let current = null;
+  let inPurpose = false;
+
+  for (const rawLine of content.split(/\r?\n/)) {
+    const line = rawLine.replace(/\r$/, "");
+    const trimmed = line.trim();
+
+    if (trimmed === "objects:") {
+      inObjects = true;
+      continue;
+    }
+    if (!inObjects) {
+      continue;
+    }
+
+    if (line.startsWith("  - ")) {
+      if (current) {
+        objects.push(current);
+      }
+      current = {};
+      inPurpose = false;
+      const remainder = line.slice(4);
+      if (remainder.includes(":")) {
+        const [key, ...rest] = remainder.split(":");
+        current[key.trim()] = rest.join(":").trim().replace(/^["']|["']$/g, "");
+      }
+      continue;
+    }
+
+    if (!current) {
+      continue;
+    }
+
+    if (trimmed.startsWith("purpose:")) {
+      inPurpose = true;
+      continue;
+    }
+
+    if (inPurpose) {
+      if (line.startsWith("      - ") || line.startsWith("        ")) {
+        continue;
+      }
+      inPurpose = false;
+    }
+
+    if (!line.startsWith("    ") || !trimmed.includes(":")) {
+      continue;
+    }
+
+    const [key, ...rest] = trimmed.split(":");
+    current[key.trim()] = rest.join(":").trim().replace(/^["']|["']$/g, "");
+  }
+
+  if (current) {
+    objects.push(current);
+  }
+
+  return objects;
+}
+
+export async function assertProjectRegistered(projectName, projectRoot = process.cwd()) {
+  const registryObjects = await readProjectRegistry(projectRoot);
+  const normalized = String(projectName ?? "").trim().toLowerCase();
+  const matched = registryObjects.find((item) => item.name?.trim().toLowerCase() === normalized);
+  if (!matched) {
+    throw new Error(`Project is not registered in company/项目注册表.yaml: ${projectName}`);
+  }
+  return matched;
 }
 
 export async function writeTextFile(filePath, content) {
@@ -238,6 +318,7 @@ export class PaperclipApi {
 }
 
 export async function resolveProjectByName(api, companyId, projectName) {
+  await assertProjectRegistered(projectName);
   const projects = await api.get(`/api/companies/${companyId}/projects`);
   const normalized = projectName.trim().toLowerCase();
   const project = (projects ?? []).find((item) => item.name?.trim().toLowerCase() === normalized);

@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(
@@ -10,7 +11,6 @@ sys.path.insert(
 )
 
 from app.core.llm.runtime import (
-    LLMPromptRuntime,
     NoopLLMClient,
     OpenAICompatibleLLMClient,
     create_llm_client_from_env,
@@ -46,7 +46,6 @@ def test_create_llm_client_from_env_returns_openai_compatible_client():
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
             "AIMANDALA_LLM_API_KEY": "secret",
             "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_LITE_MODEL": "gpt-report",
             "AIMANDALA_LLM_CHAT_MODEL": "gpt-chat",
             "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
             "AIMANDALA_LLM_TIMEOUT_SECONDS": "18",
@@ -60,8 +59,6 @@ def test_create_llm_client_from_env_returns_openai_compatible_client():
     assert isinstance(client, OpenAICompatibleLLMClient)
     assert client.config.default.base_url == "https://example.com/v1"
     assert client.config.default.model == "gpt-test"
-    assert client.config.lite_report is not None
-    assert client.config.lite_report.model == "gpt-report"
     assert client.config.chat is not None
     assert client.config.chat.model == "gpt-chat"
     assert client.config.vision is not None
@@ -71,7 +68,7 @@ def test_create_llm_client_from_env_returns_openai_compatible_client():
     assert client.config.retry_backoff_ms == 250
 
 
-def test_create_llm_client_from_env_supports_task_specific_overrides():
+def test_create_llm_client_from_env_supports_chat_and_vision_overrides():
     with patch.dict(
         os.environ,
         {
@@ -79,12 +76,6 @@ def test_create_llm_client_from_env_supports_task_specific_overrides():
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
             "AIMANDALA_LLM_API_KEY": "default-secret",
             "AIMANDALA_LLM_MODEL": "gpt-default",
-            "AIMANDALA_LLM_LITE_BASE_URL": "https://glm.example.com/v4",
-            "AIMANDALA_LLM_LITE_API_KEY": "glm-secret",
-            "AIMANDALA_LLM_LITE_MODEL": "glm-4",
-            "AIMANDALA_LLM_PRO_BASE_URL": "https://ark.example.com/v3",
-            "AIMANDALA_LLM_PRO_API_KEY": "doubao-secret",
-            "AIMANDALA_LLM_PRO_MODEL": "ep-pro",
             "AIMANDALA_LLM_CHAT_BASE_URL": "https://moonshot.example.com/v1",
             "AIMANDALA_LLM_CHAT_API_KEY": "kimi-secret",
             "AIMANDALA_LLM_CHAT_MODEL": "moonshot-v1-8k",
@@ -97,42 +88,10 @@ def test_create_llm_client_from_env_supports_task_specific_overrides():
         client = create_llm_client_from_env()
 
     assert isinstance(client, OpenAICompatibleLLMClient)
-    assert client.config.lite_report is not None
-    assert client.config.lite_report.base_url == "https://glm.example.com/v4"
-    assert client.config.lite_report.model == "glm-4"
-    assert client.config.pro_report is not None
-    assert client.config.pro_report.model == "ep-pro"
     assert client.config.chat is not None
     assert client.config.chat.model == "moonshot-v1-8k"
     assert client.config.vision is not None
     assert client.config.vision.model == "ep-vision"
-
-
-def test_create_llm_client_from_env_supports_relayhub_task_alias_models():
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_LLM_BACKEND": "openai_compatible",
-            "AIMANDALA_LLM_BASE_URL": "https://relayhub.jingshu.cc/aimandala/v1",
-            "AIMANDALA_LLM_API_KEY": "relayhub-prod-token",
-            "AIMANDALA_LLM_MODEL": "relayhub-task-aimandala-lite-report",
-            "AIMANDALA_LLM_PRO_MODEL": "relayhub-task-aimandala-pro-report",
-            "AIMANDALA_LLM_CHAT_MODEL": "relayhub-task-aimandala-chat",
-            "AIMANDALA_LLM_VISION_MODEL": "relayhub-task-aimandala-vision",
-        },
-        clear=False,
-    ):
-        client = create_llm_client_from_env()
-
-    assert isinstance(client, OpenAICompatibleLLMClient)
-    assert client.config.default.base_url == "https://relayhub.jingshu.cc/aimandala/v1"
-    assert client.config.default.model == "relayhub-task-aimandala-lite-report"
-    assert client.config.pro_report is not None
-    assert client.config.pro_report.model == "relayhub-task-aimandala-pro-report"
-    assert client.config.chat is not None
-    assert client.config.chat.model == "relayhub-task-aimandala-chat"
-    assert client.config.vision is not None
-    assert client.config.vision.model == "relayhub-task-aimandala-vision"
 
 
 def test_create_llm_client_from_env_supports_legacy_model_envs():
@@ -150,12 +109,8 @@ def test_create_llm_client_from_env_supports_legacy_model_envs():
         client = create_llm_client_from_env()
 
     assert isinstance(client, OpenAICompatibleLLMClient)
-    assert client.config.lite_report is not None
-    assert client.config.lite_report.base_url == "https://open.bigmodel.cn/api/paas/v4"
-    assert client.config.lite_report.model == "glm-4"
-    assert client.config.pro_report is not None
-    assert client.config.pro_report.base_url == "https://ark.cn-beijing.volces.com/api/v3"
-    assert client.config.pro_report.model == "ep-pro"
+    assert client.config.default.base_url == "https://open.bigmodel.cn/api/paas/v4"
+    assert client.config.default.model == "glm-4"
     assert client.config.vision is not None
     assert client.config.vision.model == "ep-vision"
     assert client.config.chat is not None
@@ -192,7 +147,7 @@ def test_openai_compatible_llm_client_parses_code_fenced_json_payload():
         return_value=_FakeHTTPResponse(response_payload),
     ):
         result = client.generate_structured(
-            task="report",
+            task="vision",
             prompt="请生成 lite",
             schema={"type": "object"},
         )
@@ -201,8 +156,107 @@ def test_openai_compatible_llm_client_parses_code_fenced_json_payload():
     assert result["title"] == "来自 LLM 的标题"
 
 
-def test_prompt_runtime_can_wrap_noop_safe_llm_client():
-    runtime = LLMPromptRuntime(NoopLLMClient())
+def test_openai_compatible_llm_client_uses_non_json_mode_for_vision_image_requests(tmp_path: Path):
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
+            "AIMANDALA_LLM_MODEL": "gpt-test",
+            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
+            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
+            "AIMANDALA_LLM_MAX_RETRIES": "0",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
 
-    assert runtime.generate_lite(prompt="demo", schema={"type": "object"}) is None
-    assert runtime.generate_pro(prompt="demo", schema={"type": "object"}) is None
+    calls: list[dict[str, object]] = []
+
+    def _fake_urlopen(request, timeout=0):
+        del timeout
+        payload = json.loads(request.data.decode("utf-8"))
+        calls.append(payload)
+        return _FakeHTTPResponse(
+            json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "{\"global_visual_summary\": \"内圈蓝白，中圈粉白，外圈粉紫与白色留白。\"}",
+                            }
+                        }
+                    ]
+                }
+            )
+        )
+
+    with patch("app.core.llm.runtime.urlopen", side_effect=_fake_urlopen):
+        image_path = tmp_path / "sample01.jpg"
+        image_path.write_bytes(b"fake-image")
+
+        result = client.generate_structured(
+            task="vision",
+            prompt="请生成视觉摘要",
+            schema={"type": "object"},
+            image_path=str(image_path),
+        )
+
+    assert isinstance(result, dict)
+    assert result["global_visual_summary"] == "内圈蓝白，中圈粉白，外圈粉紫与白色留白。"
+    assert len(calls) == 1
+    assert "response_format" not in calls[0]
+    assert calls[0]["thinking"] == {"type": "disabled"}
+
+
+def test_openai_compatible_llm_client_disables_thinking_for_vision_image_requests(tmp_path: Path):
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
+            "AIMANDALA_LLM_MODEL": "gpt-test",
+            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
+            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
+            "AIMANDALA_LLM_MAX_RETRIES": "0",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
+
+    calls: list[dict[str, object]] = []
+
+    def _fake_urlopen(request, timeout=0):
+        del timeout
+        payload = json.loads(request.data.decode("utf-8"))
+        calls.append(payload)
+        return _FakeHTTPResponse(
+            json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "{\"global_visual_summary\": \"内圈蓝白，中圈粉白，外圈粉紫与白色留白。\"}",
+                            }
+                        }
+                    ]
+                }
+            )
+        )
+
+    with patch("app.core.llm.runtime.urlopen", side_effect=_fake_urlopen):
+        image_path = tmp_path / "sample01.jpg"
+        image_path.write_bytes(b"fake-image")
+
+        result = client.generate_structured(
+            task="vision",
+            prompt="请生成视觉摘要",
+            schema={"type": "object"},
+            image_path=str(image_path),
+        )
+
+    assert isinstance(result, dict)
+    assert result["global_visual_summary"] == "内圈蓝白，中圈粉白，外圈粉紫与白色留白。"
+    assert len(calls) == 1
+    assert calls[0]["thinking"] == {"type": "disabled"}
+    assert "response_format" not in calls[0]

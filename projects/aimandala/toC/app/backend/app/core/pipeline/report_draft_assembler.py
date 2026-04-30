@@ -16,6 +16,7 @@ class ReportDraftAssembler:
         *,
         get_theme_label: Callable[[str | None], str],
         build_lite_prompt_preview: Callable[[InterpretationRecord], str],
+        build_runtime_lite_narrative_plan: Callable[..., dict[str, Any]],
         build_runtime_lite_narrative_projection: Callable[..., dict[str, Any]],
         build_lite_story_sections: Callable[..., dict[str, str]],
         build_lite_theme_insights: Callable[..., dict[str, str]],
@@ -28,8 +29,10 @@ class ReportDraftAssembler:
         build_lite_six_insights_payload: Callable[..., dict[str, dict[str, str]]],
         build_lite_experiment_payload: Callable[..., dict[str, str]],
         build_pro_prompt_preview: Callable[[InterpretationRecord], str],
+        get_runtime_imbalance_narrative_basis: Callable[[InterpretationRecord], dict[str, Any]],
         get_runtime_imbalance_projection: Callable[[InterpretationRecord], dict[str, Any]],
         build_pro_imbalance_profile: Callable[..., dict[str, Any]],
+        build_runtime_pro_narrative_plan: Callable[..., dict[str, Any]],
         build_runtime_pro_narrative_projection: Callable[..., dict[str, Any]],
         build_pro_first_impression: Callable[..., str],
         build_pro_energy_essence: Callable[..., str],
@@ -45,6 +48,7 @@ class ReportDraftAssembler:
     ) -> None:
         self._get_theme_label = get_theme_label
         self._build_lite_prompt_preview = build_lite_prompt_preview
+        self._build_runtime_lite_narrative_plan = build_runtime_lite_narrative_plan
         self._build_runtime_lite_narrative_projection = (
             build_runtime_lite_narrative_projection
         )
@@ -59,8 +63,12 @@ class ReportDraftAssembler:
         self._build_lite_six_insights_payload = build_lite_six_insights_payload
         self._build_lite_experiment_payload = build_lite_experiment_payload
         self._build_pro_prompt_preview = build_pro_prompt_preview
+        self._get_runtime_imbalance_narrative_basis = (
+            get_runtime_imbalance_narrative_basis
+        )
         self._get_runtime_imbalance_projection = get_runtime_imbalance_projection
         self._build_pro_imbalance_profile = build_pro_imbalance_profile
+        self._build_runtime_pro_narrative_plan = build_runtime_pro_narrative_plan
         self._build_runtime_pro_narrative_projection = (
             build_runtime_pro_narrative_projection
         )
@@ -81,10 +89,22 @@ class ReportDraftAssembler:
     def build_lite(self, record: InterpretationRecord) -> Layer1LiteDraft:
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(record.theme)
-        lite_prompt_preview = self._build_lite_prompt_preview(record)
-        lite_projection = self._build_runtime_lite_narrative_projection(
+        lite_plan = self._build_runtime_lite_narrative_plan(
             record,
             theme_label,
+        )
+        lite_projection = (
+            lite_plan.get("legacy_projection", {})
+            if isinstance(lite_plan, dict)
+            else self._build_runtime_lite_narrative_projection(
+                record,
+                theme_label,
+            )
+        )
+        lite_prompt_preview = self._build_lite_prompt_preview(
+            record,
+            projection=lite_projection,
+            narrative_plan=lite_plan if isinstance(lite_plan, dict) else {},
         )
         story_sections = self._build_lite_story_sections(
             record,
@@ -123,6 +143,7 @@ class ReportDraftAssembler:
                 record,
                 projection=lite_projection,
             ),
+            narrative_plan=lite_plan if isinstance(lite_plan, dict) else {},
         )
         layer.story.base.content = story_sections["base"]
         layer.story.base.connector = LITE_REPORT_BLUEPRINT.story_connectors["base"]
@@ -170,8 +191,12 @@ class ReportDraftAssembler:
         theme = record.theme or "general"
         circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(theme)
-        pro_prompt_preview = self._build_pro_prompt_preview(record)
-        imbalance_projection = self._get_runtime_imbalance_projection(record)
+        imbalance_basis = self._get_runtime_imbalance_narrative_basis(record)
+        imbalance_projection = (
+            imbalance_basis.get("legacy_projection", {})
+            if isinstance(imbalance_basis, dict)
+            else self._get_runtime_imbalance_projection(record)
+        )
         imbalance_profile = self._build_pro_imbalance_profile(
             record,
             theme_label,
@@ -183,12 +208,30 @@ class ReportDraftAssembler:
             if record.layer_2_lite_final and record.layer_2_lite_final.title
             else self._build_lite_title(record, theme_label)
         )
-        pro_projection = self._build_runtime_pro_narrative_projection(
+        pro_plan = self._build_runtime_pro_narrative_plan(
             record,
             theme_label=theme_label,
             lite_title=lite_title,
             imbalance_profile=imbalance_profile,
             imbalance_projection=imbalance_projection,
+        )
+        pro_projection = (
+            pro_plan.get("legacy_projection", {})
+            if isinstance(pro_plan, dict)
+            else self._build_runtime_pro_narrative_projection(
+                record,
+                theme_label=theme_label,
+                lite_title=lite_title,
+                imbalance_profile=imbalance_profile,
+                imbalance_projection=imbalance_projection,
+            )
+        )
+        pro_prompt_preview = self._build_pro_prompt_preview(
+            record,
+            narrative_projection=pro_projection,
+            imbalance_projection=imbalance_projection,
+            imbalance_profile=imbalance_profile,
+            narrative_plan=pro_plan if isinstance(pro_plan, dict) else {},
         )
         layer = Layer3ProDraft(
             first_impression=self._build_pro_first_impression(
@@ -285,6 +328,7 @@ class ReportDraftAssembler:
                 imbalance_profile=imbalance_profile,
                 theme_label=theme_label,
             ),
+            narrative_plan=pro_plan if isinstance(pro_plan, dict) else {},
         )
         layer.prompt_preview = pro_prompt_preview
         return layer

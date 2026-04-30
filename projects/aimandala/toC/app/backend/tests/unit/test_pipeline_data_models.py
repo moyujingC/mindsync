@@ -99,17 +99,40 @@ class TestLayer0Raw:
         assert isinstance(layer.five_elements, FiveElementsData)
         assert isinstance(layer.three_circles, ThreeCirclesData)
         assert layer.imbalance_candidates == []
+        assert layer.fidelity_flags == []
+        assert layer.quality_flags == []
 
     def test_to_dict(self):
         """测试转换为字典"""
         layer = Layer0Raw(
             five_elements=FiveElementsData(wood={"ratio": 0.5}),
             imbalance_candidates=["水多木漂"],
+            fidelity_flags=["warning:水多火灭"],
+            layer0_passed=False,
+            layer0_failure_reason="layer0_vision_unconfigured",
+            layer0_failure_detail={"stage": "vision"},
         )
         data = layer.to_dict()
         assert "five_elements" in data
+        assert "input_package" in data
+        assert "visual_analysis_basis" in data
         assert data["imbalance_candidates"] == ["水多木漂"]
+        assert data["fidelity_flags"] == ["warning:水多火灭"]
+        assert data["quality_flags"] == ["warning:水多火灭"]
+        assert data["layer0_passed"] is False
+        assert data["layer0_failure_reason"] == "layer0_vision_unconfigured"
+        assert data["layer0_failure_detail"] == {"stage": "vision"}
         assert "created_at" in data
+
+    def test_quality_flags_aliases_fidelity_flags(self):
+        """测试 quality_flags 兼容 fidelity_flags"""
+        layer = Layer0Raw()
+
+        layer.fidelity_flags = ["trace:tob_only_candidate_present"]
+        assert layer.quality_flags == ["trace:tob_only_candidate_present"]
+
+        layer.quality_flags = ["fallback:generated"]
+        assert layer.fidelity_flags == ["fallback:generated"]
 
 
 class TestSixInsights:
@@ -157,6 +180,27 @@ class TestLayer1LiteDraft:
         )
         assert layer.title == "燃烧的静默"
         assert layer.six_insights.base["raw"] == "木火主导"
+
+    def test_narrative_plan_serializes(self):
+        """测试 narrative_plan 可序列化"""
+        layer = Layer1LiteDraft(
+            title="燃烧的静默",
+            narrative_plan={
+                "mode": "lite",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "title": {
+                        "content": "燃烧的静默",
+                        "trace": {"rule_refs": ["primary_candidates:水多火灭"]},
+                    }
+                },
+            },
+        )
+
+        data = layer.to_dict()
+
+        assert data["narrative_plan"]["mode"] == "lite"
+        assert data["narrative_plan"]["sections"]["title"]["content"] == "燃烧的静默"
 
 
 class TestLayer2LiteFinal:
@@ -208,6 +252,30 @@ class TestLayer3ProDraft:
         )
         assert "自我保护" in layer.first_impression
         assert layer.imbalance_confirmed["confidence"] == 0.85
+
+    def test_narrative_plan_serializes(self):
+        """测试 Pro narrative_plan 可序列化"""
+        layer = Layer3ProDraft(
+            first_impression="画面显示强烈的自我保护",
+            narrative_plan={
+                "mode": "pro",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "first_impression": {
+                        "content": "画面显示强烈的自我保护",
+                        "trace": {"rule_refs": ["primary_candidates:水多火灭"]},
+                    }
+                },
+            },
+        )
+
+        data = layer.to_dict()
+
+        assert data["narrative_plan"]["mode"] == "pro"
+        assert (
+            data["narrative_plan"]["sections"]["first_impression"]["content"]
+            == "画面显示强烈的自我保护"
+        )
 
 
 class TestLayer4ProFinal:

@@ -105,6 +105,11 @@ Monorepo 的目标不是把所有东西混在一起，而是做到：
   - 公司侧入口：`company/projects/怀瑾握瑜/`
   - 项目工作区：`projects/aicareer/`
   - 历史来源：`/Users/xinran/Downloads/dev/ai-career`
+- `馨冉求职`
+  - 类型：`product`
+  - 公司侧入口：`company/projects/馨冉求职/`
+  - 项目工作区：`projects/xinran-jobhunt/`
+  - 历史来源：无，直接在 Monorepo 内立项
 - `研究中心`
   - 类型：`capability`
   - 公司侧入口：`company/projects/研究中心/`

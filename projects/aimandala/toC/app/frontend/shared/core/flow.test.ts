@@ -78,11 +78,29 @@ describe("shared/core flow", () => {
       title: "一镜 Lite 版",
       overall_impression: "整体稳定",
       structured: {
-        title: "一镜 Lite 版",
-        overall_impression: "整体稳定",
-        visual_elements_rendered: "线条细密",
-        emotion_portrait_rendered: "情绪平稳",
-        pro_teaser: "可继续查看 Pro",
+        topic_context: {
+          topic: "general",
+          topic_label: "全面解读",
+          report_mode: "lite",
+          orientation: {
+            intro: "这份报告会从全面解读这个议题角度看这张画。",
+            focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+            key_terms: [],
+          },
+        },
+        current_reading: "整体稳定",
+        visual_basis: "线条细密",
+        pattern_interpretation: "情绪平稳",
+        life_connection: "当下可以先稳住节奏。",
+        lite_healing_guidance: {
+          directions: [{ title: "先稳住节奏", content: "先不要急着推进，保留一点观察空间。" }],
+          micro_practices: [{ title: "一句记录", content: "写下一句此刻最真实的感受。" }],
+        },
+        pro_report_entry: {
+          title: "另一份更深的独立报告",
+          summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
+          product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
+        },
       },
       report: "lite body",
       ai_qa_context: null,
@@ -98,7 +116,7 @@ describe("shared/core flow", () => {
     expect(created.step).toBe("liteGenerating");
     expect(ready.step).toBe("liteReady");
     expect(completed.step).toBe("liteReady");
-    expect(getLiteStructuredReport(completed.report)?.pro_teaser).toBe("可继续查看 Pro");
+    expect(getLiteStructuredReport(completed.report)?.pro_report_entry.summary).toContain("更深层结构");
   });
 
   it("对 pro 报告直接进入 proReady 语义", () => {
@@ -108,10 +126,26 @@ describe("shared/core flow", () => {
       title: "一梳 Pro 版",
       overall_impression: "需要更深分析",
       structured: {
-        first_impression: "边界感偏强",
-        root_cause: {
-          pattern: "控制感",
+        topic_context: {
+          topic: "general",
+          topic_label: "全面解读",
+          report_mode: "pro",
+          orientation: {
+            intro: "这份报告会从全面解读这个议题角度看这张画。",
+            focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+            key_terms: [],
+          },
         },
+        deep_impression: "边界感偏强",
+        evidence_digest: "线条边界清楚。",
+        imbalance_diagnosis: "边界收紧。",
+        root_cause_chain: {
+          surface: "先控制。",
+          mechanism: "用掌控感降低不确定。",
+          core: "害怕失去主动权。",
+        },
+        deep_structure_interpretation: "这更像控制感背后的安全议题。",
+        healing_plan: [],
       },
       report: "pro body",
       ai_qa_context: null,
@@ -122,6 +156,6 @@ describe("shared/core flow", () => {
 
     expect(proState.step).toBe("proReady");
     expect(proState.report?.version).toBe("pro");
-    expect(getProStructuredReport(proState.report)?.first_impression).toBe("边界感偏强");
+    expect(getProStructuredReport(proState.report)?.deep_impression).toBe("边界感偏强");
   });
 });
