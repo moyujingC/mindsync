@@ -98,6 +98,17 @@
   - [shared/tools/paperclip-local-executor.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-executor.mjs)
   - [shared/tools/paperclip-local-pilot.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-pilot.mjs)
 
+补充导航口径：
+
+- 版本基线与升级后最小回归检查
+  - 看 [projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
+- `codex_local` 的正式安全边界
+  - 看 [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
+  - 与 [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md) 配套阅读
+- execution policy 与本地 `review:*` / `task_class` 语义的原则级映射
+  - 看 [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
+  - 与 [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md) 配套阅读
+
 ## 4. 公司级边界与项目级边界
 
 `Automation Platform` 公司级入口默认只承接：
@@ -133,6 +144,10 @@
 3. [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
 4. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
 5. [company/knowledge-base/system/Paperclip-设计机制与使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
+6. [2026-04-27-项目工作区与执行工作区分层-SPEC.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-SPEC.md)
+7. [2026-04-27-项目工作区与执行工作区分层-PLAN.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-PLAN.md)
+8. [2026-04-27-项目工作区与执行工作区分层-QA.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-QA.md)
+9. [2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md)
 
 如果你要看当前首个正式落地项目的部署与运维细节，再进入：
 

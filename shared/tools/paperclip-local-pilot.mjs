@@ -13,6 +13,10 @@ const REQUIRED_ENV = [
   "PAPERCLIP_AGENT_ID",
   "PAPERCLIP_API_KEY",
 ];
+const MINDSYNC_RUNTIME_ROOT = path.join(os.homedir(), ".mindsync", "runtime");
+const PAPERCLIP_REPO_FALLBACK = path.join(MINDSYNC_RUNTIME_ROOT, "paperclip");
+const PAPERCLIP_REPO_CLI_ENTRY = path.join(PAPERCLIP_REPO_FALLBACK, "cli", "src", "index.ts");
+const PAPERCLIP_REPO_TSX = path.join(PAPERCLIP_REPO_FALLBACK, "cli", "node_modules", "tsx", "dist", "cli.mjs");
 
 function usage() {
   console.log(`Usage:
@@ -96,16 +100,44 @@ function requireEnv(keys = REQUIRED_ENV) {
 }
 
 function runPaperclip(args) {
-  return execFileSync(
-    "paperclipai",
-    args,
-    {
+  const env = {
+    ...process.env,
+  };
+  try {
+    return execFileSync("paperclipai", args, {
       encoding: "utf8",
-      env: {
-        ...process.env,
-      },
-    },
-  );
+      env,
+    });
+  } catch (error) {
+    if (!pathExistsSync(PAPERCLIP_REPO_CLI_ENTRY) || !pathExistsSync(PAPERCLIP_REPO_TSX)) {
+      const primaryMessage = error instanceof Error ? error.message : String(error);
+      fail(
+        `paperclip CLI unavailable, and runtime repo-local fallback is incomplete. ` +
+        `runtime_repo=${PAPERCLIP_REPO_FALLBACK}; primary_error=${primaryMessage}`,
+      );
+    }
+    try {
+      return execFileSync("node", [PAPERCLIP_REPO_TSX, PAPERCLIP_REPO_CLI_ENTRY, ...args], {
+        encoding: "utf8",
+        env,
+      });
+    } catch (fallbackError) {
+      const primaryMessage = error instanceof Error ? error.message : String(error);
+      const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+      fail(
+        `paperclip CLI unavailable. primary_error=${primaryMessage}; fallback_error=${fallbackMessage}`,
+      );
+    }
+  }
+}
+
+function pathExistsSync(targetPath) {
+  try {
+    execFileSync("test", ["-f", targetPath], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function paperclipJson(args) {

@@ -66,7 +66,7 @@
 
 如果任务明确是发布到 `墨予镜` 个人号的一镜一梳相关内容，再继续进入：
 
-- [company/projects/墨予镜IP/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md)
+- [company/projects/内容矩阵/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/PROJECT.md)
 
 ## 5. 当前公司侧重点
 

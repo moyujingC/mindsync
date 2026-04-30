@@ -97,6 +97,15 @@
 - AIMandala 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-dev`
 - 该 worktree 固定对应 `aimandala/dev`
 - `aimandala/dev` 是 AIMandala 默认本地产品开发与本地验证分支，成熟后再合回 `main`
+- RelayHub 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev`
+- 该 worktree 固定对应 `relayhub/dev`
+- `relayhub/dev` 是 RelayHub 默认本地产品开发与本地验证分支
+- 内容矩阵固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/content-matrix-dev`
+- 该 worktree 固定对应 `content-matrix/dev`
+- `content-matrix/dev` 是内容矩阵默认本地内容整理与本地验证分支
+- 馨冉求职固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/xinran-jobhunt-dev`
+- 该 worktree 固定对应 `xinran-jobhunt/dev`
+- `xinran-jobhunt/dev` 是馨冉求职默认本地执行与本地验证分支
 
 ## IDE 默认开发纪律
 

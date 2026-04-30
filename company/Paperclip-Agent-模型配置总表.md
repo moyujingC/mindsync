@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-04-15
+> last_updated：2026-04-27
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md
 
 这份文档用于收口 `Paperclip` 当前各类 Agent 的运行时模型配置。
@@ -33,6 +33,9 @@
   - CEO 链路稳定
   - 工程与测试链路稳定
   - 规划/内容/研究类链路稳定
+- 对 `codex_local`
+  - 默认不应继承非 Paperclip 显式批准的外部 connector（连接器）
+  - 若运行宿主无法技术上完全隔离外部已连接能力，应按高风险能力处理，而不是按普通可用性提示处理
 - `warn` 不等于不可用
   - 对 `claude_local` 来说，如果 `hello probe succeeded` 同时存在，则通常表示可用，只是当前在走 API-key 模式
 
@@ -85,6 +88,12 @@
   - 这是当前更稳的工程执行口径
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
+- 安全边界口径：
+  - `codex_local` 默认不应继承用户在其他 OpenAI / ChatGPT 应用表面已连接、但未在 Paperclip 显式批准的 connector
+  - 若当前运行宿主做不到技术上完全隔离，这类外部读写能力默认按高风险能力处理
+  - 对邮箱、发送消息、外部写入这类 connector，当前默认不视为已纳入 `墨予镜` 正式治理边界
+  - 这类风险不属于普通 `warn`，而属于执行边界与安全边界问题
+  - 若后续要正式启用，必须先单独立 `spec -> plan -> verification -> delivery`
 - 人工接管口径：
   - 当前允许用户在成本敏感阶段手动暂停 `Engineer`
   - 当公共卡点被人工清除后，再恢复 `Engineer` 继续运行
@@ -119,6 +128,9 @@
   - 与 `Engineer` 保持同模型口径，方便工程链路一致
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
+- 安全边界口径：
+  - 与 `Engineer` 共用同一条 `codex_local` connector 风险边界
+  - 若测试链路可见外部已连接读写能力，默认先按治理缺口处理，而不是把它当作“顺带可用的工具”
 
 ### 3.4 claude_local 系列
 
@@ -239,6 +251,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - 不建议为了“面板没有 warning”去改 `paperclip` 仓库语义
 - 不建议为了统一而强行把所有 Agent 都迁成同一个 adapter
 - 不建议把 `claude_local` 的 API-key warning 直接当故障
+- 不建议把 `codex_local` 能访问到的外部已连接 connector 直接当作可默认使用能力
 
 ## 6. 后续变更时怎么更新
 
