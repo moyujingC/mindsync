@@ -91,11 +91,13 @@ objects:
 
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
     name: "内容矩阵"
-    slug: "moyujing-ip"
+    slug: "content-matrix"
     kind: "brand"
     status: "active"
     goal: "多账号内容矩阵与影响力建设"
     company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/PROJECT.md"
+    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/content-matrix/PROJECT.md"
+    runtime_directory: "projects/content-matrix"
     purpose:
       - "承接公司所有账号的统一内容规划、内容转译与内容资产治理"
       - "汇聚产品项目与研究中心输出，形成多账号外部表达"
