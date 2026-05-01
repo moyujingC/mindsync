@@ -199,6 +199,25 @@
   - 若后续本机 `pi` 环境不稳定，再决定是否继续保留、替换或只做 fallback
   - 若后续重建容器或迁移宿主，必须同步恢复 `/paperclip/.pi/agent/models.json`
   - 若只保留 `OPENAI_BASE_URL` / `OPENAI_API_KEY`，但遗漏自定义 provider，`Test environment` 仍可能失败
+- RelayHub 入口绑定口径：
+  - `entry-paperclip-pi-local-mac`
+  - `entry-paperclip-pi-local-server`
+  - 统一通过 [shared/tools/sync-paperclip-pi-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-pi-model.sh) 同步
+  - 该脚本会把入口绑定翻译到 `/paperclip/.pi/agent/models.json`
+  - 同时把 `Paperclip` 运行时 `pi_local` agent 的 `adapterConfig.model` 对齐为 `provider/model`
+
+### 3.6 CEO Hermes
+
+- Agent：`CEO`
+- Adapter：`hermes_local`
+- 当前规划范围：
+  - 只纳入服务器入口
+  - 对应 `entry-paperclip-hermes-local-server`
+- RelayHub 入口绑定口径：
+  - 统一通过 [shared/tools/sync-paperclip-hermes-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-hermes-model.sh) 同步
+  - 该脚本会把入口绑定翻译到 `/paperclip/.hermes/config.yaml`
+  - 如指定 `OPENAI_ENV_FILE`，也会同步 `OPENAI_BASE_URL` / `OPENAI_MODEL` / `OPENAI_API_KEY`
+  - 同时把 `Paperclip` 运行时 `hermes_local` agent 的 `adapterConfig.env.OPENAI_*` 对齐
 
 ## 4. 当前服务器侧全局环境
 
@@ -215,6 +234,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
 
 - `hermes_local`
   - 主要吃服务器侧 `OPENAI_*`
+  - 同时应以 `/paperclip/.hermes/config.yaml` 作为 Hermes 进程直接读取的落地配置
 - `claude_local`
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
 - `codex_local`
@@ -223,6 +243,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - `Idea Clarifier`
   - 虽然也复用服务器侧 `OPENAI_API_KEY`
   - 当前模型已改为 `deepseek-v4-pro`
+  - 但真正执行仍依赖 `/paperclip/.pi/agent/models.json` 中的自定义 provider
 - `Engineer / Test QA`
   - 当前不通过降模型省 token
   - 当前通过 `session compaction` 控制长会话上下文体积
