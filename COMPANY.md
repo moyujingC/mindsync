@@ -84,13 +84,14 @@ goals:
 8. [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
 9. [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
 10. [company/标签与状态使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/标签与状态使用说明.md)
-11. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
-12. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
-13. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
-14. [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
-15. [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md)
-16. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
-17. [company/knowledge-base/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md)
+11. [company/Git仓库管理系统说明.md](/Users/xinran/Downloads/dev/mindsync/company/Git仓库管理系统说明.md)
+12. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
+13. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
+14. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+15. [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
+16. [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md)
+17. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+18. [company/knowledge-base/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md)
 
 其中：
 
@@ -104,6 +105,7 @@ goals:
 - `任务创建模板` 定义 intake / epic / execution / artifact-review 的默认写法
 - `顶层任务收束规则` 定义顶层任务应如何长期收束，不混入阶段性整改表
 - `标签与状态使用说明` 解释这些标签和文档状态在实际运行中如何影响入口、巡检和默认动作
+- `Git仓库管理系统说明` 收口公司级 Git 仓库、Monorepo、worktree、分支和提交纪律的总入口
 - `MONOREPO` 定义仓库分层、对象类型与目录归属原则
 - `DOCS_GOVERNANCE` 定义正式文档的状态、元数据和 artifact 规则
 - `服务器与基础设施入口` 定义当前可运维宿主机的公司级登录入口与项目 runbook 索引
