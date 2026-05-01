@@ -10,6 +10,7 @@ MODE="${1:-status}"
 TARGET_AGENT_NAMES_RAW="${PAPERCLIP_COMMAND_OVERRIDE_TARGETS:-Engineer}"
 
 DEFAULT_PROXY_COMMAND="${REPO_ROOT}/shared/tools/ci/server-automation-command-proxy.sh"
+DEFAULT_RUNTIME_PROXY_COMMAND="${PAPERCLIP_RUNTIME_PROXY_COMMAND:-/opt/automation/app/mindsync/shared/tools/ci/server-automation-command-proxy.sh}"
 DEFAULT_WORKTREE_ROOT="${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
 IFS=',' read -r -a TARGET_AGENT_NAMES <<<"$TARGET_AGENT_NAMES_RAW"
 
@@ -30,6 +31,8 @@ Commands:
 Notes:
   - Current default target: Engineer
   - To target more agents, set PAPERCLIP_COMMAND_OVERRIDE_TARGETS, e.g. Engineer,Test / QA
+  - Runtime command defaults to /opt/automation/app/mindsync/shared/tools/ci/server-automation-command-proxy.sh
+  - Override runtime command path with PAPERCLIP_RUNTIME_PROXY_COMMAND if the server uses a different stable checkout path
   - This script only overrides adapterConfig.command plus helper env for proxy pass-through.
   - It does not fabricate task_class / execution_route metadata.
   - This script preserves existing adapterConfig.extraArgs/model/instructions fields
@@ -93,12 +96,13 @@ build_patch_payload() {
   local current_payload="$1"
   local mode="$2"
   local proxy_command="$3"
-  python3 - "$mode" "$proxy_command" <<'PY' <<<"$current_payload"
+  CURRENT_PAYLOAD="$current_payload" python3 - "$mode" "$proxy_command" <<'PY'
 import json, sys
+import os
 
 mode = sys.argv[1]
 proxy_command = sys.argv[2]
-agent = json.loads(sys.stdin.read())
+agent = json.loads(os.environ["CURRENT_PAYLOAD"])
 adapter = agent.get("adapterType")
 adapter_config = dict(agent.get("adapterConfig") or {})
 env = dict(adapter_config.get("env") or {})
@@ -139,11 +143,12 @@ show_status() {
       continue
     fi
     payload="$(api_curl "${api_url}/api/agents/${runtime_id}")"
-    python3 - "$agent_name" <<'PY' <<<"$payload"
+    PAYLOAD_JSON="$payload" python3 - "$agent_name" <<'PY'
 import json, sys
+import os
 
 name = sys.argv[1]
-agent = json.loads(sys.stdin.read())
+agent = json.loads(os.environ["PAYLOAD_JSON"])
 cfg = dict(agent.get("adapterConfig") or {})
 env = dict(cfg.get("env") or {})
 def value(key):
@@ -170,7 +175,7 @@ apply_mode() {
       continue
     fi
     current_payload="$(api_curl "${api_url}/api/agents/${runtime_id}")"
-    patch_payload="$(build_patch_payload "$current_payload" "$patch_mode" "$DEFAULT_PROXY_COMMAND")"
+    patch_payload="$(build_patch_payload "$current_payload" "$patch_mode" "$DEFAULT_RUNTIME_PROXY_COMMAND")"
     if [[ "$dry_run" == "1" ]]; then
       echo "== ${agent_name} =="
       echo "$patch_payload"

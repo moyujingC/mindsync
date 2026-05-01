@@ -68,10 +68,11 @@ api_curl() {
 }
 
 payload="$(api_curl "${api_url}/api/companies/${company_id}/agents")"
-python3 - <<'PY' <<<"$payload"
+PAYLOAD_JSON="$payload" python3 - <<'PY'
 import json, sys
+import os
 
-agents = json.loads(sys.stdin.read())
+agents = json.loads(os.environ["PAYLOAD_JSON"])
 target = {"codex_local", "claude_local", "pi_local"}
 
 matrix = {

@@ -276,6 +276,10 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 11. `shared/tools/sync-paperclip-server-automation-command-override.sh`
    - 管理 runtime `adapterConfig.command` override 的状态、dry-run、sync、rollback
    - 当前默认目标仅为 `Engineer`
+   - 默认写入的 runtime command 路径是服务器稳定路径：
+     - `/opt/automation/app/mindsync/shared/tools/ci/server-automation-command-proxy.sh`
+   - 若服务器正式 checkout 路径不同，需显式设置：
+     - `PAPERCLIP_RUNTIME_PROXY_COMMAND=<server-stable-path>`
    - 若要扩大到 `Test / QA`，需显式设置：
      - `PAPERCLIP_COMMAND_OVERRIDE_TARGETS=Engineer,Test / QA`
    - 当前只下发 proxy 所需的透传 env：
