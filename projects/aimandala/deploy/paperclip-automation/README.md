@@ -258,8 +258,33 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 不继续后续 maintenance 或会触发写文件的自动动作
 8. `shared/tools/sync-paperclip-server-automation-guardrails.sh`
    - 统一把 guard/finalizer 依赖的 env 下发到 runtime agent `adapterConfig.env`
-   - 当前只同步环境变量，不默认覆盖 adapter `command`
-   - 只有在确认 Paperclip adapter 的 CLI 参数协议后，才继续推进 command wrapper override
+9. `shared/tools/probe-paperclip-adapter-command-override.sh`
+   - 读取 Paperclip runtime agent 当前配置
+   - 输出 `codex_local / claude_local / pi_local` 的 command override 兼容矩阵
+   - 当前已确认：
+     - `command` 只替换 adapter binary（可执行文件）
+     - `extraArgs` 仍由 adapter 追加
+     - prompt 仍通过 stdin（标准输入）注入
+     - `cwd` 仍来自 runtime workspace
+10. `shared/tools/ci/server-automation-command-proxy.sh`
+   - runtime command override 的透传包装器
+   - 默认 `passive` 模式：
+     - 保留原始 args / stdin / cwd / exit code
+     - 只有在显式拿到 `task_class / execution_route / description` 元数据时才执行 guard
+     - 只有显式满足 `automation-execution + server_automation` 时才触发 finalizer
+   - 这样做是为了避免仅靠 agent 级 `command` override 就把所有运行都误判成服务器自动化任务
+11. `shared/tools/sync-paperclip-server-automation-command-override.sh`
+   - 管理 runtime `adapterConfig.command` override 的状态、dry-run、sync、rollback
+   - 当前默认目标仅为 `Engineer`
+   - 若要扩大到 `Test / QA`，需显式设置：
+     - `PAPERCLIP_COMMAND_OVERRIDE_TARGETS=Engineer,Test / QA`
+   - 当前只下发 proxy 所需的透传 env：
+     - `PAPERCLIP_REAL_COMMAND`
+     - `PAPERCLIP_EXECUTION_WORKTREE_ROOT`
+     - `PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT`
+     - `PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE=passive`
+   - 不再伪造 `PAPERCLIP_TASK_CLASS` / `PAPERCLIP_EXECUTION_ROUTE`
+   - 因为这两项若在 agent 级静态写死，会把非 `server_automation` 任务也伪装成自动化任务
 
 当前补充说明：
 
