@@ -413,6 +413,22 @@ export async function getChangedFiles(cwd) {
     .map((line) => line.slice(3).trim());
 }
 
+export async function getGitStatusLines(cwd) {
+  const result = await runShellCommand("git status --porcelain", { cwd });
+  if (result.code !== 0) {
+    throw new Error(`Failed to read git status: ${truncateText(result.stderr || result.stdout, 1200)}`);
+  }
+  return result.stdout
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .filter(Boolean);
+}
+
+export async function isGitWorktreeClean(cwd) {
+  const lines = await getGitStatusLines(cwd);
+  return lines.length === 0;
+}
+
 function parseStatusPorcelain(output) {
   const lines = String(output ?? "")
     .split(/\r?\n/)

@@ -233,13 +233,23 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 维护前先检查 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat`
    - 任一 checkout 变脏即直接失败退出，不再静默 `reset --hard` 或自动清理
    - 日常自动清理只允许作用于 `/opt/automation/worktrees`
-4. heartbeat / 巡检编排
+4. `shared/tools/ci/server-automation-guard.mjs`
+   - 服务器执行前统一校验 cwd
+   - `server_automation` 只能落到 `/opt/automation/worktrees`
+   - `manual-review-required + local_manual_review` 不允许使用服务器可写根
+   - `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 固定视为 observe-only checkout
+5. `shared/tools/ci/server-automation-finalizer.mjs`
+   - 服务器执行后统一做 Git 收尾
+   - clean worktree 才允许直接保持 `done`
+   - 白名单内改动允许自动 `git add + git commit`，并把任务转为 `in_review`
+   - 非白名单或可疑改动直接转 `blocked`，保留现场等待人工处理
+6. heartbeat / 巡检编排
    - 先跑 runner heartbeat
    - 再跑 execution health check strict gate
    - 若发现当前活跃 Automation issue 的 workspace materialization 漂移，本轮服务直接失败
    - 历史 `done` 漂移只进入审计，不单独阻断 heartbeat
-   - 若发现本应本地执行的任务进入了服务器可写路径，只记录为 `localExecutionRoutingIssues`
-   - 这类问题属于路由异常审计，不触发服务器代转交，也不单独阻断 heartbeat
+   - 若发现本应本地执行的任务进入了服务器可写路径，直接视为 strict gate 失败
+   - 若发现 `done` issue 对应 worktree 仍 dirty，也直接视为 strict gate 失败
    - `--apply` 只继续用于 stale running issue 的看板纠偏，不再作为普通任务 reject / handoff 处理器
    - 不继续后续 maintenance 或会触发写文件的自动动作
 
@@ -252,8 +262,13 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - `serverAutomationBlocking = 34`
    - `historicalDoneWorkspaceDrift = 8`
    - `localExecutionRouting = 2`
-5. 其中 strict gate 当前只由 `serverAutomationBlocking` 驱动；`localExecutionRouting` 继续只审计，不单独阻断 heartbeat
-6. 因此下一阶段主任务不是再次调整 gate，而是诊断这 34 条活跃 `server_automation` issue 为什么没有真正 materialize 到 execution workspace
+5. 当前正式口径已进一步收紧：
+   - `localExecutionRouting` 命中后不再只是审计，而是直接阻断成功回写
+   - `done but dirty` worktree 也属于 strict gate 失败
+6. 因此下一阶段主任务不再只是诊断 materialization，而是同时保证：
+   - 不再写 observe-only checkout
+   - 不再让 `local_manual_review` 进入服务器可写区
+   - 不再出现 `done but dirty`
 
 ### 2.4.1 2026-04-19 diagnosis phase 基线
 
@@ -262,7 +277,10 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 1. `serverAutomationBlocking = 34`
 2. `historicalDoneWorkspaceDrift = 8`
 3. `localExecutionRouting = 2`
-4. `strictShouldFail` 只由活跃 `serverAutomationBlockingIssues` 驱动
+4. `strictShouldFail` 当前由以下任一命中触发：
+   - 活跃 `serverAutomationBlockingIssues`
+   - `localExecutionRoutingIssues`
+   - `doneDirtyWorkspaceIssues`
 
 当前阶段的正式目标不是：
 
@@ -272,7 +290,11 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 而是：
 
-1. 先运行 diagnosis CLI，把 34 条 blocking issue 收敛成根因分桶
+1. 先运行 diagnosis / health / finalizer 三层链路，把当前活跃问题分成：
+   - 未 materialize
+   - observe-only checkout
+   - local routing drift
+   - done but dirty
 2. 再按桶级抽样补证据
 3. 最后再进入下一轮受控修复计划
 
@@ -535,9 +557,10 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 不新增 `execution_workspace_policy_not_materialized`
    - 不新增 `server_writable_execution_not_allowed`
 3. `manual-review-required` 任务未被误送入 `server_automation`
-4. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
-5. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
-6. 若本轮升级涉及 auth / host / port 相关修复
+4. `done` 的服务器侧 issue 不再留下 dirty worktree
+5. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
+6. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
+7. 若本轮升级涉及 auth / host / port 相关修复
    - 同步验证公网入口、Tailscale 入口、`publicBaseUrl` 与回跳行为
 
 当前补充治理要求：
