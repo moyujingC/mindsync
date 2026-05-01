@@ -243,7 +243,11 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - clean worktree 才允许直接保持 `done`
    - 白名单内改动允许自动 `git add + git commit`，并把任务转为 `in_review`
    - 非白名单或可疑改动直接转 `blocked`，保留现场等待人工处理
-6. heartbeat / 巡检编排
+6. `shared/tools/ci/server-automation-run.sh`
+   - 统一服务器侧执行包装器
+   - 固定顺序：guard -> 执行命令 -> finalizer
+   - 适用于 deploy / smoke / runner / maintenance / 受控修复这类服务器自动化任务
+7. heartbeat / 巡检编排
    - 先跑 runner heartbeat
    - 再跑 execution health check strict gate
    - 若发现当前活跃 Automation issue 的 workspace materialization 漂移，本轮服务直接失败
