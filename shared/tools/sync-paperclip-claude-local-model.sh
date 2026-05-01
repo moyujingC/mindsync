@@ -7,10 +7,10 @@ AUTH_JSON="${HOME}/.paperclip/auth.json"
 API_BASE="${PAPERCLIP_API_URL:-http://vm-0-11-opencloudos.tail176582.ts.net:3100}"
 COMPANY_ID="${PAPERCLIP_COMPANY_ID:-be191a6e-7447-4821-a93d-9114214c4a64}"
 
-PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://code.ppchat.vip/v1}"
-PRIMARY_MODEL="${PRIMARY_MODEL:-gpt-5.4}"
-BACKUP_BASE_URL="${BACKUP_BASE_URL:-https://aitechflux.com/v1}"
-BACKUP_MODEL="${BACKUP_MODEL:-Claude混合版}"
+PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://api.deepseek.com/anthropic}"
+PRIMARY_MODEL="${PRIMARY_MODEL:-deepseek-v4-pro}"
+BACKUP_BASE_URL="${BACKUP_BASE_URL:-https://api.deepseek.com/anthropic}"
+BACKUP_MODEL="${BACKUP_MODEL:-deepseek-v4-flash}"
 
 read_token() {
   ruby -rjson -e '
@@ -109,12 +109,12 @@ env.setdefault("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", plain("1"))
 adapter_config["env"] = env
 adapter_config["paperclipModelRouting"] = {
     "primary": {
-        "provider": "PPChat",
+        "provider": "DeepSeek",
         "baseUrl": primary_base_url,
         "model": primary_model,
     },
     "backup": {
-        "provider": "AITechFlux",
+        "provider": "DeepSeek",
         "baseUrl": backup_base_url,
         "model": backup_model,
         "note": "备用口径，当前未声明为自动回退。",

@@ -24,6 +24,7 @@ Notes:
   - Existing adapterConfig fields are preserved; only model / modelReasoningEffort are aligned
   - Use PAPERCLIP_API_URL to point at a remote automation server
   - Use PAPERCLIP_API_TOKEN or PAPERCLIP_API_KEY when the remote instance requires auth
+  - When using DeepSeek, also update the provider base_url / auth in extraArgs or local Codex config
 EOF
 }
 
@@ -196,6 +197,12 @@ import sys
 agent = json.loads(sys.stdin.read())
 adapter_config = dict(agent.get("adapterConfig") or {})
 adapter_config["model"] = os.environ["LOCAL_MODEL"]
+
+extra_args = list(adapter_config.get("extraArgs") or [])
+replacements = {
+    'model_providers.codex.base_url="https://code.ppchat.vip/v1"': 'model_providers.codex.base_url="https://api.deepseek.com"',
+}
+adapter_config["extraArgs"] = [replacements.get(item, item) for item in extra_args]
 
 effort = os.environ.get("LOCAL_EFFORT", "").strip()
 if effort:
