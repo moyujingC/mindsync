@@ -92,6 +92,28 @@ function createState() {
         }
       }
     ],
+    entries: [
+      { id: "entry-claude-ide-local", alias: "relayhub-entry-claude-ide-local" },
+      { id: "entry-codex-ide-local", alias: "relayhub-entry-codex-ide-local" },
+    ],
+    entryBindings: [
+      {
+        entryId: "entry-claude-ide-local",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Claude IDE local binding",
+      },
+      {
+        entryId: "entry-codex-ide-local",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Codex IDE local binding",
+      },
+    ],
     tasks: [
       {
         id: "task-claude-code",
@@ -238,7 +260,7 @@ test("GET /v1/models returns only the currently bound Codex model when explicitl
         const payload = await response.json();
 
         assert.equal(payload.object, "list");
-        assert.deepEqual(payload.data.map((item) => item.id), ["relayhub-task-codex-repo", "model-a"]);
+        assert.deepEqual(payload.data.map((item) => item.id), ["relayhub-entry-codex-ide-local", "model-a"]);
       });
     });
   });
@@ -246,7 +268,8 @@ test("GET /v1/models returns only the currently bound Codex model when explicitl
 
 test("GET /v1/models returns a clear error when task-codex-repo is not bound and explicitly enabled", async () => {
   const state = createState();
-  state.tasks[1].defaultModelEntryId = null;
+  state.entryBindings[1].defaultModelEntryId = null;
+  state.entryBindings[1].defaultModelEntryName = null;
 
   await withCodexRelayEnabled(async () => {
     await withTempState(async () => {
@@ -254,8 +277,8 @@ test("GET /v1/models returns a clear error when task-codex-repo is not bound and
         const response = await fetch(`${baseUrl}/v1/models`);
         assert.equal(response.status, 409);
         const payload = await response.json();
-        assert.equal(payload.error.code, "task_not_bound");
-        assert.equal(payload.relay.taskId, "task-codex-repo");
+        assert.equal(payload.error.code, "entry_not_bound");
+        assert.equal(payload.relay.entryId, "entry-codex-ide-local");
       });
     }, state);
   });
@@ -364,6 +387,45 @@ test("POST /v1/responses routes relayhub task alias to its own bound entry when 
             },
             body: JSON.stringify({
               model: "relayhub-task-dev-backend",
+              input: "修一个接口 bug",
+              stream: false
+            })
+          });
+          assert.equal(response.status, 200);
+        });
+      }, state);
+
+      assert.equal(observedBody.model, "model-a");
+    });
+  });
+});
+
+test("POST /v1/responses routes relayhub entry alias to its bound model when explicitly enabled", async () => {
+  let observedBody = null;
+
+  await withCodexRelayEnabled(async () => {
+    await withMockUpstream(async (request, response) => {
+      observedBody = await readRequestJson(request);
+      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        object: "response",
+        id: "resp_entry_alias",
+        status: "completed",
+        output: []
+      }));
+    }, async (upstreamBaseUrl) => {
+      const state = createState();
+      state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+      await withTempState(async () => {
+        await withServer(createDevRelayServer(), async (baseUrl) => {
+          const response = await fetch(`${baseUrl}/v1/responses`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              model: "relayhub-entry-codex-ide-local",
               input: "修一个接口 bug",
               stream: false
             })
@@ -524,6 +586,57 @@ test("POST /chat/completions routes relayhub task alias to its own bound entry",
           body: JSON.stringify({
             model: "relayhub-task-dev-docs",
             messages: [{ role: "user", content: "整理一版交付说明" }]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.equal(payload.model, "model-a");
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
+  });
+});
+
+test("POST /v1/messages routes relayhub entry alias to its bound model", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-entry-alias",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [
+        {
+          index: 0,
+          message: { role: "assistant", content: "ok" },
+          finish_reason: "stop"
+        }
+      ],
+      usage: {
+        prompt_tokens: 10,
+        completion_tokens: 2
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          },
+          body: JSON.stringify({
+            model: "relayhub-entry-claude-ide-local",
+            max_tokens: 64,
+            messages: [{ role: "user", content: [{ type: "text", text: "hello relay" }] }]
           })
         });
 

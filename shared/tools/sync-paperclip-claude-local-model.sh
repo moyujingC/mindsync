@@ -6,6 +6,8 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AUTH_JSON="${HOME}/.paperclip/auth.json"
 API_BASE="${PAPERCLIP_API_URL:-http://vm-0-11-opencloudos.tail176582.ts.net:3100}"
 COMPANY_ID="${PAPERCLIP_COMPANY_ID:-be191a6e-7447-4821-a93d-9114214c4a64}"
+CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
+ENTRY_ID="${ENTRY_ID:-entry-paperclip-claude-local-server}"
 
 PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://api.deepseek.com/anthropic}"
 PRIMARY_MODEL="${PRIMARY_MODEL:-deepseek-v4-pro}"
@@ -30,6 +32,8 @@ Usage:
 Env overrides:
   PAPERCLIP_API_URL
   PAPERCLIP_COMPANY_ID
+  CONTROL_PLANE_BASE_URL
+  ENTRY_ID
   PRIMARY_BASE_URL
   PRIMARY_MODEL
   BACKUP_BASE_URL
@@ -50,7 +54,24 @@ require_cmd python3
 require_cmd curl
 require_cmd jq
 
+read_binding_defaults() {
+  local binding_json model_id
+  binding_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/entry-bindings" | jq -c --arg entryId "${ENTRY_ID}" '.[] | select(.entryId == $entryId)')"
+  if [[ -n "$binding_json" && "$binding_json" != "null" ]]; then
+    model_id="$(printf '%s' "$binding_json" | jq -r '.defaultModelEntryId // empty')"
+    if [[ -n "$model_id" ]]; then
+      local model_json
+      model_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/models" | jq -c --arg modelId "$model_id" '.[] | select(.id == $modelId)')"
+      if [[ -n "$model_json" && "$model_json" != "null" ]]; then
+        PRIMARY_BASE_URL="$(printf '%s' "$model_json" | jq -r '.baseUrl')"
+        PRIMARY_MODEL="$(printf '%s' "$model_json" | jq -r '.modelId')"
+      fi
+    fi
+  fi
+}
+
 TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-$(read_token)}}"
+read_binding_defaults
 
 api_curl() {
   curl -fsS -H "Authorization: Bearer ${TOKEN}" "$@"

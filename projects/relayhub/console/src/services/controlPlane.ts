@@ -1,15 +1,19 @@
 import {
+  seedEntries,
+  seedEntryBindings,
   presetModelCatalogs,
   seedModelEntries,
   seedTaskRunRecords,
   seedTaskTemplates,
 } from "../fixtures/controlPlaneData";
 import type {
+  EntryBinding,
   GovernanceOverview,
   ModelCatalogResponse,
   ModelEntry,
   ModelEntryInput,
   ModelEntryStatus,
+  RelayEntry,
   TaskModelStat,
   TaskRunRecord,
   TaskRunRecordInput,
@@ -55,6 +59,8 @@ function canBindTaskToModel(taskId: string, model: InternalModelEntry | undefine
 
 interface ControlPlaneState {
   modelEntries: InternalModelEntry[];
+  entries: RelayEntry[];
+  entryBindings: EntryBinding[];
   tasks: TaskTemplate[];
   runs: TaskRunRecord[];
   nextIds: {
@@ -106,6 +112,8 @@ function createInitialState(): ControlPlaneState {
       ...item,
       apiKey: item.hasStoredApiKey ? "seed-api-key" : null,
     })),
+    entries: clone(seedEntries),
+    entryBindings: clone(seedEntryBindings),
     tasks: clone(seedTaskTemplates),
     runs: clone(seedTaskRunRecords),
     nextIds: {
@@ -352,6 +360,21 @@ async function listTaskTemplatesFromServer(): Promise<TaskTemplate[]> {
   return requestJson<TaskTemplate[]>("/tasks");
 }
 
+async function listEntriesFromServer(): Promise<RelayEntry[]> {
+  return requestJson<RelayEntry[]>("/entries");
+}
+
+async function listEntryBindingsFromServer(): Promise<EntryBinding[]> {
+  return requestJson<EntryBinding[]>("/entry-bindings");
+}
+
+async function saveEntryBindingToServer(input: EntryBinding): Promise<EntryBinding> {
+  return requestJson<EntryBinding>(`/entry-bindings/${input.entryId}`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
+}
+
 async function saveTaskTemplateToServer(input: TaskTemplateInput): Promise<TaskTemplate> {
   if (input.id) {
     return requestJson<TaskTemplate>(`/tasks/${input.id}`, {
@@ -439,6 +462,41 @@ export async function listModelEntries(): Promise<ModelEntry[]> {
   }
 
   return delay(mockState.modelEntries.map(toPublicModelEntry));
+}
+
+export async function listEntries(): Promise<RelayEntry[]> {
+  if (shouldUseServer()) {
+    return listEntriesFromServer();
+  }
+
+  return delay(mockState.entries);
+}
+
+export async function listEntryBindings(): Promise<EntryBinding[]> {
+  if (shouldUseServer()) {
+    return listEntryBindingsFromServer();
+  }
+
+  return delay(mockState.entryBindings);
+}
+
+export async function saveEntryBinding(input: EntryBinding): Promise<EntryBinding> {
+  if (shouldUseServer()) {
+    return saveEntryBindingToServer(input);
+  }
+
+  const current = mockState.entryBindings.find((item) => item.entryId === input.entryId);
+  if (!current) {
+    throw new Error("没有找到要更新的入口绑定。");
+  }
+  current.defaultModelEntryId = input.defaultModelEntryId;
+  current.defaultModelEntryName =
+    mockState.modelEntries.find((item) => item.id === input.defaultModelEntryId)?.name ?? null;
+  current.fallbackModelEntryId = input.fallbackModelEntryId;
+  current.fallbackModelEntryName =
+    mockState.modelEntries.find((item) => item.id === input.fallbackModelEntryId)?.name ?? null;
+  current.statusNote = input.statusNote;
+  return delay(current);
 }
 
 export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry> {

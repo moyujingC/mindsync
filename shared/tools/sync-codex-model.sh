@@ -7,6 +7,8 @@ PAPERCLIP_YAML="${REPO_ROOT}/.paperclip.yaml"
 CODEX_CONFIG="${HOME}/.codex/config.toml"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-}"
 PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
+CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
+ENTRY_ID="${ENTRY_ID:-entry-paperclip-codex-local-server}"
 
 usage() {
   cat <<'EOF'
@@ -19,7 +21,7 @@ Commands:
   sync    Update Paperclip codex_local agents to use the local Codex client model
 
 Notes:
-  - Source of truth for model selection is ~/.codex/config.toml
+  - Source of truth for model selection is RelayHub entry binding when available; otherwise fallback to ~/.codex/config.toml
   - Only runtime agents configured as codex_local in .paperclip.yaml are updated
   - Existing adapterConfig fields are preserved; only model / modelReasoningEffort are aligned
   - Use PAPERCLIP_API_URL to point at a remote automation server
@@ -106,6 +108,17 @@ require_cmd curl
 
 local_model="$(read_codex_value "model")"
 local_effort="$(read_codex_value "model_reasoning_effort")"
+
+binding_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/entry-bindings" | jq -c --arg entryId "${ENTRY_ID}" '.[] | select(.entryId == $entryId)')"
+if [[ -n "$binding_json" && "$binding_json" != "null" ]]; then
+  bound_model_id="$(printf '%s' "$binding_json" | jq -r '.defaultModelEntryId // empty')"
+  if [[ -n "$bound_model_id" ]]; then
+    bound_model_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/models" | jq -c --arg modelId "$bound_model_id" '.[] | select(.id == $modelId)')"
+    if [[ -n "$bound_model_json" && "$bound_model_json" != "null" ]]; then
+      local_model="$(printf '%s' "$bound_model_json" | jq -r '.modelId')"
+    fi
+  fi
+fi
 
 if [[ -z "${local_model}" ]]; then
   echo "Could not read model from ${CODEX_CONFIG}" >&2

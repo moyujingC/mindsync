@@ -25,6 +25,14 @@ export type ModelEntryTestCode =
   | "upstream_unreachable"
   | "responses_unavailable"
   | "responses_stream_unavailable";
+export type EntryClientFamily = "claude" | "codex" | "paperclip";
+export type EntryAdapterType = "claude_local" | "codex_local" | "pi_local" | "hermes_local" | null;
+export type EntryHostType = "mac" | "server" | "external-observe";
+export type EntryProtocolFamily =
+  | "anthropic-messages"
+  | "openai-responses"
+  | "openai-chat-completions"
+  | "observe-only";
 export type TaskCategory = "通用工具" | "业务任务";
 export type RunResultGrade = "优秀" | "可用" | "一般" | "失败";
 
@@ -92,6 +100,28 @@ export interface ModelCatalogItem {
 export interface ModelCatalogResponse {
   items: ModelCatalogItem[];
   fetchedAt: string;
+}
+
+export interface RelayEntry {
+  id: string;
+  name: string;
+  clientFamily: EntryClientFamily;
+  adapterType: EntryAdapterType;
+  hostType: EntryHostType;
+  protocolFamily: EntryProtocolFamily;
+  controllable: boolean;
+  description: string;
+  alias: string | null;
+  notes: string[];
+}
+
+export interface EntryBinding {
+  entryId: string;
+  defaultModelEntryId: string | null;
+  defaultModelEntryName: string | null;
+  fallbackModelEntryId: string | null;
+  fallbackModelEntryName: string | null;
+  statusNote: string;
 }
 
 export interface TaskTemplate {

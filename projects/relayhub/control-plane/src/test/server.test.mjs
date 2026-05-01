@@ -57,6 +57,64 @@ test("GET /tasks includes the dev-relay built-in task matrix", async () => {
   });
 });
 
+test("GET /entries returns the entry matrix including observe-only mobile Claude", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/entries`);
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.ok(Array.isArray(payload));
+    const mobile = payload.find((item) => item.id === "entry-claude-mobile-observe");
+    assert.ok(mobile);
+    assert.equal(mobile.protocolFamily, "observe-only");
+    assert.equal(mobile.controllable, false);
+    assert.ok(payload.some((item) => item.id === "entry-paperclip-claude-local-mac"));
+    assert.ok(payload.some((item) => item.id === "entry-paperclip-claude-local-server"));
+  });
+});
+
+test("GET /entry-bindings returns per-entry default model bindings", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/entry-bindings`);
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.ok(Array.isArray(payload));
+    const claudeLocalMac = payload.find((item) => item.entryId === "entry-paperclip-claude-local-mac");
+    assert.ok(claudeLocalMac);
+    assert.equal(typeof claudeLocalMac.statusNote, "string");
+  });
+});
+
+test("PATCH /entry-bindings/:entryId updates the entry default model binding", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/entry-bindings/entry-codex-ide-local`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        defaultModelEntryId: "preset-siliconflow",
+        fallbackModelEntryId: "preset-ppchat-relay",
+        statusNote: "切到更便宜入口。"
+      })
+    });
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.defaultModelEntryId, "preset-siliconflow");
+    assert.equal(payload.defaultModelEntryName, "SiliconFlow 通用目录");
+    assert.equal(payload.fallbackModelEntryId, "preset-ppchat-relay");
+    assert.equal(payload.statusNote, "切到更便宜入口。");
+  });
+});
+
 test("POST /models/:id/test promotes a configured entry to active", async () => {
   await resetState();
   const originalFetch = globalThis.fetch;

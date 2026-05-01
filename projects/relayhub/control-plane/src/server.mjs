@@ -575,6 +575,22 @@ function updateTaskNames(state) {
   });
 }
 
+function updateEntryBindingNames(state) {
+  state.entryBindings = state.entryBindings.map((binding) => {
+    const defaultModel = state.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null;
+    const fallbackModel = state.modelEntries.find((item) => item.id === binding.fallbackModelEntryId) ?? null;
+    return {
+      ...binding,
+      defaultModelEntryName: defaultModel?.name ?? null,
+      fallbackModelEntryName: fallbackModel?.name ?? null
+    };
+  });
+}
+
+function getEntryBinding(state, entryId) {
+  return state.entryBindings.find((item) => item.entryId === entryId) ?? null;
+}
+
 function getTaskStats(state, taskId) {
   const task = state.tasks.find((item) => item.id === taskId);
   if (!task) {
@@ -651,14 +667,14 @@ function getOverview(state) {
   const configuredPendingTest = state.modelEntries.filter(
     (item) => item.status === "configured-pending-test"
   ).length;
-  const tasksBound = state.tasks.filter((item) => item.defaultModelEntryId !== null).length;
+  const tasksBound = state.entryBindings.filter((item) => item.defaultModelEntryId !== null).length;
   const highlights = [];
 
   if (configuredPendingTest > 0) {
     highlights.push(`当前有 ${configuredPendingTest} 个模型已配置但尚未完成测试连接。`);
   }
-  if (state.tasks.some((item) => item.defaultModelEntryId === null)) {
-    highlights.push("仍有任务没有绑定默认模型，首次使用前需要补齐。");
+  if (state.entryBindings.some((item) => item.defaultModelEntryId === null)) {
+    highlights.push("仍有入口没有绑定默认模型，首次使用前需要补齐。");
   }
   if (state.runs.length > 0) {
     highlights.push("运行记录已经开始积累，可以用来做第一轮模型选择判断。");
@@ -669,7 +685,7 @@ function getOverview(state) {
     activeEntries,
     configuredPendingTest,
     tasksBound,
-    totalTasks: state.tasks.length,
+    totalTasks: state.entries.length,
     recentRunsCount: state.runs.length,
     highlights,
     recentRuns: [...state.runs].sort((left, right) => right.ranAt.localeCompare(left.ranAt)).slice(0, 5)
@@ -685,6 +701,7 @@ async function handleRequest(request, response) {
 
   const state = await readState();
   updateTaskNames(state);
+  updateEntryBindingNames(state);
 
   if (method === "GET" && path === "/health") {
     return json(response, 200, { ok: true });
@@ -696,6 +713,44 @@ async function handleRequest(request, response) {
 
   if (method === "GET" && path === "/models") {
     return json(response, 200, state.modelEntries.map(toPublicModelEntry));
+  }
+
+  if (method === "GET" && path === "/entries") {
+    return json(response, 200, state.entries);
+  }
+
+  if (method === "GET" && path === "/entry-bindings") {
+    return json(response, 200, state.entryBindings);
+  }
+
+  if (path.startsWith("/entry-bindings/")) {
+    const entryId = path.split("/")[2];
+    const binding = getEntryBinding(state, entryId);
+    if (!binding) {
+      return notFound(response, "Entry binding not found");
+    }
+
+    if (method === "PATCH" && path === `/entry-bindings/${entryId}`) {
+      const body = await readJsonBody(request);
+      const nextDefaultId = body.defaultModelEntryId ?? null;
+      const nextFallbackId = body.fallbackModelEntryId ?? null;
+      const nextDefaultEntry = nextDefaultId
+        ? state.modelEntries.find((item) => item.id === nextDefaultId) ?? null
+        : null;
+      const nextFallbackEntry = nextFallbackId
+        ? state.modelEntries.find((item) => item.id === nextFallbackId) ?? null
+        : null;
+
+      binding.defaultModelEntryId = nextDefaultId;
+      binding.defaultModelEntryName = nextDefaultEntry?.name ?? null;
+      binding.fallbackModelEntryId = nextFallbackId;
+      binding.fallbackModelEntryName = nextFallbackEntry?.name ?? null;
+      binding.statusNote = typeof body.statusNote === "string" && body.statusNote.trim()
+        ? body.statusNote.trim()
+        : binding.statusNote;
+      await writeState(state);
+      return json(response, 200, binding);
+    }
   }
 
   if (method === "POST" && path === "/models") {
@@ -812,6 +867,17 @@ async function handleRequest(request, response) {
         task.defaultModelEntryId === id
           ? { ...task, defaultModelEntryId: null, defaultModelEntryName: null }
           : task
+      );
+      state.entryBindings = state.entryBindings.map((binding) =>
+        binding.defaultModelEntryId === id || binding.fallbackModelEntryId === id
+          ? {
+              ...binding,
+              defaultModelEntryId: binding.defaultModelEntryId === id ? null : binding.defaultModelEntryId,
+              defaultModelEntryName: binding.defaultModelEntryId === id ? null : binding.defaultModelEntryName,
+              fallbackModelEntryId: binding.fallbackModelEntryId === id ? null : binding.fallbackModelEntryId,
+              fallbackModelEntryName: binding.fallbackModelEntryId === id ? null : binding.fallbackModelEntryName,
+            }
+          : binding
       );
       await writeState(state);
       return noContent(response);

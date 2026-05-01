@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { seedModelEntries, seedRuns, seedTasks } from "./seed-data.mjs";
+import { seedEntryBindings, seedEntries, seedModelEntries, seedRuns, seedTasks } from "./seed-data.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,6 +24,8 @@ function clone(value) {
 function createInitialState() {
   return {
     modelEntries: clone(seedModelEntries),
+    entries: clone(seedEntries),
+    entryBindings: clone(seedEntryBindings),
     tasks: clone(seedTasks),
     runs: clone(seedRuns),
     nextIds: {
@@ -90,6 +92,8 @@ function migrateMissingPresetModelEntries(state) {
     changed: true,
     state: {
       ...state,
+      entries: Array.isArray(state.entries) ? state.entries : clone(seedEntries),
+      entryBindings: Array.isArray(state.entryBindings) ? state.entryBindings : clone(seedEntryBindings),
       modelEntries: [...normalizedExistingEntries, ...missingPresetEntries]
     }
   };

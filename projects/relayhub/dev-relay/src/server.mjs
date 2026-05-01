@@ -8,6 +8,9 @@ const port = Number(process.env.PORT ?? 4319);
 const CLAUDE_RELAY_TASK_ID = "task-claude-code";
 const CODEX_RELAY_TASK_ID = "task-codex-repo";
 const RELAY_TASK_MODEL_PREFIX = "relayhub-task-";
+const RELAY_ENTRY_MODEL_PREFIX = "relayhub-entry-";
+const CLAUDE_ENTRY_ID = "entry-claude-ide-local";
+const CODEX_ENTRY_ID = "entry-codex-ide-local";
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -51,6 +54,33 @@ function relayModelToTaskId(model) {
   }
 
   return suffix.startsWith("task-") ? suffix : `task-${suffix}`;
+}
+
+function entryIdToRelayModel(entryId) {
+  const normalized = String(entryId ?? "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.startsWith("entry-")) {
+    return `${RELAY_ENTRY_MODEL_PREFIX}${normalized.slice(6)}`;
+  }
+
+  return `${RELAY_ENTRY_MODEL_PREFIX}${normalized}`;
+}
+
+function relayModelToEntryId(model) {
+  const normalized = String(model ?? "").trim();
+  if (!normalized.startsWith(RELAY_ENTRY_MODEL_PREFIX)) {
+    return null;
+  }
+
+  const suffix = normalized.slice(RELAY_ENTRY_MODEL_PREFIX.length).trim();
+  if (!suffix) {
+    return null;
+  }
+
+  return suffix.startsWith("entry-") ? suffix : `entry-${suffix}`;
 }
 
 function codexRelayDisabled(response) {
@@ -246,6 +276,121 @@ function shouldProxyAnthropicMessagesNatively(entry) {
 
 function inferTaskIdFromModel(bodyModel, fallbackTaskId) {
   return relayModelToTaskId(bodyModel) ?? fallbackTaskId;
+}
+
+function inferEntryIdFromModel(bodyModel, fallbackEntryId) {
+  return relayModelToEntryId(bodyModel) ?? fallbackEntryId;
+}
+
+function resolveEntryBinding(state, entryId, options = {}) {
+  const {
+    endpointKind = null,
+    requireStream = false
+  } = options;
+  const entryBinding = state.entryBindings?.find((item) => item.entryId === entryId);
+  if (!entryBinding) {
+    return {
+      ok: false,
+      statusCode: 404,
+      code: "entry_binding_not_found",
+      message: `找不到 ${entryId} 的入口绑定，先去 RelayHub 入口库补配置。`,
+      relay: {
+        entryId
+      }
+    };
+  }
+
+  if (!entryBinding.defaultModelEntryId) {
+    return {
+      ok: false,
+      statusCode: 409,
+      code: "entry_not_bound",
+      message: `${entryId} 还没有绑定默认模型，先去 RelayHub 入口库完成绑定。`,
+      relay: {
+        entryId
+      }
+    };
+  }
+
+  const entry = state.modelEntries.find((item) => item.id === entryBinding.defaultModelEntryId);
+  if (!entry) {
+    return {
+      ok: false,
+      statusCode: 404,
+      code: "model_entry_not_found",
+      message: "入口当前绑定的模型入口不存在，请回入口库重新绑定。",
+      relay: {
+        entryId,
+        modelEntryId: entryBinding.defaultModelEntryId
+      }
+    };
+  }
+
+  if (entry.status !== "active") {
+    return {
+      ok: false,
+      statusCode: 409,
+      code: "model_not_active",
+      message: "入口当前绑定的模型入口还未激活，先去模型库测试连接。",
+      relay: {
+        entryId,
+        modelEntryId: entry.id,
+        baseUrl: entry.baseUrl
+      }
+    };
+  }
+
+  if (!entry.apiKey) {
+    return {
+      ok: false,
+      statusCode: 409,
+      code: "missing_api_key",
+      message: "入口当前绑定的模型入口缺少 API Key，先去模型库补 Key。",
+      relay: {
+        entryId,
+        modelEntryId: entry.id,
+        baseUrl: entry.baseUrl
+      }
+    };
+  }
+
+  const responsesOk = Boolean(entry.capabilities?.responses?.ok);
+  const responsesStreamOk = Boolean(entry.capabilities?.responses?.streamOk);
+  const chatCompletionsOk = Boolean(entry.capabilities?.chatCompletions?.ok);
+
+  if (endpointKind === "responses" && (!responsesOk || (requireStream && !responsesStreamOk))) {
+    return {
+      ok: false,
+      statusCode: 409,
+      code: "responses_not_ready",
+      message: "当前入口尚未通过所需的 Responses 探测，先去模型库完成该入口验证。",
+      relay: {
+        entryId,
+        modelEntryId: entry.id,
+        baseUrl: entry.baseUrl
+      }
+    };
+  }
+
+  if (endpointKind === "chat-completions" && !chatCompletionsOk) {
+    return {
+      ok: false,
+      statusCode: 409,
+      code: "chat_completions_not_ready",
+      message: "当前入口尚未通过 Chat Completions 探测，先去模型库完成该入口验证。",
+      relay: {
+        entryId,
+        modelEntryId: entry.id,
+        baseUrl: entry.baseUrl
+      }
+    };
+  }
+
+  return {
+    ok: true,
+    entryBinding,
+    entry
+  };
 }
 
 function resolveRelayBinding(state, taskId, options = {}) {
@@ -692,15 +837,20 @@ async function proxyChatCompletions(request, response) {
   }
 
   const state = await readState();
-  const taskId = inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID);
-  const resolved = resolveRelayBinding(state, taskId, {
-    endpointKind: "chat-completions"
-  });
+  const requestedEntryId = relayModelToEntryId(body.model);
+  const resolved = requestedEntryId
+    ? resolveEntryBinding(state, requestedEntryId, {
+        endpointKind: "chat-completions"
+      })
+    : resolveRelayBinding(state, inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID), {
+        endpointKind: "chat-completions"
+      });
   if (!resolved.ok) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
 
-  const { task, entry } = resolved;
+  const task = "task" in resolved ? resolved.task : { id: requestedEntryId ?? CLAUDE_RELAY_TASK_ID };
+  const entry = resolved.entry;
   const upstreamBody = attachReasoningConfig({
     ...body,
     model: entry.modelId
@@ -816,15 +966,20 @@ async function proxyAnthropicMessages(request, response) {
   }
 
   const state = await readState();
-  const taskId = inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID);
-  const resolved = resolveRelayBinding(state, taskId, {
-    endpointKind: "chat-completions"
-  });
+  const requestedEntryId = inferEntryIdFromModel(body.model, CLAUDE_ENTRY_ID);
+  const resolved = relayModelToEntryId(body.model)
+    ? resolveEntryBinding(state, requestedEntryId, {
+        endpointKind: "chat-completions"
+      })
+    : resolveRelayBinding(state, inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID), {
+        endpointKind: "chat-completions"
+      });
   if (!resolved.ok) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
 
-  const { task, entry } = resolved;
+  const task = "task" in resolved ? resolved.task : { id: requestedEntryId };
+  const entry = resolved.entry;
   if (shouldProxyAnthropicMessagesNatively(entry)) {
     const upstreamBody = {
       ...body,
@@ -1124,7 +1279,10 @@ async function listCodexModels(response) {
     return codexRelayDisabled(response);
   }
   const state = await readState();
-  const resolved = resolveRelayBinding(state, CODEX_RELAY_TASK_ID);
+  const resolved = resolveEntryBinding(state, CODEX_ENTRY_ID, {
+    endpointKind: "responses",
+    requireStream: true
+  });
   if (!resolved.ok) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
@@ -1134,11 +1292,11 @@ async function listCodexModels(response) {
     object: "list",
     data: [
       {
-        id: taskIdToRelayModel(CODEX_RELAY_TASK_ID),
+        id: entryIdToRelayModel(CODEX_ENTRY_ID),
         object: "model",
         created: Math.floor(Date.now() / 1000),
         owned_by: "relayhub",
-        root: taskIdToRelayModel(CODEX_RELAY_TASK_ID)
+        root: entryIdToRelayModel(CODEX_ENTRY_ID)
       },
       {
         id: entry.modelId,
@@ -1163,16 +1321,22 @@ async function proxyResponses(request, response) {
   }
 
   const state = await readState();
-  const taskId = inferTaskIdFromModel(body.model, CODEX_RELAY_TASK_ID);
-  const resolved = resolveRelayBinding(state, taskId, {
-    endpointKind: "responses",
-    requireStream: Boolean(body.stream)
-  });
+  const requestedEntryId = inferEntryIdFromModel(body.model, CODEX_ENTRY_ID);
+  const resolved = relayModelToEntryId(body.model)
+    ? resolveEntryBinding(state, requestedEntryId, {
+        endpointKind: "responses",
+        requireStream: Boolean(body.stream)
+      })
+    : resolveRelayBinding(state, inferTaskIdFromModel(body.model, CODEX_RELAY_TASK_ID), {
+        endpointKind: "responses",
+        requireStream: Boolean(body.stream)
+      });
   if (!resolved.ok) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
 
-  const { task, entry } = resolved;
+  const task = "task" in resolved ? resolved.task : { id: requestedEntryId };
+  const entry = resolved.entry;
   const upstreamBody = attachReasoningConfig({
     ...body,
     model: entry.modelId
