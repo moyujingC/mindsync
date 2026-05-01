@@ -256,6 +256,10 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 若发现 `done` issue 对应 worktree 仍 dirty，也直接视为 strict gate 失败
    - `--apply` 只继续用于 stale running issue 的看板纠偏，不再作为普通任务 reject / handoff 处理器
    - 不继续后续 maintenance 或会触发写文件的自动动作
+8. `shared/tools/sync-paperclip-server-automation-guardrails.sh`
+   - 统一把 guard/finalizer 依赖的 env 下发到 runtime agent `adapterConfig.env`
+   - 当前只同步环境变量，不默认覆盖 adapter `command`
+   - 只有在确认 Paperclip adapter 的 CLI 参数协议后，才继续推进 command wrapper override
 
 当前补充说明：
 
