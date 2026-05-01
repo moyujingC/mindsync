@@ -3,13 +3,19 @@
 > 状态：current
 > 版本：0.2.1
 > owner：Research & Knowledge Lead
-> last_updated：2026-04-13
+> last_updated：2026-05-02
 > source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md
 > 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
 
 这是 `研究中心` 在 Monorepo 中的正式项目工作区入口。
 
 它用于承接 `研究中心` 的任务执行、阶段产物、知识入库动作和后续可能出现的自动化脚本。
+
+当前默认开发 worktree：
+
+- 路径：`/Users/xinran/Downloads/dev/mindsync-worktrees/research-center-dev`
+- 分支：`research-center/dev`
+- 用途：研究中心的默认本地研究整理、知识沉淀与能力实验工作区
 
 ## 1. 项目是什么
 
