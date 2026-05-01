@@ -14,9 +14,9 @@ REAL_COMMAND="${PAPERCLIP_REAL_COMMAND:-}"
 AUTO_FINALIZE="${PAPERCLIP_SERVER_AUTOMATION_AUTO_FINALIZE:-0}"
 PROXY_MODE="${PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE:-passive}"
 COMPANY_ID="${PAPERCLIP_COMPANY_ID:-}"
-API_BASE="${PAPERCLIP_API_BASE:-http://127.0.0.1:3100}"
+API_BASE="${PAPERCLIP_API_BASE:-${PAPERCLIP_API_URL:-http://127.0.0.1:3100}}"
 API_KEY="${PAPERCLIP_API_KEY:-}"
-ISSUE_ID="${PAPERCLIP_ISSUE_ID:-}"
+ISSUE_ID="${PAPERCLIP_ISSUE_ID:-${PAPERCLIP_TASK_ID:-}}"
 COMMIT_MESSAGE="${PAPERCLIP_AUTOMATION_COMMIT_MESSAGE:-}"
 GIT_USER_NAME="${PAPERCLIP_AUTOMATION_GIT_USER_NAME:-Paperclip Automation}"
 GIT_USER_EMAIL="${PAPERCLIP_AUTOMATION_GIT_USER_EMAIL:-paperclip-automation@local}"
@@ -34,7 +34,9 @@ Environment:
   PAPERCLIP_SERVER_AUTOMATION_AUTO_FINALIZE=1
   PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE  passive (default) or enforce
   PAPERCLIP_ISSUE_ID
+  PAPERCLIP_TASK_ID
   PAPERCLIP_API_BASE
+  PAPERCLIP_API_URL
   PAPERCLIP_API_KEY
   PAPERCLIP_COMPANY_ID
   PAPERCLIP_AUTOMATION_COMMIT_MESSAGE
@@ -64,6 +66,68 @@ if [[ ! -f "$FINALIZER_SCRIPT" ]]; then
 fi
 
 cwd="$(pwd)"
+
+resolve_issue_metadata() {
+  if [[ -z "$ISSUE_ID" || -z "$COMPANY_ID" || -z "$API_KEY" ]]; then
+    return 0
+  fi
+
+  local issue_url="${API_BASE%/}/api/issues/${ISSUE_ID}?companyId=${COMPANY_ID}"
+  local issue_payload
+  if ! issue_payload="$(curl -fsS -H "Authorization: Bearer ${API_KEY}" "$issue_url")"; then
+    return 0
+  fi
+
+  local resolved
+  if ! resolved="$(
+    ISSUE_PAYLOAD="$issue_payload" python3 - <<'PY'
+import json
+import os
+
+issue = json.loads(os.environ["ISSUE_PAYLOAD"])
+description = str(issue.get("description") or "")
+metadata = {}
+for raw_line in description.splitlines():
+    if ":" not in raw_line:
+        continue
+    key, value = raw_line.split(":", 1)
+    key = key.strip()
+    value = value.strip()
+    if key in {"task_class", "execution_route"}:
+        metadata[key] = value
+
+print(issue.get("id") or "")
+print(metadata.get("task_class", ""))
+print(metadata.get("execution_route", ""))
+print(description)
+PY
+  )"; then
+    return 0
+  fi
+
+  local resolved_issue_id resolved_task_class resolved_execution_route resolved_description
+  resolved_issue_id="$(printf '%s\n' "$resolved" | sed -n '1p')"
+  resolved_task_class="$(printf '%s\n' "$resolved" | sed -n '2p')"
+  resolved_execution_route="$(printf '%s\n' "$resolved" | sed -n '3p')"
+  resolved_description="$(printf '%s\n' "$resolved" | tail -n +4)"
+
+  if [[ -n "$resolved_issue_id" ]]; then
+    ISSUE_ID="$resolved_issue_id"
+  fi
+  if [[ -z "$TASK_CLASS" && -n "$resolved_task_class" ]]; then
+    TASK_CLASS="$resolved_task_class"
+  fi
+  if [[ -z "$EXECUTION_ROUTE" && -n "$resolved_execution_route" ]]; then
+    EXECUTION_ROUTE="$resolved_execution_route"
+  fi
+  if [[ -z "$DESCRIPTION_OVERRIDE" && -n "$resolved_description" ]]; then
+    DESCRIPTION_OVERRIDE="$resolved_description"
+  fi
+}
+
+if [[ "$PROXY_MODE" == "passive" ]]; then
+  resolve_issue_metadata
+fi
 
 should_run_guard="1"
 if [[ "$PROXY_MODE" == "passive" && -z "$TASK_CLASS" && -z "$EXECUTION_ROUTE" && -z "$DESCRIPTION_OVERRIDE" ]]; then
