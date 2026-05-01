@@ -7,6 +7,7 @@ import { readState } from "../../control-plane/src/store.mjs";
 const port = Number(process.env.PORT ?? 4319);
 const CLAUDE_RELAY_TASK_ID = "task-claude-code";
 const CODEX_RELAY_TASK_ID = "task-codex-repo";
+const RELAY_TASK_MODEL_PREFIX = "relayhub-task-";
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -23,6 +24,33 @@ function relayError(response, statusCode, code, message, relay = undefined) {
     },
     ...(relay ? { relay } : {})
   });
+}
+
+function taskIdToRelayModel(taskId) {
+  const normalized = String(taskId ?? "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.startsWith("task-")) {
+    return `${RELAY_TASK_MODEL_PREFIX}${normalized.slice(5)}`;
+  }
+
+  return `${RELAY_TASK_MODEL_PREFIX}${normalized}`;
+}
+
+function relayModelToTaskId(model) {
+  const normalized = String(model ?? "").trim();
+  if (!normalized.startsWith(RELAY_TASK_MODEL_PREFIX)) {
+    return null;
+  }
+
+  const suffix = normalized.slice(RELAY_TASK_MODEL_PREFIX.length).trim();
+  if (!suffix) {
+    return null;
+  }
+
+  return suffix.startsWith("task-") ? suffix : `task-${suffix}`;
 }
 
 function codexRelayDisabled(response) {
@@ -216,7 +244,15 @@ function shouldProxyAnthropicMessagesNatively(entry) {
   return baseUrl.includes("aitechflux.com") || providerLabel.includes("aitechflux");
 }
 
-function resolveRelayBinding(state, taskId) {
+function inferTaskIdFromModel(bodyModel, fallbackTaskId) {
+  return relayModelToTaskId(bodyModel) ?? fallbackTaskId;
+}
+
+function resolveRelayBinding(state, taskId, options = {}) {
+  const {
+    endpointKind = null,
+    requireStream = false
+  } = options;
   const task = state.tasks.find((item) => item.id === taskId);
   if (!task) {
     return {
@@ -290,15 +326,20 @@ function resolveRelayBinding(state, taskId) {
     };
   }
 
-  if (taskId === CODEX_RELAY_TASK_ID) {
-    const responsesOk = Boolean(entry.capabilities?.responses?.ok);
-    const responsesStreamOk = Boolean(entry.capabilities?.responses?.streamOk);
-    if (!responsesOk || !responsesStreamOk) {
+  const responsesOk = Boolean(entry.capabilities?.responses?.ok);
+  const responsesStreamOk = Boolean(entry.capabilities?.responses?.streamOk);
+  const chatCompletionsOk = Boolean(entry.capabilities?.chatCompletions?.ok);
+
+  if (endpointKind === "responses") {
+    if (!responsesOk || (requireStream && !responsesStreamOk)) {
       return {
         ok: false,
         statusCode: 409,
         code: "responses_not_ready",
-        message: "当前绑定入口尚未通过 Responses 流式探测，先去模型库完成 Codex 兼容验证。",
+        message:
+          taskId === CODEX_RELAY_TASK_ID
+            ? "当前绑定入口尚未通过 Responses 流式探测，先去模型库完成 Codex 兼容验证。"
+            : "当前绑定入口尚未通过所需的 Responses 探测，先去模型库完成该任务的入口验证。",
         relay: {
           taskId: task.id,
           modelEntryId: entry.id,
@@ -306,6 +347,20 @@ function resolveRelayBinding(state, taskId) {
         }
       };
     }
+  }
+
+  if (endpointKind === "chat-completions" && !chatCompletionsOk) {
+    return {
+      ok: false,
+      statusCode: 409,
+      code: "chat_completions_not_ready",
+      message: "当前绑定入口尚未通过 Chat Completions 探测，先去模型库完成该任务的入口验证。",
+      relay: {
+        taskId: task.id,
+        modelEntryId: entry.id,
+        baseUrl: entry.baseUrl
+      }
+    };
   }
 
   return {
@@ -637,7 +692,10 @@ async function proxyChatCompletions(request, response) {
   }
 
   const state = await readState();
-  const resolved = resolveRelayBinding(state, CLAUDE_RELAY_TASK_ID);
+  const taskId = inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID);
+  const resolved = resolveRelayBinding(state, taskId, {
+    endpointKind: "chat-completions"
+  });
   if (!resolved.ok) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
@@ -758,7 +816,10 @@ async function proxyAnthropicMessages(request, response) {
   }
 
   const state = await readState();
-  const resolved = resolveRelayBinding(state, CLAUDE_RELAY_TASK_ID);
+  const taskId = inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID);
+  const resolved = resolveRelayBinding(state, taskId, {
+    endpointKind: "chat-completions"
+  });
   if (!resolved.ok) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
@@ -1073,6 +1134,13 @@ async function listCodexModels(response) {
     object: "list",
     data: [
       {
+        id: taskIdToRelayModel(CODEX_RELAY_TASK_ID),
+        object: "model",
+        created: Math.floor(Date.now() / 1000),
+        owned_by: "relayhub",
+        root: taskIdToRelayModel(CODEX_RELAY_TASK_ID)
+      },
+      {
         id: entry.modelId,
         object: "model",
         created: Math.floor(Date.now() / 1000),
@@ -1095,7 +1163,11 @@ async function proxyResponses(request, response) {
   }
 
   const state = await readState();
-  const resolved = resolveRelayBinding(state, CODEX_RELAY_TASK_ID);
+  const taskId = inferTaskIdFromModel(body.model, CODEX_RELAY_TASK_ID);
+  const resolved = resolveRelayBinding(state, taskId, {
+    endpointKind: "responses",
+    requireStream: Boolean(body.stream)
+  });
   if (!resolved.ok) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }

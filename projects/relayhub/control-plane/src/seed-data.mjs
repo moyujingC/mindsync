@@ -303,6 +303,56 @@ export const seedTasks = [
     switchNote: "当前还没有默认模型，先完成模型激活再绑定。"
   },
   {
+    id: "task-dev-frontend",
+    name: "开发前端改动",
+    category: "通用工具",
+    description: "偏页面结构、交互细节、样式调整与前端重构，优先关注 UI 改动质量和可直接合入性。",
+    builtIn: true,
+    defaultModelEntryId: "preset-aitechflux-relay",
+    defaultModelEntryName: "AITechFlux 中转",
+    switchNote: "默认沿用 Claude 型主路径；如果想省钱，可切到 OpenAI-compatible 入口后再人工复核。"
+  },
+  {
+    id: "task-dev-backend",
+    name: "开发后端改动",
+    category: "通用工具",
+    description: "偏服务端接口、数据面逻辑、脚本与运维接线，优先关注改动闭环和稳定性。",
+    builtIn: true,
+    defaultModelEntryId: null,
+    defaultModelEntryName: null,
+    switchNote: "建议优先绑定支持 Responses 的 Codex / OpenAI-compatible 入口，方便仓库级实现和回归。"
+  },
+  {
+    id: "task-dev-test-fix",
+    name: "开发测试修复",
+    category: "通用工具",
+    description: "偏单测修复、回归验证、fixture 收口和 QA 辅助，优先关注快速定位和稳定改动。",
+    builtIn: true,
+    defaultModelEntryId: null,
+    defaultModelEntryName: null,
+    switchNote: "通常适合绑定支持 Responses 的入口，方便连续试错和批量修复。"
+  },
+  {
+    id: "task-dev-docs",
+    name: "开发文档整理",
+    category: "通用工具",
+    description: "偏 spec、runbook、交付说明、知识整理与口径统一，优先关注表达清晰和上下文一致。",
+    builtIn: true,
+    defaultModelEntryId: "preset-aitechflux-relay",
+    defaultModelEntryName: "AITechFlux 中转",
+    switchNote: "默认走 Claude 型表达主路径；成本优先时可切到国产或 OpenAI-compatible 候选。"
+  },
+  {
+    id: "task-dev-research",
+    name: "开发研究总结",
+    category: "通用工具",
+    description: "偏方案比较、技术调研、迁移分析和决策收口，优先关注长上下文理解与总结质量。",
+    builtIn: true,
+    defaultModelEntryId: "preset-aitechflux-relay",
+    defaultModelEntryName: "AITechFlux 中转",
+    switchNote: "默认走 Claude 型总结主路径；如需结构化代码实验，可切到支持 Responses 的入口。"
+  },
+  {
     id: "task-therapy-dialogue",
     name: "心理疗愈对话",
     category: "业务任务",

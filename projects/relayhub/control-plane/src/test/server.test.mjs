@@ -40,6 +40,23 @@ test("GET /models returns public model entries without apiKey", async () => {
   });
 });
 
+test("GET /tasks includes the dev-relay built-in task matrix", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/tasks`);
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.ok(Array.isArray(payload));
+    assert.ok(payload.some((item) => item.id === "task-dev-frontend"));
+    assert.ok(payload.some((item) => item.id === "task-dev-backend"));
+    assert.ok(payload.some((item) => item.id === "task-dev-test-fix"));
+    assert.ok(payload.some((item) => item.id === "task-dev-docs"));
+    assert.ok(payload.some((item) => item.id === "task-dev-research"));
+  });
+});
+
 test("POST /models/:id/test promotes a configured entry to active", async () => {
   await resetState();
   const originalFetch = globalThis.fetch;

@@ -238,7 +238,7 @@ test("GET /v1/models returns only the currently bound Codex model when explicitl
         const payload = await response.json();
 
         assert.equal(payload.object, "list");
-        assert.deepEqual(payload.data.map((item) => item.id), ["model-a"]);
+        assert.deepEqual(payload.data.map((item) => item.id), ["relayhub-task-codex-repo", "model-a"]);
       });
     });
   });
@@ -329,6 +329,50 @@ test("POST /v1/responses forwards non-stream requests to the bound Codex upstrea
       assert.equal(observedAuthorization, "Bearer sk-active");
       assert.equal(observedBody.model, "model-a");
       assert.equal(observedBody.stream, false);
+    });
+  });
+});
+
+test("POST /v1/responses routes relayhub task alias to its own bound entry when explicitly enabled", async () => {
+  let observedBody = null;
+
+  await withCodexRelayEnabled(async () => {
+    await withMockUpstream(async (request, response) => {
+      observedBody = await readRequestJson(request);
+      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        object: "response",
+        id: "resp_task_alias",
+        status: "completed",
+        output: []
+      }));
+    }, async (upstreamBaseUrl) => {
+      const state = createState();
+      state.modelEntries[0].baseUrl = upstreamBaseUrl;
+      state.tasks.push({
+        id: "task-dev-backend",
+        name: "开发后端改动",
+        defaultModelEntryId: "model-active"
+      });
+
+      await withTempState(async () => {
+        await withServer(createDevRelayServer(), async (baseUrl) => {
+          const response = await fetch(`${baseUrl}/v1/responses`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              model: "relayhub-task-dev-backend",
+              input: "修一个接口 bug",
+              stream: false
+            })
+          });
+          assert.equal(response.status, 200);
+        });
+      }, state);
+
+      assert.equal(observedBody.model, "model-a");
     });
   });
 });
@@ -446,6 +490,50 @@ test("POST /chat/completions forwards to the bound upstream and overrides model"
     assert.equal(observedAuthorization, "Bearer sk-active");
     assert.equal(observedBody.model, "model-a");
     assert.equal(observedBody.messages[0].content, "hello");
+  });
+});
+
+test("POST /chat/completions routes relayhub task alias to its own bound entry", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-task-alias",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }]
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.tasks.push({
+      id: "task-dev-docs",
+      name: "开发文档整理",
+      defaultModelEntryId: "model-active"
+    });
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "relayhub-task-dev-docs",
+            messages: [{ role: "user", content: "整理一版交付说明" }]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.equal(payload.model, "model-a");
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
   });
 });
 
