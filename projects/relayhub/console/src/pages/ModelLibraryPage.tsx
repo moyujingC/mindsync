@@ -8,6 +8,7 @@ import type {
   ModelEntry,
   ModelEntryInput,
   ModelEntryKind,
+  ReasoningEffort,
 } from "../models/controlPlane";
 import {
   deleteModelEntry,
@@ -23,12 +24,20 @@ const KIND_OPTIONS: Array<{ value: ModelEntryKind; label: string }> = [
   { value: "relay-api", label: "中转 API" },
 ];
 
+const REASONING_EFFORT_OPTIONS: Array<{ value: ReasoningEffort | ""; label: string }> = [
+  { value: "", label: "跟随默认" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+];
+
 const emptyForm: ModelEntryInput = {
   name: "",
   providerLabel: "",
   kind: "coding-plan",
   baseUrl: "",
   modelId: "",
+  reasoningEffort: null,
   purchaseUrl: "",
   apiKey: "",
 };
@@ -142,6 +151,7 @@ export function ModelLibraryPage() {
       kind: entry.kind,
       baseUrl: entry.baseUrl,
       modelId: entry.modelId,
+      reasoningEffort: entry.reasoningEffort,
       purchaseUrl: entry.purchaseUrl ?? "",
       apiKey: "",
     });
@@ -547,6 +557,30 @@ export function ModelLibraryPage() {
                 placeholder="可选"
               />
             </label>
+            <label className="field">
+              <span>推理强度</span>
+              <select
+                aria-label="推理强度"
+                value={form.reasoningEffort ?? ""}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    reasoningEffort: event.target.value
+                      ? event.target.value as ReasoningEffort
+                      : null,
+                  }))
+                }
+              >
+                {REASONING_EFFORT_OPTIONS.map((item) => (
+                  <option key={item.label} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+              <span className="supporting-text">
+                对 GPT-5 / o 系列这类推理模型生效。High 表示更深推理，但通常更慢也更贵。
+              </span>
+            </label>
             <label className="field field-wide">
               <span>API Key</span>
               <input
@@ -644,6 +678,9 @@ function EntriesTable({
               <td>
                 <div>{entry.baseUrl}</div>
                 <div className="supporting-text">入口内默认模型：{entry.modelId}</div>
+                <div className="supporting-text">
+                  推理强度：{entry.reasoningEffort ? entry.reasoningEffort : "跟随默认"}
+                </div>
                 <button type="button" className="action-button" onClick={() => onCopyBaseUrl(entry)}>
                   复制 Base URL
                 </button>

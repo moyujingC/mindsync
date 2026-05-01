@@ -71,6 +71,29 @@ function getTemplateSettingsValues(templateJson) {
   return templateJson["terminal.integrated.env.osx"] ?? {};
 }
 
+function getClaudeCodeEnvironmentValues(settingsJson) {
+  const entries = settingsJson["claudeCode.environmentVariables"];
+  if (!Array.isArray(entries)) {
+    return {};
+  }
+
+  const values = {};
+  for (const entry of entries) {
+    if (!entry || typeof entry !== "object") {
+      continue;
+    }
+
+    const key = typeof entry.name === "string" ? entry.name : "";
+    if (!key) {
+      continue;
+    }
+
+    values[key] = entry.value;
+  }
+
+  return values;
+}
+
 function collectMismatches(expected, actual) {
   const mismatches = [];
 
@@ -184,15 +207,21 @@ export async function checkClaudeCodeEnv({
   if (workspaceSettings) {
     const actualWorkspaceValues = getTemplateSettingsValues(workspaceSettings);
     const workspaceMismatches = collectMismatches(expected, actualWorkspaceValues);
+    const actualClaudeCodeValues = getClaudeCodeEnvironmentValues(workspaceSettings);
+    const claudeCodeMismatches = collectMismatches(expected, actualClaudeCodeValues);
 
     for (const mismatch of workspaceMismatches) {
       findings.push(renderMismatch(mismatch));
     }
+    for (const mismatch of claudeCodeMismatches) {
+      findings.push(`workspace-claude ${renderMismatch(mismatch)}`);
+    }
 
-    if (workspaceMismatches.length > 0) {
+    if (workspaceMismatches.length > 0 || claudeCodeMismatches.length > 0) {
       status = "fix next";
     } else {
       findings.push(`ok workspace settings match template path=${workspaceSettingsPath}`);
+      findings.push(`ok workspace claudeCode.environmentVariables match template path=${workspaceSettingsPath}`);
     }
   }
 

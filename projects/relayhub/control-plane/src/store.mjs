@@ -48,18 +48,28 @@ function defaultCapabilities() {
   };
 }
 
+function normalizeReasoningEffort(value) {
+  return value === "low" || value === "medium" || value === "high" ? value : null;
+}
+
 function migrateMissingPresetModelEntries(state) {
   const existingEntries = Array.isArray(state.modelEntries) ? state.modelEntries : [];
   let changed = false;
   const normalizedExistingEntries = existingEntries.map((entry) => {
-    if (entry && typeof entry === "object" && entry.capabilities) {
-      return entry;
-    }
-    changed = true;
-    return {
+    const nextEntry = {
       ...entry,
-      capabilities: defaultCapabilities()
+      capabilities: entry && typeof entry === "object" && entry.capabilities
+        ? entry.capabilities
+        : defaultCapabilities(),
+      reasoningEffort: normalizeReasoningEffort(entry?.reasoningEffort)
     };
+    if (
+      nextEntry.capabilities !== entry?.capabilities ||
+      nextEntry.reasoningEffort !== (entry?.reasoningEffort ?? null)
+    ) {
+      changed = true;
+    }
+    return nextEntry;
   });
   const existingIds = new Set(normalizedExistingEntries.map((entry) => entry.id));
   const missingPresetEntries = seedModelEntries

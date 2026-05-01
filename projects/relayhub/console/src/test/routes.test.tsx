@@ -457,10 +457,10 @@ describe("RelayHub console routes", () => {
     ).toBeInTheDocument();
   });
 
-  it("verifies Claude Code current model through local dev-relay from the task shortcut", async () => {
+  it("verifies Claude Code current model through release relay from the task shortcut", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = typeof input === "string" ? input : input.toString();
-      if (url === "http://127.0.0.1:4319/chat/completions") {
+      if (url === "/claude/chat/completions") {
         return new Response(
           JSON.stringify({
             id: "chatcmpl-relayhub-smoke",
@@ -492,7 +492,7 @@ describe("RelayHub console routes", () => {
       await screen.findByText("Claude Code 真链路验证成功：relayhub ui verify ok"),
     ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      "http://127.0.0.1:4319/chat/completions",
+      "/claude/chat/completions",
       expect.objectContaining({
         method: "POST",
       }),

@@ -71,6 +71,42 @@ function defaultCapabilities(overrides = {}) {
   };
 }
 
+function normalizeReasoningEffort(value) {
+  return value === "low" || value === "medium" || value === "high" ? value : null;
+}
+
+function attachReasoningConfig(payload, entry, endpointKind) {
+  const effort = normalizeReasoningEffort(entry.reasoningEffort);
+  if (!effort) {
+    return payload;
+  }
+
+  const modelId = String(entry.modelId ?? "").trim().toLowerCase();
+  const isReasoningModel =
+    modelId.startsWith("gpt-5") ||
+    modelId.startsWith("o1") ||
+    modelId.startsWith("o3") ||
+    modelId.startsWith("o4");
+
+  if (!isReasoningModel) {
+    return payload;
+  }
+
+  if (endpointKind === "responses") {
+    return {
+      ...payload,
+      reasoning: {
+        effort
+      }
+    };
+  }
+
+  return {
+    ...payload,
+    reasoning_effort: effort
+  };
+}
+
 function markTestOutcome(entry, outcome) {
   entry.lastTestResult = outcome.result;
   entry.lastTestCode = outcome.code;
@@ -158,11 +194,11 @@ async function probeResponsesStream(entry) {
         ...createProbeHeaders(entry.apiKey),
         Accept: "text/event-stream"
       },
-      body: JSON.stringify({
+      body: JSON.stringify(attachReasoningConfig({
         model: entry.modelId,
         input: "Reply with exactly: ok",
         stream: true
-      })
+      }, entry, "responses"))
     });
 
     if (!response.ok || !response.body) {
@@ -278,11 +314,11 @@ async function probeModelEntryCapabilities(entry) {
   const responsesProbe = await tryProbeJson(buildResponsesUrl(entry.baseUrl), {
     method: "POST",
     headers: createProbeHeaders(entry.apiKey),
-    body: JSON.stringify({
+    body: JSON.stringify(attachReasoningConfig({
       model: entry.modelId,
       input: "Reply with exactly: ok",
       stream: false
-    })
+    }, entry, "responses"))
   });
   capabilities.responses.ok = responsesProbe.ok;
 
@@ -292,11 +328,11 @@ async function probeModelEntryCapabilities(entry) {
   const chatProbe = await tryProbeJson(buildChatCompletionsUrl(entry.baseUrl), {
     method: "POST",
     headers: createProbeHeaders(entry.apiKey),
-    body: JSON.stringify({
+    body: JSON.stringify(attachReasoningConfig({
       model: entry.modelId,
       messages: [{ role: "user", content: "Reply with exactly: ok" }],
       stream: false
-    })
+    }, entry, "chat-completions"))
   });
   capabilities.chatCompletions.ok = chatProbe.ok;
 
@@ -673,6 +709,7 @@ async function handleRequest(request, response) {
       source: "custom",
       baseUrl: String(body.baseUrl ?? "").trim(),
       modelId: String(body.modelId ?? "").trim(),
+      reasoningEffort: normalizeReasoningEffort(body.reasoningEffort),
       catalogFamily: "openai-compatible",
       purchaseUrl: body.purchaseUrl ? String(body.purchaseUrl).trim() : null,
       status: "configured-pending-test",
@@ -719,6 +756,9 @@ async function handleRequest(request, response) {
       } else if (entry.source !== "preset") {
         entry.modelId = String(body.modelId ?? entry.modelId).trim();
       }
+      entry.reasoningEffort = normalizeReasoningEffort(
+        body.reasoningEffort ?? entry.reasoningEffort,
+      );
       if (entry.source !== "preset") {
         entry.baseUrl = String(body.baseUrl ?? entry.baseUrl).trim();
       }

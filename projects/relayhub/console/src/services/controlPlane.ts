@@ -77,7 +77,9 @@ const CONTROL_PLANE_BASE_URL = configuredControlPlaneRuntime === "mock"
     : "";
 const DEV_RELAY_BASE_URL = configuredDevRelayBaseUrl.length > 0
   ? configuredDevRelayBaseUrl
-  : "http://127.0.0.1:4319";
+  : import.meta.env.DEV
+    ? "http://127.0.0.1:4319"
+    : "/claude";
 
 function clone<T>(value: T): T {
   return structuredClone(value);

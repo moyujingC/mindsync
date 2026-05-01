@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-CONTROL_PLANE_BASE_URL="${RELAYHUB_CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
+CONTROL_PLANE_BASE_URL="${RELAYHUB_CONTROL_PLANE_BASE_URL:-https://relayhub.jingshu.cc/api/control-plane}"
 DEV_RELAY_DIR="$ROOT_DIR/dev-relay"
 TASK_ID="${RELAYHUB_CLI_SMOKE_TASK_ID:-task-claude-code}"
 FORCED_BIND_ENTRY_ID="${RELAYHUB_CLI_SMOKE_BIND_ENTRY_ID:-}"
@@ -54,7 +54,7 @@ if [[ "$ENTRY_STATUS" != "active" ]]; then
   exit 1
 fi
 
-echo "[relayhub-cli] run claude via local relay"
+echo "[relayhub-cli] run claude via release relay"
 env -i \
   PATH="$PATH" \
   HOME="$HOME" \

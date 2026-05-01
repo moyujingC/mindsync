@@ -7,8 +7,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Source it in your own shell if you want your current session to match RelayHub's Claude Code relay defaults.
 # It intentionally does not edit .vscode/settings.json for you.
 
-export RELAYHUB_DEV_RELAY_BASE_URL="${RELAYHUB_DEV_RELAY_BASE_URL:-http://127.0.0.1:4319}"
-export RELAYHUB_DEV_RELAY_AUTH_TOKEN="${RELAYHUB_DEV_RELAY_AUTH_TOKEN:-relayhub-local-dev-relay}"
+export RELAYHUB_DEV_RELAY_BASE_URL="${RELAYHUB_DEV_RELAY_BASE_URL:-https://relayhub.jingshu.cc/claude}"
+export RELAYHUB_DEV_RELAY_AUTH_TOKEN="${RELAYHUB_DEV_RELAY_AUTH_TOKEN:-relayhub-release-claude}"
 export RELAYHUB_CLAUDE_MODEL="${RELAYHUB_CLAUDE_MODEL:-relayhub-task-claude-code}"
 
 export ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL:-$RELAYHUB_DEV_RELAY_BASE_URL}"

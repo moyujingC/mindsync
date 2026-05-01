@@ -2,6 +2,7 @@ export type ModelEntryKind = "coding-plan" | "domestic-model" | "relay-api";
 export type ModelEntrySource = "preset" | "custom";
 export type PresetPriority = "recommended-first" | "recommended" | "optional";
 export type CostTier = "高" | "中" | "低";
+export type ReasoningEffort = "low" | "medium" | "high";
 export type ModelEntryStatus =
   | "preset-unconfigured"
   | "configured-pending-test"
@@ -47,6 +48,7 @@ export interface ModelEntry {
   source: ModelEntrySource;
   baseUrl: string;
   modelId: string;
+  reasoningEffort: ReasoningEffort | null;
   catalogFamily: "openai-compatible";
   purchaseUrl: string | null;
   status: ModelEntryStatus;
@@ -76,6 +78,7 @@ export interface ModelEntryInput {
   source?: ModelEntrySource;
   baseUrl: string;
   modelId: string;
+  reasoningEffort: ReasoningEffort | null;
   purchaseUrl?: string | null;
   apiKey?: string;
 }

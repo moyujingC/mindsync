@@ -6,12 +6,12 @@ import path from "node:path";
 import { checkClaudeCodeEnv } from "../check-vscode-claude-code-env.mjs";
 
 const TEMPLATE_ENV = {
-  RELAYHUB_DEV_RELAY_BASE_URL: "http://127.0.0.1:4319",
-  RELAYHUB_DEV_RELAY_AUTH_TOKEN: "relayhub-local-dev-relay",
+  RELAYHUB_DEV_RELAY_BASE_URL: "https://relayhub.jingshu.cc/claude",
+  RELAYHUB_DEV_RELAY_AUTH_TOKEN: "relayhub-release-claude",
   RELAYHUB_CLAUDE_MODEL: "relayhub-task-claude-code",
-  ANTHROPIC_BASE_URL: "http://127.0.0.1:4319",
-  ANTHROPIC_API_KEY: "relayhub-local-dev-relay",
-  ANTHROPIC_AUTH_TOKEN: "relayhub-local-dev-relay",
+  ANTHROPIC_BASE_URL: "https://relayhub.jingshu.cc/claude",
+  ANTHROPIC_API_KEY: "relayhub-release-claude",
+  ANTHROPIC_AUTH_TOKEN: "relayhub-release-claude",
   ANTHROPIC_MODEL: "relayhub-task-claude-code",
   ANTHROPIC_DEFAULT_OPUS_MODEL: "relayhub-task-claude-code",
   ANTHROPIC_DEFAULT_SONNET_MODEL: "relayhub-task-claude-code",
@@ -41,6 +41,10 @@ async function writeWorkspaceSettings(filePath, values = TEMPLATE_ENV) {
     filePath,
     JSON.stringify(
       {
+        "claudeCode.environmentVariables": Object.entries(values).map(([name, value]) => ({
+          name,
+          value,
+        })),
         "terminal.integrated.env.osx": values
       },
       null,
@@ -71,7 +75,7 @@ test("reports fix next when workspace settings are missing", async () => {
 test("reports fix next when workspace settings are incomplete", async () => {
   await withTempWorkspace(async ({ root, homeDir, workspaceSettingsPath }) => {
     await writeWorkspaceSettings(workspaceSettingsPath, {
-      ANTHROPIC_BASE_URL: "http://127.0.0.1:4319"
+      ANTHROPIC_BASE_URL: "https://relayhub.jingshu.cc/claude"
     });
 
     const result = await checkClaudeCodeEnv({
@@ -139,6 +143,7 @@ test("reports ok when workspace, shell, and user claude settings are aligned", a
 
     assert.equal(result.status, "ok");
     assert.ok(result.findings.some((line) => line.includes("workspace settings match template")));
+    assert.ok(result.findings.some((line) => line.includes("workspace claudeCode.environmentVariables match template")));
     assert.ok(result.findings.some((line) => line.includes("shell environment matches template")));
   });
 });

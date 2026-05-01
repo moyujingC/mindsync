@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 USE_CLEAN_SETTINGS="${RELAYHUB_CLAUDE_CLEAN_SETTINGS:-1}"
 USE_BARE_MODE="${RELAYHUB_CLAUDE_BARE_MODE:-auto}"
-RELAY_BASE_URL="${RELAYHUB_DEV_RELAY_BASE_URL:-http://127.0.0.1:4319}"
-RELAY_AUTH_TOKEN="${RELAYHUB_DEV_RELAY_AUTH_TOKEN:-relayhub-local-dev-relay}"
+RELAY_BASE_URL="${RELAYHUB_DEV_RELAY_BASE_URL:-https://relayhub.jingshu.cc/claude}"
+RELAY_AUTH_TOKEN="${RELAYHUB_DEV_RELAY_AUTH_TOKEN:-relayhub-release-claude}"
 RELAY_MODEL="${RELAYHUB_CLAUDE_MODEL:-relayhub-task-claude-code}"
 
 if ! command -v claude >/dev/null 2>&1; then

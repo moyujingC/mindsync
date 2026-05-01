@@ -248,6 +248,28 @@ test("PATCH /models/:id resets stale capabilities after config changes", async (
   });
 });
 
+test("PATCH /models/:id persists reasoning effort", async () => {
+  await resetState();
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/models/preset-ppchat-relay`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        modelId: "gpt-5.4",
+        reasoningEffort: "high"
+      })
+    });
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.modelId, "gpt-5.4");
+    assert.equal(payload.reasoningEffort, "high");
+  });
+});
+
 test("GET /models/:id/catalog returns upstream model list for preset relay entry with api key", async () => {
   await resetState();
   const originalFetch = globalThis.fetch;
