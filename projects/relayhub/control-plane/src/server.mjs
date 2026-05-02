@@ -203,6 +203,9 @@ function buildPublicEntryBindingResolution(state, secrets, entryId) {
   const resolvedModel = binding?.defaultModelEntryId
     ? state.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null
     : null;
+  const usageEvidence = state.entryActivity && typeof state.entryActivity === "object"
+    ? state.entryActivity[entryId] ?? null
+    : null;
 
   const effectiveReasoningEffort = resolveEffectiveReasoningEffort(binding, resolvedModel);
 
@@ -219,6 +222,14 @@ function buildPublicEntryBindingResolution(state, secrets, entryId) {
     reasoningEffortOverride: binding?.reasoningEffortOverride ?? null,
     effectiveReasoningEffort,
     statusNote: binding?.statusNote ?? null,
+    usageEvidence: usageEvidence
+      ? {
+          lastSuccessfulRequestAt: usageEvidence.lastSuccessfulRequestAt ?? null,
+          lastSuccessfulRequestId: usageEvidence.lastSuccessfulRequestId ?? null,
+          lastSuccessfulRoute: usageEvidence.lastSuccessfulRoute ?? null,
+          lastSuccessfulModelEntryId: usageEvidence.lastSuccessfulModelEntryId ?? null
+        }
+      : null,
     resolvedModel: resolvedModel
       ? {
           id: resolvedModel.id,

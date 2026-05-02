@@ -104,6 +104,7 @@ export function EntriesView() {
             const currentDraft = drafts[entry.entryId] ?? entry.reasoningEffortOverride ?? "";
             const pending = mutation.isPending && mutation.variables?.entryId === entry.entryId;
             const connectionState = getEntryConnectionState(entry);
+            const usageState = getEntryUsageState(entry);
             const taskPrompt = buildCodexTaskPrompt(entry, connectionState);
             const copyLabel = copiedEntryId === entry.entryId ? "已复制任务文案" : "复制给 Codex";
 
@@ -150,8 +151,20 @@ export function EntriesView() {
                             emphasize: true,
                           },
                           {
+                            label: "使用状态",
+                            value: usageState.label,
+                          },
+                          {
                             label: "状态说明",
                             value: connectionState.description,
+                          },
+                          {
+                            label: "为什么还看不到已使用",
+                            value: usageState.description,
+                          },
+                          {
+                            label: "最近一次成功使用",
+                            value: usageState.lastSeenAt ?? "还没有成功流量记录",
                           },
                           {
                             label: "客户端接线动作",
@@ -369,6 +382,12 @@ type EntryConnectionState = {
   tone: "success" | "warning" | "danger" | "accent";
 };
 
+type EntryUsageState = {
+  label: string;
+  description: string;
+  lastSeenAt: string | null;
+};
+
 function getEntryConnectionState(entry: EntryBindingResolution): EntryConnectionState {
   if (!entry.resolvedModel) {
     return {
@@ -445,6 +464,30 @@ function buildCodexTaskPrompt(entry: EntryBindingResolution, connectionState: En
     "- 如果发现当前环境还缺 RelayHub 门禁 token（门禁卡）或客户端配置位置不明确，请先定位，再继续接入。",
     "- 完成后请回报：你把哪个客户端接到了哪个 URL，用的是哪个 alias，以及还剩什么风险。",
   ].join("\n");
+}
+
+function getEntryUsageState(entry: EntryBindingResolution): EntryUsageState {
+  if (entry.usageEvidence === undefined) {
+    return {
+      label: "暂无法判断",
+      description: "当前控制面接口还没有暴露最近请求或最近流量证据，所以这里只能确认后台有没有配好，不能确认客户端是否已经真的在用。",
+      lastSeenAt: null,
+    };
+  }
+
+  if (entry.usageEvidence?.lastSuccessfulRequestAt) {
+    return {
+      label: "已观察到使用",
+      description: "至少有一次真实请求成功通过 RelayHub 并转发到上游，说明这个入口已经被实际用过。",
+      lastSeenAt: entry.usageEvidence.lastSuccessfulRequestAt,
+    };
+  }
+
+  return {
+    label: "尚未观察到使用",
+    description: "还没观察到成功流量，不代表客户端一定没配，只代表当前还没看到成功请求。",
+    lastSeenAt: null,
+  };
 }
 
 async function copyTaskPrompt(

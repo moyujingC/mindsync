@@ -298,6 +298,35 @@ test("GET /entry-bindings/resolutions returns public resolved entry view without
       assert.equal(typeof resolved.resolvedModel.modelId, "string");
       assert.equal(typeof resolved.resolvedModel.hasStoredApiKey, "boolean");
       assert.equal("apiKey" in resolved.resolvedModel, false);
+      assert.equal(resolved.usageEvidence, null);
+    });
+  });
+});
+
+test("GET /entry-bindings/resolutions includes public usage evidence when present", async () => {
+  await withTempDataDir(async (tempDir) => {
+    const statePath = path.join(tempDir, "state.json");
+    const state = JSON.parse(await fs.readFile(statePath, "utf8"));
+    state.entryActivity = {
+      "entry-paperclip-claude-local-server": {
+        lastSuccessfulRequestAt: "2026-05-02T12:10:00.000Z",
+        lastSuccessfulRequestId: "req-demo-1",
+        lastSuccessfulRoute: "/v1/messages",
+        lastSuccessfulModelEntryId: "preset-aitechflux-relay",
+      },
+    };
+    await fs.writeFile(statePath, JSON.stringify(state, null, 2), "utf8");
+
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/entry-bindings/resolutions`);
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      const resolved = payload.find((item) => item.entryId === "entry-paperclip-claude-local-server");
+      assert.ok(resolved);
+      assert.equal(resolved.usageEvidence.lastSuccessfulRequestAt, "2026-05-02T12:10:00.000Z");
+      assert.equal(resolved.usageEvidence.lastSuccessfulRoute, "/v1/messages");
+      assert.equal(resolved.usageEvidence.lastSuccessfulModelEntryId, "preset-aitechflux-relay");
     });
   });
 });

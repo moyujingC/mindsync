@@ -34,6 +34,7 @@ function createInitialState() {
     modelEntries: clone(seedModelEntries),
     entries: clone(seedEntries),
     entryBindings: clone(seedEntryBindings),
+    entryActivity: {},
     tasks: clone(seedTasks),
     runs: clone(seedRuns),
     nextIds: {
@@ -83,6 +84,39 @@ function normalizeEntryBinding(binding) {
     ...binding,
     reasoningEffortOverride: normalizeReasoningEffort(binding?.reasoningEffortOverride)
   };
+}
+
+function normalizeEntryActivity(activity) {
+  if (!activity || typeof activity !== "object" || Array.isArray(activity)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(activity).map(([entryId, value]) => {
+      const record = value && typeof value === "object" ? value : {};
+      return [
+        entryId,
+        {
+          lastSuccessfulRequestAt:
+            typeof record.lastSuccessfulRequestAt === "string" && record.lastSuccessfulRequestAt.trim()
+              ? record.lastSuccessfulRequestAt.trim()
+              : null,
+          lastSuccessfulRequestId:
+            typeof record.lastSuccessfulRequestId === "string" && record.lastSuccessfulRequestId.trim()
+              ? record.lastSuccessfulRequestId.trim()
+              : null,
+          lastSuccessfulRoute:
+            typeof record.lastSuccessfulRoute === "string" && record.lastSuccessfulRoute.trim()
+              ? record.lastSuccessfulRoute.trim()
+              : null,
+          lastSuccessfulModelEntryId:
+            typeof record.lastSuccessfulModelEntryId === "string" && record.lastSuccessfulModelEntryId.trim()
+              ? record.lastSuccessfulModelEntryId.trim()
+              : null
+        }
+      ];
+    })
+  );
 }
 
 function migrateMissingPresetModelEntries(state) {
@@ -135,6 +169,7 @@ function migrateMissingPresetModelEntries(state) {
       entryBindings: Array.isArray(state.entryBindings)
         ? state.entryBindings.map((binding) => normalizeEntryBinding(binding))
         : clone(seedEntryBindings).map((binding) => normalizeEntryBinding(binding)),
+      entryActivity: normalizeEntryActivity(state.entryActivity),
       modelEntries: [...normalizedExistingEntries, ...missingPresetEntries]
     }
   };
@@ -146,10 +181,17 @@ export async function readState() {
     const raw = await fs.readFile(dataPath, "utf8");
     const persisted = JSON.parse(raw);
     const migrated = migrateMissingPresetModelEntries(persisted);
-    if (migrated.changed) {
-      await writeState(migrated.state);
+    const normalizedState = {
+      ...migrated.state,
+      entryActivity: normalizeEntryActivity(migrated.state.entryActivity)
+    };
+    const needsRewrite =
+      migrated.changed ||
+      JSON.stringify(normalizedState.entryActivity) !== JSON.stringify(migrated.state.entryActivity ?? {});
+    if (needsRewrite) {
+      await writeState(normalizedState);
     }
-    return migrated.state;
+    return normalizedState;
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
       const initial = createInitialState();
@@ -220,6 +262,26 @@ export async function writeRelayConfig(config) {
   const relayConfigPath = resolveRelayConfigPath();
   await fs.mkdir(dataDir, { recursive: true });
   await fs.writeFile(relayConfigPath, JSON.stringify(config, null, 2), "utf8");
+}
+
+export async function recordEntrySuccessfulUsage({
+  entryId,
+  requestId,
+  route,
+  modelEntryId,
+  at,
+}) {
+  const state = await readState();
+  state.entryActivity = {
+    ...(state.entryActivity && typeof state.entryActivity === "object" ? state.entryActivity : {}),
+    [entryId]: {
+      lastSuccessfulRequestAt: at,
+      lastSuccessfulRequestId: requestId,
+      lastSuccessfulRoute: route,
+      lastSuccessfulModelEntryId: modelEntryId,
+    },
+  };
+  await writeState(state);
 }
 
 export function toPublicModelEntry(entry) {

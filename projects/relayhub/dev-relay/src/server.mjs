@@ -2,7 +2,7 @@ import http from "node:http";
 import { appendFile, mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
-import { readRelayConfig, readSecrets, readState } from "../../control-plane/src/store.mjs";
+import { readRelayConfig, readSecrets, readState, recordEntrySuccessfulUsage } from "../../control-plane/src/store.mjs";
 
 const port = Number(process.env.PORT ?? 4319);
 const CLAUDE_RELAY_TASK_ID = "task-claude-code";
@@ -129,6 +129,16 @@ function makeRequestId() {
 
 function logRelayEvent(payload) {
   process.stdout.write(`${JSON.stringify({ at: nowIso(), ...payload })}\n`);
+}
+
+async function markEntryUsageSuccess({ entryId, requestId, route, modelEntryId }) {
+  await recordEntrySuccessfulUsage({
+    entryId,
+    requestId,
+    route,
+    modelEntryId,
+    at: nowIso(),
+  });
 }
 
 async function logClaudeUpstreamModel(payload) {
@@ -994,6 +1004,12 @@ async function proxyChatCompletions(request, response) {
     response.on("finish", resolve);
     response.on("error", reject);
   });
+  await markEntryUsageSuccess({
+    entryId: requestedEntryId,
+    requestId,
+    route: "/chat/completions",
+    modelEntryId: entry.id,
+  });
   logRelayEvent({
     requestId,
     route: "/chat/completions",
@@ -1135,6 +1151,12 @@ async function proxyAnthropicMessages(request, response) {
         durationMs: Date.now() - startedAt,
         note: "streaming response was proxied without body parsing"
       });
+      await markEntryUsageSuccess({
+        entryId: requestedEntryId,
+        requestId,
+        route: "/v1/messages",
+        modelEntryId: entry.id,
+      });
       logRelayEvent({
         requestId,
         route: "/v1/messages",
@@ -1170,6 +1192,12 @@ async function proxyAnthropicMessages(request, response) {
       stream: false,
       upstreamStatus: upstreamResponse.status,
       durationMs: Date.now() - startedAt
+    });
+    await markEntryUsageSuccess({
+      entryId: requestedEntryId,
+      requestId,
+      route: "/v1/messages",
+      modelEntryId: entry.id,
     });
     logRelayEvent({
       requestId,
@@ -1283,6 +1311,12 @@ async function proxyAnthropicMessages(request, response) {
       upstreamStatus: upstreamResponse.status,
       durationMs: Date.now() - startedAt
     });
+    await markEntryUsageSuccess({
+      entryId: requestedEntryId,
+      requestId,
+      route: "/v1/messages",
+      modelEntryId: entry.id,
+    });
     logRelayEvent({
       requestId,
       route: "/v1/messages",
@@ -1311,6 +1345,12 @@ async function proxyAnthropicMessages(request, response) {
     stream: false,
     upstreamStatus: upstreamResponse.status,
     durationMs: Date.now() - startedAt
+  });
+  await markEntryUsageSuccess({
+    entryId: requestedEntryId,
+    requestId,
+    route: "/v1/messages",
+    modelEntryId: entry.id,
   });
   logRelayEvent({
     requestId,
@@ -1498,6 +1538,12 @@ async function proxyResponses(request, response) {
     Readable.fromWeb(upstreamResponse.body).pipe(response);
     response.on("finish", resolve);
     response.on("error", reject);
+  });
+  await markEntryUsageSuccess({
+    entryId: requestedEntryId,
+    requestId,
+    route: "/v1/responses",
+    modelEntryId: entry.id,
   });
   logRelayEvent({
     requestId,

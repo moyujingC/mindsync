@@ -129,6 +129,12 @@ export function createMockState(): MockState {
       reasoningEffortOverride: "medium",
       effectiveReasoningEffort: "medium",
       statusNote: "当前给 Codex 本机工作流使用。",
+      usageEvidence: {
+        lastSuccessfulRequestAt: "2026-05-02T11:18:00.000Z",
+        lastSuccessfulRequestId: "req-codex-1",
+        lastSuccessfulRoute: "/v1/responses",
+        lastSuccessfulModelEntryId: resolvedModel.id,
+      },
       resolvedModel: {
         id: resolvedModel.id,
         name: resolvedModel.name,
@@ -152,6 +158,12 @@ export function createMockState(): MockState {
       reasoningEffortOverride: null,
       effectiveReasoningEffort: "medium",
       statusNote: "服务器 Paperclip 入口。",
+      usageEvidence: {
+        lastSuccessfulRequestAt: null,
+        lastSuccessfulRequestId: null,
+        lastSuccessfulRoute: null,
+        lastSuccessfulModelEntryId: null,
+      },
       resolvedModel: {
         id: "custom-claude-sonnet",
         name: "Claude Sonnet 自建",
@@ -175,6 +187,7 @@ export function createMockState(): MockState {
       reasoningEffortOverride: null,
       effectiveReasoningEffort: null,
       statusNote: "只做观测。",
+      usageEvidence: null,
       resolvedModel: null,
     },
   ];

@@ -100,6 +100,12 @@ export const entryResolutionSchema = z.object({
   reasoningEffortOverride: reasoningEffortSchema,
   effectiveReasoningEffort: reasoningEffortSchema,
   statusNote: z.string().nullable(),
+  usageEvidence: z.object({
+    lastSuccessfulRequestAt: z.string().nullable().optional(),
+    lastSuccessfulRequestId: z.string().nullable().optional(),
+    lastSuccessfulRoute: z.string().nullable().optional(),
+    lastSuccessfulModelEntryId: z.string().nullable().optional(),
+  }).nullable().optional(),
   resolvedModel: z.object({
     id: z.string(),
     name: z.string(),

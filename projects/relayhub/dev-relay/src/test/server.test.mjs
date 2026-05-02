@@ -405,6 +405,19 @@ async function readRequestJson(request) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
+async function waitFor(assertion, attempts = 20, delayMs = 10) {
+  let lastError = null;
+  for (let index = 0; index < attempts; index += 1) {
+    try {
+      return await assertion();
+    } catch (error) {
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+  throw lastError;
+}
+
 test("GET /health returns ok", async () => {
   await withTempState(async () => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
@@ -670,6 +683,48 @@ test("POST /v1/responses routes relayhub entry alias to its bound model", async 
   });
 });
 
+test("POST /v1/responses records usage evidence after successful relay", async () => {
+  await withMockUpstream(async (request, response) => {
+    const observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_usage_1",
+      status: "completed",
+      model: observedBody.model,
+      output: []
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async ({ readState }) => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
+          body: JSON.stringify({
+            model: "relayhub-entry-codex-ide-local",
+            input: "记录一次成功使用",
+            stream: false
+          })
+        });
+        assert.equal(response.status, 200);
+      });
+
+      await waitFor(async () => {
+        const nextState = await readState();
+        assert.equal(nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulRoute, "/v1/responses");
+        assert.equal(nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulModelEntryId, "model-active");
+        assert.equal(typeof nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulRequestAt, "string");
+        assert.equal(typeof nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulRequestId, "string");
+      });
+    }, state);
+  });
+});
+
 test("POST /v1/responses routes Paperclip codex entry alias to its bound model", async () => {
   let observedBody = null;
 
@@ -753,9 +808,10 @@ test("POST /v1/responses forwards stream requests to the bound Codex upstream", 
 
 test("POST /v1/responses returns a clear error when the Codex entry is not Responses-ready", async () => {
   const state = createState();
-  state.tasks[1].defaultModelEntryId = "model-chat-only";
+  const codexTask = state.tasks.find((item) => item.id === "task-codex-repo");
+  codexTask.defaultModelEntryId = "model-chat-only";
 
-  await withTempState(async () => {
+  await withTempState(async ({ readState }) => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/responses`, {
         method: "POST",
@@ -773,6 +829,8 @@ test("POST /v1/responses returns a clear error when the Codex entry is not Respo
       assert.equal(payload.error.code, "responses_not_ready");
       assert.match(payload.error.message, /Responses 流式探测/);
     });
+    const nextState = await readState();
+    assert.deepEqual(nextState.entryActivity, {});
   }, state);
 });
 
@@ -1310,8 +1368,14 @@ test("switching task-claude-code defaultModelEntryId changes subsequent relay re
         });
         assert.equal(first.status, 200);
 
+        await waitFor(async () => {
+          const settledState = await readState();
+          assert.ok(settledState.entryActivity);
+        });
+
         const nextState = await readState();
-        nextState.tasks[0].defaultModelEntryId = "model-second";
+        const claudeTask = nextState.tasks.find((item) => item.id === "task-claude-code");
+        claudeTask.defaultModelEntryId = "model-second";
         await writeState(nextState);
 
         const second = await fetch(`${baseUrl}/chat/completions`, {
