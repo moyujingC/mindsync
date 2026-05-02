@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-为 `RelayHub console` 提供 release 宿主机上的最小试用入口。
+为 `RelayHub frontend` 提供 release 宿主机上的最小试用入口。
 
 当前 release 现实约束：
 
@@ -29,8 +29,8 @@
 
 - 主仓库目录：`/opt/aimandala-release/app/mindsync`
 - RelayHub worktree：`/opt/aimandala-release/worktrees/relayhub-dev-deploy`
-- console 目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console`
-- 构建目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console/dist`
+- frontend 目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/frontend`
+- 构建目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/frontend/out`
 - control-plane 目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/control-plane`
 - 子域静态发布目录：`/var/www/relayhub.jingshu.cc`
 - 兼容子路径静态发布目录：`/var/www/web.jingshu.cc/relayhub`
@@ -48,7 +48,7 @@
 默认 mock 构建：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/frontend
 npm ci
 npm run build
 ```
@@ -56,14 +56,14 @@ npm run build
 release trial 构建：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/frontend
 npm ci
 RELAYHUB_CONSOLE_BASE_PATH=/ \
 RELAYHUB_CONTROL_PLANE_BASE_URL=/api/control-plane \
 RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch \
 RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api \
 RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models \
-npm run build:trial
+npm run build
 ```
 
 如需静态默认 headers：
@@ -80,8 +80,8 @@ RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON='{"x-relayhub-scope":"providers
 cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
 sudo mkdir -p /var/www/relayhub.jingshu.cc
 sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub-dev-deploy \
-  CONSOLE_DIR=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console \
-  DIST_DIR=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console/dist \
+  FRONTEND_DIR=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/frontend \
+  DIST_DIR=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/frontend/out \
   PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
   BACKUP_DIR=/var/www/relayhub.jingshu.cc.previous \
   bash deploy-relayhub-console-trial.sh
@@ -119,7 +119,7 @@ bash deploy-relayhub-release-stack.sh
 这条脚本会顺序完成：
 
 - 准备或更新 RelayHub worktree
-- 构建并发布 console trial
+- 构建并发布 frontend trial
 - 安装 `relayhub-control-plane`
 - 安装 `relayhub-dev-relay`
 - 安装 nginx 的 `/api/control-plane/` 与 `/claude/`

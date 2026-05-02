@@ -10,6 +10,7 @@ WORKTREE_DIR=${WORKTREE_DIR:-$REPO_ROOT}
 SKIP_GIT_SYNC=${SKIP_GIT_SYNC:-0}
 
 CONSOLE_DIR=${CONSOLE_DIR:-$WORKTREE_DIR/projects/relayhub/console}
+FRONTEND_DIR=${FRONTEND_DIR:-$WORKTREE_DIR/projects/relayhub/frontend}
 CONTROL_PLANE_DIR=${CONTROL_PLANE_DIR:-$WORKTREE_DIR/projects/relayhub/control-plane}
 DEV_RELAY_DIR=${DEV_RELAY_DIR:-$WORKTREE_DIR/projects/relayhub/dev-relay}
 
@@ -66,26 +67,23 @@ elif [[ ! -d "$WORKTREE_DIR" ]]; then
 fi
 
 echo "[relayhub-release] install npm deps"
-install_node_deps "$CONSOLE_DIR"
+install_node_deps "$FRONTEND_DIR"
 install_node_deps "$CONTROL_PLANE_DIR"
 install_node_deps "$DEV_RELAY_DIR"
 
-echo "[relayhub-release] build relayhub console trial"
+echo "[relayhub-release] build relayhub frontend"
 (
-  cd "$CONSOLE_DIR"
-  RELAYHUB_CONSOLE_BASE_PATH=/ \
-  RELAYHUB_CONTROL_PLANE_BASE_URL=/api/control-plane \
-  RELAYHUB_DEV_RELAY_BASE_URL=/claude \
-  RELAYHUB_PROVIDERS_RUNTIME_MODE=real-fetch \
-  RELAYHUB_PROVIDERS_READONLY_BASE_URL=/api \
-  RELAYHUB_PROVIDERS_READONLY_WIRE_CONTRACT=openai-models \
-  npm run build:trial
+  cd "$FRONTEND_DIR"
+  NEXT_PUBLIC_RELAYHUB_CONTROL_PLANE_BASE_URL=/api/control-plane \
+  RELAYHUB_FRONTEND_BASE_PATH= \
+  npm run build
 )
 
-echo "[relayhub-release] publish console"
+echo "[relayhub-release] publish frontend"
 sudo REPO_ROOT="$WORKTREE_DIR" \
+  FRONTEND_DIR="$FRONTEND_DIR" \
   CONSOLE_DIR="$CONSOLE_DIR" \
-  DIST_DIR="$CONSOLE_DIR/dist" \
+  DIST_DIR="$FRONTEND_DIR/out" \
   PUBLISH_DIR="$PUBLISH_DIR" \
   BACKUP_DIR="$BACKUP_DIR" \
   bash "$WORKTREE_DIR/projects/relayhub/deploy/release-console/deploy-relayhub-console-trial.sh"
