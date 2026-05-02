@@ -5,7 +5,7 @@
 > owner：Research & Knowledge Lead
 > handoff_for：下一窗口延续执行
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-研究中心内容质量控制与NotebookLM接入-Handoff.md
+> source_of_truth：projects/research-center/delivery/2026-04-06-研究中心内容质量控制与NotebookLM接入-Handoff.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -13,9 +13,9 @@
 
 已新增三份正式文档/模板：
 
-1. [研究中心内容严谨性与 NotebookLM 事实核查层 SPEC](/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-06-研究中心内容严谨性与NotebookLM事实核查层-SPEC.md)
-2. [研究中心内容严谨性与 NotebookLM 事实核查 SOP](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-研究中心内容严谨性与NotebookLM事实核查-SOP.md)
-3. [事实核查笔记模板](/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/事实核查笔记模板.md)
+1. [研究中心内容严谨性与 NotebookLM 事实核查层 SPEC](projects/research-center/specs/2026-04-06-研究中心内容严谨性与NotebookLM事实核查层-SPEC.md)
+2. [研究中心内容严谨性与 NotebookLM 事实核查 SOP](projects/research-center/delivery/2026-04-06-研究中心内容严谨性与NotebookLM事实核查-SOP.md)
+3. [事实核查笔记模板](projects/research-center/templates/事实核查笔记模板.md)
 
 这两份文档已经明确：
 

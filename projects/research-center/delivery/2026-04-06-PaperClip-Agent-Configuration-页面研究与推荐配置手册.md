@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-PaperClip-Agent-Configuration-页面研究与推荐配置手册.md
+> source_of_truth：projects/research-center/delivery/2026-04-06-PaperClip-Agent-Configuration-页面研究与推荐配置手册.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -21,7 +21,7 @@
 
 ## 2. 对 `墨予镜` 当前系统最关键的映射
 
-根据 [/.paperclip.yaml](/Users/xinran/Downloads/dev/mindsync/.paperclip.yaml)：
+根据 [/.paperclip.yaml](.paperclip.yaml)：
 
 - `Idea Clarifier`
   - `pi_local`

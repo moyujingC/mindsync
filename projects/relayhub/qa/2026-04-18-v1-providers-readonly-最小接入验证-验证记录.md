@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer / QA
 > last_updated：2026-04-18
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-18-v1-providers-readonly-最小接入验证-验证记录.md
+> source_of_truth：projects/relayhub/qa/2026-04-18-v1-providers-readonly-最小接入验证-验证记录.md
 > 项目：RelayHub
 > 阶段：verification
 

@@ -1,20 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
 
 import brandPattern from "../assets/pattern.webp";
-import type { DetectCirclesResponse } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
-  detection?: DetectCirclesResponse | null;
-  isDetecting?: boolean;
-  detectError?: string | null;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onContinue?: () => void;
-  onPreviewDetect?: () => void;
   onBack?: () => void;
 }
 
@@ -602,24 +597,13 @@ function BottomPanel({
   );
 }
 
-const detectToneClassMap = {
-  idle: "is-idle",
-  pending: "is-pending",
-  success: "is-success",
-  error: "is-error",
-} as const;
-
 export function MobileWebUploadPage({
   draft,
-  detection = null,
-  isDetecting = false,
-  detectError = null,
   environmentLabel,
   environmentDetail,
   environmentTone = "preview",
   onDraftChange,
   onContinue,
-  onPreviewDetect,
   onBack,
 }: MobileWebUploadPageProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -649,16 +633,6 @@ export function MobileWebUploadPage({
   const innerRadius = Math.round((draft.innerRadius ?? detection?.inner_radius ?? DEFAULT_INNER_RADIUS) * 100);
   const middleRadius = Math.round((draft.middleRadius ?? detection?.middle_radius ?? DEFAULT_MIDDLE_RADIUS) * 100);
   const canContinue = Boolean(draft.imagePath);
-  const detectTone = detectError ? "error" : detection ? "success" : isDetecting ? "pending" : "idle";
-  const detectSummary = useMemo(() => {
-    if (detectError) return detectError;
-    if (isDetecting) return "AI 正在识别三圈边界...";
-    if (detection) {
-      return `AI 识别把握度 ${Math.round((detection.confidence ?? 0) * 100)}%，可继续微调。`;
-    }
-    if (previewSrc) return "跟随你的直觉，也可以先让 AI 帮你识别三圈范围。";
-    return "上传画作后可调节三圈范围并开始解读。";
-  }, [detectError, detection, isDetecting, previewSrc]);
 
   const discStyle = {
     ["--am-upload-inner" as string]: `${innerRadius}%`,
@@ -1113,15 +1087,6 @@ export function MobileWebUploadPage({
         </div>
 
         <p className="am-upload-guidance">跟随你的直觉，调节三圈范围</p>
-
-        {previewSrc ? (
-          <div className={`am-upload-detect-status ${detectToneClassMap[detectTone]}`}>
-            <p>{detectSummary}</p>
-            <button type="button" onClick={onPreviewDetect} disabled={isDetecting}>
-              {isDetecting ? "识别中..." : detection ? "重新识别" : "AI识别"}
-            </button>
-          </div>
-        ) : null}
       </div>
 
       <div className="am-upload-bottom-sheet">

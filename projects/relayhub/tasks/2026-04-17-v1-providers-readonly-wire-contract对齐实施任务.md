@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-17-v1-providers-readonly-wire-contract对齐实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-readonly-wire-contract对齐实施任务.md
 > 项目：RelayHub
 > 阶段：implementation
 

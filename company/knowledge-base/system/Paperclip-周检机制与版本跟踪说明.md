@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead, Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md
+> source_of_truth：company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md
 
 这份文档用于定义 `墨予镜` 如何持续跟踪 `Paperclip` 上游更新，并把“看到更新”收束成“对 `MindSync` 有什么影响、该不该升级、下一步怎么迭代”的正式机制。
 
@@ -95,28 +95,28 @@
 
 做影响判断时，默认至少对照这些本地入口：
 
-1. [.paperclip.yaml](/Users/xinran/Downloads/dev/mindsync/.paperclip.yaml)
-2. [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
-3. [company/Paperclip任务系统优化方案.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md)
-4. [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
-5. [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-6. [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
-7. [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md)
-8. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
-9. [projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
+1. [.paperclip.yaml](.paperclip.yaml)
+2. [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
+3. [company/Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
+4. [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
+5. [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+6. [company/任务创建模板.md](company/任务创建模板.md)
+7. [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md)
+8. [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+9. [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
 
 若周检结论已经形成稳定治理口径，应继续把结论回写到正式入口，而不是只停留在周检归档里。
 
 当前最常见的回写目标包括：
 
 1. 项目级版本基线与升级回归清单
-   - [projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
+   - [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
 2. `codex_local` 等关键 adapter 的正式安全边界
-   - [company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
-   - [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+   - [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
+   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
 3. execution policy 与本地治理语义的原则级映射
-   - [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
-   - [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
+   - [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
+   - [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
 
 ## 6. 标准输出问题
 
@@ -194,11 +194,11 @@
 
 每次正式周检输出，优先复用：
 
-- [templates/Paperclip-周检报告模板.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
+- [templates/Paperclip-周检报告模板.md](company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
 
 如果某周结论值得长期追溯，建议再归档到：
 
-- [paperclip-weekly-reviews/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/paperclip-weekly-reviews/README.md)
+- [paperclip-weekly-reviews/README.md](company/knowledge-base/system/paperclip-weekly-reviews/README.md)
 
 默认只有满足下面任一条件时，才建议归档，而不是每周固定落盘：
 

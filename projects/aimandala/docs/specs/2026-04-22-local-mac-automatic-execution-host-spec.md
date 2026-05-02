@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-22
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-22-local-mac-automatic-execution-host-spec.md
+> source_of_truth：projects/aimandala/docs/specs/2026-04-22-local-mac-automatic-execution-host-spec.md
 > 项目：aimandala
 > 阶段：spec
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-21-local-mac-execution-host-pilot-spec.md
+> depends_on：projects/aimandala/docs/specs/2026-04-21-local-mac-execution-host-pilot-spec.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 目标

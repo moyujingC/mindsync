@@ -3,8 +3,8 @@
 > 版本：0.1.0
 > owner：Product Spec Lead
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-06-超级用户陪跑服务流程-SPEC-Readiness-Check.md
-> 对应artifact：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-06-超级用户陪跑服务流程-SPEC.md
+> source_of_truth：projects/aicareer/qa/2026-04-06-超级用户陪跑服务流程-SPEC-Readiness-Check.md
+> 对应artifact：projects/aicareer/specs/2026-04-06-超级用户陪跑服务流程-SPEC.md
 
 ## 1. 基本信息
 - 当前阶段：spec阶段

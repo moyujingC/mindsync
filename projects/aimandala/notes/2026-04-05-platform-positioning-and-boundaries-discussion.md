@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Product Spec Lead
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-platform-positioning-and-boundaries-discussion.md
+> source_of_truth：projects/aimandala/notes/2026-04-05-platform-positioning-and-boundaries-discussion.md
 > 项目：aimandala
 > 阶段：discussion
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
+> depends_on：projects/aimandala/PROJECT.md
 > reviewers：CEO / Orchestrator, Architect, Engineer
 
 ## 1. 这份文档要解决什么问题

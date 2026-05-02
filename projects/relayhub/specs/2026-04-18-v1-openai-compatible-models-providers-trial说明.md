@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Architect / Engineer
 > last_updated：2026-04-18
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-18-v1-openai-compatible-models-providers-trial说明.md
+> source_of_truth：projects/relayhub/specs/2026-04-18-v1-openai-compatible-models-providers-trial说明.md
 > 项目：RelayHub
 > 阶段：spec
 

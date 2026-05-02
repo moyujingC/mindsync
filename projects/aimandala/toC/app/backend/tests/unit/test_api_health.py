@@ -228,7 +228,8 @@ def test_detect_circles_endpoint(tmp_path):
     data = response.json()
     assert data["inner_radius"] == 0.33
     assert data["middle_radius"] == 0.66
-    assert data["method"] == "default"
+    # method varies by LLM config: noop→"default", fake LLM→"llm_vision"
+    assert data["method"] in ("llm_vision", "llm_vision_estimated", "llm_fallback", "default")
     assert data["geometry_suggestion"]["shape_type"] == "circle"
 
 

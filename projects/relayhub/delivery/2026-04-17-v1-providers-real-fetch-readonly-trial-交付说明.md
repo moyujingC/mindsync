@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-17-v1-providers-real-fetch-readonly-trial-交付说明.md
+> source_of_truth：projects/relayhub/delivery/2026-04-17-v1-providers-real-fetch-readonly-trial-交付说明.md
 > 项目：RelayHub
 > 阶段：delivery
 

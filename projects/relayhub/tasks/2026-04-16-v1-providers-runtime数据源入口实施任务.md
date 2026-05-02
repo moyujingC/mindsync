@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Architect / Test
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-providers-runtime数据源入口实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-16-v1-providers-runtime数据源入口实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-providers-最小真实fetch-transport工厂-交付说明.md
+> depends_on：projects/relayhub/delivery/2026-04-16-v1-providers-最小真实fetch-transport工厂-交付说明.md
 
 这份任务文档用于把 `Providers` 的真实只读试点从“已具备 fetch transport 工厂”继续推进到“默认关闭的 runtime 数据源入口”。
 

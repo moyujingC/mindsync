@@ -45,9 +45,9 @@ handoff_to:
 
 1. 当前参考材料任务文档
 2. 当前 reference analysis 结果
-3. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/MEMORY.md`
-4. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/review-patterns.yaml`
-5. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md`
+3. `projects/research-center/kb/preference-memory/MEMORY.md`
+4. `projects/research-center/kb/preference-memory/review-patterns.yaml`
+5. `projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md`
 
 ## 执行步骤
 

@@ -26,10 +26,10 @@
 
 ## 4. 当前输入材料
 
-- 产品Spec：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md
-- 就绪度检查报告：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-06-spec-to-architecture-readiness-check.md
-- 项目定义：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md
-- 可行性研究报告：/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md
+- 产品Spec：projects/aicareer/specs/MVP产品规范.md
+- 就绪度检查报告：projects/aicareer/qa/2026-04-06-spec-to-architecture-readiness-check.md
+- 项目定义：projects/aicareer/PROJECT.md
+- 可行性研究报告：company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md
 
 ## 5. 下游任务定义
 

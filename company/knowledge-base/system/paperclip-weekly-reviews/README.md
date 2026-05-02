@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead, Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/paperclip-weekly-reviews/README.md
+> source_of_truth：company/knowledge-base/system/paperclip-weekly-reviews/README.md
 
 这个目录用于收口 `Paperclip` 每周版本巡检的历史记录。
 
@@ -38,8 +38,8 @@
 
 只有上升为长期机制结论时，才应回写到：
 
-- [Paperclip-周检机制与版本跟踪说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
-- [Paperclip-设计机制与使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
+- [Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+- [Paperclip-设计机制与使用说明.md](company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
 - 或其他正式治理文档
 
 ## 4. 命名规则
@@ -56,7 +56,7 @@
 
 每份周检记录都应：
 
-1. 复用 [templates/Paperclip-周检报告模板.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
+1. 复用 [templates/Paperclip-周检报告模板.md](company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
 2. 明确写出：
    - 本周推荐升级版本
    - 为什么升到这个版本
@@ -91,6 +91,6 @@
 
 ## 8. 当前记录
 
-- [2026-04-27-Paperclip-周检报告.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/paperclip-weekly-reviews/2026-04-27-Paperclip-周检报告.md)
+- [2026-04-27-Paperclip-周检报告.md](company/knowledge-base/system/paperclip-weekly-reviews/2026-04-27-Paperclip-周检报告.md)
   - 首份基线样本
   - 结论：服务器已高于安全修复线，但仍建议从当前 `canary/v2026.411.0...` 收正到 `v2026.416.0`

@@ -4,15 +4,15 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md
+> source_of_truth：projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md
 > 项目：aimandala
 > 阶段：spec
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/delivery/2026-04-18-automation-and-local-execution-routing-phase1-delivery.md
+> depends_on：projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
+> depends_on：projects/aimandala/docs/delivery/2026-04-18-automation-and-local-execution-routing-phase1-delivery.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
 > “人工本地接手流程标准化”不再是当前主架构目标，本地执行已被重释为正式执行路径。
 
 ## 1. 问题定义

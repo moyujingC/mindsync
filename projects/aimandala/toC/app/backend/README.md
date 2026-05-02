@@ -73,8 +73,8 @@
 当前最小本地启动方式：
 
 ```bash
-cd /Users/xinran/Downloads/dev/mindsync
-export PYTHONPATH=/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend
+cd .
+export PYTHONPATH=projects/aimandala/toC/app/backend
 uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -85,12 +85,12 @@ uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
 当前建议至少保留下面两条验证命令：
 
 ```bash
-cd /Users/xinran/Downloads/dev/mindsync
+cd .
 pytest projects/aimandala/toC/app/backend/tests/unit
 ```
 
 ```bash
-cd /Users/xinran/Downloads/dev/mindsync
+cd .
 pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py
 ```
 
@@ -225,10 +225,10 @@ export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
 
 部署模板参考：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-05-腾讯云部署环境模板.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/.env.production.example`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/tencent-cloud/aimandala-backend.service.example`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/tencent-cloud/aimandala-api.nginx.conf.example`
+- `projects/aimandala/docs/tasks/2026-04-05-腾讯云部署环境模板.md`
+- `projects/aimandala/toC/app/backend/.env.production.example`
+- `projects/aimandala/deploy/tencent-cloud/aimandala-backend.service.example`
+- `projects/aimandala/deploy/tencent-cloud/aimandala-api.nginx.conf.example`
 
 ## 下一步建议
 

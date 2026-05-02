@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Architect / Test
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-17-v1-providers-env-runtime配置解析器实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-env-runtime配置解析器实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-17-v1-providers-runtime配置来源入口-交付说明.md
+> depends_on：projects/relayhub/delivery/2026-04-17-v1-providers-runtime配置来源入口-交付说明.md
 
 这份任务文档用于把 `Providers` 的 runtime config source 继续推进到“env runtime config 解析器”。
 

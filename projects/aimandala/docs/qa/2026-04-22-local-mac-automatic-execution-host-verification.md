@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-22
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-verification.md
+> source_of_truth：projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-verification.md
 > 项目：aimandala
 > 阶段：verification
 
@@ -40,7 +40,7 @@ git diff --check
 合入 `main` 后，在你的 Mac 上执行：
 
 ```bash
-cd /Users/xinran/Downloads/dev/mindsync
+cd .
 eval "$(shared/tools/paperclip-local-env.sh engineer)"
 node shared/tools/paperclip-local-executor.mjs doctor
 node shared/tools/paperclip-local-executor.mjs poll-once --json

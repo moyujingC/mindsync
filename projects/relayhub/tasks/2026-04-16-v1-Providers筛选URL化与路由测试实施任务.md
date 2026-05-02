@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-Providers筛选URL化与路由测试实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-16-v1-Providers筛选URL化与路由测试实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-控制台只读数据化-交付说明.md, /Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-Providers筛选URL化与路由测试-qa-basis.md
+> depends_on：projects/relayhub/delivery/2026-04-16-v1-控制台只读数据化-交付说明.md, projects/relayhub/qa/2026-04-16-v1-Providers筛选URL化与路由测试-qa-basis.md
 
 这份任务文档用于把 `RelayHub` 控制台继续从“可深链的只读运营台”推进到“筛选状态可分享、核心路由有自动化回归”的状态。
 

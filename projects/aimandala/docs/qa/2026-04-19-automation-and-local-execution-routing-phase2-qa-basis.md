@@ -4,16 +4,16 @@
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md
+> source_of_truth：projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md
 > 项目：aimandala
 > 阶段：qa-basis
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-19-automation-and-local-execution-routing-phase2-plan.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-routing-and-heartbeat-gate-verification.md
+> depends_on：projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md
+> depends_on：projects/aimandala/docs/tasks/2026-04-19-automation-and-local-execution-routing-phase2-plan.md
+> depends_on：projects/aimandala/docs/qa/2026-04-18-automation-routing-and-heartbeat-gate-verification.md
 > reviewers：Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md) 取代。
 > 其中“人工本地接手流程标准化”不再是当前默认 QA 入口。
 
 ## 1. 本轮验证对象

@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Architect / Test
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-contract-只读API命名对齐实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-16-v1-contract-只读API命名对齐实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-contract-脱离页面模型-交付说明.md
+> depends_on：projects/relayhub/delivery/2026-04-16-v1-contract-脱离页面模型-交付说明.md
 
 这份任务文档用于把 `RelayHub` 控制台当前前端只读 contract，继续以 `ReadonlyApi` 并行命名层推进到更接近未来真实只读 API 的语义。
 

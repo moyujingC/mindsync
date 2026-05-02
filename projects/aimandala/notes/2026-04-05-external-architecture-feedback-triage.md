@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Architect
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-external-architecture-feedback-triage.md
+> source_of_truth：projects/aimandala/notes/2026-04-05-external-architecture-feedback-triage.md
 > 项目：aimandala
 > 阶段：discussion
 

@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-14
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-14-Paperclip-Agent-Skill-恢复实施任务.md
+> source_of_truth：projects/research-center/tasks/2026-04-14-Paperclip-Agent-Skill-恢复实施任务.md
 > 项目：研究中心
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-14-Paperclip-Agent-Skill-恢复与迁移-SPEC.md
+> depends_on：projects/research-center/specs/2026-04-14-Paperclip-Agent-Skill-恢复与迁移-SPEC.md
 
 ## 1. 目标行为
 

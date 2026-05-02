@@ -15,9 +15,9 @@
 
 正式机当前已经改走 Docker 发布，请优先参考：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/README.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/docker-compose.release.yml`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/docker/aimandala-release.nginx.conf.example`
+- `projects/aimandala/deploy/docker/README.md`
+- `projects/aimandala/deploy/docker/docker-compose.release.yml`
+- `projects/aimandala/deploy/docker/aimandala-release.nginx.conf.example`
 
 当前线上正式域名：
 

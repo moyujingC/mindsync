@@ -49,27 +49,27 @@ reportsTo: ../ceo/AGENTS.md
 - `research-brief`
   - 当任务还没收束成正式研究对象、问题和范围时使用
   - 位置：
-    - [research-brief](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-brief/SKILL.md)
+    - [research-brief](projects/research-center/skills/research-brief/SKILL.md)
 
 - `research-synthesis`
   - 当研究已经形成事实材料，需要进一步收束成综合结论时使用
   - 位置：
-    - [research-synthesis](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-synthesis/SKILL.md)
+    - [research-synthesis](projects/research-center/skills/research-synthesis/SKILL.md)
 
 - `knowledge-ingest`
   - 当研究已经形成稳定结论，需要判断哪些内容值得正式入库时使用
   - 位置：
-    - [knowledge-ingest](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/knowledge-ingest/SKILL.md)
+    - [knowledge-ingest](projects/research-center/skills/knowledge-ingest/SKILL.md)
 
 - `insight-handoff`
   - 当研究结论需要转给 `Product Spec Lead`、`Architect`、`Content Lead` 或 `Business Lead` 时使用
   - 位置：
-    - [insight-handoff](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/insight-handoff/SKILL.md)
+    - [insight-handoff](projects/research-center/skills/insight-handoff/SKILL.md)
 
 - `handoff-packaging`
   - 当任务需要正式跨阶段交接时使用
   - 位置：
-    - [handoff-packaging](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/handoff-packaging/SKILL.md)
+    - [handoff-packaging](projects/research-center/skills/handoff-packaging/SKILL.md)
 
 ## 你的默认输入来源
 

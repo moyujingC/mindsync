@@ -4,12 +4,12 @@
 > 版本：0.1.0
 > owner：创作者
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/reference-system-example/04-review-feedback.md
+> source_of_truth：projects/research-center/research/reference-system-example/04-review-feedback.md
 > 项目：研究中心
 > 阶段：in_review
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/research/reference-system-example/02-insight-analysis-card.md
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/research/reference-system-example/03-expression-analysis-card.md
+> - projects/research-center/research/reference-system-example/02-insight-analysis-card.md
+> - projects/research-center/research/reference-system-example/03-expression-analysis-card.md
 
 ## 1. review 目标
 

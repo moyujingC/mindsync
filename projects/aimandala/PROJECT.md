@@ -4,8 +4,8 @@
 > 版本：0.4.3
 > owner：CEO / Orchestrator
 > last_updated：2026-04-18
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
-> 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
+> source_of_truth：projects/aimandala/PROJECT.md
+> 公司侧入口：[company/projects/一镜一梳/PROJECT.md](company/projects/一镜一梳/PROJECT.md)
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 这是 `一镜一梳` 在 Monorepo 中的项目工作区入口。
@@ -43,10 +43,10 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/README.md)
-- [architecture/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/README.md)
-- [docs/sources/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/sources/README.md)
-- [runbooks/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/README.md)
+- [specs/README.md](projects/aimandala/docs/specs/README.md)
+- [architecture/README.md](projects/aimandala/docs/architecture/README.md)
+- [docs/sources/README.md](projects/aimandala/docs/sources/README.md)
+- [runbooks/README.md](projects/aimandala/docs/runbooks/README.md)
 
 其中：
 
@@ -58,24 +58,24 @@
 
 当前执行窗口默认从这些目录入口进入：
 
-- [tasks/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/README.md)
-- [qa/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/README.md)
-- [delivery/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/README.md)
+- [tasks/README.md](projects/aimandala/docs/tasks/README.md)
+- [qa/README.md](projects/aimandala/docs/qa/README.md)
+- [delivery/README.md](projects/aimandala/docs/delivery/README.md)
 
 当前如果要继续推进“报告链路保真重构”，默认顺序固定为：
 
-1. [2026-04-18-报告链路保真重构总规格.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md)
-2. [2026-04-18-报告链路保真重构技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/architecture/2026-04-18-报告链路保真重构技术方案.md)
-3. [2026-04-18-报告链路保真重构实施总计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-18-报告链路保真重构实施总计划.md)
-4. [2026-04-18-报告链路保真重构验证基线.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-18-报告链路保真重构验证基线.md)
+1. [2026-04-18-报告链路保真重构总规格.md](projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md)
+2. [2026-04-18-报告链路保真重构技术方案.md](projects/aimandala/docs/architecture/2026-04-18-报告链路保真重构技术方案.md)
+3. [2026-04-18-报告链路保真重构实施总计划.md](projects/aimandala/docs/tasks/2026-04-18-报告链路保真重构实施总计划.md)
+4. [2026-04-18-报告链路保真重构验证基线.md](projects/aimandala/docs/qa/2026-04-18-报告链路保真重构验证基线.md)
 
 ## 5. 历史资料入口
 
 如需追溯历史行为、旧实现细节或阶段性收口过程，可查：
 
 - 历史仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
-- 项目历史资料：[/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs)
-- 公司侧历史草案：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
+- 项目历史资料：[projects/aimandala/docs](projects/aimandala/docs)
+- 公司侧历史草案：[company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md](company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
 
 这些材料仅作历史追溯，不再作为默认开发入口。
 

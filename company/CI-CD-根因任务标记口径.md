@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/CI-CD-根因任务标记口径.md
+> source_of_truth：company/CI-CD-根因任务标记口径.md
 
 这份文档用于约束 `root_cause_task: true` 在 `墨予镜` 中的使用边界。
 

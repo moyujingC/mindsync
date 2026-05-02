@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-providers-最小真实fetch试点-交付说明.md
+> source_of_truth：projects/relayhub/delivery/2026-04-16-v1-providers-最小真实fetch试点-交付说明.md
 > 项目：RelayHub
 > 阶段：delivery
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-providers-最小真实fetch试点-验证记录.md
+> depends_on：projects/relayhub/qa/2026-04-16-v1-providers-最小真实fetch试点-验证记录.md
 
 这份文档用于把 `RelayHub` 控制台当前这轮 `Providers` 最小真实 fetch 试点交给下一棒实现者。
 

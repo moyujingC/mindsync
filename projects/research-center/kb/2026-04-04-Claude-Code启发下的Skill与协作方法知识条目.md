@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/2026-04-04-Claude-Code启发下的Skill与协作方法知识条目.md
+> source_of_truth：projects/research-center/kb/2026-04-04-Claude-Code启发下的Skill与协作方法知识条目.md
 > 项目：研究中心
 > 阶段：knowledge-ingest
 
@@ -17,7 +17,7 @@
 - 条目类型：
   - 方法条目
 - 来源研究：
-  - [Claude Code 源码研究综合结论与 Skill 启发](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
+  - [Claude Code 源码研究综合结论与 Skill 启发](projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
 - 服务对象：
   - CEO / Orchestrator
   - Research & Knowledge Lead
@@ -93,10 +93,10 @@
 ## 5. 回链
 
 - 原始文档：
-  - [Claude Code 源码研究综合结论与 Skill 启发](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
+  - [Claude Code 源码研究综合结论与 Skill 启发](projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
 - 相关条目：
-  - [墨予镜 Skill 协议草案](/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
-  - [Skill 试跑案例索引](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-Skill试跑案例索引.md)
+  - [墨予镜 Skill 协议草案](projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
+  - [Skill 试跑案例索引](projects/research-center/delivery/2026-04-04-Skill试跑案例索引.md)
 
 ## 6. 一句话结论
 

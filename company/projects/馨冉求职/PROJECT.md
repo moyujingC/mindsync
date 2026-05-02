@@ -4,8 +4,8 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > 最后更新：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/馨冉求职/PROJECT.md
-> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt](/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt)
+> source_of_truth：company/projects/馨冉求职/PROJECT.md
+> 对应项目工作区：[projects/xinran-jobhunt](projects/xinran-jobhunt)
 > 项目类型：个人求职执行项目
 
 这份文档是 `馨冉求职` 在 `mindsync` 中的公司侧项目入口。
@@ -58,7 +58,7 @@
 
 项目工作区默认从这里进入：
 
-- [projects/xinran-jobhunt/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt/PROJECT.md)
+- [projects/xinran-jobhunt/PROJECT.md](projects/xinran-jobhunt/PROJECT.md)
 
 ## 5. 当前默认动作
 
@@ -66,4 +66,4 @@
 
 如果任务转向“把求职方法抽象成产品能力或服务模型”，再转入：
 
-- [company/projects/怀瑾握瑜/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md)
+- [company/projects/怀瑾握瑜/PROJECT.md](company/projects/怀瑾握瑜/PROJECT.md)

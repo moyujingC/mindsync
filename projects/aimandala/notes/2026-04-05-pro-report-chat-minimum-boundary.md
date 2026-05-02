@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Product / Architect
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-pro-report-chat-minimum-boundary.md
+> source_of_truth：projects/aimandala/notes/2026-04-05-pro-report-chat-minimum-boundary.md
 > 项目：aimandala
 > 阶段：discussion
 

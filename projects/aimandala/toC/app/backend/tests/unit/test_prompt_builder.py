@@ -18,6 +18,8 @@ def test_prompt_template_loads_lite_template_and_schema():
     schema = template.load_schema()
 
     assert "一镜 Lite 版解读报告模板 v1.6" in content
+    assert "第一段必须尽快命中用户当前状态" in content
+    assert "六段故事要像旧版一样形成递进" in content
     assert schema["type"] == "lite"
     assert schema["version"] == "1.6"
 
@@ -49,6 +51,7 @@ def test_prompt_builder_builds_pro_prompt_with_context():
     assert '{"theme":"intimate_relationship"}' in prompt
     assert "- 当前主题：亲密关系" in prompt
     assert "一梳 Pro 版解读报告模板 v1.6" in prompt
+    assert "不是 Lite 扩写版" in prompt
 
 
 def test_prompt_builder_includes_lite_knowledge_skeleton_block():
@@ -70,6 +73,7 @@ def test_prompt_builder_includes_lite_knowledge_skeleton_block():
     assert "知识骨架（已确定，不要改写判断）" in prompt
     assert "- 已确定标题：向前先稳住的人" in prompt
     assert "请只做语言润色，不要新增判断" in prompt
+    assert "你的目标不是只把字段填满" in prompt
 
 
 def test_prompt_builder_includes_pro_knowledge_skeleton_block():
@@ -91,6 +95,7 @@ def test_prompt_builder_includes_pro_knowledge_skeleton_block():
     assert "知识骨架（已确定，不要改写判断）" in prompt
     assert "- 已确定核心失衡：关系耗散" in prompt
     assert "你只能润色这些既有判断" in prompt
+    assert "这是一份独立深度报告，不是 Lite 扩写版" in prompt
 
 
 def test_prompt_builder_preserves_evidence_first_knowledge_skeleton_json():

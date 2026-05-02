@@ -4,12 +4,12 @@
 > 版本：0.1.0
 > owner：Engineer
 > 最后更新：2026-04-28
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-28-本地自动执行-runtime-迁出-Downloads-DELIVERY.md
+> source_of_truth：company/projects/Automation/2026-04-28-本地自动执行-runtime-迁出-Downloads-DELIVERY.md
 > 项目：Automation Platform
 > 阶段：delivery
-> depends_on：/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-SPEC.md
-> depends_on：/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md
-> depends_on：/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/2026-04-27-本地执行器-CLI-依赖缺口记录.md
+> depends_on：company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-SPEC.md
+> depends_on：company/projects/Automation/2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md
+> depends_on：company/projects/Automation/2026-04-27-本地执行器-CLI-依赖缺口记录.md
 
 ## 1. 问题定义
 
@@ -60,9 +60,9 @@
 
 涉及文件：
 
-- [shared/tools/paperclip-local-env.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-env.sh)
-- [shared/tools/paperclip-local-executor.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-executor.mjs)
-- [shared/tools/paperclip-local-pilot.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-pilot.mjs)
+- [shared/tools/paperclip-local-env.sh](shared/tools/paperclip-local-env.sh)
+- [shared/tools/paperclip-local-executor.mjs](shared/tools/paperclip-local-executor.mjs)
+- [shared/tools/paperclip-local-pilot.mjs](shared/tools/paperclip-local-pilot.mjs)
 
 ### 2.4 切换 launchd 入口
 
@@ -74,8 +74,8 @@
 
 涉及文件：
 
-- [shared/tools/paperclip-local-executor.launchd.plist](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-local-executor.launchd.plist)
-- [shared/tools/install-paperclip-local-executor-launchd.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/install-paperclip-local-executor-launchd.sh)
+- [shared/tools/paperclip-local-executor.launchd.plist](shared/tools/paperclip-local-executor.launchd.plist)
+- [shared/tools/install-paperclip-local-executor-launchd.sh](shared/tools/install-paperclip-local-executor-launchd.sh)
 
 ### 2.5 增加 runtime 脚本同步
 

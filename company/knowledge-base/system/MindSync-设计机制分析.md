@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/MindSync-设计机制分析.md
+> source_of_truth：company/knowledge-base/system/MindSync-设计机制分析.md
 
 这份文档解释 `MindSync` 这套 Monorepo 为什么这样分层、当前在系统上承担什么角色，以及遇到信息找不到时应该先从哪里进入。
 
@@ -90,9 +90,9 @@
 
 建议先查：
 
-- [AGENTS.md](/Users/xinran/Downloads/dev/mindsync/AGENTS.md)
-- [COMPANY.md](/Users/xinran/Downloads/dev/mindsync/COMPANY.md)
-- [company/knowledge-base/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md)
+- [AGENTS.md](AGENTS.md)
+- [COMPANY.md](COMPANY.md)
+- [company/knowledge-base/README.md](company/knowledge-base/README.md)
 
 ### 5.2 “我知道项目里做过，但不知道机制怎么运作”
 
@@ -106,11 +106,11 @@
 
 如果你想理解“现在的 CI/CD 系统到底是什么、包含哪些能力”，建议顺序：
 
-1. 先看 [当前CI-CD系统机制总览.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/当前CI-CD系统机制总览.md)
-2. 再看 [company/CI-CD-角色分工说明.md](/Users/xinran/Downloads/dev/mindsync/company/CI-CD-角色分工说明.md)
+1. 先看 [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
+2. 再看 [company/CI-CD-角色分工说明.md](company/CI-CD-角色分工说明.md)
 3. 再进入项目级 runbook：
-   - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-   - [projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md)
+   - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+   - [projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md](projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md)
 
 ## 7. 当前结构上的一个重要判断
 

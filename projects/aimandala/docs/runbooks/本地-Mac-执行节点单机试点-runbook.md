@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-21
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md
+> source_of_truth：projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md
 
 这份 runbook 用于收口 `aimandala` 普通任务接入本地 Mac 执行节点的单机试点操作步骤。
 
@@ -47,7 +47,7 @@
    - `paperclipai`
    - `curl`
 4. 本地可访问仓库中的：
-   - [paperclip-local-env.sh](/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh)
+   - [paperclip-local-env.sh](shared/tools/paperclip-local-env.sh)
 
 ## 3. 本地加载控制面连接
 
@@ -56,7 +56,7 @@
 先执行：
 
 ```bash
-eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh --base)"
+eval "$(shared/tools/paperclip-local-env.sh --base)"
 ```
 
 预期会得到至少下面 3 个变量：
@@ -83,13 +83,13 @@ eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-loca
 若你要以 `Engineer` 身份接入，执行：
 
 ```bash
-eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh engineer)"
+eval "$(shared/tools/paperclip-local-env.sh engineer)"
 ```
 
 若你要以 `Test / QA` 身份接入，执行：
 
 ```bash
-eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh test_qa)"
+eval "$(shared/tools/paperclip-local-env.sh test_qa)"
 ```
 
 预期会补出：
@@ -125,19 +125,19 @@ curl -fsS \
 若你希望先做一层更稳的本地自检，可执行：
 
 ```bash
-node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-pilot.mjs doctor
+node shared/tools/paperclip-local-pilot.mjs doctor
 ```
 
 前提是你已经完成：
 
 ```bash
-eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh engineer)"
+eval "$(shared/tools/paperclip-local-env.sh engineer)"
 ```
 
 或者：
 
 ```bash
-eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh test_qa)"
+eval "$(shared/tools/paperclip-local-env.sh test_qa)"
 ```
 
 它会额外确认：
@@ -173,7 +173,7 @@ eval "$(/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-loca
 如需先筛候选正样本，可执行：
 
 ```bash
-node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-pilot.mjs candidates
+node shared/tools/paperclip-local-pilot.mjs candidates
 ```
 
 同样前提是你已经先加载对应 agent 身份，而不只是执行 `--base`。
@@ -198,13 +198,13 @@ node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-p
 如需先预览而不真正回写，可执行 dry-run：
 
 ```bash
-node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-pilot.mjs claim MIN-119 --cwd /Users/xinran/.codex/worktrees/31f1/mindsync --judgment "已在本地 Mac 接手，准备进入文档收口。" --next "先核对文档链与当前差口，再决定是否进入修改。"
+node shared/tools/paperclip-local-pilot.mjs claim MIN-119 --cwd /Users/xinran/.codex/worktrees/31f1/mindsync --judgment "已在本地 Mac 接手，准备进入文档收口。" --next "先核对文档链与当前差口，再决定是否进入修改。"
 ```
 
 若确认无误，再加 `--execute` 真正执行 checkout + `status=in_progress` + comment 回写：
 
 ```bash
-node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-pilot.mjs claim MIN-119 --cwd /Users/xinran/.codex/worktrees/31f1/mindsync --judgment "已在本地 Mac 接手，准备进入文档收口。" --next "先核对文档链与当前差口，再决定是否进入修改。" --execute
+node shared/tools/paperclip-local-pilot.mjs claim MIN-119 --cwd /Users/xinran/.codex/worktrees/31f1/mindsync --judgment "已在本地 Mac 接手，准备进入文档收口。" --next "先核对文档链与当前差口，再决定是否进入修改。" --execute
 ```
 
 ### 6.2 本地 checkout
@@ -241,7 +241,7 @@ node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-p
 如需在进展、评审或完成时生成标准回写，可使用：
 
 ```bash
-node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-pilot.mjs update MIN-119 --status in_review --cwd /Users/xinran/.codex/worktrees/31f1/mindsync --judgment "文档链已收口，可进入交付物验收。" --actions "已补齐 spec / task / qa / verification 互链。" --next "等待 review 结论，再决定是否转 done。" --verification "本地文本卫生检查通过。"
+node shared/tools/paperclip-local-pilot.mjs update MIN-119 --status in_review --cwd /Users/xinran/.codex/worktrees/31f1/mindsync --judgment "文档链已收口，可进入交付物验收。" --actions "已补齐 spec / task / qa / verification 互链。" --next "等待 review 结论，再决定是否转 done。" --verification "本地文本卫生检查通过。"
 ```
 
 确认无误后，再加 `--execute` 真正回写到 issue。
@@ -278,10 +278,10 @@ node /Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-p
 ## 9. 关联文档
 
 1. spec：
-   - [../specs/2026-04-21-local-mac-execution-host-pilot-spec.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
+   - [../specs/2026-04-21-local-mac-execution-host-pilot-spec.md](projects/aimandala/docs/specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
 2. task：
-   - [../tasks/2026-04-21-local-mac-execution-host-pilot-plan.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
+   - [../tasks/2026-04-21-local-mac-execution-host-pilot-plan.md](projects/aimandala/docs/tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
 3. QA：
-   - [../qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
+   - [../qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md](projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
 4. 基础连接脚本：
-   - [paperclip-local-env.sh](/Users/xinran/.codex/worktrees/31f1/mindsync/shared/tools/paperclip-local-env.sh)
+   - [paperclip-local-env.sh](shared/tools/paperclip-local-env.sh)

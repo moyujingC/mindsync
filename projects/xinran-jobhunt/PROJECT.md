@@ -4,8 +4,8 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt/PROJECT.md
-> 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/馨冉求职/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/馨冉求职/PROJECT.md)
+> source_of_truth：projects/xinran-jobhunt/PROJECT.md
+> 公司侧入口：[company/projects/馨冉求职/PROJECT.md](company/projects/馨冉求职/PROJECT.md)
 > 项目类型：个人求职执行项目
 
 这是 `馨冉求职` 在 Monorepo 中的正式项目工作区入口。
@@ -45,9 +45,9 @@
 
 - 如果任务服务馨冉本人当前求职，留在这里
 - 如果任务沉淀出可复用方法、服务流程或产品能力，再 handoff 给：
-  - [projects/aicareer/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
+  - [projects/aicareer/PROJECT.md](projects/aicareer/PROJECT.md)
 - 如果任务产出可公开表达的第一人称内容，再 handoff 给：
-  - [company/projects/内容矩阵/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/PROJECT.md)
+  - [company/projects/内容矩阵/PROJECT.md](company/projects/内容矩阵/PROJECT.md)
 
 ## 4. 当前下一步
 

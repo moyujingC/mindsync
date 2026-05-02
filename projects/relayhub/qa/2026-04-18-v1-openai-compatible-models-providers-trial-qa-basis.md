@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：QA
 > last_updated：2026-04-18
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-18-v1-openai-compatible-models-providers-trial-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-18-v1-openai-compatible-models-providers-trial-qa-basis.md
 > 项目：RelayHub
 > 阶段：qa
 

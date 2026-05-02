@@ -11,7 +11,6 @@ import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
 import type { MobileWebRouteId } from "./routes";
 import type {
-  DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
   InterpretationVersion,
@@ -26,9 +25,6 @@ import { getDraftReportVariant } from "./state";
 export interface MobileWebAppProps {
   route: MobileWebRouteId;
   uploadDraft?: MobileWebUploadDraft;
-  uploadDetection?: DetectCirclesResponse | null;
-  uploadDetecting?: boolean;
-  uploadDetectError?: string | null;
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
   historyQuery?: InterpretationListQuery;
@@ -50,7 +46,6 @@ export interface MobileWebAppProps {
   onLandingOpenHistory?: () => void;
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onUploadContinue?: () => void;
-  onUploadPreviewDetect?: () => void;
   onUploadBack?: () => void;
   onReportEntryBack?: () => void;
   onReportEntryChooseReportType?: (reportType: MobileWebReportProductType) => void;
@@ -72,9 +67,6 @@ export interface MobileWebAppProps {
 export function MobileWebApp({
   route,
   uploadDraft,
-  uploadDetection,
-  uploadDetecting = false,
-  uploadDetectError = null,
   flowState,
   records = [],
   historyQuery,
@@ -96,7 +88,6 @@ export function MobileWebApp({
   onLandingOpenHistory,
   onUploadDraftChange,
   onUploadContinue,
-  onUploadPreviewDetect,
   onUploadBack,
   onReportEntryBack,
   onReportEntryChooseReportType,
@@ -129,15 +120,11 @@ export function MobileWebApp({
       return (
         <MobileWebUploadPage
           draft={uploadDraft}
-          detection={uploadDetection}
-          isDetecting={uploadDetecting}
-          detectError={uploadDetectError}
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}
           onDraftChange={onUploadDraftChange}
           onContinue={onUploadContinue}
-          onPreviewDetect={onUploadPreviewDetect}
           onBack={onUploadBack}
         />
       );

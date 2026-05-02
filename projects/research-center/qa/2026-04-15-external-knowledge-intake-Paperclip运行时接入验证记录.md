@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/qa/2026-04-15-external-knowledge-intake-Paperclip运行时接入验证记录.md
+> source_of_truth：projects/research-center/qa/2026-04-15-external-knowledge-intake-Paperclip运行时接入验证记录.md
 > 项目：研究中心
 > 阶段：verification
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-15-external-knowledge-intake-Paperclip运行时接入实施任务.md
+> depends_on：projects/research-center/tasks/2026-04-15-external-knowledge-intake-Paperclip运行时接入实施任务.md
 
 ## 1. 验证范围
 

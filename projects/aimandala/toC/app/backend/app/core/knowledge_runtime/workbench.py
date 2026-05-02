@@ -13,6 +13,11 @@ from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.report_knowledge_debug import KnowledgeDebugBlockBuilder
 from app.core.pipeline.report_safety_wrapper import ReportSafetyWrapper
 from app.core.pipeline.store import InterpretationStore
+from app.core.pipeline.generation_runtime import (
+    DeterministicReportGenerationRuntime,
+    LLMReportGenerationRuntime,
+)
+from app.core.llm.runtime import NoopLLMClient, create_llm_client_from_env
 
 from .compiler import KnowledgePackCompiler
 from .repository import (
@@ -361,7 +366,11 @@ class KnowledgeWorkbench:
         version: str,
         include_details: bool = False,
     ) -> dict[str, Any]:
-        runtime = create_knowledge_runtime(build_selector=build_selector)
+        llm_client = create_llm_client_from_env()
+        runtime = create_knowledge_runtime(
+            build_selector=build_selector,
+            llm_client=llm_client,
+        )
         debug_builder = KnowledgeDebugBlockBuilder(
             get_knowledge_runtime=lambda: runtime,
             get_primary_knowledge_signal=lambda record: (
@@ -390,9 +399,15 @@ class KnowledgeWorkbench:
 
         with tempfile.TemporaryDirectory(prefix="aimandala-kb-workbench-") as temp_dir:
             store = InterpretationStore(storage_dir=str(Path(temp_dir) / "interpretations"))
+            generation_runtime = (
+                DeterministicReportGenerationRuntime()
+                if type(llm_client) is NoopLLMClient
+                else LLMReportGenerationRuntime(llm_client=llm_client)
+            )
             orchestrator = LayeredOrchestrator(
                 store=store,
                 knowledge_runtime=runtime,
+                generation_runtime=generation_runtime,
                 enable_vision=False,
             )
 

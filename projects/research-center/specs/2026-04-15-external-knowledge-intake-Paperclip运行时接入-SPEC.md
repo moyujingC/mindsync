@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Research & Knowledge Lead
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-15-external-knowledge-intake-Paperclip运行时接入-SPEC.md
+> source_of_truth：projects/research-center/specs/2026-04-15-external-knowledge-intake-Paperclip运行时接入-SPEC.md
 > 项目：研究中心
 > 阶段：spec
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-15-外部知识采集统一能力-SPEC.md
+> depends_on：projects/research-center/specs/2026-04-15-外部知识采集统一能力-SPEC.md
 
 ## 1. 目标
 

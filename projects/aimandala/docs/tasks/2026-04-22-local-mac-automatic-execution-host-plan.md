@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-22
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-22-local-mac-automatic-execution-host-plan.md
+> source_of_truth：projects/aimandala/docs/tasks/2026-04-22-local-mac-automatic-execution-host-plan.md
 > 项目：aimandala
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-22-local-mac-automatic-execution-host-spec.md
+> depends_on：projects/aimandala/docs/specs/2026-04-22-local-mac-automatic-execution-host-spec.md
 
 ## 1. 实施目标
 
