@@ -663,6 +663,7 @@ describe("RelayHub console routes", () => {
       kind: "relay-api",
       baseUrl: "https://aitechflux.com/v1",
       modelId: "claude-sonnet",
+      reasoningEffort: null,
       apiKey: "sk-aitechflux-test",
     });
     await controlPlaneService.testModelEntryConnection("preset-aitechflux-relay");

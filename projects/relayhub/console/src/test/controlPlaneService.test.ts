@@ -123,6 +123,7 @@ describe("control-plane service release wiring", () => {
       kind: "relay-api",
       baseUrl: "https://aitechflux.com/v1",
       modelId: "claude-sonnet",
+      reasoningEffort: null,
       apiKey: "sk-aitechflux-test",
     });
 

@@ -629,6 +629,7 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     source: "custom",
     baseUrl: input.baseUrl.trim(),
     modelId: input.modelId.trim(),
+    reasoningEffort: input.reasoningEffort ?? null,
     catalogFamily: "openai-compatible",
     purchaseUrl: input.purchaseUrl?.trim() || null,
     status: apiKey ? "configured-pending-test" : "configured-pending-test",
