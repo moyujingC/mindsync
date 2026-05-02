@@ -89,26 +89,11 @@
 ## Monorepo 日常工作区约定
 
 - 根工作区 [mindsync](/Users/xinran/Downloads/dev/mindsync) 固定对应 `main`
-- `main` 只承担公司主干、Automation、治理文档与最终收口，不承接 RelayHub 的频繁服务器试错
-- RelayHub 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev`
-- 该 worktree 固定对应 `relayhub/dev`
-- `relayhub/dev` 是 RelayHub 唯一正式服务器测试分支
-- `relayhub.jingshu.cc` 的服务器部署默认从 `relayhub/dev` 拉取，而不是从 `main` 拉取
-- AIMandala 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-dev`
-- 该 worktree 固定对应 `aimandala/dev`
-- `aimandala/dev` 是 AIMandala 默认本地产品开发与本地验证分支，成熟后再合回 `main`
-- RelayHub 固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev`
-- 该 worktree 固定对应 `relayhub/dev`
-- `relayhub/dev` 是 RelayHub 默认本地产品开发与本地验证分支
-- 内容矩阵固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/content-matrix-dev`
-- 该 worktree 固定对应 `content-matrix/dev`
-- `content-matrix/dev` 是内容矩阵默认本地内容整理与本地验证分支
-- 研究中心固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/research-center-dev`
-- 该 worktree 固定对应 `research-center/dev`
-- `research-center/dev` 是研究中心默认本地研究整理、知识沉淀与能力实验分支
-- 馨冉求职固定使用独立 worktree：`/Users/xinran/Downloads/dev/mindsync-worktrees/xinran-jobhunt-dev`
-- 该 worktree 固定对应 `xinran-jobhunt/dev`
-- `xinran-jobhunt/dev` 是馨冉求职默认本地执行与本地验证分支
+- `main` 只承担公司主干、Automation、治理文档与最终收口
+- 已明确长期独立开发的项目，默认应在各自正式 `git worktree` 中开发与验证
+- 具体项目 worktree、分支和服务器/本地路径口径，统一看：
+  - [company/Git仓库管理系统说明.md](/Users/xinran/Downloads/dev/mindsync/company/Git仓库管理系统说明.md)
+  - [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 
 ## IDE 默认开发纪律
 
@@ -145,6 +130,7 @@
 2. 不等待用户额外提醒“记得提交”
 3. 小型连续修改允许在同一轮内合并为一次提交，不强制每改一行就提交
 4. 若提交说明未手写，允许使用仓库内的自动提交辅助机制生成最小 commit message
+5. 提交纪律的正式说明统一看 [company/Git提交与自动提交规范.md](/Users/xinran/Downloads/dev/mindsync/company/Git提交与自动提交规范.md)
 
 ### 什么属于重要工作
 
