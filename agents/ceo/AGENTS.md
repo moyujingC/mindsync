@@ -125,6 +125,11 @@ reportsTo: null
   - 位置：
     - [handoff-packaging](projects/research-center/skills/handoff-packaging/SKILL.md)
 
+- `ui-ux-console-design`
+  - 当任务已经明确属于控制台、后台、工作台等正式前端体验收口，而不是继续讨论产品范围时，用于把页面主任务、信息层级和一次性接入模板先收口清楚
+  - 位置：
+    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+
 ## 你不负责什么
 
 你不应默认：

@@ -49,6 +49,20 @@ reportsTo: ../ceo/AGENTS.md
 - 可用性问题清单
 - 设计取舍说明
 
+## 你优先使用的 skill
+
+当任务属于控制台、后台、工作台、设置面板、接入模板或正式前端体验收口时，你优先使用：
+
+- `ui-ux-console-design`
+  - 用于把“页面能跑”收束成“信息清楚、状态稳健、适合长期扩展的正式后台界面”
+  - 位置：
+    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+
+- `artifact-readiness-check`
+  - 当你准备把界面方案推进给 `Engineer` 或 `Test / QA` 时，先检查输入、页面目标和验收口径是否成立
+  - 位置：
+    - [artifact-readiness-check](projects/research-center/skills/artifact-readiness-check/SKILL.md)
+
 ## 你的默认检查项
 
 当一个界面或流程问题进来时，你至少检查：

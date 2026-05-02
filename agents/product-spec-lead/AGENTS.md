@@ -86,6 +86,11 @@ reportsTo: ../ceo/AGENTS.md
   - 位置：
     - [product-framing-spec](projects/research-center/skills/product-framing-spec/SKILL.md)
 
+- `ui-ux-console-design`
+  - 当任务明确属于控制台、后台、工作台、设置页或接入页体验收口时，用于把产品定义继续收束成稳定的页面结构、状态设计和一次性接入模板
+  - 位置：
+    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+
 - `artifact-readiness-check`
   - 当你准备把 `spec` 推进给 `Architect` 或 `Engineer` 时，先检查 artifact 是否成立
   - 位置：

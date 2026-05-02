@@ -198,11 +198,17 @@
 遇到“需求讨论 -> 开发 -> 验证 -> 交付”的重要链路时，优先使用：
 
 - `product-framing-spec`
+- `ui-ux-console-design`
 - `artifact-readiness-check`
 - `qa-gate-review`
 - `harness-sdd-tdd-guard`
 
 其中 `harness-sdd-tdd-guard` 用于统一判断当前是否属于重要工作、处于哪一阶段、最小 artifact 是否齐全，以及是否允许直接进入实现或宣布完成。
+
+如果任务明确属于控制台、后台、工作台、设置页、接入页或正式前端体验收口，应额外优先使用：
+
+- `ui-ux-console-design`
+  - 用于把页面主任务、信息层级、状态设计和一次性接入模板先收口清楚
 
 ## Paperclip Notes
 

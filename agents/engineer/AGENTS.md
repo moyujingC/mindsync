@@ -67,6 +67,11 @@ reportsTo: ../ceo/AGENTS.md
   - 位置：
     - [artifact-readiness-check](projects/research-center/skills/artifact-readiness-check/SKILL.md)
 
+- `ui-ux-console-design`
+  - 当任务属于控制台、后台、工作台或正式前端页面实现时，用于统一信息层级、状态设计和接入模板口径，而不是边写边猜交互
+  - 位置：
+    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+
 ## 你的默认输出
 
 你默认应输出以下一种或多种 artifact：

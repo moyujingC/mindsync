@@ -70,6 +70,11 @@ reportsTo: ../ceo/AGENTS.md
   - 位置：
     - [architecture-boundary-plan](projects/research-center/skills/architecture-boundary-plan/SKILL.md)
 
+- `ui-ux-console-design`
+  - 当任务涉及控制台、后台、工作台等前端主界面，需要同时收口信息架构、页面区块边界和接口承载方式时优先使用
+  - 位置：
+    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+
 - `artifact-readiness-check`
   - 当你准备把方案推进给 `Engineer` 或 `Test / QA` 时，先检查当前 architecture artifact 是否成立
   - 位置：
