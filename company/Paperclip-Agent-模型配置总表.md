@@ -17,6 +17,12 @@
 - 鉴权是怎么进来的
 - 这个状态在面板上应该如何解读
 
+补充口径：
+
+- RelayHub 当前正式把这些运行时入口收成 `entry-*`
+- Paperclip 当前正式目标口径是固定接入 RelayHub，而不是每次切模后重新同步真实上游
+- 后续切模型时，优先改 RelayHub 的入口绑定；同步脚本只保留为初始化或修复工具
+
 它不是部署文档，也不是 Agent 提示词文档。
 如果要看服务器、SSH、代理、宿主职责，请回到：
 
@@ -43,11 +49,11 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前目标宿主切到用户当前 Mac；若本地链路失败，应记录为本地运行缺口 |
-| 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主工程链路；对 `local_manual_review` 单机试点，目标宿主切到用户当前 Mac |
-| 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.3-codex` | Codex provider API key 配置 | 当前主测试链路；对 `local_manual_review` 单机试点，目标宿主切到用户当前 Mac |
-| 需求澄清 | Idea Clarifier | `pi_local` | `https://ark.cn-beijing.volces.com/api/coding/v3` | `volcengine-coding-plan/Doubao-Seed-2.0-pro` | `pi` 自定义 provider + 服务器环境变量 `OPENAI_API_KEY` | 当前为独立链路，不与 CEO 强制统一 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://ark.cn-beijing.volces.com/api/coding` | `ark-code-latest` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前主“火山 Coding Plan”链路；普通任务单机试点时不默认继续视为服务器本地 |
+| CEO | CEO | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
+| 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
+| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-mac` 或 `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
 
 ## 3. 分组展开
 
@@ -55,24 +61,23 @@
 
 - Agent：`CEO`
 - Adapter：`claude_local`
-- Base URL：`https://ark.cn-beijing.volces.com/api/coding`
-- Model：`ark-code-latest`
+- Base URL：`https://api.deepseek.com/anthropic`
+- Model：`deepseek-v4-pro`
 - 模型来源：
   - Agent 级 `ANTHROPIC_BASE_URL`
   - Agent 级 `ANTHROPIC_MODEL`
   - Agent 级 `ANTHROPIC_API_KEY`
 - 当前语义：
-  - 这是当前为了绕开 `hermes_local` session resume 上游 bug 的临时回退链路
-  - 当前目标不是保留 Hermes 实验链路，而是先恢复 CEO 可用性
-  - 等 `paperclip` 上游修复后，再评估是否切回 `hermes_local`
+  - 当前通过 `claude_local` 走 DeepSeek 的 Anthropic 兼容入口
+  - 目标是保留现有 adapter 执行链，同时把底层大模型统一到 DeepSeek V4
   - 对普通任务本地自动执行链，CEO 不再保留服务器宿主例外
 
 ### 3.2 Engineer
 
 - Agent：`Engineer`
 - Adapter：`codex_local`
-- Base URL：`https://code.ppchat.vip/v1`
-- Model：`gpt-5.3-codex`
+- Base URL：`https://api.deepseek.com`
+- Model：`deepseek-v4-pro`
 - Reasoning：`medium`
 - Token 优化策略：
   - 不降模型
@@ -84,8 +89,8 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于工程实现
-  - 当前已经从“和 CEO 用同一模型”的尝试中回退，固定为 `gpt-5.3-codex`
-  - 这是当前更稳的工程执行口径
+  - 当前已统一切到 `deepseek-v4-pro`
+  - 由于 `codex_local` 当前仍走 `responses` 线，需继续关注 DeepSeek 兼容性
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -112,8 +117,8 @@
 
 - Agent：`Test / QA`
 - Adapter：`codex_local`
-- Base URL：`https://code.ppchat.vip/v1`
-- Model：`gpt-5.3-codex`
+- Base URL：`https://api.deepseek.com`
+- Model：`deepseek-v4-pro`
 - Reasoning：`medium`
 - Token 优化策略：
   - 不降模型
@@ -125,7 +130,7 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于测试、QA、验收
-  - 与 `Engineer` 保持同模型口径，方便工程链路一致
+  - 与 `Engineer` 保持同模型口径，统一为 `deepseek-v4-pro`
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -146,8 +151,8 @@
 它们当前共享同一组模型入口：
 
 - Adapter：`claude_local`
-- Base URL：`https://ark.cn-beijing.volces.com/api/coding`
-- Model：`ark-code-latest`
+- Base URL：`https://api.deepseek.com/anthropic`
+- Model：`deepseek-v4-pro`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
   - `ANTHROPIC_BASE_URL`
@@ -159,7 +164,7 @@
 
 当前明确口径：
 
-- 这组 Agent 使用的是火山引擎 `Coding Plan` 兼容接口
+- 这组 Agent 当前使用的是 DeepSeek 的 Anthropic 兼容接口
 - 当前采用 API-key 模式，而不是 Claude 登录态模式
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
@@ -179,30 +184,47 @@
 
 - Agent：`Idea Clarifier`
 - Adapter：`pi_local`
-- Provider / Model：`volcengine-coding-plan/Doubao-Seed-2.0-pro`
-- Base URL：`https://ark.cn-beijing.volces.com/api/coding/v3`
+- Provider / Model：`relayhub-entry-paperclip-pi-local-server`（服务器）或 `relayhub-entry-paperclip-pi-local-mac`（本地）
+- Base URL：`RelayHub /v1/chat/completions`
 - 运行时附加环境：
   - `HOME=/paperclip`
 - 当前语义：
-  - 这是单独保留的一条本机 `pi` 链路
-  - 当前没有与 CEO 或 `claude_local` 做强制统一
+  - 这是保留 `pi_local` adapter 的独立执行链
+  - 但底层模型已与其他 Agent 统一到 `deepseek-v4-pro`
 - 当前实现口径：
   - `pi` 默认内置的 `openai` provider 会优先走 `openai-responses`
-  - 火山当前这条 `coding/v3` 链路对 `chat/completions` 兼容正常，但对 `responses` 口径不兼容
-  - 因此 `Idea Clarifier` 当前必须通过 `~/.pi/agent/models.json` 中的自定义 provider
-  - 该 provider 固定使用 `openai-completions`
+  - 当前切到 DeepSeek 后，仍建议优先保留可显式指定兼容口径的 provider 配置
+  - 若运行时出现 `responses` 兼容问题，应优先改成稳定走 `chat/completions` 的 provider
 - 治理口径：
   - 若后续本机 `pi` 环境不稳定，再决定是否继续保留、替换或只做 fallback
   - 若后续重建容器或迁移宿主，必须同步恢复 `/paperclip/.pi/agent/models.json`
   - 若只保留 `OPENAI_BASE_URL` / `OPENAI_API_KEY`，但遗漏自定义 provider，`Test environment` 仍可能失败
+- RelayHub 入口绑定口径：
+  - `entry-paperclip-pi-local-mac`
+  - `entry-paperclip-pi-local-server`
+  - 稳态口径是让 Paperclip 固定指向 RelayHub，并把 `adapterConfig.model` 固定为对应 `relayhub-entry-*`
+  - 真实 `base_url / model / api_key / reasoningEffort` 由 RelayHub 控制面决定
+  - [shared/tools/sync-paperclip-pi-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-pi-model.sh) 只保留为初始化或修复工具
+
+### 3.6 CEO Hermes
+
+- Agent：`CEO`
+- Adapter：`hermes_local`
+- 当前规划范围：
+  - 只纳入服务器入口
+  - 对应 `entry-paperclip-hermes-local-server`
+- RelayHub 入口绑定口径：
+  - 稳态口径是让 Paperclip 固定指向 `relayhub-entry-paperclip-hermes-local-server`
+  - 真实 `base_url / model / api_key / reasoningEffort` 由 RelayHub 控制面决定
+  - [shared/tools/sync-paperclip-hermes-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-hermes-model.sh) 只保留为初始化或修复工具
 
 ## 4. 当前服务器侧全局环境
 
 automation 节点当前重要环境变量如下：
 
 ```env
-OPENAI_BASE_URL=https://ark.cn-beijing.volces.com/api/coding/v3
-OPENAI_MODEL=minimax-m2.5
+OPENAI_BASE_URL=https://api.deepseek.com
+OPENAI_MODEL=deepseek-v4-pro
 HTTP_PROXY=http://47.253.255.110:18888
 HTTPS_PROXY=http://47.253.255.110:18888
 ```
@@ -211,15 +233,16 @@ HTTPS_PROXY=http://47.253.255.110:18888
 
 - `hermes_local`
   - 主要吃服务器侧 `OPENAI_*`
+  - 同时应以 `/paperclip/.hermes/config.yaml` 作为 Hermes 进程直接读取的落地配置
 - `claude_local`
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
 - `codex_local`
-  - 主要吃自身 provider 配置，当前指向 `https://code.ppchat.vip/v1`
+  - 主要吃自身 provider 配置，当前指向 `https://api.deepseek.com`
 - automation 节点国际出网当前通过阿里云美国机 `tinyproxy` 辅助
 - `Idea Clarifier`
   - 虽然也复用服务器侧 `OPENAI_API_KEY`
-  - 但不能直接依赖 `pi` 内置 `openai` provider
-  - 需要额外的 `volcengine-coding-plan` 自定义 provider 才能稳定走火山 `Doubao-Seed-2.0-pro`
+  - 当前模型已改为 `deepseek-v4-pro`
+  - 但真正执行仍依赖 `/paperclip/.pi/agent/models.json` 中的自定义 provider
 - `Engineer / Test QA`
   - 当前不通过降模型省 token
   - 当前通过 `session compaction` 控制长会话上下文体积
@@ -229,20 +252,20 @@ HTTPS_PROXY=http://47.253.255.110:18888
 ### 5.1 推荐保留
 
 - `CEO`
-  - `hermes_local + minimax-m2.5`
+  - `claude_local + deepseek-v4-pro`
 - `Engineer`
-  - `codex_local + gpt-5.3-codex`
+  - `codex_local + deepseek-v4-pro`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
   - 成本压力较高或遇到公共卡点时，允许用户手动暂停；后续再补“多次失败自动转人工”
 - `Test / QA`
-  - `codex_local + gpt-5.3-codex`
+  - `codex_local + deepseek-v4-pro`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
 - 规划/产品/内容/研究类 Agent
-  - `claude_local + ark-code-latest`
+  - `claude_local + deepseek-v4-pro`
 - `Idea Clarifier`
-  - `pi_local + volcengine-coding-plan/Doubao-Seed-2.0-pro`
+  - `pi_local + deepseek-v4-pro`
   - `HOME=/paperclip`
   - `claude_local` 仅作环境失败兜底
 

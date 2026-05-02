@@ -1,13 +1,21 @@
 import {
+  seedEntries,
+  seedEntryBindings,
+  presetModelCatalogs,
   seedModelEntries,
   seedTaskRunRecords,
   seedTaskTemplates,
 } from "../fixtures/controlPlaneData";
 import type {
+  EntryBinding,
+  EntryBindingResolution,
   GovernanceOverview,
+  ModelCatalogResponse,
   ModelEntry,
   ModelEntryInput,
   ModelEntryStatus,
+  RelayEntry,
+  RelayAccessSummary,
   TaskModelStat,
   TaskRunRecord,
   TaskRunRecordInput,
@@ -20,8 +28,52 @@ interface InternalModelEntry extends ModelEntry {
   apiKey: string | null;
 }
 
+function defaultCapabilities(overrides?: Partial<ModelEntry["capabilities"]>): ModelEntry["capabilities"] {
+  return {
+    responses: {
+      ok: false,
+      streamOk: false,
+      ...(overrides?.responses ?? {}),
+    },
+    chatCompletions: {
+      ok: false,
+      ...(overrides?.chatCompletions ?? {}),
+    },
+    lastProbedAt: overrides?.lastProbedAt ?? null,
+    lastErrorMessage: overrides?.lastErrorMessage ?? null,
+  };
+}
+
+function normalizeReasoningEffort(value: unknown): ModelEntry["reasoningEffort"] {
+  return value === "low" || value === "medium" || value === "high" ? value : null;
+}
+
+function resolveEffectiveReasoningEffort(
+  binding: Pick<EntryBinding, "reasoningEffortOverride"> | null | undefined,
+  model: Pick<ModelEntry, "reasoningEffort"> | null | undefined,
+): ModelEntry["reasoningEffort"] {
+  return normalizeReasoningEffort(binding?.reasoningEffortOverride) ?? normalizeReasoningEffort(model?.reasoningEffort);
+}
+
+function canBindTaskToModel(taskId: string, model: InternalModelEntry | undefined | null) {
+  if (!model || taskId !== "task-codex-repo") {
+    return { ok: true as const };
+  }
+
+  if (!model.capabilities.responses.ok || !model.capabilities.responses.streamOk) {
+    return {
+      ok: false as const,
+      message: "当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。",
+    };
+  }
+
+  return { ok: true as const };
+}
+
 interface ControlPlaneState {
   modelEntries: InternalModelEntry[];
+  entries: RelayEntry[];
+  entryBindings: EntryBinding[];
   tasks: TaskTemplate[];
   runs: TaskRunRecord[];
   nextIds: {
@@ -29,10 +81,27 @@ interface ControlPlaneState {
     task: number;
     run: number;
   };
+  relayAccess: RelayAccessSummary & {
+    relayToken: string | null;
+  };
 }
 
 const MOCK_LATENCY_MS = 90;
-const CONTROL_PLANE_BASE_URL = (import.meta.env.RELAYHUB_CONTROL_PLANE_BASE_URL ?? "").trim();
+const configuredControlPlaneRuntime = (import.meta.env.RELAYHUB_CONTROL_PLANE_RUNTIME ?? "").trim();
+const configuredControlPlaneBaseUrl = (import.meta.env.RELAYHUB_CONTROL_PLANE_BASE_URL ?? "").trim();
+const configuredDevRelayBaseUrl = (import.meta.env.RELAYHUB_DEV_RELAY_BASE_URL ?? "").trim();
+const CONTROL_PLANE_BASE_URL = configuredControlPlaneRuntime === "mock"
+  ? ""
+  : configuredControlPlaneBaseUrl.length > 0
+  ? configuredControlPlaneBaseUrl
+  : import.meta.env.DEV
+    ? "/api/control-plane"
+    : "";
+const DEV_RELAY_BASE_URL = configuredDevRelayBaseUrl.length > 0
+  ? configuredDevRelayBaseUrl
+  : import.meta.env.DEV
+    ? "http://127.0.0.1:4319"
+    : "/claude";
 
 function clone<T>(value: T): T {
   return structuredClone(value);
@@ -59,12 +128,21 @@ function createInitialState(): ControlPlaneState {
       ...item,
       apiKey: item.hasStoredApiKey ? "seed-api-key" : null,
     })),
+    entries: clone(seedEntries),
+    entryBindings: clone(seedEntryBindings),
     tasks: clone(seedTaskTemplates),
     runs: clone(seedTaskRunRecords),
     nextIds: {
       model: 1,
       task: 1,
       run: 1,
+    },
+    relayAccess: {
+      relayToken: null,
+      hasStoredRelayToken: false,
+      maskedRelayToken: null,
+      effectiveSource: "missing",
+      updatedAt: null,
     },
   };
 }
@@ -111,6 +189,7 @@ function applyTestOutcome(
     message: string;
     status: ModelEntryStatus;
     statusNote: string;
+    capabilities?: ModelEntry["capabilities"];
   },
 ) {
   entry.lastTestResult = outcome.result;
@@ -118,6 +197,7 @@ function applyTestOutcome(
   entry.lastTestMessage = outcome.message;
   entry.status = outcome.status;
   entry.statusNote = outcome.statusNote;
+  entry.capabilities = outcome.capabilities ?? defaultCapabilities();
 }
 
 function activeModelEntries(): ModelEntry[] {
@@ -239,8 +319,23 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `RelayHub control plane request failed: ${response.status}`);
+    const raw = await response.text();
+    let parsedMessage = "";
+    try {
+      const parsed = raw ? JSON.parse(raw) : null;
+      parsedMessage =
+        (parsed && typeof parsed === "object" && "message" in parsed && typeof parsed.message === "string"
+          ? parsed.message
+          : "") ||
+        (parsed && typeof parsed === "object" && "error" in parsed && parsed.error &&
+        typeof parsed.error === "object" && "message" in parsed.error &&
+        typeof parsed.error.message === "string"
+          ? parsed.error.message
+          : "");
+    } catch {
+      parsedMessage = "";
+    }
+    throw new Error(parsedMessage || raw || `RelayHub control plane request failed: ${response.status}`);
   }
 
   if (response.status === 204) {
@@ -280,8 +375,31 @@ async function testModelEntryConnectionFromServer(id: string): Promise<ModelEntr
   });
 }
 
+async function getModelCatalogFromServer(id: string): Promise<ModelCatalogResponse> {
+  return requestJson<ModelCatalogResponse>(`/models/${id}/catalog`);
+}
+
 async function listTaskTemplatesFromServer(): Promise<TaskTemplate[]> {
   return requestJson<TaskTemplate[]>("/tasks");
+}
+
+async function listEntriesFromServer(): Promise<RelayEntry[]> {
+  return requestJson<RelayEntry[]>("/entries");
+}
+
+async function listEntryBindingsFromServer(): Promise<EntryBinding[]> {
+  return requestJson<EntryBinding[]>("/entry-bindings");
+}
+
+async function listEntryBindingResolutionsFromServer(): Promise<EntryBindingResolution[]> {
+  return requestJson<EntryBindingResolution[]>("/entry-bindings/resolutions");
+}
+
+async function saveEntryBindingToServer(input: EntryBinding): Promise<EntryBinding> {
+  return requestJson<EntryBinding>(`/entry-bindings/${input.entryId}`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
 }
 
 async function saveTaskTemplateToServer(input: TaskTemplateInput): Promise<TaskTemplate> {
@@ -323,6 +441,53 @@ async function getGovernanceOverviewFromServer(): Promise<GovernanceOverview> {
   return requestJson<GovernanceOverview>("/overview");
 }
 
+async function getRelayAccessSummaryFromServer(): Promise<RelayAccessSummary> {
+  return requestJson<RelayAccessSummary>("/relay-access");
+}
+
+async function saveRelayAccessTokenToServer(relayToken: string): Promise<RelayAccessSummary> {
+  return requestJson<RelayAccessSummary>("/relay-access", {
+    method: "PATCH",
+    body: JSON.stringify({
+      relayToken,
+    }),
+  });
+}
+
+export async function verifyClaudeCodeRelay(): Promise<string> {
+  const response = await fetch(`${DEV_RELAY_BASE_URL}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "relayhub-task-claude-code",
+      messages: [
+        {
+          role: "user",
+          content: "Reply with exactly relayhub ui verify ok",
+        },
+      ],
+      stream: false,
+    }),
+  });
+
+  const payload = await response.json().catch(() => null) as
+    | { choices?: Array<{ message?: { content?: string | null } }>; error?: { message?: string } }
+    | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.error?.message || `Claude Code relay verify failed: ${response.status}`);
+  }
+
+  const message = payload?.choices?.[0]?.message?.content?.trim();
+  if (!message) {
+    throw new Error("Claude Code relay 没有返回可读结果。");
+  }
+
+  return message;
+}
+
 function shouldUseServer() {
   return CONTROL_PLANE_BASE_URL.length > 0;
 }
@@ -339,6 +504,83 @@ export async function listModelEntries(): Promise<ModelEntry[]> {
   return delay(mockState.modelEntries.map(toPublicModelEntry));
 }
 
+export async function listEntries(): Promise<RelayEntry[]> {
+  if (shouldUseServer()) {
+    return listEntriesFromServer();
+  }
+
+  return delay(mockState.entries);
+}
+
+export async function listEntryBindings(): Promise<EntryBinding[]> {
+  if (shouldUseServer()) {
+    return listEntryBindingsFromServer();
+  }
+
+  return delay(mockState.entryBindings);
+}
+
+export async function listEntryBindingResolutions(): Promise<EntryBindingResolution[]> {
+  if (shouldUseServer()) {
+    return listEntryBindingResolutionsFromServer();
+  }
+
+  return delay(
+    mockState.entryBindings.map((binding) => {
+      const entry = mockState.entries.find((item) => item.id === binding.entryId) ?? null;
+      const model = binding.defaultModelEntryId
+        ? mockState.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null
+        : null;
+
+      return {
+        entryId: binding.entryId,
+        alias: entry?.alias ?? null,
+        clientFamily: entry?.clientFamily ?? null,
+        adapterType: entry?.adapterType ?? null,
+        hostType: entry?.hostType ?? null,
+        protocolFamily: entry?.protocolFamily ?? null,
+        controllable: entry?.controllable ?? false,
+        defaultModelEntryId: binding.defaultModelEntryId,
+        fallbackModelEntryId: binding.fallbackModelEntryId,
+        reasoningEffortOverride: binding.reasoningEffortOverride ?? null,
+        effectiveReasoningEffort: resolveEffectiveReasoningEffort(binding, model),
+        statusNote: binding.statusNote,
+        resolvedModel: model
+          ? {
+              id: model.id,
+              name: model.name,
+              baseUrl: model.baseUrl,
+              modelId: model.modelId,
+              reasoningEffort: model.reasoningEffort,
+              status: model.status,
+              hasStoredApiKey: model.hasStoredApiKey,
+            }
+          : null,
+      };
+    }),
+  );
+}
+
+export async function saveEntryBinding(input: EntryBinding): Promise<EntryBinding> {
+  if (shouldUseServer()) {
+    return saveEntryBindingToServer(input);
+  }
+
+  const current = mockState.entryBindings.find((item) => item.entryId === input.entryId);
+  if (!current) {
+    throw new Error("没有找到要更新的入口绑定。");
+  }
+  current.defaultModelEntryId = input.defaultModelEntryId;
+  current.defaultModelEntryName =
+    mockState.modelEntries.find((item) => item.id === input.defaultModelEntryId)?.name ?? null;
+  current.fallbackModelEntryId = input.fallbackModelEntryId;
+  current.fallbackModelEntryName =
+    mockState.modelEntries.find((item) => item.id === input.fallbackModelEntryId)?.name ?? null;
+  current.reasoningEffortOverride = input.reasoningEffortOverride ?? null;
+  current.statusNote = input.statusNote;
+  return delay(current);
+}
+
 export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry> {
   if (shouldUseServer()) {
     return saveModelEntryToServer(input);
@@ -352,9 +594,11 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
 
     current.name = input.name.trim();
     current.providerLabel = input.providerLabel.trim();
-    current.kind = input.kind;
-    current.baseUrl = input.baseUrl.trim();
-    current.modelId = input.modelId.trim();
+    if (current.source !== "preset") {
+      current.kind = input.kind;
+      current.baseUrl = input.baseUrl.trim();
+      current.modelId = input.modelId.trim();
+    }
     current.purchaseUrl = input.purchaseUrl?.trim() || null;
     if (input.apiKey && input.apiKey.trim().length > 0) {
       current.apiKey = input.apiKey.trim();
@@ -370,6 +614,7 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     current.lastTestMessage = current.hasStoredApiKey
       ? "配置刚更新，请重新测试连接确认是否可用。"
       : "还缺 API Key，暂时无法开始测试连接。";
+    current.capabilities = defaultCapabilities();
 
     return delay(toPublicModelEntry(current));
   }
@@ -384,6 +629,7 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     source: "custom",
     baseUrl: input.baseUrl.trim(),
     modelId: input.modelId.trim(),
+    reasoningEffort: input.reasoningEffort ?? null,
     catalogFamily: "openai-compatible",
     purchaseUrl: input.purchaseUrl?.trim() || null,
     status: apiKey ? "configured-pending-test" : "configured-pending-test",
@@ -396,6 +642,7 @@ export async function saveModelEntry(input: ModelEntryInput): Promise<ModelEntry
     lastTestResult: "idle",
     lastTestCode: "not-tested",
     lastTestMessage: "还未开始测试连接。",
+    capabilities: defaultCapabilities(),
     presetPriority: null,
     recommendedTaskCategories: [],
     recommendedTaskIds: [],
@@ -455,6 +702,7 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
       message: "缺少 API Key，先补密钥再重新测试连接。",
       status: "test-failed",
       statusNote: "测试失败：还缺 API Key。下一步先补密钥。",
+      capabilities: defaultCapabilities(),
     });
     return delay(toPublicModelEntry(entry));
   }
@@ -466,6 +714,7 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
       message: "Base URL 不合法，需以 http:// 或 https:// 开头。",
       status: "test-failed",
       statusNote: "测试失败：Base URL 格式不对。下一步先修正地址。",
+      capabilities: defaultCapabilities(),
     });
     return delay(toPublicModelEntry(entry));
   }
@@ -477,6 +726,10 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
       message: "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
       status: "test-failed",
       statusNote: "测试失败：上游暂时不可达。下一步检查地址或稍后重试。",
+      capabilities: defaultCapabilities({
+        lastProbedAt: nowStamp(),
+        lastErrorMessage: "已发起测试连接，但当前上游不可达或返回异常，请稍后重试。",
+      }),
     });
     return delay(toPublicModelEntry(entry));
   }
@@ -484,11 +737,48 @@ export async function testModelEntryConnection(id: string): Promise<ModelEntry> 
   applyTestOutcome(entry, {
     result: "success",
     code: "success",
-    message: "测试连接通过，这个模型现在可以绑定到任务。",
+    message: "测试连接通过，这个模型可绑定 Claude，也可绑定 Codex。",
     status: "active",
-    statusNote: "连接测试通过，可以绑定到任务默认模型。",
+    statusNote: "连接测试通过：可绑定 Codex。",
+    capabilities: defaultCapabilities({
+      responses: {
+        ok: true,
+        streamOk: true,
+      },
+      chatCompletions: {
+        ok: true,
+      },
+      lastProbedAt: nowStamp(),
+      lastErrorMessage: null,
+    }),
   });
   return delay(toPublicModelEntry(entry));
+}
+
+export async function getModelCatalog(id: string): Promise<ModelCatalogResponse> {
+  if (shouldUseServer()) {
+    return getModelCatalogFromServer(id);
+  }
+
+  const entry = mockState.modelEntries.find((item) => item.id === id);
+  if (!entry) {
+    throw new Error("没有找到要获取可用模型列表的入口。");
+  }
+
+  if (entry.source !== "preset" || entry.kind !== "relay-api" || entry.catalogFamily !== "openai-compatible") {
+    throw new Error("当前仅支持中转预置入口获取可用模型列表。");
+  }
+
+  if (!entry.hasStoredApiKey || !entry.apiKey) {
+    throw new Error("请先补 API Key，再获取可用模型列表。");
+  }
+
+  const catalog = presetModelCatalogs[id];
+  if (!catalog) {
+    throw new Error("当前入口还没有可用模型列表样本。");
+  }
+
+  return delay(catalog);
 }
 
 export async function listTaskTemplates(): Promise<TaskTemplate[]> {
@@ -510,6 +800,14 @@ export async function saveTaskTemplate(input: TaskTemplateInput): Promise<TaskTe
       throw new Error("没有找到要更新的任务。");
     }
 
+    const nextModel = input.defaultModelEntryId
+      ? mockState.modelEntries.find((item) => item.id === input.defaultModelEntryId)
+      : null;
+    const bindingCheck = canBindTaskToModel(current.id, nextModel);
+    if (!bindingCheck.ok) {
+      throw new Error(bindingCheck.message);
+    }
+
     current.name = input.name.trim();
     current.category = input.category;
     current.description = input.description.trim();
@@ -519,6 +817,13 @@ export async function saveTaskTemplate(input: TaskTemplateInput): Promise<TaskTe
   }
 
   const nextId = `custom-task-${mockState.nextIds.task++}`;
+  const nextModel = input.defaultModelEntryId
+    ? mockState.modelEntries.find((item) => item.id === input.defaultModelEntryId)
+    : null;
+  const bindingCheck = canBindTaskToModel(nextId, nextModel);
+  if (!bindingCheck.ok) {
+    throw new Error(bindingCheck.message);
+  }
   const created: TaskTemplate = withTaskModelName({
     id: nextId,
     name: input.name.trim(),
@@ -634,6 +939,42 @@ export async function getGovernanceOverview(): Promise<GovernanceOverview> {
     recentRunsCount: mockState.runs.length,
     highlights,
     recentRuns: [...mockState.runs].sort((left, right) => right.ranAt.localeCompare(left.ranAt)).slice(0, 5),
+  });
+}
+
+export async function getRelayAccessSummary(): Promise<RelayAccessSummary> {
+  if (shouldUseServer()) {
+    return getRelayAccessSummaryFromServer();
+  }
+
+  const relayToken = mockState.relayAccess.relayToken?.trim() ?? "";
+  return delay({
+    hasStoredRelayToken: relayToken.length > 0,
+    maskedRelayToken: relayToken.length > 0 ? maskApiKey(relayToken) : null,
+    effectiveSource: relayToken.length > 0 ? "control-plane" : "missing",
+    updatedAt: mockState.relayAccess.updatedAt,
+  });
+}
+
+export async function saveRelayAccessToken(relayToken: string): Promise<RelayAccessSummary> {
+  if (shouldUseServer()) {
+    return saveRelayAccessTokenToServer(relayToken);
+  }
+
+  const trimmed = relayToken.trim();
+  mockState.relayAccess = {
+    relayToken: trimmed || null,
+    hasStoredRelayToken: trimmed.length > 0,
+    maskedRelayToken: trimmed.length > 0 ? maskApiKey(trimmed) : null,
+    effectiveSource: trimmed.length > 0 ? "control-plane" : "missing",
+    updatedAt: trimmed.length > 0 ? nowStamp() : null,
+  };
+
+  return delay({
+    hasStoredRelayToken: mockState.relayAccess.hasStoredRelayToken,
+    maskedRelayToken: mockState.relayAccess.maskedRelayToken,
+    effectiveSource: mockState.relayAccess.effectiveSource,
+    updatedAt: mockState.relayAccess.updatedAt,
   });
 }
 

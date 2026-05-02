@@ -1,10 +1,15 @@
 import { NavLink, Outlet } from "react-router-dom";
 
+type TrialBootstrapGlobalScope = typeof globalThis & {
+  __RELAYHUB_TRIAL_BOOTSTRAP_ERROR__?: string;
+};
+
 const navGroups = [
   {
     label: "核心模块",
     items: [
       { to: "/models", label: "模型库" },
+      { to: "/entries", label: "入口视图" },
       { to: "/tasks", label: "任务库" },
       { to: "/runs", label: "运行记录" },
     ],
@@ -25,6 +30,9 @@ const navGroups = [
 ];
 
 export function AppShell() {
+  const bootstrapError = (globalThis as TrialBootstrapGlobalScope)
+    .__RELAYHUB_TRIAL_BOOTSTRAP_ERROR__;
+
   return (
     <div className="shell">
       <aside className="sidebar">
@@ -94,6 +102,16 @@ export function AppShell() {
             <span className="pill pill-neutral">默认主入口仍为 mock</span>
           </div>
         </header>
+
+        {bootstrapError ? (
+          <section className="bootstrap-warning">
+            <strong>只读模型源启动失败</strong>
+            <p>
+              当前已降级继续渲染模型库 / 任务库主界面；支持模块里的外部模型源可能不可用。
+              具体错误：{bootstrapError}
+            </p>
+          </section>
+        ) : null}
 
         <main className="main-panel">
           <Outlet />

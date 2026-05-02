@@ -648,6 +648,13 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - `auxiliary.compression`
 7. 这样可以避免 Hermes 在 context compression 时再次报：
    - `No auxiliary LLM provider configured`
+8. 初始化或修复时，如需把 Hermes 配置一次性切到 RelayHub，应优先执行：
+   - `export RELAYHUB_INTERNAL_TOKEN=...`
+   - `bash shared/tools/sync-paperclip-hermes-model.sh sync`
+   - 把 Hermes 当前 adapter 配置改成固定指向 RelayHub
+9. 进入稳态后：
+   - Paperclip 面板里的 `hermes_local` 只保留 RelayHub 地址和 `relayhub-entry-paperclip-hermes-local-server`
+   - 日常切模型、切密钥、切 `reasoningEffort` 都只在 RelayHub 上完成
 
 推荐重建：
 
@@ -764,6 +771,13 @@ docker compose -f docker-compose.paperclip.yml up -d paperclip
    - `pi` 内置 `openai` provider 默认走 `openai-responses`
    - 当前火山 `https://ark.cn-beijing.volces.com/api/coding/v3` 实测兼容的是 `chat/completions`
    - 因此必须固定走自定义 `openai-completions` provider
+9. 初始化或修复时，如需把 `pi_local` 配置一次性切到 RelayHub，应优先执行：
+   - `export RELAYHUB_INTERNAL_TOKEN=...`
+   - `bash shared/tools/sync-paperclip-pi-model.sh sync`
+   - 把 `pi_local` 当前 provider 配置改成固定指向 RelayHub
+10. 进入稳态后：
+   - Paperclip 面板里的 `pi_local` 只保留 RelayHub 地址和 `relayhub-entry-paperclip-pi-local-server`
+   - 日常切模型、切密钥、切 `reasoningEffort` 都只在 RelayHub 上完成
 
 最小检查：
 

@@ -3,10 +3,14 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "${SCRIPT_DIR}/relayhub-entry-sync-lib.sh"
 PAPERCLIP_YAML="${REPO_ROOT}/.paperclip.yaml"
 CODEX_CONFIG="${HOME}/.codex/config.toml"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-}"
 PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
+CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
+ENTRY_ID="${ENTRY_ID:-entry-paperclip-codex-local-server}"
+RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
 
 usage() {
   cat <<'EOF'
@@ -19,11 +23,15 @@ Commands:
   sync    Update Paperclip codex_local agents to use the local Codex client model
 
 Notes:
-  - Source of truth for model selection is ~/.codex/config.toml
+  - Source of truth for model selection and api key is RelayHub internal entry binding resolve
   - Only runtime agents configured as codex_local in .paperclip.yaml are updated
   - Existing adapterConfig fields are preserved; only model / modelReasoningEffort are aligned
+  - This script is now an initialization / repair tool.
+  - Steady-state Paperclip usage should point codex_local at RelayHub once,
+    then switch model / api key / reasoning effort in RelayHub only.
   - Use PAPERCLIP_API_URL to point at a remote automation server
   - Use PAPERCLIP_API_TOKEN or PAPERCLIP_API_KEY when the remote instance requires auth
+  - When using DeepSeek, also update the provider base_url / auth in extraArgs or local Codex config
 EOF
 }
 
@@ -102,9 +110,18 @@ fi
 require_cmd ruby
 require_cmd python3
 require_cmd curl
+require_cmd jq
 
 local_model="$(read_codex_value "model")"
 local_effort="$(read_codex_value "model_reasoning_effort")"
+
+resolved_json="$(relayhub_fetch_entry_binding_json "${CONTROL_PLANE_BASE_URL}" "${ENTRY_ID}" "${RELAYHUB_INTERNAL_TOKEN}")"
+relayhub_export_entry_binding_env "${resolved_json}"
+relayhub_assert_api_key_present "${ENTRY_ID}" "${RESOLVED_MODEL_ID}" "${RESOLVED_API_KEY}"
+local_model="${RESOLVED_MODEL}"
+if [[ -n "${RESOLVED_REASONING_EFFORT}" ]]; then
+  local_effort="${RESOLVED_REASONING_EFFORT}"
+fi
 
 if [[ -z "${local_model}" ]]; then
   echo "Could not read model from ${CODEX_CONFIG}" >&2
@@ -188,7 +205,7 @@ sync_models() {
 
     current_payload="$(api_curl "${api_url}/api/agents/${runtime_id}")"
     patch_payload="$(
-      LOCAL_MODEL="${local_model}" LOCAL_EFFORT="${local_effort:-}" python3 - <<'PY' <<<"$current_payload"
+      LOCAL_MODEL="${local_model}" LOCAL_EFFORT="${local_effort:-}" RESOLVED_API_KEY="${RESOLVED_API_KEY}" python3 - <<'PY' <<<"$current_payload"
 import json
 import os
 import sys
@@ -196,6 +213,15 @@ import sys
 agent = json.loads(sys.stdin.read())
 adapter_config = dict(agent.get("adapterConfig") or {})
 adapter_config["model"] = os.environ["LOCAL_MODEL"]
+adapter_config["apiKey"] = os.environ["RESOLVED_API_KEY"]
+
+extra_args = list(adapter_config.get("extraArgs") or [])
+replacements = {
+    'model_providers.codex.base_url="https://code.ppchat.vip/v1"': 'model_providers.codex.base_url="https://api.deepseek.com"',
+}
+adapter_config["extraArgs"] = [replacements.get(item, item) for item in extra_args]
+if not any(item.startswith("model_providers.codex.api_key=") for item in adapter_config["extraArgs"]):
+    adapter_config["extraArgs"].append(f'model_providers.codex.api_key="{os.environ["RESOLVED_API_KEY"]}"')
 
 effort = os.environ.get("LOCAL_EFFORT", "").strip()
 if effort:

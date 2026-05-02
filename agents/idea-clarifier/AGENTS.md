@@ -14,7 +14,7 @@ reportsTo: ../ceo/AGENTS.md
 
 - 当前正式运行链路为服务器侧 `pi_local`
 - 当前已验证通过的模型口径为：
-  - `volcengine-coding-plan/Doubao-Seed-2.0-pro`
+  - `deepseek-v4-pro`
 - 当前标准兜底链路为：
   - `claude_local`
 

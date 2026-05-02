@@ -56,6 +56,7 @@ docker compose -f docker-compose.release.yml --env-file .env.release up -d
 
 - `.env.release` 中的 `VITE_AIMANDALA_API_BASE_URL` 必须保持为 `https://web-api.jingshu.cc`
 - `.env.release` 中的 `AIMANDALA_LLM_BACKEND` 应保持为 `openai_compatible`
+- 若正式接入 RelayHub，`.env.release` 中的 `AIMANDALA_LLM_BASE_URL` 应改为 `https://relayhub.jingshu.cc/aimandala/v1`
 - `.env.release` 中的 `AIMANDALA_UPLOAD_BACKEND` 应保持为 `cos`
 - `.env.release` 中的 `AIMANDALA_ENABLE_DEBUG_WORKBENCH` 应保持为 `0`
 - 否则正式前端会产生 mixed content 或把调试能力暴露到生产环境
@@ -63,7 +64,7 @@ docker compose -f docker-compose.release.yml --env-file .env.release up -d
 ## 当前约束
 
 1. 这套发布入口默认以 `mindsync/projects/aimandala` 为构建上下文，不复用旧版 `ai-mandala` 根目录
-2. `release` 的正式默认口径是 `openai_compatible + cos + https://web-api.jingshu.cc + debug workbench off`
+2. `release` 的正式默认口径是 `openai_compatible + cos + RelayHub prod-relay 或正式 OpenAI-compatible 网关 + debug workbench off`
 3. 当前宿主机 TLS、证书和最终域名切流仍由宿主机 `nginx` 负责，不在容器里终结证书
 4. 旧版 AI Mandala 容器仅作为回退目标保留，不再作为新功能开发或正式发布入口
 5. 证书当前由宿主机 `certbot + nginx` 管理，自动续期依赖系统内置 `certbot.timer`

@@ -633,6 +633,21 @@ tbody tr:hover,
     var(--panel);
 }
 
+.bootstrap-warning {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 1px solid rgba(248, 190, 102, 0.35);
+  border-radius: 18px;
+  background: rgba(248, 190, 102, 0.12);
+  color: #fff1cf;
+}
+
+.bootstrap-warning p {
+  margin: 8px 0 0;
+  color: #ffe2b0;
+  line-height: 1.6;
+}
+
 @media (max-width: 1180px) {
   .shell {
     grid-template-columns: 1fr;

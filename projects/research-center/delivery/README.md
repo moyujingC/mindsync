@@ -22,3 +22,7 @@
 ## 2026-04-14 Agent 运行时补建
 
 - [Idea Clarifier 运行时缺失排查与修复说明](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-14-Idea-Clarifier-运行时缺失排查与修复说明.md)
+
+## 2026-04-27 claude_local 主备模型切换
+
+- [Paperclip claude_local 主备模型切换交付说明](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/research-center/delivery/2026-04-27-Paperclip-Claude-Local-主备模型切换-交付说明.md)
