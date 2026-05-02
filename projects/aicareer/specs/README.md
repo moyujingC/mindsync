@@ -10,5 +10,5 @@
 
 当前 canonical 入口：
 
-- [MVP产品规范.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md)
-- [MVP技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP技术方案.md)
+- [MVP产品规范.md](projects/aicareer/specs/MVP产品规范.md)
+- [MVP技术方案.md](projects/aicareer/specs/MVP技术方案.md)

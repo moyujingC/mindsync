@@ -44,7 +44,7 @@ handoff_to:
 
 1. 当前项目 `PROJECT.md`
 2. 当前 source-pack
-3. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-06-媒体链接摄取与转写共享能力-SPEC.md`
+3. `projects/research-center/specs/2026-04-06-媒体链接摄取与转写共享能力-SPEC.md`
 
 ## 执行步骤
 

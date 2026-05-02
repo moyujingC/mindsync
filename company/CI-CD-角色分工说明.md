@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-14
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/CI-CD-角色分工说明.md
+> source_of_truth：company/CI-CD-角色分工说明.md
 > reviewers：Engineer, Test / QA
 
 这份文档用于说明 `墨予镜` 当前在 CI/CD 链路中，`Engineer` 与 `Test / QA` 的职责边界、任务接力点和状态流转责任。
@@ -14,7 +14,7 @@
 
 如果需要先理解“当前这套 CI/CD 系统本身由哪些组件构成、如何流转”，应先看：
 
-- [company/knowledge-base/system/当前CI-CD系统机制总览.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/当前CI-CD系统机制总览.md)
+- [company/knowledge-base/system/当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
 
 ## 1. 为什么这份文档存在
 

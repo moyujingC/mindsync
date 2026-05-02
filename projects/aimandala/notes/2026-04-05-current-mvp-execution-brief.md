@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Product / Architect
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-current-mvp-execution-brief.md
+> source_of_truth：projects/aimandala/notes/2026-04-05-current-mvp-execution-brief.md
 > 项目：aimandala
 > 阶段：discussion
 
@@ -90,6 +90,6 @@
 
 ## 8. 相关讨论稿入口
 
-1. [2026-04-05-architecture-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-architecture-handoff.md)
-2. [2026-04-05-platform-mvp-and-evolution-plan-discussion.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-platform-mvp-and-evolution-plan-discussion.md)
-3. [2026-04-05-journey-engine-capability-registry-task-manager-discussion.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-journey-engine-capability-registry-task-manager-discussion.md)
+1. [2026-04-05-architecture-handoff.md](projects/aimandala/notes/2026-04-05-architecture-handoff.md)
+2. [2026-04-05-platform-mvp-and-evolution-plan-discussion.md](projects/aimandala/notes/2026-04-05-platform-mvp-and-evolution-plan-discussion.md)
+3. [2026-04-05-journey-engine-capability-registry-task-manager-discussion.md](projects/aimandala/notes/2026-04-05-journey-engine-capability-registry-task-manager-discussion.md)

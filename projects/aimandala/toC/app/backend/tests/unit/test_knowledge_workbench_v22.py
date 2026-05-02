@@ -26,6 +26,18 @@ def _reset_api_state() -> None:
     routes_v2._active_pro_upgrade_jobs.clear()
 
 
+def _force_workbench_noop_llm(monkeypatch) -> None:
+    """Lock fixture/workbench exports to the deterministic local review baseline."""
+    from app.core.knowledge_runtime import workbench as workbench_module
+    from app.core.llm.runtime import NoopLLMClient
+
+    monkeypatch.setattr(
+        workbench_module,
+        "create_llm_client_from_env",
+        lambda: NoopLLMClient(),
+    )
+
+
 def test_v22_workbench_builds_candidate_and_diff():
     workbench = KnowledgeWorkbench()
     build_id = "pytest-v22"
@@ -82,6 +94,7 @@ def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
     from app.api.main import app
 
     _reset_api_state()
+    _force_workbench_noop_llm(monkeypatch)
     monkeypatch.setenv("AIMANDALA_ENABLE_DEBUG_WORKBENCH", "1")
     client = TestClient(app)
 
@@ -127,7 +140,8 @@ def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
     assert preview_payload["diff_from_current"] is None
 
 
-def test_v22_workbench_can_export_fixture_golden_assets(tmp_path):
+def test_v22_workbench_can_export_fixture_golden_assets(monkeypatch, tmp_path):
+    _force_workbench_noop_llm(monkeypatch)
     workbench = KnowledgeWorkbench()
 
     result = asyncio.run(
@@ -149,6 +163,7 @@ def test_v22_workbench_can_export_fixture_golden_assets(tmp_path):
 
     report_payload = json.loads((export_dir / "lite.report.json").read_text(encoding="utf-8"))
     assert report_payload["version"] == "lite"
+    assert report_payload.get("error") is None
     assert report_payload["structured"]["topic_context"]["topic"] == "general"
     assert "current_reading" in report_payload["structured"]
     assert "knowledge_debug" in report_payload
@@ -169,7 +184,35 @@ def test_v22_workbench_can_export_fixture_golden_assets(tmp_path):
     assert "topic_context" not in markdown_payload
     assert "current_reading" not in markdown_payload
     excerpt = markdown_payload.split("## 正文摘录", 1)[1]
+    assert excerpt.strip()
     assert "重要声明" not in excerpt[:160]
+
+
+def test_v22_workbench_exports_real_report_without_llm(monkeypatch, tmp_path):
+    _force_workbench_noop_llm(monkeypatch)
+    workbench = KnowledgeWorkbench()
+
+    result = asyncio.run(
+        workbench.export_fixture_golden(
+            fixture_id="toc-mvp-fixture-002",
+            build_selector="current",
+            version="pro",
+            output_dir=tmp_path,
+        )
+    )
+
+    export_dir = tmp_path / "toc-mvp-fixture-002"
+    report_payload = json.loads((export_dir / "pro.report.json").read_text(encoding="utf-8"))
+    assert result["version"] == "pro"
+    assert report_payload["version"] == "pro"
+    assert report_payload.get("error") is None
+    assert report_payload["structured"]["deep_impression"]
+    assert report_payload["structured"]["evidence_digest"]
+    assert report_payload["structured"]["healing_plan"]
+    markdown_payload = (export_dir / "pro.report.md").read_text(encoding="utf-8")
+    assert "产品区块" in markdown_payload
+    excerpt = markdown_payload.split("## 正文摘录", 1)[1]
+    assert excerpt.strip()
 
 
 def test_v22_eval_summary_includes_golden_review_aggregation(tmp_path):

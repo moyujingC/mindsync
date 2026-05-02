@@ -4,7 +4,7 @@
 > 版本：0.1.4
 > owner：Engineer
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md
+> source_of_truth：projects/aimandala/deploy/paperclip-automation/README.md
 > 项目：aimandala
 > 阶段：ops-runbook
 
@@ -12,7 +12,7 @@
 
 它应被理解为：
 
-- `aimandala` 对 [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md) 的项目级落地
+- `aimandala` 对 [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md) 的项目级落地
 - 当前首个正式项目级实例 runbook
 - 不是公司级 `Automation Platform` 的总入口
 
@@ -233,15 +233,62 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 维护前先检查 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat`
    - 任一 checkout 变脏即直接失败退出，不再静默 `reset --hard` 或自动清理
    - 日常自动清理只允许作用于 `/opt/automation/worktrees`
-4. heartbeat / 巡检编排
+4. `shared/tools/ci/server-automation-guard.mjs`
+   - 服务器执行前统一校验 cwd
+   - `server_automation` 只能落到 `/opt/automation/worktrees`
+   - `manual-review-required + local_manual_review` 不允许使用服务器可写根
+   - `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 固定视为 observe-only checkout
+5. `shared/tools/ci/server-automation-finalizer.mjs`
+   - 服务器执行后统一做 Git 收尾
+   - clean worktree 才允许直接保持 `done`
+   - 白名单内改动允许自动 `git add + git commit`，并把任务转为 `in_review`
+   - 非白名单或可疑改动直接转 `blocked`，保留现场等待人工处理
+6. `shared/tools/ci/server-automation-run.sh`
+   - 统一服务器侧执行包装器
+   - 固定顺序：guard -> 执行命令 -> finalizer
+   - 适用于 deploy / smoke / runner / maintenance / 受控修复这类服务器自动化任务
+7. heartbeat / 巡检编排
    - 先跑 runner heartbeat
    - 再跑 execution health check strict gate
    - 若发现当前活跃 Automation issue 的 workspace materialization 漂移，本轮服务直接失败
    - 历史 `done` 漂移只进入审计，不单独阻断 heartbeat
-   - 若发现本应本地执行的任务进入了服务器可写路径，只记录为 `localExecutionRoutingIssues`
-   - 这类问题属于路由异常审计，不触发服务器代转交，也不单独阻断 heartbeat
+   - 若发现本应本地执行的任务进入了服务器可写路径，直接视为 strict gate 失败
+   - 若发现 `done` issue 对应 worktree 仍 dirty，也直接视为 strict gate 失败
    - `--apply` 只继续用于 stale running issue 的看板纠偏，不再作为普通任务 reject / handoff 处理器
    - 不继续后续 maintenance 或会触发写文件的自动动作
+8. `shared/tools/sync-paperclip-server-automation-guardrails.sh`
+   - 统一把 guard/finalizer 依赖的 env 下发到 runtime agent `adapterConfig.env`
+9. `shared/tools/probe-paperclip-adapter-command-override.sh`
+   - 读取 Paperclip runtime agent 当前配置
+   - 输出 `codex_local / claude_local / pi_local` 的 command override 兼容矩阵
+   - 当前已确认：
+     - `command` 只替换 adapter binary（可执行文件）
+     - `extraArgs` 仍由 adapter 追加
+     - prompt 仍通过 stdin（标准输入）注入
+     - `cwd` 仍来自 runtime workspace
+10. `shared/tools/ci/server-automation-command-proxy.sh`
+   - runtime command override 的透传包装器
+   - 默认 `passive` 模式：
+     - 保留原始 args / stdin / cwd / exit code
+     - 只有在显式拿到 `task_class / execution_route / description` 元数据时才执行 guard
+     - 只有显式满足 `automation-execution + server_automation` 时才触发 finalizer
+   - 这样做是为了避免仅靠 agent 级 `command` override 就把所有运行都误判成服务器自动化任务
+11. `shared/tools/sync-paperclip-server-automation-command-override.sh`
+   - 管理 runtime `adapterConfig.command` override 的状态、dry-run、sync、rollback
+   - 当前默认目标仅为 `Engineer`
+   - 默认写入的 runtime command 路径是服务器稳定路径：
+     - `/opt/automation/app/mindsync/shared/tools/ci/server-automation-command-proxy.sh`
+   - 若服务器正式 checkout 路径不同，需显式设置：
+     - `PAPERCLIP_RUNTIME_PROXY_COMMAND=<server-stable-path>`
+   - 若要扩大到 `Test / QA`，需显式设置：
+     - `PAPERCLIP_COMMAND_OVERRIDE_TARGETS=Engineer,Test / QA`
+   - 当前只下发 proxy 所需的透传 env：
+     - `PAPERCLIP_REAL_COMMAND`
+     - `PAPERCLIP_EXECUTION_WORKTREE_ROOT`
+     - `PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT`
+     - `PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE=passive`
+   - 不再伪造 `PAPERCLIP_TASK_CLASS` / `PAPERCLIP_EXECUTION_ROUTE`
+   - 因为这两项若在 agent 级静态写死，会把非 `server_automation` 任务也伪装成自动化任务
 
 当前补充说明：
 
@@ -252,8 +299,13 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - `serverAutomationBlocking = 34`
    - `historicalDoneWorkspaceDrift = 8`
    - `localExecutionRouting = 2`
-5. 其中 strict gate 当前只由 `serverAutomationBlocking` 驱动；`localExecutionRouting` 继续只审计，不单独阻断 heartbeat
-6. 因此下一阶段主任务不是再次调整 gate，而是诊断这 34 条活跃 `server_automation` issue 为什么没有真正 materialize 到 execution workspace
+5. 当前正式口径已进一步收紧：
+   - `localExecutionRouting` 命中后不再只是审计，而是直接阻断成功回写
+   - `done but dirty` worktree 也属于 strict gate 失败
+6. 因此下一阶段主任务不再只是诊断 materialization，而是同时保证：
+   - 不再写 observe-only checkout
+   - 不再让 `local_manual_review` 进入服务器可写区
+   - 不再出现 `done but dirty`
 
 ### 2.4.1 2026-04-19 diagnosis phase 基线
 
@@ -262,7 +314,10 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 1. `serverAutomationBlocking = 34`
 2. `historicalDoneWorkspaceDrift = 8`
 3. `localExecutionRouting = 2`
-4. `strictShouldFail` 只由活跃 `serverAutomationBlockingIssues` 驱动
+4. `strictShouldFail` 当前由以下任一命中触发：
+   - 活跃 `serverAutomationBlockingIssues`
+   - `localExecutionRoutingIssues`
+   - `doneDirtyWorkspaceIssues`
 
 当前阶段的正式目标不是：
 
@@ -272,7 +327,11 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 而是：
 
-1. 先运行 diagnosis CLI，把 34 条 blocking issue 收敛成根因分桶
+1. 先运行 diagnosis / health / finalizer 三层链路，把当前活跃问题分成：
+   - 未 materialize
+   - observe-only checkout
+   - local routing drift
+   - done but dirty
 2. 再按桶级抽样补证据
 3. 最后再进入下一轮受控修复计划
 
@@ -535,9 +594,10 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 不新增 `execution_workspace_policy_not_materialized`
    - 不新增 `server_writable_execution_not_allowed`
 3. `manual-review-required` 任务未被误送入 `server_automation`
-4. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
-5. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
-6. 若本轮升级涉及 auth / host / port 相关修复
+4. `done` 的服务器侧 issue 不再留下 dirty worktree
+5. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
+6. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
+7. 若本轮升级涉及 auth / host / port 相关修复
    - 同步验证公网入口、Tailscale 入口、`publicBaseUrl` 与回跳行为
 
 当前补充治理要求：
@@ -546,8 +606,8 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 但项目级正式版本口径仍以本 runbook 为 deploy 入口
 3. 若后续推荐目标版本变化，应同步更新：
    - 本文
-   - [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
-   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
 
 ## 4.2 `hermes_local` 容器原生方案
 
@@ -588,6 +648,13 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - `auxiliary.compression`
 7. 这样可以避免 Hermes 在 context compression 时再次报：
    - `No auxiliary LLM provider configured`
+8. 初始化或修复时，如需把 Hermes 配置一次性切到 RelayHub，应优先执行：
+   - `export RELAYHUB_INTERNAL_TOKEN=...`
+   - `bash shared/tools/sync-paperclip-hermes-model.sh sync`
+   - 把 Hermes 当前 adapter 配置改成固定指向 RelayHub
+9. 进入稳态后：
+   - Paperclip 面板里的 `hermes_local` 只保留 RelayHub 地址和 `relayhub-entry-paperclip-hermes-local-server`
+   - 日常切模型、切密钥、切 `reasoningEffort` 都只在 RelayHub 上完成
 
 推荐重建：
 
@@ -704,6 +771,13 @@ docker compose -f docker-compose.paperclip.yml up -d paperclip
    - `pi` 内置 `openai` provider 默认走 `openai-responses`
    - 当前火山 `https://ark.cn-beijing.volces.com/api/coding/v3` 实测兼容的是 `chat/completions`
    - 因此必须固定走自定义 `openai-completions` provider
+9. 初始化或修复时，如需把 `pi_local` 配置一次性切到 RelayHub，应优先执行：
+   - `export RELAYHUB_INTERNAL_TOKEN=...`
+   - `bash shared/tools/sync-paperclip-pi-model.sh sync`
+   - 把 `pi_local` 当前 provider 配置改成固定指向 RelayHub
+10. 进入稳态后：
+   - Paperclip 面板里的 `pi_local` 只保留 RelayHub 地址和 `relayhub-entry-paperclip-pi-local-server`
+   - 日常切模型、切密钥、切 `reasoningEffort` 都只在 RelayHub 上完成
 
 最小检查：
 
@@ -831,7 +905,7 @@ sudo bash -lc '
 
 日常清理由：
 
-- `/Users/xinran/Downloads/dev/mindsync/shared/tools/ci/automation-node-maintenance.sh`
+- `shared/tools/ci/automation-node-maintenance.sh`
 
 负责，默认处理：
 

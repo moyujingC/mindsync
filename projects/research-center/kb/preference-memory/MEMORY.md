@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/MEMORY.md
+> source_of_truth：projects/research-center/kb/preference-memory/MEMORY.md
 > 项目：研究中心
 
 这份文档用于记录创作者的稳定偏好、常见修正方向与强约束。

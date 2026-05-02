@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-skill-试跑记录-business-diagnosis.md
+> source_of_truth：projects/research-center/delivery/2026-04-04-skill-试跑记录-business-diagnosis.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -21,7 +21,7 @@
 
 ## 2. 输出位置
 
-- [Skill 体系对外化路径商业诊断](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-Skill体系对外化路径商业诊断.md)
+- [Skill 体系对外化路径商业诊断](projects/research-center/delivery/2026-04-04-Skill体系对外化路径商业诊断.md)
 
 ## 3. 按 Skill 走的过程
 

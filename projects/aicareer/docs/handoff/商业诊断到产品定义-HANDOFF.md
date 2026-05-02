@@ -19,7 +19,7 @@
 5. **验证优先级确认**：先验证价值主张（转化率），再验证交付能力（满意度），最后验证规模化能力
 
 ## 4. 当前输入材料
-- 商业诊断报告：[AI职业能力诊断服务商业诊断报告.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/docs/business/AI职业能力诊断服务商业诊断报告.md)
+- 商业诊断报告：[AI职业能力诊断服务商业诊断报告.md](projects/aicareer/docs/business/AI职业能力诊断服务商业诊断报告.md)
 - 项目背景：历史母任务「策划并落实这项服务」的上下文
 
 ## 5. 下游任务定义

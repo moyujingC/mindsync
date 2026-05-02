@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-22
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md
+> source_of_truth：projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md
 
 ## 1. 目标
 
@@ -17,7 +17,7 @@
 先确认：
 
 ```bash
-cd /Users/xinran/Downloads/dev/mindsync
+cd .
 bash shared/tools/paperclip-local-env.smoke.sh
 eval "$(shared/tools/paperclip-local-env.sh engineer)"
 node shared/tools/paperclip-local-executor.mjs doctor

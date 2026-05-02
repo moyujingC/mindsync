@@ -15,6 +15,7 @@ from app.core.llm import (
     NoopLLMClient,
     create_llm_client_from_env,
 )
+from app.core.pipeline.generation_runtime import DeterministicReportGenerationRuntime
 from app.core.miniapp_runtime import (
     build_wechatpay_payload,
     exchange_wechat_session,
@@ -351,19 +352,26 @@ def get_orchestrator() -> LayeredOrchestrator:
     if _orchestrator is None:
         try:
             llm_client = create_llm_client_from_env()
+            is_noop = isinstance(llm_client, NoopLLMClient)
             circle_detector = (
                 CircleDetector(detector_backend=LLMCircleDetectionBackend(llm_client))
-                if not isinstance(llm_client, NoopLLMClient)
+                if not is_noop
                 else CircleDetector()
             )
             report_chat_runtime = (
                 LLMReportChatRuntime(llm_client)
-                if not isinstance(llm_client, NoopLLMClient)
+                if not is_noop
                 else None
             )
             _orchestrator = LayeredOrchestrator(
                 circle_detector=circle_detector,
                 report_chat_runtime=report_chat_runtime,
+                enable_vision=not is_noop,
+                generation_runtime=(
+                    DeterministicReportGenerationRuntime()
+                    if is_noop
+                    else None
+                ),
             )
         except ValueError as error:
             raise HTTPException(status_code=501, detail=str(error)) from error

@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-17-v1-providers-env-runtime配置解析器-验证记录.md
+> source_of_truth：projects/relayhub/qa/2026-04-17-v1-providers-env-runtime配置解析器-验证记录.md
 > 项目：RelayHub
 > 阶段：verification
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-17-v1-providers-env-runtime配置解析器-qa-basis.md, /Users/xinran/Downloads/dev/mindsync/projects/relayhub/console
+> depends_on：projects/relayhub/qa/2026-04-17-v1-providers-env-runtime配置解析器-qa-basis.md, projects/relayhub/console
 
 这份文档记录 `RelayHub` 控制台在为 `Providers` 试点补 env runtime config 解析器后的验证结果。
 

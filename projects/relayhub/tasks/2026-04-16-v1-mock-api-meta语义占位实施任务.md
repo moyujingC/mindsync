@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Architect / Test
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-mock-api-meta语义占位实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-16-v1-mock-api-meta语义占位实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-Providers-URL边界组合回归-交付说明.md, /Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-mock-api-meta语义占位-qa-basis.md
+> depends_on：projects/relayhub/delivery/2026-04-16-v1-Providers-URL边界组合回归-交付说明.md, projects/relayhub/qa/2026-04-16-v1-mock-api-meta语义占位-qa-basis.md
 
 这份任务文档用于把 `RelayHub` 控制台当前 mock API 的 `meta`，从“只有生成信息”推进到“带最小语义占位”的只读 response 契约。
 

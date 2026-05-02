@@ -4,14 +4,14 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-18-automation-and-local-execution-routing-phase1-plan.md
+> source_of_truth：projects/aimandala/docs/tasks/2026-04-18-automation-and-local-execution-routing-phase1-plan.md
 > 项目：aimandala
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
+> depends_on：projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-plan.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-19-paperclip-native-execution-routing-plan.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-plan.md](projects/aimandala/docs/tasks/2026-04-19-paperclip-native-execution-routing-plan.md) 取代。
 > 其中“普通任务在服务器错路由时形成拒绝执行 + 本地人工接手闭环”的主路径不再是当前实施目标。
 
 ## 1. 本轮目标

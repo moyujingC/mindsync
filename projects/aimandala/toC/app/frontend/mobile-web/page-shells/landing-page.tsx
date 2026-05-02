@@ -359,7 +359,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         <div className="am-step-flow">
           <div className="am-step-flow__line" aria-hidden="true" />
           <StepCard num={1} icon={<IconUpload />} title="上传画作" desc={"拍清整幅\n即可开始"} />
-          <StepCard num={2} icon={<IconAnalyze />} title="AI识别" desc={"读取颜色\n与结构"} />
+          <StepCard num={2} icon={<IconAnalyze />} title="手动设定" desc={"跟随直觉\n调节三圈"} />
           <StepCard num={3} icon={<IconReport />} title="查看报告" desc={"先看 Lite\n再决定深入"} />
         </div>
       </section>

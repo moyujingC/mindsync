@@ -4,14 +4,14 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-15-MindSync-Skill统一同步入口交付说明.md
+> source_of_truth：projects/research-center/delivery/2026-04-15-MindSync-Skill统一同步入口交付说明.md
 > 项目：研究中心
 > 阶段：delivery
 
 ## 1. 已交付内容
 
 - 新增统一入口脚本：
-  - `/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh`
+  - `shared/tools/sync-mindsync-skills.sh`
 - 该入口收束两条同步链：
   - `research-center` repo skill 扫描与 agent 挂载
   - `Get笔记` company skill / desiredSkills / agent env 同步
@@ -26,7 +26,7 @@
 PAPERCLIP_API_URL='http://vm-0-11-opencloudos.tail176582.ts.net:3100' \
 PAPERCLIP_COMPANY_ID='be191a6e-7447-4821-a93d-9114214c4a64' \
 PAPERCLIP_API_TOKEN='<CEO token>' \
-bash /Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh status
+bash shared/tools/sync-mindsync-skills.sh status
 ```
 
 ### 2.2 执行统一同步
@@ -35,7 +35,7 @@ bash /Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh s
 PAPERCLIP_API_URL='http://vm-0-11-opencloudos.tail176582.ts.net:3100' \
 PAPERCLIP_COMPANY_ID='be191a6e-7447-4821-a93d-9114214c4a64' \
 PAPERCLIP_API_TOKEN='<CEO token>' \
-bash /Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh sync
+bash shared/tools/sync-mindsync-skills.sh sync
 ```
 
 ## 3. 同步语义
@@ -58,7 +58,7 @@ bash /Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh s
 
 - 先提交 `projects/research-center/skills/*`
 - 如有角色分配变化，同步更新：
-  - `/Users/xinran/Downloads/dev/mindsync/company/paperclip-research-center-skill-bindings.yaml`
+  - `company/paperclip-research-center-skill-bindings.yaml`
 - 然后重新执行：
   - `bash shared/tools/sync-mindsync-skills.sh sync`
 
@@ -67,7 +67,7 @@ bash /Users/xinran/Downloads/dev/mindsync/shared/tools/sync-mindsync-skills.sh s
 当 `Get笔记` 的目标 agent 或来源规则变化时：
 
 - 更新：
-  - `/Users/xinran/Downloads/dev/mindsync/company/paperclip-agent-skill-bindings.yaml`
+  - `company/paperclip-agent-skill-bindings.yaml`
 - 然后重新执行同一条统一同步命令
 
 ## 5. 结论

@@ -206,7 +206,6 @@ export function createPreviewAppProps(
       return {
         route,
         uploadDraft: draft,
-        uploadDetection,
       };
 
     case "reportEntry":

@@ -14,7 +14,9 @@ describe("RelayHub console routes", () => {
   it("redirects root route to the model library", async () => {
     renderRoute("/");
 
-    expect(await screen.findByText("先看哪些模型已经可用，哪些还差最后一步激活")).toBeInTheDocument();
+    expect(
+      await screen.findByText("先接入一个可复用入口，再决定入口内当前用哪个模型"),
+    ).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByTestId("current-location")).toHaveTextContent("/models");
     });
@@ -41,9 +43,42 @@ describe("RelayHub console routes", () => {
     renderRoute("/tasks");
 
     expect(
-      await screen.findByText("先把每个任务当前默认用的模型说清楚，需要换时直接在这里切"),
+      await screen.findByText("先把每个任务当前默认走哪个入口内模型说清楚，需要换时直接在这里切"),
     ).toBeInTheDocument();
     expect(await screen.findByText("Claude Code Web Coding")).toBeInTheDocument();
+  });
+
+  it("renders entries route with Paperclip relay guidance", async () => {
+    renderRoute("/entries");
+
+    expect(
+      await screen.findByText("把 Paperclip 固定上游入口和它们当前解析到的真实模型并排看清楚"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Paperclip 入口解析")).toBeInTheDocument();
+    expect((await screen.findAllByText("一次性接入模板")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/RELAYHUB_RELAY_TOKEN/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/模型级推理强度：/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/入口级覆盖：/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/最终生效值：/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByLabelText("入口级推理强度覆盖")).length).toBeGreaterThan(0);
+  });
+
+  it("saves entry-level reasoning override from entries route", async () => {
+    const saveSpy = vi.spyOn(controlPlaneService, "saveEntryBinding");
+    renderRoute("/entries");
+
+    const cards = await screen.findAllByRole("article");
+    const firstCard = cards[0]!;
+    const select = within(firstCard).getByLabelText("入口级推理强度覆盖");
+    fireEvent.change(select, {
+      target: { value: "high" },
+    });
+    fireEvent.click(within(firstCard).getByRole("button", { name: "保存入口覆盖" }));
+
+    await waitFor(() => {
+      expect(saveSpy).toHaveBeenCalled();
+    });
+    expect(await screen.findByText(/单独设置推理强度为 high/)).toBeInTheDocument();
   });
 
   it("renders runs route with governance overview", async () => {
@@ -70,6 +105,29 @@ describe("RelayHub console routes", () => {
 
     expect(await screen.findByText("当前闭环进度")).toBeInTheDocument();
     expect(await screen.findByText("下一步入口")).toBeInTheDocument();
+  });
+
+  it("renders settings route with relay token management copy", async () => {
+    renderRoute("/settings");
+
+    expect(await screen.findByText("管理谁能调用 RelayHub 中转 API")).toBeInTheDocument();
+    expect(await screen.findByText("Relay 门禁")).toBeInTheDocument();
+    expect(await screen.findByLabelText("新的 RelayHub 门禁 token")).toBeInTheDocument();
+  });
+
+  it("saves relay token from settings route", async () => {
+    const saveSpy = vi.spyOn(controlPlaneService, "saveRelayAccessToken");
+    renderRoute("/settings");
+
+    fireEvent.change(await screen.findByLabelText("新的 RelayHub 门禁 token"), {
+      target: { value: "relayhub-ui-token" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "保存门禁 token" }));
+
+    await waitFor(() => {
+      expect(saveSpy).toHaveBeenCalledWith("relayhub-ui-token");
+    });
+    expect(await screen.findByText(/RelayHub 门禁 token 已保存/)).toBeInTheDocument();
   });
 
   it("keeps dashboard available but moves it out of core navigation", async () => {
@@ -128,6 +186,220 @@ describe("RelayHub console routes", () => {
     expect((await screen.findAllByText("去购买 / 充值")).length).toBeGreaterThan(0);
   });
 
+  it("shows AITechFlux as a preset relay entry with purchase guidance", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("AITechFlux 中转")).toBeInTheDocument();
+    expect(
+      await screen.findByText("当前 Claude Code 默认主路径，直接复用 release /claude 并原生转发 Anthropic /messages。"),
+    ).toBeInTheDocument();
+    expect((await screen.findAllByText("适合先绑定：Claude Code Web Coding。")).length).toBeGreaterThan(0);
+  });
+
+  it("frames presets as reusable access entries in the model library", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("先接入一个可复用入口，再决定入口内当前用哪个模型")).toBeInTheDocument();
+    expect(await screen.findByText("这些预置入口已经给好 URL、模型标识和购买入口，目标是让你少填一次配置。")).toBeInTheDocument();
+  });
+
+  it("shows explicit first-time setup steps in the model library hero", async () => {
+    renderRoute("/models");
+
+    expect(await screen.findByText("第一次接入可以按这 5 步走")).toBeInTheDocument();
+    expect(await screen.findByText("1. 先选一个预置入口")).toBeInTheDocument();
+    expect(await screen.findByText("2. 去购买 / 开通，拿到 API Key")).toBeInTheDocument();
+    expect(await screen.findByText("3. 回来只补 API Key")).toBeInTheDocument();
+    expect(await screen.findByText("4. 保存后手动测试连接")).toBeInTheDocument();
+    expect(await screen.findByText("5. 激活后去任务库绑定")).toBeInTheDocument();
+  });
+
+  it("locks base url and model id editing for preset entries", async () => {
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("PPChat 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByDisplayValue("https://code.ppchat.vip/v1")).toBeDisabled();
+    expect(await screen.findByDisplayValue("gpt-5")).toBeDisabled();
+    expect(await screen.findByDisplayValue("Coding Plan")).toBeDisabled();
+    expect(await screen.findByText("URL 和默认模型标识已经配好；当前只需要补 API Key。保存后还不算激活，仍需要显式点击“测试连接”。")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "获取可用模型" })).not.toBeInTheDocument();
+  });
+
+  it("keeps AITechFlux preset base url locked and uses fetched catalog for modelId selection", async () => {
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByDisplayValue("https://aitechflux.com/v1")).toBeDisabled();
+    expect(await screen.findByDisplayValue("中转 API")).toBeDisabled();
+    expect(await screen.findByText("URL 已经配好；当前先补 API Key。若默认模型不确定，先获取可用模型列表，再切当前模型。保存后还不算激活，仍需要显式点击“测试连接”。")).toBeInTheDocument();
+    expect(await screen.findByText("这里填写的是你从对应平台拿回来的 API Key；它只在服务端脱敏保存，不会进入前端构建产物。")).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "还没有 Key？先去开通 / 充值" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("模型标识")).not.toBeInTheDocument();
+    expect(await screen.findByText("当前模型标识")).toBeInTheDocument();
+  });
+
+  it("moves focus to api key and marks the row when editing a preset entry", async () => {
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView;
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByLabelText("API Key")).toHaveFocus();
+    expect(row).toHaveAttribute("aria-selected", "true");
+    expect(row).toHaveClass("row-selected");
+    expect(scrollIntoView).toHaveBeenCalled();
+  });
+
+  it("fetches preset relay catalog and shows selectable upstream models", async () => {
+    vi.spyOn(controlPlaneService, "getModelCatalog").mockResolvedValue({
+      items: [
+        { id: "高性能极速模型", label: "高性能极速模型" },
+        { id: "高性能低价模型", label: "高性能低价模型" },
+        { id: "Claude混合版", label: "Claude混合版" },
+      ],
+      fetchedAt: "2026-04-21 11:00",
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+    fireEvent.change(screen.getByLabelText("API Key"), {
+      target: { value: "sk-aitechflux-test" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "获取可用模型" }));
+
+    expect(await screen.findByLabelText("可用模型列表")).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "高性能低价模型" })).toBeInTheDocument();
+    expect(await screen.findByText("已获取上游可用模型，可从列表中切换当前模型。")).toBeInTheDocument();
+  });
+
+  it("shows clear error when fetching preset relay catalog without api key", async () => {
+    vi.spyOn(controlPlaneService, "getModelCatalog").mockRejectedValue(
+      new Error("请先补 API Key，再获取可用模型列表。"),
+    );
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+    fireEvent.click(screen.getByRole("button", { name: "获取可用模型" }));
+
+    expect(await screen.findByText("请先补 API Key，再获取可用模型列表。")).toBeInTheDocument();
+  });
+
+  it("saves selected preset relay modelId and points to next test step", async () => {
+    vi.spyOn(controlPlaneService, "getModelCatalog").mockResolvedValue({
+      items: [
+        { id: "高性能极速模型", label: "高性能极速模型" },
+        { id: "高性能低价模型", label: "高性能低价模型" },
+        { id: "Claude混合版", label: "Claude混合版" },
+      ],
+      fetchedAt: "2026-04-21 11:00",
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+    fireEvent.change(screen.getByLabelText("API Key"), {
+      target: { value: "sk-aitechflux-test" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "获取可用模型" }));
+    fireEvent.change(await screen.findByLabelText("可用模型列表"), {
+      target: { value: "高性能低价模型" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "保存配置" }));
+
+    expect(
+      await screen.findByText("当前模型已更新，下一步请测试连接确认该入口当前模型是否可用。"),
+    ).toBeInTheDocument();
+  });
+
+  it("copies preset base url from the table and shows success feedback", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", {
+      clipboard: {
+        writeText,
+      },
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "复制 Base URL" }));
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith("https://aitechflux.com/v1");
+    });
+    expect(await screen.findByText("入口地址已复制，可去外部工具粘贴使用。")).toBeInTheDocument();
+  });
+
+  it("shows a non-blocking error when copying base url fails", async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error("clipboard-denied"));
+    vi.stubGlobal("navigator", {
+      clipboard: {
+        writeText,
+      },
+    });
+
+    renderRoute("/models");
+
+    const nameCell = await screen.findByText("AITechFlux 中转");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "复制 Base URL" }));
+
+    expect(await screen.findByText("入口地址复制失败，请手动复制。")).toBeInTheDocument();
+  });
+
+  it("keeps custom entries fully editable in the model library", async () => {
+    renderRoute("/models");
+
+    fireEvent.change(screen.getByLabelText("名称"), {
+      target: { value: "自定义入口" },
+    });
+    fireEvent.change(screen.getByLabelText("Provider"), {
+      target: { value: "aitechflux.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Base URL"), {
+      target: { value: "https://aitechflux.com/v1" },
+    });
+    fireEvent.change(screen.getByLabelText("模型标识"), {
+      target: { value: "gpt-5" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "新增模型" }));
+
+    const nameCell = await screen.findByText("自定义入口");
+    const row = nameCell.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.click(within(row!).getByRole("button", { name: "编辑" }));
+
+    expect(await screen.findByDisplayValue("https://aitechflux.com/v1")).not.toBeDisabled();
+    expect(await screen.findByDisplayValue("gpt-5")).not.toBeDisabled();
+  });
+
   it("shows explicit failure reason when model test is missing api key", async () => {
     renderRoute("/models");
 
@@ -151,7 +423,7 @@ describe("RelayHub console routes", () => {
 
     expect(
       await screen.findByText(
-        "“PPChat 中转”已激活。下一步可去任务库绑定默认模型。适合先绑定：Claude Code Web Coding、Codex Repo Coding。",
+        "“PPChat 中转”已激活。下一步可去任务库绑定默认模型；这个入口现在也可在外部工具中复用 Base URL + Key。适合先绑定：Codex Repo Coding。",
       ),
     ).toBeInTheDocument();
   });
@@ -160,10 +432,7 @@ describe("RelayHub console routes", () => {
     renderRoute("/models");
 
     expect(await screen.findByText("优先激活候选")).toBeInTheDocument();
-    expect(await screen.findByText("最适合作为通用工具和编码任务的首个激活候选，先跑通绑定路径最快。")).toBeInTheDocument();
-    expect(
-      (await screen.findAllByText("适合先绑定：Claude Code Web Coding、Codex Repo Coding。")).length,
-    ).toBeGreaterThan(0);
+    expect((await screen.findAllByText("适合先绑定：Claude Code Web Coding。")).length).toBeGreaterThan(0);
   });
 
   it("shows task guidance when there are no active models to bind", async () => {
@@ -172,7 +441,7 @@ describe("RelayHub console routes", () => {
     renderRoute("/tasks");
 
     expect(
-      await screen.findByText("先把每个任务当前默认用的模型说清楚，需要换时直接在这里切"),
+      await screen.findByText("先把每个任务当前默认走哪个入口内模型说清楚，需要换时直接在这里切"),
     ).toBeInTheDocument();
     expect(await screen.findByText("当前还没有可绑定的已激活模型")).toBeInTheDocument();
     expect(await screen.findByText("先回模型库完成激活，再回来绑定任务。")).toBeInTheDocument();
@@ -200,12 +469,137 @@ describe("RelayHub console routes", () => {
     fireEvent.change(within(row!).getByLabelText("Claude Code Web Coding-快速切换默认模型"), {
       target: { value: "preset-deepseek-v3" },
     });
-    fireEvent.click(within(row!).getByRole("button", { name: "切换默认模型" }));
+    fireEvent.click(within(row!).getByRole("button", { name: "切换入口内默认模型" }));
 
     expect(
-      await screen.findByText("“Claude Code Web Coding”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+      await screen.findByText("“Claude Code Web Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
     ).toBeInTheDocument();
-    expect(await screen.findByText("DeepSeek V3 官方")).toBeInTheDocument();
+    expect(await screen.findByText("DeepSeek V4 官方")).toBeInTheDocument();
+  });
+
+  it("lets users switch Claude Code current model from the dedicated task shortcut", async () => {
+    vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
+        ...seedModelEntries[1]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+    ]);
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByText("Claude Code 当前模型")).toBeInTheDocument();
+    expect(await screen.findByText("当前绑定：AITechFlux 中转")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Claude Code 当前模型"), {
+      target: { value: "preset-deepseek-v3" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "切换 Claude Code 当前模型" }));
+
+    expect(
+      await screen.findByText("“Claude Code Web Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("当前绑定：DeepSeek V4 官方")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Claude Code 后续请求会自动跟随这个任务绑定，不需要你在 Claude Code 里再改 URL。"),
+    ).toBeInTheDocument();
+  });
+
+  it("verifies Claude Code current model through release relay from the task shortcut", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === "string" ? input : input.toString();
+      if (url === "/claude/chat/completions") {
+        return new Response(
+          JSON.stringify({
+            id: "chatcmpl-relayhub-smoke",
+            choices: [
+              {
+                message: {
+                  content: "relayhub ui verify ok",
+                },
+              },
+            ],
+          }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        );
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    globalThis.fetch = fetchMock as typeof fetch;
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByText("Claude Code 当前模型")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "验证 Claude Code 当前模型" }));
+
+    expect(
+      await screen.findByText("Claude Code 真链路验证成功：relayhub ui verify ok"),
+    ).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/claude/chat/completions",
+      expect.objectContaining({
+        method: "POST",
+      }),
+    );
+  });
+
+  it("shows dedicated PPChat and AITechFlux relay candidates for Claude Code", async () => {
+    vi.spyOn(controlPlaneService, "listModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[2]!,
+        status: "configured-pending-test",
+      },
+      {
+        ...seedModelEntries[6]!,
+        id: "preset-aitechflux-relay",
+        name: "AITechFlux 中转",
+        providerLabel: "AITechFlux",
+        kind: "relay-api",
+        source: "preset",
+        baseUrl: "https://aitechflux.com/v1",
+        modelId: "高性能低价模型",
+        purchaseUrl: "https://aitechflux.com/",
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+        hasStoredApiKey: true,
+        maskedApiKey: "sk-aite...test",
+        lastTestedAt: "2026-04-27 21:42",
+        lastTestResult: "responses-unavailable",
+        lastTestCode: "responses_unavailable",
+        lastTestMessage: "not implemented",
+        capabilities: {
+          responses: { ok: false, streamOk: false },
+          chatCompletions: { ok: true },
+          lastProbedAt: "2026-04-27 21:42",
+          lastErrorMessage: "not implemented",
+        },
+        presetPriority: "recommended",
+        recommendedTaskCategories: ["通用工具"],
+        recommendedTaskIds: ["task-claude-code"],
+        selectionReason: "当前 Claude Code 默认主路径，直接复用 release /claude 并原生转发 Anthropic /messages。",
+        activationHint: "保持 task-claude-code 绑定到该入口；如需切模型，优先从 catalog 中选择支持 anthropic 的真实模型名。",
+        costTier: "中",
+        capabilityTags: ["编码", "中转 API", "入口复用"],
+        tags: ["中转 API", "第三方中转", "Claude"],
+      },
+    ]);
+
+    renderRoute("/tasks");
+
+    expect(await screen.findByRole("button", { name: "测试 PPChat 中转" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "测试 AITechFlux 中转" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "当前已绑定" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "切换到 PPChat 中转" })).toBeInTheDocument();
+    expect(await screen.findByText("当前推荐直接在这里切 `PPChat` 和 `AITechFlux`，不用先去模型库再回任务库。")).toBeInTheDocument();
   });
 
   it("shows recommended candidates for tasks based on active models", async () => {
@@ -229,7 +623,7 @@ describe("RelayHub console routes", () => {
     expect((await screen.findAllByText("当前绑定已在推荐候选内。")).length).toBeGreaterThan(0);
   });
 
-  it("allows binding a previously unbound task from the task table", async () => {
+  it("blocks binding Codex Repo Coding to a model without Responses streaming capability", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {
         ...seedModelEntries[2]!,
@@ -251,12 +645,43 @@ describe("RelayHub console routes", () => {
     fireEvent.change(within(row!).getByLabelText("Codex Repo Coding-快速切换默认模型"), {
       target: { value: "preset-ppchat-relay" },
     });
-    fireEvent.click(within(row!).getByRole("button", { name: "绑定默认模型" }));
+    fireEvent.click(within(row!).getByRole("button", { name: "绑定入口内默认模型" }));
 
     expect(
-      await screen.findByText("“Codex Repo Coding”的默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
+      (
+        await screen.findAllByText("当前入口尚未通过 Responses 流式探测，不可绑定给 Codex Repo Coding。")
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(screen.queryByText("“Codex Repo Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。")).not.toBeInTheDocument();
+  });
+
+  it("allows binding Codex Repo Coding after choosing a Responses-ready model", async () => {
+    await controlPlaneService.saveModelEntry({
+      id: "preset-aitechflux-relay",
+      name: "AITechFlux 中转",
+      providerLabel: "AITechFlux",
+      kind: "relay-api",
+      baseUrl: "https://aitechflux.com/v1",
+      modelId: "claude-sonnet",
+      reasoningEffort: null,
+      apiKey: "sk-aitechflux-test",
+    });
+    await controlPlaneService.testModelEntryConnection("preset-aitechflux-relay");
+
+    renderRoute("/tasks");
+
+    const taskName = await screen.findByText("Codex Repo Coding");
+    const row = taskName.closest("tr");
+    expect(row).not.toBeNull();
+    fireEvent.change(within(row!).getByLabelText("Codex Repo Coding-快速切换默认模型"), {
+      target: { value: "preset-aitechflux-relay" },
+    });
+    fireEvent.click(within(row!).getByRole("button", { name: "绑定入口内默认模型" }));
+
+    expect(
+      await screen.findByText("“Codex Repo Coding”的入口内默认模型已切换。新的绑定会对后续使用和后续新运行记录生效。"),
     ).toBeInTheDocument();
-    expect(await screen.findAllByText("PPChat 中转")).not.toHaveLength(0);
+    expect(await screen.findAllByText("AITechFlux 中转")).not.toHaveLength(0);
   });
 
   it("blocks run submission when required fields are missing", async () => {
@@ -279,6 +704,11 @@ describe("RelayHub console routes", () => {
   it("prefills the bound default model for the preferred task in runs", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {
+        ...seedModelEntries[6]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
         ...seedModelEntries[2]!,
         status: "active",
         statusNote: "连接测试通过，可以绑定到任务默认模型。",
@@ -294,15 +724,20 @@ describe("RelayHub console routes", () => {
 
     expect(await screen.findByText("当前任务记录上下文")).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByLabelText("任务")).toHaveValue("task-therapy-summary");
-      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v3");
+      expect(screen.getByLabelText("任务")).toHaveValue("task-claude-code");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-aitechflux-relay");
     });
-    expect(await screen.findByText("当前任务默认模型：DeepSeek V3 官方")).toBeInTheDocument();
+    expect(await screen.findByText("当前任务默认模型：AITechFlux 中转")).toBeInTheDocument();
     expect(await screen.findByText("这次会按当前默认模型开始记录。")).toBeInTheDocument();
   });
 
   it("syncs the model field to the task default model when switching tasks in runs", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[6]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
       {
         ...seedModelEntries[2]!,
         status: "active",
@@ -324,9 +759,9 @@ describe("RelayHub console routes", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByLabelText("模型")).toHaveValue("preset-ppchat-relay");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-aitechflux-relay");
     });
-    expect(await screen.findByText("当前任务默认模型：PPChat 中转")).toBeInTheDocument();
+    expect(await screen.findByText("当前任务默认模型：AITechFlux 中转")).toBeInTheDocument();
   });
 
   it("shows an explicit hint when the selected run task has no default model", async () => {
@@ -363,7 +798,7 @@ describe("RelayHub console routes", () => {
   it("switches task stats to the submitted task after recording a run", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {
-        ...seedModelEntries[2]!,
+        ...seedModelEntries[6]!,
         status: "active",
         statusNote: "连接测试通过，可以绑定到任务默认模型。",
       },
@@ -373,13 +808,13 @@ describe("RelayHub console routes", () => {
 
     expect(await screen.findByText("治理概览")).toBeInTheDocument();
     expect(await screen.findByRole("option", { name: "Claude Code Web Coding" })).toBeInTheDocument();
-    expect(await screen.findByRole("option", { name: "PPChat 中转" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "AITechFlux 中转" })).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("任务"), {
       target: { value: "task-claude-code" },
     });
     fireEvent.change(screen.getByLabelText("模型"), {
-      target: { value: "preset-ppchat-relay" },
+      target: { value: "preset-aitechflux-relay" },
     });
     fireEvent.change(screen.getByLabelText("结果摘要"), {
       target: { value: "这次网页编码结果稳定，可继续作为默认候选。" },

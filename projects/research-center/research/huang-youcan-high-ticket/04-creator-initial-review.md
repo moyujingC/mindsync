@@ -4,12 +4,12 @@
 > 版本：0.1.0
 > owner：创作者
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/huang-youcan-high-ticket/04-creator-initial-review.md
+> source_of_truth：projects/research-center/research/huang-youcan-high-ticket/04-creator-initial-review.md
 > 项目：研究中心
 > 阶段：in_review
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/research/huang-youcan-high-ticket/02-insight-analysis-card.md
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/research/huang-youcan-high-ticket/03-expression-analysis-card.md
+> - projects/research-center/research/huang-youcan-high-ticket/02-insight-analysis-card.md
+> - projects/research-center/research/huang-youcan-high-ticket/03-expression-analysis-card.md
 
 这份 review 已补入创作者的第二轮明确反馈，当前可作为本条真实输入的正式 review 基础版本。
 

@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-14
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-14-Idea-Clarifier-运行时缺失排查与修复说明.md
+> source_of_truth：projects/research-center/delivery/2026-04-14-Idea-Clarifier-运行时缺失排查与修复说明.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -12,8 +12,8 @@
 
 新增的 `Idea Clarifier` 已存在于仓库治理源：
 
-- [/Users/xinran/Downloads/dev/mindsync/.paperclip.yaml](/Users/xinran/Downloads/dev/mindsync/.paperclip.yaml)
-- [/Users/xinran/Downloads/dev/mindsync/agents/idea-clarifier/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/idea-clarifier/AGENTS.md)
+- [.paperclip.yaml](.paperclip.yaml)
+- [agents/idea-clarifier/AGENTS.md](agents/idea-clarifier/AGENTS.md)
 
 但在 Paperclip 面板上看不到。
 
@@ -30,7 +30,7 @@
 
 ## 3. 为什么原脚本没有修好
 
-[shared/tools/sync-agents.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-agents.sh) 只负责：
+[shared/tools/sync-agents.sh](shared/tools/sync-agents.sh) 只负责：
 
 - 在仓库与运行时之间同步已有 agent 的 instructions 文件
 
@@ -49,7 +49,7 @@
 
 已新增：
 
-- [shared/tools/sync-paperclip-runtime-agents.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-runtime-agents.sh)
+- [shared/tools/sync-paperclip-runtime-agents.sh](shared/tools/sync-paperclip-runtime-agents.sh)
 
 用途：
 

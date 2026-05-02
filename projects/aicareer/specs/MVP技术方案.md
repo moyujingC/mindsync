@@ -4,10 +4,10 @@
 > 版本：0.2.0
 > owner：Architect
 > last_updated：2026-04-03
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP技术方案.md
+> source_of_truth：projects/aicareer/specs/MVP技术方案.md
 > 项目：aicareer
 > 阶段：architecture
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md
+> depends_on：projects/aicareer/specs/MVP产品规范.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 目标

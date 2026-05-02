@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-Token观察口径.md
+> source_of_truth：company/Paperclip-Agent-Token观察口径.md
 
 这份文档用于观察 `Paperclip` 中 Agent 的 token 消耗是否处于健康状态，尤其用于验证：
 
@@ -15,7 +15,7 @@
 
 它不定义模型配置本身；模型口径请看：
 
-- [Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
+- [Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
 
 ## 1. 这份文档解决什么问题
 

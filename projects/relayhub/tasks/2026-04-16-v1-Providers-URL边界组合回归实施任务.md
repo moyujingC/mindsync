@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-Providers-URL边界组合回归实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-16-v1-Providers-URL边界组合回归实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-Providers筛选URL化与路由测试-交付说明.md, /Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-Providers-URL边界组合回归-qa-basis.md
+> depends_on：projects/relayhub/delivery/2026-04-16-v1-Providers筛选URL化与路由测试-交付说明.md, projects/relayhub/qa/2026-04-16-v1-Providers-URL边界组合回归-qa-basis.md
 
 这份任务文档用于把 `RelayHub` 控制台当前 `Providers` 页的 URL 状态能力，从“主流程可分享”继续推进到“边界组合可稳定回归”。
 

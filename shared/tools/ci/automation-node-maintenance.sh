@@ -111,7 +111,14 @@ cleanup_git_worktrees() {
   fi
 
   if [[ -d "${EXECUTION_WORKTREE_ROOT}" ]]; then
-    find "${EXECUTION_WORKTREE_ROOT}" -mindepth 1 -maxdepth 1 -type d -mtime +"${WORKTREE_RETENTION_DAYS}" -exec rm -rf {} +
+    while IFS= read -r worktree_dir; do
+      [[ -n "${worktree_dir}" ]] || continue
+      if git -C "${worktree_dir}" status --short --untracked-files=normal 2>/dev/null | grep -q .; then
+        log "Skip dirty worktree cleanup: ${worktree_dir}"
+        continue
+      fi
+      rm -rf "${worktree_dir}"
+    done < <(find "${EXECUTION_WORKTREE_ROOT}" -mindepth 1 -maxdepth 1 -type d -mtime +"${WORKTREE_RETENTION_DAYS}" | sort)
   fi
 }
 

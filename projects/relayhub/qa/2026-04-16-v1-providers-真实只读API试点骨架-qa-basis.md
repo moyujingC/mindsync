@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-providers-真实只读API试点骨架-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-16-v1-providers-真实只读API试点骨架-qa-basis.md
 > 项目：RelayHub
 > 阶段：verification-basis
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-providers-真实只读API试点骨架实施任务.md
+> depends_on：projects/relayhub/tasks/2026-04-16-v1-providers-真实只读API试点骨架实施任务.md
 
 这份文档定义 `RelayHub` 控制台在为 `Providers` 落真实只读 API 试点骨架时的最小验证口径。
 

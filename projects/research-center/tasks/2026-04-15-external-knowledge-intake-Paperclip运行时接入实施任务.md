@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-15-external-knowledge-intake-Paperclip运行时接入实施任务.md
+> source_of_truth：projects/research-center/tasks/2026-04-15-external-knowledge-intake-Paperclip运行时接入实施任务.md
 > 项目：研究中心
 > 阶段：task
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-15-external-knowledge-intake-Paperclip运行时接入-SPEC.md
+> depends_on：projects/research-center/specs/2026-04-15-external-knowledge-intake-Paperclip运行时接入-SPEC.md
 
 ## 1. 目标
 

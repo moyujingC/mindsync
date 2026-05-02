@@ -46,9 +46,9 @@ handoff_to:
 
 1. 当前 `reference intake`
 2. 原始参考材料
-3. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/MEMORY.md`
-4. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/review-patterns.yaml`
-5. `/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md`
+3. `projects/research-center/kb/preference-memory/MEMORY.md`
+4. `projects/research-center/kb/preference-memory/review-patterns.yaml`
+5. `company/内容矩阵.md`
 
 ## 执行步骤
 

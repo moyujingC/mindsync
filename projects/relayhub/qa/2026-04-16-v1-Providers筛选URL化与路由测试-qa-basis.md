@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-Providers筛选URL化与路由测试-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-16-v1-Providers筛选URL化与路由测试-qa-basis.md
 > 项目：RelayHub
 > 阶段：verification-basis
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-Providers筛选URL化与路由测试实施任务.md
+> depends_on：projects/relayhub/tasks/2026-04-16-v1-Providers筛选URL化与路由测试实施任务.md
 
 这份文档定义 `RelayHub` 控制台在推进 `Providers` 筛选 URL 化与核心路由测试时的最小验证口径。
 

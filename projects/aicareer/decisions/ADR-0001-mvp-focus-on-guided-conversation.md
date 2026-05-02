@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Architect
 > last_updated：2026-04-02
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/decisions/ADR-0001-mvp-focus-on-guided-conversation.md
+> source_of_truth：projects/aicareer/decisions/ADR-0001-mvp-focus-on-guided-conversation.md
 > 项目：aicareer
 > 阶段：architecture
 

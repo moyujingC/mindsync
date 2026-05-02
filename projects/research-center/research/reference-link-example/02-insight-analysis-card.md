@@ -4,11 +4,11 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/reference-link-example/02-insight-analysis-card.md
+> source_of_truth：projects/research-center/research/reference-link-example/02-insight-analysis-card.md
 > 项目：研究中心
 > 阶段：research
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/research/reference-link-example/01-reference-intake.md
+> - projects/research-center/research/reference-link-example/01-reference-intake.md
 
 ## 1. source_id
 

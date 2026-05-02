@@ -4,10 +4,10 @@
 > 版本：0.2.0
 > owner：Test / QA
 > last_updated：2026-04-03
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-02-mvp-qa-checklist.md
+> source_of_truth：projects/aicareer/qa/2026-04-02-mvp-qa-checklist.md
 > 项目：aicareer
 > 阶段：verification
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md
+> depends_on：projects/aicareer/specs/MVP产品规范.md
 > reviewers：CEO / Orchestrator, Product Spec Lead, Engineer
 
 ## 1. 目标行为
@@ -90,4 +90,4 @@
 
 - QA 条目已补齐到 review 版
 - 纸面验证已完成，详见：
-  [2026-04-03-paper-validation-report.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/qa/2026-04-03-paper-validation-report.md)
+  [2026-04-03-paper-validation-report.md](projects/aicareer/qa/2026-04-03-paper-validation-report.md)

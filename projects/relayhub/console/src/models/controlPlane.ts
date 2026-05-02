@@ -2,21 +2,51 @@ export type ModelEntryKind = "coding-plan" | "domestic-model" | "relay-api";
 export type ModelEntrySource = "preset" | "custom";
 export type PresetPriority = "recommended-first" | "recommended" | "optional";
 export type CostTier = "高" | "中" | "低";
+export type ReasoningEffort = "low" | "medium" | "high";
 export type ModelEntryStatus =
   | "preset-unconfigured"
   | "configured-pending-test"
   | "active"
   | "test-failed"
   | "disabled";
-export type ModelEntryTestResult = "idle" | "success" | "missing-api-key" | "invalid-base-url" | "upstream-unreachable";
+export type ModelEntryTestResult =
+  | "idle"
+  | "success"
+  | "missing-api-key"
+  | "invalid-base-url"
+  | "upstream-unreachable"
+  | "responses-unavailable"
+  | "responses-stream-unavailable";
 export type ModelEntryTestCode =
   | "not-tested"
   | "success"
   | "missing_api_key"
   | "invalid_base_url"
-  | "upstream_unreachable";
+  | "upstream_unreachable"
+  | "responses_unavailable"
+  | "responses_stream_unavailable";
+export type EntryClientFamily = "claude" | "codex" | "paperclip";
+export type EntryAdapterType = "claude_local" | "codex_local" | "pi_local" | "hermes_local" | null;
+export type EntryHostType = "mac" | "server" | "external-observe";
+export type EntryProtocolFamily =
+  | "anthropic-messages"
+  | "openai-responses"
+  | "openai-chat-completions"
+  | "observe-only";
 export type TaskCategory = "通用工具" | "业务任务";
 export type RunResultGrade = "优秀" | "可用" | "一般" | "失败";
+
+export interface ModelEntryCapabilities {
+  responses: {
+    ok: boolean;
+    streamOk: boolean;
+  };
+  chatCompletions: {
+    ok: boolean;
+  };
+  lastProbedAt: string | null;
+  lastErrorMessage: string | null;
+}
 
 export interface ModelEntry {
   id: string;
@@ -26,6 +56,7 @@ export interface ModelEntry {
   source: ModelEntrySource;
   baseUrl: string;
   modelId: string;
+  reasoningEffort: ReasoningEffort | null;
   catalogFamily: "openai-compatible";
   purchaseUrl: string | null;
   status: ModelEntryStatus;
@@ -36,6 +67,7 @@ export interface ModelEntry {
   lastTestResult: ModelEntryTestResult;
   lastTestCode: ModelEntryTestCode;
   lastTestMessage: string;
+  capabilities: ModelEntryCapabilities;
   presetPriority: PresetPriority | null;
   recommendedTaskCategories: TaskCategory[];
   recommendedTaskIds: string[];
@@ -54,8 +86,67 @@ export interface ModelEntryInput {
   source?: ModelEntrySource;
   baseUrl: string;
   modelId: string;
+  reasoningEffort: ReasoningEffort | null;
   purchaseUrl?: string | null;
   apiKey?: string;
+}
+
+export interface ModelCatalogItem {
+  id: string;
+  label: string;
+  supportedEndpointTypes?: string[];
+}
+
+export interface ModelCatalogResponse {
+  items: ModelCatalogItem[];
+  fetchedAt: string;
+}
+
+export interface RelayEntry {
+  id: string;
+  name: string;
+  clientFamily: EntryClientFamily;
+  adapterType: EntryAdapterType;
+  hostType: EntryHostType;
+  protocolFamily: EntryProtocolFamily;
+  controllable: boolean;
+  description: string;
+  alias: string | null;
+  notes: string[];
+}
+
+export interface EntryBinding {
+  entryId: string;
+  defaultModelEntryId: string | null;
+  defaultModelEntryName: string | null;
+  fallbackModelEntryId: string | null;
+  fallbackModelEntryName: string | null;
+  reasoningEffortOverride: ReasoningEffort | null;
+  statusNote: string;
+}
+
+export interface EntryBindingResolution {
+  entryId: string;
+  alias: string | null;
+  clientFamily: EntryClientFamily | null;
+  adapterType: EntryAdapterType;
+  hostType: EntryHostType | null;
+  protocolFamily: EntryProtocolFamily | null;
+  controllable: boolean;
+  defaultModelEntryId: string | null;
+  fallbackModelEntryId: string | null;
+  reasoningEffortOverride: ReasoningEffort | null;
+  effectiveReasoningEffort: ReasoningEffort | null;
+  statusNote: string | null;
+  resolvedModel: {
+    id: string;
+    name: string;
+    baseUrl: string;
+    modelId: string;
+    reasoningEffort: ReasoningEffort | null;
+    status: ModelEntryStatus;
+    hasStoredApiKey: boolean;
+  } | null;
 }
 
 export interface TaskTemplate {
@@ -134,4 +225,11 @@ export interface GovernanceOverview {
   recentRunsCount: number;
   highlights: string[];
   recentRuns: TaskRunRecord[];
+}
+
+export interface RelayAccessSummary {
+  hasStoredRelayToken: boolean;
+  maskedRelayToken: string | null;
+  effectiveSource: "control-plane" | "environment" | "missing";
+  updatedAt: string | null;
 }

@@ -923,81 +923,90 @@ class NarrativeContextService:
         )
 
         overall_parts = [
-            f"这幅画首先给人的感觉，是一种以「{dominant}」为主的底色；它更在意的是{dominant_theme}。",
+            (
+                f"这张画更先让人看到的，不是你准备马上往前冲，而是你正在把自己重新收回来，确认现在的自己还能不能稳稳地站在{dominant_theme}上。"
+                if resolved_theme == "general"
+                else f"放到「{resolved_theme_label}」里看，这张画先说中的不是结果，而是你在往前之前，会先确认自己有没有站稳{dominant_theme}。"
+            ),
         ]
+        if feeling_hint:
+            overall_parts.append(feeling_hint)
         if transition:
-            overall_parts.append(transition)
+            overall_parts.append(f"再往里看，画面的主轴是：{transition}")
         overall_parts.append(
-            f"整体来看，这不是单纯往外冲的状态，而更像先把内在安顿住，再慢慢把「{secondary}」相关的{secondary_keywords}带回现实。"
+            f"所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把和「{secondary}」有关的{secondary_keywords}带回现实。"
         )
         if signal_text:
-            overall_parts.append(signal_text)
+            overall_parts.append(f"它也提醒你：{signal_text}")
 
         visual_parts = [
             (
-                f"从三圈颜色聚合来看，五行里以「{dominant}」({dominant_percentage:.2f}%) "
-                f"和「{secondary}」({secondary_percentage:.2f}%) 最突出。"
-            ),
-            (
-                f"内圈主导为「{inner or '未识别'}」，中圈主导为「{middle or '未识别'}」，"
-                f"外圈主导为「{outer or '未识别'}」。{circle_pattern}"
+                f"如果只看画面给人的感受，最先浮出来的是两股力量：一股是「{dominant}」的收拢和判断，另一股是「{secondary}」想把事情重新带回现实。"
             ),
         ]
+        if circle_pattern:
+            visual_parts.append(f"三层画面的走向也很清楚：{circle_pattern}")
         if readings_text:
-            visual_parts.append(readings_text + "。")
+            softened_readings = [
+                self._soften_circle_reading(item)
+                for item in readings_text.split("；")
+                if isinstance(item, str) and item.strip()
+            ]
+            if softened_readings:
+                visual_parts.append("换句话说，" + "；".join(softened_readings[:2]) + "。")
 
         base = (
-            f"你的底色更接近「{dominant}」所代表的{dominant_theme}。"
-            f"{transition or ''} 这也让你做很多事之前，会先确认自己是不是已经站稳。"
+            f"你的底色不是急着证明什么，而是先确认自己有没有站稳在{dominant_theme}上。"
+            f"{transition or ''} 你很多时候不是慢，而是先要让内在点头。"
         ).strip()
         contradiction = (
-            f"你内里更需要{dominant_theme}，但外在已经开始调用「{outer}」的力量去整理边界、秩序或方向。"
-            f"这会让你一边想继续向外，一边又不愿再用没有承载感的方式消耗自己。"
+            f"矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「{outer}」的方式先整理边界、秩序或方向。"
+            "于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。"
         )
         if adjacent_relations:
             pattern = (
-                f"从圈间关系看，{adjacent_relations[0]}。"
-                "所以你的推进方式往往不是一下子冲出去，而是先在内部整合，等感觉对了才继续往前。"
+                f"久而久之，这会形成你的惯用模式：{adjacent_relations[0]}。"
+                "你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。"
             )
         else:
             pattern = "你的模式更像先在内部整合，再决定往外投入多少能量。"
         defense = (
-            f"当外圈更偏向「{outer}」时，你会更倾向用清晰、距离感或判断标准保护自己。"
-            f"这不是冷下来，而是在替现在的自己筛选什么值得继续打开。"
+            f"为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。"
+            f"它看起来像「{outer}」的收紧，但本质上是在替现在的你筛选什么值得继续打开。"
         )
         block_parts = ["当前最容易卡住你的，是主导能量和现实节奏还没完全接上。"]
         if weakest_percentage < 12:
             block_parts.append(
-                f"尤其是「{weakest}」相关的{weakest_theme}资源暂时偏少时，你会更容易在快要推进时先退回来。"
+                f"尤其当和「{weakest}」有关的{weakest_theme}还没跟上时，你会在快要推进的那一刻先退回来。"
             )
         if signal_text:
-            block_parts.append(signal_text)
+            block_parts.append(f"这也是为什么你会反复遇到这样的卡点：{signal_text}")
         light = (
-            f"你的光并不只在稳定里，也在于你已经开始把「{secondary}」所代表的{secondary_theme}慢慢带出来。"
-            f"这说明你不是被困住，而是在学习用更适合自己的方式向前。"
+            f"但你的光也已经出来了：你不是只会收着，而是正在把「{secondary}」代表的{secondary_theme}慢慢带回生活。"
+            "这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
         )
 
         scene = (
-            f"在「{resolved_theme_label}」这个角度里，你更容易出现在“先确认自己有没有站稳，再决定要不要继续投入”的场景里。"
-            f"这和画面里「{dominant}」更强有关，因为它会先把注意力拉回{dominant_theme}。"
+            f"在「{resolved_theme_label}」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。"
+            f"因为画面里更强的那股力量，会先把注意力拉回{dominant_theme}。"
         )
         impact = "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。"
         if weakest_percentage < 12:
-            impact += f" 当「{weakest}」相关的{weakest_theme}资源偏少时，你也会更需要一点缓冲和回收。"
-        awareness = "这幅画提醒你的，不是逼自己立刻变得更强，而是看见：只要先把内在安顿好，后面的行动会自然长出来。"
+            impact += f" 当和「{weakest}」有关的{weakest_theme}还偏少时，你也会更需要一点缓冲和回收。"
+        awareness = "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
         if signal_text:
             awareness += f" {signal_text}"
 
         emotion_parts = [
-            f"情绪层面上，你现在更像在优先处理「{dominant}」相关的课题，也就是{dominant_theme}。",
-            f"而外圈出现的「{outer}」，又说明你并不是想完全退回去，而是在重新整理自己要用什么样的边界、判断和回应方式与世界接触。",
+            f"情绪上，你现在不像没感觉，反而像一直在心里默默处理{dominant_theme}这件事。",
+            f"而最外层落出来的「{outer}」感，也说明你并不是想完全退回去，只是想先弄清楚，接下来该用什么边界和姿态继续向外。",
         ]
         if weakest_percentage < 12:
             emotion_parts.append(
-                f"相比之下，「{weakest}」相关的{weakest_theme}资源暂时收得比较里面，所以当节奏一快，你更容易先想停下来整理自己。"
+                f"也因为和「{weakest}」有关的{weakest_theme}暂时偏弱，所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。"
             )
         if signal_text:
-            emotion_parts.append(signal_text)
+            emotion_parts.append(f"这和你现在的状态也很像：{signal_text}")
         if feeling_hint:
             emotion_parts.append(feeling_hint)
 
@@ -1062,7 +1071,7 @@ class NarrativeContextService:
                     "title": "先安顿自己",
                     "content": (
                         "今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。"
-                        f"那往往是「{dominant}」在提醒你：先照顾好{dominant_keywords}。"
+                        f"那不是你拖延，而往往是在提醒你：先照顾好{dominant_keywords}。"
                     ),
                 },
                 {
@@ -1070,7 +1079,7 @@ class NarrativeContextService:
                     "title": "看见边界变化",
                     "content": (
                         "当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。"
-                        f"外圈的「{outer}」不是要你拒绝，而是提醒你先看清楚。"
+                        "那不是故意冷下来，而是在确认这件事值不值得你继续打开。"
                     ),
                 },
                 {
@@ -1225,44 +1234,40 @@ class NarrativeContextService:
         )
 
         first_impression_parts = [
-            f"第一眼看这张画，最明显的是「{dominant}」和「{secondary}」共同撑起了整张画的骨架。",
+            "第一眼看这张画，最先撞出来的不是结果层面的焦虑，而是你正卡在一个很具体的位置：想往前，但还没有完全放心把自己交出去。"
         ]
         if transition:
-            first_impression_parts.append(str(transition).strip())
+            first_impression_parts.append(f"画面的主轴也很明确：{str(transition).strip()}")
         first_impression_parts.append(
-            "这不是表面上的停住，而是画面正在认真处理一件更底层的事：先把自己安顿住，再决定如何向外表达。"
+            f"所以这不是简单的停住，而是你正在认真处理更底层的事：先把和{self._get_element_theme_phrase(resolved_theme, dominant)}有关的承载感站稳，再决定怎么用「{secondary}」的力量继续向外。"
         )
         if contradiction_text:
-            normalized_contradiction = contradiction_text[:96].strip()
-            if normalized_contradiction and normalized_contradiction[-1] not in "。！？":
-                normalized_contradiction += "。"
-            first_impression_parts.append(normalized_contradiction)
+            first_impression_parts.append(self._trim_sentence(contradiction_text, 96))
         if signal_text:
-            first_impression_parts.append(signal_text)
+            first_impression_parts.append(f"更深一层看，{signal_text}")
 
         energy_essence = (
-            f"{resolved_theme_label}主题下，这张画的能量核心更接近「{dominant}」({dominant_percentage:.2f}%)"
-            f" 与「{secondary}」({secondary_percentage:.2f}%) 的组合。"
-            f"{transition or ''} 这说明你现在最重要的功课，不是更快，而是让内在承载、外在边界和现实动作重新接上。"
+            f"这张画的能量主轴，不是拼命往外冲，而是先把{self._get_element_theme_phrase(resolved_theme, dominant)}站稳，再决定怎么让「{secondary}」带着你继续向前。"
+            f"{transition or ''}"
         ).strip()
 
         block_parts: list[str] = []
         if mapped_contradiction:
-            block_parts.append(f"当前更核心的卡点，其实是「{mapped_contradiction}」。")
+            block_parts.append(f"你现在更核心的卡点，其实是「{mapped_contradiction}」")
         if mapped_manifestation:
-            block_parts.append(mapped_manifestation.rstrip("。") + "。")
+            block_parts.append(f"它不是抽象概念，落到现实里，常常就表现成：{mapped_manifestation.rstrip('。')}。")
         if block_text:
-            block_parts.append(block_text[:96].strip())
+            block_parts.append(f"所以你会反复遇到同一种体验：{self._trim_sentence(block_text, 90).rstrip('。')}")
         if primary_imbalance:
             block_parts.append(
-                f"{primary_imbalance}让你很难一边往前推进，一边仍然感觉自己是安全的。"
+                f"说到底，是因为{primary_imbalance}让你很难一边往前推进，一边仍然感觉自己是安全的。"
             )
         if weakest_percentage < 12:
             block_parts.append(
-                f"再加上「{weakest}」相关的{weakest_theme}资源暂时偏少，所以你在快要真正启动时更容易先想缓一缓。"
+                f"再加上和「{weakest}」有关的{weakest_theme}资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。"
             )
         if signal_text:
-            block_parts.append(signal_text)
+            block_parts.append(f"这和画面里的深层信号也是一致的：{signal_text}")
         if resolved_feeling_hint:
             block_parts.append(resolved_feeling_hint)
 
@@ -1317,17 +1322,17 @@ class NarrativeContextService:
         action_label = str(labels.get("micro_action") or "行动提示").strip()
         micro_sections = {
             rhythm_label: (
-                f"圈间节奏首先显示：{adjacent_relations[0]}。这说明当前能量更像在调整承接，而不是剧烈摆荡。"
+                f"先看节奏，你现在的能量不是散的，而是明显在{adjacent_relations[0]}。这说明你正在调承接，不是在乱。"
                 if adjacent_relations
                 else str(templates.get("micro_rhythm") or "").strip()
             ),
             relationship_label: (
-                f"继续往外看，{adjacent_relations[1]}。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。"
+                f"再往外看，{adjacent_relations[1]}。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。"
                 if len(adjacent_relations) > 1
                 else str(templates.get("micro_relationship") or "").strip()
             ),
             action_label: (
-                f"当前最明显的行动提示是：{wrap_relations[0]}。与其一次性猛推，不如让行动和承载一起增长。"
+                f"落到行动上，最明显的提示是：{wrap_relations[0]}。与其一次性猛推，不如让行动和承载一起增长。"
                 if wrap_relations
                 else str(templates.get("micro_action") or "").strip()
             ),
@@ -1417,9 +1422,9 @@ class NarrativeContextService:
 
         block_parts: list[str] = []
         if contradiction:
-            block_parts.append(f"当前更核心的卡点，其实是「{contradiction}」。")
+            block_parts.append(f"你现在更核心的卡点，其实是「{contradiction}」")
         if manifestation:
-            block_parts.append(manifestation.rstrip("。") + "。")
+            block_parts.append(f"它不是抽象概念，落到现实里，常常就表现成：{manifestation.rstrip('。')}。")
 
         direction_text = direction
         healing_parts: list[str] = []
@@ -1434,15 +1439,15 @@ class NarrativeContextService:
 
         deeper_root = ""
         if manifestation:
-            deeper_root = f"更深一层看，这更接近「{display_imbalance}」的模式：{manifestation}。"
+            deeper_root = f"如果再往下一层看，问题不只是表面卡住，而是你会慢慢形成一种重复机制：「{display_imbalance}」会让你在关键时刻又回到“{manifestation}”里。"
             if psychology:
                 deeper_root += f" 它常会让人落进「{psychology}」这样的内在循环。"
 
         core_root = ""
         if issue_type and cognitive_upgrade:
-            core_root = f"更深层的位置，是你正在重新学习：在「{issue_type}」这里，{cognitive_upgrade}"
+            core_root = f"而最深的地方，往往不是能力问题，而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。 在「{issue_type}」这里，你正在重新学习：{cognitive_upgrade}"
         elif cognitive_upgrade:
-            core_root = f"更深层的位置，是你正在重新学习：{cognitive_upgrade}"
+            core_root = f"而最深的地方，往往不是能力问题，而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。 {cognitive_upgrade}"
 
         return {
             "imbalance_type": imbalance_type,
@@ -1845,6 +1850,29 @@ class NarrativeContextService:
         cleaned = re.sub(r"\s+", " ", cleaned).strip()
         return cleaned
 
+    def _trim_sentence(self, content: str, limit: int = 88) -> str:
+        cleaned = self._clean_user_facing_copy(content)
+        if not cleaned:
+            return ""
+        if len(cleaned) <= limit:
+            return cleaned if cleaned[-1] in "。！？" else f"{cleaned}。"
+        trimmed = cleaned[:limit].rstrip("，,；; ")
+        return f"{trimmed}。"
+
+    def _soften_circle_reading(self, content: str) -> str:
+        cleaned = self._clean_user_facing_copy(content)
+        replacements = [
+            ("内圈（里圈）主要对应", "最里面这一层常会照见"),
+            ("内圈主要对应", "最里面这一层常会照见"),
+            ("中圈主要对应", "中间这一层更容易落到"),
+            ("外圈主要对应", "最外面这一层更容易碰到"),
+            ("此圈可以重点观察：", "放到现实里，往往会连到"),
+            ("当前更显著的是", "现在更突出的是"),
+        ]
+        for src, target in replacements:
+            cleaned = cleaned.replace(src, target)
+        return cleaned.strip()
+
     def _resolve_imbalance_projection(
         self,
         *,
@@ -2088,22 +2116,22 @@ class NarrativeContextService:
         without_intention_template: str,
         with_intention_template: str,
     ) -> str:
-        contradiction_preview = (
-            f"{lite_contradiction[:72]} " if lite_contradiction else ""
-        )
+        contradiction_preview = self._trim_sentence(lite_contradiction, 120)
         if not intention:
             base = self._render_runtime_template(
                 without_intention_template,
-                lite_contradiction=contradiction_preview,
+                lite_contradiction=f"{contradiction_preview} " if contradiction_preview else "",
             )
+            base = f"表面上看，你最容易先看到的是：{base}".strip()
             if manifestation:
                 base = f"{base} 更落到现实里看，它常会表现成：{manifestation}。"
             return f"{base} {signal_text}".strip() if signal_text else base
         base = self._render_runtime_template(
             with_intention_template,
-            lite_contradiction=contradiction_preview,
+            lite_contradiction=f"{contradiction_preview} " if contradiction_preview else "",
             intention=intention,
         )
+        base = f"表面上看，你最容易先看到的是：{base}".strip()
         if manifestation:
             base = f"{base} 现实层面也常会表现成：{manifestation}。"
         return f"{base} {signal_text}".strip() if signal_text else base
@@ -2124,15 +2152,24 @@ class NarrativeContextService:
             if isinstance(item, str) and item.strip()
         ]
         knowledge_reading = str(payload.get("knowledge_reading") or "").strip()
+        softened_reading = self._soften_circle_reading(knowledge_reading)
         parts: list[str] = []
         if meaning and radius_percent:
             parts.append(
-                f"{meaning}当前约占 {radius_percent}%，主导元素更偏「{dominant or '未识别'}」。"
+                f"{meaning}这一层当前约占 {radius_percent}%，给人的主感觉更偏「{dominant or '未识别'}」。"
             )
         elif dominant:
-            parts.append(f"当前主导元素更偏「{dominant}」。")
-        if knowledge_reading:
-            parts.append(knowledge_reading.rstrip("。") + "。")
-        if colors:
-            parts.append(f"代表性色彩集中在 {'、'.join(colors[:3])}。")
+            parts.append(f"这一层当前更偏「{dominant}」的感觉。")
+        if softened_reading:
+            fragments = [
+                item.strip()
+                for item in softened_reading.split("。")
+                if item.strip()
+            ]
+            if fragments:
+                parts.append(fragments[0].rstrip("。") + "。")
+            if len(fragments) > 1:
+                parts.append(fragments[1].rstrip("。") + "。")
+        if colors and not softened_reading:
+            parts.append(f"画面里反复出现的颜色集中在 {'、'.join(colors[:3])}。")
         return " ".join(parts).strip() or fallback_text

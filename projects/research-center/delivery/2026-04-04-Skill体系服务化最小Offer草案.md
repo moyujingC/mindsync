@@ -4,11 +4,11 @@
 > 版本：0.1.0
 > owner：Business Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-Skill体系服务化最小Offer草案.md
+> source_of_truth：projects/research-center/delivery/2026-04-04-Skill体系服务化最小Offer草案.md
 > 项目：研究中心
 > 阶段：delivery
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-04-Skill体系对外表达与服务化打包方案.md
+> - projects/research-center/specs/2026-04-04-Skill体系对外表达与服务化打包方案.md
 
 这份文档把当前 skill 体系进一步收束成一个可试探外部需求的最小服务化 offer 草案。
 

@@ -1,6 +1,6 @@
 version: 0.1.0
 last_updated: 2026-04-15
-source_of_truth: /Users/xinran/Downloads/dev/mindsync/company/paperclip-research-center-skill-bindings.yaml
+source_of_truth: company/paperclip-research-center-skill-bindings.yaml
 description: >
   研究中心 repo 内 skill 的公司挂载清单。用于在 Paperclip 扫描项目工作区后，
   按 agent 角色把研究中心 skill 同步到对应 agent 的 desiredSkills。

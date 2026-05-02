@@ -4,11 +4,11 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-05-参考材料系统每日整理-Routine-SPEC.md
+> source_of_truth：projects/research-center/specs/2026-04-05-参考材料系统每日整理-Routine-SPEC.md
 > 项目：研究中心
 > 阶段：spec
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md
+> - projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md
 > - /Users/xinran/Downloads/dev/paperclip/skills/paperclip/references/routines.md
 
 这份文档定义“参考材料系统每日整理”在 Paperclip 中的第一版 routine 设计。
@@ -94,8 +94,8 @@
 
 routine 每次最少扫描：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/`
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/`
+- `projects/research-center/kb/`
+- `projects/research-center/kb/preference-memory/`
 - 近期新增的 reference review 样例或正式 review 记录
 
 建议时间窗口：

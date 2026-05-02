@@ -4,13 +4,13 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-06-研究中心内容严谨性与NotebookLM事实核查层-SPEC.md
+> source_of_truth：projects/research-center/specs/2026-04-06-研究中心内容严谨性与NotebookLM事实核查层-SPEC.md
 > 项目：研究中心
 > 阶段：spec
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md
-> - /Users/xinran/Downloads/dev/mindsync/agents/research-knowledge-lead/AGENTS.md
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-synthesis/SKILL.md
+> - projects/research-center/PROJECT.md
+> - agents/research-knowledge-lead/AGENTS.md
+> - projects/research-center/skills/research-synthesis/SKILL.md
 
 这份文档定义 `研究中心` 的内容严谨性控制方案，以及 `NotebookLM` 在其中承担的角色。
 

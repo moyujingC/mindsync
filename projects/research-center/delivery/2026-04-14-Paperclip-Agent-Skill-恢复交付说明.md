@@ -4,21 +4,21 @@
 > 版本：0.2.0
 > owner：Engineer / Research & Knowledge Lead
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-14-Paperclip-Agent-Skill-恢复交付说明.md
+> source_of_truth：projects/research-center/delivery/2026-04-14-Paperclip-Agent-Skill-恢复交付说明.md
 > 项目：研究中心
 > 阶段：delivery
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/research-center/qa/2026-04-14-Paperclip-Agent-Skill-恢复验证记录.md
+> depends_on：projects/research-center/qa/2026-04-14-Paperclip-Agent-Skill-恢复验证记录.md
 
 ## 1. 已交付内容
 
 - 新增 skill 绑定治理源：
-  - `/Users/xinran/Downloads/dev/mindsync/company/paperclip-agent-skill-bindings.yaml`
+  - `company/paperclip-agent-skill-bindings.yaml`
 - 新增通用恢复脚本：
-  - `/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-agent-skills.sh`
+  - `shared/tools/sync-paperclip-agent-skills.sh`
 - 更新 `Get笔记` 运维脚本：
-  - `/Users/xinran/Downloads/dev/mindsync/shared/tools/getnote-setup.sh`
+  - `shared/tools/getnote-setup.sh`
 - 新增仓库受管底层 skill 包：
-  - `/Users/xinran/Downloads/dev/mindsync/shared/skills/getnote/`
+  - `shared/skills/getnote/`
 
 ## 2. 标准恢复顺序
 

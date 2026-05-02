@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/README.md
+> source_of_truth：company/knowledge-base/system/README.md
 
 这份索引用于收口 `墨予镜` 当前对核心系统的设计机制分析与使用说明。
 
@@ -16,11 +16,12 @@
 
 ## 1. 当前文档
 
-- [Paperclip-设计机制与使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
-- [Paperclip-周检机制与版本跟踪说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
-- [paperclip-weekly-reviews/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/paperclip-weekly-reviews/README.md)
-- [MindSync-设计机制分析.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/MindSync-设计机制分析.md)
-- [当前CI-CD系统机制总览.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/当前CI-CD系统机制总览.md)
+- [Paperclip-设计机制与使用说明.md](company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
+- [Paperclip-workspace-充分使用度检查表.md](company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md)
+- [Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+- [paperclip-weekly-reviews/README.md](company/knowledge-base/system/paperclip-weekly-reviews/README.md)
+- [MindSync-设计机制分析.md](company/knowledge-base/system/MindSync-设计机制分析.md)
+- [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
 
 ## 2. 适用边界
 
@@ -39,7 +40,8 @@
 
 ## 3. 推荐阅读顺序
 
-1. 先看 [MindSync-设计机制分析.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/MindSync-设计机制分析.md)
-2. 再看 [Paperclip-设计机制与使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
-3. 如果要理解 `Paperclip` 上游快速迭代对本地系统的影响判断机制，再看 [Paperclip-周检机制与版本跟踪说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
-4. 如果要理解现状中的自动化与故障路由，再看 [当前CI-CD系统机制总览.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/当前CI-CD系统机制总览.md)
+1. 先看 [MindSync-设计机制分析.md](company/knowledge-base/system/MindSync-设计机制分析.md)
+2. 再看 [Paperclip-设计机制与使用说明.md](company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
+3. 如果要判断自己有没有把 `workspace / git worktree` 真正用透，再看 [Paperclip-workspace-充分使用度检查表.md](company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md)
+4. 如果要理解 `Paperclip` 上游快速迭代对本地系统的影响判断机制，再看 [Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+5. 如果要理解现状中的自动化与故障路由，再看 [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)

@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-skill-试跑记录-Claude-Code到Skill产品定义与架构方案.md
+> source_of_truth：projects/research-center/delivery/2026-04-04-skill-试跑记录-Claude-Code到Skill产品定义与架构方案.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -21,20 +21,20 @@
 - 来源项目：
   - `研究中心`
 - 输出位置：
-  - [Claude Code 启发下的 Skill 体系产品定义 / SPEC](/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-04-Claude-Code启发下的Skill体系产品定义-SPEC.md)
-  - [Skill 体系架构边界与接入方案](/Users/xinran/Downloads/dev/mindsync/projects/research-center/decisions/2026-04-04-Skill体系架构边界与接入方案.md)
+  - [Claude Code 启发下的 Skill 体系产品定义 / SPEC](projects/research-center/specs/2026-04-04-Claude-Code启发下的Skill体系产品定义-SPEC.md)
+  - [Skill 体系架构边界与接入方案](projects/research-center/decisions/2026-04-04-Skill体系架构边界与接入方案.md)
 
 ## 2. 试跑前上下文
 
 本轮读取了以下材料：
 
-- [Claude Code 源码研究综合结论与 Skill 启发](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
-- [墨予镜 Skill 协议草案](/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
-- [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
-- [研究中心项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
-- [研究中心项目工作区](/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md)
-- [Product Spec Lead 角色说明](/Users/xinran/Downloads/dev/mindsync/agents/product-spec-lead/AGENTS.md)
-- [Architect 角色说明](/Users/xinran/Downloads/dev/mindsync/agents/architect/AGENTS.md)
+- [Claude Code 源码研究综合结论与 Skill 启发](projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
+- [墨予镜 Skill 协议草案](projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
+- [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+- [研究中心项目入口](company/projects/研究中心/PROJECT.md)
+- [研究中心项目工作区](projects/research-center/PROJECT.md)
+- [Product Spec Lead 角色说明](agents/product-spec-lead/AGENTS.md)
+- [Architect 角色说明](agents/architect/AGENTS.md)
 
 ## 3. 按 Skill 走的过程
 

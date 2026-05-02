@@ -24,9 +24,9 @@
 
 进入本目录前，先对齐：
 
-- [MVP产品规范.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md)
-- [MVP技术方案.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP技术方案.md)
-- [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
+- [MVP产品规范.md](projects/aicareer/specs/MVP产品规范.md)
+- [MVP技术方案.md](projects/aicareer/specs/MVP技术方案.md)
+- [本项目 PROJECT.md](projects/aicareer/PROJECT.md)
 
 ## 当前阶段性文档
 
@@ -34,17 +34,17 @@
 
 如需回看当前最关键的阶段材料，优先阅读：
 
-- [2026-04-03-mvp-review-memo.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-03-mvp-review-memo.md)
-- [2026-04-03-mvp-implementation-note.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-03-mvp-implementation-note.md)
-- [2026-04-06-spec-to-architecture-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-06-spec-to-architecture-handoff.md)
-- [2026-04-06-spec-to-CEO-handoff.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-06-spec-to-CEO-handoff.md)
+- [2026-04-03-mvp-review-memo.md](projects/aicareer/delivery/2026-04-03-mvp-review-memo.md)
+- [2026-04-03-mvp-implementation-note.md](projects/aicareer/delivery/2026-04-03-mvp-implementation-note.md)
+- [2026-04-06-spec-to-architecture-handoff.md](projects/aicareer/delivery/2026-04-06-spec-to-architecture-handoff.md)
+- [2026-04-06-spec-to-CEO-handoff.md](projects/aicareer/delivery/2026-04-06-spec-to-CEO-handoff.md)
 
 ## 历史资料入口
 
 以下文档主要用于追溯窗口背景：
 
-- [2026-04-03-窗口工作总结.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-03-窗口工作总结.md)
-- [2026-04-03-career-asset-sample.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-03-career-asset-sample.md)
+- [2026-04-03-窗口工作总结.md](projects/aicareer/delivery/2026-04-03-窗口工作总结.md)
+- [2026-04-03-career-asset-sample.md](projects/aicareer/delivery/2026-04-03-career-asset-sample.md)
 
 ## 默认阅读顺序
 

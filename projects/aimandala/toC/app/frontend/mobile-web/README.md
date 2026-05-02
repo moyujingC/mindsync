@@ -29,7 +29,7 @@
 
 ## 生产环境变量模板
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/frontend/mobile-web/.env.production.example`
+- `projects/aimandala/toC/app/frontend/mobile-web/.env.production.example`
 
 当前生产环境建议至少配置：
 

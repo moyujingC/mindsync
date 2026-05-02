@@ -31,6 +31,6 @@
 常用命令：
 
 - 导出并重建知识包：
-  - `python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/scripts/export_knowledge_pack_v21.py`
+  - `python3 projects/aimandala/toC/app/backend/scripts/export_knowledge_pack_v21.py`
 - 检查当前提交的知识包和编译产物是否漂移：
-  - `python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/scripts/check_knowledge_pack_v21.py`
+  - `python3 projects/aimandala/toC/app/backend/scripts/check_knowledge_pack_v21.py`

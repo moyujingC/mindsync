@@ -44,8 +44,8 @@ handoff_to:
 ## 必读上下文
 
 1. 当前项目 `PROJECT.md`
-2. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md`
-3. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/MEMORY.md`
+2. `projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md`
+3. `projects/research-center/kb/preference-memory/MEMORY.md`
 
 ## 执行步骤
 

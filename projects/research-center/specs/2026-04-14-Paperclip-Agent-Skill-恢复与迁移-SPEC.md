@@ -4,7 +4,7 @@
 > 版本：0.2.0
 > owner：Engineer / Research & Knowledge Lead
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-14-Paperclip-Agent-Skill-恢复与迁移-SPEC.md
+> source_of_truth：projects/research-center/specs/2026-04-14-Paperclip-Agent-Skill-恢复与迁移-SPEC.md
 > 项目：研究中心
 > 阶段：spec
 

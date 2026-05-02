@@ -4,9 +4,9 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md
+> source_of_truth：company/Paperclip任务系统优化方案.md
 
-这份文档定义 `墨予镜` 当前阶段对 Paperclip 任务系统的优化方向。
+这份文档定义 `知行工坊` 当前阶段对 Paperclip 任务系统的优化方向。
 
 它不是单次“整理 13 个任务”的临时操作说明，而是为了把：
 
@@ -21,7 +21,7 @@
 
 ## 1. 当前暴露出的根问题
 
-结合 `墨予镜` 当前本机实例的真实使用情况，问题不在于“系统不能工作”，而在于“系统工作了，但语义没有被界面和流程显式承载”。
+结合 `知行工坊` 当前本机实例的真实使用情况，问题不在于“系统不能工作”，而在于“系统工作了，但语义没有被界面和流程显式承载”。
 
 当前主要表现为：
 
@@ -60,7 +60,7 @@
 
 ### 4.1 任务分层
 
-在 `墨予镜` 里，Paperclip issue 默认分为四层：
+在 `知行工坊` 里，Paperclip issue 默认分为四层：
 
 1. `intake`
    - 原始输入、模糊想法、参考材料、待分诊问题
@@ -88,9 +88,9 @@
 
 当前约定以：
 
-- [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-- [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
-- [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+- [company/任务创建模板.md](company/任务创建模板.md)
+- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
 
 为执行入口。
 
@@ -124,7 +124,7 @@
 
 ### 5.3 `in_review`
 
-`in_review` 在 `墨予镜` 中不是单一语义。
+`in_review` 在 `知行工坊` 中不是单一语义。
 
 它至少包含三类：
 
@@ -134,7 +134,7 @@
 
 这部分规则以：
 
-- [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
+- [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
 
 为准。
 
@@ -188,7 +188,7 @@
 
 ## 7. 运行时与治理源的对账要求
 
-`墨予镜` 的公司治理源在仓库内，Paperclip 实际运行态在本机实例内。
+`知行工坊` 的公司治理源在仓库内，Paperclip 实际运行态在本机实例内。
 
 两者不是天然同构的，因此系统必须持续做两类对账。
 
@@ -196,7 +196,7 @@
 
 已存在：
 
-- [shared/tools/sync-paperclip-project-workspaces.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-project-workspaces.sh)
+- [shared/tools/sync-paperclip-project-workspaces.sh](shared/tools/sync-paperclip-project-workspaces.sh)
 
 用于检查：
 
@@ -206,7 +206,7 @@
 
 本轮新增：
 
-- [shared/tools/paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
+- [shared/tools/paperclip-task-system-audit.mjs](shared/tools/paperclip-task-system-audit.mjs)
 
 用于检查：
 
@@ -313,9 +313,9 @@
 
 当前已先在治理层补齐：
 
-- [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-- [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
-- [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+- [company/任务创建模板.md](company/任务创建模板.md)
+- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
 
 若要处理某一批具体存量任务，应额外创建项目级或阶段性交付文档，不直接写入 `company/` 规则层。
 
@@ -337,11 +337,11 @@
 
 1. 标签和派生语义仍不足以稳定表达任务类型
 2. UI 和脚本层已经证明这些语义是长期稳定的
-3. `墨予镜` 之外的其他公司样本也需要同一能力
+3. `知行工坊` 之外的其他公司样本也需要同一能力
 
 ## 10. 一句话结论
 
-`墨予镜` 当前最需要的不是“更多任务”，而是“让任务系统自己显出结构”。
+`知行工坊` 当前最需要的不是“更多任务”，而是“让任务系统自己显出结构”。
 
 因此，本轮系统优化的主线是：
 
