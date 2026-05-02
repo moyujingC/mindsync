@@ -61,7 +61,7 @@ import type {
   InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
-import { detectCircles, getInterpretationList } from "../shared/api";
+import { getInterpretationList } from "../shared/api";
 import {
   applyError,
   getGenerationPresentation,
@@ -149,10 +149,6 @@ export function MobileWebBrowserShell() {
   const [previewMode, setPreviewMode] = useState(initialState.previewMode);
   const [previewChannel, setPreviewChannel] = useState<"mobile-web" | "miniapp">("mobile-web");
   const [controlsOpen, setControlsOpen] = useState(initialState.controlsOpen);
-  const [previewDetection, setPreviewDetection] =
-    useState<DetectCirclesResponse | null>(null);
-  const [previewDetecting, setPreviewDetecting] = useState(false);
-  const [previewDetectError, setPreviewDetectError] = useState<string | null>(null);
   const [previewFlowState, setPreviewFlowState] =
     useState<MandalaFlowState | null>(null);
   const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
@@ -201,11 +197,11 @@ export function MobileWebBrowserShell() {
       createPreviewAppProps(
         route,
         draft,
-        previewDetection,
+        null,
         previewFlowState,
         previewHistoryRecords,
       ),
-    [draft, previewDetection, previewFlowState, previewHistoryRecords, route],
+    [draft, previewFlowState, previewHistoryRecords, route],
   );
 
   useEffect(() => {
@@ -470,13 +466,10 @@ export function MobileWebBrowserShell() {
       previewMode: true,
       uploadDraft: draft,
       flowState: previewFlowState,
-      detection: previewDetection,
-      detectError: previewDetectError,
       report: previewFlowState?.report ?? null,
       status: previewFlowState?.status ?? null,
       runtimeBusy: previewFlowRunning,
       historyBusy: Boolean(previewHistoryOpeningId),
-      uploadDetecting: previewDetecting,
     };
     const signature = JSON.stringify({
       route,
@@ -486,15 +479,6 @@ export function MobileWebBrowserShell() {
       statusStage: previewFlowState?.status?.generation_stage ?? null,
       statusProgress: previewFlowState?.status?.generation_progress ?? null,
       reportVersion: previewFlowState?.report?.version ?? null,
-      detect: previewDetection
-        ? {
-            inner: previewDetection.inner_radius,
-            middle: previewDetection.middle_radius,
-            confidence: previewDetection.confidence,
-          }
-        : null,
-      detectError: previewDetectError,
-      previewDetecting,
       previewFlowRunning,
     });
 
@@ -519,9 +503,6 @@ export function MobileWebBrowserShell() {
   }, [
     draft,
     localDebugEnabled,
-    previewDetectError,
-    previewDetecting,
-    previewDetection,
     previewFlowRunning,
     previewFlowState,
     previewHistoryOpeningId,
@@ -1134,9 +1115,6 @@ export function MobileWebBrowserShell() {
               <MobileWebApp
                 {...previewProps}
                 uploadDraft={draft}
-                uploadDetection={previewDetection}
-                uploadDetecting={previewDetecting}
-                uploadDetectError={previewDetectError}
                 activeHistoryFilter={(previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
                 historyQuery={previewHistoryQuery}
                 historyActionBusy={
@@ -1213,8 +1191,6 @@ export function MobileWebBrowserShell() {
                         {
                           ...nextDraft,
                           uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-                          innerRadius: previewDetection?.inner_radius ?? nextDraft.innerRadius,
-                          middleRadius: previewDetection?.middle_radius ?? nextDraft.middleRadius,
                         },
                         userId,
                       ),
@@ -1251,38 +1227,6 @@ export function MobileWebBrowserShell() {
                 }}
                 onLoadingLeaveLater={() => {
                   void handlePreviewLeaveLoadingLater();
-                }}
-                onUploadPreviewDetect={async () => {
-                  if (!draft.imagePath) {
-                    setPreviewDetectError("请先选择一张画作，再触发三圈检测。");
-                    return;
-                  }
-
-                  setPreviewDetecting(true);
-                  setPreviewDetectError(null);
-
-                  try {
-                    const resolvedImagePath = await ensureUploadedImagePath(
-                      draft,
-                      (uploaded) => {
-                        setDraft((current) => ({
-                          ...current,
-                          uploadAsset: toMobileWebUploadAssetRef(uploaded),
-                        }));
-                      },
-                    );
-                    const detection = await detectCircles({
-                      image_path: resolvedImagePath.image_path,
-                    });
-                    setPreviewDetection(detection);
-                  } catch (error) {
-                    setPreviewDetectError(
-                      error instanceof Error ? error.message : "三圈检测失败",
-                    );
-                    setPreviewDetection(null);
-                  } finally {
-                    setPreviewDetecting(false);
-                  }
                 }}
                 onReportPrimaryAction={handlePreviewPrimaryAction}
                 onReportSecondaryAction={handlePreviewSecondaryAction}
@@ -1369,7 +1313,7 @@ export function MobileWebBrowserShell() {
               draft={draft}
               interpretationId={interpretationId}
               flowState={previewFlowState}
-              detection={previewDetection}
+              detection={null}
               runtimeSnapshot={runtimeDebugSnapshot}
             />
           ) : null}
@@ -1382,9 +1326,9 @@ export function MobileWebBrowserShell() {
               interpretationId={interpretationId}
               userId={userId}
               flowState={previewFlowState}
-              detection={previewDetection}
-              detectError={previewDetectError}
-              detecting={previewDetecting}
+              detection={null}
+              detectError={null}
+              detecting={false}
               runtimeSnapshot={runtimeDebugSnapshot}
               apiTraces={apiTraces}
               timelineEntries={timelineEntries}

@@ -53,6 +53,60 @@ class ReportLiteNarrativeBuilder:
         self._clean_knowledge_text_block = clean_knowledge_text_block
         self._get_theme_label = get_theme_label
 
+    def _build_state_opening(
+        self,
+        theme_label: str,
+        dominant_name: str,
+        dominant_theme: str,
+        feeling_hint: str,
+        signal_text: str,
+    ) -> str:
+        opening = (
+            f"这张画更先让人看到的，不是你准备马上往前冲，"
+            f"而是你正在把自己重新收回来，确认现在的自己还能不能稳稳地站在{dominant_theme}上。"
+        )
+        if theme_label != "整体":
+            opening = (
+                f"放到「{theme_label}」里看，这张画先说中的不是结果，"
+                f"而是你在往前之前，会先确认自己有没有站稳{dominant_theme}。"
+            )
+        if feeling_hint:
+            opening = f"{opening} {feeling_hint}"
+        elif signal_text:
+            opening = f"{opening} {signal_text}"
+        return opening.strip()
+
+    def _build_circle_observation(
+        self,
+        meaning: str,
+        dominant: str,
+        summary: str,
+    ) -> str:
+        cleaned_summary = self._clean_knowledge_text_block(summary or "").strip()
+        if cleaned_summary:
+            return (
+                f"{meaning}这一层更显眼的是「{dominant or '未识别'}」的感觉，"
+                f"画面上会给人一种{cleaned_summary.rstrip('。')}的印象。"
+            )
+        if dominant:
+            return f"{meaning}这一层更显眼的是「{dominant}」的感觉。"
+        return ""
+
+    def _strip_technical_prefixes(self, text: str) -> str:
+        cleaned = self._clean_knowledge_text_block(text or "").strip()
+        replacements = [
+            ("内圈（里圈）主要对应", "最里面这一层常会照见"),
+            ("内圈主要对应", "最里面这一层常会照见"),
+            ("中圈主要对应", "中间这一层更容易落到"),
+            ("外圈主要对应", "最外面这一层更容易碰到"),
+            ("此圈可以重点观察：", "放到现实里，往往会连到"),
+            ("当前更显著的是", "现在更突出的是"),
+            ("「", "「"),
+        ]
+        for source, target in replacements:
+            cleaned = cleaned.replace(source, target)
+        return cleaned.strip()
+
     def build_title(
         self,
         record: InterpretationRecord,
@@ -118,17 +172,17 @@ class ReportLiteNarrativeBuilder:
         dominant_theme = self._get_element_theme_phrase(theme, dominant["name"])
         secondary_keywords = self._get_element_core_keywords(theme, secondary["name"])
         transition = self._describe_circle_transition(layer0)
+        feeling_hint = self._build_feeling_hint(record)
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
-        parts = [
-            f"这幅画首先给人的感觉，是一种以「{dominant['name']}」为主的底色；它更在意的是{dominant_theme}。",
-        ]
+        parts = [self._build_state_opening(theme_label, dominant["name"], dominant_theme, feeling_hint, signal_text)]
         if transition:
-            parts.append(transition)
+            parts.append(f"再往里看，画面的主轴是：{transition}")
         parts.append(
-            f"整体来看，这不是单纯往外冲的状态，而更像先把内在安顿住，再慢慢把「{secondary['name']}」相关的{secondary_keywords}带回现实。"
+            f"所以这不是简单的停住，而更像你先把内在安顿好，"
+            f"再慢慢把和「{secondary['name']}」有关的{secondary_keywords}带回现实。"
         )
         if signal_text:
-            parts.append(signal_text)
+            parts.append(f"它也提醒你：{signal_text}")
         return " ".join(parts)
 
     def build_visual_elements(
@@ -156,21 +210,36 @@ class ReportLiteNarrativeBuilder:
         outer = layer0.three_circles.outer
         circle_pattern = self.describe_circle_pattern(circle_info)
         lines = [
-            f"从三圈颜色聚合来看，五行里以「{dominant['name']}」({dominant['percentage']:.2f}%) 和「{secondary['name']}」({secondary['percentage']:.2f}%) 最突出。",
-            f"内圈主导为「{inner.get('dominant', '未识别')}」，中圈主导为「{middle.get('dominant', '未识别')}」，外圈主导为「{outer.get('dominant', '未识别')}」。{circle_pattern}",
+            f"如果只看画面给人的感受，最先浮出来的是两股力量：一股是「{dominant['name']}」的收拢和判断，"
+            f"另一股是「{secondary['name']}」想把事情重新带回现实。"
         ]
-        reading_segments = [
-            inner.get("knowledge_reading", ""),
-            middle.get("knowledge_reading", ""),
-            outer.get("knowledge_reading", ""),
+        if circle_pattern:
+            lines.append(f"三层画面的走向也很清楚：{circle_pattern}")
+        observations = [
+            self._build_circle_observation(
+                str(inner.get("meaning", "最里面")),
+                str(inner.get("dominant", "")),
+                str(inner.get("observation_summary") or inner.get("knowledge_reading") or ""),
+            ),
+            self._build_circle_observation(
+                str(middle.get("meaning", "中间")),
+                str(middle.get("dominant", "")),
+                str(middle.get("observation_summary") or middle.get("knowledge_reading") or ""),
+            ),
+            self._build_circle_observation(
+                str(outer.get("meaning", "最外面")),
+                str(outer.get("dominant", "")),
+                str(outer.get("observation_summary") or outer.get("knowledge_reading") or ""),
+            ),
         ]
-        reading_text = "；".join(
-            segment
-            for segment in reading_segments
-            if isinstance(segment, str) and segment.strip()
-        )
-        if reading_text:
-            lines.append(reading_text + "。")
+        lines.extend([item for item in observations if item])
+        reading_segments = []
+        for circle in (inner, middle, outer):
+            reading = circle.get("knowledge_reading", "")
+            if isinstance(reading, str) and reading.strip():
+                reading_segments.append(self._strip_technical_prefixes(reading))
+        if reading_segments:
+            lines.append("换句话说，" + "；".join(reading_segments[:2]) + "。")
         return " ".join(lines).strip()
 
     def build_emotion_portrait(
@@ -202,16 +271,19 @@ class ReportLiteNarrativeBuilder:
         weakest_theme = self._get_element_theme_phrase(theme, weakest["name"])
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         parts = [
-            f"情绪层面上，你现在更像在优先处理「{dominant['name']}」相关的课题，也就是{dominant_theme}。",
-            f"而外圈出现的「{outer.get('dominant', '金')}」，又说明你并不是想完全退回去，而是在重新整理自己要用什么样的边界、判断和回应方式与世界接触。",
+            f"情绪上，你现在不像没感觉，反而像一直在心里默默处理{dominant_theme}这件事。",
+            f"而最外层落出来的「{outer.get('dominant', '金')}」感，也说明你并不是想完全退回去，"
+            "只是想先弄清楚，接下来该用什么边界和姿态继续向外。"
         ]
         if weakest.get("percentage", 0.0) < 12:
             parts.append(
-                f"相比之下，「{weakest['name']}」相关的{weakest_theme}资源暂时收得比较里面，所以当节奏一快，你更容易先想停下来整理自己。"
+                f"也因为和「{weakest['name']}」有关的{weakest_theme}暂时偏弱，"
+                "所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。"
             )
         if signal_text:
-            parts.append(signal_text)
-        parts.append(feeling_hint)
+            parts.append(f"这和你现在的状态也很像：{signal_text}")
+        if feeling_hint:
+            parts.append(feeling_hint)
         return " ".join(part for part in parts if part).strip()
 
     def build_story_sections(
@@ -241,33 +313,37 @@ class ReportLiteNarrativeBuilder:
         outer_dominant = layer0.three_circles.outer.get("dominant", secondary["name"])
 
         base = (
-            f"你的底色更接近「{dominant['name']}」所代表的{dominant_theme}。"
-            f"{transition or ''} 这也让你做很多事之前，会先确认自己是不是已经站稳。"
+            f"你的底色不是急着证明什么，而是先确认自己有没有站稳在{dominant_theme}上。"
+            f"{(' ' + transition) if transition else ''} 所以你很多时候不是慢，而是先要让内在点头。"
         ).strip()
         contradiction = (
-            f"你内里更需要{dominant_theme}，但外在已经开始调用「{outer_dominant}」的力量去整理边界、秩序或方向。"
-            f"这会让你一边想继续向外，一边又不愿再用没有承载感的方式消耗自己。"
+            f"矛盾也正在这里：你心里其实想继续往前，"
+            f"但外在又已经开始用「{outer_dominant}」的方式先整理边界、秩序或方向。"
+            "于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。"
         )
         if adjacent:
             pattern = (
-                f"从圈间关系看，{adjacent[0]}。所以你的推进方式往往不是一下子冲出去，而是先在内部整合，等感觉对了才继续往前。"
+                f"久而久之，这会形成你的惯用模式：{adjacent[0]}。"
+                "你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。"
             )
         else:
             pattern = "你的模式更像先在内部整合，再决定往外投入多少能量。"
         defense = (
-            f"当外圈更偏向「{outer_dominant}」时，你会更倾向用清晰、距离感或判断标准保护自己。"
-            f"这不是冷下来，而是在替现在的自己筛选什么值得继续打开。"
+            f"为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。"
+            f"它看起来像「{outer_dominant}」的收紧，但本质上是在替现在的你筛选什么值得继续打开。"
         )
         block_parts = ["当前最容易卡住你的，是主导能量和现实节奏还没完全接上。"]
         if weakest.get("percentage", 0.0) < 12:
             block_parts.append(
-                f"尤其是「{weakest['name']}」相关的{weakest_theme}资源暂时偏少时，你会更容易在快要推进时先退回来。"
+                f"尤其当和「{weakest['name']}」有关的{weakest_theme}还没跟上时，"
+                "你会在快要推进的那一刻先退回来。"
             )
         if signal_text:
-            block_parts.append(signal_text)
+            block_parts.append(f"这也是为什么你会反复遇到这样的卡点：{signal_text}")
         light = (
-            f"你的光并不只在稳定里，也在于你已经开始把「{secondary['name']}」所代表的{secondary_theme}慢慢带出来。"
-            f"这说明你不是被困住，而是在学习用更适合自己的方式向前。"
+            f"但你的光也已经出来了：你不是只会收着，"
+            f"而是正在把「{secondary['name']}」代表的{secondary_theme}慢慢带回生活。"
+            "这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
         )
         sections = {
             "base": " ".join(part for part in [base] if part).strip(),
@@ -309,13 +385,14 @@ class ReportLiteNarrativeBuilder:
         weakest_theme = self._get_element_theme_phrase(theme, weakest["name"])
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         scene = (
-            f"在「{theme_label}」这个角度里，你更容易出现在“先确认自己有没有站稳，再决定要不要继续投入”的场景里。"
-            f"这和画面里「{dominant['name']}」更强有关，因为它会先把注意力拉回{dominant_theme}。"
+            f"在「{theme_label}」里，你最常出现的场景是："
+            "不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。"
+            f"因为画面里更强的那股力量，会先把注意力拉回{dominant_theme}。"
         )
         impact = "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。"
         if weakest.get("percentage", 0.0) < 12:
-            impact += f" 当「{weakest['name']}」相关的{weakest_theme}资源偏少时，你也会更需要一点缓冲和回收。"
-        awareness = "这幅画提醒你的，不是逼自己立刻变得更强，而是看见：只要先把内在安顿好，后面的行动会自然长出来。"
+            impact += f" 当和「{weakest['name']}」有关的{weakest_theme}还偏少时，你也会更需要一点缓冲和回收。"
+        awareness = "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
         if signal_text:
             awareness += f" {signal_text}"
         insights = {
@@ -360,12 +437,12 @@ class ReportLiteNarrativeBuilder:
             DailyAwareness(
                 day=1,
                 title="先安顿自己",
-                content=f"今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。那往往是「{dominant['name']}」在提醒你：先照顾好{dominant_keywords}。",
+                content=f"今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。那不是你拖延，而往往是在提醒你：先照顾好{dominant_keywords}。",
             ),
             DailyAwareness(
                 day=2,
                 title="看见边界变化",
-                content=f"当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。外圈的「{outer_dominant}」不是要你拒绝，而是提醒你先看清楚。",
+                content=f"当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。那不是故意冷下来，而是在确认这件事值不值得你继续打开。",
             ),
             DailyAwareness(
                 day=3,

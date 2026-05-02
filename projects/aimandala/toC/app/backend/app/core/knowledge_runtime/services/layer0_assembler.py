@@ -1452,6 +1452,32 @@ class Layer0Assembler:
                 "failure_detail": {"stage": "vision", "mode": "generated"},
             }
         if type(self.llm_client) is NoopLLMClient:
+            deterministic_summary = self._build_global_visual_summary(circles)
+            per_circle_summary = {
+                circle_key: str(circle.get("observation_summary") or "").strip()
+                for circle_key, circle in circles.items()
+                if isinstance(circle, dict)
+            }
+            if deterministic_summary and all(
+                per_circle_summary.get(circle_key)
+                for circle_key in ["inner", "middle", "outer"]
+            ):
+                return {
+                    "source": "deterministic_visual_observation",
+                    "layer0_passed": True,
+                    "global_visual_summary": deterministic_summary,
+                    "per_circle_summary": per_circle_summary,
+                    "per_circle_color_labels": {
+                        circle_key: list(
+                            (
+                                circle.get("palette", {}) or {}
+                            ).get("canonical_color_labels", [])
+                        )
+                        for circle_key, circle in circles.items()
+                        if isinstance(circle, dict)
+                    },
+                    "confidence": 0.0,
+                }
             return {
                 "source": "layer0_failed",
                 "layer0_passed": False,
