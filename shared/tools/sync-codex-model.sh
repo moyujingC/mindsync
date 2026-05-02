@@ -26,6 +26,9 @@ Notes:
   - Source of truth for model selection and api key is RelayHub internal entry binding resolve
   - Only runtime agents configured as codex_local in .paperclip.yaml are updated
   - Existing adapterConfig fields are preserved; only model / modelReasoningEffort are aligned
+  - This script is now an initialization / repair tool.
+  - Steady-state Paperclip usage should point codex_local at RelayHub once,
+    then switch model / api key / reasoning effort in RelayHub only.
   - Use PAPERCLIP_API_URL to point at a remote automation server
   - Use PAPERCLIP_API_TOKEN or PAPERCLIP_API_KEY when the remote instance requires auth
   - When using DeepSeek, also update the provider base_url / auth in extraArgs or local Codex config

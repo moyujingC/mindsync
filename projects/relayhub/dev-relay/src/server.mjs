@@ -83,22 +83,6 @@ function relayModelToEntryId(model) {
   return suffix.startsWith("entry-") ? suffix : `entry-${suffix}`;
 }
 
-function codexRelayDisabled(response) {
-  return relayError(
-    response,
-    503,
-    "codex_relay_disabled",
-    "Codex relay 已临时停用，当前请先直连上游 API，不再默认经过 RelayHub。",
-    {
-      taskId: CODEX_RELAY_TASK_ID,
-    },
-  );
-}
-
-function isCodexRelayEnabled() {
-  return process.env.RELAYHUB_ENABLE_CODEX_RELAY === "1";
-}
-
 function nowIso() {
   return new Date().toISOString();
 }
@@ -1296,44 +1280,61 @@ async function proxyAnthropicMessages(request, response) {
 }
 
 async function listCodexModels(response) {
-  if (!isCodexRelayEnabled()) {
-    return codexRelayDisabled(response);
-  }
   const state = await readRelayState();
-  const resolved = resolveEntryBinding(state, CODEX_ENTRY_ID, {
-    endpointKind: "responses",
-    requireStream: true
-  });
-  if (!resolved.ok) {
-    return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
-  }
+  const entries = Array.isArray(state.entries) ? state.entries : [];
+  const modelMap = new Map(
+    (Array.isArray(state.modelEntries) ? state.modelEntries : []).map((entry) => [entry.id, entry])
+  );
+  const bindingMap = new Map(
+    (Array.isArray(state.entryBindings) ? state.entryBindings : []).map((binding) => [binding.entryId, binding])
+  );
+  const data = [];
+  const seenIds = new Set();
 
-  const { entry } = resolved;
-  return json(response, 200, {
-    object: "list",
-    data: [
-      {
-        id: entryIdToRelayModel(CODEX_ENTRY_ID),
+  for (const relayEntry of entries) {
+    if (!relayEntry?.controllable || relayEntry.protocolFamily === "observe-only") {
+      continue;
+    }
+
+    const relayModelId = entryIdToRelayModel(relayEntry.id);
+    if (!seenIds.has(relayModelId)) {
+      seenIds.add(relayModelId);
+      data.push({
+        id: relayModelId,
         object: "model",
         created: Math.floor(Date.now() / 1000),
         owned_by: "relayhub",
-        root: entryIdToRelayModel(CODEX_ENTRY_ID)
-      },
-      {
-        id: entry.modelId,
-        object: "model",
-        created: Math.floor(Date.now() / 1000),
-        owned_by: entry.providerLabel || "relayhub",
-        root: entry.modelId
-      }
-    ]
+        root: relayModelId
+      });
+    }
+
+    const binding = bindingMap.get(relayEntry.id);
+    if (!binding?.defaultModelEntryId) {
+      continue;
+    }
+
+    const upstreamEntry = modelMap.get(binding.defaultModelEntryId);
+    if (!upstreamEntry?.modelId || seenIds.has(upstreamEntry.modelId)) {
+      continue;
+    }
+
+    seenIds.add(upstreamEntry.modelId);
+    data.push({
+      id: upstreamEntry.modelId,
+      object: "model",
+      created: Math.floor(Date.now() / 1000),
+      owned_by: upstreamEntry.providerLabel || "relayhub",
+      root: upstreamEntry.modelId
+    });
+  }
+
+  return json(response, 200, {
+    object: "list",
+    data
   });
 }
 
 async function proxyResponses(request, response) {
-  if (!isCodexRelayEnabled()) {
-    return codexRelayDisabled(response);
-  }
   let body;
   try {
     body = await readJsonBody(request);

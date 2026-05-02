@@ -93,8 +93,96 @@ function createState() {
       }
     ],
     entries: [
-      { id: "entry-claude-ide-local", alias: "relayhub-entry-claude-ide-local" },
-      { id: "entry-codex-ide-local", alias: "relayhub-entry-codex-ide-local" },
+      {
+        id: "entry-claude-ide-local",
+        alias: "relayhub-entry-claude-ide-local",
+        clientFamily: "claude",
+        adapterType: null,
+        hostType: "mac",
+        protocolFamily: "anthropic-messages",
+        controllable: true
+      },
+      {
+        id: "entry-codex-ide-local",
+        alias: "relayhub-entry-codex-ide-local",
+        clientFamily: "codex",
+        adapterType: null,
+        hostType: "mac",
+        protocolFamily: "openai-responses",
+        controllable: true
+      },
+      {
+        id: "entry-claude-mobile-observe",
+        alias: "relayhub-entry-claude-mobile-observe",
+        clientFamily: "claude",
+        adapterType: null,
+        hostType: "external-observe",
+        protocolFamily: "observe-only",
+        controllable: false
+      },
+      {
+        id: "entry-paperclip-claude-local-mac",
+        alias: "relayhub-entry-paperclip-claude-local-mac",
+        clientFamily: "paperclip",
+        adapterType: "claude_local",
+        hostType: "mac",
+        protocolFamily: "anthropic-messages",
+        controllable: true
+      },
+      {
+        id: "entry-paperclip-claude-local-server",
+        alias: "relayhub-entry-paperclip-claude-local-server",
+        clientFamily: "paperclip",
+        adapterType: "claude_local",
+        hostType: "server",
+        protocolFamily: "anthropic-messages",
+        controllable: true
+      },
+      {
+        id: "entry-paperclip-codex-local-mac",
+        alias: "relayhub-entry-paperclip-codex-local-mac",
+        clientFamily: "paperclip",
+        adapterType: "codex_local",
+        hostType: "mac",
+        protocolFamily: "openai-responses",
+        controllable: true
+      },
+      {
+        id: "entry-paperclip-codex-local-server",
+        alias: "relayhub-entry-paperclip-codex-local-server",
+        clientFamily: "paperclip",
+        adapterType: "codex_local",
+        hostType: "server",
+        protocolFamily: "openai-responses",
+        controllable: true
+      },
+      {
+        id: "entry-paperclip-pi-local-mac",
+        alias: "relayhub-entry-paperclip-pi-local-mac",
+        clientFamily: "paperclip",
+        adapterType: "pi_local",
+        hostType: "mac",
+        protocolFamily: "openai-chat-completions",
+        controllable: true
+      },
+      {
+        id: "entry-paperclip-pi-local-server",
+        alias: "relayhub-entry-paperclip-pi-local-server",
+        clientFamily: "paperclip",
+        adapterType: "pi_local",
+        hostType: "server",
+        protocolFamily: "openai-chat-completions",
+        controllable: true
+      },
+      {
+        id: "entry-paperclip-hermes-local-server",
+        alias: "relayhub-entry-paperclip-hermes-local-server",
+        clientFamily: "paperclip",
+        adapterType: "hermes_local",
+        hostType: "server",
+        protocolFamily: "openai-chat-completions",
+        controllable: true
+      },
     ],
     entryBindings: [
       {
@@ -112,6 +200,62 @@ function createState() {
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
         statusNote: "Codex IDE local binding",
+      },
+      {
+        entryId: "entry-paperclip-claude-local-mac",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Paperclip claude_local mac binding",
+      },
+      {
+        entryId: "entry-paperclip-claude-local-server",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Paperclip claude_local server binding",
+      },
+      {
+        entryId: "entry-paperclip-codex-local-mac",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Paperclip codex_local mac binding",
+      },
+      {
+        entryId: "entry-paperclip-codex-local-server",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Paperclip codex_local server binding",
+      },
+      {
+        entryId: "entry-paperclip-pi-local-mac",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Paperclip pi_local mac binding",
+      },
+      {
+        entryId: "entry-paperclip-pi-local-server",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Paperclip pi_local server binding",
+      },
+      {
+        entryId: "entry-paperclip-hermes-local-server",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        statusNote: "Paperclip hermes_local server binding",
       },
     ],
     tasks: [
@@ -194,21 +338,6 @@ async function withRelayLogDir(run) {
   }
 }
 
-async function withCodexRelayEnabled(run) {
-  const previous = process.env.RELAYHUB_ENABLE_CODEX_RELAY;
-  process.env.RELAYHUB_ENABLE_CODEX_RELAY = "1";
-
-  try {
-    await run();
-  } finally {
-    if (previous === undefined) {
-      delete process.env.RELAYHUB_ENABLE_CODEX_RELAY;
-    } else {
-      process.env.RELAYHUB_ENABLE_CODEX_RELAY = previous;
-    }
-  }
-}
-
 async function withServer(server, run) {
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -252,51 +381,259 @@ test("GET /health returns ok", async () => {
   });
 });
 
-test("GET /v1/models returns disabled by default", async () => {
+test("GET /v1/models returns controllable relay entries and resolved upstream models", async () => {
   await withTempState(async () => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/models`);
-      assert.equal(response.status, 503);
+      assert.equal(response.status, 200);
       const payload = await response.json();
-      assert.equal(payload.error.code, "codex_relay_disabled");
+      assert.equal(payload.object, "list");
+      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-codex-ide-local"));
+      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-claude-local-mac"));
+      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
+      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-pi-local-server"));
+      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-hermes-local-server"));
+      assert.ok(payload.data.some((item) => item.id === "model-a"));
+      assert.ok(!payload.data.some((item) => item.id === "relayhub-entry-claude-mobile-observe"));
     });
   });
 });
 
-test("GET /v1/models returns only the currently bound Codex model when explicitly enabled", async () => {
-  await withCodexRelayEnabled(async () => {
+test("GET /v1/models keeps Paperclip entry aliases even when some entries are unbound", async () => {
+  const state = createState();
+  state.entryBindings = state.entryBindings.map((binding) =>
+    binding.entryId === "entry-paperclip-codex-local-server"
+      ? {
+          ...binding,
+          defaultModelEntryId: null,
+          defaultModelEntryName: null,
+        }
+      : binding
+  );
+
+  await withTempState(async () => {
+    await withServer(createDevRelayServer(), async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/v1/models`);
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
+    });
+  }, state);
+});
+
+test("POST /v1/responses forwards non-stream requests to the bound Codex upstream", async () => {
+  let observedBody = null;
+  let observedAuthorization = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedAuthorization = request.headers.authorization ?? null;
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_1",
+      status: "completed",
+      output: [
+        {
+          type: "message",
+          role: "assistant",
+          content: [{ type: "output_text", text: "ok" }]
+        }
+      ]
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
     await withTempState(async () => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/models`);
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "should-be-overridden",
+            input: "Reply with exactly: ok",
+            stream: false
+          })
+        });
         assert.equal(response.status, 200);
         const payload = await response.json();
-
-        assert.equal(payload.object, "list");
-        assert.deepEqual(payload.data.map((item) => item.id), ["relayhub-entry-codex-ide-local", "model-a"]);
-      });
-    });
-  });
-});
-
-test("GET /v1/models returns a clear error when task-codex-repo is not bound and explicitly enabled", async () => {
-  const state = createState();
-  state.entryBindings[1].defaultModelEntryId = null;
-  state.entryBindings[1].defaultModelEntryName = null;
-
-  await withCodexRelayEnabled(async () => {
-    await withTempState(async () => {
-      await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/models`);
-        assert.equal(response.status, 409);
-        const payload = await response.json();
-        assert.equal(payload.error.code, "entry_not_bound");
-        assert.equal(payload.relay.entryId, "entry-codex-ide-local");
+        assert.equal(payload.object, "response");
       });
     }, state);
+
+    assert.equal(observedAuthorization, "Bearer sk-active");
+    assert.equal(observedBody.model, "model-a");
+    assert.equal(observedBody.stream, false);
   });
 });
 
-test("POST /v1/responses returns disabled by default", async () => {
+test("POST /v1/responses routes relayhub task alias to its own bound entry", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_task_alias",
+      status: "completed",
+      output: []
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.tasks.push({
+      id: "task-dev-backend",
+      name: "开发后端改动",
+      defaultModelEntryId: "model-active"
+    });
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "relayhub-task-dev-backend",
+            input: "修一个接口 bug",
+            stream: false
+          })
+        });
+        assert.equal(response.status, 200);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
+  });
+});
+
+test("POST /v1/responses routes relayhub entry alias to its bound model", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_entry_alias",
+      status: "completed",
+      output: []
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "relayhub-entry-codex-ide-local",
+            input: "修一个接口 bug",
+            stream: false
+          })
+        });
+        assert.equal(response.status, 200);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
+  });
+});
+
+test("POST /v1/responses routes Paperclip codex entry alias to its bound model", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_paperclip_codex",
+      status: "completed",
+      output: []
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-codex-local-server",
+            input: "修一个 Paperclip 任务",
+            stream: false
+          })
+        });
+        assert.equal(response.status, 200);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
+  });
+});
+
+test("POST /v1/responses forwards stream requests to the bound Codex upstream", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "text/event-stream; charset=utf-8" });
+    response.write("event: response.created\n");
+    response.write('data: {"type":"response.created"}\n\n');
+    response.write("event: response.output_text.delta\n");
+    response.write('data: {"delta":"ok","type":"response.output_text.delta"}\n\n');
+    response.write("event: response.completed\n");
+    response.write('data: {"type":"response.completed"}\n\n');
+    response.end();
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "ignored",
+            input: "Reply with exactly: ok",
+            stream: true
+          })
+        });
+        assert.equal(response.status, 200);
+        assert.match(response.headers.get("content-type") ?? "", /text\/event-stream/);
+        const text = await response.text();
+        assert.match(text, /response\.created/);
+        assert.match(text, /response\.output_text\.delta/);
+        assert.match(text, /response\.completed/);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
+    assert.equal(observedBody.stream, true);
+  });
+});
+
+test("POST /v1/responses returns a clear error when the Codex entry is not Responses-ready", async () => {
+  const state = createState();
+  state.tasks[1].defaultModelEntryId = "model-chat-only";
+
   await withTempState(async () => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/responses`, {
@@ -310,218 +647,12 @@ test("POST /v1/responses returns disabled by default", async () => {
         })
       });
 
-      assert.equal(response.status, 503);
+      assert.equal(response.status, 409);
       const payload = await response.json();
-      assert.equal(payload.error.code, "codex_relay_disabled");
+      assert.equal(payload.error.code, "responses_not_ready");
+      assert.match(payload.error.message, /Responses 流式探测/);
     });
-  });
-});
-
-test("POST /v1/responses forwards non-stream requests to the bound Codex upstream when explicitly enabled", async () => {
-  let observedBody = null;
-  let observedAuthorization = null;
-
-  await withCodexRelayEnabled(async () => {
-    await withMockUpstream(async (request, response) => {
-      observedAuthorization = request.headers.authorization ?? null;
-      observedBody = await readRequestJson(request);
-      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
-      response.end(JSON.stringify({
-        object: "response",
-        id: "resp_1",
-        status: "completed",
-        output: [
-          {
-            type: "message",
-            role: "assistant",
-            content: [{ type: "output_text", text: "ok" }]
-          }
-        ]
-      }));
-    }, async (upstreamBaseUrl) => {
-      const state = createState();
-      state.modelEntries[0].baseUrl = upstreamBaseUrl;
-
-      await withTempState(async () => {
-        await withServer(createDevRelayServer(), async (baseUrl) => {
-          const response = await fetch(`${baseUrl}/v1/responses`, {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            body: JSON.stringify({
-              model: "should-be-overridden",
-              input: "Reply with exactly: ok",
-              stream: false
-            })
-          });
-          assert.equal(response.status, 200);
-          const payload = await response.json();
-          assert.equal(payload.object, "response");
-        });
-      }, state);
-
-      assert.equal(observedAuthorization, "Bearer sk-active");
-      assert.equal(observedBody.model, "model-a");
-      assert.equal(observedBody.stream, false);
-    });
-  });
-});
-
-test("POST /v1/responses routes relayhub task alias to its own bound entry when explicitly enabled", async () => {
-  let observedBody = null;
-
-  await withCodexRelayEnabled(async () => {
-    await withMockUpstream(async (request, response) => {
-      observedBody = await readRequestJson(request);
-      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
-      response.end(JSON.stringify({
-        object: "response",
-        id: "resp_task_alias",
-        status: "completed",
-        output: []
-      }));
-    }, async (upstreamBaseUrl) => {
-      const state = createState();
-      state.modelEntries[0].baseUrl = upstreamBaseUrl;
-      state.tasks.push({
-        id: "task-dev-backend",
-        name: "开发后端改动",
-        defaultModelEntryId: "model-active"
-      });
-
-      await withTempState(async () => {
-        await withServer(createDevRelayServer(), async (baseUrl) => {
-          const response = await fetch(`${baseUrl}/v1/responses`, {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            body: JSON.stringify({
-              model: "relayhub-task-dev-backend",
-              input: "修一个接口 bug",
-              stream: false
-            })
-          });
-          assert.equal(response.status, 200);
-        });
-      }, state);
-
-      assert.equal(observedBody.model, "model-a");
-    });
-  });
-});
-
-test("POST /v1/responses routes relayhub entry alias to its bound model when explicitly enabled", async () => {
-  let observedBody = null;
-
-  await withCodexRelayEnabled(async () => {
-    await withMockUpstream(async (request, response) => {
-      observedBody = await readRequestJson(request);
-      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
-      response.end(JSON.stringify({
-        object: "response",
-        id: "resp_entry_alias",
-        status: "completed",
-        output: []
-      }));
-    }, async (upstreamBaseUrl) => {
-      const state = createState();
-      state.modelEntries[0].baseUrl = upstreamBaseUrl;
-
-      await withTempState(async () => {
-        await withServer(createDevRelayServer(), async (baseUrl) => {
-          const response = await fetch(`${baseUrl}/v1/responses`, {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            body: JSON.stringify({
-              model: "relayhub-entry-codex-ide-local",
-              input: "修一个接口 bug",
-              stream: false
-            })
-          });
-          assert.equal(response.status, 200);
-        });
-      }, state);
-
-      assert.equal(observedBody.model, "model-a");
-    });
-  });
-});
-
-test("POST /v1/responses forwards stream requests to the bound Codex upstream when explicitly enabled", async () => {
-  let observedBody = null;
-
-  await withCodexRelayEnabled(async () => {
-    await withMockUpstream(async (request, response) => {
-      observedBody = await readRequestJson(request);
-      response.writeHead(200, { "content-type": "text/event-stream; charset=utf-8" });
-      response.write("event: response.created\n");
-      response.write('data: {"type":"response.created"}\n\n');
-      response.write("event: response.output_text.delta\n");
-      response.write('data: {"delta":"ok","type":"response.output_text.delta"}\n\n');
-      response.write("event: response.completed\n");
-      response.write('data: {"type":"response.completed"}\n\n');
-      response.end();
-    }, async (upstreamBaseUrl) => {
-      const state = createState();
-      state.modelEntries[0].baseUrl = upstreamBaseUrl;
-
-      await withTempState(async () => {
-        await withServer(createDevRelayServer(), async (baseUrl) => {
-          const response = await fetch(`${baseUrl}/v1/responses`, {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            body: JSON.stringify({
-              model: "ignored",
-              input: "Reply with exactly: ok",
-              stream: true
-            })
-          });
-          assert.equal(response.status, 200);
-          assert.match(response.headers.get("content-type") ?? "", /text\/event-stream/);
-          const text = await response.text();
-          assert.match(text, /response\.created/);
-          assert.match(text, /response\.output_text\.delta/);
-          assert.match(text, /response\.completed/);
-        });
-      }, state);
-
-      assert.equal(observedBody.model, "model-a");
-      assert.equal(observedBody.stream, true);
-    });
-  });
-});
-
-test("POST /v1/responses returns a clear error when the Codex entry is not Responses-ready and explicitly enabled", async () => {
-  const state = createState();
-  state.tasks[1].defaultModelEntryId = "model-chat-only";
-
-  await withCodexRelayEnabled(async () => {
-    await withTempState(async () => {
-      await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/responses`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json"
-          },
-          body: JSON.stringify({
-            input: "hello",
-            stream: false
-          })
-        });
-
-        assert.equal(response.status, 409);
-        const payload = await response.json();
-        assert.equal(payload.error.code, "responses_not_ready");
-        assert.match(payload.error.message, /Responses 流式探测/);
-      });
-    }, state);
-  });
+  }, state);
 });
 
 test("POST /chat/completions forwards to the bound upstream and overrides model", async () => {
@@ -701,44 +832,120 @@ test("POST /chat/completions forwards reasoning_effort for GPT-5 style models", 
   });
 });
 
-test("POST /v1/responses forwards reasoning.effort for GPT-5 style models when explicitly enabled", async () => {
+test("POST /v1/responses forwards reasoning.effort for GPT-5 style models", async () => {
   let observedBody = null;
 
-  await withCodexRelayEnabled(async () => {
-    await withMockUpstream(async (request, response) => {
-      observedBody = await readRequestJson(request);
-      response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
-      response.end(JSON.stringify({
-        object: "response",
-        id: "resp_reasoning",
-        status: "completed",
-        output: []
-      }));
-    }, async (upstreamBaseUrl) => {
-      const state = createState();
-      state.modelEntries[0].baseUrl = upstreamBaseUrl;
-      state.modelEntries[0].modelId = "gpt-5.4";
-      state.modelEntries[0].reasoningEffort = "high";
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_reasoning",
+      status: "completed",
+      output: []
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.modelEntries[0].modelId = "gpt-5.4";
+    state.modelEntries[0].reasoningEffort = "high";
 
-      await withTempState(async () => {
-        await withServer(createDevRelayServer(), async (baseUrl) => {
-          const response = await fetch(`${baseUrl}/v1/responses`, {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            body: JSON.stringify({
-              input: "hello",
-              stream: false
-            })
-          });
-          assert.equal(response.status, 200);
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            input: "hello",
+            stream: false
+          })
         });
-      }, state);
+        assert.equal(response.status, 200);
+      });
+    }, state);
 
-      assert.equal(observedBody.model, "gpt-5.4");
-      assert.equal(observedBody.reasoning.effort, "high");
-    });
+    assert.equal(observedBody.model, "gpt-5.4");
+    assert.equal(observedBody.reasoning.effort, "high");
+  });
+});
+
+test("POST /v1/chat/completions routes Paperclip pi entry alias to its bound model", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-paperclip-pi",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }]
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-pi-local-server",
+            messages: [{ role: "user", content: "hello pi relay" }]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.equal(payload.model, "model-a");
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
+  });
+});
+
+test("POST /v1/chat/completions routes Paperclip hermes entry alias to its bound model", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-paperclip-hermes",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }]
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-hermes-local-server",
+            messages: [{ role: "user", content: "hello hermes relay" }]
+          })
+        });
+
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.equal(payload.model, "model-a");
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "model-a");
   });
 });
 

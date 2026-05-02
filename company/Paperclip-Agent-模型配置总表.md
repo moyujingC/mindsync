@@ -20,8 +20,8 @@
 补充口径：
 
 - RelayHub 当前正式把这些运行时入口收成 `entry-*`
-- 后续切模型时，优先改 RelayHub 的入口绑定
-- 再由同步脚本把入口绑定翻译成各 adapter 实际环境变量或 provider 配置
+- Paperclip 当前正式目标口径是固定接入 RelayHub，而不是每次切模后重新同步真实上游
+- 后续切模型时，优先改 RelayHub 的入口绑定；同步脚本只保留为初始化或修复工具
 
 它不是部署文档，也不是 Agent 提示词文档。
 如果要看服务器、SSH、代理、宿主职责，请回到：
@@ -49,11 +49,11 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `claude_local` | `https://api.deepseek.com/anthropic` | `deepseek-v4-pro` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前已统一切到 DeepSeek V4（DeepSeek 第四代模型）主链路 |
-| 工程实现 | Engineer | `codex_local` | `https://api.deepseek.com` | `deepseek-v4-pro` | Codex provider API key 配置 | 当前已统一切到 DeepSeek V4（DeepSeek 第四代模型）主链路；仍需关注 `responses` 兼容性 |
-| 测试验收 | Test / QA | `codex_local` | `https://api.deepseek.com` | `deepseek-v4-pro` | Codex provider API key 配置 | 当前已统一切到 DeepSeek V4（DeepSeek 第四代模型）主链路；仍需关注 `responses` 兼容性 |
-| 需求澄清 | Idea Clarifier | `pi_local` | `https://api.deepseek.com` | `deepseek-v4-pro` | `pi` 自定义 provider + 服务器环境变量 `OPENAI_API_KEY` | 当前已统一切到 DeepSeek V4（DeepSeek 第四代模型）主链路 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `https://api.deepseek.com/anthropic` | `deepseek-v4-pro` | Agent 级 `ANTHROPIC_*` 环境变量 | 当前已统一切到 DeepSeek V4（DeepSeek 第四代模型）主链路 |
+| CEO | CEO | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
+| 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
+| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-mac` 或 `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
 
 ## 3. 分组展开
 
@@ -184,8 +184,8 @@
 
 - Agent：`Idea Clarifier`
 - Adapter：`pi_local`
-- Provider / Model：`deepseek-v4-pro`
-- Base URL：`https://api.deepseek.com`
+- Provider / Model：`relayhub-entry-paperclip-pi-local-server`（服务器）或 `relayhub-entry-paperclip-pi-local-mac`（本地）
+- Base URL：`RelayHub /v1/chat/completions`
 - 运行时附加环境：
   - `HOME=/paperclip`
 - 当前语义：
@@ -202,11 +202,9 @@
 - RelayHub 入口绑定口径：
   - `entry-paperclip-pi-local-mac`
   - `entry-paperclip-pi-local-server`
-  - 统一通过 [shared/tools/sync-paperclip-pi-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-pi-model.sh) 同步
-  - 调用前必须提供 `RELAYHUB_INTERNAL_TOKEN`
-  - 真实 `apiKey` 也由 RelayHub 控制面下发，不再默认保留宿主旧值
-  - 该脚本会把入口绑定翻译到 `/paperclip/.pi/agent/models.json`
-  - 同时把 `Paperclip` 运行时 `pi_local` agent 的 `adapterConfig.model` 对齐为 `provider/model`
+  - 稳态口径是让 Paperclip 固定指向 RelayHub，并把 `adapterConfig.model` 固定为对应 `relayhub-entry-*`
+  - 真实 `base_url / model / api_key / reasoningEffort` 由 RelayHub 控制面决定
+  - [shared/tools/sync-paperclip-pi-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-pi-model.sh) 只保留为初始化或修复工具
 
 ### 3.6 CEO Hermes
 
@@ -216,12 +214,9 @@
   - 只纳入服务器入口
   - 对应 `entry-paperclip-hermes-local-server`
 - RelayHub 入口绑定口径：
-  - 统一通过 [shared/tools/sync-paperclip-hermes-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-hermes-model.sh) 同步
-  - 调用前必须提供 `RELAYHUB_INTERNAL_TOKEN`
-  - 真实 `OPENAI_API_KEY` 也由 RelayHub 控制面下发，不再默认沿用宿主旧值
-  - 该脚本会把入口绑定翻译到 `/paperclip/.hermes/config.yaml`
-  - 如指定 `OPENAI_ENV_FILE`，也会同步 `OPENAI_BASE_URL` / `OPENAI_MODEL` / `OPENAI_API_KEY`
-  - 同时把 `Paperclip` 运行时 `hermes_local` agent 的 `adapterConfig.env.OPENAI_*` 对齐
+  - 稳态口径是让 Paperclip 固定指向 `relayhub-entry-paperclip-hermes-local-server`
+  - 真实 `base_url / model / api_key / reasoningEffort` 由 RelayHub 控制面决定
+  - [shared/tools/sync-paperclip-hermes-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-hermes-model.sh) 只保留为初始化或修复工具
 
 ## 4. 当前服务器侧全局环境
 

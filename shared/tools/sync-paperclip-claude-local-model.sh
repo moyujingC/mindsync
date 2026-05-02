@@ -41,6 +41,11 @@ Env overrides:
   PRIMARY_MODEL
   BACKUP_BASE_URL
   BACKUP_MODEL
+
+Notes:
+  - This script is now an initialization / repair tool.
+  - Steady-state Paperclip usage should point claude_local at RelayHub once,
+    then switch model / api key / reasoning effort in RelayHub only.
 EOF
 }
 
