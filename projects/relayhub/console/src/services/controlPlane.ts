@@ -15,6 +15,7 @@ import type {
   ModelEntryInput,
   ModelEntryStatus,
   RelayEntry,
+  RelayAccessSummary,
   TaskModelStat,
   TaskRunRecord,
   TaskRunRecordInput,
@@ -80,6 +81,9 @@ interface ControlPlaneState {
     task: number;
     run: number;
   };
+  relayAccess: RelayAccessSummary & {
+    relayToken: string | null;
+  };
 }
 
 const MOCK_LATENCY_MS = 90;
@@ -132,6 +136,13 @@ function createInitialState(): ControlPlaneState {
       model: 1,
       task: 1,
       run: 1,
+    },
+    relayAccess: {
+      relayToken: null,
+      hasStoredRelayToken: false,
+      maskedRelayToken: null,
+      effectiveSource: "missing",
+      updatedAt: null,
     },
   };
 }
@@ -428,6 +439,19 @@ async function getTaskStatsFromServer(taskId: string): Promise<TaskStats | null>
 
 async function getGovernanceOverviewFromServer(): Promise<GovernanceOverview> {
   return requestJson<GovernanceOverview>("/overview");
+}
+
+async function getRelayAccessSummaryFromServer(): Promise<RelayAccessSummary> {
+  return requestJson<RelayAccessSummary>("/relay-access");
+}
+
+async function saveRelayAccessTokenToServer(relayToken: string): Promise<RelayAccessSummary> {
+  return requestJson<RelayAccessSummary>("/relay-access", {
+    method: "PATCH",
+    body: JSON.stringify({
+      relayToken,
+    }),
+  });
 }
 
 export async function verifyClaudeCodeRelay(): Promise<string> {
@@ -914,6 +938,42 @@ export async function getGovernanceOverview(): Promise<GovernanceOverview> {
     recentRunsCount: mockState.runs.length,
     highlights,
     recentRuns: [...mockState.runs].sort((left, right) => right.ranAt.localeCompare(left.ranAt)).slice(0, 5),
+  });
+}
+
+export async function getRelayAccessSummary(): Promise<RelayAccessSummary> {
+  if (shouldUseServer()) {
+    return getRelayAccessSummaryFromServer();
+  }
+
+  const relayToken = mockState.relayAccess.relayToken?.trim() ?? "";
+  return delay({
+    hasStoredRelayToken: relayToken.length > 0,
+    maskedRelayToken: relayToken.length > 0 ? maskApiKey(relayToken) : null,
+    effectiveSource: relayToken.length > 0 ? "control-plane" : "missing",
+    updatedAt: mockState.relayAccess.updatedAt,
+  });
+}
+
+export async function saveRelayAccessToken(relayToken: string): Promise<RelayAccessSummary> {
+  if (shouldUseServer()) {
+    return saveRelayAccessTokenToServer(relayToken);
+  }
+
+  const trimmed = relayToken.trim();
+  mockState.relayAccess = {
+    relayToken: trimmed || null,
+    hasStoredRelayToken: trimmed.length > 0,
+    maskedRelayToken: trimmed.length > 0 ? maskApiKey(trimmed) : null,
+    effectiveSource: trimmed.length > 0 ? "control-plane" : "missing",
+    updatedAt: trimmed.length > 0 ? nowStamp() : null,
+  };
+
+  return delay({
+    hasStoredRelayToken: mockState.relayAccess.hasStoredRelayToken,
+    maskedRelayToken: mockState.relayAccess.maskedRelayToken,
+    effectiveSource: mockState.relayAccess.effectiveSource,
+    updatedAt: mockState.relayAccess.updatedAt,
   });
 }
 

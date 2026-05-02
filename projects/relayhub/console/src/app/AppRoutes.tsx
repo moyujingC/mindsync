@@ -8,6 +8,7 @@ import { ModelLibraryPage } from "../pages/ModelLibraryPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { ProvidersPage } from "../pages/ProvidersPage";
 import { RunsPage } from "../pages/RunsPage";
+import { SettingsPage } from "../pages/SettingsPage";
 import { TasksPage } from "../pages/TasksPage";
 
 export function AppRoutes() {
@@ -92,24 +93,7 @@ export function AppRoutes() {
         />
         <Route
           path="/settings"
-          element={
-            <PlaceholderPage
-              title="Settings"
-              eyebrow="只读占位页"
-              description="这里未来承接环境级系统信息、版本信息和只读配置入口，当前只保留心智位置。"
-              purpose="让后续真实控制台后端接入时有稳定容器，但不把 v1 静态壳误导成配置编辑器。"
-              futureSections={[
-                "版本与环境元数据",
-                "只读系统配置摘要",
-                "后续 API / sidecar 接入占位",
-              ]}
-              notIncluded={[
-                "不提供鉴权设置",
-                "不提供密钥管理",
-                "不提供任何可写入操作",
-              ]}
-            />
-          }
+          element={<SettingsPage />}
         />
       </Route>
     </Routes>

@@ -450,6 +450,46 @@ test("GET /v1/models returns 401 when relay token is invalid", async () => {
   });
 });
 
+test("GET /v1/models accepts control-plane managed relay token before environment fallback", async () => {
+  const previousEnvToken = process.env.RELAYHUB_RELAY_TOKEN;
+  process.env.RELAYHUB_RELAY_TOKEN = "environment-token";
+
+  try {
+    await withTempState(async ({ dataDir }) => {
+      await fs.writeFile(
+        path.join(dataDir, "relay-config.json"),
+        JSON.stringify({
+          relayToken: "managed-token",
+          updatedAt: "2026-05-02 13:30"
+        }, null, 2),
+        "utf8"
+      );
+
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const success = await fetch(`${baseUrl}/v1/models`, {
+          headers: {
+            authorization: "Bearer managed-token"
+          }
+        });
+        assert.equal(success.status, 200);
+
+        const fail = await fetch(`${baseUrl}/v1/models`, {
+          headers: {
+            authorization: "Bearer environment-token"
+          }
+        });
+        assert.equal(fail.status, 401);
+      });
+    });
+  } finally {
+    if (previousEnvToken === undefined) {
+      delete process.env.RELAYHUB_RELAY_TOKEN;
+    } else {
+      process.env.RELAYHUB_RELAY_TOKEN = previousEnvToken;
+    }
+  }
+});
+
 test("GET /v1/models returns controllable relay entries and resolved upstream models", async () => {
   await withRelayAuthConfigured(async (token) => {
     await withTempState(async () => {

@@ -2,7 +2,7 @@ import http from "node:http";
 import { appendFile, mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
-import { readSecrets, readState } from "../../control-plane/src/store.mjs";
+import { readRelayConfig, readSecrets, readState } from "../../control-plane/src/store.mjs";
 
 const port = Number(process.env.PORT ?? 4319);
 const CLAUDE_RELAY_TASK_ID = "task-claude-code";
@@ -29,8 +29,18 @@ function relayError(response, statusCode, code, message, relay = undefined) {
   });
 }
 
-function requireRelayAuth(request, response) {
-  const configuredToken = String(process.env.RELAYHUB_RELAY_TOKEN ?? "").trim();
+async function resolveConfiguredRelayToken() {
+  const relayConfig = await readRelayConfig();
+  const storedToken = typeof relayConfig?.relayToken === "string" ? relayConfig.relayToken.trim() : "";
+  if (storedToken) {
+    return storedToken;
+  }
+
+  return String(process.env.RELAYHUB_RELAY_TOKEN ?? "").trim();
+}
+
+async function requireRelayAuth(request, response) {
+  const configuredToken = await resolveConfiguredRelayToken();
   if (!configuredToken) {
     relayError(
       response,
@@ -1526,35 +1536,35 @@ async function handleRequest(request, response) {
   }
 
   if (method === "GET" && url.pathname === "/v1/models") {
-    if (!requireRelayAuth(request, response)) {
+    if (!(await requireRelayAuth(request, response))) {
       return;
     }
     return listCodexModels(response);
   }
 
   if (method === "POST" && (url.pathname === "/chat/completions" || url.pathname === "/v1/chat/completions")) {
-    if (!requireRelayAuth(request, response)) {
+    if (!(await requireRelayAuth(request, response))) {
       return;
     }
     return proxyChatCompletions(request, response);
   }
 
   if (method === "POST" && url.pathname === "/v1/responses") {
-    if (!requireRelayAuth(request, response)) {
+    if (!(await requireRelayAuth(request, response))) {
       return;
     }
     return proxyResponses(request, response);
   }
 
   if (method === "POST" && url.pathname === "/v1/messages") {
-    if (!requireRelayAuth(request, response)) {
+    if (!(await requireRelayAuth(request, response))) {
       return;
     }
     return proxyAnthropicMessages(request, response);
   }
 
   if (method === "POST" && url.pathname === "/v1/messages/count_tokens") {
-    if (!requireRelayAuth(request, response)) {
+    if (!(await requireRelayAuth(request, response))) {
       return;
     }
     return countAnthropicTokens(request, response);

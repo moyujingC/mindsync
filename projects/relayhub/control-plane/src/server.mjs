@@ -1,6 +1,14 @@
 import http from "node:http";
 import { fileURLToPath } from "node:url";
-import { readSecrets, readState, toPublicModelEntry, writeSecrets, writeState } from "./store.mjs";
+import {
+  readRelayConfig,
+  readSecrets,
+  readState,
+  toPublicModelEntry,
+  writeRelayConfig,
+  writeSecrets,
+  writeState
+} from "./store.mjs";
 
 const port = Number(process.env.PORT ?? 4318);
 const proxyBasePath = "/api/control-plane";
@@ -46,6 +54,21 @@ function maskApiKey(apiKey) {
     return `${trimmed.slice(0, 2)}...${trimmed.slice(-2)}`;
   }
   return `${trimmed.slice(0, 6)}...${trimmed.slice(-4)}`;
+}
+
+function buildRelayAccessSummary(relayConfig) {
+  const environmentToken = typeof process.env.RELAYHUB_RELAY_TOKEN === "string"
+    ? process.env.RELAYHUB_RELAY_TOKEN.trim()
+    : "";
+  const storedToken = typeof relayConfig?.relayToken === "string" ? relayConfig.relayToken.trim() : "";
+  const effectiveToken = storedToken || environmentToken;
+
+  return {
+    hasStoredRelayToken: storedToken.length > 0,
+    maskedRelayToken: effectiveToken ? maskApiKey(effectiveToken) : null,
+    effectiveSource: storedToken ? "control-plane" : environmentToken ? "environment" : "missing",
+    updatedAt: relayConfig?.updatedAt ?? null
+  };
 }
 
 function nowStamp() {
@@ -838,6 +861,7 @@ async function handleRequest(request, response) {
 
   const state = await readState();
   const secrets = await readSecrets();
+  const relayConfig = await readRelayConfig();
   updateTaskNames(state);
   updateEntryBindingNames(state);
 
@@ -847,6 +871,10 @@ async function handleRequest(request, response) {
 
   if (method === "GET" && path === "/overview") {
     return json(response, 200, getOverview(state));
+  }
+
+  if (method === "GET" && path === "/relay-access") {
+    return json(response, 200, buildRelayAccessSummary(relayConfig));
   }
 
   if (method === "GET" && path === "/models") {
@@ -891,6 +919,17 @@ async function handleRequest(request, response) {
     }
 
     return json(response, 200, result.payload);
+  }
+
+  if (method === "PATCH" && path === "/relay-access") {
+    const body = await readJsonBody(request);
+    const nextRelayToken = typeof body.relayToken === "string" ? body.relayToken.trim() : "";
+    const nextConfig = {
+      relayToken: nextRelayToken || null,
+      updatedAt: nextRelayToken ? nowStamp() : null
+    };
+    await writeRelayConfig(nextConfig);
+    return json(response, 200, buildRelayAccessSummary(nextConfig));
   }
 
   if (path.startsWith("/entry-bindings/")) {

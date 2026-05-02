@@ -150,4 +150,20 @@ describe("control-plane service release wiring", () => {
       "Claude混合版",
     ]);
   });
+
+  it("reads and saves relay access token summary in mock mode", async () => {
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_RUNTIME", "mock");
+    vi.stubEnv("RELAYHUB_CONTROL_PLANE_BASE_URL", "");
+    vi.resetModules();
+    const service = await import("../services/controlPlane");
+
+    const initial = await service.getRelayAccessSummary();
+    expect(initial.hasStoredRelayToken).toBe(false);
+    expect(initial.effectiveSource).toBe("missing");
+
+    const saved = await service.saveRelayAccessToken("relayhub-ui-token");
+    expect(saved.hasStoredRelayToken).toBe(true);
+    expect(saved.effectiveSource).toBe("control-plane");
+    expect(saved.maskedRelayToken).toContain("relayh");
+  });
 });

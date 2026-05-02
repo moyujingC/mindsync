@@ -107,6 +107,29 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("下一步入口")).toBeInTheDocument();
   });
 
+  it("renders settings route with relay token management copy", async () => {
+    renderRoute("/settings");
+
+    expect(await screen.findByText("管理谁能调用 RelayHub 中转 API")).toBeInTheDocument();
+    expect(await screen.findByText("Relay 门禁")).toBeInTheDocument();
+    expect(await screen.findByLabelText("新的 RelayHub 门禁 token")).toBeInTheDocument();
+  });
+
+  it("saves relay token from settings route", async () => {
+    const saveSpy = vi.spyOn(controlPlaneService, "saveRelayAccessToken");
+    renderRoute("/settings");
+
+    fireEvent.change(await screen.findByLabelText("新的 RelayHub 门禁 token"), {
+      target: { value: "relayhub-ui-token" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "保存门禁 token" }));
+
+    await waitFor(() => {
+      expect(saveSpy).toHaveBeenCalledWith("relayhub-ui-token");
+    });
+    expect(await screen.findByText(/RelayHub 门禁 token 已保存/)).toBeInTheDocument();
+  });
+
   it("keeps dashboard available but moves it out of core navigation", async () => {
     renderRoute("/dashboard");
 

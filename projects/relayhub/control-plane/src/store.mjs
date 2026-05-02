@@ -21,6 +21,10 @@ function resolveSecretsPath() {
   return path.join(resolveDataDir(), "model-secrets.json");
 }
 
+function resolveRelayConfigPath() {
+  return path.join(resolveDataDir(), "relay-config.json");
+}
+
 function clone(value) {
   return structuredClone(value);
 }
@@ -46,6 +50,13 @@ function createInitialSecrets() {
       apiKey: "seed-api-key",
       updatedAt: null
     }
+  };
+}
+
+function createInitialRelayConfig() {
+  return {
+    relayToken: null,
+    updatedAt: null
   };
 }
 
@@ -165,6 +176,31 @@ export async function readSecrets() {
   }
 }
 
+export async function readRelayConfig() {
+  const relayConfigPath = resolveRelayConfigPath();
+  try {
+    const raw = await fs.readFile(relayConfigPath, "utf8");
+    const parsed = JSON.parse(raw);
+    return {
+      relayToken:
+        parsed && typeof parsed.relayToken === "string" && parsed.relayToken.trim()
+          ? parsed.relayToken.trim()
+          : null,
+      updatedAt:
+        parsed && typeof parsed.updatedAt === "string" && parsed.updatedAt.trim()
+          ? parsed.updatedAt.trim()
+          : null
+    };
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      const initial = createInitialRelayConfig();
+      await writeRelayConfig(initial);
+      return initial;
+    }
+    throw error;
+  }
+}
+
 export async function writeState(state) {
   const dataDir = resolveDataDir();
   const dataPath = resolveDataPath();
@@ -179,6 +215,13 @@ export async function writeSecrets(secrets) {
   await fs.writeFile(secretsPath, JSON.stringify(secrets, null, 2), "utf8");
 }
 
+export async function writeRelayConfig(config) {
+  const dataDir = resolveDataDir();
+  const relayConfigPath = resolveRelayConfigPath();
+  await fs.mkdir(dataDir, { recursive: true });
+  await fs.writeFile(relayConfigPath, JSON.stringify(config, null, 2), "utf8");
+}
+
 export function toPublicModelEntry(entry) {
   const { apiKey, ...rest } = entry;
   return rest;
@@ -188,5 +231,6 @@ export async function resetState() {
   const initial = createInitialState();
   await writeState(initial);
   await writeSecrets(createInitialSecrets());
+  await writeRelayConfig(createInitialRelayConfig());
   return initial;
 }

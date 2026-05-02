@@ -227,6 +227,48 @@ test("GET /entry-bindings returns per-entry default model bindings", async () =>
   });
 });
 
+test("GET /relay-access returns missing state by default", async () => {
+  await withTempDataDir(async () => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/relay-access`);
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      assert.equal(payload.hasStoredRelayToken, false);
+      assert.equal(payload.maskedRelayToken, null);
+      assert.equal(payload.effectiveSource, "missing");
+    });
+  });
+});
+
+test("PATCH /relay-access stores relay token separately from state.json", async () => {
+  await withTempDataDir(async (tempDir) => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/relay-access`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          relayToken: "relayhub-gate-token-123"
+        })
+      });
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      assert.equal(payload.hasStoredRelayToken, true);
+      assert.equal(payload.effectiveSource, "control-plane");
+      assert.match(payload.maskedRelayToken, /relayh\.\.\./);
+
+      const stateRaw = await fs.readFile(path.join(tempDir, "state.json"), "utf8");
+      assert.equal(stateRaw.includes("relayhub-gate-token-123"), false);
+
+      const relayConfig = JSON.parse(await fs.readFile(path.join(tempDir, "relay-config.json"), "utf8"));
+      assert.equal(relayConfig.relayToken, "relayhub-gate-token-123");
+    });
+  });
+});
+
 test("GET /entry-bindings/resolutions returns public resolved entry view without api key", async () => {
   await withTempDataDir(async () => {
     await withServer(async (baseUrl) => {

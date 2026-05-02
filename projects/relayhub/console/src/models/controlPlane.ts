@@ -226,3 +226,10 @@ export interface GovernanceOverview {
   highlights: string[];
   recentRuns: TaskRunRecord[];
 }
+
+export interface RelayAccessSummary {
+  hasStoredRelayToken: boolean;
+  maskedRelayToken: string | null;
+  effectiveSource: "control-plane" | "environment" | "missing";
+  updatedAt: string | null;
+}
