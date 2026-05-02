@@ -70,6 +70,10 @@ function main() {
     !health.workspaceUsesExpectedRoot({ cwd: "/opt/automation/app/mindsync" }, "/opt/automation/worktrees"),
     "workspace outside expected root should be rejected",
   );
+  assert(
+    health.workspaceUsesObserveOnlyCheckout({ cwd: "/opt/automation/app/mindsync-heartbeat" }),
+    "heartbeat checkout should be treated as observe-only",
+  );
 
   const localRoutingIssue = buildIssue({
     status: "blocked",
@@ -95,6 +99,16 @@ function main() {
   assert(
     !health.issueLooksActiveWithoutWorkspace(localRoutingIssue, "local_manual_review"),
     "local manual review issue should not be treated as a server automation blocking issue",
+  );
+
+  const observeOnlyClassification = health.classifyObserveOnlyCheckoutIssue(
+    localRoutingIssue,
+    health.parseIssueMetadata(["task_class: automation-execution", "execution_route: server_automation"].join("\n")),
+    { cwd: "/opt/automation/app/mindsync" },
+  );
+  assert(
+    observeOnlyClassification.reason === "execution_workspace_policy_not_materialized",
+    "observe-only classification should reuse workspace policy reason code",
   );
 
   process.stdout.write("execution-health smoke ok\n");

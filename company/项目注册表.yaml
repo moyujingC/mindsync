@@ -2,7 +2,7 @@ version: 0.1.0
 last_updated: 2026-04-04
 source_of_truth: /Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml
 description: >
-  墨予镜公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
+  知行工坊公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
   其他文档只做解释，不重复维护对象主数据。
 
 objects:

@@ -8,7 +8,7 @@
 
 这份文档是 `mindsync` 中 `Automation Platform` 的公司级 capability 入口。
 
-它用于收口 `墨予镜` 当前围绕 `Paperclip` 运行时、执行路由、服务器 automation 与普通任务本地执行链形成的共享能力定义。
+它用于收口 `知行工坊` 当前围绕 `Paperclip` 运行时、执行路由、服务器 automation 与普通任务本地执行链形成的共享能力定义。
 
 它不是某个具体项目的 deploy 手册，也不是某一台机器的运维备忘。
 

@@ -3,7 +3,16 @@
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 
-import { PaperclipApi, getOption, isoNow, logError, logInfo, parseArgs, truthy } from "./common.mjs";
+import {
+  PaperclipApi,
+  getGitStatusLines,
+  getOption,
+  isoNow,
+  logError,
+  logInfo,
+  parseArgs,
+  truthy,
+} from "./common.mjs";
 
 const AUTOMATION_ROUTE_SOURCES = new Set([
   "lint-failure",
@@ -16,6 +25,10 @@ const AUTOMATION_ROUTE_SOURCES = new Set([
 ]);
 const OBSERVED_ACTIVE_STATUSES = new Set(["in_progress", "in_review", "blocked", "done"]);
 const STRICT_BLOCKING_STATUSES = new Set(["in_progress", "in_review", "blocked"]);
+const OBSERVE_ONLY_CHECKOUTS = new Set([
+  "/opt/automation/app/mindsync",
+  "/opt/automation/app/mindsync-heartbeat",
+]);
 
 function minutesSince(isoTimestamp) {
   return (Date.now() - new Date(isoTimestamp).getTime()) / (1000 * 60);
@@ -65,6 +78,19 @@ function workspaceUsesExpectedRoot(workspace, expectedRoot) {
   return [workspace?.cwd, workspace?.providerRef, workspace?.worktreePath].some((value) =>
     normalizePath(value).startsWith(prefix),
   );
+}
+
+function workspaceUsesObserveOnlyCheckout(workspace) {
+  return [workspace?.cwd, workspace?.providerRef, workspace?.worktreePath].some((value) => {
+    const normalized = normalizePath(value);
+    for (const observeOnlyRoot of OBSERVE_ONLY_CHECKOUTS) {
+      const root = normalizePath(observeOnlyRoot);
+      if (normalized === root || normalized.startsWith(`${root}/`)) {
+        return true;
+      }
+    }
+    return false;
+  });
 }
 
 function classifyExecutionWorkspaceDrift(issue) {
@@ -145,6 +171,69 @@ function classifyServerWritableExecutionRejected(issue, metadata, workspace) {
 
 function classifyLocalExecutionRoutingIssue(issue, metadata, workspace) {
   return classifyServerWritableExecutionRejected(issue, metadata, workspace);
+}
+
+function classifyObserveOnlyCheckoutIssue(issue, metadata, workspace) {
+  return {
+    issueId: issue.id,
+    identifier: issue.identifier,
+    title: issue.title,
+    status: issue.status,
+    reason: "execution_workspace_policy_not_materialized",
+    taskClass: metadata.task_class ?? null,
+    executionRoute: resolveExecutionRoute(metadata),
+    executionWorkspaceId: issue.executionWorkspaceId ?? issue.currentExecutionWorkspace?.id ?? null,
+    workspaceCwd: workspace?.cwd ?? null,
+    workspaceProviderRef: workspace?.providerRef ?? null,
+    workspacePath: workspace?.worktreePath ?? null,
+  };
+}
+
+async function classifyDirtyDoneWorkspaceIssues(issues, workspaceById, expectedRoot) {
+  const results = [];
+
+  for (const issue of issues ?? []) {
+    if (issue.status !== "done") {
+      continue;
+    }
+    const metadata = parseIssueMetadata(issue.description);
+    if (resolveExecutionRoute(metadata) !== "server_automation") {
+      continue;
+    }
+    const workspace = getWorkspaceBinding(issue, workspaceById);
+    if (!workspace || !workspaceUsesExpectedRoot(workspace, expectedRoot)) {
+      continue;
+    }
+    const cwd = workspace.cwd ?? workspace.providerRef ?? workspace.worktreePath ?? null;
+    if (!cwd) {
+      continue;
+    }
+    let statusLines = [];
+    try {
+      statusLines = await getGitStatusLines(cwd);
+    } catch {
+      continue;
+    }
+    if (statusLines.length === 0) {
+      continue;
+    }
+    results.push({
+      issueId: issue.id,
+      identifier: issue.identifier,
+      title: issue.title,
+      status: issue.status,
+      reason: "done_issue_worktree_dirty",
+      taskClass: metadata.task_class ?? null,
+      executionRoute: resolveExecutionRoute(metadata),
+      executionWorkspaceId: issue.executionWorkspaceId ?? issue.currentExecutionWorkspace?.id ?? null,
+      workspaceCwd: workspace?.cwd ?? null,
+      workspaceProviderRef: workspace?.providerRef ?? null,
+      workspacePath: workspace?.worktreePath ?? null,
+      gitStatus: statusLines,
+    });
+  }
+
+  return results;
 }
 
 async function main() {
@@ -251,6 +340,24 @@ async function main() {
           .map(classifyExecutionWorkspaceDrift)
       : [];
 
+  const observeOnlyCheckoutIssues = (issues ?? [])
+    .filter((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      if (resolveExecutionRoute(metadata) !== "server_automation") {
+        return false;
+      }
+      if (!STRICT_BLOCKING_STATUSES.has(issue.status)) {
+        return false;
+      }
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return Boolean(workspace) && workspaceUsesObserveOnlyCheckout(workspace);
+    })
+    .map((issue) => {
+      const metadata = parseIssueMetadata(issue.description);
+      const workspace = getWorkspaceBinding(issue, workspaceById);
+      return classifyObserveOnlyCheckoutIssue(issue, metadata, workspace);
+    });
+
   const serverWritableExecutionRejectedIssues = (issues ?? [])
     .filter((issue) => {
       const metadata = parseIssueMetadata(issue.description);
@@ -269,6 +376,8 @@ async function main() {
       return classifyServerWritableExecutionRejected(issue, metadata, workspace);
     });
 
+  const doneDirtyWorkspaceIssues = await classifyDirtyDoneWorkspaceIssues(issues, workspaceById, expectedRoot);
+
   const staleRunningIssues = staleIssues.map((issue) => ({
     ...issue,
     reason: "stale_running_issue",
@@ -284,17 +393,23 @@ async function main() {
     expectedRoot,
     counts: {
       staleRunning: staleRunningIssues.length,
-      serverAutomationBlocking: activeWorkspaceDriftIssues.length,
+      serverAutomationBlocking: activeWorkspaceDriftIssues.length + observeOnlyCheckoutIssues.length,
       historicalDoneWorkspaceDrift: historicalDoneWorkspaceDriftIssues.length,
       localExecutionRouting: serverWritableExecutionRejectedIssues.length,
+      doneDirtyWorkspace: doneDirtyWorkspaceIssues.length,
     },
     staleRunningIssues,
-    serverAutomationBlockingIssues: activeWorkspaceDriftIssues,
+    serverAutomationBlockingIssues: [...activeWorkspaceDriftIssues, ...observeOnlyCheckoutIssues],
     historicalDoneWorkspaceDriftIssues,
     localExecutionRoutingIssues: serverWritableExecutionRejectedIssues,
+    doneDirtyWorkspaceIssues: doneDirtyWorkspaceIssues,
   };
 
-  const strictShouldFail = activeWorkspaceDriftIssues.length > 0;
+  const strictShouldFail =
+    activeWorkspaceDriftIssues.length > 0
+    || observeOnlyCheckoutIssues.length > 0
+    || serverWritableExecutionRejectedIssues.length > 0
+    || doneDirtyWorkspaceIssues.length > 0;
 
   if (staleIssues.length === 0) {
     if (!strictShouldFail && historicalDoneWorkspaceDriftIssues.length === 0) {
@@ -303,7 +418,7 @@ async function main() {
     }
 
     logInfo(
-      `Detected ${activeWorkspaceDriftIssues.length} server automation blocking issue(s), ${historicalDoneWorkspaceDriftIssues.length} historical done workspace drift issue(s), and ${serverWritableExecutionRejectedIssues.length} local execution routing issue(s)`,
+      `Detected ${activeWorkspaceDriftIssues.length + observeOnlyCheckoutIssues.length} server automation blocking issue(s), ${historicalDoneWorkspaceDriftIssues.length} historical done workspace drift issue(s), ${serverWritableExecutionRejectedIssues.length} local execution routing issue(s), and ${doneDirtyWorkspaceIssues.length} done-but-dirty worktree issue(s)`,
     );
     console.log(JSON.stringify(summary, null, 2));
     if (strict && strictShouldFail) {
@@ -328,8 +443,12 @@ export const __testables = {
   workspaceUsesExpectedRoot,
   classifyExecutionWorkspaceDrift,
   classifyLocalExecutionRoutingIssue,
+  classifyObserveOnlyCheckoutIssue,
+  classifyDirtyDoneWorkspaceIssues,
   OBSERVED_ACTIVE_STATUSES,
   STRICT_BLOCKING_STATUSES,
+  OBSERVE_ONLY_CHECKOUTS,
+  workspaceUsesObserveOnlyCheckout,
 };
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {

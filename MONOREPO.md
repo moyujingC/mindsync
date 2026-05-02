@@ -1,149 +1,156 @@
 # MindSync Monorepo 说明
 
-> 状态：draft
-> 最后更新：2026-04-04
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-02
+> source_of_truth：/Users/xinran/Downloads/dev/mindsync/MONOREPO.md
 
-这份文档定义 `mindsync` 作为 `墨予镜` Monorepo 的顶层结构、目录归属和迁移原则。
-它只回答两个问题：
+这份文档只回答一件事：
 
-- 各类对象应该放在哪一层
-- 目录如何保持长期可维护
+**`mindsync` 这个 Monorepo（单仓多项目）在结构上怎么分层。**
 
-对象主数据不在这里维护，而以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为准。
+它不重复解释：
 
-## 1. 目标
+- Git 分支 / `git worktree`（Git 工作树）管理口径
+- 历史仓库是否仍是主入口
+- 各项目与历史仓库的一一映射
 
-把原来分散在公司内核仓库与多个项目仓库中的长期资产，逐步收束到一个可维护、可治理、可被 Paperclip 直接调度的工作区中。
+这些分别看：
 
-Monorepo 的目标不是把所有东西混在一起，而是做到：
+- [company/Git仓库管理系统说明.md](/Users/xinran/Downloads/dev/mindsync/company/Git仓库管理系统说明.md)
+- [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
 
-- 一个仓库承载公司内核与项目工作区
-- 不同层级信息各有唯一入口
-- 项目实现可以独立演进，但共享规则、模板和工具
-- Agent 可以稳定地从统一入口定位公司级和项目级上下文
+## 1. 一句话定义
 
-## 2. 顶层目录约定
+`MindSync` 是 `墨予镜` 的公司内核 + 多项目工作区 Monorepo。
 
-- `agents/`
-  - 角色定义与角色本地运行时入口
-- `company/`
-  - 公司级治理、蓝图、研究沉淀、项目映射
-  - 其中 `company/knowledge-base/` 用于收口公司级长期知识与系统机制解释
-- `projects/`
-  - `product` 类型对象的实际工作区与项目级入口
-- `shared/`
-  - 共享脚本、模板、工具与跨项目可复用资源
-- `external/`
-  - 外部参考资料或迁移期间的外部依赖参考
+它的目标不是把所有内容混在一起，而是让：
 
-## 3. 对象类型约定
+- 公司级治理
+- 项目级实现
+- 共享工具
+- 长期知识
 
-当前公司至少存在以下对象类型：
+都落在同一个主仓库里，但仍保持边界清楚。
+
+## 2. 顶层目录分层
+
+当前默认分成五层：
+
+### 2.1 `agents/`
+
+- 角色定义
+- 回答“谁负责做什么”
+
+### 2.2 `company/`
+
+- 公司级治理
+- 注册表
+- 蓝图
+- 系统说明
+- 公司知识库
+
+回答“这家公司怎么运作”。
+
+### 2.3 `projects/`
+
+- 项目工作区
+- 项目实现入口
+- 项目专属文档
+
+回答“这个项目具体怎么做”。
+
+### 2.4 `shared/`
+
+- 共享脚本
+- 模板
+- 跨项目工具
+
+回答“多个项目共用什么工具链”。
+
+### 2.5 `external/`
+
+- 外部参考资料
+- 迁移期依赖参考
+
+## 3. 对象落位原则
+
+当前公司至少存在三类长期对象：
 
 - `product`
-  - 面向外部用户或服务场景的正式产品项目
 - `capability`
-  - 为多个项目和多个 Agent 提供共享能力的长期底座
 - `brand`
-  - 对外叙事、内容放大与身份表达的长期载体
 
-当前阶段仍允许 `capability` 或 `brand` 暂时以 `projects/` 下工作区的形式存在。
-这样做是为了兼容现有 Paperclip 工作方式和现有路径约定，不强行在本轮整改中改目录。
+默认落位原则：
 
-## 4. 项目目录约定
+- 公司级规则、蓝图、注册表
+  - 放 `company/`
+- 项目实现与项目工作区
+  - 放 `projects/`
+- 跨项目共用脚本和模板
+  - 放 `shared/`
 
-每个项目在 `projects/<project-slug>/` 下至少应具备：
+当前阶段仍允许：
+
+- `capability`
+- `brand`
+
+继续以 `projects/` 下工作区的形式存在，只要入口和语义清楚即可。
+
+## 4. 项目目录的最低要求
+
+每个 `projects/<project-slug>/` 至少应具备：
 
 1. `PROJECT.md`
-2. `README.md` 或等价入口说明
+2. `README.md` 或等价入口
 3. 项目实现目录
 4. 项目专属文档目录
-5. 如有需要，再补测试、脚本、资产等子目录
 
-对 `product` 类型，建议逐步统一为：
+这条规则的目的不是统一所有项目长相，而是保证每个项目都有稳定入口。
 
-- `specs/`
-- `tasks/`
-- `decisions/`
-- `qa/`
-- `delivery/`
-- `notes/`
+## 5. 公司级与项目级的分工
 
-对 `capability` 类型，建议逐步统一为：
+### 5.1 公司级
 
-- `research/`
-- `kb/`
-- `specs/`
-- `tasks/`
-- `delivery/`
-- `notes/`
+放在：
 
-对 `brand` 类型，建议逐步统一为：
+- `company/`
 
-- `content/`
-- `profile/`
-- `assets/`
-- `notes/`
-- `delivery/`
+主要承接：
 
-公司侧与项目侧分工如下：
+- 治理规则
+- 公司蓝图
+- 项目注册表
+- 系统机制说明
+- 跨项目长期知识
 
-- `company/projects/<项目名>/`
-  - 保留公司视角下的项目定位、研究结论、任务纪要、内容资产入口
+### 5.2 项目级
+
+放在：
+
 - `projects/<project-slug>/`
-  - 保留项目工作区、项目实现、项目专属需求与交付文档
+- `company/projects/<项目名>/`
 
-## 5. 当前对象落位原则
+其中：
 
-- `一镜一梳`
-  - 类型：`product`
-  - 公司侧入口：`company/projects/一镜一梳/`
-  - 项目工作区：`projects/aimandala/`
-  - 历史来源：`/Users/xinran/Downloads/dev/ai-mandala`
-- `怀瑾握瑜`
-  - 类型：`product`
-  - 公司侧入口：`company/projects/怀瑾握瑜/`
-  - 项目工作区：`projects/aicareer/`
-  - 历史来源：`/Users/xinran/Downloads/dev/ai-career`
-- `馨冉求职`
-  - 类型：`product`
-  - 公司侧入口：`company/projects/馨冉求职/`
-  - 项目工作区：`projects/xinran-jobhunt/`
-  - 历史来源：无，直接在 Monorepo 内立项
-- `研究中心`
-  - 类型：`capability`
-  - 公司侧入口：`company/projects/研究中心/`
-  - 项目工作区：`projects/research-center/`
-  - 历史来源：无，直接在 Monorepo 内启动
-- `RelayHub`
-  - 类型：`capability`
-  - 公司侧入口：`company/projects/RelayHub/`
-  - 项目工作区：`projects/relayhub/`
-  - 历史来源：无，直接在 Monorepo 内启动
+- `projects/<project-slug>/`
+  - 项目工作区、项目实现、项目专属文档
+- `company/projects/<项目名>/`
+  - 公司视角下的项目定位、研究、纪要、内容资产入口
 
-更完整的对象清单、状态、入口路径与历史来源，以 `company/项目注册表.yaml` 为准。
+## 6. 当前使用原则
 
-## 6. 迁移原则
+1. 公司级文档不塞进项目目录
+2. 项目实现不反向塞进 `company/`
+3. 主数据以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为准
+4. 若结构说明与项目映射冲突，以注册表和项目入口文档为准
 
-1. 先建立稳定入口，再迁移实现内容。
-2. 先迁项目文档和工作约束，再迁代码与脚本。
-3. 公司级文档不进入项目目录，项目实现不反向塞入 `company/`。
-4. 迁移期间保留历史来源说明，但不把历史仓库继续当成主入口。
-5. 每次迁移都要同步更新 `company/项目注册表.yaml`、项目 `PROJECT.md` 与必要的 Paperclip 配置。
+## 7. 推荐搭配阅读
 
-## 7. 当前整改范围
-
-本轮整改只完成：
-
-- Monorepo 治理口径对齐
-- 对象分型显式化
-- 单一真相注册表落地
-- 顶层目录骨架建立
-- 项目入口文件建立
-- `怀瑾握瑜` 的流程化项目骨架建立
-
-本轮不直接完成：
-
-- 外部仓库代码全量迁入
-- 构建系统统一
-- 跨项目依赖抽取
+- 仓库与 worktree 的总口径：
+  - [company/Git仓库管理系统说明.md](/Users/xinran/Downloads/dev/mindsync/company/Git仓库管理系统说明.md)
+- 项目与历史仓库映射：
+  - [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+- 系统层解释：
+  - [company/knowledge-base/system/MindSync-设计机制分析.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/MindSync-设计机制分析.md)

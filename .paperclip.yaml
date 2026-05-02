@@ -1,4 +1,4 @@
-# .paperclip.yaml - 墨予镜公司 Paperclip 配置
+# .paperclip.yaml - 知行工坊 Paperclip 配置
 # 这是 MindSync Monorepo 工作空间的核心配置文件
 # 定义了公司结构、Agents、Goals 和 Projects 的元数据
 # 公司对象主数据以 company/项目注册表.yaml 为治理源；
@@ -7,8 +7,8 @@
 # 公司信息
 company:
   id: "be191a6e-7447-4821-a93d-9114214c4a64"
-  name: "墨予镜"
-  description: "以墨予思，以镜观己"
+  name: "知行工坊"
+  description: "一人公司系统，以知促行，以行验知"
   mode: "remote_authenticated"
   host: "vm-0-11-opencloudos.tail176582.ts.net"
   port: 3100
