@@ -38,6 +38,7 @@
 - `content-grounded-transform`
 - `review-feedback-to-memory`
 - `knowledge-relink-maintenance`
+- `ui-ux-console-design`
 
 ## 配套文档
 
