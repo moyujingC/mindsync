@@ -26,6 +26,17 @@ export const modelCapabilitiesSchema = z.object({
   lastErrorMessage: z.string().nullable(),
 });
 
+const modelCatalogFamilySchema = z.union([
+  z.literal("openai-compatible"),
+  z.literal("anthropic-compatible"),
+]);
+
+const modelCostTierSchema = z.union([
+  z.literal("高"),
+  z.literal("中"),
+  z.literal("低"),
+]);
+
 export const modelEntrySchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -35,24 +46,24 @@ export const modelEntrySchema = z.object({
   baseUrl: z.string(),
   modelId: z.string(),
   reasoningEffort: reasoningEffortSchema,
-  catalogFamily: z.literal("openai-compatible"),
+  catalogFamily: modelCatalogFamilySchema.catch("openai-compatible"),
   purchaseUrl: z.string().nullable(),
   status: modelEntryStatusSchema,
   statusNote: z.string(),
   hasStoredApiKey: z.boolean(),
   maskedApiKey: z.string().nullable(),
   lastTestedAt: z.string().nullable(),
-  lastTestResult: z.string(),
-  lastTestCode: z.string(),
-  lastTestMessage: z.string(),
+  lastTestResult: z.string().catch("idle"),
+  lastTestCode: z.string().catch("not-tested"),
+  lastTestMessage: z.string().catch("还没有测试记录。"),
   capabilities: modelCapabilitiesSchema,
-  presetPriority: z.string().nullable(),
-  recommendedTaskCategories: z.array(z.string()),
-  recommendedTaskIds: z.array(z.string()),
-  selectionReason: z.string().nullable(),
-  activationHint: z.string().nullable(),
-  costTier: z.union([z.literal("高"), z.literal("中"), z.literal("低")]).nullable(),
-  capabilityTags: z.array(z.string()),
+  presetPriority: z.string().nullable().catch(null),
+  recommendedTaskCategories: z.array(z.string()).catch([]),
+  recommendedTaskIds: z.array(z.string()).catch([]),
+  selectionReason: z.string().nullable().catch(null),
+  activationHint: z.string().nullable().catch(null),
+  costTier: modelCostTierSchema.nullable().catch(null),
+  capabilityTags: z.array(z.string()).catch([]),
   tags: z.array(z.string()),
 });
 
