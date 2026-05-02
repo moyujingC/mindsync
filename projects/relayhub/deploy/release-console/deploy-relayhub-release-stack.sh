@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT=${REPO_ROOT:-/opt/aimandala-release/worktrees/relayhub}
+REPO_ROOT=${REPO_ROOT:-/opt/aimandala-release/worktrees/relayhub-dev-deploy}
 SOURCE_REPO=${SOURCE_REPO:-/opt/aimandala-release/app/mindsync}
 REMOTE_NAME=${REMOTE_NAME:-origin}
-BRANCH_NAME=${BRANCH_NAME:-project/relayhub}
+BRANCH_NAME=${BRANCH_NAME:-relayhub/dev}
 WORKTREE_PARENT=${WORKTREE_PARENT:-/opt/aimandala-release/worktrees}
 WORKTREE_DIR=${WORKTREE_DIR:-$REPO_ROOT}
 SKIP_GIT_SYNC=${SKIP_GIT_SYNC:-0}
@@ -29,6 +29,14 @@ install_node_deps() {
   fi
 }
 
+ensure_remote_branch_fetch() {
+  local repo_dir="$1"
+  local refspec="+refs/heads/$BRANCH_NAME:refs/remotes/$REMOTE_NAME/$BRANCH_NAME"
+  if ! git -C "$repo_dir" config --get-all "remote.$REMOTE_NAME.fetch" | grep -Fqx "$refspec"; then
+    git -C "$repo_dir" config --add "remote.$REMOTE_NAME.fetch" "$refspec"
+  fi
+}
+
 echo "[relayhub-release] source repo: $SOURCE_REPO"
 echo "[relayhub-release] worktree dir: $WORKTREE_DIR"
 echo "[relayhub-release] branch: $BRANCH_NAME"
@@ -41,14 +49,16 @@ if [[ "$SKIP_GIT_SYNC" != "1" ]]; then
   fi
 
   mkdir -p "$WORKTREE_PARENT"
+  ensure_remote_branch_fetch "$SOURCE_REPO"
 
   if [[ ! -d "$WORKTREE_DIR" ]]; then
     git -C "$SOURCE_REPO" fetch "$REMOTE_NAME" "refs/heads/$BRANCH_NAME:refs/remotes/$REMOTE_NAME/$BRANCH_NAME"
     git -C "$SOURCE_REPO" worktree add "$WORKTREE_DIR" "$REMOTE_NAME/$BRANCH_NAME"
   else
-    git -C "$WORKTREE_DIR" fetch "$REMOTE_NAME"
-    git -C "$WORKTREE_DIR" checkout "$BRANCH_NAME" || true
-    git -C "$WORKTREE_DIR" pull --ff-only "$REMOTE_NAME" "$BRANCH_NAME"
+    ensure_remote_branch_fetch "$WORKTREE_DIR"
+    git -C "$WORKTREE_DIR" fetch "$REMOTE_NAME" "refs/heads/$BRANCH_NAME:refs/remotes/$REMOTE_NAME/$BRANCH_NAME"
+    git -C "$WORKTREE_DIR" checkout "$BRANCH_NAME"
+    git -C "$WORKTREE_DIR" reset --hard "$REMOTE_NAME/$BRANCH_NAME"
   fi
 elif [[ ! -d "$WORKTREE_DIR" ]]; then
   echo "worktree dir not found while SKIP_GIT_SYNC=1: $WORKTREE_DIR" >&2

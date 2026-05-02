@@ -8,7 +8,8 @@
 
 - `/opt/aimandala-release/app/mindsync` 现有 checkout 仍服务主业务 release，且可能带有脏工作区
 - RelayHub 当前应在 release 机上使用独立 `git worktree` 部署
-- 推荐 worktree 目录：`/opt/aimandala-release/worktrees/relayhub`
+- 正式发布默认使用更安全的 deploy worktree：`/opt/aimandala-release/worktrees/relayhub-dev-deploy`
+- 旧目录 `/opt/aimandala-release/worktrees/relayhub` 可能已经带脏改，不再作为默认发布工作树
 
 因此本 runbook 的默认口径改为：
 
@@ -27,10 +28,10 @@
 ## 2. 目录约定
 
 - 主仓库目录：`/opt/aimandala-release/app/mindsync`
-- RelayHub worktree：`/opt/aimandala-release/worktrees/relayhub`
-- console 目录：`/opt/aimandala-release/worktrees/relayhub/projects/relayhub/console`
-- 构建目录：`/opt/aimandala-release/worktrees/relayhub/projects/relayhub/console/dist`
-- control-plane 目录：`/opt/aimandala-release/worktrees/relayhub/projects/relayhub/control-plane`
+- RelayHub worktree：`/opt/aimandala-release/worktrees/relayhub-dev-deploy`
+- console 目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console`
+- 构建目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console/dist`
+- control-plane 目录：`/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/control-plane`
 - 子域静态发布目录：`/var/www/relayhub.jingshu.cc`
 - 兼容子路径静态发布目录：`/var/www/web.jingshu.cc/relayhub`
 - nginx 站点样例：`/etc/nginx/sites-available/web.jingshu.cc`
@@ -47,7 +48,7 @@
 默认 mock 构建：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console
 npm ci
 npm run build
 ```
@@ -55,7 +56,7 @@ npm run build
 release trial 构建：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console
 npm ci
 RELAYHUB_CONSOLE_BASE_PATH=/ \
 RELAYHUB_CONTROL_PLANE_BASE_URL=/api/control-plane \
@@ -76,11 +77,11 @@ RELAYHUB_PROVIDERS_READONLY_DEFAULT_HEADERS_JSON='{"x-relayhub-scope":"providers
 推荐子域发布：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
 sudo mkdir -p /var/www/relayhub.jingshu.cc
-sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
-  CONSOLE_DIR=/opt/aimandala-release/worktrees/relayhub/projects/relayhub/console \
-  DIST_DIR=/opt/aimandala-release/worktrees/relayhub/projects/relayhub/console/dist \
+sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub-dev-deploy \
+  CONSOLE_DIR=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console \
+  DIST_DIR=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/console/dist \
   PUBLISH_DIR=/var/www/relayhub.jingshu.cc \
   BACKUP_DIR=/var/www/relayhub.jingshu.cc.previous \
   bash deploy-relayhub-console-trial.sh
@@ -94,22 +95,24 @@ sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
 
 ```bash
 cd /opt/aimandala-release/app/mindsync
+git config --add remote.origin.fetch +refs/heads/relayhub/dev:refs/remotes/origin/relayhub/dev
 git fetch origin refs/heads/relayhub/dev:refs/remotes/origin/relayhub/dev
 mkdir -p /opt/aimandala-release/worktrees
-git worktree add /opt/aimandala-release/worktrees/relayhub origin/relayhub/dev
+git worktree add /opt/aimandala-release/worktrees/relayhub-dev-deploy origin/relayhub/dev
 ```
 
 说明：
 
 - 如果主 checkout 存在未提交改动，不要直接在主 checkout 切 `relayhub/dev`
 - 一律通过 `git worktree add` 新开 RelayHub 隔离工作树
+- 发布脚本会再次确保 `remote.origin.fetch` 包含 `relayhub/dev`，避免服务器只抓 `release` 导致发布旧代码
 
 ### 4.0.1 一键部署主路径
 
 如果目标是把 `RelayHub Console + control-plane + dev-relay + /claude + /api/control-plane` 一次性收口到 release，当前推荐直接执行：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
 bash deploy-relayhub-release-stack.sh
 ```
 
@@ -127,9 +130,9 @@ bash deploy-relayhub-release-stack.sh
 安装 systemd 服务：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
-sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
-  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub/projects/relayhub/control-plane \
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
+sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub-dev-deploy \
+  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/control-plane \
   PORT=4318 \
   DATA_DIR=/var/lib/relayhub/control-plane \
   bash install-relayhub-control-plane-service.sh
@@ -138,7 +141,7 @@ sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
 安装 nginx 同源反代：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
 sudo CONTROL_PLANE_PORT=4318 \
   bash install-relayhub-control-plane-nginx-location.sh
 ```
@@ -148,9 +151,9 @@ sudo CONTROL_PLANE_PORT=4318 \
 安装 Codex 专用 relay service：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
-sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
-  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub/projects/relayhub/dev-relay \
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
+sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub-dev-deploy \
+  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/dev-relay \
   PORT=4319 \
   DATA_DIR=/var/lib/relayhub/control-plane \
   bash install-relayhub-dev-relay-service.sh
@@ -159,7 +162,7 @@ sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
 安装 nginx 上的 Claude / Codex 开发工作流入口：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
 sudo CLAUDE_RELAY_PORT=4319 \
   bash install-relayhub-claude-nginx-location.sh
 sudo CODEX_RELAY_PORT=4319 \
@@ -171,9 +174,9 @@ sudo CODEX_RELAY_PORT=4319 \
 安装 AI曼陀罗 生产 relay service：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
-sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
-  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub/projects/relayhub/prod-relay/aimandala \
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
+sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub-dev-deploy \
+  WORKING_DIRECTORY=/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/prod-relay/aimandala \
   PORT=4320 \
   DATA_DIR=/var/lib/relayhub/control-plane \
   bash install-relayhub-prod-relay-aimandala-service.sh
@@ -182,7 +185,7 @@ sudo REPO_ROOT=/opt/aimandala-release/worktrees/relayhub \
 安装 nginx 上的 AI曼陀罗 生产入口：
 
 ```bash
-cd /opt/aimandala-release/worktrees/relayhub/projects/relayhub/deploy/release-console
+cd /opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/deploy/release-console
 sudo AIMANDALA_RELAY_PORT=4320 \
   bash install-relayhub-prod-relay-aimandala-nginx-location.sh
 ```
