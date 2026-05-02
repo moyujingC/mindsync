@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
 import { DashboardPage } from "../pages/DashboardPage";
 import { EnvironmentsPage } from "../pages/EnvironmentsPage";
+import { EntriesPage } from "../pages/EntriesPage";
 import { EvalPage } from "../pages/EvalPage";
 import { ModelLibraryPage } from "../pages/ModelLibraryPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
@@ -15,6 +16,7 @@ export function AppRoutes() {
       <Route element={<AppShell />}>
         <Route index element={<Navigate to="/models" replace />} />
         <Route path="/models" element={<ModelLibraryPage />} />
+        <Route path="/entries" element={<EntriesPage />} />
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/runs" element={<RunsPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />

@@ -226,6 +226,37 @@ test("GET /entry-bindings returns per-entry default model bindings", async () =>
   });
 });
 
+test("GET /entry-bindings/resolutions returns public resolved entry view without api key", async () => {
+  await withTempDataDir(async () => {
+    await withServer(async (baseUrl) => {
+      const saveResponse = await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          apiKey: "sk-aitechflux-test"
+        })
+      });
+      assert.equal(saveResponse.status, 200);
+
+      const response = await fetch(`${baseUrl}/entry-bindings/resolutions`);
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+
+      assert.ok(Array.isArray(payload));
+      const resolved = payload.find((item) => item.entryId === "entry-paperclip-claude-local-server");
+      assert.ok(resolved);
+      assert.equal(resolved.alias, "relayhub-entry-paperclip-claude-local-server");
+      assert.equal(resolved.clientFamily, "paperclip");
+      assert.equal(typeof resolved.resolvedModel.baseUrl, "string");
+      assert.equal(typeof resolved.resolvedModel.modelId, "string");
+      assert.equal(typeof resolved.resolvedModel.hasStoredApiKey, "boolean");
+      assert.equal("apiKey" in resolved.resolvedModel, false);
+    });
+  });
+});
+
 test("PATCH /entry-bindings/:entryId updates the entry default model binding", async () => {
   await resetState();
 

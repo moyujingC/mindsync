@@ -7,6 +7,9 @@ import http from "node:http";
 import { once } from "node:events";
 import { createDevRelayServer } from "../server.mjs";
 
+const DEFAULT_RELAY_TOKEN = "relayhub-relay-test";
+process.env.RELAYHUB_RELAY_TOKEN = DEFAULT_RELAY_TOKEN;
+
 function createState() {
   return {
     modelEntries: [
@@ -318,6 +321,28 @@ async function withTempState(run, state = createState()) {
   }
 }
 
+async function withRelayAuthConfigured(run, token = DEFAULT_RELAY_TOKEN) {
+  const previous = process.env.RELAYHUB_RELAY_TOKEN;
+  process.env.RELAYHUB_RELAY_TOKEN = token;
+
+  try {
+    await run(token);
+  } finally {
+    if (previous === undefined) {
+      delete process.env.RELAYHUB_RELAY_TOKEN;
+    } else {
+      process.env.RELAYHUB_RELAY_TOKEN = previous;
+    }
+  }
+}
+
+function withRelayAuthorization(token, headers = {}) {
+  return {
+    ...headers,
+    authorization: `Bearer ${token}`
+  };
+}
+
 async function withRelayLogDir(run) {
   const logDir = await fs.mkdtemp(path.join(os.tmpdir(), "relayhub-dev-relay-log-"));
   const previous = process.env.RELAYHUB_DEV_RELAY_LOG_DIR;
@@ -381,20 +406,61 @@ test("GET /health returns ok", async () => {
   });
 });
 
+test("GET /v1/models returns 503 when relay token is not configured", async () => {
+  const previous = process.env.RELAYHUB_RELAY_TOKEN;
+  delete process.env.RELAYHUB_RELAY_TOKEN;
+
+  try {
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/models`);
+        assert.equal(response.status, 503);
+        const payload = await response.json();
+        assert.equal(payload.error.code, "relay_auth_not_configured");
+      });
+    });
+  } finally {
+    process.env.RELAYHUB_RELAY_TOKEN = previous ?? DEFAULT_RELAY_TOKEN;
+  }
+});
+
+test("GET /v1/models returns 401 when relay token is invalid", async () => {
+  await withRelayAuthConfigured(async () => {
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/models`, {
+          headers: {
+            authorization: "Bearer wrong-token"
+          }
+        });
+        assert.equal(response.status, 401);
+        const payload = await response.json();
+        assert.equal(payload.error.code, "relay_auth_invalid");
+      });
+    });
+  });
+});
+
 test("GET /v1/models returns controllable relay entries and resolved upstream models", async () => {
-  await withTempState(async () => {
-    await withServer(createDevRelayServer(), async (baseUrl) => {
-      const response = await fetch(`${baseUrl}/v1/models`);
-      assert.equal(response.status, 200);
-      const payload = await response.json();
-      assert.equal(payload.object, "list");
-      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-codex-ide-local"));
-      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-claude-local-mac"));
-      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
-      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-pi-local-server"));
-      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-hermes-local-server"));
-      assert.ok(payload.data.some((item) => item.id === "model-a"));
-      assert.ok(!payload.data.some((item) => item.id === "relayhub-entry-claude-mobile-observe"));
+  await withRelayAuthConfigured(async (token) => {
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/models`, {
+          headers: {
+            authorization: `Bearer ${token}`
+          }
+        });
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.equal(payload.object, "list");
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-codex-ide-local"));
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-claude-local-mac"));
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-pi-local-server"));
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-hermes-local-server"));
+        assert.ok(payload.data.some((item) => item.id === "model-a"));
+        assert.ok(!payload.data.some((item) => item.id === "relayhub-entry-claude-mobile-observe"));
+      });
     });
   });
 });
@@ -411,14 +477,20 @@ test("GET /v1/models keeps Paperclip entry aliases even when some entries are un
       : binding
   );
 
-  await withTempState(async () => {
-    await withServer(createDevRelayServer(), async (baseUrl) => {
-      const response = await fetch(`${baseUrl}/v1/models`);
-      assert.equal(response.status, 200);
-      const payload = await response.json();
-      assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
-    });
-  }, state);
+  await withRelayAuthConfigured(async (token) => {
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/models`, {
+          headers: {
+            authorization: `Bearer ${token}`
+          }
+        });
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
+      });
+    }, state);
+  });
 });
 
 test("POST /v1/responses forwards non-stream requests to the bound Codex upstream", async () => {
@@ -449,9 +521,9 @@ test("POST /v1/responses forwards non-stream requests to the bound Codex upstrea
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "should-be-overridden",
             input: "Reply with exactly: ok",
@@ -495,9 +567,9 @@ test("POST /v1/responses routes relayhub task alias to its own bound entry", asy
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "relayhub-task-dev-backend",
             input: "修一个接口 bug",
@@ -532,9 +604,9 @@ test("POST /v1/responses routes relayhub entry alias to its bound model", async 
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "relayhub-entry-codex-ide-local",
             input: "修一个接口 bug",
@@ -569,9 +641,9 @@ test("POST /v1/responses routes Paperclip codex entry alias to its bound model",
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "relayhub-entry-paperclip-codex-local-server",
             input: "修一个 Paperclip 任务",
@@ -607,9 +679,9 @@ test("POST /v1/responses forwards stream requests to the bound Codex upstream", 
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "ignored",
             input: "Reply with exactly: ok",
@@ -638,9 +710,9 @@ test("POST /v1/responses returns a clear error when the Codex entry is not Respo
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/responses`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
+        headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
         body: JSON.stringify({
           input: "hello",
           stream: false
@@ -677,9 +749,9 @@ test("POST /chat/completions forwards to the bound upstream and overrides model"
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "should-be-overridden",
             messages: [{ role: "user", content: "hello" }]
@@ -723,9 +795,9 @@ test("POST /chat/completions routes relayhub task alias to its own bound entry",
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "relayhub-task-dev-docs",
             messages: [{ role: "user", content: "整理一版交付说明" }]
@@ -772,10 +844,10 @@ test("POST /v1/messages routes relayhub entry alias to its bound model", async (
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json",
             "anthropic-version": "2023-06-01"
-          },
+          }),
           body: JSON.stringify({
             model: "relayhub-entry-claude-ide-local",
             max_tokens: 64,
@@ -815,9 +887,9 @@ test("POST /chat/completions forwards reasoning_effort for GPT-5 style models", 
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             messages: [{ role: "user", content: "hello" }]
           })
@@ -854,9 +926,9 @@ test("POST /v1/responses forwards reasoning.effort for GPT-5 style models", asyn
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             input: "hello",
             stream: false
@@ -891,9 +963,9 @@ test("POST /v1/chat/completions routes Paperclip pi entry alias to its bound mod
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "relayhub-entry-paperclip-pi-local-server",
             messages: [{ role: "user", content: "hello pi relay" }]
@@ -930,9 +1002,9 @@ test("POST /v1/chat/completions routes Paperclip hermes entry alias to its bound
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             model: "relayhub-entry-paperclip-hermes-local-server",
             messages: [{ role: "user", content: "hello hermes relay" }]
@@ -957,9 +1029,9 @@ test("POST /chat/completions returns a clear error when task-claude-code is not 
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
+        headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
         body: JSON.stringify({
           messages: [{ role: "user", content: "hello" }]
         })
@@ -981,9 +1053,9 @@ test("POST /chat/completions returns a clear error when the bound entry is not a
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
+        headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
         body: JSON.stringify({
           messages: [{ role: "user", content: "hello" }]
         })
@@ -1005,9 +1077,9 @@ test("POST /chat/completions returns a clear error when the bound entry has no a
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
+        headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
         body: JSON.stringify({
           messages: [{ role: "user", content: "hello" }]
         })
@@ -1043,9 +1115,9 @@ test("switching task-claude-code defaultModelEntryId changes subsequent relay re
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const first = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             messages: [{ role: "user", content: "hello" }]
           })
@@ -1058,9 +1130,9 @@ test("switching task-claude-code defaultModelEntryId changes subsequent relay re
 
         const second = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             messages: [{ role: "user", content: "hello again" }]
           })
@@ -1081,9 +1153,9 @@ test("POST /chat/completions returns a clear error when the upstream is unreacha
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
+        headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
         body: JSON.stringify({
           messages: [{ role: "user", content: "hello" }]
         })
@@ -1114,9 +1186,9 @@ test("POST /chat/completions preserves upstream status and wraps error summary",
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json"
-          },
+          }),
           body: JSON.stringify({
             messages: [{ role: "user", content: "hello" }]
           })
@@ -1138,10 +1210,10 @@ test("POST /v1/messages/count_tokens returns a usable token count payload", asyn
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/messages/count_tokens`, {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "anthropic-version": "2023-06-01"
-        },
+        headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          }),
         body: JSON.stringify({
           model: "ignored-by-relay",
           system: "You are helpful.",
@@ -1193,10 +1265,10 @@ test("POST /v1/messages maps anthropic messages into upstream chat completions a
         await withServer(createDevRelayServer(), async (baseUrl) => {
           const response = await fetch(`${baseUrl}/v1/messages`, {
             method: "POST",
-            headers: {
-              "content-type": "application/json",
-              "anthropic-version": "2023-06-01"
-            },
+            headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          }),
             body: JSON.stringify({
               model: "ignored-by-relay",
               system: "You are a coding assistant.",
@@ -1266,10 +1338,10 @@ test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-st
         await withServer(createDevRelayServer(), async (baseUrl) => {
           const response = await fetch(`${baseUrl}/v1/messages`, {
             method: "POST",
-            headers: {
-              "content-type": "application/json",
-              "anthropic-version": "2023-06-01"
-            },
+            headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          }),
             body: JSON.stringify({
               model: "ignored-by-relay",
               max_tokens: 64,
@@ -1334,10 +1406,10 @@ test("POST /v1/messages collapses think blocks for native anthropic upstream res
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json",
             "anthropic-version": "2023-06-01"
-          },
+          }),
           body: JSON.stringify({
             model: "ignored-by-relay",
             max_tokens: 64,
@@ -1401,10 +1473,10 @@ test("POST /v1/messages maps anthropic tools to upstream tools and tool calls ba
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json",
             "anthropic-version": "2023-06-01"
-          },
+          }),
           body: JSON.stringify({
             model: "ignored-by-relay",
             max_tokens: 256,
@@ -1475,10 +1547,10 @@ test("POST /v1/messages preserves all anthropic tool_use ids when sending tool r
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json",
             "anthropic-version": "2023-06-01"
-          },
+          }),
           body: JSON.stringify({
             model: "ignored-by-relay",
             max_tokens: 256,
@@ -1594,10 +1666,10 @@ test("POST /v1/messages returns anthropic streaming events when stream=true", as
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json",
             "anthropic-version": "2023-06-01"
-          },
+          }),
           body: JSON.stringify({
             model: "ignored-by-relay",
             max_tokens: 64,
@@ -1656,10 +1728,10 @@ test("POST /v1/messages collapses think blocks for mapped OpenAI-compatible resp
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const response = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
-          headers: {
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
             "content-type": "application/json",
             "anthropic-version": "2023-06-01"
-          },
+          }),
           body: JSON.stringify({
             model: "ignored-by-relay",
             max_tokens: 64,

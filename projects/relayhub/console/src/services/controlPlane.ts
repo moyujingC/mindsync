@@ -8,6 +8,7 @@ import {
 } from "../fixtures/controlPlaneData";
 import type {
   EntryBinding,
+  EntryBindingResolution,
   GovernanceOverview,
   ModelCatalogResponse,
   ModelEntry,
@@ -368,6 +369,10 @@ async function listEntryBindingsFromServer(): Promise<EntryBinding[]> {
   return requestJson<EntryBinding[]>("/entry-bindings");
 }
 
+async function listEntryBindingResolutionsFromServer(): Promise<EntryBindingResolution[]> {
+  return requestJson<EntryBindingResolution[]>("/entry-bindings/resolutions");
+}
+
 async function saveEntryBindingToServer(input: EntryBinding): Promise<EntryBinding> {
   return requestJson<EntryBinding>(`/entry-bindings/${input.entryId}`, {
     method: "PATCH",
@@ -478,6 +483,45 @@ export async function listEntryBindings(): Promise<EntryBinding[]> {
   }
 
   return delay(mockState.entryBindings);
+}
+
+export async function listEntryBindingResolutions(): Promise<EntryBindingResolution[]> {
+  if (shouldUseServer()) {
+    return listEntryBindingResolutionsFromServer();
+  }
+
+  return delay(
+    mockState.entryBindings.map((binding) => {
+      const entry = mockState.entries.find((item) => item.id === binding.entryId) ?? null;
+      const model = binding.defaultModelEntryId
+        ? mockState.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null
+        : null;
+
+      return {
+        entryId: binding.entryId,
+        alias: entry?.alias ?? null,
+        clientFamily: entry?.clientFamily ?? null,
+        adapterType: entry?.adapterType ?? null,
+        hostType: entry?.hostType ?? null,
+        protocolFamily: entry?.protocolFamily ?? null,
+        controllable: entry?.controllable ?? false,
+        defaultModelEntryId: binding.defaultModelEntryId,
+        fallbackModelEntryId: binding.fallbackModelEntryId,
+        statusNote: binding.statusNote,
+        resolvedModel: model
+          ? {
+              id: model.id,
+              name: model.name,
+              baseUrl: model.baseUrl,
+              modelId: model.modelId,
+              reasoningEffort: model.reasoningEffort,
+              status: model.status,
+              hasStoredApiKey: model.hasStoredApiKey,
+            }
+          : null,
+      };
+    }),
+  );
 }
 
 export async function saveEntryBinding(input: EntryBinding): Promise<EntryBinding> {

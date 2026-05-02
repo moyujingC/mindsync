@@ -2,6 +2,7 @@
   "//": "Copy the relevant values into your local .vscode/settings.json. This template is documentation, not an auto-applied workspace file.",
   "terminal.integrated.env.osx": {
     "RELAYHUB_DEV_RELAY_BASE_URL": "https://relayhub.jingshu.cc/claude",
+    "RELAYHUB_RELAY_TOKEN": "relayhub-release-claude",
     "RELAYHUB_DEV_RELAY_AUTH_TOKEN": "relayhub-release-claude",
     "RELAYHUB_CLAUDE_MODEL": "relayhub-task-claude-code",
     "ANTHROPIC_BASE_URL": "https://relayhub.jingshu.cc/claude",

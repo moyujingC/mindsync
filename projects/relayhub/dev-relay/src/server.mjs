@@ -29,6 +29,32 @@ function relayError(response, statusCode, code, message, relay = undefined) {
   });
 }
 
+function requireRelayAuth(request, response) {
+  const configuredToken = String(process.env.RELAYHUB_RELAY_TOKEN ?? "").trim();
+  if (!configuredToken) {
+    relayError(
+      response,
+      503,
+      "relay_auth_not_configured",
+      "RelayHub relay token 未配置，当前中转入口未启用正式访问鉴权。"
+    );
+    return false;
+  }
+
+  const expected = `Bearer ${configuredToken}`;
+  if (request.headers.authorization !== expected) {
+    relayError(
+      response,
+      401,
+      "relay_auth_invalid",
+      "RelayHub relay token 缺失或不匹配。"
+    );
+    return false;
+  }
+
+  return true;
+}
+
 function taskIdToRelayModel(taskId) {
   const normalized = String(taskId ?? "").trim();
   if (!normalized) {
@@ -1491,22 +1517,37 @@ async function handleRequest(request, response) {
   }
 
   if (method === "GET" && url.pathname === "/v1/models") {
+    if (!requireRelayAuth(request, response)) {
+      return;
+    }
     return listCodexModels(response);
   }
 
   if (method === "POST" && (url.pathname === "/chat/completions" || url.pathname === "/v1/chat/completions")) {
+    if (!requireRelayAuth(request, response)) {
+      return;
+    }
     return proxyChatCompletions(request, response);
   }
 
   if (method === "POST" && url.pathname === "/v1/responses") {
+    if (!requireRelayAuth(request, response)) {
+      return;
+    }
     return proxyResponses(request, response);
   }
 
   if (method === "POST" && url.pathname === "/v1/messages") {
+    if (!requireRelayAuth(request, response)) {
+      return;
+    }
     return proxyAnthropicMessages(request, response);
   }
 
   if (method === "POST" && url.pathname === "/v1/messages/count_tokens") {
+    if (!requireRelayAuth(request, response)) {
+      return;
+    }
     return countAnthropicTokens(request, response);
   }
 

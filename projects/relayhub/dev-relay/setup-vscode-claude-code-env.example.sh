@@ -8,7 +8,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # It intentionally does not edit .vscode/settings.json for you.
 
 export RELAYHUB_DEV_RELAY_BASE_URL="${RELAYHUB_DEV_RELAY_BASE_URL:-https://relayhub.jingshu.cc/claude}"
-export RELAYHUB_DEV_RELAY_AUTH_TOKEN="${RELAYHUB_DEV_RELAY_AUTH_TOKEN:-relayhub-release-claude}"
+export RELAYHUB_RELAY_TOKEN="${RELAYHUB_RELAY_TOKEN:-relayhub-release-claude}"
+export RELAYHUB_DEV_RELAY_AUTH_TOKEN="${RELAYHUB_DEV_RELAY_AUTH_TOKEN:-$RELAYHUB_RELAY_TOKEN}"
 export RELAYHUB_CLAUDE_MODEL="${RELAYHUB_CLAUDE_MODEL:-relayhub-task-claude-code}"
 
 export ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL:-$RELAYHUB_DEV_RELAY_BASE_URL}"

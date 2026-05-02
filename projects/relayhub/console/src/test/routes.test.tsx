@@ -48,6 +48,17 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("Claude Code Web Coding")).toBeInTheDocument();
   });
 
+  it("renders entries route with Paperclip relay guidance", async () => {
+    renderRoute("/entries");
+
+    expect(
+      await screen.findByText("把 Paperclip 固定上游入口和它们当前解析到的真实模型并排看清楚"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Paperclip 入口解析")).toBeInTheDocument();
+    expect((await screen.findAllByText("一次性接入模板")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/RELAYHUB_RELAY_TOKEN/)).length).toBeGreaterThan(0);
+  });
+
   it("renders runs route with governance overview", async () => {
     renderRoute("/runs");
 
@@ -134,10 +145,10 @@ describe("RelayHub console routes", () => {
     renderRoute("/models");
 
     expect(await screen.findByText("AITechFlux 中转")).toBeInTheDocument();
-    expect(await screen.findByText("第三方中转入口，可复用 URL + Key，并在工具内切换默认模型。")).toBeInTheDocument();
     expect(
-      (await screen.findAllByText("适合先绑定：Claude Code Web Coding、Codex Repo Coding。")).length,
-    ).toBeGreaterThan(0);
+      await screen.findByText("当前 Claude Code 默认主路径，直接复用 release /claude 并原生转发 Anthropic /messages。"),
+    ).toBeInTheDocument();
+    expect((await screen.findAllByText("适合先绑定：Claude Code Web Coding。")).length).toBeGreaterThan(0);
   });
 
   it("frames presets as reusable access entries in the model library", async () => {
@@ -367,7 +378,7 @@ describe("RelayHub console routes", () => {
 
     expect(
       await screen.findByText(
-        "“PPChat 中转”已激活。下一步可去任务库绑定默认模型；这个入口现在也可在外部工具中复用 Base URL + Key。适合先绑定：Claude Code Web Coding、Codex Repo Coding。",
+        "“PPChat 中转”已激活。下一步可去任务库绑定默认模型；这个入口现在也可在外部工具中复用 Base URL + Key。适合先绑定：Codex Repo Coding。",
       ),
     ).toBeInTheDocument();
   });
@@ -376,10 +387,7 @@ describe("RelayHub console routes", () => {
     renderRoute("/models");
 
     expect(await screen.findByText("优先激活候选")).toBeInTheDocument();
-    expect(await screen.findByText("最适合作为通用工具和编码任务的首个激活候选，先跑通绑定路径最快。")).toBeInTheDocument();
-    expect(
-      (await screen.findAllByText("适合先绑定：Claude Code Web Coding、Codex Repo Coding。")).length,
-    ).toBeGreaterThan(0);
+    expect((await screen.findAllByText("适合先绑定：Claude Code Web Coding。")).length).toBeGreaterThan(0);
   });
 
   it("shows task guidance when there are no active models to bind", async () => {
@@ -441,7 +449,7 @@ describe("RelayHub console routes", () => {
     renderRoute("/tasks");
 
     expect(await screen.findByText("Claude Code 当前模型")).toBeInTheDocument();
-    expect(await screen.findByText("当前绑定：PPChat 中转")).toBeInTheDocument();
+    expect(await screen.findByText("当前绑定：AITechFlux 中转")).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Claude Code 当前模型"), {
       target: { value: "preset-deepseek-v3" },
@@ -506,7 +514,7 @@ describe("RelayHub console routes", () => {
         status: "configured-pending-test",
       },
       {
-        ...seedModelEntries[5]!,
+        ...seedModelEntries[6]!,
         id: "preset-aitechflux-relay",
         name: "AITechFlux 中转",
         providerLabel: "AITechFlux",
@@ -531,9 +539,9 @@ describe("RelayHub console routes", () => {
         },
         presetPriority: "recommended",
         recommendedTaskCategories: ["通用工具"],
-        recommendedTaskIds: ["task-claude-code", "task-codex-repo"],
-        selectionReason: "第三方中转入口，可复用 URL + Key，并在工具内切换默认模型。",
-        activationHint: "先在 AITechFlux 开通或充值，再填 API Key 测试连接。",
+        recommendedTaskIds: ["task-claude-code"],
+        selectionReason: "当前 Claude Code 默认主路径，直接复用 release /claude 并原生转发 Anthropic /messages。",
+        activationHint: "保持 task-claude-code 绑定到该入口；如需切模型，优先从 catalog 中选择支持 anthropic 的真实模型名。",
         costTier: "中",
         capabilityTags: ["编码", "中转 API", "入口复用"],
         tags: ["中转 API", "第三方中转", "Claude"],
@@ -543,9 +551,9 @@ describe("RelayHub console routes", () => {
     renderRoute("/tasks");
 
     expect(await screen.findByRole("button", { name: "测试 PPChat 中转" })).toBeInTheDocument();
-    expect(await screen.findByRole("button", { name: "当前已绑定" })).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: "测试 AITechFlux 中转" })).toBeInTheDocument();
-    expect(await screen.findByRole("button", { name: "切换到 AITechFlux 中转" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "当前已绑定" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "切换到 PPChat 中转" })).toBeInTheDocument();
     expect(await screen.findByText("当前推荐直接在这里切 `PPChat` 和 `AITechFlux`，不用先去模型库再回任务库。")).toBeInTheDocument();
   });
 
@@ -650,6 +658,11 @@ describe("RelayHub console routes", () => {
   it("prefills the bound default model for the preferred task in runs", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {
+        ...seedModelEntries[6]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
+      {
         ...seedModelEntries[2]!,
         status: "active",
         statusNote: "连接测试通过，可以绑定到任务默认模型。",
@@ -665,15 +678,20 @@ describe("RelayHub console routes", () => {
 
     expect(await screen.findByText("当前任务记录上下文")).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByLabelText("任务")).toHaveValue("task-therapy-summary");
-      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v3");
+      expect(screen.getByLabelText("任务")).toHaveValue("task-claude-code");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-aitechflux-relay");
     });
-    expect(await screen.findByText("当前任务默认模型：DeepSeek V3 官方")).toBeInTheDocument();
+    expect(await screen.findByText("当前任务默认模型：AITechFlux 中转")).toBeInTheDocument();
     expect(await screen.findByText("这次会按当前默认模型开始记录。")).toBeInTheDocument();
   });
 
   it("syncs the model field to the task default model when switching tasks in runs", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
+      {
+        ...seedModelEntries[6]!,
+        status: "active",
+        statusNote: "连接测试通过，可以绑定到任务默认模型。",
+      },
       {
         ...seedModelEntries[2]!,
         status: "active",
@@ -695,9 +713,9 @@ describe("RelayHub console routes", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByLabelText("模型")).toHaveValue("preset-ppchat-relay");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-aitechflux-relay");
     });
-    expect(await screen.findByText("当前任务默认模型：PPChat 中转")).toBeInTheDocument();
+    expect(await screen.findByText("当前任务默认模型：AITechFlux 中转")).toBeInTheDocument();
   });
 
   it("shows an explicit hint when the selected run task has no default model", async () => {
@@ -734,7 +752,7 @@ describe("RelayHub console routes", () => {
   it("switches task stats to the submitted task after recording a run", async () => {
     vi.spyOn(controlPlaneService, "listActiveModelEntries").mockResolvedValue([
       {
-        ...seedModelEntries[2]!,
+        ...seedModelEntries[6]!,
         status: "active",
         statusNote: "连接测试通过，可以绑定到任务默认模型。",
       },
@@ -744,13 +762,13 @@ describe("RelayHub console routes", () => {
 
     expect(await screen.findByText("治理概览")).toBeInTheDocument();
     expect(await screen.findByRole("option", { name: "Claude Code Web Coding" })).toBeInTheDocument();
-    expect(await screen.findByRole("option", { name: "PPChat 中转" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "AITechFlux 中转" })).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("任务"), {
       target: { value: "task-claude-code" },
     });
     fireEvent.change(screen.getByLabelText("模型"), {
-      target: { value: "preset-ppchat-relay" },
+      target: { value: "preset-aitechflux-relay" },
     });
     fireEvent.change(screen.getByLabelText("结果摘要"), {
       target: { value: "这次网页编码结果稳定，可继续作为默认候选。" },

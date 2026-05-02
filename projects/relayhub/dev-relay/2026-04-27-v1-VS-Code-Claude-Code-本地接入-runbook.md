@@ -26,8 +26,9 @@
 默认行为固定为：
 
 - `ANTHROPIC_BASE_URL=https://relayhub.jingshu.cc/claude`
-- `ANTHROPIC_API_KEY=relayhub-release-claude`
-- `ANTHROPIC_AUTH_TOKEN=relayhub-release-claude`
+- `RELAYHUB_RELAY_TOKEN=<relay token>`
+- `ANTHROPIC_API_KEY=<relay token>`
+- `ANTHROPIC_AUTH_TOKEN=<relay token>`
 - `ANTHROPIC_MODEL=relayhub-task-claude-code`
 - `ANTHROPIC_DEFAULT_OPUS_MODEL=relayhub-task-claude-code`
 - `ANTHROPIC_DEFAULT_SONNET_MODEL=relayhub-task-claude-code`
@@ -99,6 +100,7 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 
 - 不要只改单个 `ANTHROPIC_BASE_URL`
 - 要通过统一入口一次性导出完整 `ANTHROPIC_*`
+- 外层正式鉴权口径改为 `RELAYHUB_RELAY_TOKEN`
 - 默认保留 `--setting-sources local`
 - `mindsync` 仓库根 `.claude/settings.json` 作为项目级共享默认值
 

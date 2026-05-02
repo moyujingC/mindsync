@@ -9,6 +9,7 @@ const navGroups = [
     label: "核心模块",
     items: [
       { to: "/models", label: "模型库" },
+      { to: "/entries", label: "入口视图" },
       { to: "/tasks", label: "任务库" },
       { to: "/runs", label: "运行记录" },
     ],

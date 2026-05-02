@@ -124,6 +124,28 @@ export interface EntryBinding {
   statusNote: string;
 }
 
+export interface EntryBindingResolution {
+  entryId: string;
+  alias: string | null;
+  clientFamily: EntryClientFamily | null;
+  adapterType: EntryAdapterType;
+  hostType: EntryHostType | null;
+  protocolFamily: EntryProtocolFamily | null;
+  controllable: boolean;
+  defaultModelEntryId: string | null;
+  fallbackModelEntryId: string | null;
+  statusNote: string | null;
+  resolvedModel: {
+    id: string;
+    name: string;
+    baseUrl: string;
+    modelId: string;
+    reasoningEffort: ReasoningEffort | null;
+    status: ModelEntryStatus;
+    hasStoredApiKey: boolean;
+  } | null;
+}
+
 export interface TaskTemplate {
   id: string;
   name: string;

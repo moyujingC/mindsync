@@ -168,6 +168,38 @@ function requireInternalAuth(request, response) {
   return true;
 }
 
+function buildPublicEntryBindingResolution(state, secrets, entryId) {
+  const relayEntry = state.entries.find((item) => item.id === entryId) ?? null;
+  const binding = state.entryBindings.find((item) => item.entryId === entryId) ?? null;
+  const resolvedModel = binding?.defaultModelEntryId
+    ? state.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null
+    : null;
+
+  return {
+    entryId,
+    alias: relayEntry?.alias ?? null,
+    clientFamily: relayEntry?.clientFamily ?? null,
+    adapterType: relayEntry?.adapterType ?? null,
+    hostType: relayEntry?.hostType ?? null,
+    protocolFamily: relayEntry?.protocolFamily ?? null,
+    controllable: relayEntry?.controllable ?? false,
+    defaultModelEntryId: binding?.defaultModelEntryId ?? null,
+    fallbackModelEntryId: binding?.fallbackModelEntryId ?? null,
+    statusNote: binding?.statusNote ?? null,
+    resolvedModel: resolvedModel
+      ? {
+          id: resolvedModel.id,
+          name: resolvedModel.name,
+          baseUrl: resolvedModel.baseUrl,
+          modelId: resolvedModel.modelId,
+          reasoningEffort: resolvedModel.reasoningEffort ?? null,
+          status: resolvedModel.status,
+          hasStoredApiKey: Boolean(getStoredApiKey(secrets, resolvedModel.id))
+        }
+      : null
+  };
+}
+
 function canFetchCatalog(entry) {
   return (
     entry.source === "preset" &&
@@ -816,6 +848,16 @@ async function handleRequest(request, response) {
 
   if (method === "GET" && path === "/entry-bindings") {
     return json(response, 200, state.entryBindings);
+  }
+
+  if (method === "GET" && path === "/entry-bindings/resolutions") {
+    return json(
+      response,
+      200,
+      state.entryBindings.map((binding) =>
+        buildPublicEntryBindingResolution(state, secrets, binding.entryId)
+      )
+    );
   }
 
   if (method === "POST" && path === "/internal/resolve-entry-binding") {
