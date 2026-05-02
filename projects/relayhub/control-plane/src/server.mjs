@@ -173,9 +173,11 @@ function setStoredApiKey(secrets, modelEntryId, apiKey) {
 }
 
 function buildModelEntryWithSecret(entry, secrets) {
+  const apiKey = getStoredApiKey(secrets, entry.id);
   return {
     ...entry,
-    apiKey: getStoredApiKey(secrets, entry.id)
+    apiKey,
+    hasStoredApiKey: Boolean(apiKey)
   };
 }
 
