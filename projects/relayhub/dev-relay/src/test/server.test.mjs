@@ -194,6 +194,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Claude IDE local binding",
       },
       {
@@ -202,6 +203,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Codex IDE local binding",
       },
       {
@@ -210,6 +212,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Paperclip claude_local mac binding",
       },
       {
@@ -218,6 +221,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Paperclip claude_local server binding",
       },
       {
@@ -226,6 +230,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Paperclip codex_local mac binding",
       },
       {
@@ -234,6 +239,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Paperclip codex_local server binding",
       },
       {
@@ -242,6 +248,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Paperclip pi_local mac binding",
       },
       {
@@ -250,6 +257,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Paperclip pi_local server binding",
       },
       {
@@ -258,6 +266,7 @@ function createState() {
         defaultModelEntryName: "Active Relay",
         fallbackModelEntryId: null,
         fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
         statusNote: "Paperclip hermes_local server binding",
       },
     ],
@@ -940,6 +949,143 @@ test("POST /v1/responses forwards reasoning.effort for GPT-5 style models", asyn
 
     assert.equal(observedBody.model, "gpt-5.4");
     assert.equal(observedBody.reasoning.effort, "high");
+  });
+});
+
+test("POST /v1/responses uses entry-level reasoning override before model-level value", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_reasoning_override",
+      status: "completed",
+      output: []
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.modelEntries[0].modelId = "gpt-5.4";
+    state.modelEntries[0].reasoningEffort = "high";
+    state.entryBindings[5].reasoningEffortOverride = "low";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-codex-local-server",
+            input: "hello",
+            stream: false
+          })
+        });
+        assert.equal(response.status, 200);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "gpt-5.4");
+    assert.equal(observedBody.reasoning.effort, "low");
+  });
+});
+
+test("POST /v1/chat/completions uses entry-level reasoning override before model-level value", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl_reasoning_override",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }]
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.modelEntries[0].modelId = "gpt-5.4";
+    state.modelEntries[0].reasoningEffort = "medium";
+    state.entryBindings[7].reasoningEffortOverride = "high";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-pi-local-server",
+            messages: [{ role: "user", content: "hello pi relay" }]
+          })
+        });
+
+        assert.equal(response.status, 200);
+      });
+    }, state);
+
+    assert.equal(observedBody.model, "gpt-5.4");
+    assert.equal(observedBody.reasoning_effort, "high");
+  });
+});
+
+test("same upstream model can emit different reasoning effort for different entry aliases", async () => {
+  const observedEfforts = [];
+
+  await withMockUpstream(async (request, response) => {
+    const body = await readRequestJson(request);
+    observedEfforts.push(body.reasoning?.effort ?? null);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      object: "response",
+      id: "resp_reasoning_dual_entry",
+      status: "completed",
+      output: []
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.modelEntries[0].modelId = "gpt-5.4";
+    state.modelEntries[0].reasoningEffort = "medium";
+    state.entryBindings[4].reasoningEffortOverride = "low";
+    state.entryBindings[5].reasoningEffortOverride = "high";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const first = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-codex-local-mac",
+            input: "first",
+            stream: false
+          })
+        });
+        assert.equal(first.status, 200);
+
+        const second = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-codex-local-server",
+            input: "second",
+            stream: false
+          })
+        });
+        assert.equal(second.status, 200);
+      });
+    }, state);
+
+    assert.deepEqual(observedEfforts, ["low", "high"]);
   });
 });
 

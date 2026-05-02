@@ -43,6 +43,17 @@ function defaultCapabilities(overrides?: Partial<ModelEntry["capabilities"]>): M
   };
 }
 
+function normalizeReasoningEffort(value: unknown): ModelEntry["reasoningEffort"] {
+  return value === "low" || value === "medium" || value === "high" ? value : null;
+}
+
+function resolveEffectiveReasoningEffort(
+  binding: Pick<EntryBinding, "reasoningEffortOverride"> | null | undefined,
+  model: Pick<ModelEntry, "reasoningEffort"> | null | undefined,
+): ModelEntry["reasoningEffort"] {
+  return normalizeReasoningEffort(binding?.reasoningEffortOverride) ?? normalizeReasoningEffort(model?.reasoningEffort);
+}
+
 function canBindTaskToModel(taskId: string, model: InternalModelEntry | undefined | null) {
   if (!model || taskId !== "task-codex-repo") {
     return { ok: true as const };
@@ -507,6 +518,8 @@ export async function listEntryBindingResolutions(): Promise<EntryBindingResolut
         controllable: entry?.controllable ?? false,
         defaultModelEntryId: binding.defaultModelEntryId,
         fallbackModelEntryId: binding.fallbackModelEntryId,
+        reasoningEffortOverride: binding.reasoningEffortOverride ?? null,
+        effectiveReasoningEffort: resolveEffectiveReasoningEffort(binding, model),
         statusNote: binding.statusNote,
         resolvedModel: model
           ? {
@@ -539,6 +552,7 @@ export async function saveEntryBinding(input: EntryBinding): Promise<EntryBindin
   current.fallbackModelEntryId = input.fallbackModelEntryId;
   current.fallbackModelEntryName =
     mockState.modelEntries.find((item) => item.id === input.fallbackModelEntryId)?.name ?? null;
+  current.reasoningEffortOverride = input.reasoningEffortOverride ?? null;
   current.statusNote = input.statusNote;
   return delay(current);
 }

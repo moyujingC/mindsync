@@ -1,15 +1,76 @@
+import { useMemo, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { Section } from "../components/Section";
 import { useAsyncResource } from "../hooks/useAsyncResource";
-import type { EntryBindingResolution } from "../models/controlPlane";
-import { listEntryBindingResolutions } from "../services/controlPlane";
+import type { EntryBinding, EntryBindingResolution, ReasoningEffort } from "../models/controlPlane";
+import { listEntryBindingResolutions, saveEntryBinding } from "../services/controlPlane";
 
 const RELAY_TOKEN_NAME = "RELAYHUB_RELAY_TOKEN";
+const REASONING_OPTIONS: Array<{ value: "" | ReasoningEffort; label: string }> = [
+  { value: "", label: "跟随模型" },
+  { value: "low", label: "low（想得浅）" },
+  { value: "medium", label: "medium（想得中）" },
+  { value: "high", label: "high（想得深）" },
+];
 
 export function EntriesPage() {
-  const resolutions = useAsyncResource(() => listEntryBindingResolutions(), []);
-  const paperclipEntries = (resolutions.data ?? []).filter((item) => item.clientFamily === "paperclip");
-  const observeOnlyEntries = (resolutions.data ?? []).filter((item) => item.protocolFamily === "observe-only");
+  const [version, setVersion] = useState(0);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [savingEntryId, setSavingEntryId] = useState<string | null>(null);
+  const [overrideDrafts, setOverrideDrafts] = useState<Record<string, string>>({});
+  const resolutions = useAsyncResource(() => listEntryBindingResolutions(), [version]);
+
+  const paperclipEntries = useMemo(
+    () => (resolutions.data ?? []).filter((item) => item.clientFamily === "paperclip"),
+    [resolutions.data],
+  );
+  const observeOnlyEntries = useMemo(
+    () => (resolutions.data ?? []).filter((item) => item.protocolFamily === "observe-only"),
+    [resolutions.data],
+  );
+
+  function resolveDraftValue(entry: EntryBindingResolution) {
+    const draft = overrideDrafts[entry.entryId];
+    if (draft !== undefined) {
+      return draft;
+    }
+    return entry.reasoningEffortOverride ?? "";
+  }
+
+  async function handleOverrideSave(entry: EntryBindingResolution) {
+    setFeedback(null);
+    setError(null);
+    setSavingEntryId(entry.entryId);
+
+    try {
+      const nextOverride = normalizeDraft(resolveDraftValue(entry));
+      const payload: EntryBinding = {
+        entryId: entry.entryId,
+        defaultModelEntryId: entry.defaultModelEntryId,
+        defaultModelEntryName: entry.resolvedModel?.name ?? null,
+        fallbackModelEntryId: entry.fallbackModelEntryId,
+        fallbackModelEntryName: null,
+        reasoningEffortOverride: nextOverride,
+        statusNote: entry.statusNote ?? "",
+      };
+      await saveEntryBinding(payload);
+      setVersion((current) => current + 1);
+      setOverrideDrafts((current) => ({
+        ...current,
+        [entry.entryId]: nextOverride ?? "",
+      }));
+      setFeedback(
+        nextOverride
+          ? `已为 ${entry.entryId} 单独设置推理强度为 ${nextOverride}。以后这个入口会按这档执行。`
+          : `已把 ${entry.entryId} 改回跟随模型默认推理强度。`,
+      );
+    } catch (currentError) {
+      setError(currentError instanceof Error ? currentError.message : "入口推理强度保存失败。");
+    } finally {
+      setSavingEntryId(null);
+    }
+  }
 
   return (
     <div className="page-grid">
@@ -22,6 +83,9 @@ export function EntriesPage() {
           </p>
         </div>
       </section>
+
+      {feedback ? <p className="form-success">{feedback}</p> : null}
+      {error ? <p className="form-error">{error}</p> : null}
 
       <Section
         title="Paperclip 入口解析"
@@ -48,8 +112,31 @@ export function EntriesPage() {
                     <p>真实模型：{entry.resolvedModel.name} / {entry.resolvedModel.modelId}</p>
                     <p className="supporting-text">Base URL：{entry.resolvedModel.baseUrl}</p>
                     <p className="supporting-text">
-                      推理强度：{entry.resolvedModel.reasoningEffort ?? "跟随默认"} / 密钥：{entry.resolvedModel.hasStoredApiKey ? "已存" : "缺失"} / 状态：{entry.resolvedModel.status}
+                      模型级推理强度：{formatReasoningLabel(entry.resolvedModel.reasoningEffort, "这个模型当前没有默认推理强度")}
                     </p>
+                    <p className="supporting-text">
+                      入口级覆盖：{entry.reasoningEffortOverride ? `${entry.reasoningEffortOverride}（入口覆盖生效）` : "跟随模型"}
+                    </p>
+                    <p className="supporting-text">
+                      最终生效值：{formatReasoningLabel(entry.effectiveReasoningEffort, "当前没有生效中的推理强度")}
+                    </p>
+                    <p className="supporting-text">
+                      密钥：{entry.resolvedModel.hasStoredApiKey ? "已存" : "缺失"} / 状态：{entry.resolvedModel.status}
+                    </p>
+                    {entry.controllable ? (
+                      <EntryOverrideEditor
+                        entry={entry}
+                        draftValue={resolveDraftValue(entry)}
+                        saving={savingEntryId === entry.entryId}
+                        onDraftChange={(value) =>
+                          setOverrideDrafts((current) => ({
+                            ...current,
+                            [entry.entryId]: value,
+                          }))
+                        }
+                        onSave={() => handleOverrideSave(entry)}
+                      />
+                    ) : null}
                   </>
                 ) : (
                   <p className="supporting-text">当前还没有解析到真实模型，先去入口绑定里补默认模型。</p>
@@ -80,6 +167,48 @@ export function EntriesPage() {
   );
 }
 
+function EntryOverrideEditor({
+  entry,
+  draftValue,
+  saving,
+  onDraftChange,
+  onSave,
+}: {
+  entry: EntryBindingResolution;
+  draftValue: string;
+  saving: boolean;
+  onDraftChange: (value: string) => void;
+  onSave: () => void;
+}) {
+  return (
+    <div style={{ marginTop: 12 }}>
+      <label className="field-label" htmlFor={`reasoning-override-${entry.entryId}`}>
+        入口级推理强度覆盖
+      </label>
+      <select
+        id={`reasoning-override-${entry.entryId}`}
+        value={draftValue}
+        onChange={(event) => onDraftChange(event.target.value)}
+        disabled={saving}
+      >
+        {REASONING_OPTIONS.map((option) => (
+          <option key={option.value || "follow-model"} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <p className="supporting-text">
+        模型级推理强度代表“这个模型默认想多深”；入口级覆盖代表“这个入口单独改，不影响别的入口”。
+      </p>
+      <div className="inline-actions">
+        <button type="button" className="button-link" onClick={onSave} disabled={saving}>
+          {saving ? "正在保存..." : "保存入口覆盖"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function TemplateCard({ entry }: { entry: EntryBindingResolution }) {
   return (
     <div className="supporting-text" style={{ marginTop: 12 }}>
@@ -100,4 +229,21 @@ function resolveRelayUrl(entry: EntryBindingResolution) {
     return "https://relayhub.jingshu.cc/claude/v1/responses";
   }
   return "https://relayhub.jingshu.cc/claude/v1/chat/completions";
+}
+
+function normalizeDraft(value: string): ReasoningEffort | null {
+  return value === "low" || value === "medium" || value === "high" ? value : null;
+}
+
+function formatReasoningLabel(value: ReasoningEffort | null, fallback: string) {
+  if (!value) {
+    return fallback;
+  }
+  if (value === "low") {
+    return "low（想得浅）";
+  }
+  if (value === "medium") {
+    return "medium（想得中）";
+  }
+  return "high（想得深）";
 }

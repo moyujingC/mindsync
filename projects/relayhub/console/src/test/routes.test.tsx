@@ -57,6 +57,28 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("Paperclip 入口解析")).toBeInTheDocument();
     expect((await screen.findAllByText("一次性接入模板")).length).toBeGreaterThan(0);
     expect((await screen.findAllByText(/RELAYHUB_RELAY_TOKEN/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/模型级推理强度：/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/入口级覆盖：/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/最终生效值：/)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByLabelText("入口级推理强度覆盖")).length).toBeGreaterThan(0);
+  });
+
+  it("saves entry-level reasoning override from entries route", async () => {
+    const saveSpy = vi.spyOn(controlPlaneService, "saveEntryBinding");
+    renderRoute("/entries");
+
+    const cards = await screen.findAllByRole("article");
+    const firstCard = cards[0]!;
+    const select = within(firstCard).getByLabelText("入口级推理强度覆盖");
+    fireEvent.change(select, {
+      target: { value: "high" },
+    });
+    fireEvent.click(within(firstCard).getByRole("button", { name: "保存入口覆盖" }));
+
+    await waitFor(() => {
+      expect(saveSpy).toHaveBeenCalled();
+    });
+    expect(await screen.findByText(/单独设置推理强度为 high/)).toBeInTheDocument();
   });
 
   it("renders runs route with governance overview", async () => {

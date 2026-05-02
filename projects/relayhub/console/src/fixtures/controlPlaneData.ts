@@ -458,6 +458,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "AITechFlux 中转",
     fallbackModelEntryId: "preset-openrouter-coding",
     fallbackModelEntryName: "OpenRouter Coding",
+    reasoningEffortOverride: null,
     statusNote: "本地 Claude IDE 默认走 Anthropic 兼容入口。",
   },
   {
@@ -466,6 +467,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "PPChat 中转",
     fallbackModelEntryId: "preset-siliconflow",
     fallbackModelEntryName: "SiliconFlow 通用目录",
+    reasoningEffortOverride: null,
     statusNote: "本地 Codex IDE 默认走 Responses 兼容入口。",
   },
   {
@@ -474,6 +476,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: null,
     fallbackModelEntryId: null,
     fallbackModelEntryName: null,
+    reasoningEffortOverride: null,
     statusNote: "只做观测，不参与中转接管。",
   },
   {
@@ -482,6 +485,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "AITechFlux 中转",
     fallbackModelEntryId: "preset-openrouter-coding",
     fallbackModelEntryName: "OpenRouter Coding",
+    reasoningEffortOverride: null,
     statusNote: "本地 claude_local 跟随本地 Anthropic 兼容入口。",
   },
   {
@@ -490,6 +494,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "AITechFlux 中转",
     fallbackModelEntryId: "preset-openrouter-coding",
     fallbackModelEntryName: "OpenRouter Coding",
+    reasoningEffortOverride: null,
     statusNote: "服务器 claude_local 跟随服务器 Anthropic 兼容入口。",
   },
   {
@@ -498,6 +503,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "PPChat 中转",
     fallbackModelEntryId: "preset-siliconflow",
     fallbackModelEntryName: "SiliconFlow 通用目录",
+    reasoningEffortOverride: null,
     statusNote: "本地 codex_local 跟随本地 Responses 兼容入口。",
   },
   {
@@ -506,6 +512,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "PPChat 中转",
     fallbackModelEntryId: "preset-siliconflow",
     fallbackModelEntryName: "SiliconFlow 通用目录",
+    reasoningEffortOverride: null,
     statusNote: "服务器 codex_local 跟随服务器 Responses 兼容入口。",
   },
   {
@@ -514,6 +521,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "DeepSeek V3 官方",
     fallbackModelEntryId: "preset-volcengine-doubao",
     fallbackModelEntryName: "豆包 1.5 Pro 官方",
+    reasoningEffortOverride: null,
     statusNote: "本地 pi_local 以 provider 配置方式跟随入口绑定。",
   },
   {
@@ -522,6 +530,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "DeepSeek V3 官方",
     fallbackModelEntryId: "preset-volcengine-doubao",
     fallbackModelEntryName: "豆包 1.5 Pro 官方",
+    reasoningEffortOverride: null,
     statusNote: "服务器 pi_local 以 provider 配置方式跟随入口绑定。",
   },
   {
@@ -530,6 +539,7 @@ export const seedEntryBindings: EntryBinding[] = [
     defaultModelEntryName: "DeepSeek V3 官方",
     fallbackModelEntryId: "preset-volcengine-doubao",
     fallbackModelEntryName: "豆包 1.5 Pro 官方",
+    reasoningEffortOverride: null,
     statusNote: "服务器 hermes_local 通过 OPENAI_* 跟随入口绑定。",
   },
 ];

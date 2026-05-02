@@ -36,6 +36,15 @@
 - 默认追加 `--setting-sources local`
 - 如当前 `Claude Code` 版本支持，才会追加 `--bare`
 
+这里要特别分清两种 key（密钥）：
+
+- `RELAYHUB_RELAY_TOKEN`
+  - 这是 RelayHub 数据面的门禁 token（谁能调用 RelayHub 中转 API）
+  - 它不是上游模型厂商的真实 API Key
+- 上游厂商 API Key
+  - 这是 RelayHub 服务器自己拿去请求真实模型厂商时用的密钥
+  - 由 RelayHub 控制面托管，不需要再暴露给 Claude Code 或 Paperclip 面板
+
 这套口径的目的很简单：
 
 - 让 `Claude Code` 固定命中 release 上的 `dev-relay`

@@ -67,6 +67,13 @@ function normalizeReasoningEffort(value) {
   return value === "low" || value === "medium" || value === "high" ? value : null;
 }
 
+function normalizeEntryBinding(binding) {
+  return {
+    ...binding,
+    reasoningEffortOverride: normalizeReasoningEffort(binding?.reasoningEffortOverride)
+  };
+}
+
 function migrateMissingPresetModelEntries(state) {
   const existingEntries = Array.isArray(state.modelEntries) ? state.modelEntries : [];
   let changed = false;
@@ -114,7 +121,9 @@ function migrateMissingPresetModelEntries(state) {
     state: {
       ...state,
       entries: Array.isArray(state.entries) ? state.entries : clone(seedEntries),
-      entryBindings: Array.isArray(state.entryBindings) ? state.entryBindings : clone(seedEntryBindings),
+      entryBindings: Array.isArray(state.entryBindings)
+        ? state.entryBindings.map((binding) => normalizeEntryBinding(binding))
+        : clone(seedEntryBindings).map((binding) => normalizeEntryBinding(binding)),
       modelEntries: [...normalizedExistingEntries, ...missingPresetEntries]
     }
   };

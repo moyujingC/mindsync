@@ -535,60 +535,70 @@ export const seedEntryBindings = [
     entryId: "entry-claude-ide-local",
     defaultModelEntryId: "preset-aitechflux-relay",
     fallbackModelEntryId: "preset-openrouter-coding",
+    reasoningEffortOverride: null,
     statusNote: "本地 Claude IDE 默认走 Anthropic 兼容入口。"
   },
   {
     entryId: "entry-codex-ide-local",
     defaultModelEntryId: "preset-ppchat-relay",
     fallbackModelEntryId: "preset-siliconflow",
+    reasoningEffortOverride: null,
     statusNote: "本地 Codex IDE 默认走 Responses 兼容入口。"
   },
   {
     entryId: "entry-claude-mobile-observe",
     defaultModelEntryId: null,
     fallbackModelEntryId: null,
+    reasoningEffortOverride: null,
     statusNote: "只做观测，不参与中转接管。"
   },
   {
     entryId: "entry-paperclip-claude-local-mac",
     defaultModelEntryId: "preset-aitechflux-relay",
     fallbackModelEntryId: "preset-openrouter-coding",
+    reasoningEffortOverride: null,
     statusNote: "本地 claude_local 跟随本地 Anthropic 兼容入口。"
   },
   {
     entryId: "entry-paperclip-claude-local-server",
     defaultModelEntryId: "preset-aitechflux-relay",
     fallbackModelEntryId: "preset-openrouter-coding",
+    reasoningEffortOverride: null,
     statusNote: "服务器 claude_local 跟随服务器 Anthropic 兼容入口。"
   },
   {
     entryId: "entry-paperclip-codex-local-mac",
     defaultModelEntryId: "preset-ppchat-relay",
     fallbackModelEntryId: "preset-siliconflow",
+    reasoningEffortOverride: null,
     statusNote: "本地 codex_local 跟随本地 Responses 兼容入口。"
   },
   {
     entryId: "entry-paperclip-codex-local-server",
     defaultModelEntryId: "preset-ppchat-relay",
     fallbackModelEntryId: "preset-siliconflow",
+    reasoningEffortOverride: null,
     statusNote: "服务器 codex_local 跟随服务器 Responses 兼容入口。"
   },
   {
     entryId: "entry-paperclip-pi-local-mac",
     defaultModelEntryId: "preset-deepseek-v3",
     fallbackModelEntryId: "preset-volcengine-doubao",
+    reasoningEffortOverride: null,
     statusNote: "本地 pi_local 以 provider 配置方式跟随入口绑定。"
   },
   {
     entryId: "entry-paperclip-pi-local-server",
     defaultModelEntryId: "preset-deepseek-v3",
     fallbackModelEntryId: "preset-volcengine-doubao",
+    reasoningEffortOverride: null,
     statusNote: "服务器 pi_local 以 provider 配置方式跟随入口绑定。"
   },
   {
     entryId: "entry-paperclip-hermes-local-server",
     defaultModelEntryId: "preset-deepseek-v3",
     fallbackModelEntryId: "preset-volcengine-doubao",
+    reasoningEffortOverride: null,
     statusNote: "服务器 hermes_local 通过 OPENAI_* 跟随入口绑定。"
   }
 ];

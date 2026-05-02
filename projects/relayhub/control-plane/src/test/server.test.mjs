@@ -223,6 +223,7 @@ test("GET /entry-bindings returns per-entry default model bindings", async () =>
     const claudeLocalMac = payload.find((item) => item.entryId === "entry-paperclip-claude-local-mac");
     assert.ok(claudeLocalMac);
     assert.equal(typeof claudeLocalMac.statusNote, "string");
+    assert.equal(claudeLocalMac.reasoningEffortOverride, null);
   });
 });
 
@@ -249,6 +250,8 @@ test("GET /entry-bindings/resolutions returns public resolved entry view without
       assert.ok(resolved);
       assert.equal(resolved.alias, "relayhub-entry-paperclip-claude-local-server");
       assert.equal(resolved.clientFamily, "paperclip");
+      assert.equal(resolved.reasoningEffortOverride, null);
+      assert.equal(resolved.effectiveReasoningEffort, null);
       assert.equal(typeof resolved.resolvedModel.baseUrl, "string");
       assert.equal(typeof resolved.resolvedModel.modelId, "string");
       assert.equal(typeof resolved.resolvedModel.hasStoredApiKey, "boolean");
@@ -269,6 +272,7 @@ test("PATCH /entry-bindings/:entryId updates the entry default model binding", a
       body: JSON.stringify({
         defaultModelEntryId: "preset-siliconflow",
         fallbackModelEntryId: "preset-ppchat-relay",
+        reasoningEffortOverride: "high",
         statusNote: "切到更便宜入口。"
       })
     });
@@ -278,8 +282,114 @@ test("PATCH /entry-bindings/:entryId updates the entry default model binding", a
     assert.equal(payload.defaultModelEntryId, "preset-siliconflow");
     assert.equal(payload.defaultModelEntryName, "SiliconFlow 通用目录");
     assert.equal(payload.fallbackModelEntryId, "preset-ppchat-relay");
+    assert.equal(payload.reasoningEffortOverride, "high");
     assert.equal(payload.statusNote, "切到更便宜入口。");
   });
+});
+
+test("POST /internal/resolve-entry-binding returns override and effective reasoning effort", async () => {
+  const previousToken = process.env.RELAYHUB_INTERNAL_TOKEN;
+  process.env.RELAYHUB_INTERNAL_TOKEN = "relayhub-internal-test";
+  try {
+    await withTempDataDir(async () => {
+      await withServer(async (baseUrl) => {
+        const modelResponse = await fetch(`${baseUrl}/models/preset-ppchat-relay`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            modelId: "gpt-5.4",
+            reasoningEffort: "medium",
+            apiKey: "sk-ppchat-test"
+          })
+        });
+        assert.equal(modelResponse.status, 200);
+
+        const bindingResponse = await fetch(`${baseUrl}/entry-bindings/entry-paperclip-codex-local-server`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            defaultModelEntryId: "preset-ppchat-relay",
+            reasoningEffortOverride: "high"
+          })
+        });
+        assert.equal(bindingResponse.status, 200);
+
+        const response = await fetch(`${baseUrl}/internal/resolve-entry-binding`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-relayhub-internal-token": "relayhub-internal-test"
+          },
+          body: JSON.stringify({
+            entryId: "entry-paperclip-codex-local-server"
+          })
+        });
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+
+        assert.equal(payload.reasoningEffortOverride, "high");
+        assert.equal(payload.resolvedModel.reasoningEffort, "medium");
+        assert.equal(payload.effectiveReasoningEffort, "high");
+      });
+    });
+  } finally {
+    if (previousToken === undefined) {
+      delete process.env.RELAYHUB_INTERNAL_TOKEN;
+    } else {
+      process.env.RELAYHUB_INTERNAL_TOKEN = previousToken;
+    }
+  }
+});
+
+test("readState backfills missing reasoningEffortOverride on legacy entry bindings", async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "relayhub-control-plane-legacy-"));
+  const previousDataDir = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR;
+  process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR = tempDir;
+
+  try {
+    const legacyState = {
+      modelEntries: [],
+      entries: [],
+      entryBindings: [
+        {
+          entryId: "entry-claude-ide-local",
+          defaultModelEntryId: null,
+          defaultModelEntryName: null,
+          fallbackModelEntryId: null,
+          fallbackModelEntryName: null,
+          statusNote: "legacy binding"
+        }
+      ],
+      tasks: [],
+      runs: [],
+      nextIds: {
+        model: 1,
+        task: 1,
+        run: 1
+      }
+    };
+
+    await fs.writeFile(path.join(tempDir, "state.json"), JSON.stringify(legacyState, null, 2), "utf8");
+    await fs.writeFile(path.join(tempDir, "model-secrets.json"), JSON.stringify({}, null, 2), "utf8");
+
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/entry-bindings`);
+      assert.equal(response.status, 200);
+      const payload = await response.json();
+      assert.equal(payload[0].reasoningEffortOverride, null);
+    });
+  } finally {
+    if (previousDataDir === undefined) {
+      delete process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR;
+    } else {
+      process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR = previousDataDir;
+    }
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
 });
 
 test("POST /models/:id/test promotes a configured entry to active", async () => {

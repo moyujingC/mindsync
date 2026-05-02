@@ -79,6 +79,10 @@ function normalizeReasoningEffort(value) {
   return value === "low" || value === "medium" || value === "high" ? value : null;
 }
 
+function resolveEffectiveReasoningEffort(binding, modelEntry) {
+  return normalizeReasoningEffort(binding?.reasoningEffortOverride) ?? normalizeReasoningEffort(modelEntry?.reasoningEffort);
+}
+
 function attachReasoningConfig(payload, entry, endpointKind) {
   const effort = normalizeReasoningEffort(entry.reasoningEffort);
   if (!effort) {
@@ -175,6 +179,8 @@ function buildPublicEntryBindingResolution(state, secrets, entryId) {
     ? state.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null
     : null;
 
+  const effectiveReasoningEffort = resolveEffectiveReasoningEffort(binding, resolvedModel);
+
   return {
     entryId,
     alias: relayEntry?.alias ?? null,
@@ -185,6 +191,8 @@ function buildPublicEntryBindingResolution(state, secrets, entryId) {
     controllable: relayEntry?.controllable ?? false,
     defaultModelEntryId: binding?.defaultModelEntryId ?? null,
     fallbackModelEntryId: binding?.fallbackModelEntryId ?? null,
+    reasoningEffortOverride: binding?.reasoningEffortOverride ?? null,
+    effectiveReasoningEffort,
     statusNote: binding?.statusNote ?? null,
     resolvedModel: resolvedModel
       ? {
@@ -699,12 +707,15 @@ function resolveEntryBindingPayload(state, secrets, entryId) {
   }
 
   const apiKey = getStoredApiKey(secrets, modelEntry.id);
+  const effectiveReasoningEffort = resolveEffectiveReasoningEffort(binding, modelEntry);
   return {
     ok: true,
     payload: {
       entryId,
       defaultModelEntryId: binding.defaultModelEntryId,
       fallbackModelEntryId: binding.fallbackModelEntryId ?? null,
+      reasoningEffortOverride: binding.reasoningEffortOverride ?? null,
+      effectiveReasoningEffort,
       resolvedModel: {
         id: modelEntry.id,
         baseUrl: modelEntry.baseUrl,
@@ -904,6 +915,7 @@ async function handleRequest(request, response) {
       binding.defaultModelEntryName = nextDefaultEntry?.name ?? null;
       binding.fallbackModelEntryId = nextFallbackId;
       binding.fallbackModelEntryName = nextFallbackEntry?.name ?? null;
+      binding.reasoningEffortOverride = normalizeReasoningEffort(body.reasoningEffortOverride);
       binding.statusNote = typeof body.statusNote === "string" && body.statusNote.trim()
         ? body.statusNote.trim()
         : binding.statusNote;

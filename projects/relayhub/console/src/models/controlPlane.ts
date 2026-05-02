@@ -121,6 +121,7 @@ export interface EntryBinding {
   defaultModelEntryName: string | null;
   fallbackModelEntryId: string | null;
   fallbackModelEntryName: string | null;
+  reasoningEffortOverride: ReasoningEffort | null;
   statusNote: string;
 }
 
@@ -134,6 +135,8 @@ export interface EntryBindingResolution {
   controllable: boolean;
   defaultModelEntryId: string | null;
   fallbackModelEntryId: string | null;
+  reasoningEffortOverride: ReasoningEffort | null;
+  effectiveReasoningEffort: ReasoningEffort | null;
   statusNote: string | null;
   resolvedModel: {
     id: string;

@@ -175,8 +175,12 @@ function normalizeReasoningEffort(value) {
   return value === "low" || value === "medium" || value === "high" ? value : null;
 }
 
-function attachReasoningConfig(payload, entry, endpointKind) {
-  const effort = normalizeReasoningEffort(entry.reasoningEffort);
+function resolveEffectiveReasoningEffort(binding, entry) {
+  return normalizeReasoningEffort(binding?.reasoningEffortOverride) ?? normalizeReasoningEffort(entry?.reasoningEffort);
+}
+
+function attachReasoningConfig(payload, binding, entry, endpointKind) {
+  const effort = resolveEffectiveReasoningEffort(binding, entry);
   if (!effort) {
     return payload;
   }
@@ -420,7 +424,8 @@ function resolveEntryBinding(state, entryId, options = {}) {
   return {
     ok: true,
     entryBinding,
-    entry
+    entry,
+    effectiveReasoningEffort: resolveEffectiveReasoningEffort(entryBinding, entry)
   };
 }
 
@@ -542,7 +547,8 @@ function resolveRelayBinding(state, taskId, options = {}) {
   return {
     ok: true,
     task,
-    entry
+    entry,
+    effectiveReasoningEffort: resolveEffectiveReasoningEffort(null, entry)
   };
 }
 
@@ -882,10 +888,11 @@ async function proxyChatCompletions(request, response) {
 
   const task = "task" in resolved ? resolved.task : { id: requestedEntryId ?? CLAUDE_RELAY_TASK_ID };
   const entry = resolved.entry;
+  const binding = "entryBinding" in resolved ? resolved.entryBinding : null;
   const upstreamBody = attachReasoningConfig({
     ...body,
     model: entry.modelId
-  }, entry, "chat-completions");
+  }, binding, entry, "chat-completions");
   const bodyText = JSON.stringify(upstreamBody);
   const relayContext = {
     taskId: task.id,
@@ -1166,6 +1173,7 @@ async function proxyAnthropicMessages(request, response) {
     return;
   }
 
+  const binding = "entryBinding" in resolved ? resolved.entryBinding : null;
   const upstreamBody = attachReasoningConfig({
     model: entry.modelId,
     messages: mapAnthropicMessagesToOpenAI(body),
@@ -1175,7 +1183,7 @@ async function proxyAnthropicMessages(request, response) {
     stream: false,
     tools: mapAnthropicToolsToOpenAI(body.tools),
     tool_choice: mapAnthropicToolChoiceToOpenAI(body.tool_choice) ?? (body.tools?.length ? "auto" : undefined)
-  }, entry, "chat-completions");
+  }, binding, entry, "chat-completions");
   const bodyText = JSON.stringify(upstreamBody);
   const relayContext = {
     taskId: task.id,
@@ -1385,10 +1393,11 @@ async function proxyResponses(request, response) {
 
   const task = "task" in resolved ? resolved.task : { id: requestedEntryId };
   const entry = resolved.entry;
+  const binding = "entryBinding" in resolved ? resolved.entryBinding : null;
   const upstreamBody = attachReasoningConfig({
     ...body,
     model: entry.modelId
-  }, entry, "responses");
+  }, binding, entry, "responses");
   const bodyText = JSON.stringify(upstreamBody);
   const relayContext = {
     taskId: task.id,
