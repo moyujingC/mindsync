@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -22,6 +23,7 @@ export function EntriesView() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [copiedEntryId, setCopiedEntryId] = useState<string | null>(null);
 
   const query = useQuery({
     queryKey: ["entry-binding-resolutions"],
@@ -59,9 +61,14 @@ export function EntriesView() {
   const items = query.data ?? [];
   const activeEntries = items.filter((item) => item.protocolFamily !== "observe-only");
   const observeEntries = items.filter((item) => item.protocolFamily === "observe-only");
-  const resolvedCount = activeEntries.filter((item) => item.resolvedModel).length;
-  const riskCount = activeEntries.filter((item) => !item.resolvedModel || !item.resolvedModel.hasStoredApiKey).length;
   const controllableCount = activeEntries.filter((item) => item.controllable).length;
+  const configuredCount = activeEntries.filter((item) => getEntryConnectionState(item).key !== "not-configured").length;
+  const readyCount = activeEntries.filter((item) => getEntryConnectionState(item).key === "ready").length;
+  const pendingCount = activeEntries.filter((item) => getEntryConnectionState(item).key === "pending-test").length;
+  const needsAttentionCount = activeEntries.filter((item) => {
+    const state = getEntryConnectionState(item).key;
+    return state === "not-configured" || state === "missing-key" || state === "failed";
+  }).length;
 
   return (
     <div className="space-y-6">
@@ -71,8 +78,13 @@ export function EntriesView() {
       <section className="grid gap-4 xl:grid-cols-4">
         <SummaryCard label="可控入口" value={controllableCount} hint="这些入口可以直接在 RelayHub 里切默认模型或推理强度。" tone="success" />
         <SummaryCard label="只观测入口" value={observeEntries.length} hint="这些入口只记录行为，不进入 RelayHub 数据面。" />
-        <SummaryCard label="已解析模型" value={resolvedCount} hint="说明已经知道这个入口最终会打到哪个真实模型。" />
-        <SummaryCard label="风险入口" value={riskCount} hint="包括还没绑定到模型，或模型缺少厂商密钥的入口。" tone={riskCount > 0 ? "warning" : "neutral"} />
+        <SummaryCard label="后台已配置" value={configuredCount} hint="说明 RelayHub 已经知道这个入口该打到哪个模型。" />
+        <SummaryCard
+          label="待处理入口"
+          value={needsAttentionCount}
+          hint={`包括未配置、缺少厂商密钥，或测试失败的入口。另有 ${readyCount} 个已可用，${pendingCount} 个待测试。`}
+          tone={needsAttentionCount > 0 ? "warning" : "neutral"}
+        />
       </section>
 
       <section className="rounded-[28px] border border-slate-200 bg-slate-50/70 p-5 sm:p-6">
@@ -91,7 +103,9 @@ export function EntriesView() {
           {activeEntries.map((entry) => {
             const currentDraft = drafts[entry.entryId] ?? entry.reasoningEffortOverride ?? "";
             const pending = mutation.isPending && mutation.variables?.entryId === entry.entryId;
-            const hasRisk = !entry.resolvedModel || !entry.resolvedModel.hasStoredApiKey;
+            const connectionState = getEntryConnectionState(entry);
+            const taskPrompt = buildCodexTaskPrompt(entry, connectionState);
+            const copyLabel = copiedEntryId === entry.entryId ? "已复制任务文案" : "复制给 Codex";
 
             return (
               <article
@@ -105,11 +119,11 @@ export function EntriesView() {
                       <Badge tone="accent">{entry.alias ?? "未设置 alias"}</Badge>
                       <Badge>{entry.entryId}</Badge>
                       <Badge tone={entry.controllable ? "success" : "warning"}>{entry.controllable ? "可控入口" : "只读入口"}</Badge>
-                      {hasRisk ? <Badge tone="warning">需要处理</Badge> : <Badge tone="success">可继续使用</Badge>}
+                      <Badge tone={connectionState.tone}>{connectionState.label}</Badge>
                     </div>
                     <h4 className="mt-4 text-lg font-semibold text-slate-950">{humanizeClient(entry.clientFamily)} / {humanizeHost(entry.hostType)}</h4>
                     <p className="mt-2 text-sm leading-6 text-slate-600">
-                      这是一个 {humanizeProtocol(entry.protocolFamily)} 入口。你以后切模型，优先在这里确认谁在用、实际用到哪、是否需要单独覆盖推理强度。
+                      这是一个 {humanizeProtocol(entry.protocolFamily)} 入口。先看后台有没有配好，再按下面的任务模板把它交给 Codex 去完成客户端接入。
                     </p>
                   </div>
                 </div>
@@ -119,6 +133,34 @@ export function EntriesView() {
                   <Badge>{humanizeAdapter(entry.adapterType)}</Badge>
                   <Badge>{humanizeHost(entry.hostType)}</Badge>
                   <Badge>{humanizeProtocol(entry.protocolFamily)}</Badge>
+                </div>
+
+                <div className="mt-5">
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4">
+                    <SectionHeading
+                      title="接入状态"
+                      description="把后台配置状态和你是否已经去客户端接线分开看，避免把“可用”误当成“已经接入到使用端”。"
+                    />
+                    <div className="mt-4">
+                      <KeyValueList
+                        items={[
+                          {
+                            label: "后台配置状态",
+                            value: connectionState.label,
+                            emphasize: true,
+                          },
+                          {
+                            label: "状态说明",
+                            value: connectionState.description,
+                          },
+                          {
+                            label: "客户端接线动作",
+                            value: "复制下方任务文案，发给 Codex 代你完成这次接入。",
+                          },
+                        ]}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-5">
@@ -209,19 +251,22 @@ export function EntriesView() {
 
                 <div className="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
                   <SectionHeading
-                    title="一次性接入模板"
-                    description="外部客户端只看这几行就能接线：地址、模型 alias（别名）、认证头。以后切模型和切密钥都回 RelayHub 改。"
+                    title="给 Codex 的一次性接入任务"
+                    description="你只需要复制下面整段文案，发到 Codex 聊天框里。Codex 会按这条入口的协议、地址、alias（别名）和鉴权方式，直接帮你完成本次客户端接线。"
+                    action={
+                      <Button
+                        type="button"
+                        onClick={() => copyTaskPrompt(entry.entryId, taskPrompt, setCopiedEntryId, setFeedback, setError)}
+                        data-testid={`copy-entry-task-${entry.entryId}`}
+                      >
+                        {copyLabel}
+                      </Button>
+                    }
                   />
-                  <div className="mt-4 space-y-2 text-sm text-slate-700">
-                    <p>
-                      URL：<span className="font-mono text-xs text-slate-950">{resolveRelayUrl(entry)}</span>
-                    </p>
-                    <p>
-                      model：<span className="font-mono text-xs text-slate-950">{entry.alias ?? "未设置 alias"}</span>
-                    </p>
-                    <p>
-                      认证：<span className="font-mono text-xs text-slate-950">Authorization: Bearer &lt;{RELAY_TOKEN_NAME}&gt;</span>
-                    </p>
+                  <div className="mt-4 rounded-3xl border border-slate-200 bg-white p-4">
+                    <pre className="overflow-x-auto whitespace-pre-wrap break-words text-xs leading-6 text-slate-800" data-testid={`entry-task-prompt-${entry.entryId}`}>
+                      {taskPrompt}
+                    </pre>
                   </div>
                 </div>
               </article>
@@ -315,4 +360,110 @@ function humanizeModelStatus(value: string) {
   if (value === "test-failed") return "测试失败";
   if (value === "disabled") return "已停用";
   return value;
+}
+
+type EntryConnectionState = {
+  key: "ready" | "pending-test" | "missing-key" | "not-configured" | "failed";
+  label: string;
+  description: string;
+  tone: "success" | "warning" | "danger" | "accent";
+};
+
+function getEntryConnectionState(entry: EntryBindingResolution): EntryConnectionState {
+  if (!entry.resolvedModel) {
+    return {
+      key: "not-configured",
+      label: "后台未配置",
+      description: "RelayHub 里还没解析到真实模型。先去模型库补齐，再回来绑定入口。",
+      tone: "warning",
+    };
+  }
+
+  if (!entry.resolvedModel.hasStoredApiKey) {
+    return {
+      key: "missing-key",
+      label: "模型缺密钥",
+      description: "入口已经知道该走哪个模型，但厂商 API Key（厂商密钥）还没补齐，暂时打不出去。",
+      tone: "danger",
+    };
+  }
+
+  if (entry.resolvedModel.status === "active") {
+    return {
+      key: "ready",
+      label: "后台已可用",
+      description: "RelayHub 这边已经配置完成且测试通过。下一步是把客户端按模板真正接上来。",
+      tone: "success",
+    };
+  }
+
+  if (entry.resolvedModel.status === "configured-pending-test") {
+    return {
+      key: "pending-test",
+      label: "后台待测试",
+      description: "模型和密钥已经填了，但还没完成可用性验证。可以先接线，再补测试确认。",
+      tone: "accent",
+    };
+  }
+
+  return {
+    key: "failed",
+    label: "后台测试异常",
+    description: "当前模型最近一次测试没有通过，建议先处理模型可用性，再安排客户端接入。",
+    tone: "danger",
+  };
+}
+
+function buildCodexTaskPrompt(entry: EntryBindingResolution, connectionState: EntryConnectionState) {
+  const alias = entry.alias ?? entry.entryId;
+  const relayUrl = resolveRelayUrl(entry);
+  const protocol = humanizeProtocol(entry.protocolFamily);
+  const client = humanizeClient(entry.clientFamily);
+  const adapter = humanizeAdapter(entry.adapterType);
+  const host = humanizeHost(entry.hostType);
+  const modelName = entry.resolvedModel?.name ?? "暂未绑定模型";
+  const statusSummary = `${connectionState.label}：${connectionState.description}`;
+
+  return [
+    `请帮我把 RelayHub 的这个入口接到 ${client} 客户端里，并直接完成本次接入配置。`,
+    "",
+    "目标入口信息：",
+    `- entryId: ${entry.entryId}`,
+    `- alias: ${alias}`,
+    `- 客户端: ${client}`,
+    `- adapter（接入适配器）: ${adapter}`,
+    `- host（宿主环境）: ${host}`,
+    `- protocol（协议）: ${protocol}`,
+    `- Relay URL: ${relayUrl}`,
+    `- Authorization: Bearer <${RELAY_TOKEN_NAME}>`,
+    `- 当前绑定模型: ${modelName}`,
+    `- 后台状态: ${statusSummary}`,
+    "",
+    "执行要求：",
+    "- 直接按这个入口的协议和地址完成客户端侧接线，不要改旧 console。",
+    "- 如果需要修改本地或服务器上的客户端配置文件，请直接改，并告诉我改了哪些文件。",
+    "- 如果发现当前环境还缺 RelayHub 门禁 token（门禁卡）或客户端配置位置不明确，请先定位，再继续接入。",
+    "- 完成后请回报：你把哪个客户端接到了哪个 URL，用的是哪个 alias，以及还剩什么风险。",
+  ].join("\n");
+}
+
+async function copyTaskPrompt(
+  entryId: string,
+  taskPrompt: string,
+  setCopiedEntryId: React.Dispatch<React.SetStateAction<string | null>>,
+  setFeedback: (value: string | null) => void,
+  setError: (value: string | null) => void,
+) {
+  try {
+    await navigator.clipboard.writeText(taskPrompt);
+    setCopiedEntryId(entryId);
+    setFeedback(`已复制 ${entryId} 的 Codex 接入任务文案。直接发到 Codex 聊天框即可。`);
+    setError(null);
+    window.setTimeout(() => {
+      setCopiedEntryId((current) => (current === entryId ? null : current));
+    }, 2000);
+  } catch {
+    setError("复制失败。请手动复制下面的任务文案。");
+    setFeedback(null);
+  }
 }

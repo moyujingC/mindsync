@@ -130,8 +130,10 @@ test("Entries 页能打开并保存入口覆盖", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "入口矩阵" })).toBeVisible();
   await expect(page.getByTestId("entries-matrix-badge")).toContainText("2 个主入口");
+  await expect(page.getByText("后台已配置")).toBeVisible();
   await expect(page.getByTestId("entry-card-entry-codex-ide-local")).toBeVisible();
-  await expect(page.getByTestId("entry-card-entry-codex-ide-local").getByRole("heading", { name: "一次性接入模板" })).toBeVisible();
+  await expect(page.getByTestId("entry-card-entry-codex-ide-local").getByRole("heading", { name: "给 Codex 的一次性接入任务" })).toBeVisible();
+  await expect(page.getByTestId("entry-task-prompt-entry-codex-ide-local")).toContainText("请帮我把 RelayHub 的这个入口接到 Codex 客户端里");
 
   await page.getByLabel("entry-codex-ide-local 推理强度覆盖").selectOption("high");
   await page.getByTestId("save-entry-entry-codex-ide-local").click();
