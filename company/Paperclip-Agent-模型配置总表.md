@@ -61,16 +61,19 @@
 
 - Agent：`CEO`
 - Adapter：`claude_local`
-- Base URL：`https://api.deepseek.com/anthropic`
-- Model：`deepseek-v4-pro`
+- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Model：`relayhub-entry-paperclip-claude-local-server`
 - 模型来源：
   - Agent 级 `ANTHROPIC_BASE_URL`
   - Agent 级 `ANTHROPIC_MODEL`
   - Agent 级 `ANTHROPIC_API_KEY`
+  - Agent 级 `ANTHROPIC_AUTH_TOKEN`
 - 当前语义：
-  - 当前通过 `claude_local` 走 DeepSeek 的 Anthropic 兼容入口
-  - 目标是保留现有 adapter 执行链，同时把底层大模型统一到 DeepSeek V4
-  - 对普通任务本地自动执行链，CEO 不再保留服务器宿主例外
+  - 当前通过 `claude_local` 走 RelayHub 的 Anthropic Messages（Claude 协议）入口
+  - `relayhub-entry-paperclip-claude-local-server` 是入口别名，不是真实上游模型名
+  - 真实上游供应商、真实模型名、真实厂商密钥统一在 RelayHub 后台绑定里治理
+  - `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` 在这里是 RelayHub 门禁 token（门禁卡），不是厂商 API Key
+  - 对普通任务本地自动执行链，CEO 继续保留 `server` 入口这条正式分流
 
 ### 3.2 Engineer
 
@@ -151,10 +154,11 @@
 它们当前共享同一组模型入口：
 
 - Adapter：`claude_local`
-- Base URL：`https://api.deepseek.com/anthropic`
-- Model：`deepseek-v4-pro`
+- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Model：`relayhub-entry-paperclip-claude-local-mac`（本机）或 `relayhub-entry-paperclip-claude-local-server`（服务器）
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
+  - `ANTHROPIC_AUTH_TOKEN`
   - `ANTHROPIC_BASE_URL`
   - `ANTHROPIC_MODEL`
   - `ANTHROPIC_DEFAULT_OPUS_MODEL`
@@ -164,12 +168,22 @@
 
 当前明确口径：
 
-- 这组 Agent 当前使用的是 DeepSeek 的 Anthropic 兼容接口
-- 当前采用 API-key 模式，而不是 Claude 登录态模式
+- 这组 Agent 当前正式口径是固定接入 RelayHub，而不是直连某一家上游厂商
+- `ANTHROPIC_MODEL` 控的是 RelayHub entry alias（入口别名），不是 `deepseek-v4-pro` 这类真实模型名
+- 当前采用 RelayHub 门禁 token 模式，而不是 Claude 登录态模式
+- 后续如果要切真实上游模型，应优先改 RelayHub 后台绑定，而不是回写 Paperclip agent 的 `ANTHROPIC_MODEL`
+- [shared/tools/sync-paperclip-claude-local-model.sh](shared/tools/sync-paperclip-claude-local-model.sh) 只保留为初始化或修复工具；它负责把 agent 对齐回 RelayHub，不负责定义真实上游模型是谁
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
   - 且状态为 `warn`
   - 这是预期现象，不单独视为故障
+
+当前宿主分流口径：
+
+- 本机 Mac 侧默认入口：`relayhub-entry-paperclip-claude-local-mac`
+- 服务器侧默认入口：`relayhub-entry-paperclip-claude-local-server`
+- 两条入口都走 `https://relayhub.jingshu.cc/claude/v1/messages`
+- 前端里看到的“当前绑定模型”由 RelayHub 解析结果决定，不由 Paperclip 直接决定
 
 当前面板解读规则：
 
@@ -252,7 +266,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
 ### 5.1 推荐保留
 
 - `CEO`
-  - `claude_local + deepseek-v4-pro`
+  - `claude_local + relayhub-entry-paperclip-claude-local-server`
 - `Engineer`
   - `codex_local + deepseek-v4-pro`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
@@ -263,7 +277,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
 - 规划/产品/内容/研究类 Agent
-  - `claude_local + deepseek-v4-pro`
+  - `claude_local + relayhub-entry-paperclip-claude-local-mac / relayhub-entry-paperclip-claude-local-server`
 - `Idea Clarifier`
   - `pi_local + deepseek-v4-pro`
   - `HOME=/paperclip`
@@ -282,7 +296,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
 
 1. `CEO` 更换模型供应商或 base URL
 2. `Engineer / Test QA` 切换模型
-3. `claude_local` 系列从 API-key 模式改为登录态模式
+3. `claude_local` 系列从 RelayHub 门禁 token 模式改为别的鉴权模式
 4. `Idea Clarifier` 改 adapter 或改为 fallback-only
 5. automation 节点的全局环境变量发生变化
 
