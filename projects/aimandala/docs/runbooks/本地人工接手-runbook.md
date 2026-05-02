@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地人工接手-runbook.md
+> source_of_truth：projects/aimandala/docs/runbooks/本地人工接手-runbook.md
 
 > 2026-04-19 状态说明：
 > 本文档保留为旧 phase 2 手工 handoff 流程的历史 runbook。
@@ -80,7 +80,7 @@
 
 接手 comment 的固定模板见：
 
-- [本地人工接手-comment-模板规范.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
+- [本地人工接手-comment-模板规范.md](projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
 
 ### 3.3 准备本地工作区
 
@@ -126,7 +126,7 @@
 
 进展 comment 与完成 comment 的固定模板见：
 
-- [本地人工接手-comment-模板规范.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
+- [本地人工接手-comment-模板规范.md](projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
 
 ## 4. 推荐状态路径
 
@@ -186,10 +186,10 @@ phase 2 只定义推荐路径，不定义强约束状态机。
 ## 8. 关联文档
 
 1. phase 2 spec：
-   - [../specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md)
+   - [../specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md](projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md)
 2. phase 2 task：
-   - [../tasks/2026-04-19-automation-and-local-execution-routing-phase2-plan.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-19-automation-and-local-execution-routing-phase2-plan.md)
+   - [../tasks/2026-04-19-automation-and-local-execution-routing-phase2-plan.md](projects/aimandala/docs/tasks/2026-04-19-automation-and-local-execution-routing-phase2-plan.md)
 3. phase 2 QA：
-   - [../qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
+   - [../qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
 4. comment 模板规范：
-   - [本地人工接手-comment-模板规范.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
+   - [本地人工接手-comment-模板规范.md](projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)

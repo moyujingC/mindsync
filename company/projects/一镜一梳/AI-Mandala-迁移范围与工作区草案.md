@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md
+> source_of_truth：company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md
 > 项目：aimandala
 > 阶段：problem-framing
-> depends_on：/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md
+> depends_on：company/projects/一镜一梳/PROJECT.md
 > reviewers：Architect, Engineer, Test / QA
 
 ## 1. 背景

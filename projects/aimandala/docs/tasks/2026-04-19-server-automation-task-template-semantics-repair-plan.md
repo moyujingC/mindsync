@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-19-server-automation-task-template-semantics-repair-plan.md
+> source_of_truth：projects/aimandala/docs/tasks/2026-04-19-server-automation-task-template-semantics-repair-plan.md
 > 项目：aimandala
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-19-服务器自动执行任务模板语义修复规格.md
+> depends_on：projects/aimandala/docs/specs/2026-04-19-服务器自动执行任务模板语义修复规格.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 本轮目标

@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/delivery/2026-04-03-mvp-review-memo.md
+> source_of_truth：projects/aicareer/delivery/2026-04-03-mvp-review-memo.md
 > 项目：aicareer
 > 阶段：review
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md
+> depends_on：projects/aicareer/specs/MVP产品规范.md
 
 这份 memo 用于收束 `aicareer` 当前一轮 MVP 文档评审结果，避免 review 结论只停留在聊天记录中。
 

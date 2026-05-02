@@ -4,12 +4,12 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-18
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/delivery/2026-04-18-automation-and-local-execution-routing-phase1-delivery.md
+> source_of_truth：projects/aimandala/docs/delivery/2026-04-18-automation-and-local-execution-routing-phase1-delivery.md
 > 项目：aimandala
 > 阶段：delivery
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-18-automation-and-local-execution-routing-phase1-plan.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-and-local-execution-routing-qa-basis.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-routing-and-heartbeat-gate-verification.md
+> depends_on：projects/aimandala/docs/tasks/2026-04-18-automation-and-local-execution-routing-phase1-plan.md
+> depends_on：projects/aimandala/docs/qa/2026-04-18-automation-and-local-execution-routing-qa-basis.md
+> depends_on：projects/aimandala/docs/qa/2026-04-18-automation-routing-and-heartbeat-gate-verification.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 本轮交付内容

@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-Claude-Code研究结论交付.md
+> source_of_truth：projects/research-center/delivery/2026-04-04-Claude-Code研究结论交付.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -13,9 +13,9 @@
 本次围绕本机 Claude Code 外部源码材料，新增了两份正式产物：
 
 1. 综合研究结论：
-   - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md`
+   - `projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md`
 2. Skill 协议草案：
-   - `/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md`
+   - `projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md`
 
 ## 2. 解决了什么问题
 

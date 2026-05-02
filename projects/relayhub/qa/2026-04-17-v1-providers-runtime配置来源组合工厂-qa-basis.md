@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-17-v1-providers-runtime配置来源组合工厂-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-17-v1-providers-runtime配置来源组合工厂-qa-basis.md
 > 项目：RelayHub
 > 阶段：verification-basis
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-17-v1-providers-runtime配置来源组合工厂实施任务.md
+> depends_on：projects/relayhub/tasks/2026-04-17-v1-providers-runtime配置来源组合工厂实施任务.md
 
 这份文档定义 `RelayHub` 控制台在为 `Providers` 试点补 runtime 配置来源组合工厂时的最小验证口径。
 

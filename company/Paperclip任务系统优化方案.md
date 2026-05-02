@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md
+> source_of_truth：company/Paperclip任务系统优化方案.md
 
 这份文档定义 `知行工坊` 当前阶段对 Paperclip 任务系统的优化方向。
 
@@ -88,9 +88,9 @@
 
 当前约定以：
 
-- [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-- [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
-- [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+- [company/任务创建模板.md](company/任务创建模板.md)
+- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
 
 为执行入口。
 
@@ -134,7 +134,7 @@
 
 这部分规则以：
 
-- [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
+- [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
 
 为准。
 
@@ -196,7 +196,7 @@
 
 已存在：
 
-- [shared/tools/sync-paperclip-project-workspaces.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-project-workspaces.sh)
+- [shared/tools/sync-paperclip-project-workspaces.sh](shared/tools/sync-paperclip-project-workspaces.sh)
 
 用于检查：
 
@@ -206,7 +206,7 @@
 
 本轮新增：
 
-- [shared/tools/paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
+- [shared/tools/paperclip-task-system-audit.mjs](shared/tools/paperclip-task-system-audit.mjs)
 
 用于检查：
 
@@ -313,9 +313,9 @@
 
 当前已先在治理层补齐：
 
-- [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-- [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
-- [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+- [company/任务创建模板.md](company/任务创建模板.md)
+- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
 
 若要处理某一批具体存量任务，应额外创建项目级或阶段性交付文档，不直接写入 `company/` 规则层。
 

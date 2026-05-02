@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-skill-试跑记录-research-brief与knowledge-ingest.md
+> source_of_truth：projects/research-center/delivery/2026-04-04-skill-试跑记录-research-brief与knowledge-ingest.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -24,8 +24,8 @@
 
 ## 2. 输出位置
 
-- [Skill 体系商业化与产品化边界研究 Brief](/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-04-Skill体系商业化与产品化边界研究-brief.md)
-- [Claude Code 启发下的 Skill 与协作方法知识条目](/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/2026-04-04-Claude-Code启发下的Skill与协作方法知识条目.md)
+- [Skill 体系商业化与产品化边界研究 Brief](projects/research-center/tasks/2026-04-04-Skill体系商业化与产品化边界研究-brief.md)
+- [Claude Code 启发下的 Skill 与协作方法知识条目](projects/research-center/kb/2026-04-04-Claude-Code启发下的Skill与协作方法知识条目.md)
 
 ## 3. 按 Skill 走的过程
 

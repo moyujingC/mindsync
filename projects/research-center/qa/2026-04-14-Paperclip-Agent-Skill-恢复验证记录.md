@@ -4,10 +4,10 @@
 > 版本：0.2.0
 > owner：Test / QA
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/qa/2026-04-14-Paperclip-Agent-Skill-恢复验证记录.md
+> source_of_truth：projects/research-center/qa/2026-04-14-Paperclip-Agent-Skill-恢复验证记录.md
 > 项目：研究中心
 > 阶段：verification
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-14-Paperclip-Agent-Skill-恢复实施任务.md
+> depends_on：projects/research-center/tasks/2026-04-14-Paperclip-Agent-Skill-恢复实施任务.md
 
 ## 1. 验证范围
 
@@ -43,7 +43,7 @@
   - 绑定清单已切换为服务器可见路径：
     - `/opt/automation/app/mindsync/shared/skills/getnote`
   - 仓库内已新增受管底层 skill 包：
-    - `/Users/xinran/Downloads/dev/mindsync/shared/skills/getnote/SKILL.md`
+    - `shared/skills/getnote/SKILL.md`
   - 脚本优先使用 `source_type + source_locator` 做解析
 
 ### 2.4 Ruby / Psych 兼容性

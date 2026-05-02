@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-04-skill-试跑记录-Claude-Code到个人号内容输入.md
+> source_of_truth：projects/research-center/delivery/2026-04-04-skill-试跑记录-Claude-Code到个人号内容输入.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -23,16 +23,16 @@
 - 目标账号：
   - `墨予镜`
 - 输出位置：
-  - 历史内容输出目录已删除；如需继续承接，应回到 [company/projects/内容矩阵/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/PROJECT.md) 重新定义落点
+  - 历史内容输出目录已删除；如需继续承接，应回到 [company/projects/内容矩阵/PROJECT.md](company/projects/内容矩阵/PROJECT.md) 重新定义落点
 
 ## 2. 试跑前上下文
 
 本轮读取了以下材料：
 
-- [Claude Code 源码研究综合结论与 Skill 启发](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
-- [内容矩阵项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/PROJECT.md)
-- [个人真实信息与表达基线](/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/个人真实信息与表达基线.md)
-- [内容矩阵](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
+- [Claude Code 源码研究综合结论与 Skill 启发](projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
+- [内容矩阵项目入口](company/projects/内容矩阵/PROJECT.md)
+- [个人真实信息与表达基线](company/projects/内容矩阵/个人真实信息与表达基线.md)
+- [内容矩阵](company/内容矩阵.md)
 
 ## 3. 按 Skill 走的过程
 

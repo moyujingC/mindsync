@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/README.md
+> source_of_truth：company/knowledge-base/README.md
 
 这份索引用于收口 `墨予镜` 的公司级知识库入口。
 
@@ -36,8 +36,8 @@
 
 ## 4. 当前重点入口
 
-- [system/README.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/README.md)
-- [product/方法论/产品可行性研究报告标准模板.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/product/方法论/产品可行性研究报告标准模板.md)
+- [system/README.md](company/knowledge-base/system/README.md)
+- [product/方法论/产品可行性研究报告标准模板.md](company/knowledge-base/product/方法论/产品可行性研究报告标准模板.md)
 
 ## 5. 与项目文档的分工
 

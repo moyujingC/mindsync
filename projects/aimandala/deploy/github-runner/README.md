@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-12
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/github-runner/README.md
+> source_of_truth：projects/aimandala/deploy/github-runner/README.md
 > 项目：aimandala
 > 阶段：ops-runbook
 
@@ -32,7 +32,7 @@
 - 不与正式 `prod` 容器混跑
 - 不直接承载业务服务
 - 仅用于 `ci / deploy / nightly-smoke / auto-repair`
-- 推荐与 `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md` 一起部署
+- 推荐与 `projects/aimandala/deploy/paperclip-automation/README.md` 一起部署
 
 ## 2. 推荐目录
 
@@ -102,7 +102,7 @@ self-hosted,linux,mindsync-ci,aimandala
 
 参考文件：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/github-runner/mindsync-ci-runner.service.example`
+- `projects/aimandala/deploy/github-runner/mindsync-ci-runner.service.example`
 
 ## 6. Watchdog
 
@@ -111,7 +111,7 @@ runner 宕机时，GitHub 上会直接表现为 job 卡在 `Queued` / `Waiting f
 为了把这类问题同步到 Paperclip，第一阶段先接受在同一台 `automation` 节点上定时执行：
 
 ```bash
-node /Users/xinran/Downloads/dev/mindsync/shared/tools/ci/check-runner-heartbeat.mjs \
+node shared/tools/ci/check-runner-heartbeat.mjs \
   --repository moyujingC/mindsync \
   --workflow-file aimandala-ci.yml \
   --branch main

@@ -20,7 +20,7 @@
 检查：
 
 - 优先运行任务系统巡检：
-  - [paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
+  - [paperclip-task-system-audit.mjs](shared/tools/paperclip-task-system-audit.mjs)
 - 当前有哪些活跃项目
 - 哪些任务在推进
 - 哪些任务长时间没有 owner 或没有进展

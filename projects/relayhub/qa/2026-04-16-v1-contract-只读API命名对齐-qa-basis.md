@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-qa-basis.md
 > 项目：RelayHub
 > 阶段：verification-basis
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-contract-只读API命名对齐实施任务.md
+> depends_on：projects/relayhub/tasks/2026-04-16-v1-contract-只读API命名对齐实施任务.md
 
 这份文档定义 `RelayHub` 控制台在为前端只读 contract 引入 `ReadonlyApi` 并行命名层时的最小验证口径。
 

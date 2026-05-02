@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer / QA
 > last_updated：2026-04-22
-> source_of_truth：/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-验证记录.md
+> source_of_truth：projects/relayhub/qa/2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-验证记录.md
 > 项目：RelayHub
 > 阶段：verification
 

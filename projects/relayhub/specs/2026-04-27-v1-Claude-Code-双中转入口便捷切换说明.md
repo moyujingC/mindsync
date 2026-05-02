@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer / Architect
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/specs/2026-04-27-v1-Claude-Code-双中转入口便捷切换说明.md
+> source_of_truth：projects/relayhub/specs/2026-04-27-v1-Claude-Code-双中转入口便捷切换说明.md
 > 项目：RelayHub
 > 阶段：spec
 

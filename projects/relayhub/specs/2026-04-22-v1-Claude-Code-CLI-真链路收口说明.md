@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer / Architect
 > last_updated：2026-04-22
-> source_of_truth：/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md
+> source_of_truth：projects/relayhub/specs/2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md
 > 项目：RelayHub
 > 阶段：spec
 

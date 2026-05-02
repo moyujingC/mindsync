@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-验证记录.md
+> source_of_truth：projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-验证记录.md
 > 项目：RelayHub
 > 阶段：verification
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-qa-basis.md, /Users/xinran/Downloads/dev/mindsync/projects/relayhub/console
+> depends_on：projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-qa-basis.md, projects/relayhub/console
 
 这份文档记录 `RelayHub` 控制台在为前端只读 contract 引入 `ReadonlyApi` 并行命名层后的验证结果。
 

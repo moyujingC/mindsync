@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-SenseVoice-vs-Whisper-中文短视频转写试跑方案.md
+> source_of_truth：projects/research-center/delivery/2026-04-06-SenseVoice-vs-Whisper-中文短视频转写试跑方案.md
 > 项目：研究中心
 > 阶段：delivery
 

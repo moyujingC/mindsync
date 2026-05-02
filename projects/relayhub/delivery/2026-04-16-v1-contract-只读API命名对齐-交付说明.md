@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-contract-只读API命名对齐-交付说明.md
+> source_of_truth：projects/relayhub/delivery/2026-04-16-v1-contract-只读API命名对齐-交付说明.md
 > 项目：RelayHub
 > 阶段：delivery
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-验证记录.md
+> depends_on：projects/relayhub/qa/2026-04-16-v1-contract-只读API命名对齐-验证记录.md
 
 这份文档用于把 `RelayHub` 控制台当前这轮 `ReadonlyApi` 并行命名对齐结果交给下一棒实现者。
 

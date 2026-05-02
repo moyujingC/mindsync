@@ -4,15 +4,15 @@
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-18-automation-and-local-execution-routing-qa-basis.md
+> source_of_truth：projects/aimandala/docs/qa/2026-04-18-automation-and-local-execution-routing-qa-basis.md
 > 项目：aimandala
 > 阶段：qa-basis
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-18-automation-and-local-execution-routing-phase1-plan.md
+> depends_on：projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
+> depends_on：projects/aimandala/docs/tasks/2026-04-18-automation-and-local-execution-routing-phase1-plan.md
 > reviewers：Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-qa-basis.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md) 取代。
 > 其中“普通任务错路由到服务器可写路径时被拒绝并转本地人工接手”的验证目标不再是当前主质量门。
 
 ## 1. 本轮验证对象

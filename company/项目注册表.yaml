@@ -1,6 +1,6 @@
 version: 0.1.0
 last_updated: 2026-04-04
-source_of_truth: /Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml
+source_of_truth: company/项目注册表.yaml
 description: >
   知行工坊公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
   其他文档只做解释，不重复维护对象主数据。
@@ -12,8 +12,8 @@ objects:
     kind: "product"
     status: "active"
     goal: "一镜一梳上线"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md"
+    company_entry: "company/projects/一镜一梳/PROJECT.md"
+    workspace_entry: "projects/aimandala/PROJECT.md"
     runtime_directory: "projects/aimandala"
     purpose:
       - "曼陀罗疗愈方向的核心产品项目"
@@ -26,8 +26,8 @@ objects:
     kind: "product"
     status: "pilot"
     goal: "怀瑾握瑜产品化"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md"
+    company_entry: "company/projects/怀瑾握瑜/PROJECT.md"
+    workspace_entry: "projects/aicareer/PROJECT.md"
     runtime_directory: "projects/aicareer"
     legacy_repository: "https://github.com/MindSyncHub/ai-career"
     purpose:
@@ -41,8 +41,8 @@ objects:
     kind: "product"
     status: "active"
     goal: "馨冉求职推进与交付"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/馨冉求职/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/xinran-jobhunt/PROJECT.md"
+    company_entry: "company/projects/馨冉求职/PROJECT.md"
+    workspace_entry: "projects/xinran-jobhunt/PROJECT.md"
     runtime_directory: "projects/xinran-jobhunt"
     purpose:
       - "承接馨冉本人当前真实求职推进、材料生产与投递协作"
@@ -55,8 +55,8 @@ objects:
     kind: "capability"
     status: "active"
     goal: "研究中心能力建设"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md"
+    company_entry: "company/projects/研究中心/PROJECT.md"
+    workspace_entry: "projects/research-center/PROJECT.md"
     runtime_directory: "projects/research-center"
     purpose:
       - "承接跨项目研究、方法论沉淀与知识资产治理"
@@ -69,8 +69,8 @@ objects:
     kind: "capability"
     status: "active"
     goal: "模型接入、评测与优化决策能力建设"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/relayhub/PROJECT.md"
+    company_entry: "company/projects/RelayHub/PROJECT.md"
+    workspace_entry: "projects/relayhub/PROJECT.md"
     runtime_directory: "projects/relayhub"
     purpose:
       - "承接公司级共享模型接入、路由与观测能力建设"
@@ -83,7 +83,7 @@ objects:
     kind: "capability"
     status: "active"
     goal: "公司级执行与运维底座建设"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md"
+    company_entry: "company/projects/Automation/PROJECT.md"
     purpose:
       - "承接 Paperclip 相关执行路由、服务器 automation、workspace policy、heartbeat 与 maintenance 等共享能力"
       - "为多个项目提供一致的 server_automation 与 local_manual_review 分流口径"
@@ -95,8 +95,8 @@ objects:
     kind: "brand"
     status: "active"
     goal: "多账号内容矩阵与影响力建设"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/content-matrix/PROJECT.md"
+    company_entry: "company/projects/内容矩阵/PROJECT.md"
+    workspace_entry: "projects/content-matrix/PROJECT.md"
     runtime_directory: "projects/content-matrix"
     purpose:
       - "承接公司所有账号的统一内容规划、内容转译与内容资产治理"

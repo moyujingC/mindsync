@@ -54,8 +54,8 @@ handoff_to:
 
 ## 必读上下文
 
-1. `/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md`
-2. `/Users/xinran/Downloads/dev/mindsync/company/研发原则.md`
+1. `DOCS_GOVERNANCE.md`
+2. `company/研发原则.md`
 3. 对应项目 `PROJECT.md`
 4. 当前生效的 `spec / decisions / tasks / qa / delivery`
 

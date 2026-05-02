@@ -22,30 +22,30 @@
 
 ### 公司设计与治理
 
-- [公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md)
-- [研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
-- [任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
-- [Paperclip任务系统优化方案.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md)
-- [任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-- [任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
-- [顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
-- [项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
-- [内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
+- [公司蓝图.md](company/公司蓝图.md)
+- [研发原则.md](company/研发原则.md)
+- [任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
+- [Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
+- [任务类型与标签规范.md](company/任务类型与标签规范.md)
+- [任务创建模板.md](company/任务创建模板.md)
+- [顶层任务收束规则.md](company/顶层任务收束规则.md)
+- [项目与仓库映射.md](company/项目与仓库映射.md)
+- [内容矩阵.md](company/内容矩阵.md)
 
 ## 你优先查看的项目入口
 
 ### 一镜一梳
 
-- [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
+- [PROJECT.md](projects/aimandala/PROJECT.md)
 
 ### 怀瑾握瑜
 
-- [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
+- [PROJECT.md](projects/aicareer/PROJECT.md)
 
 ## 你优先使用的系统巡检工具
 
-- [paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
-- [sync-paperclip-project-workspaces.sh](/Users/xinran/Downloads/dev/mindsync/shared/tools/sync-paperclip-project-workspaces.sh)
+- [paperclip-task-system-audit.mjs](shared/tools/paperclip-task-system-audit.mjs)
+- [sync-paperclip-project-workspaces.sh](shared/tools/sync-paperclip-project-workspaces.sh)
 
 其中：
 

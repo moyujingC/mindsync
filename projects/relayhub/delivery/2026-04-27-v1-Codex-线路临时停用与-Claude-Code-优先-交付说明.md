@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/delivery/2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先-交付说明.md
+> source_of_truth：projects/relayhub/delivery/2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先-交付说明.md
 > 项目：RelayHub
 > 阶段：delivery
 

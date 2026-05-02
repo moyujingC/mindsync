@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/当前CI-CD系统机制总览.md
+> source_of_truth：company/knowledge-base/system/当前CI-CD系统机制总览.md
 
 这份文档用于解释 `墨予镜` 当前已经落地的 CI/CD 系统到底包含哪些组件、怎样流转、解决什么问题。
 
@@ -66,12 +66,12 @@
 
 公司级服务器入口见：
 
-- [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+- [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
 
 项目级 runbook 见：
 
-- [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-- [projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
+- [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+- [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
 
 ## 3. Paperclip 在这条链路里做什么
 
@@ -171,7 +171,7 @@
 
 更细职责边界见：
 
-- [company/CI-CD-角色分工说明.md](/Users/xinran/Downloads/dev/mindsync/company/CI-CD-角色分工说明.md)
+- [company/CI-CD-角色分工说明.md](company/CI-CD-角色分工说明.md)
 
 ## 6.1 当前 workflow 面板的正确阅读方式
 
@@ -190,7 +190,7 @@
 
 这条规则的正式 spec 见：
 
-- [projects/aimandala/docs/specs/2026-04-16-ci-cd-面板视图与收束规则.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-16-ci-cd-面板视图与收束规则.md)
+- [projects/aimandala/docs/specs/2026-04-16-ci-cd-面板视图与收束规则.md](projects/aimandala/docs/specs/2026-04-16-ci-cd-面板视图与收束规则.md)
 
 ## 7. 如果你想快速知道“当前系统包含什么”
 
@@ -205,10 +205,10 @@
 ## 8. 继续深入时该看哪里
 
 - 角色边界：
-  - [company/CI-CD-角色分工说明.md](/Users/xinran/Downloads/dev/mindsync/company/CI-CD-角色分工说明.md)
+  - [company/CI-CD-角色分工说明.md](company/CI-CD-角色分工说明.md)
 - 项目级交付总览：
-  - [projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md)
+  - [projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md](projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md)
 - 项目级实施计划：
-  - [projects/aimandala/docs/tasks/2026-04-12-ci-cd-实施计划.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-12-ci-cd-实施计划.md)
+  - [projects/aimandala/docs/tasks/2026-04-12-ci-cd-实施计划.md](projects/aimandala/docs/tasks/2026-04-12-ci-cd-实施计划.md)
 - 运维手册：
-  - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+  - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)

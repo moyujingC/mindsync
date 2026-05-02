@@ -4,8 +4,8 @@
 > 版本：0.3.0
 > owner：CEO / Orchestrator
 > 最后更新：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md
-> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/aicareer](/Users/xinran/Downloads/dev/mindsync/projects/aicareer)
+> source_of_truth：company/projects/怀瑾握瑜/PROJECT.md
+> 对应项目工作区：[projects/aicareer](projects/aicareer)
 > 历史来源仓库：[/Users/xinran/Downloads/dev/ai-career](/Users/xinran/Downloads/dev/ai-career)
 
 这份文档是 `mindsync` 中 `怀瑾握瑜` 的项目级入口。
@@ -56,7 +56,7 @@
 
 项目工作区默认从这里进入：
 
-- [projects/aicareer/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md)
+- [projects/aicareer/PROJECT.md](projects/aicareer/PROJECT.md)
 
 如需看产品规范、技术方案、验证与交付细节，应继续进入项目工作区下的目录入口。
 
@@ -64,17 +64,17 @@
 
 默认先看：
 
-- [2026-04-02-可行性研究报告.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md)
-- [content/怀瑾握瑜-产品号内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-产品号内容策略简报.md)
-- [content/怀瑾握瑜-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/content/怀瑾握瑜-首批选题清单.md)
+- [2026-04-02-可行性研究报告.md](company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md)
+- [content/怀瑾握瑜-产品号内容策略简报.md](company/projects/怀瑾握瑜/content/怀瑾握瑜-产品号内容策略简报.md)
+- [content/怀瑾握瑜-首批选题清单.md](company/projects/怀瑾握瑜/content/怀瑾握瑜-首批选题清单.md)
 
 如果任务明确涉及 `墨予镜` 账号，再继续进入：
 
-- [company/projects/内容矩阵/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/内容矩阵/PROJECT.md)
+- [company/projects/内容矩阵/PROJECT.md](company/projects/内容矩阵/PROJECT.md)
 
 ## 5. 历史入口
 
 如果任务明确来自某次历史纠偏或需要追溯流转背景，再看：
 
-- [2026-04-02-任务状态纪要.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-任务状态纪要.md)
-- [2026-04-02-Build-in-Public-纠偏任务定义.md](/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-Build-in-Public-纠偏任务定义.md)
+- [2026-04-02-任务状态纪要.md](company/projects/怀瑾握瑜/2026-04-02-任务状态纪要.md)
+- [2026-04-02-Build-in-Public-纠偏任务定义.md](company/projects/怀瑾握瑜/2026-04-02-Build-in-Public-纠偏任务定义.md)

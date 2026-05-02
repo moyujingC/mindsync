@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Test / QA
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-Environments深链回归测试实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-16-v1-Environments深链回归测试实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-Providers筛选URL化与路由测试-交付说明.md, /Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-Environments深链回归测试-qa-basis.md
+> depends_on：projects/relayhub/delivery/2026-04-16-v1-Providers筛选URL化与路由测试-交付说明.md, projects/relayhub/qa/2026-04-16-v1-Environments深链回归测试-qa-basis.md
 
 这份任务文档用于把 `RelayHub` 控制台现有最小路由回归，从 `Dashboard / Providers / Eval` 扩展到 `Environments`。
 

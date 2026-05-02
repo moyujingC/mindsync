@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Architect / Test
 > last_updated：2026-04-16
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-readonly-api-adapter层实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-16-v1-readonly-api-adapter层实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-16-v1-contract-只读API命名对齐-交付说明.md
+> depends_on：projects/relayhub/delivery/2026-04-16-v1-contract-只读API命名对齐-交付说明.md
 
 这份任务文档用于把 `RelayHub` 控制台当前 `ReadonlyApiResponse()` helper 的 envelope 适配逻辑，从 `consoleData.ts` 中抽成独立 adapter 层。
 

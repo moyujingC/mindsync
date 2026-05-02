@@ -4,8 +4,8 @@
 > 版本：0.1.0
 > owner：QA / Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/research-center/qa/2026-04-27-Paperclip-Claude-Local-主备模型切换-验证记录.md
-> depends_on：/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/research-center/tasks/2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md
+> source_of_truth：projects/research-center/qa/2026-04-27-Paperclip-Claude-Local-主备模型切换-验证记录.md
+> depends_on：projects/research-center/tasks/2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md
 
 ## 1. 验证目标
 

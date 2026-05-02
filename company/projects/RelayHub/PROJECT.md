@@ -4,8 +4,8 @@
 > 版本：0.1.1
 > owner：Architect / Engineer
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md
-> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/relayhub](/Users/xinran/Downloads/dev/mindsync/projects/relayhub)
+> source_of_truth：company/projects/RelayHub/PROJECT.md
+> 对应项目工作区：[projects/relayhub](projects/relayhub)
 > 项目类型：公司级模型接入、评测与优化能力项目
 
 这份文档是 `RelayHub` 在 `mindsync` 中的公司侧项目入口。
@@ -113,14 +113,14 @@
 
 任何 Agent 第一次进入 `RelayHub` 项目时，默认优先读取以下材料：
 
-1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/RelayHub/PROJECT.md)
-2. [项目工作区入口](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/PROJECT.md)
-3. [2026-04-16-RelayHub-v1-架构与产品定义.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
-4. [2026-04-16-v1-最小立项与实现准备任务.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
-5. [2026-04-16-v1-qa-basis.md](/Users/xinran/Downloads/dev/mindsync/projects/relayhub/qa/2026-04-16-v1-qa-basis.md)
-6. [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
-7. [agents/architect/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/architect/AGENTS.md)
-8. [agents/engineer/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/engineer/AGENTS.md)
+1. [PROJECT.md](company/projects/RelayHub/PROJECT.md)
+2. [项目工作区入口](projects/relayhub/PROJECT.md)
+3. [2026-04-16-RelayHub-v1-架构与产品定义.md](projects/relayhub/specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
+4. [2026-04-16-v1-最小立项与实现准备任务.md](projects/relayhub/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
+5. [2026-04-16-v1-qa-basis.md](projects/relayhub/qa/2026-04-16-v1-qa-basis.md)
+6. [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+7. [agents/architect/AGENTS.md](agents/architect/AGENTS.md)
+8. [agents/engineer/AGENTS.md](agents/engineer/AGENTS.md)
 
 如果任务明确涉及产品生产边界，还应继续进入对应产品项目入口。
 

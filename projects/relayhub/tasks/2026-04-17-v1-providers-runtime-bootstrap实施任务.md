@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Engineer / Architect / Test
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/tasks/2026-04-17-v1-providers-runtime-bootstrap实施任务.md
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-runtime-bootstrap实施任务.md
 > 项目：RelayHub
 > 阶段：implementation-plan
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/relayhub/delivery/2026-04-17-v1-providers-runtime配置来源组合工厂-交付说明.md
+> depends_on：projects/relayhub/delivery/2026-04-17-v1-providers-runtime配置来源组合工厂-交付说明.md
 
 这份任务文档用于把 `Providers` 的 config、env parser、source factory 与 datasource 串成 runtime bootstrap 最小装配层。
 

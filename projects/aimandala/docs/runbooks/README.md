@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-15
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/README.md
+> source_of_truth：projects/aimandala/docs/runbooks/README.md
 
 这里放 `一镜一梳 / aimandala` 的运行说明、联调手册和操作型 runbook。
 
@@ -39,13 +39,13 @@
 
 ## 3. 当前重点入口
 
-1. [开发与联调总入口.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/开发与联调总入口.md)
-2. [本地联调手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/本地联调手册.md)
-3. [历史任务批量关闭-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/runbooks/历史任务批量关闭-runbook.md)
-4. [本地-Mac-自动执行器-runbook.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md)
-5. [本地-Mac-执行节点单机试点-runbook.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md)
-6. [../tasks/2026-04-10-服务器部署与运维手册.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-7. [../tasks/aimandala-pr-质量门-runbook.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
+1. [开发与联调总入口.md](projects/aimandala/docs/runbooks/开发与联调总入口.md)
+2. [本地联调手册.md](projects/aimandala/docs/runbooks/本地联调手册.md)
+3. [历史任务批量关闭-runbook.md](projects/aimandala/docs/runbooks/历史任务批量关闭-runbook.md)
+4. [本地-Mac-自动执行器-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md)
+5. [本地-Mac-执行节点单机试点-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md)
+6. [../tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+7. [../tasks/aimandala-pr-质量门-runbook.md](projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
 
 ## 4. 当前治理判断
 

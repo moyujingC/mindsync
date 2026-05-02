@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Architect
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-journey-engine-capability-registry-task-manager-discussion.md
+> source_of_truth：projects/aimandala/notes/2026-04-05-journey-engine-capability-registry-task-manager-discussion.md
 > 项目：aimandala
 > 阶段：discussion
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-05-platform-architecture-blueprint-discussion.md
+> depends_on：projects/aimandala/notes/2026-04-05-platform-architecture-blueprint-discussion.md
 > reviewers：CEO / Orchestrator, Product Spec Lead, Engineer
 
 ## 1. 目标

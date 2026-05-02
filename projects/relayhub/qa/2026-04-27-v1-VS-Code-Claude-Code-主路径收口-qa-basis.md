@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：QA / Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/qa/2026-04-27-v1-VS-Code-Claude-Code-主路径收口-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-27-v1-VS-Code-Claude-Code-主路径收口-qa-basis.md
 > 项目：RelayHub
 > 阶段：qa
 

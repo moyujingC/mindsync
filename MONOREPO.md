@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-05-02
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/MONOREPO.md
+> source_of_truth：MONOREPO.md
 
 这份文档只回答一件事：
 
@@ -18,8 +18,8 @@
 
 这些分别看：
 
-- [company/Git仓库管理系统说明.md](/Users/xinran/Downloads/dev/mindsync/company/Git仓库管理系统说明.md)
-- [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+- [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
+- [company/项目与仓库映射.md](company/项目与仓库映射.md)
 
 ## 1. 一句话定义
 
@@ -143,14 +143,14 @@
 
 1. 公司级文档不塞进项目目录
 2. 项目实现不反向塞进 `company/`
-3. 主数据以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为准
+3. 主数据以 [company/项目注册表.yaml](company/项目注册表.yaml) 为准
 4. 若结构说明与项目映射冲突，以注册表和项目入口文档为准
 
 ## 7. 推荐搭配阅读
 
 - 仓库与 worktree 的总口径：
-  - [company/Git仓库管理系统说明.md](/Users/xinran/Downloads/dev/mindsync/company/Git仓库管理系统说明.md)
+  - [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
 - 项目与历史仓库映射：
-  - [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+  - [company/项目与仓库映射.md](company/项目与仓库映射.md)
 - 系统层解释：
-  - [company/knowledge-base/system/MindSync-设计机制分析.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/MindSync-设计机制分析.md)
+  - [company/knowledge-base/system/MindSync-设计机制分析.md](company/knowledge-base/system/MindSync-设计机制分析.md)

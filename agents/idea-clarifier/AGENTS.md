@@ -328,19 +328,19 @@ reportsTo: ../ceo/AGENTS.md
 - `harness-sdd-tdd-guard`
   - 用于判断当前到底还停留在 brainstorming / problem-framing，还是已经足够进入正式工作流
   - 位置：
-    - [harness-sdd-tdd-guard](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+    - [harness-sdd-tdd-guard](projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
 
 - `handoff-packaging`
   - 用于把整理结果收束成可交给 CEO 的 handoff brief，而不是只留在聊天总结里
   - 位置：
-    - [handoff-packaging](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/handoff-packaging/SKILL.md)
+    - [handoff-packaging](projects/research-center/skills/handoff-packaging/SKILL.md)
 
 有条件时可选使用：
 
 - `insight-extraction`
   - 仅当输入本身是一段聊天记录、参考材料或 AI 输出，且你需要先从里面提炼观点、框架和可迁移点时使用
   - 位置：
-    - [insight-extraction](/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/insight-extraction/SKILL.md)
+    - [insight-extraction](projects/research-center/skills/insight-extraction/SKILL.md)
 
 你不应默认直接使用：
 

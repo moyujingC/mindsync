@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-26
-> source_of_truth：/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-26-v1-Codex-first-原生-Responses-接入-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-26-v1-Codex-first-原生-Responses-接入-qa-basis.md
 > 项目：RelayHub
 > 阶段：verification-basis
-> depends_on：/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/specs/2026-04-26-v1-Codex-first-原生-Responses-接入说明.md
+> depends_on：projects/relayhub/specs/2026-04-26-v1-Codex-first-原生-Responses-接入说明.md
 
 ## 1. 目标行为
 

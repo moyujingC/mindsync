@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-本机试跑SenseVoice可行性判断.md
+> source_of_truth：projects/research-center/delivery/2026-04-06-本机试跑SenseVoice可行性判断.md
 > 项目：研究中心
 > 阶段：delivery
 

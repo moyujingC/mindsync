@@ -4,11 +4,11 @@
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md
+> source_of_truth：projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md
 > 项目：aimandala
 > 阶段：qa-basis
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/tasks/2026-04-19-paperclip-native-execution-routing-plan.md
+> depends_on：projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md
+> depends_on：projects/aimandala/docs/tasks/2026-04-19-paperclip-native-execution-routing-plan.md
 > reviewers：Engineer, Test / QA
 
 ## 1. 本轮验证对象

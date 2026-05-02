@@ -4,7 +4,7 @@
 > 版本：0.1.1
 > owner：Engineer / QA
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-19-v1-control-plane-release-验证记录.md
+> source_of_truth：projects/relayhub/qa/2026-04-19-v1-control-plane-release-验证记录.md
 > 项目：RelayHub
 > 阶段：verification
 

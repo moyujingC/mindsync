@@ -4,10 +4,10 @@
 > 版本：0.3.0
 > owner：Product Spec Lead
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/MVP产品规范.md
+> source_of_truth：projects/aicareer/specs/MVP产品规范.md
 > 项目：aicareer
 > 阶段：spec
-> depends_on：/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md
+> depends_on：company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md
 > reviewers：CEO / Orchestrator, Architect, Test / QA
 
 ## 1. 背景

@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md
+> source_of_truth：projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md
 > 项目：研究中心
 > 研究对象：Claude Code 外部源码材料
 > 服务对象：CEO / Product Spec Lead / Architect / Content Lead / Research & Knowledge Lead
@@ -23,9 +23,9 @@
 ### 1.1 本轮主研究样本
 
 - 主样本：
-  - `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best`
+  - `external/claude-code/source/claude-code-best`
 - 辅助参考：
-  - `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/jarmuine-claude-code`
+  - `external/claude-code/source/jarmuine-claude-code`
 
 ### 1.2 为什么选择 `claude-code-best`
 
@@ -61,9 +61,9 @@
 
 从以下材料综合判断：
 
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/src/QueryEngine.ts`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/docs/conversation/the-loop.mdx`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/docs/conversation/multi-turn.mdx`
+- `external/claude-code/source/claude-code-best/src/QueryEngine.ts`
+- `external/claude-code/source/claude-code-best/docs/conversation/the-loop.mdx`
+- `external/claude-code/source/claude-code-best/docs/conversation/multi-turn.mdx`
 
 可以看出它的核心不是一个“更聪明的主 prompt”，而是三层结构：
 
@@ -80,9 +80,9 @@
 
 从以下材料看：
 
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/docs/extensibility/skills.mdx`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/src/tools/SkillTool/SkillTool.ts`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/src/skills/loadSkillsDir.ts`
+- `external/claude-code/source/claude-code-best/docs/extensibility/skills.mdx`
+- `external/claude-code/source/claude-code-best/src/tools/SkillTool/SkillTool.ts`
+- `external/claude-code/source/claude-code-best/src/skills/loadSkillsDir.ts`
 
 Skill 的本质不是：
 
@@ -120,8 +120,8 @@ Skill 的本质不是：
 
 从以下材料看：
 
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/docs/extensibility/custom-agents.mdx`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/src/tools/AgentTool/loadAgentsDir.ts`
+- `external/claude-code/source/claude-code-best/docs/extensibility/custom-agents.mdx`
+- `external/claude-code/source/claude-code-best/src/tools/AgentTool/loadAgentsDir.ts`
 
 自定义 Agent 的关键不是“写一段角色描述”，而是定义：
 
@@ -149,10 +149,10 @@ Skill 的本质不是：
 
 从以下材料看：
 
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/docs/agent/coordinator-and-swarm.mdx`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/src/coordinator/coordinatorMode.ts`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/src/tools/TaskListTool/TaskListTool.ts`
-- `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/claude-code-best/src/tools/TaskUpdateTool/TaskUpdateTool.ts`
+- `external/claude-code/source/claude-code-best/docs/agent/coordinator-and-swarm.mdx`
+- `external/claude-code/source/claude-code-best/src/coordinator/coordinatorMode.ts`
+- `external/claude-code/source/claude-code-best/src/tools/TaskListTool/TaskListTool.ts`
+- `external/claude-code/source/claude-code-best/src/tools/TaskUpdateTool/TaskUpdateTool.ts`
 
 它的多 Agent 协作真正依赖的是：
 
@@ -176,10 +176,10 @@ Skill 的本质不是：
 
 结合现有公司文件：
 
-- `/Users/xinran/Downloads/dev/mindsync/COMPANY.md`
-- `/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md`
-- `/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md`
-- `/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md`
+- `COMPANY.md`
+- `company/公司蓝图.md`
+- `DOCS_GOVERNANCE.md`
+- `company/projects/研究中心/PROJECT.md`
 
 可以判断：
 

@@ -54,7 +54,7 @@ handoff_to:
 4. `machine-review-note`
 5. `review-note`
 6. 入库前检查清单
-7. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
+7. `projects/research-center/PROJECT.md`
 
 ## 执行步骤
 
@@ -79,7 +79,7 @@ handoff_to:
 建议基于：
 
 - `templates/知识条目-模板.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/知识入库前检查清单.md`
+- `projects/research-center/templates/知识入库前检查清单.md`
 
 ## 质量检查项
 

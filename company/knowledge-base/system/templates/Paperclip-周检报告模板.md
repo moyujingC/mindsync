@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead, Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/templates/Paperclip-周检报告模板.md
+> source_of_truth：company/knowledge-base/system/templates/Paperclip-周检报告模板.md
 
 > 使用方式：
 > - 这是 `Paperclip` 周检自动化与人工复盘共用模板

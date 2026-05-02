@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：QA / Engineer
 > last_updated：2026-04-24
-> source_of_truth：/Users/xinran/.codex/worktrees/1b9a/mindsync/projects/relayhub/qa/2026-04-24-v1-Claude-Code-任务页切后即验-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-04-24-v1-Claude-Code-任务页切后即验-qa-basis.md
 > 项目：RelayHub
 > 阶段：qa
 

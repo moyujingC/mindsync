@@ -1,6 +1,6 @@
 version: 0.1.0
 last_updated: 2026-04-05
-source_of_truth: /Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/review-patterns.yaml
+source_of_truth: projects/research-center/kb/preference-memory/review-patterns.yaml
 description: >
   创作者 review 反馈的第一版结构化记录。
   用于承接单次反馈样本、稳定偏好模式和 hard constraints。

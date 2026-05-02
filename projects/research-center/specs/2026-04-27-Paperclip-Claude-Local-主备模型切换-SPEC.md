@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/research-center/specs/2026-04-27-Paperclip-Claude-Local-主备模型切换-SPEC.md
+> source_of_truth：projects/research-center/specs/2026-04-27-Paperclip-Claude-Local-主备模型切换-SPEC.md
 
 ## 1. 目标
 

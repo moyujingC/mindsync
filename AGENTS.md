@@ -94,12 +94,12 @@
 
 ## Monorepo 日常工作区约定
 
-- 根工作区 [mindsync](/Users/xinran/Downloads/dev/mindsync) 固定对应 `main`
+- 根工作区 [mindsync](.) 固定对应 `main`
 - `main` 只承担公司主干、Automation、治理文档与最终收口
 - 已明确长期独立开发的项目，默认应在各自正式 `git worktree` 中开发与验证
 - 具体项目 worktree、分支和服务器/本地路径口径，统一看：
-  - [company/Git仓库管理系统说明.md](/Users/xinran/Downloads/dev/mindsync/company/Git仓库管理系统说明.md)
-  - [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+  - [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
+  - [company/项目与仓库映射.md](company/项目与仓库映射.md)
 
 ## IDE 默认开发纪律
 
@@ -136,7 +136,7 @@
 2. 不等待用户额外提醒“记得提交”
 3. 小型连续修改允许在同一轮内合并为一次提交，不强制每改一行就提交
 4. 若提交说明未手写，允许使用仓库内的自动提交辅助机制生成最小 commit message
-5. 提交纪律的正式说明统一看 [company/Git提交与自动提交规范.md](/Users/xinran/Downloads/dev/mindsync/company/Git提交与自动提交规范.md)
+5. 提交纪律的正式说明统一看 [company/Git提交与自动提交规范.md](company/Git提交与自动提交规范.md)
 
 ### 什么属于重要工作
 

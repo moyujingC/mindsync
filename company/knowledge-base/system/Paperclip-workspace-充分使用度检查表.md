@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-05-02
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md
+> source_of_truth：company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md
 
 这份文档回答一个很实际的问题：
 
@@ -338,9 +338,9 @@ worktree 目录存在，只说明系统部分会创建隔离 checkout，不等�
 ## 6. 推荐搭配阅读
 
 - 机制总入口：
-  - [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md)
+  - [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md)
 - 当前正式项目级实例：
-  - [projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
+  - [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
 - 任务语义与执行边界：
-  - [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-  - [company/标签与状态使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/标签与状态使用说明.md)
+  - [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+  - [company/标签与状态使用说明.md](company/标签与状态使用说明.md)

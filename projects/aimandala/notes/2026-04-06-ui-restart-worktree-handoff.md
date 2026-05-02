@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/notes/2026-04-06-ui-restart-worktree-handoff.md
+> source_of_truth：projects/aimandala/notes/2026-04-06-ui-restart-worktree-handoff.md
 > 项目：aimandala
 > 阶段：handoff
 > handoff_from：`/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart`
@@ -18,7 +18,7 @@
 
 1. 代码级改动仍主要留在独立 worktree
 2. 本次 handoff 先回收上下文，不直接把代码强行 merge 到当前 `main`
-3. 原因不是功能冲突，而是当前 `/Users/xinran/Downloads/dev/mindsync` 工作树本身已有大量其他方向改动，直接合并风险高
+3. 原因不是功能冲突，而是当前 `.` 工作树本身已有大量其他方向改动，直接合并风险高
 4. 用户已说明这些大量改动大多不是 `一镜一梳` 当前项目内容，因此后续应按“选择性合回”而不是“整树混合”处理
 
 ## 2. 当前 UI 重启线的核心方向
@@ -73,10 +73,10 @@
 
 worktree 内已新增或更新以下正式文档：
 
-1. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/docs/decisions/2026-04-06-用户分群与产品矩阵决策.md`
-2. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/docs/specs/2026-04-06-产品矩阵-目标用户与最小交付单元.md`
-3. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/docs/specs/2026-04-06-报告产品-用户任务定义.md`
-4. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/docs/specs/2026-04-06-当前两份报告内容评估.md`
+1. `projects/aimandala/docs/decisions/2026-04-06-用户分群与产品矩阵决策.md`
+2. `projects/aimandala/docs/specs/2026-04-06-产品矩阵-目标用户与最小交付单元.md`
+3. `projects/aimandala/docs/specs/2026-04-06-报告产品-用户任务定义.md`
+4. `projects/aimandala/docs/specs/2026-04-06-当前两份报告内容评估.md`
 
 这些文档已经把此前关于：
 
@@ -92,14 +92,14 @@ worktree 内已新增或更新以下正式文档：
 
 如果下一窗口继续写代码，最关键的文件仍是这些：
 
-1. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/page-shells/upload-page.tsx`
-2. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/page-shells/loading-page.tsx`
-3. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/page-shells/report-entry-page.tsx`
-4. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/page-shells/report-page-legacy.tsx`
-5. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/page-shells/pro-report-page.tsx`
-6. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/runtime.tsx`
-7. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/browser-shell.tsx`
-8. `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-ui-restart/projects/aimandala/toC/app/frontend/mobile-web/styles.css`
+1. `projects/aimandala/toC/app/frontend/mobile-web/page-shells/upload-page.tsx`
+2. `projects/aimandala/toC/app/frontend/mobile-web/page-shells/loading-page.tsx`
+3. `projects/aimandala/toC/app/frontend/mobile-web/page-shells/report-entry-page.tsx`
+4. `projects/aimandala/toC/app/frontend/mobile-web/page-shells/report-page-legacy.tsx`
+5. `projects/aimandala/toC/app/frontend/mobile-web/page-shells/pro-report-page.tsx`
+6. `projects/aimandala/toC/app/frontend/mobile-web/runtime.tsx`
+7. `projects/aimandala/toC/app/frontend/mobile-web/browser-shell.tsx`
+8. `projects/aimandala/toC/app/frontend/mobile-web/styles.css`
 
 ## 5. 已验证结果
 

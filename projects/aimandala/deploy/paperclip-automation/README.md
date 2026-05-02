@@ -4,7 +4,7 @@
 > 版本：0.1.4
 > owner：Engineer
 > last_updated：2026-04-17
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md
+> source_of_truth：projects/aimandala/deploy/paperclip-automation/README.md
 > 项目：aimandala
 > 阶段：ops-runbook
 
@@ -12,7 +12,7 @@
 
 它应被理解为：
 
-- `aimandala` 对 [company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md) 的项目级落地
+- `aimandala` 对 [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md) 的项目级落地
 - 当前首个正式项目级实例 runbook
 - 不是公司级 `Automation Platform` 的总入口
 
@@ -606,8 +606,8 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 但项目级正式版本口径仍以本 runbook 为 deploy 入口
 3. 若后续推荐目标版本变化，应同步更新：
    - 本文
-   - [company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
-   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
 
 ## 4.2 `hermes_local` 容器原生方案
 
@@ -905,7 +905,7 @@ sudo bash -lc '
 
 日常清理由：
 
-- `/Users/xinran/Downloads/dev/mindsync/shared/tools/ci/automation-node-maintenance.sh`
+- `shared/tools/ci/automation-node-maintenance.sh`
 
 负责，默认处理：
 

@@ -4,15 +4,15 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-19
-> source_of_truth：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
+> source_of_truth：projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-spec.md
 > 项目：aimandala
 > 阶段：spec
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/company/Paperclip任务系统优化方案.md
-> depends_on：/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/deploy/paperclip-automation/README.md
+> depends_on：company/Paperclip任务系统优化方案.md
+> depends_on：projects/aimandala/deploy/paperclip-automation/README.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](/Users/xinran/.codex/worktrees/31f1/mindsync/projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
 > 其中“服务器拒绝普通任务，再 handoff 到本地”的主路径不再是当前正式口径。
 
 ## 1. 问题定义

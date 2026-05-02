@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-27
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md
+> source_of_truth：company/Paperclip-Agent-模型配置总表.md
 
 这份文档用于收口 `Paperclip` 当前各类 Agent 的运行时模型配置。
 
@@ -26,7 +26,7 @@
 它不是部署文档，也不是 Agent 提示词文档。
 如果要看服务器、SSH、代理、宿主职责，请回到：
 
-- [服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+- [服务器与基础设施入口.md](company/服务器与基础设施入口.md)
 
 ## 1. 当前总原则
 
@@ -204,7 +204,7 @@
   - `entry-paperclip-pi-local-server`
   - 稳态口径是让 Paperclip 固定指向 RelayHub，并把 `adapterConfig.model` 固定为对应 `relayhub-entry-*`
   - 真实 `base_url / model / api_key / reasoningEffort` 由 RelayHub 控制面决定
-  - [shared/tools/sync-paperclip-pi-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-pi-model.sh) 只保留为初始化或修复工具
+  - [shared/tools/sync-paperclip-pi-model.sh](shared/tools/sync-paperclip-pi-model.sh) 只保留为初始化或修复工具
 
 ### 3.6 CEO Hermes
 
@@ -216,7 +216,7 @@
 - RelayHub 入口绑定口径：
   - 稳态口径是让 Paperclip 固定指向 `relayhub-entry-paperclip-hermes-local-server`
   - 真实 `base_url / model / api_key / reasoningEffort` 由 RelayHub 控制面决定
-  - [shared/tools/sync-paperclip-hermes-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-hermes-model.sh) 只保留为初始化或修复工具
+  - [shared/tools/sync-paperclip-hermes-model.sh](shared/tools/sync-paperclip-hermes-model.sh) 只保留为初始化或修复工具
 
 ## 4. 当前服务器侧全局环境
 
@@ -289,6 +289,6 @@ HTTPS_PROXY=http://47.253.255.110:18888
 更新时优先同步：
 
 1. 本文
-2. [服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+2. [服务器与基础设施入口.md](company/服务器与基础设施入口.md)
 3. `.paperclip.yaml`
 4. 需要时再同步到项目级运维文档

@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-05-02
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/projects/relayhub/qa/2026-05-02-v1-dev-relay-任务矩阵与统一中转入口-qa-basis.md
+> source_of_truth：projects/relayhub/qa/2026-05-02-v1-dev-relay-任务矩阵与统一中转入口-qa-basis.md
 > 项目：RelayHub
 > 阶段：qa
 
