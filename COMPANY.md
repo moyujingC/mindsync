@@ -2,17 +2,23 @@
 schema: agentcompanies/v1
 kind: company
 slug: mindsync
-name: 墨予镜
-description: 以墨予思，以镜观己
+name: 知行工坊
+description: 一人公司系统，以知促行，以行验知
 version: 0.1.0
 goals:
   - 通过多角色 AI 协作推进产品、研究、内容与工程交付
   - 建立中文优先、文档优先、可持续演进的公司内核
 ---
 
-# 墨予镜
+# 知行工坊
 
-`墨予镜` 是一个混合型 AI 公司内核。
+`知行工坊` 是一家以 `MindSync` 为公司系统底座的中文一人公司。
+
+其中三层边界固定如下：
+
+- `知行工坊`：公司名称
+- `MindSync`：公司系统、Monorepo（单一仓库多项目工作区）与运行时治理底座
+- `墨予镜`：个人 IP（个人品牌）账号名称，不再作为公司名称使用
 
 这个公司包聚焦于一套最小但完整的组织操作系统：
 
@@ -72,7 +78,7 @@ goals:
 
 ## 公司级必读文档
 
-进入 `墨予镜` 公司系统后，除 `COMPANY.md` 本身外，默认还应优先读取以下公司级文档：
+进入 `知行工坊` 的 `MindSync` 公司系统后，除 `COMPANY.md` 本身外，默认还应优先读取以下公司级文档：
 
 1. [company/公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md)
 2. [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml)
