@@ -2,7 +2,7 @@ import http from "node:http";
 import { appendFile, mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
-import { readState } from "../../control-plane/src/store.mjs";
+import { readSecrets, readState } from "../../control-plane/src/store.mjs";
 
 const port = Number(process.env.PORT ?? 4319);
 const CLAUDE_RELAY_TASK_ID = "task-claude-code";
@@ -280,6 +280,27 @@ function inferTaskIdFromModel(bodyModel, fallbackTaskId) {
 
 function inferEntryIdFromModel(bodyModel, fallbackEntryId) {
   return relayModelToEntryId(bodyModel) ?? fallbackEntryId;
+}
+
+function getStoredApiKey(secrets, modelEntryId) {
+  const secret = secrets?.[modelEntryId];
+  if (!secret || typeof secret !== "object") {
+    return null;
+  }
+  return typeof secret.apiKey === "string" && secret.apiKey.trim() ? secret.apiKey.trim() : null;
+}
+
+async function readRelayState() {
+  const [state, secrets] = await Promise.all([readState(), readSecrets()]);
+  return {
+    ...state,
+    modelEntries: Array.isArray(state.modelEntries)
+      ? state.modelEntries.map((entry) => ({
+          ...entry,
+          apiKey: entry.apiKey ?? getStoredApiKey(secrets, entry.id)
+        }))
+      : []
+  };
 }
 
 function resolveEntryBinding(state, entryId, options = {}) {
@@ -836,7 +857,7 @@ async function proxyChatCompletions(request, response) {
     return relayError(response, 400, "invalid_json", "请求体不是合法 JSON。");
   }
 
-  const state = await readState();
+  const state = await readRelayState();
   const requestedEntryId = relayModelToEntryId(body.model);
   const resolved = requestedEntryId
     ? resolveEntryBinding(state, requestedEntryId, {
@@ -965,7 +986,7 @@ async function proxyAnthropicMessages(request, response) {
     return relayError(response, 400, "invalid_json", "请求体不是合法 JSON。");
   }
 
-  const state = await readState();
+  const state = await readRelayState();
   const requestedEntryId = inferEntryIdFromModel(body.model, CLAUDE_ENTRY_ID);
   const resolved = relayModelToEntryId(body.model)
     ? resolveEntryBinding(state, requestedEntryId, {
@@ -1278,7 +1299,7 @@ async function listCodexModels(response) {
   if (!isCodexRelayEnabled()) {
     return codexRelayDisabled(response);
   }
-  const state = await readState();
+  const state = await readRelayState();
   const resolved = resolveEntryBinding(state, CODEX_ENTRY_ID, {
     endpointKind: "responses",
     requireStream: true
@@ -1320,7 +1341,7 @@ async function proxyResponses(request, response) {
     return relayError(response, 400, "invalid_json", "请求体不是合法 JSON。");
   }
 
-  const state = await readState();
+  const state = await readRelayState();
   const requestedEntryId = inferEntryIdFromModel(body.model, CODEX_ENTRY_ID);
   const resolved = relayModelToEntryId(body.model)
     ? resolveEntryBinding(state, requestedEntryId, {

@@ -3,18 +3,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "${SCRIPT_DIR}/relayhub-entry-sync-lib.sh"
 PAPERCLIP_YAML="${REPO_ROOT}/.paperclip.yaml"
 AUTH_JSON="${HOME}/.paperclip/auth.json"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-}"
 PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
 CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
 ENTRY_ID="${ENTRY_ID:-entry-paperclip-hermes-local-server}"
+RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
 PAPERCLIP_SYNC_SKIP_AGENT_PATCH="${PAPERCLIP_SYNC_SKIP_AGENT_PATCH:-0}"
 
 HERMES_HOME="${HERMES_HOME:-/paperclip}"
 HERMES_CONFIG_PATH="${HERMES_CONFIG_PATH:-${HERMES_HOME}/.hermes/config.yaml}"
 OPENAI_ENV_FILE="${OPENAI_ENV_FILE:-}"
-SYNC_OPENAI_API_KEY="${SYNC_OPENAI_API_KEY:-${OPENAI_API_KEY:-}}"
 HERMES_COMPRESSION_PROVIDER="${HERMES_COMPRESSION_PROVIDER:-custom}"
 
 PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-}"
@@ -35,12 +36,12 @@ Env overrides:
   PAPERCLIP_API_URL
   PAPERCLIP_API_TOKEN / PAPERCLIP_API_KEY
   CONTROL_PLANE_BASE_URL
+  RELAYHUB_INTERNAL_TOKEN
   ENTRY_ID
   PAPERCLIP_SYNC_SKIP_AGENT_PATCH=1
   HERMES_HOME
   HERMES_CONFIG_PATH
   OPENAI_ENV_FILE
-  SYNC_OPENAI_API_KEY
   HERMES_COMPRESSION_PROVIDER
 EOF
 }
@@ -107,74 +108,24 @@ api_curl() {
 }
 
 read_binding_defaults() {
-  local binding_json model_json model_id
-  binding_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/entry-bindings" | jq -c --arg entryId "${ENTRY_ID}" '.[] | select(.entryId == $entryId)')"
-  if [[ -z "${binding_json}" || "${binding_json}" == "null" ]]; then
-    echo "RelayHub entry binding not found for ${ENTRY_ID}" >&2
-    exit 1
-  fi
-
-  model_id="$(printf '%s' "${binding_json}" | jq -r '.defaultModelEntryId // empty')"
-  if [[ -z "${model_id}" ]]; then
-    echo "RelayHub entry binding ${ENTRY_ID} has no defaultModelEntryId" >&2
-    exit 1
-  fi
-
-  model_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/models" | jq -c --arg modelId "${model_id}" '.[] | select(.id == $modelId)')"
-  if [[ -z "${model_json}" || "${model_json}" == "null" ]]; then
-    echo "RelayHub model ${model_id} not found" >&2
-    exit 1
-  fi
-
-  PRIMARY_BASE_URL="$(printf '%s' "${model_json}" | jq -r '.baseUrl')"
-  PRIMARY_MODEL="$(printf '%s' "${model_json}" | jq -r '.modelId')"
-  PRIMARY_REASONING_EFFORT="$(printf '%s' "${model_json}" | jq -r '.reasoningEffort // empty')"
-}
-
-read_existing_openai_api_key() {
-  local existing=""
-  if [[ -n "${SYNC_OPENAI_API_KEY}" ]]; then
-    printf '%s' "${SYNC_OPENAI_API_KEY}"
-    return
-  fi
-
-  if [[ -n "${OPENAI_ENV_FILE}" && -f "${OPENAI_ENV_FILE}" ]]; then
-    existing="$(ruby -e '
-      path = ARGV[0]
-      key = "OPENAI_API_KEY"
-      value = nil
-      File.readlines(path, encoding: "UTF-8").each do |line|
-        next unless line =~ /^\s*#{Regexp.escape(key)}=/
-        value = line.split("=", 2)[1].to_s.strip
-      end
-      puts value.to_s
-    ' "${OPENAI_ENV_FILE}")"
-  fi
-
-  if [[ -z "${existing}" && -f "${HERMES_CONFIG_PATH}" ]]; then
-    existing="$(ruby -e '
-      require "yaml"
-      path = ARGV[0]
-      data = YAML.safe_load(File.read(path, encoding: "UTF-8")) || {}
-      value = data.dig("providers", "main", "api_key")
-      puts value.to_s
-    ' "${HERMES_CONFIG_PATH}" || true)"
-  fi
-
-  printf '%s' "${existing}"
+  local resolved_json
+  resolved_json="$(relayhub_fetch_entry_binding_json "${CONTROL_PLANE_BASE_URL}" "${ENTRY_ID}" "${RELAYHUB_INTERNAL_TOKEN}")"
+  relayhub_export_entry_binding_env "${resolved_json}"
+  relayhub_assert_api_key_present "${ENTRY_ID}" "${RESOLVED_MODEL_ID}" "${RESOLVED_API_KEY}"
+  PRIMARY_BASE_URL="${RESOLVED_BASE_URL}"
+  PRIMARY_MODEL="${RESOLVED_MODEL}"
+  PRIMARY_REASONING_EFFORT="${RESOLVED_REASONING_EFFORT}"
 }
 
 sync_openai_env_file() {
-  local effective_api_key
   [[ -z "${OPENAI_ENV_FILE}" ]] && return
 
-  effective_api_key="$(read_existing_openai_api_key)"
   mkdir -p "$(dirname "${OPENAI_ENV_FILE}")"
 
   PRIMARY_BASE_URL="${PRIMARY_BASE_URL}" \
   PRIMARY_MODEL="${PRIMARY_MODEL}" \
   OPENAI_ENV_FILE="${OPENAI_ENV_FILE}" \
-  EFFECTIVE_API_KEY="${effective_api_key}" \
+  EFFECTIVE_API_KEY="${RESOLVED_API_KEY}" \
   python3 - <<'PY'
 import os
 from pathlib import Path
@@ -215,14 +166,12 @@ PY
 }
 
 sync_hermes_config() {
-  local effective_api_key
-  effective_api_key="$(read_existing_openai_api_key)"
   mkdir -p "$(dirname "${HERMES_CONFIG_PATH}")"
 
   PRIMARY_BASE_URL="${PRIMARY_BASE_URL}" \
   PRIMARY_MODEL="${PRIMARY_MODEL}" \
   HERMES_CONFIG_PATH="${HERMES_CONFIG_PATH}" \
-  EFFECTIVE_API_KEY="${effective_api_key}" \
+  EFFECTIVE_API_KEY="${RESOLVED_API_KEY}" \
   HERMES_COMPRESSION_PROVIDER="${HERMES_COMPRESSION_PROVIDER}" \
   ruby -e '
     require "yaml"
@@ -327,9 +276,8 @@ PY
 }
 
 sync_runtime_agents() {
-  local updated agent_id agent_name current_payload patch_payload effective_api_key
+  local updated agent_id agent_name current_payload patch_payload
   updated=0
-  effective_api_key="$(read_existing_openai_api_key)"
 
   if [[ "${PAPERCLIP_SYNC_SKIP_AGENT_PATCH}" == "1" ]]; then
     echo "Skipped Paperclip hermes_local agent patch."
@@ -340,7 +288,7 @@ sync_runtime_agents() {
     [[ -z "${agent_id}" ]] && continue
     current_payload="$(api_curl "${api_url}/api/agents/${agent_id}")"
     patch_payload="$(
-      PRIMARY_BASE_URL="${PRIMARY_BASE_URL}" PRIMARY_MODEL="${PRIMARY_MODEL}" EFFECTIVE_API_KEY="${effective_api_key}" python3 - <<'PY' <<<"${current_payload}"
+      PRIMARY_BASE_URL="${PRIMARY_BASE_URL}" PRIMARY_MODEL="${PRIMARY_MODEL}" EFFECTIVE_API_KEY="${RESOLVED_API_KEY}" python3 - <<'PY' <<<"${current_payload}"
 import json
 import os
 import sys

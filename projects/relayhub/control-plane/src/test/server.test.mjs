@@ -1,5 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { once } from "node:events";
 import { createControlPlaneServer } from "../server.mjs";
 import { resetState } from "../store.mjs";
@@ -23,21 +26,154 @@ async function withServer(run) {
   }
 }
 
+async function withTempDataDir(run) {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "relayhub-control-plane-test-"));
+  const previousDataDir = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR;
+  process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR = tempDir;
+  try {
+    await resetState();
+    await run(tempDir);
+  } finally {
+    if (previousDataDir === undefined) {
+      delete process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR;
+    } else {
+      process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR = previousDataDir;
+    }
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
+}
+
 test("GET /models returns public model entries without apiKey", async () => {
-  await resetState();
+  await withTempDataDir(async () => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/models`);
+      assert.equal(response.status, 200);
+      const payload = await response.json();
 
-  await withServer(async (baseUrl) => {
-    const response = await fetch(`${baseUrl}/models`);
-    assert.equal(response.status, 200);
-    const payload = await response.json();
-
-    assert.ok(Array.isArray(payload));
-    assert.ok(payload.length >= 7);
-    assert.equal("apiKey" in payload[0], false);
-    assert.equal(payload[0].presetPriority !== undefined, true);
-    assert.equal(Array.isArray(payload[0].recommendedTaskIds), true);
-    assert.ok(payload.some((item) => item.id === "preset-aitechflux-relay"));
+      assert.ok(Array.isArray(payload));
+      assert.ok(payload.length >= 7);
+      assert.equal("apiKey" in payload[0], false);
+      assert.equal(payload[0].presetPriority !== undefined, true);
+      assert.equal(Array.isArray(payload[0].recommendedTaskIds), true);
+      assert.ok(payload.some((item) => item.id === "preset-aitechflux-relay"));
+    });
   });
+});
+
+test("POST /models stores api key in secrets file instead of state.json", async () => {
+  await withTempDataDir(async (tempDir) => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/models`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          name: "Secret Relay",
+          kind: "relay-api",
+          providerLabel: "secret-provider",
+          baseUrl: "https://secret.example.com/v1",
+          modelId: "gpt-5",
+          apiKey: "sk-secret-123"
+        })
+      });
+      assert.equal(response.status, 201);
+      const payload = await response.json();
+      assert.equal(payload.hasStoredApiKey, true);
+      assert.equal(payload.maskedApiKey, "sk-sec...-123");
+
+      const stateRaw = await fs.readFile(path.join(tempDir, "state.json"), "utf8");
+      assert.equal(stateRaw.includes("sk-secret-123"), false);
+
+      const secrets = JSON.parse(await fs.readFile(path.join(tempDir, "model-secrets.json"), "utf8"));
+      assert.equal(secrets[payload.id].apiKey, "sk-secret-123");
+    });
+  });
+});
+
+test("POST /internal/resolve-entry-binding returns full binding with api key when authorized", async () => {
+  const previousToken = process.env.RELAYHUB_INTERNAL_TOKEN;
+  process.env.RELAYHUB_INTERNAL_TOKEN = "relayhub-internal-test";
+  try {
+    await withTempDataDir(async () => {
+      await withServer(async (baseUrl) => {
+        const saveResponse = await fetch(`${baseUrl}/models/preset-aitechflux-relay`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            apiKey: "sk-aitechflux-test"
+          })
+        });
+        assert.equal(saveResponse.status, 200);
+
+        const bindResponse = await fetch(`${baseUrl}/entry-bindings/entry-paperclip-claude-local-server`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            defaultModelEntryId: "preset-aitechflux-relay"
+          })
+        });
+        assert.equal(bindResponse.status, 200);
+
+        const response = await fetch(`${baseUrl}/internal/resolve-entry-binding`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-relayhub-internal-token": "relayhub-internal-test"
+          },
+          body: JSON.stringify({
+            entryId: "entry-paperclip-claude-local-server"
+          })
+        });
+        assert.equal(response.status, 200);
+        const payload = await response.json();
+
+        assert.equal(payload.entryId, "entry-paperclip-claude-local-server");
+        assert.equal(payload.defaultModelEntryId, "preset-aitechflux-relay");
+        assert.equal(payload.resolvedModel.baseUrl, "https://aitechflux.com/v1");
+        assert.equal(payload.resolvedModel.modelId, "claude-sonnet");
+        assert.equal(payload.resolvedModel.apiKey, "sk-aitechflux-test");
+        assert.equal(payload.resolvedModel.hasStoredApiKey, true);
+      });
+    });
+  } finally {
+    if (previousToken === undefined) {
+      delete process.env.RELAYHUB_INTERNAL_TOKEN;
+    } else {
+      process.env.RELAYHUB_INTERNAL_TOKEN = previousToken;
+    }
+  }
+});
+
+test("POST /internal/resolve-entry-binding returns 401 when token is missing", async () => {
+  const previousToken = process.env.RELAYHUB_INTERNAL_TOKEN;
+  process.env.RELAYHUB_INTERNAL_TOKEN = "relayhub-internal-test";
+  try {
+    await withTempDataDir(async () => {
+      await withServer(async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/internal/resolve-entry-binding`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            entryId: "entry-paperclip-claude-local-server"
+          })
+        });
+        assert.equal(response.status, 401);
+      });
+    });
+  } finally {
+    if (previousToken === undefined) {
+      delete process.env.RELAYHUB_INTERNAL_TOKEN;
+    } else {
+      process.env.RELAYHUB_INTERNAL_TOKEN = previousToken;
+    }
+  }
 });
 
 test("GET /tasks includes the dev-relay built-in task matrix", async () => {

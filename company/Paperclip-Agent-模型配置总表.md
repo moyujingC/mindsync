@@ -203,6 +203,8 @@
   - `entry-paperclip-pi-local-mac`
   - `entry-paperclip-pi-local-server`
   - 统一通过 [shared/tools/sync-paperclip-pi-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-pi-model.sh) 同步
+  - 调用前必须提供 `RELAYHUB_INTERNAL_TOKEN`
+  - 真实 `apiKey` 也由 RelayHub 控制面下发，不再默认保留宿主旧值
   - 该脚本会把入口绑定翻译到 `/paperclip/.pi/agent/models.json`
   - 同时把 `Paperclip` 运行时 `pi_local` agent 的 `adapterConfig.model` 对齐为 `provider/model`
 
@@ -215,6 +217,8 @@
   - 对应 `entry-paperclip-hermes-local-server`
 - RelayHub 入口绑定口径：
   - 统一通过 [shared/tools/sync-paperclip-hermes-model.sh](/Users/xinran/Downloads/dev/mindsync-worktrees/relayhub-dev/shared/tools/sync-paperclip-hermes-model.sh) 同步
+  - 调用前必须提供 `RELAYHUB_INTERNAL_TOKEN`
+  - 真实 `OPENAI_API_KEY` 也由 RelayHub 控制面下发，不再默认沿用宿主旧值
   - 该脚本会把入口绑定翻译到 `/paperclip/.hermes/config.yaml`
   - 如指定 `OPENAI_ENV_FILE`，也会同步 `OPENAI_BASE_URL` / `OPENAI_MODEL` / `OPENAI_API_KEY`
   - 同时把 `Paperclip` 运行时 `hermes_local` agent 的 `adapterConfig.env.OPENAI_*` 对齐

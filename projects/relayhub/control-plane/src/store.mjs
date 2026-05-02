@@ -17,6 +17,10 @@ function resolveDataPath() {
   return path.join(resolveDataDir(), "state.json");
 }
 
+function resolveSecretsPath() {
+  return path.join(resolveDataDir(), "model-secrets.json");
+}
+
 function clone(value) {
   return structuredClone(value);
 }
@@ -32,6 +36,15 @@ function createInitialState() {
       model: 1,
       task: 1,
       run: 1
+    }
+  };
+}
+
+function createInitialSecrets() {
+  return {
+    "preset-ppchat-relay": {
+      apiKey: "seed-api-key",
+      updatedAt: null
     }
   };
 }
@@ -58,16 +71,24 @@ function migrateMissingPresetModelEntries(state) {
   const existingEntries = Array.isArray(state.modelEntries) ? state.modelEntries : [];
   let changed = false;
   const normalizedExistingEntries = existingEntries.map((entry) => {
+    const rawApiKey = typeof entry?.apiKey === "string" && entry.apiKey.trim()
+      ? entry.apiKey.trim()
+      : null;
     const nextEntry = {
       ...entry,
       capabilities: entry && typeof entry === "object" && entry.capabilities
         ? entry.capabilities
         : defaultCapabilities(),
-      reasoningEffort: normalizeReasoningEffort(entry?.reasoningEffort)
+      reasoningEffort: normalizeReasoningEffort(entry?.reasoningEffort),
+      hasStoredApiKey: entry?.hasStoredApiKey ?? Boolean(rawApiKey),
+      maskedApiKey: entry?.maskedApiKey ?? null
     };
+    delete nextEntry.apiKey;
     if (
       nextEntry.capabilities !== entry?.capabilities ||
-      nextEntry.reasoningEffort !== (entry?.reasoningEffort ?? null)
+      nextEntry.reasoningEffort !== (entry?.reasoningEffort ?? null) ||
+      nextEntry.hasStoredApiKey !== (entry?.hasStoredApiKey ?? Boolean(rawApiKey)) ||
+      "apiKey" in (entry ?? {})
     ) {
       changed = true;
     }
@@ -119,11 +140,34 @@ export async function readState() {
   }
 }
 
+export async function readSecrets() {
+  const secretsPath = resolveSecretsPath();
+  try {
+    const raw = await fs.readFile(secretsPath, "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      const initial = createInitialSecrets();
+      await writeSecrets(initial);
+      return initial;
+    }
+    throw error;
+  }
+}
+
 export async function writeState(state) {
   const dataDir = resolveDataDir();
   const dataPath = resolveDataPath();
   await fs.mkdir(dataDir, { recursive: true });
   await fs.writeFile(dataPath, JSON.stringify(state, null, 2), "utf8");
+}
+
+export async function writeSecrets(secrets) {
+  const dataDir = resolveDataDir();
+  const secretsPath = resolveSecretsPath();
+  await fs.mkdir(dataDir, { recursive: true });
+  await fs.writeFile(secretsPath, JSON.stringify(secrets, null, 2), "utf8");
 }
 
 export function toPublicModelEntry(entry) {
@@ -134,5 +178,6 @@ export function toPublicModelEntry(entry) {
 export async function resetState() {
   const initial = createInitialState();
   await writeState(initial);
+  await writeSecrets(createInitialSecrets());
   return initial;
 }

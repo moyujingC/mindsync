@@ -589,8 +589,9 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 7. 这样可以避免 Hermes 在 context compression 时再次报：
    - `No auxiliary LLM provider configured`
 8. 若要和 RelayHub 控制面保持一致，应优先执行：
+   - `export RELAYHUB_INTERNAL_TOKEN=...`
    - `bash shared/tools/sync-paperclip-hermes-model.sh sync`
-   - 由 RelayHub 的 `entry-paperclip-hermes-local-server` 决定默认 `base_url / model`
+   - 由 RelayHub 的 `entry-paperclip-hermes-local-server` 决定默认 `base_url / model / api_key`
 
 推荐重建：
 
@@ -708,8 +709,9 @@ docker compose -f docker-compose.paperclip.yml up -d paperclip
    - 当前火山 `https://ark.cn-beijing.volces.com/api/coding/v3` 实测兼容的是 `chat/completions`
    - 因此必须固定走自定义 `openai-completions` provider
 9. 若要和 RelayHub 控制面保持一致，应优先执行：
+   - `export RELAYHUB_INTERNAL_TOKEN=...`
    - `bash shared/tools/sync-paperclip-pi-model.sh sync`
-   - 由 RelayHub 的 `entry-paperclip-pi-local-server` 决定默认 `provider / model / base_url`
+   - 由 RelayHub 的 `entry-paperclip-pi-local-server` 决定默认 `provider / model / base_url / api_key`
 
 最小检查：
 

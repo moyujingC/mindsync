@@ -36,8 +36,7 @@ export const seedModelEntries = [
     activationHint: "先去阿里云百炼开通并充值，再填 API Key 测试连接。",
     costTier: "高",
     capabilityTags: ["对话", "正式候选", "国产模型"],
-    tags: ["国产模型", "通用对话", "正式生产候选"],
-    apiKey: null
+    tags: ["国产模型", "通用对话", "正式生产候选"]
   },
   {
     id: "preset-deepseek-v3",
@@ -76,8 +75,7 @@ export const seedModelEntries = [
     activationHint: "先在 DeepSeek Platform 充值并拿到 API Key，再完成测试连接。",
     costTier: "中",
     capabilityTags: ["摘要", "编码", "成本优先", "国产模型"],
-    tags: ["国产模型", "编码", "摘要"],
-    apiKey: null
+    tags: ["国产模型", "编码", "摘要"]
   },
   {
     id: "preset-ppchat-relay",
@@ -116,8 +114,7 @@ export const seedModelEntries = [
     activationHint: "当前已保存示例配置，先测试连接，通过后直接去任务库绑定。",
     costTier: "中",
     capabilityTags: ["编码", "长上下文", "中转 API"],
-    tags: ["中转 API", "Coding Plan", "OpenAI-compatible"],
-    apiKey: "seed-api-key"
+    tags: ["中转 API", "Coding Plan", "OpenAI-compatible"]
   },
   {
     id: "preset-siliconflow",
@@ -156,8 +153,7 @@ export const seedModelEntries = [
     activationHint: "先去 SiliconFlow 开通并充值，再填 API Key 测试连接。",
     costTier: "低",
     capabilityTags: ["聚合目录", "成本优先", "国产模型聚合"],
-    tags: ["中转 API", "国产模型聚合"],
-    apiKey: null
+    tags: ["中转 API", "国产模型聚合"]
   },
   {
     id: "preset-volcengine-doubao",
@@ -196,8 +192,7 @@ export const seedModelEntries = [
     activationHint: "先在火山方舟开通模型与额度，再填 API Key 测试连接。",
     costTier: "中",
     capabilityTags: ["对话", "正式候选", "国产模型"],
-    tags: ["国产模型", "正式候选", "对话"],
-    apiKey: null
+    tags: ["国产模型", "正式候选", "对话"]
   },
   {
     id: "preset-openrouter-coding",
@@ -236,8 +231,7 @@ export const seedModelEntries = [
     activationHint: "先在 OpenRouter 充值并复制 API Key，再回来测试连接。",
     costTier: "高",
     capabilityTags: ["编码", "备用候选", "中转 API"],
-    tags: ["中转 API", "Coding Plan", "备用候选"],
-    apiKey: null
+    tags: ["中转 API", "Coding Plan", "备用候选"]
   },
   {
     id: "preset-aitechflux-relay",
@@ -276,8 +270,7 @@ export const seedModelEntries = [
     activationHint: "先在 AITechFlux 开通或充值，再填 API Key 测试连接。",
     costTier: "中",
     capabilityTags: ["编码", "中转 API", "入口复用"],
-    tags: ["中转 API", "第三方中转", "Claude"],
-    apiKey: null
+    tags: ["中转 API", "第三方中转", "Claude"]
   }
 ];
 

@@ -3,12 +3,14 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "${SCRIPT_DIR}/relayhub-entry-sync-lib.sh"
 PAPERCLIP_YAML="${REPO_ROOT}/.paperclip.yaml"
 AUTH_JSON="${HOME}/.paperclip/auth.json"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-}"
 PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
 CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
 ENTRY_ID="${ENTRY_ID:-entry-paperclip-pi-local-server}"
+RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
 PAPERCLIP_SYNC_SKIP_AGENT_PATCH="${PAPERCLIP_SYNC_SKIP_AGENT_PATCH:-0}"
 
 PI_HOME="${PI_HOME:-/paperclip}"
@@ -16,8 +18,6 @@ PI_MODELS_PATH="${PI_MODELS_PATH:-${PI_HOME}/.pi/agent/models.json}"
 PI_PROVIDER_ID="${PI_PROVIDER_ID:-relayhub-main}"
 PI_PROVIDER_LABEL="${PI_PROVIDER_LABEL:-RelayHub Managed}"
 PI_API_TYPE="${PI_API_TYPE:-openai-completions}"
-PI_API_KEY_ENV_VAR="${PI_API_KEY_ENV_VAR:-OPENAI_API_KEY}"
-PI_API_KEY_VALUE="${PI_API_KEY_VALUE:-}"
 PI_MODEL_NAME="${PI_MODEL_NAME:-}"
 PI_COMPAT_SUPPORTS_DEVELOPER_ROLE="${PI_COMPAT_SUPPORTS_DEVELOPER_ROLE:-false}"
 PI_COMPAT_SUPPORTS_REASONING_EFFORT="${PI_COMPAT_SUPPORTS_REASONING_EFFORT:-false}"
@@ -40,6 +40,7 @@ Env overrides:
   PAPERCLIP_API_URL
   PAPERCLIP_API_TOKEN / PAPERCLIP_API_KEY
   CONTROL_PLANE_BASE_URL
+  RELAYHUB_INTERNAL_TOKEN
   ENTRY_ID
   PAPERCLIP_SYNC_SKIP_AGENT_PATCH=1
   PI_HOME
@@ -47,8 +48,6 @@ Env overrides:
   PI_PROVIDER_ID
   PI_PROVIDER_LABEL
   PI_API_TYPE
-  PI_API_KEY_ENV_VAR
-  PI_API_KEY_VALUE
   PI_MODEL_NAME
   PI_COMPAT_SUPPORTS_DEVELOPER_ROLE
   PI_COMPAT_SUPPORTS_REASONING_EFFORT
@@ -117,28 +116,13 @@ api_curl() {
 }
 
 read_binding_defaults() {
-  local binding_json model_json model_id
-  binding_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/entry-bindings" | jq -c --arg entryId "${ENTRY_ID}" '.[] | select(.entryId == $entryId)')"
-  if [[ -z "${binding_json}" || "${binding_json}" == "null" ]]; then
-    echo "RelayHub entry binding not found for ${ENTRY_ID}" >&2
-    exit 1
-  fi
-
-  model_id="$(printf '%s' "${binding_json}" | jq -r '.defaultModelEntryId // empty')"
-  if [[ -z "${model_id}" ]]; then
-    echo "RelayHub entry binding ${ENTRY_ID} has no defaultModelEntryId" >&2
-    exit 1
-  fi
-
-  model_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/models" | jq -c --arg modelId "${model_id}" '.[] | select(.id == $modelId)')"
-  if [[ -z "${model_json}" || "${model_json}" == "null" ]]; then
-    echo "RelayHub model ${model_id} not found" >&2
-    exit 1
-  fi
-
-  PRIMARY_BASE_URL="$(printf '%s' "${model_json}" | jq -r '.baseUrl')"
-  PRIMARY_MODEL="$(printf '%s' "${model_json}" | jq -r '.modelId')"
-  PRIMARY_REASONING_EFFORT="$(printf '%s' "${model_json}" | jq -r '.reasoningEffort // empty')"
+  local resolved_json
+  resolved_json="$(relayhub_fetch_entry_binding_json "${CONTROL_PLANE_BASE_URL}" "${ENTRY_ID}" "${RELAYHUB_INTERNAL_TOKEN}")"
+  relayhub_export_entry_binding_env "${resolved_json}"
+  relayhub_assert_api_key_present "${ENTRY_ID}" "${RESOLVED_MODEL_ID}" "${RESOLVED_API_KEY}"
+  PRIMARY_BASE_URL="${RESOLVED_BASE_URL}"
+  PRIMARY_MODEL="${RESOLVED_MODEL}"
+  PRIMARY_REASONING_EFFORT="${RESOLVED_REASONING_EFFORT}"
 }
 
 sync_models_file() {
@@ -153,11 +137,10 @@ sync_models_file() {
   PI_PROVIDER_ID="${PI_PROVIDER_ID}" \
   PI_PROVIDER_LABEL="${PI_PROVIDER_LABEL}" \
   PI_API_TYPE="${PI_API_TYPE}" \
-  PI_API_KEY_ENV_VAR="${PI_API_KEY_ENV_VAR}" \
-  PI_API_KEY_VALUE="${PI_API_KEY_VALUE}" \
   PI_MODEL_NAME="${PI_MODEL_NAME}" \
   PI_COMPAT_SUPPORTS_DEVELOPER_ROLE="${PI_COMPAT_SUPPORTS_DEVELOPER_ROLE}" \
   PI_COMPAT_SUPPORTS_REASONING_EFFORT="${PI_COMPAT_SUPPORTS_REASONING_EFFORT}" \
+  RESOLVED_API_KEY="${RESOLVED_API_KEY}" \
   PRIMARY_REASONING_EFFORT="${PRIMARY_REASONING_EFFORT}" \
   python3 - <<'PY'
 import json
@@ -180,13 +163,13 @@ if not isinstance(providers, dict):
 provider_id = os.environ["PI_PROVIDER_ID"]
 model_id = os.environ["PRIMARY_MODEL"]
 model_name = os.environ["PI_MODEL_NAME"].strip() or model_id
-api_key_value = os.environ["PI_API_KEY_VALUE"].strip()
+api_key_value = os.environ["RESOLVED_API_KEY"].strip()
 
 provider_payload = {
     "name": os.environ["PI_PROVIDER_LABEL"],
     "baseUrl": os.environ["PRIMARY_BASE_URL"],
     "api": os.environ["PI_API_TYPE"],
-    "apiKey": api_key_value or os.environ["PI_API_KEY_ENV_VAR"],
+    "apiKey": api_key_value,
     "authHeader": True,
     "compat": {
         "supportsDeveloperRole": os.environ["PI_COMPAT_SUPPORTS_DEVELOPER_ROLE"].lower() == "true",

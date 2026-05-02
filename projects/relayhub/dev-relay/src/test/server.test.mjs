@@ -137,7 +137,19 @@ function createState() {
 
 async function withTempState(run, state = createState()) {
   const dataDir = await fs.mkdtemp(path.join(os.tmpdir(), "relayhub-dev-relay-"));
+  const secrets = Object.fromEntries(
+    state.modelEntries
+      .filter((item) => typeof item.apiKey === "string" && item.apiKey.trim())
+      .map((item) => [
+        item.id,
+        {
+          apiKey: item.apiKey,
+          updatedAt: null,
+        },
+      ]),
+  );
   await fs.writeFile(path.join(dataDir, "state.json"), JSON.stringify(state, null, 2), "utf8");
+  await fs.writeFile(path.join(dataDir, "model-secrets.json"), JSON.stringify(secrets, null, 2), "utf8");
   const previous = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR;
   process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR = dataDir;
 

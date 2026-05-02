@@ -3,11 +3,13 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "${SCRIPT_DIR}/relayhub-entry-sync-lib.sh"
 AUTH_JSON="${HOME}/.paperclip/auth.json"
 API_BASE="${PAPERCLIP_API_URL:-http://vm-0-11-opencloudos.tail176582.ts.net:3100}"
 COMPANY_ID="${PAPERCLIP_COMPANY_ID:-be191a6e-7447-4821-a93d-9114214c4a64}"
 CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
 ENTRY_ID="${ENTRY_ID:-entry-paperclip-claude-local-server}"
+RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
 
 PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://api.deepseek.com/anthropic}"
 PRIMARY_MODEL="${PRIMARY_MODEL:-deepseek-v4-pro}"
@@ -33,6 +35,7 @@ Env overrides:
   PAPERCLIP_API_URL
   PAPERCLIP_COMPANY_ID
   CONTROL_PLANE_BASE_URL
+  RELAYHUB_INTERNAL_TOKEN
   ENTRY_ID
   PRIMARY_BASE_URL
   PRIMARY_MODEL
@@ -55,19 +58,12 @@ require_cmd curl
 require_cmd jq
 
 read_binding_defaults() {
-  local binding_json model_id
-  binding_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/entry-bindings" | jq -c --arg entryId "${ENTRY_ID}" '.[] | select(.entryId == $entryId)')"
-  if [[ -n "$binding_json" && "$binding_json" != "null" ]]; then
-    model_id="$(printf '%s' "$binding_json" | jq -r '.defaultModelEntryId // empty')"
-    if [[ -n "$model_id" ]]; then
-      local model_json
-      model_json="$(curl -fsS "${CONTROL_PLANE_BASE_URL}/models" | jq -c --arg modelId "$model_id" '.[] | select(.id == $modelId)')"
-      if [[ -n "$model_json" && "$model_json" != "null" ]]; then
-        PRIMARY_BASE_URL="$(printf '%s' "$model_json" | jq -r '.baseUrl')"
-        PRIMARY_MODEL="$(printf '%s' "$model_json" | jq -r '.modelId')"
-      fi
-    fi
-  fi
+  local resolved_json
+  resolved_json="$(relayhub_fetch_entry_binding_json "${CONTROL_PLANE_BASE_URL}" "${ENTRY_ID}" "${RELAYHUB_INTERNAL_TOKEN}")"
+  relayhub_export_entry_binding_env "${resolved_json}"
+  relayhub_assert_api_key_present "${ENTRY_ID}" "${RESOLVED_MODEL_ID}" "${RESOLVED_API_KEY}"
+  PRIMARY_BASE_URL="${RESOLVED_BASE_URL}"
+  PRIMARY_MODEL="${RESOLVED_MODEL}"
 }
 
 TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-$(read_token)}}"
@@ -119,9 +115,11 @@ primary_base_url = os.environ["PRIMARY_BASE_URL"]
 primary_model = os.environ["PRIMARY_MODEL"]
 backup_base_url = os.environ["BACKUP_BASE_URL"]
 backup_model = os.environ["BACKUP_MODEL"]
+resolved_api_key = os.environ["RESOLVED_API_KEY"]
 
 env["ANTHROPIC_BASE_URL"] = plain(primary_base_url)
 env["ANTHROPIC_MODEL"] = plain(primary_model)
+env["ANTHROPIC_API_KEY"] = plain(resolved_api_key)
 env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = plain(primary_model)
 env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = plain(primary_model)
 env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = plain(primary_model)
@@ -163,7 +161,7 @@ case "${1:-status}" in
     show_status
     ;;
   sync)
-    export PRIMARY_BASE_URL PRIMARY_MODEL BACKUP_BASE_URL BACKUP_MODEL
+    export PRIMARY_BASE_URL PRIMARY_MODEL BACKUP_BASE_URL BACKUP_MODEL RESOLVED_API_KEY
     sync_agents
     ;;
   -h|--help|help)

@@ -1,6 +1,6 @@
 import http from "node:http";
 import { fileURLToPath } from "node:url";
-import { readState, toPublicModelEntry, writeState } from "./store.mjs";
+import { readSecrets, readState, toPublicModelEntry, writeSecrets, writeState } from "./store.mjs";
 
 const port = Number(process.env.PORT ?? 4318);
 const proxyBasePath = "/api/control-plane";
@@ -34,6 +34,10 @@ function badRequest(response, message) {
 
 function badGateway(response, message) {
   json(response, 502, { message });
+}
+
+function unauthorized(response, message = "Unauthorized") {
+  json(response, 401, { message });
 }
 
 function maskApiKey(apiKey) {
@@ -118,6 +122,50 @@ function markTestOutcome(entry, outcome) {
     ...(entry.capabilities ?? {}),
     ...(outcome.capabilities ?? {})
   };
+}
+
+function getStoredApiKey(secrets, modelEntryId) {
+  const item = secrets?.[modelEntryId];
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+  return typeof item.apiKey === "string" && item.apiKey.trim() ? item.apiKey.trim() : null;
+}
+
+function setStoredApiKey(secrets, modelEntryId, apiKey) {
+  const trimmed = typeof apiKey === "string" ? apiKey.trim() : "";
+  if (!trimmed) {
+    delete secrets[modelEntryId];
+    return;
+  }
+
+  secrets[modelEntryId] = {
+    apiKey: trimmed,
+    updatedAt: nowStamp()
+  };
+}
+
+function buildModelEntryWithSecret(entry, secrets) {
+  return {
+    ...entry,
+    apiKey: getStoredApiKey(secrets, entry.id)
+  };
+}
+
+function requireInternalAuth(request, response) {
+  const configuredToken = process.env.RELAYHUB_INTERNAL_TOKEN ?? "";
+  if (!configuredToken.trim()) {
+    unauthorized(response, "RelayHub internal token not configured");
+    return false;
+  }
+
+  const incoming = request.headers["x-relayhub-internal-token"];
+  if (incoming !== configuredToken) {
+    unauthorized(response, "RelayHub internal token mismatch");
+    return false;
+  }
+
+  return true;
 }
 
 function canFetchCatalog(entry) {
@@ -591,6 +639,52 @@ function getEntryBinding(state, entryId) {
   return state.entryBindings.find((item) => item.entryId === entryId) ?? null;
 }
 
+function resolveEntryBindingPayload(state, secrets, entryId) {
+  const binding = getEntryBinding(state, entryId);
+  if (!binding) {
+    return {
+      ok: false,
+      status: 404,
+      message: "Entry binding not found"
+    };
+  }
+
+  if (!binding.defaultModelEntryId) {
+    return {
+      ok: false,
+      status: 400,
+      message: `Entry ${entryId} has no default model binding`
+    };
+  }
+
+  const modelEntry = state.modelEntries.find((item) => item.id === binding.defaultModelEntryId);
+  if (!modelEntry) {
+    return {
+      ok: false,
+      status: 404,
+      message: `Model ${binding.defaultModelEntryId} not found`
+    };
+  }
+
+  const apiKey = getStoredApiKey(secrets, modelEntry.id);
+  return {
+    ok: true,
+    payload: {
+      entryId,
+      defaultModelEntryId: binding.defaultModelEntryId,
+      fallbackModelEntryId: binding.fallbackModelEntryId ?? null,
+      resolvedModel: {
+        id: modelEntry.id,
+        baseUrl: modelEntry.baseUrl,
+        modelId: modelEntry.modelId,
+        reasoningEffort: modelEntry.reasoningEffort ?? null,
+        apiKey,
+        hasStoredApiKey: Boolean(apiKey)
+      }
+    }
+  };
+}
+
 function getTaskStats(state, taskId) {
   const task = state.tasks.find((item) => item.id === taskId);
   if (!task) {
@@ -700,6 +794,7 @@ async function handleRequest(request, response) {
   const method = request.method ?? "GET";
 
   const state = await readState();
+  const secrets = await readSecrets();
   updateTaskNames(state);
   updateEntryBindingNames(state);
 
@@ -721,6 +816,28 @@ async function handleRequest(request, response) {
 
   if (method === "GET" && path === "/entry-bindings") {
     return json(response, 200, state.entryBindings);
+  }
+
+  if (method === "POST" && path === "/internal/resolve-entry-binding") {
+    if (!requireInternalAuth(request, response)) {
+      return;
+    }
+
+    const body = await readJsonBody(request);
+    const entryId = typeof body.entryId === "string" ? body.entryId.trim() : "";
+    if (!entryId) {
+      return badRequest(response, "entryId is required");
+    }
+
+    const result = resolveEntryBindingPayload(state, secrets, entryId);
+    if (!result.ok) {
+      if (result.status === 404) {
+        return notFound(response, result.message);
+      }
+      return badRequest(response, result.message);
+    }
+
+    return json(response, 200, result.payload);
   }
 
   if (path.startsWith("/entry-bindings/")) {
@@ -783,11 +900,14 @@ async function handleRequest(request, response) {
       activationHint: null,
       costTier: null,
       capabilityTags: [],
-      tags: ["自定义"],
-      apiKey: apiKey || null
+      tags: ["自定义"]
     };
     state.modelEntries.unshift(entry);
+    if (apiKey) {
+      setStoredApiKey(secrets, entry.id, apiKey);
+    }
     await writeState(state);
+    await writeSecrets(secrets);
     return json(response, 201, toPublicModelEntry(entry));
   }
 
@@ -800,6 +920,7 @@ async function handleRequest(request, response) {
 
     if (method === "PATCH" && path === `/models/${id}`) {
       const body = await readJsonBody(request);
+      const shouldClearApiKey = body.clearApiKey === true || body.apiKey === null;
       entry.name = String(body.name ?? entry.name).trim();
       entry.providerLabel = String(body.providerLabel ?? entry.providerLabel).trim();
       if (entry.source !== "preset") {
@@ -819,9 +940,13 @@ async function handleRequest(request, response) {
       }
       entry.purchaseUrl = body.purchaseUrl ? String(body.purchaseUrl).trim() : entry.purchaseUrl;
       if (typeof body.apiKey === "string" && body.apiKey.trim().length > 0) {
-        entry.apiKey = body.apiKey.trim();
+        setStoredApiKey(secrets, entry.id, body.apiKey);
         entry.hasStoredApiKey = true;
         entry.maskedApiKey = maskApiKey(body.apiKey);
+      } else if (shouldClearApiKey) {
+        setStoredApiKey(secrets, entry.id, "");
+        entry.hasStoredApiKey = false;
+        entry.maskedApiKey = null;
       }
       entry.status = entry.hasStoredApiKey
         ? "configured-pending-test"
@@ -837,6 +962,7 @@ async function handleRequest(request, response) {
         : "还缺 API Key，暂时无法开始测试连接。";
       entry.capabilities = defaultCapabilities();
       await writeState(state);
+      await writeSecrets(secrets);
       return json(response, 200, toPublicModelEntry(entry));
     }
 
@@ -845,7 +971,7 @@ async function handleRequest(request, response) {
         return badRequest(response, "当前仅支持中转预置入口获取可用模型列表。");
       }
 
-      const result = await fetchModelCatalog(entry);
+      const result = await fetchModelCatalog(buildModelEntryWithSecret(entry, secrets));
       if (!result.ok) {
         if (result.statusCode === 400) {
           return badRequest(response, result.message);
@@ -860,9 +986,12 @@ async function handleRequest(request, response) {
       if (entry.source === "preset") {
         entry.status = "disabled";
         entry.statusNote = "该预置条目已停用，可随时重新配置并测试连接。";
+        entry.hasStoredApiKey = false;
+        entry.maskedApiKey = null;
       } else {
         state.modelEntries = state.modelEntries.filter((item) => item.id !== id);
       }
+      delete secrets[id];
       state.tasks = state.tasks.map((task) =>
         task.defaultModelEntryId === id
           ? { ...task, defaultModelEntryId: null, defaultModelEntryName: null }
@@ -880,12 +1009,13 @@ async function handleRequest(request, response) {
           : binding
       );
       await writeState(state);
+      await writeSecrets(secrets);
       return noContent(response);
     }
 
     if (method === "POST" && path === `/models/${id}/test`) {
       entry.lastTestedAt = nowStamp();
-      const probeResult = await probeModelEntryCapabilities(entry);
+      const probeResult = await probeModelEntryCapabilities(buildModelEntryWithSecret(entry, secrets));
       markTestOutcome(entry, probeResult.outcome);
       await writeState(state);
       return json(response, 200, toPublicModelEntry(entry));
