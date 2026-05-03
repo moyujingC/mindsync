@@ -222,6 +222,46 @@ GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常
 - `sha`
 - `paths`
 
+## 6. PaperclipAI 联调口径
+
+当前这套 `CI/CD + Deploy` 不只要在 GitHub Actions 面板里是绿色，还要在 `PaperclipAI` 这层控制面完成联调。
+
+这里的 `PaperclipAI` 主要承接的是：
+
+- 失败建单
+- 父子任务收束
+- 执行来源回写
+- `server_automation` 与 `local_manual_review` 路由区分
+- runner heartbeat 与执行健康巡检
+
+默认验收要点：
+
+- `RelayHub`
+  - `push -> relayhub/dev` 后，GitHub 侧应触发 `relayhub-ci-deploy`
+  - 若失败，`PaperclipAI` 中对应任务应落为：
+    - `task_class: automation-execution`
+    - `execution_route: server_automation`
+    - `source: deploy-or-smoke-failure` 或对应失败源
+  - 若成功，至少应能从回写 comment 看见：
+    - `adapter: github-actions/self-hosted-runner:deploy`
+    - `host: automation@150.158.9.95`
+- `AI Mandala`
+  - `PR -> main` 的完整 CI 失败，应进入 `PaperclipAI` 的 CI 失败链，而不是误记成 deploy 失败
+  - `push -> main` 的 `deploy-dev` 失败，应进入 deploy / smoke 失败链
+  - `push -> release` 的 `deploy-prod` 失败，应进入生产发布失败链
+- 父任务收束
+  - 同一提交下的汇总父任务仍应保持：
+    - `task_class: manual-review-required`
+    - `execution_route: local_manual_review`
+    - `source: automation-summary`
+  - 不能把父任务误送进服务器自动执行链
+
+可执行 smoke 与运行时入口统一看：
+
+- [shared/tools/ci/paperclip-sync-lib.smoke.mjs](shared/tools/ci/paperclip-sync-lib.smoke.mjs)
+- [shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs](shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs)
+- [company/projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md](company/projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md)
+
 ## 6. 一句话判断法
 
 - 公司治理工作：上 `main`
