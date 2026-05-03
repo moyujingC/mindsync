@@ -467,7 +467,7 @@ describe("RelayHub console routes", () => {
     const row = taskName.closest("tr");
     expect(row).not.toBeNull();
     fireEvent.change(within(row!).getByLabelText("Claude Code Web Coding-快速切换默认模型"), {
-      target: { value: "preset-deepseek-v3" },
+      target: { value: "preset-deepseek-v4" },
     });
     fireEvent.click(within(row!).getByRole("button", { name: "切换入口内默认模型" }));
 
@@ -497,7 +497,7 @@ describe("RelayHub console routes", () => {
     expect(await screen.findByText("当前绑定：AITechFlux 中转")).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Claude Code 当前模型"), {
-      target: { value: "preset-deepseek-v3" },
+      target: { value: "preset-deepseek-v4" },
     });
     fireEvent.click(screen.getByRole("button", { name: "切换 Claude Code 当前模型" }));
 
@@ -854,11 +854,11 @@ describe("RelayHub console routes", () => {
       target: { value: "task-codex-repo" },
     });
     fireEvent.change(screen.getByLabelText("模型"), {
-      target: { value: "preset-deepseek-v3" },
+      target: { value: "preset-deepseek-v4" },
     });
     await waitFor(() => {
       expect(screen.getByLabelText("任务")).toHaveValue("task-codex-repo");
-      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v3");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v4");
     });
     fireEvent.change(screen.getByLabelText("结果摘要"), {
       target: { value: "这次仓库级实现结果可用，但还需要人工复核。" },
@@ -874,7 +874,7 @@ describe("RelayHub console routes", () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText("任务")).toHaveValue("task-codex-repo");
-      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v3");
+      expect(screen.getByLabelText("模型")).toHaveValue("preset-deepseek-v4");
       expect(screen.getByLabelText("结果摘要")).toHaveValue("");
       expect(screen.getByLabelText("备注")).toHaveValue("");
     });
