@@ -1,0 +1,131 @@
+name: relayhub-ci-deploy
+
+on:
+  push:
+    branches:
+      - relayhub/dev
+    paths:
+      - "projects/relayhub/**"
+      - "shared/tools/ci/**"
+      - ".github/workflows/relayhub-*.yml"
+
+concurrency:
+  group: relayhub-ci-deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PAPERCLIP_COMPANY_ID: "be191a6e-7447-4821-a93d-9114214c4a64"
+  PAPERCLIP_PROJECT_NAME: "RelayHub"
+
+jobs:
+  relayhub-light-ci:
+    name: relayhub-light-ci
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Console Dependencies
+        run: |
+          set -euo pipefail
+          npm --prefix projects/relayhub/console ci
+
+      - name: Run Console Tests
+        run: |
+          set -euo pipefail
+          npm --prefix projects/relayhub/console test
+
+      - name: Build Console
+        run: |
+          set -euo pipefail
+          npm --prefix projects/relayhub/console run build
+
+      - name: Run Control Plane Tests
+        run: |
+          set -euo pipefail
+          npm --prefix projects/relayhub/control-plane test
+
+      - name: Run Dev Relay Tests
+        run: |
+          set -euo pipefail
+          npm --prefix projects/relayhub/dev-relay test
+
+  relayhub-deploy:
+    name: relayhub-deploy
+    needs:
+      - relayhub-light-ci
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH Key
+        env:
+          SSH_KEY: ${{ secrets.RELAYHUB_RELEASE_SSH_KEY }}
+          SSH_HOST: ${{ secrets.RELAYHUB_RELEASE_HOST }}
+          SSH_USER: ${{ secrets.RELAYHUB_RELEASE_USER }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${SSH_KEY:-}" ]]; then
+            echo "Missing required secret: RELAYHUB_RELEASE_SSH_KEY" >&2
+            exit 1
+          fi
+          if [[ -z "${SSH_HOST:-}" ]]; then
+            echo "Missing required secret: RELAYHUB_RELEASE_HOST" >&2
+            exit 1
+          fi
+          if [[ -z "${SSH_USER:-}" ]]; then
+            echo "Missing required secret: RELAYHUB_RELEASE_USER" >&2
+            exit 1
+          fi
+          install -m 700 -d ~/.ssh
+          NORMALIZED_KEY="$(printf '%s' "$SSH_KEY" | tr -d '\r')"
+          if printf '%s' "$NORMALIZED_KEY" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%s\n' "$NORMALIZED_KEY" > ~/.ssh/relayhub_release
+          else
+            printf '%s' "$NORMALIZED_KEY" | base64 --decode > ~/.ssh/relayhub_release
+          fi
+          chmod 600 ~/.ssh/relayhub_release
+          ssh-keygen -y -f ~/.ssh/relayhub_release >/dev/null
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy RelayHub Release Stack
+        env:
+          SSH_HOST: ${{ secrets.RELAYHUB_RELEASE_HOST }}
+          SSH_USER: ${{ secrets.RELAYHUB_RELEASE_USER }}
+        run: |
+          set -euo pipefail
+          ssh \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -i ~/.ssh/relayhub_release \
+            "$SSH_USER@$SSH_HOST" '
+            set -e
+            cd /opt/aimandala-release/app/mindsync
+            bash projects/relayhub/deploy/release-console/deploy-relayhub-release-stack.sh
+          '
+
+      - name: Smoke Check RelayHub
+        run: |
+          set -euo pipefail
+          curl -kfsS https://relayhub.jingshu.cc/api/control-plane/health
+          curl -kfsS https://relayhub.jingshu.cc/claude/health
