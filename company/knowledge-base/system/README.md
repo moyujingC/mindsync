@@ -1,9 +1,9 @@
 # 系统机制知识库
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer
-> last_updated：2026-04-15
+> last_updated：2026-05-03
 > source_of_truth：company/knowledge-base/system/README.md
 
 这份索引用于收口 `墨予镜` 当前对核心系统的设计机制分析与使用说明。
@@ -22,6 +22,7 @@
 - [paperclip-weekly-reviews/README.md](company/knowledge-base/system/paperclip-weekly-reviews/README.md)
 - [MindSync-设计机制分析.md](company/knowledge-base/system/MindSync-设计机制分析.md)
 - [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
+- [AI-Skill-系统性讨论.md](company/knowledge-base/system/AI-Skill-系统性讨论.md)
 
 ## 2. 适用边界
 
@@ -50,3 +51,4 @@
 3. 如果要判断自己有没有把 `workspace / git worktree` 真正用透，再看 [Paperclip-workspace-充分使用度检查表.md](company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md)
 4. 如果要理解 `Paperclip` 上游快速迭代对本地系统的影响判断机制，再看 [Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
 5. 如果要理解现状中的自动化与故障路由，再看 [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
+6. 如果要理解如何为 AI 团队设计 `skill` 能力包，再看 [AI-Skill-系统性讨论.md](company/knowledge-base/system/AI-Skill-系统性讨论.md)
