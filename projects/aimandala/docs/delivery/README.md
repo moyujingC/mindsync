@@ -9,22 +9,25 @@
 当前只保留以下交付文档：
 
 1. [2026-05-03-多项目-heartbeat-运行态落地交付记录.md](2026-05-03-多项目-heartbeat-运行态落地交付记录.md)
-2. [2026-04-18-报告链路保真重构交付记录.md](2026-04-18-报告链路保真重构交付记录.md)
-3. [2026-04-19-Batch-A-runtime-evidence-交付记录.md](2026-04-19-Batch-A-runtime-evidence-交付记录.md)
-4. [2026-04-19-Batch-B-narrative-plan-交付记录.md](2026-04-19-Batch-B-narrative-plan-交付记录.md)
-5. [2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md](2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md)
-6. [2026-04-19-Batch-D-固定样本重建交付记录.md](2026-04-19-Batch-D-固定样本重建交付记录.md)
-7. [2026-04-19-Batch-E-解读教程算法保真交付记录.md](2026-04-19-Batch-E-解读教程算法保真交付记录.md)
-8. [2026-04-19-Batch-F-golden-审阅交付记录.md](2026-04-19-Batch-F-golden-审阅交付记录.md)
-9. [2026-04-19-Batch-G-golden-偏差回灌交付记录.md](2026-04-19-Batch-G-golden-偏差回灌交付记录.md)
-10. [2026-04-19-Batch-H-报告表达保真交付记录.md](2026-04-19-Batch-H-报告表达保真交付记录.md)
-11. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
-12. [2026-04-18-automation-and-local-execution-routing-phase1-delivery.md](2026-04-18-automation-and-local-execution-routing-phase1-delivery.md)
+2. [2026-05-03-Lite-Pro-报告生成修复交付记录.md](2026-05-03-Lite-Pro-报告生成修复交付记录.md)
+3. [2026-04-18-报告链路保真重构交付记录.md](2026-04-18-报告链路保真重构交付记录.md)
+4. [2026-04-19-Batch-A-runtime-evidence-交付记录.md](2026-04-19-Batch-A-runtime-evidence-交付记录.md)
+5. [2026-04-19-Batch-B-narrative-plan-交付记录.md](2026-04-19-Batch-B-narrative-plan-交付记录.md)
+6. [2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md](2026-04-19-Batch-C-Lite-Pro-合同与前端承接交付记录.md)
+7. [2026-04-19-Batch-D-固定样本重建交付记录.md](2026-04-19-Batch-D-固定样本重建交付记录.md)
+8. [2026-04-19-Batch-E-解读教程算法保真交付记录.md](2026-04-19-Batch-E-解读教程算法保真交付记录.md)
+9. [2026-04-19-Batch-F-golden-审阅交付记录.md](2026-04-19-Batch-F-golden-审阅交付记录.md)
+10. [2026-04-19-Batch-G-golden-偏差回灌交付记录.md](2026-04-19-Batch-G-golden-偏差回灌交付记录.md)
+11. [2026-04-19-Batch-H-报告表达保真交付记录.md](2026-04-19-Batch-H-报告表达保真交付记录.md)
+12. [2026-04-18-Lite-Pro-独立报告重定义交付记录.md](2026-04-18-Lite-Pro-独立报告重定义交付记录.md)
+13. [2026-04-18-automation-and-local-execution-routing-phase1-delivery.md](2026-04-18-automation-and-local-execution-routing-phase1-delivery.md)
 
 分工如下：
 
 - `2026-05-03-多项目-heartbeat-运行态落地交付记录.md`
   - 收束 automation 节点把单项目 heartbeat 升级为多项目 heartbeat 的真实上线结果、残留风险与后续 checkout 治理 handoff
+- `2026-05-03-Lite-Pro-报告生成修复交付记录.md`
+  - 收束 Lite / Pro 报告生成修复、回归测试与 golden 重导结果
 - `2026-04-18-报告链路保真重构交付记录.md`
   - 收束这轮重大重构的母文档、阶段状态、验证结论和后续 handoff
 - `2026-04-19-Batch-A-runtime-evidence-交付记录.md`

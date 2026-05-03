@@ -60,6 +60,18 @@ def test_quick_safety_check_combines_multiple_signals():
     assert result.action_required == "suggest_professional"
 
 
+def test_ordinary_imbalance_does_not_trigger_high_risk_without_crisis_signal():
+    result = quick_safety_check(
+        imbalance_type="金多木折",
+        color_analysis={"overall_saturation": 0.3, "black_ratio": 0.0, "red_ratio": 0.2},
+        text_content="理清当前职业推进中的拉扯。想往前，但也担心失控。",
+    )
+
+    assert result.risk_level == RiskLevel.NONE
+    assert result.required_disclaimers == ["basic"]
+    assert result.action_required == "none"
+
+
 def test_wrap_output_adds_disclaimer_for_toc():
     protocol = SafetyProtocol()
 

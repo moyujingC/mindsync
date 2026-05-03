@@ -914,6 +914,13 @@ class NarrativeContextService:
         dominant_keywords = self._get_element_core_keywords(resolved_theme, dominant)
         secondary_keywords = self._get_element_core_keywords(resolved_theme, secondary)
         signal_text = self._describe_signal(signal)
+        imbalance_projection = self._resolve_imbalance_projection(
+            theme=resolved_theme,
+            theme_label=resolved_theme_label,
+            signal=signal,
+            projection=None,
+        )
+        mapped_direction = self._projection_text(imbalance_projection, "direction")
         inner = inner_dominant or dominant
         middle = middle_dominant or secondary
         readings_text = "；".join(
@@ -933,17 +940,29 @@ class NarrativeContextService:
             overall_parts.append(feeling_hint)
         if transition:
             overall_parts.append(f"再往里看，画面的主轴是：{transition}")
-        overall_parts.append(
-            f"所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把和「{secondary}」有关的{secondary_keywords}带回现实。"
-        )
+        if mapped_direction:
+            overall_parts.append(
+                f"所以这不是简单的停住，而更像你先把内在安顿好，再把节奏调整到：{mapped_direction}。"
+            )
+        else:
+            overall_parts.append(
+                f"所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把和「{secondary}」有关的{secondary_keywords}带回现实。"
+            )
         if signal_text:
             overall_parts.append(f"它也提醒你：{signal_text}")
 
-        visual_parts = [
-            (
-                f"如果只看画面给人的感受，最先浮出来的是两股力量：一股是「{dominant}」的收拢和判断，另一股是「{secondary}」想把事情重新带回现实。"
-            ),
-        ]
+        if mapped_direction:
+            visual_parts = [
+                (
+                    f"如果只看画面给人的感受，最先浮出来的是两股力量：一股是「{dominant}」的收拢和判断，另一股是在提醒你把节奏调整到「{mapped_direction}」。"
+                ),
+            ]
+        else:
+            visual_parts = [
+                (
+                    f"如果只看画面给人的感受，最先浮出来的是两股力量：一股是「{dominant}」的收拢和判断，另一股是「{secondary}」想把事情重新带回现实。"
+                ),
+            ]
         if circle_pattern:
             visual_parts.append(f"三层画面的走向也很清楚：{circle_pattern}")
         if readings_text:
@@ -981,10 +1000,16 @@ class NarrativeContextService:
             )
         if signal_text:
             block_parts.append(f"这也是为什么你会反复遇到这样的卡点：{signal_text}")
-        light = (
-            f"但你的光也已经出来了：你不是只会收着，而是正在把「{secondary}」代表的{secondary_theme}慢慢带回生活。"
-            "这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
-        )
+        if mapped_direction:
+            light = (
+                f"但你的光也已经出来了：你不是只会收着，而是已经能看见「{mapped_direction}」这条更稳的路。"
+                "这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+            )
+        else:
+            light = (
+                f"但你的光也已经出来了：你不是只会收着，而是正在把「{secondary}」代表的{secondary_theme}慢慢带回生活。"
+                "这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+            )
 
         scene = (
             f"在「{resolved_theme_label}」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。"
@@ -1238,18 +1263,29 @@ class NarrativeContextService:
         ]
         if transition:
             first_impression_parts.append(f"画面的主轴也很明确：{str(transition).strip()}")
-        first_impression_parts.append(
-            f"所以这不是简单的停住，而是你正在认真处理更底层的事：先把和{self._get_element_theme_phrase(resolved_theme, dominant)}有关的承载感站稳，再决定怎么用「{secondary}」的力量继续向外。"
-        )
+        if mapped_direction:
+            first_impression_parts.append(
+                f"所以这不是简单的停住，而是你正在认真处理更底层的事：先把和{self._get_element_theme_phrase(resolved_theme, dominant)}有关的承载感站稳，再把下一步调整成「{mapped_direction}」。"
+            )
+        else:
+            first_impression_parts.append(
+                f"所以这不是简单的停住，而是你正在认真处理更底层的事：先把和{self._get_element_theme_phrase(resolved_theme, dominant)}有关的承载感站稳，再决定怎么用「{secondary}」的力量继续向外。"
+            )
         if contradiction_text:
             first_impression_parts.append(self._trim_sentence(contradiction_text, 96))
         if signal_text:
             first_impression_parts.append(f"更深一层看，{signal_text}")
 
-        energy_essence = (
-            f"这张画的能量主轴，不是拼命往外冲，而是先把{self._get_element_theme_phrase(resolved_theme, dominant)}站稳，再决定怎么让「{secondary}」带着你继续向前。"
-            f"{transition or ''}"
-        ).strip()
+        if mapped_direction:
+            energy_essence = (
+                f"这张画的能量主轴，不是拼命往外冲，而是先把{self._get_element_theme_phrase(resolved_theme, dominant)}站稳，再把行动节奏调整成「{mapped_direction}」。"
+                f"{transition or ''}"
+            ).strip()
+        else:
+            energy_essence = (
+                f"这张画的能量主轴，不是拼命往外冲，而是先把{self._get_element_theme_phrase(resolved_theme, dominant)}站稳，再决定怎么让「{secondary}」带着你继续向前。"
+                f"{transition or ''}"
+            ).strip()
 
         block_parts: list[str] = []
         if mapped_contradiction:

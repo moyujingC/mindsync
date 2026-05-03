@@ -25,6 +25,7 @@ from app.core.pipeline.orchestrator_v2 import (
     PricingSnapshot,
 )
 from app.core.pipeline.generation_runtime import (
+    DeterministicReportGenerationRuntime,
     LiteGenerationBundle,
     LLMReportGenerationRuntime,
     ProGenerationBundle,
@@ -159,6 +160,7 @@ def test_prepare_lite_record_uses_detector_when_missing_manual_input(tmp_path):
     orchestrator = LayeredOrchestrator(
         store=store,
         circle_detector=StubCircleDetector(),
+        generation_runtime=DeterministicReportGenerationRuntime(),
         enable_vision=True,
     )
 
@@ -181,6 +183,7 @@ def test_get_report_returns_lite_placeholder_when_not_generated(tmp_path):
     orchestrator = LayeredOrchestrator(
         store=store,
         circle_detector=StubCircleDetector(),
+        generation_runtime=DeterministicReportGenerationRuntime(),
         enable_vision=True,
     )
 
@@ -231,8 +234,49 @@ def test_generate_lite_placeholder_creates_report(tmp_path):
     assert "向前先稳住的人" in record.layer_2_lite_final.full_report_markdown
     assert "你的心灵画像故事" in record.layer_2_lite_final.full_report_markdown
     assert "在「财富事业」中的具体表现" in record.layer_2_lite_final.full_report_markdown
-    assert "重要声明" in record.layer_2_lite_final.full_report_markdown
+    assert "强烈建议" not in record.layer_2_lite_final.full_report_markdown
+    assert "心理援助热线" not in record.layer_2_lite_final.full_report_markdown
+    assert "你的健康和安全是最重要的" not in record.layer_2_lite_final.full_report_markdown
     assert "一镜 Lite 版解读报告模板 v1.6" in record.layer_1_lite_draft.prompt_preview
+
+
+def test_wealth_career_reports_use_imbalance_direction_not_secondary_element(tmp_path):
+    image_path = tmp_path / "wealth-career.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        generation_runtime=DeterministicReportGenerationRuntime(),
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-wealth-career-direction",
+            theme="wealth_career",
+            painting_intention="理清当前职业推进中的拉扯",
+            painting_feeling="想往前，但也担心失控",
+            check_existing=False,
+        )
+    )
+
+    assert record.layer_2_lite_final is not None
+    assert "把节奏调整到：" in record.layer_2_lite_final.overall_impression
+    assert "把和「土」有关的积累、稳定、承载带回现实" not in record.layer_2_lite_final.overall_impression
+    assert "把节奏调整到" in record.layer_2_lite_final.visual_elements_rendered
+    assert "「土」想把事情重新带回现实" not in record.layer_2_lite_final.visual_elements_rendered
+
+    orchestrator.upgrade_to_pro(record.interpretation_id)
+    upgraded = store.load(record.interpretation_id)
+
+    assert upgraded is not None
+    assert upgraded.layer_3_pro_draft is not None
+    assert "下一步调整成" in upgraded.layer_3_pro_draft.first_impression
+    assert "怎么用「土」的力量继续向外" not in upgraded.layer_3_pro_draft.first_impression
+    assert "行动节奏调整成" in upgraded.layer_3_pro_draft.core_insight_table["能量本质"]
+    assert "让「土」带着你继续向前" not in upgraded.layer_3_pro_draft.core_insight_table["能量本质"]
 
 
 def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):

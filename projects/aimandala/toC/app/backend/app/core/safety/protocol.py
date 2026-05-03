@@ -102,11 +102,6 @@ HIGH_RISK_IMBALANCES = {
         "warning": "⚠️ 高风险：缺乏热情，快感缺失",
         "action": "显示情感淡漠提示，建议寻求专业评估",
     },
-    "金多木折": {
-        "risk_level": RiskLevel.HIGH,
-        "warning": "⚠️ 高风险：自我批评严重，自信心受损",
-        "action": "建议减少自我批评，重建自信",
-    },
 }
 
 
