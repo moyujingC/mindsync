@@ -54,6 +54,7 @@
 - 已进入第一轮正式实现与 release 试用收口
 - 当前长期服务器测试分支固定为 `relayhub/dev`
 - 短期不并回 `main` / `release`
+- `2026-05-03` 补一次 GitHub Actions 最小触发提交，用于验证 `relayhub/dev -> 自动部署` 链路
 
 当前不做：
 
