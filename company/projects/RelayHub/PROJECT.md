@@ -100,6 +100,10 @@
 - 长期服务器测试分支固定为 `relayhub/dev`
 - `relayhub.jingshu.cc` 当前由 `relayhub/dev` 分支驱动
 - 它不跟随主业务 `release` 分支节奏推进
+- 当前 GitHub 使用口径是：
+  - 日常开发先进入 `relayhub/dev` 或其任务分支
+  - 服务器测试与内部部署默认由 `relayhub/dev` push 直接触发
+  - 阶段稳定后再定期回收进 `main`
 
 当前不做：
 
@@ -108,6 +112,11 @@
 - 在没有 QA 基线和任务分解前开始编码
 - 把个人开发版和生产版混成同一套无差别运行策略
 - 把 RelayHub 并回 `main` / `release` 作为当前前置条件
+
+当前也不做：
+
+- 为 `RelayHub` 额外拆出仓库级 `release` 分支
+- 要求每次内部部署前都先走 `main -> release` 这条更重的产品发布链
 
 ## 6. 固定必读
 
