@@ -4,6 +4,13 @@
 
 为 `RelayHub frontend` 提供 release 宿主机上的最小试用入口。
 
+当前 GitHub / 分支口径一并固定为：
+
+- 运行分支：`relayhub/dev`
+- 触发方式：`push -> relayhub/dev` 后由独立 RelayHub workflow 自动部署
+- 服务器角色：继续复用当前 `release` 机器作为 RelayHub 内部部署宿主
+- 分支语义：这里的 `release` 是服务器角色，不等于 RelayHub 需要跟随仓库级 `release` 分支推进
+
 当前 release 现实约束：
 
 - `/opt/aimandala-release/app/mindsync` 现有 checkout 仍服务主业务 release，且可能带有脏工作区

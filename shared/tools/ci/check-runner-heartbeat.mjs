@@ -172,7 +172,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help || options.h) {
     console.log(`Usage:
-  node shared/tools/ci/check-runner-heartbeat.mjs --repository <owner/repo> [--workflow-file aimandala-ci.yml] [--branch main]
+  node shared/tools/ci/check-runner-heartbeat.mjs --repository <owner/repo> [--project-name 一镜一梳] [--workflow-file aimandala-ci.yml] [--branch main]
 `);
     return;
   }
@@ -180,6 +180,7 @@ async function main() {
   const githubToken = getOption(options, "github-token", process.env.GITHUB_TOKEN);
   const workflowFile = getOption(options, "workflow-file", "aimandala-ci.yml");
   const branch = getOption(options, "branch", "main");
+  const projectName = getOption(options, "project-name", process.env.PAPERCLIP_PROJECT_NAME ?? "一镜一梳");
   const runnerName = getOption(options, "runner-name", process.env.RUNNER_HEARTBEAT_RUNNER_NAME ?? "mindsync-ci");
   const expectedLabels = String(
     getOption(options, "expect-labels", process.env.RUNNER_HEARTBEAT_EXPECT_LABELS ?? "self-hosted,linux,mindsync-ci,aimandala"),
@@ -268,7 +269,7 @@ async function main() {
       apiBase,
       apiKey,
       companyId,
-      projectName: "一镜一梳",
+      projectName,
       kind: "infra-runner-failure",
       workflow: "runner-heartbeat",
       repository,
