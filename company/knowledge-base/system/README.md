@@ -1,9 +1,9 @@
 # 系统机制知识库
 
 > 状态：current
-> 版本：0.1.1
+> 版本：0.1.2
 > owner：Engineer
-> last_updated：2026-05-03
+> last_updated：2026-05-04
 > source_of_truth：company/knowledge-base/system/README.md
 
 这份索引用于收口 `墨予镜` 当前对核心系统的设计机制分析与使用说明。
@@ -13,6 +13,7 @@
 - `Paperclip` 在 `墨予镜` 里到底扮演什么角色
 - `MindSync` 这套 Monorepo 是怎么分层、怎么协作的
 - 当前已经落地的 `CI/CD` 链路到底包含哪些组件、如何流转、应该先看哪里
+- `skill / MCP / plugin` 这类 AI 扩展机制应该如何理解、取舍和治理
 
 ## 1. 当前文档
 
@@ -23,6 +24,9 @@
 - [MindSync-设计机制分析.md](company/knowledge-base/system/MindSync-设计机制分析.md)
 - [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
 - [AI-Skill-系统性讨论.md](company/knowledge-base/system/AI-Skill-系统性讨论.md)
+- [AI-MCP-系统性讨论.md](company/knowledge-base/system/AI-MCP-系统性讨论.md)
+- [AI-Plugin-系统性讨论.md](company/knowledge-base/system/AI-Plugin-系统性讨论.md)
+- [AI-Skill-MCP-Plugin-对比分析.md](company/knowledge-base/system/AI-Skill-MCP-Plugin-对比分析.md)
 
 ## 2. 适用边界
 
@@ -52,3 +56,6 @@
 4. 如果要理解 `Paperclip` 上游快速迭代对本地系统的影响判断机制，再看 [Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
 5. 如果要理解现状中的自动化与故障路由，再看 [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
 6. 如果要理解如何为 AI 团队设计 `skill` 能力包，再看 [AI-Skill-系统性讨论.md](company/knowledge-base/system/AI-Skill-系统性讨论.md)
+7. 如果要理解 AI 如何标准化连接外部系统，再看 [AI-MCP-系统性讨论.md](company/knowledge-base/system/AI-MCP-系统性讨论.md)
+8. 如果要理解 AI 工具生态里的插件如何打包和分发能力，再看 [AI-Plugin-系统性讨论.md](company/knowledge-base/system/AI-Plugin-系统性讨论.md)
+9. 如果要比较 `skill / MCP / plugin` 的职责边界和组合方式，再看 [AI-Skill-MCP-Plugin-对比分析.md](company/knowledge-base/system/AI-Skill-MCP-Plugin-对比分析.md)
