@@ -118,11 +118,9 @@ jobs:
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -i ~/.ssh/relayhub_release \
-            "$SSH_USER@$SSH_HOST" '
-            set -e
-            cd /opt/aimandala-release/app/mindsync
-            bash projects/relayhub/deploy/release-console/deploy-relayhub-release-stack.sh
-          '
+            "$SSH_USER@$SSH_HOST" \
+            "SOURCE_REPO=/opt/aimandala-release/app/mindsync bash -s" \
+            < projects/relayhub/deploy/release-console/deploy-relayhub-release-stack.sh
 
       - name: Smoke Check RelayHub
         run: |
