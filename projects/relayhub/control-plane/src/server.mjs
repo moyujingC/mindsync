@@ -716,6 +716,7 @@ function getEntryBinding(state, entryId) {
 }
 
 function resolveEntryBindingPayload(state, secrets, entryId) {
+  const relayEntry = state.entries.find((item) => item.id === entryId) ?? null;
   const binding = getEntryBinding(state, entryId);
   if (!binding) {
     return {
@@ -744,14 +745,19 @@ function resolveEntryBindingPayload(state, secrets, entryId) {
 
   const apiKey = getStoredApiKey(secrets, modelEntry.id);
   const effectiveReasoningEffort = resolveEffectiveReasoningEffort(binding, modelEntry);
+  const relayToken = typeof state.relayConfig?.relayToken === "string" && state.relayConfig.relayToken.trim()
+    ? state.relayConfig.relayToken.trim()
+    : null;
   return {
     ok: true,
     payload: {
       entryId,
+      alias: relayEntry?.alias ?? null,
       defaultModelEntryId: binding.defaultModelEntryId,
       fallbackModelEntryId: binding.fallbackModelEntryId ?? null,
       reasoningEffortOverride: binding.reasoningEffortOverride ?? null,
       effectiveReasoningEffort,
+      relayToken,
       resolvedModel: {
         id: modelEntry.id,
         baseUrl: modelEntry.baseUrl,
@@ -875,6 +881,7 @@ async function handleRequest(request, response) {
   const state = await readState();
   const secrets = await readSecrets();
   const relayConfig = await readRelayConfig();
+  state.relayConfig = relayConfig;
   updateTaskNames(state);
   updateEntryBindingNames(state);
 

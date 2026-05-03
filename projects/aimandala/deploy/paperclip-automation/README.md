@@ -846,12 +846,23 @@ NO_PROXY=127.0.0.1,localhost,vm-0-11-opencloudos.tail176582.ts.net
 
 ## 6. Heartbeat 与清理
 
-当前默认仍建议用 `check-runner-heartbeat.mjs` 做 runner 巡检。
+当前默认建议用 `paperclip-multi-project-heartbeat.mjs` 做多项目 heartbeat 编排。
 
 第一阶段先接受它运行在同一台 `automation` 节点上，覆盖：
 
-- runner 在线但长时间 `queued`
-- 最近成功运行超时
+- `AI Mandala`
+  - `aimandala-ci.yml`
+  - `main`
+  - 项目名：`一镜一梳`
+- `RelayHub`
+  - `relayhub-ci-deploy.yml`
+  - `relayhub/dev`
+  - 项目名：`RelayHub`
+
+每个 target 都会顺序执行：
+
+- `check-runner-heartbeat.mjs`
+- `check-paperclip-execution-health.mjs`
 
 它默认不能覆盖：
 
@@ -879,17 +890,19 @@ NO_PROXY=127.0.0.1,localhost,vm-0-11-opencloudos.tail176582.ts.net
 ```bash
 sudo bash -lc '
   cd /opt/automation/app/mindsync-heartbeat &&
-  bash shared/tools/ci/runner-doctor.sh \
+  node shared/tools/ci/paperclip-multi-project-heartbeat.mjs \
     --env-file /etc/default/paperclip-heartbeat \
-    --strict
+    --doctor 1 \
+    --print-json 1
 '
 ```
 
 说明：
 
-- `runner-doctor.sh` 默认只读取当前 shell 环境，不会自动猜测应该加载 `/etc/default/paperclip-automation` 还是 `/etc/default/paperclip-heartbeat`
-- 当前 runner heartbeat 的 GitHub / Paperclip 凭证以 `/etc/default/paperclip-heartbeat` 为准
-- 若 `runner-doctor.sh` 报 `GITHUB_REPOSITORY and GITHUB_TOKEN are required`，优先检查是否遗漏 `--env-file /etc/default/paperclip-heartbeat`，不要直接把它判断成 runner 故障
+- `paperclip-multi-project-heartbeat.mjs` 支持 `--env-file`
+- 若不传 `--env-file`，再手动显式 `source /etc/default/paperclip-heartbeat`
+- 当前 heartbeat 的 GitHub / Paperclip 凭证仍以 `/etc/default/paperclip-heartbeat` 为准
+- 若多项目 heartbeat 报 `repository、github token、company id、paperclip api key 都是必填`，优先检查是否遗漏环境变量加载，而不是直接判断成 runner 故障
 - 若诊断持续显示 `expected commit` 与当前 `head` 不一致，或工作树长期 `dirty`，应先按 `workspace_drift` 处理 automation 节点工作区
 - 当前固定口径：
   - `paperclip-heartbeat.service`
@@ -937,7 +950,7 @@ sudo bash -lc '
    - `sudo systemctl daemon-reload`
    - `sudo systemctl cat paperclip-heartbeat.service`
    - `sudo systemctl cat automation-maintenance.service`
-   - 确认 `WorkingDirectory` 与 `ExecStart` 已指向 `/opt/automation/app/mindsync-heartbeat` 和仓库内 `shared/tools/ci/*`
+   - 确认 `WorkingDirectory` 与 `ExecStart` 已指向 `/opt/automation/app/mindsync-heartbeat` 和仓库内 `shared/tools/ci/paperclip-multi-project-heartbeat.mjs`
 6. 在宿主机执行 `sudo timedatectl set-timezone Asia/Shanghai`，再用 `timedatectl` 确认系统时区已切到北京时间
 7. 启动 Paperclip service
 8. 完成私有网络访问与 board claim
@@ -1008,9 +1021,9 @@ sudo chown -R ubuntu:ubuntu /data/paperclip
 3. Paperclip 面板能登录并看到公司数据
 4. 触发一次 `ci` 后，job 实际落到这台机器执行
 5. `systemctl cat paperclip-heartbeat.service` 显示的 `WorkingDirectory` 与 `ExecStart` 和仓库模板一致，而不是旧的 `/opt/automation/ops/paperclip-ci`
-6. `check-runner-heartbeat.mjs` 可以本机手动执行成功
-7. `runner-doctor.sh --strict` 返回成功，且 labels / token / 最新 workflow 诊断一致
-8. `paperclip-heartbeat.timer` 会同时完成 runner 巡检和执行健康巡检
+6. `paperclip-multi-project-heartbeat.mjs` 可以本机手动执行成功
+7. `paperclip-multi-project-heartbeat.mjs --doctor 1 --print-json 1` 可以本机手动执行成功
+8. `paperclip-heartbeat.timer` 会同时完成 `AI Mandala` 与 `RelayHub` 的 runner 巡检和执行健康巡检
 9. `paperclip-heartbeat.service` 若失败，需先区分：
    - systemd unit 路径漂移
    - strict gate 命中 `execution_workspace_policy_not_materialized`

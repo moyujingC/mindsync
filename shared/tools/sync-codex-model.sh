@@ -4,13 +4,19 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "${SCRIPT_DIR}/relayhub-entry-sync-lib.sh"
-PAPERCLIP_YAML="${REPO_ROOT}/.paperclip.yaml"
+PAPERCLIP_YAML="${PAPERCLIP_YAML_OVERRIDE:-${REPO_ROOT}/.paperclip.yaml}"
 CODEX_CONFIG="${HOME}/.codex/config.toml"
+CODEX_AUTH="${HOME}/.codex/auth.json"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-}"
 PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
 CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
 ENTRY_ID="${ENTRY_ID:-entry-paperclip-codex-local-server}"
 RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
+RELAYHUB_CODEX_BASE_URL="${RELAYHUB_CODEX_BASE_URL:-https://relayhub.jingshu.cc/claude/v1}"
+RELAYHUB_CODEX_WIRE_API="${RELAYHUB_CODEX_WIRE_API:-responses}"
+RELAYHUB_CODEX_PROVIDER_NAME="${RELAYHUB_CODEX_PROVIDER_NAME:-codex}"
+RELAYHUB_CODEX_AUTH_KEY_NAME="${RELAYHUB_CODEX_AUTH_KEY_NAME:-OPENAI_API_KEY}"
+PAPERCLIP_SYNC_SKIP_AGENT_PATCH="${PAPERCLIP_SYNC_SKIP_AGENT_PATCH:-0}"
 
 usage() {
   cat <<'EOF'
@@ -19,19 +25,21 @@ Usage:
   shared/tools/sync-codex-model.sh sync
 
 Commands:
-  status  Show the local Codex model and current Paperclip codex_local agent model config
-  sync    Update Paperclip codex_local agents to use the local Codex client model
+  status  Show RelayHub binding, current local Codex client config, and current Paperclip codex_local agent config
+  sync    Write RelayHub client config locally and align Paperclip codex_local agents to the RelayHub alias model
 
 Notes:
-  - Source of truth for model selection and api key is RelayHub internal entry binding resolve
+  - Source of truth for model selection is RelayHub entry binding resolve
+  - Source of truth for the relay token is RelayHub control-plane relay-config
+  - The local Codex client should keep RelayHub URL + alias model + relay token only
   - Only runtime agents configured as codex_local in .paperclip.yaml are updated
-  - Existing adapterConfig fields are preserved; only model / modelReasoningEffort are aligned
+  - Existing adapterConfig fields are preserved; only model / modelReasoningEffort / apiKey are aligned
   - This script is now an initialization / repair tool.
   - Steady-state Paperclip usage should point codex_local at RelayHub once,
     then switch model / api key / reasoning effort in RelayHub only.
   - Use PAPERCLIP_API_URL to point at a remote automation server
   - Use PAPERCLIP_API_TOKEN or PAPERCLIP_API_KEY when the remote instance requires auth
-  - When using DeepSeek, also update the provider base_url / auth in extraArgs or local Codex config
+  - Set PAPERCLIP_SYNC_SKIP_AGENT_PATCH=1 to update only the local Codex client files
 EOF
 }
 
@@ -60,8 +68,7 @@ read_codex_value() {
     path = ARGV[0]
     key = ARGV[1]
     unless File.exist?(path)
-      warn "Codex config not found at #{path}"
-      exit 2
+      exit 0
     end
     line = File.readlines(path, encoding: "UTF-8").find do |raw|
       stripped = raw.strip
@@ -74,6 +81,19 @@ read_codex_value() {
       puts value
     end
   ' "$CODEX_CONFIG" "$key"
+}
+
+read_token_from_auth() {
+  ruby -rjson -e '
+    path = ARGV[0]
+    key = ARGV[1]
+    unless File.exist?(path)
+      exit 0
+    end
+    payload = JSON.parse(File.read(path, encoding: "UTF-8"))
+    value = payload[key]
+    puts value.to_s if value.is_a?(String) && !value.empty?
+  ' "$CODEX_AUTH" "$1"
 }
 
 iter_codex_agents() {
@@ -112,36 +132,52 @@ require_cmd python3
 require_cmd curl
 require_cmd jq
 
-local_model="$(read_codex_value "model")"
-local_effort="$(read_codex_value "model_reasoning_effort")"
+current_model="$(read_codex_value "model")"
+current_effort="$(read_codex_value "model_reasoning_effort")"
+current_base_url="$(read_codex_value "base_url")"
+current_wire_api="$(read_codex_value "wire_api")"
+current_provider_name="$(read_codex_value "name")"
+current_auth_key="$(read_token_from_auth "${RELAYHUB_CODEX_AUTH_KEY_NAME}")"
 
 resolved_json="$(relayhub_fetch_entry_binding_json "${CONTROL_PLANE_BASE_URL}" "${ENTRY_ID}" "${RELAYHUB_INTERNAL_TOKEN}")"
 relayhub_export_entry_binding_env "${resolved_json}"
 relayhub_assert_api_key_present "${ENTRY_ID}" "${RESOLVED_MODEL_ID}" "${RESOLVED_API_KEY}"
-local_model="${RESOLVED_MODEL}"
-if [[ -n "${RESOLVED_REASONING_EFFORT}" ]]; then
-  local_effort="${RESOLVED_REASONING_EFFORT}"
-fi
+resolved_alias="$(printf '%s' "${resolved_json}" | jq -r '.alias // empty')"
+resolved_relay_token="$(printf '%s' "${resolved_json}" | jq -r '.relayToken // empty')"
+target_model="${resolved_alias:-}"
+target_effort="${RESOLVED_REASONING_EFFORT:-}"
 
-if [[ -z "${local_model}" ]]; then
-  echo "Could not read model from ${CODEX_CONFIG}" >&2
+if [[ -z "${target_model}" ]]; then
+  echo "RelayHub entry ${ENTRY_ID} did not return an alias model." >&2
   exit 1
 fi
 
-runtime_agents_json="$(
-  if [[ -n "$PAPERCLIP_API_TOKEN" ]]; then
-    curl -fsS -H "Authorization: Bearer ${PAPERCLIP_API_TOKEN}" \
-      "${api_url}/api/companies/${company_id}/agents" || {
-      echo "Paperclip API unavailable at ${api_url}" >&2
-      exit 1
-    }
-  else
-    curl -fsS "${api_url}/api/companies/${company_id}/agents" || {
-      echo "Paperclip API unavailable at ${api_url}" >&2
-      exit 1
-    }
+if [[ -z "${resolved_relay_token}" ]]; then
+  echo "RelayHub entry ${ENTRY_ID} did not return a relay token from relay-config.json." >&2
+  exit 1
+fi
+
+load_runtime_agents() {
+  if [[ "${PAPERCLIP_SYNC_SKIP_AGENT_PATCH}" == "1" ]]; then
+    runtime_agents_json="[]"
+    return
   fi
-)"
+
+  runtime_agents_json="$(
+    if [[ -n "$PAPERCLIP_API_TOKEN" ]]; then
+      curl -fsS -H "Authorization: Bearer ${PAPERCLIP_API_TOKEN}" \
+        "${api_url}/api/companies/${company_id}/agents" || {
+        echo "Paperclip API unavailable at ${api_url}" >&2
+        exit 1
+      }
+    else
+      curl -fsS "${api_url}/api/companies/${company_id}/agents" || {
+        echo "Paperclip API unavailable at ${api_url}" >&2
+        exit 1
+      }
+    fi
+  )"
+}
 
 api_curl() {
   if [[ -n "$PAPERCLIP_API_TOKEN" ]]; then
@@ -161,11 +197,152 @@ runtime_agent_id_by_name() {
   ' "$agent_name" <<<"$runtime_agents_json"
 }
 
+write_local_codex_files() {
+  mkdir -p "$(dirname "${CODEX_CONFIG}")"
+
+  CODEX_CONFIG_PATH="${CODEX_CONFIG}" \
+  TARGET_MODEL="${target_model}" \
+  TARGET_EFFORT="${target_effort}" \
+  TARGET_BASE_URL="${RELAYHUB_CODEX_BASE_URL}" \
+  TARGET_WIRE_API="${RELAYHUB_CODEX_WIRE_API}" \
+  TARGET_PROVIDER_NAME="${RELAYHUB_CODEX_PROVIDER_NAME}" \
+  python3 - <<'PY'
+import os
+from pathlib import Path
+
+path = Path(os.environ["CODEX_CONFIG_PATH"])
+model = os.environ["TARGET_MODEL"]
+effort = os.environ.get("TARGET_EFFORT", "").strip()
+base_url = os.environ["TARGET_BASE_URL"]
+wire_api = os.environ["TARGET_WIRE_API"]
+provider_name = os.environ["TARGET_PROVIDER_NAME"]
+
+if path.exists():
+    lines = path.read_text(encoding="utf-8").splitlines()
+else:
+    lines = []
+
+def update_root(lines, key, value, enabled=True):
+    prefix = f"{key} ="
+    found = False
+    for idx, raw in enumerate(lines):
+        stripped = raw.strip()
+        if not stripped or stripped.startswith("#") or stripped.startswith("["):
+            continue
+        if stripped.startswith(prefix):
+            found = True
+            if enabled:
+                lines[idx] = f'{key} = "{value}"'
+            else:
+                lines.pop(idx)
+            break
+    if enabled and not found:
+        insert_at = 0
+        while insert_at < len(lines) and lines[insert_at].strip().startswith("#"):
+            insert_at += 1
+        lines.insert(insert_at, f'{key} = "{value}"')
+
+def ensure_section(lines, section_name):
+    header = f"[model_providers.{section_name}]"
+    for idx, raw in enumerate(lines):
+        if raw.strip() == header:
+            return idx
+    if lines and lines[-1].strip():
+        lines.append("")
+    lines.append(header)
+    return len(lines) - 1
+
+def find_section_end(lines, start_idx):
+    idx = start_idx + 1
+    while idx < len(lines):
+        stripped = lines[idx].strip()
+        if stripped.startswith("[") and stripped.endswith("]"):
+            return idx
+        idx += 1
+    return len(lines)
+
+def update_section_key(lines, section_name, key, value):
+    start_idx = ensure_section(lines, section_name)
+    end_idx = find_section_end(lines, start_idx)
+    prefix = f"{key} ="
+    for idx in range(start_idx + 1, end_idx):
+        stripped = lines[idx].strip()
+        if stripped.startswith(prefix):
+            if isinstance(value, bool):
+                lines[idx] = f"{key} = {'true' if value else 'false'}"
+            else:
+                lines[idx] = f'{key} = "{value}"' if isinstance(value, str) else f"{key} = {value}"
+            return
+    if isinstance(value, bool):
+        lines.insert(end_idx, f"{key} = {'true' if value else 'false'}")
+    else:
+        lines.insert(end_idx, f'{key} = "{value}"' if isinstance(value, str) else f"{key} = {value}")
+
+update_root(lines, "model_provider", provider_name)
+update_root(lines, "model", model)
+update_root(lines, "model_reasoning_effort", effort, enabled=bool(effort))
+update_section_key(lines, provider_name, "name", provider_name)
+update_section_key(lines, provider_name, "base_url", base_url)
+update_section_key(lines, provider_name, "wire_api", wire_api)
+update_section_key(lines, provider_name, "requires_openai_auth", True)
+
+path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+PY
+
+  CODEX_AUTH_PATH="${CODEX_AUTH}" \
+  AUTH_KEY_NAME="${RELAYHUB_CODEX_AUTH_KEY_NAME}" \
+  RELAY_TOKEN="${resolved_relay_token}" \
+  python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+path = Path(os.environ["CODEX_AUTH_PATH"])
+payload = {}
+if path.exists():
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(loaded, dict):
+            payload = loaded
+    except Exception:
+        payload = {}
+
+payload[os.environ["AUTH_KEY_NAME"]] = os.environ["RELAY_TOKEN"]
+path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+PY
+}
+
 show_status() {
-  echo "Local Codex config"
-  echo "  model: ${local_model}"
-  echo "  model_reasoning_effort: ${local_effort:-<unset>}"
+  echo "RelayHub entry binding"
+  echo "  entry_id: ${ENTRY_ID}"
+  echo "  alias: ${target_model}"
+  echo "  relay_base_url: ${RELAYHUB_CODEX_BASE_URL}"
+  echo "  wire_api: ${RELAYHUB_CODEX_WIRE_API}"
+  echo "  default_model_entry_id: ${RESOLVED_MODEL_ID}"
+  echo "  upstream_base_url: ${RESOLVED_BASE_URL}"
+  echo "  upstream_model: ${RESOLVED_MODEL}"
+  echo "  reasoning_effort: ${target_effort:-<unset>}"
+  echo "  relay_token_present: yes"
   echo ""
+  echo "Local Codex client files"
+  echo "  config_path: ${CODEX_CONFIG}"
+  echo "  auth_path: ${CODEX_AUTH}"
+  echo "  current_model: ${current_model:-<unset>}"
+  echo "  current_model_reasoning_effort: ${current_effort:-<unset>}"
+  echo "  current_base_url: ${current_base_url:-<unset>}"
+  echo "  current_wire_api: ${current_wire_api:-<unset>}"
+  echo "  current_provider_name: ${current_provider_name:-<unset>}"
+  if [[ -n "${current_auth_key}" ]]; then
+    echo "  current_auth_key_present: yes"
+  else
+    echo "  current_auth_key_present: no"
+  fi
+  echo ""
+  if [[ "${PAPERCLIP_SYNC_SKIP_AGENT_PATCH}" == "1" ]]; then
+    echo "Paperclip codex_local agents"
+    echo "  skipped by PAPERCLIP_SYNC_SKIP_AGENT_PATCH=1"
+    return
+  fi
   echo "Paperclip codex_local agents"
 
   while IFS=$'\t' read -r agent_name _repo_dir; do
@@ -193,6 +370,17 @@ PY
 }
 
 sync_models() {
+  write_local_codex_files
+
+  echo "Updated ${CODEX_CONFIG} -> model=${target_model}, base_url=${RELAYHUB_CODEX_BASE_URL}, wire_api=${RELAYHUB_CODEX_WIRE_API}"
+  echo "Updated ${CODEX_AUTH} -> ${RELAYHUB_CODEX_AUTH_KEY_NAME}=<relay-token>"
+
+  if [[ "${PAPERCLIP_SYNC_SKIP_AGENT_PATCH}" == "1" ]]; then
+    echo ""
+    echo "Skipped Paperclip runtime agent patch."
+    return
+  fi
+
   local updated=0
 
   while IFS=$'\t' read -r agent_name _repo_dir; do
@@ -205,25 +393,16 @@ sync_models() {
 
     current_payload="$(api_curl "${api_url}/api/agents/${runtime_id}")"
     patch_payload="$(
-      LOCAL_MODEL="${local_model}" LOCAL_EFFORT="${local_effort:-}" RESOLVED_API_KEY="${RESOLVED_API_KEY}" python3 - <<'PY' <<<"$current_payload"
+      CURRENT_PAYLOAD="${current_payload}" TARGET_MODEL="${target_model}" TARGET_EFFORT="${target_effort:-}" RELAY_TOKEN="${resolved_relay_token}" python3 - <<'PY'
 import json
 import os
-import sys
 
-agent = json.loads(sys.stdin.read())
+agent = json.loads(os.environ["CURRENT_PAYLOAD"])
 adapter_config = dict(agent.get("adapterConfig") or {})
-adapter_config["model"] = os.environ["LOCAL_MODEL"]
-adapter_config["apiKey"] = os.environ["RESOLVED_API_KEY"]
+adapter_config["model"] = os.environ["TARGET_MODEL"]
+adapter_config["apiKey"] = os.environ["RELAY_TOKEN"]
 
-extra_args = list(adapter_config.get("extraArgs") or [])
-replacements = {
-    'model_providers.codex.base_url="https://code.ppchat.vip/v1"': 'model_providers.codex.base_url="https://api.deepseek.com"',
-}
-adapter_config["extraArgs"] = [replacements.get(item, item) for item in extra_args]
-if not any(item.startswith("model_providers.codex.api_key=") for item in adapter_config["extraArgs"]):
-    adapter_config["extraArgs"].append(f'model_providers.codex.api_key="{os.environ["RESOLVED_API_KEY"]}"')
-
-effort = os.environ.get("LOCAL_EFFORT", "").strip()
+effort = os.environ.get("TARGET_EFFORT", "").strip()
 if effort:
     adapter_config["modelReasoningEffort"] = effort
 else:
@@ -244,13 +423,15 @@ PY
     curl -fsS -X PATCH "${patch_headers[@]}" "${api_url}/api/agents/${runtime_id}" \
       -d "$patch_payload" >/dev/null
 
-    echo "Updated ${agent_name} -> model=${local_model}${local_effort:+, modelReasoningEffort=${local_effort}}"
+    echo "Updated ${agent_name} -> model=${target_model}${target_effort:+, modelReasoningEffort=${target_effort}}"
     updated=$((updated + 1))
   done < <(iter_codex_agents)
 
   echo ""
   echo "Done. Updated ${updated} codex_local agent(s)."
 }
+
+load_runtime_agents
 
 case "${1:-status}" in
   status)

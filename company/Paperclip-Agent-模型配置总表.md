@@ -79,8 +79,11 @@
 
 - Agent：`Engineer`
 - Adapter：`codex_local`
-- Base URL：`https://api.deepseek.com`
-- Model：`deepseek-v4-pro`
+- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Model：`relayhub-entry-paperclip-codex-local-server`
+- 协议：`OpenAI Responses`
+- 当前默认入口绑定：`preset-ppchat-relay`
+- 当前真实上游：`https://code.ppchat.vip/v1`
 - Reasoning：`medium`
 - Token 优化策略：
   - 不降模型
@@ -92,8 +95,13 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于工程实现
-  - 当前已统一切到 `deepseek-v4-pro`
-  - 由于 `codex_local` 当前仍走 `responses` 线，需继续关注 DeepSeek 兼容性
+  - 稳态口径是让 `codex_local` 固定接入 RelayHub，而不是直接写死上游模型商
+  - 当前服务器侧正式入口是 `relayhub-entry-paperclip-codex-local-server`
+  - 当前客户端落地配置位置是：
+    - `/paperclip/.codex/config.toml`
+    - `/paperclip/.codex/auth.json`
+  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-ppchat-relay`
+  - 若后续切模型、切 key 或切 `reasoningEffort`，优先在 RelayHub 控制面改入口绑定
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -120,8 +128,11 @@
 
 - Agent：`Test / QA`
 - Adapter：`codex_local`
-- Base URL：`https://api.deepseek.com`
-- Model：`deepseek-v4-pro`
+- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Model：`relayhub-entry-paperclip-codex-local-server`
+- 协议：`OpenAI Responses`
+- 当前默认入口绑定：`preset-ppchat-relay`
+- 当前真实上游：`https://code.ppchat.vip/v1`
 - Reasoning：`medium`
 - Token 优化策略：
   - 不降模型
@@ -133,7 +144,11 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于测试、QA、验收
-  - 与 `Engineer` 保持同模型口径，统一为 `deepseek-v4-pro`
+  - 与 `Engineer` 保持同一条服务器侧 RelayHub 入口口径
+  - 当前客户端落地配置位置同样是：
+    - `/paperclip/.codex/config.toml`
+    - `/paperclip/.codex/auth.json`
+  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-ppchat-relay`
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -251,7 +266,11 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - `claude_local`
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
 - `codex_local`
-  - 主要吃自身 provider 配置，当前指向 `https://api.deepseek.com`
+  - 服务器侧稳态不再直接吃上游 `base_url`
+  - 当前客户端固定指向 `https://relayhub.jingshu.cc/claude/v1`
+  - 当前模型固定写为 `relayhub-entry-paperclip-codex-local-server`
+  - 当前 Relay 访问 token 由 RelayHub 控制面的 `relay-config.json` 管理
+  - Paperclip 客户端侧只消费 relay token，不直接持有上游供应商长期密钥
 - automation 节点国际出网当前通过阿里云美国机 `tinyproxy` 辅助
 - `Idea Clarifier`
   - 虽然也复用服务器侧 `OPENAI_API_KEY`
@@ -268,12 +287,12 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - `CEO`
   - `claude_local + relayhub-entry-paperclip-claude-local-server`
 - `Engineer`
-  - `codex_local + deepseek-v4-pro`
+  - `codex_local + relayhub-entry-paperclip-codex-local-server`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
   - 成本压力较高或遇到公共卡点时，允许用户手动暂停；后续再补“多次失败自动转人工”
 - `Test / QA`
-  - `codex_local + deepseek-v4-pro`
+  - `codex_local + relayhub-entry-paperclip-codex-local-server`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
 - 规划/产品/内容/研究类 Agent
