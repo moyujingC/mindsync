@@ -59,6 +59,7 @@
   - 任务分支先回 `relayhub/dev`
   - `relayhub/dev` push 直接触发内部部署
   - 阶段稳定后再定期回 `main`
+  - 当前已补 `relayhub/dev` 短链路自动部署 workflow
 
 当前不做：
 
