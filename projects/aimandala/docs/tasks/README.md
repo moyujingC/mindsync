@@ -13,6 +13,7 @@
 
 当前与 `Web MVP` 公开首发、双端并行和运行稳定性最相关的任务入口是：
 
+- `2026-05-03-observe-only-checkout-治理实施计划.md`
 - `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
 - `2026-04-22-local-mac-automatic-execution-host-plan.md`
 - `2026-04-21-local-mac-execution-host-pilot-plan.md`
@@ -33,6 +34,7 @@
 
 说明：
 
+- `2026-05-03-observe-only-checkout-治理实施计划.md` 是当前 automation 节点主镜像区与巡检区治理的正式实施入口，固定先盘点、再归类、再决定转正 / 备份 / 重建 / 定点覆盖，并把 checkout 脏状态上升为升级阻断条件。
 - `2026-04-26-历史任务全量关闭与新基线切换实施计划.md` 是当前控制面任务面重置的正式实施入口，固定把 `2026-04-26 00:00 Asia/Shanghai` 之前的历史普通任务与历史 automation 任务都视为旧窗口对象，默认全量关闭，只保留极少数显式例外，并把后续第一主线固定为普通任务先在本地 Mac 自动执行。
 - `2026-04-22-local-mac-automatic-execution-host-plan.md` 是当前普通任务自动在本地 Mac 上跑的正式实施入口，固定落本地执行器、launchd、runbook 与 verification，不把服务器 heartbeat 重新拉回普通任务主链。
 - `2026-04-21-local-mac-execution-host-pilot-plan.md` 是当前普通任务接入本地 Mac 执行节点的单机试点正式入口，固定只服务你当前这台 Mac，先收 control plane 与 execution host 的宿主语义、连接合同和最小回写合同，不直接扩成多机方案。

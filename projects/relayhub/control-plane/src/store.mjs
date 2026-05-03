@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { seedEntryBindings, seedEntries, seedModelEntries, seedRuns, seedTasks } from "./seed-data.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const LEGACY_DEEPSEEK_V3_ID = "preset-deepseek-v3";
+const CANONICAL_DEEPSEEK_V4_ID = "preset-deepseek-v4";
 
 function resolveDataDir() {
   const configured = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR?.trim();
@@ -23,6 +25,17 @@ function resolveSecretsPath() {
 
 function resolveRelayConfigPath() {
   return path.join(resolveDataDir(), "relay-config.json");
+}
+
+async function writeJsonAtomically(targetPath, value) {
+  const directory = path.dirname(targetPath);
+  const tempPath = path.join(
+    directory,
+    `.${path.basename(targetPath)}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}.tmp`
+  );
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(tempPath, JSON.stringify(value, null, 2), "utf8");
+  await fs.rename(tempPath, targetPath);
 }
 
 function clone(value) {
@@ -81,6 +94,14 @@ function normalizeReasoningEffort(value) {
 function normalizeEntryBinding(binding) {
   return {
     ...binding,
+    defaultModelEntryId:
+      binding?.defaultModelEntryId === LEGACY_DEEPSEEK_V3_ID
+        ? CANONICAL_DEEPSEEK_V4_ID
+        : binding?.defaultModelEntryId ?? null,
+    fallbackModelEntryId:
+      binding?.fallbackModelEntryId === LEGACY_DEEPSEEK_V3_ID
+        ? CANONICAL_DEEPSEEK_V4_ID
+        : binding?.fallbackModelEntryId ?? null,
     reasoningEffortOverride: normalizeReasoningEffort(binding?.reasoningEffortOverride)
   };
 }
@@ -94,6 +115,7 @@ function migrateMissingPresetModelEntries(state) {
       : null;
     const nextEntry = {
       ...entry,
+      id: entry?.id === LEGACY_DEEPSEEK_V3_ID ? CANONICAL_DEEPSEEK_V4_ID : entry?.id,
       capabilities: entry && typeof entry === "object" && entry.capabilities
         ? entry.capabilities
         : defaultCapabilities(),
@@ -106,6 +128,7 @@ function migrateMissingPresetModelEntries(state) {
       nextEntry.capabilities !== entry?.capabilities ||
       nextEntry.reasoningEffort !== (entry?.reasoningEffort ?? null) ||
       nextEntry.hasStoredApiKey !== (entry?.hasStoredApiKey ?? Boolean(rawApiKey)) ||
+      nextEntry.id !== entry?.id ||
       "apiKey" in (entry ?? {})
     ) {
       changed = true;
@@ -135,6 +158,24 @@ function migrateMissingPresetModelEntries(state) {
       entryBindings: Array.isArray(state.entryBindings)
         ? state.entryBindings.map((binding) => normalizeEntryBinding(binding))
         : clone(seedEntryBindings).map((binding) => normalizeEntryBinding(binding)),
+      tasks: Array.isArray(state.tasks)
+        ? state.tasks.map((task) => ({
+            ...task,
+            defaultModelEntryId:
+              task?.defaultModelEntryId === LEGACY_DEEPSEEK_V3_ID
+                ? CANONICAL_DEEPSEEK_V4_ID
+                : task?.defaultModelEntryId ?? null,
+          }))
+        : clone(seedTasks),
+      runs: Array.isArray(state.runs)
+        ? state.runs.map((run) => ({
+            ...run,
+            modelEntryId:
+              run?.modelEntryId === LEGACY_DEEPSEEK_V3_ID
+                ? CANONICAL_DEEPSEEK_V4_ID
+                : run?.modelEntryId,
+          }))
+        : clone(seedRuns),
       modelEntries: [...normalizedExistingEntries, ...missingPresetEntries]
     }
   };
@@ -165,7 +206,15 @@ export async function readSecrets() {
   try {
     const raw = await fs.readFile(secretsPath, "utf8");
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
+    if (!parsed || typeof parsed !== "object") {
+      return {};
+    }
+    if (parsed[LEGACY_DEEPSEEK_V3_ID] && !parsed[CANONICAL_DEEPSEEK_V4_ID]) {
+      parsed[CANONICAL_DEEPSEEK_V4_ID] = parsed[LEGACY_DEEPSEEK_V3_ID];
+      delete parsed[LEGACY_DEEPSEEK_V3_ID];
+      await writeSecrets(parsed);
+    }
+    return parsed;
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
       const initial = createInitialSecrets();
@@ -202,24 +251,18 @@ export async function readRelayConfig() {
 }
 
 export async function writeState(state) {
-  const dataDir = resolveDataDir();
   const dataPath = resolveDataPath();
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(dataPath, JSON.stringify(state, null, 2), "utf8");
+  await writeJsonAtomically(dataPath, state);
 }
 
 export async function writeSecrets(secrets) {
-  const dataDir = resolveDataDir();
   const secretsPath = resolveSecretsPath();
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(secretsPath, JSON.stringify(secrets, null, 2), "utf8");
+  await writeJsonAtomically(secretsPath, secrets);
 }
 
 export async function writeRelayConfig(config) {
-  const dataDir = resolveDataDir();
   const relayConfigPath = resolveRelayConfigPath();
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(relayConfigPath, JSON.stringify(config, null, 2), "utf8");
+  await writeJsonAtomically(relayConfigPath, config);
 }
 
 export function toPublicModelEntry(entry) {

@@ -54,6 +54,11 @@
 - 已进入第一轮正式实现与 release 试用收口
 - 当前长期服务器测试分支固定为 `relayhub/dev`
 - 短期不并回 `main` / `release`
+- 当前 GitHub 默认使用流程是：
+  - 日常开发在 `relayhub/dev` 或其任务分支推进
+  - 任务分支先回 `relayhub/dev`
+  - `relayhub/dev` push 直接触发内部部署
+  - 阶段稳定后再定期回 `main`
 
 当前不做：
 
@@ -61,6 +66,7 @@
 - 直接合并个人开发版和生产版配置
 - 把生产路由策略写成开发实验默认值
 - 为 RelayHub 额外拆出 `main / release` 双轨版本
+- 把“先并回 `main` 才可部署”作为当前默认前置条件
 
 ## 5. 当前长期入口
 

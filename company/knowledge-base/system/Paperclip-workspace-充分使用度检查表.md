@@ -315,6 +315,12 @@
    - 不能再允许 `done but dirty`
    - 必须把 Git 收尾、workspace 关闭、清理语义绑定起来
 
+补充到 `2026-05-03` 的正式判断：
+
+1. 多项目 heartbeat 已经落地
+2. 但 observe-only checkout 是否长期干净，已经成为判断“worktree 是否真正用起来”的硬条件
+3. 如果 `/opt/automation/app/mindsync` 或 `/opt/automation/app/mindsync-heartbeat` 继续承接真实写操作，就不能宣称当前环境已充分使用 `workspace / git worktree`
+
 ## 5. 用这份检查表时最容易踩的误区
 
 ### 5.1 把“开了 policy”当成“已经充分使用”
@@ -328,6 +334,14 @@
 也不是。
 
 worktree 目录存在，只说明系统部分会创建隔离 checkout，不等于每条任务都真的落到了那里。
+
+### 5.4 把“多项目 heartbeat 跑通了”当成“observe-only checkout 已治理完成”
+
+也不是。
+
+heartbeat 能同时检查 `main` 和 `relayhub/dev`，只说明巡检能力已经覆盖多项目。
+
+如果巡检 checkout 自己仍然会被写脏，或者升级仍依赖脏目录直接继续运维，就还不算闭环。
 
 ### 5.3 把“issue done”当成“执行闭环已经成立”
 
