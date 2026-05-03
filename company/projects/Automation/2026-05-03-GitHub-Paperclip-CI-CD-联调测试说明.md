@@ -182,8 +182,29 @@ node shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs
    - `adapter`
    - `host`
 4. heartbeat 是否健康：
-   - `check-runner-heartbeat.mjs`
-   - `check-paperclip-execution-health.mjs`
+   - `paperclip-multi-project-heartbeat.mjs`
+   - 其内部对每个 target 顺序调用：
+     - `check-runner-heartbeat.mjs`
+     - `check-paperclip-execution-health.mjs`
+
+## 6.1 Heartbeat 接入后的专项检查
+
+完成 heartbeat 升级后，至少再核对：
+
+1. `paperclip-heartbeat.service` 已切到：
+   - `shared/tools/ci/paperclip-multi-project-heartbeat.mjs`
+2. `PAPERCLIP_HEARTBEAT_TARGETS_JSON` 至少包含：
+   - `一镜一梳 / aimandala-ci.yml / main`
+   - `RelayHub / relayhub-ci-deploy.yml / relayhub/dev`
+3. 手动执行多项目 heartbeat 时：
+   - 输出中能同时看见 `一镜一梳`
+   - 输出中能同时看见 `RelayHub`
+4. 当故意把某个 target 的 `workflowFile` 改错时：
+   - 整个 heartbeat 非零退出
+   - 摘要中仍能同时看见两个 target 的结果
+5. `RelayHub` 的 heartbeat / execution health 异常进入 `PaperclipAI` 后：
+   - 应落到 `RelayHub`
+   - 不应继续错误落到 `一镜一梳`
 
 ## 7. 本轮最小结论口径
 
