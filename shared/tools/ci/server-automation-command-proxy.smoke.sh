@@ -59,4 +59,40 @@ if [[ "$OUTPUT" != *"passive-ok"* ]]; then
   exit 1
 fi
 
+set +e
+node "$REPO_ROOT/shared/tools/ci/server-automation-guard.mjs" \
+  --cwd /opt/automation/app/mindsync \
+  --expected-root "$TMP_DIR/worktree-root" \
+  >/tmp/server-automation-guard-observe-only.out 2>/tmp/server-automation-guard-observe-only.err
+observe_only_exit=$?
+set -e
+
+if [[ "$observe_only_exit" -eq 0 ]]; then
+  echo "observe-only guard smoke failed: guard should reject shared checkout" >&2
+  exit 1
+fi
+
+WORKTREE_ROOT="$TMP_DIR/worktree-root"
+mkdir -p "$WORKTREE_ROOT/MIN-1"
+OUTPUT="$(
+  cd "$TMP_DIR"
+  PAPERCLIP_REAL_COMMAND=/bin/sh \
+  PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE=passive \
+  PAPERCLIP_SERVER_AUTOMATION_AUTO_FINALIZE=0 \
+  PAPERCLIP_TASK_ID=test-issue \
+  PAPERCLIP_COMPANY_ID=test-company \
+  PAPERCLIP_API_KEY=test-token \
+  PAPERCLIP_API_URL=http://127.0.0.1:18080 \
+  PAPERCLIP_EXECUTION_WORKTREE_ROOT="$WORKTREE_ROOT" \
+  PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT="$WORKTREE_ROOT" \
+  PAPERCLIP_WORKSPACE_CWD="$WORKTREE_ROOT/MIN-1" \
+  PAPERCLIP_WORKSPACE_WORKTREE_PATH="$WORKTREE_ROOT/MIN-1" \
+  bash "$REPO_ROOT/shared/tools/ci/server-automation-command-proxy.sh" -lc 'pwd' <<<"stdin-smoke"
+)"
+
+if [[ "$OUTPUT" != *"$WORKTREE_ROOT/MIN-1"* ]]; then
+  echo "server automation worktree re-exec smoke failed" >&2
+  exit 1
+fi
+
 printf 'server-automation-command-proxy smoke ok\n'
