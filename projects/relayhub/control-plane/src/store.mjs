@@ -25,6 +25,17 @@ function resolveRelayConfigPath() {
   return path.join(resolveDataDir(), "relay-config.json");
 }
 
+async function writeJsonAtomically(targetPath, value) {
+  const directory = path.dirname(targetPath);
+  const tempPath = path.join(
+    directory,
+    `.${path.basename(targetPath)}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}.tmp`
+  );
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(tempPath, JSON.stringify(value, null, 2), "utf8");
+  await fs.rename(tempPath, targetPath);
+}
+
 function clone(value) {
   return structuredClone(value);
 }
@@ -244,24 +255,18 @@ export async function readRelayConfig() {
 }
 
 export async function writeState(state) {
-  const dataDir = resolveDataDir();
   const dataPath = resolveDataPath();
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(dataPath, JSON.stringify(state, null, 2), "utf8");
+  await writeJsonAtomically(dataPath, state);
 }
 
 export async function writeSecrets(secrets) {
-  const dataDir = resolveDataDir();
   const secretsPath = resolveSecretsPath();
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(secretsPath, JSON.stringify(secrets, null, 2), "utf8");
+  await writeJsonAtomically(secretsPath, secrets);
 }
 
 export async function writeRelayConfig(config) {
-  const dataDir = resolveDataDir();
   const relayConfigPath = resolveRelayConfigPath();
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(relayConfigPath, JSON.stringify(config, null, 2), "utf8");
+  await writeJsonAtomically(relayConfigPath, config);
 }
 
 export async function recordEntrySuccessfulUsage({
