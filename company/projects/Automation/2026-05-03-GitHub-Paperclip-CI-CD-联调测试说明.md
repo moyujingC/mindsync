@@ -206,6 +206,14 @@ node shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs
    - 应落到 `RelayHub`
    - 不应继续错误落到 `一镜一梳`
 
+补充治理口径：
+
+6. 巡检 checkout 即使检查 `relayhub/dev` 的 workflow
+   - 也应继续保持本地对齐 `origin/main`
+7. 若 `/opt/automation/app/mindsync-heartbeat` 变脏
+   - 应按 observe-only checkout 治理处理
+   - 不应直接把它切到 `relayhub/dev` 当作修复手段
+
 ## 7. 本轮最小结论口径
 
 当以下条件都满足时，才能说：

@@ -119,6 +119,17 @@ test("POST /internal/resolve-entry-binding returns full binding with api key whe
         });
         assert.equal(bindResponse.status, 200);
 
+        const relayResponse = await fetch(`${baseUrl}/relay-access`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            relayToken: "relayhub-gate-token-test"
+          })
+        });
+        assert.equal(relayResponse.status, 200);
+
         const response = await fetch(`${baseUrl}/internal/resolve-entry-binding`, {
           method: "POST",
           headers: {
@@ -133,6 +144,8 @@ test("POST /internal/resolve-entry-binding returns full binding with api key whe
         const payload = await response.json();
 
         assert.equal(payload.entryId, "entry-paperclip-claude-local-server");
+        assert.equal(payload.alias, "relayhub-entry-paperclip-claude-local-server");
+        assert.equal(payload.relayToken, "relayhub-gate-token-test");
         assert.equal(payload.defaultModelEntryId, "preset-aitechflux-relay");
         assert.equal(payload.resolvedModel.baseUrl, "https://aitechflux.com/v1");
         assert.equal(payload.resolvedModel.modelId, "claude-sonnet");
@@ -360,6 +373,17 @@ test("POST /internal/resolve-entry-binding returns override and effective reason
         });
         assert.equal(bindingResponse.status, 200);
 
+        const relayResponse = await fetch(`${baseUrl}/relay-access`, {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            relayToken: "relayhub-codex-gate-token"
+          })
+        });
+        assert.equal(relayResponse.status, 200);
+
         const response = await fetch(`${baseUrl}/internal/resolve-entry-binding`, {
           method: "POST",
           headers: {
@@ -373,6 +397,8 @@ test("POST /internal/resolve-entry-binding returns override and effective reason
         assert.equal(response.status, 200);
         const payload = await response.json();
 
+        assert.equal(payload.alias, "relayhub-entry-paperclip-codex-local-server");
+        assert.equal(payload.relayToken, "relayhub-codex-gate-token");
         assert.equal(payload.reasoningEffortOverride, "high");
         assert.equal(payload.resolvedModel.reasoningEffort, "medium");
         assert.equal(payload.effectiveReasoningEffort, "high");
