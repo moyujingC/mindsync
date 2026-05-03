@@ -39,7 +39,7 @@ export const seedModelEntries = [
     tags: ["国产模型", "通用对话", "正式生产候选"]
   },
   {
-    id: "preset-deepseek-v3",
+    id: "preset-deepseek-v4",
     name: "DeepSeek V4 官方",
     providerLabel: "DeepSeek Platform",
     kind: "domestic-model",
@@ -361,7 +361,7 @@ export const seedTasks = [
     category: "业务任务",
     description: "偏摘要和结构化整理，优先关注稳定性与成本效率。",
     builtIn: true,
-    defaultModelEntryId: "preset-deepseek-v3",
+    defaultModelEntryId: "preset-deepseek-v4",
     defaultModelEntryName: "DeepSeek V3 官方",
     switchNote: "可以在国产模型之间比较成本和摘要质量。"
   },
@@ -371,7 +371,7 @@ export const seedTasks = [
     category: "业务任务",
     description: "承接 AI曼陀罗 Lite 报告生成，请求必须走国产正式候选。",
     builtIn: true,
-    defaultModelEntryId: "preset-deepseek-v3",
+    defaultModelEntryId: "preset-deepseek-v4",
     defaultModelEntryName: "DeepSeek V3 官方",
     switchNote: "只允许绑定国产模型，供 AI曼陀罗 Lite 报告主链路使用。"
   },
@@ -582,21 +582,21 @@ export const seedEntryBindings = [
   },
   {
     entryId: "entry-paperclip-pi-local-mac",
-    defaultModelEntryId: "preset-deepseek-v3",
+    defaultModelEntryId: "preset-deepseek-v4",
     fallbackModelEntryId: "preset-volcengine-doubao",
     reasoningEffortOverride: null,
     statusNote: "本地 pi_local 以 provider 配置方式跟随入口绑定。"
   },
   {
     entryId: "entry-paperclip-pi-local-server",
-    defaultModelEntryId: "preset-deepseek-v3",
+    defaultModelEntryId: "preset-deepseek-v4",
     fallbackModelEntryId: "preset-volcengine-doubao",
     reasoningEffortOverride: null,
     statusNote: "服务器 pi_local 以 provider 配置方式跟随入口绑定。"
   },
   {
     entryId: "entry-paperclip-hermes-local-server",
-    defaultModelEntryId: "preset-deepseek-v3",
+    defaultModelEntryId: "preset-deepseek-v4",
     fallbackModelEntryId: "preset-volcengine-doubao",
     reasoningEffortOverride: null,
     statusNote: "服务器 hermes_local 通过 OPENAI_* 跟随入口绑定。"
@@ -621,7 +621,7 @@ export const seedRuns = [
     id: "run-002",
     taskId: "task-claude-code",
     taskName: "Claude Code Web Coding",
-    modelEntryId: "preset-deepseek-v3",
+    modelEntryId: "preset-deepseek-v4",
     modelEntryName: "DeepSeek V3 官方",
     ranAt: "2026-04-18 11:58",
     summary: "实现速度快，但复杂页面结构需要更多手动修正。",
@@ -634,7 +634,7 @@ export const seedRuns = [
     id: "run-003",
     taskId: "task-therapy-summary",
     taskName: "心理疗愈摘要",
-    modelEntryId: "preset-deepseek-v3",
+    modelEntryId: "preset-deepseek-v4",
     modelEntryName: "DeepSeek V3 官方",
     ranAt: "2026-04-18 12:06",
     summary: "摘要结构完整，可直接进入人工复核。",

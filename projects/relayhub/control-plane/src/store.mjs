@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { seedEntryBindings, seedEntries, seedModelEntries, seedRuns, seedTasks } from "./seed-data.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const LEGACY_DEEPSEEK_V3_ID = "preset-deepseek-v3";
+const CANONICAL_DEEPSEEK_V4_ID = "preset-deepseek-v4";
 
 function resolveDataDir() {
   const configured = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR?.trim();
@@ -92,6 +94,14 @@ function normalizeReasoningEffort(value) {
 function normalizeEntryBinding(binding) {
   return {
     ...binding,
+    defaultModelEntryId:
+      binding?.defaultModelEntryId === LEGACY_DEEPSEEK_V3_ID
+        ? CANONICAL_DEEPSEEK_V4_ID
+        : binding?.defaultModelEntryId ?? null,
+    fallbackModelEntryId:
+      binding?.fallbackModelEntryId === LEGACY_DEEPSEEK_V3_ID
+        ? CANONICAL_DEEPSEEK_V4_ID
+        : binding?.fallbackModelEntryId ?? null,
     reasoningEffortOverride: normalizeReasoningEffort(binding?.reasoningEffortOverride)
   };
 }
@@ -105,6 +115,7 @@ function migrateMissingPresetModelEntries(state) {
       : null;
     const nextEntry = {
       ...entry,
+      id: entry?.id === LEGACY_DEEPSEEK_V3_ID ? CANONICAL_DEEPSEEK_V4_ID : entry?.id,
       capabilities: entry && typeof entry === "object" && entry.capabilities
         ? entry.capabilities
         : defaultCapabilities(),
@@ -117,6 +128,7 @@ function migrateMissingPresetModelEntries(state) {
       nextEntry.capabilities !== entry?.capabilities ||
       nextEntry.reasoningEffort !== (entry?.reasoningEffort ?? null) ||
       nextEntry.hasStoredApiKey !== (entry?.hasStoredApiKey ?? Boolean(rawApiKey)) ||
+      nextEntry.id !== entry?.id ||
       "apiKey" in (entry ?? {})
     ) {
       changed = true;
@@ -146,6 +158,24 @@ function migrateMissingPresetModelEntries(state) {
       entryBindings: Array.isArray(state.entryBindings)
         ? state.entryBindings.map((binding) => normalizeEntryBinding(binding))
         : clone(seedEntryBindings).map((binding) => normalizeEntryBinding(binding)),
+      tasks: Array.isArray(state.tasks)
+        ? state.tasks.map((task) => ({
+            ...task,
+            defaultModelEntryId:
+              task?.defaultModelEntryId === LEGACY_DEEPSEEK_V3_ID
+                ? CANONICAL_DEEPSEEK_V4_ID
+                : task?.defaultModelEntryId ?? null,
+          }))
+        : clone(seedTasks),
+      runs: Array.isArray(state.runs)
+        ? state.runs.map((run) => ({
+            ...run,
+            modelEntryId:
+              run?.modelEntryId === LEGACY_DEEPSEEK_V3_ID
+                ? CANONICAL_DEEPSEEK_V4_ID
+                : run?.modelEntryId,
+          }))
+        : clone(seedRuns),
       modelEntries: [...normalizedExistingEntries, ...missingPresetEntries]
     }
   };
@@ -176,7 +206,15 @@ export async function readSecrets() {
   try {
     const raw = await fs.readFile(secretsPath, "utf8");
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
+    if (!parsed || typeof parsed !== "object") {
+      return {};
+    }
+    if (parsed[LEGACY_DEEPSEEK_V3_ID] && !parsed[CANONICAL_DEEPSEEK_V4_ID]) {
+      parsed[CANONICAL_DEEPSEEK_V4_ID] = parsed[LEGACY_DEEPSEEK_V3_ID];
+      delete parsed[LEGACY_DEEPSEEK_V3_ID];
+      await writeSecrets(parsed);
+    }
+    return parsed;
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
       const initial = createInitialSecrets();
