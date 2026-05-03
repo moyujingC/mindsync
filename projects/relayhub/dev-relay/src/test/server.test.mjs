@@ -293,6 +293,12 @@ function createState() {
 
 async function withTempState(run, state = createState()) {
   const dataDir = await fs.mkdtemp(path.join(os.tmpdir(), "relayhub-dev-relay-"));
+  async function writeJsonAtomically(filename, value) {
+    const targetPath = path.join(dataDir, filename);
+    const tempPath = `${targetPath}.tmp`;
+    await fs.writeFile(tempPath, JSON.stringify(value, null, 2), "utf8");
+    await fs.rename(tempPath, targetPath);
+  }
   const secrets = Object.fromEntries(
     state.modelEntries
       .filter((item) => typeof item.apiKey === "string" && item.apiKey.trim())
@@ -304,8 +310,8 @@ async function withTempState(run, state = createState()) {
         },
       ]),
   );
-  await fs.writeFile(path.join(dataDir, "state.json"), JSON.stringify(state, null, 2), "utf8");
-  await fs.writeFile(path.join(dataDir, "model-secrets.json"), JSON.stringify(secrets, null, 2), "utf8");
+  await writeJsonAtomically("state.json", state);
+  await writeJsonAtomically("model-secrets.json", secrets);
   const previous = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR;
   process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR = dataDir;
 
@@ -317,7 +323,7 @@ async function withTempState(run, state = createState()) {
         return JSON.parse(raw);
       },
       async writeState(nextState) {
-        await fs.writeFile(path.join(dataDir, "state.json"), JSON.stringify(nextState, null, 2), "utf8");
+        await writeJsonAtomically("state.json", nextState);
       }
     });
   } finally {
