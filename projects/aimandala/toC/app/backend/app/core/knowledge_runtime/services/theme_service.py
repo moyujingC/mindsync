@@ -56,8 +56,36 @@ class ThemeService:
         shades = entry.get("shades", {})
         intensity_data = shades.get(intensity_or_element, {})
         if circle and isinstance(intensity_data, dict):
-            return intensity_data.get("circles", {}).get(circle, {})
+            circle_candidates = self._circle_lookup_candidates(circle)
+            circle_payload = intensity_data.get("circles", {})
+            if isinstance(circle_payload, dict):
+                for candidate in circle_candidates:
+                    value = circle_payload.get(candidate)
+                    if isinstance(value, dict):
+                        return value
+            for candidate in circle_candidates:
+                value = intensity_data.get(candidate)
+                if isinstance(value, dict):
+                    return value
         return intensity_data if isinstance(intensity_data, dict) else {}
+
+    def _circle_lookup_candidates(self, circle: str | None) -> list[str]:
+        value = str(circle or "").strip()
+        if not value:
+            return []
+        aliases = {
+            "inner": "内圈",
+            "middle": "中圈",
+            "outer": "外圈",
+            "内圈": "inner",
+            "中圈": "middle",
+            "外圈": "outer",
+        }
+        candidates = [value]
+        alias = aliases.get(value)
+        if alias:
+            candidates.append(alias)
+        return list(dict.fromkeys(candidates))
 
     def get_theme_imbalance_mapping(
         self,
@@ -87,4 +115,3 @@ class ThemeService:
                 }
             ],
         )
-

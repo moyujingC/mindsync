@@ -247,6 +247,28 @@ def test_v21_healing_plan_resolves_transition_overload_for_intimate_relationship
     assert result.warnings == []
 
 
+def test_v21_theme_color_interpretation_supports_theme_circle_schema():
+    runtime = get_knowledge_runtime()
+
+    middle = runtime.theme_service.get_theme_color_interpretation(
+        "wealth_career",
+        "金",
+        "中白",
+        "middle",
+    )
+    middle_cn = runtime.theme_service.get_theme_color_interpretation(
+        "wealth_career",
+        "金",
+        "中白",
+        "中圈",
+    )
+
+    assert middle["interpretation"] == "当下财务规划良好，既有纪律性也懂得变通"
+    assert middle["manifestation"] == "能够制定并执行财务计划，同时保持开放的心态"
+    assert middle["healing"] == "在保持纪律的基础上，培养更多的灵活性，提升财务决策的智慧"
+    assert middle_cn == middle
+
+
 def test_v21_narrative_service_builds_imbalance_projection():
     runtime = get_knowledge_runtime()
 

@@ -290,6 +290,16 @@ class ReportPromptPreviewBuilder:
         try:
             rule_evaluations = getattr(layer0, "rule_evaluations", {}) or {}
             imbalance_trace = rule_evaluations.get("imbalance_trace", {})
+            interpretation_method_trace = rule_evaluations.get(
+                "interpretation_method_trace",
+                {},
+            )
+            school_chain = []
+            if hasattr(narrative_service, "build_school_interpretation_chain"):
+                school_chain = narrative_service.build_school_interpretation_chain(
+                    theme=self._get_record_theme(record),
+                    interpretation_method_trace=interpretation_method_trace,
+                )
             context = narrative_service.build_theme_prompt_context(
                 theme=self._get_record_theme(record),
                 theme_label=self._get_theme_label(record.theme),
@@ -321,6 +331,7 @@ class ReportPromptPreviewBuilder:
                 primary_candidates=imbalance_trace.get("primary_candidates", []),
                 synthetic_signal=imbalance_trace.get("synthetic_signal", {}),
                 theme_projection=getattr(layer0, "theme_projection", {}) or {},
+                school_interpretation_chain=school_chain,
                 fidelity_flags=getattr(layer0, "fidelity_flags", []),
                 fallback_summary=getattr(layer0, "fallback_summary", {}) or {},
             )

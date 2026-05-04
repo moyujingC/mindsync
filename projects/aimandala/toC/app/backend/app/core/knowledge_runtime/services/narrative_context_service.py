@@ -147,6 +147,7 @@ class NarrativeContextService:
         primary_candidates: list[Any] | None = None,
         synthetic_signal: dict[str, Any] | None = None,
         theme_projection: dict[str, Any] | None = None,
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
         fidelity_flags: list[str] | None = None,
         fallback_summary: dict[str, Any] | None = None,
     ) -> str:
@@ -245,6 +246,14 @@ class NarrativeContextService:
         if rendered_triad_states:
             lines.append(f"- 三元结构：{' / '.join(rendered_triad_states)}")
 
+        rendered_school_chain = self._render_school_chain_lines(
+            school_interpretation_chain or [],
+            detail_limit=2,
+        )
+        if rendered_school_chain:
+            lines.append("- 流派判断链：")
+            lines.extend(f"  - {line}" for line in rendered_school_chain)
+
         rendered_primary_candidates: list[str] = []
         for item in primary_candidates or []:
             if isinstance(item, dict):
@@ -334,6 +343,17 @@ class NarrativeContextService:
 
     def get_element_core_keywords(self, theme: str, element_name: str) -> str:
         return self._get_element_core_keywords(theme or "general", element_name)
+
+    def build_school_interpretation_chain(
+        self,
+        *,
+        theme: str,
+        interpretation_method_trace: dict[str, Any] | None,
+    ) -> list[dict[str, Any]]:
+        return self._build_school_interpretation_chain(
+            theme=theme,
+            interpretation_method_trace=interpretation_method_trace,
+        )
 
     def describe_circle_transition(
         self,
@@ -459,9 +479,18 @@ class NarrativeContextService:
         feeling_hint: str = "",
         default_pro_teaser: str = "",
         interpretation_method_trace: dict[str, Any] | None = None,
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
         fidelity_flags: list[str] | None = None,
         fallback_summary: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        resolved_school_chain = self._normalize_school_interpretation_chain(
+            school_interpretation_chain
+            if school_interpretation_chain is not None
+            else self._build_school_interpretation_chain(
+                theme=theme,
+                interpretation_method_trace=interpretation_method_trace,
+            )
+        )
         legacy_projection = self._build_lite_projection_payload(
             theme=theme,
             theme_label=theme_label,
@@ -487,6 +516,7 @@ class NarrativeContextService:
             signal=signal,
             feeling_hint=feeling_hint,
             default_pro_teaser=default_pro_teaser,
+            school_interpretation_chain=resolved_school_chain,
         )
         if not legacy_projection:
             return {}
@@ -534,6 +564,7 @@ class NarrativeContextService:
             knowledge_refs=[f"theme:{resolved_theme}"],
             rule_refs=[signal_ref] if signal_ref else [],
             theme_refs=[f"theme_label:{resolved_theme_label}"],
+            school_interpretation_chain=resolved_school_chain,
             fidelity_flags=fidelity_flags,
             fallback_summary=fallback_summary,
         )
@@ -640,9 +671,18 @@ class NarrativeContextService:
         circle_fallbacks: dict[str, str] | None = None,
         imbalance_projection: dict[str, Any] | None = None,
         interpretation_method_trace: dict[str, Any] | None = None,
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
         fidelity_flags: list[str] | None = None,
         fallback_summary: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        resolved_school_chain = self._normalize_school_interpretation_chain(
+            school_interpretation_chain
+            if school_interpretation_chain is not None
+            else self._build_school_interpretation_chain(
+                theme=theme,
+                interpretation_method_trace=interpretation_method_trace,
+            )
+        )
         legacy_projection = self._build_pro_projection_payload(
             theme=theme,
             theme_label=theme_label,
@@ -667,6 +707,7 @@ class NarrativeContextService:
             structure_labels=structure_labels,
             circle_fallbacks=circle_fallbacks,
             imbalance_projection=imbalance_projection,
+            school_interpretation_chain=resolved_school_chain,
         )
         if not legacy_projection:
             return {}
@@ -698,6 +739,7 @@ class NarrativeContextService:
             knowledge_refs=[f"theme:{resolved_theme}"],
             rule_refs=[signal_ref] if signal_ref else [],
             theme_refs=[f"theme_label:{resolved_theme_label}"],
+            school_interpretation_chain=resolved_school_chain,
             fidelity_flags=fidelity_flags,
             fallback_summary=fallback_summary,
         )
@@ -828,6 +870,7 @@ class NarrativeContextService:
         signal: str = "",
         feeling_hint: str = "",
         default_pro_teaser: str = "",
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         plan = self.build_lite_narrative_plan(
             theme=theme,
@@ -854,6 +897,7 @@ class NarrativeContextService:
             signal=signal,
             feeling_hint=feeling_hint,
             default_pro_teaser=default_pro_teaser,
+            school_interpretation_chain=school_interpretation_chain,
         )
         return (
             plan.get("legacy_projection", {})
@@ -888,6 +932,7 @@ class NarrativeContextService:
         signal: str = "",
         feeling_hint: str = "",
         default_pro_teaser: str = "",
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         resolved_theme = theme or "general"
         theme_summary = self.theme_service.get_theme_summary(resolved_theme)
@@ -973,6 +1018,12 @@ class NarrativeContextService:
             ]
             if softened_readings:
                 visual_parts.append("换句话说，" + "；".join(softened_readings[:2]) + "。")
+        school_summary = self._render_school_chain_paragraph(
+            school_interpretation_chain or [],
+            intro="按流派的主题状态链看",
+        )
+        if school_summary:
+            visual_parts.append(school_summary)
 
         base = (
             f"你的底色不是急着证明什么，而是先确认自己有没有站稳在{dominant_theme}上。"
@@ -1145,6 +1196,7 @@ class NarrativeContextService:
         structure_labels: dict[str, str] | None = None,
         circle_fallbacks: dict[str, str] | None = None,
         imbalance_projection: dict[str, Any] | None = None,
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         plan = self.build_pro_narrative_plan(
             theme=theme,
@@ -1170,6 +1222,7 @@ class NarrativeContextService:
             structure_labels=structure_labels,
             circle_fallbacks=circle_fallbacks,
             imbalance_projection=imbalance_projection,
+            school_interpretation_chain=school_interpretation_chain,
         )
         return (
             plan.get("legacy_projection", {})
@@ -1203,6 +1256,7 @@ class NarrativeContextService:
         structure_labels: dict[str, str] | None = None,
         circle_fallbacks: dict[str, str] | None = None,
         imbalance_projection: dict[str, Any] | None = None,
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         resolved_theme = theme or "general"
         theme_summary = self.theme_service.get_theme_summary(resolved_theme)
@@ -1342,6 +1396,22 @@ class NarrativeContextService:
             )
             for key in ["inner", "middle", "outer"]
         }
+        school_by_circle = self._school_chain_by_circle(
+            school_interpretation_chain or []
+        )
+        if school_by_circle:
+            circle_readings = {
+                key: self._join_sentence_parts(
+                    [
+                        value,
+                        self._render_school_chain_item(
+                            school_by_circle.get(key, {}),
+                            include_circle_label=True,
+                        ),
+                    ]
+                )
+                for key, value in circle_readings.items()
+            }
 
         adjacent_relations = [
             str(item).strip()
@@ -1730,6 +1800,7 @@ class NarrativeContextService:
         knowledge_refs: list[str],
         rule_refs: list[str],
         theme_refs: list[str],
+        school_interpretation_chain: list[dict[str, Any]] | None = None,
         fidelity_flags: list[str] | None,
         fallback_summary: dict[str, Any] | None,
     ) -> dict[str, Any]:
@@ -1772,6 +1843,9 @@ class NarrativeContextService:
             "per_circle_color_summary": per_circle_color_summary,
             "per_circle_observation_summary": per_circle_observation_summary,
             "per_circle_observations": per_circle_observations,
+            "school_interpretation_chain": self._normalize_school_interpretation_chain(
+                school_interpretation_chain or []
+            ),
             "fidelity_flags": [
                 str(item).strip()
                 for item in (fidelity_flags or [])
@@ -1829,6 +1903,217 @@ class NarrativeContextService:
                 f"面积约{self._format_area_ratio(state_basis.get('area_ratio'))}"
             )
         return observations
+
+    def _build_school_interpretation_chain(
+        self,
+        *,
+        theme: str,
+        interpretation_method_trace: dict[str, Any] | None,
+    ) -> list[dict[str, Any]]:
+        method_trace = (
+            interpretation_method_trace
+            if isinstance(interpretation_method_trace, dict)
+            else {}
+        )
+        per_circle_analysis = method_trace.get("per_circle_color_analysis", {})
+        if not isinstance(per_circle_analysis, dict):
+            return []
+
+        chain: list[dict[str, Any]] = []
+        for circle_key in ["inner", "middle", "outer"]:
+            item = per_circle_analysis.get(circle_key)
+            if not isinstance(item, dict):
+                continue
+            element = str(item.get("dominant_element") or "").strip()
+            if not element:
+                continue
+            state_basis = item.get("state_basis", {})
+            if not isinstance(state_basis, dict):
+                state_basis = {}
+            depth_state = str(state_basis.get("depth_state") or "").strip()
+            shade = self._shade_for_element_depth(element, depth_state)
+            state_label = self._school_state_label(depth_state)
+            interpretation = (
+                self.theme_service.get_theme_color_interpretation(
+                    theme or "general",
+                    element,
+                    shade,
+                    circle_key,
+                )
+                if shade
+                else {}
+            )
+            if not interpretation and theme != "general" and shade:
+                interpretation = self.theme_service.get_theme_color_interpretation(
+                    "general",
+                    element,
+                    shade,
+                    circle_key,
+                )
+            interpretation_payload = (
+                interpretation if isinstance(interpretation, dict) else {}
+            )
+            manifestation = self._school_manifestation_text(interpretation_payload)
+            chain.append(
+                {
+                    "circle": circle_key,
+                    "circle_label": str(
+                        item.get("circle_label") or self._circle_label(circle_key)
+                    ).strip(),
+                    "element": element,
+                    "shade": shade,
+                    "state": state_label,
+                    "depth_state": depth_state or "unknown",
+                    "dominant_color": str(item.get("dominant_color") or "").strip(),
+                    "area_ratio": state_basis.get("area_ratio"),
+                    "interpretation": str(
+                        interpretation_payload.get("interpretation") or ""
+                    ).strip(),
+                    "manifestation": manifestation,
+                    "healing": str(interpretation_payload.get("healing") or "").strip(),
+                    "source_ref": (
+                        f"themes/{theme or 'general'}.yaml:"
+                        f"color_meanings.{element}.shades.{shade}.{circle_key}"
+                        if shade
+                        else ""
+                    ),
+                }
+            )
+        return self._normalize_school_interpretation_chain(chain)
+
+    def _normalize_school_interpretation_chain(
+        self,
+        chain: list[dict[str, Any]] | Any,
+    ) -> list[dict[str, Any]]:
+        if not isinstance(chain, list):
+            return []
+        normalized: list[dict[str, Any]] = []
+        for item in chain:
+            if not isinstance(item, dict):
+                continue
+            circle = str(item.get("circle") or "").strip()
+            element = str(item.get("element") or "").strip()
+            if not circle or not element:
+                continue
+            normalized.append(
+                {
+                    "circle": circle,
+                    "circle_label": str(
+                        item.get("circle_label") or self._circle_label(circle)
+                    ).strip(),
+                    "element": element,
+                    "shade": str(item.get("shade") or "").strip(),
+                    "state": str(item.get("state") or "").strip() or "未判定",
+                    "depth_state": str(item.get("depth_state") or "").strip()
+                    or "unknown",
+                    "dominant_color": str(item.get("dominant_color") or "").strip(),
+                    "area_ratio": item.get("area_ratio"),
+                    "interpretation": str(item.get("interpretation") or "").strip(),
+                    "manifestation": str(item.get("manifestation") or "").strip(),
+                    "healing": str(item.get("healing") or "").strip(),
+                    "source_ref": str(item.get("source_ref") or "").strip(),
+                }
+            )
+        return normalized
+
+    def _school_chain_by_circle(
+        self,
+        chain: list[dict[str, Any]],
+    ) -> dict[str, dict[str, Any]]:
+        return {
+            str(item.get("circle") or "").strip(): item
+            for item in self._normalize_school_interpretation_chain(chain)
+            if str(item.get("circle") or "").strip()
+        }
+
+    def _render_school_chain_paragraph(
+        self,
+        chain: list[dict[str, Any]],
+        *,
+        intro: str,
+    ) -> str:
+        lines = self._render_school_chain_lines(chain, detail_limit=3)
+        if not lines:
+            return ""
+        return f"{intro}：" + "；".join(lines) + "。"
+
+    def _render_school_chain_lines(
+        self,
+        chain: list[dict[str, Any]],
+        *,
+        detail_limit: int,
+    ) -> list[str]:
+        lines: list[str] = []
+        for item in self._normalize_school_interpretation_chain(chain):
+            rendered = self._render_school_chain_item(
+                item,
+                include_circle_label=True,
+                detail_limit=detail_limit,
+            )
+            if rendered:
+                lines.append(rendered)
+        return lines
+
+    def _render_school_chain_item(
+        self,
+        item: dict[str, Any],
+        *,
+        include_circle_label: bool,
+        detail_limit: int = 3,
+    ) -> str:
+        if not isinstance(item, dict) or not item:
+            return ""
+        circle_label = str(item.get("circle_label") or "").strip()
+        element = str(item.get("element") or "").strip()
+        shade = str(item.get("shade") or "").strip()
+        state = str(item.get("state") or "").strip()
+        header = " / ".join(part for part in [element, shade, state] if part)
+        if include_circle_label and circle_label:
+            header = f"{circle_label}：{header}" if header else f"{circle_label}：未判定"
+        details = [
+            str(item.get("interpretation") or "").strip(),
+            str(item.get("manifestation") or "").strip(),
+            (
+                f"疗愈方向：{str(item.get('healing') or '').strip()}"
+                if str(item.get("healing") or "").strip()
+                else ""
+            ),
+        ]
+        details = [value for value in details if value][:detail_limit]
+        if details:
+            return f"{header}，{'，'.join(details)}"
+        return header
+
+    def _school_manifestation_text(self, payload: dict[str, Any]) -> str:
+        value = payload.get("manifestation")
+        if isinstance(value, str):
+            return value.strip()
+        manifestations = payload.get("manifestations")
+        if isinstance(manifestations, list):
+            return "、".join(
+                str(item).strip()
+                for item in manifestations
+                if isinstance(item, str) and str(item).strip()
+            )
+        return ""
+
+    def _shade_for_element_depth(self, element: str, depth_state: str) -> str:
+        shade_map = {
+            "木": {"deep": "深绿", "middle": "中绿", "light": "淡绿"},
+            "火": {"deep": "深红", "middle": "中红", "light": "淡红"},
+            "土": {"deep": "深黄", "middle": "中黄", "light": "淡黄"},
+            "金": {"deep": "深白", "middle": "中白", "light": "淡白"},
+            "水": {"deep": "深蓝", "middle": "中蓝", "light": "淡蓝"},
+        }
+        return shade_map.get(element, {}).get(depth_state, "")
+
+    def _school_state_label(self, depth_state: str) -> str:
+        return {
+            "deep": "太过",
+            "middle": "正常",
+            "light": "不足",
+            "unknown": "未判定",
+        }.get(str(depth_state or "").strip(), "未判定")
 
     def _circle_label(self, circle_key: str) -> str:
         return {

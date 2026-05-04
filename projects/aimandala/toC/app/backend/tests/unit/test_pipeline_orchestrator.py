@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(
@@ -32,6 +33,8 @@ from app.core.pipeline.generation_runtime import (
 )
 from app.core.pipeline.report_contracts import PromptSchemaValidator
 from app.core.pipeline.store import InterpretationStore
+
+PROJECT_ROOT = Path(__file__).resolve().parents[5]
 
 
 class StubCircleDetector:
@@ -277,6 +280,105 @@ def test_wealth_career_reports_use_imbalance_direction_not_secondary_element(tmp
     assert "怎么用「土」的力量继续向外" not in upgraded.layer_3_pro_draft.first_impression
     assert "行动节奏调整成" in upgraded.layer_3_pro_draft.core_insight_table["能量本质"]
     assert "让「土」带着你继续向前" not in upgraded.layer_3_pro_draft.core_insight_table["能量本质"]
+
+
+def test_wealth_career_reports_include_school_interpretation_chain(tmp_path):
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        generation_runtime=DeterministicReportGenerationRuntime(),
+        enable_vision=True,
+    )
+    golden_payload = json.loads(
+        (
+            PROJECT_ROOT
+            / "fixtures"
+            / "toc-mvp"
+            / "golden"
+            / "toc-mvp-fixture-002"
+            / "lite.report.json"
+        ).read_text(encoding="utf-8")
+    )
+    evidence = golden_payload["knowledge_debug"]["layer0_evidence"]
+    record = InterpretationRecord(
+        user_id="user-wealth-career-school-chain",
+        theme="wealth_career",
+        three_circles={"inner_radius": 33, "middle_radius": 66},
+        painting_intention="理清当前职业推进中的拉扯",
+        painting_feeling="想往前，但也担心失控",
+    )
+    record.layer_0_raw = Layer0Raw(
+        input_package=evidence["input_package"],
+        visual_analysis_basis=evidence["visual_analysis_basis"],
+        visual_facts=evidence["visual_facts"],
+        layer0_passed=evidence["layer0_passed"],
+        layer0_failure_reason=evidence["layer0_failure_reason"],
+        layer0_failure_detail=evidence["layer0_failure_detail"],
+        knowledge_hits=evidence["knowledge_hits"],
+        rule_evaluations=evidence["rule_evaluations"],
+        theme_projection=evidence["theme_projection"],
+        imbalance_candidates=evidence["imbalance_candidates"],
+        fidelity_flags=evidence["fidelity_flags"],
+        quality_flags=evidence["quality_flags"],
+        fallback_summary=evidence["fallback_summary"],
+    )
+    record.layer_0_raw.three_circles.inner = {
+        "radius_percent": 33,
+        "meaning": "核心自我",
+        "dominant": "火",
+        "knowledge_reading": evidence["knowledge_hits"]["circle_readings"]["inner"],
+    }
+    record.layer_0_raw.three_circles.middle = {
+        "radius_percent": 66,
+        "meaning": "关系场域",
+        "dominant": "金",
+        "knowledge_reading": evidence["knowledge_hits"]["circle_readings"]["middle"],
+    }
+    record.layer_0_raw.three_circles.outer = {
+        "radius_percent": 100,
+        "meaning": "外在呈现",
+        "dominant": "金",
+        "knowledge_reading": evidence["knowledge_hits"]["circle_readings"]["outer"],
+    }
+    record.layer_0_raw.micro_analysis.adjacent = ["中心收束", "外层舒展"]
+    record.layer_0_raw.micro_analysis.wrap = ["保护自己后再重新连接外界"]
+
+    record.layer_1_lite_draft = orchestrator._build_layer1_placeholder(record)
+    record.layer_2_lite_final = orchestrator._build_lite_placeholder_report(record)
+    store.save(record)
+
+    assert record.layer_1_lite_draft is not None
+    assert record.layer_2_lite_final is not None
+    lite_chain = record.layer_1_lite_draft.narrative_plan["evidence_trace_summary"][
+        "school_interpretation_chain"
+    ]
+    assert len(lite_chain) == 3
+    assert lite_chain[1]["circle"] == "middle"
+    assert lite_chain[1]["element"] == "金"
+    assert lite_chain[1]["shade"] == "中白"
+    assert lite_chain[1]["state"] == "正常"
+    assert lite_chain[1]["interpretation"] == "当下财务规划良好，既有纪律性也懂得变通"
+    assert "中圈：金 / 中白 / 正常" in record.layer_2_lite_final.visual_elements_rendered
+    assert "当下财务规划良好" in record.layer_2_lite_final.visual_elements_rendered
+    assert "在保持纪律的基础上，培养更多的灵活性" in record.layer_2_lite_final.visual_elements_rendered
+
+    record.layer_3_pro_draft = orchestrator._build_pro_placeholder_draft(record)
+    record.layer_4_pro_final = orchestrator._build_pro_placeholder_report(record)
+    store.save(record)
+    upgraded = store.load(record.interpretation_id)
+
+    assert upgraded is not None
+    assert upgraded.layer_3_pro_draft is not None
+    pro_chain = upgraded.layer_3_pro_draft.narrative_plan["evidence_trace_summary"][
+        "school_interpretation_chain"
+    ]
+    assert len(pro_chain) == 3
+    assert pro_chain[2]["circle"] == "outer"
+    assert pro_chain[2]["element"] == "金"
+    assert pro_chain[2]["shade"] == "中白"
+    assert "外圈：金 / 中白 / 正常" in upgraded.layer_3_pro_draft.three_circles_detailed["outer"]["reading"]
+    assert "财务管理能力良好，在社会上有一定认可度" in upgraded.layer_3_pro_draft.three_circles_detailed["outer"]["reading"]
 
 
 def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):

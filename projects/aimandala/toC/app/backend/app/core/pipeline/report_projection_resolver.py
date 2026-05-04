@@ -197,6 +197,13 @@ class ReportProjectionResolver:
             for item in (layer0.micro_analysis.adjacent or [])
             if isinstance(item, str) and str(item).strip()
         ]
+        rule_evaluations = (
+            layer0.rule_evaluations if isinstance(layer0.rule_evaluations, dict) else {}
+        )
+        interpretation_method_trace = rule_evaluations.get(
+            "interpretation_method_trace",
+            {},
+        )
 
         try:
             plan = narrative_service.build_lite_narrative_plan(
@@ -243,11 +250,7 @@ class ReportProjectionResolver:
                 signal=self._get_primary_knowledge_signal(record),
                 feeling_hint=self._build_feeling_hint(record),
                 default_pro_teaser=DEFAULT_PRO_TEASER,
-                interpretation_method_trace=(
-                    layer0.rule_evaluations.get("interpretation_method_trace", {})
-                    if isinstance(layer0.rule_evaluations, dict)
-                    else {}
-                ),
+                interpretation_method_trace=interpretation_method_trace,
                 fidelity_flags=list(getattr(layer0, "fidelity_flags", []) or []),
                 fallback_summary=(
                     layer0.fallback_summary
