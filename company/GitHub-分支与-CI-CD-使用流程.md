@@ -1,9 +1,9 @@
 # GitHub 分支与 CI/CD 使用流程
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer / Architect
-> last_updated：2026-05-03
+> last_updated：2026-05-04
 > source_of_truth：company/GitHub-分支与-CI-CD-使用流程.md
 
 这份文档把 `mindsync` 当前的 GitHub 使用流程收口成一套明确口径。
@@ -150,6 +150,12 @@
 - `项目开发分支 -> main`
   - 阶段性、稳定点收口路径
 
+这里再收紧一层默认纪律：
+
+- 不把 `main` 当所有项目的高频集成池
+- 不因为“想触发 CI / deploy”就把项目日常改动先塞进 `main`
+- 只有已经准备进入公司级长期真理源的稳定内容，才进入 `main`
+
 ### 4.3 何时把 `main` 回灌到项目分支
 
 仅在以下情况进行：
@@ -168,6 +174,44 @@
 - 需要把项目级实现、文档和结论纳入主仓长期真理源
 - 不会把未准备好的内部试验态内容一并带入 `main`
 
+### 4.5 哪些项目分支不应长期高频回灌 `main`
+
+以下分支默认都属于“项目开发主线”而不是“公司主干”：
+
+- `aimandala/dev`
+- `relayhub/dev`
+- `research-center/dev`
+- `content-matrix/dev`
+- `xinran-jobhunt/dev`
+
+它们的共同纪律是：
+
+- 可以长期存在
+- 可以高频迭代
+- 但不应为了保持“看起来同步”而高频 merge 回 `main`
+
+通俗说：
+
+- `main` 更像公司总账
+- 项目 `dev` 分支更像各自项目的流水账
+
+流水账可以天天变，总账不该被所有流水高频倒灌。
+
+只有满足下面任一条件，才建议从项目分支回 `main`：
+
+- 形成了阶段稳定点
+- 需要把公司级可复用结论、共享脚本或正式入口一并收口
+- 需要让其他项目明确依赖这批稳定内容
+- 已完成一轮项目内验证，不再只是试验态
+
+如果只是这些情况，默认不要回 `main`：
+
+- 项目内部试错
+- 临时联调
+- 仅服务单一项目的服务器试验
+- 还在频繁重写的 UI / 文案 / 研究草稿
+- 只是为了让 `main`“看起来最新”
+
 ## 5. GitHub Actions 触发口径
 
 ### 5.1 AI Mandala
@@ -182,6 +226,14 @@
 - `push -> release`
   - 跑完整 CI
   - 成功后执行 `deploy-prod`
+
+补充判断：
+
+- `push -> main` 不是无条件触发 `AI Mandala` 部署
+- 只有命中 `projects/aimandala/toC/**`、`projects/aimandala/deploy/**`、`shared/tools/ci/**` 或对应 workflow 文件时，才会触发 `deploy-dev`
+- `push -> release` 也同样受这组路径过滤约束
+
+因此如果一次 `main` merge 主要改的是 `RelayHub`、研究文档或公司治理文档，就算已经 push 到 `main`，也通常**不需要**额外手动补触发 `AI Mandala deploy`
 
 ### 5.2 RelayHub
 
@@ -221,6 +273,27 @@ GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常
 - `branch`
 - `sha`
 - `paths`
+
+### 5.4 何时需要手动补触发 `main / release` 对应部署
+
+默认先按下面顺序判断：
+
+1. 该次 `push` 是否已经自动生成对应 workflow run
+2. 该次改动是否命中 workflow 的 `paths` 过滤
+3. 自动 run 是 `queued / in_progress / completed`，还是根本没有生成
+
+只有满足下面任一情况，才建议手动 `workflow_dispatch`：
+
+- 这次改动本应部署，但因为 `paths` 配置遗漏而没生成 run
+- 自动 run 因 runner / secret / GitHub 暂时异常被取消，需要补跑同一 `sha`
+- 你明确要把某个既有 `main` 或 `release` 的已存在提交重新部署一次
+
+以下情况默认不需要手动补触发：
+
+- 自动 run 已经排队或正在执行
+- 自动 run 已成功完成
+- 本次改动根本没命中该项目部署路径
+- 只是把别的项目分支合进了 `main`，但没有带来该项目 deploy 相关改动
 
 ## 6. PaperclipAI 联调口径
 

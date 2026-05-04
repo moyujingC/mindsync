@@ -1,9 +1,9 @@
 # Git 仓库管理系统说明
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer
-> last_updated：2026-05-02
+> last_updated：2026-05-04
 > source_of_truth：company/Git仓库管理系统说明.md
 
 这份文档定义 `MindSync` 当前的公司级 Git 仓库管理系统。
@@ -220,6 +220,19 @@ GitHub / Git 的正式理解应是：
 - 其他项目
   - 采用 `<project>/dev` 作为长期开发分支时，也应明确写入各自项目入口文档
 
+再补一条强约束：
+
+- `aimandala/dev`、`relayhub/dev`、`research-center/dev`、`content-matrix/dev`、`xinran-jobhunt/dev`
+  - 都允许长期存在并高频迭代
+  - 但默认不允许把这些高频迭代长期、机械性地同步回 `main`
+
+原因很简单：
+
+- `main` 是公司级稳定收口区
+- 项目 `dev` 分支是项目级连续施工区
+
+施工区可以频繁推倒重来，稳定收口区不该被当作实时镜像。
+
 任务分支默认从项目开发分支分出，例如：
 
 - `feature/*`
@@ -321,6 +334,22 @@ GitHub Actions 不会识别“你是从哪个 `worktree` 推上去的”。
 - `relayhub/dev -> main`
   - 定期但不高频
   - 只在阶段能力稳定后回收
+
+进一步收紧为：
+
+- `research-center/dev -> main`
+  - 只回灌已经确认要成为公司长期知识或共享方法的内容
+- `content-matrix/dev -> main`
+  - 只回灌公司级内容治理规则、正式入口和共享资产结构
+- `xinran-jobhunt/dev -> main`
+  - 只回灌对其他项目也成立的协作机制、模板或治理规则
+
+默认不要把下列内容为了“保持同步”直接长期高频带回 `main`：
+
+- 单一项目内部试验
+- 频繁变化的过程稿
+- 只服务某个项目当前阶段的临时脚本
+- 还没有形成复用价值的研究草稿或内容草稿
 
 ### 7.3 服务器主镜像区 / 巡检区
 
