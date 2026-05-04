@@ -575,8 +575,8 @@ export const seedEntryBindings = [
   },
   {
     entryId: "entry-paperclip-codex-local-server",
-    defaultModelEntryId: "preset-ppchat-relay",
-    fallbackModelEntryId: "preset-siliconflow",
+    defaultModelEntryId: "preset-deepseek-v4",
+    fallbackModelEntryId: "preset-ppchat-relay",
     reasoningEffortOverride: null,
     statusNote: "服务器 codex_local 跟随服务器 Responses 兼容入口。"
   },

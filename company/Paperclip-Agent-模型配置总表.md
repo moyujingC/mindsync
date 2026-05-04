@@ -79,8 +79,9 @@
 - Base URL：`https://relayhub.jingshu.cc/claude/v1`
 - Model：`relayhub-entry-paperclip-codex-local-server`
 - 协议：`OpenAI Responses`
-- 当前默认入口绑定：`preset-ppchat-relay`
-- 当前真实上游：`https://code.ppchat.vip/v1`
+- 当前默认入口绑定：`preset-deepseek-v4`
+- 当前回退入口绑定：`preset-ppchat-relay`
+- 当前真实上游：`https://api.deepseek.com/v1`
 - Reasoning：`medium`
 - Token 优化策略：
   - 不降模型
@@ -97,7 +98,8 @@
   - 当前客户端落地配置位置是：
     - `/paperclip/.codex/config.toml`
     - `/paperclip/.codex/auth.json`
-  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-ppchat-relay`
+  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-deepseek-v4`
+  - 当前 fallback 入口为 `preset-ppchat-relay`
   - 若后续切模型、切 key 或切 `reasoningEffort`，优先在 RelayHub 控制面改入口绑定
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
@@ -128,8 +130,9 @@
 - Base URL：`https://relayhub.jingshu.cc/claude/v1`
 - Model：`relayhub-entry-paperclip-codex-local-server`
 - 协议：`OpenAI Responses`
-- 当前默认入口绑定：`preset-ppchat-relay`
-- 当前真实上游：`https://code.ppchat.vip/v1`
+- 当前默认入口绑定：`preset-deepseek-v4`
+- 当前回退入口绑定：`preset-ppchat-relay`
+- 当前真实上游：`https://api.deepseek.com/v1`
 - Reasoning：`medium`
 - Token 优化策略：
   - 不降模型
@@ -145,7 +148,8 @@
   - 当前客户端落地配置位置同样是：
     - `/paperclip/.codex/config.toml`
     - `/paperclip/.codex/auth.json`
-  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-ppchat-relay`
+  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-deepseek-v4`
+  - 当前 fallback 入口为 `preset-ppchat-relay`
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：

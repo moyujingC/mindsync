@@ -366,7 +366,7 @@ curl -k https://relayhub.jingshu.cc/aimandala/v1/chat/completions \
 - 静态目录：`/var/www/web.jingshu.cc/relayhub`
 - 子域静态目录：`/var/www/relayhub.jingshu.cc`
 - nginx 配置：`/etc/nginx/sites-available/ai-mandala`
-- RelayHub 独立 worktree：`/opt/aimandala-release/worktrees/relayhub`
+- RelayHub 独立 worktree：`/opt/aimandala-release/worktrees/relayhub-dev-deploy`
 
 已验证：
 
