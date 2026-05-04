@@ -49,11 +49,11 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `claude_local` | `RelayHub Claude Code` | `relayhub-task-claude-code` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
+| CEO | CEO | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
 | 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
 | 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
 | 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub Claude Code` | `relayhub-task-claude-code` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
 
 ## 3. 分组展开
 
@@ -62,7 +62,7 @@
 - Agent：`CEO`
 - Adapter：`claude_local`
 - Base URL：`https://relayhub.jingshu.cc/claude`
-- Model：`relayhub-task-claude-code`
+- Model：`relayhub-entry-paperclip-claude-local-server`
 - 模型来源：
   - Agent 级 `ANTHROPIC_BASE_URL`
   - Agent 级 `ANTHROPIC_MODEL`
@@ -72,7 +72,7 @@
   - 当前通过 `claude_local` 启动 Claude Code CLI
   - Claude Code 使用 `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN`，不依赖交互式 Claude 登录态
   - `ANTHROPIC_BASE_URL` 必须是不带 `/v1` 的 `https://relayhub.jingshu.cc/claude`
-  - `ANTHROPIC_MODEL` 必须使用 Claude Code 任务入口 `relayhub-task-claude-code`
+  - `ANTHROPIC_MODEL` 必须使用 RelayHub entry `relayhub-entry-paperclip-claude-local-server`
   - 对普通任务本地自动执行链，CEO 不再保留服务器宿主例外
 
 ### 3.2 Engineer
@@ -182,7 +182,7 @@
 
 - Adapter：`claude_local`
 - Base URL：`https://relayhub.jingshu.cc/claude`
-- Model：`relayhub-task-claude-code`
+- Model：`relayhub-entry-paperclip-claude-local-server`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
   - `ANTHROPIC_AUTH_TOKEN`
@@ -198,7 +198,7 @@
 - 这组 Agent 当前通过 RelayHub 的 Claude Code 入口执行
 - 当前采用 API-key 模式，而不是 Claude 登录态模式，即“免登录”
 - `ANTHROPIC_BASE_URL` 必须保持为 `https://relayhub.jingshu.cc/claude`，不要写成 `https://relayhub.jingshu.cc/claude/v1`
-- `ANTHROPIC_MODEL` 必须保持为 `relayhub-task-claude-code`，不要写成 `relayhub-entry-paperclip-claude-local-server`
+- `ANTHROPIC_MODEL` 必须保持为 `relayhub-entry-paperclip-claude-local-server`
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
   - 且状态为 `warn`

@@ -13,10 +13,10 @@ RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
 USE_CONTROL_PLANE_BINDING="${USE_CONTROL_PLANE_BINDING:-0}"
 
 PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://relayhub.jingshu.cc/claude}"
-PRIMARY_MODEL="${PRIMARY_MODEL:-relayhub-task-claude-code}"
+PRIMARY_MODEL="${PRIMARY_MODEL:-relayhub-entry-paperclip-claude-local-server}"
 RELAYHUB_RELAY_TOKEN="${RELAYHUB_RELAY_TOKEN:-relayhub-release-claude}"
 BACKUP_BASE_URL="${BACKUP_BASE_URL:-https://relayhub.jingshu.cc/claude}"
-BACKUP_MODEL="${BACKUP_MODEL:-relayhub-task-claude-code}"
+BACKUP_MODEL="${BACKUP_MODEL:-relayhub-entry-paperclip-claude-local-server}"
 
 read_token() {
   ruby -rjson -e '
@@ -50,7 +50,7 @@ Notes:
   - This script is now an initialization / repair tool.
   - Default claude_local mode is Claude Code API-key mode via RelayHub:
     ANTHROPIC_BASE_URL=https://relayhub.jingshu.cc/claude and
-    ANTHROPIC_MODEL=relayhub-task-claude-code.
+    ANTHROPIC_MODEL=relayhub-entry-paperclip-claude-local-server.
   - Set USE_CONTROL_PLANE_BINDING=1 only when the RelayHub entry binding is
     known to resolve to a Claude Code-compatible Anthropic base URL and model.
   - Steady-state Paperclip usage should point claude_local at RelayHub once,
