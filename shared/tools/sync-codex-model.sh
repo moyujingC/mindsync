@@ -33,7 +33,8 @@ Notes:
   - Source of truth for the relay token is RelayHub control-plane relay-config
   - The local Codex client should keep RelayHub URL + alias model + relay token only
   - Only runtime agents configured as codex_local in .paperclip.yaml are updated
-  - Existing adapterConfig fields are preserved; only model / modelReasoningEffort / apiKey are aligned
+  - Existing adapterConfig fields are preserved except model / modelReasoningEffort / apiKey
+    and Codex CLI extraArgs needed for RelayHub API-key mode
   - This script is now an initialization / repair tool.
   - Steady-state Paperclip usage should point codex_local at RelayHub once,
     then switch model / api key / reasoning effort in RelayHub only.
@@ -393,7 +394,7 @@ sync_models() {
 
     current_payload="$(api_curl "${api_url}/api/agents/${runtime_id}")"
     patch_payload="$(
-      CURRENT_PAYLOAD="${current_payload}" TARGET_MODEL="${target_model}" TARGET_EFFORT="${target_effort:-}" RELAY_TOKEN="${resolved_relay_token}" python3 - <<'PY'
+      CURRENT_PAYLOAD="${current_payload}" TARGET_MODEL="${target_model}" TARGET_EFFORT="${target_effort:-}" RELAY_TOKEN="${resolved_relay_token}" TARGET_BASE_URL="${RELAYHUB_CODEX_BASE_URL}" TARGET_WIRE_API="${RELAYHUB_CODEX_WIRE_API}" python3 - <<'PY'
 import json
 import os
 
@@ -401,6 +402,15 @@ agent = json.loads(os.environ["CURRENT_PAYLOAD"])
 adapter_config = dict(agent.get("adapterConfig") or {})
 adapter_config["model"] = os.environ["TARGET_MODEL"]
 adapter_config["apiKey"] = os.environ["RELAY_TOKEN"]
+adapter_config["extraArgs"] = [
+    "-c", "preferred_auth_method=\"apikey\"",
+    "-c", "model_provider=\"codex\"",
+    "-c", "model_providers.codex.name=\"codex\"",
+    "-c", f"model_providers.codex.base_url=\"{os.environ['TARGET_BASE_URL']}\"",
+    "-c", f"model_providers.codex.wire_api=\"{os.environ['TARGET_WIRE_API']}\"",
+    "-c", "model_providers.codex.requires_openai_auth=true",
+    "--skip-git-repo-check",
+]
 
 effort = os.environ.get("TARGET_EFFORT", "").strip()
 if effort:

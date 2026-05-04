@@ -1,9 +1,9 @@
 # Paperclip Agent 模型配置总表
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer
-> last_updated：2026-04-27
+> last_updated：2026-05-04
 > source_of_truth：company/Paperclip-Agent-模型配置总表.md
 
 这份文档用于收口 `Paperclip` 当前各类 Agent 的运行时模型配置。
@@ -49,11 +49,11 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| CEO | CEO | `claude_local` | `RelayHub Claude Code` | `relayhub-task-claude-code` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
 | 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
 | 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
 | 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-mac` 或 `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub Claude Code` | `relayhub-task-claude-code` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
 
 ## 3. 分组展开
 
@@ -61,15 +61,18 @@
 
 - Agent：`CEO`
 - Adapter：`claude_local`
-- Base URL：`https://api.deepseek.com/anthropic`
-- Model：`deepseek-v4-pro`
+- Base URL：`https://relayhub.jingshu.cc/claude`
+- Model：`relayhub-task-claude-code`
 - 模型来源：
   - Agent 级 `ANTHROPIC_BASE_URL`
   - Agent 级 `ANTHROPIC_MODEL`
   - Agent 级 `ANTHROPIC_API_KEY`
+  - Agent 级 `ANTHROPIC_AUTH_TOKEN`
 - 当前语义：
-  - 当前通过 `claude_local` 走 DeepSeek 的 Anthropic 兼容入口
-  - 目标是保留现有 adapter 执行链，同时把底层大模型统一到 DeepSeek V4
+  - 当前通过 `claude_local` 启动 Claude Code CLI
+  - Claude Code 使用 `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN`，不依赖交互式 Claude 登录态
+  - `ANTHROPIC_BASE_URL` 必须是不带 `/v1` 的 `https://relayhub.jingshu.cc/claude`
+  - `ANTHROPIC_MODEL` 必须使用 Claude Code 任务入口 `relayhub-task-claude-code`
   - 对普通任务本地自动执行链，CEO 不再保留服务器宿主例外
 
 ### 3.2 Engineer
@@ -83,6 +86,10 @@
 - 当前回退入口绑定：`preset-ppchat-relay`
 - 当前真实上游：`https://api.deepseek.com/v1`
 - Reasoning：`medium`
+- 运行参数：
+  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/claude/v1"`
+  - `model_providers.codex.wire_api="responses"`
+  - `--skip-git-repo-check`
 - Token 优化策略：
   - 不降模型
   - 通过限制长会话控制上下文膨胀
@@ -134,6 +141,10 @@
 - 当前回退入口绑定：`preset-ppchat-relay`
 - 当前真实上游：`https://api.deepseek.com/v1`
 - Reasoning：`medium`
+- 运行参数：
+  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/claude/v1"`
+  - `model_providers.codex.wire_api="responses"`
+  - `--skip-git-repo-check`
 - Token 优化策略：
   - 不降模型
   - 通过限制长会话控制上下文膨胀
@@ -170,10 +181,11 @@
 它们当前共享同一组模型入口：
 
 - Adapter：`claude_local`
-- Base URL：`https://api.deepseek.com/anthropic`
-- Model：`deepseek-v4-pro`
+- Base URL：`https://relayhub.jingshu.cc/claude`
+- Model：`relayhub-task-claude-code`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
+  - `ANTHROPIC_AUTH_TOKEN`
   - `ANTHROPIC_BASE_URL`
   - `ANTHROPIC_MODEL`
   - `ANTHROPIC_DEFAULT_OPUS_MODEL`
@@ -183,8 +195,10 @@
 
 当前明确口径：
 
-- 这组 Agent 当前使用的是 DeepSeek 的 Anthropic 兼容接口
-- 当前采用 API-key 模式，而不是 Claude 登录态模式
+- 这组 Agent 当前通过 RelayHub 的 Claude Code 入口执行
+- 当前采用 API-key 模式，而不是 Claude 登录态模式，即“免登录”
+- `ANTHROPIC_BASE_URL` 必须保持为 `https://relayhub.jingshu.cc/claude`，不要写成 `https://relayhub.jingshu.cc/claude/v1`
+- `ANTHROPIC_MODEL` 必须保持为 `relayhub-task-claude-code`，不要写成 `relayhub-entry-paperclip-claude-local-server`
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
   - 且状态为 `warn`
