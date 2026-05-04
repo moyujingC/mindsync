@@ -1,5 +1,6 @@
 import { getGenerationPresentation } from "../../shared/core";
 import { getThemeDisplayName } from "../../shared/core";
+import type { InterpretationVersion } from "../../shared/types";
 import type { InterpretationRecordResponse } from "../../shared/types";
 
 export interface HistoryPageItemDescriptor {
@@ -8,8 +9,10 @@ export interface HistoryPageItemDescriptor {
   themeLabel: string;
   title: string;
   subtitle: string;
-  canOpenReport: boolean;
-  reportVariant: "lite" | "pro";
+  recordReady: boolean;
+  availableReportTypes: InterpretationVersion[];
+  focusReportType: InterpretationVersion;
+  versionSummary: string;
   statusLabel: string;
   statusDetail: string;
   actionLabel: string;
@@ -46,6 +49,22 @@ function formatHistoryCreatedAt(value: string): string {
   }).format(date);
 }
 
+function getAvailableReportTypes(
+  record: InterpretationRecordResponse,
+): InterpretationVersion[] {
+  const available = record.version_purchased.filter(
+    (version): version is InterpretationVersion => version === "lite" || version === "pro",
+  );
+
+  return available.length ? available : ["lite"];
+}
+
+function formatVersionSummary(
+  reportTypes: InterpretationVersion[],
+): string {
+  return reportTypes.map((type) => (type === "pro" ? "Pro" : "Lite")).join(" / ");
+}
+
 export function createHistoryPageDescriptor(
   records: InterpretationRecordResponse[],
 ): HistoryPageDescriptor {
@@ -63,43 +82,48 @@ export function createHistoryPageDescriptor(
     items: records.map((record) => {
       const presentation = getGenerationPresentation(record);
       const themeLabel = getThemeDisplayName(record.theme) ?? record.theme;
-      const reportVariant = record.version_purchased.includes("pro") ? "pro" : "lite";
+      const availableReportTypes = getAvailableReportTypes(record);
+      const focusReportType = availableReportTypes.includes("pro") ? "pro" : "lite";
       const isPending = !presentation.isReady;
 
       let statusLabel = presentation.statusLabel;
       let statusDetail = presentation.statusDetail;
-      let actionLabel = presentation.isReady ? "打开报告" : "查看进度";
+      let actionLabel = "查看记录详情";
       let statusTone: HistoryPageItemDescriptor["statusTone"] = presentation.isReady
         ? "ready"
         : "pending";
       let helperNote: string | undefined;
 
-      if (reportVariant === "pro" && isPending) {
+      if (focusReportType === "pro" && isPending) {
         statusLabel = "Pro 生成中";
         statusDetail = "Pro 完整解读已经开始生成。你可以先离开当前页面，稍后从历史记录回来查看。";
-        actionLabel = "继续查看进度";
+        actionLabel = "查看详情与进度";
         statusTone = "proPending";
         helperNote = "后台仍在继续生成，不需要一直停留在等待页。";
-      } else if (reportVariant === "pro" && presentation.isReady) {
+      } else if (focusReportType === "pro" && presentation.isReady) {
         statusLabel = "可查看 Pro";
-        statusDetail = "Pro 完整解读已生成，可直接进入完整报告查看结果。";
-        actionLabel = "查看完整 Pro 报告";
+        statusDetail = "这条记录已经拥有 Lite 与 Pro，可先进入详情页再选择要查看的版本。";
+        actionLabel = "查看记录详情";
         statusTone = "proReady";
         helperNote = "已包含三圈能量、失衡诊断与报告内 AI 问答。";
-      } else if (reportVariant === "lite" && presentation.isReady) {
-        actionLabel = "打开 Lite 报告";
-      } else if (reportVariant === "lite" && isPending) {
-        actionLabel = "查看生成进度";
+      } else if (focusReportType === "lite" && presentation.isReady) {
+        statusDetail = availableReportTypes.length > 1
+          ? "这条记录已经有可查看版本，可先进入详情页，再决定打开 Lite 还是 Pro。"
+          : "这条记录已经可以查看，可先进入详情页确认版本与状态。";
+      } else if (focusReportType === "lite" && isPending) {
+        actionLabel = "查看详情与进度";
       }
 
       return {
         interpretationId: record.interpretation_id,
         theme: record.theme,
         themeLabel,
-        title: `${themeLabel} · ${reportVariant === "pro" ? "Pro" : "Lite"}`,
+        title: `${themeLabel} · 解读记录`,
         subtitle: `创建于 ${formatHistoryCreatedAt(record.created_at)}`,
-        canOpenReport: presentation.isReady,
-        reportVariant,
+        recordReady: presentation.isReady,
+        availableReportTypes,
+        focusReportType,
+        versionSummary: formatVersionSummary(availableReportTypes),
         statusLabel,
         statusDetail,
         actionLabel,

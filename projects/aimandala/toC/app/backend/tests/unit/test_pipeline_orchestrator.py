@@ -1,8 +1,10 @@
 """Unit tests for the minimal migrated V2 orchestrator shell."""
 
 import asyncio
+import json
 import os
 import sys
+from types import SimpleNamespace
 
 sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -12,10 +14,11 @@ from app.core.analysis.circle_detector import CircleDetectionResult
 from app.core.pipeline.data_models import (
     GenerationStatus,
     InterpretationRecord,
+    Layer0Raw,
     Layer1LiteDraft,
     Layer2LiteFinal,
+    Layer3ProDraft,
 )
-from app.core.pipeline.prompt_runtime import NoopPromptRuntime
 from app.core.pipeline.orchestrator_v2 import (
     GenerationStage,
     LayeredOrchestrator,
@@ -23,8 +26,8 @@ from app.core.pipeline.orchestrator_v2 import (
 )
 from app.core.pipeline.generation_runtime import (
     LiteGenerationBundle,
+    LLMReportGenerationRuntime,
     ProGenerationBundle,
-    PromptBackedReportGenerationRuntime,
 )
 from app.core.pipeline.report_contracts import PromptSchemaValidator
 from app.core.pipeline.store import InterpretationStore
@@ -62,11 +65,11 @@ def test_generation_stage_values():
 
 
 def test_pricing_snapshot_to_dict():
-    snapshot = PricingSnapshot(lite=9.9, pro=49.0, upgrade_diff=39.1)
+    snapshot = PricingSnapshot(lite=9.9, pro=39.0, upgrade_diff=39.1)
 
     assert snapshot.to_dict() == {
         "lite": 9.9,
-        "pro": 49.0,
+        "pro": 39.0,
         "upgrade_diff": 39.1,
     }
 
@@ -82,7 +85,7 @@ def test_layered_orchestrator_exposes_fixed_pricing(tmp_path):
 
     pricing = LayeredOrchestrator.get_pricing()
     assert pricing.lite == 9.9
-    assert pricing.pro == 49.0
+    assert pricing.pro == 39.0
     assert pricing.upgrade_diff == 39.1
 
 
@@ -257,8 +260,16 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
     assert report["title"] == "慢慢亮起来的中心"
     assert "一镜 Lite 版解读报告模板 v1.6" in report["structured"]["prompt_preview"]
     assert report["structured"]["prompt_schema_validation_issues"] == []
-    assert "失衡类型与对应疗愈建议" in report["structured"]["pro_teaser"]
-    assert "【你的底色" in report["structured"]["six_insights_rendered"]["base"]
+    assert report["structured"]["lite_healing_guidance"]["directions"]
+    assert report["structured"]["lite_healing_guidance"]["micro_practices"]
+    assert report["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
+    assert "更深层结构" in report["structured"]["pro_report_entry"]["summary"]
+    assert report["structured"]["topic_context"]["topic"] == "general"
+    assert report["structured"]["current_reading"] == report["overall_impression"]
+    assert report["structured"]["visual_basis"]
+    assert report["structured"]["pattern_interpretation"]
+    assert report["structured"]["life_connection"]
+    assert "six_insights_rendered" not in report["structured"]
     assert report["can_upgrade"] is True
 
 
@@ -298,6 +309,26 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
     assert profile["insight_context_summary"]["constraints"]["scope"] == "single_interpretation"
     assert profile["evidence_summary"]["agent"]["name"] == "InsightAgent"
     assert profile["fallback_summary"]["used"] in {True, False}
+    assert profile["generation_mode"]["strategy"] == "knowledge_first"
+    assert profile["generation_mode"]["llm_role"] == "chat_generation_for_draft_and_final_render"
+    assert profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
+    assert profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
+    assert '"runtime_evidence"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
+    assert '"narrative_plan"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
+    assert '"compatibility_projection"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
+    assert '"runtime_evidence"' in profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
+    assert '"narrative_plan"' in profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
+    assert profile["field_provenance"]["lite"][0]["generation_mode"] == "knowledge_only"
+    assert profile["field_provenance"]["pro"][0]["generation_mode"] == "knowledge_only"
+    assert profile["knowledge_debug"]["narrative_plans"]["lite"]["mode"] == "lite"
+    assert profile["knowledge_debug"]["narrative_plans"]["pro"]["mode"] == "pro"
+    assert (
+        profile["knowledge_debug"]["narrative_plans"]["lite"]["sections"]["lite_healing_guidance"]
+    )
+    assert profile["knowledge_debug"]["narrative_plans"]["pro"]["sections"]["healing_suggestions"]
+    assert "story_sections" in profile["knowledge_debug"]["knowledge_projections"]["lite"]
+    assert "root_cause" in profile["knowledge_debug"]["knowledge_projections"]["pro"]
+    assert profile["diagnostics"]["summary"]["no_llm_override_on_structured_fields"] is True
 
 
 def test_answer_report_chat_returns_runtime_reply(tmp_path):
@@ -418,6 +449,99 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
         def build_theme_prompt_context(self, **kwargs):
             return "Runtime-Theme-Prompt-Context"
 
+        def build_lite_narrative_plan(self, **kwargs):
+            return {
+                "mode": "lite",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "title": {"content": "Runtime-Lite-Title", "trace": {}},
+                    "overall_impression": {"content": "Runtime-Overall-Impression", "trace": {}},
+                    "visual_elements": {"content": "Runtime-Visual-Elements", "trace": {}},
+                    "emotion_portrait": {"content": "Runtime-Emotion-Portrait", "trace": {}},
+                    "story_sections": {
+                        "content": {
+                            "base": "Runtime-Story-Base",
+                            "contradiction": "Runtime-Story-Contradiction",
+                            "pattern": "Runtime-Story-Pattern",
+                            "defense": "Runtime-Story-Defense",
+                            "block": "Runtime-Story-Block",
+                            "light": "Runtime-Story-Light",
+                        },
+                        "trace": {},
+                    },
+                    "theme_insights": {
+                        "content": {
+                            "scene": "Runtime-Theme-Scene",
+                            "impact": "Runtime-Theme-Impact",
+                            "awareness": "Runtime-Theme-Awareness",
+                        },
+                        "trace": {},
+                    },
+                    "lite_healing_guidance": {
+                        "content": {
+                            "directions": [{"title": "Direction", "content": "Direction Content"}],
+                            "micro_practices": [{"title": "Practice", "content": "Practice Content"}],
+                        },
+                        "trace": {},
+                    },
+                    "pro_report_entry": {
+                        "content": {
+                            "title": "另一份更深的独立报告",
+                            "summary": "Runtime-Pro-Teaser",
+                            "product_note": "独立购买",
+                        },
+                        "trace": {},
+                    },
+                },
+                "legacy_projection": {
+                    "title": "Runtime-Lite-Title",
+                    "overall_impression": "Runtime-Overall-Impression",
+                    "visual_elements": "Runtime-Visual-Elements",
+                    "experiment": {
+                        "title": "Runtime-Experiment-Title",
+                        "content": "Runtime-Experiment-Content",
+                    },
+                    "story_angles": {
+                        "base": "Runtime-Base-Angle",
+                        "light": "Runtime-Light-Angle",
+                    },
+                    "six_insights": {
+                        "base": {
+                            "title": "Runtime-Six-Base-Title",
+                            "content": "Runtime-Six-Base-Content",
+                            "summary": "Runtime-Six-Base-Summary",
+                        },
+                        "light": {
+                            "title": "Runtime-Six-Light-Title",
+                            "content": "Runtime-Six-Light-Content",
+                            "summary": "Runtime-Six-Light-Summary",
+                        },
+                    },
+                    "story_sections": {
+                        "base": "Runtime-Story-Base",
+                        "contradiction": "Runtime-Story-Contradiction",
+                        "pattern": "Runtime-Story-Pattern",
+                        "defense": "Runtime-Story-Defense",
+                        "block": "Runtime-Story-Block",
+                        "light": "Runtime-Story-Light",
+                    },
+                    "theme_insights": {
+                        "scene": "Runtime-Theme-Scene",
+                        "impact": "Runtime-Theme-Impact",
+                        "awareness": "Runtime-Theme-Awareness",
+                    },
+                    "emotion_portrait": "Runtime-Emotion-Portrait",
+                    "pro_teaser": "Runtime-Pro-Teaser",
+                    "three_awareness": [
+                        {
+                            "day": 1,
+                            "title": "Runtime-Awareness-1",
+                            "content": "Runtime-Awareness-Content-1",
+                        }
+                    ],
+                },
+            }
+
         def build_lite_narrative_projection(self, **kwargs):
             assert kwargs["theme"] == "general"
             assert kwargs["default_pro_teaser"]
@@ -481,6 +605,7 @@ def test_layer1_placeholder_prefers_runtime_lite_projection():
     layer1 = orchestrator._build_layer1_placeholder(record)
 
     assert layer1.title == "Runtime-Lite-Title"
+    assert layer1.narrative_plan["mode"] == "lite"
     assert layer1.overall_impression == "Runtime-Overall-Impression"
     assert layer1.visual_elements == "Runtime-Visual-Elements"
     assert layer1.experiment["title"] == "Runtime-Experiment-Title"
@@ -586,25 +711,46 @@ def test_get_status_returns_compact_snapshot(tmp_path):
     assert status["report_ready"] is True
 
 
-def test_prompt_backed_runtime_applies_three_awareness_payload():
-    runtime = PromptBackedReportGenerationRuntime(prompt_runtime=NoopPromptRuntime())
-    layer = Layer1LiteDraft()
-
-    runtime._apply_lite_payload(
-        layer,
-        {
-            "three_awareness": [
-                {"day": 1, "title": "先慢下来", "content": "今天先不要同时推进三件事。"},
-                {"title": "看见拉扯", "content": "留意你是在想前进，还是想先保护自己。"},
-            ]
+def test_pro_generation_payload_structured_fields_are_local_knowledge_values():
+    layer = Layer3ProDraft(
+        core_insight_table={
+            "能量本质": "知识骨架里的能量本质",
+            "核心失衡": "知识骨架里的核心失衡",
         },
+        three_circles_detailed={
+            "inner": {
+                "label": "内圈",
+                "reading": "知识骨架里的内圈判断",
+            }
+        },
+        micro_analysis_detailed={
+            "节奏关系": "知识骨架里的节奏关系",
+        },
+        imbalance_confirmed={
+            "type": "knowledge-type",
+            "summary": "知识骨架里的整体判断",
+            "primary": "知识骨架里的主失衡",
+        },
+        root_cause={
+            "surface": "知识骨架里的表层根源",
+            "deeper": "知识骨架里的深层根源",
+            "core": "知识骨架里的核心根源",
+        },
+        healing_suggestions=[
+            {
+                "phase": "当前阶段",
+                "focus": "知识骨架里的聚焦点",
+                "practice": "知识骨架里的动作",
+            }
+        ],
     )
 
-    assert len(layer.three_awareness) == 2
-    assert layer.three_awareness[0].day == 1
-    assert layer.three_awareness[0].title == "先慢下来"
-    assert layer.three_awareness[1].day == 2
-    assert layer.three_awareness[1].content == "留意你是在想前进，还是想先保护自己。"
+    assert layer.core_insight_table["能量本质"] == "知识骨架里的能量本质"
+    assert layer.three_circles_detailed["inner"]["reading"] == "知识骨架里的内圈判断"
+    assert layer.micro_analysis_detailed["节奏关系"] == "知识骨架里的节奏关系"
+    assert layer.imbalance_confirmed["type"] == "knowledge-type"
+    assert layer.root_cause["core"] == "知识骨架里的核心根源"
+    assert layer.healing_suggestions[0]["practice"] == "知识骨架里的动作"
 
 
 def test_select_pro_imbalance_type_uses_configured_rules():
@@ -819,6 +965,21 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
         )
     )
     record.layer_0_raw.imbalance_candidates = ["水多火灭"]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["primary_candidates"] = [
+        {
+            "id": "水多火灭",
+            "category": "相乘",
+            "toc_supported": True,
+            "score": 0.91,
+            "selected_for_primary": True,
+            "reason_codes": ["attacker_excess", "target_deficient"],
+        }
+    ]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["synthetic_signal"] = {
+        "id": "transition-overload",
+        "used": False,
+        "reason": "",
+    }
     store.save(record)
 
     result = orchestrator.upgrade_to_pro(record.interpretation_id)
@@ -828,17 +989,16 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
     assert upgraded is not None
     assert upgraded.layer_3_pro_draft is not None
     assert upgraded.layer_3_pro_draft.healing_suggestions
-    assert "水多火灭" in upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
-    assert "恐惧压制行动" in upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
-    assert "害怕失败" in upgraded.layer_3_pro_draft.imbalance_confirmed["evidence"]
-    assert "72小时决策" in upgraded.layer_3_pro_draft.imbalance_confirmed["evidence"]
-    assert "恐惧压制行动" in upgraded.layer_3_pro_draft.core_insight_table["关键卡点"]
-    assert "72小时决策" in upgraded.layer_3_pro_draft.core_insight_table["转化方向"]
-    assert "财富是能量的流动" in upgraded.layer_3_pro_draft.core_insight_table["疗愈核心"]
-    assert "水多火灭" in upgraded.layer_3_pro_draft.root_cause["deeper"]
-    assert "财富焦虑" in upgraded.layer_3_pro_draft.root_cause["core"]
-    assert "财富焦虑" in upgraded.layer_3_pro_draft.healing_suggestions[0]["focus"]
-    assert "72小时决策" not in upgraded.layer_3_pro_draft.healing_suggestions[0]["practice"]
+    assert upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
+    assert "推进" in upgraded.layer_3_pro_draft.imbalance_confirmed["summary"]
+    assert upgraded.layer_3_pro_draft.imbalance_confirmed["evidence"]
+    assert upgraded.layer_3_pro_draft.core_insight_table["关键卡点"]
+    assert upgraded.layer_3_pro_draft.core_insight_table["转化方向"]
+    assert upgraded.layer_3_pro_draft.core_insight_table["疗愈核心"]
+    assert upgraded.layer_3_pro_draft.root_cause["deeper"]
+    assert upgraded.layer_3_pro_draft.root_cause["core"]
+    assert upgraded.layer_3_pro_draft.healing_suggestions[0]["focus"]
+    assert "{'" + "inner'" not in str(upgraded.layer_3_pro_draft.healing_suggestions)
 
 
 def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
@@ -870,6 +1030,21 @@ def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
     )
     record.layer_0_raw = orchestrator._build_layer0_fallback(record)
     record.layer_0_raw.imbalance_candidates = ["transition-overload"]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["primary_candidates"] = [
+        {
+            "id": "transition-overload",
+            "category": "synthetic",
+            "toc_supported": True,
+            "score": 1.0,
+            "selected_for_primary": True,
+            "reason_codes": ["fallback_signal"],
+        }
+    ]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["synthetic_signal"] = {
+        "id": "transition-overload",
+        "used": True,
+        "reason": "fallback_signal",
+    }
     record.layer_1_lite_draft = Layer1LiteDraft()
     record.layer_1_lite_draft.story.contradiction.content = "一边想继续，一边又会先缩回来。"
     record.layer_1_lite_draft.story.block.content = "临门一脚前会先停顿一下。"
@@ -885,6 +1060,75 @@ def test_build_pro_placeholder_reuses_runtime_imbalance_projection():
 
 def test_layer3_placeholder_prefers_runtime_pro_projection():
     class StubNarrativeService:
+        def build_pro_narrative_plan(self, **kwargs):
+            return {
+                "mode": "pro",
+                "generation_mode": "evidence_first",
+                "sections": {
+                    "first_impression": {"content": "Runtime-Pro-First-Impression", "trace": {}},
+                    "core_insight_table": {
+                        "content": {
+                            "能量本质": "Runtime-Pro-Energy-Essence",
+                            "核心失衡": "Runtime-Imbalance-Summary",
+                            "关键卡点": "Runtime-Pro-Block-Point",
+                            "转化方向": "Runtime-Pro-Direction",
+                            "疗愈核心": "Runtime-Pro-Healing-Core",
+                        },
+                        "trace": {},
+                    },
+                    "three_circles_detailed": {
+                        "content": {
+                            "inner": "Runtime-Pro-Inner-Reading",
+                            "middle": "Runtime-Pro-Middle-Reading",
+                            "outer": "Runtime-Pro-Outer-Reading",
+                        },
+                        "trace": {},
+                    },
+                    "micro_analysis_detailed": {
+                        "content": {
+                            "节奏关系": "Runtime-Pro-Micro-Rhythm",
+                            "关系模式": "Runtime-Pro-Micro-Relationship",
+                            "行动模式": "Runtime-Pro-Micro-Action",
+                        },
+                        "trace": {},
+                    },
+                    "root_cause": {
+                        "content": {
+                            "surface": "Runtime-Pro-Root-Surface",
+                            "deeper": "Runtime-Pro-Root-Deeper",
+                            "core": "Runtime-Pro-Root-Core",
+                        },
+                        "trace": {},
+                    },
+                    "healing_suggestions": {
+                        "content": [{"phase": "当前阶段", "focus": "Focus", "practice": "Practice"}],
+                        "trace": {},
+                    },
+                },
+                "legacy_projection": {
+                    "first_impression": "Runtime-Pro-First-Impression",
+                    "energy_essence": "Runtime-Pro-Energy-Essence",
+                    "block_point": "Runtime-Pro-Block-Point",
+                    "direction": "Runtime-Pro-Direction",
+                    "healing_core": "Runtime-Pro-Healing-Core",
+                    "circle_readings": {
+                        "inner": "Runtime-Pro-Inner-Reading",
+                        "middle": "Runtime-Pro-Middle-Reading",
+                        "outer": "Runtime-Pro-Outer-Reading",
+                    },
+                    "micro_sections": {
+                        "节奏关系": "Runtime-Pro-Micro-Rhythm",
+                        "关系模式": "Runtime-Pro-Micro-Relationship",
+                        "行动模式": "Runtime-Pro-Micro-Action",
+                    },
+                    "root_cause": {
+                        "surface": "Runtime-Pro-Root-Surface",
+                        "deeper": "Runtime-Pro-Root-Deeper",
+                        "core": "Runtime-Pro-Root-Core",
+                    },
+                },
+            }
+
         def build_imbalance_projection(self, **kwargs):
             return {
                 "contradiction": "Runtime-Imbalance-Primary",
@@ -936,6 +1180,7 @@ def test_layer3_placeholder_prefers_runtime_pro_projection():
 
     layer3 = orchestrator._build_pro_placeholder_draft(record)
 
+    assert layer3.narrative_plan["mode"] == "pro"
     assert layer3.first_impression == "Runtime-Pro-First-Impression"
     assert layer3.core_insight_table["能量本质"] == "Runtime-Pro-Energy-Essence"
     assert layer3.core_insight_table["关键卡点"] == "Runtime-Pro-Block-Point"
@@ -1083,65 +1328,24 @@ def test_upgrade_to_pro_supports_custom_generation_runtime(tmp_path):
     assert upgraded.layer_4_pro_final.full_report_markdown == "Runtime-Pro-Report"
 
 
-def test_prompt_runtime_can_override_lite_and_pro_structured_fields(tmp_path):
-    class StubPromptRuntime:
-        def generate_lite(self, *, prompt, schema):
-            assert "一镜 Lite 版解读报告模板 v1.6" in prompt
-            assert schema.get("type") == "lite"
-            return {
-                "title": "Prompt-Lite-Title",
-                "overall_impression": "Prompt-Lite-Overall",
-                "visual_elements": "Prompt-Lite-Visual",
-                "emotion_portrait": "Prompt-Lite-Emotion",
-                "story": {
-                    "base": "Prompt-Story-Base",
-                    "contradiction": "Prompt-Story-Contradiction",
-                    "pattern": "Prompt-Story-Pattern",
-                    "defense": "Prompt-Story-Defense",
-                    "block": "Prompt-Story-Block",
-                    "light": "Prompt-Story-Light",
-                },
-                "theme_scene": "Prompt-Theme-Scene",
-                "theme_impact": "Prompt-Theme-Impact",
-                "theme_awareness": "Prompt-Theme-Awareness",
-                "pro_teaser": "Prompt-Pro-Teaser",
-            }
-
-        def generate_pro(self, *, prompt, schema):
-            assert "一梳 Pro 版解读报告模板 v1.6" in prompt
-            assert schema.get("type") == "pro"
-            return {
-                "first_impression": "Prompt-Pro-First-Impression",
-                "core_insight_table": {
-                    "能量本质": "Prompt-Core-Essence",
-                },
-                "root_cause": {
-                    "surface": "Prompt-Root-Surface",
-                },
-            }
-
+def test_generation_runtime_default_flow_generates_llm_backed_reports(tmp_path):
     image_path = tmp_path / "image.png"
     image_path.write_bytes(b"mock-image")
     store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
     orchestrator = LayeredOrchestrator(
         store=store,
         circle_detector=StubCircleDetector(),
-        prompt_runtime=StubPromptRuntime(),
         enable_vision=True,
     )
 
     record = asyncio.run(
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
-            user_id="user-prompt-runtime",
+            user_id="user-runtime-default",
         )
     )
     assert record.layer_1_lite_draft is not None
     assert record.layer_2_lite_final is not None
-    assert record.layer_1_lite_draft.title == "Prompt-Lite-Title"
-    assert record.layer_2_lite_final.title == "Prompt-Lite-Title"
-    assert "Prompt-Lite-Overall" in record.layer_2_lite_final.full_report_markdown
-    assert "Prompt-Theme-Scene" in record.layer_2_lite_final.full_report_markdown
 
     upgraded = orchestrator.upgrade_to_pro(record.interpretation_id)
     assert upgraded is not None
@@ -1149,8 +1353,285 @@ def test_prompt_runtime_can_override_lite_and_pro_structured_fields(tmp_path):
     assert record_after_upgrade is not None
     assert record_after_upgrade.layer_3_pro_draft is not None
     assert record_after_upgrade.layer_4_pro_final is not None
-    assert (
-        record_after_upgrade.layer_3_pro_draft.first_impression
-        == "Prompt-Pro-First-Impression"
+    assert record_after_upgrade.layer_3_pro_draft.root_cause.get("surface")
+
+
+def test_generation_runtime_is_llm_backed_by_default(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        enable_vision=True,
     )
-    assert "Prompt-Pro-First-Impression" in record_after_upgrade.layer_4_pro_final.full_report_markdown
+
+    assert orchestrator.generation_runtime.__class__.__name__ == "LLMReportGenerationRuntime"
+
+
+def test_llm_report_generation_runtime_uses_chat_task_for_lite_and_pro():
+    calls = []
+
+    class FakeLLMClient:
+        def generate_text(self, *, task, system_prompt, user_prompt):
+            calls.append(
+                {
+                    "task": task,
+                    "system_prompt": system_prompt,
+                    "user_prompt": user_prompt,
+                }
+            )
+            if "lite-prompt" in user_prompt:
+                return json.dumps(
+                    {
+                        "title": "Lite 标题",
+                        "overall_impression": "Lite 总体印象",
+                        "visual_elements": "Lite 视觉依据",
+                        "emotion_portrait": "Lite 情绪画像",
+                        "story": {
+                            "base": "base",
+                            "contradiction": "contradiction",
+                            "pattern": "pattern",
+                            "defense": "defense",
+                            "block": "block",
+                            "light": "light",
+                        },
+                        "theme_scene": "scene",
+                        "theme_impact": "impact",
+                        "theme_awareness": "awareness",
+                        "three_awareness": [
+                            {"day": 1, "title": "t1", "content": "c1"},
+                            {"day": 2, "title": "t2", "content": "c2"},
+                            {"day": 3, "title": "t3", "content": "c3"},
+                        ],
+                        "pro_teaser": "teaser",
+                    },
+                    ensure_ascii=False,
+                )
+            return json.dumps(
+                {
+                    "first_impression": "Pro 第一眼",
+                    "core_insight_table": {"能量本质": "本质"},
+                    "three_circles_detailed": {
+                        "inner": {"label": "内圈", "reading": "inner"}
+                    },
+                    "micro_analysis_detailed": {"节奏关系": "rhythm"},
+                    "imbalance_confirmed": {"summary": "summary"},
+                    "root_cause": {
+                        "surface": "surface",
+                        "deeper": "deeper",
+                        "core": "core",
+                    },
+                    "healing_suggestions": [
+                        {"phase": "p1", "focus": "f1", "practice": "a1"}
+                    ],
+                },
+                ensure_ascii=False,
+            )
+
+    runtime = LLMReportGenerationRuntime(llm_client=FakeLLMClient())
+    context = SimpleNamespace(
+        prompt_builder=SimpleNamespace(
+            build_lite=lambda **kwargs: "lite-prompt",
+            build_pro=lambda **kwargs: "pro-prompt",
+        ),
+        _build_layer0_placeholder=lambda record: Layer0Raw(),
+        _build_layer1_placeholder=lambda record: Layer1LiteDraft(prompt_preview="lite-prompt"),
+        _build_lite_placeholder_report=lambda record: "layer2",
+        _build_pro_placeholder_draft=lambda record: Layer3ProDraft(prompt_preview="pro-prompt"),
+        _build_pro_placeholder_report=lambda record: "layer4",
+    )
+    record = SimpleNamespace(layer_0_raw=None, layer_1_lite_draft=None, layer_3_pro_draft=None)
+
+    lite_bundle = runtime.generate_lite(context, record)
+    pro_bundle = runtime.generate_pro(context, record)
+
+    assert isinstance(lite_bundle.layer_0_raw, Layer0Raw)
+    assert lite_bundle.layer_1_lite_draft.prompt_preview == "lite-prompt"
+    assert lite_bundle.layer_1_lite_draft.title == "Lite 标题"
+    assert lite_bundle.layer_2_lite_final == "layer2"
+    assert pro_bundle.layer_3_pro_draft.prompt_preview == "pro-prompt"
+    assert pro_bundle.layer_3_pro_draft.first_impression == "Pro 第一眼"
+    assert pro_bundle.layer_4_pro_final == "layer4"
+    assert [call["task"] for call in calls] == ["chat", "chat"]
+    assert calls[0]["user_prompt"] == "lite-prompt"
+    assert calls[1]["user_prompt"] == "pro-prompt"
+
+
+def test_llm_report_generation_runtime_blocks_when_chat_generation_fails():
+    class FakeLLMClient:
+        def generate_text(self, *, task, system_prompt, user_prompt):
+            return None
+
+    runtime = LLMReportGenerationRuntime(llm_client=FakeLLMClient())
+    context = SimpleNamespace(
+        prompt_builder=SimpleNamespace(
+            build_lite=lambda **kwargs: "lite-prompt",
+            build_pro=lambda **kwargs: "pro-prompt",
+        ),
+        _build_layer0_placeholder=lambda record: "layer0",
+        _build_layer1_placeholder=lambda record: SimpleNamespace(prompt_preview="lite-prompt"),
+        _build_lite_placeholder_report=lambda record: "layer2",
+        _build_pro_placeholder_draft=lambda record: SimpleNamespace(prompt_preview="pro-prompt"),
+        _build_pro_placeholder_report=lambda record: "layer4",
+    )
+    record = SimpleNamespace(layer_0_raw=None, layer_1_lite_draft=None, layer_3_pro_draft=None)
+
+    try:
+        runtime.generate_lite(context, record)
+        raise AssertionError("expected generate_lite to fail when chat result is empty")
+    except RuntimeError as exc:
+        assert "chat_generation_failed_blocking" in str(exc)
+
+    try:
+        runtime.generate_pro(context, record)
+        raise AssertionError("expected generate_pro to fail when chat result is empty")
+    except RuntimeError as exc:
+        assert "chat_generation_failed_blocking" in str(exc)
+
+
+def test_generate_lite_placeholder_marks_record_failed_when_layer0_blocks(tmp_path):
+    image_path = tmp_path / "layer0-failed-image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+
+    class FailingLayer0Runtime:
+        def generate_lite(self, generation_context, record):
+            record.layer_0_raw = Layer0Raw(
+                input_package={
+                    "image": {"image_ref": "tmp/layer0-failed-image.png"},
+                    "circle_config": {"inner_radius": 35, "middle_radius": 67, "source": "auto_detect"},
+                },
+                visual_analysis_basis={
+                    "global_visual_summary": "",
+                    "llm_color_observation": {"summary": "", "source": "layer0_failed"},
+                    "program_color_measurement": {
+                        "summary": "程序中间结果仍可查看。",
+                        "source": "program_segmented_block_measurement",
+                    },
+                    "direct_judgment_hits": {"catalog_version": "merged-manual6-runtime9.v1", "catalog_items": [], "hits": []},
+                    "circles": {
+                        "inner": {
+                            "observation_summary": "未观察到足够依据",
+                            "shape_features": {"boundary_style": "未观察到足够依据"},
+                            "brushwork": {"stroke_quality": "未观察到足够依据"},
+                            "blocks": [],
+                        },
+                        "middle": {
+                            "observation_summary": "未观察到足够依据",
+                            "shape_features": {"boundary_style": "未观察到足够依据"},
+                            "brushwork": {"stroke_quality": "未观察到足够依据"},
+                            "blocks": [],
+                        },
+                        "outer": {
+                            "observation_summary": "未观察到足够依据",
+                            "shape_features": {"boundary_style": "未观察到足够依据"},
+                            "brushwork": {"stroke_quality": "未观察到足够依据"},
+                            "blocks": [],
+                        },
+                    },
+                    "prompt_meta": {
+                        "source": "layer0_failed",
+                        "failure_reason": "layer0_vision_unconfigured",
+                        "vision_unavailable": True,
+                    },
+                },
+                visual_facts={"program_color_measurement": {"source": "program_segmented_block_measurement"}},
+                layer0_passed=False,
+                layer0_failure_reason="layer0_vision_unconfigured",
+                layer0_failure_detail={"stage": "vision"},
+                fallback_summary={
+                    "used": True,
+                    "levels": ["layer0_failed"],
+                    "warnings": ["layer0_vision_unconfigured"],
+                },
+            )
+            raise RuntimeError("layer0_generation_failed_blocking:layer0_vision_unconfigured")
+
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        generation_runtime=FailingLayer0Runtime(),
+        enable_vision=True,
+    )
+    orchestrator.report_lite_record_workflow.generation_runtime = orchestrator.generation_runtime
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-layer0-failed",
+            theme="general",
+        )
+    )
+
+    assert record.status == GenerationStatus.FAILED
+    assert record.generation_stage == GenerationStage.FAILED.value
+    assert record.generation_progress == 100
+    assert record.layer_0_raw is not None
+    assert record.layer_0_raw.layer0_passed is False
+    assert record.layer_0_raw.layer0_failure_reason == "layer0_vision_unconfigured"
+    assert record.layer_1_lite_draft is None
+    assert record.layer_2_lite_final is None
+
+    persisted = store.load(record.interpretation_id)
+    assert persisted is not None
+    assert persisted.status == GenerationStatus.FAILED
+    assert persisted.layer_0_raw is not None
+    assert persisted.layer_0_raw.layer0_failure_reason == "layer0_vision_unconfigured"
+
+
+def test_upgrade_to_pro_marks_record_failed_when_layer0_has_failed(tmp_path):
+    image_path = tmp_path / "layer0-failed-pro.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+
+    class FailingLayer0Runtime:
+        def generate_lite(self, generation_context, record):
+            record.layer_0_raw = Layer0Raw(
+                layer0_passed=False,
+                layer0_failure_reason="layer0_vision_unconfigured",
+                layer0_failure_detail={"stage": "vision"},
+                input_package={"image": {"image_ref": "tmp/layer0-failed-pro.png"}},
+                visual_analysis_basis={
+                    "global_visual_summary": "",
+                    "llm_color_observation": {"summary": "", "source": "layer0_failed"},
+                    "program_color_measurement": {"summary": "程序中间结果仍可查看。", "source": "program_segmented_block_measurement"},
+                    "direct_judgment_hits": {"catalog_version": "merged-manual6-runtime9.v1", "catalog_items": [], "hits": []},
+                    "circles": {"inner": {}, "middle": {}, "outer": {}},
+                    "prompt_meta": {"source": "layer0_failed", "failure_reason": "layer0_vision_unconfigured"},
+                },
+                fallback_summary={"used": True, "levels": ["layer0_failed"], "warnings": ["layer0_vision_unconfigured"]},
+            )
+            raise RuntimeError("layer0_generation_failed_blocking:layer0_vision_unconfigured")
+
+        def generate_pro(self, generation_context, record):
+            raise RuntimeError("layer0_generation_failed_blocking:layer0_vision_unconfigured")
+
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        generation_runtime=FailingLayer0Runtime(),
+        enable_vision=True,
+    )
+    orchestrator.report_lite_record_workflow.generation_runtime = orchestrator.generation_runtime
+    orchestrator.report_lifecycle_manager.generation_runtime = orchestrator.generation_runtime
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="user-layer0-failed-pro",
+            theme="general",
+        )
+    )
+    result = orchestrator.upgrade_to_pro(record.interpretation_id)
+
+    assert result is not None
+    assert result["success"] is False
+    assert result["status"] == "failed"
+
+    persisted = store.load(record.interpretation_id)
+    assert persisted is not None
+    assert persisted.status == GenerationStatus.FAILED
+    assert persisted.generation_stage == GenerationStage.FAILED.value
+    assert persisted.layer_3_pro_draft is None
+    assert persisted.layer_4_pro_final is None

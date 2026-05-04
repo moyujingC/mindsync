@@ -20,7 +20,7 @@
 检查：
 
 - 优先运行任务系统巡检：
-  - [paperclip-task-system-audit.mjs](/Users/xinran/Downloads/dev/mindsync/shared/tools/paperclip-task-system-audit.mjs)
+  - [paperclip-task-system-audit.mjs](shared/tools/paperclip-task-system-audit.mjs)
 - 当前有哪些活跃项目
 - 哪些任务在推进
 - 哪些任务长时间没有 owner 或没有进展
@@ -126,6 +126,12 @@
 - 是否创建正式任务
 - 是否先发起讨论
 - 是否直接交给某个角色
+
+从现在开始，这类前置澄清默认优先交给：
+
+- `Idea Clarifier`
+
+而不是由 CEO 长期亲自承担所有模糊输入整理。
 
 ## 你什么时候应该先发起讨论，而不是直接创建任务
 

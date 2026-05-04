@@ -17,7 +17,9 @@ export function HistoryPageShell({ descriptor }: HistoryPageShellProps) {
           <li key={item.interpretationId}>
             <h2>{item.title}</h2>
             <p>{item.subtitle}</p>
-            <small>{item.canOpenReport ? "可查看报告" : "报告未就绪"}</small>
+            <small>
+              {item.recordReady ? "可进入详情并查看报告" : "可进入详情查看进度"}
+            </small>
           </li>
         ))}
       </ul>

@@ -78,7 +78,7 @@ handoff_to:
 1. 当前 issue 的 title / description / comments / issue documents
 2. 当前研究任务或 brief
 3. 当前研究材料与拆解文档
-4. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
+4. `projects/research-center/PROJECT.md`
 
 ## 执行步骤
 
@@ -97,7 +97,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-synthesis/templates/研究综合结论-模板.md`
+- `templates/研究综合结论-模板.md`
 
 至少写清：
 

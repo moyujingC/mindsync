@@ -42,6 +42,15 @@ class ReportProNarrativeBuilder:
         self._build_feeling_hint = build_feeling_hint
         self._get_knowledge_runtime = get_knowledge_runtime
 
+    def _trim_sentence(self, text: str, limit: int = 88) -> str:
+        cleaned = " ".join((text or "").split()).strip()
+        if not cleaned:
+            return ""
+        if len(cleaned) <= limit:
+            return cleaned if cleaned[-1] in "。！？" else f"{cleaned}。"
+        trimmed = cleaned[:limit].rstrip("，,；; ")
+        return trimmed + "。"
+
     def build_first_impression(
         self,
         record: InterpretationRecord,
@@ -62,26 +71,29 @@ class ReportProNarrativeBuilder:
         secondary = distribution[1] if len(distribution) > 1 else dominant
         transition = self._describe_circle_transition(layer0)
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
+        dominant_theme = self._get_element_theme_phrase(
+            self._get_record_theme(record),
+            dominant["name"],
+        )
         lite_contradiction = (
             record.layer_1_lite_draft.story.contradiction.content
             if record.layer_1_lite_draft and record.layer_1_lite_draft.story.contradiction.content
             else ""
         )
         parts = [
-            f"第一眼看这张画，最明显的是「{dominant['name']}」和「{secondary['name']}」共同撑起了整张画的骨架。",
+            f"第一眼看这张画，最先撞出来的不是结果层面的焦虑，"
+            f"而是你正卡在一个很具体的位置：想往前，但还没有完全放心把自己交出去。"
         ]
         if transition:
-            parts.append(transition)
+            parts.append(f"画面的主轴也很明确：{transition}")
         parts.append(
-            f"所以 Lite 里那份《{lite_title}》并不是一种空泛的安慰，而是真实反映了这张画正在处理的事：先把自己安顿住，再决定如何向外表达。"
+            f"所以这不是简单的停住，而是你正在认真处理更底层的事："
+            f"先把和{dominant_theme}有关的承载感站稳，再决定怎么用「{secondary['name']}」的力量继续向外。"
         )
         if lite_contradiction:
-            contradiction = lite_contradiction[:96].strip()
-            if contradiction and contradiction[-1] not in "。！？":
-                contradiction += "。"
-            parts.append(contradiction)
+            parts.append(self._trim_sentence(lite_contradiction, 96))
         if signal_text:
-            parts.append(signal_text)
+            parts.append(f"更深一层看，{signal_text}")
         return " ".join(parts)
 
     def build_energy_essence(
@@ -103,10 +115,14 @@ class ReportProNarrativeBuilder:
         dominant = distribution[0] if distribution else {"name": "土", "percentage": 0.0}
         secondary = distribution[1] if len(distribution) > 1 else dominant
         transition = self._describe_circle_transition(layer0)
+        dominant_theme = self._get_element_theme_phrase(
+            self._get_record_theme(record),
+            dominant["name"],
+        )
         return (
-            f"{theme_label}主题下，这张画的能量核心更接近「{dominant['name']}」({dominant['percentage']:.2f}%)"
-            f" 与「{secondary['name']}」({secondary['percentage']:.2f}%) 的组合。"
-            f"{transition or ''} 这说明你现在最重要的功课，不是更快，而是让内在承载、外在边界和现实动作重新接上。"
+            f"这张画的能量主轴，不是拼命往外冲，"
+            f"而是先把{dominant_theme}站稳，再决定怎么让「{secondary['name']}」带着你继续向前。"
+            f"{(' ' + transition) if transition else ''}"
         ).strip()
 
     def build_block_point(
@@ -144,25 +160,28 @@ class ReportProNarrativeBuilder:
             "manifestation",
         ).strip()
         if mapped_contradiction:
-            parts.append(f"当前更核心的卡点，其实是「{mapped_contradiction}」。")
+            parts.append(f"你现在更核心的卡点，其实是「{mapped_contradiction}」")
         if mapped_manifestation:
-            parts.append(mapped_manifestation.rstrip("。") + "。")
+            parts.append(f"它不是抽象概念，落到现实里，常常就表现成：{mapped_manifestation.rstrip('。')}。")
         if lite_block:
-            parts.append(lite_block[:96].strip())
+            parts.append(f"所以你会反复遇到同一种体验：{self._trim_sentence(lite_block, 90).rstrip('。')}")
         if primary:
-            parts.append(f"{primary}让你很难一边往前推进，一边仍然感觉自己是安全的。")
+            parts.append(f"说到底，是因为{primary}让你很难一边往前推进，一边仍然感觉自己是安全的。")
         if weakest.get("percentage", 0.0) < 12:
             weakest_theme = self._get_element_theme_phrase(
                 self._get_record_theme(record),
                 weakest["name"],
             )
             parts.append(
-                f"再加上「{weakest['name']}」相关的{weakest_theme}资源暂时偏少，所以你在快要真正启动时更容易先想缓一缓。"
+                f"再加上和「{weakest['name']}」有关的{weakest_theme}资源暂时偏少，"
+                "所以你在快要真正启动时，更容易先想缓一缓。"
             )
         if signal_text:
-            parts.append(signal_text)
-        parts.append(self._build_feeling_hint(record))
-        return " ".join(part for part in parts if part).strip()
+            parts.append(f"这和画面里的深层信号也是一致的：{signal_text}")
+        feeling_hint = self._build_feeling_hint(record)
+        if feeling_hint:
+            parts.append(feeling_hint)
+        return " ".join(part for part in parts if part).strip() + "。"
 
     def build_direction(
         self,
@@ -227,7 +246,17 @@ class ReportProNarrativeBuilder:
         deeper_root = self._get_projection_text(runtime_projection, "deeper_root").strip()
         if deeper_root:
             return deeper_root
-        return PRO_REPORT_BLUEPRINT.narrative_templates["root_deeper"]
+        runtime_surface = self.build_surface_root_cause(
+            record,
+            narrative_projection=narrative_projection,
+            projection=projection,
+        )
+        fallback = PRO_REPORT_BLUEPRINT.narrative_templates["root_deeper"]
+        return (
+            f"如果再往下一层看，问题不只是表面卡住，"
+            f"而是你会慢慢形成一种重复机制：{fallback.rstrip('。')}。"
+            f"它会把前面那种“{self._trim_sentence(runtime_surface, 52).rstrip('。')}”反复拉回来。"
+        )
 
     def build_core_root_cause(
         self,
@@ -247,7 +276,11 @@ class ReportProNarrativeBuilder:
         core_root = self._get_projection_text(runtime_projection, "core_root").strip()
         if core_root:
             return core_root
-        return PRO_REPORT_BLUEPRINT.narrative_templates["root_core"]
+        fallback = PRO_REPORT_BLUEPRINT.narrative_templates["root_core"]
+        return (
+            "而最深的地方，往往不是能力问题，"
+            f"而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。{fallback.rstrip('。')}。"
+        )
 
     def build_circle_reading(
         self,
@@ -279,13 +312,13 @@ class ReportProNarrativeBuilder:
         knowledge_reading = circle.get("knowledge_reading", "")
         parts: list[str] = []
         if meaning and radius_percent:
-            parts.append(f"{meaning}当前约占 {radius_percent}%，主导元素更偏「{dominant or '未识别'}」。")
+            parts.append(f"{meaning}这一层当前约占 {radius_percent}%，主导感觉更偏「{dominant or '未识别'}」。")
         elif dominant:
-            parts.append(f"当前主导元素更偏「{dominant}」。")
+            parts.append(f"这一层当前更偏「{dominant}」的感觉。")
         if knowledge_reading:
             parts.append(knowledge_reading.rstrip("。") + "。")
-        if colors:
-            parts.append(f"代表性色彩集中在 {'、'.join(colors[:3])}。")
+        if colors and not knowledge_reading:
+            parts.append(f"画面里反复出现的颜色集中在 {'、'.join(colors[:3])}。")
         return " ".join(parts).strip() or fallback_text
 
     def build_micro_sections_from_knowledge(
@@ -308,17 +341,17 @@ class ReportProNarrativeBuilder:
         adjacent = layer0.micro_analysis.adjacent or []
         wrap = layer0.micro_analysis.wrap or []
         rhythm = (
-            f"圈间节奏首先显示：{adjacent[0]}。这说明当前能量更像在调整承接，而不是剧烈摆荡。"
+            f"先看节奏，你现在的能量不是散的，而是明显在{adjacent[0]}。这说明你正在调承接，不是在乱。"
             if adjacent
             else PRO_REPORT_BLUEPRINT.narrative_templates["micro_rhythm"]
         )
         relationship = (
-            f"继续往外看，{adjacent[1]}。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。"
+            f"再往外看，{adjacent[1]}。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。"
             if len(adjacent) > 1
             else PRO_REPORT_BLUEPRINT.narrative_templates["micro_relationship"]
         )
         action = (
-            f"当前最明显的行动提示是：{wrap[0]}。与其一次性猛推，不如让行动和承载一起增长。"
+            f"落到行动上，最明显的提示是：{wrap[0]}。与其一次性猛推，不如让行动和承载一起增长。"
             if wrap
             else PRO_REPORT_BLUEPRINT.narrative_templates["micro_action"]
         )
@@ -363,7 +396,9 @@ class ReportProNarrativeBuilder:
                 else ""
             )
             if mapped_manifestation:
-                base = f"{base} 更落到现实里看，它常会表现成：{mapped_manifestation}。"
+                base = f"表面上看，你最容易先看到的是：{base} 更落到现实里看，它常会表现成：{mapped_manifestation}。"
+            else:
+                base = f"表面上看，你最容易先看到的是：{base}"
             return f"{base} {signal_text}".strip() if signal_text else base
         base = PRO_REPORT_BLUEPRINT.narrative_templates[
             "surface_root_with_intention"
@@ -374,7 +409,9 @@ class ReportProNarrativeBuilder:
             intention=intention,
         )
         if mapped_manifestation:
-            base = f"{base} 现实层面也常会表现成：{mapped_manifestation}。"
+            base = f"表面上看，你最容易先看到的是：{base} 现实层面也常会表现成：{mapped_manifestation}。"
+        else:
+            base = f"表面上看，你最容易先看到的是：{base}"
         return f"{base} {signal_text}".strip() if signal_text else base
 
     def map_knowledge_signal_to_profile(self, signal: str) -> str:
@@ -613,11 +650,15 @@ class ReportProNarrativeBuilder:
         if not payload:
             return []
 
-        issue_type = str(payload.get("issue_type") or "").strip()
-        symptoms = str(payload.get("symptoms") or "").strip()
-        mandala_prescription = str(payload.get("mandala_prescription") or "").strip()
-        daily_practice = str(payload.get("daily_practice") or "").strip()
-        cognitive_upgrade = str(payload.get("cognitive_upgrade") or "").strip()
+        issue_type = self._clean_runtime_healing_text(payload.get("issue_type"))
+        symptoms = self._clean_runtime_healing_text(payload.get("symptoms"))
+        mandala_prescription = self._clean_runtime_healing_text(
+            payload.get("mandala_prescription")
+        )
+        daily_practice = self._clean_runtime_healing_text(payload.get("daily_practice"))
+        cognitive_upgrade = self._clean_runtime_healing_text(
+            payload.get("cognitive_upgrade")
+        )
 
         if not any(
             [
@@ -669,3 +710,28 @@ class ReportProNarrativeBuilder:
                 ),
             },
         ]
+
+    def _clean_runtime_healing_text(self, value: Any) -> str:
+        if not isinstance(value, str):
+            return ""
+        text = value.strip()
+        if not text:
+            return ""
+        raw_markers = [
+            "{'" + "inner'",
+            '"inner"',
+            "'inner':",
+            "'middle':",
+            "'outer':",
+            '"middle":',
+            '"outer":',
+            "'depth_state':",
+            '"depth_state":',
+            "'avg_brightness':",
+            '"avg_brightness":',
+            "'avg_saturation':",
+            '"avg_saturation":',
+        ]
+        if any(marker in text for marker in raw_markers):
+            return ""
+        return text

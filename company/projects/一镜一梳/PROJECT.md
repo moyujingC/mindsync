@@ -1,12 +1,11 @@
 # 一镜一梳项目入口
 
 > 状态：current
-> 版本：0.3.0
+> 版本：0.4.1
 > owner：CEO / Orchestrator
-> 最后更新：2026-04-08
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md
-> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/aimandala](/Users/xinran/Downloads/dev/mindsync/projects/aimandala)
-> 历史来源仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
+> 最后更新：2026-04-15
+> source_of_truth：company/projects/一镜一梳/PROJECT.md
+> 对应项目工作区：[projects/aimandala](projects/aimandala)
 
 这份文档是 `mindsync` 中 `一镜一梳` 的项目级入口。
 
@@ -16,7 +15,7 @@
 - `一镜一梳` 产品号内容，归 `一镜一梳` 项目
 - 发布到 `墨予镜` 个人号的内容，归 `墨予镜 IP`
 
-## 1. 当前定位
+## 1. 项目定位
 
 `一镜一梳` 是 `墨予镜` 在曼陀罗疗愈方向上的核心项目。
 
@@ -34,43 +33,42 @@
 - 启号内容应以用户问题、产品方法与阶段性进展为主
 - 发布到 `墨予镜` 个人号的相关内容，继续归 `墨予镜 IP`
 
-## 2. 固定必读
+## 2. 公司侧边界
 
-任何 Agent 第一次进入 `一镜一梳` 项目时，默认优先读取以下材料：
+这里默认长期保留：
 
-1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
-2. [AI-Mandala-迁移范围与工作区草案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
-3. [projects/aimandala/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
-4. [projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md)
-5. [content/一镜一梳-产品号内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/content/一镜一梳-产品号内容策略简报.md)
-6. [content/一镜一梳-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/content/一镜一梳-首批选题清单.md)
-7. [content/一镜一梳-启号首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/content/一镜一梳-启号首发内容大纲.md)
-8. [content/2026-04-08-双账号启号周发布计划.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/content/2026-04-08-双账号启号周发布计划.md)
+- 项目定位与公司侧入口
+- 研究结论与内容判断锚点
+- `一镜一梳` 产品号内容资产
+- 需要跨账号复用的项目事实材料
 
-如果任务明确涉及后续代码迁移或目录设计，应继续以第 2 条文档为当前迁移范围依据，避免把暂不纳入的产品线和实验能力一起带入 Monorepo。
+这里不承担：
 
-如果任务明确是发布到 `墨予镜` 个人号的一镜一梳相关内容，还应继续读取：
+- 项目工作区详细阅读顺序
+- 实现阶段的 task / qa / delivery 索引
+- 项目代码与运行细节入口
 
-9. [company/projects/墨予镜IP/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md)
-10. [company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-build-in-public-内容策略简报.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-build-in-public-内容策略简报.md)
-11. [company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-首批选题清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-首批选题清单.md)
-12. [company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-启号首发内容大纲.md](/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/content/一镜一梳/墨予镜-一镜一梳-启号首发内容大纲.md)
+## 3. 对应项目工作区
 
-## 3. 目录边界
+项目工作区默认从这里进入：
 
-- `company/projects/一镜一梳/`
-  - 放公司侧长期保留的项目文档和资产入口
-- `projects/aimandala/`
-  - 放项目工作区、实现与项目专属文档
+- [projects/aimandala/PROJECT.md](projects/aimandala/PROJECT.md)
 
-默认内容资产边界：
+如需看产品规范、技术方案、任务、验证和交付细节，应继续进入项目工作区下的目录 `README.md`。
 
-- `company/projects/一镜一梳/content/`
-  - 放 `一镜一梳` 产品号内容资产
-- `company/projects/墨予镜IP/content/一镜一梳/`
-  - 放来源于 `一镜一梳`，但发布到 `墨予镜` 个人号的内容资产
+## 4. 公司侧内容资产入口
 
-## 4. 当前最重要的两件事
+`一镜一梳` 产品号内容资产默认从这里进入：
+
+- [content/一镜一梳-产品号内容策略简报.md](company/projects/一镜一梳/content/一镜一梳-产品号内容策略简报.md)
+- [content/一镜一梳-首批选题清单.md](company/projects/一镜一梳/content/一镜一梳-首批选题清单.md)
+- [content/一镜一梳-启号首发内容大纲.md](company/projects/一镜一梳/content/一镜一梳-启号首发内容大纲.md)
+
+如果任务明确是发布到 `墨予镜` 个人号的一镜一梳相关内容，再继续进入：
+
+- [company/projects/内容矩阵/PROJECT.md](company/projects/内容矩阵/PROJECT.md)
+
+## 5. 当前公司侧重点
 
 眼下 `一镜一梳` 不是缺方向，而是缺两条可持续运转的链路：
 
@@ -82,3 +80,12 @@
 1. 跑通内容启动节奏
 2. 保持产品定位与内容口径一致
 3. 不在启号阶段夸大产品能力或进度
+
+## 6. 历史入口
+
+如需回看本项目进入 Monorepo、发布收口与阶段交付过程，请到以下历史资料查看：
+
+- [AI-Mandala-迁移范围与工作区草案.md](company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
+- [projects/aimandala/docs/tasks/2026-04-12-迁移收官与正式版收口总计划.md](projects/aimandala/docs/tasks/2026-04-12-迁移收官与正式版收口总计划.md)
+- [projects/aimandala/docs/qa/2026-04-12-迁移收官与正式版收口验证记录.md](projects/aimandala/docs/qa/2026-04-12-迁移收官与正式版收口验证记录.md)
+- [projects/aimandala/docs/delivery/2026-04-12-迁移收官与正式版收口交付记录.md](projects/aimandala/docs/delivery/2026-04-12-迁移收官与正式版收口交付记录.md)

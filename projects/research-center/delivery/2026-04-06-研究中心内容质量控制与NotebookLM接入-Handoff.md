@@ -5,7 +5,7 @@
 > owner：Research & Knowledge Lead
 > handoff_for：下一窗口延续执行
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-研究中心内容质量控制与NotebookLM接入-Handoff.md
+> source_of_truth：projects/research-center/delivery/2026-04-06-研究中心内容质量控制与NotebookLM接入-Handoff.md
 > 项目：研究中心
 > 阶段：delivery
 
@@ -13,9 +13,9 @@
 
 已新增三份正式文档/模板：
 
-1. [研究中心内容严谨性与 NotebookLM 事实核查层 SPEC](/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-06-研究中心内容严谨性与NotebookLM事实核查层-SPEC.md)
-2. [研究中心内容严谨性与 NotebookLM 事实核查 SOP](/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-研究中心内容严谨性与NotebookLM事实核查-SOP.md)
-3. [事实核查笔记模板](/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/事实核查笔记模板.md)
+1. [研究中心内容严谨性与 NotebookLM 事实核查层 SPEC](projects/research-center/specs/2026-04-06-研究中心内容严谨性与NotebookLM事实核查层-SPEC.md)
+2. [研究中心内容严谨性与 NotebookLM 事实核查 SOP](projects/research-center/delivery/2026-04-06-研究中心内容严谨性与NotebookLM事实核查-SOP.md)
+3. [事实核查笔记模板](projects/research-center/templates/事实核查笔记模板.md)
 
 这两份文档已经明确：
 
@@ -46,9 +46,9 @@
 - 先跑人工核查
 - 再决定是否值得工具化
 
-## 3. 与 CMPA-21 的关系
+## 3. 与历史研究任务的关系
 
-`CMPA-21` 已经回到正确轨道，但当前新产出的详细长稿仍存在高风险：
+这次历史研究任务已经回到正确轨道，但当前新产出的详细长稿仍存在高风险：
 
 - 出现大量精确数字
 - 出现很多行业规模与增长率表述
@@ -78,7 +78,7 @@
 
 优先顺序如下：
 
-1. 针对 `CMPA-21` 新出的研究草案做一轮“事实主张拆分”
+1. 针对这次历史研究任务新出的研究草案做一轮“事实主张拆分”
 2. 产出一份 `fact-check-note`
 3. 基于 `fact-check-note` 回改研究草案
 4. 核查通过后再提交 review

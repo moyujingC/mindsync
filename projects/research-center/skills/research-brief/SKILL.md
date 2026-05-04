@@ -100,9 +100,9 @@ handoff_to:
 开始前优先读取：
 
 1. 当前 issue 的 title / description / comments / issue documents
-2. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
-3. `/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md`
-4. `/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-04-研究方向与任务模型.md`
+2. `projects/research-center/PROJECT.md`
+3. `company/projects/研究中心/PROJECT.md`
+4. `company/projects/研究中心/研究方向与任务模型.md`
 5. 如果任务已挂到具体项目，还要读对应项目 `PROJECT.md`
 
 ## 执行步骤
@@ -120,7 +120,7 @@ handoff_to:
 
 默认输出为一份正式研究 brief，建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/research-brief/templates/研究任务-brief-模板.md`
+- `templates/研究任务-brief-模板.md`
 
 至少写清：
 

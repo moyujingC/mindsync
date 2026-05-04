@@ -64,8 +64,7 @@ class KnowledgeRepository:
 
     def load_index(self, *, force_reload: bool = False) -> dict[str, Any]:
         if self._index_cache is None or force_reload:
-            if not self.index_path.exists():
-                self.compiler.ensure_index()
+            self.compiler.ensure_index()
             self._index_cache = json.loads(self.index_path.read_text(encoding="utf-8"))
         return self._index_cache
 

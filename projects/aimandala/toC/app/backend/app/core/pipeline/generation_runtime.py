@@ -1,34 +1,36 @@
-"""Pluggable generation runtime for migrated Lite/Pro report production."""
+"""Knowledge-first generation runtime for migrated Lite/Pro report production."""
 
 from __future__ import annotations
 
-from typing import Any, Optional
+import json
+from typing import Any
+
+from app.core.llm.runtime import LLMClient, NoopLLMClient
 
 from .data_models import (
+    DailyAwareness,
     InterpretationRecord,
     Layer1LiteDraft,
     Layer3ProDraft,
+    StoryNode,
+    ThemeInsights,
 )
-from .prompt_runtime import PromptRuntime
 from .report_generation_contracts import (
+    Layer0BuildBlockedError,
     LiteGenerationBundle,
     ProGenerationBundle,
     ReportGenerationContext,
-    ReportGenerationRuntime,
 )
-from .report_generation_payload_applier import (
-    apply_lite_generation_payload,
-    apply_pro_generation_payload,
-)
+
+
+KNOWN_ENDPOINT_MODEL_RESOLUTIONS = {
+    "ep-20260316095322-94wf5": "doubao-seed-1-6-vision-250815",
+    "ep-20260316092926-vl464": "doubao-seed-1-6-flash-250715",
+}
 
 
 class DeterministicReportGenerationRuntime:
-    """Deterministic fallback runtime for Lite/Pro generation.
-
-    The formal chain is now prompt/schema-driven. This runtime remains as a
-    controlled fallback for local development, QA observation, and failure-safe
-    completion when prompt-backed generation cannot return structured payloads.
-    """
+    """Knowledge-first runtime for Lite/Pro generation."""
 
     def generate_lite(
         self,
@@ -37,6 +39,12 @@ class DeterministicReportGenerationRuntime:
     ) -> LiteGenerationBundle:
         layer_0_raw = generation_context._build_layer0_placeholder(record)
         record.layer_0_raw = layer_0_raw
+        if getattr(layer_0_raw, "layer0_passed", True) is False:
+            raise Layer0BuildBlockedError(
+                getattr(layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                layer_0_raw=layer_0_raw,
+                detail=getattr(layer_0_raw, "layer0_failure_detail", {}) or {},
+            )
         layer_1_lite_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = layer_1_lite_draft
         layer_2_lite_final = generation_context._build_lite_placeholder_report(record)
@@ -60,48 +68,66 @@ class DeterministicReportGenerationRuntime:
         )
 
 
-class PromptBackedReportGenerationRuntime:
-    """Formal Lite/Pro runtime that prefers prompt/schema output.
+class LLMReportGenerationRuntime:
+    """LLM-backed runtime that blocks when chat generation is unavailable."""
 
-    Deterministic generation is still invoked first to prepare a safe draft and
-    prompt preview, but the returned structured payload becomes the primary
-    content source whenever the prompt runtime succeeds.
-    """
+    LITE_REQUIRED_FIELDS = [
+        "title",
+        "overall_impression",
+        "visual_elements",
+        "emotion_portrait",
+        "story",
+        "theme_scene",
+        "theme_impact",
+        "theme_awareness",
+        "three_awareness",
+        "pro_teaser",
+    ]
+    PRO_REQUIRED_FIELDS = [
+        "first_impression",
+        "core_insight_table",
+        "three_circles_detailed",
+        "micro_analysis_detailed",
+        "imbalance_confirmed",
+        "root_cause",
+        "healing_suggestions",
+    ]
 
-    def __init__(
-        self,
-        *,
-        prompt_runtime: PromptRuntime,
-        fallback_runtime: Optional[DeterministicReportGenerationRuntime] = None,
-    ) -> None:
-        self.prompt_runtime = prompt_runtime
-        self.fallback_runtime = fallback_runtime or DeterministicReportGenerationRuntime()
+    def __init__(self, *, llm_client: LLMClient | None = None) -> None:
+        self.llm_client = llm_client or NoopLLMClient()
 
     def generate_lite(
         self,
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
-        base = self.fallback_runtime.generate_lite(generation_context, record)
-        schema = generation_context.prompt_builder.get_template(
-            "1.6",
-            "lite",
-        ).load_schema()
-        payload = self.prompt_runtime.generate_lite(
-            prompt=base.layer_1_lite_draft.prompt_preview,
-            schema=schema,
-        )
-        if not isinstance(payload, dict):
-            return base
+        layer_0_raw = generation_context._build_layer0_placeholder(record)
+        record.layer_0_raw = layer_0_raw
+        if getattr(layer_0_raw, "layer0_passed", True) is False:
+            raise Layer0BuildBlockedError(
+                getattr(layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                layer_0_raw=layer_0_raw,
+                detail=getattr(layer_0_raw, "layer0_failure_detail", {}) or {},
+            )
+        deterministic_draft = generation_context._build_layer1_placeholder(record)
+        record.layer_1_lite_draft = deterministic_draft
 
-        layer1 = base.layer_1_lite_draft
-        apply_lite_generation_payload(layer1, payload)
-        record.layer_1_lite_draft = layer1
-        layer2 = generation_context._build_lite_placeholder_report(record)
+        lite_payload = self._run_chat_generation(
+            prompt=str(getattr(deterministic_draft, "prompt_preview", "") or ""),
+            report_mode="lite",
+            required_fields=self.LITE_REQUIRED_FIELDS,
+            record=record,
+        )
+        layer_1_lite_draft = self._apply_lite_payload(
+            deterministic_draft,
+            lite_payload,
+        )
+        record.layer_1_lite_draft = layer_1_lite_draft
+        layer_2_lite_final = generation_context._build_lite_placeholder_report(record)
         return LiteGenerationBundle(
-            layer_0_raw=base.layer_0_raw,
-            layer_1_lite_draft=layer1,
-            layer_2_lite_final=layer2,
+            layer_0_raw=layer_0_raw,
+            layer_1_lite_draft=layer_1_lite_draft,
+            layer_2_lite_final=layer_2_lite_final,
         )
 
     def generate_pro(
@@ -109,29 +135,427 @@ class PromptBackedReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> ProGenerationBundle:
-        base = self.fallback_runtime.generate_pro(generation_context, record)
-        schema = generation_context.prompt_builder.get_template(
-            "1.6",
-            "pro",
-        ).load_schema()
-        payload = self.prompt_runtime.generate_pro(
-            prompt=base.layer_3_pro_draft.prompt_preview,
-            schema=schema,
-        )
-        if not isinstance(payload, dict):
-            return base
+        if getattr(getattr(record, "layer_0_raw", None), "layer0_passed", True) is False:
+            raise Layer0BuildBlockedError(
+                getattr(record.layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
+                layer_0_raw=record.layer_0_raw,
+                detail=getattr(record.layer_0_raw, "layer0_failure_detail", {}) or {},
+            )
+        deterministic_draft = generation_context._build_pro_placeholder_draft(record)
+        record.layer_3_pro_draft = deterministic_draft
 
-        layer3 = base.layer_3_pro_draft
-        apply_pro_generation_payload(layer3, payload)
-        record.layer_3_pro_draft = layer3
-        layer4 = generation_context._build_pro_placeholder_report(record)
+        pro_payload = self._run_chat_generation(
+            prompt=str(getattr(deterministic_draft, "prompt_preview", "") or ""),
+            report_mode="pro",
+            required_fields=self.PRO_REQUIRED_FIELDS,
+            record=record,
+        )
+        layer_3_pro_draft = self._apply_pro_payload(
+            deterministic_draft,
+            pro_payload,
+        )
+        record.layer_3_pro_draft = layer_3_pro_draft
+        layer_4_pro_final = generation_context._build_pro_placeholder_report(record)
         return ProGenerationBundle(
-            layer_3_pro_draft=layer3,
-            layer_4_pro_final=layer4,
+            layer_3_pro_draft=layer_3_pro_draft,
+            layer_4_pro_final=layer_4_pro_final,
         )
 
-    def _apply_lite_payload(self, layer: Layer1LiteDraft, payload: dict[str, Any]) -> None:
-        apply_lite_generation_payload(layer, payload)
+    def _run_chat_generation(
+        self,
+        *,
+        prompt: str,
+        report_mode: str,
+        required_fields: list[str],
+        record: InterpretationRecord,
+    ) -> dict[str, Any]:
+        user_prompt = prompt.strip()
+        if not user_prompt:
+            error = f"chat_generation_failed_blocking:{report_mode}:missing_prompt_preview"
+            self._write_chat_trace(record, report_mode=report_mode, error=error)
+            raise RuntimeError(error)
 
-    def _apply_pro_payload(self, layer: Layer3ProDraft, payload: dict[str, Any]) -> None:
-        apply_pro_generation_payload(layer, payload)
+        system_prompt = (
+            "你是一名严格遵循合同结构的曼陀罗报告生成助手。"
+            "你会基于给定 prompt 生成结构化报告内容。"
+            "只允许输出一个 JSON 对象，不要输出代码块或额外说明。"
+        )
+        raw = self.llm_client.generate_text(
+            task="chat",
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+        )
+        if not isinstance(raw, str) or not raw.strip():
+            error = f"chat_generation_failed_blocking:{report_mode}:empty_response"
+            self._write_chat_trace(record, report_mode=report_mode, error=error)
+            raise RuntimeError(error)
+
+        parsed = self._parse_json_payload(raw)
+        if not isinstance(parsed, dict):
+            error = f"chat_generation_failed_blocking:{report_mode}:non_json_response"
+            self._write_chat_trace(record, report_mode=report_mode, error=error)
+            raise RuntimeError(error)
+
+        payload = self._extract_report_payload(parsed, report_mode=report_mode)
+        if not isinstance(payload, dict):
+            error = f"chat_generation_failed_blocking:{report_mode}:invalid_payload"
+            self._write_chat_trace(record, report_mode=report_mode, error=error)
+            raise RuntimeError(error)
+
+        missing_fields = [
+            field_name
+            for field_name in required_fields
+            if self._is_missing(payload.get(field_name))
+        ]
+        if missing_fields:
+            error = (
+                "chat_generation_failed_blocking:"
+                f"{report_mode}:missing_fields:{','.join(missing_fields)}"
+            )
+            self._write_chat_trace(record, report_mode=report_mode, error=error)
+            raise RuntimeError(error)
+
+        self._write_chat_trace(record, report_mode=report_mode, error=None)
+        return payload
+
+    def _apply_lite_payload(
+        self,
+        fallback_layer: Layer1LiteDraft,
+        payload: dict[str, Any],
+    ) -> Layer1LiteDraft:
+        layer = fallback_layer
+        layer.title = self._as_text(payload.get("title"), fallback=layer.title)
+        layer.overall_impression = self._as_text(
+            payload.get("overall_impression"),
+            fallback=layer.overall_impression,
+        )
+        layer.visual_elements = self._as_text(
+            payload.get("visual_elements"),
+            fallback=layer.visual_elements,
+        )
+        layer.emotion_portrait = self._as_text(
+            payload.get("emotion_portrait"),
+            fallback=layer.emotion_portrait,
+        )
+
+        story_payload = payload.get("story")
+        if isinstance(story_payload, dict):
+            layer.story.base = StoryNode(
+                content=self._as_text(
+                    story_payload.get("base"),
+                    fallback=layer.story.base.content,
+                )
+            )
+            layer.story.contradiction = StoryNode(
+                content=self._as_text(
+                    story_payload.get("contradiction"),
+                    fallback=layer.story.contradiction.content,
+                )
+            )
+            layer.story.pattern = StoryNode(
+                content=self._as_text(
+                    story_payload.get("pattern"),
+                    fallback=layer.story.pattern.content,
+                )
+            )
+            layer.story.defense = StoryNode(
+                content=self._as_text(
+                    story_payload.get("defense"),
+                    fallback=layer.story.defense.content,
+                )
+            )
+            layer.story.block = StoryNode(
+                content=self._as_text(
+                    story_payload.get("block"),
+                    fallback=layer.story.block.content,
+                )
+            )
+            layer.story.light = StoryNode(
+                content=self._as_text(
+                    story_payload.get("light"),
+                    fallback=layer.story.light.content,
+                )
+            )
+
+        layer.theme_insights = ThemeInsights(
+            scene=self._as_text(
+                payload.get("theme_scene"),
+                fallback=layer.theme_insights.scene,
+            ),
+            impact=self._as_text(
+                payload.get("theme_impact"),
+                fallback=layer.theme_insights.impact,
+            ),
+            awareness=self._as_text(
+                payload.get("theme_awareness"),
+                fallback=layer.theme_insights.awareness,
+            ),
+        )
+        layer.three_awareness = self._build_awareness_items(
+            payload.get("three_awareness"),
+            fallback=layer.three_awareness,
+        )
+        layer.pro_teaser = self._as_text(
+            payload.get("pro_teaser"),
+            fallback=layer.pro_teaser,
+        )
+        return layer
+
+    def _apply_pro_payload(
+        self,
+        fallback_layer: Layer3ProDraft,
+        payload: dict[str, Any],
+    ) -> Layer3ProDraft:
+        layer = fallback_layer
+        layer.first_impression = self._as_text(
+            payload.get("first_impression"),
+            fallback=layer.first_impression,
+        )
+        layer.core_insight_table = self._as_dict_of_text(
+            payload.get("core_insight_table"),
+            fallback=layer.core_insight_table,
+        )
+        layer.three_circles_detailed = self._as_nested_dict(
+            payload.get("three_circles_detailed"),
+            fallback=layer.three_circles_detailed,
+        )
+        layer.micro_analysis_detailed = self._as_dict_of_text(
+            payload.get("micro_analysis_detailed"),
+            fallback=layer.micro_analysis_detailed,
+        )
+        layer.imbalance_confirmed = self._as_nested_dict(
+            payload.get("imbalance_confirmed"),
+            fallback=layer.imbalance_confirmed,
+        )
+        layer.root_cause = self._as_dict_of_text(
+            payload.get("root_cause"),
+            fallback=layer.root_cause,
+        )
+        layer.healing_suggestions = self._build_healing_suggestions(
+            payload.get("healing_suggestions"),
+            fallback=layer.healing_suggestions,
+        )
+        return layer
+
+    def _build_awareness_items(
+        self,
+        value: Any,
+        *,
+        fallback: list[Any],
+    ) -> list[DailyAwareness]:
+        if not isinstance(value, list):
+            return fallback
+        items: list[DailyAwareness] = []
+        for index, item in enumerate(value, start=1):
+            if not isinstance(item, dict):
+                continue
+            title = self._as_text(item.get("title"))
+            content = self._as_text(item.get("content"))
+            if not title and not content:
+                continue
+            raw_day = item.get("day")
+            day = int(raw_day) if isinstance(raw_day, int) else index
+            items.append(
+                DailyAwareness(
+                    day=day,
+                    title=title,
+                    content=content,
+                )
+            )
+        return items or fallback
+
+    def _build_healing_suggestions(
+        self,
+        value: Any,
+        *,
+        fallback: list[dict[str, Any]],
+    ) -> list[dict[str, str]]:
+        if not isinstance(value, list):
+            return fallback
+        items: list[dict[str, str]] = []
+        for item in value:
+            if not isinstance(item, dict):
+                continue
+            phase = self._as_text(item.get("phase"))
+            focus = self._as_text(item.get("focus"))
+            practice = self._as_text(item.get("practice"))
+            if not phase and not focus and not practice:
+                continue
+            items.append(
+                {
+                    "phase": phase,
+                    "focus": focus,
+                    "practice": practice,
+                }
+            )
+        return items or fallback
+
+    def _extract_report_payload(
+        self,
+        payload: dict[str, Any],
+        *,
+        report_mode: str,
+    ) -> dict[str, Any] | None:
+        direct_keys = (
+            self.LITE_REQUIRED_FIELDS
+            if report_mode == "lite"
+            else self.PRO_REQUIRED_FIELDS
+        )
+        if any(key in payload for key in direct_keys):
+            return payload
+        nested = payload.get(report_mode)
+        if isinstance(nested, dict):
+            return nested
+        nested = payload.get("draft")
+        if isinstance(nested, dict):
+            return nested
+        nested = payload.get("structured")
+        if isinstance(nested, dict):
+            return nested
+        return payload if payload else None
+
+    def _write_chat_trace(
+        self,
+        record: InterpretationRecord,
+        *,
+        report_mode: str,
+        error: str | None,
+    ) -> None:
+        if record.layer_0_raw is None or not hasattr(record.layer_0_raw, "theme_projection"):
+            return
+        theme_projection = (
+            record.layer_0_raw.theme_projection
+            if isinstance(record.layer_0_raw.theme_projection, dict)
+            else {}
+        )
+        model_trace = (
+            theme_projection.get("model_trace")
+            if isinstance(theme_projection.get("model_trace"), dict)
+            else {}
+        )
+        chat_by_mode = (
+            model_trace.get("chat_by_mode")
+            if isinstance(model_trace.get("chat_by_mode"), dict)
+            else {}
+        )
+        chat_by_mode[report_mode] = {
+            "report_mode": report_mode,
+            "endpoint_id": self._resolve_llm_endpoint_id(task="chat"),
+            "resolved_model": self._resolve_llm_model(task="chat"),
+            "source": "llm_chat_generation" if error is None else "chat_generation_failed_blocking",
+            "prompt_version": "1.6",
+            "error": error or "",
+        }
+        model_trace["chat_by_mode"] = chat_by_mode
+        theme_projection["model_trace"] = model_trace
+        record.layer_0_raw.theme_projection = theme_projection
+
+    def _resolve_llm_model(self, *, task: str) -> str:
+        config = getattr(self.llm_client, "config", None)
+        if config is None or not hasattr(config, "resolve_task_config"):
+            return ""
+        try:
+            task_config = config.resolve_task_config(task)
+        except Exception:
+            return ""
+        model = str(getattr(task_config, "model", "") or "").strip()
+        return KNOWN_ENDPOINT_MODEL_RESOLUTIONS.get(model, model)
+
+    def _resolve_llm_endpoint_id(self, *, task: str) -> str:
+        config = getattr(self.llm_client, "config", None)
+        if config is None or not hasattr(config, "resolve_task_config"):
+            return ""
+        try:
+            task_config = config.resolve_task_config(task)
+        except Exception:
+            return ""
+        model = str(getattr(task_config, "model", "") or "").strip()
+        return model if model.startswith("ep-") else ""
+
+    def _parse_json_payload(self, raw: str) -> dict[str, Any] | None:
+        candidate = raw.strip()
+        if candidate.startswith("```"):
+            candidate = self._strip_code_fence(candidate)
+        try:
+            parsed = json.loads(candidate)
+        except json.JSONDecodeError:
+            extracted = self._extract_json_object(candidate)
+            if not extracted:
+                return None
+            try:
+                parsed = json.loads(extracted)
+            except json.JSONDecodeError:
+                return None
+        return parsed if isinstance(parsed, dict) else None
+
+    def _strip_code_fence(self, text: str) -> str:
+        lines = text.splitlines()
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].startswith("```"):
+            lines = lines[:-1]
+        return "\n".join(lines).strip()
+
+    def _extract_json_object(self, text: str) -> str:
+        start = text.find("{")
+        end = text.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            return ""
+        return text[start : end + 1]
+
+    def _is_missing(self, value: Any) -> bool:
+        if value is None:
+            return True
+        if isinstance(value, str):
+            return not value.strip()
+        if isinstance(value, (list, tuple, dict, set)):
+            return len(value) == 0
+        return False
+
+    def _as_text(self, value: Any, *, fallback: str = "") -> str:
+        if isinstance(value, str):
+            return value.strip() or fallback
+        return fallback
+
+    def _as_dict_of_text(
+        self,
+        value: Any,
+        *,
+        fallback: dict[str, Any],
+    ) -> dict[str, str]:
+        if not isinstance(value, dict):
+            return fallback
+        result: dict[str, str] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                continue
+            text = self._as_text(item)
+            if text:
+                result[key] = text
+        return result or fallback
+
+    def _as_nested_dict(
+        self,
+        value: Any,
+        *,
+        fallback: dict[str, Any],
+    ) -> dict[str, Any]:
+        if not isinstance(value, dict):
+            return fallback
+        result: dict[str, Any] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                continue
+            if isinstance(item, dict):
+                result[key] = {
+                    inner_key: inner_value
+                    for inner_key, inner_value in item.items()
+                    if isinstance(inner_key, str)
+                }
+            elif isinstance(item, list):
+                result[key] = [entry for entry in item]
+            elif isinstance(item, str):
+                result[key] = item.strip()
+            else:
+                result[key] = item
+        return result or fallback

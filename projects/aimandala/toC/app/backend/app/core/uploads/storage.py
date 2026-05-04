@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 from fastapi import UploadFile
@@ -54,6 +55,7 @@ class COSUploadConfig:
     region: str
     key_prefix: str
     public_base_url: str | None = None
+    signed_url_ttl_seconds: int = 900
 
 
 @runtime_checkable
@@ -179,8 +181,16 @@ class COSUploadStorage:
             original_filename=stored.original_filename,
             content_type=stored.content_type,
             size_bytes=stored.size_bytes,
-            image_url=self._build_public_url(storage_key),
+            image_url=self.build_temporary_url(storage_key),
             local_expires_at=stored.local_expires_at,
+        )
+
+    def build_temporary_url(self, storage_key: str) -> str:
+        client = self._create_cos_client()
+        return client.get_presigned_download_url(
+            Bucket=self.config.bucket,
+            Key=storage_key,
+            Expired=self.config.signed_url_ttl_seconds,
         )
 
     def _upload_file_to_cos(self, *, file_path: str, storage_key: str, content_type: str | None) -> None:
@@ -205,14 +215,15 @@ class COSUploadStorage:
             Region=self.config.region,
             SecretId=self.config.secret_id,
             SecretKey=self.config.secret_key,
+            Domain=self._resolve_cos_domain(),
         )
         return CosS3Client(cos_config)
 
-    def _build_public_url(self, storage_key: str) -> str:
-        if self.config.public_base_url:
-            return f"{self.config.public_base_url.rstrip('/')}/{storage_key}"
-        return f"https://{self.config.bucket}.cos.{self.config.region}.myqcloud.com/{storage_key}"
-
+    def _resolve_cos_domain(self) -> str | None:
+        if not self.config.public_base_url:
+            return None
+        parsed = urlsplit(self.config.public_base_url.rstrip("/"))
+        return parsed.netloc or parsed.path or None
 
 class LocalUploadStorage:
     """Local filesystem-backed upload storage for migration-time browser uploads.
@@ -369,6 +380,7 @@ def load_cos_upload_config_from_env() -> COSUploadConfig:
             os.getenv("AIMANDALA_UPLOAD_COS_KEY_PREFIX", "aimandala/uploads")
         ),
         public_base_url=public_base_url.rstrip("/") if public_base_url else None,
+        signed_url_ttl_seconds=load_cos_signed_url_ttl_seconds_from_env(),
     )
 
 
@@ -387,6 +399,24 @@ def _normalize_key_prefix(value: str) -> str:
 
 def build_storage_key(key_prefix: str, filename: str) -> str:
     return f"{_normalize_key_prefix(key_prefix)}/{filename.lstrip('/')}"
+
+
+def load_cos_signed_url_ttl_seconds_from_env() -> int:
+    """Load COS signed URL ttl in seconds."""
+
+    raw_value = os.getenv("AIMANDALA_COS_SIGNED_URL_TTL_SECONDS", "900").strip()
+    try:
+        ttl_seconds = int(raw_value)
+    except ValueError as error:
+        raise ValueError(
+            "AIMANDALA_COS_SIGNED_URL_TTL_SECONDS must be a positive integer"
+        ) from error
+
+    if ttl_seconds <= 0:
+        raise ValueError(
+            "AIMANDALA_COS_SIGNED_URL_TTL_SECONDS must be a positive integer"
+        )
+    return ttl_seconds
 
 
 def load_local_upload_retention_hours_from_env() -> int:

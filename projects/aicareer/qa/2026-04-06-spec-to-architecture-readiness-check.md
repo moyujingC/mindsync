@@ -5,7 +5,7 @@
 - 当前项目：怀瑾握瑜（aicareer）
 - 当前阶段：spec
 - 下一阶段：architecture
-- 当前 artifact：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-spec.md
+- 当前 artifact：projects/aicareer/specs/MVP产品规范.md
 
 ## 2. Ready 判断
 

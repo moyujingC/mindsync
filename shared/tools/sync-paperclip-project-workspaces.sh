@@ -7,6 +7,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 REGISTRY_PATH="$ROOT_DIR/company/项目注册表.yaml"
 PAPERCLIP_CONFIG_PATH="$ROOT_DIR/.paperclip.yaml"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-http://127.0.0.1:3100}"
+PAPERCLIP_API_KEY="${PAPERCLIP_API_KEY:-}"
+MINDSYNC_RUNTIME_ROOT="${MINDSYNC_RUNTIME_ROOT:-$ROOT_DIR}"
 MODE="${1:-status}"
 
 if [[ ! -f "$REGISTRY_PATH" ]]; then
@@ -45,23 +47,25 @@ if [[ -z "$company_id" ]]; then
   exit 1
 fi
 
-python3 - "$MODE" "$REGISTRY_PATH" "$PAPERCLIP_API_URL" "$company_id" <<'PY'
+python3 - "$MODE" "$REGISTRY_PATH" "$PAPERCLIP_API_URL" "$company_id" "$PAPERCLIP_API_KEY" "$MINDSYNC_RUNTIME_ROOT" <<'PY'
 import json
 import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
 
-mode, registry_path, api_url, company_id = sys.argv[1:5]
+mode, registry_path, api_url, company_id, api_key, runtime_root = sys.argv[1:7]
 
-if mode not in {"status", "sync"}:
-    print("Usage: sync-paperclip-project-workspaces.sh {status|sync}", file=sys.stderr)
+if mode not in {"status", "sync", "json"}:
+    print("Usage: sync-paperclip-project-workspaces.sh {status|sync|json}", file=sys.stderr)
     sys.exit(1)
 
 
 def request_json(url: str, method: str = "GET", payload: dict | None = None) -> object:
     data = None
     headers = {}
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
     if payload is not None:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         headers["Content-Type"] = "application/json"
@@ -160,7 +164,7 @@ for runtime_project in runtime_projects:
     if not registry_item:
       missing_in_registry.append(name)
       continue
-    expected_cwd = str((Path(registry_path).parent.parent / registry_item["runtime_directory"]).resolve())
+    expected_cwd = str((Path(runtime_root) / registry_item["runtime_directory"]).resolve())
     if current_cwd != expected_cwd:
         drifts.append(
             {
@@ -172,8 +176,23 @@ for runtime_project in runtime_projects:
             }
         )
 
+report = {
+    "company_id": company_id,
+    "runtime_root": runtime_root,
+    "registry_count": len(registry),
+    "runtime_count": len(runtime_projects),
+    "missing_in_runtime": missing_in_runtime,
+    "missing_in_registry": missing_in_registry,
+    "drifts": drifts,
+}
+
+if mode == "json":
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    sys.exit(0)
+
 print("Paperclip 项目工作区对账")
 print(f"- 公司 ID: {company_id}")
+print(f"- 运行时根目录: {runtime_root}")
 print(f"- 注册表项目数: {len(registry)}")
 print(f"- 运行时项目数: {len(runtime_projects)}")
 

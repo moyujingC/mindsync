@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-04-Skill体系商业化与产品化边界研究-brief.md
+> source_of_truth：projects/research-center/tasks/2026-04-04-Skill体系商业化与产品化边界研究-brief.md
 > 项目：研究中心
 > 阶段：problem-framing
 
@@ -32,10 +32,10 @@
 - 对象类型：
   - 方法体系 / 内部能力资产
 - 来源材料：
-  - [Claude Code 源码研究综合结论与 Skill 启发](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
-  - [墨予镜 Skill 协议草案](/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
-  - [Claude Code 启发下的 Skill 体系产品定义 / SPEC](/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-04-Claude-Code启发下的Skill体系产品定义-SPEC.md)
-  - [Skill 体系架构边界与接入方案](/Users/xinran/Downloads/dev/mindsync/projects/research-center/decisions/2026-04-04-Skill体系架构边界与接入方案.md)
+  - [Claude Code 源码研究综合结论与 Skill 启发](projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
+  - [墨予镜 Skill 协议草案](projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
+  - [Claude Code 启发下的 Skill 体系产品定义 / SPEC](projects/research-center/specs/2026-04-04-Claude-Code启发下的Skill体系产品定义-SPEC.md)
+  - [Skill 体系架构边界与接入方案](projects/research-center/decisions/2026-04-04-Skill体系架构边界与接入方案.md)
 
 ## 3. 要回答的问题
 

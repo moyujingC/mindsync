@@ -87,11 +87,6 @@ function parseReportSections(markdown: string | null | undefined): ReportPageSec
 }
 
 function buildSelfUnderstandingSections(structured: NonNullable<ReturnType<typeof getLiteStructuredReport>>): ReportPageSection[] {
-  const blocks = structured.self_understanding_blocks;
-  if (!blocks) {
-    return [];
-  }
-
   const sections: ReportPageSection[] = [];
 
   const pushSection = (id: string, heading: string, body: string | null | undefined) => {
@@ -105,48 +100,30 @@ function buildSelfUnderstandingSections(structured: NonNullable<ReturnType<typeo
     });
   };
 
-  pushSection("opening-hit", "整体命中", blocks.opening_hit);
-  pushSection("visual-evidence", "画面依据", blocks.visual_evidence?.summary);
+  const orientation = structured.topic_context.orientation;
   pushSection(
-    "state-interpretation",
-    "状态解释",
-    [
-      blocks.state_interpretation?.current_state,
-      blocks.state_interpretation?.emotional_tension,
-      blocks.state_interpretation?.explanation_chain,
-    ]
+    "topic-orientation",
+    "议题理解",
+    [orientation.intro, orientation.focus]
       .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
       .join("\n\n"),
   );
+  pushSection("current-reading", "当前命中", structured.current_reading);
+  pushSection("visual-basis", "画面依据", structured.visual_basis);
+  pushSection("pattern-interpretation", "模式解释", structured.pattern_interpretation);
+  pushSection("life-connection", "现实连接", structured.life_connection);
   pushSection(
-    "pattern-naming",
-    "模式命名",
+    "lite-healing",
+    "轻量疗愈",
     [
-      blocks.pattern_naming?.pattern_name,
-      blocks.pattern_naming?.pattern_description,
-      blocks.pattern_naming?.protective_logic,
+      ...(structured.lite_healing_guidance?.directions ?? []).map(
+        (item) => `${item.title ?? "轻量方向"}：${item.content ?? ""}`,
+      ),
+      ...(structured.lite_healing_guidance?.micro_practices ?? []).map(
+        (item) => `${item.title ?? "小练习"}：${item.content ?? ""}`,
+      ),
     ]
-      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
-      .join("\n\n"),
-  );
-  pushSection(
-    "reality-connection",
-    "现实连接",
-    [
-      blocks.reality_connection?.typical_scene,
-      blocks.reality_connection?.current_impact,
-    ]
-      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
-      .join("\n\n"),
-  );
-  pushSection(
-    "next-step",
-    "一个下一步",
-    [
-      blocks.next_step?.direction,
-      blocks.next_step?.action,
-    ]
-      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
+      .filter((item): item is string => Boolean(item.trim()))
       .join("\n\n"),
   );
 
@@ -154,7 +131,6 @@ function buildSelfUnderstandingSections(structured: NonNullable<ReturnType<typeo
 }
 
 export function MobileWebReportPage({
-  route = "report",
   state,
   uploadDraft,
   environmentLabel,
@@ -169,9 +145,9 @@ export function MobileWebReportPage({
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const isLoading = state.step === "liteGenerating";
   const isError = state.step === "error";
-  const isUpgradeRoute = route === "upgrade" || state.step === "upgradePlaceholder";
+  const isProReport = state.report?.version === "pro" || state.step === "proReady";
   const canRetryRefresh = Boolean(isError && state.interpretation?.interpretation_id);
-  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "全面解读";
+  const themeLabel = structured?.topic_context.topic_label ?? getThemeDisplayName(uploadDraft?.theme) ?? "全面解读";
   const resultCta = resolveSelfUnderstandingReportCta({
     theme: uploadDraft?.theme,
     canUpgrade: Boolean(state.report?.can_upgrade || state.status?.can_upgrade),
@@ -183,11 +159,10 @@ export function MobileWebReportPage({
     : null;
   const reportSections = parseReportSections(typeof state.report?.report === "string" ? state.report.report : null);
   const selfUnderstandingSections = structured ? buildSelfUnderstandingSections(structured) : [];
-  const reportTitle = structured?.title || state.report?.title || (isUpgradeRoute ? "一梳 Pro 版" : "你的曼陀罗解读");
-  const reportSubtitle = isUpgradeRoute
+  const reportTitle = state.report?.title || (isProReport ? "一梳 Pro 版" : "你的曼陀罗解读");
+  const reportSubtitle = isProReport
     ? "当前正在查看 Pro 版解读。"
-    : structured?.self_understanding_blocks?.opening_hit ||
-      structured?.overall_impression ||
+    : structured?.current_reading ||
       state.report?.overall_impression ||
       "曼曼已经把这一轮 Lite 版解读整理好了。";
   const generatedAt = new Date().toLocaleDateString("zh-CN", {
@@ -204,7 +179,7 @@ export function MobileWebReportPage({
     ? "继续查看生成进度"
       : canRetryRefresh
         ? "重试刷新结果"
-        : isUpgradeRoute
+        : isProReport
         ? "查看历史记录"
         : resultCta.primaryLabel;
   const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
@@ -212,7 +187,7 @@ export function MobileWebReportPage({
       ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
     : canRetryRefresh
       ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
-      : isUpgradeRoute
+      : isProReport
         ? "当前已经进入一梳 Pro 版，可以先回看历史记录，或返回上传页重新开始。"
         : isError
           ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
@@ -225,8 +200,8 @@ export function MobileWebReportPage({
           ? [
               {
                 id: "fallback-impression",
-                heading: "整体命中",
-                body: structured.overall_impression,
+                heading: "当前命中",
+                body: structured.current_reading,
               },
             ]
           : [
@@ -248,12 +223,12 @@ export function MobileWebReportPage({
       .map((section) => section.heading)
       .filter(Boolean)
       .join(" · ") || "整体命中 · 画面依据 · 状态解释";
-  const reportToneLabel = isUpgradeRoute ? "一梳 Pro 版" : "一镜 Lite 版";
+  const reportToneLabel = isProReport ? "一梳 Pro 版" : "一镜 Lite 版";
 
   return (
     <MobileWebAppShell
       route={
-        mobileWebRoutes.find((item) => item.id === (route === "upgrade" ? "upgrade" : "report")) ??
+        mobileWebRoutes.find((item) => item.id === "report") ??
         mobileWebRoutes[0]
       }
       environmentLabel={environmentLabel}
@@ -268,7 +243,7 @@ export function MobileWebReportPage({
           <h2>{reportTitle}</h2>
           <p className="mw-report-hero__summary">{reportSubtitle}</p>
           <div className="mw-report-hero__meta">
-            <span className="mw-badge">{isUpgradeRoute ? "Pro" : "Lite"}</span>
+            <span className="mw-badge">{isProReport ? "Pro" : "Lite"}</span>
             <span className="mw-badge">{themeLabel}</span>
             <span className="mw-badge">{statusLabel}</span>
             <span className="mw-report-hero__date">{generatedAt}</span>

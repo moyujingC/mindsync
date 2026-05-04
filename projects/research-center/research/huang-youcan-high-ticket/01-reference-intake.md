@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/huang-youcan-high-ticket/01-reference-intake.md
+> source_of_truth：projects/research-center/research/huang-youcan-high-ticket/01-reference-intake.md
 > 项目：研究中心
 > 阶段：problem-framing
 

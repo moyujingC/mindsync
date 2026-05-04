@@ -1,0 +1,279 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { seedEntryBindings, seedEntries, seedModelEntries, seedRuns, seedTasks } from "./seed-data.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const LEGACY_DEEPSEEK_V3_ID = "preset-deepseek-v3";
+const CANONICAL_DEEPSEEK_V4_ID = "preset-deepseek-v4";
+
+function resolveDataDir() {
+  const configured = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR?.trim();
+  if (configured) {
+    return path.resolve(configured);
+  }
+  return path.resolve(__dirname, "..", "data");
+}
+
+function resolveDataPath() {
+  return path.join(resolveDataDir(), "state.json");
+}
+
+function resolveSecretsPath() {
+  return path.join(resolveDataDir(), "model-secrets.json");
+}
+
+function resolveRelayConfigPath() {
+  return path.join(resolveDataDir(), "relay-config.json");
+}
+
+async function writeJsonAtomically(targetPath, value) {
+  const directory = path.dirname(targetPath);
+  const tempPath = path.join(
+    directory,
+    `.${path.basename(targetPath)}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}.tmp`
+  );
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(tempPath, JSON.stringify(value, null, 2), "utf8");
+  await fs.rename(tempPath, targetPath);
+}
+
+function clone(value) {
+  return structuredClone(value);
+}
+
+function createInitialState() {
+  return {
+    modelEntries: clone(seedModelEntries),
+    entries: clone(seedEntries),
+    entryBindings: clone(seedEntryBindings),
+    tasks: clone(seedTasks),
+    runs: clone(seedRuns),
+    nextIds: {
+      model: 1,
+      task: 1,
+      run: 1
+    }
+  };
+}
+
+function createInitialSecrets() {
+  return {
+    "preset-ppchat-relay": {
+      apiKey: "seed-api-key",
+      updatedAt: null
+    }
+  };
+}
+
+function createInitialRelayConfig() {
+  return {
+    relayToken: null,
+    updatedAt: null
+  };
+}
+
+function defaultCapabilities() {
+  return {
+    responses: {
+      ok: false,
+      streamOk: false
+    },
+    chatCompletions: {
+      ok: false
+    },
+    lastProbedAt: null,
+    lastErrorMessage: null
+  };
+}
+
+function normalizeReasoningEffort(value) {
+  return value === "low" || value === "medium" || value === "high" ? value : null;
+}
+
+function normalizeEntryBinding(binding) {
+  return {
+    ...binding,
+    defaultModelEntryId:
+      binding?.defaultModelEntryId === LEGACY_DEEPSEEK_V3_ID
+        ? CANONICAL_DEEPSEEK_V4_ID
+        : binding?.defaultModelEntryId ?? null,
+    fallbackModelEntryId:
+      binding?.fallbackModelEntryId === LEGACY_DEEPSEEK_V3_ID
+        ? CANONICAL_DEEPSEEK_V4_ID
+        : binding?.fallbackModelEntryId ?? null,
+    reasoningEffortOverride: normalizeReasoningEffort(binding?.reasoningEffortOverride)
+  };
+}
+
+function migrateMissingPresetModelEntries(state) {
+  const existingEntries = Array.isArray(state.modelEntries) ? state.modelEntries : [];
+  let changed = false;
+  const normalizedExistingEntries = existingEntries.map((entry) => {
+    const rawApiKey = typeof entry?.apiKey === "string" && entry.apiKey.trim()
+      ? entry.apiKey.trim()
+      : null;
+    const nextEntry = {
+      ...entry,
+      id: entry?.id === LEGACY_DEEPSEEK_V3_ID ? CANONICAL_DEEPSEEK_V4_ID : entry?.id,
+      capabilities: entry && typeof entry === "object" && entry.capabilities
+        ? entry.capabilities
+        : defaultCapabilities(),
+      reasoningEffort: normalizeReasoningEffort(entry?.reasoningEffort),
+      hasStoredApiKey: entry?.hasStoredApiKey ?? Boolean(rawApiKey),
+      maskedApiKey: entry?.maskedApiKey ?? null
+    };
+    delete nextEntry.apiKey;
+    if (
+      nextEntry.capabilities !== entry?.capabilities ||
+      nextEntry.reasoningEffort !== (entry?.reasoningEffort ?? null) ||
+      nextEntry.hasStoredApiKey !== (entry?.hasStoredApiKey ?? Boolean(rawApiKey)) ||
+      nextEntry.id !== entry?.id ||
+      "apiKey" in (entry ?? {})
+    ) {
+      changed = true;
+    }
+    return nextEntry;
+  });
+  const existingIds = new Set(normalizedExistingEntries.map((entry) => entry.id));
+  const missingPresetEntries = seedModelEntries
+    .filter((entry) => entry.source === "preset" && !existingIds.has(entry.id))
+    .map((entry) => clone(entry));
+
+  if (missingPresetEntries.length === 0 && !changed) {
+    return {
+      changed: false,
+      state: {
+        ...state,
+        modelEntries: normalizedExistingEntries
+      }
+    };
+  }
+
+  return {
+    changed: true,
+    state: {
+      ...state,
+      entries: Array.isArray(state.entries) ? state.entries : clone(seedEntries),
+      entryBindings: Array.isArray(state.entryBindings)
+        ? state.entryBindings.map((binding) => normalizeEntryBinding(binding))
+        : clone(seedEntryBindings).map((binding) => normalizeEntryBinding(binding)),
+      tasks: Array.isArray(state.tasks)
+        ? state.tasks.map((task) => ({
+            ...task,
+            defaultModelEntryId:
+              task?.defaultModelEntryId === LEGACY_DEEPSEEK_V3_ID
+                ? CANONICAL_DEEPSEEK_V4_ID
+                : task?.defaultModelEntryId ?? null,
+          }))
+        : clone(seedTasks),
+      runs: Array.isArray(state.runs)
+        ? state.runs.map((run) => ({
+            ...run,
+            modelEntryId:
+              run?.modelEntryId === LEGACY_DEEPSEEK_V3_ID
+                ? CANONICAL_DEEPSEEK_V4_ID
+                : run?.modelEntryId,
+          }))
+        : clone(seedRuns),
+      modelEntries: [...normalizedExistingEntries, ...missingPresetEntries]
+    }
+  };
+}
+
+export async function readState() {
+  const dataPath = resolveDataPath();
+  try {
+    const raw = await fs.readFile(dataPath, "utf8");
+    const persisted = JSON.parse(raw);
+    const migrated = migrateMissingPresetModelEntries(persisted);
+    if (migrated.changed) {
+      await writeState(migrated.state);
+    }
+    return migrated.state;
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      const initial = createInitialState();
+      await writeState(initial);
+      return initial;
+    }
+    throw error;
+  }
+}
+
+export async function readSecrets() {
+  const secretsPath = resolveSecretsPath();
+  try {
+    const raw = await fs.readFile(secretsPath, "utf8");
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") {
+      return {};
+    }
+    if (parsed[LEGACY_DEEPSEEK_V3_ID] && !parsed[CANONICAL_DEEPSEEK_V4_ID]) {
+      parsed[CANONICAL_DEEPSEEK_V4_ID] = parsed[LEGACY_DEEPSEEK_V3_ID];
+      delete parsed[LEGACY_DEEPSEEK_V3_ID];
+      await writeSecrets(parsed);
+    }
+    return parsed;
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      const initial = createInitialSecrets();
+      await writeSecrets(initial);
+      return initial;
+    }
+    throw error;
+  }
+}
+
+export async function readRelayConfig() {
+  const relayConfigPath = resolveRelayConfigPath();
+  try {
+    const raw = await fs.readFile(relayConfigPath, "utf8");
+    const parsed = JSON.parse(raw);
+    return {
+      relayToken:
+        parsed && typeof parsed.relayToken === "string" && parsed.relayToken.trim()
+          ? parsed.relayToken.trim()
+          : null,
+      updatedAt:
+        parsed && typeof parsed.updatedAt === "string" && parsed.updatedAt.trim()
+          ? parsed.updatedAt.trim()
+          : null
+    };
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      const initial = createInitialRelayConfig();
+      await writeRelayConfig(initial);
+      return initial;
+    }
+    throw error;
+  }
+}
+
+export async function writeState(state) {
+  const dataPath = resolveDataPath();
+  await writeJsonAtomically(dataPath, state);
+}
+
+export async function writeSecrets(secrets) {
+  const secretsPath = resolveSecretsPath();
+  await writeJsonAtomically(secretsPath, secrets);
+}
+
+export async function writeRelayConfig(config) {
+  const relayConfigPath = resolveRelayConfigPath();
+  await writeJsonAtomically(relayConfigPath, config);
+}
+
+export function toPublicModelEntry(entry) {
+  const { apiKey, ...rest } = entry;
+  return rest;
+}
+
+export async function resetState() {
+  const initial = createInitialState();
+  await writeState(initial);
+  await writeSecrets(createInitialSecrets());
+  await writeRelayConfig(createInitialRelayConfig());
+  return initial;
+}

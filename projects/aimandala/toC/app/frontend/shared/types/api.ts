@@ -1,6 +1,13 @@
 export type InterpretationVersion = "lite" | "pro";
 export type InterpretationListFilter = "all" | "ready" | "pending";
 
+export interface InterpretationUpgradeHistoryEntry {
+  from: InterpretationVersion | string;
+  to: InterpretationVersion | string;
+  price_diff: number;
+  at: string;
+}
+
 export interface InterpretationListQuery {
   filter?: InterpretationListFilter;
   limit?: number;
@@ -40,6 +47,7 @@ export interface UploadImageResponse {
   original_filename: string;
   content_type?: string | null;
   size_bytes: number;
+  // Temporary access URL. Long-lived identity lives in storage_backend + storage_key.
   image_url?: string | null;
   image_local_expires_at?: string | null;
 }
@@ -47,6 +55,7 @@ export interface UploadImageResponse {
 export interface CreateInterpretationRequest {
   user_id: string;
   image_path: string;
+  // Compatibility-only temporary URL; formal creation should rely on storage_key.
   image_url?: string | null;
   storage_backend?: string | null;
   storage_key?: string | null;
@@ -89,6 +98,11 @@ export interface InterpretationRecordResponse {
   auto_detected: boolean;
   can_upgrade: boolean;
   created_at: string;
+  upgrade_history?: InterpretationUpgradeHistoryEntry[];
+  image_url?: string | null;
+  storage_backend?: string | null;
+  storage_key?: string | null;
+  image_local_expires_at?: string | null;
 }
 
 export interface InterpretationStatusResponse {
@@ -104,15 +118,34 @@ export interface InterpretationStatusResponse {
   };
   auto_detected: boolean;
   can_upgrade: boolean;
+  image_url?: string | null;
+  storage_backend?: string | null;
+  storage_key?: string | null;
+  image_local_expires_at?: string | null;
+}
+
+export interface ReportTopicContext {
+  topic: string;
+  topic_label: string;
+  report_mode: InterpretationVersion | string;
+  orientation: {
+    intro: string;
+    focus: string;
+    key_terms: Array<{
+      term: string;
+      explanation: string;
+    }>;
+  };
 }
 
 export interface LiteStructuredReport {
   prompt_preview?: string | null;
   prompt_schema_validation_issues?: string[] | null;
-  title: string;
-  overall_impression: string;
-  visual_elements_rendered: string;
-  emotion_portrait_rendered: string;
+  topic_context: ReportTopicContext;
+  current_reading: string;
+  visual_basis: string;
+  pattern_interpretation: string;
+  life_connection: string;
   self_understanding_blocks?: {
     title?: string;
     opening_hit?: string;
@@ -168,14 +201,40 @@ export interface LiteStructuredReport {
     title?: string;
     content?: string;
   }> | null;
+  lite_healing_guidance?: {
+    directions?: Array<{
+      title?: string;
+      content?: string;
+    }> | null;
+    micro_practices?: Array<{
+      title?: string;
+      content?: string;
+    }> | null;
+  } | null;
   six_insights_rendered?: Record<string, string> | null;
   experiment_rendered?: string | null;
-  pro_teaser: string;
+  pro_report_entry: {
+    title?: string;
+    summary?: string;
+    product_note?: string;
+  };
+  pro_teaser?: string | null;
 }
 
 export interface ProStructuredReport {
   prompt_preview?: string | null;
   prompt_schema_validation_issues?: string[] | null;
+  topic_context: ReportTopicContext;
+  deep_impression: string;
+  evidence_digest: string;
+  imbalance_diagnosis: string;
+  root_cause_chain: {
+    surface?: string;
+    mechanism?: string;
+    core?: string;
+  };
+  deep_structure_interpretation: string;
+  healing_plan: Array<{ phase?: string; focus?: string; practice?: string }>;
   first_impression?: string | null;
   core_insight_table?: Record<string, string> | null;
   three_circles_detailed?: Record<string, { label?: string; reading?: string }> | null;
@@ -196,6 +255,10 @@ export interface ReportResponse {
   can_upgrade: boolean;
   upgrade_price?: number | null;
   error?: string | null;
+  image_url?: string | null;
+  storage_backend?: string | null;
+  storage_key?: string | null;
+  image_local_expires_at?: string | null;
 }
 
 export interface ReportChatMessage {
@@ -266,6 +329,70 @@ export interface UpgradePlaceholderResponse {
   enabled: boolean;
   status: string;
   message: string;
+}
+
+export type PurchaseState =
+  | "created"
+  | "pending"
+  | "paid"
+  | "failed"
+  | "cancelled"
+  | "fulfilled";
+
+export interface StubWechatPayPayload {
+  mode: "stub";
+  order_id: string;
+  next_action: "reconcile_after_host_payment";
+}
+
+export interface WechatPayRequestPaymentArgs {
+  timeStamp: string;
+  nonceStr: string;
+  package: string;
+  signType: string;
+  paySign: string;
+}
+
+export interface WechatPayHostPayload {
+  mode: "wechatpay";
+  order_id: string;
+  next_action: "wait_for_payment_confirmation";
+  dry_run: boolean;
+  request_payment_args: WechatPayRequestPaymentArgs;
+}
+
+export type MiniappWechatPayPayload = StubWechatPayPayload | WechatPayHostPayload;
+
+export interface CreateMiniappOrderRequest {
+  interpretation_id: string;
+  product_type: InterpretationVersion;
+  channel: "miniapp";
+  open_id?: string | null;
+  debug_canonical_user_id?: string | null;
+}
+
+export interface MiniappOrderResponse {
+  order_id: string;
+  interpretation_id: string;
+  product_type: InterpretationVersion;
+  channel: "miniapp";
+  purchase_state: PurchaseState;
+  payable_amount: number;
+  currency: string;
+  version_granted?: InterpretationVersion[] | null;
+  latest_purchase_updated_at?: string | null;
+  wechat_pay_payload?: MiniappWechatPayPayload | null;
+}
+
+export interface ReconcileMiniappOrderResponse extends MiniappOrderResponse {
+  reconciled: boolean;
+}
+
+export interface NotifyMiniappWechatPaymentRequest {
+  order_id: string;
+  event: "paid" | "failed" | "cancelled";
+  payment_reference?: string | null;
+  raw_payload?: Record<string, unknown> | null;
 }
 
 export interface PricingInfo {

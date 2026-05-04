@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 from app.core.analysis.circle_detector import CircleDetectionResult, CircleDetector
+from app.core.llm.runtime import create_llm_client_from_env
 try:
     from app.core.analysis.three_circle_colors import extract_colors_by_circles
 except Exception:  # pragma: no cover - migration-time fallback
@@ -30,9 +31,8 @@ except Exception:  # pragma: no cover - migration-time fallback
 from .data_models import InterpretationRecord
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
-    PromptBackedReportGenerationRuntime,
+    LLMReportGenerationRuntime,
 )
-from .prompt_runtime import PromptRuntime
 from .report_generation_contracts import ReportGenerationRuntime
 from .report_pipeline_components import install_report_pipeline_components
 from .report_pipeline_stage_config import ReportPipelineStageConfig
@@ -79,7 +79,7 @@ class LayeredOrchestrator:
 
     PRICING = PricingSnapshot(
         lite=9.9,
-        pro=49.0,
+        pro=39.0,
         # Kept only for legacy V2 response compatibility. Product semantics remain
         # "independent purchase" unless a later decision explicitly changes them.
         upgrade_diff=39.1,
@@ -92,7 +92,6 @@ class LayeredOrchestrator:
         store: Optional[InterpretationStore] = None,
         circle_detector: Optional[CircleDetector] = None,
         generation_runtime: Optional[ReportGenerationRuntime] = None,
-        prompt_runtime: Optional[PromptRuntime] = None,
         report_chat_runtime: Optional[Any] = None,
         enable_vision: bool = True,
     ) -> None:
@@ -117,12 +116,10 @@ class LayeredOrchestrator:
         )
         if generation_runtime is not None:
             self.generation_runtime = generation_runtime
-        elif prompt_runtime is not None:
-            self.generation_runtime = PromptBackedReportGenerationRuntime(
-                prompt_runtime=prompt_runtime,
-            )
         else:
-            self.generation_runtime = DeterministicReportGenerationRuntime()
+            self.generation_runtime = LLMReportGenerationRuntime(
+                llm_client=create_llm_client_from_env()
+            )
         self.report_chat_runtime = report_chat_runtime
         self.enable_vision = enable_vision
         install_report_pipeline_components(
@@ -303,3 +300,13 @@ class LayeredOrchestrator:
             interpretation_id,
         )
         return result.status_payload if result is not None else None
+
+    def fulfill_direct_pro_purchase(
+        self,
+        interpretation_id: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Generate Pro after a direct Pro purchase without using upgrade semantics."""
+        return self.report_lifecycle_manager.fulfill_direct_pro_purchase(
+            self,
+            interpretation_id,
+        )

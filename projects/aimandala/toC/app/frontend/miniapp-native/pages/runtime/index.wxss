@@ -1,0 +1,37 @@
+@import "../../styles/tokens.wxss";
+
+.runtime-page {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    var(--am-surface-primary-soft) 0%,
+    var(--am-surface-primary-elevated) 100%
+  );
+}
+
+.runtime-page__state {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20rpx;
+  padding: 64rpx 48rpx;
+  color: var(--am-text-primary);
+  font-family: var(--am-font-body);
+}
+
+.runtime-page__state--error {
+  color: var(--am-status-danger);
+}
+
+.runtime-page__title {
+  font-size: var(--am-text-title-rpx);
+  font-weight: 600;
+  font-family: var(--am-font-display);
+}
+
+.runtime-page__copy {
+  font-size: var(--am-text-body-rpx);
+  line-height: var(--am-leading-body);
+  color: var(--am-text-secondary);
+}

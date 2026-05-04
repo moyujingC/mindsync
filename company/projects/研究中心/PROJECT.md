@@ -4,8 +4,8 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md
-> 对应项目工作区：[/Users/xinran/Downloads/dev/mindsync/projects/research-center](/Users/xinran/Downloads/dev/mindsync/projects/research-center)
+> source_of_truth：company/projects/研究中心/PROJECT.md
+> 对应项目工作区：[projects/research-center](projects/research-center)
 > 项目类型：公司级研究与知识能力项目
 
 这份文档是 `研究中心` 在 `mindsync` 中的公司侧项目入口。
@@ -81,20 +81,20 @@
 
 任何 Agent 第一次进入 `研究中心` 项目时，默认优先读取以下材料：
 
-1. [PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md)
-2. [2026-04-04-研究方向与任务模型.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-04-研究方向与任务模型.md)
-3. [2026-04-08-研究入库连续产出运行方案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-08-研究入库连续产出运行方案.md)
-4. [2026-04-08-本周研究执行清单.md](/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/2026-04-08-本周研究执行清单.md)
-5. 对应项目工作区入口：[projects/research-center/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md)
-6. [agents/research-knowledge-lead/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/research-knowledge-lead/AGENTS.md)
+1. [PROJECT.md](company/projects/研究中心/PROJECT.md)
+2. [研究方向与任务模型.md](company/projects/研究中心/研究方向与任务模型.md)
+3. [研究入库连续产出运行方案.md](company/projects/研究中心/研究入库连续产出运行方案.md)
+4. [2026-04-08-本周研究执行清单.md](company/projects/研究中心/2026-04-08-本周研究执行清单.md)
+5. 对应项目工作区入口：[projects/research-center/PROJECT.md](projects/research-center/PROJECT.md)
+6. [agents/research-knowledge-lead/AGENTS.md](agents/research-knowledge-lead/AGENTS.md)
 
 如果任务明确偏技术抽象，还应补读：
 
-7. [agents/architect/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/architect/AGENTS.md)
+7. [agents/architect/AGENTS.md](agents/architect/AGENTS.md)
 
 如果任务明确需要转化为产品判断，还应补读：
 
-8. [agents/product-spec-lead/AGENTS.md](/Users/xinran/Downloads/dev/mindsync/agents/product-spec-lead/AGENTS.md)
+8. [agents/product-spec-lead/AGENTS.md](agents/product-spec-lead/AGENTS.md)
 
 ## 5. 这里应该放什么
 

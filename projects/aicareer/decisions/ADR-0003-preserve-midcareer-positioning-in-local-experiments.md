@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/decisions/ADR-0003-preserve-midcareer-positioning-in-local-experiments.md
+> source_of_truth：projects/aicareer/decisions/ADR-0003-preserve-midcareer-positioning-in-local-experiments.md
 > 项目：aicareer
 > 阶段：spec
 

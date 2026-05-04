@@ -1,0 +1,193 @@
+name: nightly-smoke
+
+on:
+  schedule:
+    - cron: "15 1 * * *"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Choose smoke target"
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - dev
+          - prod
+      mode:
+        description: "Choose smoke depth"
+        required: true
+        default: basic
+        type: choice
+        options:
+          - basic
+          - deep
+
+permissions:
+  contents: read
+
+env:
+  PAPERCLIP_COMPANY_ID: "be191a6e-7447-4821-a93d-9114214c4a64"
+  PAPERCLIP_PROJECT_NAME: "一镜一梳"
+
+jobs:
+  nightly-dev-smoke:
+    name: nightly-dev-smoke
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.target == 'all' ||
+      github.event.inputs.target == 'dev'
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Resolve Dev Smoke Mode
+        id: dev_mode
+        run: |
+          set -euo pipefail
+          MODE="basic"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            MODE="${{ github.event.inputs.mode }}"
+          fi
+          printf 'mode=%s\n' "$MODE" >> "$GITHUB_OUTPUT"
+
+      - name: Run Dev Smoke
+        id: dev_smoke
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node shared/tools/ci/aimandala-smoke.mjs \
+            --env dev \
+            --mode "${{ steps.dev_mode.outputs.mode }}" \
+            --output "$RUNNER_TEMP/nightly-dev-smoke.json" 2>&1 | tee "$RUNNER_TEMP/nightly-dev-smoke.log"
+
+      - name: Sync Dev Nightly Issue
+        if: always()
+        env:
+          PAPERCLIP_API_BASE: ${{ secrets.PAPERCLIP_API_BASE }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
+        run: |
+          set -euo pipefail
+          RESULT="resolved"
+          if [[ "${{ steps.dev_smoke.outcome }}" != "success" ]]; then
+            RESULT="failed"
+          fi
+          node shared/tools/ci/paperclip-ci-issue.mjs \
+            --soft-fail \
+            --company-id "$PAPERCLIP_COMPANY_ID" \
+            --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:nightly-smoke" \
+            --kind "deploy-or-smoke-failure" \
+            --workflow "nightly-smoke" \
+            --repository "${{ github.repository }}" \
+            --branch "main" \
+            --job "nightly-dev-smoke" \
+            --sha "${{ github.sha }}" \
+            --run-number "${{ github.run_number }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --commit-parent \
+            --failed-step "Run Dev Smoke" \
+            --summary-file "$RUNNER_TEMP/nightly-dev-smoke.log" \
+            --result "$RESULT" \
+            --environment "dev" \
+            --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" \
+            --owner-label "Engineer"
+
+      - name: Fail Dev Smoke Job
+        if: steps.dev_smoke.outcome != 'success'
+        run: exit 1
+
+  nightly-prod-smoke:
+    name: nightly-prod-smoke
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.target == 'all' ||
+      github.event.inputs.target == 'prod'
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Resolve Prod Smoke Mode
+        id: prod_mode
+        run: |
+          set -euo pipefail
+          MODE="basic"
+          WITH_UPGRADE="false"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            MODE="${{ github.event.inputs.mode }}"
+            if [[ "$MODE" == "deep" ]]; then
+              WITH_UPGRADE="true"
+            fi
+          fi
+          printf 'mode=%s\n' "$MODE" >> "$GITHUB_OUTPUT"
+          printf 'with_upgrade=%s\n' "$WITH_UPGRADE" >> "$GITHUB_OUTPUT"
+
+      - name: Run Prod Smoke
+        id: prod_smoke
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node shared/tools/ci/aimandala-smoke.mjs \
+            --env prod \
+            --mode "${{ steps.prod_mode.outputs.mode }}" \
+            --fixture-path "projects/aimandala/fixtures/toc-mvp/assets/mandala-test-01.JPG" \
+            --with-upgrade "${{ steps.prod_mode.outputs.with_upgrade }}" \
+            --output "$RUNNER_TEMP/nightly-prod-smoke.json" 2>&1 | tee "$RUNNER_TEMP/nightly-prod-smoke.log"
+
+      - name: Sync Prod Nightly Issue
+        if: always()
+        env:
+          PAPERCLIP_API_BASE: ${{ secrets.PAPERCLIP_API_BASE }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
+        run: |
+          set -euo pipefail
+          RESULT="resolved"
+          if [[ "${{ steps.prod_smoke.outcome }}" != "success" ]]; then
+            RESULT="failed"
+          fi
+          node shared/tools/ci/paperclip-ci-issue.mjs \
+            --soft-fail \
+            --company-id "$PAPERCLIP_COMPANY_ID" \
+            --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:nightly-smoke" \
+            --kind "deploy-or-smoke-failure" \
+            --workflow "nightly-smoke" \
+            --repository "${{ github.repository }}" \
+            --branch "release" \
+            --job "nightly-prod-smoke" \
+            --sha "${{ github.sha }}" \
+            --run-number "${{ github.run_number }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --commit-parent \
+            --failed-step "Run Prod Smoke" \
+            --summary-file "$RUNNER_TEMP/nightly-prod-smoke.log" \
+            --result "$RESULT" \
+            --environment "prod" \
+            --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" \
+            --owner-label "Engineer"
+
+      - name: Fail Prod Smoke Job
+        if: steps.prod_smoke.outcome != 'success'
+        run: exit 1

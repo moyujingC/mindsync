@@ -76,15 +76,53 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
     overall_impression:
       "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
     structured: {
-      title: "一镜 Lite 版预览",
-      overall_impression:
+      topic_context: {
+        topic: "general",
+        topic_label: "全面解读",
+        report_mode: "lite",
+        orientation: {
+          intro: "这份报告会从全面解读这个议题角度看这张画。",
+          focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+          key_terms: [],
+        },
+      },
+      current_reading:
         "你当前的表达像是在试着把注意力从外部噪音收回来，先回到自己的中心。",
-      visual_elements_rendered:
+      visual_basis:
         "中心颜色密度更高，外围线条更轻，说明你正在把主要能量压缩到一个更可控的范围里。",
-      emotion_portrait_rendered:
+      pattern_interpretation:
         "既有想进一步整理内在感受的需求，也保留了对外部变化的敏感度，因此画面同时出现稳住与扩张的张力。",
-      pro_teaser:
-        "如果想看更完整的层次拆解，后续可以从现有入口继续进入一梳 Pro 版路径。",
+      life_connection:
+        "留意你在哪些场景里最容易重新被外部节奏带走。",
+      lite_healing_guidance: {
+        directions: [
+          {
+            title: "先把节奏放缓一点",
+            content: "这次先不急着回应外部变化，先确认自己真正想守住的是什么。",
+          },
+          {
+            title: "把理解放回现实场景",
+            content: "留意你在哪些场景里最容易重新被外部节奏带走。",
+          },
+        ],
+        micro_practices: [
+          {
+            title: "一句停顿",
+            content: "遇到想立刻回应的时候，先停三秒，再决定要不要开口。",
+          },
+          {
+            title: "一句记录",
+            content: "把今天最明显的一次收紧感写下来，只记录，不分析。",
+          },
+        ],
+      },
+      pro_report_entry: {
+        title: "另一份更深的独立报告",
+        summary:
+          "如果你希望从更深层结构继续理解这张画，Pro 会提供更完整的结构、根因与疗愈视角。",
+        product_note:
+          "Pro 不是 Lite 的升级版，而是另一份独立购买、独立成立的深度完整解读。",
+      },
     },
     report:
       version === "pro"
@@ -95,7 +133,7 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
         ? "这个模式更像长期形成，还是最近被触发？\n我怎样减少过度消耗？\n什么环境最支持我的表达？"
         : null,
     can_upgrade: true,
-    upgrade_price: 49,
+    upgrade_price: 39,
     error: null,
   };
 }
@@ -168,7 +206,6 @@ export function createPreviewAppProps(
       return {
         route,
         uploadDraft: draft,
-        uploadDetection,
       };
 
     case "reportEntry":
@@ -213,15 +250,11 @@ export function createPreviewAppProps(
         records: historyRecordsOverride ?? createMockRecords(),
       };
 
-    case "upgrade":
+    case "historyRecordDetail":
       return {
         route,
         uploadDraft: draft,
-        flowState: flowStateOverride ?? {
-          ...baseFlowState,
-          step: "upgradePlaceholder",
-          report: createMockReport("pro"),
-        },
+        record: (historyRecordsOverride ?? createMockRecords())[0],
       };
   }
 }

@@ -62,7 +62,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/qa-gate-review/templates/QA-评审模板.md`
+- `templates/QA-评审模板.md`
 
 ## 质量检查项
 

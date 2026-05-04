@@ -40,7 +40,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/content-grounded-transform/templates/内容转译模板.md`
+- `templates/内容转译模板.md`
 
 ## 示例调用
 

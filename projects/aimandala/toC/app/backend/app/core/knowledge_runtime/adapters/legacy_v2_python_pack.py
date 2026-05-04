@@ -146,6 +146,109 @@ HEALING_ISSUE_MAPPINGS = {
     },
 }
 
+_TRANSITION_OVERLOAD_IMBALANCE = {
+    "category": "阶段迁移",
+    "relation": "旧节奏与新节奏切换",
+    "mechanism": "旧有模式尚未完全退出，新阶段的拉力又提前进入，导致内在承载出现拥堵",
+    "color_features": "主导元素正在切换，三圈推进速度不一致，常见于画面节奏处在重新整理的阶段",
+    "psychology": "既想继续往前，又担心自己暂时接不住变化，容易在推进与回撤之间来回拉扯",
+    "manifestation": "过渡期里会先想稳住安全感，再决定是否继续行动，因此常呈现想靠近又先后退的状态",
+    "three_circles": {
+        "inner": "内心仍在确认新的安全感和承载边界",
+        "middle": "与关系或任务的连接方式正在重组，容易出现节奏卡顿",
+        "outer": "对外表达开始调整，但旧惯性还会把你拉回熟悉模式",
+    },
+    "healing_direction": "先稳住承载，再分段推进，让新节奏有空间慢慢落地",
+    "color_prescription": "增加黄色和绿色稳定根基，辅以少量蓝色帮助过渡期降噪",
+    "toc_supported": True,
+}
+
+_TRANSITION_OVERLOAD_THEME_MAPPINGS = {
+    "general": {
+        "核心矛盾": "新旧节奏暂时不同步",
+        "具体表现": "一部分自己已经想往前走，另一部分自己还在回头确认安全感",
+        "转变方向": "先稳住节奏，再让变化分段落地",
+    },
+    "father_relationship": {
+        "核心矛盾": "想靠近却又先退回",
+        "具体表现": "关系节奏正在变化，但你和父亲都还没找到新的相处方式",
+        "转变方向": "先稳定沟通节奏，再让新的连接慢慢落地",
+    },
+    "mother_relationship": {
+        "核心矛盾": "依赖与独立同时拉扯",
+        "具体表现": "旧的依赖方式在退出，但新的边界和亲密方式还没完全建立",
+        "转变方向": "允许关系缓慢重组，用更稳定的节奏表达真实需要",
+    },
+    "intimate_relationship": {
+        "核心矛盾": "想靠近又怕失衡",
+        "具体表现": "关系节奏在切换时，你会一边想推进亲密，一边又先把自己收回来",
+        "转变方向": "先把感受说清楚，再让靠近和退回都变得可沟通",
+    },
+    "parent_child_relationship": {
+        "核心矛盾": "旧养育节奏跟不上孩子变化",
+        "具体表现": "孩子的阶段在变化，但家庭沟通和支持方式还停留在旧模式里",
+        "转变方向": "先更新沟通方式，再逐步调整期待和边界",
+    },
+    "wealth_career": {
+        "核心矛盾": "旧节奏退出时承载跟不上",
+        "具体表现": "旧项目或旧路径正在退场，但新阶段真正推进前你又会先迟疑和回撤",
+        "转变方向": "先稳住基本盘，把变化拆成可承接的小步动作",
+    },
+    "health_wellness": {
+        "核心矛盾": "身体节奏切换时承载超负荷",
+        "具体表现": "作息、压力或生活方式正在变化，身体还没完成适配，容易感到疲惫和卡顿",
+        "转变方向": "先降噪和减负，让身体有空间重新建立稳定节律",
+    },
+    "personal_growth": {
+        "核心矛盾": "旧身份放不下，新自我又还没站稳",
+        "具体表现": "你已经察觉自己要进入下一个阶段，但行动和内在认同还没有完全同步",
+        "转变方向": "先允许自己处在过渡期，再用小实验把新节奏慢慢坐实",
+    },
+}
+
+_TRANSITION_OVERLOAD_HEALING_MAPPINGS = {
+    "father_relationship": {"issue_type": "情绪压抑与沟通障碍"},
+    "general": {"issue_type": "能量失衡"},
+    "health_wellness": {"issue_type": "能量耗竭"},
+    "intimate_relationship": {"issue_type": "沟通障碍"},
+    "mother_relationship": {"issue_type": "情绪冲突"},
+    "parent_child_relationship": {"issue_type": "亲子沟通模式障碍"},
+    "personal_growth": {"issue_type": "成长停滞/迷茫"},
+    "wealth_career": {"issue_type": "事业停滞"},
+}
+
+EXPORTED_IMBALANCE_TYPES = {
+    **IMBALANCE_TYPES,
+    "transition-overload": _TRANSITION_OVERLOAD_IMBALANCE,
+}
+EXPORTED_TOC_IMBALANCE_TYPES = [*TOC_IMBALANCE_TYPES, "transition-overload"]
+EXPORTED_IMBALANCE_CATEGORIES = {
+    **IMBALANCE_CATEGORIES,
+    "阶段迁移": ["transition-overload"],
+}
+EXPORTED_IMBALANCE_MAPPINGS = {
+    theme_id: {
+        **theme_mappings,
+        **(
+            {"transition-overload": _TRANSITION_OVERLOAD_THEME_MAPPINGS[theme_id]}
+            if theme_id in _TRANSITION_OVERLOAD_THEME_MAPPINGS
+            else {}
+        ),
+    }
+    for theme_id, theme_mappings in IMBALANCE_MAPPINGS.items()
+}
+EXPORTED_HEALING_ISSUE_MAPPINGS = {
+    theme_id: {
+        **theme_mappings,
+        **(
+            {"transition-overload": _TRANSITION_OVERLOAD_HEALING_MAPPINGS[theme_id]}
+            if theme_id in _TRANSITION_OVERLOAD_HEALING_MAPPINGS
+            else {}
+        ),
+    }
+    for theme_id, theme_mappings in HEALING_ISSUE_MAPPINGS.items()
+}
+
 
 def _asset(
     *,
@@ -307,21 +410,21 @@ class LegacyV2PythonPackExporter:
                 asset_id="rule.imbalance_types",
                 asset_type="rule",
                 payload={
-                    "imbalances": IMBALANCE_TYPES,
-                    "toc_supported": TOC_IMBALANCE_TYPES,
+                    "imbalances": EXPORTED_IMBALANCE_TYPES,
+                    "toc_supported": EXPORTED_TOC_IMBALANCE_TYPES,
                     "tob_exclusive": TOB_EXCLUSIVE_TYPES,
-                    "categories": IMBALANCE_CATEGORIES,
+                    "categories": EXPORTED_IMBALANCE_CATEGORIES,
                 },
             ),
             "rules/theme_mappings.yaml": _asset(
                 asset_id="rule.theme_mappings",
                 asset_type="rule",
-                payload={"mappings": IMBALANCE_MAPPINGS},
+                payload={"mappings": EXPORTED_IMBALANCE_MAPPINGS},
             ),
             "rules/healing_issue_mappings.yaml": _asset(
                 asset_id="rule.healing_issue_mappings",
                 asset_type="rule",
-                payload={"mappings": HEALING_ISSUE_MAPPINGS},
+                payload={"mappings": EXPORTED_HEALING_ISSUE_MAPPINGS},
             ),
             "healing/templates.yaml": _asset(
                 asset_id="healing.templates",

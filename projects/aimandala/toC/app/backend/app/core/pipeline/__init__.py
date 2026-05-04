@@ -3,20 +3,13 @@
 from .orchestrator_v2 import GenerationStage, LayeredOrchestrator, PricingSnapshot
 from .generation_runtime import (
     DeterministicReportGenerationRuntime,
-    PromptBackedReportGenerationRuntime,
+    LLMReportGenerationRuntime,
 )
 from .report_generation_contracts import (
     LiteGenerationBundle,
     ProGenerationBundle,
     ReportGenerationContext,
     ReportGenerationRuntime,
-)
-from .prompt_runtime import NoopPromptRuntime, PromptRuntime
-from .prompt_runtime import (
-    HTTPPromptRuntime,
-    HTTPPromptRuntimeConfig,
-    create_prompt_runtime_from_env,
-    load_http_prompt_runtime_config_from_env,
 )
 from .report_contracts import PromptSchemaValidator, ReportContractAssembler
 from .report_blueprints import (
@@ -35,18 +28,12 @@ __all__ = [
     "DEFAULT_PRO_TEASER",
     "DeterministicReportGenerationRuntime",
     "GenerationStage",
+    "LLMReportGenerationRuntime",
     "LITE_REPORT_BLUEPRINT",
     "LITE_AWARENESS_TITLES",
     "LiteGenerationBundle",
     "LayeredOrchestrator",
-    "HTTPPromptRuntime",
-    "HTTPPromptRuntimeConfig",
-    "NoopPromptRuntime",
     "PricingSnapshot",
-    "PromptBackedReportGenerationRuntime",
-    "PromptRuntime",
-    "create_prompt_runtime_from_env",
-    "load_http_prompt_runtime_config_from_env",
     "PRO_IMBALANCE_LABELS",
     "PRO_IMBALANCE_SELECTION_RULES",
     "PRO_REPORT_BLUEPRINT",

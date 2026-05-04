@@ -1,0 +1,57 @@
+.am-hidden {
+  display: none !important;
+}
+
+.am-text-balance {
+  text-wrap: balance;
+}
+
+.am-surface-stack {
+  display: grid;
+  gap: var(--am-space-3);
+}
+
+.am-stack-gap-sm {
+  gap: 10px !important;
+}
+
+.mw-stack {
+  display: grid;
+  gap: var(--am-space-4);
+}
+
+.mw-prewrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mw-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.am-scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.am-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.am-lucide-spin {
+  animation: am-lucide-spin 1s linear infinite;
+}
+
+@keyframes am-lucide-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

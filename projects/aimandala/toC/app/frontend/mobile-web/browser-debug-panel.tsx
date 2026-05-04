@@ -22,6 +22,7 @@ import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
 
 export type DebugWorkbenchTabId =
+  | "layer0-first"
   | "pipeline"
   | "knowledge"
   | "report-trace"
@@ -32,11 +33,14 @@ export const DEBUG_WORKBENCH_TABS: Array<{
   label: string;
   description: string;
 }> = [
+  { id: "layer0-first", label: "Layer0 首层", description: "只看 input_package 与 visual_analysis_basis" },
   { id: "pipeline", label: "Pipeline", description: "链路时间线、任务回放、API traces、runtime snapshot" },
   { id: "knowledge", label: "Knowledge", description: "build summary、Layer0 evidence、source refs、字段到知识映射" },
   { id: "report-trace", label: "Report Trace", description: "field -> knowledge -> prompt snippet -> final field" },
   { id: "samples", label: "Samples", description: "固定 fixtures 回归摘要与 current / candidate diff" },
 ];
+
+const PLACEHOLDER_INTERPRETATION_IDS = new Set(["", "demo-interpretation-id"]);
 
 interface BrowserDebugPanelProps {
   route: MobileWebRouteId;
@@ -125,6 +129,15 @@ function toArrayRecords(value: unknown): Array<Record<string, unknown>> {
   );
 }
 
+function toStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean);
+}
+
 function includesNormalized(haystack: string, needle: string): boolean {
   return haystack.toLowerCase().includes(needle.toLowerCase());
 }
@@ -166,7 +179,7 @@ function buildPromptMatchKeywords(
     ]) {
       if (typeof candidate === "string" && candidate.trim()) {
         candidate
-          .split(/[\/,]/)
+          .split(/[/,]/)
           .map((part) => part.trim())
           .filter(Boolean)
           .forEach((part) => keywords.add(part));
@@ -207,6 +220,22 @@ function findLatestTrace(
   return traces.find(matcher);
 }
 
+function renderSimpleValue(value: unknown): string {
+  if (typeof value === "string") {
+    return value || "--";
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    return value.length ? value.map((item) => renderSimpleValue(item)).join(" / ") : "--";
+  }
+  if (value && typeof value === "object") {
+    return formatJson(value);
+  }
+  return "--";
+}
+
 function createStageDescriptors(input: {
   previewMode: boolean;
   draft: MobileWebUploadDraft;
@@ -238,15 +267,13 @@ function createStageDescriptors(input: {
     (trace) =>
       trace.url.includes("/interpretations") &&
       !trace.url.includes("/status") &&
-      !trace.url.includes("/report") &&
-      !trace.url.includes("/upgrade"),
+      !trace.url.includes("/report"),
   );
   const statusTrace = findLatestTrace(traces, (trace) => trace.url.includes("/status"));
   const liteReportTrace = findLatestTrace(
     traces,
     (trace) => trace.url.includes("/report") && !trace.url.includes("version=pro"),
   );
-  const upgradeTrace = findLatestTrace(traces, (trace) => trace.url.includes("/upgrade"));
   const proReportTrace = findLatestTrace(
     traces,
     (trace) => trace.url.includes("/report") && trace.url.includes("version=pro"),
@@ -324,29 +351,8 @@ function createStageDescriptors(input: {
           : liteReportTrace?.errorMessage ?? "等待 Lite report",
     },
     {
-      key: "upgrade",
-      label: "5. Pro 升级入口",
-      description: "upgradeInterpretation",
-      state:
-        reportVariant !== "pro"
-          ? "idle"
-          : upgradeTrace?.phase === "error"
-            ? "error"
-            : activeFlowState?.step === "upgradePlaceholder" || upgradeTrace?.phase === "success"
-              ? "done"
-              : activeFlowState?.step === "liteGenerating"
-                ? "running"
-                : "idle",
-      detail:
-        reportVariant !== "pro"
-          ? "当前未选择 Pro 链路"
-          : activeFlowState?.step === "upgradePlaceholder"
-            ? "升级入口已打开"
-            : upgradeTrace?.errorMessage ?? "等待 upgrade",
-    },
-    {
       key: "pro-report",
-      label: "6. Pro 报告",
+      label: "5. Pro 报告",
       description: "report(version=pro)",
       state:
         reportVariant !== "pro"
@@ -475,7 +481,7 @@ export function BrowserDebugPanel({
   previewMode,
   draft,
   interpretationId,
-  userId,
+  userId: _userId,
   flowState,
   detection,
   detectError,
@@ -484,7 +490,7 @@ export function BrowserDebugPanel({
   apiTraces,
   timelineEntries,
   onClearApiTraces,
-  initialTab = "pipeline",
+  initialTab = "layer0-first",
   preloadedReportDebugProfile = null,
   preloadedCurrentBuildSummary = null,
   preloadedCandidateBuildSummary = null,
@@ -495,6 +501,11 @@ export function BrowserDebugPanel({
   const activeFlowState = previewMode ? flowState : runtimeSnapshot?.flowState ?? null;
   const activeInterpretationId =
     activeFlowState?.interpretation?.interpretation_id ?? interpretationId;
+  const canFetchReportDebug =
+    !previewMode &&
+    !disableWorkbenchFetch &&
+    Boolean(activeInterpretationId) &&
+    !PLACEHOLDER_INTERPRETATION_IDS.has(activeInterpretationId);
   const stages = createStageDescriptors({
     previewMode,
     draft,
@@ -550,6 +561,75 @@ export function BrowserDebugPanel({
     () => toRecord(reportDebugProfile?.knowledge_debug),
     [reportDebugProfile],
   );
+  const layer0Evidence = useMemo(
+    () => toRecord(knowledgeDebug.layer0_evidence),
+    [knowledgeDebug],
+  );
+  const inputPackage = useMemo(() => {
+    const canonical = toRecord(knowledgeDebug.input_package);
+    if (Object.keys(canonical).length) {
+      return canonical;
+    }
+    const layer0Value = toRecord(layer0Evidence.input_package);
+    if (Object.keys(layer0Value).length) {
+      return layer0Value;
+    }
+    return toRecord(knowledgeDebug.review_input_package);
+  }, [knowledgeDebug, layer0Evidence]);
+  const visualAnalysisBasis = useMemo(() => {
+    const canonical = toRecord(knowledgeDebug.visual_analysis_basis);
+    if (Object.keys(canonical).length) {
+      return canonical;
+    }
+    return toRecord(layer0Evidence.visual_analysis_basis);
+  }, [knowledgeDebug, layer0Evidence]);
+  const modelTrace = useMemo(
+    () => toRecord(knowledgeDebug.model_trace),
+    [knowledgeDebug],
+  );
+  const visionTrace = useMemo(
+    () => toRecord(modelTrace.vision),
+    [modelTrace],
+  );
+  const layer0Passed = useMemo(() => {
+    const explicit = layer0Evidence.layer0_passed;
+    if (typeof explicit === "boolean") {
+      return explicit;
+    }
+    return true;
+  }, [layer0Evidence]);
+  const layer0FailureReason = useMemo(
+    () => renderSimpleValue(layer0Evidence.layer0_failure_reason || visionTrace.failure_reason),
+    [layer0Evidence, visionTrace],
+  );
+  const layer0Summary = useMemo(
+    () => toRecord(knowledgeDebug.review_layer0_summary),
+    [knowledgeDebug],
+  );
+  const circleCards = useMemo(() => {
+    const circles = toRecord(visualAnalysisBasis.circles);
+    return ["inner", "middle", "outer"].map((key) => ({
+      key,
+      label: key === "inner" ? "内圈" : key === "middle" ? "中圈" : "外圈",
+      value: toRecord(circles[key]),
+    }));
+  }, [visualAnalysisBasis]);
+  const directJudgment = useMemo(
+    () => toRecord(visualAnalysisBasis.direct_judgment_hits),
+    [visualAnalysisBasis],
+  );
+  const directJudgmentCatalog = useMemo(
+    () => toArrayRecords(directJudgment.catalog_items),
+    [directJudgment],
+  );
+  const directJudgmentHits = useMemo(
+    () => toArrayRecords(directJudgment.hits),
+    [directJudgment],
+  );
+  const crossCircleRelations = useMemo(
+    () => toArrayRecords(visualAnalysisBasis.cross_circle_relations),
+    [visualAnalysisBasis],
+  );
   const knowledgeFieldMap = useMemo(
     () => toRecord(knowledgeDebug.field_to_knowledge_map),
     [knowledgeDebug],
@@ -577,6 +657,18 @@ export function BrowserDebugPanel({
   const fallbackSummary = useMemo(
     () => toRecord(reportDebugProfile?.fallback_summary),
     [reportDebugProfile],
+  );
+  const topicContextTrace = useMemo(
+    () => toRecord(knowledgeDebug.topic_context_trace),
+    [knowledgeDebug],
+  );
+  const productBlockDebug = useMemo(
+    () => toRecord(knowledgeDebug.product_block_debug),
+    [knowledgeDebug],
+  );
+  const internalCompatibility = useMemo(
+    () => toRecord(knowledgeDebug.internal_compatibility),
+    [knowledgeDebug],
   );
   const fieldList = useMemo(() => {
     const keys = new Set<string>([
@@ -666,7 +758,7 @@ export function BrowserDebugPanel({
   }, [mergedFixtureRows]);
 
   useEffect(() => {
-    if (disableWorkbenchFetch || previewMode || !activeInterpretationId) {
+    if (!canFetchReportDebug) {
       return;
     }
     let cancelled = false;
@@ -692,7 +784,7 @@ export function BrowserDebugPanel({
     return () => {
       cancelled = true;
     };
-  }, [activeInterpretationId, disableWorkbenchFetch, previewMode]);
+  }, [activeInterpretationId, canFetchReportDebug]);
 
   useEffect(() => {
     if (disableWorkbenchFetch || currentBuildSummary) {
@@ -824,6 +916,255 @@ export function BrowserDebugPanel({
           ))}
         </div>
       </section>
+
+      {activeTab === "layer0-first" ? (
+        <>
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>首层数据质量审阅</h3>
+              <span>{reportDebugLoading ? "loading" : "ready"}</span>
+            </div>
+            {reportDebugError ? <p className="mw-inline-error">{reportDebugError}</p> : null}
+            <p className="muted">
+              当前只展示这次解读的输入包和客观视觉转述。知识命中、规则推导、报告映射先不放在这个审阅入口里。
+            </p>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>input_package</h3>
+              <span>输入包</span>
+            </div>
+            <div className="browser-debug-kv">
+              <div>
+                <span>image_ref</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.image).image_ref)}</strong>
+              </div>
+              <div>
+                <span>topic</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.topic_input).topic)}</strong>
+              </div>
+              <div>
+                <span>topic_label</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.topic_input).topic_label)}</strong>
+              </div>
+              <div>
+                <span>circle source</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.circle_config).source)}</strong>
+              </div>
+              <div>
+                <span>inner_radius</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.circle_config).inner_radius)}</strong>
+              </div>
+              <div>
+                <span>middle_radius</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.circle_config).middle_radius)}</strong>
+              </div>
+              <div>
+                <span>painting_intention</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.user_context).painting_intention)}</strong>
+              </div>
+              <div>
+                <span>painting_feeling</span>
+                <strong>{renderSimpleValue(toRecord(inputPackage.user_context).painting_feeling)}</strong>
+              </div>
+            </div>
+            <details className="browser-debug-json">
+              <summary>raw input_package</summary>
+              <pre>{formatJson(inputPackage)}</pre>
+            </details>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>visual_analysis_basis</h3>
+              <span>客观视觉转述</span>
+            </div>
+            <div className="browser-debug-kv">
+              <div>
+                <span>Layer0 status</span>
+                <strong>{layer0Passed ? "pass" : "fail"}</strong>
+              </div>
+              <div>
+                <span>vision endpoint</span>
+                <strong>{renderSimpleValue(visionTrace.endpoint_id)}</strong>
+              </div>
+              <div>
+                <span>vision model</span>
+                <strong>{renderSimpleValue(visionTrace.resolved_model)}</strong>
+              </div>
+              <div>
+                <span>vision source</span>
+                <strong>{renderSimpleValue(visionTrace.source)}</strong>
+              </div>
+              <div>
+                <span>failure reason</span>
+                <strong>{layer0FailureReason}</strong>
+              </div>
+            </div>
+            <div className="browser-debug-grid">
+              <article className="browser-debug-card">
+                <h4>global_visual_summary</h4>
+                <p>{renderSimpleValue(visualAnalysisBasis.global_visual_summary)}</p>
+              </article>
+              <article className="browser-debug-card">
+                <h4>首层摘要</h4>
+                <p>{renderSimpleValue(layer0Summary.visual_fact_summary)}</p>
+                <p>{renderSimpleValue(layer0Summary.per_circle_observation_summary)}</p>
+              </article>
+              <article className="browser-debug-card">
+                <h4>llm_color_observation</h4>
+                <p>{renderSimpleValue(toRecord(visualAnalysisBasis.llm_color_observation).summary)}</p>
+              </article>
+              <article className="browser-debug-card">
+                <h4>program_color_measurement</h4>
+                <p>{renderSimpleValue(toRecord(visualAnalysisBasis.program_color_measurement).summary)}</p>
+              </article>
+            </div>
+
+            <div className="browser-debug-section__header">
+              <h3>direct_judgment_hits</h3>
+              <span>{renderSimpleValue(directJudgment.catalog_version)}</span>
+            </div>
+            <div className="browser-debug-grid">
+              <article className="browser-debug-card">
+                <h4>命中结果</h4>
+                {directJudgmentHits.length === 0 ? (
+                  <p className="muted">暂无直断结果。</p>
+                ) : (
+                  directJudgmentHits.map((item) => (
+                    <div key={String(item.judgment_id ?? Math.random())}>
+                      <strong>{renderSimpleValue(item.judgment_label)}</strong>
+                      <p>{renderSimpleValue(item.matched ? "matched" : "not matched")} · {renderSimpleValue(item.confidence)}</p>
+                      <p>{renderSimpleValue(item.evidence_excerpt)}</p>
+                    </div>
+                  ))
+                )}
+              </article>
+              <article className="browser-debug-card">
+                <h4>catalog</h4>
+                {directJudgmentCatalog.length === 0 ? (
+                  <p className="muted">暂无 catalog。</p>
+                ) : (
+                  directJudgmentCatalog.map((item) => (
+                    <div key={String(item.judgment_id ?? Math.random())}>
+                      <strong>{renderSimpleValue(item.judgment_id)}</strong>
+                      <p>{renderSimpleValue(item.judgment_label)}</p>
+                    </div>
+                  ))
+                )}
+              </article>
+            </div>
+
+            <div className="browser-debug-section__header">
+              <h3>circle_band_metrics</h3>
+              <span>圈带厚度</span>
+            </div>
+            <div className="browser-debug-kv">
+              {["inner", "middle", "outer"].map((key) => {
+                const metric = toRecord(toRecord(visualAnalysisBasis.circle_band_metrics)[key]);
+                return (
+                  <div key={key}>
+                    <span>{key}</span>
+                    <strong>{renderSimpleValue(metric.band_ratio)}</strong>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="browser-debug-section__header">
+              <h3>三圈观察</h3>
+              <span>圈摘要 + 显著块</span>
+            </div>
+            <div className="browser-debug-grid">
+              {circleCards.map(({ key, label, value }) => {
+                const palette = toRecord(value.palette);
+                const colorStats = toRecord(value.color_stats);
+                const composition = toRecord(value.composition);
+                const brushwork = toRecord(value.brushwork);
+                const blocks = toArrayRecords(value.blocks);
+                return (
+                  <article key={key} className="browser-debug-card">
+                    <h4>{label}</h4>
+                    <p>{renderSimpleValue(value.observation_summary)}</p>
+                    <div className="browser-debug-kv">
+                      <div>
+                        <span>canonical colors</span>
+                        <strong>{renderSimpleValue(toStringArray(palette.canonical_color_labels))}</strong>
+                      </div>
+                      <div>
+                        <span>depth_state</span>
+                        <strong>{renderSimpleValue(colorStats.depth_state)}</strong>
+                      </div>
+                      <div>
+                        <span>distribution</span>
+                        <strong>{renderSimpleValue(colorStats.distribution)}</strong>
+                      </div>
+                      <div>
+                        <span>whitespace_state</span>
+                        <strong>{renderSimpleValue(composition.whitespace_state)}</strong>
+                      </div>
+                      <div>
+                        <span>brushwork</span>
+                        <strong>{renderSimpleValue(brushwork.stroke_quality)}</strong>
+                      </div>
+                      <div>
+                        <span>blocks</span>
+                        <strong>{String(blocks.length)}</strong>
+                      </div>
+                    </div>
+                    {blocks.length ? (
+                      <details className="browser-debug-json">
+                        <summary>{label} 显著块 blocks</summary>
+                        <pre>{formatJson(blocks)}</pre>
+                      </details>
+                    ) : null}
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="browser-debug-section__header">
+              <h3>cross_circle_relations</h3>
+              <span>跨圈关系</span>
+            </div>
+            <div className="browser-debug-grid">
+              {crossCircleRelations.length === 0 ? (
+                <article className="browser-debug-card">
+                  <p className="muted">暂无跨圈关系。</p>
+                </article>
+              ) : (
+                crossCircleRelations.map((item, index) => (
+                  <article key={`${String(item.from_circle)}-${String(item.to_circle)}-${index}`} className="browser-debug-card">
+                    <h4>{renderSimpleValue(item.relation_type)}</h4>
+                    <p>{renderSimpleValue(item.description)}</p>
+                  </article>
+                ))
+              )}
+            </div>
+
+            <div className="browser-debug-section__header">
+              <h3>prompt_meta</h3>
+              <span>追溯</span>
+            </div>
+            <div className="browser-debug-kv">
+              <div>
+                <span>prompt_version</span>
+                <strong>{renderSimpleValue(toRecord(visualAnalysisBasis.prompt_meta).prompt_version)}</strong>
+              </div>
+              <div>
+                <span>analysis_scope</span>
+                <strong>{renderSimpleValue(toRecord(visualAnalysisBasis.prompt_meta).analysis_scope)}</strong>
+              </div>
+            </div>
+
+            <details className="browser-debug-json">
+              <summary>raw visual_analysis_basis</summary>
+              <pre>{formatJson(visualAnalysisBasis)}</pre>
+            </details>
+          </section>
+        </>
+      ) : null}
 
       {activeTab === "pipeline" ? (
         <>
@@ -1029,17 +1370,29 @@ export function BrowserDebugPanel({
 
           <section className="browser-debug-section">
             <div className="browser-debug-section__header">
+              <h3>Topic Context Trace</h3>
+              <span>{String(topicContextTrace.knowledge_route ?? "unknown")}</span>
+            </div>
+            <div className="browser-debug-json">
+              <pre>{formatJson(topicContextTrace)}</pre>
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
               <h3>Layer0 Evidence</h3>
               <span>{reportDebugLoading ? "loading" : "ready"}</span>
             </div>
             {reportDebugError ? <p className="mw-inline-error">{reportDebugError}</p> : null}
             <div className="browser-debug-grid">
               {[
-                { label: "visual_facts", value: toRecord(knowledgeDebug.layer0_evidence).visual_facts },
-                { label: "knowledge_hits", value: toRecord(knowledgeDebug.layer0_evidence).knowledge_hits },
-                { label: "rule_evaluations", value: toRecord(knowledgeDebug.layer0_evidence).rule_evaluations },
-                { label: "theme_projection", value: toRecord(knowledgeDebug.layer0_evidence).theme_projection },
-                { label: "fallback_summary", value: toRecord(knowledgeDebug.layer0_evidence).fallback_summary },
+                { label: "input_package", value: layer0Evidence.input_package },
+                { label: "visual_analysis_basis", value: layer0Evidence.visual_analysis_basis },
+                { label: "visual_facts", value: layer0Evidence.visual_facts },
+                { label: "knowledge_hits", value: layer0Evidence.knowledge_hits },
+                { label: "rule_evaluations", value: layer0Evidence.rule_evaluations },
+                { label: "theme_projection", value: layer0Evidence.theme_projection },
+                { label: "fallback_summary", value: layer0Evidence.fallback_summary },
               ].map(({ label, value }) => (
                 <article key={label} className="browser-debug-card">
                   <h4>{label}</h4>
@@ -1157,6 +1510,31 @@ export function BrowserDebugPanel({
                 </article>
               </div>
             ) : null}
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Product Block Debug</h3>
+              <span>final / narrative / evidence / prompt / quality</span>
+            </div>
+            <div className="browser-debug-grid">
+              {Object.entries(productBlockDebug).map(([mode, blocks]) => (
+                <article key={mode} className="browser-debug-card">
+                  <h4>{mode}</h4>
+                  <pre>{formatJson(blocks)}</pre>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="browser-debug-section">
+            <div className="browser-debug-section__header">
+              <h3>Internal Compatibility</h3>
+              <span>{String(internalCompatibility.compatibility_used ?? false)}</span>
+            </div>
+            <div className="browser-debug-json">
+              <pre>{formatJson(internalCompatibility)}</pre>
+            </div>
           </section>
         </>
       ) : null}

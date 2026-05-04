@@ -4,10 +4,10 @@
 > 版本：0.1.0
 > owner：Product Spec Lead
 > last_updated：2026-04-03
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/fixtures/2026-04-03-mvp-sample-cases.md
+> source_of_truth：projects/aicareer/fixtures/2026-04-03-mvp-sample-cases.md
 > 项目：aicareer
 > 阶段：verification-prep
-> depends_on：/Users/xinran/Downloads/dev/mindsync/projects/aicareer/specs/2026-04-02-mvp-spec.md
+> depends_on：projects/aicareer/specs/MVP产品规范.md
 > reviewers：CEO / Orchestrator, Test / QA
 
 这份文档定义 `aicareer` 第一轮纸面验证使用的模拟样本。

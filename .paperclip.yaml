@@ -1,4 +1,4 @@
-# .paperclip.yaml - 墨予镜公司 Paperclip 配置
+# .paperclip.yaml - 知行工坊 Paperclip 配置
 # 这是 MindSync Monorepo 工作空间的核心配置文件
 # 定义了公司结构、Agents、Goals 和 Projects 的元数据
 # 公司对象主数据以 company/项目注册表.yaml 为治理源；
@@ -6,64 +6,83 @@
 
 # 公司信息
 company:
-  id: "e53a86d4-299d-4a9c-8db5-6e82c77b76c8"
-  name: "墨予镜"
-  description: "以墨予思，以镜观己"
-  mode: "local_trusted"
-  host: "localhost"
+  id: "be191a6e-7447-4821-a93d-9114214c4a64"
+  name: "知行工坊"
+  description: "一人公司系统，以知促行，以行验知"
+  mode: "remote_authenticated"
+  host: "vm-0-11-opencloudos.tail176582.ts.net"
   port: 3100
+  # 当前口径：
+  # - control plane host 继续是 automation 节点
+  # - server execution host 继续承接 server_automation
+  # - local execution host 正式绑定到用户当前这台 Mac
+  # - codex_local / claude_local / pi_local 对普通任务路径默认由 Mac 本地执行器承接
+  # 对普通任务路径，不再把 *_local 默认解释成 automation 服务器本地。
 
 # Agent 配置
 agents:
-  - id: "d3d3f38e-7003-49d6-8301-825d8faf9ff8"
+  - id: "2014e2cd-af7a-4be1-bb60-e6a324b7c3c1"
     name: "CEO"
     role: "ceo"
+    # 临时回退口径：Hermes session resume 存在上游 bug，先切回 claude_local 保证 CEO 可用。
     adapter: "claude_local"
     directory: "agents/ceo"
 
-  - id: "8ee8ca86-8478-43e7-b22e-9878315a1271"
+  - id: "81c0b428-1016-42b6-8393-9f23cb1dca49"
+    name: "Idea Clarifier"
+    role: "idea_clarifier"
+    # 正式主链路：服务器侧 pi_local
+    # 当前已验证通过的模型口径：
+    # - provider/model: volcengine-coding-plan/Doubao-Seed-2.0-pro
+    # - pi 运行时 HOME: /paperclip
+    # - 通过自定义 Pi provider 走火山兼容的 openai-completions 链路
+    # 运行时兜底：当 pi_local 因环境缺失失败时，Paperclip 应自动回退到 claude_local
+    adapter: "pi_local"
+    directory: "agents/idea-clarifier"
+
+  - id: "499cd480-8072-42b7-b60b-ca94d2d4118c"
     name: "Business Lead"
     role: "business"
     adapter: "claude_local"
     directory: "agents/business-lead"
 
-  - id: "98779e06-b071-42c6-b6e9-ca42cf491578"
+  - id: "bf010eca-064d-41a3-9b8d-401e71c69d23"
     name: "Product Spec Lead"
     role: "product_spec"
     adapter: "claude_local"
     directory: "agents/product-spec-lead"
 
-  - id: "c0cb9c1f-4dd9-4ca5-9d95-fb7dc67c078b"
+  - id: "bad0ce29-22e4-4e2f-87b7-0fa26a0c4ba3"
     name: "UI / UX"
     role: "ui_ux"
     adapter: "claude_local"
     directory: "agents/ui-ux"
 
-  - id: "bae3a947-b810-476f-8a7c-ff7d85dbfe86"
+  - id: "da3da98c-79a7-4990-b26d-3530d2711c2e"
     name: "Research & Knowledge Lead"
     role: "research_knowledge"
     adapter: "claude_local"
     directory: "agents/research-knowledge-lead"
 
-  - id: "fe0d2c95-79d8-4ec7-a05a-6ec7c1d84881"
+  - id: "a575d0ee-6528-4d48-81b2-b32ec062be49"
     name: "Architect"
     role: "architect"
     adapter: "claude_local"
     directory: "agents/architect"
 
-  - id: "84ac6908-09f8-467b-a3fc-4a9c0b167a4f"
+  - id: "fd835fc1-7e14-487f-ba02-45eed5f6c221"
     name: "Engineer"
     role: "engineer"
     adapter: "codex_local"
     directory: "agents/engineer"
 
-  - id: "3896dab5-e7b2-4a87-9da2-97f73f08cafb"
+  - id: "74eec73d-6752-4478-bbe2-6215be534715"
     name: "Test / QA"
     role: "test_qa"
     adapter: "codex_local"
     directory: "agents/test-qa"
 
-  - id: "44c2d2c2-0b24-4e62-8397-b50ac1a72b2f"
+  - id: "2faf9d77-9454-44ec-97c2-dbd24d34a9e6"
     name: "Content Lead"
     role: "content"
     adapter: "claude_local"
@@ -92,7 +111,7 @@ goals:
       - "00403f31-add0-4b19-b715-6652a4b3dfe3"
 
   - id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
-    title: "墨予镜影响力建设"
+    title: "内容矩阵与多账号影响力建设"
     projects:
       - "6947ac34-cf22-4a87-bc4c-ded2edc77772"
 
@@ -100,6 +119,16 @@ goals:
     title: "研究中心建设"
     projects:
       - "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
+
+  - id: "f2db2682-eb58-4d95-8839-d05518f48d71"
+    title: "馨冉求职推进与交付"
+    projects:
+      - "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
+
+  - id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
+    title: "RelayHub能力建设"
+    projects:
+      - "relayhub"
 
 # Project 配置
 projects:
@@ -109,6 +138,14 @@ projects:
     directory: "projects/aimandala"
     repository: "https://github.com/MindSyncHub/ai-mandala"
     source_subdirectory: "."
+    # 运行态治理口径：
+    # - agent 的执行工作目录由 project / issue 级 execution workspace policy 决定
+    # - agent 自身 adapter 配置里的 cwd 仅保留为 legacy fallback
+    # - 一镜一梳当前默认策略应为：
+    #   - executionWorkspacePolicy.enabled = true
+    #   - defaultMode = isolated_workspace
+    #   - workspaceStrategy.type = git_worktree
+    #   - workspaceStrategy.worktreeParentDir = /opt/automation/worktrees
 
   - id: "00403f31-add0-4b19-b715-6652a4b3dfe3"
     name: "怀瑾握瑜"
@@ -118,7 +155,7 @@ projects:
     source_subdirectory: "."
 
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
-    name: "墨予镜 IP"
+    name: "内容矩阵"
     goal_id: "1c20b0f1-d8d6-4245-a5bb-54211b1a1bdf"
 
   - id: "7d8de414-4ef2-45c6-a0ef-5d03da1a9b29"
@@ -128,11 +165,25 @@ projects:
     repository: "https://github.com/MindSyncHub/mindsync"
     source_subdirectory: "projects/research-center"
 
+  - id: "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
+    name: "馨冉求职"
+    goal_id: "f2db2682-eb58-4d95-8839-d05518f48d71"
+    directory: "projects/xinran-jobhunt"
+    repository: "https://github.com/MindSyncHub/mindsync"
+    source_subdirectory: "projects/xinran-jobhunt"
+
+  - id: "relayhub"
+    name: "RelayHub"
+    goal_id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
+    directory: "projects/relayhub"
+    repository: "https://github.com/MindSyncHub/mindsync"
+    source_subdirectory: "projects/relayhub"
+
 # 同步配置
 sync:
   # Agent 配置同步
   agents:
-    paperclip_base: "${HOME}/.paperclip/instances/default/companies/e53a86d4-299d-4a9c-8db5-6e82c77b76c8/agents"
+    paperclip_base: "${HOME}/.paperclip/instances/default/companies/be191a6e-7447-4821-a93d-9114214c4a64/agents"
     mindsync_base: "agents"
 
   # 同步方向
@@ -143,6 +194,8 @@ sync:
 # 工作空间配置
 workspace:
   # 默认主工作区是 Monorepo 根目录；项目任务进入对应 projects/<slug>
+  # 这里的“进入”表示 Paperclip 在 project / issue 层解析执行工作区后，
+  # 再把最终 cwd 注入 agent 运行上下文；不要把它理解成 agent 自己写死工作目录。
   # 运行态 Agent 应优先读取：
   # 1. COMPANY.md
   # 2. company/项目注册表.yaml

@@ -1,0 +1,41 @@
+{
+  "name": "getnote-codex-local",
+  "version": "1.6.0",
+  "description": "getnote-codex-local：Codex 本地版 Get笔记 Skill，用于保存链接/图片/文本到笔记，执行语义搜索，并管理知识库与标签。",
+  "license": "MIT-0",
+  "author": "get-notes@luojilab.com",
+  "homepage": "https://biji.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iswalle/getnote-openclaw.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iswalle/getnote-openclaw/issues"
+  },
+  "keywords": [
+    "get笔记",
+    "笔记",
+    "notes",
+    "知识库",
+    "语义搜索",
+    "链接保存",
+    "图片OCR",
+    "录音转写",
+    "标签管理",
+    "openclaw",
+    "skill"
+  ],
+  "clawhub": {
+    "acceptLicenseTerms": true
+  },
+  "openclaw": {
+    "minVersion": "0.1.0",
+    "baseUrl": "https://openapi.biji.com",
+    "requires": {},
+    "optionalEnv": [
+      "GETNOTE_API_KEY",
+      "GETNOTE_CLIENT_ID",
+      "GETNOTE_OWNER_ID"
+    ]
+  }
+}

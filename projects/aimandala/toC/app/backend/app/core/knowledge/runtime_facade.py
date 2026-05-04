@@ -1,9 +1,9 @@
 """Runtime-backed compatibility helpers for the legacy knowledge package."""
 
-from app.core.knowledge_runtime.runtime import get_knowledge_runtime
-
 
 def _runtime():
+    from app.core.knowledge_runtime.runtime import get_knowledge_runtime
+
     return get_knowledge_runtime()
 
 

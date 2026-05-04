@@ -27,6 +27,7 @@ from app.core.uploads.storage import (
     _normalize_key_prefix,
     create_upload_storage_from_env,
     load_cos_upload_config_from_env,
+    load_cos_signed_url_ttl_seconds_from_env,
     load_local_upload_retention_hours_from_env,
     load_oss_upload_config_from_env,
     load_s3_upload_config_from_env,
@@ -158,6 +159,7 @@ def test_create_upload_storage_from_env_returns_cos_backend():
         region="ap-shanghai",
         key_prefix="aimandala/uploads",
         public_base_url=None,
+        signed_url_ttl_seconds=900,
     )
 
 
@@ -221,6 +223,27 @@ def test_load_local_upload_retention_hours_from_env_defaults_to_24():
         retention_hours = load_local_upload_retention_hours_from_env()
 
     assert retention_hours == 24
+
+
+def test_load_cos_signed_url_ttl_seconds_from_env_defaults_to_900():
+    with patch.dict(os.environ, {}, clear=False):
+        ttl_seconds = load_cos_signed_url_ttl_seconds_from_env()
+
+    assert ttl_seconds == 900
+
+
+def test_load_cos_signed_url_ttl_seconds_from_env_requires_positive_int():
+    with patch.dict(
+        os.environ,
+        {"AIMANDALA_COS_SIGNED_URL_TTL_SECONDS": "0"},
+        clear=False,
+    ):
+        try:
+            load_cos_signed_url_ttl_seconds_from_env()
+        except ValueError as error:
+            assert "positive integer" in str(error)
+        else:
+            raise AssertionError("Expected invalid signed url ttl to raise ValueError")
 
 
 def test_load_local_upload_retention_hours_from_env_requires_positive_int():
@@ -304,6 +327,7 @@ def test_oss_upload_storage_dry_run_returns_remote_metadata(tmp_path):
 
 def test_cos_upload_storage_returns_remote_metadata_and_keeps_local_path(tmp_path):
     upload_calls = []
+    presigned_calls = []
 
     class FakeCosConfig:
         def __init__(self, **kwargs):
@@ -315,6 +339,13 @@ def test_cos_upload_storage_returns_remote_metadata_and_keeps_local_path(tmp_pat
 
         def put_object(self, **kwargs):
             upload_calls.append(kwargs)
+
+        def get_presigned_download_url(self, **kwargs):
+            presigned_calls.append(kwargs)
+            return (
+                f"https://{self.config.kwargs.get('Domain') or 'demo-bucket.cos.ap-shanghai.myqcloud.com'}/"
+                f"{kwargs['Key']}?sign=demo"
+            )
 
     fake_qcloud_module = types.SimpleNamespace(
         CosConfig=FakeCosConfig,
@@ -328,6 +359,7 @@ def test_cos_upload_storage_returns_remote_metadata_and_keeps_local_path(tmp_pat
             region="ap-shanghai",
             key_prefix="mandala/uploads",
             public_base_url="https://cdn.example.com/assets",
+            signed_url_ttl_seconds=900,
         ),
         local_fallback=LocalUploadStorage(base_dir=tmp_path, retention_hours=24),
     )
@@ -344,13 +376,18 @@ def test_cos_upload_storage_returns_remote_metadata_and_keeps_local_path(tmp_pat
 
     assert stored.storage_backend == "cos"
     assert stored.storage_key.startswith("mandala/uploads/")
-    assert stored.image_url == f"https://cdn.example.com/assets/{stored.storage_key}"
+    assert stored.image_url == f"https://cdn.example.com/{stored.storage_key}?sign=demo"
     assert os.path.exists(stored.image_path)
     assert stored.local_expires_at is not None
     assert len(upload_calls) == 1
+    assert len(presigned_calls) == 1
     assert upload_calls[0]["Bucket"] == "demo-bucket"
     assert upload_calls[0]["Key"] == stored.storage_key
     assert upload_calls[0]["ContentType"] == "image/png"
+    assert presigned_calls[0]["Bucket"] == "demo-bucket"
+    assert presigned_calls[0]["Key"] == stored.storage_key
+    assert presigned_calls[0]["Expired"] == 900
+    assert storage._resolve_cos_domain() == "cdn.example.com"
 
 
 def test_cos_upload_storage_requires_sdk(tmp_path):

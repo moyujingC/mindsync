@@ -1,81 +1,110 @@
 # 一镜一梳项目工作区
 
 > 状态：current
-> 版本：0.3.0
+> 版本：0.4.3
 > owner：CEO / Orchestrator
-> last_updated：2026-04-12
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md
-> 公司侧入口：[/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
-> 历史来源仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
+> last_updated：2026-04-18
+> source_of_truth：projects/aimandala/PROJECT.md
+> 公司侧入口：[company/projects/一镜一梳/PROJECT.md](company/projects/一镜一梳/PROJECT.md)
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 这是 `一镜一梳` 在 Monorepo 中的项目工作区入口。
 
-当前项目工作区已经完成主工作区迁移，后续新功能应直接在这里继续推进：
+## 1. 项目是什么
 
-- 项目实现代码
-- 项目专属需求与设计文档
-- 测试与脚本
-- 项目运行说明
+`一镜一梳` 是当前面向 To C 用户的三圈识别与解读产品工作区。
 
-## 1. 当前工作方式
+这里承接：
 
-当前把 `AI-Mandala` 迁入 `mindsync`，是为了恢复受治理的直接开发，而不是立即切到 Paperclip 面板流程。
+- 当前正式产品范围与技术方案
+- Web MVP 公开首发主线
+- miniapp 渐进并入与灰度相关能力
+- 与主链直接相关的任务、QA、交付和运维说明
 
-因此当前默认工作方式是：
+## 2. 当前阶段
 
-- 在 `projects/aimandala/` 中建立正式项目工作区
-- 使用 Codex / Claude Code 直接开发
-- 暂缓把 `AI-Mandala` 作为 Paperclip 面板开发试点
-- 所有新的 Lite / Pro 正式能力、部署配置与交付记录，都优先回写到这个工作区
+当前默认阶段门为：
 
-### 1.1 当前正式状态
+1. `spec / problem`
+2. `task / implementation plan`
+3. `qa basis`
+4. `implementation`
+5. `verification`
+6. `delivery`
 
-截至 `2026-04-12`，当前项目状态应理解为：
+截至 `2026-04-15`，当前阶段可理解为：
+
+- Web MVP 公开首发收口仍是默认主线
+- miniapp 能力以“渐进并入、默认灰度关闭”为边界继续推进
+- 当前项目已完成从旧仓迁移到新工作区的主链收口
+- 报告链路保真重构已进入 `spec / architecture / task / qa basis` 正式收口阶段，尚未进入各批次实现
+
+## 3. 长期 canonical 入口
+
+当前长期真理源默认从这些目录入口进入：
+
+- [specs/README.md](projects/aimandala/docs/specs/README.md)
+- [architecture/README.md](projects/aimandala/docs/architecture/README.md)
+- [docs/sources/README.md](projects/aimandala/docs/sources/README.md)
+- [runbooks/README.md](projects/aimandala/docs/runbooks/README.md)
+
+其中：
+
+- `specs/` 和 `architecture/` 继续承接当前正式产品与技术结论
+- `docs/sources/` 承接项目级知识源资料、原始镜像和运行时映射
+- `docs/sources/` 默认不是正式规则替代入口，而是源资料追溯入口
+
+## 4. 当前窗口入口
+
+当前执行窗口默认从这些目录入口进入：
+
+- [tasks/README.md](projects/aimandala/docs/tasks/README.md)
+- [qa/README.md](projects/aimandala/docs/qa/README.md)
+- [delivery/README.md](projects/aimandala/docs/delivery/README.md)
+
+当前如果要继续推进“报告链路保真重构”，默认顺序固定为：
+
+1. [2026-04-18-报告链路保真重构总规格.md](projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md)
+2. [2026-04-18-报告链路保真重构技术方案.md](projects/aimandala/docs/architecture/2026-04-18-报告链路保真重构技术方案.md)
+3. [2026-04-18-报告链路保真重构实施总计划.md](projects/aimandala/docs/tasks/2026-04-18-报告链路保真重构实施总计划.md)
+4. [2026-04-18-报告链路保真重构验证基线.md](projects/aimandala/docs/qa/2026-04-18-报告链路保真重构验证基线.md)
+
+## 5. 历史资料入口
+
+如需追溯历史行为、旧实现细节或阶段性收口过程，可查：
+
+- 历史仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
+- 项目历史资料：[projects/aimandala/docs](projects/aimandala/docs)
+- 公司侧历史草案：[company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md](company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
+
+这些材料仅作历史追溯，不再作为默认开发入口。
+
+## 6. 当前正式状态
+
+截至 `2026-04-15`，当前应把项目状态理解为：
 
 - `projects/aimandala` 已是唯一开发与发布主入口
-- 新生成 Lite / Pro 已按正式主链在新工作区收口
-- 历史 `interpretation` 继续兼容读取，不做全量回填
-- 发布流固定为 `main -> dev`、`release -> prod`
-- 公网业务链路已恢复可运行，可继续只在新工作区做后续开发
-- 生产环境 LLM 已切到真实 `openai_compatible` provider
+- `main` 已吸收 batch E 的 `live-ready` 主线实现与 runbook
+- `main` 已吸收 `miniapp-native` 原生灰度壳、灰度配置样例和对应文档链
+- miniapp live 相关能力默认灰度关闭，不构成当前 Web 公开首发阻塞项
+- 历史记录继续兼容读取，但不作为后续功能设计基线
+- 当前 Aimandala 固定开发 worktree 为 `aimandala/dev`
+- 固定本地路径为 `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-dev`
+- `codex/aimandala-dual-channel-ui` 继续只作为临时并行实验 worktree
 
-这不等于“所有内容质量都已经终局”。
-也不等于“生产环境已经完成 `cos` 资产链路的最终正式配置”。
+## 7. 协作约束
 
-更准确的口径是：
+当前默认约束是：
 
-- 主工作区迁移完成
-- 正式版主链收口完成
-- 后续继续在新工作区做质量迭代
-- 生产环境仍需补齐真实 COS 配置，才能算正式环境完全收口
+- `main` 继续承接 Web MVP 首发和生产稳定
+- `aimandala/dev` 继续承接 AIMandala 默认本地开发与本地验证
+- 小程序 worktree 可继续并行开发
+- 小程序相关改动默认采用“分批摘入 main”，不整支直接合并
+- 主工作区上的新改动，除非明确是 Web 宿主专属，否则应尽量保持 shared-friendly
+- 批次 E 的 miniapp live 能力允许并入 `main`，但必须默认灰度关闭
+- 后续继续摘入 miniapp 内容时，默认只从 `codex/aimandala-dual-channel-ui` 这条并行线继续
 
-### 1.2 旧仓库角色
-
-旧仓库 `/Users/xinran/Downloads/dev/ai-mandala` 现在只保留两种用途：
-
-- 查询历史行为
-- 抽取仍有参考价值的旧实现或文档
-
-它不再承接：
-
-- 新功能开发
-- 正式发布
-- 长期协作入口
-
-## 2. 固定必读
-
-任何 Agent 第一次进入 `一镜一梳` 项目工作区时，默认优先读取以下材料：
-
-1. [本项目 PROJECT.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md)
-2. [公司侧项目入口](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md)
-3. [AI-Mandala-迁移范围与工作区草案.md](/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
-4. [2026-04-04-首批迁移清单.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/tasks/2026-04-04-首批迁移清单.md)
-5. [2026-04-04-toc-mvp-spec.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-spec.md)
-6. [2026-04-04-toc-mvp-architecture.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/specs/2026-04-04-toc-mvp-architecture.md)
-7. [2026-04-04-toc-mvp-qa-checklist.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md)
-
-## 3. 当前迁移范围
+## 8. 当前正式范围
 
 当前默认只承接：
 
@@ -89,22 +118,3 @@
 2. Studio 相关产品
 3. `V3` 实验级 API
 4. 内部工具
-
-## 4. 推荐目录方向
-
-当前不建议按历史仓库结构直接平移。
-
-推荐逐步收束为：
-
-- `docs/`
-  - 正式 spec、tasks、qa、decisions、delivery
-- `toC/`
-  - To C 主产品实现主线
-  - 当前用户端以前手机端 Web 为主，后续应兼容小程序和 App 版扩展
-  - 用户端前端应采用“共享内核 + 渠道实现”的结构
-- `fixtures/`
-  - 测试样本和模拟输入
-- `notes/`
-  - 临时笔记
-
-后续如需扩展 To B、Studio 或其他能力，应在新的边界定义明确后再决定是否增设新目录。

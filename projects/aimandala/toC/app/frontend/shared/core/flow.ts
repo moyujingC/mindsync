@@ -7,7 +7,6 @@ import type {
   ProStructuredReport,
   ReportResponse,
   SelectedImageRef,
-  UpgradePlaceholderResponse,
 } from "../types";
 
 export const initialMandalaFlowState: MandalaFlowState = {
@@ -76,32 +75,9 @@ export function applyReport(
 ): MandalaFlowState {
   return {
     ...state,
-    step: report.version === "pro" ? "upgradePlaceholder" : "liteReady",
+    step: report.version === "pro" ? "proReady" : "liteReady",
     report,
     lastError: report.error ?? null,
-  };
-}
-
-export function applyUpgradePlaceholder(
-  state: MandalaFlowState,
-  upgrade: UpgradePlaceholderResponse,
-): MandalaFlowState {
-  return {
-    ...state,
-    step: "upgradePlaceholder",
-    report: {
-      interpretation_id: upgrade.interpretation_id,
-      version: "pro",
-      title: "一梳 Pro 版入口",
-      overall_impression: upgrade.message,
-      structured: null,
-      report: upgrade.message,
-      ai_qa_context: null,
-      can_upgrade: false,
-      upgrade_price: null,
-      error: null,
-    },
-    lastError: null,
   };
 }
 
@@ -125,11 +101,14 @@ export function getLiteStructuredReport(
 
   const structured = report.structured as Partial<LiteStructuredReport>;
   if (
-    typeof structured.title !== "string" ||
-    typeof structured.overall_impression !== "string" ||
-    typeof structured.visual_elements_rendered !== "string" ||
-    typeof structured.emotion_portrait_rendered !== "string" ||
-    typeof structured.pro_teaser !== "string"
+    typeof structured.topic_context !== "object" ||
+    structured.topic_context === null ||
+    typeof structured.current_reading !== "string" ||
+    typeof structured.visual_basis !== "string" ||
+    typeof structured.pattern_interpretation !== "string" ||
+    typeof structured.life_connection !== "string" ||
+    typeof structured.pro_report_entry !== "object" ||
+    structured.pro_report_entry === null
   ) {
     return null;
   }
@@ -147,7 +126,16 @@ export function getProStructuredReport(
   const structured = report.structured as Partial<ProStructuredReport>;
   if (
     typeof structured !== "object" ||
-    structured === null
+    structured === null ||
+    typeof structured.topic_context !== "object" ||
+    structured.topic_context === null ||
+    typeof structured.deep_impression !== "string" ||
+    typeof structured.evidence_digest !== "string" ||
+    typeof structured.imbalance_diagnosis !== "string" ||
+    typeof structured.root_cause_chain !== "object" ||
+    structured.root_cause_chain === null ||
+    typeof structured.deep_structure_interpretation !== "string" ||
+    !Array.isArray(structured.healing_plan)
   ) {
     return null;
   }

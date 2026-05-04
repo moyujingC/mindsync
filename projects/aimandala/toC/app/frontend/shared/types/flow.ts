@@ -11,7 +11,7 @@ export type MandalaFlowStep =
   | "detectingCircles"
   | "liteGenerating"
   | "liteReady"
-  | "upgradePlaceholder"
+  | "proReady"
   | "error";
 
 export interface SelectedImageRef {

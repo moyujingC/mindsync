@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NGINX_SITE=${NGINX_SITE:-/etc/nginx/sites-available/ai-mandala}
+UPSTREAM_BASE_URL=${UPSTREAM_BASE_URL:-}
+UPSTREAM_AUTHORIZATION_BEARER=${UPSTREAM_AUTHORIZATION_BEARER:-}
+
+if [ -z "$UPSTREAM_BASE_URL" ]; then
+  echo "UPSTREAM_BASE_URL is required, for example: https://readonly.example.internal" >&2
+  exit 1
+fi
+
+if [ -z "$UPSTREAM_AUTHORIZATION_BEARER" ]; then
+  echo "UPSTREAM_AUTHORIZATION_BEARER is required for authenticated upstreams" >&2
+  exit 1
+fi
+
+UPSTREAM_BASE_URL=${UPSTREAM_BASE_URL%/}
+BACKUP_PATH="${NGINX_SITE}.relayhub-api-backup-$(date +%Y%m%d-%H%M%S)"
+
+sudo cp "$NGINX_SITE" "$BACKUP_PATH"
+
+python3 - "$NGINX_SITE" "$UPSTREAM_BASE_URL" "$UPSTREAM_AUTHORIZATION_BEARER" <<'PY' > /tmp/relayhub-api-nginx-site
+from pathlib import Path
+import re
+import sys
+
+site_path = Path(sys.argv[1])
+upstream = sys.argv[2]
+bearer = sys.argv[3]
+text = site_path.read_text()
+
+block = f"""
+    location = /api {{
+        return 301 /api/;
+    }}
+
+    location /api/ {{
+        proxy_pass {upstream}/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Authorization "Bearer {bearer}";
+    }}
+"""
+
+pattern = re.compile(
+    r"\n    location = /api \{.*?\n    \}\n\n"
+    r"    location /api/ \{.*?\n    \}\n",
+    re.DOTALL,
+)
+
+if pattern.search(text):
+    text = pattern.sub(block + "\n", text, count=1)
+else:
+    marker = "    location / {\n"
+    if marker not in text:
+        raise SystemExit("Could not find primary web.jingshu.cc location marker")
+    text = text.replace(marker, block + "\n" + marker, 1)
+
+print(text, end="")
+PY
+
+sudo cp /tmp/relayhub-api-nginx-site "$NGINX_SITE"
+sudo nginx -t
+sudo systemctl reload nginx
+
+echo "RelayHub API nginx location installed"
+echo "backup=$BACKUP_PATH"

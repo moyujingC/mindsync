@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from app.core.prompt.builder_v2 import PromptBuilder
@@ -40,6 +41,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "title",
                 "final_value": layer2.get("title") if layer2 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.title"
                     if self._non_empty_text(layer1.get("title") if layer1 else None)
@@ -54,6 +56,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "overall_impression",
                 "final_value": layer2.get("overall_impression") if layer2 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.overall_impression"
                     if self._non_empty_text(layer1.get("overall_impression") if layer1 else None)
@@ -69,6 +72,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "visual_elements_rendered",
                 "final_value": layer2.get("visual_elements_rendered") if layer2 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.visual_elements"
                     if self._non_empty_text(layer1.get("visual_elements") if layer1 else None)
@@ -84,6 +88,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "emotion_portrait_rendered",
                 "final_value": layer2.get("emotion_portrait_rendered") if layer2 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.emotion_portrait"
                     if self._non_empty_text(layer1.get("emotion_portrait") if layer1 else None)
@@ -97,8 +102,9 @@ class ReportDebugProfileBuilder:
                 ],
             },
             {
-                "field": "pro_teaser",
-                "final_value": layer2.get("pro_teaser") if layer2 else None,
+                "field": "pro_report_entry",
+                "final_value": layer2.get("pro_report_entry") if layer2 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_1_lite_draft.pro_teaser"
                     if self._non_empty_text(layer1.get("pro_teaser") if layer1 else None)
@@ -109,12 +115,24 @@ class ReportDebugProfileBuilder:
                     {"source": "user.theme", "value": record.theme},
                 ],
             },
+            {
+                "field": "lite_healing_guidance",
+                "final_value": layer2.get("lite_healing_guidance") if layer2 else None,
+                "generation_mode": "knowledge_only",
+                "main_source": "layer_2_lite_final.lite_healing_guidance",
+                "upstream_inputs": [
+                    {"source": "layer_1_lite_draft.theme_insights", "value": layer1.get("theme_insights") if layer1 else None},
+                    {"source": "layer_1_lite_draft.three_awareness", "value": layer1.get("three_awareness") if layer1 else None},
+                    {"source": "layer_2_lite_final.experiment_rendered", "value": layer2.get("experiment_rendered") if layer2 else None},
+                ],
+            },
         ]
 
         pro_field_provenance = [
             {
                 "field": "first_impression",
                 "final_value": layer3.get("first_impression") if layer3 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "layer_3_pro_draft.first_impression"
                     if self._non_empty_text(layer3.get("first_impression") if layer3 else None)
@@ -129,6 +147,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "core_insight_table",
                 "final_value": layer3.get("core_insight_table") if layer3 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": "layer_3_pro_draft.core_insight_table",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.core_insight_table", "value": layer3.get("core_insight_table") if layer3 else None},
@@ -139,6 +158,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "root_cause",
                 "final_value": layer3.get("root_cause") if layer3 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": "layer_3_pro_draft.root_cause",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.root_cause", "value": layer3.get("root_cause") if layer3 else None},
@@ -155,6 +175,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "healing_suggestions",
                 "final_value": layer3.get("healing_suggestions") if layer3 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": "layer_3_pro_draft.healing_suggestions",
                 "upstream_inputs": [
                     {"source": "layer_3_pro_draft.healing_suggestions", "value": layer3.get("healing_suggestions") if layer3 else None},
@@ -169,6 +190,7 @@ class ReportDebugProfileBuilder:
             {
                 "field": "full_report_markdown",
                 "final_value": layer4.get("full_report_markdown") if layer4 else None,
+                "generation_mode": "knowledge_only",
                 "main_source": (
                     "template_merge_layer2_plus_layer3"
                     if layer4
@@ -205,7 +227,8 @@ class ReportDebugProfileBuilder:
             "theme_impact": "layer_2_lite_final.theme_insights.impact",
             "theme_awareness": "layer_2_lite_final.theme_insights.awareness",
             "three_awareness": "layer_2_lite_final.three_awareness",
-            "pro_teaser": "layer_2_lite_final.pro_teaser",
+            "lite_healing_guidance": "layer_2_lite_final.lite_healing_guidance",
+            "pro_report_entry": "layer_2_lite_final.pro_report_entry",
         }
         pro_mapped_fields = {
             "first_impression": "layer_3_pro_draft.first_impression / report.summary",
@@ -257,12 +280,17 @@ class ReportDebugProfileBuilder:
             {
                 "key": "layer0",
                 "label": "Layer0 原始知识层",
-                "status": "done" if layer0 else "missing",
+                "status": (
+                    "failed"
+                    if layer0 and layer0.get("layer0_passed") is False
+                    else ("done" if layer0 else "missing")
+                ),
                 "created_at": layer0.get("created_at") if layer0 else None,
                 "summary": {
                     "imbalance_candidates": layer0.get("imbalance_candidates") if layer0 else [],
                     "color_analysis": layer0.get("color_analysis") if layer0 else None,
                     "circle_colors": layer0.get("circle_colors") if layer0 else None,
+                    "layer0_failure_reason": layer0.get("layer0_failure_reason") if layer0 else None,
                 },
             },
             {
@@ -317,6 +345,11 @@ class ReportDebugProfileBuilder:
             "generation_stage": record.generation_stage,
             "generation_progress": record.generation_progress,
             "version_purchased": record.version_purchased,
+            "generation_mode": {
+                "strategy": "knowledge_first",
+                "llm_role": "chat_generation_for_draft_and_final_render",
+                "shared_basis": "layer0_theme_projection_plus_narrative_projection",
+            },
             "steps": steps,
             "layers": {
                 "layer_0_raw": layer0,
@@ -339,12 +372,18 @@ class ReportDebugProfileBuilder:
             "prompt_debug": {
                 "lite": {
                     "prompt_preview": layer1.get("prompt_preview") if layer1 else None,
+                    "knowledge_skeleton_excerpt": self._extract_knowledge_skeleton_excerpt(
+                        layer1.get("prompt_preview") if layer1 else None
+                    ),
                     "schema": lite_schema,
                     "validation_issues": lite_validation_issues,
                     "schema_fields": lite_schema_fields,
                 },
                 "pro": {
                     "prompt_preview": layer3.get("prompt_preview") if layer3 else None,
+                    "knowledge_skeleton_excerpt": self._extract_knowledge_skeleton_excerpt(
+                        layer3.get("prompt_preview") if layer3 else None
+                    ),
                     "schema": pro_schema,
                     "validation_issues": pro_validation_issues,
                     "schema_fields": pro_schema_fields,
@@ -361,6 +400,82 @@ class ReportDebugProfileBuilder:
         if len(compact) <= limit:
             return compact
         return f"{compact[:limit]}..."
+
+    def _extract_knowledge_skeleton_excerpt(self, prompt_preview: Any) -> str:
+        if not isinstance(prompt_preview, str):
+            return ""
+        marker = "## 知识骨架（已确定，不要改写判断）"
+        if marker not in prompt_preview:
+            return ""
+        after_marker = prompt_preview.rsplit(marker, 1)[1]
+        section = after_marker.split("---", 1)[0].strip()
+        json_start = section.find("{")
+        if json_start >= 0:
+            payload = section[json_start:]
+            parsed = self._parse_embedded_json(payload)
+            if parsed is None:
+                return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
+            compact = self._summarize_knowledge_skeleton(parsed)
+            return self._excerpt(compact, limit=1600) or ""
+        return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
+
+    def _parse_embedded_json(self, payload: str) -> Any | None:
+        candidates = [payload]
+        if '\\"' in payload or "\\n" in payload or "\\t" in payload:
+            candidates.append(self._normalize_escaped_block(payload))
+        for candidate in candidates:
+            try:
+                return json.loads(candidate)
+            except Exception:
+                continue
+        return None
+
+    def _normalize_escaped_block(self, value: str) -> str:
+        return (
+            value.replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace('\\"', '"')
+        )
+
+    def _summarize_knowledge_skeleton(self, payload: Any) -> str:
+        if not isinstance(payload, dict):
+            return json.dumps(payload, ensure_ascii=False, indent=2)
+
+        runtime_evidence = payload.get("runtime_evidence", {})
+        narrative_plan = payload.get("narrative_plan", {})
+        compatibility_projection = payload.get("compatibility_projection", {})
+
+        summary = {
+            "generation_mode": payload.get("generation_mode"),
+            "theme": payload.get("theme"),
+            "theme_label": payload.get("theme_label"),
+            "user_input": payload.get("user_input"),
+            "runtime_evidence": {
+                "keys": sorted(runtime_evidence.keys())
+                if isinstance(runtime_evidence, dict)
+                else [],
+                "rule_evaluations_keys": sorted(
+                    (runtime_evidence.get("rule_evaluations") or {}).keys()
+                )
+                if isinstance(runtime_evidence, dict)
+                and isinstance(runtime_evidence.get("rule_evaluations"), dict)
+                else [],
+            },
+            "narrative_plan": {
+                "mode": narrative_plan.get("mode"),
+                "generation_mode": narrative_plan.get("generation_mode"),
+                "section_keys": sorted((narrative_plan.get("sections") or {}).keys())
+                if isinstance(narrative_plan, dict)
+                and isinstance(narrative_plan.get("sections"), dict)
+                else [],
+            },
+            "compatibility_projection": {
+                "keys": sorted(compatibility_projection.keys())
+                if isinstance(compatibility_projection, dict)
+                else [],
+            },
+        }
+        return json.dumps(summary, ensure_ascii=False, indent=2)
 
     def _non_empty_text(self, value: Any) -> str:
         if not isinstance(value, str):
@@ -555,6 +670,7 @@ class ReportDebugProfileBuilder:
             "user_input_driven_count": len(user_input_driven),
             "layer0_driven_count": len(layer0_driven),
             "prompt_draft_driven_count": len(prompt_draft_driven),
+            "no_llm_override_on_structured_fields": True,
             "high_risk_count": len(high_risk_fields),
             "medium_risk_count": len(medium_risk_fields),
             "low_risk_count": len(low_risk_fields),

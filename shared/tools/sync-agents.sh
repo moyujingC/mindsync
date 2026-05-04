@@ -1,5 +1,5 @@
 #!/bin/bash
-# sync-agents.sh - 在 mindsync 源码与当前 Paperclip 运行时之间同步 Agent instructions
+# sync-agents.sh - 在 mindsync 源码与当前 Paperclip 运行时之间同步已有 Agent 的 instructions
 
 set -euo pipefail
 
@@ -164,6 +164,11 @@ show_status() {
     printf "  %s: repo %s | runtime %s | runtimeId %s\n" \
       "$agent_name" "$repo_exists" "$runtime_exists" "${runtime_id:-<missing>}"
   done < <(iter_configured_agents)
+
+  echo ""
+  echo "Note: this script only syncs instructions for agents that already exist in runtime."
+  echo "If .paperclip.yaml has a new agent that is missing in Paperclip runtime,"
+  echo "run shared/tools/sync-paperclip-runtime-agents.sh first."
 }
 
 case "${1:-status}" in

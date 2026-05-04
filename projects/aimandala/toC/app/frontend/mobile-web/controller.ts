@@ -4,20 +4,18 @@ import {
   applyInterpretationCreated,
   applyReport,
   applyStatus,
-  applyUpgradePlaceholder,
   initialMandalaFlowState,
   selectImage,
 } from "../shared/core";
 import {
   createInterpretation,
-  detectCircles,
   getInterpretationReport,
   getInterpretationStatus,
-  upgradeInterpretation,
 } from "../shared/api";
 import type {
   CreateInterpretationResponse,
   DetectCirclesResponse,
+  InterpretationVersion,
   InterpretationStatusResponse,
   MandalaFlowState,
   ReportResponse,
@@ -72,19 +70,6 @@ function buildManualDetection(
   };
 }
 
-function buildUpgradeProcessingPlaceholder(
-  interpretationId: string,
-) {
-  return {
-    success: true,
-    interpretation_id: interpretationId,
-    version: "pro" as const,
-    enabled: true,
-    status: "processing",
-    message: "一梳 Pro 版正在生成中，请稍候查看。",
-  };
-}
-
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -105,29 +90,23 @@ export async function runMobileWebLiteFlow(
 
   try {
     let detection: DetectCirclesResponse | undefined;
-    let innerRadius = payload.innerRadius;
-    let middleRadius = payload.middleRadius;
 
     if (hasResolvedCircleRadii(payload)) {
       detection = buildManualDetection(payload.innerRadius, payload.middleRadius);
       state = applyDetection(state, detection);
-    } else {
-      detection = await detectCircles({
-        image_path: payload.imagePath,
-      });
-      state = applyDetection(state, detection);
-      innerRadius = normalizeCirclePercent(detection.inner_radius);
-      middleRadius = normalizeCirclePercent(detection.middle_radius);
     }
 
     const interpretation = await createInterpretation({
       user_id: payload.userId,
       image_path: payload.imagePath,
+      storage_backend: payload.storageBackend,
+      storage_key: payload.storageKey,
+      image_local_expires_at: payload.imageLocalExpiresAt,
       theme: payload.theme,
       painting_intention: payload.paintingIntention,
       painting_feeling: payload.paintingFeeling,
-      inner_radius: innerRadius,
-      middle_radius: middleRadius,
+      inner_radius: payload.innerRadius,
+      middle_radius: payload.middleRadius,
     });
     state = applyInterpretationCreated(state, interpretation);
 
@@ -143,7 +122,10 @@ export async function runMobileWebLiteFlow(
       };
     }
 
-    const report = await getInterpretationReport(interpretation.interpretation_id);
+    const report = await getInterpretationReport(
+      interpretation.interpretation_id,
+      "lite",
+    );
     state = applyReport(state, report);
 
     return {
@@ -167,6 +149,7 @@ export async function runMobileWebLiteFlow(
 
 export async function refreshMobileWebReport(
   interpretationId: string,
+  reportType: InterpretationVersion,
   currentState: MandalaFlowState = initialMandalaFlowState,
 ): Promise<MobileWebFlowSnapshot> {
   let state = currentState;
@@ -182,7 +165,7 @@ export async function refreshMobileWebReport(
       };
     }
 
-    const report = await getInterpretationReport(interpretationId);
+    const report = await getInterpretationReport(interpretationId, reportType);
     state = applyReport(state, report);
 
     return {
@@ -202,74 +185,9 @@ export async function refreshMobileWebReport(
   }
 }
 
-export async function openMobileWebUpgradeEntry(
-  interpretationId: string,
-  currentState: MandalaFlowState = initialMandalaFlowState,
-): Promise<MobileWebFlowSnapshot> {
-  let state = currentState;
-
-  try {
-    state = applyUpgradePlaceholder(
-      state,
-      buildUpgradeProcessingPlaceholder(interpretationId),
-    );
-    void upgradeInterpretation(interpretationId).catch(() => undefined);
-
-    return {
-      state,
-    };
-  } catch (error) {
-    state = applyError(
-      state,
-      error instanceof Error ? error.message : "Failed to open upgrade entry",
-    );
-
-    return {
-      state,
-    };
-  }
-}
-
-export async function refreshMobileWebProReport(
-  interpretationId: string,
-  currentState: MandalaFlowState = initialMandalaFlowState,
-): Promise<MobileWebFlowSnapshot> {
-  let state = currentState;
-
-  try {
-    const status = await getInterpretationStatus(interpretationId);
-    state = applyStatus(state, status);
-
-    const report = await getInterpretationReport(interpretationId, "pro");
-    if (report?.version === "pro" && report.report) {
-      state = applyReport(state, report);
-
-      return {
-        state,
-        status,
-        report,
-      };
-    }
-
-    return {
-      state,
-      status,
-      report,
-    };
-  } catch (error) {
-    state = applyError(
-      state,
-      error instanceof Error ? error.message : "Failed to refresh pro report",
-    );
-
-    return {
-      state,
-    };
-  }
-}
-
 export async function pollMobileWebReportUntilReady(
   interpretationId: string,
+  reportType: InterpretationVersion = "lite",
   currentState: MandalaFlowState = initialMandalaFlowState,
   options: MobileWebReportPollingOptions = {},
 ): Promise<MobileWebFlowSnapshot> {
@@ -278,14 +196,21 @@ export async function pollMobileWebReportUntilReady(
   let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    latestSnapshot = await refreshMobileWebReport(interpretationId, latest);
+    latestSnapshot = await refreshMobileWebReport(interpretationId, reportType, latest);
     latest = latestSnapshot.state;
 
     if (onTick) {
       await onTick(latestSnapshot);
     }
 
-    if (latest.step !== "liteGenerating") {
+    const readyForType =
+      reportType === "pro"
+        ? latestSnapshot.report?.version === "pro" &&
+          typeof latestSnapshot.report.report === "string" &&
+          latestSnapshot.report.report.trim().length > 0
+        : latest.step !== "liteGenerating";
+
+    if (readyForType) {
       return latestSnapshot;
     }
 
@@ -294,59 +219,14 @@ export async function pollMobileWebReportUntilReady(
     }
   }
 
-  if (latest.step === "liteGenerating") {
+  if (latest.step === "liteGenerating" || reportType === "pro") {
     latestSnapshot = {
       ...latestSnapshot,
       state: applyError(
         latest,
-        "Lite 报告生成超时，请稍后重试。",
-      ),
-    };
-  }
-
-  return latestSnapshot;
-}
-
-export async function pollMobileWebProReportUntilReady(
-  interpretationId: string,
-  currentState: MandalaFlowState = initialMandalaFlowState,
-  options: MobileWebReportPollingOptions = {},
-): Promise<MobileWebFlowSnapshot> {
-  const { intervalMs = 3000, maxAttempts = 60, onTick } = options;
-  let latest = currentState;
-  let latestSnapshot: MobileWebFlowSnapshot = { state: latest };
-
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    latestSnapshot = await refreshMobileWebProReport(interpretationId, latest);
-    latest = latestSnapshot.state;
-
-    if (onTick) {
-      await onTick(latestSnapshot);
-    }
-
-    if (
-      latestSnapshot.report?.version === "pro" &&
-      typeof latestSnapshot.report.report === "string" &&
-      latestSnapshot.report.report.trim()
-    ) {
-      return latestSnapshot;
-    }
-
-    if (latest.step === "error") {
-      return latestSnapshot;
-    }
-
-    if (attempt < maxAttempts - 1) {
-      await wait(intervalMs);
-    }
-  }
-
-  if (latest.step !== "error") {
-    latestSnapshot = {
-      ...latestSnapshot,
-      state: applyError(
-        latest,
-        "Pro 报告生成时间较长，请稍后到历史记录中继续查看。",
+        reportType === "pro"
+          ? "Pro 报告生成时间较长，请稍后到历史记录中继续查看。"
+          : "Lite 报告生成超时，请稍后重试。",
       ),
     };
   }

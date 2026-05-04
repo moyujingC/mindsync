@@ -1,6 +1,6 @@
 # Fixtures
 
-这里放 `一镜一梳` 迁移与验证阶段使用的模拟样本、测试输入和验收样例。
+这里放 `一镜一梳` 用于验证、测试和验收的固定样本。
 
 它和 `toC/data/` 的区别是：
 
@@ -17,12 +17,13 @@
 
 当前已沉淀：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/manifest.yaml`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/README.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-a-lite-general.yaml`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-b-lite-to-pro-career.yaml`
-- `/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/sample-c-existing-reuse.yaml`
+- `projects/aimandala/fixtures/manifest.yaml`
+- `projects/aimandala/fixtures/toc-mvp/README.md`
+- `projects/aimandala/fixtures/toc-mvp/toc-mvp-fixture-001.yaml`
+- `projects/aimandala/fixtures/toc-mvp/toc-mvp-fixture-002.yaml`
+- `projects/aimandala/fixtures/toc-mvp/toc-mvp-fixture-003.yaml`
+- `projects/aimandala/fixtures/toc-mvp/toc-mvp-fixture-004.yaml`
 
 最小校验命令：
 
-- `python3 /Users/xinran/Downloads/dev/mindsync/projects/aimandala/scripts/validate_fixtures.py`
+- `python3 $REPO_ROOT/projects/aimandala/scripts/validate_fixtures.py`

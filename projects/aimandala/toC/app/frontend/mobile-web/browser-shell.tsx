@@ -2,16 +2,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { BrowserDebugPanel } from "./browser-debug-panel";
+import { ManualReviewPanel } from "./manual-review-panel";
+import { MiniappApp } from "../miniapp/app";
+import type { MiniappRouteId } from "../miniapp/routes";
 import { createPreviewAppProps } from "./fixtures";
 import {
   createBrowserFileFromFixture,
   mobileWebDevFixturePresets,
 } from "./dev-fixtures";
 import {
-  openMobileWebUpgradeEntry,
-  pollMobileWebProReportUntilReady,
   pollMobileWebReportUntilReady,
-  refreshMobileWebProReport,
   refreshMobileWebReport,
   runMobileWebLiteFlow,
 } from "./controller";
@@ -26,6 +26,12 @@ import {
   PREVIEW_ROUTE_OPTIONS,
 } from "./preview-shell-support";
 import { MobileWebRuntime } from "./runtime";
+import {
+  createMobileWebGuestSession,
+  persistMobileWebSession,
+  resolveMobileWebSession,
+  updateMobileWebSessionCanonicalUserId,
+} from "./identity";
 import type {
   DebugTimelineEntry,
   DebugTimelineSnapshot,
@@ -49,11 +55,13 @@ import {
 } from "../shared/api/debugTrace";
 import type {
   DetectCirclesResponse,
+  FrontendUserSession,
   InterpretationListQuery,
   InterpretationRecordResponse,
+  InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
-import { detectCircles, getInterpretationList } from "../shared/api";
+import { getInterpretationList } from "../shared/api";
 import {
   applyError,
   getGenerationPresentation,
@@ -70,8 +78,8 @@ function readBrowserShellInitialState() {
     return {
       route: "landing" as MobileWebRouteId,
       draft: defaultDraft,
-      interpretationId: "demo-interpretation-id",
-      userId: "demo-user-id",
+      interpretationId: "",
+      session: createMobileWebGuestSession("ssr"),
       previewMode: import.meta.env.DEV,
       controlsOpen: import.meta.env.DEV,
       cleanMode: false,
@@ -105,8 +113,10 @@ function readBrowserShellInitialState() {
       paintingIntention: url.searchParams.get("paintingIntention") ?? defaultDraft.paintingIntention,
       paintingFeeling: url.searchParams.get("paintingFeeling") ?? defaultDraft.paintingFeeling,
     } satisfies MobileWebUploadDraft,
-    interpretationId: url.searchParams.get("interpretationId") ?? "demo-interpretation-id",
-    userId: url.searchParams.get("userId") ?? "demo-user-id",
+    interpretationId: url.searchParams.get("interpretationId") ?? "",
+    session: resolveMobileWebSession({
+      locationHref: url.toString(),
+    }),
     previewMode: previewParam === "0" ? false : previewParam === "1" ? true : import.meta.env.DEV,
     controlsOpen: controlsParam === "0" ? false : controlsParam === "1" ? true : (import.meta.env.DEV || localDebugEnabled),
     cleanMode,
@@ -134,13 +144,11 @@ export function MobileWebBrowserShell() {
   const [route, setRoute] = useState<MobileWebRouteId>(initialState.route);
   const [draft, setDraft] = useState<MobileWebUploadDraft>(initialState.draft);
   const [interpretationId, setInterpretationId] = useState(initialState.interpretationId);
-  const [userId, setUserId] = useState(initialState.userId);
+  const [session, setSession] = useState<FrontendUserSession>(initialState.session);
+  const [userIdInput, setUserIdInput] = useState(initialState.session.canonicalUserId);
   const [previewMode, setPreviewMode] = useState(initialState.previewMode);
+  const [previewChannel, setPreviewChannel] = useState<"mobile-web" | "miniapp">("mobile-web");
   const [controlsOpen, setControlsOpen] = useState(initialState.controlsOpen);
-  const [previewDetection, setPreviewDetection] =
-    useState<DetectCirclesResponse | null>(null);
-  const [previewDetecting, setPreviewDetecting] = useState(false);
-  const [previewDetectError, setPreviewDetectError] = useState<string | null>(null);
   const [previewFlowState, setPreviewFlowState] =
     useState<MandalaFlowState | null>(null);
   const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
@@ -160,6 +168,8 @@ export function MobileWebBrowserShell() {
     useState(false);
   const [previewHistoryOpeningId, setPreviewHistoryOpeningId] =
     useState<string | null>(null);
+  const [previewHistoryOpeningReportType, setPreviewHistoryOpeningReportType] =
+    useState<InterpretationVersion | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
   const [apiTraces, setApiTraces] = useState<ApiDebugTraceEntry[]>([]);
@@ -172,26 +182,41 @@ export function MobileWebBrowserShell() {
   const runtimeSessionRef = useRef<string>("runtime-idle");
   const previewLastStepRef = useRef<string>("idle");
   const runtimeLastStepRef = useRef<string>("idle");
+  const userId = session.canonicalUserId;
 
   const input = useMemo(
-    () => createPreviewRouteInput(route, draft, interpretationId, userId, {
+    () => createPreviewRouteInput(route, draft, interpretationId, session, {
       filter: (previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all",
       limit: previewHistoryQuery.limit ?? 20,
       theme: previewHistoryQuery.theme,
     }),
-    [draft, interpretationId, previewHistoryQuery.filter, previewHistoryQuery.limit, previewHistoryQuery.theme, route, userId],
+    [draft, interpretationId, previewHistoryQuery.filter, previewHistoryQuery.limit, previewHistoryQuery.theme, route, session],
   );
   const previewProps = useMemo(
     () =>
       createPreviewAppProps(
         route,
         draft,
-        previewDetection,
+        null,
         previewFlowState,
         previewHistoryRecords,
       ),
-    [draft, previewDetection, previewFlowState, previewHistoryRecords, route],
+    [draft, previewFlowState, previewHistoryRecords, route],
   );
+
+  useEffect(() => {
+    setUserIdInput(session.canonicalUserId);
+    persistMobileWebSession(session);
+  }, [session]);
+
+  function commitUserIdInput(nextValue: string) {
+    setUserIdInput(nextValue);
+
+    const nextSession = updateMobileWebSessionCanonicalUserId(session, nextValue);
+    if (nextSession) {
+      setSession(nextSession);
+    }
+  }
 
   async function refreshPreviewHistory(
     nextQuery: InterpretationListQuery,
@@ -414,8 +439,8 @@ export function MobileWebBrowserShell() {
 
     const taskStarting =
       route === "loading" &&
-      ["idle", "liteReady", "upgradePlaceholder", "error"].includes(lastStep) &&
-      ["detectingCircles", "liteGenerating", "liteReady", "upgradePlaceholder"].includes(currentStep);
+      ["idle", "liteReady", "proReady", "error"].includes(lastStep) &&
+      ["detectingCircles", "liteGenerating", "liteReady", "proReady"].includes(currentStep);
     const gainedInterpretation =
       !currentSessionId.includes(interpretationId ?? "") &&
       Boolean(interpretationId);
@@ -441,13 +466,10 @@ export function MobileWebBrowserShell() {
       previewMode: true,
       uploadDraft: draft,
       flowState: previewFlowState,
-      detection: previewDetection,
-      detectError: previewDetectError,
       report: previewFlowState?.report ?? null,
       status: previewFlowState?.status ?? null,
       runtimeBusy: previewFlowRunning,
       historyBusy: Boolean(previewHistoryOpeningId),
-      uploadDetecting: previewDetecting,
     };
     const signature = JSON.stringify({
       route,
@@ -457,15 +479,6 @@ export function MobileWebBrowserShell() {
       statusStage: previewFlowState?.status?.generation_stage ?? null,
       statusProgress: previewFlowState?.status?.generation_progress ?? null,
       reportVersion: previewFlowState?.report?.version ?? null,
-      detect: previewDetection
-        ? {
-            inner: previewDetection.inner_radius,
-            middle: previewDetection.middle_radius,
-            confidence: previewDetection.confidence,
-          }
-        : null,
-      detectError: previewDetectError,
-      previewDetecting,
       previewFlowRunning,
     });
 
@@ -490,9 +503,6 @@ export function MobileWebBrowserShell() {
   }, [
     draft,
     localDebugEnabled,
-    previewDetectError,
-    previewDetecting,
-    previewDetection,
     previewFlowRunning,
     previewFlowState,
     previewHistoryOpeningId,
@@ -595,6 +605,7 @@ export function MobileWebBrowserShell() {
           let liteSnapshot = previewFlowState?.step === "liteGenerating"
             ? await pollMobileWebReportUntilReady(
                 currentInterpretationId,
+                "lite",
                 previewFlowState,
                 {
                   intervalMs: PREVIEW_POLLING_INTERVAL_MS,
@@ -609,8 +620,9 @@ export function MobileWebBrowserShell() {
           }
 
           if (hasProReportAccess(liteSnapshot.state)) {
-            return pollMobileWebProReportUntilReady(
+            return pollMobileWebReportUntilReady(
               currentInterpretationId,
+              "pro",
               liteSnapshot.state,
               {
                 intervalMs: PREVIEW_POLLING_INTERVAL_MS,
@@ -620,16 +632,10 @@ export function MobileWebBrowserShell() {
             );
           }
 
-          const upgradeSnapshot =
-            liteSnapshot.state.step === "upgradePlaceholder"
-              ? liteSnapshot
-              : await openMobileWebUpgradeEntry(currentInterpretationId, liteSnapshot.state);
-
-          handleTick(upgradeSnapshot);
-
-          return pollMobileWebProReportUntilReady(
+          return pollMobileWebReportUntilReady(
             currentInterpretationId,
-            upgradeSnapshot.state,
+            "pro",
+            liteSnapshot.state,
             {
               intervalMs: PREVIEW_POLLING_INTERVAL_MS,
               maxAttempts: PREVIEW_POLLING_MAX_ATTEMPTS,
@@ -639,6 +645,7 @@ export function MobileWebBrowserShell() {
         })()
       : pollMobileWebReportUntilReady(
           currentInterpretationId,
+          "lite",
           previewFlowState,
           {
             intervalMs: PREVIEW_POLLING_INTERVAL_MS,
@@ -662,7 +669,7 @@ export function MobileWebBrowserShell() {
             snapshot.report.report.trim();
 
           if (proReady || snapshot.state.step === "error") {
-            setRoute("upgrade");
+            setRoute("report");
           }
           return;
         }
@@ -705,6 +712,7 @@ export function MobileWebBrowserShell() {
         try {
           const refreshed = await refreshMobileWebReport(
             interpretationId,
+            "lite",
             previewFlowState,
           );
           setPreviewFlowState(refreshed.state);
@@ -740,6 +748,7 @@ export function MobileWebBrowserShell() {
           try {
             const refreshed = await refreshMobileWebReport(
               interpretationId,
+              "lite",
               previewFlowState,
             );
             setPreviewFlowState(refreshed.state);
@@ -767,9 +776,9 @@ export function MobileWebBrowserShell() {
         structured: getLiteStructuredReport(previewFlowState?.report ?? null),
       });
 
-      if (resultCta.intent === "open_upgrade_report") {
+      if (resultCta.intent === "open_pro_report") {
         setDraft((current) => mergeMobileWebUploadDraft(current, {
-          reportVariant: "pro",
+          reportType: "pro",
         }));
         setRoute("loading");
         return;
@@ -785,23 +794,6 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "upgrade") {
-      const interpretationId = previewFlowState?.interpretation?.interpretation_id;
-      if (!interpretationId || previewFlowRunning) {
-        return;
-      }
-
-      setPreviewFlowRunning(true);
-      try {
-        const refreshed = await refreshMobileWebProReport(
-          interpretationId,
-          previewFlowState ?? initialMandalaFlowState,
-        );
-        setPreviewFlowState(refreshed.state);
-      } finally {
-        setPreviewFlowRunning(false);
-      }
-    }
   }
 
   async function handlePreviewLeaveLoadingLater() {
@@ -825,7 +817,7 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "report" || route === "upgrade") {
+    if (route === "report") {
       setPreviewFlowState(null);
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
@@ -837,64 +829,55 @@ export function MobileWebBrowserShell() {
     }
   }
 
-  function handlePreviewBackAction() {
-    if (route === "upgrade") {
-      setRoute("reportEntry");
-    }
-  }
+  function handlePreviewBackAction() {}
 
   async function handlePreviewOpenHistoryRecord(
     interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
+  ) {
+    if (previewFlowRunning) {
+      return;
+    }
+
+    setPreviewHistoryOpeningId(interpretationId);
+    try {
+      setInterpretationId(interpretationId);
+      setRoute("historyRecordDetail");
+    } finally {
+      setPreviewHistoryOpeningId(null);
+    }
+  }
+
+  async function handlePreviewOpenHistoryRecordReport(
+    reportType: InterpretationVersion,
   ) {
     if (previewFlowRunning) {
       return;
     }
 
     setPreviewFlowRunning(true);
-    setPreviewHistoryOpeningId(interpretationId);
+    setPreviewHistoryOpeningReportType(reportType);
     try {
       const refreshed = await refreshMobileWebReport(
         interpretationId,
+        reportType,
         initialMandalaFlowState,
       );
       setPreviewFlowState(refreshed.state);
       setInterpretationId(interpretationId);
-      setDraft((current) => ({
-        ...current,
-        reportVariant,
-        reportType: reportVariant === "pro" ? "pro" : "lite",
-      }));
+      setDraft((current) => mergeMobileWebUploadDraft(current, { reportType }));
 
-      if (reportVariant === "pro") {
-        await finalizePreviewSelectedReport({
-          interpretationId,
-          state: refreshed.state,
-          draft: {
-            ...draft,
-            reportVariant: "pro",
-            reportType: "pro",
-          },
-          userId,
-          historyQuery: previewHistoryQuery,
-          setPreviewFlowState,
-          setPreviewHistoryRecords,
-          setPreviewHistoryStatusLabel,
-          setPreviewHistoryStatusDetail,
-          setPreviewHistoryStatusTone,
-          setRoute,
-        });
+      if (reportType === "pro") {
+        const proReady =
+          refreshed.report?.version === "pro" &&
+          typeof refreshed.report.report === "string" &&
+          refreshed.report.report.trim();
+        setRoute(proReady ? "report" : "loading");
         return;
       }
 
-      setRoute(
-        canOpenReport || refreshed.state.step !== "liteGenerating"
-          ? "report"
-          : "loading",
-      );
+      setRoute(refreshed.state.step === "liteGenerating" ? "loading" : "report");
     } finally {
-      setPreviewHistoryOpeningId(null);
+      setPreviewHistoryOpeningReportType(null);
       setPreviewFlowRunning(false);
     }
   }
@@ -943,6 +926,10 @@ export function MobileWebBrowserShell() {
             <span className="muted">
               开发辅助层，正式产品界面只看手机画面。
             </span>
+            <div className="browser-shell__version-badge" aria-label="当前联调壳层版本">
+              <span className="browser-shell__version-label">Local Debug</span>
+              <strong>v2026-04-20-layer0-first</strong>
+            </div>
           </div>
 
           <button
@@ -970,7 +957,7 @@ export function MobileWebBrowserShell() {
               <div className="browser-shell__controls">
                 <div className="field">
                   <span>测试样本</span>
-                  <div style={{ display: "grid", gap: 8 }}>
+                  <div className="browser-shell__fixture-list">
                     {mobileWebDevFixturePresets.map((preset) => {
                       const isLoadingFixture = fixtureLoadingId === preset.id;
 
@@ -978,15 +965,11 @@ export function MobileWebBrowserShell() {
                         <button
                           key={preset.id}
                           type="button"
-                          className="mw-secondary-button mw-secondary-button--inline"
+                          className="mw-secondary-button mw-secondary-button--inline browser-shell__fixture-button"
                           onClick={() => {
                             void handleApplyFixturePreset(preset.id);
                           }}
                           disabled={Boolean(fixtureLoadingId)}
-                          style={{
-                            justifyContent: "space-between",
-                            width: "100%",
-                          }}
                         >
                           <span>{preset.label}</span>
                           <span>{isLoadingFixture ? "载入中..." : "一键填充"}</span>
@@ -996,15 +979,28 @@ export function MobileWebBrowserShell() {
                   </div>
                 </div>
 
-                <label className="field field--checkbox">
-                  <input
-                    type="checkbox"
-                    checked={previewMode}
+                  <label className="field field--checkbox">
+                    <input
+                      type="checkbox"
+                      checked={previewMode}
                     onChange={(event) => {
                       setPreviewMode(event.target.checked);
                     }}
                   />
                   <span>使用本地预览模式（不请求后端）</span>
+                  </label>
+
+                <label className="field">
+                  <span>预览通道</span>
+                  <select
+                    value={previewChannel}
+                    onChange={(event) => {
+                      setPreviewChannel(event.target.value as "mobile-web" | "miniapp");
+                    }}
+                  >
+                    <option value="mobile-web">mobile-web</option>
+                    <option value="miniapp">miniapp</option>
+                  </select>
                 </label>
 
                 <label className="field">
@@ -1015,7 +1011,11 @@ export function MobileWebBrowserShell() {
                       setRoute(event.target.value as MobileWebRouteId);
                     }}
                   >
-                    {PREVIEW_ROUTE_OPTIONS.map((option) => (
+                    {PREVIEW_ROUTE_OPTIONS.filter((option) => (
+                      previewChannel === "mobile-web"
+                        ? true
+                        : option.value !== "reportLegacy"
+                    )).map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -1089,9 +1089,12 @@ export function MobileWebBrowserShell() {
                 <label className="field">
                   <span>userId</span>
                   <input
-                    value={userId}
+                    value={userIdInput}
                     onChange={(event) => {
-                      setUserId(event.target.value);
+                      commitUserIdInput(event.target.value);
+                    }}
+                    onBlur={() => {
+                      setUserIdInput(session.canonicalUserId);
                     }}
                   />
                 </label>
@@ -1101,206 +1104,186 @@ export function MobileWebBrowserShell() {
 
           <div className="browser-shell__phone">
           {previewMode ? (
-            <MobileWebApp
-              {...previewProps}
-              uploadDraft={draft}
-              uploadDetection={previewDetection}
-              uploadDetecting={previewDetecting}
-              uploadDetectError={previewDetectError}
-              activeHistoryFilter={(previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
-              historyQuery={previewHistoryQuery}
-              historyActionBusy={previewFlowRunning && route === "history"}
-              activeHistoryRecordId={previewHistoryOpeningId}
-              historyStatusLabel={previewHistoryStatusLabel ?? undefined}
-              historyStatusDetail={previewHistoryStatusDetail ?? undefined}
-              historyStatusTone={previewHistoryStatusTone}
-              historyRefreshHint={previewHistoryRefreshHint ?? undefined}
-              historyRefreshBusy={previewHistoryRefreshing}
-              environmentLabel={import.meta.env.DEV && route === "upload" ? "当前为本地预览模式" : undefined}
-              environmentDetail={
-                import.meta.env.DEV && route === "upload"
-                  ? previewFlowRunning
-                    ? "当前正在尝试刷新或执行真实 Lite 主路径，请先等待 create/status/report 链路返回。"
-                    : "上传页的三圈检测可切到真实接口触发；其它页面默认保持正式界面观感。"
-                  : undefined
-              }
-              environmentTone={import.meta.env.DEV ? "preview" : undefined}
-              onLandingStart={() => {
-                setRoute("upload");
-              }}
-              onLandingOpenHistory={() => {
-                setRoute("history");
-                void refreshPreviewHistory(previewHistoryQuery);
-              }}
-              onUploadDraftChange={(patch) => {
-                setDraft((current) => mergeMobileWebUploadDraft(current, patch));
-                if (patch.imagePath !== undefined) {
-                  setPreviewDetection(null);
-                  setPreviewDetectError(null);
-                  setPreviewFlowState(null);
-                  setPreviewHistoryRecords(null);
-                  setPreviewHistoryQuery({ filter: "all", limit: 20 });
-                  setPreviewHistoryStatusLabel(null);
-                  setPreviewHistoryStatusDetail(null);
-                  setPreviewHistoryRefreshHint(null);
+            previewChannel === "miniapp" ? (
+              <MiniappApp
+                route={route as MiniappRouteId}
+                mode="runtime"
+                initialDraft={draft}
+                initialSession={session}
+              />
+            ) : (
+              <MobileWebApp
+                {...previewProps}
+                uploadDraft={draft}
+                activeHistoryFilter={(previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
+                historyQuery={previewHistoryQuery}
+                historyActionBusy={
+                  previewFlowRunning &&
+                  (route === "history" || route === "historyRecordDetail")
                 }
-              }}
-              onUploadContinue={async () => {
-                setPreviewFlowState(null);
-                setRoute("reportEntry");
-              }}
-              onUploadBack={() => {
-                setRoute("landing");
-              }}
-              onReportEntryBack={() => {
-                setRoute("upload");
-              }}
-              onReportEntryChooseReportType={async (reportType: MobileWebReportProductType) => {
-                const nextDraft = mergeMobileWebUploadDraft(draft, {
-                  reportType,
-                });
-                setDraft(nextDraft);
-                setPreviewFlowState(null);
-                setRoute("loading");
-
-                setPreviewFlowRunning(true);
-                try {
-                  const resolvedImagePath = await ensureUploadedImagePath(
-                    nextDraft,
-                    (uploaded) => {
-                      setDraft((current) => ({
-                        ...current,
-                        uploadAsset: toMobileWebUploadAssetRef(uploaded),
-                      }));
-                    },
-                  );
-                  const result = await runMobileWebLiteFlow(
-                    toStartCreatePayload(
-                      {
-                        ...nextDraft,
-                        uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-                        innerRadius: previewDetection?.inner_radius ?? nextDraft.innerRadius,
-                        middleRadius: previewDetection?.middle_radius ?? nextDraft.middleRadius,
-                      },
-                      userId,
-                    ),
-                  );
-                  setPreviewFlowState(result.state);
-                  if (result.state.step === "liteGenerating") {
-                    setRoute("loading");
-                    return;
+                activeHistoryRecordId={previewHistoryOpeningId}
+                activeHistoryRecordReportType={previewHistoryOpeningReportType}
+                historyStatusLabel={previewHistoryStatusLabel ?? undefined}
+                historyStatusDetail={previewHistoryStatusDetail ?? undefined}
+                historyStatusTone={previewHistoryStatusTone}
+                historyRefreshHint={previewHistoryRefreshHint ?? undefined}
+                historyRefreshBusy={previewHistoryRefreshing}
+                environmentLabel={import.meta.env.DEV && route === "upload" ? "当前为本地预览模式" : undefined}
+                environmentDetail={
+                  import.meta.env.DEV && route === "upload"
+                    ? previewFlowRunning
+                      ? "当前正在尝试刷新或执行真实 Lite 主路径，请先等待 create/status/report 链路返回。"
+                      : "上传页的三圈检测可切到真实接口触发；其它页面默认保持正式界面观感。"
+                    : undefined
+                }
+                environmentTone={import.meta.env.DEV ? "preview" : undefined}
+                onLandingStart={() => {
+                  setRoute("upload");
+                }}
+                onLandingOpenHistory={() => {
+                  setRoute("history");
+                  void refreshPreviewHistory(previewHistoryQuery);
+                }}
+                onUploadDraftChange={(patch) => {
+                  setDraft((current) => mergeMobileWebUploadDraft(current, patch));
+                  if (patch.imagePath !== undefined) {
+                    setPreviewDetection(null);
+                    setPreviewDetectError(null);
+                    setPreviewFlowState(null);
+                    setPreviewHistoryRecords(null);
+                    setPreviewHistoryQuery({ filter: "all", limit: 20 });
+                    setPreviewHistoryStatusLabel(null);
+                    setPreviewHistoryStatusDetail(null);
+                    setPreviewHistoryRefreshHint(null);
                   }
-                  await finalizePreviewSelectedReport({
-                    interpretationId: result.state.interpretation?.interpretation_id ?? "demo-interpretation-id",
-                    state: result.state,
-                    draft: { ...nextDraft, uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath) },
-                    userId,
-                    historyQuery: previewHistoryQuery,
-                    setPreviewFlowState,
-                    setPreviewHistoryRecords,
-                    setPreviewHistoryStatusLabel,
-                    setPreviewHistoryStatusDetail,
-                    setPreviewHistoryStatusTone,
-                    setRoute,
+                }}
+                onUploadContinue={async () => {
+                  setPreviewFlowState(null);
+                  setRoute("reportEntry");
+                }}
+                onUploadBack={() => {
+                  setRoute("landing");
+                }}
+                onReportEntryBack={() => {
+                  setRoute("upload");
+                }}
+                onReportEntryChooseReportType={async (reportType: MobileWebReportProductType) => {
+                  const nextDraft = mergeMobileWebUploadDraft(draft, {
+                    reportType,
                   });
-                } catch (error) {
-                  setPreviewFlowState(
-                    applyError(
-                      initialMandalaFlowState,
-                      error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
-                    ),
-                  );
-                  setRoute(getDraftReportVariant(nextDraft) === "pro" ? "upgrade" : "report");
-                } finally {
-                  setPreviewFlowRunning(false);
-                }
-              }}
-              onLoadingLeaveLater={() => {
-                void handlePreviewLeaveLoadingLater();
-              }}
-              onUploadPreviewDetect={async () => {
-                if (!draft.imagePath) {
-                  setPreviewDetectError("请先选择一张画作，再触发三圈检测。");
-                  return;
-                }
+                  setDraft(nextDraft);
+                  setPreviewFlowState(null);
+                  setRoute("loading");
 
-                setPreviewDetecting(true);
-                setPreviewDetectError(null);
-
-                try {
-                  const resolvedImagePath = await ensureUploadedImagePath(
-                    draft,
-                    (uploaded) => {
-                      setDraft((current) => ({
-                        ...current,
-                        uploadAsset: toMobileWebUploadAssetRef(uploaded),
-                      }));
-                    },
-                  );
-                  const detection = await detectCircles({
-                    image_path: resolvedImagePath.image_path,
-                  });
-                  setPreviewDetection(detection);
-                } catch (error) {
-                  setPreviewDetectError(
-                    error instanceof Error ? error.message : "三圈检测失败",
-                  );
-                  setPreviewDetection(null);
-                } finally {
-                  setPreviewDetecting(false);
-                }
-              }}
-              onReportPrimaryAction={handlePreviewPrimaryAction}
-              onReportSecondaryAction={handlePreviewSecondaryAction}
-              onReportBackAction={handlePreviewBackAction}
-              reportPrimaryDisabled={route === "loading" && previewFlowRunning}
-              onHistoryBackToUpload={() => {
-                setRoute("upload");
-              }}
-              onHistoryFilterChange={(filter) => {
-                const nextQuery = {
-                  ...previewHistoryQuery,
-                  filter,
-                };
-                setPreviewHistoryQuery((current) => ({
-                  ...current,
-                  filter,
-                }));
-                if (route === "history") {
-                  void refreshPreviewHistory(nextQuery);
-                }
-              }}
-              onHistoryThemeChange={(theme) => {
-                const nextQuery = {
-                  ...previewHistoryQuery,
-                  theme,
-                };
-                setPreviewHistoryQuery((current) => ({
-                  ...current,
-                  theme,
-                }));
-                if (route === "history") {
-                  void refreshPreviewHistory(nextQuery);
-                }
-              }}
-              onHistoryLimitChange={(limit) => {
-                const nextQuery = {
-                  ...previewHistoryQuery,
-                  limit,
-                };
-                setPreviewHistoryQuery((current) => ({
-                  ...current,
-                  limit,
-                }));
-                if (route === "history") {
-                  void refreshPreviewHistory(nextQuery);
-                }
-              }}
-              onHistoryRefresh={() => {
-                void handlePreviewHistoryRefresh();
-              }}
-              onHistoryOpenRecord={handlePreviewOpenHistoryRecord}
-            />
+                  setPreviewFlowRunning(true);
+                  try {
+                    const resolvedImagePath = await ensureUploadedImagePath(
+                      nextDraft,
+                      (uploaded) => {
+                        setDraft((current) => ({
+                          ...current,
+                          uploadAsset: toMobileWebUploadAssetRef(uploaded),
+                        }));
+                      },
+                    );
+                    const result = await runMobileWebLiteFlow(
+                      toStartCreatePayload(
+                        {
+                          ...nextDraft,
+                          uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+                        },
+                        userId,
+                      ),
+                    );
+                    setPreviewFlowState(result.state);
+                    if (result.state.step === "liteGenerating") {
+                      setRoute("loading");
+                      return;
+                    }
+                    await finalizePreviewSelectedReport({
+                      interpretationId: result.state.interpretation?.interpretation_id ?? "demo-interpretation-id",
+                      state: result.state,
+                      draft: { ...nextDraft, uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath) },
+                      userId,
+                      historyQuery: previewHistoryQuery,
+                      setPreviewFlowState,
+                      setPreviewHistoryRecords,
+                      setPreviewHistoryStatusLabel,
+                      setPreviewHistoryStatusDetail,
+                      setPreviewHistoryStatusTone,
+                      setRoute,
+                    });
+                  } catch (error) {
+                    setPreviewFlowState(
+                      applyError(
+                        initialMandalaFlowState,
+                        error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
+                      ),
+                    );
+                    setRoute("report");
+                  } finally {
+                    setPreviewFlowRunning(false);
+                  }
+                }}
+                onLoadingLeaveLater={() => {
+                  void handlePreviewLeaveLoadingLater();
+                }}
+                onReportPrimaryAction={handlePreviewPrimaryAction}
+                onReportSecondaryAction={handlePreviewSecondaryAction}
+                onReportBackAction={handlePreviewBackAction}
+                reportPrimaryDisabled={route === "loading" && previewFlowRunning}
+                onHistoryBackToUpload={() => {
+                  setRoute("upload");
+                }}
+                onHistoryFilterChange={(filter) => {
+                  const nextQuery = {
+                    ...previewHistoryQuery,
+                    filter,
+                  };
+                  setPreviewHistoryQuery((current) => ({
+                    ...current,
+                    filter,
+                  }));
+                  if (route === "history") {
+                    void refreshPreviewHistory(nextQuery);
+                  }
+                }}
+                onHistoryThemeChange={(theme) => {
+                  const nextQuery = {
+                    ...previewHistoryQuery,
+                    theme,
+                  };
+                  setPreviewHistoryQuery((current) => ({
+                    ...current,
+                    theme,
+                  }));
+                  if (route === "history") {
+                    void refreshPreviewHistory(nextQuery);
+                  }
+                }}
+                onHistoryLimitChange={(limit) => {
+                  const nextQuery = {
+                    ...previewHistoryQuery,
+                    limit,
+                  };
+                  setPreviewHistoryQuery((current) => ({
+                    ...current,
+                    limit,
+                  }));
+                  if (route === "history") {
+                    void refreshPreviewHistory(nextQuery);
+                  }
+                }}
+                onHistoryRefresh={() => {
+                  void handlePreviewHistoryRefresh();
+                }}
+                onHistoryOpenRecord={handlePreviewOpenHistoryRecord}
+                onHistoryRecordDetailBack={() => {
+                  setRoute("history");
+                }}
+                onHistoryRecordDetailOpenReport={handlePreviewOpenHistoryRecordReport}
+              />
+            )
           ) : (
             <MobileWebRuntime
               input={input}
@@ -1324,6 +1307,18 @@ export function MobileWebBrowserShell() {
           </div>
 
           {localDebugEnabled && controlsOpen ? (
+            <ManualReviewPanel
+              route={route}
+              previewMode={previewMode}
+              draft={draft}
+              interpretationId={interpretationId}
+              flowState={previewFlowState}
+              detection={null}
+              runtimeSnapshot={runtimeDebugSnapshot}
+            />
+          ) : null}
+
+          {localDebugEnabled && controlsOpen ? (
             <BrowserDebugPanel
               route={route}
               previewMode={previewMode}
@@ -1331,9 +1326,9 @@ export function MobileWebBrowserShell() {
               interpretationId={interpretationId}
               userId={userId}
               flowState={previewFlowState}
-              detection={previewDetection}
-              detectError={previewDetectError}
-              detecting={previewDetecting}
+              detection={null}
+              detectError={null}
+              detecting={false}
               runtimeSnapshot={runtimeDebugSnapshot}
               apiTraces={apiTraces}
               timelineEntries={timelineEntries}

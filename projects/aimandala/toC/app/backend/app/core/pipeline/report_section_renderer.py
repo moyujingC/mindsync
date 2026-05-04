@@ -52,7 +52,7 @@ class ReportSectionRenderer:
                     pro_draft.core_insight_table.get(key, "")
                     or pro_draft.core_insight_table.get(
                         {
-                            "核心失衡": "当前失衡",
+                            "当前失衡": "当前失衡",
                             "关键卡点": PRO_REPORT_BLUEPRINT.structure_labels[
                                 "core_table_fallback_block"
                             ],
@@ -62,7 +62,7 @@ class ReportSectionRenderer:
                             "核心失衡": PRO_REPORT_BLUEPRINT.structure_labels[
                                 "core_table_fallback_summary"
                             ],
-                        }.get(key, key),
+                        }.get(label, label),
                         "",
                     ),
                 )

@@ -2,17 +2,23 @@
 schema: agentcompanies/v1
 kind: company
 slug: mindsync
-name: 墨予镜
-description: 以墨予思，以镜观己
+name: 知行工坊
+description: 一人公司系统，以知促行，以行验知
 version: 0.1.0
 goals:
   - 通过多角色 AI 协作推进产品、研究、内容与工程交付
   - 建立中文优先、文档优先、可持续演进的公司内核
 ---
 
-# 墨予镜
+# 知行工坊
 
-`墨予镜` 是一个混合型 AI 公司内核。
+`知行工坊` 是一家以 `MindSync` 为公司系统底座的中文一人公司。
+
+其中三层边界固定如下：
+
+- `知行工坊`：公司名称
+- `MindSync`：公司系统、Monorepo（单一仓库多项目工作区）与运行时治理底座
+- `墨予镜`：个人 IP（个人品牌）账号名称，不再作为公司名称使用
 
 这个公司包聚焦于一套最小但完整的组织操作系统：
 
@@ -33,6 +39,7 @@ goals:
 
 当前公司至少覆盖以下职能：
 
+- Idea Clarifier
 - CEO / Orchestrator
 - Business Lead
 - Product Spec Lead
@@ -41,6 +48,12 @@ goals:
 - Engineer
 - Test / QA
 - Content Lead
+
+当前公司至少覆盖以下长期对象类型：
+
+- `product`
+- `capability`
+- `brand`
 
 ## 仓库说明
 
@@ -52,28 +65,39 @@ goals:
 - `shared/` 保存共享工具
 - `.paperclip.yaml` 保存 Paperclip 运行时侧边配置
 
-对象主数据以 [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml) 为唯一权威清单。
+当前已经显式项目化的公司级 capability 包括：
+
+- `研究中心`
+- `RelayHub`
+- `Automation Platform`
+
+对象主数据以 [company/项目注册表.yaml](company/项目注册表.yaml) 为唯一权威清单。
 其他文档只解释结构、治理与协作方式，不重复维护对象主数据。
 
 导入到 Paperclip 后，`COMPANY.md` 作为公司入口，`agents/*/AGENTS.md` 作为组织核心角色定义。
 
 ## 公司级必读文档
 
-进入 `墨予镜` 公司系统后，除 `COMPANY.md` 本身外，默认还应优先读取以下公司级文档：
+进入 `知行工坊` 的 `MindSync` 公司系统后，除 `COMPANY.md` 本身外，默认还应优先读取以下公司级文档：
 
-1. [company/公司蓝图.md](/Users/xinran/Downloads/dev/mindsync/company/公司蓝图.md)
-2. [company/项目注册表.yaml](/Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml)
-3. [company/内容矩阵.md](/Users/xinran/Downloads/dev/mindsync/company/内容矩阵.md)
-4. [company/研发原则.md](/Users/xinran/Downloads/dev/mindsync/company/研发原则.md)
-5. [company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
-6. [company/Paperclip任务系统优化方案.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md)
-7. [company/任务类型与标签规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务类型与标签规范.md)
-8. [company/任务创建模板.md](/Users/xinran/Downloads/dev/mindsync/company/任务创建模板.md)
-9. [company/顶层任务收束规则.md](/Users/xinran/Downloads/dev/mindsync/company/顶层任务收束规则.md)
-10. [company/标签与状态使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/标签与状态使用说明.md)
-11. [MONOREPO.md](/Users/xinran/Downloads/dev/mindsync/MONOREPO.md)
-12. [DOCS_GOVERNANCE.md](/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md)
-13. [company/项目与仓库映射.md](/Users/xinran/Downloads/dev/mindsync/company/项目与仓库映射.md)
+1. [company/公司蓝图.md](company/公司蓝图.md)
+2. [company/项目注册表.yaml](company/项目注册表.yaml)
+3. [company/内容矩阵.md](company/内容矩阵.md)
+4. [company/研发原则.md](company/研发原则.md)
+5. [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
+6. [company/Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
+7. [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+8. [company/任务创建模板.md](company/任务创建模板.md)
+9. [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
+10. [company/标签与状态使用说明.md](company/标签与状态使用说明.md)
+11. [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
+12. [MONOREPO.md](MONOREPO.md)
+13. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+14. [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+15. [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
+16. [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md)
+17. [company/项目与仓库映射.md](company/项目与仓库映射.md)
+18. [company/knowledge-base/README.md](company/knowledge-base/README.md)
 
 其中：
 
@@ -87,9 +111,14 @@ goals:
 - `任务创建模板` 定义 intake / epic / execution / artifact-review 的默认写法
 - `顶层任务收束规则` 定义顶层任务应如何长期收束，不混入阶段性整改表
 - `标签与状态使用说明` 解释这些标签和文档状态在实际运行中如何影响入口、巡检和默认动作
-- `MONOREPO` 定义仓库分层、对象类型与目录归属原则
+- `Git仓库管理系统说明` 收口公司级 Git 仓库、Monorepo、worktree、分支和提交纪律的总入口
+- `MONOREPO` 只补充目录分层与对象落位原则
 - `DOCS_GOVERNANCE` 定义正式文档的状态、元数据和 artifact 规则
-- `项目与仓库映射` 解释注册表中的对象如何映射到当前 Monorepo 与历史仓库
+- `服务器与基础设施入口` 定义当前可运维宿主机的公司级登录入口与项目 runbook 索引
+- `Paperclip Agent 模型配置总表` 用于解释当前各 Agent 的运行时模型、adapter、base URL、鉴权方式、面板状态解读，以及 `Engineer` 的成本控制与转人工口径
+- `Automation Platform` 收口公司级执行与运维底座定义，并明确 `server_automation` 与 `local_manual_review` 两条执行链的边界
+- `项目与仓库映射` 只补充各项目到当前工作区与历史仓库的映射
+- `公司知识库` 收口公司级方法论、系统机制分析与跨项目长期可复用知识
 
 ## 信息分层
 

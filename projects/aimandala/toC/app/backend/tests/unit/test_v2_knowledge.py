@@ -33,9 +33,21 @@ def test_v2_knowledge_query_engine_can_answer_basic_queries():
 
     color_result = engine.get_color_meaning("红色", theme="general")
     circle_result = engine.get_circle_interpretation("内圈", "火", theme="general")
+    trace = engine.evaluate_imbalance_trace(
+        {
+            "water": {"element": "水", "proportion": 0.42},
+            "fire": {"element": "火", "proportion": 0.08},
+            "wood": {"element": "木", "proportion": 0.20},
+            "earth": {"element": "土", "proportion": 0.18},
+            "metal": {"element": "金", "proportion": 0.12},
+        },
+        {"inner": "水", "middle": "水", "outer": "土"},
+    )
 
     assert color_result.found is True
     assert circle_result.found is True
+    assert trace["imbalance_trace"]["primary_candidates"]
+    assert len(trace["imbalance_trace"]["all_candidates"]) == 20
 
 
 def test_orchestrator_initializes_v2_knowledge_engine_and_builds_theme_context():
@@ -148,6 +160,15 @@ def test_orchestrator_builds_knowledge_backed_layer0_for_valid_image(tmp_path):
     assert layer0.five_elements.fire["percentage"] > 0
     assert layer0.three_circles.inner["knowledge_reading"]
     assert layer0.color_analysis["element_distribution"]["fire"]["element"] == "火"
+    assert layer0.rule_evaluations["element_states"]
+    assert layer0.rule_evaluations["triad_states"]
+    assert layer0.rule_evaluations["imbalance_trace"]["all_candidates"]
+    assert layer0.imbalance_candidates
+    assert layer0.imbalance_candidates == [
+        item["id"] for item in layer0.rule_evaluations["imbalance_trace"]["primary_candidates"]
+    ]
+    assert layer0.fallback_summary["used"] is False
+    assert "fallback:transition-overload" not in layer0.fidelity_flags
 
 
 def test_lite_and_pro_texts_use_knowledge_backed_layer0(tmp_path):
@@ -168,6 +189,21 @@ def test_lite_and_pro_texts_use_knowledge_backed_layer0(tmp_path):
 
     record.layer_0_raw = orchestrator._build_layer0_placeholder(record)
     record.layer_0_raw.imbalance_candidates = ["transition-overload"]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["primary_candidates"] = [
+        {
+            "id": "transition-overload",
+            "category": "synthetic",
+            "toc_supported": True,
+            "score": 1.0,
+            "selected_for_primary": True,
+            "reason_codes": ["manual_override"],
+        }
+    ]
+    record.layer_0_raw.rule_evaluations["imbalance_trace"]["synthetic_signal"] = {
+        "id": "transition-overload",
+        "used": True,
+        "reason": "manual_override",
+    }
 
     context = orchestrator._build_theme_prompt_context(record)
     layer1 = orchestrator._build_layer1_placeholder(record)
@@ -182,4 +218,5 @@ def test_lite_and_pro_texts_use_knowledge_backed_layer0(tmp_path):
     assert "过渡期" in layer1.emotion_portrait
     assert "主导元素更偏" in layer3.three_circles_detailed["inner"]["reading"]
     assert "圈间节奏首先显示" in layer3.micro_analysis_detailed["节奏关系"]
-    assert "Layer 0 的知识候选更接近「过渡负荷」" in layer3.imbalance_confirmed["summary"]
+    assert "过渡负荷" in layer3.imbalance_confirmed["summary"]
+    assert "阶段迁移" in layer3.imbalance_confirmed["summary"]

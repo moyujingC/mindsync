@@ -48,7 +48,7 @@ handoff_to:
 
 1. 当前项目 `PROJECT.md`
 2. 当前阶段相关 artifact
-3. `/Users/xinran/Downloads/dev/mindsync/DOCS_GOVERNANCE.md`
+3. `DOCS_GOVERNANCE.md`
 
 ## 执行步骤
 
@@ -63,7 +63,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/handoff-packaging/templates/HANDOFF-模板.md`
+- `templates/HANDOFF-模板.md`
 
 默认至少包含：
 

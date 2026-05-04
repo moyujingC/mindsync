@@ -1,0 +1,48 @@
+id: toc-mvp-fixture-004
+status: current
+owner: Test / QA
+scope: To C MVP
+theme: general
+fixture_type: warning-trace
+asset_ref:
+  kind: image-asset
+  asset_path: fixtures/toc-mvp/assets/IMG_5063.jpeg
+  evidence_path: fixtures/toc-mvp/evidence/toc-mvp-fixture-004.md
+  note: 通过 override_imbalance_candidates 触发确定性 warning trace，不走 fallback
+input:
+  user_profile: qa-fixture-user-004
+  image_path: fixtures/toc-mvp/assets/IMG_5063.jpeg
+  image_label: 脱敏 warning trace 画作
+  painting_intention: 看见当下的风险提示
+  painting_feeling: 有点不安，但还能保持观察
+  expected_report_version: lite
+execution:
+  create_twice: false
+  upgrade_to_pro: false
+  override_imbalance_candidates:
+    - 水多火灭
+validation:
+  report_version: lite
+  existing_on_repeat: false
+  fallback_used: false
+  warning_ids:
+    - 水多火灭
+  required_structured_fields:
+    - topic_context
+    - current_reading
+    - visual_basis
+    - pattern_interpretation
+    - life_connection
+    - lite_healing_guidance
+    - pro_report_entry
+coverage:
+  - TC-02
+  - TC-06
+expected_observations:
+  - warning trace 可见
+  - fallback_summary.used 仍为 false
+  - Lite 新合同字段完整
+review_entrypoints:
+  - projects/aimandala/toC/app/backend/tests/unit/test_knowledge_workbench_v22.py
+  - projects/aimandala/toC/app/frontend/mobile-web/browser-debug-panel.test.tsx
+  - projects/aimandala/toC/app/backend/app/core/knowledge_runtime/workbench.py

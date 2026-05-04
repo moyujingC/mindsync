@@ -1,8 +1,8 @@
 version: 0.1.0
 last_updated: 2026-04-04
-source_of_truth: /Users/xinran/Downloads/dev/mindsync/company/项目注册表.yaml
+source_of_truth: company/项目注册表.yaml
 description: >
-  墨予镜公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
+  知行工坊公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
   其他文档只做解释，不重复维护对象主数据。
 
 objects:
@@ -10,16 +10,15 @@ objects:
     name: "一镜一梳"
     slug: "aimandala"
     kind: "product"
-    status: "planned_migration"
+    status: "active"
     goal: "一镜一梳上线"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/一镜一梳/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/PROJECT.md"
+    company_entry: "company/projects/一镜一梳/PROJECT.md"
+    workspace_entry: "projects/aimandala/PROJECT.md"
     runtime_directory: "projects/aimandala"
-    legacy_repository: "https://github.com/MindSyncHub/ai-mandala"
     purpose:
       - "曼陀罗疗愈方向的核心产品项目"
-      - "作为后续迁入 Monorepo 的正式产品工作区"
-      - "为研究中心与墨予镜 IP 提供产品素材"
+      - "以 `projects/aimandala` 作为唯一正式开发与发布工作区"
+      - "为研究中心与内容矩阵提供产品素材"
 
   - id: "00403f31-add0-4b19-b715-6652a4b3dfe3"
     name: "怀瑾握瑜"
@@ -27,8 +26,8 @@ objects:
     kind: "product"
     status: "pilot"
     goal: "怀瑾握瑜产品化"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/怀瑾握瑜/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/aicareer/PROJECT.md"
+    company_entry: "company/projects/怀瑾握瑜/PROJECT.md"
+    workspace_entry: "projects/aicareer/PROJECT.md"
     runtime_directory: "projects/aicareer"
     legacy_repository: "https://github.com/MindSyncHub/ai-career"
     purpose:
@@ -36,28 +35,70 @@ objects:
       - "作为公司流程、artifact 流与 Agent handoff 的试点项目"
       - "先在纸面和最小实现上跑通公司工作方式"
 
+  - id: "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
+    name: "馨冉求职"
+    slug: "xinran-jobhunt"
+    kind: "product"
+    status: "active"
+    goal: "馨冉求职推进与交付"
+    company_entry: "company/projects/馨冉求职/PROJECT.md"
+    workspace_entry: "projects/xinran-jobhunt/PROJECT.md"
+    runtime_directory: "projects/xinran-jobhunt"
+    purpose:
+      - "承接馨冉本人当前真实求职推进、材料生产与投递协作"
+      - "作为个人求职执行项目，而不是抽象产品化实验"
+      - "与怀瑾握瑜保持边界：前者服务当前求职闭环，后者探索可产品化的方法与服务模型"
+
   - id: "research-center"
     name: "研究中心"
     slug: "research-center"
     kind: "capability"
     status: "active"
     goal: "研究中心能力建设"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/研究中心/PROJECT.md"
-    workspace_entry: "/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md"
+    company_entry: "company/projects/研究中心/PROJECT.md"
+    workspace_entry: "projects/research-center/PROJECT.md"
     runtime_directory: "projects/research-center"
     purpose:
       - "承接跨项目研究、方法论沉淀与知识资产治理"
       - "作为多个 Agent 的共享能力底座"
       - "为各产品项目提供可复用洞察和研究输入"
 
+  - id: "relayhub"
+    name: "RelayHub"
+    slug: "relayhub"
+    kind: "capability"
+    status: "active"
+    goal: "模型接入、评测与优化决策能力建设"
+    company_entry: "company/projects/RelayHub/PROJECT.md"
+    workspace_entry: "projects/relayhub/PROJECT.md"
+    runtime_directory: "projects/relayhub"
+    purpose:
+      - "承接公司级共享模型接入、路由与观测能力建设"
+      - "提供个人开发版 relay、产品生产版 relay 与旁路 eval 的统一底座"
+      - "为中转站续费决策、国产模型替代判断和任务级优化提供正式评测入口"
+
+  - id: "automation-platform"
+    name: "Automation Platform"
+    slug: "automation-platform"
+    kind: "capability"
+    status: "active"
+    goal: "公司级执行与运维底座建设"
+    company_entry: "company/projects/Automation/PROJECT.md"
+    purpose:
+      - "承接 Paperclip 相关执行路由、服务器 automation、workspace policy、heartbeat 与 maintenance 等共享能力"
+      - "为多个项目提供一致的 server_automation 与 local_manual_review 分流口径"
+      - "当前首个正式落地样例是 aimandala，但能力本体不从属于单一项目"
+
   - id: "6947ac34-cf22-4a87-bc4c-ded2edc77772"
-    name: "墨予镜 IP"
-    slug: "moyujing-ip"
+    name: "内容矩阵"
+    slug: "content-matrix"
     kind: "brand"
     status: "active"
-    goal: "墨予镜影响力建设"
-    company_entry: "/Users/xinran/Downloads/dev/mindsync/company/projects/墨予镜IP/PROJECT.md"
+    goal: "多账号内容矩阵与影响力建设"
+    company_entry: "company/projects/内容矩阵/PROJECT.md"
+    workspace_entry: "projects/content-matrix/PROJECT.md"
+    runtime_directory: "projects/content-matrix"
     purpose:
-      - "承接墨予镜个人 IP 的统一对外叙事与内容放大"
-      - "汇聚产品项目与研究中心输出，形成外部表达"
-      - "维护个人真实信息、表达边界与第一人称素材"
+      - "承接公司所有账号的统一内容规划、内容转译与内容资产治理"
+      - "汇聚产品项目与研究中心输出，形成多账号外部表达"
+      - "在总项目下分别维护个人号、产品号与其他账号的表达边界与素材体系"

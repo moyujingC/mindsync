@@ -21,6 +21,7 @@ def _reset_api_state():
 
     routes_v2._orchestrator = None
     routes_v2._upload_storage = None
+    routes_v2._miniapp_stub_store = None
     routes_v2._active_pro_upgrade_jobs.clear()
     shutil.rmtree(
         os.path.join(
@@ -62,6 +63,48 @@ def test_health_endpoint():
     assert data["service"] == "aimandala-toc-backend"
 
 
+def test_local_dev_cors_allows_vite_ports():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.options(
+        "/api/v2/pricing",
+        headers={
+            "Origin": "http://127.0.0.1:4174",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:4174"
+
+
+def test_public_web_origins_are_allowed_for_runtime_api_calls():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    for origin in (
+        "http://dev-web.jingshu.cc",
+        "https://dev-web.jingshu.cc",
+        "https://web.jingshu.cc",
+        "http://101.43.98.40",
+    ):
+        response = client.options(
+            "/api/v2/pricing",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.headers["access-control-allow-origin"] == origin
+
+
 def test_pricing_endpoint():
     from app.api.main import app
 
@@ -72,8 +115,98 @@ def test_pricing_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["lite"] == 9.9
-    assert data["pro"] == 49.0
+    assert data["pro"] == 39.0
     assert data["upgrade_diff"] == 39.1
+
+
+def test_miniapp_session_exchange_supports_debug_canonical_user():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/session/exchange",
+        json={
+            "debug_canonical_user_id": "debug-miniapp-user",
+            "open_id": "wx-open-1",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["canonical_user_id"] == "debug-miniapp-user"
+    assert data["open_id"] == "wx-open-1"
+    assert data["linked"] is True
+    assert data["is_new_user"] is False
+    assert data["session_id"]
+
+
+def test_miniapp_session_exchange_supports_code_only_stub():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/session/exchange",
+        json={
+            "code": "miniapp-code-only",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["open_id"].startswith("stub-openid-")
+    assert data["canonical_user_id"].startswith("wechat:stub-openid-")
+    assert data["linked"] is False
+    assert data["is_new_user"] is True
+
+
+def test_miniapp_session_exchange_uses_live_wechat_path_when_gray_enabled(monkeypatch):
+    from app.api.main import app
+    from app.api import routes_v2
+
+    _reset_api_state()
+    monkeypatch.setenv("AIMANDALA_MINIAPP_LIVE_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED", "1")
+    client = TestClient(app)
+
+    with patch.object(
+        routes_v2,
+        "exchange_wechat_session",
+        return_value=types.SimpleNamespace(
+            open_id="wx-live-openid",
+            union_id="wx-union",
+            session_key="session-key",
+        ),
+    ):
+        response = client.post(
+            "/api/v2/miniapp/session/exchange",
+            json={
+                "code": "live-code",
+            },
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["open_id"] == "wx-live-openid"
+    assert data["canonical_user_id"] == "wechat:wx-live-openid"
+
+
+def test_miniapp_session_exchange_requires_any_identity_signal():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/session/exchange",
+        json={},
+    )
+
+    assert response.status_code == 400
+    assert "code" in response.json()["detail"]
 
 
 def test_detect_circles_endpoint(tmp_path):
@@ -95,7 +228,8 @@ def test_detect_circles_endpoint(tmp_path):
     data = response.json()
     assert data["inner_radius"] == 0.33
     assert data["middle_radius"] == 0.66
-    assert data["method"] == "default"
+    # method varies by LLM config: noop→"default", fake LLM→"llm_vision"
+    assert data["method"] in ("llm_vision", "llm_vision_estimated", "llm_fallback", "default")
     assert data["geometry_suggestion"]["shape_type"] == "circle"
 
 
@@ -209,6 +343,7 @@ def test_upload_image_endpoint_returns_cos_metadata():
     _reset_api_state()
     client = TestClient(app)
     upload_calls = []
+    presigned_calls = []
 
     class FakeCosConfig:
         def __init__(self, **kwargs):
@@ -220,6 +355,13 @@ def test_upload_image_endpoint_returns_cos_metadata():
 
         def put_object(self, **kwargs):
             upload_calls.append(kwargs)
+
+        def get_presigned_download_url(self, **kwargs):
+            presigned_calls.append(kwargs)
+            return (
+                f"https://{self.config.kwargs.get('Domain') or 'demo-bucket.cos.ap-shanghai.myqcloud.com'}/"
+                f"{kwargs['Key']}?sign=demo"
+            )
 
     fake_qcloud_module = types.SimpleNamespace(
         CosConfig=FakeCosConfig,
@@ -235,6 +377,7 @@ def test_upload_image_endpoint_returns_cos_metadata():
             "AIMANDALA_UPLOAD_COS_BUCKET": "demo-bucket",
             "AIMANDALA_UPLOAD_COS_REGION": "ap-shanghai",
             "AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL": "https://img.example.com/mandala",
+            "AIMANDALA_COS_SIGNED_URL_TTL_SECONDS": "900",
         },
         clear=False,
     ), patch.dict(sys.modules, {"qcloud_cos": fake_qcloud_module}):
@@ -249,12 +392,14 @@ def test_upload_image_endpoint_returns_cos_metadata():
     data = response.json()
     assert data["storage_backend"] == "cos"
     assert data["storage_key"].startswith("aimandala/uploads/")
-    assert data["image_url"] == f"https://img.example.com/mandala/{data['storage_key']}"
+    assert data["image_url"] == f"https://img.example.com/{data['storage_key']}?sign=demo"
     assert os.path.exists(data["image_path"])
     assert data["image_local_expires_at"] is not None
     assert len(upload_calls) == 1
+    assert len(presigned_calls) == 1
     assert upload_calls[0]["Bucket"] == "demo-bucket"
     assert upload_calls[0]["Key"] == data["storage_key"]
+    assert presigned_calls[0]["Expired"] == 900
 
 
 def test_upload_image_endpoint_returns_501_for_missing_remote_backend_config():
@@ -283,7 +428,7 @@ def test_upload_image_endpoint_returns_501_for_missing_remote_backend_config():
     assert "Missing required upload storage config" in response.json()["detail"]
 
 
-def test_detect_circles_returns_501_for_invalid_prompt_runtime_config(tmp_path):
+def test_detect_circles_without_report_runtime_config(tmp_path):
     from app.api.main import app
 
     _reset_api_state()
@@ -291,23 +436,17 @@ def test_detect_circles_returns_501_for_invalid_prompt_runtime_config(tmp_path):
     image_path = tmp_path / "detect.png"
     image_path.write_bytes(b"mock-image")
 
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_PROMPT_RUNTIME_BACKEND": "http",
-            "AIMANDALA_PROMPT_RUNTIME_HTTP_URL": "",
+    response = client.post(
+        "/api/v2/detect-circles",
+        json={
+            "image_path": str(image_path),
         },
-        clear=False,
-    ):
-        response = client.post(
-            "/api/v2/detect-circles",
-            json={
-                "image_path": str(image_path),
-            },
-        )
+    )
 
-    assert response.status_code == 501
-    assert "AIMANDALA_PROMPT_RUNTIME_HTTP_URL" in response.json()["detail"]
+    assert response.status_code == 200
+    data = response.json()
+    assert data["inner_radius"] == 0.33
+    assert data["middle_radius"] == 0.66
 
 
 def test_upload_image_endpoint_returns_501_when_cos_sdk_missing():
@@ -416,6 +555,104 @@ def test_create_interpretation_persists_upload_metadata(tmp_path):
     assert record.image_storage_backend == "cos"
     assert record.image_storage_key == "aimandala/uploads/demo.png"
     assert record.image_local_expires_at == "2026-04-06T00:00:00+00:00"
+
+
+def test_read_endpoints_refresh_cos_image_url_from_storage_key(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-cos-refresh.png"
+    image_path.write_bytes(b"mock-image")
+    presigned_calls = []
+
+    class FakeCosConfig:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    class FakeCosClient:
+        def __init__(self, config):
+            self.config = config
+
+        def get_presigned_download_url(self, **kwargs):
+            presigned_calls.append(kwargs)
+            return (
+                f"https://{self.config.kwargs.get('Domain') or 'demo-bucket.cos.ap-shanghai.myqcloud.com'}/"
+                f"{kwargs['Key']}?refresh=1"
+            )
+
+    fake_qcloud_module = types.SimpleNamespace(
+        CosConfig=FakeCosConfig,
+        CosS3Client=FakeCosClient,
+    )
+
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_UPLOAD_BACKEND": "cos",
+            "AIMANDALA_UPLOAD_COS_SECRET_ID": "secret-id",
+            "AIMANDALA_UPLOAD_COS_SECRET_KEY": "secret-key",
+            "AIMANDALA_UPLOAD_COS_BUCKET": "demo-bucket",
+            "AIMANDALA_UPLOAD_COS_REGION": "ap-shanghai",
+            "AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL": "https://img.example.com/mandala",
+            "AIMANDALA_COS_SIGNED_URL_TTL_SECONDS": "900",
+        },
+        clear=False,
+    ), patch.dict(sys.modules, {"qcloud_cos": fake_qcloud_module}):
+        create_response = client.post(
+            "/api/v2/interpretations",
+            json={
+                "user_id": "user-api-read-refresh",
+                "image_path": str(image_path),
+                "storage_backend": "cos",
+                "storage_key": "aimandala/uploads/demo.png",
+                "image_url": "https://expired.example.com/demo.png",
+                "image_local_expires_at": "2026-04-06T00:00:00+00:00",
+            },
+        )
+
+        interpretation_id = create_response.json()["interpretation_id"]
+        status_response = client.get(f"/api/v2/interpretations/{interpretation_id}/status")
+        report_response = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
+        history_response = client.get("/api/v2/users/user-api-read-refresh/interpretations")
+
+    assert status_response.status_code == 200
+    assert report_response.status_code == 200
+    assert history_response.status_code == 200
+    assert status_response.json()["image_url"] == "https://img.example.com/aimandala/uploads/demo.png?refresh=1"
+    assert report_response.json()["image_url"] == "https://img.example.com/aimandala/uploads/demo.png?refresh=1"
+    assert history_response.json()[0]["image_url"] == "https://img.example.com/aimandala/uploads/demo.png?refresh=1"
+    assert all(call["Key"] == "aimandala/uploads/demo.png" for call in presigned_calls)
+
+
+def test_read_endpoints_return_null_image_url_when_storage_identity_missing(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-missing-storage.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-missing-storage",
+            "image_path": str(image_path),
+            "image_url": "https://expired.example.com/demo.png",
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    status_response = client.get(f"/api/v2/interpretations/{interpretation_id}/status")
+    report_response = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
+    history_response = client.get("/api/v2/users/user-api-missing-storage/interpretations")
+
+    assert status_response.status_code == 200
+    assert report_response.status_code == 200
+    assert history_response.status_code == 200
+    assert status_response.json()["image_url"] is None
+    assert report_response.json()["image_url"] is None
+    assert history_response.json()[0]["image_url"] is None
 
 
 def test_create_interpretation_requires_complete_manual_circles(tmp_path):
@@ -586,9 +823,8 @@ def test_get_user_interpretations_endpoint_supports_filter_query(tmp_path):
     assert all(item["generation_stage"] == "completed" for item in ready_data)
 
 
-def test_get_user_interpretations_endpoint_keeps_pro_generating_records_in_pending(tmp_path):
+def test_get_user_interpretations_endpoint_marks_direct_pro_purchase_ready_after_reconcile(tmp_path):
     from app.api.main import app
-    from app.api import routes_v2
 
     _reset_api_state()
     client = TestClient(app)
@@ -606,9 +842,24 @@ def test_get_user_interpretations_endpoint_keeps_pro_generating_records_in_pendi
     assert create_response.status_code == 200
     interpretation_id = create_response.json()["interpretation_id"]
 
-    with patch.object(routes_v2, "_ensure_pro_upgrade_job", lambda _: None):
-        upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    assert client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    ).status_code == 200
+    assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
     ready_response = client.get("/api/v2/users/user-api-pro-pending/interpretations?filter=ready")
     pending_response = client.get("/api/v2/users/user-api-pro-pending/interpretations?filter=pending")
@@ -619,12 +870,12 @@ def test_get_user_interpretations_endpoint_keeps_pro_generating_records_in_pendi
     ready_data = ready_response.json()
     pending_data = pending_response.json()
 
-    assert ready_data == []
-    assert len(pending_data) == 1
-    assert pending_data[0]["interpretation_id"] == interpretation_id
-    assert pending_data[0]["version_purchased"] == ["lite", "pro"]
-    assert pending_data[0]["generation_stage"] == "generating"
-    assert pending_data[0]["generation_progress"] == 85
+    assert len(ready_data) == 1
+    assert ready_data[0]["interpretation_id"] == interpretation_id
+    assert ready_data[0]["version_purchased"] == ["lite", "pro"]
+    assert ready_data[0]["generation_stage"] == "completed"
+    assert ready_data[0]["generation_progress"] == 100
+    assert pending_data == []
 
 
 def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_path):
@@ -702,8 +953,24 @@ def test_get_user_interpretations_endpoint_distinguishes_lite_and_lite_plus_pro(
     )
 
     pro_interpretation_id = pro_response.json()["interpretation_id"]
-    upgrade_response = client.post(f"/api/v2/interpretations/{pro_interpretation_id}/upgrade")
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": pro_interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    assert client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    ).status_code == 200
+    assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
     response = client.get("/api/v2/users/user-api-history-version/interpretations")
 
@@ -769,12 +1036,377 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
     assert data["version"] == "lite"
     assert data["title"] == "慢慢亮起来的中心"
     assert data["overall_impression"] is not None
-    assert data["structured"]["title"] == "慢慢亮起来的中心"
+    assert data["structured"]["topic_context"]["topic"] == "general"
+    assert data["structured"]["current_reading"] == data["overall_impression"]
+    assert data["structured"]["visual_basis"]
+    assert data["structured"]["pattern_interpretation"]
+    assert data["structured"]["life_connection"]
     assert data["structured"]["prompt_schema_validation_issues"] == []
-    assert "pro_teaser" in data["structured"]
+    assert "lite_healing_guidance" in data["structured"]
+    assert "pro_report_entry" in data["structured"]
+    assert "title" not in data["structured"]
+    assert data["structured"]["pro_report_entry"]["title"] == "另一份更深的独立报告"
     assert "六个核心洞察" in data["report"]
     assert "重要声明" in data["report"]
     assert data["error"] is None
+
+
+def test_create_miniapp_order_endpoint_creates_pending_stub_order(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-lite.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-lite",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "lite",
+            "channel": "miniapp",
+            "open_id": "wx-open-lite",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["interpretation_id"] == interpretation_id
+    assert data["product_type"] == "lite"
+    assert data["channel"] == "miniapp"
+    assert data["purchase_state"] == "pending"
+    assert data["payable_amount"] == 9.9
+    assert data["currency"] == "CNY"
+    assert data["version_granted"] is None
+    assert data["wechat_pay_payload"]["mode"] == "stub"
+    assert data["wechat_pay_payload"]["next_action"] == "reconcile_after_host_payment"
+
+
+def test_create_miniapp_order_endpoint_uses_direct_pro_price_for_existing_lite_record(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-pro.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-pro",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["payable_amount"] == 39.0
+
+
+def test_create_miniapp_order_endpoint_defaults_to_stub_payload_when_live_gray_is_off(
+    tmp_path,
+):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-gray-off.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-gray-off",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+            "open_id": "wx-gray-off-open-1",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["payable_amount"] == 39.0
+    assert data["wechat_pay_payload"]["mode"] == "stub"
+    assert data["wechat_pay_payload"]["next_action"] == "reconcile_after_host_payment"
+
+
+def test_create_miniapp_order_endpoint_returns_wechatpay_payload_when_gray_enabled(
+    tmp_path,
+    monkeypatch,
+):
+    from app.api.main import app
+
+    _reset_api_state()
+    monkeypatch.setenv("AIMANDALA_MINIAPP_LIVE_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_APP_ID", "wx-app")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_PAY_MCH_ID", "mch-1")
+    monkeypatch.setenv("AIMANDALA_MINIAPP_WECHAT_PAY_API_V3_KEY", "api-key")
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-live-pro.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-live-order-pro",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+            "open_id": "wx-live-open-1",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["payable_amount"] == 39.0
+    assert data["wechat_pay_payload"]["mode"] == "wechatpay"
+    assert data["wechat_pay_payload"]["next_action"] == "wait_for_payment_confirmation"
+    assert data["wechat_pay_payload"]["request_payment_args"]["package"].startswith("prepay_id=")
+
+
+def test_create_miniapp_order_endpoint_returns_404_for_unknown_record():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": "missing-interpretation",
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+
+    assert response.status_code == 404
+
+
+def test_get_miniapp_order_endpoint_returns_created_order(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-get.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-get",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "lite",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    response = client.get(f"/api/v2/miniapp/orders/{order_id}")
+
+    assert response.status_code == 200
+    assert response.json()["order_id"] == order_id
+
+
+def test_get_miniapp_order_endpoint_returns_404_for_unknown_order():
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+
+    response = client.get("/api/v2/miniapp/orders/missing-order")
+
+    assert response.status_code == 404
+
+
+def test_notify_miniapp_wechat_payment_updates_purchase_state(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-notify.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-order-notify",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    for event, expected_state in (
+        ("paid", "paid"),
+        ("failed", "failed"),
+        ("cancelled", "cancelled"),
+    ):
+        recreate_response = client.post(
+            "/api/v2/miniapp/orders",
+            json={
+                "interpretation_id": interpretation_id,
+                "product_type": "pro",
+                "channel": "miniapp",
+            },
+        )
+        current_order_id = recreate_response.json()["order_id"]
+        notify_response = client.post(
+            "/api/v2/miniapp/payments/wechat/notify",
+            json={
+                "order_id": current_order_id,
+                "event": event,
+                "payment_reference": f"ref-{event}",
+            },
+        )
+
+        assert notify_response.status_code == 200
+        assert notify_response.json()["purchase_state"] == expected_state
+
+    notify_response = client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+            "payment_reference": "ref-paid",
+        },
+    )
+    assert notify_response.status_code == 200
+
+
+def test_reconcile_miniapp_order_requires_paid_state(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-reconcile-pending.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-reconcile-pending",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "lite",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    response = client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["purchase_state"] == "pending"
+    assert data["reconciled"] is False
+    assert data["version_granted"] is None
+
+
+def test_reconcile_miniapp_order_marks_paid_order_fulfilled(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "miniapp-order-reconcile-paid.png"
+    image_path.write_bytes(b"mock-image")
+
+    create_response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-miniapp-reconcile-paid",
+            "image_path": str(image_path),
+        },
+    )
+    interpretation_id = create_response.json()["interpretation_id"]
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    order_id = order_response.json()["order_id"]
+
+    notify_response = client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+            "payment_reference": "miniapp-paid",
+        },
+    )
+    assert notify_response.status_code == 200
+
+    response = client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["purchase_state"] == "fulfilled"
+    assert data["reconciled"] is True
+    assert data["version_granted"] == ["pro"]
+
+    interpretation = client.get(f"/api/v2/interpretations/{interpretation_id}")
+    assert interpretation.status_code == 200
+    assert "pro" in interpretation.json()["version_purchased"]
 
 
 def test_get_report_endpoint_404_for_unknown_record():
@@ -809,14 +1441,9 @@ def test_upgrade_placeholder_endpoint(tmp_path):
     assert response.status_code == 200
     data = response.json()
     assert data["success"] is True
-    assert data["enabled"] is True
-    assert data["status"] in {"processing", "completed"}
-
-    report_data = _wait_for_pro_report(client, interpretation_id)
-    assert report_data["version"] == "pro"
-    assert report_data["error"] is None
-    assert "一梳 Pro 版报告" in report_data["report"]
-    assert "重要声明" in report_data["report"]
+    assert data["enabled"] is False
+    assert data["status"] == "disabled"
+    assert "独立购买" in data["message"]
 
 
 def test_get_report_endpoint_defaults_to_best_available_version_after_upgrade(tmp_path):
@@ -836,8 +1463,24 @@ def test_get_report_endpoint_defaults_to_best_available_version_after_upgrade(tm
     )
     interpretation_id = create_response.json()["interpretation_id"]
 
-    upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
-    assert upgrade_response.status_code == 200
+    order_response = client.post(
+        "/api/v2/miniapp/orders",
+        json={
+            "interpretation_id": interpretation_id,
+            "product_type": "pro",
+            "channel": "miniapp",
+        },
+    )
+    assert order_response.status_code == 200
+    order_id = order_response.json()["order_id"]
+    assert client.post(
+        "/api/v2/miniapp/payments/wechat/notify",
+        json={
+            "order_id": order_id,
+            "event": "paid",
+        },
+    ).status_code == 200
+    assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
     _wait_for_pro_report(client, interpretation_id)
 
@@ -886,43 +1529,7 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
                     "method": "fake_vision",
                     "summary": "识别到了比较清晰的内中圈边界",
                 }
-            if "first_impression" in json.dumps(schema, ensure_ascii=False):
-                return {
-                    "first_impression": "这张画在收与放之间保持了一种克制的张力。",
-                    "core_insight_table": {
-                        "能量本质": "先收住自己，再慢慢向外表达。",
-                    },
-                    "micro_analysis_detailed": {
-                        "相邻关系": "内外之间有明显缓冲带。",
-                    },
-                    "root_cause": {
-                        "核心牵引": "你在安全感不足时会先保护边界。",
-                    },
-                    "imbalance_confirmed": {
-                        "primary": "边界收缩型",
-                        "evidence": "内圈较紧，外圈表达更谨慎。",
-                    },
-                    "healing_suggestions": [
-                        {"phase": "1-7天", "focus": "放慢", "practice": "每天留三分钟只看画面中心。"},
-                    ],
-                }
-            return {
-                "title": "来自真实 LLM 的 Lite 标题",
-                "overall_impression": "这幅画先把自己轻轻收拢，再试着向外试探。",
-                "visual_elements": "画面中心更凝聚，中圈保留了过渡空间。",
-                "emotion_portrait": "你像是在保护自己，也在等待一个更稳的出口。",
-                "story": {
-                    "base": "你先把感受收回自己这里。",
-                    "contradiction": "你想表达，但还在观察外界是否安全。",
-                },
-                "theme_scene": "当你需要先确认环境是否稳定时",
-                "theme_impact": "你会放慢表达节奏，避免自己过早暴露。",
-                "theme_awareness": "不是不想靠近，而是需要更稳的节奏。",
-                "three_awareness": [
-                    {"day": 1, "title": "先停一下", "content": "先看见自己在收紧什么。"},
-                ],
-                "pro_teaser": "如果继续进入 Pro，可以看到这份收缩背后的保护逻辑。",
-            }
+                raise AssertionError(f"unexpected structured LLM task: {task}")
 
         def generate_text(self, *, task, system_prompt, user_prompt):
             assert task == "chat"
@@ -959,11 +1566,27 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
         lite_report = client.get(f"/api/v2/interpretations/{interpretation_id}/report")
         assert lite_report.status_code == 200
         lite_data = lite_report.json()
-        assert lite_data["title"] == "来自真实 LLM 的 Lite 标题"
-        assert lite_data["overall_impression"] == "这幅画先把自己轻轻收拢，再试着向外试探。"
+        assert lite_data["title"] == "慢慢亮起来的中心"
+        assert lite_data["structured"]["prompt_schema_validation_issues"] == []
 
-        upgrade_response = client.post(f"/api/v2/interpretations/{interpretation_id}/upgrade")
-        assert upgrade_response.status_code == 200
+        order_response = client.post(
+            "/api/v2/miniapp/orders",
+            json={
+                "interpretation_id": interpretation_id,
+                "product_type": "pro",
+                "channel": "miniapp",
+            },
+        )
+        assert order_response.status_code == 200
+        order_id = order_response.json()["order_id"]
+        assert client.post(
+            "/api/v2/miniapp/payments/wechat/notify",
+            json={
+                "order_id": order_id,
+                "event": "paid",
+            },
+        ).status_code == 200
+        assert client.post(f"/api/v2/miniapp/orders/{order_id}/reconcile").status_code == 200
 
         chat_response = client.post(
             f"/api/v2/interpretations/{interpretation_id}/chat",

@@ -1,0 +1,16 @@
+{
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "./",
+  "srcMiniprogramRoot": "./",
+  "projectname": "aimandala-miniapp-native",
+  "description": "Aimandala miniapp native shell",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": false,
+    "enhance": true
+  },
+  "simulatorType": "wechat"
+}

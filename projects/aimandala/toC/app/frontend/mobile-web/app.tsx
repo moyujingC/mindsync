@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { MobileWebLandingPage } from "./page-shells/landing-page";
 import { MobileWebLoadingPage } from "./page-shells/loading-page";
 import { MobileWebHistoryPage } from "./page-shells/history-page";
-import { MobileWebProReportPage } from "./page-shells/pro-report-page";
+import { MobileWebHistoryRecordDetailPage } from "./page-shells/history-record-detail-page";
 import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
 import { MobileWebLegacyReportPage } from "./page-shells/report-page-legacy";
@@ -11,9 +11,9 @@ import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
 import type { MobileWebRouteId } from "./routes";
 import type {
-  DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
+  InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
 import type {
@@ -25,16 +25,15 @@ import { getDraftReportVariant } from "./state";
 export interface MobileWebAppProps {
   route: MobileWebRouteId;
   uploadDraft?: MobileWebUploadDraft;
-  uploadDetection?: DetectCirclesResponse | null;
-  uploadDetecting?: boolean;
-  uploadDetectError?: string | null;
   flowState?: MandalaFlowState;
   records?: InterpretationRecordResponse[];
   historyQuery?: InterpretationListQuery;
+  record?: InterpretationRecordResponse;
   activeHistoryFilter?: HistoryFilterId;
   historyFilterBusy?: boolean;
   historyActionBusy?: boolean;
   activeHistoryRecordId?: string | null;
+  activeHistoryRecordReportType?: InterpretationVersion | null;
   historyStatusLabel?: string;
   historyStatusDetail?: string;
   historyStatusTone?: "preview" | "runtime";
@@ -47,7 +46,6 @@ export interface MobileWebAppProps {
   onLandingOpenHistory?: () => void;
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onUploadContinue?: () => void;
-  onUploadPreviewDetect?: () => void;
   onUploadBack?: () => void;
   onReportEntryBack?: () => void;
   onReportEntryChooseReportType?: (reportType: MobileWebReportProductType) => void;
@@ -61,26 +59,23 @@ export interface MobileWebAppProps {
   onHistoryThemeChange?: (theme?: string) => void;
   onHistoryLimitChange?: (limit: number) => void;
   onHistoryRefresh?: () => void;
-  onHistoryOpenRecord?: (
-    interpretationId: string,
-    canOpenReport: boolean,
-    reportVariant: "lite" | "pro",
-  ) => void;
+  onHistoryOpenRecord?: (interpretationId: string) => void;
+  onHistoryRecordDetailBack?: () => void;
+  onHistoryRecordDetailOpenReport?: (reportType: InterpretationVersion) => void;
 }
 
 export function MobileWebApp({
   route,
   uploadDraft,
-  uploadDetection,
-  uploadDetecting = false,
-  uploadDetectError = null,
   flowState,
   records = [],
   historyQuery,
+  record,
   activeHistoryFilter = "all",
   historyFilterBusy = false,
   historyActionBusy = false,
   activeHistoryRecordId = null,
+  activeHistoryRecordReportType = null,
   historyStatusLabel,
   historyStatusDetail,
   historyStatusTone,
@@ -93,14 +88,12 @@ export function MobileWebApp({
   onLandingOpenHistory,
   onUploadDraftChange,
   onUploadContinue,
-  onUploadPreviewDetect,
   onUploadBack,
   onReportEntryBack,
   onReportEntryChooseReportType,
   onLoadingLeaveLater,
   onReportPrimaryAction,
   onReportSecondaryAction,
-  onReportBackAction,
   reportPrimaryDisabled = false,
   onHistoryBackToUpload,
   onHistoryFilterChange,
@@ -108,6 +101,8 @@ export function MobileWebApp({
   onHistoryLimitChange,
   onHistoryRefresh,
   onHistoryOpenRecord,
+  onHistoryRecordDetailBack,
+  onHistoryRecordDetailOpenReport,
 }: MobileWebAppProps): ReactNode {
   switch (route) {
     case "landing":
@@ -125,15 +120,11 @@ export function MobileWebApp({
       return (
         <MobileWebUploadPage
           draft={uploadDraft}
-          detection={uploadDetection}
-          isDetecting={uploadDetecting}
-          detectError={uploadDetectError}
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}
           onDraftChange={onUploadDraftChange}
           onContinue={onUploadContinue}
-          onPreviewDetect={onUploadPreviewDetect}
           onBack={onUploadBack}
         />
       );
@@ -200,20 +191,6 @@ export function MobileWebApp({
         />
       );
 
-    case "upgrade":
-      if (!flowState) {
-        return "Missing flow state";
-      }
-      return (
-        <MobileWebProReportPage
-          state={flowState}
-          uploadDraft={uploadDraft}
-          onBackAction={onReportBackAction}
-          onRestartAction={onReportSecondaryAction}
-          onRetryAction={onReportPrimaryAction}
-        />
-      );
-
     case "history":
       return (
         <MobileWebHistoryPage
@@ -237,6 +214,22 @@ export function MobileWebApp({
           onLimitChange={onHistoryLimitChange}
           onRefresh={onHistoryRefresh}
           onOpenRecord={onHistoryOpenRecord}
+        />
+      );
+
+    case "historyRecordDetail":
+      if (!record) {
+        return "Missing history record";
+      }
+      return (
+        <MobileWebHistoryRecordDetailPage
+          record={record}
+          openingReportType={activeHistoryRecordReportType}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
+          onBackToHistory={onHistoryRecordDetailBack}
+          onOpenReportType={onHistoryRecordDetailOpenReport}
         />
       );
 

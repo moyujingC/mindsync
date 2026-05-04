@@ -97,7 +97,7 @@ function resolveLoadingUiState(
   }
 
   if (isPro) {
-    if (state.step === "upgradePlaceholder") {
+    if (state.step === "proReady") {
       return {
         stages,
         progress: 82,
@@ -248,7 +248,7 @@ function FloatingParticlesSmall() {
 function LoadingBackIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="rgba(232,220,200,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -256,8 +256,8 @@ function LoadingBackIcon() {
 function LoadingCloseIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M7 7L17 17" stroke="rgba(232,220,200,0.86)" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M17 7L7 17" stroke="rgba(232,220,200,0.86)" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M7 7L17 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M17 7L7 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -265,7 +265,7 @@ function LoadingCloseIcon() {
 function LoadingDoneIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M20 6L9 17L4 12" stroke="#48BB78" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -273,7 +273,7 @@ function LoadingDoneIcon() {
 function LoadingWaitingIcon() {
   return (
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="8.5" stroke="rgba(113,128,150,0.5)" strokeWidth="1.8" />
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
 }
@@ -299,9 +299,9 @@ function LoadingVersionIcon({ isPro }: { isPro: boolean }) {
 function LoadingTipIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M9.5 18.5H14.5" stroke="#C87850" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M10 21H14" stroke="#C87850" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M8.7 15.3C7.33 14.3 6.5 12.68 6.5 10.92C6.5 7.93 8.96 5.5 12 5.5C15.04 5.5 17.5 7.93 17.5 10.92C17.5 12.68 16.67 14.3 15.3 15.3C14.74 15.71 14.4 16.33 14.4 17V17.5H9.6V17C9.6 16.33 9.26 15.71 8.7 15.3Z" stroke="#C87850" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M9.5 18.5H14.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M10 21H14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M8.7 15.3C7.33 14.3 6.5 12.68 6.5 10.92C6.5 7.93 8.96 5.5 12 5.5C15.04 5.5 17.5 7.93 17.5 10.92C17.5 12.68 16.67 14.3 15.3 15.3C14.74 15.71 14.4 16.33 14.4 17V17.5H9.6V17C9.6 16.33 9.26 15.71 8.7 15.3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -314,6 +314,9 @@ export function MobileWebLoadingPage({
   onLeaveLater,
 }: MobileWebLoadingPageProps) {
   const [tipIndex, setTipIndex] = useState(0);
+  const loadingPatternStyle = {
+    ["--am-pattern-image" as string]: `url(${brandPattern})`,
+  } as React.CSSProperties;
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -347,8 +350,8 @@ export function MobileWebLoadingPage({
         </button>
       </div>
 
-      <div className="am-loading-body">
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+      <div className="am-loading-body" style={loadingPatternStyle}>
+        <div className="am-pattern-overlay am-loading-surface-pattern" />
         <div className="am-ambient-glow am-ambient-glow--right" />
         <div className="am-ambient-glow am-ambient-glow--left" />
         <div className="am-loading-topbar__ornament" aria-hidden="true" />

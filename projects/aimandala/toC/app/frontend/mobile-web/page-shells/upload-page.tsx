@@ -1,20 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
 
 import brandPattern from "../assets/pattern.webp";
-import type { DetectCirclesResponse } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
-  detection?: DetectCirclesResponse | null;
-  isDetecting?: boolean;
-  detectError?: string | null;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onContinue?: () => void;
-  onPreviewDetect?: () => void;
   onBack?: () => void;
 }
 
@@ -31,7 +26,7 @@ const DEFAULT_MIDDLE_RADIUS = 0.65;
 function NavBackIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="rgba(232,220,200,0.86)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -39,9 +34,9 @@ function NavBackIcon() {
 function UploadGlyph() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="6" y="8" width="12" height="9" rx="2.2" stroke="#D4A054" strokeWidth="1.5" />
-      <path d="M9 8.5L10.2 6.8C10.6 6.2 11.2 5.9 11.9 5.9H12.1C12.8 5.9 13.4 6.2 13.8 6.8L15 8.5" stroke="#D4A054" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="12" cy="12.5" r="2.3" stroke="#D4A054" strokeWidth="1.5" />
+      <rect x="6" y="8" width="12" height="9" rx="2.2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M9 8.5L10.2 6.8C10.6 6.2 11.2 5.9 11.9 5.9H12.1C12.8 5.9 13.4 6.2 13.8 6.8L15 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="12.5" r="2.3" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -192,19 +187,19 @@ function UploadSlider({
   value,
   min,
   max,
-  color,
+  tone,
   onChange,
 }: {
   label: string;
   value: number;
   min: number;
   max: number;
-  color: string;
+  tone: "gold" | "copper";
   onChange: (nextValue: number) => void;
 }) {
   const percentage = ((value - min) / (max - min)) * 100;
   return (
-    <label className="am-upload-slider">
+    <label className={`am-upload-slider am-upload-slider--${tone}`}>
       <span className="am-upload-slider__label">{label}</span>
       <div className="am-upload-slider__track-wrap">
         <div className="am-upload-slider__track" />
@@ -218,7 +213,7 @@ function UploadSlider({
           onChange={(event) => onChange(Number(event.target.value))}
         />
       </div>
-      <strong style={{ color }}>{value}%</strong>
+      <strong>{value}%</strong>
     </label>
   );
 }
@@ -339,28 +334,7 @@ function TextInputField({
   };
 
   return (
-    <div
-      className="relative rounded-xl px-4 transition-all duration-200"
-      style={{
-        position: "relative",
-        minHeight: focused ? "100px" : "48px",
-        height: focused ? "auto" : "48px",
-        border: focused
-          ? "1.5px solid rgba(212, 160, 84, 0.45)"
-          : "1px solid rgba(200, 120, 80, 0.15)",
-        backgroundColor: focused ? "rgba(212, 160, 84, 0.03)" : "#F5EFE2",
-        boxShadow: focused ? "0 0 0 3px rgba(212, 160, 84, 0.08)" : "none",
-        display: "flex",
-        flexDirection: focused ? "column" : "row",
-        alignItems: focused ? "stretch" : "center",
-        paddingTop: focused ? "12px" : "0",
-        paddingBottom: focused ? "28px" : "0",
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        borderRadius: "12px",
-        transition: "all 0.2s",
-      }}
-    >
+    <div className={`am-upload-text-input${focused ? " is-focused" : ""}`}>
       {focused ? (
         <textarea
           autoFocus
@@ -369,18 +343,7 @@ function TextInputField({
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
           maxLength={MAX_TEXT_LENGTH}
-          style={{
-            flex: 1,
-            outline: "none",
-            background: "transparent",
-            resize: "none",
-            fontSize: "16px",
-            fontFamily: "'Noto Sans SC', sans-serif",
-            color: "#3D2E1E",
-            lineHeight: "1.6",
-            minHeight: "60px",
-            border: "none",
-          }}
+          className="am-upload-text-input__control am-upload-text-input__control--textarea"
         />
       ) : (
         <input
@@ -389,38 +352,20 @@ function TextInputField({
           readOnly
           onFocus={() => setFocused(true)}
           placeholder={placeholder}
-          style={{
-            flex: 1,
-            outline: "none",
-            background: "transparent",
-            fontSize: "16px",
-            fontFamily: "'Noto Sans SC', sans-serif",
-            color: "#3D2E1E",
-            border: "none",
-          }}
+          className="am-upload-text-input__control"
         />
       )}
 
       {focused ? (
-        <span
-          style={{
-            position: "absolute",
-            right: "14px",
-            bottom: "8px",
-            fontFamily: "'Noto Sans SC', sans-serif",
-            fontSize: "11px",
-            color: "rgba(155, 122, 90, 0.5)",
-          }}
-        >
+        <span className="am-upload-text-input__count">
           {value.length}/{MAX_TEXT_LENGTH}字
         </span>
       ) : (
         <LucideIcon
           iconNode={ICON_PENCIL}
           size={16}
-          color="rgba(200, 120, 80, 0.3)"
           strokeWidth={2}
-          style={{ marginLeft: "8px", flexShrink: 0 }}
+          className="am-upload-text-input__icon"
         />
       )}
     </div>
@@ -519,44 +464,20 @@ function ThemeSelector({
   }, [selected]);
 
   return (
-    <div>
-      <p
-        style={{
-          marginBottom: "12px",
-          padding: "0 4px",
-          fontFamily: "'Noto Sans SC', sans-serif",
-          fontSize: "14px",
-          fontWeight: 500,
-          color: "#3D2E1E",
-        }}
-      >
-        选择解读主题 <span style={{ color: "#C87850" }}>*</span>
+    <div className="am-theme-selector">
+      <p className="am-theme-selector__title">
+        选择解读主题 <span className="am-theme-selector__required">*</span>
       </p>
 
       <div
         ref={scrollRef}
-        className="am-scrollbar-hide"
+        className="am-scrollbar-hide am-theme-selector__scroll"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
         onPointerLeave={handlePointerEnd}
         onScroll={updatePagination}
-        style={{
-          display: "flex",
-          gap: "12px",
-          width: "100%",
-          overflowX: "auto",
-          paddingBottom: "12px",
-          flexWrap: "nowrap",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          WebkitOverflowScrolling: "touch",
-          touchAction: "pan-x",
-          overscrollBehaviorX: "contain",
-          userSelect: "none",
-          cursor: "grab",
-        }}
       >
         {themes.map((theme) => {
           const isSelected = selected === theme.value;
@@ -564,6 +485,7 @@ function ThemeSelector({
             <button
               key={theme.value}
               type="button"
+              className={`am-theme-selector__card${isSelected ? " is-active" : ""}`}
               onClick={(event) => {
                 if (suppressNextClickRef.current) {
                   event.preventDefault();
@@ -572,88 +494,26 @@ function ThemeSelector({
                 setSelected(theme.value);
                 onChange?.(theme.value);
               }}
-              style={{
-                width: "72px",
-                height: "80px",
-                borderRadius: "12px",
-                border: isSelected
-                  ? "1px solid rgba(212,160,84,0.4)"
-                  : "1px solid rgba(200,120,80,0.15)",
-                backgroundColor: isSelected ? "transparent" : "#EDE6D8",
-                background: isSelected
-                  ? "linear-gradient(135deg, #1E2D4D 0%, #253860 40%, #2A4070 70%, #1E2D4D 100%)"
-                  : undefined,
-                boxShadow: isSelected ? "0 4px 14px rgba(26, 40, 68, 0.35)" : "none",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-                overflow: "hidden",
-                flexShrink: 0,
-              }}
             >
-              {isSelected ? (
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "radial-gradient(circle at 70% 20%, rgba(212,160,84,0.2) 0%, transparent 50%)",
-                    pointerEvents: "none",
-                  }}
-                />
-              ) : null}
+              {isSelected ? <div className="am-theme-selector__glow" /> : null}
 
               {isSelected ? (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "4px",
-                    right: "4px",
-                    width: "16px",
-                    height: "16px",
-                    borderRadius: "999px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "rgba(212,160,84,0.5)",
-                  }}
-                >
-                  <LucideIcon iconNode={ICON_CHECK} size={10} color="#1E2D4D" strokeWidth={3} />
+                <div className="am-theme-selector__check">
+                  <LucideIcon iconNode={ICON_CHECK} size={10} strokeWidth={3} />
                 </div>
               ) : null}
 
-              <span style={{ marginBottom: "4px", position: "relative", zIndex: 1 }}>
+              <span className="am-theme-selector__icon">
                 <LucideIcon
                   iconNode={theme.icon}
                   size={22}
-                  color={isSelected ? "#D4A054" : "#9B6840"}
                   strokeWidth={1.5}
                 />
               </span>
-              <span
-                style={{
-                  position: "relative",
-                  zIndex: 1,
-                  fontFamily: "'Noto Sans SC', sans-serif",
-                  fontSize: "14px",
-                  color: isSelected ? "#E8DCC8" : "#3D2E1E",
-                  lineHeight: 1.3,
-                }}
-              >
+              <span className="am-theme-selector__label">
                 {theme.label}
               </span>
-              <span
-                style={{
-                  position: "relative",
-                  zIndex: 1,
-                  fontFamily: "'Noto Sans SC', sans-serif",
-                  fontSize: "14px",
-                  color: isSelected ? "rgba(212,160,84,0.7)" : "#9B7A5A",
-                  lineHeight: 1.3,
-                }}
-              >
+              <span className="am-theme-selector__sub">
                 {theme.subLabel}
               </span>
             </button>
@@ -661,19 +521,13 @@ function ThemeSelector({
         })}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginTop: "4px" }}>
+      <div className="am-theme-selector__dots">
         {Array.from({ length: pageCount }).map((_, index) => {
           const isSelected = activeDotIndex === index;
           return (
             <div
               key={`dot-${index}`}
-              style={{
-                width: isSelected ? "16px" : "6px",
-                height: "6px",
-                borderRadius: "999px",
-                backgroundColor: isSelected ? "#D4A054" : "rgba(200,120,80,0.2)",
-                transition: "all 0.2s",
-              }}
+              className={`am-theme-selector__dot${isSelected ? " is-active" : ""}`}
             />
           );
         })}
@@ -694,31 +548,10 @@ function BottomPanel({
   onPrivacy?: () => void;
 }) {
   return (
-    <div
-      style={{
-        padding: "10px 24px 12px",
-        backgroundColor: "#F0E6D6",
-        borderTopWidth: "1px",
-        borderTopStyle: "solid",
-        borderTopColor: "rgba(200, 120, 80, 0.1)",
-      }}
-    >
+    <div className="am-upload-bottom-panel">
       <button
         type="button"
         className="am-upload-bottom-cta"
-        style={{
-          width: "100%",
-          height: "50px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px",
-          borderRadius: "999px",
-          border: "none",
-          background: "linear-gradient(135deg, #9B4030 0%, #C87850 30%, #D4A054 60%, #C87850 85%, #9B4030 100%)",
-          boxShadow: "0 4px 18px rgba(155, 64, 48, 0.3), 0 1px 3px rgba(0,0,0,0.1)",
-          cursor: canContinue && !isUploading ? "pointer" : "not-allowed",
-        }}
         onClick={() => {
           if (!canContinue || isUploading) return;
           onContinue?.();
@@ -730,63 +563,29 @@ function BottomPanel({
             <LucideIcon
               iconNode={ICON_LOADER}
               size={18}
-              color="#F5EFE2"
               className="am-lucide-spin"
             />
-            <span
-              style={{
-                fontFamily: "'Noto Serif SC', serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                letterSpacing: "0.08em",
-                color: "#F5EFE2",
-              }}
-            >
+            <span className="am-upload-bottom-cta__label">
               上传中...
             </span>
           </>
         ) : (
           <>
-            <LucideIcon iconNode={ICON_BOOK_OPEN} size={18} color="#F5EFE2" />
-            <span
-              style={{
-                fontFamily: "'Noto Serif SC', serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                letterSpacing: "0.08em",
-                color: "#F5EFE2",
-              }}
-            >
+            <LucideIcon iconNode={ICON_BOOK_OPEN} size={18} />
+            <span className="am-upload-bottom-cta__label">
               开始解读
             </span>
           </>
         )}
       </button>
 
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: "6px", marginTop: "8px" }}>
-        <LucideIcon iconNode={ICON_LOCK} size={11} color="#9B7A5A" style={{ marginTop: "2px", flexShrink: 0 }} />
-        <p
-          style={{
-            fontFamily: "'Noto Sans SC', sans-serif",
-            fontSize: "11px",
-            color: "#9B7A5A",
-            lineHeight: 1.5,
-            textAlign: "center",
-            margin: 0,
-          }}
-        >
+      <div className="am-upload-bottom-panel__privacy">
+        <LucideIcon iconNode={ICON_LOCK} size={11} className="am-upload-bottom-panel__lock" />
+        <p className="am-upload-bottom-panel__copy">
           上传即表示您同意{" "}
           <button
             type="button"
-            style={{
-              color: "#C87850",
-              textDecoration: "underline",
-              background: "none",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
-              font: "inherit",
-            }}
+            className="am-upload-bottom-panel__link"
             onClick={onPrivacy}
           >
             隐私政策
@@ -798,24 +597,13 @@ function BottomPanel({
   );
 }
 
-const detectToneClassMap = {
-  idle: "is-idle",
-  pending: "is-pending",
-  success: "is-success",
-  error: "is-error",
-} as const;
-
 export function MobileWebUploadPage({
   draft,
-  detection = null,
-  isDetecting = false,
-  detectError = null,
   environmentLabel,
   environmentDetail,
   environmentTone = "preview",
   onDraftChange,
   onContinue,
-  onPreviewDetect,
   onBack,
 }: MobileWebUploadPageProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -845,20 +633,13 @@ export function MobileWebUploadPage({
   const innerRadius = Math.round((draft.innerRadius ?? detection?.inner_radius ?? DEFAULT_INNER_RADIUS) * 100);
   const middleRadius = Math.round((draft.middleRadius ?? detection?.middle_radius ?? DEFAULT_MIDDLE_RADIUS) * 100);
   const canContinue = Boolean(draft.imagePath);
-  const detectTone = detectError ? "error" : detection ? "success" : isDetecting ? "pending" : "idle";
-  const detectSummary = useMemo(() => {
-    if (detectError) return detectError;
-    if (isDetecting) return "AI 正在识别三圈边界...";
-    if (detection) {
-      return `AI 识别把握度 ${Math.round((detection.confidence ?? 0) * 100)}%，可继续微调。`;
-    }
-    if (previewSrc) return "跟随你的直觉，也可以先让 AI 帮你识别三圈范围。";
-    return "上传画作后可调节三圈范围并开始解读。";
-  }, [detectError, detection, isDetecting, previewSrc]);
 
   const discStyle = {
     ["--am-upload-inner" as string]: `${innerRadius}%`,
     ["--am-upload-middle" as string]: `${middleRadius}%`,
+  } as CSSProperties;
+  const uploadPatternStyle = {
+    ["--am-pattern-image" as string]: `url(${brandPattern})`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -1162,8 +943,8 @@ export function MobileWebUploadPage({
 
   return (
     <div className="am-page am-upload-page">
-      <div className="am-upload-hero">
-        <div className="am-pattern-overlay" style={{ backgroundImage: `url(${brandPattern})` }} />
+      <div className="am-upload-hero" style={uploadPatternStyle}>
+        <div className="am-pattern-overlay" />
 
         <div className="am-upload-topbar">
           <button type="button" className="am-upload-back" onClick={onBack} aria-label="返回首页">
@@ -1284,7 +1065,7 @@ export function MobileWebUploadPage({
             value={innerRadius}
             min={10}
             max={82}
-            color="#D4A054"
+            tone="gold"
             onChange={(nextInner) => {
               const inner = Math.min(nextInner, middleRadius - 8);
               const nextMiddle = Math.max(inner + 8, middleRadius);
@@ -1296,7 +1077,7 @@ export function MobileWebUploadPage({
             value={middleRadius}
             min={18}
             max={90}
-            color="#C87850"
+            tone="copper"
             onChange={(nextMiddle) => {
               const middle = Math.max(nextMiddle, innerRadius + 8);
               const nextInner = Math.min(innerRadius, middle - 8);
@@ -1306,15 +1087,6 @@ export function MobileWebUploadPage({
         </div>
 
         <p className="am-upload-guidance">跟随你的直觉，调节三圈范围</p>
-
-        {previewSrc ? (
-          <div className={`am-upload-detect-status ${detectToneClassMap[detectTone]}`}>
-            <p>{detectSummary}</p>
-            <button type="button" onClick={onPreviewDetect} disabled={isDetecting}>
-              {isDetecting ? "识别中..." : detection ? "重新识别" : "AI识别"}
-            </button>
-          </div>
-        ) : null}
       </div>
 
       <div className="am-upload-bottom-sheet">
@@ -1324,7 +1096,7 @@ export function MobileWebUploadPage({
             onChange={(nextValue) => onDraftChange?.({ theme: nextValue })}
           />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "20px" }}>
+          <div className="am-upload-form-stack">
             <TextInputField
               placeholder="记录绘画前设定的意图"
               value={draft.paintingIntention}
@@ -1337,7 +1109,7 @@ export function MobileWebUploadPage({
             />
           </div>
 
-          <div style={{ height: "16px" }} />
+          <div className="am-upload-spacer" />
           <BottomPanel
             canContinue={canContinue}
             isUploading={false}

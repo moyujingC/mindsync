@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/delivery/2026-04-06-研究中心内容严谨性与NotebookLM事实核查-SOP.md
+> source_of_truth：projects/research-center/delivery/2026-04-06-研究中心内容严谨性与NotebookLM事实核查-SOP.md
 > 项目：研究中心
 
 这份 SOP 用于指导 `研究中心` 在实际任务中如何把 `NotebookLM` 作为事实核查辅助层使用。
@@ -75,7 +75,7 @@
 
 命名建议：
 
-- `CMPA-21-fact-check`
+- `历史任务-fact-check`
 - 或 `2026-04-06-agent-software-data-asset-check`
 
 只上传与本轮任务直接相关的材料。
@@ -96,7 +96,7 @@
 
 建议直接复用：
 
-- [事实核查笔记模板](/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/事实核查笔记模板.md)
+- [事实核查笔记模板](projects/research-center/templates/事实核查笔记模板.md)
 
 最少要有四栏：
 

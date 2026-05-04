@@ -3,7 +3,7 @@ name: knowledge-ingest
 description: 把研究结论转成结构化长期知识条目，避免研究停留在聊天和散笔记中。
 owner: Research & Knowledge Lead
 status: draft
-version: 0.1.0
+version: 0.1.1
 skill_type: shared
 applies_to:
   - research_knowledge
@@ -54,30 +54,32 @@ handoff_to:
 4. `machine-review-note`
 5. `review-note`
 6. 入库前检查清单
-7. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/PROJECT.md`
+7. `projects/research-center/PROJECT.md`
 
 ## 执行步骤
 
 1. 先检查 `fact-check-note` 是否完整。
 2. 再检查 `machine-review-note` 的 `final_decision` 是否为 `pass`。
 3. 再检查 `review-note` 的 `final_decision` 是否为 `approve_for_ingest`。
-4. 再核对入库前检查清单是否允许进入 `knowledge-ingest`。
-5. 只有当前四项都满足时，才继续判断哪些结论具备长期复用价值。
-6. 区分哪些是事实、哪些是模式、哪些是启发。
-7. 判断更适合做：
+4. 确认以上三类 artifact 都是正式文档，而不是一句摘要性描述。
+5. 确认知识条目和入库前检查清单里保留了这些 artifact 的明确路径或链接。
+6. 再核对入库前检查清单是否允许进入 `knowledge-ingest`。
+7. 只有当前六项都满足时，才继续判断哪些结论具备长期复用价值。
+8. 区分哪些是事实、哪些是模式、哪些是启发。
+9. 判断更适合做：
    - 方法条目
    - 模式条目
    - 案例条目
    - 观点条目
-8. 写清来源、适用范围和不适用范围。
-9. 记录后续可能的维护责任。
+10. 写清来源、适用范围和不适用范围。
+11. 记录后续可能的维护责任。
 
 ## 输出格式
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/knowledge-ingest/templates/知识条目-模板.md`
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/知识入库前检查清单.md`
+- `templates/知识条目-模板.md`
+- `projects/research-center/templates/知识入库前检查清单.md`
 
 ## 质量检查项
 
@@ -87,6 +89,8 @@ handoff_to:
 - 是否保留来源路径
 - 是否保留机器预审依据
 - 是否保留核查与 review 依据
+- 是否为每个前置 artifact 保留了正式文档路径或链接
+- 是否避免用“所有事实均来自...”这类摘要句代替正式 `fact-check-note`
 - 是否存在明确的 `approve_for_ingest`
 
 ## Handoff 规则
@@ -95,6 +99,7 @@ handoff_to:
 - 入库后应回链到 `machine-review-note`
 - 入库后应回链到 `fact-check-note` 与 review 结论
 - 如果条目仍高度依赖上下文，应先保留在研究文档，不强行入库
+- 如果任何前置 artifact 只有口头结论、没有正式文档，不得产出知识条目
 - 如果 `machine-review-note` 不是 `pass`，不得产出知识条目
 - 如果 `review-note` 不是 `approve_for_ingest`，不得产出知识条目
 

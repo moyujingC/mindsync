@@ -4,11 +4,11 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/huang-youcan-high-ticket/05-memory-update-draft.md
+> source_of_truth：projects/research-center/research/huang-youcan-high-ticket/05-memory-update-draft.md
 > 项目：研究中心
 > 阶段：knowledge-ingest
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/research/huang-youcan-high-ticket/04-creator-initial-review.md
+> - projects/research-center/research/huang-youcan-high-ticket/04-creator-initial-review.md
 
 这份 memory update 已根据创作者补充的正式反馈更新，当前可作为写回偏好记忆的高置信草稿。
 

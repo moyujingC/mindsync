@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/company/跨角色-Handoff-模板.md
+> source_of_truth：company/跨角色-Handoff-模板.md
 
 这份模板用于所有跨角色、跨阶段、跨项目的正式 handoff。
 

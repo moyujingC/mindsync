@@ -74,6 +74,7 @@ export async function renderHistoryEntry(userId: string) {
 export async function refreshReportEntry(interpretationId: string) {
   const refreshed = await refreshMobileWebReport(
     interpretationId,
+    "lite",
     initialMandalaFlowState,
   );
   const viewModel = createMobileWebPageViewModel(

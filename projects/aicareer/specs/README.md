@@ -7,3 +7,8 @@
 - 只有进入评审的正式文档才放这里
 - spec 应明确范围、目标和验收标准
 - 技术方案应明确边界、模块与风险
+
+当前 canonical 入口：
+
+- [MVP产品规范.md](projects/aicareer/specs/MVP产品规范.md)
+- [MVP技术方案.md](projects/aicareer/specs/MVP技术方案.md)

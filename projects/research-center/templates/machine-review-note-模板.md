@@ -1,10 +1,10 @@
 # Machine Review Note 模板
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Research & Knowledge Lead
-> last_updated：2026-04-07
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/machine-review-note-模板.md
+> last_updated：2026-04-13
+> source_of_truth：projects/research-center/templates/machine-review-note-模板.md
 > 项目：研究中心
 
 这份模板用于记录研究中心内容在进入人工 review 前的机器预审结论。

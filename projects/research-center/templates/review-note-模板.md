@@ -1,10 +1,10 @@
 # Review Note 模板
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：创作者
-> last_updated：2026-04-06
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/templates/review-note-模板.md
+> last_updated：2026-04-13
+> source_of_truth：projects/research-center/templates/review-note-模板.md
 > 项目：研究中心
 
 这份模板用于记录研究中心内容在进入知识库前的正式 review 结论。

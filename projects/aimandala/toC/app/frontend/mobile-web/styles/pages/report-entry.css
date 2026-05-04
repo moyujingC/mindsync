@@ -1,0 +1,330 @@
+.am-report-entry-page {
+  --am-report-entry-info-border: color-mix(in srgb, var(--am-status-info) 22%, transparent);
+  --am-report-entry-info-border-soft: color-mix(in srgb, var(--am-status-info) 18%, transparent);
+  --am-report-entry-info-border-faint: color-mix(in srgb, var(--am-status-info) 12%, transparent);
+  --am-report-entry-info-surface: color-mix(in srgb, var(--am-status-info) 12%, white);
+  --am-report-entry-info-surface-soft: color-mix(in srgb, var(--am-status-info) 10%, white);
+  --am-report-entry-info-surface-faint: color-mix(in srgb, var(--am-status-info) 4%, white);
+  min-height: 100%;
+  background: linear-gradient(180deg, #f4eedf 0%, #faf8f5 100%);
+  font-family: var(--am-font-body);
+}
+
+.am-report-entry-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 20px 32px;
+  background: linear-gradient(180deg, var(--am-color-ink-900) 0%, #223358 100%);
+}
+
+.am-report-entry-hero__pattern {
+  --am-pattern-image: none;
+  position: absolute;
+  inset: 0;
+  background-image: var(--am-pattern-image);
+  background-size: 280px;
+  background-repeat: repeat;
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+.am-report-entry-back {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--am-text-on-dark-muted);
+  font-size: 14px;
+}
+
+.am-report-entry-hero__content {
+  position: relative;
+  margin-top: 28px;
+}
+
+.am-report-entry-hero__eyebrow {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--am-text-accent) 86%, transparent);
+  letter-spacing: 0.16em;
+}
+
+.am-report-entry-hero__title {
+  margin: 10px 0;
+  color: var(--am-text-on-dark);
+  font-family: var(--am-font-display);
+  font-size: 30px;
+  line-height: 1.28;
+}
+
+.am-report-entry-hero__description,
+.am-report-entry-hero__hint {
+  max-width: 320px;
+  margin: 0;
+  line-height: 1.8;
+}
+
+.am-report-entry-hero__description {
+  color: var(--am-text-on-dark-muted);
+  font-size: 14px;
+}
+
+.am-report-entry-hero__hint {
+  margin-top: 12px;
+  max-width: 318px;
+  color: var(--am-text-on-dark-soft);
+  font-size: 12.5px;
+  line-height: 1.85;
+}
+
+.am-report-entry-theme-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--am-radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  color: color-mix(in srgb, var(--am-text-on-dark) 80%, transparent);
+  font-size: 12px;
+}
+
+.am-report-entry-theme-pill__label {
+  color: var(--am-status-accent-soft);
+  letter-spacing: 0.08em;
+}
+
+.am-report-entry-body {
+  display: grid;
+  gap: 18px;
+  padding: 18px 18px 30px;
+}
+
+.am-report-entry-card {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: 22px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 26px;
+  cursor: default;
+  opacity: 0.88;
+}
+
+.am-report-entry-card.is-available {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.am-report-entry-card.is-unavailable {
+  pointer-events: none;
+}
+
+.am-report-entry-card--lite {
+  border-color: var(--am-report-entry-info-border);
+  color: var(--am-text-primary);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84) 0%, rgba(245, 239, 226, 0.94) 100%);
+  box-shadow: 0 16px 36px rgba(74, 61, 48, 0.09);
+}
+
+.am-report-entry-card--pro {
+  border-color: var(--am-border-strong);
+  color: var(--am-text-on-dark);
+  background: linear-gradient(135deg, rgba(26, 40, 68, 0.98) 0%, rgba(37, 56, 96, 0.96) 100%);
+  box-shadow: 0 18px 40px rgba(26, 40, 68, 0.2);
+}
+
+.am-report-entry-card__topline {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1px;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__topline {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--am-status-info) 62%, white),
+    color-mix(in srgb, var(--am-status-info) 6%, transparent)
+  );
+}
+
+.am-report-entry-card--pro .am-report-entry-card__topline {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--am-text-accent) 70%, transparent),
+    color-mix(in srgb, var(--am-text-accent) 6%, transparent)
+  );
+}
+
+.am-report-entry-card__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__eyebrow {
+  color: var(--am-status-info);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__eyebrow {
+  color: color-mix(in srgb, var(--am-text-accent) 86%, transparent);
+}
+
+.am-report-entry-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.am-report-entry-card__title {
+  margin: 0;
+  font-family: var(--am-font-display);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.am-report-entry-card__price {
+  flex-shrink: 0;
+  margin-top: 2px;
+  padding: 5px 10px;
+  border-radius: var(--am-radius-pill);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__price {
+  color: var(--am-status-info);
+  background: var(--am-report-entry-info-surface);
+  border: 1px solid var(--am-report-entry-info-border-soft);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__price {
+  color: var(--am-text-on-dark);
+  background: var(--am-surface-warning-soft);
+  border: 1px solid var(--am-border-strong);
+}
+
+.am-report-entry-card__description {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__description {
+  color: var(--am-text-secondary);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__description {
+  color: color-mix(in srgb, var(--am-text-on-dark) 82%, transparent);
+}
+
+.am-report-entry-card__bullets {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 14px;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__bullets {
+  border-top: 1px solid var(--am-report-entry-info-border-faint);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__bullets {
+  border-top: 1px solid color-mix(in srgb, var(--am-text-on-dark) 10%, transparent);
+}
+
+.am-report-entry-card__bullet {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__bullet {
+  color: var(--am-text-soft);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__bullet {
+  color: color-mix(in srgb, var(--am-text-on-dark) 74%, transparent);
+}
+
+.am-report-entry-card__bullet-dot {
+  flex: 0 0 auto;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__bullet-dot {
+  color: var(--am-status-info);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__bullet-dot {
+  color: #d4a054;
+}
+
+.am-report-entry-card__note {
+  margin: 16px 0 0;
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__note {
+  color: var(--am-text-tertiary);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__note {
+  color: color-mix(in srgb, var(--am-text-on-dark) 58%, transparent);
+}
+
+.am-report-entry-card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  margin-top: 18px;
+  padding: 0 14px;
+  border-radius: 14px;
+  opacity: 0.76;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.am-report-entry-card.is-available .am-report-entry-card__cta {
+  opacity: 1;
+}
+
+.am-report-entry-card--lite .am-report-entry-card__cta {
+  color: var(--am-status-info);
+  background: linear-gradient(135deg, var(--am-report-entry-info-surface-soft) 0%, var(--am-report-entry-info-surface-faint) 100%);
+}
+
+.am-report-entry-card--pro .am-report-entry-card__cta {
+  color: var(--am-text-on-dark);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--am-text-accent) 18%, transparent) 0%,
+    color-mix(in srgb, var(--am-color-copper-400) 14%, transparent) 100%
+  );
+}
+
+.am-report-entry-footnote {
+  padding: 16px 18px;
+  border: 1px solid var(--am-report-entry-info-border-faint);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--am-text-secondary);
+  font-size: 13px;
+  line-height: 1.8;
+  box-shadow: 0 12px 28px rgba(74, 61, 48, 0.05);
+}
+
+.am-report-entry-footnote__label {
+  margin-bottom: 6px;
+  color: var(--am-text-warm);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}

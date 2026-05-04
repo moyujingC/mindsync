@@ -1,0 +1,8 @@
+@import "./styles/tokens.wxss";
+
+page {
+  min-height: 100%;
+  background: var(--am-surface-primary-soft);
+  color: var(--am-text-primary);
+  font-family: var(--am-font-body);
+}

@@ -95,7 +95,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/task-routing/templates/任务路由模板.md`
+- `templates/任务路由模板.md`
 
 ## 质量检查项
 

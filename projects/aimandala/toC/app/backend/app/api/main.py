@@ -19,10 +19,23 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=[
             "http://localhost:4173",
+            "http://localhost:4174",
             "http://127.0.0.1:4173",
+            "http://127.0.0.1:4174",
             "http://localhost:3000",
             "http://127.0.0.1:3000",
+            "http://101.43.98.40",
+            "https://101.43.98.40",
+            "http://dev-web.jingshu.cc",
+            "https://dev-web.jingshu.cc",
+            "http://web.jingshu.cc",
+            "https://web.jingshu.cc",
         ],
+        allow_origin_regex=(
+            r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+            r"|https?://101\.43\.98\.40(:\d+)?$"
+            r"|https?://([a-z0-9-]+\.)?jingshu\.cc$"
+        ),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

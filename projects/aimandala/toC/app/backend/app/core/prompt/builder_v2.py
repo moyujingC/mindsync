@@ -80,6 +80,7 @@ class PromptBuilder:
         vision_data: str,
         theme: str = "general",
         theme_context: str = "",
+        knowledge_skeleton: str = "",
         version: str = "1.6",
         extra_context: dict[str, Any] | None = None,
     ) -> str:
@@ -88,6 +89,7 @@ class PromptBuilder:
             "vision_data": vision_data,
             "theme": theme,
             "theme_context": theme_context,
+            "knowledge_skeleton": knowledge_skeleton,
         }
         if extra_context:
             context.update(extra_context)
@@ -99,6 +101,7 @@ class PromptBuilder:
         vision_data: str,
         theme: str = "general",
         theme_context: str = "",
+        knowledge_skeleton: str = "",
         version: str = "1.6",
         extra_context: dict[str, Any] | None = None,
     ) -> str:
@@ -107,6 +110,7 @@ class PromptBuilder:
             "vision_data": vision_data,
             "theme": theme,
             "theme_context": theme_context,
+            "knowledge_skeleton": knowledge_skeleton,
         }
         if extra_context:
             context.update(extra_context)
@@ -119,6 +123,7 @@ def build_prompt(
     vision_data: str,
     theme: str = "general",
     theme_context: str = "",
+    knowledge_skeleton: str = "",
     version: str = "1.6",
     extra_context: dict[str, Any] | None = None,
 ) -> str:
@@ -128,6 +133,7 @@ def build_prompt(
             vision_data=vision_data,
             theme=theme,
             theme_context=theme_context,
+            knowledge_skeleton=knowledge_skeleton,
             version=version,
             extra_context=extra_context,
         )
@@ -135,6 +141,7 @@ def build_prompt(
         vision_data=vision_data,
         theme=theme,
         theme_context=theme_context,
+        knowledge_skeleton=knowledge_skeleton,
         version=version,
         extra_context=extra_context,
     )

@@ -1,17 +1,25 @@
-import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUpgradePage, loadUploadPage } from "./loaders";
+import { getInterpretation } from "../shared/api";
+import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUploadPage } from "./loaders";
+import { resolveMobileWebCanonicalUserId } from "./identity";
 import type { MobileWebAppProps } from "./app";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
-import type { InterpretationListQuery } from "../shared/types";
+import type {
+  FrontendUserSession,
+  InterpretationListQuery,
+} from "../shared/types";
 
-export interface UploadRouteInput {
-  draft: MobileWebUploadDraft;
+interface MobileWebSessionRouteInput {
+  session?: FrontendUserSession;
   userId?: string;
 }
 
-export interface LiteReportRouteInput {
+export interface UploadRouteInput extends MobileWebSessionRouteInput {
   draft: MobileWebUploadDraft;
-  userId: string;
+}
+
+export interface LiteReportRouteInput extends MobileWebSessionRouteInput {
+  draft: MobileWebUploadDraft;
 }
 
 export interface ExistingReportRouteInput {
@@ -19,8 +27,12 @@ export interface ExistingReportRouteInput {
   uploadDraft?: MobileWebUploadDraft;
 }
 
-export interface HistoryRouteInput {
-  userId: string;
+export interface HistoryRecordDetailRouteInput {
+  interpretationId: string;
+  uploadDraft?: MobileWebUploadDraft;
+}
+
+export interface HistoryRouteInput extends MobileWebSessionRouteInput {
   uploadDraft?: MobileWebUploadDraft;
   historyQuery?: InterpretationListQuery;
 }
@@ -33,7 +45,7 @@ export type MobileWebRouteInput =
   | { route: "report"; params: ExistingReportRouteInput }
   | { route: "reportLegacy"; params: ExistingReportRouteInput }
   | { route: "history"; params: HistoryRouteInput }
-  | { route: "upgrade"; params: ExistingReportRouteInput };
+  | { route: "historyRecordDetail"; params: HistoryRecordDetailRouteInput };
 
 export async function resolveMobileWebRouteProps(
   input: MobileWebRouteInput,
@@ -62,7 +74,14 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "loading": {
-      const report = await loadLiteReportPage(input.params);
+      const userId = resolveMobileWebCanonicalUserId(input.params);
+      if (!userId) {
+        throw new Error("Mobile web loading route requires a canonical user session.");
+      }
+      const report = await loadLiteReportPage({
+        ...input.params,
+        userId,
+      });
       return {
         route: "loading",
         flowState: report.state,
@@ -89,8 +108,12 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "history": {
+      const userId = resolveMobileWebCanonicalUserId(input.params);
+      if (!userId) {
+        throw new Error("Mobile web history route requires a canonical user session.");
+      }
       const history = await loadHistoryPage(
-        input.params.userId,
+        userId,
         input.params.historyQuery,
       );
       return {
@@ -101,14 +124,15 @@ export async function resolveMobileWebRouteProps(
       };
     }
 
-    case "upgrade": {
-      const report = await loadUpgradePage(input.params.interpretationId);
+    case "historyRecordDetail": {
+      const record = await getInterpretation(input.params.interpretationId);
       return {
-        route: "upgrade",
-        flowState: report.state,
+        route: "historyRecordDetail",
+        record,
         uploadDraft: input.params.uploadDraft,
       };
     }
+
   }
 
   return assertNever(input);
@@ -119,5 +143,5 @@ function assertNever(input: never): never {
 }
 
 export function isReportLikeRoute(route: MobileWebRouteId): boolean {
-  return route === "loading" || route === "report" || route === "reportLegacy" || route === "upgrade";
+  return route === "loading" || route === "report" || route === "reportLegacy";
 }

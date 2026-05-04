@@ -16,6 +16,7 @@ const defaultOptions = {
   apiUrl: "http://127.0.0.1:3100",
   staleHours: 24,
   reviewHours: 24,
+  ciWindowSize: 3,
   json: false,
 };
 
@@ -43,6 +44,11 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
+    if (arg === "--ci-window-size") {
+      options.ciWindowSize = Number(argv[index + 1] ?? options.ciWindowSize);
+      index += 1;
+      continue;
+    }
     if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -54,7 +60,7 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log(`Usage:
-  node shared/tools/paperclip-task-system-audit.mjs [--json] [--api-url <url>] [--stale-hours <n>] [--review-hours <n>]
+  node shared/tools/paperclip-task-system-audit.mjs [--json] [--api-url <url>] [--stale-hours <n>] [--review-hours <n>] [--ci-window-size <n>]
 
 Purpose:
   Audit the current Paperclip task system against MindSync governance and surface
@@ -211,8 +217,92 @@ function getReviewLabel(issue) {
   return "review:multiple";
 }
 
-function summarizeIssues(issues, { staleHours, reviewHours }) {
+function isExplicitRootCauseTask(issue) {
+  const description = typeof issue.description === "string" ? issue.description : "";
+  return /^\s*root_cause_task:\s*true\s*$/mi.test(description);
+}
+
+function normalizeCiCdPipelineKey(title) {
+  if (!title || typeof title !== "string") return null;
+
+  let normalized = title.trim().toLowerCase();
+  normalized = normalized.replace(/^[^a-z0-9\u4e00-\u9fff]+/u, "");
+  normalized = normalized.replace(/^ci失败[:：]\s*/u, "");
+  normalized = normalized.replace(/^ci基础设施异常[:：]\s*/u, "");
+  normalized = normalized.replace(/^ci\/cd失败[:：]\s*/u, "");
+  normalized = normalized.replace(/\s+\/\s+[a-z0-9._-]+$/u, "");
+
+  if (normalized.includes("·")) {
+    normalized = normalized.split("·")[0].trim();
+  }
+  if (normalized.includes("/")) {
+    normalized = normalized.split("/")[0].trim();
+  }
+
+  normalized = normalized.replace(/\s+/gu, "-");
+
+  if (!/(ci|deploy|smoke|build|workflow|runner|nightly)/u.test(normalized)) {
+    return null;
+  }
+
+  return normalized || null;
+}
+
+function summarizeCiCdWindow(openIssues, ciWindowSize) {
+  const grouped = new Map();
+
+  for (const issue of openIssues) {
+    const pipelineKey = normalizeCiCdPipelineKey(issue.title);
+    if (!pipelineKey) continue;
+
+    const entries = grouped.get(pipelineKey) ?? [];
+    entries.push(issue);
+    grouped.set(pipelineKey, entries);
+  }
+
+  const retainedIds = new Set();
+  const overflowIssues = [];
+  const pipelines = [];
+
+  for (const [pipelineKey, entries] of grouped.entries()) {
+    const sorted = [...entries].sort((left, right) => lastActivityTs(right) - lastActivityTs(left));
+    const baseRetained = sorted.slice(0, ciWindowSize);
+    const baseRetainedIds = new Set(baseRetained.map((issue) => issue.id));
+    const exceptionRetained = sorted.filter((issue) =>
+      !baseRetainedIds.has(issue.id) && isExplicitRootCauseTask(issue),
+    );
+    const retained = [...baseRetained, ...exceptionRetained];
+    const retainedIdsForPipeline = new Set(retained.map((issue) => issue.id));
+    const overflow = sorted.filter((issue) => !retainedIdsForPipeline.has(issue.id));
+
+    for (const issue of retained) retainedIds.add(issue.id);
+    overflowIssues.push(...overflow);
+    pipelines.push({
+      pipelineKey,
+      totalOpen: sorted.length,
+      retainedCount: retained.length,
+      overflowCount: overflow.length,
+      latestIdentifiers: retained.map((issue) => issue.identifier ?? issue.id),
+      rootCauseRetainedIdentifiers: exceptionRetained.map((issue) => issue.identifier ?? issue.id),
+    });
+  }
+
+  overflowIssues.sort((left, right) => lastActivityTs(right) - lastActivityTs(left));
+  pipelines.sort((left, right) => right.totalOpen - left.totalOpen || left.pipelineKey.localeCompare(right.pipelineKey));
+
+  return {
+    retainedIds,
+    overflowIssues,
+    pipelines,
+  };
+}
+
+function summarizeIssues(issues, { staleHours, reviewHours, ciWindowSize }) {
   const openIssues = issues.filter((issue) => !["done", "cancelled"].includes(issue.status));
+  const ciCdWindow = summarizeCiCdWindow(openIssues, ciWindowSize);
+  const actionableOpenIssues = openIssues.filter((issue) =>
+    !normalizeCiCdPipelineKey(issue.title) || ciCdWindow.retainedIds.has(issue.id),
+  );
   const now = Date.now();
   const staleThresholdMs = staleHours * 60 * 60 * 1000;
   const reviewThresholdMs = reviewHours * 60 * 60 * 1000;
@@ -222,7 +312,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
   const byStatus = {};
   const byType = {};
   const byReview = {};
-  for (const issue of openIssues) {
+  for (const issue of actionableOpenIssues) {
     byStatus[issue.status] = (byStatus[issue.status] ?? 0) + 1;
     const typeLabel = getTypeLabel(issue) ?? "untyped";
     const reviewLabel = getReviewLabel(issue) ?? "no-review-label";
@@ -233,7 +323,7 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     }
   }
 
-  const needsTriage = openIssues.filter((issue) =>
+  const needsTriage = actionableOpenIssues.filter((issue) =>
     !issue.parentId &&
     !issue.assigneeAgentId &&
     !issue.assigneeUserId &&
@@ -241,38 +331,45 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
     getTypeLabel(issue) !== "type:epic",
   );
 
-  const readyToStart = openIssues.filter((issue) =>
+  const readyToStart = actionableOpenIssues.filter((issue) =>
     issue.status === "todo" &&
     (issue.assigneeAgentId || issue.assigneeUserId),
   );
 
-  const staleInProgress = openIssues.filter((issue) =>
+  const staleInProgress = actionableOpenIssues.filter((issue) =>
     issue.status === "in_progress" &&
     now - lastActivityTs(issue) >= staleThresholdMs,
   );
 
-  const agingReview = openIssues.filter((issue) =>
+  const staleRunningWithoutHeartbeat = actionableOpenIssues.filter((issue) => {
+    if (!issue.activeRun || issue.activeRun.status !== "running") {
+      return false;
+    }
+    return now - lastActivityTs(issue) >= staleThresholdMs;
+  });
+
+  const agingReview = actionableOpenIssues.filter((issue) =>
     issue.status === "in_review" &&
     now - lastActivityTs(issue) >= reviewThresholdMs,
   );
 
-  const missingTypeLabel = openIssues.filter((issue) => !getTypeLabel(issue));
-  const reviewWithoutReviewLabel = openIssues.filter((issue) =>
+  const missingTypeLabel = actionableOpenIssues.filter((issue) => !getTypeLabel(issue));
+  const reviewWithoutReviewLabel = actionableOpenIssues.filter((issue) =>
     issue.status === "in_review" &&
     !getReviewLabel(issue),
   );
-  const reviewLabelOutsideReview = openIssues.filter((issue) =>
+  const reviewLabelOutsideReview = actionableOpenIssues.filter((issue) =>
     issue.status !== "in_review" &&
     Boolean(getReviewLabel(issue)),
   );
-  const openChildUnderClosedParent = openIssues.filter((issue) => {
+  const openChildUnderClosedParent = actionableOpenIssues.filter((issue) => {
     if (!issue.parentId) return false;
     const parent = issuesById.get(issue.parentId);
     if (!parent) return false;
     return ["done", "cancelled"].includes(parent.status);
   });
 
-  const topLevelActive = openIssues.filter((issue) =>
+  const topLevelActive = actionableOpenIssues.filter((issue) =>
     !issue.parentId && ["todo", "in_progress", "in_review", "blocked"].includes(issue.status),
   ).filter((issue) => {
     const hasOpenChildren = (openChildCountByParentId.get(issue.id) ?? 0) > 0;
@@ -282,12 +379,20 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
 
   return {
     openCount: openIssues.length,
+    actionableOpenCount: actionableOpenIssues.length,
+    ciCdOverflowCount: ciCdWindow.overflowIssues.length,
     byStatus,
     byType,
     byReview,
+    ciCdWindow: {
+      windowSize: ciWindowSize,
+      pipelines: ciCdWindow.pipelines,
+      overflowIssues: ciCdWindow.overflowIssues,
+    },
     needsTriage,
     readyToStart,
     staleInProgress,
+    staleRunningWithoutHeartbeat,
     agingReview,
     missingTypeLabel,
     reviewWithoutReviewLabel,
@@ -298,6 +403,13 @@ function summarizeIssues(issues, { staleHours, reviewHours }) {
 }
 
 function summarizeProjectDrift(runtimeProjects, expectedProjectGoalByName) {
+  if (!runtimeProjects) {
+    return {
+      goalDrift: [],
+      unavailableReason: "runtime projects unavailable",
+    };
+  }
+
   const goalDrift = [];
 
   for (const project of runtimeProjects) {
@@ -312,7 +424,7 @@ function summarizeProjectDrift(runtimeProjects, expectedProjectGoalByName) {
     }
   }
 
-  return { goalDrift };
+  return { goalDrift, unavailableReason: null };
 }
 
 function compactIssue(issue) {
@@ -326,6 +438,7 @@ function compactIssue(issue) {
     assigneeAgentId: issue.assigneeAgentId,
     assigneeUserId: issue.assigneeUserId,
     lastActivityAt: issue.lastActivityAt ?? issue.updatedAt,
+    activeRunStatus: issue.activeRun?.status ?? null,
   };
 }
 
@@ -334,23 +447,35 @@ function printHumanReport(report, { staleHours, reviewHours }) {
   console.log("");
   console.log("## 概览");
   console.log(`- open issues: ${report.issues.openCount}`);
+  console.log(`- actionable open issues: ${report.issues.actionableOpenCount}`);
+  console.log(`- CI/CD overflow issues: ${report.issues.ciCdOverflowCount}`);
   console.log(`- by status: ${Object.entries(report.issues.byStatus).map(([status, count]) => `${status}=${count}`).join(", ") || "none"}`);
   console.log(`- by type: ${Object.entries(report.issues.byType).map(([type, count]) => `${type}=${count}`).join(", ") || "none"}`);
   console.log(`- by review: ${Object.entries(report.issues.byReview).map(([review, count]) => `${review}=${count}`).join(", ") || "none"}`);
   console.log(`- project->goal drift: ${report.projects.goalDrift.length}`);
+  if (report.projects.unavailableReason) {
+    console.log(`- runtime project audit: unavailable (${report.projects.unavailableReason})`);
+  }
   console.log("");
 
+  printCiCdWindowSummary(report.issues.ciCdWindow);
   printIssueGroup("待分诊输入", report.issues.needsTriage, "顶层、无 owner、仍在 backlog/todo 的输入。");
   printIssueGroup("待开始任务", report.issues.readyToStart, "已分配 owner、处于 todo，可直接启动。");
   printIssueGroup(`卡住的执行任务（>${staleHours}h）`, report.issues.staleInProgress, "处于 in_progress，但最近活动已超过阈值。");
+  printIssueGroup(`运行中但无回写（>${staleHours}h）`, report.issues.staleRunningWithoutHeartbeat, "存在 activeRun=running，但最近活动已超过阈值的任务。");
   printIssueGroup(`久置 review（>${reviewHours}h）`, report.issues.agingReview, "处于 in_review，且最近活动已超过阈值。");
   printIssueGroup("缺少类型标签的打开任务", report.issues.missingTypeLabel, "已打开但尚未标记 `type:*` 语义的任务。");
   printIssueGroup("缺少 review 标签的审阅任务", report.issues.reviewWithoutReviewLabel, "处于 in_review，但尚未标记 `review:*` 语义的任务。");
   printIssueGroup("review 标签脱离审阅语境的任务", report.issues.reviewLabelOutsideReview, "已带 `review:*`，但当前并不处于 in_review 的任务。");
   printIssueGroup("打开子任务挂在已关闭父任务下", report.issues.openChildUnderClosedParent, "用于识别父任务已 done/cancelled，但子任务仍保持打开的结构异常。");
   printIssueGroup("仍在顶层直接推进的活跃任务", report.issues.topLevelActive, "用于识别仍未收束成父子结构、且没有活跃子任务承接的顶层活跃任务。");
+  printIssueGroup(`超出最新窗口的 CI/CD / Deploy 历史任务`, report.issues.ciCdWindow.overflowIssues, `同一流水线仅保留最新 ${report.issues.ciCdWindow.windowSize} 次；本组仅作历史噪音提示，不应进入当前处理窗口。`);
 
   console.log("## Project / Goal 漂移");
+  if (report.projects.unavailableReason) {
+    console.log(`- 未执行运行时项目对账：${report.projects.unavailableReason}`);
+    return;
+  }
   if (report.projects.goalDrift.length === 0) {
     console.log("- 无");
   } else {
@@ -360,6 +485,24 @@ function printHumanReport(report, { staleHours, reviewHours }) {
       console.log(`  治理源 goal: ${item.expectedGoal}`);
     }
   }
+}
+
+function printCiCdWindowSummary(ciCdWindow) {
+  console.log("## CI/CD 最新窗口");
+  console.log(`- 同一流水线默认只保留最新 ${ciCdWindow.windowSize} 次任务进入行动窗口。`);
+  if (ciCdWindow.pipelines.length === 0) {
+    console.log("- 当前未识别到 CI/CD / Deploy 时序任务。");
+    console.log("");
+    return;
+  }
+  for (const pipeline of ciCdWindow.pipelines) {
+    const overflowPart = pipeline.overflowCount > 0 ? ` | overflow=${pipeline.overflowCount}` : "";
+    const rootCausePart = pipeline.rootCauseRetainedIdentifiers.length > 0
+      ? ` | root-cause-retained=${pipeline.rootCauseRetainedIdentifiers.join(", ")}`
+      : "";
+    console.log(`- ${pipeline.pipelineKey} | total=${pipeline.totalOpen} | retained=${pipeline.retainedCount}${overflowPart}${rootCausePart} | latest=${pipeline.latestIdentifiers.join(", ")}`);
+  }
+  console.log("");
 }
 
 function printIssueGroup(title, issues, description) {
@@ -373,7 +516,8 @@ function printIssueGroup(title, issues, description) {
   for (const issue of issues.map(compactIssue)) {
     const typePart = issue.typeLabel ? ` | ${issue.typeLabel}` : "";
     const reviewPart = issue.reviewLabel ? ` | ${issue.reviewLabel}` : "";
-    console.log(`- ${issue.identifier} | ${issue.status}${typePart}${reviewPart} | ${issue.title}`);
+    const runPart = issue.activeRunStatus ? ` | run=${issue.activeRunStatus}` : "";
+    console.log(`- ${issue.identifier} | ${issue.status}${typePart}${reviewPart}${runPart} | ${issue.title}`);
   }
   console.log("");
 }
@@ -382,13 +526,22 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const config = readPaperclipConfig(paperclipConfigPath);
   const issues = runPaperclipIssueList(config.companyId);
-  const runtimeProjects = await fetchRuntimeProjects(options.apiUrl, config.companyId);
+  let runtimeProjects = null;
+  let runtimeProjectsError = null;
+  try {
+    runtimeProjects = await fetchRuntimeProjects(options.apiUrl, config.companyId);
+  } catch (error) {
+    runtimeProjectsError = error instanceof Error ? error.message : String(error);
+  }
 
   const report = {
     generatedAt: new Date().toISOString(),
     companyId: config.companyId,
     issues: summarizeIssues(issues, options),
-    projects: summarizeProjectDrift(runtimeProjects, config.expectedProjectGoalByName),
+    projects: {
+      ...summarizeProjectDrift(runtimeProjects, config.expectedProjectGoalByName),
+      unavailableReason: runtimeProjectsError,
+    },
   };
 
   if (options.json) {

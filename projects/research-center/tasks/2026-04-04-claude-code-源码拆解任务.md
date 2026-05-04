@@ -4,7 +4,7 @@
 > 版本：1.0.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/tasks/2026-04-04-claude-code-源码拆解任务.md
+> source_of_truth：projects/research-center/tasks/2026-04-04-claude-code-源码拆解任务.md
 > 项目：研究中心
 
 ## 1. 任务基本信息
@@ -30,7 +30,7 @@
 - 对象类型：
   - 方法实践 / 外部源码材料
 - 来源链接或材料：
-  - `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/`
+  - `external/claude-code/source/`
 - 与我们哪条业务线相关：
   - 研究中心
   - 人与 AI 协作方法
@@ -71,6 +71,6 @@
 
 ## 7. 下一步
 
-1. 先把源码材料放到 `/Users/xinran/Downloads/dev/mindsync/external/claude-code/source/`
+1. 先把源码材料放到 `external/claude-code/source/`
 2. 然后从目录结构和入口文件开始做第一轮拆解
 3. 输出首份研究摘要到 `projects/research-center/research/claude-code/`

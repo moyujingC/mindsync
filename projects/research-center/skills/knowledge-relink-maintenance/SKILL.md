@@ -45,10 +45,10 @@ handoff_to:
 
 ## 必读上下文
 
-1. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/README.md`
-2. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/MEMORY.md`
-3. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/kb/preference-memory/review-patterns.yaml`
-4. `/Users/xinran/Downloads/dev/mindsync/projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md`
+1. `projects/research-center/kb/README.md`
+2. `projects/research-center/kb/preference-memory/MEMORY.md`
+3. `projects/research-center/kb/preference-memory/review-patterns.yaml`
+4. `projects/research-center/specs/2026-04-05-参考材料摄取与偏好记忆系统-SPEC.md`
 5. 最近一轮新增的知识条目与 review 事件
 
 ## 执行步骤
@@ -69,7 +69,7 @@ handoff_to:
 
 建议基于：
 
-- `/Users/xinran/Downloads/dev/mindsync/projects/research-center/skills/knowledge-relink-maintenance/templates/maintenance-report-template.md`
+- `templates/maintenance-report-template.md`
 
 最小结果至少包含：
 

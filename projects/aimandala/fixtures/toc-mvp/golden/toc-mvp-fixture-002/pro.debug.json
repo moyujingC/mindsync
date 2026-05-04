@@ -1,0 +1,933 @@
+{
+  "algorithm_fidelity_trace": {
+    "scope": "pro",
+    "method_trace_keys": [
+      "direct_judgment",
+      "per_circle_color_analysis",
+      "shape_analysis",
+      "circle_relation_analysis",
+      "final_algorithm_basis"
+    ],
+    "missing_method_trace_keys": [],
+    "algorithm_fidelity_pass": true,
+    "legacy_semantics_found": false,
+    "raw_payload_leak_found": false,
+    "raw_payload_leak_by_scope": {
+      "lite": false,
+      "pro": false
+    }
+  },
+  "topic_context_trace": {
+    "topic": "wealth_career",
+    "report_modes": [
+      "lite",
+      "pro"
+    ],
+    "knowledge_route": "theme_only",
+    "general_mixed": false,
+    "layer0_passed": true
+  },
+  "narrative_plans": {
+    "lite": {
+      "mode": "lite",
+      "generation_mode": "evidence_first",
+      "theme": "wealth_career",
+      "theme_label": "财富事业",
+      "evidence_trace_summary": {
+        "visual_fact_refs": [
+          "dominant:金",
+          "secondary:土",
+          "inner:火",
+          "middle:金",
+          "outer:金"
+        ],
+        "knowledge_hit_refs": [
+          "theme:wealth_career"
+        ],
+        "rule_refs": [
+          "signal:金多木折"
+        ],
+        "theme_projection_refs": [
+          "theme_label:财富事业"
+        ],
+        "direct_judgment_refs": [
+          "method:direct_judgment"
+        ],
+        "color_analysis_refs": [
+          "method:per_circle_color_analysis"
+        ],
+        "shape_analysis_refs": [
+          "method:shape_analysis"
+        ],
+        "circle_relation_refs": [
+          "method:circle_relation_analysis"
+        ],
+        "tutorial_source_refs": [
+          "source:four_step_method",
+          "source:five_elements_excess_deficiency",
+          "source:triad_structure"
+        ],
+        "per_circle_color_summary": "内圈以#e0dbbb / 火为主，深浅居中，填充较密，面积约10.9%；中圈以#d1dbd6 / 金为主，深浅居中，填充较密，面积约32.7%；外圈以#e2e7e7 / 金为主，深浅居中，填充稳定，面积约56.4%",
+        "per_circle_observation_summary": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%；中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%",
+        "per_circle_observations": {
+          "inner": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%",
+          "middle": "中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%",
+          "outer": "外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%"
+        },
+        "fidelity_flags": [
+          "trace:tob_only_candidate_present"
+        ],
+        "fallback_summary": {
+          "used": false,
+          "levels": [],
+          "warnings": []
+        }
+      },
+      "sections": {
+        "title": {
+          "content": "向前先稳住的人",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [],
+            "theme_projection_refs": [
+              "theme_label:财富事业"
+            ],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "overall_impression": {
+          "content": "放到「财富事业」里看，这张画先说中的不是结果，而是你在往前之前，会先确认自己有没有站稳自我价值与专业成就。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。 再往里看，画面的主轴是：三圈依次呈现出「火 -> 金 -> 金」的变化。 所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把和「土」有关的积累、稳定、承载带回现实。",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "inner:火",
+              "middle:金",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "visual_elements": {
+          "content": "如果只看画面给人的感受，最先浮出来的是两股力量：一股是「金」的收拢和判断，另一股是「土」想把事情重新带回现实。 三层画面的走向也很清楚：这说明你仍优先保护核心边界，再逐步恢复向外连接。 换句话说，最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「火」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态；中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「金」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 从逐圈观察看，内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%；中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "inner:火",
+              "middle:金",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "circle:火",
+              "circle:金",
+              "circle:金"
+            ],
+            "rule_refs": [],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "emotion_portrait": {
+          "content": "情绪上，你现在不像没感觉，反而像一直在心里默默处理自我价值与专业成就这件事。 而最外层落出来的「金」感，也说明你并不是想完全退回去，只是想先弄清楚，接下来该用什么边界和姿态继续向外。 也因为和「水」有关的财富流动与机会感知暂时偏弱，所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "inner:火",
+              "middle:金",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "story_sections": {
+          "content": {
+            "base": "你的底色不是急着证明什么，而是先确认自己有没有站稳在自我价值与专业成就上。三圈依次呈现出「火 -> 金 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。",
+            "contradiction": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+            "pattern": "久而久之，这会形成你的惯用模式：中心收束。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。",
+            "defense": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。",
+            "block": "当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来。",
+            "light": "但你的光也已经出来了：你不是只会收着，而是正在把「土」代表的财富安全感与物质基础慢慢带回生活。这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+          },
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "inner:火",
+              "middle:金",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "theme_insights": {
+          "content": {
+            "scene": "在「财富事业」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。因为画面里更强的那股力量，会先把注意力拉回自我价值与专业成就。",
+            "impact": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。 当和「水」有关的财富流动与机会感知还偏少时，你也会更需要一点缓冲和回收。",
+            "awareness": "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [
+              "theme_label:财富事业"
+            ],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "lite_healing_guidance": {
+          "content": {
+            "directions": [
+              {
+                "title": "轻量调节方向",
+                "content": "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
+              },
+              {
+                "title": "现实中的温和着力点",
+                "content": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。 当和「水」有关的财富流动与机会感知还偏少时，你也会更需要一点缓冲和回收。"
+              },
+              {
+                "title": "先从一个小场景开始",
+                "content": "在「财富事业」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。因为画面里更强的那股力量，会先把注意力拉回自我价值与专业成就。"
+              }
+            ],
+            "micro_practices": [
+              {
+                "title": "先安顿自己",
+                "content": "今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。那不是你拖延，而往往是在提醒你：先照顾好价值、专业、精准。"
+              },
+              {
+                "title": "看见边界变化",
+                "content": "当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。那不是故意冷下来，而是在确认这件事值不值得你继续打开。"
+              },
+              {
+                "title": "曼曼的疗愈仪式：给自己一个稳稳的小空间",
+                "content": "准备：白纸、喜欢的笔，舒适坐姿，双脚踩地，深呼吸三次，对自己说“这 5 分钟，只属于我”。\n步骤一：先写下此刻在「财富事业」里最牵动你的一个念头，只写一句，不急着分析。\n步骤二：把手放回胸口或腹部，感受身体哪里最紧，再用一条线、一个圈或一个小色块把它画出来。\n步骤三：看着这张小纸片，问自己“如果今天只做一件更温柔也更稳的事，它会是什么？”，然后把那个动作写在角落里。\n曼曼的祝福：慢慢来，不着急。向前先稳住的人不是要一下子把一切都梳开，而是先让你重新听见自己的节奏。\n补充观察：如果今天只顺着这幅画练习一件事，可以试着把「金」的品质带进生活里，例如先给自己一点价值、专业、精准。"
+              }
+            ]
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:wealth_career",
+              "healing:金多木折"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "pro_report_entry": {
+          "content": {
+            "title": "另一份更深的独立报告",
+            "summary": "如果你希望从更深层结构继续理解这张画，Pro 会提供更完整的结构、根因与疗愈视角。",
+            "product_note": "这是独立购买的深度报告，不依赖 Lite 才成立。"
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:wealth_career",
+              "product:pro"
+            ],
+            "rule_refs": [],
+            "theme_projection_refs": [
+              "theme_label:财富事业"
+            ],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        }
+      },
+      "legacy_projection": {
+        "title": "向前先稳住的人",
+        "overall_impression": "放到「财富事业」里看，这张画先说中的不是结果，而是你在往前之前，会先确认自己有没有站稳自我价值与专业成就。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。 再往里看，画面的主轴是：三圈依次呈现出「火 -> 金 -> 金」的变化。 所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把和「土」有关的积累、稳定、承载带回现实。",
+        "visual_elements": "如果只看画面给人的感受，最先浮出来的是两股力量：一股是「金」的收拢和判断，另一股是「土」想把事情重新带回现实。 三层画面的走向也很清楚：这说明你仍优先保护核心边界，再逐步恢复向外连接。 换句话说，最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「火」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态；中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「金」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 从逐圈观察看，内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%；中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%",
+        "story_angles": {
+          "base": "你的核心事业驱动力",
+          "contradiction": "想法 vs 落地的差距",
+          "pattern": "财富/事业中的重复循环",
+          "defense": "在事业中如何保护自己（也可能阻碍成长）",
+          "block": "事业/财富突破的核心障碍",
+          "light": "你在事业中的独特优势"
+        },
+        "six_insights": {
+          "base": {
+            "title": "你的底色：先稳住中心的人：你的核心事业驱动力",
+            "content": "你的底色不是急着证明什么，而是先确认自己有没有站稳在自我价值与专业成就上。三圈依次呈现出「火 -> 金 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。",
+            "summary": "你的底色不是急着证明什么，而是先确认自己有没有站稳在自我价值与专业成就上。三圈依次呈现出「火 -> 金 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。"
+          },
+          "contradiction": {
+            "title": "你的矛盾：想往前，也想先喘口气：想法 vs 落地的差距",
+            "content": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+            "summary": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。"
+          },
+          "pattern": {
+            "title": "你的模式：先感受，再决定投入多少：财富/事业中的重复循环",
+            "content": "久而久之，这会形成你的惯用模式：中心收束。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。",
+            "summary": "久而久之，这会形成你的惯用模式：中心收束。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。"
+          },
+          "defense": {
+            "title": "你的防御：用边界保护感受力：在事业中如何保护自己（也可能阻碍成长）",
+            "content": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。",
+            "summary": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。"
+          },
+          "block": {
+            "title": "你的卡点：恢复中的自己不想再被催促：事业/财富突破的核心障碍",
+            "content": "当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来。",
+            "summary": "当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来。"
+          },
+          "light": {
+            "title": "你的光：你已经知道什么更适合自己：你在事业中的独特优势",
+            "content": "但你的光也已经出来了：你不是只会收着，而是正在把「土」代表的财富安全感与物质基础慢慢带回生活。这说明你不是卡死了，而是在学一种更适合自己的前进方式。",
+            "summary": "但你的光也已经出来了：你不是只会收着，而是正在把「土」代表的财富安全感与物质基础慢慢带回生活。这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+          }
+        },
+        "experiment": {
+          "title": "曼曼的疗愈仪式：给自己一个稳稳的小空间",
+          "content": "准备：白纸、喜欢的笔，舒适坐姿，双脚踩地，深呼吸三次，对自己说“这 5 分钟，只属于我”。\n步骤一：先写下此刻在「财富事业」里最牵动你的一个念头，只写一句，不急着分析。\n步骤二：把手放回胸口或腹部，感受身体哪里最紧，再用一条线、一个圈或一个小色块把它画出来。\n步骤三：看着这张小纸片，问自己“如果今天只做一件更温柔也更稳的事，它会是什么？”，然后把那个动作写在角落里。\n曼曼的祝福：慢慢来，不着急。向前先稳住的人不是要一下子把一切都梳开，而是先让你重新听见自己的节奏。\n补充观察：如果今天只顺着这幅画练习一件事，可以试着把「金」的品质带进生活里，例如先给自己一点价值、专业、精准。"
+        },
+        "story_sections": {
+          "base": "你的底色不是急着证明什么，而是先确认自己有没有站稳在自我价值与专业成就上。三圈依次呈现出「火 -> 金 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。",
+          "contradiction": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+          "pattern": "久而久之，这会形成你的惯用模式：中心收束。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。",
+          "defense": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。",
+          "block": "当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来。",
+          "light": "但你的光也已经出来了：你不是只会收着，而是正在把「土」代表的财富安全感与物质基础慢慢带回生活。这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+        },
+        "theme_insights": {
+          "scene": "在「财富事业」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。因为画面里更强的那股力量，会先把注意力拉回自我价值与专业成就。",
+          "impact": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。 当和「水」有关的财富流动与机会感知还偏少时，你也会更需要一点缓冲和回收。",
+          "awareness": "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
+        },
+        "emotion_portrait": "情绪上，你现在不像没感觉，反而像一直在心里默默处理自我价值与专业成就这件事。 而最外层落出来的「金」感，也说明你并不是想完全退回去，只是想先弄清楚，接下来该用什么边界和姿态继续向外。 也因为和「水」有关的财富流动与机会感知暂时偏弱，所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。",
+        "three_awareness": [
+          {
+            "day": 1,
+            "title": "先安顿自己",
+            "content": "今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。那不是你拖延，而往往是在提醒你：先照顾好价值、专业、精准。"
+          },
+          {
+            "day": 2,
+            "title": "看见边界变化",
+            "content": "当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。那不是故意冷下来，而是在确认这件事值不值得你继续打开。"
+          },
+          {
+            "day": 3,
+            "title": "捕捉卡住瞬间",
+            "content": "如果今天又出现想推进却又停住的那个瞬间的时刻，别急着评价自己。把那个瞬间记下来，你会更看清自己何时需要补回与「水」相关的财富流动与机会感知。"
+          }
+        ],
+        "pro_teaser": "你的画中，还藏着更深的线索：这种模式为什么总会重复出现，它在日常生活里还会如何影响你，以及你当前最需要看见的失衡类型与对应疗愈建议。这些答案，都在「一梳」完整版里等你。\n\n还有更多深层洞察，包括：\n- 这种事业模式与童年“金钱故事”的连接\n- 你在不同事业阶段的表现差异\n- 更完整的结构、根因与疗愈视角"
+      }
+    },
+    "pro": {
+      "mode": "pro",
+      "generation_mode": "evidence_first",
+      "theme": "wealth_career",
+      "theme_label": "财富事业",
+      "evidence_trace_summary": {
+        "visual_fact_refs": [
+          "dominant:金",
+          "secondary:土",
+          "weakest:水"
+        ],
+        "knowledge_hit_refs": [
+          "theme:wealth_career"
+        ],
+        "rule_refs": [
+          "signal:金多木折"
+        ],
+        "theme_projection_refs": [
+          "theme_label:财富事业"
+        ],
+        "direct_judgment_refs": [
+          "method:direct_judgment"
+        ],
+        "color_analysis_refs": [
+          "method:per_circle_color_analysis"
+        ],
+        "shape_analysis_refs": [
+          "method:shape_analysis"
+        ],
+        "circle_relation_refs": [
+          "method:circle_relation_analysis"
+        ],
+        "tutorial_source_refs": [
+          "source:four_step_method",
+          "source:five_elements_excess_deficiency",
+          "source:triad_structure"
+        ],
+        "per_circle_color_summary": "内圈以#e0dbbb / 火为主，深浅居中，填充较密，面积约10.9%；中圈以#d1dbd6 / 金为主，深浅居中，填充较密，面积约32.7%；外圈以#e2e7e7 / 金为主，深浅居中，填充稳定，面积约56.4%",
+        "per_circle_observation_summary": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%；中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%",
+        "per_circle_observations": {
+          "inner": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%",
+          "middle": "中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%",
+          "outer": "外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%"
+        },
+        "fidelity_flags": [
+          "trace:tob_only_candidate_present"
+        ],
+        "fallback_summary": {
+          "used": false,
+          "levels": [],
+          "warnings": []
+        }
+      },
+      "sections": {
+        "first_impression": {
+          "content": "第一眼看这张画，最先撞出来的不是结果层面的焦虑，而是你正卡在一个很具体的位置：想往前，但还没有完全放心把自己交出去。 画面的主轴也很明确：三圈依次呈现出「火 -> 金 -> 金」的变化。 所以这不是简单的停住，而是你正在认真处理更底层的事：先把和自我价值与专业成就有关的承载感站稳，再决定怎么用「土」的力量继续向外。 矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "weakest:水"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "core_insight_table": {
+          "content": {
+            "能量本质": "这张画的能量主轴，不是拼命往外冲，而是先把自我价值与专业成就站稳，再决定怎么让「土」带着你继续向前。三圈依次呈现出「火 -> 金 -> 金」的变化。",
+            "核心失衡": "你现在更核心的卡点，其实是「完美拖延机会」 它不是抽象概念，落到现实里，常常就表现成：追求完美方案，导致项目迟迟无法启动。 所以你会反复遇到同一种体验：当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来 说到底，是因为完美拖延机会让你很难一边往前推进，一边仍然感觉自己是安全的。 再加上和「水」有关的财富流动与机会感知资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。",
+            "关键卡点": "你现在更核心的卡点，其实是「完美拖延机会」 它不是抽象概念，落到现实里，常常就表现成：追求完美方案，导致项目迟迟无法启动。 所以你会反复遇到同一种体验：当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来 说到底，是因为完美拖延机会让你很难一边往前推进，一边仍然感觉自己是安全的。 再加上和「水」有关的财富流动与机会感知资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。",
+            "转化方向": "先完成再完美，小步快跑。先稳住中心感，再把能量逐步放回财富事业相关的关系、行动与表达，而不是一次性全部打开。",
+            "疗愈核心": "围绕「不配得感」真正要慢慢建立的新体验是：每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关。 当前调节方向更接近：减少自我批评，重建自信。"
+          },
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "weakest:水"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "block_point": {
+          "content": "你现在更核心的卡点，其实是「完美拖延机会」 它不是抽象概念，落到现实里，常常就表现成：追求完美方案，导致项目迟迟无法启动。 所以你会反复遇到同一种体验：当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来 说到底，是因为完美拖延机会让你很难一边往前推进，一边仍然感觉自己是安全的。 再加上和「水」有关的财富流动与机会感知资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "weakest:水"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "three_circles_detailed": {
+          "content": {
+            "inner": "核心自我这一层当前约占 33%，给人的主感觉更偏「火」。 最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「火」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。 内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%",
+            "middle": "关系场域这一层当前约占 66%，给人的主感觉更偏「金」。 中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「金」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%",
+            "outer": "外在呈现这一层当前约占 100%，给人的主感觉更偏「金」。 最外面这一层更容易碰到与世界的关系、物质/事业、身体/财富，现在更突出的是「金」特质。 放到现实里，往往会连到对外在世界的态度 / 事业发展方向 / 身体健康状况。 外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%"
+          },
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "weakest:水"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "micro_analysis_detailed": {
+          "content": {
+            "节奏关系": "先看节奏，你现在的能量不是散的，而是明显在中心收束。这说明你正在调承接，不是在乱。",
+            "关系模式": "再往外看，外层舒展。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。",
+            "行动模式": "落到行动上，最明显的提示是：保护自己后再重新连接外界。与其一次性猛推，不如让行动和承载一起增长。"
+          },
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:金",
+              "secondary:土",
+              "weakest:水"
+            ],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "imbalance_confirmed": {
+          "content": {
+            "type": "金多木折",
+            "primary": "完美拖延机会",
+            "summary": "你现在更核心的卡点，其实是「完美拖延机会」 它不是抽象概念，落到现实里，常常就表现成：追求完美方案，导致项目迟迟无法启动。 所以你会反复遇到同一种体验：当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来 说到底，是因为完美拖延机会让你很难一边往前推进，一边仍然感觉自己是安全的。 再加上和「水」有关的财富流动与机会感知资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。",
+            "evidence": "先完成再完美，小步快跑。先稳住中心感，再把能量逐步放回财富事业相关的关系、行动与表达，而不是一次性全部打开。"
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "root_cause": {
+          "content": {
+            "surface": "表面上看，你最容易先看到的是：矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。 你原本希望“理清当前职业推进中的拉扯”，但现实推进方式和这个期待之间还存在落差。 现实层面也常会表现成：追求完美方案，导致项目迟迟无法启动。",
+            "deeper": "如果再往下一层看，问题不只是表面卡住，而是你会慢慢形成一种重复机制：「金多木折」会让你在关键时刻又回到“追求完美方案，导致项目迟迟无法启动”里。 它常会让人落进「自我批评严重、成长被阻碍、被挑剔伤害」这样的内在循环。",
+            "core": "而最深的地方，往往不是能力问题，而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。 在「不配得感」这里，你正在重新学习：每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关"
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:wealth_career"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "healing_suggestions": {
+          "content": [
+            {
+              "phase": "当前阶段",
+              "focus": "完美拖延机会",
+              "practice": "围绕「不配得感」真正要慢慢建立的新体验是：每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关。 当前调节方向更接近：减少自我批评，重建自信。"
+            },
+            {
+              "phase": "下一步",
+              "focus": "财富事业中的行动节奏",
+              "practice": "先完成再完美，小步快跑。先稳住中心感，再把能量逐步放回财富事业相关的关系、行动与表达，而不是一次性全部打开。"
+            },
+            {
+              "phase": "更深层",
+              "focus": "根因层",
+              "practice": "而最深的地方，往往不是能力问题，而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。 在「不配得感」这里，你正在重新学习：每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关"
+            }
+          ],
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:wealth_career",
+              "healing:金多木折"
+            ],
+            "rule_refs": [
+              "signal:金多木折"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        }
+      },
+      "legacy_projection": {
+        "first_impression": "第一眼看这张画，最先撞出来的不是结果层面的焦虑，而是你正卡在一个很具体的位置：想往前，但还没有完全放心把自己交出去。 画面的主轴也很明确：三圈依次呈现出「火 -> 金 -> 金」的变化。 所以这不是简单的停住，而是你正在认真处理更底层的事：先把和自我价值与专业成就有关的承载感站稳，再决定怎么用「土」的力量继续向外。 矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+        "energy_essence": "这张画的能量主轴，不是拼命往外冲，而是先把自我价值与专业成就站稳，再决定怎么让「土」带着你继续向前。三圈依次呈现出「火 -> 金 -> 金」的变化。",
+        "block_point": "你现在更核心的卡点，其实是「完美拖延机会」 它不是抽象概念，落到现实里，常常就表现成：追求完美方案，导致项目迟迟无法启动。 所以你会反复遇到同一种体验：当前最容易卡住你的，是主导能量和现实节奏还没完全接上。 尤其当和「水」有关的财富流动与机会感知还没跟上时，你会在快要推进的那一刻先退回来 说到底，是因为完美拖延机会让你很难一边往前推进，一边仍然感觉自己是安全的。 再加上和「水」有关的财富流动与机会感知资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。 你提到的“想往前，但也担心失控”也说明身体层面还在追赶外部节奏。",
+        "direction": "先完成再完美，小步快跑。先稳住中心感，再把能量逐步放回财富事业相关的关系、行动与表达，而不是一次性全部打开。",
+        "healing_core": "围绕「不配得感」真正要慢慢建立的新体验是：每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关。 当前调节方向更接近：减少自我批评，重建自信。",
+        "circle_readings": {
+          "inner": "核心自我这一层当前约占 33%，给人的主感觉更偏「火」。 最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「火」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。 内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%",
+          "middle": "关系场域这一层当前约占 66%，给人的主感觉更偏「金」。 中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「金」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%",
+          "outer": "外在呈现这一层当前约占 100%，给人的主感觉更偏「金」。 最外面这一层更容易碰到与世界的关系、物质/事业、身体/财富，现在更突出的是「金」特质。 放到现实里，往往会连到对外在世界的态度 / 事业发展方向 / 身体健康状况。 外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%"
+        },
+        "micro_sections": {
+          "节奏关系": "先看节奏，你现在的能量不是散的，而是明显在中心收束。这说明你正在调承接，不是在乱。",
+          "关系模式": "再往外看，外层舒展。这意味着你的关系和现实投入，不只是情绪反应，而是在寻找更合适的承接方式。",
+          "行动模式": "落到行动上，最明显的提示是：保护自己后再重新连接外界。与其一次性猛推，不如让行动和承载一起增长。"
+        },
+        "root_cause": {
+          "surface": "表面上看，你最容易先看到的是：矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。 你原本希望“理清当前职业推进中的拉扯”，但现实推进方式和这个期待之间还存在落差。 现实层面也常会表现成：追求完美方案，导致项目迟迟无法启动。",
+          "deeper": "如果再往下一层看，问题不只是表面卡住，而是你会慢慢形成一种重复机制：「金多木折」会让你在关键时刻又回到“追求完美方案，导致项目迟迟无法启动”里。 它常会让人落进「自我批评严重、成长被阻碍、被挑剔伤害」这样的内在循环。",
+          "core": "而最深的地方，往往不是能力问题，而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。 在「不配得感」这里，你正在重新学习：每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关"
+        }
+      }
+    }
+  },
+  "field_to_knowledge_map": {
+    "title": {
+      "query_keys": [
+        "theme",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "narrative.wealth_career"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "narrative/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "current_reading": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "imbalance.金多木折",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "rules/imbalance_types.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    },
+    "visual_basis": {
+      "query_keys": [
+        "theme",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    },
+    "pattern_interpretation": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "imbalance.金多木折",
+        "narrative.wealth_career"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "rules/imbalance_types.yaml",
+        "narrative/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "life_connection": {
+      "query_keys": [
+        "theme",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "narrative.wealth_career"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "narrative/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "lite_healing_guidance": {
+      "query_keys": [
+        "theme",
+        "healing",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "healing.wealth_career.不配得感",
+        "narrative.wealth_career"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "rules/healing_issue_mappings.yaml",
+        "healing/wealth_career.yaml",
+        "narrative/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "pro_report_entry": {
+      "query_keys": [
+        "narrative",
+        "theme"
+      ],
+      "entity_ids": [
+        "narrative.wealth_career",
+        "theme.wealth_career"
+      ],
+      "source_paths": [
+        "narrative/wealth_career.yaml",
+        "themes/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "deep_impression": {
+      "query_keys": [
+        "imbalance.primary",
+        "narrative",
+        "theme"
+      ],
+      "entity_ids": [
+        "imbalance.金多木折",
+        "narrative.wealth_career",
+        "theme.wealth_career"
+      ],
+      "source_paths": [
+        "rules/imbalance_types.yaml",
+        "narrative/wealth_career.yaml",
+        "themes/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "evidence_digest": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "imbalance.金多木折",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "rules/imbalance_types.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    },
+    "imbalance_diagnosis": {
+      "query_keys": [
+        "imbalance.primary",
+        "theme"
+      ],
+      "entity_ids": [
+        "imbalance.金多木折",
+        "theme.wealth_career"
+      ],
+      "source_paths": [
+        "rules/imbalance_types.yaml",
+        "themes/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "root_cause_chain": {
+      "query_keys": [
+        "imbalance.primary",
+        "theme",
+        "narrative"
+      ],
+      "entity_ids": [
+        "imbalance.金多木折",
+        "theme.wealth_career",
+        "narrative.wealth_career"
+      ],
+      "source_paths": [
+        "rules/imbalance_types.yaml",
+        "themes/wealth_career.yaml",
+        "narrative/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "deep_structure_interpretation": {
+      "query_keys": [
+        "theme",
+        "narrative",
+        "imbalance.primary"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "narrative.wealth_career",
+        "imbalance.金多木折"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "narrative/wealth_career.yaml",
+        "rules/imbalance_types.yaml"
+      ],
+      "warnings": []
+    },
+    "healing_plan": {
+      "query_keys": [
+        "healing",
+        "imbalance.primary",
+        "narrative"
+      ],
+      "entity_ids": [
+        "healing.wealth_career.不配得感",
+        "imbalance.金多木折",
+        "narrative.wealth_career"
+      ],
+      "source_paths": [
+        "rules/healing_issue_mappings.yaml",
+        "healing/wealth_career.yaml",
+        "rules/imbalance_types.yaml",
+        "narrative/wealth_career.yaml"
+      ],
+      "warnings": []
+    },
+    "full_report_markdown": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "healing",
+        "narrative",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.wealth_career",
+        "imbalance.金多木折",
+        "healing.wealth_career.不配得感",
+        "narrative.wealth_career",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/wealth_career.yaml",
+        "rules/imbalance_types.yaml",
+        "rules/healing_issue_mappings.yaml",
+        "healing/wealth_career.yaml",
+        "narrative/wealth_career.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    }
+  },
+  "fallback_analysis": {
+    "used": false,
+    "levels": [],
+    "warnings": [],
+    "fidelity_flags": [
+      "trace:tob_only_candidate_present"
+    ],
+    "quality_flags": [
+      "trace:tob_only_candidate_present"
+    ],
+    "query_fallbacks": []
+  },
+  "warning_analysis": {
+    "warning_hits": [],
+    "active_warning_paths": []
+  }
+}

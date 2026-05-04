@@ -4,11 +4,11 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-05
-> source_of_truth：/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/reference-system-example/05-memory-update.md
+> source_of_truth：projects/research-center/research/reference-system-example/05-memory-update.md
 > 项目：研究中心
 > 阶段：knowledge-ingest
 > depends_on：
-> - /Users/xinran/Downloads/dev/mindsync/projects/research-center/research/reference-system-example/04-review-feedback.md
+> - projects/research-center/research/reference-system-example/04-review-feedback.md
 
 这份文档演示 `review-feedback-to-memory` 在收到创作者反馈后的最小更新动作。
 

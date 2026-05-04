@@ -1,4 +1,4 @@
-name: aimandala-deploy
+name: deploy
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
     paths:
       - "projects/aimandala/toC/**"
       - "projects/aimandala/deploy/**"
+      - "shared/tools/ci/**"
       - ".github/workflows/aimandala-deploy.yml"
   workflow_dispatch:
     inputs:
@@ -23,76 +24,226 @@ concurrency:
   group: aimandala-deploy-${{ github.ref_name }}-${{ github.event.inputs.target || github.ref_name }}
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
+env:
+  PAPERCLIP_COMPANY_ID: "be191a6e-7447-4821-a93d-9114214c4a64"
+  PAPERCLIP_PROJECT_NAME: "一镜一梳"
+
 jobs:
   deploy-dev:
+    name: deploy-dev
     if: |
       (github.event_name == 'push' && github.ref_name == 'main') ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'dev')
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
     timeout-minutes: 20
     steps:
-      - name: Prepare SSH key
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare SSH Key
+        id: dev_prepare_ssh
+        continue-on-error: true
         env:
           SSH_KEY: ${{ secrets.AIMANDALA_DEV_SSH_KEY }}
           SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
+          SSH_USER: ${{ secrets.AIMANDALA_DEV_USER }}
         run: |
           set -euo pipefail
+          if [[ -z "${SSH_KEY:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_DEV_SSH_KEY" | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
+            exit 1
+          fi
+          if [[ -z "${SSH_HOST:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_DEV_HOST" | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
+            exit 1
+          fi
+          if [[ -z "${SSH_USER:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_DEV_USER" | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
+            exit 1
+          fi
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/aimandala_dev
+          NORMALIZED_KEY="$(printf '%s' "$SSH_KEY" | tr -d '\r')"
+          if printf '%s' "$NORMALIZED_KEY" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%s\n' "$NORMALIZED_KEY" > ~/.ssh/aimandala_dev
+          else
+            printf '%s' "$NORMALIZED_KEY" | base64 --decode > ~/.ssh/aimandala_dev
+          fi
           chmod 600 ~/.ssh/aimandala_dev
-          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/aimandala_dev >/dev/null 2>>"$RUNNER_TEMP/deploy-dev-prepare.log"
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>&1 | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
 
-      - name: Deploy main to dev server
+      - name: Deploy Main To Dev Server
+        id: dev_remote_deploy
+        if: steps.dev_prepare_ssh.outcome == 'success'
+        continue-on-error: true
         env:
           SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
           SSH_USER: ${{ secrets.AIMANDALA_DEV_USER }}
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/aimandala_dev "$SSH_USER@$SSH_HOST" '
+          ssh \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -i ~/.ssh/aimandala_dev \
+            "$SSH_USER@$SSH_HOST" '
             set -e
             cd /opt/aimandala-main/app/mindsync
             git fetch origin main
             git reset --hard origin/main
             /opt/aimandala-main/scripts/deploy-main.sh
-          '
+          ' 2>&1 | tee "$RUNNER_TEMP/deploy-dev-remote.log"
 
-      - name: Smoke check dev server
-        env:
-          SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
-          SSH_USER: ${{ secrets.AIMANDALA_DEV_USER }}
+      - name: Smoke Check Dev Server
+        id: dev_smoke
+        if: steps.dev_remote_deploy.outcome == 'success'
+        continue-on-error: true
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/aimandala_dev "$SSH_USER@$SSH_HOST" '
-            set -e
-            curl -fsS http://127.0.0.1:8000/health
-            curl -fsSI http://127.0.0.1/
-          '
+          node shared/tools/ci/aimandala-smoke.mjs \
+            --env dev \
+            --mode basic \
+            --output "$RUNNER_TEMP/deploy-dev-smoke.json" 2>&1 | tee "$RUNNER_TEMP/deploy-dev-smoke.log"
+
+      - name: Resolve Dev Result
+        id: dev_result
+        if: always()
+        run: |
+          set -euo pipefail
+          FAILED=0
+          FAILED_STEP=""
+          SUMMARY_FILE=""
+
+          if [[ "${{ steps.dev_prepare_ssh.outcome }}" != "success" ]]; then
+            FAILED=1
+            FAILED_STEP="Prepare SSH Key"
+            SUMMARY_FILE="$RUNNER_TEMP/deploy-dev-prepare.log"
+          elif [[ "${{ steps.dev_remote_deploy.outcome }}" != "success" ]]; then
+            FAILED=1
+            FAILED_STEP="Deploy Main To Dev Server"
+            SUMMARY_FILE="$RUNNER_TEMP/deploy-dev-remote.log"
+          elif [[ "${{ steps.dev_smoke.outcome }}" != "success" ]]; then
+            FAILED=1
+            FAILED_STEP="Smoke Check Dev Server"
+            SUMMARY_FILE="$RUNNER_TEMP/deploy-dev-smoke.log"
+          fi
+
+          printf 'failed=%s\n' "$FAILED" >> "$GITHUB_OUTPUT"
+          printf 'failed_step=%s\n' "$FAILED_STEP" >> "$GITHUB_OUTPUT"
+          printf 'summary_file=%s\n' "$SUMMARY_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Sync Dev Deploy Issue
+        if: always()
+        env:
+          PAPERCLIP_API_BASE: ${{ secrets.PAPERCLIP_API_BASE }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
+        run: |
+          set -euo pipefail
+          RESULT="resolved"
+          if [[ "${{ steps.dev_result.outputs.failed }}" == "1" ]]; then
+            RESULT="failed"
+          fi
+          node shared/tools/ci/paperclip-ci-issue.mjs \
+            --soft-fail \
+            --company-id "$PAPERCLIP_COMPANY_ID" \
+            --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:deploy" \
+            --kind "deploy-or-smoke-failure" \
+            --workflow "deploy" \
+            --repository "${{ github.repository }}" \
+            --branch "${{ github.ref_name }}" \
+            --job "deploy-dev" \
+            --sha "${{ github.sha }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --failed-step "${{ steps.dev_result.outputs.failed_step }}" \
+            --summary-file "${{ steps.dev_result.outputs.summary_file }}" \
+            --result "$RESULT" \
+            --environment "dev" \
+            --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" \
+            --owner-label "Engineer"
+
+      - name: Fail Dev Deploy Job
+        if: steps.dev_result.outputs.failed == '1'
+        run: exit 1
 
   deploy-prod:
+    name: deploy-prod
     if: |
       (github.event_name == 'push' && github.ref_name == 'release') ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'prod')
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+      - aimandala
     timeout-minutes: 30
     steps:
-      - name: Prepare SSH key
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare SSH Key
+        id: prod_prepare_ssh
+        continue-on-error: true
         env:
           SSH_KEY: ${{ secrets.AIMANDALA_PROD_SSH_KEY }}
           SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
+          SSH_USER: ${{ secrets.AIMANDALA_PROD_USER }}
         run: |
           set -euo pipefail
+          if [[ -z "${SSH_KEY:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_PROD_SSH_KEY" | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
+            exit 1
+          fi
+          if [[ -z "${SSH_HOST:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_PROD_HOST" | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
+            exit 1
+          fi
+          if [[ -z "${SSH_USER:-}" ]]; then
+            echo "Missing required secret: AIMANDALA_PROD_USER" | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
+            exit 1
+          fi
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/aimandala_prod
+          NORMALIZED_KEY="$(printf '%s' "$SSH_KEY" | tr -d '\r')"
+          if printf '%s' "$NORMALIZED_KEY" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%s\n' "$NORMALIZED_KEY" > ~/.ssh/aimandala_prod
+          else
+            printf '%s' "$NORMALIZED_KEY" | base64 --decode > ~/.ssh/aimandala_prod
+          fi
           chmod 600 ~/.ssh/aimandala_prod
-          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/aimandala_prod >/dev/null 2>>"$RUNNER_TEMP/deploy-prod-prepare.log"
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>&1 | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
 
-      - name: Deploy release to production server
+      - name: Deploy Release To Production Server
+        id: prod_remote_deploy
+        if: steps.prod_prepare_ssh.outcome == 'success'
+        continue-on-error: true
         env:
           SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
           SSH_USER: ${{ secrets.AIMANDALA_PROD_USER }}
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/aimandala_prod "$SSH_USER@$SSH_HOST" '
+          ssh \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -i ~/.ssh/aimandala_prod \
+            "$SSH_USER@$SSH_HOST" '
             set -e
             cd /opt/aimandala-release/app/mindsync
             git fetch origin release
@@ -100,18 +251,77 @@ jobs:
             cd projects/aimandala/deploy/docker
             docker compose -f docker-compose.release.yml --env-file .env.release build
             docker compose -f docker-compose.release.yml --env-file .env.release up -d
-          '
+          ' 2>&1 | tee "$RUNNER_TEMP/deploy-prod-remote.log"
 
-      - name: Smoke check production containers and public entrypoints
-        env:
-          SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
-          SSH_USER: ${{ secrets.AIMANDALA_PROD_USER }}
+      - name: Smoke Check Production
+        id: prod_smoke
+        if: steps.prod_remote_deploy.outcome == 'success'
+        continue-on-error: true
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/aimandala_prod "$SSH_USER@$SSH_HOST" '
-            set -e
-            curl -fsS http://127.0.0.1:8100/health
-            curl -fsSI http://127.0.0.1:8101/
-          '
-          curl -fsS https://web-api.jingshu.cc/health
-          curl -fsSI https://web.jingshu.cc/
+          node shared/tools/ci/aimandala-smoke.mjs \
+            --env prod \
+            --mode basic \
+            --output "$RUNNER_TEMP/deploy-prod-smoke.json" 2>&1 | tee "$RUNNER_TEMP/deploy-prod-smoke.log"
+
+      - name: Resolve Prod Result
+        id: prod_result
+        if: always()
+        run: |
+          set -euo pipefail
+          FAILED=0
+          FAILED_STEP=""
+          SUMMARY_FILE=""
+
+          if [[ "${{ steps.prod_prepare_ssh.outcome }}" != "success" ]]; then
+            FAILED=1
+            FAILED_STEP="Prepare SSH Key"
+            SUMMARY_FILE="$RUNNER_TEMP/deploy-prod-prepare.log"
+          elif [[ "${{ steps.prod_remote_deploy.outcome }}" != "success" ]]; then
+            FAILED=1
+            FAILED_STEP="Deploy Release To Production Server"
+            SUMMARY_FILE="$RUNNER_TEMP/deploy-prod-remote.log"
+          elif [[ "${{ steps.prod_smoke.outcome }}" != "success" ]]; then
+            FAILED=1
+            FAILED_STEP="Smoke Check Production"
+            SUMMARY_FILE="$RUNNER_TEMP/deploy-prod-smoke.log"
+          fi
+
+          printf 'failed=%s\n' "$FAILED" >> "$GITHUB_OUTPUT"
+          printf 'failed_step=%s\n' "$FAILED_STEP" >> "$GITHUB_OUTPUT"
+          printf 'summary_file=%s\n' "$SUMMARY_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Sync Prod Deploy Issue
+        if: always()
+        env:
+          PAPERCLIP_API_BASE: ${{ secrets.PAPERCLIP_API_BASE }}
+          PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+          PAPERCLIP_ENGINEER_AGENT_ID: ${{ secrets.PAPERCLIP_ENGINEER_AGENT_ID }}
+        run: |
+          set -euo pipefail
+          RESULT="resolved"
+          if [[ "${{ steps.prod_result.outputs.failed }}" == "1" ]]; then
+            RESULT="failed"
+          fi
+          node shared/tools/ci/paperclip-ci-issue.mjs \
+            --soft-fail \
+            --company-id "$PAPERCLIP_COMPANY_ID" \
+            --project-name "$PAPERCLIP_PROJECT_NAME" \
+            --execution-adapter "github-actions/self-hosted-runner:deploy" \
+            --kind "deploy-or-smoke-failure" \
+            --workflow "deploy" \
+            --repository "${{ github.repository }}" \
+            --branch "${{ github.ref_name }}" \
+            --job "deploy-prod" \
+            --sha "${{ github.sha }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --failed-step "${{ steps.prod_result.outputs.failed_step }}" \
+            --summary-file "${{ steps.prod_result.outputs.summary_file }}" \
+            --result "$RESULT" \
+            --environment "prod" \
+            --owner-agent-id "$PAPERCLIP_ENGINEER_AGENT_ID" \
+            --owner-label "Engineer"
+
+      - name: Fail Prod Deploy Job
+        if: steps.prod_result.outputs.failed == '1'
+        run: exit 1
