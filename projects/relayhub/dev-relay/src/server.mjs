@@ -52,12 +52,18 @@ async function requireRelayAuth(request, response) {
   }
 
   const expected = `Bearer ${configuredToken}`;
-  if (request.headers.authorization !== expected) {
+  const providedAuthorization = String(request.headers.authorization ?? "").trim();
+  const providedApiKey = String(request.headers["x-api-key"] ?? "").trim();
+  const relayAuthAccepted =
+    providedAuthorization === expected ||
+    providedApiKey === configuredToken;
+
+  if (!relayAuthAccepted) {
     relayError(
       response,
       401,
       "relay_auth_invalid",
-      "RelayHub relay token 缺失或不匹配。"
+      "RelayHub relay token 缺失或不匹配。支持 Authorization: Bearer 或 x-api-key 两种正式传法。"
     );
     return false;
   }

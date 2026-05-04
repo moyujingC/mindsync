@@ -469,6 +469,21 @@ test("GET /v1/models returns 401 when relay token is invalid", async () => {
   });
 });
 
+test("GET /v1/models accepts relay token through x-api-key for claude_local compatibility", async () => {
+  await withRelayAuthConfigured(async () => {
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/models`, {
+          headers: {
+            "x-api-key": DEFAULT_RELAY_TOKEN
+          }
+        });
+        assert.equal(response.status, 200);
+      });
+    });
+  });
+});
+
 test("GET /v1/models accepts control-plane managed relay token before environment fallback", async () => {
   const previousEnvToken = process.env.RELAYHUB_RELAY_TOKEN;
   process.env.RELAYHUB_RELAY_TOKEN = "environment-token";
