@@ -7,10 +7,10 @@ PAPERCLIP_YAML="${REPO_ROOT}/.paperclip.yaml"
 PAPERCLIP_API_URL="${PAPERCLIP_API_URL:-}"
 PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
 MODE="${1:-status}"
-TARGET_AGENT_NAMES_RAW="${PAPERCLIP_COMMAND_OVERRIDE_TARGETS:-Engineer}"
+TARGET_AGENT_NAMES_RAW="${PAPERCLIP_COMMAND_OVERRIDE_TARGETS:-Engineer,Test / QA}"
 
 DEFAULT_PROXY_COMMAND="${REPO_ROOT}/shared/tools/ci/server-automation-command-proxy.sh"
-DEFAULT_RUNTIME_PROXY_COMMAND="${PAPERCLIP_RUNTIME_PROXY_COMMAND:-/opt/automation/app/mindsync/shared/tools/ci/server-automation-command-proxy.sh}"
+DEFAULT_RUNTIME_PROXY_COMMAND="${PAPERCLIP_RUNTIME_PROXY_COMMAND:-/opt/automation/runtime-tools/mindsync/shared/tools/ci/server-automation-command-proxy.sh}"
 DEFAULT_WORKTREE_ROOT="${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
 IFS=',' read -r -a TARGET_AGENT_NAMES <<<"$TARGET_AGENT_NAMES_RAW"
 
@@ -29,9 +29,9 @@ Commands:
   rollback  Remove runtime command override and helper env keys from target agents
 
 Notes:
-  - Current default target: Engineer
-  - To target more agents, set PAPERCLIP_COMMAND_OVERRIDE_TARGETS, e.g. Engineer,Test / QA
-  - Runtime command defaults to /opt/automation/app/mindsync/shared/tools/ci/server-automation-command-proxy.sh
+  - Current default targets: Engineer,Test / QA
+  - To narrow or expand targets, set PAPERCLIP_COMMAND_OVERRIDE_TARGETS, e.g. Engineer
+  - Runtime command defaults to /opt/automation/runtime-tools/mindsync/shared/tools/ci/server-automation-command-proxy.sh
   - Override runtime command path with PAPERCLIP_RUNTIME_PROXY_COMMAND if the server uses a different stable checkout path
   - This script only overrides adapterConfig.command plus helper env for proxy pass-through.
   - It does not fabricate task_class / execution_route metadata.

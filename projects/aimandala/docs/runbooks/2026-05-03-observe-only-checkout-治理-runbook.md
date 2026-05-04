@@ -185,3 +185,78 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
   - [../tasks/2026-05-03-observe-only-checkout-治理实施计划.md](../tasks/2026-05-03-observe-only-checkout-治理实施计划.md)
 - QA：
   - [../qa/2026-05-03-observe-only-checkout-治理-qa-basis.md](../qa/2026-05-03-observe-only-checkout-治理-qa-basis.md)
+  - [../qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md](../qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md)
+
+## 13. 历史残留清理完成态
+
+2026-05-03 本轮真实收口后，automation 节点应满足下面完成态：
+
+1. `/opt/automation/app/mindsync`
+   - `git status --short` 为空
+2. `/opt/automation/app/mindsync-heartbeat`
+   - `git status --short` 为空
+3. `/opt/automation/worktrees`
+   - 不再存在 dirty worktree
+
+### 13.1 必须保留的备份目录口径
+
+本轮已验证的备份目录分三组：
+
+1. observe-only checkout：
+   - `/home/ubuntu/cleanup-backups/20260503-185240`
+   - `/home/ubuntu/cleanup-backups/20260503-185656-heartbeat`
+2. 已完成 / 纯文档残留 worktree：
+   - `/home/ubuntu/cleanup-backups/20260503-190217-MIN-134-frontend-quality`
+   - `/home/ubuntu/cleanup-backups/20260503-190707-doc-review-worktrees/...`
+3. 老基线残留副本：
+   - `/home/ubuntu/cleanup-backups/20260503-191124-stale-active-worktrees/...`
+
+以后再做同类清理时，默认也按这三层分类保留备份：
+
+1. observe-only checkout 现场
+2. `done / in_review` 残留
+3. 仍挂在老基线提交上的未提交副本
+
+### 13.2 历史残留 worktree 的正式收口顺序
+
+不要直接 `rm -rf`。固定顺序应为：
+
+1. 先确认 issue 状态与文件类型
+2. 先导出：
+   - `git status --short --branch`
+   - `git diff`
+   - `git ls-files --others --exclude-standard`
+3. 再打包整个 worktree 目录
+4. 再执行 `git worktree remove --force`
+5. 最后把对应 issue 状态同步收口
+
+### 13.3 issue 状态收口口径
+
+如果 worktree 已从运行目录移除，但任务本身并未形成正式交付闭环，不要直接改成 `done`。
+
+当前经过验证的正式口径是：
+
+1. 把对应 issue 改成 `blocked`
+2. 再单独写一条评论，明确：
+   - 原 worktree 路径
+   - backup 目录
+   - 为什么移除
+   - 若要继续，应先从备份恢复，再重新 materialize 新 worktree
+
+评论接口已验证可用：
+
+```bash
+POST /api/issues/<issueId>/comments
+content-type: application/json
+{"body":"..."}
+```
+
+### 13.4 当前已验证的最终结果
+
+本轮已完成验证：
+
+1. `MIN-134` 已作为 `done` 残留移除
+2. `MIN-157 / MIN-159 / MIN-161` 已作为纯文档 `in_review` 残留移除
+3. `MIN-150 / MIN-160 / MIN-163 / MIN-165` 已作为老基线未提交副本移除
+4. `MIN-150 / MIN-160 / MIN-163 / MIN-165` 的 Paperclip issue 已统一转为 `blocked`
+5. 上述 4 个 issue 都已补“历史 worktree 归档说明”评论
