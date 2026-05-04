@@ -44,6 +44,7 @@
 
 - [2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md](projects/aimandala/docs/qa/2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md)
 - [2026-05-03-observe-only-checkout-治理-qa-basis.md](projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-治理-qa-basis.md)
+- [2026-05-03-observe-only-checkout-历史残留清理验证记录.md](projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md)
 - [2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md](projects/aimandala/docs/qa/2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md)
 - [2026-04-22-local-mac-automatic-execution-host-verification.md](projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-verification.md)
 - [2026-04-22-local-mac-automatic-execution-host-qa-basis.md](projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-qa-basis.md)
@@ -66,6 +67,7 @@
 
 - `2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md` 是当前 automation 节点把单项目 heartbeat 升级为多项目 heartbeat 的正式验证记录，固定记录 `一镜一梳 + RelayHub` 两个 target 的 doctor、systemd 与坏 target 演练结果。
 - `2026-05-03-observe-only-checkout-治理-qa-basis.md` 是当前主镜像区与巡检区 observe-only checkout 治理的正式 QA baseline，固定把 checkout 干净性、fail-fast 和升级前分类检查纳入验收口径。
+- `2026-05-03-observe-only-checkout-历史残留清理验证记录.md` 是当前 automation 节点真实清理历史 dirty worktree 的正式验证记录，固定保存备份目录、已移除 worktree 名单，以及 `blocked + 归档说明评论` 的任务系统收口结果。
 - `2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md` 是当前控制面旧任务重置的正式 QA baseline，固定验证历史普通任务与历史 automation 任务都在默认关闭范围内、例外名单极少且显式、以及新基线后先把普通任务自动在本地 Mac 上跑起来。
 - `2026-04-22-local-mac-automatic-execution-host-verification.md` 是当前“普通任务自动在 Mac 上跑”的正式验证入口，明确区分已经落地的本地执行器与 launchd 资产，以及当前 `pi_local` 仍受本机缺少 `pi` 命令约束的真实缺口。
 - `2026-04-22-local-mac-automatic-execution-host-qa-basis.md` 是当前普通任务自动本地执行的正式 QA baseline，固定验证自动筛选、自动 claim、摘要排除、每 agent 单并发和 `in_review / blocked` 终态合同。

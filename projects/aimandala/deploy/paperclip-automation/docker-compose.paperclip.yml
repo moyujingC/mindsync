@@ -40,7 +40,8 @@ services:
       PAPERCLIP_EXECUTION_HOST: "${PAPERCLIP_EXECUTION_HOST:-automation@150.158.9.95}"
     volumes:
       - "${PAPERCLIP_DATA_DIR:-/data/paperclip}:/paperclip"
-      - "${MINDSYNC_REPO:-/opt/automation/app/mindsync}:${MINDSYNC_REPO:-/opt/automation/app/mindsync}"
-      - "${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}:${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}"
+      - "${MINDSYNC_REPO:-/opt/automation/app/mindsync}:${MINDSYNC_REPO:-/opt/automation/app/mindsync}:ro"
+      - "${MINDSYNC_RUNTIME_REPO:-/opt/automation/runtime-tools/mindsync}:${MINDSYNC_RUNTIME_REPO:-/opt/automation/runtime-tools/mindsync}:ro"
+      - "${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}:${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}:ro"
       - "${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}:${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
     restart: unless-stopped
