@@ -367,7 +367,8 @@ test("POST /internal/resolve-entry-binding returns override and effective reason
             "content-type": "application/json"
           },
           body: JSON.stringify({
-            defaultModelEntryId: "preset-ppchat-relay",
+            defaultModelEntryId: "preset-deepseek-v4",
+            fallbackModelEntryId: "preset-ppchat-relay",
             reasoningEffortOverride: "high"
           })
         });
@@ -400,7 +401,7 @@ test("POST /internal/resolve-entry-binding returns override and effective reason
         assert.equal(payload.alias, "relayhub-entry-paperclip-codex-local-server");
         assert.equal(payload.relayToken, "relayhub-codex-gate-token");
         assert.equal(payload.reasoningEffortOverride, "high");
-        assert.equal(payload.resolvedModel.reasoningEffort, "medium");
+        assert.equal(payload.resolvedModel.reasoningEffort, null);
         assert.equal(payload.effectiveReasoningEffort, "high");
       });
     });
