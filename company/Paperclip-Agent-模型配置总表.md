@@ -69,11 +69,12 @@
   - Agent 级 `ANTHROPIC_API_KEY`
   - Agent 级 `ANTHROPIC_AUTH_TOKEN`
 - 当前语义：
-  - 当前通过 `claude_local` 走 RelayHub 的 Anthropic Messages（Claude 协议）入口
-  - `relayhub-entry-paperclip-claude-local-server` 是入口别名，不是真实上游模型名
-  - 真实上游供应商、真实模型名、真实厂商密钥统一在 RelayHub 后台绑定里治理
-  - `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` 在这里是 RelayHub 门禁 token（门禁卡），不是厂商 API Key
-  - 对普通任务本地自动执行链，CEO 继续保留 `server` 入口这条正式分流
+- 当前通过 `claude_local` 走 RelayHub 的 Anthropic Messages（Claude 协议）入口
+- `relayhub-entry-paperclip-claude-local-server` 是入口别名，不是真实上游模型名
+- 真实上游供应商、真实模型名、真实厂商密钥统一在 RelayHub 后台绑定里治理
+- `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` 在这里是 RelayHub 门禁 token（门禁卡），不是厂商 API Key
+- 对普通任务本地自动执行链，CEO 继续保留 `server` 入口这条正式分流
+- 当前 `server` 入口默认绑定已收口到 `DeepSeek V4 官方`
 
 ### 3.2 Engineer
 
@@ -188,6 +189,10 @@
 - 当前采用 RelayHub 门禁 token 模式，而不是 Claude 登录态模式
 - 后续如果要切真实上游模型，应优先改 RelayHub 后台绑定，而不是回写 Paperclip agent 的 `ANTHROPIC_MODEL`
 - [shared/tools/sync-paperclip-claude-local-model.sh](shared/tools/sync-paperclip-claude-local-model.sh) 只保留为初始化或修复工具；它负责把 agent 对齐回 RelayHub，不负责定义真实上游模型是谁
+- 当前正式默认绑定已收口为：
+  - `entry-paperclip-claude-local-mac -> preset-deepseek-v4`
+  - `entry-paperclip-claude-local-server -> preset-deepseek-v4`
+- 当前真实默认上游模型是 `deepseek-v4-pro`
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
   - 且状态为 `warn`
