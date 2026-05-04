@@ -445,80 +445,44 @@ export const seedEntries = [
     notes: ["观测入口", "不可控"]
   },
   {
-    id: "entry-paperclip-claude-local-mac",
-    name: "Paperclip claude_local Mac",
-    clientFamily: "paperclip",
-    adapterType: "claude_local",
-    hostType: "mac",
-    protocolFamily: "anthropic-messages",
-    controllable: true,
-    description: "Paperclip 在本地 Mac 上运行的 claude_local 入口。",
-    alias: "relayhub-entry-paperclip-claude-local-mac",
-    notes: ["本地执行器", "ANTHROPIC_* 同步目标"]
-  },
-  {
     id: "entry-paperclip-claude-local-server",
-    name: "Paperclip claude_local Server",
+    name: "Paperclip claude_local",
     clientFamily: "paperclip",
     adapterType: "claude_local",
     hostType: "server",
     protocolFamily: "anthropic-messages",
     controllable: true,
-    description: "Paperclip 在服务器上运行的 claude_local 入口。",
+    description: "Paperclip 的 claude_local 正式入口。",
     alias: "relayhub-entry-paperclip-claude-local-server",
-    notes: ["服务器执行", "ANTHROPIC_* 同步目标"]
-  },
-  {
-    id: "entry-paperclip-codex-local-mac",
-    name: "Paperclip codex_local Mac",
-    clientFamily: "paperclip",
-    adapterType: "codex_local",
-    hostType: "mac",
-    protocolFamily: "openai-responses",
-    controllable: true,
-    description: "Paperclip 在本地 Mac 上运行的 codex_local 入口。",
-    alias: "relayhub-entry-paperclip-codex-local-mac",
-    notes: ["本地执行器", "Codex provider 同步目标"]
+    notes: ["Paperclip 单入口", "ANTHROPIC_* 同步目标"]
   },
   {
     id: "entry-paperclip-codex-local-server",
-    name: "Paperclip codex_local Server",
+    name: "Paperclip codex_local",
     clientFamily: "paperclip",
     adapterType: "codex_local",
     hostType: "server",
     protocolFamily: "openai-responses",
     controllable: true,
-    description: "Paperclip 在服务器上运行的 codex_local 入口。",
+    description: "Paperclip 的 codex_local 正式入口。",
     alias: "relayhub-entry-paperclip-codex-local-server",
-    notes: ["服务器执行", "Codex provider 同步目标"]
-  },
-  {
-    id: "entry-paperclip-pi-local-mac",
-    name: "Paperclip pi_local Mac",
-    clientFamily: "paperclip",
-    adapterType: "pi_local",
-    hostType: "mac",
-    protocolFamily: "openai-chat-completions",
-    controllable: true,
-    description: "Paperclip 在本地 Mac 上运行的 pi_local 入口。",
-    alias: "relayhub-entry-paperclip-pi-local-mac",
-    notes: ["本地执行器", "provider config 同步目标"]
+    notes: ["Paperclip 单入口", "Codex provider 同步目标"]
   },
   {
     id: "entry-paperclip-pi-local-server",
-    name: "Paperclip pi_local Server",
+    name: "Paperclip pi_local",
     clientFamily: "paperclip",
     adapterType: "pi_local",
     hostType: "server",
     protocolFamily: "openai-chat-completions",
     controllable: true,
-    description: "Paperclip 在服务器上运行的 pi_local 入口。",
+    description: "Paperclip 的 pi_local 正式入口。",
     alias: "relayhub-entry-paperclip-pi-local-server",
-    notes: ["服务器执行", "provider config 同步目标"]
+    notes: ["Paperclip 单入口", "provider config 同步目标"]
   },
   {
     id: "entry-paperclip-hermes-local-server",
-    name: "Paperclip hermes_local Server",
+    name: "Paperclip hermes_local",
     clientFamily: "paperclip",
     adapterType: "hermes_local",
     hostType: "server",
@@ -553,53 +517,32 @@ export const seedEntryBindings = [
     statusNote: "只做观测，不参与中转接管。"
   },
   {
-    entryId: "entry-paperclip-claude-local-mac",
-    defaultModelEntryId: "preset-aitechflux-relay",
-    fallbackModelEntryId: "preset-openrouter-coding",
-    reasoningEffortOverride: null,
-    statusNote: "本地 claude_local 跟随本地 Anthropic 兼容入口。"
-  },
-  {
     entryId: "entry-paperclip-claude-local-server",
-    defaultModelEntryId: "preset-aitechflux-relay",
-    fallbackModelEntryId: "preset-openrouter-coding",
+    defaultModelEntryId: "preset-deepseek-v4",
+    fallbackModelEntryId: null,
     reasoningEffortOverride: null,
-    statusNote: "服务器 claude_local 跟随服务器 Anthropic 兼容入口。"
-  },
-  {
-    entryId: "entry-paperclip-codex-local-mac",
-    defaultModelEntryId: "preset-ppchat-relay",
-    fallbackModelEntryId: "preset-siliconflow",
-    reasoningEffortOverride: null,
-    statusNote: "本地 codex_local 跟随本地 Responses 兼容入口。"
+    statusNote: "Paperclip claude_local 固定跟随统一 Anthropic 兼容入口。"
   },
   {
     entryId: "entry-paperclip-codex-local-server",
-    defaultModelEntryId: "preset-ppchat-relay",
-    fallbackModelEntryId: "preset-siliconflow",
-    reasoningEffortOverride: null,
-    statusNote: "服务器 codex_local 跟随服务器 Responses 兼容入口。"
-  },
-  {
-    entryId: "entry-paperclip-pi-local-mac",
     defaultModelEntryId: "preset-deepseek-v4",
-    fallbackModelEntryId: "preset-volcengine-doubao",
+    fallbackModelEntryId: "preset-ppchat-relay",
     reasoningEffortOverride: null,
-    statusNote: "本地 pi_local 以 provider 配置方式跟随入口绑定。"
+    statusNote: "Paperclip codex_local 固定跟随统一 Responses 兼容入口。"
   },
   {
     entryId: "entry-paperclip-pi-local-server",
     defaultModelEntryId: "preset-deepseek-v4",
     fallbackModelEntryId: "preset-volcengine-doubao",
     reasoningEffortOverride: null,
-    statusNote: "服务器 pi_local 以 provider 配置方式跟随入口绑定。"
+    statusNote: "Paperclip pi_local 固定以 provider 配置方式跟随统一入口绑定。"
   },
   {
     entryId: "entry-paperclip-hermes-local-server",
     defaultModelEntryId: "preset-deepseek-v4",
     fallbackModelEntryId: "preset-volcengine-doubao",
     reasoningEffortOverride: null,
-    statusNote: "服务器 hermes_local 通过 OPENAI_* 跟随入口绑定。"
+    statusNote: "Paperclip hermes_local 通过 OPENAI_* 跟随统一入口绑定。"
   }
 ];
 

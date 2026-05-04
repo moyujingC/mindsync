@@ -55,19 +55,7 @@ require_cmd() {
 }
 
 default_entry_id_for_host() {
-  local os_name
-  os_name="$(uname -s)"
-  case "${os_name}" in
-    Darwin)
-      printf '%s\n' "entry-paperclip-claude-local-mac"
-      ;;
-    Linux)
-      printf '%s\n' "entry-paperclip-claude-local-server"
-      ;;
-    *)
-      printf '%s\n' "entry-paperclip-claude-local-mac"
-      ;;
-  esac
+  printf '%s\n' "entry-paperclip-claude-local-server"
 }
 
 read_yaml_value() {

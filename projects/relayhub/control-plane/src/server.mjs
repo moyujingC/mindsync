@@ -1,6 +1,7 @@
 import http from "node:http";
 import { fileURLToPath } from "node:url";
 import {
+  canonicalizePublicEntryId,
   readRelayConfig,
   readSecrets,
   readState,
@@ -198,19 +199,20 @@ function requireInternalAuth(request, response) {
 }
 
 function buildPublicEntryBindingResolution(state, secrets, entryId) {
-  const relayEntry = state.entries.find((item) => item.id === entryId) ?? null;
-  const binding = state.entryBindings.find((item) => item.entryId === entryId) ?? null;
+  const canonicalEntryId = canonicalizePublicEntryId(entryId);
+  const relayEntry = state.entries.find((item) => item.id === canonicalEntryId) ?? null;
+  const binding = state.entryBindings.find((item) => item.entryId === canonicalEntryId) ?? null;
   const resolvedModel = binding?.defaultModelEntryId
     ? state.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null
     : null;
   const usageEvidence = state.entryActivity && typeof state.entryActivity === "object"
-    ? state.entryActivity[entryId] ?? null
+    ? state.entryActivity[canonicalEntryId] ?? null
     : null;
 
   const effectiveReasoningEffort = resolveEffectiveReasoningEffort(binding, resolvedModel);
 
   return {
-    entryId,
+    entryId: canonicalEntryId,
     alias: relayEntry?.alias ?? null,
     clientFamily: relayEntry?.clientFamily ?? null,
     adapterType: relayEntry?.adapterType ?? null,

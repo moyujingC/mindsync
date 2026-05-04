@@ -147,7 +147,7 @@ export function createMockState(): MockState {
     },
     {
       entryId: "entry-paperclip-claude-local-server",
-      alias: "relayhub-entry-paperclip-claude-server",
+      alias: "relayhub-entry-paperclip-claude-local-server",
       clientFamily: "paperclip",
       adapterType: "claude_local",
       hostType: "server",
@@ -157,7 +157,7 @@ export function createMockState(): MockState {
       fallbackModelEntryId: null,
       reasoningEffortOverride: null,
       effectiveReasoningEffort: "medium",
-      statusNote: "服务器 Paperclip 入口。",
+      statusNote: "Paperclip claude_local 统一入口。",
       usageEvidence: {
         lastSuccessfulRequestAt: null,
         lastSuccessfulRequestId: null,

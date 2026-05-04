@@ -219,7 +219,6 @@ test("GET /entries returns the entry matrix including observe-only mobile Claude
     assert.ok(mobile);
     assert.equal(mobile.protocolFamily, "observe-only");
     assert.equal(mobile.controllable, false);
-    assert.ok(payload.some((item) => item.id === "entry-paperclip-claude-local-mac"));
     assert.ok(payload.some((item) => item.id === "entry-paperclip-claude-local-server"));
   });
 });
@@ -233,10 +232,10 @@ test("GET /entry-bindings returns per-entry default model bindings", async () =>
     const payload = await response.json();
 
     assert.ok(Array.isArray(payload));
-    const claudeLocalMac = payload.find((item) => item.entryId === "entry-paperclip-claude-local-mac");
-    assert.ok(claudeLocalMac);
-    assert.equal(typeof claudeLocalMac.statusNote, "string");
-    assert.equal(claudeLocalMac.reasoningEffortOverride, null);
+    const claudeLocal = payload.find((item) => item.entryId === "entry-paperclip-claude-local-server");
+    assert.ok(claudeLocal);
+    assert.equal(typeof claudeLocal.statusNote, "string");
+    assert.equal(claudeLocal.reasoningEffortOverride, null);
   });
 });
 

@@ -44,7 +44,7 @@ AGENTS = [
         "adapterConfig": {
             "env": {
                 "ANTHROPIC_BASE_URL": {"type": "plain", "value": "https://relayhub.jingshu.cc/claude/v1"},
-                "ANTHROPIC_MODEL": {"type": "plain", "value": "relayhub-entry-paperclip-claude-local-mac"},
+                "ANTHROPIC_MODEL": {"type": "plain", "value": "relayhub-entry-paperclip-claude-local-server"},
                 "ANTHROPIC_AUTH_TOKEN": {"type": "plain", "value": "relayhub-token"},
                 "ANTHROPIC_API_KEY": {"type": "plain", "value": "relayhub-token"}
             }
@@ -96,7 +96,7 @@ OUTPUT="$(
 )"
 
 grep -q '"effective_base_url": "https://relayhub.jingshu.cc/claude/v1"' <<<"${OUTPUT}"
-grep -q '"effective_model": "relayhub-entry-paperclip-claude-local-mac"' <<<"${OUTPUT}"
+grep -q '"effective_model": "relayhub-entry-paperclip-claude-local-server"' <<<"${OUTPUT}"
 grep -q '"effective_auth_mode": "relayhub_auth_token"' <<<"${OUTPUT}"
 grep -q '"source_of_model": "relayhub_entry_alias"' <<<"${OUTPUT}"
 

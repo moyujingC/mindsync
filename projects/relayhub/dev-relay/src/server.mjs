@@ -11,6 +11,11 @@ const RELAY_TASK_MODEL_PREFIX = "relayhub-task-";
 const RELAY_ENTRY_MODEL_PREFIX = "relayhub-entry-";
 const CLAUDE_ENTRY_ID = "entry-claude-ide-local";
 const CODEX_ENTRY_ID = "entry-codex-ide-local";
+const PAPERCLIP_ENTRY_MIGRATIONS = {
+  "entry-paperclip-claude-local-mac": "entry-paperclip-claude-local-server",
+  "entry-paperclip-codex-local-mac": "entry-paperclip-codex-local-server",
+  "entry-paperclip-pi-local-mac": "entry-paperclip-pi-local-server"
+};
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -123,6 +128,10 @@ function relayModelToEntryId(model) {
   }
 
   return suffix.startsWith("entry-") ? suffix : `entry-${suffix}`;
+}
+
+function canonicalizePaperclipEntryId(entryId) {
+  return PAPERCLIP_ENTRY_MIGRATIONS[entryId] ?? entryId;
 }
 
 function nowIso() {
@@ -319,7 +328,7 @@ function inferTaskIdFromModel(bodyModel, fallbackTaskId) {
 }
 
 function inferEntryIdFromModel(bodyModel, fallbackEntryId) {
-  return relayModelToEntryId(bodyModel) ?? fallbackEntryId;
+  return canonicalizePaperclipEntryId(relayModelToEntryId(bodyModel) ?? fallbackEntryId);
 }
 
 function getStoredApiKey(secrets, modelEntryId) {
@@ -344,19 +353,20 @@ async function readRelayState() {
 }
 
 function resolveEntryBinding(state, entryId, options = {}) {
+  const canonicalEntryId = canonicalizePaperclipEntryId(entryId);
   const {
     endpointKind = null,
     requireStream = false
   } = options;
-  const entryBinding = state.entryBindings?.find((item) => item.entryId === entryId);
+  const entryBinding = state.entryBindings?.find((item) => item.entryId === canonicalEntryId);
   if (!entryBinding) {
     return {
       ok: false,
       statusCode: 404,
       code: "entry_binding_not_found",
-      message: `找不到 ${entryId} 的入口绑定，先去 RelayHub 入口库补配置。`,
+      message: `找不到 ${canonicalEntryId} 的入口绑定，先去 RelayHub 入口库补配置。`,
       relay: {
-        entryId
+        entryId: canonicalEntryId
       }
     };
   }
@@ -366,9 +376,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "entry_not_bound",
-      message: `${entryId} 还没有绑定默认模型，先去 RelayHub 入口库完成绑定。`,
+      message: `${canonicalEntryId} 还没有绑定默认模型，先去 RelayHub 入口库完成绑定。`,
       relay: {
-        entryId
+        entryId: canonicalEntryId
       }
     };
   }
@@ -379,9 +389,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 404,
       code: "model_entry_not_found",
-      message: "入口当前绑定的模型入口不存在，请回入口库重新绑定。",
+        message: "入口当前绑定的模型入口不存在，请回入口库重新绑定。",
       relay: {
-        entryId,
+        entryId: canonicalEntryId,
         modelEntryId: entryBinding.defaultModelEntryId
       }
     };
@@ -392,9 +402,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "model_not_active",
-      message: "入口当前绑定的模型入口还未激活，先去模型库测试连接。",
+        message: "入口当前绑定的模型入口还未激活，先去模型库测试连接。",
       relay: {
-        entryId,
+        entryId: canonicalEntryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -406,9 +416,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "missing_api_key",
-      message: "入口当前绑定的模型入口缺少 API Key，先去模型库补 Key。",
+        message: "入口当前绑定的模型入口缺少 API Key，先去模型库补 Key。",
       relay: {
-        entryId,
+        entryId: canonicalEntryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -424,9 +434,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "responses_not_ready",
-      message: "当前入口尚未通过所需的 Responses 探测，先去模型库完成该入口验证。",
+        message: "当前入口尚未通过所需的 Responses 探测，先去模型库完成该入口验证。",
       relay: {
-        entryId,
+        entryId: canonicalEntryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -438,9 +448,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "chat_completions_not_ready",
-      message: "当前入口尚未通过 Chat Completions 探测，先去模型库完成该入口验证。",
+        message: "当前入口尚未通过 Chat Completions 探测，先去模型库完成该入口验证。",
       relay: {
-        entryId,
+        entryId: canonicalEntryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -451,6 +461,7 @@ function resolveEntryBinding(state, entryId, options = {}) {
     ok: true,
     entryBinding,
     entry,
+    entryId: canonicalEntryId,
     effectiveReasoningEffort: resolveEffectiveReasoningEffort(entryBinding, entry)
   };
 }
@@ -901,8 +912,9 @@ async function proxyChatCompletions(request, response) {
 
   const state = await readRelayState();
   const requestedEntryId = relayModelToEntryId(body.model);
+  const canonicalEntryId = canonicalizePaperclipEntryId(requestedEntryId);
   const resolved = requestedEntryId
-    ? resolveEntryBinding(state, requestedEntryId, {
+    ? resolveEntryBinding(state, canonicalEntryId, {
         endpointKind: "chat-completions"
       })
     : resolveRelayBinding(state, inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID), {
@@ -912,7 +924,7 @@ async function proxyChatCompletions(request, response) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
 
-  const task = "task" in resolved ? resolved.task : { id: requestedEntryId ?? CLAUDE_RELAY_TASK_ID };
+  const task = "task" in resolved ? resolved.task : { id: canonicalEntryId ?? CLAUDE_RELAY_TASK_ID };
   const entry = resolved.entry;
   const binding = "entryBinding" in resolved ? resolved.entryBinding : null;
   const upstreamBody = attachReasoningConfig({
@@ -1011,7 +1023,7 @@ async function proxyChatCompletions(request, response) {
     response.on("error", reject);
   });
   await markEntryUsageSuccess({
-    entryId: requestedEntryId,
+    entryId: canonicalEntryId,
     requestId,
     route: "/chat/completions",
     modelEntryId: entry.id,
@@ -1386,7 +1398,7 @@ async function listCodexModels(response) {
       continue;
     }
 
-    const relayModelId = entryIdToRelayModel(relayEntry.id);
+    const relayModelId = entryIdToRelayModel(canonicalizePaperclipEntryId(relayEntry.id));
     if (!seenIds.has(relayModelId)) {
       seenIds.add(relayModelId);
       data.push({

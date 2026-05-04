@@ -50,10 +50,10 @@
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
 | CEO | CEO | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
-| 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
-| 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
-| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-mac` 或 `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
+| 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
+| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
 
 ## 3. 分组展开
 
@@ -73,7 +73,7 @@
 - `relayhub-entry-paperclip-claude-local-server` 是入口别名，不是真实上游模型名
 - 真实上游供应商、真实模型名、真实厂商密钥统一在 RelayHub 后台绑定里治理
 - `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` 在这里是 RelayHub 门禁 token（门禁卡），不是厂商 API Key
-- 对普通任务本地自动执行链，CEO 继续保留 `server` 入口这条正式分流
+- 当前 `server` 命名只保留为规范入口名，不再表达 Mac / Server 可独立控模
 - 当前 `server` 入口默认绑定已收口到 `DeepSeek V4 官方`
 
 ### 3.2 Engineer
@@ -171,7 +171,7 @@
 
 - Adapter：`claude_local`
 - Base URL：`https://relayhub.jingshu.cc/claude/v1`
-- Model：`relayhub-entry-paperclip-claude-local-mac`（本机）或 `relayhub-entry-paperclip-claude-local-server`（服务器）
+- Model：`relayhub-entry-paperclip-claude-local-server`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
   - `ANTHROPIC_AUTH_TOKEN`
@@ -190,7 +190,6 @@
 - 后续如果要切真实上游模型，应优先改 RelayHub 后台绑定，而不是回写 Paperclip agent 的 `ANTHROPIC_MODEL`
 - [shared/tools/sync-paperclip-claude-local-model.sh](shared/tools/sync-paperclip-claude-local-model.sh) 只保留为初始化或修复工具；它负责把 agent 对齐回 RelayHub，不负责定义真实上游模型是谁
 - 当前正式默认绑定已收口为：
-  - `entry-paperclip-claude-local-mac -> preset-deepseek-v4`
   - `entry-paperclip-claude-local-server -> preset-deepseek-v4`
 - 当前真实默认上游模型是 `deepseek-v4-pro`
 - 因此面板里出现：
@@ -198,12 +197,12 @@
   - 且状态为 `warn`
   - 这是预期现象，不单独视为故障
 
-当前宿主分流口径：
+当前统一入口口径：
 
-- 本机 Mac 侧默认入口：`relayhub-entry-paperclip-claude-local-mac`
-- 服务器侧默认入口：`relayhub-entry-paperclip-claude-local-server`
-- 两条入口都走 `https://relayhub.jingshu.cc/claude/v1/messages`
+- 当前正式入口：`relayhub-entry-paperclip-claude-local-server`
+- 它走 `https://relayhub.jingshu.cc/claude/v1/messages`
 - 前端里看到的“当前绑定模型”由 RelayHub 解析结果决定，不由 Paperclip 直接决定
+- 旧 `relayhub-entry-paperclip-claude-local-mac` 只保留短期兼容，不再作为正式治理对象
 
 当前面板解读规则：
 

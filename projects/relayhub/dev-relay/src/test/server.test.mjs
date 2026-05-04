@@ -124,15 +124,6 @@ function createState() {
         controllable: false
       },
       {
-        id: "entry-paperclip-claude-local-mac",
-        alias: "relayhub-entry-paperclip-claude-local-mac",
-        clientFamily: "paperclip",
-        adapterType: "claude_local",
-        hostType: "mac",
-        protocolFamily: "anthropic-messages",
-        controllable: true
-      },
-      {
         id: "entry-paperclip-claude-local-server",
         alias: "relayhub-entry-paperclip-claude-local-server",
         clientFamily: "paperclip",
@@ -142,30 +133,12 @@ function createState() {
         controllable: true
       },
       {
-        id: "entry-paperclip-codex-local-mac",
-        alias: "relayhub-entry-paperclip-codex-local-mac",
-        clientFamily: "paperclip",
-        adapterType: "codex_local",
-        hostType: "mac",
-        protocolFamily: "openai-responses",
-        controllable: true
-      },
-      {
         id: "entry-paperclip-codex-local-server",
         alias: "relayhub-entry-paperclip-codex-local-server",
         clientFamily: "paperclip",
         adapterType: "codex_local",
         hostType: "server",
         protocolFamily: "openai-responses",
-        controllable: true
-      },
-      {
-        id: "entry-paperclip-pi-local-mac",
-        alias: "relayhub-entry-paperclip-pi-local-mac",
-        clientFamily: "paperclip",
-        adapterType: "pi_local",
-        hostType: "mac",
-        protocolFamily: "openai-chat-completions",
         controllable: true
       },
       {
@@ -207,15 +180,6 @@ function createState() {
         statusNote: "Codex IDE local binding",
       },
       {
-        entryId: "entry-paperclip-claude-local-mac",
-        defaultModelEntryId: "model-active",
-        defaultModelEntryName: "Active Relay",
-        fallbackModelEntryId: null,
-        fallbackModelEntryName: null,
-        reasoningEffortOverride: null,
-        statusNote: "Paperclip claude_local mac binding",
-      },
-      {
         entryId: "entry-paperclip-claude-local-server",
         defaultModelEntryId: "model-active",
         defaultModelEntryName: "Active Relay",
@@ -225,15 +189,6 @@ function createState() {
         statusNote: "Paperclip claude_local server binding",
       },
       {
-        entryId: "entry-paperclip-codex-local-mac",
-        defaultModelEntryId: "model-active",
-        defaultModelEntryName: "Active Relay",
-        fallbackModelEntryId: null,
-        fallbackModelEntryName: null,
-        reasoningEffortOverride: null,
-        statusNote: "Paperclip codex_local mac binding",
-      },
-      {
         entryId: "entry-paperclip-codex-local-server",
         defaultModelEntryId: "model-active",
         defaultModelEntryName: "Active Relay",
@@ -241,15 +196,6 @@ function createState() {
         fallbackModelEntryName: null,
         reasoningEffortOverride: null,
         statusNote: "Paperclip codex_local server binding",
-      },
-      {
-        entryId: "entry-paperclip-pi-local-mac",
-        defaultModelEntryId: "model-active",
-        defaultModelEntryName: "Active Relay",
-        fallbackModelEntryId: null,
-        fallbackModelEntryName: null,
-        reasoningEffortOverride: null,
-        statusNote: "Paperclip pi_local mac binding",
       },
       {
         entryId: "entry-paperclip-pi-local-server",
@@ -537,7 +483,7 @@ test("GET /v1/models returns controllable relay entries and resolved upstream mo
         const payload = await response.json();
         assert.equal(payload.object, "list");
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-codex-ide-local"));
-        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-claude-local-mac"));
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-claude-local-server"));
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-pi-local-server"));
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-hermes-local-server"));
@@ -1088,7 +1034,7 @@ test("POST /v1/responses uses entry-level reasoning override before model-level 
     state.modelEntries[0].baseUrl = upstreamBaseUrl;
     state.modelEntries[0].modelId = "gpt-5.4";
     state.modelEntries[0].reasoningEffort = "high";
-    state.entryBindings[5].reasoningEffortOverride = "low";
+    state.entryBindings.find((item) => item.entryId === "entry-paperclip-codex-local-server").reasoningEffortOverride = "low";
 
     await withTempState(async () => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
@@ -1129,7 +1075,7 @@ test("POST /v1/chat/completions uses entry-level reasoning override before model
     state.modelEntries[0].baseUrl = upstreamBaseUrl;
     state.modelEntries[0].modelId = "gpt-5.4";
     state.modelEntries[0].reasoningEffort = "medium";
-    state.entryBindings[7].reasoningEffortOverride = "high";
+    state.entryBindings.find((item) => item.entryId === "entry-paperclip-pi-local-server").reasoningEffortOverride = "high";
 
     await withTempState(async () => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
@@ -1153,7 +1099,7 @@ test("POST /v1/chat/completions uses entry-level reasoning override before model
   });
 });
 
-test("same upstream model can emit different reasoning effort for different entry aliases", async () => {
+test("legacy Paperclip mac alias still resolves to the canonical server entry", async () => {
   const observedEfforts = [];
 
   await withMockUpstream(async (request, response) => {
@@ -1162,7 +1108,7 @@ test("same upstream model can emit different reasoning effort for different entr
     response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({
       object: "response",
-      id: "resp_reasoning_dual_entry",
+      id: "resp_reasoning_canonical",
       status: "completed",
       output: []
     }));
@@ -1171,10 +1117,9 @@ test("same upstream model can emit different reasoning effort for different entr
     state.modelEntries[0].baseUrl = upstreamBaseUrl;
     state.modelEntries[0].modelId = "gpt-5.4";
     state.modelEntries[0].reasoningEffort = "medium";
-    state.entryBindings[4].reasoningEffortOverride = "low";
-    state.entryBindings[5].reasoningEffortOverride = "high";
+    state.entryBindings.find((item) => item.entryId === "entry-paperclip-codex-local-server").reasoningEffortOverride = "high";
 
-    await withTempState(async () => {
+    await withTempState(async ({ readState }) => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const first = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
@@ -1183,28 +1128,21 @@ test("same upstream model can emit different reasoning effort for different entr
           }),
           body: JSON.stringify({
             model: "relayhub-entry-paperclip-codex-local-mac",
-            input: "first",
+            input: "compat",
             stream: false
           })
         });
         assert.equal(first.status, 200);
+      });
 
-        const second = await fetch(`${baseUrl}/v1/responses`, {
-          method: "POST",
-          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
-            "content-type": "application/json"
-          }),
-          body: JSON.stringify({
-            model: "relayhub-entry-paperclip-codex-local-server",
-            input: "second",
-            stream: false
-          })
-        });
-        assert.equal(second.status, 200);
+      await waitFor(async () => {
+        const nextState = await readState();
+        assert.equal(nextState.entryActivity["entry-paperclip-codex-local-server"].lastSuccessfulRoute, "/v1/responses");
+        assert.equal(nextState.entryActivity["entry-paperclip-codex-local-mac"], undefined);
       });
     }, state);
 
-    assert.deepEqual(observedEfforts, ["low", "high"]);
+    assert.deepEqual(observedEfforts, ["high"]);
   });
 });
 
