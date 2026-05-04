@@ -56,7 +56,8 @@ docker compose -f docker-compose.release.yml --env-file .env.release up -d
 
 - `.env.release` 中的 `VITE_AIMANDALA_API_BASE_URL` 必须保持为 `https://web-api.jingshu.cc`
 - `.env.release` 中的 `AIMANDALA_LLM_BACKEND` 应保持为 `openai_compatible`
-- 若正式接入 RelayHub，`.env.release` 中的 `AIMANDALA_LLM_BASE_URL` 应改为 `https://relayhub.jingshu.cc/aimandala/v1`
+- `.env.release` 中的 `AIMANDALA_LLM_MODEL` / `AIMANDALA_LLM_CHAT_MODEL` / `AIMANDALA_LLM_VISION_MODEL` 当前统一使用 `deepseek-v4-pro`
+- 若正式接入 RelayHub，`.env.release` 中的 `AIMANDALA_LLM_BASE_URL` 应改为 `https://relayhub.jingshu.cc/aimandala/v1`，但模型入口仍应解析到 DeepSeek V4 Pro
 - `.env.release` 中的 `AIMANDALA_UPLOAD_BACKEND` 应保持为 `cos`
 - `.env.release` 中的 `AIMANDALA_ENABLE_DEBUG_WORKBENCH` 应保持为 `0`
 - 否则正式前端会产生 mixed content 或把调试能力暴露到生产环境

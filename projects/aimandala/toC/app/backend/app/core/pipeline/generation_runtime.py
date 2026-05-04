@@ -23,10 +23,7 @@ from .report_generation_contracts import (
 )
 
 
-KNOWN_ENDPOINT_MODEL_RESOLUTIONS = {
-    "ep-20260316095322-94wf5": "doubao-seed-1-6-vision-250815",
-    "ep-20260316092926-vl464": "doubao-seed-1-6-flash-250715",
-}
+KNOWN_ENDPOINT_MODEL_RESOLUTIONS = {}
 
 
 class DeterministicReportGenerationRuntime:

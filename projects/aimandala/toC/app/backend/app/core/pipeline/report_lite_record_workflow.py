@@ -50,6 +50,9 @@ class ReportLiteRecordWorkflow:
         painting_feeling: str | None = None,
         three_circles: dict[str, int] | None = None,
     ) -> InterpretationRecord:
+        if not three_circles:
+            raise ValueError("manual three-circle boundaries are required")
+
         image_hash = self.hash_image(image_path)
         record = self.store.create_record(
             user_id=user_id,
@@ -65,39 +68,16 @@ class ReportLiteRecordWorkflow:
         record.painting_feeling = painting_feeling
         record.status = GenerationStatus.PROCESSING
 
-        if three_circles:
-            normalized = self.normalize_circle_payload(three_circles)
-            record.three_circles = normalized
-            record.three_circles_user_adjusted = True
-            record.three_circles_adjust_history.append(
-                {
-                    "from": {"inner": 33, "middle": 66},
-                    "to": normalized.copy(),
-                    "source": "manual",
-                }
-            )
-        else:
-            detection = await detect_three_circles(image_path=image_path)
-            normalized = self.normalize_circle_payload(
-                {
-                    "inner_radius": int(round(detection.inner_radius * 100)),
-                    "middle_radius": int(round(detection.middle_radius * 100)),
-                }
-            )
-            record.three_circles = normalized
-            record.three_circles_auto_detect = {
-                "inner_radius": detection.inner_radius,
-                "middle_radius": detection.middle_radius,
-                "confidence": detection.confidence,
-                "method": detection.method,
+        normalized = self.normalize_circle_payload(three_circles)
+        record.three_circles = normalized
+        record.three_circles_user_adjusted = True
+        record.three_circles_adjust_history.append(
+            {
+                "from": {"inner": 33, "middle": 66},
+                "to": normalized.copy(),
+                "source": "manual",
             }
-            record.three_circles_adjust_history.append(
-                {
-                    "from": {"inner": 33, "middle": 66},
-                    "to": normalized.copy(),
-                    "source": "auto",
-                }
-            )
+        )
 
         record.update_progress(self.detecting_stage, 10)
         self.store.save(record)

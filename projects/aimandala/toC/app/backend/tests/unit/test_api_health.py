@@ -228,8 +228,7 @@ def test_detect_circles_endpoint(tmp_path):
     data = response.json()
     assert data["inner_radius"] == 0.33
     assert data["middle_radius"] == 0.66
-    # method varies by LLM config: noop→"default", fake LLM→"llm_vision"
-    assert data["method"] in ("llm_vision", "llm_vision_estimated", "llm_fallback", "default")
+    assert data["method"] == "default"
     assert data["geometry_suggestion"]["shape_type"] == "circle"
 
 
@@ -509,6 +508,8 @@ def test_create_interpretation_endpoint(tmp_path):
         json={
             "user_id": "user-api-1",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "general",
         },
     )
@@ -517,13 +518,34 @@ def test_create_interpretation_endpoint(tmp_path):
     data = response.json()
     assert data["success"] is True
     assert data["version"] == "lite"
-    assert data["auto_detected"] is True
+    assert data["auto_detected"] is False
     assert data["existing"] is False
     assert data["generation_stage"] == "completed"
     assert data["report_ready"] is True
     assert data["three_circles"]["inner_radius"] == 33
     assert data["three_circles"]["middle_radius"] == 66
     assert data["interpretation_id"]
+
+
+def test_create_interpretation_requires_manual_three_circles(tmp_path):
+    from app.api.main import app
+
+    _reset_api_state()
+    client = TestClient(app)
+    image_path = tmp_path / "mandala-missing-circles.png"
+    image_path.write_bytes(b"mock-image")
+
+    response = client.post(
+        "/api/v2/interpretations",
+        json={
+            "user_id": "user-api-missing-circles",
+            "image_path": str(image_path),
+            "theme": "general",
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "manual three-circle boundaries are required"
 
 
 def test_create_interpretation_persists_upload_metadata(tmp_path):
@@ -540,6 +562,8 @@ def test_create_interpretation_persists_upload_metadata(tmp_path):
         json={
             "user_id": "user-api-meta",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "image_url": "https://img.example.com/mandala/demo.png",
             "storage_backend": "cos",
             "storage_key": "aimandala/uploads/demo.png",
@@ -604,6 +628,8 @@ def test_read_endpoints_refresh_cos_image_url_from_storage_key(tmp_path):
             json={
                 "user_id": "user-api-read-refresh",
                 "image_path": str(image_path),
+                "inner_radius": 33,
+                "middle_radius": 66,
                 "storage_backend": "cos",
                 "storage_key": "aimandala/uploads/demo.png",
                 "image_url": "https://expired.example.com/demo.png",
@@ -638,6 +664,8 @@ def test_read_endpoints_return_null_image_url_when_storage_identity_missing(tmp_
         json={
             "user_id": "user-api-missing-storage",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "image_url": "https://expired.example.com/demo.png",
         },
     )
@@ -689,6 +717,8 @@ def test_create_interpretation_returns_existing_for_same_user_image_theme(tmp_pa
         json={
             "user_id": "user-api-existing",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "general",
         },
     )
@@ -697,6 +727,8 @@ def test_create_interpretation_returns_existing_for_same_user_image_theme(tmp_pa
         json={
             "user_id": "user-api-existing",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "general",
         },
     )
@@ -722,6 +754,8 @@ def test_get_interpretation_endpoint(tmp_path):
         json={
             "user_id": "user-api-3",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "growth",
         },
     )
@@ -734,7 +768,7 @@ def test_get_interpretation_endpoint(tmp_path):
     assert data["interpretation_id"] == interpretation_id
     assert data["user_id"] == "user-api-3"
     assert data["theme"] == "growth"
-    assert data["auto_detected"] is True
+    assert data["auto_detected"] is False
 
 
 def test_get_user_interpretations_endpoint(tmp_path):
@@ -752,6 +786,8 @@ def test_get_user_interpretations_endpoint(tmp_path):
         json={
             "user_id": "user-api-4",
             "image_path": str(first_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     client.post(
@@ -759,6 +795,8 @@ def test_get_user_interpretations_endpoint(tmp_path):
         json={
             "user_id": "user-api-4",
             "image_path": str(second_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "intimate_relationship",
         },
     )
@@ -787,6 +825,8 @@ def test_get_user_interpretations_endpoint_supports_filter_query(tmp_path):
         json={
             "user_id": "user-api-filter",
             "image_path": str(first_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     client.post(
@@ -794,6 +834,8 @@ def test_get_user_interpretations_endpoint_supports_filter_query(tmp_path):
         json={
             "user_id": "user-api-filter",
             "image_path": str(second_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
 
@@ -836,6 +878,8 @@ def test_get_user_interpretations_endpoint_marks_direct_pro_purchase_ready_after
         json={
             "user_id": "user-api-pro-pending",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "general",
         },
     )
@@ -895,6 +939,8 @@ def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_pa
         json={
             "user_id": "user-api-theme-limit",
             "image_path": str(first_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "general",
         },
     )
@@ -903,6 +949,8 @@ def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_pa
         json={
             "user_id": "user-api-theme-limit",
             "image_path": str(second_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "wealth_career",
         },
     )
@@ -911,6 +959,8 @@ def test_get_user_interpretations_endpoint_supports_theme_and_limit_query(tmp_pa
         json={
             "user_id": "user-api-theme-limit",
             "image_path": str(third_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "wealth_career",
         },
     )
@@ -940,6 +990,8 @@ def test_get_user_interpretations_endpoint_distinguishes_lite_and_lite_plus_pro(
         json={
             "user_id": "user-api-history-version",
             "image_path": str(lite_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "general",
         },
     )
@@ -948,9 +1000,13 @@ def test_get_user_interpretations_endpoint_distinguishes_lite_and_lite_plus_pro(
         json={
             "user_id": "user-api-history-version",
             "image_path": str(pro_image),
+            "inner_radius": 33,
+            "middle_radius": 66,
             "theme": "wealth_career",
         },
     )
+    assert lite_response.status_code == 200
+    assert pro_response.status_code == 200
 
     pro_interpretation_id = pro_response.json()["interpretation_id"]
     order_response = client.post(
@@ -998,6 +1054,8 @@ def test_get_interpretation_status_endpoint(tmp_path):
         json={
             "user_id": "user-api-status",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1025,6 +1083,8 @@ def test_get_report_endpoint_returns_placeholder(tmp_path):
         json={
             "user_id": "user-api-5",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1064,6 +1124,8 @@ def test_create_miniapp_order_endpoint_creates_pending_stub_order(tmp_path):
         json={
             "user_id": "user-miniapp-order-lite",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1104,6 +1166,8 @@ def test_create_miniapp_order_endpoint_uses_direct_pro_price_for_existing_lite_r
         json={
             "user_id": "user-miniapp-order-pro",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1137,6 +1201,8 @@ def test_create_miniapp_order_endpoint_defaults_to_stub_payload_when_live_gray_i
         json={
             "user_id": "user-miniapp-gray-off",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1179,6 +1245,8 @@ def test_create_miniapp_order_endpoint_returns_wechatpay_payload_when_gray_enabl
         json={
             "user_id": "user-miniapp-live-order-pro",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1232,6 +1300,8 @@ def test_get_miniapp_order_endpoint_returns_created_order(tmp_path):
         json={
             "user_id": "user-miniapp-order-get",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1275,6 +1345,8 @@ def test_notify_miniapp_wechat_payment_updates_purchase_state(tmp_path):
         json={
             "user_id": "user-miniapp-order-notify",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1338,6 +1410,8 @@ def test_reconcile_miniapp_order_requires_paid_state(tmp_path):
         json={
             "user_id": "user-miniapp-reconcile-pending",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1373,6 +1447,8 @@ def test_reconcile_miniapp_order_marks_paid_order_fulfilled(tmp_path):
         json={
             "user_id": "user-miniapp-reconcile-paid",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1432,6 +1508,8 @@ def test_upgrade_placeholder_endpoint(tmp_path):
         json={
             "user_id": "user-api-upgrade",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1459,6 +1537,8 @@ def test_get_report_endpoint_defaults_to_best_available_version_after_upgrade(tm
         json={
             "user_id": "user-api-upgrade-default-report",
             "image_path": str(image_path),
+            "inner_radius": 33,
+            "middle_radius": 66,
         },
     )
     interpretation_id = create_response.json()["interpretation_id"]
@@ -1521,15 +1601,7 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
 
     class FakeLLMClient:
         def generate_structured(self, *, task, prompt, schema, image_path=None):
-            if task == "vision":
-                return {
-                    "inner_radius": 0.28,
-                    "middle_radius": 0.61,
-                    "confidence": 0.91,
-                    "method": "fake_vision",
-                    "summary": "识别到了比较清晰的内中圈边界",
-                }
-                raise AssertionError(f"unexpected structured LLM task: {task}")
+            raise AssertionError(f"unexpected structured LLM task: {task}")
 
         def generate_text(self, *, task, system_prompt, user_prompt):
             assert task == "chat"
@@ -1548,15 +1620,17 @@ def test_shared_llm_client_powers_detection_generation_and_report_chat(tmp_path)
         )
         assert detect_response.status_code == 200
         detect_data = detect_response.json()
-        assert detect_data["method"] == "llm_vision"
-        assert detect_data["inner_radius"] == 0.28
-        assert detect_data["middle_radius"] == 0.61
+        assert detect_data["method"] == "default"
+        assert detect_data["inner_radius"] == 0.33
+        assert detect_data["middle_radius"] == 0.66
 
         create_response = client.post(
             "/api/v2/interpretations",
             json={
                 "user_id": "user-api-llm-shared",
                 "image_path": str(image_path),
+                "inner_radius": 33,
+                "middle_radius": 66,
                 "theme": "general",
             },
         )

@@ -61,10 +61,10 @@ export function createUploadPageDescriptor(
       },
       {
         id: "circles",
-        title: "三圈检测",
+        title: "三圈人工确认",
         description: detection
-          ? `当前检测结果：内圈 ${Math.round(detection.inner_radius * 100)}%，中圈 ${Math.round(detection.middle_radius * 100)}%，方法 ${detection.method}。`
-          : "等待调用 detect-circles 获取三圈建议。",
+          ? `当前确认结果：内圈 ${Math.round(detection.inner_radius * 100)}%，中圈 ${Math.round(detection.middle_radius * 100)}%，来源 ${detection.method}。`
+          : "请在画作上手动调整内中圈和中外圈边界。",
       },
     ],
     fields: [
@@ -117,7 +117,7 @@ export function createUploadPageDescriptor(
       },
       {
         id: "detect",
-        label: "等待三圈检测",
+        label: "确认三圈边界",
         status: detection ? "done" : "pending",
       },
     ],

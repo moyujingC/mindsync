@@ -23,6 +23,8 @@ export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
+  innerRadius: 0.35,
+  middleRadius: 0.65,
 };
 
 export const PREVIEW_ROUTE_OPTIONS: Array<{

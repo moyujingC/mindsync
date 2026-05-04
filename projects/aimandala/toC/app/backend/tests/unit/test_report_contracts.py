@@ -7,7 +7,7 @@ from app.core.pipeline.report_knowledge_debug import KnowledgeDebugBlockBuilder
 from app.core.pipeline.structured_report_schema import get_structured_report_contract
 from app.core.pipeline.store import InterpretationStore
 
-from .test_pipeline_orchestrator import StubCircleDetector
+from .test_pipeline_orchestrator import MANUAL_THREE_CIRCLES, StubCircleDetector
 
 
 def _create_orchestrator(tmp_path):
@@ -29,6 +29,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
             image_path=str(image_path),
             user_id="report-contract-lite",
             theme="wealth_career",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -86,6 +87,7 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="report-contract-pro",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
     orchestrator.upgrade_to_pro(record.interpretation_id)
@@ -361,10 +363,7 @@ def test_review_debug_views_group_input_layer0_and_mapping_summaries():
         painting_intention="看清工作中的收缩和推进。",
         painting_feeling="紧绷，但想往前。",
         three_circles={"inner_radius": 0.35, "middle_radius": 0.65},
-        three_circles_auto_detect={
-            "inner_radius": 0.37,
-            "middle_radius": 0.63,
-        },
+        three_circles_auto_detect=None,
         layer_0_raw=SimpleNamespace(to_dict=lambda: layer0),
         layer_2_lite_final=SimpleNamespace(
             overall_impression="你正在一边收紧、一边寻找推进感。",
@@ -395,7 +394,7 @@ def test_review_debug_views_group_input_layer0_and_mapping_summaries():
     assert input_package["topic_input"]["topic_label"] == "财富事业"
     assert input_package["circle_config"]["inner_radius"] == 0.35
     assert input_package["circle_config"]["middle_radius"] == 0.65
-    assert input_package["circle_config"]["source"] == "mixed"
+    assert input_package["circle_config"]["source"] == "user_calibrated"
 
     assert "中心有聚焦感" in layer0_summary["direct_judgment_summary"]
     assert "内圈偏亮" in layer0_summary["per_circle_observation_summary"]
@@ -413,6 +412,7 @@ def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_pat
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="report-contract-lite-after-pro",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
     orchestrator.upgrade_to_pro(record.interpretation_id)
@@ -441,6 +441,7 @@ def test_orchestrator_prefers_best_available_report_version(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="report-contract-best-version",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -463,6 +464,7 @@ def test_report_contract_assembler_rejects_unsupported_version(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="report-contract-invalid",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 

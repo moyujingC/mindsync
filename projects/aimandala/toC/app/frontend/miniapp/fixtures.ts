@@ -19,6 +19,8 @@ export function createMiniappDraft(
     reportVariant: "lite",
     paintingIntention: "想看看最近的状态",
     paintingFeeling: "一边紧，一边想整理清楚",
+    innerRadius: 0.35,
+    middleRadius: 0.65,
     ...patch,
   };
 }
@@ -56,7 +58,7 @@ function createMiniappStatus(
       inner_radius: 0.34,
       middle_radius: 0.66,
     },
-    auto_detected: true,
+    auto_detected: false,
     can_upgrade: true,
     ...patch,
   };
@@ -135,7 +137,7 @@ function createMiniappFlowState(
         inner_radius: 0.34,
         middle_radius: 0.66,
       },
-      auto_detected: true,
+      auto_detected: false,
       existing: false,
       report_ready: true,
     },
@@ -160,7 +162,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.29,
         middle_radius: 0.62,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: true,
       created_at: "2026-04-15T09:20:00+08:00",
       upgrade_history: [],
@@ -177,7 +179,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.31,
         middle_radius: 0.64,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: false,
       created_at: "2026-04-15T08:10:00+08:00",
       upgrade_history: [
@@ -201,7 +203,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.37,
         middle_radius: 0.68,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: false,
       created_at: "2026-04-15T07:40:00+08:00",
       upgrade_history: [

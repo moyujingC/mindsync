@@ -905,7 +905,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
       setPreviewHistoryStatusLabel(`已载入 ${preset.label}`);
-      setPreviewHistoryStatusDetail("当前已填入测试图与默认主题，可直接在上传页做三圈识别并进入 Lite / Pro 选择。");
+      setPreviewHistoryStatusDetail("当前已填入测试图、默认主题和人工三圈比例，可直接进入 Lite / Pro 选择。");
       setPreviewHistoryStatusTone("preview");
       setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);
@@ -1133,7 +1133,7 @@ export function MobileWebBrowserShell() {
                   import.meta.env.DEV && route === "upload"
                     ? previewFlowRunning
                       ? "当前正在尝试刷新或执行真实 Lite 主路径，请先等待 create/status/report 链路返回。"
-                      : "上传页的三圈检测可切到真实接口触发；其它页面默认保持正式界面观感。"
+                      : "上传页的三圈边界由用户手动调整；其它页面默认保持正式界面观感。"
                     : undefined
                 }
                 environmentTone={import.meta.env.DEV ? "preview" : undefined}

@@ -282,8 +282,8 @@ function createStageDescriptors(input: {
   return [
     {
       key: "detect",
-      label: "1. 三圈识别",
-      description: "detect-circles",
+      label: "1. 三圈人工确认",
+      description: "manual circle boundaries",
       state: activeDetectError
         ? "error"
         : activeDetecting || detectTrace?.phase === "pending"

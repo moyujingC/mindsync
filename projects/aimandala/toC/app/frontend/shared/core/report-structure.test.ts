@@ -52,7 +52,7 @@ describe("shared/core report-structure", () => {
             inner_radius: 10,
             middle_radius: 20,
           },
-          auto_detected: true,
+          auto_detected: false,
           can_upgrade: false,
         },
         report: null,

@@ -29,7 +29,7 @@ def test_lite_awareness_titles_load_from_template():
     assert LITE_REPORT_BLUEPRINT.theme_labels["wealth_career"] == "财富事业"
     assert LITE_REPORT_BLUEPRINT.title_templates["wealth_career"] == "向前先稳住的人"
     assert LITE_REPORT_BLUEPRINT.structure_labels["experiment_title"] == "曼曼的疗愈仪式：给自己一个稳稳的小空间"
-    assert LITE_REPORT_BLUEPRINT.structure_labels["layer0_color_summary"] == "迁移阶段先保留结构位，后续再替换成正式颜色分析。"
+    assert LITE_REPORT_BLUEPRINT.structure_labels["layer0_color_summary"] == "当前颜色分析会按逐圈颜色、面积与深浅状态输出正式证据。"
     assert LITE_REPORT_BLUEPRINT.structure_labels["section_story"] == "## 你的心灵画像故事"
     assert "overall_impression" in LITE_REPORT_BLUEPRINT.narrative_templates
     assert "missing_story_sections" in LITE_REPORT_BLUEPRINT.narrative_templates

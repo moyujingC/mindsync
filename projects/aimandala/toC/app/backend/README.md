@@ -123,7 +123,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - 上传响应现已补充 `image_local_expires_at`，前端可以明确感知本地临时路径的预计过期时间
 - `create` 请求现已支持透传 `image_url / storage_backend / storage_key / image_local_expires_at` 并入库，保证图片生命周期后续可追踪
 - 本地上传文件现在可通过 `GET /api/v2/uploads/{storage_key}` 读取，便于 preview/runtime 继续消费同一份上传对象语义
-- 独立三圈检测接口可用
+- 三圈边界现在由用户在上传页人工确认；独立三圈检测接口仅保留兼容与调试用途，不参与正式 create 主链
 - Lite 初始化可创建记录
 - 会生成一份迁移期 `一镜 Lite 版` 报告
 - Lite 报告已经开始按 `layer_1 / layer_2` 的结构字段输出更完整的故事、主题洞察、小觉察和实验内容
@@ -139,7 +139,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - Lite / Pro 正式报告主链已收口为知识优先本地组装：`Layer0 / 四步法 / projection / narrative projection -> Lite/Pro 知识骨架 -> 最终报告`
 - 当前后端仍保留 `prompt_preview` / `prompt_schema_validation_issues` 作为前端兼容字段，但它们不再表示模型主生成入口
 - Lite / Pro 的最终 `report.structured` 字段契约现已集中在 `app/core/pipeline/structured_report_schema.py`
-- 后端现已补上统一 LLM client，仅用于三圈 AI 识别与 Pro 报告内 AI 追问；Lite / Pro 报告正文不再由 LLM 结构生成覆盖
+- 后端现已补上统一 LLM client，仅用于 Layer0 画面事实提取、Lite / Pro 报告结构生成和 Pro 报告内 AI 追问；三圈边界暂时不依赖 LLM，由用户人工确认
 - Pro 报告页对应的 AI 问答现已补上真实接口，基于当前报告 markdown、QA 上下文和历史对话生成延展回答
 
 ## 当前边界
@@ -152,7 +152,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - 更精细的 CV/OpenCV 几何检测与多模型路由策略
 - To B / Studio / V3
 
-也就是说，当前 Lite / Pro `report` 已回到知识优先本地生成主链；统一 LLM client 只承担三圈 AI 识别和 Pro 内追问。报告正文质量的后续优化应继续沿知识库、projection、骨架组装链路推进，而不是恢复 prompt runtime 覆盖。
+也就是说，当前三圈边界以人工确认为准；统一 LLM client 不再承担三圈边界识别。报告正文质量的后续优化应继续沿知识库、projection、骨架组装链路和 DeepSeek V4 Pro 文本生成链路推进，而不是恢复旧 prompt runtime 覆盖。
 
 ## 验证
 
@@ -188,36 +188,36 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 
 ## Unified LLM 配置
 
-如需把三圈识别和报告内 AI 问答接到真实模型，优先使用下面这组环境变量：
+如需把报告生成、Layer0 画面事实提取和报告内 AI 问答接到真实模型，优先使用下面这组环境变量：
 
 - `AIMANDALA_LLM_BACKEND`（本地可缺省为 `noop`；正式 `release` 应显式设为 `openai_compatible`）
 - `AIMANDALA_LLM_BASE_URL`（`openai_compatible` 模式必填，例如 `https://<host>/v1`）
 - `AIMANDALA_LLM_API_KEY`（可选，取决于网关要求）
 - `AIMANDALA_LLM_API_KEY_HEADER`（可选，默认 `Authorization`）
-- `AIMANDALA_LLM_MODEL`（必填，默认模型）
-- `AIMANDALA_LLM_CHAT_MODEL`（可选，报告追问专用模型）
-- `AIMANDALA_LLM_VISION_MODEL`（可选，三圈识别专用视觉模型）
+- `AIMANDALA_LLM_MODEL`（可选，默认 `deepseek-v4-pro`）
+- `AIMANDALA_LLM_CHAT_MODEL`（可选，报告生成与追问专用模型，未设置时使用 `deepseek-v4-pro`）
+- `AIMANDALA_LLM_VISION_MODEL`（可选，Layer0 画面事实提取专用模型，未设置时使用 `deepseek-v4-pro`；三圈边界不走模型）
 - `AIMANDALA_LLM_TIMEOUT_SECONDS`（可选，默认 `30`）
 - `AIMANDALA_LLM_MAX_RETRIES`（可选，默认 `2`）
 - `AIMANDALA_LLM_RETRY_BACKOFF_MS`（可选，默认 `400`）
 
 说明：
 
-- `AIMANDALA_LLM_BACKEND=noop` 时，Lite / Pro 报告仍按知识优先本地链路生成，三圈识别回落为默认几何建议，report chat 不会得到真实模型回复
-- `release` 环境若需要 AI 三圈识别或报告追问，不应使用 `noop`
+- `AIMANDALA_LLM_BACKEND=noop` 时，Lite / Pro 报告会回落到本地确定性链路，report chat 不会得到真实模型回复
+- `release` 环境若需要 DeepSeek V4 Pro 报告生成或报告追问，不应使用 `noop`
 - `openai_compatible` 当前基于 `/chat/completions` 协议，支持文本生成、JSON 结构生成和图片输入
-- `AIMANDALA_LLM_CHAT_MODEL / AIMANDALA_LLM_VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
+- `AIMANDALA_LLM_CHAT_MODEL / AIMANDALA_LLM_VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`，而 `AIMANDALA_LLM_MODEL` 未设置时默认使用 `deepseek-v4-pro`
 - 报告正文不再支持通过 LLM report/prompt runtime 配置覆盖
 
 最小示例：
 
 ```bash
 export AIMANDALA_LLM_BACKEND=openai_compatible
-export AIMANDALA_LLM_BASE_URL="https://<your-gateway>/v1"
+export AIMANDALA_LLM_BASE_URL="https://api.deepseek.com/v1"
 export AIMANDALA_LLM_API_KEY="<your-api-key>"
-export AIMANDALA_LLM_MODEL="gpt-4.1"
-export AIMANDALA_LLM_CHAT_MODEL="gpt-4.1-mini"
-export AIMANDALA_LLM_VISION_MODEL="gpt-4.1"
+export AIMANDALA_LLM_MODEL="deepseek-v4-pro"
+export AIMANDALA_LLM_CHAT_MODEL="deepseek-v4-pro"
+export AIMANDALA_LLM_VISION_MODEL="deepseek-v4-pro"
 export AIMANDALA_LLM_TIMEOUT_SECONDS=30
 export AIMANDALA_LLM_MAX_RETRIES=2
 export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
@@ -236,5 +236,5 @@ export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
 
 1. 把本地临时上传升级成正式图片存储方案
 2. 继续增强 Lite / Pro 知识库 projection 与报告骨架质量
-3. 针对三圈识别和报告追问分别收口 provider 选择与线上配置
+3. 针对报告生成、Layer0 画面事实提取和报告追问收口 provider 选择与线上配置
 4. 继续完善 safety / knowledge 的正式编排与回归评估

@@ -115,6 +115,8 @@ const defaultUploadDraft: MobileWebUploadDraft = {
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
+  innerRadius: DEFAULT_INNER_RADIUS,
+  middleRadius: DEFAULT_MIDDLE_RADIUS,
 };
 
 function hasManualCircleRadii(
@@ -266,9 +268,6 @@ export function MobileWebRuntime({
     }
 
     setRuntimeUploadDraft(inputUploadDraft);
-    setRuntimeUploadDetection(null);
-    setRuntimeUploadDetecting(false);
-    setRuntimeUploadDetectError(null);
     setRuntimeHistoryQuery({ filter: "all", limit: 20 });
     setRuntimeHistoryOpeningId(null);
     setRuntimeHistoryOpeningReportType(null);

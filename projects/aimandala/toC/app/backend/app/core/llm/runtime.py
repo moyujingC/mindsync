@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import base64
 import json
 import mimetypes
@@ -13,6 +12,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Protocol, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+
+DEFAULT_DEEPSEEK_V4_MODEL = "deepseek-v4-pro"
 
 
 @dataclass(frozen=True)
@@ -396,123 +398,6 @@ class OpenAICompatibleLLMClient:
         time.sleep(wait_seconds)
 
 
-class LLMCircleDetectionBackend:
-    """Vision-backed three-circle detection using the shared LLM client."""
-
-    def __init__(self, llm_client: LLMClient) -> None:
-        self.llm_client = llm_client
-
-    async def detect_circles(
-        self,
-        image_path: str,
-        use_ai: bool = True,
-        use_opencv: bool = True,
-        confidence_threshold: float = 0.3,
-    ) -> Dict[str, Any]:
-        del use_opencv
-        if not use_ai:
-            return self._build_fallback_payload(
-                reason="ai_disabled",
-                confidence_threshold=confidence_threshold,
-            )
-
-        schema = {
-            "type": "object",
-            "required": ["inner_radius", "middle_radius", "confidence", "method"],
-            "properties": {
-                "inner_radius": {"type": "number"},
-                "middle_radius": {"type": "number"},
-                "confidence": {"type": "number"},
-                "method": {"type": "string"},
-                "summary": {"type": "string"},
-            },
-        }
-        prompt = (
-            "请识别一张曼陀罗绘画中的三圈结构。\n"
-            "输出内圈和中圈相对于整张图外圈半径的比例，范围 0-1。\n"
-            "如果图中不够清晰，也请给出最合理估计，并在 confidence 中体现不确定性。\n"
-            "method 字段只能输出以下固定值之一：llm_vision、llm_vision_estimated。"
-        )
-        payload = await asyncio.to_thread(
-            self.llm_client.generate_structured,
-            task="vision",
-            prompt=prompt,
-            schema=schema,
-            image_path=image_path,
-        )
-        if not isinstance(payload, dict):
-            return self._build_fallback_payload(
-                reason="llm_empty_response",
-                confidence_threshold=confidence_threshold,
-            )
-
-        inner = self._normalize_ratio(payload.get("inner_radius"), default=0.33)
-        middle = self._normalize_ratio(payload.get("middle_radius"), default=0.66)
-        middle = max(middle, inner + 0.05)
-        middle = min(middle, 0.9)
-        confidence = self._normalize_confidence(payload.get("confidence"), default=0.55)
-        method = self._normalize_method(payload.get("method"))
-        summary = payload.get("summary")
-
-        return {
-            "inner_radius": inner,
-            "middle_radius": middle,
-            "confidence": confidence,
-            "method": method,
-            "debug_info": {
-                "backend": "llm_vision",
-                "summary": summary if isinstance(summary, str) else None,
-                "confidence_threshold": confidence_threshold,
-            },
-        }
-
-    def _normalize_ratio(self, value: Any, *, default: float) -> float:
-        try:
-            ratio = float(value)
-        except (TypeError, ValueError):
-            return default
-        if ratio > 1.0:
-            ratio = ratio / 100.0
-        return max(0.1, min(ratio, 0.9))
-
-    def _normalize_confidence(self, value: Any, *, default: float) -> float:
-        try:
-            confidence = float(value)
-        except (TypeError, ValueError):
-            return default
-        if confidence > 1.0:
-            confidence = confidence / 100.0
-        return max(0.0, min(confidence, 1.0))
-
-    def _normalize_method(self, value: Any) -> str:
-        raw = str(value or "").strip().lower()
-        if raw in {"llm_vision", "ai_vision"}:
-            return "llm_vision"
-        if raw in {"llm_vision_estimated", "estimated", "estimate"}:
-            return "llm_vision_estimated"
-        if any(token in raw for token in ["估计", "estimate", "unclear", "不够清晰"]):
-            return "llm_vision_estimated"
-        return "llm_vision"
-
-    def _build_fallback_payload(
-        self,
-        *,
-        reason: str,
-        confidence_threshold: float,
-    ) -> Dict[str, Any]:
-        return {
-            "inner_radius": 0.33,
-            "middle_radius": 0.66,
-            "confidence": 0.2,
-            "method": "llm_fallback",
-            "debug_info": {
-                "backend": "llm_vision",
-                "reason": reason,
-                "confidence_threshold": confidence_threshold,
-            },
-        }
-
-
 class LLMReportChatRuntime:
     """Report-aware chat runtime for the Pro report follow-up QA flow."""
 
@@ -602,7 +487,10 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
         default=400,
     )
     default_base_url = os.getenv("AIMANDALA_LLM_BASE_URL", "").strip()
-    default_model = os.getenv("AIMANDALA_LLM_MODEL", "").strip()
+    default_model = os.getenv(
+        "AIMANDALA_LLM_MODEL",
+        DEFAULT_DEEPSEEK_V4_MODEL,
+    ).strip() or DEFAULT_DEEPSEEK_V4_MODEL
     default_api_key = os.getenv("AIMANDALA_LLM_API_KEY", "").strip() or None
     default_api_key_header = (
         os.getenv("AIMANDALA_LLM_API_KEY_HEADER", "Authorization").strip()
@@ -610,9 +498,6 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
     )
     if not default_base_url:
         raise ValueError("Missing required LLM config: AIMANDALA_LLM_BASE_URL")
-    if not default_model:
-        raise ValueError("Missing required LLM config: AIMANDALA_LLM_MODEL")
-
     default_task = LLMTaskConfig(
         base_url=default_base_url,
         api_key=default_api_key,
@@ -622,9 +507,11 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
 
     return LLMClientConfig(
         default=default_task,
-        chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task),
+        chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task)
+        or default_task,
         chat_fallback=_load_task_config_from_env("AIMANDALA_LLM_CHAT_FALLBACK", fallback=default_task),
-        vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task),
+        vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task)
+        or default_task,
         vision_fallback=_load_task_config_from_env("AIMANDALA_LLM_VISION_FALLBACK", fallback=default_task),
         timeout_seconds=timeout_seconds,
         max_retries=max_retries,
@@ -633,10 +520,8 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
 
 
 def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
-    glm_key = os.getenv("GLM_API_KEY", "").strip()
-    doubao_key = os.getenv("DOUBAO_API_KEY", "").strip()
-    moonshot_key = os.getenv("MOONSHOT_API_KEY", "").strip()
-    if not any([glm_key, doubao_key, moonshot_key]):
+    legacy_api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    if not legacy_api_key:
         return None
 
     timeout_seconds = _read_positive_int_env(
@@ -653,44 +538,19 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
     )
 
     default_task = _build_legacy_task_config(
-        base_url="https://open.bigmodel.cn/api/paas/v4",
-        api_key=glm_key or doubao_key or moonshot_key or None,
-        model="glm-4",
-    )
-    chat = (
-        _build_legacy_task_config(
-            base_url="https://api.moonshot.cn/v1",
-            api_key=moonshot_key,
-            model="moonshot-v1-8k",
-        )
-        if moonshot_key
-        else default_task
-    )
-    vision = (
-        _build_legacy_task_config(
-            base_url="https://ark.cn-beijing.volces.com/api/v3",
-            api_key=doubao_key,
-            model=os.getenv("DOUBAO_VISION_ENDPOINT_ID", "").strip() or "ep-20260316095322-94wf5",
-        )
-        if doubao_key
-        else None
-    )
-    vision_fallback = (
-        _build_legacy_task_config(
-            base_url="https://api.moonshot.cn/v1",
-            api_key=moonshot_key,
-            model="moonshot-v1-8k-vision-preview",
-        )
-        if moonshot_key
-        else None
+        base_url=os.getenv("AIMANDALA_LLM_BASE_URL", "").strip()
+        or "https://api.deepseek.com/v1",
+        api_key=legacy_api_key,
+        model=os.getenv("AIMANDALA_LLM_MODEL", "").strip()
+        or DEFAULT_DEEPSEEK_V4_MODEL,
     )
 
     return LLMClientConfig(
         default=default_task,
-        chat=chat,
-        chat_fallback=default_task,
-        vision=vision,
-        vision_fallback=vision_fallback,
+        chat=default_task,
+        chat_fallback=None,
+        vision=default_task,
+        vision_fallback=None,
         timeout_seconds=timeout_seconds,
         max_retries=max_retries,
         retry_backoff_ms=retry_backoff_ms,

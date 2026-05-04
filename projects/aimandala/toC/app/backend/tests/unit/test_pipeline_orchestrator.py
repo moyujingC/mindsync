@@ -35,6 +35,7 @@ from app.core.pipeline.report_contracts import PromptSchemaValidator
 from app.core.pipeline.store import InterpretationStore
 
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
+MANUAL_THREE_CIRCLES = {"inner_radius": 35, "middle_radius": 67}
 
 
 class StubCircleDetector:
@@ -51,6 +52,11 @@ class StubCircleDetector:
             confidence=0.8,
             method="stub",
         )
+
+
+class FailingCircleDetector:
+    async def detect_circles(self, **kwargs):
+        raise AssertionError(f"unexpected detector call: {kwargs}")
 
 
 def _assert_bound_method(actual, expected):
@@ -156,13 +162,65 @@ def test_prepare_lite_record_with_manual_circles(tmp_path):
     assert record.generation_progress == 10
 
 
-def test_prepare_lite_record_uses_detector_when_missing_manual_input(tmp_path):
+def test_prepare_lite_record_requires_manual_circles_and_skips_detector(tmp_path):
     image_path = tmp_path / "image.png"
     image_path.write_bytes(b"mock-image")
     store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
     orchestrator = LayeredOrchestrator(
         store=store,
-        circle_detector=StubCircleDetector(),
+        circle_detector=FailingCircleDetector(),
+        generation_runtime=DeterministicReportGenerationRuntime(),
+        enable_vision=True,
+    )
+
+    try:
+        asyncio.run(
+            orchestrator.prepare_lite_record(
+                image_path=str(image_path),
+                user_id="user-2",
+            )
+        )
+    except ValueError as error:
+        assert str(error) == "manual three-circle boundaries are required"
+    else:
+        raise AssertionError("missing manual three-circle boundaries should fail")
+
+    assert store.get_user_records("user-2") == []
+
+
+def test_generate_lite_placeholder_requires_manual_circles_and_skips_detector(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=FailingCircleDetector(),
+        generation_runtime=DeterministicReportGenerationRuntime(),
+        enable_vision=True,
+    )
+
+    try:
+        asyncio.run(
+            orchestrator.generate_lite_placeholder(
+                image_path=str(image_path),
+                user_id="user-2",
+            )
+        )
+    except ValueError as error:
+        assert str(error) == "manual three-circle boundaries are required"
+    else:
+        raise AssertionError("missing manual three-circle boundaries should fail")
+
+    assert store.get_user_records("user-2") == []
+
+
+def test_prepare_lite_record_marks_manual_source_when_circles_provided(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=FailingCircleDetector(),
         generation_runtime=DeterministicReportGenerationRuntime(),
         enable_vision=True,
     )
@@ -171,12 +229,13 @@ def test_prepare_lite_record_uses_detector_when_missing_manual_input(tmp_path):
         orchestrator.prepare_lite_record(
             image_path=str(image_path),
             user_id="user-2",
+            three_circles={"inner_radius": 35, "middle_radius": 67},
         )
     )
 
     assert record.three_circles == {"inner_radius": 35, "middle_radius": 67}
-    assert record.three_circles_auto_detect["method"] == "stub"
-    assert record.three_circles_user_adjusted is False
+    assert record.three_circles_auto_detect is None
+    assert record.three_circles_user_adjusted is True
 
 
 def test_get_report_returns_lite_placeholder_when_not_generated(tmp_path):
@@ -194,6 +253,7 @@ def test_get_report_returns_lite_placeholder_when_not_generated(tmp_path):
         orchestrator.prepare_lite_record(
             image_path=str(image_path),
             user_id="user-3",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -226,6 +286,7 @@ def test_generate_lite_placeholder_creates_report(tmp_path):
             image_path=str(image_path),
             user_id="user-4",
             theme="wealth_career",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -261,6 +322,7 @@ def test_wealth_career_reports_use_imbalance_direction_not_secondary_element(tmp
             theme="wealth_career",
             painting_intention="理清当前职业推进中的拉扯",
             painting_feeling="想往前，但也担心失控",
+            three_circles=MANUAL_THREE_CIRCLES,
             check_existing=False,
         )
     )
@@ -395,6 +457,7 @@ def test_get_report_returns_lite_report_after_placeholder_generation(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-5",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -434,6 +497,7 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
             image_path=str(image_path),
             user_id="user-debug",
             theme="wealth_career",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
     orchestrator.upgrade_to_pro(record.interpretation_id)
@@ -500,6 +564,7 @@ def test_answer_report_chat_returns_runtime_reply(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-chat",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -531,6 +596,7 @@ def test_insight_agent_wraps_lite_generation_and_context(tmp_path):
             image_path=str(image_path),
             user_id="user-insight-lite",
             theme="wealth_career",
+            three_circles=MANUAL_THREE_CIRCLES,
             check_existing=False,
         )
     )
@@ -565,6 +631,7 @@ def test_insight_agent_wraps_pro_generation_and_report_chat(tmp_path):
             image_path=str(image_path),
             user_id="user-insight-pro",
             theme="general",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -845,6 +912,7 @@ def test_get_status_returns_compact_snapshot(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-6",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -957,6 +1025,7 @@ def test_upgrade_to_pro_generates_placeholder_report(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-7",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -1005,6 +1074,7 @@ def test_start_and_complete_pro_upgrade_support_polling_flow(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-upgrade-polling",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -1048,6 +1118,7 @@ def test_report_safety_wrapper_strips_lite_disclaimer_for_embedding(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-lite-safety",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -1108,6 +1179,7 @@ def test_upgrade_to_pro_prefers_runtime_healing_suggestions(tmp_path):
             image_path=str(image_path),
             user_id="user-runtime-healing",
             theme="wealth_career",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
     record.layer_0_raw.imbalance_candidates = ["水多火灭"]
@@ -1416,6 +1488,7 @@ def test_generate_lite_placeholder_supports_custom_generation_runtime(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-runtime-lite",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -1461,6 +1534,7 @@ def test_upgrade_to_pro_supports_custom_generation_runtime(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-runtime-pro",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -1488,6 +1562,7 @@ def test_generation_runtime_default_flow_generates_llm_backed_reports(tmp_path):
         orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id="user-runtime-default",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
     assert record.layer_1_lite_draft is not None
@@ -1646,7 +1721,7 @@ def test_generate_lite_placeholder_marks_record_failed_when_layer0_blocks(tmp_pa
             record.layer_0_raw = Layer0Raw(
                 input_package={
                     "image": {"image_ref": "tmp/layer0-failed-image.png"},
-                    "circle_config": {"inner_radius": 35, "middle_radius": 67, "source": "auto_detect"},
+                    "circle_config": {"inner_radius": 35, "middle_radius": 67, "source": "user_calibrated"},
                 },
                 visual_analysis_basis={
                     "global_visual_summary": "",
@@ -1707,6 +1782,7 @@ def test_generate_lite_placeholder_marks_record_failed_when_layer0_blocks(tmp_pa
             image_path=str(image_path),
             user_id="user-layer0-failed",
             theme="general",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
 
@@ -1767,6 +1843,7 @@ def test_upgrade_to_pro_marks_record_failed_when_layer0_has_failed(tmp_path):
             image_path=str(image_path),
             user_id="user-layer0-failed-pro",
             theme="general",
+            three_circles=MANUAL_THREE_CIRCLES,
         )
     )
     result = orchestrator.upgrade_to_pro(record.interpretation_id)

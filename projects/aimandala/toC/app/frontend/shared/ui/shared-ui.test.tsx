@@ -104,7 +104,7 @@ const flowState: MandalaFlowState = {
       inner_radius: 0.28,
       middle_radius: 0.63,
     },
-    auto_detected: true,
+    auto_detected: false,
     can_upgrade: true,
   },
   report: null,
@@ -211,15 +211,15 @@ describe("shared ui", () => {
         <SharedUploadChecklistCard
           checklist={[
             { id: "asset", label: "上传画作", status: "done" },
-            { id: "detect", label: "等待三圈检测", status: "pending" },
+            { id: "detect", label: "确认三圈边界", status: "pending" },
           ]}
         />
         <SharedUploadDetectionCard
           detection={null}
           section={{
             id: "circles",
-            title: "三圈检测",
-            description: "等待调用 detect-circles 获取三圈建议。",
+            title: "三圈人工确认",
+            description: "请在画作上手动调整内中圈和中外圈边界。",
           }}
         />
         <SharedUploadDraftSummaryCard
@@ -237,7 +237,7 @@ describe("shared ui", () => {
     );
 
     expect(html).toContain("迁移期推荐流程");
-    expect(html).toContain("触发三圈检测");
+    expect(html).toContain("使用当前三圈");
     expect(html).toContain("主题与补充信息");
   });
 });

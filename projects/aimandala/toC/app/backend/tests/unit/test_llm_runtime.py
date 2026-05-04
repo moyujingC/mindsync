@@ -45,9 +45,9 @@ def test_create_llm_client_from_env_returns_openai_compatible_client():
             "AIMANDALA_LLM_BACKEND": "openai_compatible",
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
             "AIMANDALA_LLM_API_KEY": "secret",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_CHAT_MODEL": "gpt-chat",
-            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
+            "AIMANDALA_LLM_MODEL": "custom-default",
+            "AIMANDALA_LLM_CHAT_MODEL": "custom-chat",
+            "AIMANDALA_LLM_VISION_MODEL": "custom-vision",
             "AIMANDALA_LLM_TIMEOUT_SECONDS": "18",
             "AIMANDALA_LLM_MAX_RETRIES": "3",
             "AIMANDALA_LLM_RETRY_BACKOFF_MS": "250",
@@ -58,14 +58,34 @@ def test_create_llm_client_from_env_returns_openai_compatible_client():
 
     assert isinstance(client, OpenAICompatibleLLMClient)
     assert client.config.default.base_url == "https://example.com/v1"
-    assert client.config.default.model == "gpt-test"
+    assert client.config.default.model == "custom-default"
     assert client.config.chat is not None
-    assert client.config.chat.model == "gpt-chat"
+    assert client.config.chat.model == "custom-chat"
     assert client.config.vision is not None
-    assert client.config.vision.model == "gpt-vision"
+    assert client.config.vision.model == "custom-vision"
     assert client.config.timeout_seconds == 18
     assert client.config.max_retries == 3
     assert client.config.retry_backoff_ms == 250
+
+
+def test_create_llm_client_from_env_uses_deepseek_v4_pro_by_default():
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://api.deepseek.com/v1",
+            "AIMANDALA_LLM_API_KEY": "deepseek-secret",
+        },
+        clear=True,
+    ):
+        client = create_llm_client_from_env()
+
+    assert isinstance(client, OpenAICompatibleLLMClient)
+    assert client.config.default.model == "deepseek-v4-pro"
+    assert client.config.chat is not None
+    assert client.config.chat.model == "deepseek-v4-pro"
+    assert client.config.vision is not None
+    assert client.config.vision.model == "deepseek-v4-pro"
 
 
 def test_create_llm_client_from_env_supports_chat_and_vision_overrides():
@@ -75,13 +95,13 @@ def test_create_llm_client_from_env_supports_chat_and_vision_overrides():
             "AIMANDALA_LLM_BACKEND": "openai_compatible",
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
             "AIMANDALA_LLM_API_KEY": "default-secret",
-            "AIMANDALA_LLM_MODEL": "gpt-default",
-            "AIMANDALA_LLM_CHAT_BASE_URL": "https://moonshot.example.com/v1",
-            "AIMANDALA_LLM_CHAT_API_KEY": "kimi-secret",
-            "AIMANDALA_LLM_CHAT_MODEL": "moonshot-v1-8k",
-            "AIMANDALA_LLM_VISION_BASE_URL": "https://ark.example.com/v3",
-            "AIMANDALA_LLM_VISION_API_KEY": "doubao-secret",
-            "AIMANDALA_LLM_VISION_MODEL": "ep-vision",
+            "AIMANDALA_LLM_MODEL": "custom-default",
+            "AIMANDALA_LLM_CHAT_BASE_URL": "https://chat.example.com/v1",
+            "AIMANDALA_LLM_CHAT_API_KEY": "chat-secret",
+            "AIMANDALA_LLM_CHAT_MODEL": "custom-chat",
+            "AIMANDALA_LLM_VISION_BASE_URL": "https://vision.example.com/v1",
+            "AIMANDALA_LLM_VISION_API_KEY": "vision-secret",
+            "AIMANDALA_LLM_VISION_MODEL": "custom-vision",
         },
         clear=False,
     ):
@@ -89,33 +109,30 @@ def test_create_llm_client_from_env_supports_chat_and_vision_overrides():
 
     assert isinstance(client, OpenAICompatibleLLMClient)
     assert client.config.chat is not None
-    assert client.config.chat.model == "moonshot-v1-8k"
+    assert client.config.chat.model == "custom-chat"
     assert client.config.vision is not None
-    assert client.config.vision.model == "ep-vision"
+    assert client.config.vision.model == "custom-vision"
 
 
 def test_create_llm_client_from_env_supports_legacy_model_envs():
     with patch.dict(
         os.environ,
         {
-            "GLM_API_KEY": "glm-secret",
-            "DOUBAO_API_KEY": "doubao-secret",
-            "DOUBAO_ENDPOINT_ID": "ep-pro",
-            "DOUBAO_VISION_ENDPOINT_ID": "ep-vision",
-            "MOONSHOT_API_KEY": "kimi-secret",
+            "AIMANDALA_LLM_BACKEND": "",
+            "DEEPSEEK_API_KEY": "deepseek-secret",
         },
-        clear=False,
+        clear=True,
     ):
         client = create_llm_client_from_env()
 
     assert isinstance(client, OpenAICompatibleLLMClient)
-    assert client.config.default.base_url == "https://open.bigmodel.cn/api/paas/v4"
-    assert client.config.default.model == "glm-4"
+    assert client.config.default.base_url == "https://api.deepseek.com/v1"
+    assert client.config.default.model == "deepseek-v4-pro"
     assert client.config.vision is not None
-    assert client.config.vision.model == "ep-vision"
+    assert client.config.vision.model == "deepseek-v4-pro"
     assert client.config.chat is not None
-    assert client.config.chat.base_url == "https://api.moonshot.cn/v1"
-    assert client.config.chat.model == "moonshot-v1-8k"
+    assert client.config.chat.base_url == "https://api.deepseek.com/v1"
+    assert client.config.chat.model == "deepseek-v4-pro"
 
 
 def test_openai_compatible_llm_client_parses_code_fenced_json_payload():
@@ -124,7 +141,7 @@ def test_openai_compatible_llm_client_parses_code_fenced_json_payload():
         {
             "AIMANDALA_LLM_BACKEND": "openai_compatible",
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
+            "AIMANDALA_LLM_MODEL": "custom-test",
         },
         clear=False,
     ):
@@ -162,8 +179,8 @@ def test_openai_compatible_llm_client_uses_non_json_mode_for_vision_image_reques
         {
             "AIMANDALA_LLM_BACKEND": "openai_compatible",
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
+            "AIMANDALA_LLM_MODEL": "custom-test",
+            "AIMANDALA_LLM_VISION_MODEL": "custom-vision",
             "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
             "AIMANDALA_LLM_MAX_RETRIES": "0",
         },
@@ -215,8 +232,8 @@ def test_openai_compatible_llm_client_disables_thinking_for_vision_image_request
         {
             "AIMANDALA_LLM_BACKEND": "openai_compatible",
             "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
+            "AIMANDALA_LLM_MODEL": "custom-test",
+            "AIMANDALA_LLM_VISION_MODEL": "custom-vision",
             "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
             "AIMANDALA_LLM_MAX_RETRIES": "0",
         },

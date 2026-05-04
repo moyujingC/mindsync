@@ -10,7 +10,6 @@ from pydantic import BaseModel, Field
 
 from app.core.analysis.circle_detector import CircleDetector
 from app.core.llm import (
-    LLMCircleDetectionBackend,
     LLMReportChatRuntime,
     NoopLLMClient,
     create_llm_client_from_env,
@@ -353,18 +352,13 @@ def get_orchestrator() -> LayeredOrchestrator:
         try:
             llm_client = create_llm_client_from_env()
             is_noop = isinstance(llm_client, NoopLLMClient)
-            circle_detector = (
-                CircleDetector(detector_backend=LLMCircleDetectionBackend(llm_client))
-                if not is_noop
-                else CircleDetector()
-            )
             report_chat_runtime = (
                 LLMReportChatRuntime(llm_client)
                 if not is_noop
                 else None
             )
             _orchestrator = LayeredOrchestrator(
-                circle_detector=circle_detector,
+                circle_detector=CircleDetector(),
                 report_chat_runtime=report_chat_runtime,
                 enable_vision=not is_noop,
                 generation_runtime=(
@@ -730,19 +724,22 @@ async def create_interpretation(payload: CreateInterpretationRequest):
     if existing_record is not None:
         record = existing_record
     else:
-        record = await orchestrator.generate_lite_placeholder(
-            image_path=payload.image_path,
-            user_id=payload.user_id,
-            theme=payload.theme,
-            image_url=payload.image_url,
-            image_storage_backend=payload.storage_backend,
-            image_storage_key=payload.storage_key,
-            image_local_expires_at=payload.image_local_expires_at,
-            painting_intention=payload.painting_intention,
-            painting_feeling=payload.painting_feeling,
-            three_circles=manual_three_circles,
-            check_existing=False,
-        )
+        try:
+            record = await orchestrator.generate_lite_placeholder(
+                image_path=payload.image_path,
+                user_id=payload.user_id,
+                theme=payload.theme,
+                image_url=payload.image_url,
+                image_storage_backend=payload.storage_backend,
+                image_storage_key=payload.storage_key,
+                image_local_expires_at=payload.image_local_expires_at,
+                painting_intention=payload.painting_intention,
+                painting_feeling=payload.painting_feeling,
+                three_circles=manual_three_circles,
+                check_existing=False,
+            )
+        except ValueError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
 
     return CreateInterpretationResponse(
         interpretation_id=record.interpretation_id,

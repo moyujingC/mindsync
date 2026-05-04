@@ -3,7 +3,6 @@
 from .runtime import (
     LLMClient,
     LLMClientConfig,
-    LLMCircleDetectionBackend,
     LLMReportChatRuntime,
     NoopLLMClient,
     OpenAICompatibleLLMClient,
@@ -13,7 +12,6 @@ from .runtime import (
 __all__ = [
     "LLMClient",
     "LLMClientConfig",
-    "LLMCircleDetectionBackend",
     "LLMReportChatRuntime",
     "NoopLLMClient",
     "OpenAICompatibleLLMClient",

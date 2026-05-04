@@ -288,8 +288,8 @@
    - 先选图
    - 支持浏览器原生选图
    - 支持本地缩略预览
-   - 支持模拟三圈检测结果
-   - 只有检测完成后才能继续
+   - 支持手动调整并确认三圈边界
+   - 只有三圈边界确认后才能继续
 2. loading 页
    - 已有进度条和阶段列表
    - 已开始按受控节奏自动轮询真实 `status`
@@ -317,7 +317,7 @@
 
 当前这些动作不再是纯占位：
 
-- 上传页的 `detect-circles` 已开始支持真实接口触发
+- 上传页的三圈边界已切为用户手动调整，不再依赖 `detect-circles` 才能继续
 - 浏览器原生选图已开始先换成后端本地临时 `image_path`
 - 上传页摘要区已开始展示 `storage_backend / storage_key / image_url / image_local_expires_at`
 - 预览壳里的 Lite 主路径已开始尝试真实 `create + status + report`
@@ -331,7 +331,7 @@
 - history 列表项已开始直接提示当前记录版本是 `Lite` 还是 `Lite + Pro`
 - history 列表项已开始直接打开已有 Pro 报告，而不再重复触发 Lite 刷新
 - 正式 `MobileWebRuntime` 已补上与预览壳一致的 loading 自动推进与 report 最小动作回路
-- 正式 `MobileWebRuntime` 的 upload 页已补上页面内 draft 编辑、三圈检测与继续进入 loading 的动作
+- 正式 `MobileWebRuntime` 的 upload 页已补上页面内 draft 编辑、三圈人工确认与继续进入 loading 的动作
 - Lite / Pro richer structured report 已开始贯通到 mobile-web 页面壳，而不再只依赖 markdown 正文
 - report 页在 structured 卡片可用时，已开始优先走卡片阅读顺序，减少与原始正文的重复信息
 - report 页现在会显示 `prompt_schema_validation_issues` 的结构校验状态，方便联调时快速定位缺字段
@@ -348,7 +348,7 @@
 
 - 已迁入并可重复联调：
   - 上传选图与上传对象换路径
-  - 三圈检测
+  - 三圈人工确认
   - Lite `create + status + report`
   - `existing` 复用提示
   - 历史记录加载、筛选、回到 `loading / Lite / Pro`

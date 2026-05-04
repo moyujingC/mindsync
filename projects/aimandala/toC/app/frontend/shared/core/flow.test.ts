@@ -45,7 +45,7 @@ const interpretation: CreateInterpretationResponse = {
     inner_radius: 12,
     middle_radius: 24,
   },
-  auto_detected: true,
+  auto_detected: false,
   existing: false,
   report_ready: false,
 };
@@ -61,7 +61,7 @@ const readyStatus: InterpretationStatusResponse = {
     inner_radius: 12,
     middle_radius: 24,
   },
-  auto_detected: true,
+  auto_detected: false,
   can_upgrade: true,
 };
 

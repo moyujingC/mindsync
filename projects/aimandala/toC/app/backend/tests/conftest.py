@@ -24,6 +24,7 @@ def _build_fake_chat_payload(request_body: dict) -> dict:
     user_message = messages[-1] if messages else {}
     content = user_message.get("content")
     user_text = ""
+    has_image_input = False
     if isinstance(content, str):
         user_text = content
     elif isinstance(content, list):
@@ -31,16 +32,22 @@ def _build_fake_chat_payload(request_body: dict) -> dict:
         for item in content:
             if isinstance(item, dict) and item.get("type") == "text":
                 text_parts.append(str(item.get("text") or ""))
+            if isinstance(item, dict) and item.get("type") == "image_url":
+                has_image_input = True
         user_text = "\n".join(part for part in text_parts if part)
 
     is_json_expected = isinstance(request_body.get("response_format"), dict)
-    is_vision = "vision_data" not in user_text and (
-        model.startswith("ep-20260316095322-94wf5")
-        or "vision" in model
-        or "首层视觉观察" in user_text
+    is_vision = has_image_input or (
+        is_json_expected
+        and "vision_data" not in user_text
+        and (
+            model == "deepseek-v4-pro"
+            or "vision" in model
+            or "首层视觉观察" in user_text
+        )
     )
 
-    if is_json_expected and is_vision:
+    if is_vision:
         return {
             "choices": [
                 {
@@ -181,13 +188,13 @@ def _patch_backend_llm_for_tests(monkeypatch, request):
         return
 
     monkeypatch.setenv("AIMANDALA_LLM_BACKEND", "openai_compatible")
-    monkeypatch.setenv("AIMANDALA_LLM_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")
-    monkeypatch.setenv("AIMANDALA_LLM_MODEL", "ep-20260316092926-vl464")
-    monkeypatch.setenv("AIMANDALA_LLM_CHAT_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")
-    monkeypatch.setenv("AIMANDALA_LLM_CHAT_MODEL", "ep-20260316092926-vl464")
+    monkeypatch.setenv("AIMANDALA_LLM_BASE_URL", "https://api.deepseek.com/v1")
+    monkeypatch.setenv("AIMANDALA_LLM_MODEL", "deepseek-v4-pro")
+    monkeypatch.setenv("AIMANDALA_LLM_CHAT_BASE_URL", "https://api.deepseek.com/v1")
+    monkeypatch.setenv("AIMANDALA_LLM_CHAT_MODEL", "deepseek-v4-pro")
     monkeypatch.setenv("AIMANDALA_LLM_CHAT_API_KEY", "test-chat-key")
-    monkeypatch.setenv("AIMANDALA_LLM_VISION_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")
-    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "ep-20260316095322-94wf5")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_BASE_URL", "https://api.deepseek.com/v1")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "deepseek-v4-pro")
     monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "test-vision-key")
 
     def _fake_urlopen(request_obj, timeout=0):

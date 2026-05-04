@@ -49,6 +49,13 @@ def _wait_for_pro_report(
     raise AssertionError(f"pro report did not become ready in time: {last_payload}")
 
 
+def _manual_circle_payload(inner: int = 33, middle: int = 66) -> dict[str, int]:
+    return {
+        "inner_radius": inner,
+        "middle_radius": middle,
+    }
+
+
 def test_api_v2_report_lifecycle_contract(tmp_path):
     from app.api.main import app
 
@@ -65,6 +72,7 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
             "theme": "wealth_career",
             "painting_intention": "想看看自己最近为什么会对推进事情有迟疑。",
             "painting_feeling": "画的时候有点紧，但也有一点想往外走。",
+            **_manual_circle_payload(),
         },
     )
     assert create_response.status_code == 200
@@ -78,7 +86,7 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
         "generation_stage": "completed",
         "generation_progress": 100,
         "three_circles": {"inner_radius": 33, "middle_radius": 66},
-        "auto_detected": True,
+        "auto_detected": False,
         "existing": False,
         "report_ready": True,
     }
@@ -224,6 +232,7 @@ def test_api_v2_report_chat_returns_llm_grounded_reply(tmp_path):
             "user_id": "user-contract-chat",
             "image_path": str(image_path),
             "theme": "general",
+            **_manual_circle_payload(),
         },
     )
     assert create_response.status_code == 200
@@ -278,7 +287,7 @@ def test_api_v2_create_interpretation_returns_failed_record_when_layer0_blocks(t
                 input_package={
                     "image": {"image_ref": "tmp/api-layer0-failed.png"},
                     "topic_input": {"topic": "general", "topic_label": "全面解读"},
-                    "circle_config": {"inner_radius": 35, "middle_radius": 67, "source": "auto_detect"},
+                    "circle_config": {"inner_radius": 35, "middle_radius": 67, "source": "user_calibrated"},
                 },
                 visual_analysis_basis={
                     "global_visual_summary": "",
@@ -327,6 +336,7 @@ def test_api_v2_create_interpretation_returns_failed_record_when_layer0_blocks(t
             "user_id": "user-layer0-api-failed",
             "image_path": str(image_path),
             "theme": "general",
+            **_manual_circle_payload(35, 67),
         },
     )
     assert create_response.status_code == 200
@@ -373,6 +383,7 @@ def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):
             "user_id": "user-contract-history",
             "image_path": str(general_image),
             "theme": "general",
+            **_manual_circle_payload(),
         },
     )
     wealth_response = client.post(
@@ -381,6 +392,7 @@ def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):
             "user_id": "user-contract-history",
             "image_path": str(wealth_image),
             "theme": "wealth_career",
+            **_manual_circle_payload(),
         },
     )
     relationship_response = client.post(
@@ -389,6 +401,7 @@ def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):
             "user_id": "user-contract-history",
             "image_path": str(relationship_image),
             "theme": "intimate_relationship",
+            **_manual_circle_payload(),
         },
     )
 

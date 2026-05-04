@@ -96,7 +96,7 @@ export function getFlowStepLabel(
     case "idle":
       return "待上传";
     case "detectingCircles":
-      return "三圈检测中";
+      return "三圈确认中";
     case "liteGenerating":
       return getGenerationPresentation(
         state.status ?? state.interpretation ?? {

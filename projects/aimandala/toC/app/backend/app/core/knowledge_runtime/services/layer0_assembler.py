@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 from app.core.knowledge.color_meanings import normalize_color_name
 from app.core.llm.runtime import LLMClient, NoopLLMClient
-from app.core.pipeline.report_generation_contracts import Layer0BuildBlockedError
 from ..repository import KnowledgeRepository
 from .circle_service import CircleService
 from .element_service import ElementService
@@ -354,6 +353,8 @@ class Layer0Assembler:
                     },
                 ],
             }
+            from app.core.pipeline.report_generation_contracts import Layer0BuildBlockedError
+
             raise Layer0BuildBlockedError(
                 failure_reason,
                 layer_0_raw=layer,

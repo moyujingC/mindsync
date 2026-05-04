@@ -22,7 +22,7 @@ function createMockInterpretation(): CreateInterpretationResponse {
       inner_radius: 0.28,
       middle_radius: 0.63,
     },
-    auto_detected: true,
+    auto_detected: false,
     existing: false,
     report_ready: true,
   };
@@ -40,7 +40,7 @@ function createMockStatus(): InterpretationStatusResponse {
       inner_radius: 0.28,
       middle_radius: 0.63,
     },
-    auto_detected: true,
+    auto_detected: false,
     can_upgrade: true,
   };
 }
@@ -152,7 +152,7 @@ function createMockRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.26,
         middle_radius: 0.6,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: true,
       created_at: "2026-04-04T10:00:00+08:00",
     },
@@ -168,7 +168,7 @@ function createMockRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.31,
         middle_radius: 0.67,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: false,
       created_at: "2026-04-03T21:30:00+08:00",
     },

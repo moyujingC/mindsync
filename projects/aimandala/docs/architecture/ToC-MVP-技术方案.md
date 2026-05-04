@@ -25,7 +25,7 @@
 当前 To C MVP 只需要支持：
 
 1. 用户上传图片并提交必要描述
-2. 三圈检测与确认
+2. 人工确认三圈边界
 3. `一镜 Lite 版` 生成
 4. `一梳 Pro 版` 生成
 5. 报告读取与历史查看
@@ -67,8 +67,8 @@
 
 1. `upload`
    - 接收图片、主题和用户描述
-2. `detect`
-   - 执行三圈检测，生成几何建议
+2. `circle-confirm`
+   - 用户人工确认三圈边界，生成几何参数
 3. `lite pipeline`
    - 生成 Layer 0、Layer 1、Layer 2
 4. `pro generation`

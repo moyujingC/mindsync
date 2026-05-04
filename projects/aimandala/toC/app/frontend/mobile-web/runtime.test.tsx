@@ -133,7 +133,7 @@ describe("MobileWebRuntime", () => {
     container.remove();
   });
 
-  it("选择页在已有用户三圈比例时不要求先跑 AI detect", async () => {
+  it("选择页使用已有人工三圈比例创建解读，不调用 detect", async () => {
     const input: MobileWebRouteInput = {
       route: "reportEntry",
       params: {

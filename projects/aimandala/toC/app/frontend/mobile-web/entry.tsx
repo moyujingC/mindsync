@@ -42,6 +42,8 @@ export async function renderLiteResultEntry(params: {
         theme: params.theme || "general",
         paintingIntention: params.paintingIntention || "",
         paintingFeeling: params.paintingFeeling || "",
+        innerRadius: 0.35,
+        middleRadius: 0.65,
       },
       params.userId,
     ),

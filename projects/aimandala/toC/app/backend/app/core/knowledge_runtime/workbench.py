@@ -1113,11 +1113,14 @@ class KnowledgeWorkbench:
         except ValueError:
             return str(resolved)
 
-    def _build_three_circle_override(self, input_payload: dict[str, Any]) -> dict[str, int] | None:
+    def _build_three_circle_override(self, input_payload: dict[str, Any]) -> dict[str, int]:
         inner = input_payload.get("inner_radius")
         middle = input_payload.get("middle_radius")
         if inner is None or middle is None:
-            return None
+            return {
+                "inner_radius": 35,
+                "middle_radius": 67,
+            }
         return {
             "inner_radius": int(inner),
             "middle_radius": int(middle),

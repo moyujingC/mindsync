@@ -214,9 +214,12 @@ def test_lite_and_pro_texts_use_knowledge_backed_layer0(tmp_path):
     assert "五行主导：" in context
     assert "三圈主导：" in context
     assert "知识库失衡候选：过渡负荷" in context
-    assert "五行里以「" in layer1.visual_elements
+    assert "从逐圈观察看" in layer1.visual_elements
+    assert "内圈主要呈现" in layer1.visual_elements
     assert "过渡期" in layer1.emotion_portrait
-    assert "主导元素更偏" in layer3.three_circles_detailed["inner"]["reading"]
-    assert "圈间节奏首先显示" in layer3.micro_analysis_detailed["节奏关系"]
+    assert "核心自我这一层" in layer3.three_circles_detailed["inner"]["reading"]
+    assert "内圈主要呈现" in layer3.three_circles_detailed["inner"]["reading"]
+    assert "先看节奏" in layer3.micro_analysis_detailed["节奏关系"]
+    assert "能量不是散的" in layer3.micro_analysis_detailed["节奏关系"]
     assert "过渡负荷" in layer3.imbalance_confirmed["summary"]
     assert "阶段迁移" in layer3.imbalance_confirmed["summary"]

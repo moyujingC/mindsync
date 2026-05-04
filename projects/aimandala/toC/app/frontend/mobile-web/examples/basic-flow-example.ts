@@ -16,6 +16,8 @@ async function example() {
       theme: "general",
       paintingIntention: "我想看看自己最近的状态",
       paintingFeeling: "画的时候有点紧又有点平静",
+      innerRadius: 0.35,
+      middleRadius: 0.65,
     },
     "demo-user",
   );

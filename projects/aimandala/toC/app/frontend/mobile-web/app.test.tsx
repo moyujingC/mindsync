@@ -22,7 +22,7 @@ const flowState: MandalaFlowState = {
       inner_radius: 0.28,
       middle_radius: 0.63,
     },
-    auto_detected: true,
+    auto_detected: false,
     existing: false,
     report_ready: true,
   },
@@ -37,7 +37,7 @@ const flowState: MandalaFlowState = {
       inner_radius: 0.28,
       middle_radius: 0.63,
     },
-    auto_detected: true,
+    auto_detected: false,
     can_upgrade: true,
   },
   report: {
@@ -106,7 +106,7 @@ const historyRecord: InterpretationRecordResponse = {
     inner_radius: 0.3,
     middle_radius: 0.62,
   },
-  auto_detected: true,
+  auto_detected: false,
   can_upgrade: false,
   created_at: "2026-04-11T08:00:00.000Z",
   upgrade_history: [
