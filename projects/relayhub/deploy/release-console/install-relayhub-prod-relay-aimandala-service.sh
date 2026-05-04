@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT=${REPO_ROOT:-/opt/aimandala-release/worktrees/relayhub}
+REPO_ROOT=${REPO_ROOT:-/opt/aimandala-release/worktrees/relayhub-dev-deploy}
 SERVICE_NAME=${SERVICE_NAME:-relayhub-prod-relay-aimandala}
 SERVICE_TEMPLATE=${SERVICE_TEMPLATE:-$REPO_ROOT/projects/relayhub/deploy/release-console/relayhub-prod-relay-aimandala.service.example}
 SERVICE_TARGET=${SERVICE_TARGET:-/etc/systemd/system/${SERVICE_NAME}.service}
