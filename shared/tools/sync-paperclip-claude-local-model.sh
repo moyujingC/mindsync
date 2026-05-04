@@ -125,16 +125,18 @@ resolved_api_key = os.environ["RESOLVED_API_KEY"]
 env["ANTHROPIC_BASE_URL"] = plain(primary_base_url)
 env["ANTHROPIC_MODEL"] = plain(primary_model)
 env["ANTHROPIC_API_KEY"] = plain(resolved_api_key)
+env["ANTHROPIC_AUTH_TOKEN"] = plain(resolved_api_key)
 env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = plain(primary_model)
 env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = plain(primary_model)
 env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = plain(primary_model)
 env.setdefault("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", plain("1"))
 
 adapter_config["env"] = env
+adapter_config["model"] = primary_model
 adapter_config["paperclipModelRouting"] = {
     "primary": {
-        "provider": "DeepSeek",
-        "baseUrl": primary_base_url,
+        "provider": "RelayHub",
+        "baseUrl": f"{primary_base_url.rstrip('/')}/messages",
         "model": primary_model,
     },
     "backup": {
