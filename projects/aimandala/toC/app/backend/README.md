@@ -238,3 +238,25 @@ export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
 2. 继续增强 Lite / Pro 知识库 projection 与报告骨架质量
 3. 针对三圈识别和报告追问分别收口 provider 选择与线上配置
 4. 继续完善 safety / knowledge 的正式编排与回归评估
+
+## 视觉模型评测
+
+MVP 阶段，文字模型默认选用 DeepSeek V4；视觉模型需要先用脱敏 fixture 对国产视觉模型做一轮评测，再决定 `AIMANDALA_LLM_VISION_MODEL`。
+
+计划模式：
+
+```bash
+PYTHONPATH=projects/aimandala/toC/app/backend \
+python3 projects/aimandala/toC/app/backend/scripts/run_vision_model_evals.py \
+  --fixture-id toc-mvp-fixture-001
+```
+
+候选配置模板：
+
+```bash
+PYTHONPATH=projects/aimandala/toC/app/backend \
+python3 projects/aimandala/toC/app/backend/scripts/run_vision_model_evals.py \
+  --print-config-template
+```
+
+真实调用必须显式加 `--execute`，并通过 `--candidate-config` 提供候选模型配置；脚本默认不会请求真实模型 API。
