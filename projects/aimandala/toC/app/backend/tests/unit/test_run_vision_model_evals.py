@@ -36,6 +36,18 @@ def test_build_plan_does_not_require_candidates():
     assert plan["candidate_count"] == 0
 
 
+def test_config_template_includes_four_domestic_vision_candidates():
+    template = run_vision_model_evals.config_template()
+    candidate_ids = {candidate["id"] for candidate in template["candidates"]}
+
+    assert candidate_ids == {
+        "doubao-vision",
+        "qwen-vl",
+        "glm-vision",
+        "kimi-vision",
+    }
+
+
 def test_load_candidates_resolves_api_key_from_env(tmp_path: Path, monkeypatch):
     config_path = tmp_path / "candidates.json"
     config_path.write_text(

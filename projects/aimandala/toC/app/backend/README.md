@@ -259,4 +259,6 @@ python3 projects/aimandala/toC/app/backend/scripts/run_vision_model_evals.py \
   --print-config-template
 ```
 
+当前模板内置 `doubao-vision`、`qwen-vl`、`glm-vision`、`kimi-vision` 四个候选入口。
+
 真实调用必须显式加 `--execute`，并通过 `--candidate-config` 提供候选模型配置；脚本默认不会请求真实模型 API。

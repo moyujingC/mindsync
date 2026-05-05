@@ -15,7 +15,7 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 AIMANDALA_ROOT = Path(__file__).resolve().parents[4]
 REPO_ROOT = Path(__file__).resolve().parents[6]
 MANIFEST_PATH = AIMANDALA_ROOT / "fixtures" / "manifest.yaml"
-DEFAULT_OUTPUT_DIR = AIMANDALA_ROOT / "docs" / "qa" / "model-evals" / "2026-05-05-vision"
+DEFAULT_OUTPUT_DIR = AIMANDALA_ROOT / "docs" / "qa" / "model-evals" / "2026-05-06-vision"
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
@@ -355,6 +355,13 @@ def config_template() -> dict[str, Any]:
                 "base_url": "https://open.bigmodel.cn/api/paas/v4",
                 "model": "<glm-vision-model-id>",
                 "api_key_env": "GLM_API_KEY",
+                "api_key_header": "Authorization",
+            },
+            {
+                "id": "kimi-vision",
+                "base_url": "https://api.moonshot.ai/v1",
+                "model": "<kimi-vision-model-id>",
+                "api_key_env": "MOONSHOT_API_KEY",
                 "api_key_header": "Authorization",
             },
         ]
