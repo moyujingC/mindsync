@@ -11,6 +11,7 @@ import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
 import type { MobileWebRouteId } from "./routes";
 import type {
+  DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
   InterpretationVersion,
@@ -26,6 +27,7 @@ export interface MobileWebAppProps {
   route: MobileWebRouteId;
   uploadDraft?: MobileWebUploadDraft;
   flowState?: MandalaFlowState;
+  detection?: DetectCirclesResponse | null;
   records?: InterpretationRecordResponse[];
   historyQuery?: InterpretationListQuery;
   record?: InterpretationRecordResponse;
@@ -68,6 +70,7 @@ export function MobileWebApp({
   route,
   uploadDraft,
   flowState,
+  detection = null,
   records = [],
   historyQuery,
   record,
@@ -120,6 +123,7 @@ export function MobileWebApp({
       return (
         <MobileWebUploadPage
           draft={uploadDraft}
+          detection={detection}
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}

@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 
-const DEFAULT_INNER_RADIUS = 0.35;
-const DEFAULT_MIDDLE_RADIUS = 0.65;
-
 import { MobileWebApp } from "./app";
 import { resolveMobileWebCanonicalUserId } from "./identity";
 import { loadHistoryPage } from "./loaders";
@@ -27,6 +24,7 @@ import {
   resolveSelfUnderstandingReportCta,
   selectImage,
 } from "../shared/core";
+import { detectCircles } from "../shared/api";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
@@ -116,17 +114,6 @@ const defaultUploadDraft: MobileWebUploadDraft = {
   paintingIntention: "",
   paintingFeeling: "",
 };
-
-function hasManualCircleRadii(
-  draft: MobileWebUploadDraft | null,
-): draft is MobileWebUploadDraft & { innerRadius: number; middleRadius: number } {
-  return (
-    typeof draft?.innerRadius === "number" &&
-    !Number.isNaN(draft.innerRadius) &&
-    typeof draft.middleRadius === "number" &&
-    !Number.isNaN(draft.middleRadius)
-  );
-}
 
 function normalizeCircleRatio(value: number): number {
   const normalized = value <= 1 ? value : value / 100;
@@ -230,6 +217,11 @@ export function MobileWebRuntime({
   const [runtimeUploadDraft, setRuntimeUploadDraft] = useState<MobileWebUploadDraft | null>(
     inputUploadDraft ?? null,
   );
+  const [runtimeUploadDetection, setRuntimeUploadDetection] =
+    useState<DetectCirclesResponse | null>(null);
+  const [runtimeUploadDetecting, setRuntimeUploadDetecting] = useState(false);
+  const [runtimeUploadDetectError, setRuntimeUploadDetectError] =
+    useState<string | null>(null);
   const [runtimeHistoryQuery, setRuntimeHistoryQuery] =
     useState<InterpretationListQuery>({ filter: "all", limit: 20 });
   const [runtimeHistoryBusy, setRuntimeHistoryBusy] = useState(false);
@@ -591,12 +583,18 @@ export function MobileWebRuntime({
         : null,
       status: flowState?.status ?? null,
       report,
+      detection: runtimeUploadDetection,
+      uploadDetecting: runtimeUploadDetecting,
+      uploadDetectError: runtimeUploadDetectError,
     });
   }, [
     onDebugSnapshotChange,
     runtimeBusy,
     runtimeHistoryBusy,
     runtimeProps,
+    runtimeUploadDetectError,
+    runtimeUploadDetecting,
+    runtimeUploadDetection,
     runtimeUploadDraft,
   ]);
 
@@ -1126,16 +1124,19 @@ export function MobileWebRuntime({
     if (!draftToUse) {
       return;
     }
+    if (!userId) {
+      setRuntimeUploadDetectError("Missing user id for mobile web runtime");
+      return;
+    }
 
-    const resolvedDetection = buildManualDetection(
-      draftToUse.innerRadius ?? DEFAULT_INNER_RADIUS,
-      draftToUse.middleRadius ?? DEFAULT_MIDDLE_RADIUS,
-    );
+    let resolvedDetection: DetectCirclesResponse;
 
     setRuntimeBusy(true);
+    setRuntimeUploadDetecting(true);
+    setRuntimeUploadDetectError(null);
 
     try {
-        const resolvedImagePath = await ensureUploadedImagePath(
+      const resolvedImagePath = await ensureUploadedImagePath(
         draftToUse,
         (uploaded) => {
           setRuntimeUploadDraft((current) => (
@@ -1148,18 +1149,27 @@ export function MobileWebRuntime({
           ));
         },
       );
+      const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
+      resolvedDetection =
+        typeof draftToUse.innerRadius === "number" &&
+        !Number.isNaN(draftToUse.innerRadius) &&
+        typeof draftToUse.middleRadius === "number" &&
+        !Number.isNaN(draftToUse.middleRadius)
+          ? buildManualDetection(draftToUse.innerRadius, draftToUse.middleRadius)
+          : await detectCircles({ image_path: nextAssetRef.runtimeImagePath });
+      setRuntimeUploadDetection(resolvedDetection);
       setRuntimeProps({
         route: "loading",
         flowState: createRuntimeLoadingState(
           {
             ...draftToUse,
-            uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+            uploadAsset: nextAssetRef,
           },
           resolvedDetection,
         ),
         uploadDraft: {
           ...draftToUse,
-          uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+          uploadAsset: nextAssetRef,
         },
       });
 
@@ -1167,7 +1177,7 @@ export function MobileWebRuntime({
         toStartCreatePayload(
           {
             ...draftToUse,
-            uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+            uploadAsset: nextAssetRef,
             innerRadius: resolvedDetection.inner_radius,
             middleRadius: resolvedDetection.middle_radius,
           },
@@ -1176,7 +1186,7 @@ export function MobileWebRuntime({
       );
       const nextDraft = {
         ...draftToUse,
-        uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+        uploadAsset: nextAssetRef,
       };
       if (result.state.step === "liteGenerating") {
         setRuntimeProps({
@@ -1191,7 +1201,12 @@ export function MobileWebRuntime({
           nextDraft,
         );
       }
+    } catch (uploadError) {
+      const message = uploadError instanceof Error ? uploadError.message : "Failed to continue upload";
+      setRuntimeUploadDetectError(message);
+      throw uploadError;
     } finally {
+      setRuntimeUploadDetecting(false);
       setRuntimeBusy(false);
     }
   }
@@ -1250,6 +1265,7 @@ export function MobileWebRuntime({
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}
+      detection={runtimeUploadDetection}
       onUploadDraftChange={(patch) => {
         setRuntimeUploadDraft((current) =>
           mergeMobileWebUploadDraft(current ?? defaultUploadDraft, patch),
