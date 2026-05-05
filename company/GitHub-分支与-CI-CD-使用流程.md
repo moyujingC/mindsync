@@ -1,9 +1,9 @@
 # GitHub 分支与 CI/CD 使用流程
 
 > 状态：current
-> 版本：0.1.1
+> 版本：0.2.0
 > owner：Engineer / Architect
-> last_updated：2026-05-04
+> last_updated：2026-05-05
 > source_of_truth：company/GitHub-分支与-CI-CD-使用流程.md
 
 这份文档把 `mindsync` 当前的 GitHub 使用流程收口成一套明确口径。
@@ -21,6 +21,8 @@
 - `worktree` 是工作台，不是另一套 Git 治理体系
 - 默认先收口到项目开发分支，再定期回 `main`
 - 不把所有项目强行塞进同一种发布节奏
+- 当前判断 `Aimandala` CI/CD 是否可用时，优先看 `mvp-release`
+- 原 `aimandala-ci / deploy / nightly-smoke / auto-repair` 先按增强设计链路理解
 
 ## 2. 当前分支职责
 
@@ -216,6 +218,63 @@
 
 ### 5.1 AI Mandala
 
+截至 `2026-05-05`，`AI Mandala` 同时存在两套 GitHub Actions 口径：
+
+- `mvp-release`
+  - 当前优先看的 MVP 可用链路
+  - 使用 GitHub 托管 runner：`ubuntu-latest`
+  - 负责最小 CI、手动部署、部署后 smoke
+- `aimandala-ci / aimandala-deploy / aimandala-nightly-smoke / aimandala-auto-repair`
+  - 增强设计链路
+  - 使用 self-hosted runner：`self-hosted + linux + mindsync-ci + aimandala`
+  - 负责完整质量门、Paperclip 回写、nightly smoke 和 auto-repair
+
+#### 5.1.1 MVP 可用链路：`mvp-release`
+
+`mvp-ci` 会在以下事件触发：
+
+- `PR -> main`
+- `PR -> release`
+- `push -> aimandala/dev`
+- `push -> main`
+- `push -> release`
+
+路径过滤：
+
+- `projects/aimandala/toC/**`
+- `projects/aimandala/fixtures/**`
+- `shared/tools/ci/**`
+- `.github/workflows/mvp-release.yml`
+
+`mvp-ci` 当前检查内容：
+
+- 前端 install / lint / typecheck / test / `build:mobile-web`
+- 后端 release 依赖安装 / ruff / pytest unit tests
+
+`mvp-deploy` 只通过 `workflow_dispatch` 手动触发：
+
+- `target=dev`
+  - 必须从 `main` 分支触发
+  - 远端目录：`/opt/aimandala-main/app/mindsync`
+  - 远端命令：`/opt/aimandala-main/scripts/deploy-main.sh`
+- `target=prod`
+  - 必须从 `release` 分支触发
+  - 远端目录：`/opt/aimandala-release/app/mindsync`
+  - 远端命令：`docker compose -f docker-compose.release.yml --env-file .env.release build && docker compose -f docker-compose.release.yml --env-file .env.release up -d`
+
+`mvp-deploy` 成功部署后会运行：
+
+- `shared/tools/ci/aimandala-smoke.mjs`
+
+支持的 smoke 深度：
+
+- `basic`
+- `deep`
+
+#### 5.1.2 增强设计链路
+
+增强设计链路的目标口径是：
+
 - 任务/项目分支 push
   - 跑轻量 CI
 - `PR -> main`
@@ -229,11 +288,13 @@
 
 补充判断：
 
-- `push -> main` 不是无条件触发 `AI Mandala` 部署
-- 只有命中 `projects/aimandala/toC/**`、`projects/aimandala/deploy/**`、`shared/tools/ci/**` 或对应 workflow 文件时，才会触发 `deploy-dev`
-- `push -> release` 也同样受这组路径过滤约束
+- 增强链路中的 `push -> main` 不是无条件触发 `AI Mandala` 部署
+- 只有命中 `projects/aimandala/toC/**`、`projects/aimandala/deploy/**`、`shared/tools/ci/**` 或对应 workflow 文件时，才会触发增强链路的 `deploy-dev`
+- 增强链路中的 `push -> release` 也同样受这组路径过滤约束
 
 因此如果一次 `main` merge 主要改的是 `RelayHub`、研究文档或公司治理文档，就算已经 push 到 `main`，也通常**不需要**额外手动补触发 `AI Mandala deploy`
+
+但如果当前目标是“确认 `Aimandala` 最小 CI/CD 是否可用”，优先检查 `mvp-release` 的 run，而不是先看增强链路的 self-hosted runner / Paperclip 回写链路。
 
 ### 5.2 RelayHub
 
