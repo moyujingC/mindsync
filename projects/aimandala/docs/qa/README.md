@@ -42,6 +42,7 @@
 
 当前优先阅读：
 
+- [2026-05-05-mvp-国产视觉模型评测基线.md](projects/aimandala/docs/qa/2026-05-05-mvp-国产视觉模型评测基线.md)
 - [2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md](projects/aimandala/docs/qa/2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md)
 - [2026-05-03-observe-only-checkout-治理-qa-basis.md](projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-治理-qa-basis.md)
 - [2026-05-03-observe-only-checkout-历史残留清理验证记录.md](projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md)
@@ -65,6 +66,7 @@
 
 说明：
 
+- `2026-05-05-mvp-国产视觉模型评测基线.md` 是当前 MVP 国产视觉模型选型的正式 QA baseline，固定用脱敏 fixture 对候选视觉模型做三圈识别适配评测，不把第三方中转或国外视觉模型列为生产默认候选。
 - `2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md` 是当前 automation 节点把单项目 heartbeat 升级为多项目 heartbeat 的正式验证记录，固定记录 `一镜一梳 + RelayHub` 两个 target 的 doctor、systemd 与坏 target 演练结果。
 - `2026-05-03-observe-only-checkout-治理-qa-basis.md` 是当前主镜像区与巡检区 observe-only checkout 治理的正式 QA baseline，固定把 checkout 干净性、fail-fast 和升级前分类检查纳入验收口径。
 - `2026-05-03-observe-only-checkout-历史残留清理验证记录.md` 是当前 automation 节点真实清理历史 dirty worktree 的正式验证记录，固定保存备份目录、已移除 worktree 名单，以及 `blocked + 归档说明评论` 的任务系统收口结果。
