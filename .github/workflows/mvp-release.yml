@@ -66,7 +66,7 @@ jobs:
           cache-dependency-path: ${{ env.AIMANDALA_FRONTEND_DIR }}/package-lock.json
 
       - name: Install Frontend Dependencies
-        run: npm --prefix "$AIMANDALA_FRONTEND_DIR" ci
+        run: npm --prefix "$AIMANDALA_FRONTEND_DIR" install --no-fund --no-audit
 
       - name: Run Frontend Lint
         run: npm --prefix "$AIMANDALA_FRONTEND_DIR" run lint
