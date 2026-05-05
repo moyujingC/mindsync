@@ -12,7 +12,7 @@ PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
 CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
 ENTRY_ID="${ENTRY_ID:-entry-paperclip-codex-local-server}"
 RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
-RELAYHUB_CODEX_BASE_URL="${RELAYHUB_CODEX_BASE_URL:-https://relayhub.jingshu.cc/claude/v1}"
+RELAYHUB_CODEX_BASE_URL="${RELAYHUB_CODEX_BASE_URL:-https://relayhub.jingshu.cc/codex/v1}"
 RELAYHUB_CODEX_WIRE_API="${RELAYHUB_CODEX_WIRE_API:-responses}"
 RELAYHUB_CODEX_PROVIDER_NAME="${RELAYHUB_CODEX_PROVIDER_NAME:-codex}"
 RELAYHUB_CODEX_AUTH_KEY_NAME="${RELAYHUB_CODEX_AUTH_KEY_NAME:-OPENAI_API_KEY}"
@@ -402,6 +402,30 @@ agent = json.loads(os.environ["CURRENT_PAYLOAD"])
 adapter_config = dict(agent.get("adapterConfig") or {})
 adapter_config["model"] = os.environ["TARGET_MODEL"]
 adapter_config["apiKey"] = os.environ["RELAY_TOKEN"]
+existing_extra_args = adapter_config.get("extraArgs")
+if not isinstance(existing_extra_args, list):
+    existing_extra_args = []
+
+managed_prefixes = (
+    "preferred_auth_method=",
+    "model_provider=",
+    "model_providers.codex.name=",
+    "model_providers.codex.base_url=",
+    "model_providers.codex.wire_api=",
+    "model_providers.codex.requires_openai_auth=",
+)
+
+filtered_extra_args = []
+for item in existing_extra_args:
+    if not isinstance(item, str):
+        filtered_extra_args.append(item)
+        continue
+    if item == "--skip-git-repo-check":
+        continue
+    if item.startswith(managed_prefixes):
+        continue
+    filtered_extra_args.append(item)
+
 adapter_config["extraArgs"] = [
     "-c", "preferred_auth_method=\"apikey\"",
     "-c", "model_provider=\"codex\"",
@@ -409,6 +433,7 @@ adapter_config["extraArgs"] = [
     "-c", f"model_providers.codex.base_url=\"{os.environ['TARGET_BASE_URL']}\"",
     "-c", f"model_providers.codex.wire_api=\"{os.environ['TARGET_WIRE_API']}\"",
     "-c", "model_providers.codex.requires_openai_auth=true",
+    *filtered_extra_args,
     "--skip-git-repo-check",
 ]
 

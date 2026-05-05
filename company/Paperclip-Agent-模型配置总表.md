@@ -79,7 +79,7 @@
 
 - Agent：`Engineer`
 - Adapter：`codex_local`
-- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Base URL：`https://relayhub.jingshu.cc/codex/v1`
 - Model：`relayhub-entry-paperclip-codex-local-server`
 - 协议：`OpenAI Responses`
 - 当前默认入口绑定：`preset-deepseek-v4`
@@ -87,7 +87,7 @@
 - 当前真实上游：`https://api.deepseek.com/v1`
 - Reasoning：`medium`
 - 运行参数：
-  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/claude/v1"`
+  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/codex/v1"`
   - `model_providers.codex.wire_api="responses"`
   - `--skip-git-repo-check`
 - Token 优化策略：
@@ -134,7 +134,7 @@
 
 - Agent：`Test / QA`
 - Adapter：`codex_local`
-- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Base URL：`https://relayhub.jingshu.cc/codex/v1`
 - Model：`relayhub-entry-paperclip-codex-local-server`
 - 协议：`OpenAI Responses`
 - 当前默认入口绑定：`preset-deepseek-v4`
@@ -142,7 +142,7 @@
 - 当前真实上游：`https://api.deepseek.com/v1`
 - Reasoning：`medium`
 - 运行参数：
-  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/claude/v1"`
+  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/codex/v1"`
   - `model_providers.codex.wire_api="responses"`
   - `--skip-git-repo-check`
 - Token 优化策略：
@@ -271,7 +271,7 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
 - `codex_local`
   - 服务器侧稳态不再直接吃上游 `base_url`
-  - 当前客户端固定指向 `https://relayhub.jingshu.cc/claude/v1`
+  - 当前客户端固定指向 `https://relayhub.jingshu.cc/codex/v1`
   - 当前模型固定写为 `relayhub-entry-paperclip-codex-local-server`
   - 当前 Relay 访问 token 由 RelayHub 控制面的 `relay-config.json` 管理
   - Paperclip 客户端侧只消费 relay token，不直接持有上游供应商长期密钥

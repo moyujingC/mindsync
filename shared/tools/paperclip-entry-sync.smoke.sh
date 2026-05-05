@@ -310,7 +310,7 @@ assert "OPENAI_API_KEY=sk-hermes-smoke" in env_lines
 
 codex_config = codex_config_path.read_text(encoding="utf-8")
 assert 'model = "relayhub-entry-paperclip-codex-local-server"' in codex_config
-assert 'base_url = "https://relayhub.jingshu.cc/claude/v1"' in codex_config
+assert 'base_url = "https://relayhub.jingshu.cc/codex/v1"' in codex_config
 assert 'wire_api = "responses"' in codex_config
 assert 'model_reasoning_effort = "high"' in codex_config
 
@@ -322,7 +322,15 @@ adapter_config = agent_patch["adapterConfig"]
 assert adapter_config["model"] == "relayhub-entry-paperclip-codex-local-server"
 assert adapter_config["apiKey"] == "relayhub-codex-smoke-token"
 assert adapter_config["modelReasoningEffort"] == "high"
-assert adapter_config["extraArgs"] == ['model_providers.codex.base_url="https://api.deepseek.com"']
+assert adapter_config["extraArgs"] == [
+    "-c", "preferred_auth_method=\"apikey\"",
+    "-c", "model_provider=\"codex\"",
+    "-c", "model_providers.codex.name=\"codex\"",
+    "-c", "model_providers.codex.base_url=\"https://relayhub.jingshu.cc/codex/v1\"",
+    "-c", "model_providers.codex.wire_api=\"responses\"",
+    "-c", "model_providers.codex.requires_openai_auth=true",
+    "--skip-git-repo-check",
+]
 PY
 
 echo "paperclip-entry-sync smoke passed"
