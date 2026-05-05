@@ -19,9 +19,9 @@
 
 补充口径：
 
-- RelayHub 当前正式把这些运行时入口收成 `entry-*`
-- Paperclip 当前正式目标口径是固定接入 RelayHub，而不是每次切模后重新同步真实上游
-- 后续切模型时，优先改 RelayHub 的入口绑定；同步脚本只保留为初始化或修复工具
+- `codex_local` 当前正式改为直连 `PPChat`
+- `claude_local` / `pi_local` 仍维持各自现有口径
+- 后续切模型时，`codex_local` 优先维护直接 provider 配置；同步脚本只保留为初始化或修复工具
 
 它不是部署文档，也不是 Agent 提示词文档。
 如果要看服务器、SSH、代理、宿主职责，请回到：
@@ -50,8 +50,8 @@
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
 | CEO | CEO | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
-| 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
-| 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-mac` 或 `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
+| 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Codex provider API key 配置 | 当前正式口径改为直接走 PPChat，不再经过 RelayHub |
+| 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Codex provider API key 配置 | 当前正式口径改为直接走 PPChat，不再经过 RelayHub |
 | 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
 | 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
 
@@ -79,15 +79,14 @@
 
 - Agent：`Engineer`
 - Adapter：`codex_local`
-- Base URL：`https://relayhub.jingshu.cc/codex/v1`
-- Model：`relayhub-entry-paperclip-codex-local-server`
+- Base URL：`https://code.ppchat.vip/v1`
+- Model：`gpt-5.4`
 - 协议：`OpenAI Responses`
-- 当前默认入口绑定：`preset-deepseek-v4`
-- 当前回退入口绑定：`preset-ppchat-relay`
-- 当前真实上游：`https://api.deepseek.com/v1`
-- Reasoning：`medium`
+- 当前主 provider：`PPChat`
+- 当前真实上游：`https://code.ppchat.vip/v1`
+- Reasoning：`high`
 - 运行参数：
-  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/codex/v1"`
+  - `model_providers.codex.base_url="https://code.ppchat.vip/v1"`
   - `model_providers.codex.wire_api="responses"`
   - `--skip-git-repo-check`
 - Token 优化策略：
@@ -100,14 +99,13 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于工程实现
-  - 稳态口径是让 `codex_local` 固定接入 RelayHub，而不是直接写死上游模型商
-  - 当前服务器侧正式入口是 `relayhub-entry-paperclip-codex-local-server`
+  - 当前稳态口径是让 `codex_local` 直接连接 `PPChat`
   - 当前客户端落地配置位置是：
     - `/paperclip/.codex/config.toml`
     - `/paperclip/.codex/auth.json`
-  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-deepseek-v4`
-  - 当前 fallback 入口为 `preset-ppchat-relay`
-  - 若后续切模型、切 key 或切 `reasoningEffort`，优先在 RelayHub 控制面改入口绑定
+  - 当前模型固定写为 `gpt-5.4`
+  - 当前 `apiKey` 直接使用 PPChat provider key
+  - 若后续切模型、切 key 或切 `reasoningEffort`，优先直接维护 codex provider 配置
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -134,15 +132,14 @@
 
 - Agent：`Test / QA`
 - Adapter：`codex_local`
-- Base URL：`https://relayhub.jingshu.cc/codex/v1`
-- Model：`relayhub-entry-paperclip-codex-local-server`
+- Base URL：`https://code.ppchat.vip/v1`
+- Model：`gpt-5.4`
 - 协议：`OpenAI Responses`
-- 当前默认入口绑定：`preset-deepseek-v4`
-- 当前回退入口绑定：`preset-ppchat-relay`
-- 当前真实上游：`https://api.deepseek.com/v1`
-- Reasoning：`medium`
+- 当前主 provider：`PPChat`
+- 当前真实上游：`https://code.ppchat.vip/v1`
+- Reasoning：`high`
 - 运行参数：
-  - `model_providers.codex.base_url="https://relayhub.jingshu.cc/codex/v1"`
+  - `model_providers.codex.base_url="https://code.ppchat.vip/v1"`
   - `model_providers.codex.wire_api="responses"`
   - `--skip-git-repo-check`
 - Token 优化策略：
@@ -155,12 +152,11 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于测试、QA、验收
-  - 与 `Engineer` 保持同一条服务器侧 RelayHub 入口口径
+  - 与 `Engineer` 保持同一条 PPChat 直连接入口径
   - 当前客户端落地配置位置同样是：
     - `/paperclip/.codex/config.toml`
     - `/paperclip/.codex/auth.json`
-  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-deepseek-v4`
-  - 当前 fallback 入口为 `preset-ppchat-relay`
+  - 当前真实上游固定为 `PPChat`
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -271,10 +267,9 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
 - `codex_local`
   - 服务器侧稳态不再直接吃上游 `base_url`
-  - 当前客户端固定指向 `https://relayhub.jingshu.cc/codex/v1`
-  - 当前模型固定写为 `relayhub-entry-paperclip-codex-local-server`
-  - 当前 Relay 访问 token 由 RelayHub 控制面的 `relay-config.json` 管理
-  - Paperclip 客户端侧只消费 relay token，不直接持有上游供应商长期密钥
+  - 当前客户端固定指向 `https://code.ppchat.vip/v1`
+  - 当前模型固定写为 `gpt-5.4`
+  - 当前 provider key 直接保存在 codex provider 配置里
 - automation 节点国际出网当前通过阿里云美国机 `tinyproxy` 辅助
 - `Idea Clarifier`
   - 虽然也复用服务器侧 `OPENAI_API_KEY`
@@ -291,12 +286,12 @@ HTTPS_PROXY=http://47.253.255.110:18888
 - `CEO`
   - `claude_local + deepseek-v4-pro`
 - `Engineer`
-  - `codex_local + relayhub-entry-paperclip-codex-local-server`
+  - `codex_local + PPChat + gpt-5.4`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
   - 成本压力较高或遇到公共卡点时，允许用户手动暂停；后续再补“多次失败自动转人工”
 - `Test / QA`
-  - `codex_local + relayhub-entry-paperclip-codex-local-server`
+  - `codex_local + PPChat + gpt-5.4`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
 - 规划/产品/内容/研究类 Agent
