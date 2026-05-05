@@ -430,7 +430,6 @@ class ReportLiteNarrativeBuilder:
         theme = self._get_record_theme(record)
         dominant_keywords = self._get_element_core_keywords(theme, dominant["name"])
         weakest_theme = self._get_element_theme_phrase(theme, weakest["name"])
-        outer_dominant = layer0.three_circles.outer.get("dominant", "金")
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         signal_short = signal_text.rstrip("。") if signal_text else "想推进却又停住的那个瞬间"
         awareness_items = [
@@ -442,7 +441,7 @@ class ReportLiteNarrativeBuilder:
             DailyAwareness(
                 day=2,
                 title="看见边界变化",
-                content=f"当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。那不是故意冷下来，而是在确认这件事值不值得你继续打开。",
+                content="当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。那不是故意冷下来，而是在确认这件事值不值得你继续打开。",
             ),
             DailyAwareness(
                 day=3,

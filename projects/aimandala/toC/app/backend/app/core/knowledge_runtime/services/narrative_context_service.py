@@ -914,8 +914,6 @@ class NarrativeContextService:
         dominant_keywords = self._get_element_core_keywords(resolved_theme, dominant)
         secondary_keywords = self._get_element_core_keywords(resolved_theme, secondary)
         signal_text = self._describe_signal(signal)
-        inner = inner_dominant or dominant
-        middle = middle_dominant or secondary
         readings_text = "；".join(
             item.strip()
             for item in (circle_readings or [])
