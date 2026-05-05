@@ -518,10 +518,10 @@ export const seedEntryBindings = [
   },
   {
     entryId: "entry-paperclip-claude-local-server",
-    defaultModelEntryId: "preset-deepseek-v4",
+    defaultModelEntryId: "preset-aitechflux-relay",
     fallbackModelEntryId: null,
-    reasoningEffortOverride: null,
-    statusNote: "Paperclip claude_local 固定跟随统一 Anthropic 兼容入口。"
+    reasoningEffortOverride: "high",
+    statusNote: "Paperclip claude_local 固定走 AITechFlux Anthropic 兼容入口，避免 DeepSeek thinking mode reasoning_content 回传问题。"
   },
   {
     entryId: "entry-paperclip-codex-local-server",
