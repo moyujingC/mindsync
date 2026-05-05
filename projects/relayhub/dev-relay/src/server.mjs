@@ -1,4 +1,5 @@
 import http from "node:http";
+import { createHash } from "node:crypto";
 import { appendFile, mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
@@ -786,6 +787,19 @@ function collapseThinkBlocks(text) {
   });
 }
 
+function buildAnthropicThinkingBlock(reasoningContent) {
+  const normalizedReasoning = String(reasoningContent ?? "").trim();
+  if (!normalizedReasoning) {
+    return null;
+  }
+
+  return {
+    type: "thinking",
+    thinking: normalizedReasoning,
+    signature: createHash("sha256").update(normalizedReasoning).digest("base64")
+  };
+}
+
 function collapseThinkBlocksInAnthropicPayload(payload) {
   if (!payload || !Array.isArray(payload.content)) {
     return payload;
@@ -814,19 +828,18 @@ function mapOpenAIChoiceToAnthropic(choice) {
     typeof message.reasoning_content === "string" && message.reasoning_content.trim()
       ? message.reasoning_content
       : null;
+  const thinkingBlock = buildAnthropicThinkingBlock(reasoningContent);
 
   if (typeof message.content === "string" && message.content.length > 0) {
+    if (thinkingBlock) {
+      content.push(thinkingBlock);
+    }
     content.push({
       type: "text",
-      text: collapseThinkBlocks(message.content),
-      ...(reasoningContent ? { reasoning_content: reasoningContent } : {})
+      text: collapseThinkBlocks(message.content)
     });
-  } else if (reasoningContent) {
-    content.push({
-      type: "text",
-      text: "",
-      reasoning_content: reasoningContent
-    });
+  } else if (thinkingBlock) {
+    content.push(thinkingBlock);
   }
 
   for (const toolCall of toolCalls) {
@@ -849,6 +862,7 @@ function mapOpenAIChoiceToAnthropic(choice) {
     id: choice?.id ?? undefined,
     role: "assistant",
     content,
+    ...(reasoningContent ? { reasoning_content: reasoningContent } : {}),
     stop_reason: mapFinishReasonToAnthropic(choice?.finish_reason, toolCalls.length > 0)
   };
 }
@@ -868,6 +882,7 @@ function buildAnthropicMessagePayload(entry, upstreamPayload, body) {
     role: "assistant",
     model: entry.modelId,
     content: mappedChoice.content,
+    ...(mappedChoice.reasoning_content ? { reasoning_content: mappedChoice.reasoning_content } : {}),
     stop_reason: mappedChoice.stop_reason,
     stop_sequence: null,
     usage: {

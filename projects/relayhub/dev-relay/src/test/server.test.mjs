@@ -1917,7 +1917,11 @@ test("POST /v1/messages preserves reasoning_content across mapped OpenAI-compati
 
         assert.equal(first.status, 200);
         const firstPayload = await first.json();
-        assert.equal(firstPayload.content[0].reasoning_content, "private chain of thought token");
+        assert.equal(firstPayload.content[0].type, "thinking");
+        assert.equal(firstPayload.content[0].thinking, "private chain of thought token");
+        assert.equal(typeof firstPayload.content[0].signature, "string");
+        assert.equal(firstPayload.content[1].text, "first answer");
+        assert.equal(firstPayload.reasoning_content, "private chain of thought token");
 
         const second = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
@@ -1932,7 +1936,17 @@ test("POST /v1/messages preserves reasoning_content across mapped OpenAI-compati
               { role: "user", content: [{ type: "text", text: "question one" }] },
               {
                 role: "assistant",
-                content: firstPayload.content
+                content: [
+                  {
+                    type: "thinking",
+                    thinking: firstPayload.content[0].thinking,
+                    signature: firstPayload.content[0].signature
+                  },
+                  {
+                    type: "text",
+                    text: firstPayload.content[1].text
+                  }
+                ]
               },
               { role: "user", content: [{ type: "text", text: "question two" }] }
             ]
