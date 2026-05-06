@@ -1,9 +1,9 @@
 # 文档治理规范
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.3.0
 > owner：CEO / Orchestrator
-> last_updated：2026-04-15
+> last_updated：2026-05-06
 > source_of_truth：DOCS_GOVERNANCE.md
 
 这份文档定义 `墨予镜` 在 `mindsync` Monorepo 中如何落实 `Harness Engineering`、`SDD`、`TDD` 与 `Docs As System`。
@@ -645,3 +645,98 @@ canonical 母文档的职责是承接长期真理源，不应退化成阶段流�
 - `PROJECT.md` / `README.md` 是否缺少 canonical 清单
 - 周计划、交付记录、readiness check 是否长期占用 `current`
 - vendor / generated / 第三方 README 是否被误纳入治理视野
+
+## 19. AI-Ready 文档特征
+
+本规范定义的文档系统最终服务于 AI 协作。一份 AI-Ready 的文档应满足以下六个特征：
+
+| 特征 | 含义 |
+|------|------|
+| **不冗余** | 一个事实只在一处，过程与结论分离 |
+| **不重复** | 每个文件职责清晰，不交叉描述同一件事 |
+| **不矛盾** | 有明确的权威链，以最新/current 版本为准 |
+| **可执行** | 有明确的验收条件和边界约束 |
+| **有边界** | 声明依赖和上下文，不让 AI 猜 |
+| **可发现** | 有 AI 专用导航索引，不让 AI 翻目录 |
+
+### 19.1 权威链
+
+当文档之间存在矛盾时，按以下权威链解决：
+
+```
+1. 实际代码          → 真相之源
+2. specs/           → 模块契约（由代码验证）
+3. progress.md      → 当前状态摘要
+4. decisions/       → 为什么这么做的理由
+5. README           → 入门指南
+6. research/        → 参考材料（可能有偏差）
+```
+
+### 19.2 冗余检查要点
+
+文档中的冗余通常表现为：
+
+- 同一主题的多次讨论、修改记录、备选方案堆叠
+- 带 TODO、计划、考虑中 超过 3 个月的文档未决策
+- 过长的 sprint log、变更历史未移入 archive
+- 划掉的内容保留过多
+
+### 19.3 AI 导航索引
+
+关键入口文档应提供 AI 专用导航索引，例如：
+
+```markdown
+# AI 导航索引
+
+## 执行任务前必读
+- [progress.md](progress.md) — 当前状态总览
+
+## 模块操作
+- 添加新模块 → [specs/README.md](specs/README.md)
+- 修改现有模块 → 对应的 specs/xxx.md
+
+## 不要读（会误导）
+- archive/ 下的文件是历史记录，不代表当前状态
+```
+
+## 20. 治理执行层
+
+本规范定义"规则层"，配套的"执行层"由 `doc-governance` skill 负责。
+
+| 层次 | 文件 | 职责 |
+|------|------|------|
+| 规则层 | `DOCS_GOVERNANCE.md` | 定义"应该怎样" |
+| 执行层 | `doc-governance` skill | "怎么检查并修复" |
+
+### 20.1 治理触发机制
+
+治理采用事件驱动，不强制定时：
+
+| 触发时机 | 动作 |
+|---------|------|
+| 发现文档矛盾 | 调用 `doc-governance` 诊断并修复 |
+| 代码重大变更 | 调用 `doc-governance` 同步检查 spec |
+| 新决策确定 | 调用 `doc-governance` 更新 decisions |
+| 每周/每月 | 人工手动调用 `doc-governance` 做健康检查（可选） |
+
+### 20.2 扫描工具
+
+辅助扫描脚本位于：
+
+```
+projects/research-center/skills/doc-governance/scripts/scan.py
+```
+
+脚本可检查：
+- 链接失效
+- 状态字段缺失
+- 冗余关键词
+- 重复标题
+
+### 20.3 治理报告
+
+治理完成后应生成报告，使用模板：
+
+```
+projects/research-center/skills/doc-governance/templates/治理报告-模板.md
+```
