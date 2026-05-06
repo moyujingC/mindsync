@@ -49,15 +49,15 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](../../projects/aicareer/specs/README.md)
+- [specs/README.md](./specs/README.md)
 
 ## 4. 当前窗口入口
 
 当前执行窗口默认从这些入口进入：
 
-- [tasks/2026-04-02-mvp-implementation-plan.md](projects/aicareer/tasks/2026-04-02-mvp-implementation-plan.md)
-- [qa/README.md](../../projects/aicareer/qa/README.md)
-- [delivery/README.md](../../projects/aicareer/delivery/README.md)
+- [tasks/2026-04-02-mvp-implementation-plan.md](./tasks/2026-04-02-mvp-implementation-plan.md)
+- [qa/README.md](./qa/README.md)
+- [delivery/README.md](./delivery/README.md)
 
 补充说明：
 
@@ -68,8 +68,8 @@
 
 如需追溯窗口背景与阶段产物，可查：
 
-- [2026-04-03-窗口工作总结.md](projects/aicareer/delivery/2026-04-03-窗口工作总结.md)
-- [2026-04-03-career-asset-sample.md](projects/aicareer/delivery/2026-04-03-career-asset-sample.md)
+- [2026-04-03-窗口工作总结.md](./delivery/2026-04-03-窗口工作总结.md)
+- [2026-04-03-career-asset-sample.md](./delivery/2026-04-03-career-asset-sample.md)
 - 历史来源仓库：本地旧仓库 `ai-career`
 
 这些材料主要用于追溯，不承担当前默认入口职责。
