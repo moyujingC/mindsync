@@ -1,5 +1,11 @@
 # RelayHub v1：AITechFlux 中转入口预置接入交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-21-v1-AITechFlux-中转入口预置接入-交付说明.md
+
 ## Summary
 
 本轮交付把 `AITechFlux` 接入为 `RelayHub` 的系统预置中转入口。
