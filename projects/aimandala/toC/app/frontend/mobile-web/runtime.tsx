@@ -24,12 +24,7 @@ import {
   resolveSelfUnderstandingReportCta,
   selectImage,
 } from "../shared/core";
-import {
-  createMiniappOrder,
-  detectCircles,
-  notifyMiniappWechatPayment,
-  reconcileMiniappOrder,
-} from "../shared/api";
+import { detectCircles } from "../shared/api";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
@@ -203,24 +198,6 @@ function formatHistoryRefreshHint(date = new Date()): string {
     second: "2-digit",
     hour12: false,
   }).format(date)}`;
-}
-
-async function ensureRuntimeProAccess(
-  interpretationId: string,
-  userId: string | null,
-): Promise<void> {
-  const order = await createMiniappOrder({
-    interpretation_id: interpretationId,
-    product_type: "pro",
-    channel: "miniapp",
-    debug_canonical_user_id: userId,
-  });
-
-  await notifyMiniappWechatPayment({
-    order_id: order.order_id,
-    event: "paid",
-  });
-  await reconcileMiniappOrder(order.order_id);
 }
 
 export function MobileWebRuntime({
@@ -487,7 +464,6 @@ export function MobileWebRuntime({
             );
           }
 
-          await ensureRuntimeProAccess(interpretationId, userId);
           return pollMobileWebReportUntilReady(
             interpretationId,
             "pro",
@@ -651,9 +627,6 @@ export function MobileWebRuntime({
     draft: MobileWebUploadDraft | null,
   ) {
     if (getDraftReportVariant(draft ?? defaultUploadDraft) === "pro" && interpretationId) {
-      if (!hasProReportAccess(state)) {
-        await ensureRuntimeProAccess(interpretationId, userId);
-      }
       const proReport = await refreshMobileWebReport(interpretationId, "pro", state);
       const proReady =
         proReport.report?.version === "pro" &&
@@ -1020,9 +993,6 @@ export function MobileWebRuntime({
     setRuntimeHistoryOpeningId(record.interpretation_id);
     setRuntimeHistoryOpeningReportType(reportType);
     try {
-      if (reportType === "pro" && !record.version_purchased.includes("pro")) {
-        await ensureRuntimeProAccess(record.interpretation_id, userId);
-      }
       const refreshed = await refreshMobileWebReport(
         record.interpretation_id,
         reportType,
