@@ -16,12 +16,12 @@
 
 ## 1. 当前文档
 
-- [Paperclip-设计机制与使用说明.md](company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
-- [Paperclip-workspace-充分使用度检查表.md](company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md)
-- [Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
-- [paperclip-weekly-reviews/README.md](company/knowledge-base/system/paperclip-weekly-reviews/README.md)
-- [MindSync-设计机制分析.md](company/knowledge-base/system/MindSync-设计机制分析.md)
-- [当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
+- [Paperclip-设计机制与使用说明.md](Paperclip-设计机制与使用说明.md)
+- [Paperclip-workspace-充分使用度检查表.md](Paperclip-workspace-充分使用度检查表.md)
+- [Paperclip-周检机制与版本跟踪说明.md](Paperclip-周检机制与版本跟踪说明.md)
+- [paperclip-weekly-reviews/README.md](paperclip-weekly-reviews/README.md)
+- [MindSync-设计机制分析.md](MindSync-设计机制分析.md)
+- [当前CI-CD系统机制总览.md](当前CI-CD系统机制总览.md)
 
 ## 2. 适用边界
 

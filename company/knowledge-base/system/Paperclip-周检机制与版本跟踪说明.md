@@ -95,28 +95,28 @@
 
 做影响判断时，默认至少对照这些本地入口：
 
-1. [.paperclip.yaml](.paperclip.yaml)
-2. [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
-3. [company/Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
-4. [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
-5. [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-6. [company/任务创建模板.md](company/任务创建模板.md)
-7. [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md)
-8. [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-9. [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+1. [.paperclip.yaml](../.paperclip.yaml)
+2. [Paperclip-Agent-模型配置总表.md](../../company/Paperclip-Agent-模型配置总表.md)
+3. [Paperclip任务系统优化方案.md](../../company/Paperclip任务系统优化方案.md)
+4. [任务审阅与状态流转规范.md](../../company/任务审阅与状态流转规范.md)
+5. [任务类型与标签规范.md](../../company/任务类型与标签规范.md)
+6. [任务创建模板.md](../../company/任务创建模板.md)
+7. [Automation入口.md](../../company/projects/Automation/PROJECT.md)
+8. [服务器与基础设施入口.md](../../company/服务器与基础设施入口.md)
+9. [paperclip-automation README.md](../../projects/aimandala/deploy/paperclip-automation/README.md)
 
 若周检结论已经形成稳定治理口径，应继续把结论回写到正式入口，而不是只停留在周检归档里。
 
 当前最常见的回写目标包括：
 
 1. 项目级版本基线与升级回归清单
-   - [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+   - [paperclip-automation README.md](../../projects/aimandala/deploy/paperclip-automation/README.md)
 2. `codex_local` 等关键 adapter 的正式安全边界
-   - [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
-   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+   - [Paperclip-Agent-模型配置总表.md](../../company/Paperclip-Agent-模型配置总表.md)
+   - [服务器与基础设施入口.md](../../company/服务器与基础设施入口.md)
 3. execution policy 与本地治理语义的原则级映射
-   - [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
-   - [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+   - [任务审阅与状态流转规范.md](../../company/任务审阅与状态流转规范.md)
+   - [任务类型与标签规范.md](../../company/任务类型与标签规范.md)
 
 ## 6. 标准输出问题
 

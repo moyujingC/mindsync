@@ -26,7 +26,7 @@
 
 它服务多个项目，但当前首个正式落地样例是：
 
-- [company/projects/一镜一梳/PROJECT.md](company/projects/一镜一梳/PROJECT.md)
+- [company/projects/一镜一梳/PROJECT.md](../一镜一梳/PROJECT.md)
 - [projects/aimandala/PROJECT.md](projects/aimandala/PROJECT.md)
 
 ## 2. 它和 Paperclip 的关系
