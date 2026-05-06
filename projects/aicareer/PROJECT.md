@@ -5,7 +5,7 @@
 > owner：CEO / Orchestrator
 > last_updated：2026-04-15
 > source_of_truth：projects/aicareer/PROJECT.md
-> 公司侧入口：[company/projects/怀瑾握瑜/PROJECT.md](company/projects/怀瑾握瑜/PROJECT.md)
+> 公司侧入口：[company/projects/怀瑾握瑜/PROJECT.md](../../company/projects/怀瑾握瑜/PROJECT.md)
 > 历史来源仓库：[/Users/xinran/Downloads/dev/ai-career](/Users/xinran/Downloads/dev/ai-career)
 
 这是 `怀瑾握瑜` 在 Monorepo 中的正式项目工作区入口。
@@ -49,15 +49,15 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](projects/aicareer/specs/README.md)
+- [specs/README.md](../../projects/aicareer/specs/README.md)
 
 ## 4. 当前窗口入口
 
 当前执行窗口默认从这些入口进入：
 
 - [tasks/2026-04-02-mvp-implementation-plan.md](projects/aicareer/tasks/2026-04-02-mvp-implementation-plan.md)
-- [qa/README.md](projects/aicareer/qa/README.md)
-- [delivery/README.md](projects/aicareer/delivery/README.md)
+- [qa/README.md](../../projects/aicareer/qa/README.md)
+- [delivery/README.md](../../projects/aicareer/delivery/README.md)
 
 ## 5. 历史资料入口
 

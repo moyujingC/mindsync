@@ -5,7 +5,7 @@
 > owner：CEO / Orchestrator
 > last_updated：2026-04-18
 > source_of_truth：projects/aimandala/PROJECT.md
-> 公司侧入口：[company/projects/一镜一梳/PROJECT.md](company/projects/一镜一梳/PROJECT.md)
+> 公司侧入口：[company/projects/一镜一梳/PROJECT.md](../../company/projects/一镜一梳/PROJECT.md)
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
 
 这是 `一镜一梳` 在 Monorepo 中的项目工作区入口。
@@ -43,10 +43,10 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](projects/aimandala/docs/specs/README.md)
-- [architecture/README.md](projects/aimandala/docs/architecture/README.md)
-- [docs/sources/README.md](projects/aimandala/docs/sources/README.md)
-- [runbooks/README.md](projects/aimandala/docs/runbooks/README.md)
+- [specs/README.md](../../projects/aimandala/docs/specs/README.md)
+- [architecture/README.md](../../projects/aimandala/docs/architecture/README.md)
+- [docs/sources/README.md](../../projects/aimandala/docs/sources/README.md)
+- [runbooks/README.md](../../projects/aimandala/docs/runbooks/README.md)
 
 其中：
 
@@ -58,9 +58,9 @@
 
 当前执行窗口默认从这些目录入口进入：
 
-- [tasks/README.md](projects/aimandala/docs/tasks/README.md)
-- [qa/README.md](projects/aimandala/docs/qa/README.md)
-- [delivery/README.md](projects/aimandala/docs/delivery/README.md)
+- [tasks/README.md](../../projects/aimandala/docs/tasks/README.md)
+- [qa/README.md](../../projects/aimandala/docs/qa/README.md)
+- [delivery/README.md](../../projects/aimandala/docs/delivery/README.md)
 
 当前如果要继续推进“报告链路保真重构”，默认顺序固定为：
 
@@ -75,7 +75,7 @@
 
 - 历史仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
 - 项目历史资料：[projects/aimandala/docs](projects/aimandala/docs)
-- 公司侧历史草案：[company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md](company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
+- 公司侧历史草案：[company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md](../../company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
 
 这些材料仅作历史追溯，不再作为默认开发入口。
 

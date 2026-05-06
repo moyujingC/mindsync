@@ -27,9 +27,9 @@
 
 进入本目录前，先对齐这些长期入口：
 
-- [ToC-MVP-产品规范.md](projects/aimandala/docs/specs/ToC-MVP-产品规范.md)
-- [ToC-MVP-技术方案.md](projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
-- [本项目 PROJECT.md](projects/aimandala/PROJECT.md)
+- [ToC-MVP-产品规范.md](../../../../projects/aimandala/docs/specs/ToC-MVP-产品规范.md)
+- [ToC-MVP-技术方案.md](../../../../projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
+- [本项目 PROJECT.md](../../../../projects/aimandala/PROJECT.md)
 
 ## 当前阶段性文档
 

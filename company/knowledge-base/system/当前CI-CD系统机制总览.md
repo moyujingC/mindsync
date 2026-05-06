@@ -122,12 +122,12 @@ MVP 链路当前使用：
 
 公司级服务器入口见：
 
-- [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+- [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md)
 
 项目级 runbook 见：
 
 - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-- [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+- [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
 
 MVP 链路仍会通过 SSH 访问 dev / prod 目标机，但不依赖 automation 节点上的 self-hosted runner 执行 CI。
 
@@ -243,7 +243,7 @@ MVP 链路更不承担自动修复和自动建单职责。它的价值是先保�
 
 更细职责边界见：
 
-- [company/CI-CD-角色分工说明.md](company/CI-CD-角色分工说明.md)
+- [company/CI-CD-角色分工说明.md](../../../company/CI-CD-角色分工说明.md)
 
 MVP 链路没有 Paperclip 状态流。MVP 链路的状态先看 GitHub Actions run 结果。
 
@@ -282,7 +282,7 @@ MVP 链路没有 Paperclip 状态流。MVP 链路的状态先看 GitHub Actions 
 - MVP 可用链路：
   - [.github/workflows/mvp-release.yml](../../../.github/workflows/mvp-release.yml)
 - 角色边界：
-  - [company/CI-CD-角色分工说明.md](company/CI-CD-角色分工说明.md)
+  - [company/CI-CD-角色分工说明.md](../../../company/CI-CD-角色分工说明.md)
 - 项目级交付总览：
   - [projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md](projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md)
 - 项目级实施计划：

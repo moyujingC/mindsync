@@ -5,7 +5,7 @@
 > owner：Research & Knowledge Lead
 > last_updated：2026-05-02
 > source_of_truth：projects/research-center/PROJECT.md
-> 公司侧入口：[company/projects/研究中心/PROJECT.md](company/projects/研究中心/PROJECT.md)
+> 公司侧入口：[company/projects/研究中心/PROJECT.md](../../company/projects/研究中心/PROJECT.md)
 
 这是 `研究中心` 在 Monorepo 中的正式项目工作区入口。
 
@@ -30,12 +30,12 @@
 
 ## 2. 固定必读
 
-1. [本项目 PROJECT.md](projects/research-center/PROJECT.md)
-2. [公司侧项目入口](company/projects/研究中心/PROJECT.md)
-3. [研究方向与任务模型](company/projects/研究中心/研究方向与任务模型.md)
+1. [本项目 PROJECT.md](../../projects/research-center/PROJECT.md)
+2. [公司侧项目入口](../../company/projects/研究中心/PROJECT.md)
+3. [研究方向与任务模型](../../company/projects/研究中心/研究方向与任务模型.md)
 4. [Research & Knowledge Lead 角色说明](agents/research-knowledge-lead/AGENTS.md)
-5. [研究任务模板](projects/research-center/templates/研究任务模板.md)
-6. [内容选题研究模板](projects/research-center/templates/内容选题研究模板.md)
+5. [研究任务模板](../../projects/research-center/templates/研究任务模板.md)
+6. [内容选题研究模板](../../projects/research-center/templates/内容选题研究模板.md)
 
 ## 3. 目录说明
 
@@ -104,7 +104,7 @@
 
 ## 5. 当前下一步
 
-1. 严格按 [研究入库连续产出运行方案.md](company/projects/研究中心/研究入库连续产出运行方案.md) 跑每周最小闭环。
+1. 严格按 [研究入库连续产出运行方案.md](../../company/projects/研究中心/研究入库连续产出运行方案.md) 跑每周最小闭环。
 2. 优先形成“可转给内容侧”的研究上游输入，而不是只停留在综合结论。
 3. 每周至少沉一条正式知识条目或知识候选，避免研究只留在 `research/`。
 4. 继续围绕业务线、内容线和 Agent 方法线维持 `研究 -> 入库 -> handoff` 节奏。

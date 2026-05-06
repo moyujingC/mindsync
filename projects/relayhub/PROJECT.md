@@ -5,7 +5,7 @@
 > owner：Architect / Engineer
 > last_updated：2026-04-19
 > source_of_truth：projects/relayhub/PROJECT.md
-> 公司侧入口：[company/projects/RelayHub/PROJECT.md](company/projects/RelayHub/PROJECT.md)
+> 公司侧入口：[company/projects/RelayHub/PROJECT.md](../../company/projects/RelayHub/PROJECT.md)
 
 这是 `RelayHub` 在 Monorepo 中的正式项目工作区入口。
 
@@ -72,9 +72,9 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](projects/relayhub/specs/README.md)
-- [tasks/README.md](projects/relayhub/tasks/README.md)
-- [qa/README.md](projects/relayhub/qa/README.md)
+- [specs/README.md](../../projects/relayhub/specs/README.md)
+- [tasks/README.md](../../projects/relayhub/tasks/README.md)
+- [qa/README.md](../../projects/relayhub/qa/README.md)
 
 ## 6. 当前窗口入口
 

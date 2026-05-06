@@ -27,7 +27,7 @@
 它服务多个项目，但当前首个正式落地样例是：
 
 - [company/projects/一镜一梳/PROJECT.md](../一镜一梳/PROJECT.md)
-- [projects/aimandala/PROJECT.md](projects/aimandala/PROJECT.md)
+- [projects/aimandala/PROJECT.md](../../../projects/aimandala/PROJECT.md)
 
 ## 2. 它和 Paperclip 的关系
 
@@ -87,13 +87,13 @@
 普通任务当前正式承载位置不是单独项目，而是三层分布：
 
 - 治理规则层
-  - [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-  - [company/任务创建模板.md](company/任务创建模板.md)
-  - [company/Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
+  - [company/任务类型与标签规范.md](../../../company/任务类型与标签规范.md)
+  - [company/任务创建模板.md](../../../company/任务创建模板.md)
+  - [company/Paperclip任务系统优化方案.md](../../../company/Paperclip任务系统优化方案.md)
 - 运行时映射层
   - [.paperclip.yaml](.paperclip.yaml)
-  - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-  - [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
+  - [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md)
+  - [company/Paperclip-Agent-模型配置总表.md](../../../company/Paperclip-Agent-模型配置总表.md)
 - 执行脚本层
   - [shared/tools/paperclip-local-executor.mjs](shared/tools/paperclip-local-executor.mjs)
   - [shared/tools/paperclip-local-pilot.mjs](shared/tools/paperclip-local-pilot.mjs)
@@ -101,13 +101,13 @@
 补充导航口径：
 
 - 版本基线与升级后最小回归检查
-  - 看 [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+  - 看 [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
 - `codex_local` 的正式安全边界
-  - 看 [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
-  - 与 [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md) 配套阅读
+  - 看 [company/Paperclip-Agent-模型配置总表.md](../../../company/Paperclip-Agent-模型配置总表.md)
+  - 与 [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md) 配套阅读
 - execution policy 与本地 `review:*` / `task_class` 语义的原则级映射
-  - 看 [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
-  - 与 [company/任务类型与标签规范.md](company/任务类型与标签规范.md) 配套阅读
+  - 看 [company/任务审阅与状态流转规范.md](../../../company/任务审阅与状态流转规范.md)
+  - 与 [company/任务类型与标签规范.md](../../../company/任务类型与标签规范.md) 配套阅读
 
 ## 4. 公司级边界与项目级边界
 
@@ -127,7 +127,7 @@
 
 当前首个正式项目级实例是：
 
-- [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+- [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
 
 这份文档应被理解为：
 
@@ -139,11 +139,11 @@
 
 如果你要理解公司级机制，先看：
 
-1. [company/Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
-2. [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-3. [company/任务创建模板.md](company/任务创建模板.md)
-4. [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-5. [company/knowledge-base/system/Paperclip-设计机制与使用说明.md](company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
+1. [company/Paperclip任务系统优化方案.md](../../../company/Paperclip任务系统优化方案.md)
+2. [company/任务类型与标签规范.md](../../../company/任务类型与标签规范.md)
+3. [company/任务创建模板.md](../../../company/任务创建模板.md)
+4. [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md)
+5. [company/knowledge-base/system/Paperclip-设计机制与使用说明.md](../../../company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
 6. [2026-04-27-项目工作区与执行工作区分层-SPEC.md](company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-SPEC.md)
 7. [2026-04-27-项目工作区与执行工作区分层-PLAN.md](company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-PLAN.md)
 8. [2026-04-27-项目工作区与执行工作区分层-QA.md](company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-QA.md)
@@ -151,6 +151,6 @@
 
 如果你要看当前首个正式落地项目的部署与运维细节，再进入：
 
-1. [company/projects/一镜一梳/PROJECT.md](company/projects/一镜一梳/PROJECT.md)
-2. [projects/aimandala/PROJECT.md](projects/aimandala/PROJECT.md)
-3. [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+1. [company/projects/一镜一梳/PROJECT.md](../../../company/projects/一镜一梳/PROJECT.md)
+2. [projects/aimandala/PROJECT.md](../../../projects/aimandala/PROJECT.md)
+3. [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)

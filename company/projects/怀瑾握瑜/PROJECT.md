@@ -56,7 +56,7 @@
 
 项目工作区默认从这里进入：
 
-- [projects/aicareer/PROJECT.md](projects/aicareer/PROJECT.md)
+- [projects/aicareer/PROJECT.md](../../../projects/aicareer/PROJECT.md)
 
 如需看产品规范、技术方案、验证与交付细节，应继续进入项目工作区下的目录入口。
 
@@ -65,12 +65,12 @@
 默认先看：
 
 - [2026-04-02-可行性研究报告.md](company/projects/怀瑾握瑜/2026-04-02-可行性研究报告.md)
-- [content/怀瑾握瑜-产品号内容策略简报.md](company/projects/怀瑾握瑜/content/怀瑾握瑜-产品号内容策略简报.md)
-- [content/怀瑾握瑜-首批选题清单.md](company/projects/怀瑾握瑜/content/怀瑾握瑜-首批选题清单.md)
+- [content/怀瑾握瑜-产品号内容策略简报.md](../../../company/projects/怀瑾握瑜/content/怀瑾握瑜-产品号内容策略简报.md)
+- [content/怀瑾握瑜-首批选题清单.md](../../../company/projects/怀瑾握瑜/content/怀瑾握瑜-首批选题清单.md)
 
 如果任务明确涉及 `墨予镜` 账号，再继续进入：
 
-- [company/projects/内容矩阵/PROJECT.md](company/projects/内容矩阵/PROJECT.md)
+- [company/projects/内容矩阵/PROJECT.md](../../../company/projects/内容矩阵/PROJECT.md)
 
 ## 5. 历史入口
 

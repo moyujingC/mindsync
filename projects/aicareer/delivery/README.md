@@ -24,9 +24,9 @@
 
 进入本目录前，先对齐：
 
-- [MVP产品规范.md](projects/aicareer/specs/MVP产品规范.md)
-- [MVP技术方案.md](projects/aicareer/specs/MVP技术方案.md)
-- [本项目 PROJECT.md](projects/aicareer/PROJECT.md)
+- [MVP产品规范.md](../../../projects/aicareer/specs/MVP产品规范.md)
+- [MVP技术方案.md](../../../projects/aicareer/specs/MVP技术方案.md)
+- [本项目 PROJECT.md](../../../projects/aicareer/PROJECT.md)
 
 ## 当前阶段性文档
 
