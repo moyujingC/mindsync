@@ -1,4 +1,10 @@
 # HANDOFF: 商业诊断 → 产品定义
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Product Spec Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/docs/handoff/商业诊断到产品定义-HANDOFF.md
+
 ## 1. 背景
 - 任务背景：完成「AI时代职业能力诊断与提升方案」轻咨询服务的商业框架设计，验证商业可行性
 - 所属项目：aicareer（AI职业发展服务项目）

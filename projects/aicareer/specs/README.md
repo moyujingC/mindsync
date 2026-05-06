@@ -1,4 +1,10 @@
 # Specs
+> 状态：current
+> 版本：0.1.0
+> owner：Product Spec Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/specs/README.md
+
 
 这里放 `怀瑾握瑜` 的正式 spec 与技术方案。
 
