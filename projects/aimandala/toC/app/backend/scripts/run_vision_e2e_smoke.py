@@ -202,9 +202,9 @@ def _wait_for_pro_report(
 
 
 def _build_runtime_diagnostics(interpretation_id: str) -> dict[str, Any]:
-    from app.api.routes_v2 import get_store
+    from app.api.routes_v2 import get_orchestrator
 
-    record = get_store().load(interpretation_id)
+    record = get_orchestrator().store.load(interpretation_id)
     if record is None:
         return {"record_found": False}
 
