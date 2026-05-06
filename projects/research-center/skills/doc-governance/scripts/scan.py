@@ -29,7 +29,7 @@ EXCLUDE_DIRS = {
 # 冗余关键词（需检查）
 REDUNDANCY_KEYWORDS = [
     r'讨论中', r'考虑中', r'待定', r'备选方案',
-    r'TODO', r'计划中', r'未完成',
+    r'TODO',
 ]
 
 # 状态字段模式
@@ -91,7 +91,21 @@ def iter_non_fenced_lines(content: str):
             yield i, line
 
 
-def scan_redundancy(file_path: Path) -> list[dict]:
+def should_scan_redundancy_keywords(file_path: Path, repo_root: Path) -> bool:
+    """只在更像过程文档的正式文档中做冗余关键词扫描，减少模板/skill 误报"""
+    try:
+        rel = file_path.relative_to(repo_root)
+    except ValueError:
+        return False
+
+    parts = rel.parts
+    if 'templates' in parts or 'skills' in parts:
+        return False
+
+    return is_formal_doc(file_path, repo_root)
+
+
+def scan_redundancy(file_path: Path, repo_root: Path) -> list[dict]:
     """扫描冗余问题"""
     issues = []
     try:
@@ -99,22 +113,23 @@ def scan_redundancy(file_path: Path) -> list[dict]:
         lines = content.split('\n')
 
         # 检查关键词
-        for keyword in REDUNDANCY_KEYWORDS:
-            pattern = re.compile(keyword)
-            matches = [(i+1, line.strip()) for i, line in enumerate(lines) if pattern.search(line)]
-            if matches:
-                for line_no, line_text in matches[:3]:  # 只取前3个
-                    issues.append({
-                        'type': 'redundancy',
-                        'keyword': keyword,
-                        'line': line_no,
-                        'text': line_text[:100]
-                    })
+        if should_scan_redundancy_keywords(file_path, repo_root):
+            for keyword in REDUNDANCY_KEYWORDS:
+                pattern = re.compile(keyword)
+                matches = [(i+1, line.strip()) for i, line in enumerate(lines) if pattern.search(line)]
+                if matches:
+                    for line_no, line_text in matches[:3]:  # 只取前3个
+                        issues.append({
+                            'type': 'redundancy',
+                            'keyword': keyword,
+                            'line': line_no,
+                            'text': line_text[:100]
+                        })
 
-        # 检查修改记录堆叠（连续多行以 --- 或 === 或 变更 开头）
+        # 检查显式修改记录堆叠，避免把 markdown 分隔线误判成 changelog
         change_count = 0
         for line in lines:
-            if re.match(r'^[-=]{3,}|变更记录|修改历史|changelog', line, re.IGNORECASE):
+            if re.match(r'^\s{0,3}(#+\s*)?(变更记录|修改历史|changelog)\b', line, re.IGNORECASE):
                 change_count += 1
         if change_count > 5:
             issues.append({
@@ -238,7 +253,7 @@ def scan_links(file_path: Path, repo_root: Path) -> list[dict]:
 def scan_file(file_path: Path, repo_root: Path) -> list[dict]:
     """扫描单个文件"""
     issues = []
-    issues.extend(scan_redundancy(file_path))
+    issues.extend(scan_redundancy(file_path, repo_root))
     issues.extend(scan_formal_status(file_path, repo_root))
     issues.extend(scan_links(file_path, repo_root))
     return issues
