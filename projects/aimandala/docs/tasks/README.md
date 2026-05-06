@@ -1,5 +1,11 @@
 # Tasks
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/docs/tasks/README.md
+
 这里放 `一镜一梳` 的执行计划、阶段任务和实现任务定义。
 
 规则：

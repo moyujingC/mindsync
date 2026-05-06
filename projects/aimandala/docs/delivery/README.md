@@ -1,5 +1,11 @@
 # Delivery
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer / Test / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/docs/delivery/README.md
+
 这里放 `一镜一梳` 当前正式交付记录。
 
 `delivery` 不是实现前置文档，而是实现和验证之后的正式收口产物。

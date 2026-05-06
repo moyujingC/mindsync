@@ -1,6 +1,6 @@
 # Aimandala 本地 Mac 执行节点单机试点接入前置验证记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-22

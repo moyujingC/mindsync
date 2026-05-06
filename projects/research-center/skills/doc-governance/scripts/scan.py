@@ -96,6 +96,12 @@ def should_scan_status_doc(file_path: Path, repo_root: Path) -> bool:
     if 'notes' in parts or 'output' in parts:
         return False
 
+    if 'fixtures' in parts:
+        return False
+
+    if 'sources' in parts and '原始镜像' in parts:
+        return False
+
     return True
 
 

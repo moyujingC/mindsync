@@ -1,5 +1,11 @@
 # QA
 
+> 状态：current
+> 版本：0.1.0
+> owner：Test / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/docs/qa/README.md
+
 这里放 `一镜一梳` 当前主链路的验收清单、验证记录与样本验证文档。
 
 当前 QA 目录主要服务一件事：
