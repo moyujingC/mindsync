@@ -86,6 +86,9 @@
 如需回看本项目进入 Monorepo、发布收口与阶段交付过程，请到以下历史资料查看：
 
 - [AI-Mandala-迁移范围与工作区草案.md](../../../company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
-- [projects/aimandala/docs/tasks/2026-04-12-迁移收官与正式版收口总计划.md](projects/aimandala/docs/tasks/2026-04-12-迁移收官与正式版收口总计划.md)
-- [projects/aimandala/docs/qa/2026-04-12-迁移收官与正式版收口验证记录.md](projects/aimandala/docs/qa/2026-04-12-迁移收官与正式版收口验证记录.md)
-- [projects/aimandala/docs/delivery/2026-04-12-迁移收官与正式版收口交付记录.md](projects/aimandala/docs/delivery/2026-04-12-迁移收官与正式版收口交付记录.md)
+- 历史任务文件名：`2026-04-12-迁移收官与正式版收口总计划.md`
+  入口见 [projects/aimandala/docs/tasks/README.md](../../../projects/aimandala/docs/tasks/README.md)
+- 历史验证文件名：`2026-04-12-迁移收官与正式版收口验证记录.md`
+  入口见 [projects/aimandala/docs/qa/README.md](../../../projects/aimandala/docs/qa/README.md)
+- 历史交付文件名：`2026-04-12-迁移收官与正式版收口交付记录.md`
+  入口见 [projects/aimandala/docs/delivery/README.md](../../../projects/aimandala/docs/delivery/README.md)

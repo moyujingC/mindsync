@@ -91,6 +91,6 @@
 
 ## 8. 当前记录
 
-- [2026-04-27-Paperclip-周检报告.md](company/knowledge-base/system/paperclip-weekly-reviews/2026-04-27-Paperclip-周检报告.md)
+- [2026-04-27-Paperclip-周检报告.md](./2026-04-27-Paperclip-周检报告.md)
   - 首份基线样本
   - 结论：服务器已高于安全修复线，但仍建议从当前 `canary/v2026.411.0...` 收正到 `v2026.416.0`

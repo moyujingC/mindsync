@@ -144,10 +144,10 @@
 3. [company/任务创建模板.md](../../../company/任务创建模板.md)
 4. [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md)
 5. [company/knowledge-base/system/Paperclip-设计机制与使用说明.md](../../../company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
-6. [2026-04-27-项目工作区与执行工作区分层-SPEC.md](company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-SPEC.md)
-7. [2026-04-27-项目工作区与执行工作区分层-PLAN.md](company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-PLAN.md)
-8. [2026-04-27-项目工作区与执行工作区分层-QA.md](company/projects/Automation/2026-04-27-项目工作区与执行工作区分层-QA.md)
-9. [2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md](company/projects/Automation/2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md)
+6. [2026-04-27-项目工作区与执行工作区分层-SPEC.md](./2026-04-27-项目工作区与执行工作区分层-SPEC.md)
+7. [2026-04-27-项目工作区与执行工作区分层-PLAN.md](./2026-04-27-项目工作区与执行工作区分层-PLAN.md)
+8. [2026-04-27-项目工作区与执行工作区分层-QA.md](./2026-04-27-项目工作区与执行工作区分层-QA.md)
+9. [2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md](./2026-04-27-本地执行器优先本地-worktree-IMPLEMENTATION.md)
 
 如果你要看当前首个正式落地项目的部署与运维细节，再进入：
 

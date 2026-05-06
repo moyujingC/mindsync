@@ -88,7 +88,7 @@
 
 正式目录分层说明看：
 
-- [MONOREPO.md](MONOREPO.md)
+- [MONOREPO.md](../MONOREPO.md)
 
 ### 3.3 历史仓库的定位
 
@@ -506,7 +506,7 @@ worktree 是同一仓库的不同工作台，不是新仓库，不应自己发�
 
 如果你要理解公司级 Git 仓库管理系统，建议按这个顺序看：
 
-1. [MONOREPO.md](MONOREPO.md)
+1. [MONOREPO.md](../MONOREPO.md)
 2. [company/项目与仓库映射.md](../company/项目与仓库映射.md)
 3. [company/Git提交与自动提交规范.md](../company/Git提交与自动提交规范.md)
 4. [company/服务器与基础设施入口.md](../company/服务器与基础设施入口.md)

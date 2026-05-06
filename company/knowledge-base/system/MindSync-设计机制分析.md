@@ -90,8 +90,8 @@
 
 建议先查：
 
-- [AGENTS.md](AGENTS.md)
-- [COMPANY.md](COMPANY.md)
+- [AGENTS.md](../../../AGENTS.md)
+- [COMPANY.md](../../../COMPANY.md)
 - [company/knowledge-base/README.md](../../../company/knowledge-base/README.md)
 
 ### 5.2 “我知道项目里做过，但不知道机制怎么运作”
@@ -109,8 +109,9 @@
 1. 先看 [当前CI-CD系统机制总览.md](../../../company/knowledge-base/system/当前CI-CD系统机制总览.md)
 2. 再看 [company/CI-CD-角色分工说明.md](../../../company/CI-CD-角色分工说明.md)
 3. 再进入项目级 runbook：
-   - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-   - [projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md](projects/aimandala/docs/delivery/2026-04-12-ci-cd-与自动修复交付记录.md)
+   - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](../../../projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+   - 历史交付文件名：`2026-04-12-ci-cd-与自动修复交付记录.md`
+     入口见 [projects/aimandala/docs/delivery/README.md](../../../projects/aimandala/docs/delivery/README.md)
 
 ## 7. 当前结构上的一个重要判断
 

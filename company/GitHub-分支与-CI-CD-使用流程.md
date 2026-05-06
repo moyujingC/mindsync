@@ -417,7 +417,7 @@ GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常
 
 - [shared/tools/ci/paperclip-sync-lib.smoke.mjs](shared/tools/ci/paperclip-sync-lib.smoke.mjs)
 - [shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs](shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs)
-- [company/projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md](company/projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md)
+- [company/projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md](./projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md)
 
 ## 7. 一句话判断法
 
