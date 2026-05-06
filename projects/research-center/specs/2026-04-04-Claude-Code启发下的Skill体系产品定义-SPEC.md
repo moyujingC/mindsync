@@ -27,8 +27,8 @@
 - 当前阶段：
   - `spec`
 - 上游输入：
-  - [Claude Code 源码研究综合结论与 Skill 启发](../../../projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
-  - [墨予镜 Skill 协议草案](projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
+  - [Claude Code 源码研究综合结论与 Skill 启发](../research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
+  - [墨予镜 Skill 协议草案](./2026-04-04-墨予镜-Skill-协议草案.md)
 - 继承的项目锚点：
   - `研究中心` 是公司的共享能力底座，负责把高价值研究议题沉淀成长期可复用能力
   - `墨予镜` 当前已有公司原则、角色边界和 artifact 目录，但各 Agent 仍缺少系统化方法 skill

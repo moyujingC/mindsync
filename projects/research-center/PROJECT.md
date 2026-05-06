@@ -33,7 +33,7 @@
 1. [本项目 PROJECT.md](../../projects/research-center/PROJECT.md)
 2. [公司侧项目入口](../../company/projects/研究中心/PROJECT.md)
 3. [研究方向与任务模型](../../company/projects/研究中心/研究方向与任务模型.md)
-4. [Research & Knowledge Lead 角色说明](agents/research-knowledge-lead/AGENTS.md)
+4. [Research & Knowledge Lead 角色说明](../../agents/research-knowledge-lead/AGENTS.md)
 5. [研究任务模板](../../projects/research-center/templates/研究任务模板.md)
 6. [内容选题研究模板](../../projects/research-center/templates/内容选题研究模板.md)
 

@@ -9,4 +9,4 @@
 
 如果某项能力会长期复用，应先在这里形成正式定义，再推进实现或自动化。
 
-- [2026-04-27-Paperclip-Claude-Local-主备模型切换-SPEC.md](projects/research-center/specs/2026-04-27-Paperclip-Claude-Local-主备模型切换-SPEC.md)
+- [2026-04-27-Paperclip-Claude-Local-主备模型切换-SPEC.md](./2026-04-27-Paperclip-Claude-Local-主备模型切换-SPEC.md)

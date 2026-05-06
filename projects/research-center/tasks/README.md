@@ -17,4 +17,4 @@
 - 协作者
 - 完成标准
 
-- [2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md](projects/research-center/tasks/2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md)
+- [2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md](./2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md)
