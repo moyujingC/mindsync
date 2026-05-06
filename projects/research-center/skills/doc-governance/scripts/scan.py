@@ -9,6 +9,17 @@ import re
 import sys
 from pathlib import Path
 
+ROOT_GOVERNANCE_FILES = {
+    'AGENTS.md', 'COMPANY.md', 'DOCS_GOVERNANCE.md',
+    'MONOREPO.md', 'CLAUDE.md'
+}
+
+FORMAL_PROJECT_DIRS = {
+    'specs', 'architecture', 'tasks', 'qa', 'delivery',
+    'handoff', 'verification', 'research', 'content',
+    'decisions', 'runbooks', 'templates', 'kb'
+}
+
 # 扫描范围（排除项）
 EXCLUDE_DIRS = {
     'node_modules', '.git', '.pytest_cache', '__pycache__',
@@ -22,7 +33,7 @@ REDUNDANCY_KEYWORDS = [
 ]
 
 # 状态字段模式
-STATUS_PATTERN = re.compile(r'^\s*(状态|status)[：:]\s*(\S+)', re.MULTILINE)
+STATUS_PATTERN = re.compile(r'^\s*>?\s*(状态|status)\s*[：:]\s*(\S+)', re.MULTILINE)
 
 # 链接模式
 LINK_PATTERN = re.compile(r'\[([^\]]+)\]\(([^)]+\.md)\)')
@@ -37,11 +48,54 @@ def should_exclude(path: Path) -> bool:
     return False
 
 
+def is_formal_doc(file_path: Path, repo_root: Path) -> bool:
+    """按当前治理规则判断是否属于应检查元数据的第一方正式文档"""
+    try:
+        rel = file_path.relative_to(repo_root)
+    except ValueError:
+        return False
+
+    parts = rel.parts
+    if not parts:
+        return False
+
+    if len(parts) == 1:
+        return file_path.name in ROOT_GOVERNANCE_FILES
+
+    if parts[0] == 'company':
+        return True
+
+    if parts[0] == 'shared':
+        return True
+
+    if parts[0] == 'projects':
+        if file_path.name in {'PROJECT.md', 'README.md', 'AGENTS.md'}:
+            return True
+        return any(part in FORMAL_PROJECT_DIRS for part in parts)
+
+    return False
+
+
+def read_content(file_path: Path) -> str:
+    return file_path.read_text(encoding='utf-8', errors='ignore')
+
+
+def iter_non_fenced_lines(content: str):
+    """返回不在 fenced code block 内的行"""
+    in_fence = False
+    for i, line in enumerate(content.splitlines(), 1):
+        if line.strip().startswith('```'):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            yield i, line
+
+
 def scan_redundancy(file_path: Path) -> list[dict]:
     """扫描冗余问题"""
     issues = []
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore')
+        content = read_content(file_path)
         lines = content.split('\n')
 
         # 检查关键词
@@ -79,10 +133,10 @@ def scan_status(file_path: Path) -> list[dict]:
     """扫描状态问题"""
     issues = []
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore')
+        content = read_content(file_path)
 
         # 检查是否缺少状态字段
-        status_match = STATUS_PATTERN.search(content)
+        status_match = STATUS_PATTERN.search('\n'.join(content.splitlines()[:15]))
         if not status_match:
             issues.append({
                 'type': 'status',
@@ -93,7 +147,7 @@ def scan_status(file_path: Path) -> list[dict]:
 
         # 检查 long-term current 误用
         if status_match:
-            status = status_match.group(2)
+            status = status_match.group(2).lower()
             file_name = file_path.name.lower()
 
             # 周计划、交付记录不应该是 current
@@ -111,43 +165,82 @@ def scan_status(file_path: Path) -> list[dict]:
     return issues
 
 
-def scan_links(file_path: Path, base_path: Path) -> list[dict]:
-    """扫描失效链接"""
+def scan_formal_status(file_path: Path, repo_root: Path) -> list[dict]:
+    if not is_formal_doc(file_path, repo_root):
+        return []
+    return scan_status(file_path)
+
+
+def resolve_link_target(file_path: Path, repo_root: Path, link_target: str) -> tuple[Path | None, str | None]:
+    """解析 markdown 链接，支持相对路径和 repo-relative 路径"""
+    if link_target.startswith(('/', '/Users/', '/home/')):
+        abs_path = Path(link_target)
+        if abs_path.exists():
+            return abs_path, 'absolute'
+        return None, 'absolute'
+
+    relative_path = (file_path.parent / link_target).resolve()
+    if relative_path.exists():
+        return relative_path, 'relative'
+
+    repo_relative_path = (repo_root / link_target).resolve()
+    if repo_relative_path.exists():
+        return repo_relative_path, 'repo-relative'
+
+    return None, None
+
+
+def scan_links(file_path: Path, repo_root: Path) -> list[dict]:
+    """扫描失效链接，并区分 repo-relative / absolute style 问题"""
     issues = []
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore')
+        content = read_content(file_path)
 
-        for match in LINK_PATTERN.finditer(content):
-            link_text = match.group(1)
-            link_target = match.group(2)
+        for line_no, line in iter_non_fenced_lines(content):
+            for match in LINK_PATTERN.finditer(line):
+                link_text = match.group(1)
+                link_target = match.group(2)
 
-            # 只检查相对链接
-            if link_target.startswith('http') or link_target.startswith('#'):
-                continue
+                if link_target.startswith('http') or link_target.startswith('#'):
+                    continue
 
-            # 解析相对路径
-            link_path = (file_path.parent / link_target).resolve()
+                resolved_path, mode = resolve_link_target(file_path, repo_root, link_target)
 
-            # 检查文件是否存在
-            if not link_path.exists():
-                issues.append({
-                    'type': 'broken_link',
-                    'keyword': '失效链接',
-                    'line': 0,
-                    'text': f'[{link_text}]({link_target}) -> 文件不存在'
-                })
+                if resolved_path is None:
+                    issues.append({
+                        'type': 'broken_link',
+                        'keyword': '失效链接',
+                        'line': line_no,
+                        'text': f'[{link_text}]({link_target}) -> 文件不存在'
+                    })
+                    continue
+
+                if mode == 'repo-relative':
+                    issues.append({
+                        'type': 'link_style',
+                        'keyword': 'repo-relative 正文链接',
+                        'line': line_no,
+                        'text': f'[{link_text}]({link_target}) -> 可解析，但建议改为相对链接'
+                    })
+                elif mode == 'absolute':
+                    issues.append({
+                        'type': 'link_style',
+                        'keyword': '绝对路径正文链接',
+                        'line': line_no,
+                        'text': f'[{link_text}]({link_target}) -> 可解析，但不应在正式文档中使用绝对路径'
+                    })
 
     except Exception as e:
         pass
     return issues
 
 
-def scan_file(file_path: Path, base_path: Path) -> list[dict]:
+def scan_file(file_path: Path, repo_root: Path) -> list[dict]:
     """扫描单个文件"""
     issues = []
     issues.extend(scan_redundancy(file_path))
-    issues.extend(scan_status(file_path))
-    issues.extend(scan_links(file_path, base_path))
+    issues.extend(scan_formal_status(file_path, repo_root))
+    issues.extend(scan_links(file_path, repo_root))
     return issues
 
 
@@ -159,7 +252,8 @@ def scan_directory(directory: Path, recursive: bool = True) -> dict:
         'by_type': {
             'redundancy': [],
             'status': [],
-            'broken_link': []
+            'broken_link': [],
+            'link_style': []
         }
     }
 
