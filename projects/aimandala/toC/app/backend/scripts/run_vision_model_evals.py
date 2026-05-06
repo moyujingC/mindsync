@@ -247,12 +247,25 @@ def load_candidates(config_path: Path | None) -> list[Candidate]:
     return candidates
 
 
-def build_plan(fixtures: list[Fixture], candidates: list[Candidate], output_dir: Path) -> dict[str, Any]:
+def _validate_repeat_count(repeat_count: int) -> None:
+    if repeat_count < 1:
+        raise ValueError("repeat_count must be at least 1")
+
+
+def build_plan(
+    fixtures: list[Fixture],
+    candidates: list[Candidate],
+    output_dir: Path,
+    repeat_count: int = 1,
+) -> dict[str, Any]:
+    _validate_repeat_count(repeat_count)
     return {
         "ok": True,
         "mode": "plan",
         "fixture_count": len(fixtures),
         "candidate_count": len(candidates),
+        "round_count": repeat_count,
+        "planned_result_count": len(fixtures) * len(candidates) * repeat_count,
         "output_dir": str(output_dir),
         "fixtures": [
             {
@@ -285,7 +298,13 @@ def _build_client(candidate: Candidate) -> OpenAICompatibleLLMClient:
     )
 
 
-def execute_evals(fixtures: list[Fixture], candidates: list[Candidate], output_dir: Path) -> dict[str, Any]:
+def execute_evals(
+    fixtures: list[Fixture],
+    candidates: list[Candidate],
+    output_dir: Path,
+    repeat_count: int = 1,
+) -> dict[str, Any]:
+    _validate_repeat_count(repeat_count)
     if not candidates:
         raise ValueError("--execute requires at least one candidate")
     missing_keys = [candidate.candidate_id for candidate in candidates if not candidate.api_key_configured]
@@ -294,37 +313,44 @@ def execute_evals(fixtures: list[Fixture], candidates: list[Candidate], output_d
 
     output_dir.mkdir(parents=True, exist_ok=True)
     results: list[dict[str, Any]] = []
-    for candidate in candidates:
-        client = _build_client(candidate)
-        candidate_dir = output_dir / candidate.candidate_id
-        candidate_dir.mkdir(parents=True, exist_ok=True)
-        for fixture in fixtures:
-            started_at = time.time()
-            payload = client.generate_structured(
-                task="vision",
-                prompt=VISION_EVAL_PROMPT,
-                schema=VISION_EVAL_SCHEMA,
-                image_path=str(fixture.image_path),
-            )
-            duration_ms = round((time.time() - started_at) * 1000)
-            result = {
-                "ok": isinstance(payload, dict),
-                "fixture_id": fixture.fixture_id,
-                "model": candidate.model,
-                "candidate_id": candidate.candidate_id,
-                "duration_ms": duration_ms,
-                "image_path": str(fixture.image_path.relative_to(AIMANDALA_ROOT)),
-                "output": payload,
-            }
-            output_path = candidate_dir / f"{fixture.fixture_id}.json"
-            output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            results.append({**result, "output_path": str(output_path)})
+    for round_index in range(1, repeat_count + 1):
+        round_id = f"round-{round_index:03d}"
+        round_dir = output_dir / round_id
+        round_dir.mkdir(parents=True, exist_ok=True)
+        for candidate in candidates:
+            client = _build_client(candidate)
+            candidate_dir = round_dir / candidate.candidate_id
+            candidate_dir.mkdir(parents=True, exist_ok=True)
+            for fixture in fixtures:
+                started_at = time.time()
+                payload = client.generate_structured(
+                    task="vision",
+                    prompt=VISION_EVAL_PROMPT,
+                    schema=VISION_EVAL_SCHEMA,
+                    image_path=str(fixture.image_path),
+                )
+                duration_ms = round((time.time() - started_at) * 1000)
+                result = {
+                    "ok": isinstance(payload, dict),
+                    "round_id": round_id,
+                    "round_index": round_index,
+                    "fixture_id": fixture.fixture_id,
+                    "model": candidate.model,
+                    "candidate_id": candidate.candidate_id,
+                    "duration_ms": duration_ms,
+                    "image_path": str(fixture.image_path.relative_to(AIMANDALA_ROOT)),
+                    "output": payload,
+                }
+                output_path = candidate_dir / f"{fixture.fixture_id}.json"
+                output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                results.append({**result, "output_path": str(output_path)})
 
     summary = {
         "ok": all(item["ok"] for item in results),
         "mode": "execute",
         "fixture_count": len(fixtures),
         "candidate_count": len(candidates),
+        "round_count": repeat_count,
         "result_count": len(results),
         "output_dir": str(output_dir),
         "results": results,
@@ -373,6 +399,7 @@ def main() -> int:
     parser.add_argument("--candidate-config", type=Path, help="JSON file containing vision model candidates.")
     parser.add_argument("--fixture-id", action="append", default=[], help="Fixture id to run, can be repeated.")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--repeat-count", type=int, default=1, help="Number of eval rounds to run.")
     parser.add_argument("--execute", action="store_true", help="Call real model APIs and write result JSON files.")
     parser.add_argument("--print-config-template", action="store_true", help="Print a candidate config template.")
     args = parser.parse_args()
@@ -384,9 +411,9 @@ def main() -> int:
     fixtures = load_fixtures(args.fixture_id or None)
     candidates = load_candidates(args.candidate_config)
     if args.execute:
-        result = execute_evals(fixtures, candidates, args.output_dir)
+        result = execute_evals(fixtures, candidates, args.output_dir, repeat_count=args.repeat_count)
     else:
-        result = build_plan(fixtures, candidates, args.output_dir)
+        result = build_plan(fixtures, candidates, args.output_dir, repeat_count=args.repeat_count)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("ok") else 1
 

@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-005",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 8621,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个明显的对称图案，以紫色和黄色为主，周围环绕着多个花瓣状图案。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，由多个对称的几何形状组成。",
+      "middle": "中圈边界由黄色和蓝色几何形状构成，边界较为明显。",
+      "outer": "外圈边界由绿色和黄色几何形状构成，边界较为模糊。"
+    },
+    "dominant_colors": [
+      "紫色",
+      "黄色",
+      "绿色",
+      "蓝色"
+    ],
+    "structure_notes": [
+      "图案对称性高",
+      "颜色分布均匀",
+      "层次分明"
+    ],
+    "risk_flags": [
+      "无明显的拥挤或断裂现象"
+    ],
+    "confidence": "high"
+  }
+}

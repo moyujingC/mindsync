@@ -28,12 +28,15 @@ def test_build_plan_does_not_require_candidates():
         fixtures,
         candidates=[],
         output_dir=Path("/tmp/vision-evals"),
+        repeat_count=3,
     )
 
     assert plan["ok"] is True
     assert plan["mode"] == "plan"
     assert plan["fixture_count"] == 1
     assert plan["candidate_count"] == 0
+    assert plan["round_count"] == 3
+    assert plan["planned_result_count"] == 0
 
 
 def test_config_template_includes_four_domestic_vision_candidates():
@@ -132,8 +135,71 @@ def test_execute_writes_result_files(tmp_path: Path):
     ):
         summary = run_vision_model_evals.execute_evals(fixtures, [candidate], tmp_path)
 
-    output_path = tmp_path / "fake-vision" / "toc-mvp-fixture-001.json"
+    output_path = tmp_path / "round-001" / "fake-vision" / "toc-mvp-fixture-001.json"
     assert summary["ok"] is True
     assert output_path.exists()
     written = json.loads(output_path.read_text(encoding="utf-8"))
     assert written["output"]["center_observation"] == "中心较稳定。"
+
+
+def test_execute_repeats_into_round_directories_without_overwrite(tmp_path: Path):
+    fixtures = run_vision_model_evals.load_fixtures(["toc-mvp-fixture-001"])
+    candidate = run_vision_model_evals.Candidate(
+        candidate_id="fake-vision",
+        base_url="https://example.com/v1",
+        model="vision-model",
+        api_key="secret",
+        api_key_env=None,
+        api_key_header="Authorization",
+        timeout_seconds=1,
+        max_retries=0,
+        retry_backoff_ms=0,
+    )
+
+    payloads = [
+        {
+            "center_observation": "第一轮中心稳定。",
+            "circle_boundaries": {
+                "inner": "内圈可见。",
+                "middle": "中圈可见。",
+                "outer": "外圈清晰。",
+            },
+            "dominant_colors": ["蓝色"],
+            "structure_notes": ["结构集中"],
+            "risk_flags": [],
+            "confidence": "medium",
+        },
+        {
+            "center_observation": "第二轮中心略偏。",
+            "circle_boundaries": {
+                "inner": "内圈可见。",
+                "middle": "中圈可见。",
+                "outer": "外圈清晰。",
+            },
+            "dominant_colors": ["蓝色"],
+            "structure_notes": ["结构集中"],
+            "risk_flags": [],
+            "confidence": "medium",
+        },
+    ]
+
+    with patch.object(
+        run_vision_model_evals.OpenAICompatibleLLMClient,
+        "generate_structured",
+        side_effect=payloads,
+    ):
+        summary = run_vision_model_evals.execute_evals(
+            fixtures,
+            [candidate],
+            tmp_path,
+            repeat_count=2,
+        )
+
+    first_output = tmp_path / "round-001" / "fake-vision" / "toc-mvp-fixture-001.json"
+    second_output = tmp_path / "round-002" / "fake-vision" / "toc-mvp-fixture-001.json"
+    assert summary["ok"] is True
+    assert summary["round_count"] == 2
+    assert summary["result_count"] == 2
+    assert first_output.exists()
+    assert second_output.exists()
+    assert first_output.read_text(encoding="utf-8") != second_output.read_text(encoding="utf-8")
