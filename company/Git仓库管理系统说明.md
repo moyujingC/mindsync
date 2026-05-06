@@ -450,7 +450,7 @@ GitHub Actions 不会识别“你是从哪个 `worktree` 推上去的”。
 
 自动提交辅助机制和提交边界的正式说明，仍以：
 
-- [company/Git提交与自动提交规范.md](company/Git提交与自动提交规范.md)
+- [company/Git提交与自动提交规范.md](../company/Git提交与自动提交规范.md)
 
 为准。
 
@@ -507,11 +507,11 @@ worktree 是同一仓库的不同工作台，不是新仓库，不应自己发�
 如果你要理解公司级 Git 仓库管理系统，建议按这个顺序看：
 
 1. [MONOREPO.md](MONOREPO.md)
-2. [company/项目与仓库映射.md](company/项目与仓库映射.md)
-3. [company/Git提交与自动提交规范.md](company/Git提交与自动提交规范.md)
-4. [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-5. [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md)
+2. [company/项目与仓库映射.md](../company/项目与仓库映射.md)
+3. [company/Git提交与自动提交规范.md](../company/Git提交与自动提交规范.md)
+4. [company/服务器与基础设施入口.md](../company/服务器与基础设施入口.md)
+5. [company/projects/Automation/PROJECT.md](../company/projects/Automation/PROJECT.md)
 
 如果你要判断 `Paperclip workspace / execution workspace / git worktree` 是否已经真正用透，再继续看：
 
-- [company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md](company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md)
+- [company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md](../company/knowledge-base/system/Paperclip-workspace-充分使用度检查表.md)
