@@ -1,9 +1,32 @@
 {
-  "ok": false,
+  "ok": true,
   "fixture_id": "toc-mvp-fixture-001",
-  "model": "Doubao-Seed-1.6-vision",
+  "model": "ep-20260316095322-94wf5",
   "candidate_id": "doubao-vision",
-  "duration_ms": 7786,
+  "duration_ms": 13035,
   "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
-  "output": null
+  "output": {
+    "center_observation": "画面中心是一个红色星形图案，周围环绕着黄色区域，黄色区域中还有绿色和橙色的弧形图案",
+    "circle_boundaries": {
+      "inner": "内圈由7个紫色、黄色、蓝色组成的圆形图案构成，边界清晰，围绕中心星形",
+      "middle": "中圈包含内圈的7个圆形，以及周围的绿色、橙色弧形和黄色背景区域，边界相对模糊，与内圈和外圈有色彩过渡",
+      "outer": "外圈由蓝色的波浪形图案和带有绿色、黄色圆点的橙色月牙形图案构成，边界清晰，围绕中圈"
+    },
+    "dominant_colors": [
+      "蓝色",
+      "黄色",
+      "紫色",
+      "绿色",
+      "橙色",
+      "红色"
+    ],
+    "structure_notes": [
+      "内圈有7个对称分布的圆形图案，图案内部有蓝色、黄色、紫色的几何图形",
+      "中圈的黄色区域连接内圈和外圈，绿色和橙色弧形图案穿插其中",
+      "外圈的蓝色波浪形图案和橙色月牙形图案交替排列，月牙形图案上有绿色和黄色圆点",
+      "整体结构对称，各圈层图案衔接自然，无明显断裂"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
 }
