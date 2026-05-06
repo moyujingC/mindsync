@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers Security Browser Runtime Input 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-security-browser-runtime-input实施任务.md
+
 ## 目标
 
 在 `Console` app 层新增统一 `Providers security browser runtime input` 装配入口，把 browser runtime 中分散的 auth/token 输入收束成单一高层输入对象，同时保持默认启动为 disabled/mock。

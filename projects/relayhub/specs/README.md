@@ -1,5 +1,12 @@
 # Specs
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/specs/README.md
+
+
 这里放 `RelayHub` 的正式 spec 与架构方案。
 
 规则：

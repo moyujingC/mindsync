@@ -1,5 +1,12 @@
 # Delivery
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/README.md
+
+
 这里放 `RelayHub` 的交付记录、阶段 handoff 和实现后结论。
 
 `delivery` 用于承接窗口性证据链，不用于替代长期 `spec`、`task` 或 `qa`。

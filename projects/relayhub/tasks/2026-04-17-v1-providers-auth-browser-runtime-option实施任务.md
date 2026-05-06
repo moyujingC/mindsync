@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers auth browser runtime option 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-auth-browser-runtime-option实施任务.md
+
 ## Summary
 
 在 `Console` 侧新增更高层 `Providers auth browser runtime option` 装配入口，把 browser runtime 输入中的显式 `authDeploymentInput` 再收束一层。

@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers auth deployment input 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-auth-deployment-input实施任务.md
+
 ## Summary
 
 在 `Console` 侧新增更高层 `Providers auth deployment input` 装配入口，把当前散落在 deployment/browser runtime 输入中的多种 auth 参数收束成单一 auth 输入对象。

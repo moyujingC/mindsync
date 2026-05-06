@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers token provider seam 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-token-provider-seam实施任务.md
+
 ## Summary
 
 在现有 `auth browser runtime option` 之上新增 services 层 `token provider seam`，把 Providers auth 从显式 headers resolver/source 继续推进到显式 token provider/source。
