@@ -7,10 +7,13 @@ import { act } from "react";
 
 vi.mock("../shared/api", () => ({
   createInterpretation: vi.fn(),
+  createMiniappOrder: vi.fn(),
   detectCircles: vi.fn(),
   getInterpretationList: vi.fn(),
   getInterpretationReport: vi.fn(),
   getInterpretationStatus: vi.fn(),
+  notifyMiniappWechatPayment: vi.fn(),
+  reconcileMiniappOrder: vi.fn(),
   uploadImage: vi.fn(),
 }));
 
@@ -54,6 +57,42 @@ function createLiteReportResponse() {
     ai_qa_context: null,
     can_upgrade: true,
     upgrade_price: 39,
+    error: null,
+  };
+}
+
+function createProReportResponse() {
+  return {
+    interpretation_id: "ipt-runtime-lite",
+    version: "pro" as const,
+    title: "一梳 Pro 版报告",
+    overall_impression: "更完整的结构已经生成。",
+    structured: {
+      topic_context: {
+        topic: "general",
+        topic_label: "全面解读",
+        report_mode: "pro",
+        orientation: {
+          intro: "Pro 会展开更深的结构。",
+          focus: "看见根因与调节路径。",
+          key_terms: [],
+        },
+      },
+      deep_impression: "边界感偏强。",
+      evidence_digest: "内圈、中圈、外圈依据完整。",
+      imbalance_diagnosis: "金多木折",
+      root_cause_chain: {
+        surface: "先收紧。",
+        mechanism: "用边界保护自己。",
+        core: "需要稳定感。",
+      },
+      deep_structure_interpretation: "结构可读。",
+      healing_plan: [{ phase: "第一步", focus: "放慢", practice: "记录身体感受" }],
+    },
+    report: "pro body",
+    ai_qa_context: null,
+    can_upgrade: false,
+    upgrade_price: null,
     error: null,
   };
 }
@@ -120,6 +159,47 @@ describe("MobileWebRuntime", () => {
     });
     vi.mocked(api.getInterpretationReport).mockResolvedValue(createLiteReportResponse());
     vi.mocked(api.getInterpretationList).mockResolvedValue([]);
+    vi.mocked(api.createMiniappOrder).mockResolvedValue({
+      order_id: "order-runtime-pro",
+      interpretation_id: "ipt-runtime-lite",
+      product_type: "pro",
+      channel: "miniapp",
+      purchase_state: "created",
+      payable_amount: 39,
+      currency: "CNY",
+      version_granted: null,
+      latest_purchase_updated_at: null,
+      wechat_pay_payload: {
+        mode: "stub",
+        order_id: "order-runtime-pro",
+        next_action: "reconcile_after_host_payment",
+      },
+    });
+    vi.mocked(api.notifyMiniappWechatPayment).mockResolvedValue({
+      order_id: "order-runtime-pro",
+      interpretation_id: "ipt-runtime-lite",
+      product_type: "pro",
+      channel: "miniapp",
+      purchase_state: "paid",
+      payable_amount: 39,
+      currency: "CNY",
+      version_granted: null,
+      latest_purchase_updated_at: null,
+      wechat_pay_payload: null,
+    });
+    vi.mocked(api.reconcileMiniappOrder).mockResolvedValue({
+      order_id: "order-runtime-pro",
+      interpretation_id: "ipt-runtime-lite",
+      product_type: "pro",
+      channel: "miniapp",
+      purchase_state: "fulfilled",
+      payable_amount: 39,
+      currency: "CNY",
+      version_granted: ["pro"],
+      latest_purchase_updated_at: null,
+      wechat_pay_payload: null,
+      reconciled: true,
+    });
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -178,5 +258,90 @@ describe("MobileWebRuntime", () => {
       );
     });
     expect(api.detectCircles).not.toHaveBeenCalled();
+  });
+
+  it("选择 Pro 时先走 miniapp stub 支付和 reconcile 再拉取 Pro 报告", async () => {
+    vi.mocked(api.getInterpretationStatus)
+      .mockResolvedValueOnce({
+        interpretation_id: "ipt-runtime-lite",
+        status: "completed",
+        generation_stage: "report_ready",
+        generation_progress: 100,
+        report_ready: true,
+        version_purchased: ["lite"],
+        three_circles: {
+          inner_radius: 36,
+          middle_radius: 64,
+        },
+        auto_detected: false,
+        can_upgrade: true,
+      })
+      .mockResolvedValue({
+        interpretation_id: "ipt-runtime-lite",
+        status: "completed",
+        generation_stage: "report_ready",
+        generation_progress: 100,
+        report_ready: true,
+        version_purchased: ["lite", "pro"],
+        three_circles: {
+          inner_radius: 36,
+          middle_radius: 64,
+        },
+        auto_detected: false,
+        can_upgrade: false,
+      });
+    vi.mocked(api.getInterpretationReport).mockImplementation(async (_id, version) => (
+      version === "pro" ? createProReportResponse() : createLiteReportResponse()
+    ));
+
+    const input: MobileWebRouteInput = {
+      route: "reportEntry",
+      params: {
+        session: createMobileWebGuestSession("runtime-test"),
+        draft: {
+          imagePath: "/tmp/manual-circle-mandala.png",
+          theme: "general",
+          reportType: "lite",
+          reportVariant: "lite",
+          paintingIntention: "看见自己",
+          paintingFeeling: "平静",
+          innerRadius: 0.36,
+          middleRadius: 0.64,
+        },
+      },
+    };
+
+    flushSync(() => {
+      root.render(<MobileWebRuntime input={input} />);
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("选择 Pro");
+    });
+
+    const proButton = Array.from(container.querySelectorAll("button")).find((item) =>
+      item.textContent?.includes("选择 Pro"),
+    );
+    expect(proButton).toBeTruthy();
+
+    await act(async () => {
+      proButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("一梳 Pro 版报告");
+    });
+    expect(api.createMiniappOrder).toHaveBeenCalledWith({
+      interpretation_id: "ipt-runtime-lite",
+      product_type: "pro",
+      channel: "miniapp",
+      debug_canonical_user_id: expect.stringContaining("guest:mobile-web:runtime-test"),
+    });
+    expect(api.notifyMiniappWechatPayment).toHaveBeenCalledWith({
+      order_id: "order-runtime-pro",
+      event: "paid",
+    });
+    expect(api.reconcileMiniappOrder).toHaveBeenCalledWith("order-runtime-pro");
+    expect(api.getInterpretationReport).toHaveBeenCalledWith("ipt-runtime-lite", "pro");
   });
 });
