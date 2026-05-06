@@ -19,10 +19,10 @@
 - GitHub Actions 不按 `worktree` 触发
 - GitHub Actions 只按分支、事件和路径触发
 - `worktree` 是工作台，不是另一套 Git 治理体系
-- 默认先收口到项目开发分支，再定期回 `main`
+- 单人开发默认先在 `main` 根工作区推进，再按任务复杂度决定是否拆出项目开发分支
 - 不把所有项目强行塞进同一种发布节奏
 - 当前判断 `Aimandala` CI/CD 是否可用时，优先看 `mvp-release`
-- 原 `aimandala-ci / deploy / nightly-smoke / auto-repair` 先按增强设计链路理解
+- 原 `aimandala-ci / deploy / nightly-smoke / auto-repair` 先按增强设计链路理解，不作为当前 MVP 日常开发的默认复杂度
 
 ## 2. 当前分支职责
 
@@ -30,15 +30,23 @@
 
 `main` 当前固定表示：
 
+- 单人开发默认主线
 - 公司主干
 - 治理主干
 - Automation 收口主干
 - 跨项目稳定收口主干
 
-它默认不承接：
+它可以承接：
 
-- 高频项目试错
-- `RelayHub` 的日常部署主线
+- 当前单线程推进中的普通项目开发
+- 本地人工完成的 CI 修复
+- MVP 阶段的最小 CI/CD 验证
+
+它不适合承接：
+
+- 多条项目线并行施工
+- 需要长期隔离的实验分支
+- 服务器自动化写文件任务
 
 ### 2.2 `release`
 
@@ -55,16 +63,16 @@
 
 `aimandala/dev` 当前固定表示：
 
-- `AI Mandala` 的项目开发主线
-- 本地开发、联调和验证默认主线
+- `AI Mandala` 可选的项目开发主线
+- 当 `main` 根工作区不够用时，用于本地开发、联调和验证的独立主线
 
 ### 2.4 `relayhub/dev`
 
 `relayhub/dev` 当前固定表示：
 
-- `RelayHub` 的长期服务器测试分支
-- `RelayHub` 的内部部署主线
-- `relayhub.jingshu.cc` 当前默认驱动分支
+- `RelayHub` 可选的长期服务器测试分支
+- 当需要和 `main` 隔离时，作为内部部署主线
+- 若当前直接基于 `main` 推进，则部署来源应以项目 runbook 或 workflow 配置为准
 
 ### 2.5 任务分支
 
@@ -77,8 +85,9 @@
 
 默认口径：
 
-- 项目实现任务不要直接从 `main` 分出
-- 公司治理 / Monorepo 治理任务才默认基于 `main`
+- 单人单线程任务可以直接基于 `main` 完成
+- 已经启用项目开发分支时，任务分支默认从项目开发分支分出
+- 公司治理 / Monorepo 治理任务仍默认基于 `main`
 
 ## 3. 在哪个分支上做什么
 
@@ -99,6 +108,7 @@
 
 适合分支：
 
+- `main`
 - `aimandala/dev`
 - 从 `aimandala/dev` 分出的任务分支
 
@@ -110,7 +120,8 @@
 
 默认路径：
 
-- 任务分支先回 `aimandala/dev`
+- 单人当前主线开发可以直接在 `main` 完成
+- 若启用了 `aimandala/dev`，任务分支先回 `aimandala/dev`
 - `aimandala/dev` 稳定后再回 `main`
 - 生产发布时再进入 `release`
 
@@ -118,6 +129,7 @@
 
 适合分支：
 
+- `main`
 - `relayhub/dev`
 - 从 `relayhub/dev` 分出的任务分支
 
@@ -129,9 +141,10 @@
 
 默认路径：
 
-- 任务分支先回 `relayhub/dev`
-- `relayhub/dev` push 后直接触发内部部署链
-- 阶段稳定后再定期回 `main`
+- 单人当前主线开发可以直接在 `main` 完成
+- 若启用了 `relayhub/dev`，任务分支先回 `relayhub/dev`
+- `relayhub/dev` push 后按该分支的内部部署链验证
+- 项目分支形成阶段稳定点后，再定期回 `main`
 
 ## 4. 分支之间的合并同步
 
@@ -139,7 +152,7 @@
 
 当前默认采用：
 
-- 项目分支定期回主干
+- `main` 优先，项目分支按需回主干
 
 而不是：
 
@@ -147,16 +160,18 @@
 
 ### 4.2 日常收口顺序
 
+- `main`
+  - 单人开发默认收口路径
 - `项目任务分支 -> 项目开发分支`
-  - 日常默认收口路径
+  - 已经启用项目开发分支时的日常收口路径
 - `项目开发分支 -> main`
-  - 阶段性、稳定点收口路径
+  - 项目分支形成独立演进后的阶段性、稳定点收口路径
 
 这里再收紧一层默认纪律：
 
-- 不把 `main` 当所有项目的高频集成池
-- 不因为“想触发 CI / deploy”就把项目日常改动先塞进 `main`
-- 只有已经准备进入公司级长期真理源的稳定内容，才进入 `main`
+- 不因为“文档里曾经写了项目分支”就强制离开 `main`
+- 不因为“想触发 CI / deploy”就额外制造分支和 worktree
+- 如果工作本来就在 `main` 上完成，关键是保持提交小、验证清楚、失败可追踪
 
 ### 4.3 何时把 `main` 回灌到项目分支
 
@@ -190,14 +205,15 @@
 
 - 可以长期存在
 - 可以高频迭代
-- 但不应为了保持“看起来同步”而高频 merge 回 `main`
+- 但不是默认必经入口
+- 如果确实形成独立演进，不应为了保持“看起来同步”而高频 merge 回 `main`
 
 通俗说：
 
-- `main` 更像公司总账
-- 项目 `dev` 分支更像各自项目的流水账
+- 单人单线程时，`main` 就是当前工作账本
+- 项目 `dev` 分支只在需要独立账本时启用
 
-流水账可以天天变，总账不该被所有流水高频倒灌。
+因此当前不再默认把所有项目日常工作都先导向 `dev` 分支。
 
 只有满足下面任一条件，才建议从项目分支回 `main`：
 
@@ -213,6 +229,8 @@
 - 仅服务单一项目的服务器试验
 - 还在频繁重写的 UI / 文案 / 研究草稿
 - 只是为了让 `main`“看起来最新”
+
+如果这些内容本来就在 `main` 上推进，则不需要额外“回 main”；此时应通过小提交、清晰说明和 CI 结果控制风险。
 
 ## 5. GitHub Actions 触发口径
 
@@ -396,11 +414,12 @@ GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常
 - [shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs](shared/tools/ci/paperclip-github-cicd-routing.smoke.mjs)
 - [company/projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md](company/projects/Automation/2026-05-03-GitHub-Paperclip-CI-CD-联调测试说明.md)
 
-## 6. 一句话判断法
+## 7. 一句话判断法
 
 - 公司治理工作：上 `main`
-- `AI Mandala` 日常开发：上 `aimandala/dev`
-- `RelayHub` 日常开发和内部部署：上 `relayhub/dev`
-- 任务开发：先回项目开发分支
-- 阶段稳定：再回 `main`
+- 单人当前主线开发：优先上 `main`
+- `AI Mandala` 需要隔离时：上 `aimandala/dev`
+- `RelayHub` 需要内部部署隔离时：上 `relayhub/dev`
+- 任务开发：当前主线在 `main` 就回 `main`；已启用项目开发分支才先回项目开发分支
+- 项目分支阶段稳定：再回 `main`
 - `AI Mandala` 正式发布：再进入 `release`

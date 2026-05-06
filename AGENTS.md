@@ -95,8 +95,9 @@
 ## Monorepo 日常工作区约定
 
 - 根工作区 [mindsync](.) 固定对应 `main`
-- `main` 只承担公司主干、Automation、治理文档与最终收口
-- 已明确长期独立开发的项目，默认应在各自正式 `git worktree` 中开发与验证
+- 对单人开发场景，`main` 对应的根工作区默认就是日常主工作台；如果当下在这里开发已经够用，不必为了形式切到其他 `git worktree`
+- `main` 可以承担公司主干、治理文档、Automation，以及当前单线程进行中的项目开发工作
+- 只有在确实需要隔离并行任务、保持某项目长期独立开发台，或承接本地 / 服务器自动执行时，才默认创建并使用正式 `git worktree`
 - 具体项目 worktree、分支和服务器/本地路径口径，统一看：
   - [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
   - [company/项目与仓库映射.md](company/项目与仓库映射.md)
