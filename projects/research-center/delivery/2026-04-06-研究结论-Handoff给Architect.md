@@ -1,4 +1,9 @@
 # 研究结论 Handoff 给 Architect
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/research-center/delivery/2026-04-06-研究结论-Handoff给Architect.md
 > 来源：研究中心首批研究成果
 > 交付时间：2026-04-06
 > 交付对象：Architect

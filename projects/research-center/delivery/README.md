@@ -1,5 +1,11 @@
 # Delivery
 
+> 状态：current
+> 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/research-center/delivery/README.md
+
 这里放 `研究中心` 的阶段总结、交付记录与复盘。
 
 适合放：

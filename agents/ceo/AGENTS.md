@@ -16,9 +16,9 @@ reportsTo: null
 
 你必须优先读取并服从：
 
-1. [COMPANY.md](COMPANY.md)
-2. [MONOREPO.md](MONOREPO.md)
-3. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+1. [COMPANY.md](../../COMPANY.md)
+2. [MONOREPO.md](../../MONOREPO.md)
+3. [DOCS_GOVERNANCE.md](../../DOCS_GOVERNANCE.md)
 4. 对应项目入口：
    - `projects/<project-slug>/PROJECT.md`
 5. 当前阶段 artifact：

@@ -79,6 +79,26 @@ def is_formal_doc(file_path: Path, repo_root: Path) -> bool:
     return False
 
 
+def should_scan_status_doc(file_path: Path, repo_root: Path) -> bool:
+    """状态检查只覆盖第一方正式文档，排除模板、技能说明、临时笔记和输出样本"""
+    if not is_formal_doc(file_path, repo_root):
+        return False
+
+    try:
+        rel = file_path.relative_to(repo_root)
+    except ValueError:
+        return False
+
+    parts = rel.parts
+    if 'templates' in parts or 'skills' in parts:
+        return False
+
+    if 'notes' in parts or 'output' in parts:
+        return False
+
+    return True
+
+
 def read_content(file_path: Path) -> str:
     return file_path.read_text(encoding='utf-8', errors='ignore')
 
@@ -102,10 +122,22 @@ def should_scan_redundancy_keywords(file_path: Path, repo_root: Path) -> bool:
         return False
 
     parts = rel.parts
-    if 'templates' in parts or 'skills' in parts:
+    if 'templates' in parts or 'skills' in parts or 'decisions' in parts:
+        return False
+
+    if file_path.name == 'DOCS_GOVERNANCE.md':
         return False
 
     return is_formal_doc(file_path, repo_root)
+
+
+def find_repo_root(start_path: Path) -> Path:
+    """尽量找到仓库根，避免把子目录扫描误当成仓库根"""
+    current = start_path if start_path.is_dir() else start_path.parent
+    for candidate in [current, *current.parents]:
+        if (candidate / '.git').exists() or (candidate / 'AGENTS.md').exists():
+            return candidate
+    return start_path
 
 
 def scan_redundancy(file_path: Path, repo_root: Path) -> list[dict]:
@@ -184,7 +216,7 @@ def scan_status(file_path: Path) -> list[dict]:
 
 
 def scan_formal_status(file_path: Path, repo_root: Path) -> list[dict]:
-    if not is_formal_doc(file_path, repo_root):
+    if not should_scan_status_doc(file_path, repo_root):
         return []
     return scan_status(file_path)
 
@@ -264,6 +296,7 @@ def scan_file(file_path: Path, repo_root: Path) -> list[dict]:
 
 def scan_directory(directory: Path, recursive: bool = True) -> dict:
     """扫描目录"""
+    repo_root = find_repo_root(directory.resolve())
     results = {
         'files_scanned': 0,
         'total_issues': 0,
@@ -281,7 +314,7 @@ def scan_directory(directory: Path, recursive: bool = True) -> dict:
             continue
 
         results['files_scanned'] += 1
-        issues = scan_file(file_path, directory)
+        issues = scan_file(file_path, repo_root)
 
         for issue in issues:
             results['by_type'][issue['type']].append({

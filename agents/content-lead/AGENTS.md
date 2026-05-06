@@ -81,8 +81,8 @@ reportsTo: ../ceo/AGENTS.md
 
 如果目标账号是 `墨予镜` 个人 IP，你还必须额外确认：
 
-- 是否已经读取 [company/projects/墨予镜IP/PROJECT.md](../../company/projects/墨予镜IP/PROJECT.md)
-- 是否已经读取 [company/projects/墨予镜IP/个人真实信息与表达基线.md](../../company/projects/墨予镜IP/个人真实信息与表达基线.md)
+- 是否已经读取 [company/projects/内容矩阵/PROJECT.md](../../company/projects/内容矩阵/PROJECT.md)
+- 是否已经读取 [company/projects/内容矩阵/个人真实信息与表达基线.md](../../company/projects/内容矩阵/个人真实信息与表达基线.md)
 - 本轮内容里所有第一人称表述，是否都能对应到已确认的真实经历、真实状态或真实判断
 - 当前引用的项目文档、策略文档和上游草稿，是否已经被创作者本人审核为可引用依据
 

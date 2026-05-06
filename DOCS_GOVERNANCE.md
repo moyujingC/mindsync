@@ -372,7 +372,7 @@
 - 元数据
   - `source_of_truth：projects/aimandala/docs/specs/2026-04-18-报告链路保真重构总规格.md`
 - 正文链接
-  - `[架构总览](./architecture/架构总览.md)`
+- `[架构总览](./projects/aimandala/docs/architecture/架构总览.md)`
 - 命令
   - `cd "$REPO_ROOT/projects/aimandala/toC/app/frontend"`
 

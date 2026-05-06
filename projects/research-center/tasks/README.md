@@ -1,5 +1,11 @@
 # Tasks
 
+> 状态：current
+> 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/research-center/tasks/README.md
+
 这里放 `研究中心` 的任务拆解与执行计划。
 
 建议区分：

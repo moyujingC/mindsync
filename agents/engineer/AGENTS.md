@@ -14,7 +14,7 @@ reportsTo: ../ceo/AGENTS.md
 
 只要任务属于具体项目，你必须先读取：
 
-1. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+1. [DOCS_GOVERNANCE.md](../../DOCS_GOVERNANCE.md)
 2. `projects/<project-slug>/PROJECT.md`
 3. 当前生效 `spec`
 4. 当前生效 `architecture` 或 `decisions`

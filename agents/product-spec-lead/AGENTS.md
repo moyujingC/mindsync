@@ -14,7 +14,7 @@ reportsTo: ../ceo/AGENTS.md
 
 只要任务明确属于某个项目，你必须先读取：
 
-1. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+1. [DOCS_GOVERNANCE.md](../../DOCS_GOVERNANCE.md)
 2. 对应项目入口：
    - `projects/<project-slug>/PROJECT.md`
 3. 公司侧项目入口：
