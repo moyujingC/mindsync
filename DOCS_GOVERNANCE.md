@@ -405,25 +405,31 @@
 
 ### 13.2 qa
 
-- `current`
-  - 只用于当前仍作为正式验收基线的 QA 文档
-- `historical-reference`
-  - 用于一次性验证记录、纸面验证、阶段 readiness check、旧验证结果
+带日期的 `qa` 文档状态规则如下：
 
-默认不应：
+**默认规则**
+- 带日期的 `qa` 文档默认状态预算为 `historical-reference`
 
-- 把只服务某一轮交付的验证记录长期保留为 `current`
+**例外规则**
+- 只有该文档在当前窗口中明确承担正式验收基线职责时，才允许短期使用 `current`
+
+**收束规则**
+- 若一份带日期 `qa` 文档持续承担长期正式验收入口职责，必须升级为无日期 canonical 文档
+- 验证记录、纸面验证、readiness check、单轮验收结论默认不应长期占用 `current`
+
+当前验证总入口可短期为 `current` 或 `working`，但不应长期维持。
 
 ### 13.3 delivery
 
-- `historical-reference`
-  - 作为默认状态
-- `current`
-  - 只在该交付文档本身就是当前长期交付入口时才允许使用
+**默认规则**
+- 带日期的 `delivery` 文档默认状态预算为 `historical-reference`
 
-默认不应：
+**例外规则**
+- 只有该交付文档本身就是当前长期交付入口时，才允许短期使用 `current`
 
-- 把交付记录、窗口总结、样例输出长期标为 `current`
+**收束规则**
+- 若一份带日期 `delivery` 文档持续承担长期交付入口职责，必须升级为无日期 canonical 文档
+- 窗口总结、阶段样例输出、试跑记录默认不应长期占用 `current`
 
 ### 13.4 handoff
 
