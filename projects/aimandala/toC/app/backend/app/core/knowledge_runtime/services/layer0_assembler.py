@@ -1489,11 +1489,17 @@ class Layer0Assembler:
             circles=circles,
         )
         if not isinstance(payload, dict):
+            error_detail = getattr(self.llm_client, "last_error_detail", {})
+            attempt_trace = getattr(self.llm_client, "last_attempt_trace", [])
             return {
                 "source": "layer0_failed",
                 "layer0_passed": False,
                 "failure_reason": "layer0_vision_request_failed",
-                "failure_detail": {"stage": "vision"},
+                "failure_detail": {
+                    "stage": "vision",
+                    "llm_error": error_detail if isinstance(error_detail, dict) else {},
+                    "llm_attempt_trace": attempt_trace if isinstance(attempt_trace, list) else [],
+                },
             }
         summary = str(payload.get("global_visual_summary") or "").strip()
         if not summary:

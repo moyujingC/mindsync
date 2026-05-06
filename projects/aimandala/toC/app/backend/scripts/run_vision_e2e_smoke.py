@@ -20,12 +20,66 @@ DEFAULT_FIXTURE_IDS = [
     "toc-mvp-fixture-006",
     "toc-mvp-fixture-008",
 ]
+DEFAULT_ENV_FILES = [
+    BACKEND_ROOT / ".env.local",
+    AIMANDALA_ROOT / ".env.local",
+]
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
 from fastapi.testclient import TestClient  # noqa: E402
 
 from scripts.run_vision_model_evals import load_fixtures  # noqa: E402
+
+
+def _parse_env_file_line(line: str) -> tuple[str, str] | None:
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        return None
+    if stripped.startswith("export "):
+        stripped = stripped[len("export ") :].strip()
+    if "=" not in stripped:
+        return None
+    key, value = stripped.split("=", 1)
+    key = key.strip()
+    if not key:
+        return None
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1]
+    return key, value
+
+
+def load_env_file(path: Path, *, override: bool = False) -> list[str]:
+    """Load simple KEY=VALUE env files without logging secret values."""
+    if not path.exists():
+        raise RuntimeError(f"Env file does not exist: {path}")
+    loaded: list[str] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        parsed = _parse_env_file_line(line)
+        if not parsed:
+            continue
+        key, value = parsed
+        if override or key not in os.environ:
+            os.environ[key] = value
+        loaded.append(key)
+    return loaded
+
+
+def load_smoke_env(env_file: Path | None = None) -> list[str]:
+    configured_path = env_file or (
+        Path(os.environ["AIMANDALA_SMOKE_ENV_FILE"]).expanduser()
+        if os.getenv("AIMANDALA_SMOKE_ENV_FILE")
+        else None
+    )
+    if configured_path:
+        return load_env_file(configured_path.expanduser())
+
+    loaded: list[str] = []
+    for default_path in DEFAULT_ENV_FILES:
+        if default_path.exists():
+            loaded.extend(load_env_file(default_path))
+    return loaded
 
 
 def _reset_api_state() -> None:
@@ -72,6 +126,21 @@ def configure_vision_env_from_existing_keys() -> None:
     os.environ.setdefault("AIMANDALA_UPLOAD_BACKEND", "local")
 
 
+def validate_vision_env() -> None:
+    missing = [
+        name
+        for name in [
+            "AIMANDALA_LLM_VISION_API_KEY",
+            "AIMANDALA_LLM_VISION_FALLBACK_API_KEY",
+        ]
+        if not os.getenv(name, "").strip()
+    ]
+    if missing:
+        raise RuntimeError(
+            "Missing vision smoke API key env: " + ", ".join(missing)
+        )
+
+
 def _post_upload(client: TestClient, image_path: Path) -> dict[str, Any]:
     with image_path.open("rb") as image_file:
         response = client.post(
@@ -97,6 +166,20 @@ def _guess_content_type(path: Path) -> str:
     return "application/octet-stream"
 
 
+def _build_fixture_user_context(fixture: Any) -> dict[str, str]:
+    """Use user-like context in smoke runs so QA evidence is not polluted by test meta text."""
+    theme = getattr(fixture, "theme", None) or "general"
+    if theme == "general":
+        return {
+            "painting_intention": "想更看清自己现在的状态，也想知道接下来怎么更稳地往前。",
+            "painting_feeling": "先如实看看这张画带出来的感受，不急着下结论。",
+        }
+    return {
+        "painting_intention": "想更看清自己在这个议题上的状态，也想知道接下来怎么更稳地往前。",
+        "painting_feeling": "先如实看看这张画带出来的感受，不急着下结论。",
+    }
+
+
 def _wait_for_pro_report(
     client: TestClient,
     interpretation_id: str,
@@ -118,7 +201,65 @@ def _wait_for_pro_report(
     return last_payload
 
 
+def _build_runtime_diagnostics(interpretation_id: str) -> dict[str, Any]:
+    from app.api.routes_v2 import get_store
+
+    record = get_store().load(interpretation_id)
+    if record is None:
+        return {"record_found": False}
+
+    layer0 = record.layer_0_raw
+    diagnostics: dict[str, Any] = {
+        "record_found": True,
+        "status": record.status,
+        "generation_stage": record.generation_stage,
+        "generation_progress": record.generation_progress,
+        "lite_ready": record.layer_2_lite_final is not None,
+        "pro_ready": record.layer_4_pro_final is not None,
+    }
+    if layer0 is not None:
+        diagnostics["layer0"] = {
+            "passed": layer0.layer0_passed,
+            "failure_reason": layer0.layer0_failure_reason,
+            "failure_detail": _sanitize_layer0_failure_detail(layer0.layer0_failure_detail),
+            "fidelity_flags": layer0.fidelity_flags,
+            "fallback_summary": layer0.fallback_summary,
+            "visual_basis_source": (
+                (layer0.visual_analysis_basis or {}).get("prompt_meta", {}).get("source")
+                if isinstance(layer0.visual_analysis_basis, dict)
+                else None
+            ),
+        }
+    return diagnostics
+
+
+def _sanitize_layer0_failure_detail(detail: Any) -> dict[str, Any]:
+    if not isinstance(detail, dict):
+        return {}
+    sanitized = {
+        key: value
+        for key, value in detail.items()
+        if key not in {"raw_response", "request_payload", "authorization", "api_key"}
+    }
+    attempt_trace = sanitized.get("llm_attempt_trace")
+    if isinstance(attempt_trace, list):
+        sanitized["llm_attempt_trace"] = [
+            {
+                "model": item.get("model"),
+                "base_url": item.get("base_url"),
+                "endpoint_url": item.get("endpoint_url"),
+                "result": item.get("result"),
+                "status": item.get("status"),
+                "reason": item.get("reason"),
+            }
+            for item in attempt_trace
+            if isinstance(item, dict)
+        ]
+    return sanitized
+
+
 def run_fixture_smoke(client: TestClient, fixture: Any) -> dict[str, Any]:
+    user_context = _build_fixture_user_context(fixture)
     upload = _post_upload(client, fixture.image_path)
     detect_response = client.post(
         "/api/v2/detect-circles",
@@ -137,8 +278,8 @@ def run_fixture_smoke(client: TestClient, fixture: Any) -> dict[str, Any]:
             "storage_key": upload.get("storage_key"),
             "image_local_expires_at": upload.get("image_local_expires_at"),
             "theme": fixture.theme or "general",
-            "painting_intention": "端到端验证视觉模型进入三圈识别和报告依据。",
-            "painting_feeling": "保持观察，不做诊断。",
+            "painting_intention": user_context["painting_intention"],
+            "painting_feeling": user_context["painting_feeling"],
         },
     )
     create_response.raise_for_status()
@@ -180,6 +321,7 @@ def run_fixture_smoke(client: TestClient, fixture: Any) -> dict[str, Any]:
     reconcile_response.raise_for_status()
     reconcile = reconcile_response.json()
     pro_report = _wait_for_pro_report(client, interpretation_id)
+    runtime_diagnostics = _build_runtime_diagnostics(interpretation_id)
 
     result = {
         "fixture_id": fixture.fixture_id,
@@ -195,6 +337,7 @@ def run_fixture_smoke(client: TestClient, fixture: Any) -> dict[str, Any]:
             "reconcile": reconcile,
         },
         "pro_report": pro_report,
+        "runtime_diagnostics": runtime_diagnostics,
     }
     result["validation"] = validate_fixture_result(result)
     return result
@@ -302,18 +445,32 @@ def _build_fixture_summary(result: dict[str, Any]) -> dict[str, Any]:
         if pro_report
         else None,
         "validation": result.get("validation"),
+        "runtime_diagnostics": result.get("runtime_diagnostics"),
     }
 
 
-def execute_smoke(fixture_ids: list[str], output_dir: Path) -> dict[str, Any]:
+def _prepare_output_dir(output_dir: Path) -> None:
+    """Ensure reruns do not mix stale evidence with current smoke results."""
+    shutil.rmtree(output_dir, ignore_errors=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+
+def execute_smoke(
+    fixture_ids: list[str],
+    output_dir: Path,
+    *,
+    env_file: Path | None = None,
+) -> dict[str, Any]:
+    load_smoke_env(env_file)
     configure_vision_env_from_existing_keys()
+    validate_vision_env()
     _reset_api_state()
     _install_smoke_orchestrator()
 
     from app.api.main import app
 
     fixtures = load_fixtures(fixture_ids)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    _prepare_output_dir(output_dir)
     client = TestClient(app)
     results = []
     for fixture in fixtures:
@@ -385,6 +542,7 @@ def build_sanitized_fixture_result(result: dict[str, Any]) -> dict[str, Any]:
         if pro_report
         else None,
         "validation": result.get("validation"),
+        "runtime_diagnostics": result.get("runtime_diagnostics"),
     }
 
 
@@ -432,10 +590,30 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture-id", action="append", default=[], help="Fixture id to run, can be repeated.")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--env-file",
+        type=Path,
+        default=None,
+        help="Optional local env file with vision API keys. Values are loaded but never printed.",
+    )
     args = parser.parse_args()
 
     fixture_ids = args.fixture_id or DEFAULT_FIXTURE_IDS
-    summary = execute_smoke(fixture_ids, args.output_dir)
+    try:
+        summary = execute_smoke(fixture_ids, args.output_dir, env_file=args.env_file)
+    except RuntimeError as error:
+        print(
+            json.dumps(
+                {
+                    "ok": False,
+                    "mode": "vision_e2e_smoke",
+                    "error": str(error),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 1
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0 if summary.get("ok") else 1
 

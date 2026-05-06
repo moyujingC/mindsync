@@ -110,6 +110,8 @@ class OpenAICompatibleLLMClient:
 
     def __init__(self, config: LLMClientConfig) -> None:
         self.config = config
+        self.last_error_detail: dict[str, Any] = {}
+        self.last_attempt_trace: list[dict[str, Any]] = []
 
     def generate_structured(
         self,
@@ -119,6 +121,8 @@ class OpenAICompatibleLLMClient:
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
+        self.last_error_detail = {}
+        self.last_attempt_trace = []
         task_config = self.config.resolve_task_config(task)
         fallback_task_config = self.config.resolve_fallback_task_config(task)
         schema_json = json.dumps(schema, ensure_ascii=False, indent=2)
@@ -175,6 +179,8 @@ class OpenAICompatibleLLMClient:
         system_prompt: str,
         user_prompt: str,
     ) -> Optional[str]:
+        self.last_error_detail = {}
+        self.last_attempt_trace = []
         task_config = self.config.resolve_task_config(task)
         fallback_task_config = self.config.resolve_fallback_task_config(task)
         messages = self._build_messages(
@@ -248,12 +254,20 @@ class OpenAICompatibleLLMClient:
             configs_to_try.append(fallback_task_config)
 
         for active_config in configs_to_try:
+            attempt_trace: dict[str, Any] = {
+                "model": active_config.model,
+                "base_url": active_config.base_url,
+                "endpoint_url": active_config.endpoint_url,
+                "result": "pending",
+            }
             result = self._request_single_chat_completion(
                 task_config=active_config,
                 messages=messages,
                 expect_json=expect_json,
                 disable_thinking=disable_thinking,
+                attempt_trace=attempt_trace,
             )
+            self.last_attempt_trace.append(attempt_trace)
             if result is not None:
                 return result
         return None
@@ -265,6 +279,7 @@ class OpenAICompatibleLLMClient:
         messages: Sequence[Dict[str, Any]],
         expect_json: bool,
         disable_thinking: bool,
+        attempt_trace: dict[str, Any],
     ) -> Optional[str]:
         payload: Dict[str, Any] = {
             "model": task_config.model,
@@ -286,7 +301,56 @@ class OpenAICompatibleLLMClient:
             try:
                 with urlopen(request, timeout=self.config.timeout_seconds) as response:
                     raw_payload = response.read().decode("utf-8")
-            except (HTTPError, URLError, TimeoutError, ValueError):
+                attempt_trace["result"] = "response"
+            except HTTPError as error:
+                attempt_trace["result"] = "http_error"
+                attempt_trace["status"] = getattr(error, "code", None)
+                self.last_error_detail = {
+                    "kind": "http_error",
+                    "status": getattr(error, "code", None),
+                    "reason": str(getattr(error, "reason", "") or ""),
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
+                if attempt_index < total_attempts - 1:
+                    self._sleep_for_retry(attempt_index)
+                    continue
+                return None
+            except URLError as error:
+                attempt_trace["result"] = "url_error"
+                attempt_trace["reason"] = str(getattr(error, "reason", "") or error)
+                self.last_error_detail = {
+                    "kind": "url_error",
+                    "reason": str(getattr(error, "reason", "") or error),
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
+                if attempt_index < total_attempts - 1:
+                    self._sleep_for_retry(attempt_index)
+                    continue
+                return None
+            except TimeoutError:
+                attempt_trace["result"] = "timeout"
+                attempt_trace["timeout_seconds"] = self.config.timeout_seconds
+                self.last_error_detail = {
+                    "kind": "timeout",
+                    "timeout_seconds": self.config.timeout_seconds,
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
+                if attempt_index < total_attempts - 1:
+                    self._sleep_for_retry(attempt_index)
+                    continue
+                return None
+            except ValueError as error:
+                attempt_trace["result"] = "value_error"
+                attempt_trace["reason"] = str(error)
+                self.last_error_detail = {
+                    "kind": "value_error",
+                    "reason": str(error),
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
                 if attempt_index < total_attempts - 1:
                     self._sleep_for_retry(attempt_index)
                     continue
@@ -294,7 +358,15 @@ class OpenAICompatibleLLMClient:
 
             parsed_text = self._extract_text_from_response(raw_payload)
             if parsed_text is not None:
+                self.last_error_detail = {}
+                attempt_trace["result"] = "success"
                 return parsed_text
+            self.last_error_detail = {
+                "kind": "invalid_response_payload",
+                "task_model": task_config.model,
+                "base_url": task_config.base_url,
+            }
+            attempt_trace["result"] = "invalid_response_payload"
             if attempt_index < total_attempts - 1:
                 self._sleep_for_retry(attempt_index)
                 continue

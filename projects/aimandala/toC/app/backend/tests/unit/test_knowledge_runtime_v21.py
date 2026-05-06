@@ -24,6 +24,7 @@ from app.core.knowledge_runtime.compiler import KnowledgePackCompiler
 from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root
 from app.core.knowledge_runtime.repository import KnowledgeRepository
 from app.core.knowledge_runtime.runtime import create_knowledge_runtime, get_knowledge_runtime
+from app.core.knowledge_runtime.services.layer0_assembler import Layer0Assembler
 from app.core.knowledge_runtime.validators import KnowledgePackValidator
 from app.core.llm.runtime import NoopLLMClient
 from app.core.pipeline.data_models import InterpretationRecord
@@ -1729,3 +1730,35 @@ def test_api_returns_410_for_legacy_record():
 
     assert response.status_code == 410
     assert "unsupported interpretation schema" in response.json()["detail"]
+
+
+def test_layer0_visual_summary_failure_exposes_llm_error_detail():
+    runtime = get_knowledge_runtime()
+
+    class _FailingLLMClient:
+        def __init__(self) -> None:
+            self.last_error_detail = {"kind": "url_error", "reason": "network down"}
+            self.last_attempt_trace = [
+                {"model": "qwen-vl-max-latest", "result": "invalid_response_payload"},
+                {"model": "ep-20260316095322-94wf5", "result": "url_error"},
+            ]
+
+        def generate_structured(self, **kwargs):
+            return None
+
+    assembler = runtime.layer0_assembler
+    assembler.llm_client = _FailingLLMClient()
+
+    payload = assembler._build_vision_visual_summary(
+        image_path=_fixture_asset_path("IMG_5062.jpeg"),
+        circles={
+            "inner": {"observation_summary": "内圈黄色花瓣。"},
+            "middle": {"observation_summary": "中圈紫色花瓣。"},
+            "outer": {"observation_summary": "外圈绿色叶片。"},
+        },
+        generated=False,
+    )
+
+    assert payload["failure_reason"] == "layer0_vision_request_failed"
+    assert payload["failure_detail"]["llm_error"]["kind"] == "url_error"
+    assert payload["failure_detail"]["llm_attempt_trace"][0]["model"] == "qwen-vl-max-latest"

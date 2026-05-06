@@ -48,6 +48,7 @@
 
 当前优先阅读：
 
+- [2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md](./2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md)
 - [2026-05-06-mvp-国产视觉模型评测验证记录.md](./2026-05-06-mvp-国产视觉模型评测验证记录.md)
 - [2026-05-05-mvp-国产视觉模型评测基线.md](./2026-05-05-mvp-国产视觉模型评测基线.md)
 - [2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md](./2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md)
@@ -74,6 +75,7 @@
 
 说明：
 
+- `2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md` 是当前 MVP 视觉模型默认接入的最终质量门结论，统一收束人工细看、端到端 smoke、前端 runtime smoke、流派保真和最终 3 图复测；配套证据目录为 `model-evals/2026-05-06-vision-mvp-final-smoke/`。
 - `2026-05-06-mvp-国产视觉模型评测验证记录.md` 是当前第一轮国产视觉模型真实 API 评测结果，记录 `qwen-vl-max-latest`、`glm-4v-plus` 与 `Doubao-Seed-1.6-vision` 在 4 个脱敏 fixture 上的结果。
 - `2026-05-05-mvp-国产视觉模型评测基线.md` 是当前 MVP 国产视觉模型选型的正式 QA baseline，固定用脱敏 fixture 对候选视觉模型做三圈识别适配评测，不把第三方中转或国外视觉模型列为生产默认候选。
 - `2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md` 是当前 automation 节点把单项目 heartbeat 升级为多项目 heartbeat 的正式验证记录，固定记录 `一镜一梳 + RelayHub` 两个 target 的 doctor、systemd 与坏 target 演练结果。
