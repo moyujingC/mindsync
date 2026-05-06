@@ -52,8 +52,8 @@
 - 影响项：安全基线已确认，但版本基线仍需收正
 - 命中的本地系统层：
   - [.paperclip.yaml](.paperclip.yaml) 中的远程认证实例口径
-  - [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md) 中的控制面 / 执行底座分层
-  - [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md) 中的部署与运维主链
+  - [company/projects/Automation/PROJECT.md](../../../../company/projects/Automation/PROJECT.md) 中的控制面 / 执行底座分层
+  - [projects/aimandala/deploy/paperclip-automation/README.md](../../../../projects/aimandala/deploy/paperclip-automation/README.md) 中的部署与运维主链
 - 若不处理的风险：当前虽然已不落在已知严重漏洞区间，但继续停留在 `canary` 基线且不显式钉版本，会让后续升级、排障和审计都更不稳定
 
 - 影响项：版本管理口径仍不够显式
@@ -66,8 +66,8 @@
 
 - 影响项：execution policies 可能逐步替代一部分本地 `review` 约定
 - 命中的本地系统层：
-  - [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
-  - [company/Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
+  - [company/任务审阅与状态流转规范.md](../../../../company/任务审阅与状态流转规范.md)
+  - [company/Paperclip任务系统优化方案.md](../../../../company/Paperclip任务系统优化方案.md)
 - 建议处理窗口：完成安全升级和版本收正后，再开一个独立 spec 评估“哪些 review 流应该下沉为上游原生审批策略”
 
 - 影响项：blocker dependencies 可能替代一部分手工 blocked / wake 逻辑
@@ -145,9 +145,9 @@
 ## 8. 需要同步更新的本地 artifact
 
 - 文档：
-  - [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+  - [projects/aimandala/deploy/paperclip-automation/README.md](../../../../projects/aimandala/deploy/paperclip-automation/README.md)
   - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-  - 需要时补到 [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md) 或系统知识库
+  - 需要时补到 [company/Paperclip-Agent-模型配置总表.md](../../../../company/Paperclip-Agent-模型配置总表.md) 或系统知识库
 - 配置：
   - 如后续决定显式版本钉住，需要补充 `Paperclip` 主仓 tag / ref 口径
 - 部署：

@@ -194,11 +194,11 @@
 
 每次正式周检输出，优先复用：
 
-- [templates/Paperclip-周检报告模板.md](company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
+- [templates/Paperclip-周检报告模板.md](../../../company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
 
 如果某周结论值得长期追溯，建议再归档到：
 
-- [paperclip-weekly-reviews/README.md](company/knowledge-base/system/paperclip-weekly-reviews/README.md)
+- [paperclip-weekly-reviews/README.md](../../../company/knowledge-base/system/paperclip-weekly-reviews/README.md)
 
 默认只有满足下面任一条件时，才建议归档，而不是每周固定落盘：
 

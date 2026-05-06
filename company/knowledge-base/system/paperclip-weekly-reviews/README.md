@@ -38,8 +38,8 @@
 
 只有上升为长期机制结论时，才应回写到：
 
-- [Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
-- [Paperclip-设计机制与使用说明.md](company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
+- [Paperclip-周检机制与版本跟踪说明.md](../../../../company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+- [Paperclip-设计机制与使用说明.md](../../../../company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
 - 或其他正式治理文档
 
 ## 4. 命名规则
@@ -56,7 +56,7 @@
 
 每份周检记录都应：
 
-1. 复用 [templates/Paperclip-周检报告模板.md](company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
+1. 复用 [templates/Paperclip-周检报告模板.md](../../../../company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
 2. 明确写出：
    - 本周推荐升级版本
    - 为什么升到这个版本

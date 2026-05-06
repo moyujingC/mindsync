@@ -352,9 +352,9 @@ heartbeat 能同时检查 `main` 和 `relayhub/dev`，只说明巡检能力已�
 ## 6. 推荐搭配阅读
 
 - 机制总入口：
-  - [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md)
+  - [company/projects/Automation/PROJECT.md](../../../company/projects/Automation/PROJECT.md)
 - 当前正式项目级实例：
-  - [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+  - [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
 - 任务语义与执行边界：
-  - [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-  - [company/标签与状态使用说明.md](company/标签与状态使用说明.md)
+  - [company/任务类型与标签规范.md](../../../company/任务类型与标签规范.md)
+  - [company/标签与状态使用说明.md](../../../company/标签与状态使用说明.md)
