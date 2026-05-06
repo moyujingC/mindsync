@@ -151,6 +151,6 @@
 ## 7. 关联文档
 
 1. 本地人工接手 runbook：
-   - [本地人工接手-runbook.md](../../../../projects/aimandala/docs/runbooks/本地人工接手-runbook.md)
+   - [本地人工接手-runbook.md](./本地人工接手-runbook.md)
 2. phase 2 spec：
-   - [../specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md](projects/aimandala/docs/specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md)
+   - [../specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md](../specs/2026-04-18-automation-and-local-execution-routing-phase2-local-handoff-spec.md)

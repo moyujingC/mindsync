@@ -12,7 +12,7 @@
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-plan.md](projects/aimandala/docs/tasks/2026-04-19-paperclip-native-execution-routing-plan.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-plan.md](./2026-04-19-paperclip-native-execution-routing-plan.md) 取代。
 > “本地人工接手流程标准化”不再是当前默认实施入口。
 
 ## 1. 本轮目标

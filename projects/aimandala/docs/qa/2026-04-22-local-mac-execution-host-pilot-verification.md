@@ -128,9 +128,9 @@
 
 已复核：
 
-1. [2026-04-21-local-mac-execution-host-pilot-spec.md](projects/aimandala/docs/specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
-2. [2026-04-21-local-mac-execution-host-pilot-plan.md](projects/aimandala/docs/tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
-3. [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
+1. [2026-04-21-local-mac-execution-host-pilot-spec.md](../specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
+2. [2026-04-21-local-mac-execution-host-pilot-plan.md](../tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
+3. [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](./2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
 
 观察到的正式事实：
 

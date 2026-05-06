@@ -56,14 +56,15 @@
 - [2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md](./2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md)
 - [2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md](./2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md)
 - [2026-04-19-paperclip-native-execution-routing-qa-basis.md](./2026-04-19-paperclip-native-execution-routing-qa-basis.md)
-- [2026-04-16-ceo-hermes-container-runtime-verification.md](./2026-04-16-ceo-hermes-container-runtime-verification.md)
-- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](./2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
-- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](./2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
-- [2026-04-15-min33-human-unblock-verification.md](./2026-04-15-min33-human-unblock-verification.md)
-- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md](./2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md)
-- [2026-04-13-miniapp-native-gray-verification.md](./2026-04-13-miniapp-native-gray-verification.md)
-- [2026-04-13-miniapp-wechatpay-live-verification.md](./2026-04-13-miniapp-wechatpay-live-verification.md)
-- [2026-04-12-ci-cd-验证记录.md](./2026-04-12-ci-cd-验证记录.md)
+- 历史验证文件名：`2026-04-16-ceo-hermes-container-runtime-verification.md`
+- 历史验证文件名：`2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md`
+- 历史验证文件名：`2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md`
+- 历史验证文件名：`2026-04-15-min33-human-unblock-verification.md`
+- 历史验证文件名：`2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md`
+- 历史验证文件名：`2026-04-13-miniapp-native-gray-verification.md`
+- 历史验证文件名：`2026-04-13-miniapp-wechatpay-live-verification.md`
+- 历史验证文件名：`2026-04-12-ci-cd-验证记录.md`
+  以上历史条目统一从本目录历史资料区追溯，不再作为当前可直达正式入口。
 
 说明：
 
@@ -94,16 +95,16 @@
 - [2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](./2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
 - [2026-04-18-automation-and-local-execution-routing-qa-basis.md](./2026-04-18-automation-and-local-execution-routing-qa-basis.md)
 - [2026-04-18-automation-routing-and-heartbeat-gate-verification.md](./2026-04-18-automation-routing-and-heartbeat-gate-verification.md)
-- [2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md](./2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md)
-- [2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md](./2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md)
-- [2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md](./2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md)
-- [2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md](./2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md)
-- [2026-04-12-迁移收官与正式版收口验证记录.md](./2026-04-12-迁移收官与正式版收口验证记录.md)
-- [2026-04-12-v22-knowledge-workbench-verification.md](./2026-04-12-v22-knowledge-workbench-verification.md)
-- [2026-04-13-paperclip-automation-节点验证记录.md](./2026-04-13-paperclip-automation-节点验证记录.md)
-- [2026-04-04-toc-mvp-qa-checklist.md](./2026-04-04-toc-mvp-qa-checklist.md)
-- [2026-04-08-toc-mvp-first-pass-verification.md](./2026-04-08-toc-mvp-first-pass-verification.md)
-- [2026-04-08-toc-mvp-sample-validation.md](./2026-04-08-toc-mvp-sample-validation.md)
+- 历史验证文件名：`2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md`
+- 历史验证文件名：`2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md`
+- 历史验证文件名：`2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md`
+- 历史验证文件名：`2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md`
+- 历史验证文件名：`2026-04-12-迁移收官与正式版收口验证记录.md`
+- 历史验证文件名：`2026-04-12-v22-knowledge-workbench-verification.md`
+- 历史验证文件名：`2026-04-13-paperclip-automation-节点验证记录.md`
+- 历史验证文件名：`2026-04-04-toc-mvp-qa-checklist.md`
+- 历史验证文件名：`2026-04-08-toc-mvp-first-pass-verification.md`
+- 历史验证文件名：`2026-04-08-toc-mvp-sample-validation.md`
 
 ## 默认阅读顺序
 
