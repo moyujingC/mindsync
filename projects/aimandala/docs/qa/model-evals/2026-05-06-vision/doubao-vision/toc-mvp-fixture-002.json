@@ -1,0 +1,9 @@
+{
+  "ok": false,
+  "fixture_id": "toc-mvp-fixture-002",
+  "model": "Doubao-Seed-1.6-vision",
+  "candidate_id": "doubao-vision",
+  "duration_ms": 11723,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+  "output": null
+}
