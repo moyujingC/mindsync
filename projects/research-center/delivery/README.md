@@ -11,18 +11,18 @@
 
 ## 2026-04-06 PaperClip 配置材料
 
-- [PaperClip Agent Configuration 文档索引](projects/research-center/delivery/2026-04-06-PaperClip-Agent-Configuration-文档索引.md)
-- [页面研究与推荐配置手册](projects/research-center/delivery/2026-04-06-PaperClip-Agent-Configuration-页面研究与推荐配置手册.md)
-- [墨予镜现有9个Agent的配置核对清单](projects/research-center/delivery/2026-04-06-墨予镜现有9个Agent的PaperClip配置核对清单.md)
-- [PaperClip Agent Configuration 5分钟面板操作顺序](projects/research-center/delivery/2026-04-06-PaperClip-Agent-Configuration-5分钟面板操作顺序.md)
-- [墨予镜9个Agent建议配置总表](projects/research-center/delivery/2026-04-06-墨予镜9个Agent建议配置总表.md)
-- [墨予镜9个Agent的Capabilities可粘贴文案](projects/research-center/delivery/2026-04-06-墨予镜9个Agent的Capabilities可粘贴文案.md)
-- [墨予镜9个Agent面板逐项填写模板](projects/research-center/delivery/2026-04-06-墨予镜9个Agent面板逐项填写模板.md)
+- [PaperClip Agent Configuration 文档索引](./2026-04-06-PaperClip-Agent-Configuration-文档索引.md)
+- [页面研究与推荐配置手册](./2026-04-06-PaperClip-Agent-Configuration-页面研究与推荐配置手册.md)
+- [墨予镜现有9个Agent的配置核对清单](./2026-04-06-墨予镜现有9个Agent的PaperClip配置核对清单.md)
+- [PaperClip Agent Configuration 5分钟面板操作顺序](./2026-04-06-PaperClip-Agent-Configuration-5分钟面板操作顺序.md)
+- [墨予镜9个Agent建议配置总表](./2026-04-06-墨予镜9个Agent建议配置总表.md)
+- [墨予镜9个Agent的Capabilities可粘贴文案](./2026-04-06-墨予镜9个Agent的Capabilities可粘贴文案.md)
+- [墨予镜9个Agent面板逐项填写模板](./2026-04-06-墨予镜9个Agent面板逐项填写模板.md)
 
 ## 2026-04-14 Agent 运行时补建
 
-- [Idea Clarifier 运行时缺失排查与修复说明](projects/research-center/delivery/2026-04-14-Idea-Clarifier-运行时缺失排查与修复说明.md)
+- [Idea Clarifier 运行时缺失排查与修复说明](./2026-04-14-Idea-Clarifier-运行时缺失排查与修复说明.md)
 
 ## 2026-04-27 claude_local 主备模型切换
 
-- [Paperclip claude_local 主备模型切换交付说明](projects/research-center/delivery/2026-04-27-Paperclip-Claude-Local-主备模型切换-交付说明.md)
+- [Paperclip claude_local 主备模型切换交付说明](./2026-04-27-Paperclip-Claude-Local-主备模型切换-交付说明.md)
