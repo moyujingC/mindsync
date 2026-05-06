@@ -96,6 +96,9 @@ def test_build_public_summary_omits_report_body_and_upload_local_path():
             "report": "完整报告正文不进入摘要。",
             "structured": {
                 "visual_basis": "内圈颜色较亮，中圈有紫色花瓣，外圈由绿色和黄色叶片构成。",
+                "emotion_portrait": "温柔但清楚地命名当前状态。",
+                "story": {"base": "先收回自己。"},
+                "theme_awareness": "今天先观察一次身体反应。",
                 "prompt_schema_validation_issues": [],
             },
         },
@@ -104,7 +107,12 @@ def test_build_public_summary_omits_report_body_and_upload_local_path():
             "title": "一梳 Pro 版",
             "error": None,
             "report": "完整 Pro 正文不进入摘要。",
-            "structured": {"deep_impression": "结构稳定。"},
+            "structured": {
+                "deep_impression": "结构稳定。",
+                "root_cause_chain": {"surface": "表层", "deeper": "深层", "core": "核心"},
+                "healing_plan": [{"phase": "当前阶段", "practice": "记录一次边界感"}],
+                "prompt_preview": "prompt should not be copied into style review fields",
+            },
         },
         "validation": {"ok": True, "failures": []},
     }
@@ -117,6 +125,9 @@ def test_build_public_summary_omits_report_body_and_upload_local_path():
     assert "image_path" not in fixture_summary["upload"]
     assert "report" not in fixture_summary["lite_report"]
     assert "report" not in fixture_summary["pro_report"]
+    assert fixture_summary["lite_report"]["style_review_fields"]["emotion_portrait"] == "温柔但清楚地命名当前状态。"
+    assert fixture_summary["pro_report"]["style_review_fields"]["root_cause_chain"]["core"] == "核心"
+    assert "prompt_preview" not in fixture_summary["pro_report"]["style_review_fields"]
 
 
 def test_build_sanitized_fixture_result_omits_runtime_paths_and_raw_report_body():
@@ -165,6 +176,9 @@ def test_build_sanitized_fixture_result_omits_runtime_paths_and_raw_report_body(
             "report": "完整 Lite 正文不进入证据文件。",
             "structured": {
                 "visual_basis": "内圈颜色较亮，中圈有紫色花瓣，外圈由绿色和黄色叶片构成。",
+                "emotion_portrait": "温柔但清楚地命名当前状态。",
+                "story": {"base": "先收回自己。"},
+                "theme_awareness": "今天先观察一次身体反应。",
                 "prompt_schema_validation_issues": [],
             },
         },
@@ -175,7 +189,12 @@ def test_build_sanitized_fixture_result_omits_runtime_paths_and_raw_report_body(
             "overall_impression": "摘要可保留。",
             "error": None,
             "report": "完整 Pro 正文不进入证据文件。",
-            "structured": {"deep_impression": "结构稳定。"},
+            "structured": {
+                "deep_impression": "结构稳定。",
+                "root_cause_chain": {"surface": "表层", "deeper": "深层", "core": "核心"},
+                "healing_plan": [{"phase": "当前阶段", "practice": "记录一次边界感"}],
+                "prompt_preview": "prompt should not be copied into style review fields",
+            },
         },
         "validation": {"ok": True, "failures": []},
     }
@@ -187,3 +206,6 @@ def test_build_sanitized_fixture_result_omits_runtime_paths_and_raw_report_body(
     assert "report" not in sanitized["pro_report"]
     assert "pro_purchase" not in sanitized
     assert sanitized["detect"]["debug_backend"] == "llm_vision"
+    assert sanitized["lite_report"]["style_review_fields"]["story"]["base"] == "先收回自己。"
+    assert sanitized["pro_report"]["style_review_fields"]["healing_plan"][0]["phase"] == "当前阶段"
+    assert "prompt_preview" not in sanitized["pro_report"]["style_review_fields"]

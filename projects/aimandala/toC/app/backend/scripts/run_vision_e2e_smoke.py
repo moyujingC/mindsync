@@ -289,6 +289,7 @@ def _build_fixture_summary(result: dict[str, Any]) -> dict[str, Any]:
             "title": lite_report.get("title"),
             "error": lite_report.get("error"),
             "visual_basis": lite_structured.get("visual_basis"),
+            "style_review_fields": _build_lite_style_review_fields(lite_structured),
             "prompt_schema_validation_issues": lite_structured.get("prompt_schema_validation_issues"),
         },
         "pro_report": {
@@ -296,6 +297,7 @@ def _build_fixture_summary(result: dict[str, Any]) -> dict[str, Any]:
             "title": pro_report.get("title"),
             "error": pro_report.get("error"),
             "structured_keys": sorted(pro_structured.keys()),
+            "style_review_fields": _build_pro_style_review_fields(pro_structured),
         }
         if pro_report
         else None,
@@ -369,6 +371,7 @@ def build_sanitized_fixture_result(result: dict[str, Any]) -> dict[str, Any]:
             "overall_impression": lite_report.get("overall_impression"),
             "error": lite_report.get("error"),
             "visual_basis": lite_structured.get("visual_basis"),
+            "style_review_fields": _build_lite_style_review_fields(lite_structured),
             "prompt_schema_validation_issues": lite_structured.get("prompt_schema_validation_issues"),
         },
         "pro_report": {
@@ -377,11 +380,52 @@ def build_sanitized_fixture_result(result: dict[str, Any]) -> dict[str, Any]:
             "overall_impression": pro_report.get("overall_impression"),
             "error": pro_report.get("error"),
             "structured_keys": sorted(pro_structured.keys()),
+            "style_review_fields": _build_pro_style_review_fields(pro_structured),
         }
         if pro_report
         else None,
         "validation": result.get("validation"),
     }
+
+
+def _build_lite_style_review_fields(structured: dict[str, Any]) -> dict[str, Any]:
+    """Keep enough structured fields for style review without copying raw report bodies."""
+    return _compact_selected_fields(
+        structured,
+        [
+            "emotion_portrait",
+            "story",
+            "theme_scene",
+            "theme_impact",
+            "theme_awareness",
+            "three_awareness",
+            "pro_teaser",
+        ],
+    )
+
+
+def _build_pro_style_review_fields(structured: dict[str, Any]) -> dict[str, Any]:
+    """Expose Pro interpretation shape for QA while omitting prompt/debug payloads."""
+    return _compact_selected_fields(
+        structured,
+        [
+            "deep_impression",
+            "deep_structure_interpretation",
+            "evidence_digest",
+            "imbalance_diagnosis",
+            "root_cause_chain",
+            "healing_plan",
+            "topic_context",
+        ],
+    )
+
+
+def _compact_selected_fields(payload: dict[str, Any], keys: list[str]) -> dict[str, Any]:
+    compact: dict[str, Any] = {}
+    for key in keys:
+        if key in payload:
+            compact[key] = payload[key]
+    return compact
 
 
 def main() -> int:
