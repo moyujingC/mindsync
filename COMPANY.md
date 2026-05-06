@@ -4,7 +4,10 @@ kind: company
 slug: mindsync
 name: 知行工坊
 description: 一人公司系统，以知促行，以行验知
+status: current
 version: 0.1.0
+owner: CEO
+last_updated: 2026-05-06
 goals:
   - 通过多角色 AI 协作推进产品、研究、内容与工程交付
   - 建立中文优先、文档优先、可持续演进的公司内核

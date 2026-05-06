@@ -1,5 +1,11 @@
 # MindSync Workspace Instructions
 
+> 状态：current
+> 版本：1.0.0
+> owner：CEO
+> last_updated：2026-05-06
+> source_of_truth：AGENTS.md
+
 本文件是 `mindsync` 根目录的统一协作入口，供 Codex、Claude Code 等 IDE 内代理读取。
 
 ## Workspace Purpose
