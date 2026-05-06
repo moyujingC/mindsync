@@ -27,9 +27,9 @@
 
 进入本目录前，先对齐这些长期入口：
 
-- [ToC-MVP-产品规范.md](../../../../projects/aimandala/docs/specs/ToC-MVP-产品规范.md)
-- [ToC-MVP-技术方案.md](../../../../projects/aimandala/docs/architecture/ToC-MVP-技术方案.md)
-- [本项目 PROJECT.md](../../../../projects/aimandala/PROJECT.md)
+- [ToC-MVP-产品规范.md](../specs/ToC-MVP-产品规范.md)
+- [ToC-MVP-技术方案.md](../architecture/ToC-MVP-技术方案.md)
+- [本项目 PROJECT.md](../../PROJECT.md)
 
 ## 当前阶段性文档
 
@@ -42,28 +42,28 @@
 
 当前优先阅读：
 
-- [2026-05-06-mvp-国产视觉模型评测验证记录.md](projects/aimandala/docs/qa/2026-05-06-mvp-国产视觉模型评测验证记录.md)
-- [2026-05-05-mvp-国产视觉模型评测基线.md](projects/aimandala/docs/qa/2026-05-05-mvp-国产视觉模型评测基线.md)
-- [2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md](projects/aimandala/docs/qa/2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md)
-- [2026-05-03-observe-only-checkout-治理-qa-basis.md](projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-治理-qa-basis.md)
-- [2026-05-03-observe-only-checkout-历史残留清理验证记录.md](projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md)
-- [2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md](projects/aimandala/docs/qa/2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md)
-- [2026-04-22-local-mac-automatic-execution-host-verification.md](projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-verification.md)
-- [2026-04-22-local-mac-automatic-execution-host-qa-basis.md](projects/aimandala/docs/qa/2026-04-22-local-mac-automatic-execution-host-qa-basis.md)
-- [2026-04-22-local-mac-execution-host-pilot-verification.md](projects/aimandala/docs/qa/2026-04-22-local-mac-execution-host-pilot-verification.md)
-- [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
-- [2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md)
-- [2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md)
-- [2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md)
-- [2026-04-19-paperclip-native-execution-routing-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md)
-- [2026-04-16-ceo-hermes-container-runtime-verification.md](projects/aimandala/docs/qa/2026-04-16-ceo-hermes-container-runtime-verification.md)
-- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
-- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](projects/aimandala/docs/qa/2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
-- [2026-04-15-min33-human-unblock-verification.md](projects/aimandala/docs/qa/2026-04-15-min33-human-unblock-verification.md)
-- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md](projects/aimandala/docs/qa/2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md)
-- [2026-04-13-miniapp-native-gray-verification.md](projects/aimandala/docs/qa/2026-04-13-miniapp-native-gray-verification.md)
-- [2026-04-13-miniapp-wechatpay-live-verification.md](projects/aimandala/docs/qa/2026-04-13-miniapp-wechatpay-live-verification.md)
-- [2026-04-12-ci-cd-验证记录.md](projects/aimandala/docs/qa/2026-04-12-ci-cd-验证记录.md)
+- [2026-05-06-mvp-国产视觉模型评测验证记录.md](./2026-05-06-mvp-国产视觉模型评测验证记录.md)
+- [2026-05-05-mvp-国产视觉模型评测基线.md](./2026-05-05-mvp-国产视觉模型评测基线.md)
+- [2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md](./2026-05-03-automation-节点多项目-heartbeat-上线验证记录.md)
+- [2026-05-03-observe-only-checkout-治理-qa-basis.md](./2026-05-03-observe-only-checkout-治理-qa-basis.md)
+- [2026-05-03-observe-only-checkout-历史残留清理验证记录.md](./2026-05-03-observe-only-checkout-历史残留清理验证记录.md)
+- [2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md](./2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md)
+- [2026-04-22-local-mac-automatic-execution-host-verification.md](./2026-04-22-local-mac-automatic-execution-host-verification.md)
+- [2026-04-22-local-mac-automatic-execution-host-qa-basis.md](./2026-04-22-local-mac-automatic-execution-host-qa-basis.md)
+- [2026-04-22-local-mac-execution-host-pilot-verification.md](./2026-04-22-local-mac-execution-host-pilot-verification.md)
+- [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](./2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
+- [2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md](./2026-04-19-server-automation-blocking-sample-interpretation-qa-basis.md)
+- [2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md](./2026-04-19-server-automation-task-template-semantics-repair-qa-basis.md)
+- [2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md](./2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md)
+- [2026-04-19-paperclip-native-execution-routing-qa-basis.md](./2026-04-19-paperclip-native-execution-routing-qa-basis.md)
+- [2026-04-16-ceo-hermes-container-runtime-verification.md](./2026-04-16-ceo-hermes-container-runtime-verification.md)
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md](./2026-04-14-mvp-公开首发收口与小程序渐进并入验证基线.md)
+- [2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md](./2026-04-14-mvp-公开首发收口与小程序渐进并入验证记录.md)
+- [2026-04-15-min33-human-unblock-verification.md](./2026-04-15-min33-human-unblock-verification.md)
+- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md](./2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束验证基线.md)
+- [2026-04-13-miniapp-native-gray-verification.md](./2026-04-13-miniapp-native-gray-verification.md)
+- [2026-04-13-miniapp-wechatpay-live-verification.md](./2026-04-13-miniapp-wechatpay-live-verification.md)
+- [2026-04-12-ci-cd-验证记录.md](./2026-04-12-ci-cd-验证记录.md)
 
 说明：
 
@@ -91,19 +91,19 @@
 
 以下文档主要用于追溯背景，不再作为当前首轮入口：
 
-- [2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
-- [2026-04-18-automation-and-local-execution-routing-qa-basis.md](projects/aimandala/docs/qa/2026-04-18-automation-and-local-execution-routing-qa-basis.md)
-- [2026-04-18-automation-routing-and-heartbeat-gate-verification.md](projects/aimandala/docs/qa/2026-04-18-automation-routing-and-heartbeat-gate-verification.md)
-- [2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md](projects/aimandala/docs/qa/2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md)
-- [2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md](projects/aimandala/docs/qa/2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md)
-- [2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md](projects/aimandala/docs/qa/2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md)
-- [2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md](projects/aimandala/docs/qa/2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md)
-- [2026-04-12-迁移收官与正式版收口验证记录.md](projects/aimandala/docs/qa/2026-04-12-迁移收官与正式版收口验证记录.md)
-- [2026-04-12-v22-knowledge-workbench-verification.md](projects/aimandala/docs/qa/2026-04-12-v22-knowledge-workbench-verification.md)
-- [2026-04-13-paperclip-automation-节点验证记录.md](projects/aimandala/docs/qa/2026-04-13-paperclip-automation-节点验证记录.md)
-- [2026-04-04-toc-mvp-qa-checklist.md](projects/aimandala/docs/qa/2026-04-04-toc-mvp-qa-checklist.md)
-- [2026-04-08-toc-mvp-first-pass-verification.md](projects/aimandala/docs/qa/2026-04-08-toc-mvp-first-pass-verification.md)
-- [2026-04-08-toc-mvp-sample-validation.md](projects/aimandala/docs/qa/2026-04-08-toc-mvp-sample-validation.md)
+- [2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](./2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
+- [2026-04-18-automation-and-local-execution-routing-qa-basis.md](./2026-04-18-automation-and-local-execution-routing-qa-basis.md)
+- [2026-04-18-automation-routing-and-heartbeat-gate-verification.md](./2026-04-18-automation-routing-and-heartbeat-gate-verification.md)
+- [2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md](./2026-04-14-miniapp-batch-a-shared-foundation-audit-verification.md)
+- [2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md](./2026-04-14-batch-b-历史记录详情与显式报告类型验证基线.md)
+- [2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md](./2026-04-15-miniapp-batch-c-静态壳与页面闭环验证基线.md)
+- [2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md](./2026-04-15-miniapp-batch-d-api-contract-stub-only-验证基线.md)
+- [2026-04-12-迁移收官与正式版收口验证记录.md](./2026-04-12-迁移收官与正式版收口验证记录.md)
+- [2026-04-12-v22-knowledge-workbench-verification.md](./2026-04-12-v22-knowledge-workbench-verification.md)
+- [2026-04-13-paperclip-automation-节点验证记录.md](./2026-04-13-paperclip-automation-节点验证记录.md)
+- [2026-04-04-toc-mvp-qa-checklist.md](./2026-04-04-toc-mvp-qa-checklist.md)
+- [2026-04-08-toc-mvp-first-pass-verification.md](./2026-04-08-toc-mvp-first-pass-verification.md)
+- [2026-04-08-toc-mvp-sample-validation.md](./2026-04-08-toc-mvp-sample-validation.md)
 
 ## 默认阅读顺序
 
