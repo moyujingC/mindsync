@@ -204,6 +204,11 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 - `AIMANDALA_LLM_MODEL`（必填，默认模型）
 - `AIMANDALA_LLM_CHAT_MODEL`（可选，报告追问专用模型）
 - `AIMANDALA_LLM_VISION_MODEL`（可选，三圈识别专用视觉模型）
+- `AIMANDALA_LLM_VISION_BASE_URL`（可选，三圈识别专用视觉 endpoint）
+- `AIMANDALA_LLM_VISION_API_KEY`（可选，三圈识别专用 API key）
+- `AIMANDALA_LLM_VISION_FALLBACK_MODEL`（可选，三圈识别 fallback 模型）
+- `AIMANDALA_LLM_VISION_FALLBACK_BASE_URL`（可选，三圈识别 fallback endpoint）
+- `AIMANDALA_LLM_VISION_FALLBACK_API_KEY`（可选，三圈识别 fallback API key）
 - `AIMANDALA_LLM_TIMEOUT_SECONDS`（可选，默认 `30`）
 - `AIMANDALA_LLM_MAX_RETRIES`（可选，默认 `2`）
 - `AIMANDALA_LLM_RETRY_BACKOFF_MS`（可选，默认 `400`）
@@ -214,6 +219,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 - `release` 环境若需要 AI 三圈识别或报告追问，不应使用 `noop`
 - `openai_compatible` 当前基于 `/chat/completions` 协议，支持文本生成、JSON 结构生成和图片输入
 - `AIMANDALA_LLM_CHAT_MODEL / AIMANDALA_LLM_VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
+- `AIMANDALA_LLM_VISION_FALLBACK_*` 已配置时，视觉任务会在主模型失败后尝试 fallback
 - 报告正文不再支持通过 LLM report/prompt runtime 配置覆盖
 
 最小示例：
@@ -230,9 +236,34 @@ export AIMANDALA_LLM_MAX_RETRIES=2
 export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
 ```
 
+MVP 本地 / staging 视觉模型口径：
+
+```bash
+export AIMANDALA_LLM_BACKEND=openai_compatible
+export AIMANDALA_LLM_BASE_URL="<text-or-default-openai-compatible-url>"
+export AIMANDALA_LLM_API_KEY="<text-or-default-api-key>"
+export AIMANDALA_LLM_MODEL="deepseek-v4-pro"
+export AIMANDALA_LLM_CHAT_MODEL="deepseek-v4-pro"
+export AIMANDALA_LLM_VISION_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+export AIMANDALA_LLM_VISION_MODEL="qwen-vl-max-latest"
+export AIMANDALA_LLM_VISION_API_KEY="<dashscope-api-key>"
+export AIMANDALA_LLM_VISION_FALLBACK_BASE_URL="https://ark.cn-beijing.volces.com/api/v3"
+export AIMANDALA_LLM_VISION_FALLBACK_MODEL="ep-20260316095322-94wf5"
+export AIMANDALA_LLM_VISION_FALLBACK_API_KEY="<doubao-api-key>"
+```
+
+失败降级策略：
+
+- Qwen 视觉成功：`detect.method=llm_vision` 或 `llm_vision_estimated`。
+- Qwen 请求失败、空响应或 JSON 解析失败：自动尝试豆包 fallback。
+- Qwen 与豆包都失败：返回低置信度 `method=llm_fallback`，默认三圈 `inner=0.33 / middle=0.66`。
+- detector backend 未配置或图片不存在：返回 `method=default`。
+- 前端 / 产品侧遇到 `llm_fallback` 或 `default` 时，不应当作高可信自动识别，应提示用户手动三圈或重试。
+
 部署模板参考：
 
 - `projects/aimandala/docs/tasks/2026-04-05-腾讯云部署环境模板.md`
+- `projects/aimandala/toC/app/backend/.env.staging.example`
 - `projects/aimandala/toC/app/backend/.env.production.example`
 - `projects/aimandala/deploy/tencent-cloud/aimandala-backend.service.example`
 - `projects/aimandala/deploy/tencent-cloud/aimandala-api.nginx.conf.example`
@@ -248,7 +279,14 @@ export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
 
 ## 视觉模型评测
 
-MVP 阶段，文字模型默认选用 DeepSeek V4；视觉模型需要先用脱敏 fixture 对国产视觉模型做一轮评测，再决定 `AIMANDALA_LLM_VISION_MODEL`。
+MVP 阶段，文字模型默认选用 DeepSeek V4；视觉模型已经完成国产模型评测、稳定性评测、人工细看、后端 e2e smoke、前端 runtime smoke 和默认接入 QA Gate。
+
+本地 / staging 默认：
+
+- `AIMANDALA_LLM_VISION_MODEL=qwen-vl-max-latest`
+- `AIMANDALA_LLM_VISION_FALLBACK_MODEL=ep-20260316095322-94wf5`
+
+生产配置仍需单独 change record，不在本地 / staging 验证中直接切换。
 
 计划模式：
 
