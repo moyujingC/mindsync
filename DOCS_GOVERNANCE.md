@@ -167,7 +167,7 @@
 
 推荐直接复用：
 
-- [company/跨角色-Handoff-模板.md](company/跨角色-Handoff-模板.md)
+- [company/跨角色-Handoff-模板.md](./company/跨角色-Handoff-模板.md)
 
 ## 7. SDD 阶段门
 
@@ -617,7 +617,7 @@ canonical 母文档的职责是承接长期真理源，不应退化成阶段流�
 
 后续盘点、收口和复查时，应统一参照：
 
-- [company/文档治理审计清单.md](company/文档治理审计清单.md)
+- [company/文档治理审计清单.md](./company/文档治理审计清单.md)
 
 ### 17.1 迁移批次定义
 
