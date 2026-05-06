@@ -8,7 +8,21 @@
 - 任务拆解应能直接 handoff 给实现角色
 - 不用聊天记录替代正式任务定义
 
-当前默认入口：
+当前目录入口说明：
+
+- 本目录保留带日期任务文档是合理的，因为任务天然是阶段性 artifact
+- 这些文档默认不应被理解成长期 canonical 文档
+- 进入本目录前，先从 [PROJECT.md](../../../projects/relayhub/PROJECT.md) 与 [specs/README.md](../../../projects/relayhub/specs/README.md) 确认当前项目口径
+
+当前窗口任务链：
+
+- [2026-04-27-v1-VS-Code-Claude-Code-主路径收口实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-主路径收口实施任务.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环实施任务.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口实施任务.md)
+- [2026-04-27-v1-Claude-Code-双中转入口便捷切换实施任务.md](projects/relayhub/tasks/2026-04-27-v1-Claude-Code-双中转入口便捷切换实施任务.md)
+
+较早窗口任务：
 
 - [2026-04-16-v1-最小立项与实现准备任务.md](projects/relayhub/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
 - [2026-04-16-v1-控制台静态壳与核心页面实施任务.md](projects/relayhub/tasks/2026-04-16-v1-控制台静态壳与核心页面实施任务.md)
@@ -32,8 +46,3 @@
 - [2026-04-26-v1-Codex-first-原生-Responses-接入实施任务.md](projects/relayhub/tasks/2026-04-26-v1-Codex-first-原生-Responses-接入实施任务.md)
 - [2026-04-27-v1-Codex-任务页快捷切换与切后即验实施任务.md](projects/relayhub/tasks/2026-04-27-v1-Codex-任务页快捷切换与切后即验实施任务.md)
 - [2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先实施任务.md](projects/relayhub/tasks/2026-04-27-v1-Codex-线路临时停用与-Claude-Code-优先实施任务.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-主路径收口实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-主路径收口实施任务.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环实施任务.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口实施任务.md](projects/relayhub/tasks/2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口实施任务.md)
-- [2026-04-27-v1-Claude-Code-双中转入口便捷切换实施任务.md](projects/relayhub/tasks/2026-04-27-v1-Claude-Code-双中转入口便捷切换实施任务.md)

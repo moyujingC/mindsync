@@ -39,6 +39,12 @@
 - [2026-04-06-spec-to-architecture-handoff.md](projects/aicareer/delivery/2026-04-06-spec-to-architecture-handoff.md)
 - [2026-04-06-spec-to-CEO-handoff.md](projects/aicareer/delivery/2026-04-06-spec-to-CEO-handoff.md)
 
+这些文档的角色是：
+
+- 帮你理解某一轮阶段结论如何形成
+- 帮你追踪 handoff（交接）如何传递
+- 不是长期 canonical 入口
+
 ## 历史资料入口
 
 以下文档主要用于追溯窗口背景：

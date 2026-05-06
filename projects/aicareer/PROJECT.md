@@ -6,7 +6,7 @@
 > last_updated：2026-04-15
 > source_of_truth：projects/aicareer/PROJECT.md
 > 公司侧入口：[company/projects/怀瑾握瑜/PROJECT.md](../../company/projects/怀瑾握瑜/PROJECT.md)
-> 历史来源仓库：[/Users/xinran/Downloads/dev/ai-career](/Users/xinran/Downloads/dev/ai-career)
+> 历史来源仓库：本地旧仓库 `ai-career`（非正式入口）
 
 这是 `怀瑾握瑜` 在 Monorepo 中的正式项目工作区入口。
 
@@ -59,13 +59,18 @@
 - [qa/README.md](../../projects/aicareer/qa/README.md)
 - [delivery/README.md](../../projects/aicareer/delivery/README.md)
 
+补充说明：
+
+- `delivery/README.md` 是窗口材料入口，不是长期 canonical 文档
+- 若要判断当前正式口径，优先回到 `specs/README.md`
+
 ## 5. 历史资料入口
 
 如需追溯窗口背景与阶段产物，可查：
 
 - [2026-04-03-窗口工作总结.md](projects/aicareer/delivery/2026-04-03-窗口工作总结.md)
 - [2026-04-03-career-asset-sample.md](projects/aicareer/delivery/2026-04-03-career-asset-sample.md)
-- [历史来源仓库](/Users/xinran/Downloads/dev/ai-career)
+- 历史来源仓库：本地旧仓库 `ai-career`
 
 这些材料主要用于追溯，不承担当前默认入口职责。
 
