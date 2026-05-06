@@ -40,6 +40,7 @@ STATUS_PATTERN = re.compile(r'^\s*>?\s*(状态|status)\s*[：:]\s*(\S+)', re.MUL
 
 # 链接模式
 LINK_PATTERN = re.compile(r'\[([^\]]+)\]\(([^)]+\.md)\)')
+DATED_DOC_PATTERN = re.compile(r'^\d{4}-\d{2}-\d{2}-')
 
 
 def should_exclude(path: Path) -> bool:
@@ -205,10 +206,11 @@ def scan_status(file_path: Path) -> list[dict]:
         if status_match:
             status = status_match.group(2).lower()
             file_name = file_path.name.lower()
+            is_dated_doc = bool(DATED_DOC_PATTERN.match(file_path.name))
 
-            # 周计划、交付记录不应该是 current
+            # 带日期的一次性记录不应该长期保持 current
             if status == 'current':
-                if any(kw in file_name for kw in ['周', 'week', '交付', 'delivery', '执行', 'execution']):
+                if is_dated_doc and any(kw in file_name for kw in ['周', 'week', '交付', 'delivery', '执行', 'execution']):
                     issues.append({
                         'type': 'status',
                         'keyword': '状态误用',
