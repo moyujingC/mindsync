@@ -371,3 +371,34 @@ def test_sanitize_layer0_failure_detail_omits_sensitive_payload():
     assert sanitized["llm_error"]["status"] == 401
     assert sanitized["llm_attempt_trace"][0]["result"] == "http_error"
     assert "extra" not in sanitized["llm_attempt_trace"][0]
+
+
+def test_build_runtime_diagnostics_reads_orchestrator_store(monkeypatch):
+    layer0 = SimpleNamespace(
+        layer0_passed=False,
+        layer0_failure_reason="layer0_vision_request_failed",
+        layer0_failure_detail={"stage": "vision"},
+        fidelity_flags=["layer0_failed"],
+        fallback_summary={"used": True},
+        visual_analysis_basis={"prompt_meta": {"source": "layer0_failed"}},
+    )
+    record = SimpleNamespace(
+        status="failed",
+        generation_stage="failed",
+        generation_progress=100,
+        layer_0_raw=layer0,
+        layer_2_lite_final=None,
+        layer_4_pro_final=None,
+    )
+    store = SimpleNamespace(load=lambda interpretation_id: record)
+    orchestrator = SimpleNamespace(store=store)
+
+    monkeypatch.setattr(
+        "app.api.routes_v2.get_orchestrator",
+        lambda: orchestrator,
+    )
+
+    diagnostics = run_vision_e2e_smoke._build_runtime_diagnostics("demo")
+
+    assert diagnostics["status"] == "failed"
+    assert diagnostics["layer0"]["failure_reason"] == "layer0_vision_request_failed"
