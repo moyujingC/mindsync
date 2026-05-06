@@ -151,7 +151,10 @@ class OpenAICompatibleLLMClient:
             )
             if not raw:
                 return None
-            return self._parse_json_response(raw)
+            parsed = self._parse_json_response(raw)
+            if parsed is None:
+                self._record_json_parse_failure(raw, task=task)
+            return parsed
 
         raw = self._request_chat_completion(
             task_config=task_config,
@@ -170,7 +173,10 @@ class OpenAICompatibleLLMClient:
             )
         if not raw:
             return None
-        return self._parse_json_response(raw)
+        parsed = self._parse_json_response(raw)
+        if parsed is None:
+            self._record_json_parse_failure(raw, task=task)
+        return parsed
 
     def generate_text(
         self,
@@ -432,6 +438,15 @@ class OpenAICompatibleLLMClient:
         if isinstance(parsed, dict):
             return parsed
         return None
+
+    def _record_json_parse_failure(self, text: str, *, task: str) -> None:
+        preview = text.strip().replace("\n", " ")[:240]
+        self.last_error_detail = {
+            "kind": "invalid_json_response",
+            "task": task,
+            "response_length": len(text),
+            "response_preview": preview,
+        }
 
     def _extract_json_object(self, text: str) -> Optional[str]:
         start = text.find("{")

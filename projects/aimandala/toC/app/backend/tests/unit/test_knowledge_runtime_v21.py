@@ -1762,3 +1762,31 @@ def test_layer0_visual_summary_failure_exposes_llm_error_detail():
     assert payload["failure_reason"] == "layer0_vision_request_failed"
     assert payload["failure_detail"]["llm_error"]["kind"] == "url_error"
     assert payload["failure_detail"]["llm_attempt_trace"][0]["model"] == "qwen-vl-max-latest"
+
+
+def test_layer0_visual_summary_invalid_payload_exposes_payload_shape():
+    runtime = get_knowledge_runtime()
+
+    class _InvalidPayloadLLMClient:
+        def generate_structured(self, **kwargs):
+            return {
+                "global_visual_summary": "整体有花瓣结构。",
+                "per_circle_summary": {"inner": "内圈明亮"},
+            }
+
+    assembler = runtime.layer0_assembler
+    assembler.llm_client = _InvalidPayloadLLMClient()
+
+    payload = assembler._build_vision_visual_summary(
+        image_path=_fixture_asset_path("IMG_5062.jpeg"),
+        circles={
+            "inner": {"observation_summary": "内圈黄色花瓣。"},
+            "middle": {"observation_summary": "中圈紫色花瓣。"},
+            "outer": {"observation_summary": "外圈绿色叶片。"},
+        },
+        generated=False,
+    )
+
+    assert payload["failure_reason"] == "layer0_visual_basis_incomplete"
+    assert "per_circle_summary" in payload["failure_detail"]["payload_keys"]
+    assert payload["failure_detail"]["per_circle_summary_keys"] == ["inner"]

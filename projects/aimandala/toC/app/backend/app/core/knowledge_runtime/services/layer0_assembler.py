@@ -1507,7 +1507,11 @@ class Layer0Assembler:
                 "source": "layer0_failed",
                 "layer0_passed": False,
                 "failure_reason": "layer0_vision_invalid_payload",
-                "failure_detail": {"stage": "vision", "missing": ["global_visual_summary"]},
+                "failure_detail": {
+                    "stage": "vision",
+                    "missing": ["global_visual_summary"],
+                    "payload_keys": sorted(payload.keys()),
+                },
             }
         per_circle_summary = payload.get("per_circle_summary")
         per_circle_roles = payload.get("per_circle_color_roles")
@@ -1527,6 +1531,13 @@ class Layer0Assembler:
                 "failure_detail": {
                     "stage": "vision",
                     "missing": ["per_circle_summary_or_roles"],
+                    "payload_keys": sorted(payload.keys()),
+                    "per_circle_summary_keys": sorted(per_circle_summary.keys())
+                    if isinstance(per_circle_summary, dict)
+                    else [],
+                    "per_circle_color_roles_keys": sorted(per_circle_roles.keys())
+                    if isinstance(per_circle_roles, dict)
+                    else [],
                 },
             }
         return {
