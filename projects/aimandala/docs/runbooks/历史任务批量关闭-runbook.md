@@ -171,4 +171,4 @@ small sample（小样本）确认无误后，再做全量关闭。
 1. [历史任务全量关闭与新基线切换规格](projects/aimandala/docs/specs/2026-04-26-历史任务全量关闭与新基线切换规格.md)
 2. [历史任务全量关闭与新基线切换实施计划](projects/aimandala/docs/tasks/2026-04-26-历史任务全量关闭与新基线切换实施计划.md)
 3. [历史任务全量关闭与新基线切换-qa-basis](projects/aimandala/docs/qa/2026-04-26-历史任务全量关闭与新基线切换-qa-basis.md)
-4. [本地-Mac-自动执行器-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md)
+4. [本地-Mac-自动执行器-runbook.md](../../../../projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md)

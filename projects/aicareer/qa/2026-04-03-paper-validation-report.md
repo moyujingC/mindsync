@@ -27,8 +27,8 @@
 
 验证依据来自：
 
-- [MVP 产品 Spec](projects/aicareer/specs/MVP产品规范.md)
-- [MVP 技术方案](projects/aicareer/specs/MVP技术方案.md)
+- [MVP 产品 Spec](../../../projects/aicareer/specs/MVP产品规范.md)
+- [MVP 技术方案](../../../projects/aicareer/specs/MVP技术方案.md)
 - [MVP 验收与测试清单](projects/aicareer/qa/2026-04-02-mvp-qa-checklist.md)
 
 ## 2. 总体结论

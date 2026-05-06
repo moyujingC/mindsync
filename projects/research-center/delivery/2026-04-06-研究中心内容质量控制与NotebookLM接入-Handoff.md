@@ -15,7 +15,7 @@
 
 1. [研究中心内容严谨性与 NotebookLM 事实核查层 SPEC](projects/research-center/specs/2026-04-06-研究中心内容严谨性与NotebookLM事实核查层-SPEC.md)
 2. [研究中心内容严谨性与 NotebookLM 事实核查 SOP](projects/research-center/delivery/2026-04-06-研究中心内容严谨性与NotebookLM事实核查-SOP.md)
-3. [事实核查笔记模板](projects/research-center/templates/事实核查笔记模板.md)
+3. [事实核查笔记模板](../../../projects/research-center/templates/事实核查笔记模板.md)
 
 这两份文档已经明确：
 

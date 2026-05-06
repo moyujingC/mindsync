@@ -28,11 +28,11 @@
 
 本轮读取了以下材料：
 
-- [Claude Code 源码研究综合结论与 Skill 启发](projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
+- [Claude Code 源码研究综合结论与 Skill 启发](../../../projects/research-center/research/claude-code/07-Claude-Code源码研究综合结论与Skill启发.md)
 - [墨予镜 Skill 协议草案](projects/research-center/specs/2026-04-04-墨予镜-Skill-协议草案.md)
 - [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
-- [研究中心项目入口](company/projects/研究中心/PROJECT.md)
-- [研究中心项目工作区](projects/research-center/PROJECT.md)
+- [研究中心项目入口](../../../company/projects/研究中心/PROJECT.md)
+- [研究中心项目工作区](../../../projects/research-center/PROJECT.md)
 - [Product Spec Lead 角色说明](agents/product-spec-lead/AGENTS.md)
 - [Architect 角色说明](agents/architect/AGENTS.md)
 

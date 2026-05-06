@@ -80,7 +80,7 @@
 
 接手 comment 的固定模板见：
 
-- [本地人工接手-comment-模板规范.md](projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
+- [本地人工接手-comment-模板规范.md](../../../../projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
 
 ### 3.3 准备本地工作区
 
@@ -126,7 +126,7 @@
 
 进展 comment 与完成 comment 的固定模板见：
 
-- [本地人工接手-comment-模板规范.md](projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
+- [本地人工接手-comment-模板规范.md](../../../../projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
 
 ## 4. 推荐状态路径
 
@@ -192,4 +192,4 @@ phase 2 只定义推荐路径，不定义强约束状态机。
 3. phase 2 QA：
    - [../qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-automation-and-local-execution-routing-phase2-qa-basis.md)
 4. comment 模板规范：
-   - [本地人工接手-comment-模板规范.md](projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
+   - [本地人工接手-comment-模板规范.md](../../../../projects/aimandala/docs/runbooks/本地人工接手-comment-模板规范.md)
