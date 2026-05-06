@@ -30,6 +30,7 @@
 - `knowledge-ingest`
 - `fact-check-gate`
 - `qa-gate-review`
+- `doc-governance`
 - `task-routing`
 - `artifact-readiness-check`
 - `business-diagnosis`
@@ -66,6 +67,7 @@
 
 - 7 个核心角色的基础 skill 引用接入
 - 多条真实试跑链路验证
+- 文档治理执行层 skill 已在仓库内落盘
 
 当前还没有完成：
 
