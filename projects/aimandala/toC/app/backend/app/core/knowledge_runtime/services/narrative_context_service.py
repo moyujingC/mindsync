@@ -922,7 +922,7 @@ class NarrativeContextService:
 
         overall_parts = [
             (
-                f"这张画更先让人看到的，不是你准备马上往前冲，而是你正在把自己重新收回来，确认现在的自己还能不能稳稳地站在{dominant_theme}上。"
+                f"第一眼先看到的，不是你要不要马上往前冲，而是你正在把自己重新收回来，确认现在这份力气能不能稳稳地落在{dominant_theme}上。"
                 if resolved_theme == "general"
                 else f"放到「{resolved_theme_label}」里看，这张画先说中的不是结果，而是你在往前之前，会先确认自己有没有站稳{dominant_theme}。"
             ),
@@ -930,7 +930,7 @@ class NarrativeContextService:
         if feeling_hint:
             overall_parts.append(feeling_hint)
         if transition:
-            overall_parts.append(f"再往里看，画面的主轴是：{transition}")
+            overall_parts.append(f"再往里看，三圈的走向也在说明同一件事：{transition}")
         overall_parts.append(
             f"所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把和「{secondary}」有关的{secondary_keywords}带回现实。"
         )
@@ -938,9 +938,7 @@ class NarrativeContextService:
             overall_parts.append(f"它也提醒你：{signal_text}")
 
         visual_parts = [
-            (
-                f"如果只看画面给人的感受，最先浮出来的是两股力量：一股是「{dominant}」的收拢和判断，另一股是「{secondary}」想把事情重新带回现实。"
-            ),
+            f"如果只看画面给人的感受，最先浮出来的是两股力量：一股是「{dominant}」的收拢和判断，另一股是「{secondary}」想把事情重新带回现实。",
         ]
         if circle_pattern:
             visual_parts.append(f"三层画面的走向也很清楚：{circle_pattern}")
@@ -972,7 +970,7 @@ class NarrativeContextService:
             f"为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。"
             f"它看起来像「{outer}」的收紧，但本质上是在替现在的你筛选什么值得继续打开。"
         )
-        block_parts = ["当前最容易卡住你的，是主导能量和现实节奏还没完全接上。"]
+        block_parts = ["当前最容易卡住你的，不是没有方向，而是主导能量和现实节奏还没完全接上。"]
         if weakest_percentage < 12:
             block_parts.append(
                 f"尤其当和「{weakest}」有关的{weakest_theme}还没跟上时，你会在快要推进的那一刻先退回来。"
@@ -1251,7 +1249,7 @@ class NarrativeContextService:
 
         block_parts: list[str] = []
         if mapped_contradiction:
-            block_parts.append(f"你现在更核心的卡点，其实是「{mapped_contradiction}」")
+            block_parts.append(f"你现在更核心的卡点，其实是：{mapped_contradiction}")
         if mapped_manifestation:
             block_parts.append(f"它不是抽象概念，落到现实里，常常就表现成：{mapped_manifestation.rstrip('。')}。")
         if block_text:
@@ -1262,7 +1260,7 @@ class NarrativeContextService:
             )
         if weakest_percentage < 12:
             block_parts.append(
-                f"再加上和「{weakest}」有关的{weakest_theme}资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。"
+                f"再加上{weakest_theme}这部分资源暂时偏少，所以你在快要真正启动时，更容易先想缓一缓。"
             )
         if signal_text:
             block_parts.append(f"这和画面里的深层信号也是一致的：{signal_text}")
@@ -1399,13 +1397,16 @@ class NarrativeContextService:
             if isinstance(item, str) and str(item).strip()
         )
 
-        summary_parts = [f"当前更接近的核心失衡是「{display_imbalance}」"]
-        if category:
-            summary_parts.append(f"（{category}）")
+        summary_parts = ["这张画更像在提醒你：真正卡住的不是能力，而是某种反复出现的内在拉扯"]
         if contradiction:
             summary_parts.append(f"：{contradiction}")
         elif manifestation:
             summary_parts.append(f"：{manifestation}")
+        if display_imbalance:
+            label_text = f"知识库把这条线索归到「{display_imbalance}」"
+            if category:
+                label_text += f"（{category}）"
+            summary_parts.append(f"。{label_text}")
         summary = "".join(summary_parts).strip()
         if summary and summary[-1] not in "。！？":
             summary += "。"
@@ -1420,14 +1421,17 @@ class NarrativeContextService:
 
         block_parts: list[str] = []
         if contradiction:
-            block_parts.append(f"你现在更核心的卡点，其实是「{contradiction}」")
+            block_parts.append(f"你现在更核心的卡点，其实是：{contradiction}")
         if manifestation:
             block_parts.append(f"它不是抽象概念，落到现实里，常常就表现成：{manifestation.rstrip('。')}。")
 
         direction_text = direction
         healing_parts: list[str] = []
         if issue_type and cognitive_upgrade:
-            healing_parts.append(f"围绕「{issue_type}」真正要慢慢建立的新体验是：{cognitive_upgrade}。")
+            healing_parts.append(
+                f"真正要慢慢建立的新体验是：{cognitive_upgrade}。"
+                f"如果放回{resolved_theme_label}，它对应的是「{issue_type}」这一类现实议题。"
+            )
         elif cognitive_upgrade:
             healing_parts.append(cognitive_upgrade.rstrip("。") + "。")
         if healing_direction:
@@ -1437,13 +1441,22 @@ class NarrativeContextService:
 
         deeper_root = ""
         if manifestation:
-            deeper_root = f"如果再往下一层看，问题不只是表面卡住，而是你会慢慢形成一种重复机制：「{display_imbalance}」会让你在关键时刻又回到“{manifestation}”里。"
+            deeper_root = (
+                "如果再往下一层看，问题不只是表面卡住，而是你会慢慢形成一种重复机制："
+                f"一到关键时刻，就又回到“{manifestation}”里。"
+            )
             if psychology:
-                deeper_root += f" 它常会让人落进「{psychology}」这样的内在循环。"
+                deeper_root += f" 这种循环里常见的感受是：{psychology}。"
+            if display_imbalance:
+                deeper_root += f" 知识库里把这条机制标记为「{display_imbalance}」，这里只把它作为定位线索，不把它当成结论标签。"
 
         core_root = ""
         if issue_type and cognitive_upgrade:
-            core_root = f"而最深的地方，往往不是能力问题，而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。 在「{issue_type}」这里，你正在重新学习：{cognitive_upgrade}"
+            core_root = (
+                "而最深的地方，往往不是能力问题，"
+                "而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。"
+                f"放到{resolved_theme_label}里，你正在重新学习：{cognitive_upgrade}"
+            )
         elif cognitive_upgrade:
             core_root = f"而最深的地方，往往不是能力问题，而是你心里对“我可不可以安心拥有、安心向前”这件事还没有完全放松。 {cognitive_upgrade}"
 

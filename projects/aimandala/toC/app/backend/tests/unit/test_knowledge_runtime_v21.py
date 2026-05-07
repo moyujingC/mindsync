@@ -262,7 +262,8 @@ def test_v21_narrative_service_builds_imbalance_projection():
     assert "72小时决策" in projection["direction"]
     assert "财富是能量的流动" in projection["healing_core"]
     assert "水多火灭" in projection["deeper_root"]
-    assert "财富焦虑" in projection["core_root"]
+    assert "安心拥有、安心向前" in projection["core_root"]
+    assert "财富事业" in projection["core_root"]
 
 
 def test_v21_narrative_service_builds_imbalance_narrative_basis():
@@ -478,6 +479,11 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "过渡期" in projection["emotion_portrait"]
     assert "这也和你最近画画时写下的感觉有关。" in projection["emotion_portrait"]
     assert "过渡期" in projection["emotion_portrait"]
+    assert "{dominant_theme}" not in projection["overall_impression"]
+    assert "{secondary_name}" not in projection["overall_impression"]
+    assert "{transition_sentence}" not in projection["overall_impression"]
+    assert "{dominant_name}" not in projection["visual_elements"]
+    assert "{outer_name}" not in projection["emotion_portrait"]
     assert len(projection["three_awareness"]) == 3
     assert projection["three_awareness"][0]["title"] == "先安顿自己"
     assert "默认 Pro 预告" in projection["pro_teaser"]
@@ -626,6 +632,8 @@ def test_v21_narrative_service_builds_pro_projection():
     assert "《慢慢亮起来的中心》" not in projection["first_impression"]
     assert "财富安全感与物质基础" in projection["energy_essence"]
     assert "恐惧压制行动" in projection["block_point"]
+    assert "{transition_sentence}" not in projection["first_impression"]
+    assert "{dominant_theme}" not in projection["energy_essence"]
 
 
 def test_v21_narrative_service_builds_pro_narrative_plan():
@@ -727,6 +735,8 @@ def test_v21_narrative_service_builds_pro_narrative_plan():
     assert "你原本希望“想知道怎么更稳定地往前”" in plan["legacy_projection"]["root_cause"]["surface"]
     assert plan["legacy_projection"]["root_cause"]["deeper"] == "更深一层是你还在确认自己能不能稳稳接住变化"
     assert plan["legacy_projection"]["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
+    assert "【" not in plan["legacy_projection"]["root_cause"]["deeper"]
+    assert "「" not in plan["legacy_projection"]["block_point"]
 
 
 def test_v21_narrative_plan_compresses_per_circle_depth_state():

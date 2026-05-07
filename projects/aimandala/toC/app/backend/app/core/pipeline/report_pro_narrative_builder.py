@@ -160,7 +160,7 @@ class ReportProNarrativeBuilder:
             "manifestation",
         ).strip()
         if mapped_contradiction:
-            parts.append(f"你现在更核心的卡点，其实是「{mapped_contradiction}」")
+            parts.append(f"你现在更核心的卡点，其实是：{mapped_contradiction}")
         if mapped_manifestation:
             parts.append(f"它不是抽象概念，落到现实里，常常就表现成：{mapped_manifestation.rstrip('。')}。")
         if lite_block:
@@ -173,7 +173,7 @@ class ReportProNarrativeBuilder:
                 weakest["name"],
             )
             parts.append(
-                f"再加上和「{weakest['name']}」有关的{weakest_theme}资源暂时偏少，"
+                f"再加上{weakest_theme}这部分资源暂时偏少，"
                 "所以你在快要真正启动时，更容易先想缓一缓。"
             )
         if signal_text:

@@ -62,8 +62,8 @@ class ReportLiteNarrativeBuilder:
         signal_text: str,
     ) -> str:
         opening = (
-            f"这张画更先让人看到的，不是你准备马上往前冲，"
-            f"而是你正在把自己重新收回来，确认现在的自己还能不能稳稳地站在{dominant_theme}上。"
+            f"第一眼先看到的，不是你要不要马上往前冲，"
+            f"而是你正在把自己重新收回来，确认现在这份力气能不能稳稳地落在{dominant_theme}上。"
         )
         if theme_label != "整体":
             opening = (
@@ -176,7 +176,7 @@ class ReportLiteNarrativeBuilder:
         signal_text = self._describe_signal(self._get_primary_knowledge_signal(record))
         parts = [self._build_state_opening(theme_label, dominant["name"], dominant_theme, feeling_hint, signal_text)]
         if transition:
-            parts.append(f"再往里看，画面的主轴是：{transition}")
+            parts.append(f"再往里看，三圈的走向也在说明同一件事：{transition}")
         parts.append(
             f"所以这不是简单的停住，而更像你先把内在安顿好，"
             f"再慢慢把和「{secondary['name']}」有关的{secondary_keywords}带回现实。"
@@ -332,7 +332,7 @@ class ReportLiteNarrativeBuilder:
             f"为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。"
             f"它看起来像「{outer_dominant}」的收紧，但本质上是在替现在的你筛选什么值得继续打开。"
         )
-        block_parts = ["当前最容易卡住你的，是主导能量和现实节奏还没完全接上。"]
+        block_parts = ["当前最容易卡住你的，不是没有方向，而是主导能量和现实节奏还没完全接上。"]
         if weakest.get("percentage", 0.0) < 12:
             block_parts.append(
                 f"尤其当和「{weakest['name']}」有关的{weakest_theme}还没跟上时，"
