@@ -255,6 +255,10 @@ def test_v22_workbench_can_export_fixture_golden_assets(monkeypatch, tmp_path):
     assert (export_dir / "lite.report.json").exists()
     assert (export_dir / "lite.report.md").exists()
     assert (export_dir / "lite.debug.json").exists()
+    assert (export_dir / "lite.process.json").exists()
+    assert (export_dir / "lite.process.md").exists()
+    assert result["artifacts"]["process_json"].endswith("lite.process.json")
+    assert result["artifacts"]["process_markdown"].endswith("lite.process.md")
 
     report_payload = json.loads((export_dir / "lite.report.json").read_text(encoding="utf-8"))
     assert report_payload["version"] == "lite"
@@ -265,6 +269,33 @@ def test_v22_workbench_can_export_fixture_golden_assets(monkeypatch, tmp_path):
     assert "/Users/xinran" not in json.dumps(report_payload, ensure_ascii=False)
 
     debug_payload = json.loads((export_dir / "lite.debug.json").read_text(encoding="utf-8"))
+    process_payload = json.loads((export_dir / "lite.process.json").read_text(encoding="utf-8"))
+    expected_stage_ids = [
+        "stage-00-input-context",
+        "stage-01-theme-selection",
+        "stage-02-circle-boundary-decision",
+        "stage-03-entry-point",
+        "stage-04-visual-evidence",
+        "stage-05-newbie-six-method-hits",
+        "stage-06-five-element-relation",
+        "stage-07-conflict-blockage",
+        "stage-08-healing-goal",
+        "stage-09-lite-draft",
+        "stage-10-pro-draft",
+        "stage-11-final-report",
+    ]
+    assert process_payload["source_of_truth"].endswith("01_曼陀罗解读手册.md")
+    assert process_payload["stage_ids"] == expected_stage_ids
+    assert [stage["id"] for stage in process_payload["stages"]] == expected_stage_ids
+    assert process_payload["stages"][1]["label"] == "确定解读主题"
+    assert process_payload["stages"][2]["payload"]["locked_for_interpretation"] is True
+    assert "少术语" in process_payload["stages"][6]["payload"]["final_report_language_rule"]
+    process_markdown = (export_dir / "lite.process.md").read_text(encoding="utf-8")
+    assert "中间过程版本" in process_markdown
+    assert "stage-05-newbie-six-method-hits" in process_markdown
+    assert "原始手册" in process_markdown
+    assert "manual_process_trace" in debug_payload
+    assert debug_payload["manual_process_trace"]["stage_ids"] == expected_stage_ids
     assert "algorithm_fidelity_trace" in debug_payload
     assert debug_payload["algorithm_fidelity_trace"]["scope"] == "lite"
     assert "topic_context_trace" in debug_payload
@@ -275,6 +306,8 @@ def test_v22_workbench_can_export_fixture_golden_assets(monkeypatch, tmp_path):
     assert "method:per_circle_color_analysis" in visual_trace["rule_refs"]
 
     markdown_payload = (export_dir / "lite.report.md").read_text(encoding="utf-8")
+    assert "解读过程链" in markdown_payload
+    assert "stage-01-theme-selection" in markdown_payload
     assert "产品区块" in markdown_payload
     assert "topic_context" not in markdown_payload
     assert "current_reading" not in markdown_payload

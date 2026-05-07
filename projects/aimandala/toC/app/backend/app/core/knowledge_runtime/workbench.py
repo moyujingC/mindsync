@@ -33,6 +33,22 @@ from .validators import KnowledgePackValidator
 class KnowledgeWorkbench:
     """Own the local-only build/eval/debug loop for the knowledge pack."""
 
+    ORIGINAL_INTERPRETATION_MANUAL = "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md"
+    MANUAL_PROCESS_STAGE_IDS = [
+        "stage-00-input-context",
+        "stage-01-theme-selection",
+        "stage-02-circle-boundary-decision",
+        "stage-03-entry-point",
+        "stage-04-visual-evidence",
+        "stage-05-newbie-six-method-hits",
+        "stage-06-five-element-relation",
+        "stage-07-conflict-blockage",
+        "stage-08-healing-goal",
+        "stage-09-lite-draft",
+        "stage-10-pro-draft",
+        "stage-11-final-report",
+    ]
+
     def __init__(self, *, toc_root: Path | None = None) -> None:
         self.toc_root = toc_root or get_knowledge_toc_root()
         self.project_root = self.toc_root.parent
@@ -284,18 +300,37 @@ class KnowledgeWorkbench:
             fixture=fixture,
             execution=execution,
         )
-        debug_payload = self._build_export_debug_payload(execution)
+        process_payload = self._build_export_manual_process_trace(
+            fixture=fixture,
+            execution=execution,
+            report=report_payload,
+        )
+        debug_payload = self._build_export_debug_payload(
+            execution,
+            manual_process_trace=process_payload,
+        )
         report_markdown = self._build_export_report_markdown(
             fixture=fixture,
             report=report_payload,
+            manual_process_trace=process_payload,
+        )
+        process_markdown = self._build_export_manual_process_markdown(
+            fixture=fixture,
+            process_trace=process_payload,
         )
 
         report_path = export_dir / f"{version}.report.json"
         debug_path = export_dir / f"{version}.debug.json"
         markdown_path = export_dir / f"{version}.report.md"
+        process_path = export_dir / f"{version}.process.json"
+        process_markdown_path = export_dir / f"{version}.process.md"
 
         report_path.write_text(
             json.dumps(report_payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        process_path.write_text(
+            json.dumps(process_payload, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
         debug_path.write_text(
@@ -303,6 +338,7 @@ class KnowledgeWorkbench:
             encoding="utf-8",
         )
         markdown_path.write_text(report_markdown, encoding="utf-8")
+        process_markdown_path.write_text(process_markdown, encoding="utf-8")
 
         return {
             "fixture_id": fixture_id,
@@ -313,6 +349,8 @@ class KnowledgeWorkbench:
                 "report_json": str(report_path),
                 "debug_json": str(debug_path),
                 "report_markdown": str(markdown_path),
+                "process_json": str(process_path),
+                "process_markdown": str(process_markdown_path),
             },
         }
 
@@ -920,11 +958,17 @@ class KnowledgeWorkbench:
             "asset_ref": self._sanitize_export_value(fixture.get("asset_ref", {})),
         }
 
-    def _build_export_debug_payload(self, execution: dict[str, Any]) -> dict[str, Any]:
+    def _build_export_debug_payload(
+        self,
+        execution: dict[str, Any],
+        *,
+        manual_process_trace: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         knowledge_debug = execution.get("knowledge_debug", {})
         if not isinstance(knowledge_debug, dict):
             knowledge_debug = {}
         payload = {
+            "manual_process_trace": manual_process_trace or {},
             "algorithm_fidelity_trace": knowledge_debug.get("algorithm_fidelity_trace", {}),
             "topic_context_trace": knowledge_debug.get("topic_context_trace", {}),
             "narrative_plans": knowledge_debug.get("narrative_plans", {}),
@@ -939,6 +983,7 @@ class KnowledgeWorkbench:
         *,
         fixture: dict[str, Any],
         report: dict[str, Any],
+        manual_process_trace: dict[str, Any] | None = None,
     ) -> str:
         structured = report.get("structured", {}) if isinstance(report.get("structured"), dict) else {}
         version = str(report.get("version") or "lite")
@@ -953,9 +998,23 @@ class KnowledgeWorkbench:
             f"- 议题：`{topic_context.get('topic') or fixture.get('theme') or 'general'}`",
             f"- 议题标签：{topic_context.get('topic_label') or ''}",
             "",
-            "## 产品区块",
+            "## 解读过程链",
+            "",
+            "这部分用于 QA 复盘：最终报告的表达可以沿用优化后的自然文案，但底层推导必须能回到原始解读手册的顺序。",
             "",
         ]
+        for stage in (manual_process_trace or {}).get("stages", []):
+            if not isinstance(stage, dict):
+                continue
+            summary = str(stage.get("summary") or "").strip()
+            if not summary:
+                continue
+            lines.append(f"- `{stage.get('id')}` {stage.get('label')}：{summary}")
+        lines.extend([
+            "",
+            "## 产品区块",
+            "",
+        ])
         field_labels = self._golden_field_labels(version)
         for field, label in field_labels:
             value = structured.get(field)
@@ -982,6 +1041,295 @@ class KnowledgeWorkbench:
                 ]
             )
         return "\n".join(lines).strip() + "\n"
+
+    def _build_export_manual_process_trace(
+        self,
+        *,
+        fixture: dict[str, Any],
+        execution: dict[str, Any],
+        report: dict[str, Any],
+    ) -> dict[str, Any]:
+        knowledge_debug = execution.get("knowledge_debug", {})
+        if not isinstance(knowledge_debug, dict):
+            knowledge_debug = {}
+        structured = report.get("structured", {}) if isinstance(report.get("structured"), dict) else {}
+        version = str(report.get("version") or "lite")
+        input_package = knowledge_debug.get("review_input_package") or knowledge_debug.get("input_package") or {}
+        if not isinstance(input_package, dict):
+            input_package = {}
+        layer0_summary = knowledge_debug.get("review_layer0_summary", {})
+        if not isinstance(layer0_summary, dict):
+            layer0_summary = {}
+        layer0_evidence = knowledge_debug.get("layer0_evidence", {})
+        if not isinstance(layer0_evidence, dict):
+            layer0_evidence = {}
+        rule_evaluations = layer0_evidence.get("rule_evaluations", {})
+        if not isinstance(rule_evaluations, dict):
+            rule_evaluations = {}
+        method_trace = rule_evaluations.get("interpretation_method_trace", {})
+        if not isinstance(method_trace, dict):
+            method_trace = {}
+        product_blocks = knowledge_debug.get("product_block_debug", {})
+        if not isinstance(product_blocks, dict):
+            product_blocks = {}
+        topic_context = structured.get("topic_context", {}) if isinstance(structured.get("topic_context"), dict) else {}
+        topic_input = input_package.get("topic_input", {}) if isinstance(input_package.get("topic_input"), dict) else {}
+        user_context = input_package.get("user_context", {}) if isinstance(input_package.get("user_context"), dict) else {}
+        circle_config = input_package.get("circle_config", {}) if isinstance(input_package.get("circle_config"), dict) else {}
+        knowledge_projections = knowledge_debug.get("knowledge_projections", {})
+        if not isinstance(knowledge_projections, dict):
+            knowledge_projections = {}
+
+        stages = [
+            self._manual_stage(
+                "stage-00-input-context",
+                "输入上下文",
+                "先记录用户主题、创作意图、创作感受和图像引用，避免后续报告脱离用户当下问题。",
+                {
+                    "topic": topic_input.get("topic") or topic_context.get("topic") or fixture.get("theme") or "general",
+                    "topic_label": topic_input.get("topic_label") or topic_context.get("topic_label") or "",
+                    "painting_intention": user_context.get("painting_intention") or "",
+                    "painting_feeling": user_context.get("painting_feeling") or "",
+                    "image_ref": self._sanitize_export_value(
+                        self._dig(input_package, ["image", "image_ref"])
+                        or fixture.get("asset_ref", {}).get("asset_path", "")
+                    ),
+                },
+                manual_refs=["解读前准备：询问绘画者想要解读的主题"],
+            ),
+            self._manual_stage(
+                "stage-01-theme-selection",
+                "确定解读主题",
+                "按手册要求先确定解读重点，再进入三圈和细节判断；本次主题会作为后续所有判断的投影口径。",
+                {
+                    "selected_theme": topic_context.get("topic") or fixture.get("theme") or "general",
+                    "selected_theme_label": topic_context.get("topic_label") or "",
+                    "selection_source": "fixture/user_input",
+                },
+                manual_refs=["第一步：确定绘画者的主题。解读主题是什么？财富、情感还是健康。"],
+            ),
+            self._manual_stage(
+                "stage-02-circle-boundary-decision",
+                "确定三圈边界并锁定",
+                "按手册先定三圈，定完后不在解读中来回改动；QA 需要检查这一步是否明确留下边界和来源。",
+                {
+                    "inner_radius": circle_config.get("inner_radius"),
+                    "middle_radius": circle_config.get("middle_radius"),
+                    "auto_detect_inner_radius": circle_config.get("auto_detect_inner_radius"),
+                    "auto_detect_middle_radius": circle_config.get("auto_detect_middle_radius"),
+                    "source": circle_config.get("source") or "unknown",
+                    "locked_for_interpretation": True,
+                },
+                manual_refs=["第二步：确定好主题后，以你的神为准确定三个圈的结构。", "买定离手，落子无悔。"],
+            ),
+            self._manual_stage(
+                "stage-03-entry-point",
+                "选择解读切入点",
+                "切入点可以来自内圈、外圈或最突出的画面特征；当前导出会记录实际使用的直断/候选摘要。",
+                {
+                    "entry_strategy": self._resolve_manual_entry_strategy(layer0_summary),
+                    "direct_judgment_summary": layer0_summary.get("direct_judgment_summary", ""),
+                    "candidate_summary": layer0_summary.get("candidate_summary", ""),
+                },
+                manual_refs=["第三步：确定三圈后，找切入点解读。"],
+            ),
+            self._manual_stage(
+                "stage-04-visual-evidence",
+                "画面依据与逐圈观察",
+                "先把可见画面、三圈颜色、结构和填充状态说清楚，再进入状态解释。",
+                {
+                    "visual_fact_summary": layer0_summary.get("visual_fact_summary", ""),
+                    "per_circle_observation_summary": layer0_summary.get("per_circle_observation_summary", ""),
+                    "shape_observation_summary": layer0_summary.get("shape_observation_summary", ""),
+                    "final_visual_basis": self._final_block_excerpt(
+                        product_blocks,
+                        version,
+                        "visual_basis" if version == "lite" else "evidence_digest",
+                    ),
+                },
+                manual_refs=["三圈结构法", "从曼陀罗中的 X，我能看出你是 Y"],
+            ),
+            self._manual_stage(
+                "stage-05-newbie-six-method-hits",
+                "新手解读六式检查",
+                "检查外圈花边、外圈红色、外圈大面积单色、渐变色、深重色、浅轻色等直断信号是否命中。",
+                {
+                    "catalog_version": self._dig(rule_evaluations, ["direct_judgment_hits", "catalog_version"]),
+                    "hits": self._dig(rule_evaluations, ["direct_judgment_hits", "hits"]) or [],
+                    "method_trace_source": self._dig(method_trace, ["direct_judgment", "source"]),
+                },
+                manual_refs=[
+                    "新手解读6式：外圈花边、星星点点",
+                    "新手解读6式：外圈红色多",
+                    "新手解读6式：外圈颜色单一且面积大",
+                    "新手解读6式：渐变色",
+                    "新手解读6式：颜色浓郁、深重",
+                    "新手解读6式：颜色浅、轻",
+                ],
+            ),
+            self._manual_stage(
+                "stage-06-five-element-relation",
+                "五行关系作为解释工具",
+                "五行只作为内部解释工具，用户可见正文要少术语，把关系翻译成现实状态。",
+                {
+                    "element_state_summary": layer0_summary.get("element_state_summary", ""),
+                    "relation_summary": layer0_summary.get("relation_summary", ""),
+                    "circle_relation_analysis": method_trace.get("circle_relation_analysis", {}),
+                    "final_report_language_rule": "少术语；术语必须服务解释，不能喧宾夺主。",
+                },
+                manual_refs=["五行感知法", "五行相生相克解读法"],
+            ),
+            self._manual_stage(
+                "stage-07-conflict-blockage",
+                "找冲突、卡点、堵点",
+                "在主题和画面证据基础上找到当前最影响用户的卡点，而不是泛泛讲所有主题。",
+                {
+                    "candidate_summary": layer0_summary.get("candidate_summary", ""),
+                    "final_block": self._final_block_excerpt(
+                        product_blocks,
+                        version,
+                        "pattern_interpretation" if version == "lite" else "imbalance_diagnosis",
+                    ),
+                    "root_cause": structured.get("root_cause_chain") if version == "pro" else {},
+                },
+                manual_refs=["通过曼陀罗解读，我们就可以知道案主内心的冲突点、卡点、堵点。", "爆破卡点：找到根源性事件"],
+            ),
+            self._manual_stage(
+                "stage-08-healing-goal",
+                "建立调节目标",
+                "只有在判断成立后才给方向；Lite 给轻量觉察，Pro 给更完整的行动/清理/调节路径。",
+                {
+                    "lite_healing_guidance": structured.get("lite_healing_guidance", {}),
+                    "pro_healing_plan": structured.get("healing_plan", {}),
+                    "final_healing_block": self._final_block_excerpt(
+                        product_blocks,
+                        version,
+                        "lite_healing_guidance" if version == "lite" else "healing_plan",
+                    ),
+                },
+                manual_refs=["用曼陀罗疗愈与案主建立共同目标", "清理情绪", "定制方案"],
+            ),
+            self._manual_stage(
+                "stage-09-lite-draft",
+                "Lite 过程稿",
+                "Lite 仍可使用上一版优化后的自然表达，但必须从前面证据链映射到字段。",
+                knowledge_projections.get("lite", {}) if isinstance(knowledge_projections.get("lite"), dict) else {},
+                manual_refs=["解读句式：从你的曼陀罗中，可以看出...；因为..."],
+            ),
+            self._manual_stage(
+                "stage-10-pro-draft",
+                "Pro 过程稿",
+                "Pro 不是 Lite 加长版，而是在同一手册逻辑上展开机制、根因链和调节方案。",
+                knowledge_projections.get("pro", {}) if isinstance(knowledge_projections.get("pro"), dict) else {},
+                manual_refs=["个案六大流程：确定目标、爆破卡点、清理情绪、定制方案"],
+            ),
+            self._manual_stage(
+                "stage-11-final-report",
+                "最终报告",
+                "最终呈现可以是自然报告文案，但 QA 必须能从最终字段倒查到上面的手册推导链。",
+                {
+                    "version": version,
+                    "title": report.get("title"),
+                    "structured_fields": sorted(structured.keys()),
+                    "report_excerpt": self._excerpt(self._strip_safety_wrappers(report.get("report")), limit=500),
+                },
+                manual_refs=["最终呈现：用曼陀罗作为桥梁，持续沟通并给出后续方向"],
+            ),
+        ]
+        return self._sanitize_export_value(
+            {
+                "source_of_truth": self.ORIGINAL_INTERPRETATION_MANUAL,
+                "manual_logic_version": "original-manual-process.v1",
+                "fixture_id": fixture.get("id"),
+                "version": version,
+                "stage_ids": self.MANUAL_PROCESS_STAGE_IDS,
+                "stages": stages,
+                "qa_rule": "QA 输出必须同时保留最终报告和以上每个中间过程版本；最终文案可沿用优化表达，但推导逻辑必须可回到原始解读手册。",
+            }
+        )
+
+    def _manual_stage(
+        self,
+        stage_id: str,
+        label: str,
+        summary: str,
+        payload: Any,
+        *,
+        manual_refs: list[str],
+    ) -> dict[str, Any]:
+        return {
+            "id": stage_id,
+            "label": label,
+            "manual_source": self.ORIGINAL_INTERPRETATION_MANUAL,
+            "manual_refs": manual_refs,
+            "summary": summary,
+            "payload": payload,
+        }
+
+    def _build_export_manual_process_markdown(
+        self,
+        *,
+        fixture: dict[str, Any],
+        process_trace: dict[str, Any],
+    ) -> str:
+        lines = [
+            f"# Manual Process Trace: {fixture.get('id')} / {process_trace.get('version')}",
+            "",
+            f"- 原始手册：`{process_trace.get('source_of_truth')}`",
+            f"- 过程版本：`{process_trace.get('manual_logic_version')}`",
+            f"- QA 规则：{process_trace.get('qa_rule')}",
+            "",
+            "## 中间过程版本",
+            "",
+        ]
+        for stage in process_trace.get("stages", []):
+            if not isinstance(stage, dict):
+                continue
+            lines.extend(
+                [
+                    f"### {stage.get('id')} {stage.get('label')}",
+                    "",
+                    f"- 手册依据：{'；'.join(str(item) for item in stage.get('manual_refs', []))}",
+                    f"- 过程摘要：{stage.get('summary')}",
+                    "",
+                    "```json",
+                    json.dumps(stage.get("payload", {}), ensure_ascii=False, indent=2),
+                    "```",
+                    "",
+                ]
+            )
+        return "\n".join(lines).strip() + "\n"
+
+    def _resolve_manual_entry_strategy(self, layer0_summary: dict[str, Any]) -> str:
+        direct = str(layer0_summary.get("direct_judgment_summary") or "").strip()
+        shape = str(layer0_summary.get("shape_observation_summary") or "").strip()
+        if direct:
+            return "most_prominent_feature/direct_judgment"
+        if shape:
+            return "most_prominent_feature/shape"
+        return "three_circles_in_order"
+
+    def _final_block_excerpt(
+        self,
+        product_blocks: dict[str, Any],
+        version: str,
+        field: str,
+    ) -> Any:
+        mode = "pro" if version == "pro" else "lite"
+        mode_blocks = product_blocks.get(mode, {}) if isinstance(product_blocks, dict) else {}
+        block = mode_blocks.get(field, {}) if isinstance(mode_blocks, dict) else {}
+        final = block.get("final") if isinstance(block, dict) else None
+        if isinstance(final, str):
+            return self._excerpt(final, limit=500) or ""
+        return final
+
+    def _dig(self, payload: Any, path: list[str]) -> Any:
+        current = payload
+        for key in path:
+            if not isinstance(current, dict):
+                return None
+            current = current.get(key)
+        return current
 
     def _strip_safety_wrappers(self, value: Any) -> Any:
         if not isinstance(value, str):
