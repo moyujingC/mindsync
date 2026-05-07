@@ -1,7 +1,7 @@
 # Manual Process Trace: toc-mvp-fixture-002 / pro
 
 - 原始手册：`docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md`
-- 过程版本：`original-manual-process.v1`
+- 过程版本：`three-circle-five-element-flow.v1`
 - QA 规则：QA 输出必须同时保留最终报告和以上每个中间过程版本；最终文案可沿用优化表达，但推导逻辑必须可回到原始解读手册。
 
 ## 中间过程版本
@@ -50,23 +50,25 @@
 }
 ```
 
-### stage-03-entry-point 选择解读切入点
+### stage-03-direct-judgment-high-hit-check 直断法高命中检查
 
-- 手册依据：第三步：确定三圈后，找切入点解读。
-- 过程摘要：切入点可以来自内圈、外圈或最突出的画面特征；当前导出会记录实际使用的直断/候选摘要。
+- 手册依据：新手解读6式：外圈花边、星星点点；新手解读6式：外圈红色多；新手解读6式：外圈颜色单一且面积大；新手解读6式：渐变色；新手解读6式：颜色浓郁、深重；新手解读6式：颜色浅、轻
+- 过程摘要：直断法不是切入点选择，而是在三圈锁定后先检查高命中特征；命中项只能作为快速抓手，后续必须被逐圈颜色、形状和生克关系继续验证。
 
 ```json
 {
-  "entry_strategy": "most_prominent_feature/direct_judgment",
+  "catalog_version": null,
+  "hits": [],
+  "method_trace_source": "tutorial_four_step_method",
   "direct_judgment_summary": "直断先看到「金」更占主体，再结合「土」去判断整体能量的主轴。 当前主判断落在「金多木折」。",
   "candidate_summary": "主候选为 金多木折(0.935)、金多水浊(0.8583)。"
 }
 ```
 
-### stage-04-visual-evidence 画面依据与逐圈观察
+### stage-04-per-circle-visual-evidence 逐圈画面依据
 
 - 手册依据：三圈结构法；从曼陀罗中的 X，我能看出你是 Y
-- 过程摘要：先把可见画面、三圈颜色、结构和填充状态说清楚，再进入状态解释。
+- 过程摘要：先把每一圈可见的颜色、形状、比例、填充和结构说清楚，再进入状态解释；这是最终画面依据区的来源。
 
 ```json
 {
@@ -77,28 +79,236 @@
 }
 ```
 
-### stage-05-newbie-six-method-hits 新手解读六式检查
+### stage-05-per-circle-color-shape-element-reading 逐圈颜色、形状与圈内生克解读
 
-- 手册依据：新手解读6式：外圈花边、星星点点；新手解读6式：外圈红色多；新手解读6式：外圈颜色单一且面积大；新手解读6式：渐变色；新手解读6式：颜色浓郁、深重；新手解读6式：颜色浅、轻
-- 过程摘要：检查外圈花边、外圈红色、外圈大面积单色、渐变色、深重色、浅轻色等直断信号是否命中。
+- 手册依据：五行感知法；五行相生相克解读法；在运用形状进行解读时，可以结合颜色、五行相生相克、新手解读6式等一起解读。
+- 过程摘要：依据原始手册逐圈看颜色、深浅、面积、形状及本圈内部五行生克；用户可见正文要少术语，把关系翻译成现实状态。
 
 ```json
 {
-  "catalog_version": null,
-  "hits": [],
-  "method_trace_source": "tutorial_four_step_method"
+  "per_circle_color_analysis": {
+    "inner": {
+      "circle": "inner",
+      "circle_label": "内圈",
+      "dominant_element": "火",
+      "dominant_color": "#e1dbbc",
+      "colors": [
+        {
+          "hex": "#e1dbbc",
+          "rgb": [
+            225,
+            219,
+            188
+          ],
+          "percentage": 55.86
+        },
+        {
+          "hex": "#beac68",
+          "rgb": [
+            190,
+            172,
+            104
+          ],
+          "percentage": 15.11
+        },
+        {
+          "hex": "#8f7d3d",
+          "rgb": [
+            143,
+            125,
+            61
+          ],
+          "percentage": 13.76
+        },
+        {
+          "hex": "#268bbf",
+          "rgb": [
+            38,
+            139,
+            191
+          ],
+          "percentage": 9.96
+        },
+        {
+          "hex": "#283030",
+          "rgb": [
+            40,
+            48,
+            48
+          ],
+          "percentage": 5.31
+        }
+      ],
+      "state_basis": {
+        "source": "tutorial_color_area_depth",
+        "area_ratio": 0.1089,
+        "avg_brightness": 134.06,
+        "avg_saturation": 0.4316,
+        "depth_state": "middle",
+        "fill_state": "dense"
+      }
+    },
+    "middle": {
+      "circle": "middle",
+      "circle_label": "中圈",
+      "dominant_element": "金",
+      "dominant_color": "#d3dddb",
+      "colors": [
+        {
+          "hex": "#d3dddb",
+          "rgb": [
+            211,
+            221,
+            219
+          ],
+          "percentage": 56.44
+        },
+        {
+          "hex": "#b0bc99",
+          "rgb": [
+            176,
+            188,
+            153
+          ],
+          "percentage": 14.97
+        },
+        {
+          "hex": "#619365",
+          "rgb": [
+            97,
+            147,
+            101
+          ],
+          "percentage": 14.75
+        },
+        {
+          "hex": "#26311d",
+          "rgb": [
+            38,
+            49,
+            29
+          ],
+          "percentage": 7.6
+        },
+        {
+          "hex": "#cad128",
+          "rgb": [
+            202,
+            209,
+            40
+          ],
+          "percentage": 6.24
+        }
+      ],
+      "state_basis": {
+        "source": "tutorial_color_area_depth",
+        "area_ratio": 0.3267,
+        "avg_brightness": 151.22,
+        "avg_saturation": 0.3577,
+        "depth_state": "middle",
+        "fill_state": "dense"
+      }
+    },
+    "outer": {
+      "circle": "outer",
+      "circle_label": "外圈",
+      "dominant_element": "金",
+      "dominant_color": "#e1e6e5",
+      "colors": [
+        {
+          "hex": "#e1e6e5",
+          "rgb": [
+            225,
+            230,
+            229
+          ],
+          "percentage": 42.81
+        },
+        {
+          "hex": "#c8c9bf",
+          "rgb": [
+            200,
+            201,
+            191
+          ],
+          "percentage": 28.58
+        },
+        {
+          "hex": "#859266",
+          "rgb": [
+            133,
+            146,
+            102
+          ],
+          "percentage": 14.46
+        },
+        {
+          "hex": "#ccd42b",
+          "rgb": [
+            204,
+            212,
+            43
+          ],
+          "percentage": 7.17
+        },
+        {
+          "hex": "#363d24",
+          "rgb": [
+            54,
+            61,
+            36
+          ],
+          "percentage": 6.98
+        }
+      ],
+      "state_basis": {
+        "source": "tutorial_color_area_depth",
+        "area_ratio": 0.5644,
+        "avg_brightness": 162.29,
+        "avg_saturation": 0.316,
+        "depth_state": "middle",
+        "fill_state": "filled"
+      }
+    }
+  },
+  "shape_analysis": {
+    "source": "micro_analysis_proxy",
+    "overall_features": [
+      "detected_circle_transition_pattern",
+      "detected_wrap_or_protection_pattern"
+    ],
+    "triggered_analyses": [
+      {
+        "type": "shape_proxy",
+        "circle_count": 3,
+        "adjacent_relations": [
+          "火克金，认知克制情感表达",
+          "金与金无明显生克"
+        ],
+        "wrap_relations": [
+          "保持当前能量流动状态，继续深化"
+        ]
+      }
+    ]
+  },
+  "element_state_summary": "",
+  "relation_summary": "",
+  "final_report_language_rule": "少术语；三圈和五行只能服务解释，不能喧宾夺主。"
 }
 ```
 
-### stage-06-five-element-relation 五行关系作为解释工具
+### stage-06-per-circle-imbalance-candidates 逐圈失衡候选
 
-- 手册依据：五行感知法；五行相生相克解读法
-- 过程摘要：五行只作为内部解释工具，用户可见正文要少术语，把关系翻译成现实状态。
+- 手册依据：五行相生相克解读法；相生相克的结果是好是坏，也要看其平衡情况。
+- 过程摘要：失衡状态应在逐圈颜色、形状和圈内生克解读过程中浮现，而不是先给一个抽象标签再回填证据。
 
 ```json
 {
-  "element_state_summary": "",
-  "relation_summary": "",
+  "candidate_summary": "主候选为 金多木折(0.935)、金多水浊(0.8583)。",
+  "selected_primary_candidates": [
+    "金多木折",
+    "金多水浊"
+  ],
   "circle_relation_analysis": {
     "source": "circle_energy_flow",
     "circle_elements": {
@@ -118,12 +328,43 @@
       "used": false,
       "reason": ""
     }
-  },
-  "final_report_language_rule": "少术语；术语必须服务解释，不能喧宾夺主。"
+  }
 }
 ```
 
-### stage-07-conflict-blockage 找冲突、卡点、堵点
+### stage-07-whole-energy-flow-synthesis 整体能量流动综合
+
+- 手册依据：三圈结构法；三圈能量循环模型；能量流动质量评估
+- 过程摘要：逐圈解读之后再看整体；这里看的不是简单圈与圈之间的五行关系，而是内在、关系和外在呈现之间的能量流动是否顺、堵、倒灌或跳跃。
+
+```json
+{
+  "energy_flow_basis": {
+    "source": "circle_energy_flow",
+    "circle_elements": {
+      "inner": "火",
+      "middle": "金",
+      "outer": "金"
+    },
+    "adjacent_relations": [
+      "火克金，认知克制情感表达",
+      "金与金无明显生克"
+    ],
+    "wrap_relations": [
+      "保持当前能量流动状态，继续深化"
+    ],
+    "synthetic_signal": {
+      "id": "transition-overload",
+      "used": false,
+      "reason": ""
+    }
+  },
+  "flow_reading_rule": "整体综合阶段读取三圈能量流动，不把圈间五行关系当作最终结论本身。",
+  "final_report_language_rule": "少术语；把能量流动翻译成用户能理解的现实状态。"
+}
+```
+
+### stage-08-conflict-blockage 找冲突、卡点、堵点
 
 - 手册依据：通过曼陀罗解读，我们就可以知道案主内心的冲突点、卡点、堵点。；爆破卡点：找到根源性事件
 - 过程摘要：在主题和画面证据基础上找到当前最影响用户的卡点，而不是泛泛讲所有主题。
@@ -140,7 +381,7 @@
 }
 ```
 
-### stage-08-healing-goal 建立调节目标
+### stage-09-healing-goal 建立调节目标
 
 - 手册依据：用曼陀罗疗愈与案主建立共同目标；清理情绪；定制方案
 - 过程摘要：只有在判断成立后才给方向；Lite 给轻量觉察，Pro 给更完整的行动/清理/调节路径。
@@ -185,7 +426,7 @@
 }
 ```
 
-### stage-09-lite-draft Lite 过程稿
+### stage-10-lite-draft Lite 过程稿
 
 - 手册依据：解读句式：从你的曼陀罗中，可以看出...；因为...
 - 过程摘要：Lite 仍可使用上一版优化后的自然表达，但必须从前面证据链映射到字段。
@@ -231,7 +472,7 @@
 }
 ```
 
-### stage-10-pro-draft Pro 过程稿
+### stage-11-pro-draft Pro 过程稿
 
 - 手册依据：个案六大流程：确定目标、爆破卡点、清理情绪、定制方案
 - 过程摘要：Pro 不是 Lite 加长版，而是在同一手册逻辑上展开机制、根因链和调节方案。
@@ -299,7 +540,7 @@
 }
 ```
 
-### stage-11-final-report 最终报告
+### stage-12-final-report 最终报告
 
 - 手册依据：最终呈现：用曼陀罗作为桥梁，持续沟通并给出后续方向
 - 过程摘要：最终呈现可以是自然报告文案，但 QA 必须能从最终字段倒查到上面的手册推导链。

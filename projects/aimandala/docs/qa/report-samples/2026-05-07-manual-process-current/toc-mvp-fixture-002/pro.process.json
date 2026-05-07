@@ -1,21 +1,22 @@
 {
   "source_of_truth": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
-  "manual_logic_version": "original-manual-process.v1",
+  "manual_logic_version": "three-circle-five-element-flow.v1",
   "fixture_id": "toc-mvp-fixture-002",
   "version": "pro",
   "stage_ids": [
     "stage-00-input-context",
     "stage-01-theme-selection",
     "stage-02-circle-boundary-decision",
-    "stage-03-entry-point",
-    "stage-04-visual-evidence",
-    "stage-05-newbie-six-method-hits",
-    "stage-06-five-element-relation",
-    "stage-07-conflict-blockage",
-    "stage-08-healing-goal",
-    "stage-09-lite-draft",
-    "stage-10-pro-draft",
-    "stage-11-final-report"
+    "stage-03-direct-judgment-high-hit-check",
+    "stage-04-per-circle-visual-evidence",
+    "stage-05-per-circle-color-shape-element-reading",
+    "stage-06-per-circle-imbalance-candidates",
+    "stage-07-whole-energy-flow-synthesis",
+    "stage-08-conflict-blockage",
+    "stage-09-healing-goal",
+    "stage-10-lite-draft",
+    "stage-11-pro-draft",
+    "stage-12-final-report"
   ],
   "stages": [
     {
@@ -67,38 +68,8 @@
       }
     },
     {
-      "id": "stage-03-entry-point",
-      "label": "选择解读切入点",
-      "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
-      "manual_refs": [
-        "第三步：确定三圈后，找切入点解读。"
-      ],
-      "summary": "切入点可以来自内圈、外圈或最突出的画面特征；当前导出会记录实际使用的直断/候选摘要。",
-      "payload": {
-        "entry_strategy": "most_prominent_feature/direct_judgment",
-        "direct_judgment_summary": "直断先看到「金」更占主体，再结合「土」去判断整体能量的主轴。 当前主判断落在「金多木折」。",
-        "candidate_summary": "主候选为 金多木折(0.935)、金多水浊(0.8583)。"
-      }
-    },
-    {
-      "id": "stage-04-visual-evidence",
-      "label": "画面依据与逐圈观察",
-      "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
-      "manual_refs": [
-        "三圈结构法",
-        "从曼陀罗中的 X，我能看出你是 Y"
-      ],
-      "summary": "先把可见画面、三圈颜色、结构和填充状态说清楚，再进入状态解释。",
-      "payload": {
-        "visual_fact_summary": "内圈以白色、粉色为主，整体颜色偏浅，填充较混合，留白不算突出，可见镂空、团块。；中圈以白色、粉色为主，整体颜色偏浅，填充较混合，能看到一定白色空隙，可见留白块、镂空。；外圈以白色、粉色、黄色为主，整体深浅居中，填充稳定，白色留白感明显，可见镂空、条带。",
-        "per_circle_observation_summary": "内圈以白色、粉色为主，整体颜色偏浅，填充较混合，留白不算突出，可见镂空、团块。；中圈以白色、粉色为主，整体颜色偏浅，填充较混合，能看到一定白色空隙，可见留白块、镂空。；外圈以白色、粉色、黄色为主，整体深浅居中，填充稳定，白色留白感明显，可见镂空、条带。",
-        "shape_observation_summary": "",
-        "final_visual_basis": "这张画的能量主轴，不是拼命往外冲，而是先把自我价值与专业成就站稳，再决定怎么让「土」带着你继续向前。三圈依次呈现出「火 -> 金 -> 金」的变化。\n\n这张画更像在提醒你：真正卡住的不是能力，而是某种反复出现的内在拉扯：完美拖延机会。知识库把这条线索归到「金多木折」（相乘）。\n\n内圈：核心自我这一层当前约占 33%，给人的主感觉更偏「火」。 最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「火」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。 内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%\n\n中圈：关系场域这一层当前约占 66%，给人的主感觉更偏「金」。 中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「金」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%\n\n外圈：外在呈现这一层当前约占 100%，给人的主感觉更偏「金」。 最外面这一层更容易碰到与世界的关系、物质/事业..."
-      }
-    },
-    {
-      "id": "stage-05-newbie-six-method-hits",
-      "label": "新手解读六式检查",
+      "id": "stage-03-direct-judgment-high-hit-check",
+      "label": "直断法高命中检查",
       "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
       "manual_refs": [
         "新手解读6式：外圈花边、星星点点",
@@ -108,25 +79,267 @@
         "新手解读6式：颜色浓郁、深重",
         "新手解读6式：颜色浅、轻"
       ],
-      "summary": "检查外圈花边、外圈红色、外圈大面积单色、渐变色、深重色、浅轻色等直断信号是否命中。",
+      "summary": "直断法不是切入点选择，而是在三圈锁定后先检查高命中特征；命中项只能作为快速抓手，后续必须被逐圈颜色、形状和生克关系继续验证。",
       "payload": {
         "catalog_version": null,
         "hits": [],
-        "method_trace_source": "tutorial_four_step_method"
+        "method_trace_source": "tutorial_four_step_method",
+        "direct_judgment_summary": "直断先看到「金」更占主体，再结合「土」去判断整体能量的主轴。 当前主判断落在「金多木折」。",
+        "candidate_summary": "主候选为 金多木折(0.935)、金多水浊(0.8583)。"
       }
     },
     {
-      "id": "stage-06-five-element-relation",
-      "label": "五行关系作为解释工具",
+      "id": "stage-04-per-circle-visual-evidence",
+      "label": "逐圈画面依据",
+      "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+      "manual_refs": [
+        "三圈结构法",
+        "从曼陀罗中的 X，我能看出你是 Y"
+      ],
+      "summary": "先把每一圈可见的颜色、形状、比例、填充和结构说清楚，再进入状态解释；这是最终画面依据区的来源。",
+      "payload": {
+        "visual_fact_summary": "内圈以白色、粉色为主，整体颜色偏浅，填充较混合，留白不算突出，可见镂空、团块。；中圈以白色、粉色为主，整体颜色偏浅，填充较混合，能看到一定白色空隙，可见留白块、镂空。；外圈以白色、粉色、黄色为主，整体深浅居中，填充稳定，白色留白感明显，可见镂空、条带。",
+        "per_circle_observation_summary": "内圈以白色、粉色为主，整体颜色偏浅，填充较混合，留白不算突出，可见镂空、团块。；中圈以白色、粉色为主，整体颜色偏浅，填充较混合，能看到一定白色空隙，可见留白块、镂空。；外圈以白色、粉色、黄色为主，整体深浅居中，填充稳定，白色留白感明显，可见镂空、条带。",
+        "shape_observation_summary": "",
+        "final_visual_basis": "这张画的能量主轴，不是拼命往外冲，而是先把自我价值与专业成就站稳，再决定怎么让「土」带着你继续向前。三圈依次呈现出「火 -> 金 -> 金」的变化。\n\n这张画更像在提醒你：真正卡住的不是能力，而是某种反复出现的内在拉扯：完美拖延机会。知识库把这条线索归到「金多木折」（相乘）。\n\n内圈：核心自我这一层当前约占 33%，给人的主感觉更偏「火」。 最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「火」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态。 内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%\n\n中圈：关系场域这一层当前约占 66%，给人的主感觉更偏「金」。 中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「金」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%\n\n外圈：外在呈现这一层当前约占 100%，给人的主感觉更偏「金」。 最外面这一层更容易碰到与世界的关系、物质/事业..."
+      }
+    },
+    {
+      "id": "stage-05-per-circle-color-shape-element-reading",
+      "label": "逐圈颜色、形状与圈内生克解读",
       "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
       "manual_refs": [
         "五行感知法",
-        "五行相生相克解读法"
+        "五行相生相克解读法",
+        "在运用形状进行解读时，可以结合颜色、五行相生相克、新手解读6式等一起解读。"
       ],
-      "summary": "五行只作为内部解释工具，用户可见正文要少术语，把关系翻译成现实状态。",
+      "summary": "依据原始手册逐圈看颜色、深浅、面积、形状及本圈内部五行生克；用户可见正文要少术语，把关系翻译成现实状态。",
       "payload": {
+        "per_circle_color_analysis": {
+          "inner": {
+            "circle": "inner",
+            "circle_label": "内圈",
+            "dominant_element": "火",
+            "dominant_color": "#e1dbbc",
+            "colors": [
+              {
+                "hex": "#e1dbbc",
+                "rgb": [
+                  225,
+                  219,
+                  188
+                ],
+                "percentage": 55.86
+              },
+              {
+                "hex": "#beac68",
+                "rgb": [
+                  190,
+                  172,
+                  104
+                ],
+                "percentage": 15.11
+              },
+              {
+                "hex": "#8f7d3d",
+                "rgb": [
+                  143,
+                  125,
+                  61
+                ],
+                "percentage": 13.76
+              },
+              {
+                "hex": "#268bbf",
+                "rgb": [
+                  38,
+                  139,
+                  191
+                ],
+                "percentage": 9.96
+              },
+              {
+                "hex": "#283030",
+                "rgb": [
+                  40,
+                  48,
+                  48
+                ],
+                "percentage": 5.31
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.1089,
+              "avg_brightness": 134.06,
+              "avg_saturation": 0.4316,
+              "depth_state": "middle",
+              "fill_state": "dense"
+            }
+          },
+          "middle": {
+            "circle": "middle",
+            "circle_label": "中圈",
+            "dominant_element": "金",
+            "dominant_color": "#d3dddb",
+            "colors": [
+              {
+                "hex": "#d3dddb",
+                "rgb": [
+                  211,
+                  221,
+                  219
+                ],
+                "percentage": 56.44
+              },
+              {
+                "hex": "#b0bc99",
+                "rgb": [
+                  176,
+                  188,
+                  153
+                ],
+                "percentage": 14.97
+              },
+              {
+                "hex": "#619365",
+                "rgb": [
+                  97,
+                  147,
+                  101
+                ],
+                "percentage": 14.75
+              },
+              {
+                "hex": "#26311d",
+                "rgb": [
+                  38,
+                  49,
+                  29
+                ],
+                "percentage": 7.6
+              },
+              {
+                "hex": "#cad128",
+                "rgb": [
+                  202,
+                  209,
+                  40
+                ],
+                "percentage": 6.24
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.3267,
+              "avg_brightness": 151.22,
+              "avg_saturation": 0.3577,
+              "depth_state": "middle",
+              "fill_state": "dense"
+            }
+          },
+          "outer": {
+            "circle": "outer",
+            "circle_label": "外圈",
+            "dominant_element": "金",
+            "dominant_color": "#e1e6e5",
+            "colors": [
+              {
+                "hex": "#e1e6e5",
+                "rgb": [
+                  225,
+                  230,
+                  229
+                ],
+                "percentage": 42.81
+              },
+              {
+                "hex": "#c8c9bf",
+                "rgb": [
+                  200,
+                  201,
+                  191
+                ],
+                "percentage": 28.58
+              },
+              {
+                "hex": "#859266",
+                "rgb": [
+                  133,
+                  146,
+                  102
+                ],
+                "percentage": 14.46
+              },
+              {
+                "hex": "#ccd42b",
+                "rgb": [
+                  204,
+                  212,
+                  43
+                ],
+                "percentage": 7.17
+              },
+              {
+                "hex": "#363d24",
+                "rgb": [
+                  54,
+                  61,
+                  36
+                ],
+                "percentage": 6.98
+              }
+            ],
+            "state_basis": {
+              "source": "tutorial_color_area_depth",
+              "area_ratio": 0.5644,
+              "avg_brightness": 162.29,
+              "avg_saturation": 0.316,
+              "depth_state": "middle",
+              "fill_state": "filled"
+            }
+          }
+        },
+        "shape_analysis": {
+          "source": "micro_analysis_proxy",
+          "overall_features": [
+            "detected_circle_transition_pattern",
+            "detected_wrap_or_protection_pattern"
+          ],
+          "triggered_analyses": [
+            {
+              "type": "shape_proxy",
+              "circle_count": 3,
+              "adjacent_relations": [
+                "火克金，认知克制情感表达",
+                "金与金无明显生克"
+              ],
+              "wrap_relations": [
+                "保持当前能量流动状态，继续深化"
+              ]
+            }
+          ]
+        },
         "element_state_summary": "",
         "relation_summary": "",
+        "final_report_language_rule": "少术语；三圈和五行只能服务解释，不能喧宾夺主。"
+      }
+    },
+    {
+      "id": "stage-06-per-circle-imbalance-candidates",
+      "label": "逐圈失衡候选",
+      "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+      "manual_refs": [
+        "五行相生相克解读法",
+        "相生相克的结果是好是坏，也要看其平衡情况。"
+      ],
+      "summary": "失衡状态应在逐圈颜色、形状和圈内生克解读过程中浮现，而不是先给一个抽象标签再回填证据。",
+      "payload": {
+        "candidate_summary": "主候选为 金多木折(0.935)、金多水浊(0.8583)。",
+        "selected_primary_candidates": [
+          "金多木折",
+          "金多水浊"
+        ],
         "circle_relation_analysis": {
           "source": "circle_energy_flow",
           "circle_elements": {
@@ -146,12 +359,46 @@
             "used": false,
             "reason": ""
           }
-        },
-        "final_report_language_rule": "少术语；术语必须服务解释，不能喧宾夺主。"
+        }
       }
     },
     {
-      "id": "stage-07-conflict-blockage",
+      "id": "stage-07-whole-energy-flow-synthesis",
+      "label": "整体能量流动综合",
+      "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+      "manual_refs": [
+        "三圈结构法",
+        "三圈能量循环模型",
+        "能量流动质量评估"
+      ],
+      "summary": "逐圈解读之后再看整体；这里看的不是简单圈与圈之间的五行关系，而是内在、关系和外在呈现之间的能量流动是否顺、堵、倒灌或跳跃。",
+      "payload": {
+        "energy_flow_basis": {
+          "source": "circle_energy_flow",
+          "circle_elements": {
+            "inner": "火",
+            "middle": "金",
+            "outer": "金"
+          },
+          "adjacent_relations": [
+            "火克金，认知克制情感表达",
+            "金与金无明显生克"
+          ],
+          "wrap_relations": [
+            "保持当前能量流动状态，继续深化"
+          ],
+          "synthetic_signal": {
+            "id": "transition-overload",
+            "used": false,
+            "reason": ""
+          }
+        },
+        "flow_reading_rule": "整体综合阶段读取三圈能量流动，不把圈间五行关系当作最终结论本身。",
+        "final_report_language_rule": "少术语；把能量流动翻译成用户能理解的现实状态。"
+      }
+    },
+    {
+      "id": "stage-08-conflict-blockage",
       "label": "找冲突、卡点、堵点",
       "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
       "manual_refs": [
@@ -170,7 +417,7 @@
       }
     },
     {
-      "id": "stage-08-healing-goal",
+      "id": "stage-09-healing-goal",
       "label": "建立调节目标",
       "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
       "manual_refs": [
@@ -218,7 +465,7 @@
       }
     },
     {
-      "id": "stage-09-lite-draft",
+      "id": "stage-10-lite-draft",
       "label": "Lite 过程稿",
       "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
       "manual_refs": [
@@ -265,7 +512,7 @@
       }
     },
     {
-      "id": "stage-10-pro-draft",
+      "id": "stage-11-pro-draft",
       "label": "Pro 过程稿",
       "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
       "manual_refs": [
@@ -334,7 +581,7 @@
       }
     },
     {
-      "id": "stage-11-final-report",
+      "id": "stage-12-final-report",
       "label": "最终报告",
       "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
       "manual_refs": [

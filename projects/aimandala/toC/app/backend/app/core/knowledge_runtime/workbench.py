@@ -38,15 +38,16 @@ class KnowledgeWorkbench:
         "stage-00-input-context",
         "stage-01-theme-selection",
         "stage-02-circle-boundary-decision",
-        "stage-03-entry-point",
-        "stage-04-visual-evidence",
-        "stage-05-newbie-six-method-hits",
-        "stage-06-five-element-relation",
-        "stage-07-conflict-blockage",
-        "stage-08-healing-goal",
-        "stage-09-lite-draft",
-        "stage-10-pro-draft",
-        "stage-11-final-report",
+        "stage-03-direct-judgment-high-hit-check",
+        "stage-04-per-circle-visual-evidence",
+        "stage-05-per-circle-color-shape-element-reading",
+        "stage-06-per-circle-imbalance-candidates",
+        "stage-07-whole-energy-flow-synthesis",
+        "stage-08-conflict-blockage",
+        "stage-09-healing-goal",
+        "stage-10-lite-draft",
+        "stage-11-pro-draft",
+        "stage-12-final-report",
     ]
 
     def __init__(self, *, toc_root: Path | None = None) -> None:
@@ -1123,20 +1124,29 @@ class KnowledgeWorkbench:
                 manual_refs=["第二步：确定好主题后，以你的神为准确定三个圈的结构。", "买定离手，落子无悔。"],
             ),
             self._manual_stage(
-                "stage-03-entry-point",
-                "选择解读切入点",
-                "切入点可以来自内圈、外圈或最突出的画面特征；当前导出会记录实际使用的直断/候选摘要。",
+                "stage-03-direct-judgment-high-hit-check",
+                "直断法高命中检查",
+                "直断法不是切入点选择，而是在三圈锁定后先检查高命中特征；命中项只能作为快速抓手，后续必须被逐圈颜色、形状和生克关系继续验证。",
                 {
-                    "entry_strategy": self._resolve_manual_entry_strategy(layer0_summary),
+                    "catalog_version": self._dig(rule_evaluations, ["direct_judgment_hits", "catalog_version"]),
+                    "hits": self._dig(rule_evaluations, ["direct_judgment_hits", "hits"]) or [],
+                    "method_trace_source": self._dig(method_trace, ["direct_judgment", "source"]),
                     "direct_judgment_summary": layer0_summary.get("direct_judgment_summary", ""),
                     "candidate_summary": layer0_summary.get("candidate_summary", ""),
                 },
-                manual_refs=["第三步：确定三圈后，找切入点解读。"],
+                manual_refs=[
+                    "新手解读6式：外圈花边、星星点点",
+                    "新手解读6式：外圈红色多",
+                    "新手解读6式：外圈颜色单一且面积大",
+                    "新手解读6式：渐变色",
+                    "新手解读6式：颜色浓郁、深重",
+                    "新手解读6式：颜色浅、轻",
+                ],
             ),
             self._manual_stage(
-                "stage-04-visual-evidence",
-                "画面依据与逐圈观察",
-                "先把可见画面、三圈颜色、结构和填充状态说清楚，再进入状态解释。",
+                "stage-04-per-circle-visual-evidence",
+                "逐圈画面依据",
+                "先把每一圈可见的颜色、形状、比例、填充和结构说清楚，再进入状态解释；这是最终画面依据区的来源。",
                 {
                     "visual_fact_summary": layer0_summary.get("visual_fact_summary", ""),
                     "per_circle_observation_summary": layer0_summary.get("per_circle_observation_summary", ""),
@@ -1150,37 +1160,49 @@ class KnowledgeWorkbench:
                 manual_refs=["三圈结构法", "从曼陀罗中的 X，我能看出你是 Y"],
             ),
             self._manual_stage(
-                "stage-05-newbie-six-method-hits",
-                "新手解读六式检查",
-                "检查外圈花边、外圈红色、外圈大面积单色、渐变色、深重色、浅轻色等直断信号是否命中。",
+                "stage-05-per-circle-color-shape-element-reading",
+                "逐圈颜色、形状与圈内生克解读",
+                "依据原始手册逐圈看颜色、深浅、面积、形状及本圈内部五行生克；用户可见正文要少术语，把关系翻译成现实状态。",
                 {
-                    "catalog_version": self._dig(rule_evaluations, ["direct_judgment_hits", "catalog_version"]),
-                    "hits": self._dig(rule_evaluations, ["direct_judgment_hits", "hits"]) or [],
-                    "method_trace_source": self._dig(method_trace, ["direct_judgment", "source"]),
+                    "per_circle_color_analysis": method_trace.get("per_circle_color_analysis", {}),
+                    "shape_analysis": method_trace.get("shape_analysis", {}),
+                    "element_state_summary": layer0_summary.get("element_state_summary", ""),
+                    "relation_summary": layer0_summary.get("relation_summary", ""),
+                    "final_report_language_rule": "少术语；三圈和五行只能服务解释，不能喧宾夺主。",
                 },
                 manual_refs=[
-                    "新手解读6式：外圈花边、星星点点",
-                    "新手解读6式：外圈红色多",
-                    "新手解读6式：外圈颜色单一且面积大",
-                    "新手解读6式：渐变色",
-                    "新手解读6式：颜色浓郁、深重",
-                    "新手解读6式：颜色浅、轻",
+                    "五行感知法",
+                    "五行相生相克解读法",
+                    "在运用形状进行解读时，可以结合颜色、五行相生相克、新手解读6式等一起解读。",
                 ],
             ),
             self._manual_stage(
-                "stage-06-five-element-relation",
-                "五行关系作为解释工具",
-                "五行只作为内部解释工具，用户可见正文要少术语，把关系翻译成现实状态。",
+                "stage-06-per-circle-imbalance-candidates",
+                "逐圈失衡候选",
+                "失衡状态应在逐圈颜色、形状和圈内生克解读过程中浮现，而不是先给一个抽象标签再回填证据。",
                 {
-                    "element_state_summary": layer0_summary.get("element_state_summary", ""),
-                    "relation_summary": layer0_summary.get("relation_summary", ""),
+                    "candidate_summary": layer0_summary.get("candidate_summary", ""),
+                    "selected_primary_candidates": self._dig(
+                        method_trace, ["final_algorithm_basis", "selected_primary_candidates"]
+                    )
+                    or [],
                     "circle_relation_analysis": method_trace.get("circle_relation_analysis", {}),
-                    "final_report_language_rule": "少术语；术语必须服务解释，不能喧宾夺主。",
                 },
-                manual_refs=["五行感知法", "五行相生相克解读法"],
+                manual_refs=["五行相生相克解读法", "相生相克的结果是好是坏，也要看其平衡情况。"],
             ),
             self._manual_stage(
-                "stage-07-conflict-blockage",
+                "stage-07-whole-energy-flow-synthesis",
+                "整体能量流动综合",
+                "逐圈解读之后再看整体；这里看的不是简单圈与圈之间的五行关系，而是内在、关系和外在呈现之间的能量流动是否顺、堵、倒灌或跳跃。",
+                {
+                    "energy_flow_basis": method_trace.get("circle_relation_analysis", {}),
+                    "flow_reading_rule": "整体综合阶段读取三圈能量流动，不把圈间五行关系当作最终结论本身。",
+                    "final_report_language_rule": "少术语；把能量流动翻译成用户能理解的现实状态。",
+                },
+                manual_refs=["三圈结构法", "三圈能量循环模型", "能量流动质量评估"],
+            ),
+            self._manual_stage(
+                "stage-08-conflict-blockage",
                 "找冲突、卡点、堵点",
                 "在主题和画面证据基础上找到当前最影响用户的卡点，而不是泛泛讲所有主题。",
                 {
@@ -1195,7 +1217,7 @@ class KnowledgeWorkbench:
                 manual_refs=["通过曼陀罗解读，我们就可以知道案主内心的冲突点、卡点、堵点。", "爆破卡点：找到根源性事件"],
             ),
             self._manual_stage(
-                "stage-08-healing-goal",
+                "stage-09-healing-goal",
                 "建立调节目标",
                 "只有在判断成立后才给方向；Lite 给轻量觉察，Pro 给更完整的行动/清理/调节路径。",
                 {
@@ -1210,21 +1232,21 @@ class KnowledgeWorkbench:
                 manual_refs=["用曼陀罗疗愈与案主建立共同目标", "清理情绪", "定制方案"],
             ),
             self._manual_stage(
-                "stage-09-lite-draft",
+                "stage-10-lite-draft",
                 "Lite 过程稿",
                 "Lite 仍可使用上一版优化后的自然表达，但必须从前面证据链映射到字段。",
                 knowledge_projections.get("lite", {}) if isinstance(knowledge_projections.get("lite"), dict) else {},
                 manual_refs=["解读句式：从你的曼陀罗中，可以看出...；因为..."],
             ),
             self._manual_stage(
-                "stage-10-pro-draft",
+                "stage-11-pro-draft",
                 "Pro 过程稿",
                 "Pro 不是 Lite 加长版，而是在同一手册逻辑上展开机制、根因链和调节方案。",
                 knowledge_projections.get("pro", {}) if isinstance(knowledge_projections.get("pro"), dict) else {},
                 manual_refs=["个案六大流程：确定目标、爆破卡点、清理情绪、定制方案"],
             ),
             self._manual_stage(
-                "stage-11-final-report",
+                "stage-12-final-report",
                 "最终报告",
                 "最终呈现可以是自然报告文案，但 QA 必须能从最终字段倒查到上面的手册推导链。",
                 {
@@ -1239,7 +1261,7 @@ class KnowledgeWorkbench:
         return self._sanitize_export_value(
             {
                 "source_of_truth": self.ORIGINAL_INTERPRETATION_MANUAL,
-                "manual_logic_version": "original-manual-process.v1",
+                "manual_logic_version": "three-circle-five-element-flow.v1",
                 "fixture_id": fixture.get("id"),
                 "version": version,
                 "stage_ids": self.MANUAL_PROCESS_STAGE_IDS,
@@ -1299,15 +1321,6 @@ class KnowledgeWorkbench:
                 ]
             )
         return "\n".join(lines).strip() + "\n"
-
-    def _resolve_manual_entry_strategy(self, layer0_summary: dict[str, Any]) -> str:
-        direct = str(layer0_summary.get("direct_judgment_summary") or "").strip()
-        shape = str(layer0_summary.get("shape_observation_summary") or "").strip()
-        if direct:
-            return "most_prominent_feature/direct_judgment"
-        if shape:
-            return "most_prominent_feature/shape"
-        return "three_circles_in_order"
 
     def _final_block_excerpt(
         self,

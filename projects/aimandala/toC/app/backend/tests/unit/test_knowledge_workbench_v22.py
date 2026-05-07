@@ -274,25 +274,28 @@ def test_v22_workbench_can_export_fixture_golden_assets(monkeypatch, tmp_path):
         "stage-00-input-context",
         "stage-01-theme-selection",
         "stage-02-circle-boundary-decision",
-        "stage-03-entry-point",
-        "stage-04-visual-evidence",
-        "stage-05-newbie-six-method-hits",
-        "stage-06-five-element-relation",
-        "stage-07-conflict-blockage",
-        "stage-08-healing-goal",
-        "stage-09-lite-draft",
-        "stage-10-pro-draft",
-        "stage-11-final-report",
+        "stage-03-direct-judgment-high-hit-check",
+        "stage-04-per-circle-visual-evidence",
+        "stage-05-per-circle-color-shape-element-reading",
+        "stage-06-per-circle-imbalance-candidates",
+        "stage-07-whole-energy-flow-synthesis",
+        "stage-08-conflict-blockage",
+        "stage-09-healing-goal",
+        "stage-10-lite-draft",
+        "stage-11-pro-draft",
+        "stage-12-final-report",
     ]
     assert process_payload["source_of_truth"].endswith("01_曼陀罗解读手册.md")
     assert process_payload["stage_ids"] == expected_stage_ids
     assert [stage["id"] for stage in process_payload["stages"]] == expected_stage_ids
     assert process_payload["stages"][1]["label"] == "确定解读主题"
     assert process_payload["stages"][2]["payload"]["locked_for_interpretation"] is True
-    assert "少术语" in process_payload["stages"][6]["payload"]["final_report_language_rule"]
+    assert "少术语" in process_payload["stages"][5]["payload"]["final_report_language_rule"]
+    assert "能量流动" in process_payload["stages"][7]["summary"]
     process_markdown = (export_dir / "lite.process.md").read_text(encoding="utf-8")
     assert "中间过程版本" in process_markdown
-    assert "stage-05-newbie-six-method-hits" in process_markdown
+    assert "stage-03-direct-judgment-high-hit-check" in process_markdown
+    assert "stage-07-whole-energy-flow-synthesis" in process_markdown
     assert "原始手册" in process_markdown
     assert "manual_process_trace" in debug_payload
     assert debug_payload["manual_process_trace"]["stage_ids"] == expected_stage_ids
