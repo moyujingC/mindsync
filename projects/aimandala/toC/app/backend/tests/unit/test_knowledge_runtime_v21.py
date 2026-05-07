@@ -24,7 +24,6 @@ from app.core.knowledge_runtime.compiler import KnowledgePackCompiler
 from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root
 from app.core.knowledge_runtime.repository import KnowledgeRepository
 from app.core.knowledge_runtime.runtime import create_knowledge_runtime, get_knowledge_runtime
-from app.core.knowledge_runtime.services.layer0_assembler import Layer0Assembler
 from app.core.knowledge_runtime.validators import KnowledgePackValidator
 from app.core.llm.runtime import NoopLLMClient
 from app.core.pipeline.data_models import InterpretationRecord
