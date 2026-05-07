@@ -5,7 +5,7 @@
 核心流程：
 1. 先定主题
 2. 再定三圈并锁定
-3. 直断（快速筛查）- 识别高命中特征，但不替代逐圈解读
+3. 直断高命中检查 - 识别高命中特征，但不替代逐圈解读
 4. 逐圈颜色、形状、圈内五行生克分析
 5. 在逐圈过程中识别失衡候选
 6. 逐圈之后综合整幅画的能量流动
@@ -28,12 +28,22 @@ from .three_circles import (
     evaluate_energy_quality,
 )
 
-# ==================== 解读步骤框架（四步法）====================
+# ==================== 解读步骤框架（三圈五行流程）====================
 
 INTERPRETATION_STEPS = {
+    "step0_theme_and_circle_lock": {
+        "name": "前置：确定主题与三圈锁定",
+        "description": "先确定本次解读主题，再锁定内圈、中圈、外圈边界，后续判断都基于同一组三圈。",
+        "actions": [
+            "明确用户本次关注主题",
+            "确定内圈、中圈、外圈边界",
+            "记录每一圈对应的现实层面",
+            "后续直断、逐圈解读和整体综合都回到同一组三圈",
+        ],
+    },
     "step1_direct_judgment": {
-        "name": "第一步：直断（快速筛查）",
-        "description": "基于画面整体特征的直接判断，快速抓住最突出的信息，打开案主心防",
+        "name": "第一步：直断高命中检查",
+        "description": "在主题和三圈锁定后，检查画面是否命中新手解读6式或扩充直断模式",
         "actions": [
             "观察画面整体特征（涂色饱满度、颜色深浅、留白比例）",
             "识别明显的直断模式（9种）",
@@ -64,7 +74,7 @@ INTERPRETATION_STEPS = {
         "note": "直断用于快速打开局面，不能等同于切入点选择，后续需结合逐圈分析验证和深化",
     },
     "step2_color_analysis": {
-        "name": "第二步：颜色分析（逐圈详细）",
+        "name": "第二步：逐圈颜色分析",
         "description": "逐圈分析颜色分布、深浅和面积，确定五行属性及状态",
         "actions": [
             "识别内圈、中圈、外圈的主要颜色",
@@ -87,8 +97,8 @@ INTERPRETATION_STEPS = {
         "output": "每圈的颜色分布、深浅状态、五行属性、面积比例",
     },
     "step3_shape_analysis": {
-        "name": "第三步：形状分析（整体+触发式）",
-        "description": "整体观察形状特征，在颜色与形状五行冲突时进行细分析",
+        "name": "第三步：逐圈形状分析",
+        "description": "逐圈观察形状特征，在颜色与形状五行冲突时进行细分析",
         "actions": [
             "整体观察画面形状特征（圆润/尖锐/规则/散乱）",
             "识别主要形状及其五行属性",
@@ -114,7 +124,7 @@ INTERPRETATION_STEPS = {
         "note": "形状是辅助维度，颜色分析为主；不强制每个色块都分析形状冲突",
     },
     "step4_five_elements_relations": {
-        "name": "第四步：生克分析（圈级关系）",
+        "name": "第四步：圈内生克与整体能量流动",
         "description": "先基于每圈内部的五行分布分析生克关系，再在逐圈之后综合整幅画的能量流向和失衡类型",
         "actions": [
             "分析每圈内部的五行生克关系",
@@ -685,7 +695,7 @@ def check_abnormal_relations(elements_with_areas: Dict[str, float]) -> List[Dict
     return abnormalities
 
 
-# ==================== 完整解读流程（四步法）====================
+# ==================== 完整解读流程（三圈五行流程）====================
 
 
 def interpret_mandala(
@@ -699,13 +709,13 @@ def interpret_mandala(
     observed_features: Optional[List[str]] = None,  # 观察到的特征列表（用于直断）
 ) -> Dict:
     """
-    完整的曼陀罗解读流程（四步法）
+    完整的曼陀罗解读流程（三圈五行流程）
 
     流程：
-    1. 直断（快速筛查）
-    2. 颜色分析（逐圈详细）
-    3. 形状分析（整体+触发式）
-    4. 生克分析（圈级关系）
+    1. 直断高命中检查
+    2. 逐圈颜色分析
+    3. 逐圈形状分析
+    4. 圈内生克分析与整体能量流动综合
 
     Args:
         inner_colors: 内圈颜色及面积
@@ -723,7 +733,7 @@ def interpret_mandala(
 
     report = {"steps": {}}
 
-    # ============== Step 1: 直断（快速筛查）==============
+    # ============== Step 1: 直断高命中检查 ==============
     direct_judgments = []
 
     # 基于留白比例分析
@@ -740,7 +750,7 @@ def interpret_mandala(
         "key_insights": [j["meaning"] for j in direct_judgments[:3]],  # 最重要的3个洞察
     }
 
-    # ============== Step 2: 颜色分析（逐圈详细）==============
+    # ============== Step 2: 逐圈颜色分析 ==============
     def analyze_circle_colors(colors_with_area, circle_name):
         """分析一圈的颜色分布"""
         color_analysis = []
@@ -792,7 +802,7 @@ def interpret_mandala(
         "外圈": outer_color_analysis,
     }
 
-    # ============== Step 3: 形状分析（整体+触发式）==============
+    # ============== Step 3: 逐圈形状分析 ==============
     shape_analysis = {"overall_features": [], "triggered_analyses": []}
 
     # 收集所有形状进行整体观察
@@ -895,7 +905,7 @@ def interpret_mandala(
 
     report["steps"]["shape_analysis"] = shape_analysis
 
-    # ============== Step 4: 生克分析（圈级关系）==============
+    # ============== Step 4: 圈内生克与整体能量流动 ==============
     # 汇总各圈元素
     def get_elements_from_analysis(color_analysis):
         """从颜色分析中提取五行元素列表"""

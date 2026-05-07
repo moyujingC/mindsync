@@ -84,7 +84,7 @@
         "payload": {
           "catalog_version": null,
           "hits": [],
-          "method_trace_source": "tutorial_four_step_method",
+          "method_trace_source": "three_circle_five_element_flow",
           "direct_judgment_summary": "直断先看到「金」更占主体，再结合「土」去判断整体能量的主轴。 当前主判断落在「金多木折」。",
           "candidate_summary": "主候选为 金多木折(0.935)、金多水浊(0.8583)。"
         }
@@ -121,59 +121,59 @@
               "circle": "inner",
               "circle_label": "内圈",
               "dominant_element": "火",
-              "dominant_color": "#e1dbbc",
+              "dominant_color": "#e0dbbb",
               "colors": [
                 {
-                  "hex": "#e1dbbc",
+                  "hex": "#e0dbbb",
                   "rgb": [
-                    225,
+                    224,
                     219,
-                    188
+                    187
                   ],
-                  "percentage": 55.86
+                  "percentage": 55.59
                 },
                 {
-                  "hex": "#beac68",
+                  "hex": "#bba860",
                   "rgb": [
-                    190,
-                    172,
-                    104
+                    187,
+                    168,
+                    96
                   ],
-                  "percentage": 15.11
+                  "percentage": 16.1
                 },
                 {
-                  "hex": "#8f7d3d",
+                  "hex": "#8a7838",
                   "rgb": [
-                    143,
-                    125,
-                    61
+                    138,
+                    120,
+                    56
                   ],
-                  "percentage": 13.76
+                  "percentage": 12.9
                 },
                 {
-                  "hex": "#268bbf",
+                  "hex": "#298abd",
+                  "rgb": [
+                    41,
+                    138,
+                    189
+                  ],
+                  "percentage": 10.22
+                },
+                {
+                  "hex": "#262b29",
                   "rgb": [
                     38,
-                    139,
-                    191
+                    43,
+                    41
                   ],
-                  "percentage": 9.96
-                },
-                {
-                  "hex": "#283030",
-                  "rgb": [
-                    40,
-                    48,
-                    48
-                  ],
-                  "percentage": 5.31
+                  "percentage": 5.19
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.1089,
-                "avg_brightness": 134.06,
-                "avg_saturation": 0.4316,
+                "avg_brightness": 131.3,
+                "avg_saturation": 0.4291,
                 "depth_state": "middle",
                 "fill_state": "dense"
               }
@@ -182,59 +182,50 @@
               "circle": "middle",
               "circle_label": "中圈",
               "dominant_element": "金",
-              "dominant_color": "#d3dddb",
+              "dominant_color": "#d1dbd6",
               "colors": [
                 {
-                  "hex": "#d3dddb",
+                  "hex": "#d1dbd6",
                   "rgb": [
-                    211,
-                    221,
-                    219
-                  ],
-                  "percentage": 56.44
-                },
-                {
-                  "hex": "#b0bc99",
-                  "rgb": [
-                    176,
-                    188,
-                    153
-                  ],
-                  "percentage": 14.97
-                },
-                {
-                  "hex": "#619365",
-                  "rgb": [
-                    97,
-                    147,
-                    101
-                  ],
-                  "percentage": 14.75
-                },
-                {
-                  "hex": "#26311d",
-                  "rgb": [
-                    38,
-                    49,
-                    29
-                  ],
-                  "percentage": 7.6
-                },
-                {
-                  "hex": "#cad128",
-                  "rgb": [
-                    202,
                     209,
-                    40
+                    219,
+                    214
                   ],
-                  "percentage": 6.24
+                  "percentage": 63.64
+                },
+                {
+                  "hex": "#87a66e",
+                  "rgb": [
+                    135,
+                    166,
+                    110
+                  ],
+                  "percentage": 17.23
+                },
+                {
+                  "hex": "#304225",
+                  "rgb": [
+                    48,
+                    66,
+                    37
+                  ],
+                  "percentage": 10.14
+                },
+                {
+                  "hex": "#cbd22f",
+                  "rgb": [
+                    203,
+                    210,
+                    47
+                  ],
+                  "percentage": 6.17
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.3267,
-                "avg_brightness": 151.22,
-                "avg_saturation": 0.3577,
+                "avg_brightness": 153.11,
+                "avg_saturation": 0.3996,
                 "depth_state": "middle",
                 "fill_state": "dense"
               }
@@ -243,59 +234,59 @@
               "circle": "outer",
               "circle_label": "外圈",
               "dominant_element": "金",
-              "dominant_color": "#e1e6e5",
+              "dominant_color": "#e2e6e6",
               "colors": [
                 {
-                  "hex": "#e1e6e5",
+                  "hex": "#e2e6e6",
                   "rgb": [
-                    225,
+                    226,
                     230,
-                    229
+                    230
                   ],
-                  "percentage": 42.81
+                  "percentage": 40.92
                 },
                 {
-                  "hex": "#c8c9bf",
+                  "hex": "#c9cac1",
                   "rgb": [
-                    200,
                     201,
-                    191
+                    202,
+                    193
                   ],
-                  "percentage": 28.58
+                  "percentage": 30.32
                 },
                 {
-                  "hex": "#859266",
+                  "hex": "#889068",
                   "rgb": [
-                    133,
-                    146,
-                    102
+                    136,
+                    144,
+                    104
                   ],
-                  "percentage": 14.46
+                  "percentage": 14.54
                 },
                 {
-                  "hex": "#ccd42b",
+                  "hex": "#ccd42c",
                   "rgb": [
                     204,
                     212,
-                    43
+                    44
                   ],
-                  "percentage": 7.17
+                  "percentage": 7.53
                 },
                 {
-                  "hex": "#363d24",
+                  "hex": "#323b21",
                   "rgb": [
-                    54,
-                    61,
-                    36
+                    50,
+                    59,
+                    33
                   ],
-                  "percentage": 6.98
+                  "percentage": 6.69
                 }
               ],
               "state_basis": {
                 "source": "tutorial_color_area_depth",
                 "area_ratio": 0.5644,
-                "avg_brightness": 162.29,
-                "avg_saturation": 0.316,
+                "avg_brightness": 162.07,
+                "avg_saturation": 0.3146,
                 "depth_state": "middle",
                 "fill_state": "filled"
               }
@@ -677,7 +668,7 @@
           "source:five_elements_excess_deficiency",
           "source:triad_structure"
         ],
-        "per_circle_color_summary": "内圈以#e1dbbc / 火为主，深浅居中，填充较密，面积约10.9%；中圈以#d3dddb / 金为主，深浅居中，填充较密，面积约32.7%；外圈以#e1e6e5 / 金为主，深浅居中，填充稳定，面积约56.4%",
+        "per_circle_color_summary": "内圈以#e0dbbb / 火为主，深浅居中，填充较密，面积约10.9%；中圈以#d1dbd6 / 金为主，深浅居中，填充较密，面积约32.7%；外圈以#e2e6e6 / 金为主，深浅居中，填充稳定，面积约56.4%",
         "per_circle_observation_summary": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%；中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%",
         "per_circle_observations": {
           "inner": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%",
@@ -1024,7 +1015,7 @@
           "source:five_elements_excess_deficiency",
           "source:triad_structure"
         ],
-        "per_circle_color_summary": "内圈以#e1dbbc / 火为主，深浅居中，填充较密，面积约10.9%；中圈以#d3dddb / 金为主，深浅居中，填充较密，面积约32.7%；外圈以#e1e6e5 / 金为主，深浅居中，填充稳定，面积约56.4%",
+        "per_circle_color_summary": "内圈以#e0dbbb / 火为主，深浅居中，填充较密，面积约10.9%；中圈以#d1dbd6 / 金为主，深浅居中，填充较密，面积约32.7%；外圈以#e2e6e6 / 金为主，深浅居中，填充稳定，面积约56.4%",
         "per_circle_observation_summary": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%；中圈主要呈现「金」的状态，深浅居中，填充较密，面积约32.7%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约56.4%",
         "per_circle_observations": {
           "inner": "内圈主要呈现「火」的状态，深浅居中，填充较密，面积约10.9%",

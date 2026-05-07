@@ -26,6 +26,17 @@ ELEMENT_KEY_TO_CN = {
     "water": "水",
 }
 
+THREE_CIRCLE_METHOD_SOURCE = "three_circle_five_element_flow"
+THREE_CIRCLE_ORDERED_STEPS = [
+    "确定主题",
+    "锁定三圈",
+    "直断高命中检查",
+    "逐圈画面依据",
+    "逐圈颜色形状与圈内生克",
+    "逐圈失衡候选",
+    "整体能量流动综合",
+]
+
 CIRCLE_KEY_TO_CN = {
     "inner": "内圈",
     "middle": "中圈",
@@ -578,7 +589,7 @@ class Layer0Assembler:
                 "synthetic_signal": synthetic_signal,
             },
             "final_algorithm_basis": {
-                "ordered_steps": ["直断", "逐圈颜色分析", "形状分析", "圈级生克分析"],
+                "ordered_steps": THREE_CIRCLE_ORDERED_STEPS,
                 "selected_primary_candidates": ["transition-overload"],
                 "notes": ["vision_extraction_unavailable"],
             },
@@ -2594,7 +2605,7 @@ class Layer0Assembler:
             "shape_analysis": shape_analysis,
             "circle_relation_analysis": circle_relation_analysis,
             "final_algorithm_basis": {
-                "ordered_steps": ["直断", "逐圈颜色分析", "形状分析", "圈级生克分析"],
+                "ordered_steps": THREE_CIRCLE_ORDERED_STEPS,
                 "selected_primary_candidates": [
                     item.get("id")
                     for item in primary_candidates
@@ -2639,7 +2650,7 @@ class Layer0Assembler:
             "dominant_element": dominant_label,
             "secondary_element": secondary_label,
             "primary_signal": primary_id,
-            "source": "tutorial_four_step_method",
+            "source": THREE_CIRCLE_METHOD_SOURCE,
         }
 
     def _build_per_circle_color_analysis(
