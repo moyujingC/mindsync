@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers auth runtime input 接线实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-auth-runtime-input接线实施任务.md
+
 ## Summary
 
 本轮目标是把已经存在的 `ProvidersAuthHeaderResolver` 从 fetch transport 配置层向上接到 runtime 输入层，让 deployment/browser runtime 可以显式传入 auth resolver，但默认启动仍固定为 mock。

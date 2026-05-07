@@ -12,15 +12,8 @@ except Exception:  # pragma: no cover - migration-time fallback
     extract_colors_by_circles = None
 
 try:
-    from app.core.knowledge import (
-        KnowledgeQueryEngine,
-    )
-    from app.core.knowledge_runtime.runtime import get_knowledge_runtime
     from app.core.knowledge.three_circles import analyze_energy_flow
 except Exception:  # pragma: no cover - migration-time fallback
-    KnowledgeQueryEngine = None
-    get_knowledge_runtime = None
-
     def analyze_energy_flow(
         inner_elements: list,
         middle_elements: list,
@@ -30,7 +23,6 @@ except Exception:  # pragma: no cover - migration-time fallback
 
 from .data_models import InterpretationRecord
 from .generation_runtime import (
-    DeterministicReportGenerationRuntime,
     LLMReportGenerationRuntime,
 )
 from .report_generation_contracts import ReportGenerationRuntime
@@ -39,6 +31,8 @@ from .report_pipeline_stage_config import ReportPipelineStageConfig
 from .store import InterpretationStore
 
 _UNSET = object()
+KnowledgeQueryEngine = None
+get_knowledge_runtime = None
 
 
 class GenerationStage(str, Enum):
@@ -103,8 +97,9 @@ class LayeredOrchestrator:
         self.circle_detector = circle_detector or CircleDetector()
         self._knowledge_runtime_explicit = knowledge_runtime is not _UNSET
         if knowledge_runtime is _UNSET:
+            runtime_factory = self._resolve_knowledge_runtime_factory()
             self.knowledge_runtime = (
-                get_knowledge_runtime() if get_knowledge_runtime is not None else None
+                runtime_factory() if runtime_factory is not None else None
             )
         else:
             self.knowledge_runtime = knowledge_runtime
@@ -139,15 +134,39 @@ class LayeredOrchestrator:
         if (
             self._knowledge_engine is None
             and not self._knowledge_engine_explicit
-            and KnowledgeQueryEngine is not None
         ):
-            self._knowledge_engine = KnowledgeQueryEngine(version="toc")
+            engine_cls = self._resolve_knowledge_query_engine()
+            if engine_cls is None:
+                return None
+            self._knowledge_engine = engine_cls(version="toc")
         return self._knowledge_engine
 
     @knowledge_engine.setter
     def knowledge_engine(self, value: Optional[Any]) -> None:
         self._knowledge_engine = value
         self._knowledge_engine_explicit = True
+
+    def _resolve_knowledge_query_engine(self) -> Optional[Any]:
+        engine_cls = globals().get("KnowledgeQueryEngine")
+        if engine_cls is not None:
+            return engine_cls
+        try:
+            from app.core.knowledge.query_engine import KnowledgeQueryEngine as engine_cls
+        except Exception:  # pragma: no cover - migration-time fallback
+            return None
+        globals()["KnowledgeQueryEngine"] = engine_cls
+        return engine_cls
+
+    def _resolve_knowledge_runtime_factory(self) -> Optional[Any]:
+        runtime_factory = globals().get("get_knowledge_runtime")
+        if runtime_factory is not None:
+            return runtime_factory
+        try:
+            from app.core.knowledge_runtime.runtime import get_knowledge_runtime as runtime_factory
+        except Exception:  # pragma: no cover - migration-time fallback
+            return None
+        globals()["get_knowledge_runtime"] = runtime_factory
+        return runtime_factory
 
     @classmethod
     def get_pricing(cls) -> PricingSnapshot:

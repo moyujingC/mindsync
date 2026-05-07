@@ -58,7 +58,7 @@
 
 项目工作区默认从这里进入：
 
-- [projects/xinran-jobhunt/PROJECT.md](projects/xinran-jobhunt/PROJECT.md)
+- [projects/xinran-jobhunt/PROJECT.md](../../../projects/xinran-jobhunt/PROJECT.md)
 
 ## 5. 当前默认动作
 
@@ -66,4 +66,4 @@
 
 如果任务转向“把求职方法抽象成产品能力或服务模型”，再转入：
 
-- [company/projects/怀瑾握瑜/PROJECT.md](company/projects/怀瑾握瑜/PROJECT.md)
+- [company/projects/怀瑾握瑜/PROJECT.md](../../../company/projects/怀瑾握瑜/PROJECT.md)

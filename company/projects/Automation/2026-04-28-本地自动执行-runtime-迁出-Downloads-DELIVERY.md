@@ -1,6 +1,6 @@
 # 本地自动执行 runtime 迁出 Downloads 交付记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > 最后更新：2026-04-28

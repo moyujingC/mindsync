@@ -1,4 +1,10 @@
 # Data
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/data/README.md
+
 
 这里放 `aicareer` 实现阶段使用的本地样本、静态配置和示例输出。
 

@@ -1,5 +1,4 @@
 import json
-import os
 
 import pytest
 
@@ -177,7 +176,11 @@ def _build_fake_chat_payload(request_body: dict) -> dict:
 @pytest.fixture(autouse=True)
 def _patch_backend_llm_for_tests(monkeypatch, request):
     module_name = request.module.__name__
-    if module_name.endswith("test_llm_runtime") or module_name.endswith("test_knowledge_runtime_v21"):
+    if (
+        module_name.endswith("test_llm_runtime")
+        or module_name.endswith("test_knowledge_runtime_v21")
+        or module_name.endswith("test_v2_knowledge")
+    ):
         return
 
     monkeypatch.setenv("AIMANDALA_LLM_BACKEND", "openai_compatible")

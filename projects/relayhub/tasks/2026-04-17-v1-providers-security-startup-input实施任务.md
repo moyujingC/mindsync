@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers Security Startup Input 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-security-startup-input实施任务.md
+
 ## 目标
 
 在 `Console` app startup 层新增统一安全输入装配入口，把 startup 附近仍分散的 deployment/browser 安全入口收束成单一高层输入对象，同时保持默认启动为 disabled/mock。

@@ -1,5 +1,11 @@
 # 腾讯云部署说明（systemd + nginx / Docker + nginx）
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/deploy/tencent-cloud/README.md
+
 > 适用范围：`一镜一梳 To C` 后端（FastAPI）与 mobile-web 静态前端
 
 当前项目已经形成两种部署路径：

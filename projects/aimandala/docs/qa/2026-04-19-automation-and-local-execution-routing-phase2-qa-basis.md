@@ -13,7 +13,7 @@
 > reviewers：Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-qa-basis.md](projects/aimandala/docs/qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-qa-basis.md](./2026-04-19-paperclip-native-execution-routing-qa-basis.md) 取代。
 > 其中“人工本地接手流程标准化”不再是当前默认 QA 入口。
 
 ## 1. 本轮验证对象

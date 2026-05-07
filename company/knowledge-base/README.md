@@ -36,8 +36,8 @@
 
 ## 4. 当前重点入口
 
-- [system/README.md](company/knowledge-base/system/README.md)
-- [product/方法论/产品可行性研究报告标准模板.md](company/knowledge-base/product/方法论/产品可行性研究报告标准模板.md)
+- [system/README.md](../../company/knowledge-base/system/README.md)
+- [product/方法论/产品可行性研究报告标准模板.md](../../company/knowledge-base/product/方法论/产品可行性研究报告标准模板.md)
 
 ## 5. 与项目文档的分工
 

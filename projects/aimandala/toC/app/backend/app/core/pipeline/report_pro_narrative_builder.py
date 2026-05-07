@@ -81,8 +81,8 @@ class ReportProNarrativeBuilder:
             else ""
         )
         parts = [
-            f"第一眼看这张画，最先撞出来的不是结果层面的焦虑，"
-            f"而是你正卡在一个很具体的位置：想往前，但还没有完全放心把自己交出去。"
+            "第一眼看这张画，最先撞出来的不是结果层面的焦虑，"
+            "而是你正卡在一个很具体的位置：想往前，但还没有完全放心把自己交出去。"
         ]
         if transition:
             parts.append(f"画面的主轴也很明确：{transition}")

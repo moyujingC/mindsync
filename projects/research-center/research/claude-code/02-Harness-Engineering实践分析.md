@@ -1,6 +1,10 @@
 # Claude Code Harness Engineering 实践分析
 
+> 状态：historical-reference
 > 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/research-center/research/claude-code/02-Harness-Engineering实践分析.md
 > 日期：2026-04-04
 > 研究人员：Research & Knowledge Lead
 

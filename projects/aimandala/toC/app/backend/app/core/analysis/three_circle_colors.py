@@ -260,12 +260,6 @@ def _classify_white_source(
     red, green, blue = rgb
     brightness = _pixel_brightness(rgb)
     saturation = _pixel_saturation(rgb)
-    distance = math.sqrt(
-        (red - background_rgb[0]) ** 2
-        + (green - background_rgb[1]) ** 2
-        + (blue - background_rgb[2]) ** 2
-    )
-
     spread = max(red, green, blue) - min(red, green, blue)
 
     if brightness >= 244 and saturation <= 16 and spread <= 10:

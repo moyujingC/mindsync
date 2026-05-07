@@ -1,6 +1,6 @@
 # RelayHub v1 Providers 真实 transport 与 wire adapter 交付说明
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-16

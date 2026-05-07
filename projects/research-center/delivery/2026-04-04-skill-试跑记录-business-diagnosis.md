@@ -21,7 +21,7 @@
 
 ## 2. 输出位置
 
-- [Skill 体系对外化路径商业诊断](projects/research-center/delivery/2026-04-04-Skill体系对外化路径商业诊断.md)
+- [Skill 体系对外化路径商业诊断](./2026-04-04-Skill体系对外化路径商业诊断.md)
 
 ## 3. 按 Skill 走的过程
 

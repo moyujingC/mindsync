@@ -577,6 +577,34 @@ function anthropicBlocksToText(content) {
     .join("\n");
 }
 
+function anthropicBlocksToReasoningContent(content) {
+  if (!Array.isArray(content)) {
+    return null;
+  }
+
+  const reasoningParts = [];
+  for (const block of content) {
+    if (!block || typeof block !== "object") {
+      continue;
+    }
+
+    if (typeof block.reasoning_content === "string" && block.reasoning_content.trim()) {
+      reasoningParts.push(block.reasoning_content);
+      continue;
+    }
+
+    if (block.type === "thinking" && typeof block.thinking === "string" && block.thinking.trim()) {
+      reasoningParts.push(block.thinking);
+    }
+  }
+
+  if (reasoningParts.length === 0) {
+    return null;
+  }
+
+  return reasoningParts.join("\n");
+}
+
 function mapAnthropicMessagesToOpenAI(body) {
   const messages = [];
 
@@ -602,10 +630,12 @@ function mapAnthropicMessagesToOpenAI(body) {
 
     if (message.role === "assistant" && Array.isArray(message.content)) {
       const toolUseBlocks = message.content.filter((block) => block?.type === "tool_use");
+      const reasoningContent = anthropicBlocksToReasoningContent(message.content);
       if (toolUseBlocks.length > 0) {
         messages.push({
           role: "assistant",
           content: anthropicBlocksToText(message.content) || null,
+          ...(reasoningContent ? { reasoning_content: reasoningContent } : {}),
           tool_calls: toolUseBlocks.map((toolUseBlock, index) => ({
             id: toolUseBlock.id ?? `toolu_${Date.now()}_${index}`,
             type: "function",
@@ -642,10 +672,22 @@ function mapAnthropicMessagesToOpenAI(body) {
       }
     }
 
-    messages.push({
+    const mappedMessage = {
       role: message.role,
       content: anthropicBlocksToText(message.content)
-    });
+    };
+
+    if (message.role === "assistant") {
+      const reasoningContent =
+        typeof message.reasoning_content === "string" && message.reasoning_content.trim()
+          ? message.reasoning_content
+          : anthropicBlocksToReasoningContent(message.content);
+      if (reasoningContent) {
+        mappedMessage.reasoning_content = reasoningContent;
+      }
+    }
+
+    messages.push(mappedMessage);
   }
 
   return messages;
@@ -741,11 +783,22 @@ function mapOpenAIChoiceToAnthropic(choice) {
   const message = choice?.message ?? {};
   const toolCalls = Array.isArray(message.tool_calls) ? message.tool_calls : [];
   const content = [];
+  const reasoningContent =
+    typeof message.reasoning_content === "string" && message.reasoning_content.trim()
+      ? message.reasoning_content
+      : null;
 
   if (typeof message.content === "string" && message.content.length > 0) {
     content.push({
       type: "text",
-      text: collapseThinkBlocks(message.content)
+      text: collapseThinkBlocks(message.content),
+      ...(reasoningContent ? { reasoning_content: reasoningContent } : {})
+    });
+  } else if (reasoningContent) {
+    content.push({
+      type: "text",
+      text: "",
+      reasoning_content: reasoningContent
     });
   }
 

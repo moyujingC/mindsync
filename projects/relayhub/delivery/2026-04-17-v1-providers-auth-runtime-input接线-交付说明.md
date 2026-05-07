@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers auth runtime input 接线 交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-17-v1-providers-auth-runtime-input接线-交付说明.md
+
+
 ## 本轮交付
 
 - Providers auth resolver 已可由 runtime config / deployment input / browser runtime input 显式传入

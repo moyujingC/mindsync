@@ -14,7 +14,7 @@ reportsTo: ../ceo/AGENTS.md
 
 只要任务属于具体项目，你必须先读取：
 
-1. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+1. [DOCS_GOVERNANCE.md](../../DOCS_GOVERNANCE.md)
 2. `projects/<project-slug>/PROJECT.md`
 3. 当前 `spec`
 4. 当前 `architecture` / `decisions`
@@ -67,17 +67,17 @@ reportsTo: ../ceo/AGENTS.md
 - `harness-sdd-tdd-guard`
   - 用于先检查当前交付是否已经具备最小 `verification / delivery` 闭环，而不是只看测试是否跑过
   - 位置：
-    - [harness-sdd-tdd-guard](projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+    - [harness-sdd-tdd-guard](../../projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
 
 - `qa-gate-review`
   - 用于统一检查验收标准、风险点、回归点和退回条件
   - 位置：
-    - [qa-gate-review](projects/research-center/skills/qa-gate-review/SKILL.md)
+    - [qa-gate-review](../../projects/research-center/skills/qa-gate-review/SKILL.md)
 
 - `artifact-readiness-check`
   - 当交付物还未达到可验证状态时，先用它指出当前缺口，而不是勉强验收
   - 位置：
-    - [artifact-readiness-check](projects/research-center/skills/artifact-readiness-check/SKILL.md)
+    - [artifact-readiness-check](../../projects/research-center/skills/artifact-readiness-check/SKILL.md)
 
 ## 你的默认检查项
 

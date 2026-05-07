@@ -1,5 +1,11 @@
 # RelayHub v1：AITechFlux 中转入口预置接入实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-21-v1-AITechFlux-中转入口预置接入实施任务.md
+
 ## Summary
 
 本轮目标是把 `AITechFlux` 作为新的系统预置中转入口补入 `RelayHub`，并保持前端 mock、服务端 seed、页面语义和测试口径一致。

@@ -90,6 +90,6 @@
 
 ## 8. 相关讨论稿入口
 
-1. [2026-04-05-architecture-handoff.md](projects/aimandala/notes/2026-04-05-architecture-handoff.md)
-2. [2026-04-05-platform-mvp-and-evolution-plan-discussion.md](projects/aimandala/notes/2026-04-05-platform-mvp-and-evolution-plan-discussion.md)
-3. [2026-04-05-journey-engine-capability-registry-task-manager-discussion.md](projects/aimandala/notes/2026-04-05-journey-engine-capability-registry-task-manager-discussion.md)
+1. [2026-04-05-architecture-handoff.md](./2026-04-05-architecture-handoff.md)
+2. [2026-04-05-platform-mvp-and-evolution-plan-discussion.md](./2026-04-05-platform-mvp-and-evolution-plan-discussion.md)
+3. [2026-04-05-journey-engine-capability-registry-task-manager-discussion.md](./2026-04-05-journey-engine-capability-registry-task-manager-discussion.md)

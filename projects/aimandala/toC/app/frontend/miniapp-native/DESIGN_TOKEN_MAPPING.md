@@ -1,5 +1,12 @@
 # Aimandala Miniapp Token Mapping
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/app/frontend/miniapp-native/DESIGN_TOKEN_MAPPING.md
+
+
 ## 目标
 
 这份文档定义 `mobile-web` 设计 token 到 `miniapp-native` 的手工映射规则，帮助后续把小程序端逐步拉回同一套设计语言。

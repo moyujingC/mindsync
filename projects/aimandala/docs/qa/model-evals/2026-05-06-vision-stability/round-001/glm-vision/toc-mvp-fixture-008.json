@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-001",
+  "round_index": 1,
+  "fixture_id": "toc-mvp-fixture-008",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 9505,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个对称的花朵图案，周围有几何形状。",
+    "circle_boundaries": {
+      "inner": "清晰，有明确的几何图案。",
+      "middle": "清晰，有明显的颜色过渡。",
+      "outer": "清晰，有明确的边界线。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "蓝色",
+      "绿色",
+      "粉色"
+    ],
+    "structure_notes": [
+      "图案对称",
+      "颜色过渡自然",
+      "层次分明"
+    ],
+    "risk_flags": [
+      "无明显的风险标志"
+    ],
+    "confidence": "high"
+  }
+}

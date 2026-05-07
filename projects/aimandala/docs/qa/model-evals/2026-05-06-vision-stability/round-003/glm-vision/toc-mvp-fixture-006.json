@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "round_id": "round-003",
+  "round_index": 3,
+  "fixture_id": "toc-mvp-fixture-006",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 8610,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个明显的几何图案，由多个重叠的三角形和星形组成，颜色丰富，包括黄色、绿色和蓝色。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，由中心图案的边缘定义。",
+      "middle": "中圈边界由内圈向外延伸的图案元素构成，较为明显。",
+      "outer": "外圈边界由一圈绿色的叶子图案和蓝色的箭头图案组成，边界清晰可见。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "绿色",
+      "蓝色"
+    ],
+    "structure_notes": [
+      "图案结构对称",
+      "颜色分布均匀",
+      "层次分明"
+    ],
+    "risk_flags": [
+      "无明显的风险标志"
+    ],
+    "confidence": "high"
+  }
+}

@@ -12,7 +12,7 @@ PAPERCLIP_API_TOKEN="${PAPERCLIP_API_TOKEN:-${PAPERCLIP_API_KEY:-}}"
 CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
 ENTRY_ID="${ENTRY_ID:-entry-paperclip-codex-local-server}"
 RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
-RELAYHUB_CODEX_BASE_URL="${RELAYHUB_CODEX_BASE_URL:-https://relayhub.jingshu.cc/claude/v1}"
+RELAYHUB_CODEX_BASE_URL="${RELAYHUB_CODEX_BASE_URL:-https://code.ppchat.vip/v1}"
 RELAYHUB_CODEX_WIRE_API="${RELAYHUB_CODEX_WIRE_API:-responses}"
 RELAYHUB_CODEX_PROVIDER_NAME="${RELAYHUB_CODEX_PROVIDER_NAME:-codex}"
 RELAYHUB_CODEX_AUTH_KEY_NAME="${RELAYHUB_CODEX_AUTH_KEY_NAME:-OPENAI_API_KEY}"
@@ -25,18 +25,16 @@ Usage:
   shared/tools/sync-codex-model.sh sync
 
 Commands:
-  status  Show RelayHub binding, current local Codex client config, and current Paperclip codex_local agent config
-  sync    Write RelayHub client config locally and align Paperclip codex_local agents to the RelayHub alias model
+  status  Show current local Codex client config and current Paperclip codex_local agent config
+  sync    Write PPChat direct Codex client config locally and align Paperclip codex_local agents to the direct model
 
 Notes:
-  - Source of truth for model selection is RelayHub entry binding resolve
-  - Source of truth for the relay token is RelayHub control-plane relay-config
-  - The local Codex client should keep RelayHub URL + alias model + relay token only
+  - Current default path writes the direct PPChat Codex config
+  - The local Codex client should keep direct PPChat URL + direct API key
   - Only runtime agents configured as codex_local in .paperclip.yaml are updated
-  - Existing adapterConfig fields are preserved; only model / modelReasoningEffort / apiKey are aligned
+  - Existing adapterConfig fields are preserved except model / modelReasoningEffort / apiKey
+    and Codex CLI extraArgs needed for direct API-key mode
   - This script is now an initialization / repair tool.
-  - Steady-state Paperclip usage should point codex_local at RelayHub once,
-    then switch model / api key / reasoning effort in RelayHub only.
   - Use PAPERCLIP_API_URL to point at a remote automation server
   - Use PAPERCLIP_API_TOKEN or PAPERCLIP_API_KEY when the remote instance requires auth
   - Set PAPERCLIP_SYNC_SKIP_AGENT_PATCH=1 to update only the local Codex client files
@@ -139,21 +137,12 @@ current_wire_api="$(read_codex_value "wire_api")"
 current_provider_name="$(read_codex_value "name")"
 current_auth_key="$(read_token_from_auth "${RELAYHUB_CODEX_AUTH_KEY_NAME}")"
 
-resolved_json="$(relayhub_fetch_entry_binding_json "${CONTROL_PLANE_BASE_URL}" "${ENTRY_ID}" "${RELAYHUB_INTERNAL_TOKEN}")"
-relayhub_export_entry_binding_env "${resolved_json}"
-relayhub_assert_api_key_present "${ENTRY_ID}" "${RESOLVED_MODEL_ID}" "${RESOLVED_API_KEY}"
-resolved_alias="$(printf '%s' "${resolved_json}" | jq -r '.alias // empty')"
-resolved_relay_token="$(printf '%s' "${resolved_json}" | jq -r '.relayToken // empty')"
-target_model="${resolved_alias:-}"
-target_effort="${RESOLVED_REASONING_EFFORT:-}"
-
-if [[ -z "${target_model}" ]]; then
-  echo "RelayHub entry ${ENTRY_ID} did not return an alias model." >&2
-  exit 1
-fi
+target_model="${CODEX_DIRECT_MODEL:-gpt-5.4}"
+target_effort="${CODEX_DIRECT_REASONING_EFFORT:-high}"
+resolved_relay_token="$(read_token_from_auth "${RELAYHUB_CODEX_AUTH_KEY_NAME}")"
 
 if [[ -z "${resolved_relay_token}" ]]; then
-  echo "RelayHub entry ${ENTRY_ID} did not return a relay token from relay-config.json." >&2
+  echo "Direct PPChat API key missing in ${CODEX_AUTH} (${RELAYHUB_CODEX_AUTH_KEY_NAME})." >&2
   exit 1
 fi
 
@@ -313,16 +302,12 @@ PY
 }
 
 show_status() {
-  echo "RelayHub entry binding"
-  echo "  entry_id: ${ENTRY_ID}"
-  echo "  alias: ${target_model}"
-  echo "  relay_base_url: ${RELAYHUB_CODEX_BASE_URL}"
+  echo "Direct Codex target"
+  echo "  base_url: ${RELAYHUB_CODEX_BASE_URL}"
+  echo "  model: ${target_model}"
   echo "  wire_api: ${RELAYHUB_CODEX_WIRE_API}"
-  echo "  default_model_entry_id: ${RESOLVED_MODEL_ID}"
-  echo "  upstream_base_url: ${RESOLVED_BASE_URL}"
-  echo "  upstream_model: ${RESOLVED_MODEL}"
   echo "  reasoning_effort: ${target_effort:-<unset>}"
-  echo "  relay_token_present: yes"
+  echo "  direct_api_key_present: yes"
   echo ""
   echo "Local Codex client files"
   echo "  config_path: ${CODEX_CONFIG}"
@@ -373,7 +358,7 @@ sync_models() {
   write_local_codex_files
 
   echo "Updated ${CODEX_CONFIG} -> model=${target_model}, base_url=${RELAYHUB_CODEX_BASE_URL}, wire_api=${RELAYHUB_CODEX_WIRE_API}"
-  echo "Updated ${CODEX_AUTH} -> ${RELAYHUB_CODEX_AUTH_KEY_NAME}=<relay-token>"
+  echo "Updated ${CODEX_AUTH} -> ${RELAYHUB_CODEX_AUTH_KEY_NAME}=<direct-api-key>"
 
   if [[ "${PAPERCLIP_SYNC_SKIP_AGENT_PATCH}" == "1" ]]; then
     echo ""
@@ -393,7 +378,7 @@ sync_models() {
 
     current_payload="$(api_curl "${api_url}/api/agents/${runtime_id}")"
     patch_payload="$(
-      CURRENT_PAYLOAD="${current_payload}" TARGET_MODEL="${target_model}" TARGET_EFFORT="${target_effort:-}" RELAY_TOKEN="${resolved_relay_token}" python3 - <<'PY'
+      CURRENT_PAYLOAD="${current_payload}" TARGET_MODEL="${target_model}" TARGET_EFFORT="${target_effort:-}" RELAY_TOKEN="${resolved_relay_token}" TARGET_BASE_URL="${RELAYHUB_CODEX_BASE_URL}" TARGET_WIRE_API="${RELAYHUB_CODEX_WIRE_API}" python3 - <<'PY'
 import json
 import os
 
@@ -401,6 +386,40 @@ agent = json.loads(os.environ["CURRENT_PAYLOAD"])
 adapter_config = dict(agent.get("adapterConfig") or {})
 adapter_config["model"] = os.environ["TARGET_MODEL"]
 adapter_config["apiKey"] = os.environ["RELAY_TOKEN"]
+existing_extra_args = adapter_config.get("extraArgs")
+if not isinstance(existing_extra_args, list):
+    existing_extra_args = []
+
+managed_prefixes = (
+    "preferred_auth_method=",
+    "model_provider=",
+    "model_providers.codex.name=",
+    "model_providers.codex.base_url=",
+    "model_providers.codex.wire_api=",
+    "model_providers.codex.requires_openai_auth=",
+)
+
+filtered_extra_args = []
+for item in existing_extra_args:
+    if not isinstance(item, str):
+        filtered_extra_args.append(item)
+        continue
+    if item == "--skip-git-repo-check":
+        continue
+    if item.startswith(managed_prefixes):
+        continue
+    filtered_extra_args.append(item)
+
+adapter_config["extraArgs"] = [
+    "-c", "preferred_auth_method=\"apikey\"",
+    "-c", "model_provider=\"codex\"",
+    "-c", "model_providers.codex.name=\"codex\"",
+    "-c", f"model_providers.codex.base_url=\"{os.environ['TARGET_BASE_URL']}\"",
+    "-c", f"model_providers.codex.wire_api=\"{os.environ['TARGET_WIRE_API']}\"",
+    "-c", "model_providers.codex.requires_openai_auth=true",
+    *filtered_extra_args,
+    "--skip-git-repo-check",
+]
 
 effort = os.environ.get("TARGET_EFFORT", "").strip()
 if effort:

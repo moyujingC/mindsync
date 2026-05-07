@@ -1,5 +1,11 @@
 # RelayHub v1：中转入口可用模型列表拉取与 `modelId` 切换 QA Basis
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/qa/2026-04-21-v1-中转入口可用模型列表拉取与-modelId-切换-qa-basis.md
+
 ## Summary
 
 本轮 QA 只验证一条主路径：

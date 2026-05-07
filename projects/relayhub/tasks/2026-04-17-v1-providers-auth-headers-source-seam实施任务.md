@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers auth headers source seam 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-auth-headers-source-seam实施任务.md
+
 ## Summary
 
 本轮目标是把当前“调用方直接传 `authHeadersResolver`”收束为正式的 auth headers source seam，为后续 token 来源接入预留集中入口，同时保持默认 mock 启动不变。

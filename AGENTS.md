@@ -1,5 +1,11 @@
 # MindSync Workspace Instructions
 
+> 状态：current
+> 版本：1.0.0
+> owner：CEO
+> last_updated：2026-05-06
+> source_of_truth：AGENTS.md
+
 本文件是 `mindsync` 根目录的统一协作入口，供 Codex、Claude Code 等 IDE 内代理读取。
 
 ## Workspace Purpose
@@ -89,17 +95,19 @@
 - 不要把公司级文档、共享资源、项目实现混层存放
 - 先以 `company/项目注册表.yaml` 判断对象类型，再决定进入公司侧入口或 `projects/` 工作区
 - 若要让 Paperclip 使用这套内核，优先基于 `COMPANY.md`、`.paperclip.yaml` 与 `agents/` 对齐
+- IDE 代理默认禁止主动创建分支、切换分支或新建 `git worktree`；除非用户明确要求，否则必须在当前分支、当前 worktree 继续工作
 - 只要当前会话产生了文件改动，默认动作就是在当前分支、当前 worktree 直接完成一次提交，而不是把自己的改动留在工作区里等待用户提醒
 - 这条“改完即提交”规则适用于所有分支、所有 worktree；若工作区本来就有他人未提交改动，必须只暂存并提交自己负责的文件，不得把不属于本次任务的脏改一并卷入
 
 ## Monorepo 日常工作区约定
 
 - 根工作区 [mindsync](.) 固定对应 `main`
-- `main` 只承担公司主干、Automation、治理文档与最终收口
-- 已明确长期独立开发的项目，默认应在各自正式 `git worktree` 中开发与验证
+- 对单人开发场景，`main` 对应的根工作区默认就是日常主工作台；如果当下在这里开发已经够用，不必为了形式切到其他 `git worktree`
+- `main` 可以承担公司主干、治理文档、Automation，以及当前单线程进行中的项目开发工作
+- 即使确实需要隔离并行任务、保持某项目长期独立开发台，或承接本地 / 服务器自动执行，也必须先得到用户明确指令，IDE 代理不得自行切分支或开 worktree
 - 具体项目 worktree、分支和服务器/本地路径口径，统一看：
-  - [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
-  - [company/项目与仓库映射.md](company/项目与仓库映射.md)
+  - [company/Git仓库管理系统说明.md](./company/Git仓库管理系统说明.md)
+  - [company/项目与仓库映射.md](./company/项目与仓库映射.md)
 
 ## IDE 默认开发纪律
 
@@ -136,7 +144,7 @@
 2. 不等待用户额外提醒“记得提交”
 3. 小型连续修改允许在同一轮内合并为一次提交，不强制每改一行就提交
 4. 若提交说明未手写，允许使用仓库内的自动提交辅助机制生成最小 commit message
-5. 提交纪律的正式说明统一看 [company/Git提交与自动提交规范.md](company/Git提交与自动提交规范.md)
+5. 提交纪律的正式说明统一看 [company/Git提交与自动提交规范.md](./company/Git提交与自动提交规范.md)
 
 ### 什么属于重要工作
 

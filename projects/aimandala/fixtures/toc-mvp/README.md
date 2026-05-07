@@ -8,17 +8,16 @@
   - 已包含正式入库的脱敏画作资产池。
   - 当前 9 张 `IMG_*.jpeg` 都属于正式纳管资产。
 - descriptor / manifest
-  - 当前正式体系已经切到 `toc-mvp-fixture-001~004`。
+  - 当前正式体系已经切到 `toc-mvp-fixture-001~009`。
   - 旧 `sample-*` 不再作为默认正式入口。
 
 当前资产池中的正式脱敏图片：
 
-- 默认正式候选：
+- 默认正式样本：
   - `assets/IMG_5057.jpeg`
   - `assets/IMG_5060.jpeg`
   - `assets/IMG_5062.jpeg`
   - `assets/IMG_5063.jpeg`
-- 顺延替换池：
   - `assets/IMG_5065.jpeg`
   - `assets/IMG_5067.jpeg`
   - `assets/IMG_5075.jpeg`
@@ -31,6 +30,11 @@
 - `toc-mvp-fixture-002.yaml`
 - `toc-mvp-fixture-003.yaml`
 - `toc-mvp-fixture-004.yaml`
+- `toc-mvp-fixture-005.yaml`
+- `toc-mvp-fixture-006.yaml`
+- `toc-mvp-fixture-007.yaml`
+- `toc-mvp-fixture-008.yaml`
+- `toc-mvp-fixture-009.yaml`
 
 当前 golden 审阅资产：
 

@@ -1,5 +1,12 @@
 # Specs
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/specs/README.md
+
+
 这里放 `RelayHub` 的正式 spec 与架构方案。
 
 规则：
@@ -8,32 +15,44 @@
 - spec 应明确系统目标、边界和默认决策
 - 架构文档应明确运行形态、部署分层与风险约束
 
-当前 canonical 入口：
+当前目录入口说明：
 
-- [2026-04-16-RelayHub-v1-架构与产品定义.md](projects/relayhub/specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
-- [2026-04-16-RelayHub-v1-控制台信息架构草图.md](projects/relayhub/specs/2026-04-16-RelayHub-v1-控制台信息架构草图.md)
-- [2026-04-16-v1-控制台页面级线框与字段草图.md](projects/relayhub/specs/2026-04-16-v1-控制台页面级线框与字段草图.md)
-- [2026-04-18-v1-使用场景与用户旅程说明.md](projects/relayhub/specs/2026-04-18-v1-使用场景与用户旅程说明.md)
-- [2026-04-19-v1-治理控制台下的模型库与任务闭环产品说明.md](projects/relayhub/specs/2026-04-19-v1-治理控制台下的模型库与任务闭环产品说明.md)
-- [2026-04-19-v1-控制台信息架构重排说明.md](projects/relayhub/specs/2026-04-19-v1-控制台信息架构重排说明.md)
-- [2026-04-19-v1-治理控制台主路径可用性收口说明.md](projects/relayhub/specs/2026-04-19-v1-治理控制台主路径可用性收口说明.md)
-- [2026-04-19-v1-模型激活闭环收口说明.md](projects/relayhub/specs/2026-04-19-v1-模型激活闭环收口说明.md)
-- [2026-04-19-v1-任务级默认模型快速切换说明.md](projects/relayhub/specs/2026-04-19-v1-任务级默认模型快速切换说明.md)
-- [2026-04-19-v1-预置模型质量与选型引导收口说明.md](projects/relayhub/specs/2026-04-19-v1-预置模型质量与选型引导收口说明.md)
-- [2026-04-19-v1-运行记录主路径收口说明.md](projects/relayhub/specs/2026-04-19-v1-运行记录主路径收口说明.md)
-- [2026-04-20-v1-中转入口优先的模型库与任务切换收口说明.md](projects/relayhub/specs/2026-04-20-v1-中转入口优先的模型库与任务切换收口说明.md)
-- [2026-04-21-v1-AITechFlux-中转入口预置接入说明.md](projects/relayhub/specs/2026-04-21-v1-AITechFlux-中转入口预置接入说明.md)
-- [2026-04-21-v1-中转入口可用模型列表拉取与-modelId-切换收口说明.md](projects/relayhub/specs/2026-04-21-v1-中转入口可用模型列表拉取与-modelId-切换收口说明.md)
-- [2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入说明.md](projects/relayhub/specs/2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入说明.md)
-- [2026-04-21-v1-Claude-Code-Anthropic兼容接入收口说明.md](projects/relayhub/specs/2026-04-21-v1-Claude-Code-Anthropic兼容接入收口说明.md)
-- [2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md](projects/relayhub/specs/2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md)
-- [2026-04-24-v1-Claude-Code-任务页一键切模型收口说明.md](projects/relayhub/specs/2026-04-24-v1-Claude-Code-任务页一键切模型收口说明.md)
-- [2026-04-24-v1-Claude-Code-任务页切后即验收口说明.md](projects/relayhub/specs/2026-04-24-v1-Claude-Code-任务页切后即验收口说明.md)
-- [2026-04-24-v1-本地可互动控制台开发口径收口说明.md](projects/relayhub/specs/2026-04-24-v1-本地可互动控制台开发口径收口说明.md)
-- [2026-04-19-v1-control-plane-release-部署与可写试用说明.md](projects/relayhub/specs/2026-04-19-v1-control-plane-release-部署与可写试用说明.md)
-- [2026-04-26-v1-Codex-first-原生-Responses-接入说明.md](projects/relayhub/specs/2026-04-26-v1-Codex-first-原生-Responses-接入说明.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-主路径收口说明.md](projects/relayhub/specs/2026-04-27-v1-VS-Code-Claude-Code-主路径收口说明.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化说明.md](projects/relayhub/specs/2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化说明.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环说明.md](projects/relayhub/specs/2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环说明.md)
-- [2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口说明.md](projects/relayhub/specs/2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口说明.md)
-- [2026-04-27-v1-Claude-Code-双中转入口便捷切换说明.md](projects/relayhub/specs/2026-04-27-v1-Claude-Code-双中转入口便捷切换说明.md)
+- `specs` 目录允许保留日期文件，但只有真正长期生效的内容才应逐步 canonical 化
+- 不是所有日期 spec 都等于当前 canonical；很多只是某一轮阶段收口稿
+- 判断当前正式口径时，优先看当前窗口链与已 canonical 化的无日期文档
+
+当前窗口 spec 链：
+
+- [2026-04-27-v1-VS-Code-Claude-Code-主路径收口说明.md](./2026-04-27-v1-VS-Code-Claude-Code-主路径收口说明.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化说明.md](./2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化说明.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环说明.md](./2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环说明.md)
+- [2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口说明.md](./2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口说明.md)
+- [2026-04-27-v1-Claude-Code-双中转入口便捷切换说明.md](./2026-04-27-v1-Claude-Code-双中转入口便捷切换说明.md)
+
+已 canonical 化的长期规则：
+
+- [AITechFlux-中转入口规范.md](./AITechFlux-中转入口规范.md)
+- [预置中转入口模型目录与-ModelId-切换规范.md](./预置中转入口模型目录与-ModelId-切换规范.md)
+
+较早窗口 spec：
+
+- [2026-04-16-RelayHub-v1-架构与产品定义.md](./2026-04-16-RelayHub-v1-架构与产品定义.md)
+- [2026-04-16-RelayHub-v1-控制台信息架构草图.md](./2026-04-16-RelayHub-v1-控制台信息架构草图.md)
+- [2026-04-16-v1-控制台页面级线框与字段草图.md](./2026-04-16-v1-控制台页面级线框与字段草图.md)
+- [2026-04-18-v1-使用场景与用户旅程说明.md](./2026-04-18-v1-使用场景与用户旅程说明.md)
+- [2026-04-19-v1-治理控制台下的模型库与任务闭环产品说明.md](./2026-04-19-v1-治理控制台下的模型库与任务闭环产品说明.md)
+- [2026-04-19-v1-控制台信息架构重排说明.md](./2026-04-19-v1-控制台信息架构重排说明.md)
+- [2026-04-19-v1-治理控制台主路径可用性收口说明.md](./2026-04-19-v1-治理控制台主路径可用性收口说明.md)
+- [2026-04-19-v1-模型激活闭环收口说明.md](./2026-04-19-v1-模型激活闭环收口说明.md)
+- [2026-04-19-v1-任务级默认模型快速切换说明.md](./2026-04-19-v1-任务级默认模型快速切换说明.md)
+- [2026-04-19-v1-预置模型质量与选型引导收口说明.md](./2026-04-19-v1-预置模型质量与选型引导收口说明.md)
+- [2026-04-19-v1-运行记录主路径收口说明.md](./2026-04-19-v1-运行记录主路径收口说明.md)
+- [2026-04-20-v1-中转入口优先的模型库与任务切换收口说明.md](./2026-04-20-v1-中转入口优先的模型库与任务切换收口说明.md)
+- [2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入说明.md](./2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入说明.md)
+- [2026-04-21-v1-Claude-Code-Anthropic兼容接入收口说明.md](./2026-04-21-v1-Claude-Code-Anthropic兼容接入收口说明.md)
+- [2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md](./2026-04-22-v1-Claude-Code-CLI-真链路收口说明.md)
+- [2026-04-24-v1-Claude-Code-任务页一键切模型收口说明.md](./2026-04-24-v1-Claude-Code-任务页一键切模型收口说明.md)
+- [2026-04-24-v1-Claude-Code-任务页切后即验收口说明.md](./2026-04-24-v1-Claude-Code-任务页切后即验收口说明.md)
+- [2026-04-24-v1-本地可互动控制台开发口径收口说明.md](./2026-04-24-v1-本地可互动控制台开发口径收口说明.md)
+- [2026-04-19-v1-control-plane-release-部署与可写试用说明.md](./2026-04-19-v1-control-plane-release-部署与可写试用说明.md)
+- [2026-04-26-v1-Codex-first-原生-Responses-接入说明.md](./2026-04-26-v1-Codex-first-原生-Responses-接入说明.md)

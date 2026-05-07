@@ -1,5 +1,11 @@
 # AIMandala Release Docker 骨架
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/deploy/docker/README.md
+
 > 适用范围：`aimandala` 新版 `release` 并行部署
 
 本目录用于为正式机上的新版 `aimandala` 提供 Docker 发布入口。

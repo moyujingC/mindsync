@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers global auth headers source seam 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-global-auth-headers-source-seam实施任务.md
+
 ## Summary
 
 在现有 `auth headers source factory` 之上继续补一个显式 `global auth headers source seam`，让 Providers auth 在不引入 env auth key、不定义 token provider 的前提下，具备读取 `globalThis` 上显式 resolver 的能力。
