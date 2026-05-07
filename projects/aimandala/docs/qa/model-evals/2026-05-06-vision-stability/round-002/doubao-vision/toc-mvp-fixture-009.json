@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-009",
+  "model": "ep-20260316095322-94wf5",
+  "candidate_id": "doubao-vision",
+  "duration_ms": 11641,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+  "output": {
+    "center_observation": "中心为一个黄色圆点，周围环绕橙色放射状线条和白色圆环，整体呈对称的曼陀罗图案核心区域，图案密集且色彩鲜艳。",
+    "circle_boundaries": {
+      "inner": "内圈以中心黄色圆点为核心，包含橙色放射环和白色圆环，边界清晰，被绿色叶片状图案环绕。",
+      "middle": "中圈由绿色叶片、橙色花瓣和黄色区域组成，叶片与花瓣交替排列，边界相对内圈向外扩展，与内圈、外圈衔接自然。",
+      "outer": "外圈主要是绿色大叶片、浅蓝色图案和浅绿色小叶片，分布在最外层，边界与中圈的橙色花瓣、绿色叶片衔接，整体呈对称的花瓣状向外延伸。"
+    },
+    "dominant_colors": [
+      "yellow",
+      "orange",
+      "green",
+      "blue",
+      "white"
+    ],
+    "structure_notes": [
+      "整体结构对称，呈曼陀罗图案，各圈层颜色区分明显。",
+      "内圈中心为黄色圆点，周围橙色放射线条和白色圆环，层次分明。",
+      "中圈由绿色叶片、橙色花瓣和黄色区域组成，叶片与花瓣交替排列，图案密集但无断裂。",
+      "外圈为绿色大叶片、浅蓝色图案和浅绿色小叶片，对称分布，与中圈衔接自然。",
+      "各颜色块分布均匀，无明显偏移，留白区域主要在图案外围的白色背景。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

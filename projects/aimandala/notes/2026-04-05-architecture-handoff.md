@@ -67,14 +67,14 @@
 
 ### 平台级讨论稿
 
-1. [2026-04-05-platform-positioning-and-boundaries-discussion.md](projects/aimandala/notes/2026-04-05-platform-positioning-and-boundaries-discussion.md)
-2. [2026-04-05-platform-architecture-blueprint-discussion.md](projects/aimandala/notes/2026-04-05-platform-architecture-blueprint-discussion.md)
-3. [2026-04-05-platform-mvp-and-evolution-plan-discussion.md](projects/aimandala/notes/2026-04-05-platform-mvp-and-evolution-plan-discussion.md)
-4. [2026-04-05-external-architecture-feedback-triage.md](projects/aimandala/notes/2026-04-05-external-architecture-feedback-triage.md)
+1. [2026-04-05-platform-positioning-and-boundaries-discussion.md](./2026-04-05-platform-positioning-and-boundaries-discussion.md)
+2. [2026-04-05-platform-architecture-blueprint-discussion.md](./2026-04-05-platform-architecture-blueprint-discussion.md)
+3. [2026-04-05-platform-mvp-and-evolution-plan-discussion.md](./2026-04-05-platform-mvp-and-evolution-plan-discussion.md)
+4. [2026-04-05-external-architecture-feedback-triage.md](./2026-04-05-external-architecture-feedback-triage.md)
 
 ### 最小内核讨论稿
 
-5. [2026-04-05-journey-engine-capability-registry-task-manager-discussion.md](projects/aimandala/notes/2026-04-05-journey-engine-capability-registry-task-manager-discussion.md)
+5. [2026-04-05-journey-engine-capability-registry-task-manager-discussion.md](./2026-04-05-journey-engine-capability-registry-task-manager-discussion.md)
 
 这些文档都是 `notes/` 讨论稿，不是当前正式执行约束。
 
@@ -146,5 +146,5 @@
 
 本轮额外补了两份更可执行的讨论稿：
 
-1. [2026-04-05-pro-report-chat-minimum-boundary.md](projects/aimandala/notes/2026-04-05-pro-report-chat-minimum-boundary.md)
-2. [2026-04-05-capability-registry-minimum-draft.md](projects/aimandala/notes/2026-04-05-capability-registry-minimum-draft.md)
+1. [2026-04-05-pro-report-chat-minimum-boundary.md](./2026-04-05-pro-report-chat-minimum-boundary.md)
+2. [2026-04-05-capability-registry-minimum-draft.md](./2026-04-05-capability-registry-minimum-draft.md)

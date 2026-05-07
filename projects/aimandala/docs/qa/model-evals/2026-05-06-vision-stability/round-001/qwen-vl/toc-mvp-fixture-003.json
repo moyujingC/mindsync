@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "round_id": "round-001",
+  "round_index": 1,
+  "fixture_id": "toc-mvp-fixture-003",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 15803,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+  "output": {
+    "center_observation": "画面中心为一个由橙色、黄色和蓝色构成的复杂几何图案，呈放射状结构，周围环绕着紫色花瓣状区域，整体对称且清晰。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，由中心彩色几何图案向外延伸至紫色花瓣区域，形成明确的第一层结构。",
+      "middle": "中圈边界明显，由紫色花瓣过渡到灰蓝色与绿色交错的叶状图案，层次分明。",
+      "outer": "外圈边界完整，由绿色、黄色和浅蓝色组成的重复图案构成，接近画纸边缘，轮廓清晰。"
+    },
+    "dominant_colors": [
+      "橙色",
+      "黄色",
+      "紫色",
+      "绿色",
+      "蓝色",
+      "灰色"
+    ],
+    "structure_notes": [
+      "整体呈高度对称的圆形结构，具有明显的三圈分层特征。",
+      "中心区域色彩密集，向外逐渐扩展为重复的几何与植物形态图案。",
+      "各圈之间有清晰的过渡带，无明显断裂或偏移。",
+      "留白较少，大部分区域被颜色填充，但线条清晰，未出现拥挤感。",
+      "图案具有明显的层次变化，从中心向外呈现出由复杂到规律重复的渐变。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

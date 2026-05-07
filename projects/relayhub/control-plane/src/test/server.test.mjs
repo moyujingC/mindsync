@@ -219,6 +219,7 @@ test("GET /entries returns the entry matrix including observe-only mobile Claude
     assert.ok(mobile);
     assert.equal(mobile.protocolFamily, "observe-only");
     assert.equal(mobile.controllable, false);
+    assert.ok(payload.some((item) => item.id === "entry-paperclip-claude-local-mac"));
     assert.ok(payload.some((item) => item.id === "entry-paperclip-claude-local-server"));
   });
 });
@@ -232,6 +233,10 @@ test("GET /entry-bindings returns per-entry default model bindings", async () =>
     const payload = await response.json();
 
     assert.ok(Array.isArray(payload));
+    const claudeLocalMac = payload.find((item) => item.entryId === "entry-paperclip-claude-local-mac");
+    assert.ok(claudeLocalMac);
+    assert.equal(typeof claudeLocalMac.statusNote, "string");
+    assert.equal(claudeLocalMac.reasoningEffortOverride, null);
     const claudeLocal = payload.find((item) => item.entryId === "entry-paperclip-claude-local-server");
     assert.ok(claudeLocal);
     assert.equal(typeof claudeLocal.statusNote, "string");
@@ -312,35 +317,6 @@ test("GET /entry-bindings/resolutions returns public resolved entry view without
       assert.equal(typeof resolved.resolvedModel.modelId, "string");
       assert.equal(typeof resolved.resolvedModel.hasStoredApiKey, "boolean");
       assert.equal("apiKey" in resolved.resolvedModel, false);
-      assert.equal(resolved.usageEvidence, null);
-    });
-  });
-});
-
-test("GET /entry-bindings/resolutions includes public usage evidence when present", async () => {
-  await withTempDataDir(async (tempDir) => {
-    const statePath = path.join(tempDir, "state.json");
-    const state = JSON.parse(await fs.readFile(statePath, "utf8"));
-    state.entryActivity = {
-      "entry-paperclip-claude-local-server": {
-        lastSuccessfulRequestAt: "2026-05-02T12:10:00.000Z",
-        lastSuccessfulRequestId: "req-demo-1",
-        lastSuccessfulRoute: "/v1/messages",
-        lastSuccessfulModelEntryId: "preset-aitechflux-relay",
-      },
-    };
-    await fs.writeFile(statePath, JSON.stringify(state, null, 2), "utf8");
-
-    await withServer(async (baseUrl) => {
-      const response = await fetch(`${baseUrl}/entry-bindings/resolutions`);
-      assert.equal(response.status, 200);
-      const payload = await response.json();
-
-      const resolved = payload.find((item) => item.entryId === "entry-paperclip-claude-local-server");
-      assert.ok(resolved);
-      assert.equal(resolved.usageEvidence.lastSuccessfulRequestAt, "2026-05-02T12:10:00.000Z");
-      assert.equal(resolved.usageEvidence.lastSuccessfulRoute, "/v1/messages");
-      assert.equal(resolved.usageEvidence.lastSuccessfulModelEntryId, "preset-aitechflux-relay");
     });
   });
 });
@@ -397,7 +373,8 @@ test("POST /internal/resolve-entry-binding returns override and effective reason
             "content-type": "application/json"
           },
           body: JSON.stringify({
-            defaultModelEntryId: "preset-ppchat-relay",
+            defaultModelEntryId: "preset-deepseek-v4",
+            fallbackModelEntryId: "preset-ppchat-relay",
             reasoningEffortOverride: "high"
           })
         });
@@ -430,7 +407,7 @@ test("POST /internal/resolve-entry-binding returns override and effective reason
         assert.equal(payload.alias, "relayhub-entry-paperclip-codex-local-server");
         assert.equal(payload.relayToken, "relayhub-codex-gate-token");
         assert.equal(payload.reasoningEffortOverride, "high");
-        assert.equal(payload.resolvedModel.reasoningEffort, "medium");
+        assert.equal(payload.resolvedModel.reasoningEffort, null);
         assert.equal(payload.effectiveReasoningEffort, "high");
       });
     });

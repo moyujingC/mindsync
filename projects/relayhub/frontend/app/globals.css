@@ -1,17 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --page: #eef2f5;
-  --panel: #ffffff;
-  --panel-muted: #f8fafc;
-  --panel-strong: #e2e8f0;
-  --ink: #0f172a;
-  --ink-muted: #475569;
-  --accent: #0f172a;
-  --accent-soft: #dbe4ef;
-  --success-soft: #dcfce7;
-  --warning-soft: #fef3c7;
-  --danger-soft: #ffe4e6;
+  --page: #f3f5f7;
 }
 
 @theme inline {
@@ -31,7 +21,7 @@ body {
 body {
   margin: 0;
   background: var(--page);
-  color: var(--ink);
+  color: #0f172a;
   font-family: var(--font-body), sans-serif;
 }
 
@@ -40,14 +30,4 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display), var(--font-body), sans-serif;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-::selection {
-  background: #cbd5e1;
-  color: #020617;
 }

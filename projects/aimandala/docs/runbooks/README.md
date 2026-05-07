@@ -39,15 +39,15 @@
 
 ## 3. 当前重点入口
 
-1. [开发与联调总入口.md](projects/aimandala/docs/runbooks/开发与联调总入口.md)
-2. [本地联调手册.md](projects/aimandala/docs/runbooks/本地联调手册.md)
-3. [历史任务批量关闭-runbook.md](projects/aimandala/docs/runbooks/历史任务批量关闭-runbook.md)
-4. [本地-Mac-自动执行器-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md)
-5. [本地-Mac-执行节点单机试点-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md)
-6. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](projects/aimandala/docs/runbooks/2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
-7. [2026-05-03-observe-only-checkout-治理-runbook.md](projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md)
-8. [../tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-9. [../tasks/aimandala-pr-质量门-runbook.md](projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
+1. [开发与联调总入口.md](./开发与联调总入口.md)
+2. [本地联调手册.md](./本地联调手册.md)
+3. [历史任务批量关闭-runbook.md](./历史任务批量关闭-runbook.md)
+4. [本地-Mac-自动执行器-runbook.md](./本地-Mac-自动执行器-runbook.md)
+5. [本地-Mac-执行节点单机试点-runbook.md](./本地-Mac-执行节点单机试点-runbook.md)
+6. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](./2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
+7. [2026-05-03-observe-only-checkout-治理-runbook.md](./2026-05-03-observe-only-checkout-治理-runbook.md)
+8. [../tasks/2026-04-10-服务器部署与运维手册.md](../tasks/2026-04-10-服务器部署与运维手册.md)
+9. [../tasks/aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
 
 ## 4. 当前治理判断
 
@@ -63,7 +63,7 @@
 
 - `历史任务批量关闭-runbook.md` 是当前控制面旧任务清噪的正式操作入口，固定使用 `done + 历史基线重置 comment` 的统一收口口径，并把后续第一主线明确切到普通任务本地 Mac 自动执行。
 - `2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md` 是当前 automation 节点把单项目 heartbeat 升级成多项目 heartbeat 的正式上线手册，固定覆盖备份、doctor、systemd 验证、坏 target 演练与回滚。
-- `2026-05-03-observe-only-checkout-治理-runbook.md` 是当前 automation 节点主镜像区与巡检区治理的正式操作入口，固定把 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 定义为 observe-only checkout，并要求升级前先检查干净性。
+- `2026-05-03-observe-only-checkout-治理-runbook.md` 是当前 automation 节点主镜像区与巡检区治理的正式操作入口，固定把 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 定义为 observe-only checkout，并要求升级前先检查干净性、先备份再清理历史残留、最后同步 issue 状态。
 - `execution routing` 的当前正式入口已转为 `../specs/2026-04-19-paperclip-native-execution-routing-spec.md`、`../tasks/2026-04-19-paperclip-native-execution-routing-plan.md` 与 `../qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md`。
 - `本地-Mac-自动执行器-runbook.md` 是当前普通任务自动在本地 Mac 上跑的正式操作入口；`paperclip-local-pilot.mjs` 退回为人工排障/手动接管工具。
 - 当前 heartbeat 剩余 `34` 条活跃 `serverAutomationBlocking` 的下一阶段正式入口，已转为 `../specs/2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md`、`../tasks/2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md` 与 `../qa/2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md`。

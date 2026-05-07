@@ -9,6 +9,7 @@ import {
 } from "../shared/core";
 import {
   createInterpretation,
+  detectCircles,
   getInterpretationReport,
   getInterpretationStatus,
 } from "../shared/api";
@@ -94,6 +95,9 @@ export async function runMobileWebLiteFlow(
     if (hasResolvedCircleRadii(payload)) {
       detection = buildManualDetection(payload.innerRadius, payload.middleRadius);
       state = applyDetection(state, detection);
+    } else {
+      detection = await detectCircles({ image_path: payload.imagePath });
+      state = applyDetection(state, detection);
     }
 
     const interpretation = await createInterpretation({
@@ -105,8 +109,8 @@ export async function runMobileWebLiteFlow(
       theme: payload.theme,
       painting_intention: payload.paintingIntention,
       painting_feeling: payload.paintingFeeling,
-      inner_radius: payload.innerRadius,
-      middle_radius: payload.middleRadius,
+      inner_radius: payload.innerRadius ?? (detection ? normalizeCirclePercent(detection.inner_radius) : undefined),
+      middle_radius: payload.middleRadius ?? (detection ? normalizeCirclePercent(detection.middle_radius) : undefined),
     });
     state = applyInterpretationCreated(state, interpretation);
 

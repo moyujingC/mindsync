@@ -6,11 +6,6 @@ import { seedEntryBindings, seedEntries, seedModelEntries, seedRuns, seedTasks }
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LEGACY_DEEPSEEK_V3_ID = "preset-deepseek-v3";
 const CANONICAL_DEEPSEEK_V4_ID = "preset-deepseek-v4";
-const PAPERCLIP_ENTRY_MIGRATIONS = {
-  "entry-paperclip-claude-local-mac": "entry-paperclip-claude-local-server",
-  "entry-paperclip-codex-local-mac": "entry-paperclip-codex-local-server",
-  "entry-paperclip-pi-local-mac": "entry-paperclip-pi-local-server"
-};
 
 function resolveDataDir() {
   const configured = process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR?.trim();
@@ -52,7 +47,6 @@ function createInitialState() {
     modelEntries: clone(seedModelEntries),
     entries: clone(seedEntries),
     entryBindings: clone(seedEntryBindings),
-    entryActivity: {},
     tasks: clone(seedTasks),
     runs: clone(seedRuns),
     nextIds: {
@@ -112,117 +106,6 @@ function normalizeEntryBinding(binding) {
   };
 }
 
-function normalizeEntryActivity(activity) {
-  if (!activity || typeof activity !== "object" || Array.isArray(activity)) {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(activity).map(([entryId, value]) => {
-      const record = value && typeof value === "object" ? value : {};
-      return [
-        entryId,
-        {
-          lastSuccessfulRequestAt:
-            typeof record.lastSuccessfulRequestAt === "string" && record.lastSuccessfulRequestAt.trim()
-              ? record.lastSuccessfulRequestAt.trim()
-              : null,
-          lastSuccessfulRequestId:
-            typeof record.lastSuccessfulRequestId === "string" && record.lastSuccessfulRequestId.trim()
-              ? record.lastSuccessfulRequestId.trim()
-              : null,
-          lastSuccessfulRoute:
-            typeof record.lastSuccessfulRoute === "string" && record.lastSuccessfulRoute.trim()
-              ? record.lastSuccessfulRoute.trim()
-              : null,
-          lastSuccessfulModelEntryId:
-            typeof record.lastSuccessfulModelEntryId === "string" && record.lastSuccessfulModelEntryId.trim()
-              ? record.lastSuccessfulModelEntryId.trim()
-              : null
-        }
-      ];
-    })
-  );
-}
-
-function canonicalizePaperclipEntryId(entryId) {
-  return PAPERCLIP_ENTRY_MIGRATIONS[entryId] ?? entryId;
-}
-
-function mergeEntryActivityRecord(current, incoming) {
-  const currentTime = typeof current?.lastSuccessfulRequestAt === "string" ? current.lastSuccessfulRequestAt : null;
-  const incomingTime = typeof incoming?.lastSuccessfulRequestAt === "string" ? incoming.lastSuccessfulRequestAt : null;
-  if (!currentTime) return incoming;
-  if (!incomingTime) return current;
-  return incomingTime > currentTime ? incoming : current;
-}
-
-function migratePaperclipEntries(state) {
-  let changed = false;
-
-  const seenEntryIds = new Set();
-  const nextEntries = [];
-  for (const entry of Array.isArray(state.entries) ? state.entries : []) {
-    const canonicalId = canonicalizePaperclipEntryId(entry?.id);
-    if (canonicalId !== entry?.id) {
-      changed = true;
-      continue;
-    }
-    if (seenEntryIds.has(canonicalId)) {
-      changed = true;
-      continue;
-    }
-    seenEntryIds.add(canonicalId);
-    nextEntries.push(entry);
-  }
-
-  const bindingMap = new Map();
-  for (const binding of Array.isArray(state.entryBindings) ? state.entryBindings : []) {
-    const canonicalId = canonicalizePaperclipEntryId(binding?.entryId);
-    const normalized = normalizeEntryBinding({
-      ...binding,
-      entryId: canonicalId
-    });
-    if (canonicalId !== binding?.entryId) {
-      changed = true;
-    }
-    const current = bindingMap.get(canonicalId);
-    if (!current) {
-      bindingMap.set(canonicalId, normalized);
-      continue;
-    }
-    changed = true;
-    bindingMap.set(canonicalId, {
-      ...current,
-      defaultModelEntryId: current.defaultModelEntryId ?? normalized.defaultModelEntryId,
-      fallbackModelEntryId: current.fallbackModelEntryId ?? normalized.fallbackModelEntryId,
-      reasoningEffortOverride: current.reasoningEffortOverride ?? normalized.reasoningEffortOverride,
-      statusNote: current.statusNote ?? normalized.statusNote
-    });
-  }
-
-  const normalizedActivity = normalizeEntryActivity(state.entryActivity);
-  const activityMap = new Map();
-  for (const [entryId, record] of Object.entries(normalizedActivity)) {
-    const canonicalId = canonicalizePaperclipEntryId(entryId);
-    if (canonicalId !== entryId) {
-      changed = true;
-    }
-    const current = activityMap.get(canonicalId);
-    activityMap.set(canonicalId, current ? mergeEntryActivityRecord(current, record) : record);
-  }
-
-  return {
-    changed,
-    state: {
-      ...state,
-      entries: nextEntries,
-      entryBindings: Array.from(bindingMap.values()),
-      entryActivity: Object.fromEntries(activityMap.entries())
-    }
-  };
-}
-
 function migrateMissingPresetModelEntries(state) {
   const existingEntries = Array.isArray(state.modelEntries) ? state.modelEntries : [];
   let changed = false;
@@ -257,22 +140,24 @@ function migrateMissingPresetModelEntries(state) {
     .filter((entry) => entry.source === "preset" && !existingIds.has(entry.id))
     .map((entry) => clone(entry));
 
-  const paperclipMigrated = migratePaperclipEntries({
-    ...state,
-    modelEntries: normalizedExistingEntries
-  });
-
-  if (missingPresetEntries.length === 0 && !changed && !paperclipMigrated.changed) {
+  if (missingPresetEntries.length === 0 && !changed) {
     return {
       changed: false,
-      state: paperclipMigrated.state
+      state: {
+        ...state,
+        modelEntries: normalizedExistingEntries
+      }
     };
   }
 
   return {
     changed: true,
     state: {
-      ...paperclipMigrated.state,
+      ...state,
+      entries: Array.isArray(state.entries) ? state.entries : clone(seedEntries),
+      entryBindings: Array.isArray(state.entryBindings)
+        ? state.entryBindings.map((binding) => normalizeEntryBinding(binding))
+        : clone(seedEntryBindings).map((binding) => normalizeEntryBinding(binding)),
       tasks: Array.isArray(state.tasks)
         ? state.tasks.map((task) => ({
             ...task,
@@ -296,27 +181,16 @@ function migrateMissingPresetModelEntries(state) {
   };
 }
 
-export function canonicalizePublicEntryId(entryId) {
-  return canonicalizePaperclipEntryId(entryId);
-}
-
 export async function readState() {
   const dataPath = resolveDataPath();
   try {
     const raw = await fs.readFile(dataPath, "utf8");
     const persisted = JSON.parse(raw);
     const migrated = migrateMissingPresetModelEntries(persisted);
-    const normalizedState = {
-      ...migrated.state,
-      entryActivity: normalizeEntryActivity(migrated.state.entryActivity)
-    };
-    const needsRewrite =
-      migrated.changed ||
-      JSON.stringify(normalizedState.entryActivity) !== JSON.stringify(migrated.state.entryActivity ?? {});
-    if (needsRewrite) {
-      await writeState(normalizedState);
+    if (migrated.changed) {
+      await writeState(migrated.state);
     }
-    return normalizedState;
+    return migrated.state;
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
       const initial = createInitialState();
@@ -389,26 +263,6 @@ export async function writeSecrets(secrets) {
 export async function writeRelayConfig(config) {
   const relayConfigPath = resolveRelayConfigPath();
   await writeJsonAtomically(relayConfigPath, config);
-}
-
-export async function recordEntrySuccessfulUsage({
-  entryId,
-  requestId,
-  route,
-  modelEntryId,
-  at,
-}) {
-  const state = await readState();
-  state.entryActivity = {
-    ...(state.entryActivity && typeof state.entryActivity === "object" ? state.entryActivity : {}),
-    [entryId]: {
-      lastSuccessfulRequestAt: at,
-      lastSuccessfulRequestId: requestId,
-      lastSuccessfulRoute: route,
-      lastSuccessfulModelEntryId: modelEntryId,
-    },
-  };
-  await writeState(state);
 }
 
 export function toPublicModelEntry(entry) {

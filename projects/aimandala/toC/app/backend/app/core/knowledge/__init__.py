@@ -17,11 +17,13 @@ from .utils import (
 __all__ = [
     *_legacy_exports_all,
     *_runtime_facade_all,
-    "KnowledgeQueryEngine",
-    "QueryResult",
-    "query_color_meaning",
-    "query_circle_interpretation",
-    "identify_imbalance_types",
+    *[
+        "KnowledgeQueryEngine",
+        "QueryResult",
+        "query_color_meaning",
+        "query_circle_interpretation",
+        "identify_imbalance_types",
+    ],
     "FallbackChain",
     "with_fallback",
     "safe_query",

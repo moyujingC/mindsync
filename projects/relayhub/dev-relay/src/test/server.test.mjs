@@ -124,6 +124,15 @@ function createState() {
         controllable: false
       },
       {
+        id: "entry-paperclip-claude-local-mac",
+        alias: "relayhub-entry-paperclip-claude-local-mac",
+        clientFamily: "paperclip",
+        adapterType: "claude_local",
+        hostType: "mac",
+        protocolFamily: "anthropic-messages",
+        controllable: true
+      },
+      {
         id: "entry-paperclip-claude-local-server",
         alias: "relayhub-entry-paperclip-claude-local-server",
         clientFamily: "paperclip",
@@ -133,12 +142,30 @@ function createState() {
         controllable: true
       },
       {
+        id: "entry-paperclip-codex-local-mac",
+        alias: "relayhub-entry-paperclip-codex-local-mac",
+        clientFamily: "paperclip",
+        adapterType: "codex_local",
+        hostType: "mac",
+        protocolFamily: "openai-responses",
+        controllable: true
+      },
+      {
         id: "entry-paperclip-codex-local-server",
         alias: "relayhub-entry-paperclip-codex-local-server",
         clientFamily: "paperclip",
         adapterType: "codex_local",
         hostType: "server",
         protocolFamily: "openai-responses",
+        controllable: true
+      },
+      {
+        id: "entry-paperclip-pi-local-mac",
+        alias: "relayhub-entry-paperclip-pi-local-mac",
+        clientFamily: "paperclip",
+        adapterType: "pi_local",
+        hostType: "mac",
+        protocolFamily: "openai-chat-completions",
         controllable: true
       },
       {
@@ -180,6 +207,15 @@ function createState() {
         statusNote: "Codex IDE local binding",
       },
       {
+        entryId: "entry-paperclip-claude-local-mac",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
+        statusNote: "Paperclip claude_local mac binding",
+      },
+      {
         entryId: "entry-paperclip-claude-local-server",
         defaultModelEntryId: "model-active",
         defaultModelEntryName: "Active Relay",
@@ -189,6 +225,15 @@ function createState() {
         statusNote: "Paperclip claude_local server binding",
       },
       {
+        entryId: "entry-paperclip-codex-local-mac",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
+        statusNote: "Paperclip codex_local mac binding",
+      },
+      {
         entryId: "entry-paperclip-codex-local-server",
         defaultModelEntryId: "model-active",
         defaultModelEntryName: "Active Relay",
@@ -196,6 +241,15 @@ function createState() {
         fallbackModelEntryName: null,
         reasoningEffortOverride: null,
         statusNote: "Paperclip codex_local server binding",
+      },
+      {
+        entryId: "entry-paperclip-pi-local-mac",
+        defaultModelEntryId: "model-active",
+        defaultModelEntryName: "Active Relay",
+        fallbackModelEntryId: null,
+        fallbackModelEntryName: null,
+        reasoningEffortOverride: null,
+        statusNote: "Paperclip pi_local mac binding",
       },
       {
         entryId: "entry-paperclip-pi-local-server",
@@ -357,19 +411,6 @@ async function readRequestJson(request) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
-async function waitFor(assertion, attempts = 20, delayMs = 10) {
-  let lastError = null;
-  for (let index = 0; index < attempts; index += 1) {
-    try {
-      return await assertion();
-    } catch (error) {
-      lastError = error;
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
-  }
-  throw lastError;
-}
-
 test("GET /health returns ok", async () => {
   await withTempState(async () => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
@@ -410,21 +451,6 @@ test("GET /v1/models returns 401 when relay token is invalid", async () => {
         assert.equal(response.status, 401);
         const payload = await response.json();
         assert.equal(payload.error.code, "relay_auth_invalid");
-      });
-    });
-  });
-});
-
-test("GET /v1/models accepts relay token through x-api-key for claude_local compatibility", async () => {
-  await withRelayAuthConfigured(async () => {
-    await withTempState(async () => {
-      await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/models`, {
-          headers: {
-            "x-api-key": DEFAULT_RELAY_TOKEN
-          }
-        });
-        assert.equal(response.status, 200);
       });
     });
   });
@@ -483,7 +509,7 @@ test("GET /v1/models returns controllable relay entries and resolved upstream mo
         const payload = await response.json();
         assert.equal(payload.object, "list");
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-codex-ide-local"));
-        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-claude-local-server"));
+        assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-claude-local-mac"));
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-codex-local-server"));
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-pi-local-server"));
         assert.ok(payload.data.some((item) => item.id === "relayhub-entry-paperclip-hermes-local-server"));
@@ -650,48 +676,6 @@ test("POST /v1/responses routes relayhub entry alias to its bound model", async 
   });
 });
 
-test("POST /v1/responses records usage evidence after successful relay", async () => {
-  await withMockUpstream(async (request, response) => {
-    const observedBody = await readRequestJson(request);
-    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
-    response.end(JSON.stringify({
-      object: "response",
-      id: "resp_usage_1",
-      status: "completed",
-      model: observedBody.model,
-      output: []
-    }));
-  }, async (upstreamBaseUrl) => {
-    const state = createState();
-    state.modelEntries[0].baseUrl = upstreamBaseUrl;
-
-    await withTempState(async ({ readState }) => {
-      await withServer(createDevRelayServer(), async (baseUrl) => {
-        const response = await fetch(`${baseUrl}/v1/responses`, {
-          method: "POST",
-          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
-            "content-type": "application/json"
-          }),
-          body: JSON.stringify({
-            model: "relayhub-entry-codex-ide-local",
-            input: "记录一次成功使用",
-            stream: false
-          })
-        });
-        assert.equal(response.status, 200);
-      });
-
-      await waitFor(async () => {
-        const nextState = await readState();
-        assert.equal(nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulRoute, "/v1/responses");
-        assert.equal(nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulModelEntryId, "model-active");
-        assert.equal(typeof nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulRequestAt, "string");
-        assert.equal(typeof nextState.entryActivity["entry-codex-ide-local"].lastSuccessfulRequestId, "string");
-      });
-    }, state);
-  });
-});
-
 test("POST /v1/responses routes Paperclip codex entry alias to its bound model", async () => {
   let observedBody = null;
 
@@ -775,10 +759,9 @@ test("POST /v1/responses forwards stream requests to the bound Codex upstream", 
 
 test("POST /v1/responses returns a clear error when the Codex entry is not Responses-ready", async () => {
   const state = createState();
-  const codexTask = state.tasks.find((item) => item.id === "task-codex-repo");
-  codexTask.defaultModelEntryId = "model-chat-only";
+  state.tasks[1].defaultModelEntryId = "model-chat-only";
 
-  await withTempState(async ({ readState }) => {
+  await withTempState(async () => {
     await withServer(createDevRelayServer(), async (baseUrl) => {
       const response = await fetch(`${baseUrl}/v1/responses`, {
         method: "POST",
@@ -796,8 +779,6 @@ test("POST /v1/responses returns a clear error when the Codex entry is not Respo
       assert.equal(payload.error.code, "responses_not_ready");
       assert.match(payload.error.message, /Responses 流式探测/);
     });
-    const nextState = await readState();
-    assert.deepEqual(nextState.entryActivity, {});
   }, state);
 });
 
@@ -1034,7 +1015,7 @@ test("POST /v1/responses uses entry-level reasoning override before model-level 
     state.modelEntries[0].baseUrl = upstreamBaseUrl;
     state.modelEntries[0].modelId = "gpt-5.4";
     state.modelEntries[0].reasoningEffort = "high";
-    state.entryBindings.find((item) => item.entryId === "entry-paperclip-codex-local-server").reasoningEffortOverride = "low";
+    state.entryBindings[5].reasoningEffortOverride = "low";
 
     await withTempState(async () => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
@@ -1075,7 +1056,7 @@ test("POST /v1/chat/completions uses entry-level reasoning override before model
     state.modelEntries[0].baseUrl = upstreamBaseUrl;
     state.modelEntries[0].modelId = "gpt-5.4";
     state.modelEntries[0].reasoningEffort = "medium";
-    state.entryBindings.find((item) => item.entryId === "entry-paperclip-pi-local-server").reasoningEffortOverride = "high";
+    state.entryBindings[7].reasoningEffortOverride = "high";
 
     await withTempState(async () => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
@@ -1099,7 +1080,7 @@ test("POST /v1/chat/completions uses entry-level reasoning override before model
   });
 });
 
-test("legacy Paperclip mac alias still resolves to the canonical server entry", async () => {
+test("same upstream model can emit different reasoning effort for different entry aliases", async () => {
   const observedEfforts = [];
 
   await withMockUpstream(async (request, response) => {
@@ -1108,7 +1089,7 @@ test("legacy Paperclip mac alias still resolves to the canonical server entry", 
     response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({
       object: "response",
-      id: "resp_reasoning_canonical",
+      id: "resp_reasoning_dual_entry",
       status: "completed",
       output: []
     }));
@@ -1117,9 +1098,10 @@ test("legacy Paperclip mac alias still resolves to the canonical server entry", 
     state.modelEntries[0].baseUrl = upstreamBaseUrl;
     state.modelEntries[0].modelId = "gpt-5.4";
     state.modelEntries[0].reasoningEffort = "medium";
-    state.entryBindings.find((item) => item.entryId === "entry-paperclip-codex-local-server").reasoningEffortOverride = "high";
+    state.entryBindings[4].reasoningEffortOverride = "low";
+    state.entryBindings[5].reasoningEffortOverride = "high";
 
-    await withTempState(async ({ readState }) => {
+    await withTempState(async () => {
       await withServer(createDevRelayServer(), async (baseUrl) => {
         const first = await fetch(`${baseUrl}/v1/responses`, {
           method: "POST",
@@ -1128,21 +1110,28 @@ test("legacy Paperclip mac alias still resolves to the canonical server entry", 
           }),
           body: JSON.stringify({
             model: "relayhub-entry-paperclip-codex-local-mac",
-            input: "compat",
+            input: "first",
             stream: false
           })
         });
         assert.equal(first.status, 200);
-      });
 
-      await waitFor(async () => {
-        const nextState = await readState();
-        assert.equal(nextState.entryActivity["entry-paperclip-codex-local-server"].lastSuccessfulRoute, "/v1/responses");
-        assert.equal(nextState.entryActivity["entry-paperclip-codex-local-mac"], undefined);
+        const second = await fetch(`${baseUrl}/v1/responses`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json"
+          }),
+          body: JSON.stringify({
+            model: "relayhub-entry-paperclip-codex-local-server",
+            input: "second",
+            stream: false
+          })
+        });
+        assert.equal(second.status, 200);
       });
     }, state);
 
-    assert.deepEqual(observedEfforts, ["high"]);
+    assert.deepEqual(observedEfforts, ["low", "high"]);
   });
 });
 
@@ -1327,14 +1316,8 @@ test("switching task-claude-code defaultModelEntryId changes subsequent relay re
         });
         assert.equal(first.status, 200);
 
-        await waitFor(async () => {
-          const settledState = await readState();
-          assert.ok(settledState.entryActivity);
-        });
-
         const nextState = await readState();
-        const claudeTask = nextState.tasks.find((item) => item.id === "task-claude-code");
-        claudeTask.defaultModelEntryId = "model-second";
+        nextState.tasks[0].defaultModelEntryId = "model-second";
         await writeState(nextState);
 
         const second = await fetch(`${baseUrl}/chat/completions`, {
@@ -1917,11 +1900,7 @@ test("POST /v1/messages preserves reasoning_content across mapped OpenAI-compati
 
         assert.equal(first.status, 200);
         const firstPayload = await first.json();
-        assert.equal(firstPayload.content[0].type, "thinking");
-        assert.equal(firstPayload.content[0].thinking, "private chain of thought token");
-        assert.equal(typeof firstPayload.content[0].signature, "string");
-        assert.equal(firstPayload.content[1].text, "first answer");
-        assert.equal(firstPayload.reasoning_content, "private chain of thought token");
+        assert.equal(firstPayload.content[0].reasoning_content, "private chain of thought token");
 
         const second = await fetch(`${baseUrl}/v1/messages`, {
           method: "POST",
@@ -1936,17 +1915,7 @@ test("POST /v1/messages preserves reasoning_content across mapped OpenAI-compati
               { role: "user", content: [{ type: "text", text: "question one" }] },
               {
                 role: "assistant",
-                content: [
-                  {
-                    type: "thinking",
-                    thinking: firstPayload.content[0].thinking,
-                    signature: firstPayload.content[0].signature
-                  },
-                  {
-                    type: "text",
-                    text: firstPayload.content[1].text
-                  }
-                ]
+                content: firstPayload.content
               },
               { role: "user", content: [{ type: "text", text: "question two" }] }
             ]

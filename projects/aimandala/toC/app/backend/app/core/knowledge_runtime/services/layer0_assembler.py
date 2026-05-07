@@ -1489,11 +1489,17 @@ class Layer0Assembler:
             circles=circles,
         )
         if not isinstance(payload, dict):
+            error_detail = getattr(self.llm_client, "last_error_detail", {})
+            attempt_trace = getattr(self.llm_client, "last_attempt_trace", [])
             return {
                 "source": "layer0_failed",
                 "layer0_passed": False,
                 "failure_reason": "layer0_vision_request_failed",
-                "failure_detail": {"stage": "vision"},
+                "failure_detail": {
+                    "stage": "vision",
+                    "llm_error": error_detail if isinstance(error_detail, dict) else {},
+                    "llm_attempt_trace": attempt_trace if isinstance(attempt_trace, list) else [],
+                },
             }
         summary = str(payload.get("global_visual_summary") or "").strip()
         if not summary:
@@ -1501,7 +1507,11 @@ class Layer0Assembler:
                 "source": "layer0_failed",
                 "layer0_passed": False,
                 "failure_reason": "layer0_vision_invalid_payload",
-                "failure_detail": {"stage": "vision", "missing": ["global_visual_summary"]},
+                "failure_detail": {
+                    "stage": "vision",
+                    "missing": ["global_visual_summary"],
+                    "payload_keys": sorted(payload.keys()),
+                },
             }
         per_circle_summary = payload.get("per_circle_summary")
         per_circle_roles = payload.get("per_circle_color_roles")
@@ -1521,6 +1531,13 @@ class Layer0Assembler:
                 "failure_detail": {
                     "stage": "vision",
                     "missing": ["per_circle_summary_or_roles"],
+                    "payload_keys": sorted(payload.keys()),
+                    "per_circle_summary_keys": sorted(per_circle_summary.keys())
+                    if isinstance(per_circle_summary, dict)
+                    else [],
+                    "per_circle_color_roles_keys": sorted(per_circle_roles.keys())
+                    if isinstance(per_circle_roles, dict)
+                    else [],
                 },
             }
         return {

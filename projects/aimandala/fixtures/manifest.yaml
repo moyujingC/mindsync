@@ -27,3 +27,33 @@ fixtures:
       - tc-02
       - tc-06
     kind: warning-trace
+  - id: toc-mvp-fixture-005
+    path: fixtures/toc-mvp/toc-mvp-fixture-005.yaml
+    scope: toc-mvp
+    purpose:
+      - vision-stability
+    kind: vision-stability
+  - id: toc-mvp-fixture-006
+    path: fixtures/toc-mvp/toc-mvp-fixture-006.yaml
+    scope: toc-mvp
+    purpose:
+      - vision-stability
+    kind: vision-stability
+  - id: toc-mvp-fixture-007
+    path: fixtures/toc-mvp/toc-mvp-fixture-007.yaml
+    scope: toc-mvp
+    purpose:
+      - vision-stability
+    kind: vision-stability
+  - id: toc-mvp-fixture-008
+    path: fixtures/toc-mvp/toc-mvp-fixture-008.yaml
+    scope: toc-mvp
+    purpose:
+      - vision-stability
+    kind: vision-stability
+  - id: toc-mvp-fixture-009
+    path: fixtures/toc-mvp/toc-mvp-fixture-009.yaml
+    scope: toc-mvp
+    purpose:
+      - vision-stability
+    kind: vision-stability

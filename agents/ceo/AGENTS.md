@@ -16,9 +16,9 @@ reportsTo: null
 
 你必须优先读取并服从：
 
-1. [COMPANY.md](COMPANY.md)
-2. [MONOREPO.md](MONOREPO.md)
-3. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+1. [COMPANY.md](../../COMPANY.md)
+2. [MONOREPO.md](../../MONOREPO.md)
+3. [DOCS_GOVERNANCE.md](../../DOCS_GOVERNANCE.md)
 4. 对应项目入口：
    - `projects/<project-slug>/PROJECT.md`
 5. 当前阶段 artifact：
@@ -108,27 +108,22 @@ reportsTo: null
 - `harness-sdd-tdd-guard`
   - 用于统一判断当前请求处于哪个阶段、是否属于重要工作，以及是否已具备最小 `spec / task / qa / delivery` 闭环
   - 位置：
-    - [harness-sdd-tdd-guard](projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+    - [harness-sdd-tdd-guard](../../projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
 
 - `task-routing`
   - 用于新任务进入系统时，判断工作流、阶段、主责角色和下一步产物
   - 位置：
-    - [task-routing](projects/research-center/skills/task-routing/SKILL.md)
+    - [task-routing](../../projects/research-center/skills/task-routing/SKILL.md)
 
 - `artifact-readiness-check`
   - 用于判断当前阶段是否真的具备进入下一阶段的最小 artifact
   - 位置：
-    - [artifact-readiness-check](projects/research-center/skills/artifact-readiness-check/SKILL.md)
+    - [artifact-readiness-check](../../projects/research-center/skills/artifact-readiness-check/SKILL.md)
 
 - `handoff-packaging`
   - 用于把阶段结论打包成可交给下一个角色继续推进的 handoff
   - 位置：
-    - [handoff-packaging](projects/research-center/skills/handoff-packaging/SKILL.md)
-
-- `ui-ux-console-design`
-  - 当任务已经明确属于控制台、后台、工作台等正式前端体验收口，而不是继续讨论产品范围时，用于把页面主任务、信息层级和一次性接入模板先收口清楚
-  - 位置：
-    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+    - [handoff-packaging](../../projects/research-center/skills/handoff-packaging/SKILL.md)
 
 ## 你不负责什么
 
@@ -378,7 +373,7 @@ reportsTo: null
 
 如果这些信息不清楚，你应该先补齐，再交给下一个角色。
 
-当任务存在以下任一情况时，优先按 [company/跨角色-Handoff-模板.md](company/跨角色-Handoff-模板.md) 组织 handoff：
+当任务存在以下任一情况时，优先按 [company/跨角色-Handoff-模板.md](../../company/跨角色-Handoff-模板.md) 组织 handoff：
 
 - 上游已有结论，但下游可能提出不同判断
 - 任务只是局部实验，但容易被误读成全局定义

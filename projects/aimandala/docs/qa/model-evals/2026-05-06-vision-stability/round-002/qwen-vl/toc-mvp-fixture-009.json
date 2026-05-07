@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-009",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 8953,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+  "output": {
+    "center_observation": "画面中心为一个由黄色和橙色构成的放射状图案，周围环绕白色圆环，整体结构对称且清晰。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，由黄色核心与橙色放射线条组成，呈圆形结构。",
+      "middle": "中圈可见，由绿色和橙色花瓣状元素构成，层次分明，边界完整。",
+      "outer": "外圈边界明显，由蓝色和绿色叶片状图案组成，轮廓完整，延伸至画面边缘。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "橙色",
+      "绿色",
+      "蓝色",
+      "白色"
+    ],
+    "structure_notes": [
+      "整体结构高度对称，呈现典型的曼陀罗分层特征。",
+      "颜色分布从中心向外渐变，形成视觉上的层次感。",
+      "各圈之间有明确的过渡区域，无明显断裂或偏移。",
+      "留白较少，图案密集但不拥挤，线条清晰。",
+      "外圈叶片形状规则，排列整齐，支持三圈结构的完整性。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

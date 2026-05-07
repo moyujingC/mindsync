@@ -12,7 +12,7 @@
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](./2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
 > “人工本地接手流程标准化”不再是当前主架构目标，本地执行已被重释为正式执行路径。
 
 ## 1. 问题定义

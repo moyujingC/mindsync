@@ -1,5 +1,12 @@
 # Mobile Web
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/app/frontend/mobile-web/README.md
+
+
 这里放 `一镜一梳` 当前手机端 Web 版的实现入口。
 
 当前这里已经恢复了 mobile-web 的页面层、运行时层和浏览器宿主层，但默认仍应按下面方式接共享层：

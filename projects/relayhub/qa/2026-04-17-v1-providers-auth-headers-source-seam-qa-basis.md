@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers auth headers source seam QA Basis
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/qa/2026-04-17-v1-providers-auth-headers-source-seam-qa-basis.md
+
+
 ## 目标
 
 验证 Providers auth headers source seam 已落位，并且 deployment/browser runtime 可显式选择 resolver 来源，同时默认 mock 启动不回归。

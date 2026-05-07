@@ -30,6 +30,7 @@
 - `knowledge-ingest`
 - `fact-check-gate`
 - `qa-gate-review`
+- `doc-governance`
 - `task-routing`
 - `artifact-readiness-check`
 - `business-diagnosis`
@@ -66,6 +67,7 @@
 
 - 7 个核心角色的基础 skill 引用接入
 - 多条真实试跑链路验证
+- 文档治理执行层 skill 已在仓库内落盘
 
 当前还没有完成：
 
@@ -81,23 +83,17 @@
   - `mindsync` 仓库内的 `projects/research-center/skills/`
 - 运行时镜像：
   - 本机 `~/.claude/skills/`
-  - 本机 `~/.codex/skills/`
 
 这意味着：
 
 - 仓库里的 skill 是 source of truth
-- 如果希望 `Claude Code` 或 `Codex` 本地运行时直接识别这些 skill，需要额外做本机挂载
+- 如果希望 Claude 本地运行时直接识别这些 skill，需要额外做本机挂载
 - 仅把 skill 写进角色 `AGENTS.md`，不会自动让 Paperclip 面板显示这些 skill
 
 当前建议使用：
 
 - `shared/tools/sync-local-skills.sh`
 
-把仓库 skill 轻量同步到本地 IDE 运行时目录：
-
-- `~/.claude/skills/`
-- `~/.codex/skills/`
-
-这样在 `Claude Code` 和 `Codex` 本地 IDE 里，都更接近“已安装 skill”的使用体验。
+把仓库 skill 轻量同步到 `~/.claude/skills/`。
 
 这套策略服务当前单人、单机开发阶段；它不等同于 Paperclip 已经提供了 company-managed skills runtime。

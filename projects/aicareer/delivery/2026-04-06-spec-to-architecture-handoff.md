@@ -1,5 +1,11 @@
 # HANDOFF: 产品Spec → 架构设计
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：CEO / Orchestrator
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/delivery/2026-04-06-spec-to-architecture-handoff.md
+
 ## 1. 背景
 
 - 任务背景：`怀瑾握瑜` MVP 产品定义已完成，需要转入技术架构设计阶段

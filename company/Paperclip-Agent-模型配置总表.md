@@ -1,9 +1,9 @@
 # Paperclip Agent 模型配置总表
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer
-> last_updated：2026-04-27
+> last_updated：2026-05-04
 > source_of_truth：company/Paperclip-Agent-模型配置总表.md
 
 这份文档用于收口 `Paperclip` 当前各类 Agent 的运行时模型配置。
@@ -19,14 +19,14 @@
 
 补充口径：
 
-- RelayHub 当前正式把这些运行时入口收成 `entry-*`
-- Paperclip 当前正式目标口径是固定接入 RelayHub，而不是每次切模后重新同步真实上游
-- 后续切模型时，优先改 RelayHub 的入口绑定；同步脚本只保留为初始化或修复工具
+- `codex_local` 当前正式改为直连 `PPChat`
+- `claude_local` / `pi_local` 仍维持各自现有口径
+- 后续切模型时，`codex_local` 优先维护直接 provider 配置；同步脚本只保留为初始化或修复工具
 
 它不是部署文档，也不是 Agent 提示词文档。
 如果要看服务器、SSH、代理、宿主职责，请回到：
 
-- [服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+- [服务器与基础设施入口.md](../company/服务器与基础设施入口.md)
 
 ## 1. 当前总原则
 
@@ -49,11 +49,11 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
-| 工程实现 | Engineer | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
-| 测试验收 | Test / QA | `codex_local` | `RelayHub /v1/responses` | `relayhub-entry-paperclip-codex-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游与推理强度 |
-| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub /v1/messages` | `relayhub-entry-paperclip-claude-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| CEO | CEO | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
+| 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Codex provider API key 配置 | 当前正式口径改为直接走 PPChat，不再经过 RelayHub |
+| 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Codex provider API key 配置 | 当前正式口径改为直接走 PPChat，不再经过 RelayHub |
+| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
 
 ## 3. 分组展开
 
@@ -61,7 +61,7 @@
 
 - Agent：`CEO`
 - Adapter：`claude_local`
-- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Base URL：`https://relayhub.jingshu.cc/claude`
 - Model：`relayhub-entry-paperclip-claude-local-server`
 - 模型来源：
   - Agent 级 `ANTHROPIC_BASE_URL`
@@ -69,23 +69,32 @@
   - Agent 级 `ANTHROPIC_API_KEY`
   - Agent 级 `ANTHROPIC_AUTH_TOKEN`
 - 当前语义：
-- 当前通过 `claude_local` 走 RelayHub 的 Anthropic Messages（Claude 协议）入口
-- `relayhub-entry-paperclip-claude-local-server` 是入口别名，不是真实上游模型名
-- 真实上游供应商、真实模型名、真实厂商密钥统一在 RelayHub 后台绑定里治理
-- `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` 在这里是 RelayHub 门禁 token（门禁卡），不是厂商 API Key
-- 当前 `server` 命名只保留为规范入口名，不再表达 Mac / Server 可独立控模
-- 当前 `server` 入口默认绑定已收口到 `AITechFlux 中转`
+  - 当前通过 `claude_local` 启动 Claude Code CLI
+  - Claude Code 使用 `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN`，不依赖交互式 Claude 登录态
+  - `ANTHROPIC_BASE_URL` 必须是不带 `/v1` 的 `https://relayhub.jingshu.cc/claude`
+  - `ANTHROPIC_MODEL` 必须使用 RelayHub entry `relayhub-entry-paperclip-claude-local-server`
+  - 对普通任务本地自动执行链，CEO 不再保留服务器宿主例外
+  - 当前通过 `claude_local` 走 RelayHub 的 Anthropic Messages（Claude 协议）入口
+  - `relayhub-entry-paperclip-claude-local-server` 是入口别名，不是真实上游模型名
+  - 真实上游供应商、真实模型名、真实厂商密钥统一在 RelayHub 后台绑定里治理
+  - `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` 在这里是 RelayHub 门禁 token（门禁卡），不是厂商 API Key
+  - 当前 `server` 命名只保留为规范入口名，不再表达 Mac / Server 可独立控模
+  - 当前 `server` 入口默认绑定已收口到 `AITechFlux 中转`
 
 ### 3.2 Engineer
 
 - Agent：`Engineer`
 - Adapter：`codex_local`
-- Base URL：`https://relayhub.jingshu.cc/claude/v1`
-- Model：`relayhub-entry-paperclip-codex-local-server`
+- Base URL：`https://code.ppchat.vip/v1`
+- Model：`gpt-5.4`
 - 协议：`OpenAI Responses`
-- 当前默认入口绑定：`preset-ppchat-relay`
+- 当前主 provider：`PPChat`
 - 当前真实上游：`https://code.ppchat.vip/v1`
-- Reasoning：`medium`
+- Reasoning：`high`
+- 运行参数：
+  - `model_providers.codex.base_url="https://code.ppchat.vip/v1"`
+  - `model_providers.codex.wire_api="responses"`
+  - `--skip-git-repo-check`
 - Token 优化策略：
   - 不降模型
   - 通过限制长会话控制上下文膨胀
@@ -96,13 +105,13 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于工程实现
-  - 稳态口径是让 `codex_local` 固定接入 RelayHub，而不是直接写死上游模型商
-  - 当前服务器侧正式入口是 `relayhub-entry-paperclip-codex-local-server`
+  - 当前稳态口径是让 `codex_local` 直接连接 `PPChat`
   - 当前客户端落地配置位置是：
     - `/paperclip/.codex/config.toml`
     - `/paperclip/.codex/auth.json`
-  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-ppchat-relay`
-  - 若后续切模型、切 key 或切 `reasoningEffort`，优先在 RelayHub 控制面改入口绑定
+  - 当前模型固定写为 `gpt-5.4`
+  - 当前 `apiKey` 直接使用 PPChat provider key
+  - 若后续切模型、切 key 或切 `reasoningEffort`，优先直接维护 codex provider 配置
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -129,12 +138,16 @@
 
 - Agent：`Test / QA`
 - Adapter：`codex_local`
-- Base URL：`https://relayhub.jingshu.cc/claude/v1`
-- Model：`relayhub-entry-paperclip-codex-local-server`
+- Base URL：`https://code.ppchat.vip/v1`
+- Model：`gpt-5.4`
 - 协议：`OpenAI Responses`
-- 当前默认入口绑定：`preset-ppchat-relay`
+- 当前主 provider：`PPChat`
 - 当前真实上游：`https://code.ppchat.vip/v1`
-- Reasoning：`medium`
+- Reasoning：`high`
+- 运行参数：
+  - `model_providers.codex.base_url="https://code.ppchat.vip/v1"`
+  - `model_providers.codex.wire_api="responses"`
+  - `--skip-git-repo-check`
 - Token 优化策略：
   - 不降模型
   - 通过限制长会话控制上下文膨胀
@@ -145,11 +158,11 @@
     - `maxSessionAgeHours: 24`
 - 当前语义：
   - 用于测试、QA、验收
-  - 与 `Engineer` 保持同一条服务器侧 RelayHub 入口口径
+  - 与 `Engineer` 保持同一条 PPChat 直连接入口径
   - 当前客户端落地配置位置同样是：
     - `/paperclip/.codex/config.toml`
     - `/paperclip/.codex/auth.json`
-  - 当前真实上游由 RelayHub 入口绑定解析到 `preset-ppchat-relay`
+  - 当前真实上游固定为 `PPChat`
   - 达到 session compaction 阈值后切新 session，属于成本控制，不代表故障
   - 对 `manual-review-required + local_manual_review`，正式目标宿主是用户当前这台 Mac，而不是 automation 服务器
 - 安全边界口径：
@@ -170,7 +183,7 @@
 它们当前共享同一组模型入口：
 
 - Adapter：`claude_local`
-- Base URL：`https://relayhub.jingshu.cc/claude/v1`
+- Base URL：`https://relayhub.jingshu.cc/claude`
 - Model：`relayhub-entry-paperclip-claude-local-server`
 - 相关环境变量：
   - `ANTHROPIC_API_KEY`
@@ -184,26 +197,23 @@
 
 当前明确口径：
 
-- 这组 Agent 当前正式口径是固定接入 RelayHub，而不是直连某一家上游厂商
-- `ANTHROPIC_MODEL` 控的是 RelayHub entry alias（入口别名），不是 `deepseek-v4-pro` 这类真实模型名
-- 当前采用 RelayHub 门禁 token 模式，而不是 Claude 登录态模式
-- 后续如果要切真实上游模型，应优先改 RelayHub 后台绑定，而不是回写 Paperclip agent 的 `ANTHROPIC_MODEL`
-- [shared/tools/sync-paperclip-claude-local-model.sh](shared/tools/sync-paperclip-claude-local-model.sh) 只保留为初始化或修复工具；它负责把 agent 对齐回 RelayHub，不负责定义真实上游模型是谁
-- 当前正式默认绑定已收口为：
-  - `entry-paperclip-claude-local-server -> preset-aitechflux-relay`
-- 当前真实默认上游模型是 AITechFlux 的 `Claude混合版`
-- 不再把 Paperclip `claude_local` 主入口默认绑定到 DeepSeek V4；DeepSeek thinking mode 要求 `reasoning_content` 跨轮回传，Claude Code CLI 当前无法稳定保留这块内容。
+  - 这组 Agent 当前通过 RelayHub 的 Claude Code 入口执行
+  - 当前采用 API-key 模式，而不是 Claude 登录态模式，即“免登录”
+  - `ANTHROPIC_BASE_URL` 必须保持为 `https://relayhub.jingshu.cc/claude`，不要写成 `https://relayhub.jingshu.cc/claude/v1`
+  - `ANTHROPIC_MODEL` 必须保持为 `relayhub-entry-paperclip-claude-local-server`
+  - 这组 Agent 当前正式口径是固定接入 RelayHub，而不是直连某一家上游厂商
+  - `ANTHROPIC_MODEL` 控的是 RelayHub entry alias（入口别名），不是 `deepseek-v4-pro` 这类真实模型名
+  - 当前采用 RelayHub 门禁 token 模式，而不是 Claude 登录态模式
+  - 后续如果要切真实上游模型，应优先改 RelayHub 后台绑定，而不是回写 Paperclip agent 的 `ANTHROPIC_MODEL`
+  - [shared/tools/sync-paperclip-claude-local-model.sh](shared/tools/sync-paperclip-claude-local-model.sh) 只保留为初始化或修复工具；它负责把 agent 对齐回 RelayHub，不负责定义真实上游模型是谁
+  - 当前正式默认绑定已收口为：
+    - `entry-paperclip-claude-local-server -> preset-aitechflux-relay`
+  - 当前真实默认上游模型是 AITechFlux 的 `Claude混合版`
+  - 不再把 Paperclip `claude_local` 主入口默认绑定到 DeepSeek V4；DeepSeek thinking mode 要求 `reasoning_content` 跨轮回传，Claude Code CLI 当前无法稳定保留这块内容。
 - 因此面板里出现：
   - `ANTHROPIC_API_KEY is set...`
   - 且状态为 `warn`
   - 这是预期现象，不单独视为故障
-
-当前统一入口口径：
-
-- 当前正式入口：`relayhub-entry-paperclip-claude-local-server`
-- 它走 `https://relayhub.jingshu.cc/claude/v1/messages`
-- 前端里看到的“当前绑定模型”由 RelayHub 解析结果决定，不由 Paperclip 直接决定
-- 旧 `relayhub-entry-paperclip-claude-local-mac` 只保留短期兼容，不再作为正式治理对象
 
 当前面板解读规则：
 
@@ -272,10 +282,9 @@ HTTPS_PROXY=http://47.253.255.110:18888
   - 主要吃各 Agent 自己的 `adapterConfig.env` 中的 `ANTHROPIC_*`
 - `codex_local`
   - 服务器侧稳态不再直接吃上游 `base_url`
-  - 当前客户端固定指向 `https://relayhub.jingshu.cc/claude/v1`
-  - 当前模型固定写为 `relayhub-entry-paperclip-codex-local-server`
-  - 当前 Relay 访问 token 由 RelayHub 控制面的 `relay-config.json` 管理
-  - Paperclip 客户端侧只消费 relay token，不直接持有上游供应商长期密钥
+  - 当前客户端固定指向 `https://code.ppchat.vip/v1`
+  - 当前模型固定写为 `gpt-5.4`
+  - 当前 provider key 直接保存在 codex provider 配置里
 - automation 节点国际出网当前通过阿里云美国机 `tinyproxy` 辅助
 - `Idea Clarifier`
   - 虽然也复用服务器侧 `OPENAI_API_KEY`
@@ -290,18 +299,18 @@ HTTPS_PROXY=http://47.253.255.110:18888
 ### 5.1 推荐保留
 
 - `CEO`
-  - `claude_local + relayhub-entry-paperclip-claude-local-server`
+  - `claude_local + deepseek-v4-pro`
 - `Engineer`
-  - `codex_local + relayhub-entry-paperclip-codex-local-server`
+  - `codex_local + PPChat + gpt-5.4`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
   - 成本压力较高或遇到公共卡点时，允许用户手动暂停；后续再补“多次失败自动转人工”
 - `Test / QA`
-  - `codex_local + relayhub-entry-paperclip-codex-local-server`
+  - `codex_local + PPChat + gpt-5.4`
   - `sessionCompaction = { enabled: true, maxSessionRuns: 12, maxRawInputTokens: 300000, maxSessionAgeHours: 24 }`
   - 对普通任务单机试点，允许通过本地 Mac 直连远端 control plane 执行
 - 规划/产品/内容/研究类 Agent
-  - `claude_local + relayhub-entry-paperclip-claude-local-mac / relayhub-entry-paperclip-claude-local-server`
+  - `claude_local + deepseek-v4-pro`
 - `Idea Clarifier`
   - `pi_local + deepseek-v4-pro`
   - `HOME=/paperclip`
@@ -320,13 +329,13 @@ HTTPS_PROXY=http://47.253.255.110:18888
 
 1. `CEO` 更换模型供应商或 base URL
 2. `Engineer / Test QA` 切换模型
-3. `claude_local` 系列从 RelayHub 门禁 token 模式改为别的鉴权模式
+3. `claude_local` 系列从 API-key 模式改为登录态模式
 4. `Idea Clarifier` 改 adapter 或改为 fallback-only
 5. automation 节点的全局环境变量发生变化
 
 更新时优先同步：
 
 1. 本文
-2. [服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+2. [服务器与基础设施入口.md](../company/服务器与基础设施入口.md)
 3. `.paperclip.yaml`
 4. 需要时再同步到项目级运维文档

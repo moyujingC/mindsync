@@ -1,7 +1,6 @@
 import http from "node:http";
 import { fileURLToPath } from "node:url";
 import {
-  canonicalizePublicEntryId,
   readRelayConfig,
   readSecrets,
   readState,
@@ -174,11 +173,9 @@ function setStoredApiKey(secrets, modelEntryId, apiKey) {
 }
 
 function buildModelEntryWithSecret(entry, secrets) {
-  const apiKey = getStoredApiKey(secrets, entry.id);
   return {
     ...entry,
-    apiKey,
-    hasStoredApiKey: Boolean(apiKey)
+    apiKey: getStoredApiKey(secrets, entry.id)
   };
 }
 
@@ -199,20 +196,16 @@ function requireInternalAuth(request, response) {
 }
 
 function buildPublicEntryBindingResolution(state, secrets, entryId) {
-  const canonicalEntryId = canonicalizePublicEntryId(entryId);
-  const relayEntry = state.entries.find((item) => item.id === canonicalEntryId) ?? null;
-  const binding = state.entryBindings.find((item) => item.entryId === canonicalEntryId) ?? null;
+  const relayEntry = state.entries.find((item) => item.id === entryId) ?? null;
+  const binding = state.entryBindings.find((item) => item.entryId === entryId) ?? null;
   const resolvedModel = binding?.defaultModelEntryId
     ? state.modelEntries.find((item) => item.id === binding.defaultModelEntryId) ?? null
-    : null;
-  const usageEvidence = state.entryActivity && typeof state.entryActivity === "object"
-    ? state.entryActivity[canonicalEntryId] ?? null
     : null;
 
   const effectiveReasoningEffort = resolveEffectiveReasoningEffort(binding, resolvedModel);
 
   return {
-    entryId: canonicalEntryId,
+    entryId,
     alias: relayEntry?.alias ?? null,
     clientFamily: relayEntry?.clientFamily ?? null,
     adapterType: relayEntry?.adapterType ?? null,
@@ -224,14 +217,6 @@ function buildPublicEntryBindingResolution(state, secrets, entryId) {
     reasoningEffortOverride: binding?.reasoningEffortOverride ?? null,
     effectiveReasoningEffort,
     statusNote: binding?.statusNote ?? null,
-    usageEvidence: usageEvidence
-      ? {
-          lastSuccessfulRequestAt: usageEvidence.lastSuccessfulRequestAt ?? null,
-          lastSuccessfulRequestId: usageEvidence.lastSuccessfulRequestId ?? null,
-          lastSuccessfulRoute: usageEvidence.lastSuccessfulRoute ?? null,
-          lastSuccessfulModelEntryId: usageEvidence.lastSuccessfulModelEntryId ?? null
-        }
-      : null,
     resolvedModel: resolvedModel
       ? {
           id: resolvedModel.id,

@@ -95,6 +95,34 @@ free_gb() {
   df -Pk / | awk 'NR==2 { print int($4 / 1024 / 1024) }'
 }
 
+classify_dirty_worktree() {
+  local worktree_dir="$1"
+  local status_output path code_residue=0
+
+  status_output="$(git_status_short "$worktree_dir" || true)"
+  while IFS= read -r line; do
+    [[ -n "$line" ]] || continue
+    path="${line:3}"
+    if [[ "$path" == *" -> "* ]]; then
+      path="${path##* -> }"
+    fi
+    case "$path" in
+      *.md|*.txt|projects/*/docs/*|company/*)
+        ;;
+      *)
+        code_residue=1
+        break
+        ;;
+    esac
+  done <<<"$status_output"
+
+  if [[ "$code_residue" -eq 1 ]]; then
+    printf 'code_or_config_residue'
+  else
+    printf 'doc_or_delivery_residue'
+  fi
+}
+
 cleanup_runner_temp() {
   if [[ -d "${RUNNER_ROOT}/_work/_temp" ]]; then
     find "${RUNNER_ROOT}/_work/_temp" -mindepth 1 -mtime +"${TEMP_RETENTION_DAYS}" -exec rm -rf {} +
@@ -114,7 +142,7 @@ cleanup_git_worktrees() {
     while IFS= read -r worktree_dir; do
       [[ -n "${worktree_dir}" ]] || continue
       if git -C "${worktree_dir}" status --short --untracked-files=normal 2>/dev/null | grep -q .; then
-        log "Skip dirty worktree cleanup: ${worktree_dir}"
+        log "Skip dirty worktree cleanup: ${worktree_dir} classification=$(classify_dirty_worktree "${worktree_dir}")"
         continue
       fi
       rm -rf "${worktree_dir}"

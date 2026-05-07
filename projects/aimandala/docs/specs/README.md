@@ -1,5 +1,11 @@
 # Specs
 
+> 状态：current
+> 版本：0.1.0
+> owner：Product Spec Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/docs/specs/README.md
+
 这里放 `一镜一梳` 当前仍作为正式入口的产品规格文档。
 
 使用原则：

@@ -1,5 +1,12 @@
 # RelayHub Console release 静态试用入口
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/deploy/release-console/README.md
+
+
 ## 1. 目标
 
 为 `RelayHub frontend` 提供 release 宿主机上的最小试用入口。
@@ -366,7 +373,7 @@ curl -k https://relayhub.jingshu.cc/aimandala/v1/chat/completions \
 - 静态目录：`/var/www/web.jingshu.cc/relayhub`
 - 子域静态目录：`/var/www/relayhub.jingshu.cc`
 - nginx 配置：`/etc/nginx/sites-available/ai-mandala`
-- RelayHub 独立 worktree：`/opt/aimandala-release/worktrees/relayhub`
+- RelayHub 独立 worktree：`/opt/aimandala-release/worktrees/relayhub-dev-deploy`
 
 已验证：
 

@@ -1,5 +1,11 @@
 # RelayHub v1 Claude Code 双中转入口便捷切换交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-27-v1-Claude-Code-双中转入口便捷切换-交付说明.md
+
 ## Summary
 
 本轮把 `Claude Code` 的两条常用中转入口 `PPChat / AITechFlux` 收成了任务页里的便捷切换入口。

@@ -14,7 +14,7 @@ reportsTo: ../ceo/AGENTS.md
 
 只要任务属于具体项目，你必须先读取：
 
-1. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+1. [DOCS_GOVERNANCE.md](../../DOCS_GOVERNANCE.md)
 2. `projects/<project-slug>/PROJECT.md`
 3. 当前生效 `spec`
 4. 当前生效 `architecture` 或 `decisions`
@@ -60,17 +60,12 @@ reportsTo: ../ceo/AGENTS.md
 - `harness-sdd-tdd-guard`
   - 用于先判断当前是否已经具备最小 `spec / task / qa basis / verification / delivery` 闭环
   - 位置：
-    - [harness-sdd-tdd-guard](projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+    - [harness-sdd-tdd-guard](../../projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
 
 - `artifact-readiness-check`
   - 当你怀疑当前输入还不足以直接进入实现时，先检查 artifact 是否 ready
   - 位置：
-    - [artifact-readiness-check](projects/research-center/skills/artifact-readiness-check/SKILL.md)
-
-- `ui-ux-console-design`
-  - 当任务属于控制台、后台、工作台或正式前端页面实现时，用于统一信息层级、状态设计和接入模板口径，而不是边写边猜交互
-  - 位置：
-    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+    - [artifact-readiness-check](../../projects/research-center/skills/artifact-readiness-check/SKILL.md)
 
 ## 你的默认输出
 

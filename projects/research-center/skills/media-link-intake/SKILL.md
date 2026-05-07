@@ -61,6 +61,11 @@ handoff_to:
      - 进入自动媒体摄取主链
 3. 若进入自动链路，则优先尝试自动获取媒体文件或正文。
    - 当前 baseline：先试 `yt-dlp`
+   - YouTube 若遇到拦截：
+     - 先补 `--cookies-from-browser`
+     - 必要时补 `--user-agent`
+     - 再尝试 `--extractor-args 'youtube:player_client=mweb'`
+     - 若仍失败，记录是否疑似需要 `PO Token`
    - 若通用下载失败，再考虑平台专用 downloader
 4. 若失败，切换到半自动 fallback：
    - 截图
@@ -79,6 +84,9 @@ handoff_to:
 当前可用本地工具：
 
 - `shared/tools/media-link-intake.sh`
+  - 支持 `--cookies-from-browser`
+  - 支持 `--user-agent`
+  - 支持 `--extractor-args`
 
 ## 质量检查项
 

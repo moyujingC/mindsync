@@ -26,26 +26,6 @@ export const modelCapabilitiesSchema = z.object({
   lastErrorMessage: z.string().nullable(),
 });
 
-const modelCatalogFamilySchema = z.union([
-  z.literal("openai-compatible"),
-  z.literal("anthropic-compatible"),
-]);
-
-const modelCostTierSchema = z.union([
-  z.literal("高"),
-  z.literal("中"),
-  z.literal("低"),
-]);
-
-const optionalStringWithDefault = (fallback: string) =>
-  z.string().optional().nullable().transform((value) => value ?? fallback);
-
-const optionalNullableString = z.string().optional().nullable().transform((value) => value ?? null);
-
-const optionalStringArray = z.array(z.string()).optional().nullable().transform((value) => value ?? []);
-
-const optionalNullableCostTier = modelCostTierSchema.optional().nullable().transform((value) => value ?? null);
-
 export const modelEntrySchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -55,24 +35,24 @@ export const modelEntrySchema = z.object({
   baseUrl: z.string(),
   modelId: z.string(),
   reasoningEffort: reasoningEffortSchema,
-  catalogFamily: modelCatalogFamilySchema.optional().nullable().transform((value) => value ?? "openai-compatible"),
+  catalogFamily: z.literal("openai-compatible"),
   purchaseUrl: z.string().nullable(),
   status: modelEntryStatusSchema,
   statusNote: z.string(),
   hasStoredApiKey: z.boolean(),
   maskedApiKey: z.string().nullable(),
   lastTestedAt: z.string().nullable(),
-  lastTestResult: optionalStringWithDefault("idle"),
-  lastTestCode: optionalStringWithDefault("not-tested"),
-  lastTestMessage: optionalStringWithDefault("还没有测试记录。"),
+  lastTestResult: z.string(),
+  lastTestCode: z.string(),
+  lastTestMessage: z.string(),
   capabilities: modelCapabilitiesSchema,
-  presetPriority: optionalNullableString,
-  recommendedTaskCategories: optionalStringArray,
-  recommendedTaskIds: optionalStringArray,
-  selectionReason: optionalNullableString,
-  activationHint: optionalNullableString,
-  costTier: optionalNullableCostTier,
-  capabilityTags: optionalStringArray,
+  presetPriority: z.string().nullable(),
+  recommendedTaskCategories: z.array(z.string()),
+  recommendedTaskIds: z.array(z.string()),
+  selectionReason: z.string().nullable(),
+  activationHint: z.string().nullable(),
+  costTier: z.union([z.literal("高"), z.literal("中"), z.literal("低")]).nullable(),
+  capabilityTags: z.array(z.string()),
   tags: z.array(z.string()),
 });
 
@@ -100,12 +80,6 @@ export const entryResolutionSchema = z.object({
   reasoningEffortOverride: reasoningEffortSchema,
   effectiveReasoningEffort: reasoningEffortSchema,
   statusNote: z.string().nullable(),
-  usageEvidence: z.object({
-    lastSuccessfulRequestAt: z.string().nullable().optional(),
-    lastSuccessfulRequestId: z.string().nullable().optional(),
-    lastSuccessfulRoute: z.string().nullable().optional(),
-    lastSuccessfulModelEntryId: z.string().nullable().optional(),
-  }).nullable().optional(),
   resolvedModel: z.object({
     id: z.string(),
     name: z.string(),

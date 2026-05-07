@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { appendFile, mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
-import { readRelayConfig, readSecrets, readState, recordEntrySuccessfulUsage } from "../../control-plane/src/store.mjs";
+import { readRelayConfig, readSecrets, readState } from "../../control-plane/src/store.mjs";
 
 const port = Number(process.env.PORT ?? 4319);
 const CLAUDE_RELAY_TASK_ID = "task-claude-code";
@@ -12,11 +12,6 @@ const RELAY_TASK_MODEL_PREFIX = "relayhub-task-";
 const RELAY_ENTRY_MODEL_PREFIX = "relayhub-entry-";
 const CLAUDE_ENTRY_ID = "entry-claude-ide-local";
 const CODEX_ENTRY_ID = "entry-codex-ide-local";
-const PAPERCLIP_ENTRY_MIGRATIONS = {
-  "entry-paperclip-claude-local-mac": "entry-paperclip-claude-local-server",
-  "entry-paperclip-codex-local-mac": "entry-paperclip-codex-local-server",
-  "entry-paperclip-pi-local-mac": "entry-paperclip-pi-local-server"
-};
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -58,18 +53,12 @@ async function requireRelayAuth(request, response) {
   }
 
   const expected = `Bearer ${configuredToken}`;
-  const providedAuthorization = String(request.headers.authorization ?? "").trim();
-  const providedApiKey = String(request.headers["x-api-key"] ?? "").trim();
-  const relayAuthAccepted =
-    providedAuthorization === expected ||
-    providedApiKey === configuredToken;
-
-  if (!relayAuthAccepted) {
+  if (request.headers.authorization !== expected) {
     relayError(
       response,
       401,
       "relay_auth_invalid",
-      "RelayHub relay token 缺失或不匹配。支持 Authorization: Bearer 或 x-api-key 两种正式传法。"
+      "RelayHub relay token 缺失或不匹配。"
     );
     return false;
   }
@@ -131,10 +120,6 @@ function relayModelToEntryId(model) {
   return suffix.startsWith("entry-") ? suffix : `entry-${suffix}`;
 }
 
-function canonicalizePaperclipEntryId(entryId) {
-  return PAPERCLIP_ENTRY_MIGRATIONS[entryId] ?? entryId;
-}
-
 function nowIso() {
   return new Date().toISOString();
 }
@@ -145,16 +130,6 @@ function makeRequestId() {
 
 function logRelayEvent(payload) {
   process.stdout.write(`${JSON.stringify({ at: nowIso(), ...payload })}\n`);
-}
-
-async function markEntryUsageSuccess({ entryId, requestId, route, modelEntryId }) {
-  await recordEntrySuccessfulUsage({
-    entryId,
-    requestId,
-    route,
-    modelEntryId,
-    at: nowIso(),
-  });
 }
 
 async function logClaudeUpstreamModel(payload) {
@@ -329,7 +304,7 @@ function inferTaskIdFromModel(bodyModel, fallbackTaskId) {
 }
 
 function inferEntryIdFromModel(bodyModel, fallbackEntryId) {
-  return canonicalizePaperclipEntryId(relayModelToEntryId(bodyModel) ?? fallbackEntryId);
+  return relayModelToEntryId(bodyModel) ?? fallbackEntryId;
 }
 
 function getStoredApiKey(secrets, modelEntryId) {
@@ -354,20 +329,19 @@ async function readRelayState() {
 }
 
 function resolveEntryBinding(state, entryId, options = {}) {
-  const canonicalEntryId = canonicalizePaperclipEntryId(entryId);
   const {
     endpointKind = null,
     requireStream = false
   } = options;
-  const entryBinding = state.entryBindings?.find((item) => item.entryId === canonicalEntryId);
+  const entryBinding = state.entryBindings?.find((item) => item.entryId === entryId);
   if (!entryBinding) {
     return {
       ok: false,
       statusCode: 404,
       code: "entry_binding_not_found",
-      message: `找不到 ${canonicalEntryId} 的入口绑定，先去 RelayHub 入口库补配置。`,
+      message: `找不到 ${entryId} 的入口绑定，先去 RelayHub 入口库补配置。`,
       relay: {
-        entryId: canonicalEntryId
+        entryId
       }
     };
   }
@@ -377,9 +351,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "entry_not_bound",
-      message: `${canonicalEntryId} 还没有绑定默认模型，先去 RelayHub 入口库完成绑定。`,
+      message: `${entryId} 还没有绑定默认模型，先去 RelayHub 入口库完成绑定。`,
       relay: {
-        entryId: canonicalEntryId
+        entryId
       }
     };
   }
@@ -390,9 +364,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 404,
       code: "model_entry_not_found",
-        message: "入口当前绑定的模型入口不存在，请回入口库重新绑定。",
+      message: "入口当前绑定的模型入口不存在，请回入口库重新绑定。",
       relay: {
-        entryId: canonicalEntryId,
+        entryId,
         modelEntryId: entryBinding.defaultModelEntryId
       }
     };
@@ -403,9 +377,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "model_not_active",
-        message: "入口当前绑定的模型入口还未激活，先去模型库测试连接。",
+      message: "入口当前绑定的模型入口还未激活，先去模型库测试连接。",
       relay: {
-        entryId: canonicalEntryId,
+        entryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -417,9 +391,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "missing_api_key",
-        message: "入口当前绑定的模型入口缺少 API Key，先去模型库补 Key。",
+      message: "入口当前绑定的模型入口缺少 API Key，先去模型库补 Key。",
       relay: {
-        entryId: canonicalEntryId,
+        entryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -435,9 +409,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "responses_not_ready",
-        message: "当前入口尚未通过所需的 Responses 探测，先去模型库完成该入口验证。",
+      message: "当前入口尚未通过所需的 Responses 探测，先去模型库完成该入口验证。",
       relay: {
-        entryId: canonicalEntryId,
+        entryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -449,9 +423,9 @@ function resolveEntryBinding(state, entryId, options = {}) {
       ok: false,
       statusCode: 409,
       code: "chat_completions_not_ready",
-        message: "当前入口尚未通过 Chat Completions 探测，先去模型库完成该入口验证。",
+      message: "当前入口尚未通过 Chat Completions 探测，先去模型库完成该入口验证。",
       relay: {
-        entryId: canonicalEntryId,
+        entryId,
         modelEntryId: entry.id,
         baseUrl: entry.baseUrl
       }
@@ -462,7 +436,6 @@ function resolveEntryBinding(state, entryId, options = {}) {
     ok: true,
     entryBinding,
     entry,
-    entryId: canonicalEntryId,
     effectiveReasoningEffort: resolveEffectiveReasoningEffort(entryBinding, entry)
   };
 }
@@ -828,18 +801,19 @@ function mapOpenAIChoiceToAnthropic(choice) {
     typeof message.reasoning_content === "string" && message.reasoning_content.trim()
       ? message.reasoning_content
       : null;
-  const thinkingBlock = buildAnthropicThinkingBlock(reasoningContent);
 
   if (typeof message.content === "string" && message.content.length > 0) {
-    if (thinkingBlock) {
-      content.push(thinkingBlock);
-    }
     content.push({
       type: "text",
-      text: collapseThinkBlocks(message.content)
+      text: collapseThinkBlocks(message.content),
+      ...(reasoningContent ? { reasoning_content: reasoningContent } : {})
     });
-  } else if (thinkingBlock) {
-    content.push(thinkingBlock);
+  } else if (reasoningContent) {
+    content.push({
+      type: "text",
+      text: "",
+      reasoning_content: reasoningContent
+    });
   }
 
   for (const toolCall of toolCalls) {
@@ -980,9 +954,8 @@ async function proxyChatCompletions(request, response) {
 
   const state = await readRelayState();
   const requestedEntryId = relayModelToEntryId(body.model);
-  const canonicalEntryId = canonicalizePaperclipEntryId(requestedEntryId);
   const resolved = requestedEntryId
-    ? resolveEntryBinding(state, canonicalEntryId, {
+    ? resolveEntryBinding(state, requestedEntryId, {
         endpointKind: "chat-completions"
       })
     : resolveRelayBinding(state, inferTaskIdFromModel(body.model, CLAUDE_RELAY_TASK_ID), {
@@ -992,7 +965,7 @@ async function proxyChatCompletions(request, response) {
     return relayError(response, resolved.statusCode, resolved.code, resolved.message, resolved.relay);
   }
 
-  const task = "task" in resolved ? resolved.task : { id: canonicalEntryId ?? CLAUDE_RELAY_TASK_ID };
+  const task = "task" in resolved ? resolved.task : { id: requestedEntryId ?? CLAUDE_RELAY_TASK_ID };
   const entry = resolved.entry;
   const binding = "entryBinding" in resolved ? resolved.entryBinding : null;
   const upstreamBody = attachReasoningConfig({
@@ -1089,12 +1062,6 @@ async function proxyChatCompletions(request, response) {
     Readable.fromWeb(upstreamResponse.body).pipe(response);
     response.on("finish", resolve);
     response.on("error", reject);
-  });
-  await markEntryUsageSuccess({
-    entryId: canonicalEntryId,
-    requestId,
-    route: "/chat/completions",
-    modelEntryId: entry.id,
   });
   logRelayEvent({
     requestId,
@@ -1237,12 +1204,6 @@ async function proxyAnthropicMessages(request, response) {
         durationMs: Date.now() - startedAt,
         note: "streaming response was proxied without body parsing"
       });
-      await markEntryUsageSuccess({
-        entryId: requestedEntryId,
-        requestId,
-        route: "/v1/messages",
-        modelEntryId: entry.id,
-      });
       logRelayEvent({
         requestId,
         route: "/v1/messages",
@@ -1278,12 +1239,6 @@ async function proxyAnthropicMessages(request, response) {
       stream: false,
       upstreamStatus: upstreamResponse.status,
       durationMs: Date.now() - startedAt
-    });
-    await markEntryUsageSuccess({
-      entryId: requestedEntryId,
-      requestId,
-      route: "/v1/messages",
-      modelEntryId: entry.id,
     });
     logRelayEvent({
       requestId,
@@ -1397,12 +1352,6 @@ async function proxyAnthropicMessages(request, response) {
       upstreamStatus: upstreamResponse.status,
       durationMs: Date.now() - startedAt
     });
-    await markEntryUsageSuccess({
-      entryId: requestedEntryId,
-      requestId,
-      route: "/v1/messages",
-      modelEntryId: entry.id,
-    });
     logRelayEvent({
       requestId,
       route: "/v1/messages",
@@ -1432,12 +1381,6 @@ async function proxyAnthropicMessages(request, response) {
     upstreamStatus: upstreamResponse.status,
     durationMs: Date.now() - startedAt
   });
-  await markEntryUsageSuccess({
-    entryId: requestedEntryId,
-    requestId,
-    route: "/v1/messages",
-    modelEntryId: entry.id,
-  });
   logRelayEvent({
     requestId,
     route: "/v1/messages",
@@ -1466,7 +1409,7 @@ async function listCodexModels(response) {
       continue;
     }
 
-    const relayModelId = entryIdToRelayModel(canonicalizePaperclipEntryId(relayEntry.id));
+    const relayModelId = entryIdToRelayModel(relayEntry.id);
     if (!seenIds.has(relayModelId)) {
       seenIds.add(relayModelId);
       data.push({
@@ -1624,12 +1567,6 @@ async function proxyResponses(request, response) {
     Readable.fromWeb(upstreamResponse.body).pipe(response);
     response.on("finish", resolve);
     response.on("error", reject);
-  });
-  await markEntryUsageSuccess({
-    entryId: requestedEntryId,
-    requestId,
-    route: "/v1/responses",
-    modelEntryId: entry.id,
   });
   logRelayEvent({
     requestId,

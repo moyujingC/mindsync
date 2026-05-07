@@ -1,5 +1,12 @@
 # App
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/app/README.md
+
+
 这里放 `一镜一梳` To C 主产品的应用入口层。
 
 当前显式拆分为：

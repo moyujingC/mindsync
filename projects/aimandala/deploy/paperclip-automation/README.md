@@ -12,7 +12,7 @@
 
 它应被理解为：
 
-- `aimandala` 对 [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md) 的项目级落地
+- `aimandala` 对 [company/projects/Automation/PROJECT.md](../../../../company/projects/Automation/PROJECT.md) 的项目级落地
 - 当前首个正式项目级实例 runbook
 - 不是公司级 `Automation Platform` 的总入口
 
@@ -45,6 +45,7 @@
 
 ```bash
 /opt/automation/app/mindsync
+/opt/automation/runtime-tools/mindsync
 /opt/automation/app/mindsync-heartbeat
 /opt/automation/worktrees
 /opt/paperclip/app/paperclip
@@ -58,6 +59,10 @@
   - 主镜像区
   - 只作为权威镜像、共享脚本源、运维排障参考
   - 默认不再让 agent 直接在这里长期写入
+- `/opt/automation/runtime-tools/mindsync`
+  - 运行时脚本镜像区
+  - 只作为 proxy / guard / finalizer 的稳定脚本源
+  - 默认通过容器只读挂载，不承接真实写任务
 - `/opt/automation/app/mindsync-heartbeat`
   - 巡检区
   - 只用于 heartbeat、runner-doctor、maintenance、执行健康巡检
@@ -269,19 +274,17 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 10. `shared/tools/ci/server-automation-command-proxy.sh`
    - runtime command override 的透传包装器
    - 默认 `passive` 模式：
-     - 保留原始 args / stdin / cwd / exit code
-     - 只有在显式拿到 `task_class / execution_route / description` 元数据时才执行 guard
-     - 只有显式满足 `automation-execution + server_automation` 时才触发 finalizer
-   - 这样做是为了避免仅靠 agent 级 `command` override 就把所有运行都误判成服务器自动化任务
+     - 保留原始 args / stdin / exit code
+     - 始终先执行最小 guard，拒绝 observe-only checkout
+     - 只有显式满足 `automation-execution + server_automation` 时才要求 worktree 根并触发 finalizer
+   - 这样做是为了避免把所有运行都误判成服务器自动化任务，但仍保证共享 checkout 永远不会被执行链写入
 11. `shared/tools/sync-paperclip-server-automation-command-override.sh`
    - 管理 runtime `adapterConfig.command` override 的状态、dry-run、sync、rollback
-   - 当前默认目标仅为 `Engineer`
+   - 当前默认目标固定为 `Engineer,Test / QA`
    - 默认写入的 runtime command 路径是服务器稳定路径：
-     - `/opt/automation/app/mindsync/shared/tools/ci/server-automation-command-proxy.sh`
-   - 若服务器正式 checkout 路径不同，需显式设置：
+     - `/opt/automation/runtime-tools/mindsync/shared/tools/ci/server-automation-command-proxy.sh`
+   - 若服务器正式脚本路径不同，才需显式设置：
      - `PAPERCLIP_RUNTIME_PROXY_COMMAND=<server-stable-path>`
-   - 若要扩大到 `Test / QA`，需显式设置：
-     - `PAPERCLIP_COMMAND_OVERRIDE_TARGETS=Engineer,Test / QA`
    - 当前只下发 proxy 所需的透传 env：
      - `PAPERCLIP_REAL_COMMAND`
      - `PAPERCLIP_EXECUTION_WORKTREE_ROOT`
@@ -606,8 +609,8 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 但项目级正式版本口径仍以本 runbook 为 deploy 入口
 3. 若后续推荐目标版本变化，应同步更新：
    - 本文
-   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+   - [company/服务器与基础设施入口.md](../../../../company/服务器与基础设施入口.md)
+   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](../../../../company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
 
 ## 4.2 `hermes_local` 容器原生方案
 

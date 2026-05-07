@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "round_id": "round-003",
+  "round_index": 3,
+  "fixture_id": "toc-mvp-fixture-006",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 11040,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+  "output": {
+    "center_observation": "画面中心为一个由多个几何图形组成的对称结构，核心是一个浅色圆形，周围环绕着放射状线条和紫色六边形图案，整体呈现出清晰的视觉焦点。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，以中心的六角星形结构为核心，向外延伸出蓝色和绿色的三角形层，形成明显的分层结构。",
+      "middle": "中圈边界较为明显，由黄色背景区域构成，包含星星、月亮等符号均匀分布，与内圈之间有清晰的过渡。",
+      "outer": "外圈边界清晰，由绿色和蓝色交替的锯齿状图案构成，围绕整个图像边缘，形成完整的圆形框架。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "蓝色",
+      "绿色",
+      "紫色",
+      "粉色"
+    ],
+    "structure_notes": [
+      "整体构图高度对称，中心到边缘呈现清晰的层次递进。",
+      "内圈以几何图形为主，中圈为象征性符号（星星、月亮），外圈为装饰性图案。",
+      "颜色分布均衡，无明显拥挤或断裂现象。",
+      "各圈之间有明确的界限，未出现偏移或重叠。",
+      "中心区域有轻微的晕染效果，可能为手绘笔触所致。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

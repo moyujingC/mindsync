@@ -54,8 +54,8 @@
 
 当前主链路补充口径：
 
-- `task-claude-code` 当前默认仍可能绑定到专门的 Claude 工作流入口
-- `Paperclip claude_local` 两条正式入口当前默认绑定已收口到 `DeepSeek V4 官方`
+- `task-claude-code` 默认应绑定到 `AITechFlux 中转`
+- 该入口固定按原生 `POST /v1/messages` 转发到 `https://aitechflux.com/v1/messages`
 - `POST /v1/messages/count_tokens` 继续由 `RelayHub dev-relay` 本地估算兜底
 - `PPChat` 不再作为 Claude 默认主链路，只保留给 OpenAI / Codex 类入口
 
@@ -98,7 +98,7 @@ bash projects/relayhub/dev-relay/local-claude-code-cli-smoke.sh
 - 命令自然完成
 - 返回不是本地报错或挂起
 - 请求没有被用户级 `~/.claude/settings.json` 覆盖
-- `task-claude-code.defaultModelEntryId` 命中当前控制面里真正生效的绑定
+- `task-claude-code.defaultModelEntryId` 命中 `preset-aitechflux-relay`
 - 不出现缺少 `count_tokens` 或压缩头解码错误
 
 ## 5. 后台 VS Code / 常驻进程口径
@@ -226,8 +226,7 @@ bash projects/relayhub/dev-relay/check-vscode-claude-code-env.sh --workspace-roo
 
 当前默认建议：
 
-- `Paperclip claude_local` 当前正式默认绑定维持 `DeepSeek V4 官方`
-- `Claude Code` 任务主路径按当前控制面绑定治理，不再把 `AITechFlux` 写成唯一默认
+- Claude 主路径优先维持 `AITechFlux 中转`
 - `PPChat` 仅在 OpenAI / Codex 路径中继续使用
 
 ## 7. 本轮边界

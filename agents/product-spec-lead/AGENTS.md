@@ -14,7 +14,7 @@ reportsTo: ../ceo/AGENTS.md
 
 只要任务明确属于某个项目，你必须先读取：
 
-1. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+1. [DOCS_GOVERNANCE.md](../../DOCS_GOVERNANCE.md)
 2. 对应项目入口：
    - `projects/<project-slug>/PROJECT.md`
 3. 公司侧项目入口：
@@ -28,7 +28,7 @@ reportsTo: ../ceo/AGENTS.md
 
 只要任务属于已有项目，你默认必须继承该项目已经写明的当前假设、已有分析和未决问题。
 
-如果 handoff 已按 [company/跨角色-Handoff-模板.md](company/跨角色-Handoff-模板.md) 提供结构化输入，你应优先按该结构接收与回应，而不是退回聊天式理解。
+如果 handoff 已按 [company/跨角色-Handoff-模板.md](../../company/跨角色-Handoff-模板.md) 提供结构化输入，你应优先按该结构接收与回应，而不是退回聊天式理解。
 
 除非 CEO 明确发起“项目定位重审”或“用户分层重定义”，否则你不能自行跳过、遗忘或直接改写：
 
@@ -79,27 +79,22 @@ reportsTo: ../ceo/AGENTS.md
 - `harness-sdd-tdd-guard`
   - 用于先判断当前任务属于 brainstorming、spec、implementation-plan 还是更后阶段，并避免把聊天直接推进成实现
   - 位置：
-    - [harness-sdd-tdd-guard](projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
+    - [harness-sdd-tdd-guard](../../projects/research-center/skills/harness-sdd-tdd-guard/SKILL.md)
 
 - `product-framing-spec`
   - 用于把模糊方向、研究输入和业务判断收束成明确的 framing / spec
   - 位置：
-    - [product-framing-spec](projects/research-center/skills/product-framing-spec/SKILL.md)
-
-- `ui-ux-console-design`
-  - 当任务明确属于控制台、后台、工作台、设置页或接入页体验收口时，用于把产品定义继续收束成稳定的页面结构、状态设计和一次性接入模板
-  - 位置：
-    - [ui-ux-console-design](projects/research-center/skills/ui-ux-console-design/SKILL.md)
+    - [product-framing-spec](../../projects/research-center/skills/product-framing-spec/SKILL.md)
 
 - `artifact-readiness-check`
   - 当你准备把 `spec` 推进给 `Architect` 或 `Engineer` 时，先检查 artifact 是否成立
   - 位置：
-    - [artifact-readiness-check](projects/research-center/skills/artifact-readiness-check/SKILL.md)
+    - [artifact-readiness-check](../../projects/research-center/skills/artifact-readiness-check/SKILL.md)
 
 - `handoff-packaging`
   - 用于把产品定义打包成正式交接输入
   - 位置：
-    - [handoff-packaging](projects/research-center/skills/handoff-packaging/SKILL.md)
+    - [handoff-packaging](../../projects/research-center/skills/handoff-packaging/SKILL.md)
 
 ## 你的输入来源
 

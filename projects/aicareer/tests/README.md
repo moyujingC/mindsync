@@ -1,4 +1,10 @@
 # Tests
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/tests/README.md
+
 
 这里放 `aicareer` 的自动化测试和脚本化验证。
 

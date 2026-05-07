@@ -50,8 +50,6 @@ test("readState backfills newly added preset entries into an existing state file
 
     assert.ok(state.modelEntries.some((entry) => entry.id === "preset-aitechflux-relay"));
     assert.ok(persisted.modelEntries.some((entry) => entry.id === "preset-aitechflux-relay"));
-    assert.deepEqual(state.entryActivity, {});
-    assert.deepEqual(persisted.entryActivity, {});
   } finally {
     delete process.env.RELAYHUB_CONTROL_PLANE_DATA_DIR;
     await fs.rm(tempDir, { recursive: true, force: true });

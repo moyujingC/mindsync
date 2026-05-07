@@ -1,6 +1,6 @@
 # 一镜一梳本地 Mac 执行节点单机试点 Runbook
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-21
@@ -278,10 +278,10 @@ node shared/tools/paperclip-local-pilot.mjs update MIN-119 --status in_review --
 ## 9. 关联文档
 
 1. spec：
-   - [../specs/2026-04-21-local-mac-execution-host-pilot-spec.md](projects/aimandala/docs/specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
+   - [../specs/2026-04-21-local-mac-execution-host-pilot-spec.md](../specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
 2. task：
-   - [../tasks/2026-04-21-local-mac-execution-host-pilot-plan.md](projects/aimandala/docs/tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
+   - [../tasks/2026-04-21-local-mac-execution-host-pilot-plan.md](../tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
 3. QA：
-   - [../qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md](projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
+   - [../qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md](../qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
 4. 基础连接脚本：
    - [paperclip-local-env.sh](shared/tools/paperclip-local-env.sh)

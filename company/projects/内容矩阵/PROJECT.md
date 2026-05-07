@@ -86,11 +86,11 @@
 
 任何 Agent 第一次进入 `内容矩阵` 项目时，默认优先读取以下材料：
 
-1. [PROJECT.md](company/projects/内容矩阵/PROJECT.md)
-2. [company/内容矩阵.md](company/内容矩阵.md)
-3. [company/项目与仓库映射.md](company/项目与仓库映射.md)
-4. [个人真实信息与表达基线.md](company/projects/内容矩阵/个人真实信息与表达基线.md)
-5. [个人号内容协作规则.md](company/projects/内容矩阵/个人号内容协作规则.md)
+1. [PROJECT.md](../../../company/projects/内容矩阵/PROJECT.md)
+2. [company/内容矩阵.md](../../../company/内容矩阵.md)
+3. [company/项目与仓库映射.md](../../../company/项目与仓库映射.md)
+4. [个人真实信息与表达基线.md](../../../company/projects/内容矩阵/个人真实信息与表达基线.md)
+5. [个人号内容协作规则.md](../../../company/projects/内容矩阵/个人号内容协作规则.md)
 
 如果任务明确只涉及 `墨予镜` 个人号，还必须继续确认：
 
