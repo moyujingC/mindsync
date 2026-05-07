@@ -682,7 +682,7 @@ class ReportProNarrativeBuilder:
             mandala_prescription,
             theme_label=theme_label,
         ) or (
-            f"先做小幅但稳定的调节，不期待一次性把所有问题解决。"
+            "先做小幅但稳定的调节，不期待一次性把所有问题解决。"
         )
         phase_three_focus = (
             cognitive_upgrade

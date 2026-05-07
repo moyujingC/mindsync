@@ -2075,12 +2075,11 @@ class NarrativeContextService:
         direction = str(legacy_projection.get("direction") or "").strip()
         root_cause = legacy_projection.get("root_cause", {})
         core_root = str(root_cause.get("core") or "").strip() if isinstance(root_cause, dict) else ""
-        primary = primary_imbalance or self._get_signal_label(signal) or signal or "当前主轴"
         suggestions = [
             {
                 "phase": "当前阶段",
                 "focus": "先看见卡住发生在哪里",
-                "practice": healing_core or f"先把当前最卡的一步拆小，让身体重新感到自己接得住。",
+                "practice": healing_core or "先把当前最卡的一步拆小，让身体重新感到自己接得住。",
             },
             {
                 "phase": "下一步",
