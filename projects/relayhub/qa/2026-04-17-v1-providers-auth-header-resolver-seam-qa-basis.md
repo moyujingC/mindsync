@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers auth header resolver seam QA Basis
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/qa/2026-04-17-v1-providers-auth-header-resolver-seam-qa-basis.md
+
+
 ## 目标
 
 验证 Providers real-fetch transport 已支持显式 auth header resolver seam，且不破坏默认 mock 启动与既有 browser runtime 路径。

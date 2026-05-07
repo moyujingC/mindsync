@@ -1,0 +1,145 @@
+{
+  "ok": true,
+  "mode": "vision_e2e_smoke",
+  "fixture_count": 3,
+  "candidate": {
+    "vision_model": "qwen-vl-max-latest",
+    "vision_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "vision_fallback_model": "ep-20260316095322-94wf5",
+    "vision_fallback_base_url": "https://ark.cn-beijing.volces.com/api/v3"
+  },
+  "fixtures": [
+    {
+      "fixture_id": "toc-mvp-fixture-003",
+      "image_asset": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "upload": {
+        "storage_backend": "local",
+        "storage_key": "8c51c6fcee82422583d9359527e35a54.jpeg",
+        "content_type": "image/jpeg",
+        "size_bytes": 3176617
+      },
+      "detect": {
+        "method": "llm_vision",
+        "confidence": 0.9,
+        "inner_radius": 0.25,
+        "middle_radius": 0.55,
+        "debug_backend": "llm_vision"
+      },
+      "lite_report": {
+        "version": "lite",
+        "title": "慢慢亮起来的中心",
+        "error": null,
+        "visual_basis": "如果只看画面给人的感受，最先浮出来的是两股力量：一股是「金」的收拢和判断，另一股是「木」想把事情重新带回现实。 三层画面的走向也很清楚：这说明你仍优先保护核心边界，再逐步恢复向外连接。 换句话说，最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「火」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态；中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「火」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 从逐圈观察看，内圈主要呈现「火」的状态，颜色偏深，填充稳定，面积约6.2%；中圈主要呈现「火」的状态，深浅居中，填充稳定，面积约24.0%；外圈主要呈现「木」的状态，深浅居中，填充稳定，面积约69.8%",
+        "prompt_schema_validation_issues": []
+      },
+      "pro_report": {
+        "version": "pro",
+        "title": "一梳 Pro 版报告",
+        "error": null,
+        "structured_keys": [
+          "deep_impression",
+          "deep_structure_interpretation",
+          "evidence_digest",
+          "healing_plan",
+          "imbalance_diagnosis",
+          "prompt_preview",
+          "prompt_schema_validation_issues",
+          "root_cause_chain",
+          "topic_context"
+        ]
+      },
+      "validation": {
+        "ok": true,
+        "failures": []
+      }
+    },
+    {
+      "fixture_id": "toc-mvp-fixture-006",
+      "image_asset": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "upload": {
+        "storage_backend": "local",
+        "storage_key": "c6469f8f20254565883fe8b2bc09921f.jpeg",
+        "content_type": "image/jpeg",
+        "size_bytes": 3096659
+      },
+      "detect": {
+        "method": "llm_vision",
+        "confidence": 0.95,
+        "inner_radius": 0.35,
+        "middle_radius": 0.65,
+        "debug_backend": "llm_vision"
+      },
+      "lite_report": {
+        "version": "lite",
+        "title": "慢慢亮起来的中心",
+        "error": null,
+        "visual_basis": "如果只看画面给人的感受，最先浮出来的是两股力量：一股是「木」的收拢和判断，另一股是「金」想把事情重新带回现实。 三层画面的走向也很清楚：这说明你仍优先保护核心边界，再逐步恢复向外连接。 换句话说，最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「木」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态；中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「木」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 从逐圈观察看，内圈主要呈现「木」的状态，深浅居中，填充稳定，面积约12.2%；中圈主要呈现「木」的状态，深浅居中，填充稳定，面积约30.0%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约57.8%",
+        "prompt_schema_validation_issues": []
+      },
+      "pro_report": {
+        "version": "pro",
+        "title": "一梳 Pro 版报告",
+        "error": null,
+        "structured_keys": [
+          "deep_impression",
+          "deep_structure_interpretation",
+          "evidence_digest",
+          "healing_plan",
+          "imbalance_diagnosis",
+          "prompt_preview",
+          "prompt_schema_validation_issues",
+          "root_cause_chain",
+          "topic_context"
+        ]
+      },
+      "validation": {
+        "ok": true,
+        "failures": []
+      }
+    },
+    {
+      "fixture_id": "toc-mvp-fixture-008",
+      "image_asset": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "upload": {
+        "storage_backend": "local",
+        "storage_key": "53ddb315a8744a51a54ea47ce876f9f6.jpeg",
+        "content_type": "image/jpeg",
+        "size_bytes": 3043990
+      },
+      "detect": {
+        "method": "llm_vision",
+        "confidence": 0.95,
+        "inner_radius": 0.35,
+        "middle_radius": 0.65,
+        "debug_backend": "llm_vision"
+      },
+      "lite_report": {
+        "version": "lite",
+        "title": "慢慢亮起来的中心",
+        "error": null,
+        "visual_basis": "如果只看画面给人的感受，最先浮出来的是两股力量：一股是「土」的收拢和判断，另一股是「金」想把事情重新带回现实。 三层画面的走向也很清楚：这说明你仍优先保护核心边界，再逐步恢复向外连接。 换句话说，最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「金」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态；中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「土」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 从逐圈观察看，内圈主要呈现「金」的状态，深浅居中，填充较密，面积约12.2%；中圈主要呈现「土」的状态，深浅居中，填充稳定，面积约30.0%；外圈主要呈现「土」的状态，深浅居中，填充稳定，面积约57.8%",
+        "prompt_schema_validation_issues": []
+      },
+      "pro_report": {
+        "version": "pro",
+        "title": "一梳 Pro 版报告",
+        "error": null,
+        "structured_keys": [
+          "deep_impression",
+          "deep_structure_interpretation",
+          "evidence_digest",
+          "healing_plan",
+          "imbalance_diagnosis",
+          "prompt_preview",
+          "prompt_schema_validation_issues",
+          "root_cause_chain",
+          "topic_context"
+        ]
+      },
+      "validation": {
+        "ok": true,
+        "failures": []
+      }
+    }
+  ]
+}

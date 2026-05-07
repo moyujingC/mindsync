@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers auth headers source 组合工厂 交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-17-v1-providers-auth-headers-source组合工厂-交付说明.md
+
+
 ## 本轮目标
 
 把 Providers auth 从“source seam”继续推进到“source factory”，为后续 token 来源扩展预留集中入口，同时保持默认启动为 mock/disabled。

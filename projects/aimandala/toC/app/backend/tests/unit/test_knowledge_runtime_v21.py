@@ -24,6 +24,7 @@ from app.core.knowledge_runtime.compiler import KnowledgePackCompiler
 from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root
 from app.core.knowledge_runtime.repository import KnowledgeRepository
 from app.core.knowledge_runtime.runtime import create_knowledge_runtime, get_knowledge_runtime
+from app.core.knowledge_runtime.services.layer0_assembler import Layer0Assembler
 from app.core.knowledge_runtime.validators import KnowledgePackValidator
 from app.core.llm.runtime import NoopLLMClient
 from app.core.pipeline.data_models import InterpretationRecord
@@ -482,6 +483,10 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "把节奏调整到：先稳住节奏，再让变化分段落地" in projection["overall_impression"]
     assert "把节奏调整到「先稳住节奏，再让变化分段落地」" in projection["visual_elements"]
     assert "「金」想把事情重新带回现实" not in projection["visual_elements"]
+    assert "内在的根基与安全感" in projection["overall_impression"]
+    assert "这也和你最近画画时写下的感觉有关。" in projection["overall_impression"]
+    assert "三圈依次呈现出「火 -> 木 -> 金」的变化。" in projection["overall_impression"]
+    assert "「土」的收拢和判断" in projection["visual_elements"]
     assert "内圈阅读；中圈阅读。" in projection["visual_elements"]
     assert projection["six_insights"]["base"]["title"] == "你的底色：先稳住中心的人：你当前的生命能量基调"
     assert projection["six_insights"]["base"]["content"] == projection["story_sections"]["base"]
@@ -495,6 +500,7 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "内外节奏正在重新对齐" in projection["story_sections"]["pattern"]
     assert "过渡期" in projection["theme_insights"]["awareness"]
     assert "重新有把握了再动" in projection["emotion_portrait"]
+    assert "这也和你最近画画时写下的感觉有关。" in projection["emotion_portrait"]
     assert "过渡期" in projection["emotion_portrait"]
     assert len(projection["three_awareness"]) == 3
     assert projection["three_awareness"][0]["title"] == "先安顿自己"
@@ -741,6 +747,9 @@ def test_v21_narrative_service_builds_pro_narrative_plan():
     assert plan["legacy_projection"]["micro_sections"]["节奏关系"].startswith("先看节奏")
     assert plan["legacy_projection"]["micro_sections"]["关系模式"].startswith("再往外看")
     assert plan["legacy_projection"]["micro_sections"]["行动模式"].startswith("落到行动上")
+    assert "内外节奏正在重新对齐" in plan["legacy_projection"]["micro_sections"]["节奏关系"]
+    assert "外部表达开始寻找新的边界" in plan["legacy_projection"]["micro_sections"]["关系模式"]
+    assert "先把行动拆成可以承接的小步子" in plan["legacy_projection"]["micro_sections"]["行动模式"]
     assert "你原本希望“想知道怎么更稳定地往前”" in plan["legacy_projection"]["root_cause"]["surface"]
     assert plan["legacy_projection"]["root_cause"]["deeper"] == "更深一层是你还在确认自己能不能稳稳接住变化"
     assert plan["legacy_projection"]["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
@@ -1224,7 +1233,7 @@ def test_v21_layer0_warns_when_vision_circle_colors_conflict_with_program_measur
     assert visual_basis["program_color_measurement"]["source"] == "program_segmented_block_measurement"
 
 
-def test_v21_layer0_uses_deterministic_visual_summary_when_vision_unavailable(
+def test_v21_layer0_uses_deterministic_visual_observation_without_vision(
     tmp_path,
 ):
     image_path = tmp_path / "knowledge-layer0-vision-fallback.png"
@@ -1252,23 +1261,23 @@ def test_v21_layer0_uses_deterministic_visual_summary_when_vision_unavailable(
     assert layer0.layer0_failure_detail == {}
     assert layer0.input_package["image"]["image_ref"]
     assert visual_basis["prompt_meta"]["source"] == "deterministic_visual_observation"
+    assert visual_basis["prompt_meta"]["model_role"] == "objective_visual_transcription"
     assert visual_basis["prompt_meta"]["failure_reason"] == ""
     assert visual_basis["prompt_meta"]["vision_unavailable"] is False
+    assert visual_basis["prompt_meta"]["validation_status"] == "passed"
     assert visual_basis["program_color_measurement"]["source"] == "program_segmented_block_measurement"
-    assert visual_basis["global_visual_summary"]
+    assert "内圈以红色、绿色为主" in visual_basis["global_visual_summary"]
     assert visual_basis["llm_color_observation"]["source"] == "deterministic_visual_observation"
-    assert visual_basis["llm_color_observation"]["summary"]
+    assert "内圈以红色、绿色为主" in visual_basis["llm_color_observation"]["summary"]
     assert visual_basis["direct_judgment_hits"]["hits"]
     assert layer0.visual_facts["visual_analysis_basis"] == visual_basis
     assert layer0.fallback_summary["used"] is False
     assert layer0.fallback_summary["levels"] == []
     assert layer0.fallback_summary["warnings"] == []
     for circle in visual_basis["circles"].values():
-        assert circle["observation_summary"] != "未观察到足够依据"
-        assert circle["shape_features"]["boundary_style"]
-        assert circle["shape_features"]["boundary_style"] != "未观察到足够依据"
-        assert circle["brushwork"]["stroke_quality"]
-        assert circle["brushwork"]["stroke_quality"] != "未观察到足够依据"
+        assert circle["observation_summary"]
+        assert circle["shape_features"]["boundary_style"] == "轮廓较清楚"
+        assert circle["brushwork"]["stroke_quality"] == "偏重"
 
 
 def test_v21_layer0_requests_compact_multimodal_visual_prompt(tmp_path):
@@ -1747,3 +1756,63 @@ def test_api_returns_410_for_legacy_record():
 
     assert response.status_code == 410
     assert "unsupported interpretation schema" in response.json()["detail"]
+
+
+def test_layer0_visual_summary_failure_exposes_llm_error_detail():
+    runtime = get_knowledge_runtime()
+
+    class _FailingLLMClient:
+        def __init__(self) -> None:
+            self.last_error_detail = {"kind": "url_error", "reason": "network down"}
+            self.last_attempt_trace = [
+                {"model": "qwen-vl-max-latest", "result": "invalid_response_payload"},
+                {"model": "ep-20260316095322-94wf5", "result": "url_error"},
+            ]
+
+        def generate_structured(self, **kwargs):
+            return None
+
+    assembler = runtime.layer0_assembler
+    assembler.llm_client = _FailingLLMClient()
+
+    payload = assembler._build_vision_visual_summary(
+        image_path=_fixture_asset_path("IMG_5062.jpeg"),
+        circles={
+            "inner": {"observation_summary": "内圈黄色花瓣。"},
+            "middle": {"observation_summary": "中圈紫色花瓣。"},
+            "outer": {"observation_summary": "外圈绿色叶片。"},
+        },
+        generated=False,
+    )
+
+    assert payload["failure_reason"] == "layer0_vision_request_failed"
+    assert payload["failure_detail"]["llm_error"]["kind"] == "url_error"
+    assert payload["failure_detail"]["llm_attempt_trace"][0]["model"] == "qwen-vl-max-latest"
+
+
+def test_layer0_visual_summary_invalid_payload_exposes_payload_shape():
+    runtime = get_knowledge_runtime()
+
+    class _InvalidPayloadLLMClient:
+        def generate_structured(self, **kwargs):
+            return {
+                "global_visual_summary": "整体有花瓣结构。",
+                "per_circle_summary": {"inner": "内圈明亮"},
+            }
+
+    assembler = runtime.layer0_assembler
+    assembler.llm_client = _InvalidPayloadLLMClient()
+
+    payload = assembler._build_vision_visual_summary(
+        image_path=_fixture_asset_path("IMG_5062.jpeg"),
+        circles={
+            "inner": {"observation_summary": "内圈黄色花瓣。"},
+            "middle": {"observation_summary": "中圈紫色花瓣。"},
+            "outer": {"observation_summary": "外圈绿色叶片。"},
+        },
+        generated=False,
+    )
+
+    assert payload["failure_reason"] == "layer0_visual_basis_incomplete"
+    assert "per_circle_summary" in payload["failure_detail"]["payload_keys"]
+    assert payload["failure_detail"]["per_circle_summary_keys"] == ["inner"]

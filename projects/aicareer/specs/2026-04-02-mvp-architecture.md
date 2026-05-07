@@ -11,4 +11,4 @@
 
 当前正式入口：
 
-- [MVP技术方案.md](projects/aicareer/specs/MVP技术方案.md)
+- [MVP技术方案.md](../../../projects/aicareer/specs/MVP技术方案.md)

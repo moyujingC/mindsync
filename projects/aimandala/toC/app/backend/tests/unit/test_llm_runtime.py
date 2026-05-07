@@ -5,6 +5,7 @@ import os
 import sys
 from pathlib import Path
 from unittest.mock import patch
+from urllib.error import URLError
 
 sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -32,7 +33,7 @@ class _FakeHTTPResponse:
 
 
 def test_create_llm_client_from_env_defaults_to_noop():
-    with patch.dict(os.environ, {}, clear=False):
+    with patch.dict(os.environ, {}, clear=True):
         client = create_llm_client_from_env()
 
     assert isinstance(client, NoopLLMClient)
@@ -277,3 +278,117 @@ def test_openai_compatible_llm_client_disables_thinking_for_vision_image_request
     assert len(calls) == 1
     assert calls[0]["thinking"] == {"type": "disabled"}
     assert "response_format" not in calls[0]
+
+
+def test_openai_compatible_llm_client_records_last_error_detail_on_request_failure():
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
+            "AIMANDALA_LLM_MODEL": "gpt-test",
+            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
+            "AIMANDALA_LLM_MAX_RETRIES": "0",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
+
+    with patch("app.core.llm.runtime.urlopen", side_effect=URLError("network down")):
+        result = client.generate_structured(
+            task="vision",
+            prompt="请生成视觉摘要",
+            schema={"type": "object"},
+        )
+
+    assert result is None
+    assert client.last_error_detail["kind"] == "url_error"
+    assert "network down" in client.last_error_detail["reason"]
+
+
+def test_openai_compatible_llm_client_records_attempt_trace_for_fallback_failure(tmp_path: Path):
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://primary.example.com/v1",
+            "AIMANDALA_LLM_MODEL": "primary-model",
+            "AIMANDALA_LLM_VISION_BASE_URL": "https://vision.example.com/v1",
+            "AIMANDALA_LLM_VISION_MODEL": "vision-primary",
+            "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL": "https://fallback.example.com/v1",
+            "AIMANDALA_LLM_VISION_FALLBACK_MODEL": "vision-fallback",
+            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
+            "AIMANDALA_LLM_MAX_RETRIES": "0",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
+
+    with patch("app.core.llm.runtime.urlopen", side_effect=URLError("network down")):
+        image_path = tmp_path / "sample01.jpg"
+        image_path.write_bytes(b"fake-image")
+
+        result = client.generate_structured(
+            task="vision",
+            prompt="请生成视觉摘要",
+            schema={"type": "object"},
+            image_path=str(image_path),
+        )
+
+    assert result is None
+    assert [item["model"] for item in client.last_attempt_trace] == [
+        "vision-primary",
+        "vision-fallback",
+    ]
+    assert all(item["result"] == "url_error" for item in client.last_attempt_trace)
+    assert all("network down" in item["reason"] for item in client.last_attempt_trace)
+
+
+def test_openai_compatible_llm_client_records_invalid_json_response_detail(tmp_path: Path):
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
+            "AIMANDALA_LLM_MODEL": "gpt-test",
+            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
+            "AIMANDALA_LLM_MAX_RETRIES": "0",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
+
+    class _Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "这是一段非 JSON 解释文本。" * 30,
+                            }
+                        }
+                    ]
+                }
+            ).encode("utf-8")
+
+    with patch("app.core.llm.runtime.urlopen", return_value=_Response()):
+        image_path = tmp_path / "sample01.jpg"
+        image_path.write_bytes(b"fake-image")
+        result = client.generate_structured(
+            task="vision",
+            prompt="请生成视觉摘要",
+            schema={"type": "object"},
+            image_path=str(image_path),
+        )
+
+    assert result is None
+    assert client.last_error_detail["kind"] == "invalid_json_response"
+    assert client.last_error_detail["response_length"] > 240
+    assert len(client.last_error_detail["response_preview"]) <= 240

@@ -1,5 +1,12 @@
 # Data
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/data/README.md
+
+
 这里放 `一镜一梳` To C 主产品当前主线所需的样本数据、示例输出或结构化输入。
 
 要求：

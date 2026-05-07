@@ -90,4 +90,4 @@
 
 - QA 条目已补齐到 review 版
 - 纸面验证已完成，详见：
-  [2026-04-03-paper-validation-report.md](projects/aicareer/qa/2026-04-03-paper-validation-report.md)
+  [2026-04-03-paper-validation-report.md](./2026-04-03-paper-validation-report.md)

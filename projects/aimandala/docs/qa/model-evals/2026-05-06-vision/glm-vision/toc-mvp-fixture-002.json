@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "fixture_id": "toc-mvp-fixture-002",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 11714,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+  "output": {
+    "center_observation": "中心区域有明显的几何图案，颜色较为集中。",
+    "circle_boundaries": {
+      "inner": "内圈由五个圆形图案组成，每个图案都有相似的花卉设计。",
+      "middle": "中圈由蓝色和黄色的几何形状组成，与内圈的花卉图案形成对比。",
+      "outer": "外圈由棕色和米色的几何图案组成，与内圈和中圈形成明显的边界。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "绿色",
+      "紫色",
+      "蓝色",
+      "棕色"
+    ],
+    "structure_notes": [
+      "图案对称且均匀分布。",
+      "颜色搭配和谐，没有明显的拥挤或断裂。",
+      "层次分明，从中心到外圈有明显的层次变化。"
+    ],
+    "risk_flags": [
+      "无明显风险标志。"
+    ],
+    "confidence": "medium"
+  }
+}

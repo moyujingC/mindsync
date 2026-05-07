@@ -5,7 +5,7 @@
 > owner：Architect / Engineer
 > last_updated：2026-04-19
 > source_of_truth：projects/relayhub/PROJECT.md
-> 公司侧入口：[company/projects/RelayHub/PROJECT.md](company/projects/RelayHub/PROJECT.md)
+> 公司侧入口：[company/projects/RelayHub/PROJECT.md](../../company/projects/RelayHub/PROJECT.md)
 
 这是 `RelayHub` 在 Monorepo 中的正式项目工作区入口。
 
@@ -72,17 +72,17 @@
 
 当前长期真理源默认从这些目录入口进入：
 
-- [specs/README.md](projects/relayhub/specs/README.md)
-- [tasks/README.md](projects/relayhub/tasks/README.md)
-- [qa/README.md](projects/relayhub/qa/README.md)
+- [specs/README.md](./specs/README.md)
+- [tasks/README.md](./tasks/README.md)
+- [qa/README.md](./qa/README.md)
 
 ## 6. 当前窗口入口
 
 当前执行窗口默认从这些入口进入：
 
-- [2026-04-16-RelayHub-v1-架构与产品定义.md](projects/relayhub/specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
-- [2026-04-16-v1-最小立项与实现准备任务.md](projects/relayhub/tasks/2026-04-16-v1-最小立项与实现准备任务.md)
-- [2026-04-16-v1-qa-basis.md](projects/relayhub/qa/2026-04-16-v1-qa-basis.md)
+- [2026-04-16-RelayHub-v1-架构与产品定义.md](./specs/2026-04-16-RelayHub-v1-架构与产品定义.md)
+- [2026-04-16-v1-最小立项与实现准备任务.md](./tasks/2026-04-16-v1-最小立项与实现准备任务.md)
+- [2026-04-16-v1-qa-basis.md](./qa/2026-04-16-v1-qa-basis.md)
 
 ## 7. 目录说明
 

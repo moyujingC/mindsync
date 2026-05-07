@@ -1,5 +1,11 @@
 # Delivery
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer / Test / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/docs/delivery/README.md
+
 这里放 `一镜一梳` 当前正式交付记录。
 
 `delivery` 不是实现前置文档，而是实现和验证之后的正式收口产物。
@@ -8,8 +14,8 @@
 
 当前只保留以下交付文档：
 
-1. [2026-05-03-多项目-heartbeat-运行态落地交付记录.md](2026-05-03-多项目-heartbeat-运行态落地交付记录.md)
-2. [2026-05-03-Lite-Pro-报告生成修复交付记录.md](2026-05-03-Lite-Pro-报告生成修复交付记录.md)
+1. [2026-05-06-mvp-视觉模型默认接入交付记录.md](2026-05-06-mvp-视觉模型默认接入交付记录.md)
+2. [2026-05-03-多项目-heartbeat-运行态落地交付记录.md](2026-05-03-多项目-heartbeat-运行态落地交付记录.md)
 3. [2026-04-18-报告链路保真重构交付记录.md](2026-04-18-报告链路保真重构交付记录.md)
 4. [2026-04-19-Batch-A-runtime-evidence-交付记录.md](2026-04-19-Batch-A-runtime-evidence-交付记录.md)
 5. [2026-04-19-Batch-B-narrative-plan-交付记录.md](2026-04-19-Batch-B-narrative-plan-交付记录.md)
@@ -24,10 +30,10 @@
 
 分工如下：
 
+- `2026-05-06-mvp-视觉模型默认接入交付记录.md`
+  - 收束 MVP 本地 / staging 默认视觉模型接入的最终交付口径、fallback 策略、验证结论和给 staging / release 的 handoff；不等同于生产切换批准
 - `2026-05-03-多项目-heartbeat-运行态落地交付记录.md`
   - 收束 automation 节点把单项目 heartbeat 升级为多项目 heartbeat 的真实上线结果、残留风险与后续 checkout 治理 handoff
-- `2026-05-03-Lite-Pro-报告生成修复交付记录.md`
-  - 收束 Lite / Pro 报告生成修复、回归测试与 golden 重导结果
 - `2026-04-18-报告链路保真重构交付记录.md`
   - 收束这轮重大重构的母文档、阶段状态、验证结论和后续 handoff
 - `2026-04-19-Batch-A-runtime-evidence-交付记录.md`

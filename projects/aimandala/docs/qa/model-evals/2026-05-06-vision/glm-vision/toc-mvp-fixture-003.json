@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "fixture_id": "toc-mvp-fixture-003",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 12412,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个明显的蓝色圆点，周围环绕着黄色和橙色的图案，呈现出一种放射状的设计。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，以蓝色和黄色为主。",
+      "middle": "中圈边界较为模糊，颜色过渡自然。",
+      "outer": "外圈边界清晰，以绿色和黄色为主。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "绿色",
+      "蓝色",
+      "橙色"
+    ],
+    "structure_notes": [
+      "图案对称性高，层次分明。",
+      "颜色搭配和谐，没有明显的拥挤或断裂现象。"
+    ],
+    "risk_flags": [
+      "无明显的风险标志。"
+    ],
+    "confidence": "high"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "round_id": "round-003",
+  "round_index": 3,
+  "fixture_id": "toc-mvp-fixture-003",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 14806,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+  "output": {
+    "center_observation": "画面中心是一个由橙色、黄色和蓝色构成的复杂几何图案，呈放射状结构，周围环绕着紫色花瓣状区域，整体呈现高度对称性。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，由中心彩色几何图案向外延伸的紫色花瓣状结构界定，形成明显的视觉焦点。",
+      "middle": "中圈边界可见，由灰色与浅蓝色交替的菱形结构组成，呈现出规则的辐射状排列，与内圈有明显分界。",
+      "outer": "外圈边界完整，由绿色、黄色和浅蓝色组成的重复叶片状图案构成，边缘清晰，覆盖整个圆形画布。"
+    },
+    "dominant_colors": [
+      "橙色",
+      "黄色",
+      "紫色",
+      "绿色",
+      "蓝色",
+      "灰色"
+    ],
+    "structure_notes": [
+      "整体结构高度对称，呈现典型的曼陀罗式放射布局。",
+      "颜色分布均匀，层次分明，从中心向外逐层展开。",
+      "无明显断裂或偏移，各圈层之间过渡自然。",
+      "留白较少，大部分区域被颜色填充，但线条清晰，未出现拥挤感。",
+      "中心区域色彩集中且明亮，吸引视觉焦点。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

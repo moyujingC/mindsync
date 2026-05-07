@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-001",
+  "round_index": 1,
+  "fixture_id": "toc-mvp-fixture-005",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 10552,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+  "output": {
+    "center_observation": "中心区域以紫色和黄色为主，呈现出对称的花瓣状图案。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，图案密集且对称。",
+      "middle": "中圈边界明显，图案逐渐向外扩展。",
+      "outer": "外圈边界模糊，图案较为分散。"
+    },
+    "dominant_colors": [
+      "紫色",
+      "黄色",
+      "绿色",
+      "蓝色"
+    ],
+    "structure_notes": [
+      "图案从中心向外辐射，层次分明。",
+      "颜色过渡自然，无明显断裂或偏移。",
+      "整体结构均衡，无明显拥挤或留白。"
+    ],
+    "risk_flags": [
+      "无明显的风险标志。"
+    ],
+    "confidence": "high"
+  }
+}

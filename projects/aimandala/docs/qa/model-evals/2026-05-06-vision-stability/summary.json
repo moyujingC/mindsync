@@ -1,0 +1,2908 @@
+{
+  "ok": true,
+  "mode": "execute",
+  "fixture_count": 9,
+  "candidate_count": 3,
+  "round_count": 3,
+  "result_count": 81,
+  "output_dir": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability",
+  "results": [
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 10726,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个红色星形图案，周围环绕着黄色区域，黄色区域内有绿色和橙色的弧形图案，以及多个紫色、黄色、蓝色组成的圆形图案。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心红色星形为核心，包含周围的黄色区域及附近的紫色圆形图案，边界相对模糊，主要由中心的星形和周围的图案构成。",
+          "middle": "中圈包含多个紫色、黄色、蓝色的圆形图案，以及绿色、橙色的弧形图案，向外延伸至带有绿色、黄色、橙色装饰的区域，边界通过颜色和图案的变化来区分。",
+          "outer": "外圈是最外层的蓝色波浪形图案和带有绿色、黄色、橙色的装饰性叶片状图案，边界清晰，与背景白色形成明显对比。"
+        },
+        "dominant_colors": [
+          "蓝色",
+          "黄色",
+          "紫色",
+          "绿色",
+          "橙色",
+          "红色"
+        ],
+        "structure_notes": [
+          "中心区域颜色对比鲜明，红色星形在黄色背景上突出，周围紫色圆形图案对称分布。",
+          "中圈的紫色圆形图案内部有黄色和蓝色的装饰，图案对称且排列整齐，没有明显的拥挤或断裂。",
+          "外圈的蓝色波浪形图案和橙色、绿色的叶片状图案层次分明，图案之间的留白较少，但整体结构紧凑有序。",
+          "颜色分布均匀，各圈层的颜色块过渡自然，没有明显的偏移。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 12004,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个带有蓝色十字图案的棕色装饰结构，周围环绕着黄色区域和蓝色小花，整体呈现对称的中心装饰，颜色以棕色、黄色、蓝色为主。",
+        "circle_boundaries": {
+          "inner": "内圈可能是中心的棕色十字装饰及其紧邻的黄色区域，边界相对清晰，包含中心图案和周围的蓝色小花。",
+          "middle": "中圈由五个浅蓝色圆形图案组成，每个圆形内有花卉图案，圆形之间通过蓝色小花和黄色区域连接，边界为浅蓝色圆形的轮廓。",
+          "outer": "外圈是浅蓝色圆形外侧的棕色十字形装饰（类似几何图案），分布在画面的左上、右上、右下、左下等位置，边界为这些棕色几何图案的外沿，与白色背景相邻。"
+        },
+        "dominant_colors": [
+          "浅蓝色",
+          "绿色",
+          "黄色",
+          "棕色",
+          "蓝色",
+          "紫色",
+          "粉色"
+        ],
+        "structure_notes": [
+          "五个浅蓝色圆形（中圈）呈对称分布，每个圆形内的花卉图案有细微差异但整体风格一致。",
+          "中心区域（内圈）的棕色装饰与蓝色十字、黄色背景形成层次，蓝色小花连接中圈的浅蓝色圆形。",
+          "外圈的棕色几何图案（十字形）与中圈圆形外侧相邻，白色背景作为最外层，整体结构对称，无明显断裂或偏移。",
+          "颜色块分布清晰，浅蓝色圆形内的绿色叶子、黄色花朵、紫色/粉色花苞，中心的棕色、黄色、蓝色，外圈的棕色几何图案，层次分明。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 10208,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个蓝色的小圆点，周围环绕着黄橙色的网格状图案，形成内圈的核心区域，整体对称且色彩鲜艳。",
+        "circle_boundaries": {
+          "inner": "内圈以蓝色圆点为中心，黄橙色网格图案为主要部分，边界清晰，与中圈的紫色区域有明显的色彩和图案过渡。",
+          "middle": "中圈主要由紫色的花瓣状图案和棕色的装饰性轮廓组成，向外过渡到包含蓝色、灰色、粉色等色彩的区域，边界通过色彩和图案的变化来区分，相对清晰。",
+          "outer": "外圈包含绿色、黄色、浅蓝色、米色等色彩的对称图案，整体呈圆形，边界为黑色的轮廓线，与白色背景形成明显对比，边界清晰。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "蓝色",
+          "紫色",
+          "粉色",
+          "绿色",
+          "浅蓝色",
+          "米色",
+          "灰色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "整体结构对称，各圈层图案重复且有序，无明显断裂或偏移。",
+          "内圈色彩鲜艳（黄、橙、蓝），中圈以紫色和粉色为主，外圈色彩丰富（绿、黄、蓝、米色等），层次分明。",
+          "图案填充完整，无明显留白区域，各部分拥挤程度适中，线条清晰。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 13664,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个紫色星形图案（或星形装饰），背景为粉色区域，周围环绕着黄色、绿色、紫色等颜色的叶片状或曲线状图案，以及棕色的类似螺柱的装饰元素。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心紫色星形为核心，向外延伸至粉色区域及周边的黄色、绿色曲线图案，边界较模糊，主要由中心装饰和紧邻的彩色图案构成。",
+          "middle": "中圈范围涵盖了中间的绿色、黄色、蓝色叶片状图案，以及棕色螺柱装饰，向外延伸至更外围的彩色几何图形（如三角形、扇形），边界由不同颜色图案的过渡区域构成，可见度中等。",
+          "outer": "外圈主要是最外围的蓝色、绿色、黄色的扇形/三角形图案，以及灰色的小圆形（或鹅卵石状）装饰，围绕在整体图案的最外层，边界相对清晰，与白色背景形成对比。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "粉色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "棕色",
+          "灰色",
+          "白色"
+        ],
+        "structure_notes": [
+          "整体为对称的曼陀罗结构，中心向外呈辐射状分布图案。",
+          "内圈中心图案（紫色星形+粉色背景）与中圈的曲线/叶片图案、外圈的几何图形（扇形、三角形）和灰色小圆形形成层次。",
+          "颜色块之间过渡自然，无明显拥挤，但图案元素（如叶片、螺柱、几何图形）分布紧密。",
+          "各圈层的图案风格有变化：内圈偏中心装饰，中圈偏曲线/叶片，外圈偏几何图形和灰色装饰。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 12071,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个粉色和紫色相间的星形图案，周围环绕着橙色的花瓣状图形，再外层是绿色的环形区域。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心粉色星形图案为核心，向外到绿色环形区域，边界清晰，包含橙色花瓣和绿色背景。",
+          "middle": "中圈从绿色环形区域向外到蓝色环形区域，包含黄色星形和橙色菱形图案，边界较清晰。",
+          "outer": "外圈从蓝色环形区域向外到最外层的粉色环形区域，包含绿色叶子状、黄色菱形和橙色菱形图案，边界清晰，整体为圆形。"
+        },
+        "dominant_colors": [
+          "粉色",
+          "紫色",
+          "橙色",
+          "绿色",
+          "黄色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "各圈层图案层次分明，内圈以中心星形和橙色花瓣为主，中圈为黄色星形和蓝色区域，外圈为绿色叶子、黄色和橙色菱形及粉色背景。",
+          "图案对称分布，颜色搭配丰富但不杂乱，各区域填充完整，无明显断裂或偏移。",
+          "内圈绿色区域与中圈黄色星形区域边界清晰，中圈蓝色区域与外圈粉色区域边界也较清晰。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 15787,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个浅橙色（或米黄色）的圆形，周围有紫色和粉色的几何图形环绕，中心区域的几何图案呈现对称的星形结构，线条将中心圆形与周围的多边形连接。",
+        "circle_boundaries": {
+          "inner": "内圈大致是中心圆形及周围的紫色、粉色几何区域，边界由黑色线条和彩色块的边缘构成，可见度高，与中圈的星形图案衔接。",
+          "middle": "中圈包含彩色的星形（绿色、蓝色、紫色等三角形和菱形）以及黄色背景上的星星、月亮图案，边界与内圈的几何图形和外圈的装饰图案区分，可见度高，结构对称。",
+          "outer": "外圈是最外侧的绿色和蓝色相间的锯齿（或箭头）状装饰环，围绕整个图案，边界清晰，与中圈的黄色背景区域衔接，可见度高。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "紫色",
+          "粉色",
+          "橙色（浅）",
+          "棕色"
+        ],
+        "structure_notes": [
+          "整体结构为对称的圆形曼陀罗，内圈几何图形（星形、多边形）对称分布，线条规整；",
+          "中圈的星星（粉色、紫色）、月亮（黄色）和圆形（黄色）在黄色背景上均匀排列，与星形图案的角对齐；",
+          "外圈的绿色和蓝色装饰图案呈重复的锯齿状，环绕整个图案，无断裂或偏移；",
+          "颜色块分布均匀，无明显留白或拥挤，层次分明（内圈几何、中圈图案、外圈装饰）。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 10622,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "中心是明亮的黄色区域，有紫色的花瓣状图案和多个小的圆形（类似眼睛）装饰，整体呈现对称的放射状结构，图案密集且复杂。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心黄色和紫色图案为核心，边界模糊，主要包含黄色背景上的紫色、绿色和橙色图案，图案紧密排列。",
+          "middle": "中圈范围从内圈向外扩展，包含绿色的叶子状、橙色的卷曲图案以及棕色的几何图形（带白色方块），背景为浅绿色，图案密度适中。",
+          "outer": "外圈靠近边缘，主要是蓝色的波浪形图案、绿色的叶子状图案和棕色几何图形，背景为白色（纸张颜色），图案相对中圈更稀疏，边界与纸张边缘衔接，整体呈圆形轮廓。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "绿色",
+          "橙色",
+          "棕色",
+          "蓝色",
+          "白色",
+          "浅绿色"
+        ],
+        "structure_notes": [
+          "整体为对称的圆形曼陀罗结构，从中心向外呈放射状分布不同图案",
+          "内圈图案密集，颜色对比强烈（黄、紫、绿、橙）",
+          "中圈和外圈图案重复且有规律，颜色层次分明（浅绿背景过渡到白色背景）",
+          "无明显断裂或偏移，图案衔接自然，对称性良好"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 11160,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个黄色和浅绿色相间的八瓣花形图案，周围环绕着浅蓝色的几何框架和粉色区域，八瓣花的中心有橙色小三角装饰，整体结构对称。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心八瓣花为核心，向外延伸至浅蓝色的几何方形框架内，边界相对清晰，包含粉色、浅蓝色和绿色的花瓣状图案。",
+          "middle": "中圈从内圈的几何框架向外，覆盖到黄色、绿色的花瓣状图案以及蓝色的几何区域，边界与内圈的几何结构和外圈的装饰元素过渡，可见程度高，图案复杂。",
+          "outer": "外圈是最外层的浅蓝色区域，边缘有粉色圆环，分布着紫色圆点和紫色花朵装饰，边界清晰，与中圈的黄色、绿色图案形成层次。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "浅蓝色",
+          "粉色",
+          "紫色",
+          "橙色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "整体结构高度对称，从中心向外呈现三层圆形层次。",
+          "内圈有几何方形框架和花瓣图案，颜色以浅蓝、粉、黄绿为主。",
+          "中圈有黄色、绿色的花瓣状图案，夹杂橙色星形装饰，还有蓝色几何块和黄色方形图案。",
+          "外圈是浅蓝色背景，边缘粉色圆环，有紫色圆点和花朵装饰，花朵内有橙色星形。",
+          "各圈之间通过颜色和图案类型（几何、花瓣、装饰）区分，层次分明，无明显断裂或偏移。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 11611,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "中心是一个黄色圆点，周围环绕橙色放射状图案，被白色圆环和红色小圆环包围，整体构成对称的核心区域，视觉焦点明确。",
+        "circle_boundaries": {
+          "inner": "内圈以中心黄色圆点及橙色放射区为核心，边界由白色圆环和红色小圆环构成，范围较小且图案密集。",
+          "middle": "中圈包含绿色叶片状图案和黄橙相间的花瓣状结构，围绕内圈分布，边界与外圈的绿色大叶片和蓝色图案衔接，可见度高。",
+          "outer": "外圈由绿色大叶片、蓝色几何图案和浅绿色小叶片组成，位于最外层，边界清晰，与背景白色形成对比。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "白色",
+          "红色"
+        ],
+        "structure_notes": [
+          "整体结构对称，各圈层图案重复且有序，无明显断裂或偏移。",
+          "内圈图案最密集，中圈和外圈图案逐渐扩展，层次分明。",
+          "颜色块分布均匀，各圈层颜色区分明显，留白主要在背景和图案间隙。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/doubao-vision/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 15121,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由红色线条构成的星形图案，周围环绕着黄色背景，形成视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈由六个紫色与黄色相间的圆形图案组成，排列成环状，边界清晰，结构对称。",
+          "middle": "中圈包含绿色、橙色和蓝色的波浪形及叶片状元素，围绕内圈延伸，边界较为明显但部分区域有重叠。",
+          "outer": "外圈由蓝色波浪形图案构成，形成外围边界，整体轮廓完整，但边缘略显不规则。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "蓝色",
+          "绿色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体结构呈高度对称的放射状布局，具有明显的三圈层次。",
+          "内圈图案重复性强，每个单元包含星形和几何图形组合。",
+          "中圈元素呈现自然形态（如叶片），与内圈的几何风格形成对比。",
+          "外圈以波浪线为主，表现出动态感，但部分区域颜色过渡较模糊。",
+          "中心区域留白较少，色彩密集，视觉冲击力强。",
+          "无明显断裂或偏移，各圈层之间连接紧密。"
+        ],
+        "risk_flags": [
+          "外圈边缘存在轻微不规则，可能影响整体平衡感。",
+          "中圈与外圈交界处颜色过渡不够平滑，可能存在视觉拥挤。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 17553,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由棕色、黄色和蓝色构成的星形图案，周围环绕着六个蓝色小花，整体呈现对称布局。",
+        "circle_boundaries": {
+          "inner": "内圈由中心星形图案及其周边的蓝色小花组成，边界清晰，呈放射状结构。",
+          "middle": "中圈由六个圆形区域构成，每个圆形内包含花卉图案，这些圆形均匀分布于中心周围，边界明显。",
+          "outer": "外圈由连接各圆形之间的几何图案（十字形）构成，部分延伸至画面边缘，边界较为清晰但略显松散。"
+        },
+        "dominant_colors": [
+          "浅蓝",
+          "绿色",
+          "黄色",
+          "棕色",
+          "紫色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "画面整体呈六重对称结构，具有高度的秩序感。",
+          "五个主要圆形区域分布在中心周围，形成环状排列。",
+          "每个圆形内部有相似的花卉图案，表现出重复性与一致性。",
+          "中心区域颜色较密集，向外逐渐过渡到更开放的空间。",
+          "留白区域集中在圆形之间及外圈边缘，未完全填满。",
+          "无明显断裂或偏移，层次分明，从中心向外逐层展开。"
+        ],
+        "risk_flags": [
+          "外圈几何图案与圆形之间的连接处存在轻微不连续，可能影响整体完整性感知。",
+          "部分圆形边缘略有模糊，可能因绘制工具限制导致。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 15803,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由橙色、黄色和蓝色构成的复杂几何图案，呈放射状结构，周围环绕着紫色花瓣状区域，整体对称且清晰。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心彩色几何图案向外延伸至紫色花瓣区域，形成明确的第一层结构。",
+          "middle": "中圈边界明显，由紫色花瓣过渡到灰蓝色与绿色交错的叶状图案，层次分明。",
+          "outer": "外圈边界完整，由绿色、黄色和浅蓝色组成的重复图案构成，接近画纸边缘，轮廓清晰。"
+        },
+        "dominant_colors": [
+          "橙色",
+          "黄色",
+          "紫色",
+          "绿色",
+          "蓝色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "整体呈高度对称的圆形结构，具有明显的三圈分层特征。",
+          "中心区域色彩密集，向外逐渐扩展为重复的几何与植物形态图案。",
+          "各圈之间有清晰的过渡带，无明显断裂或偏移。",
+          "留白较少，大部分区域被颜色填充，但线条清晰，未出现拥挤感。",
+          "图案具有明显的层次变化，从中心向外呈现出由复杂到规律重复的渐变。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 15814,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个粉色背景的区域，其中包含一个紫色星形图案，星形中心为深紫色圆点，整体位于视觉焦点位置。",
+        "circle_boundaries": {
+          "inner": "内圈由中心星形向外延伸的黄色与紫色交织的花瓣状结构构成，边界清晰，呈放射状分布。",
+          "middle": "中圈由绿色、蓝色和黄色叶片状元素组成，形成环绕中心的密集层，边界较为明确但部分区域有轻微重叠。",
+          "outer": "外圈由蓝绿色三角形和灰色小圆点交替排列构成，形成环状边界，整体轮廓完整且可见度高。"
+        },
+        "dominant_colors": [
+          "绿色",
+          "蓝色",
+          "黄色",
+          "紫色",
+          "粉色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "整体构图对称，呈现明显的三圈层次结构。",
+          "内圈以星形为核心，向外辐射出黄紫相间的花瓣结构。",
+          "中圈由多种植物形态元素填充，颜色丰富，密度较高。",
+          "外圈由几何形状（三角形）和点状元素构成，形成清晰的外围边界。",
+          "各圈之间存在过渡区域，无明显断裂或偏移。",
+          "留白较少，整体填满率高，色彩层次分明。"
+        ],
+        "risk_flags": [
+          "中圈部分区域颜色叠加较多，可能存在视觉拥挤现象。",
+          "外圈灰色点状元素分布不完全均匀，略显松散。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 19174,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由粉紫色和深紫色构成的星形图案，呈放射状对称分布，周围环绕着橙黄色的花瓣状元素，整体结构清晰且高度对称。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由绿色环带包围中心星形图案，形成明确的内层区域。",
+          "middle": "中圈边界明显，由蓝色与黄色交替组成的几何星形图案构成，层次分明，与内外圈有良好区分。",
+          "outer": "外圈边界完整，由紫色背景上的绿色叶片状图案与黄色闪电状线条组成，轮廓清晰，覆盖整个圆形范围。"
+        },
+        "dominant_colors": [
+          "粉色",
+          "紫色",
+          "黄色",
+          "蓝色",
+          "绿色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体构图呈现高度对称性，以中心点为轴心逐层向外扩展。",
+          "各圈之间有明显的颜色与图案分隔，层次清晰。",
+          "内圈至外圈的颜色渐变自然，从暖色（粉紫）过渡到冷色（蓝绿）再回到柔和色调（紫粉）。",
+          "无明显断裂或偏移，所有图案均保持在圆周内，未出现溢出或错位现象。",
+          "留白极少，几乎每个区域都被填充，但填充均匀，无拥挤感。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 18869,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由多个同心几何图形构成的复杂结构，最内层为一个浅黄色圆形，周围环绕着放射状线条，形成类似太阳光芒的效果。该区域被紫色和蓝色的三角形与菱形图案包围，整体呈现出对称且稳定的视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由多个嵌套的几何图形（如三角形、菱形）构成，颜色以紫色、绿色、蓝色为主，形成明显的层次感。",
+          "middle": "中圈边界可见，呈淡黄色背景，分布有粉色星星、黄色月亮和圆形符号，排列规律，围绕中心结构均匀分布。",
+          "outer": "外圈边界清晰，由绿色与蓝色相间的锯齿状图案组成，形成连续的环形装饰带，完整包裹整个图像。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "蓝色",
+          "绿色",
+          "黄色",
+          "粉色"
+        ],
+        "structure_notes": [
+          "整体构图高度对称，呈现典型的曼陀罗结构。",
+          "中心区域具有强烈的视觉焦点，由多层嵌套几何图形构成。",
+          "中圈元素（星星、月亮）分布均匀，未出现明显偏移或断裂。",
+          "外圈图案连续且完整，无明显留白或中断。",
+          "颜色过渡自然，各圈层之间有明确的分界线。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 10857,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由紫色花瓣状图形组成的星形结构，周围环绕着黄色放射状线条，形成清晰的视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈以紫色星形为核心，向外延伸出黄色放射线，边界清晰，呈对称分布。",
+          "middle": "中圈包含橙色卷曲图案、绿色波浪形元素和棕色几何图形，边界较为明显，但部分区域与内圈衔接紧密，略有融合。",
+          "outer": "外圈由蓝色波浪形图案和绿色叶片状元素构成，边缘略显模糊，整体呈圆形轮廓，但局部有轻微不规则。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "整体构图呈高度对称的圆形结构，具有明显的三圈层次。",
+          "内圈以中心星形为基点，向外辐射，结构稳定。",
+          "中圈元素丰富，包括卷曲、波浪和几何形状，排列有序但密度较高。",
+          "外圈颜色较浅，主要由蓝色和绿色构成，与中圈形成对比。",
+          "留白较少，各区域填充完整，无明显断裂或偏移。",
+          "色彩过渡自然，层次分明，无显著拥挤感。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 18294,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由黄色花瓣状图案构成的对称结构，周围环绕着浅蓝色和粉色的几何边框，整体呈现出高度对称的视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心的黄色花瓣图案与浅蓝色方形边框共同构成，形成一个明确的同心圆核心区域。",
+          "middle": "中圈边界较为明显，由绿色与黄色交替的叶状图案组成，围绕内圈向外扩展，具有较强的层次感。",
+          "outer": "外圈边界清晰，由粉红色的外环线界定，外围点缀有紫色小圆点和星形图案，整体轮廓完整。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "浅蓝色",
+          "绿色",
+          "粉色",
+          "紫色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体结构高度对称，呈四重对称布局，中心向四周辐射。",
+          "内圈以几何图形为主，中圈以有机叶状图案为主，外圈以装饰性元素为主，表现出明显的层次变化。",
+          "颜色分布均匀，无明显拥挤或断裂现象。",
+          "四个角落存在重复的蓝色方块与米色格子组合，可能代表某种结构性符号。",
+          "外圈边缘有规律分布的紫色圆点和星形图案，增强整体的节奏感。"
+        ],
+        "risk_flags": [
+          "无明显视觉异常或断裂",
+          "无显著偏移或失衡现象",
+          "所有圈层边界清晰，未见模糊或缺失"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 14081,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个黄色圆形，周围环绕着橙色放射状线条，形成类似太阳的图案，外围有一圈白色区域，再外是橙色环形边框，整体结构清晰且对称。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心黄色圆点和橙色放射线构成，外围有白色环带，结构完整。",
+          "middle": "中圈可见，由绿色与橙色交替的花瓣状结构组成，边界明显，呈放射状分布。",
+          "outer": "外圈边界较宽，包含蓝色、绿色和浅绿色的叶状结构，轮廓清晰，整体对称。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "白色"
+        ],
+        "structure_notes": [
+          "整体呈现高度对称的放射性结构，符合三圈曼陀罗的基本布局。",
+          "内圈颜色明亮，层次分明，具有视觉焦点作用。",
+          "中圈由多层花瓣构成，颜色过渡自然，无明显断裂或偏移。",
+          "外圈叶片状结构均匀分布，颜色搭配协调，留白较少但未过度拥挤。",
+          "各圈之间有明确的分界线，层次变化清晰。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/qwen-vl/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9653,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的星形图案，周围环绕着多个对称的几何形状。",
+        "circle_boundaries": {
+          "inner": "内圈由星形图案和周围的几何形状组成，边界清晰。",
+          "middle": "中圈由多个对称的几何形状组成，边界较为明显。",
+          "outer": "外圈由波浪形的图案组成，边界模糊。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "蓝色",
+          "绿色"
+        ],
+        "structure_notes": [
+          "图案对称性高",
+          "颜色分布均匀",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9781,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的十字形图案，周围环绕着蓝色和黄色的元素。",
+        "circle_boundaries": {
+          "inner": "内圈由五个圆形图案组成，每个图案都有相似的花卉设计。",
+          "middle": "中圈由棕色和蓝色的几何形状组成，形成了一个复杂的图案。",
+          "outer": "外圈由一系列棕色和蓝色的几何形状组成，看起来像是一种边框或框架。"
+        },
+        "dominant_colors": [
+          "蓝色",
+          "黄色",
+          "绿色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "图案对称且平衡。",
+          "颜色使用鲜艳且对比明显。",
+          "设计细节丰富，但整体和谐。"
+        ],
+        "risk_flags": [
+          "没有明显的风险标志。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8264,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的蓝色圆点，周围环绕着黄色和橙色的图案。",
+        "circle_boundaries": {
+          "inner": "清晰",
+          "middle": "清晰",
+          "outer": "清晰"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "蓝色",
+          "绿色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色渐变",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9178,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个紫色的星形图案，周围环绕着绿色和黄色的叶子状图案。",
+        "circle_boundaries": {
+          "inner": "内圈由紫色星形和周围的叶子状图案组成。",
+          "middle": "中圈由黄色和绿色的叶子状图案组成。",
+          "outer": "外圈由蓝色、绿色和黄色的扇形图案组成。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "绿色",
+          "黄色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色分布均匀",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 10552,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "中心区域以紫色和黄色为主，呈现出对称的花瓣状图案。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，图案密集且对称。",
+          "middle": "中圈边界明显，图案逐渐向外扩展。",
+          "outer": "外圈边界模糊，图案较为分散。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "黄色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案从中心向外辐射，层次分明。",
+          "颜色过渡自然，无明显断裂或偏移。",
+          "整体结构均衡，无明显拥挤或留白。"
+        ],
+        "risk_flags": [
+          "无明显的风险标志。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9755,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的几何图案，由多个重叠的三角形和星形组成，颜色丰富。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由复杂的几何图形构成。",
+          "middle": "中圈边界由一系列星形和月亮图案组成，边界较为明显。",
+          "outer": "外圈边界由绿色和蓝色的叶子图案构成，边界清晰可见。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "图案结构对称，层次分明。",
+          "中心区域图案复杂，周围环绕着多个层次的图案。",
+          "颜色分布均匀，没有明显的拥挤或断裂。"
+        ],
+        "risk_flags": [
+          "无明显的风险标志。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8134,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "中心区域以黄色为主，具有对称的图案和放射状结构。",
+        "circle_boundaries": {
+          "inner": "清晰，以黄色和紫色为主。",
+          "middle": "明显，以绿色和橙色为主。",
+          "outer": "清晰，以蓝色和棕色为主。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "橙色",
+          "蓝色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "层次分明",
+          "色彩丰富"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9505,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个对称的花朵图案，周围有几何形状。",
+        "circle_boundaries": {
+          "inner": "清晰，有明确的几何图案。",
+          "middle": "清晰，有明显的颜色过渡。",
+          "outer": "清晰，有明确的边界线。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "蓝色",
+          "绿色",
+          "粉色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色过渡自然",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-001",
+      "round_index": 1,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 11381,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的黄色圆形，周围环绕着橙色和白色的图案。",
+        "circle_boundaries": {
+          "inner": "清晰可见",
+          "middle": "清晰可见",
+          "outer": "清晰可见"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "层次分明",
+          "颜色过渡自然"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-001/glm-vision/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 12242,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个红色星形图案，周围环绕着黄色区域，黄色区域内有绿色和橙色的弧形图案以及多个紫色、黄色、蓝色的圆形装饰",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心红色星形为核心，包含周围的黄色区域及附近的彩色圆形，边界相对模糊，主要由中心星形和邻近的装饰图案构成",
+          "middle": "中圈范围包含多个紫色、黄色、蓝色的圆形装饰以及它们周围的绿色、橙色弧形图案，向外延伸至带有绿色、橙色、黄色元素的叶片状图案，边界由这些中层装饰的分布范围确定",
+          "outer": "外圈由最外侧的蓝色波浪形图案和带有绿色、橙色、黄色的叶片状图案组成，覆盖画面的边缘部分，边界清晰，呈现出向外扩展的波浪形态"
+        },
+        "dominant_colors": [
+          "蓝色",
+          "黄色",
+          "紫色",
+          "绿色",
+          "橙色",
+          "红色"
+        ],
+        "structure_notes": [
+          "整体结构对称，呈曼陀罗样式，各圈层装饰图案重复且规律分布",
+          "内圈中心星形图案周围的黄色区域与中层彩色圆形装饰衔接自然，无明显断裂",
+          "中圈的彩色圆形装饰（紫色、黄色、蓝色）排列规整，形成环状结构",
+          "外圈的蓝色波浪形图案和叶片状图案（含绿、橙、黄元素）层次分明，围绕中圈分布",
+          "颜色块分布均匀，不同颜色区域边界清晰，无明显拥挤或偏移",
+          "各圈层的图案元素风格统一，装饰性强，图案之间的连接流畅"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 11895,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个带有蓝色十字的金色花纹图案，周围环绕着黄色区域和蓝色小花，整体处于五片圆形图案的中央交汇点。",
+        "circle_boundaries": {
+          "inner": "内圈可视为中心的金色十字及蓝色十字图案，边界相对紧凑，被黄色区域和蓝色小花围绕，可见程度高。",
+          "middle": "中圈大致是黄色填充区域，连接着五个浅蓝色圆形图案和中心图案，边界与五个圆形的外围轮廓及蓝色小花分布有关，可见程度中等。",
+          "outer": "外圈由五个浅蓝色圆形图案（带有花卉图案）和外围的棕色十字形图案组成，边界清晰，五个圆形分布在四周，外围棕色十字形图案在圆形外侧，可见程度高。"
+        },
+        "dominant_colors": [
+          "浅蓝色",
+          "黄色",
+          "绿色",
+          "黄色（花朵）",
+          "紫色",
+          "蓝色",
+          "棕色",
+          "白色"
+        ],
+        "structure_notes": [
+          "五个浅蓝色圆形图案（内有花卉、藤蔓等图案）呈环形分布在中心周围，图案有重复也有变化，如花朵数量、藤蔓形态等",
+          "中心区域有金色花纹和蓝色十字，周围黄色区域连接中心与外围圆形，蓝色小花分布在黄色区域和圆形之间",
+          "外围有棕色十字形图案，与中心金色花纹风格相似，整体结构对称但局部图案有细节差异",
+          "颜色块分布清晰，各区域色彩对比明显，无明显拥挤或断裂，层次分明（中心 - 黄色中圈 - 外围圆形及十字）"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 9010,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个蓝色小圆点，周围环绕着橙黄色的网格状图案，形成内圈的核心区域。",
+        "circle_boundaries": {
+          "inner": "内圈以蓝色圆点为中心，橙黄色网格图案为主要部分，边界大致在紫色花瓣状图案的内侧，较为清晰。",
+          "middle": "中圈由紫色花瓣状图案和周围的棕色装饰环组成，外侧边界与外圈的彩色图案（如蓝色、灰色、粉色等区域）相接，边界相对明确。",
+          "outer": "外圈是最外层的彩色图案，包含绿色、黄色、蓝色、橙色等区域，边界为整个圆形图案的外边缘，清晰可见。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "蓝色",
+          "紫色",
+          "绿色",
+          "粉色",
+          "灰色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "图案具有高度对称性，各区域的颜色和形状重复排列。",
+          "内圈的橙黄色网格图案与中圈的紫色花瓣图案层次分明，外圈的彩色图案（如绿色、黄色的几何图形）环绕在外。",
+          "各圈层之间的边界通过颜色和图案的变化来区分，没有明显的断裂或偏移。",
+          "整体结构紧凑，颜色填充均匀，没有明显的留白区域。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 12490,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个紫色星形图案（类似太阳或星芒），背景为浅粉色，位于整个图案的几何中心区域，周围环绕着黄、绿、紫等颜色的装饰性叶片或花瓣状图形",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心紫色星形为核心，向外延伸至浅粉色区域及周围的黄色、绿色叶片结构，边界较模糊，主要由中心图案和紧邻的装饰层构成",
+          "middle": "中圈范围覆盖了大部分彩色的叶片、蓝色花瓣状图形以及棕色的类似螺栓或装饰件的元素，边界从内圈外侧延伸至灰色小石块状图形的内侧，包含丰富的色彩和图案层次",
+          "outer": "外圈主要由灰色的小石块状图形（或类似圆形的装饰）和最外侧的彩色（蓝、绿、黄等）花瓣状图形构成，灰色图形形成一圈环绕的边界，外侧彩色图形向外扩展至画面边缘"
+        },
+        "dominant_colors": [
+          "紫色",
+          "粉色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "灰色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "整体图案呈对称的曼陀罗结构，中心向外辐射出多层装饰",
+          "内圈中心为紫色星形，粉色背景，周围有黄色、绿色的叶片状图案",
+          "中圈包含蓝色的花瓣状图形、棕色的螺栓状装饰以及绿色、黄色的叶片，图案密集且层次丰富",
+          "外圈有灰色的小圆形（石块状）装饰环绕，最外侧是蓝、绿、黄等颜色的花瓣状图形，与灰色图形交替分布",
+          "各圈层之间通过颜色和图案类型的变化形成明显的层次区分，整体对称且无明显断裂或偏移"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 10771,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个粉色的星形图案，周围环绕着橙色的花瓣状图形，中心区域色彩丰富且图案密集，呈现出对称的花纹结构。",
+        "circle_boundaries": {
+          "inner": "内圈大致以绿色区域为边界，包含中心的粉色星形和橙色花瓣图形，边界相对清晰，图案紧凑。",
+          "middle": "中圈以蓝色区域为边界，包含黄色的星形图案和蓝色的带花纹区域，与内圈和外圈的图案风格有明显区分，边界较清晰。",
+          "outer": "外圈以粉色区域为边界，包含绿色的叶子状图形、黄色的菱形和橙色的图形，图案相对内圈和中圈稍显松散，边界清晰。"
+        },
+        "dominant_colors": [
+          "粉色",
+          "绿色",
+          "黄色",
+          "蓝色",
+          "橙色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "整体图案对称，各圈层图案风格有变化，内圈图案密集，中圈和外圈相对有序。",
+          "颜色块分布均匀，无明显留白区域，图案连接紧密，无断裂或偏移现象。",
+          "各圈层之间层次分明，通过颜色和图案类型区分。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 11164,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个浅色（偏黄粉）的圆形，周围有紫色的几何图形（类似菱形或三角形拼接）环绕，中心区域的几何结构对称且层次分明，有线条分割成多个小区域。",
+        "circle_boundaries": {
+          "inner": "内圈大致是中心的几何图案（紫色、绿色、蓝色等几何图形组成的星形结构内部），边界由中心圆形向外的几何线条和图形构成，可见度高，结构紧密。",
+          "middle": "中圈是黄色背景区域，包含星星、月亮、太阳图案，外侧边界是带有蓝绿花纹的外圈内侧，中圈的图案（星星、月亮等）分布均匀，边界与内圈的几何图形和外圈的花纹区域有明显区分。",
+          "outer": "外圈是最外侧的蓝绿相间的花纹区域（类似锯齿或箭头状的图案），边界清晰，围绕整个中圈，与中圈的黄色背景形成明显颜色和图案差异。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "紫色",
+          "粉色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "中心区域几何结构对称，有多层嵌套的三角形、菱形，线条分割均匀，无明显断裂或偏移。",
+          "中圈黄色背景上的星星（粉色、紫色）、月亮（黄色）、太阳（黄色）图案分布对称，无拥挤感，排列规则。",
+          "外圈蓝绿花纹呈环形连续分布，无断裂，与中圈、内圈的层次分明，颜色过渡清晰。",
+          "整体结构为同心圆式的三层（内圈几何、中圈图案、外圈花纹），各层边界明确，图案对称。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 14890,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个明亮的黄色区域，周围环绕着紫色的花瓣状图案，中心区域还有几个棕色带白圈的圆点，整体呈现出对称的放射状结构。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心黄色区域为核心，向外延伸至紫色花瓣图案的边缘，主要包含黄色背景和紫色、棕色图案，边界相对清晰，图案密集。",
+          "middle": "中圈位于内圈外侧，从紫色花瓣图案的边缘到绿色叶子状图案和橙色卷曲图案的区域，颜色以黄色、绿色、橙色为主，图案包括绿色的叶子、橙色的卷曲纹和白色的火焰状纹，边界通过颜色和图案类型的变化来区分，可见程度较高。",
+          "outer": "外圈是最外层的区域，从绿色叶子状图案和橙色卷曲图案的外侧到蓝色的波浪状图案、棕色的几何图案（带白色方块和三角形），颜色有浅绿色背景、蓝色、棕色、绿色，图案包括蓝色波浪、棕色几何图形、绿色叶子，边界与中圈通过图案和颜色的进一步变化来界定，整体可见，图案分布相对中圈更靠外。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "绿色",
+          "橙色",
+          "蓝色",
+          "棕色",
+          "白色",
+          "浅绿色"
+        ],
+        "structure_notes": [
+          "整体结构对称，呈放射状分布，从中心向外圈图案逐渐丰富，层次分明。",
+          "内圈图案（紫色花瓣、棕色圆点）相对紧凑，中圈（绿色叶子、橙色卷曲、白色火焰）和外圈（蓝色波浪、棕色几何、绿色叶子）图案逐渐扩展，没有明显的断裂，各圈之间的过渡自然，通过颜色和图案类型的变化来区分层次。",
+          "颜色块分布均匀，各颜色在相应的圈层内有规律地重复，留白较少，主要是图案之间的间隙和浅绿色背景区域。",
+          "图案没有明显的偏移，整体围绕中心对称排列，拥挤程度在内圈较高，中圈和外圈相对适中，各圈的图案密度有变化，内圈图案密集，外圈图案分布相对稀疏但类型更多。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 13577,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "中心位置是一个由黄色和浅绿色组成的八瓣花形图案，被浅蓝色的几何框架包围，花形图案的中心有一个小的橙色星形细节。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心八瓣花为核心，向外延伸至浅蓝色的几何结构（类似回字或T字组合），边界相对清晰，包含粉色和浅绿色的花瓣状图案。",
+          "middle": "中圈从内圈的浅蓝色几何结构向外，覆盖到黄色和绿色的花瓣状图案，以及带有紫色星星和蓝色方块的区域，边界由这些图案的分布自然划分，可见程度较高。",
+          "outer": "外圈是最外层的蓝色区域，带有紫色圆点和粉色的圆环边界，图案包括黄色、绿色的星形花瓣和蓝色的方块、紫色的花形装饰，边界清晰，由最外层的粉色圆环和内部的图案区分。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "浅绿色",
+          "浅蓝色",
+          "粉色",
+          "紫色",
+          "橙色",
+          "蓝色（方块）"
+        ],
+        "structure_notes": [
+          "整体结构对称，从中心向外呈现三层（内、中、外）的图案层次，每层都有重复的几何和花瓣状图案。",
+          "内圈和中圈的浅蓝色几何框架（类似回字或T字）将图案分隔，形成清晰的层次。",
+          "外圈的紫色圆点均匀分布在粉色圆环内侧的蓝色区域，与内部的黄色、绿色花瓣图案形成对比。",
+          "各层之间的颜色过渡自然，图案元素（如星星、方块、花瓣）在各层重复出现但大小或细节有变化。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 11641,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "中心为一个黄色圆点，周围环绕橙色放射状线条和白色圆环，整体呈对称的曼陀罗图案核心区域，图案密集且色彩鲜艳。",
+        "circle_boundaries": {
+          "inner": "内圈以中心黄色圆点为核心，包含橙色放射环和白色圆环，边界清晰，被绿色叶片状图案环绕。",
+          "middle": "中圈由绿色叶片、橙色花瓣和黄色区域组成，叶片与花瓣交替排列，边界相对内圈向外扩展，与内圈、外圈衔接自然。",
+          "outer": "外圈主要是绿色大叶片、浅蓝色图案和浅绿色小叶片，分布在最外层，边界与中圈的橙色花瓣、绿色叶片衔接，整体呈对称的花瓣状向外延伸。"
+        },
+        "dominant_colors": [
+          "yellow",
+          "orange",
+          "green",
+          "blue",
+          "white"
+        ],
+        "structure_notes": [
+          "整体结构对称，呈曼陀罗图案，各圈层颜色区分明显。",
+          "内圈中心为黄色圆点，周围橙色放射线条和白色圆环，层次分明。",
+          "中圈由绿色叶片、橙色花瓣和黄色区域组成，叶片与花瓣交替排列，图案密集但无断裂。",
+          "外圈为绿色大叶片、浅蓝色图案和浅绿色小叶片，对称分布，与中圈衔接自然。",
+          "各颜色块分布均匀，无明显偏移，留白区域主要在图案外围的白色背景。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/doubao-vision/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 11416,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个红色星形图案，周围环绕着黄色背景区域，构成视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈由六个紫色与黄色相间的圆形图案组成，排列紧密，形成清晰的内层结构。",
+          "middle": "中圈由绿色、橙色和蓝色的弧形及叶片状元素构成，边界较为明显但略显复杂，连接内圈与外圈。",
+          "outer": "外圈由蓝色波浪形线条构成，边缘清晰，呈放射状向外延伸，形成完整的外围轮廓。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "蓝色",
+          "绿色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体结构对称且层次分明，具有高度的几何规律性。",
+          "内圈图案重复性强，呈现出六重对称性。",
+          "中圈元素过渡自然，颜色丰富，但部分区域存在轻微拥挤感。",
+          "外圈波浪线条流畅，边界完整，无明显断裂或偏移。",
+          "中心区域留白较少，但红色星形突出，成为视觉锚点。"
+        ],
+        "risk_flags": [
+          "中圈部分区域色彩密集，可能存在局部拥挤现象。",
+          "外圈边缘虽完整，但部分波浪线略显不规则，可能影响整体对称性感知。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 11704,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由棕色、黄色和蓝色构成的星形图案，周围环绕着四个蓝色小花，整体呈对称布局，位于视觉焦点位置。",
+        "circle_boundaries": {
+          "inner": "内圈为中央星形图案及其周围的蓝色小花区域，边界清晰，呈放射状结构。",
+          "middle": "中圈由五个浅蓝色圆形组成，每个圆内包含花卉图案，排列成花瓣状，边界明确且均匀分布。",
+          "outer": "外圈由五个棕色几何十字形图案构成，位于浅蓝色圆之间，形成外围框架，边界清晰但略显分离。"
+        },
+        "dominant_colors": [
+          "浅蓝",
+          "绿色",
+          "黄色",
+          "棕色",
+          "紫色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "整体构图呈现高度对称性，具有明显的放射状结构。",
+          "五个浅蓝色圆内图案一致，均为黄绿相间的花朵与藤蔓，表现出重复性和规律性。",
+          "棕色十字形图案在外部形成稳定框架，与内部圆圈形成层次分明的三圈结构。",
+          "中心区域色彩丰富，以黄色和蓝色为主，视觉上突出。",
+          "留白区域较少，整体较为饱满，无明显断裂或偏移现象。"
+        ],
+        "risk_flags": [
+          "外圈棕色十字形图案之间存在微小间隙，可能影响整体连贯性。",
+          "部分蓝色小花与中心图案连接处线条较细，可能存在轻微断裂风险。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 11088,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由橙色、黄色和蓝色构成的复杂几何图案，呈放射状结构，周围环绕着紫色花瓣状元素，整体对称且色彩集中。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心彩色几何图案与外围紫色花瓣构成，形成明确的视觉核心区域。",
+          "middle": "中圈边界可见，由灰色和浅蓝色的叶状结构组成，围绕内圈向外延伸，层次分明。",
+          "outer": "外圈边界完整，由绿色、黄色和浅蓝色交替构成的几何图案包围，整体圆形轮廓清晰。"
+        },
+        "dominant_colors": [
+          "橙色",
+          "黄色",
+          "紫色",
+          "绿色",
+          "蓝色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "整体图案高度对称，具有明显的放射性结构。",
+          "颜色分布均匀，从中心向外逐层展开，无明显断裂或偏移。",
+          "留白极少，各区域填充完整，无明显拥挤或空缺。",
+          "层次变化清晰，由内到外颜色和形状逐步过渡。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 13608,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个粉色背景的星形图案，星形为紫色，位于整个构图的正中央，周围被黄色和紫色的线条环绕，形成一个清晰的视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈由中心星形及其周围的黄色和紫色交织线条构成，边界清晰，呈放射状向外延伸。",
+          "middle": "中圈由绿色、蓝色和黄色的叶片状图案组成，围绕内圈分布，形成明显的层次感，边界较为连续但有局部断裂。",
+          "outer": "外圈由蓝绿色、黄色和灰色的小三角形及点状元素构成，呈环状排列，整体轮廓完整，但部分区域存在轻微不规则。"
+        },
+        "dominant_colors": [
+          "绿色",
+          "蓝色",
+          "黄色",
+          "紫色",
+          "粉色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "中心区域结构对称，星形图案明确，具有较强的视觉引导性。",
+          "中圈叶片图案重复性强，颜色渐变明显，表现出一定的层次变化。",
+          "外圈由小三角形和点状元素构成，形成类似花瓣或齿轮的装饰性边界。",
+          "整体构图呈现明显的三圈结构，各圈之间有清晰的过渡区域。",
+          "部分区域存在轻微的线条偏移，但未破坏整体对称性。",
+          "留白较少，色彩填充密集，无明显空白区域。"
+        ],
+        "risk_flags": [
+          "外圈部分区域存在轻微断裂，可能影响整体完整性。",
+          "中圈与外圈交界处颜色过渡略显突兀，可能存在视觉断层。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 9674,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由紫色和粉色构成的星形图案，周围环绕着橙黄色花瓣状元素，整体呈高度对称的放射状结构。",
+        "circle_boundaries": {
+          "inner": "内圈清晰可见，由绿色背景上的橙黄色花瓣状图案组成，边界分明，与中心星形图案紧密相连。",
+          "middle": "中圈由蓝色背景上的黄色星形和橙色菱形图案构成，边界清晰，与内圈形成明显分层。",
+          "outer": "外圈由粉色背景上的绿色叶片状和黄色锯齿状图案组成，边界完整，与中圈之间有明显的过渡区域。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "粉色",
+          "橙色",
+          "黄色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "整体结构高度对称，呈现典型的曼陀罗几何布局。",
+          "各圈层之间有明确的视觉分界，颜色和图案变化有序。",
+          "无明显断裂或偏移现象，层次清晰。",
+          "留白极少，图案密集但不拥挤，色彩分布均匀。",
+          "中心区域为视觉焦点，向外辐射的图案保持一致性。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 16635,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由放射状线条构成的圆形区域，呈淡黄色，周围环绕着紫色和蓝色的几何图案，形成对称的星形结构。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由紫色与蓝色交织的星形结构组成，围绕中心圆，形成明确的内部区域。",
+          "middle": "中圈边界可见，以黄色为底色，分布有粉色星星、紫色星星和黄月相符号，形成环绕内圈的装饰带。",
+          "outer": "外圈边界清晰，由绿色与蓝色交替的锯齿状图案构成，完整包围整个图像，形成外部框架。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "蓝色",
+          "绿色",
+          "紫色",
+          "粉色"
+        ],
+        "structure_notes": [
+          "整体结构高度对称，呈现出明显的三圈分层布局。",
+          "内圈以几何星形为主，中圈以天体符号（星星、月亮）点缀，外圈为重复的锯齿纹样。",
+          "颜色层次分明，从中心向外逐渐过渡，具有较强的视觉秩序感。",
+          "无明显断裂或偏移，各圈边界连续且完整。",
+          "留白较少，填充较满，但未出现拥挤感。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 17729,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由紫色花瓣状图形组成的星形结构，周围环绕着黄色的放射状线条，形成清晰的视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈以紫色和黄色为主，边界清晰，呈放射状向外延伸，构成核心图案。",
+          "middle": "中圈包含橙色卷曲形状、绿色波浪形图案以及棕色几何图形，边界较明显，但部分区域与内圈融合，过渡自然。",
+          "outer": "外圈主要由蓝色波浪形和棕色几何图案组成，边界较为模糊，有轻微向外扩散的趋势，整体轮廓接近圆形但略有不规则。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "整体构图对称性强，具有明显的放射性结构。",
+          "颜色分布均匀，层次分明，从中心向外围逐步展开。",
+          "存在多层嵌套图案，包括螺旋、波浪和几何元素，显示出良好的组织性。",
+          "留白较少，图案密集但未出现过度拥挤现象。",
+          "部分区域（如外圈）存在轻微断裂或偏移，可能影响整体圆润度。"
+        ],
+        "risk_flags": [
+          "外圈边界略显模糊，可能存在绘制时的控制偏差。",
+          "部分图案在边缘处有轻微重叠或错位，需注意细节一致性。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 12040,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由黄色花瓣状图形组成的对称图案，周围环绕着浅蓝色和粉色的几何结构，整体呈现高度对称性。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，以中心黄色花瓣图案为核心，向外延伸出浅蓝色方形框架，构成明确的内层区域。",
+          "middle": "中圈边界明显，由绿色与黄色交织的叶片状图案以及紫色星形点缀组成，形成中间过渡层，层次分明。",
+          "outer": "外圈边界完整，由淡蓝色背景和粉色外环构成，边缘有规律分布的紫色圆点和花朵装饰，轮廓清晰。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "浅蓝色",
+          "粉色",
+          "绿色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "整体结构高度对称，呈四重对称布局。",
+          "中心区域颜色明亮，视觉焦点集中于中央黄色花瓣图案。",
+          "各圈层之间有清晰的分隔线和色彩过渡，层次感强。",
+          "中圈存在重复的几何单元（如方块与线条组合），表现出规律性。",
+          "外圈留白较少，图案密集，但未出现断裂或偏移现象。",
+          "部分区域（如角落）有装饰性元素（紫色花朵与星星），增强视觉丰富度。"
+        ],
+        "risk_flags": [
+          "无明显断裂或偏移，结构完整。",
+          "颜色填充均匀，无显著拥挤或空白区域。",
+          "未观察到异常的不对称或缺失部分。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 8953,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由黄色和橙色构成的放射状图案，周围环绕白色圆环，整体结构对称且清晰。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由黄色核心与橙色放射线条组成，呈圆形结构。",
+          "middle": "中圈可见，由绿色和橙色花瓣状元素构成，层次分明，边界完整。",
+          "outer": "外圈边界明显，由蓝色和绿色叶片状图案组成，轮廓完整，延伸至画面边缘。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "白色"
+        ],
+        "structure_notes": [
+          "整体结构高度对称，呈现典型的曼陀罗分层特征。",
+          "颜色分布从中心向外渐变，形成视觉上的层次感。",
+          "各圈之间有明确的过渡区域，无明显断裂或偏移。",
+          "留白较少，图案密集但不拥挤，线条清晰。",
+          "外圈叶片形状规则，排列整齐，支持三圈结构的完整性。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/qwen-vl/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8226,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的星形图案，周围环绕着多个对称的几何形状。",
+        "circle_boundaries": {
+          "inner": "内圈由星形图案和周围的几何形状组成，边界清晰。",
+          "middle": "中圈由多个对称的几何形状组成，边界较为明显。",
+          "outer": "外圈由波浪形的图案组成，边界较为模糊。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "蓝色",
+          "绿色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "图案对称性高",
+          "颜色搭配和谐",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 10204,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个复杂的几何图案，颜色鲜艳，包括黄色、蓝色和棕色。",
+        "circle_boundaries": {
+          "inner": "内圈由五个圆形图案组成，每个图案都有花卉设计。",
+          "middle": "中圈由蓝色和黄色的几何形状组成，连接内圈和外圈。",
+          "outer": "外圈由棕色和米色的几何图案组成，形成了一个框架。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色对比鲜明",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8824,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的蓝色圆点，周围环绕着黄色和橙色的螺旋图案。",
+        "circle_boundaries": {
+          "inner": "清晰",
+          "middle": "清晰",
+          "outer": "清晰"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "蓝色",
+          "绿色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色过渡自然",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 7868,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "中心位置有一个紫色的星形图案，周围环绕着黄色和绿色的叶子状图案。",
+        "circle_boundaries": {
+          "inner": "内圈由紫色星形和周围的黄色、绿色叶子组成。",
+          "middle": "中圈由蓝色和绿色的扇形图案组成。",
+          "outer": "外圈由灰色和蓝色的圆环组成。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色分布均匀",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8621,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的对称图案，以紫色和黄色为主，周围环绕着多个花瓣状图案。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由多个对称的几何形状组成。",
+          "middle": "中圈边界由黄色和蓝色几何形状构成，边界较为明显。",
+          "outer": "外圈边界由绿色和黄色几何形状构成，边界较为模糊。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "黄色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案对称性高",
+          "颜色分布均匀",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的拥挤或断裂现象"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8006,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的几何图案，由多个重叠的三角形和星形组成，颜色丰富，包括黄色、绿色、蓝色和紫色。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由多个几何形状组成。",
+          "middle": "中圈边界由一系列星星和月亮图案构成，边界较为明显。",
+          "outer": "外圈边界由绿色和蓝色的叶子图案组成，边界清晰且完整。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "图案对称且复杂",
+          "颜色分布均匀",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8126,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "中心区域以黄色为主，周围有紫色和橙色的图案，呈现出放射状。",
+        "circle_boundaries": {
+          "inner": "内圈清晰，以黄色和紫色为主。",
+          "middle": "中圈可见，有绿色和橙色的图案。",
+          "outer": "外圈模糊，以绿色和蓝色为主。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "橙色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色渐变",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 10302,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "中心区域由多个对称的几何图形组成，包括一个六瓣花形图案，周围有多个正方形和三角形。",
+        "circle_boundaries": {
+          "inner": "内圈由中心的花形图案和周围的几何图形组成，边界清晰。",
+          "middle": "中圈由多个层次的花瓣状图案组成，边界较为明显。",
+          "outer": "外圈由一圈圆形和点状图案组成，边界清晰可见。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "粉色"
+        ],
+        "structure_notes": [
+          "图案对称性高",
+          "层次分明",
+          "颜色搭配和谐"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-002",
+      "round_index": 2,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9399,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的黄色圆形图案，周围环绕着橙色和白色的装饰。",
+        "circle_boundaries": {
+          "inner": "清晰可见，由黄色和橙色组成。",
+          "middle": "由绿色和黄色组成，边界较为明显。",
+          "outer": "由蓝色和绿色组成，边界清晰。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案对称，层次分明。",
+          "颜色过渡自然，没有明显的拥挤或断裂。"
+        ],
+        "risk_flags": [
+          "无明显风险标志。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-002/glm-vision/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 11688,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个红色星形图案，周围环绕着黄色区域，黄色区域内有绿色和橙色的弧形图案，以及多个紫色、黄色、蓝色的圆形装饰图案。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心红色星形为核心，向外延伸至紫色圆形图案的内侧，主要包含黄色背景和绿色、橙色弧形，边界相对清晰，被紫色圆形图案环绕。",
+          "middle": "中圈包含多个紫色、黄色、蓝色的圆形装饰图案，以及周围的绿色、橙色、黄色区域，外侧边界与外圈的蓝色、黄色、绿色、橙色图案相接，边界由这些图案的排列构成，相对明确。",
+          "outer": "外圈由蓝色的波浪形图案和黄色、绿色、橙色的装饰性叶片状图案组成，最外侧边界是蓝色波浪的边缘，与白色背景相接，图案排列紧密，边界清晰。"
+        },
+        "dominant_colors": [
+          "蓝色",
+          "黄色",
+          "紫色",
+          "绿色",
+          "橙色",
+          "红色"
+        ],
+        "structure_notes": [
+          "整体结构对称，呈曼陀罗样式，内圈、中圈、外圈层次分明。",
+          "内圈中心红色星形，周围黄色区域有绿色和橙色弧形，弧形之间有留白（黄色区域）。",
+          "中圈的紫色圆形图案排列成环状，图案重复且对称，无明显断裂或偏移。",
+          "外圈的蓝色波浪形图案和黄色、绿色、橙色的叶片状图案排列紧密，叶片上有绿色和橙色的圆点装饰，图案连续无明显断裂。",
+          "颜色块分布均匀，各圈颜色区分明显，层次变化清晰，从中心向外颜色逐渐丰富。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 8763,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个带有蓝色十字的金色星形图案，周围环绕着黄色区域和蓝色小花，中心区域图案复杂，色彩对比明显。",
+        "circle_boundaries": {
+          "inner": "内圈可能是中心的金色星形及蓝色十字区域，边界相对清晰，与周围黄色区域和蓝色小花相邻。",
+          "middle": "中圈大致是黄色背景区域，包含蓝色小花和五个浅蓝色圆形图案的外围部分，边界与浅蓝色圆形和外围棕色十字图案衔接。",
+          "outer": "外圈是五个浅蓝色圆形图案（内部有花卉图案）以及外围的棕色十字形装饰，边界与白色背景相邻，整体轮廓较清晰。"
+        },
+        "dominant_colors": [
+          "浅蓝色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "棕色",
+          "紫色",
+          "粉色"
+        ],
+        "structure_notes": [
+          "五个浅蓝色圆形均匀分布在中圈周围，内部有花卉、卷草等图案，图案风格相似但细节有变化。",
+          "中心区域与中圈（黄色）、外圈（浅蓝色圆形及棕色十字）层次分明，颜色过渡自然。",
+          "外围棕色十字形装饰与中心金色星形图案风格呼应，整体结构对称。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 9504,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "中心位置是一个蓝色小圆点，周围环绕着由黄色和橙色组成的网格状图案，整体构成内圈的核心区域，图案对称且色彩鲜明。",
+        "circle_boundaries": {
+          "inner": "内圈以中心蓝色圆点为核心，向外延伸至黄色和橙色的网格图案，边界相对明确，与中圈的紫色区域形成明显过渡。",
+          "middle": "中圈主要为紫色的花瓣状图案，外围有棕色的装饰线条，向内与内圈的黄橙区域衔接，向外与外圈的多彩几何图案过渡，边界因装饰图案的存在稍显复杂但可辨。",
+          "outer": "外圈由绿色、黄色、蓝色、橙色等组成的对称几何图案，边界接近整个曼陀罗的外轮廓，图案完整，没有明显的断裂。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "蓝色",
+          "紫色",
+          "绿色",
+          "粉色",
+          "灰色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "整体结构对称，内圈、中圈、外圈的图案层次分明，色彩过渡自然。",
+          "内圈的黄橙网格图案与中圈的紫色花瓣图案通过棕色装饰线条分隔，层次清晰。",
+          "外圈的几何图案以绿色、黄色、蓝色为主，与中圈的粉色、紫色等形成色彩对比，图案排列整齐，无明显拥挤或偏移。",
+          "各圈层的图案均为对称设计，线条绘制清晰，色彩填充均匀。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 10904,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个紫色星形图案，中心星形图案的背景为粉色区域，周围被不同颜色的图案环绕。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心紫色星形图案及其周围粉色区域为核心，边界附近有黄色、绿色、紫色的叶片状图案和棕色的类似螺栓的图案，可见程度高，图案密集。",
+          "middle": "中圈位于内圈外侧，包含较多的绿色、黄色、蓝色的叶片状图案以及棕色螺栓图案，与内圈图案衔接紧密，边界相对模糊但可通过颜色和图案密度变化区分，可见程度较高。",
+          "outer": "外圈靠近画面边缘，主要由蓝色、绿色、黄色的扇形图案和灰色的小石块状图案组成，边界接近画面的外轮廓，可见程度高，图案相对内圈和中圈更具规律性的排列。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "粉色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "灰色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "中心区域图案集中，内圈到中圈到外圈图案有层次变化，从中心的星形、叶片、螺栓到外圈的扇形和石块状图案，层次分明。",
+          "颜色块分布有规律，内圈以粉色、紫色、黄色、绿色为主，中圈绿色、黄色、蓝色、棕色较多，外圈蓝色、绿色、黄色、灰色为主，无明显留白区域，整体图案填充较满。",
+          "图案无明显断裂，各圈之间的图案衔接自然，内圈的叶片状图案向外延伸至中圈，中圈的图案与外圈的扇形图案过渡协调，无明显偏移。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 8650,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个粉色的星形图案，周围环绕着橙色的花瓣状图形，中心区域色彩丰富，图案对称且密集。",
+        "circle_boundaries": {
+          "inner": "内圈大致以绿色圆形区域为边界，包含橙色花瓣和紫色、粉色的星形图案，边界相对清晰。",
+          "middle": "中圈大致以蓝色圆形区域为边界，包含黄色星形和橙色菱形图案，与内圈和外圈的图案风格有明显区分，边界较清晰。",
+          "outer": "外圈大致以粉色圆形区域为边界，包含绿色叶子状和黄色菱形图案，边界清晰，整体呈圆形。"
+        },
+        "dominant_colors": [
+          "粉色",
+          "黄色",
+          "蓝色",
+          "绿色",
+          "橙色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "整体图案对称，内圈、中圈、外圈的图案风格和颜色有明显区分，层次清晰。",
+          "内圈图案密集，以粉色星形和橙色花瓣为主；中圈以黄色星形和橙色菱形为主，搭配蓝色背景；外圈以绿色叶子和黄色菱形为主，搭配粉色背景。",
+          "各圈层之间的边界清晰，图案衔接自然，无明显断裂或偏移。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 10608,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个浅色（偏粉黄）的圆形，周围有紫色的几何图形环绕，圆形被黑色线条分割的几何结构包围，视觉上是图案的核心区域。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心浅色圆为核心，向外延伸至紫色和彩色几何图形（如绿色、蓝色的三角形、菱形）的区域，边界由几何图形的轮廓构成，比较清晰。",
+          "middle": "中圈位于内圈几何图形之外，是浅黄色的环形区域，包含粉色、紫色星星和黄色月亮、圆形图案，外边界到带有蓝绿花纹的外圈内侧。",
+          "outer": "外圈是最外侧的环形，由绿色底带蓝色锯齿/箭头状花纹构成，边界清晰，围绕整个图案，与中圈的浅黄色区域形成明显区分。"
+        },
+        "dominant_colors": [
+          "绿色",
+          "蓝色",
+          "黄色",
+          "粉色",
+          "紫色",
+          "浅黄色"
+        ],
+        "structure_notes": [
+          "内圈几何结构复杂，有绿色、蓝色的三角形、菱形，内部线条分割形成对称图案；",
+          "中圈（浅黄色环）图案丰富，星星（粉、紫）、月亮（黄）、圆形（黄）分布均匀，对称排列；",
+          "外圈花纹为蓝色图形在绿色底上，呈重复的箭头/锯齿状，环绕整个图案；",
+          "整体结构对称，从中心到外圈层次分明，各圈层图案风格和颜色区分明显。"
+        ],
+        "risk_flags": [
+          "无明显断裂、偏移或过度拥挤，结构对称且各部分清晰；颜色填充均匀，图案完整。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 9253,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "画面中心是明亮的黄色区域，有紫色花瓣状图案和多个圆形小装饰，呈现对称的辐射状结构",
+        "circle_boundaries": {
+          "inner": "内圈以中心黄色区域为核心，包含紫色花瓣和绿色、橙色的曲线装饰，边界相对清晰，图案密集",
+          "middle": "中圈环绕内圈，主要由绿色叶片状、橙色卷曲线条及带有几何图案（棕色方块、三角形）的区域组成，图案丰富且对称分布",
+          "outer": "外圈靠近边缘，有蓝色波浪形、绿色叶片形图案，以及棕色几何图案，整体呈圆形轮廓，与背景白色形成对比，边界因图案延伸略显柔和但可识别"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "橙色",
+          "紫色",
+          "棕色",
+          "蓝色",
+          "白色"
+        ],
+        "structure_notes": [
+          "整体为对称的曼陀罗结构，从中心向外辐射式分布图案",
+          "内圈图案（紫色花瓣、圆形装饰）紧凑，中圈和外圈图案（曲线、叶片、几何图形）层次分明且重复对称",
+          "颜色块分布均匀，无明显断裂或偏移，各圈图案衔接自然",
+          "留白主要在画面外围背景，内部图案填充饱满"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 10596,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "中心区域是一个八瓣花形图案，颜色为黄绿相间，周围环绕着浅蓝色的几何框架，花形图案的中心有橙色小三角装饰，整体结构对称且复杂。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心八瓣花和其外的浅蓝色几何框为边界，形状接近正方形嵌套，可见度高，图案细节丰富。",
+          "middle": "中圈范围从内圈外的粉色花瓣状图案向外延伸，包含绿色、黄色的花叶状图形，以及蓝色的几何结构和粉色星星，边界相对柔和但可辨识。",
+          "outer": "外圈是最外层的圆形区域，以粉色圆环为边界，内部有蓝色背景、黄色花叶、紫色圆点和花朵等图案，边界清晰，是最外层的圆形结构。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "粉色",
+          "紫色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体结构为对称的圆形曼陀罗，内圈、中圈、外圈层次分明，各层图案有不同的几何和花叶元素",
+          "颜色分布均匀，各颜色块之间边界清晰，无明显断裂或偏移",
+          "内圈中心为八瓣花，中圈有粉色花瓣、绿色花叶、蓝色几何框和粉色星星，外圈有黄色花叶、蓝色背景、紫色圆点和花朵，最外层是粉色圆环",
+          "图案中有对称的几何图形（如正方形、十字形）和花叶图形，对称性强"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "ep-20260316095322-94wf5",
+      "candidate_id": "doubao-vision",
+      "duration_ms": 9408,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个黄色的圆点，周围环绕着橙色的放射状图案，被白色圆环包围，整体构成对称的中心区域，图案密集且色彩鲜艳。",
+        "circle_boundaries": {
+          "inner": "内圈大致以中心黄色圆点及周围橙色放射图案和白色圆环为边界，图案紧凑，颜色以黄、橙、白为主，边界清晰。",
+          "middle": "中圈位于内圈外侧，包含绿色的叶片状图案和橙色、黄色的花瓣状图案，边界相对内圈向外扩展，图案层次丰富，与内圈衔接自然。",
+          "outer": "外圈是最外侧的图案，包含绿色、蓝色和浅绿色的叶片状图案，边界接近画面边缘，图案分布对称，与中圈形成明显的层次区分。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "白色"
+        ],
+        "structure_notes": [
+          "整体结构对称，各圈层图案呈放射状分布，无明显断裂或偏移。",
+          "内圈色彩对比强烈，中圈和外圈颜色过渡自然，层次分明。",
+          "留白区域主要在画面边缘，图案区域填充饱满，无明显拥挤感。",
+          "各圈层的图案形状和颜色有明显区分，内圈以圆形和放射状为主，中圈以花瓣和叶片为主，外圈以叶片和几何图形为主。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/doubao-vision/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 11876,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个红色星形图案，周围环绕着黄色背景，构成视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈由六个紫色与黄色相间的圆形图案组成，排列紧密，边界清晰。",
+          "middle": "中圈包含绿色、橙色和黄色的弧形及叶片状结构，连接内圈与外圈，边界较为明显但略有重叠。",
+          "outer": "外圈由蓝色波浪形线条构成，形成放射状边缘，边界清晰且对称。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "蓝色",
+          "绿色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体结构呈高度对称的放射状布局，具有明显的层次感。",
+          "内圈图案重复性强，颜色对比鲜明。",
+          "中圈元素过渡自然，但部分区域存在轻微拥挤现象。",
+          "外圈波浪线条流畅，与内部结构形成良好衔接。",
+          "中心区域留白较少，色彩密集，突出核心位置。"
+        ],
+        "risk_flags": [
+          "中圈局部存在轻微拥挤，可能影响视觉平衡。",
+          "外圈蓝色区域略显厚重，可能对整体轻盈感造成一定压制。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 17769,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由棕色和黄色构成的星形图案，内部包含蓝色十字结构，周围环绕着四个蓝色小花，整体呈对称布局。",
+        "circle_boundaries": {
+          "inner": "内圈为中央星形图案及周围四个蓝色小花区域，边界清晰，呈放射状分布。",
+          "middle": "中圈由五个浅蓝色圆形构成，每个圆形内含花卉图案，排列成环状，边界明显且完整。",
+          "outer": "外圈由棕色几何十字图案组成，位于五个浅蓝色圆之间，形成外围框架，边界清晰但略显不连续。"
+        },
+        "dominant_colors": [
+          "浅蓝",
+          "绿色",
+          "黄色",
+          "棕色",
+          "紫色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "五个浅蓝色圆形均匀分布，构成中圈，每个圆内有相似的花卉图案。",
+          "中心区域对称性强，具有明显的放射性结构。",
+          "外圈的棕色十字图案与中圈之间存在间隙，未完全闭合。",
+          "整体构图呈现五重对称性，而非典型的三圈结构，可能为变体设计。",
+          "留白区域较少，画面较为饱满，无明显断裂或偏移。"
+        ],
+        "risk_flags": [
+          "结构不符合传统三圈划分，可能存在识别偏差。",
+          "外圈边界不连续，可能影响圈层判断的准确性。"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 14806,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由橙色、黄色和蓝色构成的复杂几何图案，呈放射状结构，周围环绕着紫色花瓣状区域，整体呈现高度对称性。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心彩色几何图案向外延伸的紫色花瓣状结构界定，形成明显的视觉焦点。",
+          "middle": "中圈边界可见，由灰色与浅蓝色交替的菱形结构组成，呈现出规则的辐射状排列，与内圈有明显分界。",
+          "outer": "外圈边界完整，由绿色、黄色和浅蓝色组成的重复叶片状图案构成，边缘清晰，覆盖整个圆形画布。"
+        },
+        "dominant_colors": [
+          "橙色",
+          "黄色",
+          "紫色",
+          "绿色",
+          "蓝色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "整体结构高度对称，呈现典型的曼陀罗式放射布局。",
+          "颜色分布均匀，层次分明，从中心向外逐层展开。",
+          "无明显断裂或偏移，各圈层之间过渡自然。",
+          "留白较少，大部分区域被颜色填充，但线条清晰，未出现拥挤感。",
+          "中心区域色彩集中且明亮，吸引视觉焦点。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 14698,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个粉色背景的星形图案，星形为紫色，位于整个构图的核心位置，周围由黄色和紫色的线条构成放射状结构。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，以中心星形为核心，向外延伸出黄、紫相间的花瓣状结构，形成明确的内层区域。",
+          "middle": "中圈可见，由绿色、蓝色和黄色的叶片状图案组成，呈对称分布，与内圈有明显分界。",
+          "outer": "外圈边界完整，由深蓝、浅蓝、绿色和黄色的扇形图案构成，外围有一圈灰色小点作为装饰性边框，整体轮廓清晰。"
+        },
+        "dominant_colors": [
+          "绿色",
+          "蓝色",
+          "黄色",
+          "紫色",
+          "粉色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "整体构图高度对称，呈现典型的三圈曼陀罗结构。",
+          "内圈以星形为中心，向外辐射，具有较强的视觉焦点。",
+          "中圈由植物形态的叶片构成，颜色丰富且层次分明。",
+          "外圈由几何化的扇形图案组成，边缘有灰色点状装饰，增强了边界感。",
+          "颜色过渡自然，使用了渐变手法，尤其在绿色和蓝色区域。",
+          "无明显断裂或偏移，各圈之间衔接流畅。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 13238,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由紫色和粉色构成的星形图案，周围环绕着橙黄色花瓣状结构，整体呈高度对称的放射状布局。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由绿色背景和橙黄色花瓣状元素构成，形成明显的圆形轮廓。",
+          "middle": "中圈边界明显，由蓝色与黄色交错的几何星形图案组成，具有清晰的分层感。",
+          "outer": "外圈边界完整，由紫色背景和绿色叶状图案构成，边缘整齐，未见断裂或偏移。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "粉色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体结构呈现高度对称性，三个圈层分明，层次清晰。",
+          "各圈层之间有明确的过渡区域，颜色与形状变化有序。",
+          "无明显留白或拥挤现象，色彩分布均匀。",
+          "图案连续性强，无断裂或错位现象。",
+          "中心区域细节丰富，向外逐渐扩展为更复杂的几何形态。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 11040,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由多个几何图形组成的对称结构，核心是一个浅色圆形，周围环绕着放射状线条和紫色六边形图案，整体呈现出清晰的视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，以中心的六角星形结构为核心，向外延伸出蓝色和绿色的三角形层，形成明显的分层结构。",
+          "middle": "中圈边界较为明显，由黄色背景区域构成，包含星星、月亮等符号均匀分布，与内圈之间有清晰的过渡。",
+          "outer": "外圈边界清晰，由绿色和蓝色交替的锯齿状图案构成，围绕整个图像边缘，形成完整的圆形框架。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "蓝色",
+          "绿色",
+          "紫色",
+          "粉色"
+        ],
+        "structure_notes": [
+          "整体构图高度对称，中心到边缘呈现清晰的层次递进。",
+          "内圈以几何图形为主，中圈为象征性符号（星星、月亮），外圈为装饰性图案。",
+          "颜色分布均衡，无明显拥挤或断裂现象。",
+          "各圈之间有明确的界限，未出现偏移或重叠。",
+          "中心区域有轻微的晕染效果，可能为手绘笔触所致。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 12123,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由紫色三角形组成的放射状星形图案，周围环绕着黄色背景，形成清晰的视觉焦点。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，以紫色星形为中心向外延伸出黄色区域，构成核心结构。",
+          "middle": "中圈可见，由橙色卷曲图案、绿色波浪形和棕色几何图形交替组成，层次分明。",
+          "outer": "外圈边界完整，以浅绿色为底色，边缘分布蓝色波浪形和棕色几何图案，整体呈圆形闭合。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "棕色"
+        ],
+        "structure_notes": [
+          "整体构图对称性强，呈现典型的曼陀罗式放射对称结构。",
+          "颜色分布均匀，各区域色彩对比鲜明但协调。",
+          "无明显断裂或偏移现象，线条流畅连续。",
+          "留白较少，填充密集，视觉上较为饱满。",
+          "层次变化明确：从中心向外依次为紫色星形→黄色辐射区→橙绿棕组合区→浅绿底色区。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 17239,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "画面中心为一个由黄色花瓣状图形构成的对称图案，被浅蓝色方形边框包围，整体呈现高度对称的几何结构。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，以中心黄色花朵为核心，向外延伸出浅蓝色和粉色的几何框架，形成明确的内层区域。",
+          "middle": "中圈可见性良好，由黄色与绿色相间的叶状图案组成，围绕内圈形成环形过渡带，结构完整。",
+          "outer": "外圈边界清晰，由浅蓝色背景和粉色外环构成，边缘有紫色圆点和星形装饰，整体轮廓完整。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "浅蓝色",
+          "粉色",
+          "绿色",
+          "紫色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "整体构图高度对称，呈四重对称结构。",
+          "中心区域存在明显的几何嵌套关系，从中心向外逐层扩展。",
+          "中圈与外圈之间存在清晰的层次划分，颜色与形状变化明显。",
+          "外圈边缘分布有规律的紫色圆点和星形图案，增强视觉节奏感。",
+          "部分区域（如蓝色方块）存在轻微偏移，但不影响整体对称性。",
+          "留白较少，色彩填充密集，无明显断裂或空白区域。"
+        ],
+        "risk_flags": [
+          "无明显断裂或缺失区域。",
+          "未观察到显著偏移或失衡现象。",
+          "结构完整，无异常拥挤或混乱表现。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "qwen-vl-max-latest",
+      "candidate_id": "qwen-vl",
+      "duration_ms": 11033,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "画面中心是一个由黄色圆形和橙色放射状线条构成的核心区域，周围环绕着白色圆环和橙色边框，整体结构对称且清晰。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心黄色圆点与橙色放射线构成，外侧有白色圆环作为分隔，形态完整。",
+          "middle": "中圈边界明显，由绿色和橙色花瓣状图案组成，层次分明，连接内外圈，无断裂或偏移。",
+          "outer": "外圈边界可见，由蓝色和绿色叶片状图案构成，呈放射状排列，边缘略显柔和但整体连续。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色",
+          "白色"
+        ],
+        "structure_notes": [
+          "整体构图高度对称，中心区域突出，三圈结构层次分明。",
+          "颜色分布从中心向外逐渐过渡，形成视觉上的层次感。",
+          "留白较少，图案密集但未出现拥挤感，各部分之间有清晰的分界。",
+          "无明显断裂或偏移现象，线条流畅，结构完整。",
+          "外圈叶片状图案略有重叠，但不影响整体轮廓识别。"
+        ],
+        "risk_flags": [],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/qwen-vl/toc-mvp-fixture-009.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-001",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 7869,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的星形图案，周围环绕着多个对称的圆形图案。",
+        "circle_boundaries": {
+          "inner": "内圈由星形图案和周围的圆形图案组成。",
+          "middle": "中圈由多个对称的圆形图案组成。",
+          "outer": "外圈由波浪形的图案组成。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "紫色",
+          "蓝色",
+          "绿色"
+        ],
+        "structure_notes": [
+          "图案对称且层次分明。",
+          "颜色搭配和谐，没有明显的拥挤或断裂。"
+        ],
+        "risk_flags": [
+          "没有明显的风险标志。"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-001.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-002",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9035,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的几何图案，周围环绕着多个圆形图案。",
+        "circle_boundaries": {
+          "inner": "中心几何图案",
+          "middle": "五个圆形图案",
+          "outer": "几何形状的边框"
+        },
+        "dominant_colors": [
+          "绿色",
+          "黄色",
+          "蓝色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "颜色分布均匀",
+          "中心图案复杂"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-002.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-003",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8051,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的蓝色圆点，周围环绕着黄色和橙色的图案，形成了一个焦点。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由黄色和橙色组成。",
+          "middle": "中圈边界由紫色和粉色组成，较为明显。",
+          "outer": "外圈边界由绿色和黄色组成，较为模糊。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "紫色",
+          "粉色",
+          "绿色"
+        ],
+        "structure_notes": [
+          "图案对称，层次分明。",
+          "颜色过渡自然，没有明显的拥挤或断裂。"
+        ],
+        "risk_flags": [
+          "无明显的风险标志。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-003.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-004",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9697,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "output": {
+        "center_observation": "中心位置有一个紫色的星形图案，周围环绕着黄色和绿色的叶片状图案。",
+        "circle_boundaries": {
+          "inner": "中心星形图案及其周围的黄色和绿色叶片。",
+          "middle": "黄色和绿色叶片向外延伸，形成第二层。",
+          "outer": "最外层由蓝色和灰色的扇形图案组成。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "灰色"
+        ],
+        "structure_notes": [
+          "图案呈现出明显的层次感，从中心到外圈颜色和形状逐渐变化。",
+          "中心星形图案是视觉焦点，吸引注意力。"
+        ],
+        "risk_flags": [
+          "无明显的风险标志。"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-004.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-005",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8495,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的对称图案，由多个花瓣状结构组成，颜色鲜艳，以紫色和黄色为主。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心向外辐射的图案构成。",
+          "middle": "中圈边界明显，由多个几何形状和颜色块组成。",
+          "outer": "外圈边界清晰，由重复的几何图案构成，颜色多样。"
+        },
+        "dominant_colors": [
+          "紫色",
+          "黄色",
+          "绿色",
+          "蓝色",
+          "橙色"
+        ],
+        "structure_notes": [
+          "图案具有高度的对称性。",
+          "颜色分布均匀，没有明显的拥挤或断裂。",
+          "层次分明，从中心到外圈逐渐扩展。"
+        ],
+        "risk_flags": [
+          "无明显的风险标志。"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-005.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-006",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 8610,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的几何图案，由多个重叠的三角形和星形组成，颜色丰富，包括黄色、绿色和蓝色。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由中心图案的边缘定义。",
+          "middle": "中圈边界由内圈向外延伸的图案元素构成，较为明显。",
+          "outer": "外圈边界由一圈绿色的叶子图案和蓝色的箭头图案组成，边界清晰可见。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案结构对称",
+          "颜色分布均匀",
+          "层次分明"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-006.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-007",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 7923,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+      "output": {
+        "center_observation": "中心区域以黄色为主，具有放射状的图案和对称性。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，以黄色和紫色为主。",
+          "middle": "中圈边界较为模糊，图案逐渐向外扩展。",
+          "outer": "外圈边界不明显，图案与背景颜色融合。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "橙色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "图案具有明显的对称性。",
+          "颜色过渡自然。",
+          "中心区域图案密集，向外逐渐稀疏。"
+        ],
+        "risk_flags": [
+          "无明显风险标志。"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-007.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-008",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 7368,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个对称的几何图案，由多个花瓣状结构组成，颜色主要为黄色和绿色。",
+        "circle_boundaries": {
+          "inner": "内圈边界清晰，由黑色线条勾勒。",
+          "middle": "中圈边界由蓝色和黄色交替的图案构成，边界较为模糊。",
+          "outer": "外圈边界由粉色和紫色交替的圆点构成，边界清晰可见。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "绿色",
+          "蓝色",
+          "粉色",
+          "紫色"
+        ],
+        "structure_notes": [
+          "图案对称性高",
+          "颜色层次分明",
+          "中心图案复杂"
+        ],
+        "risk_flags": [
+          "无明显的风险标志"
+        ],
+        "confidence": "medium"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-008.json"
+    },
+    {
+      "ok": true,
+      "round_id": "round-003",
+      "round_index": 3,
+      "fixture_id": "toc-mvp-fixture-009",
+      "model": "glm-4v-plus",
+      "candidate_id": "glm-vision",
+      "duration_ms": 9571,
+      "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+      "output": {
+        "center_observation": "中心区域有一个明显的黄色圆形，周围环绕着橙色和白色的图案。",
+        "circle_boundaries": {
+          "inner": "清晰可见，由黄色和橙色组成。",
+          "middle": "由绿色和黄色组成，边界较为模糊。",
+          "outer": "由蓝色和绿色组成，边界清晰可见。"
+        },
+        "dominant_colors": [
+          "黄色",
+          "橙色",
+          "绿色",
+          "蓝色"
+        ],
+        "structure_notes": [
+          "图案对称",
+          "层次分明",
+          "颜色过渡自然"
+        ],
+        "risk_flags": [
+          "无"
+        ],
+        "confidence": "high"
+      },
+      "output_path": "projects/aimandala/docs/qa/model-evals/2026-05-06-vision-stability/round-003/glm-vision/toc-mvp-fixture-009.json"
+    }
+  ]
+}

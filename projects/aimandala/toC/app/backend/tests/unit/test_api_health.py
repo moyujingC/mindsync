@@ -1,6 +1,5 @@
 """Smoke tests for the migrated AI-Mandala To C backend API shell."""
 
-import json
 import os
 import sys
 import shutil

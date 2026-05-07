@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers token deployment input 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-token-deployment-input实施任务.md
+
 ## Summary
 
 在现有 `token source composition factory v2` 之上新增 `Console` 侧 `token deployment input` 装配层，把 deployment/browser runtime 输入中的 `authTokenProvider / authTokenSource / authTokenSourceFactoryOptions / authTokenSourceCompositionOptions` 收束成单一 token 输入对象。

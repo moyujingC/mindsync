@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "fixture_id": "toc-mvp-fixture-001",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 10862,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个星形图案，周围环绕着多个圆形和几何形状。",
+    "circle_boundaries": {
+      "inner": "内圈由多个紧密排列的圆形和几何形状组成。",
+      "middle": "中圈由较大的几何形状和图案组成，与内圈之间有明显的分界。",
+      "outer": "外圈由波浪状的线条和图案组成，与中圈之间有明显的分界。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "紫色",
+      "蓝色",
+      "绿色"
+    ],
+    "structure_notes": [
+      "图案对称且有序",
+      "颜色鲜艳且对比明显",
+      "层次分明，从中心向外扩展"
+    ],
+    "risk_flags": [
+      "无明显的风险标志"
+    ],
+    "confidence": "high"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "round_id": "round-001",
+  "round_index": 1,
+  "fixture_id": "toc-mvp-fixture-007",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 10857,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+  "output": {
+    "center_observation": "画面中心是一个由紫色花瓣状图形组成的星形结构，周围环绕着黄色放射状线条，形成清晰的视觉焦点。",
+    "circle_boundaries": {
+      "inner": "内圈以紫色星形为核心，向外延伸出黄色放射线，边界清晰，呈对称分布。",
+      "middle": "中圈包含橙色卷曲图案、绿色波浪形元素和棕色几何图形，边界较为明显，但部分区域与内圈衔接紧密，略有融合。",
+      "outer": "外圈由蓝色波浪形图案和绿色叶片状元素构成，边缘略显模糊，整体呈圆形轮廓，但局部有轻微不规则。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "紫色",
+      "橙色",
+      "绿色",
+      "蓝色",
+      "棕色"
+    ],
+    "structure_notes": [
+      "整体构图呈高度对称的圆形结构，具有明显的三圈层次。",
+      "内圈以中心星形为基点，向外辐射，结构稳定。",
+      "中圈元素丰富，包括卷曲、波浪和几何形状，排列有序但密度较高。",
+      "外圈颜色较浅，主要由蓝色和绿色构成，与中圈形成对比。",
+      "留白较少，各区域填充完整，无明显断裂或偏移。",
+      "色彩过渡自然，层次分明，无显著拥挤感。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

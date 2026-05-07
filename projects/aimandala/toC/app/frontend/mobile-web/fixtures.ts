@@ -187,8 +187,8 @@ export function createPreviewAppProps(
     selectedImage: {
       imagePath: draft.imagePath,
     },
-    detection: createMockDetection(),
-    geometry: createMockDetection().geometry_suggestion ?? null,
+    detection: uploadDetection ?? createMockDetection(),
+    geometry: (uploadDetection ?? createMockDetection()).geometry_suggestion ?? null,
     interpretation: createMockInterpretation(),
     status: createMockStatus(),
     report: createMockReport(),

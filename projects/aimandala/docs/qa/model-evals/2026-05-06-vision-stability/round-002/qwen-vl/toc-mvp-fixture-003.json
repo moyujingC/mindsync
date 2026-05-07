@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-003",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 11088,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+  "output": {
+    "center_observation": "画面中心是一个由橙色、黄色和蓝色构成的复杂几何图案，呈放射状结构，周围环绕着紫色花瓣状元素，整体对称且色彩集中。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，由中心彩色几何图案与外围紫色花瓣构成，形成明确的视觉核心区域。",
+      "middle": "中圈边界可见，由灰色和浅蓝色的叶状结构组成，围绕内圈向外延伸，层次分明。",
+      "outer": "外圈边界完整，由绿色、黄色和浅蓝色交替构成的几何图案包围，整体圆形轮廓清晰。"
+    },
+    "dominant_colors": [
+      "橙色",
+      "黄色",
+      "紫色",
+      "绿色",
+      "蓝色",
+      "灰色"
+    ],
+    "structure_notes": [
+      "整体图案高度对称，具有明显的放射性结构。",
+      "颜色分布均匀，从中心向外逐层展开，无明显断裂或偏移。",
+      "留白极少，各区域填充完整，无明显拥挤或空缺。",
+      "层次变化清晰，由内到外颜色和形状逐步过渡。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

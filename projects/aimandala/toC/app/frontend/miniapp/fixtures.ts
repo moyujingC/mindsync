@@ -233,7 +233,7 @@ export function createMiniappPreviewProps(
       return {
         route: "upload",
         uploadDraft: createMiniappDraft(),
-        uploadDetection: createMiniappDetection(),
+        detection: createMiniappDetection(),
       };
     case "reportEntry":
       return {

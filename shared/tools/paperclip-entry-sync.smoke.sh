@@ -27,9 +27,9 @@ MODELS = [
     }
     ,
     {
-        "id": "preset-ppchat-relay",
+        "id": "preset-ppchat-direct",
         "baseUrl": "https://code.ppchat.vip/v1",
-        "modelId": "gpt-5",
+        "modelId": "gpt-5.4",
         "reasoningEffort": "high",
     }
 ]
@@ -45,7 +45,7 @@ BINDINGS = [
     },
     {
         "entryId": "entry-paperclip-codex-local-server",
-        "defaultModelEntryId": "preset-ppchat-relay",
+        "defaultModelEntryId": "preset-ppchat-direct",
     },
 ]
 
@@ -92,14 +92,14 @@ class Handler(BaseHTTPRequestHandler):
             elif entry_id == "entry-paperclip-codex-local-server":
                 response = {
                     "entryId": entry_id,
-                    "defaultModelEntryId": "preset-ppchat-relay",
+                    "defaultModelEntryId": "preset-ppchat-direct",
                     "fallbackModelEntryId": None,
-                    "alias": "relayhub-entry-paperclip-codex-local-server",
-                    "relayToken": "relayhub-codex-smoke-token",
+                    "alias": "ppchat-direct-paperclip-codex-local-server",
+                    "relayToken": "ppchat-codex-smoke-token",
                     "resolvedModel": {
-                        "id": "preset-ppchat-relay",
+                        "id": "preset-ppchat-direct",
                         "baseUrl": "https://code.ppchat.vip/v1",
-                        "modelId": "gpt-5",
+                        "modelId": "gpt-5.4",
                         "reasoningEffort": "high",
                         "apiKey": "sk-codex-upstream-smoke",
                         "hasStoredApiKey": True,
@@ -264,6 +264,13 @@ agents:
     directory: "agents/engineer"
 YAML
 
+mkdir -p "${tmpdir}/.codex"
+cat >"${tmpdir}/.codex/auth.json" <<'JSON'
+{
+  "OPENAI_API_KEY": "ppchat-codex-smoke-token"
+}
+JSON
+
 HOME="${tmpdir}" \
 PAPERCLIP_YAML_OVERRIDE="${tmpdir}/paperclip.yaml" \
 CONTROL_PLANE_BASE_URL="${control_plane_url}" \
@@ -309,20 +316,28 @@ assert "OPENAI_MODEL=deepseek-chat" in env_lines
 assert "OPENAI_API_KEY=sk-hermes-smoke" in env_lines
 
 codex_config = codex_config_path.read_text(encoding="utf-8")
-assert 'model = "relayhub-entry-paperclip-codex-local-server"' in codex_config
-assert 'base_url = "https://relayhub.jingshu.cc/claude/v1"' in codex_config
+assert 'model = "gpt-5.4"' in codex_config
+assert 'base_url = "https://code.ppchat.vip/v1"' in codex_config
 assert 'wire_api = "responses"' in codex_config
 assert 'model_reasoning_effort = "high"' in codex_config
 
 codex_auth = json.loads(codex_auth_path.read_text(encoding="utf-8"))
-assert codex_auth["OPENAI_API_KEY"] == "relayhub-codex-smoke-token"
+assert codex_auth["OPENAI_API_KEY"] == "ppchat-codex-smoke-token"
 
 agent_patch = json.loads(agent_patch_path.read_text(encoding="utf-8"))
 adapter_config = agent_patch["adapterConfig"]
-assert adapter_config["model"] == "relayhub-entry-paperclip-codex-local-server"
-assert adapter_config["apiKey"] == "relayhub-codex-smoke-token"
+assert adapter_config["model"] == "gpt-5.4"
+assert adapter_config["apiKey"] == "ppchat-codex-smoke-token"
 assert adapter_config["modelReasoningEffort"] == "high"
-assert adapter_config["extraArgs"] == ['model_providers.codex.base_url="https://api.deepseek.com"']
+assert adapter_config["extraArgs"] == [
+    "-c", "preferred_auth_method=\"apikey\"",
+    "-c", "model_provider=\"codex\"",
+    "-c", "model_providers.codex.name=\"codex\"",
+    "-c", "model_providers.codex.base_url=\"https://code.ppchat.vip/v1\"",
+    "-c", "model_providers.codex.wire_api=\"responses\"",
+    "-c", "model_providers.codex.requires_openai_auth=true",
+    "--skip-git-repo-check",
+]
 PY
 
 echo "paperclip-entry-sync smoke passed"

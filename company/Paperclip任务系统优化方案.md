@@ -88,9 +88,9 @@
 
 当前约定以：
 
-- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-- [company/任务创建模板.md](company/任务创建模板.md)
-- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](../company/任务类型与标签规范.md)
+- [company/任务创建模板.md](../company/任务创建模板.md)
+- [company/顶层任务收束规则.md](../company/顶层任务收束规则.md)
 
 为执行入口。
 
@@ -134,7 +134,7 @@
 
 这部分规则以：
 
-- [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
+- [company/任务审阅与状态流转规范.md](../company/任务审阅与状态流转规范.md)
 
 为准。
 
@@ -313,9 +313,9 @@
 
 当前已先在治理层补齐：
 
-- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-- [company/任务创建模板.md](company/任务创建模板.md)
-- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](../company/任务类型与标签规范.md)
+- [company/任务创建模板.md](../company/任务创建模板.md)
+- [company/顶层任务收束规则.md](../company/顶层任务收束规则.md)
 
 若要处理某一批具体存量任务，应额外创建项目级或阶段性交付文档，不直接写入 `company/` 规则层。
 

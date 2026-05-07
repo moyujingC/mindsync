@@ -15,7 +15,7 @@
 
 它不定义模型配置本身；模型口径请看：
 
-- [Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
+- [Paperclip-Agent-模型配置总表.md](../company/Paperclip-Agent-模型配置总表.md)
 
 ## 1. 这份文档解决什么问题
 

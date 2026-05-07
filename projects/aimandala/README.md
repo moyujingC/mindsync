@@ -1,5 +1,11 @@
 # 一镜一梳工作区说明
 
+> 状态：current
+> 版本：0.1.0
+> owner：CEO / Orchestrator
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/README.md
+
 这里是 `一镜一梳` 在 `mindsync` Monorepo 中的正式项目工作区。
 
 当前目标是把 To C 主产品主线、部署说明和项目 artifact 收束在一个可继续开发、可治理、可演进的工作区。
@@ -18,7 +24,7 @@
 
 进入本工作区后，优先阅读：
 
-1. [PROJECT.md](projects/aimandala/PROJECT.md)
-2. [公司侧项目入口](company/projects/一镜一梳/PROJECT.md)
-3. [To C MVP Spec](projects/aimandala/docs/specs/ToC-MVP-产品规范.md)
-4. [部署与运维手册](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+1. [PROJECT.md](./PROJECT.md)
+2. [公司侧项目入口](../../company/projects/一镜一梳/PROJECT.md)
+3. [To C MVP Spec](./docs/specs/ToC-MVP-产品规范.md)
+4. [部署与运维手册](./docs/tasks/2026-04-10-服务器部署与运维手册.md)

@@ -54,8 +54,8 @@ import {
   type ApiDebugTraceEntry,
 } from "../shared/api/debugTrace";
 import type {
-  DetectCirclesResponse,
   FrontendUserSession,
+  DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
   InterpretationVersion,
@@ -151,6 +151,10 @@ export function MobileWebBrowserShell() {
   const [controlsOpen, setControlsOpen] = useState(initialState.controlsOpen);
   const [previewFlowState, setPreviewFlowState] =
     useState<MandalaFlowState | null>(null);
+  const [previewDetection, setPreviewDetection] =
+    useState<DetectCirclesResponse | null>(null);
+  const [previewDetectError, setPreviewDetectError] =
+    useState<string | null>(null);
   const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
   const [previewHistoryRecords, setPreviewHistoryRecords] =
     useState<InterpretationRecordResponse[] | null>(null);
@@ -466,10 +470,13 @@ export function MobileWebBrowserShell() {
       previewMode: true,
       uploadDraft: draft,
       flowState: previewFlowState,
+      detection: previewDetection,
+      detectError: previewDetectError,
       report: previewFlowState?.report ?? null,
       status: previewFlowState?.status ?? null,
       runtimeBusy: previewFlowRunning,
       historyBusy: Boolean(previewHistoryOpeningId),
+      uploadDetecting: previewFlowRunning && route === "loading",
     };
     const signature = JSON.stringify({
       route,
@@ -479,6 +486,8 @@ export function MobileWebBrowserShell() {
       statusStage: previewFlowState?.status?.generation_stage ?? null,
       statusProgress: previewFlowState?.status?.generation_progress ?? null,
       reportVersion: previewFlowState?.report?.version ?? null,
+      detection: previewDetection,
+      detectError: previewDetectError,
       previewFlowRunning,
     });
 
@@ -503,6 +512,8 @@ export function MobileWebBrowserShell() {
   }, [
     draft,
     localDebugEnabled,
+    previewDetectError,
+    previewDetection,
     previewFlowRunning,
     previewFlowState,
     previewHistoryOpeningId,
@@ -1137,6 +1148,7 @@ export function MobileWebBrowserShell() {
                     : undefined
                 }
                 environmentTone={import.meta.env.DEV ? "preview" : undefined}
+                detection={previewDetection}
                 onLandingStart={() => {
                   setRoute("upload");
                 }}

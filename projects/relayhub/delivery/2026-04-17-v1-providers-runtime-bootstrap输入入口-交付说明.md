@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers Runtime Bootstrap 输入入口 交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-17-v1-providers-runtime-bootstrap输入入口-交付说明.md
+
+
 ## 交付内容
 
 - 新增 providers runtime bootstrap input 入口

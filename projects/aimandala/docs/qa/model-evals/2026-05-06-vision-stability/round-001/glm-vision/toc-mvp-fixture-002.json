@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-001",
+  "round_index": 1,
+  "fixture_id": "toc-mvp-fixture-002",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 9781,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个明显的十字形图案，周围环绕着蓝色和黄色的元素。",
+    "circle_boundaries": {
+      "inner": "内圈由五个圆形图案组成，每个图案都有相似的花卉设计。",
+      "middle": "中圈由棕色和蓝色的几何形状组成，形成了一个复杂的图案。",
+      "outer": "外圈由一系列棕色和蓝色的几何形状组成，看起来像是一种边框或框架。"
+    },
+    "dominant_colors": [
+      "蓝色",
+      "黄色",
+      "绿色",
+      "棕色"
+    ],
+    "structure_notes": [
+      "图案对称且平衡。",
+      "颜色使用鲜艳且对比明显。",
+      "设计细节丰富，但整体和谐。"
+    ],
+    "risk_flags": [
+      "没有明显的风险标志。"
+    ],
+    "confidence": "high"
+  }
+}

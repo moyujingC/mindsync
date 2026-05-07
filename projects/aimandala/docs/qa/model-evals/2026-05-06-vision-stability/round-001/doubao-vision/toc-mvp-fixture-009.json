@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-001",
+  "round_index": 1,
+  "fixture_id": "toc-mvp-fixture-009",
+  "model": "ep-20260316095322-94wf5",
+  "candidate_id": "doubao-vision",
+  "duration_ms": 11611,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+  "output": {
+    "center_observation": "中心是一个黄色圆点，周围环绕橙色放射状图案，被白色圆环和红色小圆环包围，整体构成对称的核心区域，视觉焦点明确。",
+    "circle_boundaries": {
+      "inner": "内圈以中心黄色圆点及橙色放射区为核心，边界由白色圆环和红色小圆环构成，范围较小且图案密集。",
+      "middle": "中圈包含绿色叶片状图案和黄橙相间的花瓣状结构，围绕内圈分布，边界与外圈的绿色大叶片和蓝色图案衔接，可见度高。",
+      "outer": "外圈由绿色大叶片、蓝色几何图案和浅绿色小叶片组成，位于最外层，边界清晰，与背景白色形成对比。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "橙色",
+      "绿色",
+      "蓝色",
+      "白色",
+      "红色"
+    ],
+    "structure_notes": [
+      "整体结构对称，各圈层图案重复且有序，无明显断裂或偏移。",
+      "内圈图案最密集，中圈和外圈图案逐渐扩展，层次分明。",
+      "颜色块分布均匀，各圈层颜色区分明显，留白主要在背景和图案间隙。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

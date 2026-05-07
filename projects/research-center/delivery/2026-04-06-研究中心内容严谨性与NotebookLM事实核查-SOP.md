@@ -96,7 +96,7 @@
 
 建议直接复用：
 
-- [事实核查笔记模板](projects/research-center/templates/事实核查笔记模板.md)
+- [事实核查笔记模板](../../../projects/research-center/templates/事实核查笔记模板.md)
 
 最少要有四栏：
 
