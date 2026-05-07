@@ -66,6 +66,15 @@
   - `prod` 必须从 `release` 分支触发
   - 远端执行后会运行 `shared/tools/ci/aimandala-smoke.mjs`
 
+同时现在补充一条独立手动部署链：
+
+- `mvp-deploy-direct`
+  - 单独 workflow
+  - 用途是复用“最新一次已成功的 `mvp-ci`”结果
+  - 先检查对应分支最近一次成功的 `push` 型 `mvp-release`
+  - 检查通过后直接 deploy + smoke
+  - 不再重复跑一整轮 `mvp-ci`
+
 这条链路当前不做：
 
 - Paperclip 失败建单

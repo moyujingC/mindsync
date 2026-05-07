@@ -294,6 +294,17 @@
 - `basic`
 - `deep`
 
+补充一条新的手动部署口径：
+
+- `mvp-deploy-direct`
+  - 只通过 `workflow_dispatch` 手动触发
+  - `target=dev` 必须从 `main` 分支触发
+  - `target=prod` 必须从 `release` 分支触发
+  - 先检查对应分支最新一次 `push` 触发的 `mvp-release` 是否成功
+  - 且其中 `mvp-ci` 必须为绿色
+  - 检查通过后直接执行 deploy 和 smoke
+  - 不重复再跑一轮 `mvp-ci`
+
 #### 5.1.2 增强设计链路
 
 增强设计链路的目标口径是：
