@@ -14,7 +14,7 @@
 
 如果需要先理解“当前这套 CI/CD 系统本身由哪些组件构成、如何流转”，应先看：
 
-- [company/knowledge-base/system/当前CI-CD系统机制总览.md](company/knowledge-base/system/当前CI-CD系统机制总览.md)
+- [company/knowledge-base/system/当前CI-CD系统机制总览.md](../company/knowledge-base/system/当前CI-CD系统机制总览.md)
 
 ## 1. 为什么这份文档存在
 

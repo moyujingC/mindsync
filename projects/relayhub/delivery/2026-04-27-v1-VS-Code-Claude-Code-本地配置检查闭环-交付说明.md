@@ -1,5 +1,11 @@
 # RelayHub v1 VS Code Claude Code 本地配置检查闭环交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-本地配置检查闭环-交付说明.md
+
 ## Summary
 
 本轮交付把 `VS Code / Claude Code` 的本地接入，从“有模板可复制”继续推进到“有只读检查入口可诊断”。

@@ -1,6 +1,6 @@
 # 多项目 Heartbeat 运行态落地交付记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-05-03

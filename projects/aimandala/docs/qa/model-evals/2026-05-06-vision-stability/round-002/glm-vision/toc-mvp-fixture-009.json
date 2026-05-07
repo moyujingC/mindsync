@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-009",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 9399,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5081.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个明显的黄色圆形图案，周围环绕着橙色和白色的装饰。",
+    "circle_boundaries": {
+      "inner": "清晰可见，由黄色和橙色组成。",
+      "middle": "由绿色和黄色组成，边界较为明显。",
+      "outer": "由蓝色和绿色组成，边界清晰。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "橙色",
+      "绿色",
+      "蓝色"
+    ],
+    "structure_notes": [
+      "图案对称，层次分明。",
+      "颜色过渡自然，没有明显的拥挤或断裂。"
+    ],
+    "risk_flags": [
+      "无明显风险标志。"
+    ],
+    "confidence": "high"
+  }
+}

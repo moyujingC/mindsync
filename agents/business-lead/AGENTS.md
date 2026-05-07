@@ -56,12 +56,12 @@ reportsTo: ../ceo/AGENTS.md
 - `business-diagnosis`
   - 用于先拆模糊问题，再判断用户、场景、价值、约束和验证优先级
   - 位置：
-    - [business-diagnosis](projects/research-center/skills/business-diagnosis/SKILL.md)
+    - [business-diagnosis](../../projects/research-center/skills/business-diagnosis/SKILL.md)
 
 - `handoff-packaging`
   - 当商业判断需要交给 `Product Spec Lead`、`Content Lead` 或 CEO 时使用
   - 位置：
-    - [handoff-packaging](projects/research-center/skills/handoff-packaging/SKILL.md)
+    - [handoff-packaging](../../projects/research-center/skills/handoff-packaging/SKILL.md)
 
 ## `dbskill` 的使用原则
 

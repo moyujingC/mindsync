@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers token deployment input 交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-17-v1-providers-token-deployment-input-交付说明.md
+
+
 ## 本轮目标
 
 把 Providers token 链从“多种低层 token 输入都可直接传入”继续推进到“由 deployment 级 token input 统一决定 token 来源”，为后续更高层 token runtime 输入收束预留 app 层集中入口。

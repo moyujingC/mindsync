@@ -12,7 +12,7 @@
 
 它应被理解为：
 
-- `aimandala` 对 [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md) 的项目级落地
+- `aimandala` 对 [company/projects/Automation/PROJECT.md](../../../../company/projects/Automation/PROJECT.md) 的项目级落地
 - 当前首个正式项目级实例 runbook
 - 不是公司级 `Automation Platform` 的总入口
 
@@ -609,8 +609,8 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 但项目级正式版本口径仍以本 runbook 为 deploy 入口
 3. 若后续推荐目标版本变化，应同步更新：
    - 本文
-   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+   - [company/服务器与基础设施入口.md](../../../../company/服务器与基础设施入口.md)
+   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](../../../../company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
 
 ## 4.2 `hermes_local` 容器原生方案
 

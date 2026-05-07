@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers Security Browser Runtime Input QA Basis
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/qa/2026-04-17-v1-providers-security-browser-runtime-input-qa-basis.md
+
+
 ## 必测项
 
 - 默认 `securityBrowserRuntimeInput` 解析为 `undefined`

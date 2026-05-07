@@ -1,4 +1,10 @@
 # App
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/app/README.md
+
 
 这里放 `aicareer` 第一版实现入口和流程编排代码。
 

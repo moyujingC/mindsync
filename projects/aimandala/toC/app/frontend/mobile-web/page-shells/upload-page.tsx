@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
 
 import brandPattern from "../assets/pattern.webp";
 import type { MobileWebUploadDraft } from "../state";
+import type { DetectCirclesResponse } from "../../shared/types";
 
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
+  detection?: DetectCirclesResponse | null;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
@@ -599,6 +601,7 @@ function BottomPanel({
 
 export function MobileWebUploadPage({
   draft,
+  detection = null,
   environmentLabel,
   environmentDetail,
   environmentTone = "preview",

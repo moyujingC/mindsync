@@ -1,6 +1,6 @@
 # RelayHub v1 Providers runtime 收敛与真实闭环试点 交付说明
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-17

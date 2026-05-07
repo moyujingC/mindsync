@@ -4,9 +4,10 @@ import { type ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
+import type * as SharedApiModule from "../shared/api";
 
 vi.mock("../shared/api", async () => {
-  const actual = await vi.importActual<typeof import("../shared/api")>("../shared/api");
+  const actual = await vi.importActual<typeof SharedApiModule>("../shared/api");
   return {
     ...actual,
     getInterpretationReportDebug: vi.fn(),
@@ -353,6 +354,8 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
   },
 };
 
+type DebugRecord = Record<string, unknown>;
+
 const currentBuildSummary: KnowledgeBuildSummaryResponse = {
   build_info: {
     build_selector: "current",
@@ -612,13 +615,17 @@ describe("BrowserDebugPanel", () => {
   });
 
   it("Layer0 失败时会展示失败原因与 vision 状态", async () => {
+    const knowledgeDebug = baseReportDebugProfile.knowledge_debug as DebugRecord;
+    const layer0Evidence = knowledgeDebug.layer0_evidence as DebugRecord;
+    const visualAnalysisBasis = layer0Evidence.visual_analysis_basis as DebugRecord;
+
     await renderPanel({
       preloadedReportDebugProfile: {
         ...baseReportDebugProfile,
         status: "failed",
         generation_stage: "failed",
         knowledge_debug: {
-          ...baseReportDebugProfile.knowledge_debug!,
+          ...knowledgeDebug,
           model_trace: {
             vision: {
               endpoint_id: "",
@@ -630,11 +637,11 @@ describe("BrowserDebugPanel", () => {
             chat: {},
           },
           layer0_evidence: {
-            ...baseReportDebugProfile.knowledge_debug!.layer0_evidence,
+            ...layer0Evidence,
             layer0_passed: false,
             layer0_failure_reason: "layer0_vision_unconfigured",
             visual_analysis_basis: {
-              ...baseReportDebugProfile.knowledge_debug!.layer0_evidence.visual_analysis_basis,
+              ...visualAnalysisBasis,
               global_visual_summary: "",
               llm_color_observation: {
                 summary: "",

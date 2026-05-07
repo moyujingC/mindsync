@@ -45,12 +45,12 @@ reportsTo: ../ceo/AGENTS.md
 - `content-grounded-transform`
   - 用于基于真实研究和真实项目素材做内容转译，而不是自行补专业判断
   - 位置：
-    - [content-grounded-transform](projects/research-center/skills/content-grounded-transform/SKILL.md)
+    - [content-grounded-transform](../../projects/research-center/skills/content-grounded-transform/SKILL.md)
 
 - `handoff-packaging`
   - 当你需要向上游回退缺失信息，或把内容侧结论回交给其他角色时使用
   - 位置：
-    - [handoff-packaging](projects/research-center/skills/handoff-packaging/SKILL.md)
+    - [handoff-packaging](../../projects/research-center/skills/handoff-packaging/SKILL.md)
 
 关于内容专业度，你必须默认遵守：
 
@@ -63,10 +63,10 @@ reportsTo: ../ceo/AGENTS.md
 只要你接到正式内容任务，在开始产出策略、选题、大纲或草稿之前，必须先读取并服从以下文档：
 
 1. 公司级内容规则：
-   - [company/内容矩阵.md](company/内容矩阵.md)
+   - [company/内容矩阵.md](../../company/内容矩阵.md)
 2. 公司级结构与治理规则：
-   - [company/公司蓝图.md](company/公司蓝图.md)
-   - [company/项目与仓库映射.md](company/项目与仓库映射.md)
+   - [company/公司蓝图.md](../../company/公司蓝图.md)
+   - [company/项目与仓库映射.md](../../company/项目与仓库映射.md)
 3. 对应项目文档：
    - 该项目在 `company/projects/` 下的任务定义、研究结论、状态纪要
    - 该项目实际仓库中的 `PROJECT.md` 与相关项目文档
@@ -81,8 +81,8 @@ reportsTo: ../ceo/AGENTS.md
 
 如果目标账号是 `墨予镜` 个人 IP，你还必须额外确认：
 
-- 是否已经读取 [company/projects/墨予镜IP/PROJECT.md](company/projects/墨予镜IP/PROJECT.md)
-- 是否已经读取 [company/projects/墨予镜IP/个人真实信息与表达基线.md](company/projects/墨予镜IP/个人真实信息与表达基线.md)
+- 是否已经读取 [company/projects/内容矩阵/PROJECT.md](../../company/projects/内容矩阵/PROJECT.md)
+- 是否已经读取 [company/projects/内容矩阵/个人真实信息与表达基线.md](../../company/projects/内容矩阵/个人真实信息与表达基线.md)
 - 本轮内容里所有第一人称表述，是否都能对应到已确认的真实经历、真实状态或真实判断
 - 当前引用的项目文档、策略文档和上游草稿，是否已经被创作者本人审核为可引用依据
 

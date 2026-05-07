@@ -12,7 +12,7 @@
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 > 2026-04-19 状态说明：
-> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](projects/aimandala/docs/specs/2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
+> 本文档已被 [2026-04-19-paperclip-native-execution-routing-spec.md](./2026-04-19-paperclip-native-execution-routing-spec.md) 取代。
 > 其中“服务器拒绝普通任务，再 handoff 到本地”的主路径不再是当前正式口径。
 
 ## 1. 问题定义

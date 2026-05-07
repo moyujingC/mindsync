@@ -1,5 +1,11 @@
 # Preference Memory
 
+> 状态：current
+> 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/research-center/kb/preference-memory/README.md
+
 这里放“创作者偏好记忆”的第一版文件式资产。
 
 它不等同于正式知识库条目，也不等同于原始参考材料。

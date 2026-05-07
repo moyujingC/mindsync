@@ -1,6 +1,6 @@
 # Claude Code 研究结论交付
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-04-04

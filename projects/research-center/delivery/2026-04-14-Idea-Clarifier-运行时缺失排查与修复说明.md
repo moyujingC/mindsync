@@ -12,8 +12,8 @@
 
 新增的 `Idea Clarifier` 已存在于仓库治理源：
 
-- [.paperclip.yaml](.paperclip.yaml)
-- [agents/idea-clarifier/AGENTS.md](agents/idea-clarifier/AGENTS.md)
+- [.paperclip.yaml](../../../.paperclip.yaml)
+- [agents/idea-clarifier/AGENTS.md](../../../agents/idea-clarifier/AGENTS.md)
 
 但在 Paperclip 面板上看不到。
 
@@ -30,7 +30,7 @@
 
 ## 3. 为什么原脚本没有修好
 
-[shared/tools/sync-agents.sh](shared/tools/sync-agents.sh) 只负责：
+[shared/tools/sync-agents.sh](../../../shared/tools/sync-agents.sh) 只负责：
 
 - 在仓库与运行时之间同步已有 agent 的 instructions 文件
 
@@ -49,7 +49,7 @@
 
 已新增：
 
-- [shared/tools/sync-paperclip-runtime-agents.sh](shared/tools/sync-paperclip-runtime-agents.sh)
+- [shared/tools/sync-paperclip-runtime-agents.sh](../../../shared/tools/sync-paperclip-runtime-agents.sh)
 
 用途：
 

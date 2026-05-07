@@ -1,5 +1,7 @@
 # Claude Workspace Note
 
+> 状态：current
+
 此目录的统一协作说明以 `AGENTS.md` 为准。
 
 进入本工作区后，请按下面顺序读取：

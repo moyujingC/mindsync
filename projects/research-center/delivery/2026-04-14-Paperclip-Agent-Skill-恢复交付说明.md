@@ -1,6 +1,6 @@
 # Paperclip Agent Skill 恢复交付说明
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.2.0
 > owner：Engineer / Research & Knowledge Lead
 > last_updated：2026-04-15

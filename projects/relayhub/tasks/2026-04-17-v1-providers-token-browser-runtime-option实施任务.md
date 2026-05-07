@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers token browser runtime option 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-token-browser-runtime-option实施任务.md
+
 ## Summary
 
 在现有 `Providers token deployment input` 之上新增 `Console` 侧 `token browser runtime option`，把 browser runtime 输入里显式传 `tokenDeploymentInput` 的方式再收束一层。
