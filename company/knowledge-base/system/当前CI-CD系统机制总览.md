@@ -68,12 +68,19 @@
 
 同时现在补充一条独立手动部署链：
 
-- `mvp-deploy-direct`
+- `mvp-deploy`
   - 单独 workflow
   - 用途是复用“最新一次已成功的 `mvp-ci`”结果
   - 先检查对应分支最近一次成功的 `push` 型 `mvp-ci`
   - 检查通过后直接 deploy + smoke
   - 不再重复跑一整轮 `mvp-ci`
+
+这里需要区分两个层次：
+
+- `mvp-ci` workflow 里原本就包含一个名为 `mvp-deploy` 的手动 deploy job
+- 现在新增的 `.github/workflows/mvp-deploy.yml` 是独立 workflow
+  - 它的职责是“复用最新绿色 `mvp-ci` 结果后再部署”
+  - 不是再次重跑整条 `mvp-ci` workflow
 
 这样设计的主要原因是：
 

@@ -1,4 +1,4 @@
-# MVP Direct Deploy Checklist
+# MVP Deploy Checklist
 
 目标环境：
 - dev / prod
@@ -13,7 +13,7 @@
 - 本次部署是否明确允许复用该绿灯结果
 
 触发动作：
-- workflow: `mvp-deploy-direct`
+- workflow: `mvp-deploy`
 - target:
 - smoke_mode:
 
@@ -23,6 +23,6 @@
 - smoke 结果
 
 通过标准：
-- direct deploy workflow 通过
+- deploy workflow 通过
 - smoke 通过
 - 当前环境恢复可用

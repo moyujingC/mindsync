@@ -115,7 +115,7 @@ jobs:
             "$AIMANDALA_BACKEND_DIR/tests/unit"
 
   mvp-deploy:
-    name: mvp-deploy
+    name: mvp-deploy-inline
     needs:
       - mvp-ci
     if: github.event_name == 'workflow_dispatch'

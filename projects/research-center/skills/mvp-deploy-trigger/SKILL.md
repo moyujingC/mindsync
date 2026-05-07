@@ -1,6 +1,6 @@
 ---
 name: mvp-deploy-trigger
-description: 触发 Aimandala 当前 MVP 阶段的手动部署；若最新一次对应分支的 MVP CI 已全绿，则直接触发不重复跑 CI 的 direct deploy。
+description: 触发 Aimandala 当前 MVP 阶段的手动部署；若最新一次对应分支的 MVP CI 已全绿，则直接触发不重复跑 CI 的 MVP deploy。
 owner: Engineer / CEO / Orchestrator
 status: draft
 version: 0.1.0
@@ -34,7 +34,7 @@ handoff_to:
 如果已经绿色：
 
 - 不重复再跑一整轮 `mvp-ci`
-- 直接触发 `mvp-deploy-direct`
+- 直接触发 `mvp-deploy`
 
 如果还没有绿色：
 
@@ -57,7 +57,7 @@ handoff_to:
 ## 必读上下文
 
 1. `.github/workflows/mvp-ci.yml`
-2. `.github/workflows/mvp-deploy-direct.yml`
+2. `.github/workflows/mvp-deploy.yml`
 3. `company/GitHub-分支与-CI-CD-使用流程.md`
 4. `company/knowledge-base/system/当前CI-CD系统机制总览.md`
 5. `projects/research-center/skills/cicd-check/SKILL.md`
@@ -69,7 +69,7 @@ handoff_to:
    - `prod` 对应 `release`
 2. 先查该分支最新一次 `push` 触发的 `mvp-ci` 是否成功。
 3. 如果最新 `mvp-ci` 已成功：
-   - 触发 `mvp-deploy-direct`
+   - 触发 `mvp-deploy`
    - 说明本次复用了最新绿色 CI 结果
 4. 如果没有成功的最新 CI：
    - 不直接 deploy
@@ -86,13 +86,13 @@ handoff_to:
 
 - `mvp-ci`
   - 会在手动触发时重新跑 `mvp-ci`
-- `mvp-deploy-direct`
+- `mvp-deploy`
   - 先校验最新绿色 `mvp-ci`
   - 校验通过后直接 deploy，不重复跑 CI
 
 如果用户明确想“快一点，且复用最新绿灯”，优先用：
 
-- `mvp-deploy-direct`
+- `mvp-deploy`
 
 ## 输出格式
 
@@ -101,7 +101,7 @@ handoff_to:
 - 目标环境：
 - 目标分支：
 - 最新 MVP CI 状态：
-- 是否可 direct deploy：
+- 是否可直接部署：
 - 触发的 workflow：
 - run 入口：
 - 下一步观察点：
@@ -111,11 +111,11 @@ handoff_to:
 - 是否先检查了最新绿色 `mvp-ci`
 - 是否把 `dev` / `prod` 分支限制说清楚
 - 是否把“直接 deploy”误解成“完全不验证”
-- 是否在没有绿色 CI 时误触发 direct deploy
+- 是否在没有绿色 CI 时误触发部署
 
 ## Handoff 规则
 
-- 若 direct deploy 成功：
+- 若部署成功：
   - 交给 `test_qa` 做结果确认
 - 若 CI 未绿：
   - 交还 `cicd-check`

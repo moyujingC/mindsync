@@ -296,7 +296,7 @@
 
 补充一条新的手动部署口径：
 
-- `mvp-deploy-direct`
+- `mvp-deploy`
   - 只通过 `workflow_dispatch` 手动触发
   - `target=dev` 必须从 `main` 分支触发
   - `target=prod` 必须从 `release` 分支触发
@@ -304,6 +304,15 @@
   - 且其中 `mvp-ci` 必须为绿色
   - 检查通过后直接执行 deploy 和 smoke
   - 不重复再跑一轮 `mvp-ci`
+
+这里要和 `mvp-ci` workflow 里的内嵌 deploy job 区分开：
+
+- `mvp-ci` workflow
+  - 仍然包含一个手动触发时可运行的 `mvp-deploy` job
+  - 这条路会先跑同一次 workflow 里的 `mvp-ci`
+- `.github/workflows/mvp-deploy.yml`
+  - 是新的独立 deploy workflow
+  - 它先复用最新绿色 `mvp-ci` 结果，再直接部署
 
 这条 direct deploy 口径的设计目的不是“跳过质量门”，而是：
 

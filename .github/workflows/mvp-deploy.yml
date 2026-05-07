@@ -1,4 +1,4 @@
-name: mvp-deploy-direct
+name: mvp-deploy
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ on:
           - deep
 
 concurrency:
-  group: mvp-deploy-direct-${{ github.ref_name }}-${{ github.event.inputs.target }}
+  group: mvp-deploy-${{ github.ref_name }}-${{ github.event.inputs.target }}
   cancel-in-progress: false
 
 permissions:
@@ -45,7 +45,7 @@ jobs:
             const target = context.payload.inputs.target;
             const branch = target === 'prod' ? 'release' : 'main';
             if (context.ref.replace('refs/heads/', '') !== branch) {
-              core.setFailed(`MVP direct deploy for ${target} must be dispatched from ${branch}.`);
+              core.setFailed(`MVP deploy for ${target} must be dispatched from ${branch}.`);
               return;
             }
 
