@@ -40,6 +40,7 @@
 - `review-feedback-to-memory`
 - `knowledge-relink-maintenance`
 - `ui-ux-console-design`
+- `cicd-check`
 
 ## 配套文档
 
