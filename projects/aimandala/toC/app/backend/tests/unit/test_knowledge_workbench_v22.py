@@ -278,6 +278,8 @@ def test_v22_workbench_can_export_fixture_golden_assets(monkeypatch, tmp_path):
     assert "产品区块" in markdown_payload
     assert "topic_context" not in markdown_payload
     assert "current_reading" not in markdown_payload
+    assert "再次验证" not in markdown_payload
+    assert "相同输入是否复用" not in markdown_payload
     excerpt = markdown_payload.split("## 正文摘录", 1)[1]
     assert excerpt.strip()
     assert "重要声明" not in excerpt[:160]

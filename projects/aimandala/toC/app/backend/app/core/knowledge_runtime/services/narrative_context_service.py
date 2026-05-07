@@ -932,7 +932,7 @@ class NarrativeContextService:
         if transition:
             overall_parts.append(f"再往里看，三圈的走向也在说明同一件事：{transition}")
         overall_parts.append(
-            f"所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把和「{secondary}」有关的{secondary_keywords}带回现实。"
+            f"所以这不是简单的停住，而更像你先把内在安顿好，再慢慢把{secondary_keywords}带回现实。"
         )
         if signal_text:
             overall_parts.append(f"它也提醒你：{signal_text}")
@@ -973,7 +973,7 @@ class NarrativeContextService:
         block_parts = ["当前最容易卡住你的，不是没有方向，而是主导能量和现实节奏还没完全接上。"]
         if weakest_percentage < 12:
             block_parts.append(
-                f"尤其当和「{weakest}」有关的{weakest_theme}还没跟上时，你会在快要推进的那一刻先退回来。"
+                f"尤其当{weakest_theme}还没跟上时，你会在快要推进的那一刻先退回来。"
             )
         if signal_text:
             block_parts.append(f"这也是为什么你会反复遇到这样的卡点：{signal_text}")
@@ -988,7 +988,7 @@ class NarrativeContextService:
         )
         impact = "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。"
         if weakest_percentage < 12:
-            impact += f" 当和「{weakest}」有关的{weakest_theme}还偏少时，你也会更需要一点缓冲和回收。"
+            impact += f" 当{weakest_theme}还偏少时，你也会更需要一点缓冲和回收。"
         awareness = "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
         if signal_text:
             awareness += f" {signal_text}"
@@ -999,7 +999,7 @@ class NarrativeContextService:
         ]
         if weakest_percentage < 12:
             emotion_parts.append(
-                f"也因为和「{weakest}」有关的{weakest_theme}暂时偏弱，所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。"
+                f"也因为{weakest_theme}暂时偏弱，所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。"
             )
         if signal_text:
             emotion_parts.append(f"这和你现在的状态也很像：{signal_text}")
@@ -1082,8 +1082,8 @@ class NarrativeContextService:
                     "day": 3,
                     "title": "捕捉卡住瞬间",
                     "content": (
-                        f"如果今天又出现{signal_short}的时刻，别急着评价自己。"
-                        f"把那个瞬间记下来，你会更看清自己何时需要补回与「{weakest}」相关的{weakest_theme}。"
+                        f"如果今天又出现{signal_short}，别急着评价自己。"
+                        f"把那个瞬间记下来，你会更看清自己何时需要补回{weakest_theme}。"
                     ),
                 },
             ],
@@ -2079,8 +2079,8 @@ class NarrativeContextService:
         suggestions = [
             {
                 "phase": "当前阶段",
-                "focus": primary,
-                "practice": healing_core or f"先围绕「{primary}」建立更稳的承载感。",
+                "focus": "先看见卡住发生在哪里",
+                "practice": healing_core or f"先把当前最卡的一步拆小，让身体重新感到自己接得住。",
             },
             {
                 "phase": "下一步",

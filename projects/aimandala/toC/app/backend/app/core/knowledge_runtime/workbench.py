@@ -415,8 +415,8 @@ class KnowledgeWorkbench:
                 "image_path": str(self._resolve_path(input_payload.get("image_path"))),
                 "user_id": str(input_payload.get("user_profile") or f"{fixture.get('id', 'fixture')}-user"),
                 "theme": str(fixture.get("theme") or input_payload.get("theme") or "general"),
-                "painting_intention": input_payload.get("painting_intention"),
-                "painting_feeling": input_payload.get("painting_feeling"),
+                "painting_intention": self._resolve_fixture_user_intention(fixture),
+                "painting_feeling": self._resolve_fixture_user_feeling(fixture),
                 "three_circles": self._build_three_circle_override(input_payload),
             }
             record = await orchestrator.generate_lite_placeholder(
@@ -569,6 +569,34 @@ class KnowledgeWorkbench:
             "ai_qa_context_present": bool(report.get("ai_qa_context")),
             "structured_field_presence": structured_presence,
         }
+
+    def _resolve_fixture_user_intention(self, fixture: dict[str, Any]) -> str:
+        input_payload = fixture.get("input", {}) if isinstance(fixture.get("input"), dict) else {}
+        raw = str(input_payload.get("painting_intention") or "").strip()
+        fixture_type = str(fixture.get("fixture_type") or "").strip()
+        if fixture_type in {"existing-reuse", "vision-stability"} or self._looks_like_qa_intention(raw):
+            return "想更看清自己现在的状态，也想知道接下来怎么更稳地往前。"
+        return raw
+
+    def _resolve_fixture_user_feeling(self, fixture: dict[str, Any]) -> str:
+        input_payload = fixture.get("input", {}) if isinstance(fixture.get("input"), dict) else {}
+        raw = str(input_payload.get("painting_feeling") or "").strip()
+        fixture_type = str(fixture.get("fixture_type") or "").strip()
+        if fixture_type in {"existing-reuse", "vision-stability"} or self._looks_like_qa_intention(raw):
+            return "先如实看看这张画带出来的感受，不急着下结论。"
+        return raw
+
+    def _looks_like_qa_intention(self, value: str) -> bool:
+        markers = [
+            "验证",
+            "复用",
+            "测试",
+            "稳定性",
+            "fixture",
+            "三圈边界",
+            "画面结构",
+        ]
+        return any(marker in value for marker in markers)
 
     def _build_knowledge_summary(self, knowledge_debug: dict[str, Any]) -> dict[str, Any]:
         layer0 = knowledge_debug.get("layer0_evidence", {})

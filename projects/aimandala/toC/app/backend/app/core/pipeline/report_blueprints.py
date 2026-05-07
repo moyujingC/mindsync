@@ -594,7 +594,7 @@ _DEFAULT_LITE_NARRATIVE_TEMPLATES = {
     "user_context_from_intention": "你在创作前提到“{intention}”，这说明你当时已经在主动寻找一个新的落点。",
     "user_context_from_feeling": "创作时你感受到“{feeling}”，这让画面里那种既收束又试探着向外打开的张力更明显。",
     "feeling_hint_default": "这通常意味着身体感受和现实推进速度暂时没有对齐。",
-    "feeling_hint_from_feeling": "你提到的“{feeling}”也说明身体层面还在追赶外部节奏。",
+    "feeling_hint_from_feeling": "如果把创作时的“{feeling}”也放进来看，身体像是在提醒你：先观察清楚，不必急着下结论。",
 }
 _DEFAULT_LITE_AWARENESS_CONTENT_TEMPLATES = [
     "今天先留意身体在哪些时刻悄悄收紧。那种紧绷不是你做错了什么，而是身体在提醒你：这里也许需要更多安全感和边界感。",
