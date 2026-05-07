@@ -15,7 +15,7 @@ when_to_use: >
 inputs:
   - 目标环境：dev 或 prod
   - 当前目标分支
-  - 最新 mvp-release / mvp-ci 状态
+  - 最新 mvp-ci 状态
 outputs:
   - deploy 触发判断
   - 采用的 workflow
@@ -56,7 +56,7 @@ handoff_to:
 
 ## 必读上下文
 
-1. `.github/workflows/mvp-release.yml`
+1. `.github/workflows/mvp-ci.yml`
 2. `.github/workflows/mvp-deploy-direct.yml`
 3. `company/GitHub-分支与-CI-CD-使用流程.md`
 4. `company/knowledge-base/system/当前CI-CD系统机制总览.md`
@@ -67,7 +67,7 @@ handoff_to:
 1. 先判断目标环境。
    - `dev` 对应 `main`
    - `prod` 对应 `release`
-2. 先查该分支最新一次 `push` 触发的 `mvp-release` 是否成功。
+2. 先查该分支最新一次 `push` 触发的 `mvp-ci` 是否成功。
 3. 如果最新 `mvp-ci` 已成功：
    - 触发 `mvp-deploy-direct`
    - 说明本次复用了最新绿色 CI 结果
@@ -84,7 +84,7 @@ handoff_to:
 
 当前 MVP 阶段默认存在两种手动部署方式：
 
-- `mvp-release`
+- `mvp-ci`
   - 会在手动触发时重新跑 `mvp-ci`
 - `mvp-deploy-direct`
   - 先校验最新绿色 `mvp-ci`

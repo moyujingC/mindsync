@@ -22,7 +22,7 @@
 - 单人开发默认先在 `main` 根工作区推进，再按任务复杂度决定是否拆出项目开发分支
 - IDE 代理默认禁止主动切分支、创建分支或开新 worktree；只有用户明确要求时才允许执行
 - 不把所有项目强行塞进同一种发布节奏
-- 当前判断 `Aimandala` CI/CD 是否可用时，优先看 `mvp-release`
+- 当前判断 `Aimandala` CI/CD 是否可用时，优先看 `mvp-ci`
 - 原 `aimandala-ci / deploy / nightly-smoke / auto-repair` 先按增强设计链路理解，不作为当前 MVP 日常开发的默认复杂度
 
 ## 2. 当前分支职责
@@ -243,7 +243,7 @@
 
 截至 `2026-05-05`，`AI Mandala` 同时存在两套 GitHub Actions 口径：
 
-- `mvp-release`
+- `mvp-ci`
   - 当前优先看的 MVP 可用链路
   - 使用 GitHub 托管 runner：`ubuntu-latest`
   - 负责最小 CI、手动部署、部署后 smoke
@@ -252,7 +252,7 @@
   - 使用 self-hosted runner：`self-hosted + linux + mindsync-ci + aimandala`
   - 负责完整质量门、Paperclip 回写、nightly smoke 和 auto-repair
 
-#### 5.1.1 MVP 可用链路：`mvp-release`
+#### 5.1.1 MVP 可用链路：`mvp-ci`
 
 `mvp-ci` 会在以下事件触发：
 
@@ -267,7 +267,7 @@
 - `projects/aimandala/toC/**`
 - `projects/aimandala/fixtures/**`
 - `shared/tools/ci/**`
-- `.github/workflows/mvp-release.yml`
+- `.github/workflows/mvp-ci.yml`
 
 `mvp-ci` 当前检查内容：
 
@@ -300,10 +300,22 @@
   - 只通过 `workflow_dispatch` 手动触发
   - `target=dev` 必须从 `main` 分支触发
   - `target=prod` 必须从 `release` 分支触发
-  - 先检查对应分支最新一次 `push` 触发的 `mvp-release` 是否成功
+  - 先检查对应分支最新一次 `push` 触发的 `mvp-ci` 是否成功
   - 且其中 `mvp-ci` 必须为绿色
   - 检查通过后直接执行 deploy 和 smoke
   - 不重复再跑一轮 `mvp-ci`
+
+这条 direct deploy 口径的设计目的不是“跳过质量门”，而是：
+
+- 对同一提交，优先复用最新一次已经通过的 `mvp-ci`
+- 避免为了手动部署再次重复消耗一整轮 GitHub Actions 分钟数
+- 在私有仓库免费额度有限的前提下，尽量把 CI 用量留给真正的新提交验证
+
+它成立的安全前提是：
+
+- 部署目标仍然是当前分支最新一次已通过 `mvp-ci` 的提交
+- 不能拿更老的绿灯去部署一个后来已经变新的分支状态
+- 因此 direct deploy 固定检查“最新一次 run 是否为绿色”，而不是只寻找任意一条历史成功记录
 
 #### 5.1.2 增强设计链路
 
@@ -328,7 +340,7 @@
 
 因此如果一次 `main` merge 主要改的是 `RelayHub`、研究文档或公司治理文档，就算已经 push 到 `main`，也通常**不需要**额外手动补触发 `AI Mandala deploy`
 
-但如果当前目标是“确认 `Aimandala` 最小 CI/CD 是否可用”，优先检查 `mvp-release` 的 run，而不是先看增强链路的 self-hosted runner / Paperclip 回写链路。
+但如果当前目标是“确认 `Aimandala` 最小 CI/CD 是否可用”，优先检查 `mvp-ci` 的 run，而不是先看增强链路的 self-hosted runner / Paperclip 回写链路。
 
 ### 5.2 RelayHub
 

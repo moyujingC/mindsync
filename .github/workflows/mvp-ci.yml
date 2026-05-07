@@ -1,4 +1,4 @@
-name: mvp-release
+name: mvp-ci
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
       - "projects/aimandala/toC/**"
       - "projects/aimandala/fixtures/**"
       - "shared/tools/ci/**"
-      - ".github/workflows/mvp-release.yml"
+      - ".github/workflows/mvp-ci.yml"
   push:
     branches:
       - aimandala/dev
@@ -19,7 +19,7 @@ on:
       - "projects/aimandala/toC/**"
       - "projects/aimandala/fixtures/**"
       - "shared/tools/ci/**"
-      - ".github/workflows/mvp-release.yml"
+      - ".github/workflows/mvp-ci.yml"
   workflow_dispatch:
     inputs:
       target:
@@ -39,7 +39,7 @@ on:
           - deep
 
 concurrency:
-  group: mvp-release-${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.inputs.target || 'ci' }}
+  group: mvp-ci-${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.inputs.target || 'ci' }}
   cancel-in-progress: false
 
 permissions:

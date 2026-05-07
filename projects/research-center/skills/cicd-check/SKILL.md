@@ -113,7 +113,7 @@ handoff_to:
 通俗说，这个 skill 在 MVP 阶段主要做三件事：
 
 - 看 `GitHub Actions（GitHub 持续集成页面）` 上最新 run 是绿还是红
-- 判断当前 `mvp-release` 主链路是否被阻塞
+- 判断当前 `mvp-ci` 主链路是否被阻塞
 - 一旦失败，就把它收束成可执行的最小修 bug 计划
 
 当前默认不做：
@@ -124,7 +124,7 @@ handoff_to:
 
 如果以后增强链路重新稳定，这个 skill 可以继续扩展，但 MVP 阶段的默认主判断仍应先看：
 
-- `.github/workflows/mvp-release.yml`
+- `.github/workflows/mvp-ci.yml`
 
 ## 最新状态判断口径
 

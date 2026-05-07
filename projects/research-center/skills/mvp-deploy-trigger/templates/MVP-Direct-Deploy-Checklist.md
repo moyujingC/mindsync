@@ -8,7 +8,7 @@
 - prod -> release
 
 部署前检查：
-- 最新 `mvp-release` 是否存在成功的 `push` run
+- 最新 `mvp-ci` 是否存在成功的 `push` run
 - 该 run 中 `mvp-ci` 是否为绿色
 - 本次部署是否明确允许复用该绿灯结果
 
