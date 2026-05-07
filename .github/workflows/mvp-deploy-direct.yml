@@ -61,9 +61,17 @@ jobs:
               }
             );
 
-            const latestSuccess = runs.find((run) => run.name === 'mvp-release' && run.conclusion === 'success');
-            if (!latestSuccess) {
-              core.setFailed(`No successful push-triggered mvp-release run found on branch ${branch}.`);
+            const latestRun = runs.find((run) => run.name === 'mvp-release');
+            if (!latestRun) {
+              core.setFailed(`No push-triggered mvp-release run found on branch ${branch}.`);
+              return;
+            }
+
+            if (latestRun.conclusion !== 'success') {
+              core.setFailed(
+                `Latest push-triggered mvp-release run on ${branch} is not green. ` +
+                `Run ${latestRun.id} concluded with ${latestRun.conclusion}.`
+              );
               return;
             }
 
@@ -72,25 +80,25 @@ jobs:
               {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                run_id: latestSuccess.id,
+                run_id: latestRun.id,
                 per_page: 100,
               }
             );
 
             const mvpCiJob = jobs.find((job) => job.name === 'mvp-ci');
             if (!mvpCiJob || mvpCiJob.conclusion !== 'success') {
-              core.setFailed(`Latest successful mvp-release run ${latestSuccess.id} does not contain a successful mvp-ci job.`);
+              core.setFailed(`Latest mvp-release run ${latestRun.id} does not contain a successful mvp-ci job.`);
               return;
             }
 
-            core.setOutput('ci_run_id', String(latestSuccess.id));
-            core.setOutput('ci_run_url', latestSuccess.html_url);
-            core.setOutput('ci_head_sha', latestSuccess.head_sha);
+            core.setOutput('ci_run_id', String(latestRun.id));
+            core.setOutput('ci_run_url', latestRun.html_url);
+            core.setOutput('ci_head_sha', latestRun.head_sha);
             core.summary
               .addHeading('Latest MVP CI Check')
               .addRaw(`Branch: ${branch}\n`, true)
-              .addRaw(`Run: ${latestSuccess.html_url}\n`, true)
-              .addRaw(`Commit: ${latestSuccess.head_sha}\n`, true)
+              .addRaw(`Run: ${latestRun.html_url}\n`, true)
+              .addRaw(`Commit: ${latestRun.head_sha}\n`, true)
               .write();
 
   mvp-deploy:
