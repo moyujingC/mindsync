@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-001",
+  "round_index": 1,
+  "fixture_id": "toc-mvp-fixture-003",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 8264,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个明显的蓝色圆点，周围环绕着黄色和橙色的图案。",
+    "circle_boundaries": {
+      "inner": "清晰",
+      "middle": "清晰",
+      "outer": "清晰"
+    },
+    "dominant_colors": [
+      "黄色",
+      "橙色",
+      "蓝色",
+      "绿色"
+    ],
+    "structure_notes": [
+      "图案对称",
+      "颜色渐变",
+      "层次分明"
+    ],
+    "risk_flags": [
+      "无"
+    ],
+    "confidence": "high"
+  }
+}

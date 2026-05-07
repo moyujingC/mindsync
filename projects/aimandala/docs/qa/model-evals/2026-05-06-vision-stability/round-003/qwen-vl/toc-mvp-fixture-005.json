@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "round_id": "round-003",
+  "round_index": 3,
+  "fixture_id": "toc-mvp-fixture-005",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 13238,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+  "output": {
+    "center_observation": "画面中心为一个由紫色和粉色构成的星形图案，周围环绕着橙黄色花瓣状结构，整体呈高度对称的放射状布局。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，由绿色背景和橙黄色花瓣状元素构成，形成明显的圆形轮廓。",
+      "middle": "中圈边界明显，由蓝色与黄色交错的几何星形图案组成，具有清晰的分层感。",
+      "outer": "外圈边界完整，由紫色背景和绿色叶状图案构成，边缘整齐，未见断裂或偏移。"
+    },
+    "dominant_colors": [
+      "紫色",
+      "粉色",
+      "黄色",
+      "绿色",
+      "蓝色",
+      "橙色"
+    ],
+    "structure_notes": [
+      "整体结构呈现高度对称性，三个圈层分明，层次清晰。",
+      "各圈层之间有明确的过渡区域，颜色与形状变化有序。",
+      "无明显留白或拥挤现象，色彩分布均匀。",
+      "图案连续性强，无断裂或错位现象。",
+      "中心区域细节丰富，向外逐渐扩展为更复杂的几何形态。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

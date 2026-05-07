@@ -1,4 +1,10 @@
 # Delivery
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/delivery/README.md
+
 
 这里放 `怀瑾握瑜` 的交付记录、发布说明和复盘。
 
@@ -24,9 +30,9 @@
 
 进入本目录前，先对齐：
 
-- [MVP产品规范.md](projects/aicareer/specs/MVP产品规范.md)
-- [MVP技术方案.md](projects/aicareer/specs/MVP技术方案.md)
-- [本项目 PROJECT.md](projects/aicareer/PROJECT.md)
+- [MVP产品规范.md](../specs/MVP产品规范.md)
+- [MVP技术方案.md](../specs/MVP技术方案.md)
+- [本项目 PROJECT.md](../PROJECT.md)
 
 ## 当前阶段性文档
 
@@ -34,17 +40,23 @@
 
 如需回看当前最关键的阶段材料，优先阅读：
 
-- [2026-04-03-mvp-review-memo.md](projects/aicareer/delivery/2026-04-03-mvp-review-memo.md)
-- [2026-04-03-mvp-implementation-note.md](projects/aicareer/delivery/2026-04-03-mvp-implementation-note.md)
-- [2026-04-06-spec-to-architecture-handoff.md](projects/aicareer/delivery/2026-04-06-spec-to-architecture-handoff.md)
-- [2026-04-06-spec-to-CEO-handoff.md](projects/aicareer/delivery/2026-04-06-spec-to-CEO-handoff.md)
+- [2026-04-03-mvp-review-memo.md](./2026-04-03-mvp-review-memo.md)
+- [2026-04-03-mvp-implementation-note.md](./2026-04-03-mvp-implementation-note.md)
+- [2026-04-06-spec-to-architecture-handoff.md](./2026-04-06-spec-to-architecture-handoff.md)
+- [2026-04-06-spec-to-CEO-handoff.md](./2026-04-06-spec-to-CEO-handoff.md)
+
+这些文档的角色是：
+
+- 帮你理解某一轮阶段结论如何形成
+- 帮你追踪 handoff（交接）如何传递
+- 不是长期 canonical 入口
 
 ## 历史资料入口
 
 以下文档主要用于追溯窗口背景：
 
-- [2026-04-03-窗口工作总结.md](projects/aicareer/delivery/2026-04-03-窗口工作总结.md)
-- [2026-04-03-career-asset-sample.md](projects/aicareer/delivery/2026-04-03-career-asset-sample.md)
+- [2026-04-03-窗口工作总结.md](./2026-04-03-窗口工作总结.md)
+- [2026-04-03-career-asset-sample.md](./2026-04-03-career-asset-sample.md)
 
 ## 默认阅读顺序
 

@@ -1,5 +1,11 @@
 # RelayHub v1 Claude Code 可调用的最小 dev-relay 接入交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-21-v1-Claude-Code-可调用的最小-dev-relay-接入-交付说明.md
+
 ## Summary
 
 本轮交付的目标是让 RelayHub 第一次成为 Claude Code 可直接调用的本地中转站。

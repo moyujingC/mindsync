@@ -71,7 +71,11 @@ class KnowledgeDebugBlockBuilder:
         )
         if runtime is None:
             return {
-                "build_info": {},
+                "build_info": {
+                    "build_selector": "current",
+                    "build_source": "current",
+                    "build_id": "current",
+                },
                 "layer0_evidence": self._build_layer0_evidence(layer0),
                 "algorithm_fidelity_trace": algorithm_fidelity_trace,
                 "model_trace": self._build_model_trace(layer0),

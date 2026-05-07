@@ -1,5 +1,11 @@
 # Decisions
 
+> 状态：current
+> 版本：0.1.0
+> owner：CEO / Orchestrator
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/docs/decisions/README.md
+
 这里放 `一镜一梳` 的结构性决策和 ADR。
 
 适合放在这里的内容包括：
@@ -18,4 +24,5 @@
 
 当前已沉淀：
 
+- `2026-05-05-mvp-模型选型决策.md`
 - `2026-04-06-用户分群与产品矩阵决策.md`

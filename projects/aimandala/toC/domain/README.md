@@ -1,5 +1,12 @@
 # Domain
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/domain/README.md
+
+
 这里放 `一镜一梳` To C 主产品的领域对象、核心规则和主流程定义。
 
 适合放在这里的内容包括：

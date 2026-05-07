@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers token source 组合工厂 v2 交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-17-v1-providers-token-source组合工厂v2-交付说明.md
+
+
 ## 本轮目标
 
 把 Providers token 链从“由 token source factory 决定来源”继续推进到“由 token source composition factory 统一收束 default-disabled / static / global 三类来源”，为后续更高层 token 输入收束预留 services 层集中入口。

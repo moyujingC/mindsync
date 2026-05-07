@@ -1,5 +1,12 @@
 # 2026-04-17 v1 Providers auth headers source 组合工厂 QA Basis
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/qa/2026-04-17-v1-providers-auth-headers-source组合工厂-qa-basis.md
+
+
 ## Core Cases
 
 - 默认 factory 返回 disabled auth source

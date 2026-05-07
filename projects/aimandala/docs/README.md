@@ -1,5 +1,11 @@
 # Docs
 
+> 状态：current
+> 版本：0.1.0
+> owner：CEO / Orchestrator
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/docs/README.md
+
 这里放 `一镜一梳` 的正式项目 artifact。
 
 当前统一收敛为以下子目录：

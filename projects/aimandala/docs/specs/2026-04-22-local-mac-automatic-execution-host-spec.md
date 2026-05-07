@@ -1,6 +1,6 @@
 # Aimandala Local Mac Automatic Execution Host Spec
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-04-22

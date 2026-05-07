@@ -1,5 +1,11 @@
 # RelayHub v1 Claude Code 本地联调与 AITechFlux 任务切模型交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-22-v1-Claude-Code-本地联调与-AITechFlux-任务切模型-交付说明.md
+
 ## Summary
 
 本轮交付把已经实现的 `control-plane`、`dev-relay` 和中转入口激活链路真正收成一条本地可操作闭环：

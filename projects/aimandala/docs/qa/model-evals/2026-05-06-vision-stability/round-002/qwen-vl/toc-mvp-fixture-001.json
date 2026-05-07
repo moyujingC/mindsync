@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-001",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 11416,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5057.jpeg",
+  "output": {
+    "center_observation": "画面中心为一个红色星形图案，周围环绕着黄色背景区域，构成视觉焦点。",
+    "circle_boundaries": {
+      "inner": "内圈由六个紫色与黄色相间的圆形图案组成，排列紧密，形成清晰的内层结构。",
+      "middle": "中圈由绿色、橙色和蓝色的弧形及叶片状元素构成，边界较为明显但略显复杂，连接内圈与外圈。",
+      "outer": "外圈由蓝色波浪形线条构成，边缘清晰，呈放射状向外延伸，形成完整的外围轮廓。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "紫色",
+      "蓝色",
+      "绿色",
+      "橙色"
+    ],
+    "structure_notes": [
+      "整体结构对称且层次分明，具有高度的几何规律性。",
+      "内圈图案重复性强，呈现出六重对称性。",
+      "中圈元素过渡自然，颜色丰富，但部分区域存在轻微拥挤感。",
+      "外圈波浪线条流畅，边界完整，无明显断裂或偏移。",
+      "中心区域留白较少，但红色星形突出，成为视觉锚点。"
+    ],
+    "risk_flags": [
+      "中圈部分区域色彩密集，可能存在局部拥挤现象。",
+      "外圈边缘虽完整，但部分波浪线略显不规则，可能影响整体对称性感知。"
+    ],
+    "confidence": "high"
+  }
+}

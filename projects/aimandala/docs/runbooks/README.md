@@ -39,15 +39,15 @@
 
 ## 3. 当前重点入口
 
-1. [开发与联调总入口.md](projects/aimandala/docs/runbooks/开发与联调总入口.md)
-2. [本地联调手册.md](projects/aimandala/docs/runbooks/本地联调手册.md)
-3. [历史任务批量关闭-runbook.md](projects/aimandala/docs/runbooks/历史任务批量关闭-runbook.md)
-4. [本地-Mac-自动执行器-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-自动执行器-runbook.md)
-5. [本地-Mac-执行节点单机试点-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md)
-6. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](projects/aimandala/docs/runbooks/2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
-7. [2026-05-03-observe-only-checkout-治理-runbook.md](projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md)
-8. [../tasks/2026-04-10-服务器部署与运维手册.md](projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
-9. [../tasks/aimandala-pr-质量门-runbook.md](projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md)
+1. [开发与联调总入口.md](./开发与联调总入口.md)
+2. [本地联调手册.md](./本地联调手册.md)
+3. [历史任务批量关闭-runbook.md](./历史任务批量关闭-runbook.md)
+4. [本地-Mac-自动执行器-runbook.md](./本地-Mac-自动执行器-runbook.md)
+5. [本地-Mac-执行节点单机试点-runbook.md](./本地-Mac-执行节点单机试点-runbook.md)
+6. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](./2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
+7. [2026-05-03-observe-only-checkout-治理-runbook.md](./2026-05-03-observe-only-checkout-治理-runbook.md)
+8. [../tasks/2026-04-10-服务器部署与运维手册.md](../tasks/2026-04-10-服务器部署与运维手册.md)
+9. [../tasks/aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
 
 ## 4. 当前治理判断
 

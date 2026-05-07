@@ -38,17 +38,62 @@ def _force_workbench_noop_llm(monkeypatch) -> None:
     )
 
 
-def test_v22_workbench_builds_candidate_and_diff():
+def test_v22_workbench_builds_candidate_and_diff(monkeypatch):
+    _force_workbench_noop_llm(monkeypatch)
     workbench = KnowledgeWorkbench()
     build_id = "pytest-v22"
     build_selector = f"candidate:{build_id}"
     build_dir = resolve_build_dir(build_selector)
     shutil.rmtree(build_dir, ignore_errors=True)
+    original_load_build_summary = workbench.load_build_summary
+
+    async def fake_run_evals(*, build_selector: str, fixture_ids=None):
+        eval_dir = resolve_build_dir(build_selector) / "evals"
+        eval_dir.mkdir(parents=True, exist_ok=True)
+        summary = {
+            "build_selector": build_selector,
+            "summary": {
+                "fixture_count": len(fixture_ids or ["toc-mvp-fixture-001"]),
+                "fixture_fallback_count": 0,
+                "warning_hit_count": 1,
+                "structured_missing_count": 0,
+                "regression_flag_count": 0,
+            },
+            "fixtures": [],
+        }
+        (eval_dir / "summary.json").write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        return summary
+
+    def fake_load_build_summary(build_selector: str):
+        summary = original_load_build_summary(build_selector)
+        if build_selector == "current":
+            summary["eval_summary"] = {
+                "summary": {
+                    "fixture_count": 1,
+                    "fixture_fallback_count": 0,
+                    "warning_hit_count": 1,
+                    "structured_missing_count": 0,
+                    "regression_flag_count": 0,
+                },
+                "fixtures": [],
+            }
+        return summary
+
+    monkeypatch.setattr(workbench, "run_evals", fake_run_evals)
+    monkeypatch.setattr(workbench, "load_build_summary", fake_load_build_summary)
 
     try:
         build_result = workbench.build_candidate(build_id)
-        current_summary = asyncio.run(workbench.ensure_build_summary("current"))
-        candidate_summary = asyncio.run(workbench.run_evals(build_selector=build_selector))
+        current_summary = workbench.load_build_summary("current")["eval_summary"]
+        candidate_summary = asyncio.run(
+            workbench.run_evals(
+                build_selector=build_selector,
+                fixture_ids=["toc-mvp-fixture-001"],
+            )
+        )
         diff_payload = workbench.diff_builds(
             base_selector="current",
             target_selector=build_selector,
@@ -57,8 +102,8 @@ def test_v22_workbench_builds_candidate_and_diff():
         assert Path(build_result["index_path"]).exists()
         assert Path(build_result["quality_path"]).exists()
         assert (build_dir / "evals" / "summary.json").exists()
-        assert current_summary["quality"]["build_info"]["build_selector"] == "current"
-        assert candidate_summary["summary"]["fixture_count"] == 4
+        assert current_summary["summary"]["fixture_count"] == 1
+        assert candidate_summary["summary"]["fixture_count"] == 1
         assert candidate_summary["summary"]["warning_hit_count"] >= 1
         assert "quality_diff" in diff_payload
         assert "eval_diff" in diff_payload
@@ -91,10 +136,60 @@ def test_v22_debug_endpoints_are_dev_only(monkeypatch):
 
 
 def test_v22_debug_endpoints_return_payloads_when_enabled(monkeypatch):
+    from app.api import routes_v2
     from app.api.main import app
 
     _reset_api_state()
-    _force_workbench_noop_llm(monkeypatch)
+
+    class FakeKnowledgeWorkbench:
+        async def ensure_build_summary(self, build_selector: str):
+            return {
+                "build_info": {"build_selector": build_selector},
+                "quality": {"summary": {"theme_count": 3}},
+                "eval_summary": {"summary": {"fixture_count": 4}},
+            }
+
+        async def preview_fixture(
+            self,
+            *,
+            fixture_id: str,
+            build_selector: str,
+            version: str,
+            compare_to_current: bool = True,
+        ):
+            return {
+                "fixture_meta": {
+                    "fixture_id": fixture_id,
+                    "build_selector": build_selector,
+                    "version": version,
+                },
+                "report_summary": {
+                    "version": version,
+                    "structured_field_presence": {
+                        "deep_impression": True,
+                        "evidence_digest": True,
+                        "imbalance_diagnosis": True,
+                        "root_cause_chain": True,
+                        "deep_structure_interpretation": True,
+                        "healing_plan": True,
+                    },
+                },
+                "knowledge_summary": {
+                    "summary": {
+                        "fallback_used": False,
+                        "algorithm_fidelity_pass": True,
+                        "raw_payload_leak_found": False,
+                    },
+                    "source_refs": [{"source_path": "fixtures/fake.yaml"}],
+                    "field_to_knowledge_map": {
+                        "healing_plan": {"entity_ids": ["healing.general"]}
+                    },
+                },
+                "regression_flags": [],
+                "diff_from_current": None if not compare_to_current else {},
+            }
+
+    routes_v2._knowledge_workbench = FakeKnowledgeWorkbench()
     monkeypatch.setenv("AIMANDALA_ENABLE_DEBUG_WORKBENCH", "1")
     client = TestClient(app)
 

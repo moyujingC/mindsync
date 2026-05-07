@@ -1,5 +1,11 @@
 # RelayHub v1 VS Code Claude Code 主路径收口交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-主路径收口-交付说明.md
+
 ## Summary
 
 本轮交付把 `RelayHub` 当前阶段默认主路径正式收口为：

@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-002",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 10204,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5060.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个复杂的几何图案，颜色鲜艳，包括黄色、蓝色和棕色。",
+    "circle_boundaries": {
+      "inner": "内圈由五个圆形图案组成，每个图案都有花卉设计。",
+      "middle": "中圈由蓝色和黄色的几何形状组成，连接内圈和外圈。",
+      "outer": "外圈由棕色和米色的几何图案组成，形成了一个框架。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "绿色",
+      "蓝色",
+      "棕色"
+    ],
+    "structure_notes": [
+      "图案对称",
+      "颜色对比鲜明",
+      "层次分明"
+    ],
+    "risk_flags": [
+      "无明显的风险标志"
+    ],
+    "confidence": "medium"
+  }
+}

@@ -1,5 +1,11 @@
 # Projects Workspace
 
+> 状态：current
+> 版本：0.1.0
+> owner：CEO
+> last_updated：2026-05-06
+> source_of_truth：projects/README.md
+
 这里是 `mindsync` Monorepo 中各项目的工作区入口。
 
 每个项目目录都应有自己的 `PROJECT.md`，并与 `company/projects/<项目名>/` 形成双入口：

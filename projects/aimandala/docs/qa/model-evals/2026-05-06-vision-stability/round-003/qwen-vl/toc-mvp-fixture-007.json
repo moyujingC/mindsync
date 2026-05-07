@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "round_id": "round-003",
+  "round_index": 3,
+  "fixture_id": "toc-mvp-fixture-007",
+  "model": "qwen-vl-max-latest",
+  "candidate_id": "qwen-vl",
+  "duration_ms": 12123,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5075.jpeg",
+  "output": {
+    "center_observation": "画面中心为一个由紫色三角形组成的放射状星形图案，周围环绕着黄色背景，形成清晰的视觉焦点。",
+    "circle_boundaries": {
+      "inner": "内圈边界清晰，以紫色星形为中心向外延伸出黄色区域，构成核心结构。",
+      "middle": "中圈可见，由橙色卷曲图案、绿色波浪形和棕色几何图形交替组成，层次分明。",
+      "outer": "外圈边界完整，以浅绿色为底色，边缘分布蓝色波浪形和棕色几何图案，整体呈圆形闭合。"
+    },
+    "dominant_colors": [
+      "黄色",
+      "紫色",
+      "橙色",
+      "绿色",
+      "蓝色",
+      "棕色"
+    ],
+    "structure_notes": [
+      "整体构图对称性强，呈现典型的曼陀罗式放射对称结构。",
+      "颜色分布均匀，各区域色彩对比鲜明但协调。",
+      "无明显断裂或偏移现象，线条流畅连续。",
+      "留白较少，填充密集，视觉上较为饱满。",
+      "层次变化明确：从中心向外依次为紫色星形→黄色辐射区→橙绿棕组合区→浅绿底色区。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}
