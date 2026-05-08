@@ -1,10 +1,14 @@
-# 三圈五行解读方法论 - 当前版
+# 三圈五行解读方法论 - 过渡历史版
 
-> 状态：current  
-> 创建时间：2026-05-07  
-> 替代旧版：`06_interpretation_methods.md`  
-> 方法总纲：`projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md`  
+> 状态：historical
+> 创建时间：2026-05-07
+> 降级日期：2026-05-08
+> 降级原因：本文是 `06_interpretation_methods.md` 的过渡修正版，但当前方法链已收束到 `projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md`。
+> 替代旧版：`06_interpretation_methods.md`
+> 方法总纲：`projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md`
 > 根基手册：`projects/aimandala/docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md`
+>
+> 本文件仅保留为历史过渡记录，不再作为当前 Aimandala 报告生成、QA 或 runtime evidence 的方法依据。
 
 ## 定位
 

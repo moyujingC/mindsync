@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Research & Knowledge Lead / Architect
-> last_updated：2026-04-18
+> last_updated：2026-05-08
 > 项目：aimandala
 > 阶段：current
 > source_of_truth：projects/aimandala/docs/sources/知识库构建/README.md
@@ -32,6 +32,12 @@
 ## 2. 使用规则
 
 当前默认不要直接把 [原始镜像](原始镜像) 整体当成 `spec`、`architecture` 或运行时规则入口。
+
+当前采用“三层知识源治理”：
+
+- `单一真值源`：用于定义当前方法、规则和流派逻辑。
+- `运行时投影`：由单一真值源整理成 `pack / index / runtime` 可消费的数据。
+- `历史镜像`：保留来源和迁移过程，只作追溯，不直接指导当前报告生成。
 
 正式引用时应遵循：
 

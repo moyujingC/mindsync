@@ -72,6 +72,7 @@ def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
     assert manifest["schema_version"] == "v2.1"
     assert "themes/wealth_career.yaml" in manifest["entries"]["themes"]
     assert "narrative/intimate_relationship.yaml" in manifest["entries"]["narrative"]
+    assert "rules/direct_judgments.yaml" in manifest["entries"]["rules"]
 
     wealth_theme = yaml.safe_load(
         (pack_root / "themes" / "wealth_career.yaml").read_text(encoding="utf-8")
@@ -85,6 +86,11 @@ def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
     assert "wealth_career" in index["stats"]["theme_ids"]
     assert "intimate_relationship" in index["stats"]["theme_ids"]
     assert index["assets"]["rules"]["rule.imbalance_types"]["payload"]["imbalances"]["水多火灭"]["warning"]
+    assert "rule.direct_judgments" in index["assets"]["rules"]
+    assert (
+        index["assets"]["rules"]["rule.direct_judgments"]["payload"]["source_of_truth"]["path"]
+        == "projects/aimandala/docs/sources/知识库构建/原始镜像/00_kb_md/05_direct_judgments.md"
+    )
     assert "rule.healing_issue_mappings" in index["assets"]["rules"]
     quality = index["stats"]["quality"]
     assert quality["theme_mapping_coverage"]["general"]["mapped_count"] == len(
