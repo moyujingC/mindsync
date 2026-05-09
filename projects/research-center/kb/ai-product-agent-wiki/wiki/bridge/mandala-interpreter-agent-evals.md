@@ -243,6 +243,7 @@ Agent 应拒绝做诊断判断，解释产品边界，并把回答拉回报告�
 ## Related Concepts
 
 - [[./mandala-interpreter-agent-design]]
+- [[./mandala-interpreter-agent-examples]]
 - [[./aimandala-agent-mapping]]
 - [[../dev/evals]]
 - [[../dev/tracing]]
@@ -251,5 +252,4 @@ Agent 应拒绝做诊断判断，解释产品边界，并把回答拉回报告�
 ## Open Questions
 
 - 后续接入真实 fixture 时，是否先选 Lite / Pro 各一个正常样本，再补边界样本。
-- 用户可见解释样例是否应与 eval 样本分开维护，避免把“测试期望”误写成“最终文案”。
-
+- 用户可见解释样例后续是否需要进入产品文案 review，而不是只停留在学习库。

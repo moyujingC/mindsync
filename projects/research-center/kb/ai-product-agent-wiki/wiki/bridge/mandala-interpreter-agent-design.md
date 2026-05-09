@@ -280,6 +280,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 
 - [[./aimandala-agent-mapping]]
 - [[./mandala-interpreter-agent-evals]]
+- [[./mandala-interpreter-agent-examples]]
 - [[./pm-to-agent-architecture]]
 - [[../dev/single-agent-design]]
 - [[../dev/tool-design]]

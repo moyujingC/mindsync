@@ -39,6 +39,7 @@
 - [[bridge/aimandala-agent-mapping]]
 - [[bridge/mandala-interpreter-agent-design]]
 - [[bridge/mandala-interpreter-agent-evals]]
+- [[bridge/mandala-interpreter-agent-examples]]
 
 ## Atom Entry Points
 
@@ -59,6 +60,8 @@
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 - [[../../atoms/bridge/mandala-agent-evals-must-cover-boundaries]]
 - [[../../atoms/bridge/mandala-agent-evals-check-traceability]]
+- [[../../atoms/bridge/user-facing-explanations-should-stay-evidence-grounded]]
+- [[../../atoms/bridge/explanation-examples-are-not-final-copy]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 

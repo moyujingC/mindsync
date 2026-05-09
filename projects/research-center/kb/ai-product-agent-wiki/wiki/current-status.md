@@ -20,9 +20,11 @@
 - 课程 02 到 08 已回写核心学习内容和概念链接
 - 一镜一梳 `MandalaInterpreterAgent` 项目映射设计页
 - `MandalaInterpreterAgent` 抽象 eval 样本页
+- `MandalaInterpreterAgent` 用户可见解释样例页
 
 ## What comes next
 
-- 继续补真实项目案例和用户解释样例
+- 继续补真实项目案例
 - 后续接入真实 fixture 时，把抽象 eval 样本映射到 Lite / Pro 具体报告样本
+- 后续将解释样例交给产品文案和风险边界 review
 - 等项目实践稳定后，再判断哪些内容可提炼进公司级知识库
