@@ -19,6 +19,7 @@ entries:
   - themes/personal_growth.yaml
   - themes/wealth_career.yaml
   rules:
+  - rules/direct_judgments.yaml
   - rules/healing_issue_mappings.yaml
   - rules/imbalance_types.yaml
   - rules/theme_mappings.yaml

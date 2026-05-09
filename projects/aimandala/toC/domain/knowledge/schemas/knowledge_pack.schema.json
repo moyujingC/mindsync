@@ -5,7 +5,7 @@
   "required": ["pack_id", "schema_version", "status", "entries"],
   "properties": {
     "pack_id": { "type": "string", "minLength": 1 },
-    "schema_version": { "type": "string", "const": "v2.1" },
+    "schema_version": { "type": "string", "enum": ["v2.1", "v2.2"] },
     "status": { "type": "string", "minLength": 1 },
     "source": { "type": "string" },
     "description": { "type": "string" },

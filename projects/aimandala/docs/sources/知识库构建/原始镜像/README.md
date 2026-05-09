@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
-> last_updated：2026-04-18
+> last_updated：2026-05-08
 > 项目：aimandala
 > 阶段：current
 > source_of_truth：projects/aimandala/docs/sources/知识库构建/原始镜像/README.md
@@ -36,3 +36,14 @@
 - 图片和 JSON 评估产物已保留
 
 本目录的存在不表示其中全部内容都自动升级为当前 `spec`、`architecture` 或运行时真理源。
+
+## 4. 已知易干扰文件
+
+以下文件保留为历史镜像，但默认不再作为当前方法依据：
+
+- `00_kb_md/06_interpretation_methods.md`
+  - 已作废。它把直断写成四步法第一步，并把直断写成切入点，容易误导报告生成。
+- `00_kb_md/06_interpretation_methods_v2.md`
+  - 过渡修正版。它仍保留旧阶段顺序痕迹，当前以 `../三圈五行流派解读方法与步骤.md` 为准。
+
+如果搜索结果命中这些文件，应先回到上级目录的 `当前正式依据与使用说明.md` 判断是否可引用。

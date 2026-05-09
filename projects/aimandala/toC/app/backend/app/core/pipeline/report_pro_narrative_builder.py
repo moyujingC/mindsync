@@ -160,7 +160,7 @@ class ReportProNarrativeBuilder:
             "manifestation",
         ).strip()
         if mapped_contradiction:
-            parts.append(f"你现在更核心的卡点，其实是「{mapped_contradiction}」")
+            parts.append(f"你现在更核心的卡点，其实是：{mapped_contradiction}")
         if mapped_manifestation:
             parts.append(f"它不是抽象概念，落到现实里，常常就表现成：{mapped_manifestation.rstrip('。')}。")
         if lite_block:
@@ -173,7 +173,7 @@ class ReportProNarrativeBuilder:
                 weakest["name"],
             )
             parts.append(
-                f"再加上和「{weakest['name']}」有关的{weakest_theme}资源暂时偏少，"
+                f"再加上{weakest_theme}这部分资源暂时偏少，"
                 "所以你在快要真正启动时，更容易先想缓一缓。"
             )
         if signal_text:
@@ -671,16 +671,18 @@ class ReportProNarrativeBuilder:
         ):
             return []
 
-        phase_one_focus = (
-            symptoms
-            or f"这次更需要先看见「{issue_type or primary}」在你当下的具体表现。"
-        )
+        phase_one_focus = symptoms or "先看见你最近最常在哪个瞬间开始收紧、犹豫或回撤。"
         if issue_type:
-            phase_one_focus = f"当前更接近的疗愈议题是「{issue_type}」。{phase_one_focus}"
+            phase_one_focus = (
+                f"这一步不是给自己贴上“{issue_type}”的标签，"
+                f"而是看见它在生活里具体怎么出现：{phase_one_focus}"
+            )
 
-        phase_two_focus = (
-            mandala_prescription
-            or f"围绕「{primary}」先做小幅但稳定的调节，而不是期待一次性把所有问题解决。"
+        phase_two_focus = self._rewrite_mandala_prescription(
+            mandala_prescription,
+            theme_label=theme_label,
+        ) or (
+            "先做小幅但稳定的调节，不期待一次性把所有问题解决。"
         )
         phase_three_focus = (
             cognitive_upgrade
@@ -689,7 +691,7 @@ class ReportProNarrativeBuilder:
 
         return [
             {
-                "phase": f"建议一：先识别「{issue_type or primary}」",
+                "phase": "建议一：先看见卡住发生在哪里",
                 "focus": phase_one_focus,
                 "practice": daily_practice
                 or "先用一句话写下你最近最常出现的感受，再决定要不要马上处理它。",
@@ -704,12 +706,33 @@ class ReportProNarrativeBuilder:
                 "phase": "建议三：把理解落回现实生活",
                 "focus": phase_three_focus,
                 "practice": render_template_text(
-                    "这周在{theme_label}里保留少量但稳定的承诺，围绕「{primary}」练习不过度用力，也不完全退回去。",
+                    "这周在{theme_label}里保留少量但稳定的承诺：不过度用力，也不完全退回去，只做一个能被身体接住的小推进。",
                     primary=primary,
                     theme_label=theme_label,
                 ),
             },
         ]
+
+    def _rewrite_mandala_prescription(
+        self,
+        value: str,
+        *,
+        theme_label: str,
+    ) -> str:
+        cleaned = self._clean_runtime_healing_text(value)
+        if not cleaned:
+            return ""
+        lowered = cleaned.replace("建议每天1张，连续练习约三周", "")
+        lowered = lowered.replace("建议每天3张，连续练习约三周", "")
+        lowered = lowered.replace("建议连续练习约三周", "")
+        lowered = lowered.replace("建议每天冥想15分钟，连续练习约三周", "")
+        lowered = lowered.strip("。 ，,")
+        if "绘制" in lowered or "曼陀罗" in lowered:
+            return (
+                f"如果还想继续用画面做调节，可以不追求完整作品，只在{theme_label}里挑一个当下最需要被安顿的感受，"
+                "用一个颜色或一个小形状把它画出来。重点不是画得好，而是让身体先有一个承接它的容器。"
+            )
+        return lowered
 
     def _clean_runtime_healing_text(self, value: Any) -> str:
         if not isinstance(value, str):

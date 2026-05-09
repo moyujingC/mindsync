@@ -1,5 +1,13 @@
 # 曼陀罗解读方法论 - 系统化解读步骤
 
+> 状态：deprecated
+> 作废日期：2026-05-07
+> 作废原因：本文把“直断（快速筛查）”写成四步法第一步，并在执行动作中写成“作为解读的切入点和重点提示”，容易误导运行时和报告生成逻辑。
+> 当前替代文档：`06_interpretation_methods_v2.md`
+> 当前方法总纲：`projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md`
+>
+> 本文件仅保留为历史镜像，不再作为当前 Aimandala 报告生成、QA 或 runtime evidence 的方法依据。
+
 > 来源文件: `app/core/interpretation_methods.py`
 > 创建时间: 2026-03-05
 > 版本: v3.0（优化为四步法：直断+颜色+形状+生克）

@@ -6,7 +6,7 @@
   "properties": {
     "id": { "type": "string", "minLength": 1 },
     "type": { "type": "string", "minLength": 1 },
-    "version": { "type": "string", "const": "v2.1" },
+    "version": { "type": "string", "enum": ["v2.1", "v2.2"] },
     "status": { "type": "string", "minLength": 1 },
     "source": { "type": "string", "minLength": 1 },
     "review_status": { "type": "string", "minLength": 1 },

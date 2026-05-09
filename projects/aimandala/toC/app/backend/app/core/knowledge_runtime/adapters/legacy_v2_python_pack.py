@@ -30,6 +30,11 @@ from app.core.knowledge.imbalance_types import (
     TOB_EXCLUSIVE_TYPES,
     TOC_IMBALANCE_TYPES,
 )
+from app.core.knowledge.direct_judgments import (
+    COLOR_DEPTH_RULES,
+    DIRECT_JUDGMENTS,
+    WHITESPACE_ANALYSIS,
+)
 from app.core.knowledge.themes import (
     HEALING_PRESCRIPTIONS,
     IMBALANCE_MAPPINGS,
@@ -46,6 +51,43 @@ from app.core.knowledge.three_circles import (
     ENERGY_FLOW_QUALITY,
     THREE_CIRCLES,
 )
+
+DIRECT_JUDGMENTS_SOURCE_PATH = (
+    "projects/aimandala/docs/sources/知识库构建/直断法高命中模式.md"
+)
+
+DIRECT_JUDGMENT_EVIDENCE_REQUIREMENTS = {
+    "颜色浅、轻": ["整体色调浅淡", "下笔轻柔或大面积泛白", "主要颜色饱和度偏低"],
+    "颜色浓郁、深重": ["整体填色密度高", "主色或大面积色块偏深", "画面大面积涂满无留白"],
+    "整张大面积留白": ["整张画留白比例较高", "留白分布较均匀"],
+    "外圈颜色单一且面积大": ["外圈仅有单一主色", "外圈单色占比较大"],
+    "大面积黄色": ["黄色在整体或某一圈中面积显著", "黄色为主色调"],
+    "外圈花边、星星点点": ["外圈颜色丰富", "外圈呈现零碎、花边、圆点或装饰性强的结构"],
+    "外圈红色多": ["外圈存在成片红色", "红色相邻区域不是绿色为主"],
+    "渐变色": ["画面出现色彩渐变", "相邻区域或圈层之间呈连续过渡"],
+    "蓝绿搭配": ["蓝色和绿色同时明显出现"],
+    "内外同色": ["内圈和外圈主色或核心色高度一致"],
+    "外白内浓（心门关闭）": ["外圈留白多", "内圈或中圈颜色数量不少于3种"],
+}
+
+DIRECT_JUDGMENT_WHITESPACE_RULES = {
+    "大量留白": {
+        "threshold": "whitespace_ratio > 0.4",
+        **WHITESPACE_ANALYSIS["大量留白"],
+    },
+    "适量留白": {
+        "threshold": "0.15 < whitespace_ratio <= 0.4",
+        "meaning": "平衡状态，有表达也有空间",
+    },
+    "少量留白": {
+        "threshold": "0.05 < whitespace_ratio <= 0.15",
+        **WHITESPACE_ANALYSIS["少量留白"],
+    },
+    "无留白": {
+        "threshold": "whitespace_ratio <= 0.05",
+        **WHITESPACE_ANALYSIS["无留白"],
+    },
+}
 
 HEALING_ISSUE_MAPPINGS = {
     "father_relationship": {
@@ -250,20 +292,53 @@ EXPORTED_HEALING_ISSUE_MAPPINGS = {
 }
 
 
+def _build_direct_judgment_records() -> list[dict[str, Any]]:
+    slug_by_name = {
+        "颜色浅、轻": "light_pale_whitish",
+        "颜色浓郁、深重": "heavy_dark_filled",
+        "整张大面积留白": "overall_whitespace",
+        "外圈颜色单一且面积大": "outer_single_color_large_mass",
+        "大面积黄色": "large_yellow_mass",
+        "外圈花边、星星点点": "outer_decorative_fragmented",
+        "外圈红色多": "outer_red_mass",
+        "渐变色": "gradient_transition",
+        "蓝绿搭配": "blue_green_expression",
+        "内外同色": "inner_outer_same_color",
+        "外白内浓（心门关闭）": "closed_heart",
+    }
+    records: list[dict[str, Any]] = []
+    for name, judgment in DIRECT_JUDGMENTS.items():
+        record = {
+            "id": f"direct_judgment.{slug_by_name.get(name, name)}",
+            "name": name,
+            "visual_pattern": judgment.get("pattern", ""),
+            "meaning": judgment.get("meaning", ""),
+            "detail": judgment.get("detail", ""),
+            "principle": judgment.get("principle", ""),
+            "suggestion": judgment.get("suggestion", ""),
+            "severity": judgment.get("severity", ""),
+            "evidence_requirements": DIRECT_JUDGMENT_EVIDENCE_REQUIREMENTS.get(name, []),
+        }
+        records.append(record)
+    return records
+
+
 def _asset(
     *,
     asset_id: str,
     asset_type: str,
     payload: dict[str, Any],
     relations: dict[str, Any] | None = None,
+    source: str = "legacy_v2_python",
+    review_status: str = "migrated",
 ) -> dict[str, Any]:
     return {
         "id": asset_id,
         "type": asset_type,
         "version": "v2.1",
         "status": "active",
-        "source": "legacy_v2_python",
-        "review_status": "migrated",
+        "source": source,
+        "review_status": review_status,
         "payload": payload,
         "relations": relations or {},
     }
@@ -406,6 +481,34 @@ class LegacyV2PythonPackExporter:
             entries["narrative"].append(narrative_rel_path)
 
         rules_assets = {
+            "rules/direct_judgments.yaml": _asset(
+                asset_id="rule.direct_judgments",
+                asset_type="rule",
+                source=DIRECT_JUDGMENTS_SOURCE_PATH,
+                review_status="source_aligned",
+                payload={
+                    "source_of_truth": {
+                        "path": DIRECT_JUDGMENTS_SOURCE_PATH,
+                        "title": "直断特征 - 快速识别关键心理特征",
+                        "note": "直断知识只以此 Markdown 为原始真值源；本 YAML 是运行时知识包投影。",
+                    },
+                    "catalog_version": "direct_judgments.v2.1",
+                    "usage": {
+                        "stage": "stage-04-direct-judgment-high-hit-check",
+                        "purpose": "检查画作是否命中高命中特征，作为后续逐圈解读的提示线索。",
+                        "boundary": "直断结果不是最终结论，必须被逐圈颜色、形状、五行生克和能量流动继续验证。",
+                    },
+                    "judgments": _build_direct_judgment_records(),
+                    "color_depth_rules": COLOR_DEPTH_RULES,
+                    "whitespace_rules": DIRECT_JUDGMENT_WHITESPACE_RULES,
+                },
+                relations={
+                    "source_markdown": [DIRECT_JUDGMENTS_SOURCE_PATH],
+                    "related_runtime": [
+                        "projects/aimandala/toC/app/backend/app/core/knowledge/direct_judgments.py"
+                    ],
+                },
+            ),
             "rules/imbalance_types.yaml": _asset(
                 asset_id="rule.imbalance_types",
                 asset_type="rule",

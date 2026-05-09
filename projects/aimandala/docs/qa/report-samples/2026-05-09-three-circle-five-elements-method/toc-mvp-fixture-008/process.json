@@ -1,0 +1,114 @@
+{
+  "run_id": "2026-05-09-three-circle-five-elements-method/toc-mvp-fixture-008",
+  "fixture_id": "toc-mvp-fixture-008",
+  "theme": "general",
+  "execution_mode": "offline_method_chain_rehearsal",
+  "new_external_model_calls": false,
+  "stages": [
+    {
+      "stage": "stage-00-input-context",
+      "status": "completed",
+      "output_ref": "process.md#stage-00-运行上下文"
+    },
+    {
+      "stage": "stage-01-user-input-context",
+      "status": "completed",
+      "output_ref": "process.md#stage-01-用户输入与解读上下文"
+    },
+    {
+      "stage": "stage-02-circle-boundary-decision",
+      "status": "completed",
+      "output_ref": "process.md#stage-02-三圈边界锁定"
+    },
+    {
+      "stage": "stage-03-visual-evidence",
+      "status": "completed",
+      "source": "reused qwen-vl round-001 eval",
+      "output_ref": "process.md#stage-03-视觉证据"
+    },
+    {
+      "stage": "stage-04-direct-judgment-high-hit-check",
+      "status": "completed",
+      "strong_hits": ["蓝绿搭配", "外圈花边、星星点点"],
+      "weak_hits": ["渐变色", "大面积黄色"],
+      "output_ref": "process.md#stage-04-直断法双路命中检查"
+    },
+    {
+      "stage": "stage-05-per-circle-color-shape-element-sensing",
+      "status": "completed",
+      "output_ref": "process.md#stage-05-逐圈颜色形状五行感知映射"
+    },
+    {
+      "stage": "stage-06-per-circle-element-generation-control",
+      "status": "completed",
+      "theme_mounted": "general",
+      "output_ref": "process.md#stage-06-五行生克与主题映射分析"
+    },
+    {
+      "stage": "stage-07-per-circle-imbalance-patterns",
+      "status": "completed",
+      "core_candidates": ["结构承接偏强", "过渡负荷"],
+      "output_ref": "process.md#stage-07-失衡候选收束"
+    },
+    {
+      "stage": "stage-08-energy-flow-diagnosis",
+      "status": "completed",
+      "main_flow_pattern": "有结构承接的正向流动",
+      "output_ref": "process.md#stage-08-能量流动诊断"
+    },
+    {
+      "stage": "stage-09-evidence-consolidation",
+      "status": "completed",
+      "output_ref": "process.md#stage-09-证据池整合"
+    },
+    {
+      "stage": "stage-10-core-thesis-selection",
+      "status": "completed",
+      "selected_thesis": "生命力、流动感和表达意愿已经在场；真正需要整理的是如何让这些力量经过清晰边界和稳定节奏，被安全地带到外在行动里。",
+      "output_ref": "process.md#stage-10-核心主轴选择"
+    },
+    {
+      "stage": "stage-11-user-facing-framing",
+      "status": "completed",
+      "output_ref": "process.md#stage-11-用户可见表达框架"
+    },
+    {
+      "stage": "stage-12-healing-direction-and-report-branching",
+      "status": "completed",
+      "output_ref": "process.md#stage-12-疗愈方向与-lite--pro-分流"
+    },
+    {
+      "stage": "stage-13-lite-draft",
+      "status": "completed",
+      "visual_modules": 2,
+      "output_ref": "lite.report.md"
+    },
+    {
+      "stage": "stage-14-pro-draft",
+      "status": "completed",
+      "visual_modules": 4,
+      "output_ref": "pro.report.md"
+    },
+    {
+      "stage": "stage-15-visual-assets",
+      "status": "request_only",
+      "image_generation_executed": false,
+      "asset_requests": 6,
+      "output_ref": "process.md#stage-15-可视化资产"
+    },
+    {
+      "stage": "stage-16-final-report",
+      "status": "completed",
+      "output_ref": "final.package.md"
+    }
+  ],
+  "qa": {
+    "process_chain_complete": true,
+    "lite_visual_modules_expected": 2,
+    "lite_visual_modules_actual": 2,
+    "pro_visual_modules_expected": 4,
+    "pro_visual_modules_actual": 4,
+    "api_keys_in_output": false,
+    "private_env_paths_in_output": false
+  }
+}
