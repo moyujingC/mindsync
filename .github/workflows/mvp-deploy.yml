@@ -1,0 +1,202 @@
+name: mvp-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Choose MVP deploy target"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+      smoke_mode:
+        description: "Choose smoke depth"
+        required: true
+        default: basic
+        type: choice
+        options:
+          - basic
+          - deep
+
+concurrency:
+  group: mvp-deploy-${{ github.ref_name }}-${{ github.event.inputs.target }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-latest-mvp-ci:
+    name: verify-latest-mvp-ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      ci_run_id: ${{ steps.verify.outputs.ci_run_id }}
+      ci_run_url: ${{ steps.verify.outputs.ci_run_url }}
+      ci_head_sha: ${{ steps.verify.outputs.ci_head_sha }}
+    steps:
+      - name: Verify Latest MVP CI Success
+        id: verify
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const target = context.payload.inputs.target;
+            const branch = target === 'prod' ? 'release' : 'main';
+            if (context.ref.replace('refs/heads/', '') !== branch) {
+              core.setFailed(`MVP deploy for ${target} must be dispatched from ${branch}.`);
+              return;
+            }
+
+            const runs = await github.paginate(
+              github.rest.actions.listWorkflowRuns,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'mvp-ci.yml',
+                branch,
+                event: 'push',
+                per_page: 20,
+              }
+            );
+
+            const latestRun = runs.find((run) => run.name === 'mvp-ci');
+            if (!latestRun) {
+              core.setFailed(`No push-triggered mvp-ci run found on branch ${branch}.`);
+              return;
+            }
+
+            if (latestRun.conclusion !== 'success') {
+              core.setFailed(
+                `Latest push-triggered mvp-ci run on ${branch} is not green. ` +
+                `Run ${latestRun.id} concluded with ${latestRun.conclusion}.`
+              );
+              return;
+            }
+
+            const jobs = await github.paginate(
+              github.rest.actions.listJobsForWorkflowRun,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: latestRun.id,
+                per_page: 100,
+              }
+            );
+
+            const mvpCiJob = jobs.find((job) => job.name === 'mvp-ci');
+            if (!mvpCiJob || mvpCiJob.conclusion !== 'success') {
+              core.setFailed(`Latest mvp-ci run ${latestRun.id} does not contain a successful mvp-ci job.`);
+              return;
+            }
+
+            core.setOutput('ci_run_id', String(latestRun.id));
+            core.setOutput('ci_run_url', latestRun.html_url);
+            core.setOutput('ci_head_sha', latestRun.head_sha);
+            core.summary
+              .addHeading('Latest MVP CI Check')
+              .addRaw(`Branch: ${branch}\n`, true)
+              .addRaw(`Run: ${latestRun.html_url}\n`, true)
+              .addRaw(`Commit: ${latestRun.head_sha}\n`, true)
+              .write();
+
+  mvp-deploy:
+    name: mvp-deploy
+    needs:
+      - verify-latest-mvp-ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: ${{ github.event.inputs.target == 'prod' && 'production' || 'development' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.verify-latest-mvp-ci.outputs.ci_head_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Resolve Deploy Target
+        id: target
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event.inputs.target }}" == "prod" ]]; then
+            printf 'ssh_key_secret=AIMANDALA_PROD_SSH_KEY\n' >> "$GITHUB_OUTPUT"
+            printf 'ssh_host_secret=AIMANDALA_PROD_HOST\n' >> "$GITHUB_OUTPUT"
+            printf 'ssh_user_secret=AIMANDALA_PROD_USER\n' >> "$GITHUB_OUTPUT"
+            printf 'branch=release\n' >> "$GITHUB_OUTPUT"
+            printf 'remote_dir=/opt/aimandala-release/app/mindsync\n' >> "$GITHUB_OUTPUT"
+            printf 'deploy_command=cd projects/aimandala/deploy/docker && docker compose -f docker-compose.release.yml --env-file .env.release build && docker compose -f docker-compose.release.yml --env-file .env.release up -d\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'ssh_key_secret=AIMANDALA_DEV_SSH_KEY\n' >> "$GITHUB_OUTPUT"
+            printf 'ssh_host_secret=AIMANDALA_DEV_HOST\n' >> "$GITHUB_OUTPUT"
+            printf 'ssh_user_secret=AIMANDALA_DEV_USER\n' >> "$GITHUB_OUTPUT"
+            printf 'branch=main\n' >> "$GITHUB_OUTPUT"
+            printf 'remote_dir=/opt/aimandala-main/app/mindsync\n' >> "$GITHUB_OUTPUT"
+            printf 'deploy_command=/opt/aimandala-main/scripts/deploy-main.sh\n' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Prepare SSH Key
+        env:
+          SSH_KEY: ${{ github.event.inputs.target == 'prod' && secrets.AIMANDALA_PROD_SSH_KEY || secrets.AIMANDALA_DEV_SSH_KEY }}
+          SSH_HOST: ${{ github.event.inputs.target == 'prod' && secrets.AIMANDALA_PROD_HOST || secrets.AIMANDALA_DEV_HOST }}
+          SSH_USER: ${{ github.event.inputs.target == 'prod' && secrets.AIMANDALA_PROD_USER || secrets.AIMANDALA_DEV_USER }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${SSH_KEY:-}" || -z "${SSH_HOST:-}" || -z "${SSH_USER:-}" ]]; then
+            echo "Missing required AIMANDALA_${{ github.event.inputs.target == 'prod' && 'PROD' || 'DEV' }} SSH secret" >&2
+            exit 1
+          fi
+          install -m 700 -d ~/.ssh
+          normalized_key="$(printf '%s' "$SSH_KEY" | tr -d '\r')"
+          if printf '%s' "$normalized_key" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%s\n' "$normalized_key" > ~/.ssh/aimandala_mvp
+          else
+            printf '%s' "$normalized_key" | base64 --decode > ~/.ssh/aimandala_mvp
+          fi
+          chmod 600 ~/.ssh/aimandala_mvp
+          ssh-keygen -y -f ~/.ssh/aimandala_mvp >/dev/null
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy Remote
+        env:
+          SSH_HOST: ${{ github.event.inputs.target == 'prod' && secrets.AIMANDALA_PROD_HOST || secrets.AIMANDALA_DEV_HOST }}
+          SSH_USER: ${{ github.event.inputs.target == 'prod' && secrets.AIMANDALA_PROD_USER || secrets.AIMANDALA_DEV_USER }}
+          DEPLOY_SHA: ${{ needs.verify-latest-mvp-ci.outputs.ci_head_sha }}
+          REMOTE_DIR: ${{ steps.target.outputs.remote_dir }}
+          DEPLOY_COMMAND: ${{ steps.target.outputs.deploy_command }}
+        run: |
+          set -euo pipefail
+          ssh \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -i ~/.ssh/aimandala_mvp \
+            "$SSH_USER@$SSH_HOST" \
+            "set -euo pipefail
+             cd '$REMOTE_DIR'
+             git fetch origin '$DEPLOY_SHA'
+             git reset --hard '$DEPLOY_SHA'
+             $DEPLOY_COMMAND"
+
+      - name: Smoke Check With Retry
+        env:
+          TARGET: ${{ github.event.inputs.target }}
+          SMOKE_MODE: ${{ github.event.inputs.smoke_mode }}
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            if node shared/tools/ci/aimandala-smoke.mjs \
+              --env "$TARGET" \
+              --mode "$SMOKE_MODE" \
+              --output "$RUNNER_TEMP/mvp-smoke.json"; then
+              exit 0
+            fi
+            if [[ "$attempt" == "6" ]]; then
+              exit 1
+            fi
+            sleep 10
+          done

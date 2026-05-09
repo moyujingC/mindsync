@@ -269,7 +269,7 @@ def test_api_v2_create_interpretation_returns_failed_record_when_layer0_blocks(t
                         "source": "program_segmented_block_measurement",
                     },
                     "direct_judgment_hits": {
-                        "catalog_version": "merged-manual6-runtime9.v1",
+                        "catalog_version": "direct_judgments.v2.1.source11.v1",
                         "catalog_items": [],
                         "hits": [],
                     },

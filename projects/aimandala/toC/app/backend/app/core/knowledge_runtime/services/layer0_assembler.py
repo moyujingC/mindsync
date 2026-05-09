@@ -25,6 +25,17 @@ ELEMENT_KEY_TO_CN = {
     "water": "水",
 }
 
+THREE_CIRCLE_METHOD_SOURCE = "three_circle_five_element_flow"
+THREE_CIRCLE_ORDERED_STEPS = [
+    "确定主题",
+    "锁定三圈",
+    "直断高命中检查",
+    "逐圈画面依据",
+    "逐圈颜色形状与圈内生克",
+    "逐圈失衡候选",
+    "整体能量流动综合",
+]
+
 CIRCLE_KEY_TO_CN = {
     "inner": "内圈",
     "middle": "中圈",
@@ -70,77 +81,84 @@ CANONICAL_24_COLOR_SWATCHES = [
     {"label": "紫罗兰", "rgb": (177, 120, 205)},
 ]
 
-MERGED_DIRECT_JUDGMENT_CATALOG_VERSION = "merged-manual6-runtime9.v1"
+MERGED_DIRECT_JUDGMENT_CATALOG_VERSION = "direct_judgments.v2.1.source11.v1"
 MERGED_DIRECT_JUDGMENT_CATALOG = [
     {
         "judgment_id": "outer_decorative_fragmented",
-        "judgment_label": "外圈花边/碎花边",
-        "source_family": "merged",
-        "merged_from": ["manual_6:外圈花边、星星点点", "runtime_9:外圈颜色五颜六色、零零碎碎、花边"],
-        "pattern_summary": "外圈出现碎小装饰、零散点状或花边式分布。",
+        "judgment_label": "外圈花边、星星点点",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:外圈花边、星星点点"],
+        "pattern_summary": "外圈存在花边、圆点、细碎小图案，五颜六色、零碎繁杂，外观精致好看。",
     },
     {
         "judgment_id": "outer_red_mass",
         "judgment_label": "外圈红色多",
-        "source_family": "merged",
-        "merged_from": ["manual_6:外圈红色多", "runtime_9:外圈有成片红色"],
-        "pattern_summary": "外圈红色或红调色块成片出现，量感明显。",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:外圈红色多"],
+        "pattern_summary": "曼陀罗外圈大面积成片红色，且相邻区域不是绿色主导。",
     },
     {
         "judgment_id": "outer_single_color_large_mass",
         "judgment_label": "外圈颜色单一且面积大",
-        "source_family": "merged",
-        "merged_from": ["manual_6:外圈颜色单一且面积大"],
-        "pattern_summary": "外圈以单一主色为主，且量感明显压过其他颜色。",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:外圈颜色单一且面积大"],
+        "pattern_summary": "外圈仅有单一颜色，色块占比面积偏大。",
     },
     {
         "judgment_id": "gradient_transition",
         "judgment_label": "渐变色",
-        "source_family": "merged",
-        "merged_from": ["manual_6:渐变色"],
-        "pattern_summary": "颜色从内向外或相邻圈之间呈连续过渡。",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:渐变色"],
+        "pattern_summary": "画面出现色彩渐变效果。",
     },
     {
         "judgment_id": "heavy_dark_filled",
-        "judgment_label": "颜色浓郁深重/整体涂满深色",
-        "source_family": "merged",
-        "merged_from": ["manual_6:颜色浓郁、深重", "runtime_9:画面整体涂得很满，深色为主"],
-        "pattern_summary": "整体颜色偏深且铺陈较满，重色量感明显。",
+        "judgment_label": "颜色浓郁、深重",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:颜色浓郁、深重"],
+        "pattern_summary": "涂色厚重、颜色深浓，画面大面积涂满无留白。",
     },
     {
         "judgment_id": "light_pale_whitish",
-        "judgment_label": "颜色浅轻/整体泛白偏淡",
-        "source_family": "merged",
-        "merged_from": ["manual_6:颜色浅、轻", "runtime_9:整体泛白，颜色偏淡"],
-        "pattern_summary": "画面整体偏浅、偏淡，白色或留白感明显。",
-    },
-    {
-        "judgment_id": "blue_green_expression",
-        "judgment_label": "蓝色+绿色",
-        "source_family": "merged",
-        "merged_from": ["runtime_9:明显有蓝色+绿色"],
-        "pattern_summary": "画面内能稳定看到蓝色与绿色同时出现。",
-    },
-    {
-        "judgment_id": "inner_outer_same_color",
-        "judgment_label": "内圈和外圈颜色一致",
-        "source_family": "merged",
-        "merged_from": ["runtime_9:内圈和外圈颜色完全一致"],
-        "pattern_summary": "内圈和外圈的主色或主色家族保持一致。",
+        "judgment_label": "颜色浅、轻",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:颜色浅、轻"],
+        "pattern_summary": "涂色清淡、下笔轻柔，整体泛白、色调浅淡无力。",
     },
     {
         "judgment_id": "overall_whitespace",
-        "judgment_label": "整张留白较多",
-        "source_family": "merged",
-        "merged_from": ["runtime_9:整张留白较多"],
-        "pattern_summary": "圆盘内白色、留白或镂空区域占比明显。",
+        "judgment_label": "整张大面积留白",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:整张大面积留白"],
+        "pattern_summary": "整张画作留白占比多、均匀留白。",
     },
     {
-        "judgment_id": "outer_whitespace_inner_colored",
-        "judgment_label": "外圈留白多但内中圈上色较多",
-        "source_family": "merged",
-        "merged_from": ["runtime_9:外圈留白多，但里圈或中圈涂的颜色3个以上"],
-        "pattern_summary": "外圈白色明显，而内圈或中圈仍保持较丰富的上色。",
+        "judgment_id": "large_yellow_mass",
+        "judgment_label": "大面积黄色",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:大面积黄色"],
+        "pattern_summary": "画面黄色面积占比大、黄色为主色调。",
+    },
+    {
+        "judgment_id": "blue_green_expression",
+        "judgment_label": "蓝绿搭配",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:蓝绿搭配"],
+        "pattern_summary": "画面明显同时出现蓝色+绿色。",
+    },
+    {
+        "judgment_id": "inner_outer_same_color",
+        "judgment_label": "内外同色",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:内外同色"],
+        "pattern_summary": "内圈和外圈的颜色完全一致。",
+    },
+    {
+        "judgment_id": "closed_heart",
+        "judgment_label": "外白内浓（心门关闭）",
+        "source_family": "source11",
+        "merged_from": ["直断法高命中模式.md:外白内浓（心门关闭）"],
+        "pattern_summary": "外圈留白多，但里圈或中圈涂色3种以上。",
     },
 ]
 
@@ -579,7 +597,7 @@ class Layer0Assembler:
                 "synthetic_signal": synthetic_signal,
             },
             "final_algorithm_basis": {
-                "ordered_steps": ["直断", "逐圈颜色分析", "形状分析", "圈级生克分析"],
+                "ordered_steps": THREE_CIRCLE_ORDERED_STEPS,
                 "selected_primary_candidates": ["transition-overload"],
                 "notes": ["vision_extraction_unavailable"],
             },
@@ -2110,6 +2128,25 @@ class Layer0Assembler:
                 "evidence_excerpt": "画面内白色、浅色或留白感明显。" if matched else "画面整体并不偏浅或泛白。",
                 "evidence_type": "light_pale_whitish",
             }
+        if judgment_id == "overall_whitespace":
+            matched = whitespace_score >= 0.35
+            return {
+                "matched": matched,
+                "confidence": 0.83 if matched else 0.22,
+                "evidence_excerpt": "圆盘内存在连续白色留白或镂空区域。" if matched else "白色留白未达到明显主导程度。",
+                "evidence_type": "overall_whitespace",
+            }
+        if judgment_id == "large_yellow_mass":
+            yellow_labels = {"柠檬黄", "中黄", "土黄", "橘黄", "金色"}
+            matched = any(label in yellow_labels for label in all_labels) and max(
+                self._top_block_mass_ratio(circle) for circle in [inner, middle, outer]
+            ) >= 0.25
+            return {
+                "matched": matched,
+                "confidence": 0.78 if matched else 0.2,
+                "evidence_excerpt": "画面内黄色或黄调色块占比较明显。" if matched else "黄色没有形成明显主导面积。",
+                "evidence_type": "large_yellow_mass",
+            }
         if judgment_id == "blue_green_expression":
             matched = any(label in {"天蓝", "湖蓝", "深蓝", "群青"} for label in all_labels) and any(label in {"草绿", "翠绿", "淡绿", "深绿", "青绿"} for label in all_labels)
             return {
@@ -2126,20 +2163,12 @@ class Layer0Assembler:
                 "evidence_excerpt": "内圈与外圈的主色家族一致。" if matched else "内外圈主色并不一致。",
                 "evidence_type": "inner_outer_same_color",
             }
-        if judgment_id == "overall_whitespace":
-            matched = whitespace_score >= 0.35
-            return {
-                "matched": matched,
-                "confidence": 0.83 if matched else 0.22,
-                "evidence_excerpt": "圆盘内存在连续白色留白或镂空区域。" if matched else "白色留白未达到明显主导程度。",
-                "evidence_type": "overall_whitespace",
-            }
-        matched = self._circle_whitespace_score(outer) >= 0.2 and (len(inner_labels) >= 2 or len(middle_labels) >= 2)
+        matched = self._circle_whitespace_score(outer) >= 0.2 and (len(inner_labels) >= 3 or len(middle_labels) >= 3)
         return {
             "matched": matched,
             "confidence": 0.77 if matched else 0.2,
-            "evidence_excerpt": "外圈白色较多，但内圈或中圈仍保持较丰富上色。" if matched else "外圈留白与内中圈上色丰富度未同时满足。",
-            "evidence_type": "outer_whitespace_inner_colored",
+            "evidence_excerpt": "外圈白色较多，但内圈或中圈仍保持三种以上上色。" if matched else "外白内浓特征未同时满足。",
+            "evidence_type": "closed_heart",
         }
 
     def _canonical_color_label_from_rgb(self, rgb: Any) -> str:
@@ -2595,7 +2624,7 @@ class Layer0Assembler:
             "shape_analysis": shape_analysis,
             "circle_relation_analysis": circle_relation_analysis,
             "final_algorithm_basis": {
-                "ordered_steps": ["直断", "逐圈颜色分析", "形状分析", "圈级生克分析"],
+                "ordered_steps": THREE_CIRCLE_ORDERED_STEPS,
                 "selected_primary_candidates": [
                     item.get("id")
                     for item in primary_candidates
@@ -2640,7 +2669,7 @@ class Layer0Assembler:
             "dominant_element": dominant_label,
             "secondary_element": secondary_label,
             "primary_signal": primary_id,
-            "source": "tutorial_four_step_method",
+            "source": THREE_CIRCLE_METHOD_SOURCE,
         }
 
     def _build_per_circle_color_analysis(

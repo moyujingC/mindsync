@@ -40,6 +40,16 @@ def resolve_build_dir(build_selector: str = "current") -> Path:
     return knowledge_root / "candidates" / build_id
 
 
+def resolve_pack_root(build_selector: str = "current") -> Path:
+    """Resolve which YAML pack should back a compiled build selector."""
+
+    source, build_id = parse_build_selector(build_selector)
+    knowledge_root = get_knowledge_toc_root() / "data" / "knowledge"
+    if source == "candidate" and build_id.startswith("v2.2"):
+        return knowledge_root / "packs" / "v2.2"
+    return knowledge_root / "packs" / "v2.1"
+
+
 def resolve_build_index_path(build_selector: str = "current") -> Path:
     """Resolve a build selector to the expected `index.json` path."""
 
@@ -47,7 +57,7 @@ def resolve_build_index_path(build_selector: str = "current") -> Path:
 
 
 class KnowledgeRepository:
-    """Read-only repository backed by the compiled v2.1 index."""
+    """Read-only repository backed by a compiled knowledge index."""
 
     def __init__(
         self,
@@ -59,7 +69,10 @@ class KnowledgeRepository:
         self.build_selector = build_selector
         self.index_path = index_path or resolve_build_index_path(build_selector)
         resolved_build_dir = self.index_path.parent
-        self.compiler = compiler or KnowledgePackCompiler(build_dir=resolved_build_dir)
+        self.compiler = compiler or KnowledgePackCompiler(
+            pack_root=resolve_pack_root(build_selector),
+            build_dir=resolved_build_dir,
+        )
         self._index_cache: dict[str, Any] | None = None
 
     def load_index(self, *, force_reload: bool = False) -> dict[str, Any]:

@@ -8,8 +8,7 @@
 > 项目：aimandala
 > 阶段：verification
 > depends_on：projects/aimandala/docs/sources/知识库构建/当前正式依据与使用说明.md
-> depends_on：projects/aimandala/docs/qa/2026-04-19-Batch-E-解读教程算法保真验证记录.md
-> depends_on：projects/aimandala/docs/qa/2026-04-19-Batch-H-报告表达保真验证记录.md
+> depends_on：projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md
 > depends_on：projects/aimandala/docs/qa/2026-05-06-mvp-视觉模型端到端-smoke-验证记录.md
 > depends_on：projects/aimandala/docs/qa/2026-05-06-mvp-视觉模型前端-runtime-smoke-验证记录.md
 
@@ -48,8 +47,7 @@
 依据：
 
 - 当前后端 e2e smoke 记录明确说明：Lite / Pro 报告正文走本地 deterministic / knowledge 主链，不由视觉模型直接生成整份报告。
-- Batch E 已验证四步法 trace、元素教程状态、circle relation 和 narrative evidence trace。
-- Batch H 已验证表达层没有退回 debug dump，也没有丢失关键三圈证据。
+- 当前正式依据已收口到三圈五行 stage 00-16，不再引用 Batch E / Batch H 旧链路作为放行依据。
 
 ### 2.2 Lite 流派保真
 
@@ -128,7 +126,7 @@ Pro 应保持“深度理解报告”的定位：机制拆解、现实连接、�
 
 出现以下任一情况，应退回实现或知识链路，不进入默认接入：
 
-- 报告主判断明显来自大模型自由发挥，而不是 knowledge skeleton。
+- 报告主判断明显来自大模型自由发挥，而不是 stage 00-12 的知识引用与中间交付物。
 - Lite 开头变成泛安慰文，不能在前两句命中用户状态。
 - Lite / Pro 混用定位，Pro 只是 Lite 的扩写版。
 - Pro 根因链三层没有递进，只是同义重复。

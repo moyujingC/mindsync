@@ -40,6 +40,8 @@
 - `review-feedback-to-memory`
 - `knowledge-relink-maintenance`
 - `ui-ux-console-design`
+- `cicd-check`
+- `mvp-deploy-trigger`
 
 ## 配套文档
 

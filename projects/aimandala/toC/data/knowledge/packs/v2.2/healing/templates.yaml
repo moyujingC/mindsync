@@ -1,0 +1,32 @@
+id: healing.templates
+type: healing
+version: v2.2
+status: active
+source: legacy_v2_python
+review_status: migrated
+payload:
+  templates:
+    standard:
+      phases:
+      - 觉察
+      - 接纳
+      - 转化
+      - 巩固
+      duration_days: 21
+      daily_practice:
+      - 绘画
+      - 书写
+      - 冥想
+    intensive:
+      phases:
+      - 危机干预
+      - 稳定化
+      - 深度工作
+      - 整合
+      duration_days: 40
+      daily_practice:
+      - 绘画
+      - 书写
+      - 冥想
+      - 身体练习
+relations: {}

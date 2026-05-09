@@ -1730,7 +1730,7 @@ def test_generate_lite_placeholder_marks_record_failed_when_layer0_blocks(tmp_pa
                         "summary": "程序中间结果仍可查看。",
                         "source": "program_segmented_block_measurement",
                     },
-                    "direct_judgment_hits": {"catalog_version": "merged-manual6-runtime9.v1", "catalog_items": [], "hits": []},
+                    "direct_judgment_hits": {"catalog_version": "direct_judgments.v2.1.source11.v1", "catalog_items": [], "hits": []},
                     "circles": {
                         "inner": {
                             "observation_summary": "未观察到足够依据",
@@ -1818,7 +1818,7 @@ def test_upgrade_to_pro_marks_record_failed_when_layer0_has_failed(tmp_path):
                     "global_visual_summary": "",
                     "llm_color_observation": {"summary": "", "source": "layer0_failed"},
                     "program_color_measurement": {"summary": "程序中间结果仍可查看。", "source": "program_segmented_block_measurement"},
-                    "direct_judgment_hits": {"catalog_version": "merged-manual6-runtime9.v1", "catalog_items": [], "hits": []},
+                    "direct_judgment_hits": {"catalog_version": "direct_judgments.v2.1.source11.v1", "catalog_items": [], "hits": []},
                     "circles": {"inner": {}, "middle": {}, "outer": {}},
                     "prompt_meta": {"source": "layer0_failed", "failure_reason": "layer0_vision_unconfigured"},
                 },

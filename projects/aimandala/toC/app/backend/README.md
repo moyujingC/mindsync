@@ -143,7 +143,8 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - Pro 报告内容也已经开始受 `theme / painting_intention / painting_feeling / 三圈参数` 影响，不再只是固定模板
 - Pro 报告文案与结构也已开始向旧主线正式深度报告靠拢，包含第一眼直觉、核心洞察表格、Lite 基础承接、三圈深度诊断、失衡识别、根源探索与针对失衡问题的疗愈建议
 - Lite / Pro 最终 markdown 都已接入 safety disclaimer 包装
-- Lite / Pro 正式报告主链已收口为知识优先本地组装：`Layer0 / 四步法 / projection / narrative projection -> Lite/Pro 知识骨架 -> 最终报告`
+- 当前报告方法论已收口到 `stage-00-input-context -> ... -> stage-16-final-report`，单一真值源见 `projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md`
+- 后端内部仍保留的 `Layer0` / `layer_0_raw` 仅是旧兼容容器，用于维持现有 API、测试和迁移期诊断；不得再理解为当前报告生成方法
 - 当前后端仍保留 `prompt_preview` / `prompt_schema_validation_issues` 作为前端兼容字段，但它们不再表示模型主生成入口
 - Lite / Pro 的最终 `report.structured` 字段契约现已集中在 `app/core/pipeline/structured_report_schema.py`
 - 后端现已补上统一 LLM client，仅用于 Layer0 画面事实提取、Lite / Pro 报告结构生成和 Pro 报告内 AI 追问；三圈边界暂时不依赖 LLM，由用户人工确认

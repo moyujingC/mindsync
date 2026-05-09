@@ -121,6 +121,10 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     assert payload["structured"]["root_cause_chain"]
     assert payload["structured"]["deep_structure_interpretation"]
     assert payload["structured"]["healing_plan"]
+    healing_serialized = str(payload["structured"]["healing_plan"])
+    assert "疗愈议题" not in healing_serialized
+    assert "建议每天" not in healing_serialized
+    assert "约三周" not in healing_serialized
     serialized = str(payload["structured"])
     assert "{'" + "inner'" not in serialized
     assert "解锁完整" not in serialized
