@@ -53,19 +53,21 @@ from app.core.knowledge.three_circles import (
 )
 
 DIRECT_JUDGMENTS_SOURCE_PATH = (
-    "projects/aimandala/docs/sources/知识库构建/原始镜像/00_kb_md/05_direct_judgments.md"
+    "projects/aimandala/docs/sources/知识库构建/直断法高命中模式.md"
 )
 
 DIRECT_JUDGMENT_EVIDENCE_REQUIREMENTS = {
-    "涂色很满深色为主": ["整体填色密度高", "主色或大面积色块偏深"],
-    "整体泛白颜色偏淡": ["整体留白或浅色占比较高", "主要颜色饱和度偏低"],
-    "思虑过重喜好操心": ["黄色在整体或某一圈中面积显著"],
-    "喜欢分享开口来财": ["蓝色和绿色同时明显出现"],
-    "入不敷出热情奔放": ["外圈存在成片红色", "红色相邻区域不是绿色为主"],
-    "关注外表过手财神": ["外圈颜色丰富", "外圈呈现零碎、花边或装饰性强的结构"],
-    "表里如一": ["内圈和外圈主色或核心色高度一致"],
-    "不想说啥无声沉默": ["整张画留白比例较高"],
-    "心门关闭": ["外圈留白多", "内圈或中圈颜色数量不少于3种"],
+    "颜色浅、轻": ["整体色调浅淡", "下笔轻柔或大面积泛白", "主要颜色饱和度偏低"],
+    "颜色浓郁、深重": ["整体填色密度高", "主色或大面积色块偏深", "画面大面积涂满无留白"],
+    "整张大面积留白": ["整张画留白比例较高", "留白分布较均匀"],
+    "外圈颜色单一且面积大": ["外圈仅有单一主色", "外圈单色占比较大"],
+    "大面积黄色": ["黄色在整体或某一圈中面积显著", "黄色为主色调"],
+    "外圈花边、星星点点": ["外圈颜色丰富", "外圈呈现零碎、花边、圆点或装饰性强的结构"],
+    "外圈红色多": ["外圈存在成片红色", "红色相邻区域不是绿色为主"],
+    "渐变色": ["画面出现色彩渐变", "相邻区域或圈层之间呈连续过渡"],
+    "蓝绿搭配": ["蓝色和绿色同时明显出现"],
+    "内外同色": ["内圈和外圈主色或核心色高度一致"],
+    "外白内浓（心门关闭）": ["外圈留白多", "内圈或中圈颜色数量不少于3种"],
 }
 
 DIRECT_JUDGMENT_WHITESPACE_RULES = {
@@ -292,30 +294,32 @@ EXPORTED_HEALING_ISSUE_MAPPINGS = {
 
 def _build_direct_judgment_records() -> list[dict[str, Any]]:
     slug_by_name = {
-        "涂色很满深色为主": "full_dark_coloring",
-        "整体泛白颜色偏淡": "pale_overall",
-        "思虑过重喜好操心": "large_yellow_worrying",
-        "喜欢分享开口来财": "blue_green_sharing",
-        "入不敷出热情奔放": "outer_red_spending",
-        "关注外表过手财神": "outer_colorful_fragmented",
-        "表里如一": "inner_outer_same",
-        "不想说啥无声沉默": "large_whitespace_silence",
-        "心门关闭": "closed_heart",
+        "颜色浅、轻": "light_pale_whitish",
+        "颜色浓郁、深重": "heavy_dark_filled",
+        "整张大面积留白": "overall_whitespace",
+        "外圈颜色单一且面积大": "outer_single_color_large_mass",
+        "大面积黄色": "large_yellow_mass",
+        "外圈花边、星星点点": "outer_decorative_fragmented",
+        "外圈红色多": "outer_red_mass",
+        "渐变色": "gradient_transition",
+        "蓝绿搭配": "blue_green_expression",
+        "内外同色": "inner_outer_same_color",
+        "外白内浓（心门关闭）": "closed_heart",
     }
     records: list[dict[str, Any]] = []
     for name, judgment in DIRECT_JUDGMENTS.items():
-        records.append(
-            {
-                "id": f"direct_judgment.{slug_by_name.get(name, name)}",
-                "name": name,
-                "visual_pattern": judgment.get("pattern", ""),
-                "meaning": judgment.get("meaning", ""),
-                "detail": judgment.get("detail", ""),
-                "suggestion": judgment.get("suggestion", ""),
-                "severity": judgment.get("severity", ""),
-                "evidence_requirements": DIRECT_JUDGMENT_EVIDENCE_REQUIREMENTS.get(name, []),
-            }
-        )
+        record = {
+            "id": f"direct_judgment.{slug_by_name.get(name, name)}",
+            "name": name,
+            "visual_pattern": judgment.get("pattern", ""),
+            "meaning": judgment.get("meaning", ""),
+            "detail": judgment.get("detail", ""),
+            "principle": judgment.get("principle", ""),
+            "suggestion": judgment.get("suggestion", ""),
+            "severity": judgment.get("severity", ""),
+            "evidence_requirements": DIRECT_JUDGMENT_EVIDENCE_REQUIREMENTS.get(name, []),
+        }
+        records.append(record)
     return records
 
 

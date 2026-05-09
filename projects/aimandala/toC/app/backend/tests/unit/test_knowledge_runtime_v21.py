@@ -89,7 +89,7 @@ def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
     assert "rule.direct_judgments" in index["assets"]["rules"]
     assert (
         index["assets"]["rules"]["rule.direct_judgments"]["payload"]["source_of_truth"]["path"]
-        == "projects/aimandala/docs/sources/知识库构建/原始镜像/00_kb_md/05_direct_judgments.md"
+        == "projects/aimandala/docs/sources/知识库构建/直断法高命中模式.md"
     )
     assert "rule.healing_issue_mappings" in index["assets"]["rules"]
     quality = index["stats"]["quality"]
@@ -942,9 +942,9 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
     catalog_ids = [
         item["judgment_id"] for item in visual_basis["direct_judgment_hits"]["catalog_items"]
     ]
-    assert visual_basis["direct_judgment_hits"]["catalog_version"] == "merged-manual6-runtime9.v1"
-    assert len(catalog_ids) == 10
-    assert "large_yellow_mass" not in catalog_ids
+    assert visual_basis["direct_judgment_hits"]["catalog_version"] == "direct_judgments.v2.1.source11.v1"
+    assert len(catalog_ids) == 11
+    assert "large_yellow_mass" in catalog_ids
     assert "outer_decorative_fragmented" in catalog_ids
     assert "heavy_dark_filled" in catalog_ids
     assert "light_pale_whitish" in catalog_ids

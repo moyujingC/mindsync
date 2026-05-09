@@ -8,6 +8,8 @@ from .data_models import InterpretationRecord, Layer0Raw
 from .report_generation_contracts import Layer0BuildBlockedError
 from .report_blueprints import LITE_REPORT_BLUEPRINT
 
+DIRECT_JUDGMENT_CATALOG_VERSION = "direct_judgments.v2.1.source11.v1"
+
 ELEMENT_KEY_TO_CN = {
     "wood": "木",
     "fire": "火",
@@ -235,7 +237,7 @@ class ReportLayer0Support:
                 "source": "fallback",
             },
             "direct_judgment_hits": {
-                "catalog_version": "merged-manual6-runtime9.v1",
+                "catalog_version": DIRECT_JUDGMENT_CATALOG_VERSION,
                 "catalog_items": [],
                 "hits": [],
             },
