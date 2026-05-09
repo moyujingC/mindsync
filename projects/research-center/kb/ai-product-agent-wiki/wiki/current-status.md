@@ -11,6 +11,8 @@
 - 首批主题入口
 - atoms 中间层
 - source / atom / concept 模板
+- AI 产品原则概念页
+- Agent loop 概念页
 
 ## What comes next
 
