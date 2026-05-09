@@ -3,9 +3,22 @@
 ## Current Focus
 
 - Karpathy LLM Wiki 模式
+- Agent 系统学习课程路径
 - AI 产品经理视角下的 Agent 判断
 - Agent 开发最小闭环
 - 一镜一梳项目映射
+
+## Course Path
+
+- [[course/00-overview]]
+- [[course/01-agent-foundations]]
+- [[course/02-context-tools]]
+- [[course/03-agent-loop-state]]
+- [[course/04-evals-guardrails-tracing]]
+- [[course/05-single-agent-design]]
+- [[course/06-multi-agent-design]]
+- [[course/07-product-view]]
+- [[course/08-aimandala-mapping]]
 
 ## Entry Points
 
@@ -31,5 +44,6 @@
 ## Working Rules
 
 - 先写 source，再写 atom，再写 concept
+- 课程页只负责组织学习路径，不替代 source / atom / concept
 - 先写理解，再写结论
 - 先写可复用内容，再考虑公司级提炼

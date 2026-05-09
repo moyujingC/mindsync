@@ -13,10 +13,11 @@
 - source / atom / concept 模板
 - AI 产品原则概念页
 - Agent loop 概念页
+- Agent 系统学习课程入口
+- 00 到 08 的课程路径
 
 ## What comes next
 
-- 扩展 Karpathy `llm-wiki` source page
-- Agent 判断框架
-- 单智能体开发最小闭环
-- 一镜一梳映射页
+- 按课程逐步扩展 source、atom 和 concept
+- 补 Agent 工具设计、状态机、trace、guardrails 的独立概念页
+- 继续细化一镜一梳映射页
