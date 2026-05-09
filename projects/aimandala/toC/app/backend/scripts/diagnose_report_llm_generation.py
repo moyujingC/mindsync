@@ -77,6 +77,7 @@ async def _run(args: argparse.Namespace) -> dict[str, Any]:
                 draft = orchestrator._build_pro_placeholder_draft(record)
                 record.layer_3_pro_draft = draft
             prompt = str(getattr(draft, "prompt_preview", "") or "")
+            result["prompt_parts"] = _prompt_parts(orchestrator, record, args.version, draft)
             result["prompt_chars"] = len(prompt)
             result["prompt_preview"] = prompt[:MAX_PROMPT_PREVIEW_CHARS]
             result["status"] = "plan_only"
@@ -112,6 +113,7 @@ async def _run(args: argparse.Namespace) -> dict[str, Any]:
         result["chat_trace"] = _extract_chat_trace(record, args.version)
         result["payload_excerpt"] = json.dumps(payload, ensure_ascii=False)[:1200]
         result.update(_prompt_diagnostics(record, args.version))
+        result["prompt_parts"] = _prompt_parts(orchestrator, record, args.version, None)
         return result
 
 
@@ -203,6 +205,98 @@ def _prompt_diagnostics(record: Any, version: str) -> dict[str, Any]:
         "prompt_preview": prompt[:MAX_PROMPT_PREVIEW_CHARS],
         "prompt_preview_truncated": len(prompt) > MAX_PROMPT_PREVIEW_CHARS,
     }
+
+
+def _prompt_parts(
+    orchestrator: Any,
+    record: Any,
+    version: str,
+    draft: Any | None,
+) -> dict[str, Any]:
+    if version == "lite":
+        draft = draft or getattr(record, "layer_1_lite_draft", None)
+        vision_data = {
+            "theme": getattr(record, "theme", ""),
+            "painting_intention": getattr(record, "painting_intention", ""),
+            "painting_feeling": getattr(record, "painting_feeling", ""),
+            "three_circles": getattr(record, "three_circles", {}),
+            "layer_0_raw": _layer0_dict(record),
+        }
+        narrative_plan = getattr(draft, "narrative_plan", {}) if draft else {}
+        projection = (
+            narrative_plan.get("legacy_projection", {})
+            if isinstance(narrative_plan, dict)
+            else {}
+        )
+        knowledge_skeleton = orchestrator.report_prompt_preview_builder.build_lite_knowledge_skeleton(
+            record,
+            projection=projection,
+            narrative_plan=narrative_plan if isinstance(narrative_plan, dict) else {},
+        )
+    else:
+        draft = draft or getattr(record, "layer_3_pro_draft", None)
+        vision_data = {
+            "theme": getattr(record, "theme", ""),
+            "painting_intention": getattr(record, "painting_intention", ""),
+            "painting_feeling": getattr(record, "painting_feeling", ""),
+            "three_circles": getattr(record, "three_circles", {}),
+            "layer_0_raw": _layer0_dict(record),
+            "layer_1_lite_draft": (
+                record.layer_1_lite_draft.to_dict()
+                if getattr(record, "layer_1_lite_draft", None)
+                else None
+            ),
+        }
+        narrative_plan = getattr(draft, "narrative_plan", {}) if draft else {}
+        pro_projection = (
+            narrative_plan.get("legacy_projection", {})
+            if isinstance(narrative_plan, dict)
+            else {}
+        )
+        knowledge_skeleton = orchestrator.report_prompt_preview_builder.build_pro_knowledge_skeleton(
+            record,
+            narrative_projection=pro_projection,
+            imbalance_projection={},
+            imbalance_profile=getattr(draft, "imbalance_confirmed", {}) if draft else {},
+            narrative_plan=narrative_plan if isinstance(narrative_plan, dict) else {},
+        )
+    prompt = str(getattr(draft, "prompt_preview", "") or "")
+    vision_json = json.dumps(vision_data, ensure_ascii=False, indent=2)
+    theme_context = orchestrator.report_prompt_preview_builder.build_theme_prompt_context(record)
+    layer0 = _layer0_dict(record)
+    known_parts = len(vision_json) + len(theme_context) + len(knowledge_skeleton)
+    static_chars = max(len(prompt) - known_parts, 0)
+    return {
+        "template_static_chars": static_chars,
+        "vision_data_chars": len(vision_json),
+        "theme_context_chars": len(theme_context),
+        "knowledge_skeleton_chars": len(knowledge_skeleton),
+        "prompt_preview_chars": len(prompt),
+        "approx_tokens_by_chars_div_2": _approx_tokens(len(prompt)),
+        "layer0_breakdown_chars": _dict_breakdown_chars(layer0),
+    }
+
+
+def _layer0_dict(record: Any) -> dict[str, Any] | None:
+    layer0 = getattr(record, "layer_0_raw", None)
+    if layer0 is None or not hasattr(layer0, "to_dict"):
+        return None
+    payload = layer0.to_dict()
+    return payload if isinstance(payload, dict) else None
+
+
+def _dict_breakdown_chars(payload: dict[str, Any] | None) -> dict[str, int]:
+    if not isinstance(payload, dict):
+        return {}
+    return {
+        key: len(json.dumps(value, ensure_ascii=False, indent=2))
+        for key, value in sorted(payload.items())
+    }
+
+
+def _approx_tokens(char_count: int) -> int:
+    # Chinese-heavy prompts often land near 1.5-2.5 chars/token across common BPEs.
+    return int(round(char_count / 2))
 
 
 def _extract_chat_trace(record: Any, version: str) -> dict[str, Any]:
