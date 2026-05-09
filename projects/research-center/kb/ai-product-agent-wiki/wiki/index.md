@@ -37,6 +37,7 @@
 - [[dev/rag-vs-llm-wiki]]
 - [[bridge/pm-to-agent-architecture]]
 - [[bridge/aimandala-agent-mapping]]
+- [[bridge/mandala-interpreter-agent-design]]
 
 ## Atom Entry Points
 
@@ -53,6 +54,8 @@
 - [[../../atoms/dev/single-agent-before-multi-agent]]
 - [[../../atoms/dev/multi-agent-needs-clear-reason]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
+- [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
+- [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 

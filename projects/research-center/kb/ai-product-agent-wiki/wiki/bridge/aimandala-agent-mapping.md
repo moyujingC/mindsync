@@ -32,9 +32,13 @@
 - trace 记录 -> Agent 可解释性基础
 - eval set -> 报告质量、证据使用和风险边界验证
 
+更具体的第一版设计见 [[./mandala-interpreter-agent-design]]。它把 `MandalaInterpreterAgent` 收束为报告解读 Agent：只解释已有 Lite / Pro 报告、`school_interpretation_chain` 和 stage refs，不重新识别三圈，也不新增底层判断。
+
 ## Related Atoms
 
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
+- [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
+- [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 - [[../../atoms/dev/single-agent-before-multi-agent]]
 - [[../../atoms/dev/trace-enables-agent-explainability]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
