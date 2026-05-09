@@ -1,0 +1,48 @@
+id: narrative.general
+type: narrative
+version: v2.2
+status: active
+source: markdown_truth_source
+review_status: projected
+payload:
+  theme_id: general
+  insight_templates:
+    你的底色:
+      角度: 你当前的生命能量基调
+      示例: 你的画呈现出一种外冷内热的状态，像是用理性的外壳保护着一颗敏感的心。这种能量的核心是对安全感的深深渴望...
+    你的矛盾:
+      角度: 内在自我与外在表现之间的张力
+      示例: 你内心渴望自由绽放，但似乎总有一种力量在拉住你，让你在'想要'和'不敢'之间反复摇摆...
+    你的模式:
+      角度: 生命中重复出现的能量循环
+      示例: 你可能常常开始得很热烈，但在接近目标时容易找到理由停下来，让之前的热情慢慢冷却...
+    你的防御:
+      角度: 你保护自己的方式（也可能成为限制）
+      示例: 你习惯用'准备'来保护自己——告诉自己'等想清楚了再行动'。这让你安全，但也让你错失了许多机会...
+    你的卡点:
+      角度: 当前生命阶段的核心成长议题
+      示例: 过多的思虑正在抑制你的行动力，让你容易陷入'想得多做得少'的状态，原本的热情在等待中慢慢冷却...
+    你的光:
+      角度: 你独特的内在资源与转变可能
+      示例: 你拥有罕见的整合力——能将不同的能量融为一体。这意味着你有极强的适应力，这是你的核心天赋...
+  pro_upgrade_teaser: '
+
+    还有更多深层洞察，包括：
+
+    - 这种能量模式在亲密关系、财富与健康中的具体表现
+
+    - 童年经历如何塑造了这一模式
+
+    - 更完整的结构、根因与疗愈视角
+
+    '
+relations:
+  source_markdown: projects/aimandala/docs/sources/知识库构建/主题知识/通用解读.md
+  source_symbols:
+  - THEME_CONFIG
+  - COLOR_MEANINGS
+  - INTERACTIONS
+  - INSIGHT_TEMPLATES
+  - IMBALANCE_MAPPINGS
+  - HEALING_PRESCRIPTIONS
+  theme: theme.general

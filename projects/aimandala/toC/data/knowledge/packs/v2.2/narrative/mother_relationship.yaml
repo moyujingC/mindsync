@@ -1,0 +1,48 @@
+id: narrative.mother_relationship
+type: narrative
+version: v2.2
+status: active
+source: markdown_truth_source
+review_status: projected
+payload:
+  theme_id: mother_relationship
+  insight_templates:
+    你的底色:
+      角度: 母亲在你内在世界的印记
+      示例: 你的中圈土元素温暖饱满，显示你与母亲有着深厚的情感基础...
+    你的矛盾:
+      角度: 渴望亲密 vs 需要独立
+      示例: 中圈的紧密连接与内圈的独立渴望显示，你可能在'想靠近妈妈'和'想做自己'间感到拉扯...
+    你的模式:
+      角度: 在关系中的照顾模式
+      示例: 土过旺的能量显示，你可能无意识地在关系中重复母亲的照顾模式，过度付出而忽略自己的需求...
+    你的防御:
+      角度: 如何保护与母亲相关的情感
+      示例: 外圈的木形成生长性的保护：当感到被过度关注时，你会用独立和距离来建立边界...
+    你的卡点:
+      角度: 母亲关系对现在的影响
+      示例: 来自母亲的过度保护可能让你难以发展出自己的判断力和独立性，使你在做选择时习惯性地寻求外界认可...
+    你的光:
+      角度: 与母亲关系中的资源
+      示例: 画显示你继承了极强的情感感知力——当你将这份天赋用于自我关怀而非过度照顾他人，它会滋养你的生命...
+  pro_upgrade_teaser: '
+
+    还有更多深层洞察，包括：
+
+    - 这种母亲关系模式如何影响你的亲密关系
+
+    - 与母亲关系的和解与分离
+
+    - 更完整的结构、根因与疗愈视角
+
+    '
+relations:
+  source_markdown: projects/aimandala/docs/sources/知识库构建/主题知识/母亲关系.md
+  source_symbols:
+  - THEME_CONFIG
+  - COLOR_MEANINGS
+  - INTERACTIONS
+  - INSIGHT_TEMPLATES
+  - IMBALANCE_MAPPINGS
+  - HEALING_PRESCRIPTIONS
+  theme: theme.mother_relationship

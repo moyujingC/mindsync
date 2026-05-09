@@ -16,7 +16,7 @@
 
 1. `MVP 可用链路`
    - 当前日常判断 `Aimandala` CI/CD 是否能跑通时，优先看这条链路
-   - 入口文件是 [.github/workflows/mvp-release.yml](../../../.github/workflows/mvp-release.yml)
+   - 入口文件是 [.github/workflows/mvp-ci.yml](../../../.github/workflows/mvp-ci.yml)
    - 它使用 GitHub 托管 runner：`ubuntu-latest`
    - 它覆盖最小 CI、手动部署与部署后 smoke 检查
 2. `增强设计链路`
@@ -43,7 +43,7 @@
 - 自动修复脚本
 - 运行健康巡检脚本
 
-但当前实际可用主路径应先看 `mvp-release`。它有意把链路缩短为：
+但当前实际可用主路径应先看 `mvp-ci`。它有意把链路缩短为：
 
 - GitHub 托管 runner 执行 CI
 - 手动触发部署
@@ -54,7 +54,7 @@
 
 ### 2.0 MVP 可用链路
 
-`mvp-release` 当前包含两个 job：
+`mvp-ci` 当前包含两个 job：
 
 - `mvp-ci`
   - 前端：install、lint、typecheck、test、`build:mobile-web`
@@ -65,6 +65,33 @@
   - `dev` 必须从 `main` 分支触发
   - `prod` 必须从 `release` 分支触发
   - 远端执行后会运行 `shared/tools/ci/aimandala-smoke.mjs`
+
+同时现在补充一条独立手动部署链：
+
+- `mvp-deploy`
+  - 单独 workflow
+  - 用途是复用“最新一次已成功的 `mvp-ci`”结果
+  - 先检查对应分支最近一次成功的 `push` 型 `mvp-ci`
+  - 检查通过后直接 deploy + smoke
+  - 不再重复跑一整轮 `mvp-ci`
+
+这里需要区分两个层次：
+
+- `mvp-ci` workflow 里原本就包含一个名为 `mvp-deploy` 的手动 deploy job
+- 现在新增的 `.github/workflows/mvp-deploy.yml` 是独立 workflow
+  - 它的职责是“复用最新绿色 `mvp-ci` 结果后再部署”
+  - 不是再次重跑整条 `mvp-ci` workflow
+
+这样设计的主要原因是：
+
+- GitHub Actions 在私有仓库下的免费分钟数有上限
+- 如果同一个提交已经跑过完整 `mvp-ci`，再为了手动 deploy 重新跑一轮，性价比很低
+- 因此更合理的做法是：先确认最新一次 `mvp-ci` 仍是绿色，再直接复用这次绿灯结果进行部署
+
+但这条优化不能放松边界：
+
+- 只允许复用“当前分支最新一次”的绿色 run
+- 不允许拿更早的历史成功 run 去覆盖后来已经变化的分支状态
 
 这条链路当前不做：
 
@@ -271,7 +298,7 @@ MVP 链路没有 Paperclip 状态流。MVP 链路的状态先看 GitHub Actions 
 
 当前最短答案是：
 
-1. `mvp-release` 是当前优先看的 MVP 可用链路
+1. `mvp-ci` 是当前优先看的 MVP 可用链路
 2. GitHub 托管 runner `ubuntu-latest` 负责执行 MVP CI 和手动部署 job
 3. `shared/tools/ci/aimandala-smoke.mjs` 负责 MVP 部署后的 smoke 检查
 4. `aimandala-ci / deploy / nightly-smoke / auto-repair` 是增强设计链路
@@ -281,7 +308,7 @@ MVP 链路没有 Paperclip 状态流。MVP 链路的状态先看 GitHub Actions 
 ## 8. 继续深入时该看哪里
 
 - MVP 可用链路：
-  - [.github/workflows/mvp-release.yml](../../../.github/workflows/mvp-release.yml)
+  - [.github/workflows/mvp-ci.yml](../../../.github/workflows/mvp-ci.yml)
 - 角色边界：
   - [company/CI-CD-角色分工说明.md](../../../company/CI-CD-角色分工说明.md)
 - 项目级交付总览：

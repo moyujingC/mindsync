@@ -24,7 +24,6 @@ from app.core.knowledge_runtime.compiler import KnowledgePackCompiler
 from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root
 from app.core.knowledge_runtime.repository import KnowledgeRepository
 from app.core.knowledge_runtime.runtime import create_knowledge_runtime, get_knowledge_runtime
-from app.core.knowledge_runtime.services.layer0_assembler import Layer0Assembler
 from app.core.knowledge_runtime.validators import KnowledgePackValidator
 from app.core.llm.runtime import NoopLLMClient
 from app.core.pipeline.data_models import InterpretationRecord
@@ -73,6 +72,7 @@ def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
     assert manifest["schema_version"] == "v2.1"
     assert "themes/wealth_career.yaml" in manifest["entries"]["themes"]
     assert "narrative/intimate_relationship.yaml" in manifest["entries"]["narrative"]
+    assert "rules/direct_judgments.yaml" in manifest["entries"]["rules"]
 
     wealth_theme = yaml.safe_load(
         (pack_root / "themes" / "wealth_career.yaml").read_text(encoding="utf-8")
@@ -86,6 +86,11 @@ def test_v21_exporter_and_compiler_generate_pack_and_index(tmp_path):
     assert "wealth_career" in index["stats"]["theme_ids"]
     assert "intimate_relationship" in index["stats"]["theme_ids"]
     assert index["assets"]["rules"]["rule.imbalance_types"]["payload"]["imbalances"]["水多火灭"]["warning"]
+    assert "rule.direct_judgments" in index["assets"]["rules"]
+    assert (
+        index["assets"]["rules"]["rule.direct_judgments"]["payload"]["source_of_truth"]["path"]
+        == "projects/aimandala/docs/sources/知识库构建/直断法高命中模式.md"
+    )
     assert "rule.healing_issue_mappings" in index["assets"]["rules"]
     quality = index["stats"]["quality"]
     assert quality["theme_mapping_coverage"]["general"]["mapped_count"] == len(
@@ -262,7 +267,8 @@ def test_v21_narrative_service_builds_imbalance_projection():
     assert "72小时决策" in projection["direction"]
     assert "财富是能量的流动" in projection["healing_core"]
     assert "水多火灭" in projection["deeper_root"]
-    assert "财富焦虑" in projection["core_root"]
+    assert "安心拥有、安心向前" in projection["core_root"]
+    assert "财富事业" in projection["core_root"]
 
 
 def test_v21_narrative_service_builds_imbalance_narrative_basis():
@@ -478,6 +484,11 @@ def test_v21_narrative_service_builds_lite_projection():
     assert "过渡期" in projection["emotion_portrait"]
     assert "这也和你最近画画时写下的感觉有关。" in projection["emotion_portrait"]
     assert "过渡期" in projection["emotion_portrait"]
+    assert "{dominant_theme}" not in projection["overall_impression"]
+    assert "{secondary_name}" not in projection["overall_impression"]
+    assert "{transition_sentence}" not in projection["overall_impression"]
+    assert "{dominant_name}" not in projection["visual_elements"]
+    assert "{outer_name}" not in projection["emotion_portrait"]
     assert len(projection["three_awareness"]) == 3
     assert projection["three_awareness"][0]["title"] == "先安顿自己"
     assert "默认 Pro 预告" in projection["pro_teaser"]
@@ -626,6 +637,8 @@ def test_v21_narrative_service_builds_pro_projection():
     assert "《慢慢亮起来的中心》" not in projection["first_impression"]
     assert "财富安全感与物质基础" in projection["energy_essence"]
     assert "恐惧压制行动" in projection["block_point"]
+    assert "{transition_sentence}" not in projection["first_impression"]
+    assert "{dominant_theme}" not in projection["energy_essence"]
 
 
 def test_v21_narrative_service_builds_pro_narrative_plan():
@@ -727,6 +740,8 @@ def test_v21_narrative_service_builds_pro_narrative_plan():
     assert "你原本希望“想知道怎么更稳定地往前”" in plan["legacy_projection"]["root_cause"]["surface"]
     assert plan["legacy_projection"]["root_cause"]["deeper"] == "更深一层是你还在确认自己能不能稳稳接住变化"
     assert plan["legacy_projection"]["root_cause"]["core"] == "核心根因是对失控的担心还没有真正放松"
+    assert "【" not in plan["legacy_projection"]["root_cause"]["deeper"]
+    assert "「" not in plan["legacy_projection"]["block_point"]
 
 
 def test_v21_narrative_plan_compresses_per_circle_depth_state():
@@ -927,9 +942,9 @@ def test_v21_layer0_contains_structured_evidence(tmp_path):
     catalog_ids = [
         item["judgment_id"] for item in visual_basis["direct_judgment_hits"]["catalog_items"]
     ]
-    assert visual_basis["direct_judgment_hits"]["catalog_version"] == "merged-manual6-runtime9.v1"
-    assert len(catalog_ids) == 10
-    assert "large_yellow_mass" not in catalog_ids
+    assert visual_basis["direct_judgment_hits"]["catalog_version"] == "direct_judgments.v2.1.source11.v1"
+    assert len(catalog_ids) == 11
+    assert "large_yellow_mass" in catalog_ids
     assert "outer_decorative_fragmented" in catalog_ids
     assert "heavy_dark_filled" in catalog_ids
     assert "light_pale_whitish" in catalog_ids

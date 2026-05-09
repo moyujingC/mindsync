@@ -1,0 +1,526 @@
+id: element.five_elements
+type: element
+version: v2.2
+status: active
+source: legacy_v2_python
+review_status: migrated
+payload:
+  five_elements: &id001
+    木:
+      name: 木
+      virtue: 仁
+      colors:
+      - 绿色
+      - 青色
+      - 翠色
+      - 黄绿色
+      - 黄绿
+      color_codes:
+      - '#228B22'
+      - '#00CED1'
+      - '#90EE90'
+      - '#9ACD32'
+      attributes: 生长、发展、创造
+      nature: 树木生长，破土而出
+      organs: 肝、胆
+      emotion: 怒
+      direction: 东
+      season: 春
+      shape: 长方形
+      positive_traits:
+      - 独立
+      - 自主
+      - 自信
+      - 生机
+      - 成长
+      - 积极
+      - 欣赏
+      - 三观正
+      - 有主见
+      - 创造力
+      negative_traits:
+      - 固执
+      - 侵占
+      - 郁闷
+      - 恼怒
+      - 自我中心
+    火:
+      name: 火
+      virtue: 礼
+      colors:
+      - 红色
+      - 紫色
+      - 紫罗兰
+      - 青莲
+      - 橙色
+      - 粉红色
+      - 粉色
+      - 桃红
+      - 玫瑰红
+      - 橘黄
+      color_codes:
+      - '#DC143C'
+      - '#9932CC'
+      - '#FF8C00'
+      - '#FFB6C1'
+      - '#FF69B4'
+      - '#E32636'
+      - '#FFA500'
+      attributes: 热情、能量、喜悦
+      nature: 火灼热，燃烧万物
+      organs: 心、小肠
+      emotion: 喜
+      direction: 南
+      season: 夏
+      shape: 三角形
+      positive_traits:
+      - 热情
+      - 动力
+      - 勇气
+      - 爱
+      - 给予
+      - 快乐
+      - 欢喜心
+      negative_traits:
+      - 自我牺牲
+      - 善变
+      - 急躁
+      - 爱面子
+      - 索取
+    土:
+      name: 土
+      virtue: 信
+      colors:
+      - 黄色
+      - 咖啡色
+      - 茶色
+      - 褐色
+      color_codes:
+      - '#FFD700'
+      - '#6B4423'
+      - '#8B7355'
+      - '#A0522D'
+      attributes: 稳定、包容、信任
+      nature: 土藏金，聚土成金
+      organs: 脾、胃
+      emotion: 思
+      direction: 中
+      season: 长夏
+      shape: 正方形
+      positive_traits:
+      - 承载
+      - 接纳
+      - 包容
+      - 安全感
+      - 稳定有序
+      - 积极阳光
+      - 开朗
+      - 务实
+      - 脚踏实地
+      negative_traits:
+      - 抱怨
+      - 木讷
+      - 自卑
+      - 固执
+      - 愚笨
+      - 忍受
+      - 疲惫感
+    金:
+      name: 金
+      virtue: 义
+      colors:
+      - 白色
+      - 金色
+      - 银色
+      color_codes:
+      - '#FFFFFF'
+      - '#FFD700'
+      - '#C0C0C0'
+      attributes: 纯洁、收获、决断
+      nature: 金藏于石，金属坚硬
+      organs: 肺、大肠
+      emotion: 悲
+      direction: 西
+      season: 秋
+      shape: 圆形
+      positive_traits:
+      - 标准
+      - 规则
+      - 逻辑
+      - 决心
+      - 聪明
+      - 努力
+      - 挑战
+      - 性价比
+      - 自律
+      negative_traits:
+      - 挑剔
+      - 委屈
+      - 苛刻
+      - 心累
+      - 自我批评
+      - 批评别人
+    水:
+      name: 水
+      virtue: 智
+      colors:
+      - 黑色
+      - 蓝色
+      - 灰色
+      color_codes:
+      - '#000000'
+      - '#4169E1'
+      - '#808080'
+      attributes: 智慧、流动、深邃
+      nature: 水滋润万物，寒凉凝结
+      organs: 肾、膀胱
+      emotion: 恐
+      direction: 北
+      season: 冬
+      shape: 波浪形
+      positive_traits:
+      - 智慧
+      - 温暖
+      - 滋养他人
+      - 善良
+      - 愿意帮助他人
+      - 与人沟通合作
+      - 人脉
+      - 口才
+      - 财富
+      negative_traits:
+      - 情绪化
+      - 多愁善感
+      - 善变
+      - 优柔寡断
+      - 没主见
+      - 自我牺牲
+      - 怨气
+      - 不安全感
+      - 摧毁
+      - 湿寒
+  element_properties: *id001
+  relations:
+    five_elements_relations:
+      相生:
+        木: 火
+        火: 土
+        土: 金
+        金: 水
+        水: 木
+      相克:
+        木: 土
+        土: 水
+        水: 火
+        火: 金
+        金: 木
+    generating_relations:
+      木生火:
+        nature_principle: 木性温和，易燃，劈木钻木可生火
+        meaning: 助力、提携、给予、帮助
+        self_effect: 损耗本身力量（泄己之力）
+        other_effect: 帮助提拔他人
+        interpretation:
+          balanced:
+            inner: 绘画者自信、独立，内在有很多生机，对未来有希望，不断地成长，内在生出了欢喜心，对自己和生活有了更多热情，更懂得爱自己
+            middle: 绘画者近期能量不断在提升，心情也还不错，有更多欢喜心。同时家庭关系也在进步
+            outer: 外界有一些新的机会，点燃了绘画者的动力和热情
+          generator_strong:
+            meaning: 木积压得太多，没有用在正确的地方去生火
+            psychology: 绘画者容易生闷气，心里有评判有标准，对人不服，固执己见
+          generated_strong:
+            meaning: 木全被消耗，也生不出这么多火，这个火一般是虚火
+            psychology: 绘画者可能比较爱面子、虚荣，但内在底气不足
+        abnormal:
+          too_much_generator: 木多火塞 - 木头太多反而堵塞了火的燃烧
+          too_much_generated: 火多木焚 - 火太旺会把木头都烧尽
+      火生土:
+        nature_principle: 火灼热，能燃烧万物，火烧完之后成为灰烬，灰即为土
+        meaning: 转化为稳定、落地
+        self_effect: 损耗本身力量
+        other_effect: 产生稳定和安全感
+        interpretation:
+          balanced:
+            inner: 绘画者内心有了更多光明和温暖，生出更多活力和欢喜心，由此内在有了更多安全感
+            middle: 绘画者近期能量状态好，欢喜心增加，对家人愿意付出，与家人关系温暖、甜蜜、稳定
+            outer: 绘画者内在有力量、努力，有行动力，能够在工作中做出一些结果来
+          generator_strong:
+            meaning: 火积压太多而没有转化为有用的土
+            psychology: 绘画者近期心火旺盛，容易受情绪影响，易焦虑，着急要结果
+          generated_strong:
+            meaning: 活力少了，动力不够
+            psychology: 绘画者心力不够，做事情有心无力，有很多疲惫感
+        abnormal:
+          too_much_generator: 火多土焦 - 火太旺会把土烧焦
+          too_much_generated: 土多火晦 - 土太多会掩盖火光
+      土生金:
+        nature_principle: 金藏于山石里，矿山、岩石中产金，山石中至刚至阳之物是玉，金子和玉五行属金
+        meaning: 价值提升、收获
+        self_effect: 损耗本身力量
+        other_effect: 产生价值和标准
+        interpretation:
+          balanced:
+            inner: 绘画者内在有了更多稳定和安全感，也比以前更认可自己，自我价值感和自尊心都在提升
+            middle: 绘画者近期能量稳定，待家人宽厚平和，将家中打理得井井有条
+            outer: 绘画者近期执行力不错，能脚踏实地、务实、按部就班地做事
+          generator_strong:
+            meaning: 土积压太多而没有转化为有用的金
+            psychology: 绘画者接纳力和忍耐力不错，但相对比较固执，灵活性不足
+          generated_strong:
+            meaning: 接纳力不足
+            psychology: 多挑剔和评判，要么评判自己，要么评判身边人
+        abnormal:
+          too_much_generator: 土多金埋 - 土太多会把金埋没
+          too_much_generated: 金多土虚 - 金太旺反耗土气，土被耗虚
+      金生水:
+        nature_principle: 寒冷早晨金属表面会产生小水珠，金属表面较冷，空气中水蒸气在金属表面凝结
+        meaning: 智慧生发、财富流动
+        self_effect: 损耗本身力量
+        other_effect: 产生智慧和流动
+        interpretation:
+          balanced:
+            inner: 绘画者有着良好的自我价值，对自身认知比较清晰，有主见，对于内在的情绪能够及时断舍离，由此内在生发许多智慧
+            middle: 绘画者近期能量比较平和稳定，对人际关系有边界，不会随意负担身边人的情绪
+            outer: 绘画者近期行动力不错，能够自律，收入呈现增长趋势
+          generator_strong:
+            meaning: 聪明能干，但内在条条框框比较多
+            psychology: 对自己和他人的标准和要求都比较多，容易产生对他人的评判
+          generated_strong:
+            meaning: 善良有爱心，但对自我认知不清晰
+            psychology: 没有主见，容易纠结，容易过度付出或讨好别人
+        abnormal:
+          too_much_generator: 金多水浊 - 金太多会使水浑浊
+          too_much_generated: 水多金沉 - 水太多金会下沉
+      水生木:
+        nature_principle: 水有滋养温润使树木生长，木需要依赖水的滋养才能成长
+        meaning: 滋养成长、生机勃发
+        self_effect: 损耗本身力量
+        other_effect: 帮助成长和创造
+        interpretation:
+          balanced:
+            inner: 绘画者比以往更懂得爱自己，给自己更多滋养，内在有了许多自我沟通，由此内心产生更多生机和自信
+            middle: 绘画者能量有正向提升，状态积极向上，待家人温柔，说话沟通能给予别人生机
+            outer: 行动力有提升，近期沟通说话演讲也比较多，能够开口来财
+          generator_strong:
+            meaning: 喉轮能量比较强，温柔善良，有爱心
+            psychology: 但容易多愁善感，情绪反复无常
+          generated_strong:
+            meaning: 爱成长爱精进，有主见
+            psychology: 有时会比较固执，听不进去别人的意见
+        abnormal:
+          too_much_generator: 水多木漂 - 水太多会把木头漂走
+          too_much_generated: 木多水缩 - 木头太多会吸干水分
+    restraining_relations:
+      木克土:
+        nature_principle: 树木生长要破土而出，根茎要破土扎入更深的泥土，山上的土石需要树木根茎才能制衡巩固
+        meaning: 制约、制衡、压制、管教、打击
+        self_effect: 稍微损耗本身之力
+        other_effect: 被制约的一方损耗比较大
+        interpretation:
+          balanced:
+            inner: 绘画者内心怀揣希望，想要向上生长，却无法放下我执，导致内心拉扯
+            middle: 绘画者近期能量比较低落，对什么都提不起心情，活力不够，家庭氛围比较低沉
+            outer: 外在发生的一些事情让绘画者难以接受，情绪得不到释放，比较压抑
+          restrainer_strong:
+            meaning: 积极进取，但承载力不足
+            psychology: 比较固执己见
+          restrained_strong:
+            meaning: 比较宽厚容忍，忍耐力挺强
+            psychology: 讲信用，但内心也容易缺乏安全感
+        abnormal:
+          restrainer_strong: 土多木折 - 土太厚树木无法破土
+          restrained_strong: 木多土崩 - 木太多土会被崩裂
+      土克水:
+        nature_principle: 水来土掩，河川的堤防、堤坝都由土石所砌成，以阻挡水患
+        meaning: 阻挡、限制、规制
+        self_effect: 稍微损耗本身之力
+        other_effect: 被制约的一方损耗比较大
+        interpretation:
+          balanced:
+            inner: 绘画者执着于旧有意识，内在的限制性信念难以突破，缺乏生机和活力
+            middle: 绘画者能量比较沉闷，觉得生活工作有点枯燥无味，没有太多变化
+            outer: 绘画者做事习惯循规蹈矩，可能会忙碌，但没有成长，更多是无意义地重复
+          restrainer_strong:
+            meaning: 目前较为安稳，不想做太大改变
+            psychology: 但能量会像罩着一个厚重的壳子
+          restrained_strong:
+            meaning: 情绪不稳定，反复无常
+            psychology: 有时候会负面情绪爆发泛滥
+        abnormal:
+          restrainer_strong: 水多土荡 - 水太大土堤会被冲垮
+          restrained_strong: 土多水干 - 土太多水会被吸干
+      水克火:
+        nature_principle: 灭火得用水
+        meaning: 浇灭、冷却、控制
+        self_effect: 稍微损耗本身之力
+        other_effect: 被制约的一方损耗比较大
+        interpretation:
+          balanced:
+            inner: 绘画者想变得更好，但心里面积压了一些伤痛和恐惧，导致绘画者对自身的认知发生偏差
+            middle: 绘画者近期情绪起伏比较大，虽然自己也觉得不好，但却控制不住
+            outer: 绘画者想要好好做事，好好赚钱，但就是动不起来，心有余而力不足
+          restrainer_strong:
+            meaning: 热情和动力越来越减弱
+            psychology: 身体湿寒气较多，不爱动，想得多做得少
+          restrained_strong:
+            meaning: 近期爱生气，或者性子容易着急
+            psychology: 急躁，情绪起伏很大
+        abnormal:
+          restrainer_strong: 火多水干 - 火太旺水会被烧干
+          restrained_strong: 水多火熄 - 水太大火会被浇灭
+      火克金:
+        nature_principle: 所有金属物质，以火加温到某一程度，均可化为液态，甚至蒸发成为气态。火克金也有冶炼、提纯金的含义
+        meaning: 冶炼、提纯、考验
+        self_effect: 稍微损耗本身之力
+        other_effect: 被制约的一方损耗比较大
+        interpretation:
+          balanced:
+            inner: 绘画者渴望被爱，渴望获得更多成绩，但容易陷入自我评判中
+            middle: 绘画者近期能量有拉扯，会压抑自己的怒气和急躁
+            outer: 绘画者的行动力还可以，但想法比较多，容易让自己心累
+          restrainer_strong:
+            meaning: 有点用力过猛，心火旺盛，虚火多
+            psychology: 做事情可能会着急要拿结果
+          restrained_strong:
+            meaning: 能力还不错，对自我要求很高
+            psychology: 经常容易挑自己毛病或者挑剔别人，觉得很累
+        abnormal:
+          restrainer_strong: 金多火熄 - 金太多火会被熄灭
+          restrained_strong: 火多金熔 - 火太旺金会被熔化
+      金克木:
+        nature_principle: 凡是木材，都要用金属制的斧头或锯子砍劈、修建
+        meaning: 修剪、整理、规范
+        self_effect: 稍微损耗本身之力
+        other_effect: 被制约的一方损耗比较大
+        interpretation:
+          balanced:
+            inner: 绘画者想更多地突破和成长自己，只是对自己有高标准高要求，会经常性自我评判
+            middle: 近期能量上偏向自我压抑，在成长的过程中，绘画者会感觉到自己被外在的环境、标准克制
+            outer: 绘画者想要有新的突破，但容易被外界的人或事影响，行动力不是特别好
+          restrainer_strong:
+            meaning: 规矩特别多，让人喘不过气来
+            psychology: 绘画者会把很多事情都弄得一丝不苟
+          restrained_strong:
+            meaning: 近期在努力地成长
+            psychology: 在某些事上有偏执，一根筋，只沉浸在自己的世界里
+        abnormal:
+          restrainer_strong: 木多金损 - 木太硬金会受损
+          restrained_strong: 金多木断 - 金太利木会被砍断
+    over_restraining_relations:
+      木乘土:
+        name: 木乘土
+        basic_relation: 木克土
+        meaning: 木对土的过度克制
+        causes:
+        - 木行过于亢盛，对土行克制太过
+        - 土行过于虚弱，难以抵御木行的正常克制
+        manifestation: 树木过度生长导致土壤贫瘠，根茎过度扩展破坏土地结构
+        psychology: 过度的自我主张和成长欲望，导致无法承载和稳定，内心根基不稳
+        interpretation: 绘画者可能过于追求成长突破，但缺乏踏实的基础，导致焦虑和不安
+      土乘水:
+        name: 土乘水
+        basic_relation: 土克水
+        meaning: 土对水的过度克制
+        causes:
+        - 土行过于亢盛，对水行克制太过
+        - 水行过于虚弱，难以抵御土行的正常克制
+        manifestation: 过度的堤坝阻断水流，土地过于干燥吸收所有水分
+        psychology: 过度的控制和安全需求，导致情感和智慧流动受阻
+        interpretation: 绘画者可能过于追求安稳和规则，导致情感表达和智慧流动受阻
+      水乘火:
+        name: 水乘火
+        basic_relation: 水克火
+        meaning: 水对火的过度克制
+        causes:
+        - 水行过于亢盛，对火行克制太过
+        - 火行过于虚弱，难以抵御水行的正常克制
+        manifestation: 洪水浇灭一切火焰，过度的情绪淹没热情和动力
+        psychology: 过度的情绪和恐惧，完全压制了热情和行动力
+        interpretation: 绘画者可能被情绪困扰，导致缺乏行动力和生活热情
+      火乘金:
+        name: 火乘金
+        basic_relation: 火克金
+        meaning: 火对金的过度克制
+        causes:
+        - 火行过于亢盛，对金行克制太过
+        - 金行过于虚弱，难以抵御火行的正常克制
+        manifestation: 过度的火焰熔化所有金属，无法保持形状和结构
+        psychology: 过度的热情和冲动，破坏了规则和标准
+        interpretation: 绘画者可能过于冲动和急躁，导致无法坚持原则和标准
+      金乘木:
+        name: 金乘木
+        basic_relation: 金克木
+        meaning: 金对木的过度克制
+        causes:
+        - 金行过于亢盛，对木行克制太过
+        - 木行过于虚弱，难以抵御金行的正常克制
+        manifestation: 过度砍伐导致森林消失，修剪过度树木无法生长
+        psychology: 过度的规则和自我批评，压制了成长和创造力
+        interpretation: 绘画者可能对自己要求过于苛刻，导致自信心受损，难以成长
+    reverse_restraining_relations:
+      木侮金:
+        name: 木侮金
+        basic_relation: 金克木
+        meaning: 木对金的反向克制（木太盛反克金）
+        causes:
+        - 木行过于强盛，使金行不仅不能克制它，反而被它反向克制
+        - 金行过于虚弱，不仅不能制约木行，反而被其嘲笑和轻视
+        manifestation: 树木长得太坚硬，斧头砍不动；或者树木缠绕金属使其生锈
+        psychology: 过度的固执和强势，不接受任何规范和批评
+        interpretation: 绘画者可能过于固执己见，拒绝接受规则和他人的建议
+      金侮火:
+        name: 金侮火
+        basic_relation: 火克金
+        meaning: 金对火的反向克制（金太盛反克火）
+        causes:
+        - 金行过于强盛，使火行无法熔化它
+        - 火行过于虚弱，无法对金行产生作用
+        manifestation: 高熔点金属无法被火焰熔化，金属反射热量
+        psychology: 过度的冷漠和坚硬，无法被热情打动
+        interpretation: 绘画者可能过于冷漠和理性，缺乏热情和同理心
+      火侮水:
+        name: 火侮水
+        basic_relation: 水克火
+        meaning: 火对水的反向克制（火太盛反克水）
+        causes:
+        - 火行过于强盛，使水行无法浇灭它
+        - 水行过于虚弱，无法对火行产生作用
+        manifestation: 烈火将水分蒸发，高温使水无法靠近
+        psychology: 过度的热情和冲动，无视情绪和理性的警示
+        interpretation: 绘画者可能过于冲动和鲁莽，忽视情绪信号和他人的提醒
+      水侮土:
+        name: 水侮土
+        basic_relation: 土克水
+        meaning: 水对土的反向克制（水太盛反克土）
+        causes:
+        - 水行过于强盛，冲垮土行堤防
+        - 土行过于虚弱，无法阻挡水行
+        manifestation: 洪水冲垮堤坝，泥石流摧毁土地
+        psychology: 过度的情绪泛滥，冲垮了稳定和安全感
+        interpretation: 绘画者可能情绪失控，导致生活失去稳定和安全感
+      土侮木:
+        name: 土侮木
+        basic_relation: 木克土
+        meaning: 土对木的反向克制（土太盛反克木）
+        causes:
+        - 土行过于强盛，使木行无法破土而出
+        - 木行过于虚弱，无法突破土行的压制
+        manifestation: 厚重的土壤压制种子发芽，岩石层阻挡树根生长
+        psychology: 过度的稳定和保守，压制了成长和突破
+        interpretation: 绘画者可能过于安于现状，缺乏成长和突破的动力
+    generation_becomes_restraint:
+      description: 当生一方的力量太强而被生一方的力量太弱时，这种生实际上就成为了克对方
+      examples:
+      - relation: 水生木
+        phenomenon: 水多木漂
+        explanation: 正常情况下水生木就像用水浇花，但浇水太多会淹没花草树木，洪水甚至会把树连根拔起
+        psychology: 过度的滋养变成了溺爱和控制
+      - relation: 木生火
+        phenomenon: 木多火塞
+        explanation: 木头太多反而堵塞了火的燃烧空间
+        psychology: 过度的付出反而成为负担
+      - relation: 火生土
+        phenomenon: 火多土焦
+        explanation: 火烧得太旺会把土烧焦
+        psychology: 过度的热情反而造成伤害
+relations: {}

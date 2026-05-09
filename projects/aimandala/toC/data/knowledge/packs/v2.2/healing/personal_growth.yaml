@@ -1,0 +1,63 @@
+id: healing.personal_growth
+type: healing
+version: v2.2
+status: active
+source: markdown_truth_source
+review_status: projected
+payload:
+  theme_id: personal_growth
+  healing_prescriptions:
+    issue_types:
+      成长停滞/迷茫:
+        symptoms: 感觉生活没有方向，对未来感到迷茫，缺乏行动力，难以突破现状
+        mandala_prescription: 绘制以绿色为主，辅以少量红色和蓝色（象征智慧与流动）的曼陀罗，中心可点缀黄色，象征稳定根基。连续绘制21天
+        daily_practice: 每天冥想10分钟，想象自己像树一样向上生长，感受根系扎根大地，枝叶向阳舒展
+        cognitive_upgrade: 认识到成长是一个持续的过程，而非终点。每一次尝试都是学习，而非失败。允许自己犯错，并从中学习
+      内在冲突/焦虑:
+        symptoms: 经常感到内心矛盾，自我批判严重，对自身能力和价值感到怀疑，易焦虑
+        mandala_prescription: 绘制以黄色为中心，向外扩散白色和绿色（象征接纳与成长）的曼陀罗，用蓝色线条连接不同区域，象征整合。连续绘制14天
+        daily_practice: 每天写下3件欣赏自己的事情，无论大小。练习正念呼吸，关注当下感受，不评判
+        cognitive_upgrade: 理解内在冲突是成长的契机，而非障碍。接纳自己的不完美，认识到自我价值并非取决于外部成就，而是内在的完整性
+      情绪压抑/冷漠:
+        symptoms: 难以表达真实情感，对生活缺乏热情，人际关系疏离，感到孤独
+        mandala_prescription: 绘制以红色、橙色为主，辅以少量黄色（象征温暖与支持）的曼陀罗，可加入流动的水波纹图案，象征情绪释放。连续绘制28天
+        daily_practice: 每天进行15分钟的自由舞蹈或唱歌，允许身体自由表达。与信任的朋友分享一个真实感受
+        cognitive_upgrade: 认识到情绪是生命的能量，表达情绪是健康的。学会区分情绪与事实，允许自己感受所有情绪，并找到健康的释放方式
+      缺乏自信/恐惧:
+        symptoms: 害怕尝试新事物，担心失败和被评判，自我设限严重，难以发挥潜能
+        mandala_prescription: 绘制以蓝色为底色，中心点缀金色或白色（象征智慧与力量），外圈用绿色勾勒，象征突破。连续绘制21天
+        daily_practice: 每天尝试一件让自己感到轻微不适但有益的小事。记录每一次成功，无论大小
+        cognitive_upgrade: 明白恐惧是成长的信号，而非停止的理由。相信自己的内在力量和潜能是无限的，每一次挑战都是提升自我的机会
+      关系困境/界限不清:
+        symptoms: 在人际关系中感到被消耗或无法建立深度连接，容易受他人影响，界限模糊
+        mandala_prescription: 绘制以白色为中心，向外扩散蓝色（象征清晰沟通）和绿色（象征独立成长）的曼陀罗，用黑色线条勾勒清晰的边界。连续绘制14天
+        daily_practice: 每天练习说'不'，从小事开始。明确自己的需求和感受，并温和而坚定地表达出来
+        cognitive_upgrade: 认识到健康的关系建立在清晰的界限和相互尊重之上。爱自己是爱他人的前提，学会保护自己的能量和空间
+  healing_template:
+    duration_days: 30
+    phases:
+    - phase: 1
+      days: 1-10
+      theme: 自我觉察与探索
+      color: 绿色+蓝色
+      frequency: 每天7张
+    - phase: 2
+      days: 11-20
+      theme: 清理阻碍与恐惧
+      color: 黑色+紫色
+      frequency: 每天7-14张
+    - phase: 3
+      days: 21-30
+      theme: 整合与显化
+      color: 黄色+红色
+      frequency: 每天3-7张
+relations:
+  source_markdown: projects/aimandala/docs/sources/知识库构建/主题知识/个人成长.md
+  source_symbols:
+  - THEME_CONFIG
+  - COLOR_MEANINGS
+  - INTERACTIONS
+  - INSIGHT_TEMPLATES
+  - IMBALANCE_MAPPINGS
+  - HEALING_PRESCRIPTIONS
+  theme: theme.personal_growth

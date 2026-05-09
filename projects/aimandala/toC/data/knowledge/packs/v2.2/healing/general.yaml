@@ -1,0 +1,63 @@
+id: healing.general
+type: healing
+version: v2.2
+status: active
+source: markdown_truth_source
+review_status: projected
+payload:
+  theme_id: general
+  healing_prescriptions:
+    issue_types:
+      能量失衡:
+        symptoms: 生命能量分布不均，某些领域过度发展而另一些被忽视
+        mandala_prescription: 绘制以平衡为主题的曼陀罗，关注各圈能量的协调。建议每天1张，持续21天
+        daily_practice: 每天进行身体扫描，觉察能量在身体的分布，记录感受
+        cognitive_upgrade: 认识到生命是一个整体，各领域的平衡比单领域的极致更重要
+      情绪压抑:
+        symptoms: 难以表达真实情绪，习惯压抑或否认感受
+        mandala_prescription: 绘制以情绪表达为主题的曼陀罗，使用红色、蓝色。建议每天3张，持续14天
+        daily_practice: 每天写下3个当下感受，不评判，只是记录
+        cognitive_upgrade: 情绪是生命的信使，压抑情绪就是压抑生命力的流动
+      缺乏方向:
+        symptoms: 感到迷茫，缺乏目标感，生活缺乏动力
+        mandala_prescription: 绘制以未来愿景为主题的曼陀罗，中心放置代表理想的颜色。建议每天1张，持续21天
+        daily_practice: 每天花10分钟想象理想的自己和生活，记录浮现的画面
+        cognitive_upgrade: 方向不是找出来的，而是在行动中逐渐清晰的
+      边界模糊:
+        symptoms: 难以说不，容易被他人影响，在关系中失去自我
+        mandala_prescription: 绘制以自我边界为主题的曼陀罗，外圈使用清晰的颜色。建议每天1张，持续14天
+        daily_practice: 每天练习对一件小事说不，记录自己的感受和对方的反应
+        cognitive_upgrade: 健康的边界不是墙，而是门——你可以选择何时打开
+      行动力不足:
+        symptoms: 想得多做得少，总是在准备但从不开始
+        mandala_prescription: 绘制以行动为主题的曼陀罗，使用红色、绿色。建议每天3张，持续21天
+        daily_practice: 每天做一件一直想做但没做的事，无论大小
+        cognitive_upgrade: 完成比完美更重要，行动本身就是答案
+  healing_template:
+    duration_days: 21
+    phases:
+    - phase: 1
+      days: 1-7
+      theme: 觉察与连接
+      color: 绿色
+      frequency: 每天3-5张
+    - phase: 2
+      days: 8-14
+      theme: 清理与释放
+      color: 蓝色+黑色
+      frequency: 每天5-7张
+    - phase: 3
+      days: 15-21
+      theme: 整合与前行
+      color: 黄色+红色
+      frequency: 每天3张
+relations:
+  source_markdown: projects/aimandala/docs/sources/知识库构建/主题知识/通用解读.md
+  source_symbols:
+  - THEME_CONFIG
+  - COLOR_MEANINGS
+  - INTERACTIONS
+  - INSIGHT_TEMPLATES
+  - IMBALANCE_MAPPINGS
+  - HEALING_PRESCRIPTIONS
+  theme: theme.general
