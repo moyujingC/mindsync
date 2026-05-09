@@ -17,7 +17,10 @@ from app.core.knowledge_runtime.adapters.markdown_theme_pack_v22 import (  # noq
 )
 from app.core.knowledge_runtime.compiler import KnowledgePackCompiler  # noqa: E402
 from app.core.knowledge_runtime.paths import resolve_knowledge_toc_root  # noqa: E402
+from app.core.knowledge_runtime.repository import resolve_pack_root  # noqa: E402
+from app.core.knowledge_runtime.runtime import create_knowledge_runtime  # noqa: E402
 from app.core.knowledge_runtime.validators import KnowledgePackValidator  # noqa: E402
+from app.core.llm.runtime import NoopLLMClient  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
 THEME_SOURCE_DIR = PROJECT_ROOT / "docs" / "sources" / "知识库构建" / "主题知识"
@@ -101,3 +104,26 @@ def test_v22_script_paths_are_candidate_only():
     assert (
         toc_root / "data" / "knowledge" / "builds" / "candidates" / "v2.2-theme-md"
     ).parent.name == "candidates"
+
+
+def test_v22_candidate_selector_uses_v22_pack_without_changing_current():
+    toc_root = resolve_knowledge_toc_root(__file__)
+
+    assert resolve_pack_root("current") == toc_root / "data" / "knowledge" / "packs" / "v2.1"
+    assert (
+        resolve_pack_root("candidate:v2.2-theme-md")
+        == toc_root / "data" / "knowledge" / "packs" / "v2.2"
+    )
+
+    runtime = create_knowledge_runtime(
+        build_selector="candidate:v2.2-theme-md",
+        llm_client=NoopLLMClient(),
+    )
+    manifest = runtime.repository.get_manifest()
+    theme_asset = runtime.repository.get_asset("themes", "theme.father_relationship")
+
+    assert manifest["schema_version"] == "v2.2"
+    assert manifest["pack_id"] == "aimandala-v2.2"
+    assert theme_asset is not None
+    assert theme_asset["source"] == "markdown_truth_source"
+    assert theme_asset["payload"]["theme_name_cn"] == "与父亲的关系"
