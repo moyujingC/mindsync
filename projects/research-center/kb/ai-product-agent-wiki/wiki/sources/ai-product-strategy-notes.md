@@ -29,13 +29,22 @@
 - [[../../atoms/pm/start-with-problem-not-ai]]
 - [[../../atoms/pm/define-human-ai-boundary]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
+- [[../../atoms/dev/agent-state-explains-next-action]]
+- [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
+- [[../../atoms/dev/single-agent-before-multi-agent]]
+- [[../../atoms/dev/multi-agent-needs-clear-reason]]
 
 ## Concepts Updated
 
 - [[../pm/ai-product-principles]]
 - [[../dev/agent-loop]]
+- [[../dev/state-machine]]
+- [[../dev/guardrails]]
+- [[../dev/single-agent-design]]
+- [[../dev/multi-agent-design]]
+- [[../bridge/pm-to-agent-architecture]]
+- [[../bridge/aimandala-agent-mapping]]
 
 ## Open Questions
 
 - 对一镜一梳而言，哪些判断必须保留人工复核。
-

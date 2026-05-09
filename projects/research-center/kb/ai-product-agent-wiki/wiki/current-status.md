@@ -15,9 +15,12 @@
 - Agent loop 概念页
 - Agent 系统学习课程入口
 - 00 到 08 的课程路径
+- Agent 核心概念页：tool design、state machine、evals、tracing、guardrails、single agent、multi agent
+- PM 到 Agent 架构映射页
+- 课程 02 到 08 已回写核心学习内容和概念链接
 
 ## What comes next
 
-- 按课程逐步扩展 source、atom 和 concept
-- 补 Agent 工具设计、状态机、trace、guardrails 的独立概念页
-- 继续细化一镜一梳映射页
+- 继续补真实项目案例和 eval 样本
+- 把一镜一梳的 `MandalaInterpreterAgent` 设计进一步映射到目标、工具、状态、trace 和 guardrails
+- 等项目实践稳定后，再判断哪些内容可提炼进公司级知识库

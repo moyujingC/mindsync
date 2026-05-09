@@ -32,9 +32,9 @@ Karpathy 提议把 LLM 生成的学习结果逐步编译成可链接、可持续
 ## Concepts Updated
 
 - [[../dev/rag-vs-llm-wiki]]
+- [[../dev/tool-design]]
 - [[../bridge/aimandala-agent-mapping]]
 
 ## Open Questions
 
 - 是否需要把学习中的中间判断抽成 atoms 层。
-

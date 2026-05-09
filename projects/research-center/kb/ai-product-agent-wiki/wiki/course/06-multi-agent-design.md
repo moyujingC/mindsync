@@ -20,14 +20,25 @@
 
 - [[../../atoms/pm/define-human-ai-boundary]]
 - [[../../atoms/dev/decompose-complex-tasks-before-generation]]
+- [[../../atoms/dev/single-agent-before-multi-agent]]
+- [[../../atoms/dev/multi-agent-needs-clear-reason]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
 
 ## Concepts
 
 - [[../pm/ai-product-principles]]
 - [[../dev/agent-loop]]
+- [[../dev/multi-agent-design]]
+- [[../dev/single-agent-design]]
+
+## Core Notes
+
+多智能体不是 Agent 系统的默认答案。只有当职责、模型能力、工具权限或并行性真的不同，拆分才有意义。
+
+拆分后要定义 handoff（交接）格式。每个 Agent 输出什么、谁消费、谁做最终判断、失败时谁负责降级，都必须明确。
+
+多 Agent 的 eval 也更复杂。除了评每个 Agent，还要评整体链路：交接是否丢信息、最终决策是否可追踪、成本和延迟是否仍可接受。
 
 ## Practice
 
 只在一镜一梳出现明确分工后，再考虑拆出 VisionAgent、KnowledgeAgent、InterpreterAgent、ReviewerAgent。
-

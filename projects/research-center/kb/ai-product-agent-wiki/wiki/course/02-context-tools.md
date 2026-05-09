@@ -20,13 +20,22 @@
 
 - [[../../atoms/dev/context-engineering-beats-prompt-tweaking]]
 - [[../../atoms/dev/llm-wiki-uses-compiled-knowledge]]
+- [[../../atoms/dev/tools-should-be-few-clear-and-structured]]
 
 ## Concepts
 
 - [[../dev/rag-vs-llm-wiki]]
 - [[../dev/agent-loop]]
+- [[../dev/tool-design]]
+
+## Core Notes
+
+上下文是 Agent 判断的燃料，工具是 Agent 执行动作的手。只改 prompt，通常只能改变表达方式；补上下文和工具，才是在改变 Agent 实际能看见什么、能做什么。
+
+工具设计要克制。工具越多，Agent 越容易选错；工具越模糊，trace 和 eval 越难判断对错。第一版更适合保留少量高价值工具，并让每个工具都有结构化输入输出。
+
+对一镜一梳来说，工具不应按代码模块随手暴露，而应按任务步骤定义：读输入、取证据、查知识、生成草稿、做安全检查、输出解释。
 
 ## Practice
 
 把一镜一梳里的三圈识别、知识 runtime、报告生成、安全检查列成 Agent 可调用工具清单。
-
