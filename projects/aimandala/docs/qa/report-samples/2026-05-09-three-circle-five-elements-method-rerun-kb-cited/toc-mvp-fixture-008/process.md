@@ -9,11 +9,13 @@
 
 ## 执行说明
 
-这版重跑修正三个重点：
+这版重跑修正四个重点：
 
 - Stage 03 以 `visual_units` 记录“位置 + 颜色 + 形状 + 面积 + 相邻关系”，忽略原始黑色线框画稿。
-- Stage 05 / 06 / 07 不自由解释，每条五行映射、生克关系、主题映射和失衡候选都保留 `knowledge_refs`。
+- Stage 04-07 的 `knowledge_refs` 只指向知识库具体条目；Prompt / 规范文档只进入 `prompt_refs` 或 `spec_refs`。
+- Stage 04 只保留知识库真实存在的直断模式命中；“方形/矩形结构明显”降级为视觉观察和形状五行依据。
 - 最终 Lite / Pro 报告只整合已有过程数据，不新增画面事实或未被知识库支持的失衡标签。
+
 ## Stage 00: 运行上下文
 
 ```json
@@ -367,52 +369,67 @@
 
 ## Stage 04: 直断法双路命中检查
 
+本阶段的 `knowledge_refs` 只指向知识库具体条目；执行文档另放在 `prompt_refs` / `spec_refs`。
+
 ```json
 {
   "stage": "stage-04-direct-judgment-high-hit-check",
   "strong_hits": [
     {
       "mode": "蓝绿搭配",
+      "mode_id": "direct_judgment.blue_green_expression",
       "result": "consistent",
       "visual_unit_refs": [
         "inner-001",
         "inner-002",
         "middle-001",
         "outer-001"
+      ],
+      "knowledge_refs": [
+        "packs/v2.1/rules/direct_judgments.yaml::judgments.direct_judgment.blue_green_expression"
       ]
     },
     {
       "mode": "外圈花边、星星点点",
+      "mode_id": "direct_judgment.outer_decorative_fragmented",
       "result": "consistent",
       "visual_unit_refs": [
         "outer-003",
         "outer-004",
         "middle-003"
-      ]
-    }
-  ],
-  "partial_hits": [
-    {
-      "mode": "方形/矩形结构明显",
-      "result": "vision_supported_program_indirect",
-      "visual_unit_refs": [
-        "inner-002",
-        "middle-002"
+      ],
+      "knowledge_refs": [
+        "packs/v2.1/rules/direct_judgments.yaml::judgments.direct_judgment.outer_decorative_fragmented"
       ]
     }
   ],
   "knowledge_refs": [
-    "直断法高命中模式.md::蓝绿搭配",
-    "直断法高命中模式.md::外圈花边、星星点点",
-    "直断法高命中模式.md::方形/矩形结构明显",
-    "packs/v2.1/rules/direct_judgments.yaml"
+    "packs/v2.1/rules/direct_judgments.yaml::judgments.direct_judgment.blue_green_expression",
+    "packs/v2.1/rules/direct_judgments.yaml::judgments.direct_judgment.outer_decorative_fragmented"
+  ],
+  "visual_observations_not_direct_judgments": [
+    {
+      "name": "方形/矩形结构明显",
+      "reason": "当前直断知识库没有该模式条目，因此不作为 stage-04 直断命中；仅作为 stage-03 视觉证据和 stage-05 形状五行映射依据。",
+      "visual_unit_refs": [
+        "inner-002",
+        "middle-002"
+      ],
+      "evidence_refs": [
+        "stage-03.visual_units.inner-002",
+        "stage-03.visual_units.middle-002"
+      ]
+    }
+  ],
+  "prompt_refs": [
+    "第04步直断命中检查Prompt.md"
   ]
 }
 ```
 
 ## Stage 05: 逐圈颜色、形状五行感知映射
 
-本阶段必须把判断回指到知识库条目；没有知识条目支撑的内容只能保留为观察项。
+本阶段的 `knowledge_refs` 只指向知识库具体条目；执行文档另放在 `prompt_refs` / `spec_refs`。
 
 ```json
 {
@@ -426,7 +443,11 @@
         "颜色五行感知规则.md::五行颜色基础映射/土/黄色",
         "颜色五行感知规则.md::五行颜色基础映射/木/黄绿色",
         "形状五行感知规则.md::形状五行基础映射/木/放射状",
-        "三圈语义与能量流动.md::三圈基础语义/内圈"
+        "三圈语义与能量流动.md::三圈基础语义/内圈",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.土",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.木",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.土",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.木"
       ],
       "evidence_refs": [
         "stage-03.visual_units.inner-001"
@@ -439,7 +460,10 @@
       "knowledge_refs": [
         "颜色五行感知规则.md::五行颜色基础映射/水/蓝色",
         "形状五行感知规则.md::形状五行基础映射/土/方形/矩形",
-        "五行生克与失衡模式.md::基础关系/相克/土克水"
+        "五行生克与失衡模式.md::基础关系/相克/土克水",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.水",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.土",
+        "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相克.土"
       ],
       "evidence_refs": [
         "stage-03.visual_units.inner-002"
@@ -454,7 +478,11 @@
         "颜色五行感知规则.md::五行颜色基础映射/土/黄色",
         "颜色五行感知规则.md::五行颜色基础映射/火/橙色",
         "形状五行感知规则.md::形状五行基础映射/木/放射状",
-        "三圈语义与能量流动.md::三圈基础语义/中圈"
+        "三圈语义与能量流动.md::三圈基础语义/中圈",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.木",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.土",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.火",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.木"
       ],
       "evidence_refs": [
         "stage-03.visual_units.middle-001"
@@ -468,7 +496,10 @@
         "颜色五行感知规则.md::五行颜色基础映射/水/蓝色",
         "颜色五行感知规则.md::五行颜色基础映射/土/黄色",
         "形状五行感知规则.md::形状五行基础映射/土/方形/矩形",
-        "五行生克与失衡模式.md::基础关系/相克/土克水"
+        "五行生克与失衡模式.md::基础关系/相克/土克水",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.水",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.土",
+        "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相克.土"
       ],
       "evidence_refs": [
         "stage-03.visual_units.middle-002"
@@ -481,7 +512,10 @@
       "knowledge_refs": [
         "颜色五行感知规则.md::五行颜色基础映射/水/蓝色",
         "形状五行感知规则.md::形状五行基础映射/金/环形",
-        "三圈语义与能量流动.md::三圈基础语义/外圈"
+        "三圈语义与能量流动.md::三圈基础语义/外圈",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.水",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.金",
+        "packs/v2.1/circles/three_circles.yaml::payload.three_circles.外圈"
       ],
       "evidence_refs": [
         "stage-03.visual_units.outer-001"
@@ -495,7 +529,10 @@
         "颜色五行感知规则.md::五行颜色基础映射/火/紫色",
         "形状五行感知规则.md::形状五行基础映射/金/圆形",
         "形状五行感知规则.md::形状五行基础映射/水/点状",
-        "形状五行感知规则.md::形状与颜色的关系/冲突"
+        "形状五行感知规则.md::形状与颜色的关系/冲突",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.火",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.金",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.水"
       ],
       "evidence_refs": [
         "stage-03.visual_units.outer-003"
@@ -508,7 +545,10 @@
       "knowledge_refs": [
         "颜色五行感知规则.md::五行颜色基础映射/火/橙色/紫色",
         "形状五行感知规则.md::形状五行基础映射/火/星形",
-        "三圈语义与能量流动.md::三圈基础语义/外圈"
+        "三圈语义与能量流动.md::三圈基础语义/外圈",
+        "packs/v2.1/elements/color_meanings.yaml::payload.color_meanings.火",
+        "packs/v2.1/elements/five_elements.yaml::payload.five_elements.火",
+        "packs/v2.1/circles/three_circles.yaml::payload.three_circles.外圈"
       ],
       "evidence_refs": [
         "stage-03.visual_units.outer-004"
@@ -557,13 +597,16 @@
         "stage-05.unit_results.outer-004"
       ]
     }
+  ],
+  "spec_refs": [
+    "第05步颜色形状五行感知映射规范.md"
   ]
 }
 ```
 
 ## Stage 06: 逐圈五行生克与主题映射分析
 
-本阶段必须把判断回指到知识库条目；没有知识条目支撑的内容只能保留为观察项。
+本阶段的 `knowledge_refs` 只指向知识库具体条目；执行文档另放在 `prompt_refs` / `spec_refs`。
 
 ```json
 {
@@ -577,7 +620,8 @@
           "relation": "water_generates_wood_candidate",
           "knowledge_refs": [
             "五行生克与失衡模式.md::基础关系/相生/水生木",
-            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相生.水"
+            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相生.水",
+            "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相生.水"
           ],
           "evidence_refs": [
             "stage-05.unit_results.inner-001",
@@ -588,7 +632,8 @@
           "relation": "wood_controls_earth_candidate",
           "knowledge_refs": [
             "五行生克与失衡模式.md::基础关系/相克/木克土",
-            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.木"
+            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.木",
+            "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相克.木"
           ],
           "evidence_refs": [
             "stage-05.unit_results.inner-001"
@@ -605,7 +650,8 @@
           "interpretation_candidate": "通用主题下，只能候选解释为内在生长与自我承接同时出现。",
           "knowledge_refs": [
             "主题知识与疗愈映射.md::当前主题域/general",
-            "主题知识与疗愈映射.md::主题挂载原则"
+            "主题知识与疗愈映射.md::主题挂载原则",
+            "packs/v2.1/rules/theme_mappings.yaml::payload.mappings.general"
           ],
           "evidence_refs": [
             "stage-05.circle_summaries.inner"
@@ -620,7 +666,8 @@
           "relation": "water_generates_wood_candidate",
           "knowledge_refs": [
             "五行生克与失衡模式.md::基础关系/相生/水生木",
-            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相生.水"
+            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相生.水",
+            "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相生.水"
           ],
           "evidence_refs": [
             "stage-05.unit_results.middle-001",
@@ -631,7 +678,8 @@
           "relation": "earth_controls_water_candidate",
           "knowledge_refs": [
             "五行生克与失衡模式.md::基础关系/相克/土克水",
-            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.土"
+            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.土",
+            "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相克.土"
           ],
           "evidence_refs": [
             "stage-05.unit_results.middle-002"
@@ -648,7 +696,8 @@
           "interpretation_candidate": "通用主题下，只能候选解释为当下能量有生长和流动，同时需要结构承接。",
           "knowledge_refs": [
             "主题知识与疗愈映射.md::当前主题域/general",
-            "主题知识与疗愈映射.md::主题映射方式"
+            "主题知识与疗愈映射.md::主题映射方式",
+            "packs/v2.1/rules/theme_mappings.yaml::payload.mappings.general"
           ],
           "evidence_refs": [
             "stage-05.circle_summaries.middle"
@@ -663,7 +712,8 @@
           "relation": "water_controls_fire_candidate",
           "knowledge_refs": [
             "五行生克与失衡模式.md::基础关系/相克/水克火",
-            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.水"
+            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.水",
+            "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相克.水"
           ],
           "evidence_refs": [
             "stage-05.unit_results.outer-001",
@@ -674,7 +724,8 @@
           "relation": "fire_controls_metal_candidate",
           "knowledge_refs": [
             "五行生克与失衡模式.md::基础关系/相克/火克金",
-            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.火"
+            "packs/v2.1/elements/five_elements.yaml::relations.five_elements_relations.相克.火",
+            "packs/v2.1/elements/five_elements.yaml::payload.relations.five_elements_relations.相克.火"
           ],
           "evidence_refs": [
             "stage-05.unit_results.outer-003",
@@ -692,7 +743,8 @@
           "interpretation_candidate": "通用主题下，只能候选解释为外在表达点较多，且需要聚焦；不能直接判断焦虑或混乱。",
           "knowledge_refs": [
             "主题知识与疗愈映射.md::当前主题域/general",
-            "主题知识与疗愈映射.md::主题映射方式"
+            "主题知识与疗愈映射.md::主题映射方式",
+            "packs/v2.1/rules/theme_mappings.yaml::payload.mappings.general"
           ],
           "evidence_refs": [
             "stage-05.circle_summaries.outer"
@@ -713,13 +765,16 @@
       "stage-01-user-input-context.painting_feeling",
       "stage-03-visual-evidence"
     ]
-  }
+  },
+  "spec_refs": [
+    "第06步五行生克与主题映射规范.md"
+  ]
 }
 ```
 
 ## Stage 07: 逐圈失衡模式浮现
 
-本阶段必须把判断回指到知识库条目；没有知识条目支撑的内容只能保留为观察项。
+本阶段的 `knowledge_refs` 只指向知识库具体条目；执行文档另放在 `prompt_refs` / `spec_refs`。
 
 ```json
 {
@@ -734,14 +789,38 @@
       "knowledge_refs": [
         "五行生克与失衡模式.md::运行时常见失衡类型/transition-overload",
         "主题知识与疗愈映射.md::当前主题域/general",
-        "packs/v2.1/rules/imbalance_types.yaml::transition-overload",
-        "packs/v2.1/rules/theme_mappings.yaml::general.transition-overload"
+        "packs/v2.1/rules/imbalance_types.yaml::payload.imbalances.transition-overload",
+        "packs/v2.1/rules/theme_mappings.yaml::payload.mappings.general.transition-overload"
       ],
       "evidence_refs": [
         "stage-03.visual_units.middle-001",
         "stage-03.visual_units.middle-002",
         "stage-03.visual_units.outer-001",
         "stage-06.circle_results"
+      ],
+      "evidence_chain": [
+        {
+          "type": "visual",
+          "summary": "中圈黄绿叶片向外展开，同时蓝色矩形和米色格子提供承接结构。",
+          "evidence_refs": [
+            "stage-03.visual_units.middle-001",
+            "stage-03.visual_units.middle-002"
+          ]
+        },
+        {
+          "type": "element_relation",
+          "summary": "中圈同时出现水生木和土克水候选，开放与承接并存。",
+          "evidence_refs": [
+            "stage-06.circle_results.middle.element_relations"
+          ]
+        },
+        {
+          "type": "theme_mapping",
+          "summary": "general 主题下 transition-overload 对应新旧节奏暂时不同步。",
+          "knowledge_refs": [
+            "packs/v2.1/rules/theme_mappings.yaml::payload.mappings.general.transition-overload"
+          ]
+        }
       ]
     }
   ],
@@ -750,7 +829,9 @@
       "name": "承接结构偏强",
       "reason": "知识库没有对应失衡条目，且当前证据不足以匹配土多水干、金多木折或其他具体失衡；只能作为观察项。",
       "knowledge_refs": [
-        "五行生克与失衡模式.md::失衡浮现原则"
+        "五行生克与失衡模式.md::失衡浮现原则",
+        "packs/v2.1/rules/imbalance_types.yaml::payload.imbalances.土多水干",
+        "packs/v2.1/rules/imbalance_types.yaml::payload.imbalances.金多木折"
       ],
       "evidence_refs": [
         "stage-05.unit_results.inner-002",
@@ -761,8 +842,8 @@
       "name": "外圈表达点分散",
       "reason": "外圈点状元素较多，但知识库没有独立失衡条目支持该命名；只能作为外圈观察项，交给第 8 步能量流动判断。",
       "knowledge_refs": [
-        "三圈语义与能量流动.md::三圈基础语义/外圈",
-        "三圈语义与能量流动.md::整体能量流动"
+        "三圈语义与能量流动.md::常见流动类型/跳跃",
+        "packs/v2.1/circles/three_circles.yaml::payload.three_circles.外圈"
       ],
       "evidence_refs": [
         "stage-05.unit_results.outer-003",
@@ -774,6 +855,9 @@
     "单一土过重：黄色明显，但水、木、火、金都有稳定证据，不宜简化为单一土主导。",
     "明显断裂：画面整体对称、三圈连续，没有明显断裂。",
     "水多火灭：外圈有水克火候选，但缺少蓝色占比极高、火极弱等知识库要求的证据。"
+  ],
+  "spec_refs": [
+    "第07步失衡模式浮现规范.md"
   ]
 }
 ```
@@ -797,7 +881,8 @@
   ],
   "knowledge_refs": [
     "三圈语义与能量流动.md::整体能量流动",
-    "三圈语义与能量流动.md::顺畅/卡点/跳跃"
+    "三圈语义与能量流动.md::顺畅/卡点/跳跃",
+    "packs/v2.1/circles/three_circles.yaml::payload.energy_flow"
   ],
   "evidence_refs": [
     "stage-03-visual-evidence",
@@ -942,8 +1027,9 @@
 ## QA 检查结论
 
 - Stage 03 已按 `visual_units` 输出，并显式忽略原始黑色线稿。
-- Stage 05 每个视觉单元和圈层汇总均包含 `knowledge_refs`。
-- Stage 06 每条生克关系、主题映射和用户输入回应均包含 `knowledge_refs`。
+- Stage 04 只保留知识库真实存在的直断命中：`direct_judgment.blue_green_expression` 和 `direct_judgment.outer_decorative_fragmented`。
+- Stage 05 每个视觉单元和圈层汇总均包含知识库具体条目。
+- Stage 06 每条生克关系、主题映射和用户输入回应均包含知识库具体条目。
 - Stage 07 唯一进入候选的失衡为 `transition-overload`，其余未被知识库支持的命名均降级为 `watch_only`。
 - Lite 包含 2 个可视化模块说明，Pro 包含 4 个可视化模块说明。
 - 本次输出未包含 API key、私有 env 路径或运行时私有数据。
