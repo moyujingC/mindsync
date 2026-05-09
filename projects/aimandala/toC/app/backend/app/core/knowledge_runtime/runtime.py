@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from app.core.llm.runtime import LLMClient, create_llm_client_from_env
 
 from .compiler import KnowledgePackCompiler
-from .repository import KnowledgeRepository, resolve_build_dir
+from .repository import KnowledgeRepository, resolve_build_dir, resolve_pack_root
 from .services.circle_service import CircleService
 from .services.element_service import ElementService
 from .services.healing_service import HealingService
@@ -44,6 +44,7 @@ def create_knowledge_runtime(
 
     validator = KnowledgePackValidator()
     compiler = KnowledgePackCompiler(
+        pack_root=resolve_pack_root(build_selector),
         validator=validator,
         build_dir=resolve_build_dir(build_selector),
     )
