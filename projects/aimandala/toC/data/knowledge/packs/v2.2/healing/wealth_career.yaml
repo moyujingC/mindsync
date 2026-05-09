@@ -1,0 +1,86 @@
+id: healing.wealth_career
+type: healing
+version: v2.2
+status: active
+source: markdown_truth_source
+review_status: projected
+payload:
+  theme_id: wealth_career
+  healing_prescriptions:
+    issue_types:
+      财富焦虑:
+        symptoms: 收入不稳定，对未来财务状况感到担忧，容易患得患失
+        mandala_prescription:
+          inner: 黄色
+          middle: 蓝色
+          outer: 绿色
+        daily_practice: 每日记录收支，制定详细预算，练习冥想，观想财富流入
+        cognitive_upgrade: 财富是能量的流动，而非固定的数字；相信自己有能力创造和吸引财富
+      消费冲动:
+        symptoms: 赚钱动力强但容易冲动消费，难以积累财富
+        mandala_prescription:
+          inner: 白色
+          middle: 土色
+          outer: 蓝色
+        daily_practice: 购物前列清单，设定消费上限，延迟满足，培养记账习惯
+        cognitive_upgrade: 消费是为了满足需求，而非逃避情绪；学会区分'需要'与'想要'
+      事业停滞:
+        symptoms: 缺乏事业方向，对职业发展感到迷茫和无力
+        mandala_prescription:
+          inner: 绿色
+          middle: 红色
+          outer: 黄色
+        daily_practice: 学习新技能，拓展人脉，寻求职业导师指导，设定短期目标
+        cognitive_upgrade: 事业发展是一个持续学习和成长的过程，小步快跑，持续精进
+      不配得感:
+        symptoms: 缺乏自我价值感，认为自己不配拥有财富或成功
+        mandala_prescription:
+          inner: 金色
+          middle: 红色
+          outer: 土色
+        daily_practice: 每日肯定自我价值，记录成就，培养感恩之心，参与志愿活动
+        cognitive_upgrade: 每个人都值得拥有丰盛的财富和成功，你的价值与金钱无关
+      投资恐惧:
+        symptoms: 对投资风险过于担忧，不敢尝试新的投资机会
+        mandala_prescription:
+          inner: 蓝色
+          middle: 绿色
+          outer: 红色
+        daily_practice: 学习投资知识，从小额投资开始，分散风险，寻求专业建议
+        cognitive_upgrade: 风险与机遇并存，理性评估风险，相信自己的判断力
+      财务混乱:
+        symptoms: 缺乏财务规划，支出随意，容易负债
+        mandala_prescription:
+          inner: 白色
+          middle: 黄色
+          outer: 金色
+        daily_practice: 制定详细的财务计划，定期复盘，培养储蓄习惯，寻求财务咨询
+        cognitive_upgrade: 财务自由始于规划，清晰的目标是实现财富增长的第一步
+  healing_template:
+    duration_days: 30
+    phases:
+    - phase: 1
+      days: 1-10
+      theme: 觉察金钱信念与模式
+      color: 黑色
+      frequency: 每天7-14张
+    - phase: 2
+      days: 11-20
+      theme: 释放匮乏感与恐惧
+      color: 蓝色+绿色
+      frequency: 每天7张
+    - phase: 3
+      days: 21-30
+      theme: 建立丰盛意识
+      color: 黄色+红色
+      frequency: 每天3-7张
+relations:
+  source_markdown: projects/aimandala/docs/sources/知识库构建/主题知识/财富事业.md
+  source_symbols:
+  - THEME_CONFIG
+  - COLOR_MEANINGS
+  - INTERACTIONS
+  - INSIGHT_TEMPLATES
+  - IMBALANCE_MAPPINGS
+  - HEALING_PRESCRIPTIONS
+  theme: theme.wealth_career

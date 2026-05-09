@@ -51,12 +51,13 @@
 13. `company/标签与状态使用说明.md`
 14. `MONOREPO.md`
 15. `DOCS_GOVERNANCE.md`
-16. `company/服务器与基础设施入口.md`
-17. `company/Paperclip-Agent-模型配置总表.md`
-18. `company/projects/Automation/PROJECT.md`
-19. `agents/*/AGENTS.md`
-20. `company/项目与仓库映射.md`
-21. `company/knowledge-base/README.md`
+16. `company/aiassistant/README.md`
+17. `company/服务器与基础设施入口.md`
+18. `company/Paperclip-Agent-模型配置总表.md`
+19. `company/projects/Automation/PROJECT.md`
+20. `agents/*/AGENTS.md`
+21. `company/项目与仓库映射.md`
+22. `company/knowledge-base/README.md`
 
 如果任务与某个具体角色有关，应继续读取对应的 `agents/<role>/AGENTS.md`。
 
