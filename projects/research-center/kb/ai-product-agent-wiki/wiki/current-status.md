@@ -9,11 +9,12 @@
 - 目录边界
 - 维护原则
 - 首批主题入口
+- atoms 中间层
+- source / atom / concept 模板
 
 ## What comes next
 
-- Karpathy `llm-wiki` source page
+- 扩展 Karpathy `llm-wiki` source page
 - Agent 判断框架
 - 单智能体开发最小闭环
 - 一镜一梳映射页
-
