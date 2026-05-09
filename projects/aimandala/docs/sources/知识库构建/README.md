@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Research & Knowledge Lead / Architect
-> last_updated：2026-05-08
+> last_updated：2026-05-09
 > 项目：aimandala
 > 阶段：current
 > source_of_truth：projects/aimandala/docs/sources/知识库构建/README.md
@@ -19,6 +19,10 @@
 
 ## 1. 当前目录分工
 
+- [V2完整知识库](V2完整知识库)
+  - 旧项目 `ai-mandala` 中 V2 知识库的完整快照
+  - 包含 `00_kb_md` Markdown 说明层和 `app/core/knowledge` Python 结构化知识层
+  - 用于恢复知识密度、做保真对照和重建当前单一真值源
 - [原始镜像](原始镜像)
   - 旧仓库 `知识库构建` 目录的原始镜像层
   - 默认不直接等同于当前正式规则入口
@@ -26,6 +30,46 @@
   - 解释哪些源资料当前可作为正式依据，哪些只作支撑或历史样本
 - [最小必读知识源清单.md](最小必读知识源清单.md)
   - 服务后续报告链路整改和知识保真排查，给出最短阅读路径
+- [直断法高命中模式.md](直断法高命中模式.md)
+  - 当前直断法 Markdown 单一真值源
+- [原始解读案例篇11例.md](原始解读案例篇11例.md)
+  - 从原始手册中单独抽出的 11 个解读案例，供 AI 学习描述方式与案例表达节奏
+- [第03步视觉证据提取Prompt.md](第03步视觉证据提取Prompt.md)
+  - `stage-03-visual-evidence` 的视觉大模型观察 prompt
+- [第04步直断命中检查Prompt.md](第04步直断命中检查Prompt.md)
+  - `stage-04-direct-judgment-high-hit-check` 的直断命中检查 prompt
+- [第05步颜色形状五行感知映射规范.md](第05步颜色形状五行感知映射规范.md)
+  - `stage-05-per-circle-color-shape-element-sensing` 的规则映射规范
+- [第06步五行生克与主题映射规范.md](第06步五行生克与主题映射规范.md)
+  - `stage-06-per-circle-element-generation-control` 的五行生克和主题映射规范
+- [第07步失衡模式浮现规范.md](第07步失衡模式浮现规范.md)
+  - `stage-07-per-circle-imbalance-patterns` 的失衡候选收束规范
+- [第10-12步报告整合Prompt.md](第10-12步报告整合Prompt.md)
+  - `stage-10-core-thesis-selection`、`stage-11-user-facing-framing`、`stage-12-healing-direction-and-report-branching` 的一次性报告整合 prompt
+- [报告语言风格规范.md](报告语言风格规范.md)
+  - Lite / Pro 报告共同的疗愈感语言规范
+- [报告可视化规范.md](报告可视化规范.md)
+  - Lite / Pro 报告中的可视化模块数量、用途、输入来源和边界
+- [Lite报告写作规范.md](Lite报告写作规范.md)
+  - `stage-13-lite-draft` 的 Lite 报告写作规格
+- [Pro报告写作规范.md](Pro报告写作规范.md)
+  - `stage-14-pro-draft` 的 Pro 报告写作规格
+- [第13步Lite报告生成Prompt.md](第13步Lite报告生成Prompt.md)
+  - `stage-13-lite-draft` 的 Lite 报告生成 prompt
+- [第14步Pro报告生成Prompt.md](第14步Pro报告生成Prompt.md)
+  - `stage-14-pro-draft` 的 Pro 报告生成 prompt
+- [三圈语义与能量流动.md](三圈语义与能量流动.md)
+  - 当前三圈语义和能量流动 Markdown 单一真值源
+- [颜色五行感知规则.md](颜色五行感知规则.md)
+  - 当前颜色五行感知 Markdown 单一真值源
+- [形状五行感知规则.md](形状五行感知规则.md)
+  - 当前形状五行感知 Markdown 单一真值源
+- [五行生克与失衡模式.md](五行生克与失衡模式.md)
+  - 当前五行生克和失衡模式 Markdown 单一真值源
+- [主题知识与疗愈映射.md](主题知识与疗愈映射.md)
+  - 当前主题知识和疗愈映射 Markdown 单一真值源
+- [运行时知识库文件清单.md](运行时知识库文件清单.md)
+  - 说明 `toC/data/knowledge` 下的 pack、build 和 eval 文件用途
 - [V2运行时映射清单.md](V2运行时映射清单.md)
   - 把原始流派资料与当前 workspace 的 `V2` 运行时资产对齐到同一张表里
 
