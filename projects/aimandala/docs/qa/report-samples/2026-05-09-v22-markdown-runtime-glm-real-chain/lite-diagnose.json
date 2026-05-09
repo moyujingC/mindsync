@@ -1,0 +1,81 @@
+{
+  "fixture_id": "toc-mvp-fixture-003",
+  "build_selector": "candidate:v2.2-theme-md",
+  "version": "lite",
+  "pack_id": "aimandala-v2.2",
+  "schema_version": "v2.2",
+  "required_fields": [
+    "title",
+    "overall_impression",
+    "visual_elements",
+    "emotion_portrait",
+    "story",
+    "theme_scene",
+    "theme_impact",
+    "theme_awareness",
+    "three_awareness",
+    "pro_teaser"
+  ],
+  "llm_client": "OpenAICompatibleLLMClient",
+  "llm_config": {
+    "default_base_url": "https://open.bigmodel.cn/api/paas/v4",
+    "default_model": "glm-4",
+    "chat_base_url": "https://open.bigmodel.cn/api/paas/v4",
+    "chat_model": "glm-4",
+    "timeout_seconds": 60,
+    "max_retries": 0
+  },
+  "record_meta": {
+    "interpretation_id": "1d61087b-1426-4bce-a346-293cc3e782b3",
+    "theme": "general",
+    "status": "processing",
+    "user_id": "qa-fixture-user-003",
+    "image_hash": "d7a86793b676e400",
+    "three_circles": {
+      "inner_radius": 33,
+      "middle_radius": 66
+    }
+  },
+  "status": "failed",
+  "error": "layer0_generation_failed_blocking:layer0_vision_request_failed",
+  "last_error_detail": {
+    "kind": "http_error",
+    "status": 400,
+    "reason": "Bad Request",
+    "task_model": "glm-4",
+    "base_url": "https://open.bigmodel.cn/api/paas/v4"
+  },
+  "last_attempt_trace": [
+    {
+      "model": "glm-4",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4",
+      "endpoint_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "result": "http_error",
+      "status": 400
+    }
+  ],
+  "chat_trace": {},
+  "prompt_chars": 0,
+  "prompt_preview": "",
+  "prompt_preview_truncated": false,
+  "layer0_failure_reason": "layer0_vision_request_failed",
+  "layer0_failure_detail": {
+    "stage": "vision",
+    "llm_error": {
+      "kind": "http_error",
+      "status": 400,
+      "reason": "Bad Request",
+      "task_model": "glm-4",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4"
+    },
+    "llm_attempt_trace": [
+      {
+        "model": "glm-4",
+        "base_url": "https://open.bigmodel.cn/api/paas/v4",
+        "endpoint_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+        "result": "http_error",
+        "status": 400
+      }
+    ]
+  }
+}

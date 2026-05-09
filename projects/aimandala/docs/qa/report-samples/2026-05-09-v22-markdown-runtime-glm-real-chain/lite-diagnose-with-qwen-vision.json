@@ -1,0 +1,70 @@
+{
+  "fixture_id": "toc-mvp-fixture-003",
+  "build_selector": "candidate:v2.2-theme-md",
+  "version": "lite",
+  "pack_id": "aimandala-v2.2",
+  "schema_version": "v2.2",
+  "required_fields": [
+    "title",
+    "overall_impression",
+    "visual_elements",
+    "emotion_portrait",
+    "story",
+    "theme_scene",
+    "theme_impact",
+    "theme_awareness",
+    "three_awareness",
+    "pro_teaser"
+  ],
+  "llm_client": "OpenAICompatibleLLMClient",
+  "llm_config": {
+    "default_base_url": "https://open.bigmodel.cn/api/paas/v4",
+    "default_model": "glm-4",
+    "chat_base_url": "https://open.bigmodel.cn/api/paas/v4",
+    "chat_model": "glm-4",
+    "timeout_seconds": 120,
+    "max_retries": 0
+  },
+  "record_meta": {
+    "interpretation_id": "db4e1bd1-694b-48e7-b918-60e95e64d2fa",
+    "theme": "general",
+    "status": "processing",
+    "user_id": "qa-fixture-user-003",
+    "image_hash": "d7a86793b676e400",
+    "three_circles": {
+      "inner_radius": 33,
+      "middle_radius": 66
+    }
+  },
+  "status": "failed",
+  "error": "chat_generation_failed_blocking:lite:empty_response",
+  "last_error_detail": {
+    "kind": "http_error",
+    "status": 400,
+    "reason": "Bad Request",
+    "task_model": "glm-4",
+    "base_url": "https://open.bigmodel.cn/api/paas/v4"
+  },
+  "last_attempt_trace": [
+    {
+      "model": "glm-4",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4",
+      "endpoint_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "result": "http_error",
+      "status": 400
+    }
+  ],
+  "chat_trace": {
+    "report_mode": "lite",
+    "endpoint_id": "",
+    "resolved_model": "glm-4",
+    "source": "chat_generation_failed_blocking",
+    "prompt_version": "1.6",
+    "error": "chat_generation_failed_blocking:lite:empty_response"
+  },
+  "prompt_chars": 1002282,
+  "prompt_preview": "# 一镜 Lite 版解读报告模板 v1.6\n\n> 当前语义定位：`自我理解报告` 兼容结构\n> 当前输出要求：先继续复用 Lite 兼容字段壳，不直接要求页面立刻切换字段名\n\n## 系统角色\n\n你是曼曼，一镜一梳里负责「第一份理解报告」的疗愈型解读师。\n\n### 风格要求\n温柔、稳定、清楚、有共鸣感\n\n### 语言要求\n少术语、少空话、少堆砌比喻。像一个真正理解来访者的人在说话，温柔但不飘。  \n如果必须提到三圈或五行，只能服务于解释，不要把它们写成主角。\n\n### 解读方法\n底层推导必须先遵循 `01_曼陀罗解读手册.md` 的原始解读逻辑：\n1. 先确定用户当前最想解读的主题\n2. 再确定三圈边界，并在后续解读中保持这个划分不漂移\n3. 再做直断法高命中检查：新手解读六式和扩充直断只能作为快速抓手，不能替代逐圈解读\n4. 再逐圈记录画面依据，并逐圈分析颜色、形状、比例和本圈内部五行生克\n5. 再在逐圈过程中识别可能的失衡状态\n6. 逐圈之后再看整幅画的能量流动，而不是把圈与圈之间的五行关系当作最终结论\n7. 再找到主题下的冲突、卡点、堵点\n8. 最后才给出轻量调节方向\n\n最终表达围绕五个一级任务展开：\n1. 先让用户被看见\n2. 再让用户被解释\n3. 再把模糊感命名出来\n4. 再把它连接到现实主题\n5. 最后给出一个低压但明确的下一步\n\n### 旧版水平回补要求\n- 这份 Lite 报告虽然仍输出 JSON 字段，但成文水平必须至少达到旧版 `dev/ai-mandala` 的可读性和命中感，并在结构稳定性上更进一步。\n- 你的目标不是只把字段填满，而是生成一份真正能让用户读下去的第一份理解报告。\n- 第一段必须尽快命中用户当前状态，不能先绕一大圈才进入重点。\n- 六段故事要像旧版一样形成递进，而不是六个同义改写段落。\n- 主题区块必须像旧版一样落到现实场景、真实影响和一个能马上开始的小觉察。\n- 如果知识骨架已经很清楚，你的任务是把它写得更像人话，而不是把它摊平成说明书。\n\n### 约束条件\n- 第一段必须尽快命中用户当前状态，不能铺垫过久\n- 必须给出“为什么会这样理解”的解释链，不能只有好听的话\n- 必须使用当前主题；如果用户填写了创作前意图或创作时感受，也要自然纳入判断\n- 如果意图或感受缺失，只能如实按画作信息推断，不能编造细节\n- 当前虽然沿用 Lite 兼容字段名，但实际应按“自我理解报告”语义组织内容\n- 少用专业术语；如果为了说明画面依据必须使用“内圈/中圈/外圈”或五行词汇，要用简短、人能读懂的方式解释，不能堆术语\n- 不直接下诊断，不把用户说死，不用“你就是”\n- 不强行卖萌，不要频繁重复固定口头禅\n- 不写成泛安慰文，不要为了诗意牺牲准确度\n- 结尾只给一个低压、可执行、今天就能开始的小方向\n\n---\n\n## 用户画面数据\n\n请基于以下画面数据生成解读报告：\n\n{\n  \"theme\": \"general\",\n  \"painting_intention\": \"想更看清自己现在的状态，也想知道接下来怎么更稳地往前。\",\n  \"painting_feeling\": \"先如实看看这张画带出来的感受，不急着下结论。\",\n  \"three_circles\": {\n    \"inner_radius\": 33,\n    \"middle_radius\": 66\n  },\n  \"layer_0_raw\": {\n    \"description\": \"V2.1知识结构化解释证据\",\n    \"five_elements\": {\n      \"wood\": {\n        \"percentage\": 26.05,\n        \"areas\": [\n          \"外圈\"\n        ],\n        \"element_cn\": \"木\"\n      },\n      \"fire\": {\n        \"percentage\": 22.15,\n        \"areas\": [\n          \"内圈\"\n        ],\n        \"element_cn\": \"火\"\n      },\n      \"earth\": {\n        \"percentage\": 18.84,\n        \"areas\": [],\n        \"element_cn\": \"土\"\n      },\n      \"metal\": {\n        \"percentage\": 30.62,\n        \"areas\": [\n          \"中圈\"\n        ],\n        \"element_cn\": \"金\"\n      },\n      \"water\": {\n        \"",
+  "prompt_preview_truncated": true,
+  "layer0_failure_reason": "",
+  "layer0_failure_detail": {}
+}
