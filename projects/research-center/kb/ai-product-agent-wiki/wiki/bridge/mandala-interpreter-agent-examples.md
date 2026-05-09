@@ -6,6 +6,8 @@
 
 这些样例不是一镜一梳正式产品文案，也不引用真实 fixture 或 golden 报告。它们只服务学习库，帮助后续把 Agent 设计、eval 样本和用户体验连接起来。
 
+后续如需接入真实项目样本，先看 [[./mandala-interpreter-agent-fixture-mapping]]，不要直接把 golden 报告正文复制进本页。
+
 ## Why It Matters
 
 Eval 样本能说明什么算通过，但用户解释样例能说明“通过时大概长什么样”。如果只有 eval，没有样例，后续实现很容易只满足检查项，却忽略解释是否自然、克制、可读。
@@ -173,6 +175,7 @@ Pro 版会比 Lite 版多看几层：每一圈的元素、色阶和状态，三�
 
 - [[./mandala-interpreter-agent-design]]
 - [[./mandala-interpreter-agent-evals]]
+- [[./mandala-interpreter-agent-fixture-mapping]]
 - [[./aimandala-agent-mapping]]
 - [[../dev/guardrails]]
 - [[../dev/tracing]]
@@ -181,4 +184,3 @@ Pro 版会比 Lite 版多看几层：每一圈的元素、色阶和状态，三�
 
 - 后续是否需要为 Lite / Pro 分别建立真实 fixture 驱动的解释样例。
 - 用户侧解释是否要分成“短解释”和“展开解释”两档。
-

@@ -35,6 +35,7 @@
 - [[../bridge/mandala-interpreter-agent-design]]
 - [[../bridge/mandala-interpreter-agent-evals]]
 - [[../bridge/mandala-interpreter-agent-examples]]
+- [[../bridge/mandala-interpreter-agent-fixture-mapping]]
 - [[../bridge/pm-to-agent-architecture]]
 - [[../dev/agent-loop]]
 - [[../dev/tool-design]]
@@ -55,6 +56,8 @@
 它的 eval 样本应同时覆盖正常解释、证据不足和边界风险，避免只验证“回答顺不顺”，却没有验证“是否守住边界”。
 
 用户解释样例应和 eval 样本分开维护：eval 定义通过标准，examples 展示通过时的可读形态，但不直接等于正式产品文案。
+
+真实 fixture 可以作为项目事实锚点，但不应直接替代抽象 eval 口径。学习库只记录 fixture ID、资产类型和映射关系，不复制 golden 报告正文。
 
 学习库里的结论先留在 research-center。只有当这些判断经过项目实践验证，才考虑提炼进公司级知识库。
 

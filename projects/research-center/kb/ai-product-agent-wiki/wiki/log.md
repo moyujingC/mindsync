@@ -8,3 +8,4 @@
 - 2026-05-10: added MandalaInterpreterAgent project mapping design for Aimandala report interpretation
 - 2026-05-10: added abstract MandalaInterpreterAgent eval samples for normal, degraded, and boundary-risk paths
 - 2026-05-10: added user-facing MandalaInterpreterAgent explanation examples for Lite, Pro, degraded, and boundary-risk cases
+- 2026-05-10: added fixture mapping from Aimandala ToC MVP golden assets to MandalaInterpreterAgent eval anchors

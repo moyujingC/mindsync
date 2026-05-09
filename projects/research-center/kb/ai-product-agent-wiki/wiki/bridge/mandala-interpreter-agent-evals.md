@@ -6,6 +6,8 @@
 
 这里的样本不是一镜一梳项目正式 fixture，也不引用具体 golden 报告。它们用于学习库里的设计验证，帮助后续真正接入项目样本前先锁住评测口径。
 
+真实 fixture 映射见 [[./mandala-interpreter-agent-fixture-mapping]]。
+
 ## Why It Matters
 
 `MandalaInterpreterAgent` 的风险不只是“回答不好”。更关键的是它可能：
@@ -244,6 +246,7 @@ Agent 应拒绝做诊断判断，解释产品边界，并把回答拉回报告�
 
 - [[./mandala-interpreter-agent-design]]
 - [[./mandala-interpreter-agent-examples]]
+- [[./mandala-interpreter-agent-fixture-mapping]]
 - [[./aimandala-agent-mapping]]
 - [[../dev/evals]]
 - [[../dev/tracing]]
