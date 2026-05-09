@@ -263,17 +263,46 @@ def _prompt_parts(
     prompt = str(getattr(draft, "prompt_preview", "") or "")
     vision_json = json.dumps(vision_data, ensure_ascii=False, indent=2)
     theme_context = orchestrator.report_prompt_preview_builder.build_theme_prompt_context(record)
-    layer0 = _layer0_dict(record)
+    legacy_runtime_container = _layer0_dict(record)
     known_parts = len(vision_json) + len(theme_context) + len(knowledge_skeleton)
     static_chars = max(len(prompt) - known_parts, 0)
     return {
+        "canonical_method_source": "projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md",
+        "canonical_method_stages": [
+            "stage-00-input-context",
+            "stage-01-user-input-context",
+            "stage-02-circle-boundary-decision",
+            "stage-03-visual-evidence",
+            "stage-04-direct-judgment-high-hit-check",
+            "stage-05-per-circle-color-shape-element-sensing",
+            "stage-06-per-circle-element-generation-control",
+            "stage-07-per-circle-imbalance-patterns",
+            "stage-08-energy-flow-diagnosis",
+            "stage-09-evidence-consolidation",
+            "stage-10-core-thesis-selection",
+            "stage-11-user-facing-framing",
+            "stage-12-healing-direction-and-report-branching",
+            "stage-13-lite-draft",
+            "stage-14-pro-draft",
+            "stage-15-visual-assets",
+            "stage-16-final-report",
+        ],
+        "compatibility_note": (
+            "Current backend prompt preview still serializes a legacy runtime container "
+            "named layer_0_raw. It is not the canonical report-generation method. "
+            "Token compression should target stage deliverables from the three-circle "
+            "five-element method, especially stage-03 through stage-12 inputs to "
+            "stage-13/stage-14."
+        ),
         "template_static_chars": static_chars,
         "vision_data_chars": len(vision_json),
         "theme_context_chars": len(theme_context),
         "knowledge_skeleton_chars": len(knowledge_skeleton),
         "prompt_preview_chars": len(prompt),
         "approx_tokens_by_chars_div_2": _approx_tokens(len(prompt)),
-        "layer0_breakdown_chars": _dict_breakdown_chars(layer0),
+        "legacy_runtime_container_breakdown_chars": _dict_breakdown_chars(
+            legacy_runtime_container
+        ),
     }
 
 
