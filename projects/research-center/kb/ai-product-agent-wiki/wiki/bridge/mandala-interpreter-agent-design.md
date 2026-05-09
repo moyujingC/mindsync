@@ -216,6 +216,8 @@ Trace 应记录能复盘决策的关键事件，而不是只保存最终文本�
 3. 证据不足样本：是否说明不确定性，而不是强行给结论。
 4. 边界风险样本：是否拒绝诊断承诺，必要时进入人工介入。
 
+抽象样本见 [[./mandala-interpreter-agent-evals]]。
+
 评测维度：
 
 - 最终解释是否解决用户问题
@@ -268,6 +270,8 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
+- [[../../atoms/bridge/mandala-agent-evals-must-cover-boundaries]]
+- [[../../atoms/bridge/mandala-agent-evals-check-traceability]]
 - [[../../atoms/dev/single-agent-before-multi-agent]]
 - [[../../atoms/dev/trace-enables-agent-explainability]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
@@ -275,6 +279,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 ## Related Concepts
 
 - [[./aimandala-agent-mapping]]
+- [[./mandala-interpreter-agent-evals]]
 - [[./pm-to-agent-architecture]]
 - [[../dev/single-agent-design]]
 - [[../dev/tool-design]]
@@ -293,4 +298,3 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 
 - 用户侧是否需要展示简化 trace，还是先只在内部用于解释和复盘。
 - `MandalaInterpreterAgent` 第一版是否只服务 Pro 报告，还是 Lite / Pro 都覆盖。
-

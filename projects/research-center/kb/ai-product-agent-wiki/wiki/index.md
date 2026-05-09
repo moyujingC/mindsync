@@ -38,6 +38,7 @@
 - [[bridge/pm-to-agent-architecture]]
 - [[bridge/aimandala-agent-mapping]]
 - [[bridge/mandala-interpreter-agent-design]]
+- [[bridge/mandala-interpreter-agent-evals]]
 
 ## Atom Entry Points
 
@@ -56,6 +57,8 @@
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
+- [[../../atoms/bridge/mandala-agent-evals-must-cover-boundaries]]
+- [[../../atoms/bridge/mandala-agent-evals-check-traceability]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 
