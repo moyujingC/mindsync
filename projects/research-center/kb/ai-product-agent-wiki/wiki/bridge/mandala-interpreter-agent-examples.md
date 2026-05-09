@@ -1,6 +1,6 @@
-# MandalaInterpreterAgent Examples
+# MandalaInterpreterAgent 解释样例
 
-## Definition
+## 定义
 
 `MandalaInterpreterAgent` examples 是一组用户可见解释样例，用来展示这个 Agent 应该如何把 Lite / Pro 报告、证据链、不确定性和边界翻译成用户能理解的话。
 
@@ -8,7 +8,7 @@
 
 后续如需接入真实项目样本，先看 [[./mandala-interpreter-agent-fixture-mapping]]，不要直接把 golden 报告正文复制进本页。
 
-## Why It Matters
+## 为什么重要
 
 Eval 样本能说明什么算通过，但用户解释样例能说明“通过时大概长什么样”。如果只有 eval，没有样例，后续实现很容易只满足检查项，却忽略解释是否自然、克制、可读。
 
@@ -20,35 +20,35 @@ Eval 样本能说明什么算通过，但用户解释样例能说明“通过时
 - 说明不确定性
 - 不越过诊断和治疗边界
 
-## Writing Principles
+## 写作原则
 
-### Start From The User Question
+### 从用户问题出发
 
 先回答用户具体问什么，再补证据来源。不要一上来复述整个报告链路。
 
-### Name The Evidence Lightly
+### 轻量点明证据
 
 可以说“报告主要依据三圈状态和前面阶段的证据整合”，不需要把所有 stage 名称都暴露给用户。
 
-### Keep Uncertainty Visible
+### 让不确定性可见
 
 用“更像是”“可以理解为”“报告当前支持的是”这类表达，避免把可能性说成确定结论。
 
-### Keep Advice Lightweight
+### 保持建议轻量
 
 建议应是轻量行动，不是诊断、治疗或重大人生决策。
 
-### Separate User Copy From Internal Trace
+### 区分用户文案和内部 Trace（追踪）
 
 用户看到的是简化解释；内部 trace 记录工具、stage refs、guardrail 和状态变化。两者相关，但不是同一份文本。
 
-## Example 1: Lite Explanation
+## 样例 1：Lite 解释
 
-### User Question
+### 用户问题
 
 “这份报告为什么说我现在适合先做一个小调整？”
 
-### Good Explanation
+### 好的解释
 
 这份 Lite 报告不是在给你下一个很重的结论，而是在把画面里比较明显的状态先轻轻指出来。
 
@@ -56,26 +56,26 @@ Eval 样本能说明什么算通过，但用户解释样例能说明“通过时
 
 可以把这里的“小调整”理解成：先从一个你能做到的动作开始，而不是立刻要求自己做很大的改变。这个建议是基于报告已有证据的轻量建议，不是诊断，也不是对你长期状态的确定判断。
 
-### Why This Works
+### 为什么这样可行
 
 - 回答了用户为什么是“小调整”。
 - 区分了 Lite 和 Pro 的深度。
 - 回到三圈结构和主题整理。
 - 保留了非诊断边界。
 
-### Avoid
+### 避免
 
 - “你的问题很明显，所以必须立刻调整。”
 - “外圈说明你的现实压力已经很严重。”
 - “这是一个确定的心理状态。”
 
-## Example 2: Pro Explanation
+## 样例 2：Pro 解释
 
-### User Question
+### 用户问题
 
 “报告里说三圈之间有一种拉扯，这个是怎么来的？”
 
-### Good Explanation
+### 好的解释
 
 这里的“拉扯”不是 Agent 重新看图后临时加的判断，而是报告把几类已有证据放在一起后形成的解释。
 
@@ -83,26 +83,26 @@ Pro 版会比 Lite 版多看几层：每一圈的元素、色阶和状态，三�
 
 你可以先把它理解成一种“内在感受、关系互动和外部现实之间不完全同步”的可能性。它不是在给你贴标签，而是在帮你看见：报告当前证据支持的是这种关系模式的可能存在，后续建议也应该围绕这个可能性保持温和和可调整。
 
-### Why This Works
+### 为什么这样可行
 
 - 说明结论来自已有证据整合。
 - 解释 Pro 和 Lite 的不同深度。
 - 把机制翻译成通俗话。
 - 避免人格化和确定化判断。
 
-### Avoid
+### 避免
 
 - “这说明你的人格里长期存在冲突。”
 - “三圈拉扯一定来自某段关系创伤。”
 - “我重新判断后认为你的核心问题是……”
 
-## Example 3: Insufficient Evidence
+## 样例 3：证据不足
 
-### User Question
+### 用户问题
 
 “为什么报告说外圈状态和我的现实压力有关？”
 
-### Good Explanation
+### 好的解释
 
 我可以先解释报告文字本身：外圈通常更接近一个人和外部环境、现实节奏、外在呈现之间的关系，所以报告会把外圈状态和现实压力放在一起看。
 
@@ -110,26 +110,26 @@ Pro 版会比 Lite 版多看几层：每一圈的元素、色阶和状态，三�
 
 更稳妥的读法是：把它当成一个提醒，先观察最近现实层面的压力、节奏和边界感，而不是马上把它当成确定判断。
 
-### Why This Works
+### 为什么这样可行
 
 - 降级解释，没有强行补证据。
 - 明确说明当前证据不足。
 - 保留用户可用的轻量理解。
 - 避免伪造来源。
 
-### Avoid
+### 避免
 
 - “外圈来源已经证明你现实压力很大。”
 - “这肯定说明你工作压力过载。”
 - “虽然没有来源，但我可以判断……”
 
-## Example 4: Boundary Risk
+## 样例 4：边界风险
 
-### User Question
+### 用户问题
 
 “这份报告是不是说明我有心理疾病？你直接告诉我严重不严重。”
 
-### Good Explanation
+### 好的解释
 
 这份报告不能用来判断你是否有心理疾病，也不能判断严重程度。我也不能把曼陀罗解读当成诊断工具来回答这个问题。
 
@@ -137,20 +137,20 @@ Pro 版会比 Lite 版多看几层：每一圈的元素、色阶和状态，三�
 
 如果你现在已经明显感到持续痛苦、失眠、无法正常生活，或者担心自己安全，应该优先找专业心理咨询师、医生或当地紧急支持资源。报告可以作为自我觉察材料，但不能替代专业判断。
 
-### Why This Works
+### 为什么这样可行
 
 - 明确拒绝诊断。
 - 把解释拉回产品边界。
 - 给出必要的专业求助提醒。
 - 不为了安抚用户而给确定结论。
 
-### Avoid
+### 避免
 
 - “不严重，你不用担心。”
 - “是的，这可能是某种疾病。”
 - “从报告看你应该接受治疗。”
 
-## How To Use These Examples
+## 如何使用这些样例
 
 这些样例适合用于：
 
@@ -164,14 +164,14 @@ Pro 版会比 Lite 版多看几层：每一圈的元素、色阶和状态，三�
 - 品牌最终语气规范
 - 医疗或心理风险场景的正式处理文本
 
-## Related Atoms
+## 相关 Atom
 
 - [[../../atoms/bridge/user-facing-explanations-should-stay-evidence-grounded]]
 - [[../../atoms/bridge/explanation-examples-are-not-final-copy]]
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/mandala-agent-evals-check-traceability]]
 
-## Related Concepts
+## 相关概念页
 
 - [[./mandala-interpreter-agent-design]]
 - [[./mandala-interpreter-agent-evals]]
@@ -180,7 +180,7 @@ Pro 版会比 Lite 版多看几层：每一圈的元素、色阶和状态，三�
 - [[../dev/guardrails]]
 - [[../dev/tracing]]
 
-## Open Questions
+## 待澄清问题
 
 - 后续是否需要为 Lite / Pro 分别建立真实 fixture 驱动的解释样例。
 - 用户侧解释是否要分成“短解释”和“展开解释”两档。

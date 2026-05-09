@@ -1,26 +1,26 @@
-# Define Human AI Boundary
+# 定义人和 AI 的边界
 
-## Claim
+## 断言
 
 AI 产品经理必须定义哪些判断交给 AI，哪些判断保留给人。
 
-## Type
+## 类型
 
 - pattern
 
-## Applies To
+## 适用对象
 
 - pm
 
-## Source
+## 来源
 
 - [[../../wiki/sources/ai-product-strategy-notes]]
 
-## Notes
+## 备注
 
 - 这会直接影响风险、体验、成本和责任边界。
 
-## Related Concepts
+## 相关概念页
 
 - [[../../wiki/pm/ai-product-principles]]
 

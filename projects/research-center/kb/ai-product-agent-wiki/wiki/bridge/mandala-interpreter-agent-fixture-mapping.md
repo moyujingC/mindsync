@@ -1,12 +1,12 @@
-# MandalaInterpreterAgent Fixture Mapping
+# MandalaInterpreterAgent fixture 映射
 
-## Definition
+## 定义
 
 `MandalaInterpreterAgent` fixture mapping 是把一镜一梳已有 To C MVP 固定样本，映射到学习库里的抽象 eval 和用户解释样例。
 
 这不是项目侧正式 QA 文档，也不复制 golden 报告正文。它只记录：哪些真实样本可以作为后续接入 `MandalaInterpreterAgent` 评测时的项目事实锚点。
 
-## Why It Matters
+## 为什么重要
 
 抽象 eval 可以定义行为边界，但最终还是要能落到真实项目样本上。Fixture mapping 的作用是把两者接起来：
 
@@ -14,7 +14,7 @@
 - 项目 fixture 说明可以用什么样本评。
 - 学习库 mapping 说明两者如何对应。
 
-## Project Fixture Sources
+## 项目 fixture 来源
 
 当前一镜一梳 To C MVP fixture 体系已经切到 `toc-mvp-fixture-001~009`。
 
@@ -29,17 +29,17 @@
 
 本页只引用样本 ID 和资产类型，不复制报告内容。
 
-## Mapping Table
+## 映射表
 
-| Abstract Eval | Real Fixture Anchor | Why It Fits | Notes |
+| 抽象 eval | 真实 fixture 锚点 | 为什么适合 | 备注 |
 | --- | --- | --- | --- |
-| Typical Lite Explanation | `toc-mvp-fixture-001` Lite golden | 有 Lite 报告、debug trace 和人工 review，可验证“简洁、温和、回到画面依据” | 后续可补用户问题：“为什么报告建议先做小调整？” |
-| Typical Pro Explanation | `toc-mvp-fixture-002` Pro golden | 有 Pro 报告、debug trace 和人工 review，可验证逐圈证据、机制链和疗愈路径解释 | 适合检查是否把 Pro 解释成 Lite 加长版 |
-| Lite / Pro Difference | `toc-mvp-fixture-002` Lite + Pro golden | 同一 fixture 同时有 Lite 和 Pro，可观察两个层级如何不同 | 可作为新增 eval 样本候选 |
-| Insufficient Evidence Or Missing Refs | 暂无直接正式锚点 | 需要构造缺失 stage refs 或缺失 chain 字段的派生样本 | 不应直接篡改 golden，可在未来另建 negative fixture |
-| Boundary Risk Or Diagnosis Request | 任一 Lite / Pro fixture + 边界问题输入 | 风险来自用户问题，不一定来自报告内容 | 适合用固定报告加诊断诉求问题构造对话样本 |
+| 典型 Lite 解释 | `toc-mvp-fixture-001` Lite golden | 有 Lite 报告、debug trace 和人工 review，可验证“简洁、温和、回到画面依据” | 后续可补用户问题：“为什么报告建议先做小调整？” |
+| 典型 Pro 解释 | `toc-mvp-fixture-002` Pro golden | 有 Pro 报告、debug trace 和人工 review，可验证逐圈证据、机制链和疗愈路径解释 | 适合检查是否把 Pro 解释成 Lite 加长版 |
+| Lite / Pro 差异 | `toc-mvp-fixture-002` Lite + Pro golden | 同一 fixture 同时有 Lite 和 Pro，可观察两个层级如何不同 | 可作为新增 eval 样本候选 |
+| 证据不足或引用缺失 | 暂无直接正式锚点 | 需要构造缺失 stage refs 或缺失 chain 字段的派生样本 | 不应直接篡改 golden，可在未来另建 negative fixture |
+| 边界风险或诊断诉求 | 任一 Lite / Pro fixture + 边界问题输入 | 风险来自用户问题，不一定来自报告内容 | 适合用固定报告加诊断诉求问题构造对话样本 |
 
-## How To Use
+## 如何使用
 
 后续接入真实样本时，建议按三步走：
 
@@ -47,16 +47,16 @@
 2. 再用 `toc-mvp-fixture-002` 跑 Pro 正常解释和 Lite / Pro 差异解释。
 3. 最后基于固定报告构造证据不足和边界风险输入，验证 `degraded` 与 `needs_manual_review` 路径。
 
-## What Not To Do
+## 不要做什么
 
 - 不把 golden 报告正文复制进学习库。
 - 不把单个 fixture 的表现当成全部产品规则。
 - 不在学习库里修改 fixture、debug 或 review。
 - 不把抽象 eval 的失败样本直接写入项目 golden。
 
-## Open Eval Candidates
+## 待补评测候选
 
-### Lite / Pro Difference Explanation
+### Lite / Pro 差异解释
 
 用户问题：
 
@@ -69,7 +69,7 @@
 - 不把 Pro 描述成 Lite 的简单加长版。
 - 能回指同一 fixture 的 Lite / Pro 对照。
 
-### Review-Informed Explanation
+### 基于 review 的解释
 
 用户问题：
 
@@ -81,21 +81,20 @@
 - 区分 debug trace、report 和 review 的角色。
 - 不替代正式项目 QA 结论。
 
-## Related Atoms
+## 相关 Atom
 
 - [[../../atoms/bridge/real-fixtures-should-map-to-abstract-evals]]
 - [[../../atoms/bridge/mandala-agent-evals-check-traceability]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 
-## Related Concepts
+## 相关概念页
 
 - [[./mandala-interpreter-agent-evals]]
 - [[./mandala-interpreter-agent-examples]]
 - [[./mandala-interpreter-agent-design]]
 - [[./aimandala-agent-mapping]]
 
-## Open Questions
+## 待澄清问题
 
 - 是否需要在学习库里单独建立 `fixture-derived-evals` 页面，还是继续把真实 fixture 映射保留在 bridge 层。
 - negative fixture 应该在项目侧正式创建，还是先用学习库里的抽象样本描述。
-

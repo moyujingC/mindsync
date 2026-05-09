@@ -1,27 +1,27 @@
-# LLM Wiki Uses Compiled Knowledge
+# LLM Wiki 使用已编译知识
 
-## Claim
+## 断言
 
 LLM Wiki 的核心不是临时检索一堆原始材料，而是持续维护一份已经编译过的知识库。
 
-## Type
+## 类型
 
 - pattern
 
-## Applies To
+## 适用对象
 
 - dev
 
-## Source
+## 来源
 
 - [[../../wiki/sources/karpathy-llm-wiki]]
 
-## Notes
+## 备注
 
 - 这更像知识编译器，不只是问答界面。
 - 适合沉淀长期理解，而不是一次性答复。
 
-## Related Concepts
+## 相关概念页
 
 - [[../../wiki/dev/rag-vs-llm-wiki]]
 

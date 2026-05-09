@@ -1,4 +1,4 @@
-# AI Product Agent Wiki 协作说明
+# AI 产品 Agent 知识库协作说明
 
 > 状态：draft
 > owner：Research & Knowledge Lead

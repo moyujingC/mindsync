@@ -1,10 +1,10 @@
-# Current Status
+# 当前状态
 
-## What this wiki is for
+## 这个知识库用来做什么
 
 这是一个持续增长的知识库，用来记录 AI 产品和 Agent 开发的可复用理解。
 
-## What is ready
+## 已经完成
 
 - 目录边界
 - 维护原则
@@ -15,7 +15,7 @@
 - Agent loop 概念页
 - Agent 系统学习课程入口
 - 00 到 08 的课程路径
-- Agent 核心概念页：tool design、state machine、evals、tracing、guardrails、single agent、multi agent
+- Agent 核心概念页：工具设计、状态机、eval、tracing、guardrails、单 Agent、多 Agent
 - PM 到 Agent 架构映射页
 - 课程 02 到 08 已回写核心学习内容和概念链接
 - 一镜一梳 `MandalaInterpreterAgent` 项目映射设计页
@@ -23,7 +23,7 @@
 - `MandalaInterpreterAgent` 用户可见解释样例页
 - `MandalaInterpreterAgent` 真实 fixture 映射页
 
-## What comes next
+## 下一步
 
 - 后续基于 fixture mapping 继续补真实项目案例，不复制 golden 报告正文
 - 后续如需 negative fixture，应先在项目侧正式定义

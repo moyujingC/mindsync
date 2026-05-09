@@ -1,6 +1,6 @@
-# Source: <Title>
+# 来源：<标题>
 
-## Metadata
+## 元信息
 
 - type:
 - source_url:
@@ -8,34 +8,34 @@
 - topic:
 - status: draft
 
-## One-line Summary
+## 一句话总结
 
 一句话说明这份资料主要讲什么。
 
-## Key Claims
+## 关键判断
 
 - claim 1
 - claim 2
 - claim 3
 
-## Useful For
+## 适合用于
 
 - AI PM:
 - Independent Dev:
 - Aimandala:
 
-## Atoms Created
+## 已创建 Atom
 
 - [[../../atoms/pm/example-atom]]
 - [[../../atoms/dev/example-atom]]
 - [[../../atoms/bridge/example-atom]]
 
-## Concepts Updated
+## 已更新概念页
 
 - [[../dev/example-concept]]
 - [[../pm/example-concept]]
 
-## Open Questions
+## 待澄清问题
 
 - question 1
 

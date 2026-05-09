@@ -1,27 +1,27 @@
-# Tools Should Be Few Clear And Structured
+# 工具应少而清晰且结构化
 
-## Claim
+## 断言
 
 Agent 工具应该少而清楚，并且用结构化输入输出表达能力边界。
 
-## Type
+## 类型
 
 - pattern
 
-## Applies To
+## 适用对象
 
 - dev
 
-## Source
+## 来源
 
 - [[../../wiki/sources/building-with-llms-notes]]
 
-## Notes
+## 备注
 
 - 工具太多会增加选择错误和调试成本。
 - 结构化输入输出能让 eval、trace 和状态机更容易判断发生了什么。
 
-## Related Concepts
+## 相关概念页
 
 - [[../../wiki/dev/tool-design]]
 

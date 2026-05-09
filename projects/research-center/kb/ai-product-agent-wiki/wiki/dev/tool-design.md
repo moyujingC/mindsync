@@ -1,16 +1,16 @@
-# Tool Design
+# 工具设计
 
-## Definition
+## 定义
 
 Tool design 是把 Agent 能做的动作拆成清楚、可调用、可验证的工具。工具不是随便暴露一个函数给模型，而是给 Agent 一组有限的、名字清楚的能力。
 
-## Why It Matters
+## 为什么重要
 
 Agent 需要工具才能影响外部世界或读取专门信息。工具设计差，Agent 就会在“该调用什么、怎么传参、结果代表什么”上出错。
 
 工具设计好的系统更容易调试。你可以看到 Agent 调用了哪个工具、输入是什么、输出是什么、下一步为什么这样走。
 
-## PM View
+## 产品经理视角
 
 产品经理可以把工具理解为 Agent 的“可执行能力清单”。如果一个能力对用户价值不清楚，就不应该急着变成工具。
 
@@ -21,7 +21,7 @@ Agent 需要工具才能影响外部世界或读取专门信息。工具设计�
 - 工具输出是否足够让 Agent 做下一步判断？
 - 工具是否会越过人机边界或安全边界？
 
-## Dev View
+## 开发视角
 
 工具应优先满足四个条件：
 
@@ -39,17 +39,17 @@ Agent 需要工具才能影响外部世界或读取专门信息。工具设计�
 - 执行安全检查
 - 生成可解释 trace 摘要
 
-## Related Atoms
+## 相关 Atom
 
 - [[../../atoms/dev/tools-should-be-few-clear-and-structured]]
 - [[../../atoms/dev/context-engineering-beats-prompt-tweaking]]
 
-## Related Sources
+## 相关来源
 
 - [[../sources/building-with-llms-notes]]
 - [[../sources/karpathy-llm-wiki]]
 
-## Open Questions
+## 待澄清问题
 
 - 一镜一梳的知识 runtime 应该暴露成一个统一查询工具，还是拆成证据检索、概念解释和报告引用三个工具。
 

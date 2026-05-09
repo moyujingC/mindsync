@@ -1,30 +1,30 @@
-# <Concept Title>
+# <概念标题>
 
-## Definition
+## 定义
 
 用通俗语言定义这个概念。
 
-## Why It Matters
+## 为什么重要
 
 说明这个概念为什么重要。
 
-## PM View
+## 产品经理视角
 
 作为 AI 产品经理应该如何理解。
 
-## Dev View
+## 开发视角
 
 作为独立开发者应该如何实现或验证。
 
-## Related Atoms
+## 相关 Atom
 
 - [[../../atoms/dev/example-atom]]
 
-## Related Sources
+## 相关来源
 
 - [[../sources/example-source]]
 
-## Open Questions
+## 待澄清问题
 
 - question 1
 

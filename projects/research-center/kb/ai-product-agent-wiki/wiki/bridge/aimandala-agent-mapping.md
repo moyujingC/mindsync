@@ -1,14 +1,14 @@
-# Aimandala Agent Mapping
+# 一镜一梳 Agent 映射
 
-## Definition
+## 定义
 
 一镜一梳当前已经有 workflow、知识运行时和报告生成层；后续如果要加 Agent，最自然的方向是把这些能力组织成单智能体工作流，再逐步抽象出可复用的 atoms。
 
-## Why It Matters
+## 为什么重要
 
 它可以把项目实践和知识库学习接起来，避免学习内容和真实项目脱节。
 
-## PM View
+## 产品经理视角
 
 要先判断哪些环节需要 AI 决策，哪些只是固定流程。
 
@@ -19,7 +19,7 @@
 - 它失败时是否能给出清楚体验？
 - 它是否能把高风险建议留给人工或保守输出？
 
-## Dev View
+## 开发视角
 
 可以先把现有 orchestrator 当作基础编排层，再逐步补 agent trace、state 和 review 机制。
 
@@ -34,7 +34,7 @@
 
 更具体的第一版设计见 [[./mandala-interpreter-agent-design]]。它把 `MandalaInterpreterAgent` 收束为报告解读 Agent：只解释已有 Lite / Pro 报告、`school_interpretation_chain` 和 stage refs，不重新识别三圈，也不新增底层判断。
 
-## Related Atoms
+## 相关 Atom
 
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
@@ -43,12 +43,12 @@
 - [[../../atoms/dev/trace-enables-agent-explainability]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 
-## Related Sources
+## 相关来源
 
 - [[../sources/karpathy-llm-wiki]]
 - [[../sources/ai-product-strategy-notes]]
 - [[../sources/building-with-llms-notes]]
 
-## Open Questions
+## 待澄清问题
 
 - 哪些报告生成步骤值得独立成 agent 的职责边界。
