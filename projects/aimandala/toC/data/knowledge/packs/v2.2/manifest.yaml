@@ -1,0 +1,48 @@
+pack_id: aimandala-v2.2
+schema_version: v2.2
+status: candidate
+source: markdown_theme_truth_sources
+description: 'Candidate runtime projection: theme/healing/narrative assets are projected
+  from Markdown truth sources; non-theme assets keep the v2.1-compatible runtime shape.'
+entries:
+  elements:
+  - elements/color_meanings.yaml
+  - elements/five_elements.yaml
+  circles:
+  - circles/three_circles.yaml
+  themes:
+  - themes/father_relationship.yaml
+  - themes/general.yaml
+  - themes/health_wellness.yaml
+  - themes/intimate_relationship.yaml
+  - themes/mother_relationship.yaml
+  - themes/parent_child_relationship.yaml
+  - themes/personal_growth.yaml
+  - themes/wealth_career.yaml
+  rules:
+  - rules/direct_judgments.yaml
+  - rules/healing_issue_mappings.yaml
+  - rules/imbalance_types.yaml
+  - rules/theme_mappings.yaml
+  healing:
+  - healing/father_relationship.yaml
+  - healing/general.yaml
+  - healing/health_wellness.yaml
+  - healing/intimate_relationship.yaml
+  - healing/mother_relationship.yaml
+  - healing/parent_child_relationship.yaml
+  - healing/personal_growth.yaml
+  - healing/templates.yaml
+  - healing/wealth_career.yaml
+  narrative:
+  - narrative/father_relationship.yaml
+  - narrative/general.yaml
+  - narrative/health_wellness.yaml
+  - narrative/intimate_relationship.yaml
+  - narrative/mother_relationship.yaml
+  - narrative/parent_child_relationship.yaml
+  - narrative/personal_growth.yaml
+  - narrative/wealth_career.yaml
+truth_sources:
+  themes: projects/aimandala/docs/sources/知识库构建/主题知识
+  non_theme_assets: legacy_v2_python_runtime_projection

@@ -1,0 +1,48 @@
+id: narrative.intimate_relationship
+type: narrative
+version: v2.2
+status: active
+source: markdown_truth_source
+review_status: projected
+payload:
+  theme_id: intimate_relationship
+  insight_templates:
+    你的底色:
+      角度: 你在亲密关系中的核心需求
+      示例: 你的内圈深蓝显示，你对亲密关系的核心需求是深度理解而非表面陪伴...
+    你的矛盾:
+      角度: 渴望亲密 vs 推开亲密
+      示例: 中圈的火显示你渴望热烈回应，但外圈的金却在关系中保持克制——你可能总在'想要靠近'和'害怕受伤'间摇摆...
+    你的模式:
+      角度: 重复吸引的关系类型
+      示例: 水克火的能量格局显示，你可能常吸引那些情绪丰富但不够稳定的人，或自己在关系中过度情绪化...
+    你的防御:
+      角度: 在关系中如何保护自己
+      示例: 外圈的金形成一道优雅的防线：当关系深入时，你会不自觉地用理性分析替代情感投入...
+    你的卡点:
+      角度: 亲密关系中的核心障碍
+      示例: 过多的情感需求与表达能力之间的落差可能让伴侣感到压力，或让你在关系中过度敏感而误解对方...
+    你的光:
+      角度: 你在关系中的独特价值
+      示例: 画显示你拥有极强的情感洞察力——当你学会适度表达而非全盘倾泻，这会成为关系中最珍贵的礼物...
+  pro_upgrade_teaser: '
+
+    还有更多深层洞察，包括：
+
+    - 这种亲密关系模式与父亲、母亲关系的连接
+
+    - 你在不同关系阶段的表现差异
+
+    - 更完整的结构、根因与疗愈视角
+
+    '
+relations:
+  source_markdown: projects/aimandala/docs/sources/知识库构建/主题知识/亲密关系.md
+  source_symbols:
+  - THEME_CONFIG
+  - COLOR_MEANINGS
+  - INTERACTIONS
+  - INSIGHT_TEMPLATES
+  - IMBALANCE_MAPPINGS
+  - HEALING_PRESCRIPTIONS
+  theme: theme.intimate_relationship
