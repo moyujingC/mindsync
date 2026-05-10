@@ -12,13 +12,12 @@ from .report_debug_profile import ReportDebugProfileBuilder
 from .report_interaction_support import ReportInteractionSupport
 from .report_knowledge_adapter import ReportKnowledgeAdapter
 from .report_knowledge_debug import KnowledgeDebugBlockBuilder
-from .report_layer0_support import ReportLayer0Support
 from .report_lifecycle import ReportLifecycleManager
 from .report_lite_record_workflow import ReportLiteRecordWorkflow
 from .report_pipeline_stage_config import ReportPipelineStageConfig
-from .report_prompt_preview import ReportPromptPreviewBuilder
 from .report_safety_wrapper import ReportSafetyWrapper
 from .report_section_renderer import ReportSectionRenderer
+from .stage_process_package import StageProcessPackageAssembler
 
 
 def install_report_foundation_components(
@@ -30,32 +29,15 @@ def install_report_foundation_components(
 ) -> None:
     """Attach report foundation services shared by all downstream helpers."""
 
-    orchestrator.report_layer0_support = ReportLayer0Support(
-        get_layer0_assembler=lambda: orchestrator.layer0_assembler,
-        extract_colors_by_circles=extract_colors_by_circles,
-        analyze_energy_flow=analyze_energy_flow,
-    )
     orchestrator.prompt_builder = PromptBuilder()
     orchestrator.report_contracts = ReportContractAssembler(orchestrator.prompt_builder)
     orchestrator.report_section_renderer = ReportSectionRenderer()
     orchestrator.report_knowledge_adapter = ReportKnowledgeAdapter(
         get_narrative_service=lambda: orchestrator.narrative_service,
         get_knowledge_runtime=lambda: orchestrator.knowledge_runtime,
-        get_layer0_view=orchestrator.report_layer0_support.get_layer0_view,
     )
-    orchestrator.report_prompt_preview_builder = ReportPromptPreviewBuilder(
-        prompt_builder=orchestrator.prompt_builder,
-        get_narrative_service=lambda: orchestrator.narrative_service,
+    orchestrator.stage_package_assembler = StageProcessPackageAssembler(
         get_theme_label=orchestrator.report_knowledge_adapter.get_theme_label,
-        get_record_theme=orchestrator.report_layer0_support.get_record_theme,
-        get_layer0_view=orchestrator.report_layer0_support.get_layer0_view,
-        get_layer0_element_distribution=(
-            orchestrator.report_layer0_support.get_layer0_element_distribution
-        ),
-        get_primary_knowledge_signal=(
-            orchestrator.report_knowledge_adapter.get_primary_knowledge_signal
-        ),
-        get_signal_label=orchestrator.report_knowledge_adapter.get_signal_label,
         get_knowledge_theme_summary=(
             orchestrator.report_knowledge_adapter.get_knowledge_theme_summary
         ),

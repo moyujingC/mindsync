@@ -14,11 +14,11 @@ from uuid import uuid4
 
 from .data_models import (
     InterpretationRecord,
-    Layer0Raw,
     Layer1LiteDraft,
     Layer2LiteFinal,
     Layer3ProDraft,
     Layer4ProFinal,
+    StageProcessPackage,
     UpgradeHistory,
     GenerationStatus,
 )
@@ -36,7 +36,7 @@ class InterpretationStore:
     """
 
     # 数据保留期限（天）- 所有数据保留10年用于研究分析
-    RAW_DATA_RETENTION_DAYS = 365 * 10  # layer_0和layer_1保留10年
+    RAW_DATA_RETENTION_DAYS = 365 * 10
     FINAL_DATA_RETENTION_DAYS = 365 * 10  # layer_2和layer_4保留10年
     SUPPORTED_SCHEMA_VERSION = "v2.1"
     ATOMIC_WRITE_RETRIES = 1
@@ -150,9 +150,18 @@ class InterpretationStore:
             status=data.get("status", GenerationStatus.PENDING),
         )
 
-        # 加载五层数据
-        if data.get("layer_0_raw"):
-            record.layer_0_raw = self._dict_to_layer0(data["layer_0_raw"])
+        # Load the current stage-based process package first. Legacy layer fields
+        # may still exist in archived records but are not the formal report input.
+        if data.get("stage_process_package"):
+            stage_data = data["stage_process_package"]
+            record.stage_process_package = StageProcessPackage(
+                payload=stage_data.get("payload", {})
+                if isinstance(stage_data, dict)
+                else {},
+                created_at=stage_data.get("created_at", "")
+                if isinstance(stage_data, dict)
+                else "",
+            )
 
         if data.get("layer_1_lite_draft"):
             record.layer_1_lite_draft = self._dict_to_layer1(data["layer_1_lite_draft"])
@@ -179,57 +188,6 @@ class InterpretationStore:
 
         return record
 
-    def _dict_to_layer0(self, data: Dict) -> Layer0Raw:
-        """字典转Layer0Raw"""
-        from .data_models import FiveElementsData, ThreeCirclesData, MicroAnalysisData
-
-        layer = Layer0Raw(
-            description=data.get("description", ""),
-            imbalance_candidates=data.get("imbalance_candidates", []),
-            color_analysis=data.get("color_analysis", {}),
-            circle_colors=data.get("circle_colors"),
-            input_package=data.get("input_package", {}),
-            visual_analysis_basis=data.get("visual_analysis_basis", {}),
-            visual_facts=data.get("visual_facts", {}),
-            layer0_passed=bool(data.get("layer0_passed", True)),
-            layer0_failure_reason=data.get("layer0_failure_reason", ""),
-            layer0_failure_detail=data.get("layer0_failure_detail", {}),
-            knowledge_hits=data.get("knowledge_hits", {}),
-            rule_evaluations=data.get("rule_evaluations", {}),
-            theme_projection=data.get("theme_projection", {}),
-            fidelity_flags=data.get("fidelity_flags", data.get("quality_flags", [])),
-            quality_flags=data.get("quality_flags", data.get("fidelity_flags", [])),
-            fallback_summary=data.get("fallback_summary", {}),
-            created_at=data.get("created_at", ""),
-        )
-
-        # 五行数据
-        fe_data = data.get("five_elements", {})
-        layer.five_elements = FiveElementsData(
-            wood=fe_data.get("wood", {}),
-            fire=fe_data.get("fire", {}),
-            earth=fe_data.get("earth", {}),
-            metal=fe_data.get("metal", {}),
-            water=fe_data.get("water", {}),
-        )
-
-        # 三圈数据
-        tc_data = data.get("three_circles", {})
-        layer.three_circles = ThreeCirclesData(
-            inner=tc_data.get("inner", {}),
-            middle=tc_data.get("middle", {}),
-            outer=tc_data.get("outer", {}),
-        )
-
-        # 微观关系
-        ma_data = data.get("micro_analysis", {})
-        layer.micro_analysis = MicroAnalysisData(
-            adjacent=ma_data.get("adjacent", []),
-            wrap=ma_data.get("wrap", []),
-        )
-
-        return layer
-
     def _dict_to_layer1(self, data: Dict) -> Layer1LiteDraft:
         """字典转Layer1LiteDraft"""
         from .data_models import SixInsights
@@ -239,6 +197,9 @@ class InterpretationStore:
             prompt_preview=data.get("prompt_preview", ""),
             title=data.get("title", ""),
             overall_impression=data.get("overall_impression", ""),
+            visual_elements=data.get("visual_elements", ""),
+            emotion_portrait=data.get("emotion_portrait", ""),
+            pro_teaser=data.get("pro_teaser", ""),
             narrative_plan=data.get("narrative_plan", {}),
             experiment=data.get("experiment", {}),
             created_at=data.get("created_at", ""),
@@ -255,14 +216,34 @@ class InterpretationStore:
             light=si_data.get("light", {}),
         )
 
+        story_data = data.get("story", {}) if isinstance(data.get("story"), dict) else {}
+        for key in ("base", "contradiction", "pattern", "defense", "block", "light"):
+            node = getattr(layer.story, key)
+            value = story_data.get(key, {})
+            if isinstance(value, dict):
+                node.content = value.get("content", "")
+                node.connector = value.get("connector")
+
+        theme_data = (
+            data.get("theme_insights", {})
+            if isinstance(data.get("theme_insights"), dict)
+            else {}
+        )
+        layer.theme_insights.scene = theme_data.get("scene", "")
+        layer.theme_insights.impact = theme_data.get("impact", "")
+        layer.theme_insights.awareness = theme_data.get("awareness", "")
+
         return layer
 
     def _dict_to_layer2(self, data: Dict) -> Layer2LiteFinal:
         """字典转Layer2LiteFinal"""
         return Layer2LiteFinal(
             description=data.get("description", ""),
+            version=data.get("version", "1.6"),
             title=data.get("title", ""),
             overall_impression=data.get("overall_impression", ""),
+            visual_elements_rendered=data.get("visual_elements_rendered", ""),
+            emotion_portrait_rendered=data.get("emotion_portrait_rendered", ""),
             six_insights_rendered=data.get("six_insights_rendered", {}),
             experiment_rendered=data.get("experiment_rendered", ""),
             full_report_markdown=data.get("full_report_markdown", ""),
@@ -400,7 +381,7 @@ class InterpretationStore:
 
     def cleanup_expired_data(self) -> int:
         """
-        清理过期的原始数据（layer_0和layer_1）
+        清理过期的草稿数据
 
         Returns:
             清理的记录数
@@ -420,9 +401,7 @@ class InterpretationStore:
                 if created_at < cutoff_date and "pro" not in data.get(
                     "version_purchased", []
                 ):
-                    # 保留分层结构但清空layer_0和layer_1的详细内容
-                    if data.get("layer_0_raw"):
-                        data["layer_0_raw"] = {"description": "数据已过期清理"}
+                    # 保留报告结构但清空 Lite 草稿详细内容。
                     if data.get("layer_1_lite_draft"):
                         data["layer_1_lite_draft"] = {"description": "数据已过期清理"}
 
@@ -461,7 +440,7 @@ class InterpretationStore:
                     data.get("image_hash") == image_hash
                     and data.get("user_id") == user_id
                     and data.get("theme") == theme
-                    and data.get("layer_0_raw")
+                    and data.get("stage_process_package")
                 ):
                     return self._dict_to_record(data)
 
@@ -537,7 +516,7 @@ class InterpretationStore:
         max_age_hours: Optional[int] = 24,
     ) -> Optional[InterpretationRecord]:
         """
-        检查是否可以复用缓存的layer_0数据
+        检查是否可以复用缓存的 stage 过程包
 
         Args:
             image_hash: 图像哈希
@@ -558,7 +537,7 @@ class InterpretationStore:
                     data.get("image_hash") != image_hash
                     or data.get("user_id") != user_id
                     or data.get("theme") != theme
-                    or not data.get("layer_0_raw")
+                    or not data.get("stage_process_package")
                 ):
                     continue
 

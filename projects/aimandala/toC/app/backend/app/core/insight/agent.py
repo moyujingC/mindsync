@@ -183,20 +183,7 @@ class InsightAgent:
             if knowledge_signal
             else None
         )
-        layer0 = record.layer_0_raw.to_dict() if record.layer_0_raw else {}
-        layer0_view = {
-            "visual_facts": layer0.get("visual_facts", {}),
-            "knowledge_hits": layer0.get("knowledge_hits", {}),
-            "rule_evaluations": layer0.get("rule_evaluations", {}),
-            "theme_projection": layer0.get("theme_projection", {}),
-            "fallback_summary": layer0.get("fallback_summary", {}),
-            "fidelity_flags": layer0.get("fidelity_flags", layer0.get("quality_flags", [])),
-            "quality_flags": layer0.get("quality_flags", []),
-            "imbalance_candidates": layer0.get("imbalance_candidates", []),
-            "layer0_passed": layer0.get("layer0_passed", True),
-            "layer0_failure_reason": layer0.get("layer0_failure_reason", ""),
-            "layer0_failure_detail": layer0.get("layer0_failure_detail", {}),
-        }
+        stage_process = self._build_stage_process_view(record)
         build_info: dict[str, Any] = {}
         if self.knowledge_debug_builder is not None:
             knowledge_debug = self.knowledge_debug_builder.build(record)
@@ -227,7 +214,7 @@ class InsightAgent:
                 "auto_detect_summary": record.three_circles_auto_detect,
                 "user_adjusted": record.three_circles_user_adjusted,
             },
-            layer0=layer0_view,
+            stage_process=stage_process,
             knowledge={
                 "theme_summary": self._get_knowledge_theme_summary(record.theme),
                 "build_info": build_info,
@@ -236,9 +223,42 @@ class InsightAgent:
                 "scope": "single_interpretation",
                 "chat_scope": "current_report_only",
                 "medical_boundary": "non_clinical",
-                "fallback_present": bool(layer0_view["fallback_summary"]),
+                "fallback_present": False,
             },
         )
+
+    def _build_stage_process_view(self, record: InterpretationRecord) -> dict[str, Any]:
+        package = getattr(record, "stage_process_package", None)
+        payload = getattr(package, "payload", None)
+        if not isinstance(payload, dict):
+            return {
+                "present": False,
+                "stage_count": 0,
+                "stages": {},
+            }
+        stage_keys = sorted(key for key in payload if str(key).startswith("stage-"))
+        return {
+            "present": True,
+            "stage_count": len(stage_keys),
+            "process_contract": payload.get("process_contract", {}),
+            "stages": {
+                key: self._summarize_stage(payload.get(key))
+                for key in stage_keys
+            },
+            "primary_signal": self._get_primary_knowledge_signal(record),
+        }
+
+    def _summarize_stage(self, value: Any) -> dict[str, Any]:
+        if not isinstance(value, dict):
+            return {"type": type(value).__name__}
+        refs = value.get("knowledge_refs") or value.get("evidence_refs")
+        summary = {
+            "status": value.get("status", "done"),
+            "keys": sorted(str(key) for key in value.keys())[:16],
+        }
+        if isinstance(refs, list):
+            summary["ref_count"] = len(refs)
+        return summary
 
     def _build_evidence_summary(
         self,
@@ -270,18 +290,13 @@ class InsightAgent:
                 if isinstance(knowledge_debug_record.get("field_to_knowledge_map"), dict)
                 else 0,
             },
-            "layer0": {
-                "visual_fact_keys": sorted(context.layer0.get("visual_facts", {}).keys()),
-                "knowledge_hit_keys": sorted(context.layer0.get("knowledge_hits", {}).keys()),
-                "rule_evaluation_keys": sorted(
-                    context.layer0.get("rule_evaluations", {}).keys()
+            "stage_process": {
+                "present": bool(context.stage_process.get("present")),
+                "stage_count": context.stage_process.get("stage_count", 0),
+                "stage_keys": sorted(
+                    (context.stage_process.get("stages", {}) or {}).keys()
                 ),
-                "theme_projection_keys": sorted(
-                    context.layer0.get("theme_projection", {}).keys()
-                ),
-                "imbalance_candidates": context.layer0.get("imbalance_candidates", []),
-                "fidelity_flags": context.layer0.get("fidelity_flags", []),
-                "quality_flags": context.layer0.get("quality_flags", []),
+                "primary_signal": context.stage_process.get("primary_signal"),
             },
         }
 
@@ -295,24 +310,19 @@ class InsightAgent:
             knowledge_debug if isinstance(knowledge_debug, dict) else {}
         )
         fallback_analysis = knowledge_debug_record.get("fallback_analysis", {})
-        layer0_fallback = context.layer0.get("fallback_summary", {})
         if not isinstance(fallback_analysis, dict):
             fallback_analysis = {}
-        if not isinstance(layer0_fallback, dict):
-            layer0_fallback = {}
-        levels = list(layer0_fallback.get("levels", []) or [])
+        levels: list[Any] = []
         for item in fallback_analysis.get("levels", []) or []:
             if item not in levels:
                 levels.append(item)
-        warnings = list(layer0_fallback.get("warnings", []) or [])
+        warnings: list[Any] = []
         for item in fallback_analysis.get("warnings", []) or []:
             if item not in warnings:
                 warnings.append(item)
         return {
-            "used": bool(layer0_fallback.get("used")) or bool(fallback_analysis.get("used")),
+            "used": bool(fallback_analysis.get("used")),
             "levels": levels,
             "warnings": warnings,
             "query_fallbacks": fallback_analysis.get("query_fallbacks", []),
-            "fidelity_flags": context.layer0.get("fidelity_flags", []),
-            "quality_flags": context.layer0.get("quality_flags", []),
         }

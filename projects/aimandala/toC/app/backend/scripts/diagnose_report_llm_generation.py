@@ -67,7 +67,6 @@ async def _run(args: argparse.Namespace) -> dict[str, Any]:
             "record_meta": _record_meta(record),
         }
         if args.plan_only:
-            record.layer_0_raw = orchestrator._build_layer0_placeholder(record)
             if args.version == "lite":
                 draft = orchestrator._build_layer1_placeholder(record)
                 record.layer_1_lite_draft = draft
@@ -100,8 +99,7 @@ async def _run(args: argparse.Namespace) -> dict[str, Any]:
             result["last_attempt_trace"] = getattr(llm_client, "last_attempt_trace", [])
             result["chat_trace"] = _extract_chat_trace(record, args.version)
             result.update(_prompt_diagnostics(record, args.version))
-            result["layer0_failure_reason"] = getattr(record.layer_0_raw, "layer0_failure_reason", "") if record.layer_0_raw else ""
-            result["layer0_failure_detail"] = getattr(record.layer_0_raw, "layer0_failure_detail", {}) if record.layer_0_raw else {}
+            result["stage_process_failure"] = _extract_stage_process_failure(record)
             return result
 
         result["status"] = "ok"
@@ -213,39 +211,20 @@ def _prompt_parts(
     version: str,
     draft: Any | None,
 ) -> dict[str, Any]:
-    if version == "lite":
-        draft = draft or getattr(record, "layer_1_lite_draft", None)
-        narrative_plan = getattr(draft, "narrative_plan", {}) if draft else {}
-        projection = (
-            narrative_plan.get("legacy_projection", {})
-            if isinstance(narrative_plan, dict)
-            else {}
-        )
-        stage_process_package = orchestrator.report_prompt_preview_builder.build_lite_knowledge_skeleton(
-            record,
-            projection=projection,
-            narrative_plan=narrative_plan if isinstance(narrative_plan, dict) else {},
-        )
-    else:
-        draft = draft or getattr(record, "layer_3_pro_draft", None)
-        narrative_plan = getattr(draft, "narrative_plan", {}) if draft else {}
-        pro_projection = (
-            narrative_plan.get("legacy_projection", {})
-            if isinstance(narrative_plan, dict)
-            else {}
-        )
-        stage_process_package = orchestrator.report_prompt_preview_builder.build_pro_knowledge_skeleton(
-            record,
-            narrative_projection=pro_projection,
-            imbalance_projection={},
-            imbalance_profile=getattr(draft, "imbalance_confirmed", {}) if draft else {},
-            narrative_plan=narrative_plan if isinstance(narrative_plan, dict) else {},
-        )
-    prompt = str(getattr(draft, "prompt_preview", "") or "")
-    theme_context = orchestrator.report_prompt_preview_builder.build_theme_prompt_context(record)
-    legacy_runtime_container = _layer0_dict(record)
+    prompt = str(getattr(draft, "prompt_preview", "") or "") if draft is not None else _extract_prompt_preview(record, version)
+    package = orchestrator.stage_package_assembler.build(
+        record,
+        target_report=version,
+    )
+    record.stage_process_package = package
+    stage_process_package = orchestrator.stage_package_assembler._json_dumps(package.payload)
+    theme_context = orchestrator.stage_package_assembler._build_theme_context(record)
     known_parts = len(stage_process_package) + len(theme_context)
     static_chars = max(len(prompt) - known_parts, 0)
+    if version == "lite":
+        stage_keys = sorted(package.payload.keys())
+    else:
+        stage_keys = sorted(package.payload.keys())
     return {
         "canonical_method_source": "projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md",
         "canonical_method_stages": [
@@ -267,29 +246,15 @@ def _prompt_parts(
             "stage-15-visual-assets",
             "stage-16-final-report",
         ],
-        "compatibility_note": (
-            "Current backend prompt preview feeds the LLM with a stage_process_package "
-            "built from stage deliverables and retrieved knowledge entries. The legacy "
-            "layer_0_raw container may still exist in storage/debug for compatibility, "
-            "but it must not be serialized wholesale into Lite/Pro generation prompts."
-        ),
+        "stage_keys": stage_keys,
+        "contract": package.payload.get("process_contract", {}),
         "template_static_chars": static_chars,
         "theme_context_chars": len(theme_context),
         "stage_process_package_chars": len(stage_process_package),
         "prompt_preview_chars": len(prompt),
         "approx_tokens_by_chars_div_2": _approx_tokens(len(prompt)),
-        "legacy_runtime_container_breakdown_chars": _dict_breakdown_chars(
-            legacy_runtime_container
-        ),
+        "stage_process_package_breakdown_chars": _dict_breakdown_chars(package.payload),
     }
-
-
-def _layer0_dict(record: Any) -> dict[str, Any] | None:
-    layer0 = getattr(record, "layer_0_raw", None)
-    if layer0 is None or not hasattr(layer0, "to_dict"):
-        return None
-    payload = layer0.to_dict()
-    return payload if isinstance(payload, dict) else None
 
 
 def _dict_breakdown_chars(payload: dict[str, Any] | None) -> dict[str, int]:
@@ -307,11 +272,14 @@ def _approx_tokens(char_count: int) -> int:
 
 
 def _extract_chat_trace(record: Any, version: str) -> dict[str, Any]:
-    layer0 = getattr(record, "layer_0_raw", None)
-    projection = getattr(layer0, "theme_projection", {}) if layer0 is not None else {}
-    if not isinstance(projection, dict):
+    package = getattr(record, "stage_process_package", None)
+    payload = getattr(package, "payload", {}) if package is not None else {}
+    if not isinstance(payload, dict):
         return {}
-    model_trace = projection.get("model_trace", {})
+    process_contract = payload.get("process_contract", {})
+    if not isinstance(process_contract, dict):
+        return {}
+    model_trace = process_contract.get("model_trace", {})
     if not isinstance(model_trace, dict):
         return {}
     by_mode = model_trace.get("chat_by_mode", {})
@@ -319,6 +287,24 @@ def _extract_chat_trace(record: Any, version: str) -> dict[str, Any]:
         return {}
     trace = by_mode.get(version, {})
     return trace if isinstance(trace, dict) else {}
+
+
+def _extract_stage_process_failure(record: Any) -> dict[str, Any]:
+    package = getattr(record, "stage_process_package", None)
+    payload = getattr(package, "payload", {}) if package is not None else {}
+    if not isinstance(payload, dict):
+        return {}
+    failures: dict[str, Any] = {}
+    for key, value in payload.items():
+        if not isinstance(value, dict):
+            continue
+        if value.get("status") in {"failed", "error"} or value.get("failure_reason"):
+            failures[key] = {
+                "status": value.get("status", ""),
+                "failure_reason": value.get("failure_reason", ""),
+                "failure_detail": value.get("failure_detail", {}),
+            }
+    return failures
 
 
 def main() -> int:

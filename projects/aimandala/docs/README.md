@@ -52,7 +52,7 @@
 - [sources/知识库构建/当前正式依据与使用说明.md](sources/知识库构建/当前正式依据与使用说明.md)
 - [sources/知识库构建/运行时知识库文件清单.md](sources/知识库构建/运行时知识库文件清单.md)
 
-旧 `Layer0 -> projection -> knowledge_skeleton` 报告链路文档、Batch A-H 旧链路文档和旧报告样本已从 active 入口清理，不再作为当前报告生成依据。
+旧报告链路文档、Batch A-H 旧链路文档和旧报告样本已从 active 入口清理，不再作为当前报告生成依据。
 
 知识源追溯与运行时映射统一从这里进入：
 

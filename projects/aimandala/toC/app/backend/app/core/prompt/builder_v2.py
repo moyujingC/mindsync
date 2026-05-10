@@ -80,19 +80,18 @@ class PromptBuilder:
         vision_data: str,
         theme: str = "general",
         theme_context: str = "",
-        knowledge_skeleton: str = "",
         stage_process_package: str = "",
         version: str = "1.6",
         extra_context: dict[str, Any] | None = None,
     ) -> str:
         template = self.get_template(version, "lite")
-        stage_payload = stage_process_package or knowledge_skeleton
+        if not stage_process_package.strip():
+            raise ValueError("stage_process_package is required for lite prompt generation")
         context: dict[str, Any] = {
             "vision_data": vision_data,
             "theme": theme,
             "theme_context": theme_context,
-            "knowledge_skeleton": stage_payload,
-            "stage_process_package": stage_payload,
+            "stage_process_package": stage_process_package,
         }
         if extra_context:
             context.update(extra_context)
@@ -104,19 +103,18 @@ class PromptBuilder:
         vision_data: str,
         theme: str = "general",
         theme_context: str = "",
-        knowledge_skeleton: str = "",
         stage_process_package: str = "",
         version: str = "1.6",
         extra_context: dict[str, Any] | None = None,
     ) -> str:
         template = self.get_template(version, "pro")
-        stage_payload = stage_process_package or knowledge_skeleton
+        if not stage_process_package.strip():
+            raise ValueError("stage_process_package is required for pro prompt generation")
         context: dict[str, Any] = {
             "vision_data": vision_data,
             "theme": theme,
             "theme_context": theme_context,
-            "knowledge_skeleton": stage_payload,
-            "stage_process_package": stage_payload,
+            "stage_process_package": stage_process_package,
         }
         if extra_context:
             context.update(extra_context)
@@ -129,7 +127,6 @@ def build_prompt(
     vision_data: str,
     theme: str = "general",
     theme_context: str = "",
-    knowledge_skeleton: str = "",
     stage_process_package: str = "",
     version: str = "1.6",
     extra_context: dict[str, Any] | None = None,
@@ -140,7 +137,6 @@ def build_prompt(
             vision_data=vision_data,
             theme=theme,
             theme_context=theme_context,
-            knowledge_skeleton=knowledge_skeleton,
             stage_process_package=stage_process_package,
             version=version,
             extra_context=extra_context,
@@ -149,7 +145,6 @@ def build_prompt(
         vision_data=vision_data,
         theme=theme,
         theme_context=theme_context,
-        knowledge_skeleton=knowledge_skeleton,
         stage_process_package=stage_process_package,
         version=version,
         extra_context=extra_context,

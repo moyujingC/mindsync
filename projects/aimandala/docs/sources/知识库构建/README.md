@@ -21,13 +21,7 @@
 
 当前 AI 解读报告生成只允许以 [三圈五行流派解读方法与步骤.md](三圈五行流派解读方法与步骤.md) 作为方法入口，并按 `stage-00-input-context` 到 `stage-16-final-report` 的交付物流转。
 
-以下旧链路已经从 active 文档中清理，不得再作为后续 AI 生成报告或改造报告链路的依据：
-
-- `Layer0 -> projection -> knowledge_skeleton -> Lite/Pro`
-- `runtime-evidence -> narrative-plan -> prompt-skeleton`
-- “旧版报告水平回补”相关样本和 Batch A-H 旧报告链路文档
-
-后端代码里仍出现的 `Layer0` / `layer_0_raw` 只是旧后端兼容容器，用于维持现有 API、测试和迁移期诊断，不代表当前流派方法论。
+旧报告链路、旧报告样本和 Batch A-H 旧链路文档已经从 active 运行路径和 active 文档口径中清理，不得再作为后续 AI 生成报告或改造报告链路的依据。若在归档区或历史样本中看到旧链路名词，只能按历史证据理解，不得回灌到默认生成、测试或 QA 样本中。
 
 ## 1. 当前目录分工
 

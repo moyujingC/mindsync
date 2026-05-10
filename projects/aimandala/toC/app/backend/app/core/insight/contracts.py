@@ -20,7 +20,7 @@ class InsightContext:
     signal_label: str | None
     image: dict[str, Any] = field(default_factory=dict)
     drawing_input: dict[str, Any] = field(default_factory=dict)
-    layer0: dict[str, Any] = field(default_factory=dict)
+    stage_process: dict[str, Any] = field(default_factory=dict)
     knowledge: dict[str, Any] = field(default_factory=dict)
     constraints: dict[str, Any] = field(default_factory=dict)
 
@@ -34,7 +34,7 @@ class InsightContext:
             "signal_label": self.signal_label,
             "image": self.image,
             "drawing_input": self.drawing_input,
-            "layer0": self.layer0,
+            "stage_process": self.stage_process,
             "knowledge": self.knowledge,
             "constraints": self.constraints,
         }

@@ -103,9 +103,6 @@ class LayeredOrchestrator:
             )
         else:
             self.knowledge_runtime = knowledge_runtime
-        self.layer0_assembler = (
-            self.knowledge_runtime.layer0_assembler if self.knowledge_runtime else None
-        )
         self.narrative_service = (
             self.knowledge_runtime.narrative_service if self.knowledge_runtime else None
         )

@@ -208,7 +208,7 @@ def _build_runtime_diagnostics(interpretation_id: str) -> dict[str, Any]:
     if record is None:
         return {"record_found": False}
 
-    layer0 = record.layer_0_raw
+    stage_process = getattr(record, "stage_process_package", None)
     diagnostics: dict[str, Any] = {
         "record_found": True,
         "status": record.status,
@@ -217,23 +217,35 @@ def _build_runtime_diagnostics(interpretation_id: str) -> dict[str, Any]:
         "lite_ready": record.layer_2_lite_final is not None,
         "pro_ready": record.layer_4_pro_final is not None,
     }
-    if layer0 is not None:
-        diagnostics["layer0"] = {
-            "passed": layer0.layer0_passed,
-            "failure_reason": layer0.layer0_failure_reason,
-            "failure_detail": _sanitize_layer0_failure_detail(layer0.layer0_failure_detail),
-            "fidelity_flags": layer0.fidelity_flags,
-            "fallback_summary": layer0.fallback_summary,
+    if stage_process is not None:
+        payload = (
+            stage_process.payload
+            if isinstance(getattr(stage_process, "payload", None), dict)
+            else {}
+        )
+        stage03 = (
+            payload.get("stage-03-visual-evidence", {})
+            if isinstance(payload, dict)
+            else {}
+        )
+        if not isinstance(stage03, dict):
+            stage03 = {}
+        diagnostics["stage_process"] = {
+            "passed": stage03.get("status") not in {"failed", "error"},
+            "failure_reason": stage03.get("failure_reason", ""),
+            "failure_detail": _sanitize_stage_failure_detail(stage03.get("failure_detail", {})),
+            "fidelity_flags": getattr(stage_process, "fidelity_flags", []),
+            "fallback_summary": getattr(stage_process, "fallback_summary", {}),
             "visual_basis_source": (
-                (layer0.visual_analysis_basis or {}).get("prompt_meta", {}).get("source")
-                if isinstance(layer0.visual_analysis_basis, dict)
+                (getattr(stage_process, "visual_analysis_basis", {}) or {}).get("prompt_meta", {}).get("source")
+                if isinstance(getattr(stage_process, "visual_analysis_basis", {}), dict)
                 else None
             ),
         }
     return diagnostics
 
 
-def _sanitize_layer0_failure_detail(detail: Any) -> dict[str, Any]:
+def _sanitize_stage_failure_detail(detail: Any) -> dict[str, Any]:
     if not isinstance(detail, dict):
         return {}
     sanitized = {

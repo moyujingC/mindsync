@@ -412,15 +412,8 @@ class KnowledgeWorkbench:
         )
         debug_builder = KnowledgeDebugBlockBuilder(
             get_knowledge_runtime=lambda: runtime,
-            get_primary_knowledge_signal=lambda record: (
-                next(
-                    (
-                        item
-                        for item in (record.layer_0_raw.imbalance_candidates or [])
-                        if isinstance(item, str) and item.strip()
-                    ),
-                    "",
-                )
+            get_primary_knowledge_signal=(
+                lambda record: orchestrator.report_knowledge_adapter.get_primary_knowledge_signal(record)
             ),
         )
 
@@ -471,7 +464,7 @@ class KnowledgeWorkbench:
                 )
 
             stored_record = store.load(record.interpretation_id) or record
-            self._apply_layer0_overrides(stored_record, execution)
+            self._apply_stage_overrides(stored_record, execution)
             store.save(stored_record)
 
             if version == "pro" or bool(execution.get("upgrade_to_pro")):
@@ -638,13 +631,13 @@ class KnowledgeWorkbench:
         return any(marker in value for marker in markers)
 
     def _build_knowledge_summary(self, knowledge_debug: dict[str, Any]) -> dict[str, Any]:
-        layer0 = knowledge_debug.get("layer0_evidence", {})
+        stage_evidence = knowledge_debug.get("stage_process_evidence", {})
         warning_analysis = knowledge_debug.get("warning_analysis", {})
         fallback_analysis = knowledge_debug.get("fallback_analysis", {})
         return {
             "build_info": knowledge_debug.get("build_info", {}),
-            "imbalance_candidates": layer0.get("imbalance_candidates", []),
-            "layer0_evidence": layer0,
+            "imbalance_candidates": [],
+            "stage_process_evidence": stage_evidence,
             "algorithm_fidelity_trace": knowledge_debug.get("algorithm_fidelity_trace", {}),
             "query_results": knowledge_debug.get("query_results", {}),
             "fallback_analysis": fallback_analysis,
@@ -1058,13 +1051,13 @@ class KnowledgeWorkbench:
         input_package = knowledge_debug.get("review_input_package") or knowledge_debug.get("input_package") or {}
         if not isinstance(input_package, dict):
             input_package = {}
-        layer0_summary = knowledge_debug.get("review_layer0_summary", {})
-        if not isinstance(layer0_summary, dict):
-            layer0_summary = {}
-        layer0_evidence = knowledge_debug.get("layer0_evidence", {})
-        if not isinstance(layer0_evidence, dict):
-            layer0_evidence = {}
-        rule_evaluations = layer0_evidence.get("rule_evaluations", {})
+        stage_summary = knowledge_debug.get("review_stage_summary", {})
+        if not isinstance(stage_summary, dict):
+            stage_summary = {}
+        stage_process_evidence = knowledge_debug.get("stage_process_evidence", {})
+        if not isinstance(stage_process_evidence, dict):
+            stage_process_evidence = {}
+        rule_evaluations = stage_process_evidence.get("rule_evaluations", {})
         if not isinstance(rule_evaluations, dict):
             rule_evaluations = {}
         method_trace = rule_evaluations.get("interpretation_method_trace", {})
@@ -1077,9 +1070,9 @@ class KnowledgeWorkbench:
         topic_input = input_package.get("topic_input", {}) if isinstance(input_package.get("topic_input"), dict) else {}
         user_context = input_package.get("user_context", {}) if isinstance(input_package.get("user_context"), dict) else {}
         circle_config = input_package.get("circle_config", {}) if isinstance(input_package.get("circle_config"), dict) else {}
-        knowledge_projections = knowledge_debug.get("knowledge_projections", {})
-        if not isinstance(knowledge_projections, dict):
-            knowledge_projections = {}
+        report_draft_sections = knowledge_debug.get("report_draft_sections", {})
+        if not isinstance(report_draft_sections, dict):
+            report_draft_sections = {}
 
         stages = [
             self._manual_stage(
@@ -1131,8 +1124,8 @@ class KnowledgeWorkbench:
                     "catalog_version": self._dig(rule_evaluations, ["direct_judgment_hits", "catalog_version"]),
                     "hits": self._dig(rule_evaluations, ["direct_judgment_hits", "hits"]) or [],
                     "method_trace_source": self._dig(method_trace, ["direct_judgment", "source"]),
-                    "direct_judgment_summary": layer0_summary.get("direct_judgment_summary", ""),
-                    "candidate_summary": layer0_summary.get("candidate_summary", ""),
+                    "direct_judgment_summary": stage_summary.get("direct_judgment_summary", ""),
+                    "candidate_summary": stage_summary.get("candidate_summary", ""),
                 },
                 manual_refs=[
                     "新手解读6式：外圈花边、星星点点",
@@ -1148,9 +1141,9 @@ class KnowledgeWorkbench:
                 "逐圈画面依据",
                 "先把每一圈可见的颜色、形状、比例、填充和结构说清楚，再进入状态解释；这是最终画面依据区的来源。",
                 {
-                    "visual_fact_summary": layer0_summary.get("visual_fact_summary", ""),
-                    "per_circle_observation_summary": layer0_summary.get("per_circle_observation_summary", ""),
-                    "shape_observation_summary": layer0_summary.get("shape_observation_summary", ""),
+                    "visual_fact_summary": stage_summary.get("visual_fact_summary", ""),
+                    "per_circle_observation_summary": stage_summary.get("per_circle_observation_summary", ""),
+                    "shape_observation_summary": stage_summary.get("shape_observation_summary", ""),
                     "final_visual_basis": self._final_block_excerpt(
                         product_blocks,
                         version,
@@ -1166,8 +1159,8 @@ class KnowledgeWorkbench:
                 {
                     "per_circle_color_analysis": method_trace.get("per_circle_color_analysis", {}),
                     "shape_analysis": method_trace.get("shape_analysis", {}),
-                    "element_state_summary": layer0_summary.get("element_state_summary", ""),
-                    "relation_summary": layer0_summary.get("relation_summary", ""),
+                    "element_state_summary": stage_summary.get("element_state_summary", ""),
+                    "relation_summary": stage_summary.get("relation_summary", ""),
                     "final_report_language_rule": "少术语；三圈和五行只能服务解释，不能喧宾夺主。",
                 },
                 manual_refs=[
@@ -1181,7 +1174,7 @@ class KnowledgeWorkbench:
                 "逐圈失衡候选",
                 "失衡状态应在逐圈颜色、形状和圈内生克解读过程中浮现，而不是先给一个抽象标签再回填证据。",
                 {
-                    "candidate_summary": layer0_summary.get("candidate_summary", ""),
+                    "candidate_summary": stage_summary.get("candidate_summary", ""),
                     "selected_primary_candidates": self._dig(
                         method_trace, ["final_algorithm_basis", "selected_primary_candidates"]
                     )
@@ -1206,7 +1199,7 @@ class KnowledgeWorkbench:
                 "找冲突、卡点、堵点",
                 "在主题和画面证据基础上找到当前最影响用户的卡点，而不是泛泛讲所有主题。",
                 {
-                    "candidate_summary": layer0_summary.get("candidate_summary", ""),
+                    "candidate_summary": stage_summary.get("candidate_summary", ""),
                     "final_block": self._final_block_excerpt(
                         product_blocks,
                         version,
@@ -1235,14 +1228,14 @@ class KnowledgeWorkbench:
                 "stage-10-lite-draft",
                 "Lite 过程稿",
                 "Lite 仍可使用上一版优化后的自然表达，但必须从前面证据链映射到字段。",
-                knowledge_projections.get("lite", {}) if isinstance(knowledge_projections.get("lite"), dict) else {},
+                report_draft_sections.get("lite", {}) if isinstance(report_draft_sections.get("lite"), dict) else {},
                 manual_refs=["解读句式：从你的曼陀罗中，可以看出...；因为..."],
             ),
             self._manual_stage(
                 "stage-11-pro-draft",
                 "Pro 过程稿",
                 "Pro 不是 Lite 加长版，而是在同一手册逻辑上展开机制、根因链和调节方案。",
-                knowledge_projections.get("pro", {}) if isinstance(knowledge_projections.get("pro"), dict) else {},
+                report_draft_sections.get("pro", {}) if isinstance(report_draft_sections.get("pro"), dict) else {},
                 manual_refs=["个案六大流程：确定目标、爆破卡点、清理情绪、定制方案"],
             ),
             self._manual_stage(
@@ -1542,9 +1535,10 @@ class KnowledgeWorkbench:
             return path
         return (self.project_root / path).resolve()
 
-    def _apply_layer0_overrides(self, record: Any, execution: dict[str, Any]) -> None:
-        layer0 = getattr(record, "layer_0_raw", None)
-        if layer0 is None:
+    def _apply_stage_overrides(self, record: Any, execution: dict[str, Any]) -> None:
+        package = getattr(record, "stage_process_package", None)
+        payload = getattr(package, "payload", None)
+        if not isinstance(payload, dict):
             return
         override_imbalances = execution.get("override_imbalance_candidates", [])
         if isinstance(override_imbalances, list) and override_imbalances:
@@ -1554,56 +1548,20 @@ class KnowledgeWorkbench:
                 if isinstance(item, str) and str(item).strip()
             ]
             if normalized:
-                layer0.imbalance_candidates = normalized
-                layer0.rule_evaluations["imbalance_candidates"] = normalized
-                layer0.rule_evaluations["primary_candidates"] = normalized
-                trace = layer0.rule_evaluations.get("imbalance_trace", {})
-                trace["primary_candidates"] = [
+                stage07 = payload.setdefault("stage-07-per-circle-imbalance-patterns", {})
+                if not isinstance(stage07, dict):
+                    stage07 = {}
+                    payload["stage-07-per-circle-imbalance-patterns"] = stage07
+                stage07["candidates"] = [
                     {
                         "id": imbalance_id,
-                        "category": "override",
-                        "toc_supported": True,
                         "score": 1.0,
-                        "selected_for_primary": True,
-                        "reason_codes": ["override_imbalance_candidates"],
-                        "decision": "override",
-                        "warning": None,
+                        "source": "fixture_override",
+                        "knowledge_refs": [],
                     }
                     for imbalance_id in normalized
                 ]
-                existing_all = trace.get("all_candidates", [])
-                if isinstance(existing_all, list):
-                    for item in existing_all:
-                        if not isinstance(item, dict):
-                            continue
-                        item["selected_for_primary"] = str(item.get("id") or "") in normalized
-                        if item["selected_for_primary"]:
-                            item["decision"] = "override"
-                if "transition-overload" in normalized:
-                    trace["synthetic_signal"] = {
-                        "id": "transition-overload",
-                        "used": True,
-                        "reason": "override_imbalance_candidates",
-                    }
-                else:
-                    trace["synthetic_signal"] = {
-                        "id": "transition-overload",
-                        "used": False,
-                        "reason": "",
-                    }
-                layer0.rule_evaluations["imbalance_trace"] = trace
-                layer0.rule_evaluations["synthetic_signal"] = trace["synthetic_signal"]
-                existing_flags = list(getattr(layer0, "fidelity_flags", []) or [])
-                for imbalance_id in normalized:
-                    existing_flags.append(f"warning:{imbalance_id}")
-                layer0.fidelity_flags = list(dict.fromkeys(existing_flags))
-                if layer0.fallback_summary.get("used") and "generated" not in (
-                    layer0.fallback_summary.get("levels", []) or []
-                ):
-                    layer0.fallback_summary["levels"] = [
-                        *layer0.fallback_summary.get("levels", []),
-                        "generated",
-                    ]
+                stage07["status"] = "fixture_override"
 
     def _dict_delta(self, base: dict[str, Any], target: dict[str, Any]) -> dict[str, Any]:
         result = {}

@@ -1,8 +1,4 @@
-"""
-分层数据模型 - 5层架构
-
-确保Lite和Pro版本的一致性，支持升级模式
-"""
+"""Report data models for the stage-based interpretation pipeline."""
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
@@ -25,150 +21,6 @@ class GenerationStatus(str, Enum):
     PROCESSING = "processing"
     COMPLETED = "completed"
     FAILED = "failed"
-
-
-@dataclass
-class FiveElementsData:
-    """五行分布数据"""
-
-    wood: Dict[str, Any] = field(default_factory=dict)
-    fire: Dict[str, Any] = field(default_factory=dict)
-    earth: Dict[str, Any] = field(default_factory=dict)
-    metal: Dict[str, Any] = field(default_factory=dict)
-    water: Dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class ThreeCirclesData:
-    """三圈结构数据"""
-
-    inner: Dict[str, Any] = field(default_factory=dict)  # 内圈·核心自我
-    middle: Dict[str, Any] = field(default_factory=dict)  # 中圈·关系场域
-    outer: Dict[str, Any] = field(default_factory=dict)  # 外圈·外在呈现
-
-
-@dataclass
-class MicroAnalysisData:
-    """微观关系分析"""
-
-    adjacent: List[str] = field(default_factory=list)  # 相邻关系
-    wrap: List[str] = field(default_factory=list)  # 包裹关系
-
-
-@dataclass
-class Layer0Raw:
-    """
-    Layer 0: 知识库原始查询结果（最底层数据）
-
-    这是所有生成的基础，从知识库查询得到的原始结构化数据
-    """
-
-    description: str = "知识库原始查询结果"
-
-    # 五行分布
-    five_elements: FiveElementsData = field(default_factory=FiveElementsData)
-
-    # 三圈结构
-    three_circles: ThreeCirclesData = field(default_factory=ThreeCirclesData)
-
-    # 微观关系
-    micro_analysis: MicroAnalysisData = field(default_factory=MicroAnalysisData)
-
-    # 失衡类型候选（可能是多个）
-    imbalance_candidates: List[str] = field(default_factory=list)
-
-    # 颜色分析原始数据
-    color_analysis: Dict[str, Any] = field(default_factory=dict)
-
-    # 三圈颜色分析结果（基于用户配置的三圈边界）
-    # 结构: {"inner": {...}, "middle": {...}, "outer": {...}}
-    circle_colors: Optional[Dict[str, Any]] = None
-
-    # v2.1 正式结构化证据字段
-    input_package: Dict[str, Any] = field(default_factory=dict)
-    visual_analysis_basis: Dict[str, Any] = field(default_factory=dict)
-    visual_facts: Dict[str, Any] = field(default_factory=dict)
-    layer0_passed: bool = True
-    layer0_failure_reason: str = ""
-    layer0_failure_detail: Dict[str, Any] = field(default_factory=dict)
-    knowledge_hits: Dict[str, Any] = field(default_factory=dict)
-    rule_evaluations: Dict[str, Any] = field(default_factory=dict)
-    theme_projection: Dict[str, Any] = field(default_factory=dict)
-    fidelity_flags: List[str] = field(default_factory=list)
-    quality_flags: List[str] = field(default_factory=list)
-    fallback_summary: Dict[str, Any] = field(default_factory=dict)
-
-    # 生成时间戳
-    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
-
-    def __post_init__(self) -> None:
-        flags = self.fidelity_flags if self.fidelity_flags else self.quality_flags
-        normalized = self._normalize_flag_list(flags)
-        object.__setattr__(self, "fidelity_flags", normalized)
-        object.__setattr__(self, "quality_flags", list(normalized))
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name in {"fidelity_flags", "quality_flags"}:
-            normalized = self._normalize_flag_list(value)
-            counterpart_name = "quality_flags" if name == "fidelity_flags" else "fidelity_flags"
-            counterpart = list(object.__getattribute__(self, "__dict__").get(counterpart_name, []))
-            if (
-                not normalized
-                and counterpart
-                and "created_at" not in object.__getattribute__(self, "__dict__")
-            ):
-                normalized = counterpart
-            object.__setattr__(self, "fidelity_flags", normalized)
-            object.__setattr__(self, "quality_flags", list(normalized))
-            return
-        object.__setattr__(self, name, value)
-
-    @staticmethod
-    def _normalize_flag_list(value: Any) -> List[str]:
-        if not isinstance(value, list):
-            return []
-        return [
-            str(item).strip()
-            for item in value
-            if isinstance(item, str) and str(item).strip()
-        ]
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "description": self.description,
-            "five_elements": {
-                "wood": self.five_elements.wood,
-                "fire": self.five_elements.fire,
-                "earth": self.five_elements.earth,
-                "metal": self.five_elements.metal,
-                "water": self.five_elements.water,
-            },
-            "three_circles": {
-                "inner": self.three_circles.inner,
-                "middle": self.three_circles.middle,
-                "outer": self.three_circles.outer,
-            },
-            "micro_analysis": {
-                "adjacent": self.micro_analysis.adjacent,
-                "wrap": self.micro_analysis.wrap,
-            },
-            "imbalance_candidates": self.imbalance_candidates,
-            "color_analysis": self.color_analysis,
-            "circle_colors": self.circle_colors,
-            "input_package": self.input_package,
-            "visual_analysis_basis": self.visual_analysis_basis,
-            "visual_facts": self.visual_facts,
-            "layer0_passed": self.layer0_passed,
-            "layer0_failure_reason": self.layer0_failure_reason,
-            "layer0_failure_detail": self.layer0_failure_detail,
-            "knowledge_hits": self.knowledge_hits,
-            "rule_evaluations": self.rule_evaluations,
-            "theme_projection": self.theme_projection,
-            "fidelity_flags": self.fidelity_flags,
-            "quality_flags": self.quality_flags,
-            "fallback_summary": self.fallback_summary,
-            "created_at": self.created_at,
-        }
 
 
 @dataclass
@@ -240,9 +92,9 @@ class SixInsights:
 @dataclass
 class Layer1LiteDraft:
     """
-    Layer 1: Lite版AI润色前的结构化输出
+    Lite 草稿：由 stage_process_package 生成的结构化输出
 
-    这是从layer_0转换而来的结构化数据，还未经过AI润色
+    类名保留是为了兼容既有 API 和存储字段；正式输入源是 stage_process_package。
     """
 
     description: str = "Lite版结构化输出（未润色）"
@@ -326,7 +178,7 @@ class Layer1LiteDraft:
 @dataclass
 class Layer2LiteFinal:
     """
-    Layer 2: Lite版最终润色后的文本（用户看到的）
+    Lite 最终报告：用户看到的 Lite 版文本
 
     这是经过AI润色后的最终Lite版报告内容（v1.6 结构化格式）
     """
@@ -401,9 +253,9 @@ class Layer2LiteFinal:
 @dataclass
 class Layer3ProDraft:
     """
-    Layer 3: Pro版增量生成的内容（基于layer_0和layer_1）
+    Pro 草稿：由 stage_process_package 生成的 Pro 版结构化内容
 
-    这是Pro版特有的增量内容，不包含Lite已有的部分
+    这是 Pro 版特有的内容，不直接消费旧运行时容器。
     """
 
     description: str = "Pro版增量内容（未润色）"
@@ -455,7 +307,7 @@ class Layer3ProDraft:
 @dataclass
 class Layer4ProFinal:
     """
-    Layer 4: Pro版最终润色后的完整报告
+    Pro 最终报告：用户看到的 Pro 版完整报告
 
     这是Pro版的最终完整报告，包含Lite全部内容+Pro增量内容
     """
@@ -476,6 +328,20 @@ class Layer4ProFinal:
             "description": self.description,
             "full_report_markdown": self.full_report_markdown,
             "ai_qa_context": self.ai_qa_context,
+            "created_at": self.created_at,
+        }
+
+
+@dataclass
+class StageProcessPackage:
+    """Stage 00-12 deliverables consumed by Lite/Pro report generation."""
+
+    payload: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "payload": self.payload,
             "created_at": self.created_at,
         }
 
@@ -503,7 +369,7 @@ class InterpretationRecord:
     """
     完整解读记录
 
-    包含从layer_0到layer_4的所有数据，支持版本升级
+    当前正式报告链路以 stage_process_package 为输入，并保留 Lite/Pro 旧字段名以兼容现有 API。
     """
 
     interpretation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -539,8 +405,11 @@ class InterpretationRecord:
     three_circles_adjust_history: List[Dict] = field(default_factory=list)
     # 结构: [{"timestamp": "...", "from": {"inner": 33, "middle": 66}, "to": {"inner": 35, "middle": 65}, "source": "auto|manual"}]
 
-    # 五层数据
-    layer_0_raw: Optional[Layer0Raw] = None
+    # Stage-based report generation data.
+    stage_process_package: Optional[StageProcessPackage] = None
+
+    # Report layer shell retained for Lite/Pro API compatibility. The evidence
+    # source is stage_process_package, not a raw legacy container.
     layer_1_lite_draft: Optional[Layer1LiteDraft] = None
     layer_2_lite_final: Optional[Layer2LiteFinal] = None
     layer_3_pro_draft: Optional[Layer3ProDraft] = None
@@ -582,7 +451,11 @@ class InterpretationRecord:
             "three_circles_auto_detect": self.three_circles_auto_detect,
             "three_circles_user_adjusted": self.three_circles_user_adjusted,
             "three_circles_adjust_history": self.three_circles_adjust_history,
-            "layer_0_raw": self.layer_0_raw.to_dict() if self.layer_0_raw else None,
+            "stage_process_package": (
+                self.stage_process_package.to_dict()
+                if self.stage_process_package
+                else None
+            ),
             "layer_1_lite_draft": (
                 self.layer_1_lite_draft.to_dict() if self.layer_1_lite_draft else None
             ),
@@ -615,7 +488,7 @@ class InterpretationRecord:
         return (
             "lite" in self.version_purchased
             and "pro" not in self.version_purchased
-            and self.layer_0_raw is not None
+            and self.stage_process_package is not None
             and self.layer_1_lite_draft is not None
         )
 

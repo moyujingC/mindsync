@@ -6,9 +6,9 @@ from typing import Any, Callable
 
 from .data_models import GenerationStatus, InterpretationRecord
 from .report_generation_contracts import (
-    Layer0BuildBlockedError,
     ReportGenerationContext,
     ReportGenerationRuntime,
+    StageProcessPackageBlockedError,
 )
 from .report_blueprints import PRO_REPORT_BLUEPRINT
 from .report_contracts import ReportContractAssembler
@@ -86,11 +86,11 @@ class ReportLifecycleManager:
         if record is None:
             return None
 
-        if getattr(getattr(record, "layer_0_raw", None), "layer0_passed", True) is False:
+        if record.stage_process_package is None:
             return self._build_pro_response(
                 interpretation_id=interpretation_id,
                 status="failed",
-                message="Layer0 首层未通过，不能继续升级 Pro。",
+                message="stage 过程包缺失，不能继续升级 Pro。",
                 success=False,
             )
 
@@ -144,17 +144,11 @@ class ReportLifecycleManager:
 
         self._mark_processing(record)
         try:
-            if getattr(record.layer_0_raw, "layer0_passed", True) is False:
-                raise Layer0BuildBlockedError(
-                    getattr(record.layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
-                    layer_0_raw=record.layer_0_raw,
-                    detail=getattr(record.layer_0_raw, "layer0_failure_detail", {}) or {},
-                )
             pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
             record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
             record.layer_4_pro_final = pro_bundle.layer_4_pro_final
             self._mark_completed(record)
-        except Layer0BuildBlockedError:
+        except StageProcessPackageBlockedError:
             record.layer_3_pro_draft = None
             record.layer_4_pro_final = None
             record.status = GenerationStatus.FAILED
@@ -163,11 +157,11 @@ class ReportLifecycleManager:
             return self._build_pro_response(
                 interpretation_id=interpretation_id,
                 status="failed",
-                message="Layer0 首层未通过，已阻断 Pro 生成。",
+                message="stage 过程包未通过，已阻断 Pro 生成。",
                 success=False,
             )
         except RuntimeError as error:
-            if str(error).startswith("layer0_generation_failed_blocking:"):
+            if str(error).startswith("stage_process_generation_failed_blocking:"):
                 record.layer_3_pro_draft = None
                 record.layer_4_pro_final = None
                 record.status = GenerationStatus.FAILED
@@ -176,7 +170,7 @@ class ReportLifecycleManager:
                 return self._build_pro_response(
                     interpretation_id=interpretation_id,
                     status="failed",
-                    message="Layer0 首层未通过，已阻断 Pro 生成。",
+                    message="stage 过程包未通过，已阻断 Pro 生成。",
                     success=False,
                 )
             raise
@@ -209,17 +203,11 @@ class ReportLifecycleManager:
 
         self._mark_processing(record)
         try:
-            if getattr(record.layer_0_raw, "layer0_passed", True) is False:
-                raise Layer0BuildBlockedError(
-                    getattr(record.layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
-                    layer_0_raw=record.layer_0_raw,
-                    detail=getattr(record.layer_0_raw, "layer0_failure_detail", {}) or {},
-                )
             pro_bundle = self.generation_runtime.generate_pro(generation_context, record)
             record.layer_3_pro_draft = pro_bundle.layer_3_pro_draft
             record.layer_4_pro_final = pro_bundle.layer_4_pro_final
             self._mark_completed(record)
-        except Layer0BuildBlockedError:
+        except StageProcessPackageBlockedError:
             record.layer_3_pro_draft = None
             record.layer_4_pro_final = None
             record.status = GenerationStatus.FAILED
@@ -228,11 +216,11 @@ class ReportLifecycleManager:
             return self._build_pro_response(
                 interpretation_id=interpretation_id,
                 status="failed",
-                message="Layer0 首层未通过，已阻断 Pro 生成。",
+                message="stage 过程包未通过，已阻断 Pro 生成。",
                 success=False,
             )
         except RuntimeError as error:
-            if str(error).startswith("layer0_generation_failed_blocking:"):
+            if str(error).startswith("stage_process_generation_failed_blocking:"):
                 record.layer_3_pro_draft = None
                 record.layer_4_pro_final = None
                 record.status = GenerationStatus.FAILED
@@ -241,7 +229,7 @@ class ReportLifecycleManager:
                 return self._build_pro_response(
                     interpretation_id=interpretation_id,
                     status="failed",
-                    message="Layer0 首层未通过，已阻断 Pro 生成。",
+                    message="stage 过程包未通过，已阻断 Pro 生成。",
                     success=False,
                 )
             raise

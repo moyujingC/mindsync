@@ -16,7 +16,6 @@ from .data_models import (
     ThemeInsights,
 )
 from .report_generation_contracts import (
-    Layer0BuildBlockedError,
     LiteGenerationBundle,
     ProGenerationBundle,
     ReportGenerationContext,
@@ -34,19 +33,16 @@ class DeterministicReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
-        layer_0_raw = generation_context._build_layer0_placeholder(record)
-        record.layer_0_raw = layer_0_raw
-        if getattr(layer_0_raw, "layer0_passed", True) is False:
-            raise Layer0BuildBlockedError(
-                getattr(layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
-                layer_0_raw=layer_0_raw,
-                detail=getattr(layer_0_raw, "layer0_failure_detail", {}) or {},
-            )
+        stage_process_package = generation_context.stage_package_assembler.build(
+            record,
+            target_report="lite",
+        )
+        record.stage_process_package = stage_process_package
         layer_1_lite_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = layer_1_lite_draft
         layer_2_lite_final = generation_context._build_lite_placeholder_report(record)
         return LiteGenerationBundle(
-            layer_0_raw=layer_0_raw,
+            stage_process_package=stage_process_package,
             layer_1_lite_draft=layer_1_lite_draft,
             layer_2_lite_final=layer_2_lite_final,
         )
@@ -98,14 +94,11 @@ class LLMReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
-        layer_0_raw = generation_context._build_layer0_placeholder(record)
-        record.layer_0_raw = layer_0_raw
-        if getattr(layer_0_raw, "layer0_passed", True) is False:
-            raise Layer0BuildBlockedError(
-                getattr(layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
-                layer_0_raw=layer_0_raw,
-                detail=getattr(layer_0_raw, "layer0_failure_detail", {}) or {},
-            )
+        stage_process_package = generation_context.stage_package_assembler.build(
+            record,
+            target_report="lite",
+        )
+        record.stage_process_package = stage_process_package
         deterministic_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = deterministic_draft
 
@@ -122,7 +115,7 @@ class LLMReportGenerationRuntime:
         record.layer_1_lite_draft = layer_1_lite_draft
         layer_2_lite_final = generation_context._build_lite_placeholder_report(record)
         return LiteGenerationBundle(
-            layer_0_raw=layer_0_raw,
+            stage_process_package=stage_process_package,
             layer_1_lite_draft=layer_1_lite_draft,
             layer_2_lite_final=layer_2_lite_final,
         )
@@ -132,12 +125,10 @@ class LLMReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> ProGenerationBundle:
-        if getattr(getattr(record, "layer_0_raw", None), "layer0_passed", True) is False:
-            raise Layer0BuildBlockedError(
-                getattr(record.layer_0_raw, "layer0_failure_reason", "") or "layer0_visual_basis_incomplete",
-                layer_0_raw=record.layer_0_raw,
-                detail=getattr(record.layer_0_raw, "layer0_failure_detail", {}) or {},
-            )
+        record.stage_process_package = generation_context.stage_package_assembler.build(
+            record,
+            target_report="pro",
+        )
         deterministic_draft = generation_context._build_pro_placeholder_draft(record)
         record.layer_3_pro_draft = deterministic_draft
 
@@ -418,16 +409,17 @@ class LLMReportGenerationRuntime:
         report_mode: str,
         error: str | None,
     ) -> None:
-        if record.layer_0_raw is None or not hasattr(record.layer_0_raw, "theme_projection"):
+        if record.stage_process_package is None:
             return
-        theme_projection = (
-            record.layer_0_raw.theme_projection
-            if isinstance(record.layer_0_raw.theme_projection, dict)
+        payload = record.stage_process_package.payload
+        process_contract = (
+            payload.get("process_contract")
+            if isinstance(payload.get("process_contract"), dict)
             else {}
         )
         model_trace = (
-            theme_projection.get("model_trace")
-            if isinstance(theme_projection.get("model_trace"), dict)
+            process_contract.get("model_trace")
+            if isinstance(process_contract.get("model_trace"), dict)
             else {}
         )
         chat_by_mode = (
@@ -444,8 +436,8 @@ class LLMReportGenerationRuntime:
             "error": error or "",
         }
         model_trace["chat_by_mode"] = chat_by_mode
-        theme_projection["model_trace"] = model_trace
-        record.layer_0_raw.theme_projection = theme_projection
+        process_contract["model_trace"] = model_trace
+        payload["process_contract"] = process_contract
 
     def _resolve_llm_model(self, *, task: str) -> str:
         config = getattr(self.llm_client, "config", None)

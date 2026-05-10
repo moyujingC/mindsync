@@ -133,21 +133,20 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - 三圈边界现在由用户在上传页人工确认；独立三圈检测接口仅保留兼容与调试用途，不参与正式 create 主链
 - Lite 初始化可创建记录
 - 会生成一份迁移期 `一镜 Lite 版` 报告
-- Lite 报告已经开始按 `layer_1 / layer_2` 的结构字段输出更完整的故事、主题洞察、小觉察和实验内容
+- Lite 报告已经开始按当前结构字段输出更完整的故事、主题洞察、小觉察和实验内容
 - Lite 报告内容已经开始受 `theme / painting_intention / painting_feeling / 三圈参数` 影响，不再只是固定模板
 - Lite 报告文案与结构已开始明显向旧主线正式报告靠拢，包含更接近正式产品口吻的标题、整体印象、心灵画像故事、主题表现、六个核心洞察与小实验
 - 同一用户 / 同一图片 / 同一主题会复用已有记录
 - 记录、状态、报告、历史列表都可以查询
 - `upgrade` 已能写入并读取 `一梳 Pro 版` 报告
-- Pro 报告已经开始按 `layer_3 / layer_4` 输出第一眼直觉、核心洞察、三圈画像、根源分析与调节建议
+- Pro 报告已经开始输出第一眼直觉、核心洞察、三圈画像、根源分析与调节建议
 - Pro 报告内容也已经开始受 `theme / painting_intention / painting_feeling / 三圈参数` 影响，不再只是固定模板
 - Pro 报告文案与结构也已开始向旧主线正式深度报告靠拢，包含第一眼直觉、核心洞察表格、Lite 基础承接、三圈深度诊断、失衡识别、根源探索与针对失衡问题的疗愈建议
 - Lite / Pro 最终 markdown 都已接入 safety disclaimer 包装
 - 当前报告方法论已收口到 `stage-00-input-context -> ... -> stage-16-final-report`，单一真值源见 `projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md`
-- 后端内部仍保留的 `Layer0` / `layer_0_raw` 仅是旧兼容容器，用于维持现有 API、测试和迁移期诊断；不得再理解为当前报告生成方法
-- 当前后端仍保留 `prompt_preview` / `prompt_schema_validation_issues` 作为前端兼容字段，但它们不再表示模型主生成入口
+- 当前后端仍保留 `prompt_preview` / `prompt_schema_validation_issues` 作为前端兼容字段，但正式生成入口是 `stage_process_package`
 - Lite / Pro 的最终 `report.structured` 字段契约现已集中在 `app/core/pipeline/structured_report_schema.py`
-- 后端现已补上统一 LLM client，仅用于 Layer0 画面事实提取、Lite / Pro 报告结构生成和 Pro 报告内 AI 追问；三圈边界暂时不依赖 LLM，由用户人工确认
+- 后端现已补上统一 LLM client，用于 stage 链路中的视觉观察、Lite / Pro 报告结构生成和 Pro 报告内 AI 追问；三圈边界暂时不依赖 LLM，由用户人工确认
 - Pro 报告页对应的 AI 问答现已补上真实接口，基于当前报告 markdown、QA 上下文和历史对话生成延展回答
 
 ## 当前边界
@@ -160,7 +159,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.
 - 更精细的 CV/OpenCV 几何检测与多模型路由策略
 - To B / Studio / V3
 
-也就是说，当前三圈边界以人工确认为准；统一 LLM client 不再承担三圈边界识别。报告正文质量的后续优化应继续沿知识库、projection、骨架组装链路和 DeepSeek V4 Pro 文本生成链路推进，而不是恢复旧 prompt runtime 覆盖。
+也就是说，当前三圈边界以人工确认为准；统一 LLM client 不再承担三圈边界识别。报告正文质量的后续优化应继续沿 stage 00-16、运行时知识包、`stage_process_package` 和 DeepSeek V4 文本生成链路推进。
 
 ## 验证
 
@@ -196,7 +195,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 
 ## Unified LLM 配置
 
-如需把报告生成、Layer0 画面事实提取和报告内 AI 问答接到真实模型，优先使用下面这组环境变量：
+如需把报告生成、stage 视觉观察和报告内 AI 问答接到真实模型，优先使用下面这组环境变量：
 
 - `AIMANDALA_LLM_BACKEND`（本地可缺省为 `noop`；正式 `release` 应显式设为 `openai_compatible`）
 - `AIMANDALA_LLM_BASE_URL`（`openai_compatible` 模式必填，例如 `https://<host>/v1`）
@@ -204,7 +203,7 @@ pytest projects/aimandala/toC/app/backend/tests/unit
 - `AIMANDALA_LLM_API_KEY_HEADER`（可选，默认 `Authorization`）
 - `AIMANDALA_LLM_MODEL`（可选，默认 `deepseek-v4-pro`）
 - `AIMANDALA_LLM_CHAT_MODEL`（可选，报告生成与追问专用模型，未设置时使用 `AIMANDALA_LLM_MODEL`）
-- `AIMANDALA_LLM_VISION_MODEL`（可选，Layer0 画面事实提取专用模型，未设置时使用 `AIMANDALA_LLM_MODEL`；三圈边界不走模型）
+- `AIMANDALA_LLM_VISION_MODEL`（可选，stage 视觉观察专用模型，未设置时使用 `AIMANDALA_LLM_MODEL`；三圈边界不走模型）
 - `AIMANDALA_LLM_VISION_BASE_URL`（可选，三圈识别专用视觉 endpoint）
 - `AIMANDALA_LLM_VISION_API_KEY`（可选，三圈识别专用 API key）
 - `AIMANDALA_LLM_VISION_FALLBACK_MODEL`（可选，三圈识别 fallback 模型）
@@ -274,8 +273,8 @@ export AIMANDALA_LLM_VISION_FALLBACK_API_KEY="<doubao-api-key>"
 后续优先级建议：
 
 1. 把本地临时上传升级成正式图片存储方案
-2. 继续增强 Lite / Pro 知识库 projection 与报告骨架质量
-3. 针对报告生成、Layer0 画面事实提取和报告追问收口 provider 选择与线上配置
+2. 继续增强 Lite / Pro stage 交付物与报告骨架质量
+3. 针对报告生成、stage 视觉观察和报告追问收口 provider 选择与线上配置
 4. 继续完善 safety / knowledge 的正式编排与回归评估
 
 ## 视觉模型评测

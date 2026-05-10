@@ -141,41 +141,28 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
     debug_payload = debug_response.json()
     assert debug_payload["interpretation_id"] == interpretation_id
     assert debug_payload["theme"] == "wealth_career"
-    assert debug_payload["layers"]["layer_0_raw"] is not None
+    assert debug_payload["layers"]["stage_process_package"]
     assert debug_payload["layers"]["layer_2_lite_final"] is not None
     assert debug_payload["field_provenance"]["lite"]
-    assert debug_payload["diagnostics"]["summary"]["layer0_driven_count"] >= 1
+    assert debug_payload["diagnostics"]["summary"]["lite_field_issue_count"] == 0
     assert debug_payload["prompt_debug"]["lite"]["validation_issues"] == []
     assert debug_payload["insight_context_summary"]["theme"] == "wealth_career"
     assert debug_payload["insight_context_summary"]["constraints"]["scope"] == "single_interpretation"
+    assert debug_payload["insight_context_summary"]["stage_process"]["present"] is True
     assert debug_payload["evidence_summary"]["agent"]["name"] == "InsightAgent"
     assert "knowledge_sources" in debug_payload["evidence_summary"]
+    assert "stage_process" in debug_payload["evidence_summary"]
     assert "used" in debug_payload["fallback_summary"]
+
     knowledge_debug = debug_payload["knowledge_debug"]
-    build_info = knowledge_debug.get("build_info") or knowledge_debug["layer0_evidence"]["build_info"]
-    assert build_info["build_selector"] == "current"
-    algorithm_fidelity_trace = knowledge_debug["algorithm_fidelity_trace"]
-    assert isinstance(algorithm_fidelity_trace["method_trace_keys"], list)
-    assert isinstance(algorithm_fidelity_trace["algorithm_fidelity_pass"], bool)
-    assert isinstance(algorithm_fidelity_trace["legacy_semantics_found"], bool)
-    assert isinstance(algorithm_fidelity_trace["raw_payload_leak_found"], bool)
-    assert knowledge_debug["layer0_evidence"]["visual_facts"]
-    assert knowledge_debug["layer0_evidence"]["input_package"]
-    assert knowledge_debug["layer0_evidence"]["visual_analysis_basis"]
+    assert knowledge_debug["build_info"]["build_selector"] == "current"
+    assert knowledge_debug["stage_process_evidence"]["stage_count"] >= 12
     assert knowledge_debug["input_package"]
-    assert knowledge_debug["layer0_evidence"]["knowledge_hits"]
-    rule_evaluations = knowledge_debug["layer0_evidence"]["rule_evaluations"]
-    assert rule_evaluations
-    assert knowledge_debug["layer0_evidence"]["fidelity_flags"] == knowledge_debug["layer0_evidence"]["quality_flags"]
-    assert "imbalance_trace" in rule_evaluations
-    assert knowledge_debug["layer0_evidence"]["theme_projection"]
-    assert knowledge_debug["layer0_evidence"]["fallback_summary"] is not None
     assert isinstance(knowledge_debug.get("query_results", {}), dict)
-    assert isinstance(knowledge_debug.get("narrative_plans", {}), dict)
+    assert isinstance(knowledge_debug.get("report_draft_sections", {}), dict)
     assert isinstance(knowledge_debug.get("product_block_debug", {}), dict)
     assert knowledge_debug["topic_context_trace"]["topic"] == "wealth_career"
     assert "knowledge_route" in knowledge_debug["topic_context_trace"]
-    assert "legacy_fields" in knowledge_debug["internal_compatibility"]
     assert isinstance(knowledge_debug["source_refs"], list)
     assert isinstance(knowledge_debug["field_to_knowledge_map"], dict)
 
@@ -245,67 +232,56 @@ def test_api_v2_report_chat_returns_llm_grounded_reply(tmp_path):
     assert payload["reply"]
 
 
-def test_api_v2_create_interpretation_returns_failed_record_when_layer0_blocks(tmp_path, monkeypatch):
+def test_api_v2_create_interpretation_returns_failed_record_when_stage_package_blocks(tmp_path, monkeypatch):
     from app.api.main import app
     from app.api import routes_v2
-    from app.core.pipeline.data_models import Layer0Raw
+    from app.core.pipeline.data_models import StageProcessPackage
     from app.core.pipeline.orchestrator_v2 import GenerationStage
 
     _reset_api_state()
 
-    class FailingLayer0Runtime:
+    class FailingStageRuntime:
         def generate_lite(self, generation_context, record):
-            record.layer_0_raw = Layer0Raw(
-                input_package={
-                    "image": {"image_ref": "tmp/api-layer0-failed.png"},
-                    "topic_input": {"topic": "general", "topic_label": "全面解读"},
-                    "circle_config": {"inner_radius": 35, "middle_radius": 67, "source": "user_calibrated"},
-                },
-                visual_analysis_basis={
-                    "global_visual_summary": "",
-                    "llm_color_observation": {"summary": "", "source": "layer0_failed"},
-                    "program_color_measurement": {
-                        "summary": "程序中间结果仍可查看。",
-                        "source": "program_segmented_block_measurement",
+            record.stage_process_package = StageProcessPackage(
+                payload={
+                    "process_contract": {
+                        "generation_mode": "stage_based_runtime",
+                        "target_report": "lite",
+                        "model_trace": {
+                            "vision": {
+                                "source": "stage_generation_failed",
+                                "failure_reason": "stage_vision_unconfigured",
+                            }
+                        },
                     },
-                    "direct_judgment_hits": {
-                        "catalog_version": "direct_judgments.v2.1.source11.v1",
-                        "catalog_items": [],
-                        "hits": [],
+                    "stage-01-user-input-context": {"theme": "general"},
+                    "stage-02-circle-boundary-decision": {
+                        "inner_middle_radius": 35,
+                        "middle_outer_radius": 67,
+                        "boundary_source": "user_calibrated",
                     },
-                    "circles": {"inner": {}, "middle": {}, "outer": {}},
-                    "prompt_meta": {
-                        "source": "layer0_failed",
-                        "failure_reason": "layer0_vision_unconfigured",
-                        "vision_unavailable": True,
+                    "stage-03-visual-evidence": {
+                        "status": "failed",
+                        "failure_reason": "stage_vision_unconfigured",
                     },
-                },
-                visual_facts={"program_color_measurement": {"source": "program_segmented_block_measurement"}},
-                layer0_passed=False,
-                layer0_failure_reason="layer0_vision_unconfigured",
-                layer0_failure_detail={"stage": "vision"},
-                fallback_summary={
-                    "used": True,
-                    "levels": ["layer0_failed"],
-                    "warnings": ["layer0_vision_unconfigured"],
-                },
+                }
             )
-            raise RuntimeError("layer0_generation_failed_blocking:layer0_vision_unconfigured")
+            raise RuntimeError("stage_process_generation_failed_blocking:stage_vision_unconfigured")
 
     orchestrator = routes_v2.get_orchestrator()
-    failing_runtime = FailingLayer0Runtime()
+    failing_runtime = FailingStageRuntime()
     orchestrator.generation_runtime = failing_runtime
     orchestrator.report_lite_record_workflow.generation_runtime = failing_runtime
     orchestrator.report_lifecycle_manager.generation_runtime = failing_runtime
     monkeypatch.setattr(routes_v2, "_orchestrator", orchestrator)
     client = TestClient(app)
-    image_path = tmp_path / "api-layer0-failed.png"
+    image_path = tmp_path / "api-stage-failed.png"
     image_path.write_bytes(b"mock-image")
 
     create_response = client.post(
         "/api/v2/interpretations",
         json={
-            "user_id": "user-layer0-api-failed",
+            "user_id": "user-stage-api-failed",
             "image_path": str(image_path),
             "theme": "general",
             **_manual_circle_payload(35, 67),
@@ -329,12 +305,9 @@ def test_api_v2_create_interpretation_returns_failed_record_when_layer0_blocks(t
     assert debug_response.status_code == 200
     debug_payload = debug_response.json()
     knowledge_debug = debug_payload["knowledge_debug"]
-    assert knowledge_debug["layer0_evidence"]["input_package"]["image"]["image_ref"] == "tmp/api-layer0-failed.png"
-    assert knowledge_debug["layer0_evidence"]["visual_analysis_basis"]["prompt_meta"]["source"] == "layer0_failed"
-    assert knowledge_debug["layer0_evidence"]["layer0_passed"] is False
-    assert knowledge_debug["layer0_evidence"]["layer0_failure_reason"] == "layer0_vision_unconfigured"
-    assert knowledge_debug["model_trace"]["vision"]["source"] == "layer0_failed"
-
+    assert knowledge_debug["input_package"]["topic_input"]["topic"] == "general"
+    assert knowledge_debug["stage_process_evidence"]["stages"]["stage-03-visual-evidence"]["status"] == "failed"
+    assert knowledge_debug["model_trace"]["generation_mode"] == "stage_based_runtime"
 
 def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):
     from app.api.main import app

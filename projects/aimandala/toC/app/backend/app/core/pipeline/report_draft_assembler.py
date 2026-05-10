@@ -1,4 +1,4 @@
-"""Assemble Lite and Pro draft layers from report helper callbacks."""
+"""Assemble Lite and Pro draft layers from stage-based prompt inputs."""
 
 from __future__ import annotations
 
@@ -9,15 +9,13 @@ from .report_blueprints import LITE_REPORT_BLUEPRINT, PRO_REPORT_BLUEPRINT
 
 
 class ReportDraftAssembler:
-    """Build Layer1/Layer3 drafts while keeping orchestrator composition-focused."""
+    """Build Layer1/Layer3 drafts while keeping the runtime stage-based."""
 
     def __init__(
         self,
         *,
         get_theme_label: Callable[[str | None], str],
         build_lite_prompt_preview: Callable[[InterpretationRecord], str],
-        build_runtime_lite_narrative_plan: Callable[..., dict[str, Any]],
-        build_runtime_lite_narrative_projection: Callable[..., dict[str, Any]],
         build_lite_story_sections: Callable[..., dict[str, str]],
         build_lite_theme_insights: Callable[..., dict[str, str]],
         build_lite_title: Callable[..., str],
@@ -29,11 +27,8 @@ class ReportDraftAssembler:
         build_lite_six_insights_payload: Callable[..., dict[str, dict[str, str]]],
         build_lite_experiment_payload: Callable[..., dict[str, str]],
         build_pro_prompt_preview: Callable[[InterpretationRecord], str],
-        get_runtime_imbalance_narrative_basis: Callable[[InterpretationRecord], dict[str, Any]],
-        get_runtime_imbalance_projection: Callable[[InterpretationRecord], dict[str, Any]],
         build_pro_imbalance_profile: Callable[..., dict[str, Any]],
         build_runtime_pro_narrative_plan: Callable[..., dict[str, Any]],
-        build_runtime_pro_narrative_projection: Callable[..., dict[str, Any]],
         build_pro_first_impression: Callable[..., str],
         build_pro_energy_essence: Callable[..., str],
         build_pro_block_point: Callable[..., str],
@@ -48,10 +43,6 @@ class ReportDraftAssembler:
     ) -> None:
         self._get_theme_label = get_theme_label
         self._build_lite_prompt_preview = build_lite_prompt_preview
-        self._build_runtime_lite_narrative_plan = build_runtime_lite_narrative_plan
-        self._build_runtime_lite_narrative_projection = (
-            build_runtime_lite_narrative_projection
-        )
         self._build_lite_story_sections = build_lite_story_sections
         self._build_lite_theme_insights = build_lite_theme_insights
         self._build_lite_title = build_lite_title
@@ -63,15 +54,8 @@ class ReportDraftAssembler:
         self._build_lite_six_insights_payload = build_lite_six_insights_payload
         self._build_lite_experiment_payload = build_lite_experiment_payload
         self._build_pro_prompt_preview = build_pro_prompt_preview
-        self._get_runtime_imbalance_narrative_basis = (
-            get_runtime_imbalance_narrative_basis
-        )
-        self._get_runtime_imbalance_projection = get_runtime_imbalance_projection
         self._build_pro_imbalance_profile = build_pro_imbalance_profile
         self._build_runtime_pro_narrative_plan = build_runtime_pro_narrative_plan
-        self._build_runtime_pro_narrative_projection = (
-            build_runtime_pro_narrative_projection
-        )
         self._build_pro_first_impression = build_pro_first_impression
         self._build_pro_energy_essence = build_pro_energy_essence
         self._build_pro_block_point = build_pro_block_point
@@ -87,63 +71,38 @@ class ReportDraftAssembler:
         self._build_pro_healing_suggestions = build_pro_healing_suggestions
 
     def build_lite(self, record: InterpretationRecord) -> Layer1LiteDraft:
-        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(record.theme)
-        lite_plan = self._build_runtime_lite_narrative_plan(
-            record,
-            theme_label,
-        )
-        lite_projection = (
-            lite_plan.get("legacy_projection", {})
-            if isinstance(lite_plan, dict)
-            else self._build_runtime_lite_narrative_projection(
-                record,
-                theme_label,
-            )
-        )
-        lite_prompt_preview = self._build_lite_prompt_preview(
-            record,
-            projection=lite_projection,
-            narrative_plan=lite_plan if isinstance(lite_plan, dict) else {},
-        )
+        lite_prompt_preview = self._build_lite_prompt_preview(record)
         story_sections = self._build_lite_story_sections(
             record,
             theme_label,
-            projection=lite_projection,
+            stage_plan={},
         )
         theme_insights = self._build_lite_theme_insights(
             record,
             theme_label,
-            projection=lite_projection,
+            stage_plan={},
         )
         layer = Layer1LiteDraft(
-            title=self._build_lite_title(
-                record,
-                theme_label,
-                projection=lite_projection,
-            ),
+            title=self._build_lite_title(record, theme_label, stage_plan={}),
             overall_impression=self._build_lite_overall_impression(
                 record,
                 theme_label,
-                circles,
-                projection=lite_projection,
+                record.three_circles or {"inner_radius": 33, "middle_radius": 66},
+                stage_plan={},
             ),
             visual_elements=self._build_lite_visual_elements(
                 record,
                 record.theme or "general",
-                circles,
-                projection=lite_projection,
+                record.three_circles or {"inner_radius": 33, "middle_radius": 66},
+                stage_plan={},
             ),
             emotion_portrait=self._build_lite_emotion_portrait(
                 record,
                 theme_label,
-                projection=lite_projection,
+                stage_plan={},
             ),
-            pro_teaser=self._build_lite_pro_teaser(
-                record,
-                projection=lite_projection,
-            ),
-            narrative_plan=lite_plan if isinstance(lite_plan, dict) else {},
+            pro_teaser=self._build_lite_pro_teaser(record, stage_plan={}),
         )
         layer.story.base.content = story_sections["base"]
         layer.story.base.connector = LITE_REPORT_BLUEPRINT.story_connectors["base"]
@@ -152,13 +111,9 @@ class ReportDraftAssembler:
             "contradiction"
         ]
         layer.story.pattern.content = story_sections["pattern"]
-        layer.story.pattern.connector = LITE_REPORT_BLUEPRINT.story_connectors[
-            "pattern"
-        ]
+        layer.story.pattern.connector = LITE_REPORT_BLUEPRINT.story_connectors["pattern"]
         layer.story.defense.content = story_sections["defense"]
-        layer.story.defense.connector = LITE_REPORT_BLUEPRINT.story_connectors[
-            "defense"
-        ]
+        layer.story.defense.connector = LITE_REPORT_BLUEPRINT.story_connectors["defense"]
         layer.story.block.content = story_sections["block"]
         layer.story.block.connector = LITE_REPORT_BLUEPRINT.story_connectors["block"]
         layer.story.light.content = story_sections["light"]
@@ -168,13 +123,13 @@ class ReportDraftAssembler:
         layer.three_awareness = self._build_lite_three_awareness(
             record,
             theme_label,
-            projection=lite_projection,
+            stage_plan={},
         )
         six_insights = self._build_lite_six_insights_payload(
             record,
             theme_label,
             story_sections,
-            projection=lite_projection,
+            stage_plan={},
         )
         for key, payload in six_insights.items():
             getattr(layer.six_insights, key).update(payload)
@@ -182,88 +137,64 @@ class ReportDraftAssembler:
             record,
             theme_label,
             layer.title,
-            projection=lite_projection,
+            stage_plan={},
         )
         layer.prompt_preview = lite_prompt_preview
         return layer
 
     def build_pro(self, record: InterpretationRecord) -> Layer3ProDraft:
         theme = record.theme or "general"
-        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
         theme_label = self._get_theme_label(theme)
-        imbalance_basis = self._get_runtime_imbalance_narrative_basis(record)
-        imbalance_projection = (
-            imbalance_basis.get("legacy_projection", {})
-            if isinstance(imbalance_basis, dict)
-            else self._get_runtime_imbalance_projection(record)
-        )
         imbalance_profile = self._build_pro_imbalance_profile(
             record,
             theme_label,
-            circles,
-            projection=imbalance_projection,
+            record.three_circles or {"inner_radius": 33, "middle_radius": 66},
+            stage_plan={},
         )
         lite_title = (
             record.layer_2_lite_final.title
             if record.layer_2_lite_final and record.layer_2_lite_final.title
-            else self._build_lite_title(record, theme_label)
+            else self._build_lite_title(record, theme_label, stage_plan={})
         )
         pro_plan = self._build_runtime_pro_narrative_plan(
             record,
             theme_label=theme_label,
             lite_title=lite_title,
             imbalance_profile=imbalance_profile,
-            imbalance_projection=imbalance_projection,
+            imbalance_stage_plan={},
         )
-        pro_projection = (
-            pro_plan.get("legacy_projection", {})
-            if isinstance(pro_plan, dict)
-            else self._build_runtime_pro_narrative_projection(
-                record,
-                theme_label=theme_label,
-                lite_title=lite_title,
-                imbalance_profile=imbalance_profile,
-                imbalance_projection=imbalance_projection,
-            )
-        )
-        pro_prompt_preview = self._build_pro_prompt_preview(
-            record,
-            narrative_projection=pro_projection,
-            imbalance_projection=imbalance_projection,
-            imbalance_profile=imbalance_profile,
-            narrative_plan=pro_plan if isinstance(pro_plan, dict) else {},
-        )
+        pro_prompt_preview = self._build_pro_prompt_preview(record)
         layer = Layer3ProDraft(
             first_impression=self._build_pro_first_impression(
                 record,
                 theme_label,
                 lite_title,
-                projection=pro_projection,
+                stage_plan=pro_plan,
             ),
             core_insight_table={
                 "能量本质": self._build_pro_energy_essence(
                     record,
                     theme_label,
-                    circles,
-                    projection=pro_projection,
+                    record.three_circles or {"inner_radius": 33, "middle_radius": 66},
+                    stage_plan=pro_plan,
                 ),
-                "核心失衡": imbalance_profile["summary"],
+                "核心失衡": imbalance_profile.get("summary", ""),
                 "关键卡点": self._build_pro_block_point(
                     record,
                     imbalance_profile,
-                    narrative_projection=pro_projection,
-                    projection=imbalance_projection,
+                    narrative_stage_plan=pro_plan,
+                    stage_plan={},
                 ),
                 "转化方向": self._build_pro_direction(
                     record,
                     theme_label,
-                    narrative_projection=pro_projection,
-                    projection=imbalance_projection,
+                    narrative_stage_plan=pro_plan,
+                    stage_plan={},
                 ),
                 "疗愈核心": self._build_pro_healing_core(
                     record,
-                    narrative_projection=pro_projection,
-                    projection=imbalance_projection,
+                    narrative_stage_plan=pro_plan,
+                    stage_plan={},
                 ),
             },
             three_circles_detailed={
@@ -274,8 +205,8 @@ class ReportDraftAssembler:
                         "inner",
                         PRO_REPORT_BLUEPRINT.narrative_templates[
                             "circle_inner_reading"
-                        ].format(inner=circles["inner_radius"]),
-                        projection=pro_projection,
+                        ].format(inner=record.three_circles.get("inner_radius", 33) if record.three_circles else 33),
+                        stage_plan=pro_plan,
                     ),
                 },
                 "middle": {
@@ -285,8 +216,8 @@ class ReportDraftAssembler:
                         "middle",
                         PRO_REPORT_BLUEPRINT.narrative_templates[
                             "circle_middle_reading"
-                        ].format(middle=circles["middle_radius"]),
-                        projection=pro_projection,
+                        ].format(middle=record.three_circles.get("middle_radius", 66) if record.three_circles else 66),
+                        stage_plan=pro_plan,
                     ),
                 },
                 "outer": {
@@ -294,41 +225,29 @@ class ReportDraftAssembler:
                     "reading": self._build_pro_circle_reading(
                         record,
                         "outer",
-                        PRO_REPORT_BLUEPRINT.narrative_templates[
-                            "circle_outer_reading"
-                        ],
-                        projection=pro_projection,
+                        PRO_REPORT_BLUEPRINT.narrative_templates["circle_outer_reading"],
+                        stage_plan=pro_plan,
                     ),
                 },
             },
             micro_analysis_detailed=self._build_pro_micro_sections_from_knowledge(
                 record,
-                projection=pro_projection,
+                theme_label,
+                stage_plan=pro_plan,
             ),
             imbalance_confirmed=imbalance_profile,
             root_cause={
-                "surface": self._build_surface_root_cause(
-                    record,
-                    narrative_projection=pro_projection,
-                    projection=imbalance_projection,
-                ),
-                "deeper": self._build_deeper_root_cause(
-                    record,
-                    narrative_projection=pro_projection,
-                    projection=imbalance_projection,
-                ),
-                "core": self._build_core_root_cause(
-                    record,
-                    narrative_projection=pro_projection,
-                    projection=imbalance_projection,
-                ),
+                "surface": self._build_surface_root_cause(record, imbalance_profile, stage_plan={}),
+                "deeper": self._build_deeper_root_cause(record, imbalance_profile, stage_plan={}),
+                "core": self._build_core_root_cause(record, imbalance_profile, stage_plan={}),
             },
             healing_suggestions=self._build_pro_healing_suggestions(
                 record,
+                theme_label,
                 imbalance_profile=imbalance_profile,
-                theme_label=theme_label,
+                stage_plan={},
             ),
             narrative_plan=pro_plan if isinstance(pro_plan, dict) else {},
+            prompt_preview=pro_prompt_preview,
         )
-        layer.prompt_preview = pro_prompt_preview
         return layer

@@ -30,13 +30,10 @@ class ReportSafetyWrapper:
         return cleaned
 
     def wrap_report(self, record: InterpretationRecord, content: str) -> str:
+        safety_basis = self._build_stage_safety_basis(record)
         safety = self._safety_check(
-            imbalance_type=(
-                record.layer_0_raw.imbalance_candidates[0]
-                if record.layer_0_raw and record.layer_0_raw.imbalance_candidates
-                else None
-            ),
-            color_analysis=record.layer_0_raw.color_analysis if record.layer_0_raw else None,
+            imbalance_type=safety_basis.get("imbalance_type"),
+            color_analysis=safety_basis.get("color_analysis"),
             text_content=" ".join(
                 part
                 for part in [
@@ -52,3 +49,38 @@ class ReportSafetyWrapper:
             safety.risk_level,
             context="toc",
         )
+
+    def _build_stage_safety_basis(self, record: InterpretationRecord) -> dict[str, Any]:
+        package = getattr(record, "stage_process_package", None)
+        payload = getattr(package, "payload", None)
+        if not isinstance(payload, dict):
+            return {"imbalance_type": None, "color_analysis": None}
+
+        stage05 = payload.get("stage-05-per-circle-color-shape-element-sensing", {})
+        stage07 = payload.get("stage-07-per-circle-imbalance-patterns", {})
+        circle_results = (
+            stage05.get("circle_results", [])
+            if isinstance(stage05, dict)
+            else []
+        )
+        candidates = (
+            stage07.get("candidates", [])
+            if isinstance(stage07, dict)
+            else []
+        )
+        imbalance_type = None
+        for item in candidates if isinstance(candidates, list) else []:
+            if isinstance(item, str) and item.strip():
+                imbalance_type = item.strip()
+                break
+            if isinstance(item, dict):
+                value = str(item.get("id") or item.get("name") or "").strip()
+                if value:
+                    imbalance_type = value
+                    break
+        return {
+            "imbalance_type": imbalance_type,
+            "color_analysis": {
+                "circle_results": circle_results if isinstance(circle_results, list) else [],
+            },
+        }

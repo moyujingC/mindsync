@@ -180,4 +180,4 @@ def test_prompt_builder_preserves_stage_process_package_json():
     assert '"stage-03-visual-evidence"' in prompt
     assert '"stage-09-evidence-consolidation"' in prompt
     assert '"stage-12-healing-direction-and-report-branching"' in prompt
-    assert "layer_0_raw" not in prompt
+    assert "stage_process_package" in prompt

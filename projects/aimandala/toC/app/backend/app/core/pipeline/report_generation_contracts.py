@@ -7,17 +7,17 @@ from typing import Any, Protocol
 
 from .data_models import (
     InterpretationRecord,
-    Layer0Raw,
     Layer1LiteDraft,
     Layer2LiteFinal,
     Layer3ProDraft,
     Layer4ProFinal,
+    StageProcessPackage,
 )
 
 
 @dataclass(frozen=True)
 class LiteGenerationBundle:
-    layer_0_raw: Layer0Raw
+    stage_process_package: StageProcessPackage
     layer_1_lite_draft: Layer1LiteDraft
     layer_2_lite_final: Layer2LiteFinal
 
@@ -28,19 +28,19 @@ class ProGenerationBundle:
     layer_4_pro_final: Layer4ProFinal
 
 
-class Layer0BuildBlockedError(RuntimeError):
-    """Raised when Layer0 cannot be accepted as a formal evidence layer."""
+class StageProcessPackageBlockedError(RuntimeError):
+    """Raised when stage deliverables cannot support report generation."""
 
     def __init__(
         self,
         reason: str,
         *,
-        layer_0_raw: Layer0Raw | None = None,
+        stage_process_package: StageProcessPackage | None = None,
         detail: dict[str, Any] | None = None,
     ) -> None:
-        super().__init__(f"layer0_generation_failed_blocking:{reason}")
+        super().__init__(f"stage_process_generation_failed_blocking:{reason}")
         self.reason = reason
-        self.layer_0_raw = layer_0_raw
+        self.stage_process_package = stage_process_package
         self.detail = detail or {}
 
 
@@ -48,9 +48,7 @@ class ReportGenerationContext(Protocol):
     """Minimal collaborator surface required by report generation runtimes."""
 
     prompt_builder: Any
-
-    def _build_layer0_placeholder(self, record: InterpretationRecord) -> Layer0Raw:
-        ...
+    stage_package_assembler: Any
 
     def _build_layer1_placeholder(
         self,

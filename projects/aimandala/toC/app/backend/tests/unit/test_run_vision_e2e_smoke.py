@@ -326,9 +326,9 @@ def test_build_sanitized_fixture_result_omits_runtime_paths_and_raw_report_body(
             "record_found": True,
             "status": "failed",
             "generation_stage": "failed",
-            "layer0": {
+            "stage_process": {
                 "passed": False,
-                "failure_reason": "layer0_vision_request_failed",
+                "failure_reason": "stage_vision_request_failed",
             },
         },
     }
@@ -343,10 +343,10 @@ def test_build_sanitized_fixture_result_omits_runtime_paths_and_raw_report_body(
     assert sanitized["lite_report"]["style_review_fields"]["story"]["base"] == "先收回自己。"
     assert sanitized["pro_report"]["style_review_fields"]["healing_plan"][0]["phase"] == "当前阶段"
     assert "prompt_preview" not in sanitized["pro_report"]["style_review_fields"]
-    assert sanitized["runtime_diagnostics"]["layer0"]["failure_reason"] == "layer0_vision_request_failed"
+    assert sanitized["runtime_diagnostics"]["stage_process"]["failure_reason"] == "stage_vision_request_failed"
 
 
-def test_sanitize_layer0_failure_detail_omits_sensitive_payload():
+def test_sanitize_stage_failure_detail_omits_sensitive_payload():
     detail = {
         "stage": "vision",
         "api_key": "secret",
@@ -364,7 +364,7 @@ def test_sanitize_layer0_failure_detail_omits_sensitive_payload():
         ],
     }
 
-    sanitized = run_vision_e2e_smoke._sanitize_layer0_failure_detail(detail)
+    sanitized = run_vision_e2e_smoke._sanitize_stage_failure_detail(detail)
 
     assert "api_key" not in sanitized
     assert "request_payload" not in sanitized
@@ -374,19 +374,23 @@ def test_sanitize_layer0_failure_detail_omits_sensitive_payload():
 
 
 def test_build_runtime_diagnostics_reads_orchestrator_store(monkeypatch):
-    layer0 = SimpleNamespace(
-        layer0_passed=False,
-        layer0_failure_reason="layer0_vision_request_failed",
-        layer0_failure_detail={"stage": "vision"},
-        fidelity_flags=["layer0_failed"],
+    stage_process = SimpleNamespace(
+        payload={
+            "stage-03-visual-evidence": {
+                "status": "failed",
+                "failure_reason": "stage_vision_request_failed",
+                "failure_detail": {"stage": "vision"},
+            }
+        },
+        fidelity_flags=["stage_vision_failed"],
         fallback_summary={"used": True},
-        visual_analysis_basis={"prompt_meta": {"source": "layer0_failed"}},
+        visual_analysis_basis={"prompt_meta": {"source": "stage_vision_failed"}},
     )
     record = SimpleNamespace(
         status="failed",
         generation_stage="failed",
         generation_progress=100,
-        layer_0_raw=layer0,
+        stage_process_package=stage_process,
         layer_2_lite_final=None,
         layer_4_pro_final=None,
     )
@@ -401,4 +405,4 @@ def test_build_runtime_diagnostics_reads_orchestrator_store(monkeypatch):
     diagnostics = run_vision_e2e_smoke._build_runtime_diagnostics("demo")
 
     assert diagnostics["status"] == "failed"
-    assert diagnostics["layer0"]["failure_reason"] == "layer0_vision_request_failed"
+    assert diagnostics["stage_process"]["failure_reason"] == "stage_vision_request_failed"

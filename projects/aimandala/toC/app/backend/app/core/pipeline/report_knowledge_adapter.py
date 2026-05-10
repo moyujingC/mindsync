@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from .data_models import InterpretationRecord, Layer0Raw
+from .data_models import InterpretationRecord
 from .report_blueprints import LITE_REPORT_BLUEPRINT
 
 
@@ -16,20 +16,31 @@ class ReportKnowledgeAdapter:
         *,
         get_narrative_service: Callable[[], Any],
         get_knowledge_runtime: Callable[[], Any],
-        get_layer0_view: Callable[[InterpretationRecord], Layer0Raw],
     ) -> None:
         self._get_narrative_service = get_narrative_service
         self._get_knowledge_runtime = get_knowledge_runtime
-        self._get_layer0_view = get_layer0_view
         self._theme_summary_cache: dict[str, dict[str, Any]] = {}
         self._theme_element_profile_cache: dict[tuple[str, str], dict[str, Any]] = {}
 
     def get_primary_knowledge_signal(self, record: InterpretationRecord) -> str:
-        layer0 = self._get_layer0_view(record)
-        candidates = getattr(layer0, "imbalance_candidates", []) or []
+        payload = (
+            record.stage_process_package.payload
+            if record.stage_process_package is not None
+            else {}
+        )
+        stage07 = (
+            payload.get("stage-07-per-circle-imbalance-patterns", {})
+            if isinstance(payload, dict)
+            else {}
+        )
+        candidates = stage07.get("candidates", []) if isinstance(stage07, dict) else []
         for item in candidates:
             if isinstance(item, str) and item.strip():
                 return item.strip()
+            if isinstance(item, dict):
+                candidate_id = str(item.get("id", "") or item.get("name", "")).strip()
+                if candidate_id:
+                    return candidate_id
         return ""
 
     def get_theme_label(self, theme: str | None) -> str:
@@ -185,32 +196,12 @@ class ReportKnowledgeAdapter:
         self._theme_element_profile_cache[cache_key] = profile
         return profile
 
-    def describe_circle_transition(self, layer0: Layer0Raw) -> str:
+    def describe_circle_transition(self, stage08: dict[str, Any]) -> str:
         narrative_service = self._get_narrative_service()
-        if narrative_service is not None and hasattr(
-            narrative_service,
-            "describe_circle_transition",
-        ):
-            try:
-                runtime_transition = narrative_service.describe_circle_transition(
-                    inner_dominant=layer0.three_circles.inner.get("dominant", ""),
-                    middle_dominant=layer0.three_circles.middle.get("dominant", ""),
-                    outer_dominant=layer0.three_circles.outer.get("dominant", ""),
-                )
-            except Exception:
-                runtime_transition = ""
-            if isinstance(runtime_transition, str) and runtime_transition.strip():
-                return runtime_transition.strip()
-
-        inner = layer0.three_circles.inner.get("dominant", "")
-        middle = layer0.three_circles.middle.get("dominant", "")
-        outer = layer0.three_circles.outer.get("dominant", "")
-        if inner and middle and outer:
-            if inner == middle == outer:
-                return f"三圈目前都围绕「{inner}」展开。"
-            if inner == middle and outer != inner:
-                return f"内圈和中圈都更偏「{inner}」，外圈则开始转向「{outer}」。"
-            return f"三圈依次呈现出「{inner} -> {middle} -> {outer}」的变化。"
+        if isinstance(stage08, dict):
+            transition = stage08.get("overall_flow") or stage08.get("transition")
+            if isinstance(transition, str) and transition.strip():
+                return transition.strip()
         return ""
 
     def clean_knowledge_text_block(self, content: str) -> str:
