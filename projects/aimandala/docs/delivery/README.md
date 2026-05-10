@@ -14,12 +14,15 @@
 
 当前只保留以下交付文档：
 
-1. [2026-05-06-mvp-视觉模型默认接入交付记录.md](2026-05-06-mvp-视觉模型默认接入交付记录.md)
-2. [2026-05-03-多项目-heartbeat-运行态落地交付记录.md](2026-05-03-多项目-heartbeat-运行态落地交付记录.md)
-3. [2026-04-18-automation-and-local-execution-routing-phase1-delivery.md](2026-04-18-automation-and-local-execution-routing-phase1-delivery.md)
+1. [2026-05-10-三圈五行流派解读方法实施闭环交付记录.md](2026-05-10-三圈五行流派解读方法实施闭环交付记录.md)
+2. [2026-05-06-mvp-视觉模型默认接入交付记录.md](2026-05-06-mvp-视觉模型默认接入交付记录.md)
+3. [2026-05-03-多项目-heartbeat-运行态落地交付记录.md](2026-05-03-多项目-heartbeat-运行态落地交付记录.md)
+4. [2026-04-18-automation-and-local-execution-routing-phase1-delivery.md](2026-04-18-automation-and-local-execution-routing-phase1-delivery.md)
 
 分工如下：
 
+- `2026-05-10-三圈五行流派解读方法实施闭环交付记录.md`
+  - 收束三圈五行方法真值源、实现规格、QA 基线和旧链路隔离门禁，给后续报告生成整改提供默认 handoff
 - `2026-05-06-mvp-视觉模型默认接入交付记录.md`
   - 收束 MVP 本地 / staging 默认视觉模型接入的最终交付口径、fallback 策略、验证结论和给 staging / release 的 handoff；不等同于生产切换批准
 - `2026-05-03-多项目-heartbeat-运行态落地交付记录.md`
