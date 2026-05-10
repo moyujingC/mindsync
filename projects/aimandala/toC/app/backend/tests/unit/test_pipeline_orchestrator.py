@@ -521,13 +521,13 @@ def test_get_report_debug_profile_returns_structured_diagnostics(tmp_path):
     assert profile["fallback_summary"]["used"] in {True, False}
     assert profile["generation_mode"]["strategy"] == "knowledge_first"
     assert profile["generation_mode"]["llm_role"] == "chat_generation_for_draft_and_final_render"
-    assert profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
-    assert profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
-    assert '"runtime_evidence"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
-    assert '"narrative_plan"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
-    assert '"compatibility_projection"' in profile["prompt_debug"]["lite"]["knowledge_skeleton_excerpt"]
-    assert '"runtime_evidence"' in profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
-    assert '"narrative_plan"' in profile["prompt_debug"]["pro"]["knowledge_skeleton_excerpt"]
+    assert profile["prompt_debug"]["lite"]["stage_process_package_excerpt"]
+    assert profile["prompt_debug"]["pro"]["stage_process_package_excerpt"]
+    assert '"process_contract"' in profile["prompt_debug"]["lite"]["stage_process_package_excerpt"]
+    assert '"stage-09-evidence-consolidation"' in profile["prompt_debug"]["lite"]["stage_process_package_excerpt"]
+    assert '"stage-12-healing-direction-and-report-branching"' in profile["prompt_debug"]["lite"]["stage_process_package_excerpt"]
+    assert '"process_contract"' in profile["prompt_debug"]["pro"]["stage_process_package_excerpt"]
+    assert '"stage-09-evidence-consolidation"' in profile["prompt_debug"]["pro"]["stage_process_package_excerpt"]
     assert profile["field_provenance"]["lite"][0]["generation_mode"] == "knowledge_only"
     assert profile["field_provenance"]["pro"][0]["generation_mode"] == "knowledge_only"
     assert profile["knowledge_debug"]["narrative_plans"]["lite"]["mode"] == "lite"

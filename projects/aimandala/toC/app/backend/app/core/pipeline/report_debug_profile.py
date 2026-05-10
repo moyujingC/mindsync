@@ -372,7 +372,7 @@ class ReportDebugProfileBuilder:
             "prompt_debug": {
                 "lite": {
                     "prompt_preview": layer1.get("prompt_preview") if layer1 else None,
-                    "knowledge_skeleton_excerpt": self._extract_knowledge_skeleton_excerpt(
+                    "stage_process_package_excerpt": self._extract_stage_process_package_excerpt(
                         layer1.get("prompt_preview") if layer1 else None
                     ),
                     "schema": lite_schema,
@@ -381,7 +381,7 @@ class ReportDebugProfileBuilder:
                 },
                 "pro": {
                     "prompt_preview": layer3.get("prompt_preview") if layer3 else None,
-                    "knowledge_skeleton_excerpt": self._extract_knowledge_skeleton_excerpt(
+                    "stage_process_package_excerpt": self._extract_stage_process_package_excerpt(
                         layer3.get("prompt_preview") if layer3 else None
                     ),
                     "schema": pro_schema,
@@ -401,23 +401,31 @@ class ReportDebugProfileBuilder:
             return compact
         return f"{compact[:limit]}..."
 
-    def _extract_knowledge_skeleton_excerpt(self, prompt_preview: Any) -> str:
+    def _extract_stage_process_package_excerpt(self, prompt_preview: Any) -> str:
         if not isinstance(prompt_preview, str):
             return ""
-        marker = "## 知识骨架（已确定，不要改写判断）"
+        marker = "## Stage 过程交付物"
         if marker not in prompt_preview:
             return ""
         after_marker = prompt_preview.rsplit(marker, 1)[1]
         section = after_marker.split("---", 1)[0].strip()
         json_start = section.find("{")
         if json_start >= 0:
-            payload = section[json_start:]
+            payload = self._extract_first_json_object(section[json_start:])
             parsed = self._parse_embedded_json(payload)
             if parsed is None:
                 return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
-            compact = self._summarize_knowledge_skeleton(parsed)
+            compact = self._summarize_stage_process_package(parsed)
             return self._excerpt(compact, limit=1600) or ""
         return self._excerpt(self._normalize_escaped_block(section), limit=1600) or ""
+
+    def _extract_first_json_object(self, value: str) -> str:
+        decoder = json.JSONDecoder()
+        try:
+            _, end = decoder.raw_decode(value)
+        except Exception:
+            return value
+        return value[:end]
 
     def _parse_embedded_json(self, payload: str) -> Any | None:
         candidates = [payload]
@@ -437,42 +445,34 @@ class ReportDebugProfileBuilder:
             .replace('\\"', '"')
         )
 
-    def _summarize_knowledge_skeleton(self, payload: Any) -> str:
+    def _summarize_stage_process_package(self, payload: Any) -> str:
         if not isinstance(payload, dict):
             return json.dumps(payload, ensure_ascii=False, indent=2)
 
-        runtime_evidence = payload.get("runtime_evidence", {})
-        narrative_plan = payload.get("narrative_plan", {})
-        compatibility_projection = payload.get("compatibility_projection", {})
+        process_contract = payload.get("process_contract", {})
+        stage_09 = payload.get("stage-09-evidence-consolidation", {})
+        stage_10 = payload.get("stage-10-core-thesis-selection", {})
+        stage_11 = payload.get("stage-11-user-facing-framing", {})
+        stage_12 = payload.get("stage-12-healing-direction-and-report-branching", {})
 
         summary = {
-            "generation_mode": payload.get("generation_mode"),
-            "theme": payload.get("theme"),
-            "theme_label": payload.get("theme_label"),
-            "user_input": payload.get("user_input"),
-            "runtime_evidence": {
-                "keys": sorted(runtime_evidence.keys())
-                if isinstance(runtime_evidence, dict)
-                else [],
-                "rule_evaluations_keys": sorted(
-                    (runtime_evidence.get("rule_evaluations") or {}).keys()
-                )
-                if isinstance(runtime_evidence, dict)
-                and isinstance(runtime_evidence.get("rule_evaluations"), dict)
-                else [],
+            "process_contract": {
+                "method_source": process_contract.get("method_source"),
+                "generation_mode": process_contract.get("generation_mode"),
+                "target_report": process_contract.get("target_report"),
+                "token_policy": process_contract.get("token_policy"),
             },
-            "narrative_plan": {
-                "mode": narrative_plan.get("mode"),
-                "generation_mode": narrative_plan.get("generation_mode"),
-                "section_keys": sorted((narrative_plan.get("sections") or {}).keys())
-                if isinstance(narrative_plan, dict)
-                and isinstance(narrative_plan.get("sections"), dict)
-                else [],
+            "stage-09-evidence-consolidation": {
+                "keys": sorted(stage_09.keys()) if isinstance(stage_09, dict) else [],
             },
-            "compatibility_projection": {
-                "keys": sorted(compatibility_projection.keys())
-                if isinstance(compatibility_projection, dict)
-                else [],
+            "stage-10-core-thesis-selection": {
+                "keys": sorted(stage_10.keys()) if isinstance(stage_10, dict) else [],
+            },
+            "stage-11-user-facing-framing": {
+                "keys": sorted(stage_11.keys()) if isinstance(stage_11, dict) else [],
+            },
+            "stage-12-healing-direction-and-report-branching": {
+                "keys": sorted(stage_12.keys()) if isinstance(stage_12, dict) else [],
             },
         }
         return json.dumps(summary, ensure_ascii=False, indent=2)

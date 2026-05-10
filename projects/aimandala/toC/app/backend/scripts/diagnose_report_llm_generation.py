@@ -215,45 +215,26 @@ def _prompt_parts(
 ) -> dict[str, Any]:
     if version == "lite":
         draft = draft or getattr(record, "layer_1_lite_draft", None)
-        vision_data = {
-            "theme": getattr(record, "theme", ""),
-            "painting_intention": getattr(record, "painting_intention", ""),
-            "painting_feeling": getattr(record, "painting_feeling", ""),
-            "three_circles": getattr(record, "three_circles", {}),
-            "layer_0_raw": _layer0_dict(record),
-        }
         narrative_plan = getattr(draft, "narrative_plan", {}) if draft else {}
         projection = (
             narrative_plan.get("legacy_projection", {})
             if isinstance(narrative_plan, dict)
             else {}
         )
-        knowledge_skeleton = orchestrator.report_prompt_preview_builder.build_lite_knowledge_skeleton(
+        stage_process_package = orchestrator.report_prompt_preview_builder.build_lite_knowledge_skeleton(
             record,
             projection=projection,
             narrative_plan=narrative_plan if isinstance(narrative_plan, dict) else {},
         )
     else:
         draft = draft or getattr(record, "layer_3_pro_draft", None)
-        vision_data = {
-            "theme": getattr(record, "theme", ""),
-            "painting_intention": getattr(record, "painting_intention", ""),
-            "painting_feeling": getattr(record, "painting_feeling", ""),
-            "three_circles": getattr(record, "three_circles", {}),
-            "layer_0_raw": _layer0_dict(record),
-            "layer_1_lite_draft": (
-                record.layer_1_lite_draft.to_dict()
-                if getattr(record, "layer_1_lite_draft", None)
-                else None
-            ),
-        }
         narrative_plan = getattr(draft, "narrative_plan", {}) if draft else {}
         pro_projection = (
             narrative_plan.get("legacy_projection", {})
             if isinstance(narrative_plan, dict)
             else {}
         )
-        knowledge_skeleton = orchestrator.report_prompt_preview_builder.build_pro_knowledge_skeleton(
+        stage_process_package = orchestrator.report_prompt_preview_builder.build_pro_knowledge_skeleton(
             record,
             narrative_projection=pro_projection,
             imbalance_projection={},
@@ -261,10 +242,9 @@ def _prompt_parts(
             narrative_plan=narrative_plan if isinstance(narrative_plan, dict) else {},
         )
     prompt = str(getattr(draft, "prompt_preview", "") or "")
-    vision_json = json.dumps(vision_data, ensure_ascii=False, indent=2)
     theme_context = orchestrator.report_prompt_preview_builder.build_theme_prompt_context(record)
     legacy_runtime_container = _layer0_dict(record)
-    known_parts = len(vision_json) + len(theme_context) + len(knowledge_skeleton)
+    known_parts = len(stage_process_package) + len(theme_context)
     static_chars = max(len(prompt) - known_parts, 0)
     return {
         "canonical_method_source": "projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md",
@@ -288,16 +268,14 @@ def _prompt_parts(
             "stage-16-final-report",
         ],
         "compatibility_note": (
-            "Current backend prompt preview still serializes a legacy runtime container "
-            "named layer_0_raw. It is not the canonical report-generation method. "
-            "Token compression should target stage deliverables from the three-circle "
-            "five-element method, especially stage-03 through stage-12 inputs to "
-            "stage-13/stage-14."
+            "Current backend prompt preview feeds the LLM with a stage_process_package "
+            "built from stage deliverables and retrieved knowledge entries. The legacy "
+            "layer_0_raw container may still exist in storage/debug for compatibility, "
+            "but it must not be serialized wholesale into Lite/Pro generation prompts."
         ),
         "template_static_chars": static_chars,
-        "vision_data_chars": len(vision_json),
         "theme_context_chars": len(theme_context),
-        "knowledge_skeleton_chars": len(knowledge_skeleton),
+        "stage_process_package_chars": len(stage_process_package),
         "prompt_preview_chars": len(prompt),
         "approx_tokens_by_chars_div_2": _approx_tokens(len(prompt)),
         "legacy_runtime_container_breakdown_chars": _dict_breakdown_chars(

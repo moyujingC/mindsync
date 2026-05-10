@@ -79,21 +79,19 @@ class ReportPromptPreviewBuilder:
         projection: dict[str, Any] | None = None,
         narrative_plan: dict[str, Any] | None = None,
     ) -> str:
-        vision_payload = {
-            "theme": record.theme,
-            "painting_intention": record.painting_intention,
-            "painting_feeling": record.painting_feeling,
-            "three_circles": record.three_circles or {},
-            "layer_0_raw": record.layer_0_raw.to_dict() if record.layer_0_raw else None,
-        }
+        stage_process_package = self.build_lite_stage_process_package(
+            record,
+            projection=projection,
+            narrative_plan=narrative_plan,
+        )
         return self.prompt_builder.build_lite(
-            vision_data=json.dumps(vision_payload, ensure_ascii=False, indent=2),
+            vision_data=json.dumps(stage_process_package, ensure_ascii=False, indent=2),
             theme=record.theme or "general",
             theme_context=self.build_theme_prompt_context(record),
-            knowledge_skeleton=self.build_lite_knowledge_skeleton(
-                record,
-                projection=projection,
-                narrative_plan=narrative_plan,
+            stage_process_package=json.dumps(
+                stage_process_package,
+                ensure_ascii=False,
+                indent=2,
             ),
             extra_context={
                 "theme_label": self._get_theme_label(record.theme),
@@ -157,31 +155,80 @@ class ReportPromptPreviewBuilder:
         imbalance_profile: dict[str, Any] | None = None,
         narrative_plan: dict[str, Any] | None = None,
     ) -> str:
-        vision_payload = {
-            "theme": record.theme,
-            "painting_intention": record.painting_intention,
-            "painting_feeling": record.painting_feeling,
-            "three_circles": record.three_circles or {},
-            "layer_0_raw": record.layer_0_raw.to_dict() if record.layer_0_raw else None,
-            "layer_1_lite_draft": (
-                record.layer_1_lite_draft.to_dict()
-                if record.layer_1_lite_draft
-                else None
-            ),
-        }
+        stage_process_package = self.build_pro_stage_process_package(
+            record,
+            narrative_projection=narrative_projection,
+            imbalance_projection=imbalance_projection,
+            imbalance_profile=imbalance_profile,
+            narrative_plan=narrative_plan,
+        )
         return self.prompt_builder.build_pro(
-            vision_data=json.dumps(vision_payload, ensure_ascii=False, indent=2),
+            vision_data=json.dumps(stage_process_package, ensure_ascii=False, indent=2),
             theme=record.theme or "general",
             theme_context=self.build_theme_prompt_context(record),
-            knowledge_skeleton=self.build_pro_knowledge_skeleton(
-                record,
-                narrative_projection=narrative_projection,
-                imbalance_projection=imbalance_projection,
-                imbalance_profile=imbalance_profile,
-                narrative_plan=narrative_plan,
+            stage_process_package=json.dumps(
+                stage_process_package,
+                ensure_ascii=False,
+                indent=2,
             ),
             extra_context={
                 "theme_label": self._get_theme_label(record.theme),
+            },
+        )
+
+    def build_lite_stage_process_package(
+        self,
+        record: InterpretationRecord,
+        *,
+        projection: dict[str, Any] | None = None,
+        narrative_plan: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        layer0 = self._get_layer0_view(record)
+        projection_payload = projection if isinstance(projection, dict) else {}
+        plan_payload = narrative_plan if isinstance(narrative_plan, dict) else {}
+        return self._build_stage_process_package(
+            record,
+            layer0=layer0,
+            target_report="lite",
+            narrative_plan=plan_payload,
+            report_writing_inputs={"lite": projection_payload},
+        )
+
+    def build_pro_stage_process_package(
+        self,
+        record: InterpretationRecord,
+        *,
+        narrative_projection: dict[str, Any] | None = None,
+        imbalance_projection: dict[str, Any] | None = None,
+        imbalance_profile: dict[str, Any] | None = None,
+        narrative_plan: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        layer0 = self._get_layer0_view(record)
+        narrative_payload = (
+            narrative_projection if isinstance(narrative_projection, dict) else {}
+        )
+        imbalance_payload = (
+            imbalance_projection if isinstance(imbalance_projection, dict) else {}
+        )
+        profile_payload = imbalance_profile if isinstance(imbalance_profile, dict) else {}
+        plan_payload = narrative_plan if isinstance(narrative_plan, dict) else {}
+        lite_context = (
+            record.layer_1_lite_draft.to_dict()
+            if record.layer_1_lite_draft
+            else {}
+        )
+        return self._build_stage_process_package(
+            record,
+            layer0=layer0,
+            target_report="pro",
+            narrative_plan=plan_payload,
+            report_writing_inputs={
+                "pro": {
+                    "narrative_projection": narrative_payload,
+                    "imbalance_projection": imbalance_payload,
+                    "imbalance_profile": profile_payload,
+                    "lite_context_summary": self._summarize_lite_context(lite_context),
+                },
             },
         )
 
@@ -192,30 +239,15 @@ class ReportPromptPreviewBuilder:
         projection: dict[str, Any] | None = None,
         narrative_plan: dict[str, Any] | None = None,
     ) -> str:
-        theme_label = self._get_theme_label(record.theme)
-        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
-        layer0 = self._get_layer0_view(record)
-        primary_signal = self._get_primary_knowledge_signal(record)
-        projection_payload = projection if isinstance(projection, dict) else {}
-        plan_payload = narrative_plan if isinstance(narrative_plan, dict) else {}
-        runtime_evidence = self._build_runtime_evidence_payload(
-            layer0=layer0,
-            circles=circles,
-            primary_signal=primary_signal,
+        return json.dumps(
+            self.build_lite_stage_process_package(
+                record,
+                projection=projection,
+                narrative_plan=narrative_plan,
+            ),
+            ensure_ascii=False,
+            indent=2,
         )
-        skeleton = {
-            "generation_mode": "evidence_first",
-            "theme": record.theme or "general",
-            "theme_label": theme_label,
-            "user_input": {
-                "painting_intention": (record.painting_intention or "").strip(),
-                "painting_feeling": (record.painting_feeling or "").strip(),
-            },
-            "runtime_evidence": runtime_evidence,
-            "narrative_plan": plan_payload,
-            "compatibility_projection": projection_payload,
-        }
-        return json.dumps(skeleton, ensure_ascii=False, indent=2)
 
     def build_pro_knowledge_skeleton(
         self,
@@ -226,39 +258,17 @@ class ReportPromptPreviewBuilder:
         imbalance_profile: dict[str, Any] | None = None,
         narrative_plan: dict[str, Any] | None = None,
     ) -> str:
-        theme_label = self._get_theme_label(record.theme)
-        layer0 = self._get_layer0_view(record)
-        primary_signal = self._get_primary_knowledge_signal(record)
-        narrative_payload = (
-            narrative_projection if isinstance(narrative_projection, dict) else {}
+        return json.dumps(
+            self.build_pro_stage_process_package(
+                record,
+                narrative_projection=narrative_projection,
+                imbalance_projection=imbalance_projection,
+                imbalance_profile=imbalance_profile,
+                narrative_plan=narrative_plan,
+            ),
+            ensure_ascii=False,
+            indent=2,
         )
-        imbalance_payload = (
-            imbalance_projection if isinstance(imbalance_projection, dict) else {}
-        )
-        profile_payload = imbalance_profile if isinstance(imbalance_profile, dict) else {}
-        plan_payload = narrative_plan if isinstance(narrative_plan, dict) else {}
-        runtime_evidence = self._build_runtime_evidence_payload(
-            layer0=layer0,
-            circles=record.three_circles or {"inner_radius": 33, "middle_radius": 66},
-            primary_signal=primary_signal,
-        )
-        skeleton = {
-            "generation_mode": "evidence_first",
-            "theme": record.theme or "general",
-            "theme_label": theme_label,
-            "user_input": {
-                "painting_intention": (record.painting_intention or "").strip(),
-                "painting_feeling": (record.painting_feeling or "").strip(),
-            },
-            "runtime_evidence": runtime_evidence,
-            "narrative_plan": plan_payload,
-            "compatibility_projection": {
-                "narrative_projection": narrative_payload,
-                "imbalance_projection": imbalance_payload,
-                "imbalance_profile": profile_payload,
-            },
-        }
-        return json.dumps(skeleton, ensure_ascii=False, indent=2)
 
     def build_feeling_hint(self, record: InterpretationRecord) -> str:
         feeling = (record.painting_feeling or "").strip()
@@ -367,3 +377,376 @@ class ReportPromptPreviewBuilder:
             "fallback_summary": getattr(layer0, "fallback_summary", {}) or {},
             "imbalance_candidates": getattr(layer0, "imbalance_candidates", []) or [],
         }
+
+    def _build_stage_process_package(
+        self,
+        record: InterpretationRecord,
+        *,
+        layer0: Layer0Raw,
+        target_report: str,
+        narrative_plan: dict[str, Any],
+        report_writing_inputs: dict[str, Any],
+    ) -> dict[str, Any]:
+        circles = record.three_circles or {"inner_radius": 33, "middle_radius": 66}
+        primary_signal = self._get_primary_knowledge_signal(record)
+        rule_evaluations = (
+            getattr(layer0, "rule_evaluations", {}) or {}
+            if isinstance(getattr(layer0, "rule_evaluations", {}), dict)
+            else {}
+        )
+        visual_basis = (
+            getattr(layer0, "visual_analysis_basis", {}) or {}
+            if isinstance(getattr(layer0, "visual_analysis_basis", {}), dict)
+            else {}
+        )
+        visual_facts = (
+            getattr(layer0, "visual_facts", {}) or {}
+            if isinstance(getattr(layer0, "visual_facts", {}), dict)
+            else {}
+        )
+        knowledge_hits = (
+            getattr(layer0, "knowledge_hits", {}) or {}
+            if isinstance(getattr(layer0, "knowledge_hits", {}), dict)
+            else {}
+        )
+        theme_projection = (
+            getattr(layer0, "theme_projection", {}) or {}
+            if isinstance(getattr(layer0, "theme_projection", {}), dict)
+            else {}
+        )
+        consolidated = self._build_consolidated_evidence(
+            layer0=layer0,
+            rule_evaluations=rule_evaluations,
+            visual_basis=visual_basis,
+            knowledge_hits=knowledge_hits,
+            primary_signal=primary_signal,
+        )
+        return {
+            "process_contract": {
+                "method_source": (
+                    "projects/aimandala/docs/sources/知识库构建/"
+                    "三圈五行流派解读方法与步骤.md"
+                ),
+                "generation_mode": "stage_based_retrieved_evidence",
+                "target_report": target_report,
+                "token_policy": (
+                    "Do not load full Markdown truth sources into this prompt. "
+                    "Use only stage deliverables and cited knowledge entries."
+                ),
+                "forbidden_inputs": [
+                    "full_markdown_truth_sources",
+                    "full_theme_knowledge_documents",
+                    "raw_layer_0_container",
+                    "private_env_or_api_keys",
+                ],
+            },
+            "stage-00-input-context": {
+                "knowledge_runtime_version": self._safe_get(
+                    getattr(layer0, "input_package", {}) or {},
+                    ["runtime", "knowledge_runtime_version"],
+                    "",
+                ),
+                "report_target": target_report,
+            },
+            "stage-01-user-input-context": {
+                "theme": record.theme or "general",
+                "theme_label": self._get_theme_label(record.theme),
+                "painting_intention": (record.painting_intention or "").strip(),
+                "painting_feeling": (record.painting_feeling or "").strip(),
+            },
+            "stage-02-circle-boundary-decision": {
+                "inner_middle_radius": circles.get("inner_radius", 33),
+                "middle_outer_radius": circles.get("middle_radius", 66),
+                "radius_unit": "normalized_percent",
+                "boundary_source": self._safe_get(
+                    getattr(layer0, "input_package", {}) or {},
+                    ["circle_config", "source"],
+                    "manual_or_runtime",
+                ),
+                "locked": True,
+            },
+            "stage-03-visual-evidence": self._compact_visual_evidence(
+                visual_basis=visual_basis,
+                visual_facts=visual_facts,
+            ),
+            "stage-04-direct-judgment-high-hit-check": self._compact_direct_judgments(
+                visual_basis=visual_basis,
+                rule_evaluations=rule_evaluations,
+            ),
+            "stage-05-per-circle-color-shape-element-sensing": (
+                self._compact_element_sensing(layer0=layer0, visual_basis=visual_basis)
+            ),
+            "stage-06-per-circle-element-generation-control": (
+                self._compact_generation_control(rule_evaluations=rule_evaluations)
+            ),
+            "stage-07-per-circle-imbalance-patterns": (
+                self._compact_imbalance_patterns(
+                    rule_evaluations=rule_evaluations,
+                    primary_signal=primary_signal,
+                )
+            ),
+            "stage-08-energy-flow-diagnosis": {
+                "circle_dominants": {
+                    "inner": layer0.three_circles.inner.get("dominant", "未识别"),
+                    "middle": layer0.three_circles.middle.get("dominant", "未识别"),
+                    "outer": layer0.three_circles.outer.get("dominant", "未识别"),
+                },
+                "transition": self._build_transition_summary(layer0),
+                "micro_relations": {
+                    "adjacent": list(layer0.micro_analysis.adjacent or [])[:6],
+                    "wrap": list(layer0.micro_analysis.wrap or [])[:6],
+                },
+            },
+            "stage-09-evidence-consolidation": consolidated,
+            "stage-10-core-thesis-selection": self._extract_stage_plan(
+                narrative_plan,
+                "stage-10-core-thesis-selection",
+                fallback_keys=("core_thesis", "thesis", "main_axis"),
+            ),
+            "stage-11-user-facing-framing": self._extract_stage_plan(
+                narrative_plan,
+                "stage-11-user-facing-framing",
+                fallback_keys=("user_facing_framing", "framing", "sections"),
+            ),
+            "stage-12-healing-direction-and-report-branching": {
+                "plan": self._extract_stage_plan(
+                    narrative_plan,
+                    "stage-12-healing-direction-and-report-branching",
+                    fallback_keys=("healing_direction", "report_branching"),
+                ),
+                "report_writing_inputs": report_writing_inputs,
+                "theme_projection_refs": self._compact_theme_projection(
+                    theme_projection
+                ),
+            },
+        }
+
+    def _compact_visual_evidence(
+        self,
+        *,
+        visual_basis: dict[str, Any],
+        visual_facts: dict[str, Any],
+    ) -> dict[str, Any]:
+        circles = visual_basis.get("circles") if isinstance(visual_basis, dict) else {}
+        compact_circles: dict[str, Any] = {}
+        if isinstance(circles, dict):
+            for circle_key in ("inner", "middle", "outer"):
+                circle = circles.get(circle_key, {})
+                if not isinstance(circle, dict):
+                    continue
+                compact_circles[circle_key] = {
+                    "observation_summary": circle.get("observation_summary", ""),
+                    "palette": circle.get("palette", [])[:6]
+                    if isinstance(circle.get("palette"), list)
+                    else circle.get("palette", []),
+                    "visual_units": circle.get("visual_units", [])[:8]
+                    if isinstance(circle.get("visual_units"), list)
+                    else [],
+                    "evidence_refs": circle.get("evidence_refs", [])[:8]
+                    if isinstance(circle.get("evidence_refs"), list)
+                    else [],
+                }
+        return {
+            "global_visual_summary": visual_basis.get("global_visual_summary", ""),
+            "circles": compact_circles,
+            "circle_band_metrics": visual_basis.get("circle_band_metrics", {}),
+            "visual_fact_refs": self._compact_refs(visual_facts, max_items=12),
+            "prompt_meta": visual_basis.get("prompt_meta", {}),
+        }
+
+    def _compact_direct_judgments(
+        self,
+        *,
+        visual_basis: dict[str, Any],
+        rule_evaluations: dict[str, Any],
+    ) -> dict[str, Any]:
+        direct = visual_basis.get("direct_judgment_hits", {})
+        if not isinstance(direct, dict):
+            direct = {}
+        return {
+            "catalog_version": direct.get("catalog_version", ""),
+            "hits": self._limit_list(direct.get("hits", []), 12),
+            "candidate_items": self._limit_list(direct.get("catalog_items", []), 12),
+            "rule_trace": self._compact_refs(
+                rule_evaluations.get("direct_judgment_trace", {}),
+                max_items=12,
+            ),
+        }
+
+    def _compact_element_sensing(
+        self,
+        *,
+        layer0: Layer0Raw,
+        visual_basis: dict[str, Any],
+    ) -> dict[str, Any]:
+        return {
+            "element_distribution": self._get_layer0_element_distribution(layer0)[:5],
+            "circle_colors": getattr(layer0, "circle_colors", None) or {},
+            "color_analysis_summary": self._compact_refs(
+                getattr(layer0, "color_analysis", {}) or {},
+                max_items=12,
+            ),
+            "circle_observation_refs": {
+                key: value.get("observation_summary", "")
+                for key, value in (visual_basis.get("circles", {}) or {}).items()
+                if isinstance(value, dict)
+            },
+        }
+
+    def _compact_generation_control(
+        self,
+        *,
+        rule_evaluations: dict[str, Any],
+    ) -> dict[str, Any]:
+        return {
+            "element_states": self._limit_list(
+                rule_evaluations.get("element_states", []),
+                12,
+            ),
+            "triad_states": self._limit_list(
+                rule_evaluations.get("triad_states", []),
+                12,
+            ),
+            "theme_mapping_refs": self._compact_refs(
+                rule_evaluations.get("theme_mapping_trace", {}),
+                max_items=12,
+            ),
+        }
+
+    def _compact_imbalance_patterns(
+        self,
+        *,
+        rule_evaluations: dict[str, Any],
+        primary_signal: str | None,
+    ) -> dict[str, Any]:
+        imbalance_trace = rule_evaluations.get("imbalance_trace", {})
+        return {
+            "primary_signal": self._get_signal_label(primary_signal)
+            if primary_signal
+            else "",
+            "primary_candidates": self._limit_list(
+                imbalance_trace.get("primary_candidates", [])
+                if isinstance(imbalance_trace, dict)
+                else [],
+                12,
+            ),
+            "synthetic_signal": imbalance_trace.get("synthetic_signal", {})
+            if isinstance(imbalance_trace, dict)
+            else {},
+        }
+
+    def _build_consolidated_evidence(
+        self,
+        *,
+        layer0: Layer0Raw,
+        rule_evaluations: dict[str, Any],
+        visual_basis: dict[str, Any],
+        knowledge_hits: dict[str, Any],
+        primary_signal: str | None,
+    ) -> dict[str, Any]:
+        return {
+            "primary_signal": self._get_signal_label(primary_signal)
+            if primary_signal
+            else "",
+            "knowledge_refs": self._compact_refs(knowledge_hits, max_items=20),
+            "rule_refs": self._compact_refs(rule_evaluations, max_items=20),
+            "visual_basis_refs": {
+                "global_visual_summary": visual_basis.get("global_visual_summary", ""),
+                "direct_judgment_hits_count": len(
+                    visual_basis.get("direct_judgment_hits", {}).get("hits", [])
+                    if isinstance(visual_basis.get("direct_judgment_hits"), dict)
+                    else []
+                ),
+            },
+            "fidelity_flags": list(getattr(layer0, "fidelity_flags", []) or []),
+            "fallback_summary": getattr(layer0, "fallback_summary", {}) or {},
+            "imbalance_candidates": list(
+                getattr(layer0, "imbalance_candidates", []) or []
+            )[:12],
+        }
+
+    def _compact_theme_projection(self, theme_projection: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "keys": sorted(theme_projection.keys()) if isinstance(theme_projection, dict) else [],
+            "summary": self._compact_refs(theme_projection, max_items=12),
+        }
+
+    def _build_transition_summary(self, layer0: Layer0Raw) -> str:
+        inner = layer0.three_circles.inner.get("dominant", "")
+        middle = layer0.three_circles.middle.get("dominant", "")
+        outer = layer0.three_circles.outer.get("dominant", "")
+        if inner or middle or outer:
+            return f"内圈{inner or '未识别'} -> 中圈{middle or '未识别'} -> 外圈{outer or '未识别'}"
+        return ""
+
+    def _extract_stage_plan(
+        self,
+        narrative_plan: dict[str, Any],
+        stage_key: str,
+        *,
+        fallback_keys: tuple[str, ...],
+    ) -> Any:
+        if not isinstance(narrative_plan, dict):
+            return {}
+        if stage_key in narrative_plan:
+            return narrative_plan[stage_key]
+        stages = narrative_plan.get("stages")
+        if isinstance(stages, dict) and stage_key in stages:
+            return stages[stage_key]
+        sections = narrative_plan.get("sections")
+        if isinstance(sections, dict):
+            found = {
+                key: sections[key]
+                for key in fallback_keys
+                if key in sections
+            }
+            if found:
+                return found
+        return {
+            key: narrative_plan[key]
+            for key in fallback_keys
+            if key in narrative_plan
+        }
+
+    def _summarize_lite_context(self, lite_context: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(lite_context, dict) or not lite_context:
+            return {}
+        return {
+            "title": lite_context.get("title", ""),
+            "overall_impression": lite_context.get("overall_impression", ""),
+            "visual_elements": lite_context.get("visual_elements", ""),
+            "emotion_portrait": lite_context.get("emotion_portrait", ""),
+            "theme_insights": lite_context.get("theme_insights", {}),
+        }
+
+    def _compact_refs(self, payload: Any, *, max_items: int) -> Any:
+        if isinstance(payload, dict):
+            compact: dict[str, Any] = {}
+            for index, (key, value) in enumerate(payload.items()):
+                if index >= max_items:
+                    break
+                if isinstance(value, (str, int, float, bool)) or value is None:
+                    compact[key] = value
+                elif isinstance(value, list):
+                    compact[key] = self._limit_list(value, min(max_items, 8))
+                elif isinstance(value, dict):
+                    compact[key] = self._compact_refs(value, max_items=min(max_items, 8))
+                else:
+                    compact[key] = str(value)
+            return compact
+        if isinstance(payload, list):
+            return self._limit_list(payload, max_items)
+        return payload
+
+    def _limit_list(self, value: Any, max_items: int) -> list[Any]:
+        if not isinstance(value, list):
+            return []
+        return value[:max_items]
+
+    def _safe_get(self, payload: Any, path: list[str], default: Any) -> Any:
+        current = payload
+        for key in path:
+            if not isinstance(current, dict) or key not in current:
+                return default
+            current = current[key]
+        return current
