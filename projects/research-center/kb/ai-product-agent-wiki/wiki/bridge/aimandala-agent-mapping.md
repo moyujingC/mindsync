@@ -2,7 +2,7 @@
 
 ## Definition
 
-一镜一梳当前已经有 workflow、知识运行时和报告生成层；后续如果要加 Agent，最自然的方向是把这些能力组织成单智能体工作流，再逐步抽象出可复用的 atoms。
+一镜一梳当前已经有 workflow、知识运行时和报告生成层；后续如果要加 Agent，先把 Lite / Pro 报告生成流程改造成 Report Agent，再在此基础上增加解释 Agent，会比一开始就直接做解释 Agent 更稳妥。
 
 ## Why It Matters
 
@@ -32,11 +32,13 @@
 - trace 记录 -> Agent 可解释性基础
 - eval set -> 报告质量、证据使用和风险边界验证
 
-更具体的第一版设计见 [[./mandala-interpreter-agent-design]]。它把 `MandalaInterpreterAgent` 收束为报告解读 Agent：只解释已有 Lite / Pro 报告、`school_interpretation_chain` 和 stage refs，不重新识别三圈，也不新增底层判断。
+更具体的路径见 [[./mandala-report-agent-path]]。这条路径先把报告生成 workflow 收束成 Report Agent，再把 `MandalaInterpreterAgent` 放到第二阶段，只解释已有 Lite / Pro 报告、`school_interpretation_chain` 和 stage refs，不重新识别三圈，也不新增底层判断。
 
 ## Related Atoms
 
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
+- [[../../atoms/bridge/report-generation-agent-should-come-before-explanation-agent]]
+- [[../../atoms/bridge/stage-packages-and-trace-should-be-first-class-agent-inputs]]
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 - [[../../atoms/dev/single-agent-before-multi-agent]]
@@ -51,4 +53,4 @@
 
 ## Open Questions
 
-- 哪些报告生成步骤值得独立成 agent 的职责边界。
+- 报告生成 Agent 是否应该先接管现有 stage package 组织，再逐步接入更强的 tool use。

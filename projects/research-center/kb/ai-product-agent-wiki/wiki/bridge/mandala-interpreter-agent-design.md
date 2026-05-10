@@ -8,6 +8,8 @@
 
 一镜一梳已经有 To C MVP 主路径、Lite / Pro 报告生成和 16 阶段解读流程。如果直接把这些能力拆成多 Agent，容易把已有 workflow 搞复杂。
 
+这也是为什么解释 Agent 更适合作为第二阶段：先把报告生成 Workflow Agent 化，等生成链路稳定后，再在其产物之上做解释层。
+
 更稳妥的做法是先做一个单 Agent：它只消费现有报告链路的事实，把复杂的解读过程翻译成用户能理解的话，并在证据不足、边界不清或风险较高时进入降级或人工介入。
 
 ## Scope
@@ -298,4 +300,4 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 ## Open Questions
 
 - 用户侧是否需要展示简化 trace，还是先只在内部用于解释和复盘。
-- `MandalaInterpreterAgent` 第一版是否只服务 Pro 报告，还是 Lite / Pro 都覆盖。
+- `MandalaInterpreterAgent` 是否应该在报告生成 Agent 稳定后再单独落地。

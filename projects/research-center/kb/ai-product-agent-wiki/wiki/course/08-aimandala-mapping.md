@@ -32,6 +32,7 @@
 ## Concepts
 
 - [[../bridge/aimandala-agent-mapping]]
+- [[../bridge/mandala-report-agent-path]]
 - [[../bridge/mandala-interpreter-agent-design]]
 - [[../bridge/mandala-interpreter-agent-evals]]
 - [[../bridge/mandala-interpreter-agent-examples]]
@@ -49,9 +50,9 @@
 
 一镜一梳当前更像 workflow 加 runtime。课程学习的目标不是立刻把它改成复杂多 Agent 系统，而是把 Agent 概念映射成可用的产品和技术检查表。
 
-可以先把 `LayeredOrchestrator` 看成底层编排，把 knowledge runtime、LLM report runtime 和 safety wrapper 看成工具或子能力，再在上层定义 `MandalaInterpreterAgent` 的目标、状态、trace、eval 和 guardrails。
+可以先把 `LayeredOrchestrator` 看成底层编排，把 knowledge runtime、LLM report runtime 和 safety wrapper 看成工具或子能力，再先落 `MandalaReportAgent`，后落 `MandalaInterpreterAgent`。
 
-`MandalaInterpreterAgent` 的第一版不应该重新生成报告，而应该解释已有报告。它的事实基础来自 Lite / Pro 报告、`school_interpretation_chain` 和 stage 09-16 的过程引用。
+`MandalaReportAgent` 应优先处理报告生成过程里的证据组织、stage 顺序、来源绑定和质检。`MandalaInterpreterAgent` 则放在第二阶段，解释已有报告和证据链。
 
 它的 eval 样本应同时覆盖正常解释、证据不足和边界风险，避免只验证“回答顺不顺”，却没有验证“是否守住边界”。
 
@@ -63,4 +64,4 @@
 
 ## Practice
 
-把 `LayeredOrchestrator`、knowledge runtime、LLM report runtime、safety wrapper 和 stage refs 映射到 `MandalaInterpreterAgent` 的目标、工具、状态、trace、eval 和 guardrails，并用抽象 eval 样本和用户解释样例检查正常、降级和人工介入路径。
+把 `LayeredOrchestrator`、knowledge runtime、LLM report runtime、safety wrapper 和 stage refs 先映射到 `MandalaReportAgent`，再映射到 `MandalaInterpreterAgent` 的目标、工具、状态、trace、eval 和 guardrails，并用抽象 eval 样本和用户解释样例检查正常、降级和人工介入路径。
