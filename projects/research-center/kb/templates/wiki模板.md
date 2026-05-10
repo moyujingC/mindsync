@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：YYYY-MM-DD
-> source_of_truth：projects/research-center/kb/wiki/<topic>/<slug>.md
+> source_of_truth：projects/research-center/kb/templates/wiki模板.md
 
 ## 当前结论
 

@@ -10,6 +10,7 @@
 
 ## 基本规则
 
+- 默认使用中文写文件名和正文；行业中更常用的英文专有名词可以保留，并在首次出现时补充中文解释。
 - 不允许无来源直接写 wiki。
 - 不允许把 AI 讨论文本直接当作正式知识。
 - 每个重要 wiki 判断必须能回指 source 或 atom。
@@ -51,8 +52,8 @@ AI 讨论可以帮助梳理逻辑，但不能替代来源。来自 AI 讨论的�
 
 ## 模板使用
 
-- 新来源优先使用 `templates/source-template.md`。
-- 新原子知识优先使用 `templates/atom-template.md`。
-- 新 wiki 页优先使用 `templates/wiki-template.md`。
+- 新来源优先使用 `templates/来源模板.md`。
+- 新原子知识优先使用 `templates/原子知识模板.md`。
+- 新 wiki 页优先使用 `templates/wiki模板.md`。
 
 模板字段不够时可以补充，但不能删掉来源、边界和可信状态相关字段。
