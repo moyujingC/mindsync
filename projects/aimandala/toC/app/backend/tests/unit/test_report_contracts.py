@@ -1,6 +1,7 @@
 import asyncio
 from types import SimpleNamespace
 
+from app.core.pipeline.generation_runtime import DeterministicReportGenerationRuntime
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 from app.core.pipeline.report_contracts import ReportContractAssembler
 from app.core.pipeline.report_knowledge_debug import KnowledgeDebugBlockBuilder
@@ -17,6 +18,7 @@ def _create_orchestrator(tmp_path):
     orchestrator = LayeredOrchestrator(
         store=store,
         circle_detector=StubCircleDetector(),
+        generation_runtime=DeterministicReportGenerationRuntime(),
         enable_vision=True,
     )
     return orchestrator, image_path
@@ -33,7 +35,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
         )
     )
 
-    assembler = ReportContractAssembler(orchestrator.prompt_builder)
+    assembler = ReportContractAssembler()
     payload = assembler.build_report_payload(
         record=record,
         requested_version="lite",
@@ -42,7 +44,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     lite_contract = get_structured_report_contract("lite")
 
     assert payload["version"] == "lite"
-    assert payload["title"] == "慢慢亮起来的中心"
+    assert payload["title"]
     assert tuple(payload["structured"].keys()) == lite_contract.field_names
     assert payload["structured"]["prompt_schema_validation_issues"] == []
     assert payload["structured"]["topic_context"] == {
@@ -66,7 +68,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     }
     assert payload["structured"]["current_reading"] == payload["overall_impression"]
     assert payload["structured"]["visual_basis"]
-    assert "留承接空间" in payload["structured"]["visual_basis"] or "往前" in payload["structured"]["visual_basis"]
+    assert "stage-03" in payload["structured"]["visual_basis"]
     assert payload["structured"]["pattern_interpretation"]
     assert payload["structured"]["life_connection"]
     assert payload["structured"]["lite_healing_guidance"]["directions"]
@@ -95,7 +97,7 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     upgraded = orchestrator.store.load(record.interpretation_id)
     assert upgraded is not None
 
-    assembler = ReportContractAssembler(orchestrator.prompt_builder)
+    assembler = ReportContractAssembler()
     payload = assembler.build_report_payload(
         record=upgraded,
         requested_version="pro",
@@ -116,7 +118,7 @@ def test_report_contract_assembler_builds_pro_payload(tmp_path):
     assert "内圈" in payload["structured"]["evidence_digest"]
     assert "中圈" in payload["structured"]["evidence_digest"]
     assert "外圈" in payload["structured"]["evidence_digest"]
-    assert "更快" in payload["structured"]["evidence_digest"] or "更稳" in payload["structured"]["evidence_digest"]
+    assert "stage-08" in payload["structured"]["evidence_digest"]
     assert payload["structured"]["imbalance_diagnosis"]
     assert payload["structured"]["root_cause_chain"]
     assert payload["structured"]["deep_structure_interpretation"]
@@ -256,7 +258,7 @@ def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_pat
     upgraded = orchestrator.store.load(record.interpretation_id)
     assert upgraded is not None
 
-    assembler = ReportContractAssembler(orchestrator.prompt_builder)
+    assembler = ReportContractAssembler()
     payload = assembler.build_report_payload(
         record=upgraded,
         requested_version="lite",
@@ -304,7 +306,7 @@ def test_report_contract_assembler_rejects_unsupported_version(tmp_path):
         )
     )
 
-    assembler = ReportContractAssembler(orchestrator.prompt_builder)
+    assembler = ReportContractAssembler()
     payload = assembler.build_report_payload(
         record=record,
         requested_version="unknown",

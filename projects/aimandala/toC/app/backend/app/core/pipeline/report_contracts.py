@@ -5,8 +5,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from app.core.prompt.builder_v2 import PromptBuilder
-
 from .data_models import InterpretationRecord, Layer1LiteDraft, Layer3ProDraft
 from .report_blueprints import PRO_REPORT_BLUEPRINT
 from .structured_report_schema import get_structured_report_contract
@@ -120,16 +118,21 @@ TOPIC_ORIENTATION_PRESETS: dict[str, dict[str, Any]] = {
 
 
 class PromptSchemaValidator:
-    """Validate Lite/Pro structured payloads against prompt schema requirements."""
-
-    PROMPT_VERSION = "1.6"
-
-    def __init__(self, prompt_builder: PromptBuilder) -> None:
-        self.prompt_builder = prompt_builder
+    """Validate Lite/Pro draft payloads against the current structured contract."""
 
     def validate_lite(self, layer: Layer1LiteDraft) -> list[str]:
-        schema = self.prompt_builder.get_template(self.PROMPT_VERSION, "lite").load_schema()
-        required_fields = self._extract_required_prompt_fields(schema)
+        required_fields = [
+            "title",
+            "overall_impression",
+            "visual_elements",
+            "emotion_portrait",
+            "story",
+            "theme_scene",
+            "theme_impact",
+            "theme_awareness",
+            "three_awareness",
+            "pro_teaser",
+        ]
         values: dict[str, Any] = {
             "title": layer.title,
             "overall_impression": layer.overall_impression,
@@ -153,8 +156,15 @@ class PromptSchemaValidator:
         return self._collect_missing_required_fields(values, required_fields)
 
     def validate_pro(self, layer: Layer3ProDraft) -> list[str]:
-        schema = self.prompt_builder.get_template(self.PROMPT_VERSION, "pro").load_schema()
-        required_fields = self._extract_required_prompt_fields(schema)
+        required_fields = [
+            "first_impression",
+            "core_insight_table",
+            "three_circles_detailed",
+            "micro_analysis_detailed",
+            "imbalance_confirmed",
+            "root_cause",
+            "healing_suggestions",
+        ]
         values: dict[str, Any] = {
             "first_impression": layer.first_impression,
             "core_insight_table": layer.core_insight_table,
@@ -165,19 +175,6 @@ class PromptSchemaValidator:
             "healing_suggestions": layer.healing_suggestions,
         }
         return self._collect_missing_required_fields(values, required_fields)
-
-    def _extract_required_prompt_fields(self, schema: dict[str, Any]) -> list[str]:
-        fields = schema.get("fields", []) if isinstance(schema, dict) else []
-        required: list[str] = []
-        for field in fields:
-            if not isinstance(field, dict):
-                continue
-            if not field.get("required"):
-                continue
-            name = field.get("name")
-            if isinstance(name, str) and name:
-                required.append(name)
-        return required
 
     def _collect_missing_required_fields(
         self,
@@ -204,8 +201,8 @@ class PromptSchemaValidator:
 class ReportContractAssembler:
     """Assemble stable Lite/Pro report payloads for API responses."""
 
-    def __init__(self, prompt_builder: PromptBuilder) -> None:
-        self.validator = PromptSchemaValidator(prompt_builder)
+    def __init__(self) -> None:
+        self.validator = PromptSchemaValidator()
 
     def build_report_payload(
         self,

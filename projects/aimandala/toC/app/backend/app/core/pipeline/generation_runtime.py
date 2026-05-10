@@ -432,7 +432,7 @@ class LLMReportGenerationRuntime:
             "endpoint_id": self._resolve_llm_endpoint_id(task="chat"),
             "resolved_model": self._resolve_llm_model(task="chat"),
             "source": "llm_chat_generation" if error is None else "chat_generation_failed_blocking",
-            "prompt_version": "1.6",
+            "prompt_version": "stage-current",
             "error": error or "",
         }
         model_trace["chat_by_mode"] = chat_by_mode

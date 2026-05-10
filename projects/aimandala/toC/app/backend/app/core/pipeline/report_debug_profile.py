@@ -5,10 +5,9 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from app.core.prompt.builder_v2 import PromptBuilder
-
 from .data_models import InterpretationRecord
 from .report_contracts import PromptSchemaValidator
+from .structured_report_schema import get_structured_report_contract
 
 
 class ReportDebugProfileBuilder:
@@ -17,10 +16,8 @@ class ReportDebugProfileBuilder:
     def __init__(
         self,
         *,
-        prompt_builder: PromptBuilder,
         validator: PromptSchemaValidator,
     ) -> None:
-        self.prompt_builder = prompt_builder
         self.validator = validator
 
     def build(
@@ -85,7 +82,7 @@ class ReportDebugProfileBuilder:
                     "stage_process_package_excerpt": self._extract_stage_process_package_excerpt(
                         layer1.get("prompt_preview") if layer1 else None
                     ),
-                    "schema": self.prompt_builder.get_template("1.6", "lite").load_schema(),
+                    "schema": self._structured_contract_payload("lite"),
                     "validation_issues": lite_validation_issues,
                 },
                 "pro": {
@@ -93,7 +90,7 @@ class ReportDebugProfileBuilder:
                     "stage_process_package_excerpt": self._extract_stage_process_package_excerpt(
                         layer3.get("prompt_preview") if layer3 else None
                     ),
-                    "schema": self.prompt_builder.get_template("1.6", "pro").load_schema(),
+                    "schema": self._structured_contract_payload("pro"),
                     "validation_issues": pro_validation_issues,
                 },
             },
@@ -172,6 +169,17 @@ class ReportDebugProfileBuilder:
                 },
             },
         ]
+
+    def _structured_contract_payload(self, report_version: str) -> dict[str, Any]:
+        contract = get_structured_report_contract(report_version)
+        return {
+            "report_version": contract.report_version,
+            "schema_version": contract.schema_version,
+            "fields": [
+                {"name": field.name, "required": field.required}
+                for field in contract.fields
+            ],
+        }
 
     def _build_lite_field_provenance(
         self,

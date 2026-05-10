@@ -1,9 +1,8 @@
-"""Prompt building helpers for migrated V2 report generation."""
+"""Prompt building helpers for stage-based report generation."""
 
-from .builder_v2 import PromptBuilder, PromptTemplate, build_prompt
+from .builder_v2 import PromptBuilder, build_prompt
 
 __all__ = [
     "PromptBuilder",
-    "PromptTemplate",
     "build_prompt",
 ]

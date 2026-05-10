@@ -30,7 +30,7 @@ def install_report_foundation_components(
     """Attach report foundation services shared by all downstream helpers."""
 
     orchestrator.prompt_builder = PromptBuilder()
-    orchestrator.report_contracts = ReportContractAssembler(orchestrator.prompt_builder)
+    orchestrator.report_contracts = ReportContractAssembler()
     orchestrator.report_section_renderer = ReportSectionRenderer()
     orchestrator.report_knowledge_adapter = ReportKnowledgeAdapter(
         get_narrative_service=lambda: orchestrator.narrative_service,
@@ -43,7 +43,6 @@ def install_report_foundation_components(
         ),
     )
     orchestrator.report_debug_builder = ReportDebugProfileBuilder(
-        prompt_builder=orchestrator.prompt_builder,
         validator=orchestrator.report_contracts.validator,
     )
     orchestrator.knowledge_debug_builder = KnowledgeDebugBlockBuilder(

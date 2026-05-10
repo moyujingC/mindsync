@@ -1,4 +1,4 @@
-"""Unit tests for migrated V2 prompt builder."""
+"""Unit tests for the stage-based prompt builder."""
 
 import os
 import sys
@@ -8,20 +8,33 @@ sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
-from app.core.prompt.builder_v2 import PromptBuilder, PromptTemplate
+from app.core.prompt.builder_v2 import PromptBuilder
 
 
-def test_prompt_template_loads_lite_template_and_schema():
-    template = PromptTemplate(version="1.6", report_type="lite")
+def test_prompt_builder_builds_lite_prompt_without_legacy_template_files():
+    builder = PromptBuilder()
+    stage_process_package = json.dumps(
+        {
+            "process_contract": {
+                "generation_mode": "stage_based_runtime",
+                "target_report": "lite",
+            },
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
 
-    content = template.load()
-    schema = template.load_schema()
+    prompt = builder.build_lite(
+        vision_data=stage_process_package,
+        theme="wealth_career",
+        theme_context="- 当前主题：财富事业",
+        stage_process_package=stage_process_package,
+    )
 
-    assert "一镜 Lite 版解读报告模板 v1.6" in content
-    assert "第一段必须尽快命中用户当前状态" in content
-    assert "六段故事要像旧版一样形成递进" in content
-    assert schema["type"] == "lite"
-    assert schema["version"] == "1.6"
+    assert "第13步 Lite 报告生成 Prompt" in prompt
+    assert "三圈五行流派 Lite 报告写作者" in prompt
+    assert "lite-visual-basis-summary" in prompt
+    assert "lite_v1.6" not in prompt
 
 
 def test_prompt_builder_builds_lite_prompt_with_context():
@@ -50,7 +63,7 @@ def test_prompt_builder_builds_lite_prompt_with_context():
 
     assert "stage_based_retrieved_evidence" in prompt
     assert "- 当前主题：财富事业" in prompt
-    assert "在「财富事业」中的具体表现" in prompt
+    assert "Theme id: wealth_career" in prompt
 
 
 def test_prompt_builder_builds_pro_prompt_with_context():
@@ -78,8 +91,8 @@ def test_prompt_builder_builds_pro_prompt_with_context():
 
     assert "stage_based_retrieved_evidence" in prompt
     assert "- 当前主题：亲密关系" in prompt
-    assert "一梳 Pro 版解读报告模板 v1.6" in prompt
-    assert "不是 Lite 扩写版" in prompt
+    assert "第14步 Pro 报告生成 Prompt" in prompt
+    assert "不是 Lite 的加长版" in prompt
 
 
 def test_prompt_builder_includes_lite_stage_process_package_block():
@@ -110,8 +123,8 @@ def test_prompt_builder_includes_lite_stage_process_package_block():
     assert "Stage 过程交付物" in prompt
     assert '"stage_based_retrieved_evidence"' in prompt
     assert "向前先稳住的人" in prompt
-    assert "请只做语言润色，不要新增判断" in prompt
-    assert "你的目标不是只把字段填满" in prompt
+    assert "只使用输入中已有的证据和判断" in prompt
+    assert "lite-small-step-healing-card" in prompt
 
 
 def test_prompt_builder_includes_pro_stage_process_package_block():
@@ -142,8 +155,8 @@ def test_prompt_builder_includes_pro_stage_process_package_block():
     assert "Stage 过程交付物" in prompt
     assert '"target_report": "pro"' in prompt
     assert "关系耗散" in prompt
-    assert "你只能润色这些既有判断" in prompt
-    assert "这是一份独立深度报告，不是 Lite 扩写版" in prompt
+    assert "所有核心判断都必须能回到前置 stage" in prompt
+    assert "pro-root-cause-chain" in prompt
 
 
 def test_prompt_builder_preserves_stage_process_package_json():

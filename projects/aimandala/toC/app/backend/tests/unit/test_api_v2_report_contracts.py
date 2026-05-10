@@ -4,12 +4,46 @@ import os
 import shutil
 import sys
 import time
+from contextlib import contextmanager
 
+import pytest
 from fastapi.testclient import TestClient
 
 sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+
+
+LLM_ENV_KEYS = [
+    "AIMANDALA_LLM_BACKEND",
+    "AIMANDALA_LLM_BASE_URL",
+    "AIMANDALA_LLM_API_KEY",
+    "AIMANDALA_LLM_MODEL",
+    "DEEPSEEK_API_KEY",
+    "DEEPSEEK_BASE_URL",
+    "DEEPSEEK_MODEL",
+]
+
+
+@contextmanager
+def _without_llm_env():
+    original = {key: os.environ.get(key) for key in LLM_ENV_KEYS}
+    for key in LLM_ENV_KEYS:
+        os.environ.pop(key, None)
+    try:
+        yield
+    finally:
+        for key, value in original.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
+@pytest.fixture(autouse=True)
+def _force_deterministic_report_runtime():
+    with _without_llm_env():
+        yield
 
 
 def _reset_api_state() -> None:
@@ -59,10 +93,11 @@ def _manual_circle_payload(inner: int = 33, middle: int = 66) -> dict[str, int]:
 def test_api_v2_report_lifecycle_contract(tmp_path):
     from app.api.main import app
 
-    _reset_api_state()
-    client = TestClient(app)
-    image_path = tmp_path / "wealth-career-contract.png"
-    image_path.write_bytes(b"mock-image")
+    with _without_llm_env():
+        _reset_api_state()
+        client = TestClient(app)
+        image_path = tmp_path / "wealth-career-contract.png"
+        image_path.write_bytes(b"mock-image")
 
     create_response = client.post(
         "/api/v2/interpretations",
@@ -179,11 +214,21 @@ def test_api_v2_report_lifecycle_contract(tmp_path):
 
 def test_api_v2_report_chat_returns_llm_grounded_reply(tmp_path):
     from app.api.main import app
+    from app.api import routes_v2
 
-    _reset_api_state()
-    client = TestClient(app)
-    image_path = tmp_path / "general-chat-contract.png"
-    image_path.write_bytes(b"mock-image")
+    with _without_llm_env():
+        _reset_api_state()
+        client = TestClient(app)
+        image_path = tmp_path / "general-chat-contract.png"
+        image_path.write_bytes(b"mock-image")
+        orchestrator = routes_v2.get_orchestrator()
+
+        class FakeReportChatRuntime:
+            def reply(self, **kwargs):
+                assert kwargs["message"] == "我现在最需要留意什么？"
+                return "你现在最需要留意的是：先把画面里最明显的收拢感和最近的真实场景连起来看。"
+
+        orchestrator.report_chat_runtime = FakeReportChatRuntime()
 
     create_response = client.post(
         "/api/v2/interpretations",
@@ -312,8 +357,9 @@ def test_api_v2_create_interpretation_returns_failed_record_when_stage_package_b
 def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):
     from app.api.main import app
 
-    _reset_api_state()
-    client = TestClient(app)
+    with _without_llm_env():
+        _reset_api_state()
+        client = TestClient(app)
 
     general_image = tmp_path / "history-general.png"
     wealth_image = tmp_path / "history-wealth.png"
