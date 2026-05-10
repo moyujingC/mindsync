@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-05-10
-> source_of_truth：projects/research-center/kb/knowledge-studio/AGENTS.md
+> source_of_truth：projects/research-center/kb/AGENTS.md
 
 本目录用于把可追溯来源加工成可复用知识。Agent 在这里工作时，应优先维护 `sources -> atoms -> wiki` 的链路。
 

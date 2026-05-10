@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：YYYY-MM-DD
-> source_of_truth：projects/research-center/kb/knowledge-studio/sources/<topic>/<slug>.md
+> source_of_truth：projects/research-center/kb/sources/<topic>/<slug>.md
 
 ## 元数据
 
