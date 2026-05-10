@@ -1,4 +1,4 @@
-# Agent 设计要编码失败处理
+# Agent 设计应包含失败处理
 
 ## 断言
 
@@ -8,7 +8,7 @@ AI 产品里的失败处理不应只停留在体验文案，而应该进入 Agen
 
 - insight
 
-## 适用对象
+## 适用范围
 
 - bridge
 
@@ -20,8 +20,7 @@ AI 产品里的失败处理不应只停留在体验文案，而应该进入 Agen
 
 - 产品边界需要被翻译成技术状态机。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/dev/agent-loop]]
 - [[../../wiki/bridge/aimandala-agent-mapping]]
-

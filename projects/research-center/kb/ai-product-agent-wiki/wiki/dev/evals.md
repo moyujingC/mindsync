@@ -8,7 +8,7 @@ Evals（评测）是用样本、标准和记录来判断 Agent 是否真的做�
 
 Agent 的质量不只在最终文本里。它可能写出看似合理的答案，但中间选错证据、错用工具、跳过风险检查，或者在该人工介入时继续生成。
 
-## 产品经理视角
+## PM 视角
 
 产品经理要先定义“什么叫可接受”。对 AI 产品来说，评测标准通常包括：
 
@@ -18,7 +18,7 @@ Agent 的质量不只在最终文本里。它可能写出看似合理的答案�
 - 是否触发了该触发的风险边界
 - 是否把失败体验处理清楚
 
-## 开发视角
+## Dev 视角
 
 Agent eval 至少应覆盖三层：
 
@@ -28,7 +28,7 @@ Agent eval 至少应覆盖三层：
 
 最小做法可以先维护一组固定样本，每次改 prompt、工具或状态机后跑同一批样本并记录变化。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/dev/evals-are-mandatory-for-ai-products]]
 - [[../../atoms/dev/eval-tool-calls-and-decisions]]
@@ -38,7 +38,6 @@ Agent eval 至少应覆盖三层：
 - [[../sources/building-with-llms-notes]]
 - [[../sources/ai-product-strategy-notes]]
 
-## 待澄清问题
+## 待解问题
 
 - 一镜一梳第一批 eval 样本应该优先覆盖典型用户，还是优先覆盖风险和失败案例。
-

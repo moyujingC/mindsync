@@ -1,4 +1,4 @@
-# 06 多 Agent 设计
+# 06 多智能体设计
 
 ## 目标
 
@@ -16,7 +16,7 @@
 - [[../sources/ai-product-strategy-notes]]
 - [[../sources/building-with-llms-notes]]
 
-## Atom
+## 原子
 
 - [[../../atoms/pm/define-human-ai-boundary]]
 - [[../../atoms/dev/decompose-complex-tasks-before-generation]]
@@ -24,7 +24,7 @@
 - [[../../atoms/dev/multi-agent-needs-clear-reason]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
 
-## 概念页
+## 概念
 
 - [[../pm/ai-product-principles]]
 - [[../dev/agent-loop]]

@@ -1,4 +1,4 @@
-# State Machine（状态机）
+# 状态机（State Machine）
 
 ## 定义
 
@@ -10,7 +10,7 @@ State machine（状态机）是用有限状态描述 Agent 当前处境和下一
 
 状态机让继续、重试、降级、人工介入和结束都变成明确路径。
 
-## 产品经理视角
+## PM 视角
 
 状态机不是纯技术细节，它承接产品边界。
 
@@ -22,7 +22,7 @@ State machine（状态机）是用有限状态描述 Agent 当前处境和下一
 
 这些都需要产品判断，再落到状态设计。
 
-## 开发视角
+## Dev 视角
 
 一个最小 Agent 状态机可以包含：
 
@@ -45,7 +45,7 @@ State machine（状态机）是用有限状态描述 Agent 当前处境和下一
 - 失败出口
 - trace 记录字段
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/dev/agent-state-explains-next-action]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
@@ -55,7 +55,6 @@ State machine（状态机）是用有限状态描述 Agent 当前处境和下一
 - [[../sources/building-with-llms-notes]]
 - [[../sources/ai-product-strategy-notes]]
 
-## 待澄清问题
+## 待解问题
 
 - `MandalaInterpreterAgent` 的状态是否应该和现有 `LayeredOrchestrator` 阶段一一对应。
-

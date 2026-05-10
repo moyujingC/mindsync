@@ -1,4 +1,4 @@
-# 曼陀罗 Agent eval 必须覆盖边界
+# Mandala Agent 的 eval 必须覆盖边界
 
 ## 断言
 
@@ -8,7 +8,7 @@
 
 - decision
 
-## 适用对象
+## 适用范围
 
 - bridge
 
@@ -21,8 +21,7 @@
 - 正常样本只能证明 Agent 会解释，不能证明它会降级、拒绝越界或触发人工介入。
 - 对一镜一梳来说，证据不足和诊断诉求是最需要被评测锁住的边界。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/bridge/mandala-interpreter-agent-evals]]
 - [[../../wiki/bridge/mandala-interpreter-agent-design]]
-

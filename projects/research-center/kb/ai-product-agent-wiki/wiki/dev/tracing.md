@@ -10,7 +10,7 @@ Tracing（追踪）是记录 Agent 执行过程中的关键事件：目标、上
 
 Trace 让 Agent 从黑盒变成可复盘系统。
 
-## 产品经理视角
+## PM 视角
 
 产品经理不一定看完整技术日志，但需要能看懂高层 trace：
 
@@ -22,7 +22,7 @@ Trace 让 Agent 从黑盒变成可复盘系统。
 
 这些信息可以转成用户侧解释、客服排障、质量复盘和产品迭代输入。
 
-## 开发视角
+## Dev 视角
 
 一个实用 trace 不必记录所有 token，但要记录能复盘决策的事件：
 
@@ -39,7 +39,7 @@ Trace 让 Agent 从黑盒变成可复盘系统。
 
 Trace 字段要稳定，否则后续很难做统计、回放和自动评测。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/dev/trace-enables-agent-explainability]]
 - [[../../atoms/dev/eval-tool-calls-and-decisions]]
@@ -48,7 +48,6 @@ Trace 字段要稳定，否则后续很难做统计、回放和自动评测。
 
 - [[../sources/building-with-llms-notes]]
 
-## 待澄清问题
+## 待解问题
 
 - 一镜一梳是否需要面向用户展示简化 trace，还是先只用于内部调试和质量复盘。
-

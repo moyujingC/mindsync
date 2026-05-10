@@ -16,13 +16,13 @@
 - [[../sources/building-with-llms-notes]]
 - [[../sources/karpathy-llm-wiki]]
 
-## Atom
+## 原子
 
 - [[../../atoms/dev/context-engineering-beats-prompt-tweaking]]
 - [[../../atoms/dev/llm-wiki-uses-compiled-knowledge]]
 - [[../../atoms/dev/tools-should-be-few-clear-and-structured]]
 
-## 概念页
+## 概念
 
 - [[../dev/rag-vs-llm-wiki]]
 - [[../dev/agent-loop]]

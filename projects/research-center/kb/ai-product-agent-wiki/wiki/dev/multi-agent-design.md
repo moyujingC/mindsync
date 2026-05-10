@@ -1,4 +1,4 @@
-# 多 Agent 设计
+# Multi Agent Design（多智能体设计）
 
 ## 定义
 
@@ -8,7 +8,7 @@ Multi agent design 是把一个系统拆成多个智能体，让它们按职责�
 
 多智能体可以让复杂系统更模块化，但也会带来 handoff、协调、成本、延迟和责任归属问题。
 
-## 产品经理视角
+## PM 视角
 
 产品经理要先问：多 Agent 是否让用户问题更好解决。
 
@@ -21,7 +21,7 @@ Multi agent design 是把一个系统拆成多个智能体，让它们按职责�
 
 不值得拆分的情况是：只是为了让架构看起来高级。
 
-## 开发视角
+## Dev 视角
 
 多智能体至少要定义：
 
@@ -35,7 +35,7 @@ Multi agent design 是把一个系统拆成多个智能体，让它们按职责�
 
 如果这些定义不清楚，先回到单智能体。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/dev/single-agent-before-multi-agent]]
 - [[../../atoms/dev/multi-agent-needs-clear-reason]]
@@ -45,7 +45,6 @@ Multi agent design 是把一个系统拆成多个智能体，让它们按职责�
 - [[../sources/building-with-llms-notes]]
 - [[../sources/ai-product-strategy-notes]]
 
-## 待澄清问题
+## 待解问题
 
 - 一镜一梳未来是否需要独立 `ReviewerAgent`，取决于报告风险、质量标准和人工复核成本。
-

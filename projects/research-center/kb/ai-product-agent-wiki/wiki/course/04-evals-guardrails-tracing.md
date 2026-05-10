@@ -1,4 +1,4 @@
-# 04 Evals、Guardrails 与 Tracing
+# 04 评测、护栏与追踪
 
 ## 目标
 
@@ -16,7 +16,7 @@
 - [[../sources/building-with-llms-notes]]
 - [[../sources/ai-product-strategy-notes]]
 
-## Atom
+## 原子
 
 - [[../../atoms/dev/evals-are-mandatory-for-ai-products]]
 - [[../../atoms/dev/eval-tool-calls-and-decisions]]
@@ -24,7 +24,7 @@
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
 
-## 概念页
+## 概念
 
 - [[../dev/agent-loop]]
 - [[../dev/evals]]

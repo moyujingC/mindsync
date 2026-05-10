@@ -2,13 +2,13 @@
 
 ## 定义
 
-一镜一梳当前已经有 workflow、知识运行时和报告生成层；后续如果要加 Agent，最自然的方向是把这些能力组织成单智能体工作流，再逐步抽象出可复用的 atoms。
+一镜一梳当前已经有 workflow、知识运行时和报告生成层；后续如果要加 Agent，先把 Lite / Pro 报告生成流程改造成 Report Agent，再在此基础上增加解释 Agent，会比一开始就直接做解释 Agent 更稳妥。
 
 ## 为什么重要
 
 它可以把项目实践和知识库学习接起来，避免学习内容和真实项目脱节。
 
-## 产品经理视角
+## PM 视角
 
 要先判断哪些环节需要 AI 决策，哪些只是固定流程。
 
@@ -19,7 +19,7 @@
 - 它失败时是否能给出清楚体验？
 - 它是否能把高风险建议留给人工或保守输出？
 
-## 开发视角
+## Dev 视角
 
 可以先把现有 orchestrator 当作基础编排层，再逐步补 agent trace、state 和 review 机制。
 
@@ -32,11 +32,13 @@
 - trace 记录 -> Agent 可解释性基础
 - eval set -> 报告质量、证据使用和风险边界验证
 
-更具体的第一版设计见 [[./mandala-interpreter-agent-design]]。它把 `MandalaInterpreterAgent` 收束为报告解读 Agent：只解释已有 Lite / Pro 报告、`school_interpretation_chain` 和 stage refs，不重新识别三圈，也不新增底层判断。
+更具体的路径见 [[./mandala-report-agent-path]]。这条路径先把报告生成 workflow 收束成 Report Agent，再把 `MandalaInterpreterAgent` 放到第二阶段，只解释已有 Lite / Pro 报告、`school_interpretation_chain` 和 stage refs，不重新识别三圈，也不新增底层判断。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
+- [[../../atoms/bridge/report-generation-agent-should-come-before-explanation-agent]]
+- [[../../atoms/bridge/stage-packages-and-trace-should-be-first-class-agent-inputs]]
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 - [[../../atoms/dev/single-agent-before-multi-agent]]
@@ -49,6 +51,6 @@
 - [[../sources/ai-product-strategy-notes]]
 - [[../sources/building-with-llms-notes]]
 
-## 待澄清问题
+## 待解问题
 
-- 哪些报告生成步骤值得独立成 agent 的职责边界。
+- 报告生成 Agent 是否应该先接管现有 stage package 组织，再逐步接入更强的 tool use。

@@ -1,4 +1,4 @@
-# <Atom 标题>
+# <原子标题>
 
 ## 断言
 
@@ -8,7 +8,7 @@
 
 - fact | pattern | insight | decision
 
-## 适用对象
+## 适用范围
 
 - pm | dev | bridge
 
@@ -20,7 +20,6 @@
 
 - 用 1-3 条补充说明，不展开成长文。
 
-## 相关概念页
+## 相关概念
 
 - [[../wiki/dev/example-concept]]
-

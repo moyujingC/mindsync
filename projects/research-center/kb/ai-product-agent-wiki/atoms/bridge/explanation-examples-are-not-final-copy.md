@@ -8,7 +8,7 @@
 
 - decision
 
-## 适用对象
+## 适用范围
 
 - bridge
 
@@ -21,8 +21,7 @@
 - 解释样例可以帮助定义口径，但正式上线文案仍需要产品、品牌和风控复核。
 - 这样能避免把学习中的草案直接误升级成项目合同。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/bridge/mandala-interpreter-agent-examples]]
 - [[../../wiki/bridge/aimandala-agent-mapping]]
-

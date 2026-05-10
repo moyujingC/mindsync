@@ -1,6 +1,6 @@
 # 来源：Building with LLMs 笔记
 
-## 元信息
+## 元数据
 
 - type: skill
 - source_url: /Users/xinran/.agents/skills/building-with-llms/SKILL.md
@@ -12,19 +12,19 @@
 
 这份资料强调上下文工程、few-shot、分解任务、自我批评和评测，是把 LLM 做稳的基础方法。
 
-## 关键判断
+## 关键断言
 
 - 上下文工程比只改 prompt 更重要。
 - 复杂任务要拆解，不要一次让模型解决全部问题。
 - 评测和自检是稳定输出的前提。
 
-## 适合用于
+## 适合用在
 
-- AI PM: 识别产品是否需要更好的上下文，而不是更“聪明”的模型
-- Independent Dev: 设计 agent loop、tool use 和 eval
-- Aimandala: 优化报告生成与质量控制
+- AI PM：识别产品是否需要更好的上下文，而不是更“聪明”的模型
+- 独立开发：设计 agent loop、tool use 和 eval
+- 一镜一梳：优化报告生成与质量控制
 
-## 已创建 Atom
+## 已产出原子
 
 - [[../../atoms/dev/context-engineering-beats-prompt-tweaking]]
 - [[../../atoms/dev/decompose-complex-tasks-before-generation]]
@@ -37,7 +37,7 @@
 - [[../../atoms/dev/single-agent-before-multi-agent]]
 - [[../../atoms/dev/multi-agent-needs-clear-reason]]
 
-## 已更新概念页
+## 已更新概念
 
 - [[../dev/agent-loop]]
 - [[../dev/tool-design]]
@@ -49,6 +49,6 @@
 - [[../dev/multi-agent-design]]
 - [[../bridge/pm-to-agent-architecture]]
 
-## 待澄清问题
+## 待解问题
 
 - 一镜一梳的哪些质量问题更适合靠上下文解决，哪些更适合靠规则解决。

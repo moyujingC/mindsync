@@ -8,6 +8,8 @@
 
 一镜一梳已经有 To C MVP 主路径、Lite / Pro 报告生成和 16 阶段解读流程。如果直接把这些能力拆成多 Agent，容易把已有 workflow 搞复杂。
 
+这也是为什么解释 Agent 更适合作为第二阶段：先把报告生成 Workflow Agent 化，等生成链路稳定后，再在其产物之上做解释层。
+
 更稳妥的做法是先做一个单 Agent：它只消费现有报告链路的事实，把复杂的解读过程翻译成用户能理解的话，并在证据不足、边界不清或风险较高时进入降级或人工介入。
 
 ## 范围
@@ -41,7 +43,7 @@
 - 降级原因
 - 人工介入标记
 
-### 非目标
+### 不做什么
 
 - 不替代三圈人工确认
 - 不重跑视觉识别
@@ -207,7 +209,7 @@ Trace 应记录能复盘决策的关键事件，而不是只保存最终文本�
 
 对一镜一梳来说，stage refs 是 trace 的事实锚点。没有 stage refs，Agent 只能解释“自己说了什么”，不能解释“项目链路为什么得出这个判断”。
 
-## Evals（评测）
+## 评测（Eval）
 
 第一批 eval 可以覆盖四类样本：
 
@@ -227,7 +229,7 @@ Trace 应记录能复盘决策的关键事件，而不是只保存最终文本�
 - 是否触发应有 guardrails
 - 是否记录可复盘 trace
 
-## Guardrails（护栏）
+## 护栏（Guardrails）
 
 `MandalaInterpreterAgent` 的护栏应放在解释前、中、后，而不是只在最终输出后检查。
 
@@ -244,7 +246,7 @@ Trace 应记录能复盘决策的关键事件，而不是只保存最终文本�
 - 如果 stage refs 缺失或冲突，不能输出完整解释。
 - 如果用户问题要求确定性诊断，必须降级或人工介入。
 
-## 产品经理视角
+## PM 视角
 
 PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生成产品。
 
@@ -255,7 +257,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 - 告诉用户哪些部分是确定的，哪些只是可能性
 - 帮用户找到下一步轻量行动
 
-## 开发视角
+## Dev 视角
 
 开发者实现时应先保持单 Agent，不拆 `VisionAgent`、`KnowledgeAgent` 或 `ReviewerAgent`。
 
@@ -266,7 +268,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 3. 再补 guardrails 检查。
 4. 最后用固定样本做 eval。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
@@ -276,7 +278,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 - [[../../atoms/dev/trace-enables-agent-explainability]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 
-## 相关概念页
+## 相关概念
 
 - [[./aimandala-agent-mapping]]
 - [[./mandala-interpreter-agent-evals]]
@@ -295,7 +297,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 - Lite / Pro 流派保真报告生成要求保留 `school_interpretation_chain`。
 - 16 阶段流程中，stage 09-16 覆盖证据整合、主轴选择、用户表达框架、Lite / Pro 分流、报告草稿、可视化资产和最终质检。
 
-## 待澄清问题
+## 待解问题
 
 - 用户侧是否需要展示简化 trace，还是先只在内部用于解释和复盘。
-- `MandalaInterpreterAgent` 第一版是否只服务 Pro 报告，还是 Lite / Pro 都覆盖。
+- `MandalaInterpreterAgent` 是否应该在报告生成 Agent 稳定后再单独落地。

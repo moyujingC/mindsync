@@ -1,4 +1,4 @@
-# 用户可见解释应以证据为基础
+# 面向用户的解释应保持证据扎根
 
 ## 断言
 
@@ -8,7 +8,7 @@
 
 - pattern
 
-## 适用对象
+## 适用范围
 
 - bridge
 
@@ -21,8 +21,7 @@
 - 对 `MandalaInterpreterAgent` 来说，好解释不是更会安慰，而是让用户知道判断从哪里来。
 - 解释样例应保留证据、不确定性和边界提醒。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/bridge/mandala-interpreter-agent-examples]]
 - [[../../wiki/bridge/mandala-interpreter-agent-design]]
-

@@ -8,11 +8,11 @@ Agent loop 是智能体完成任务时反复执行的基本循环：理解目标
 
 没有 loop 的 AI 更像一次模型调用；有 loop 的 AI 才能处理多步骤任务和不确定结果。
 
-## 产品经理视角
+## PM 视角
 
 产品经理不需要实现 loop，但需要知道 loop 会影响成本、延迟、可靠性和用户等待体验。每多一轮工具调用或模型判断，都要有明确产品价值。
 
-## 开发视角
+## Dev 视角
 
 最小可用 agent loop 可以包含：
 
@@ -30,7 +30,7 @@ Agent loop 是智能体完成任务时反复执行的基本循环：理解目标
 - 是否需要人工介入
 - 最终输出如何评测
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/dev/context-engineering-beats-prompt-tweaking]]
 - [[../../atoms/dev/decompose-complex-tasks-before-generation]]
@@ -42,7 +42,6 @@ Agent loop 是智能体完成任务时反复执行的基本循环：理解目标
 - [[../sources/building-with-llms-notes]]
 - [[../sources/ai-product-strategy-notes]]
 
-## 待澄清问题
+## 待解问题
 
 - 一镜一梳的 `LayeredOrchestrator` 应该保留为 workflow，还是包进 `MandalaInterpreterAgent` 的 loop。
-

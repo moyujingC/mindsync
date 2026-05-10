@@ -1,4 +1,4 @@
-# Guardrails（护栏）
+# 护栏（Guardrails）
 
 ## 定义
 
@@ -8,7 +8,7 @@ Guardrails（护栏）是一组限制和检查，用来确保 Agent 不越过产
 
 AI 系统会在不确定上下文里生成内容和做决策。没有 guardrails，产品容易把“模型可能说什么”误当成“产品可以承诺什么”。
 
-## 产品经理视角
+## PM 视角
 
 PM 要定义 guardrails 的产品边界：
 
@@ -18,7 +18,7 @@ PM 要定义 guardrails 的产品边界：
 - 哪些失败应该向用户解释，哪些应该静默重试？
 - 产品承诺到哪里为止？
 
-## 开发视角
+## Dev 视角
 
 技术实现上，guardrails 可以放在多个位置：
 
@@ -32,7 +32,7 @@ PM 要定义 guardrails 的产品边界：
 
 不要只把 guardrails 放在最终输出后面。越晚检查，越难解释，也越难节省成本。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
@@ -42,7 +42,6 @@ PM 要定义 guardrails 的产品边界：
 - [[../sources/ai-product-strategy-notes]]
 - [[../sources/building-with-llms-notes]]
 
-## 待澄清问题
+## 待解问题
 
 - 一镜一梳里“解释命盘”和“人生建议”的边界应该如何分层表达。
-

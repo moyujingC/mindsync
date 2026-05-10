@@ -1,4 +1,4 @@
-# 03 Agent Loop 与状态
+# 03 Agent loop 与状态
 
 ## 目标
 
@@ -16,13 +16,13 @@
 - [[../sources/building-with-llms-notes]]
 - [[../sources/ai-product-strategy-notes]]
 
-## Atom
+## 原子
 
 - [[../../atoms/dev/decompose-complex-tasks-before-generation]]
 - [[../../atoms/dev/agent-state-explains-next-action]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
 
-## 概念页
+## 概念
 
 - [[../dev/agent-loop]]
 - [[../dev/state-machine]]

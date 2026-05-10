@@ -1,6 +1,6 @@
 # 来源：<标题>
 
-## 元信息
+## 元数据
 
 - type:
 - source_url:
@@ -12,30 +12,29 @@
 
 一句话说明这份资料主要讲什么。
 
-## 关键判断
+## 关键断言
 
 - claim 1
 - claim 2
 - claim 3
 
-## 适合用于
+## 适合用在
 
 - AI PM:
 - Independent Dev:
 - Aimandala:
 
-## 已创建 Atom
+## 已产出原子
 
 - [[../../atoms/pm/example-atom]]
 - [[../../atoms/dev/example-atom]]
 - [[../../atoms/bridge/example-atom]]
 
-## 已更新概念页
+## 已更新概念
 
 - [[../dev/example-concept]]
 - [[../pm/example-concept]]
 
-## 待澄清问题
+## 待解问题
 
 - question 1
-

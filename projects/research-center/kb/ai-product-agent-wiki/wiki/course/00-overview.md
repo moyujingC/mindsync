@@ -21,12 +21,12 @@
 - [[../sources/ai-product-strategy-notes]]
 - [[../sources/building-with-llms-notes]]
 
-## Atom
+## 原子
 
 - [[../../atoms/dev/llm-wiki-uses-compiled-knowledge]]
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 
-## 概念页
+## 概念
 
 - [[../dev/rag-vs-llm-wiki]]
 - [[../pm/ai-product-principles]]
@@ -35,4 +35,3 @@
 ## 备注
 
 这条课程路径不是一次性定稿，而是后续学习内容的主索引。新增资料时，先更新 source 和 atoms，再回到对应课程页补链接。
-

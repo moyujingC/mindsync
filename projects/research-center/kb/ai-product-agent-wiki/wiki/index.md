@@ -1,6 +1,6 @@
 # AI 产品 Agent 知识库索引
 
-## 当前重点
+## 当前关注
 
 - Karpathy LLM Wiki 模式
 - Agent 系统学习课程路径
@@ -20,7 +20,7 @@
 - [[course/07-product-view]]
 - [[course/08-aimandala-mapping]]
 
-## 入口页面
+## 入口页
 
 - [[sources/karpathy-llm-wiki]]
 - [[sources/ai-product-strategy-notes]]
@@ -37,6 +37,7 @@
 - [[dev/rag-vs-llm-wiki]]
 - [[bridge/pm-to-agent-architecture]]
 - [[bridge/aimandala-agent-mapping]]
+- [[bridge/mandala-report-agent-path]]
 - [[bridge/mandala-interpreter-agent-design]]
 - [[bridge/mandala-interpreter-agent-evals]]
 - [[bridge/mandala-interpreter-agent-examples]]
@@ -57,6 +58,8 @@
 - [[../../atoms/dev/single-agent-before-multi-agent]]
 - [[../../atoms/dev/multi-agent-needs-clear-reason]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
+- [[../../atoms/bridge/report-generation-agent-should-come-before-explanation-agent]]
+- [[../../atoms/bridge/stage-packages-and-trace-should-be-first-class-agent-inputs]]
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 - [[../../atoms/bridge/mandala-agent-evals-must-cover-boundaries]]
@@ -67,7 +70,7 @@
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 
-## 工作规则
+## 使用规则
 
 - 先写 source，再写 atom，再写 concept
 - 课程页只负责组织学习路径，不替代 source / atom / concept

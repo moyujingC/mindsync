@@ -1,4 +1,4 @@
-# 先单 Agent，再多 Agent
+# 先单智能体，后多智能体
 
 ## 断言
 
@@ -8,7 +8,7 @@
 
 - decision
 
-## 适用对象
+## 适用范围
 
 - dev
 
@@ -22,8 +22,7 @@
 - 单智能体更容易定义目标、工具、状态、trace 和 eval。
 - 过早多智能体会放大 handoff、责任归属、成本和调试复杂度。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/dev/single-agent-design]]
 - [[../../wiki/dev/multi-agent-design]]
-

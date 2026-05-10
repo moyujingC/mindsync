@@ -1,4 +1,4 @@
-# 05 单 Agent 设计
+# 05 单智能体设计
 
 ## 目标
 
@@ -16,14 +16,14 @@
 - [[../sources/building-with-llms-notes]]
 - [[../sources/ai-product-strategy-notes]]
 
-## Atom
+## 原子
 
 - [[../../atoms/dev/context-engineering-beats-prompt-tweaking]]
 - [[../../atoms/dev/decompose-complex-tasks-before-generation]]
 - [[../../atoms/dev/evals-are-mandatory-for-ai-products]]
 - [[../../atoms/dev/single-agent-before-multi-agent]]
 
-## 概念页
+## 概念
 
 - [[../dev/agent-loop]]
 - [[../dev/single-agent-design]]

@@ -16,14 +16,14 @@
 - [[../sources/ai-product-strategy-notes]]
 - [[../sources/building-with-llms-notes]]
 
-## Atom
+## 原子
 
 - [[../../atoms/pm/start-with-problem-not-ai]]
 - [[../../atoms/pm/define-human-ai-boundary]]
 - [[../../atoms/dev/evals-are-mandatory-for-ai-products]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 
-## 概念页
+## 概念
 
 - [[../pm/ai-product-principles]]
 - [[../bridge/pm-to-agent-architecture]]

@@ -8,7 +8,7 @@
 
 - pattern
 
-## 适用对象
+## 适用范围
 
 - dev
 
@@ -20,7 +20,6 @@
 
 - 这也是 workflow 和 agent loop 的基础。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/dev/agent-loop]]
-

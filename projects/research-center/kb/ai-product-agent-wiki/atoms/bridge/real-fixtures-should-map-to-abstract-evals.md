@@ -8,7 +8,7 @@
 
 - pattern
 
-## 适用对象
+## 适用范围
 
 - bridge
 
@@ -21,8 +21,7 @@
 - 抽象 eval 定义要评什么，真实 fixture 提供项目事实锚点。
 - 这样可以避免某个具体样本过早变成唯一标准。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/bridge/mandala-interpreter-agent-fixture-mapping]]
 - [[../../wiki/bridge/mandala-interpreter-agent-evals]]
-

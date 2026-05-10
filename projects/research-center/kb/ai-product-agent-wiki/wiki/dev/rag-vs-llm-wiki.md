@@ -1,4 +1,4 @@
-# RAG 与 LLM Wiki
+# RAG vs LLM Wiki（检索增强与知识编译）
 
 ## 定义
 
@@ -8,15 +8,15 @@ RAG 更强调“查询时取回资料并拼上下文”，LLM Wiki 更强调“�
 
 这决定了你的系统是偏临时检索，还是偏知识沉淀。
 
-## 产品经理视角
+## PM 视角
 
 如果目标是长期学习和复用，LLM Wiki 更适合作为知识资产管理方式。
 
-## 开发视角
+## Dev 视角
 
 需要把 raw、source、atom、wiki 分层，避免把原始材料和稳定知识混在一起。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/dev/llm-wiki-uses-compiled-knowledge]]
 
@@ -24,7 +24,6 @@ RAG 更强调“查询时取回资料并拼上下文”，LLM Wiki 更强调“�
 
 - [[../sources/karpathy-llm-wiki]]
 
-## 待澄清问题
+## 待解问题
 
 - 哪些内容应该停留在 atoms 层，哪些应该进入概念页。
-

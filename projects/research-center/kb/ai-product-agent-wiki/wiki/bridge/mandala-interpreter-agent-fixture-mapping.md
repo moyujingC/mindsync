@@ -33,9 +33,9 @@
 
 | 抽象 eval | 真实 fixture 锚点 | 为什么适合 | 备注 |
 | --- | --- | --- | --- |
-| 典型 Lite 解释 | `toc-mvp-fixture-001` Lite golden | 有 Lite 报告、debug trace 和人工 review，可验证“简洁、温和、回到画面依据” | 后续可补用户问题：“为什么报告建议先做小调整？” |
-| 典型 Pro 解释 | `toc-mvp-fixture-002` Pro golden | 有 Pro 报告、debug trace 和人工 review，可验证逐圈证据、机制链和疗愈路径解释 | 适合检查是否把 Pro 解释成 Lite 加长版 |
-| Lite / Pro 差异 | `toc-mvp-fixture-002` Lite + Pro golden | 同一 fixture 同时有 Lite 和 Pro，可观察两个层级如何不同 | 可作为新增 eval 样本候选 |
+| 典型 Lite 报告解释 | `toc-mvp-fixture-001` Lite golden | 有 Lite 报告、debug trace 和人工 review，可验证“简洁、温和、回到画面依据” | 后续可补用户问题：“为什么报告建议先做小调整？” |
+| 典型 Pro 报告解释 | `toc-mvp-fixture-002` Pro golden | 有 Pro 报告、debug trace 和人工 review，可验证逐圈证据、机制链和疗愈路径解释 | 适合检查是否把 Pro 解释成 Lite 加长版 |
+| Lite / Pro 差异解释 | `toc-mvp-fixture-002` Lite + Pro golden | 同一 fixture 同时有 Lite 和 Pro，可观察两个层级如何不同 | 可作为新增 eval 样本候选 |
 | 证据不足或引用缺失 | 暂无直接正式锚点 | 需要构造缺失 stage refs 或缺失 chain 字段的派生样本 | 不应直接篡改 golden，可在未来另建 negative fixture |
 | 边界风险或诊断诉求 | 任一 Lite / Pro fixture + 边界问题输入 | 风险来自用户问题，不一定来自报告内容 | 适合用固定报告加诊断诉求问题构造对话样本 |
 
@@ -54,7 +54,7 @@
 - 不在学习库里修改 fixture、debug 或 review。
 - 不把抽象 eval 的失败样本直接写入项目 golden。
 
-## 待补评测候选
+## 可补充的 eval 候选
 
 ### Lite / Pro 差异解释
 
@@ -69,7 +69,7 @@
 - 不把 Pro 描述成 Lite 的简单加长版。
 - 能回指同一 fixture 的 Lite / Pro 对照。
 
-### 基于 review 的解释
+### 人工 review 影响解释
 
 用户问题：
 
@@ -81,20 +81,20 @@
 - 区分 debug trace、report 和 review 的角色。
 - 不替代正式项目 QA 结论。
 
-## 相关 Atom
+## 相关原子
 
 - [[../../atoms/bridge/real-fixtures-should-map-to-abstract-evals]]
 - [[../../atoms/bridge/mandala-agent-evals-check-traceability]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
 
-## 相关概念页
+## 相关概念
 
 - [[./mandala-interpreter-agent-evals]]
 - [[./mandala-interpreter-agent-examples]]
 - [[./mandala-interpreter-agent-design]]
 - [[./aimandala-agent-mapping]]
 
-## 待澄清问题
+## 待解问题
 
 - 是否需要在学习库里单独建立 `fixture-derived-evals` 页面，还是继续把真实 fixture 映射保留在 bridge 层。
 - negative fixture 应该在项目侧正式创建，还是先用学习库里的抽象样本描述。

@@ -1,4 +1,4 @@
-# 曼陀罗 Agent eval 要检查可追溯性
+# Mandala Agent 的 eval 要检查可追溯性
 
 ## 断言
 
@@ -8,7 +8,7 @@
 
 - pattern
 
-## 适用对象
+## 适用范围
 
 - bridge
 
@@ -21,9 +21,8 @@
 - 如果解释无法回指来源，就算文字顺畅也不应视为通过。
 - Traceability（可追溯性）是区分“解释已有证据”和“重新编造判断”的关键。
 
-## 相关概念页
+## 相关概念
 
 - [[../../wiki/bridge/mandala-interpreter-agent-evals]]
 - [[../../wiki/dev/evals]]
 - [[../../wiki/dev/tracing]]
-

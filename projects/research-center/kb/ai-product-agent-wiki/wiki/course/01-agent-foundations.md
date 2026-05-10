@@ -16,13 +16,13 @@
 - [[../sources/ai-product-strategy-notes]]
 - [[../sources/building-with-llms-notes]]
 
-## Atom
+## 原子
 
 - [[../../atoms/pm/start-with-problem-not-ai]]
 - [[../../atoms/pm/define-human-ai-boundary]]
 - [[../../atoms/dev/decompose-complex-tasks-before-generation]]
 
-## 概念页
+## 概念
 
 - [[../pm/ai-product-principles]]
 - [[../dev/agent-loop]]
@@ -30,4 +30,3 @@
 ## 练习
 
 用一镜一梳报告链路做判断：哪些部分只是固定流程，哪些部分需要 Agent 决策。
-
