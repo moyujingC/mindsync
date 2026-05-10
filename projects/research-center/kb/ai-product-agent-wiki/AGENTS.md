@@ -1,7 +1,7 @@
-# AI Product Agent Wiki 协作说明
+# AI 产品 Agent 知识库协作说明
 
 > 状态：draft
-> owner：Research & Knowledge Lead
+> 负责人：Research & Knowledge Lead
 > source_of_truth：projects/research-center/kb/ai-product-agent-wiki/AGENTS.md
 
 这个目录用于收口 AI 产品与 Agent 开发相关的长期知识沉淀。

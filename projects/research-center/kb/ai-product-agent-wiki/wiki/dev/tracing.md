@@ -1,16 +1,16 @@
-# Tracing
+# Tracing（追踪）
 
-## Definition
+## 定义
 
 Tracing（追踪）是记录 Agent 执行过程中的关键事件：目标、上下文、工具调用、工具结果、状态变化、模型判断和最终输出。
 
-## Why It Matters
+## 为什么重要
 
 没有 trace，就只能看到结果。结果错了时，很难判断问题来自 prompt、上下文、工具、模型、状态机还是产品边界。
 
 Trace 让 Agent 从黑盒变成可复盘系统。
 
-## PM View
+## PM 视角
 
 产品经理不一定看完整技术日志，但需要能看懂高层 trace：
 
@@ -22,7 +22,7 @@ Trace 让 Agent 从黑盒变成可复盘系统。
 
 这些信息可以转成用户侧解释、客服排障、质量复盘和产品迭代输入。
 
-## Dev View
+## Dev 视角
 
 一个实用 trace 不必记录所有 token，但要记录能复盘决策的事件：
 
@@ -39,16 +39,15 @@ Trace 让 Agent 从黑盒变成可复盘系统。
 
 Trace 字段要稳定，否则后续很难做统计、回放和自动评测。
 
-## Related Atoms
+## 相关原子
 
 - [[../../atoms/dev/trace-enables-agent-explainability]]
 - [[../../atoms/dev/eval-tool-calls-and-decisions]]
 
-## Related Sources
+## 相关来源
 
 - [[../sources/building-with-llms-notes]]
 
-## Open Questions
+## 待解问题
 
 - 一镜一梳是否需要面向用户展示简化 trace，还是先只用于内部调试和质量复盘。
-

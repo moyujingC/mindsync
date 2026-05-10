@@ -1,26 +1,25 @@
-# Context Engineering Beats Prompt Tweaking
+# 上下文工程比反复调 prompt 更重要
 
-## Claim
+## 断言
 
 当 LLM 输出不稳定时，优先检查上下文是否足够，而不是只修改 prompt。
 
-## Type
+## 类型
 
 - pattern
 
-## Applies To
+## 适用范围
 
 - dev
 
-## Source
+## 来源
 
 - [[../../wiki/sources/building-with-llms-notes]]
 
-## Notes
+## 备注
 
 - 对 Agent 来说，上下文包括任务目标、工具结果、知识证据、历史状态和失败信息。
 
-## Related Concepts
+## 相关概念
 
 - [[../../wiki/dev/agent-loop]]
-

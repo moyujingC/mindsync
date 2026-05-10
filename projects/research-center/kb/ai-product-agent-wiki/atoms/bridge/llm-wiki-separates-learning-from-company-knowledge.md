@@ -1,26 +1,25 @@
-# LLM Wiki Separates Learning From Company Knowledge
+# LLM Wiki 将学习和公司知识分离
 
-## Claim
+## 断言
 
 学习中的 wiki 应该先保留为研究资产，稳定后再提炼进入公司级知识库。
 
-## Type
+## 类型
 
 - decision
 
-## Applies To
+## 适用范围
 
 - bridge
 
-## Source
+## 来源
 
 - [[../../wiki/sources/karpathy-llm-wiki]]
 
-## Notes
+## 备注
 
 - 这样可以避免把未消化的学习笔记直接升级成公司定稿。
 
-## Related Concepts
+## 相关概念
 
 - [[../../wiki/bridge/aimandala-agent-mapping]]
-

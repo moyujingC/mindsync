@@ -1,6 +1,6 @@
-# Source: Karpathy LLM Wiki
+# 来源：Karpathy LLM Wiki
 
-## Metadata
+## 元数据
 
 - type: gist
 - source_url: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
@@ -8,33 +8,33 @@
 - topic: llm-wiki
 - status: draft
 
-## One-line Summary
+## 一句话总结
 
 Karpathy 提议把 LLM 生成的学习结果逐步编译成可链接、可持续维护的 Markdown wiki，而不是每次都从原始资料临时问答。
 
-## Key Claims
+## 关键断言
 
 - LLM Wiki 的目标是把分散资料沉淀成可维护知识。
 - 原始资料、编译结果和最终 wiki 应该分层。
 - 学习过程本身也应该被持续回写。
 
-## Useful For
+## 适合用在
 
-- AI PM: 理解知识库产品的知识流分层
-- Independent Dev: 设计 raw/source/atom/wiki 的工作流
-- Aimandala: 为项目知识沉淀提供模板
+- AI PM：理解知识库产品的知识流分层
+- 独立开发：设计 raw/source/atom/wiki 的工作流
+- 一镜一梳：为项目知识沉淀提供模板
 
-## Atoms Created
+## 已产出原子
 
 - [[../../atoms/dev/llm-wiki-uses-compiled-knowledge]]
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 
-## Concepts Updated
+## 已更新概念
 
 - [[../dev/rag-vs-llm-wiki]]
 - [[../dev/tool-design]]
 - [[../bridge/aimandala-agent-mapping]]
 
-## Open Questions
+## 待解问题
 
 - 是否需要把学习中的中间判断抽成 atoms 层。

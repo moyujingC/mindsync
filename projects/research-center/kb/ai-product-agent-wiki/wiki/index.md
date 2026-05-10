@@ -1,6 +1,6 @@
-# AI Product Agent Wiki Index
+# AI 产品 Agent 知识库索引
 
-## Current Focus
+## 当前关注
 
 - Karpathy LLM Wiki 模式
 - Agent 系统学习课程路径
@@ -8,7 +8,7 @@
 - Agent 开发最小闭环
 - 一镜一梳项目映射
 
-## Course Path
+## 课程路径
 
 - [[course/00-overview]]
 - [[course/01-agent-foundations]]
@@ -20,7 +20,7 @@
 - [[course/07-product-view]]
 - [[course/08-aimandala-mapping]]
 
-## Entry Points
+## 入口页
 
 - [[sources/karpathy-llm-wiki]]
 - [[sources/ai-product-strategy-notes]]
@@ -43,7 +43,7 @@
 - [[bridge/mandala-interpreter-agent-examples]]
 - [[bridge/mandala-interpreter-agent-fixture-mapping]]
 
-## Atom Entry Points
+## Atom 入口
 
 - [[../../atoms/pm/start-with-problem-not-ai]]
 - [[../../atoms/pm/define-human-ai-boundary]]
@@ -70,7 +70,7 @@
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 - [[../../atoms/bridge/llm-wiki-separates-learning-from-company-knowledge]]
 
-## Working Rules
+## 使用规则
 
 - 先写 source，再写 atom，再写 concept
 - 课程页只负责组织学习路径，不替代 source / atom / concept

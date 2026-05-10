@@ -1,12 +1,12 @@
-# Ingest Log
+# 入库日志
 
-- 2026-05-09: created wiki skeleton and directory boundaries
-- 2026-05-09: added atoms layer, ingest templates, and first Karpathy LLM Wiki source/atom/concept pages
-- 2026-05-09: added first AI product manager and agent development source/atom/concept pages
-- 2026-05-10: added course-based Agent learning path from overview to Aimandala mapping
-- 2026-05-10: added Agent core concept layer for tools, state, evals, tracing, guardrails, single agent, multi agent, and PM-to-architecture mapping
-- 2026-05-10: added MandalaInterpreterAgent project mapping design for Aimandala report interpretation
-- 2026-05-10: added abstract MandalaInterpreterAgent eval samples for normal, degraded, and boundary-risk paths
-- 2026-05-10: added user-facing MandalaInterpreterAgent explanation examples for Lite, Pro, degraded, and boundary-risk cases
-- 2026-05-10: added fixture mapping from Aimandala ToC MVP golden assets to MandalaInterpreterAgent eval anchors
-- 2026-05-10: recorded report-generation-first path before explanation Agent for Aimandala
+- 2026-05-09：创建 wiki 骨架和目录边界。
+- 2026-05-09：新增 atoms 层、入库模板，以及第一批 Karpathy LLM Wiki 的 source / atom / concept 页面。
+- 2026-05-09：新增第一批 AI 产品经理和 Agent 开发相关的 source / atom / concept 页面。
+- 2026-05-10：新增从总览到一镜一梳映射的课程化 Agent 学习路径。
+- 2026-05-10：新增 Agent 核心概念层，覆盖工具、状态、eval、trace、guardrails、单智能体、多智能体和 PM 到架构映射。
+- 2026-05-10：在讨论明确“报告生成先于报告解释”后，新增 `MandalaReportAgent` / `MandalaInterpreterAgent` 项目映射。
+- 2026-05-10：新增 `MandalaInterpreterAgent` 抽象 eval 样本，覆盖正常、降级和边界风险路径。
+- 2026-05-10：新增 `MandalaInterpreterAgent` 面向用户的 Lite、Pro、降级和边界风险解释样例。
+- 2026-05-10：新增一镜一梳 To C MVP golden 资产到 `MandalaInterpreterAgent` eval 锚点的 fixture 映射。
+- 2026-05-10：记录一镜一梳应先做报告生成 Agent、再做解释 Agent 的路径。

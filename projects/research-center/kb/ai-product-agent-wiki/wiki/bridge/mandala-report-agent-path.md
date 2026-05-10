@@ -1,12 +1,12 @@
-# Mandala Report Agent Path
+# MandalaReportAgent 路径
 
-## Definition
+## 定义
 
 `Mandala Report Agent Path` 是一镜一梳把现有报告生成 workflow 先改造成 Agent 的路线。它的优先级高于解释 Agent，因为当前最需要先稳定的是 Lite / Pro 报告生成过程本身。
 
 第二阶段才是 `MandalaInterpreterAgent`：它基于稳定的报告、证据链、trace 和 guardrails，回答用户对报告的追问。
 
-## Why It Matters
+## 为什么重要
 
 最近一段时间围绕报告生成 workflow 的提交，反复在修同一类问题：
 
@@ -21,11 +21,11 @@
 1. 先把报告生成 workflow 变成受控的 Report Agent。
 2. 再把报告解释层抽成 Interpreter Agent。
 
-## Phase 1: Report Generation Agent
+## 阶段 1：报告生成 Agent
 
 这个阶段的目标是把现有的 Lite / Pro 报告生成链路 Agent 化，而不是把所有东西改成自由对话。
 
-### Responsibilities
+### 职责
 
 - 读取记录、图片、知识包和 stage package
 - 按固定 stage 组织报告生成
@@ -33,7 +33,7 @@
 - 在每个关键步骤做证据、来源和边界检查
 - 生成 Lite / Pro 报告草稿和最终质检结果
 
-### First Class Inputs
+### 一等输入
 
 - `stage package`
 - `knowledge runtime`
@@ -42,7 +42,7 @@
 - `guardrails`
 - `fixture / test sample`
 
-### Failure Modes It Should Prevent
+### 应避免的失败模式
 
 - 中间上下文丢失
 - 直接拿 prompt 替代 stage 组织
@@ -50,7 +50,7 @@
 - 诊断式或越界式输出混入报告
 - 最后一步才发现缺字段或缺来源
 
-## Phase 2: Report Interpretation Agent
+## 阶段 2：报告解释 Agent
 
 只有在报告生成 Agent 稳定后，才做解释 Agent。
 
@@ -63,13 +63,13 @@
 
 它不应该重做报告生成，也不应该重算三圈。
 
-## PM View
+## PM 视角
 
 对用户来说，最先需要稳定的是“报告生成是否可信”。如果生成本身还在反复改，过早加解释层只会把复杂度往后推。
 
 所以产品上应该先把报告生成 Agent 定义成主链，再把解释 Agent 作为后续交互层。
 
-## Dev View
+## Dev 视角
 
 开发者实现时，应该把报告生成 Agent 当成一个受控 workflow agent：
 
@@ -80,14 +80,14 @@
 
 这比单纯把一个大 prompt 包成 Agent 更能减少历史错误。
 
-## Related Atoms
+## 相关原子
 
 - [[../../atoms/bridge/report-generation-agent-should-come-before-explanation-agent]]
 - [[../../atoms/bridge/stage-packages-and-trace-should-be-first-class-agent-inputs]]
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/agent-design-should-encode-failure-handling]]
 
-## Related Concepts
+## 相关概念
 
 - [[./aimandala-agent-mapping]]
 - [[./mandala-interpreter-agent-design]]
@@ -101,8 +101,7 @@
 - [[../dev/guardrails]]
 - [[../pm/ai-product-principles]]
 
-## Open Questions
+## 待解问题
 
 - 报告生成 Agent 是否应直接接管现有 `LayeredOrchestrator`，还是先包一层适配器。
 - Lite 和 Pro 是否先共用一个 Agent，再按 stage 分支处理。
-

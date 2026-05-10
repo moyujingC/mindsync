@@ -1,10 +1,10 @@
-# MandalaInterpreterAgent Design
+# MandalaInterpreterAgent 设计
 
-## Definition
+## 定义
 
 `MandalaInterpreterAgent` 是一镜一梳报告链路之上的解读 Agent。它的第一版目标不是生成 Lite / Pro 报告，也不是重新识别三圈，而是帮助用户看懂已经生成的报告、证据链和不确定性。
 
-## Why It Matters
+## 为什么重要
 
 一镜一梳已经有 To C MVP 主路径、Lite / Pro 报告生成和 16 阶段解读流程。如果直接把这些能力拆成多 Agent，容易把已有 workflow 搞复杂。
 
@@ -12,9 +12,9 @@
 
 更稳妥的做法是先做一个单 Agent：它只消费现有报告链路的事实，把复杂的解读过程翻译成用户能理解的话，并在证据不足、边界不清或风险较高时进入降级或人工介入。
 
-## Scope
+## 范围
 
-### Goal
+### 目标
 
 帮助用户理解 Lite / Pro 报告：
 
@@ -24,7 +24,7 @@
 - 表达不确定性和建议边界
 - 在需要时标记人工介入
 
-### Inputs
+### 输入
 
 - 用户上传图片与补充描述
 - 人工确认后的三圈边界
@@ -34,7 +34,7 @@
 - Lite / Pro 报告草稿或最终报告
 - 最终报告质检结果
 
-### Outputs
+### 输出
 
 - 用户可读解释
 - 证据摘要
@@ -43,7 +43,7 @@
 - 降级原因
 - 人工介入标记
 
-### Non-goals
+### 不做什么
 
 - 不替代三圈人工确认
 - 不重跑视觉识别
@@ -52,7 +52,7 @@
 - 不越过 Lite / Pro 报告本身的建议边界
 - 不把心理觉察内容说成诊断结论
 
-## Tools
+## 工具
 
 ### `read_interpretation_context`
 
@@ -116,7 +116,7 @@
 - 是否跳过证据不足说明
 - 是否需要人工复核
 
-## State Machine
+## 状态机
 
 ### `collecting_context`
 
@@ -186,7 +186,7 @@
 - 只能解释报告正文，不能解释完整过程链
 - 可视化资产失败但已有 fallback text
 
-## Trace
+## Trace（追踪）
 
 Trace 应记录能复盘决策的关键事件，而不是只保存最终文本。
 
@@ -209,7 +209,7 @@ Trace 应记录能复盘决策的关键事件，而不是只保存最终文本�
 
 对一镜一梳来说，stage refs 是 trace 的事实锚点。没有 stage refs，Agent 只能解释“自己说了什么”，不能解释“项目链路为什么得出这个判断”。
 
-## Evals
+## 评测（Eval）
 
 第一批 eval 可以覆盖四类样本：
 
@@ -229,24 +229,24 @@ Trace 应记录能复盘决策的关键事件，而不是只保存最终文本�
 - 是否触发应有 guardrails
 - 是否记录可复盘 trace
 
-## Guardrails
+## 护栏（Guardrails）
 
 `MandalaInterpreterAgent` 的护栏应放在解释前、中、后，而不是只在最终输出后检查。
 
-### Product Boundary
+### 产品边界
 
 - 一镜一梳是个人觉察和轻疗愈产品，不是诊断工具。
 - Agent 只能解释已有报告，不能做新的心理判断。
 - 建议应保持轻量、可执行、非医疗化。
 
-### Technical Boundary
+### 技术边界
 
 - 工具不能绕过人工三圈确认。
 - 解释必须能回指报告、`school_interpretation_chain` 或 stage refs。
 - 如果 stage refs 缺失或冲突，不能输出完整解释。
 - 如果用户问题要求确定性诊断，必须降级或人工介入。
 
-## PM View
+## PM 视角
 
 PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生成产品。
 
@@ -257,7 +257,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 - 告诉用户哪些部分是确定的，哪些只是可能性
 - 帮用户找到下一步轻量行动
 
-## Dev View
+## Dev 视角
 
 开发者实现时应先保持单 Agent，不拆 `VisionAgent`、`KnowledgeAgent` 或 `ReviewerAgent`。
 
@@ -268,7 +268,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 3. 再补 guardrails 检查。
 4. 最后用固定样本做 eval。
 
-## Related Atoms
+## 相关原子
 
 - [[../../atoms/bridge/interpreter-agent-explains-existing-evidence]]
 - [[../../atoms/bridge/stage-refs-anchor-agent-trace]]
@@ -278,7 +278,7 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 - [[../../atoms/dev/trace-enables-agent-explainability]]
 - [[../../atoms/bridge/guardrails-belong-to-product-and-technical-boundaries]]
 
-## Related Concepts
+## 相关概念
 
 - [[./aimandala-agent-mapping]]
 - [[./mandala-interpreter-agent-evals]]
@@ -291,13 +291,13 @@ PM 应把这个 Agent 当作“报告理解助手”，而不是新的报告生�
 - [[../dev/evals]]
 - [[../dev/guardrails]]
 
-## Related Project Facts
+## 相关项目事实
 
 - 一镜一梳 To C MVP 当前主路径：上传、人工三圈确认、Lite / Pro 选择、生成、查看报告。
 - Lite / Pro 流派保真报告生成要求保留 `school_interpretation_chain`。
 - 16 阶段流程中，stage 09-16 覆盖证据整合、主轴选择、用户表达框架、Lite / Pro 分流、报告草稿、可视化资产和最终质检。
 
-## Open Questions
+## 待解问题
 
 - 用户侧是否需要展示简化 trace，还是先只在内部用于解释和复盘。
 - `MandalaInterpreterAgent` 是否应该在报告生成 Agent 稳定后再单独落地。

@@ -1,26 +1,25 @@
-# <Atom Title>
+# <原子标题>
 
-## Claim
+## 断言
 
 一句话写清这个 atom 的最小知识断言。
 
-## Type
+## 类型
 
 - fact | pattern | insight | decision
 
-## Applies To
+## 适用范围
 
 - pm | dev | bridge
 
-## Source
+## 来源
 
 - [[../wiki/sources/example-source]]
 
-## Notes
+## 备注
 
 - 用 1-3 条补充说明，不展开成长文。
 
-## Related Concepts
+## 相关概念
 
 - [[../wiki/dev/example-concept]]
-

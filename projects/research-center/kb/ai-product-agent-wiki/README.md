@@ -1,7 +1,7 @@
-# AI Product Agent Wiki
+# AI 产品 Agent 知识库
 
 > 状态：draft
-> owner：Research & Knowledge Lead
+> 负责人：Research & Knowledge Lead
 > 适用范围：AI 产品经理学习、Agent 开发学习、与项目实践的桥接沉淀
 
 这是一个边学边沉淀的活知识库，用来整理：
@@ -11,7 +11,7 @@
 - 你在项目实践里得到的可复用结论
 - 公开资料的结构化消化结果
 
-## 知识流
+## 知识流转
 
 ```text
 raw/ -> wiki/sources/ -> atoms/ -> wiki/
@@ -28,14 +28,14 @@ raw/ -> wiki/sources/ -> atoms/ -> wiki/
 - `wiki/`
   - 汇总后的可读概念页
 
-## 放什么
+## 收录内容
 
 - 原始资料摘录和链接
 - 你已经消化后的概念页
 - 产品判断和技术实现之间的桥接页
 - 可复用的项目映射页
 
-## 不放什么
+## 不收录内容
 
 - 单次聊天的未整理结论
 - 只服务某个临时任务的短期笔记

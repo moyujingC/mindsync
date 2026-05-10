@@ -1,26 +1,25 @@
-# Start With Problem Not AI
+# 先从问题出发，不要先从 AI 出发
 
-## Claim
+## 断言
 
 AI 产品设计应该先定义用户问题，再判断是否需要 AI、workflow 或 agent。
 
-## Type
+## 类型
 
 - insight
 
-## Applies To
+## 适用范围
 
 - pm
 
-## Source
+## 来源
 
 - [[../../wiki/sources/ai-product-strategy-notes]]
 
-## Notes
+## 备注
 
 - 这能避免为了追热点而强行上智能体。
 
-## Related Concepts
+## 相关概念
 
 - [[../../wiki/pm/ai-product-principles]]
-
