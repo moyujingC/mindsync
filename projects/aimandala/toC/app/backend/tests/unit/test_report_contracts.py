@@ -24,15 +24,89 @@ def _create_orchestrator(tmp_path):
     return orchestrator, image_path
 
 
-def test_report_contract_assembler_builds_lite_payload(tmp_path):
-    orchestrator, image_path = _create_orchestrator(tmp_path)
+def _formal_visual_stage_payload() -> dict:
+    return {
+        "stage-03-visual-evidence": {
+            "status": "complete",
+            "global_visual_summary": "内圈红色集中，中圈绿色放射，外圈黄色包裹。",
+            "circles": {
+                "inner": {
+                    "visual_units": [
+                        {
+                            "color": "红色",
+                            "shade": "bright",
+                            "shape": "圆形",
+                            "area_ratio": 0.36,
+                            "description": "内圈红色圆形集中在中心。",
+                        }
+                    ]
+                },
+                "middle": {
+                    "visual_units": [
+                        {
+                            "color": "绿色",
+                            "shade": "medium",
+                            "shape": "条状",
+                            "area_ratio": 0.34,
+                            "description": "中圈绿色条状向外放射。",
+                        }
+                    ]
+                },
+                "outer": {
+                    "visual_units": [
+                        {
+                            "color": "黄色",
+                            "shade": "medium",
+                            "shape": "包裹",
+                            "area_ratio": 0.30,
+                            "description": "外圈黄色形成稳定包裹。",
+                        }
+                    ]
+                },
+            },
+            "evidence_refs": ["stage-03.visual.inner.0"],
+        },
+        "stage-04-direct-judgment-high-hit-check": {
+            "status": "complete",
+            "matches": [],
+            "conflicts": [],
+            "knowledge_refs": [],
+        },
+    }
+
+
+def _create_formal_lite_record(orchestrator, image_path, *, user_id, theme="general"):
     record = asyncio.run(
-        orchestrator.generate_lite_placeholder(
+        orchestrator.report_lite_record_workflow.prepare_record(
+            detect_three_circles=orchestrator.detect_three_circles,
             image_path=str(image_path),
-            user_id="report-contract-lite",
-            theme="wealth_career",
+            user_id=user_id,
+            theme=theme,
             three_circles=MANUAL_THREE_CIRCLES,
         )
+    )
+    record.stage_process_package = orchestrator.stage_package_assembler.build(
+        record,
+        target_report="lite",
+    )
+    record.stage_process_package.payload.update(_formal_visual_stage_payload())
+    bundle = orchestrator.generation_runtime.generate_lite(orchestrator, record)
+    record.stage_process_package = bundle.stage_process_package
+    record.layer_1_lite_draft = bundle.layer_1_lite_draft
+    record.layer_2_lite_final = bundle.layer_2_lite_final
+    if "lite" not in record.version_purchased:
+        record.version_purchased.append("lite")
+    orchestrator.store.save(record)
+    return record
+
+
+def test_report_contract_assembler_builds_lite_payload(tmp_path):
+    orchestrator, image_path = _create_orchestrator(tmp_path)
+    record = _create_formal_lite_record(
+        orchestrator,
+        image_path,
+        user_id="report-contract-lite",
+        theme="wealth_career",
     )
 
     assembler = ReportContractAssembler()
@@ -68,7 +142,7 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     }
     assert payload["structured"]["current_reading"] == payload["overall_impression"]
     assert payload["structured"]["visual_basis"]
-    assert "stage-03" in payload["structured"]["visual_basis"]
+    assert "内圈红色集中" in payload["structured"]["visual_basis"]
     assert payload["structured"]["pattern_interpretation"]
     assert payload["structured"]["life_connection"]
     assert payload["structured"]["lite_healing_guidance"]["directions"]
@@ -85,12 +159,10 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
 
 def test_report_contract_assembler_builds_pro_payload(tmp_path):
     orchestrator, image_path = _create_orchestrator(tmp_path)
-    record = asyncio.run(
-        orchestrator.generate_lite_placeholder(
-            image_path=str(image_path),
-            user_id="report-contract-pro",
-            three_circles=MANUAL_THREE_CIRCLES,
-        )
+    record = _create_formal_lite_record(
+        orchestrator,
+        image_path,
+        user_id="report-contract-pro",
     )
     orchestrator.upgrade_to_pro(record.interpretation_id)
 
@@ -246,12 +318,10 @@ def test_pro_root_cause_chain_and_healing_plan_use_clean_bound_topic_tied_copy()
 
 def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_path):
     orchestrator, image_path = _create_orchestrator(tmp_path)
-    record = asyncio.run(
-        orchestrator.generate_lite_placeholder(
-            image_path=str(image_path),
-            user_id="report-contract-lite-after-pro",
-            three_circles=MANUAL_THREE_CIRCLES,
-        )
+    record = _create_formal_lite_record(
+        orchestrator,
+        image_path,
+        user_id="report-contract-lite-after-pro",
     )
     orchestrator.upgrade_to_pro(record.interpretation_id)
 
@@ -275,12 +345,10 @@ def test_report_contract_assembler_keeps_lite_contract_after_pro_upgrade(tmp_pat
 
 def test_orchestrator_prefers_best_available_report_version(tmp_path):
     orchestrator, image_path = _create_orchestrator(tmp_path)
-    record = asyncio.run(
-        orchestrator.generate_lite_placeholder(
-            image_path=str(image_path),
-            user_id="report-contract-best-version",
-            three_circles=MANUAL_THREE_CIRCLES,
-        )
+    record = _create_formal_lite_record(
+        orchestrator,
+        image_path,
+        user_id="report-contract-best-version",
     )
 
     lite_payload = orchestrator.get_report(record.interpretation_id)

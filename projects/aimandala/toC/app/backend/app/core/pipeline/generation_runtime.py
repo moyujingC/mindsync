@@ -19,10 +19,23 @@ from .report_generation_contracts import (
     LiteGenerationBundle,
     ProGenerationBundle,
     ReportGenerationContext,
+    StageProcessPackageBlockedError,
 )
+from app.core.stage_process_contracts import validate_formal_stage_process_package
 
 
 KNOWN_ENDPOINT_MODEL_RESOLUTIONS = {}
+
+
+def _block_unless_formal(stage_process_package: Any) -> None:
+    try:
+        validate_formal_stage_process_package(stage_process_package.payload)
+    except ValueError as error:
+        raise StageProcessPackageBlockedError(
+            "incomplete_stage_process_package",
+            stage_process_package=stage_process_package,
+            detail={"error": str(error)},
+        ) from error
 
 
 class DeterministicReportGenerationRuntime:
@@ -38,6 +51,7 @@ class DeterministicReportGenerationRuntime:
             target_report="lite",
         )
         record.stage_process_package = stage_process_package
+        _block_unless_formal(stage_process_package)
         layer_1_lite_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = layer_1_lite_draft
         layer_2_lite_final = generation_context._build_lite_placeholder_report(record)
@@ -52,6 +66,8 @@ class DeterministicReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> ProGenerationBundle:
+        if record.stage_process_package is not None:
+            _block_unless_formal(record.stage_process_package)
         layer_3_pro_draft = generation_context._build_pro_placeholder_draft(record)
         record.layer_3_pro_draft = layer_3_pro_draft
         layer_4_pro_final = generation_context._build_pro_placeholder_report(record)
@@ -99,6 +115,7 @@ class LLMReportGenerationRuntime:
             target_report="lite",
         )
         record.stage_process_package = stage_process_package
+        _block_unless_formal(stage_process_package)
         deterministic_draft = generation_context._build_layer1_placeholder(record)
         record.layer_1_lite_draft = deterministic_draft
 
@@ -129,6 +146,7 @@ class LLMReportGenerationRuntime:
             record,
             target_report="pro",
         )
+        _block_unless_formal(record.stage_process_package)
         deterministic_draft = generation_context._build_pro_placeholder_draft(record)
         record.layer_3_pro_draft = deterministic_draft
 

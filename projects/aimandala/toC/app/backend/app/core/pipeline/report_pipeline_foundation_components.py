@@ -41,6 +41,7 @@ def install_report_foundation_components(
         get_knowledge_theme_summary=(
             orchestrator.report_knowledge_adapter.get_knowledge_theme_summary
         ),
+        get_knowledge_runtime=lambda: orchestrator.knowledge_runtime,
     )
     orchestrator.report_debug_builder = ReportDebugProfileBuilder(
         validator=orchestrator.report_contracts.validator,

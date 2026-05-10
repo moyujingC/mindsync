@@ -56,17 +56,12 @@ def test_orchestrator_initializes_v2_knowledge_engine_and_builds_stage_prompt_co
 
     assert orchestrator.knowledge_engine is not None
 
-    prompt = orchestrator.stage_package_assembler.build_prompt(
-        record,
-        target_report="lite",
-        prompt_builder=orchestrator.prompt_builder,
-    )
+    package = orchestrator.stage_package_assembler.build(record, target_report="lite")
+    payload = package.payload
 
-    assert "当前主题：财富事业" in prompt
-    assert "主题知识：财富事业" in prompt
-    assert "主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in prompt
-    assert record.stage_process_package is not None
-    assert record.stage_process_package.payload["process_contract"]["generation_mode"] == "stage_based_runtime"
+    assert payload["process_contract"]["generation_mode"] == "stage_based_runtime"
+    assert payload["stage-06-per-circle-element-generation-control"]["theme_summary"]["theme_name"] == "财富事业"
+    assert "金钱信念与匮乏感" in payload["stage-06-per-circle-element-generation-control"]["theme_summary"]["core_issues"]
 
 
 def test_orchestrator_lazily_initializes_compat_knowledge_engine(monkeypatch):
@@ -107,15 +102,104 @@ def test_orchestrator_stage_prompt_context_uses_runtime_even_without_compat_engi
         three_circles={"inner_radius": 35, "middle_radius": 67},
     )
 
-    prompt = orchestrator.stage_package_assembler.build_prompt(
-        record,
-        target_report="lite",
-        prompt_builder=orchestrator.prompt_builder,
+    package = orchestrator.stage_package_assembler.build(record, target_report="lite")
+    payload = package.payload
+
+    assert payload["stage-01-user-input-context"]["theme_label"] == "财富事业"
+    assert payload["stage-06-per-circle-element-generation-control"]["theme_summary"]["theme_name"] == "财富事业"
+
+
+def test_stage_package_marks_missing_visual_evidence_incomplete():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    record = InterpretationRecord(
+        theme="wealth_career",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
     )
 
-    assert "当前主题：财富事业" in prompt
-    assert "主题知识：财富事业" in prompt
-    assert "主题核心议题：金钱信念与匮乏感 / 事业成就与价值感" in prompt
+    package = orchestrator.stage_package_assembler.build(record, target_report="lite")
+    payload = package.payload
+
+    assert payload["process_contract"]["package_status"] == "incomplete"
+    assert "stage-03-visual-evidence" in payload["process_contract"]["incomplete_stages"]
+    assert "pending_stage_runtime_replacement" not in str(payload)
+
+
+def test_stage_package_couples_stage_05_to_07_to_runtime_knowledge_refs():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    record = InterpretationRecord(
+        theme="wealth_career",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+    record.stage_process_package = StageProcessPackage(
+        payload={
+            "process_contract": {
+                "generation_mode": "stage_based_runtime",
+                "target_report": "lite",
+                "package_status": "placeholder",
+            },
+            "stage-03-visual-evidence": {
+                "status": "complete",
+                "global_visual_summary": "内圈红色集中，中圈绿色放射，外圈黄色包裹。",
+                "circles": {
+                    "inner": {
+                        "visual_units": [
+                            {
+                                "color": "红色",
+                                "shade": "bright",
+                                "shape": "圆形",
+                                "area_ratio": 0.36,
+                                "description": "中心有红色圆形色块。",
+                            }
+                        ]
+                    },
+                    "middle": {
+                        "visual_units": [
+                            {
+                                "color": "绿色",
+                                "shade": "medium",
+                                "shape": "条状",
+                                "area_ratio": 0.34,
+                                "description": "中圈绿色条状向外排列。",
+                            }
+                        ]
+                    },
+                    "outer": {
+                        "visual_units": [
+                            {
+                                "color": "黄色",
+                                "shade": "medium",
+                                "shape": "包裹",
+                                "area_ratio": 0.30,
+                                "description": "外圈黄色形成包裹边界。",
+                            }
+                        ]
+                    },
+                },
+                "evidence_refs": ["stage-03.visual.inner.0"],
+            },
+            "stage-04-direct-judgment-high-hit-check": {
+                "status": "complete",
+                "matches": [],
+                "conflicts": [],
+                "knowledge_refs": [],
+            },
+        }
+    )
+
+    package = orchestrator.stage_package_assembler.build(record, target_report="lite")
+    payload = package.payload
+
+    assert payload["process_contract"]["package_status"] == "formal"
+    assert payload["process_contract"]["knowledge_ref_count"] >= 3
+    for stage_key in [
+        "stage-05-per-circle-color-shape-element-sensing",
+        "stage-06-per-circle-element-generation-control",
+        "stage-07-per-circle-imbalance-patterns",
+    ]:
+        refs = payload[stage_key]["knowledge_refs"]
+        assert refs
+        assert all("三圈五行流派解读方法与步骤.md" not in ref for ref in refs)
+    assert payload["stage-12-healing-direction-and-report-branching"]["lite_writing_input"]
 
 
 def test_report_knowledge_adapter_element_meaning_uses_runtime_service():

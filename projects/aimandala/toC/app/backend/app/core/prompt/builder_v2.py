@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from typing import Any
+import json
+
+from app.core.stage_process_contracts import validate_formal_stage_process_package
 
 
 LITE_PROMPT_CONTRACT = """# 第13步 Lite 报告生成 Prompt
@@ -152,6 +155,7 @@ class PromptBuilder:
     ) -> str:
         if not stage_process_package.strip():
             raise ValueError("stage_process_package is required for lite prompt generation")
+        validate_formal_stage_process_package(self._parse_stage_package(stage_process_package))
         return self._build_prompt(
             prompt_contract=LITE_PROMPT_CONTRACT,
             output_contract=LITE_OUTPUT_CONTRACT,
@@ -174,6 +178,7 @@ class PromptBuilder:
     ) -> str:
         if not stage_process_package.strip():
             raise ValueError("stage_process_package is required for pro prompt generation")
+        validate_formal_stage_process_package(self._parse_stage_package(stage_process_package))
         return self._build_prompt(
             prompt_contract=PRO_PROMPT_CONTRACT,
             output_contract=PRO_OUTPUT_CONTRACT,
@@ -212,6 +217,15 @@ class PromptBuilder:
 
     def _format_extra_context(self, extra_context: dict[str, Any]) -> str:
         return "\n".join(f"- {key}: {value}" for key, value in sorted(extra_context.items()))
+
+    def _parse_stage_package(self, value: str) -> dict[str, Any]:
+        try:
+            payload = json.loads(value)
+        except json.JSONDecodeError as error:
+            raise ValueError("formal stage_process_package must be valid JSON") from error
+        if not isinstance(payload, dict):
+            raise ValueError("formal stage_process_package must be a JSON object")
+        return payload
 
 
 def build_prompt(

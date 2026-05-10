@@ -90,14 +90,86 @@ def _manual_circle_payload(inner: int = 33, middle: int = 66) -> dict[str, int]:
     }
 
 
+def _formal_visual_stage_payload() -> dict:
+    return {
+        "stage-03-visual-evidence": {
+            "status": "complete",
+            "global_visual_summary": "内圈红色集中，中圈绿色放射，外圈黄色包裹。",
+            "circles": {
+                "inner": {
+                    "visual_units": [
+                        {
+                            "color": "红色",
+                            "shade": "bright",
+                            "shape": "圆形",
+                            "area_ratio": 0.36,
+                            "description": "内圈红色圆形集中在中心。",
+                        }
+                    ]
+                },
+                "middle": {
+                    "visual_units": [
+                        {
+                            "color": "绿色",
+                            "shade": "medium",
+                            "shape": "条状",
+                            "area_ratio": 0.34,
+                            "description": "中圈绿色条状向外放射。",
+                        }
+                    ]
+                },
+                "outer": {
+                    "visual_units": [
+                        {
+                            "color": "黄色",
+                            "shade": "medium",
+                            "shape": "包裹",
+                            "area_ratio": 0.30,
+                            "description": "外圈黄色形成稳定包裹。",
+                        }
+                    ]
+                },
+            },
+            "evidence_refs": ["stage-03.visual.inner.0"],
+        },
+        "stage-04-direct-judgment-high-hit-check": {
+            "status": "complete",
+            "matches": [],
+            "conflicts": [],
+            "knowledge_refs": [],
+        },
+    }
+
+
+def _install_formal_visual_runtime(orchestrator) -> None:
+    from app.core.pipeline.generation_runtime import DeterministicReportGenerationRuntime
+
+    class FormalVisualRuntime(DeterministicReportGenerationRuntime):
+        def generate_lite(self, generation_context, record):
+            if record.stage_process_package is None:
+                record.stage_process_package = generation_context.stage_package_assembler.build(
+                    record,
+                    target_report="lite",
+                )
+            record.stage_process_package.payload.update(_formal_visual_stage_payload())
+            return super().generate_lite(generation_context, record)
+
+    runtime = FormalVisualRuntime()
+    orchestrator.generation_runtime = runtime
+    orchestrator.report_lite_record_workflow.generation_runtime = runtime
+    orchestrator.report_lifecycle_manager.generation_runtime = runtime
+
+
 def test_api_v2_report_lifecycle_contract(tmp_path):
     from app.api.main import app
+    from app.api import routes_v2
 
     with _without_llm_env():
         _reset_api_state()
         client = TestClient(app)
         image_path = tmp_path / "wealth-career-contract.png"
         image_path.write_bytes(b"mock-image")
+        _install_formal_visual_runtime(routes_v2.get_orchestrator())
 
     create_response = client.post(
         "/api/v2/interpretations",
@@ -222,6 +294,7 @@ def test_api_v2_report_chat_returns_llm_grounded_reply(tmp_path):
         image_path = tmp_path / "general-chat-contract.png"
         image_path.write_bytes(b"mock-image")
         orchestrator = routes_v2.get_orchestrator()
+        _install_formal_visual_runtime(orchestrator)
 
         class FakeReportChatRuntime:
             def reply(self, **kwargs):
@@ -356,10 +429,12 @@ def test_api_v2_create_interpretation_returns_failed_record_when_stage_package_b
 
 def test_api_v2_history_filters_mark_direct_pro_purchase_ready(tmp_path):
     from app.api.main import app
+    from app.api import routes_v2
 
     with _without_llm_env():
         _reset_api_state()
         client = TestClient(app)
+        _install_formal_visual_runtime(routes_v2.get_orchestrator())
 
     general_image = tmp_path / "history-general.png"
     wealth_image = tmp_path / "history-wealth.png"

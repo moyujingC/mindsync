@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import pytest
 
 sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -11,17 +12,32 @@ sys.path.insert(
 from app.core.prompt.builder_v2 import PromptBuilder
 
 
+def _formal_package(
+    *,
+    target_report: str = "lite",
+    generation_mode: str = "stage_based_retrieved_evidence",
+    extra: dict | None = None,
+) -> str:
+    payload = {
+        "process_contract": {
+            "generation_mode": generation_mode,
+            "target_report": target_report,
+            "package_status": "formal",
+            "completed_stages": ["stage-00-input-context"],
+            "incomplete_stages": [],
+            "blocking_reasons": [],
+            "knowledge_ref_count": 1,
+        }
+    }
+    if extra:
+        payload.update(extra)
+    return json.dumps(payload, ensure_ascii=False, indent=2)
+
+
 def test_prompt_builder_builds_lite_prompt_without_legacy_template_files():
     builder = PromptBuilder()
-    stage_process_package = json.dumps(
-        {
-            "process_contract": {
-                "generation_mode": "stage_based_runtime",
-                "target_report": "lite",
-            },
-        },
-        ensure_ascii=False,
-        indent=2,
+    stage_process_package = _formal_package(
+        generation_mode="stage_based_runtime",
     )
 
     prompt = builder.build_lite(
@@ -39,18 +55,12 @@ def test_prompt_builder_builds_lite_prompt_without_legacy_template_files():
 
 def test_prompt_builder_builds_lite_prompt_with_context():
     builder = PromptBuilder()
-    stage_process_package = json.dumps(
-        {
-            "process_contract": {
-                "generation_mode": "stage_based_retrieved_evidence",
-                "target_report": "lite",
-            },
+    stage_process_package = _formal_package(
+        extra={
             "stage-01-user-input-context": {
                 "theme": "wealth_career",
             },
-        },
-        ensure_ascii=False,
-        indent=2,
+        }
     )
 
     prompt = builder.build_lite(
@@ -68,18 +78,13 @@ def test_prompt_builder_builds_lite_prompt_with_context():
 
 def test_prompt_builder_builds_pro_prompt_with_context():
     builder = PromptBuilder()
-    stage_process_package = json.dumps(
-        {
-            "process_contract": {
-                "generation_mode": "stage_based_retrieved_evidence",
-                "target_report": "pro",
-            },
+    stage_process_package = _formal_package(
+        target_report="pro",
+        extra={
             "stage-12-healing-direction-and-report-branching": {
                 "report_writing_inputs": {"pro": {"root_cause": {"core": "关系耗散"}}},
             },
         },
-        ensure_ascii=False,
-        indent=2,
     )
 
     prompt = builder.build_pro(
@@ -102,20 +107,14 @@ def test_prompt_builder_includes_lite_stage_process_package_block():
         vision_data='{"theme":"wealth_career"}',
         theme="wealth_career",
         theme_context="- 当前主题：财富事业",
-        stage_process_package=json.dumps(
-            {
-                "process_contract": {
-                    "generation_mode": "stage_based_retrieved_evidence",
-                    "target_report": "lite",
-                },
+        stage_process_package=_formal_package(
+            extra={
                 "stage-12-healing-direction-and-report-branching": {
                     "report_writing_inputs": {
                         "lite": {"title": "向前先稳住的人"},
                     },
                 },
-            },
-            ensure_ascii=False,
-            indent=2,
+            }
         ),
         extra_context={"theme_label": "财富事业"},
     )
@@ -134,20 +133,15 @@ def test_prompt_builder_includes_pro_stage_process_package_block():
         vision_data='{"theme":"intimate_relationship"}',
         theme="intimate_relationship",
         theme_context="- 当前主题：亲密关系",
-        stage_process_package=json.dumps(
-            {
-                "process_contract": {
-                    "generation_mode": "stage_based_retrieved_evidence",
-                    "target_report": "pro",
-                },
+        stage_process_package=_formal_package(
+            target_report="pro",
+            extra={
                 "stage-12-healing-direction-and-report-branching": {
                     "report_writing_inputs": {
                         "pro": {"imbalance_profile": {"primary": "关系耗散"}},
                     },
                 },
             },
-            ensure_ascii=False,
-            indent=2,
         ),
         extra_context={"theme_label": "亲密关系"},
     )
@@ -161,12 +155,8 @@ def test_prompt_builder_includes_pro_stage_process_package_block():
 
 def test_prompt_builder_preserves_stage_process_package_json():
     builder = PromptBuilder()
-    stage_package = json.dumps(
-        {
-            "process_contract": {
-                "generation_mode": "stage_based_retrieved_evidence",
-                "target_report": "lite",
-            },
+    stage_package = _formal_package(
+        extra={
             "stage-03-visual-evidence": {
                 "global_visual_summary": "中心收拢，外圈展开。",
             },
@@ -176,9 +166,7 @@ def test_prompt_builder_preserves_stage_process_package_json():
             "stage-12-healing-direction-and-report-branching": {
                 "report_writing_inputs": {"lite": {"title": "向内站稳的人"}},
             },
-        },
-        ensure_ascii=False,
-        indent=2,
+        }
     )
 
     prompt = builder.build_lite(
@@ -194,3 +182,29 @@ def test_prompt_builder_preserves_stage_process_package_json():
     assert '"stage-09-evidence-consolidation"' in prompt
     assert '"stage-12-healing-direction-and-report-branching"' in prompt
     assert "stage_process_package" in prompt
+
+
+def test_prompt_builder_blocks_incomplete_stage_process_package():
+    builder = PromptBuilder()
+    stage_package = json.dumps(
+        {
+            "process_contract": {
+                "generation_mode": "stage_based_runtime",
+                "target_report": "lite",
+                "package_status": "incomplete",
+                "blocking_reasons": ["stage-03 visual evidence missing"],
+            },
+            "stage-03-visual-evidence": {
+                "status": "pending_stage_runtime_replacement",
+            },
+        },
+        ensure_ascii=False,
+    )
+
+    with pytest.raises(ValueError, match="formal stage_process_package"):
+        builder.build_lite(
+            vision_data=stage_package,
+            theme="general",
+            theme_context="- 当前主题：整体",
+            stage_process_package=stage_package,
+        )
