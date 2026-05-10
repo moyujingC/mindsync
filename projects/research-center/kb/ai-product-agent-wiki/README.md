@@ -1,8 +1,21 @@
 # AI 产品 Agent 知识库
 
-> 状态：draft
+> 状态：historical-reference
 > 负责人：Research & Knowledge Lead
 > 适用范围：AI 产品经理学习、Agent 开发学习、与项目实践的桥接沉淀
+> last_updated：2026-05-10
+> source_of_truth：projects/research-center/kb/ai-product-agent-wiki/README.md
+> superseded_by：projects/research-center/kb/conversation-knowledge-wiki/README.md
+
+## 归档说明
+
+这个目录是一次有效的知识库形态实验，但早期存在大量 AI 连续生成内容，质量和来源稳定性不足。
+
+从 2026-05-10 起，本目录不再作为研究中心当前默认知识库入口。新的默认入口是：
+
+- [对话知识库](../conversation-knowledge-wiki/README.md)
+
+本目录内容默认不可直接引用、不可批量迁移。只有通过迁移 review 的结构、模板或条目，才能进入新知识库。
 
 这是一个边学边沉淀的活知识库，用来整理：
 
