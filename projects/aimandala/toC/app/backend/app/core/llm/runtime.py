@@ -201,7 +201,7 @@ class OpenAICompatibleLLMClient:
             fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=False,
-            disable_thinking=False,
+            disable_thinking=True,
         )
         if not raw:
             return None

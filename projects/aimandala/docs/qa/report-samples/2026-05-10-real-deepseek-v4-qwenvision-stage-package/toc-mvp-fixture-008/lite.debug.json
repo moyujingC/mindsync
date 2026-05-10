@@ -1,0 +1,1263 @@
+{
+  "manual_process_trace": {
+    "source_of_truth": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+    "manual_logic_version": "three-circle-five-element-flow.v1",
+    "fixture_id": "toc-mvp-fixture-008",
+    "version": "lite",
+    "stage_ids": [
+      "stage-00-input-context",
+      "stage-01-theme-selection",
+      "stage-02-circle-boundary-decision",
+      "stage-03-direct-judgment-high-hit-check",
+      "stage-04-per-circle-visual-evidence",
+      "stage-05-per-circle-color-shape-element-reading",
+      "stage-06-per-circle-imbalance-candidates",
+      "stage-07-whole-energy-flow-synthesis",
+      "stage-08-conflict-blockage",
+      "stage-09-healing-goal",
+      "stage-10-lite-draft",
+      "stage-11-pro-draft",
+      "stage-12-final-report"
+    ],
+    "stages": [
+      {
+        "id": "stage-00-input-context",
+        "label": "输入上下文",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "解读前准备：询问绘画者想要解读的主题"
+        ],
+        "summary": "先记录用户主题、创作意图、创作感受和图像引用，避免后续报告脱离用户当下问题。",
+        "payload": {
+          "topic": "general",
+          "topic_label": "全面解读",
+          "painting_intention": "想更看清自己现在的状态，也想知道接下来怎么更稳地往前。",
+          "painting_feeling": "先如实看看这张画带出来的感受，不急着下结论。",
+          "image_ref": "projects/aimandala/fixtures/toc-mvp/assets/IMG_5079.jpeg"
+        }
+      },
+      {
+        "id": "stage-01-theme-selection",
+        "label": "确定解读主题",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "第一步：确定绘画者的主题。解读主题是什么？财富、情感还是健康。"
+        ],
+        "summary": "按手册要求先确定解读重点，再进入三圈和细节判断；本次主题会作为后续所有判断的投影口径。",
+        "payload": {
+          "selected_theme": "general",
+          "selected_theme_label": "全面解读",
+          "selection_source": "fixture/user_input"
+        }
+      },
+      {
+        "id": "stage-02-circle-boundary-decision",
+        "label": "确定三圈边界并锁定",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "第二步：确定好主题后，以你的神为准确定三个圈的结构。",
+          "买定离手，落子无悔。"
+        ],
+        "summary": "按手册先定三圈，定完后不在解读中来回改动；QA 需要检查这一步是否明确留下边界和来源。",
+        "payload": {
+          "inner_radius": 35,
+          "middle_radius": 67,
+          "auto_detect_inner_radius": null,
+          "auto_detect_middle_radius": null,
+          "source": "user_calibrated",
+          "locked_for_interpretation": true
+        }
+      },
+      {
+        "id": "stage-03-direct-judgment-high-hit-check",
+        "label": "直断法高命中检查",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "新手解读6式：外圈花边、星星点点",
+          "新手解读6式：外圈红色多",
+          "新手解读6式：外圈颜色单一且面积大",
+          "新手解读6式：渐变色",
+          "新手解读6式：颜色浓郁、深重",
+          "新手解读6式：颜色浅、轻"
+        ],
+        "summary": "直断法不是切入点选择，而是在三圈锁定后先检查高命中特征；命中项只能作为快速抓手，后续必须被逐圈颜色、形状和生克关系继续验证。",
+        "payload": {
+          "catalog_version": null,
+          "hits": [],
+          "method_trace_source": "three_circle_five_element_flow",
+          "direct_judgment_summary": "直断先看到「土」更占主体，再结合「金」去判断整体能量的主轴。 当前主判断落在「土多金埋」。",
+          "candidate_summary": "主候选为 土多金埋(0.8264)、金多水浊(0.6277)、土多水干(0.6198)。"
+        }
+      },
+      {
+        "id": "stage-04-per-circle-visual-evidence",
+        "label": "逐圈画面依据",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "三圈结构法",
+          "从曼陀罗中的 X，我能看出你是 Y"
+        ],
+        "summary": "先把每一圈可见的颜色、形状、比例、填充和结构说清楚，再进入状态解释；这是最终画面依据区的来源。",
+        "payload": {
+          "visual_fact_summary": "一个圆形曼陀罗图案，由内向外分为三个圈层，整体以黄色、蓝色、粉色和紫色为主色调，包含莲花花瓣、星形、几何方块等形状，色彩分布对称，中心为黄色花朵结构。",
+          "per_circle_observation_summary": "主色为黄色、浅蓝色，点缀色为粉色，白色留白很明显，显著图形包括黄色花朵（纯色）、浅蓝色方形边框（纯色）、粉色花瓣状（纯色）、白色花蕊（纯色）。；主色为黄色、蓝色，点缀色为橙色、紫色、浅棕色，能看到白色留白，显著图形包括黄色莲花花瓣（纯色）、橙色星形（纯色）、蓝色方形（纯色）、浅棕色网格（纯色）、紫色星形（纯色）、白色留白区域（纯色）。；主色为浅蓝色、粉色，点缀色为紫色、橙色，能看到白色留白，显著图形包括浅蓝色底色区域（纯色）、粉色边框（纯色）、紫色圆点（纯色）、紫色、橙色小花簇（纯色）、白色背景留白（纯色）。",
+          "shape_observation_summary": "",
+          "final_visual_basis": "从画面看，最显眼的是那股“收拢和判断”的力量。内圈以金为主，颜色偏粉白，中间有一朵黄色花朵，轮廓清楚，说明你对自己的看法、价值观、原则其实相当清晰。中圈占比最大，主导是土，出现莲花花瓣、星形、方形，像是在说你的情绪和关系里正需要稳定、承载和秩序。外圈又回到金，浅蓝底色上散落着紫色、橙色的小花簇和圆点，边界不是硬邦邦的墙，而是有节奏的装饰。这样一圈圈看下来，整体能量是土先稳固住，再由金慢慢推向外面，所以我会这样理解：你不是退缩，而是在用自己的节奏，先把安全感和根基稳住了，再往前走。"
+        }
+      },
+      {
+        "id": "stage-05-per-circle-color-shape-element-reading",
+        "label": "逐圈颜色、形状与圈内生克解读",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "五行感知法",
+          "五行相生相克解读法",
+          "在运用形状进行解读时，可以结合颜色、五行相生相克、新手解读6式等一起解读。"
+        ],
+        "summary": "依据原始手册逐圈看颜色、深浅、面积、形状及本圈内部五行生克；用户可见正文要少术语，把关系翻译成现实状态。",
+        "payload": {
+          "per_circle_color_analysis": {
+            "inner": {
+              "circle": "inner",
+              "circle_label": "内圈",
+              "dominant_element": "金",
+              "dominant_color": "#dcd4d7",
+              "colors": [
+                {
+                  "hex": "#dcd4d7",
+                  "rgb": [
+                    220,
+                    212,
+                    215
+                  ],
+                  "percentage": 58.27
+                },
+                {
+                  "hex": "#e6e679",
+                  "rgb": [
+                    230,
+                    230,
+                    121
+                  ],
+                  "percentage": 16.21
+                },
+                {
+                  "hex": "#efde17",
+                  "rgb": [
+                    239,
+                    222,
+                    23
+                  ],
+                  "percentage": 14.26
+                },
+                {
+                  "hex": "#31281c",
+                  "rgb": [
+                    49,
+                    40,
+                    28
+                  ],
+                  "percentage": 7.11
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.1225,
+                "avg_brightness": 169.51,
+                "avg_saturation": 0.4607,
+                "depth_state": "middle",
+                "fill_state": "dense"
+              }
+            },
+            "middle": {
+              "circle": "middle",
+              "circle_label": "中圈",
+              "dominant_element": "土",
+              "dominant_color": "#b7d5e0",
+              "colors": [
+                {
+                  "hex": "#b7d5e0",
+                  "rgb": [
+                    183,
+                    213,
+                    224
+                  ],
+                  "percentage": 35.64
+                },
+                {
+                  "hex": "#e9e68e",
+                  "rgb": [
+                    233,
+                    230,
+                    142
+                  ],
+                  "percentage": 31.33
+                },
+                {
+                  "hex": "#e8e52f",
+                  "rgb": [
+                    232,
+                    229,
+                    47
+                  ],
+                  "percentage": 20.39
+                },
+                {
+                  "hex": "#2f2e20",
+                  "rgb": [
+                    47,
+                    46,
+                    32
+                  ],
+                  "percentage": 7.86
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.3264,
+                "avg_brightness": 170.0,
+                "avg_saturation": 0.4225,
+                "depth_state": "middle",
+                "fill_state": "filled"
+              }
+            },
+            "outer": {
+              "circle": "outer",
+              "circle_label": "外圈",
+              "dominant_element": "金",
+              "dominant_color": "#d2d6de",
+              "colors": [
+                {
+                  "hex": "#d2d6de",
+                  "rgb": [
+                    210,
+                    214,
+                    222
+                  ],
+                  "percentage": 46.95
+                },
+                {
+                  "hex": "#e8e47a",
+                  "rgb": [
+                    232,
+                    228,
+                    122
+                  ],
+                  "percentage": 17.83
+                },
+                {
+                  "hex": "#8690b5",
+                  "rgb": [
+                    134,
+                    144,
+                    181
+                  ],
+                  "percentage": 15.46
+                },
+                {
+                  "hex": "#e2d820",
+                  "rgb": [
+                    226,
+                    216,
+                    32
+                  ],
+                  "percentage": 12.48
+                },
+                {
+                  "hex": "#3a373b",
+                  "rgb": [
+                    58,
+                    55,
+                    59
+                  ],
+                  "percentage": 7.28
+                }
+              ],
+              "state_basis": {
+                "source": "tutorial_color_area_depth",
+                "area_ratio": 0.5511,
+                "avg_brightness": 166.08,
+                "avg_saturation": 0.3428,
+                "depth_state": "middle",
+                "fill_state": "filled"
+              }
+            }
+          },
+          "shape_analysis": {
+            "source": "micro_analysis_proxy",
+            "overall_features": [
+              "detected_circle_transition_pattern",
+              "detected_wrap_or_protection_pattern"
+            ],
+            "triggered_analyses": [
+              {
+                "type": "shape_proxy",
+                "circle_count": 3,
+                "adjacent_relations": [
+                  "金与土无明显生克",
+                  "土生金，情绪顺畅显化为行动"
+                ],
+                "wrap_relations": [
+                  "保持当前能量流动状态，继续深化"
+                ]
+              }
+            ]
+          },
+          "element_state_summary": "",
+          "relation_summary": "",
+          "final_report_language_rule": "少术语；三圈和五行只能服务解释，不能喧宾夺主。"
+        }
+      },
+      {
+        "id": "stage-06-per-circle-imbalance-candidates",
+        "label": "逐圈失衡候选",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "五行相生相克解读法",
+          "相生相克的结果是好是坏，也要看其平衡情况。"
+        ],
+        "summary": "失衡状态应在逐圈颜色、形状和圈内生克解读过程中浮现，而不是先给一个抽象标签再回填证据。",
+        "payload": {
+          "candidate_summary": "主候选为 土多金埋(0.8264)、金多水浊(0.6277)、土多水干(0.6198)。",
+          "selected_primary_candidates": [
+            "土多金埋",
+            "金多水浊",
+            "土多水干"
+          ],
+          "circle_relation_analysis": {
+            "source": "circle_energy_flow",
+            "circle_elements": {
+              "inner": "金",
+              "middle": "土",
+              "outer": "金"
+            },
+            "adjacent_relations": [
+              "金与土无明显生克",
+              "土生金，情绪顺畅显化为行动"
+            ],
+            "wrap_relations": [
+              "保持当前能量流动状态，继续深化"
+            ],
+            "synthetic_signal": {
+              "id": "transition-overload",
+              "used": false,
+              "reason": ""
+            }
+          }
+        }
+      },
+      {
+        "id": "stage-07-whole-energy-flow-synthesis",
+        "label": "整体能量流动综合",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "三圈结构法",
+          "三圈能量循环模型",
+          "能量流动质量评估"
+        ],
+        "summary": "逐圈解读之后再看整体；这里看的不是简单圈与圈之间的五行关系，而是内在、关系和外在呈现之间的能量流动是否顺、堵、倒灌或跳跃。",
+        "payload": {
+          "energy_flow_basis": {
+            "source": "circle_energy_flow",
+            "circle_elements": {
+              "inner": "金",
+              "middle": "土",
+              "outer": "金"
+            },
+            "adjacent_relations": [
+              "金与土无明显生克",
+              "土生金，情绪顺畅显化为行动"
+            ],
+            "wrap_relations": [
+              "保持当前能量流动状态，继续深化"
+            ],
+            "synthetic_signal": {
+              "id": "transition-overload",
+              "used": false,
+              "reason": ""
+            }
+          },
+          "flow_reading_rule": "整体综合阶段读取三圈能量流动，不把圈间五行关系当作最终结论本身。",
+          "final_report_language_rule": "少术语；把能量流动翻译成用户能理解的现实状态。"
+        }
+      },
+      {
+        "id": "stage-08-conflict-blockage",
+        "label": "找冲突、卡点、堵点",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "通过曼陀罗解读，我们就可以知道案主内心的冲突点、卡点、堵点。",
+          "爆破卡点：找到根源性事件"
+        ],
+        "summary": "在主题和画面证据基础上找到当前最影响用户的卡点，而不是泛泛讲所有主题。",
+        "payload": {
+          "candidate_summary": "主候选为 土多金埋(0.8264)、金多水浊(0.6277)、土多水干(0.6198)。",
+          "final_block": "情绪上，你并不是没感觉，反而像在心里默默处理一件很重要的事——关于怎么让自己更有底气、更有安全感。最外面那层透出的理性、边界感，也不是你故意拉开距离，而是你想先弄清楚：接下来要用什么姿态和标准去面对外面的世界。因为生命力扩展的力量暂时偏弱，一旦节奏变快，你就容易先退回来，等自己重新有把握了再动。这不是弱，是你在保护自己的节奏。\n\n久而久之，这就成了你的惯用方式：不是直接冲，而是先在心里把事转过一遍，感觉对了才真正迈出去。就像画面里土生金的过程，情绪被承载、被理解后，才顺畅地化为行动。所以在别人看来，你可能显得谨慎、需要时间，但对你来说，这只是让自己不翻船的必须步骤。\n\n为了不让自己再乱掉，你自然长出了一种防御：强调清晰、距离感和判断标准。这看起来像“收紧”，但本质上是在替现在的你筛选——什么值得继续投入，什么需要先保持距离。它保护了你，但偶尔也会让你在关系或新机会面前，先退一步观察很久。",
+          "root_cause": {}
+        }
+      },
+      {
+        "id": "stage-09-healing-goal",
+        "label": "建立调节目标",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "用曼陀罗疗愈与案主建立共同目标",
+          "清理情绪",
+          "定制方案"
+        ],
+        "summary": "只有在判断成立后才给方向；Lite 给轻量觉察，Pro 给更完整的行动/清理/调节路径。",
+        "payload": {
+          "lite_healing_guidance": {
+            "directions": [
+              {
+                "title": "先稳住当前节奏",
+                "content": "这幅画提醒你的，不是逼自己立刻变强或变快，而是先承认：你想稳住，不等于你退缩。今天可以试着留意：当你准备回应外部事情前，身体会不会先想稳住一点？那一两秒的停顿，不是拖延，而是在提醒你：先接住自己，再去回应世界。"
+              },
+              {
+                "title": "把理解放回现实场景",
+                "content": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。好处是，你很少冲动犯错；代价是，当环境要求你快速反应时，你容易先给自己压力，觉得自己是不是又犹豫了。尤其在需要灵活变通的地方，可能会有点吃力。"
+              },
+              {
+                "title": "保留一个更轻的动作方向",
+                "content": "在生活里，你常常不是没有机会，而是每次准备投入时，都会先在心里问自己：现在这样做，会不会又把生活搞乱？比如面对新工作、新关系，你可能会反复评估，需要比别人更长的时间才能说“好”。这份谨慎，其实是画面里那股“土”的力量在帮你先稳住，但也会让你偶尔错过一些需要即时回应的时刻。"
+              }
+            ],
+            "micro_practices": [
+              {
+                "title": "留意那个“先稳一下”的信号",
+                "content": "今天，在回应任何外部请求前，先在心里停一秒，感觉一下身体是不是想稳住。如果是，就对自己说：“我可以先接住自己，再去回应。”"
+              },
+              {
+                "title": "看看边界什么时候收紧",
+                "content": "当你面对想投入的事却下意识把标准提高、距离拉远时，别急着怪自己冷，而是轻声问一句：“我现在是在保护自己，还是在推开想要的东西？”"
+              },
+              {
+                "title": "记录一个“想动又停住”的瞬间",
+                "content": "如果今天又出现那种想推进却又停下来的瞬间，把它记下来：当时发生了什么？身体哪里紧？你不需要马上改变，只是先看见这个模式，就已经在给自己松绑。"
+              }
+            ]
+          },
+          "pro_healing_plan": {},
+          "final_healing_block": {
+            "directions": [
+              {
+                "title": "先稳住当前节奏",
+                "content": "这幅画提醒你的，不是逼自己立刻变强或变快，而是先承认：你想稳住，不等于你退缩。今天可以试着留意：当你准备回应外部事情前，身体会不会先想稳住一点？那一两秒的停顿，不是拖延，而是在提醒你：先接住自己，再去回应世界。"
+              },
+              {
+                "title": "把理解放回现实场景",
+                "content": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。好处是，你很少冲动犯错；代价是，当环境要求你快速反应时，你容易先给自己压力，觉得自己是不是又犹豫了。尤其在需要灵活变通的地方，可能会有点吃力。"
+              },
+              {
+                "title": "保留一个更轻的动作方向",
+                "content": "在生活里，你常常不是没有机会，而是每次准备投入时，都会先在心里问自己：现在这样做，会不会又把生活搞乱？比如面对新工作、新关系，你可能会反复评估，需要比别人更长的时间才能说“好”。这份谨慎，其实是画面里那股“土”的力量在帮你先稳住，但也会让你偶尔错过一些需要即时回应的时刻。"
+              }
+            ],
+            "micro_practices": [
+              {
+                "title": "留意那个“先稳一下”的信号",
+                "content": "今天，在回应任何外部请求前，先在心里停一秒，感觉一下身体是不是想稳住。如果是，就对自己说：“我可以先接住自己，再去回应。”"
+              },
+              {
+                "title": "看看边界什么时候收紧",
+                "content": "当你面对想投入的事却下意识把标准提高、距离拉远时，别急着怪自己冷，而是轻声问一句：“我现在是在保护自己，还是在推开想要的东西？”"
+              },
+              {
+                "title": "记录一个“想动又停住”的瞬间",
+                "content": "如果今天又出现那种想推进却又停下来的瞬间，把它记下来：当时发生了什么？身体哪里紧？你不需要马上改变，只是先看见这个模式，就已经在给自己松绑。"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "stage-10-lite-draft",
+        "label": "Lite 过程稿",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "解读句式：从你的曼陀罗中，可以看出...；因为..."
+        ],
+        "summary": "Lite 仍可使用上一版优化后的自然表达，但必须从前面证据链映射到字段。",
+        "payload": {
+          "title": "慢慢亮起来的中心",
+          "overall_impression": "你现在的状态不是急着往外冲，而是正把注意力收回来，先确认自己有没有站稳。身子像是在对你说：先看清这张画带出来的感受，不急着下结论。这份报告会慢慢解释，为什么你会有这样的节奏，以及这种节奏其实在帮你为下一步做准备。",
+          "story_sections": {
+            "base": "你的底色不是急着证明什么，而是先确认自己有没有站稳。就像画里三圈的顺序：先有清晰的金（自我认知），再有承载的土（关系里的稳定感），再到向外表达的金。你很多时候不是慢，而是需要内在先点头，才能放心地往前。",
+            "contradiction": "矛盾在于，你心里是想继续往前走的——创作前你也说了，想知道怎么更稳地往前——但身体又先启动了一股整理边界、判断方向的力量。于是你一边想行动，一边又不愿再把自己丢回那种失控消耗的感觉里。",
+            "pattern": "久而久之，这就成了你的惯用方式：不是直接冲，而是先在心里把事转过一遍，感觉对了才真正迈出去。就像画面里土生金的过程，情绪被承载、被理解后，才顺畅地化为行动。所以在别人看来，你可能显得谨慎、需要时间，但对你来说，这只是让自己不翻船的必须步骤。",
+            "defense": "为了不让自己再乱掉，你自然长出了一种防御：强调清晰、距离感和判断标准。这看起来像“收紧”，但本质上是在替现在的你筛选——什么值得继续投入，什么需要先保持距离。它保护了你，但偶尔也会让你在关系或新机会面前，先退一步观察很久。",
+            "block": "现在最容易卡住你的，不是没有方向，而是主导的“土”能量和现实节奏还没完全接上。尤其当生命力的成长与扩展还没跟上时，你会在快要推进的那一刻又退回来，不是不想动，是身体觉得还没准备好。",
+            "light": "但你的光也已经出来了：你不是只会收着，而是已经能看见“尝试新体验，培养灵活性”这条更稳的路。这说明你不是卡死了，而是在学一种更适合自己的前进方式——先把自己接住，再慢慢伸出去。"
+          },
+          "theme_insights": {
+            "scene": "在生活里，你常常不是没有机会，而是每次准备投入时，都会先在心里问自己：现在这样做，会不会又把生活搞乱？比如面对新工作、新关系，你可能会反复评估，需要比别人更长的时间才能说“好”。这份谨慎，其实是画面里那股“土”的力量在帮你先稳住，但也会让你偶尔错过一些需要即时回应的时刻。",
+            "impact": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。好处是，你很少冲动犯错；代价是，当环境要求你快速反应时，你容易先给自己压力，觉得自己是不是又犹豫了。尤其在需要灵活变通的地方，可能会有点吃力。",
+            "awareness": "这幅画提醒你的，不是逼自己立刻变强或变快，而是先承认：你想稳住，不等于你退缩。今天可以试着留意：当你准备回应外部事情前，身体会不会先想稳住一点？那一两秒的停顿，不是拖延，而是在提醒你：先接住自己，再去回应世界。"
+          },
+          "three_awareness": [
+            {
+              "day": 1,
+              "title": "留意那个“先稳一下”的信号",
+              "content": "今天，在回应任何外部请求前，先在心里停一秒，感觉一下身体是不是想稳住。如果是，就对自己说：“我可以先接住自己，再去回应。”"
+            },
+            {
+              "day": 2,
+              "title": "看看边界什么时候收紧",
+              "content": "当你面对想投入的事却下意识把标准提高、距离拉远时，别急着怪自己冷，而是轻声问一句：“我现在是在保护自己，还是在推开想要的东西？”"
+            },
+            {
+              "day": 3,
+              "title": "记录一个“想动又停住”的瞬间",
+              "content": "如果今天又出现那种想推进却又停下来的瞬间，把它记下来：当时发生了什么？身体哪里紧？你不需要马上改变，只是先看见这个模式，就已经在给自己松绑。"
+            }
+          ],
+          "pro_report_entry": {
+            "title": "另一份更深的独立报告",
+            "summary": "这份报告说的是你当下的能量轮廓和节奏。如果你还想更深入地看清：这种“先稳再动”的模式是怎么来的，它在亲密关系和事业里具体怎样影响你，以及如何用更完整的疗愈方向慢慢调整，可以在完整版报告里继续探索。"
+          }
+        }
+      },
+      {
+        "id": "stage-11-pro-draft",
+        "label": "Pro 过程稿",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "个案六大流程：确定目标、爆破卡点、清理情绪、定制方案"
+        ],
+        "summary": "Pro 不是 Lite 加长版，而是在同一手册逻辑上展开机制、根因链和调节方案。",
+        "payload": {}
+      },
+      {
+        "id": "stage-12-final-report",
+        "label": "最终报告",
+        "manual_source": "docs/sources/知识库构建/原始镜像/01_曼陀罗解读手册.md",
+        "manual_refs": [
+          "最终呈现：用曼陀罗作为桥梁，持续沟通并给出后续方向"
+        ],
+        "summary": "最终呈现可以是自然报告文案，但 QA 必须能从最终字段倒查到上面的手册推导链。",
+        "payload": {
+          "version": "lite",
+          "title": "慢慢亮起来的中心",
+          "structured_fields": [
+            "current_reading",
+            "life_connection",
+            "lite_healing_guidance",
+            "pattern_interpretation",
+            "pro_report_entry",
+            "prompt_preview",
+            "prompt_schema_validation_issues",
+            "topic_context",
+            "visual_basis"
+          ],
+          "report_excerpt": "# 慢慢亮起来的中心\n\n你现在的状态不是急着往外冲，而是正把注意力收回来，先确认自己有没有站稳。身子像是在对你说：先看清这张画带出来的感受，不急着下结论。这份报告会慢慢解释，为什么你会有这样的节奏，以及这种节奏其实在帮你为下一步做准备。\n\n## 画面元素\n从画面看，最显眼的是那股“收拢和判断”的力量。内圈以金为主，颜色偏粉白，中间有一朵黄色花朵，轮廓清楚，说明你对自己的看法、价值观、原则其实相当清晰。中圈占比最大，主导是土，出现莲花花瓣、星形、方形，像是在说你的情绪和关系里正需要稳定、承载和秩序。外圈又回到金，浅蓝底色上散落着紫色、橙色的小花簇和圆点，边界不是硬邦邦的墙，而是有节奏的装饰。这样一圈圈看下来，整体能量是土先稳固住，再由金慢慢推向外面，所以我会这样理解：你不是退缩，而是在用自己的节奏，先把安全感和根基稳住了，再往前走。\n\n## 情绪画像\n情绪上，你并不是没感觉，反而像在心里默默处理一件很重要的事——关于怎么让自己更有底气、更有安全感。最外面那层透出的理性、边界感，也不是你故意拉开距离，而是你想先弄清楚：接下来要用什么姿态和标准去面对外面的世界。因为生命力扩展的力量暂时偏弱，..."
+        }
+      }
+    ],
+    "qa_rule": "QA 输出必须同时保留最终报告和以上每个中间过程版本；最终文案可沿用优化表达，但推导逻辑必须可回到原始解读手册。"
+  },
+  "algorithm_fidelity_trace": {
+    "scope": "lite",
+    "method_trace_keys": [
+      "direct_judgment",
+      "per_circle_color_analysis",
+      "shape_analysis",
+      "circle_relation_analysis",
+      "final_algorithm_basis"
+    ],
+    "missing_method_trace_keys": [],
+    "algorithm_fidelity_pass": true,
+    "legacy_semantics_found": false,
+    "raw_payload_leak_found": false,
+    "raw_payload_leak_by_scope": {
+      "lite": false,
+      "pro": false
+    }
+  },
+  "topic_context_trace": {
+    "topic": "general",
+    "report_modes": [
+      "lite"
+    ],
+    "knowledge_route": "general",
+    "general_mixed": false,
+    "layer0_passed": true
+  },
+  "narrative_plans": {
+    "lite": {
+      "mode": "lite",
+      "generation_mode": "evidence_first",
+      "theme": "general",
+      "theme_label": "通用解读",
+      "evidence_trace_summary": {
+        "visual_fact_refs": [
+          "dominant:土",
+          "secondary:金",
+          "inner:金",
+          "middle:土",
+          "outer:金"
+        ],
+        "knowledge_hit_refs": [
+          "theme:general"
+        ],
+        "rule_refs": [
+          "signal:土多金埋"
+        ],
+        "theme_projection_refs": [
+          "theme_label:通用解读"
+        ],
+        "direct_judgment_refs": [
+          "method:direct_judgment"
+        ],
+        "color_analysis_refs": [
+          "method:per_circle_color_analysis"
+        ],
+        "shape_analysis_refs": [
+          "method:shape_analysis"
+        ],
+        "circle_relation_refs": [
+          "method:circle_relation_analysis"
+        ],
+        "tutorial_source_refs": [
+          "source:four_step_method",
+          "source:five_elements_excess_deficiency",
+          "source:triad_structure"
+        ],
+        "per_circle_color_summary": "内圈以#dcd4d7 / 金为主，深浅居中，填充较密，面积约12.2%；中圈以#b7d5e0 / 土为主，深浅居中，填充稳定，面积约32.6%；外圈以#d2d6de / 金为主，深浅居中，填充稳定，面积约55.1%",
+        "per_circle_observation_summary": "内圈主要呈现「金」的状态，深浅居中，填充较密，面积约12.2%；中圈主要呈现「土」的状态，深浅居中，填充稳定，面积约32.6%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约55.1%",
+        "per_circle_observations": {
+          "inner": "内圈主要呈现「金」的状态，深浅居中，填充较密，面积约12.2%",
+          "middle": "中圈主要呈现「土」的状态，深浅居中，填充稳定，面积约32.6%",
+          "outer": "外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约55.1%"
+        },
+        "school_interpretation_chain": [
+          {
+            "circle": "inner",
+            "circle_label": "内圈",
+            "element": "金",
+            "shade": "中白",
+            "state": "正常",
+            "depth_state": "middle",
+            "dominant_color": "#dcd4d7",
+            "area_ratio": 0.1225,
+            "interpretation": "内在有清晰的自我认知和价值观",
+            "manifestation": "自我了解、价值观清晰、有原则",
+            "healing": "继续深化自我认知，同时保持开放",
+            "source_ref": "themes/general.yaml:color_meanings.金.shades.中白.inner"
+          },
+          {
+            "circle": "middle",
+            "circle_label": "中圈",
+            "element": "土",
+            "shade": "中黄",
+            "state": "正常",
+            "depth_state": "middle",
+            "dominant_color": "#b7d5e0",
+            "area_ratio": 0.3264,
+            "interpretation": "当下生命状态稳定，能够承载生活中的各种体验",
+            "manifestation": "情绪稳定、能够承担责任、生活有序",
+            "healing": "在稳定的基础上，探索更丰富的生命可能",
+            "source_ref": "themes/general.yaml:color_meanings.土.shades.中黄.middle"
+          },
+          {
+            "circle": "outer",
+            "circle_label": "外圈",
+            "element": "金",
+            "shade": "中白",
+            "state": "正常",
+            "depth_state": "middle",
+            "dominant_color": "#d2d6de",
+            "area_ratio": 0.5511,
+            "interpretation": "外在展现清晰的思路和可靠的判断力",
+            "manifestation": "给人可靠感、思路清晰、值得信任",
+            "healing": "将这份清晰用于帮助他人",
+            "source_ref": "themes/general.yaml:color_meanings.金.shades.中白.outer"
+          }
+        ],
+        "fidelity_flags": [
+          "trace:tob_only_candidate_present"
+        ],
+        "fallback_summary": {
+          "used": false,
+          "levels": [],
+          "warnings": []
+        }
+      },
+      "sections": {
+        "title": {
+          "content": "慢慢亮起来的中心",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:土"
+            ],
+            "knowledge_hit_refs": [
+              "theme:general"
+            ],
+            "rule_refs": [],
+            "theme_projection_refs": [
+              "theme_label:通用解读"
+            ],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "overall_impression": {
+          "content": "第一眼先看到的，不是你要不要马上往前冲，而是你正在把自己重新收回来，确认现在这份力气能不能稳稳地落在内在的根基与安全感上。 如果把创作时的“先如实看看这张画带出来的感受，不急着下结论。”也放进来看，身体像是在提醒你：先观察清楚，不必急着下结论。 再往里看，三圈的走向也在说明同一件事：三圈依次呈现出「金 -> 土 -> 金」的变化。 所以这不是简单的停住，而更像你先把内在安顿好，再把节奏调整到：尝试新体验，培养灵活性。",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:土",
+              "secondary:金",
+              "inner:金",
+              "middle:土",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "theme:general"
+            ],
+            "rule_refs": [
+              "signal:土多金埋"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "visual_elements": {
+          "content": "如果只看画面给人的感受，最先浮出来的是两股力量：一股是「土」的收拢和判断，另一股是在提醒你把节奏调整到「尝试新体验，培养灵活性」。 三层画面的走向也很清楚：这说明你仍优先保护核心边界，再逐步恢复向外连接。 换句话说，最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「金」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态；中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「土」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 按流派的主题状态链看：内圈：金 / 中白 / 正常，内在有清晰的自我认知和价值观，自我了解、价值观清晰、有原则，疗愈方向：继续深化自我认知，同时保持开放；中圈：土 / 中黄 / 正常，当下生命状态稳定，能够承载生活中的各种体验，情绪稳定、能够承担责任、生活有序，疗愈方向：在稳定的基础上，探索更丰富的生命可能；外圈：金 / 中白 / 正常，外在展现清晰的思路和可靠的判断力，给人可靠感、思路清晰、值得信任，疗愈方向：将这份清晰用于帮助他人。 从逐圈观察看，内圈主要呈现「金」的状态，深浅居中，填充较密，面积约12.2%；中圈主要呈现「土」的状态，深浅居中，填充稳定，面积约32.6%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约55.1%",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:土",
+              "secondary:金",
+              "inner:金",
+              "middle:土",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "circle:金",
+              "circle:土",
+              "circle:金"
+            ],
+            "rule_refs": [],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "emotion_portrait": {
+          "content": "情绪上，你现在不像没感觉，反而像一直在心里默默处理内在的根基与安全感这件事。 而最外层落出来的「金」感，也说明你并不是想完全退回去，只是想先弄清楚，接下来该用什么边界和姿态继续向外。 也因为生命力的成长与扩展暂时偏弱，所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。 如果把创作时的“先如实看看这张画带出来的感受，不急着下结论。”也放进来看，身体像是在提醒你：先观察清楚，不必急着下结论。",
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:土",
+              "secondary:金",
+              "inner:金",
+              "middle:土",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "theme:general"
+            ],
+            "rule_refs": [
+              "signal:土多金埋"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "story_sections": {
+          "content": {
+            "base": "你的底色不是急着证明什么，而是先确认自己有没有站稳在内在的根基与安全感上。三圈依次呈现出「金 -> 土 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。",
+            "contradiction": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+            "pattern": "久而久之，这会形成你的惯用模式：金与土无明显生克。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。",
+            "defense": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。",
+            "block": "当前最容易卡住你的，不是没有方向，而是主导能量和现实节奏还没完全接上。 尤其当生命力的成长与扩展还没跟上时，你会在快要推进的那一刻先退回来。",
+            "light": "但你的光也已经出来了：你不是只会收着，而是已经能看见「尝试新体验，培养灵活性」这条更稳的路。这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+          },
+          "trace": {
+            "visual_fact_refs": [
+              "dominant:土",
+              "secondary:金",
+              "inner:金",
+              "middle:土",
+              "outer:金"
+            ],
+            "knowledge_hit_refs": [
+              "theme:general"
+            ],
+            "rule_refs": [
+              "signal:土多金埋"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "theme_insights": {
+          "content": {
+            "scene": "在「通用解读」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。因为画面里更强的那股力量，会先把注意力拉回内在的根基与安全感。",
+            "impact": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。 当生命力的成长与扩展还偏少时，你也会更需要一点缓冲和回收。",
+            "awareness": "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:general"
+            ],
+            "rule_refs": [
+              "signal:土多金埋"
+            ],
+            "theme_projection_refs": [
+              "theme_label:通用解读"
+            ],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "lite_healing_guidance": {
+          "content": {
+            "directions": [
+              {
+                "title": "轻量调节方向",
+                "content": "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
+              },
+              {
+                "title": "现实中的温和着力点",
+                "content": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。 当生命力的成长与扩展还偏少时，你也会更需要一点缓冲和回收。"
+              },
+              {
+                "title": "先从一个小场景开始",
+                "content": "在「通用解读」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。因为画面里更强的那股力量，会先把注意力拉回内在的根基与安全感。"
+              }
+            ],
+            "micro_practices": [
+              {
+                "title": "先安顿自己",
+                "content": "今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。那不是你拖延，而往往是在提醒你：先照顾好安全、稳定、接纳。"
+              },
+              {
+                "title": "看见边界变化",
+                "content": "当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。那不是故意冷下来，而是在确认这件事值不值得你继续打开。"
+              },
+              {
+                "title": "曼曼的疗愈仪式：给自己一个稳稳的小空间",
+                "content": "准备：白纸、喜欢的笔，舒适坐姿，双脚踩地，深呼吸三次，对自己说“这 5 分钟，只属于我”。\n步骤一：先写下此刻在「通用解读」里最牵动你的一个念头，只写一句，不急着分析。\n步骤二：把手放回胸口或腹部，感受身体哪里最紧，再用一条线、一个圈或一个小色块把它画出来。\n步骤三：看着这张小纸片，问自己“如果今天只做一件更温柔也更稳的事，它会是什么？”，然后把那个动作写在角落里。\n曼曼的祝福：慢慢来，不着急。慢慢亮起来的中心不是要一下子把一切都梳开，而是先让你重新听见自己的节奏。\n补充观察：如果今天只顺着这幅画练习一件事，可以试着把「土」的品质带进生活里，例如先给自己一点安全、稳定、接纳。"
+              }
+            ]
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:general",
+              "healing:土多金埋"
+            ],
+            "rule_refs": [
+              "signal:土多金埋"
+            ],
+            "theme_projection_refs": [],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        },
+        "pro_report_entry": {
+          "content": {
+            "title": "另一份更深的独立报告",
+            "summary": "如果你希望从更深层结构继续理解这张画，Pro 会提供更完整的结构、根因与疗愈视角。",
+            "product_note": "这是独立购买的深度报告，不依赖 Lite 才成立。"
+          },
+          "trace": {
+            "visual_fact_refs": [],
+            "knowledge_hit_refs": [
+              "theme:general",
+              "product:pro"
+            ],
+            "rule_refs": [],
+            "theme_projection_refs": [
+              "theme_label:通用解读"
+            ],
+            "reason_codes": [],
+            "fallback": {
+              "used": false
+            }
+          }
+        }
+      },
+      "legacy_projection": {
+        "title": "慢慢亮起来的中心",
+        "overall_impression": "第一眼先看到的，不是你要不要马上往前冲，而是你正在把自己重新收回来，确认现在这份力气能不能稳稳地落在内在的根基与安全感上。 如果把创作时的“先如实看看这张画带出来的感受，不急着下结论。”也放进来看，身体像是在提醒你：先观察清楚，不必急着下结论。 再往里看，三圈的走向也在说明同一件事：三圈依次呈现出「金 -> 土 -> 金」的变化。 所以这不是简单的停住，而更像你先把内在安顿好，再把节奏调整到：尝试新体验，培养灵活性。",
+        "visual_elements": "如果只看画面给人的感受，最先浮出来的是两股力量：一股是「土」的收拢和判断，另一股是在提醒你把节奏调整到「尝试新体验，培养灵活性」。 三层画面的走向也很清楚：这说明你仍优先保护核心边界，再逐步恢复向外连接。 换句话说，最里面这一层常会照见自我关系、原生家庭、过往伤痛、自我价值，现在更突出的是「金」特质。 放到现实里，往往会连到对自己的看法和自我认知 / 原生家庭带来的创伤或滋养 / 过往伤痛的疗愈状态；中间这一层更容易落到亲密关系、爱人/闺蜜/亲朋，现在更突出的是「土」特质。 放到现实里，往往会连到当前情感状态 / 与亲密他人的关系质量 / 情感表达方式。 按流派的主题状态链看：内圈：金 / 中白 / 正常，内在有清晰的自我认知和价值观，自我了解、价值观清晰、有原则，疗愈方向：继续深化自我认知，同时保持开放；中圈：土 / 中黄 / 正常，当下生命状态稳定，能够承载生活中的各种体验，情绪稳定、能够承担责任、生活有序，疗愈方向：在稳定的基础上，探索更丰富的生命可能；外圈：金 / 中白 / 正常，外在展现清晰的思路和可靠的判断力，给人可靠感、思路清晰、值得信任，疗愈方向：将这份清晰用于帮助他人。 从逐圈观察看，内圈主要呈现「金」的状态，深浅居中，填充较密，面积约12.2%；中圈主要呈现「土」的状态，深浅居中，填充稳定，面积约32.6%；外圈主要呈现「金」的状态，深浅居中，填充稳定，面积约55.1%",
+        "story_angles": {
+          "base": "你当前的生命能量基调",
+          "contradiction": "内在自我与外在表现之间的张力",
+          "pattern": "生命中重复出现的能量循环",
+          "defense": "你保护自己的方式（也可能成为限制）",
+          "block": "当前生命阶段的核心成长议题",
+          "light": "你独特的内在资源与转变可能"
+        },
+        "six_insights": {
+          "base": {
+            "title": "你的底色：先稳住中心的人：你当前的生命能量基调",
+            "content": "你的底色不是急着证明什么，而是先确认自己有没有站稳在内在的根基与安全感上。三圈依次呈现出「金 -> 土 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。",
+            "summary": "你的底色不是急着证明什么，而是先确认自己有没有站稳在内在的根基与安全感上。三圈依次呈现出「金 -> 土 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。"
+          },
+          "contradiction": {
+            "title": "你的矛盾：想往前，也想先喘口气：内在自我与外在表现之间的张力",
+            "content": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+            "summary": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。"
+          },
+          "pattern": {
+            "title": "你的模式：先感受，再决定投入多少：生命中重复出现的能量循环",
+            "content": "久而久之，这会形成你的惯用模式：金与土无明显生克。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。",
+            "summary": "久而久之，这会形成你的惯用模式：金与土无明显生克。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。"
+          },
+          "defense": {
+            "title": "你的防御：用边界保护感受力：你保护自己的方式（也可能成为限制）",
+            "content": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。",
+            "summary": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。"
+          },
+          "block": {
+            "title": "你的卡点：恢复中的自己不想再被催促：当前生命阶段的核心成长议题",
+            "content": "当前最容易卡住你的，不是没有方向，而是主导能量和现实节奏还没完全接上。 尤其当生命力的成长与扩展还没跟上时，你会在快要推进的那一刻先退回来。",
+            "summary": "当前最容易卡住你的，不是没有方向，而是主导能量和现实节奏还没完全接上。 尤其当生命力的成长与扩展还没跟上时，你会在快要推进的那一刻先退回来。"
+          },
+          "light": {
+            "title": "你的光：你已经知道什么更适合自己：你独特的内在资源与转变可能",
+            "content": "但你的光也已经出来了：你不是只会收着，而是已经能看见「尝试新体验，培养灵活性」这条更稳的路。这说明你不是卡死了，而是在学一种更适合自己的前进方式。",
+            "summary": "但你的光也已经出来了：你不是只会收着，而是已经能看见「尝试新体验，培养灵活性」这条更稳的路。这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+          }
+        },
+        "experiment": {
+          "title": "曼曼的疗愈仪式：给自己一个稳稳的小空间",
+          "content": "准备：白纸、喜欢的笔，舒适坐姿，双脚踩地，深呼吸三次，对自己说“这 5 分钟，只属于我”。\n步骤一：先写下此刻在「通用解读」里最牵动你的一个念头，只写一句，不急着分析。\n步骤二：把手放回胸口或腹部，感受身体哪里最紧，再用一条线、一个圈或一个小色块把它画出来。\n步骤三：看着这张小纸片，问自己“如果今天只做一件更温柔也更稳的事，它会是什么？”，然后把那个动作写在角落里。\n曼曼的祝福：慢慢来，不着急。慢慢亮起来的中心不是要一下子把一切都梳开，而是先让你重新听见自己的节奏。\n补充观察：如果今天只顺着这幅画练习一件事，可以试着把「土」的品质带进生活里，例如先给自己一点安全、稳定、接纳。"
+        },
+        "story_sections": {
+          "base": "你的底色不是急着证明什么，而是先确认自己有没有站稳在内在的根基与安全感上。三圈依次呈现出「金 -> 土 -> 金」的变化。 你很多时候不是慢，而是先要让内在点头。",
+          "contradiction": "矛盾也正在这里：你心里其实想继续往前，但外在又已经开始用「金」的方式先整理边界、秩序或方向。于是你会一边想行动，一边又不愿再把自己丢回那种失控消耗里。",
+          "pattern": "久而久之，这会形成你的惯用模式：金与土无明显生克。你通常不是直接冲，而是先在心里把事情转过一遍，感觉对了才真正迈出去。",
+          "defense": "为了不再乱掉，你会自然长出一种防御：更强调清晰、距离感和判断标准。它看起来像「金」的收紧，但本质上是在替现在的你筛选什么值得继续打开。",
+          "block": "当前最容易卡住你的，不是没有方向，而是主导能量和现实节奏还没完全接上。 尤其当生命力的成长与扩展还没跟上时，你会在快要推进的那一刻先退回来。",
+          "light": "但你的光也已经出来了：你不是只会收着，而是已经能看见「尝试新体验，培养灵活性」这条更稳的路。这说明你不是卡死了，而是在学一种更适合自己的前进方式。"
+        },
+        "theme_insights": {
+          "scene": "在「通用解读」里，你最常出现的场景是：不是没有机会，而是每次准备投入时，都会先问自己现在这样推，会不会又把自己推乱。因为画面里更强的那股力量，会先把注意力拉回内在的根基与安全感。",
+          "impact": "这会让你在面对关键事情时，更在意稳不稳、清不清楚、承不承受得住，而不是先求快。 当生命力的成长与扩展还偏少时，你也会更需要一点缓冲和回收。",
+          "awareness": "这幅画提醒你的，不是逼自己立刻更强，而是先承认：你想稳住，不等于你退缩；只要先把自己接住，后面的行动会自己长出来。"
+        },
+        "emotion_portrait": "情绪上，你现在不像没感觉，反而像一直在心里默默处理内在的根基与安全感这件事。 而最外层落出来的「金」感，也说明你并不是想完全退回去，只是想先弄清楚，接下来该用什么边界和姿态继续向外。 也因为生命力的成长与扩展暂时偏弱，所以一旦节奏变快，你更容易先退回来，等自己重新有把握了再动。 如果把创作时的“先如实看看这张画带出来的感受，不急着下结论。”也放进来看，身体像是在提醒你：先观察清楚，不必急着下结论。",
+        "three_awareness": [
+          {
+            "day": 1,
+            "title": "先安顿自己",
+            "content": "今天留意一下，当你准备回应外部事情前，身体会不会先想稳住一点。那不是你拖延，而往往是在提醒你：先照顾好安全、稳定、接纳。"
+          },
+          {
+            "day": 2,
+            "title": "看见边界变化",
+            "content": "当你准备继续投入时，观察自己是不是会先把边界、标准或距离感收紧。那不是故意冷下来，而是在确认这件事值不值得你继续打开。"
+          },
+          {
+            "day": 3,
+            "title": "捕捉卡住瞬间",
+            "content": "如果今天又出现想推进却又停住的那个瞬间，别急着评价自己。把那个瞬间记下来，你会更看清自己何时需要补回生命力的成长与扩展。"
+          }
+        ],
+        "pro_teaser": "你的画中，还藏着更深的线索：这种模式为什么总会重复出现，它在日常生活里还会如何影响你，以及你当前最需要看见的失衡类型与对应疗愈建议。这些答案，都在「一梳」完整版里等你。\n\n还有更多深层洞察，包括：\n- 这种能量模式在亲密关系、财富与健康中的具体表现\n- 童年经历如何塑造了这一模式\n- 更完整的结构、根因与疗愈视角"
+      }
+    },
+    "pro": {
+      "mode": "pro"
+    }
+  },
+  "field_to_knowledge_map": {
+    "title": {
+      "query_keys": [
+        "theme",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "narrative.general"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "narrative/general.yaml"
+      ],
+      "warnings": []
+    },
+    "current_reading": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "imbalance.土多金埋",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "rules/imbalance_types.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    },
+    "visual_basis": {
+      "query_keys": [
+        "theme",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    },
+    "pattern_interpretation": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "imbalance.土多金埋",
+        "narrative.general"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "rules/imbalance_types.yaml",
+        "narrative/general.yaml"
+      ],
+      "warnings": []
+    },
+    "life_connection": {
+      "query_keys": [
+        "theme",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "narrative.general"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "narrative/general.yaml"
+      ],
+      "warnings": []
+    },
+    "lite_healing_guidance": {
+      "query_keys": [
+        "theme",
+        "healing",
+        "narrative"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "healing.general.能量失衡",
+        "narrative.general"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "rules/healing_issue_mappings.yaml",
+        "healing/general.yaml",
+        "narrative/general.yaml"
+      ],
+      "warnings": []
+    },
+    "pro_report_entry": {
+      "query_keys": [
+        "narrative",
+        "theme"
+      ],
+      "entity_ids": [
+        "narrative.general",
+        "theme.general"
+      ],
+      "source_paths": [
+        "narrative/general.yaml",
+        "themes/general.yaml"
+      ],
+      "warnings": []
+    },
+    "deep_impression": {
+      "query_keys": [
+        "imbalance.primary",
+        "narrative",
+        "theme"
+      ],
+      "entity_ids": [
+        "imbalance.土多金埋",
+        "narrative.general",
+        "theme.general"
+      ],
+      "source_paths": [
+        "rules/imbalance_types.yaml",
+        "narrative/general.yaml",
+        "themes/general.yaml"
+      ],
+      "warnings": []
+    },
+    "evidence_digest": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "imbalance.土多金埋",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "rules/imbalance_types.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    },
+    "imbalance_diagnosis": {
+      "query_keys": [
+        "imbalance.primary",
+        "theme"
+      ],
+      "entity_ids": [
+        "imbalance.土多金埋",
+        "theme.general"
+      ],
+      "source_paths": [
+        "rules/imbalance_types.yaml",
+        "themes/general.yaml"
+      ],
+      "warnings": []
+    },
+    "root_cause_chain": {
+      "query_keys": [
+        "imbalance.primary",
+        "theme",
+        "narrative"
+      ],
+      "entity_ids": [
+        "imbalance.土多金埋",
+        "theme.general",
+        "narrative.general"
+      ],
+      "source_paths": [
+        "rules/imbalance_types.yaml",
+        "themes/general.yaml",
+        "narrative/general.yaml"
+      ],
+      "warnings": []
+    },
+    "deep_structure_interpretation": {
+      "query_keys": [
+        "theme",
+        "narrative",
+        "imbalance.primary"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "narrative.general",
+        "imbalance.土多金埋"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "narrative/general.yaml",
+        "rules/imbalance_types.yaml"
+      ],
+      "warnings": []
+    },
+    "healing_plan": {
+      "query_keys": [
+        "healing",
+        "imbalance.primary",
+        "narrative"
+      ],
+      "entity_ids": [
+        "healing.general.能量失衡",
+        "imbalance.土多金埋",
+        "narrative.general"
+      ],
+      "source_paths": [
+        "rules/healing_issue_mappings.yaml",
+        "healing/general.yaml",
+        "rules/imbalance_types.yaml",
+        "narrative/general.yaml"
+      ],
+      "warnings": []
+    },
+    "full_report_markdown": {
+      "query_keys": [
+        "theme",
+        "imbalance.primary",
+        "healing",
+        "narrative",
+        "circles.inner",
+        "circles.middle",
+        "circles.outer"
+      ],
+      "entity_ids": [
+        "theme.general",
+        "imbalance.土多金埋",
+        "healing.general.能量失衡",
+        "narrative.general",
+        "circle.内圈",
+        "circle.中圈",
+        "circle.外圈"
+      ],
+      "source_paths": [
+        "themes/general.yaml",
+        "rules/imbalance_types.yaml",
+        "rules/healing_issue_mappings.yaml",
+        "healing/general.yaml",
+        "narrative/general.yaml",
+        "circles/three_circles.yaml"
+      ],
+      "warnings": []
+    }
+  },
+  "fallback_analysis": {
+    "used": false,
+    "levels": [],
+    "warnings": [],
+    "fidelity_flags": [
+      "trace:tob_only_candidate_present"
+    ],
+    "quality_flags": [
+      "trace:tob_only_candidate_present"
+    ],
+    "query_fallbacks": []
+  },
+  "warning_analysis": {
+    "warning_hits": [],
+    "active_warning_paths": []
+  }
+}

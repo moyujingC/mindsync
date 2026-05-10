@@ -306,6 +306,46 @@ def test_openai_compatible_llm_client_records_last_error_detail_on_request_failu
     assert "network down" in client.last_error_detail["reason"]
 
 
+def test_openai_compatible_llm_client_disables_thinking_for_text_generation():
+    with patch.dict(
+        os.environ,
+        {
+            "AIMANDALA_LLM_BACKEND": "openai_compatible",
+            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
+            "AIMANDALA_LLM_MODEL": "deepseek-v4-pro",
+            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
+            "AIMANDALA_LLM_MAX_RETRIES": "0",
+        },
+        clear=False,
+    ):
+        client = create_llm_client_from_env()
+
+    calls = []
+
+    def _fake_urlopen(request, timeout):
+        calls.append(json.loads(request.data.decode("utf-8")))
+        return _FakeHTTPResponse(
+            json.dumps(
+                {
+                    "choices": [
+                        {"message": {"content": "{\"ok\": true}"}},
+                    ]
+                }
+            )
+        )
+
+    with patch("app.core.llm.runtime.urlopen", side_effect=_fake_urlopen):
+        result = client.generate_text(
+            task="chat",
+            system_prompt="system",
+            user_prompt="user",
+        )
+
+    assert result == "{\"ok\": true}"
+    assert len(calls) == 1
+    assert calls[0]["thinking"] == {"type": "disabled"}
+
+
 def test_openai_compatible_llm_client_records_attempt_trace_for_fallback_failure(tmp_path: Path):
     with patch.dict(
         os.environ,
