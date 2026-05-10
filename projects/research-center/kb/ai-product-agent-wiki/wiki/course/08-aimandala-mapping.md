@@ -32,6 +32,7 @@
 ## 概念
 
 - [[../bridge/aimandala-agent-mapping]]
+- [[../bridge/workflow-to-agent-architecture]]
 - [[../bridge/mandala-report-agent-path]]
 - [[../bridge/mandala-interpreter-agent-design]]
 - [[../bridge/mandala-interpreter-agent-evals]]
@@ -51,6 +52,8 @@
 一镜一梳当前更像 workflow 加 runtime。课程学习的目标不是立刻把它改成复杂多 Agent 系统，而是把 Agent 概念映射成可用的产品和技术检查表。
 
 可以先把 `LayeredOrchestrator` 看成底层编排，把 knowledge runtime、LLM report runtime 和 safety wrapper 看成工具或子能力，再先落 `MandalaReportAgent`，后落 `MandalaInterpreterAgent`。
+
+从传统 workflow 迁移到 Agent 时，应先判断当前问题是不是单点 prompt 问题，还是已经变成阶段顺序、上下文、trace、知识来源和质检边界问题。如果是后者，优先补 stage package 和 `MandalaReportAgent`，而不是直接拆多 Agent。完整判断见 [[../bridge/workflow-to-agent-architecture]]。
 
 `MandalaReportAgent` 应优先处理报告生成过程里的证据组织、stage 顺序、来源绑定和质检。`MandalaInterpreterAgent` 则放在第二阶段，解释已有报告和证据链。
 

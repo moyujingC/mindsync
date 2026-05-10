@@ -36,6 +36,7 @@
 - [[dev/multi-agent-design]]
 - [[dev/rag-vs-llm-wiki]]
 - [[bridge/pm-to-agent-architecture]]
+- [[bridge/workflow-to-agent-architecture]]
 - [[bridge/aimandala-agent-mapping]]
 - [[bridge/mandala-report-agent-path]]
 - [[bridge/mandala-interpreter-agent-design]]

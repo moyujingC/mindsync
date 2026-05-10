@@ -19,6 +19,7 @@
 - PM 到 Agent 架构映射页
 - 课程 02 到 08 已回写核心学习内容和概念链接
 - 一镜一梳 `MandalaReportAgent` / `MandalaInterpreterAgent` 项目映射与顺序页
+- 一镜一梳从传统 workflow 嵌入 LLM call 到 Agent 架构的演进判断页
 - `MandalaInterpreterAgent` 项目映射设计页
 - `MandalaInterpreterAgent` 抽象 eval 样本页
 - `MandalaInterpreterAgent` 用户可见解释样例页
@@ -27,6 +28,7 @@
 ## 接下来做什么
 
 - 后续基于 `MandalaReportAgent` 先整理报告生成 Agent 的 stage、工具和边界
+- 后续基于 `workflow-to-agent-architecture` 验证当前代码改造是否符合渐进路线
 - 后续再把解释 Agent 放到报告生成产物之上
 - 后续将解释样例交给产品文案和风险边界 review
 - 等项目实践稳定后，再判断哪些内容可提炼进公司级知识库
