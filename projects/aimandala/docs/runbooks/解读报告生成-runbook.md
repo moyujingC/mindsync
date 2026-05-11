@@ -17,7 +17,11 @@
 3. prompt 层只负责第 13 / 14 步 Lite / Pro 正文生成
 4. 控制层通过 `stage_process_package`、formal package gate（正式过程包门禁）和 generation runtime block（生成运行时阻断）限制错误链路继续执行
 
-本轮只说明当前事实链路，不宣称新增运行时约束。
+当前已下沉为 gate 的控制包括：
+
+1. `package_status` 必须为 `formal`
+2. payload 中不能残留 `pending_stage_runtime_replacement`
+3. payload 中不能包含 `full_markdown_truth_sources`、`full_theme_knowledge_documents`、`raw_legacy_container`、`old_report_skeleton`、`old_report_plan`、`private_env_or_api_keys` 这些 forbidden input marker（禁止输入标记）
 
 ## 2. 适用范围
 
@@ -132,7 +136,7 @@ prompt 层回答：
 1. `projects/aimandala/toC/app/backend/app/core/pipeline/stage_process_package.py`
    - 负责组装第 00-12 步 `stage_process_package`
 2. `projects/aimandala/toC/app/backend/app/core/stage_process_contracts.py`
-   - 负责校验 formal stage process package（正式 stage 过程包）
+   - 负责校验 formal stage process package（正式 stage 过程包）、pending marker 和 forbidden input marker
 3. `projects/aimandala/toC/app/backend/app/core/pipeline/generation_runtime.py`
    - 负责在生成 Lite / Pro 前阻断 incomplete stage package
 4. `projects/aimandala/toC/app/backend/app/core/prompt/builder_v2.py`
@@ -146,6 +150,7 @@ prompt 层回答：
 2. 哪些 stage package 可以进入正式生成
 3. Pro 升级失败时是业务状态问题，还是 stage package gate 问题
 4. prompt 是否仍可能绕过 `stage_process_package`
+5. payload 是否把完整真值源、完整主题知识、旧容器、旧报告骨架或敏感信息标记带进正式生成
 
 如果运行时没有拦住错误链路，应该补控制层，而不是只补本文档。
 

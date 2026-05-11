@@ -313,3 +313,35 @@ def test_generation_runtime_blocks_placeholder_stage_package():
 
     assert record.layer_1_lite_draft is None
     assert record.layer_2_lite_final is None
+
+
+def test_generation_runtime_blocks_forbidden_stage_process_package_input():
+    runtime = DeterministicReportGenerationRuntime()
+    context = SimpleNamespace(
+        stage_package_assembler=SimpleNamespace(
+            build=lambda record, target_report: StageProcessPackage(
+                payload={
+                    "process_contract": {
+                        "target_report": target_report,
+                        "package_status": "formal",
+                    },
+                    "stage-12-healing-direction-and-report-branching": {
+                        "debug_payload": {
+                            "source": "old_report_skeleton",
+                        },
+                    },
+                }
+            )
+        ),
+        _build_layer1_placeholder=lambda record: Layer1LiteDraft(prompt_preview="lite-prompt"),
+        _build_lite_placeholder_report=lambda record: "layer2",
+        _build_pro_placeholder_draft=lambda record: SimpleNamespace(prompt_preview="pro-prompt"),
+        _build_pro_placeholder_report=lambda record: "layer4",
+    )
+    record = InterpretationRecord(version_purchased=["lite"])
+
+    with pytest.raises(StageProcessPackageBlockedError, match="incomplete_stage_process_package"):
+        runtime.generate_lite(context, record)
+
+    assert record.layer_1_lite_draft is None
+    assert record.layer_2_lite_final is None

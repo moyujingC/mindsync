@@ -10,6 +10,7 @@ sys.path.insert(
 )
 
 from app.core.prompt.builder_v2 import PromptBuilder
+from app.core.stage_process_contracts import validate_formal_stage_process_package
 
 
 def _formal_package(
@@ -202,6 +203,46 @@ def test_prompt_builder_blocks_incomplete_stage_process_package():
     )
 
     with pytest.raises(ValueError, match="formal stage_process_package"):
+        builder.build_lite(
+            vision_data=stage_package,
+            theme="general",
+            theme_context="- 当前主题：整体",
+            stage_process_package=stage_package,
+        )
+
+
+def test_validate_formal_stage_process_package_reports_forbidden_path():
+    payload = {
+        "process_contract": {
+            "generation_mode": "stage_based_runtime",
+            "target_report": "lite",
+            "package_status": "formal",
+            "forbidden_inputs": ["raw_legacy_container"],
+        },
+        "stage-12-healing-direction-and-report-branching": {
+            "debug_payload": {
+                "source": "raw_legacy_container",
+            },
+        },
+    }
+
+    with pytest.raises(ValueError, match="stage-12-healing-direction-and-report-branching.debug_payload.source"):
+        validate_formal_stage_process_package(payload)
+
+
+def test_prompt_builder_blocks_forbidden_stage_process_package_input():
+    builder = PromptBuilder()
+    stage_package = _formal_package(
+        extra={
+            "stage-12-healing-direction-and-report-branching": {
+                "debug_payload": {
+                    "source": "raw_legacy_container",
+                },
+            },
+        }
+    )
+
+    with pytest.raises(ValueError, match="forbidden inputs"):
         builder.build_lite(
             vision_data=stage_package,
             theme="general",
