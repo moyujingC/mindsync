@@ -38,6 +38,45 @@ def _block_unless_formal(stage_process_package: Any) -> None:
         ) from error
 
 
+def _ensure_visual_stages(
+    generation_context: ReportGenerationContext,
+    record: InterpretationRecord,
+) -> None:
+    if record.stage_process_package is not None:
+        payload = record.stage_process_package.payload
+        if isinstance(payload, dict):
+            stage03 = payload.get("stage-03-visual-evidence", {})
+            stage04 = payload.get("stage-04-direct-judgment-high-hit-check", {})
+            if (
+                isinstance(stage03, dict)
+                and stage03.get("status") == "complete"
+                and isinstance(stage04, dict)
+                and stage04.get("status") == "complete"
+            ):
+                return
+    runtime = getattr(generation_context, "stage_vision_runtime", None)
+    if runtime is None or record.image_local_path is None:
+        return
+    base_package = generation_context.stage_package_assembler.build(
+        record,
+        target_report="lite",
+    )
+    record.stage_process_package = base_package
+    stage03 = runtime.generate_stage03(
+        image_path=record.image_local_path,
+        theme=record.theme or "general",
+        three_circles=record.three_circles or {"inner_radius": 33, "middle_radius": 66},
+    )
+    base_package.payload["stage-03-visual-evidence"] = stage03
+    if stage03.get("status") == "complete":
+        base_package.payload["stage-04-direct-judgment-high-hit-check"] = (
+            runtime.generate_stage04(
+                image_path=record.image_local_path,
+                stage03=stage03,
+            )
+        )
+
+
 class DeterministicReportGenerationRuntime:
     """Knowledge-first runtime for Lite/Pro generation."""
 
@@ -46,6 +85,7 @@ class DeterministicReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
+        _ensure_visual_stages(generation_context, record)
         stage_process_package = generation_context.stage_package_assembler.build(
             record,
             target_report="lite",
@@ -110,6 +150,7 @@ class LLMReportGenerationRuntime:
         generation_context: ReportGenerationContext,
         record: InterpretationRecord,
     ) -> LiteGenerationBundle:
+        _ensure_visual_stages(generation_context, record)
         stage_process_package = generation_context.stage_package_assembler.build(
             record,
             target_report="lite",

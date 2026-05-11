@@ -49,6 +49,7 @@ class ReportGenerationContext(Protocol):
 
     prompt_builder: Any
     stage_package_assembler: Any
+    stage_vision_runtime: Any
 
     def _build_layer1_placeholder(
         self,

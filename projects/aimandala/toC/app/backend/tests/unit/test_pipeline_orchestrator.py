@@ -42,6 +42,85 @@ class FailingCircleDetector:
         raise AssertionError(f"unexpected detector call: {kwargs}")
 
 
+class FakeVisionClient:
+    def __init__(self):
+        self.last_attempt_trace = [{"model": "fake-vision", "result": "response"}]
+        self.last_error_detail = {}
+
+    def generate_structured(self, **kwargs):
+        if "第04步" in kwargs["prompt"] or "直断命中" in kwargs["prompt"]:
+            return {
+                "stage": "stage-04-direct-judgment-high-hit-check",
+                "hits": [
+                    {
+                        "mode": "外圈红色多",
+                        "hit_strength": "full_hit",
+                        "vision_hit": True,
+                        "program_hit": True,
+                        "cross_validation": "consistent",
+                        "visual_unit_refs": ["outer-001"],
+                        "visible_evidence": ["外圈存在成片红色。"],
+                        "knowledge_refs": ["direct_judgment.outer_red_mass"],
+                        "reasoning": "视觉与程序都确认外圈红色成片。",
+                    }
+                ],
+                "non_hits": [],
+                "uncertain_items": [],
+                "conflicts": [],
+                "summary": "命中外圈红色多。",
+            }
+        return {
+            "stage": "stage-03-visual-evidence",
+            "global_summary": "内圈红色集中，中圈绿色放射，外圈红色包裹。",
+            "circles": {
+                "inner": {
+                    "summary": "内圈中心有红色圆形。",
+                    "visual_units": [
+                        {
+                            "id": "inner-001",
+                            "position": "中心",
+                            "color": {"main": "红色", "depth": "深", "saturation": "高"},
+                            "shape": {"type": "圆形", "arrangement": "集中"},
+                            "area_ratio": "0.30",
+                            "visible_evidence": "内圈中心有红色圆形填色。",
+                        }
+                    ],
+                },
+                "middle": {
+                    "summary": "中圈绿色条状向外放射。",
+                    "visual_units": [
+                        {
+                            "id": "middle-001",
+                            "position": "中圈",
+                            "color": {"main": "绿色", "depth": "中", "saturation": "中"},
+                            "shape": {"type": "条状", "arrangement": "放射"},
+                            "area_ratio": "0.30",
+                            "visible_evidence": "中圈绿色条状向外放射。",
+                        }
+                    ],
+                },
+                "outer": {
+                    "summary": "外圈存在成片红色。",
+                    "visual_units": [
+                        {
+                            "id": "outer-001",
+                            "position": "外圈",
+                            "color": {"main": "红色", "depth": "深", "saturation": "高"},
+                            "shape": {"type": "块状", "arrangement": "成片"},
+                            "area_ratio": "0.46",
+                            "visible_evidence": "外圈存在成片红色。",
+                        }
+                    ],
+                },
+            },
+            "evidence_summary": ["外圈存在成片红色。"],
+            "uncertainties": [],
+        }
+
+    def generate_text(self, **kwargs):
+        return None
+
+
 def test_generation_stage_values():
     assert GenerationStage.PENDING == "pending"
     assert GenerationStage.DETECTING == "detecting"
@@ -145,6 +224,38 @@ def test_get_report_returns_failed_payload_without_visual_evidence(tmp_path):
     assert record.status == "failed"
     lite = orchestrator.get_report(record.interpretation_id, version="lite")
     assert lite["error"] == "lite report not generated yet"
+
+
+def test_generate_lite_placeholder_with_fake_vision_builds_formal_stage_package(tmp_path):
+    image_path = tmp_path / "image.png"
+    image_path.write_bytes(b"mock-image")
+    store = InterpretationStore(storage_dir=str(tmp_path / "interpretations"))
+    runtime = DeterministicReportGenerationRuntime()
+    runtime.llm_client = FakeVisionClient()
+    orchestrator = LayeredOrchestrator(
+        store=store,
+        circle_detector=StubCircleDetector(),
+        generation_runtime=runtime,
+        enable_vision=True,
+    )
+
+    record = asyncio.run(
+        orchestrator.generate_lite_placeholder(
+            image_path=str(image_path),
+            user_id="stage-user-formal",
+            theme="wealth_career",
+            three_circles=MANUAL_THREE_CIRCLES,
+            check_existing=False,
+        )
+    )
+
+    payload = record.stage_process_package.payload
+    assert record.status == "completed"
+    assert payload["process_contract"]["package_status"] == "formal"
+    assert payload["stage-03-visual-evidence"]["status"] == "complete"
+    assert payload["stage-04-direct-judgment-high-hit-check"]["status"] == "complete"
+    assert "direct_judgment.outer_red_mass" in payload["stage-04-direct-judgment-high-hit-check"]["knowledge_refs"]
+    assert record.layer_2_lite_final is not None
 
 
 def test_generation_runtime_uses_stage_process_package():

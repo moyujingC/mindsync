@@ -90,72 +90,96 @@ def _manual_circle_payload(inner: int = 33, middle: int = 66) -> dict[str, int]:
     }
 
 
-def _formal_visual_stage_payload() -> dict:
-    return {
-        "stage-03-visual-evidence": {
-            "status": "complete",
-            "global_visual_summary": "内圈红色集中，中圈绿色放射，外圈黄色包裹。",
+class FakeVisionClient:
+    def __init__(self):
+        self.last_attempt_trace = [{"model": "fake-vision", "result": "response"}]
+        self.last_error_detail = {}
+
+    def generate_structured(self, **kwargs):
+        if "直断命中" in kwargs["prompt"]:
+            return {
+                "stage": "stage-04-direct-judgment-high-hit-check",
+                "hits": [
+                    {
+                        "mode": "外圈红色多",
+                        "hit_strength": "full_hit",
+                        "vision_hit": True,
+                        "program_hit": True,
+                        "cross_validation": "consistent",
+                        "visual_unit_refs": ["outer-001"],
+                        "visible_evidence": ["外圈存在成片红色。"],
+                        "knowledge_refs": ["direct_judgment.outer_red_mass"],
+                        "reasoning": "视觉与程序都确认外圈红色成片。",
+                    }
+                ],
+                "non_hits": [],
+                "uncertain_items": [],
+                "conflicts": [],
+                "summary": "命中外圈红色多。",
+            }
+        return {
+            "stage": "stage-03-visual-evidence",
+            "global_summary": "内圈红色集中，中圈绿色放射，外圈红色包裹。",
             "circles": {
                 "inner": {
+                    "summary": "内圈红色圆形集中。",
                     "visual_units": [
                         {
+                            "id": "inner-001",
+                            "position": "中心",
                             "color": "红色",
-                            "shade": "bright",
                             "shape": "圆形",
+                            "shade": "bright",
                             "area_ratio": 0.36,
-                            "description": "内圈红色圆形集中在中心。",
+                            "visible_evidence": "内圈红色圆形集中在中心。",
                         }
                     ]
                 },
                 "middle": {
+                    "summary": "中圈绿色条状向外放射。",
                     "visual_units": [
                         {
+                            "id": "middle-001",
+                            "position": "中圈",
                             "color": "绿色",
-                            "shade": "medium",
                             "shape": "条状",
+                            "shade": "medium",
                             "area_ratio": 0.34,
-                            "description": "中圈绿色条状向外放射。",
+                            "visible_evidence": "中圈绿色条状向外放射。",
                         }
                     ]
                 },
                 "outer": {
+                    "summary": "外圈存在成片红色。",
                     "visual_units": [
                         {
-                            "color": "黄色",
-                            "shade": "medium",
-                            "shape": "包裹",
-                            "area_ratio": 0.30,
-                            "description": "外圈黄色形成稳定包裹。",
+                            "id": "outer-001",
+                            "position": "外圈",
+                            "color": "红色",
+                            "shape": "块状",
+                            "shade": "deep",
+                            "area_ratio": 0.46,
+                            "visible_evidence": "外圈存在成片红色。",
                         }
                     ]
                 },
             },
-            "evidence_refs": ["stage-03.visual.inner.0"],
-        },
-        "stage-04-direct-judgment-high-hit-check": {
-            "status": "complete",
-            "matches": [],
-            "conflicts": [],
-            "knowledge_refs": [],
-        },
-    }
+            "evidence_summary": ["外圈存在成片红色。"],
+            "uncertainties": [],
+        }
+
+    def generate_text(self, **kwargs):
+        return None
 
 
 def _install_formal_visual_runtime(orchestrator) -> None:
     from app.core.pipeline.generation_runtime import DeterministicReportGenerationRuntime
 
-    class FormalVisualRuntime(DeterministicReportGenerationRuntime):
-        def generate_lite(self, generation_context, record):
-            if record.stage_process_package is None:
-                record.stage_process_package = generation_context.stage_package_assembler.build(
-                    record,
-                    target_report="lite",
-                )
-            record.stage_process_package.payload.update(_formal_visual_stage_payload())
-            return super().generate_lite(generation_context, record)
-
-    runtime = FormalVisualRuntime()
+    runtime = DeterministicReportGenerationRuntime()
+    runtime.llm_client = FakeVisionClient()
     orchestrator.generation_runtime = runtime
+    orchestrator.vision_llm_client = runtime.llm_client
+    orchestrator.stage_vision_runtime.llm_client = runtime.llm_client
     orchestrator.report_lite_record_workflow.generation_runtime = runtime
     orchestrator.report_lifecycle_manager.generation_runtime = runtime
 

@@ -112,6 +112,7 @@ class LayeredOrchestrator:
             self.generation_runtime = LLMReportGenerationRuntime(
                 llm_client=create_llm_client_from_env()
             )
+        self.vision_llm_client = getattr(self.generation_runtime, "llm_client", None)
         self.report_chat_runtime = report_chat_runtime
         self.enable_vision = enable_vision
         install_report_pipeline_components(

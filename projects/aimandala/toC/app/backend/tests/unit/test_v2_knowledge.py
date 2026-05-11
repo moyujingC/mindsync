@@ -8,6 +8,7 @@ sys.path.insert(
 )
 
 from app.core.knowledge import KnowledgeQueryEngine, get_theme_summary, list_themes
+from app.core.knowledge_runtime.services.direct_judgment_service import DirectJudgmentService
 from app.core.pipeline.data_models import InterpretationRecord, StageProcessPackage
 from app.core.pipeline import orchestrator_v2 as orchestrator_module
 from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
@@ -200,6 +201,34 @@ def test_stage_package_couples_stage_05_to_07_to_runtime_knowledge_refs():
         assert refs
         assert all("三圈五行流派解读方法与步骤.md" not in ref for ref in refs)
     assert payload["stage-12-healing-direction-and-report-branching"]["lite_writing_input"]
+
+
+def test_direct_judgment_service_reads_runtime_rules():
+    orchestrator = LayeredOrchestrator(enable_vision=False)
+    service = DirectJudgmentService(orchestrator.knowledge_runtime.repository)
+
+    judgments = service.list_judgments()
+    program_matches = service.match_programmatically(
+        {
+            "circles": {
+                "outer": {
+                    "visual_units": [
+                        {
+                            "id": "outer-red-001",
+                            "color": "红色",
+                            "area_ratio": 0.46,
+                            "description": "外圈有成片红色填色区域。",
+                        }
+                    ]
+                }
+            }
+        }
+    )
+
+    assert any(item["id"] == "direct_judgment.outer_red_mass" for item in judgments)
+    assert program_matches
+    assert program_matches[0]["knowledge_refs"] == ["direct_judgment.outer_red_mass"]
+    assert program_matches[0]["visual_unit_refs"] == ["outer-red-001"]
 
 
 def test_report_knowledge_adapter_element_meaning_uses_runtime_service():

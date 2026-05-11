@@ -18,6 +18,7 @@ from .report_pipeline_stage_config import ReportPipelineStageConfig
 from .report_safety_wrapper import ReportSafetyWrapper
 from .report_section_renderer import ReportSectionRenderer
 from .stage_process_package import StageProcessPackageAssembler
+from .stage_vision_runtime import StageVisionRuntime
 
 
 def install_report_foundation_components(
@@ -42,6 +43,15 @@ def install_report_foundation_components(
             orchestrator.report_knowledge_adapter.get_knowledge_theme_summary
         ),
         get_knowledge_runtime=lambda: orchestrator.knowledge_runtime,
+    )
+    orchestrator.stage_vision_runtime = StageVisionRuntime(
+        llm_client=orchestrator.vision_llm_client,
+        direct_judgment_service=(
+            orchestrator.knowledge_runtime.direct_judgment_service
+            if orchestrator.knowledge_runtime
+            and hasattr(orchestrator.knowledge_runtime, "direct_judgment_service")
+            else None
+        ),
     )
     orchestrator.report_debug_builder = ReportDebugProfileBuilder(
         validator=orchestrator.report_contracts.validator,

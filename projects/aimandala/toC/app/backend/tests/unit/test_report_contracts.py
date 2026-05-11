@@ -9,6 +9,7 @@ from app.core.pipeline.structured_report_schema import get_structured_report_con
 from app.core.pipeline.store import InterpretationStore
 
 from .test_pipeline_orchestrator import MANUAL_THREE_CIRCLES, StubCircleDetector
+from .test_pipeline_orchestrator import FakeVisionClient
 
 
 def _create_orchestrator(tmp_path):
@@ -24,79 +25,19 @@ def _create_orchestrator(tmp_path):
     return orchestrator, image_path
 
 
-def _formal_visual_stage_payload() -> dict:
-    return {
-        "stage-03-visual-evidence": {
-            "status": "complete",
-            "global_visual_summary": "内圈红色集中，中圈绿色放射，外圈黄色包裹。",
-            "circles": {
-                "inner": {
-                    "visual_units": [
-                        {
-                            "color": "红色",
-                            "shade": "bright",
-                            "shape": "圆形",
-                            "area_ratio": 0.36,
-                            "description": "内圈红色圆形集中在中心。",
-                        }
-                    ]
-                },
-                "middle": {
-                    "visual_units": [
-                        {
-                            "color": "绿色",
-                            "shade": "medium",
-                            "shape": "条状",
-                            "area_ratio": 0.34,
-                            "description": "中圈绿色条状向外放射。",
-                        }
-                    ]
-                },
-                "outer": {
-                    "visual_units": [
-                        {
-                            "color": "黄色",
-                            "shade": "medium",
-                            "shape": "包裹",
-                            "area_ratio": 0.30,
-                            "description": "外圈黄色形成稳定包裹。",
-                        }
-                    ]
-                },
-            },
-            "evidence_refs": ["stage-03.visual.inner.0"],
-        },
-        "stage-04-direct-judgment-high-hit-check": {
-            "status": "complete",
-            "matches": [],
-            "conflicts": [],
-            "knowledge_refs": [],
-        },
-    }
-
-
 def _create_formal_lite_record(orchestrator, image_path, *, user_id, theme="general"):
+    orchestrator.generation_runtime.llm_client = FakeVisionClient()
+    orchestrator.vision_llm_client = orchestrator.generation_runtime.llm_client
+    orchestrator.stage_vision_runtime.llm_client = orchestrator.generation_runtime.llm_client
     record = asyncio.run(
-        orchestrator.report_lite_record_workflow.prepare_record(
-            detect_three_circles=orchestrator.detect_three_circles,
+        orchestrator.generate_lite_placeholder(
             image_path=str(image_path),
             user_id=user_id,
             theme=theme,
             three_circles=MANUAL_THREE_CIRCLES,
+            check_existing=False,
         )
     )
-    record.stage_process_package = orchestrator.stage_package_assembler.build(
-        record,
-        target_report="lite",
-    )
-    record.stage_process_package.payload.update(_formal_visual_stage_payload())
-    bundle = orchestrator.generation_runtime.generate_lite(orchestrator, record)
-    record.stage_process_package = bundle.stage_process_package
-    record.layer_1_lite_draft = bundle.layer_1_lite_draft
-    record.layer_2_lite_final = bundle.layer_2_lite_final
-    if "lite" not in record.version_purchased:
-        record.version_purchased.append("lite")
-    orchestrator.store.save(record)
     return record
 
 

@@ -9,6 +9,7 @@ from app.core.llm.runtime import LLMClient
 from .compiler import KnowledgePackCompiler
 from .repository import KnowledgeRepository, resolve_build_dir, resolve_pack_root
 from .services.circle_service import CircleService
+from .services.direct_judgment_service import DirectJudgmentService
 from .services.element_service import ElementService
 from .services.healing_service import HealingService
 from .services.imbalance_service import ImbalanceService
@@ -24,6 +25,7 @@ class KnowledgeRuntime:
     repository: KnowledgeRepository
     element_service: ElementService
     circle_service: CircleService
+    direct_judgment_service: DirectJudgmentService
     theme_service: ThemeService
     imbalance_service: ImbalanceService
     healing_service: HealingService
@@ -53,6 +55,7 @@ def create_knowledge_runtime(
     theme_service = ThemeService(repository)
     element_service = ElementService(repository)
     circle_service = CircleService(repository)
+    direct_judgment_service = DirectJudgmentService(repository)
     imbalance_service = ImbalanceService(repository)
     healing_service = HealingService(repository)
     narrative_service = NarrativeContextService(
@@ -65,6 +68,7 @@ def create_knowledge_runtime(
         repository=repository,
         element_service=element_service,
         circle_service=circle_service,
+        direct_judgment_service=direct_judgment_service,
         theme_service=theme_service,
         imbalance_service=imbalance_service,
         healing_service=healing_service,
