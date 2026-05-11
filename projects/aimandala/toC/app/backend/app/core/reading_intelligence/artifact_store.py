@@ -1,24 +1,20 @@
-"""Write mandala reading agent artifacts for review."""
+"""Artifact writer for mandala reading agent review outputs."""
 
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, is_dataclass
 from pathlib import Path
-from typing import Any
 
 from .contracts import MandalaAgentResult
 
 
 class MandalaReadingArtifactStore:
-    """Persist the MVP artifact set expected by QA and handoff docs."""
-
     def __init__(self, output_dir: str | Path) -> None:
         self.output_dir = Path(output_dir)
 
     def write(self, result: MandalaAgentResult) -> list[Path]:
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        artifacts: dict[str, Any] = {
+        files = {
             "agent_input.json": result.agent_input,
             "knowledge_pack.json": result.knowledge_pack,
             "agent_output.json": result.agent_output,
@@ -30,27 +26,15 @@ class MandalaReadingArtifactStore:
             "quality_gate.json": result.quality_gate,
         }
         written: list[Path] = []
-        for filename, payload in artifacts.items():
-            path = self.output_dir / filename
+        for name, payload in files.items():
+            path = self.output_dir / name
             path.write_text(
-                json.dumps(_json_safe(payload), ensure_ascii=False, indent=2),
+                json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
             written.append(path)
 
         markdown_path = self.output_dir / "final_report.md"
-        markdown_path.write_text(result.final_report_md, encoding="utf-8")
+        markdown_path.write_text(result.final_report_md + "\n", encoding="utf-8")
         written.append(markdown_path)
         return written
-
-
-def _json_safe(payload: Any) -> Any:
-    if is_dataclass(payload):
-        return asdict(payload)
-    if isinstance(payload, dict):
-        return {str(key): _json_safe(value) for key, value in payload.items()}
-    if isinstance(payload, list):
-        return [_json_safe(item) for item in payload]
-    if isinstance(payload, tuple):
-        return [_json_safe(item) for item in payload]
-    return payload
