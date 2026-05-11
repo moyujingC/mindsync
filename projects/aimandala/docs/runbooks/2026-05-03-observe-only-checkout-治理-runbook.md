@@ -1,9 +1,9 @@
 # Observe-only Checkout 治理 Runbook
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：Engineer
-> last_updated：2026-05-03
+> last_updated：2026-05-11
 > source_of_truth：projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md
 
 ## 1. 目标
@@ -21,7 +21,33 @@
 
 1. `/opt/automation/worktrees/...`
 
-## 2. 升级前最小检查集
+这份 runbook 是当前 automation 节点 observe-only checkout 的 control-backed runbook：
+
+1. runbook 负责说明判断树、备份、清理和升级路径
+2. `automation-node-maintenance.sh` 负责在 maintenance 前检查两个 observe-only checkout 是否干净
+3. `server-automation-guard.mjs` 负责拒绝把 observe-only checkout 当成服务器执行 cwd
+4. `check-paperclip-execution-health.mjs` 负责把 observe-only / workspace 漂移纳入 execution health 分类
+
+## 2. 控制层行为
+
+当前已有三个硬约束入口：
+
+1. `shared/tools/ci/automation-node-maintenance.sh`
+   - 默认检查 `/opt/automation/app/mindsync`
+   - 默认检查 `/opt/automation/app/mindsync-heartbeat`
+   - 任一 checkout 变脏时直接退出，不继续 maintenance
+2. `shared/tools/ci/server-automation-guard.mjs`
+   - `cwd` 命中 `/opt/automation/app/mindsync` 时拒绝执行
+   - `cwd` 命中 `/opt/automation/app/mindsync-heartbeat` 时拒绝执行
+   - `server_automation` 未落到 `/opt/automation/worktrees` 时拒绝执行
+3. `shared/tools/ci/check-paperclip-execution-health.mjs`
+   - 将 server automation 缺 execution workspace 的问题归入 `serverAutomationBlockingIssues`
+   - 将 workspace 指向 observe-only checkout 的问题归入 observe-only / workspace 漂移
+   - `--strict` 时对活跃阻断类问题返回非零
+
+这些控制层不能替代人工分类和备份。它们只负责先拦住错误继续扩大。
+
+## 3. 升级前最小检查集
 
 每次升级、巡检异常排查或 maintenance 前，先执行：
 
@@ -48,16 +74,16 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 只要任一 checkout 不干净，就不要直接继续升级。
 
-## 3. 判断树
+## 4. 判断树
 
-### 3.1 两个 checkout 都干净
+### 4.1 两个 checkout 都干净
 
 结论：
 
 1. 允许正常同步
 2. 允许继续 heartbeat / maintenance / 升级动作
 
-### 3.2 只有主镜像区脏
+### 4.2 只有主镜像区脏
 
 结论：
 
@@ -71,7 +97,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. deploy / smoke / repair 写回了共享 checkout
 3. 人工运维临时热修未收束
 
-### 3.3 只有巡检区脏
+### 4.3 只有巡检区脏
 
 结论：
 
@@ -79,7 +105,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 不要继续把它当稳定巡检基线
 3. 先恢复干净，再继续 heartbeat 升级
 
-### 3.4 两个 checkout 都脏
+### 4.4 两个 checkout 都脏
 
 结论：
 
@@ -87,7 +113,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 不再做常规升级
 3. 先盘点，再决定转正 / 备份 / 重建
 
-## 4. 脏改分类
+## 5. 脏改分类
 
 拿到 `git status` 后，固定按下面 4 类分类：
 
@@ -98,7 +124,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 如果无法分类，就先视为“有保留价值的现场”，先备份，不直接清理。
 
-## 5. 允许的修复动作
+## 6. 允许的修复动作
 
 允许：
 
@@ -107,7 +133,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 3. 对已确认无保留价值的 checkout 执行重建
 4. 当只需要上线单点修复，采用定点覆盖而不是整仓升级
 
-## 6. 不允许的修复动作
+## 7. 不允许的修复动作
 
 不允许：
 
@@ -115,8 +141,10 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 在未确认来源前直接覆盖 checkout
 3. 把 observe-only checkout 当 deploy / smoke 的实际执行目录
 4. 因为目标 workflow 在 `relayhub/dev`，就把巡检 checkout 也切到 `relayhub/dev`
+5. 为了让 maintenance 继续跑而临时 `git reset --hard`
+6. 为了让 server automation 继续跑而把 cwd 改回 observe-only checkout
 
-## 7. 何时需要重建 checkout
+## 8. 何时需要重建 checkout
 
 满足任一项时，优先考虑重建：
 
@@ -125,7 +153,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 3. 该 checkout 已失去“稳定观察基线”价值
 4. 继续在原目录上修补，比重新拉一份更难判断风险
 
-## 8. 何时只做定点覆盖
+## 9. 何时只做定点覆盖
 
 满足下面条件时，可以只做定点覆盖：
 
@@ -134,7 +162,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 3. 已完成备份
 4. 已明确记录这不是长期治理完成态
 
-## 9. 何时必须先转正或备份
+## 10. 何时必须先转正或备份
 
 满足任一项时，先转正或备份：
 
@@ -142,7 +170,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 现场改动还没有仓库对应版本
 3. 当前无法确认是人工热修还是运行时误写
 
-## 10. 与 systemd / heartbeat / maintenance 的联动顺序
+## 11. 与 systemd / heartbeat / maintenance 的联动顺序
 
 默认顺序固定为：
 
@@ -157,7 +185,29 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 正常同步
    - 重建 checkout
 
-## 11. 当前特别说明
+其中 maintenance 链路已经有硬阻断：
+
+```bash
+shared/tools/ci/automation-node-maintenance.sh
+```
+
+如果它因为 observe-only checkout 变脏退出，应先回到本 runbook 的判断树，不要直接绕过脚本。
+
+## 12. 验证命令
+
+本 runbook 对应的最小本地静态验证是：
+
+```bash
+bash -n shared/tools/ci/automation-node-maintenance.sh
+node --check shared/tools/ci/server-automation-guard.mjs
+node shared/tools/ci/server-automation-guard.smoke.mjs
+node --check shared/tools/ci/check-paperclip-execution-health.mjs
+node shared/tools/ci/execution-health.smoke.mjs
+```
+
+在 automation 节点真实排障时，还应使用本 runbook 第 3 节的 SSH 检查集确认两个 checkout 的实际状态。
+
+## 13. 当前特别说明
 
 当前多项目 heartbeat 已正式覆盖：
 
@@ -177,7 +227,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 1. 跟 `origin/main`
 2. 保持干净
 
-## 12. 配套入口
+## 14. 配套入口
 
 - 规格：
   - [../specs/2026-05-03-observe-only-checkout-治理规格.md](../specs/2026-05-03-observe-only-checkout-治理规格.md)
@@ -186,8 +236,12 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 - QA：
   - [../qa/2026-05-03-observe-only-checkout-治理-qa-basis.md](../qa/2026-05-03-observe-only-checkout-治理-qa-basis.md)
   - [../qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md](../qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md)
+- 控制层：
+  - `shared/tools/ci/automation-node-maintenance.sh`
+  - `shared/tools/ci/server-automation-guard.mjs`
+  - `shared/tools/ci/check-paperclip-execution-health.mjs`
 
-## 13. 历史残留清理完成态
+## 15. 历史残留清理完成态
 
 2026-05-03 本轮真实收口后，automation 节点应满足下面完成态：
 
@@ -198,7 +252,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 3. `/opt/automation/worktrees`
    - 不再存在 dirty worktree
 
-### 13.1 必须保留的备份目录口径
+### 15.1 必须保留的备份目录口径
 
 本轮已验证的备份目录分三组：
 
@@ -217,7 +271,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. `done / in_review` 残留
 3. 仍挂在老基线提交上的未提交副本
 
-### 13.2 历史残留 worktree 的正式收口顺序
+### 15.2 历史残留 worktree 的正式收口顺序
 
 不要直接 `rm -rf`。固定顺序应为：
 
@@ -230,7 +284,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 4. 再执行 `git worktree remove --force`
 5. 最后把对应 issue 状态同步收口
 
-### 13.3 issue 状态收口口径
+### 15.3 issue 状态收口口径
 
 如果 worktree 已从运行目录移除，但任务本身并未形成正式交付闭环，不要直接改成 `done`。
 
@@ -251,7 +305,7 @@ content-type: application/json
 {"body":"..."}
 ```
 
-### 13.4 当前已验证的最终结果
+### 15.4 当前已验证的最终结果
 
 本轮已完成验证：
 
