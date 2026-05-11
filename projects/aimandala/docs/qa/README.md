@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Test / QA
-> last_updated：2026-05-10
+> last_updated：2026-05-11
 > source_of_truth：projects/aimandala/docs/qa/README.md
 
 这里放 `一镜一梳` 当前主链路的验收清单、验证记录与样本验证文档。
@@ -48,6 +48,8 @@
 
 当前优先阅读：
 
+- [2026-05-11-runbook-体系优化验证记录.md](./2026-05-11-runbook-体系优化验证记录.md)
+- [2026-05-11-runbook-体系优化-QA基线.md](./2026-05-11-runbook-体系优化-QA基线.md)
 - [2026-05-10-三圈五行流派解读方法实施QA基线.md](./2026-05-10-三圈五行流派解读方法实施QA基线.md)
 - [2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md](./2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md)
 - [2026-05-06-mvp-国产视觉模型评测验证记录.md](./2026-05-06-mvp-国产视觉模型评测验证记录.md)
@@ -76,6 +78,8 @@
 
 说明：
 
+- `2026-05-11-runbook-体系优化验证记录.md` 是当前 runbook 体系治理的验证记录，固定保存入口唯一性、当前 / 历史分离、类型分层和控制层映射检查结论。
+- `2026-05-11-runbook-体系优化-QA基线.md` 是当前 runbook 体系治理的 QA baseline，固定验证 runbook 入口、task / runbook 边界和 control layer（控制层）映射。
 - `2026-05-10-三圈五行流派解读方法实施QA基线.md` 是当前三圈五行方法落到实现层的 QA 质量门，固定验证 `stage_process_package`、prompt、测试和 active 文档都只承接 stage 00-16 链路。
 - `2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md` 是当前 MVP 视觉模型默认接入的最终质量门结论，统一收束人工细看、端到端 smoke、前端 runtime smoke、流派保真和最终 3 图复测；配套证据目录为 `model-evals/2026-05-06-vision-mvp-final-smoke/`。
 - `2026-05-06-mvp-国产视觉模型评测验证记录.md` 是当前第一轮国产视觉模型真实 API 评测结果，记录 `qwen-vl-max-latest`、`glm-4v-plus` 与 `Doubao-Seed-1.6-vision` 在 4 个脱敏 fixture 上的结果。
