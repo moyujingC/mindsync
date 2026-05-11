@@ -8,6 +8,8 @@
 
 这里放 `一镜一梳 / aimandala` 的运行说明、联调手册和操作型 runbook。
 
+这里也是当前唯一默认 runbook 入口。
+
 它回答的问题是：
 
 - 本地怎么跑
@@ -37,19 +39,85 @@
 - `../tasks/`
 - `../qa/`
 
-## 3. 当前重点入口
+## 3. Runbook 类型
+
+当前入口固定区分三类：
+
+1. 入口页 / index
+   - 用于导航，不单独承载完整操作合同
+2. manual runbook
+   - 用于人工执行步骤、判断树、禁止动作和升级路径
+3. control-backed runbook
+   - 除了手册本身，还明确映射到脚本、gate、guard、finalizer 或 health check
+   - 其中一部分规则已经由程序强制执行
+
+## 4. 当前正式入口
+
+### 4.1 入口页
 
 1. [开发与联调总入口.md](./开发与联调总入口.md)
 2. [本地联调手册.md](./本地联调手册.md)
-3. [历史任务批量关闭-runbook.md](./历史任务批量关闭-runbook.md)
-4. [本地-Mac-自动执行器-runbook.md](./本地-Mac-自动执行器-runbook.md)
-5. [本地-Mac-执行节点单机试点-runbook.md](./本地-Mac-执行节点单机试点-runbook.md)
-6. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](./2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
-7. [2026-05-03-observe-only-checkout-治理-runbook.md](./2026-05-03-observe-only-checkout-治理-runbook.md)
-8. [../tasks/2026-04-10-服务器部署与运维手册.md](../tasks/2026-04-10-服务器部署与运维手册.md)
-9. [../tasks/aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
 
-## 4. 当前治理判断
+### 4.2 当前 manual runbooks
+
+1. [历史任务批量关闭-runbook.md](./历史任务批量关闭-runbook.md)
+2. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](./2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
+
+### 4.3 当前 control-backed runbooks
+
+1. [2026-05-03-observe-only-checkout-治理-runbook.md](./2026-05-03-observe-only-checkout-治理-runbook.md)
+
+### 4.4 runbook-like 交付手册
+
+下面两份目前仍保留在 `docs/tasks/`，但语义上更接近 runbook-like 操作手册，而不是任务计划：
+
+1. [2026-04-10-服务器部署与运维手册.md](../tasks/2026-04-10-服务器部署与运维手册.md)
+2. [aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
+
+## 5. 历史参考入口
+
+下面这些文件保留为历史参考，不再作为当前默认主入口：
+
+1. [本地-Mac-自动执行器-runbook.md](./本地-Mac-自动执行器-runbook.md)
+2. [本地-Mac-执行节点单机试点-runbook.md](./本地-Mac-执行节点单机试点-runbook.md)
+3. [本地人工接手-runbook.md](./本地人工接手-runbook.md)
+4. [本地人工接手-comment-模板规范.md](./本地人工接手-comment-模板规范.md)
+
+## 6. 控制层映射
+
+当前 `aimandala` 已经存在一部分不再只停留在文档里的控制层约束。读 runbook 时，至少要同步知道这些入口：
+
+1. `shared/tools/ci/server-automation-guard.mjs`
+   - 负责服务器写执行前的 cwd / route 约束
+2. `shared/tools/ci/server-automation-finalizer.mjs`
+   - 负责服务器执行后的 diff 检查、blocked / in_review 收尾
+3. `shared/tools/ci/check-paperclip-execution-health.mjs`
+   - 负责 execution health 巡检与 strict gate
+4. `shared/tools/ci/server-automation-run.sh`
+   - 负责把 guard -> 执行 -> finalizer 接成统一服务器执行链
+
+这里的正式边界是：
+
+1. runbook 负责说明“应该怎么走流程”
+2. control layer 负责把其中关键步骤真正拦住、放行或收尾
+
+如果问题属于：
+
+1. 入口混乱
+2. 流程描述不清
+3. 当前 / 历史口径混排
+
+先改 runbook。
+
+如果问题属于：
+
+1. 实际执行没有被拦住
+2. 路由错误仍能继续跑
+3. diff / workspace drift 没被阻断
+
+应优先补脚本、gate 或 guard，而不是只补文档。
+
+## 7. 当前治理判断
 
 历史上 `aimandala` 的 runbook 类内容混在 `tasks/` 和代码 README 中。
 

@@ -19,6 +19,7 @@
 
 当前与 `Web MVP` 公开首发、双端并行和运行稳定性最相关的任务入口是：
 
+- `2026-05-11-runbook-体系优化实施计划.md`
 - `2026-05-05-mvp-国产视觉模型评测实施计划.md`
 - `2026-05-03-observe-only-checkout-治理实施计划.md`
 - `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
@@ -37,10 +38,10 @@
 - `2026-04-13-paperclip-automation-节点实施计划.md`
 - `2026-04-12-ci-cd-实施计划.md`
 - `2026-04-12-v22-knowledge-workbench-execution-plan.md`
-- `2026-04-10-服务器部署与运维手册.md`
 
 说明：
 
+- `2026-05-11-runbook-体系优化实施计划.md` 是当前 runbook 入口、历史参考和控制层映射收口的正式任务入口，固定先解决“该看哪份 runbook、哪份只是历史、哪些规则已经下沉成 gate / guard”，再进入单篇 runbook 或脚本整改。
 - `2026-05-05-mvp-国产视觉模型评测实施计划.md` 是当前 DeepSeek V4 文字模型决策后的视觉模型选型任务入口，固定先用脱敏 fixture 比较国产视觉模型，再决定 `AIMANDALA_LLM_VISION_MODEL`。
 - `2026-05-03-observe-only-checkout-治理实施计划.md` 是当前 automation 节点主镜像区与巡检区治理的正式实施入口，固定先盘点、再归类、再决定转正 / 备份 / 重建 / 定点覆盖，并把 checkout 脏状态上升为升级阻断条件。
 - `2026-04-26-历史任务全量关闭与新基线切换实施计划.md` 是当前控制面任务面重置的正式实施入口，固定把 `2026-04-26 00:00 Asia/Shanghai` 之前的历史普通任务与历史 automation 任务都视为旧窗口对象，默认全量关闭，只保留极少数显式例外，并把后续第一主线固定为普通任务先在本地 Mac 自动执行。
@@ -54,6 +55,15 @@
 - `2026-04-16-ci-cd-临时运营口径-runbook.md` 适用于 Paperclip workflow 面板尚未更新前的值班与巡检口径。
 - `2026-04-14` 与 `2026-04-15 batch E` 仍是 Web 首发与 miniapp live-ready 的正式主入口
 - `2026-04-13` 系列已并入 `main`，但默认灰度关闭；当前只作为 miniapp native gray 联调参考，不作为 Web 默认放行门
+
+补充边界：
+
+- `2026-04-10-服务器部署与运维手册.md`
+  - 当前保留在 `docs/tasks/`，但语义上更接近 runbook-like 运维手册
+  - 默认应从 `docs/runbooks/README.md` 跳转进入，而不是把它当普通任务计划阅读
+- `aimandala-pr-质量门-runbook.md`
+  - 当前保留在 `docs/tasks/`，但语义上更接近 delivery runbook
+  - 默认也应从 `docs/runbooks/README.md` 进入
 
 当前已沉淀：
 
