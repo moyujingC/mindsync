@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Product Spec Lead
-> last_updated：2026-05-10
+> last_updated：2026-05-11
 > source_of_truth：projects/aimandala/docs/specs/README.md
 
 这里放 `一镜一梳` 当前仍作为正式入口的产品规格文档。
@@ -18,7 +18,7 @@
 
 按下面顺序阅读：
 
-1. [2026-05-10-三圈五行流派解读方法实施规格.md](2026-05-10-三圈五行流派解读方法实施规格.md)
+1. [2026-05-11-曼陀罗解读智能体-MVP实施规格.md](2026-05-11-曼陀罗解读智能体-MVP实施规格.md)
 2. [ToC-MVP-产品规范.md](ToC-MVP-产品规范.md)
 3. [2026-04-09-MVP页面状态机与页面映射总表.md](2026-04-09-MVP页面状态机与页面映射总表.md)
 
@@ -37,10 +37,12 @@
 
 - 当前主链路如何收束
 - 当前知识源为何必须回到 `docs/sources/知识库构建/`
-- 当前三圈五行方法真值源为何放在 `sources`，以及实现层如何用 `stage_process_package` 强制承接
+- 当前三圈五行方法真值源为何放在 `sources`，以及新解读智能层如何承接
 - 当前 Paperclip direct routing（直接路由）、服务器执行宿主和本地 Mac execution host（执行宿主机）如何分工
 - 当前为什么应该把 `2026-04-26` 之前的历史普通任务与历史 automation 任务统一收口，并把后续观察窗口切到新基线
 - 当前为什么要把 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 固定治理成 observe-only checkout，而不是继续作为可写升级入口
+
+旧 `stage_process_package / builder_v2 / placeholder renderer` 报告生成规格已归档到 [../archive/legacy-report-generation-2026-05-10/](../archive/legacy-report-generation-2026-05-10/)，只用于追溯旧链路。
 
 ## 使用规则
 

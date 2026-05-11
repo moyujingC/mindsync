@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-05-06
+> last_updated：2026-05-11
 > source_of_truth：projects/aimandala/docs/tasks/README.md
 
 这里放 `一镜一梳` 的执行计划、阶段任务和实现任务定义。
@@ -20,6 +20,7 @@
 当前与 `Web MVP` 公开首发、双端并行和运行稳定性最相关的任务入口是：
 
 - `2026-05-11-Paperclip-v2026.428.0-升级验证计划.md`
+- `2026-05-11-曼陀罗解读智能体-MVP实施计划.md`
 - `2026-05-11-runbook-体系优化实施计划.md`
 - `2026-05-05-mvp-国产视觉模型评测实施计划.md`
 - `2026-05-03-observe-only-checkout-治理实施计划.md`
@@ -43,6 +44,7 @@
 说明：
 
 - `2026-05-11-Paperclip-v2026.428.0-升级验证计划.md` 是当前 Paperclip 从 `v2026.416.0` 已验证基线推进到 `v2026.428.0` 推荐目标版本的正式验证入口，固定先验证版本、migration、execution workspace、执行路由和 adapter 基本链路，再决定是否升级运行实例。
+- `2026-05-11-曼陀罗解读智能体-MVP实施计划.md` 是当前报告生成重建的正式任务入口，固定以三圈五行方法真值源和解读智能层架构为依据，推进 `reading_intelligence` 模块、真实模型 runner、中间交付物和质量门。
 - `2026-05-11-runbook-体系优化实施计划.md` 是当前 runbook 入口、历史参考和控制层映射收口的正式任务入口，固定先解决“该看哪份 runbook、哪份只是历史、哪些规则已经下沉成 gate / guard”，再进入单篇 runbook 或脚本整改。
 - `2026-05-05-mvp-国产视觉模型评测实施计划.md` 是当前 DeepSeek V4 文字模型决策后的视觉模型选型任务入口，固定先用脱敏 fixture 比较国产视觉模型，再决定 `AIMANDALA_LLM_VISION_MODEL`。
 - `2026-05-03-observe-only-checkout-治理实施计划.md` 是当前 automation 节点主镜像区与巡检区治理的正式实施入口，固定先盘点、再归类、再决定转正 / 备份 / 重建 / 定点覆盖，并把 checkout 脏状态上升为升级阻断条件。
@@ -70,6 +72,7 @@
 当前已沉淀：
 
 - `2026-05-11-Paperclip-v2026.428.0-升级验证计划.md`
+- `2026-05-11-曼陀罗解读智能体-MVP实施计划.md`
 - `2026-05-05-mvp-国产视觉模型评测实施计划.md`
 - `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
 - `2026-04-21-local-mac-execution-host-pilot-plan.md`

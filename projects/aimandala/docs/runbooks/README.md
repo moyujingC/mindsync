@@ -67,7 +67,6 @@
 
 1. [2026-05-03-observe-only-checkout-治理-runbook.md](./2026-05-03-observe-only-checkout-治理-runbook.md)
 2. [本地-Mac-自动执行器-runbook.md](./本地-Mac-自动执行器-runbook.md)
-3. [解读报告生成-runbook.md](./解读报告生成-runbook.md)
 
 ### 4.4 control-backed runbook-like 交付手册
 
@@ -90,6 +89,7 @@
 1. [本地-Mac-执行节点单机试点-runbook.md](./本地-Mac-执行节点单机试点-runbook.md)
 2. [本地人工接手-runbook.md](./本地人工接手-runbook.md)
 3. [本地人工接手-comment-模板规范.md](./本地人工接手-comment-模板规范.md)
+4. [legacy-report-generation-2026-05-10/解读报告生成-runbook.md](../archive/legacy-report-generation-2026-05-10/解读报告生成-runbook.md)
 
 ## 6. 控制层映射
 
@@ -103,16 +103,13 @@
    - 负责 execution health 巡检与 strict gate
 4. `shared/tools/ci/server-automation-run.sh`
    - 负责把 guard -> 执行 -> finalizer 接成统一服务器执行链
-5. `projects/aimandala/toC/app/backend/app/core/pipeline/stage_process_package.py`
-   - 负责组装解读报告生成的 `stage_process_package`
-6. `projects/aimandala/toC/app/backend/app/core/stage_process_contracts.py`
-   - 负责校验 formal stage process package（正式 stage 过程包）
-7. `projects/aimandala/toC/app/backend/app/core/pipeline/generation_runtime.py`
-   - 负责在 Lite / Pro 生成前阻断 incomplete stage package
-8. `projects/aimandala/toC/app/backend/app/core/prompt/builder_v2.py`
-   - 负责强制 Lite / Pro prompt 接收 `stage_process_package`
-9. `projects/aimandala/toC/app/backend/app/core/pipeline/report_lifecycle.py`
-   - 负责 Pro 升级、失败状态和阻断提示
+
+解读报告生成的新控制层映射等待 `reading_intelligence` 模块落地后补入。当前实现入口看：
+
+1. [../architecture/解读智能层-曼陀罗解读智能体架构.md](../architecture/解读智能层-曼陀罗解读智能体架构.md)
+2. [../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md](../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md)
+3. [../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md](../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md)
+4. [../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md](../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md)
 
 这里的正式边界是：
 
@@ -152,7 +149,7 @@
 - `2026-05-03-observe-only-checkout-治理-runbook.md` 是当前 automation 节点主镜像区与巡检区治理的正式操作入口，固定把 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 定义为 observe-only checkout，并要求升级前先检查干净性、先备份再清理历史残留、最后同步 issue 状态。
 - `execution routing` 的当前正式入口已转为 `../specs/2026-04-19-paperclip-native-execution-routing-spec.md`、`../tasks/2026-04-19-paperclip-native-execution-routing-plan.md` 与 `../qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md`。
 - `本地-Mac-自动执行器-runbook.md` 是当前普通任务自动在本地 Mac 上跑的正式 control-backed runbook，固定映射到 `paperclip-local-executor.mjs`、local env、launchd 和本地锁 / 日志机制；`paperclip-local-pilot.mjs` 退回为人工排障/手动接管工具。
-- `解读报告生成-runbook.md` 是当前 AI 解读报告生成的正式 control-backed method runbook，固定说明 stage 00-16、`stage_process_package`、第 13 / 14 步 prompt、知识层和 formal package gate 的分工；这条链路不是普通长 prompt，而是 method runbook + stage package + prompt contract + gate 的组合。
+- 旧 `解读报告生成-runbook.md` 已归档到 `../archive/legacy-report-generation-2026-05-10/`。当前报告生成重建以三圈五行方法真值源、解读智能层架构和曼陀罗解读智能体 MVP 文档为入口。
 - 当前 heartbeat 剩余 `34` 条活跃 `serverAutomationBlocking` 的下一阶段正式入口，已转为 `../specs/2026-04-19-server-automation-workspace-materialization-diagnosis-spec.md`、`../tasks/2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md` 与 `../qa/2026-04-19-server-automation-workspace-materialization-diagnosis-qa-basis.md`。
 - `本地-Mac-执行节点单机试点-runbook.md` 保留为 2026-04-21 单机试点阶段的历史参考，不再作为当前默认入口；当前普通任务本地执行默认看 `本地-Mac-自动执行器-runbook.md`。
 - `../qa/2026-04-22-local-mac-execution-host-pilot-verification.md` 是这条单机试点 runbook 当前配套的前置验证记录，明确区分“runbook 与连接合同已经成立”与“真实本地运行闭环仍待执行”。
