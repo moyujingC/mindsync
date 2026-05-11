@@ -44,6 +44,8 @@
 说明：
 
 - `2026-05-11-Paperclip-v2026.428.0-升级验证计划.md` 是当前 Paperclip 从 `v2026.416.0` 已验证基线推进到 `v2026.428.0` 推荐目标版本的正式验证入口，固定先验证版本、migration、execution workspace、执行路由和 adapter 基本链路，再决定是否升级运行实例。
+  - 当前升级前核验记录：[../qa/2026-05-11-Paperclip-v2026.428.0-升级前核验记录.md](../qa/2026-05-11-Paperclip-v2026.428.0-升级前核验记录.md)
+  - 当前结论：暂缓升级，先修复 heartbeat service、strict gate 阻断项和 dirty checkout
 - `2026-05-11-曼陀罗解读智能体-MVP实施计划.md` 是当前报告生成重建的正式任务入口，固定以三圈五行方法真值源和解读智能层架构为依据，推进 `reading_intelligence` 模块、真实模型 runner、中间交付物和质量门。
 - `2026-05-11-runbook-体系优化实施计划.md` 是当前 runbook 入口、历史参考和控制层映射收口的正式任务入口，固定先解决“该看哪份 runbook、哪份只是历史、哪些规则已经下沉成 gate / guard”，再进入单篇 runbook 或脚本整改。
 - `2026-05-05-mvp-国产视觉模型评测实施计划.md` 是当前 DeepSeek V4 文字模型决策后的视觉模型选型任务入口，固定先用脱敏 fixture 比较国产视觉模型，再决定 `AIMANDALA_LLM_VISION_MODEL`。
