@@ -20,6 +20,7 @@ from app.core.reading_intelligence.contracts import (
 from app.core.reading_intelligence.input_collector import load_fixture_agent_input
 from app.core.reading_intelligence.knowledge_pack_builder import KnowledgePackBuilder
 from app.core.reading_intelligence.quality_gate import run_quality_gate
+from scripts.run_mandala_reading_agent_fixture import run_fixture
 
 
 class FakeReadingLLMClient:
@@ -201,3 +202,27 @@ def test_fixture_input_collector_loads_toc_fixture_003():
     assert fixture_input.user_context.theme == "general"
     assert fixture_input.user_context.painting_feeling == "保持不变"
     assert fixture_input.image.local_path.endswith("IMG_5062.jpeg")
+
+
+def test_fixture_runner_writes_review_artifacts(tmp_path):
+    written = run_fixture(
+        fixture_id="toc-mvp-fixture-003",
+        report_mode="lite",
+        output_dir=tmp_path / "fixture-003",
+        llm_client=FakeReadingLLMClient(),
+    )
+
+    assert sorted(path.name for path in written) == [
+        "agent_input.json",
+        "agent_output.json",
+        "execution_trace.json",
+        "final_report.json",
+        "final_report.md",
+        "interpretation_artifacts.json",
+        "knowledge_pack.json",
+        "quality_gate.json",
+        "report_context_package.json",
+        "stage_outputs.json",
+    ]
+    agent_output = json.loads((tmp_path / "fixture-003" / "agent_output.json").read_text())
+    assert agent_output["status"] == "complete"
