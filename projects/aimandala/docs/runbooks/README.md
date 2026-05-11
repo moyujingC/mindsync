@@ -67,12 +67,19 @@
 
 1. [2026-05-03-observe-only-checkout-治理-runbook.md](./2026-05-03-observe-only-checkout-治理-runbook.md)
 
-### 4.4 runbook-like 交付手册
+### 4.4 control-backed runbook-like 交付手册
 
 下面两份目前仍保留在 `docs/tasks/`，但语义上更接近 runbook-like 操作手册，而不是任务计划：
 
 1. [2026-04-10-服务器部署与运维手册.md](../tasks/2026-04-10-服务器部署与运维手册.md)
 2. [aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
+
+其中 `aimandala-pr-质量门-runbook.md` 应按 control-backed runbook-like delivery manual 阅读：
+
+1. 当前 MVP 主链控制层入口是 `.github/workflows/mvp-ci.yml`
+2. 增强链路控制层入口是 `.github/workflows/aimandala-ci.yml`
+3. Paperclip CI 失败建单入口是 `shared/tools/ci/paperclip-ci-issue.mjs`
+4. 当前日常判断 MVP 是否可用时，优先看 `mvp-ci`，不要把增强链路误写成唯一主路径
 
 ## 5. 历史参考入口
 
