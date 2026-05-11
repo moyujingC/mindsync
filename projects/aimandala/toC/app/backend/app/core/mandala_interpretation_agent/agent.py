@@ -1,4 +1,4 @@
-"""Mandala reading agent MVP implementation."""
+"""Mandala interpretation agent MVP implementation."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from .knowledge_pack_builder import knowledge_pack_to_prompt_fragment
 from .quality_gate import run_quality_gate
 
 
-class MandalaReadingAgent:
-    """Generate mandala reading artifacts through a single agent path."""
+class MandalaInterpretationAgent:
+    """Generate mandala interpretation artifacts through a single agent path."""
 
     def __init__(self, *, llm_client: Any) -> None:
         self.llm_client = llm_client
@@ -267,7 +267,7 @@ class MandalaReadingAgent:
             "markdown": markdown if agent_input.report_mode == "pro" else "",
         }
         final_report = {
-            "report_id": f"mandala-reading-{uuid4().hex[:12]}",
+            "report_id": f"mandala-interpretation-{uuid4().hex[:12]}",
             "report_mode": agent_input.report_mode,
             "title": "曼陀罗解读报告",
             "markdown": markdown,

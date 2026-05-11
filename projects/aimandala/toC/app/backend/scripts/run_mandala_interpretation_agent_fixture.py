@@ -1,4 +1,4 @@
-"""Run the mandala reading agent against one fixture and write review artifacts."""
+"""Run the mandala interpretation agent against one fixture and write review artifacts."""
 
 from __future__ import annotations
 
@@ -14,16 +14,16 @@ DEFAULT_OUTPUT_ROOT = (
     / "docs"
     / "qa"
     / "model-evals"
-    / "2026-05-11-mandala-reading-agent"
+    / "2026-05-11-mandala-interpretation-agent"
 )
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
 from app.core.llm.runtime import create_llm_client_from_env  # noqa: E402
-from app.core.reading_intelligence.agent import MandalaReadingAgent  # noqa: E402
-from app.core.reading_intelligence.artifact_store import MandalaReadingArtifactStore  # noqa: E402
-from app.core.reading_intelligence.input_collector import load_fixture_agent_input  # noqa: E402
-from app.core.reading_intelligence.knowledge_pack_builder import KnowledgePackBuilder  # noqa: E402
+from app.core.mandala_interpretation_agent.agent import MandalaInterpretationAgent  # noqa: E402
+from app.core.mandala_interpretation_agent.artifact_store import MandalaInterpretationArtifactStore  # noqa: E402
+from app.core.mandala_interpretation_agent.input_collector import load_fixture_agent_input  # noqa: E402
+from app.core.mandala_interpretation_agent.knowledge_pack_builder import KnowledgePackBuilder  # noqa: E402
 
 
 def main() -> int:
@@ -42,7 +42,7 @@ def main() -> int:
         else DEFAULT_OUTPUT_ROOT / args.fixture_id / args.report_mode
     )
     try:
-        result = MandalaReadingAgent(llm_client=llm_client).run(
+        result = MandalaInterpretationAgent(llm_client=llm_client).run(
             agent_input=agent_input,
             knowledge_pack=knowledge_pack,
         )
@@ -63,7 +63,7 @@ def main() -> int:
             )
         )
         return 2
-    written = MandalaReadingArtifactStore(output_dir).write(result)
+    written = MandalaInterpretationArtifactStore(output_dir).write(result)
     print(
         json.dumps(
             {

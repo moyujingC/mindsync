@@ -1,4 +1,4 @@
-"""Build a compact knowledge pack for the mandala reading agent."""
+"""Build a compact knowledge pack for the mandala interpretation agent."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ class KnowledgePackBuilder:
     def build(self, *, theme: str = "general") -> dict[str, Any]:
         normalized_theme = theme.strip() or "general"
         return {
-            "pack_id": "mandala-reading-agent-v1-compact",
+            "pack_id": "mandala-interpretation-agent-v1-compact",
             "method_source": self._relative_or_string(self.method_source),
             "runtime_pack_root": self._relative_or_string(self.pack_root),
             "theme": normalized_theme,

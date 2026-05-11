@@ -104,7 +104,22 @@
 4. `shared/tools/ci/server-automation-run.sh`
    - 负责把 guard -> 执行 -> finalizer 接成统一服务器执行链
 
-解读报告生成的新控制层映射等待 `reading_intelligence` 模块落地后补入。当前实现入口看：
+解读报告生成的新控制层已经进入 `mandala_interpretation_agent` 离线原型。当前实现入口看：
+
+1. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/agent.py`
+   - 负责单智能体主运行链路和 16 个 `stage-*` 输出
+2. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/contracts.py`
+   - 负责输入 / 输出合同和 stage key 列表
+3. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/knowledge_pack_builder.py`
+   - 负责构建精简知识包，避免把完整 Markdown 真值源塞进模型上下文
+4. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/quality_gate.py`
+   - 负责中间交付物、最终报告和上下文包的质量门
+5. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/artifact_store.py`
+   - 负责写出审阅用中间交付物
+6. `projects/aimandala/toC/app/backend/scripts/run_mandala_interpretation_agent_fixture.py`
+   - 负责离线 fixture 运行和真实模型产物落盘
+
+当前文档入口看：
 
 1. [../architecture/解读智能层-曼陀罗解读智能体架构.md](../architecture/解读智能层-曼陀罗解读智能体架构.md)
 2. [../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md](../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md)

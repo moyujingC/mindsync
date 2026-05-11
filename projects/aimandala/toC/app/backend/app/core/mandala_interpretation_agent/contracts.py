@@ -1,4 +1,4 @@
-"""Contracts for the mandala reading intelligence MVP."""
+"""Contracts for the mandala interpretation agent MVP."""
 
 from __future__ import annotations
 
@@ -92,7 +92,7 @@ class MandalaAgentInput:
     user_context: MandalaUserContext
     circle_boundaries: dict[str, Any]
     report_mode: Literal["lite", "pro"] = "lite"
-    agent_version: str = "mandala-reading-agent-v1"
+    agent_version: str = "mandala-interpretation-agent-v1"
     knowledge_pack: dict[str, Any] = field(default_factory=dict)
     output_requirements: MandalaOutputRequirements = field(default_factory=MandalaOutputRequirements)
 

@@ -1,5 +1,5 @@
 {
-  "pack_id": "mandala-reading-agent-v1-compact",
+  "pack_id": "mandala-interpretation-agent-v1-compact",
   "method_source": "projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md",
   "runtime_pack_root": "projects/aimandala/toC/data/knowledge/packs/v2.2",
   "theme": "general",

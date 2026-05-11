@@ -1,4 +1,4 @@
-"""Quality gates for mandala reading agent artifacts."""
+"""Quality gates for mandala interpretation agent artifacts."""
 
 from __future__ import annotations
 

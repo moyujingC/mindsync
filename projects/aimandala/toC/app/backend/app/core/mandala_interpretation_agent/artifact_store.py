@@ -1,4 +1,4 @@
-"""Artifact writer for mandala reading agent review outputs."""
+"""Artifact writer for mandala interpretation agent review outputs."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 from .contracts import MandalaAgentResult
 
 
-class MandalaReadingArtifactStore:
+class MandalaInterpretationArtifactStore:
     def __init__(self, output_dir: str | Path) -> None:
         self.output_dir = Path(output_dir)
 

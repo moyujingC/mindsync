@@ -1,4 +1,4 @@
-"""Unit tests for the mandala reading intelligence MVP path."""
+"""Unit tests for the mandala interpretation agent MVP path."""
 
 import json
 import os
@@ -9,23 +9,23 @@ sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
-from app.core.reading_intelligence.agent import MandalaReadingAgent
-from app.core.reading_intelligence.artifact_store import MandalaReadingArtifactStore
-from app.core.reading_intelligence.contracts import (
+from app.core.mandala_interpretation_agent.agent import MandalaInterpretationAgent
+from app.core.mandala_interpretation_agent.artifact_store import MandalaInterpretationArtifactStore
+from app.core.mandala_interpretation_agent.contracts import (
     MandalaAgentInput,
     MandalaImageInput,
     MandalaOutputRequirements,
     MandalaUserContext,
 )
-from app.core.reading_intelligence.input_collector import load_fixture_agent_input
-from app.core.reading_intelligence.knowledge_pack_builder import KnowledgePackBuilder
-from app.core.reading_intelligence.quality_gate import run_quality_gate
+from app.core.mandala_interpretation_agent.input_collector import load_fixture_agent_input
+from app.core.mandala_interpretation_agent.knowledge_pack_builder import KnowledgePackBuilder
+from app.core.mandala_interpretation_agent.quality_gate import run_quality_gate
 from app.core.llm.runtime import NoopLLMClient
 
-import scripts.run_mandala_reading_agent_fixture as runner
+import scripts.run_mandala_interpretation_agent_fixture as runner
 
 
-class FakeReadingLLMClient:
+class FakeInterpretationLLMClient:
     def __init__(self):
         self.structured_calls = []
         self.text_calls = []
@@ -114,10 +114,10 @@ def _agent_input(tmp_path: Path) -> MandalaAgentInput:
     )
 
 
-def test_mandala_reading_agent_outputs_required_artifacts(tmp_path):
-    llm_client = FakeReadingLLMClient()
+def test_mandala_interpretation_agent_outputs_required_artifacts(tmp_path):
+    llm_client = FakeInterpretationLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="general")
-    result = MandalaReadingAgent(llm_client=llm_client).run(
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=knowledge_pack,
     )
@@ -157,12 +157,12 @@ def test_mandala_reading_agent_outputs_required_artifacts(tmp_path):
 
 
 def test_artifact_store_writes_review_files(tmp_path):
-    result = MandalaReadingAgent(llm_client=FakeReadingLLMClient()).run(
+    result = MandalaInterpretationAgent(llm_client=FakeInterpretationLLMClient()).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=KnowledgePackBuilder().build(theme="general"),
     )
 
-    written = MandalaReadingArtifactStore(tmp_path / "out").write(result)
+    written = MandalaInterpretationArtifactStore(tmp_path / "out").write(result)
 
     assert sorted(path.name for path in written) == [
         "agent_input.json",
@@ -181,7 +181,7 @@ def test_artifact_store_writes_review_files(tmp_path):
 
 
 def test_quality_gate_blocks_internal_label_leak(tmp_path):
-    result = MandalaReadingAgent(llm_client=FakeReadingLLMClient()).run(
+    result = MandalaInterpretationAgent(llm_client=FakeInterpretationLLMClient()).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=KnowledgePackBuilder().build(theme="general"),
     )
@@ -198,7 +198,7 @@ def test_quality_gate_blocks_internal_label_leak(tmp_path):
 
 
 def test_agent_normalizes_model_circle_summary_shape(tmp_path):
-    class SummaryShapeClient(FakeReadingLLMClient):
+    class SummaryShapeClient(FakeInterpretationLLMClient):
         def generate_structured(self, **kwargs):
             self.structured_calls.append(kwargs)
             return {
@@ -224,7 +224,7 @@ def test_agent_normalizes_model_circle_summary_shape(tmp_path):
                 "uncertainties": [],
             }
 
-    result = MandalaReadingAgent(llm_client=SummaryShapeClient()).run(
+    result = MandalaInterpretationAgent(llm_client=SummaryShapeClient()).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=KnowledgePackBuilder().build(theme="general"),
     )
@@ -238,7 +238,7 @@ def test_agent_normalizes_model_circle_summary_shape(tmp_path):
 
 
 def test_quality_gate_blocks_empty_stage03_visual_units(tmp_path):
-    result = MandalaReadingAgent(llm_client=FakeReadingLLMClient()).run(
+    result = MandalaInterpretationAgent(llm_client=FakeInterpretationLLMClient()).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=KnowledgePackBuilder().build(theme="general"),
     )
@@ -279,7 +279,7 @@ def test_fixture_runner_reports_model_failure_without_writing_fake_report(
         sys,
         "argv",
         [
-            "run_mandala_reading_agent_fixture.py",
+            "run_mandala_interpretation_agent_fixture.py",
             "--fixture-id",
             "toc-mvp-fixture-003",
             "--output-dir",

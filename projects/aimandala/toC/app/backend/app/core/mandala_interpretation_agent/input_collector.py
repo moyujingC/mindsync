@@ -1,4 +1,4 @@
-"""Fixture input collector for mandala reading agent MVP runs."""
+"""Fixture input collector for mandala interpretation agent MVP runs."""
 
 from __future__ import annotations
 

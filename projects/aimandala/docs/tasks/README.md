@@ -48,7 +48,7 @@
   - 当前升级前核验记录：[../qa/2026-05-11-Paperclip-v2026.428.0-升级前核验记录.md](../qa/2026-05-11-Paperclip-v2026.428.0-升级前核验记录.md)
   - 当前结论：暂缓升级，先修复 heartbeat service、strict gate 阻断项和 dirty checkout
 - `2026-05-12-MVP-服务器自动写入恢复前置项.md` 是当前冻结服务器端自动写仓库后的恢复前置清单，固定先处理远端 dirty checkout 和只读 heartbeat，再考虑恢复任何服务器写入能力。
-- `2026-05-11-曼陀罗解读智能体-MVP实施计划.md` 是当前报告生成重建的正式任务入口，固定以三圈五行方法真值源和解读智能层架构为依据，推进 `reading_intelligence` 模块、真实模型 runner、中间交付物和质量门。
+- `2026-05-11-曼陀罗解读智能体-MVP实施计划.md` 是当前报告生成重建的正式任务入口，固定以三圈五行方法真值源和解读智能层架构为依据，推进 `mandala_interpretation_agent` 模块、真实模型 runner、中间交付物和质量门。
 - `2026-05-11-runbook-体系优化实施计划.md` 是当前 runbook 入口、历史参考和控制层映射收口的正式任务入口，固定先解决“该看哪份 runbook、哪份只是历史、哪些规则已经下沉成 gate / guard”，再进入单篇 runbook 或脚本整改。
 - `2026-05-05-mvp-国产视觉模型评测实施计划.md` 是当前 DeepSeek V4 文字模型决策后的视觉模型选型任务入口，固定先用脱敏 fixture 比较国产视觉模型，再决定 `AIMANDALA_LLM_VISION_MODEL`。
 - `2026-05-03-observe-only-checkout-治理实施计划.md` 是当前 automation 节点主镜像区与巡检区治理的正式实施入口，固定先盘点、再归类、再决定转正 / 备份 / 重建 / 定点覆盖，并把 checkout 脏状态上升为升级阻断条件。

@@ -1,5 +1,5 @@
 {
-  "agent_version": "mandala-reading-agent-v1",
+  "agent_version": "mandala-interpretation-agent-v1",
   "report_mode": "lite",
   "image": {
     "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5062.jpeg",
@@ -19,7 +19,7 @@
     "source": "manual"
   },
   "knowledge_pack": {
-    "pack_id": "mandala-reading-agent-v1-compact",
+    "pack_id": "mandala-interpretation-agent-v1-compact",
     "theme": "general",
     "method_source": "projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md"
   },

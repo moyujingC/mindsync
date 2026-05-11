@@ -1,6 +1,6 @@
-"""Mandala reading intelligence MVP runtime."""
+"""Mandala interpretation agent MVP runtime."""
 
-from .agent import MandalaReadingAgent
+from .agent import MandalaInterpretationAgent
 from .contracts import (
     MandalaAgentInput,
     MandalaAgentResult,
@@ -14,6 +14,6 @@ __all__ = [
     "MandalaAgentResult",
     "MandalaImageInput",
     "MandalaOutputRequirements",
-    "MandalaReadingAgent",
+    "MandalaInterpretationAgent",
     "MandalaUserContext",
 ]
