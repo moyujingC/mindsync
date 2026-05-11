@@ -562,21 +562,38 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 这份 runbook 同时承担 `aimandala` 当前 `Paperclip` 服务端版本基线入口。
 
-截至 `2026-04-27`，当前正式治理口径固定为：
+截至 `2026-05-11`，当前正式治理口径固定为：
 
-- 当前推荐目标版本：`v2026.416.0`
-- 当前推荐已验证基线：`v2026.416.0`
+- 当前推荐目标版本：`v2026.428.0`
+- 当前最低安全修复线：`v2026.416.0`
+- 当前项目已验证基线：`v2026.416.0`
+- 当前升级状态：`待计划内验证后升级`
 - 当前判断证据：
   - 官方 GitHub Releases
   - 官方 GitHub Security Advisories
   - 官方仓库近期高影响 merged changes（已合并改动）
+  - [2026-05-11-Paperclip-周检报告.md](../../../../company/knowledge-base/system/paperclip-weekly-reviews/2026-05-11-Paperclip-周检报告.md)
 
-为什么当前要以 `v2026.416.0` 为基线：
+为什么当前推荐目标切到 `v2026.428.0`：
+
+1. `2026-04-28` 官方发布了 `v2026.428.0`
+2. 截至 `2026-05-11`，官方没有更高 stable release（稳定正式发布版）
+3. `2026-05-04` 至 `2026-05-11` 未出现新的 security advisory（安全通告）
+4. 按当前版本判断规则，无安全紧急性时默认优先采用最新 stable release
+5. `v2026.428.0` 包含 productivity review（生产力审阅）、recovery（恢复）与 issue ownership（问题归属）等控制面改进，和当前 `MindSync` 任务审阅与恢复治理相关
+
+为什么仍保留 `v2026.416.0` 为最低安全修复线：
 
 1. `2026-04-16` 官方发布了 `v2026.416.0`
 2. 同日公开了多条安全通告
 3. 其中至少一条 critical（严重）级 execution workspace 命令注入问题明确写明修复版本为 `v2026.416.0`
 4. 当前 `aimandala` 已正式依赖 execution workspace policy、`/opt/automation/worktrees` 与 authenticated（鉴权）模式，因此不应继续停留在更低版本口径
+
+为什么当前不直接把已验证基线改成 `v2026.428.0`：
+
+1. `v2026.428.0` 是推荐目标，不等于当前项目已完成验证
+2. 当前部署包含自定义 Dockerfile、Hermes、`pi_local` / `codex_local` / `claude_local` 运行链和本地 / 服务器分流治理
+3. 升级前必须先完成 [2026-05-11-Paperclip-v2026.428.0-升级验证计划.md](../../docs/tasks/2026-05-11-Paperclip-v2026.428.0-升级验证计划.md)
 
 当前版本判断规则：
 

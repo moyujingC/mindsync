@@ -1,9 +1,9 @@
 # Automation Platform 入口
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：CEO / Orchestrator, Engineer
-> 最后更新：2026-04-27
+> 最后更新：2026-05-11
 > source_of_truth：company/projects/Automation/PROJECT.md
 
 这份文档是 `mindsync` 中 `Automation Platform` 的公司级 capability 入口。
@@ -102,6 +102,10 @@
 
 - 版本基线与升级后最小回归检查
   - 看 [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
+  - 当前推荐目标版本：`v2026.428.0`
+  - 当前最低安全修复线：`v2026.416.0`
+  - 当前项目已验证基线：`v2026.416.0`
+  - 升级验证任务：看 [2026-05-11-Paperclip-v2026.428.0-升级验证计划.md](../../../projects/aimandala/docs/tasks/2026-05-11-Paperclip-v2026.428.0-升级验证计划.md)
 - `codex_local` 的正式安全边界
   - 看 [company/Paperclip-Agent-模型配置总表.md](../../../company/Paperclip-Agent-模型配置总表.md)
   - 与 [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md) 配套阅读
