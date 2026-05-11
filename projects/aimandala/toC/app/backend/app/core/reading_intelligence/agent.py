@@ -289,17 +289,138 @@ class MandalaReadingAgent:
         }
 
     def _normalize_stage03(self, payload: dict[str, Any]) -> dict[str, Any]:
+        circles = self._normalize_circles(payload.get("circles"))
         return {
             "stage": "stage-03-visual-evidence",
             "status": "complete",
             "global_visual_summary": str(
                 payload.get("global_visual_summary") or payload.get("global_summary") or ""
             ).strip(),
-            "circles": payload.get("circles") if isinstance(payload.get("circles"), dict) else {},
+            "circles": circles,
             "evidence_refs": payload.get("evidence_summary", []),
             "uncertainties": payload.get("uncertainties", []),
             "model_trace": getattr(self.llm_client, "last_attempt_trace", []),
         }
+
+    def _normalize_circles(self, raw_circles: Any) -> dict[str, dict[str, Any]]:
+        normalized: dict[str, dict[str, Any]] = {}
+        circles = raw_circles if isinstance(raw_circles, dict) else {}
+        aliases = {
+            "inner": ["inner", "inner_circle", "内圈", "里圈", "中心"],
+            "middle": ["middle", "middle_circle", "中圈", "中间层"],
+            "outer": ["outer", "outer_circle", "外圈", "外层", "边界"],
+        }
+        for canonical, candidate_keys in aliases.items():
+            raw_circle = self._first_circle_payload(circles, candidate_keys)
+            normalized[canonical] = self._normalize_circle_payload(
+                canonical,
+                raw_circle,
+            )
+        return normalized
+
+    def _first_circle_payload(
+        self,
+        circles: dict[str, Any],
+        candidate_keys: list[str],
+    ) -> dict[str, Any]:
+        for key in candidate_keys:
+            payload = circles.get(key)
+            if isinstance(payload, dict):
+                return payload
+        return {}
+
+    def _normalize_circle_payload(
+        self,
+        circle_key: str,
+        raw_circle: dict[str, Any],
+    ) -> dict[str, Any]:
+        raw_units = raw_circle.get("visual_units")
+        units = [
+            self._normalize_visual_unit(circle_key, index, unit)
+            for index, unit in enumerate(raw_units)
+            if isinstance(unit, dict)
+        ] if isinstance(raw_units, list) else []
+        if not units:
+            units = self._visual_units_from_circle_summary(circle_key, raw_circle)
+        return {
+            "summary": self._circle_summary(raw_circle),
+            "visual_units": units,
+            "raw_observation": raw_circle,
+        }
+
+    def _visual_units_from_circle_summary(
+        self,
+        circle_key: str,
+        raw_circle: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        color_values = self._string_list(raw_circle.get("color_distribution"))
+        if not color_values:
+            color_values = self._string_list(raw_circle.get("dominant_colors"))
+        shape = str(raw_circle.get("shape") or raw_circle.get("pattern") or "").strip()
+        evidence = self._circle_summary(raw_circle)
+        if not evidence and not color_values and not shape:
+            return []
+        return [
+            {
+                "id": f"{circle_key}-001",
+                "position": circle_key,
+                "color": "、".join(color_values),
+                "shape": shape,
+                "visible_evidence": evidence,
+            }
+        ]
+
+    def _normalize_visual_unit(
+        self,
+        circle_key: str,
+        index: int,
+        unit: dict[str, Any],
+    ) -> dict[str, Any]:
+        return {
+            "id": str(unit.get("id") or f"{circle_key}-{index + 1:03d}").strip(),
+            "position": str(unit.get("position") or circle_key).strip(),
+            "color": self._main_value(unit.get("color")),
+            "shape": self._main_value(unit.get("shape")),
+            "visible_evidence": str(
+                unit.get("visible_evidence")
+                or unit.get("description")
+                or unit.get("evidence")
+                or ""
+            ).strip(),
+        }
+
+    def _circle_summary(self, raw_circle: dict[str, Any]) -> str:
+        explicit = str(
+            raw_circle.get("summary")
+            or raw_circle.get("description")
+            or ""
+        ).strip()
+        if explicit:
+            return explicit
+        parts = []
+        for key in ["color_distribution", "texture", "pattern", "shape", "intensity"]:
+            value = raw_circle.get(key)
+            if isinstance(value, list):
+                value_text = "、".join(str(item).strip() for item in value if str(item).strip())
+            else:
+                value_text = str(value or "").strip()
+            if value_text:
+                parts.append(value_text)
+        return "；".join(parts)
+
+    def _main_value(self, value: Any) -> str:
+        if isinstance(value, dict):
+            return str(value.get("main") or value.get("type") or value.get("name") or "").strip()
+        if isinstance(value, list):
+            return "、".join(str(item).strip() for item in value if str(item).strip())
+        return str(value or "").strip()
+
+    def _string_list(self, value: Any) -> list[str]:
+        if isinstance(value, list):
+            return [str(item).strip() for item in value if str(item).strip()]
+        if isinstance(value, str) and value.strip():
+            return [value.strip()]
+        return []
 
     def _build_stage04(self, stage03: dict[str, Any]) -> dict[str, Any]:
         evidence_refs = self._visual_unit_refs(stage03)
@@ -432,7 +553,14 @@ class MandalaReadingAgent:
             "required": ["global_visual_summary", "circles"],
             "properties": {
                 "global_visual_summary": {"type": "string"},
-                "circles": {"type": "object"},
+                "circles": {
+                    "type": "object",
+                    "properties": {
+                        "inner": {"type": "object"},
+                        "middle": {"type": "object"},
+                        "outer": {"type": "object"},
+                    },
+                },
                 "evidence_summary": {"type": "array", "items": {"type": "string"}},
                 "uncertainties": {"type": "array", "items": {"type": "string"}},
             },

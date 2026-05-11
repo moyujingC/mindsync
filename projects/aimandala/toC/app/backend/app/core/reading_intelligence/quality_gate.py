@@ -68,6 +68,15 @@ def run_quality_gate(
     if missing_context_fields:
         failure_ids.append("missing_report_context_package_fields")
 
+    stage03 = stage_outputs.get("stage-03-visual-evidence", {})
+    missing_visual_units = _missing_visual_units(stage03)
+    if missing_visual_units:
+        failure_ids.append("missing_stage03_visual_units")
+
+    evidence_map = report_context_package.get("evidence_map")
+    if not isinstance(evidence_map, list) or not evidence_map:
+        failure_ids.append("empty_evidence_map")
+
     return {
         "passed": not failure_ids,
         "failure_ids": failure_ids,
@@ -77,5 +86,21 @@ def run_quality_gate(
             "expected_blocks": expected_blocks,
             "leaked_terms": leaked_terms,
             "missing_context_fields": missing_context_fields,
+            "missing_visual_units": missing_visual_units,
         },
     }
+
+
+def _missing_visual_units(stage03: Any) -> list[str]:
+    if not isinstance(stage03, dict):
+        return ["inner", "middle", "outer"]
+    circles = stage03.get("circles")
+    if not isinstance(circles, dict):
+        return ["inner", "middle", "outer"]
+    missing = []
+    for circle_key in ["inner", "middle", "outer"]:
+        circle = circles.get(circle_key)
+        units = circle.get("visual_units") if isinstance(circle, dict) else None
+        if not isinstance(units, list) or not units:
+            missing.append(circle_key)
+    return missing

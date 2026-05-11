@@ -197,6 +197,70 @@ def test_quality_gate_blocks_internal_label_leak(tmp_path):
     assert "final_report_internal_text_leak" in quality["failure_ids"]
 
 
+def test_agent_normalizes_model_circle_summary_shape(tmp_path):
+    class SummaryShapeClient(FakeReadingLLMClient):
+        def generate_structured(self, **kwargs):
+            self.structured_calls.append(kwargs)
+            return {
+                "global_visual_summary": "三圈清晰。",
+                "circles": {
+                    "inner_circle": {
+                        "color_distribution": ["橙色", "黄色", "蓝色"],
+                        "pattern": "中心多层同心圆",
+                        "shape": "圆形",
+                    },
+                    "middle_circle": {
+                        "color_distribution": ["紫色", "粉色"],
+                        "pattern": "花瓣状结构",
+                        "shape": "环形",
+                    },
+                    "outer_circle": {
+                        "color_distribution": ["绿色", "米色"],
+                        "pattern": "叶片与几何图案",
+                        "shape": "外环",
+                    },
+                },
+                "evidence_summary": ["三圈颜色自然过渡"],
+                "uncertainties": [],
+            }
+
+    result = MandalaReadingAgent(llm_client=SummaryShapeClient()).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=KnowledgePackBuilder().build(theme="general"),
+    )
+
+    stage03 = result.stage_outputs["stage-03-visual-evidence"]
+    assert sorted(stage03["circles"].keys()) == ["inner", "middle", "outer"]
+    assert stage03["circles"]["inner"]["visual_units"][0]["id"] == "inner-001"
+    assert stage03["circles"]["middle"]["visual_units"][0]["color"] == "紫色、粉色"
+    assert result.stage_outputs["stage-09-evidence-consolidation"]["evidence_map"]
+    assert result.quality_gate["passed"] is True
+
+
+def test_quality_gate_blocks_empty_stage03_visual_units(tmp_path):
+    result = MandalaReadingAgent(llm_client=FakeReadingLLMClient()).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=KnowledgePackBuilder().build(theme="general"),
+    )
+    stage_outputs = dict(result.stage_outputs)
+    stage_outputs["stage-03-visual-evidence"] = {
+        "stage": "stage-03-visual-evidence",
+        "status": "complete",
+        "circles": {"inner": {}, "middle": {}, "outer": {}},
+    }
+
+    quality = run_quality_gate(
+        stage_outputs=stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=result.final_report_md,
+        report_context_package={**result.report_context_package, "evidence_map": []},
+    )
+
+    assert quality["passed"] is False
+    assert "missing_stage03_visual_units" in quality["failure_ids"]
+    assert "empty_evidence_map" in quality["failure_ids"]
+
+
 def test_fixture_input_collector_loads_toc_fixture_003():
     fixture_input = load_fixture_agent_input("toc-mvp-fixture-003", report_mode="lite")
 
