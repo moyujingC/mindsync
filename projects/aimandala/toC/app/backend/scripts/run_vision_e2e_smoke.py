@@ -32,6 +32,111 @@ from fastapi.testclient import TestClient  # noqa: E402
 from scripts.run_vision_model_evals import load_fixtures  # noqa: E402
 
 
+class SmokeLLMCircleDetectionBackend:
+    """Vision LLM detector used only by the end-to-end smoke runner."""
+
+    def __init__(self, llm_client: Any) -> None:
+        self.llm_client = llm_client
+
+    async def detect_circles(
+        self,
+        *,
+        image_path: str,
+        use_ai: bool = True,
+        use_opencv: bool = True,
+        confidence_threshold: float = 0.3,
+    ) -> dict[str, Any]:
+        if not use_ai or self.llm_client is None or not hasattr(self.llm_client, "generate_structured"):
+            return {
+                "inner_radius": 0.33,
+                "middle_radius": 0.66,
+                "confidence": 0.0,
+                "method": "default",
+                "debug_info": {"backend": "smoke_llm_vision", "reason": "vision_client_unavailable"},
+            }
+        payload = self.llm_client.generate_structured(
+            task="vision",
+            prompt=(
+                "请识别这张经过用户校准的曼陀罗画作的三圈边界。"
+                "只返回内中圈半径 inner_radius 与中外圈半径 middle_radius，"
+                "数值为 0 到 1 之间的归一化半径比例；同时给出 confidence。"
+                "如果圆形边界不明显，请根据画面结构估计，但 method 使用 llm_vision_estimated。"
+            ),
+            schema={
+                "type": "object",
+                "properties": {
+                    "inner_radius": {"type": "number"},
+                    "middle_radius": {"type": "number"},
+                    "confidence": {"type": "number"},
+                    "method": {"type": "string"},
+                },
+                "required": ["inner_radius", "middle_radius", "confidence"],
+            },
+            image_path=image_path,
+        )
+        if not isinstance(payload, dict):
+            return {
+                "inner_radius": 0.33,
+                "middle_radius": 0.66,
+                "confidence": 0.0,
+                "method": "default",
+                "debug_info": {
+                    "backend": "smoke_llm_vision",
+                    "reason": "empty_or_invalid_response",
+                    "attempt_trace": _sanitize_attempt_trace(
+                        getattr(self.llm_client, "last_attempt_trace", []) or []
+                    ),
+                },
+            }
+        inner = _clamp_radius(payload.get("inner_radius"), default=0.33)
+        middle = max(_clamp_radius(payload.get("middle_radius"), default=0.66), inner + 0.05)
+        middle = min(middle, 0.9)
+        confidence = max(0.0, min(_safe_float(payload.get("confidence"), default=0.5), 1.0))
+        method = str(payload.get("method") or "llm_vision").strip()
+        if method not in {"llm_vision", "llm_vision_estimated"}:
+            method = "llm_vision_estimated" if confidence < confidence_threshold else "llm_vision"
+        return {
+            "inner_radius": inner,
+            "middle_radius": middle,
+            "confidence": confidence,
+            "method": method,
+            "debug_info": {
+                "backend": "smoke_llm_vision",
+                "attempt_trace": _sanitize_attempt_trace(
+                    getattr(self.llm_client, "last_attempt_trace", []) or []
+                ),
+            },
+        }
+
+
+def _safe_float(value: Any, *, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _clamp_radius(value: Any, *, default: float) -> float:
+    return max(0.1, min(_safe_float(value, default=default), 0.9))
+
+
+def _sanitize_attempt_trace(attempt_trace: Any) -> list[dict[str, Any]]:
+    if not isinstance(attempt_trace, list):
+        return []
+    return [
+        {
+            "model": item.get("model"),
+            "base_url": item.get("base_url"),
+            "endpoint_url": item.get("endpoint_url"),
+            "result": item.get("result"),
+            "status": item.get("status"),
+            "reason": item.get("reason"),
+        }
+        for item in attempt_trace
+        if isinstance(item, dict)
+    ]
+
+
 def _parse_env_file_line(line: str) -> tuple[str, str] | None:
     stripped = line.strip()
     if not stripped or stripped.startswith("#"):
@@ -96,17 +201,21 @@ def _reset_api_state() -> None:
 def _install_smoke_orchestrator() -> None:
     from app.api import routes_v2
     from app.core.analysis.circle_detector import CircleDetector
-    from app.core.llm import LLMCircleDetectionBackend, create_llm_client_from_env
+    from app.core.llm import create_llm_client_from_env
     from app.core.pipeline.generation_runtime import DeterministicReportGenerationRuntime
     from app.core.pipeline.orchestrator_v2 import LayeredOrchestrator
 
     llm_client = create_llm_client_from_env()
+    generation_runtime = DeterministicReportGenerationRuntime()
+    generation_runtime.llm_client = llm_client
     routes_v2._orchestrator = LayeredOrchestrator(
-        circle_detector=CircleDetector(detector_backend=LLMCircleDetectionBackend(llm_client)),
-        generation_runtime=DeterministicReportGenerationRuntime(),
+        circle_detector=CircleDetector(detector_backend=SmokeLLMCircleDetectionBackend(llm_client)),
+        generation_runtime=generation_runtime,
         report_chat_runtime=None,
         enable_vision=True,
     )
+    routes_v2._orchestrator.vision_llm_client = llm_client
+    routes_v2._orchestrator.stage_vision_runtime.llm_client = llm_client
 
 
 def configure_vision_env_from_existing_keys() -> None:
@@ -230,10 +339,27 @@ def _build_runtime_diagnostics(interpretation_id: str) -> dict[str, Any]:
         )
         if not isinstance(stage03, dict):
             stage03 = {}
+        stage04 = (
+            payload.get("stage-04-direct-judgment-high-hit-check", {})
+            if isinstance(payload, dict)
+            else {}
+        )
+        if not isinstance(stage04, dict):
+            stage04 = {}
+        process_contract = (
+            payload.get("process_contract", {})
+            if isinstance(payload, dict)
+            else {}
+        )
+        if not isinstance(process_contract, dict):
+            process_contract = {}
         diagnostics["stage_process"] = {
             "passed": stage03.get("status") not in {"failed", "error"},
             "failure_reason": stage03.get("failure_reason", ""),
             "failure_detail": _sanitize_stage_failure_detail(stage03.get("failure_detail", {})),
+            "process_contract": _summarize_process_contract(process_contract),
+            "stage_03_visual_evidence": _summarize_stage03(stage03),
+            "stage_04_direct_judgment": _summarize_stage04(stage04),
             "fidelity_flags": getattr(stage_process, "fidelity_flags", []),
             "fallback_summary": getattr(stage_process, "fallback_summary", {}),
             "visual_basis_source": (
@@ -243,6 +369,127 @@ def _build_runtime_diagnostics(interpretation_id: str) -> dict[str, Any]:
             ),
         }
     return diagnostics
+
+
+def _summarize_process_contract(contract: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "generation_mode": contract.get("generation_mode"),
+        "target_report": contract.get("target_report"),
+        "package_status": contract.get("package_status"),
+        "blocking_reasons": contract.get("blocking_reasons", []),
+        "completed_stages": contract.get("completed_stages", []),
+        "incomplete_stages": contract.get("incomplete_stages", []),
+        "knowledge_ref_count": contract.get("knowledge_ref_count"),
+    }
+
+
+def _summarize_stage03(stage03: dict[str, Any]) -> dict[str, Any]:
+    circles = stage03.get("circles") if isinstance(stage03.get("circles"), dict) else {}
+    circle_summaries = {}
+    for circle_key in ("inner", "middle", "outer"):
+        circle = circles.get(circle_key, {}) if isinstance(circles, dict) else {}
+        if not isinstance(circle, dict):
+            circle = {}
+        units = circle.get("visual_units", [])
+        if not isinstance(units, list):
+            units = []
+        circle_summaries[circle_key] = {
+            "summary": circle.get("summary"),
+            "visual_unit_count": len([item for item in units if isinstance(item, dict)]),
+            "sample_visual_units": _compact_visual_units(units[:2]),
+        }
+    return {
+        "status": stage03.get("status"),
+        "failure_reason": stage03.get("failure_reason"),
+        "global_visual_summary": stage03.get("global_visual_summary"),
+        "circles": circle_summaries,
+        "evidence_refs": stage03.get("evidence_refs", []),
+        "uncertainties": stage03.get("uncertainties", []),
+        "model_trace": _sanitize_model_trace(stage03.get("model_trace")),
+    }
+
+
+def _summarize_stage04(stage04: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "status": stage04.get("status"),
+        "failure_reason": stage04.get("failure_reason"),
+        "hits": _compact_direct_judgment_items(stage04.get("hits", [])),
+        "program_matches": _compact_direct_judgment_items(stage04.get("program_matches", [])),
+        "non_hits": _compact_direct_judgment_items(stage04.get("non_hits", [])),
+        "uncertain_items": _compact_direct_judgment_items(stage04.get("uncertain_items", [])),
+        "conflicts": stage04.get("conflicts", []),
+        "knowledge_refs": stage04.get("knowledge_refs", []),
+        "summary": stage04.get("summary"),
+        "model_trace": _sanitize_model_trace(stage04.get("model_trace")),
+    }
+
+
+def _compact_visual_units(units: list[Any]) -> list[dict[str, Any]]:
+    compact = []
+    for unit in units:
+        if not isinstance(unit, dict):
+            continue
+        compact.append(
+            {
+                "id": unit.get("id"),
+                "position": unit.get("position"),
+                "color": unit.get("color"),
+                "secondary_colors": unit.get("secondary_colors", []),
+                "shade": unit.get("shade"),
+                "saturation": unit.get("saturation"),
+                "shape": unit.get("shape"),
+                "shape_arrangement": unit.get("shape_arrangement"),
+                "area_ratio": unit.get("area_ratio"),
+                "fill_state": unit.get("fill_state"),
+                "whitespace_state": unit.get("whitespace_state"),
+                "description": unit.get("description"),
+            }
+        )
+    return compact
+
+
+def _compact_direct_judgment_items(items: Any) -> list[dict[str, Any]]:
+    if not isinstance(items, list):
+        return []
+    compact = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        compact.append(
+            {
+                "mode": item.get("mode"),
+                "mode_id": item.get("mode_id"),
+                "hit_strength": item.get("hit_strength"),
+                "vision_hit": item.get("vision_hit"),
+                "program_hit": item.get("program_hit"),
+                "cross_validation": item.get("cross_validation"),
+                "visual_unit_refs": item.get("visual_unit_refs", []),
+                "visible_evidence": item.get("visible_evidence", []),
+                "knowledge_refs": item.get("knowledge_refs", []),
+                "reasoning": item.get("reasoning"),
+            }
+        )
+    return compact
+
+
+def _sanitize_model_trace(trace: Any) -> dict[str, Any]:
+    if not isinstance(trace, dict):
+        return {}
+    return {
+        "attempt_trace": [
+            {
+                "model": item.get("model"),
+                "base_url": item.get("base_url"),
+                "endpoint_url": item.get("endpoint_url"),
+                "result": item.get("result"),
+                "status": item.get("status"),
+                "reason": item.get("reason"),
+            }
+            for item in trace.get("attempt_trace", [])
+            if isinstance(item, dict)
+        ],
+        "last_error_detail": _sanitize_stage_failure_detail(trace.get("last_error_detail", {})),
+    }
 
 
 def _sanitize_stage_failure_detail(detail: Any) -> dict[str, Any]:
@@ -279,6 +526,7 @@ def run_fixture_smoke(client: TestClient, fixture: Any) -> dict[str, Any]:
     )
     detect_response.raise_for_status()
     detect = detect_response.json()
+    manual_circles = _manual_circle_payload_from_detect(detect)
 
     create_response = client.post(
         "/api/v2/interpretations",
@@ -292,9 +540,10 @@ def run_fixture_smoke(client: TestClient, fixture: Any) -> dict[str, Any]:
             "theme": fixture.theme or "general",
             "painting_intention": user_context["painting_intention"],
             "painting_feeling": user_context["painting_feeling"],
+            **manual_circles,
         },
     )
-    create_response.raise_for_status()
+    _raise_with_response_body(create_response, "create_interpretation")
     create = create_response.json()
     interpretation_id = create["interpretation_id"]
 
@@ -353,6 +602,23 @@ def run_fixture_smoke(client: TestClient, fixture: Any) -> dict[str, Any]:
     }
     result["validation"] = validate_fixture_result(result)
     return result
+
+
+def _manual_circle_payload_from_detect(detect: dict[str, Any]) -> dict[str, int]:
+    return {
+        "inner_radius": int(round(_clamp_radius(detect.get("inner_radius"), default=0.33) * 100)),
+        "middle_radius": int(round(_clamp_radius(detect.get("middle_radius"), default=0.66) * 100)),
+    }
+
+
+def _raise_with_response_body(response: Any, operation: str) -> None:
+    try:
+        response.raise_for_status()
+    except Exception as error:
+        body = response.text
+        raise RuntimeError(
+            f"{operation}_failed status={response.status_code} body={body[:800]}"
+        ) from error
 
 
 def validate_fixture_result(result: dict[str, Any]) -> dict[str, Any]:

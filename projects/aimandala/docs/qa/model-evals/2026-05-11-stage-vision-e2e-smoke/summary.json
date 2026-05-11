@@ -1,0 +1,992 @@
+{
+  "ok": true,
+  "mode": "vision_e2e_smoke",
+  "fixture_count": 3,
+  "candidate": {
+    "vision_model": "qwen-vl-max-latest",
+    "vision_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "vision_fallback_model": "ep-20260316095322-94wf5",
+    "vision_fallback_base_url": "https://ark.cn-beijing.volces.com/api/v3"
+  },
+  "fixtures": [
+    {
+      "fixture_id": "toc-mvp-fixture-003",
+      "image_asset": "fixtures/toc-mvp/assets/IMG_5062.jpeg",
+      "upload": {
+        "storage_backend": "local",
+        "storage_key": "cf43ae1d9cc749a4928ad23005c3e43f.jpeg",
+        "content_type": "image/jpeg",
+        "size_bytes": 3176617
+      },
+      "detect": {
+        "method": "llm_vision_estimated",
+        "confidence": 0.95,
+        "inner_radius": 0.35,
+        "middle_radius": 0.65,
+        "debug_backend": "smoke_llm_vision"
+      },
+      "lite_report": {
+        "version": "lite",
+        "title": "通用解读中，transition-o",
+        "error": null,
+        "visual_basis": "内圈：中心是一个由黄色和橙色构成的球形结构，内部有网格状线条分割，中央有一个小的蓝色圆点。；一圈紫色花瓣状图形，边缘带有灰色轮廓，围绕中心球形结构，形成第一层环状装饰。\n中圈：浅蓝色菱形图案，分布在紫色花瓣外围，与灰色部分交替出现，形成几何对称结构。；绿色叶状结构，呈放射状排列，边缘带有黄色勾边，与黄色三角形图案相邻。\n外圈：橙色波浪形图案，位于外圈内侧，与绿色叶状结构相邻，形成连续的边界装饰。；黄色三角形图案，位于外圈最外侧，与绿色叶状结构相邻，形成重复的几何装饰。",
+        "style_review_fields": {},
+        "prompt_schema_validation_issues": []
+      },
+      "pro_report": {
+        "version": "pro",
+        "title": "一梳 Pro 版报告",
+        "error": null,
+        "structured_keys": [
+          "deep_impression",
+          "deep_structure_interpretation",
+          "evidence_digest",
+          "healing_plan",
+          "imbalance_diagnosis",
+          "prompt_preview",
+          "prompt_schema_validation_issues",
+          "root_cause_chain",
+          "topic_context"
+        ],
+        "style_review_fields": {
+          "deep_impression": "这份深度报告会在「通用解读中，transition-o」的基础上，继续看你在「通用解读」中的核心流动。",
+          "deep_structure_interpretation": "在全面解读这个议题下，这份 Pro 解读会把画面证据、失衡判断和根因链放在一起看。\n\n心理层面先保持开放，不做诊断式定性。\n\n更深的核心需要在完整 stage 证据和用户主题中谨慎确认。",
+          "evidence_digest": "inner:火/木 -> middle:木 -> outer:火/土\n\n当前最需要关注的线索是：transition-overload。\n\n内圈：内圈像是这张画的核心房间。它约占 35%，说明你最先守住的是核心自我和安全感；你不是没有力量，而是在确认这份力量能不能被自己接住。\n\n中圈：中圈约占 65%，更像关系和现实任务所在的位置。这里已经开始重新连接外部，但仍然带着谨慎，说明你不是拒绝关系，而是在判断怎样靠近才不耗尽自己。\n\n外圈：外圈更像你给世界看的边界。它不是单纯的防御，而是在提醒你：哪些地方可以继续开放，哪些地方需要先保留一点距离。\n\n节奏关系应由 stage-08 的能量流动诊断支撑。\n\n关系模式需要结合「通用解读」主题知识进一步确认。\n\n行动模式需要回到画面证据和用户意图共同判断。",
+          "imbalance_diagnosis": "transition-overload\n\n当前最需要关注的线索是：transition-overload。\n\n该判断应回到 stage-03 到 stage-07 的证据链确认。\n\n能量层面等待 stage-08 完整诊断。\n\n心理层面先保持开放，不做诊断式定性。",
+          "root_cause_chain": {
+            "surface": "在「通用解读」主题下，先观察它如何进入现实选择。",
+            "mechanism": "心理层面先保持开放，不做诊断式定性。",
+            "core": "更深的核心需要在完整 stage 证据和用户主题中谨慎确认。"
+          },
+          "healing_plan": [
+            {
+              "phase": "当前阶段",
+              "focus": "先稳定",
+              "practice": "每天记录一个最明显的身体或情绪信号。"
+            },
+            {
+              "phase": "接下来",
+              "focus": "再连接",
+              "practice": "把这个信号放回「通用解读」里的一个真实场景。"
+            },
+            {
+              "phase": "继续深化",
+              "focus": "小步行动",
+              "practice": "选择一个今天能完成的低压力动作。"
+            }
+          ],
+          "topic_context": {
+            "topic": "general",
+            "topic_label": "全面解读",
+            "report_mode": "pro",
+            "orientation": {
+              "intro": "这份报告会从全面解读这个议题角度看这张画。",
+              "focus": "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+              "key_terms": []
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "failures": []
+      },
+      "runtime_diagnostics": {
+        "record_found": true,
+        "status": "completed",
+        "generation_stage": "completed",
+        "generation_progress": 100,
+        "lite_ready": true,
+        "pro_ready": true,
+        "stage_process": {
+          "passed": true,
+          "failure_reason": "",
+          "failure_detail": {},
+          "process_contract": {
+            "generation_mode": "stage_based_runtime",
+            "target_report": "pro",
+            "package_status": "formal",
+            "blocking_reasons": [],
+            "completed_stages": [
+              "stage-00-input-context",
+              "stage-01-user-input-context",
+              "stage-02-circle-boundary-decision",
+              "stage-03-visual-evidence",
+              "stage-04-direct-judgment-high-hit-check",
+              "stage-05-per-circle-color-shape-element-sensing",
+              "stage-06-per-circle-element-generation-control",
+              "stage-07-per-circle-imbalance-patterns",
+              "stage-08-energy-flow-diagnosis",
+              "stage-09-evidence-consolidation",
+              "stage-10-core-thesis-selection",
+              "stage-11-user-facing-framing",
+              "stage-12-healing-direction-and-report-branching"
+            ],
+            "incomplete_stages": [],
+            "knowledge_ref_count": 12
+          },
+          "stage_03_visual_evidence": {
+            "status": "complete",
+            "failure_reason": null,
+            "global_visual_summary": "一幅对称的圆形图案，由多个同心圆层构成，中心为黄色与橙色交织的球形结构，周围环绕着紫色花瓣状图形，再向外是蓝、绿、黄、橙等色彩交替的几何装饰，整体呈现高度对称的曼陀罗风格。",
+            "circles": {
+              "inner": {
+                "summary": "中心区域包含一个以黄色和橙色为主的球形结构，被一圈紫色花瓣状图形包围，整体呈放射状对称布局。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "inner_01",
+                    "position": "中心",
+                    "color": "黄色",
+                    "secondary_colors": [
+                      "橙色",
+                      "蓝色"
+                    ],
+                    "shade": "中等",
+                    "saturation": "高",
+                    "shape": "圆形",
+                    "shape_arrangement": "放射状分割",
+                    "area_ratio": 0.1,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "中心是一个由黄色和橙色构成的球形结构，内部有网格状线条分割，中央有一个小的蓝色圆点。"
+                  },
+                  {
+                    "id": "inner_02",
+                    "position": "中心外围",
+                    "color": "紫色",
+                    "secondary_colors": [
+                      "浅紫",
+                      "灰色"
+                    ],
+                    "shade": "浅",
+                    "saturation": "中等",
+                    "shape": "花瓣状",
+                    "shape_arrangement": "环形排列",
+                    "area_ratio": 0.2,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "一圈紫色花瓣状图形，边缘带有灰色轮廓，围绕中心球形结构，形成第一层环状装饰。"
+                  }
+                ]
+              },
+              "middle": {
+                "summary": "中间区域由蓝、灰、浅蓝和绿色组成的几何图案构成，呈现出重复的叶状和菱形结构，颜色交替分布。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "middle_01",
+                    "position": "内圈外围",
+                    "color": "浅蓝色",
+                    "secondary_colors": [
+                      "灰色",
+                      "白色"
+                    ],
+                    "shade": "浅",
+                    "saturation": "中等",
+                    "shape": "菱形",
+                    "shape_arrangement": "交替排列",
+                    "area_ratio": 0.25,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "浅蓝色菱形图案，分布在紫色花瓣外围，与灰色部分交替出现，形成几何对称结构。"
+                  },
+                  {
+                    "id": "middle_02",
+                    "position": "中圈外侧",
+                    "color": "绿色",
+                    "secondary_colors": [
+                      "黄色",
+                      "浅绿"
+                    ],
+                    "shade": "中等",
+                    "saturation": "高",
+                    "shape": "叶状",
+                    "shape_arrangement": "放射状对称",
+                    "area_ratio": 0.2,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "绿色叶状结构，呈放射状排列，边缘带有黄色勾边，与黄色三角形图案相邻。"
+                  }
+                ]
+              },
+              "outer": {
+                "summary": "外圈区域由橙色、黄色、绿色和蓝色组成的复杂几何图案构成，呈现出重复的波浪形和三角形结构，颜色丰富且对称。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "outer_01",
+                    "position": "外圈内侧",
+                    "color": "橙色",
+                    "secondary_colors": [
+                      "黄色",
+                      "米色"
+                    ],
+                    "shade": "中等",
+                    "saturation": "中等",
+                    "shape": "波浪形",
+                    "shape_arrangement": "连续排列",
+                    "area_ratio": 0.2,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "橙色波浪形图案，位于外圈内侧，与绿色叶状结构相邻，形成连续的边界装饰。"
+                  },
+                  {
+                    "id": "outer_02",
+                    "position": "外圈外侧",
+                    "color": "黄色",
+                    "secondary_colors": [
+                      "绿色",
+                      "蓝色"
+                    ],
+                    "shade": "浅",
+                    "saturation": "高",
+                    "shape": "三角形",
+                    "shape_arrangement": "重复排列",
+                    "area_ratio": 0.15,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "黄色三角形图案，位于外圈最外侧，与绿色叶状结构相邻，形成重复的几何装饰。"
+                  }
+                ]
+              }
+            },
+            "evidence_refs": [
+              "中心为黄色与橙色交织的球形结构，中央有蓝色圆点",
+              "第一层为紫色花瓣状图形，环绕中心",
+              "第二层由浅蓝色菱形和绿色叶状结构交替组成",
+              "第三层由橙色波浪形和黄色三角形构成",
+              "整体图案呈高度对称的曼陀罗风格，颜色丰富，结构复杂"
+            ],
+            "uncertainties": [],
+            "model_trace": {
+              "attempt_trace": [
+                {
+                  "model": "qwen-vl-max-latest",
+                  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                  "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                  "result": "success",
+                  "status": null,
+                  "reason": null
+                }
+              ],
+              "last_error_detail": {}
+            }
+          },
+          "stage_04_direct_judgment": {
+            "status": "complete",
+            "failure_reason": null,
+            "hits": [],
+            "program_matches": [
+              {
+                "mode": "蓝绿搭配",
+                "mode_id": "direct_judgment.blue_green_expression",
+                "hit_strength": "full_hit",
+                "vision_hit": null,
+                "program_hit": true,
+                "cross_validation": null,
+                "visual_unit_refs": [
+                  "middle_01",
+                  "middle_02"
+                ],
+                "visible_evidence": [
+                  "画面同时出现蓝色和绿色。"
+                ],
+                "knowledge_refs": [
+                  "direct_judgment.blue_green_expression"
+                ],
+                "reasoning": null
+              }
+            ],
+            "non_hits": [],
+            "uncertain_items": [],
+            "conflicts": [],
+            "knowledge_refs": [
+              "direct_judgment.blue_green_expression"
+            ],
+            "summary": "",
+            "model_trace": {
+              "attempt_trace": [
+                {
+                  "model": "qwen-vl-max-latest",
+                  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                  "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                  "result": "success",
+                  "status": null,
+                  "reason": null
+                }
+              ],
+              "last_error_detail": {}
+            }
+          },
+          "fidelity_flags": [],
+          "fallback_summary": {},
+          "visual_basis_source": null
+        }
+      }
+    },
+    {
+      "fixture_id": "toc-mvp-fixture-006",
+      "image_asset": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "upload": {
+        "storage_backend": "local",
+        "storage_key": "dccde11096a84331801f8def76f6b549.jpeg",
+        "content_type": "image/jpeg",
+        "size_bytes": 3096659
+      },
+      "detect": {
+        "method": "llm_vision_estimated",
+        "confidence": 0.95,
+        "inner_radius": 0.45,
+        "middle_radius": 0.75,
+        "debug_backend": "smoke_llm_vision"
+      },
+      "lite_report": {
+        "version": "lite",
+        "title": "通用解读中，水多木漂正在成为这次画作",
+        "error": null,
+        "visual_basis": "内圈：中心是一个紫色八角星，内部有从中心向外辐射的细线，颜色渐变明显，呈现光晕效果。；蓝色三角形围绕中心八角星分布，与绿色三角形交替出现，形成交叉网格结构。\n中圈：中间区域为黄色底色，作为背景，上面分布着新月和星星图案。；黄色新月分布在四个方向，每个新月由一个完整的圆和一个弯月组成，呈对称布局。\n外圈：外圈由绿色和蓝色组成的锯齿形图案构成，形成连续的环状边框，具有强烈的视觉边界感。；蓝色锯齿形与绿色锯齿形交替排列，构成外圈的装饰性边框，增强图案的整体性。",
+        "style_review_fields": {},
+        "prompt_schema_validation_issues": []
+      },
+      "pro_report": {
+        "version": "pro",
+        "title": "一梳 Pro 版报告",
+        "error": null,
+        "structured_keys": [
+          "deep_impression",
+          "deep_structure_interpretation",
+          "evidence_digest",
+          "healing_plan",
+          "imbalance_diagnosis",
+          "prompt_preview",
+          "prompt_schema_validation_issues",
+          "root_cause_chain",
+          "topic_context"
+        ],
+        "style_review_fields": {
+          "deep_impression": "这份深度报告会在「通用解读中，水多木漂正在成为这次画作」的基础上，继续看你在「通用解读」中的核心流动。",
+          "deep_structure_interpretation": "在全面解读这个议题下，这份 Pro 解读会把画面证据、失衡判断和根因链放在一起看。\n\n心理层面先保持开放，不做诊断式定性。\n\n更深的核心需要在完整 stage 证据和用户主题中谨慎确认。",
+          "evidence_digest": "inner:水 -> middle:土 -> outer:木\n\n当前最需要关注的线索是：水多木漂。\n\n内圈：内圈像是这张画的核心房间。它约占 45%，说明你最先守住的是核心自我和安全感；你不是没有力量，而是在确认这份力量能不能被自己接住。\n\n中圈：中圈约占 75%，更像关系和现实任务所在的位置。这里已经开始重新连接外部，但仍然带着谨慎，说明你不是拒绝关系，而是在判断怎样靠近才不耗尽自己。\n\n外圈：外圈更像你给世界看的边界。它不是单纯的防御，而是在提醒你：哪些地方可以继续开放，哪些地方需要先保留一点距离。\n\n节奏关系应由 stage-08 的能量流动诊断支撑。\n\n关系模式需要结合「通用解读」主题知识进一步确认。\n\n行动模式需要回到画面证据和用户意图共同判断。",
+          "imbalance_diagnosis": "水多木漂\n\n当前最需要关注的线索是：水多木漂。\n\n该判断应回到 stage-03 到 stage-07 的证据链确认。\n\n能量层面等待 stage-08 完整诊断。\n\n心理层面先保持开放，不做诊断式定性。",
+          "root_cause_chain": {
+            "surface": "在「通用解读」主题下，先观察它如何进入现实选择。",
+            "mechanism": "心理层面先保持开放，不做诊断式定性。",
+            "core": "更深的核心需要在完整 stage 证据和用户主题中谨慎确认。"
+          },
+          "healing_plan": [
+            {
+              "phase": "当前阶段",
+              "focus": "先稳定",
+              "practice": "每天记录一个最明显的身体或情绪信号。"
+            },
+            {
+              "phase": "接下来",
+              "focus": "再连接",
+              "practice": "把这个信号放回「通用解读」里的一个真实场景。"
+            },
+            {
+              "phase": "继续深化",
+              "focus": "小步行动",
+              "practice": "选择一个今天能完成的低压力动作。"
+            }
+          ],
+          "topic_context": {
+            "topic": "general",
+            "topic_label": "全面解读",
+            "report_mode": "pro",
+            "orientation": {
+              "intro": "这份报告会从全面解读这个议题角度看这张画。",
+              "focus": "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+              "key_terms": []
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "failures": []
+      },
+      "runtime_diagnostics": {
+        "record_found": true,
+        "status": "completed",
+        "generation_stage": "completed",
+        "generation_progress": 100,
+        "lite_ready": true,
+        "pro_ready": true,
+        "stage_process": {
+          "passed": true,
+          "failure_reason": "",
+          "failure_detail": {},
+          "process_contract": {
+            "generation_mode": "stage_based_runtime",
+            "target_report": "pro",
+            "package_status": "formal",
+            "blocking_reasons": [],
+            "completed_stages": [
+              "stage-00-input-context",
+              "stage-01-user-input-context",
+              "stage-02-circle-boundary-decision",
+              "stage-03-visual-evidence",
+              "stage-04-direct-judgment-high-hit-check",
+              "stage-05-per-circle-color-shape-element-sensing",
+              "stage-06-per-circle-element-generation-control",
+              "stage-07-per-circle-imbalance-patterns",
+              "stage-08-energy-flow-diagnosis",
+              "stage-09-evidence-consolidation",
+              "stage-10-core-thesis-selection",
+              "stage-11-user-facing-framing",
+              "stage-12-healing-direction-and-report-branching"
+            ],
+            "incomplete_stages": [],
+            "knowledge_ref_count": 17
+          },
+          "stage_03_visual_evidence": {
+            "status": "complete",
+            "failure_reason": null,
+            "global_visual_summary": "一幅对称的圆形图案，中心为紫色星形结构，周围环绕蓝色和绿色三角形构成的几何图形，外圈包含黄色月亮、粉色与紫色星星以及蓝绿相间的锯齿边框。整体色彩丰富，结构分明。",
+            "circles": {
+              "inner": {
+                "summary": "中心区域以紫色为主，呈八角星形状，内部有放射状线条，外围由蓝色和绿色三角形交错构成。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "inner_01",
+                    "position": "中心",
+                    "color": "紫色",
+                    "secondary_colors": [
+                      "浅紫色",
+                      "白色"
+                    ],
+                    "shade": "中等",
+                    "saturation": "高",
+                    "shape": "八角星",
+                    "shape_arrangement": "放射状",
+                    "area_ratio": 0.2,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "中心是一个紫色八角星，内部有从中心向外辐射的细线，颜色渐变明显，呈现光晕效果。"
+                  },
+                  {
+                    "id": "inner_02",
+                    "position": "围绕中心八角星",
+                    "color": "蓝色",
+                    "secondary_colors": [
+                      "绿色",
+                      "黄色"
+                    ],
+                    "shade": "深",
+                    "saturation": "高",
+                    "shape": "三角形",
+                    "shape_arrangement": "交错排列",
+                    "area_ratio": 0.4,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "蓝色三角形围绕中心八角星分布，与绿色三角形交替出现，形成交叉网格结构。"
+                  }
+                ]
+              },
+              "middle": {
+                "summary": "中间区域为黄色背景，分布着黄色新月、粉色和紫色星星，以及绿色与蓝色的边框装饰。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "middle_01",
+                    "position": "环形区域",
+                    "color": "黄色",
+                    "secondary_colors": [
+                      "淡黄色",
+                      "白色"
+                    ],
+                    "shade": "浅",
+                    "saturation": "中等",
+                    "shape": "圆形背景",
+                    "shape_arrangement": "均匀铺满",
+                    "area_ratio": 0.5,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "中间区域为黄色底色，作为背景，上面分布着新月和星星图案。"
+                  },
+                  {
+                    "id": "middle_02",
+                    "position": "分布在黄色背景上",
+                    "color": "黄色",
+                    "secondary_colors": [
+                      "橙色"
+                    ],
+                    "shade": "中等",
+                    "saturation": "高",
+                    "shape": "新月",
+                    "shape_arrangement": "对称分布",
+                    "area_ratio": 0.1,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "有黑色轮廓线",
+                    "description": "黄色新月分布在四个方向，每个新月由一个完整的圆和一个弯月组成，呈对称布局。"
+                  }
+                ]
+              },
+              "outer": {
+                "summary": "最外层为绿色与蓝色相间的锯齿状边框，构成封闭圆形边界。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "outer_01",
+                    "position": "最外圈",
+                    "color": "绿色",
+                    "secondary_colors": [
+                      "蓝色"
+                    ],
+                    "shade": "深",
+                    "saturation": "高",
+                    "shape": "锯齿形边框",
+                    "shape_arrangement": "连续环绕",
+                    "area_ratio": 0.3,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "外圈由绿色和蓝色组成的锯齿形图案构成，形成连续的环状边框，具有强烈的视觉边界感。"
+                  },
+                  {
+                    "id": "outer_02",
+                    "position": "外圈边缘",
+                    "color": "蓝色",
+                    "secondary_colors": [
+                      "绿色"
+                    ],
+                    "shade": "中等",
+                    "saturation": "高",
+                    "shape": "锯齿形",
+                    "shape_arrangement": "交替排列",
+                    "area_ratio": 0.2,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无空白",
+                    "description": "蓝色锯齿形与绿色锯齿形交替排列，构成外圈的装饰性边框，增强图案的整体性。"
+                  }
+                ]
+              }
+            },
+            "evidence_refs": [
+              "中心为紫色八角星，内部有放射状线条",
+              "蓝色与绿色三角形交错构成内圈几何结构",
+              "中圈为黄色背景，分布黄色新月与粉色、紫色星星",
+              "外圈为绿色与蓝色交替的锯齿形边框",
+              "整体图案呈高度对称布局"
+            ],
+            "uncertainties": [],
+            "model_trace": {
+              "attempt_trace": [
+                {
+                  "model": "qwen-vl-max-latest",
+                  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                  "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                  "result": "success",
+                  "status": null,
+                  "reason": null
+                }
+              ],
+              "last_error_detail": {}
+            }
+          },
+          "stage_04_direct_judgment": {
+            "status": "complete",
+            "failure_reason": null,
+            "hits": [],
+            "program_matches": [
+              {
+                "mode": "大面积黄色",
+                "mode_id": "direct_judgment.large_yellow_mass",
+                "hit_strength": "full_hit",
+                "vision_hit": null,
+                "program_hit": true,
+                "cross_validation": null,
+                "visual_unit_refs": [
+                  "middle_01"
+                ],
+                "visible_evidence": [
+                  "画面存在成片黄色。"
+                ],
+                "knowledge_refs": [
+                  "direct_judgment.large_yellow_mass"
+                ],
+                "reasoning": null
+              },
+              {
+                "mode": "蓝绿搭配",
+                "mode_id": "direct_judgment.blue_green_expression",
+                "hit_strength": "full_hit",
+                "vision_hit": null,
+                "program_hit": true,
+                "cross_validation": null,
+                "visual_unit_refs": [
+                  "inner_02",
+                  "outer_01"
+                ],
+                "visible_evidence": [
+                  "画面同时出现蓝色和绿色。"
+                ],
+                "knowledge_refs": [
+                  "direct_judgment.blue_green_expression"
+                ],
+                "reasoning": null
+              }
+            ],
+            "non_hits": [],
+            "uncertain_items": [],
+            "conflicts": [],
+            "knowledge_refs": [
+              "direct_judgment.large_yellow_mass",
+              "direct_judgment.blue_green_expression"
+            ],
+            "summary": "",
+            "model_trace": {
+              "attempt_trace": [
+                {
+                  "model": "qwen-vl-max-latest",
+                  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                  "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                  "result": "success",
+                  "status": null,
+                  "reason": null
+                }
+              ],
+              "last_error_detail": {}
+            }
+          },
+          "fidelity_flags": [],
+          "fallback_summary": {},
+          "visual_basis_source": null
+        }
+      }
+    },
+    {
+      "fixture_id": "toc-mvp-fixture-008",
+      "image_asset": "fixtures/toc-mvp/assets/IMG_5079.jpeg",
+      "upload": {
+        "storage_backend": "local",
+        "storage_key": "c9a79e08f108496cbb0ec490aa7602bd.jpeg",
+        "content_type": "image/jpeg",
+        "size_bytes": 3043990
+      },
+      "detect": {
+        "method": "llm_vision_estimated",
+        "confidence": 0.95,
+        "inner_radius": 0.35,
+        "middle_radius": 0.65,
+        "debug_backend": "smoke_llm_vision"
+      },
+      "lite_report": {
+        "version": "lite",
+        "title": "通用解读中，土多水干正在成为这次画作",
+        "error": null,
+        "visual_basis": "内圈：中心的花瓣形图案，由黄色和绿色交替组成，呈放射状对称分布，面积约占内层的20%，完全填充，周围有浅蓝色和粉色元素。；中心花瓣形图案外的浅蓝色方形结构，对称环绕中心，面积约占内层的15%，完全填充，周围有粉色和紫色星形元素。\n中圈：中层偏外的绿色花瓣状图案，与黄色花瓣状图案交替对称分布，面积约占中层的25%，完全填充，周围有浅蓝色和粉色区域。；中层的粉色不规则区域，对称分布，面积约占中层的20%，完全填充，内部有紫色星形，周围与绿色、浅蓝色元素相邻。\n外圈：外层偏内的黄色花瓣状图案，与绿色交替，内部有橙色星形，面积约占外层的30%，完全填充，背景为浅蓝色，与蓝色方形和条纹相邻。；外层的粉色圆形边框，环绕整个外层，面积约占外层的5%，完全填充，内部是浅蓝色背景和各种图案，与紫色圆形相邻。",
+        "style_review_fields": {},
+        "prompt_schema_validation_issues": []
+      },
+      "pro_report": {
+        "version": "pro",
+        "title": "一梳 Pro 版报告",
+        "error": null,
+        "structured_keys": [
+          "deep_impression",
+          "deep_structure_interpretation",
+          "evidence_digest",
+          "healing_plan",
+          "imbalance_diagnosis",
+          "prompt_preview",
+          "prompt_schema_validation_issues",
+          "root_cause_chain",
+          "topic_context"
+        ],
+        "style_review_fields": {
+          "deep_impression": "这份深度报告会在「通用解读中，土多水干正在成为这次画作」的基础上，继续看你在「通用解读」中的核心流动。",
+          "deep_structure_interpretation": "在全面解读这个议题下，这份 Pro 解读会把画面证据、失衡判断和根因链放在一起看。\n\n心理层面先保持开放，不做诊断式定性。\n\n更深的核心需要在完整 stage 证据和用户主题中谨慎确认。",
+          "evidence_digest": "inner:土 -> middle:木 -> outer:土\n\n当前最需要关注的线索是：土多水干。\n\n内圈：内圈像是这张画的核心房间。它约占 35%，说明你最先守住的是核心自我和安全感；你不是没有力量，而是在确认这份力量能不能被自己接住。\n\n中圈：中圈约占 65%，更像关系和现实任务所在的位置。这里已经开始重新连接外部，但仍然带着谨慎，说明你不是拒绝关系，而是在判断怎样靠近才不耗尽自己。\n\n外圈：外圈更像你给世界看的边界。它不是单纯的防御，而是在提醒你：哪些地方可以继续开放，哪些地方需要先保留一点距离。\n\n节奏关系应由 stage-08 的能量流动诊断支撑。\n\n关系模式需要结合「通用解读」主题知识进一步确认。\n\n行动模式需要回到画面证据和用户意图共同判断。",
+          "imbalance_diagnosis": "土多水干\n\n当前最需要关注的线索是：土多水干。\n\n该判断应回到 stage-03 到 stage-07 的证据链确认。\n\n能量层面等待 stage-08 完整诊断。\n\n心理层面先保持开放，不做诊断式定性。",
+          "root_cause_chain": {
+            "surface": "在「通用解读」主题下，先观察它如何进入现实选择。",
+            "mechanism": "心理层面先保持开放，不做诊断式定性。",
+            "core": "更深的核心需要在完整 stage 证据和用户主题中谨慎确认。"
+          },
+          "healing_plan": [
+            {
+              "phase": "当前阶段",
+              "focus": "先稳定",
+              "practice": "每天记录一个最明显的身体或情绪信号。"
+            },
+            {
+              "phase": "接下来",
+              "focus": "再连接",
+              "practice": "把这个信号放回「通用解读」里的一个真实场景。"
+            },
+            {
+              "phase": "继续深化",
+              "focus": "小步行动",
+              "practice": "选择一个今天能完成的低压力动作。"
+            }
+          ],
+          "topic_context": {
+            "topic": "general",
+            "topic_label": "全面解读",
+            "report_mode": "pro",
+            "orientation": {
+              "intro": "这份报告会从全面解读这个议题角度看这张画。",
+              "focus": "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+              "key_terms": []
+            }
+          }
+        }
+      },
+      "validation": {
+        "ok": true,
+        "failures": []
+      },
+      "runtime_diagnostics": {
+        "record_found": true,
+        "status": "completed",
+        "generation_stage": "completed",
+        "generation_progress": 100,
+        "lite_ready": true,
+        "pro_ready": true,
+        "stage_process": {
+          "passed": true,
+          "failure_reason": "",
+          "failure_detail": {},
+          "process_contract": {
+            "generation_mode": "stage_based_runtime",
+            "target_report": "pro",
+            "package_status": "formal",
+            "blocking_reasons": [],
+            "completed_stages": [
+              "stage-00-input-context",
+              "stage-01-user-input-context",
+              "stage-02-circle-boundary-decision",
+              "stage-03-visual-evidence",
+              "stage-04-direct-judgment-high-hit-check",
+              "stage-05-per-circle-color-shape-element-sensing",
+              "stage-06-per-circle-element-generation-control",
+              "stage-07-per-circle-imbalance-patterns",
+              "stage-08-energy-flow-diagnosis",
+              "stage-09-evidence-consolidation",
+              "stage-10-core-thesis-selection",
+              "stage-11-user-facing-framing",
+              "stage-12-healing-direction-and-report-branching"
+            ],
+            "incomplete_stages": [],
+            "knowledge_ref_count": 14
+          },
+          "stage_03_visual_evidence": {
+            "status": "complete",
+            "failure_reason": null,
+            "global_visual_summary": "画面为对称的曼陀罗图案，包含多个圈层，颜色丰富，有黄色、绿色、蓝色、粉色、紫色、橙色等，形状涉及花瓣、星形、方形、圆形、花朵等，各元素按对称规律排列。",
+            "circles": {
+              "inner": {
+                "summary": "最内层以中心的花瓣形图案为主，颜色为黄绿相间，周围有浅蓝色方形结构和粉色区域，还有紫色星形点缀，元素紧凑且对称。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "inner_1",
+                    "position": "中心",
+                    "color": "黄色",
+                    "secondary_colors": [
+                      "绿色"
+                    ],
+                    "shade": "浅",
+                    "saturation": "高",
+                    "shape": "花瓣形",
+                    "shape_arrangement": "放射状对称",
+                    "area_ratio": 0.2,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "少",
+                    "description": "中心的花瓣形图案，由黄色和绿色交替组成，呈放射状对称分布，面积约占内层的20%，完全填充，周围有浅蓝色和粉色元素。"
+                  },
+                  {
+                    "id": "inner_2",
+                    "position": "花瓣形图案外",
+                    "color": "浅蓝色",
+                    "secondary_colors": [],
+                    "shade": "浅",
+                    "saturation": "中",
+                    "shape": "方形",
+                    "shape_arrangement": "对称环绕",
+                    "area_ratio": 0.15,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无",
+                    "description": "中心花瓣形图案外的浅蓝色方形结构，对称环绕中心，面积约占内层的15%，完全填充，周围有粉色和紫色星形元素。"
+                  }
+                ]
+              },
+              "middle": {
+                "summary": "中层包含绿色和黄色的花瓣状图案、粉色区域、紫色星形以及浅蓝色区域，元素丰富，对称分布，颜色对比鲜明。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "middle_1",
+                    "position": "中层偏外",
+                    "color": "绿色",
+                    "secondary_colors": [
+                      "黄色"
+                    ],
+                    "shade": "中",
+                    "saturation": "高",
+                    "shape": "花瓣状",
+                    "shape_arrangement": "对称分布",
+                    "area_ratio": 0.25,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "少",
+                    "description": "中层偏外的绿色花瓣状图案，与黄色花瓣状图案交替对称分布，面积约占中层的25%，完全填充，周围有浅蓝色和粉色区域。"
+                  },
+                  {
+                    "id": "middle_2",
+                    "position": "绿色花瓣状图案旁",
+                    "color": "粉色",
+                    "secondary_colors": [],
+                    "shade": "浅",
+                    "saturation": "高",
+                    "shape": "不规则区域",
+                    "shape_arrangement": "对称分布",
+                    "area_ratio": 0.2,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无",
+                    "description": "中层的粉色不规则区域，对称分布，面积约占中层的20%，完全填充，内部有紫色星形，周围与绿色、浅蓝色元素相邻。"
+                  }
+                ]
+              },
+              "outer": {
+                "summary": "外层包含黄色和绿色的花瓣状图案、橙色星形、蓝色方形和条纹、紫色圆形和花朵、浅蓝色背景以及粉色边框，元素多样且对称，颜色丰富。",
+                "visual_unit_count": 2,
+                "sample_visual_units": [
+                  {
+                    "id": "outer_1",
+                    "position": "外层偏内",
+                    "color": "黄色",
+                    "secondary_colors": [
+                      "绿色",
+                      "橙色"
+                    ],
+                    "shade": "中",
+                    "saturation": "高",
+                    "shape": "花瓣状",
+                    "shape_arrangement": "对称分布",
+                    "area_ratio": 0.3,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "少",
+                    "description": "外层偏内的黄色花瓣状图案，与绿色交替，内部有橙色星形，面积约占外层的30%，完全填充，背景为浅蓝色，与蓝色方形和条纹相邻。"
+                  },
+                  {
+                    "id": "outer_2",
+                    "position": "外层边缘",
+                    "color": "粉色",
+                    "secondary_colors": [],
+                    "shade": "浅",
+                    "saturation": "中",
+                    "shape": "圆形边框",
+                    "shape_arrangement": "环绕整个外层",
+                    "area_ratio": 0.05,
+                    "fill_state": "完全填充",
+                    "whitespace_state": "无",
+                    "description": "外层的粉色圆形边框，环绕整个外层，面积约占外层的5%，完全填充，内部是浅蓝色背景和各种图案，与紫色圆形相邻。"
+                  }
+                ]
+              }
+            },
+            "evidence_refs": [
+              "画面为对称的曼陀罗图案，各圈层元素丰富且对称分布",
+              "颜色包含黄、绿、蓝、粉、紫、橙等，饱和度高",
+              "形状有花瓣形、方形、星形、圆形、花朵形等，按对称规律排列",
+              "各圈层元素相互关联，内层到外层图案风格延续且尺寸变化"
+            ],
+            "uncertainties": [],
+            "model_trace": {
+              "attempt_trace": [
+                {
+                  "model": "qwen-vl-max-latest",
+                  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                  "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                  "result": "timeout",
+                  "status": null,
+                  "reason": null
+                },
+                {
+                  "model": "ep-20260316095322-94wf5",
+                  "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+                  "endpoint_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+                  "result": "success",
+                  "status": null,
+                  "reason": null
+                }
+              ],
+              "last_error_detail": {}
+            }
+          },
+          "stage_04_direct_judgment": {
+            "status": "complete",
+            "failure_reason": null,
+            "hits": [],
+            "program_matches": [
+              {
+                "mode": "大面积黄色",
+                "mode_id": "direct_judgment.large_yellow_mass",
+                "hit_strength": "full_hit",
+                "vision_hit": null,
+                "program_hit": true,
+                "cross_validation": null,
+                "visual_unit_refs": [
+                  "outer_1"
+                ],
+                "visible_evidence": [
+                  "画面存在成片黄色。"
+                ],
+                "knowledge_refs": [
+                  "direct_judgment.large_yellow_mass"
+                ],
+                "reasoning": null
+              },
+              {
+                "mode": "蓝绿搭配",
+                "mode_id": "direct_judgment.blue_green_expression",
+                "hit_strength": "full_hit",
+                "vision_hit": null,
+                "program_hit": true,
+                "cross_validation": null,
+                "visual_unit_refs": [
+                  "inner_2",
+                  "middle_1"
+                ],
+                "visible_evidence": [
+                  "画面同时出现蓝色和绿色。"
+                ],
+                "knowledge_refs": [
+                  "direct_judgment.blue_green_expression"
+                ],
+                "reasoning": null
+              }
+            ],
+            "non_hits": [],
+            "uncertain_items": [],
+            "conflicts": [],
+            "knowledge_refs": [
+              "direct_judgment.large_yellow_mass",
+              "direct_judgment.blue_green_expression"
+            ],
+            "summary": "",
+            "model_trace": {
+              "attempt_trace": [
+                {
+                  "model": "qwen-vl-max-latest",
+                  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                  "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                  "result": "success",
+                  "status": null,
+                  "reason": null
+                }
+              ],
+              "last_error_detail": {}
+            }
+          },
+          "fidelity_flags": [],
+          "fallback_summary": {},
+          "visual_basis_source": null
+        }
+      }
+    }
+  ]
+}

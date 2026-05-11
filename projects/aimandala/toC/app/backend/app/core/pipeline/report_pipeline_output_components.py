@@ -103,6 +103,20 @@ def _build_lite_visual_elements(
     circles: dict[str, int] | None = None,
     **_: Any,
 ) -> str:
+    stage11 = _stage(record, "stage-11-user-facing-framing")
+    visual_basis_candidates = stage11.get("visual_basis_candidates", [])
+    if isinstance(visual_basis_candidates, list):
+        lines = []
+        labels = {"inner": "内圈", "middle": "中圈", "outer": "外圈"}
+        for item in visual_basis_candidates:
+            if not isinstance(item, dict):
+                continue
+            circle = str(item.get("circle") or "").strip()
+            basis = str(item.get("basis") or "").strip()
+            if circle and basis:
+                lines.append(f"{labels.get(circle, circle)}：{basis}")
+        if lines:
+            return "\n".join(lines)
     stage03 = _stage(record, "stage-03-visual-evidence")
     summary = str(stage03.get("global_visual_summary", "") or "").strip()
     return summary or "画面依据将在 stage-03 视觉证据完成后进入这里。"

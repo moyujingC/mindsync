@@ -12,6 +12,18 @@ sys.path.insert(
 from scripts import run_vision_e2e_smoke
 
 
+class FakeSmokeLLMClient:
+    def __init__(self):
+        self.last_attempt_trace = []
+        self.last_error_detail = {}
+
+    def generate_structured(self, **kwargs):
+        return None
+
+    def generate_text(self, **kwargs):
+        return None
+
+
 def test_build_fixture_user_context_avoids_test_meta_copy():
     context = run_vision_e2e_smoke._build_fixture_user_context(
         SimpleNamespace(fixture_id="toc-mvp-fixture-003", theme="general")
@@ -69,6 +81,29 @@ def test_load_smoke_env_uses_explicit_env_file(tmp_path: Path, monkeypatch):
     assert os.environ["DASHSCOPE_API_KEY"] == "from-file"
 
 
+def test_install_smoke_orchestrator_wires_real_llm_client_to_stage_runtime(monkeypatch):
+    from app.api import routes_v2
+
+    run_vision_e2e_smoke._reset_api_state()
+    fake_client = FakeSmokeLLMClient()
+    monkeypatch.setattr(
+        "app.core.llm.create_llm_client_from_env",
+        lambda: fake_client,
+    )
+    monkeypatch.setattr(
+        "scripts.run_vision_e2e_smoke.create_llm_client_from_env",
+        lambda: fake_client,
+        raising=False,
+    )
+
+    run_vision_e2e_smoke._install_smoke_orchestrator()
+
+    orchestrator = routes_v2.get_orchestrator()
+    assert orchestrator.generation_runtime.llm_client is fake_client
+    assert orchestrator.vision_llm_client is fake_client
+    assert orchestrator.stage_vision_runtime.llm_client is fake_client
+
+
 def test_validate_vision_env_rejects_missing_keys(monkeypatch):
     monkeypatch.delenv("AIMANDALA_LLM_VISION_API_KEY", raising=False)
     monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_API_KEY", raising=False)
@@ -82,6 +117,17 @@ def test_validate_vision_env_rejects_missing_keys(monkeypatch):
 
     assert "AIMANDALA_LLM_VISION_API_KEY" in message
     assert "AIMANDALA_LLM_VISION_FALLBACK_API_KEY" in message
+
+
+def test_manual_circle_payload_from_detect_converts_ratios_to_percentages():
+    payload = run_vision_e2e_smoke._manual_circle_payload_from_detect(
+        {
+            "inner_radius": 0.314,
+            "middle_radius": 0.672,
+        }
+    )
+
+    assert payload == {"inner_radius": 31, "middle_radius": 67}
 
 
 def test_main_surfaces_runtime_error_as_structured_failure(monkeypatch, capsys):

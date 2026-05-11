@@ -99,6 +99,61 @@ def test_stage_03_runner_rejects_empty_visual_units(tmp_path):
     assert stage03["failure_reason"] == "empty_visual_units"
 
 
+def test_stage_03_runner_groups_top_level_visual_units_from_real_model_shape(tmp_path):
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"fake-image")
+    client = FakeVisionClient(
+        [
+            {
+                "global_visual_summary": "中心有蓝色圆形，外围有粉色边界。",
+                "visual_units": [
+                    {
+                        "color": "blue",
+                        "shape": "circle",
+                        "position": "center",
+                        "area_ratio": "0.01",
+                        "fill_status": "fully filled",
+                        "adjacent_relationships": ["surrounded by yellow segments"],
+                    },
+                    {
+                        "color": "yellow",
+                        "shape": "petal-like segments",
+                        "position": "middle ring",
+                        "area_ratio": "0.18",
+                        "fill_status": "fully filled",
+                        "adjacent_relationships": ["radiating outward from center"],
+                    },
+                    {
+                        "color": "pink",
+                        "shape": "circle",
+                        "position": "outermost boundary",
+                        "area_proportion": "thin ring",
+                        "filling_status": "fully filled",
+                        "adjacent_relationship": "surrounds entire mandala",
+                    },
+                ],
+                "evidence_summary": ["中心蓝色，外圈粉色边界。"],
+                "uncertainties": [],
+            }
+        ]
+    )
+    runtime = StageVisionRuntime(llm_client=client, direct_judgment_service=None)
+
+    stage03 = runtime.generate_stage03(
+        image_path=str(image_path),
+        theme="general",
+        three_circles={"inner_radius": 35, "middle_radius": 67},
+    )
+
+    assert stage03["status"] == "complete"
+    assert stage03["circles"]["inner"]["visual_units"][0]["color"] == "blue"
+    assert stage03["circles"]["middle"]["visual_units"][0]["shape"] == "petal-like segments"
+    outer_unit = stage03["circles"]["outer"]["visual_units"][0]
+    assert outer_unit["color"] == "pink"
+    assert outer_unit["area_ratio"] == 0.05
+    assert outer_unit["fill_state"] == "fully filled"
+
+
 def test_stage_04_runner_cross_validates_program_and_vision_hits(tmp_path):
     image_path = tmp_path / "mandala.png"
     image_path.write_bytes(b"fake-image")

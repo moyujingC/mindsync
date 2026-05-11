@@ -83,7 +83,12 @@ def test_report_contract_assembler_builds_lite_payload(tmp_path):
     }
     assert payload["structured"]["current_reading"] == payload["overall_impression"]
     assert payload["structured"]["visual_basis"]
-    assert "内圈红色集中" in payload["structured"]["visual_basis"]
+    assert "内圈：" in payload["structured"]["visual_basis"]
+    assert "中圈：" in payload["structured"]["visual_basis"]
+    assert "外圈：" in payload["structured"]["visual_basis"]
+    assert "内圈中心有红色圆形填色" in payload["structured"]["visual_basis"]
+    assert "中圈绿色条状向外放射" in payload["structured"]["visual_basis"]
+    assert "外圈存在成片红色" in payload["structured"]["visual_basis"]
     assert payload["structured"]["pattern_interpretation"]
     assert payload["structured"]["life_connection"]
     assert payload["structured"]["lite_healing_guidance"]["directions"]
