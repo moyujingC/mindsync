@@ -95,4 +95,36 @@ if [[ "$OUTPUT" != *"$WORKTREE_ROOT/MIN-1"* ]]; then
   exit 1
 fi
 
+set +e
+FREEZE_OUTPUT="$(
+  cd "$TMP_DIR"
+  PAPERCLIP_REAL_COMMAND=/bin/sh \
+  PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE=passive \
+  PAPERCLIP_SERVER_AUTOMATION_AUTO_FINALIZE=0 \
+  PAPERCLIP_SERVER_AUTOMATION_FREEZE=1 \
+  PAPERCLIP_TASK_ID=test-issue \
+  PAPERCLIP_COMPANY_ID=test-company \
+  PAPERCLIP_API_KEY=test-token \
+  PAPERCLIP_API_URL=http://127.0.0.1:18080 \
+  PAPERCLIP_EXECUTION_WORKTREE_ROOT="$WORKTREE_ROOT" \
+  PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT="$WORKTREE_ROOT" \
+  PAPERCLIP_WORKSPACE_CWD="$WORKTREE_ROOT/MIN-1" \
+  PAPERCLIP_WORKSPACE_WORKTREE_PATH="$WORKTREE_ROOT/MIN-1" \
+  bash "$REPO_ROOT/shared/tools/ci/server-automation-command-proxy.sh" -lc 'printf should-not-run' <<<"stdin-smoke" 2>&1
+)"
+freeze_exit=$?
+set -e
+
+if [[ "$freeze_exit" -ne 78 ]]; then
+  echo "server automation freeze smoke failed: expected exit 78, got $freeze_exit" >&2
+  echo "$FREEZE_OUTPUT" >&2
+  exit 1
+fi
+
+if [[ "$FREEZE_OUTPUT" != *"Server automation writable execution is frozen"* ]]; then
+  echo "server automation freeze smoke failed: missing freeze message" >&2
+  echo "$FREEZE_OUTPUT" >&2
+  exit 1
+fi
+
 printf 'server-automation-command-proxy smoke ok\n'

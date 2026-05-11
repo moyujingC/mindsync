@@ -13,6 +13,7 @@ DESCRIPTION_OVERRIDE="${PAPERCLIP_ISSUE_DESCRIPTION:-}"
 REAL_COMMAND="${PAPERCLIP_REAL_COMMAND:-}"
 AUTO_FINALIZE="${PAPERCLIP_SERVER_AUTOMATION_AUTO_FINALIZE:-0}"
 PROXY_MODE="${PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE:-passive}"
+FREEZE_SERVER_AUTOMATION="${PAPERCLIP_SERVER_AUTOMATION_FREEZE:-0}"
 COMPANY_ID="${PAPERCLIP_COMPANY_ID:-}"
 API_BASE="${PAPERCLIP_API_BASE:-${PAPERCLIP_API_URL:-http://127.0.0.1:3100}}"
 API_KEY="${PAPERCLIP_API_KEY:-}"
@@ -34,6 +35,7 @@ Environment:
   PAPERCLIP_EXECUTION_ROUTE               Optional execution_route override
   PAPERCLIP_ISSUE_DESCRIPTION             Optional issue metadata block
   PAPERCLIP_SERVER_AUTOMATION_AUTO_FINALIZE=1
+  PAPERCLIP_SERVER_AUTOMATION_FREEZE=1        Refuse server-side writable execution
   PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE  passive (default) or enforce
   PAPERCLIP_ISSUE_ID
   PAPERCLIP_TASK_ID
@@ -170,6 +172,13 @@ run_guard() {
 
 if [[ "$PROXY_MODE" == "passive" ]]; then
   resolve_issue_metadata
+fi
+
+if [[ "$FREEZE_SERVER_AUTOMATION" == "1" || "$FREEZE_SERVER_AUTOMATION" == "true" ]]; then
+  if [[ "$EXECUTION_ROUTE" == "server_automation" || "$TASK_CLASS" == "automation-execution" ]]; then
+    echo "Server automation writable execution is frozen by PAPERCLIP_SERVER_AUTOMATION_FREEZE=${FREEZE_SERVER_AUTOMATION}" >&2
+    exit 78
+  fi
 fi
 
 pick_execution_cwd

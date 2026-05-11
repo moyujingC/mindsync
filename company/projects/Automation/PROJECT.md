@@ -1,9 +1,9 @@
 # Automation Platform 入口
 
 > 状态：current
-> 版本：0.1.1
+> 版本：0.1.2
 > owner：CEO / Orchestrator, Engineer
-> 最后更新：2026-05-11
+> 最后更新：2026-05-12
 > source_of_truth：company/projects/Automation/PROJECT.md
 
 这份文档是 `mindsync` 中 `Automation Platform` 的公司级 capability 入口。
@@ -50,6 +50,15 @@
 
 当前 `Automation Platform` 内部固定区分两条链：
 
+MVP 阶段临时冻结规则：
+
+- 服务器只保留 `Paperclip` control plane（控制面）和必要的只读巡检能力
+- 服务器端自动修改仓库、自动修复、自动 finalizer commit（收尾提交）全部暂停
+- 产品代码、文档和普通研发修改默认回到本地 Mac 执行
+- 若必须在服务器执行 deploy / smoke，只能人工触发，并且必须先确认不会写入 observe-only checkout
+- 当前运行态已停用 `paperclip-heartbeat.timer` 与 `automation-maintenance.timer`
+- 后续恢复任何服务器写入链路前，必须先完成独立验证与人工确认
+
 ### 3.1 `server_automation`
 
 面向：
@@ -66,6 +75,12 @@
 - 其他明确依赖服务器本地环境、runner、systemd、docker 或服务器凭据的任务
 
 当前主要由 automation 节点承接。
+
+MVP 阶段补充：
+
+- `server_automation` 现在只保留语义分类，不代表允许自动写仓库
+- 自动执行包装器应设置 `PAPERCLIP_SERVER_AUTOMATION_FREEZE=1`
+- 任何命中 `automation-execution + server_automation` 的真实写执行都应 fail-fast（快速失败）
 
 ### 3.2 `local_manual_review`
 

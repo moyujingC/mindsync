@@ -81,6 +81,16 @@
 
 ### 2.1 工作区边界原则
 
+从 `2026-05-12` 起，MVP 阶段先冻结服务器端自动写仓库能力：
+
+1. `Paperclip` control plane 继续运行
+2. `paperclip-heartbeat.timer` 暂停
+3. `automation-maintenance.timer` 暂停
+4. `server_automation` 自动写代码、auto-repair、自动 finalizer commit 全部暂停
+5. 服务器只保留只读巡检、人工部署前检查和人工触发的 deploy / smoke
+6. 产品代码、文档和普通研发修改默认回到本地 Mac 执行
+7. 恢复服务器自动写入前，必须先完成独立验证并显式撤销 `PAPERCLIP_SERVER_AUTOMATION_FREEZE=1`
+
 当前 automation 节点必须遵守下面三条边界：
 
 1. heartbeat / maintenance / runner-doctor 不再使用主镜像区作为 `WorkingDirectory`
@@ -113,7 +123,8 @@
 
 1. `automation-execution`
    - CI 失败修复、deploy、smoke、runner、maintenance、infra 巡检
-   - 允许服务器端执行和自动提交
+   - 历史默认允许服务器端执行和自动提交
+   - MVP 阶段当前冻结，不再自动写仓库或自动提交
 2. `manual-review-required`
    - 产品功能开发、UI / 文案、一般业务逻辑、普通研发任务
    - 默认回到本地执行，不允许服务器 Adapter 自动闭环
@@ -252,6 +263,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 统一服务器侧执行包装器
    - 固定顺序：guard -> 执行命令 -> finalizer
    - 适用于 deploy / smoke / runner / maintenance / 受控修复这类服务器自动化任务
+   - MVP 阶段若 `PAPERCLIP_SERVER_AUTOMATION_FREEZE=1`，命中 `automation-execution + server_automation` 时应直接拒绝执行
 7. heartbeat / 巡检编排
    - 先跑 runner heartbeat
    - 再跑 execution health check strict gate
@@ -278,6 +290,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
      - 始终先执行最小 guard，拒绝 observe-only checkout
      - 只有显式满足 `automation-execution + server_automation` 时才要求 worktree 根并触发 finalizer
    - 这样做是为了避免把所有运行都误判成服务器自动化任务，但仍保证共享 checkout 永远不会被执行链写入
+   - MVP 阶段支持 `PAPERCLIP_SERVER_AUTOMATION_FREEZE=1`，用于冻结服务器端真实写执行
 11. `shared/tools/sync-paperclip-server-automation-command-override.sh`
    - 管理 runtime `adapterConfig.command` override 的状态、dry-run、sync、rollback
    - 当前默认目标固定为 `Engineer,Test / QA`

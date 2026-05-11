@@ -119,6 +119,7 @@ if mode == "rollback":
     env.pop("PAPERCLIP_EXECUTION_WORKTREE_ROOT", None)
     env.pop("PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT", None)
     env.pop("PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE", None)
+    env.pop("PAPERCLIP_SERVER_AUTOMATION_FREEZE", None)
     adapter_config["env"] = env
 else:
     adapter_config["command"] = proxy_command
@@ -126,6 +127,7 @@ else:
     env["PAPERCLIP_EXECUTION_WORKTREE_ROOT"] = {"type": "plain", "value": "/opt/automation/worktrees"}
     env["PAPERCLIP_SERVER_WRITABLE_ALLOWED_ROOT"] = {"type": "plain", "value": "/opt/automation/worktrees"}
     env["PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE"] = {"type": "plain", "value": "passive"}
+    env["PAPERCLIP_SERVER_AUTOMATION_FREEZE"] = {"type": "plain", "value": os.environ.get("PAPERCLIP_SERVER_AUTOMATION_FREEZE", "1")}
     adapter_config["env"] = env
 
 print(json.dumps({
@@ -154,7 +156,7 @@ env = dict(cfg.get("env") or {})
 def value(key):
     entry = env.get(key) or {}
     return entry.get("value", "<unset>") if isinstance(entry, dict) else str(entry)
-print(f"{name}: command={cfg.get('command', '<default>')} real={value('PAPERCLIP_REAL_COMMAND')} proxy_mode={value('PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE')}")
+print(f"{name}: command={cfg.get('command', '<default>')} real={value('PAPERCLIP_REAL_COMMAND')} proxy_mode={value('PAPERCLIP_SERVER_AUTOMATION_PROXY_MODE')} freeze={value('PAPERCLIP_SERVER_AUTOMATION_FREEZE')}")
 PY
   done
 }
