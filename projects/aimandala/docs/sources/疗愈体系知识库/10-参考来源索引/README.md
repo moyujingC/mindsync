@@ -1,0 +1,32 @@
+# 参考来源索引
+
+> 状态：draft
+> 版本：0.1.0
+> date：2026-05-14
+> owner：CEO / Knowledge Base
+> source_of_truth：当前目录/10-参考来源索引/README.md
+
+本目录保存疗愈体系知识库的来源索引、引用地图和入库记录。
+
+这里不作为原始资料库使用。原始来源、研究摘录、事实核查和通用知识整理，优先维护在 `projects/research-center/kb`。
+
+## 使用规则
+
+- 记录来源正文位于哪里。
+- 记录该来源被哪些议题、流派、疗愈方案或应用适配文件使用。
+- 记录审核状态、适用范围和风险边界。
+- 不重复保存大段来源正文。
+
+## 推荐字段
+
+```yaml
+source_id:
+source_title:
+source_location:
+source_type:
+review_status:
+used_by:
+scope:
+safety_notes:
+last_checked:
+```
