@@ -93,6 +93,7 @@ kb/
 
 - `sources/`、`atoms/`、`wiki/` 是知识生产链路，不是原始聊天记录堆放区。
 - 公司级稳定知识仍以 [company/knowledge-base](../../../company/knowledge-base/README.md) 为入口。
+- atom 提取和防漏检查见 [Atom 提取标准与防漏检查清单](./atom提取标准与防漏检查清单.md)。
 - 图谱化链接约定见 [图谱化链接约定](./图谱化链接约定.md)。
 - 知识寿命与治理分层见 [知识半衰期分层约定](./知识半衰期分层约定.md)。
 
