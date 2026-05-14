@@ -23,7 +23,7 @@ outputs:
   - research wiki draft
   - source boundary note
   - cross-source comparison note
-  - review handoff note
+  - review questions note
 handoff_to:
   - Research & Knowledge Lead
   - Human Reviewer
@@ -53,7 +53,7 @@ handoff_to:
   -> 附录/语录/案例主题索引
   -> 防漏检查与后续批次 atoms
   -> 跨来源对照记录
-  -> review handoff
+  -> review 前问题收束
 ```
 
 本 skill 不负责完成真正的人工 review，也不负责把内容正式推进到产品化知识库。
@@ -160,10 +160,10 @@ source directory 内建议固定使用：
 91-来源评估与使用边界.md
 92-附录/语录/案例/练习主题索引.md
 93-跨来源对照记录.md
-99-review-handoff.md
+99-review-handoff.md（可选）
 ```
 
-`90+` 表示研究处理产物，避免因不同书籍章节数量不同而让摘要、边界和 handoff 的编号跳来跳去。
+`90+` 表示研究处理产物，避免因不同书籍章节数量不同而让摘要、边界和对照文件的编号跳来跳去。`99-review-handoff.md` 只在材料复杂或用户明确要求时使用。
 
 ### 5. 写章节摘要与主题标注
 
@@ -337,36 +337,56 @@ wiki 不等于产品知识条款。若来源单一，必须显式写明。
 
 跨来源对照记录不等于人工 review，也不能写成 `approve_for_ingest`。
 
-### 12. 准备 review handoff
+### 12. 收束 review 前问题
 
-在当前 source directory 中新增 review handoff，例如：
+默认不要为每本书单独新增 review handoff 文件。优先在 `93-跨来源对照记录.md` 末尾增加简短小节：
 
 ```text
-99-review-handoff.md
+## 进入人工 review 前的问题
 ```
 
 至少包含：
 
-- 原始材料路径。
-- 已完成产物列表。
 - 当前 atoms 数量。
 - wiki 草稿路径。
-- 跨来源对照记录路径。
 - 主要结论。
-- 高风险观点。
 - 需要人工判断的问题。
+- 当前是否只适合进入产品候选层。
 - 是否建议进入人工 review。
 - 明确状态：等待人工 review。
 
-### 13. 停止在 review 前
+只有当材料复杂、涉及多份来源交接，或用户明确要求时，才新增 `99-review-handoff.md`。
+
+### 13. 判断产品化层级并停止在 review 前
 
 到这里必须停止。
+
+默认判断：
+
+```text
+单本来源
+  -> source / atoms / wiki 草稿
+  -> 暂不产品化
+
+2-3 本同一作者或同一取向材料
+  -> 作者/流派取向专题候选
+  -> 可进入产品候选层
+  -> 不代表完整疗愈体系
+
+3-5 个不同来源或不同流派形成稳定支持
+  -> 议题层正式候选
+  -> 等待人工 review 和产品场景验证
+
+经过人工 review 与产品验证
+  -> 才进入正式疗愈体系知识库
+```
 
 不能自动：
 
 - 声称 review 已通过。
 - 写 `approve_for_ingest`。
 - 推进到产品化疗愈体系知识库。
+- 把单一作者或单一取向材料写成完整疗愈体系共识。
 - 调用 `knowledge-ingest` 生成长期正式条目。
 
 ## 输出格式
@@ -380,7 +400,7 @@ wiki 不等于产品知识条款。若来源单一，必须显式写明。
 - wiki 草稿路径。
 - 来源评估路径。
 - 跨来源对照记录路径。
-- review handoff 路径。
+- review 前问题位置，通常在 `93-跨来源对照记录.md`。
 - 当前状态：等待人工 review。
 
 ## 质量检查项
@@ -396,12 +416,13 @@ wiki 不等于产品知识条款。若来源单一，必须显式写明。
 - 是否有来源使用边界。
 - 是否有跨来源对照记录；即使来源不足，也要有“待对照”记录。
 - 是否检查并更新了受影响旧材料的跨来源对照记录。
-- 是否准备了 review handoff。
+- 是否在 `93-跨来源对照记录.md` 中收束了 review 前问题。
+- 是否判断了当前只能进入 source/wiki、产品候选层，还是议题层正式候选。
 - 是否没有越过人工 review。
 
 ## Handoff 规则
 
 - 如果需要事实核查，交给 `fact-check-gate`。
 - 如果需要更完整的跨来源综合，交给 `research-synthesis`，但本 skill 内仍必须保留一份最小跨来源对照记录。
-- 如果人工 review 给出修改意见，更新 source / atoms / wiki 后再生成新的 handoff。
+- 如果人工 review 给出修改意见，更新 source / atoms / wiki / 跨来源对照记录。
 - 只有人工 review 明确通过后，才可考虑 `knowledge-ingest` 或产品化知识库入口。
