@@ -23,6 +23,7 @@
 - `media-transcribe`
 - `research-brief`
 - `research-synthesis`
+- `source-to-review`
 - `handoff-packaging`
 - `insight-extraction`
 - `expression-extraction`
