@@ -4,7 +4,7 @@
 > 版本：0.1.0
 > owner：Research & Knowledge Lead
 > last_updated：2026-05-14
-> source_of_truth：projects/research-center/kb/sources/healing/对生命说是/20-review-handoff.md
+> source_of_truth：projects/research-center/kb/sources/healing/对生命说是/99-review-handoff.md
 
 本文用于把《对生命说是》的研究母库处理结果交给人工 review。当前没有通过 review，也没有进入产品化疗愈体系知识库。
 
@@ -18,10 +18,10 @@
 ## 已完成产物
 
 - Markdown 转写与拆分：`02` 至 `15` 章节文件。
-- 章节摘要与主题标注：projects/research-center/kb/sources/healing/对生命说是/16-章节摘要与主题标注.md
-- 来源评估与使用边界：projects/research-center/kb/sources/healing/对生命说是/17-来源评估与使用边界.md
-- 练习方法主题索引：projects/research-center/kb/sources/healing/对生命说是/18-练习方法主题索引.md
-- 跨来源对照记录：projects/research-center/kb/sources/healing/对生命说是/19-跨来源对照记录.md
+- 章节摘要与主题标注：projects/research-center/kb/sources/healing/对生命说是/90-章节摘要与主题标注.md
+- 来源评估与使用边界：projects/research-center/kb/sources/healing/对生命说是/91-来源评估与使用边界.md
+- 练习方法主题索引：projects/research-center/kb/sources/healing/对生命说是/92-练习方法主题索引.md
+- 跨来源对照记录：projects/research-center/kb/sources/healing/对生命说是/93-跨来源对照记录.md
 - atoms：projects/research-center/kb/atoms/healing/对生命说是-*.md
 - wiki 草稿：projects/research-center/kb/wiki/healing/生命接纳-对生命说是.md
 
