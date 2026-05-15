@@ -1,6 +1,7 @@
 id: domain.wealth.issue_clauses.v0_1
 version: 0.1.0
 status: draft
+evidence_status: model_scaffold
 date: 2026-05-15
 owner: CEO / Knowledge Base
 type: issue_clause_set
@@ -12,6 +13,7 @@ applies_to:
 source_of_truth: projects/aimandala/docs/sources/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
 source_refs:
   - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md
+provenance_note: 当前条款由现有财富议题框架和模型辅助结构化生成，用作产品化草稿；尚未完成新增电子书来源的逐条证据回填，不应视为跨来源验证结论。
 
 domain_definition:
   title: 财富议题
@@ -35,6 +37,17 @@ domain_definition:
 clauses:
   - id: wealth.low_deservingness
     title: 配得感不足
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#51-配得感不足
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+        - 创伤与复原
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
     summary: 用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。
     typical_signals:
       - 觉得自己不值得拥有更多。
@@ -58,6 +71,17 @@ clauses:
 
   - id: wealth.scarcity_and_insecurity
     title: 匮乏感和安全感不足
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#52-匮乏感和安全感不足
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+        - 创伤与复原
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
     summary: 用户可能把钱当成安全感来源，即使有进账也难以真正安心。
     typical_signals:
       - 对钱紧张、焦虑、患得患失。
@@ -80,6 +104,17 @@ clauses:
 
   - id: wealth.approval_driven_earning
     title: 求认可式赚钱
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#53-求认可式赚钱
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+        - 创伤与复原
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
     summary: 用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。
     typical_signals:
       - 努力是为了被看见、被证明、被认可。
@@ -102,6 +137,17 @@ clauses:
 
   - id: wealth.emotional_spending
     title: 情绪型漏财
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#54-情绪型漏财
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+        - 创伤与复原
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
     summary: 用户可能通过消费安抚情绪，或让情绪压力影响财富决策。
     typical_signals:
       - 为情绪买单。
@@ -125,6 +171,17 @@ clauses:
 
   - id: wealth.low_capacity
     title: 承载力不足
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#55-承载力不足
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+        - 创伤与复原
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
     summary: 用户可能能创造收入或机会，但接住、保存和稳定承载的能力不足。
     typical_signals:
       - 能赚钱但存不住。
@@ -148,6 +205,17 @@ clauses:
 
   - id: wealth.low_action
     title: 行动力不足
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#56-行动力不足
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+        - 创伤与复原
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
     summary: 用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。
     typical_signals:
       - 想法很多，但落地少。
@@ -171,6 +239,17 @@ clauses:
 
   - id: wealth.low_world_connection
     title: 与世界链接不足
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#57-与世界链接不足
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+        - 创伤与复原
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
     summary: 用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。
     typical_signals:
       - 不信任世界。
