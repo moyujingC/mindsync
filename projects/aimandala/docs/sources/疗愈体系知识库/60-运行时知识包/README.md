@@ -23,3 +23,4 @@
 - [10-aimandala-解读报告生成最小包.md](10-aimandala-解读报告生成最小包.md)：当前第一版报告生成入口，先覆盖主题确认、三圈解读、综合判断和调整建议。
 - [../50-结构化知识单元/10-aimandala-report-generation.yaml](../50-结构化知识单元/10-aimandala-report-generation.yaml)：对应的第一版结构化知识单元，供程序或运行时编译使用。
 - [20-aimandala-report-runtime-index.yaml](20-aimandala-report-runtime-index.yaml)：最小 runtime 检索顺序与组合规则。
+- [../50-结构化知识单元/40-wealth-report-routing.yaml](../50-结构化知识单元/40-wealth-report-routing.yaml)：财富主题报告 routing 单元，供 `user_theme: 财富` 时二级检索使用。

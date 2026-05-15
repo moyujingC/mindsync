@@ -1,0 +1,339 @@
+id: aimandala.wealth_report_routing.v0_1
+version: 0.1.0
+status: draft
+date: 2026-05-15
+owner: CEO / Knowledge Base
+type: theme_report_routing
+product: aimandala
+domain: wealth
+applies_to:
+  - report_generation
+  - runtime_pack
+  - theme_retrieval
+source_of_truth: projects/aimandala/docs/sources/疗愈体系知识库/50-结构化知识单元/40-wealth-report-routing.yaml
+
+source_refs:
+  - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/90-财富议题案例反推.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/12-高频组合模式.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
+  - projects/aimandala/docs/sources/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml
+
+purpose:
+  - 当 `user_theme` 为 `财富` 时，提供主题级检索和组装规则。
+  - 把画面信号、财富知识地图、财富条款和报告结构接起来。
+  - 限制财富报告只生成解读和轻量建议，不输出财务、职业或投资决策。
+
+status_policy:
+  source_supported_draft: 可以用于报告草稿表达，但必须保留缓冲语气和画面依据。
+  model_scaffold: 只能作为候选解释或追问线索，不能写成确定结论。
+  source_needed: 只能提示为后续探索方向，不应作为核心判断输出。
+  cross_source_validated: 当前财富主题暂不使用，后续需由证据长表升级后再开放。
+
+knowledge_modules:
+  - module_id: wealth.money_projection
+    title: 金钱本质与投射
+    handbook_ref: 11-财富议题手册.md#31-金钱本质与投射
+    status: source_supported_draft
+    report_use: 解释钱承载的安全、自由、尊严、被支持等心理含义。
+    output_strength: normal
+
+  - module_id: wealth.money_beliefs
+    title: 金钱信念与无意识脚本
+    handbook_ref: 11-财富议题手册.md#32-金钱信念与无意识脚本
+    status: source_supported_draft
+    report_use: 识别辛苦赚钱、有钱危险、更多才安全、钱留不住等脚本。
+    output_strength: normal
+
+  - module_id: wealth.deservingness_self_worth
+    title: 配得感与自我价值
+    handbook_ref: 11-财富议题手册.md#33-配得感与自我价值
+    status: source_supported_draft
+    report_use: 解释是否允许自己拥有、收取、被支付、被看见。
+    output_strength: normal
+
+  - module_id: wealth.safety_scarcity_control
+    title: 安全感、匮乏与控制
+    handbook_ref: 11-财富议题手册.md#34-安全感匮乏与控制
+    status: source_supported_draft
+    report_use: 解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。
+    output_strength: normal
+
+  - module_id: wealth.parents_family_money_scripts
+    title: 父母关系与家庭金钱脚本
+    handbook_ref: 11-财富议题手册.md#35-父母关系与家庭金钱脚本
+    status: source_supported_draft
+    report_use: 连接早期家庭中关于钱、成功、承担、收受和风险的学习。
+    output_strength: cautious
+
+  - module_id: wealth.family_loyalty_success_resistance
+    title: 家族忠诚与不允许成功
+    handbook_ref: 11-财富议题手册.md#36-家族忠诚与不允许成功
+    status: model_scaffold
+    report_use: 作为成功、归属、超过父母或离开原家庭相关的追问线索。
+    output_strength: weak
+
+  - module_id: wealth.money_shame_receiving
+    title: 金钱羞耻与不敢收钱
+    handbook_ref: 11-财富议题手册.md#37-金钱羞耻与不敢收钱
+    status: source_needed
+    report_use: 作为收费、开价、谈薪、收礼和接受支持相关的探索方向。
+    output_strength: weak
+
+  - module_id: wealth.emotion_spending_protective_habits
+    title: 情绪、消费与保护性习惯
+    handbook_ref: 11-财富议题手册.md#38-情绪消费与保护性习惯
+    status: model_scaffold
+    report_use: 把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。
+    output_strength: cautious
+
+  - module_id: wealth.body_fear_action
+    title: 身体连接、恐惧与行动力
+    handbook_ref: 11-财富议题手册.md#39-身体连接恐惧与行动力
+    status: source_supported_draft
+    report_use: 解释想行动但身体收缩、机会来了却退回去等状态。
+    output_strength: normal
+
+  - module_id: wealth.career_value_exchange
+    title: 事业、能力与价值交换
+    handbook_ref: 11-财富议题手册.md#310-事业能力与价值交换
+    status: source_needed
+    report_use: 连接能力表达、价值交换、服务边界和现实市场。
+    output_strength: weak
+
+  - module_id: wealth.world_connection_market
+    title: 世界链接、客户、市场与合作
+    handbook_ref: 11-财富议题手册.md#311-世界链接客户市场与合作
+    status: source_needed
+    report_use: 观察用户是否允许自己被世界看见、回应和选择。
+    output_strength: weak
+
+  - module_id: wealth.passion_needs_abundance
+    title: 热情、真实需要与内在富足
+    handbook_ref: 11-财富议题手册.md#312-热情真实需要与内在富足
+    status: source_supported_draft
+    report_use: 作为财富报告的生命力出口和生机表达来源。
+    output_strength: normal
+
+  - module_id: wealth.safety_boundary
+    title: 风险边界与不做范围
+    handbook_ref: 11-财富议题手册.md#313-风险边界与不做范围
+    status: source_supported_draft
+    report_use: 限制报告不进入财务建议、心理诊断、投资判断或确定性承诺。
+    output_strength: required
+
+core_issue_clauses:
+  - clause_id: wealth.low_deservingness
+    default_modules:
+      - wealth.deservingness_self_worth
+      - wealth.money_shame_receiving
+
+  - clause_id: wealth.scarcity_and_insecurity
+    default_modules:
+      - wealth.safety_scarcity_control
+      - wealth.money_projection
+
+  - clause_id: wealth.approval_driven_earning
+    default_modules:
+      - wealth.deservingness_self_worth
+      - wealth.career_value_exchange
+
+  - clause_id: wealth.emotional_spending
+    default_modules:
+      - wealth.emotion_spending_protective_habits
+      - wealth.safety_scarcity_control
+
+  - clause_id: wealth.low_capacity
+    default_modules:
+      - wealth.safety_scarcity_control
+      - wealth.body_fear_action
+
+  - clause_id: wealth.low_action
+    default_modules:
+      - wealth.body_fear_action
+      - wealth.passion_needs_abundance
+
+  - clause_id: wealth.low_world_connection
+    default_modules:
+      - wealth.world_connection_market
+      - wealth.career_value_exchange
+      - wealth.passion_needs_abundance
+
+visual_signal_routes:
+  - signal_id: visual.outer_red_or_fire_excess
+    label: 外圈红色或火能量明显
+    source_refs:
+      - 90-财富议题案例反推.md#外圈红色多
+      - 12-高频组合模式.md#2-火一块一块被金截断
+    candidate_clauses:
+      - wealth.emotional_spending
+      - wealth.low_action
+    candidate_modules:
+      - wealth.emotion_spending_protective_habits
+      - wealth.body_fear_action
+    use_as: candidate_mapping
+    report_boundary: 只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。
+
+  - signal_id: visual.weak_fire_many
+    label: 弱火多
+    source_refs:
+      - 12-高频组合模式.md#5-弱火多
+    candidate_clauses:
+      - wealth.approval_driven_earning
+      - wealth.emotional_spending
+    candidate_modules:
+      - wealth.deservingness_self_worth
+      - wealth.emotion_spending_protective_habits
+    use_as: candidate_mapping
+    report_boundary: 适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。
+
+  - signal_id: visual.metal_excess
+    label: 金多
+    source_refs:
+      - 12-高频组合模式.md#6-金多
+    candidate_clauses:
+      - wealth.low_deservingness
+      - wealth.approval_driven_earning
+    candidate_modules:
+      - wealth.deservingness_self_worth
+      - wealth.career_value_exchange
+    use_as: candidate_mapping
+    report_boundary: 适合表达标准、评判和证明压力，不能否定用户努力和现实目标。
+
+  - signal_id: visual.weak_or_fragmented_earth
+    label: 土弱或土零散不成片
+    source_refs:
+      - 90-财富议题案例反推.md#财富承载力不足
+      - 12-高频组合模式.md#7-土零散不成片
+    candidate_clauses:
+      - wealth.low_capacity
+      - wealth.scarcity_and_insecurity
+    candidate_modules:
+      - wealth.safety_scarcity_control
+      - wealth.body_fear_action
+    use_as: candidate_mapping
+    report_boundary: 只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。
+
+  - signal_id: visual.water_fire_conflict
+    label: 水火相冲
+    source_refs:
+      - 12-高频组合模式.md#8-水火相冲
+    candidate_clauses:
+      - wealth.low_action
+      - wealth.emotional_spending
+      - wealth.scarcity_and_insecurity
+    candidate_modules:
+      - wealth.body_fear_action
+      - wealth.emotion_spending_protective_habits
+      - wealth.safety_scarcity_control
+    use_as: candidate_mapping
+    report_boundary: 适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。
+
+  - signal_id: visual.rootless_wood
+    label: 木无根
+    source_refs:
+      - 12-高频组合模式.md#3-木无根
+    candidate_clauses:
+      - wealth.low_action
+      - wealth.low_capacity
+    candidate_modules:
+      - wealth.body_fear_action
+      - wealth.passion_needs_abundance
+    use_as: candidate_mapping
+    report_boundary: 适合表达成长动力有但滋养不足，不能写成用户没有能力。
+
+  - signal_id: visual.fragmented_white_or_metal_cut
+    label: 白色割裂或金截断
+    source_refs:
+      - 12-高频组合模式.md#1-白色把其他颜色割裂开
+    candidate_clauses:
+      - wealth.approval_driven_earning
+      - wealth.low_action
+    candidate_modules:
+      - wealth.deservingness_self_worth
+      - wealth.body_fear_action
+    use_as: candidate_mapping
+    report_boundary: 适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。
+
+  - signal_id: visual.outer_world_closed_or_blank
+    label: 外圈留白多或对外表达弱
+    source_refs:
+      - 12-高频组合模式.md#10-紫色单一且留白多
+    candidate_clauses:
+      - wealth.low_world_connection
+      - wealth.low_action
+    candidate_modules:
+      - wealth.world_connection_market
+      - wealth.career_value_exchange
+    use_as: candidate_mapping
+    report_boundary: 适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。
+
+module_selection:
+  lite:
+    max_primary_modules: 2
+    max_issue_clauses: 2
+    required:
+      - 至少 3 条画面依据。
+      - 至少 1 个财富知识模块。
+      - 至少 1 条低压小步建议。
+    avoid:
+      - 展开复杂根因链。
+      - 同时塞入过多 `source_needed` 模块。
+
+  pro:
+    max_primary_modules: 5
+    max_issue_clauses: 4
+    required:
+      - 说明核心主轴。
+      - 逐圈解释财富相关信号。
+      - 连接至少 2 个财富知识模块。
+      - 给出阶段性调节方向。
+    avoid:
+      - 把来源不足模块写成确定机制。
+      - 把报告写成完整主题方案或 21 天计划。
+
+ranking_rules:
+  - 用户明确问题优先于画面候选信号。
+  - 三圈位置影响解释权重：里圈偏内在感受，中圈偏关系与能量流动，外圈偏行动、物质和对外呈现。
+  - 多个画面信号共同指向同一条款时，该条款优先级提升。
+  - 单一画面信号只能生成候选解释，不生成强结论。
+  - source_supported_draft 模块优先于 model_scaffold 和 source_needed 模块。
+  - source_needed 模块只在用户问题或画面信号高度相关时进入报告，并使用追问式表达。
+
+report_language_rules:
+  required_phrases:
+    - 从画面看起来
+    - 可能
+    - 更像是
+    - 值得观察
+  avoid_phrases:
+    - 你一定
+    - 这说明你就是
+    - 你的财富一定会
+    - 你必须
+  evidence_order:
+    - 先写画面观察。
+    - 再写财富模块解释。
+    - 再写用户可观察的现实表现。
+    - 最后给低风险建议或下一步入口。
+
+safety:
+  global_avoid:
+    - 不判断用户收入、资产、债务、投资前景或职业成败。
+    - 不给买卖、辞职、创业、借贷、融资等决策建议。
+    - 不把父母、家庭、身体或画面符号写成确定因果。
+    - 不把同一作者体系内部观点写成完整疗愈体系共识。
+    - 不对创伤、成瘾、债务危机、家庭暴力或自伤风险做 AI 单独处理。
+  fallback:
+    high_risk: 触发外部专业支持引导，不生成深度财富报告。
+    insufficient_visual_evidence: 只输出已确认观察和可能方向，不补写细节。
+    theme_unclear: 先确认主题，再进入财富 routing。
+
+quality_checks:
+  - 是否明确 `user_theme` 为财富。
+  - 是否至少引用一个可见画面信号。
+  - 是否说明选中的财富模块或条款。
+  - 是否把 `model_scaffold` 和 `source_needed` 降级表达。
+  - 是否保留 Lite / Pro 边界。
+  - 是否避免财务建议、心理诊断和确定性承诺。

@@ -15,3 +15,4 @@
 - [10-aimandala-report-generation.yaml](10-aimandala-report-generation.yaml)：`aimandala` 报告生成的第一版结构化单元，覆盖报告任务、Lite / Pro 分流、输入输出、安全边界和来源引用。
 - [20-wealth-issue-clauses.yaml](20-wealth-issue-clauses.yaml)：财富议题第一批结构化条款，覆盖 7 个常见卡点、报告表达、疗愈方向和安全边界。
 - [30-wealth-evidence-links.yaml](30-wealth-evidence-links.yaml)：财富议题证据关系长表，用于把来源材料逐条回填到结构化条款。
+- [40-wealth-report-routing.yaml](40-wealth-report-routing.yaml)：财富主题报告 routing 单元，用于把画面信号、财富知识地图、财富条款和 Lite / Pro 报告结构接起来。

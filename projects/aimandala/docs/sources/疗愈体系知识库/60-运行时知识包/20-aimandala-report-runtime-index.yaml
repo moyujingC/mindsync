@@ -1,5 +1,5 @@
-index_id: aimandala.report_runtime.index.v0_1
-version: 0.1.0
+index_id: aimandala.report_runtime.index.v0_2
+version: 0.2.0
 status: draft
 date: 2026-05-15
 owner: CEO / Knowledge Base
@@ -27,6 +27,10 @@ load_order:
   - stage: structured_unit
     ref: ../50-结构化知识单元/10-aimandala-report-generation.yaml
     reason: 提供机器可读的报告任务单元。
+  - stage: theme_structured_unit
+    ref: ../50-结构化知识单元/40-wealth-report-routing.yaml
+    when: user_theme == 财富
+    reason: 财富主题需要按画面信号、财富模块和条款进行二级检索。
 
 runtime_fields:
   required_input:
@@ -42,6 +46,8 @@ runtime_fields:
     - report_title
     - report_sections
     - visual_basis
+    - selected_theme_modules
+    - selected_issue_clauses
     - evidence_refs
     - suggestion_boundaries
 
@@ -49,6 +55,7 @@ retrieval_policy:
   prefilter:
     - 先按 `report_version` 分流 Lite / Pro。
     - 再按 `user_theme` 过滤稳定主题入口。
+    - 当 `user_theme` 为 `财富` 时，加载 `40-wealth-report-routing.yaml`。
     - 再按 `user_segment` 调整语气和收口方式。
   fallback:
     - 输入不足时优先返回已确认事实和最可能解释方向。
@@ -61,6 +68,7 @@ composition_rules:
       - 04-Lite-Pro报告分流与交付口径
       - 03-解读报告生成最小规则
       - 10-aimandala-report-generation.yaml
+      - 40-wealth-report-routing.yaml，当主题为财富时
     output_focus:
       - 画面依据
       - 当前状态
@@ -72,6 +80,7 @@ composition_rules:
       - 04-Lite-Pro报告分流与交付口径
       - 03-解读报告生成最小规则
       - 10-aimandala-report-generation.yaml
+      - 40-wealth-report-routing.yaml，当主题为财富时
     output_focus:
       - 核心主轴
       - 逐圈整合
@@ -83,9 +92,10 @@ composition_rules:
 quality_controls:
   - 检查是否引用了正确的应用适配文件。
   - 检查 Lite / Pro 是否按各自结构生成。
+  - 检查财富主题是否选择了对应主题模块和条款。
   - 检查是否越界写成主题方案或 21 天计划。
   - 检查是否保留安全边界与外部支持引导。
 
 notes:
   - 这是最小 runtime index，不是全量知识包。
-  - 未来可在此基础上扩展主题级子 index。
+  - 财富主题已先接入主题级 routing 单元，后续其他主题可按同样方式扩展。
