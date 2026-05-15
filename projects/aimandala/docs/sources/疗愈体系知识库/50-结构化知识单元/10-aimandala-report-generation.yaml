@@ -1,0 +1,213 @@
+id: aimandala.report_generation.v0_1
+version: 0.1.0
+status: draft
+date: 2026-05-15
+owner: CEO / Knowledge Base
+type: report_block
+applies_to:
+  - report_generation
+  - runtime_pack
+  - product_handoff
+product: aimandala
+source_of_truth: projects/aimandala/docs/sources/疗愈体系知识库/50-结构化知识单元/10-aimandala-report-generation.yaml
+source_refs:
+  - projects/aimandala/docs/decisions/2026-04-06-用户分群与产品矩阵决策.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/30-应用适配/10-aimandala/03-解读报告生成最小规则.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/30-应用适配/10-aimandala/05-报告任务定义.md
+  - projects/aimandala/docs/sources/疗愈体系知识库/60-运行时知识包/10-aimandala-解读报告生成最小包.md
+
+task_definition:
+  product_type: report
+  core_task: 帮用户看懂这张曼陀罗在表达什么，并把画面状态连接到现实议题。
+  report_is:
+    - 解读产品
+    - 理解入口
+    - 状态命名工具
+    - 主题连接工具
+  report_is_not:
+    - 连续训练
+    - 长周期改变方案
+    - 主题方案完整设计
+    - 21天定制方案完整设计
+    - 医疗、心理或财务承诺
+
+user_segments:
+  primary:
+    - id: self_understanding
+      label: 自我理解型
+      report_focus:
+        - 命名状态
+        - 理解模式
+        - 看懂自己
+    - id: issue_solving
+      label: 议题解决型
+      report_focus:
+        - 连接现实议题
+        - 解释卡点
+        - 给出下一步方向
+    - id: growth_deepening
+      label: 成长深化型
+      report_focus:
+        - 解释机制
+        - 梳理成因
+        - 提供长期路径入口
+  supported_light:
+    - id: emotional_containment
+      label: 情绪安放型
+      report_focus:
+        - 承接情绪
+        - 降低强判断
+        - 给低压建议
+  excluded_primary:
+    - id: high_complexity_support
+      label: 高复杂度支持型
+      handling: 不由 AI 报告主承接，触发安全边界与外部支持引导。
+
+input_schema:
+  required:
+    - user_theme
+    - user_goal
+    - report_version
+    - visual_observations.overall
+    - visual_observations.inner_circle
+    - visual_observations.middle_circle
+    - visual_observations.outer_circle
+    - visual_observations.colors
+    - visual_observations.shapes
+    - visual_observations.uncertainty
+  optional:
+    - user_segment
+    - product_intent
+    - current_context.user_description
+    - current_context.confidence_notes
+  enums:
+    user_theme:
+      - 财富
+      - 个人成长与自我价值
+      - 其他
+    user_segment:
+      - 审美探索型
+      - 情绪安放型
+      - 自我理解型
+      - 议题解决型
+      - 成长深化型
+      - 高复杂度支持型
+      - 未知
+    product_intent:
+      - 轻解读
+      - 报告
+      - 主题方案入口
+      - 21天定制方案入口
+      - 未知
+    report_version:
+      - lite
+      - pro
+      - unknown
+
+output_flow:
+  common_sequence:
+    - 整体直觉
+    - 主题确认
+    - 三圈逐层解读
+    - 综合模式
+    - 主题卡点
+    - 生机
+    - 调整方案
+  lite_sections:
+    - 开头命中
+    - 画面依据区
+    - 当前状态解读
+    - 主题连接
+    - 小步建议
+    - 温和收束
+  pro_sections:
+    - 开头命中
+    - 画面依据区
+    - 核心主轴
+    - 逐圈整合
+    - 生克与失衡机制
+    - 能量流动诊断
+    - 根因链
+    - 阶段性调节路径
+    - 收束与提醒
+
+branching_rules:
+  report_version_known:
+    lite: 按 Lite 结构生成，保留 3 到 6 条画面依据和 1 到 3 条低压建议。
+    pro: 按 Pro 结构生成，展开核心主轴、逐圈机制、能量流动和阶段性调节路径。
+  report_version_unknown:
+    default_lite_when:
+      - 输入不足
+      - 用户只想快速理解
+      - 用户更偏情绪安放
+    default_pro_when:
+      - 证据链完整
+      - 用户需要机制解释
+      - 用户属于议题解决型或成长深化型
+    do_not_generate_deep_report_when:
+      - 用户属于高复杂度支持型
+      - 存在明显高风险状态
+
+generation_rules:
+  evidence_first:
+    - 先写观察，再写判断，最后写建议。
+    - 每个判断尽量对应可见画面信号。
+    - 单一颜色或单一形状不能承担过重结论。
+  language:
+    - 使用可能、倾向于、从画面看起来、更像是等缓冲表达。
+    - 语气稳定、温和、具体。
+    - 不把看起来像写成就是。
+  theme_handling:
+    stable_themes:
+      - 财富
+      - 个人成长与自我价值
+    fallback: 主题不在稳定入口内时，使用通用报告结构，不硬套财富话术。
+
+handoff:
+  report_to_theme_plan:
+    trigger:
+      - 用户已经确认想处理某个议题
+      - 报告中出现清晰卡点
+    wording_boundary: 只提示可进入主题方案，不在报告内展开完整训练。
+  report_to_21_day_plan:
+    trigger:
+      - 用户希望持续改变
+      - 用户需要个体化陪伴路径
+    wording_boundary: 只提示可进入 21 天定制方案，不在报告内生成完整计划。
+  report_to_external_support:
+    trigger:
+      - 高复杂度支持型
+      - 高风险危机
+      - 明显超出自助成长范畴
+    wording_boundary: 提示寻求外部专业支持，不做深度 AI 承接。
+
+safety:
+  avoid:
+    - 医学诊断
+    - 心理诊断
+    - 财务保证
+    - 绝对化预言
+    - 把一次解读写成终身定论
+    - 把未经确认的推断写成事实
+    - 把报告写成主题方案或 21 天计划
+
+quality_checks:
+  common:
+    - 主题是否明确
+    - 每一圈是否都有对应观察
+    - 综合判断是否回到主题
+    - 调整建议是否可执行
+    - 是否存在诊断式或承诺式语言
+    - 是否符合 Lite / Pro 的版本边界
+  lite:
+    - 是否快速命中
+    - 是否保留 3 到 6 条画面依据
+    - 是否有主题连接
+    - 是否只有低压小步建议
+  pro:
+    - 是否解释核心主轴
+    - 是否完成逐圈整合
+    - 是否说明生克、失衡和能量流动
+    - 是否有根因链和阶段性调节路径
+    - 是否仍然保持报告边界

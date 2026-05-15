@@ -21,3 +21,4 @@
 ## 当前可用包
 
 - [10-aimandala-解读报告生成最小包.md](10-aimandala-解读报告生成最小包.md)：当前第一版报告生成入口，先覆盖主题确认、三圈解读、综合判断和调整建议。
+- [../50-结构化知识单元/10-aimandala-report-generation.yaml](../50-结构化知识单元/10-aimandala-report-generation.yaml)：对应的第一版结构化知识单元，供程序或运行时编译使用。
