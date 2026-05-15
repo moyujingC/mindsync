@@ -1,0 +1,31 @@
+id: domain.wealth.evidence_links.v0_1
+version: 0.1.0
+status: draft
+date: 2026-05-15
+owner: CEO / Knowledge Base
+type: evidence_link_set
+domain: wealth
+source_of_truth: projects/aimandala/docs/sources/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml
+related_units:
+  - projects/aimandala/docs/sources/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
+source_index:
+  - projects/aimandala/docs/sources/疗愈体系知识库/10-参考来源索引/20-财富议题证据回填索引.md
+
+schema:
+  evidence_id: 全局唯一证据 ID。
+  clause_id: 被支持或被反驳的结构化条款 ID。
+  source_id: 来源 ID。
+  source_path: 来源路径。
+  source_location: 章节、页码、段落或文件位置。
+  evidence_type: supports_concept | supports_expression | supports_practice | contradicts | not_applicable
+  support_level: direct | partial | weak | conflict
+  summary: 对证据关系的简短说明。
+  supported_part:
+    - mechanism
+    - report_language
+    - healing_direction
+    - safety_boundary
+  status: draft | reviewed | accepted | rejected
+  notes: 补充说明。
+
+evidence_links: []
