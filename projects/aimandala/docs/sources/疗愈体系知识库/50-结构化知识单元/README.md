@@ -16,4 +16,5 @@
 - [20-wealth-issue-clauses.yaml](20-wealth-issue-clauses.yaml)：财富议题第一批结构化条款，覆盖 7 个常见卡点、报告表达、疗愈方向和安全边界。
 - [30-wealth-evidence-links.yaml](30-wealth-evidence-links.yaml)：财富议题证据关系长表，用于把来源材料逐条回填到结构化条款。
 - [40-wealth-report-routing.yaml](40-wealth-report-routing.yaml)：财富主题报告 routing 单元，用于把画面信号、财富知识地图、财富条款和 Lite / Pro 报告结构接起来。
+- [45-wealth-emergent-topic-translation.yaml](45-wealth-emergent-topic-translation.yaml)：财富作为主议题时的浮现议题回译规则，用于把自我价值、家庭、关系、情绪、身体和事业线索翻译回财富主线。
 - [../30-应用适配/10-aimandala/06-财富议题解读报告模板.md](../30-应用适配/10-aimandala/06-财富议题解读报告模板.md)：财富主题报告的段落模板，用于把主线、浮现议题回译和调整建议排进固定顺序。

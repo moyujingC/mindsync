@@ -118,6 +118,10 @@ class KnowledgePackBuilder:
                 "50-结构化知识单元/40-wealth-report-routing.yaml",
                 max_chars=16000,
             ),
+            "wealth_emergent_topic_translation": self._read_text(
+                "50-结构化知识单元/45-wealth-emergent-topic-translation.yaml",
+                max_chars=12000,
+            ),
         }
 
     def _read_text(self, relative_path: str, *, max_chars: int) -> dict[str, Any]:

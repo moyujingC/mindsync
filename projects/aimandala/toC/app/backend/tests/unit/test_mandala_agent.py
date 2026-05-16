@@ -112,6 +112,9 @@ def _agent_input(tmp_path: Path, *, theme: str = "wealth") -> MandalaAgentInput:
 def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     llm_client = StubMandalaLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    theme_entries = knowledge_pack["entries"]["theme"]
+    assert theme_entries["wealth_emergent_topic_translation"]["status"] == "loaded"
+    assert "emergent_topic: relationship" in theme_entries["wealth_emergent_topic_translation"]["text"]
     result = MandalaInterpretationAgent(llm_client=llm_client).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=knowledge_pack,

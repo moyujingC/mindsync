@@ -35,6 +35,10 @@ load_order:
     ref: ../50-结构化知识单元/40-wealth-report-routing.yaml
     when: user_theme == 财富
     reason: 财富主题需要按画面信号、财富模块和条款进行二级检索。
+  - stage: cross_topic_translation
+    ref: ../50-结构化知识单元/45-wealth-emergent-topic-translation.yaml
+    when: user_theme == 财富
+    reason: 财富报告需要把自我价值、家庭、关系、情绪、身体和事业等浮现议题回译到财富主线。
 
 runtime_fields:
   required_input:
@@ -60,6 +64,7 @@ retrieval_policy:
     - 先按 `report_version` 分流 Lite / Pro。
     - 再按 `user_theme` 过滤稳定主题入口。
     - 当 `user_theme` 为 `财富` 时，加载 `40-wealth-report-routing.yaml`。
+    - 当 `user_theme` 为 `财富` 且出现浮现议题时，加载 `45-wealth-emergent-topic-translation.yaml`。
     - 再按 `user_segment` 调整语气和收口方式。
   fallback:
     - 输入不足时优先返回已确认事实和最可能解释方向。
@@ -74,6 +79,7 @@ composition_rules:
       - 06-财富议题解读报告模板，当主题为财富时
       - 10-aimandala-report-generation.yaml
       - 40-wealth-report-routing.yaml，当主题为财富时
+      - 45-wealth-emergent-topic-translation.yaml，当主题为财富且出现浮现议题时
     output_focus:
       - 画面依据
       - 当前状态
@@ -87,6 +93,7 @@ composition_rules:
       - 06-财富议题解读报告模板，当主题为财富时
       - 10-aimandala-report-generation.yaml
       - 40-wealth-report-routing.yaml，当主题为财富时
+      - 45-wealth-emergent-topic-translation.yaml，当主题为财富且出现浮现议题时
     output_focus:
       - 核心主轴
       - 逐圈整合
@@ -99,6 +106,7 @@ quality_controls:
   - 检查是否引用了正确的应用适配文件。
   - 检查 Lite / Pro 是否按各自结构生成。
   - 检查财富主题是否选择了对应主题模块和条款。
+  - 检查浮现议题是否回译到财富主线，而不是展开成其他主题报告。
   - 检查是否越界写成主题方案或 21 天计划。
   - 检查是否保留安全边界与外部支持引导。
 
