@@ -9,7 +9,7 @@ import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Protocol, Sequence
+from typing import Any, Callable, Dict, Optional, Protocol, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -151,6 +151,7 @@ class OpenAICompatibleLLMClient:
                 messages=messages,
                 expect_json=False,
                 disable_thinking=True,
+                validate_text=self._is_json_object_response,
             )
             if not raw:
                 return None
@@ -165,6 +166,7 @@ class OpenAICompatibleLLMClient:
             messages=messages,
             expect_json=True,
             disable_thinking=False,
+            validate_text=self._is_json_object_response,
         )
         if raw is None and task.strip().lower() == "vision":
             raw = self._request_chat_completion(
@@ -173,6 +175,7 @@ class OpenAICompatibleLLMClient:
                 messages=messages,
                 expect_json=False,
                 disable_thinking=False,
+                validate_text=self._is_json_object_response,
             )
         if not raw:
             return None
@@ -254,6 +257,7 @@ class OpenAICompatibleLLMClient:
         messages: Sequence[Dict[str, Any]],
         expect_json: bool,
         disable_thinking: bool,
+        validate_text: Optional[Callable[[str], bool]] = None,
     ) -> Optional[str]:
         configs_to_try = [task_config]
         if (
@@ -274,6 +278,7 @@ class OpenAICompatibleLLMClient:
                 messages=messages,
                 expect_json=expect_json,
                 disable_thinking=disable_thinking,
+                validate_text=validate_text,
                 attempt_trace=attempt_trace,
             )
             self.last_attempt_trace.append(attempt_trace)
@@ -288,6 +293,7 @@ class OpenAICompatibleLLMClient:
         messages: Sequence[Dict[str, Any]],
         expect_json: bool,
         disable_thinking: bool,
+        validate_text: Optional[Callable[[str], bool]],
         attempt_trace: dict[str, Any],
     ) -> Optional[str]:
         payload: Dict[str, Any] = {
@@ -367,6 +373,23 @@ class OpenAICompatibleLLMClient:
 
             parsed_text = self._extract_text_from_response(raw_payload)
             if parsed_text is not None:
+                if validate_text is not None and not validate_text(parsed_text):
+                    preview = parsed_text.strip().replace("\n", " ")[:240]
+                    self.last_error_detail = {
+                        "kind": "invalid_json_response",
+                        "response_length": len(parsed_text),
+                        "response_preview": preview,
+                        "task_model": task_config.model,
+                        "base_url": task_config.base_url,
+                    }
+                    attempt_trace["result"] = "invalid_json_response"
+                    attempt_trace["invalid_json_attempts"] = (
+                        int(attempt_trace.get("invalid_json_attempts") or 0) + 1
+                    )
+                    if attempt_index < total_attempts - 1:
+                        self._sleep_for_retry(attempt_index)
+                        continue
+                    return None
                 self.last_error_detail = {}
                 attempt_trace["result"] = "success"
                 return parsed_text
@@ -450,6 +473,9 @@ class OpenAICompatibleLLMClient:
             "response_length": len(text),
             "response_preview": preview,
         }
+
+    def _is_json_object_response(self, text: str) -> bool:
+        return self._parse_json_response(text) is not None
 
     def _extract_json_object(self, text: str) -> Optional[str]:
         start = text.find("{")
