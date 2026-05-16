@@ -13,7 +13,7 @@ async function example() {
   const payload = toStartCreatePayload(
     {
       imagePath: "/tmp/example-mandala.png",
-      theme: "general",
+      theme: "wealth",
       paintingIntention: "我想看看自己最近的状态",
       paintingFeeling: "画的时候有点紧又有点平静",
       innerRadius: 0.35,

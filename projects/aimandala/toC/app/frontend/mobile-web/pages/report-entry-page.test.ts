@@ -3,14 +3,14 @@ import { describe, expect, it } from "vitest";
 import { createReportEntryPageDescriptor } from "./report-entry-page";
 
 describe("report-entry page descriptor", () => {
-  it("在 general 主题下仍显示 Lite / Pro 两种可选版本", () => {
+  it("在 wealth 主题下仍显示 Lite / Pro 两种可选版本", () => {
     const descriptor = createReportEntryPageDescriptor({
-      theme: "general",
+      theme: "wealth",
     });
     const lite = descriptor.cards.find((card) => card.id === "lite");
     const pro = descriptor.cards.find((card) => card.id === "pro");
 
-    expect(descriptor.themeLabel).toBe("全面解读");
+    expect(descriptor.themeLabel).toBe("财富议题");
     expect(lite?.availability).toBe("available");
     expect(lite?.priceLabel).toBe("9.9 元");
     expect(pro?.availability).toBe("available");

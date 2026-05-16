@@ -7,7 +7,7 @@ describe("mobile-web state", () => {
     const payload = toStartCreatePayload(
       {
         imagePath: "/tmp/sample.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
         innerRadius: 0.33,
@@ -24,7 +24,7 @@ describe("mobile-web state", () => {
     const payload = toStartCreatePayload(
       {
         imagePath: "/tmp/sample.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
         innerRadius: 33,
@@ -41,7 +41,7 @@ describe("mobile-web state", () => {
     const payload = toStartCreatePayload(
       {
         imagePath: "/tmp/sample.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
         uploadAsset: {

@@ -97,7 +97,7 @@ const flowState: MandalaFlowState = {
 const historyRecord: InterpretationRecordResponse = {
   interpretation_id: "ipt-history-1",
   user_id: "demo-user",
-  theme: "general",
+  theme: "wealth",
   status: "processing",
   generation_stage: "generating_lite",
   generation_progress: 52,
@@ -138,7 +138,7 @@ describe("MobileWebApp", () => {
         flowState={flowState}
         uploadDraft={{
           imagePath: "/tmp/sample.png",
-          theme: "intimate_relationship",
+          theme: "wealth",
           paintingIntention: "",
           paintingFeeling: "",
         }}
@@ -195,7 +195,7 @@ describe("MobileWebApp", () => {
         }}
         uploadDraft={{
           imagePath: "/tmp/sample.png",
-          theme: "general",
+          theme: "wealth",
           reportType: "pro",
           reportVariant: "pro",
           paintingIntention: "",
@@ -215,7 +215,7 @@ describe("MobileWebApp", () => {
       <MobileWebApp
         route="history"
         records={[historyRecord]}
-        historyQuery={{ filter: "pending", limit: 20, theme: "general" }}
+        historyQuery={{ filter: "pending", limit: 20, theme: "wealth" }}
         historyStatusLabel="Pro 解读仍在生成中"
         historyStatusDetail="你已经离开等待页，系统会继续在后台生成。"
         historyStatusTone="runtime"

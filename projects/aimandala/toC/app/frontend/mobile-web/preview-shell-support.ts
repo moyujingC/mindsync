@@ -16,7 +16,7 @@ import {
 
 export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
-  theme: "general",
+  theme: "wealth",
   reportType: "lite",
   reportVariant: "lite",
   paintingIntention: "",

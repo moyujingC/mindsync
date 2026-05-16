@@ -174,14 +174,7 @@ function LucideIcon({
 }
 
 const themes: ThemeItem[] = [
-  { value: "general", label: "全面", subLabel: "解读", icon: ICON_STAR },
-  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_USER },
-  { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_USER },
-  { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_USERS },
-  { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_BABY },
-  { value: "wealth_career", label: "财富", subLabel: "事业", icon: ICON_COINS },
-  { value: "health_wellness", label: "身体", subLabel: "健康", icon: ICON_HEART_PULSE },
-  { value: "personal_growth", label: "个人", subLabel: "成长", icon: ICON_SPROUT },
+  { value: "wealth", label: "财富", subLabel: "议题", icon: ICON_COINS },
 ];
 
 function UploadSlider({
@@ -381,7 +374,8 @@ function ThemeSelector({
   value?: string;
   onChange?: (nextValue: string) => void;
 }) {
-  const [selected, setSelected] = useState(value ?? themes[0].value);
+  const normalizedValue = value === "wealth" ? value : themes[0].value;
+  const [selected, setSelected] = useState(normalizedValue);
   const [activeDotIndex, setActiveDotIndex] = useState(0);
   const [pageCount, setPageCount] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -394,10 +388,10 @@ function ThemeSelector({
   const suppressNextClickRef = useRef(false);
 
   useEffect(() => {
-    if (value && value !== selected) {
-      setSelected(value);
+    if (normalizedValue !== selected) {
+      setSelected(normalizedValue);
     }
-  }, [value, selected]);
+  }, [normalizedValue, selected]);
 
   const updatePagination = () => {
     const container = scrollRef.current;
@@ -468,7 +462,7 @@ function ThemeSelector({
   return (
     <div className="am-theme-selector">
       <p className="am-theme-selector__title">
-        选择解读主题 <span className="am-theme-selector__required">*</span>
+        当前解读主题 <span className="am-theme-selector__required">*</span>
       </p>
 
       <div

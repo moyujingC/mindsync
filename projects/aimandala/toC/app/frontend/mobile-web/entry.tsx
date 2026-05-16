@@ -14,7 +14,7 @@ export async function renderUploadEntry(imagePath: string) {
   const descriptor = createUploadPageDescriptor(
     {
       imagePath,
-      theme: "general",
+      theme: "wealth",
       paintingIntention: "",
       paintingFeeling: "",
     },
@@ -39,7 +39,7 @@ export async function renderLiteResultEntry(params: {
     toStartCreatePayload(
       {
         imagePath: params.imagePath,
-        theme: params.theme || "general",
+        theme: params.theme || "wealth",
         paintingIntention: params.paintingIntention || "",
         paintingFeeling: params.paintingFeeling || "",
         innerRadius: 0.35,
@@ -99,7 +99,7 @@ export async function renderRouteEntry() {
     params: {
       draft: {
         imagePath: "/tmp/example-mandala.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
       },

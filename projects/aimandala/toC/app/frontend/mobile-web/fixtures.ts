@@ -77,12 +77,12 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
       "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
     structured: {
       topic_context: {
-        topic: "general",
-        topic_label: "全面解读",
+        topic: "wealth",
+        topic_label: "财富议题",
         report_mode: "lite",
         orientation: {
-          intro: "这份报告会从全面解读这个议题角度看这张画。",
-          focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+          intro: "这份报告会从财富议题角度看这张画。",
+          focus: "这个议题会从金钱、安全感、行动节奏和现实承载来理解这张画。",
           key_terms: [],
         },
       },
@@ -143,7 +143,7 @@ function createMockRecords(): InterpretationRecordResponse[] {
     {
       interpretation_id: "demo-001",
       user_id: "demo-user-id",
-      theme: "general",
+      theme: "wealth",
       status: "completed",
       generation_stage: "report_ready",
       generation_progress: 100,
@@ -159,7 +159,7 @@ function createMockRecords(): InterpretationRecordResponse[] {
     {
       interpretation_id: "demo-002",
       user_id: "demo-user-id",
-      theme: "wealth_career",
+      theme: "wealth",
       status: "processing",
       generation_stage: "generating_lite",
       generation_progress: 64,

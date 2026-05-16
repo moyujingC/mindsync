@@ -110,7 +110,7 @@ export interface MobileWebRuntimeProps {
 
 const defaultUploadDraft: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
-  theme: "general",
+  theme: "wealth",
   reportType: "lite",
   reportVariant: "lite",
   paintingIntention: "",

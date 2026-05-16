@@ -1,4 +1,5 @@
 export const themeDisplayNames: Record<string, string> = {
+  wealth: "财富议题",
   general: "全面解读",
   father_relationship: "父亲关系",
   mother_relationship: "母亲关系",

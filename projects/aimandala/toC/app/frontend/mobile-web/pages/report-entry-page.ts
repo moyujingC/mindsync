@@ -30,7 +30,7 @@ export interface ReportEntryPageDescriptor {
 export function createReportEntryPageDescriptor(
   draft: Pick<MobileWebUploadDraft, "theme">,
 ): ReportEntryPageDescriptor {
-  const themeLabel = getThemeDisplayName(draft.theme) ?? "全面解读";
+  const themeLabel = getThemeDisplayName(draft.theme) ?? "财富议题";
 
   return {
     statusLabel: "作品识别完成",
