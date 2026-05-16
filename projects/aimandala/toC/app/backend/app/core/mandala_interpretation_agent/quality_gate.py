@@ -16,8 +16,14 @@ FORBIDDEN_FINAL_REPORT_TERMS = [
     "需要进一步确认",
     "应由 stage",
     "回到画面证据",
+]
+
+FORBIDDEN_FINANCIAL_PROMISE_TERMS = [
     "财务预测",
     "收益预测",
+]
+
+BOUNDARY_TERMS = [
     "投资建议",
     "心理诊断",
 ]
@@ -48,6 +54,12 @@ def run_quality_gate(
         for term in FORBIDDEN_FINAL_REPORT_TERMS
         if term.lower() in final_report_md.lower()
     ]
+    leaked_terms.extend(
+        term
+        for term in FORBIDDEN_FINANCIAL_PROMISE_TERMS
+        if term.lower() in final_report_md.lower()
+    )
+    leaked_terms.extend(_unsafe_boundary_terms(final_report_md))
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
 
@@ -104,7 +116,40 @@ def _missing_visual_units(stage03: Any) -> list[str]:
     missing = []
     for circle_key in ["inner", "middle", "outer"]:
         circle = circles.get(circle_key)
-        units = circle.get("visual_units") if isinstance(circle, dict) else None
-        if not isinstance(units, list) or not units:
+        if not _circle_has_visual_evidence(circle):
             missing.append(circle_key)
     return missing
+
+
+def _circle_has_visual_evidence(circle: Any) -> bool:
+    if not isinstance(circle, dict):
+        return False
+    units = circle.get("visual_units")
+    if isinstance(units, list) and units:
+        return True
+    summary = circle.get("summary")
+    if isinstance(summary, str) and summary.strip():
+        return True
+    raw_observation = circle.get("raw_observation")
+    if isinstance(raw_observation, dict):
+        return any(str(value).strip() for value in raw_observation.values())
+    return False
+
+
+def _unsafe_boundary_terms(final_report_md: str) -> list[str]:
+    unsafe_terms = []
+    for term in BOUNDARY_TERMS:
+        index = final_report_md.find(term)
+        while index != -1:
+            start = max(0, index - 20)
+            end = min(len(final_report_md), index + len(term) + 20)
+            window = final_report_md[start:end]
+            if not _is_boundary_disclaimer(window):
+                unsafe_terms.append(term)
+                break
+            index = final_report_md.find(term, index + len(term))
+    return unsafe_terms
+
+
+def _is_boundary_disclaimer(text: str) -> bool:
+    return any(marker in text for marker in ["不构成", "不提供", "不得输出", "不要做", "避免"])

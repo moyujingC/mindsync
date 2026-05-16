@@ -91,20 +91,23 @@ cases/
 
 ## 6. 当前执行状态
 
-状态：in_progress
+状态：first_pass_generated
 
 已完成：
 
 1. 选定第一批 5 张 fixture 图片。
 2. 为每张图建立 case 记录。
 3. dry-run 已通过，5 个 case 的 Lite / Pro 共 10 次计划运行都能解析到图片和输出目录。
+4. 已使用真实模型生成 5 个 case 的 Lite / Pro 报告，共 10 份。
+5. 10 份报告最终均通过质量门。
+6. 已修正真实模型回归中暴露的质量门和视觉证据归一化问题。
 
 下一步：
 
-1. 配置真实模型环境变量和兑换码。
-2. 跑 Lite / Pro 报告。
-3. 填写 review。
-4. 汇总评分和失败原因。
+1. 人工复核 5 个 case 的报告内容。
+2. 重点复核 `wealth-case-002` Lite 的报告厚度和用户价值。
+3. 根据人工复核结果回写财富手册、routing、浮现议题回译或模板。
+4. 再扩展到 10 到 20 个真实用户样例。
 
 ## 7. 执行命令
 
@@ -135,7 +138,7 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 
 ## 8. 当前前置条件
 
-当前 shell 未配置财富报告所需的真实模型环境变量，因此直接运行会返回结构化失败。
+当前已完成一次真实模型连接和第一轮回归。
 
 已验证的失败形态：
 
@@ -153,7 +156,7 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 }
 ```
 
-这说明 batch runner 本身可用，接下来只差真实模型配置或可用的视觉 fallback。
+历史失败说明 batch runner 本身可用；当前已完成真实模型配置验证。
 
 ### 8.1 需要补齐的环境变量
 
@@ -177,6 +180,6 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 ### 8.2 当前结论
 
 - 批量回归框架已就位。
-- 5 个 case 的路径和输出目录已就位。
-- 缺少真实模型配置时，失败是可读的、可记录的。
-- 下一步需要补真实模型环境，才能产出 Lite / Pro 回归样例。
+- 5 个 case 的 Lite / Pro 报告已产出。
+- 质量门通过率为 100%。
+- 下一步需要人工内容复核，而不是继续处理模型连接问题。

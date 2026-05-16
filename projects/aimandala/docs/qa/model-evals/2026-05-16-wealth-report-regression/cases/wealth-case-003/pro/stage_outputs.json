@@ -1,0 +1,732 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "pro",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5063.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看自己的价值表达和现实交换哪里卡住。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作以中心的粉紫色星形为核心，向外辐射出绿色、蓝色和黄色的植物与叶片图案，整体呈现出一种生机勃勃、自然和谐的视觉效果。外圈由灰色石块状元素环绕，形成边界感。",
+    "circles": {
+      "inner": {
+        "summary": "粉色、紫色",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "粉色、紫色",
+            "shape": "",
+            "visible_evidence": "粉色、紫色"
+          }
+        ],
+        "raw_observation": {
+          "center_shape": "星形",
+          "colors": [
+            "粉色",
+            "紫色"
+          ],
+          "details": "中心是一个粉紫色的星形，周围有柔和的放射状线条，颜色明亮且集中。"
+        }
+      },
+      "middle": {
+        "summary": "绿色、蓝色、黄色；中圈主要由绿色叶片、蓝色尖叶和黄色藤蔓交织而成，形成复杂的植物图案，部分区域有螺旋状设计，表现出流动性和生长感。；叶片、藤蔓、螺旋",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "绿色、蓝色、黄色",
+            "shape": "['叶片', '藤蔓', '螺旋']",
+            "visible_evidence": "绿色、蓝色、黄色；中圈主要由绿色叶片、蓝色尖叶和黄色藤蔓交织而成，形成复杂的植物图案，部分区域有螺旋状设计，表现出流动性和生长感。；叶片、藤蔓、螺旋"
+          }
+        ],
+        "raw_observation": {
+          "dominant_colors": [
+            "绿色",
+            "蓝色",
+            "黄色"
+          ],
+          "shapes": [
+            "叶片",
+            "藤蔓",
+            "螺旋"
+          ],
+          "patterns": "中圈主要由绿色叶片、蓝色尖叶和黄色藤蔓交织而成，形成复杂的植物图案，部分区域有螺旋状设计，表现出流动性和生长感。"
+        }
+      },
+      "outer": {
+        "summary": "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。",
+            "shape": "",
+            "visible_evidence": "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。"
+          }
+        ],
+        "raw_observation": {
+          "boundary_elements": "灰色石块状图案",
+          "color_distribution": "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。",
+          "structure": "外圈结构清晰，石块排列紧密，与内圈的植物图案形成对比，增强画面的整体性。"
+        }
+      }
+    },
+    "evidence_refs": [
+      "中心星形使用了粉色和紫色，可能象征内在的灵性或情感核心。",
+      "中圈大量使用绿色和蓝色，绿色代表木属性，蓝色代表水属性，暗示成长、流动和信息交换。",
+      "外圈的灰色石块状图案可能象征现实世界的边界或防御机制。",
+      "整体图案呈现出自然生长的主题，叶片和藤蔓的交织表明生命力旺盛。",
+      "颜色分布均匀，无明显断裂或留白，说明能量流动较为顺畅。"
+    ],
+    "uncertainties": [
+      "无法确定具体颜色深浅是否代表情绪强度，需结合用户描述进一步判断。",
+      "外圈石块的排列方式可能被解读为防御或封闭，但也可视为稳固和保护，存在解释上的不确定性。",
+      "中心星形的紫色可能关联灵性，但缺乏更多上下文支持其具体含义。"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "粉色、紫色",
+        "dominant_colors": [
+          "粉色、紫色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "绿色、蓝色、黄色；中圈主要由绿色叶片、蓝色尖叶和黄色藤蔓交织而成，形成复杂的植物图案，部分区域有螺旋状设计，表现出流动性和生长感。；叶片、藤蔓、螺旋",
+        "dominant_colors": [
+          "绿色、蓝色、黄色"
+        ],
+        "dominant_shapes": [
+          "['叶片', '藤蔓', '螺旋']"
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。",
+        "dominant_colors": [
+          "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。"
+    ],
+    "per_circle": {
+      "inner": {
+        "visual_summary": "粉色、紫色",
+        "dominant_colors": [
+          "粉色、紫色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "绿色、蓝色、黄色；中圈主要由绿色叶片、蓝色尖叶和黄色藤蔓交织而成，形成复杂的植物图案，部分区域有螺旋状设计，表现出流动性和生长感。；叶片、藤蔓、螺旋",
+        "dominant_colors": [
+          "绿色、蓝色、黄色"
+        ],
+        "dominant_shapes": [
+          "['叶片', '藤蔓', '螺旋']"
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。",
+        "dominant_colors": [
+          "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": [
+          "粉色、紫色"
+        ]
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": [
+          "绿色、蓝色、黄色"
+        ]
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": [
+          "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。"
+        ]
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "粉色、紫色"
+      },
+      {
+        "id": "middle-001",
+        "circle": "middle",
+        "visible_evidence": "绿色、蓝色、黄色；中圈主要由绿色叶片、蓝色尖叶和黄色藤蔓交织而成，形成复杂的植物图案，部分区域有螺旋状设计，表现出流动性和生长感。；叶片、藤蔓、螺旋"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "外圈由深浅不一的灰色石块组成，形成连续的环形边界，内部点缀着蓝色和绿色的小三角形。"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "你的内在价值（粉色、紫色星形核心）是明亮而独特的，并已发展出丰富的表达（中圈植物与螺旋），但当前的能量与外界的现实交换被一道谨慎的灰色石墙所限制。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "stage-08-energy-flow-diagnosis"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.center_clear_outer_weak"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action",
+        "wealth.success_visibility_threat",
+        "wealth.low_deservingness"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange",
+        "wealth.deservingness_self_worth",
+        "wealth.body_fear_action",
+        "wealth.emotion_spending_protective_habits"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.success_visibility_threat",
+          "title": "有钱危险与成功压力",
+          "summary": "用户可能想要财富和成功，但也担心更多资源带来被看见、被要求、关系变化或压力。",
+          "report_language": [
+            "这不一定是在说你不想要财富，也可能是在说“更多”会带来压力。",
+            "成功、被看见、被需要，有时会让人同时兴奋和后退。"
+          ],
+          "healing_direction": [
+            "观察成功带来的关系想象。",
+            "区分真实风险和旧经验投射。",
+            "逐步练习被看见。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。"
+      ]
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "在你的曼陀罗中，我看到一个充满生命力的内在世界正在蓬勃生长，但它与外部现实交换的边界似乎带着一份小心和考量，这或许正是你感觉价值表达和变现卡住的地方。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.center_clear_outer_weak"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action",
+        "wealth.success_visibility_threat",
+        "wealth.low_deservingness"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange",
+        "wealth.deservingness_self_worth",
+        "wealth.body_fear_action",
+        "wealth.emotion_spending_protective_habits"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.success_visibility_threat",
+          "title": "有钱危险与成功压力",
+          "summary": "用户可能想要财富和成功，但也担心更多资源带来被看见、被要求、关系变化或压力。",
+          "report_language": [
+            "这不一定是在说你不想要财富，也可能是在说“更多”会带来压力。",
+            "成功、被看见、被需要，有时会让人同时兴奋和后退。"
+          ],
+          "healing_direction": [
+            "观察成功带来的关系想象。",
+            "区分真实风险和旧经验投射。",
+            "逐步练习被看见。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。"
+      ]
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "疗愈的方向不是要打破或摧毁你的边界，而是要重新认识这道石墙的积极意图（保护、稳固），并尝试在墙上开凿窗口，让内在的生机与现实世界进行有序、安全的交换。",
+    "report_mode": "pro",
+    "writing_input_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "stage-08-energy-flow-diagnosis"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.center_clear_outer_weak"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action",
+        "wealth.success_visibility_threat",
+        "wealth.low_deservingness"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange",
+        "wealth.deservingness_self_worth",
+        "wealth.body_fear_action",
+        "wealth.emotion_spending_protective_habits"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.success_visibility_threat",
+          "title": "有钱危险与成功压力",
+          "summary": "用户可能想要财富和成功，但也担心更多资源带来被看见、被要求、关系变化或压力。",
+          "report_language": [
+            "这不一定是在说你不想要财富，也可能是在说“更多”会带来压力。",
+            "成功、被看见、被需要，有时会让人同时兴奋和后退。"
+          ],
+          "healing_direction": [
+            "观察成功带来的关系想象。",
+            "区分真实风险和旧经验投射。",
+            "逐步练习被看见。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。"
+      ]
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "好的，请查收这份专属于你的曼陀罗解读报告。\n\n---\n\n### 你的曼陀罗财富议题解读\n\n**你的绘画主题：财富议题**\n**你的创作意图：想看自己的价值表达和现实交换哪里卡住。**\n\n亲爱的朋友，感谢你的信任与创作。这幅曼陀罗不仅色彩斑斓，更像一张你内在世界与财富关系的能量图谱。让我们一起，用温和的目光来阅读它。\n\n#### **核心看见：一道保护你的石墙**\n\n在你的曼陀罗中，我首先看到的是一个充满生命力的内在世界正在蓬勃生长。\n\n中心的**粉紫色星形**，是你独特而明亮的内在价值核心，它柔和又坚定，是你所有创造力的源泉。这股能量向外流动，在中圈化作了由**绿色、蓝色和黄色交织而成的植物图腾**——复杂的叶片、蜿蜒的藤蔓与灵动的螺旋。这代表着你的内在价值已经发展出了丰富的表达形式，思绪活跃，能力也在生机盎然地成长。\n\n然而，当这份蓬勃的生命力想要抵达外部世界时，我注意到画面最外圈有一道由**灰色石块紧密排列而成的环形边界**。它坚固、清晰，将你丰富的中圈与更广阔的天地隔开。这正是你感觉价值表达和现实交换“卡住”的关键所在。\n\n**这不是一道坏的墙，而是一道带着善意的保护墙。** 它可能代表着你的谨慎、你对现实世界的考量，或是一种想要稳固保护好自己的内在财富，再慢慢对外展示的智慧。\n\n#### **解码卡点：四道内在的“石门”**\n\n这道石墙的存在，对应着我们在财富流动中常见的几个内在议题。它们不是错误，而是等待被温柔理解的几个部分：\n\n*   **表达与连接的踌躇**：你是否习惯一个人扛起所有事？财富的流动很像呼吸，它不仅发生在内部，也需要通过表达、合作、服务，与外界的人和资源进行交换。你的中圈如此丰富，或许那些天赋和想法，正等待着一个机会，被他人看见和需要。\n*   **行动的节奏被打乱**：你或许有不少想法和计划，但从“想到”到“做到”的路上，似乎存在一些容易让人却步的障碍。有时候，是即将迈出舒适区时身体的微微紧张；有时候，是过度思虑带来的疲惫。财富的河流需要行动作为河床，哪怕是微小的行动，也能引导水流向前。\n*   **“拥有更多”的压力**：对于财富和成功，我们的感觉可能很复杂。一方面渴望，一方面又隐隐担心，如果拥有了更多，会不会带来更大的压力、更多的期待，或是让我们在关系中变得不一样？这部分需要观察的是：成功，在你的经验里，总是令你兴奋更多，还是感到潜在的不安更多？\n*   **关于“是否值得”的拉扯**：粉紫色的内核如此明亮，你在内心深处知道自己的价值。但在现实交换中，你是否会怀疑自己“值不值得”被支付、被支持、被稳稳地爱着？这种拉扯，并不是你能力不足，而是一种内在的许可——你是否已经全然允许自己，去稳定地接住更多的丰盛？\n\n#### **疗愈方向：在石墙上开一扇窗**\n\n需要明确的是，疗愈的方向**从来不是要摧毁你的边界或否定你的谨慎**。那道石墙之所以存在，一定有它曾经保护你的积极意图。我们可以做的，是带着这份对自己深深的理解，尝试在墙上开凿一些窗户，让内外的能量能够有序、安全地流动起来。\n\n**给你的温柔尝试：**\n*   **从最小的世界链接开始**：不必强迫自己立刻走向人群中心。可以尝试一周一次，将你中圈的一个想法或一个小作品，分享给一个你信任的人，看看会发生什么。\n*   **接续被打断的行动**：找出一个你想了很久但没启动的小事，把它拆解成“只需5分钟就能完成”的最小步骤。今天就去完成它，然后感受那个瞬间。\n*   **练习“被看见”的感觉**：在一个安全的环境里，坦然地接受一次夸奖，不要急着谦虚或回绝。只是去感觉那份认可停留在你身上的感受。\n*   **核对你的价值与价格**：下次当你有机会提供价值时，有意识地去感受一下：“我给出的和我接收到的，是我内心感到平衡而有尊严的吗？”\n\n你曼陀罗中心的光芒、中圈的繁盛，都在诉说着你已经拥有了丰富的内在宝藏。现在，只是到了需要重新认识并微调你与现实世界交换方式的时候。\n\n愿你能带着对自我边界的敬意，温柔地打开与世界交换的窗口。你的价值，值得被这个世界看见和回应。"
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-35f673125b98",
+      "report_mode": "pro",
+      "title": "曼陀罗解读报告",
+      "markdown": "好的，请查收这份专属于你的曼陀罗解读报告。\n\n---\n\n### 你的曼陀罗财富议题解读\n\n**你的绘画主题：财富议题**\n**你的创作意图：想看自己的价值表达和现实交换哪里卡住。**\n\n亲爱的朋友，感谢你的信任与创作。这幅曼陀罗不仅色彩斑斓，更像一张你内在世界与财富关系的能量图谱。让我们一起，用温和的目光来阅读它。\n\n#### **核心看见：一道保护你的石墙**\n\n在你的曼陀罗中，我首先看到的是一个充满生命力的内在世界正在蓬勃生长。\n\n中心的**粉紫色星形**，是你独特而明亮的内在价值核心，它柔和又坚定，是你所有创造力的源泉。这股能量向外流动，在中圈化作了由**绿色、蓝色和黄色交织而成的植物图腾**——复杂的叶片、蜿蜒的藤蔓与灵动的螺旋。这代表着你的内在价值已经发展出了丰富的表达形式，思绪活跃，能力也在生机盎然地成长。\n\n然而，当这份蓬勃的生命力想要抵达外部世界时，我注意到画面最外圈有一道由**灰色石块紧密排列而成的环形边界**。它坚固、清晰，将你丰富的中圈与更广阔的天地隔开。这正是你感觉价值表达和现实交换“卡住”的关键所在。\n\n**这不是一道坏的墙，而是一道带着善意的保护墙。** 它可能代表着你的谨慎、你对现实世界的考量，或是一种想要稳固保护好自己的内在财富，再慢慢对外展示的智慧。\n\n#### **解码卡点：四道内在的“石门”**\n\n这道石墙的存在，对应着我们在财富流动中常见的几个内在议题。它们不是错误，而是等待被温柔理解的几个部分：\n\n*   **表达与连接的踌躇**：你是否习惯一个人扛起所有事？财富的流动很像呼吸，它不仅发生在内部，也需要通过表达、合作、服务，与外界的人和资源进行交换。你的中圈如此丰富，或许那些天赋和想法，正等待着一个机会，被他人看见和需要。\n*   **行动的节奏被打乱**：你或许有不少想法和计划，但从“想到”到“做到”的路上，似乎存在一些容易让人却步的障碍。有时候，是即将迈出舒适区时身体的微微紧张；有时候，是过度思虑带来的疲惫。财富的河流需要行动作为河床，哪怕是微小的行动，也能引导水流向前。\n*   **“拥有更多”的压力**：对于财富和成功，我们的感觉可能很复杂。一方面渴望，一方面又隐隐担心，如果拥有了更多，会不会带来更大的压力、更多的期待，或是让我们在关系中变得不一样？这部分需要观察的是：成功，在你的经验里，总是令你兴奋更多，还是感到潜在的不安更多？\n*   **关于“是否值得”的拉扯**：粉紫色的内核如此明亮，你在内心深处知道自己的价值。但在现实交换中，你是否会怀疑自己“值不值得”被支付、被支持、被稳稳地爱着？这种拉扯，并不是你能力不足，而是一种内在的许可——你是否已经全然允许自己，去稳定地接住更多的丰盛？\n\n#### **疗愈方向：在石墙上开一扇窗**\n\n需要明确的是，疗愈的方向**从来不是要摧毁你的边界或否定你的谨慎**。那道石墙之所以存在，一定有它曾经保护你的积极意图。我们可以做的，是带着这份对自己深深的理解，尝试在墙上开凿一些窗户，让内外的能量能够有序、安全地流动起来。\n\n**给你的温柔尝试：**\n*   **从最小的世界链接开始**：不必强迫自己立刻走向人群中心。可以尝试一周一次，将你中圈的一个想法或一个小作品，分享给一个你信任的人，看看会发生什么。\n*   **接续被打断的行动**：找出一个你想了很久但没启动的小事，把它拆解成“只需5分钟就能完成”的最小步骤。今天就去完成它，然后感受那个瞬间。\n*   **练习“被看见”的感觉**：在一个安全的环境里，坦然地接受一次夸奖，不要急着谦虚或回绝。只是去感觉那份认可停留在你身上的感受。\n*   **核对你的价值与价格**：下次当你有机会提供价值时，有意识地去感受一下：“我给出的和我接收到的，是我内心感到平衡而有尊严的吗？”\n\n你曼陀罗中心的光芒、中圈的繁盛，都在诉说着你已经拥有了丰富的内在宝藏。现在，只是到了需要重新认识并微调你与现实世界交换方式的时候。\n\n愿你能带着对自我边界的敬意，温柔地打开与世界交换的窗口。你的价值，值得被这个世界看见和回应。",
+      "summary": "你的内在价值（粉色、紫色星形核心）是明亮而独特的，并已发展出丰富的表达（中圈植物与螺旋），但当前的能量与外界的现实交换被一道谨慎的灰色石墙所限制。"
+    }
+  }
+}

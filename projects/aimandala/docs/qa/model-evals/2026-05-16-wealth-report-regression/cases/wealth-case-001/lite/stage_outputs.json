@@ -1,0 +1,545 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "lite",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看自己和金钱、价值、资源流动之间的关系。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作整体呈现出高度对称和丰富的色彩组合，中心为一个红色星形图案，周围环绕着多个紫色、黄色和蓝色的几何图案，外圈以蓝色波浪形线条为主，形成一种流动感。画面中使用了多种颜色，包括紫色、黄色、绿色、蓝色和橙色，整体色调明亮且充满活力。",
+    "circles": {
+      "inner": {
+        "summary": "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。",
+            "shape": "",
+            "visible_evidence": "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。"
+          }
+        ],
+        "raw_observation": {
+          "color_distribution": "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。",
+          "shape_patterns": "中心为红色星形，周围是多个紫色和黄色的六边形与圆形组合，形成放射状结构。",
+          "boundary_clarity": "内圈边界清晰，与中圈之间有明显的颜色过渡和形状分界。",
+          "visual_features": "中心星形图案突出，周围几何图形排列整齐，表现出内在的秩序感和能量集中。"
+        }
+      },
+      "middle": {
+        "summary": "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。",
+            "shape": "",
+            "visible_evidence": "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。"
+          }
+        ],
+        "raw_observation": {
+          "color_distribution": "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。",
+          "shape_patterns": "中圈包含多个紫色和黄色的六边形与圆形组合，以及绿色和橙色的弧形图案，整体呈放射状排列。",
+          "boundary_clarity": "中圈与内外圈之间的边界清晰，颜色和形状变化明显。",
+          "visual_features": "中圈图案复杂且富有节奏感，表现出能量的流动和互动，部分区域有绿色和橙色的弧形线条连接不同图案。"
+        }
+      },
+      "outer": {
+        "summary": "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。",
+            "shape": "",
+            "visible_evidence": "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。"
+          }
+        ],
+        "raw_observation": {
+          "color_distribution": "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。",
+          "shape_patterns": "外圈由蓝色波浪形线条构成，其间点缀着黄色和绿色的小圆点，形成一种流动的视觉效果。",
+          "boundary_clarity": "外圈边界清晰，与中圈之间有明显的颜色和形状分界。",
+          "visual_features": "外圈的波浪形线条流畅，表现出一种向外扩展的能量流动，小圆点的点缀增加了画面的层次感和细节。"
+        }
+      }
+    },
+    "evidence_refs": [
+      "中心区域的红色星形图案可能代表核心能量或内在渴望。",
+      "紫色和黄色的几何图案在中圈重复出现，可能象征财富相关的稳定性和规律性。",
+      "外圈的蓝色波浪形线条和小圆点可能表示外部环境的流动性和不确定性。",
+      "整体色彩明亮且丰富，可能反映出积极的情绪状态和创造力。",
+      "图案的对称性和重复性可能暗示内在的秩序感和平衡。"
+    ],
+    "uncertainties": [
+      "无法确定红色星形的具体含义是否与财富直接相关。",
+      "紫色和黄色的几何图案是否完全代表财富能量，还是其他心理状态的体现尚不明确。",
+      "外圈的蓝色波浪形线条和小圆点的具体象征意义需要进一步分析。",
+      "整体色彩的明亮程度是否完全反映积极情绪，还是存在其他潜在的心理因素。"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。",
+        "dominant_colors": [
+          "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。",
+        "dominant_colors": [
+          "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。",
+        "dominant_colors": [
+          "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。"
+    ],
+    "per_circle": {
+      "inner": {
+        "visual_summary": "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。",
+        "dominant_colors": [
+          "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。",
+        "dominant_colors": [
+          "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。",
+        "dominant_colors": [
+          "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": [
+          "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。"
+        ]
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": [
+          "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。"
+        ]
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": [
+          "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。"
+        ]
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "中心区域以红色星形为核心，周围有黄色和紫色的几何图案，颜色较为集中且对比强烈。"
+      },
+      {
+        "id": "middle-001",
+        "circle": "middle",
+        "visible_evidence": "中圈主要由紫色、黄色、绿色和橙色构成，颜色分布均匀，形成多个重复的几何图案。"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "外圈以蓝色为主，辅以黄色和绿色的小圆点，颜色分布较为均匀，形成波浪形的边缘。"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "你在财富课题上拥有一个醒目的内在核心（红色星形），这个核心已经配备了一套色彩明亮、结构重复的资源和策略（中圈的紫、黄、绿、橙几何图案），但当前这股能量仍在向外流动和探索，与外部世界（外圈蓝色波浪）保持谨慎的边界，尚未形成完全开放的循环。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict",
+        "visual.inner_contracted_outer_strong"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。"
+      ]
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "你的画面对称而充满活力，中心区域的红色星形图案强烈而集中，周围环绕着规律有序的彩色几何形状，外圈则以蓝色波浪线条轻柔包裹。这看起来像一个资源丰富、结构清晰的内在财富系统，它正在谨慎地向外探索，寻找更广阔的流动空间。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict",
+        "visual.inner_contracted_outer_strong"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。"
+      ]
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "基于内在已有的资源感和秩序感（核心星形与中层规律图案），尝试逐步柔化与外界的边界（蓝色波浪层），允许内在的丰盛能量以更开放、更信任的方式向外流动，并与外界的资源形成互动，体验更完整的价值交换循环。",
+    "report_mode": "lite",
+    "writing_input_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict",
+        "visual.inner_contracted_outer_strong"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。"
+      ]
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "好的，这是为你生成的曼陀罗解读报告。\n\n---\n\n### 你的财富曼陀罗解读报告\n\n你好，很高兴能通过你的画作，与你一同探索你和金钱、价值与资源流动之间的关系。\n\n**画作初印象：一个结构清晰的内在财富系统**\n\n你的画面对称而充满活力，中心区域的红色星形图案强烈而集中，周围环绕着规律有序的彩色几何形状，外圈则以蓝色波浪线条轻柔包裹。这看起来像一个资源丰富、结构清晰的内在财富系统，它正在谨慎地向外探索，寻找更广阔的流动空间。\n\n---\n\n#### 核心解读：丰盛的内在，探索中的边界\n\n你在财富课题上拥有一个非常醒目的内在核心，它就像画面中央那颗红色的星——充满了热情、渴望与强大的创造力。这是你价值感的核心引擎，也是你最原初的“富有”。\n\n更可贵的是，围绕这个核心，你已经建立起了一套色彩明亮、结构清晰的资源与策略系统。画面中圈那些规律重复的紫色、黄色、绿色和橙色图案，象征着你内在的秩序、已经习得的技能和生活中的规律性，这些都是支持你财富之路的稳定基石。\n\n然而，有趣的是，当这股充沛的能量流动到边界时，也就是画面最外圈的蓝色波浪线条，它呈现出一种流动却谨慎的姿态。蓝色常与平静、沟通和交流相关，但在这里，它像一层温柔的缓冲带。这可能意味着，当下你丰盛的内在能量，在向外部世界（比如机会、人际、市场）流动和交换时，仍然保持着一种观察的距离和清晰的边界，尚未形成一个完全敞开的、来去自如的循环。\n\n**这可能让你在现实中偶尔感到：**\n*   **情绪与消费的拉扯**：有时钱更像是一个情绪的出口，承担了安抚、解压的功能。重要的不是消费本身，而是它背后承担了太多未被看见的情绪。如果能找到不靠消费也能安抚自己的方式，财富的流动会更轻盈。\n*   **想法与行动的温差**：你可能并不缺想法和计划，但想法落地为行动时，容易被情绪、人际或一丝自我怀疑所打断。这并非行动力本身的问题，更像是内在的保护机制在提醒你：“我们需要更稳妥一点。”财富流动需要行动的承接，可以从一些低压力的、微小而确定的步骤开始，让每一次小成功，都成为推动下一个行动的动能。\n\n---\n\n#### 给你的温柔启发\n\n你并不缺价值，也并非没有创造财富的能力。你的画告诉我，你的内在资源早已各就各位。\n\n接下来可以尝试的，是逐步柔化与外界的那层“蓝色波浪”边界。可以试着在安全的环境里，带着觉察做一些小小的实验：比如，更直接地表达一个观点，更主动地连接一个资源，或者记录下每一次消费前后的真实感受。每一次从内在核心到外部世界的、有意识的微小流动，都是在为那个更完整、更开放的丰盛循环，铺垫着信任的道路。\n\n你本身就是一个丰盛的发光体，现在是时候让这份光，更自在地流淌出去了。"
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-d9ceee41b979",
+      "report_mode": "lite",
+      "title": "曼陀罗解读报告",
+      "markdown": "好的，这是为你生成的曼陀罗解读报告。\n\n---\n\n### 你的财富曼陀罗解读报告\n\n你好，很高兴能通过你的画作，与你一同探索你和金钱、价值与资源流动之间的关系。\n\n**画作初印象：一个结构清晰的内在财富系统**\n\n你的画面对称而充满活力，中心区域的红色星形图案强烈而集中，周围环绕着规律有序的彩色几何形状，外圈则以蓝色波浪线条轻柔包裹。这看起来像一个资源丰富、结构清晰的内在财富系统，它正在谨慎地向外探索，寻找更广阔的流动空间。\n\n---\n\n#### 核心解读：丰盛的内在，探索中的边界\n\n你在财富课题上拥有一个非常醒目的内在核心，它就像画面中央那颗红色的星——充满了热情、渴望与强大的创造力。这是你价值感的核心引擎，也是你最原初的“富有”。\n\n更可贵的是，围绕这个核心，你已经建立起了一套色彩明亮、结构清晰的资源与策略系统。画面中圈那些规律重复的紫色、黄色、绿色和橙色图案，象征着你内在的秩序、已经习得的技能和生活中的规律性，这些都是支持你财富之路的稳定基石。\n\n然而，有趣的是，当这股充沛的能量流动到边界时，也就是画面最外圈的蓝色波浪线条，它呈现出一种流动却谨慎的姿态。蓝色常与平静、沟通和交流相关，但在这里，它像一层温柔的缓冲带。这可能意味着，当下你丰盛的内在能量，在向外部世界（比如机会、人际、市场）流动和交换时，仍然保持着一种观察的距离和清晰的边界，尚未形成一个完全敞开的、来去自如的循环。\n\n**这可能让你在现实中偶尔感到：**\n*   **情绪与消费的拉扯**：有时钱更像是一个情绪的出口，承担了安抚、解压的功能。重要的不是消费本身，而是它背后承担了太多未被看见的情绪。如果能找到不靠消费也能安抚自己的方式，财富的流动会更轻盈。\n*   **想法与行动的温差**：你可能并不缺想法和计划，但想法落地为行动时，容易被情绪、人际或一丝自我怀疑所打断。这并非行动力本身的问题，更像是内在的保护机制在提醒你：“我们需要更稳妥一点。”财富流动需要行动的承接，可以从一些低压力的、微小而确定的步骤开始，让每一次小成功，都成为推动下一个行动的动能。\n\n---\n\n#### 给你的温柔启发\n\n你并不缺价值，也并非没有创造财富的能力。你的画告诉我，你的内在资源早已各就各位。\n\n接下来可以尝试的，是逐步柔化与外界的那层“蓝色波浪”边界。可以试着在安全的环境里，带着觉察做一些小小的实验：比如，更直接地表达一个观点，更主动地连接一个资源，或者记录下每一次消费前后的真实感受。每一次从内在核心到外部世界的、有意识的微小流动，都是在为那个更完整、更开放的丰盛循环，铺垫着信任的道路。\n\n你本身就是一个丰盛的发光体，现在是时候让这份光，更自在地流淌出去了。",
+      "summary": "你在财富课题上拥有一个醒目的内在核心（红色星形），这个核心已经配备了一套色彩明亮、结构重复的资源和策略（中圈的紫、黄、绿、橙几何图案），但当前这股能量仍在向外流动和探索，与外部世界（外圈蓝色波浪）保持谨慎的边界，尚未形成完全开放的循环。"
+    }
+  }
+}

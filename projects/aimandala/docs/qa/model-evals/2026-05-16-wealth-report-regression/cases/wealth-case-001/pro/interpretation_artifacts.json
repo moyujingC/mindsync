@@ -1,0 +1,686 @@
+{
+  "method_source": "projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-画面信号映射审核与结构化计划.md",
+  "execution_blocks": [
+    {
+      "block_id": "block-1-input-and-boundary",
+      "stage_keys": [
+        "stage-00-input-context",
+        "stage-01-user-input-context",
+        "stage-02-circle-boundary-decision"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-2-visual-and-direct-check",
+      "stage_keys": [
+        "stage-03-visual-evidence",
+        "stage-04-direct-judgment-high-hit-check"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-3-circle-rule-reasoning",
+      "stage_keys": [
+        "stage-05-per-circle-color-shape-element-sensing",
+        "stage-06-per-circle-element-generation-control",
+        "stage-07-per-circle-imbalance-patterns",
+        "stage-08-energy-flow-diagnosis",
+        "stage-09-evidence-consolidation"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-4-thesis-and-writing-input",
+      "stage_keys": [
+        "stage-10-core-thesis-selection",
+        "stage-11-user-facing-framing",
+        "stage-12-healing-direction-and-report-branching"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-5-report-and-quality",
+      "stage_keys": [
+        "stage-13-lite-report-draft",
+        "stage-14-pro-report-draft",
+        "stage-15-visual-assets",
+        "stage-16-final-report-assembly"
+      ],
+      "status": "complete"
+    }
+  ],
+  "stage_outputs": {
+    "stage-00-input-context": {
+      "stage": "stage-00-input-context",
+      "status": "complete",
+      "report_mode": "pro",
+      "image": {
+        "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5057.jpeg",
+        "storage_backend": "",
+        "storage_key": ""
+      },
+      "agent_version": "mandala-interpretation-agent-v1"
+    },
+    "stage-01-user-input-context": {
+      "stage": "stage-01-user-input-context",
+      "status": "complete",
+      "user_context": {
+        "theme": "wealth",
+        "theme_label": "财富议题",
+        "painting_intention": "想看自己和金钱、价值、资源流动之间的关系。",
+        "painting_feeling": ""
+      }
+    },
+    "stage-02-circle-boundary-decision": {
+      "stage": "stage-02-circle-boundary-decision",
+      "status": "complete",
+      "circle_boundaries": {
+        "inner_radius": 35,
+        "middle_radius": 65,
+        "radius_unit": "normalized_percent",
+        "source": "manual_regression_default"
+      }
+    },
+    "stage-03-visual-evidence": {
+      "stage": "stage-03-visual-evidence",
+      "status": "complete",
+      "global_visual_summary": "这幅曼陀罗画作整体呈现出丰富的色彩和对称的几何图案，中心为一个红色星形，周围环绕着多个紫色、黄色和蓝色的圆形图案，外圈则由蓝绿色波浪形和橙色弧形构成，整体结构清晰且充满活力。",
+      "circles": {
+        "inner": {
+          "summary": "以黄色为主，点缀紫色、蓝色和绿色",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "position": "inner",
+              "color": "以黄色为主，点缀紫色、蓝色和绿色",
+              "shape": "",
+              "visible_evidence": "以黄色为主，点缀紫色、蓝色和绿色"
+            }
+          ],
+          "raw_observation": {
+            "center_shape": "红色星形",
+            "color_distribution": "以黄色为主，点缀紫色、蓝色和绿色",
+            "pattern_details": "中心区域有明显的放射状线条，形成一种能量汇聚的效果"
+          }
+        },
+        "middle": {
+          "summary": "主要由紫色、黄色、蓝色和绿色组成",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "position": "middle",
+              "color": "主要由紫色、黄色、蓝色和绿色组成",
+              "shape": "",
+              "visible_evidence": "主要由紫色、黄色、蓝色和绿色组成"
+            }
+          ],
+          "raw_observation": {
+            "color_distribution": "主要由紫色、黄色、蓝色和绿色组成",
+            "pattern_details": "多个圆形图案均匀分布，每个圆形内部包含星形和菱形元素，形成重复的几何结构",
+            "shape_features": "圆形和星形组合，线条流畅且对称"
+          }
+        },
+        "outer": {
+          "summary": "以蓝绿色和橙色为主",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "position": "outer",
+              "color": "以蓝绿色和橙色为主",
+              "shape": "",
+              "visible_evidence": "以蓝绿色和橙色为主"
+            }
+          ],
+          "raw_observation": {
+            "color_distribution": "以蓝绿色和橙色为主",
+            "pattern_details": "外圈由波浪形和弧形构成，蓝绿色部分呈现水波纹效果，橙色部分呈弧形向外延伸",
+            "shape_features": "波浪形和弧形交替排列，形成动态的边界效果"
+          }
+        }
+      },
+      "evidence_refs": [
+        "中心红色星形可能象征内在核心或能量源",
+        "紫色和黄色的圆形图案在中圈重复出现，可能表示某种循环或稳定状态",
+        "外圈的蓝绿色波浪形可能代表流动的能量或情绪波动",
+        "橙色弧形向外延伸，可能象征向外扩展或行动力",
+        "整体色彩丰富且对称，可能反映内心的平衡与和谐"
+      ],
+      "uncertainties": [
+        "无法确定颜色的具体深浅程度是否影响其象征意义",
+        "无法判断波浪形和弧形的排列是否有特定的节奏或含义",
+        "无法确认中心星形的大小和位置是否具有特殊意义"
+      ],
+      "model_trace": [
+        {
+          "model": "qwen-vl-max-latest",
+          "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+          "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+          "result": "success"
+        }
+      ]
+    },
+    "stage-04-direct-judgment-high-hit-check": {
+      "stage": "stage-04-direct-judgment-high-hit-check",
+      "status": "complete",
+      "hits": [],
+      "non_hits": [],
+      "uncertain_items": [],
+      "conflicts": [],
+      "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-05-per-circle-color-shape-element-sensing": {
+      "stage": "stage-05-per-circle-color-shape-element-sensing",
+      "status": "complete",
+      "per_circle": {
+        "inner": {
+          "visual_summary": "以黄色为主，点缀紫色、蓝色和绿色",
+          "dominant_colors": [
+            "以黄色为主，点缀紫色、蓝色和绿色"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "主要由紫色、黄色、蓝色和绿色组成",
+          "dominant_colors": [
+            "主要由紫色、黄色、蓝色和绿色组成"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "以蓝绿色和橙色为主",
+          "dominant_colors": [
+            "以蓝绿色和橙色为主"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-06-per-circle-element-generation-control": {
+      "stage": "stage-06-per-circle-element-generation-control",
+      "status": "complete",
+      "theme": "wealth",
+      "control_notes": [
+        "按当前画面证据和精简知识包推导，不新增画面事实。"
+      ],
+      "per_circle": {
+        "inner": {
+          "visual_summary": "以黄色为主，点缀紫色、蓝色和绿色",
+          "dominant_colors": [
+            "以黄色为主，点缀紫色、蓝色和绿色"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "主要由紫色、黄色、蓝色和绿色组成",
+          "dominant_colors": [
+            "主要由紫色、黄色、蓝色和绿色组成"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "以蓝绿色和橙色为主",
+          "dominant_colors": [
+            "以蓝绿色和橙色为主"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-07-per-circle-imbalance-patterns": {
+      "stage": "stage-07-per-circle-imbalance-patterns",
+      "status": "complete",
+      "candidates": [
+        {
+          "circle": "inner",
+          "candidate": "needs_human_review",
+          "basis": [
+            "以黄色为主，点缀紫色、蓝色和绿色"
+          ]
+        },
+        {
+          "circle": "middle",
+          "candidate": "needs_human_review",
+          "basis": [
+            "主要由紫色、黄色、蓝色和绿色组成"
+          ]
+        },
+        {
+          "circle": "outer",
+          "candidate": "needs_human_review",
+          "basis": [
+            "以蓝绿色和橙色为主"
+          ]
+        }
+      ]
+    },
+    "stage-08-energy-flow-diagnosis": {
+      "stage": "stage-08-energy-flow-diagnosis",
+      "status": "complete",
+      "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-09-evidence-consolidation": {
+      "stage": "stage-09-evidence-consolidation",
+      "status": "complete",
+      "evidence_map": [
+        {
+          "id": "inner-001",
+          "circle": "inner",
+          "visible_evidence": "以黄色为主，点缀紫色、蓝色和绿色"
+        },
+        {
+          "id": "middle-001",
+          "circle": "middle",
+          "visible_evidence": "主要由紫色、黄色、蓝色和绿色组成"
+        },
+        {
+          "id": "outer-001",
+          "circle": "outer",
+          "visible_evidence": "以蓝绿色和橙色为主"
+        }
+      ]
+    },
+    "stage-10-core-thesis-selection": {
+      "stage": "stage-10-core-thesis-selection",
+      "status": "complete",
+      "core_thesis": "财富意图清晰但资源流动的边界仍显谨慎，内圈到中圈的能量表达丰富，外圈边界控制较强，反映内在价值感已具足，但在向外的实际交换与接收中仍存在观察与试探。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001",
+        "中心红色星形可能象征内在核心或能量源",
+        "紫色和黄色的圆形图案在中圈重复出现，可能表示某种循环或稳定状态",
+        "外圈的蓝绿色波浪形可能代表流动的能量或情绪波动",
+        "橙色弧形向外延伸，可能象征向外扩展或行动力",
+        "内圈到中圈已有表达，外圈边界仍较谨慎"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.water_fire_conflict"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action",
+          "wealth.scarcity_and_insecurity"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action",
+          "wealth.safety_scarcity_control"
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.scarcity_and_insecurity",
+            "title": "匮乏感和安全感不足",
+            "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+            "report_language": [
+              "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+              "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+            ],
+            "healing_direction": [
+              "安全感重建。",
+              "金钱信念梳理。",
+              "身体稳定练习。"
+            ],
+            "source_status": "model_scaffold"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "model_scaffold",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          },
+          {
+            "module_id": "wealth.safety_scarcity_control",
+            "title": "安全感、匮乏与控制",
+            "status": "source_supported_draft",
+            "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。"
+        ]
+      }
+    },
+    "stage-11-user-facing-framing": {
+      "stage": "stage-11-user-facing-framing",
+      "status": "complete",
+      "framing": "你的画里有色彩缤纷的自我价值与资源，但在向外流动与接收金钱的实际行动上，还在小心地保护边界。",
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.water_fire_conflict"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action",
+          "wealth.scarcity_and_insecurity"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action",
+          "wealth.safety_scarcity_control"
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.scarcity_and_insecurity",
+            "title": "匮乏感和安全感不足",
+            "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+            "report_language": [
+              "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+              "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+            ],
+            "healing_direction": [
+              "安全感重建。",
+              "金钱信念梳理。",
+              "身体稳定练习。"
+            ],
+            "source_status": "model_scaffold"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "model_scaffold",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          },
+          {
+            "module_id": "wealth.safety_scarcity_control",
+            "title": "安全感、匮乏与控制",
+            "status": "source_supported_draft",
+            "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。"
+        ]
+      }
+    },
+    "stage-12-healing-direction-and-report-branching": {
+      "stage": "stage-12-healing-direction-and-report-branching",
+      "status": "complete",
+      "healing_direction": "在稳固自我价值的同时，逐步打开外在接收通道，练习安全的交换关系，让资源流动更自然、更舒展。",
+      "report_mode": "pro",
+      "writing_input_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001",
+        "中心红色星形可能象征内在核心或能量源",
+        "紫色和黄色的圆形图案在中圈重复出现，可能表示某种循环或稳定状态",
+        "外圈的蓝绿色波浪形可能代表流动的能量或情绪波动",
+        "橙色弧形向外延伸，可能象征向外扩展或行动力",
+        "内圈到中圈已有表达，外圈边界仍较谨慎"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.water_fire_conflict"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action",
+          "wealth.scarcity_and_insecurity"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action",
+          "wealth.safety_scarcity_control"
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.scarcity_and_insecurity",
+            "title": "匮乏感和安全感不足",
+            "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+            "report_language": [
+              "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+              "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+            ],
+            "healing_direction": [
+              "安全感重建。",
+              "金钱信念梳理。",
+              "身体稳定练习。"
+            ],
+            "source_status": "model_scaffold"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "model_scaffold",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          },
+          {
+            "module_id": "wealth.safety_scarcity_control",
+            "title": "安全感、匮乏与控制",
+            "status": "source_supported_draft",
+            "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。"
+        ]
+      }
+    },
+    "stage-13-lite-report-draft": {
+      "stage": "stage-13-lite-report-draft",
+      "status": "complete",
+      "enabled": false,
+      "markdown": ""
+    },
+    "stage-14-pro-report-draft": {
+      "stage": "stage-14-pro-report-draft",
+      "status": "complete",
+      "enabled": true,
+      "markdown": "# 你的财富曼陀罗解读报告\n\n**议题**：财富——关于金钱、价值与资源流动的关系\n\n你带着一个很真实的好奇走进了这幅曼陀罗：“想看自己和金钱、价值、资源流动之间的关系”。这幅画就像一面镜子，映照出你内在世界的资源地图。让我们一起，温和地看看它。\n\n---\n\n### 你画了什么？一幅充满生机的内在景观\n\n这幅曼陀罗色彩丰富、结构对称，充满了生命力。\n\n*   **中心**是一颗**红色的星形**，仿佛是你充满能量的内在核心，一个清晰、坚定的自我。\n*   **中圈**环绕着由**紫色、黄色、蓝色和绿色**组成的圆形图案，它们均匀、稳定地重复着。这像一种循环，也像一种守护，呈现出你内在拥有的丰富资源和某种既定的秩序。\n*   **外圈**则由**蓝绿色的波浪形**和**橙色的弧形**构成。蓝绿色如水波流动，橙色如光芒向外延伸，构成了一道动态的边界。\n\n### 这幅画在诉说什么？关于财富的核心洞察\n\n**你拥有一个色彩缤纷、能量充足的资源宝库，但在让这些资源真正流向外部世界、并接收世界的回馈时，你仍然在小心翼翼地保护着自己。**\n\n这并非说你的行动力不够，而是你的内在智慧在告诉你：**向外走，需要安全感。** 你的画清晰地呈现了这一点：\n\n*   **内在的资源已经具足**：中心的红星星、中圈丰富而稳定的图案，都像在说：“我有价值，我有能量，我有秩序。” 这一点，请你深深地看见和相信。\n*   **向外的边界充满谨慎**：外圈的波浪和弧形很美，但边界感也很强。它们既是张力的表达，也是一种保护。财富的流动在这里仿佛遇到了某种“观察”与“试探”，能量更多地停留在内部循环，向外转化时，那份顺畅感被小心地控制着。\n\n这在财富议题上，可能勾勒出这样一种状态：**财富的意图是清晰的，但当它需要和现实世界（比如定价、索取回报、大胆投资自我、接收馈赠）发生交换时，心里会响起一个声音：“可以了吗？安全吗？”**\n\n---\n\n### 我们尝试更深地理解：这些感觉从哪里来？\n\n基于你画作中的线索，这种“内在富足，向外谨慎”的模式，可能和下面几种感受有关。你可以感受一下，哪些更像你？\n\n#### 1. 钱，是不是在替情绪工作？\n有时候，消费或花钱不只是一个经济决策，它承担了安抚情绪的功能。如果情绪没有被看见，财富的流动就可能变成：资源刚进来，就被一种无形的、想要犒劳或安抚自己的冲动带走了。**这里更像是在提醒我们：消费本身可能不是问题，问题是它承担了太多安抚功能。**\n\n#### 2. 想行动，但身体会“刹车”吗？\n财富的流动需要行动去承接。如果你有很多好的想法，但总在即将行动时感到拖延、被自我怀疑打断，那价值的河流就很难流进现实的土壤。**这不是你“懒”或“不努力”，而更像是一种面对未知时身体的自然保护性收缩。** 它在说：“请先确认，这里是安全的。”\n\n#### 3. “安全感”，是否和金钱紧紧绑在一起？\n当金钱被当作安全感的主要来源时，我们对待它的态度就会变得紧绷。即使有进账，内心也未必能真正放松和喜悦，总感觉“还不够”。**这不一定代表现实资源真的不足，更多是内在长久以来一种“不够用”的预设。** 钱越重要，内心就越紧绷，流动就越不自然。\n\n---\n\n### 一些温和的尝试：让资源流动更舒展\n\n你的曼陀罗不是在给你“下诊断”，而是在为你提供一个视角。它说：**你资源本具足，接下来可以练习在外圈打开一扇小小的、安全的窗。**\n\n*   **尝试情绪消费觉察**：在下次想按下“支付”键时，暂停一下，问问自己：“我现在是身体饿了，还是心里空了？” 可以不立刻改变行为，只是记录此刻的感受。这能帮你看清，钱究竟在为你承担什么。\n*   **开始一次低压力小行动**：不要强迫自己完成庞大的计划。找一个与你价值有关的、最小的行动，比如，把你的一项技能分享给一个朋友，或为你的服务定一个让你感觉“有点挑战但可接受”的价格。关键是，去完成它，并感受这个过程。\n*   **练习身体的稳定感**：当紧缩、焦虑的感受出现时，试着把注意力从“怎么办”转移到身体上。双脚稳稳地踩地，感受呼吸的起伏。这是一种从身体层面重建“安全基地”的方式，让理性知道，此刻并没有真正的危险。\n\n这幅画是你与金钱关系的珍贵切片。它揭示了你的天赋，也指明了你的卡点。**财富的舒展，并非需要更多的资源涌入，而是让已经存在的价值，可以更信任地、更安全地去与世界交换与共振。**"
+    },
+    "stage-15-visual-assets": {
+      "stage": "stage-15-visual-assets",
+      "status": "skipped",
+      "reason": "mvp_no_image_generation"
+    },
+    "stage-16-final-report-assembly": {
+      "stage": "stage-16-final-report-assembly",
+      "status": "complete",
+      "final_report": {
+        "report_id": "mandala-interpretation-8c3a2a680a74",
+        "report_mode": "pro",
+        "title": "曼陀罗解读报告",
+        "markdown": "# 你的财富曼陀罗解读报告\n\n**议题**：财富——关于金钱、价值与资源流动的关系\n\n你带着一个很真实的好奇走进了这幅曼陀罗：“想看自己和金钱、价值、资源流动之间的关系”。这幅画就像一面镜子，映照出你内在世界的资源地图。让我们一起，温和地看看它。\n\n---\n\n### 你画了什么？一幅充满生机的内在景观\n\n这幅曼陀罗色彩丰富、结构对称，充满了生命力。\n\n*   **中心**是一颗**红色的星形**，仿佛是你充满能量的内在核心，一个清晰、坚定的自我。\n*   **中圈**环绕着由**紫色、黄色、蓝色和绿色**组成的圆形图案，它们均匀、稳定地重复着。这像一种循环，也像一种守护，呈现出你内在拥有的丰富资源和某种既定的秩序。\n*   **外圈**则由**蓝绿色的波浪形**和**橙色的弧形**构成。蓝绿色如水波流动，橙色如光芒向外延伸，构成了一道动态的边界。\n\n### 这幅画在诉说什么？关于财富的核心洞察\n\n**你拥有一个色彩缤纷、能量充足的资源宝库，但在让这些资源真正流向外部世界、并接收世界的回馈时，你仍然在小心翼翼地保护着自己。**\n\n这并非说你的行动力不够，而是你的内在智慧在告诉你：**向外走，需要安全感。** 你的画清晰地呈现了这一点：\n\n*   **内在的资源已经具足**：中心的红星星、中圈丰富而稳定的图案，都像在说：“我有价值，我有能量，我有秩序。” 这一点，请你深深地看见和相信。\n*   **向外的边界充满谨慎**：外圈的波浪和弧形很美，但边界感也很强。它们既是张力的表达，也是一种保护。财富的流动在这里仿佛遇到了某种“观察”与“试探”，能量更多地停留在内部循环，向外转化时，那份顺畅感被小心地控制着。\n\n这在财富议题上，可能勾勒出这样一种状态：**财富的意图是清晰的，但当它需要和现实世界（比如定价、索取回报、大胆投资自我、接收馈赠）发生交换时，心里会响起一个声音：“可以了吗？安全吗？”**\n\n---\n\n### 我们尝试更深地理解：这些感觉从哪里来？\n\n基于你画作中的线索，这种“内在富足，向外谨慎”的模式，可能和下面几种感受有关。你可以感受一下，哪些更像你？\n\n#### 1. 钱，是不是在替情绪工作？\n有时候，消费或花钱不只是一个经济决策，它承担了安抚情绪的功能。如果情绪没有被看见，财富的流动就可能变成：资源刚进来，就被一种无形的、想要犒劳或安抚自己的冲动带走了。**这里更像是在提醒我们：消费本身可能不是问题，问题是它承担了太多安抚功能。**\n\n#### 2. 想行动，但身体会“刹车”吗？\n财富的流动需要行动去承接。如果你有很多好的想法，但总在即将行动时感到拖延、被自我怀疑打断，那价值的河流就很难流进现实的土壤。**这不是你“懒”或“不努力”，而更像是一种面对未知时身体的自然保护性收缩。** 它在说：“请先确认，这里是安全的。”\n\n#### 3. “安全感”，是否和金钱紧紧绑在一起？\n当金钱被当作安全感的主要来源时，我们对待它的态度就会变得紧绷。即使有进账，内心也未必能真正放松和喜悦，总感觉“还不够”。**这不一定代表现实资源真的不足，更多是内在长久以来一种“不够用”的预设。** 钱越重要，内心就越紧绷，流动就越不自然。\n\n---\n\n### 一些温和的尝试：让资源流动更舒展\n\n你的曼陀罗不是在给你“下诊断”，而是在为你提供一个视角。它说：**你资源本具足，接下来可以练习在外圈打开一扇小小的、安全的窗。**\n\n*   **尝试情绪消费觉察**：在下次想按下“支付”键时，暂停一下，问问自己：“我现在是身体饿了，还是心里空了？” 可以不立刻改变行为，只是记录此刻的感受。这能帮你看清，钱究竟在为你承担什么。\n*   **开始一次低压力小行动**：不要强迫自己完成庞大的计划。找一个与你价值有关的、最小的行动，比如，把你的一项技能分享给一个朋友，或为你的服务定一个让你感觉“有点挑战但可接受”的价格。关键是，去完成它，并感受这个过程。\n*   **练习身体的稳定感**：当紧缩、焦虑的感受出现时，试着把注意力从“怎么办”转移到身体上。双脚稳稳地踩地，感受呼吸的起伏。这是一种从身体层面重建“安全基地”的方式，让理性知道，此刻并没有真正的危险。\n\n这幅画是你与金钱关系的珍贵切片。它揭示了你的天赋，也指明了你的卡点。**财富的舒展，并非需要更多的资源涌入，而是让已经存在的价值，可以更信任地、更安全地去与世界交换与共振。**",
+        "summary": "财富意图清晰但资源流动的边界仍显谨慎，内圈到中圈的能量表达丰富，外圈边界控制较强，反映内在价值感已具足，但在向外的实际交换与接收中仍存在观察与试探。"
+      }
+    }
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "以黄色为主，点缀紫色、蓝色和绿色"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "主要由紫色、黄色、蓝色和绿色组成"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "以蓝绿色和橙色为主"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+[
+  {
+    "block_id": "block-1-input-and-boundary",
+    "stage_keys": [
+      "stage-00-input-context",
+      "stage-01-user-input-context",
+      "stage-02-circle-boundary-decision"
+    ],
+    "status": "complete"
+  },
+  {
+    "block_id": "block-2-visual-and-direct-check",
+    "stage_keys": [
+      "stage-03-visual-evidence",
+      "stage-04-direct-judgment-high-hit-check"
+    ],
+    "status": "complete"
+  },
+  {
+    "block_id": "block-3-circle-rule-reasoning",
+    "stage_keys": [
+      "stage-05-per-circle-color-shape-element-sensing",
+      "stage-06-per-circle-element-generation-control",
+      "stage-07-per-circle-imbalance-patterns",
+      "stage-08-energy-flow-diagnosis",
+      "stage-09-evidence-consolidation"
+    ],
+    "status": "complete"
+  },
+  {
+    "block_id": "block-4-thesis-and-writing-input",
+    "stage_keys": [
+      "stage-10-core-thesis-selection",
+      "stage-11-user-facing-framing",
+      "stage-12-healing-direction-and-report-branching"
+    ],
+    "status": "complete"
+  },
+  {
+    "block_id": "block-5-report-and-quality",
+    "stage_keys": [
+      "stage-13-lite-report-draft",
+      "stage-14-pro-report-draft",
+      "stage-15-visual-assets",
+      "stage-16-final-report-assembly"
+    ],
+    "status": "complete"
+  }
+]

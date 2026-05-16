@@ -1,0 +1,254 @@
+{
+  "report_id": "mandala-interpretation-2b1d41c9f4b3",
+  "report_mode": "pro",
+  "user_context": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "painting_intention": "想看财富议题背后的情绪、关系和行动拉扯。",
+    "painting_feeling": ""
+  },
+  "visual_observation": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作整体呈现出对称的几何结构，中心是一个由紫色和黄色构成的放射状星形图案，周围环绕着绿色、蓝色和黄色的三角形与菱形。外圈装饰有月亮、星星和波浪形图案，颜色以绿色、蓝色和黄色为主，整体色彩明亮且富有层次感。",
+    "circles": {
+      "inner": {
+        "summary": "紫色、黄色；线条清晰，颜色均匀",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "紫色、黄色",
+            "shape": "",
+            "visible_evidence": "紫色、黄色；线条清晰，颜色均匀"
+          }
+        ],
+        "raw_observation": {
+          "center_shape": "放射状星形",
+          "colors": [
+            "紫色",
+            "黄色"
+          ],
+          "shape_pattern": "中心为圆形，向外辐射出八条线，形成星形结构，内部填充紫色，中心为黄色圆点",
+          "texture": "线条清晰，颜色均匀"
+        }
+      },
+      "middle": {
+        "summary": "绿色、蓝色、黄色；三角形、菱形",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "绿色、蓝色、黄色",
+            "shape": "['三角形', '菱形']",
+            "visible_evidence": "绿色、蓝色、黄色；三角形、菱形"
+          }
+        ],
+        "raw_observation": {
+          "dominant_colors": [
+            "绿色",
+            "蓝色",
+            "黄色"
+          ],
+          "shapes": [
+            "三角形",
+            "菱形"
+          ],
+          "pattern_description": "由绿色和蓝色的三角形与菱形交错排列，形成一个复杂的几何网络，其中嵌套有黄色的小三角形",
+          "symmetry": "高度对称，图案在四个方向上重复"
+        }
+      },
+      "outer": {
+        "summary": "绿色、蓝色",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "绿色、蓝色",
+            "shape": "",
+            "visible_evidence": "绿色、蓝色"
+          }
+        ],
+        "raw_observation": {
+          "border_pattern": "波浪形箭头图案",
+          "colors": [
+            "绿色",
+            "蓝色"
+          ],
+          "decorative_elements": [
+            "月亮",
+            "星星"
+          ],
+          "arrangement": "外圈边缘为绿色背景，上面布满蓝色波浪形箭头，内侧区域分布着黄色的月亮和粉色、紫色的星星，均匀排列"
+        }
+      }
+    },
+    "evidence_refs": [
+      "中心星形图案表明内在能量的聚焦和平衡",
+      "绿色和蓝色的主导色可能代表成长与情感的流动",
+      "外圈的月亮和星星象征宇宙能量与灵性连接",
+      "对称的几何结构暗示秩序与和谐"
+    ],
+    "uncertainties": [
+      "无法确定颜色深浅是否代表能量强度的变化",
+      "图案的具体象征意义可能因个人解读而异",
+      "外圈的装饰元素是否具有特定文化含义尚不明确"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "circle_interpretation": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "紫色、黄色；线条清晰，颜色均匀",
+        "dominant_colors": [
+          "紫色、黄色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "绿色、蓝色、黄色；三角形、菱形",
+        "dominant_colors": [
+          "绿色、蓝色、黄色"
+        ],
+        "dominant_shapes": [
+          "['三角形', '菱形']"
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "绿色、蓝色",
+        "dominant_colors": [
+          "绿色、蓝色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "five_element_interpretation": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。"
+    ],
+    "per_circle": {
+      "inner": {
+        "visual_summary": "紫色、黄色；线条清晰，颜色均匀",
+        "dominant_colors": [
+          "紫色、黄色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "绿色、蓝色、黄色；三角形、菱形",
+        "dominant_colors": [
+          "绿色、蓝色、黄色"
+        ],
+        "dominant_shapes": [
+          "['三角形', '菱形']"
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "绿色、蓝色",
+        "dominant_colors": [
+          "绿色、蓝色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "theme_interpretation": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [],
+      "selected_clause_ids": [],
+      "selected_module_ids": [],
+      "clauses": [],
+      "modules": [],
+      "boundaries": []
+    }
+  },
+  "core_thesis": "财富议题的核心拉扯，发生在内在稳定与外在表达之间：画面已发展出清晰的内在秩序与资源，但将这份丰盛延伸到外部世界时仍有谨慎与观望。",
+  "healing_direction": "疗愈将指向让内在的丰盛感向外流动。探索并转化在外圈边界上可能存在的谨慎或规则感，将中心与中圈的活力与秩序感，具体化为现实世界中的行动表达，并信任宇宙的丰盛安排。",
+  "final_report": {
+    "report_id": "mandala-interpretation-2b1d41c9f4b3",
+    "report_mode": "pro",
+    "title": "曼陀罗解读报告",
+    "markdown": "这是一份关于你财富议题的曼陀罗解读报告。它从你画作的色彩、结构与图案出发，尝试去看见那些隐藏在情绪、关系和行动背后的拉扯。请带着开放与温柔的心，慢慢地阅读。\n\n---\n\n### 你的财富曼陀罗解读报告\n\n你好。\n\n在这幅为“财富议题”而创作的曼陀罗里，我们仿佛打开了一扇通往你内心世界的小窗。画面整体呈现出一种明亮且富有层次感的对称之美，这不仅仅是美学的展现，更像是一张你内在财富能量的心灵地图。\n\n**我们看见，一个充满潜力的内在王国。**\n\n*   **核心：你本自具足的力量源泉**\n    曼陀罗的中心是紫色与黄色交织的放射状星形，线条清晰，色彩均匀。紫色常常与精神、智慧和高远的觉知相连，而明亮的黄色则如同太阳，代表着自信、喜悦和意志力。这个中心结构，就像是你内在财富的“发电机”，它告诉我们：你的内心深处，早已具备清晰、稳定且强大的自我核心。你知道自己的力量所在，并且能够平衡好精神追求与物质现实的渴望。这是一种非常宝贵的、本自具足的丰盛感。\n\n*   **中圈：有序流淌的情感与成长网络**\n    从中心向外扩展，我们看到由绿色和蓝色构成的三角形与菱形，它们交错排列，形成了一个复杂又精密的几何网络。绿色是成长、滋养和打开心扉的颜色，蓝色则象征着平静、沟通与情感的流动。这个区域高度对称，秩序井然，说明你如何构建自己的资源、处理人际关系、让财富流动，内心其实已有一套相当成熟的规则和蓝图。你并非毫无章法，反而拥有将情感与资源进行结构化运作的强大潜力。\n\n**我们同样看见，那份谨慎的拉扯与对外的观望。**\n\n*   **外圈：面对外部世界时的审慎边界**\n    画面的最外层，是由绿色、蓝色波浪形箭头，以及月亮、星星等宇宙符号构成的边界。相比中心和中圈的浓墨重彩，这里显得相对简洁和内敛。\n    这是一个非常关键的信号。外圈代表了我们如何与“外部世界”互动。波浪形的箭头，可能暗示着你对财富的行动，像潮汐一样，有自己的周期和节奏，有时向前，有时观望。而那些月亮和星星，则象征着一种更高的期待、灵性的守护，或者说，一种“等待最佳时机”的宇宙观。\n    **这正是我们解读到的核心拉扯：** 你的内在已经构建起一个色彩斑斓、秩序井然的丰盛世界（内在稳定），但在把这份丰盛真正推向外界、变成具体的行动和财富结果时，你似乎穿上了一层“保护衣”，表现出更多的谨慎、观察与规则感（外在表达）。你或许在等待一个完美的信号，或者在担心内在的秩序会被外部世界的复杂所扰动。\n\n### 疗愈的方向：让内在的河流，流向广阔之地\n\n这并不是一个需要被“修复”的问题，而是一个关于“流动”的邀请。你的财富议题，关键在于如何拆除那道无形却坚固的谨慎围墙，让内在的丰盛感，像水一样自然地流淌出去。\n\n1.  **从“完美秩序”到“真实行动”：** 中圈那套精密的网络是你的优势，但请别让它成为行动的束缚。财富的流动有时是非线性的，偶尔的“不完美”和“突破规则”，反而会带来新的生机。尝试从一个最小、最不具威胁性的行动开始，去验证你的内在蓝图，而不是试图在脑海里完善所有细节。\n\n2.  **转化外圈的能量：** 月亮和星星是美好的指引，但真正的航行需要你划动船桨。请试着将外圈的“观察”转化为“好奇”，将“规则”转化为“边界”。你可以带着好奇心去探索一个财富机会，同时设定好安全的边界，而非完全止步不前。问问自己：“如果我相信宇宙是丰盛的，此刻我可以做一件什么事，让这种丰盛流经我？”\n\n3.  **连接中心的力量：** 每天花一点时间，回到这幅曼陀罗的中心，连接那份紫色与黄色的能量。感受你内在的自我核心是多么清晰和有力。当对外迈出步伐感到迟疑时，深呼吸，告诉自己：“我内在的丰盛与力量，足以支持我去应对外部的一切。”\n\n这幅曼陀罗是一个美丽的提醒：你远比自己想象的更富有潜力。那份拉扯，只是内在的丰盛在寻找一个安全的出口。现在，你已经看见了它，疗愈与转变便已经悄然开始。愿你早日将那满心的色彩，都尽情挥洒在外面的世界。",
+    "summary": "财富议题的核心拉扯，发生在内在稳定与外在表达之间：画面已发展出清晰的内在秩序与资源，但将这份丰盛延伸到外部世界时仍有谨慎与观望。"
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "紫色、黄色；线条清晰，颜色均匀"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "绿色、蓝色、黄色；三角形、菱形"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "绿色、蓝色"
+    }
+  ],
+  "boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "manual_regression_default"
+  },
+  "permissions": {
+    "can_answer_follow_up": false,
+    "post_mvp_agent": "report_qa_agent"
+  }
+}

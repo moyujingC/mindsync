@@ -1,0 +1,367 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "lite",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5060.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看自己为什么对财富流动有紧张感。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作呈现出对称的花卉图案，以五个圆形区域为主，每个区域包含绿色和黄色的花朵与藤蔓。中心是一个由棕色、黄色和蓝色构成的星形图案，周围点缀着蓝色的小花。整体色彩明亮，主要使用绿色、黄色、蓝色和棕色，构图平衡且富有节奏感。",
+    "circles": {
+      "inner": {
+        "summary": "中心区域是一个复杂的星形图案，由棕色、黄色和蓝色构成，形成一个核心焦点。周围环绕着四个蓝色的小花，增强了中心的视觉吸引力。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "",
+            "shape": "",
+            "visible_evidence": "中心区域是一个复杂的星形图案，由棕色、黄色和蓝色构成，形成一个核心焦点。周围环绕着四个蓝色的小花，增强了中心的视觉吸引力。"
+          }
+        ],
+        "raw_observation": {
+          "description": "中心区域是一个复杂的星形图案，由棕色、黄色和蓝色构成，形成一个核心焦点。周围环绕着四个蓝色的小花，增强了中心的视觉吸引力。",
+          "colors": [
+            "棕色",
+            "黄色",
+            "蓝色"
+          ],
+          "shapes": [
+            "星形",
+            "小花"
+          ]
+        }
+      },
+      "middle": {
+        "summary": "中圈由五个圆形区域组成，每个区域都包含绿色和黄色的花朵以及卷曲的藤蔓。这些圆形区域之间通过棕色的几何图案连接，形成了一个连续的环状结构。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "",
+            "shape": "",
+            "visible_evidence": "中圈由五个圆形区域组成，每个区域都包含绿色和黄色的花朵以及卷曲的藤蔓。这些圆形区域之间通过棕色的几何图案连接，形成了一个连续的环状结构。"
+          }
+        ],
+        "raw_observation": {
+          "description": "中圈由五个圆形区域组成，每个区域都包含绿色和黄色的花朵以及卷曲的藤蔓。这些圆形区域之间通过棕色的几何图案连接，形成了一个连续的环状结构。",
+          "colors": [
+            "绿色",
+            "黄色",
+            "棕色",
+            "紫色",
+            "粉色"
+          ],
+          "shapes": [
+            "圆形",
+            "花朵",
+            "藤蔓",
+            "几何图案"
+          ]
+        }
+      },
+      "outer": {
+        "summary": "外圈由棕色的几何图案构成，这些图案围绕着五个圆形区域，形成了一个完整的边界。这些几何图案与内部的花卉图案形成对比，增强了整体的对称性和稳定性。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "",
+            "shape": "",
+            "visible_evidence": "外圈由棕色的几何图案构成，这些图案围绕着五个圆形区域，形成了一个完整的边界。这些几何图案与内部的花卉图案形成对比，增强了整体的对称性和稳定性。"
+          }
+        ],
+        "raw_observation": {
+          "description": "外圈由棕色的几何图案构成，这些图案围绕着五个圆形区域，形成了一个完整的边界。这些几何图案与内部的花卉图案形成对比，增强了整体的对称性和稳定性。",
+          "colors": [
+            "棕色",
+            "白色"
+          ],
+          "shapes": [
+            "几何图案",
+            "方形"
+          ]
+        }
+      }
+    },
+    "evidence_refs": [
+      "画面整体呈现对称的花卉图案，具有强烈的视觉平衡感。",
+      "中心区域为星形图案，周围有蓝色小花，形成核心焦点。",
+      "中圈由五个圆形区域组成，每个区域包含绿色和黄色的花朵及藤蔓。",
+      "外圈由棕色几何图案构成，形成完整边界。",
+      "颜色主要为绿色、黄色、蓝色和棕色，整体明亮且和谐。"
+    ],
+    "uncertainties": [
+      "无法确定具体绘画意图或心理状态，仅基于视觉证据进行描述。",
+      "颜色深浅和线条粗细的细节可能影响解读，但当前分析基于可见特征。",
+      "未提供用户背景信息，无法进一步关联个人主题或情感状态。"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "中心区域是一个复杂的星形图案，由棕色、黄色和蓝色构成，形成一个核心焦点。周围环绕着四个蓝色的小花，增强了中心的视觉吸引力。",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "中圈由五个圆形区域组成，每个区域都包含绿色和黄色的花朵以及卷曲的藤蔓。这些圆形区域之间通过棕色的几何图案连接，形成了一个连续的环状结构。",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "外圈由棕色的几何图案构成，这些图案围绕着五个圆形区域，形成了一个完整的边界。这些几何图案与内部的花卉图案形成对比，增强了整体的对称性和稳定性。",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。"
+    ],
+    "per_circle": {
+      "inner": {
+        "visual_summary": "中心区域是一个复杂的星形图案，由棕色、黄色和蓝色构成，形成一个核心焦点。周围环绕着四个蓝色的小花，增强了中心的视觉吸引力。",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "中圈由五个圆形区域组成，每个区域都包含绿色和黄色的花朵以及卷曲的藤蔓。这些圆形区域之间通过棕色的几何图案连接，形成了一个连续的环状结构。",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "外圈由棕色的几何图案构成，这些图案围绕着五个圆形区域，形成了一个完整的边界。这些几何图案与内部的花卉图案形成对比，增强了整体的对称性和稳定性。",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": []
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": []
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": []
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "中心区域是一个复杂的星形图案，由棕色、黄色和蓝色构成，形成一个核心焦点。周围环绕着四个蓝色的小花，增强了中心的视觉吸引力。"
+      },
+      {
+        "id": "middle-001",
+        "circle": "middle",
+        "visible_evidence": "中圈由五个圆形区域组成，每个区域都包含绿色和黄色的花朵以及卷曲的藤蔓。这些圆形区域之间通过棕色的几何图案连接，形成了一个连续的环状结构。"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "外圈由棕色的几何图案构成，这些图案围绕着五个圆形区域，形成了一个完整的边界。这些几何图案与内部的花卉图案形成对比，增强了整体的对称性和稳定性。"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "你为自己构建了一个精巧有序的财富循环体系，但正是这种对稳定控制的执着，成为了紧张的源头。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [],
+      "selected_clause_ids": [],
+      "selected_module_ids": [],
+      "clauses": [],
+      "modules": [],
+      "boundaries": []
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "在这幅曼陀罗中，你的财富世界呈现出一种非常工整、对称的美感：中心有一个稳定的核心焦点，周围被规律排列的花朵和藤蔓环绕，最外层还有明确的几何边界。这说明你内在对财富其实有一种很清晰的秩序感和规划能力。但同时，“流动”本应是柔软的、变化的，而这幅画里强烈的控制感和对称性，反而把流动给‘框’住了。紧张感，或许就源于你试图让财富流动在一个完全可预期的、安全可控的范围内。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [],
+      "selected_clause_ids": [],
+      "selected_module_ids": [],
+      "clauses": [],
+      "modules": [],
+      "boundaries": []
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "松开外圈的控制，允许财富流动出现更自然、有机的节奏，而非绝对对称与完美秩序。",
+    "report_mode": "lite",
+    "writing_input_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [],
+      "selected_clause_ids": [],
+      "selected_module_ids": [],
+      "clauses": [],
+      "modules": [],
+      "boundaries": []
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 曼陀罗解读报告：财富议题\n\n亲爱的朋友，感谢你带着对财富流动的觉察而来。这幅曼陀罗是你内心世界的映照，透过它，我们可以一起探索那份紧张感背后的深层秩序。\n\n---\n\n### 画面的语言\n你的曼陀**呈现出非常工整、对称的美感**：中心有一个稳固的星形核心，向外被盛开的绿色与黄色花朵、卷曲的藤蔓规律地环绕，最外层再以棕色的几何边界完整收束。色彩明亮和谐，构图富有节奏，整体给人一种**稳定而精巧**的印象。\n\n### 核心看见\n你为自己构建了一个精巧有序的财富循环体系，但正是这种对稳定控制的执着，成为了紧张的源头。\n\n你的内在其实有着清晰的财富规划能力和对“生长”的渴望（中圈层层绽放的花朵与藤蔓）。然而，“流动”本应是柔软的、富有变化的，这幅画中强烈的控制感和对称性，却悄悄把流动给“框”住了。紧张感，或许就源于你试图让财富完全运行在一个可预期、可掌握的“安全圈”内——这让你累积了能力，却也承担了过度的掌控压力。\n\n### 松弛的方向\n接下来的日子，可以试着给那份“工整”留一道缝隙：\n\n*   **允许微小的“不对称”发生**：偶尔让消费或收入计划出现一点弹性，练习在变化中保持呼吸，而非立刻修正。\n*   **感受藤蔓的柔软**：画中的藤蔓不是僵直的线条。试着在财富决策中，多聆听身体的感受和当下的机缘，而不只是头脑的“应该”。\n*   **重新看待边界**：那个棕色的外圈保护了你，但也隔绝了部分可能性。可以问问自己：如果边界不是墙，而是一道可以开合的篱笆，你会让什么新的资源流进来？\n\n你拥有让财富生根开花的土壤，而真正的滋养，往往来自持续、自由的生命流动，而非绝对完美的秩序。愿你在财富的河流中，既能建造堤岸，也能学会踏浪而行。"
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-59b11c133795",
+      "report_mode": "lite",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 曼陀罗解读报告：财富议题\n\n亲爱的朋友，感谢你带着对财富流动的觉察而来。这幅曼陀罗是你内心世界的映照，透过它，我们可以一起探索那份紧张感背后的深层秩序。\n\n---\n\n### 画面的语言\n你的曼陀**呈现出非常工整、对称的美感**：中心有一个稳固的星形核心，向外被盛开的绿色与黄色花朵、卷曲的藤蔓规律地环绕，最外层再以棕色的几何边界完整收束。色彩明亮和谐，构图富有节奏，整体给人一种**稳定而精巧**的印象。\n\n### 核心看见\n你为自己构建了一个精巧有序的财富循环体系，但正是这种对稳定控制的执着，成为了紧张的源头。\n\n你的内在其实有着清晰的财富规划能力和对“生长”的渴望（中圈层层绽放的花朵与藤蔓）。然而，“流动”本应是柔软的、富有变化的，这幅画中强烈的控制感和对称性，却悄悄把流动给“框”住了。紧张感，或许就源于你试图让财富完全运行在一个可预期、可掌握的“安全圈”内——这让你累积了能力，却也承担了过度的掌控压力。\n\n### 松弛的方向\n接下来的日子，可以试着给那份“工整”留一道缝隙：\n\n*   **允许微小的“不对称”发生**：偶尔让消费或收入计划出现一点弹性，练习在变化中保持呼吸，而非立刻修正。\n*   **感受藤蔓的柔软**：画中的藤蔓不是僵直的线条。试着在财富决策中，多聆听身体的感受和当下的机缘，而不只是头脑的“应该”。\n*   **重新看待边界**：那个棕色的外圈保护了你，但也隔绝了部分可能性。可以问问自己：如果边界不是墙，而是一道可以开合的篱笆，你会让什么新的资源流进来？\n\n你拥有让财富生根开花的土壤，而真正的滋养，往往来自持续、自由的生命流动，而非绝对完美的秩序。愿你在财富的河流中，既能建造堤岸，也能学会踏浪而行。",
+      "summary": "你为自己构建了一个精巧有序的财富循环体系，但正是这种对稳定控制的执着，成为了紧张的源头。"
+    }
+  }
+}

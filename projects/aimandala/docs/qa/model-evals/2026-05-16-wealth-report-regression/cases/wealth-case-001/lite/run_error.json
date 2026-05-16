@@ -1,7 +1,0 @@
-{
-  "case_id": "wealth-case-001",
-  "mode": "lite",
-  "status": "failed",
-  "error": "vision_model_failed: empty or invalid stage-03 payload",
-  "output_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-16-wealth-report-regression/cases/wealth-case-001/lite"
-}

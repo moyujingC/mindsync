@@ -199,6 +199,48 @@ def test_mandala_agent_quality_gate_rejects_financial_promises(tmp_path):
     assert "final_report_internal_text_leak" in quality["failure_ids"]
 
 
+def test_mandala_agent_quality_gate_allows_boundary_disclaimer(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md="本报告用于个人觉察参考，不构成投资建议或心理诊断。",
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is True
+
+
+def test_mandala_agent_quality_gate_accepts_raw_visual_observation(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    stage_outputs = deepcopy(result.stage_outputs)
+    stage_outputs["stage-03-visual-evidence"]["circles"] = {
+        "inner": {"summary": "", "visual_units": [], "raw_observation": {"center": "中心红色星形。"}},
+        "middle": {"summary": "", "visual_units": [], "raw_observation": {"colors": "中圈绿色叶片。"}},
+        "outer": {"summary": "", "visual_units": [], "raw_observation": {"boundary": "外圈边界闭合。"}},
+    }
+
+    quality = run_quality_gate(
+        stage_outputs=stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=result.final_report_md,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is True
+
+
 def test_wealth_runtime_routes_and_context():
     runtime = get_wealth_report_runtime()
 

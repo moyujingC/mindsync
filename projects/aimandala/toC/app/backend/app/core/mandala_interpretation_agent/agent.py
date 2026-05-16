@@ -365,7 +365,15 @@ class MandalaInterpretationAgent:
         color_values = self._string_list(raw_circle.get("color_distribution"))
         if not color_values:
             color_values = self._string_list(raw_circle.get("dominant_colors"))
-        shape = str(raw_circle.get("shape") or raw_circle.get("pattern") or "").strip()
+        if not color_values:
+            color_values = self._string_list(raw_circle.get("colors"))
+        shape = str(
+            raw_circle.get("shape")
+            or raw_circle.get("shapes")
+            or raw_circle.get("pattern")
+            or raw_circle.get("patterns")
+            or ""
+        ).strip()
         evidence = self._circle_summary(raw_circle)
         if not evidence and not color_values and not shape:
             return []
@@ -407,7 +415,20 @@ class MandalaInterpretationAgent:
         if explicit:
             return explicit
         parts = []
-        for key in ["color_distribution", "texture", "pattern", "shape", "intensity"]:
+        for key in [
+            "center",
+            "color_distribution",
+            "dominant_colors",
+            "colors",
+            "texture",
+            "pattern",
+            "patterns",
+            "shape",
+            "shapes",
+            "transition",
+            "boundary",
+            "intensity",
+        ]:
             value = raw_circle.get(key)
             if isinstance(value, list):
                 value_text = "、".join(str(item).strip() for item in value if str(item).strip())
