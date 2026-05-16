@@ -75,9 +75,9 @@ def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_pat
         "\n".join(
             [
                 "AIMANDALA_LLM_API_KEY=file-key",
-                "AIMANDALA_LLM_VISION_API_KEY=file-vision-key",
-                "AIMANDALA_LLM_VISION_BASE_URL=https://vision.example.test",
-                "AIMANDALA_LLM_VISION_MODEL=vision-model",
+                "AIMANDALA_LLM_VISION_FALLBACK_API_KEY=file-vision-key",
+                "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL=https://vision.example.test",
+                "AIMANDALA_LLM_VISION_FALLBACK_MODEL=vision-model",
                 "AIMANDALA_REDEEM_CODES=CODE-LITE:lite",
             ]
         ),
@@ -88,9 +88,31 @@ def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_pat
     monkeypatch.delenv("AIMANDALA_LLM_VISION_API_KEY", raising=False)
     monkeypatch.delenv("AIMANDALA_LLM_VISION_BASE_URL", raising=False)
     monkeypatch.delenv("AIMANDALA_LLM_VISION_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_MODEL", raising=False)
     monkeypatch.delenv("AIMANDALA_REDEEM_CODES", raising=False)
 
     payload = runner.build_env_check_payload(planned_runs=[{"case_id": "wealth-case-001"}])
 
     assert payload["ready"] is True
     assert payload["planned_run_count"] == 1
+    assert payload["vision_ready"] is True
+
+
+def test_build_env_check_payload_requires_any_vision_route(monkeypatch):
+    runner = _load_runner_module()
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "text-key")
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "CODE-LITE:lite")
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_MODEL", raising=False)
+
+    payload = runner.build_env_check_payload(planned_runs=[])
+
+    assert payload["ready"] is False
+    assert payload["vision_ready"] is False
+    assert "AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*" in payload["missing_required"]

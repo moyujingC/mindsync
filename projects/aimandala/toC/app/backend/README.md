@@ -100,12 +100,16 @@ git diff --check
 本地可以用私有环境文件集中放密钥，文件不要提交：
 
 ```bash
-export AIMANDALA_ENV_FILE=/absolute/path/to/aimandala.local.env
-python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py --check-env
-python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py --mode both
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py \
+  --env-file /absolute/path/to/aimandala.local.env \
+  --check-env
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py \
+  --env-file /absolute/path/to/aimandala.local.env \
+  --mode both
 ```
 
 私有环境文件使用普通 `KEY=VALUE` 格式。已经在 shell 里设置的变量优先级更高，不会被文件覆盖。
+视觉模型可以走主配置 `AIMANDALA_LLM_VISION_*`，也可以走 fallback 配置 `AIMANDALA_LLM_VISION_FALLBACK_*`。
 
 ## 兑换码配置
 

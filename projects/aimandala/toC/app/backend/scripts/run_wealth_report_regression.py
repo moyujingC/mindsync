@@ -78,11 +78,18 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Check model and redeem-code environment without calling models.",
     )
+    parser.add_argument(
+        "--env-file",
+        default="",
+        help="Private env file to load before checking or running regression.",
+    )
     return parser
 
 
 def main() -> int:
     args = build_parser().parse_args()
+    if args.env_file.strip():
+        os.environ["AIMANDALA_ENV_FILE"] = args.env_file.strip()
     regression_root = Path(args.regression_root)
     cases = load_cases(regression_root, case_id=args.case_id.strip() or None)
     modes: list[ReportMode] = ["lite", "pro"] if args.mode == "both" else [args.mode]
@@ -219,20 +226,35 @@ def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
             "AIMANDALA_LLM_VISION_API_KEY",
             "AIMANDALA_LLM_VISION_BASE_URL",
             "AIMANDALA_LLM_VISION_MODEL",
+            "AIMANDALA_LLM_VISION_FALLBACK_API_KEY",
+            "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL",
+            "AIMANDALA_LLM_VISION_FALLBACK_MODEL",
             "AIMANDALA_REDEEM_CODES",
         ]
     }
+    primary_vision_required = [
+        "AIMANDALA_LLM_VISION_API_KEY",
+        "AIMANDALA_LLM_VISION_BASE_URL",
+        "AIMANDALA_LLM_VISION_MODEL",
+    ]
+    fallback_vision_required = [
+        "AIMANDALA_LLM_VISION_FALLBACK_API_KEY",
+        "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL",
+        "AIMANDALA_LLM_VISION_FALLBACK_MODEL",
+    ]
+    primary_vision_ready = all(os.getenv(name) for name in primary_vision_required)
+    fallback_vision_ready = all(os.getenv(name) for name in fallback_vision_required)
+    vision_ready = primary_vision_ready or fallback_vision_ready
     missing_required = [
         name
         for name in [
             "AIMANDALA_LLM_API_KEY",
-            "AIMANDALA_LLM_VISION_API_KEY",
-            "AIMANDALA_LLM_VISION_BASE_URL",
-            "AIMANDALA_LLM_VISION_MODEL",
             "AIMANDALA_REDEEM_CODES",
         ]
         if not os.getenv(name)
     ]
+    if not vision_ready:
+        missing_required.append("AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*")
     ready = not missing_required
     return {
         "status": "env_check",
@@ -240,10 +262,13 @@ def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
         "planned_run_count": len(planned_runs),
         "env": env_status,
         "missing_required": missing_required,
+        "primary_vision_ready": primary_vision_ready,
+        "fallback_vision_ready": fallback_vision_ready,
+        "vision_ready": vision_ready,
         "notes": [
             "Only set/missing status is reported; secret values are never printed.",
             "AIMANDALA_LLM_BASE_URL and AIMANDALA_LLM_MODEL have DeepSeek v4 defaults if omitted.",
-            "Vision variables are required for real image regression.",
+            "Vision variables or a fallback vision model are required for real image regression.",
         ],
     }
 
