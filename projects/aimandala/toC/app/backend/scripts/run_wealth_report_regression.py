@@ -245,23 +245,29 @@ def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
     primary_vision_ready = all(os.getenv(name) for name in primary_vision_required)
     fallback_vision_ready = all(os.getenv(name) for name in fallback_vision_required)
     vision_ready = primary_vision_ready or fallback_vision_ready
-    missing_required = [
+    missing_agent_required = [
         name
-        for name in [
-            "AIMANDALA_LLM_API_KEY",
-            "AIMANDALA_REDEEM_CODES",
-        ]
+        for name in ["AIMANDALA_LLM_API_KEY"]
         if not os.getenv(name)
     ]
     if not vision_ready:
-        missing_required.append("AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*")
-    ready = not missing_required
+        missing_agent_required.append("AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*")
+    missing_api_required = [
+        name
+        for name in ["AIMANDALA_REDEEM_CODES"]
+        if not os.getenv(name)
+    ]
+    ready = not missing_agent_required
     return {
         "status": "env_check",
         "ready": ready,
+        "agent_regression_ready": ready,
+        "api_e2e_ready": ready and not missing_api_required,
         "planned_run_count": len(planned_runs),
         "env": env_status,
-        "missing_required": missing_required,
+        "missing_required": missing_agent_required,
+        "missing_agent_required": missing_agent_required,
+        "missing_api_required": missing_api_required,
         "primary_vision_ready": primary_vision_ready,
         "fallback_vision_ready": fallback_vision_ready,
         "vision_ready": vision_ready,
@@ -269,6 +275,7 @@ def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
             "Only set/missing status is reported; secret values are never printed.",
             "AIMANDALA_LLM_BASE_URL and AIMANDALA_LLM_MODEL have DeepSeek v4 defaults if omitted.",
             "Vision variables or a fallback vision model are required for real image regression.",
+            "AIMANDALA_REDEEM_CODES is required for /api/wealth-reports E2E checks, not for this agent regression runner.",
         ],
     }
 

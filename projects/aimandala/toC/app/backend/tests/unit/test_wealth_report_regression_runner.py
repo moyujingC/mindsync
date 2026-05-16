@@ -65,7 +65,7 @@ def test_build_env_check_payload_reports_missing_required_fields(monkeypatch):
 
     assert payload["status"] == "env_check"
     assert payload["ready"] is False
-    assert "AIMANDALA_REDEEM_CODES" in payload["missing_required"]
+    assert "AIMANDALA_LLM_API_KEY" in payload["missing_agent_required"]
 
 
 def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_path):
@@ -78,7 +78,6 @@ def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_pat
                 "AIMANDALA_LLM_VISION_FALLBACK_API_KEY=file-vision-key",
                 "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL=https://vision.example.test",
                 "AIMANDALA_LLM_VISION_FALLBACK_MODEL=vision-model",
-                "AIMANDALA_REDEEM_CODES=CODE-LITE:lite",
             ]
         ),
         encoding="utf-8",
@@ -96,6 +95,9 @@ def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_pat
     payload = runner.build_env_check_payload(planned_runs=[{"case_id": "wealth-case-001"}])
 
     assert payload["ready"] is True
+    assert payload["agent_regression_ready"] is True
+    assert payload["api_e2e_ready"] is False
+    assert payload["missing_api_required"] == ["AIMANDALA_REDEEM_CODES"]
     assert payload["planned_run_count"] == 1
     assert payload["vision_ready"] is True
 

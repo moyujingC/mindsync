@@ -114,10 +114,11 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 
 ## 兑换码配置
 
-报告生成需要配置 `AIMANDALA_REDEEM_CODES`。格式为：
+`/api/wealth-reports` 端到端报告生成需要配置 `AIMANDALA_REDEEM_CODES`。格式为：
 
 ```bash
 AIMANDALA_REDEEM_CODES="CODE-LITE:lite;CODE-PRO:pro;CODE-ALL:lite,pro"
 ```
 
 未配置、未传码、或兑换码不适用于所选 Lite / Pro 版本时，`/api/wealth-reports` 会返回 `402`。
+说明：`run_wealth_report_regression.py` 直接调用智能体，不经过 API 兑换码校验，所以真实样例回归不需要兑换码。
