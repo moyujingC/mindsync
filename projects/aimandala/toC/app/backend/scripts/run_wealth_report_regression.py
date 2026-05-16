@@ -1,0 +1,235 @@
+"""Run wealth report regression cases and write Lite / Pro review artifacts."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Literal
+
+
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+AIMANDALA_ROOT = Path(__file__).resolve().parents[4]
+REPO_ROOT = AIMANDALA_ROOT.parents[1]
+DEFAULT_REGRESSION_ROOT = (
+    AIMANDALA_ROOT
+    / "docs"
+    / "qa"
+    / "model-evals"
+    / "2026-05-16-wealth-report-regression"
+)
+
+sys.path.insert(0, str(BACKEND_ROOT))
+
+from app.core.llm.runtime import create_llm_client_from_env  # noqa: E402
+from app.core.mandala_interpretation_agent.agent import MandalaInterpretationAgent  # noqa: E402
+from app.core.mandala_interpretation_agent.artifact_store import MandalaInterpretationArtifactStore  # noqa: E402
+from app.core.mandala_interpretation_agent.contracts import (  # noqa: E402
+    MandalaAgentInput,
+    MandalaImageInput,
+    MandalaOutputRequirements,
+    MandalaUserContext,
+)
+from app.core.mandala_interpretation_agent.knowledge_pack_builder import KnowledgePackBuilder  # noqa: E402
+
+
+ReportMode = Literal["lite", "pro"]
+
+
+@dataclass(frozen=True)
+class WealthRegressionCase:
+    case_id: str
+    source_path: Path
+    image_path: Path
+    painting_intention: str
+    painting_feeling: str
+    inner_radius: int = 35
+    middle_radius: int = 65
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--regression-root",
+        default=str(DEFAULT_REGRESSION_ROOT),
+        help="Wealth regression root containing cases/.",
+    )
+    parser.add_argument(
+        "--case-id",
+        default="",
+        help="Run one case id only, for example wealth-case-001.",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["lite", "pro", "both"],
+        default="both",
+        help="Report mode to run.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate case configuration and print planned runs without calling models.",
+    )
+    return parser
+
+
+def main() -> int:
+    args = build_parser().parse_args()
+    regression_root = Path(args.regression_root)
+    cases = load_cases(regression_root, case_id=args.case_id.strip() or None)
+    modes: list[ReportMode] = ["lite", "pro"] if args.mode == "both" else [args.mode]
+
+    planned = [
+        {
+            "case_id": case.case_id,
+            "mode": mode,
+            "image_path": str(case.image_path),
+            "output_dir": str(regression_root / "cases" / case.case_id / mode),
+        }
+        for case in cases
+        for mode in modes
+    ]
+
+    if args.dry_run:
+        print(json.dumps({"status": "dry_run", "planned_runs": planned}, ensure_ascii=False, indent=2))
+        return 0
+
+    llm_client = create_llm_client_from_env()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    results = []
+    exit_code = 0
+
+    for case in cases:
+        for mode in modes:
+            output_dir = regression_root / "cases" / case.case_id / mode
+            try:
+                agent_input = build_agent_input(case, report_mode=mode)
+                result = MandalaInterpretationAgent(llm_client=llm_client).run(
+                    agent_input=agent_input,
+                    knowledge_pack=knowledge_pack,
+                )
+                written = MandalaInterpretationArtifactStore(output_dir).write(result)
+                results.append(
+                    {
+                        "case_id": case.case_id,
+                        "mode": mode,
+                        "status": "complete",
+                        "quality_gate_passed": result.quality_gate["passed"],
+                        "output_dir": str(output_dir),
+                        "files": [str(path) for path in written],
+                    }
+                )
+                if not result.quality_gate["passed"]:
+                    exit_code = 2
+            except Exception as error:  # noqa: BLE001 - runner must keep batch status readable.
+                output_dir.mkdir(parents=True, exist_ok=True)
+                error_payload = {
+                    "case_id": case.case_id,
+                    "mode": mode,
+                    "status": "failed",
+                    "error": str(error),
+                    "output_dir": str(output_dir),
+                }
+                (output_dir / "run_error.json").write_text(
+                    json.dumps(error_payload, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+                results.append(error_payload)
+                exit_code = 2
+
+    print(json.dumps({"status": "complete", "results": results}, ensure_ascii=False, indent=2))
+    return exit_code
+
+
+def load_cases(regression_root: Path, *, case_id: str | None = None) -> list[WealthRegressionCase]:
+    cases_root = regression_root / "cases"
+    if not cases_root.exists():
+        raise FileNotFoundError(f"cases directory missing: {cases_root}")
+
+    source_files = sorted(cases_root.glob("wealth-case-*/source.md"))
+    cases = [parse_case_source(path) for path in source_files]
+    if case_id:
+        cases = [case for case in cases if case.case_id == case_id]
+        if not cases:
+            raise ValueError(f"case id not found: {case_id}")
+    return cases
+
+
+def parse_case_source(source_path: Path) -> WealthRegressionCase:
+    text = source_path.read_text(encoding="utf-8")
+    case_id = source_path.parent.name
+    source_image = _extract_metadata(text, "source_image")
+    if not source_image:
+        raise ValueError(f"{case_id}: source_image missing")
+    image_path = resolve_repo_path(source_image)
+    if not image_path.exists():
+        raise FileNotFoundError(f"{case_id}: image not found: {image_path}")
+    return WealthRegressionCase(
+        case_id=case_id,
+        source_path=source_path,
+        image_path=image_path,
+        painting_intention=_extract_bullet_value(text, "用户意图"),
+        painting_feeling=_extract_bullet_value(text, "创作感受"),
+    )
+
+
+def build_agent_input(case: WealthRegressionCase, *, report_mode: ReportMode) -> MandalaAgentInput:
+    return MandalaAgentInput(
+        report_mode=report_mode,
+        image=MandalaImageInput(local_path=str(case.image_path)),
+        user_context=MandalaUserContext(
+            theme="wealth",
+            theme_label="财富议题",
+            painting_intention=case.painting_intention,
+            painting_feeling="" if case.painting_feeling == "待补充。" else case.painting_feeling,
+        ),
+        circle_boundaries={
+            "inner_radius": case.inner_radius,
+            "middle_radius": case.middle_radius,
+            "radius_unit": "normalized_percent",
+            "source": "manual_regression_default",
+        },
+        output_requirements=MandalaOutputRequirements(),
+    )
+
+
+def resolve_repo_path(raw_path: str) -> Path:
+    path_text = raw_path.strip()
+    if path_text.startswith("$REPO_ROOT/"):
+        return REPO_ROOT / path_text[len("$REPO_ROOT/") :]
+    candidate = Path(path_text)
+    if candidate.is_absolute():
+        return candidate
+    return REPO_ROOT / candidate
+
+
+def _extract_metadata(text: str, key: str) -> str:
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped.startswith(">"):
+            continue
+        content = stripped[1:].strip()
+        for sep in ["：", ":"]:
+            prefix = f"{key}{sep}"
+            if content.startswith(prefix):
+                return content[len(prefix) :].strip()
+    return ""
+
+
+def _extract_bullet_value(text: str, key: str) -> str:
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped.startswith("- "):
+            continue
+        content = stripped[2:].strip()
+        for sep in ["：", ":"]:
+            prefix = f"{key}{sep}"
+            if content.startswith(prefix):
+                return content[len(prefix) :].strip()
+    return ""
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

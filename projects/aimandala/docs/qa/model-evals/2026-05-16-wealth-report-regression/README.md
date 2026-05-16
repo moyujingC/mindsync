@@ -100,3 +100,30 @@ cases/
 3. 跑 Lite / Pro 报告。
 4. 填写 review。
 5. 汇总评分和失败原因。
+
+## 7. 执行命令
+
+先验证 case 配置：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py --dry-run
+```
+
+跑单个 case：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py \
+  --case-id wealth-case-001 \
+  --mode both
+```
+
+跑全部 case：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py --mode both
+```
+
+说明：
+
+- 真实执行需要先配置视觉模型和文字模型环境变量。
+- 如果模型不可用，runner 会在对应 `lite/` 或 `pro/` 目录写入 `run_error.json`。
