@@ -10,7 +10,7 @@ from app.core.wealth_report import get_wealth_report_runtime
 
 from .contracts import EXECUTION_BLOCKS, STAGE_KEYS, MandalaAgentInput, MandalaAgentResult
 from .knowledge_pack_builder import knowledge_pack_to_prompt_fragment
-from .quality_gate import run_quality_gate
+from .quality_gate import GENERIC_OPENING_PHRASES, run_quality_gate
 
 
 class MandalaInterpretationAgent:
@@ -264,8 +264,10 @@ class MandalaInterpretationAgent:
         if not report_text or not report_text.strip():
             raise RuntimeError("chat_model_failed: empty final report")
         markdown = report_text.strip()
-        draft_issues = self._report_draft_issues(markdown, report_mode=agent_input.report_mode)
-        if draft_issues:
+        for _attempt in range(2):
+            draft_issues = self._report_draft_issues(markdown, report_mode=agent_input.report_mode)
+            if not draft_issues:
+                break
             retry_text = self.llm_client.generate_text(
                 task="chat",
                 system_prompt="你是曼陀罗解读报告写作者。请严格修正报告结构问题。",
@@ -315,13 +317,16 @@ class MandalaInterpretationAgent:
     def _report_draft_issues(self, markdown: str, *, report_mode: str) -> list[str]:
         issues: list[str] = []
         text = markdown.strip()
-        if not text.startswith("#") or "财富议题" not in text.splitlines()[0]:
+        if not text.startswith("# ") or "财富议题" not in text.splitlines()[0]:
             issues.append("title_must_be_markdown_h1_and_include_wealth_topic")
-        if text.startswith(("好的", "这是为你生成", "这是一份为你生成", "亲爱的朋友")):
+        if any(phrase in text[:300] for phrase in GENERIC_OPENING_PHRASES):
             issues.append("opening_must_not_use_generic_greeting")
         min_chars = 1000 if report_mode == "pro" else 500
         if len(text) < min_chars:
             issues.append(f"report_too_short_min_{min_chars}_chars")
+        max_chars = 2400 if report_mode == "pro" else 1400
+        if len(text) > max_chars:
+            issues.append(f"report_too_long_max_{max_chars}_chars")
         return issues
 
     def _normalize_stage03(self, payload: dict[str, Any]) -> dict[str, Any]:

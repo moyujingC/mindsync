@@ -1,25 +1,26 @@
 # 财富议题报告回归评估表
 
-> 状态：first_pass_generated
-> 版本：0.1.0
-> last_updated：2026-05-16
+> 状态：first_pass_reviewed
+> 版本：0.1.1
+> last_updated：2026-05-17
 
 评分：1 = 严重不合格，3 = 勉强可用，5 = 达到上线标准。
 
 | case_id | source_image | lite_visual_evidence | lite_wealth_focus | lite_safety | lite_user_value | pro_visual_evidence | pro_wealth_focus | pro_emergent_translation | pro_lite_difference | pro_safety | pro_user_value | pass | failure_category | notes |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|---|
-| wealth-case-001 | fixtures/toc-mvp/assets/IMG_5057.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过质量门；财富主线清楚，Pro 有更完整的机制展开。 |
-| wealth-case-002 | fixtures/toc-mvp/assets/IMG_5060.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass_with_review | writing_issue | Lite 已按新 prompt 重跑，结构改善；仍建议人工复核表达厚度。 |
-| wealth-case-003 | fixtures/toc-mvp/assets/IMG_5063.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | 首次 Pro 被质量门误杀，已修正质量门和视觉证据归一化后通过。 |
-| wealth-case-004 | fixtures/toc-mvp/assets/IMG_5065.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过质量门，报告长度和主题稳定性正常。 |
-| wealth-case-005 | fixtures/toc-mvp/assets/IMG_5067.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过质量门，报告结构稳定。 |
+| wealth-case-001 | fixtures/toc-mvp/assets/IMG_5057.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | 重跑后 Lite/Pro 均通过当前质量门；财富主线清楚，Pro 有更完整的机制展开。 |
+| wealth-case-002 | fixtures/toc-mvp/assets/IMG_5060.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite 已按新 prompt 重跑并通过质量门；报告厚度可用，仍可作为人工复核重点样例。 |
+| wealth-case-003 | fixtures/toc-mvp/assets/IMG_5063.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过当前质量门；报告围绕价值表达、现实交换和谨慎边界展开。 |
+| wealth-case-004 | fixtures/toc-mvp/assets/IMG_5065.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过当前质量门，报告长度和主题稳定性正常。 |
+| wealth-case-005 | fixtures/toc-mvp/assets/IMG_5067.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass_with_risk | vision_evidence_issue | 现有 Lite/Pro 产物通过当前质量门；单独重跑 Lite 时视觉模型连续空返回，需要后续补视觉重试或 fallback。 |
 
 ## 第一轮运行结论
 
 - 5 个 case、10 份 Lite / Pro 报告均已生成。
-- 10 份报告最终均通过质量门。
-- 发现并修正质量门 / 视觉证据归一化问题：合规免责声明误判、真实视觉模型 raw observation 未进入 evidence map、报告标题和长度缺少检查。
-- 当前阶段通过率按质量门计算为 100%；按内容人工复核口径，`wealth-case-002` 仍建议重点复核 Lite 的表达厚度。
+- 10 份报告最终均通过当前质量门。
+- 已修正质量门 / 视觉证据归一化问题：合规免责声明误判、真实视觉模型 raw observation 未进入 evidence map、报告标题层级、寒暄式开头、Lite / Pro 长度边界。
+- 当前阶段通过率按质量门计算为 100%；按工程风险口径，`wealth-case-005` 暴露视觉模型偶发空返回，需要在生产试跑前补重试或 fallback。
+- Lite 质量门采用 500 到 1400 字符的硬边界；Prompt 仍建议 500 到 1200 字符，避免因少量字数波动造成假失败。
 
 ## 评分口径
 

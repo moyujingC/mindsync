@@ -1,9 +1,9 @@
 # 财富议题报告真实样例回归
 
 > 状态：in_progress
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer / CEO / Test QA
-> last_updated：2026-05-16
+> last_updated：2026-05-17
 > source_of_truth：projects/aimandala/docs/qa/model-evals/2026-05-16-wealth-report-regression/README.md
 > 对应任务：projects/aimandala/docs/tasks/2026-05-16-财富议题解读功能上线剩余任务计划.md
 
@@ -91,7 +91,7 @@ cases/
 
 ## 6. 当前执行状态
 
-状态：first_pass_generated
+状态：first_pass_reviewed
 
 已完成：
 
@@ -99,13 +99,15 @@ cases/
 2. 为每张图建立 case 记录。
 3. dry-run 已通过，5 个 case 的 Lite / Pro 共 10 次计划运行都能解析到图片和输出目录。
 4. 已使用真实模型生成 5 个 case 的 Lite / Pro 报告，共 10 份。
-5. 10 份报告最终均通过质量门。
+5. 10 份报告最终均通过当前质量门。
 6. 已修正真实模型回归中暴露的质量门和视觉证据归一化问题。
+7. 已补充标题、寒暄开头、Lite / Pro 长度边界检查。
+8. 已记录 `wealth-case-005` Lite 单独重跑时视觉模型连续空返回的稳定性风险。
 
 下一步：
 
-1. 人工复核 5 个 case 的报告内容。
-2. 重点复核 `wealth-case-002` Lite 的报告厚度和用户价值。
+1. 补视觉模型失败重试或 fallback。
+2. 人工复核 5 个 case 的报告内容，重点看手册感和用户价值。
 3. 根据人工复核结果回写财富手册、routing、浮现议题回译或模板。
 4. 再扩展到 10 到 20 个真实用户样例。
 
@@ -181,5 +183,6 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 
 - 批量回归框架已就位。
 - 5 个 case 的 Lite / Pro 报告已产出。
-- 质量门通过率为 100%。
-- 下一步需要人工内容复核，而不是继续处理模型连接问题。
+- 当前产物质量门通过率为 100%。
+- 真实模型连接可用，但视觉模型存在偶发空返回；生产试跑前需要补重试或 fallback。
+- 下一步需要进入人工内容复核，并同步补视觉稳定性。

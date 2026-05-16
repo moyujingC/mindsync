@@ -28,6 +28,19 @@ BOUNDARY_TERMS = [
     "心理诊断",
 ]
 
+GENERIC_OPENING_PHRASES = [
+    "好的",
+    "你好",
+    "您好",
+    "亲爱的朋友",
+    "这是为你生成",
+    "这是一份为你生成",
+    "这是一份关于",
+    "感谢你的信任",
+    "感谢你带着",
+    "让我们一起",
+]
+
 
 def run_quality_gate(
     *,
@@ -176,11 +189,15 @@ def _report_shape_issues(final_report_md: str, *, report_mode: str) -> list[str]
     if not text:
         return ["empty"]
     first_line = text.splitlines()[0].strip()
-    if not first_line.startswith("#") or "财富议题" not in first_line:
+    if not first_line.startswith("# ") or "财富议题" not in first_line:
         issues.append("title_missing_wealth_topic")
-    if text.startswith(("好的", "这是为你生成", "这是一份为你生成", "亲爱的朋友")):
+    opening_window = text[:300]
+    if any(phrase in opening_window for phrase in GENERIC_OPENING_PHRASES):
         issues.append("generic_greeting_opening")
     min_chars = 1000 if report_mode == "pro" else 500
     if len(text) < min_chars:
         issues.append(f"too_short_min_{min_chars}")
+    max_chars = 2400 if report_mode == "pro" else 1400
+    if len(text) > max_chars:
+        issues.append(f"too_long_max_{max_chars}")
     return issues

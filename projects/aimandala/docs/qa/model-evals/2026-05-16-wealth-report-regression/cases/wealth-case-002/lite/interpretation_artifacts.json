@@ -84,65 +84,69 @@
     "stage-03-visual-evidence": {
       "stage": "stage-03-visual-evidence",
       "status": "complete",
-      "global_visual_summary": "这幅曼陀罗画作以对称的圆形结构为中心，包含五个主要的圆形区域，每个区域都装饰有绿色和黄色的花卉图案。中心是一个由棕色和蓝色构成的星形图案，周围环绕着蓝色的小花。整体色调明亮，使用了浅蓝、绿、黄、紫和棕色，呈现出一种和谐且充满生机的视觉效果。",
+      "global_visual_summary": "这幅曼陀罗画作呈现出对称的花卉图案，中心为一个复杂的星形结构，周围环绕着五个圆形区域，每个区域都包含绿色和黄色的花朵、紫色的花苞以及蓝色的小花。整体色彩明亮且和谐，主要使用了绿色、黄色、蓝色和紫色，背景为浅色。",
       "circles": {
         "inner": {
-          "summary": "内圈是整个曼陀罗的核心区域，由一个棕色和蓝色构成的星形图案组成，星形内部有一个黄色的十字形图案。这个中心区域被四个蓝色的小花围绕，形成一个稳定且对称的结构。",
+          "summary": "星形",
           "visual_units": [
             {
               "id": "inner-001",
               "position": "inner",
               "color": "",
-              "shape": "",
-              "visible_evidence": "内圈是整个曼陀罗的核心区域，由一个棕色和蓝色构成的星形图案组成，星形内部有一个黄色的十字形图案。这个中心区域被四个蓝色的小花围绕，形成一个稳定且对称的结构。"
+              "shape": "星形",
+              "visible_evidence": "星形"
             }
           ],
           "raw_observation": {
-            "description": "内圈是整个曼陀罗的核心区域，由一个棕色和蓝色构成的星形图案组成，星形内部有一个黄色的十字形图案。这个中心区域被四个蓝色的小花围绕，形成一个稳定且对称的结构。"
+            "shape": "星形",
+            "color": "棕色与黄色相间",
+            "details": "中心是一个由棕色和黄色构成的复杂星形图案，内部有蓝色的十字形点缀。"
           }
         },
         "middle": {
-          "summary": "中圈由五个较大的圆形区域组成，每个区域都包含绿色和黄色的花卉图案，花瓣呈放射状排列，花蕊为黄色。这些圆形区域之间通过棕色的藤蔓连接，形成了一个连续的环形结构。此外，每个圆形区域中还点缀着紫色和粉色的小花苞，增加了画面的层次感。",
+          "summary": "圆形",
           "visual_units": [
             {
               "id": "middle-001",
               "position": "middle",
               "color": "",
-              "shape": "",
-              "visible_evidence": "中圈由五个较大的圆形区域组成，每个区域都包含绿色和黄色的花卉图案，花瓣呈放射状排列，花蕊为黄色。这些圆形区域之间通过棕色的藤蔓连接，形成了一个连续的环形结构。此外，每个圆形区域中还点缀着紫色和粉色的小花苞，增加了画面的层次感。"
+              "shape": "圆形",
+              "visible_evidence": "圆形"
             }
           ],
           "raw_observation": {
-            "description": "中圈由五个较大的圆形区域组成，每个区域都包含绿色和黄色的花卉图案，花瓣呈放射状排列，花蕊为黄色。这些圆形区域之间通过棕色的藤蔓连接，形成了一个连续的环形结构。此外，每个圆形区域中还点缀着紫色和粉色的小花苞，增加了画面的层次感。"
+            "shape": "圆形",
+            "color": "浅蓝色",
+            "details": "围绕中心的是五个圆形区域，每个区域内都有绿色和黄色的花朵，花瓣呈放射状排列，花蕊为黄色。此外，还有紫色的花苞和粉色的小圆点作为装饰。"
           }
         },
         "outer": {
-          "summary": "外圈由五个较大的圆形区域构成，每个区域都与中圈的圆形区域相对应，同样装饰有绿色和黄色的花卉图案。这些圆形区域之间由棕色的几何图案连接，形成一个完整的环形边界。外圈的几何图案呈现出一种传统风格，增强了整体的对称性和稳定性。",
+          "summary": "几何图案",
           "visual_units": [
             {
               "id": "outer-001",
               "position": "outer",
               "color": "",
-              "shape": "",
-              "visible_evidence": "外圈由五个较大的圆形区域构成，每个区域都与中圈的圆形区域相对应，同样装饰有绿色和黄色的花卉图案。这些圆形区域之间由棕色的几何图案连接，形成一个完整的环形边界。外圈的几何图案呈现出一种传统风格，增强了整体的对称性和稳定性。"
+              "shape": "几何图案",
+              "visible_evidence": "几何图案"
             }
           ],
           "raw_observation": {
-            "description": "外圈由五个较大的圆形区域构成，每个区域都与中圈的圆形区域相对应，同样装饰有绿色和黄色的花卉图案。这些圆形区域之间由棕色的几何图案连接，形成一个完整的环形边界。外圈的几何图案呈现出一种传统风格，增强了整体的对称性和稳定性。"
+            "shape": "几何图案",
+            "color": "棕色",
+            "details": "最外层是棕色的几何图案，形状类似于十字架，分布在五个圆形区域之间，形成一种框架结构。"
           }
         }
       },
       "evidence_refs": [
-        "中心区域的星形图案和蓝色小花表明内在能量的稳定和平衡。",
-        "中圈的花卉图案和藤蔓连接显示出情感和关系的流动与连接。",
-        "外圈的几何图案和花卉图案表明对外界的开放和与世界的链接。",
-        "整体色彩明亮，绿色和黄色的使用象征生机和成长。",
-        "紫色和粉色的小花苞点缀在各个区域，暗示潜在的能量和可能性。"
+        "中心星形图案由棕色和黄色构成，内部有蓝色十字形点缀。",
+        "五个圆形区域均以浅蓝色为底色，内含绿色和黄色的花朵，花瓣呈放射状排列。",
+        "每个圆形区域内有紫色的花苞和粉色的小圆点作为装饰。",
+        "最外层是棕色的几何图案，形状类似于十字架，分布在五个圆形区域之间。"
       ],
       "uncertainties": [
-        "无法确定画作中的具体颜色深浅是否代表特定的情感强度。",
-        "无法判断画作中是否有隐藏的符号或意义，需要进一步解读。",
-        "无法确认画作的整体布局是否完全对称，可能存在微小的偏差。"
+        "无法确定这些颜色和图案是否具有特定的文化或象征意义。",
+        "无法判断这些花卉图案的具体含义或是否代表某种植物。"
       ],
       "model_trace": [
         {
@@ -172,9 +176,11 @@
       "status": "complete",
       "per_circle": {
         "inner": {
-          "visual_summary": "内圈是整个曼陀罗的核心区域，由一个棕色和蓝色构成的星形图案组成，星形内部有一个黄色的十字形图案。这个中心区域被四个蓝色的小花围绕，形成一个稳定且对称的结构。",
+          "visual_summary": "星形",
           "dominant_colors": [],
-          "dominant_shapes": [],
+          "dominant_shapes": [
+            "星形"
+          ],
           "knowledge_refs": [
             "circle.inner",
             "elements.color_meanings",
@@ -183,9 +189,11 @@
           ]
         },
         "middle": {
-          "visual_summary": "中圈由五个较大的圆形区域组成，每个区域都包含绿色和黄色的花卉图案，花瓣呈放射状排列，花蕊为黄色。这些圆形区域之间通过棕色的藤蔓连接，形成了一个连续的环形结构。此外，每个圆形区域中还点缀着紫色和粉色的小花苞，增加了画面的层次感。",
+          "visual_summary": "圆形",
           "dominant_colors": [],
-          "dominant_shapes": [],
+          "dominant_shapes": [
+            "圆形"
+          ],
           "knowledge_refs": [
             "circle.middle",
             "elements.color_meanings",
@@ -194,9 +202,11 @@
           ]
         },
         "outer": {
-          "visual_summary": "外圈由五个较大的圆形区域构成，每个区域都与中圈的圆形区域相对应，同样装饰有绿色和黄色的花卉图案。这些圆形区域之间由棕色的几何图案连接，形成一个完整的环形边界。外圈的几何图案呈现出一种传统风格，增强了整体的对称性和稳定性。",
+          "visual_summary": "几何图案",
           "dominant_colors": [],
-          "dominant_shapes": [],
+          "dominant_shapes": [
+            "几何图案"
+          ],
           "knowledge_refs": [
             "circle.outer",
             "elements.color_meanings",
@@ -215,9 +225,11 @@
       ],
       "per_circle": {
         "inner": {
-          "visual_summary": "内圈是整个曼陀罗的核心区域，由一个棕色和蓝色构成的星形图案组成，星形内部有一个黄色的十字形图案。这个中心区域被四个蓝色的小花围绕，形成一个稳定且对称的结构。",
+          "visual_summary": "星形",
           "dominant_colors": [],
-          "dominant_shapes": [],
+          "dominant_shapes": [
+            "星形"
+          ],
           "knowledge_refs": [
             "circle.inner",
             "elements.color_meanings",
@@ -226,9 +238,11 @@
           ]
         },
         "middle": {
-          "visual_summary": "中圈由五个较大的圆形区域组成，每个区域都包含绿色和黄色的花卉图案，花瓣呈放射状排列，花蕊为黄色。这些圆形区域之间通过棕色的藤蔓连接，形成了一个连续的环形结构。此外，每个圆形区域中还点缀着紫色和粉色的小花苞，增加了画面的层次感。",
+          "visual_summary": "圆形",
           "dominant_colors": [],
-          "dominant_shapes": [],
+          "dominant_shapes": [
+            "圆形"
+          ],
           "knowledge_refs": [
             "circle.middle",
             "elements.color_meanings",
@@ -237,9 +251,11 @@
           ]
         },
         "outer": {
-          "visual_summary": "外圈由五个较大的圆形区域构成，每个区域都与中圈的圆形区域相对应，同样装饰有绿色和黄色的花卉图案。这些圆形区域之间由棕色的几何图案连接，形成一个完整的环形边界。外圈的几何图案呈现出一种传统风格，增强了整体的对称性和稳定性。",
+          "visual_summary": "几何图案",
           "dominant_colors": [],
-          "dominant_shapes": [],
+          "dominant_shapes": [
+            "几何图案"
+          ],
           "knowledge_refs": [
             "circle.outer",
             "elements.color_meanings",
@@ -287,24 +303,24 @@
         {
           "id": "inner-001",
           "circle": "inner",
-          "visible_evidence": "内圈是整个曼陀罗的核心区域，由一个棕色和蓝色构成的星形图案组成，星形内部有一个黄色的十字形图案。这个中心区域被四个蓝色的小花围绕，形成一个稳定且对称的结构。"
+          "visible_evidence": "星形"
         },
         {
           "id": "middle-001",
           "circle": "middle",
-          "visible_evidence": "中圈由五个较大的圆形区域组成，每个区域都包含绿色和黄色的花卉图案，花瓣呈放射状排列，花蕊为黄色。这些圆形区域之间通过棕色的藤蔓连接，形成了一个连续的环形结构。此外，每个圆形区域中还点缀着紫色和粉色的小花苞，增加了画面的层次感。"
+          "visible_evidence": "圆形"
         },
         {
           "id": "outer-001",
           "circle": "outer",
-          "visible_evidence": "外圈由五个较大的圆形区域构成，每个区域都与中圈的圆形区域相对应，同样装饰有绿色和黄色的花卉图案。这些圆形区域之间由棕色的几何图案连接，形成一个完整的环形边界。外圈的几何图案呈现出一种传统风格，增强了整体的对称性和稳定性。"
+          "visible_evidence": "几何图案"
         }
       ]
     },
     "stage-10-core-thesis-selection": {
       "stage": "stage-10-core-thesis-selection",
       "status": "complete",
-      "core_thesis": "内在核心结构稳定，情感与关系层面生长活跃，但财富能量的向外流动仍被谨慎的边界所保护，紧张感源于内在丰盛与外在有限开放之间的不匹配。",
+      "core_thesis": "曼陀罗在中心星形结构周围构建了规则的花卉系统，但最外层以几何框架限制扩展，整体表现为'在秩序保护下谨慎流动'的财富紧张反应。",
       "evidence_refs": [
         "inner-001",
         "middle-001",
@@ -313,145 +329,33 @@
       "theme_route": {
         "theme": "wealth",
         "status": "matched",
-        "selected_signal_ids": [
-          "visual.inner_contracted_outer_strong"
-        ],
-        "selected_clause_ids": [
-          "wealth.success_visibility_threat",
-          "wealth.low_deservingness"
-        ],
-        "selected_module_ids": [
-          "wealth.deservingness_self_worth",
-          "wealth.body_fear_action"
-        ],
-        "clauses": [
-          {
-            "id": "wealth.success_visibility_threat",
-            "title": "有钱危险与成功压力",
-            "summary": "用户可能想要财富和成功，但也担心更多资源带来被看见、被要求、关系变化或压力。",
-            "report_language": [
-              "这不一定是在说你不想要财富，也可能是在说“更多”会带来压力。",
-              "成功、被看见、被需要，有时会让人同时兴奋和后退。"
-            ],
-            "healing_direction": [
-              "观察成功带来的关系想象。",
-              "区分真实风险和旧经验投射。",
-              "逐步练习被看见。"
-            ],
-            "source_status": "model_scaffold"
-          },
-          {
-            "id": "wealth.low_deservingness",
-            "title": "配得感不足",
-            "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
-            "report_language": [
-              "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
-              "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
-            ],
-            "healing_direction": [
-              "配得感练习。",
-              "自我价值确认。",
-              "区分价值创造和自我证明。"
-            ],
-            "source_status": "model_scaffold"
-          }
-        ],
-        "modules": [
-          {
-            "module_id": "wealth.deservingness_self_worth",
-            "title": "配得感与自我价值",
-            "status": "source_supported_draft",
-            "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
-            "output_strength": "normal"
-          },
-          {
-            "module_id": "wealth.body_fear_action",
-            "title": "身体连接、恐惧与行动力",
-            "status": "source_supported_draft",
-            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
-            "output_strength": "normal"
-          }
-        ],
-        "boundaries": [
-          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。"
-        ]
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
       }
     },
     "stage-11-user-facing-framing": {
       "stage": "stage-11-user-facing-framing",
       "status": "complete",
-      "framing": "您的曼陀罗显示，您内在的财富根基是稳固且充满潜能的（内圈的星形与小花）。您有很强的滋养和连接能力（中圈绽放的花卉与藤蔓）。然而，在将这份内在丰盛完全、自由地流动到外部世界时，您显得比较审慎，为它设置了清晰而传统的边界（外圈的几何边界）。对财富流动的紧张感，可能正是来自这份“内在已经准备好，但外在还在确认安全”的拉扯。",
+      "framing": "你在画面中心用复杂的星形图式和饱满的色彩，其实已经准备好体验丰富的流动；只是最外圈那个像十字架的棕色几何结构替你把关，让财富往外走时变得非常谨慎。",
       "theme_route": {
         "theme": "wealth",
         "status": "matched",
-        "selected_signal_ids": [
-          "visual.inner_contracted_outer_strong"
-        ],
-        "selected_clause_ids": [
-          "wealth.success_visibility_threat",
-          "wealth.low_deservingness"
-        ],
-        "selected_module_ids": [
-          "wealth.deservingness_self_worth",
-          "wealth.body_fear_action"
-        ],
-        "clauses": [
-          {
-            "id": "wealth.success_visibility_threat",
-            "title": "有钱危险与成功压力",
-            "summary": "用户可能想要财富和成功，但也担心更多资源带来被看见、被要求、关系变化或压力。",
-            "report_language": [
-              "这不一定是在说你不想要财富，也可能是在说“更多”会带来压力。",
-              "成功、被看见、被需要，有时会让人同时兴奋和后退。"
-            ],
-            "healing_direction": [
-              "观察成功带来的关系想象。",
-              "区分真实风险和旧经验投射。",
-              "逐步练习被看见。"
-            ],
-            "source_status": "model_scaffold"
-          },
-          {
-            "id": "wealth.low_deservingness",
-            "title": "配得感不足",
-            "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
-            "report_language": [
-              "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
-              "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
-            ],
-            "healing_direction": [
-              "配得感练习。",
-              "自我价值确认。",
-              "区分价值创造和自我证明。"
-            ],
-            "source_status": "model_scaffold"
-          }
-        ],
-        "modules": [
-          {
-            "module_id": "wealth.deservingness_self_worth",
-            "title": "配得感与自我价值",
-            "status": "source_supported_draft",
-            "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
-            "output_strength": "normal"
-          },
-          {
-            "module_id": "wealth.body_fear_action",
-            "title": "身体连接、恐惧与行动力",
-            "status": "source_supported_draft",
-            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
-            "output_strength": "normal"
-          }
-        ],
-        "boundaries": [
-          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。"
-        ]
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
       }
     },
     "stage-12-healing-direction-and-report-branching": {
       "stage": "stage-12-healing-direction-and-report-branching",
       "status": "complete",
-      "healing_direction": "在内在安全的基础上，温柔地探索向外延展的新方式。可以从小处开始，比如允许一些非计划的、愉悦的小额支出，或尝试分享您的资源与才能。症状解除的关键，不在于让内在更丰富，而在于让外在的“许可”更灵活，从而让内外能量流动获得新的平衡。",
+      "healing_direction": "承认并感谢外圈边界提供的安全感，同时在安全区内刻意练习小额、高频的财富流动（如主动给予与接收小礼物），逐步让外层框架从防御转为弹性边界。",
       "report_mode": "lite",
       "writing_input_refs": [
         "inner-001",
@@ -461,75 +365,19 @@
       "theme_route": {
         "theme": "wealth",
         "status": "matched",
-        "selected_signal_ids": [
-          "visual.inner_contracted_outer_strong"
-        ],
-        "selected_clause_ids": [
-          "wealth.success_visibility_threat",
-          "wealth.low_deservingness"
-        ],
-        "selected_module_ids": [
-          "wealth.deservingness_self_worth",
-          "wealth.body_fear_action"
-        ],
-        "clauses": [
-          {
-            "id": "wealth.success_visibility_threat",
-            "title": "有钱危险与成功压力",
-            "summary": "用户可能想要财富和成功，但也担心更多资源带来被看见、被要求、关系变化或压力。",
-            "report_language": [
-              "这不一定是在说你不想要财富，也可能是在说“更多”会带来压力。",
-              "成功、被看见、被需要，有时会让人同时兴奋和后退。"
-            ],
-            "healing_direction": [
-              "观察成功带来的关系想象。",
-              "区分真实风险和旧经验投射。",
-              "逐步练习被看见。"
-            ],
-            "source_status": "model_scaffold"
-          },
-          {
-            "id": "wealth.low_deservingness",
-            "title": "配得感不足",
-            "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
-            "report_language": [
-              "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
-              "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
-            ],
-            "healing_direction": [
-              "配得感练习。",
-              "自我价值确认。",
-              "区分价值创造和自我证明。"
-            ],
-            "source_status": "model_scaffold"
-          }
-        ],
-        "modules": [
-          {
-            "module_id": "wealth.deservingness_self_worth",
-            "title": "配得感与自我价值",
-            "status": "source_supported_draft",
-            "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
-            "output_strength": "normal"
-          },
-          {
-            "module_id": "wealth.body_fear_action",
-            "title": "身体连接、恐惧与行动力",
-            "status": "source_supported_draft",
-            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
-            "output_strength": "normal"
-          }
-        ],
-        "boundaries": [
-          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。"
-        ]
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
       }
     },
     "stage-13-lite-report-draft": {
       "stage": "stage-13-lite-report-draft",
       "status": "complete",
       "enabled": true,
-      "markdown": "# 曼陀罗财富议题解读：当内在丰盛遇见谨慎边界\n\n**画面证据速写**\n\n您的曼陀罗呈现出高度对称的圆形结构，以五个主要的花卉区域环环相扣。第一个可见依据来自中心区域：棕色与蓝色交织的星形图案稳稳地居于圆心，内部还嵌着一个黄色十字，四朵蓝色小花紧密环绕——这种编排在视觉上直接传递出一种稳定、被守护的内心核心。第二个依据是中层与外层的连接方式：中层绽放的绿黄花卉通过棕色的藤蔓彼此牵连，而外层则由几何化的传统纹样再次将这些花卉包裹起来，形成一道清晰、规整的圆形边界。这意味着内在的丰盛并非随意流露，而是经过了有序的整理，但在与外界接触的地方，被一道庄重的“围墙”小心地护住了。\n\n**财富核心解读**\n\n您在财富流动中感受到的紧张，主要并非源于内在资源的匮乏，而更像是内在的丰盛已经准备好生长，却在外层那道谨慎的边界前放慢了脚步，形成一种“拥抱着丰富的自己，同时顾虑着展露后的世界”的拉扯。\n\n**温和行动建议**\n\n可以从一道不重要的“小门”开始练习向外流动。您可以给自己一个微小却具体的许可——比如一次完全非计划、只为愉悦心情的小额支出，或者在安全的环境中主动分享一个您的技能或心得。行动的关键不在于金额或规模的大小，而在于在做的过程中，轻轻观察身体里是否出现了“我不该这样”或“这会不会带来麻烦”的声音。只需要看见这些念头的浮现，而不必批判，这本身就是让财富能量多一些呼吸空间的开始。"
+      "markdown": "# 财富议题：在秩序保护下谨慎流动的曼陀罗解读\n\n**画面证据速写**\n\n这幅曼陀罗的中心是一个由棕色与黄色相间构成的复杂星形图案，星形内部可见蓝色十字形点缀，形状锐利而明确，显示出你对价值方向有着清晰的感知与组织能力。围绕中心分布着五个浅蓝底色圆形区域，每个区域内盛开着绿色和黄色的花朵，花瓣呈放射状排列、花蕊为明亮的黄色，其间还穿插着紫色花苞和粉色小圆点——这些元素色彩饱满、层次丰富，暗示你内在世界并不贫瘠，反而充满丰盛的资源和流动的意愿。然而，最外层出现了棕色的几何图案，形状近似十字架，分布在五个圆形区域之间，形成一个框架结构；这层框架没有参与内部花朵的生长节奏，而是独立构成了一道坚硬的外圈边界，像是一道你在不经意间设立的检查站，审视着每一笔即将离开或进入的流动。\n\n**财富核心解读**\n\n你的财富紧张感并非源于内在资源不足，而是源于一个深层模式：你在“流动正要开始”的那一刻启动了理智审查，让原本可以自然舒展的给予与接收，在即将跨出边界时被谨慎收回。\n\n**温和行动建议**\n\n可以先不急于拆除那道外圈边界，它曾经保护过你，值得被看见和感谢。试着在让你感到安全的人际圈或生活范围内，完成一次小额而具体的财富流动练习——比如为一位朋友挑选并送出一份不贵重但经过你用心选择的小礼物，或在他人提供帮助时，坦然地接受而不立即回报。练习时把注意力放在“流动完成”那一刻身体和情绪的感受，而非金额或对等与否。当这些安全流动的记忆逐渐积累，外圈的框架会从僵硬把关慢慢转化为弹性守护，让你在保有安全感的同时，开始体验财富进出的自然与从容。"
     },
     "stage-14-pro-report-draft": {
       "stage": "stage-14-pro-report-draft",
@@ -546,11 +394,11 @@
       "stage": "stage-16-final-report-assembly",
       "status": "complete",
       "final_report": {
-        "report_id": "mandala-interpretation-f89862fe2244",
+        "report_id": "mandala-interpretation-d7013cd2096e",
         "report_mode": "lite",
         "title": "曼陀罗解读报告",
-        "markdown": "# 曼陀罗财富议题解读：当内在丰盛遇见谨慎边界\n\n**画面证据速写**\n\n您的曼陀罗呈现出高度对称的圆形结构，以五个主要的花卉区域环环相扣。第一个可见依据来自中心区域：棕色与蓝色交织的星形图案稳稳地居于圆心，内部还嵌着一个黄色十字，四朵蓝色小花紧密环绕——这种编排在视觉上直接传递出一种稳定、被守护的内心核心。第二个依据是中层与外层的连接方式：中层绽放的绿黄花卉通过棕色的藤蔓彼此牵连，而外层则由几何化的传统纹样再次将这些花卉包裹起来，形成一道清晰、规整的圆形边界。这意味着内在的丰盛并非随意流露，而是经过了有序的整理，但在与外界接触的地方，被一道庄重的“围墙”小心地护住了。\n\n**财富核心解读**\n\n您在财富流动中感受到的紧张，主要并非源于内在资源的匮乏，而更像是内在的丰盛已经准备好生长，却在外层那道谨慎的边界前放慢了脚步，形成一种“拥抱着丰富的自己，同时顾虑着展露后的世界”的拉扯。\n\n**温和行动建议**\n\n可以从一道不重要的“小门”开始练习向外流动。您可以给自己一个微小却具体的许可——比如一次完全非计划、只为愉悦心情的小额支出，或者在安全的环境中主动分享一个您的技能或心得。行动的关键不在于金额或规模的大小，而在于在做的过程中，轻轻观察身体里是否出现了“我不该这样”或“这会不会带来麻烦”的声音。只需要看见这些念头的浮现，而不必批判，这本身就是让财富能量多一些呼吸空间的开始。",
-        "summary": "内在核心结构稳定，情感与关系层面生长活跃，但财富能量的向外流动仍被谨慎的边界所保护，紧张感源于内在丰盛与外在有限开放之间的不匹配。"
+        "markdown": "# 财富议题：在秩序保护下谨慎流动的曼陀罗解读\n\n**画面证据速写**\n\n这幅曼陀罗的中心是一个由棕色与黄色相间构成的复杂星形图案，星形内部可见蓝色十字形点缀，形状锐利而明确，显示出你对价值方向有着清晰的感知与组织能力。围绕中心分布着五个浅蓝底色圆形区域，每个区域内盛开着绿色和黄色的花朵，花瓣呈放射状排列、花蕊为明亮的黄色，其间还穿插着紫色花苞和粉色小圆点——这些元素色彩饱满、层次丰富，暗示你内在世界并不贫瘠，反而充满丰盛的资源和流动的意愿。然而，最外层出现了棕色的几何图案，形状近似十字架，分布在五个圆形区域之间，形成一个框架结构；这层框架没有参与内部花朵的生长节奏，而是独立构成了一道坚硬的外圈边界，像是一道你在不经意间设立的检查站，审视着每一笔即将离开或进入的流动。\n\n**财富核心解读**\n\n你的财富紧张感并非源于内在资源不足，而是源于一个深层模式：你在“流动正要开始”的那一刻启动了理智审查，让原本可以自然舒展的给予与接收，在即将跨出边界时被谨慎收回。\n\n**温和行动建议**\n\n可以先不急于拆除那道外圈边界，它曾经保护过你，值得被看见和感谢。试着在让你感到安全的人际圈或生活范围内，完成一次小额而具体的财富流动练习——比如为一位朋友挑选并送出一份不贵重但经过你用心选择的小礼物，或在他人提供帮助时，坦然地接受而不立即回报。练习时把注意力放在“流动完成”那一刻身体和情绪的感受，而非金额或对等与否。当这些安全流动的记忆逐渐积累，外圈的框架会从僵硬把关慢慢转化为弹性守护，让你在保有安全感的同时，开始体验财富进出的自然与从容。",
+        "summary": "曼陀罗在中心星形结构周围构建了规则的花卉系统，但最外层以几何框架限制扩展，整体表现为'在秩序保护下谨慎流动'的财富紧张反应。"
       }
     }
   },
@@ -558,17 +406,17 @@
     {
       "id": "inner-001",
       "circle": "inner",
-      "visible_evidence": "内圈是整个曼陀罗的核心区域，由一个棕色和蓝色构成的星形图案组成，星形内部有一个黄色的十字形图案。这个中心区域被四个蓝色的小花围绕，形成一个稳定且对称的结构。"
+      "visible_evidence": "星形"
     },
     {
       "id": "middle-001",
       "circle": "middle",
-      "visible_evidence": "中圈由五个较大的圆形区域组成，每个区域都包含绿色和黄色的花卉图案，花瓣呈放射状排列，花蕊为黄色。这些圆形区域之间通过棕色的藤蔓连接，形成了一个连续的环形结构。此外，每个圆形区域中还点缀着紫色和粉色的小花苞，增加了画面的层次感。"
+      "visible_evidence": "圆形"
     },
     {
       "id": "outer-001",
       "circle": "outer",
-      "visible_evidence": "外圈由五个较大的圆形区域构成，每个区域都与中圈的圆形区域相对应，同样装饰有绿色和黄色的花卉图案。这些圆形区域之间由棕色的几何图案连接，形成一个完整的环形边界。外圈的几何图案呈现出一种传统风格，增强了整体的对称性和稳定性。"
+      "visible_evidence": "几何图案"
     }
   ]
 }

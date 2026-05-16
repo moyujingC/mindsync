@@ -100,6 +100,10 @@ class StubMandalaLLMClient:
             "当你愿意把一个价值点放到关系里、市场里或一次真实对话里，它就不再只停留在内在判断中。"
             "这份练习会逐步建立一种新的经验：我可以带着边界进入交换，也可以在交换之后仍然保有自己的稳定。"
             "财富在这里不是单纯的收入数字，而是价值被看见、被承接、被回应之后形成的流动。"
+            "如果后续还想继续观察，可以把每一次小交换前后的情绪、身体感受和现实反馈放在一起看，"
+            "这样更容易区分真正的风险和习惯性的收缩。"
+            "当这些记录逐渐累积，你会更清楚地看见：哪些边界是在保护你，哪些边界已经让资源停在门外。"
+            "财富议题的推进就可以从这里开始，先不追求大幅改变，只让一次小而真实的流动发生。"
         )
 
 
@@ -267,6 +271,66 @@ def test_mandala_agent_quality_gate_rejects_short_report_shape(tmp_path):
 
     assert quality["passed"] is False
     assert "invalid_final_report_shape" in quality["failure_ids"]
+
+
+def test_mandala_agent_quality_gate_rejects_non_h1_title(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = "### 财富议题曼陀罗解读报告\n\n" + "画面依据与财富解读。" * 80
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "title_missing_wealth_topic" in quality["details"]["report_shape_issues"]
+
+
+def test_mandala_agent_quality_gate_rejects_generic_opening(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = "# 财富议题曼陀罗解读报告\n\n你好，感谢你的信任。" + "画面依据与财富解读。" * 80
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "generic_greeting_opening" in quality["details"]["report_shape_issues"]
+
+
+def test_mandala_agent_quality_gate_rejects_overlong_lite_report(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = "# 财富议题曼陀罗解读报告\n\n" + "画面依据与财富解读。" * 140
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "too_long_max_1400" in quality["details"]["report_shape_issues"]
 
 
 def test_mandala_agent_quality_gate_allows_boundary_disclaimer(tmp_path):
