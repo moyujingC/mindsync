@@ -24,3 +24,4 @@
 - [../50-结构化知识单元/10-aimandala-report-generation.yaml](../50-结构化知识单元/10-aimandala-report-generation.yaml)：对应的第一版结构化知识单元，供程序或运行时编译使用。
 - [20-aimandala-report-runtime-index.yaml](20-aimandala-report-runtime-index.yaml)：最小 runtime 检索顺序与组合规则。
 - [../50-结构化知识单元/40-wealth-report-routing.yaml](../50-结构化知识单元/40-wealth-report-routing.yaml)：财富主题报告 routing 单元，供 `user_theme: 财富` 时二级检索使用。
+- [../30-应用适配/10-aimandala/06-财富议题解读报告模板.md](../30-应用适配/10-aimandala/06-财富议题解读报告模板.md)：财富主题报告的段落模板，供 `user_theme: 财富` 时组装输出顺序使用。
