@@ -9,7 +9,7 @@
 | case_id | source_image | lite_visual_evidence | lite_wealth_focus | lite_safety | lite_user_value | pro_visual_evidence | pro_wealth_focus | pro_emergent_translation | pro_lite_difference | pro_safety | pro_user_value | pass | failure_category | notes |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|---|
 | wealth-case-001 | fixtures/toc-mvp/assets/IMG_5057.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过质量门；财富主线清楚，Pro 有更完整的机制展开。 |
-| wealth-case-002 | fixtures/toc-mvp/assets/IMG_5060.jpeg | 3 | 4 | 5 | 3 | 4 | 4 | 4 | 4 | 5 | 4 | pass_with_review | writing_issue | Lite 偏短，用户价值和画面依据需要人工复核；Pro 基本可用。 |
+| wealth-case-002 | fixtures/toc-mvp/assets/IMG_5060.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass_with_review | writing_issue | Lite 已按新 prompt 重跑，结构改善；仍建议人工复核表达厚度。 |
 | wealth-case-003 | fixtures/toc-mvp/assets/IMG_5063.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | 首次 Pro 被质量门误杀，已修正质量门和视觉证据归一化后通过。 |
 | wealth-case-004 | fixtures/toc-mvp/assets/IMG_5065.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过质量门，报告长度和主题稳定性正常。 |
 | wealth-case-005 | fixtures/toc-mvp/assets/IMG_5067.jpeg | 4 | 4 | 5 | 4 | 4 | 4 | 4 | 4 | 5 | 4 | pass | none | Lite/Pro 均通过质量门，报告结构稳定。 |
@@ -18,8 +18,8 @@
 
 - 5 个 case、10 份 Lite / Pro 报告均已生成。
 - 10 份报告最终均通过质量门。
-- 发现并修正 2 个质量门 / 视觉证据归一化问题：合规免责声明误判、真实视觉模型 raw observation 未进入 evidence map。
-- 当前阶段通过率按质量门计算为 100%；按内容人工复核口径，`wealth-case-002` 建议重点复核 Lite 的报告厚度和用户价值。
+- 发现并修正质量门 / 视觉证据归一化问题：合规免责声明误判、真实视觉模型 raw observation 未进入 evidence map、报告标题和长度缺少检查。
+- 当前阶段通过率按质量门计算为 100%；按内容人工复核口径，`wealth-case-002` 仍建议重点复核 Lite 的表达厚度。
 
 ## 评分口径
 

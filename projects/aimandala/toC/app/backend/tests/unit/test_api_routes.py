@@ -80,6 +80,8 @@ def test_create_lite_wealth_report_uses_native_agent_route(
     monkeypatch,
 ):
     monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite;MVP-PRO:pro")
+    monkeypatch.setenv("AIMANDALA_LLM_BACKEND", "noop")
+    monkeypatch.delenv("AIMANDALA_ENV_FILE", raising=False)
     client = TestClient(create_app())
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
@@ -103,6 +105,7 @@ def test_create_lite_wealth_report_uses_native_agent_route(
     assert payload["report_mode"] == "lite"
     assert payload["selected_clause_ids"]
     assert "财富议题" in payload["final_report_md"]
+    assert payload["report_context_package"]["permissions"]["allow_seeded_short_report"] is True
 
 
 def test_create_pro_wealth_report_returns_displayable_report(
@@ -110,6 +113,8 @@ def test_create_pro_wealth_report_returns_displayable_report(
     monkeypatch,
 ):
     monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite;MVP-PRO:pro")
+    monkeypatch.setenv("AIMANDALA_LLM_BACKEND", "noop")
+    monkeypatch.delenv("AIMANDALA_ENV_FILE", raising=False)
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
 

@@ -251,18 +251,33 @@ class MandalaInterpretationAgent:
         knowledge_pack: dict[str, Any],
         stage_outputs: dict[str, Any],
     ) -> dict[str, Any]:
+        report_prompt = self._report_prompt(
+            agent_input=agent_input,
+            knowledge_pack=knowledge_pack,
+            stage_outputs=stage_outputs,
+        )
         report_text = self.llm_client.generate_text(
             task="chat",
             system_prompt="你是曼陀罗解读报告写作者。写给普通用户，不泄漏内部 stage 或开发标签。",
-            user_prompt=self._report_prompt(
-                agent_input=agent_input,
-                knowledge_pack=knowledge_pack,
-                stage_outputs=stage_outputs,
-            ),
+            user_prompt=report_prompt,
         )
         if not report_text or not report_text.strip():
             raise RuntimeError("chat_model_failed: empty final report")
         markdown = report_text.strip()
+        draft_issues = self._report_draft_issues(markdown, report_mode=agent_input.report_mode)
+        if draft_issues:
+            retry_text = self.llm_client.generate_text(
+                task="chat",
+                system_prompt="你是曼陀罗解读报告写作者。请严格修正报告结构问题。",
+                user_prompt=(
+                    f"{report_prompt}\n\n"
+                    "上一次报告未满足以下要求，请重写完整报告，不要解释原因：\n"
+                    f"{json.dumps(draft_issues, ensure_ascii=False)}\n\n"
+                    f"上一次报告：\n{markdown}"
+                ),
+            )
+            if retry_text and retry_text.strip():
+                markdown = retry_text.strip()
         lite_draft = {
             "stage": "stage-13-lite-report-draft",
             "status": "complete",
@@ -296,6 +311,18 @@ class MandalaInterpretationAgent:
                 "final_report": final_report,
             },
         }
+
+    def _report_draft_issues(self, markdown: str, *, report_mode: str) -> list[str]:
+        issues: list[str] = []
+        text = markdown.strip()
+        if not text.startswith("#") or "财富议题" not in text.splitlines()[0]:
+            issues.append("title_must_be_markdown_h1_and_include_wealth_topic")
+        if text.startswith(("好的", "这是为你生成", "这是一份为你生成", "亲爱的朋友")):
+            issues.append("opening_must_not_use_generic_greeting")
+        min_chars = 1000 if report_mode == "pro" else 500
+        if len(text) < min_chars:
+            issues.append(f"report_too_short_min_{min_chars}_chars")
+        return issues
 
     def _normalize_stage03(self, payload: dict[str, Any]) -> dict[str, Any]:
         circles = self._normalize_circles(payload.get("circles"))
@@ -507,6 +534,9 @@ class MandalaInterpretationAgent:
             "permissions": {
                 "can_answer_follow_up": False,
                 "post_mvp_agent": "report_qa_agent",
+                "allow_seeded_short_report": bool(
+                    getattr(self.llm_client, "allow_seeded_short_report", False)
+                ),
             },
         }
 
@@ -573,11 +603,36 @@ class MandalaInterpretationAgent:
                 "theme_route": stage_outputs["stage-12-healing-direction-and-report-branching"].get("theme_route", {}),
             },
         }
+        report_structure = self._report_structure_instruction(agent_input.report_mode)
         return (
             "请生成用户可见的曼陀罗解读报告 Markdown。"
             "只基于给定写作输入，不出现 stage、placeholder、legacy 等内部词。"
-            "不得输出财务预测、收益预测、投资建议或心理诊断。\n\n"
+            "不得输出财务预测、收益预测、投资建议或心理诊断。"
+            "不要用“好的”“这是为你生成的报告”“亲爱的朋友”等寒暄式开头。"
+            "标题必须明确包含“财富议题”。"
+            f"{report_structure}\n\n"
             f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
+        )
+
+    def _report_structure_instruction(self, report_mode: str) -> str:
+        if report_mode == "pro":
+            return (
+                "Pro 版结构固定为 6 段："
+                "1. 标题；"
+                "2. 画面证据总览，至少写 3 条可见画面依据；"
+                "3. 财富核心主轴，用一句话说明金钱、价值、资源或交换机制；"
+                "4. 三圈分层解读，分别连接内圈、中圈、外圈到财富议题；"
+                "5. 浮现议题回译，把情绪、关系、家庭、身体或事业线索拉回财富主线；"
+                "6. 低风险行动建议，给 2 到 3 个可执行觉察动作。"
+                "总长度控制在 1200 到 1800 个中文字符。"
+            )
+        return (
+            "Lite 版结构固定为 4 段："
+            "1. 标题；"
+            "2. 画面证据速写，至少写 2 条可见画面依据；"
+            "3. 财富核心解读，用一句话说明主要财富卡点或优势；"
+            "4. 一个温和行动建议。"
+            "总长度控制在 500 到 1200 个中文字符。"
         )
 
     def _build_theme_route(

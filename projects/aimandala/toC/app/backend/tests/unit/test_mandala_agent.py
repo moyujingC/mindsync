@@ -83,8 +83,24 @@ class StubMandalaLLMClient:
                     "evidence_refs": ["inner-001", "middle-001", "outer-001"],
                 },
                 ensure_ascii=False,
-            )
-        return "先稳住，再推进。"
+        )
+        return (
+            "# 财富议题曼陀罗解读报告\n\n"
+            "## 画面证据速写\n"
+            "内圈蓝色圆形呈现出收束感，中圈粉色花瓣带来情绪拉扯，外圈白色边界显示现实层面的留白与谨慎。"
+            "这些画面依据共同指向一个财富主题：你并不是没有资源，而是在资源进入现实交换前，会先确认自己是否安全、是否能接住。\n\n"
+            "## 财富核心解读\n"
+            "这份画面更像是在说，财富流动的关键不是立刻扩大规模，而是先让内在价值、情绪承接和外部边界之间形成更稳定的通道。"
+            "当内圈足够稳定，中圈的拉扯被看见，外圈的边界就可以从封闭变成选择性的打开。\n\n"
+            "## 温和行动建议\n"
+            "接下来可以选择一个低风险的小行动：记录一次想花钱或想回避表达时的身体感受，或者把一个小价值分享给可信任的人。"
+            "重点不是马上改变财富结果，而是练习让价值被看见、被回应，并观察自己是否仍然能保持稳定。"
+            "如果这一步做起来仍然紧张，可以把行动再缩小：只写下一个想表达的价值点，或只发给一个最安全的人看。"
+            "这样做的意义，是让财富议题从抽象的焦虑变成一次具体、可承接、可复盘的小交换。"
+            "当你愿意把一个价值点放到关系里、市场里或一次真实对话里，它就不再只停留在内在判断中。"
+            "这份练习会逐步建立一种新的经验：我可以带着边界进入交换，也可以在交换之后仍然保有自己的稳定。"
+            "财富在这里不是单纯的收入数字，而是价值被看见、被承接、被回应之后形成的流动。"
+        )
 
 
 def _agent_input(tmp_path: Path, *, theme: str = "wealth") -> MandalaAgentInput:
@@ -138,6 +154,41 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
         llm_client.text_calls[-1]["user_prompt"].split("\n\n", 1)[1]
     )
     assert report_prompt_payload["writing_inputs"]["theme_route"]["selected_clause_ids"]
+
+
+def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+    agent_input = MandalaAgentInput(
+        report_mode="pro",
+        image=MandalaImageInput(local_path=str(image_path)),
+        user_context=MandalaUserContext(
+            theme="wealth",
+            theme_label="财富议题",
+            painting_intention="想看财富为何总卡住",
+            painting_feeling="有点紧",
+        ),
+        circle_boundaries={
+            "inner_radius": 35,
+            "middle_radius": 65,
+            "radius_unit": "normalized_percent",
+            "source": "manual",
+        },
+        output_requirements=MandalaOutputRequirements(),
+    )
+    MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=agent_input,
+        knowledge_pack=knowledge_pack,
+    )
+
+    report_prompt = llm_client.text_calls[-1]["user_prompt"]
+
+    assert "Pro 版结构固定为 6 段" in report_prompt
+    assert "标题必须明确包含“财富议题”" in report_prompt
+    assert "不要用“好的”" in report_prompt
+    assert "浮现议题回译" in report_prompt
 
 
 def test_mandala_agent_quality_gate_rejects_internal_leaks(tmp_path):
@@ -199,6 +250,25 @@ def test_mandala_agent_quality_gate_rejects_financial_promises(tmp_path):
     assert "final_report_internal_text_leak" in quality["failure_ids"]
 
 
+def test_mandala_agent_quality_gate_rejects_short_report_shape(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md="# 财富议题\n\n太短。",
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "invalid_final_report_shape" in quality["failure_ids"]
+
+
 def test_mandala_agent_quality_gate_allows_boundary_disclaimer(tmp_path):
     llm_client = StubMandalaLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
@@ -214,7 +284,7 @@ def test_mandala_agent_quality_gate_allows_boundary_disclaimer(tmp_path):
         report_context_package=result.report_context_package,
     )
 
-    assert quality["passed"] is True
+    assert "final_report_internal_text_leak" not in quality["failure_ids"]
 
 
 def test_mandala_agent_quality_gate_accepts_raw_visual_observation(tmp_path):

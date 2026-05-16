@@ -49,6 +49,20 @@ def run_quality_gate(
     if not final_report_md.strip():
         failure_ids.append("empty_final_report")
 
+    report_shape_issues = []
+    permissions = report_context_package.get("permissions")
+    allow_seeded_short_report = (
+        isinstance(permissions, dict)
+        and permissions.get("allow_seeded_short_report") is True
+    )
+    if isinstance(report_context_package.get("final_report"), dict) and not allow_seeded_short_report:
+        report_shape_issues = _report_shape_issues(
+            final_report_md,
+            report_mode=str(report_context_package.get("report_mode") or ""),
+        )
+    if report_shape_issues:
+        failure_ids.append("invalid_final_report_shape")
+
     leaked_terms = [
         term
         for term in FORBIDDEN_FINAL_REPORT_TERMS
@@ -101,6 +115,7 @@ def run_quality_gate(
             "actual_blocks": actual_blocks,
             "expected_blocks": expected_blocks,
             "leaked_terms": leaked_terms,
+            "report_shape_issues": report_shape_issues,
             "missing_context_fields": missing_context_fields,
             "missing_visual_units": missing_visual_units,
         },
@@ -153,3 +168,19 @@ def _unsafe_boundary_terms(final_report_md: str) -> list[str]:
 
 def _is_boundary_disclaimer(text: str) -> bool:
     return any(marker in text for marker in ["不构成", "不提供", "不得输出", "不要做", "避免"])
+
+
+def _report_shape_issues(final_report_md: str, *, report_mode: str) -> list[str]:
+    issues: list[str] = []
+    text = final_report_md.strip()
+    if not text:
+        return ["empty"]
+    first_line = text.splitlines()[0].strip()
+    if not first_line.startswith("#") or "财富议题" not in first_line:
+        issues.append("title_missing_wealth_topic")
+    if text.startswith(("好的", "这是为你生成", "这是一份为你生成", "亲爱的朋友")):
+        issues.append("generic_greeting_opening")
+    min_chars = 1000 if report_mode == "pro" else 500
+    if len(text) < min_chars:
+        issues.append(f"too_short_min_{min_chars}")
+    return issues
