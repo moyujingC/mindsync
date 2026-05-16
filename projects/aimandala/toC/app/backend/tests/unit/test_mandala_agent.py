@@ -122,9 +122,19 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert result.knowledge_pack["theme"] == "wealth"
     assert result.stage_outputs["stage-06-per-circle-element-generation-control"]["theme"] == "wealth"
     assert result.stage_outputs["stage-12-healing-direction-and-report-branching"]["report_mode"] == "lite"
+    theme_route = result.stage_outputs["stage-12-healing-direction-and-report-branching"]["theme_route"]
+    assert theme_route["theme"] == "wealth"
+    assert theme_route["selected_clause_ids"]
+    assert theme_route["clauses"]
+    assert result.report_context_package["theme_interpretation"]["route"]["selected_clause_ids"]
     assert result.final_report["summary"] == "核心主轴是先稳住，再推进。"
     assert result.quality_gate["passed"] is True
     assert "stage-" not in result.final_report_md
+
+    report_prompt_payload = json.loads(
+        llm_client.text_calls[-1]["user_prompt"].split("\n\n", 1)[1]
+    )
+    assert report_prompt_payload["writing_inputs"]["theme_route"]["selected_clause_ids"]
 
 
 def test_mandala_agent_quality_gate_rejects_internal_leaks(tmp_path):

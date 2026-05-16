@@ -6,6 +6,8 @@ import json
 from typing import Any
 from uuid import uuid4
 
+from app.core.wealth_report import get_wealth_report_runtime
+
 from .contracts import EXECUTION_BLOCKS, STAGE_KEYS, MandalaAgentInput, MandalaAgentResult
 from .knowledge_pack_builder import knowledge_pack_to_prompt_fragment
 from .quality_gate import run_quality_gate
@@ -214,17 +216,23 @@ class MandalaInterpretationAgent:
         evidence_refs = payload.get("evidence_refs")
         if not isinstance(evidence_refs, list):
             evidence_refs = self._visual_unit_refs(stage_outputs["stage-03-visual-evidence"])
+        theme_route = self._build_theme_route(
+            agent_input=agent_input,
+            stage_outputs=stage_outputs,
+        )
         return {
             "stage-10-core-thesis-selection": {
                 "stage": "stage-10-core-thesis-selection",
                 "status": "complete",
                 "core_thesis": core_thesis,
                 "evidence_refs": evidence_refs,
+                "theme_route": theme_route,
             },
             "stage-11-user-facing-framing": {
                 "stage": "stage-11-user-facing-framing",
                 "status": "complete",
                 "framing": framing,
+                "theme_route": theme_route,
             },
             "stage-12-healing-direction-and-report-branching": {
                 "stage": "stage-12-healing-direction-and-report-branching",
@@ -232,6 +240,7 @@ class MandalaInterpretationAgent:
                 "healing_direction": healing_direction,
                 "report_mode": agent_input.report_mode,
                 "writing_input_refs": evidence_refs,
+                "theme_route": theme_route,
             },
         }
 
@@ -467,6 +476,7 @@ class MandalaInterpretationAgent:
             "theme_interpretation": {
                 "theme": agent_input.user_context.theme,
                 "theme_label": agent_input.user_context.theme_label,
+                "route": stage_outputs["stage-12-healing-direction-and-report-branching"].get("theme_route", {}),
             },
             "core_thesis": stage_outputs["stage-10-core-thesis-selection"]["core_thesis"],
             "healing_direction": stage_outputs["stage-12-healing-direction-and-report-branching"]["healing_direction"],
@@ -539,6 +549,7 @@ class MandalaInterpretationAgent:
                 "core_thesis": stage_outputs["stage-10-core-thesis-selection"],
                 "framing": stage_outputs["stage-11-user-facing-framing"],
                 "healing": stage_outputs["stage-12-healing-direction-and-report-branching"],
+                "theme_route": stage_outputs["stage-12-healing-direction-and-report-branching"].get("theme_route", {}),
             },
         }
         return (
@@ -547,6 +558,66 @@ class MandalaInterpretationAgent:
             "不得输出财务预测、收益预测、投资建议或心理诊断。\n\n"
             f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
         )
+
+    def _build_theme_route(
+        self,
+        *,
+        agent_input: MandalaAgentInput,
+        stage_outputs: dict[str, Any],
+    ) -> dict[str, Any]:
+        if agent_input.user_context.theme != "wealth":
+            return {"theme": agent_input.user_context.theme, "status": "not_applicable"}
+
+        runtime = get_wealth_report_runtime()
+        route = runtime.route_visual_observations(
+            stage_outputs["stage-03-visual-evidence"],
+            report_mode=agent_input.report_mode,
+        )
+        clauses = [
+            self._compact_clause(runtime.get_clause(clause_id))
+            for clause_id in route.selected_clause_ids
+        ]
+        modules = [
+            self._compact_module(runtime.get_module(module_id))
+            for module_id in route.selected_module_ids
+        ]
+        return {
+            "theme": "wealth",
+            "status": "matched",
+            "selected_signal_ids": list(route.selected_signal_ids),
+            "selected_clause_ids": list(route.selected_clause_ids),
+            "selected_module_ids": list(route.selected_module_ids),
+            "clauses": [clause for clause in clauses if clause],
+            "modules": [module for module in modules if module],
+            "boundaries": list(route.boundaries),
+        }
+
+    def _compact_clause(self, clause: dict[str, Any]) -> dict[str, Any]:
+        if not clause:
+            return {}
+        return {
+            "id": clause.get("id"),
+            "title": clause.get("title"),
+            "summary": clause.get("summary"),
+            "report_language": clause.get("report_language", [])[:2],
+            "healing_direction": clause.get("healing_direction", [])[:3],
+            "source_status": (
+                clause.get("provenance", {}).get("source_status")
+                if isinstance(clause.get("provenance"), dict)
+                else None
+            ),
+        }
+
+    def _compact_module(self, module: dict[str, Any]) -> dict[str, Any]:
+        if not module:
+            return {}
+        return {
+            "module_id": module.get("module_id"),
+            "title": module.get("title"),
+            "status": module.get("status"),
+            "report_use": module.get("report_use"),
+            "output_strength": module.get("output_strength"),
+        }
 
     def _vision_schema(self) -> dict[str, Any]:
         return {
