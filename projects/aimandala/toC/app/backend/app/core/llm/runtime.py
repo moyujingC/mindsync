@@ -15,6 +15,7 @@ from urllib.request import Request, urlopen
 
 
 DEFAULT_DEEPSEEK_V4_MODEL = "deepseek-v4-pro"
+DEFAULT_DEEPSEEK_V4_BASE_URL = "https://api.deepseek.com"
 
 
 @dataclass(frozen=True)
@@ -549,8 +550,12 @@ class LLMReportChatRuntime:
 
 
 def create_llm_client_from_env() -> LLMClient:
+    load_private_env_file()
     backend = os.getenv("AIMANDALA_LLM_BACKEND", "").strip().lower()
     if backend in {"", "noop", "none"}:
+        modern_config = load_modern_llm_client_config_from_env()
+        if modern_config is not None:
+            return OpenAICompatibleLLMClient(modern_config)
         legacy_config = load_legacy_llm_client_config_from_env()
         if legacy_config is not None:
             return OpenAICompatibleLLMClient(legacy_config)
@@ -560,7 +565,25 @@ def create_llm_client_from_env() -> LLMClient:
     raise ValueError(f"Unsupported LLM backend: {backend}")
 
 
-def load_llm_client_config_from_env() -> LLMClientConfig:
+def load_private_env_file() -> None:
+    env_file = os.getenv("AIMANDALA_ENV_FILE", "").strip()
+    if not env_file:
+        return
+    env_path = Path(env_file).expanduser()
+    if not env_path.exists():
+        return
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        normalized_key = key.strip()
+        if not normalized_key or normalized_key in os.environ:
+            continue
+        os.environ[normalized_key] = _strip_env_value(value)
+
+
+def load_modern_llm_client_config_from_env() -> Optional[LLMClientConfig]:
     timeout_seconds = _read_positive_int_env(
         "AIMANDALA_LLM_TIMEOUT_SECONDS",
         default=30,
@@ -583,8 +606,54 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
         os.getenv("AIMANDALA_LLM_API_KEY_HEADER", "Authorization").strip()
         or "Authorization"
     )
-    if not default_base_url:
-        raise ValueError("Missing required LLM config: AIMANDALA_LLM_BASE_URL")
+    if not any([default_base_url, default_api_key]):
+        return None
+    default_task = LLMTaskConfig(
+        base_url=default_base_url or DEFAULT_DEEPSEEK_V4_BASE_URL,
+        api_key=default_api_key,
+        model=default_model,
+        api_key_header=default_api_key_header,
+    )
+    return LLMClientConfig(
+        default=default_task,
+        chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task)
+        or default_task,
+        chat_fallback=_load_task_config_from_env("AIMANDALA_LLM_CHAT_FALLBACK", fallback=default_task),
+        vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task)
+        or default_task,
+        vision_fallback=_load_task_config_from_env("AIMANDALA_LLM_VISION_FALLBACK", fallback=default_task),
+        timeout_seconds=timeout_seconds,
+        max_retries=max_retries,
+        retry_backoff_ms=retry_backoff_ms,
+    )
+
+
+def load_llm_client_config_from_env() -> LLMClientConfig:
+    timeout_seconds = _read_positive_int_env(
+        "AIMANDALA_LLM_TIMEOUT_SECONDS",
+        default=30,
+    )
+    max_retries = _read_non_negative_int_env(
+        "AIMANDALA_LLM_MAX_RETRIES",
+        default=2,
+    )
+    retry_backoff_ms = _read_non_negative_int_env(
+        "AIMANDALA_LLM_RETRY_BACKOFF_MS",
+        default=400,
+    )
+    default_base_url = (
+        os.getenv("AIMANDALA_LLM_BASE_URL", "").strip()
+        or DEFAULT_DEEPSEEK_V4_BASE_URL
+    )
+    default_model = os.getenv(
+        "AIMANDALA_LLM_MODEL",
+        DEFAULT_DEEPSEEK_V4_MODEL,
+    ).strip() or DEFAULT_DEEPSEEK_V4_MODEL
+    default_api_key = os.getenv("AIMANDALA_LLM_API_KEY", "").strip() or None
+    default_api_key_header = (
+        os.getenv("AIMANDALA_LLM_API_KEY_HEADER", "Authorization").strip()
+        or "Authorization"
+    )
     default_task = LLMTaskConfig(
         base_url=default_base_url,
         api_key=default_api_key,
@@ -626,7 +695,7 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
 
     default_task = _build_legacy_task_config(
         base_url=os.getenv("AIMANDALA_LLM_BASE_URL", "").strip()
-        or "https://api.deepseek.com/v1",
+        or DEFAULT_DEEPSEEK_V4_BASE_URL,
         api_key=legacy_api_key,
         model=os.getenv("AIMANDALA_LLM_MODEL", "").strip()
         or DEFAULT_DEEPSEEK_V4_MODEL,
@@ -677,6 +746,13 @@ def _build_legacy_task_config(
         model=model,
         api_key_header="Authorization",
     )
+
+
+def _strip_env_value(raw_value: str) -> str:
+    value = raw_value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        return value[1:-1]
+    return value
 
 
 def _read_positive_int_env(name: str, *, default: int) -> int:

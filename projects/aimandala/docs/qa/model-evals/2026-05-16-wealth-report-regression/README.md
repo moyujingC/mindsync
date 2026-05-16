@@ -93,13 +93,18 @@ cases/
 
 状态：in_progress
 
-下一步：
+已完成：
 
 1. 选定第一批 5 张 fixture 图片。
 2. 为每张图建立 case 记录。
-3. 跑 Lite / Pro 报告。
-4. 填写 review。
-5. 汇总评分和失败原因。
+3. dry-run 已通过，5 个 case 的 Lite / Pro 共 10 次计划运行都能解析到图片和输出目录。
+
+下一步：
+
+1. 配置真实模型环境变量和兑换码。
+2. 跑 Lite / Pro 报告。
+3. 填写 review。
+4. 汇总评分和失败原因。
 
 ## 7. 执行命令
 
@@ -160,6 +165,14 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 - `AIMANDALA_LLM_VISION_MODEL`
 - `AIMANDALA_LLM_TIMEOUT_SECONDS`
 - `AIMANDALA_LLM_MAX_RETRIES`
+- `AIMANDALA_REDEEM_CODES`
+
+当前文本模型默认口径：
+
+- `AIMANDALA_LLM_BASE_URL` 默认 `https://api.deepseek.com`
+- `AIMANDALA_LLM_MODEL` 默认 `deepseek-v4-pro`
+- 只设置 `AIMANDALA_LLM_API_KEY` 时，后端会自动启用 OpenAI-compatible 客户端。
+- 视觉模型建议单独配置 `AIMANDALA_LLM_VISION_*`，避免把不支持图片输入的文本模型用于视觉观察。
 
 ### 8.2 当前结论
 

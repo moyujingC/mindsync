@@ -82,18 +82,29 @@ git diff --check
 
 ## LLM 配置
 
-本地未配置模型时，`AIMANDALA_LLM_BACKEND` 可缺省为 `noop`。此时 `/api/wealth-reports` 必须传入 `visual_observations`，否则无法生成视觉证据。
+默认优先使用 DeepSeek v4 兼容配置：
 
-真实模型接入使用：
-
-- `AIMANDALA_LLM_BACKEND=openai_compatible`
-- `AIMANDALA_LLM_BASE_URL`
+- `AIMANDALA_LLM_BASE_URL`，默认 `https://api.deepseek.com`
 - `AIMANDALA_LLM_API_KEY`
-- `AIMANDALA_LLM_MODEL`
+- `AIMANDALA_LLM_MODEL`，默认 `deepseek-v4-pro`
 - `AIMANDALA_LLM_CHAT_MODEL`（可选）
 - `AIMANDALA_LLM_VISION_MODEL`（可选）
 - `AIMANDALA_LLM_TIMEOUT_SECONDS`（可选，默认 `30`）
 - `AIMANDALA_LLM_MAX_RETRIES`（可选，默认 `2`）
+- `AIMANDALA_LLM_RETRY_BACKOFF_MS`（可选，默认 `400`）
+
+如果只设置了 `AIMANDALA_LLM_API_KEY`，后端会自动启用兼容客户端并使用 DeepSeek v4 默认值。
+如果显式设置 `AIMANDALA_LLM_BACKEND=openai_compatible`，也会走同一套 OpenAI-compatible 客户端。
+本地未配置任何模型信息时，后端回退到 `noop`。
+
+本地可以用私有环境文件集中放密钥，文件不要提交：
+
+```bash
+export AIMANDALA_ENV_FILE=/absolute/path/to/aimandala.local.env
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py --mode both
+```
+
+私有环境文件使用普通 `KEY=VALUE` 格式。已经在 shell 里设置的变量优先级更高，不会被文件覆盖。
 
 ## 兑换码配置
 
@@ -104,4 +115,3 @@ AIMANDALA_REDEEM_CODES="CODE-LITE:lite;CODE-PRO:pro;CODE-ALL:lite,pro"
 ```
 
 未配置、未传码、或兑换码不适用于所选 Lite / Pro 版本时，`/api/wealth-reports` 会返回 `402`。
-- `AIMANDALA_LLM_RETRY_BACKOFF_MS`（可选，默认 `400`）
