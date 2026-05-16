@@ -37,6 +37,7 @@ export interface StartCreatePayload {
   storageKey?: string | null;
   imageLocalExpiresAt?: string | null;
   theme?: string;
+  redeemCode?: string;
   paintingIntention?: string;
   paintingFeeling?: string;
   innerRadius?: number;

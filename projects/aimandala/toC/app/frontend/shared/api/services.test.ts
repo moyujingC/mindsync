@@ -24,6 +24,7 @@ describe("shared/api services", () => {
     await createWealthReport({
       image_path: "/tmp/mandala.png",
       report_mode: "lite",
+      redeem_code: "MVP-LITE",
       painting_intention: "想看财富卡点",
       painting_feeling: "有点紧",
       inner_radius: 35,
@@ -40,6 +41,7 @@ describe("shared/api services", () => {
         body: JSON.stringify({
           image_path: "/tmp/mandala.png",
           report_mode: "lite",
+          redeem_code: "MVP-LITE",
           painting_intention: "想看财富卡点",
           painting_feeling: "有点紧",
           inner_radius: 35,

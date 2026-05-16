@@ -75,16 +75,21 @@ def test_upload_image_saves_browser_file_and_returns_backend_readable_path(
     Path(payload["image_path"]).unlink(missing_ok=True)
 
 
-def test_create_lite_wealth_report_uses_native_agent_route(tmp_path: Path):
+def test_create_lite_wealth_report_uses_native_agent_route(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite;MVP-PRO:pro")
+    client = TestClient(create_app())
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
 
-    client = TestClient(create_app())
     response = client.post(
         "/api/wealth-reports",
         json={
             "image_path": str(image_path),
             "report_mode": "lite",
+            "redeem_code": "MVP-LITE",
             "painting_intention": "想看财富为什么卡住",
             "painting_feeling": "有点紧",
             "visual_observations": _visual_observations(),
@@ -100,7 +105,11 @@ def test_create_lite_wealth_report_uses_native_agent_route(tmp_path: Path):
     assert "财富议题" in payload["final_report_md"]
 
 
-def test_create_pro_wealth_report_returns_displayable_report(tmp_path: Path):
+def test_create_pro_wealth_report_returns_displayable_report(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite;MVP-PRO:pro")
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
 
@@ -110,6 +119,7 @@ def test_create_pro_wealth_report_returns_displayable_report(tmp_path: Path):
         json={
             "image_path": str(image_path),
             "report_mode": "pro",
+            "redeem_code": "MVP-PRO",
             "painting_intention": "想看财富为什么卡住",
             "painting_feeling": "有点紧",
             "visual_observations": _visual_observations(),
@@ -130,6 +140,7 @@ def test_create_wealth_report_requires_llm_or_seeded_visual_observations(
 ):
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     monkeypatch.setenv("AIMANDALA_LLM_BACKEND", "noop")
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
 
@@ -139,6 +150,7 @@ def test_create_wealth_report_requires_llm_or_seeded_visual_observations(
         json={
             "image_path": str(image_path),
             "report_mode": "lite",
+            "redeem_code": "MVP-LITE",
             "painting_intention": "想看财富为什么卡住",
             "painting_feeling": "有点紧",
         },
@@ -146,3 +158,48 @@ def test_create_wealth_report_requires_llm_or_seeded_visual_observations(
 
     assert response.status_code == 501
     assert "LLM runtime is not configured" in response.json()["detail"]
+
+
+def test_create_wealth_report_rejects_missing_redeem_code(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite;MVP-PRO:pro")
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/wealth-reports",
+        json={
+            "image_path": str(image_path),
+            "report_mode": "lite",
+            "visual_observations": _visual_observations(),
+        },
+    )
+
+    assert response.status_code == 402
+    assert "兑换码" in response.json()["detail"]
+
+
+def test_create_wealth_report_rejects_lite_code_for_pro(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite;MVP-PRO:pro")
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/wealth-reports",
+        json={
+            "image_path": str(image_path),
+            "report_mode": "pro",
+            "redeem_code": "MVP-LITE",
+            "visual_observations": _visual_observations(),
+        },
+    )
+
+    assert response.status_code == 402
+    assert "不适用于 PRO 报告" in response.json()["detail"]

@@ -103,6 +103,7 @@ export async function runMobileWebReportFlow(
       storage_backend: payload.storageBackend ?? undefined,
       storage_key: payload.storageKey ?? undefined,
       report_mode: reportMode,
+      redeem_code: payload.redeemCode,
       painting_intention: payload.paintingIntention,
       painting_feeling: payload.paintingFeeling,
       inner_radius: normalizeCirclePercent(detection.inner_radius),

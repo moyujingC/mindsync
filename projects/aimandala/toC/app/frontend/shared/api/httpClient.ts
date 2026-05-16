@@ -11,6 +11,25 @@ export class AimandalaApiError extends Error {
   }
 }
 
+function resolveErrorMessage(errorData: unknown, fallback: string): string {
+  const detail = (errorData as { detail?: unknown; error?: unknown } | null)?.detail;
+  const error = (errorData as { detail?: unknown; error?: unknown } | null)?.error;
+
+  if (typeof detail === "string" && detail.trim()) {
+    return detail;
+  }
+  if (typeof error === "string" && error.trim()) {
+    return error;
+  }
+  if (detail && typeof detail === "object") {
+    const message = (detail as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) {
+      return message;
+    }
+  }
+  return fallback;
+}
+
 function summarizeDebugValue(value: unknown): unknown {
   if (value == null) {
     return value;
@@ -63,6 +82,7 @@ export async function fetchJson<T>(
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
+      const errorMessage = resolveErrorMessage(errorData, `HTTP error: ${response.status}`);
       pushApiDebugTrace({
         id: traceId,
         startedAt: new Date(startedAt).toISOString(),
@@ -73,16 +93,11 @@ export async function fetchJson<T>(
         url,
         requestSummary,
         responseSummary: summarizeDebugValue(errorData),
-        errorMessage:
-          (errorData as { detail?: string; error?: string } | null)?.detail ||
-          (errorData as { detail?: string; error?: string } | null)?.error ||
-          `HTTP error: ${response.status}`,
+        errorMessage,
         statusCode: response.status,
       });
       throw new AimandalaApiError(
-        (errorData as { detail?: string; error?: string } | null)?.detail ||
-          (errorData as { detail?: string; error?: string } | null)?.error ||
-          `HTTP error: ${response.status}`,
+        errorMessage,
         response.status,
         errorData,
       );

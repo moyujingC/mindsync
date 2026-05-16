@@ -141,6 +141,7 @@ export function MobileWebApp({
         <MobileWebReportEntryPage
           draft={uploadDraft}
           onBack={onReportEntryBack}
+          onDraftChange={onUploadDraftChange}
           onChooseReportType={onReportEntryChooseReportType}
         />
       );

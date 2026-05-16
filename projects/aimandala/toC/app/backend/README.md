@@ -60,12 +60,13 @@ uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
 - `POST /api/wealth-reports`
 - `GET /health`
 
-`POST /api/wealth-reports` 当前要求传入后端可读取的 `image_path`。如果没有配置真实 LLM，也可以传入 `visual_observations` 作为已提取画面证据，用于本地 dry-run（不调用视觉模型的试跑）。
+`POST /api/wealth-reports` 当前要求传入后端可读取的 `image_path` 和可用的 `redeem_code`。如果没有配置真实 LLM，也可以传入 `visual_observations` 作为已提取画面证据，用于本地 dry-run（不调用视觉模型的试跑）。
 
 ## 当前边界
 
 - 当前只保留财富议题报告主线。
-- 上传、历史记录、支付、订单、小程序登录等渠道能力尚未重新接入当前报告 API。
+- 上传入口和 Web 报告生成已接入当前报告 API；真实支付网关、订单、历史记录、小程序登录等渠道能力尚未重新接入。
+- Lite / Pro 生成当前先通过兑换码授权，不伪造支付完成。
 - Web 和小程序后续应共用报告生成核心，但各自的登录、支付、上传和渠道壳需要单独重做。
 - 早期报告管线和小程序后端 stub 已移除；后续渠道能力需要围绕当前报告核心重新接入。
 
@@ -93,4 +94,14 @@ git diff --check
 - `AIMANDALA_LLM_VISION_MODEL`（可选）
 - `AIMANDALA_LLM_TIMEOUT_SECONDS`（可选，默认 `30`）
 - `AIMANDALA_LLM_MAX_RETRIES`（可选，默认 `2`）
+
+## 兑换码配置
+
+报告生成需要配置 `AIMANDALA_REDEEM_CODES`。格式为：
+
+```bash
+AIMANDALA_REDEEM_CODES="CODE-LITE:lite;CODE-PRO:pro;CODE-ALL:lite,pro"
+```
+
+未配置、未传码、或兑换码不适用于所选 Lite / Pro 版本时，`/api/wealth-reports` 会返回 `402`。
 - `AIMANDALA_LLM_RETRY_BACKOFF_MS`（可选，默认 `400`）

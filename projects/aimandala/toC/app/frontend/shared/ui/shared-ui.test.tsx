@@ -201,6 +201,7 @@ describe("shared ui", () => {
     );
 
     expect(html).toContain("选择 Lite");
+    expect(html).toContain("优惠券 / 兑换码");
     expect(html).toContain("温柔提示");
     expect(html).toContain("当前主题");
   });

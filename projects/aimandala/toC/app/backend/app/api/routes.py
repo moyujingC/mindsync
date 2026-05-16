@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from typing import Any, Literal
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
@@ -39,6 +40,10 @@ class WealthReportRequest(BaseModel):
     )
     storage_backend: str = ""
     storage_key: str = ""
+    redeem_code: str = Field(
+        default="",
+        description="Coupon or redeem code that authorizes generating the selected report mode.",
+    )
 
 
 class WealthReportResponse(BaseModel):
@@ -169,9 +174,57 @@ def _build_agent_input(payload: WealthReportRequest) -> MandalaAgentInput:
     )
 
 
+def _parse_redeem_code_config(raw_config: str) -> dict[str, set[str]]:
+    """Parse CODE:lite,pro;OTHER:lite into a normalized code -> modes map."""
+
+    codes: dict[str, set[str]] = {}
+    for entry in raw_config.split(";"):
+        normalized_entry = entry.strip()
+        if not normalized_entry or ":" not in normalized_entry:
+            continue
+        code, modes = normalized_entry.split(":", 1)
+        normalized_code = code.strip().upper()
+        allowed_modes = {
+            mode.strip().lower()
+            for mode in modes.split(",")
+            if mode.strip().lower() in {"lite", "pro"}
+        }
+        if normalized_code and allowed_modes:
+            codes[normalized_code] = allowed_modes
+    return codes
+
+
+def _authorize_report_access(payload: WealthReportRequest) -> None:
+    configured_codes = _parse_redeem_code_config(
+        os.getenv("AIMANDALA_REDEEM_CODES", "")
+    )
+    submitted_code = payload.redeem_code.strip().upper()
+
+    if not configured_codes:
+        raise HTTPException(
+            status_code=402,
+            detail="报告生成需要先配置可用的优惠券或兑换码。",
+        )
+
+    if not submitted_code:
+        raise HTTPException(
+            status_code=402,
+            detail="请输入有效的优惠券或兑换码后再生成报告。",
+        )
+
+    allowed_modes = configured_codes.get(submitted_code)
+    if not allowed_modes or payload.report_mode not in allowed_modes:
+        raise HTTPException(
+            status_code=402,
+            detail=f"兑换码无效或不适用于 {payload.report_mode.upper()} 报告。",
+        )
+
+
 @router.post("/wealth-reports", response_model=WealthReportResponse)
 async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResponse:
     """Generate one wealth-topic mandala report through the native agent path."""
+
+    _authorize_report_access(payload)
 
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
     agent = MandalaInterpretationAgent(

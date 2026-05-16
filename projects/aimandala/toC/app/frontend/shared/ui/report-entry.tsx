@@ -87,6 +87,8 @@ export interface SharedReportEntrySelectionPageProps {
   heroClassName?: string;
   heroPatternClassName?: string;
   heroPatternStyle?: SharedReportEntryPatternStyle;
+  redeemCode?: string;
+  onRedeemCodeChange?: (value: string) => void;
   onBack?: () => void;
   onChoose?: (cardId: string) => void;
 }
@@ -96,6 +98,8 @@ export function SharedReportEntrySelectionPage({
   heroClassName,
   heroPatternClassName,
   heroPatternStyle,
+  redeemCode = "",
+  onRedeemCodeChange,
   onBack,
   onChoose,
 }: SharedReportEntrySelectionPageProps) {
@@ -126,6 +130,22 @@ export function SharedReportEntrySelectionPage({
       </div>
 
       <div className="am-report-entry-body">
+        <section className="am-report-entry-redeem">
+          <label className="am-report-entry-redeem__label" htmlFor="am-report-entry-redeem-code">
+            优惠券 / 兑换码
+          </label>
+          <input
+            id="am-report-entry-redeem-code"
+            className="am-report-entry-redeem__input"
+            value={redeemCode}
+            onChange={(event) => onRedeemCodeChange?.(event.target.value)}
+            placeholder="请输入可用兑换码"
+          />
+          <p className="am-report-entry-redeem__hint">
+            系统会在生成前校验兑换码；Lite 和 Pro 仍按所选版本生成。
+          </p>
+        </section>
+
         {descriptor.cards.map((card) => (
           <SharedReportEntryCard
             key={card.id}

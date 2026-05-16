@@ -61,6 +61,7 @@ describe("mobile-web controller", () => {
       storageBackend: "cos",
       storageKey: "aimandala/uploads/sample.png",
       theme: "wealth",
+      redeemCode: "MVP-LITE",
       paintingIntention: "看见财富卡点",
       paintingFeeling: "平静",
       innerRadius: 10,
@@ -82,6 +83,7 @@ describe("mobile-web controller", () => {
         storage_backend: "cos",
         storage_key: "aimandala/uploads/sample.png",
         report_mode: "lite",
+        redeem_code: "MVP-LITE",
         painting_intention: "看见财富卡点",
         painting_feeling: "平静",
         inner_radius: 10,
@@ -100,6 +102,7 @@ describe("mobile-web controller", () => {
         storageBackend: "cos",
         storageKey: "aimandala/uploads/sample.png",
         theme: "wealth",
+        redeemCode: "MVP-PRO",
         paintingIntention: "看见财富卡点",
         paintingFeeling: "平静",
         innerRadius: 10,
@@ -112,6 +115,7 @@ describe("mobile-web controller", () => {
     expect(api.createWealthReport).toHaveBeenCalledWith(
       expect.objectContaining({
         report_mode: "pro",
+        redeem_code: "MVP-PRO",
       }),
     );
   });

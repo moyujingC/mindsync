@@ -8,6 +8,7 @@ describe("mobile-web state", () => {
       {
         imagePath: "/tmp/sample.png",
         theme: "wealth",
+        redeemCode: " MVP-LITE ",
         paintingIntention: "",
         paintingFeeling: "",
         innerRadius: 0.33,
@@ -18,6 +19,7 @@ describe("mobile-web state", () => {
 
     expect(payload.innerRadius).toBe(33);
     expect(payload.middleRadius).toBe(66);
+    expect(payload.redeemCode).toBe("MVP-LITE");
   });
 
   it("toStartCreatePayload 保留已经是百分比的输入", () => {

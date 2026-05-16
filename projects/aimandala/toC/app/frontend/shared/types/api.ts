@@ -91,6 +91,7 @@ export interface VisualCircleObservation {
 export interface WealthReportRequest {
   image_path: string;
   report_mode?: InterpretationVersion;
+  redeem_code?: string;
   painting_intention?: string;
   painting_feeling?: string;
   inner_radius?: number;

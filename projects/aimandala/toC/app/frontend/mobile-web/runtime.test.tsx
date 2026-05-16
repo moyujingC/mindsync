@@ -101,6 +101,7 @@ describe("MobileWebRuntime", () => {
           theme: "wealth",
           reportType: "lite",
           reportVariant: "lite",
+          redeemCode: "MVP-LITE",
           paintingIntention: "看见财富卡点",
           paintingFeeling: "平静",
           innerRadius: 0.36,
@@ -131,6 +132,7 @@ describe("MobileWebRuntime", () => {
         expect.objectContaining({
           image_path: "/tmp/manual-circle-mandala.png",
           report_mode: "lite",
+          redeem_code: "MVP-LITE",
           painting_intention: "看见财富卡点",
           painting_feeling: "平静",
           inner_radius: 36,

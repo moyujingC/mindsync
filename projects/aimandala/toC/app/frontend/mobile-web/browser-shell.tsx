@@ -13,7 +13,7 @@ import {
 import {
   pollMobileWebReportUntilReady,
   refreshMobileWebReport,
-  runMobileWebLiteFlow,
+  runMobileWebReportFlow,
 } from "./controller";
 import {
   createPreviewRouteInput,
@@ -1136,7 +1136,7 @@ export function MobileWebBrowserShell() {
                         }));
                       },
                     );
-                    const result = await runMobileWebLiteFlow(
+                    const result = await runMobileWebReportFlow(
                       toStartCreatePayload(
                         {
                           ...nextDraft,
@@ -1144,6 +1144,7 @@ export function MobileWebBrowserShell() {
                         },
                         userId,
                       ),
+                      getDraftReportVariant(nextDraft),
                     );
                     setPreviewFlowState(result.state);
                     if (result.state.step === "liteGenerating") {
