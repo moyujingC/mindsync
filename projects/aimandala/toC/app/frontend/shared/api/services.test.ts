@@ -12,103 +12,38 @@ vi.mock("./config", () => ({
   getAimandalaApiBaseUrl: () => "http://localhost:8000",
 }));
 
-import {
-  createMiniappOrder,
-  exchangeMiniappSession,
-  getMiniappOrder,
-  notifyMiniappWechatPayment,
-  reconcileMiniappOrder,
-} from "./services";
+import { createWealthReport } from "./services";
 
-describe("shared/api services miniapp contracts", () => {
+describe("shared/api services", () => {
   beforeEach(() => {
     fetchJsonMock.mockReset();
     fetchJsonMock.mockResolvedValue({});
   });
 
-  it("exchangeMiniappSession 使用固定路径和 JSON body", async () => {
-    await exchangeMiniappSession({
-      code: "demo-code",
-      debug_canonical_user_id: "user-1",
+  it("createWealthReport uses the native wealth report endpoint", async () => {
+    await createWealthReport({
+      image_path: "/tmp/mandala.png",
+      report_mode: "lite",
+      painting_intention: "想看财富卡点",
+      painting_feeling: "有点紧",
+      inner_radius: 35,
+      middle_radius: 65,
     });
 
     expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/session/exchange",
+      "http://localhost:8000/api/wealth-reports",
       expect.objectContaining({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          code: "demo-code",
-          debug_canonical_user_id: "user-1",
-        }),
-      }),
-    );
-  });
-
-  it("createMiniappOrder 使用 orders create contract", async () => {
-    await createMiniappOrder({
-      interpretation_id: "ipt-1",
-      product_type: "pro",
-      channel: "miniapp",
-      open_id: "openid-1",
-    });
-
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/orders",
-      expect.objectContaining({
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          interpretation_id: "ipt-1",
-          product_type: "pro",
-          channel: "miniapp",
-          open_id: "openid-1",
-        }),
-      }),
-    );
-  });
-
-  it("getMiniappOrder 使用 order detail contract", async () => {
-    await getMiniappOrder("order/1");
-
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/orders/order%2F1",
-    );
-  });
-
-  it("reconcileMiniappOrder 使用 order reconcile contract", async () => {
-    await reconcileMiniappOrder("order-2");
-
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/orders/order-2/reconcile",
-      expect.objectContaining({
-        method: "POST",
-      }),
-    );
-  });
-
-  it("notifyMiniappWechatPayment 使用 wechat notify contract", async () => {
-    await notifyMiniappWechatPayment({
-      order_id: "order-3",
-      event: "paid",
-      payment_reference: "wx-demo",
-    });
-
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/payments/wechat/notify",
-      expect.objectContaining({
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_id: "order-3",
-          event: "paid",
-          payment_reference: "wx-demo",
+          image_path: "/tmp/mandala.png",
+          report_mode: "lite",
+          painting_intention: "想看财富卡点",
+          painting_feeling: "有点紧",
+          inner_radius: 35,
+          middle_radius: 65,
         }),
       }),
     );

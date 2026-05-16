@@ -1,4 +1,3 @@
-import { getInterpretationList } from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
 
 import { bootstrapMobileWebFlow, refreshMobileWebReport, runMobileWebLiteFlow } from "./controller";
@@ -8,6 +7,7 @@ import { mobileWebRoutes } from "./routes";
 import { getMobileWebPrimaryAction, toStartCreatePayload } from "./state";
 import { createMobileWebPageViewModel } from "./view-model";
 import { resolveMobileWebRouteProps } from "./router-plan";
+import type { InterpretationRecordResponse } from "../shared/types";
 
 export async function renderUploadEntry(imagePath: string) {
   const bootstrap = await bootstrapMobileWebFlow(imagePath);
@@ -63,7 +63,8 @@ export async function renderLiteResultEntry(params: {
 }
 
 export async function renderHistoryEntry(userId: string) {
-  const records = await getInterpretationList(userId);
+  void userId;
+  const records: InterpretationRecordResponse[] = [];
   const descriptor = createHistoryPageDescriptor(records);
 
   return (

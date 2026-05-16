@@ -12,25 +12,23 @@
 当前这里已经恢复了 mobile-web 的页面层、运行时层和浏览器宿主层，但默认仍应按下面方式接共享层：
 
 - 从 `../shared/types` 读取 DTO 和流程类型
-- 从 `../shared/api` 调用当前 `V2` 后端接口
+- 从 `../shared/api` 调用当前财富报告后端入口
 - 从 `../shared/core` 读取流程状态与纯函数
 
 当前建议的接入顺序：
 
 1. 上传页
    - 选择图片
-   - 调用 `detect-circles`
+   - 手动确认三圈边界
 2. 加载页
-   - 调用 `createInterpretation`
-   - 轮询 `status`
+   - 调用 `createWealthReport`
+   - 等待 `/api/wealth-reports` 返回财富报告
 3. Lite 结果页
-   - 调用 `report`
    - 渲染结构化 Lite 字段
 4. 历史页
-   - 调用用户历史列表
+   - 后续按新 report_id 存储模型重做
 5. Upgrade 页
-   - 当前已走真实 `upgrade + report(version=pro)` 最小闭环
-   - 正式生成链路已切到当前 prompt/schema 主干，可继续围绕内容质量迭代
+   - 后续围绕当前财富报告能力重新接入
 
 当前不建议在这里直接复制历史前端结构，而是优先按共享层边界重组。
 

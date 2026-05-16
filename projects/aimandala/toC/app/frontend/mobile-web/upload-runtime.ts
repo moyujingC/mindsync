@@ -1,4 +1,3 @@
-import { uploadImage } from "../shared/api";
 import type { UploadImageResponse } from "../shared/types";
 import {
   getDraftUploadImageResponse,
@@ -30,9 +29,7 @@ export async function ensureUploadedImagePath(
   }
 
   if (draft.browserFile) {
-    const uploaded = await uploadImage(draft.browserFile);
-    onResolved(uploaded);
-    return uploaded;
+    throw new Error("当前报告 API 尚未接入浏览器文件上传，请先使用后端可读取的 image_path。");
   }
 
   const fallbackUpload = createFallbackUploadResponse(draft);

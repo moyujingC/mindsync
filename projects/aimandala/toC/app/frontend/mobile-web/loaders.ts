@@ -1,4 +1,3 @@
-import { getInterpretationList } from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
 
 import {
@@ -64,7 +63,7 @@ export async function loadUpgradePage(
 }
 
 export async function loadHistoryPage(
-  userId: string,
+  _userId: string,
   query: InterpretationListQuery = {},
 ): Promise<MobileWebHistoryPageProps> {
   const historyQuery: InterpretationListQuery = {
@@ -72,9 +71,9 @@ export async function loadHistoryPage(
     limit: query.limit,
     theme: query.theme,
   };
-  const records = await getInterpretationList(userId, historyQuery);
+  void historyQuery;
 
   return {
-    records,
+    records: [],
   };
 }

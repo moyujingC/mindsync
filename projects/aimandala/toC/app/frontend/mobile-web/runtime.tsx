@@ -24,12 +24,6 @@ import {
   resolveSelfUnderstandingReportCta,
   selectImage,
 } from "../shared/core";
-import {
-  createMiniappOrder,
-  detectCircles,
-  notifyMiniappWechatPayment,
-  reconcileMiniappOrder,
-} from "../shared/api";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
@@ -52,6 +46,9 @@ export interface MobileWebRouteLoaderState {
   error: string | null;
   props: MobileWebAppProps | null;
 }
+
+const DEFAULT_INNER_RADIUS = 0.35;
+const DEFAULT_MIDDLE_RADIUS = 0.65;
 
 export function useMobileWebRouteLoader(
   input: MobileWebRouteInput,
@@ -211,18 +208,9 @@ async function ensureRuntimeProAccess(
   interpretationId: string,
   userId: string | null,
 ): Promise<void> {
-  const order = await createMiniappOrder({
-    interpretation_id: interpretationId,
-    product_type: "pro",
-    channel: "miniapp",
-    debug_canonical_user_id: userId,
-  });
-
-  await notifyMiniappWechatPayment({
-    order_id: order.order_id,
-    event: "paid",
-  });
-  await reconcileMiniappOrder(order.order_id);
+  throw new Error(
+    `Pro purchase is not available on the current report API (${interpretationId}, ${userId ?? "anonymous"}).`,
+  );
 }
 
 export function MobileWebRuntime({
@@ -1185,7 +1173,9 @@ export function MobileWebRuntime({
         typeof draftToUse.middleRadius === "number" &&
         !Number.isNaN(draftToUse.middleRadius)
           ? buildManualDetection(draftToUse.innerRadius, draftToUse.middleRadius)
-          : await detectCircles({ image_path: nextAssetRef.runtimeImagePath });
+          : (() => {
+              throw new Error("请先手动确认三圈边界，再生成财富议题报告。");
+            })();
       setRuntimeUploadDetection(resolvedDetection);
       setRuntimeProps({
         route: "loading",
@@ -1225,7 +1215,7 @@ export function MobileWebRuntime({
         });
       } else {
         await finalizeSelectedReport(
-          result.state.interpretation?.interpretation_id ?? "",
+          result.state.report?.interpretation_id ?? "",
           result.state,
           nextDraft,
         );

@@ -67,6 +67,65 @@ export interface CreateInterpretationRequest {
   middle_radius?: number;
 }
 
+export interface VisualObservationUnit {
+  id?: string;
+  position?: string;
+  color?: string;
+  shape?: string;
+  visible_evidence?: string;
+  description?: string;
+  evidence?: string;
+}
+
+export interface VisualCircleObservation {
+  summary?: string;
+  visual_units?: VisualObservationUnit[];
+  color_distribution?: string[];
+  dominant_colors?: string[];
+  shape?: string;
+  pattern?: string;
+  texture?: string;
+  intensity?: string;
+}
+
+export interface WealthReportRequest {
+  image_path: string;
+  report_mode?: InterpretationVersion;
+  painting_intention?: string;
+  painting_feeling?: string;
+  inner_radius?: number;
+  middle_radius?: number;
+  visual_observations?: {
+    global_visual_summary?: string;
+    circles?: {
+      inner?: VisualCircleObservation;
+      middle?: VisualCircleObservation;
+      outer?: VisualCircleObservation;
+    };
+    evidence_summary?: string[];
+    uncertainties?: string[];
+  } | null;
+  storage_backend?: string;
+  storage_key?: string;
+}
+
+export interface WealthReportResponse {
+  success: boolean;
+  report_id: string;
+  topic: "wealth";
+  report_mode: InterpretationVersion | string;
+  final_report_md: string;
+  final_report: Record<string, unknown>;
+  selected_signal_ids: string[];
+  selected_clause_ids: string[];
+  selected_module_ids: string[];
+  boundaries: string[];
+  topic_context: ReportTopicContext;
+  quality_gate: Record<string, unknown>;
+  agent_output: Record<string, unknown>;
+  report_context_package: Record<string, unknown>;
+}
+
 export interface CreateInterpretationResponse {
   success: boolean;
   interpretation_id: string;
@@ -261,142 +320,19 @@ export interface ReportResponse {
   image_local_expires_at?: string | null;
 }
 
-export interface ReportChatMessage {
-  role: "user" | "assistant";
-  content: string;
-}
+export type ReportDebugProfileResponse = Record<string, unknown> & {
+  interpretation_id?: string;
+  knowledge_debug?: Record<string, unknown>;
+};
 
-export interface ReportChatRequest {
-  message: string;
-  history?: ReportChatMessage[];
-}
+export type KnowledgeBuildSummaryResponse = Record<string, unknown>;
 
-export interface ReportChatResponse {
-  interpretation_id: string;
-  reply: string;
-}
-
-export interface ReportDebugStep {
-  key: string;
-  label: string;
-  status: string;
-  created_at?: string | null;
-  summary?: Record<string, unknown> | null;
-}
-
-export interface ReportDebugProfileResponse {
-  interpretation_id: string;
-  theme: string;
-  status: string;
-  generation_stage: string;
-  generation_progress: number;
-  version_purchased: string[];
-  steps: ReportDebugStep[];
-  layers: Record<string, unknown>;
-  field_provenance: Record<string, unknown>;
-  diagnostics: Record<string, unknown>;
-  prompt_debug: Record<string, unknown>;
-  knowledge_debug?: Record<string, unknown> | null;
-  insight_context_summary?: Record<string, unknown> | null;
-  evidence_summary?: Record<string, unknown> | null;
-  fallback_summary?: Record<string, unknown> | null;
-}
-
-export interface KnowledgeBuildSummaryResponse {
-  build_info: Record<string, unknown>;
-  quality: Record<string, unknown>;
-  eval_summary?: Record<string, unknown> | null;
-}
-
-export interface KnowledgeFixturePreviewRequest {
-  fixture_id: string;
-  build_selector: string;
-  version: InterpretationVersion;
-}
-
-export interface KnowledgeFixturePreviewResponse {
-  fixture_meta: Record<string, unknown>;
-  report_summary: Record<string, unknown>;
-  knowledge_summary: Record<string, unknown>;
-  regression_flags: string[];
-  diff_from_current?: Record<string, unknown> | null;
-}
-
-export interface UpgradePlaceholderResponse {
-  success: boolean;
-  interpretation_id: string;
-  version: "pro";
-  enabled: boolean;
-  status: string;
-  message: string;
-}
-
-export type PurchaseState =
-  | "created"
-  | "pending"
-  | "paid"
-  | "failed"
-  | "cancelled"
-  | "fulfilled";
-
-export interface StubWechatPayPayload {
-  mode: "stub";
-  order_id: string;
-  next_action: "reconcile_after_host_payment";
-}
+export type KnowledgeFixturePreviewResponse = Record<string, unknown>;
 
 export interface WechatPayRequestPaymentArgs {
-  timeStamp: string;
-  nonceStr: string;
-  package: string;
-  signType: string;
-  paySign: string;
-}
-
-export interface WechatPayHostPayload {
-  mode: "wechatpay";
-  order_id: string;
-  next_action: "wait_for_payment_confirmation";
-  dry_run: boolean;
-  request_payment_args: WechatPayRequestPaymentArgs;
-}
-
-export type MiniappWechatPayPayload = StubWechatPayPayload | WechatPayHostPayload;
-
-export interface CreateMiniappOrderRequest {
-  interpretation_id: string;
-  product_type: InterpretationVersion;
-  channel: "miniapp";
-  open_id?: string | null;
-  debug_canonical_user_id?: string | null;
-}
-
-export interface MiniappOrderResponse {
-  order_id: string;
-  interpretation_id: string;
-  product_type: InterpretationVersion;
-  channel: "miniapp";
-  purchase_state: PurchaseState;
-  payable_amount: number;
-  currency: string;
-  version_granted?: InterpretationVersion[] | null;
-  latest_purchase_updated_at?: string | null;
-  wechat_pay_payload?: MiniappWechatPayPayload | null;
-}
-
-export interface ReconcileMiniappOrderResponse extends MiniappOrderResponse {
-  reconciled: boolean;
-}
-
-export interface NotifyMiniappWechatPaymentRequest {
-  order_id: string;
-  event: "paid" | "failed" | "cancelled";
-  payment_reference?: string | null;
-  raw_payload?: Record<string, unknown> | null;
-}
-
-export interface PricingInfo {
-  lite: number;
-  pro: number;
-  upgrade_diff: number;
+  timeStamp?: string;
+  nonceStr?: string;
+  package?: string;
+  signType?: string;
+  paySign?: string;
 }

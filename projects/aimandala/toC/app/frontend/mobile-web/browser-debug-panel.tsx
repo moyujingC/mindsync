@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  getInterpretationReportDebug,
-  getKnowledgeBuildSummary,
-  previewKnowledgeFixture,
-} from "../shared/api";
 import type { ApiDebugTraceEntry } from "../shared/api/debugTrace";
 import type {
   DetectCirclesResponse,
@@ -298,7 +293,7 @@ function createStageDescriptors(input: {
     {
       key: "create",
       label: "2. 创建解读",
-      description: "createInterpretation",
+      description: "createWealthReport",
       state: activeFlowState?.interpretation
         ? "done"
         : createTrace?.phase === "success"
@@ -764,23 +759,11 @@ export function BrowserDebugPanel({
     let cancelled = false;
     setReportDebugLoading(true);
     setReportDebugError(null);
-    void getInterpretationReportDebug(activeInterpretationId)
-      .then((profile) => {
-        if (!cancelled) {
-          setReportDebugProfile(profile);
-        }
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          setReportDebugProfile(null);
-          setReportDebugError(error instanceof Error ? error.message : "拉取 report-debug 失败");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setReportDebugLoading(false);
-        }
-      });
+    setReportDebugProfile(null);
+    setReportDebugError("report-debug 暂未接入当前财富报告 API。");
+    setReportDebugLoading(false);
+    void activeInterpretationId;
+    void cancelled;
     return () => {
       cancelled = true;
     };
@@ -790,28 +773,8 @@ export function BrowserDebugPanel({
     if (disableWorkbenchFetch || currentBuildSummary) {
       return;
     }
-    let cancelled = false;
-    setBuildSummaryLoading(true);
-    setBuildSummaryError(null);
-    void getKnowledgeBuildSummary("current")
-      .then((summary) => {
-        if (!cancelled) {
-          setCurrentBuildSummary(summary);
-        }
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          setBuildSummaryError(error instanceof Error ? error.message : "拉取 current build summary 失败");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setBuildSummaryLoading(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
+    setBuildSummaryLoading(false);
+    setBuildSummaryError("知识构建调试接口暂未接入当前财富报告 API。");
   }, [currentBuildSummary, disableWorkbenchFetch]);
 
   async function handleLoadCandidateBuild() {
@@ -821,11 +784,11 @@ export function BrowserDebugPanel({
     setCandidateBuildLoading(true);
     setBuildSummaryError(null);
     try {
-      const summary = await getKnowledgeBuildSummary(`candidate:${candidateBuildIdInput.trim()}`);
-      setCandidateBuildSummary(summary);
-    } catch (error) {
       setCandidateBuildSummary(null);
-      setBuildSummaryError(error instanceof Error ? error.message : "载入 candidate build 失败");
+      setBuildSummaryError("candidate build 调试接口暂未接入当前财富报告 API。");
+    } catch {
+      setCandidateBuildSummary(null);
+      setBuildSummaryError("载入 candidate build 失败");
     } finally {
       setCandidateBuildLoading(false);
     }
@@ -841,15 +804,13 @@ export function BrowserDebugPanel({
     setSampleLoadingId(row.fixtureId);
     setSampleError(null);
     try {
-      const preview = await previewKnowledgeFixture({
-        fixture_id: row.fixtureId,
-        build_selector: buildSelector,
-        version: getFixturePreviewVersion(row),
-      });
-      setSamplePreview(preview);
-    } catch (error) {
+      void buildSelector;
+      void row;
       setSamplePreview(null);
-      setSampleError(error instanceof Error ? error.message : "拉取 fixture preview 失败");
+      setSampleError("fixture preview 暂未接入当前财富报告 API。");
+    } catch {
+      setSamplePreview(null);
+      setSampleError("拉取 fixture preview 失败");
     } finally {
       setSampleLoadingId(null);
     }
@@ -1617,7 +1578,7 @@ export function BrowserDebugPanel({
                 </article>
                 <article className="browser-debug-card">
                   <h4>Knowledge Summary</h4>
-                  <pre>{formatJson(samplePreview.knowledge_summary.summary ?? samplePreview.knowledge_summary)}</pre>
+                  <pre>{formatJson(toRecord(samplePreview.knowledge_summary).summary ?? samplePreview.knowledge_summary)}</pre>
                 </article>
                 <article className="browser-debug-card">
                   <h4>Regression Flags</h4>

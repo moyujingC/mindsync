@@ -29,9 +29,9 @@ async function example() {
   console.log("title", viewModel.title);
   console.log("subtitle", viewModel.subtitle);
 
-  if (result.interpretation?.interpretation_id) {
+  if (result.report?.interpretation_id) {
     const refreshed = await refreshMobileWebReport(
-      result.interpretation.interpretation_id,
+      result.report.interpretation_id,
       "lite",
       result.state,
     );

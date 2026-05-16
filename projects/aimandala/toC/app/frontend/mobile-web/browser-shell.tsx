@@ -61,7 +61,6 @@ import type {
   InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
-import { getInterpretationList } from "../shared/api";
 import {
   applyError,
   getGenerationPresentation,
@@ -234,6 +233,8 @@ export function MobileWebBrowserShell() {
       preserveRecordsOnError?: boolean;
     },
   ) {
+    void nextQuery;
+    void options;
     if (draft.browserFile && !draft.uploadAsset) {
       setPreviewHistoryStatusLabel("当前显示占位历史记录");
       setPreviewHistoryStatusDetail("当前浏览器文件还没完成上传换路径，因此历史页先不请求真实接口。");
@@ -242,23 +243,11 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    try {
-      const records = await getInterpretationList(userId, nextQuery);
-      setPreviewHistoryRecords(records);
-      setPreviewHistoryStatusLabel(options?.successLabel ?? "当前显示真实历史记录");
-      setPreviewHistoryStatusDetail(options?.successDetail ?? "历史页已按当前查询条件重新请求真实记录。");
-      setPreviewHistoryStatusTone(options?.successTone ?? "runtime");
-      setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
-    } catch (error) {
-      if (!options?.preserveRecordsOnError) {
-        setPreviewHistoryRecords(null);
-      }
-      setPreviewHistoryStatusLabel(options?.failureLabel ?? "历史记录已回退到占位数据");
-      setPreviewHistoryStatusDetail(
-        options?.failureDetail ?? `真实历史拉取失败：${error instanceof Error ? error.message : "unknown error"}`,
-      );
-      setPreviewHistoryStatusTone(options?.failureTone ?? "preview");
-    }
+    setPreviewHistoryRecords(null);
+    setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
+    setPreviewHistoryStatusDetail("当前只保留财富报告生成入口，历史列表需要按新 report_id 存储模型重做。");
+    setPreviewHistoryStatusTone("preview");
+    setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
   }
 
   useEffect(() => {
@@ -277,65 +266,14 @@ export function MobileWebBrowserShell() {
     const refreshHistory = async () => {
       setPreviewHistoryRefreshing(true);
 
-      try {
-        let resolvedQuery = previewHistoryQuery;
-        let records = await getInterpretationList(userId, resolvedQuery);
-        let switchedToReady = false;
-
-        if (cancelled) {
-          return;
-        }
-
-        if (resolvedQuery.filter === "pending" && records.length === 0) {
-          const readyQuery: InterpretationListQuery = {
-            ...resolvedQuery,
-            filter: "ready",
-          };
-          const readyRecords = await getInterpretationList(userId, readyQuery);
-          if (cancelled) {
-            return;
-          }
-
-          if (readyRecords.length > 0) {
-            resolvedQuery = readyQuery;
-            records = readyRecords;
-            switchedToReady = true;
-          }
-        }
-
-        const stillPending = records.some(
-          (record) => !getGenerationPresentation(record).isReady,
-        );
-
-        setPreviewHistoryQuery(resolvedQuery);
-        setPreviewHistoryRecords(records);
+      if (!cancelled) {
+        setPreviewHistoryRecords(null);
         setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
-        setPreviewHistoryStatusLabel(
-          switchedToReady ? "已有新的完整报告可查看" : "已自动刷新历史记录",
-        );
-        setPreviewHistoryStatusDetail(
-          switchedToReady
-            ? "刚才生成中的解读已完成，历史页已自动切到“可查看”，方便你直接打开报告。"
-            : stillPending
-              ? "检测到仍有生成中的解读，已为你更新最新状态。"
-              : "历史记录已更新到最新状态。",
-        );
-        setPreviewHistoryStatusTone("runtime");
-      } catch (error) {
-        if (cancelled) {
-          return;
-        }
-
-        setPreviewHistoryStatusLabel("自动刷新暂时失败");
-        setPreviewHistoryStatusDetail(
-          error instanceof Error ? error.message : "真实历史自动刷新失败",
-        );
+        setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
+        setPreviewHistoryStatusDetail("自动刷新已停用；历史列表会在新报告存储模型完成后重做。");
         setPreviewHistoryStatusTone("preview");
-      } finally {
-        if (!cancelled) {
-          setPreviewHistoryRefreshing(false);
-        }
       }
+      setPreviewHistoryRefreshing(false);
     };
 
     const timer = window.setInterval(() => {

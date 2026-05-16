@@ -6,11 +6,6 @@ import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
 import { act } from "react";
 
-vi.mock("../shared/api", () => ({
-  getInterpretationReportDebug: vi.fn(),
-}));
-
-import * as api from "../shared/api";
 import { ManualReviewPanel } from "./manual-review-panel";
 import type { MobileWebRuntimeDebugSnapshot } from "./debug-observer";
 
@@ -240,36 +235,33 @@ describe("ManualReviewPanel", () => {
       status: null,
       report: null,
     };
-    vi.mocked(api.getInterpretationReportDebug).mockResolvedValue({
-      ...reportDebugProfile,
-      interpretation_id: "ipt-runtime-real",
-      knowledge_debug: {
-        ...reportDebugProfile.knowledge_debug,
-        review_input_package: {
-          image_path: "/tmp/runtime-mandala.png",
-          image_preview_ref: "",
-          theme: "general",
-          topic: "general",
-          topic_label: "全面解读",
-          report_mode: "lite",
-          painting_intention: "我想看见真实输入",
-          painting_feeling: "期待能审证据",
-          inner_radius: null,
-          middle_radius: null,
-          three_circles_source: "",
-        },
-      },
-    });
-
     await renderPanelWithProps({
       previewMode: false,
       interpretationId: "",
       draft,
       runtimeSnapshot,
-      runtimeReportDebugProfile: null,
+      runtimeReportDebugProfile: {
+        ...reportDebugProfile,
+        interpretation_id: "ipt-runtime-real",
+        knowledge_debug: {
+          ...reportDebugProfile.knowledge_debug,
+          review_input_package: {
+            image_path: "/tmp/runtime-mandala.png",
+            image_preview_ref: "",
+            theme: "general",
+            topic: "general",
+            topic_label: "全面解读",
+            report_mode: "lite",
+            painting_intention: "我想看见真实输入",
+            painting_feeling: "期待能审证据",
+            inner_radius: null,
+            middle_radius: null,
+            three_circles_source: "",
+          },
+        },
+      },
     });
 
-    expect(api.getInterpretationReportDebug).toHaveBeenCalledWith("ipt-runtime-real");
     expect(normalizedText()).toContain("ipt-runtime-real");
     expect(normalizedText()).toContain("/tmp/runtime-mandala.png");
     expect(normalizedText()).toContain("0.36 / 0.64");

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { getInterpretationReportDebug } from "../shared/api";
 import type {
   DetectCirclesResponse,
   MandalaFlowState,
@@ -107,25 +106,10 @@ export function ManualReviewPanel({
       return;
     }
     let cancelled = false;
-    setLoading(true);
-    setError(null);
+    setLoading(false);
+    setError("人工审阅调试数据暂未接入当前财富报告 API。");
     setReportDebugProfile(null);
-    void getInterpretationReportDebug(activeInterpretationId)
-      .then((profile) => {
-        if (!cancelled) {
-          setReportDebugProfile(profile);
-        }
-      })
-      .catch((nextError) => {
-        if (!cancelled) {
-          setError(nextError instanceof Error ? nextError.message : "拉取人工审阅数据失败");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      });
+    void cancelled;
     return () => {
       cancelled = true;
     };

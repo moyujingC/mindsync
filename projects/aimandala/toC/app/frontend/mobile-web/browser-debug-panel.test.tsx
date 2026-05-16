@@ -4,19 +4,7 @@ import { type ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
-import type * as SharedApiModule from "../shared/api";
 
-vi.mock("../shared/api", async () => {
-  const actual = await vi.importActual<typeof SharedApiModule>("../shared/api");
-  return {
-    ...actual,
-    getInterpretationReportDebug: vi.fn(),
-    getKnowledgeBuildSummary: vi.fn(),
-    previewKnowledgeFixture: vi.fn(),
-  };
-});
-
-import * as sharedApi from "../shared/api";
 import { BrowserDebugPanel } from "./browser-debug-panel";
 import type {
   KnowledgeBuildSummaryResponse,
@@ -673,7 +661,8 @@ describe("BrowserDebugPanel", () => {
       runtimeSnapshot: null,
     });
 
-    expect(sharedApi.getInterpretationReportDebug).not.toHaveBeenCalled();
+    expect(normalizedText()).toContain("demo-interpretation-id");
+    expect(normalizedText()).not.toContain("report-debug 暂未接入当前财富报告 API");
   });
 
   it("会把字段映射联动到 source refs 与 prompt trace", async () => {

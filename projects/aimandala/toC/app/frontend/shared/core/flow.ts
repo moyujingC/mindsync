@@ -7,6 +7,7 @@ import type {
   ProStructuredReport,
   ReportResponse,
   SelectedImageRef,
+  WealthReportResponse,
 } from "../types";
 
 export const initialMandalaFlowState: MandalaFlowState = {
@@ -79,6 +80,43 @@ export function applyReport(
     report,
     lastError: report.error ?? null,
   };
+}
+
+export function applyWealthReport(
+  state: MandalaFlowState,
+  response: WealthReportResponse,
+): MandalaFlowState {
+  const report: ReportResponse = {
+    interpretation_id: response.report_id,
+    version: response.report_mode,
+    title: typeof response.final_report.title === "string"
+      ? response.final_report.title
+      : "财富议题曼陀罗解读",
+    overall_impression: typeof response.final_report.summary === "string"
+      ? response.final_report.summary
+      : null,
+    structured: {
+      topic_context: response.topic_context,
+      current_reading: typeof response.final_report.summary === "string"
+        ? response.final_report.summary
+        : response.final_report_md,
+      visual_basis: response.selected_signal_ids.join("、") || "已基于画面证据生成。",
+      pattern_interpretation: response.selected_clause_ids.join("、") || "财富议题候选条款已生成。",
+      life_connection: response.boundaries.join("；") || "这份报告聚焦财富议题，不输出财务承诺。",
+      pro_report_entry: {
+        title: "更深层财富议题解读",
+        summary: "后续可在 Pro 报告中展开机制、根因链和阶段性调节路径。",
+        product_note: "Pro 能力需要围绕当前新报告核心重新接入。",
+      },
+    },
+    report: response.final_report_md,
+    ai_qa_context: null,
+    can_upgrade: false,
+    upgrade_price: null,
+    error: response.success ? null : "财富报告质量门未通过",
+  };
+
+  return applyReport(state, report);
 }
 
 export function applyError(

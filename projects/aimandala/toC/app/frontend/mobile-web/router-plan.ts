@@ -1,4 +1,3 @@
-import { getInterpretation } from "../shared/api";
 import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUploadPage } from "./loaders";
 import { resolveMobileWebCanonicalUserId } from "./identity";
 import type { MobileWebAppProps } from "./app";
@@ -125,12 +124,9 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "historyRecordDetail": {
-      const record = await getInterpretation(input.params.interpretationId);
-      return {
-        route: "historyRecordDetail",
-        record,
-        uploadDraft: input.params.uploadDraft,
-      };
+      throw new Error(
+        `历史记录详情暂未接入当前财富报告 API：${input.params.interpretationId}`,
+      );
     }
 
   }

@@ -1,11 +1,9 @@
-import { getInterpretationList } from "../shared/api";
 import type {
   FrontendUserSession,
   InterpretationListQuery,
   InterpretationRecordResponse,
   MandalaFlowState,
 } from "../shared/types";
-import type { HistoryFilterId } from "./components/history-cards";
 import {
   refreshMobileWebReport,
 } from "./controller";
@@ -173,20 +171,10 @@ export async function finalizePreviewSelectedReport(
     setRoute("report");
   }
 
-  try {
-    const records = await getInterpretationList(userId, {
-      filter: historyQuery.filter as HistoryFilterId | undefined,
-      limit: historyQuery.limit,
-      theme: historyQuery.theme,
-    });
-    setPreviewHistoryRecords(records);
-    setPreviewHistoryStatusLabel("当前显示真实历史记录");
-    setPreviewHistoryStatusDetail("刚完成的主路径结果已尝试回流到真实历史列表。");
-    setPreviewHistoryStatusTone("runtime");
-  } catch {
-    setPreviewHistoryRecords(null);
-    setPreviewHistoryStatusLabel("历史记录暂时回退到占位数据");
-    setPreviewHistoryStatusDetail("真实主路径已执行，但历史列表拉取失败，因此仍显示 fixture。");
-    setPreviewHistoryStatusTone("preview");
-  }
+  void userId;
+  void historyQuery;
+  setPreviewHistoryRecords(null);
+  setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
+  setPreviewHistoryStatusDetail("财富报告已生成；历史列表需要后续按新 report_id 存储模型重做。");
+  setPreviewHistoryStatusTone("preview");
 }

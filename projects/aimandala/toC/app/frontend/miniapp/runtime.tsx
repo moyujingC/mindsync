@@ -16,15 +16,6 @@ import {
   type MobileWebUploadDraft,
 } from "../mobile-web/state";
 import {
-  createInterpretation,
-  createMiniappOrder,
-  exchangeMiniappSession,
-  getInterpretation,
-  getInterpretationList,
-  notifyMiniappWechatPayment,
-  reconcileMiniappOrder,
-} from "../shared/api";
-import {
   applyError,
   getLiteStructuredReport,
   hasProReportAccess,
@@ -42,11 +33,9 @@ import type { HistoryFilterId } from "../mobile-web/components/history-cards";
 import type { MiniappRouteId } from "./routes";
 import { createMiniappDraft, createMiniappPreviewProps } from "./fixtures";
 import { getMiniappLiveConfig } from "./config";
-import { resolveMiniappHostAdapter } from "./host";
 import {
   persistMiniappSession,
   resolveMiniappSession,
-  sessionFromMiniappExchange,
 } from "./identity";
 
 export interface MiniappRuntimeProps {
@@ -149,36 +138,18 @@ export function MiniappRuntime({
   );
 
   async function ensureRuntimeSession(): Promise<FrontendUserSession> {
-    if (config.miniappLiveEnabled && config.wechatSessionEnabled) {
-      const host = resolveMiniappHostAdapter();
-      const loginResult = await host.login();
-      const exchanged = await exchangeMiniappSession({
-        code: loginResult.code,
-      });
-      const nextSession = sessionFromMiniappExchange(exchanged);
-      setSession(nextSession);
-      return nextSession;
-    }
-
-    const exchanged = await exchangeMiniappSession({
-      debug_canonical_user_id: session.canonicalUserId,
-    });
-    const nextSession = sessionFromMiniappExchange(exchanged);
-    setSession(nextSession);
-    return nextSession;
+    return session;
   }
 
   async function refreshHistory(query = historyQuery): Promise<void> {
     setHistoryRefreshBusy(true);
     try {
       const activeSession = await ensureRuntimeSession();
-      const nextRecords = await getInterpretationList(
-        activeSession.canonicalUserId,
-        query,
-      );
-      setRecords(nextRecords);
-      setHistoryStatusLabel("当前显示真实 miniapp 历史");
-      setHistoryStatusDetail("历史记录已按 miniapp 当前用户与筛选条件刷新。");
+      void activeSession;
+      void query;
+      setRecords([]);
+      setHistoryStatusLabel("历史记录暂未接入当前报告 API");
+      setHistoryStatusDetail("当前小程序壳只复用财富报告生成入口，历史列表后续按新 report_id 存储模型重做。");
       setHistoryRefreshHint(formatHistoryRefreshHint());
     } finally {
       setHistoryRefreshBusy(false);
@@ -240,32 +211,7 @@ export function MiniappRuntime({
   }
 
   async function purchaseProReport(interpretationId: string): Promise<void> {
-    const activeSession = await ensureRuntimeSession();
-    const order = await createMiniappOrder({
-      interpretation_id: interpretationId,
-      product_type: "pro",
-      channel: "miniapp",
-      open_id: activeSession.platformUserId ?? undefined,
-      debug_canonical_user_id:
-        config.miniappLiveEnabled && config.wechatSessionEnabled
-          ? undefined
-          : activeSession.canonicalUserId,
-    });
-
-    if (order.wechat_pay_payload?.mode === "wechatpay") {
-      const host = resolveMiniappHostAdapter();
-      await host.requestPayment(order.wechat_pay_payload.request_payment_args);
-    }
-
-    await notifyMiniappWechatPayment({
-      order_id: order.order_id,
-      event: "paid",
-      payment_reference:
-        order.wechat_pay_payload?.mode === "wechatpay"
-          ? "miniapp-host-payment"
-          : "miniapp-stub-payment",
-    });
-    await reconcileMiniappOrder(order.order_id);
+    throw new Error(`Pro 购买暂未接入当前财富报告 API：${interpretationId}`);
   }
 
   async function handleChooseReportType(
@@ -506,9 +452,11 @@ export function MiniappRuntime({
       }}
       onHistoryOpenRecord={(interpretationId) => {
         void (async () => {
-          const nextRecord = await getInterpretation(interpretationId);
-          setRecord(nextRecord);
-          setActiveRoute("historyRecordDetail");
+          void interpretationId;
+          setHistoryStatusLabel("历史详情暂未接入当前报告 API");
+          setHistoryStatusDetail("小程序历史详情会在新 report_id 存储模型完成后重做。");
+          setRecord(null);
+          setActiveRoute("history");
         })();
       }}
       onHistoryRecordDetailBack={() => {

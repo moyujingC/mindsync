@@ -1,33 +1,24 @@
 import {
   applyDetection,
   applyError,
-  applyInterpretationCreated,
-  applyReport,
-  applyStatus,
+  applyWealthReport,
   initialMandalaFlowState,
   selectImage,
 } from "../shared/core";
-import {
-  createInterpretation,
-  detectCircles,
-  getInterpretationReport,
-  getInterpretationStatus,
-} from "../shared/api";
+import { createWealthReport } from "../shared/api";
 import type {
-  CreateInterpretationResponse,
   DetectCirclesResponse,
   InterpretationVersion,
-  InterpretationStatusResponse,
   MandalaFlowState,
   ReportResponse,
   StartCreatePayload,
+  WealthReportResponse,
 } from "../shared/types";
 
 export interface MobileWebFlowSnapshot {
   state: MandalaFlowState;
   detection?: DetectCirclesResponse;
-  interpretation?: CreateInterpretationResponse;
-  status?: InterpretationStatusResponse;
+  wealthReport?: WealthReportResponse;
   report?: ReportResponse;
 }
 
@@ -96,48 +87,26 @@ export async function runMobileWebLiteFlow(
       detection = buildManualDetection(payload.innerRadius, payload.middleRadius);
       state = applyDetection(state, detection);
     } else {
-      detection = await detectCircles({ image_path: payload.imagePath });
-      state = applyDetection(state, detection);
+      throw new Error("manual three-circle boundaries are required");
     }
 
-    const interpretation = await createInterpretation({
-      user_id: payload.userId,
+    const wealthReport = await createWealthReport({
       image_path: payload.imagePath,
-      storage_backend: payload.storageBackend,
-      storage_key: payload.storageKey,
-      image_local_expires_at: payload.imageLocalExpiresAt,
-      theme: payload.theme,
+      storage_backend: payload.storageBackend ?? undefined,
+      storage_key: payload.storageKey ?? undefined,
+      report_mode: "lite",
       painting_intention: payload.paintingIntention,
       painting_feeling: payload.paintingFeeling,
-      inner_radius: payload.innerRadius ?? (detection ? normalizeCirclePercent(detection.inner_radius) : undefined),
-      middle_radius: payload.middleRadius ?? (detection ? normalizeCirclePercent(detection.middle_radius) : undefined),
+      inner_radius: normalizeCirclePercent(detection.inner_radius),
+      middle_radius: normalizeCirclePercent(detection.middle_radius),
     });
-    state = applyInterpretationCreated(state, interpretation);
-
-    const status = await getInterpretationStatus(interpretation.interpretation_id);
-    state = applyStatus(state, status);
-
-    if (!status.report_ready) {
-      return {
-        state,
-        detection,
-        interpretation,
-        status,
-      };
-    }
-
-    const report = await getInterpretationReport(
-      interpretation.interpretation_id,
-      "lite",
-    );
-    state = applyReport(state, report);
+    state = applyWealthReport(state, wealthReport);
 
     return {
       state,
       detection,
-      interpretation,
-      status,
-      report,
+      wealthReport,
+      report: state.report ?? undefined,
     };
   } catch (error) {
     state = applyError(
@@ -158,35 +127,12 @@ export async function refreshMobileWebReport(
 ): Promise<MobileWebFlowSnapshot> {
   let state = currentState;
 
-  try {
-    const status = await getInterpretationStatus(interpretationId);
-    state = applyStatus(state, status);
-
-    if (!status.report_ready) {
-      return {
-        state,
-        status,
-      };
-    }
-
-    const report = await getInterpretationReport(interpretationId, reportType);
-    state = applyReport(state, report);
-
-    return {
+  return {
+    state: applyError(
       state,
-      status,
-      report,
-    };
-  } catch (error) {
-    state = applyError(
-      state,
-      error instanceof Error ? error.message : "Failed to refresh report",
-    );
-
-    return {
-      state,
-    };
-  }
+      `Report refresh is not available for ${interpretationId} (${reportType}) on the current report API.`,
+    ),
+  };
 }
 
 export async function pollMobileWebReportUntilReady(
