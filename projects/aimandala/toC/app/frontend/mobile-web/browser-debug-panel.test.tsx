@@ -14,7 +14,7 @@ import type {
 
 const baseDraft = {
   imagePath: "/tmp/mandala.png",
-  theme: "wealth_career",
+  theme: "wealth",
   reportVariant: "pro" as const,
   reportType: "pro" as const,
   paintingIntention: "看见自己的工作状态",
@@ -23,7 +23,7 @@ const baseDraft = {
 
 const baseReportDebugProfile: ReportDebugProfileResponse = {
   interpretation_id: "ipt-debug-1",
-  theme: "wealth_career",
+  theme: "wealth",
   status: "completed",
   generation_stage: "report_ready",
   generation_progress: 100,
@@ -49,7 +49,7 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
     lite: {
       prompt_preview: [
         "field: current_reading",
-        "knowledge entity: theme.wealth_career",
+        "knowledge entity: theme.wealth",
         "final field: current_reading",
       ].join("\n"),
       schema_fields: [
@@ -67,8 +67,8 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
   },
   insight_context_summary: {
     interpretation_id: "ipt-debug-1",
-    theme: "wealth_career",
-    theme_label: "财富事业",
+    theme: "wealth",
+    theme_label: "财富议题",
     knowledge_signal: "imbalance.fire_deficiency",
     image: {
       storage_backend: "local",
@@ -98,8 +98,8 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
         image_ref: "data/uploads/calibrated-mandala.png",
       },
       topic_input: {
-        topic: "wealth_career",
-        topic_label: "财富事业",
+        topic: "wealth",
+        topic_label: "财富议题",
       },
       user_context: {
         painting_intention: "看见自己的工作状态",
@@ -211,13 +211,13 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
         palette: ["gold", "green"],
       },
       knowledge_hits: {
-        theme: "theme.wealth_career",
+        theme: "theme.wealth",
       },
       rule_evaluations: {
         healing_fallback: true,
       },
       theme_projection: {
-        theme: "wealth_career",
+        theme: "wealth",
       },
       imbalance_candidates: ["imbalance.fire_deficiency"],
       quality_flags: ["warning:fire_deficiency"],
@@ -228,7 +228,7 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
       },
     },
     topic_context_trace: {
-      topic: "wealth_career",
+      topic: "wealth",
       report_modes: ["lite", "pro"],
       knowledge_route: "theme_only",
       general_mixed: false,
@@ -242,9 +242,9 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
           },
           evidence_trace: {
             visual_fact_refs: ["visual.palette"],
-            knowledge_hit_refs: ["theme.wealth_career"],
+            knowledge_hit_refs: ["theme.wealth"],
             rule_refs: ["imbalance.fire_deficiency"],
-            theme_projection_refs: ["themes/wealth_career.yaml"],
+            theme_projection_refs: ["themes/wealth.yaml"],
           },
           prompt_trace: {
             schema_field: "current_reading",
@@ -268,9 +268,9 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
           },
           evidence_trace: {
             visual_fact_refs: [],
-            knowledge_hit_refs: ["healing.wealth_career"],
+            knowledge_hit_refs: ["healing.wealth"],
             rule_refs: ["imbalance.fire_deficiency"],
-            theme_projection_refs: ["healing/wealth_career.yaml"],
+            theme_projection_refs: ["healing/wealth.yaml"],
           },
           prompt_trace: {
             schema_field: "healing_plan",
@@ -293,7 +293,7 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
     },
     query_results: {
       theme: {
-        entity_id: "theme.wealth_career",
+        entity_id: "theme.wealth",
       },
     },
     fallback_analysis: {
@@ -303,7 +303,7 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
       query_fallbacks: [
         {
           query_key: "theme",
-          entity_id: "theme.wealth_career",
+          entity_id: "theme.wealth",
           fallback_level: "themed",
         },
       ],
@@ -324,18 +324,18 @@ const baseReportDebugProfile: ReportDebugProfileResponse = {
     },
     source_refs: [
       {
-        entity_id: "theme.wealth_career",
+        entity_id: "theme.wealth",
         kind: "theme",
-        source_path: "themes/wealth_career.yaml",
-        absolute_path: "/abs/themes/wealth_career.yaml",
+        source_path: "themes/wealth.yaml",
+        absolute_path: "/abs/themes/wealth.yaml",
         query_keys: ["theme"],
       },
     ],
     field_to_knowledge_map: {
       current_reading: {
         query_keys: ["theme"],
-        entity_ids: ["theme.wealth_career"],
-        source_paths: ["themes/wealth_career.yaml"],
+        entity_ids: ["theme.wealth"],
+        source_paths: ["themes/wealth.yaml"],
         warnings: [],
       },
     },
@@ -360,7 +360,7 @@ const currentBuildSummary: KnowledgeBuildSummaryResponse = {
     fallback_hotspots: [
       {
         kind: "healing",
-        theme_id: "wealth_career",
+        theme_id: "wealth",
       },
     ],
     high_risk_warning_paths: [
@@ -380,7 +380,7 @@ const currentBuildSummary: KnowledgeBuildSummaryResponse = {
     fixtures: [
       {
         fixture_id: "toc-mvp-fixture-002",
-        theme: "wealth_career",
+        theme: "wealth",
         version: "pro",
         fallback_used: false,
         warning_hit_count: 0,
@@ -406,7 +406,7 @@ const candidateBuildSummary: KnowledgeBuildSummaryResponse = {
     fallback_hotspots: [
       {
         kind: "healing",
-        theme_id: "wealth_career",
+        theme_id: "wealth",
       },
       {
         kind: "narrative",
@@ -430,7 +430,7 @@ const candidateBuildSummary: KnowledgeBuildSummaryResponse = {
     fixtures: [
       {
         fixture_id: "toc-mvp-fixture-002",
-        theme: "wealth_career",
+        theme: "wealth",
         version: "pro",
         fallback_used: true,
         warning_hit_count: 1,
@@ -443,13 +443,13 @@ const candidateBuildSummary: KnowledgeBuildSummaryResponse = {
 const samplePreview: KnowledgeFixturePreviewResponse = {
   fixture_meta: {
     fixture_id: "toc-mvp-fixture-002",
-    theme: "wealth_career",
+    theme: "wealth",
     build_selector: "candidate:test-v22",
     version: "pro",
   },
   report_summary: {
     version: "pro",
-    title: "事业主题 Pro 报告",
+    title: "财富议题 Pro 报告",
     structured_field_presence: {
       healing_plan: false,
     },
@@ -461,9 +461,9 @@ const samplePreview: KnowledgeFixturePreviewResponse = {
     },
     source_refs: [
       {
-        entity_id: "healing.wealth_career",
-        source_path: "healing/wealth_career.yaml",
-        absolute_path: "/abs/healing/wealth_career.yaml",
+        entity_id: "healing.wealth",
+        source_path: "healing/wealth.yaml",
+        absolute_path: "/abs/healing/wealth.yaml",
       },
     ],
   },
@@ -674,12 +674,12 @@ describe("BrowserDebugPanel", () => {
     expect(normalizedText()).toContain("current_reading");
     expect(normalizedText()).toContain("InsightAgent");
     await clickButton("current_reading");
-    expect(normalizedText()).toContain("themes/wealth_career.yaml");
-    expect(normalizedText()).toContain("/abs/themes/wealth_career.yaml");
+    expect(normalizedText()).toContain("themes/wealth.yaml");
+    expect(normalizedText()).toContain("/abs/themes/wealth.yaml");
 
     await clickButton("Report Trace");
-    expect(normalizedText()).toContain("theme.wealth_career");
-    expect(normalizedText()).toContain("knowledge entity: theme.wealth_career");
+    expect(normalizedText()).toContain("theme.wealth");
+    expect(normalizedText()).toContain("knowledge entity: theme.wealth");
     expect(normalizedText()).toContain("final field: current_reading");
     expect(normalizedText()).toContain("Product Block Debug");
     expect(normalizedText()).toContain("healing_plan");
@@ -701,6 +701,6 @@ describe("BrowserDebugPanel", () => {
     expect(normalizedText()).toContain("warning 0 to 1");
     expect(normalizedText()).toContain("warning_ids_added");
     expect(normalizedText()).toContain("imbalance.fire_deficiency");
-    expect(normalizedText()).toContain("healing/wealth_career.yaml");
+    expect(normalizedText()).toContain("healing/wealth.yaml");
   });
 });

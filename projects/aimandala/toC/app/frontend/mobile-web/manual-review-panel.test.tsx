@@ -11,7 +11,7 @@ import type { MobileWebRuntimeDebugSnapshot } from "./debug-observer";
 
 const draft = {
   imagePath: "/tmp/mandala.png",
-  theme: "wealth_career",
+  theme: "wealth",
   reportVariant: "lite" as const,
   reportType: "lite" as const,
   paintingIntention: "看清楚工作推进里的卡点",
@@ -20,7 +20,7 @@ const draft = {
 
 const reportDebugProfile: ComponentProps<typeof ManualReviewPanel>["runtimeReportDebugProfile"] = {
   interpretation_id: "ipt-review-1",
-  theme: "wealth_career",
+  theme: "wealth",
   status: "completed",
   generation_stage: "report_ready",
   generation_progress: 100,
@@ -34,9 +34,9 @@ const reportDebugProfile: ComponentProps<typeof ManualReviewPanel>["runtimeRepor
     review_input_package: {
       image_path: "/tmp/mandala.png",
       image_preview_ref: "",
-      theme: "wealth_career",
-      topic: "wealth_career",
-      topic_label: "财富事业",
+      theme: "wealth",
+      topic: "wealth",
+      topic_label: "财富议题",
       report_mode: "lite",
       painting_intention: "看清楚工作推进里的卡点",
       painting_feeling: "有点紧，但也想继续往前",
@@ -158,7 +158,7 @@ describe("ManualReviewPanel", () => {
 
     expect(normalizedText()).toContain("人工逐步审阅");
     expect(normalizedText()).toContain("1. 输入包确认");
-    expect(normalizedText()).toContain("wealth_career / 财富事业");
+    expect(normalizedText()).toContain("wealth / 财富议题");
     expect(normalizedText()).toContain("0.35 / 0.65");
     expect(normalizedText()).toContain("2. Layer0 视觉事实");
     expect(normalizedText()).toContain("内圈偏亮");
@@ -180,7 +180,7 @@ describe("ManualReviewPanel", () => {
   it("runtime 模式优先跟随 runtime snapshot 的真实输入包和 interpretation", async () => {
     const runtimeDraft = {
       imagePath: "/tmp/runtime-mandala.png",
-      theme: "general",
+      theme: "wealth",
       reportVariant: "lite" as const,
       reportType: "lite" as const,
       paintingIntention: "我想看见真实输入",
@@ -248,9 +248,9 @@ describe("ManualReviewPanel", () => {
           review_input_package: {
             image_path: "/tmp/runtime-mandala.png",
             image_preview_ref: "",
-            theme: "general",
-            topic: "general",
-            topic_label: "全面解读",
+            theme: "wealth",
+            topic: "wealth",
+            topic_label: "财富议题",
             report_mode: "lite",
             painting_intention: "我想看见真实输入",
             painting_feeling: "期待能审证据",

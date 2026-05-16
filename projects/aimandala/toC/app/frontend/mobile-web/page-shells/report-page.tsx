@@ -147,7 +147,7 @@ export function MobileWebReportPage({
   const isError = state.step === "error";
   const isProReport = state.report?.version === "pro" || state.step === "proReady";
   const canRetryRefresh = Boolean(isError && state.interpretation?.interpretation_id);
-  const themeLabel = structured?.topic_context.topic_label ?? getThemeDisplayName(uploadDraft?.theme) ?? "全面解读";
+  const themeLabel = structured?.topic_context.topic_label ?? getThemeDisplayName(uploadDraft?.theme) ?? "财富议题";
   const resultCta = resolveSelfUnderstandingReportCta({
     theme: uploadDraft?.theme,
     canUpgrade: Boolean(state.report?.can_upgrade || state.status?.can_upgrade),

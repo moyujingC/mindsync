@@ -712,7 +712,7 @@ export function MobileWebProReportPage({
   const hasProReport = state.report?.version === "pro" && sections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;
-  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "全面解读";
+  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富议题";
   const generatedAt = useMemo(
     () =>
       new Date().toLocaleDateString("zh-CN", {
