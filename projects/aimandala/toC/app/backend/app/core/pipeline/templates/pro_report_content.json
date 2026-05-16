@@ -103,7 +103,7 @@
     {
       "type": "action-block",
       "when": {
-        "theme_in": ["wealth_career"]
+        "theme_in": ["wealth"]
       }
     },
     {

@@ -8,6 +8,7 @@ from typing import Any
 from .data_models import InterpretationRecord, Layer1LiteDraft, Layer3ProDraft
 from .report_blueprints import PRO_REPORT_BLUEPRINT
 from .structured_report_schema import get_structured_report_contract
+from app.core.wealth_report import get_wealth_report_runtime
 
 
 TOPIC_ORIENTATION_PRESETS: dict[str, dict[str, Any]] = {
@@ -16,17 +17,21 @@ TOPIC_ORIENTATION_PRESETS: dict[str, dict[str, Any]] = {
         "focus": "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
         "key_terms": [],
     },
-    "wealth_career": {
-        "label": "财富事业",
-        "focus": "这个议题通常关注你如何使用行动力、价值感、资源感和目标节奏。",
+    "wealth": {
+        "label": "财富议题",
+        "focus": "这个议题关注你和金钱、价值、资源、行动、身体、家庭脚本和世界连接之间的关系。",
         "key_terms": [
             {
-                "term": "价值感",
-                "explanation": "你是否觉得自己的付出、能力和选择值得被看见。",
+                "term": "金钱关系",
+                "explanation": "你如何感受、使用、保存和流动金钱。",
             },
             {
-                "term": "行动节奏",
-                "explanation": "你在推进目标时，是更容易稳定前进，还是在压力下收缩或过度用力。",
+                "term": "价值交换",
+                "explanation": "你是否允许自己的能力、服务和创造被看见并被支付。",
+            },
+            {
+                "term": "承载力",
+                "explanation": "机会、收入或资源进入时，你能否稳定接住并保存。",
             },
         ],
     },
@@ -314,6 +319,10 @@ class ReportContractAssembler:
         report_mode: str,
     ) -> dict[str, Any]:
         topic = (record.theme or "general").strip() or "general"
+        if topic == "wealth":
+            return get_wealth_report_runtime().get_topic_context(
+                report_mode=report_mode,
+            )
         preset = TOPIC_ORIENTATION_PRESETS.get(topic, {})
         topic_label = str(preset.get("label") or self._fallback_topic_label(topic)).strip()
         focus = str(preset.get("focus") or f"这个议题会从{topic_label}的角度理解这张画。").strip()
@@ -332,7 +341,7 @@ class ReportContractAssembler:
     def _fallback_topic_label(self, topic: str) -> str:
         labels = {
             "general": "全面解读",
-            "wealth_career": "财富事业",
+            "wealth": "财富议题",
             "intimate_relationship": "亲密关系",
             "father_relationship": "与父亲的关系",
             "mother_relationship": "与母亲的关系",
