@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from app.core.llm import NoopLLMClient, create_llm_client_from_env
@@ -17,6 +17,7 @@ from app.core.mandala_interpretation_agent import (
     MandalaUserContext,
 )
 from app.core.mandala_interpretation_agent.knowledge_pack_builder import KnowledgePackBuilder
+from app.core.uploads import create_upload_storage_from_env
 from app.core.wealth_report import get_wealth_report_runtime
 
 
@@ -57,6 +58,20 @@ class WealthReportResponse(BaseModel):
     quality_gate: dict[str, Any]
     agent_output: dict[str, Any]
     report_context_package: dict[str, Any]
+
+
+class UploadImageResponse(BaseModel):
+    """Metadata returned after persisting one uploaded mandala image."""
+
+    success: bool
+    image_path: str
+    storage_backend: str
+    storage_key: str
+    original_filename: str
+    content_type: str | None = None
+    size_bytes: int
+    image_url: str | None = None
+    image_local_expires_at: str | None = None
 
 
 class SeededMandalaLLMClient:
@@ -171,6 +186,15 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
         result.report_context_package.get("visual_observation", {}),
         report_mode=payload.report_mode,
     )
+    if not result.quality_gate["passed"]:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": "财富报告质量检查未通过。",
+                "quality_gate": result.quality_gate,
+                "agent_output": result.agent_output,
+            },
+        )
     return WealthReportResponse(
         success=result.quality_gate["passed"],
         report_id=str(result.final_report.get("report_id") or ""),
@@ -186,4 +210,36 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
         quality_gate=result.quality_gate,
         agent_output=result.agent_output,
         report_context_package=result.report_context_package,
+    )
+
+
+@router.post("/uploads", response_model=UploadImageResponse)
+async def upload_image(file: UploadFile = File(...)) -> UploadImageResponse:
+    """Persist one browser-uploaded mandala image for report generation."""
+
+    content_type = (file.content_type or "").lower()
+    if content_type and not content_type.startswith("image/"):
+        await file.close()
+        raise HTTPException(
+            status_code=415,
+            detail="Only image uploads are supported.",
+        )
+
+    try:
+        stored = await create_upload_storage_from_env().save_upload(file)
+    except NotImplementedError as error:
+        raise HTTPException(status_code=501, detail=str(error)) from error
+    except Exception as error:
+        raise HTTPException(status_code=500, detail="Image upload failed.") from error
+
+    return UploadImageResponse(
+        success=True,
+        image_path=stored.image_path,
+        storage_backend=stored.storage_backend,
+        storage_key=stored.storage_key,
+        original_filename=stored.original_filename,
+        content_type=stored.content_type,
+        size_bytes=stored.size_bytes,
+        image_url=stored.image_url,
+        image_local_expires_at=stored.local_expires_at,
     )

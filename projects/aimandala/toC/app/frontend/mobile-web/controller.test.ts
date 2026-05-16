@@ -2,19 +2,26 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../shared/api", () => ({
   createWealthReport: vi.fn(),
+  uploadImage: vi.fn(),
 }));
 
 import * as api from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
-import { refreshMobileWebReport, runMobileWebLiteFlow } from "./controller";
-import type { WealthReportResponse } from "../shared/types";
+import {
+  refreshMobileWebReport,
+  runMobileWebLiteFlow,
+  runMobileWebReportFlow,
+} from "./controller";
+import type { InterpretationVersion, WealthReportResponse } from "../shared/types";
 
-function createWealthReportResponse(): WealthReportResponse {
+function createWealthReportResponse(
+  reportMode: InterpretationVersion = "lite",
+): WealthReportResponse {
   return {
     success: true,
     report_id: "wealth-1",
     topic: "wealth",
-    report_mode: "lite",
+    report_mode: reportMode,
     final_report_md: "# 财富议题曼陀罗解读\n\n当前财富能量稳定。",
     final_report: {
       title: "财富议题曼陀罗解读",
@@ -27,7 +34,7 @@ function createWealthReportResponse(): WealthReportResponse {
     topic_context: {
       topic: "wealth",
       topic_label: "财富议题",
-      report_mode: "lite",
+      report_mode: reportMode,
       orientation: {
         intro: "这份报告会从财富议题角度看这张画。",
         focus: "关注金钱、安全感、行动和现实承载。",
@@ -79,6 +86,32 @@ describe("mobile-web controller", () => {
         painting_feeling: "平静",
         inner_radius: 10,
         middle_radius: 20,
+      }),
+    );
+  });
+
+  it("runMobileWebReportFlow 在 pro 模式下也会调用同一个财富报告入口", async () => {
+    vi.mocked(api.createWealthReport).mockResolvedValue(createWealthReportResponse("pro"));
+
+    const snapshot = await runMobileWebReportFlow(
+      {
+        userId: "user-1",
+        imagePath: "/tmp/sample.png",
+        storageBackend: "cos",
+        storageKey: "aimandala/uploads/sample.png",
+        theme: "wealth",
+        paintingIntention: "看见财富卡点",
+        paintingFeeling: "平静",
+        innerRadius: 10,
+        middleRadius: 20,
+      },
+      "pro",
+    );
+
+    expect(snapshot.report?.version).toBe("pro");
+    expect(api.createWealthReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        report_mode: "pro",
       }),
     );
   });

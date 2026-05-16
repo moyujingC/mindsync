@@ -172,7 +172,7 @@ describe("MobileWebApp", () => {
     expect(html).toContain("保存报告");
   });
 
-  it("loading 路由在 Pro 等待中明确提示可去历史记录查看", () => {
+  it("loading 路由在 Pro 等待中不再提示后台历史入口", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="loading"
@@ -204,9 +204,10 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("Pro 解读会继续在后台生成");
-    expect(html).toContain("历史页也会自动刷新，并支持你手动立即刷新");
-    expect(html).toContain("稍后去历史记录查看");
+    expect(html).toContain("Pro 版完整解读");
+    expect(html).toContain("正在生成基础线索，随后展开 Pro 深度分析");
+    expect(html).not.toContain("Pro 解读会继续在后台生成");
+    expect(html).not.toContain("稍后去历史记录查看");
   });
 
   it("history 路由会渲染刷新提示与生成中的阶段进度", () => {

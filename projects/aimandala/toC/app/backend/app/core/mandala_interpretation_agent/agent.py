@@ -543,7 +543,8 @@ class MandalaInterpretationAgent:
         }
         return (
             "请生成用户可见的曼陀罗解读报告 Markdown。"
-            "只基于给定写作输入，不出现 stage、placeholder、legacy 等内部词。\n\n"
+            "只基于给定写作输入，不出现 stage、placeholder、legacy 等内部词。"
+            "不得输出财务预测、收益预测、投资建议或心理诊断。\n\n"
             f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
         )
 

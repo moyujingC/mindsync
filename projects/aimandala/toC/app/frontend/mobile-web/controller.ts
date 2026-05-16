@@ -14,6 +14,7 @@ import type {
   StartCreatePayload,
   WealthReportResponse,
 } from "../shared/types";
+import type { MobileWebReportVariant } from "./state";
 
 export interface MobileWebFlowSnapshot {
   state: MandalaFlowState;
@@ -78,6 +79,13 @@ export async function bootstrapMobileWebFlow(
 export async function runMobileWebLiteFlow(
   payload: StartCreatePayload,
 ): Promise<MobileWebFlowSnapshot> {
+  return runMobileWebReportFlow(payload, "lite");
+}
+
+export async function runMobileWebReportFlow(
+  payload: StartCreatePayload,
+  reportMode: MobileWebReportVariant = "lite",
+): Promise<MobileWebFlowSnapshot> {
   let state = selectImage(initialMandalaFlowState, payload.imagePath);
 
   try {
@@ -94,7 +102,7 @@ export async function runMobileWebLiteFlow(
       image_path: payload.imagePath,
       storage_backend: payload.storageBackend ?? undefined,
       storage_key: payload.storageKey ?? undefined,
-      report_mode: "lite",
+      report_mode: reportMode,
       painting_intention: payload.paintingIntention,
       painting_feeling: payload.paintingFeeling,
       inner_radius: normalizeCirclePercent(detection.inner_radius),

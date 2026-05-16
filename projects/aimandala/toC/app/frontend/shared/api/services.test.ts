@@ -12,7 +12,7 @@ vi.mock("./config", () => ({
   getAimandalaApiBaseUrl: () => "http://localhost:8000",
 }));
 
-import { createWealthReport } from "./services";
+import { createWealthReport, uploadImage } from "./services";
 
 describe("shared/api services", () => {
   beforeEach(() => {
@@ -45,6 +45,22 @@ describe("shared/api services", () => {
           inner_radius: 35,
           middle_radius: 65,
         }),
+      }),
+    );
+  });
+
+  it("uploadImage sends browser files to the upload endpoint", async () => {
+    const file = new File([new Uint8Array([1, 2, 3])], "mandala.png", {
+      type: "image/png",
+    });
+
+    await uploadImage(file);
+
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      "http://localhost:8000/api/uploads",
+      expect.objectContaining({
+        method: "POST",
+        body: expect.any(FormData),
       }),
     );
   });

@@ -11,7 +11,7 @@ import {
 import type { MobileWebAppProps } from "./app";
 import {
   pollMobileWebReportUntilReady,
-  runMobileWebLiteFlow,
+  runMobileWebReportFlow,
   refreshMobileWebReport,
 } from "./controller";
 import { ensureUploadedImagePath } from "./upload-runtime";
@@ -151,17 +151,6 @@ function createRuntimeLoadingState(
   };
 }
 
-function buildDeferredHistoryQuery(
-  query: InterpretationListQuery,
-  draft: MobileWebUploadDraft | null,
-): InterpretationListQuery {
-  return {
-    ...query,
-    filter: "pending",
-    theme: draft?.theme ?? query.theme,
-  };
-}
-
 function getDraftFromInput(
   input: MobileWebRouteInput,
 ): MobileWebUploadDraft | null {
@@ -202,15 +191,6 @@ function formatHistoryRefreshHint(date = new Date()): string {
     second: "2-digit",
     hour12: false,
   }).format(date)}`;
-}
-
-async function ensureRuntimeProAccess(
-  interpretationId: string,
-  userId: string | null,
-): Promise<void> {
-  throw new Error(
-    `Pro purchase is not available on the current report API (${interpretationId}, ${userId ?? "anonymous"}).`,
-  );
 }
 
 export function MobileWebRuntime({
@@ -430,10 +410,6 @@ export function MobileWebRuntime({
       return;
     }
 
-    const selectedVariant = getDraftReportVariant(
-      runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft,
-    );
-
     let cancelled = false;
 
     setRuntimeBusy(true);
@@ -450,80 +426,16 @@ export function MobileWebRuntime({
       }
     };
 
-    const loadingTask = selectedVariant === "pro"
-      ? (async () => {
-          const liteSnapshot = loadingState.step === "liteGenerating"
-            ? await pollMobileWebReportUntilReady(
-                interpretationId,
-                "lite",
-                loadingState,
-                { onTick: handleTick },
-              )
-            : { state: loadingState };
-
-          if (liteSnapshot.state.step === "liteGenerating" || liteSnapshot.state.step === "error") {
-            return liteSnapshot;
-          }
-
-          if (hasProReportAccess(liteSnapshot.state)) {
-            return pollMobileWebReportUntilReady(
-              interpretationId,
-              "pro",
-              liteSnapshot.state,
-              { onTick: handleTick },
-            );
-          }
-
-          await ensureRuntimeProAccess(interpretationId, userId);
-          return pollMobileWebReportUntilReady(
-            interpretationId,
-            "pro",
-            liteSnapshot.state,
-            { onTick: handleTick },
-          );
-        })()
-      : pollMobileWebReportUntilReady(
-          interpretationId,
-          "lite",
-          loadingState,
-          { onTick: handleTick },
-        );
+    const loadingTask = pollMobileWebReportUntilReady(
+      interpretationId,
+      "lite",
+      loadingState,
+      { onTick: handleTick },
+    );
 
     void loadingTask
       .then(async (snapshot) => {
         if (cancelled) {
-          return;
-        }
-
-        if (selectedVariant === "pro") {
-          const proReady =
-            snapshot.report?.version === "pro" &&
-            typeof snapshot.report.report === "string" &&
-            snapshot.report.report.trim();
-
-          if (snapshot.state.step === "error") {
-            setRuntimeProps({
-              route: "report",
-              flowState: snapshot.state,
-              uploadDraft: currentUploadDraft ?? undefined,
-            });
-            return;
-          }
-
-          if (!proReady) {
-            setRuntimeProps({
-              route: "loading",
-              flowState: snapshot.state,
-              uploadDraft: currentUploadDraft ?? undefined,
-            });
-            return;
-          }
-
-          setRuntimeProps({
-            route: "report",
-            flowState: snapshot.state,
-            uploadDraft: currentUploadDraft ?? undefined,
-          });
           return;
         }
 
@@ -536,11 +448,11 @@ export function MobileWebRuntime({
           return;
         }
 
-        await finalizeSelectedReport(
-          interpretationId,
-          snapshot.state,
-          currentUploadDraft,
-        );
+        setRuntimeProps({
+          route: "report",
+          flowState: snapshot.state,
+          uploadDraft: currentUploadDraft ?? undefined,
+        });
       })
       .finally(() => {
         if (!cancelled) {
@@ -632,45 +544,6 @@ export function MobileWebRuntime({
   const currentUploadDraft = activeRuntimeUploadDraft;
   const uploadDraftForReturn = currentUploadDraft ?? defaultUploadDraft;
 
-  async function finalizeSelectedReport(
-    interpretationId: string,
-    state: MandalaFlowState,
-    draft: MobileWebUploadDraft | null,
-  ) {
-    if (getDraftReportVariant(draft ?? defaultUploadDraft) === "pro" && interpretationId) {
-      if (!hasProReportAccess(state)) {
-        await ensureRuntimeProAccess(interpretationId, userId);
-      }
-      const proReport = await refreshMobileWebReport(interpretationId, "pro", state);
-      const proReady =
-        proReport.report?.version === "pro" &&
-        typeof proReport.report.report === "string" &&
-        proReport.report.report.trim();
-
-      if (!proReady) {
-        setRuntimeProps({
-          route: "loading",
-          flowState: proReport.state,
-          uploadDraft: draft ?? undefined,
-        });
-        return;
-      }
-
-      setRuntimeProps({
-        route: "report",
-        flowState: proReport.state,
-        uploadDraft: draft ?? undefined,
-      });
-      return;
-    }
-
-    setRuntimeProps({
-      route: "report",
-      flowState: state,
-      uploadDraft: draft ?? undefined,
-    });
-  }
-
   async function handleReportPrimaryAction() {
     if (!currentRuntimeProps.flowState || runtimeBusy) {
       return;
@@ -691,19 +564,11 @@ export function MobileWebRuntime({
           "lite",
           currentRuntimeProps.flowState,
         );
-        if (refreshed.state.step === "liteGenerating") {
-          setRuntimeProps({
-            route: "loading",
-            flowState: refreshed.state,
-            uploadDraft: currentUploadDraft ?? undefined,
-          });
-        } else {
-          await finalizeSelectedReport(
-            interpretationId,
-            refreshed.state,
-            currentUploadDraft,
-          );
-        }
+        setRuntimeProps({
+          route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
+          flowState: refreshed.state,
+          uploadDraft: currentUploadDraft ?? undefined,
+        });
       } finally {
         setRuntimeBusy(false);
       }
@@ -723,19 +588,11 @@ export function MobileWebRuntime({
             "lite",
             currentRuntimeProps.flowState,
           );
-          if (refreshed.state.step === "liteGenerating") {
-            setRuntimeProps({
-              route: "loading",
-              flowState: refreshed.state,
-              uploadDraft: currentUploadDraft ?? undefined,
-            });
-          } else {
-            await finalizeSelectedReport(
-              interpretationId,
-              refreshed.state,
-              currentUploadDraft,
-            );
-          }
+          setRuntimeProps({
+            route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
+            flowState: refreshed.state,
+            uploadDraft: currentUploadDraft ?? undefined,
+          });
         } finally {
           setRuntimeBusy(false);
         }
@@ -752,20 +609,6 @@ export function MobileWebRuntime({
         structured: getLiteStructuredReport(currentRuntimeProps.flowState.report),
       });
 
-      if (resultCta.intent === "open_pro_report") {
-        const nextDraft = currentUploadDraft
-          ? mergeMobileWebUploadDraft(currentUploadDraft, { reportType: "pro" })
-          : mergeMobileWebUploadDraft(uploadDraftForReturn, { reportType: "pro" });
-
-        setRuntimeUploadDraft(nextDraft);
-        setRuntimeProps({
-          route: "loading",
-          flowState: currentRuntimeProps.flowState,
-          uploadDraft: nextDraft,
-        });
-        return;
-      }
-
       if (resultCta.intent === "restart_upload") {
         setRuntimeProps({
           route: "upload",
@@ -776,7 +619,7 @@ export function MobileWebRuntime({
 
       setRuntimeProps({
         route: "reportEntry",
-        uploadDraft: currentUploadDraft ?? undefined,
+        uploadDraft: currentUploadDraft ?? uploadDraftForReturn,
       });
       return;
     }
@@ -985,64 +828,6 @@ export function MobileWebRuntime({
     }
   }
 
-  async function handleHistoryRecordDetailOpenReport(
-    reportType: InterpretationVersion,
-  ) {
-    if (
-      runtimeBusy ||
-      runtimeHistoryBusy ||
-      currentRuntimeProps.route !== "historyRecordDetail" ||
-      !currentRuntimeProps.record
-    ) {
-      return;
-    }
-
-    const record = currentRuntimeProps.record;
-    const nextDraft = mergeMobileWebUploadDraft(
-      currentUploadDraft ?? uploadDraftForReturn,
-      { reportType },
-    );
-
-    setRuntimeBusy(true);
-    setRuntimeHistoryOpeningId(record.interpretation_id);
-    setRuntimeHistoryOpeningReportType(reportType);
-    try {
-      if (reportType === "pro" && !record.version_purchased.includes("pro")) {
-        await ensureRuntimeProAccess(record.interpretation_id, userId);
-      }
-      const refreshed = await refreshMobileWebReport(
-        record.interpretation_id,
-        reportType,
-        initialMandalaFlowState,
-      );
-      setRuntimeUploadDraft(nextDraft);
-
-      if (reportType === "pro") {
-        const proReady =
-          refreshed.report?.version === "pro" &&
-          typeof refreshed.report.report === "string" &&
-          refreshed.report.report.trim();
-
-        setRuntimeProps({
-          route: proReady ? "report" : "loading",
-          flowState: refreshed.state,
-          uploadDraft: nextDraft,
-        });
-        return;
-      }
-
-      setRuntimeProps({
-        route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
-        flowState: refreshed.state,
-        uploadDraft: nextDraft,
-      });
-    } finally {
-      setRuntimeHistoryOpeningId(null);
-      setRuntimeHistoryOpeningReportType(null);
-      setRuntimeBusy(false);
-    }
-  }
-
   function handleReportSecondaryAction() {
     if (currentRuntimeProps.route === "loading") {
       setRuntimeProps({
@@ -1064,51 +849,6 @@ export function MobileWebRuntime({
       flowState: currentRuntimeProps.flowState,
       uploadDraft: uploadDraftForReturn,
     });
-  }
-
-  async function handleLoadingLeaveLater() {
-    const draftForHistory =
-      currentUploadDraft ?? currentRuntimeProps.uploadDraft ?? uploadDraftForReturn ?? defaultUploadDraft;
-    const nextQuery = buildDeferredHistoryQuery(runtimeHistoryQuery, draftForHistory);
-
-    if (!userId || runtimeHistoryBusy) {
-      setRuntimeProps({
-        route: "upload",
-        uploadDraft: draftForHistory,
-      });
-      return;
-    }
-
-    setRuntimeHistoryBusy(true);
-    setRuntimeHistoryQuery(nextQuery);
-    try {
-      const history = await loadHistoryPage(userId, nextQuery);
-      setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
-      setRuntimeProps({
-        route: "history",
-        records: history.records,
-        uploadDraft: draftForHistory,
-        historyQuery: nextQuery,
-        historyStatusLabel: "Pro 解读仍在生成中",
-        historyStatusDetail: "你已经离开等待页，系统会继续在后台生成。稍后可直接从这里返回查看完整 Pro 报告。",
-        historyStatusTone: "runtime",
-      });
-    } catch (historyError) {
-      setRuntimeProps({
-        route: "history",
-        records: [],
-        uploadDraft: draftForHistory,
-        historyQuery: nextQuery,
-        historyStatusLabel: "历史记录拉取失败",
-        historyStatusDetail:
-          historyError instanceof Error
-            ? historyError.message
-            : "Failed to load interpretation history",
-        historyStatusTone: "runtime",
-      });
-    } finally {
-      setRuntimeHistoryBusy(false);
-    }
   }
 
   function handleHistoryBackToUpload() {
@@ -1192,7 +932,7 @@ export function MobileWebRuntime({
         },
       });
 
-      const result = await runMobileWebLiteFlow(
+      const result = await runMobileWebReportFlow(
         toStartCreatePayload(
           {
             ...draftToUse,
@@ -1202,24 +942,17 @@ export function MobileWebRuntime({
           },
           userId,
         ),
+        getDraftReportVariant(draftToUse),
       );
       const nextDraft = {
         ...draftToUse,
         uploadAsset: nextAssetRef,
       };
-      if (result.state.step === "liteGenerating") {
-        setRuntimeProps({
-          route: "loading",
-          flowState: result.state,
-          uploadDraft: nextDraft,
-        });
-      } else {
-        await finalizeSelectedReport(
-          result.state.report?.interpretation_id ?? "",
-          result.state,
-          nextDraft,
-        );
-      }
+      setRuntimeProps({
+        route: result.state.step === "liteGenerating" ? "loading" : "report",
+        flowState: result.state,
+        uploadDraft: nextDraft,
+      });
     } catch (uploadError) {
       const message = uploadError instanceof Error ? uploadError.message : "Failed to continue upload";
       setRuntimeUploadDetectError(message);
@@ -1318,7 +1051,7 @@ export function MobileWebRuntime({
         setRuntimeUploadDraft(nextDraft);
         void handleUploadContinue(nextDraft);
       }}
-      onLoadingLeaveLater={handleLoadingLeaveLater}
+      onLoadingLeaveLater={undefined}
       onReportPrimaryAction={handleReportPrimaryAction}
       onReportSecondaryAction={handleReportSecondaryAction}
       onReportBackAction={handleReportBackAction}
@@ -1341,7 +1074,7 @@ export function MobileWebRuntime({
       onHistoryRefresh={handleHistoryRefresh}
       onHistoryOpenRecord={handleHistoryOpenRecord}
       onHistoryRecordDetailBack={handleHistoryRecordDetailBack}
-      onHistoryRecordDetailOpenReport={handleHistoryRecordDetailOpenReport}
+      onHistoryRecordDetailOpenReport={undefined}
     />
   );
 }

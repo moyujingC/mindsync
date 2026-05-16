@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 
 from app.core.mandala_interpretation_agent.agent import MandalaInterpretationAgent
@@ -138,6 +139,46 @@ def test_mandala_agent_quality_gate_rejects_internal_leaks(tmp_path):
         stage_outputs=result.stage_outputs,
         execution_trace=result.execution_trace,
         final_report_md="这里泄漏了 stage-03 和 legacy。",
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "final_report_internal_text_leak" in quality["failure_ids"]
+
+
+def test_mandala_agent_quality_gate_rejects_empty_visual_evidence(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    stage_outputs = deepcopy(result.stage_outputs)
+    stage_outputs["stage-03-visual-evidence"]["circles"] = {}
+
+    quality = run_quality_gate(
+        stage_outputs=stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=result.final_report_md,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "missing_stage03_visual_units" in quality["failure_ids"]
+
+
+def test_mandala_agent_quality_gate_rejects_financial_promises(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md="这份报告提供投资建议和收益预测。",
         report_context_package=result.report_context_package,
     )
 
