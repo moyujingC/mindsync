@@ -271,6 +271,261 @@ clauses:
         - 不强迫用户社交或合作。
         - 不把内向或谨慎写成问题。
 
+  - id: wealth.receiving_and_pricing_pressure
+    title: 不敢收钱与开价压力
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#611-不敢收钱与开价压力
+      needs_backfill_from:
+        - 对财富说是
+        - 格式塔心理咨询理论与实践
+        - 心理自助CBT书系
+    summary: 用户可能有价值和能力，但在收费、谈价、收礼或接受支持时容易紧张。
+    typical_signals:
+      - 不敢报价或谈薪。
+      - 收钱时有亏欠感。
+      - 接受支持时担心被评价。
+      - 容易把自己的价值压低。
+    report_language:
+      - 这里更像是在提示“收”的动作会变紧：你不是没有价值，而是在把价值拿出来交换时容易退一步。
+      - 如果收钱会触发亏欠、怕对方失望或怕被评价，财富流动就容易停在开口之前。
+    healing_direction:
+      - 练习说出自己的价格和边界。
+      - 区分收钱和占别人便宜。
+      - 从低压力的小额交换开始。
+    visual_mapping_candidates:
+      - 中圈缠绕可能映射到关系压力影响收费。
+      - 外圈边界破损可能映射到交换边界不稳。
+    safety:
+      avoid:
+        - 不替用户制定价格。
+        - 不要求用户立刻涨价或谈判。
+
+  - id: wealth.hardship_earning_belief
+    title: 辛苦赚钱信念
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#612-辛苦赚钱信念
+      needs_backfill_from:
+        - 对财富说是
+        - 创伤与复原
+        - ACT就这么简单
+    summary: 用户可能把辛苦、牺牲、硬扛当成赚钱或获得回报的默认条件。
+    typical_signals:
+      - 只有很累才觉得自己配得到。
+      - 不容易接受轻松、支持或顺流。
+      - 把休息体验成不负责任。
+      - 赚钱和身体透支绑定。
+    report_language:
+      - 财富在这里可能和“必须很用力才配得到”绑在一起。
+      - 画面如果呈现压迫、厚重或过度填满，可以提示你观察：我是否把轻松和支持排除在财富之外。
+    healing_direction:
+      - 区分努力和透支。
+      - 允许小范围轻松获得。
+      - 观察身体是否把休息体验成危险。
+    visual_mapping_candidates:
+      - 外圈厚重深色可能映射到现实压力和负担感。
+      - 画面过满可能映射到没有留出承接和恢复空间。
+    safety:
+      avoid:
+        - 不否定努力。
+        - 不鼓励用户放弃现实责任。
+
+  - id: wealth.success_visibility_threat
+    title: 有钱危险与成功压力
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#613-有钱危险与成功压力
+      needs_backfill_from:
+        - 对财富说是
+        - 谁在我家
+        - 创伤与复原
+    summary: 用户可能想要财富和成功，但也担心更多资源带来被看见、被要求、关系变化或压力。
+    typical_signals:
+      - 靠近机会时后退。
+      - 害怕成功后被嫉妒、被要求或被孤立。
+      - 想要更多，又担心关系失衡。
+      - 被看见时兴奋和紧张并存。
+    report_language:
+      - 这不一定是在说你不想要财富，也可能是在说“更多”会带来压力。
+      - 成功、被看见、被需要，有时会让人同时兴奋和后退。
+    healing_direction:
+      - 观察成功带来的关系想象。
+      - 区分真实风险和旧经验投射。
+      - 逐步练习被看见。
+    visual_mapping_candidates:
+      - 内圈收缩外圈强可能映射到想外放但内在紧张。
+      - 外圈明亮但边界厚重可能映射到曝光与防御并存。
+    safety:
+      avoid:
+        - 不把成功恐惧写成定论。
+        - 不承诺用户会成功或变有钱。
+
+  - id: wealth.resource_leakage
+    title: 保存困难与资源外泄
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#614-保存困难与资源外泄
+      needs_backfill_from:
+        - 对财富说是
+        - 心理自助CBT书系
+        - 创伤与复原
+    summary: 用户可能有资源进入，但容易被外界需求、关系压力、临时情绪或现实负担带走。
+    typical_signals:
+      - 钱、时间或精力进来后很快散掉。
+      - 容易替别人承担。
+      - 难以建立稳定资源容器。
+      - 外界需求一来就打乱自己的节奏。
+    report_language:
+      - 从财富议题看，这里更像是在提示资源容器不够稳。
+      - 钱、时间、精力或机会进来以后，可能很快被外界需求、关系消耗或临时压力带走。
+    healing_direction:
+      - 练习资源边界。
+      - 记录资源流入和流出。
+      - 先守住一个小范围承接容器。
+    visual_mapping_candidates:
+      - 外圈缺口破损可能映射到资源外泄。
+      - 外圈碎点和留白可能映射到现实流动零散。
+    safety:
+      avoid:
+        - 不判断用户存款或真实支出。
+        - 不做财务规划承诺。
+
+  - id: wealth.exchange_boundary_imbalance
+    title: 付出失衡与交换边界
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#615-付出失衡与交换边界
+      needs_backfill_from:
+        - 格式塔心理咨询理论与实践
+        - 谁在我家
+        - 对财富说是
+    summary: 用户可能容易多给、少收、不好意思拒绝，把被喜欢和被认可放在公平交换之前。
+    typical_signals:
+      - 容易过度付出。
+      - 对拒绝和谈边界紧张。
+      - 服务、合作或关系里不太会收回报。
+      - 害怕坚持价格或条件会破坏关系。
+    report_language:
+      - 这条关系线索放到财富里，更像是在看交换边界。
+      - 你是否容易先照顾别人，再考虑自己的价值、价格和承受范围，值得被温和观察。
+    healing_direction:
+      - 小范围练习拒绝。
+      - 把付出和交换写清楚。
+      - 观察讨好和收费之间的关系。
+    visual_mapping_candidates:
+      - 中圈线条缠绕可能映射到关系拉扯。
+      - 外圈边界缺口可能映射到交换边界不清。
+    safety:
+      avoid:
+        - 不指责用户讨好。
+        - 不要求用户切断关系。
+
+  - id: wealth.value_expression_block
+    title: 价值表达受阻
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#616-价值表达受阻
+      needs_backfill_from:
+        - ACT就这么简单
+        - 格式塔心理咨询理论与实践
+        - 对财富说是
+    summary: 用户可能有能力、经验或热情，但没有被稳定表达、包装、说明、展示和交付给世界。
+    typical_signals:
+      - 有能力但不展示。
+      - 不知道如何说明自己的价值。
+      - 外界看不到用户真正能提供什么。
+      - 有热情但没有形成交付路径。
+    report_language:
+      - 你的价值可能已经存在，但还没有被整理成别人能看见、理解和交换的形式。
+      - 财富流动不只需要能力，也需要表达路径。
+    healing_direction:
+      - 梳理一个可以被看见的价值表达。
+      - 小范围公开一个作品、服务或想法。
+      - 练习把能力翻译成别人能理解的语言。
+    visual_mapping_candidates:
+      - 外圈留白多可能映射到对外表达不足。
+      - 中心清晰但外圈弱可能映射到内在有价值但外化不足。
+    safety:
+      avoid:
+        - 不把内向写成问题。
+        - 不承诺市场反馈或客户结果。
+
+  - id: wealth.scattered_goals
+    title: 目标混乱与能量分散
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#617-目标混乱与能量分散
+      needs_backfill_from:
+        - ACT就这么简单
+        - 心理自助CBT书系
+    summary: 用户可能同时想抓住太多方向，财富行动缺少主线。
+    typical_signals:
+      - 想法很多但难以聚焦。
+      - 财富目标彼此冲突。
+      - 行动容易换方向。
+      - 能量被多个目标拉散。
+    report_language:
+      - 这里更像是在提示财富能量分散：不是没有想法，而是同时想抓住太多方向，反而让行动难以形成稳定主线。
+      - 当前更需要先选一个小主轴，而不是同时证明所有可能性。
+    healing_direction:
+      - 先选一个低风险主线。
+      - 暂停同时推进过多目标。
+      - 用 7 天观察一个方向是否有能量。
+    visual_mapping_candidates:
+      - 画面碎点多可能映射到能量分散。
+      - 色块分割明显可能映射到取舍两难。
+    safety:
+      avoid:
+        - 不否定多元兴趣。
+        - 不替用户做职业或商业决策。
+
+  - id: wealth.difficulty_receiving_support
+    title: 接受支持困难
+    provenance:
+      source_status: model_scaffold
+      validation_status: pending_source_review
+      evidence_refs:
+        - projects/aimandala/docs/sources/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#618-接受支持困难
+      needs_backfill_from:
+        - 谁在我家
+        - 创伤与复原
+        - 对财富说是
+    summary: 用户可能习惯一个人扛，不容易接受帮助、资源、合作、礼物、推荐或机会。
+    typical_signals:
+      - 习惯自己扛。
+      - 不太会接受帮助。
+      - 害怕欠人情。
+      - 只允许自己付出，不太允许被支持。
+    report_language:
+      - 财富不只来自自己用力，也来自能否接受合适的支持。
+      - 如果你只允许自己付出、不太允许被支持，财富流动就容易只剩消耗，不容易形成互惠。
+    healing_direction:
+      - 练习接受一个小支持。
+      - 区分支持和亏欠。
+      - 看见合作中的互惠关系。
+    visual_mapping_candidates:
+      - 边框完整厚重可能映射到防御和自我保护强。
+      - 外圈断开可能映射到支持通道不稳定。
+    safety:
+      avoid:
+        - 不要求用户信任所有人。
+        - 不否定必要的边界和谨慎。
+
 safety:
   global_avoid:
     - 不把财富解读写成财务预测。

@@ -104,7 +104,7 @@ class KnowledgePackBuilder:
             ),
             "wealth_handbook": self._read_text(
                 "20-疗愈体系/10-议题层/11-财富议题手册.md",
-                max_chars=4200,
+                max_chars=12000,
             ),
             "wealth_report_template": self._read_text(
                 "30-应用适配/10-aimandala/06-财富议题解读报告模板.md",
@@ -112,11 +112,11 @@ class KnowledgePackBuilder:
             ),
             "wealth_clauses": self._read_text(
                 "50-结构化知识单元/20-wealth-issue-clauses.yaml",
-                max_chars=4200,
+                max_chars=16000,
             ),
             "wealth_routing": self._read_text(
                 "50-结构化知识单元/40-wealth-report-routing.yaml",
-                max_chars=4200,
+                max_chars=16000,
             ),
         }
 

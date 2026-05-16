@@ -24,3 +24,20 @@ def test_native_wealth_runtime_routes_visual_observations():
 
     assert route.selected_clause_ids
     assert route.selected_module_ids
+
+
+def test_native_wealth_runtime_uses_yaml_match_keywords_for_expanded_routes():
+    route = get_wealth_report_runtime().route_visual_observations(
+        {
+            "inner_circle": "内圈比较清晰。",
+            "middle_circle": "中圈缠绕，关系拉扯感明显。",
+            "outer_circle": "外圈边界有缺口，零散小点很多，能量分散。",
+        },
+        report_mode="pro",
+    )
+
+    assert "visual.middle_tangled_relationship_pull" in route.selected_signal_ids
+    assert "visual.outer_boundary_broken" in route.selected_signal_ids
+    assert "visual.fragmented_dots_scattered_energy" in route.selected_signal_ids
+    assert "wealth.exchange_boundary_imbalance" in route.selected_clause_ids
+    assert "wealth.resource_leakage" in route.selected_clause_ids

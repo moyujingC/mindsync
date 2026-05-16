@@ -161,9 +161,58 @@ core_issue_clauses:
       - wealth.career_value_exchange
       - wealth.passion_needs_abundance
 
+  - clause_id: wealth.receiving_and_pricing_pressure
+    default_modules:
+      - wealth.deservingness_self_worth
+      - wealth.money_shame_receiving
+      - wealth.career_value_exchange
+
+  - clause_id: wealth.hardship_earning_belief
+    default_modules:
+      - wealth.safety_scarcity_control
+      - wealth.body_fear_action
+
+  - clause_id: wealth.success_visibility_threat
+    default_modules:
+      - wealth.family_loyalty_success_resistance
+      - wealth.world_connection_market
+      - wealth.deservingness_self_worth
+
+  - clause_id: wealth.resource_leakage
+    default_modules:
+      - wealth.safety_scarcity_control
+      - wealth.emotion_spending_protective_habits
+
+  - clause_id: wealth.exchange_boundary_imbalance
+    default_modules:
+      - wealth.world_connection_market
+      - wealth.parents_family_money_scripts
+      - wealth.career_value_exchange
+
+  - clause_id: wealth.value_expression_block
+    default_modules:
+      - wealth.career_value_exchange
+      - wealth.world_connection_market
+      - wealth.passion_needs_abundance
+
+  - clause_id: wealth.scattered_goals
+    default_modules:
+      - wealth.body_fear_action
+      - wealth.passion_needs_abundance
+
+  - clause_id: wealth.difficulty_receiving_support
+    default_modules:
+      - wealth.safety_scarcity_control
+      - wealth.world_connection_market
+
 visual_signal_routes:
   - signal_id: visual.outer_red_or_fire_excess
     label: 外圈红色或火能量明显
+    match_keywords:
+      any:
+        - [外圈, 红]
+        - [外圈, 火]
+        - [外圈, 热]
     source_refs:
       - 90-财富议题案例反推.md#外圈红色多
       - 12-高频组合模式.md#2-火一块一块被金截断
@@ -178,6 +227,11 @@ visual_signal_routes:
 
   - signal_id: visual.weak_fire_many
     label: 弱火多
+    match_keywords:
+      any:
+        - [弱火]
+        - [火弱]
+        - [淡红]
     source_refs:
       - 12-高频组合模式.md#5-弱火多
     candidate_clauses:
@@ -191,6 +245,11 @@ visual_signal_routes:
 
   - signal_id: visual.metal_excess
     label: 金多
+    match_keywords:
+      any:
+        - [金多]
+        - [白色, 多]
+        - [金色, 多]
     source_refs:
       - 12-高频组合模式.md#6-金多
     candidate_clauses:
@@ -204,6 +263,12 @@ visual_signal_routes:
 
   - signal_id: visual.weak_or_fragmented_earth
     label: 土弱或土零散不成片
+    match_keywords:
+      any:
+        - [土弱]
+        - [土零散]
+        - [不成片]
+        - [整体, 不成片]
     source_refs:
       - 90-财富议题案例反推.md#财富承载力不足
       - 12-高频组合模式.md#7-土零散不成片
@@ -218,6 +283,11 @@ visual_signal_routes:
 
   - signal_id: visual.water_fire_conflict
     label: 水火相冲
+    match_keywords:
+      any:
+        - [水火]
+        - [冲突]
+        - [红, 蓝]
     source_refs:
       - 12-高频组合模式.md#8-水火相冲
     candidate_clauses:
@@ -233,6 +303,11 @@ visual_signal_routes:
 
   - signal_id: visual.rootless_wood
     label: 木无根
+    match_keywords:
+      any:
+        - [木无根]
+        - [无根]
+        - [绿色, 漂]
     source_refs:
       - 12-高频组合模式.md#3-木无根
     candidate_clauses:
@@ -246,6 +321,12 @@ visual_signal_routes:
 
   - signal_id: visual.fragmented_white_or_metal_cut
     label: 白色割裂或金截断
+    match_keywords:
+      any:
+        - [白色, 割裂]
+        - [白色, 截断]
+        - [割裂]
+        - [截断]
     source_refs:
       - 12-高频组合模式.md#1-白色把其他颜色割裂开
     candidate_clauses:
@@ -259,6 +340,11 @@ visual_signal_routes:
 
   - signal_id: visual.outer_world_closed_or_blank
     label: 外圈留白多或对外表达弱
+    match_keywords:
+      any:
+        - [外圈, 留白]
+        - [外圈, 空白]
+        - [外圈, 表达弱]
     source_refs:
       - 12-高频组合模式.md#10-紫色单一且留白多
     candidate_clauses:
@@ -269,6 +355,180 @@ visual_signal_routes:
       - wealth.career_value_exchange
     use_as: candidate_mapping
     report_boundary: 适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。
+
+  - signal_id: visual.inner_contracted_outer_strong
+    label: 内圈收缩而外圈强
+    match_keywords:
+      any:
+        - [内圈, 收缩, 外圈]
+        - [里圈, 收缩, 外圈]
+        - [内圈, 小, 外圈, 强]
+    source_refs:
+      - 11-财富议题手册.md#613-有钱危险与成功压力
+      - 11-财富议题手册.md#33-配得感与自我价值
+    candidate_clauses:
+      - wealth.success_visibility_threat
+      - wealth.low_deservingness
+      - wealth.low_capacity
+    candidate_modules:
+      - wealth.deservingness_self_worth
+      - wealth.body_fear_action
+      - wealth.world_connection_market
+    use_as: candidate_mapping
+    report_boundary: 适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。
+
+  - signal_id: visual.middle_tangled_relationship_pull
+    label: 中圈缠绕或关系拉扯
+    match_keywords:
+      any:
+        - [中圈, 缠绕]
+        - [中圈, 拉扯]
+        - [中圈, 断裂]
+        - [关系, 拉扯]
+    source_refs:
+      - 02-画面分析基础.md#中圈气人情绪层
+      - 11-财富议题手册.md#615-付出失衡与交换边界
+    candidate_clauses:
+      - wealth.exchange_boundary_imbalance
+      - wealth.receiving_and_pricing_pressure
+      - wealth.emotional_spending
+    candidate_modules:
+      - wealth.world_connection_market
+      - wealth.career_value_exchange
+      - wealth.emotion_spending_protective_habits
+    use_as: candidate_mapping
+    report_boundary: 适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。
+
+  - signal_id: visual.outer_boundary_broken
+    label: 外圈边界缺口或破损
+    match_keywords:
+      any:
+        - [外圈, 缺口]
+        - [外圈, 破损]
+        - [边框, 缺口]
+        - [边界, 破损]
+    source_refs:
+      - 02-画面分析基础.md#外圈形地现实层
+      - 11-财富议题手册.md#614-保存困难与资源外泄
+    candidate_clauses:
+      - wealth.resource_leakage
+      - wealth.exchange_boundary_imbalance
+      - wealth.low_world_connection
+    candidate_modules:
+      - wealth.safety_scarcity_control
+      - wealth.world_connection_market
+      - wealth.career_value_exchange
+    use_as: candidate_mapping
+    report_boundary: 适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。
+
+  - signal_id: visual.outer_boundary_thick_closed
+    label: 外圈边界厚重闭合
+    match_keywords:
+      any:
+        - [外圈, 厚重]
+        - [边框, 厚重]
+        - [边界, 闭合]
+        - [外圈, 闭合]
+    source_refs:
+      - 02-画面分析基础.md#外圈形地现实层
+      - 11-财富议题手册.md#618-接受支持困难
+    candidate_clauses:
+      - wealth.difficulty_receiving_support
+      - wealth.scarcity_and_insecurity
+      - wealth.success_visibility_threat
+    candidate_modules:
+      - wealth.safety_scarcity_control
+      - wealth.world_connection_market
+      - wealth.parents_family_money_scripts
+    use_as: candidate_mapping
+    report_boundary: 适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。
+
+  - signal_id: visual.fragmented_dots_scattered_energy
+    label: 碎点多或能量分散
+    match_keywords:
+      any:
+        - [碎点]
+        - [零散, 小点]
+        - [能量, 分散]
+        - [方向, 分散]
+    source_refs:
+      - 11-财富议题手册.md#617-目标混乱与能量分散
+      - 90-财富议题案例反推.md
+    candidate_clauses:
+      - wealth.scattered_goals
+      - wealth.resource_leakage
+      - wealth.low_action
+    candidate_modules:
+      - wealth.body_fear_action
+      - wealth.passion_needs_abundance
+      - wealth.safety_scarcity_control
+    use_as: candidate_mapping
+    report_boundary: 适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。
+
+  - signal_id: visual.center_clear_outer_weak
+    label: 中心清晰但外圈弱
+    match_keywords:
+      any:
+        - [中心, 清晰, 外圈, 弱]
+        - [内圈, 清晰, 外圈, 留白]
+        - [中心, 稳, 外圈, 空]
+    source_refs:
+      - 11-财富议题手册.md#616-价值表达受阻
+      - 11-财富议题手册.md#311-世界链接客户市场与合作
+    candidate_clauses:
+      - wealth.value_expression_block
+      - wealth.low_world_connection
+      - wealth.low_action
+    candidate_modules:
+      - wealth.career_value_exchange
+      - wealth.world_connection_market
+      - wealth.passion_needs_abundance
+    use_as: candidate_mapping
+    report_boundary: 适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。
+
+  - signal_id: visual.heavy_overfilled_composition
+    label: 画面厚重或过度填满
+    match_keywords:
+      any:
+        - [厚重]
+        - [过满]
+        - [填满]
+        - [压迫]
+    source_refs:
+      - 11-财富议题手册.md#612-辛苦赚钱信念
+      - 02-画面分析基础.md#外圈形地现实层
+    candidate_clauses:
+      - wealth.hardship_earning_belief
+      - wealth.scarcity_and_insecurity
+      - wealth.low_capacity
+    candidate_modules:
+      - wealth.safety_scarcity_control
+      - wealth.body_fear_action
+      - wealth.money_beliefs
+    use_as: candidate_mapping
+    report_boundary: 适合表达用力、负担和休息困难，不能否定用户现实努力或责任。
+
+  - signal_id: visual.color_blocks_split
+    label: 色块分割明显
+    match_keywords:
+      any:
+        - [色块, 分割]
+        - [分割, 明显]
+        - [取舍, 两难]
+        - [内心, 矛盾]
+    source_refs:
+      - 02-画面分析基础.md#中圈气人情绪层
+      - 11-财富议题手册.md#617-目标混乱与能量分散
+    candidate_clauses:
+      - wealth.scattered_goals
+      - wealth.low_action
+      - wealth.success_visibility_threat
+    candidate_modules:
+      - wealth.body_fear_action
+      - wealth.passion_needs_abundance
+      - wealth.deservingness_self_worth
+    use_as: candidate_mapping
+    report_boundary: 适合表达取舍两难和行动主线不清，不能替用户做现实选择。
 
 module_selection:
   lite:

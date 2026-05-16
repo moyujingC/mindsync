@@ -176,6 +176,24 @@ class WealthReportRuntime:
         route: dict[str, Any],
         observation_text: str,
     ) -> bool:
+        keyword_groups = route.get("match_keywords")
+        if isinstance(keyword_groups, dict):
+            any_groups = keyword_groups.get("any", [])
+            if isinstance(any_groups, list):
+                for group in any_groups:
+                    terms = (
+                        [str(item).strip() for item in group if str(item).strip()]
+                        if isinstance(group, list)
+                        else [str(group).strip()]
+                    )
+                    if terms and all(term in observation_text for term in terms):
+                        return True
+            all_terms = keyword_groups.get("all", [])
+            if isinstance(all_terms, list):
+                terms = [str(item).strip() for item in all_terms if str(item).strip()]
+                if terms and all(term in observation_text for term in terms):
+                    return True
+
         signal_id = str(route.get("signal_id") or "")
         label = str(route.get("label") or "")
         haystack = f"{signal_id} {label}"
