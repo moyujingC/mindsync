@@ -101,6 +101,7 @@ git diff --check
 
 ```bash
 export AIMANDALA_ENV_FILE=/absolute/path/to/aimandala.local.env
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py --check-env
 python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py --mode both
 ```
 

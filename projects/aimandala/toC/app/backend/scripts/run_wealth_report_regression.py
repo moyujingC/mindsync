@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -23,7 +24,7 @@ DEFAULT_REGRESSION_ROOT = (
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
-from app.core.llm.runtime import create_llm_client_from_env  # noqa: E402
+from app.core.llm.runtime import create_llm_client_from_env, load_private_env_file  # noqa: E402
 from app.core.mandala_interpretation_agent.agent import MandalaInterpretationAgent  # noqa: E402
 from app.core.mandala_interpretation_agent.artifact_store import MandalaInterpretationArtifactStore  # noqa: E402
 from app.core.mandala_interpretation_agent.contracts import (  # noqa: E402
@@ -72,6 +73,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Validate case configuration and print planned runs without calling models.",
     )
+    parser.add_argument(
+        "--check-env",
+        action="store_true",
+        help="Check model and redeem-code environment without calling models.",
+    )
     return parser
 
 
@@ -95,6 +101,11 @@ def main() -> int:
     if args.dry_run:
         print(json.dumps({"status": "dry_run", "planned_runs": planned}, ensure_ascii=False, indent=2))
         return 0
+
+    if args.check_env:
+        payload = build_env_check_payload(planned_runs=planned)
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return 0 if payload["ready"] else 2
 
     llm_client = create_llm_client_from_env()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
@@ -193,6 +204,48 @@ def build_agent_input(case: WealthRegressionCase, *, report_mode: ReportMode) ->
         },
         output_requirements=MandalaOutputRequirements(),
     )
+
+
+def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
+    load_private_env_file()
+    env_status = {
+        name: "set" if os.getenv(name) else "missing"
+        for name in [
+            "AIMANDALA_ENV_FILE",
+            "AIMANDALA_LLM_API_KEY",
+            "AIMANDALA_LLM_BASE_URL",
+            "AIMANDALA_LLM_MODEL",
+            "AIMANDALA_LLM_CHAT_MODEL",
+            "AIMANDALA_LLM_VISION_API_KEY",
+            "AIMANDALA_LLM_VISION_BASE_URL",
+            "AIMANDALA_LLM_VISION_MODEL",
+            "AIMANDALA_REDEEM_CODES",
+        ]
+    }
+    missing_required = [
+        name
+        for name in [
+            "AIMANDALA_LLM_API_KEY",
+            "AIMANDALA_LLM_VISION_API_KEY",
+            "AIMANDALA_LLM_VISION_BASE_URL",
+            "AIMANDALA_LLM_VISION_MODEL",
+            "AIMANDALA_REDEEM_CODES",
+        ]
+        if not os.getenv(name)
+    ]
+    ready = not missing_required
+    return {
+        "status": "env_check",
+        "ready": ready,
+        "planned_run_count": len(planned_runs),
+        "env": env_status,
+        "missing_required": missing_required,
+        "notes": [
+            "Only set/missing status is reported; secret values are never printed.",
+            "AIMANDALA_LLM_BASE_URL and AIMANDALA_LLM_MODEL have DeepSeek v4 defaults if omitted.",
+            "Vision variables are required for real image regression.",
+        ],
+    }
 
 
 def resolve_repo_path(raw_path: str) -> Path:

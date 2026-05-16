@@ -47,3 +47,50 @@ def test_build_agent_input_uses_wealth_theme():
     assert agent_input.user_context.theme == "wealth"
     assert agent_input.user_context.theme_label == "财富议题"
     assert agent_input.circle_boundaries["inner_radius"] == 35
+
+
+def test_build_env_check_payload_reports_missing_required_fields(monkeypatch):
+    runner = _load_runner_module()
+    monkeypatch.delenv("AIMANDALA_ENV_FILE", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_CHAT_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_REDEEM_CODES", raising=False)
+
+    payload = runner.build_env_check_payload(planned_runs=[])
+
+    assert payload["status"] == "env_check"
+    assert payload["ready"] is False
+    assert "AIMANDALA_REDEEM_CODES" in payload["missing_required"]
+
+
+def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_path):
+    runner = _load_runner_module()
+    env_file = tmp_path / "aimandala.local.env"
+    env_file.write_text(
+        "\n".join(
+            [
+                "AIMANDALA_LLM_API_KEY=file-key",
+                "AIMANDALA_LLM_VISION_API_KEY=file-vision-key",
+                "AIMANDALA_LLM_VISION_BASE_URL=https://vision.example.test",
+                "AIMANDALA_LLM_VISION_MODEL=vision-model",
+                "AIMANDALA_REDEEM_CODES=CODE-LITE:lite",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("AIMANDALA_ENV_FILE", str(env_file))
+    monkeypatch.delenv("AIMANDALA_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_REDEEM_CODES", raising=False)
+
+    payload = runner.build_env_check_payload(planned_runs=[{"case_id": "wealth-case-001"}])
+
+    assert payload["ready"] is True
+    assert payload["planned_run_count"] == 1
