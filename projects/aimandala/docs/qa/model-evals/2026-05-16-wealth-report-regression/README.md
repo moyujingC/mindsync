@@ -127,3 +127,43 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 
 - 真实执行需要先配置视觉模型和文字模型环境变量。
 - 如果模型不可用，runner 会在对应 `lite/` 或 `pro/` 目录写入 `run_error.json`。
+
+## 8. 当前前置条件
+
+当前 shell 未配置财富报告所需的真实模型环境变量，因此直接运行会返回结构化失败。
+
+已验证的失败形态：
+
+```json
+{
+  "status": "complete",
+  "results": [
+    {
+      "case_id": "wealth-case-001",
+      "mode": "lite",
+      "status": "failed",
+      "error": "vision_model_failed: empty or invalid stage-03 payload"
+    }
+  ]
+}
+```
+
+这说明 batch runner 本身可用，接下来只差真实模型配置或可用的视觉 fallback。
+
+### 8.1 需要补齐的环境变量
+
+- `AIMANDALA_LLM_BACKEND`
+- `AIMANDALA_LLM_BASE_URL`
+- `AIMANDALA_LLM_API_KEY`
+- `AIMANDALA_LLM_MODEL`
+- `AIMANDALA_LLM_CHAT_MODEL`
+- `AIMANDALA_LLM_VISION_MODEL`
+- `AIMANDALA_LLM_TIMEOUT_SECONDS`
+- `AIMANDALA_LLM_MAX_RETRIES`
+
+### 8.2 当前结论
+
+- 批量回归框架已就位。
+- 5 个 case 的路径和输出目录已就位。
+- 缺少真实模型配置时，失败是可读的、可记录的。
+- 下一步需要补真实模型环境，才能产出 Lite / Pro 回归样例。
