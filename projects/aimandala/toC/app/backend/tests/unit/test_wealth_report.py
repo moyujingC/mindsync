@@ -12,9 +12,15 @@ def test_native_wealth_topic_context_uses_domain_name():
     assert topic_context["orientation"]["key_terms"][0]["term"] == "金钱关系"
 
 
-def test_report_blueprint_accepts_wealth_theme_name():
-    from app.core.pipeline.report_blueprints import LITE_TITLE_TEMPLATES
+def test_native_wealth_runtime_routes_visual_observations():
+    route = get_wealth_report_runtime().route_visual_observations(
+        {
+            "outer_circle": "外圈红色很多，也有明显留白",
+            "middle_circle": "中圈有断裂和拉扯",
+            "inner_circle": "内圈收缩",
+        },
+        report_mode="lite",
+    )
 
-    assert "wealth" in LITE_TITLE_TEMPLATES
-    assert LITE_TITLE_TEMPLATES["wealth"] == "财富里的稳住者"
-    assert "wealth_career" not in LITE_TITLE_TEMPLATES
+    assert route.selected_clause_ids
+    assert route.selected_module_ids
