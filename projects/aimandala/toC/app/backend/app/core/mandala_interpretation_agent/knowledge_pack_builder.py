@@ -1,4 +1,4 @@
-"""Build a compact knowledge pack for the mandala interpretation agent."""
+"""Build a compact knowledge pack from the healing knowledge base."""
 
 from __future__ import annotations
 
@@ -9,18 +9,19 @@ from typing import Any
 
 BACKEND_ROOT = Path(__file__).resolve().parents[3]
 AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
+HEALING_KB_ROOT = AIMANDALA_ROOT / "docs" / "sources" / "疗愈体系知识库"
 METHOD_SOURCE = (
-    AIMANDALA_ROOT
-    / "docs"
-    / "sources"
-    / "知识库构建"
-    / "三圈五行流派解读方法与步骤.md"
+    HEALING_KB_ROOT
+    / "20-疗愈体系"
+    / "20-流派层"
+    / "10-曼陀罗"
+    / "00-画面信号映射审核与结构化计划.md"
 )
-KNOWLEDGE_PACK_ROOT = AIMANDALA_ROOT / "toC" / "data" / "knowledge" / "packs" / "v2.2"
+KNOWLEDGE_PACK_ROOT = HEALING_KB_ROOT
 
 
 class KnowledgePackBuilder:
-    """Create a small task-scoped knowledge pack without embedding full Markdown sources."""
+    """Create a task-scoped pack without depending on old runtime pack folders."""
 
     def __init__(self, *, pack_root: Path | None = None, method_source: Path | None = None) -> None:
         self.pack_root = pack_root or KNOWLEDGE_PACK_ROOT
@@ -29,19 +30,56 @@ class KnowledgePackBuilder:
     def build(self, *, theme: str = "general") -> dict[str, Any]:
         normalized_theme = theme.strip() or "general"
         return {
-            "pack_id": "mandala-interpretation-agent-v1-compact",
+            "pack_id": "mandala-interpretation-agent-compact",
             "method_source": self._relative_or_string(self.method_source),
-            "runtime_pack_root": self._relative_or_string(self.pack_root),
+            "knowledge_base_root": self._relative_or_string(self.pack_root),
             "theme": normalized_theme,
             "entries": {
-                "circles": self._read_yaml_text("circles/three_circles.yaml", max_chars=3600),
-                "five_elements": self._read_yaml_text("elements/five_elements.yaml", max_chars=2600),
-                "color_meanings": self._read_yaml_text("elements/color_meanings.yaml", max_chars=3000),
-                "direct_judgments": self._read_yaml_text("rules/direct_judgments.yaml", max_chars=2800),
-                "imbalance_types": self._read_yaml_text("rules/imbalance_types.yaml", max_chars=2800),
-                "theme": self._read_yaml_text(f"themes/{normalized_theme}.yaml", max_chars=2400),
-                "healing": self._read_yaml_text(f"healing/{normalized_theme}.yaml", max_chars=2200),
-                "narrative": self._read_yaml_text(f"narrative/{normalized_theme}.yaml", max_chars=2200),
+                "report_generation": self._read_text(
+                    "50-结构化知识单元/10-aimandala-report-generation.yaml",
+                    max_chars=4200,
+                ),
+                "runtime_index": self._read_text(
+                    "60-运行时知识包/20-aimandala-report-runtime-index.yaml",
+                    max_chars=2600,
+                ),
+                "mandala_signal_index": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/01-画面信号总目录.md",
+                    max_chars=2600,
+                ),
+                "circle_structure": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/01-三圈结构法.md",
+                    max_chars=3600,
+                ),
+                "visual_analysis": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/02-画面分析基础.md",
+                    max_chars=3600,
+                ),
+                "shape_sensing": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/03-形状感知法.md",
+                    max_chars=3000,
+                ),
+                "color_sensing": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/04-颜色感知法.md",
+                    max_chars=3200,
+                ),
+                "direct_judgment": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/11-直断法解读.md",
+                    max_chars=3000,
+                ),
+                "combination_patterns": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/12-高频组合模式.md",
+                    max_chars=3200,
+                ),
+                "five_element_sensing": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/20-五行/01-五行感知法.md",
+                    max_chars=3200,
+                ),
+                "five_element_relations": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/20-五行/02-五行相生相克解读法.md",
+                    max_chars=3200,
+                ),
+                "theme": self._theme_entry(normalized_theme),
             },
             "forbidden_inputs": [
                 "full_markdown_truth_sources",
@@ -53,7 +91,36 @@ class KnowledgePackBuilder:
             ],
         }
 
-    def _read_yaml_text(self, relative_path: str, *, max_chars: int) -> dict[str, Any]:
+    def _theme_entry(self, theme: str) -> dict[str, Any]:
+        if theme != "wealth":
+            return self._read_text(
+                "20-疗愈体系/10-议题层/02-个人成长与自我价值议题解读.md",
+                max_chars=2600,
+            )
+        return {
+            "wealth_framework": self._read_text(
+                "20-疗愈体系/10-议题层/01-财富议题体系框架.md",
+                max_chars=3200,
+            ),
+            "wealth_handbook": self._read_text(
+                "20-疗愈体系/10-议题层/11-财富议题手册.md",
+                max_chars=4200,
+            ),
+            "wealth_report_template": self._read_text(
+                "30-应用适配/10-aimandala/06-财富议题解读报告模板.md",
+                max_chars=3600,
+            ),
+            "wealth_clauses": self._read_text(
+                "50-结构化知识单元/20-wealth-issue-clauses.yaml",
+                max_chars=4200,
+            ),
+            "wealth_routing": self._read_text(
+                "50-结构化知识单元/40-wealth-report-routing.yaml",
+                max_chars=4200,
+            ),
+        }
+
+    def _read_text(self, relative_path: str, *, max_chars: int) -> dict[str, Any]:
         path = self.pack_root / relative_path
         if not path.exists():
             return {"path": relative_path, "status": "missing", "text": ""}
