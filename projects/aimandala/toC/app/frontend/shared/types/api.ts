@@ -328,11 +328,3 @@ export type ReportDebugProfileResponse = Record<string, unknown> & {
 export type KnowledgeBuildSummaryResponse = Record<string, unknown>;
 
 export type KnowledgeFixturePreviewResponse = Record<string, unknown>;
-
-export interface WechatPayRequestPaymentArgs {
-  timeStamp?: string;
-  nonceStr?: string;
-  package?: string;
-  signType?: string;
-  paySign?: string;
-}

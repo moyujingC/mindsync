@@ -103,19 +103,12 @@ frontend/
 
 当前共享层优先围绕这些后端接口建立：
 
-- `POST /api/v2/detect-circles`
-- `POST /api/v2/interpretations`
-- `GET /api/v2/interpretations/{interpretation_id}`
-- `GET /api/v2/interpretations/{interpretation_id}/status`
-- `GET /api/v2/interpretations/{interpretation_id}/report`
-- `POST /api/v2/interpretations/{interpretation_id}/upgrade`
-- `GET /api/v2/users/{user_id}/interpretations`
-- `GET /api/v2/pricing`
+- `POST /api/wealth-reports`
 
 当前明确不在这一批里做：
 
-- 上传、登录、支付、分享等平台强依赖能力的共享化
-- 小程序原生宿主与支付 live 运行时
+- 上传、登录、支付、分享、历史等平台强依赖能力的共享化
+- 小程序原生宿主登录与支付 live 运行时
 - 任何会提高当前 Web 主线部署复杂度的渠道配置
 
 ## 当前渠道落位

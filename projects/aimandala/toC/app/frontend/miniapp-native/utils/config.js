@@ -37,9 +37,6 @@ function persistRuntimeConfig(config) {
 function resolveRuntimeConfig(query) {
   const stored = readStoredConfig();
   const resolved = {
-    apiBaseUrl: normalizeValue(
-      (query && query.apiBaseUrl) || stored.apiBaseUrl,
-    ),
     runtimeBaseUrl: normalizeValue(
       (query && query.runtimeBaseUrl) || stored.runtimeBaseUrl,
     ),
@@ -48,7 +45,7 @@ function resolveRuntimeConfig(query) {
     ),
   };
 
-  if (resolved.apiBaseUrl || resolved.runtimeBaseUrl) {
+  if (resolved.runtimeBaseUrl) {
     persistRuntimeConfig(resolved);
   }
 
@@ -56,7 +53,7 @@ function resolveRuntimeConfig(query) {
 }
 
 function isRuntimeConfigReady(config) {
-  return Boolean(config && config.apiBaseUrl && config.runtimeBaseUrl);
+  return Boolean(config && config.runtimeBaseUrl);
 }
 
 module.exports = {
