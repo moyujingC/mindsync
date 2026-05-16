@@ -116,3 +116,38 @@ def test_build_env_check_payload_requires_any_vision_route(monkeypatch):
     assert payload["ready"] is False
     assert payload["vision_ready"] is False
     assert "AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*" in payload["missing_required"]
+
+
+def test_regression_env_example_exists():
+    runner = _load_runner_module()
+    env_example = Path(runner.BACKEND_ROOT) / ".env.regression.example"
+
+    assert env_example.exists()
+
+
+def test_env_file_argument_overrides_environment(monkeypatch, tmp_path):
+    runner = _load_runner_module()
+    env_file = tmp_path / "override.env"
+    env_file.write_text(
+        "\n".join(
+            [
+                "AIMANDALA_LLM_API_KEY=override-key",
+                "AIMANDALA_LLM_VISION_API_KEY=override-vision-key",
+                "AIMANDALA_LLM_VISION_BASE_URL=https://vision.override.test",
+                "AIMANDALA_LLM_VISION_MODEL=override-model",
+                "AIMANDALA_REDEEM_CODES=CODE-LITE:lite",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("AIMANDALA_ENV_FILE", "ignored.env")
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "shell-key")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "shell-vision-key")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_BASE_URL", "https://shell.example.test")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "shell-model")
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "shell-code")
+
+    monkeypatch.setenv("AIMANDALA_ENV_FILE", str(env_file))
+    payload = runner.build_env_check_payload(planned_runs=[])
+
+    assert payload["ready"] is True

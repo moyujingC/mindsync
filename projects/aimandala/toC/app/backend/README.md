@@ -110,6 +110,7 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
 
 私有环境文件使用普通 `KEY=VALUE` 格式。已经在 shell 里设置的变量优先级更高，不会被文件覆盖。
 视觉模型可以走主配置 `AIMANDALA_LLM_VISION_*`，也可以走 fallback 配置 `AIMANDALA_LLM_VISION_FALLBACK_*`。
+本地做财富回归时，可以直接复制 `.env.regression.example` 生成私有文件。
 
 ## 兑换码配置
 

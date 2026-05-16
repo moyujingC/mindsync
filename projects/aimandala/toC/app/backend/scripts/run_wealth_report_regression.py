@@ -81,7 +81,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--env-file",
         default="",
-        help="Private env file to load before checking or running regression.",
+        help="Private env file to load before checking or running regression; overrides AIMANDALA_ENV_FILE.",
     )
     return parser
 
