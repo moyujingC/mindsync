@@ -25,12 +25,23 @@ task_definition:
     - 理解入口
     - 状态命名工具
     - 主题连接工具
+    - 主题翻译工具
+    - 报告分流工具
   report_is_not:
     - 连续训练
     - 长周期改变方案
     - 主题方案完整设计
     - 21天定制方案完整设计
     - 医疗、心理或财务承诺
+    - 产品架构主分层工具
+
+product_layers:
+  main_layers:
+    - 入口产品
+    - 解读产品
+    - 主题转化产品
+    - 长期陪伴产品
+  report_layer_note: Lite / Pro 只属于解读产品内部的深度分流，不作为产品架构主分层。
 
 user_segments:
   primary:
@@ -163,6 +174,12 @@ generation_rules:
       - 财富
       - 个人成长与自我价值
     fallback: 主题不在稳定入口内时，使用通用报告结构，不硬套财富话术。
+    wealth_translation_chain:
+      - 画面信号
+      - 状态含义
+      - 财富议题翻译
+      - 报告段落
+    wealth_emergent_issue_rule: 关系、情绪、家庭、身体等浮现议题必须先翻译回财富机制，只作为背景解释，不单独展开成另一份报告。
 
 handoff:
   report_to_theme_plan:
