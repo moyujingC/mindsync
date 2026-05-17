@@ -1,9 +1,9 @@
 # 一镜一梳 To C MVP 技术方案
 
 > 状态：current
-> 版本：0.1.1
+> 版本：0.2.0
 > owner：Architect
-> last_updated：2026-04-07
+> last_updated：2026-05-17
 > source_of_truth：projects/aimandala/docs/architecture/ToC-MVP-技术方案.md
 > 项目：aimandala
 > 阶段：architecture
@@ -12,249 +12,188 @@
 
 ## 1. 目标
 
-为 `AI-Mandala / 一镜一梳` 当前 To C MVP 提供一个足够清晰、可迁移、可继续演进的最小技术结构。
+这份方案用于描述 `一镜一梳` 当前 To C MVP 的正式技术边界。
 
-这份技术方案重点回答三件事：
+它重点回答三件事：
 
-1. `V2` 生产主线在 `mindsync` 中如何收束。
-2. To C 前后端在新工作区里的边界如何定义。
-3. 多渠道前端如何共享业务逻辑而不共享整套 UI。
+1. 当前 To C 主代码在 `projects/aimandala/toC/` 里怎么组织。
+2. 现有主链和新报告链如何并存，而不互相污染。
+3. 多端前端如何共享业务内核，但保持各自宿主壳。
 
-## 2. MVP 结构边界
+## 2. 当前范围
 
-当前 To C MVP 只需要支持：
+当前 To C MVP 仍围绕这几条用户主路径组织：
 
-1. 用户上传图片并提交必要描述
-2. 人工确认三圈边界
-3. `一镜 Lite 版` 生成
-4. `一梳 Pro 版` 生成
-5. 报告读取与历史查看
+1. 用户上传图片并填写必要输入
+2. 三圈识别与必要的人工确认
+3. Lite 报告生成与查看
+4. Pro 报告生成与查看
+5. 历史记录查看
 
-本轮仍不包含：
+当前默认不承接：
 
-- To B / Studio 工作台
-- `V3` 实验线
-- 内部知识库工具
-- 完整部署收口与云端运维体系
+1. To B / Studio 工作台
+2. `V3` 实验 API
+3. 内部知识库工具台
+4. 报告追问能力的正式产品化接入
 
-## 3. 总体模块划分
+## 3. 当前目录与子系统边界
 
-当前建议把 To C 主线拆成三层：
-
-1. `toC/app/backend/`
-   - `V2` API 与服务主线
-2. `toC/app/frontend/`
-   - 用户端前端入口
-3. `toC/domain/`
-   - 随迁移逐步沉淀的项目级领域边界说明
-
-其中前端进一步区分为：
-
-1. `frontend/shared/`
-   - 共享前端内核
-2. `frontend/mobile-web/`
-   - 当前唯一正式用户端入口
-3. `frontend/miniapp/`
-   - 未来渠道
-4. `frontend/native-app/`
-   - 未来渠道
-
-## 4. 后端主链路
-
-当前后端继续以 `V2` 为正式主线。
-
-推荐的内部主链路如下：
-
-1. `upload`
-   - 接收图片、主题和用户描述
-2. `circle-confirm`
-   - 用户人工确认三圈边界，生成几何参数
-3. `lite pipeline`
-   - 生成 Layer 0、Layer 1、Layer 2
-4. `pro generation`
-   - 在当前应用流程中承接进入 `一梳 Pro 版` 后的较重解读生成
-5. `report retrieval`
-   - 返回 `一镜 Lite 版` / `一梳 Pro 版` 报告与历史记录
-
-## 5. 数据模型边界
-
-当前 To C MVP 继续沿用旧主线中最重要的五层数据模型：
-
-1. `Layer 0`
-   - 原始分析数据
-   - 颜色分布
-   - 三圈结构
-   - 失衡候选
-2. `Layer 1`
-   - `一镜 Lite 版` 草稿
-3. `Layer 2`
-   - `一镜 Lite 版` 终稿
-4. `Layer 3`
-   - `一梳 Pro 版` 增量内容
-5. `Layer 4`
-   - `一梳 Pro 版` 终稿
-
-这套分层仍有价值，因为它直接支撑：
-
-- 两种解读层级之间的数据复用
-- 历史记录保存
-- 报告一致性验证
-- 后续 QA 分层定位问题
-
-## 6. API 边界
-
-当前正式 API 以 `V2` 为准，To C 主路径优先依赖：
-
-1. `POST /api/v2/interpretations`
-2. `POST /api/v2/interpretations/{interpretation_id}/upgrade`
-3. `GET /api/v2/interpretations/{interpretation_id}/report`
-4. `GET /api/v2/users/{user_id}/interpretations`
-
-辅助能力：
-
-1. `POST /api/v2/detect-circles`
-2. `GET /api/v2/pricing`
-
-当前价格口径：
-
-1. `一镜 Lite 版`：`9.9`
-2. `一梳 Pro 版`：`39`
-3. 优惠不通过动态改价处理，优先走优惠券 / 兑换码
-
-当前明确不纳入：
-
-1. `routes_v3`
-2. `knowledge_v3`
-3. To B 专用的 `therapist-notes` 作为首批主路径依赖
-
-## 7. 前端架构
-
-前端当前不应被设计成“一个 mobile-web 项目”，而应被设计成：
-
-- 一个共享前端内核
-- 多个用户端渠道实现
-
-### 7.1 共享层
-
-建议共享的只有三类内容：
-
-1. `shared/core`
-   - 流程状态机
-   - 业务状态
-   - 纯函数领域逻辑
-2. `shared/api`
-   - API service
-   - 请求适配
-   - 错误翻译
-3. `shared/types`
-   - 类型定义
-   - DTO 镜像
-   - 流程状态类型
-
-### 7.2 渠道层
-
-渠道层只负责：
-
-1. 页面组件
-2. 路由
-3. 平台 API
-4. 上传、支付、登录等平台适配
-
-当前渠道优先级：
-
-1. `mobile-web`
-2. `miniapp`
-3. `native-app`
-
-## 8. 当前迁移建议
-
-首批迁移时，建议按下面方式理解旧仓库落点：
-
-### 8.1 后端
-
-优先承接：
-
-1. `app/api/main.py`
-2. `app/api/routes_v2.py`
-3. `app/api/dependencies.py`
-4. `app/api/middleware.py`
-5. `app/api/rate_limiter.py`
-6. `app/core/pipeline/`
-7. `app/core/analysis/`
-8. `app/core/knowledge/`
-9. `app/core/healing/`
-10. `app/core/prompt/builder_v2.py`
-11. `app/core/safety/protocol.py`
-12. `app/infrastructure/repositories/`
-
-这些内容迁入后，应优先挂在 `toC/app/backend/` 语义下，而不是继续维持旧仓库的混合布局。
-
-### 8.2 前端
-
-旧仓库当前用户端前端主要在 `app/ui/`。
-
-但其中既包含：
-
-- 当前仍可复用的共享内核
-- 当前 mobile-web 入口
-- 历史设计壳、兼容代码和杂项说明
-
-因此迁移策略不应是整目录直接复制，而应先拆成：
-
-1. 哪些属于 `shared/core + api + types`
-2. 哪些属于 `mobile-web`
-3. 哪些属于暂不迁或应废弃的历史壳
-
-## 9. 目录建议
-
-当前建议的 To C 结构如下：
+当前 To C 正式代码目录是：
 
 ```text
 projects/aimandala/toC/
-  app/
-    backend/
-    frontend/
-      shared/
-        core/
-        api/
-        types/
-      mobile-web/
-      miniapp/
-      native-app/
-  domain/
-  tests/
-  data/
 ```
 
-当前阶段不要求一次建完全部空目录，但后续迁移时应按这套语义落位。
+当前主要分成三层：
 
-## 10. 阶段门
+1. `toC/app/backend/`
+   - FastAPI（后端 Web 框架）接口与后端运行时
+2. `toC/app/frontend/`
+   - 多端前端实现与共享前端内核
+3. `toC/domain/`
+   - 领域对象、知识包 schema（结构定义）和长期沉淀边界
 
-进入首批代码迁移前，至少要满足：
+配套数据与测试目录：
 
-1. To C MVP spec 已存在
-2. 当前迁移清单已确认
-3. `toC/app/backend` 与 `toC/app/frontend` 边界已明确
-4. 前端共享层与渠道层边界已明确
+1. `toC/data/`
+   - 当前知识包构建产物、candidate（候选版）与 build（构建结果）
+2. `toC/tests/`
+   - 项目级测试说明入口
 
-进入正式实现前，至少要满足：
+## 4. 后端当前结构
 
-1. 至少迁入一条完整的 `V2` 主链路
-2. 至少有一份 QA 清单
-3. 至少有一份可重复验证的样本路径
+后端当前不是一条“纯新链”或“纯旧链”，而是并存结构。
 
-## 11. 风险点
+当前主要模块包括：
 
-1. 旧仓库前端里共享逻辑和渠道逻辑仍有混写。
-2. 如果直接复制 `app/ui`，会把设计壳和正式逻辑一起带进来。
-3. 如果共享层边界不严格，小程序和 App 后续仍会复制 mobile-web 逻辑。
-4. 如果把 `V3` 或 To B 的能力一起迁入，会重新污染当前主线。
+1. `app/api/`
+   - 当前 API 入口
+2. `app/core/analysis/`
+   - 三圈识别与分析能力
+3. `app/core/llm/`
+   - 大模型运行时（LLM runtime，大语言模型运行层）
+4. `app/core/wealth_report/`
+   - 当前仍在使用的既有报告主链能力
+5. `app/core/mandala_interpretation_agent/`
+   - 新的曼陀罗解读智能体离线原型
+6. `app/core/uploads/`
+   - 上传存储相关能力
+7. `app/core/safety/`
+   - 安全协议与保护规则
 
-## 12. 当前建议
+当前正式理解应是：
 
-下一步优先做：
+- `wealth_report` 代表现有 API 主链仍依赖的报告实现
+- `mandala_interpretation_agent` 代表正在重建的新报告链
+- 两者暂时并存，新链先通过 fixture runner（样例运行器）和离线验证推进
 
-1. 为 To C 主路径补一份 QA 清单。
-2. 开始第一批代码迁移时，优先从 `V2` 后端主链路入手。
-3. 前端迁移时，优先先抽共享层，再承接 `mobile-web`。
-4. 如果未来要改“先上传再选版本 / 先选版本再上传”，需要作为新一轮产品决策单独确认。
+## 5. 报告生成链当前边界
+
+当前报告生成相关能力分成两层：
+
+### 5.1 现有产品主链
+
+- 仍在当前 API 与部分测试中承担默认行为
+- 代码入口主要仍在 `wealth_report` 和现有 API 路由
+
+### 5.2 新报告重建链
+
+- 代码入口在 `app/core/mandala_interpretation_agent/`
+- 当前已落地：
+  - 输入 / 输出合同
+  - 知识包构建器
+  - 16 个 `stage-*` 输出
+  - 5 个 execution block（执行块）trace
+  - `Report Context Package`（报告上下文包）
+  - 质量门
+  - fixture runner
+- 当前未完成：
+  - API 旁路 feature flag（功能开关）接入
+  - 线上默认替换
+  - 报告追问能力
+
+这部分详细架构看：
+
+- [解读智能层-曼陀罗解读智能体架构.md](./解读智能层-曼陀罗解读智能体架构.md)
+
+## 6. 前端当前结构
+
+前端当前已经按“共享内核 + 多宿主壳”组织，而不是单一 mobile-web 项目。
+
+当前目录包括：
+
+1. `frontend/shared/`
+   - 共享业务内核、API、类型、设计 token（设计变量）和共享 UI
+2. `frontend/mobile-web/`
+   - 当前默认正式 Web 用户端
+3. `frontend/miniapp/`
+   - 小程序跨端运行时与页面壳
+4. `frontend/miniapp-native/`
+   - 原生微信小程序宿主壳
+5. `frontend/native-app/`
+   - 预留原生 App 宿主入口
+
+共享层当前实际已存在：
+
+1. `shared/core/`
+   - 流程状态、报告结构、主题和展示逻辑
+2. `shared/api/`
+   - 请求配置、HTTP client（HTTP 客户端）和服务层
+3. `shared/types/`
+   - 类型与 API 合同镜像
+4. `shared/ui/`
+   - 跨端可复用页面部件
+5. `shared/design-system/`
+   - 设计 token 和设计系统导出
+
+## 7. 知识包与方法真值源边界
+
+当前知识源不再按“完整 Markdown 直接塞给模型”来组织。
+
+当前边界是：
+
+1. 方法真值源在 `docs/sources/知识库构建/`
+2. 运行时知识包在 `toC/data/knowledge/packs/`
+3. schema（结构定义）在 `toC/domain/knowledge/schemas/`
+4. build 产物在 `toC/data/knowledge/builds/`
+
+这意味着：
+
+- `sources/` 负责“方法和知识原文”
+- `packs/` 负责“运行时可消费的压缩知识包”
+- `schemas/` 负责“知识包合同”
+- `mandala_interpretation_agent` 和其他运行时只消费压缩后的结构化知识，不直接把全部 Markdown 当 prompt（提示词）正文
+
+## 8. API 当前口径
+
+当前正式 API 仍以现有 `app/api/routes.py` 为入口，不应在架构文档里写成已经完成 `v2/v3` 重切。
+
+当前更准确的理解是：
+
+1. API 主链仍服务现有 To C MVP 上传、识别、报告和历史流程
+2. `mandala_interpretation_agent` 先以离线脚本和 QA 样本方式验证
+3. 等 API 旁路 feature flag 接入完成后，再让新链进入后端正式运行时
+
+## 9. 当前演进方向
+
+当前 To C MVP 的主要演进方向有三条：
+
+1. 报告生成从 legacy chain（旧链）渐进切到 `mandala_interpretation_agent`
+2. 前端继续保持 shared-friendly（对共享层友好）的多宿主结构
+3. 知识源继续从文档真值源压缩到 schema 化知识包，而不是回到手写 prompt 拼接时代
+
+## 10. 当前最重要的判断口径
+
+如果你现在要判断某个改动放哪里，可以先按下面规则：
+
+1. 用户端页面、路由、样式、跨端 UI
+   - 看 `frontend/`
+2. 当前 API、上传、识别、现有报告主链
+   - 看 `backend/app/api`、`analysis`、`wealth_report`
+3. 新报告生成链与中间交付物
+   - 看 `backend/app/core/mandala_interpretation_agent`
+4. 方法真值源、知识原文和主题资料
+   - 看 `docs/sources/知识库构建/`
+5. 运行时知识包、schema 和 build
+   - 看 `toC/data/knowledge/` 与 `toC/domain/knowledge/`
