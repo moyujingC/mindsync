@@ -422,7 +422,7 @@ node shared/tools/ci/diagnose-paperclip-server-automation-materialization.mjs \
 1. 运行时写脏
    - 典型信号：
      - 主镜像区出现业务文件被改写
-     - `knowledge/builds/current/*` 这类受版本管理的编译产物被改写或删除
+     - 受版本管理的正式资产被改写或删除
      - heartbeat strict gate 同时报出 `execution_workspace_policy_not_materialized`
    - 处理口径：
      - 先保留现场
@@ -453,7 +453,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 确认不再有“只存在于服务器、尚未入库”的必要内容
 2. 如果仍有受版本管理文件被删除或改写
    - 先判断它是正式资产还是运行时垃圾
-   - 像 `toC/data/knowledge/builds/current/index.json` 这类正式编译产物，应先恢复到仓库基线，再继续排查为什么会被执行链写脏
+   - 若出现正式资产被改写或删除，应先恢复到仓库基线，再继续排查为什么会被执行链写脏
 3. 只有在“服务器现场已完成回收、本地权威仓库已有对应内容”之后
    - 才允许做 checkout 收敛
    - 否则 maintenance 的 fail-fast 应继续保留

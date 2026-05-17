@@ -54,9 +54,7 @@ projects/aimandala/toC/
 
 配套数据与测试目录：
 
-1. `toC/data/`
-   - 当前知识包构建产物、candidate（候选版）与 build（构建结果）
-2. `toC/tests/`
+1. `toC/tests/`
    - 项目级测试说明入口
 
 ## 4. 后端当前结构
@@ -145,21 +143,21 @@ projects/aimandala/toC/
 5. `shared/design-system/`
    - 设计 token 和设计系统导出
 
-## 7. 知识包与方法真值源边界
+## 7. 知识库与方法真值源边界
 
-当前知识源不再按“完整 Markdown 直接塞给模型”来组织。
+当前知识源以新版疗愈体系知识库为准，由后端按任务构建精简知识包。
 
 当前边界是：
 
-1. 方法真值源在 `docs/sources/知识库构建/`
-2. 运行时知识包在 `toC/data/knowledge/packs/`
-3. build 产物在 `toC/data/knowledge/builds/`
+1. 方法与议题真值源在 `docs/sources/疗愈体系知识库/`
+2. 后端任务级知识包由 `app/core/mandala_interpretation_agent/knowledge_pack_builder.py` 读取新版知识库生成
+3. 旧 `v2.1 / v2.2` 运行时知识包和旧 build 产物已废弃
 
 这意味着：
 
-- `sources/` 负责“方法和知识原文”
-- `packs/` 负责“运行时可消费的压缩知识包”
-- `mandala_interpretation_agent` 和其他运行时只消费压缩后的结构化知识，不直接把全部 Markdown 当 prompt（提示词）正文
+- `docs/sources/疗愈体系知识库/` 负责当前方法、议题和报告模板真值源
+- `mandala_interpretation_agent` 按报告任务读取必要片段，不再依赖旧 `v2.1 / v2.2` pack
+- 如果后续需要新的结构化运行时知识资产，应按新版知识库重新设计目录和合同
 
 ## 8. API 当前口径
 
@@ -190,6 +188,6 @@ projects/aimandala/toC/
 3. 新报告生成链与中间交付物
    - 看 `backend/app/core/mandala_interpretation_agent`
 4. 方法真值源、知识原文和主题资料
+   - 看 `docs/sources/疗愈体系知识库/`
+5. 历史知识库构建资料
    - 看 `docs/sources/知识库构建/`
-5. 运行时知识包和 build
-   - 看 `toC/data/knowledge/`
