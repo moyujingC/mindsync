@@ -210,6 +210,7 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
     assert "不得把某一圈的五行与另一圈的五行做因果" in report_prompt
     assert "不是给整圈判定五行" in report_prompt
     assert "不要写“内圈属水”" in report_prompt
+    assert "财富核心解读段不要出现木火土金水" in report_prompt
     assert "不能写成确定根因" in report_prompt
     assert "浮现议题回译" in report_prompt
 
@@ -409,6 +410,33 @@ def test_mandala_agent_quality_gate_rejects_whole_circle_element_label(tmp_path)
 
     assert quality["passed"] is False
     assert "cross_circle_five_element_relation_leak" in quality["failure_ids"]
+
+
+def test_mandala_agent_quality_gate_rejects_methods_leak_into_wealth_core(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = (
+        "# 财富议题曼陀罗解读报告\n\n"
+        "## 五行感知\n"
+        "五行元素里，颜色和形状都需要逐个拆看。\n\n"
+        "## 财富核心解读\n"
+        "这里错误地把木火土金水又写进了财富主轴，所以应该失败。"
+        + "画面依据与财富解读。" * 80
+    )
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "wealth_core_method_leak" in quality["failure_ids"]
 
 
 def test_mandala_agent_quality_gate_rejects_deterministic_family_cause(tmp_path):

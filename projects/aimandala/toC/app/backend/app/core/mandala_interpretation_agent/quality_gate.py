@@ -90,6 +90,32 @@ DETERMINISTIC_CAUSE_TERMS = [
     "说明你原生家庭",
 ]
 
+WEALTH_CORE_FORBIDDEN_METHOD_TERMS = [
+    "五行",
+    "生克",
+    "元素",
+    "木性",
+    "火性",
+    "土性",
+    "金性",
+    "水性",
+    "属木",
+    "属火",
+    "属土",
+    "属金",
+    "属水",
+    "木生火",
+    "火生土",
+    "土生金",
+    "金生水",
+    "水生木",
+    "木克土",
+    "土克水",
+    "水克火",
+    "火克金",
+    "金克木",
+]
+
 RELATION_WORDS = [
     "拉扯",
     "互相",
@@ -193,6 +219,10 @@ def run_quality_gate(
     ):
         failure_ids.append("missing_visible_five_element_analysis")
 
+    wealth_core_method_terms = _wealth_core_method_terms(final_report_md)
+    if wealth_core_method_terms:
+        failure_ids.append("wealth_core_method_leak")
+
     required_context_fields = [
         "report_id",
         "report_mode",
@@ -233,6 +263,7 @@ def run_quality_gate(
             "leaked_terms": leaked_terms,
             "method_boundary_terms": method_boundary_terms,
             "deterministic_cause_terms": deterministic_cause_terms,
+            "wealth_core_method_terms": wealth_core_method_terms,
             "report_shape_issues": report_shape_issues,
             "missing_context_fields": missing_context_fields,
             "missing_visual_units": missing_visual_units,
@@ -353,3 +384,19 @@ def _has_visible_five_element_analysis(final_report_md: str) -> bool:
     ) and any(
         term in final_report_md for term in FIVE_ELEMENT_TERMS
     )
+
+
+def _wealth_core_method_terms(final_report_md: str) -> list[str]:
+    lines = final_report_md.splitlines()
+    captured: list[str] = []
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if not stripped.startswith("## 财富核心"):
+            continue
+        block = " ".join(lines[index : index + 4])
+        if any(term in block for term in WEALTH_CORE_FORBIDDEN_METHOD_TERMS) or re.search(
+            r"木[、,， ]*火[、,， ]*土[、,， ]*金[、,， ]*水",
+            block,
+        ):
+            captured.append(block[:120])
+    return captured
