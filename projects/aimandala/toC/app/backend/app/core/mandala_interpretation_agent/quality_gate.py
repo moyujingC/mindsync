@@ -23,9 +23,40 @@ FORBIDDEN_FINANCIAL_PROMISE_TERMS = [
     "收益预测",
 ]
 
+FORBIDDEN_METHOD_BOUNDARY_PATTERNS = [
+    "内圈木生中圈火",
+    "内圈火生中圈土",
+    "内圈土生中圈金",
+    "内圈金生中圈水",
+    "内圈水生中圈木",
+    "中圈木生外圈火",
+    "中圈火生外圈土",
+    "中圈土生外圈金",
+    "中圈金生外圈水",
+    "中圈水生外圈木",
+    "内圈木克中圈土",
+    "内圈土克中圈水",
+    "内圈水克中圈火",
+    "内圈火克中圈金",
+    "内圈金克中圈木",
+    "中圈木克外圈土",
+    "中圈土克外圈水",
+    "中圈水克外圈火",
+    "中圈火克外圈金",
+    "中圈金克外圈木",
+]
+
 BOUNDARY_TERMS = [
     "投资建议",
     "心理诊断",
+]
+
+DETERMINISTIC_CAUSE_TERMS = [
+    "很可能与早期家庭",
+    "源于早期家庭",
+    "来自原生家庭",
+    "是因为你的父母",
+    "说明你原生家庭",
 ]
 
 FIVE_ELEMENT_TERMS = [
@@ -98,6 +129,18 @@ def run_quality_gate(
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
 
+    method_boundary_terms = [
+        term for term in FORBIDDEN_METHOD_BOUNDARY_PATTERNS if term in final_report_md
+    ]
+    if method_boundary_terms:
+        failure_ids.append("cross_circle_five_element_relation_leak")
+
+    deterministic_cause_terms = [
+        term for term in DETERMINISTIC_CAUSE_TERMS if term in final_report_md
+    ]
+    if deterministic_cause_terms:
+        failure_ids.append("deterministic_cause_claim")
+
     if (
         not allow_seeded_short_report
         and final_report_md.strip()
@@ -143,6 +186,8 @@ def run_quality_gate(
             "actual_blocks": actual_blocks,
             "expected_blocks": expected_blocks,
             "leaked_terms": leaked_terms,
+            "method_boundary_terms": method_boundary_terms,
+            "deterministic_cause_terms": deterministic_cause_terms,
             "report_shape_issues": report_shape_issues,
             "missing_context_fields": missing_context_fields,
             "missing_visual_units": missing_visual_units,
