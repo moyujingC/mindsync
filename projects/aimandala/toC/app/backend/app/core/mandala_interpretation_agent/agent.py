@@ -13,6 +13,38 @@ from .knowledge_pack_builder import knowledge_pack_to_prompt_fragment
 from .quality_gate import GENERIC_OPENING_PHRASES, run_quality_gate
 
 
+ELEMENT_LABELS = {
+    "wood": "木",
+    "fire": "火",
+    "earth": "土",
+    "metal": "金",
+    "water": "水",
+}
+
+ELEMENT_RULES = {
+    "wood": {
+        "terms": ["绿", "青", "长条", "竖线", "枝", "叶"],
+        "hint": "木性指向生长、向上、边界和行动力。",
+    },
+    "fire": {
+        "terms": ["红", "粉", "橙", "紫", "玫", "三角", "尖", "星"],
+        "hint": "火性指向热情、表达、焦急和动力消耗。",
+    },
+    "earth": {
+        "terms": ["黄", "咖", "棕", "褐", "方", "正方", "块"],
+        "hint": "土性指向承载、稳定、现实感和责任压力。",
+    },
+    "metal": {
+        "terms": ["白", "留白", "灰", "银", "小圆", "半圆", "边界"],
+        "hint": "金性指向规则、收敛、标准、边界和价值感。",
+    },
+    "water": {
+        "terms": ["蓝", "黑", "水", "波浪", "流线", "弧线"],
+        "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。",
+    },
+}
+
+
 class MandalaInterpretationAgent:
     """Generate mandala interpretation artifacts through a single agent path."""
 
@@ -160,6 +192,7 @@ class MandalaInterpretationAgent:
             for circle_key, circle in circles.items()
             if isinstance(circle, dict)
         }
+        five_element_profile = self._five_element_profile(per_circle)
         return {
             "stage-05-per-circle-color-shape-element-sensing": {
                 "stage": "stage-05-per-circle-color-shape-element-sensing",
@@ -172,8 +205,16 @@ class MandalaInterpretationAgent:
                 "theme": agent_input.user_context.theme,
                 "control_notes": [
                     "按当前画面证据和精简知识包推导，不新增画面事实。",
+                    "五行分析只限每一圈内部的颜色、形状和能量倾向。",
+                    "三圈联动不使用五行生克关系，只分析内圈、中圈、外圈之间的层级承接。",
                 ],
-                "per_circle": per_circle,
+                "scope": {
+                    "five_element_scope": "per_circle_only",
+                    "cross_circle_five_element_relations": "excluded",
+                    "report_rule": "报告必须展示每圈五行感知，但不得写成跨圈五行生克推断。",
+                },
+                "profile": five_element_profile,
+                "per_circle": five_element_profile["per_circle"],
             },
             "stage-07-per-circle-imbalance-patterns": {
                 "stage": "stage-07-per-circle-imbalance-patterns",
@@ -321,13 +362,18 @@ class MandalaInterpretationAgent:
             issues.append("title_must_be_markdown_h1_and_include_wealth_topic")
         if any(phrase in text[:300] for phrase in GENERIC_OPENING_PHRASES):
             issues.append("opening_must_not_use_generic_greeting")
+        if not self._has_visible_five_element_analysis(text):
+            issues.append("report_must_include_visible_five_element_analysis")
         min_chars = 1000 if report_mode == "pro" else 500
         if len(text) < min_chars:
             issues.append(f"report_too_short_min_{min_chars}_chars")
-        max_chars = 2400 if report_mode == "pro" else 1400
+        max_chars = 2400 if report_mode == "pro" else 1600
         if len(text) > max_chars:
             issues.append(f"report_too_long_max_{max_chars}_chars")
         return issues
+
+    def _has_visible_five_element_analysis(self, text: str) -> bool:
+        return "五行" in text and any(label in text for label in ELEMENT_LABELS.values())
 
     def _normalize_stage03(self, payload: dict[str, Any]) -> dict[str, Any]:
         circles = self._normalize_circles(payload.get("circles"))
@@ -602,6 +648,8 @@ class MandalaInterpretationAgent:
             },
             "writing_inputs": {
                 "visual": stage_outputs["stage-03-visual-evidence"],
+                "circle_interpretation": stage_outputs["stage-05-per-circle-color-shape-element-sensing"],
+                "five_element": stage_outputs["stage-06-per-circle-element-generation-control"],
                 "core_thesis": stage_outputs["stage-10-core-thesis-selection"],
                 "framing": stage_outputs["stage-11-user-facing-framing"],
                 "healing": stage_outputs["stage-12-healing-direction-and-report-branching"],
@@ -615,6 +663,9 @@ class MandalaInterpretationAgent:
             "不得输出财务预测、收益预测、投资建议或心理诊断。"
             "不要用“好的”“这是为你生成的报告”“亲爱的朋友”等寒暄式开头。"
             "标题必须明确包含“财富议题”。"
+            "报告必须显性呈现五行分析过程，至少写出一处具体元素（金、木、水、火、土）及其画面依据。"
+            "五行分析只限于单圈内部的颜色、形状和能量倾向。"
+            "三圈联动只能写内圈本源层、中圈情绪层、外圈现实层之间的承接关系，不能写跨圈五行生克。"
             f"{report_structure}\n\n"
             f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
         )
@@ -622,22 +673,24 @@ class MandalaInterpretationAgent:
     def _report_structure_instruction(self, report_mode: str) -> str:
         if report_mode == "pro":
             return (
-                "Pro 版结构固定为 6 段："
+                "Pro 版结构固定为 7 段："
                 "1. 标题；"
                 "2. 画面证据总览，至少写 3 条可见画面依据；"
-                "3. 财富核心主轴，用一句话说明金钱、价值、资源或交换机制；"
-                "4. 三圈分层解读，分别连接内圈、中圈、外圈到财富议题；"
-                "5. 浮现议题回译，把情绪、关系、家庭、身体或事业线索拉回财富主线；"
-                "6. 低风险行动建议，给 2 到 3 个可执行觉察动作。"
-                "总长度控制在 1200 到 1800 个中文字符。"
+                "3. 各圈五行感知，分别写内圈、中圈、外圈的五行信号和依据；"
+                "4. 财富核心主轴，用一句话说明金钱、价值、资源或交换机制；"
+                "5. 三圈分层解读，分别连接内圈、中圈、外圈到财富议题，但不要使用五行生克；"
+                "6. 浮现议题回译，把情绪、关系、家庭、身体或事业线索拉回财富主线；"
+                "7. 低风险行动建议，给 2 到 3 个可执行觉察动作。"
+                "总长度控制在 1300 到 2000 个中文字符。"
             )
         return (
-            "Lite 版结构固定为 4 段："
+            "Lite 版结构固定为 5 段："
             "1. 标题；"
             "2. 画面证据速写，至少写 2 条可见画面依据；"
-            "3. 财富核心解读，用一句话说明主要财富卡点或优势；"
-            "4. 一个温和行动建议。"
-            "总长度控制在 500 到 1200 个中文字符。"
+            "3. 五行感知，用 1 段说明最明显的单圈五行信号和画面依据；"
+            "4. 财富核心解读，用一句话说明主要财富卡点或优势；"
+            "5. 一个温和行动建议。"
+            "总长度控制在 600 到 1300 个中文字符。"
         )
 
     def _build_theme_route(
@@ -741,6 +794,109 @@ class MandalaInterpretationAgent:
                 if value and value not in values:
                     values.append(value)
         return values
+
+    def _five_element_profile(self, per_circle: dict[str, Any]) -> dict[str, Any]:
+        circle_profiles: dict[str, Any] = {}
+        element_counts: dict[str, int] = {element: 0 for element in ELEMENT_LABELS}
+        for circle_key, circle_payload in per_circle.items():
+            evidence_terms = [
+                str(circle_payload.get("visual_summary") or ""),
+                *[str(value) for value in circle_payload.get("dominant_colors", [])],
+                *[str(value) for value in circle_payload.get("dominant_shapes", [])],
+            ]
+            matches = self._match_elements(evidence_terms)
+            for element_key, score in matches.items():
+                element_counts[element_key] += score
+            primary = self._primary_element(matches)
+            circle_profiles[circle_key] = {
+                "circle": circle_key,
+                "primary_element": primary,
+                "primary_element_label": ELEMENT_LABELS.get(primary, "待确认") if primary else "待确认",
+                "matched_elements": [
+                    {
+                        "element": element_key,
+                        "label": ELEMENT_LABELS[element_key],
+                        "score": score,
+                        "hint": ELEMENT_RULES[element_key]["hint"],
+                    }
+                    for element_key, score in sorted(
+                        matches.items(),
+                        key=lambda item: item[1],
+                        reverse=True,
+                    )
+                    if score > 0
+                ],
+                "evidence": {
+                    "colors": circle_payload.get("dominant_colors", []),
+                    "shapes": circle_payload.get("dominant_shapes", []),
+                    "summary": circle_payload.get("visual_summary", ""),
+                },
+                "interpretation_hint": self._element_circle_hint(circle_key, primary),
+                "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。",
+            }
+        dominant_elements = [
+            {
+                "element": element_key,
+                "label": ELEMENT_LABELS[element_key],
+                "score": score,
+            }
+            for element_key, score in sorted(
+                element_counts.items(),
+                key=lambda item: item[1],
+                reverse=True,
+            )
+            if score > 0
+        ]
+        return {
+            "scope": "per_circle_only",
+            "per_circle": circle_profiles,
+            "dominant_elements": dominant_elements,
+            "report_language": self._five_element_report_language(circle_profiles),
+            "cross_circle_rule": "三圈联动分析使用圈层结构，不使用五行生克。",
+        }
+
+    def _match_elements(self, evidence_terms: list[str]) -> dict[str, int]:
+        text = "；".join(term for term in evidence_terms if term).lower()
+        matches: dict[str, int] = {}
+        for element_key, rule in ELEMENT_RULES.items():
+            score = sum(1 for term in rule["terms"] if term.lower() in text)
+            if score:
+                matches[element_key] = score
+        return matches
+
+    def _primary_element(self, matches: dict[str, int]) -> str:
+        if not matches:
+            return ""
+        return max(matches.items(), key=lambda item: item[1])[0]
+
+    def _element_circle_hint(self, circle_key: str, element_key: str) -> str:
+        if not element_key:
+            return "当前圈层的五行信号不足，报告只能保留为待确认线索。"
+        circle_names = {
+            "inner": "内圈本源层",
+            "middle": "中圈情绪层",
+            "outer": "外圈现实层",
+        }
+        layer_hint = {
+            "inner": "用于观察内在底色、自我价值和深层安全感。",
+            "middle": "用于观察情绪流动、人际牵引和关系中的能量消耗。",
+            "outer": "用于观察现实行动、边界、资源交换和外部承接方式。",
+        }
+        return (
+            f"{circle_names.get(circle_key, circle_key)}呈现{ELEMENT_LABELS[element_key]}性，"
+            f"{ELEMENT_RULES[element_key]['hint']}{layer_hint.get(circle_key, '')}"
+        )
+
+    def _five_element_report_language(self, circle_profiles: dict[str, Any]) -> list[str]:
+        lines = []
+        for circle_key in ["inner", "middle", "outer"]:
+            profile = circle_profiles.get(circle_key)
+            if not isinstance(profile, dict):
+                continue
+            hint = str(profile.get("interpretation_hint") or "").strip()
+            if hint:
+                lines.append(hint)
+        return lines
 
     def _knowledge_refs_for_circle(
         self,

@@ -28,6 +28,14 @@ BOUNDARY_TERMS = [
     "心理诊断",
 ]
 
+FIVE_ELEMENT_TERMS = [
+    "木",
+    "火",
+    "土",
+    "金",
+    "水",
+]
+
 GENERIC_OPENING_PHRASES = [
     "好的",
     "你好",
@@ -89,6 +97,13 @@ def run_quality_gate(
     leaked_terms.extend(_unsafe_boundary_terms(final_report_md))
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
+
+    if (
+        not allow_seeded_short_report
+        and final_report_md.strip()
+        and not _has_visible_five_element_analysis(final_report_md)
+    ):
+        failure_ids.append("missing_visible_five_element_analysis")
 
     required_context_fields = [
         "report_id",
@@ -197,7 +212,13 @@ def _report_shape_issues(final_report_md: str, *, report_mode: str) -> list[str]
     min_chars = 1000 if report_mode == "pro" else 500
     if len(text) < min_chars:
         issues.append(f"too_short_min_{min_chars}")
-    max_chars = 2400 if report_mode == "pro" else 1400
+    max_chars = 2400 if report_mode == "pro" else 1600
     if len(text) > max_chars:
         issues.append(f"too_long_max_{max_chars}")
     return issues
+
+
+def _has_visible_five_element_analysis(final_report_md: str) -> bool:
+    return "五行" in final_report_md and any(
+        term in final_report_md for term in FIVE_ELEMENT_TERMS
+    )

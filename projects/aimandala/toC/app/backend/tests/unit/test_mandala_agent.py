@@ -89,6 +89,9 @@ class StubMandalaLLMClient:
             "## 画面证据速写\n"
             "内圈蓝色圆形呈现出收束感，中圈粉色花瓣带来情绪拉扯，外圈白色边界显示现实层面的留白与谨慎。"
             "这些画面依据共同指向一个财富主题：你并不是没有资源，而是在资源进入现实交换前，会先确认自己是否安全、是否能接住。\n\n"
+            "## 五行感知\n"
+            "五行只看单圈内部信号：内圈蓝色圆形偏水，指向深层感受和安全感；中圈粉色花瓣偏弱火，显示情绪表达有热度但也容易消耗；"
+            "外圈白色边界偏金，说明现实层面有收敛、标准和边界意识。这里不做跨圈五行生克，只把每圈的元素当作画面语言。\n\n"
             "## 财富核心解读\n"
             "这份画面更像是在说，财富流动的关键不是立刻扩大规模，而是先让内在价值、情绪承接和外部边界之间形成更稳定的通道。"
             "当内圈足够稳定，中圈的拉扯被看见，外圈的边界就可以从封闭变成选择性的打开。\n\n"
@@ -144,6 +147,12 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert result.agent_input["user_context"]["theme"] == "wealth"
     assert result.knowledge_pack["theme"] == "wealth"
     assert result.stage_outputs["stage-06-per-circle-element-generation-control"]["theme"] == "wealth"
+    stage06 = result.stage_outputs["stage-06-per-circle-element-generation-control"]
+    assert stage06["scope"]["five_element_scope"] == "per_circle_only"
+    assert stage06["scope"]["cross_circle_five_element_relations"] == "excluded"
+    assert stage06["per_circle"]["inner"]["primary_element_label"] == "水"
+    assert stage06["per_circle"]["middle"]["primary_element_label"] == "火"
+    assert stage06["per_circle"]["outer"]["primary_element_label"] == "金"
     assert result.stage_outputs["stage-12-healing-direction-and-report-branching"]["report_mode"] == "lite"
     theme_route = result.stage_outputs["stage-12-healing-direction-and-report-branching"]["theme_route"]
     assert theme_route["theme"] == "wealth"
@@ -158,6 +167,7 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
         llm_client.text_calls[-1]["user_prompt"].split("\n\n", 1)[1]
     )
     assert report_prompt_payload["writing_inputs"]["theme_route"]["selected_clause_ids"]
+    assert report_prompt_payload["writing_inputs"]["five_element"]["scope"]["five_element_scope"] == "per_circle_only"
 
 
 def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
@@ -189,9 +199,11 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
 
     report_prompt = llm_client.text_calls[-1]["user_prompt"]
 
-    assert "Pro 版结构固定为 6 段" in report_prompt
+    assert "Pro 版结构固定为 7 段" in report_prompt
     assert "标题必须明确包含“财富议题”" in report_prompt
     assert "不要用“好的”" in report_prompt
+    assert "各圈五行感知" in report_prompt
+    assert "不能写跨圈五行生克" in report_prompt
     assert "浮现议题回译" in report_prompt
 
 
@@ -273,6 +285,26 @@ def test_mandala_agent_quality_gate_rejects_short_report_shape(tmp_path):
     assert "invalid_final_report_shape" in quality["failure_ids"]
 
 
+def test_mandala_agent_quality_gate_rejects_report_without_five_element_analysis(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = "# 财富议题曼陀罗解读报告\n\n" + "画面依据与财富解读。" * 80
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "missing_visible_five_element_analysis" in quality["failure_ids"]
+
+
 def test_mandala_agent_quality_gate_rejects_non_h1_title(tmp_path):
     llm_client = StubMandalaLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
@@ -320,7 +352,7 @@ def test_mandala_agent_quality_gate_rejects_overlong_lite_report(tmp_path):
         agent_input=_agent_input(tmp_path),
         knowledge_pack=knowledge_pack,
     )
-    report = "# 财富议题曼陀罗解读报告\n\n" + "画面依据与财富解读。" * 140
+    report = "# 财富议题曼陀罗解读报告\n\n## 五行感知\n五行中的水与金是当前画面依据。\n\n" + "画面依据与财富解读。" * 160
 
     quality = run_quality_gate(
         stage_outputs=result.stage_outputs,
@@ -330,7 +362,7 @@ def test_mandala_agent_quality_gate_rejects_overlong_lite_report(tmp_path):
     )
 
     assert quality["passed"] is False
-    assert "too_long_max_1400" in quality["details"]["report_shape_issues"]
+    assert "too_long_max_1600" in quality["details"]["report_shape_issues"]
 
 
 def test_mandala_agent_quality_gate_allows_boundary_disclaimer(tmp_path):
