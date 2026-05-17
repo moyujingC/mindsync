@@ -51,8 +51,6 @@ projects/aimandala/toC/
    - FastAPI（后端 Web 框架）接口与后端运行时
 2. `toC/app/frontend/`
    - 多端前端实现与共享前端内核
-3. `toC/domain/`
-   - 领域对象、知识包 schema（结构定义）和长期沉淀边界
 
 配套数据与测试目录：
 
@@ -155,14 +153,12 @@ projects/aimandala/toC/
 
 1. 方法真值源在 `docs/sources/知识库构建/`
 2. 运行时知识包在 `toC/data/knowledge/packs/`
-3. schema（结构定义）在 `toC/domain/knowledge/schemas/`
-4. build 产物在 `toC/data/knowledge/builds/`
+3. build 产物在 `toC/data/knowledge/builds/`
 
 这意味着：
 
 - `sources/` 负责“方法和知识原文”
 - `packs/` 负责“运行时可消费的压缩知识包”
-- `schemas/` 负责“知识包合同”
 - `mandala_interpretation_agent` 和其他运行时只消费压缩后的结构化知识，不直接把全部 Markdown 当 prompt（提示词）正文
 
 ## 8. API 当前口径
@@ -195,5 +191,5 @@ projects/aimandala/toC/
    - 看 `backend/app/core/mandala_interpretation_agent`
 4. 方法真值源、知识原文和主题资料
    - 看 `docs/sources/知识库构建/`
-5. 运行时知识包、schema 和 build
-   - 看 `toC/data/knowledge/` 与 `toC/domain/knowledge/`
+5. 运行时知识包和 build
+   - 看 `toC/data/knowledge/`
