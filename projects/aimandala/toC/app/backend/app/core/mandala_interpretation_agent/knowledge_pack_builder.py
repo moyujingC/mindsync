@@ -63,10 +63,6 @@ class KnowledgePackBuilder:
                     "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/04-颜色感知法.md",
                     max_chars=3200,
                 ),
-                "direct_judgment": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/11-直断法解读.md",
-                    max_chars=3000,
-                ),
                 "combination_patterns": self._read_text(
                     "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/12-高频组合模式.md",
                     max_chars=3200,
