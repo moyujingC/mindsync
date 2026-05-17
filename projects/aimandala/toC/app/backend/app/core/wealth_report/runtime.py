@@ -10,6 +10,63 @@ from typing import Any
 import yaml
 
 
+SEMANTIC_ROUTE_RULES: dict[str, list[list[list[str]]]] = {
+    "outer_red_or_fire_excess": [
+        [["外圈", "外围", "边缘", "outer"], ["红", "火", "热", "橙"]]
+    ],
+    "weak_fire_many": [
+        [["弱火", "火弱", "淡红", "粉色", "粉红", "浅红", "玫红"]]
+    ],
+    "metal_excess": [
+        [["金多", "金性"]],
+        [["白色", "留白", "空白", "浅色", "灰色"], ["多", "明显", "大片", "大量", "主要", "边界"]],
+    ],
+    "weak_or_fragmented_earth": [
+        [["土弱", "土零散", "不成片"]],
+        [["黄色", "棕色", "咖色", "褐色", "土"], ["零散", "分散", "碎", "不成片", "断开"]],
+    ],
+    "water_fire_conflict": [
+        [["水火", "水火相冲", "冲突"]],
+        [["蓝色", "水"], ["红色", "粉色", "火"], ["冲突", "拉扯", "对比", "交错"]],
+    ],
+    "rootless_wood": [
+        [["木无根", "无根"]],
+        [["绿色", "叶子", "枝条", "木"], ["漂", "无根", "断开", "缺少根基"]],
+    ],
+    "fragmented_white_or_metal_cut": [
+        [["白色", "留白", "浅色", "金"], ["割裂", "截断", "分割", "分隔", "切开"]],
+    ],
+    "outer_world_closed_or_blank": [
+        [["外圈", "外围", "边缘", "outer"], ["留白", "空白", "浅色", "浅色背景", "未填满", "表达弱", "单一"]],
+    ],
+    "inner_contracted_outer_strong": [
+        [["内圈", "里圈", "inner"], ["收缩", "紧凑", "集中"], ["外圈", "外围", "边缘", "outer"]],
+    ],
+    "middle_tangled_relationship_pull": [
+        [["中圈", "中间", "middle"], ["缠绕", "拉扯", "断裂", "卷曲", "打结", "交错"]],
+    ],
+    "outer_boundary_broken": [
+        [["外圈", "外围", "边缘", "边界", "outer"], ["缺口", "破损", "断裂", "漏空", "不完整"]],
+    ],
+    "outer_boundary_thick_closed": [
+        [["外圈", "外围", "边缘", "边界", "outer"], ["边界", "边框", "边界线"], ["闭合", "完整", "厚重", "框定", "保护"]],
+    ],
+    "fragmented_dots_scattered_energy": [
+        [["碎点", "小点", "点缀", "零散"]],
+        [["能量", "方向", "目标", "颜色", "图案"], ["分散", "零散", "散", "杂乱"]],
+    ],
+    "center_clear_outer_weak": [
+        [["中心", "内圈", "inner"], ["清晰", "稳定", "聚焦", "焦点"], ["外圈", "外围", "边缘", "outer"], ["留白", "空白", "浅色", "弱", "单一", "简单"]],
+    ],
+    "heavy_overfilled_composition": [
+        [["厚重", "过满", "填满", "压迫", "密集", "拥挤", "负担"]],
+    ],
+    "color_blocks_split": [
+        [["色块", "颜色", "区域", "图案"], ["分割", "分区", "分隔", "交替", "对比"]],
+    ],
+}
+
+
 @dataclass(frozen=True)
 class WealthRouteMatch:
     """Selected wealth report routing result for one visual input."""
@@ -196,6 +253,8 @@ class WealthReportRuntime:
 
         signal_id = str(route.get("signal_id") or "")
         label = str(route.get("label") or "")
+        if self._semantic_route_matches_observation(signal_id, observation_text):
+            return True
         haystack = f"{signal_id} {label}"
         keywords = {
             "outer_red_or_fire_excess": ("外圈", "红", "火", "热"),
@@ -214,12 +273,51 @@ class WealthReportRuntime:
                 )
         return bool(label and label in observation_text)
 
+    def _semantic_route_matches_observation(
+        self,
+        signal_id: str,
+        observation_text: str,
+    ) -> bool:
+        normalized_text = self._normalize_observation_text(observation_text)
+        for rule_key, alternatives in SEMANTIC_ROUTE_RULES.items():
+            if rule_key not in signal_id:
+                continue
+            return any(
+                all(
+                    any(term in normalized_text for term in term_group)
+                    for term_group in alternative
+                )
+                for alternative in alternatives
+            )
+        return False
+
+    def _normalize_observation_text(self, text: str) -> str:
+        replacements = {
+            "inner_circle": "内圈",
+            "inner": "内圈",
+            "里圈": "内圈",
+            "中心区域": "内圈",
+            "middle_circle": "中圈",
+            "middle": "中圈",
+            "中间层": "中圈",
+            "中间区域": "中圈",
+            "outer_circle": "外圈",
+            "outer": "外圈",
+            "外围": "外圈",
+            "边缘": "外圈",
+        }
+        normalized = text
+        for source, target in replacements.items():
+            normalized = normalized.replace(source, target)
+        return normalized
+
     def _flatten_observations(self, observations: dict[str, Any]) -> str:
         parts: list[str] = []
 
         def collect(value: Any) -> None:
             if isinstance(value, dict):
-                for child in value.values():
+                for key, child in value.items():
+                    parts.append(str(key))
                     collect(child)
             elif isinstance(value, (list, tuple, set)):
                 for child in value:

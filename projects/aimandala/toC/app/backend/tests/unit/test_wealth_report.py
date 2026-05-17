@@ -41,3 +41,48 @@ def test_native_wealth_runtime_uses_yaml_match_keywords_for_expanded_routes():
     assert "visual.fragmented_dots_scattered_energy" in route.selected_signal_ids
     assert "wealth.exchange_boundary_imbalance" in route.selected_clause_ids
     assert "wealth.resource_leakage" in route.selected_clause_ids
+
+
+def test_native_wealth_runtime_routes_normalized_vision_model_language():
+    route = get_wealth_report_runtime().route_visual_observations(
+        {
+            "circles": {
+                "inner": {
+                    "summary": "中心星形图案清晰，结构紧凑，形成稳定的内核焦点。",
+                    "visual_units": [
+                        {
+                            "color": "棕色、黄色、蓝色",
+                            "shape": "星形、小花",
+                            "visible_evidence": "内圈结构紧凑，颜色对比鲜明。",
+                        }
+                    ],
+                },
+                "middle": {
+                    "summary": "中间区域有绿色和黄色花朵，叶子卷曲，粉色小点点缀，图案均匀分布。",
+                    "visual_units": [
+                        {
+                            "color": "绿色、黄色、紫色、粉色",
+                            "shape": "圆形、花朵、叶子、果实",
+                            "visible_evidence": "叶子卷曲，圆形区域重复出现。",
+                        }
+                    ],
+                },
+                "outer": {
+                    "summary": "外围由棕色十字形与浅色背景交替排列，形成清晰完整的边界线，起到框定和保护作用。",
+                    "visual_units": [
+                        {
+                            "color": "棕色、浅色",
+                            "shape": "十字形、几何图案",
+                            "visible_evidence": "浅色背景与几何图案交替，外部边界清晰。",
+                        }
+                    ],
+                },
+            }
+        },
+        report_mode="lite",
+    )
+
+    assert "visual.outer_world_closed_or_blank" in route.selected_signal_ids
+    assert "visual.outer_boundary_thick_closed" in route.selected_signal_ids
+    assert route.selected_clause_ids
+    assert route.selected_module_ids
