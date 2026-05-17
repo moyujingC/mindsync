@@ -52,10 +52,10 @@ projects/aimandala/toC/
 2. `toC/app/frontend/`
    - 多端前端实现与共享前端内核
 
-配套数据与测试目录：
+当前测试随各端实现目录放置：
 
-1. `toC/tests/`
-   - 项目级测试说明入口
+1. 后端测试在 `toC/app/backend/tests/`
+2. 前端测试在 `toC/app/frontend/` 各宿主与共享模块旁
 
 ## 4. 后端当前结构
 
