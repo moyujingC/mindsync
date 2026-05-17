@@ -44,6 +44,22 @@ ELEMENT_RULES = {
     },
 }
 
+GENERATES = {
+    "wood": "fire",
+    "fire": "earth",
+    "earth": "metal",
+    "metal": "water",
+    "water": "wood",
+}
+
+CONTROLS = {
+    "wood": "earth",
+    "earth": "water",
+    "water": "fire",
+    "fire": "metal",
+    "metal": "wood",
+}
+
 
 class MandalaInterpretationAgent:
     """Generate mandala interpretation artifacts through a single agent path."""
@@ -187,6 +203,7 @@ class MandalaInterpretationAgent:
                 "visual_summary": circle.get("summary", ""),
                 "dominant_colors": self._collect_values(circle, "color"),
                 "dominant_shapes": self._collect_values(circle, "shape"),
+                "visual_units": list(circle.get("visual_units", [])) if isinstance(circle.get("visual_units"), list) else [],
                 "knowledge_refs": self._knowledge_refs_for_circle(circle_key, knowledge_pack),
             }
             for circle_key, circle in circles.items()
@@ -205,13 +222,16 @@ class MandalaInterpretationAgent:
                 "theme": agent_input.user_context.theme,
                 "control_notes": [
                     "按当前画面证据和精简知识包推导，不新增画面事实。",
-                    "五行分析只限每一圈内部的颜色、形状和能量倾向。",
+                    "五行分析只识别每圈内部的视觉元素属性，不给整圈贴单一五行标签。",
+                    "五行生克只在同一圈内部的元素之间判断。",
                     "三圈联动不使用五行生克关系，只分析内圈、中圈、外圈之间的层级承接。",
                 ],
                 "scope": {
-                    "five_element_scope": "per_circle_only",
+                    "five_element_scope": "intra_circle_visual_elements",
+                    "circle_primary_element_labeling": "excluded",
+                    "intra_circle_element_relations": "allowed",
                     "cross_circle_five_element_relations": "excluded",
-                    "report_rule": "报告必须展示每圈五行感知，但不得写成跨圈五行生克推断。",
+                    "report_rule": "报告必须展示圈内元素五行和同圈生克候选，不得把一个圈简化成单一五行。",
                 },
                 "profile": five_element_profile,
                 "per_circle": five_element_profile["per_circle"],
@@ -663,10 +683,14 @@ class MandalaInterpretationAgent:
             "不得输出财务预测、收益预测、投资建议或心理诊断。"
             "不要用“好的”“这是为你生成的报告”“亲爱的朋友”等寒暄式开头。"
             "标题必须明确包含“财富议题”。"
-            "报告必须显性呈现五行分析过程，至少写出一处具体元素（金、木、水、火、土）及其画面依据。"
-            "五行分析只限于单圈内部的颜色、形状和能量倾向。"
+            "报告必须显性呈现五行分析过程，至少写出两个圈内视觉元素（金、木、水、火、土）及其画面依据。"
+            "五行分析不是给整圈判定五行，而是分析某一圈内部颜色、形状、面积、相邻元素分别对应的五行。"
+            "同一圈内部的元素之间可以分析五行生克，但必须说明是圈内元素关系候选。"
+            "五行感知段优先写“某个元素/某个颜色/某个形状对应什么五行”，不要先写“某一圈属什么”。"
+            "写作顺序优先先写元素，再写圈层，再写圈内关系候选。"
             "三圈联动只能写内圈本源层、中圈情绪层、外圈现实层之间的承接关系，不能写跨圈五行生克。"
             "财富核心解读和三圈分层解读不得把某一圈的五行与另一圈的五行做因果、拉扯、互相影响或能量通道解释。"
+            "不要写“内圈属水”“中圈属木”“外圈呈现土性”这类整圈五行标签。"
             "提及家庭、关系、身体或事业等浮现议题时，只能写成可观察线索或待验证假设，不能写成确定根因。"
             f"{report_structure}\n\n"
             f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
@@ -678,7 +702,7 @@ class MandalaInterpretationAgent:
                 "Pro 版结构固定为 7 段："
                 "1. 标题；"
                 "2. 画面证据总览，至少写 3 条可见画面依据；"
-                "3. 各圈五行感知，分别写内圈、中圈、外圈的五行信号和依据；"
+                "3. 圈内元素五行感知，分别写内圈、中圈、外圈内部有哪些元素信号及同圈生克候选；"
                 "4. 财富核心主轴，用一句话说明金钱、价值、资源或交换机制；"
                 "5. 三圈分层解读，分别连接内圈、中圈、外圈到财富议题，但不要使用五行生克；"
                 "6. 浮现议题回译，把情绪、关系、家庭、身体或事业线索拉回财富主线；"
@@ -689,7 +713,7 @@ class MandalaInterpretationAgent:
             "Lite 版结构固定为 5 段："
             "1. 标题；"
             "2. 画面证据速写，至少写 2 条可见画面依据；"
-            "3. 五行感知，用 1 段说明最明显的单圈五行信号和画面依据；"
+            "3. 五行感知，用 1 段说明最明显的圈内元素五行和同圈关系候选；"
             "4. 财富核心解读，用一句话说明主要财富卡点或优势；"
             "5. 一个温和行动建议。"
             "总长度控制在 600 到 1300 个中文字符。"
@@ -801,40 +825,32 @@ class MandalaInterpretationAgent:
         circle_profiles: dict[str, Any] = {}
         element_counts: dict[str, int] = {element: 0 for element in ELEMENT_LABELS}
         for circle_key, circle_payload in per_circle.items():
-            evidence_terms = [
-                str(circle_payload.get("visual_summary") or ""),
-                *[str(value) for value in circle_payload.get("dominant_colors", [])],
-                *[str(value) for value in circle_payload.get("dominant_shapes", [])],
-            ]
-            matches = self._match_elements(evidence_terms)
-            for element_key, score in matches.items():
-                element_counts[element_key] += score
-            primary = self._primary_element(matches)
+            element_signals = self._element_signals_for_circle(circle_key, circle_payload)
+            present_elements = []
+            for signal in element_signals:
+                element_key = str(signal.get("element") or "")
+                if element_key in ELEMENT_LABELS and element_key not in present_elements:
+                    present_elements.append(element_key)
+                    element_counts[element_key] += 1
             circle_profiles[circle_key] = {
                 "circle": circle_key,
-                "primary_element": primary,
-                "primary_element_label": ELEMENT_LABELS.get(primary, "待确认") if primary else "待确认",
-                "matched_elements": [
-                    {
-                        "element": element_key,
-                        "label": ELEMENT_LABELS[element_key],
-                        "score": score,
-                        "hint": ELEMENT_RULES[element_key]["hint"],
-                    }
-                    for element_key, score in sorted(
-                        matches.items(),
-                        key=lambda item: item[1],
-                        reverse=True,
-                    )
-                    if score > 0
+                "element_signals": element_signals,
+                "present_elements": [
+                    {"element": element_key, "label": ELEMENT_LABELS[element_key]}
+                    for element_key in present_elements
                 ],
+                "intra_circle_relations": self._intra_circle_relations(present_elements),
                 "evidence": {
                     "colors": circle_payload.get("dominant_colors", []),
                     "shapes": circle_payload.get("dominant_shapes", []),
                     "summary": circle_payload.get("visual_summary", ""),
                 },
-                "interpretation_hint": self._element_circle_hint(circle_key, primary),
-                "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。",
+                "interpretation_hint": self._element_circle_hint(
+                    circle_key,
+                    element_signals,
+                    present_elements,
+                ),
+                "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。",
             }
         dominant_elements = [
             {
@@ -850,43 +866,112 @@ class MandalaInterpretationAgent:
             if score > 0
         ]
         return {
-            "scope": "per_circle_only",
+            "scope": "intra_circle_visual_elements",
             "per_circle": circle_profiles,
             "dominant_elements": dominant_elements,
             "report_language": self._five_element_report_language(circle_profiles),
+            "intra_circle_rule": "五行生克只用于同一圈内部已经识别出的视觉元素之间。",
             "cross_circle_rule": "三圈联动分析使用圈层结构，不使用五行生克。",
         }
 
-    def _match_elements(self, evidence_terms: list[str]) -> dict[str, int]:
-        text = "；".join(term for term in evidence_terms if term).lower()
-        matches: dict[str, int] = {}
+    def _element_signals_for_circle(
+        self,
+        circle_key: str,
+        circle_payload: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        signals: list[dict[str, Any]] = []
+        for unit in circle_payload.get("visual_units", []):
+            if not isinstance(unit, dict):
+                continue
+            unit_id = str(unit.get("id") or f"{circle_key}-unit").strip()
+            source_values = [
+                ("color", str(unit.get("color") or "")),
+                ("shape", str(unit.get("shape") or "")),
+                ("evidence", str(unit.get("visible_evidence") or "")),
+            ]
+            for source_type, value in source_values:
+                for element_key in self._elements_for_text(value):
+                    signal = {
+                        "unit_id": unit_id,
+                        "element": element_key,
+                        "label": ELEMENT_LABELS[element_key],
+                        "source_type": source_type,
+                        "evidence": value,
+                        "hint": ELEMENT_RULES[element_key]["hint"],
+                    }
+                    if signal not in signals:
+                        signals.append(signal)
+        if not signals:
+            summary = str(circle_payload.get("visual_summary") or "")
+            for element_key in self._elements_for_text(summary):
+                signal = {
+                    "unit_id": f"{circle_key}-summary",
+                    "element": element_key,
+                    "label": ELEMENT_LABELS[element_key],
+                    "source_type": "summary",
+                    "evidence": summary,
+                    "hint": ELEMENT_RULES[element_key]["hint"],
+                }
+                if signal not in signals:
+                    signals.append(signal)
+        return signals
+
+    def _elements_for_text(self, text: str) -> list[str]:
+        normalized = text.lower()
+        matches: list[str] = []
         for element_key, rule in ELEMENT_RULES.items():
-            score = sum(1 for term in rule["terms"] if term.lower() in text)
-            if score:
-                matches[element_key] = score
+            if any(term.lower() in normalized for term in rule["terms"]):
+                matches.append(element_key)
         return matches
 
-    def _primary_element(self, matches: dict[str, int]) -> str:
-        if not matches:
-            return ""
-        return max(matches.items(), key=lambda item: item[1])[0]
+    def _intra_circle_relations(self, elements: list[str]) -> list[dict[str, Any]]:
+        relations: list[dict[str, Any]] = []
+        present = set(elements)
+        for source, target in GENERATES.items():
+            if source in present and target in present:
+                relations.append(
+                    {
+                        "type": "generate",
+                        "label": f"{ELEMENT_LABELS[source]}生{ELEMENT_LABELS[target]}",
+                        "source_element": source,
+                        "target_element": target,
+                        "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。",
+                    }
+                )
+        for source, target in CONTROLS.items():
+            if source in present and target in present:
+                relations.append(
+                    {
+                        "type": "control",
+                        "label": f"{ELEMENT_LABELS[source]}克{ELEMENT_LABELS[target]}",
+                        "source_element": source,
+                        "target_element": target,
+                        "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。",
+                    }
+                )
+        return relations
 
-    def _element_circle_hint(self, circle_key: str, element_key: str) -> str:
-        if not element_key:
+    def _element_circle_hint(
+        self,
+        circle_key: str,
+        element_signals: list[dict[str, Any]],
+        present_elements: list[str],
+    ) -> str:
+        if not element_signals:
             return "当前圈层的五行信号不足，报告只能保留为待确认线索。"
         circle_names = {
             "inner": "内圈本源层",
             "middle": "中圈情绪层",
             "outer": "外圈现实层",
         }
-        layer_hint = {
-            "inner": "用于观察内在底色、自我价值和深层安全感。",
-            "middle": "用于观察情绪流动、人际牵引和关系中的能量消耗。",
-            "outer": "用于观察现实行动、边界、资源交换和外部承接方式。",
-        }
+        labels = "、".join(ELEMENT_LABELS[element] for element in present_elements)
+        relation_labels = "、".join(
+            relation["label"] for relation in self._intra_circle_relations(present_elements)
+        )
+        relation_text = f"；同圈关系候选包括{relation_labels}" if relation_labels else ""
         return (
-            f"{circle_names.get(circle_key, circle_key)}呈现{ELEMENT_LABELS[element_key]}性，"
-            f"{ELEMENT_RULES[element_key]['hint']}{layer_hint.get(circle_key, '')}"
+            f"{circle_names.get(circle_key, circle_key)}内识别到{labels}等元素信号，"
+            f"需按圈内元素组合与相邻关系解读{relation_text}。"
         )
 
     def _five_element_report_language(self, circle_profiles: dict[str, Any]) -> list[str]:

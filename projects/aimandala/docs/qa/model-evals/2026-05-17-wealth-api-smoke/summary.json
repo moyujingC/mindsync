@@ -1,20 +1,20 @@
 {
   "status": "complete",
-  "duration_seconds": 56.58,
+  "duration_seconds": 51.54,
   "upload": {
     "storage_backend": "local",
-    "storage_key": "886d9c5d3a1642bd980e69e2f3873577.jpeg",
+    "storage_key": "c5915265d528487fa0a1e356f320879f.jpeg",
     "size_bytes": 3026573,
     "image_path_exists": true
   },
   "reports": [
     {
       "mode": "lite",
-      "duration_seconds": 56.56,
-      "report_id": "mandala-interpretation-5e11a3f7c9cc",
+      "duration_seconds": 51.51,
+      "report_id": "mandala-interpretation-d37a88f791d7",
       "quality_gate_passed": true,
       "selected_clause_count": 2,
-      "final_report_chars": 625,
+      "final_report_chars": 722,
       "output_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-17-wealth-api-smoke/lite",
       "attempt_trace": [
         {

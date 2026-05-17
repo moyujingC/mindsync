@@ -25,6 +25,36 @@ FORBIDDEN_FINANCIAL_PROMISE_TERMS = [
 ]
 
 FORBIDDEN_METHOD_BOUNDARY_PATTERNS = [
+    "内圈属木",
+    "内圈属火",
+    "内圈属土",
+    "内圈属金",
+    "内圈属水",
+    "中圈属木",
+    "中圈属火",
+    "中圈属土",
+    "中圈属金",
+    "中圈属水",
+    "外圈属木",
+    "外圈属火",
+    "外圈属土",
+    "外圈属金",
+    "外圈属水",
+    "内圈呈现木性",
+    "内圈呈现火性",
+    "内圈呈现土性",
+    "内圈呈现金性",
+    "内圈呈现水性",
+    "中圈呈现木性",
+    "中圈呈现火性",
+    "中圈呈现土性",
+    "中圈呈现金性",
+    "中圈呈现水性",
+    "外圈呈现木性",
+    "外圈呈现火性",
+    "外圈呈现土性",
+    "外圈呈现金性",
+    "外圈呈现水性",
     "内圈木生中圈火",
     "内圈火生中圈土",
     "内圈土生中圈金",
@@ -318,6 +348,8 @@ def _report_shape_issues(final_report_md: str, *, report_mode: str) -> list[str]
 
 
 def _has_visible_five_element_analysis(final_report_md: str) -> bool:
-    return "五行" in final_report_md and any(
+    return "五行" in final_report_md and (
+        "元素" in final_report_md or "颜色" in final_report_md or "形状" in final_report_md
+    ) and any(
         term in final_report_md for term in FIVE_ELEMENT_TERMS
     )

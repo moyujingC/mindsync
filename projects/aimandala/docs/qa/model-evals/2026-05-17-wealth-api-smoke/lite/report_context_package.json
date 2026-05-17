@@ -1,5 +1,5 @@
 {
-  "report_id": "mandala-interpretation-5e11a3f7c9cc",
+  "report_id": "mandala-interpretation-d37a88f791d7",
   "report_mode": "lite",
   "user_context": {
     "theme": "wealth",
@@ -10,95 +10,97 @@
   "visual_observation": {
     "stage": "stage-03-visual-evidence",
     "status": "complete",
-    "global_visual_summary": "这幅曼陀罗画作以对称的圆形结构为中心，包含五个主要的蓝色圆圈，每个圆圈内绘有绿色和黄色的花卉图案。中心区域是一个复杂的金色星形图案，周围环绕着蓝色的小花。整体色彩明亮，使用了蓝、绿、黄、紫等颜色，呈现出一种和谐而富有生机的视觉效果。",
+    "global_visual_summary": "这幅曼陀罗画作以对称的圆形结构为中心，包含五个主要的圆形区域，每个区域内都绘有绿色和黄色的花卉图案。中心区域是一个由棕色、蓝色和黄色组成的复杂星形图案，周围环绕着蓝色的小花。整体色调明亮，使用了大量绿色、黄色、蓝色和紫色，呈现出一种和谐而富有生机的视觉效果。",
     "circles": {
       "inner": {
-        "summary": "中心区域是一个金色的星形图案，内部嵌有蓝色和黄色的几何元素，周围环绕着四个蓝色的小花，形成一个稳定的核心结构。",
+        "summary": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
         "visual_units": [
           {
             "id": "inner-001",
             "position": "inner",
-            "color": "金色、蓝色、黄色",
-            "shape": "['星形', '几何图形', '小花']",
-            "visible_evidence": "中心区域是一个金色的星形图案，内部嵌有蓝色和黄色的几何元素，周围环绕着四个蓝色的小花，形成一个稳定的核心结构。"
+            "color": "棕色、黄色、蓝色",
+            "shape": "['星形', '几何形状']",
+            "visible_evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。"
           }
         ],
         "raw_observation": {
-          "description": "中心区域是一个金色的星形图案，内部嵌有蓝色和黄色的几何元素，周围环绕着四个蓝色的小花，形成一个稳定的核心结构。",
+          "description": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
           "colors": [
-            "金色",
-            "蓝色",
-            "黄色"
+            "棕色",
+            "黄色",
+            "蓝色"
           ],
           "shapes": [
             "星形",
-            "几何图形",
-            "小花"
+            "几何形状"
           ]
         }
       },
       "middle": {
-        "summary": "中圈由五个蓝色的圆形组成，每个圆形内都绘制了绿色和黄色的花卉图案，花瓣呈放射状排列，枝叶蜿蜒，整体布局均衡且富有节奏感。",
+        "summary": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
         "visual_units": [
           {
             "id": "middle-001",
             "position": "middle",
-            "color": "蓝色、绿色、黄色、紫色",
-            "shape": "['圆形', '花卉', '叶子', '卷曲线条']",
-            "visible_evidence": "中圈由五个蓝色的圆形组成，每个圆形内都绘制了绿色和黄色的花卉图案，花瓣呈放射状排列，枝叶蜿蜒，整体布局均衡且富有节奏感。"
+            "color": "绿色、黄色、蓝色、紫色",
+            "shape": "['圆形', '花卉', '卷曲线条']",
+            "visible_evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。"
           }
         ],
         "raw_observation": {
-          "description": "中圈由五个蓝色的圆形组成，每个圆形内都绘制了绿色和黄色的花卉图案，花瓣呈放射状排列，枝叶蜿蜒，整体布局均衡且富有节奏感。",
+          "description": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
           "colors": [
-            "蓝色",
             "绿色",
             "黄色",
+            "蓝色",
             "紫色"
           ],
           "shapes": [
             "圆形",
             "花卉",
-            "叶子",
             "卷曲线条"
           ]
         }
       },
       "outer": {
-        "summary": "外圈由棕色的几何图案构成，这些图案呈十字形，均匀分布于五个蓝色圆圈之间，形成了一个稳定的外围框架，增强了画面的整体对称性。",
+        "summary": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。",
         "visual_units": [
           {
             "id": "outer-001",
             "position": "outer",
-            "color": "棕色、白色",
-            "shape": "['十字形', '几何图案']",
-            "visible_evidence": "外圈由棕色的几何图案构成，这些图案呈十字形，均匀分布于五个蓝色圆圈之间，形成了一个稳定的外围框架，增强了画面的整体对称性。"
+            "color": "绿色、黄色、紫色、粉色、棕色",
+            "shape": "['圆形', '花卉', '几何边框']",
+            "visible_evidence": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。"
           }
         ],
         "raw_observation": {
-          "description": "外圈由棕色的几何图案构成，这些图案呈十字形，均匀分布于五个蓝色圆圈之间，形成了一个稳定的外围框架，增强了画面的整体对称性。",
+          "description": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。",
           "colors": [
-            "棕色",
-            "白色"
+            "绿色",
+            "黄色",
+            "紫色",
+            "粉色",
+            "棕色"
           ],
           "shapes": [
-            "十字形",
-            "几何图案"
+            "圆形",
+            "花卉",
+            "几何边框"
           ]
         }
       }
     },
     "evidence_refs": [
-      "画面中央的金色星形图案可能象征内在的秩序与核心能量。",
-      "五个蓝色圆圈内的花卉图案表现出生机勃勃的状态，暗示创造力和成长的潜力。",
-      "绿色和黄色的搭配在五行中对应木属性，可能反映生命力和成长的动态。",
-      "外圈的棕色几何图案提供了结构上的稳定性，可能代表现实层面的边界与保护。",
-      "整体色彩明亮且和谐，表明画面表达了一种积极向上的状态。"
+      "中心区域的星形图案表现出稳定和秩序感。",
+      "中间区域的五个圆形内绘有绿色和黄色的花卉图案，表现出生命力和和谐。",
+      "外圈的五个较大圆形内有丰富的色彩和花卉图案，增加了整体的层次感。",
+      "蓝色的小花连接了各个圆形，形成了一个连续的环状结构。",
+      "整体色调明亮，使用了大量绿色、黄色、蓝色和紫色，呈现出一种和谐而富有生机的视觉效果。"
     ],
     "uncertainties": [
-      "无法确定花卉图案的具体象征意义是否与财富议题直接相关。",
-      "颜色的深浅和分布可能存在主观解读差异，需结合更多上下文进行判断。",
-      "几何图案的排列方式虽然对称，但其具体含义仍需进一步分析。"
+      "无法确定具体的颜色深浅和饱和度是否影响画面的整体感觉。",
+      "无法确定花卉图案的具体种类和象征意义。",
+      "无法确定几何形状的具体设计意图和象征意义。"
     ],
     "model_trace": [
       {
@@ -114,12 +116,21 @@
     "status": "complete",
     "per_circle": {
       "inner": {
-        "visual_summary": "中心区域是一个金色的星形图案，内部嵌有蓝色和黄色的几何元素，周围环绕着四个蓝色的小花，形成一个稳定的核心结构。",
+        "visual_summary": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
         "dominant_colors": [
-          "金色、蓝色、黄色"
+          "棕色、黄色、蓝色"
         ],
         "dominant_shapes": [
-          "['星形', '几何图形', '小花']"
+          "['星形', '几何形状']"
+        ],
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "棕色、黄色、蓝色",
+            "shape": "['星形', '几何形状']",
+            "visible_evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。"
+          }
         ],
         "knowledge_refs": [
           "circle.inner",
@@ -129,12 +140,21 @@
         ]
       },
       "middle": {
-        "visual_summary": "中圈由五个蓝色的圆形组成，每个圆形内都绘制了绿色和黄色的花卉图案，花瓣呈放射状排列，枝叶蜿蜒，整体布局均衡且富有节奏感。",
+        "visual_summary": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
         "dominant_colors": [
-          "蓝色、绿色、黄色、紫色"
+          "绿色、黄色、蓝色、紫色"
         ],
         "dominant_shapes": [
-          "['圆形', '花卉', '叶子', '卷曲线条']"
+          "['圆形', '花卉', '卷曲线条']"
+        ],
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "绿色、黄色、蓝色、紫色",
+            "shape": "['圆形', '花卉', '卷曲线条']",
+            "visible_evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。"
+          }
         ],
         "knowledge_refs": [
           "circle.middle",
@@ -144,12 +164,21 @@
         ]
       },
       "outer": {
-        "visual_summary": "外圈由棕色的几何图案构成，这些图案呈十字形，均匀分布于五个蓝色圆圈之间，形成了一个稳定的外围框架，增强了画面的整体对称性。",
+        "visual_summary": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。",
         "dominant_colors": [
-          "棕色、白色"
+          "绿色、黄色、紫色、粉色、棕色"
         ],
         "dominant_shapes": [
-          "['十字形', '几何图案']"
+          "['圆形', '花卉', '几何边框']"
+        ],
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "绿色、黄色、紫色、粉色、棕色",
+            "shape": "['圆形', '花卉', '几何边框']",
+            "visible_evidence": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。"
+          }
         ],
         "knowledge_refs": [
           "circle.outer",
@@ -166,136 +195,353 @@
     "theme": "wealth",
     "control_notes": [
       "按当前画面证据和精简知识包推导，不新增画面事实。",
-      "五行分析只限每一圈内部的颜色、形状和能量倾向。",
+      "五行分析只识别每圈内部的视觉元素属性，不给整圈贴单一五行标签。",
+      "五行生克只在同一圈内部的元素之间判断。",
       "三圈联动不使用五行生克关系，只分析内圈、中圈、外圈之间的层级承接。"
     ],
     "scope": {
-      "five_element_scope": "per_circle_only",
+      "five_element_scope": "intra_circle_visual_elements",
+      "circle_primary_element_labeling": "excluded",
+      "intra_circle_element_relations": "allowed",
       "cross_circle_five_element_relations": "excluded",
-      "report_rule": "报告必须展示每圈五行感知，但不得写成跨圈五行生克推断。"
+      "report_rule": "报告必须展示圈内元素五行和同圈生克候选，不得把一个圈简化成单一五行。"
     },
     "profile": {
-      "scope": "per_circle_only",
+      "scope": "intra_circle_visual_elements",
       "per_circle": {
         "inner": {
           "circle": "inner",
-          "primary_element": "fire",
-          "primary_element_label": "火",
-          "matched_elements": [
+          "element_signals": [
             {
-              "element": "fire",
-              "label": "火",
-              "score": 1,
-              "hint": "火性指向热情、表达、焦急和动力消耗。"
-            },
-            {
+              "unit_id": "inner-001",
               "element": "earth",
               "label": "土",
-              "score": 1,
+              "source_type": "color",
+              "evidence": "棕色、黄色、蓝色",
               "hint": "土性指向承载、稳定、现实感和责任压力。"
             },
             {
+              "unit_id": "inner-001",
               "element": "water",
               "label": "水",
-              "score": 1,
+              "source_type": "color",
+              "evidence": "棕色、黄色、蓝色",
               "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            },
+            {
+              "unit_id": "inner-001",
+              "element": "fire",
+              "label": "火",
+              "source_type": "shape",
+              "evidence": "['星形', '几何形状']",
+              "hint": "火性指向热情、表达、焦急和动力消耗。"
+            },
+            {
+              "unit_id": "inner-001",
+              "element": "fire",
+              "label": "火",
+              "source_type": "evidence",
+              "evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
+              "hint": "火性指向热情、表达、焦急和动力消耗。"
+            },
+            {
+              "unit_id": "inner-001",
+              "element": "earth",
+              "label": "土",
+              "source_type": "evidence",
+              "evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
+              "hint": "土性指向承载、稳定、现实感和责任压力。"
+            },
+            {
+              "unit_id": "inner-001",
+              "element": "water",
+              "label": "水",
+              "source_type": "evidence",
+              "evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
+              "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            }
+          ],
+          "present_elements": [
+            {
+              "element": "earth",
+              "label": "土"
+            },
+            {
+              "element": "water",
+              "label": "水"
+            },
+            {
+              "element": "fire",
+              "label": "火"
+            }
+          ],
+          "intra_circle_relations": [
+            {
+              "type": "generate",
+              "label": "火生土",
+              "source_element": "fire",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "土克水",
+              "source_element": "earth",
+              "target_element": "water",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "水克火",
+              "source_element": "water",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
             }
           ],
           "evidence": {
             "colors": [
-              "金色、蓝色、黄色"
+              "棕色、黄色、蓝色"
             ],
             "shapes": [
-              "['星形', '几何图形', '小花']"
+              "['星形', '几何形状']"
             ],
-            "summary": "中心区域是一个金色的星形图案，内部嵌有蓝色和黄色的几何元素，周围环绕着四个蓝色的小花，形成一个稳定的核心结构。"
+            "summary": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。"
           },
-          "interpretation_hint": "内圈本源层呈现火性，火性指向热情、表达、焦急和动力消耗。用于观察内在底色、自我价值和深层安全感。",
-          "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。"
+          "interpretation_hint": "内圈本源层内识别到土、水、火等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括火生土、土克水、水克火。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
         },
         "middle": {
           "circle": "middle",
-          "primary_element": "wood",
-          "primary_element_label": "木",
-          "matched_elements": [
+          "element_signals": [
             {
+              "unit_id": "middle-001",
               "element": "wood",
               "label": "木",
-              "score": 3,
+              "source_type": "color",
+              "evidence": "绿色、黄色、蓝色、紫色",
               "hint": "木性指向生长、向上、边界和行动力。"
             },
             {
+              "unit_id": "middle-001",
               "element": "fire",
               "label": "火",
-              "score": 1,
+              "source_type": "color",
+              "evidence": "绿色、黄色、蓝色、紫色",
               "hint": "火性指向热情、表达、焦急和动力消耗。"
             },
             {
+              "unit_id": "middle-001",
               "element": "earth",
               "label": "土",
-              "score": 1,
+              "source_type": "color",
+              "evidence": "绿色、黄色、蓝色、紫色",
               "hint": "土性指向承载、稳定、现实感和责任压力。"
             },
             {
+              "unit_id": "middle-001",
               "element": "water",
               "label": "水",
-              "score": 1,
+              "source_type": "color",
+              "evidence": "绿色、黄色、蓝色、紫色",
               "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            },
+            {
+              "unit_id": "middle-001",
+              "element": "wood",
+              "label": "木",
+              "source_type": "evidence",
+              "evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
+              "hint": "木性指向生长、向上、边界和行动力。"
+            },
+            {
+              "unit_id": "middle-001",
+              "element": "earth",
+              "label": "土",
+              "source_type": "evidence",
+              "evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
+              "hint": "土性指向承载、稳定、现实感和责任压力。"
+            },
+            {
+              "unit_id": "middle-001",
+              "element": "water",
+              "label": "水",
+              "source_type": "evidence",
+              "evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
+              "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            }
+          ],
+          "present_elements": [
+            {
+              "element": "wood",
+              "label": "木"
+            },
+            {
+              "element": "fire",
+              "label": "火"
+            },
+            {
+              "element": "earth",
+              "label": "土"
+            },
+            {
+              "element": "water",
+              "label": "水"
+            }
+          ],
+          "intra_circle_relations": [
+            {
+              "type": "generate",
+              "label": "木生火",
+              "source_element": "wood",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "火生土",
+              "source_element": "fire",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "水生木",
+              "source_element": "water",
+              "target_element": "wood",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "木克土",
+              "source_element": "wood",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "土克水",
+              "source_element": "earth",
+              "target_element": "water",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "水克火",
+              "source_element": "water",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
             }
           ],
           "evidence": {
             "colors": [
-              "蓝色、绿色、黄色、紫色"
+              "绿色、黄色、蓝色、紫色"
             ],
             "shapes": [
-              "['圆形', '花卉', '叶子', '卷曲线条']"
+              "['圆形', '花卉', '卷曲线条']"
             ],
-            "summary": "中圈由五个蓝色的圆形组成，每个圆形内都绘制了绿色和黄色的花卉图案，花瓣呈放射状排列，枝叶蜿蜒，整体布局均衡且富有节奏感。"
+            "summary": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。"
           },
-          "interpretation_hint": "中圈情绪层呈现木性，木性指向生长、向上、边界和行动力。用于观察情绪流动、人际牵引和关系中的能量消耗。",
-          "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。"
+          "interpretation_hint": "中圈情绪层内识别到木、火、土、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、水生木、木克土、土克水、水克火。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
         },
         "outer": {
           "circle": "outer",
-          "primary_element": "earth",
-          "primary_element_label": "土",
-          "matched_elements": [
+          "element_signals": [
             {
+              "unit_id": "outer-001",
+              "element": "wood",
+              "label": "木",
+              "source_type": "color",
+              "evidence": "绿色、黄色、紫色、粉色、棕色",
+              "hint": "木性指向生长、向上、边界和行动力。"
+            },
+            {
+              "unit_id": "outer-001",
+              "element": "fire",
+              "label": "火",
+              "source_type": "color",
+              "evidence": "绿色、黄色、紫色、粉色、棕色",
+              "hint": "火性指向热情、表达、焦急和动力消耗。"
+            },
+            {
+              "unit_id": "outer-001",
               "element": "earth",
               "label": "土",
-              "score": 1,
+              "source_type": "color",
+              "evidence": "绿色、黄色、紫色、粉色、棕色",
               "hint": "土性指向承载、稳定、现实感和责任压力。"
             },
             {
-              "element": "metal",
-              "label": "金",
-              "score": 1,
-              "hint": "金性指向规则、收敛、标准、边界和价值感。"
+              "unit_id": "outer-001",
+              "element": "fire",
+              "label": "火",
+              "source_type": "evidence",
+              "evidence": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。",
+              "hint": "火性指向热情、表达、焦急和动力消耗。"
             },
             {
-              "element": "water",
-              "label": "水",
-              "score": 1,
-              "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+              "unit_id": "outer-001",
+              "element": "earth",
+              "label": "土",
+              "source_type": "evidence",
+              "evidence": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。",
+              "hint": "土性指向承载、稳定、现实感和责任压力。"
+            }
+          ],
+          "present_elements": [
+            {
+              "element": "wood",
+              "label": "木"
+            },
+            {
+              "element": "fire",
+              "label": "火"
+            },
+            {
+              "element": "earth",
+              "label": "土"
+            }
+          ],
+          "intra_circle_relations": [
+            {
+              "type": "generate",
+              "label": "木生火",
+              "source_element": "wood",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "火生土",
+              "source_element": "fire",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "木克土",
+              "source_element": "wood",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
             }
           ],
           "evidence": {
             "colors": [
-              "棕色、白色"
+              "绿色、黄色、紫色、粉色、棕色"
             ],
             "shapes": [
-              "['十字形', '几何图案']"
+              "['圆形', '花卉', '几何边框']"
             ],
-            "summary": "外圈由棕色的几何图案构成，这些图案呈十字形，均匀分布于五个蓝色圆圈之间，形成了一个稳定的外围框架，增强了画面的整体对称性。"
+            "summary": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。"
           },
-          "interpretation_hint": "外圈现实层呈现土性，土性指向承载、稳定、现实感和责任压力。用于观察现实行动、边界、资源交换和外部承接方式。",
-          "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。"
+          "interpretation_hint": "外圈现实层内识别到木、火、土等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、木克土。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
         }
       },
       "dominant_elements": [
         {
-          "element": "wood",
-          "label": "木",
+          "element": "fire",
+          "label": "火",
           "score": 3
         },
         {
@@ -304,142 +550,352 @@
           "score": 3
         },
         {
-          "element": "water",
-          "label": "水",
-          "score": 3
-        },
-        {
-          "element": "fire",
-          "label": "火",
+          "element": "wood",
+          "label": "木",
           "score": 2
         },
         {
-          "element": "metal",
-          "label": "金",
-          "score": 1
+          "element": "water",
+          "label": "水",
+          "score": 2
         }
       ],
       "report_language": [
-        "内圈本源层呈现火性，火性指向热情、表达、焦急和动力消耗。用于观察内在底色、自我价值和深层安全感。",
-        "中圈情绪层呈现木性，木性指向生长、向上、边界和行动力。用于观察情绪流动、人际牵引和关系中的能量消耗。",
-        "外圈现实层呈现土性，土性指向承载、稳定、现实感和责任压力。用于观察现实行动、边界、资源交换和外部承接方式。"
+        "内圈本源层内识别到土、水、火等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括火生土、土克水、水克火。",
+        "中圈情绪层内识别到木、火、土、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、水生木、木克土、土克水、水克火。",
+        "外圈现实层内识别到木、火、土等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、木克土。"
       ],
+      "intra_circle_rule": "五行生克只用于同一圈内部已经识别出的视觉元素之间。",
       "cross_circle_rule": "三圈联动分析使用圈层结构，不使用五行生克。"
     },
     "per_circle": {
       "inner": {
         "circle": "inner",
-        "primary_element": "fire",
-        "primary_element_label": "火",
-        "matched_elements": [
+        "element_signals": [
           {
-            "element": "fire",
-            "label": "火",
-            "score": 1,
-            "hint": "火性指向热情、表达、焦急和动力消耗。"
-          },
-          {
+            "unit_id": "inner-001",
             "element": "earth",
             "label": "土",
-            "score": 1,
+            "source_type": "color",
+            "evidence": "棕色、黄色、蓝色",
             "hint": "土性指向承载、稳定、现实感和责任压力。"
           },
           {
+            "unit_id": "inner-001",
             "element": "water",
             "label": "水",
-            "score": 1,
+            "source_type": "color",
+            "evidence": "棕色、黄色、蓝色",
             "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          },
+          {
+            "unit_id": "inner-001",
+            "element": "fire",
+            "label": "火",
+            "source_type": "shape",
+            "evidence": "['星形', '几何形状']",
+            "hint": "火性指向热情、表达、焦急和动力消耗。"
+          },
+          {
+            "unit_id": "inner-001",
+            "element": "fire",
+            "label": "火",
+            "source_type": "evidence",
+            "evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
+            "hint": "火性指向热情、表达、焦急和动力消耗。"
+          },
+          {
+            "unit_id": "inner-001",
+            "element": "earth",
+            "label": "土",
+            "source_type": "evidence",
+            "evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
+            "hint": "土性指向承载、稳定、现实感和责任压力。"
+          },
+          {
+            "unit_id": "inner-001",
+            "element": "water",
+            "label": "水",
+            "source_type": "evidence",
+            "evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。",
+            "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          }
+        ],
+        "present_elements": [
+          {
+            "element": "earth",
+            "label": "土"
+          },
+          {
+            "element": "water",
+            "label": "水"
+          },
+          {
+            "element": "fire",
+            "label": "火"
+          }
+        ],
+        "intra_circle_relations": [
+          {
+            "type": "generate",
+            "label": "火生土",
+            "source_element": "fire",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "土克水",
+            "source_element": "earth",
+            "target_element": "water",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "水克火",
+            "source_element": "water",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
           }
         ],
         "evidence": {
           "colors": [
-            "金色、蓝色、黄色"
+            "棕色、黄色、蓝色"
           ],
           "shapes": [
-            "['星形', '几何图形', '小花']"
+            "['星形', '几何形状']"
           ],
-          "summary": "中心区域是一个金色的星形图案，内部嵌有蓝色和黄色的几何元素，周围环绕着四个蓝色的小花，形成一个稳定的核心结构。"
+          "summary": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。"
         },
-        "interpretation_hint": "内圈本源层呈现火性，火性指向热情、表达、焦急和动力消耗。用于观察内在底色、自我价值和深层安全感。",
-        "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。"
+        "interpretation_hint": "内圈本源层内识别到土、水、火等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括火生土、土克水、水克火。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
       },
       "middle": {
         "circle": "middle",
-        "primary_element": "wood",
-        "primary_element_label": "木",
-        "matched_elements": [
+        "element_signals": [
           {
+            "unit_id": "middle-001",
             "element": "wood",
             "label": "木",
-            "score": 3,
+            "source_type": "color",
+            "evidence": "绿色、黄色、蓝色、紫色",
             "hint": "木性指向生长、向上、边界和行动力。"
           },
           {
+            "unit_id": "middle-001",
             "element": "fire",
             "label": "火",
-            "score": 1,
+            "source_type": "color",
+            "evidence": "绿色、黄色、蓝色、紫色",
             "hint": "火性指向热情、表达、焦急和动力消耗。"
           },
           {
+            "unit_id": "middle-001",
             "element": "earth",
             "label": "土",
-            "score": 1,
+            "source_type": "color",
+            "evidence": "绿色、黄色、蓝色、紫色",
             "hint": "土性指向承载、稳定、现实感和责任压力。"
           },
           {
+            "unit_id": "middle-001",
             "element": "water",
             "label": "水",
-            "score": 1,
+            "source_type": "color",
+            "evidence": "绿色、黄色、蓝色、紫色",
             "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          },
+          {
+            "unit_id": "middle-001",
+            "element": "wood",
+            "label": "木",
+            "source_type": "evidence",
+            "evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
+            "hint": "木性指向生长、向上、边界和行动力。"
+          },
+          {
+            "unit_id": "middle-001",
+            "element": "earth",
+            "label": "土",
+            "source_type": "evidence",
+            "evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
+            "hint": "土性指向承载、稳定、现实感和责任压力。"
+          },
+          {
+            "unit_id": "middle-001",
+            "element": "water",
+            "label": "水",
+            "source_type": "evidence",
+            "evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。",
+            "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          }
+        ],
+        "present_elements": [
+          {
+            "element": "wood",
+            "label": "木"
+          },
+          {
+            "element": "fire",
+            "label": "火"
+          },
+          {
+            "element": "earth",
+            "label": "土"
+          },
+          {
+            "element": "water",
+            "label": "水"
+          }
+        ],
+        "intra_circle_relations": [
+          {
+            "type": "generate",
+            "label": "木生火",
+            "source_element": "wood",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "火生土",
+            "source_element": "fire",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "水生木",
+            "source_element": "water",
+            "target_element": "wood",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "木克土",
+            "source_element": "wood",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "土克水",
+            "source_element": "earth",
+            "target_element": "water",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "水克火",
+            "source_element": "water",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
           }
         ],
         "evidence": {
           "colors": [
-            "蓝色、绿色、黄色、紫色"
+            "绿色、黄色、蓝色、紫色"
           ],
           "shapes": [
-            "['圆形', '花卉', '叶子', '卷曲线条']"
+            "['圆形', '花卉', '卷曲线条']"
           ],
-          "summary": "中圈由五个蓝色的圆形组成，每个圆形内都绘制了绿色和黄色的花卉图案，花瓣呈放射状排列，枝叶蜿蜒，整体布局均衡且富有节奏感。"
+          "summary": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。"
         },
-        "interpretation_hint": "中圈情绪层呈现木性，木性指向生长、向上、边界和行动力。用于观察情绪流动、人际牵引和关系中的能量消耗。",
-        "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。"
+        "interpretation_hint": "中圈情绪层内识别到木、火、土、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、水生木、木克土、土克水、水克火。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
       },
       "outer": {
         "circle": "outer",
-        "primary_element": "earth",
-        "primary_element_label": "土",
-        "matched_elements": [
+        "element_signals": [
           {
+            "unit_id": "outer-001",
+            "element": "wood",
+            "label": "木",
+            "source_type": "color",
+            "evidence": "绿色、黄色、紫色、粉色、棕色",
+            "hint": "木性指向生长、向上、边界和行动力。"
+          },
+          {
+            "unit_id": "outer-001",
+            "element": "fire",
+            "label": "火",
+            "source_type": "color",
+            "evidence": "绿色、黄色、紫色、粉色、棕色",
+            "hint": "火性指向热情、表达、焦急和动力消耗。"
+          },
+          {
+            "unit_id": "outer-001",
             "element": "earth",
             "label": "土",
-            "score": 1,
+            "source_type": "color",
+            "evidence": "绿色、黄色、紫色、粉色、棕色",
             "hint": "土性指向承载、稳定、现实感和责任压力。"
           },
           {
-            "element": "metal",
-            "label": "金",
-            "score": 1,
-            "hint": "金性指向规则、收敛、标准、边界和价值感。"
+            "unit_id": "outer-001",
+            "element": "fire",
+            "label": "火",
+            "source_type": "evidence",
+            "evidence": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。",
+            "hint": "火性指向热情、表达、焦急和动力消耗。"
           },
           {
-            "element": "water",
-            "label": "水",
-            "score": 1,
-            "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            "unit_id": "outer-001",
+            "element": "earth",
+            "label": "土",
+            "source_type": "evidence",
+            "evidence": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。",
+            "hint": "土性指向承载、稳定、现实感和责任压力。"
+          }
+        ],
+        "present_elements": [
+          {
+            "element": "wood",
+            "label": "木"
+          },
+          {
+            "element": "fire",
+            "label": "火"
+          },
+          {
+            "element": "earth",
+            "label": "土"
+          }
+        ],
+        "intra_circle_relations": [
+          {
+            "type": "generate",
+            "label": "木生火",
+            "source_element": "wood",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "火生土",
+            "source_element": "fire",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "木克土",
+            "source_element": "wood",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
           }
         ],
         "evidence": {
           "colors": [
-            "棕色、白色"
+            "绿色、黄色、紫色、粉色、棕色"
           ],
           "shapes": [
-            "['十字形', '几何图案']"
+            "['圆形', '花卉', '几何边框']"
           ],
-          "summary": "外圈由棕色的几何图案构成，这些图案呈十字形，均匀分布于五个蓝色圆圈之间，形成了一个稳定的外围框架，增强了画面的整体对称性。"
+          "summary": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。"
         },
-        "interpretation_hint": "外圈现实层呈现土性，土性指向承载、稳定、现实感和责任压力。用于观察现实行动、边界、资源交换和外部承接方式。",
-        "scope_note": "仅解释本圈内部五行倾向，不用于跨圈生克推断。"
+        "interpretation_hint": "外圈现实层内识别到木、火、土等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、木克土。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
       }
     }
   },
@@ -450,34 +906,19 @@
       "theme": "wealth",
       "status": "matched",
       "selected_signal_ids": [
-        "visual.metal_excess",
+        "visual.weak_fire_many",
         "visual.middle_tangled_relationship_pull",
-        "visual.outer_boundary_thick_closed"
+        "visual.fragmented_dots_scattered_energy"
       ],
       "selected_clause_ids": [
-        "wealth.low_deservingness",
-        "wealth.approval_driven_earning"
+        "wealth.approval_driven_earning",
+        "wealth.emotional_spending"
       ],
       "selected_module_ids": [
         "wealth.deservingness_self_worth",
-        "wealth.career_value_exchange"
+        "wealth.emotion_spending_protective_habits"
       ],
       "clauses": [
-        {
-          "id": "wealth.low_deservingness",
-          "title": "配得感不足",
-          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
-          "report_language": [
-            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
-            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
-          ],
-          "healing_direction": [
-            "配得感练习。",
-            "自我价值确认。",
-            "区分价值创造和自我证明。"
-          ],
-          "source_status": "model_scaffold"
-        },
         {
           "id": "wealth.approval_driven_earning",
           "title": "求认可式赚钱",
@@ -492,6 +933,21 @@
             "区分收入结果和自我价值。"
           ],
           "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
         }
       ],
       "modules": [
@@ -503,44 +959,44 @@
           "output_strength": "normal"
         },
         {
-          "module_id": "wealth.career_value_exchange",
-          "title": "事业、能力与价值交换",
-          "status": "source_needed",
-          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
-          "output_strength": "weak"
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
         }
       ],
       "boundaries": [
-        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。",
         "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
-        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。"
       ]
     }
   },
-  "core_thesis": "内圈火星热望与水性不安并存，中圈木势虽盛却郁而不发，外圈土金筑墙拒收——一条‘想放却收’的财富紧张闭环。",
-  "healing_direction": "让外圈边界从‘防卫墙’转化为‘可开闭的门’，练习在安全感中练习‘允许流入’，而非在恐惧中先设防。",
+  "core_thesis": "你的财富紧张感源于内在秩序对流动的压制，看似稳定的核心其实藏着害怕失控的深层不安。",
+  "healing_direction": "先承认紧张是保护你的方式，然后试着让外圈那些温柔的花慢慢长进中心的规矩里，为流动留一条小缝。",
   "final_report": {
-    "report_id": "mandala-interpretation-5e11a3f7c9cc",
+    "report_id": "mandala-interpretation-d37a88f791d7",
     "report_mode": "lite",
     "title": "曼陀罗解读报告",
-    "markdown": "# 曼陀罗财富议题解读：热情与不安交织的流动图谱\n\n## 画面证据速写\n你的曼陀罗呈现出极为对称的稳定结构。画面中央有一个**金色星形核心**，周围环绕蓝色小花与几何元素；中圈是五个蓝色圆形，内部布满**放射状绿色与黄色花卉**；外圈则由**棕白色十字形几何图案**均匀排列，形成一个明确的保护性框架。整体用色明亮但边界感强——生长元素被包裹在有序结构中。\n\n## 五行感知\n这幅画最显著的单圈五行信号来自**中圈情绪层**——那里以**绿色**为主、辅以枝叶蜿蜒的**花卉图案**，五行属性明确指向**木**。木在情绪层通常对应生长冲动、向外表达的渴望，以及需要被看见的创造力。五个蓝色圆形的均衡分布，也让这股木气带有节奏感而非泛滥。从画面看，你内在有一股想舒展、想扩张的能量，但它被安置在非常规整的圆形单元里，呈现出一种“有序的生长”，而非野性蔓延。\n\n## 财富核心解读\n你的主要财富紧张感可能源于：**内在本源对“值得拥有”的犹疑与外围过于谨慎的边界，形成了一条能量易耗却难回流的闭环**——你并非没有创造价值的能力，而是还不完全允许自己稳定地接住更多。\n\n## 温和行动建议\n接下来一周，可以尝试一个小练习：每次收到一笔收入或他人帮助时，在心里默念“我可以稳稳地收下这个”，不需要立刻回报或证明自己配得上。这个动作不是为了改变外在结果，而是让你的外围边界从“防卫墙”逐步转化为“可开闭的门”，在安全感中练习让资源流入，而不是在恐惧中先设防。",
-    "summary": "内圈火星热望与水性不安并存，中圈木势虽盛却郁而不发，外圈土金筑墙拒收——一条‘想放却收’的财富紧张闭环。"
+    "markdown": "# 曼陀罗财富议题解读：在秩序与流动之间重新认识你的紧张感\n\n## 画面证据速写\n你的画面中心有一个由棕色几何线条构成的星形结构，内部填充了黄色与蓝色的星状元素，整体呈现出一种稳固的秩序感。中圈与外圈分布着多个圆形区域，内部描绘了绿、黄色的花卉图案，外圈还出现了紫色花朵与粉色小点，并由棕色几何边框勾勒边界。蓝色小花作为连接元素贯穿中圈各圆形之间，形成连续的环状结构。\n\n## 五行感知\n内圈最明显的是棕色和黄色所承载的“土”元素，它对应现实感、稳定与责任压力；同时蓝色在这里带来了“水”的元素，代表流动、感受与深层安全感；星形的尖锐形状则引入了“火”性，指向表达与动力消耗。同圈内存在“火生土”——动力支撑着稳定结构的候选关系，但“土克水”与“水克火”同时出现，暗示对流动的约束和对表达能量的压制。在中圈，绿色主导的“木”元素带来生长与行动力，黄色“土”与蓝色“水”并存，同圈候选关系里“水生木”提示情绪滋养行动的可能，而“木克土”又在生长与稳定之间形成张力。外圈的绿、紫、粉主要是“木”与“火”的交织，棕色的几何边框再次引出土的规范线，同圈候选关系“木生火”指向行动带出热情，但“木克土”暗示生长冲动与规则之间的摩擦。\n\n## 财富核心解读\n你财富流动中的紧张感，并非来自匮乏，而是内圈太过强势的秩序结构对流动能量的压制——你想让钱流动起来，又害怕失控，因此在“收”与“放”之间反复紧绷。\n\n## 温和行动建议\n下一次感到财富焦虑时，试着不在立刻做决定的冲动里行动，而是拿出一张纸，左边写下“我害怕什么”，右边写下“我愿意为流动让出的一点点缝隙”，哪怕只是一顿不记账的晚餐或一次小额的自我奖赏——让外圈那些紫色的温柔慢慢渗透进中心的规矩里。",
+    "summary": "你的财富紧张感源于内在秩序对流动的压制，看似稳定的核心其实藏着害怕失控的深层不安。"
   },
   "evidence_map": [
     {
       "id": "inner-001",
       "circle": "inner",
-      "visible_evidence": "中心区域是一个金色的星形图案，内部嵌有蓝色和黄色的几何元素，周围环绕着四个蓝色的小花，形成一个稳定的核心结构。"
+      "visible_evidence": "中心区域是一个复杂的星形图案，由棕色的几何形状构成，内部填充了黄色和蓝色的星形元素。这个区域是整个画作的核心，表现出一种稳定和秩序感。"
     },
     {
       "id": "middle-001",
       "circle": "middle",
-      "visible_evidence": "中圈由五个蓝色的圆形组成，每个圆形内都绘制了绿色和黄色的花卉图案，花瓣呈放射状排列，枝叶蜿蜒，整体布局均衡且富有节奏感。"
+      "visible_evidence": "中间区域由五个圆形组成，每个圆形内都绘有绿色和黄色的花卉图案，花瓣呈放射状排列，叶子为卷曲的绿色线条。这些圆形之间通过蓝色的小花连接，形成一个连续的环状结构。"
     },
     {
       "id": "outer-001",
       "circle": "outer",
-      "visible_evidence": "外圈由棕色的几何图案构成，这些图案呈十字形，均匀分布于五个蓝色圆圈之间，形成了一个稳定的外围框架，增强了画面的整体对称性。"
+      "visible_evidence": "外圈由五个较大的圆形组成，每个圆形内都有类似的花卉图案，但颜色更为丰富，包括紫色的花朵和粉色的小点。这些圆形外围有棕色的几何边框，增加了整体的层次感。"
     }
   ],
   "boundaries": {

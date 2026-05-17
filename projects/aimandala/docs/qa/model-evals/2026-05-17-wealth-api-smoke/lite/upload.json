@@ -1,11 +1,11 @@
 {
   "success": true,
-  "image_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/data/uploads/886d9c5d3a1642bd980e69e2f3873577.jpeg",
+  "image_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/toC/app/backend/data/uploads/c5915265d528487fa0a1e356f320879f.jpeg",
   "storage_backend": "local",
-  "storage_key": "886d9c5d3a1642bd980e69e2f3873577.jpeg",
+  "storage_key": "c5915265d528487fa0a1e356f320879f.jpeg",
   "original_filename": "IMG_5060.jpeg",
   "content_type": "image/jpeg",
   "size_bytes": 3026573,
   "image_url": null,
-  "image_local_expires_at": "2026-05-18T01:50:57.016850+00:00"
+  "image_local_expires_at": "2026-05-18T02:13:47.729674+00:00"
 }
