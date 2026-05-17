@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -15,6 +16,7 @@ from fastapi.testclient import TestClient
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 AIMANDALA_ROOT = Path(__file__).resolve().parents[4]
 DEFAULT_IMAGE_PATH = AIMANDALA_ROOT / "fixtures" / "toc-mvp" / "assets" / "IMG_5060.jpeg"
+DEFAULT_SAVE_ROOT = AIMANDALA_ROOT / "docs" / "qa" / "model-evals"
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
@@ -73,6 +75,14 @@ def build_parser() -> argparse.ArgumentParser:
         default="有点紧，也有一点期待。",
         help="Painting feeling passed to /api/wealth-reports.",
     )
+    parser.add_argument(
+        "--save-dir",
+        default="",
+        help=(
+            "Optional directory for saving API smoke artifacts. If omitted, "
+            "the script only prints a summary."
+        ),
+    )
     return parser
 
 
@@ -92,6 +102,7 @@ def main() -> int:
     client = TestClient(create_app())
     started_at = time.monotonic()
     upload_payload = _upload_image(client, image_path)
+    save_dir = _resolve_save_dir(args.save_dir)
     results = []
     for mode in modes:
         results.append(
@@ -102,6 +113,7 @@ def main() -> int:
                 redeem_code=_redeem_code_for_mode(args, mode),
                 intention=args.intention,
                 feeling=args.feeling,
+                save_dir=save_dir,
             )
         )
 
@@ -116,6 +128,12 @@ def main() -> int:
         },
         "reports": results,
     }
+    if save_dir is not None:
+        save_dir.mkdir(parents=True, exist_ok=True)
+        (save_dir / "summary.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     return 0
 
@@ -143,21 +161,23 @@ def _create_report(
     redeem_code: str,
     intention: str,
     feeling: str,
+    save_dir: Path | None = None,
 ) -> dict:
     started_at = time.monotonic()
+    request_payload = {
+        "image_path": upload_payload["image_path"],
+        "report_mode": mode,
+        "redeem_code": redeem_code,
+        "painting_intention": intention,
+        "painting_feeling": feeling,
+        "inner_radius": 35,
+        "middle_radius": 65,
+        "storage_backend": upload_payload.get("storage_backend", ""),
+        "storage_key": upload_payload.get("storage_key", ""),
+    }
     response = client.post(
         "/api/wealth-reports",
-        json={
-            "image_path": upload_payload["image_path"],
-            "report_mode": mode,
-            "redeem_code": redeem_code,
-            "painting_intention": intention,
-            "painting_feeling": feeling,
-            "inner_radius": 35,
-            "middle_radius": 65,
-            "storage_backend": upload_payload.get("storage_backend", ""),
-            "storage_key": upload_payload.get("storage_key", ""),
-        },
+        json=request_payload,
     )
     duration_seconds = round(time.monotonic() - started_at, 2)
     if response.status_code != 200:
@@ -166,19 +186,66 @@ def _create_report(
     quality_gate = payload.get("quality_gate") or {}
     if not payload.get("success") or not quality_gate.get("passed"):
         raise RuntimeError(f"{mode} report quality failed: {quality_gate}")
-    return {
+    summary = {
         "mode": mode,
         "duration_seconds": duration_seconds,
         "report_id": payload.get("report_id"),
         "quality_gate_passed": quality_gate.get("passed"),
         "selected_clause_count": len(payload.get("selected_clause_ids") or []),
         "final_report_chars": len(payload.get("final_report_md") or ""),
+        "output_dir": str(save_dir / mode) if save_dir is not None else "",
         "attempt_trace": (
             payload.get("report_context_package", {})
             .get("visual_observation", {})
             .get("model_trace", [])
         ),
     }
+    if save_dir is not None:
+        _write_report_artifacts(
+            save_dir / mode,
+            request_payload=request_payload,
+            response_payload=payload,
+            upload_payload=upload_payload,
+            duration_seconds=duration_seconds,
+        )
+    return summary
+
+
+def _write_report_artifacts(
+    output_dir: Path,
+    *,
+    request_payload: dict,
+    response_payload: dict,
+    upload_payload: dict,
+    duration_seconds: float,
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    final_report_md = str(response_payload.get("final_report_md") or "")
+    files = {
+        "request.json": request_payload,
+        "upload.json": upload_payload,
+        "response.json": response_payload,
+        "final_report.json": response_payload.get("final_report") or {},
+        "quality_gate.json": response_payload.get("quality_gate") or {},
+        "report_context_package.json": response_payload.get("report_context_package") or {},
+        "agent_output.json": response_payload.get("agent_output") or {},
+        "route_summary.json": {
+            "topic": response_payload.get("topic"),
+            "report_mode": response_payload.get("report_mode"),
+            "report_id": response_payload.get("report_id"),
+            "duration_seconds": duration_seconds,
+            "selected_signal_ids": response_payload.get("selected_signal_ids") or [],
+            "selected_clause_ids": response_payload.get("selected_clause_ids") or [],
+            "selected_module_ids": response_payload.get("selected_module_ids") or [],
+            "boundaries": response_payload.get("boundaries") or [],
+        },
+    }
+    for filename, payload in files.items():
+        (output_dir / filename).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    (output_dir / "final_report.md").write_text(final_report_md, encoding="utf-8")
 
 
 def _redeem_code_for_mode(args: argparse.Namespace, mode: str) -> str:
@@ -194,6 +261,18 @@ def _content_type_for_image(image_path: Path) -> str:
     if suffix == ".webp":
         return "image/webp"
     return "image/png"
+
+
+def _resolve_save_dir(raw_save_dir: str) -> Path | None:
+    if not raw_save_dir.strip():
+        return None
+    save_path = Path(raw_save_dir).expanduser()
+    if save_path.is_absolute():
+        return save_path
+    if raw_save_dir.strip() == "auto":
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+        return DEFAULT_SAVE_ROOT / f"{timestamp}-wealth-api-smoke"
+    return Path.cwd() / save_path
 
 
 if __name__ == "__main__":

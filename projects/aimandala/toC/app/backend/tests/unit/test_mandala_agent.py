@@ -204,6 +204,7 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
     assert "不要用“好的”" in report_prompt
     assert "各圈五行感知" in report_prompt
     assert "不能写跨圈五行生克" in report_prompt
+    assert "不得把某一圈的五行与另一圈的五行做因果" in report_prompt
     assert "不能写成确定根因" in report_prompt
     assert "浮现议题回译" in report_prompt
 
@@ -319,6 +320,33 @@ def test_mandala_agent_quality_gate_rejects_cross_circle_five_element_relations(
         "五行中的水与火是当前画面依据。\n\n"
         "## 三圈分层解读\n"
         "这里错误地写成内圈水生中圈木，混淆了三圈联动和五行生克。"
+        + "画面依据与财富解读。" * 80
+    )
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "cross_circle_five_element_relation_leak" in quality["failure_ids"]
+
+
+def test_mandala_agent_quality_gate_rejects_cross_circle_element_tension(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = (
+        "# 财富议题曼陀罗解读报告\n\n"
+        "## 五行感知\n"
+        "五行中的土与木是当前画面依据。\n\n"
+        "## 财富核心解读\n"
+        "主要财富卡点在于内圈本源层的土性稳定需求与中圈木性想要向外流动之间互相拉扯。"
         + "画面依据与财富解读。" * 80
     )
 

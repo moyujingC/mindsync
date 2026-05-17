@@ -1,0 +1,24 @@
+{
+  "topic": "wealth",
+  "report_mode": "lite",
+  "report_id": "mandala-interpretation-5e11a3f7c9cc",
+  "duration_seconds": 56.56,
+  "selected_signal_ids": [
+    "visual.metal_excess",
+    "visual.middle_tangled_relationship_pull",
+    "visual.outer_boundary_thick_closed"
+  ],
+  "selected_clause_ids": [
+    "wealth.low_deservingness",
+    "wealth.approval_driven_earning"
+  ],
+  "selected_module_ids": [
+    "wealth.deservingness_self_worth",
+    "wealth.career_value_exchange"
+  ],
+  "boundaries": [
+    "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+    "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+    "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+  ]
+}

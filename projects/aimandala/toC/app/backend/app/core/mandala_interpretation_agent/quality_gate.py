@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from .contracts import EXECUTION_BLOCKS, STAGE_KEYS
@@ -57,6 +58,22 @@ DETERMINISTIC_CAUSE_TERMS = [
     "来自原生家庭",
     "是因为你的父母",
     "说明你原生家庭",
+]
+
+RELATION_WORDS = [
+    "拉扯",
+    "互相",
+    "导致",
+    "使得",
+    "影响",
+    "结果",
+    "源于",
+    "来自",
+    "之间",
+    "通道",
+    "流动",
+    "生",
+    "克",
 ]
 
 FIVE_ELEMENT_TERMS = [
@@ -129,9 +146,7 @@ def run_quality_gate(
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
 
-    method_boundary_terms = [
-        term for term in FORBIDDEN_METHOD_BOUNDARY_PATTERNS if term in final_report_md
-    ]
+    method_boundary_terms = _method_boundary_terms(final_report_md)
     if method_boundary_terms:
         failure_ids.append("cross_circle_five_element_relation_leak")
 
@@ -207,6 +222,45 @@ def _missing_visual_units(stage03: Any) -> list[str]:
         if not _circle_has_visual_evidence(circle):
             missing.append(circle_key)
     return missing
+
+
+def _method_boundary_terms(final_report_md: str) -> list[str]:
+    terms = [
+        term for term in FORBIDDEN_METHOD_BOUNDARY_PATTERNS if term in final_report_md
+    ]
+    terms.extend(_cross_circle_five_element_sentences(final_report_md))
+    return terms
+
+
+def _cross_circle_five_element_sentences(final_report_md: str) -> list[str]:
+    findings: list[str] = []
+    for sentence in re.split(r"[。！？\n]", final_report_md):
+        text = sentence.strip()
+        if not text:
+            continue
+        if len(_circle_mentions(text)) < 2:
+            continue
+        if len(_circle_element_mentions(text)) >= 2:
+            if any(word in text for word in RELATION_WORDS):
+                findings.append(text[:80])
+    return findings
+
+
+def _circle_mentions(text: str) -> set[str]:
+    mentions = set()
+    for key in ["内圈", "中圈", "外圈"]:
+        if key in text:
+            mentions.add(key)
+    return mentions
+
+
+def _circle_element_mentions(text: str) -> set[str]:
+    mentions = set()
+    for circle in ["内圈", "中圈", "外圈"]:
+        for element in FIVE_ELEMENT_TERMS:
+            if re.search(rf"{circle}[^。！？\n]{{0,24}}{element}[性气]?", text):
+                mentions.add(f"{circle}:{element}")
+    return mentions
 
 
 def _circle_has_visual_evidence(circle: Any) -> bool:
