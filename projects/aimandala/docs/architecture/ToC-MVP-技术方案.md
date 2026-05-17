@@ -149,13 +149,13 @@ projects/aimandala/toC/
 
 当前边界是：
 
-1. 方法与议题真值源在 `docs/sources/疗愈体系知识库/`
+1. 方法与议题真值源在 `docs/疗愈体系知识库/`
 2. 后端任务级知识包由 `app/core/mandala_interpretation_agent/knowledge_pack_builder.py` 读取新版知识库生成
 3. 旧 `v2.1 / v2.2` 运行时知识包和旧 build 产物已废弃
 
 这意味着：
 
-- `docs/sources/疗愈体系知识库/` 负责当前方法、议题和报告模板真值源
+- `docs/疗愈体系知识库/` 负责当前方法、议题和报告模板真值源
 - `mandala_interpretation_agent` 按报告任务读取必要片段，不再依赖旧 `v2.1 / v2.2` pack
 - 如果后续需要新的结构化运行时知识资产，应按新版知识库重新设计目录和合同
 
@@ -188,6 +188,6 @@ projects/aimandala/toC/
 3. 新报告生成链与中间交付物
    - 看 `backend/app/core/mandala_interpretation_agent`
 4. 方法真值源、知识原文和主题资料
-   - 看 `docs/sources/疗愈体系知识库/`
+   - 看 `docs/疗愈体系知识库/`
 5. 历史知识库构建资料
-   - 看 `docs/sources/知识库构建/`
+   - 看 `docs/疗愈体系知识库/`

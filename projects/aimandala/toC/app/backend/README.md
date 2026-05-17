@@ -12,7 +12,7 @@
 /api/wealth-reports
 -> MandalaInterpretationAgent
 -> WealthReportRuntime
--> projects/aimandala/docs/sources/疗愈体系知识库
+-> projects/aimandala/docs/疗愈体系知识库
 ```
 
 ## 当前职责

@@ -7,8 +7,8 @@
 > source_of_truth：projects/aimandala/docs/qa/2026-05-06-mvp-视觉接入后解读流派保真QA-Gate.md
 > 项目：aimandala
 > 阶段：verification
-> depends_on：projects/aimandala/docs/sources/知识库构建/当前正式依据与使用说明.md
-> depends_on：projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md
+> depends_on：projects/aimandala/docs/疗愈体系知识库/README.md
+> depends_on：projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-画面信号映射审核与结构化计划.md
 > depends_on：projects/aimandala/docs/qa/2026-05-06-mvp-视觉模型端到端-smoke-验证记录.md
 > depends_on：projects/aimandala/docs/qa/2026-05-06-mvp-视觉模型前端-runtime-smoke-验证记录.md
 

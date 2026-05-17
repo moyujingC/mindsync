@@ -1,0 +1,115 @@
+index_id: aimandala.report_runtime.index.v0_2
+version: 0.2.0
+status: draft
+date: 2026-05-15
+owner: CEO / Knowledge Base
+source_of_truth: projects/aimandala/docs/疗愈体系知识库/60-运行时知识包/20-aimandala-report-runtime-index.yaml
+product: aimandala
+
+purpose:
+  - 为报告生成提供最小 runtime 检索顺序。
+  - 把 Markdown 真值源、结构化知识单元和运行时包串起来。
+  - 让程序优先拿到报告任务、分流口径和安全边界。
+
+load_order:
+  - stage: source_index
+    ref: ../10-参考来源索引/01-曼陀罗解读手册-来源索引.md
+    reason: 报告必须可追溯到源头。
+  - stage: application_rules
+    ref: ../30-应用适配/10-aimandala/05-报告任务定义.md
+    reason: 先确认报告任务边界。
+  - stage: application_rules
+    ref: ../30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md
+    reason: 再确认 Lite / Pro 的分流口径。
+  - stage: application_rules
+    ref: ../30-应用适配/10-aimandala/03-解读报告生成最小规则.md
+    reason: 最后进入生成顺序和安全边界。
+  - stage: application_rules
+    ref: ../30-应用适配/10-aimandala/06-财富议题解读报告模板.md
+    when: user_theme == 财富
+    reason: 财富主题需要独立的段落模板，把主线和浮现议题的回译顺序固定下来。
+  - stage: structured_unit
+    ref: ../50-结构化知识单元/10-aimandala-report-generation.yaml
+    reason: 提供机器可读的报告任务单元。
+  - stage: theme_structured_unit
+    ref: ../50-结构化知识单元/40-wealth-report-routing.yaml
+    when: user_theme == 财富
+    reason: 财富主题需要按画面信号、财富模块和条款进行二级检索。
+  - stage: cross_topic_translation
+    ref: ../50-结构化知识单元/45-wealth-emergent-topic-translation.yaml
+    when: user_theme == 财富
+    reason: 财富报告需要把自我价值、家庭、关系、情绪、身体和事业等浮现议题回译到财富主线。
+
+runtime_fields:
+  required_input:
+    - user_theme
+    - user_goal
+    - report_version
+    - visual_observations
+  optional_input:
+    - user_segment
+    - product_intent
+    - current_context
+  generated_output:
+    - report_title
+    - report_sections
+    - visual_basis
+    - selected_theme_modules
+    - selected_issue_clauses
+    - evidence_refs
+    - suggestion_boundaries
+
+retrieval_policy:
+  prefilter:
+    - 先按 `report_version` 分流 Lite / Pro。
+    - 再按 `user_theme` 过滤稳定主题入口。
+    - 当 `user_theme` 为 `财富` 时，加载 `40-wealth-report-routing.yaml`。
+    - 当 `user_theme` 为 `财富` 且出现浮现议题时，加载 `45-wealth-emergent-topic-translation.yaml`。
+    - 再按 `user_segment` 调整语气和收口方式。
+  fallback:
+    - 输入不足时优先返回已确认事实和最可能解释方向。
+    - 用户状态高风险时不进入深度报告检索。
+
+composition_rules:
+  lite:
+    source_sequence:
+      - 05-报告任务定义
+      - 04-Lite-Pro报告分流与交付口径
+      - 03-解读报告生成最小规则
+      - 06-财富议题解读报告模板，当主题为财富时
+      - 10-aimandala-report-generation.yaml
+      - 40-wealth-report-routing.yaml，当主题为财富时
+      - 45-wealth-emergent-topic-translation.yaml，当主题为财富且出现浮现议题时
+    output_focus:
+      - 画面依据
+      - 当前状态
+      - 主题连接
+      - 低压建议
+  pro:
+    source_sequence:
+      - 05-报告任务定义
+      - 04-Lite-Pro报告分流与交付口径
+      - 03-解读报告生成最小规则
+      - 06-财富议题解读报告模板，当主题为财富时
+      - 10-aimandala-report-generation.yaml
+      - 40-wealth-report-routing.yaml，当主题为财富时
+      - 45-wealth-emergent-topic-translation.yaml，当主题为财富且出现浮现议题时
+    output_focus:
+      - 核心主轴
+      - 逐圈整合
+      - 生克失衡
+      - 能量流动
+      - 根因链
+      - 阶段性调节路径
+
+quality_controls:
+  - 检查是否引用了正确的应用适配文件。
+  - 检查 Lite / Pro 是否按各自结构生成。
+  - 检查财富主题是否选择了对应主题模块和条款。
+  - 检查浮现议题是否回译到财富主线，而不是展开成其他主题报告。
+  - 检查是否越界写成主题方案或 21 天计划。
+  - 检查是否保留安全边界与外部支持引导。
+
+notes:
+  - 这是最小 runtime index，不是全量知识包。
+  - 财富主题已先接入主题级 routing 单元，后续其他主题可按同样方式扩展。

@@ -1,0 +1,180 @@
+id: domain.wealth.evidence_links.v0_1
+version: 0.1.0
+status: draft
+date: 2026-05-15
+owner: CEO / Knowledge Base
+type: evidence_link_set
+domain: wealth
+source_of_truth: projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml
+related_units:
+  - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
+source_index:
+  - projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/20-财富议题证据回填索引.md
+
+schema:
+  evidence_id: 全局唯一证据 ID。
+  clause_id: 被支持或被反驳的结构化条款 ID。
+  source_id: 来源 ID。
+  source_path: 来源路径。
+  source_location: 章节、页码、段落或文件位置。
+  evidence_type: supports_concept | supports_expression | supports_practice | contradicts | not_applicable
+  support_level: direct | partial | weak | conflict
+  summary: 对证据关系的简短说明。
+  supported_part:
+    - mechanism
+    - report_language
+    - healing_direction
+    - safety_boundary
+  status: draft | reviewed | accepted | rejected
+  notes: 补充说明。
+
+evidence_links:
+  - evidence_id: wealth.low_deservingness.say_yes_to_money.self_evaluation_01
+    clause_id: wealth.low_deservingness
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第七章
+    evidence_type: supports_concept
+    support_level: partial
+    summary: 第七章把重写生命评语用于处理“不值得”“失败”等自我信念，可部分支持配得感不足中的自我价值和不值得主题。
+    supported_part:
+      - mechanism
+      - healing_direction
+    status: draft
+    notes: 该来源属于奥南朵体系材料，当前只能作为来源层支持，不能视为跨来源验证。
+
+  - evidence_id: wealth.low_deservingness.say_yes_to_money.ask_money_01
+    clause_id: wealth.low_deservingness
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第二章
+    evidence_type: supports_concept
+    support_level: partial
+    summary: 第二章摘要中提到不敢要钱可能与骄傲、不值得感或负债羞耻有关，可部分支持“值得被支付、被支持”的条款方向。
+    supported_part:
+      - mechanism
+      - report_language
+    status: draft
+    notes: 需要回到章节正文复核具体表述后，才能决定是否升级为 accepted。
+
+  - evidence_id: wealth.scarcity_and_insecurity.say_yes_to_money.money_projection_01
+    clause_id: wealth.scarcity_and_insecurity
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第一章
+    evidence_type: supports_concept
+    support_level: partial
+    summary: 第一章摘要指出人会把身份、安全、自由、尊严、爱和接纳投射到金钱上，可部分支持“安全感借由金钱表达”的机制。
+    supported_part:
+      - mechanism
+    status: draft
+    notes: 适合用于解释“钱不只是钱”，但不能判断用户真实财务安全状况。
+
+  - evidence_id: wealth.scarcity_and_insecurity.say_yes_to_money.more_attitude_01
+    clause_id: wealth.scarcity_and_insecurity
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第二章
+    evidence_type: supports_concept
+    support_level: weak
+    summary: 第二章摘要中提到“更多”是一种常见金钱无意识态度，会让人无法享受已经拥有的财富，可弱支持“总觉得不够”的财富焦虑方向。
+    supported_part:
+      - mechanism
+      - report_language
+    status: draft
+    notes: 与安全感不足相关，但不是直接的临床或心理学证据。
+
+  - evidence_id: wealth.approval_driven_earning.say_yes_to_money.self_worth_01
+    clause_id: wealth.approval_driven_earning
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第一章
+    evidence_type: supports_concept
+    support_level: weak
+    summary: 第一章摘要提到人会把身份、尊严、爱和接纳投射到金钱上，可弱支持财富结果与自我评价、被认可需要相互缠绕的方向。
+    supported_part:
+      - mechanism
+    status: draft
+    notes: 只能支持“金钱承载心理投射”的上位机制，不能直接证明求认可式赚钱。
+
+  - evidence_id: wealth.emotional_spending.say_yes_to_money.habit_protection_01
+    clause_id: wealth.emotional_spending
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第七章
+    evidence_type: supports_concept
+    support_level: weak
+    summary: 第七章摘要提到坏习惯可能是无意识保护策略，可弱支持把消费习惯理解为情绪或保护功能的入口。
+    supported_part:
+      - mechanism
+      - safety_boundary
+    status: draft
+    notes: 来源摘要没有直接讨论情绪型消费，当前只能作为习惯保护功能的间接支持。
+
+  - evidence_id: wealth.low_capacity.say_yes_to_money.receive_money_01
+    clause_id: wealth.low_capacity
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第二章
+    evidence_type: supports_concept
+    support_level: partial
+    summary: 第二章摘要列出抓住钱、赶紧花钱、不敢要钱等无意识金钱态度，可部分支持财富承接、持有和稳定流动相关条款。
+    supported_part:
+      - mechanism
+    status: draft
+    notes: “承载力”是产品化语言，来源更直接支持的是金钱态度和持有方式，需要后续降级表达。
+
+  - evidence_id: wealth.low_action.say_yes_to_money.body_action_01
+    clause_id: wealth.low_action
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第五章
+    evidence_type: supports_concept
+    support_level: partial
+    summary: 第五章摘要指出身体连接、身体姿势、直觉和行动力与财富关系有关，可部分支持行动力条款中的身体连接和财富行动方向。
+    supported_part:
+      - mechanism
+      - healing_direction
+    status: draft
+    notes: 身体直觉只能作为觉察线索，不能作为高风险决策依据。
+
+  - evidence_id: wealth.low_action.say_yes_to_money.fear_change_01
+    clause_id: wealth.low_action
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第四章
+    evidence_type: supports_concept
+    support_level: partial
+    summary: 第四章摘要聚焦压力、恐惧、目标和改变，认为恐惧会让人生和事业变小，可部分支持行动被恐惧和压力限制的方向。
+    supported_part:
+      - mechanism
+      - report_language
+    status: draft
+    notes: 产品化时应使用“可能限制行动”，不能写成确定因果。
+
+  - evidence_id: wealth.low_world_connection.say_yes_to_money.passion_need_01
+    clause_id: wealth.low_world_connection
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第六章
+    evidence_type: supports_concept
+    support_level: weak
+    summary: 第六章摘要强调从快乐、热情和真实需要出发，而不是只专注钱本身，可弱支持财富需要与生命力、真实行动和外部交换连接。
+    supported_part:
+      - mechanism
+      - report_language
+    status: draft
+    notes: 未直接讨论市场、客户或合作关系，只能作为与世界连接的上位启发。
+
+  - evidence_id: wealth.global.say_yes_to_money.safety_boundary_01
+    clause_id: wealth
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 91-来源评估与使用边界.md#风险边界素材
+    evidence_type: supports_practice
+    support_level: direct
+    summary: 来源评估明确指出财富疗愈不能替代理财、投资、法律或商业决策，家庭系统解释不能替代心理诊断，AI 应优先使用低风险觉察练习。
+    supported_part:
+      - safety_boundary
+    status: draft
+    notes: 这条证据支持财富议题全局安全边界，不支持任何具体财富机制结论。

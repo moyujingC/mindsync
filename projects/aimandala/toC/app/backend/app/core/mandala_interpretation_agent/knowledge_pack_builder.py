@@ -9,7 +9,7 @@ from typing import Any
 
 BACKEND_ROOT = Path(__file__).resolve().parents[3]
 AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
-HEALING_KB_ROOT = AIMANDALA_ROOT / "docs" / "sources" / "疗愈体系知识库"
+HEALING_KB_ROOT = AIMANDALA_ROOT / "docs" / "疗愈体系知识库"
 METHOD_SOURCE = (
     HEALING_KB_ROOT
     / "20-疗愈体系"

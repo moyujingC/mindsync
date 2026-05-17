@@ -21,7 +21,7 @@
   "knowledge_pack": {
     "pack_id": "mandala-interpretation-agent-v1-compact",
     "theme": "general",
-    "method_source": "projects/aimandala/docs/sources/知识库构建/三圈五行流派解读方法与步骤.md"
+    "method_source": "projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/三圈五行流派解读方法与步骤.md"
   },
   "output_requirements": {
     "language": "zh-CN",

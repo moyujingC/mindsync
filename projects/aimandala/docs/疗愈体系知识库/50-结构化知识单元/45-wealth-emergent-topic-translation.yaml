@@ -1,0 +1,274 @@
+id: aimandala.wealth_emergent_topic_translation.v0_1
+version: 0.1.0
+status: draft
+date: 2026-05-16
+owner: CEO / Knowledge Base
+type: cross_topic_translation_rules
+product: aimandala
+primary_topic: wealth
+applies_to:
+  - report_generation
+  - theme_retrieval
+  - future_cross_topic_matrix
+source_of_truth: projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/45-wealth-emergent-topic-translation.yaml
+
+source_refs:
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/12-财富议题浮现议题回译规则.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md
+  - projects/aimandala/docs/疗愈体系知识库/30-应用适配/10-aimandala/06-财富议题解读报告模板.md
+
+purpose:
+  - 定义财富作为主议题时，其他浮现议题如何进入报告。
+  - 保证自我价值、家庭、关系、情绪、身体和事业线索都回译到财富主线。
+  - 为后续多独立议题知识库预留桥接字段。
+
+schema:
+  primary_topic: 用户选择或报告锚定的主议题。
+  emergent_topic: 在画面或用户描述中浮现的辅助议题。
+  translation_role: 该浮现议题在主议题中的作用。
+  allowed_depth: hint | brief | supporting_mechanism。
+  translated_mechanisms: 浮现议题必须翻译成的主议题机制。
+  trigger_signals: 允许进入报告的画面或用户描述信号。
+  source_topic_clause_refs: 后续独立议题知识库成熟后挂接的条款 ID。
+  report_language: 可用于报告的用户可见表达。
+  avoid: 禁止表达。
+
+global_rules:
+  primary_topic_anchor:
+    - 报告框架由 primary_topic 决定。
+    - emergent_topic 只能解释主议题机制，不能替代主线。
+    - Lite 默认只用 hint 或 brief。
+    - Pro 最多展开 2 个 supporting_mechanism。
+  report_order:
+    - 先写画面证据。
+    - 再写财富状态和财富机制。
+    - 再把浮现议题翻译为财富机制。
+    - 最后写现实表现和低风险建议。
+  global_avoid:
+    - 不展开成其他主题报告。
+    - 不使用确定因果。
+    - 不输出财务预测、职业决策、医疗判断或心理诊断。
+
+translations:
+  - id: wealth.emergent.self_worth
+    primary_topic: wealth
+    emergent_topic: self_worth
+    emergent_topic_label: 自我价值
+    translation_role: value_permission
+    allowed_depth:
+      lite: brief
+      pro: supporting_mechanism
+    translated_mechanisms:
+      - deservingness
+      - being_paid
+      - value_visibility
+      - receiving_capacity
+      - approval_driven_earning
+    trigger_signals:
+      visual:
+        - 内圈收缩
+        - 中心空缺
+        - 金多
+        - 白色割裂
+        - 价值线索被压低
+      user_language:
+        - 不值得
+        - 不敢收钱
+        - 不敢被看见
+        - 怕别人觉得我不值
+    source_topic_clause_refs: []
+    report_language:
+      - 自我价值线索放到财富议题里，更像是在看你是否允许自己的价值被看见、被支付，并稳定地接住回报。
+    avoid:
+      - 不写用户没有价值感。
+      - 不把价值感写成人格缺陷。
+
+  - id: wealth.emergent.family
+    primary_topic: wealth
+    emergent_topic: family
+    emergent_topic_label: 家庭与原生家庭
+    translation_role: background_mechanism
+    allowed_depth:
+      lite: hint
+      pro: supporting_mechanism
+    translated_mechanisms:
+      - money_script
+      - success_permission
+      - responsibility_pattern
+      - receiving_capacity
+      - family_loyalty
+      - safety_source
+    trigger_signals:
+      visual:
+        - 强边界
+        - 防御
+        - 收缩
+        - 负担感
+        - 内外不一致
+      user_language:
+        - 父母
+        - 家庭责任
+        - 家族期待
+        - 赚钱压力
+        - 成功后关系变化
+    source_topic_clause_refs: []
+    report_language:
+      - 家庭线索放到财富议题里，不是为了判断父母或家庭，而是观察早期关于钱、成功、承担和收受的学习，是否还在影响你现在如何拥有和流动资源。
+    avoid:
+      - 不写父母决定用户财富状态。
+      - 不用家庭系统解释替代心理诊断。
+      - 不把家族忠诚写成确定结论。
+
+  - id: wealth.emergent.relationship
+    primary_topic: wealth
+    emergent_topic: relationship
+    emergent_topic_label: 亲密关系与人际关系
+    translation_role: exchange_boundary
+    allowed_depth:
+      lite: brief
+      pro: supporting_mechanism
+    translated_mechanisms:
+      - value_exchange
+      - giving_receiving_balance
+      - pricing_boundary
+      - pleasing_and_refusal
+      - resource_reciprocity
+      - support_receiving
+    trigger_signals:
+      visual:
+        - 中圈缠绕
+        - 中圈拉扯
+        - 中圈断裂
+        - 色块分割明显
+        - 外圈边界破损
+      user_language:
+        - 伴侣
+        - 合作
+        - 客户
+        - 同事
+        - 人情压力
+    source_topic_clause_refs: []
+    report_language:
+      - 关系线索放到财富议题里，更像是在看交换边界：你是否容易先照顾别人，再考虑自己的价值、价格和承受范围。
+    avoid:
+      - 不展开成亲密关系报告。
+      - 不指责用户讨好。
+      - 不要求用户切断关系。
+
+  - id: wealth.emergent.emotion_regulation
+    primary_topic: wealth
+    emergent_topic: emotion_regulation
+    emergent_topic_label: 情绪调节
+    translation_role: energy_and_spending
+    allowed_depth:
+      lite: brief
+      pro: supporting_mechanism
+    translated_mechanisms:
+      - emotional_spending
+      - money_anxiety
+      - action_interruption
+      - soothing_consumption
+      - energy_scattering
+      - protective_habit
+    trigger_signals:
+      visual:
+        - 红色明显
+        - 火感明显
+        - 外放
+        - 断裂
+        - 线条杂乱
+        - 色彩浓烈
+      user_language:
+        - 焦虑消费
+        - 冲动消费
+        - 拖延
+        - 内耗
+        - 害怕钱不够
+    source_topic_clause_refs: []
+    report_language:
+      - 情绪线索放到财富议题里，更像是在看钱是否承担了安抚功能。消费、拖延或犹豫不一定是能力问题，也可能是情绪在寻找出口。
+    avoid:
+      - 不写用户乱花钱。
+      - 不诊断成瘾、焦虑症或强迫行为。
+      - 债务危机和强迫性消费需要提示外部专业支持。
+
+  - id: wealth.emergent.body_safety
+    primary_topic: wealth
+    emergent_topic: body_safety
+    emergent_topic_label: 身体与安全感
+    translation_role: capacity_and_action
+    allowed_depth:
+      lite: hint
+      pro: supporting_mechanism
+    translated_mechanisms:
+      - capacity
+      - action_power
+      - risk_tolerance
+      - body_can_receive_next_step
+      - safety_system
+      - recovery_space
+    trigger_signals:
+      visual:
+        - 内圈深色
+        - 内圈收缩
+        - 厚重
+        - 尖锐
+        - 外圈防御
+        - 过满
+        - 压迫
+      user_language:
+        - 身体紧
+        - 怕行动
+        - 机会来了退回去
+        - 一想到钱就紧张
+    source_topic_clause_refs: []
+    report_language:
+      - 身体线索放到财富议题里，更像是在看你的系统是否能接住更多行动、曝光、机会和资源。
+    avoid:
+      - 不做健康判断。
+      - 不把身体反应当成投资、辞职、创业等决策依据。
+      - 不鼓励用户忽视现实医疗或心理支持。
+
+  - id: wealth.emergent.career_value_expression
+    primary_topic: wealth
+    emergent_topic: career_value_expression
+    emergent_topic_label: 事业、使命与价值表达
+    translation_role: external_value_path
+    allowed_depth:
+      lite: brief
+      pro: supporting_mechanism
+    translated_mechanisms:
+      - value_expression
+      - service_boundary
+      - client_market_connection
+      - true_need
+      - action_axis
+      - exchangeable_value_form
+    trigger_signals:
+      visual:
+        - 外圈弱
+        - 留白多
+        - 外圈空
+        - 中心清晰但外化不足
+      user_language:
+        - 赚钱方向
+        - 能力表达
+        - 客户
+        - 市场
+        - 定价
+        - 作品
+        - 服务
+    source_topic_clause_refs: []
+    report_language:
+      - 事业线索放到财富议题里，更像是在看你的价值是否已经被整理成别人能看见、理解并愿意交换的形式。
+    avoid:
+      - 不给职业决策建议。
+      - 不承诺客户、成交、收入或市场反馈。
+      - 不把用户不外向写成问题。
+
+future_upgrade:
+  matrix_target: cross-topic-translation.yaml
+  migration_rule:
+    - 当前文件可迁移为 primary_topic=wealth 的一组规则。
+    - 当其他议题独立成库后，只补 source_topic_clause_refs，不改变财富报告主线。
+    - 多主议题矩阵成熟后，由 primary_topic 决定报告框架，由 emergent_topic 提供背景机制。

@@ -104,7 +104,6 @@ class WealthReportRuntime:
         return (
             Path(__file__).resolve().parents[6]
             / "docs"
-            / "sources"
             / "疗愈体系知识库"
         )
 

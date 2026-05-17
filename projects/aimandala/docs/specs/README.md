@@ -36,8 +36,8 @@
 这组文档回答：
 
 - 当前主链路如何收束
-- 当前知识源为何必须回到 `docs/sources/知识库构建/`
-- 当前三圈五行方法真值源为何放在 `sources`，以及新解读智能层如何承接
+- 当前知识源为何必须回到 `docs/疗愈体系知识库/`
+- 当前三圈五行方法真值源如何由 `疗愈体系知识库` 承接，以及新解读智能层如何读取
 - 当前 Paperclip direct routing（直接路由）、服务器执行宿主和本地 Mac execution host（执行宿主机）如何分工
 - 当前为什么应该把 `2026-04-26` 之前的历史普通任务与历史 automation 任务统一收口，并把后续观察窗口切到新基线
 - 当前为什么要把 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 固定治理成 observe-only checkout，而不是继续作为可写升级入口
@@ -50,4 +50,4 @@
 - 页面状态、跳转和职责边界以 [2026-04-09-MVP页面状态机与页面映射总表.md](2026-04-09-MVP页面状态机与页面映射总表.md) 为准
 - 若页面口径与 `2026-04-18` 母规格冲突，以 `2026-04-18` 母规格链为准
 - 技术分层和运行时结构问题统一进入 [../architecture/README.md](../architecture/README.md)
-- 知识来源、正式依据与运行时映射统一进入 [../sources/知识库构建/README.md](../sources/知识库构建/README.md)
+- 知识来源、正式依据与运行时映射统一进入 [../疗愈体系知识库/README.md](../疗愈体系知识库/README.md)

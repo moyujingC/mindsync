@@ -45,14 +45,14 @@
 
 - [specs/README.md](../../projects/aimandala/docs/specs/README.md)
 - [architecture/README.md](../../projects/aimandala/docs/architecture/README.md)
-- [docs/sources/README.md](../../projects/aimandala/docs/sources/README.md)
+- [docs/疗愈体系知识库/README.md](../../projects/aimandala/docs/疗愈体系知识库/README.md)
 - [runbooks/README.md](../../projects/aimandala/docs/runbooks/README.md)
 
 其中：
 
 - `specs/` 和 `architecture/` 继续承接当前正式产品与技术结论
-- `docs/sources/` 承接项目级知识源资料、原始镜像和运行时映射
-- `docs/sources/` 默认不是正式规则替代入口，而是源资料追溯入口
+- `docs/疗愈体系知识库/` 承接曼陀罗解读、疗愈来源、原始来源存档、产品适配和运行时知识包入口
+- 既有来源材料如仍被新知识库依赖，应复制到 `docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/` 内部，不再依赖外部目录
 
 ## 4. 当前窗口入口
 
