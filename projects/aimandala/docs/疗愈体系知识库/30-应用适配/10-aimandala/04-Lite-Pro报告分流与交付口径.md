@@ -6,11 +6,11 @@
 > owner：CEO / Knowledge Base
 > source_of_truth：当前目录/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md
 > product_decision：projects/aimandala/docs/decisions/2026-04-06-用户分群与产品矩阵决策.md
-> source_refs：projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/Lite报告写作规范.md, projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/Pro报告写作规范.md
+> source_refs：30-应用适配/10-aimandala/06-财富议题解读报告模板.md
 
 本文把 `Lite / Pro` 报告口径接入疗愈体系知识库。
 
-这里不重新定义旧 `知识库构建` 中已经明确的写作规范，只负责说明它们在当前产品矩阵和运行时知识包中的使用边界。
+这里定义当前产品矩阵和运行时知识包中的 Lite / Pro 使用边界。财富议题的具体段落组织以 [06-财富议题解读报告模板.md](06-财富议题解读报告模板.md) 为准。
 
 ## 1. 基本判断
 
@@ -66,10 +66,7 @@ Lite 不承担：
 - 复杂能量流动复盘。
 - 长周期疗愈计划。
 
-正式写作规则见：
-
-- `projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/Lite报告写作规范.md`
-- `projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/第13步Lite报告生成Prompt.md`
+正式写作规则见：[06-财富议题解读报告模板.md](06-财富议题解读报告模板.md)。
 
 ## 4. Pro 报告口径
 
@@ -94,10 +91,7 @@ Pro 不承担：
 - 与用户主题无关的大而全人生分析。
 - 21 天连续陪伴方案。
 
-正式写作规则见：
-
-- `projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/Pro报告写作规范.md`
-- `projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/第14步Pro报告生成Prompt.md`
+正式写作规则见：[06-财富议题解读报告模板.md](06-财富议题解读报告模板.md)。
 
 ## 5. 分流规则
 
