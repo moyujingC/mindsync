@@ -136,6 +136,10 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     llm_client = StubMandalaLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
     theme_entries = knowledge_pack["entries"]["theme"]
+    five_element_imbalances = knowledge_pack["entries"]["five_element_imbalances"]
+    assert five_element_imbalances["status"] == "loaded"
+    assert "完整五行失衡从理论上可以扩展为 30 种" in five_element_imbalances["text"]
+    assert "五行失衡只用于圈内元素之间的关系判断" in five_element_imbalances["text"]
     assert theme_entries["wealth_emergent_topic_translation"]["status"] == "loaded"
     assert "emergent_topic: relationship" in theme_entries["wealth_emergent_topic_translation"]["text"]
     result = MandalaInterpretationAgent(llm_client=llm_client).run(

@@ -75,6 +75,10 @@ class KnowledgePackBuilder:
                     "20-疗愈体系/20-流派层/10-曼陀罗/20-五行/02-五行相生相克解读法.md",
                     max_chars=3200,
                 ),
+                "five_element_imbalances": self._read_text(
+                    "20-疗愈体系/20-流派层/10-曼陀罗/20-五行/03-五行失衡类型.md",
+                    max_chars=5200,
+                ),
                 "theme": self._theme_entry(normalized_theme),
             },
             "forbidden_inputs": [
