@@ -405,7 +405,7 @@ def _render_review_markdown(*, case: CompleteCaseVisualInput, stage03: dict) -> 
             f"- 排除项数量：{len(stage03.get('excluded_marks', []) if isinstance(stage03.get('excluded_marks'), list) else [])}",
             f"- 不确定项数量：{len(stage03.get('uncertainties', []) if isinstance(stage03.get('uncertainties'), list) else [])}",
             "",
-            "## 原文视觉识别摘录",
+            "## 原文对画面内容的描述",
             "",
             *_source_visual_note_sections(case),
             "## 人工审核区视觉基准摘录",
@@ -476,7 +476,7 @@ def _circle_review_sections(stage03: dict) -> list[str]:
 def _source_visual_note_sections(case: CompleteCaseVisualInput) -> list[str]:
     return _visual_note_sections(
         case.source_visual_notes,
-        empty_text="原文未提取到明确画面识别句。",
+        empty_text="原文未提取到明确的画面内容描述。",
     )
 
 
@@ -506,12 +506,12 @@ def _source_model_comparison_sections(
     stage03: dict,
 ) -> list[str]:
     sections: list[str] = [
-        "| 圈层 | 原文视觉识别重点 | 人工审核区视觉基准 | 大模型识别重点 | 初步差异提示 | 人工审核结论 |",
+        "| 圈层 | 原文对画面内容的描述 | 人工审核区视觉基准 | 大模型识别重点 | 初步差异提示 | 人工审核结论 |",
         "| --- | --- | --- | --- | --- | --- |",
     ]
     circles = stage03.get("circles", {}) if isinstance(stage03, dict) else {}
     for circle_key, label in [("inner", "内圈"), ("middle", "中圈"), ("outer", "外圈")]:
-        source_notes = "；".join(case.source_visual_notes.get(circle_key, [])) or "原文未提取到明确画面识别句。"
+        source_notes = "；".join(case.source_visual_notes.get(circle_key, [])) or "原文未提取到明确的画面内容描述。"
         reviewed_notes = "；".join(case.reviewed_visual_notes.get(circle_key, [])) or "人工审核区未提取到明确画面识别句。"
         circle = circles.get(circle_key, {}) if isinstance(circles, dict) else {}
         model_summary = _model_circle_summary(circle)
