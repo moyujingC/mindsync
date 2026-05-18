@@ -16,13 +16,20 @@ source_refs:
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/90-财富议题案例反推.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/README.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/01-基础信号财富翻译总表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/02-报告路由位置说明.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/03-颜色财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/04-形状财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/05-跨圈状态财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/06-组合模式财富翻译表.md
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/40-组合模式/12-高频组合模式.md
   - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
   - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml
 
 purpose:
   - 当 `user_theme` 为 `财富` 时，提供主题级检索和组装规则。
-  - 把画面信号、财富知识地图、财富条款和报告结构接起来。
+  - 把画面信号、财富议题翻译层、财富条款和报告结构接起来。
   - 限制财富报告只生成解读和轻量建议，不输出财务、职业或投资决策。
   - 先锚定财富主议题，再把情绪、关系、身体、家庭等浮现议题翻译回财富主线。
 
