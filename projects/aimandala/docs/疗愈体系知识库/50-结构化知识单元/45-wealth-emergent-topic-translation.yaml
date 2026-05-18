@@ -76,7 +76,11 @@ translations:
         - 不敢收钱
         - 不敢被看见
         - 怕别人觉得我不值
-    source_topic_clause_refs: []
+    source_topic_clause_refs:
+      - wealth.low_deservingness
+      - wealth.approval_driven_earning
+      - wealth.receiving_and_pricing_pressure
+      - wealth.value_expression_block
     report_language:
       - 自我价值线索放到财富议题里，更像是在看你是否允许自己的价值被看见、被支付，并稳定地接住回报。
     avoid:
@@ -111,7 +115,11 @@ translations:
         - 家族期待
         - 赚钱压力
         - 成功后关系变化
-    source_topic_clause_refs: []
+    source_topic_clause_refs:
+      - wealth.scarcity_and_insecurity
+      - wealth.success_visibility_threat
+      - wealth.exchange_boundary_imbalance
+      - wealth.difficulty_receiving_support
     report_language:
       - 家庭线索放到财富议题里，不是为了判断父母或家庭，而是观察早期关于钱、成功、承担和收受的学习，是否还在影响你现在如何拥有和流动资源。
     avoid:
@@ -147,7 +155,11 @@ translations:
         - 客户
         - 同事
         - 人情压力
-    source_topic_clause_refs: []
+    source_topic_clause_refs:
+      - wealth.exchange_boundary_imbalance
+      - wealth.receiving_and_pricing_pressure
+      - wealth.resource_leakage
+      - wealth.low_world_connection
     report_language:
       - 关系线索放到财富议题里，更像是在看交换边界：你是否容易先照顾别人，再考虑自己的价值、价格和承受范围。
     avoid:
@@ -184,7 +196,11 @@ translations:
         - 拖延
         - 内耗
         - 害怕钱不够
-    source_topic_clause_refs: []
+    source_topic_clause_refs:
+      - wealth.emotional_spending
+      - wealth.low_action
+      - wealth.scattered_goals
+      - wealth.scarcity_and_insecurity
     report_language:
       - 情绪线索放到财富议题里，更像是在看钱是否承担了安抚功能。消费、拖延或犹豫不一定是能力问题，也可能是情绪在寻找出口。
     avoid:
@@ -221,7 +237,11 @@ translations:
         - 怕行动
         - 机会来了退回去
         - 一想到钱就紧张
-    source_topic_clause_refs: []
+    source_topic_clause_refs:
+      - wealth.low_capacity
+      - wealth.low_action
+      - wealth.hardship_earning_belief
+      - wealth.scarcity_and_insecurity
     report_language:
       - 身体线索放到财富议题里，更像是在看你的系统是否能接住更多行动、曝光、机会和资源。
     avoid:
@@ -258,7 +278,11 @@ translations:
         - 定价
         - 作品
         - 服务
-    source_topic_clause_refs: []
+    source_topic_clause_refs:
+      - wealth.value_expression_block
+      - wealth.low_world_connection
+      - wealth.low_action
+      - wealth.approval_driven_earning
     report_language:
       - 事业线索放到财富议题里，更像是在看你的价值是否已经被整理成别人能看见、理解并愿意交换的形式。
     avoid:
