@@ -675,10 +675,16 @@ def _extract_visual_descriptions_from_segment(segment: str, *, layer: str, limit
                 continue
             if not _is_layer_relevant_visual_description(cleaned, layer=layer):
                 continue
-            _append_unique(notes, cleaned, limit=limit)
+            _append_unique(notes, _source_sentence_for_review(stripped, sentence), limit=limit)
             if len(notes) >= limit:
                 return notes
     return notes
+
+
+def _source_sentence_for_review(raw_line: str, prepared_sentence: str) -> str:
+    if prepared_sentence and prepared_sentence in raw_line:
+        return prepared_sentence.strip(" 。")
+    return raw_line.strip()
 
 
 def _prepare_source_visual_line_for_split(line: str) -> str:

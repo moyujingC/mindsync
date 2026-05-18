@@ -39,7 +39,9 @@ def test_load_complete_cases_finds_all_11_cases():
     assert cases[0].source_visual_notes["inner"]
     assert any("蓝色" in item for item in cases[0].source_visual_notes["inner"])
     assert any("笔触" in item for item in cases[0].source_visual_notes["inner"])
+    assert any("绘画者近期开始向内探索" in item for item in cases[0].source_visual_notes["inner"])
     assert any("莲花形状" in item for item in cases[1].source_visual_notes["inner"])
+    assert any("说明绘画者" in item for item in cases[1].source_visual_notes["inner"])
     assert any("枝桠" in item for item in cases[9].source_visual_notes["middle"])
     assert cases[3].reviewed_visual_notes["inner"]
     assert any("粉色" in item for item in cases[3].reviewed_visual_notes["inner"])
