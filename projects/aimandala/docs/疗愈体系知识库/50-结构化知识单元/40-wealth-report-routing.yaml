@@ -537,6 +537,145 @@ visual_signal_routes:
     use_as: candidate_mapping
     report_boundary: 适合表达取舍两难和行动主线不清，不能替用户做现实选择。
 
+report_section_routes:
+  - section_id: wealth.report.overall_intuition
+    section_name: 整体直觉
+    purpose: 先写第一眼印象，再给后续判断留出画面依据。
+    input_sources:
+      - visual_observations.overall
+      - visual_observations.colors
+      - visual_observations.shapes
+    preferred_outputs:
+      - 画面总感
+      - 主色调
+      - 圈层整体收缩或外放
+    avoid:
+      - 不直接下财务判断。
+      - 不提前展开根因链。
+
+  - section_id: wealth.report.mainline_confirmation
+    section_name: 财富主线确认
+    purpose: 说明本次报告围绕的财富状态。
+    input_sources:
+      - wealth.low_deservingness
+      - wealth.scarcity_and_insecurity
+      - wealth.low_capacity
+      - wealth.low_action
+      - wealth.low_world_connection
+    preferred_outputs:
+      - 配得感
+      - 安全感
+      - 承载力
+      - 行动力
+      - 与世界连接
+    avoid:
+      - 不写成收入高低判断。
+
+  - section_id: wealth.report.circle_reading
+    section_name: 三圈财富读法
+    purpose: 分别看内圈、中圈、外圈的财富含义。
+    input_sources:
+      - visual.inner_contracted_outer_strong
+      - visual.middle_tangled_relationship_pull
+      - visual.outer_boundary_broken
+      - visual.outer_boundary_thick_closed
+      - visual.outer_world_closed_or_blank
+    preferred_outputs:
+      - 内圈
+      - 中圈
+      - 外圈
+      - 三圈联动关系
+    avoid:
+      - 不把三圈读法混成单点结论。
+
+  - section_id: wealth.report.mechanism_analysis
+    section_name: 机制拆解
+    purpose: 解释财富为何这样卡住。
+    input_sources:
+      - wealth.low_deservingness
+      - wealth.scarcity_and_insecurity
+      - wealth.approval_driven_earning
+      - wealth.emotional_spending
+      - wealth.low_capacity
+      - wealth.low_action
+      - wealth.low_world_connection
+    preferred_outputs:
+      - 财富卡点机制
+      - 反复出现的模式
+      - 现实可感的压力源
+    avoid:
+      - 不把机制写成定性结论。
+
+  - section_id: wealth.report.emergent_topic_rewrite
+    section_name: 浮现议题回译
+    purpose: 把关系、家庭、情绪、身体和事业翻回财富主线。
+    input_sources:
+      - wealth.emergent.self_worth
+      - wealth.emergent.family
+      - wealth.emergent.relationship
+      - wealth.emergent.emotion_regulation
+      - wealth.emergent.body_safety
+      - wealth.emergent.career_value_expression
+    preferred_outputs:
+      - 价值交换
+      - 金钱脚本
+      - 情绪型漏财
+      - 承载力
+      - 价值表达
+    avoid:
+      - 不展开成其他主题报告。
+
+  - section_id: wealth.report.real_life_expression
+    section_name: 现实表现
+    purpose: 把机制翻译成用户现实里可能对得上的样子。
+    input_sources:
+      - wealth.emotional_spending
+      - wealth.low_action
+      - wealth.low_capacity
+      - wealth.value_expression_block
+      - wealth.scattered_goals
+    preferred_outputs:
+      - 更容易为情绪买单
+      - 想行动但行动被打断
+      - 有价值但不易外化
+      - 现实里更紧绷或更分散
+    avoid:
+      - 不写财务预测。
+
+  - section_id: wealth.report.growth_window
+    section_name: 生机
+    purpose: 保留可用力量和下一步出口。
+    input_sources:
+      - wealth.passion_needs_abundance
+      - wealth.value_expression_block
+      - wealth.low_action
+      - wealth.low_world_connection
+    preferred_outputs:
+      - 热情
+      - 真实需要
+      - 表达路径
+      - 稳定行动
+      - 承载力扩容
+    avoid:
+      - 不把生机写成承诺结果。
+
+  - section_id: wealth.report.adjustment_suggestions
+    section_name: 调整建议
+    purpose: 给低风险动作和观察入口。
+    input_sources:
+      - wealth.safety_scarcity_control
+      - wealth.body_fear_action
+      - wealth.emotion_spending_protective_habits
+      - wealth.world_connection_market
+    preferred_outputs:
+      - 觉察记录
+      - 小步行动
+      - 边界练习
+      - 支持练习
+    avoid:
+      - 不替用户做决策。
+      - 不扩成完整方案。
+
 module_selection:
   lite:
     max_primary_modules: 2
