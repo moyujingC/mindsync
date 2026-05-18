@@ -25,6 +25,9 @@ load_order:
     ref: ../30-应用适配/10-aimandala/03-解读报告生成最小规则.md
     reason: 最后进入生成顺序和安全边界。
   - stage: application_rules
+    ref: ../30-应用适配/10-aimandala/07-报告语言风格指南.md
+    reason: 报告语言风格的唯一入口，控制疗愈感、承接感和边界表达。
+  - stage: application_rules
     ref: ../30-应用适配/10-aimandala/06-财富议题解读报告模板.md
     when: user_theme == 财富
     reason: 财富主题需要独立的段落模板，把主线和浮现议题的回译顺序固定下来。
@@ -76,6 +79,7 @@ composition_rules:
       - 05-报告任务定义
       - 04-Lite-Pro报告分流与交付口径
       - 03-解读报告生成最小规则
+      - 07-报告语言风格指南
       - 06-财富议题解读报告模板，当主题为财富时
       - 10-aimandala-report-generation.yaml
       - 40-wealth-report-routing.yaml，当主题为财富时
@@ -90,6 +94,7 @@ composition_rules:
       - 05-报告任务定义
       - 04-Lite-Pro报告分流与交付口径
       - 03-解读报告生成最小规则
+      - 07-报告语言风格指南
       - 06-财富议题解读报告模板，当主题为财富时
       - 10-aimandala-report-generation.yaml
       - 40-wealth-report-routing.yaml，当主题为财富时

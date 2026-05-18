@@ -142,6 +142,7 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert "五行失衡只用于圈内元素之间的关系判断" in five_element_imbalances["text"]
     assert theme_entries["wealth_emergent_topic_translation"]["status"] == "loaded"
     assert "emergent_topic: relationship" in theme_entries["wealth_emergent_topic_translation"]["text"]
+    assert knowledge_pack["entries"]["report_style_guide"]["status"] == "loaded"
     result = MandalaInterpretationAgent(llm_client=llm_client).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=knowledge_pack,
@@ -217,6 +218,8 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
     assert "财富核心解读段不要出现木火土金水" in report_prompt
     assert "不能写成确定根因" in report_prompt
     assert "浮现议题回译" in report_prompt
+    assert "报告语言风格只遵循知识包中的《报告语言风格指南》" in report_prompt
+    assert "报告语言风格只遵循知识包中的《报告语言风格指南》" in report_prompt
 
 
 def test_mandala_agent_five_element_profile_keeps_intra_circle_relations(tmp_path):

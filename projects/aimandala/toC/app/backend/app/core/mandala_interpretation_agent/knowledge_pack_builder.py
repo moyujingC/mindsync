@@ -48,36 +48,40 @@ class KnowledgePackBuilder:
                     max_chars=2600,
                 ),
                 "circle_structure": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/01-三圈结构法.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/30-跨圈能量解读/01-三圈结构法.md",
                     max_chars=3600,
                 ),
                 "visual_analysis": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/02-画面分析基础.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面识别与描述/02-画面分析基础.md",
                     max_chars=3600,
                 ),
                 "shape_sensing": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/03-形状感知法.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面识别与描述/03-形状识别与感知.md",
                     max_chars=3000,
                 ),
                 "color_sensing": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/04-颜色感知法.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面识别与描述/04-颜色识别与感知.md",
                     max_chars=3200,
                 ),
                 "combination_patterns": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/12-高频组合模式.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/40-组合模式/12-高频组合模式.md",
                     max_chars=3200,
                 ),
                 "five_element_sensing": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/20-五行/01-五行感知法.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/20-圈内五行解读/01-五行感知法.md",
                     max_chars=3200,
                 ),
                 "five_element_relations": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/20-五行/02-五行相生相克解读法.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/20-圈内五行解读/02-五行相生相克解读法.md",
                     max_chars=3200,
                 ),
                 "five_element_imbalances": self._read_text(
-                    "20-疗愈体系/20-流派层/10-曼陀罗/20-五行/03-五行失衡类型.md",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/20-圈内五行解读/03-五行失衡类型.md",
                     max_chars=5200,
+                ),
+                "report_style_guide": self._read_text(
+                    "30-应用适配/10-aimandala/07-报告语言风格指南.md",
+                    max_chars=3600,
                 ),
                 "theme": self._theme_entry(normalized_theme),
             },
