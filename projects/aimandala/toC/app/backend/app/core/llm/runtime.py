@@ -13,6 +13,8 @@ from typing import Any, Callable, Dict, Optional, Protocol, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from .prompt_loader import render_prompt_template
+
 
 DEFAULT_DEEPSEEK_V4_MODEL = "deepseek-v4-pro"
 DEFAULT_DEEPSEEK_V4_BASE_URL = "https://api.deepseek.com"
@@ -129,14 +131,11 @@ class OpenAICompatibleLLMClient:
         task_config = self.config.resolve_task_config(task)
         fallback_task_config = self.config.resolve_fallback_task_config(task)
         schema_json = json.dumps(schema, ensure_ascii=False, indent=2)
-        system_prompt = (
-            "你是一名严格输出 JSON 的助手。"
-            "只返回一个 JSON 对象，不要输出解释、前缀、代码块或额外文本。"
-        )
-        user_prompt = (
-            f"{prompt.strip()}\n\n"
-            "请严格依据下面的 JSON Schema 输出：\n"
-            f"{schema_json}"
+        system_prompt = render_prompt_template("json/object_system.md")
+        user_prompt = render_prompt_template(
+            "json/schema_user.md",
+            prompt=prompt.strip(),
+            schema_json=schema_json,
         )
         messages = self._build_messages(
             system_prompt=system_prompt,

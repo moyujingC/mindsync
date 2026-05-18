@@ -1,7 +1,8 @@
 id: domain.wealth.issue_clauses.v0_1
 version: 0.1.0
 status: draft
-evidence_status: model_scaffold
+content_source_status: ai_draft
+source_verification_status: source_verification_pending
 date: 2026-05-15
 owner: CEO / Knowledge Base
 type: issue_clause_set
@@ -12,8 +13,8 @@ applies_to:
   - healing_plan
 source_of_truth: projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
 source_refs:
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md
-provenance_note: 当前条款由现有财富议题框架和模型辅助结构化生成，用作产品化草稿；尚未完成新增电子书来源的逐条证据回填，不应视为跨来源验证结论。
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md
+provenance_note: 当前条款由现有财富议题框架和模型辅助结构化生成，用作产品化草稿；尚未完成新增电子书来源的逐条证据回填，整体处于 source_verification_pending，不应视为跨来源验证结论。
 
 domain_definition:
   title: 财富议题
@@ -38,29 +39,29 @@ clauses:
   - id: wealth.low_deservingness
     title: 配得感不足
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#51-配得感不足
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md#51-配得感不足
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
         - 创伤与复原
         - 格式塔心理咨询理论与实践
         - 谁在我家
-    summary: 这条线索更像是在看，你是否还在犹豫自己值不值得拥有、被支付、被支持和被看见。
+    summary: 用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。
     typical_signals:
-      - 对“我配不配”这件事总会多想一步。
-      - 拿到结果后，心里还是不太踏实。
-      - 常常要先证明自己，才敢真正接住回报。
-      - 容易把价值和结果绑得很紧。
+      - 觉得自己不值得拥有更多。
+      - 拿到结果后仍然不满意。
+      - 需要不断证明自己才敢收钱。
+      - 对自己的价值有怀疑。
     report_language:
-      - 从财富议题看，这里更像是在看一段“我值不值得拥有”的拉扯。
-      - 你并不一定缺少创造价值的能力，更多像是还在练习怎样稳稳地接住它。
+      - 从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。
+      - 你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。
     healing_direction:
-      - 先不用急着证明自己，先练习看见自己已经有的价值。
-      - 允许自己小范围地接住一点回报或支持。
-      - 慢慢分开“我创造了什么”和“我到底值不值得”。
+      - 配得感练习。
+      - 自我价值确认。
+      - 区分价值创造和自我证明。
     visual_mapping_candidates:
       - 金多可能映射到求认可、自我评判和外界标准。
       - 土弱或不成片可能映射到承载不足。
@@ -72,29 +73,29 @@ clauses:
   - id: wealth.scarcity_and_insecurity
     title: 匮乏感和安全感不足
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#52-匮乏感和安全感不足
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md#52-匮乏感和安全感不足
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
         - 创伤与复原
         - 格式塔心理咨询理论与实践
         - 谁在我家
-    summary: 这条线索更像是在看，钱在你这里是否承担了太多安全感的任务。
+    summary: 用户可能把钱当成安全感来源，即使有进账也难以真正安心。
     typical_signals:
-      - 一碰到钱，心里容易先紧一下。
-      - 明明有进账，还是不太能真正放松。
-      - 对未来不够用的担心会自己冒出来。
-      - 赚钱动力里，恐惧有时比热爱更先说话。
+      - 对钱紧张、焦虑、患得患失。
+      - 有进账也不安心。
+      - 害怕未来不够用。
+      - 赚钱动力来自恐惧，而不是热爱和创造。
     report_language:
-      - 这里更像是安全感在向钱借力，所以钱越重要，内在反而越容易绷紧。
-      - 这不一定表示现实资源真的少，也可能是心里长期住着一个“不够用”的预设。
+      - 这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。
+      - 这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。
     healing_direction:
-      - 先不用急着解决钱的问题，先让身体知道“现在是安全的”。
-      - 慢慢看一看，自己对钱的信念是怎样形成的。
-      - 允许安全感从身体一点点长回来。
+      - 安全感重建。
+      - 金钱信念梳理。
+      - 身体稳定练习。
     visual_mapping_candidates:
       - 水火冲突可能映射到情绪消耗行动力。
     safety:
@@ -105,10 +106,10 @@ clauses:
   - id: wealth.approval_driven_earning
     title: 求认可式赚钱
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#53-求认可式赚钱
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md#53-求认可式赚钱
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
@@ -138,29 +139,29 @@ clauses:
   - id: wealth.emotional_spending
     title: 情绪型漏财
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#54-情绪型漏财
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md#54-情绪型漏财
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
         - 创伤与复原
         - 格式塔心理咨询理论与实践
         - 谁在我家
-    summary: 这条线索更像是在看，消费有没有替情绪做了太多安抚工作。
+    summary: 用户可能通过消费安抚情绪，或让情绪压力影响财富决策。
     typical_signals:
-      - 有时候花钱不是为了东西本身，而是为了安顿一下当下的感觉。
-      - 开心时想奖励自己，不开心时又想借消费缓一缓。
-      - 眼前的感觉会比性价比更快做决定。
-      - 情感、家庭或成长压力一上来，支出也容易跟着动。
+      - 为情绪买单。
+      - 开心时奖励性消费，不开心时安抚性消费。
+      - 花钱不看性价比，只看当下感觉。
+      - 情感、家庭、成长焦虑带动支出。
     report_language:
-      - 这里更像是钱在替情绪找出口，所以消费本身未必有问题，关键是它承担了太多安抚功能。
-      - 如果情绪一直没被看见，财富流动就容易变成一边进来、一边又被带走。
+      - 这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。
+      - 如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。
     healing_direction:
-      - 可以先不急着管住消费，先看一看消费前后自己在经历什么。
-      - 试着找到一种不靠花钱也能安顿情绪的方式。
-      - 允许情绪先被看见，再谈消费。
+      - 情绪消费觉察。
+      - 记录消费前后的感受。
+      - 建立不靠消费也能安抚自己的方式。
     visual_mapping_candidates:
       - 外圈红色多可能映射到情绪型漏财。
       - 水火冲突可能映射到情绪消耗行动力。
@@ -172,29 +173,29 @@ clauses:
   - id: wealth.low_capacity
     title: 承载力不足
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#55-承载力不足
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md#55-承载力不足
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
         - 创伤与复原
         - 格式塔心理咨询理论与实践
         - 谁在我家
-    summary: 这条线索更像是在看，你是否有机会和资源进来，但还需要一个更稳的容器去接住它们。
+    summary: 用户可能能创造收入或机会，但接住、保存和稳定承载的能力不足。
     typical_signals:
-      - 看起来能接到一些机会，但不一定接得住、留得住。
-      - 资源一多，内在反而容易更忙、更紧。
-      - 收入刚有起色，新的支出或压力就跟着出现。
-      - 财富往前走的时候，焦虑也容易一起被带起来。
+      - 能赚钱但存不住。
+      - 有机会但接不住。
+      - 收入提升后很快出现新支出或新压力。
+      - 财富增长会带来焦虑，而不是稳定。
     report_language:
-      - 这不一定是在说你没有财富能力，更像是在说“接住财富”的容器还需要再稳一点。
-      - 当承载力还在长的时候，机会和收入来了，内在也可能跟着紧张起来。
+      - 这条线索不一定是在说你没有财富能力，更像是在说“接住财富”的容器还需要变稳。
+      - 当承载力不足时，机会和收入来了，内在反而可能更紧张。
     healing_direction:
-      - 先让自己有一点点稳定感，再去接更多。
-      - 可以从身体稳定和节奏稳定开始。
-      - 让资源容器先变小而稳，再慢慢变大。
+      - 承载力练习。
+      - 身体稳定练习。
+      - 建立稳定节奏和资源容器。
     visual_mapping_candidates:
       - 土弱或不成片可能映射到承载力不足。
       - 木无根可能映射到成长动力有但滋养不足。
@@ -206,10 +207,10 @@ clauses:
   - id: wealth.low_action
     title: 行动力不足
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#56-行动力不足
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md#56-行动力不足
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
@@ -240,10 +241,10 @@ clauses:
   - id: wealth.low_world_connection
     title: 与世界链接不足
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md#57-与世界链接不足
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md#57-与世界链接不足
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
@@ -274,10 +275,10 @@ clauses:
   - id: wealth.receiving_and_pricing_pressure
     title: 不敢收钱与开价压力
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#611-不敢收钱与开价压力
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#611-不敢收钱与开价压力
       needs_backfill_from:
         - 对财富说是
         - 格式塔心理咨询理论与实践
@@ -306,10 +307,10 @@ clauses:
   - id: wealth.hardship_earning_belief
     title: 辛苦赚钱信念
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#612-辛苦赚钱信念
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#612-辛苦赚钱信念
       needs_backfill_from:
         - 对财富说是
         - 创伤与复原
@@ -338,10 +339,10 @@ clauses:
   - id: wealth.success_visibility_threat
     title: 有钱危险与成功压力
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#613-有钱危险与成功压力
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#613-有钱危险与成功压力
       needs_backfill_from:
         - 对财富说是
         - 谁在我家
@@ -370,10 +371,10 @@ clauses:
   - id: wealth.resource_leakage
     title: 保存困难与资源外泄
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#614-保存困难与资源外泄
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#614-保存困难与资源外泄
       needs_backfill_from:
         - 对财富说是
         - 心理自助CBT书系
@@ -402,10 +403,10 @@ clauses:
   - id: wealth.exchange_boundary_imbalance
     title: 付出失衡与交换边界
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#615-付出失衡与交换边界
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#615-付出失衡与交换边界
       needs_backfill_from:
         - 格式塔心理咨询理论与实践
         - 谁在我家
@@ -434,27 +435,27 @@ clauses:
   - id: wealth.value_expression_block
     title: 价值表达受阻
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#616-价值表达受阻
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#616-价值表达受阻
       needs_backfill_from:
         - ACT就这么简单
         - 格式塔心理咨询理论与实践
         - 对财富说是
-    summary: 这条线索更像是在看，你的价值已经存在，但还没有完全被整理成别人能看见、理解并愿意交换的样子。
+    summary: 用户可能有能力、经验或热情，但没有被稳定表达、包装、说明、展示和交付给世界。
     typical_signals:
-      - 明明有能力，却还没怎么让别人看见。
-      - 说到自己能提供什么时，容易先卡一下。
-      - 外界还不太容易抓住你的真正价值。
-      - 热情是有的，但还没完全长成清晰的交付方式。
+      - 有能力但不展示。
+      - 不知道如何说明自己的价值。
+      - 外界看不到用户真正能提供什么。
+      - 有热情但没有形成交付路径。
     report_language:
-      - 你的价值很可能已经在了，只是还在等一个更清楚的表达方式。
-      - 财富流动不只靠能力，也需要让别人有机会看见它、理解它、接住它。
+      - 你的价值可能已经存在，但还没有被整理成别人能看见、理解和交换的形式。
+      - 财富流动不只需要能力，也需要表达路径。
     healing_direction:
-      - 可以先试着把一个小价值说清楚、讲明白。
-      - 不用一下子做很大，先让一个小作品或一个小想法被看见。
-      - 练习把自己的能力翻成别人听得懂的话。
+      - 梳理一个可以被看见的价值表达。
+      - 小范围公开一个作品、服务或想法。
+      - 练习把能力翻译成别人能理解的语言。
     visual_mapping_candidates:
       - 外圈留白多可能映射到对外表达不足。
       - 中心清晰但外圈弱可能映射到内在有价值但外化不足。
@@ -466,10 +467,10 @@ clauses:
   - id: wealth.scattered_goals
     title: 目标混乱与能量分散
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#617-目标混乱与能量分散
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#617-目标混乱与能量分散
       needs_backfill_from:
         - ACT就这么简单
         - 心理自助CBT书系
@@ -497,10 +498,10 @@ clauses:
   - id: wealth.difficulty_receiving_support
     title: 接受支持困难
     provenance:
-      source_status: model_scaffold
-      validation_status: pending_source_review
+      source_status: ai_draft
+      validation_status: source_verification_pending
       evidence_refs:
-        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md#618-接受支持困难
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#618-接受支持困难
       needs_backfill_from:
         - 谁在我家
         - 创伤与复原

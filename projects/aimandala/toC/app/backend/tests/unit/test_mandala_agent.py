@@ -20,6 +20,12 @@ from app.core.mandala_interpretation_agent.quality_gate import run_quality_gate
 from app.core.wealth_report import get_wealth_report_runtime
 
 
+def _extract_prompt_payload(prompt: str) -> dict:
+    payload_start = prompt.rfind("\n{")
+    assert payload_start != -1
+    return json.loads(prompt[payload_start + 1 :])
+
+
 class StubMandalaLLMClient:
     def __init__(self) -> None:
         self.structured_calls: list[dict] = []
@@ -142,6 +148,8 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert "五行失衡只用于圈内元素之间的关系判断" in five_element_imbalances["text"]
     assert theme_entries["wealth_emergent_topic_translation"]["status"] == "loaded"
     assert "emergent_topic: relationship" in theme_entries["wealth_emergent_topic_translation"]["text"]
+    assert theme_entries["wealth_next_exploration_mapping"]["status"] == "loaded"
+    assert "父亲关系 / 权威与成功" in theme_entries["wealth_next_exploration_mapping"]["text"]
     assert knowledge_pack["entries"]["report_style_guide"]["status"] == "loaded"
     result = MandalaInterpretationAgent(llm_client=llm_client).run(
         agent_input=_agent_input(tmp_path),
@@ -165,14 +173,19 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert theme_route["theme"] == "wealth"
     assert theme_route["selected_clause_ids"]
     assert theme_route["clauses"]
+    assert theme_route["next_exploration_recommendations"]
+    assert (
+        result.report_context_package["theme_interpretation"]["route"][
+            "next_exploration_recommendations"
+        ]
+        == theme_route["next_exploration_recommendations"]
+    )
     assert result.report_context_package["theme_interpretation"]["route"]["selected_clause_ids"]
     assert result.final_report["summary"] == "核心主轴是先稳住，再推进。"
     assert result.quality_gate["passed"] is True
     assert "stage-" not in result.final_report_md
 
-    report_prompt_payload = json.loads(
-        llm_client.text_calls[-1]["user_prompt"].split("\n\n", 1)[1]
-    )
+    report_prompt_payload = _extract_prompt_payload(llm_client.text_calls[-1]["user_prompt"])
     assert report_prompt_payload["writing_inputs"]["theme_route"]["selected_clause_ids"]
     assert report_prompt_payload["writing_inputs"]["five_element"]["scope"]["five_element_scope"] == "intra_circle_visual_elements"
 
@@ -206,7 +219,7 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
 
     report_prompt = llm_client.text_calls[-1]["user_prompt"]
 
-    assert "Pro 版结构固定为 7 段" in report_prompt
+    assert "Pro 版结构固定为 8 段" in report_prompt
     assert "标题必须明确包含“财富议题”" in report_prompt
     assert "不要用“好的”" in report_prompt
     assert "圈内元素五行感知" in report_prompt
@@ -217,7 +230,9 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
     assert "不要写“内圈属水”" in report_prompt
     assert "财富核心解读段不要出现木火土金水" in report_prompt
     assert "不能写成确定根因" in report_prompt
-    assert "浮现议题回译" in report_prompt
+    assert "背景线索必须融入对应三圈的画面解读中" in report_prompt
+    assert "不要单独设“浮现议题”段落" in report_prompt
+    assert "下一次曼陀罗探索建议" in report_prompt
     assert "报告语言风格只遵循知识包中的《报告语言风格指南》" in report_prompt
     assert "报告语言风格只遵循知识包中的《报告语言风格指南》" in report_prompt
 
@@ -457,7 +472,7 @@ def test_mandala_agent_quality_gate_rejects_deterministic_family_cause(tmp_path)
         "# 财富议题曼陀罗解读报告\n\n"
         "## 五行感知\n"
         "五行中的土与金是当前画面依据。\n\n"
-        "## 浮现议题回译\n"
+        "## 三圈分层解读\n"
         "这份紧绷很可能与早期家庭中学到的承担方式有关。"
         + "画面依据与财富解读。" * 80
     )
@@ -592,3 +607,5 @@ def test_wealth_runtime_routes_and_context():
     assert context["topic_label"] == "财富议题"
     assert route.selected_clause_ids
     assert route.selected_module_ids
+    assert route.selected_next_explorations
+    assert route.selected_next_explorations[0]["recommended_topic"]

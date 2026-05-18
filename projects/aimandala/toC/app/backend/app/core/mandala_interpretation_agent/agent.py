@@ -10,6 +10,7 @@ from app.core.wealth_report import get_wealth_report_runtime
 
 from .contracts import EXECUTION_BLOCKS, STAGE_KEYS, MandalaAgentInput, MandalaAgentResult
 from .knowledge_pack_builder import knowledge_pack_to_prompt_fragment
+from .prompt_loader import load_prompt_config, load_prompt_template, render_prompt_template
 from .quality_gate import GENERIC_OPENING_PHRASES, run_quality_gate
 
 
@@ -263,7 +264,7 @@ class MandalaInterpretationAgent:
     ) -> dict[str, Any]:
         text = self.llm_client.generate_text(
             task="chat",
-            system_prompt="你是曼陀罗解读智能体。只基于已给 stage 证据做主轴选择，返回 JSON。",
+            system_prompt=load_prompt_template("thesis/system.md"),
             user_prompt=self._thesis_prompt(
                 agent_input=agent_input,
                 knowledge_pack=knowledge_pack,
@@ -274,6 +275,11 @@ class MandalaInterpretationAgent:
         core_thesis = str(payload.get("core_thesis") or "").strip() or "画面呈现出自我稳定与外部表达之间的调节过程。"
         framing = str(payload.get("user_facing_framing") or "").strip() or "这份解读会先从画面证据出发，再连接到当下状态。"
         healing_direction = str(payload.get("healing_direction") or "").strip() or "先确认稳定支点，再逐步展开表达。"
+        entry_circle = self._safe_entry_circle(payload.get("entry_circle"))
+        entry_signal = str(payload.get("entry_signal") or "").strip()
+        entry_reason = str(payload.get("entry_reason") or "").strip()
+        narrative_order = self._safe_narrative_order(payload.get("narrative_order"), entry_circle)
+        integrated_context_threads = self._string_list(payload.get("integrated_context_threads"))
         evidence_refs = payload.get("evidence_refs")
         if not isinstance(evidence_refs, list):
             evidence_refs = self._visual_unit_refs(stage_outputs["stage-03-visual-evidence"])
@@ -286,6 +292,11 @@ class MandalaInterpretationAgent:
                 "stage": "stage-10-core-thesis-selection",
                 "status": "complete",
                 "core_thesis": core_thesis,
+                "entry_circle": entry_circle,
+                "entry_signal": entry_signal,
+                "entry_reason": entry_reason,
+                "narrative_order": narrative_order,
+                "integrated_context_threads": integrated_context_threads,
                 "evidence_refs": evidence_refs,
                 "theme_route": theme_route,
             },
@@ -293,6 +304,11 @@ class MandalaInterpretationAgent:
                 "stage": "stage-11-user-facing-framing",
                 "status": "complete",
                 "framing": framing,
+                "entry_circle": entry_circle,
+                "entry_signal": entry_signal,
+                "entry_reason": entry_reason,
+                "narrative_order": narrative_order,
+                "integrated_context_threads": integrated_context_threads,
                 "theme_route": theme_route,
             },
             "stage-12-healing-direction-and-report-branching": {
@@ -300,6 +316,11 @@ class MandalaInterpretationAgent:
                 "status": "complete",
                 "healing_direction": healing_direction,
                 "report_mode": agent_input.report_mode,
+                "entry_circle": entry_circle,
+                "entry_signal": entry_signal,
+                "entry_reason": entry_reason,
+                "narrative_order": narrative_order,
+                "integrated_context_threads": integrated_context_threads,
                 "writing_input_refs": evidence_refs,
                 "theme_route": theme_route,
             },
@@ -319,7 +340,7 @@ class MandalaInterpretationAgent:
         )
         report_text = self.llm_client.generate_text(
             task="chat",
-            system_prompt="你是曼陀罗解读报告写作者。写给普通用户，不泄漏内部 stage 或开发标签。",
+            system_prompt=load_prompt_template("report/system.md"),
             user_prompt=report_prompt,
         )
         if not report_text or not report_text.strip():
@@ -331,12 +352,12 @@ class MandalaInterpretationAgent:
                 break
             retry_text = self.llm_client.generate_text(
                 task="chat",
-                system_prompt="你是曼陀罗解读报告写作者。请严格修正报告结构问题。",
-                user_prompt=(
-                    f"{report_prompt}\n\n"
-                    "上一次报告未满足以下要求，请重写完整报告，不要解释原因：\n"
-                    f"{json.dumps(draft_issues, ensure_ascii=False)}\n\n"
-                    f"上一次报告：\n{markdown}"
+                system_prompt=load_prompt_template("report/rewrite_system.md"),
+                user_prompt=render_prompt_template(
+                    "report/rewrite_user.md",
+                    report_prompt=report_prompt,
+                    draft_issues_json=json.dumps(draft_issues, ensure_ascii=False),
+                    previous_report=markdown,
                 ),
             )
             if retry_text and retry_text.strip():
@@ -550,6 +571,25 @@ class MandalaInterpretationAgent:
             return [value.strip()]
         return []
 
+    def _safe_entry_circle(self, value: Any) -> str:
+        circle = str(value or "").strip().lower()
+        return circle if circle in {"inner", "middle", "outer"} else "inner"
+
+    def _safe_narrative_order(self, value: Any, entry_circle: str) -> list[str]:
+        valid = ["inner", "middle", "outer"]
+        order = []
+        if isinstance(value, list):
+            for item in value:
+                circle = str(item or "").strip().lower()
+                if circle in valid and circle not in order:
+                    order.append(circle)
+        if entry_circle in valid and entry_circle not in order:
+            order.insert(0, entry_circle)
+        for circle in valid:
+            if circle not in order:
+                order.append(circle)
+        return order
+
     def _build_stage04(self, stage03: dict[str, Any]) -> dict[str, Any]:
         evidence_refs = self._visual_unit_refs(stage03)
         return {
@@ -617,12 +657,11 @@ class MandalaInterpretationAgent:
         agent_input: MandalaAgentInput,
         knowledge_pack: dict[str, Any],
     ) -> str:
-        return (
-            "请观察这张曼陀罗画作，只输出视觉证据 JSON。"
-            "不要做心理诊断，不要写报告正文。\n\n"
-            f"用户主题：{agent_input.user_context.theme_label}\n"
-            f"三圈边界：{json.dumps(agent_input.circle_boundaries, ensure_ascii=False)}\n"
-            f"精简知识包：{knowledge_pack_to_prompt_fragment(knowledge_pack)}"
+        return render_prompt_template(
+            "vision/user.md",
+            theme_label=agent_input.user_context.theme_label,
+            circle_boundaries_json=json.dumps(agent_input.circle_boundaries, ensure_ascii=False),
+            knowledge_pack_json=knowledge_pack_to_prompt_fragment(knowledge_pack),
         )
 
     def _thesis_prompt(
@@ -645,10 +684,9 @@ class MandalaInterpretationAgent:
                 if key in stage_outputs
             },
         }
-        return (
-            "请从已有证据中选择报告主轴，返回 JSON："
-            "core_thesis、user_facing_framing、healing_direction、evidence_refs。\n\n"
-            f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
+        return render_prompt_template(
+            "thesis/user.md",
+            payload_json=json.dumps(payload, ensure_ascii=False, indent=2),
         )
 
     def _report_prompt(
@@ -676,49 +714,12 @@ class MandalaInterpretationAgent:
                 "theme_route": stage_outputs["stage-12-healing-direction-and-report-branching"].get("theme_route", {}),
             },
         }
-        report_structure = self._report_structure_instruction(agent_input.report_mode)
-        return (
-            "请生成用户可见的曼陀罗解读报告 Markdown。"
-            "只基于给定写作输入，不出现 stage、placeholder、legacy 等内部词。"
-            "不得输出财务预测、收益预测、投资建议或心理诊断。"
-            "不要用“好的”“这是为你生成的报告”“亲爱的朋友”等寒暄式开头。"
-            "标题必须明确包含“财富议题”。"
-            "报告语言风格只遵循知识包中的《报告语言风格指南》，不要从其他文档重复抽取风格规则。"
-            "报告必须显性呈现五行分析过程，至少写出两个圈内视觉元素（金、木、水、火、土）及其画面依据。"
-            "五行分析不是给整圈判定五行，而是分析某一圈内部颜色、形状、面积、相邻元素分别对应的五行。"
-            "同一圈内部的元素之间可以分析五行生克，但必须说明是圈内元素关系候选。"
-            "五行感知段优先写“某个元素/某个颜色/某个形状对应什么五行”，不要先写“某一圈属什么”。"
-            "写作顺序优先先写元素，再写圈层，再写圈内关系候选。"
-            "三圈联动只能写内圈本源层、中圈情绪层、外圈现实层之间的承接关系，不能写跨圈五行生克。"
-            "财富核心解读和三圈分层解读不得把某一圈的五行与另一圈的五行做因果、拉扯、互相影响或能量通道解释。"
-            "不要写“内圈属水”“中圈属木”“外圈呈现土性”这类整圈五行标签。"
-            "财富核心解读段不要出现木火土金水、五行、生克、元素这些方法术语，只做财富议题翻译。"
-            "提及家庭、关系、身体或事业等浮现议题时，只能写成可观察线索或待验证假设，不能写成确定根因。"
-            f"{report_structure}\n\n"
-            f"{json.dumps(payload, ensure_ascii=False, indent=2)}"
-        )
-
-    def _report_structure_instruction(self, report_mode: str) -> str:
-        if report_mode == "pro":
-            return (
-                "Pro 版结构固定为 7 段："
-                "1. 标题；"
-                "2. 画面证据总览，至少写 3 条可见画面依据；"
-                "3. 圈内元素五行感知，分别写内圈、中圈、外圈内部有哪些元素信号及同圈生克候选；"
-                "4. 财富核心主轴，用一句话说明金钱、价值、资源或交换机制；"
-                "5. 三圈分层解读，分别连接内圈、中圈、外圈到财富议题，但不要使用五行生克；"
-                "6. 浮现议题回译，把情绪、关系、家庭、身体或事业线索拉回财富主线；"
-                "7. 低风险行动建议，给 2 到 3 个可执行觉察动作。"
-                "总长度控制在 1300 到 2000 个中文字符。"
-            )
-        return (
-            "Lite 版结构固定为 5 段："
-            "1. 标题；"
-            "2. 画面证据速写，至少写 2 条可见画面依据；"
-            "3. 五行感知，用 1 段说明最明显的圈内元素五行和同圈关系候选；"
-            "4. 财富核心解读，用一句话说明主要财富卡点或优势；"
-            "5. 一个温和行动建议。"
-            "总长度控制在 600 到 1300 个中文字符。"
+        report_structure_map = load_prompt_config("report/config.json")
+        report_structure = load_prompt_template(report_structure_map[agent_input.report_mode])
+        return render_prompt_template(
+            "report/user.md",
+            report_structure=report_structure,
+            payload_json=json.dumps(payload, ensure_ascii=False, indent=2),
         )
 
     def _build_theme_route(
@@ -749,6 +750,7 @@ class MandalaInterpretationAgent:
             "selected_signal_ids": list(route.selected_signal_ids),
             "selected_clause_ids": list(route.selected_clause_ids),
             "selected_module_ids": list(route.selected_module_ids),
+            "next_exploration_recommendations": list(route.selected_next_explorations),
             "clauses": [clause for clause in clauses if clause],
             "modules": [module for module in modules if module],
             "boundaries": list(route.boundaries),

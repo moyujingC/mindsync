@@ -1,6 +1,8 @@
 id: aimandala.wealth_report_routing.v0_1
 version: 0.1.0
 status: draft
+content_source_status: mixed
+source_verification_status: source_verification_pending
 date: 2026-05-15
 owner: CEO / Knowledge Base
 type: theme_report_routing
@@ -13,16 +15,17 @@ applies_to:
 source_of_truth: projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/40-wealth-report-routing.yaml
 
 source_refs:
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/90-财富议题案例反推.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/README.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/01-基础信号财富翻译总表.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/02-报告路由位置说明.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/03-颜色财富翻译表.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/04-形状财富翻译表.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/05-跨圈状态财富翻译表.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-财富议题翻译层/06-组合模式财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/90-财富议题案例反推.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/README.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/02-报告路由位置说明.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/03-颜色财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/04-形状财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/05-跨圈状态财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/06-组合模式财富翻译表.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/13-下一次探索建议映射表.md
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/40-组合模式/12-高频组合模式.md
   - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
   - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml
@@ -35,7 +38,7 @@ purpose:
 
 status_policy:
   source_supported_draft: 可以用于报告草稿表达，但必须保留缓冲语气和画面依据。
-  model_scaffold: 只能作为候选解释或追问线索，不能写成确定结论。
+  ai_draft: 只能作为候选解释或追问线索，不能写成确定结论。
   source_needed: 只能提示为后续探索方向，不应作为核心判断输出。
   cross_source_validated: 当前财富主题暂不使用，后续需由证据长表升级后再开放。
 
@@ -78,7 +81,7 @@ knowledge_modules:
   - module_id: wealth.family_loyalty_success_resistance
     title: 家族忠诚与不允许成功
     handbook_ref: 11-财富议题手册.md#36-家族忠诚与不允许成功
-    status: model_scaffold
+    status: ai_draft
     report_use: 作为成功、归属、超过父母或离开原家庭相关的追问线索。
     output_strength: weak
 
@@ -92,7 +95,7 @@ knowledge_modules:
   - module_id: wealth.emotion_spending_protective_habits
     title: 情绪、消费与保护性习惯
     handbook_ref: 11-财富议题手册.md#38-情绪消费与保护性习惯
-    status: model_scaffold
+    status: ai_draft
     report_use: 把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。
     output_strength: cautious
 
@@ -676,6 +679,36 @@ report_section_routes:
       - 不替用户做决策。
       - 不扩成完整方案。
 
+
+  - section_id: wealth.report.next_mandala_exploration
+    section_name: 下一次曼陀罗探索建议
+    purpose: 基于本次画面中浮现但未完全展开的线索，推荐 0-2 个下一次探索方向。
+    input_sources:
+      - wealth.emergent.self_worth
+      - wealth.emergent.family
+      - wealth.emergent.relationship
+      - wealth.emergent.emotion_regulation
+      - wealth.emergent.body_safety
+      - wealth.emergent.career_value_expression
+    preferred_outputs:
+      - 推荐方向
+      - 下次意图
+      - 画面依据
+      - 本次不展开的原因
+    mode_limits:
+      lite_max: 1
+      pro_max: 2
+    selection_rules:
+      - 优先推荐与本次财富主线关系最强的浮现机制。
+      - 优先推荐画面证据最清楚、但本次报告没有展开完整解读的方向。
+      - 用户输入已经提到但本次没有展开的方向优先级提升。
+      - 证据不足时可以不推荐。
+    avoid:
+      - 不制造焦虑式复购。
+      - 不说用户一定有父亲、母亲、亲密关系或身体问题。
+      - 不同时推荐过多方向。
+      - 不把下一次探索建议写成当前报告的确定结论。
+
 clause_report_blocks:
   - clause_id: wealth.low_deservingness
     title: 配得感不足
@@ -937,7 +970,7 @@ ranking_rules:
   - 三圈位置影响解释权重：里圈偏内在感受，中圈偏关系与能量流动，外圈偏行动、物质和对外呈现。
   - 多个画面信号共同指向同一条款时，该条款优先级提升。
   - 单一画面信号只能生成候选解释，不生成强结论。
-  - source_supported_draft 模块优先于 model_scaffold 和 source_needed 模块。
+  - source_supported_draft 模块优先于 ai_draft 和 source_needed 模块。
   - source_needed 模块只在用户问题或画面信号高度相关时进入报告，并使用追问式表达。
 
 report_language_rules:
@@ -960,7 +993,7 @@ report_language_rules:
     - 再写财富模块解释。
     - 若有浮现议题，先翻译成财富机制，再简短提及背景议题。
     - 再写用户可观察的现实表现。
-    - 最后给低风险建议或下一步入口。
+    - 最后给低风险建议和可选的下一次曼陀罗探索方向。
 
 safety:
   global_avoid:
@@ -978,6 +1011,164 @@ quality_checks:
   - 是否明确 `user_theme` 为财富。
   - 是否至少引用一个可见画面信号。
   - 是否说明选中的财富模块或条款。
-  - 是否把 `model_scaffold` 和 `source_needed` 降级表达。
+  - 是否把 `ai_draft` 和 `source_needed` 降级表达。
   - 是否保留 Lite / Pro 边界。
   - 是否避免财务建议、心理诊断和确定性承诺。
+
+next_exploration_recommendations:
+  policy:
+    lite_max: 1
+    pro_max: 2
+    allow_none_when_evidence_weak: true
+    selection_rules:
+    - 画面证据明确的方向优先。
+    - 用户文字里主动提到的方向优先。
+    - 能解释财富主轴的方向优先。
+    - 具体关系证据不足时，优先推荐上位方向，例如关系与交换边界。
+    global_avoid:
+    - 不制造焦虑式复购。
+    - 不把推荐方向写成当前报告的确定结论。
+    - 不说用户一定有父亲、母亲、亲密关系或身体问题。
+  mappings:
+  - id: wealth.next.self_worth
+    source_emergent_topic: self_worth
+    recommended_topic: 自我价值 / 配得感
+    recommended_intention: 我想探索：我是否允许自己的价值被看见、被支付，并稳定接住回报。
+    trigger_signals:
+    - 内圈收缩
+    - 中心空缺
+    - 金多
+    - 白色切分
+    - 价值线索被压低
+    why_not_expand_now: 本次只翻译到财富中的收钱、定价和接收能力。
+    avoid:
+    - 不说用户没有价值感。
+  - id: wealth.next.safety_scarcity
+    source_emergent_topic: safety_scarcity
+    recommended_topic: 安全感 / 匮乏感
+    recommended_intention: 我想探索：金钱在我的生命里承担了哪些安全感功能。
+    trigger_signals:
+    - 厚重
+    - 深色
+    - 收缩
+    - 外圈防御
+    - 过满
+    - 用户提到紧张或怕不够
+    why_not_expand_now: 本次只说明财富紧绷和承载压力，不展开完整安全感议题。
+    avoid:
+    - 不判断现实贫穷或心理问题。
+  - id: wealth.next.relationship_boundary
+    source_emergent_topic: relationship
+    recommended_topic: 关系与交换边界 / 人际关系
+    recommended_intention: 我想探索：我在关系、合作和人情往来中如何交换价值与资源。
+    trigger_signals:
+    - 中圈缠绕
+    - 中圈拉扯
+    - 中圈断裂
+    - 留白切分
+    - 外圈缺口
+    - 用户提到合作或人情压力
+    why_not_expand_now: 本次只回到财富中的付出回报、价格边界和资源流动。
+    avoid:
+    - 不直接定性亲密关系、父亲关系或母亲关系。
+  - id: wealth.next.family_script
+    source_emergent_topic: family
+    recommended_topic: 家庭系统脚本
+    recommended_intention: 我想探索：家庭中关于钱、成功、承担和归属的旧脚本。
+    trigger_signals:
+    - 强边界
+    - 防御
+    - 负担感
+    - 内外不一致
+    - 用户提到父母、家庭责任或成功压力
+    why_not_expand_now: 本次只作为财富背景机制，不判断家庭关系。
+    avoid:
+    - 不说父母导致财富卡点。
+  - id: wealth.next.father_authority
+    source_emergent_topic: family
+    recommended_topic: 父亲关系 / 权威与成功
+    recommended_intention: 我想探索：我和父亲关系中的权威、规则、认可和成功感。
+    trigger_signals:
+    - 金多
+    - 规则感强
+    - 外圈压迫
+    - 成功压力
+    - 用户提到父亲或权威评价
+    why_not_expand_now: 本次只把它翻译成财富中的价值表达、被认可和收钱压力。
+    avoid:
+    - 不说用户一定有父亲议题。
+  - id: wealth.next.mother_receiving
+    source_emergent_topic: family
+    recommended_topic: 母亲关系 / 安全感与接收
+    recommended_intention: 我想探索：我和母亲关系中的安全感、照顾、接收和被支持。
+    trigger_signals:
+    - 内圈空缺
+    - 包裹感弱
+    - 接收困难
+    - 用户提到母亲、照顾或被支持
+    why_not_expand_now: 本次只把它翻译成财富中的收受能力和安全感。
+    avoid:
+    - 不说用户一定有母亲议题。
+  - id: wealth.next.intimacy_exchange
+    source_emergent_topic: relationship
+    recommended_topic: 亲密关系
+    recommended_intention: 我想探索：我在亲密关系中的付出、接收、边界和价值感。
+    trigger_signals:
+    - 中圈关系拉扯
+    - 红色情绪外放
+    - 用户提到伴侣、婚姻或恋爱
+    why_not_expand_now: 本次只把它翻译成财富中的价值交换和资源边界。
+    avoid:
+    - 不展开成伴侣关系判断。
+  - id: wealth.next.emotion_energy
+    source_emergent_topic: emotion_regulation
+    recommended_topic: 情绪能量 / 情绪型消费 / 内耗
+    recommended_intention: 我想探索：情绪如何影响我的行动、消费和资源保存。
+    trigger_signals:
+    - 红色明显
+    - 火感外放
+    - 断裂
+    - 线条杂乱
+    - 用户提到焦虑消费、拖延或内耗
+    why_not_expand_now: 本次只说明情绪如何影响财富流动，不展开完整情绪议题。
+    avoid:
+    - 不说用户乱花钱或情绪化人格。
+  - id: wealth.next.body_capacity
+    source_emergent_topic: body_safety
+    recommended_topic: 身体承载 / 行动力 / 健康身体
+    recommended_intention: 我想探索：我的身体是否能接住更多行动、机会和资源。
+    trigger_signals:
+    - 身体紧
+    - 机会来了退回去
+    - 外圈厚重
+    - 内圈收缩
+    - 压迫感强
+    why_not_expand_now: 本次只说明财富行动需要身体承载，不做健康判断。
+    avoid:
+    - 不输出疾病、部位或医疗判断。
+  - id: wealth.next.career_expression
+    source_emergent_topic: career_value_expression
+    recommended_topic: 事业发展 / 价值表达 / 世界连接
+    recommended_intention: 我想探索：我的价值如何被世界看见、理解并交换。
+    trigger_signals:
+    - 外圈弱
+    - 外圈空
+    - 留白多
+    - 中心清晰但外化不足
+    - 用户提到客户、市场、作品或服务
+    why_not_expand_now: 本次只回到财富中的价值表达和现实交换。
+    avoid:
+    - 不替用户做职业选择或商业决策。
+  - id: wealth.next.spiritual_grounding
+    source_emergent_topic: spiritual_growth
+    recommended_topic: 灵性成长 / 意识扩容
+    recommended_intention: 我想探索：我的愿景、灵感和现实落地之间如何连接。
+    trigger_signals:
+    - 浅紫
+    - 莲花状
+    - 灵性感强
+    - 外圈落地弱
+    - 用户提到信仰或高维连接
+    why_not_expand_now: 本次只把它翻译为财富中的愿景、价值表达和现实连接。
+    avoid:
+    - 不写成灵性等级或使命定论。

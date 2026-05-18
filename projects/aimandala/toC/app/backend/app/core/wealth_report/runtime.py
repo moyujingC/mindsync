@@ -74,6 +74,7 @@ class WealthRouteMatch:
     selected_signal_ids: tuple[str, ...]
     selected_clause_ids: tuple[str, ...]
     selected_module_ids: tuple[str, ...]
+    selected_next_explorations: tuple[dict[str, Any], ...]
     boundaries: tuple[str, ...]
 
 
@@ -210,6 +211,12 @@ class WealthReportRuntime:
             selected_signal_ids=tuple(self._unique(signal_ids)),
             selected_clause_ids=tuple(self._unique(clause_ids)[:max_clauses]),
             selected_module_ids=tuple(self._unique(module_ids)[:max_modules]),
+            selected_next_explorations=tuple(
+                self._select_next_explorations(
+                    observation_text,
+                    report_mode=report_mode,
+                )
+            ),
             boundaries=tuple(self._unique(boundaries)),
         )
 
@@ -289,6 +296,63 @@ class WealthReportRuntime:
                 for alternative in alternatives
             )
         return False
+
+    def _select_next_explorations(
+        self,
+        observation_text: str,
+        *,
+        report_mode: str,
+    ) -> list[dict[str, Any]]:
+        recommendations = self.load_routing().get("next_exploration_recommendations", {})
+        if not isinstance(recommendations, dict):
+            return []
+        policy = recommendations.get("policy", {})
+        mode_limit = 1 if report_mode == "lite" else 2
+        if isinstance(policy, dict):
+            raw_limit = policy.get("lite_max") if report_mode == "lite" else policy.get("pro_max")
+            try:
+                mode_limit = int(raw_limit or mode_limit)
+            except (TypeError, ValueError):
+                mode_limit = 1 if report_mode == "lite" else 2
+
+        normalized_text = self._normalize_observation_text(observation_text)
+        candidates: list[dict[str, Any]] = []
+        for item in recommendations.get("mappings", []):
+            if not isinstance(item, dict):
+                continue
+            trigger_signals = self._string_items(item.get("trigger_signals", []))
+            if not trigger_signals:
+                continue
+            matched = [
+                signal
+                for signal in trigger_signals
+                if self._next_exploration_signal_matches(signal, normalized_text)
+            ]
+            if not matched:
+                continue
+            candidates.append(
+                {
+                    "id": item.get("id"),
+                    "recommended_topic": item.get("recommended_topic"),
+                    "recommended_intention": item.get("recommended_intention"),
+                    "matched_signals": matched[:3],
+                    "why_not_expand_now": item.get("why_not_expand_now"),
+                    "avoid": item.get("avoid", [])[:2] if isinstance(item.get("avoid"), list) else [],
+                }
+            )
+        return candidates[: max(mode_limit, 0)]
+
+    def _next_exploration_signal_matches(self, signal: str, normalized_text: str) -> bool:
+        if signal in normalized_text:
+            return True
+        signal = signal.replace("收束", "收缩")
+        text = normalized_text.replace("收束", "收缩")
+        circle_terms = ("内圈", "中圈", "外圈")
+        for circle in circle_terms:
+            if signal.startswith(circle):
+                tail = signal.removeprefix(circle)
+                return bool(tail and circle in text and tail in text)
+        return signal in text
 
     def _normalize_observation_text(self, text: str) -> str:
         replacements = {

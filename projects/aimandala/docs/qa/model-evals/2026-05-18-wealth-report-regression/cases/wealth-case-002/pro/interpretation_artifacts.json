@@ -1,0 +1,478 @@
+{
+  "method_source": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-画面信号映射审核与结构化计划.md",
+  "execution_blocks": [
+    {
+      "block_id": "block-1-input-and-boundary",
+      "stage_keys": [
+        "stage-00-input-context",
+        "stage-01-user-input-context",
+        "stage-02-circle-boundary-decision"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-2-visual-and-direct-check",
+      "stage_keys": [
+        "stage-03-visual-evidence",
+        "stage-04-direct-judgment-high-hit-check"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-3-circle-rule-reasoning",
+      "stage_keys": [
+        "stage-05-per-circle-color-shape-element-sensing",
+        "stage-06-per-circle-element-generation-control",
+        "stage-07-per-circle-imbalance-patterns",
+        "stage-08-energy-flow-diagnosis",
+        "stage-09-evidence-consolidation"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-4-thesis-and-writing-input",
+      "stage_keys": [
+        "stage-10-core-thesis-selection",
+        "stage-11-user-facing-framing",
+        "stage-12-healing-direction-and-report-branching"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-5-report-and-quality",
+      "stage_keys": [
+        "stage-13-lite-report-draft",
+        "stage-14-pro-report-draft",
+        "stage-15-visual-assets",
+        "stage-16-final-report-assembly"
+      ],
+      "status": "complete"
+    }
+  ],
+  "stage_outputs": {
+    "stage-00-input-context": {
+      "stage": "stage-00-input-context",
+      "status": "complete",
+      "report_mode": "pro",
+      "image": {
+        "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5060.jpeg",
+        "storage_backend": "",
+        "storage_key": ""
+      },
+      "agent_version": "mandala-interpretation-agent-v1"
+    },
+    "stage-01-user-input-context": {
+      "stage": "stage-01-user-input-context",
+      "status": "complete",
+      "user_context": {
+        "theme": "wealth",
+        "theme_label": "财富议题",
+        "painting_intention": "想看自己为什么对财富流动有紧张感。",
+        "painting_feeling": ""
+      }
+    },
+    "stage-02-circle-boundary-decision": {
+      "stage": "stage-02-circle-boundary-decision",
+      "status": "complete",
+      "circle_boundaries": {
+        "inner_radius": 35,
+        "middle_radius": 65,
+        "radius_unit": "normalized_percent",
+        "source": "manual_regression_default"
+      }
+    },
+    "stage-03-visual-evidence": {
+      "stage": "stage-03-visual-evidence",
+      "status": "complete",
+      "global_visual_summary": "这幅曼陀罗画作呈现出高度对称和有序的结构，中心区域为金色与蓝色星形图案，周围环绕着五个圆形区域，每个区域内包含绿色、黄色和紫色的花卉图案。整体色彩明亮且分布均匀，显示出一种和谐与平衡的状态。",
+      "circles": {
+        "inner": {
+          "summary": "中心区域由一个金色的星形图案构成，内部有蓝色的十字形点缀，周围环绕着浅黄色背景，形成一个稳定的核心。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "position": "inner",
+              "color": "金色、蓝色、浅黄色",
+              "shape": "['星形', '十字形']",
+              "visible_evidence": "中心区域由一个金色的星形图案构成，内部有蓝色的十字形点缀，周围环绕着浅黄色背景，形成一个稳定的核心。"
+            }
+          ],
+          "raw_observation": {
+            "description": "中心区域由一个金色的星形图案构成，内部有蓝色的十字形点缀，周围环绕着浅黄色背景，形成一个稳定的核心。",
+            "colors": [
+              "金色",
+              "蓝色",
+              "浅黄色"
+            ],
+            "shapes": [
+              "星形",
+              "十字形"
+            ],
+            "patterns": [
+              "对称",
+              "几何"
+            ]
+          }
+        },
+        "middle": {
+          "summary": "中间区域由五个圆形组成，每个圆形内包含绿色和黄色的花朵，以及紫色的小花苞，花瓣呈放射状排列，线条流畅。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "position": "middle",
+              "color": "绿色、黄色、紫色、浅蓝色",
+              "shape": "['圆形', '花朵', '叶片', '曲线']",
+              "visible_evidence": "中间区域由五个圆形组成，每个圆形内包含绿色和黄色的花朵，以及紫色的小花苞，花瓣呈放射状排列，线条流畅。"
+            }
+          ],
+          "raw_observation": {
+            "description": "中间区域由五个圆形组成，每个圆形内包含绿色和黄色的花朵，以及紫色的小花苞，花瓣呈放射状排列，线条流畅。",
+            "colors": [
+              "绿色",
+              "黄色",
+              "紫色",
+              "浅蓝色"
+            ],
+            "shapes": [
+              "圆形",
+              "花朵",
+              "叶片",
+              "曲线"
+            ],
+            "patterns": [
+              "重复",
+              "对称",
+              "自然"
+            ]
+          }
+        },
+        "outer": {
+          "summary": "外圈由棕色的几何图案构成，这些图案呈菱形并带有十字形装饰，围绕着中间的圆形区域，形成边界。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "position": "outer",
+              "color": "棕色、白色",
+              "shape": "['菱形', '十字形']",
+              "visible_evidence": "外圈由棕色的几何图案构成，这些图案呈菱形并带有十字形装饰，围绕着中间的圆形区域，形成边界。"
+            }
+          ],
+          "raw_observation": {
+            "description": "外圈由棕色的几何图案构成，这些图案呈菱形并带有十字形装饰，围绕着中间的圆形区域，形成边界。",
+            "colors": [
+              "棕色",
+              "白色"
+            ],
+            "shapes": [
+              "菱形",
+              "十字形"
+            ],
+            "patterns": [
+              "几何",
+              "对称"
+            ]
+          }
+        }
+      },
+      "evidence_refs": [
+        "画面整体呈现高度对称性，表明绘画者在创作时注重秩序与平衡。",
+        "中心区域的金色星形图案可能象征内在的光芒或核心能量。",
+        "五个圆形区域内的花卉图案重复出现，显示了一种规律性和连贯性。",
+        "外圈的棕色几何图案作为边界，提供了清晰的视觉分隔。",
+        "颜色使用上，绿色和黄色为主色调，暗示生机与活力，紫色点缀则增加了神秘感。"
+      ],
+      "uncertainties": [
+        "无法确定绘画者的具体意图或情感状态，因为缺乏上下文信息。",
+        "虽然画面结构清晰，但某些细节如花瓣的精确数量或线条的细微变化可能因观察角度不同而有所差异。",
+        "颜色的具体深浅和饱和度可能影响解读，但当前图像分辨率有限，难以精确判断。"
+      ],
+      "model_trace": [
+        {
+          "model": "qwen-vl-max-latest",
+          "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+          "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+          "result": "success"
+        }
+      ]
+    },
+    "stage-04-direct-judgment-high-hit-check": {
+      "stage": "stage-04-direct-judgment-high-hit-check",
+      "status": "complete",
+      "hits": [],
+      "non_hits": [],
+      "uncertain_items": [],
+      "conflicts": [],
+      "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-05-per-circle-color-shape-element-sensing": {
+      "stage": "stage-05-per-circle-color-shape-element-sensing",
+      "status": "complete",
+      "per_circle": {
+        "inner": {
+          "visual_summary": "中心区域由一个金色的星形图案构成，内部有蓝色的十字形点缀，周围环绕着浅黄色背景，形成一个稳定的核心。",
+          "dominant_colors": [
+            "金色、蓝色、浅黄色"
+          ],
+          "dominant_shapes": [
+            "['星形', '十字形']"
+          ],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "中间区域由五个圆形组成，每个圆形内包含绿色和黄色的花朵，以及紫色的小花苞，花瓣呈放射状排列，线条流畅。",
+          "dominant_colors": [
+            "绿色、黄色、紫色、浅蓝色"
+          ],
+          "dominant_shapes": [
+            "['圆形', '花朵', '叶片', '曲线']"
+          ],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "外圈由棕色的几何图案构成，这些图案呈菱形并带有十字形装饰，围绕着中间的圆形区域，形成边界。",
+          "dominant_colors": [
+            "棕色、白色"
+          ],
+          "dominant_shapes": [
+            "['菱形', '十字形']"
+          ],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-06-per-circle-element-generation-control": {
+      "stage": "stage-06-per-circle-element-generation-control",
+      "status": "complete",
+      "theme": "wealth",
+      "control_notes": [
+        "按当前画面证据和精简知识包推导，不新增画面事实。"
+      ],
+      "per_circle": {
+        "inner": {
+          "visual_summary": "中心区域由一个金色的星形图案构成，内部有蓝色的十字形点缀，周围环绕着浅黄色背景，形成一个稳定的核心。",
+          "dominant_colors": [
+            "金色、蓝色、浅黄色"
+          ],
+          "dominant_shapes": [
+            "['星形', '十字形']"
+          ],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "中间区域由五个圆形组成，每个圆形内包含绿色和黄色的花朵，以及紫色的小花苞，花瓣呈放射状排列，线条流畅。",
+          "dominant_colors": [
+            "绿色、黄色、紫色、浅蓝色"
+          ],
+          "dominant_shapes": [
+            "['圆形', '花朵', '叶片', '曲线']"
+          ],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "外圈由棕色的几何图案构成，这些图案呈菱形并带有十字形装饰，围绕着中间的圆形区域，形成边界。",
+          "dominant_colors": [
+            "棕色、白色"
+          ],
+          "dominant_shapes": [
+            "['菱形', '十字形']"
+          ],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-07-per-circle-imbalance-patterns": {
+      "stage": "stage-07-per-circle-imbalance-patterns",
+      "status": "complete",
+      "candidates": [
+        {
+          "circle": "inner",
+          "candidate": "needs_human_review",
+          "basis": [
+            "金色、蓝色、浅黄色"
+          ]
+        },
+        {
+          "circle": "middle",
+          "candidate": "needs_human_review",
+          "basis": [
+            "绿色、黄色、紫色、浅蓝色"
+          ]
+        },
+        {
+          "circle": "outer",
+          "candidate": "needs_human_review",
+          "basis": [
+            "棕色、白色"
+          ]
+        }
+      ]
+    },
+    "stage-08-energy-flow-diagnosis": {
+      "stage": "stage-08-energy-flow-diagnosis",
+      "status": "complete",
+      "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-09-evidence-consolidation": {
+      "stage": "stage-09-evidence-consolidation",
+      "status": "complete",
+      "evidence_map": [
+        {
+          "id": "inner-001",
+          "circle": "inner",
+          "visible_evidence": "中心区域由一个金色的星形图案构成，内部有蓝色的十字形点缀，周围环绕着浅黄色背景，形成一个稳定的核心。"
+        },
+        {
+          "id": "middle-001",
+          "circle": "middle",
+          "visible_evidence": "中间区域由五个圆形组成，每个圆形内包含绿色和黄色的花朵，以及紫色的小花苞，花瓣呈放射状排列，线条流畅。"
+        },
+        {
+          "id": "outer-001",
+          "circle": "outer",
+          "visible_evidence": "外圈由棕色的几何图案构成，这些图案呈菱形并带有十字形装饰，围绕着中间的圆形区域，形成边界。"
+        }
+      ]
+    },
+    "stage-10-core-thesis-selection": {
+      "stage": "stage-10-core-thesis-selection",
+      "status": "complete",
+      "core_thesis": "画者对财富流动的紧张感，根植于内在稳固的自我价值感（金蓝核心）与对外界资源连接（多彩花朵）之间的能量受阻，外显为对边界、规则的过度谨慎（棕色几何边界）。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
+      }
+    },
+    "stage-11-user-facing-framing": {
+      "stage": "stage-11-user-facing-framing",
+      "status": "complete",
+      "framing": "你的曼陀罗揭示了一个关于财富的内心剧本：深处你拥有强大的核心力量与智慧（星形十字），也渴望与丰盛的自然之流连接（花朵）。但当前，这股力量被一种严密的规则感（外圈边界）守护着，使得内在的丰沛难以顺畅地流淌出去，外在的滋养也难以轻松进入，这很可能就是你感受到紧张感的源头。",
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
+      }
+    },
+    "stage-12-healing-direction-and-report-branching": {
+      "stage": "stage-12-healing-direction-and-report-branching",
+      "status": "complete",
+      "healing_direction": "在保有核心稳定感的同时，尝试松动外在的规则感。通过小步验证，允许财富以更自然、流动的方式进入与给出，体验‘有序的流动’而非‘固守的安全’。",
+      "report_mode": "pro",
+      "writing_input_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
+      }
+    },
+    "stage-13-lite-report-draft": {
+      "stage": "stage-13-lite-report-draft",
+      "status": "complete",
+      "enabled": false,
+      "markdown": ""
+    },
+    "stage-14-pro-report-draft": {
+      "stage": "stage-14-pro-report-draft",
+      "status": "complete",
+      "enabled": true,
+      "markdown": "# 财富议题：从紧绷守护到有序流动\n\n## 画面证据总览\n这幅高度对称的曼陀罗展现出三种彼此呼应的财富心理信号。中心由金色星形与蓝色十字形构成，如同稳定而坚定的内在价值核心，未受外围纷扰影响。中圈布满放射状的花朵，绿、黄、紫等色彩有规律地重复，显示你对外在资源循环有着清晰的建构力与渴望。外圈则是规整的棕色菱形边界，带有十字装饰，仿佛一道严密的规矩之墙，把丰沛的内在力量与外在世界严格隔开——这正是紧张感的视觉起点。\n\n## 财富核心主轴\n你对财富流动的紧张，并非来自匮乏，而是因为**内在拥有强大而稳固的价值感，却被过强的外部规则感阻断了与世界的自由交换**，金钱与资源因此难以轻松进出。\n\n## 三圈分层解读\n- **内圈——财富的内在引擎：** 星形与十字形位于整个曼陀罗的最中心，底色是浅淡的黄。这代表你自我认同的核心是清晰、有序且有光彩的，你本来就具备创造价值的能力与自信。紧张并不是源于“我不行”，而是这股力量被外面那层规矩锁得太牢。\n- **中圈——资源的循环系统：** 五个圆内的花朵以重复、放射、自然的方式排列，绿色与黄色带有生长与活力的意味，紫色小花苞则保留了一丝存疑或观望。这说明你能意识到外部的机会和人际网络，也渴望参与交换，但可能严格筛选、反复斟酌，把本该自然的循环变得像走迷宫。\n- **外圈——财富边界与防御：** 棕色菱形与十字形边界带出踏实的土向质感，显示你非常重视责任、规则和安全。然而，当这个边界过于显眼，它就变成一道警戒线，让你不敢轻易接受、更不敢轻易释放，导致财富进来时被审核，出去时被压紧，形成回流的阻滞。\n\n## 浮现议题回译\n你把情绪层面的小心翼翼、关系中的利益划界、身体上惯性的紧绷，一并折射到财富这条主线上——好像必须在付出之前先充分验证安全，接受之前先反复确认资格。家庭或成长经验可能强化了“守住才有安全”的观念，而事业中严谨可预测的模式也延续到了你对金钱的期待里。这一切回译到财富主轴上，就是：你对资源的接纳和给予都处于高度监控状态，自然很难感到从容流淌。\n\n## 低风险行动建议\n1. **重新定义“安全边界”**：每天记录一笔小额支出或接受某个微小帮助时，问自己“这笔流动是否破坏了核心稳定”，用事实重塑边界，让它变得柔和、可调整，而非僵硬的阻隔。\n2. **自主设定流动练习**：每周主动转出一笔不影响生活的钱，或把一件闲置物品赠予他人，实验性地体验失去后的平静，把“给出”和“信任”慢慢联结。\n3. **收受小丰盛练习**：当别人请你喝杯咖啡或给予一句赞美时，不推辞、不急着回报，停下来感受这份流进来的温暖，证明丰盛进入不会击垮秩序，反而让核心更饱满。"
+    },
+    "stage-15-visual-assets": {
+      "stage": "stage-15-visual-assets",
+      "status": "skipped",
+      "reason": "mvp_no_image_generation"
+    },
+    "stage-16-final-report-assembly": {
+      "stage": "stage-16-final-report-assembly",
+      "status": "complete",
+      "final_report": {
+        "report_id": "mandala-interpretation-7fdb7d5ae151",
+        "report_mode": "pro",
+        "title": "曼陀罗解读报告",
+        "markdown": "# 财富议题：从紧绷守护到有序流动\n\n## 画面证据总览\n这幅高度对称的曼陀罗展现出三种彼此呼应的财富心理信号。中心由金色星形与蓝色十字形构成，如同稳定而坚定的内在价值核心，未受外围纷扰影响。中圈布满放射状的花朵，绿、黄、紫等色彩有规律地重复，显示你对外在资源循环有着清晰的建构力与渴望。外圈则是规整的棕色菱形边界，带有十字装饰，仿佛一道严密的规矩之墙，把丰沛的内在力量与外在世界严格隔开——这正是紧张感的视觉起点。\n\n## 财富核心主轴\n你对财富流动的紧张，并非来自匮乏，而是因为**内在拥有强大而稳固的价值感，却被过强的外部规则感阻断了与世界的自由交换**，金钱与资源因此难以轻松进出。\n\n## 三圈分层解读\n- **内圈——财富的内在引擎：** 星形与十字形位于整个曼陀罗的最中心，底色是浅淡的黄。这代表你自我认同的核心是清晰、有序且有光彩的，你本来就具备创造价值的能力与自信。紧张并不是源于“我不行”，而是这股力量被外面那层规矩锁得太牢。\n- **中圈——资源的循环系统：** 五个圆内的花朵以重复、放射、自然的方式排列，绿色与黄色带有生长与活力的意味，紫色小花苞则保留了一丝存疑或观望。这说明你能意识到外部的机会和人际网络，也渴望参与交换，但可能严格筛选、反复斟酌，把本该自然的循环变得像走迷宫。\n- **外圈——财富边界与防御：** 棕色菱形与十字形边界带出踏实的土向质感，显示你非常重视责任、规则和安全。然而，当这个边界过于显眼，它就变成一道警戒线，让你不敢轻易接受、更不敢轻易释放，导致财富进来时被审核，出去时被压紧，形成回流的阻滞。\n\n## 浮现议题回译\n你把情绪层面的小心翼翼、关系中的利益划界、身体上惯性的紧绷，一并折射到财富这条主线上——好像必须在付出之前先充分验证安全，接受之前先反复确认资格。家庭或成长经验可能强化了“守住才有安全”的观念，而事业中严谨可预测的模式也延续到了你对金钱的期待里。这一切回译到财富主轴上，就是：你对资源的接纳和给予都处于高度监控状态，自然很难感到从容流淌。\n\n## 低风险行动建议\n1. **重新定义“安全边界”**：每天记录一笔小额支出或接受某个微小帮助时，问自己“这笔流动是否破坏了核心稳定”，用事实重塑边界，让它变得柔和、可调整，而非僵硬的阻隔。\n2. **自主设定流动练习**：每周主动转出一笔不影响生活的钱，或把一件闲置物品赠予他人，实验性地体验失去后的平静，把“给出”和“信任”慢慢联结。\n3. **收受小丰盛练习**：当别人请你喝杯咖啡或给予一句赞美时，不推辞、不急着回报，停下来感受这份流进来的温暖，证明丰盛进入不会击垮秩序，反而让核心更饱满。",
+        "summary": "画者对财富流动的紧张感，根植于内在稳固的自我价值感（金蓝核心）与对外界资源连接（多彩花朵）之间的能量受阻，外显为对边界、规则的过度谨慎（棕色几何边界）。"
+      }
+    }
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "中心区域由一个金色的星形图案构成，内部有蓝色的十字形点缀，周围环绕着浅黄色背景，形成一个稳定的核心。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "中间区域由五个圆形组成，每个圆形内包含绿色和黄色的花朵，以及紫色的小花苞，花瓣呈放射状排列，线条流畅。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "外圈由棕色的几何图案构成，这些图案呈菱形并带有十字形装饰，围绕着中间的圆形区域，形成边界。"
+    }
+  ]
+}

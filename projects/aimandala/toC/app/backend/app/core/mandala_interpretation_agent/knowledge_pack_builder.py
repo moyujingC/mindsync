@@ -98,16 +98,16 @@ class KnowledgePackBuilder:
     def _theme_entry(self, theme: str) -> dict[str, Any]:
         if theme != "wealth":
             return self._read_text(
-                "20-疗愈体系/10-议题层/02-个人成长与自我价值议题解读.md",
+                "20-疗愈体系/10-议题层/20-浮现机制/01-自我价值与配得感.md",
                 max_chars=2600,
             )
         return {
             "wealth_framework": self._read_text(
-                "20-疗愈体系/10-议题层/01-财富议题体系框架.md",
+                "20-疗愈体系/10-议题层/10-议题本体/30-现实/01-财富.md",
                 max_chars=3200,
             ),
             "wealth_handbook": self._read_text(
-                "20-疗愈体系/10-议题层/11-财富议题手册.md",
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md",
                 max_chars=12000,
             ),
             "wealth_report_template": self._read_text(
@@ -124,7 +124,11 @@ class KnowledgePackBuilder:
             ),
             "wealth_emergent_topic_translation": self._read_text(
                 "50-结构化知识单元/45-wealth-emergent-topic-translation.yaml",
-                max_chars=12000,
+                max_chars=24000,
+            ),
+            "wealth_next_exploration_mapping": self._read_text(
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/13-下一次探索建议映射表.md",
+                max_chars=6000,
             ),
         }
 

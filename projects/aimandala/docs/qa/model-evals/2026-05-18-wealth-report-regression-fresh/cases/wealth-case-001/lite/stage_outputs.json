@@ -1,0 +1,1211 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "lite",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看自己和金钱、价值、资源流动之间的关系。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作整体呈现出对称的圆形结构，色彩丰富且分布均衡。中心区域以黄色为主，向外延伸出多个重复的几何图案，包含紫色、蓝色、绿色和橙色等元素，形成一种和谐而复杂的视觉效果。",
+    "circles": {
+      "inner": {
+        "summary": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "yellow、red、green、orange",
+            "shape": "['star', 'arc', 'circle']",
+            "visible_evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。"
+          }
+        ],
+        "raw_observation": {
+          "description": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+          "colors": [
+            "yellow",
+            "red",
+            "green",
+            "orange"
+          ],
+          "shapes": [
+            "star",
+            "arc",
+            "circle"
+          ]
+        }
+      },
+      "middle": {
+        "summary": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "purple、yellow、blue、green、orange",
+            "shape": "['circle', 'polygon', 'flower-like']",
+            "visible_evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。"
+          }
+        ],
+        "raw_observation": {
+          "description": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+          "colors": [
+            "purple",
+            "yellow",
+            "blue",
+            "green",
+            "orange"
+          ],
+          "shapes": [
+            "circle",
+            "polygon",
+            "flower-like"
+          ]
+        }
+      },
+      "outer": {
+        "summary": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "blue、green、orange",
+            "shape": "['wave', 'circle', 'dot']",
+            "visible_evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。"
+          }
+        ],
+        "raw_observation": {
+          "description": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+          "colors": [
+            "blue",
+            "green",
+            "orange"
+          ],
+          "shapes": [
+            "wave",
+            "circle",
+            "dot"
+          ]
+        }
+      }
+    },
+    "evidence_refs": [
+      "内圈中心为黄色，象征能量核心，红色星形可能代表内在的激情或目标。",
+      "中圈的紫色和蓝色组合常见于表达创造力与智慧，黄色则增强活力。",
+      "外圈的蓝色波浪状图案可能象征情绪波动或外部环境的影响。",
+      "整体色彩搭配和谐，显示出较强的秩序感和平衡性。"
+    ],
+    "uncertainties": [
+      "无法确定具体颜色的比例是否影响解读结果。",
+      "某些图案的具体含义可能存在多种解释，需结合用户背景进一步分析。"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+        "dominant_colors": [
+          "yellow、red、green、orange"
+        ],
+        "dominant_shapes": [
+          "['star', 'arc', 'circle']"
+        ],
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "yellow、red、green、orange",
+            "shape": "['star', 'arc', 'circle']",
+            "visible_evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。"
+          }
+        ],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+        "dominant_colors": [
+          "purple、yellow、blue、green、orange"
+        ],
+        "dominant_shapes": [
+          "['circle', 'polygon', 'flower-like']"
+        ],
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "purple、yellow、blue、green、orange",
+            "shape": "['circle', 'polygon', 'flower-like']",
+            "visible_evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。"
+          }
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+        "dominant_colors": [
+          "blue、green、orange"
+        ],
+        "dominant_shapes": [
+          "['wave', 'circle', 'dot']"
+        ],
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "blue、green、orange",
+            "shape": "['wave', 'circle', 'dot']",
+            "visible_evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。"
+          }
+        ],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。",
+      "五行分析只识别每圈内部的视觉元素属性，不给整圈贴单一五行标签。",
+      "五行生克只在同一圈内部的元素之间判断。",
+      "三圈联动不使用五行生克关系，只分析内圈、中圈、外圈之间的层级承接。"
+    ],
+    "scope": {
+      "five_element_scope": "intra_circle_visual_elements",
+      "circle_primary_element_labeling": "excluded",
+      "intra_circle_element_relations": "allowed",
+      "cross_circle_five_element_relations": "excluded",
+      "report_rule": "报告必须展示圈内元素五行和同圈生克候选，不得把一个圈简化成单一五行。"
+    },
+    "profile": {
+      "scope": "intra_circle_visual_elements",
+      "per_circle": {
+        "inner": {
+          "circle": "inner",
+          "element_signals": [
+            {
+              "unit_id": "inner-001",
+              "element": "wood",
+              "label": "木",
+              "source_type": "evidence",
+              "evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+              "hint": "木性指向生长、向上、边界和行动力。"
+            },
+            {
+              "unit_id": "inner-001",
+              "element": "fire",
+              "label": "火",
+              "source_type": "evidence",
+              "evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+              "hint": "火性指向热情、表达、焦急和动力消耗。"
+            },
+            {
+              "unit_id": "inner-001",
+              "element": "earth",
+              "label": "土",
+              "source_type": "evidence",
+              "evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+              "hint": "土性指向承载、稳定、现实感和责任压力。"
+            }
+          ],
+          "present_elements": [
+            {
+              "element": "wood",
+              "label": "木"
+            },
+            {
+              "element": "fire",
+              "label": "火"
+            },
+            {
+              "element": "earth",
+              "label": "土"
+            }
+          ],
+          "intra_circle_relations": [
+            {
+              "type": "generate",
+              "label": "木生火",
+              "source_element": "wood",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "火生土",
+              "source_element": "fire",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "木克土",
+              "source_element": "wood",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            }
+          ],
+          "evidence": {
+            "colors": [
+              "yellow、red、green、orange"
+            ],
+            "shapes": [
+              "['star', 'arc', 'circle']"
+            ],
+            "summary": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。"
+          },
+          "interpretation_hint": "内圈本源层内识别到木、火、土等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、木克土。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+        },
+        "middle": {
+          "circle": "middle",
+          "element_signals": [
+            {
+              "unit_id": "middle-001",
+              "element": "wood",
+              "label": "木",
+              "source_type": "evidence",
+              "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+              "hint": "木性指向生长、向上、边界和行动力。"
+            },
+            {
+              "unit_id": "middle-001",
+              "element": "fire",
+              "label": "火",
+              "source_type": "evidence",
+              "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+              "hint": "火性指向热情、表达、焦急和动力消耗。"
+            },
+            {
+              "unit_id": "middle-001",
+              "element": "earth",
+              "label": "土",
+              "source_type": "evidence",
+              "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+              "hint": "土性指向承载、稳定、现实感和责任压力。"
+            },
+            {
+              "unit_id": "middle-001",
+              "element": "water",
+              "label": "水",
+              "source_type": "evidence",
+              "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+              "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            }
+          ],
+          "present_elements": [
+            {
+              "element": "wood",
+              "label": "木"
+            },
+            {
+              "element": "fire",
+              "label": "火"
+            },
+            {
+              "element": "earth",
+              "label": "土"
+            },
+            {
+              "element": "water",
+              "label": "水"
+            }
+          ],
+          "intra_circle_relations": [
+            {
+              "type": "generate",
+              "label": "木生火",
+              "source_element": "wood",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "火生土",
+              "source_element": "fire",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "水生木",
+              "source_element": "water",
+              "target_element": "wood",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "木克土",
+              "source_element": "wood",
+              "target_element": "earth",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "土克水",
+              "source_element": "earth",
+              "target_element": "water",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "水克火",
+              "source_element": "water",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            }
+          ],
+          "evidence": {
+            "colors": [
+              "purple、yellow、blue、green、orange"
+            ],
+            "shapes": [
+              "['circle', 'polygon', 'flower-like']"
+            ],
+            "summary": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。"
+          },
+          "interpretation_hint": "中圈情绪层内识别到木、火、土、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、水生木、木克土、土克水、水克火。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+        },
+        "outer": {
+          "circle": "outer",
+          "element_signals": [
+            {
+              "unit_id": "outer-001",
+              "element": "wood",
+              "label": "木",
+              "source_type": "evidence",
+              "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+              "hint": "木性指向生长、向上、边界和行动力。"
+            },
+            {
+              "unit_id": "outer-001",
+              "element": "fire",
+              "label": "火",
+              "source_type": "evidence",
+              "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+              "hint": "火性指向热情、表达、焦急和动力消耗。"
+            },
+            {
+              "unit_id": "outer-001",
+              "element": "metal",
+              "label": "金",
+              "source_type": "evidence",
+              "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+              "hint": "金性指向规则、收敛、标准、边界和价值感。"
+            },
+            {
+              "unit_id": "outer-001",
+              "element": "water",
+              "label": "水",
+              "source_type": "evidence",
+              "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+              "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            }
+          ],
+          "present_elements": [
+            {
+              "element": "wood",
+              "label": "木"
+            },
+            {
+              "element": "fire",
+              "label": "火"
+            },
+            {
+              "element": "metal",
+              "label": "金"
+            },
+            {
+              "element": "water",
+              "label": "水"
+            }
+          ],
+          "intra_circle_relations": [
+            {
+              "type": "generate",
+              "label": "木生火",
+              "source_element": "wood",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "金生水",
+              "source_element": "metal",
+              "target_element": "water",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "generate",
+              "label": "水生木",
+              "source_element": "water",
+              "target_element": "wood",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "水克火",
+              "source_element": "water",
+              "target_element": "fire",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "火克金",
+              "source_element": "fire",
+              "target_element": "metal",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            },
+            {
+              "type": "control",
+              "label": "金克木",
+              "source_element": "metal",
+              "target_element": "wood",
+              "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+            }
+          ],
+          "evidence": {
+            "colors": [
+              "blue、green、orange"
+            ],
+            "shapes": [
+              "['wave', 'circle', 'dot']"
+            ],
+            "summary": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。"
+          },
+          "interpretation_hint": "外圈现实层内识别到木、火、金、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、金生水、水生木、水克火、火克金、金克木。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+        }
+      },
+      "dominant_elements": [
+        {
+          "element": "wood",
+          "label": "木",
+          "score": 3
+        },
+        {
+          "element": "fire",
+          "label": "火",
+          "score": 3
+        },
+        {
+          "element": "earth",
+          "label": "土",
+          "score": 2
+        },
+        {
+          "element": "water",
+          "label": "水",
+          "score": 2
+        },
+        {
+          "element": "metal",
+          "label": "金",
+          "score": 1
+        }
+      ],
+      "report_language": [
+        "内圈本源层内识别到木、火、土等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、木克土。",
+        "中圈情绪层内识别到木、火、土、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、水生木、木克土、土克水、水克火。",
+        "外圈现实层内识别到木、火、金、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、金生水、水生木、水克火、火克金、金克木。"
+      ],
+      "intra_circle_rule": "五行生克只用于同一圈内部已经识别出的视觉元素之间。",
+      "cross_circle_rule": "三圈联动分析使用圈层结构，不使用五行生克。"
+    },
+    "per_circle": {
+      "inner": {
+        "circle": "inner",
+        "element_signals": [
+          {
+            "unit_id": "inner-001",
+            "element": "wood",
+            "label": "木",
+            "source_type": "evidence",
+            "evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+            "hint": "木性指向生长、向上、边界和行动力。"
+          },
+          {
+            "unit_id": "inner-001",
+            "element": "fire",
+            "label": "火",
+            "source_type": "evidence",
+            "evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+            "hint": "火性指向热情、表达、焦急和动力消耗。"
+          },
+          {
+            "unit_id": "inner-001",
+            "element": "earth",
+            "label": "土",
+            "source_type": "evidence",
+            "evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。",
+            "hint": "土性指向承载、稳定、现实感和责任压力。"
+          }
+        ],
+        "present_elements": [
+          {
+            "element": "wood",
+            "label": "木"
+          },
+          {
+            "element": "fire",
+            "label": "火"
+          },
+          {
+            "element": "earth",
+            "label": "土"
+          }
+        ],
+        "intra_circle_relations": [
+          {
+            "type": "generate",
+            "label": "木生火",
+            "source_element": "wood",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "火生土",
+            "source_element": "fire",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "木克土",
+            "source_element": "wood",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          }
+        ],
+        "evidence": {
+          "colors": [
+            "yellow、red、green、orange"
+          ],
+          "shapes": [
+            "['star', 'arc', 'circle']"
+          ],
+          "summary": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。"
+        },
+        "interpretation_hint": "内圈本源层内识别到木、火、土等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、木克土。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+      },
+      "middle": {
+        "circle": "middle",
+        "element_signals": [
+          {
+            "unit_id": "middle-001",
+            "element": "wood",
+            "label": "木",
+            "source_type": "evidence",
+            "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+            "hint": "木性指向生长、向上、边界和行动力。"
+          },
+          {
+            "unit_id": "middle-001",
+            "element": "fire",
+            "label": "火",
+            "source_type": "evidence",
+            "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+            "hint": "火性指向热情、表达、焦急和动力消耗。"
+          },
+          {
+            "unit_id": "middle-001",
+            "element": "earth",
+            "label": "土",
+            "source_type": "evidence",
+            "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+            "hint": "土性指向承载、稳定、现实感和责任压力。"
+          },
+          {
+            "unit_id": "middle-001",
+            "element": "water",
+            "label": "水",
+            "source_type": "evidence",
+            "evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。",
+            "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          }
+        ],
+        "present_elements": [
+          {
+            "element": "wood",
+            "label": "木"
+          },
+          {
+            "element": "fire",
+            "label": "火"
+          },
+          {
+            "element": "earth",
+            "label": "土"
+          },
+          {
+            "element": "water",
+            "label": "水"
+          }
+        ],
+        "intra_circle_relations": [
+          {
+            "type": "generate",
+            "label": "木生火",
+            "source_element": "wood",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "火生土",
+            "source_element": "fire",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "水生木",
+            "source_element": "water",
+            "target_element": "wood",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "木克土",
+            "source_element": "wood",
+            "target_element": "earth",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "土克水",
+            "source_element": "earth",
+            "target_element": "water",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "水克火",
+            "source_element": "water",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          }
+        ],
+        "evidence": {
+          "colors": [
+            "purple、yellow、blue、green、orange"
+          ],
+          "shapes": [
+            "['circle', 'polygon', 'flower-like']"
+          ],
+          "summary": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。"
+        },
+        "interpretation_hint": "中圈情绪层内识别到木、火、土、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、火生土、水生木、木克土、土克水、水克火。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+      },
+      "outer": {
+        "circle": "outer",
+        "element_signals": [
+          {
+            "unit_id": "outer-001",
+            "element": "wood",
+            "label": "木",
+            "source_type": "evidence",
+            "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+            "hint": "木性指向生长、向上、边界和行动力。"
+          },
+          {
+            "unit_id": "outer-001",
+            "element": "fire",
+            "label": "火",
+            "source_type": "evidence",
+            "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+            "hint": "火性指向热情、表达、焦急和动力消耗。"
+          },
+          {
+            "unit_id": "outer-001",
+            "element": "metal",
+            "label": "金",
+            "source_type": "evidence",
+            "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+            "hint": "金性指向规则、收敛、标准、边界和价值感。"
+          },
+          {
+            "unit_id": "outer-001",
+            "element": "water",
+            "label": "水",
+            "source_type": "evidence",
+            "evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。",
+            "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          }
+        ],
+        "present_elements": [
+          {
+            "element": "wood",
+            "label": "木"
+          },
+          {
+            "element": "fire",
+            "label": "火"
+          },
+          {
+            "element": "metal",
+            "label": "金"
+          },
+          {
+            "element": "water",
+            "label": "水"
+          }
+        ],
+        "intra_circle_relations": [
+          {
+            "type": "generate",
+            "label": "木生火",
+            "source_element": "wood",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "金生水",
+            "source_element": "metal",
+            "target_element": "water",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "generate",
+            "label": "水生木",
+            "source_element": "water",
+            "target_element": "wood",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "水克火",
+            "source_element": "water",
+            "target_element": "fire",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "火克金",
+            "source_element": "fire",
+            "target_element": "metal",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          },
+          {
+            "type": "control",
+            "label": "金克木",
+            "source_element": "metal",
+            "target_element": "wood",
+            "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。"
+          }
+        ],
+        "evidence": {
+          "colors": [
+            "blue、green、orange"
+          ],
+          "shapes": [
+            "['wave', 'circle', 'dot']"
+          ],
+          "summary": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。"
+        },
+        "interpretation_hint": "外圈现实层内识别到木、火、金、水等元素信号，需按圈内元素组合与相邻关系解读；同圈关系候选包括木生火、金生水、水生木、水克火、火克金、金克木。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": [
+          "yellow、red、green、orange"
+        ]
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": [
+          "purple、yellow、blue、green、orange"
+        ]
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": [
+          "blue、green、orange"
+        ]
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "内圈位于画面中心，主要由黄色构成，并包含一个红色星形图案。周围环绕着绿色和橙色的弧形图案，这些图案与中心形成明显的对比，增强了视觉焦点。"
+      },
+      {
+        "id": "middle-001",
+        "circle": "middle",
+        "visible_evidence": "中圈围绕内圈展开，由多个重复的圆形图案组成，每个圆形内部包含紫色、黄色和蓝色的几何形状，形成类似花朵的结构。这些图案之间通过绿色和橙色的连接部分相连，增加了整体的连贯性。"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "外圈是整个画面的边缘部分，由蓝色波浪状图案构成，这些波浪图案交替出现，形成一种流动感。在波浪之间穿插着绿色和橙色的小圆点，增加了细节层次。"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "你的财富议题呈现一种‘有内核动力与资源连接，但外部流动尚在谨慎观望’的阶段性样貌。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "stage-08-energy-flow-diagnosis"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict",
+        "visual.inner_contracted_outer_strong",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "从画面来看，你与财富的关系并不是匮乏，而是能量已有、秩序已在，只是外在的流动与行动边界尚在建立中。你心里有一个很明确的核心渴望，也具备将资源组织起来的能力，但目前可能还在等待一个更安全的‘对外打开’的时机。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict",
+        "visual.inner_contracted_outer_strong",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "无需急着向外证明或抓取，先从‘承认自己已经具备价值与资源’开始。当内在的秩序感（中圈结构）进一步放松对失控的担忧，外在的流动（外圈波浪）会自然跟进。",
+    "report_mode": "lite",
+    "writing_input_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "stage-08-energy-flow-diagnosis"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict",
+        "visual.inner_contracted_outer_strong",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 财富议题·曼陀罗解读报告\n\n## 画面证据速写\n\n你的曼陀罗呈现对称的圆形结构，色彩分布均衡。中心区域以黄色为基调，内圈有一个醒目的红色星形图案，周围环绕绿色与橙色的弧形笔触，形成强烈的视觉焦点。中圈由多重重复的圆形单元组成，内含紫色、黄色和蓝色的几何形，彼此以绿色和橙色连接，整体构成类似花朵的秩序纹样。外圈是蓝色波浪状图案交替排列，波浪之间穿插着绿色和橙色的小圆点，为画面增添节奏与流动感。\n\n## 五行感知\n\n内圈中，大面积黄色对应土的承载与稳定倾向，中心的红色星形明显指向火的热情与表达冲动，环绕其旁的绿色弧形触笔则带有木的生长与边界特质。这三种元素在同一圈内相邻共存，可以观察到一个候选关系：绿色弧形（木）紧邻红色星形（火），在视觉上形成木生火的动力路径；而红色星形又坐落在黄色背景（土）之上，提示火生土的延续可能。同时，绿色弧形环绕并部分覆盖黄色区域，也提示木克土的边界感，看起来像是用规则或行动来约束过度承载的部分。\n\n中圈花卉状单元里，紫色和蓝色几何形对应水的感受与智慧流动，黄色几何形延续土的稳定感，绿色连接线则再次呈现木的行动连接。外圈最突出的是蓝色波浪形，对应水的流动属性，穿插的橙色小圆点散发火的能量，而绿色小圆点携带木的生发气息；波浪的规则交替在与橙色圆点互邻时，构成水克火的候选关系，像是在用情绪的起伏节制外在热情的急迫释放。\n\n三圈联动来看，内圈本源层那颗红色星形（核心动力）向上承接为情绪层的“花卉”秩序，中圈重复而有序的结构将内在热情转化成需要稳定表达的情绪模式；这份稳定逐层向外传递至现实层，外圈以波浪状的流动性尝试将内在秩序与外部环境接轨，波浪与圆点的交替透露出“想流动但还在试探节奏”的谨慎向外打开。\n\n## 财富核心解读\n\n你与财富之间的关系并不是缺少资源或能力，而是内在已经聚拢了相当清晰的价值核心与组织秩序，只是向外行动时容易被情绪节奏牵动，让财富的流动在“表达热情”与“守住安全”之间反复拉锯。这种状态可能体现为：有时冲动消费充当了情绪的出口，有时想法很多却迟迟无法落地兑现。\n\n## 温和行动建议\n\n可以试着从一个小动作开始——比如连续一周，每天只做一件与财富流入相关的低压力行动（如记账、整理一个收入渠道、发出一次报价），不做更多。同时留意当你想花钱安慰自己时，先停十秒问一句：“我现在需要安抚的是什么情绪？”不要求改变，只先练习辨认。"
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-f31434fd150d",
+      "report_mode": "lite",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 财富议题·曼陀罗解读报告\n\n## 画面证据速写\n\n你的曼陀罗呈现对称的圆形结构，色彩分布均衡。中心区域以黄色为基调，内圈有一个醒目的红色星形图案，周围环绕绿色与橙色的弧形笔触，形成强烈的视觉焦点。中圈由多重重复的圆形单元组成，内含紫色、黄色和蓝色的几何形，彼此以绿色和橙色连接，整体构成类似花朵的秩序纹样。外圈是蓝色波浪状图案交替排列，波浪之间穿插着绿色和橙色的小圆点，为画面增添节奏与流动感。\n\n## 五行感知\n\n内圈中，大面积黄色对应土的承载与稳定倾向，中心的红色星形明显指向火的热情与表达冲动，环绕其旁的绿色弧形触笔则带有木的生长与边界特质。这三种元素在同一圈内相邻共存，可以观察到一个候选关系：绿色弧形（木）紧邻红色星形（火），在视觉上形成木生火的动力路径；而红色星形又坐落在黄色背景（土）之上，提示火生土的延续可能。同时，绿色弧形环绕并部分覆盖黄色区域，也提示木克土的边界感，看起来像是用规则或行动来约束过度承载的部分。\n\n中圈花卉状单元里，紫色和蓝色几何形对应水的感受与智慧流动，黄色几何形延续土的稳定感，绿色连接线则再次呈现木的行动连接。外圈最突出的是蓝色波浪形，对应水的流动属性，穿插的橙色小圆点散发火的能量，而绿色小圆点携带木的生发气息；波浪的规则交替在与橙色圆点互邻时，构成水克火的候选关系，像是在用情绪的起伏节制外在热情的急迫释放。\n\n三圈联动来看，内圈本源层那颗红色星形（核心动力）向上承接为情绪层的“花卉”秩序，中圈重复而有序的结构将内在热情转化成需要稳定表达的情绪模式；这份稳定逐层向外传递至现实层，外圈以波浪状的流动性尝试将内在秩序与外部环境接轨，波浪与圆点的交替透露出“想流动但还在试探节奏”的谨慎向外打开。\n\n## 财富核心解读\n\n你与财富之间的关系并不是缺少资源或能力，而是内在已经聚拢了相当清晰的价值核心与组织秩序，只是向外行动时容易被情绪节奏牵动，让财富的流动在“表达热情”与“守住安全”之间反复拉锯。这种状态可能体现为：有时冲动消费充当了情绪的出口，有时想法很多却迟迟无法落地兑现。\n\n## 温和行动建议\n\n可以试着从一个小动作开始——比如连续一周，每天只做一件与财富流入相关的低压力行动（如记账、整理一个收入渠道、发出一次报价），不做更多。同时留意当你想花钱安慰自己时，先停十秒问一句：“我现在需要安抚的是什么情绪？”不要求改变，只先练习辨认。",
+      "summary": "你的财富议题呈现一种‘有内核动力与资源连接，但外部流动尚在谨慎观望’的阶段性样貌。"
+    }
+  }
+}

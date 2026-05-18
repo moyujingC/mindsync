@@ -18,6 +18,9 @@
       "block-5-report-and-quality"
     ],
     "leaked_terms": [],
+    "method_boundary_terms": [],
+    "deterministic_cause_terms": [],
+    "wealth_core_method_terms": [],
     "report_shape_issues": [],
     "missing_context_fields": [],
     "missing_visual_units": []
