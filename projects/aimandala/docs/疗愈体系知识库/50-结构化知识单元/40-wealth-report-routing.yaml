@@ -16,7 +16,7 @@ source_refs:
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/01-财富议题体系框架.md
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/11-财富议题手册.md
   - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/90-财富议题案例反推.md
-  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/10-画面语言/12-高频组合模式.md
+  - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/40-组合模式/12-高频组合模式.md
   - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/20-wealth-issue-clauses.yaml
   - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml
 
@@ -215,7 +215,7 @@ visual_signal_routes:
         - [外圈, 热]
     source_refs:
       - 90-财富议题案例反推.md#外圈红色多
-      - 12-高频组合模式.md#2-火一块一块被金截断
+      - 40-组合模式/12-高频组合模式.md#2-火一块一块被金截断
     candidate_clauses:
       - wealth.emotional_spending
       - wealth.low_action
@@ -233,7 +233,7 @@ visual_signal_routes:
         - [火弱]
         - [淡红]
     source_refs:
-      - 12-高频组合模式.md#5-弱火多
+      - 40-组合模式/12-高频组合模式.md#5-弱火多
     candidate_clauses:
       - wealth.approval_driven_earning
       - wealth.emotional_spending
@@ -251,7 +251,7 @@ visual_signal_routes:
         - [白色, 多]
         - [金色, 多]
     source_refs:
-      - 12-高频组合模式.md#6-金多
+      - 40-组合模式/12-高频组合模式.md#6-金多
     candidate_clauses:
       - wealth.low_deservingness
       - wealth.approval_driven_earning
@@ -271,7 +271,7 @@ visual_signal_routes:
         - [整体, 不成片]
     source_refs:
       - 90-财富议题案例反推.md#财富承载力不足
-      - 12-高频组合模式.md#7-土零散不成片
+      - 40-组合模式/12-高频组合模式.md#7-土零散不成片
     candidate_clauses:
       - wealth.low_capacity
       - wealth.scarcity_and_insecurity
@@ -289,7 +289,7 @@ visual_signal_routes:
         - [冲突]
         - [红, 蓝]
     source_refs:
-      - 12-高频组合模式.md#8-水火相冲
+      - 40-组合模式/12-高频组合模式.md#8-水火相冲
     candidate_clauses:
       - wealth.low_action
       - wealth.emotional_spending
@@ -309,7 +309,7 @@ visual_signal_routes:
         - [无根]
         - [绿色, 漂]
     source_refs:
-      - 12-高频组合模式.md#3-木无根
+      - 40-组合模式/12-高频组合模式.md#3-木无根
     candidate_clauses:
       - wealth.low_action
       - wealth.low_capacity
@@ -328,7 +328,7 @@ visual_signal_routes:
         - [割裂]
         - [截断]
     source_refs:
-      - 12-高频组合模式.md#1-白色把其他颜色割裂开
+      - 40-组合模式/12-高频组合模式.md#1-白色把其他颜色割裂开
     candidate_clauses:
       - wealth.approval_driven_earning
       - wealth.low_action
@@ -346,7 +346,7 @@ visual_signal_routes:
         - [外圈, 空白]
         - [外圈, 表达弱]
     source_refs:
-      - 12-高频组合模式.md#10-紫色单一且留白多
+      - 40-组合模式/12-高频组合模式.md#10-紫色单一且留白多
     candidate_clauses:
       - wealth.low_world_connection
       - wealth.low_action
