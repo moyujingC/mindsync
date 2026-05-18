@@ -676,6 +676,238 @@ report_section_routes:
       - 不替用户做决策。
       - 不扩成完整方案。
 
+clause_report_blocks:
+  - clause_id: wealth.low_deservingness
+    title: 配得感不足
+    primary_sections:
+      - 财富主线确认
+      - 机制拆解
+      - 浮现议题回译
+    lite_use: 作为主线或辅助线索，说明是否允许自己拥有、收取和被看见。
+    pro_use: 连接内圈状态、自我价值、求认可和收受能力，解释价值进入财富流动前的内在许可。
+    expression_focus:
+      - 值不值得拥有
+      - 是否允许自己被支付
+      - 价值能否被稳定接住
+    avoid:
+      - 不写成用户没有价值。
+
+  - clause_id: wealth.scarcity_and_insecurity
+    title: 匮乏感和安全感不足
+    primary_sections:
+      - 财富主线确认
+      - 机制拆解
+      - 现实表现
+    lite_use: 用于快速命中钱和安全感绑得过紧的状态。
+    pro_use: 展开钱如何承载安全、控制、焦虑和身体紧绷，并回到承载力与行动节奏。
+    expression_focus:
+      - 钱替安全感工作
+      - 有资源也不一定安心
+      - 越重要越紧绷
+    avoid:
+      - 不判断用户真实财务安全。
+
+  - clause_id: wealth.approval_driven_earning
+    title: 求认可式赚钱
+    primary_sections:
+      - 机制拆解
+      - 浮现议题回译
+      - 现实表现
+    lite_use: 作为求认可、怕评价或证明自己的辅助解释。
+    pro_use: 连接金能量、标准感、价值表达和关系评价，解释行动为什么变用力。
+    expression_focus:
+      - 收入结果和自我评价绑定
+      - 为了被认可而用力
+      - 外界标准牵动财富行动
+    avoid:
+      - 不否定努力赚钱。
+
+  - clause_id: wealth.emotional_spending
+    title: 情绪型漏财
+    primary_sections:
+      - 机制拆解
+      - 浮现议题回译
+      - 现实表现
+      - 调整建议
+    lite_use: 可作为 Lite 的主线之一，但必须使用缓冲语气。
+    pro_use: 连接火能量、情绪出口、消费安抚、行动中断和资源保存困难。
+    expression_focus:
+      - 钱替情绪出口工作
+      - 消费或拖延承担安抚功能
+      - 资源容易被当下感受带走
+    avoid:
+      - 不写用户乱花钱。
+
+  - clause_id: wealth.low_capacity
+    title: 承载力不足
+    primary_sections:
+      - 财富主线确认
+      - 机制拆解
+      - 生机
+      - 调整建议
+    lite_use: 用于表达接住、保存和稳定承载还需要变稳。
+    pro_use: 结合土能量、外圈现实状态、身体承接和资源容器，解释有资源但不稳的模式。
+    expression_focus:
+      - 接住财富的容器
+      - 资源进入后的稳定性
+      - 承载力扩容
+    avoid:
+      - 不预测存款、收入或保存结果。
+
+  - clause_id: wealth.low_action
+    title: 行动力不足
+    primary_sections:
+      - 财富主线确认
+      - 机制拆解
+      - 现实表现
+      - 调整建议
+    lite_use: 用于解释想法有但落地少，建议只给小步行动。
+    pro_use: 连接木火动力、情绪中断、关系牵引和现实执行路径。
+    expression_focus:
+      - 行动被打断
+      - 价值难以进入现实交换
+      - 小步恢复行动
+    avoid:
+      - 不写成懒惰或不努力。
+
+  - clause_id: wealth.low_world_connection
+    title: 与世界链接不足
+    primary_sections:
+      - 财富主线确认
+      - 三圈财富读法
+      - 生机
+    lite_use: 用于提示价值需要被世界看见，但不要求用户外向。
+    pro_use: 结合外圈状态、表达路径、市场连接、合作和支持通道。
+    expression_focus:
+      - 价值需要外化
+      - 与人、资源和机会连接
+      - 世界能否回应用户的价值
+    avoid:
+      - 不把内向或谨慎写成问题。
+
+  - clause_id: wealth.receiving_and_pricing_pressure
+    title: 不敢收钱与开价压力
+    primary_sections:
+      - 机制拆解
+      - 浮现议题回译
+      - 调整建议
+    lite_use: 只作为收费、收受和价值交换的提示，不给具体价格建议。
+    pro_use: 连接关系评价、价值表达、交换边界和收受能力。
+    expression_focus:
+      - 收的动作变紧
+      - 价值拿出来交换时后退
+      - 开价和边界压力
+    avoid:
+      - 不替用户制定价格。
+
+  - clause_id: wealth.hardship_earning_belief
+    title: 辛苦赚钱信念
+    primary_sections:
+      - 机制拆解
+      - 现实表现
+      - 调整建议
+    lite_use: 作为厚重、过满、压迫感的辅助解释。
+    pro_use: 连接身体透支、责任感、安全感和“必须很用力才配得到”的信念。
+    expression_focus:
+      - 必须辛苦才配得到
+      - 休息和支持被排除
+      - 努力与透支的边界
+    avoid:
+      - 不否定现实责任和努力。
+
+  - clause_id: wealth.success_visibility_threat
+    title: 有钱危险与成功压力
+    primary_sections:
+      - 机制拆解
+      - 浮现议题回译
+      - 现实表现
+    lite_use: Lite 中只点到“更多会带来压力”，不展开家庭或关系长链。
+    pro_use: 展开成功、被看见、关系变化、防御和内外不一致。
+    expression_focus:
+      - 想要更多又担心更多
+      - 被看见同时兴奋和后退
+      - 成功带来的关系想象
+    avoid:
+      - 不断言用户害怕成功。
+
+  - clause_id: wealth.resource_leakage
+    title: 保存困难与资源外泄
+    primary_sections:
+      - 财富主线确认
+      - 三圈财富读法
+      - 现实表现
+      - 调整建议
+    lite_use: 可作为“存不住、散得快”的主线，但不能写成现实财务结论。
+    pro_use: 结合外圈缺口、边界、关系消耗、情绪消耗和资源容器。
+    expression_focus:
+      - 资源进来后容易散
+      - 外界需求打乱节奏
+      - 建立小范围承接容器
+    avoid:
+      - 不判断真实存款、支出或债务。
+
+  - clause_id: wealth.exchange_boundary_imbalance
+    title: 付出失衡与交换边界
+    primary_sections:
+      - 机制拆解
+      - 浮现议题回译
+      - 调整建议
+    lite_use: 用于中圈关系拉扯或外圈边界弱时的关系回译。
+    pro_use: 展开多给少收、拒绝压力、收费压力和资源互惠。
+    expression_focus:
+      - 先照顾别人再考虑自己
+      - 价值、价格和承受范围
+      - 付出与交换是否清楚
+    avoid:
+      - 不指责用户讨好。
+
+  - clause_id: wealth.value_expression_block
+    title: 价值表达受阻
+    primary_sections:
+      - 财富主线确认
+      - 三圈财富读法
+      - 生机
+      - 调整建议
+    lite_use: 作为“有价值但没有外化”的温和主线。
+    pro_use: 结合中心清晰、外圈弱、表达路径、作品服务和市场理解。
+    expression_focus:
+      - 价值已经存在
+      - 价值需要被整理成可交换形式
+      - 表达路径和交付路径
+    avoid:
+      - 不承诺客户、成交或市场反馈。
+
+  - clause_id: wealth.scattered_goals
+    title: 目标混乱与能量分散
+    primary_sections:
+      - 机制拆解
+      - 现实表现
+      - 调整建议
+    lite_use: 用于解释能量分散和行动主线不清，建议只给一个小主轴。
+    pro_use: 连接碎点、色块分割、多方向拉扯、选择压力和行动不连续。
+    expression_focus:
+      - 同时想抓太多方向
+      - 行动难以形成稳定主线
+      - 先选一个低风险方向
+    avoid:
+      - 不替用户做职业或商业取舍。
+
+  - clause_id: wealth.difficulty_receiving_support
+    title: 接受支持困难
+    primary_sections:
+      - 机制拆解
+      - 浮现议题回译
+      - 生机
+      - 调整建议
+    lite_use: 作为边界厚重、自我保护强或支持通道弱的提示。
+    pro_use: 连接防御、家庭责任、关系互惠、合作和允许被支持。
+    expression_focus:
+      - 习惯一个人扛
+      - 支持和亏欠的区分
+      - 财富也来自合适支持
+    avoid:
+      - 不要求用户信任所有人。
+
 module_selection:
   lite:
     max_primary_modules: 2
