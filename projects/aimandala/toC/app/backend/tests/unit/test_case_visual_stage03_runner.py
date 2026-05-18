@@ -38,6 +38,9 @@ def test_load_complete_cases_finds_all_11_cases():
     assert all(case.marked_image_path.exists() for case in cases)
     assert cases[0].source_visual_notes["inner"]
     assert any("蓝色" in item for item in cases[0].source_visual_notes["inner"])
+    assert any("笔触" in item for item in cases[0].source_visual_notes["inner"])
+    assert any("莲花形状" in item for item in cases[1].source_visual_notes["inner"])
+    assert any("枝桠" in item for item in cases[9].source_visual_notes["middle"])
     assert cases[3].reviewed_visual_notes["inner"]
     assert any("粉色" in item for item in cases[3].reviewed_visual_notes["inner"])
 
@@ -117,6 +120,7 @@ def test_render_review_markdown_contains_visual_review_table():
 
     assert "# case-001 stage-03 视觉识别审核" in markdown
     assert "## 原文对画面内容的描述" in markdown
+    assert "### 整体画面" in markdown
     assert "## 人工审核区视觉基准摘录" in markdown
     assert "## 原文、人工基准与模型对照" in markdown
     assert "| 圈层 | 原文对画面内容的描述 | 人工审核区视觉基准 | 大模型识别重点 | 初步差异提示 | 人工审核结论 |" in markdown
@@ -133,8 +137,9 @@ def test_comparison_table_does_not_fallback_reviewed_notes_into_source_column():
         marked_image_path=Path("case-test-mandala-3q.jpg"),
         title="测试案例",
         topic_tags="测试",
-        source_visual_notes={"inner": [], "middle": [], "outer": []},
+        source_visual_notes={"global": [], "inner": [], "middle": [], "outer": []},
         reviewed_visual_notes={
+            "global": [],
             "inner": ["内圈：人工审核区粉色圆形。"],
             "middle": [],
             "outer": [],

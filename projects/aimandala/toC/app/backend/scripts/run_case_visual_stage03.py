@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from dataclasses import dataclass
 from datetime import date
@@ -34,6 +35,17 @@ from app.core.mandala_interpretation_agent.contracts import (  # noqa: E402
     MandalaUserContext,
 )
 from app.core.mandala_interpretation_agent.knowledge_pack_builder import KnowledgePackBuilder  # noqa: E402
+
+
+SOURCE_NOTE_KEYS = ["global", "inner", "middle", "outer"]
+SOURCE_NOTE_LABELS = [
+    ("global", "整体画面"),
+    ("inner", "内圈"),
+    ("middle", "中圈"),
+    ("outer", "外圈"),
+]
+MAX_SOURCE_VISUAL_NOTES_PER_LAYER = 8
+MAX_REVIEWED_VISUAL_NOTES_PER_LAYER = 6
 
 
 @dataclass(frozen=True)
@@ -489,7 +501,7 @@ def _reviewed_visual_note_sections(case: CompleteCaseVisualInput) -> list[str]:
 
 def _visual_note_sections(notes_by_circle: dict[str, list[str]], *, empty_text: str) -> list[str]:
     sections: list[str] = []
-    for circle_key, label in [("inner", "内圈"), ("middle", "中圈"), ("outer", "外圈")]:
+    for circle_key, label in SOURCE_NOTE_LABELS:
         notes = notes_by_circle.get(circle_key, [])
         sections.extend([f"### {label}", ""])
         if notes:
@@ -510,11 +522,14 @@ def _source_model_comparison_sections(
         "| --- | --- | --- | --- | --- | --- |",
     ]
     circles = stage03.get("circles", {}) if isinstance(stage03, dict) else {}
-    for circle_key, label in [("inner", "内圈"), ("middle", "中圈"), ("outer", "外圈")]:
+    for circle_key, label in [("global", "整体画面"), ("inner", "内圈"), ("middle", "中圈"), ("outer", "外圈")]:
         source_notes = "；".join(case.source_visual_notes.get(circle_key, [])) or "原文未提取到明确的画面内容描述。"
         reviewed_notes = "；".join(case.reviewed_visual_notes.get(circle_key, [])) or "人工审核区未提取到明确画面识别句。"
-        circle = circles.get(circle_key, {}) if isinstance(circles, dict) else {}
-        model_summary = _model_circle_summary(circle)
+        if circle_key == "global":
+            model_summary = str(stage03.get("global_visual_summary") or "").strip()
+        else:
+            circle = circles.get(circle_key, {}) if isinstance(circles, dict) else {}
+            model_summary = _model_circle_summary(circle)
         diff_hint = _combined_comparison_hint(
             source_text=source_notes,
             reviewed_text=reviewed_notes,
@@ -576,24 +591,20 @@ def _combined_comparison_hint(*, source_text: str, reviewed_text: str, model_tex
 
 def _extract_source_visual_notes(text: str) -> dict[str, list[str]]:
     raw_source = _extract_original_interpretation_text(text)
-    lines = _normalize_source_lines(raw_source)
-    notes = {"inner": [], "middle": [], "outer": []}
-    current_circle = ""
-    for line in lines:
-        circle = _circle_for_line(line)
-        if circle:
-            current_circle = circle
-        target = circle or current_circle
-        cleaned = _strip_order_prefix(line)
-        if target and cleaned and _looks_like_visual_source_line(cleaned):
-            if cleaned not in notes[target]:
-                notes[target].append(cleaned)
-    return {key: value[:4] for key, value in notes.items()}
+    segments = _segment_source_by_layer(raw_source)
+    return {
+        key: _extract_visual_descriptions_from_segment(
+            segment,
+            layer=key,
+            limit=MAX_SOURCE_VISUAL_NOTES_PER_LAYER,
+        )
+        for key, segment in segments.items()
+    }
 
 
 def _extract_reviewed_visual_notes(text: str) -> dict[str, list[str]]:
     review_text = _extract_review_section(text)
-    notes = {"inner": [], "middle": [], "outer": []}
+    notes = {key: [] for key in SOURCE_NOTE_KEYS}
     for section_title in ["画面事实", "五行元素与圈内生克"]:
         section = _extract_subsection(review_text, section_title)
         for raw_line in section.splitlines():
@@ -602,9 +613,11 @@ def _extract_reviewed_visual_notes(text: str) -> dict[str, list[str]]:
                 continue
             content = line.removeprefix("- ").strip()
             target = _circle_for_line(content)
+            if not target and _looks_like_reviewed_global_visual_note(content):
+                target = "global"
             if target and content not in notes[target]:
                 notes[target].append(content)
-    return {key: value[:5] for key, value in notes.items()}
+    return {key: value[:MAX_REVIEWED_VISUAL_NOTES_PER_LAYER] for key, value in notes.items()}
 
 
 def _extract_review_section(text: str) -> str:
@@ -630,6 +643,361 @@ def _extract_original_interpretation_text(text: str) -> str:
     if start == -1:
         return text[: end if end != -1 else len(text)]
     return text[start:end if end != -1 else len(text)]
+
+
+def _segment_source_by_layer(text: str) -> dict[str, str]:
+    segments: dict[str, list[str]] = {key: [] for key in SOURCE_NOTE_KEYS}
+    current = "global"
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("#### 调整方案") or line.startswith("#### 调频建议"):
+            break
+        layer = _circle_heading_for_line(line)
+        if layer:
+            current = layer
+        if current in segments:
+            segments[current].append(line)
+    return {key: "\n".join(value) for key, value in segments.items()}
+
+
+def _extract_visual_descriptions_from_segment(segment: str, *, layer: str, limit: int) -> list[str]:
+    notes: list[str] = []
+    for raw_line in segment.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        prepared = _prepare_source_visual_line_for_split(stripped)
+        for sentence in _split_visual_sentences(prepared):
+            cleaned = _clean_source_visual_sentence(sentence)
+            if not cleaned:
+                continue
+            if not _is_layer_relevant_visual_description(cleaned, layer=layer):
+                continue
+            _append_unique(notes, cleaned, limit=limit)
+            if len(notes) >= limit:
+                return notes
+    return notes
+
+
+def _prepare_source_visual_line_for_split(line: str) -> str:
+    cleaned = _remove_source_parenthetical_references(line)
+    cleaned = _drop_parenthetical_text(cleaned)
+    cleaned = _drop_unclosed_parenthetical_tail(cleaned)
+    return cleaned
+
+
+def _clean_source_visual_sentence(sentence: str) -> str:
+    cleaned = _strip_order_prefix(sentence)
+    cleaned = _remove_source_parenthetical_references(cleaned)
+    cleaned = _drop_parenthetical_text(cleaned)
+    cleaned = _drop_unclosed_parenthetical_tail(cleaned)
+    cleaned = _trim_interpretation_after_visual_clause(cleaned)
+    cleaned = _cleanup_source_visual_fragment(cleaned)
+    if _is_source_reference_fragment(cleaned) or _is_parenthetical_interpretation(cleaned):
+        return ""
+    return cleaned
+
+
+def _remove_source_parenthetical_references(text: str) -> str:
+    return re.sub(r"[（(][^）)]*(点击查看|详见)[^）)]*[）)]", "", text).strip()
+
+
+def _drop_parenthetical_text(text: str) -> str:
+    return re.sub(r"[（(][^）)]*[）)]", "", text).strip()
+
+
+def _drop_unclosed_parenthetical_tail(text: str) -> str:
+    candidates = [index for index in [text.find("（"), text.find("(")] if index != -1]
+    if not candidates:
+        return text
+    return text[: min(candidates)].strip()
+
+
+def _cleanup_source_visual_fragment(text: str) -> str:
+    cleaned = text.strip(" ，,。；;")
+    cleaned = re.sub(r"，?渐变色$", "", cleaned)
+    for suffix in ["且", "也", "这", "这些", "但是", "但"]:
+        if cleaned.endswith(suffix):
+            cleaned = cleaned[: -len(suffix)].rstrip(" ，,。；;")
+    if cleaned.endswith("属性") and "颜色" not in cleaned and "分别" not in cleaned:
+        return ""
+    return cleaned
+
+
+def _trim_interpretation_after_visual_clause(text: str) -> str:
+    cleaned = text.strip()
+    cleaned = _remove_circle_meaning_prefix(cleaned)
+    cleaned = _remove_element_meaning_tail(cleaned)
+    cleaned = _remove_visual_intro_prefix(cleaned)
+    if "代表什么？代表" in cleaned:
+        cleaned = cleaned.split("代表什么？代表", 1)[0].rstrip(" ，,。；;")
+    for marker in [
+        "说明：",
+        "说明",
+        "由此可以看出",
+        "可以看出",
+        "意味着",
+        "她会",
+        "他会",
+        "她觉得",
+        "他觉得",
+        "别人看",
+        "外人看",
+        "能量共振",
+        "相当",
+    ]:
+        index = cleaned.find(marker)
+        if index > 0:
+            prefix = cleaned[:index].rstrip(" ，,。；;")
+            if _contains_visual_descriptor(prefix):
+                return prefix
+    if "代表" in cleaned and not _starts_as_color_inventory(cleaned):
+        prefix = cleaned.split("代表", 1)[0].rstrip(" ，,。；;")
+        if _contains_visual_descriptor(prefix):
+            return prefix
+    return cleaned
+
+
+def _remove_visual_intro_prefix(text: str) -> str:
+    for marker in ["我们看到：", "可以看到：", "还可以看到：", "同时看到：", "从内圈可以看出，", "从中圈可以看出，", "从外圈来看，"]:
+        index = text.find(marker)
+        if index > 0:
+            prefix = text[:index]
+            if any(term in prefix for term in ["为什么", "怎么", "如何"]):
+                return text[index + len(marker) :].strip(" ，,。；;")
+    return text
+
+
+def _remove_element_meaning_tail(text: str) -> str:
+    if "代表" not in text:
+        return text
+    meaning_markers = [
+        "水代表",
+        "金代表",
+        "木代表",
+        "火代表",
+        "土代表",
+        "弱火代表",
+        "紫色代表",
+    ]
+    indexes = [text.find(marker) for marker in meaning_markers if text.find(marker) > 0]
+    if not indexes:
+        return text
+    return text[: min(indexes)].rstrip(" ，,。；;")
+
+
+def _remove_circle_meaning_prefix(text: str) -> str:
+    markers = ["属性有", "五行属性", "颜色有", "有什么颜色"]
+    if "代表" not in text:
+        return text
+    for marker in markers:
+        index = text.find(marker)
+        if index > 0:
+            prefix = text[:index]
+            if "代表" in prefix:
+                return text[index:].strip(" ，,。；;")
+    return text
+
+
+def _is_layer_relevant_visual_description(line: str, *, layer: str) -> bool:
+    if len(line) < 4:
+        return False
+    if _has_strong_non_visual_topic(line) and not _contains_visual_descriptor(line):
+        return False
+    if layer == "global":
+        return _is_global_visual_description(line)
+    return _is_circle_visual_description(line)
+
+
+def _is_global_visual_description(line: str) -> bool:
+    return any(
+        marker in line
+        for marker in [
+            "整体",
+            "画面特征",
+            "整张曼陀罗",
+            "这幅曼陀罗里有什么颜色",
+            "颜色都有哪几种",
+            "颜色画得",
+            "线条",
+            "凌乱",
+            "留白",
+            "单一",
+            "涂满",
+        ]
+    ) and _contains_visual_descriptor(line)
+
+
+def _is_circle_visual_description(line: str) -> bool:
+    if _has_strong_non_visual_topic(line):
+        return False
+    if _is_circle_meaning_definition(line):
+        return False
+    if _is_formal_visual_inventory_or_relation(line):
+        return True
+    if _has_interpretive_subject(line) and not _has_explicit_visual_fact_marker(line):
+        return False
+    return _contains_visual_descriptor(line) and not _is_pure_interpretive_sentence(line)
+
+
+def _contains_visual_descriptor(line: str) -> bool:
+    return _has_color_or_element_term(line) or _describes_visual_form_or_relation(line) or any(
+        marker in line
+        for marker in [
+            "莲花",
+            "花瓣",
+            "小人",
+            "小草",
+            "枝桠",
+            "树叶",
+            "种子",
+            "繁花似锦",
+            "多边形",
+            "几何",
+            "线条",
+            "粗糙",
+            "凌乱",
+            "画出线",
+            "指向",
+            "延伸",
+            "方向",
+            "里面",
+            "外面",
+            "周围",
+            "旁边",
+            "中间",
+            "包裹",
+            "包住",
+        ]
+    )
+
+
+def _is_pure_interpretive_sentence(line: str) -> bool:
+    if _is_formal_visual_inventory_or_relation(line):
+        return False
+    if _describes_visual_form_or_relation(line):
+        return False
+    return _has_interpretive_subject(line)
+
+
+def _is_circle_meaning_definition(line: str) -> bool:
+    return any(
+        marker in line
+        for marker in [
+            "代表过去",
+            "代表意识",
+            "代表现在",
+            "代表能量",
+            "代表未来",
+            "代表物质",
+            "代表财富",
+            "代表身体",
+            "水代表",
+            "金代表",
+            "木代表",
+            "火代表",
+            "土代表",
+            "弱火代表",
+            "紫色代表",
+            "自己与自己的关系",
+            "亲人之间的情感关系",
+            "别人怎么看",
+        ]
+    )
+
+
+def _has_explicit_visual_fact_marker(line: str) -> bool:
+    return any(
+        marker in line
+        for marker in [
+            "颜色",
+            "属性",
+            "形状",
+            "涂得",
+            "涂满",
+            "涂出",
+            "笔触",
+            "面积",
+            "比例",
+            "占比",
+            "比重",
+            "呈现",
+            "看起来像",
+            "像",
+            "包裹着",
+            "包着",
+            "隔断",
+            "截断",
+            "延伸",
+            "向外",
+            "向里",
+            "周围",
+            "旁边",
+            "中间",
+            "条状",
+            "粗糙",
+            "凌乱",
+            "画出线",
+            "线条",
+            "枝桠",
+            "五角星",
+            "三角形",
+            "圆圈",
+            "椭圆形",
+            "树叶",
+            "花瓣",
+            "莲花",
+            "留白",
+            "多",
+            "少",
+            "最多",
+            "次之",
+            "最少",
+        ]
+    )
+
+
+def _has_strong_non_visual_topic(line: str) -> bool:
+    return any(
+        marker in line
+        for marker in [
+            "建议",
+            "调频",
+            "画一周",
+            "多用",
+            "锚定",
+            "调整",
+            "冥想",
+            "站桩",
+            "八段锦",
+            "深呼吸",
+            "案主反馈",
+            "大胆猜测",
+            "可以问问",
+            "财富方面",
+            "和亲人的关系",
+            "身体上",
+            "工作的话",
+            "喜欢买",
+            "花钱",
+            "存不住",
+            "能赚钱",
+            "赚到钱",
+            "进账",
+            "漏财",
+        ]
+    )
+
+
+def _looks_like_reviewed_global_visual_note(line: str) -> bool:
+    return any(marker in line for marker in ["整体", "原画作", "画面", "留白", "模板线", "标记线"])
+
+
+def _append_unique(items: list[str], item: str, *, limit: int) -> None:
+    if item and item not in items and len(items) < limit:
+        items.append(item)
 
 
 def _normalize_source_lines(text: str) -> list[str]:
@@ -658,6 +1026,27 @@ def _circle_for_line(line: str) -> str:
     if "中圈" in line or "第二圈" in line:
         return "middle"
     if "外圈" in line or "第三圈" in line:
+        return "outer"
+    return ""
+
+
+def _circle_heading_for_line(line: str) -> str:
+    normalized = line.strip()
+    normalized = re.sub(r"^[0-9一二三四五六七八九十]+[、.．]\s*", "", normalized)
+    normalized = normalized.removeprefix("首先").removeprefix("其次").removeprefix("最后").strip()
+    heading_patterns = [
+        ("inner", ["看第一圈", "来看第一圈", "看内圈", "来看内圈", "看里圈", "首先看里圈", "首先来看第一圈"]),
+        ("middle", ["看第二圈", "来看第二圈", "看中圈", "其次看中圈", "其次看第二圈"]),
+        ("outer", ["看第三圈", "来看第三圈", "看外圈", "最后看外圈", "最后看第三圈"]),
+    ]
+    for layer, patterns in heading_patterns:
+        if any(pattern in normalized for pattern in patterns):
+            return layer
+    if normalized.startswith(("第一圈代表", "第一圈是", "第一圈里")):
+        return "inner"
+    if normalized.startswith(("第二圈代表", "第二圈是", "第二圈里", "中圈代表", "中圈也是", "中圈里")):
+        return "middle"
+    if normalized.startswith(("第三圈代表", "第三圈是", "第三圈里", "外圈代表", "外圈也是", "外圈里")):
         return "outer"
     return ""
 
@@ -789,7 +1178,11 @@ def _is_formal_visual_inventory_or_relation(line: str) -> bool:
         "有黄",
         "有黑",
     ]
-    return any(marker in line for marker in formal_markers) and _has_color_or_element_term(line)
+    if not any(marker in line for marker in formal_markers) or not _has_color_or_element_term(line):
+        return False
+    if _has_interpretive_subject(line) and not _has_explicit_visual_fact_marker(line):
+        return False
+    return True
 
 
 def _has_interpretive_subject(line: str) -> bool:
@@ -802,6 +1195,9 @@ def _has_interpretive_subject(line: str) -> bool:
             "案主",
             "她",
             "他",
+            "这位",
+            "她的",
+            "他的",
             "ta",
             "TA",
             "别人",
@@ -818,6 +1214,24 @@ def _has_interpretive_subject(line: str) -> bool:
             "身体",
             "感情",
             "关系",
+            "喜欢",
+            "愿意",
+            "觉得",
+            "感觉",
+            "不满意",
+            "心情",
+            "情绪",
+            "自我",
+            "要求",
+            "安全感",
+            "疲惫",
+            "束缚",
+            "压力",
+            "出于",
+            "为了",
+            "希望",
+            "能够",
+            "价值",
         ]
     )
 
