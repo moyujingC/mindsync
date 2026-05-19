@@ -62,6 +62,7 @@
 
 1. [历史任务批量关闭-runbook.md](./历史任务批量关闭-runbook.md)
 2. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](./2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
+3. [兑换码与付费最小闭环-runbook.md](./兑换码与付费最小闭环-runbook.md)
 
 ### 4.3 当前 control-backed runbooks
 
