@@ -1,0 +1,211 @@
+{
+  "global_visual_summary": "画面中心为橙色圆形，外围层层出现蓝色、黄色和紫色图案，整体花形感强。",
+  "circles": {
+    "inner": {
+      "summary": "内圈以橙色中心圆、蓝色齿状环和黄色小点为主。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "橙色",
+          "color_confidence": "high",
+          "shape": "圆形",
+          "size_tendency": "medium",
+          "adjacency": [
+            "inner-002",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心可见橙色圆形。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-002",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "齿状环",
+          "size_tendency": "small",
+          "adjacency": [
+            "inner-001",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "橙色圆形外侧可见蓝色齿状环。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-003",
+          "position": "inner",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "环间留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "inner-001",
+            "inner-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "内圈图案之间存在少量留白。",
+          "confidence": "high"
+        }
+      ]
+    },
+    "middle": {
+      "summary": "中圈有紫色尖瓣、黄色花形和蓝色背景，重复感较强。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "紫色",
+          "color_confidence": "high",
+          "shape": "尖瓣",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-002",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈可见紫色尖瓣结构。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-002",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "花形",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-001",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈可见黄色花形结构。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-003",
+          "position": "middle",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "图案间留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "middle-001",
+            "middle-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "紫黄图案之间存在留白。",
+          "confidence": "high"
+        }
+      ]
+    },
+    "outer": {
+      "summary": "外圈有蓝色云状结构和橙色圆点，图案沿外缘重复。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "云状外圈",
+          "size_tendency": "medium",
+          "adjacency": [
+            "outer-002",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈可见蓝色云状结构重复。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-002",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "橙色",
+          "color_confidence": "high",
+          "shape": "圆点",
+          "size_tendency": "small",
+          "adjacency": [
+            "outer-001",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈可见橙色圆点装饰。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-003",
+          "position": "outer",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "外缘留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "outer-001",
+            "outer-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "蓝色云状结构与橙色圆点之间留白明显。",
+          "confidence": "high"
+        }
+      ]
+    }
+  },
+  "evidence_summary": [
+    "橙色中心圆与蓝色齿状环构成强烈内圈结构",
+    "中圈紫色尖瓣与黄色花形重复",
+    "外圈蓝色云状结构和橙色圆点沿边重复"
+  ],
+  "excluded_marks": [
+    {
+      "id": "excluded-001",
+      "source_type": "therapist_marker",
+      "reason": "三圈设定标记线，仅用于边界确认",
+      "visible_evidence": "第二张图中的三圈辅助标记线"
+    },
+    {
+      "id": "excluded-002",
+      "source_type": "template_line",
+      "reason": "模板黑色线稿，不作为画作内容",
+      "visible_evidence": "原画作中的黑色模板线稿轮廓"
+    }
+  ],
+  "uncertainties": []
+}

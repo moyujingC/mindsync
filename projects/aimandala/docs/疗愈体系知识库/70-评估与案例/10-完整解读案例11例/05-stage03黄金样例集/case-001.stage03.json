@@ -1,0 +1,190 @@
+{
+  "global_visual_summary": "画面以浅蓝、粉色和紫色为主，整体呈现清晰的三圈同心结构，对称度高，留白分布明确。",
+  "circles": {
+    "inner": {
+      "summary": "内圈以浅蓝色花形、三角环和局部留白为主，蓝色笔触存在深浅不一。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "浅蓝色",
+          "color_confidence": "high",
+          "shape": "放射状花形",
+          "size_tendency": "medium",
+          "adjacency": [
+            "inner-002",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心可见浅蓝色花形，呈放射状分瓣，笔触有深浅变化。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-002",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "浅蓝色",
+          "color_confidence": "high",
+          "shape": "三角形环",
+          "size_tendency": "small",
+          "adjacency": [
+            "inner-001",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "花形外侧可见一圈浅蓝色三角形，每个三角形内部还有浅蓝色圆形。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-003",
+          "position": "inner",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "不规则留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "inner-001",
+            "inner-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "内圈可见包裹花形的白色留白，并切分三角环与中心花形。",
+          "confidence": "high"
+        }
+      ]
+    },
+    "middle": {
+      "summary": "中圈以粉色方块和块间留白为主，方块内部有三角结构。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "粉色",
+          "color_confidence": "high",
+          "shape": "方块",
+          "size_tendency": "medium",
+          "adjacency": [
+            "middle-002"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈主体为粉色方块或近似方块，每个块内部有三角形结构。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-002",
+          "position": "middle",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "块间留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "middle-001"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "粉色方块之间存在明显纸面留白，形成切分。",
+          "confidence": "high"
+        }
+      ]
+    },
+    "outer": {
+      "summary": "外圈由粉色小块、紫色圆角长方块和外缘紫色块组成，留白较多。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "粉色",
+          "color_confidence": "high",
+          "shape": "半圆/小块",
+          "size_tendency": "small",
+          "adjacency": [
+            "outer-002",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "靠近中圈外侧可见一圈粉色半圆或小块。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-002",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "紫色",
+          "color_confidence": "high",
+          "shape": "圆角长方块",
+          "size_tendency": "medium",
+          "adjacency": [
+            "outer-001",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中外层可见紫色圆角长方块，彼此分隔。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-003",
+          "position": "outer",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "外圈留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "outer-001",
+            "outer-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "外缘与不同紫粉块之间留有明显白色留白。",
+          "confidence": "high"
+        }
+      ]
+    }
+  },
+  "evidence_summary": [
+    "浅蓝花形与三角环共同构成内圈主体",
+    "粉色方块之间存在明显留白切分",
+    "外圈由粉色小块与紫色块层层展开"
+  ],
+  "excluded_marks": [
+    {
+      "id": "excluded-001",
+      "source_type": "therapist_marker",
+      "reason": "三圈设定标记线，仅用于边界确认",
+      "visible_evidence": "第二张图中的三圈辅助标记线"
+    },
+    {
+      "id": "excluded-002",
+      "source_type": "template_line",
+      "reason": "模板黑色线稿，不作为画作内容",
+      "visible_evidence": "原画作中的黑色模板线稿轮廓"
+    }
+  ],
+  "uncertainties": []
+}

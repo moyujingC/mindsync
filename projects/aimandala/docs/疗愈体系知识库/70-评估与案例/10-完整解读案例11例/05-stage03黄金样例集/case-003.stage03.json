@@ -1,0 +1,213 @@
+{
+  "global_visual_summary": "画面由红、黄、绿、蓝、紫多色构成，中心到外圈都出现重复图案和明显留白。",
+  "circles": {
+    "inner": {
+      "summary": "内圈由红色星形、黄色星形、绿色圆心和局部弧线组成。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "红色",
+          "color_confidence": "high",
+          "shape": "星形",
+          "size_tendency": "medium",
+          "adjacency": [
+            "inner-002",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "内圈中心可见红色星形结构。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-002",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "星形/尖角",
+          "size_tendency": "small",
+          "adjacency": [
+            "inner-001",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "红色星形旁可见黄色星形或尖角结构。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-003",
+          "position": "inner",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "结构间留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "inner-001",
+            "inner-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "内圈图案之间存在留白。",
+          "confidence": "high"
+        }
+      ]
+    },
+    "middle": {
+      "summary": "中圈颜色更丰富，绿色、黄色、蓝色、红色和紫色图案交错出现。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "绿色",
+          "color_confidence": "high",
+          "shape": "长条/叶形",
+          "size_tendency": "medium",
+          "adjacency": [
+            "middle-002",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈可见绿色长条或叶形结构。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-002",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "紫色",
+          "color_confidence": "high",
+          "shape": "尖角/弧形",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-001",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈可见紫色尖角或弧形结构。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-003",
+          "position": "middle",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "图案间留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "middle-001",
+            "middle-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "中圈不同颜色图案之间有留白。",
+          "confidence": "high"
+        }
+      ]
+    },
+    "outer": {
+      "summary": "外圈出现绿色长条、紫色弧形、红色块和蓝色滴状元素，图案重复度较高。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "绿色",
+          "color_confidence": "high",
+          "shape": "长条/叶形",
+          "size_tendency": "medium",
+          "adjacency": [
+            "outer-002",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈可见绿色长条或叶形结构向外延伸。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-002",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "水滴状",
+          "size_tendency": "small",
+          "adjacency": [
+            "outer-001",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈可见蓝色水滴状元素。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-003",
+          "position": "outer",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "外圈留白",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "outer-001",
+            "outer-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "外圈图案之间留有留白。",
+          "confidence": "high"
+        }
+      ]
+    }
+  },
+  "evidence_summary": [
+    "内圈由红黄星形和圆心构成",
+    "中圈多色图案交错且留白明显",
+    "外圈绿色长条和蓝色滴状元素向外展开"
+  ],
+  "excluded_marks": [
+    {
+      "id": "excluded-001",
+      "source_type": "therapist_marker",
+      "reason": "三圈设定标记线，仅用于边界确认",
+      "visible_evidence": "第二张图中的三圈辅助标记线"
+    },
+    {
+      "id": "excluded-002",
+      "source_type": "template_line",
+      "reason": "模板黑色线稿，不作为画作内容",
+      "visible_evidence": "原画作中的黑色模板线稿轮廓"
+    }
+  ],
+  "uncertainties": [
+    "中圈局部紫色弧形与红色块之间的边界在部分区域不完全清晰。"
+  ]
+}
