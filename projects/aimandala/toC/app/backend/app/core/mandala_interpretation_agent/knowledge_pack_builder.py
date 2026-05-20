@@ -15,7 +15,7 @@ METHOD_SOURCE = (
     / "20-疗愈体系"
     / "20-流派层"
     / "10-曼陀罗"
-    / "00-画面信号映射审核与结构化计划.md"
+    / "00-曼陀罗基础层解读流程.md"
 )
 KNOWLEDGE_PACK_ROOT = HEALING_KB_ROOT
 
@@ -42,6 +42,10 @@ class KnowledgePackBuilder:
                 "runtime_index": self._read_text(
                     "60-运行时知识包/20-aimandala-report-runtime-index.yaml",
                     max_chars=2600,
+                ),
+                "visual_recognition_schema": self._read_text(
+                    "50-结构化知识单元/15-visual-recognition-schema.yaml",
+                    max_chars=9000,
                 ),
                 "mandala_signal_index": self._read_text(
                     "20-疗愈体系/20-流派层/10-曼陀罗/01-画面信号总目录.md",
