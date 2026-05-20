@@ -9,7 +9,6 @@ from uuid import uuid4
 from app.core.wealth_report import get_wealth_report_runtime
 
 from .contracts import EXECUTION_BLOCKS, STAGE_KEYS, MandalaAgentInput, MandalaAgentResult
-from .knowledge_pack_builder import knowledge_pack_to_prompt_fragment
 from .prompt_loader import load_prompt_config, load_prompt_template, render_prompt_template
 from .quality_gate import GENERIC_OPENING_PHRASES, run_quality_gate
 
@@ -177,9 +176,9 @@ class MandalaInterpretationAgent:
     ) -> dict[str, Any]:
         stage03_payload = self.llm_client.generate_structured(
             task="vision",
-            prompt=self._vision_prompt(agent_input=agent_input, knowledge_pack=knowledge_pack),
+            prompt=self._vision_prompt(agent_input=agent_input),
             schema=self._vision_schema(),
-            image_path=agent_input.image.local_path,
+            image_paths=self._vision_image_paths(agent_input),
         )
         if not isinstance(stage03_payload, dict):
             raise RuntimeError("vision_model_failed: empty or invalid stage-03 payload")
@@ -202,9 +201,9 @@ class MandalaInterpretationAgent:
         per_circle = {
             circle_key: {
                 "visual_summary": circle.get("summary", ""),
-                "dominant_colors": self._collect_values(circle, "color"),
-                "dominant_shapes": self._collect_values(circle, "shape"),
-                "visual_units": list(circle.get("visual_units", [])) if isinstance(circle.get("visual_units"), list) else [],
+                "dominant_colors": self._collect_interpretable_values(circle, "color"),
+                "dominant_shapes": self._collect_interpretable_values(circle, "shape"),
+                "visual_units": self._interpretable_visual_units(circle),
                 "knowledge_refs": self._knowledge_refs_for_circle(circle_key, knowledge_pack),
             }
             for circle_key, circle in circles.items()
@@ -426,6 +425,8 @@ class MandalaInterpretationAgent:
             ).strip(),
             "circles": circles,
             "evidence_refs": payload.get("evidence_summary", []),
+            "evidence_summary": self._string_list(payload.get("evidence_summary")),
+            "excluded_marks": self._excluded_marks(payload.get("excluded_marks")),
             "uncertainties": payload.get("uncertainties", []),
             "model_trace": getattr(self.llm_client, "last_attempt_trace", []),
         }
@@ -500,9 +501,18 @@ class MandalaInterpretationAgent:
             {
                 "id": f"{circle_key}-001",
                 "position": circle_key,
+                "source_type": "user_painted",
+                "include_in_interpretation": True,
+                "exclude_reason": "none",
                 "color": "、".join(color_values),
+                "color_confidence": "medium",
                 "shape": shape,
+                "size_tendency": "unknown",
+                "adjacency": [],
+                "is_blank_space": False,
+                "metal_candidate": any("白" in color or "留白" in color for color in color_values),
                 "visible_evidence": evidence,
+                "confidence": "medium",
             }
         ]
 
@@ -515,14 +525,23 @@ class MandalaInterpretationAgent:
         return {
             "id": str(unit.get("id") or f"{circle_key}-{index + 1:03d}").strip(),
             "position": str(unit.get("position") or circle_key).strip(),
+            "source_type": self._safe_source_type(unit.get("source_type")),
+            "include_in_interpretation": self._include_visual_unit(unit),
+            "exclude_reason": str(unit.get("exclude_reason") or "none").strip(),
             "color": self._main_value(unit.get("color")),
+            "color_confidence": self._safe_confidence(unit.get("color_confidence")),
             "shape": self._main_value(unit.get("shape")),
+            "size_tendency": self._safe_size_tendency(unit.get("size_tendency")),
+            "adjacency": self._string_list(unit.get("adjacency")),
+            "is_blank_space": bool(unit.get("is_blank_space")),
+            "metal_candidate": bool(unit.get("metal_candidate")),
             "visible_evidence": str(
                 unit.get("visible_evidence")
                 or unit.get("description")
                 or unit.get("evidence")
                 or ""
             ).strip(),
+            "confidence": self._safe_confidence(unit.get("confidence")),
         }
 
     def _circle_summary(self, raw_circle: dict[str, Any]) -> str:
@@ -563,6 +582,57 @@ class MandalaInterpretationAgent:
         if isinstance(value, list):
             return "、".join(str(item).strip() for item in value if str(item).strip())
         return str(value or "").strip()
+
+    def _safe_source_type(self, value: Any) -> str:
+        source_type = str(value or "user_painted").strip()
+        allowed = {
+            "user_painted",
+            "blank_space",
+            "template_line",
+            "therapist_marker",
+            "uncertain",
+        }
+        return source_type if source_type in allowed else "uncertain"
+
+    def _include_visual_unit(self, unit: dict[str, Any]) -> bool:
+        explicit = unit.get("include_in_interpretation")
+        if isinstance(explicit, bool):
+            return explicit
+        return self._safe_source_type(unit.get("source_type")) in {"user_painted", "blank_space"}
+
+    def _safe_confidence(self, value: Any) -> str:
+        confidence = str(value or "medium").strip().lower()
+        return confidence if confidence in {"high", "medium", "low"} else "medium"
+
+    def _safe_size_tendency(self, value: Any) -> str:
+        size_tendency = str(value or "unknown").strip().lower()
+        allowed = {"large", "medium", "small", "scattered", "unknown"}
+        return size_tendency if size_tendency in allowed else "unknown"
+
+    def _excluded_marks(self, value: Any) -> list[dict[str, Any]]:
+        if not isinstance(value, list):
+            return []
+        marks = []
+        for index, item in enumerate(value):
+            if isinstance(item, dict):
+                marks.append(
+                    {
+                        "id": str(item.get("id") or f"excluded-{index + 1:03d}").strip(),
+                        "source_type": self._safe_source_type(item.get("source_type")),
+                        "reason": str(item.get("reason") or item.get("exclude_reason") or "").strip(),
+                        "visible_evidence": str(item.get("visible_evidence") or item.get("evidence") or "").strip(),
+                    }
+                )
+            elif str(item).strip():
+                marks.append(
+                    {
+                        "id": f"excluded-{index + 1:03d}",
+                        "source_type": "uncertain",
+                        "reason": str(item).strip(),
+                        "visible_evidence": str(item).strip(),
+                    }
+                )
+        return marks
 
     def _string_list(self, value: Any) -> list[str]:
         if isinstance(value, list):
@@ -655,14 +725,17 @@ class MandalaInterpretationAgent:
         self,
         *,
         agent_input: MandalaAgentInput,
-        knowledge_pack: dict[str, Any],
     ) -> str:
         return render_prompt_template(
-            "vision/user.md",
-            theme_label=agent_input.user_context.theme_label,
+            "vision/observe.md",
             circle_boundaries_json=json.dumps(agent_input.circle_boundaries, ensure_ascii=False),
-            knowledge_pack_json=knowledge_pack_to_prompt_fragment(knowledge_pack),
         )
+
+    def _vision_image_paths(self, agent_input: MandalaAgentInput) -> list[str]:
+        paths = [agent_input.image.local_path]
+        if agent_input.image.marked_local_path:
+            paths.append(agent_input.image.marked_local_path)
+        return paths
 
     def _thesis_prompt(
         self,
@@ -685,7 +758,7 @@ class MandalaInterpretationAgent:
             },
         }
         return render_prompt_template(
-            "thesis/user.md",
+            "thesis/select.md",
             payload_json=json.dumps(payload, ensure_ascii=False, indent=2),
         )
 
@@ -717,7 +790,7 @@ class MandalaInterpretationAgent:
         report_structure_map = load_prompt_config("report/config.json")
         report_structure = load_prompt_template(report_structure_map[agent_input.report_mode])
         return render_prompt_template(
-            "report/user.md",
+            "report/write.md",
             report_structure=report_structure,
             payload_json=json.dumps(payload, ensure_ascii=False, indent=2),
         )
@@ -784,20 +857,103 @@ class MandalaInterpretationAgent:
         }
 
     def _vision_schema(self) -> dict[str, Any]:
+        visual_unit_schema = {
+            "type": "object",
+            "required": [
+                "id",
+                "position",
+                "source_type",
+                "include_in_interpretation",
+                "color",
+                "color_confidence",
+                "shape",
+                "size_tendency",
+                "adjacency",
+                "is_blank_space",
+                "metal_candidate",
+                "visible_evidence",
+                "confidence",
+            ],
+            "properties": {
+                "id": {"type": "string"},
+                "position": {"type": "string"},
+                "source_type": {
+                    "type": "string",
+                    "enum": [
+                        "user_painted",
+                        "blank_space",
+                        "template_line",
+                        "therapist_marker",
+                        "uncertain",
+                    ],
+                },
+                "include_in_interpretation": {"type": "boolean"},
+                "exclude_reason": {"type": "string"},
+                "color": {"type": "string"},
+                "color_confidence": {
+                    "type": "string",
+                    "enum": ["high", "medium", "low"],
+                },
+                "shape": {"type": "string"},
+                "size_tendency": {
+                    "type": "string",
+                    "enum": ["large", "medium", "small", "scattered", "unknown"],
+                },
+                "adjacency": {"type": "array", "items": {"type": "string"}},
+                "is_blank_space": {"type": "boolean"},
+                "metal_candidate": {"type": "boolean"},
+                "visible_evidence": {"type": "string"},
+                "confidence": {
+                    "type": "string",
+                    "enum": ["high", "medium", "low"],
+                },
+            },
+        }
+        circle_schema = {
+            "type": "object",
+            "required": ["summary", "visual_units"],
+            "properties": {
+                "summary": {"type": "string"},
+                "visual_units": {
+                    "type": "array",
+                    "items": visual_unit_schema,
+                    "minItems": 1,
+                },
+            },
+        }
         return {
             "type": "object",
-            "required": ["global_visual_summary", "circles"],
+            "required": [
+                "global_visual_summary",
+                "circles",
+                "evidence_summary",
+                "excluded_marks",
+                "uncertainties",
+            ],
             "properties": {
                 "global_visual_summary": {"type": "string"},
                 "circles": {
                     "type": "object",
+                    "required": ["inner", "middle", "outer"],
                     "properties": {
-                        "inner": {"type": "object"},
-                        "middle": {"type": "object"},
-                        "outer": {"type": "object"},
+                        "inner": circle_schema,
+                        "middle": circle_schema,
+                        "outer": circle_schema,
                     },
                 },
                 "evidence_summary": {"type": "array", "items": {"type": "string"}},
+                "excluded_marks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "string"},
+                            "source_type": {"type": "string"},
+                            "reason": {"type": "string"},
+                            "visible_evidence": {"type": "string"},
+                        },
+                    },
+                },
                 "uncertainties": {"type": "array", "items": {"type": "string"}},
             },
         }
@@ -824,6 +980,24 @@ class MandalaInterpretationAgent:
                 if value and value not in values:
                     values.append(value)
         return values
+
+    def _collect_interpretable_values(self, circle: dict[str, Any], field_name: str) -> list[str]:
+        values: list[str] = []
+        for unit in self._interpretable_visual_units(circle):
+            value = str(unit.get(field_name) or "").strip()
+            if value and value not in values:
+                values.append(value)
+        return values
+
+    def _interpretable_visual_units(self, circle: dict[str, Any]) -> list[dict[str, Any]]:
+        units = circle.get("visual_units", [])
+        if not isinstance(units, list):
+            return []
+        return [
+            unit
+            for unit in units
+            if isinstance(unit, dict) and unit.get("include_in_interpretation") is not False
+        ]
 
     def _five_element_profile(self, per_circle: dict[str, Any]) -> dict[str, Any]:
         circle_profiles: dict[str, Any] = {}
@@ -886,6 +1060,8 @@ class MandalaInterpretationAgent:
         signals: list[dict[str, Any]] = []
         for unit in circle_payload.get("visual_units", []):
             if not isinstance(unit, dict):
+                continue
+            if unit.get("include_in_interpretation") is False:
                 continue
             unit_id = str(unit.get("id") or f"{circle_key}-unit").strip()
             source_values = [

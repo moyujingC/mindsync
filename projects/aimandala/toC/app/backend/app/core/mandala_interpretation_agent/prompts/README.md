@@ -1,15 +1,15 @@
 # Mandala Prompt Index
 
 ## Vision
-- `vision/user.md`: stage-03 视觉识别输入，要求只输出视觉证据 JSON。
+- `vision/observe.md`: stage-03 视觉识别输入，要求只输出视觉证据 JSON。
 
 ## Thesis
 - `thesis/system.md`: stage-10 主轴选择的 system prompt。
-- `thesis/user.md`: stage-10 主轴选择的 user prompt。
+- `thesis/select.md`: stage-10 主轴选择 prompt。
 
 ## Report
 - `report/system.md`: 最终报告生成的 system prompt。
-- `report/user.md`: 最终报告生成的 user prompt。
+- `report/write.md`: 最终报告生成 prompt。
 - `report/rewrite_system.md`: 报告结构修正的 system prompt。
 - `report/rewrite_user.md`: 报告结构修正的 user prompt。
 - `report/structure_lite.md`: Lite 报告结构模板。
