@@ -66,6 +66,7 @@ class StubMandalaLLMClient:
                                     "texture_and_density": "填色集中，面积中等。",
                                     "spatial_relations": "位于中心，外侧连接中圈粉色花瓣。",
                                     "blank_space_role": "none",
+                                    "energy_ratio_percent": 100,
                                     "rich_visual_description": "内圈中心可见蓝色圆形，是画面重心。",
                                 }
                             ],
@@ -83,6 +84,7 @@ class StubMandalaLLMClient:
                                     "texture_and_density": "重复排列，密度中等。",
                                     "spatial_relations": "同类花瓣围绕中心重复，相邻花瓣被 middle-002 留白隔开。",
                                     "blank_space_role": "none",
+                                    "energy_ratio_percent": 100,
                                     "rich_visual_description": "中圈粉色花瓣重复围绕内圈展开。",
                                 },
                                 {
@@ -95,6 +97,7 @@ class StubMandalaLLMClient:
                                     "texture_and_density": "重复出现，分布在花瓣之间。",
                                     "spatial_relations": "隔开相邻粉色花瓣，并切分中圈连续性。",
                                     "blank_space_role": "隔开、切分粉色花瓣。",
+                                    "energy_ratio_percent": 35,
                                     "rich_visual_description": "中圈花瓣之间的白色留白把粉色元素分成独立单元。",
                                 },
                             ],
@@ -112,6 +115,7 @@ class StubMandalaLLMClient:
                                     "texture_and_density": "面积较明显，包围外圈。",
                                     "spatial_relations": "位于最外层，包围中圈和内圈。",
                                     "blank_space_role": "形成外圈边界。",
+                                    "energy_ratio_percent": 100,
                                     "rich_visual_description": "外圈白色留白形成清楚的外部边界。",
                                 }
                             ],
@@ -441,6 +445,8 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert result.knowledge_pack["theme"] == "wealth"
     foundation = result.stage_outputs["foundation-image-reading"]["foundation_image_reading"]
     assert foundation["visual_observation"]["circle_visual_units"]["middle"]["visual_units"][1]["source_type"] == "blank_space"
+    middle_units = foundation["visual_observation"]["circle_visual_units"]["middle"]["visual_units"]
+    assert sum(unit["energy_ratio_percent"] for unit in middle_units) == 100
     assert foundation["element_sensing"]["middle"]["element_candidates"][1]["element"] == "metal"
     assert foundation["intra_circle_relations"]["middle"]["relations"][0]["relation_type"] == "cut_by_metal"
     assert foundation["cross_circle_flow"]["flow_observations"][0]["flow_type"] == "outer_layer_containing"

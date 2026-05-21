@@ -379,6 +379,16 @@ def _foundation_schema_issues(foundation_image_reading: Any) -> list[str]:
                 issues.append(f"{circle_key}_{index}_missing_rich_visual_description")
             if not str(unit.get("spatial_relations") or "").strip():
                 issues.append(f"{circle_key}_{index}_missing_spatial_relations")
+            ratio = unit.get("energy_ratio_percent")
+            if not isinstance(ratio, (int, float)):
+                issues.append(f"{circle_key}_{index}_missing_energy_ratio_percent")
+        ratios = [
+            unit.get("energy_ratio_percent")
+            for unit in units
+            if isinstance(unit, dict) and isinstance(unit.get("energy_ratio_percent"), (int, float))
+        ]
+        if ratios and abs(sum(ratios) - 100) > 0.05:
+            issues.append(f"{circle_key}_energy_ratio_total_not_100")
     issues.extend(_foundation_evidence_link_issues(foundation))
     return issues
 

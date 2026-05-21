@@ -39,6 +39,7 @@ def _visual_observations() -> dict:
                                 "texture_and_density": "集中、稳定。",
                                 "spatial_relations": "位于内圈中心，外侧连接中圈。",
                                 "blank_space_role": "none",
+                                "energy_ratio_percent": 100,
                                 "rich_visual_description": "内圈蓝色圆形，整体收束。",
                             }
                         ],
@@ -56,6 +57,7 @@ def _visual_observations() -> dict:
                                 "texture_and_density": "重复排列。",
                                 "spatial_relations": "围绕内圈展开，与外圈红色边界相邻。",
                                 "blank_space_role": "none",
+                                "energy_ratio_percent": 100,
                                 "rich_visual_description": "中圈粉色花瓣，有拉扯感。",
                             }
                         ],
@@ -73,6 +75,7 @@ def _visual_observations() -> dict:
                                 "texture_and_density": "红色较明显。",
                                 "spatial_relations": "位于外圈，与白色留白相邻。",
                                 "blank_space_role": "none",
+                                "energy_ratio_percent": 100,
                                 "rich_visual_description": "外圈红色边界明显。",
                             },
                             {
@@ -85,6 +88,7 @@ def _visual_observations() -> dict:
                                 "texture_and_density": "留白明显。",
                                 "spatial_relations": "与外圈红色边界相邻，并切分外圈视觉连续性。",
                                 "blank_space_role": "切分外圈红色边界。",
+                                "energy_ratio_percent": 30,
                                 "rich_visual_description": "外圈红色边界和留白同时存在。",
                             },
                         ],

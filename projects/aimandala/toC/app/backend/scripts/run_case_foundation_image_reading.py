@@ -451,6 +451,8 @@ def _render_review_markdown(
             "| 三圈标记线是否被误识别为画作元素 |  |  |",
             "| 模板黑线是否被误识别为画作元素 |  |  |",
             "| 圈内留白是否漏判 |  |  |",
+            "| 每圈视觉单元能量占比是否合计 100 |  |  |",
+            "| 能量占比是否符合面积大小与视觉重量 |  |  |",
             "| 是否给整圈贴单一五行 |  |  |",
             "| 是否出现跨圈五行生克 |  |  |",
             "| 是否混入财富、关系、身体、心理或疗愈建议 |  |  |",
@@ -529,8 +531,8 @@ def _circle_visual_unit_sections(foundation: dict[str, Any]) -> list[str]:
                 "",
                 f"- 构图：{circle.get('composition_description', '') if isinstance(circle, dict) else ''}",
                 "",
-                "| ID | 名称 | source_type | 颜色 | 形状 | 位置关系 | 留白作用 | 人工意见 |",
-                "| --- | --- | --- | --- | --- | --- | --- | --- |",
+                "| ID | 名称 | source_type | 能量占比 | 颜色 | 形状 | 位置关系 | 留白作用 | 人工意见 |",
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
             ]
         )
         for unit in circle.get("visual_units", []) if isinstance(circle, dict) else []:
@@ -538,6 +540,7 @@ def _circle_visual_unit_sections(foundation: dict[str, Any]) -> list[str]:
                 continue
             sections.append(
                 f"| {unit.get('id', '')} | {unit.get('unit_name', '')} | {unit.get('source_type', '')} | "
+                f"{unit.get('energy_ratio_percent', '')}% | "
                 f"{_md_cell(str(unit.get('color_description', '')))} | "
                 f"{_md_cell(str(unit.get('shape_description', '')))} | "
                 f"{_md_cell(str(unit.get('spatial_relations', '')))} | "

@@ -418,13 +418,16 @@ class MandalaInterpretationAgent:
             raw_circle = raw_circles.get(circle_key, {}) if isinstance(raw_circles, dict) else {}
             circle = raw_circle if isinstance(raw_circle, dict) else {}
             units = circle.get("visual_units", [])
+            normalized_units = [
+                self._normalize_visual_unit(circle_key, index, unit)
+                for index, unit in enumerate(units)
+                if isinstance(unit, dict)
+            ] if isinstance(units, list) else []
             normalized[circle_key] = {
                 "composition_description": str(circle.get("composition_description") or "").strip(),
-                "visual_units": [
-                    self._normalize_visual_unit(circle_key, index, unit)
-                    for index, unit in enumerate(units)
-                    if isinstance(unit, dict)
-                ] if isinstance(units, list) else [],
+                "visual_units": self._normalize_visual_unit_energy_ratios(
+                    normalized_units
+                ),
             }
         return normalized
 
@@ -455,6 +458,7 @@ class MandalaInterpretationAgent:
                 or ""
             ).strip(),
             "blank_space_role": str(unit.get("blank_space_role") or "").strip(),
+            "energy_ratio_percent": self._safe_float(unit.get("energy_ratio_percent")),
             "rich_visual_description": str(
                 unit.get("rich_visual_description")
                 or unit.get("visible_evidence")
@@ -462,6 +466,34 @@ class MandalaInterpretationAgent:
                 or ""
             ).strip(),
         }
+
+    def _normalize_visual_unit_energy_ratios(
+        self,
+        units: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        if not units:
+            return []
+        raw_values = [self._safe_float(unit.get("energy_ratio_percent")) for unit in units]
+        total = sum(value for value in raw_values if value > 0)
+        if total <= 0:
+            equal_share = round(100 / len(units), 2)
+            values = [equal_share for _unit in units]
+        else:
+            values = [round(max(value, 0) * 100 / total, 2) for value in raw_values]
+        drift = round(100 - sum(values), 2)
+        values[-1] = round(values[-1] + drift, 2)
+        normalized = []
+        for unit, value in zip(units, values):
+            next_unit = dict(unit)
+            next_unit["energy_ratio_percent"] = value
+            normalized.append(next_unit)
+        return normalized
+
+    def _safe_float(self, value: Any) -> float:
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return 0.0
 
     def _normalize_layered_payload(
         self,
@@ -833,6 +865,7 @@ class MandalaInterpretationAgent:
                 "texture_and_density",
                 "spatial_relations",
                 "blank_space_role",
+                "energy_ratio_percent",
                 "rich_visual_description",
             ],
             "properties": {
@@ -845,6 +878,7 @@ class MandalaInterpretationAgent:
                 "texture_and_density": {"type": "string"},
                 "spatial_relations": {"type": "string"},
                 "blank_space_role": {"type": "string"},
+                "energy_ratio_percent": {"type": "number"},
                 "rich_visual_description": {"type": "string"},
             },
         }

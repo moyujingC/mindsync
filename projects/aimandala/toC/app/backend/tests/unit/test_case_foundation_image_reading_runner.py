@@ -57,6 +57,7 @@ def _sample_foundation_payload() -> dict:
                                 "shape_description": "圆形",
                                 "spatial_relations": "位于中心。",
                                 "blank_space_role": "none",
+                                "energy_ratio_percent": 100,
                                 "rich_visual_description": "内圈蓝色圆形。",
                             }
                         ],
@@ -72,6 +73,7 @@ def _sample_foundation_payload() -> dict:
                                 "shape_description": "花瓣",
                                 "spatial_relations": "被留白隔开。",
                                 "blank_space_role": "none",
+                                "energy_ratio_percent": 100,
                                 "rich_visual_description": "中圈粉色花瓣。",
                             }
                         ],
@@ -87,6 +89,7 @@ def _sample_foundation_payload() -> dict:
                                 "shape_description": "矩形",
                                 "spatial_relations": "沿外圈重复。",
                                 "blank_space_role": "none",
+                                "energy_ratio_percent": 100,
                                 "rich_visual_description": "外圈紫色矩形重复。",
                             }
                         ],

@@ -15,7 +15,7 @@ source_of_truth: projects/aimandala/docs/疗愈体系知识库/50-结构化知�
 
 purpose:
   - 定义新版基础层图像解读的目标输出结构。
-  - 支持一次视觉模型调用完成画面观察、圈内五行识别、圈内关系和三圈能量流动。
+  - 支持视觉模型先完成画面观察，再由文本模型基于 visual_observation 完成圈内五行识别、圈内关系和三圈能量流动。
   - 约束视觉模型只完成曼陀罗基础层解读，不进入财富、关系、身体、心理或疗愈报告语言。
   - 保证五行识别、圈内关系和三圈能量流动都能回溯到画面证据。
 
@@ -23,7 +23,6 @@ input:
   required:
     - image_mandala
     - image_marked_circles
-    - circle_boundary_data
     - mandala_foundation_knowledge
   notes:
     - image_mandala 是用户原画作，是唯一画作内容来源。
@@ -47,6 +46,7 @@ global_boundaries:
     - 不给疗愈建议、行动建议或复购建议。
   five_element_rules:
     - 五行识别只针对圈内视觉单元，不给整圈贴单一五行。
+    - 五行强弱和失衡判断需参考 visual_units.energy_ratio_percent。
     - 留白、真实白色、色块间空隙一律按金处理。
     - 模板黑线和三圈标记线不进入五行判断。
     - 紫色、橙色、粉色等暧昧色需保留颜色深浅、开放/封闭、渐变和形状依据。
@@ -133,6 +133,10 @@ required_output:
               blank_space_role:
                 type: string
                 required: true
+              energy_ratio_percent:
+                type: number
+                required: true
+                description: 该视觉单元在本圈内按面积大小和视觉重量估算的能量占比；同一圈所有视觉单元合计应为 100。
               rich_visual_description:
                 type: string
                 required: true
