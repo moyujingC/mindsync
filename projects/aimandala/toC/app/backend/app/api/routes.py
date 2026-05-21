@@ -169,7 +169,7 @@ def _build_agent_input(payload: WealthReportRequest) -> MandalaAgentInput:
             "source": "user_or_client",
         },
         output_requirements=MandalaOutputRequirements(
-            forbidden_terms=["stage", "placeholder", "legacy"],
+            forbidden_terms=["stage", "placeholder"],
         ),
     )
 
@@ -236,7 +236,7 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
     )
     wealth_runtime = get_wealth_report_runtime()
     route = wealth_runtime.route_visual_observations(
-        result.report_context_package.get("visual_observation", {}),
+        result.report_context_package.get("foundation_image_reading", {}),
         report_mode=payload.report_mode,
     )
     if not result.quality_gate["passed"]:

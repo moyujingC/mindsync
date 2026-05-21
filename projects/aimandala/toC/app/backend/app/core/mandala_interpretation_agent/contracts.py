@@ -10,46 +10,37 @@ REPORT_MODES = {"lite", "pro"}
 
 
 STAGE_KEYS = [
-    "stage-00-input-context",
-    "stage-01-user-input-context",
-    "stage-02-circle-boundary-decision",
-    "stage-03-visual-evidence",
-    "stage-04-direct-judgment-high-hit-check",
-    "stage-05-per-circle-color-shape-element-sensing",
-    "stage-06-per-circle-element-generation-control",
-    "stage-07-per-circle-imbalance-patterns",
-    "stage-08-energy-flow-diagnosis",
-    "stage-09-evidence-consolidation",
-    "stage-10-core-thesis-selection",
-    "stage-11-user-facing-framing",
-    "stage-12-healing-direction-and-report-branching",
-    "stage-13-lite-report-draft",
-    "stage-14-pro-report-draft",
-    "stage-15-visual-assets",
-    "stage-16-final-report-assembly",
+    "input-context",
+    "user-input-context",
+    "circle-boundary-context",
+    "foundation-image-reading",
+    "theme-translation-route",
+    "report-thesis-selection",
+    "user-facing-framing",
+    "report-branching-plan",
+    "lite-report-draft",
+    "pro-report-draft",
+    "visual-assets",
+    "final-report-assembly",
 ]
 
 
 EXECUTION_BLOCKS = [
     {
-        "block_id": "block-1-input-and-boundary",
+        "block_id": "input-and-boundary",
         "stage_keys": STAGE_KEYS[0:3],
     },
     {
-        "block_id": "block-2-visual-and-direct-check",
-        "stage_keys": STAGE_KEYS[3:5],
+        "block_id": "foundation-image-reading",
+        "stage_keys": STAGE_KEYS[3:4],
     },
     {
-        "block_id": "block-3-circle-rule-reasoning",
-        "stage_keys": STAGE_KEYS[5:10],
+        "block_id": "theme-translation-and-thesis",
+        "stage_keys": STAGE_KEYS[4:8],
     },
     {
-        "block_id": "block-4-thesis-and-writing-input",
-        "stage_keys": STAGE_KEYS[10:13],
-    },
-    {
-        "block_id": "block-5-report-and-quality",
-        "stage_keys": STAGE_KEYS[13:17],
+        "block_id": "report-writing-and-assembly",
+        "stage_keys": STAGE_KEYS[8:12],
     },
 ]
 

@@ -12,7 +12,6 @@ FORBIDDEN_FINAL_REPORT_TERMS = [
     "stage-",
     "transition-overload",
     "placeholder",
-    "legacy",
     "待完整 stage 证据确认",
     "需要进一步确认",
     "应由 stage",
@@ -227,9 +226,11 @@ def run_quality_gate(
         "report_id",
         "report_mode",
         "user_context",
+        "foundation_image_reading",
         "visual_observation",
-        "circle_interpretation",
-        "five_element_interpretation",
+        "element_sensing",
+        "intra_circle_relations",
+        "cross_circle_flow",
         "theme_interpretation",
         "core_thesis",
         "healing_direction",
@@ -244,13 +245,13 @@ def run_quality_gate(
     if missing_context_fields:
         failure_ids.append("missing_report_context_package_fields")
 
-    stage03 = stage_outputs.get("stage-03-visual-evidence", {})
-    missing_visual_units = _missing_visual_units(stage03)
+    foundation_image_reading = stage_outputs.get("foundation-image-reading", {})
+    missing_visual_units = _missing_visual_units(foundation_image_reading)
     if missing_visual_units:
-        failure_ids.append("missing_stage03_visual_units")
-    visual_schema_issues = _visual_schema_issues(stage03)
+        failure_ids.append("missing_foundation_visual_units")
+    visual_schema_issues = _foundation_schema_issues(foundation_image_reading)
     if visual_schema_issues:
-        failure_ids.append("invalid_stage03_visual_schema")
+        failure_ids.append("invalid_foundation_image_reading_schema")
 
     evidence_map = report_context_package.get("evidence_map")
     if not isinstance(evidence_map, list) or not evidence_map:
@@ -275,10 +276,15 @@ def run_quality_gate(
     }
 
 
-def _missing_visual_units(stage03: Any) -> list[str]:
-    if not isinstance(stage03, dict):
+def _missing_visual_units(foundation_image_reading: Any) -> list[str]:
+    if not isinstance(foundation_image_reading, dict):
         return ["inner", "middle", "outer"]
-    circles = stage03.get("circles")
+    circles = (
+        foundation_image_reading
+        .get("foundation_image_reading", {})
+        .get("visual_observation", {})
+        .get("circle_visual_units")
+    )
     if not isinstance(circles, dict):
         return ["inner", "middle", "outer"]
     missing = []
@@ -334,21 +340,24 @@ def _circle_has_visual_evidence(circle: Any) -> bool:
     units = circle.get("visual_units")
     if isinstance(units, list) and units:
         return True
-    summary = circle.get("summary")
+    summary = circle.get("composition_description")
     if isinstance(summary, str) and summary.strip():
         return True
-    raw_observation = circle.get("raw_observation")
-    if isinstance(raw_observation, dict):
-        return any(str(value).strip() for value in raw_observation.values())
     return False
 
 
-def _visual_schema_issues(stage03: Any) -> list[str]:
-    if not isinstance(stage03, dict):
-        return ["stage03_not_object"]
-    circles = stage03.get("circles")
+def _foundation_schema_issues(foundation_image_reading: Any) -> list[str]:
+    if not isinstance(foundation_image_reading, dict):
+        return ["foundation_image_reading_not_object"]
+    foundation = foundation_image_reading.get("foundation_image_reading")
+    if not isinstance(foundation, dict):
+        return ["foundation_payload_missing"]
+    visual_observation = foundation.get("visual_observation")
+    if not isinstance(visual_observation, dict):
+        return ["visual_observation_missing"]
+    circles = visual_observation.get("circle_visual_units")
     if not isinstance(circles, dict):
-        return ["circles_not_object"]
+        return ["circle_visual_units_not_object"]
     issues: list[str] = []
     for circle_key in ["inner", "middle", "outer"]:
         circle = circles.get(circle_key)
@@ -359,23 +368,66 @@ def _visual_schema_issues(stage03: Any) -> list[str]:
         if not isinstance(units, list) or not units:
             issues.append(f"{circle_key}_visual_units_missing")
             continue
-        interpretable_count = 0
         for index, unit in enumerate(units):
             if not isinstance(unit, dict):
                 issues.append(f"{circle_key}_{index}_unit_not_object")
                 continue
             source_type = str(unit.get("source_type") or "user_painted").strip()
-            include = unit.get("include_in_interpretation")
-            if include is not False:
-                interpretable_count += 1
-            if source_type in {"template_line", "therapist_marker"} and include is not False:
-                issues.append(f"{circle_key}_{index}_{source_type}_included")
-            if source_type in {"user_painted", "blank_space"} and not str(unit.get("visible_evidence") or "").strip():
-                issues.append(f"{circle_key}_{index}_missing_visible_evidence")
-            if bool(unit.get("is_blank_space")) and unit.get("metal_candidate") is not True:
-                issues.append(f"{circle_key}_{index}_blank_space_without_metal_candidate")
-        if interpretable_count == 0:
-            issues.append(f"{circle_key}_no_interpretable_visual_units")
+            if source_type not in {"user_painted", "blank_space"}:
+                issues.append(f"{circle_key}_{index}_invalid_source_type")
+            if not str(unit.get("rich_visual_description") or "").strip():
+                issues.append(f"{circle_key}_{index}_missing_rich_visual_description")
+            if not str(unit.get("spatial_relations") or "").strip():
+                issues.append(f"{circle_key}_{index}_missing_spatial_relations")
+    issues.extend(_foundation_evidence_link_issues(foundation))
+    return issues
+
+
+def _foundation_evidence_link_issues(foundation: dict[str, Any]) -> list[str]:
+    links = foundation.get("evidence_links")
+    if not isinstance(links, list) or not links:
+        return ["evidence_links_missing"]
+    linked_claim_ids = {
+        str(link.get("claim_id") or "").strip()
+        for link in links
+        if isinstance(link, dict)
+    }
+    issues: list[str] = []
+    element_sensing = foundation.get("element_sensing")
+    relation_sensing = foundation.get("intra_circle_relations")
+    for circle_key in ["inner", "middle", "outer"]:
+        element_circle = (
+            element_sensing.get(circle_key, {})
+            if isinstance(element_sensing, dict)
+            else {}
+        )
+        if isinstance(element_circle, dict):
+            for index, item in enumerate(element_circle.get("element_candidates", []) or []):
+                if not isinstance(item, dict):
+                    continue
+                candidate_id = str(item.get("claim_id") or item.get("visual_unit_id") or "").strip()
+                if candidate_id and candidate_id not in linked_claim_ids:
+                    issues.append(f"{circle_key}_element_{index}_evidence_link_missing")
+        relation_circle = (
+            relation_sensing.get(circle_key, {})
+            if isinstance(relation_sensing, dict)
+            else {}
+        )
+        if isinstance(relation_circle, dict):
+            for index, item in enumerate(relation_circle.get("relations", []) or []):
+                if not isinstance(item, dict):
+                    continue
+                relation_id = str(item.get("relation_id") or "").strip()
+                if relation_id and relation_id not in linked_claim_ids:
+                    issues.append(f"{circle_key}_relation_{index}_evidence_link_missing")
+    flow = foundation.get("cross_circle_flow")
+    if isinstance(flow, dict):
+        for index, item in enumerate(flow.get("flow_observations", []) or []):
+            if not isinstance(item, dict):
+                continue
+            flow_id = str(item.get("flow_id") or "").strip()
+            if flow_id and flow_id not in linked_claim_ids:
+                issues.append(f"cross_circle_flow_{index}_evidence_link_missing")
     return issues
 
 

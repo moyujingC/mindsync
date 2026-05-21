@@ -13,56 +13,8 @@ from .prompt_loader import load_prompt_config, load_prompt_template, render_prom
 from .quality_gate import GENERIC_OPENING_PHRASES, run_quality_gate
 
 
-ELEMENT_LABELS = {
-    "wood": "木",
-    "fire": "火",
-    "earth": "土",
-    "metal": "金",
-    "water": "水",
-}
-
-ELEMENT_RULES = {
-    "wood": {
-        "terms": ["绿", "青", "长条", "竖线", "枝", "叶"],
-        "hint": "木性指向生长、向上、边界和行动力。",
-    },
-    "fire": {
-        "terms": ["红", "粉", "橙", "紫", "玫", "三角", "尖", "星"],
-        "hint": "火性指向热情、表达、焦急和动力消耗。",
-    },
-    "earth": {
-        "terms": ["黄", "咖", "棕", "褐", "方", "正方", "块"],
-        "hint": "土性指向承载、稳定、现实感和责任压力。",
-    },
-    "metal": {
-        "terms": ["白", "留白", "灰", "银", "小圆", "半圆", "边界"],
-        "hint": "金性指向规则、收敛、标准、边界和价值感。",
-    },
-    "water": {
-        "terms": ["蓝", "黑", "水", "波浪", "流线", "弧线"],
-        "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。",
-    },
-}
-
-GENERATES = {
-    "wood": "fire",
-    "fire": "earth",
-    "earth": "metal",
-    "metal": "water",
-    "water": "wood",
-}
-
-CONTROLS = {
-    "wood": "earth",
-    "earth": "water",
-    "water": "fire",
-    "fire": "metal",
-    "metal": "wood",
-}
-
-
 class MandalaInterpretationAgent:
-    """Generate mandala interpretation artifacts through a single agent path."""
+    """Generate mandala interpretation artifacts through the current agent path."""
 
     def __init__(self, *, llm_client: Any) -> None:
         self.llm_client = llm_client
@@ -81,33 +33,30 @@ class MandalaInterpretationAgent:
         }
 
         stage_outputs: dict[str, Any] = {}
-        stage_outputs.update(self._run_block_1(agent_input=agent_input))
-        stage_outputs.update(
-            self._run_block_2(agent_input=agent_input, knowledge_pack=knowledge_pack)
+        stage_outputs.update(self._build_input_context(agent_input=agent_input))
+        stage_outputs["foundation-image-reading"] = self.run_foundation_image_reading(
+            agent_input=agent_input,
+        )
+        stage_outputs["theme-translation-route"] = self._build_theme_route_stage(
+            agent_input=agent_input,
+            foundation_image_reading=stage_outputs["foundation-image-reading"],
         )
         stage_outputs.update(
-            self._run_block_3(
+            self._run_thesis_and_framing(
                 agent_input=agent_input,
                 knowledge_pack=knowledge_pack,
                 stage_outputs=stage_outputs,
             )
         )
         stage_outputs.update(
-            self._run_block_4(
-                agent_input=agent_input,
-                knowledge_pack=knowledge_pack,
-                stage_outputs=stage_outputs,
-            )
-        )
-        stage_outputs.update(
-            self._run_block_5(
+            self._run_report_writing(
                 agent_input=agent_input,
                 knowledge_pack=knowledge_pack,
                 stage_outputs=stage_outputs,
             )
         )
 
-        final_report = stage_outputs["stage-16-final-report-assembly"]["final_report"]
+        final_report = stage_outputs["final-report-assembly"]["final_report"]
         final_report_md = final_report["markdown"]
         report_context_package = self._build_report_context_package(
             agent_input=agent_input,
@@ -147,114 +96,59 @@ class MandalaInterpretationAgent:
             quality_gate=quality_gate,
         )
 
-    def _run_block_1(self, *, agent_input: MandalaAgentInput) -> dict[str, Any]:
+    def _build_input_context(self, *, agent_input: MandalaAgentInput) -> dict[str, Any]:
         return {
-            "stage-00-input-context": {
-                "stage": "stage-00-input-context",
+            "input-context": {
+                "stage": "input-context",
                 "status": "complete",
                 "report_mode": agent_input.report_mode,
                 "image": agent_input.image.to_dict(),
                 "agent_version": agent_input.agent_version,
             },
-            "stage-01-user-input-context": {
-                "stage": "stage-01-user-input-context",
+            "user-input-context": {
+                "stage": "user-input-context",
                 "status": "complete",
                 "user_context": agent_input.user_context.to_dict(),
             },
-            "stage-02-circle-boundary-decision": {
-                "stage": "stage-02-circle-boundary-decision",
+            "circle-boundary-context": {
+                "stage": "circle-boundary-context",
                 "status": "complete",
                 "circle_boundaries": agent_input.circle_boundaries,
             },
         }
 
-    def _run_block_2(
+    def run_foundation_image_reading(
         self,
         *,
         agent_input: MandalaAgentInput,
-        knowledge_pack: dict[str, Any],
     ) -> dict[str, Any]:
-        stage03_payload = self.llm_client.generate_structured(
+        payload = self.llm_client.generate_structured(
             task="vision",
             prompt=self._vision_prompt(agent_input=agent_input),
             schema=self._vision_schema(),
             image_paths=self._vision_image_paths(agent_input),
         )
-        if not isinstance(stage03_payload, dict):
-            raise RuntimeError("vision_model_failed: empty or invalid stage-03 payload")
-        stage03 = self._normalize_stage03(stage03_payload)
-        stage04 = self._build_stage04(stage03)
-        return {
-            "stage-03-visual-evidence": stage03,
-            "stage-04-direct-judgment-high-hit-check": stage04,
-        }
+        if not isinstance(payload, dict):
+            raise RuntimeError("vision_model_failed: empty or invalid foundation_image_reading payload")
+        return self._normalize_foundation_image_reading(payload)
 
-    def _run_block_3(
+    def _build_theme_route_stage(
         self,
         *,
         agent_input: MandalaAgentInput,
-        knowledge_pack: dict[str, Any],
-        stage_outputs: dict[str, Any],
+        foundation_image_reading: dict[str, Any],
     ) -> dict[str, Any]:
-        stage03 = stage_outputs["stage-03-visual-evidence"]
-        circles = stage03.get("circles", {})
-        per_circle = {
-            circle_key: {
-                "visual_summary": circle.get("summary", ""),
-                "dominant_colors": self._collect_interpretable_values(circle, "color"),
-                "dominant_shapes": self._collect_interpretable_values(circle, "shape"),
-                "visual_units": self._interpretable_visual_units(circle),
-                "knowledge_refs": self._knowledge_refs_for_circle(circle_key, knowledge_pack),
-            }
-            for circle_key, circle in circles.items()
-            if isinstance(circle, dict)
-        }
-        five_element_profile = self._five_element_profile(per_circle)
         return {
-            "stage-05-per-circle-color-shape-element-sensing": {
-                "stage": "stage-05-per-circle-color-shape-element-sensing",
-                "status": "complete",
-                "per_circle": per_circle,
-            },
-            "stage-06-per-circle-element-generation-control": {
-                "stage": "stage-06-per-circle-element-generation-control",
-                "status": "complete",
-                "theme": agent_input.user_context.theme,
-                "control_notes": [
-                    "按当前画面证据和精简知识包推导，不新增画面事实。",
-                    "五行分析只识别每圈内部的视觉元素属性，不给整圈贴单一五行标签。",
-                    "五行生克只在同一圈内部的元素之间判断。",
-                    "三圈联动不使用五行生克关系，只分析内圈、中圈、外圈之间的层级承接。",
-                ],
-                "scope": {
-                    "five_element_scope": "intra_circle_visual_elements",
-                    "circle_primary_element_labeling": "excluded",
-                    "intra_circle_element_relations": "allowed",
-                    "cross_circle_five_element_relations": "excluded",
-                    "report_rule": "报告必须展示圈内元素五行和同圈生克候选，不得把一个圈简化成单一五行。",
-                },
-                "profile": five_element_profile,
-                "per_circle": five_element_profile["per_circle"],
-            },
-            "stage-07-per-circle-imbalance-patterns": {
-                "stage": "stage-07-per-circle-imbalance-patterns",
-                "status": "complete",
-                "candidates": self._imbalance_candidates(per_circle),
-            },
-            "stage-08-energy-flow-diagnosis": {
-                "stage": "stage-08-energy-flow-diagnosis",
-                "status": "complete",
-                "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
-                "evidence_refs": self._visual_unit_refs(stage03),
-            },
-            "stage-09-evidence-consolidation": {
-                "stage": "stage-09-evidence-consolidation",
-                "status": "complete",
-                "evidence_map": self._evidence_map(stage03),
-            },
+            "stage": "theme-translation-route",
+            "status": "complete",
+            "theme": agent_input.user_context.theme,
+            "route": self._build_theme_route(
+                agent_input=agent_input,
+                foundation_image_reading=foundation_image_reading,
+            ),
         }
 
-    def _run_block_4(
+    def _run_thesis_and_framing(
         self,
         *,
         agent_input: MandalaAgentInput,
@@ -281,14 +175,11 @@ class MandalaInterpretationAgent:
         integrated_context_threads = self._string_list(payload.get("integrated_context_threads"))
         evidence_refs = payload.get("evidence_refs")
         if not isinstance(evidence_refs, list):
-            evidence_refs = self._visual_unit_refs(stage_outputs["stage-03-visual-evidence"])
-        theme_route = self._build_theme_route(
-            agent_input=agent_input,
-            stage_outputs=stage_outputs,
-        )
+            evidence_refs = self._visual_unit_refs(stage_outputs["foundation-image-reading"])
+        theme_route = stage_outputs["theme-translation-route"].get("route", {})
         return {
-            "stage-10-core-thesis-selection": {
-                "stage": "stage-10-core-thesis-selection",
+            "report-thesis-selection": {
+                "stage": "report-thesis-selection",
                 "status": "complete",
                 "core_thesis": core_thesis,
                 "entry_circle": entry_circle,
@@ -299,8 +190,8 @@ class MandalaInterpretationAgent:
                 "evidence_refs": evidence_refs,
                 "theme_route": theme_route,
             },
-            "stage-11-user-facing-framing": {
-                "stage": "stage-11-user-facing-framing",
+            "user-facing-framing": {
+                "stage": "user-facing-framing",
                 "status": "complete",
                 "framing": framing,
                 "entry_circle": entry_circle,
@@ -310,8 +201,8 @@ class MandalaInterpretationAgent:
                 "integrated_context_threads": integrated_context_threads,
                 "theme_route": theme_route,
             },
-            "stage-12-healing-direction-and-report-branching": {
-                "stage": "stage-12-healing-direction-and-report-branching",
+            "report-branching-plan": {
+                "stage": "report-branching-plan",
                 "status": "complete",
                 "healing_direction": healing_direction,
                 "report_mode": agent_input.report_mode,
@@ -325,7 +216,7 @@ class MandalaInterpretationAgent:
             },
         }
 
-    def _run_block_5(
+    def _run_report_writing(
         self,
         *,
         agent_input: MandalaAgentInput,
@@ -362,13 +253,13 @@ class MandalaInterpretationAgent:
             if retry_text and retry_text.strip():
                 markdown = retry_text.strip()
         lite_draft = {
-            "stage": "stage-13-lite-report-draft",
+            "stage": "lite-report-draft",
             "status": "complete",
             "enabled": agent_input.report_mode == "lite",
             "markdown": markdown if agent_input.report_mode == "lite" else "",
         }
         pro_draft = {
-            "stage": "stage-14-pro-report-draft",
+            "stage": "pro-report-draft",
             "status": "complete",
             "enabled": agent_input.report_mode == "pro",
             "markdown": markdown if agent_input.report_mode == "pro" else "",
@@ -378,18 +269,18 @@ class MandalaInterpretationAgent:
             "report_mode": agent_input.report_mode,
             "title": "曼陀罗解读报告",
             "markdown": markdown,
-            "summary": stage_outputs["stage-10-core-thesis-selection"]["core_thesis"],
+            "summary": stage_outputs["report-thesis-selection"]["core_thesis"],
         }
         return {
-            "stage-13-lite-report-draft": lite_draft,
-            "stage-14-pro-report-draft": pro_draft,
-            "stage-15-visual-assets": {
-                "stage": "stage-15-visual-assets",
+            "lite-report-draft": lite_draft,
+            "pro-report-draft": pro_draft,
+            "visual-assets": {
+                "stage": "visual-assets",
                 "status": "skipped",
                 "reason": "mvp_no_image_generation",
             },
-            "stage-16-final-report-assembly": {
-                "stage": "stage-16-final-report-assembly",
+            "final-report-assembly": {
+                "stage": "final-report-assembly",
                 "status": "complete",
                 "final_report": final_report,
             },
@@ -413,108 +304,63 @@ class MandalaInterpretationAgent:
         return issues
 
     def _has_visible_five_element_analysis(self, text: str) -> bool:
-        return "五行" in text and any(label in text for label in ELEMENT_LABELS.values())
+        return "五行" in text and any(label in text for label in ["木", "火", "土", "金", "水"])
 
-    def _normalize_stage03(self, payload: dict[str, Any]) -> dict[str, Any]:
-        circles = self._normalize_circles(payload.get("circles"))
-        return {
-            "stage": "stage-03-visual-evidence",
+    def _normalize_foundation_image_reading(self, payload: dict[str, Any]) -> dict[str, Any]:
+        raw = payload.get("foundation_image_reading")
+        foundation = raw if isinstance(raw, dict) else payload
+        normalized = {
+            "stage": "foundation-image-reading",
             "status": "complete",
-            "global_visual_summary": str(
-                payload.get("global_visual_summary") or payload.get("global_summary") or ""
-            ).strip(),
-            "circles": circles,
-            "evidence_refs": payload.get("evidence_summary", []),
-            "evidence_summary": self._string_list(payload.get("evidence_summary")),
-            "excluded_marks": self._excluded_marks(payload.get("excluded_marks")),
-            "uncertainties": payload.get("uncertainties", []),
+            "foundation_image_reading": {
+                "visual_observation": self._normalize_visual_observation(
+                    foundation.get("visual_observation")
+                ),
+                "element_sensing": self._normalize_layered_payload(
+                    foundation.get("element_sensing"),
+                    default_list_key="element_candidates",
+                ),
+                "intra_circle_relations": self._normalize_layered_payload(
+                    foundation.get("intra_circle_relations"),
+                    default_list_key="relations",
+                ),
+                "cross_circle_flow": self._normalize_cross_circle_flow(
+                    foundation.get("cross_circle_flow")
+                ),
+                "evidence_links": self._normalize_evidence_links(
+                    foundation.get("evidence_links")
+                ),
+            },
             "model_trace": getattr(self.llm_client, "last_attempt_trace", []),
         }
-
-    def _normalize_circles(self, raw_circles: Any) -> dict[str, dict[str, Any]]:
-        normalized: dict[str, dict[str, Any]] = {}
-        circles = raw_circles if isinstance(raw_circles, dict) else {}
-        aliases = {
-            "inner": ["inner", "inner_circle", "内圈", "里圈", "中心"],
-            "middle": ["middle", "middle_circle", "中圈", "中间层"],
-            "outer": ["outer", "outer_circle", "外圈", "外层", "边界"],
-        }
-        for canonical, candidate_keys in aliases.items():
-            raw_circle = self._first_circle_payload(circles, candidate_keys)
-            normalized[canonical] = self._normalize_circle_payload(
-                canonical,
-                raw_circle,
-            )
         return normalized
 
-    def _first_circle_payload(
-        self,
-        circles: dict[str, Any],
-        candidate_keys: list[str],
-    ) -> dict[str, Any]:
-        for key in candidate_keys:
-            payload = circles.get(key)
-            if isinstance(payload, dict):
-                return payload
-        return {}
-
-    def _normalize_circle_payload(
-        self,
-        circle_key: str,
-        raw_circle: dict[str, Any],
-    ) -> dict[str, Any]:
-        raw_units = raw_circle.get("visual_units")
-        units = [
-            self._normalize_visual_unit(circle_key, index, unit)
-            for index, unit in enumerate(raw_units)
-            if isinstance(unit, dict)
-        ] if isinstance(raw_units, list) else []
-        if not units:
-            units = self._visual_units_from_circle_summary(circle_key, raw_circle)
+    def _normalize_visual_observation(self, value: Any) -> dict[str, Any]:
+        payload = value if isinstance(value, dict) else {}
         return {
-            "summary": self._circle_summary(raw_circle),
-            "visual_units": units,
-            "raw_observation": raw_circle,
+            "overall_observation": self._object_or_empty(payload.get("overall_observation")),
+            "three_circle_observation": self._object_or_empty(payload.get("three_circle_observation")),
+            "circle_visual_units": self._normalize_circle_visual_units(
+                payload.get("circle_visual_units")
+            ),
         }
 
-    def _visual_units_from_circle_summary(
-        self,
-        circle_key: str,
-        raw_circle: dict[str, Any],
-    ) -> list[dict[str, Any]]:
-        color_values = self._string_list(raw_circle.get("color_distribution"))
-        if not color_values:
-            color_values = self._string_list(raw_circle.get("dominant_colors"))
-        if not color_values:
-            color_values = self._string_list(raw_circle.get("colors"))
-        shape = str(
-            raw_circle.get("shape")
-            or raw_circle.get("shapes")
-            or raw_circle.get("pattern")
-            or raw_circle.get("patterns")
-            or ""
-        ).strip()
-        evidence = self._circle_summary(raw_circle)
-        if not evidence and not color_values and not shape:
-            return []
-        return [
-            {
-                "id": f"{circle_key}-001",
-                "position": circle_key,
-                "source_type": "user_painted",
-                "include_in_interpretation": True,
-                "exclude_reason": "none",
-                "color": "、".join(color_values),
-                "color_confidence": "medium",
-                "shape": shape,
-                "size_tendency": "unknown",
-                "adjacency": [],
-                "is_blank_space": False,
-                "metal_candidate": any("白" in color or "留白" in color for color in color_values),
-                "visible_evidence": evidence,
-                "confidence": "medium",
+    def _normalize_circle_visual_units(self, value: Any) -> dict[str, dict[str, Any]]:
+        raw_circles = value if isinstance(value, dict) else {}
+        normalized = {}
+        for circle_key in ["inner", "middle", "outer"]:
+            raw_circle = raw_circles.get(circle_key, {}) if isinstance(raw_circles, dict) else {}
+            circle = raw_circle if isinstance(raw_circle, dict) else {}
+            units = circle.get("visual_units", [])
+            normalized[circle_key] = {
+                "composition_description": str(circle.get("composition_description") or "").strip(),
+                "visual_units": [
+                    self._normalize_visual_unit(circle_key, index, unit)
+                    for index, unit in enumerate(units)
+                    if isinstance(unit, dict)
+                ] if isinstance(units, list) else [],
             }
-        ]
+        return normalized
 
     def _normalize_visual_unit(
         self,
@@ -522,156 +368,84 @@ class MandalaInterpretationAgent:
         index: int,
         unit: dict[str, Any],
     ) -> dict[str, Any]:
+        source_type = str(unit.get("source_type") or "user_painted").strip()
+        if source_type not in {"user_painted", "blank_space"}:
+            source_type = "user_painted"
         return {
             "id": str(unit.get("id") or f"{circle_key}-{index + 1:03d}").strip(),
+            "unit_name": str(unit.get("unit_name") or unit.get("name") or "").strip(),
             "position": str(unit.get("position") or circle_key).strip(),
-            "source_type": self._safe_source_type(unit.get("source_type")),
-            "include_in_interpretation": self._include_visual_unit(unit),
-            "exclude_reason": str(unit.get("exclude_reason") or "none").strip(),
-            "color": self._main_value(unit.get("color")),
-            "color_confidence": self._safe_confidence(unit.get("color_confidence")),
-            "shape": self._main_value(unit.get("shape")),
-            "size_tendency": self._safe_size_tendency(unit.get("size_tendency")),
-            "adjacency": self._string_list(unit.get("adjacency")),
-            "is_blank_space": bool(unit.get("is_blank_space")),
-            "metal_candidate": bool(unit.get("metal_candidate")),
-            "visible_evidence": str(
-                unit.get("visible_evidence")
-                or unit.get("description")
-                or unit.get("evidence")
+            "source_type": source_type,
+            "color_description": str(
+                unit.get("color_description") or unit.get("color") or ""
+            ).strip(),
+            "shape_description": str(
+                unit.get("shape_description") or unit.get("shape") or ""
+            ).strip(),
+            "texture_and_density": str(unit.get("texture_and_density") or "").strip(),
+            "spatial_relations": str(
+                unit.get("spatial_relations")
+                or unit.get("adjacency")
                 or ""
             ).strip(),
-            "confidence": self._safe_confidence(unit.get("confidence")),
+            "blank_space_role": str(unit.get("blank_space_role") or "").strip(),
+            "rich_visual_description": str(
+                unit.get("rich_visual_description")
+                or unit.get("visible_evidence")
+                or unit.get("description")
+                or ""
+            ).strip(),
         }
 
-    def _circle_summary(self, raw_circle: dict[str, Any]) -> str:
-        explicit = str(
-            raw_circle.get("summary")
-            or raw_circle.get("description")
-            or ""
-        ).strip()
-        if explicit:
-            return explicit
-        parts = []
-        for key in [
-            "center",
-            "color_distribution",
-            "dominant_colors",
-            "colors",
-            "texture",
-            "pattern",
-            "patterns",
-            "shape",
-            "shapes",
-            "transition",
-            "boundary",
-            "intensity",
-        ]:
-            value = raw_circle.get(key)
-            if isinstance(value, list):
-                value_text = "、".join(str(item).strip() for item in value if str(item).strip())
-            else:
-                value_text = str(value or "").strip()
-            if value_text:
-                parts.append(value_text)
-        return "；".join(parts)
+    def _normalize_layered_payload(
+        self,
+        value: Any,
+        *,
+        default_list_key: str,
+    ) -> dict[str, dict[str, Any]]:
+        raw = value if isinstance(value, dict) else {}
+        normalized = {}
+        for circle_key in ["inner", "middle", "outer"]:
+            circle = raw.get(circle_key, {}) if isinstance(raw, dict) else {}
+            circle_payload = circle if isinstance(circle, dict) else {}
+            items = circle_payload.get(default_list_key)
+            normalized[circle_key] = {
+                default_list_key: items if isinstance(items, list) else [],
+                "summary": str(circle_payload.get("summary") or "").strip(),
+            }
+        return normalized
 
-    def _main_value(self, value: Any) -> str:
-        if isinstance(value, dict):
-            return str(value.get("main") or value.get("type") or value.get("name") or "").strip()
-        if isinstance(value, list):
-            return "、".join(str(item).strip() for item in value if str(item).strip())
-        return str(value or "").strip()
-
-    def _safe_source_type(self, value: Any) -> str:
-        source_type = str(value or "user_painted").strip()
-        allowed = {
-            "user_painted",
-            "blank_space",
-            "template_line",
-            "therapist_marker",
-            "uncertain",
+    def _normalize_cross_circle_flow(self, value: Any) -> dict[str, Any]:
+        payload = value if isinstance(value, dict) else {}
+        observations = payload.get("flow_observations")
+        return {
+            "flow_observations": observations if isinstance(observations, list) else [],
+            "summary": str(payload.get("summary") or "").strip(),
         }
-        return source_type if source_type in allowed else "uncertain"
 
-    def _include_visual_unit(self, unit: dict[str, Any]) -> bool:
-        explicit = unit.get("include_in_interpretation")
-        if isinstance(explicit, bool):
-            return explicit
-        return self._safe_source_type(unit.get("source_type")) in {"user_painted", "blank_space"}
-
-    def _safe_confidence(self, value: Any) -> str:
-        confidence = str(value or "medium").strip().lower()
-        return confidence if confidence in {"high", "medium", "low"} else "medium"
-
-    def _safe_size_tendency(self, value: Any) -> str:
-        size_tendency = str(value or "unknown").strip().lower()
-        allowed = {"large", "medium", "small", "scattered", "unknown"}
-        return size_tendency if size_tendency in allowed else "unknown"
-
-    def _excluded_marks(self, value: Any) -> list[dict[str, Any]]:
+    def _normalize_evidence_links(self, value: Any) -> list[dict[str, Any]]:
         if not isinstance(value, list):
             return []
-        marks = []
-        for index, item in enumerate(value):
-            if isinstance(item, dict):
-                marks.append(
-                    {
-                        "id": str(item.get("id") or f"excluded-{index + 1:03d}").strip(),
-                        "source_type": self._safe_source_type(item.get("source_type")),
-                        "reason": str(item.get("reason") or item.get("exclude_reason") or "").strip(),
-                        "visible_evidence": str(item.get("visible_evidence") or item.get("evidence") or "").strip(),
-                    }
-                )
-            elif str(item).strip():
-                marks.append(
-                    {
-                        "id": f"excluded-{index + 1:03d}",
-                        "source_type": "uncertain",
-                        "reason": str(item).strip(),
-                        "visible_evidence": str(item).strip(),
-                    }
-                )
-        return marks
+        links = []
+        for item in value:
+            if not isinstance(item, dict):
+                continue
+            links.append(
+                {
+                    "claim_id": str(item.get("claim_id") or "").strip(),
+                    "claim_type": str(item.get("claim_type") or "").strip(),
+                    "claim_text": str(item.get("claim_text") or "").strip(),
+                    "visual_unit_ids": self._string_list(item.get("visual_unit_ids")),
+                    "circle_observation_refs": self._string_list(
+                        item.get("circle_observation_refs")
+                    ),
+                    "evidence_text": str(item.get("evidence_text") or "").strip(),
+                }
+            )
+        return links
 
-    def _string_list(self, value: Any) -> list[str]:
-        if isinstance(value, list):
-            return [str(item).strip() for item in value if str(item).strip()]
-        if isinstance(value, str) and value.strip():
-            return [value.strip()]
-        return []
-
-    def _safe_entry_circle(self, value: Any) -> str:
-        circle = str(value or "").strip().lower()
-        return circle if circle in {"inner", "middle", "outer"} else "inner"
-
-    def _safe_narrative_order(self, value: Any, entry_circle: str) -> list[str]:
-        valid = ["inner", "middle", "outer"]
-        order = []
-        if isinstance(value, list):
-            for item in value:
-                circle = str(item or "").strip().lower()
-                if circle in valid and circle not in order:
-                    order.append(circle)
-        if entry_circle in valid and entry_circle not in order:
-            order.insert(0, entry_circle)
-        for circle in valid:
-            if circle not in order:
-                order.append(circle)
-        return order
-
-    def _build_stage04(self, stage03: dict[str, Any]) -> dict[str, Any]:
-        evidence_refs = self._visual_unit_refs(stage03)
-        return {
-            "stage": "stage-04-direct-judgment-high-hit-check",
-            "status": "complete",
-            "hits": [],
-            "non_hits": [],
-            "uncertain_items": [],
-            "conflicts": [],
-            "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
-            "evidence_refs": evidence_refs,
-        }
+    def _object_or_empty(self, value: Any) -> dict[str, Any]:
+        return value if isinstance(value, dict) else {}
 
     def _build_execution_trace(self, stage_outputs: dict[str, Any]) -> list[dict[str, Any]]:
         trace = []
@@ -695,22 +469,25 @@ class MandalaInterpretationAgent:
         stage_outputs: dict[str, Any],
         final_report: dict[str, Any],
     ) -> dict[str, Any]:
+        foundation_image_reading = stage_outputs["foundation-image-reading"]
         return {
             "report_id": final_report["report_id"],
             "report_mode": agent_input.report_mode,
             "user_context": agent_input.user_context.to_dict(),
-            "visual_observation": stage_outputs["stage-03-visual-evidence"],
-            "circle_interpretation": stage_outputs["stage-05-per-circle-color-shape-element-sensing"],
-            "five_element_interpretation": stage_outputs["stage-06-per-circle-element-generation-control"],
+            "foundation_image_reading": foundation_image_reading,
+            "visual_observation": foundation_image_reading["foundation_image_reading"]["visual_observation"],
+            "element_sensing": foundation_image_reading["foundation_image_reading"]["element_sensing"],
+            "intra_circle_relations": foundation_image_reading["foundation_image_reading"]["intra_circle_relations"],
+            "cross_circle_flow": foundation_image_reading["foundation_image_reading"]["cross_circle_flow"],
             "theme_interpretation": {
                 "theme": agent_input.user_context.theme,
                 "theme_label": agent_input.user_context.theme_label,
-                "route": stage_outputs["stage-12-healing-direction-and-report-branching"].get("theme_route", {}),
+                "route": stage_outputs["report-branching-plan"].get("theme_route", {}),
             },
-            "core_thesis": stage_outputs["stage-10-core-thesis-selection"]["core_thesis"],
-            "healing_direction": stage_outputs["stage-12-healing-direction-and-report-branching"]["healing_direction"],
+            "core_thesis": stage_outputs["report-thesis-selection"]["core_thesis"],
+            "healing_direction": stage_outputs["report-branching-plan"]["healing_direction"],
             "final_report": final_report,
-            "evidence_map": stage_outputs["stage-09-evidence-consolidation"]["evidence_map"],
+            "evidence_map": self._evidence_map(foundation_image_reading),
             "boundaries": agent_input.circle_boundaries,
             "permissions": {
                 "can_answer_follow_up": False,
@@ -726,9 +503,9 @@ class MandalaInterpretationAgent:
         *,
         agent_input: MandalaAgentInput,
     ) -> str:
-        return render_prompt_template(
-            "vision/observe.md",
-            circle_boundaries_json=json.dumps(agent_input.circle_boundaries, ensure_ascii=False),
+        return load_prompt_template("vision/observe.md").replace(
+            "{{CIRCLE_BOUNDARY_DATA}}",
+            json.dumps(agent_input.circle_boundaries, ensure_ascii=False, indent=2),
         )
 
     def _vision_image_paths(self, agent_input: MandalaAgentInput) -> list[str]:
@@ -751,11 +528,8 @@ class MandalaInterpretationAgent:
                 "pack_id": knowledge_pack.get("pack_id"),
                 "theme": knowledge_pack.get("theme"),
             },
-            "stage_outputs": {
-                key: stage_outputs[key]
-                for key in STAGE_KEYS[:10]
-                if key in stage_outputs
-            },
+            "foundation_image_reading": stage_outputs["foundation-image-reading"],
+            "theme_translation_route": stage_outputs["theme-translation-route"],
         }
         return render_prompt_template(
             "thesis/select.md",
@@ -769,6 +543,7 @@ class MandalaInterpretationAgent:
         knowledge_pack: dict[str, Any],
         stage_outputs: dict[str, Any],
     ) -> str:
+        foundation_image_reading = stage_outputs["foundation-image-reading"]
         payload = {
             "report_mode": agent_input.report_mode,
             "user_context": agent_input.user_context.to_dict(),
@@ -778,13 +553,15 @@ class MandalaInterpretationAgent:
                 "theme": knowledge_pack.get("theme"),
             },
             "writing_inputs": {
-                "visual": stage_outputs["stage-03-visual-evidence"],
-                "circle_interpretation": stage_outputs["stage-05-per-circle-color-shape-element-sensing"],
-                "five_element": stage_outputs["stage-06-per-circle-element-generation-control"],
-                "core_thesis": stage_outputs["stage-10-core-thesis-selection"],
-                "framing": stage_outputs["stage-11-user-facing-framing"],
-                "healing": stage_outputs["stage-12-healing-direction-and-report-branching"],
-                "theme_route": stage_outputs["stage-12-healing-direction-and-report-branching"].get("theme_route", {}),
+                "foundation_image_reading": foundation_image_reading,
+                "visual_observation": foundation_image_reading["foundation_image_reading"]["visual_observation"],
+                "element_sensing": foundation_image_reading["foundation_image_reading"]["element_sensing"],
+                "intra_circle_relations": foundation_image_reading["foundation_image_reading"]["intra_circle_relations"],
+                "cross_circle_flow": foundation_image_reading["foundation_image_reading"]["cross_circle_flow"],
+                "core_thesis": stage_outputs["report-thesis-selection"],
+                "framing": stage_outputs["user-facing-framing"],
+                "healing": stage_outputs["report-branching-plan"],
+                "theme_route": stage_outputs["report-branching-plan"].get("theme_route", {}),
             },
         }
         report_structure_map = load_prompt_config("report/config.json")
@@ -799,14 +576,14 @@ class MandalaInterpretationAgent:
         self,
         *,
         agent_input: MandalaAgentInput,
-        stage_outputs: dict[str, Any],
+        foundation_image_reading: dict[str, Any],
     ) -> dict[str, Any]:
         if agent_input.user_context.theme != "wealth":
             return {"theme": agent_input.user_context.theme, "status": "not_applicable"}
 
         runtime = get_wealth_report_runtime()
         route = runtime.route_visual_observations(
-            stage_outputs["stage-03-visual-evidence"],
+            foundation_image_reading,
             report_mode=agent_input.report_mode,
         )
         clauses = [
@@ -861,59 +638,34 @@ class MandalaInterpretationAgent:
             "type": "object",
             "required": [
                 "id",
+                "unit_name",
                 "position",
                 "source_type",
-                "include_in_interpretation",
-                "color",
-                "color_confidence",
-                "shape",
-                "size_tendency",
-                "adjacency",
-                "is_blank_space",
-                "metal_candidate",
-                "visible_evidence",
-                "confidence",
+                "color_description",
+                "shape_description",
+                "texture_and_density",
+                "spatial_relations",
+                "blank_space_role",
+                "rich_visual_description",
             ],
             "properties": {
                 "id": {"type": "string"},
+                "unit_name": {"type": "string"},
                 "position": {"type": "string"},
-                "source_type": {
-                    "type": "string",
-                    "enum": [
-                        "user_painted",
-                        "blank_space",
-                        "template_line",
-                        "therapist_marker",
-                        "uncertain",
-                    ],
-                },
-                "include_in_interpretation": {"type": "boolean"},
-                "exclude_reason": {"type": "string"},
-                "color": {"type": "string"},
-                "color_confidence": {
-                    "type": "string",
-                    "enum": ["high", "medium", "low"],
-                },
-                "shape": {"type": "string"},
-                "size_tendency": {
-                    "type": "string",
-                    "enum": ["large", "medium", "small", "scattered", "unknown"],
-                },
-                "adjacency": {"type": "array", "items": {"type": "string"}},
-                "is_blank_space": {"type": "boolean"},
-                "metal_candidate": {"type": "boolean"},
-                "visible_evidence": {"type": "string"},
-                "confidence": {
-                    "type": "string",
-                    "enum": ["high", "medium", "low"],
-                },
+                "source_type": {"type": "string", "enum": ["user_painted", "blank_space"]},
+                "color_description": {"type": "string"},
+                "shape_description": {"type": "string"},
+                "texture_and_density": {"type": "string"},
+                "spatial_relations": {"type": "string"},
+                "blank_space_role": {"type": "string"},
+                "rich_visual_description": {"type": "string"},
             },
         }
-        circle_schema = {
+        circle_visual_units_schema = {
             "type": "object",
-            "required": ["summary", "visual_units"],
+            "required": ["composition_description", "visual_units"],
             "properties": {
-                "summary": {"type": "string"},
+                "composition_description": {"type": "string"},
                 "visual_units": {
                     "type": "array",
                     "items": visual_unit_schema,
@@ -921,40 +673,200 @@ class MandalaInterpretationAgent:
                 },
             },
         }
-        return {
+        element_candidate_schema = {
+            "type": "object",
+            "required": ["visual_unit_id", "element", "basis", "confidence", "notes"],
+            "properties": {
+                "visual_unit_id": {"type": "string"},
+                "element": {
+                    "type": "string",
+                    "enum": ["wood", "fire", "earth", "metal", "water", "ambiguous"],
+                },
+                "basis": {"type": "array", "items": {"type": "string"}},
+                "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+                "notes": {"type": "string"},
+            },
+        }
+        element_circle_schema = {
+            "type": "object",
+            "required": ["element_candidates", "summary"],
+            "properties": {
+                "element_candidates": {
+                    "type": "array",
+                    "items": element_candidate_schema,
+                },
+                "summary": {"type": "string"},
+            },
+        }
+        relation_schema = {
             "type": "object",
             "required": [
-                "global_visual_summary",
-                "circles",
-                "evidence_summary",
-                "excluded_marks",
-                "uncertainties",
+                "relation_id",
+                "relation_type",
+                "involved_visual_unit_ids",
+                "visible_basis",
+                "confidence",
+                "notes",
             ],
             "properties": {
-                "global_visual_summary": {"type": "string"},
-                "circles": {
-                    "type": "object",
-                    "required": ["inner", "middle", "outer"],
-                    "properties": {
-                        "inner": circle_schema,
-                        "middle": circle_schema,
-                        "outer": circle_schema,
-                    },
+                "relation_id": {"type": "string"},
+                "relation_type": {
+                    "type": "string",
+                    "enum": [
+                        "generating",
+                        "controlling",
+                        "cut_by_metal",
+                        "surrounded_by",
+                        "separated_by_blank_space",
+                        "rootless_wood",
+                        "imbalance_candidate",
+                        "blocked_cycle",
+                        "insufficient_evidence",
+                    ],
                 },
-                "evidence_summary": {"type": "array", "items": {"type": "string"}},
-                "excluded_marks": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "id": {"type": "string"},
-                            "source_type": {"type": "string"},
-                            "reason": {"type": "string"},
-                            "visible_evidence": {"type": "string"},
+                "involved_visual_unit_ids": {"type": "array", "items": {"type": "string"}},
+                "visible_basis": {"type": "string"},
+                "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+                "notes": {"type": "string"},
+            },
+        }
+        relation_circle_schema = {
+            "type": "object",
+            "required": ["relations", "summary"],
+            "properties": {
+                "relations": {"type": "array", "items": relation_schema},
+                "summary": {"type": "string"},
+            },
+        }
+        flow_schema = {
+            "type": "object",
+            "required": [
+                "flow_id",
+                "flow_type",
+                "involved_circles",
+                "visual_basis",
+                "confidence",
+            ],
+            "properties": {
+                "flow_id": {"type": "string"},
+                "flow_type": {
+                    "type": "string",
+                    "enum": [
+                        "continuous",
+                        "interrupted",
+                        "outward_expanding",
+                        "inward_contracting",
+                        "outer_layer_containing",
+                        "outer_layer_scattered",
+                        "middle_layer_blocked",
+                        "inner_outer_mismatch",
+                        "insufficient_evidence",
+                    ],
+                },
+                "involved_circles": {"type": "array", "items": {"type": "string"}},
+                "visual_basis": {"type": "string"},
+                "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+            },
+        }
+        return {
+            "type": "object",
+            "required": ["foundation_image_reading"],
+            "properties": {
+                "foundation_image_reading": {
+                    "type": "object",
+                    "required": [
+                        "visual_observation",
+                        "element_sensing",
+                        "intra_circle_relations",
+                        "cross_circle_flow",
+                        "evidence_links",
+                    ],
+                    "properties": {
+                        "visual_observation": {
+                            "type": "object",
+                            "required": [
+                                "overall_observation",
+                                "three_circle_observation",
+                                "circle_visual_units",
+                            ],
+                            "properties": {
+                                "overall_observation": {"type": "object"},
+                                "three_circle_observation": {"type": "object"},
+                                "circle_visual_units": {
+                                    "type": "object",
+                                    "required": ["inner", "middle", "outer"],
+                                    "properties": {
+                                        "inner": circle_visual_units_schema,
+                                        "middle": circle_visual_units_schema,
+                                        "outer": circle_visual_units_schema,
+                                    },
+                                },
+                            },
+                        },
+                        "element_sensing": {
+                            "type": "object",
+                            "required": ["inner", "middle", "outer"],
+                            "properties": {
+                                "inner": element_circle_schema,
+                                "middle": element_circle_schema,
+                                "outer": element_circle_schema,
+                            },
+                        },
+                        "intra_circle_relations": {
+                            "type": "object",
+                            "required": ["inner", "middle", "outer"],
+                            "properties": {
+                                "inner": relation_circle_schema,
+                                "middle": relation_circle_schema,
+                                "outer": relation_circle_schema,
+                            },
+                        },
+                        "cross_circle_flow": {
+                            "type": "object",
+                            "required": ["flow_observations", "summary"],
+                            "properties": {
+                                "flow_observations": {
+                                    "type": "array",
+                                    "items": flow_schema,
+                                },
+                                "summary": {"type": "string"},
+                            },
+                        },
+                        "evidence_links": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "claim_id",
+                                    "claim_type",
+                                    "claim_text",
+                                    "evidence_text",
+                                ],
+                                "properties": {
+                                    "claim_id": {"type": "string"},
+                                    "claim_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "element_sensing",
+                                            "intra_circle_relation",
+                                            "cross_circle_flow",
+                                        ],
+                                    },
+                                    "claim_text": {"type": "string"},
+                                    "visual_unit_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    },
+                                    "circle_observation_refs": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    },
+                                    "evidence_text": {"type": "string"},
+                                },
+                            },
                         },
                     },
                 },
-                "uncertainties": {"type": "array", "items": {"type": "string"}},
             },
         }
 
@@ -972,231 +884,43 @@ class MandalaInterpretationAgent:
             return None
         return parsed if isinstance(parsed, dict) else None
 
-    def _collect_values(self, circle: dict[str, Any], field_name: str) -> list[str]:
-        values: list[str] = []
-        for unit in circle.get("visual_units", []):
-            if isinstance(unit, dict):
-                value = str(unit.get(field_name) or "").strip()
-                if value and value not in values:
-                    values.append(value)
-        return values
+    def _string_list(self, value: Any) -> list[str]:
+        if isinstance(value, list):
+            return [str(item).strip() for item in value if str(item).strip()]
+        if isinstance(value, str) and value.strip():
+            return [value.strip()]
+        return []
 
-    def _collect_interpretable_values(self, circle: dict[str, Any], field_name: str) -> list[str]:
-        values: list[str] = []
-        for unit in self._interpretable_visual_units(circle):
-            value = str(unit.get(field_name) or "").strip()
-            if value and value not in values:
-                values.append(value)
-        return values
+    def _safe_entry_circle(self, value: Any) -> str:
+        circle = str(value or "").strip().lower()
+        return circle if circle in {"inner", "middle", "outer"} else "inner"
 
-    def _interpretable_visual_units(self, circle: dict[str, Any]) -> list[dict[str, Any]]:
-        units = circle.get("visual_units", [])
-        if not isinstance(units, list):
-            return []
-        return [
-            unit
-            for unit in units
-            if isinstance(unit, dict) and unit.get("include_in_interpretation") is not False
-        ]
+    def _safe_narrative_order(self, value: Any, entry_circle: str) -> list[str]:
+        valid = ["inner", "middle", "outer"]
+        order = []
+        if isinstance(value, list):
+            for item in value:
+                circle = str(item or "").strip().lower()
+                if circle in valid and circle not in order:
+                    order.append(circle)
+        if entry_circle in valid and entry_circle not in order:
+            order.insert(0, entry_circle)
+        for circle in valid:
+            if circle not in order:
+                order.append(circle)
+        return order
 
-    def _five_element_profile(self, per_circle: dict[str, Any]) -> dict[str, Any]:
-        circle_profiles: dict[str, Any] = {}
-        element_counts: dict[str, int] = {element: 0 for element in ELEMENT_LABELS}
-        for circle_key, circle_payload in per_circle.items():
-            element_signals = self._element_signals_for_circle(circle_key, circle_payload)
-            present_elements = []
-            for signal in element_signals:
-                element_key = str(signal.get("element") or "")
-                if element_key in ELEMENT_LABELS and element_key not in present_elements:
-                    present_elements.append(element_key)
-                    element_counts[element_key] += 1
-            circle_profiles[circle_key] = {
-                "circle": circle_key,
-                "element_signals": element_signals,
-                "present_elements": [
-                    {"element": element_key, "label": ELEMENT_LABELS[element_key]}
-                    for element_key in present_elements
-                ],
-                "intra_circle_relations": self._intra_circle_relations(present_elements),
-                "evidence": {
-                    "colors": circle_payload.get("dominant_colors", []),
-                    "shapes": circle_payload.get("dominant_shapes", []),
-                    "summary": circle_payload.get("visual_summary", ""),
-                },
-                "interpretation_hint": self._element_circle_hint(
-                    circle_key,
-                    element_signals,
-                    present_elements,
-                ),
-                "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。",
-            }
-        dominant_elements = [
-            {
-                "element": element_key,
-                "label": ELEMENT_LABELS[element_key],
-                "score": score,
-            }
-            for element_key, score in sorted(
-                element_counts.items(),
-                key=lambda item: item[1],
-                reverse=True,
-            )
-            if score > 0
-        ]
-        return {
-            "scope": "intra_circle_visual_elements",
-            "per_circle": circle_profiles,
-            "dominant_elements": dominant_elements,
-            "report_language": self._five_element_report_language(circle_profiles),
-            "intra_circle_rule": "五行生克只用于同一圈内部已经识别出的视觉元素之间。",
-            "cross_circle_rule": "三圈联动分析使用圈层结构，不使用五行生克。",
-        }
-
-    def _element_signals_for_circle(
-        self,
-        circle_key: str,
-        circle_payload: dict[str, Any],
-    ) -> list[dict[str, Any]]:
-        signals: list[dict[str, Any]] = []
-        for unit in circle_payload.get("visual_units", []):
-            if not isinstance(unit, dict):
-                continue
-            if unit.get("include_in_interpretation") is False:
-                continue
-            unit_id = str(unit.get("id") or f"{circle_key}-unit").strip()
-            source_values = [
-                ("color", str(unit.get("color") or "")),
-                ("shape", str(unit.get("shape") or "")),
-                ("evidence", str(unit.get("visible_evidence") or "")),
-            ]
-            for source_type, value in source_values:
-                for element_key in self._elements_for_text(value):
-                    signal = {
-                        "unit_id": unit_id,
-                        "element": element_key,
-                        "label": ELEMENT_LABELS[element_key],
-                        "source_type": source_type,
-                        "evidence": value,
-                        "hint": ELEMENT_RULES[element_key]["hint"],
-                    }
-                    if signal not in signals:
-                        signals.append(signal)
-        if not signals:
-            summary = str(circle_payload.get("visual_summary") or "")
-            for element_key in self._elements_for_text(summary):
-                signal = {
-                    "unit_id": f"{circle_key}-summary",
-                    "element": element_key,
-                    "label": ELEMENT_LABELS[element_key],
-                    "source_type": "summary",
-                    "evidence": summary,
-                    "hint": ELEMENT_RULES[element_key]["hint"],
-                }
-                if signal not in signals:
-                    signals.append(signal)
-        return signals
-
-    def _elements_for_text(self, text: str) -> list[str]:
-        normalized = text.lower()
-        matches: list[str] = []
-        for element_key, rule in ELEMENT_RULES.items():
-            if any(term.lower() in normalized for term in rule["terms"]):
-                matches.append(element_key)
-        return matches
-
-    def _intra_circle_relations(self, elements: list[str]) -> list[dict[str, Any]]:
-        relations: list[dict[str, Any]] = []
-        present = set(elements)
-        for source, target in GENERATES.items():
-            if source in present and target in present:
-                relations.append(
-                    {
-                        "type": "generate",
-                        "label": f"{ELEMENT_LABELS[source]}生{ELEMENT_LABELS[target]}",
-                        "source_element": source,
-                        "target_element": target,
-                        "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。",
-                    }
-                )
-        for source, target in CONTROLS.items():
-            if source in present and target in present:
-                relations.append(
-                    {
-                        "type": "control",
-                        "label": f"{ELEMENT_LABELS[source]}克{ELEMENT_LABELS[target]}",
-                        "source_element": source,
-                        "target_element": target,
-                        "scope_note": "同圈元素关系候选，需结合面积、相邻程度和形状强弱判断。",
-                    }
-                )
-        return relations
-
-    def _element_circle_hint(
-        self,
-        circle_key: str,
-        element_signals: list[dict[str, Any]],
-        present_elements: list[str],
-    ) -> str:
-        if not element_signals:
-            return "当前圈层的五行信号不足，报告只能保留为待确认线索。"
-        circle_names = {
-            "inner": "内圈本源层",
-            "middle": "中圈情绪层",
-            "outer": "外圈现实层",
-        }
-        labels = "、".join(ELEMENT_LABELS[element] for element in present_elements)
-        relation_labels = "、".join(
-            relation["label"] for relation in self._intra_circle_relations(present_elements)
-        )
-        relation_text = f"；同圈关系候选包括{relation_labels}" if relation_labels else ""
-        return (
-            f"{circle_names.get(circle_key, circle_key)}内识别到{labels}等元素信号，"
-            f"需按圈内元素组合与相邻关系解读{relation_text}。"
-        )
-
-    def _five_element_report_language(self, circle_profiles: dict[str, Any]) -> list[str]:
-        lines = []
-        for circle_key in ["inner", "middle", "outer"]:
-            profile = circle_profiles.get(circle_key)
-            if not isinstance(profile, dict):
-                continue
-            hint = str(profile.get("interpretation_hint") or "").strip()
-            if hint:
-                lines.append(hint)
-        return lines
-
-    def _knowledge_refs_for_circle(
-        self,
-        circle_key: str,
-        knowledge_pack: dict[str, Any],
-    ) -> list[str]:
-        theme = str(knowledge_pack.get("theme") or "general")
-        return [
-            f"circle.{circle_key}",
-            "elements.color_meanings",
-            "elements.five_elements",
-            f"themes.{theme}",
-        ]
-
-    def _imbalance_candidates(self, per_circle: dict[str, Any]) -> list[dict[str, Any]]:
-        candidates = []
-        for circle_key, circle_payload in per_circle.items():
-            colors = circle_payload.get("dominant_colors", [])
-            candidates.append(
-                {
-                    "circle": circle_key,
-                    "candidate": "needs_human_review",
-                    "basis": colors,
-                }
-            )
-        return candidates
-
-    def _visual_unit_refs(self, stage03: dict[str, Any]) -> list[str]:
+    def _visual_unit_refs(self, foundation_image_reading: dict[str, Any]) -> list[str]:
         refs: list[str] = []
-        circles = stage03.get("circles", {})
-        if not isinstance(circles, dict):
+        units_by_circle = (
+            foundation_image_reading
+            .get("foundation_image_reading", {})
+            .get("visual_observation", {})
+            .get("circle_visual_units", {})
+        )
+        if not isinstance(units_by_circle, dict):
             return refs
-        for circle in circles.values():
+        for circle in units_by_circle.values():
             if not isinstance(circle, dict):
                 continue
             for unit in circle.get("visual_units", []):
@@ -1206,12 +930,17 @@ class MandalaInterpretationAgent:
                         refs.append(ref)
         return refs
 
-    def _evidence_map(self, stage03: dict[str, Any]) -> list[dict[str, Any]]:
+    def _evidence_map(self, foundation_image_reading: dict[str, Any]) -> list[dict[str, Any]]:
         evidence = []
-        circles = stage03.get("circles", {})
-        if not isinstance(circles, dict):
+        units_by_circle = (
+            foundation_image_reading
+            .get("foundation_image_reading", {})
+            .get("visual_observation", {})
+            .get("circle_visual_units", {})
+        )
+        if not isinstance(units_by_circle, dict):
             return evidence
-        for circle_key, circle in circles.items():
+        for circle_key, circle in units_by_circle.items():
             if not isinstance(circle, dict):
                 continue
             for unit in circle.get("visual_units", []):
@@ -1222,8 +951,9 @@ class MandalaInterpretationAgent:
                         "id": str(unit.get("id") or "").strip(),
                         "circle": circle_key,
                         "visible_evidence": str(
-                            unit.get("visible_evidence")
-                            or unit.get("description")
+                            unit.get("rich_visual_description")
+                            or unit.get("spatial_relations")
+                            or unit.get("shape_description")
                             or ""
                         ).strip(),
                     }

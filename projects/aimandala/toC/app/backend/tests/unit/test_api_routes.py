@@ -11,45 +11,251 @@ from app.api.main import create_app
 
 def _visual_observations() -> dict:
     return {
-        "global_visual_summary": "内圈收束，中圈有拉扯，外圈红色和留白明显。",
-        "circles": {
-            "inner": {
-                "summary": "内圈蓝色圆形，整体收束。",
-                "visual_units": [
+        "foundation_image_reading": {
+            "visual_observation": {
+                "overall_observation": {
+                    "first_impression": "内圈收束，中圈有拉扯，外圈红色和留白明显。",
+                    "main_visual_content": "内圈蓝色圆形，中圈粉色花瓣，外圈红色边界和白色留白。",
+                    "visual_atmosphere": "整体有向外展开的热度，也有边界和分隔。",
+                    "visual_weight_and_rhythm": "内圈集中，外圈红色和留白形成明显节奏。",
+                },
+                "three_circle_observation": {
+                    "inner": "内圈蓝色圆形，整体收束。",
+                    "middle": "中圈粉色花瓣，有拉扯感。",
+                    "outer": "外圈红色很多，也有白色留白。",
+                    "cross_circle_visual_connection": "内圈向中圈展开，外圈由红色边界和留白收束。",
+                },
+                "circle_visual_units": {
+                    "inner": {
+                        "composition_description": "内圈蓝色圆形，整体收束。",
+                        "visual_units": [
+                            {
+                                "id": "inner-001",
+                                "unit_name": "蓝色圆形",
+                                "position": "内圈",
+                                "source_type": "user_painted",
+                                "color_description": "蓝色",
+                                "shape_description": "圆形",
+                                "texture_and_density": "集中、稳定。",
+                                "spatial_relations": "位于内圈中心，外侧连接中圈。",
+                                "blank_space_role": "none",
+                                "rich_visual_description": "内圈蓝色圆形，整体收束。",
+                            }
+                        ],
+                    },
+                    "middle": {
+                        "composition_description": "中圈粉色花瓣，有拉扯感。",
+                        "visual_units": [
+                            {
+                                "id": "middle-001",
+                                "unit_name": "粉色花瓣",
+                                "position": "中圈",
+                                "source_type": "user_painted",
+                                "color_description": "粉色",
+                                "shape_description": "花瓣",
+                                "texture_and_density": "重复排列。",
+                                "spatial_relations": "围绕内圈展开，与外圈红色边界相邻。",
+                                "blank_space_role": "none",
+                                "rich_visual_description": "中圈粉色花瓣，有拉扯感。",
+                            }
+                        ],
+                    },
+                    "outer": {
+                        "composition_description": "外圈红色很多，也有留白。",
+                        "visual_units": [
+                            {
+                                "id": "outer-001",
+                                "unit_name": "红色边界",
+                                "position": "外圈",
+                                "source_type": "user_painted",
+                                "color_description": "红色",
+                                "shape_description": "边界",
+                                "texture_and_density": "红色较明显。",
+                                "spatial_relations": "位于外圈，与白色留白相邻。",
+                                "blank_space_role": "none",
+                                "rich_visual_description": "外圈红色边界明显。",
+                            },
+                            {
+                                "id": "outer-002",
+                                "unit_name": "外圈留白",
+                                "position": "外圈",
+                                "source_type": "blank_space",
+                                "color_description": "白色留白",
+                                "shape_description": "边界间隔",
+                                "texture_and_density": "留白明显。",
+                                "spatial_relations": "与外圈红色边界相邻，并切分外圈视觉连续性。",
+                                "blank_space_role": "切分外圈红色边界。",
+                                "rich_visual_description": "外圈红色边界和留白同时存在。",
+                            },
+                        ],
+                    },
+                },
+            },
+            "element_sensing": {
+                "inner": {
+                    "element_candidates": [
+                        {
+                            "visual_unit_id": "inner-001",
+                            "element": "water",
+                            "basis": ["蓝色"],
+                            "confidence": "high",
+                            "notes": "按颜色判为水。",
+                        }
+                    ],
+                    "summary": "内圈有水元素候选。",
+                },
+                "middle": {
+                    "element_candidates": [
+                        {
+                            "visual_unit_id": "middle-001",
+                            "element": "fire",
+                            "basis": ["粉色"],
+                            "confidence": "medium",
+                            "notes": "粉色作为弱火候选。",
+                        }
+                    ],
+                    "summary": "中圈有火元素候选。",
+                },
+                "outer": {
+                    "element_candidates": [
+                        {
+                            "visual_unit_id": "outer-001",
+                            "element": "fire",
+                            "basis": ["红色"],
+                            "confidence": "high",
+                            "notes": "红色判为火。",
+                        },
+                        {
+                            "visual_unit_id": "outer-002",
+                            "element": "metal",
+                            "basis": ["白色留白"],
+                            "confidence": "high",
+                            "notes": "留白按金处理。",
+                        },
+                    ],
+                    "summary": "外圈有火和金元素候选。",
+                },
+            },
+            "intra_circle_relations": {
+                "inner": {
+                    "relations": [
+                        {
+                            "relation_id": "inner-rel-001",
+                            "relation_type": "insufficient_evidence",
+                            "involved_visual_unit_ids": ["inner-001"],
+                            "visible_basis": "内圈只有一个主要视觉单元。",
+                            "confidence": "high",
+                            "notes": "",
+                        }
+                    ],
+                    "summary": "内圈关系证据不足。",
+                },
+                "middle": {
+                    "relations": [
+                        {
+                            "relation_id": "middle-rel-001",
+                            "relation_type": "insufficient_evidence",
+                            "involved_visual_unit_ids": ["middle-001"],
+                            "visible_basis": "中圈只有粉色花瓣作为主要单元。",
+                            "confidence": "medium",
+                            "notes": "",
+                        }
+                    ],
+                    "summary": "中圈关系证据不足。",
+                },
+                "outer": {
+                    "relations": [
+                        {
+                            "relation_id": "outer-rel-001",
+                            "relation_type": "cut_by_metal",
+                            "involved_visual_unit_ids": ["outer-001", "outer-002"],
+                            "visible_basis": "白色留白切分外圈红色边界。",
+                            "confidence": "high",
+                            "notes": "",
+                        }
+                    ],
+                    "summary": "外圈有金切火候选。",
+                },
+            },
+            "cross_circle_flow": {
+                "flow_observations": [
                     {
-                        "id": "inner-001",
-                        "position": "内圈",
-                        "color": "蓝色",
-                        "shape": "圆形",
-                        "visible_evidence": "内圈蓝色圆形。",
+                        "flow_id": "flow-001",
+                        "flow_type": "outward_expanding",
+                        "involved_circles": ["inner", "middle", "outer"],
+                        "visual_basis": "内圈集中，中圈展开，外圈红色和留白形成外部边界。",
+                        "confidence": "high",
                     }
                 ],
+                "summary": "三圈由中心向外展开，外圈边界明显。",
             },
-            "middle": {
-                "summary": "中圈粉色花瓣，有拉扯感。",
-                "visual_units": [
-                    {
-                        "id": "middle-001",
-                        "position": "中圈",
-                        "color": "粉色",
-                        "shape": "花瓣",
-                        "visible_evidence": "中圈粉色花瓣。",
-                    }
-                ],
-            },
-            "outer": {
-                "summary": "外圈红色很多，也有留白。",
-                "visual_units": [
-                    {
-                        "id": "outer-001",
-                        "position": "外圈",
-                        "color": "红色",
-                        "shape": "边界",
-                        "visible_evidence": "外圈红色边界和留白。",
-                    }
-                ],
-            },
-        },
+            "evidence_links": [
+                {
+                    "claim_id": "inner-001",
+                    "claim_type": "element_sensing",
+                    "claim_text": "内圈蓝色圆形为水元素候选。",
+                    "visual_unit_ids": ["inner-001"],
+                    "circle_observation_refs": ["visual_observation.circle_visual_units.inner"],
+                    "evidence_text": "内圈蓝色圆形，整体收束。",
+                },
+                {
+                    "claim_id": "middle-001",
+                    "claim_type": "element_sensing",
+                    "claim_text": "中圈粉色花瓣为火元素候选。",
+                    "visual_unit_ids": ["middle-001"],
+                    "circle_observation_refs": ["visual_observation.circle_visual_units.middle"],
+                    "evidence_text": "中圈粉色花瓣，有拉扯感。",
+                },
+                {
+                    "claim_id": "outer-001",
+                    "claim_type": "element_sensing",
+                    "claim_text": "外圈红色边界为火元素候选。",
+                    "visual_unit_ids": ["outer-001"],
+                    "circle_observation_refs": ["visual_observation.circle_visual_units.outer"],
+                    "evidence_text": "外圈红色边界明显。",
+                },
+                {
+                    "claim_id": "outer-002",
+                    "claim_type": "element_sensing",
+                    "claim_text": "外圈留白为金元素候选。",
+                    "visual_unit_ids": ["outer-002"],
+                    "circle_observation_refs": ["visual_observation.circle_visual_units.outer"],
+                    "evidence_text": "外圈红色边界和留白同时存在。",
+                },
+                {
+                    "claim_id": "inner-rel-001",
+                    "claim_type": "intra_circle_relation",
+                    "claim_text": "内圈关系证据不足。",
+                    "visual_unit_ids": ["inner-001"],
+                    "circle_observation_refs": ["visual_observation.circle_visual_units.inner"],
+                    "evidence_text": "内圈只有一个主要视觉单元。",
+                },
+                {
+                    "claim_id": "middle-rel-001",
+                    "claim_type": "intra_circle_relation",
+                    "claim_text": "中圈关系证据不足。",
+                    "visual_unit_ids": ["middle-001"],
+                    "circle_observation_refs": ["visual_observation.circle_visual_units.middle"],
+                    "evidence_text": "中圈只有粉色花瓣作为主要单元。",
+                },
+                {
+                    "claim_id": "outer-rel-001",
+                    "claim_type": "intra_circle_relation",
+                    "claim_text": "外圈有金切火候选。",
+                    "visual_unit_ids": ["outer-001", "outer-002"],
+                    "circle_observation_refs": ["visual_observation.circle_visual_units.outer"],
+                    "evidence_text": "白色留白切分外圈红色边界。",
+                },
+                {
+                    "claim_id": "flow-001",
+                    "claim_type": "cross_circle_flow",
+                    "claim_text": "三圈由中心向外展开。",
+                    "visual_unit_ids": ["inner-001", "middle-001", "outer-001", "outer-002"],
+                    "circle_observation_refs": ["visual_observation.three_circle_observation"],
+                    "evidence_text": "内圈集中，中圈展开，外圈红色和留白形成外部边界。",
+                },
+            ],
+        }
     }
 
 

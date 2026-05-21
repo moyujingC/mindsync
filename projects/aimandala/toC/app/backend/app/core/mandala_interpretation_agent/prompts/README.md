@@ -1,7 +1,7 @@
 # Mandala Prompt Index
 
 ## Vision
-- `vision/observe.md`: stage-03 视觉识别输入，要求只输出视觉证据 JSON。
+- `vision/observe.md`: `foundation_image_reading` 基础层图像解读 prompt，一次输出画面观察、圈内五行识别、圈内关系、三圈能量流动和证据链接。
 
 ## Thesis
 - `thesis/system.md`: stage-10 主轴选择的 system prompt。

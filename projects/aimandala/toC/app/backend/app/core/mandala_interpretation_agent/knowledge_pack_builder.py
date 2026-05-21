@@ -43,9 +43,9 @@ class KnowledgePackBuilder:
                     "60-运行时知识包/20-aimandala-report-runtime-index.yaml",
                     max_chars=2600,
                 ),
-                "visual_recognition_schema": self._read_text(
-                    "50-结构化知识单元/15-visual-recognition-schema.yaml",
-                    max_chars=9000,
+                "foundation_image_reading_schema": self._read_text(
+                    "50-结构化知识单元/16-foundation-image-reading-schema.yaml",
+                    max_chars=16000,
                 ),
                 "mandala_signal_index": self._read_text(
                     "20-疗愈体系/20-流派层/10-曼陀罗/01-画面信号总目录.md",
@@ -92,9 +92,6 @@ class KnowledgePackBuilder:
             "forbidden_inputs": [
                 "full_markdown_truth_sources",
                 "full_theme_knowledge_documents",
-                "raw_legacy_container",
-                "old_report_skeleton",
-                "old_report_plan",
                 "private_env_or_api_keys",
             ],
         }
