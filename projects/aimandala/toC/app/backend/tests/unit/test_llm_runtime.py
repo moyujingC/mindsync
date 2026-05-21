@@ -86,6 +86,37 @@ def test_load_private_env_file_sets_missing_values_without_overriding_shell(
     assert os.environ["AIMANDALA_LLM_BASE_URL"] == "https://example.test"
 
 
+def test_load_private_env_file_defaults_to_backend_env_local(
+    tmp_path,
+    monkeypatch,
+):
+    runtime_file = tmp_path / "app" / "core" / "llm" / "runtime.py"
+    backend_env = tmp_path / ".env.local"
+    runtime_file.parent.mkdir(parents=True)
+    runtime_file.write_text("", encoding="utf-8")
+    backend_env.write_text(
+        "\n".join(
+            [
+                "AIMANDALA_LLM_API_KEY=local-key",
+                "AIMANDALA_LLM_MODEL=deepseek-v4-pro",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.delenv("AIMANDALA_ENV_FILE", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_MODEL", raising=False)
+    monkeypatch.setattr(
+        "app.core.llm.runtime.__file__",
+        str(runtime_file),
+    )
+
+    load_private_env_file()
+
+    assert os.environ["AIMANDALA_LLM_API_KEY"] == "local-key"
+    assert os.environ["AIMANDALA_LLM_MODEL"] == "deepseek-v4-pro"
+
+
 def test_structured_generation_retries_invalid_json_response():
     client = _ScriptedLLMClient(["not json", '{"ok": true}'])
 

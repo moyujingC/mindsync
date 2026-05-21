@@ -614,9 +614,11 @@ def create_llm_client_from_env() -> LLMClient:
 
 def load_private_env_file() -> None:
     env_file = os.getenv("AIMANDALA_ENV_FILE", "").strip()
-    if not env_file:
-        return
-    env_path = Path(env_file).expanduser()
+    env_path = (
+        Path(env_file).expanduser()
+        if env_file
+        else Path(__file__).resolve().parents[3] / ".env.local"
+    )
     if not env_path.exists():
         return
     for raw_line in env_path.read_text(encoding="utf-8").splitlines():
