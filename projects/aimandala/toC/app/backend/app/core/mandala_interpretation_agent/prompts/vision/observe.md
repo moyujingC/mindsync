@@ -6,7 +6,6 @@
 
 - `{{IMAGE_MANDALA}}`：用户原画作，是唯一画作内容来源。
 - `{{IMAGE_MARKED_CIRCLES}}`：三圈标记图，只用于确认内圈、中圈、外圈边界。
-- `{{CIRCLE_BOUNDARY_DATA}}`：用户确认或系统记录的三圈边界数据。
 
 三圈标记线、模板黑线、印刷线稿、拍照背景都不是用户画作元素。
 
@@ -14,13 +13,12 @@
 
 一次性输出 `foundation_image_reading` JSON。
 
-它包含五块：
+它包含四块：
 
 1. `visual_observation`：画面观察。
 2. `element_sensing`：圈内视觉单元五行识别。
 3. `intra_circle_relations`：圈内五行关系。
 4. `cross_circle_flow`：三圈能量流动。
-5. `evidence_links`：证据链接。
 
 ## 边界
 
@@ -28,9 +26,9 @@
 
 - 描述整体画面感、三圈内容和视觉单元。
 - 识别颜色、形状、留白、笔触、重复、方向和空间关系。
-- 按视觉单元识别五行候选。
-- 判断同一圈内部的相生、相克、切分、包围、隔开、无根、失衡候选。
-- 判断三圈之间的连续、断开、外散、内收、压住、包围、现实承接等能量流动。
+- 按最明显的视觉单元识别五行候选。
+- 只判断最明显、证据充分的同圈关系。
+- 只判断最明显、证据充分的三圈能量流动。
 
 禁止做：
 
@@ -130,8 +128,7 @@ JSON 顶层必须是：
     "visual_observation": {},
     "element_sensing": {},
     "intra_circle_relations": {},
-    "cross_circle_flow": {},
-    "evidence_links": []
+    "cross_circle_flow": {}
   }
 }
 ```
@@ -187,6 +184,8 @@ JSON 顶层必须是：
 - `element_candidates`
 - `summary`
 
+每个圈层最多输出 5 条 `element_candidates`。只输出最明显、最影响后续解读的五行候选；证据不足可以输出空数组。
+
 每个 `element_candidates` 必须包含：
 
 - `visual_unit_id`
@@ -204,6 +203,8 @@ JSON 顶层必须是：
 - `relations`
 - `summary`
 
+每个圈层最多输出 3 条 `relations`。只输出证据明确的关系；证据不足可以输出空数组，并在 `summary` 里说明。
+
 每条 `relations` 必须包含：
 
 - `relation_id`
@@ -220,6 +221,8 @@ JSON 顶层必须是：
 - `flow_observations`
 - `summary`
 
+最多输出 3 条 `flow_observations`。只输出三圈结构中最明显的连续、断开、外散、内收、包围或不一致；证据不足可以输出空数组，并在 `summary` 里说明。
+
 每条 `flow_observations` 必须包含：
 
 - `flow_id`
@@ -228,21 +231,9 @@ JSON 顶层必须是：
 - `visual_basis`
 - `confidence`：只能是 `high`、`medium`、`low`
 
-### evidence_links
-
-每条必须包含：
-
-- `claim_id`
-- `claim_type`：只能是 `element_sensing`、`intra_circle_relation`、`cross_circle_flow`
-- `claim_text`
-- `visual_unit_ids`
-- `circle_observation_refs`
-- `evidence_text`
-
 ## 质量要求
 
 - 每个圈层至少 1 个视觉单元。
-- 每个非空五行识别、圈内关系、三圈流动判断都必须能在 `evidence_links` 中找到证据链接。
-- 如果证据不足，使用 `insufficient_evidence`，不要强行判断。
+- 如果证据不足，相关数组可以留空，或使用 `insufficient_evidence`，不要强行判断。
 - 不要输出 `excluded_marks`、`uncertainties`、`metal_candidate`。
 - 不要输出 Markdown，不要输出解释段落，只输出 JSON。

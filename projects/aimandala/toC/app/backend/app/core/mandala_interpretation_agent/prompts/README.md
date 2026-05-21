@@ -1,7 +1,11 @@
 # Mandala Prompt Index
 
 ## Vision
-- `vision/observe.md`: `foundation_image_reading` 基础层图像解读 prompt，一次输出画面观察、圈内五行识别、圈内关系、三圈能量流动和证据链接。
+- `vision/observe_visual.md`: Qwen/DashScope 视觉模型使用，只输出画面整体观察、三圈观察和圈内视觉单元。
+- `vision/observe.md`: 历史完整基础层 prompt，保留为人工参考，不作为当前运行入口。
+
+## Foundation
+- `foundation/analyze_from_visual.md`: DeepSeek v4 文本模型使用，基于 `visual_observation` 生成圈内五行识别、圈内关系和三圈能量流动。
 
 ## Thesis
 - `thesis/system.md`: stage-10 主轴选择的 system prompt。

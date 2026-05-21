@@ -34,6 +34,9 @@ class StubMandalaLLMClient:
 
     def generate_structured(self, **kwargs):
         self.structured_calls.append(kwargs)
+        return self.foundation_payload()
+
+    def foundation_payload(self):
         return {
             "foundation_image_reading": {
                 "visual_observation": {
@@ -284,7 +287,18 @@ class StubMandalaLLMClient:
 
     def generate_text(self, **kwargs):
         self.text_calls.append(kwargs)
-        if len(self.text_calls) == 1:
+        user_prompt = str(kwargs.get("user_prompt") or "")
+        if "生成圈内五行识别、圈内关系和三圈能量流动" in user_prompt:
+            foundation = self.foundation_payload()["foundation_image_reading"]
+            return json.dumps(
+                {
+                    "element_sensing": foundation["element_sensing"],
+                    "intra_circle_relations": foundation["intra_circle_relations"],
+                    "cross_circle_flow": foundation["cross_circle_flow"],
+                },
+                ensure_ascii=False,
+            )
+        if "请从已有证据中选择报告切入点" in user_prompt:
             return json.dumps(
                 {
                     "core_thesis": "核心主轴是先稳住，再推进。",
@@ -371,6 +385,35 @@ def test_foundation_reading_passes_marked_image_as_second_vision_input(tmp_path)
     assert vision_call["image_paths"] == [str(image_path), str(marked_image_path)]
     assert "三圈标记图" in vision_call["prompt"]
     assert "内圈、中圈、外圈边界" in vision_call["prompt"]
+    assert "CIRCLE_BOUNDARY_DATA" not in vision_call["prompt"]
+
+
+def test_foundation_reading_generates_evidence_links_when_model_omits_them(tmp_path):
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+    llm_client = StubMandalaLLMClient()
+    original_generate_structured = llm_client.generate_structured
+
+    def generate_structured_without_links(**kwargs):
+        payload = original_generate_structured(**kwargs)
+        del payload["foundation_image_reading"]["evidence_links"]
+        return payload
+
+    llm_client.generate_structured = generate_structured_without_links
+    agent_input = MandalaAgentInput(
+        report_mode="lite",
+        image=MandalaImageInput(local_path=str(image_path)),
+        user_context=MandalaUserContext(theme="wealth", theme_label="财富议题"),
+        circle_boundaries={},
+    )
+
+    result = MandalaInterpretationAgent(llm_client=llm_client).run_foundation_image_reading(
+        agent_input=agent_input,
+    )
+
+    links = result["foundation_image_reading"]["evidence_links"]
+    assert links
+    assert any(link["claim_type"] == "element_sensing" for link in links)
 
 
 def test_mandala_agent_produces_complete_path_artifacts(tmp_path):

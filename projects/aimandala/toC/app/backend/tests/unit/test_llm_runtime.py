@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import os
 
+import pytest
+
 from app.core.llm.runtime import (
     DEFAULT_DEEPSEEK_V4_BASE_URL,
     DEFAULT_DEEPSEEK_V4_MODEL,
@@ -86,6 +88,7 @@ def test_load_private_env_file_sets_missing_values_without_overriding_shell(
     assert os.environ["AIMANDALA_LLM_BASE_URL"] == "https://example.test"
 
 
+@pytest.mark.requires_default_env_file
 def test_load_private_env_file_defaults_to_backend_env_local(
     tmp_path,
     monkeypatch,
@@ -196,6 +199,22 @@ def test_build_messages_supports_multiple_images(tmp_path):
     assert image_items[1]["image_url"]["url"].startswith("data:image/jpeg;base64,")
 
 
+def test_vision_image_structured_generation_uses_prompt_without_schema_wrapper(tmp_path):
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"fake")
+    client = _ScriptedLLMClient(['{"ok": true}'])
+
+    result = client.generate_structured(
+        task="vision",
+        prompt="vision prompt only",
+        schema={"type": "object", "required": ["ok"]},
+        image_path=str(image_path),
+    )
+
+    assert result == {"ok": True}
+    assert client.last_user_prompt == "vision prompt only"
+
+
 class _ScriptedLLMClient(OpenAICompatibleLLMClient):
     def __init__(
         self,
@@ -222,11 +241,13 @@ class _ScriptedLLMClient(OpenAICompatibleLLMClient):
         )
         self.responses = list(responses)
         self.request_count = 0
+        self.last_user_prompt = ""
 
     def _extract_text_from_response(self, raw_payload: str):
         return raw_payload
 
     def _build_messages(self, *, system_prompt: str, user_prompt: str, image_paths):
+        self.last_user_prompt = user_prompt
         return [{"role": "user", "content": user_prompt}]
 
     def _encode_image_as_data_url(self, image_path: str) -> str:

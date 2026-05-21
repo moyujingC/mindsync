@@ -122,15 +122,63 @@ class MandalaInterpretationAgent:
         *,
         agent_input: MandalaAgentInput,
     ) -> dict[str, Any]:
-        payload = self.llm_client.generate_structured(
+        visual_payload = self.llm_client.generate_structured(
             task="vision",
-            prompt=self._vision_prompt(agent_input=agent_input),
-            schema=self._vision_schema(),
+            prompt=self._visual_observation_prompt(),
+            schema=self._visual_observation_schema(),
             image_paths=self._vision_image_paths(agent_input),
         )
-        if not isinstance(payload, dict):
-            raise RuntimeError("vision_model_failed: empty or invalid foundation_image_reading payload")
-        return self._normalize_foundation_image_reading(payload)
+        if not isinstance(visual_payload, dict):
+            error_detail = {
+                "last_error_detail": getattr(self.llm_client, "last_error_detail", {}),
+                "last_attempt_trace": getattr(self.llm_client, "last_attempt_trace", []),
+            }
+            raise RuntimeError(
+                "vision_model_failed: empty or invalid visual_observation payload "
+                f"{json.dumps(error_detail, ensure_ascii=False)}"
+            )
+        visual_observation = self._extract_visual_observation(visual_payload)
+        vision_trace = list(getattr(self.llm_client, "last_attempt_trace", []))
+        foundation_analysis = self._run_foundation_analysis_from_visual(
+            visual_observation=visual_observation,
+        )
+        analysis_trace = list(getattr(self.llm_client, "last_attempt_trace", []))
+        return self._normalize_foundation_image_reading(
+            {
+                "foundation_image_reading": {
+                    "visual_observation": visual_observation,
+                    **foundation_analysis,
+                }
+            },
+            model_trace={
+                "vision": vision_trace,
+                "foundation_analysis": analysis_trace,
+            },
+        )
+
+    def _run_foundation_analysis_from_visual(
+        self,
+        *,
+        visual_observation: dict[str, Any],
+    ) -> dict[str, Any]:
+        text = self.llm_client.generate_text(
+            task="chat",
+            system_prompt=load_prompt_template("thesis/system.md"),
+            user_prompt=render_prompt_template(
+                "foundation/analyze_from_visual.md",
+                visual_observation_json=json.dumps(
+                    {"visual_observation": visual_observation},
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+            ),
+        )
+        payload = self._parse_json_text(text) or {}
+        return {
+            "element_sensing": payload.get("element_sensing"),
+            "intra_circle_relations": payload.get("intra_circle_relations"),
+            "cross_circle_flow": payload.get("cross_circle_flow"),
+        }
 
     def _build_theme_route_stage(
         self,
@@ -306,7 +354,12 @@ class MandalaInterpretationAgent:
     def _has_visible_five_element_analysis(self, text: str) -> bool:
         return "五行" in text and any(label in text for label in ["木", "火", "土", "金", "水"])
 
-    def _normalize_foundation_image_reading(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _normalize_foundation_image_reading(
+        self,
+        payload: dict[str, Any],
+        *,
+        model_trace: Any | None = None,
+    ) -> dict[str, Any]:
         raw = payload.get("foundation_image_reading")
         foundation = raw if isinstance(raw, dict) else payload
         normalized = {
@@ -328,10 +381,15 @@ class MandalaInterpretationAgent:
                     foundation.get("cross_circle_flow")
                 ),
                 "evidence_links": self._normalize_evidence_links(
-                    foundation.get("evidence_links")
+                    foundation.get("evidence_links"),
+                    foundation=foundation,
                 ),
             },
-            "model_trace": getattr(self.llm_client, "last_attempt_trace", []),
+            "model_trace": (
+                model_trace
+                if model_trace is not None
+                else getattr(self.llm_client, "last_attempt_trace", [])
+            ),
         }
         return normalized
 
@@ -344,6 +402,14 @@ class MandalaInterpretationAgent:
                 payload.get("circle_visual_units")
             ),
         }
+
+    def _extract_visual_observation(self, payload: dict[str, Any]) -> dict[str, Any]:
+        raw = payload.get("visual_observation")
+        if not isinstance(raw, dict):
+            foundation = payload.get("foundation_image_reading")
+            if isinstance(foundation, dict):
+                raw = foundation.get("visual_observation")
+        return self._normalize_visual_observation(raw)
 
     def _normalize_circle_visual_units(self, value: Any) -> dict[str, dict[str, Any]]:
         raw_circles = value if isinstance(value, dict) else {}
@@ -410,10 +476,33 @@ class MandalaInterpretationAgent:
             circle_payload = circle if isinstance(circle, dict) else {}
             items = circle_payload.get(default_list_key)
             normalized[circle_key] = {
-                default_list_key: items if isinstance(items, list) else [],
+                default_list_key: self._normalize_layer_items(
+                    items,
+                    default_list_key=default_list_key,
+                ),
                 "summary": str(circle_payload.get("summary") or "").strip(),
             }
         return normalized
+
+    def _normalize_layer_items(
+        self,
+        items: Any,
+        *,
+        default_list_key: str,
+    ) -> list[Any]:
+        if not isinstance(items, list):
+            return []
+        if default_list_key != "element_candidates":
+            return items
+        normalized_items: list[Any] = []
+        for item in items:
+            if not isinstance(item, dict):
+                normalized_items.append(item)
+                continue
+            normalized = dict(item)
+            normalized["basis"] = self._string_list(normalized.get("basis"))
+            normalized_items.append(normalized)
+        return normalized_items
 
     def _normalize_cross_circle_flow(self, value: Any) -> dict[str, Any]:
         payload = value if isinstance(value, dict) else {}
@@ -423,9 +512,14 @@ class MandalaInterpretationAgent:
             "summary": str(payload.get("summary") or "").strip(),
         }
 
-    def _normalize_evidence_links(self, value: Any) -> list[dict[str, Any]]:
+    def _normalize_evidence_links(
+        self,
+        value: Any,
+        *,
+        foundation: dict[str, Any],
+    ) -> list[dict[str, Any]]:
         if not isinstance(value, list):
-            return []
+            return self._build_evidence_links_from_foundation(foundation)
         links = []
         for item in value:
             if not isinstance(item, dict):
@@ -442,7 +536,107 @@ class MandalaInterpretationAgent:
                     "evidence_text": str(item.get("evidence_text") or "").strip(),
                 }
             )
-        return links
+        return links or self._build_evidence_links_from_foundation(foundation)
+
+    def _build_evidence_links_from_foundation(
+        self,
+        foundation: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        links: list[dict[str, Any]] = []
+        visual_units_by_id = self._visual_units_by_id(foundation)
+        element_sensing = foundation.get("element_sensing") if isinstance(foundation, dict) else {}
+        element_circles = element_sensing.items() if isinstance(element_sensing, dict) else []
+        for circle_key, circle in element_circles:
+            if not isinstance(circle, dict):
+                continue
+            candidates = circle.get("element_candidates")
+            if not isinstance(candidates, list):
+                continue
+            for item in candidates:
+                if not isinstance(item, dict):
+                    continue
+                unit_id = str(item.get("visual_unit_id") or "").strip()
+                basis = "；".join(self._string_list(item.get("basis")))
+                unit = visual_units_by_id.get(unit_id, {})
+                links.append(
+                    {
+                        "claim_id": unit_id,
+                        "claim_type": "element_sensing",
+                        "claim_text": f"{unit_id} 五行候选为 {item.get('element', '')}。".strip(),
+                        "visual_unit_ids": [unit_id] if unit_id else [],
+                        "circle_observation_refs": [f"visual_observation.circle_visual_units.{circle_key}"],
+                        "evidence_text": basis or str(unit.get("rich_visual_description") or "").strip(),
+                    }
+                )
+        relations = foundation.get("intra_circle_relations") if isinstance(foundation, dict) else {}
+        relation_circles = relations.items() if isinstance(relations, dict) else []
+        for circle_key, circle in relation_circles:
+            if not isinstance(circle, dict):
+                continue
+            circle_relations = circle.get("relations")
+            if not isinstance(circle_relations, list):
+                continue
+            for item in circle_relations:
+                if not isinstance(item, dict):
+                    continue
+                relation_id = str(item.get("relation_id") or "").strip()
+                links.append(
+                    {
+                        "claim_id": relation_id,
+                        "claim_type": "intra_circle_relation",
+                        "claim_text": str(item.get("notes") or item.get("relation_type") or "").strip(),
+                        "visual_unit_ids": self._string_list(item.get("involved_visual_unit_ids")),
+                        "circle_observation_refs": [f"visual_observation.circle_visual_units.{circle_key}"],
+                        "evidence_text": str(item.get("visible_basis") or "").strip(),
+                    }
+                )
+        flow = foundation.get("cross_circle_flow") if isinstance(foundation, dict) else {}
+        flow_observations = (
+            flow.get("flow_observations")
+            if isinstance(flow, dict)
+            else []
+        )
+        if not isinstance(flow_observations, list):
+            flow_observations = []
+        for item in flow_observations:
+            if not isinstance(item, dict):
+                continue
+            flow_id = str(item.get("flow_id") or "").strip()
+            links.append(
+                {
+                    "claim_id": flow_id,
+                    "claim_type": "cross_circle_flow",
+                    "claim_text": str(item.get("flow_type") or "").strip(),
+                    "visual_unit_ids": [],
+                    "circle_observation_refs": ["visual_observation.three_circle_observation"],
+                    "evidence_text": str(item.get("visual_basis") or "").strip(),
+                }
+            )
+        return [link for link in links if link.get("claim_id") or link.get("evidence_text")]
+
+    def _visual_units_by_id(self, foundation: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        units_by_id: dict[str, dict[str, Any]] = {}
+        visual_observation = foundation.get("visual_observation") if isinstance(foundation, dict) else {}
+        circles = (
+            visual_observation.get("circle_visual_units")
+            if isinstance(visual_observation, dict)
+            else {}
+        )
+        if not isinstance(circles, dict):
+            return units_by_id
+        for circle in circles.values():
+            if not isinstance(circle, dict):
+                continue
+            units = circle.get("visual_units")
+            if not isinstance(units, list):
+                continue
+            for unit in units:
+                if not isinstance(unit, dict):
+                    continue
+                unit_id = str(unit.get("id") or "").strip()
+                if unit_id:
+                    units_by_id[unit_id] = unit
+        return units_by_id
 
     def _object_or_empty(self, value: Any) -> dict[str, Any]:
         return value if isinstance(value, dict) else {}
@@ -498,15 +692,8 @@ class MandalaInterpretationAgent:
             },
         }
 
-    def _vision_prompt(
-        self,
-        *,
-        agent_input: MandalaAgentInput,
-    ) -> str:
-        return load_prompt_template("vision/observe.md").replace(
-            "{{CIRCLE_BOUNDARY_DATA}}",
-            json.dumps(agent_input.circle_boundaries, ensure_ascii=False, indent=2),
-        )
+    def _visual_observation_prompt(self) -> str:
+        return load_prompt_template("vision/observe_visual.md")
 
     def _vision_image_paths(self, agent_input: MandalaAgentInput) -> list[str]:
         paths = [agent_input.image.local_path]
@@ -633,7 +820,7 @@ class MandalaInterpretationAgent:
             "output_strength": module.get("output_strength"),
         }
 
-    def _vision_schema(self) -> dict[str, Any]:
+    def _visual_observation_schema(self) -> dict[str, Any]:
         visual_unit_schema = {
             "type": "object",
             "required": [
@@ -673,6 +860,36 @@ class MandalaInterpretationAgent:
                 },
             },
         }
+        return {
+            "type": "object",
+            "required": ["visual_observation"],
+            "properties": {
+                "visual_observation": {
+                    "type": "object",
+                    "required": [
+                        "overall_observation",
+                        "three_circle_observation",
+                        "circle_visual_units",
+                    ],
+                    "properties": {
+                        "overall_observation": {"type": "object"},
+                        "three_circle_observation": {"type": "object"},
+                        "circle_visual_units": {
+                            "type": "object",
+                            "required": ["inner", "middle", "outer"],
+                            "properties": {
+                                "inner": circle_visual_units_schema,
+                                "middle": circle_visual_units_schema,
+                                "outer": circle_visual_units_schema,
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+    def _vision_schema(self) -> dict[str, Any]:
+        visual_observation_schema = self._visual_observation_schema()["properties"]["visual_observation"]
         element_candidate_schema = {
             "type": "object",
             "required": ["visual_unit_id", "element", "basis", "confidence", "notes"],
@@ -779,30 +996,9 @@ class MandalaInterpretationAgent:
                         "element_sensing",
                         "intra_circle_relations",
                         "cross_circle_flow",
-                        "evidence_links",
                     ],
                     "properties": {
-                        "visual_observation": {
-                            "type": "object",
-                            "required": [
-                                "overall_observation",
-                                "three_circle_observation",
-                                "circle_visual_units",
-                            ],
-                            "properties": {
-                                "overall_observation": {"type": "object"},
-                                "three_circle_observation": {"type": "object"},
-                                "circle_visual_units": {
-                                    "type": "object",
-                                    "required": ["inner", "middle", "outer"],
-                                    "properties": {
-                                        "inner": circle_visual_units_schema,
-                                        "middle": circle_visual_units_schema,
-                                        "outer": circle_visual_units_schema,
-                                    },
-                                },
-                            },
-                        },
+                        "visual_observation": visual_observation_schema,
                         "element_sensing": {
                             "type": "object",
                             "required": ["inner", "middle", "outer"],

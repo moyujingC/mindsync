@@ -1,0 +1,450 @@
+{
+  "stage": "foundation-image-reading",
+  "status": "complete",
+  "foundation_image_reading": {
+    "visual_observation": {
+      "overall_observation": {
+        "first_impression": "画面呈现出高度对称的几何曼陀罗结构，以中心蓝色放射状图案为核心，向外层层展开，色彩柔和，以蓝、粉、紫为主调，整体视觉稳定且富有秩序感。",
+        "main_visual_content": "由中心向外依次为蓝色花瓣状核心、浅蓝色三角形与圆形组合、粉色菱形图案、紫色矩形与小点组合，形成多层同心环状结构。",
+        "visual_atmosphere": "宁静、平衡、具有冥想感，色彩过渡柔和，线条清晰，留白分布均匀，营造出一种和谐而有序的空间氛围。",
+        "visual_weight_and_rhythm": "视觉重心集中在中心蓝色区域，向外逐层递减重量，节奏由密集向疏朗过渡，各圈层之间通过形状和颜色变化形成规律性的重复节奏。"
+      },
+      "three_circle_observation": {
+        "inner": "内圈为蓝色核心区域，包含一个中心圆和辐射状花瓣结构，周围环绕一圈浅蓝色三角形与圆形组合，构成紧密且具层次的视觉焦点。",
+        "middle": "中圈由一圈粉色菱形图案组成，每个菱形内部嵌有三角形，排列均匀，形成稳定的几何环带，与内圈的蓝色形成色彩对比。",
+        "outer": "外圈由紫色矩形和小粉色点交替排列构成，矩形呈波浪状边缘，整体形成厚重的边界感，同时外围留白区域明显，增强画作的完整性。",
+        "cross_circle_visual_connection": "内圈与中圈通过浅蓝色三角形与圆形组合自然衔接，中圈与外圈通过粉色菱形与紫色矩形之间的留白过渡连接，整体通过颜色渐变和形状交替实现圈层间的视觉连贯性。"
+      },
+      "circle_visual_units": {
+        "inner": {
+          "composition_description": "内圈以中心蓝色圆形为核心，向外延伸出12片扇形花瓣，花瓣边缘呈波浪状，外围环绕一圈浅蓝色三角形，每个三角形内含一个小圆形。",
+          "visual_units": [
+            {
+              "id": "inner_01",
+              "unit_name": "中心蓝色花瓣结构",
+              "position": "位于画面正中心，占据内圈核心位置",
+              "source_type": "user_painted",
+              "color_description": "天蓝色，从中心向边缘渐变加深，带有轻微阴影效果",
+              "shape_description": "由12个扇形花瓣组成，中心为小圆，花瓣边缘呈波浪状",
+              "texture_and_density": "笔触细腻，颜色填充均匀，密度较高",
+              "spatial_relations": "被一圈浅蓝色三角形包围，与中圈形成清晰界限",
+              "blank_space_role": "无",
+              "rich_visual_description": "该单元是整个画面的视觉焦点，其放射状结构引导视线向中心汇聚，波浪边缘增加了柔和感，整体呈现一种动态静止的美感。"
+            },
+            {
+              "id": "inner_02",
+              "unit_name": "浅蓝色三角形与圆形组合",
+              "position": "围绕中心花瓣结构，均匀分布在内圈外缘",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色，略带透明感，与中心花瓣形成同色系过渡",
+              "shape_description": "等边三角形，每个三角形内含一个小圆形，共12个，呈环形排列",
+              "texture_and_density": "笔触较轻，颜色填充均匀，密度适中",
+              "spatial_relations": "内接于中心花瓣结构，外接中圈粉色菱形，形成过渡层",
+              "blank_space_role": "无",
+              "rich_visual_description": "这一组合在视觉上起到承上启下的作用，三角形尖端指向中心，圆形则与花瓣呼应，增强了整体的几何秩序感。"
+            }
+          ]
+        },
+        "middle": {
+          "composition_description": "中圈由一圈粉色菱形图案构成，每个菱形内部嵌有三角形，菱形之间通过留白分隔，形成规则的环状结构。",
+          "visual_units": [
+            {
+              "id": "middle_01",
+              "unit_name": "粉色菱形与内部三角形组合",
+              "position": "均匀分布在中圈，共12个，环绕内圈外缘",
+              "source_type": "user_painted",
+              "color_description": "淡粉色，边缘略深，内部三角形为浅粉色",
+              "shape_description": "菱形，每个菱形内嵌一个倒置三角形，形成‘V’字形结构",
+              "texture_and_density": "笔触均匀，颜色填充完整，密度中等",
+              "spatial_relations": "内接浅蓝色三角形组合，外接紫色矩形带，中间有窄留白分隔",
+              "blank_space_role": "无",
+              "rich_visual_description": "该单元通过重复排列形成强烈的几何韵律，菱形与三角形的嵌套关系增强了视觉复杂性，粉色色调带来柔和感。"
+            },
+            {
+              "id": "middle_02",
+              "unit_name": "中圈留白区域",
+              "position": "位于粉色菱形之间，呈细长弧形，环绕整个中圈",
+              "source_type": "blank_space",
+              "color_description": "白色，与纸张底色一致",
+              "shape_description": "连续的弧形间隙，宽度均匀，共12段",
+              "texture_and_density": "无纹理，完全空白",
+              "spatial_relations": "分隔相邻的粉色菱形，形成清晰的边界",
+              "blank_space_role": "切分、隔开",
+              "rich_visual_description": "这些留白不仅分隔了菱形图案，还增强了整体的节奏感，使每个菱形单元独立而不拥挤，提升了视觉清晰度。"
+            }
+          ]
+        },
+        "outer": {
+          "composition_description": "外圈由紫色矩形与小粉色点交替排列构成，矩形呈波浪状边缘，整体形成厚重的边界层，外围留白区域明显。",
+          "visual_units": [
+            {
+              "id": "outer_01",
+              "unit_name": "紫色波浪矩形与粉色小点组合",
+              "position": "环绕整个曼陀罗最外层，共12组，呈环形排列",
+              "source_type": "user_painted",
+              "color_description": "深紫色矩形，边缘略带渐变；小点为淡粉色",
+              "shape_description": "矩形呈波浪状边缘，每个矩形两侧各有一个小半圆点，形成‘M’形轮廓",
+              "texture_and_density": "笔触较重，颜色填充饱满，密度高",
+              "spatial_relations": "内接中圈粉色菱形，外接画作边缘，与中圈留白相接",
+              "blank_space_role": "无",
+              "rich_visual_description": "该单元作为外层边界，通过波浪形边缘增加动感，紫色与粉色的对比强化了视觉层次，整体具有封闭性和保护性。"
+            },
+            {
+              "id": "outer_02",
+              "unit_name": "外圈留白区域",
+              "position": "位于紫色矩形组合与画作边缘之间，呈宽幅环形",
+              "source_type": "blank_space",
+              "color_description": "白色，与纸张底色一致",
+              "shape_description": "连续的环形空白带，宽度均匀，包裹整个曼陀罗",
+              "texture_and_density": "无纹理，完全空白",
+              "spatial_relations": "包围整个曼陀罗图案，形成外部边界",
+              "blank_space_role": "包围、承托",
+              "rich_visual_description": "该留白区域将曼陀罗主体与画纸背景分隔开来，起到承托和突出主体的作用，增强画面的整体性和完整性。"
+            }
+          ]
+        }
+      }
+    },
+    "element_sensing": {
+      "inner": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "inner_01",
+            "element": "water",
+            "basis": [
+              "天蓝色核心，中心汇聚，花瓣放射状，整体具有流淌和向下汇聚的势能，颜色为蓝色系，符合水主润下、收藏的特质。"
+            ],
+            "confidence": "high",
+            "notes": "蓝色与波浪状边缘是水行典型特征，放射状结构暗示藏中带发，核心汇聚力强。"
+          },
+          {
+            "visual_unit_id": "inner_02",
+            "element": "metal",
+            "basis": [
+              "浅蓝色三角形，形状尖锐，内含小圆形，呈环形规则排列，结构精准，边缘清晰，留白关系与中心界限分明，表现出切割、收敛与规则性。"
+            ],
+            "confidence": "medium",
+            "notes": "形状的锐利、规则的几何排列与切割感指向金。浅蓝色带透明感可视为水意，但以形为主判断偏向金。"
+          }
+        ],
+        "summary": ""
+      },
+      "middle": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "middle_01",
+            "element": "fire",
+            "basis": [
+              "淡粉色菱形，内部嵌有倒置三角形，呈“V”字形放射状，整体排列向外扩散，颜色属暖色调，形态具有放射性，表现出火的炎上和发散特质。"
+            ],
+            "confidence": "medium",
+            "notes": "粉色需谨慎，但淡粉色偏暖，结合菱形与三角形向外的放射状排列，可视为柔火。"
+          },
+          {
+            "visual_unit_id": "middle_02",
+            "element": "metal",
+            "basis": [
+              "白色留白，窄弧形间隙，均匀切分菱形图案，功能明确为分隔和界定边界，符合金的切割、收敛特性。"
+            ],
+            "confidence": "high",
+            "notes": "规则留白一律按金处理，此处切分作用明显。"
+          }
+        ],
+        "summary": ""
+      },
+      "outer": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "outer_01",
+            "element": "water",
+            "basis": [
+              "深紫色，矩形呈波浪状边缘，具有流动感和柔和的边界，色调偏冷，形体有向下、包容的趋势，紫色在此深度下可视为水的变体，具有润下和包容特质。"
+            ],
+            "confidence": "medium",
+            "notes": "紫色暧昧，但深紫冷调，波形边缘赋予流动感，倾向于水。需要结合位置（外层边界）理解其涵义。"
+          },
+          {
+            "visual_unit_id": "outer_01",
+            "element": "earth",
+            "basis": [
+              "厚重的矩形排列，密度高，色彩饱满，形成最外层的包围和承托结构，具有稳定、承载和边界厚实感，体现出土的敦厚、包容和边界属性。"
+            ],
+            "confidence": "medium",
+            "notes": "外形结构方正厚重，包裹性强，亦有可能为土。深紫色可视为水火既济或土中藏水，这里作为备选。"
+          },
+          {
+            "visual_unit_id": "outer_02",
+            "element": "metal",
+            "basis": [
+              "宽幅白色留白环形带，明确包裹并衬托整个主体，具有封闭、围合、界定边界的作用，符合金的收敛、围合与裁割特性。"
+            ],
+            "confidence": "high",
+            "notes": "大面积留白一律按金处理，此处包围功能突出。"
+          }
+        ],
+        "summary": ""
+      }
+    },
+    "intra_circle_relations": {
+      "inner": {
+        "relations": [
+          {
+            "relation_id": "rel_inner_01",
+            "relation_type": "surrounded_by",
+            "involved_visual_unit_ids": [
+              "inner_01",
+              "inner_02"
+            ],
+            "visible_basis": "浅蓝色三角形与圆形组合（inner_02）紧凑地环绕在中心蓝色花瓣结构（inner_01）外围，形成包围之势。",
+            "confidence": "high",
+            "notes": "内圈的核心被外圈单元紧密环绕，构成包围关系。"
+          }
+        ],
+        "summary": ""
+      },
+      "middle": {
+        "relations": [
+          {
+            "relation_id": "rel_mid_01",
+            "relation_type": "separated_by_blank_space",
+            "involved_visual_unit_ids": [
+              "middle_01",
+              "middle_02"
+            ],
+            "visible_basis": "中圈留白区域（middle_02）均匀地将相邻的粉色菱形（middle_01）分隔开来，形成清晰的单元间距。",
+            "confidence": "high",
+            "notes": "留白作为切分手段，将连续的图案打断成独立个体。"
+          }
+        ],
+        "summary": ""
+      },
+      "outer": {
+        "relations": [
+          {
+            "relation_id": "rel_outer_01",
+            "relation_type": "surrounded_by",
+            "involved_visual_unit_ids": [
+              "outer_01",
+              "outer_02"
+            ],
+            "visible_basis": "外圈留白区域（outer_02）以宽幅环形包裹住所有紫色矩形组合（outer_01）以及整个曼陀罗主体图案，形成最外层的包围。",
+            "confidence": "high",
+            "notes": "留白作为外围边界，对内进行了明确的包裹和承托。"
+          }
+        ],
+        "summary": ""
+      }
+    },
+    "cross_circle_flow": {
+      "flow_observations": [
+        {
+          "flow_id": "flow_01",
+          "flow_type": "outward_expanding",
+          "involved_circles": [
+            "inner",
+            "middle"
+          ],
+          "visual_basis": "内圈的核心水行单元呈放射状花瓣结构，其动态向外延伸，并通过浅蓝色三角形组合（inner_02）的尖端指向外部，直接与中圈的粉色菱形（middle_01）的“V”字形放射状结构呼应，形成一股明显的自中心向外的视觉推力。",
+          "confidence": "high",
+          "notes": "从核心的花瓣放射，到三角形的指向，再到菱形的放射排列，能量层层传递向外扩张。"
+        },
+        {
+          "flow_id": "flow_02",
+          "flow_type": "outer_layer_containing",
+          "involved_circles": [
+            "outer"
+          ],
+          "visual_basis": "外圈的深紫色矩形组合（outer_01）密度高、笔触重，形成一圈厚重的边界，且其波浪形边缘向内微收；外部更有一圈宽阔的白色留白（outer_02）再次包裹，双层结构共同对内部所有圈层构成了强有力的围合和保护。",
+          "confidence": "high",
+          "notes": "外圈的双重边界（重色图案+留白）使其包容和封闭的势能非常显著，将向外扩张的能量约束在内部。"
+        },
+        {
+          "flow_id": "flow_03",
+          "flow_type": "continuous",
+          "involved_circles": [
+            "inner",
+            "middle",
+            "outer"
+          ],
+          "visual_basis": "三圈之间通过颜色渐变和形状交替实现连贯过渡：内圈蓝→中圈粉→外圈紫，色彩过渡柔和；内圈三角形与圆形→中圈菱形与三角形→外圈矩形与半圆点，形状存在拓扑关联，无生硬断裂。",
+          "confidence": "medium",
+          "notes": "尽管外圈有强烈的包覆感，但视觉上并未切断与中内圈的联系，反而形成一种既有扩张又有回守的动态平衡。"
+        }
+      ],
+      "summary": ""
+    },
+    "evidence_links": [
+      {
+        "claim_id": "inner_01",
+        "claim_type": "element_sensing",
+        "claim_text": "inner_01 五行候选为 water。",
+        "visual_unit_ids": [
+          "inner_01"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "天蓝色核心，中心汇聚，花瓣放射状，整体具有流淌和向下汇聚的势能，颜色为蓝色系，符合水主润下、收藏的特质。"
+      },
+      {
+        "claim_id": "inner_02",
+        "claim_type": "element_sensing",
+        "claim_text": "inner_02 五行候选为 metal。",
+        "visual_unit_ids": [
+          "inner_02"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "浅蓝色三角形，形状尖锐，内含小圆形，呈环形规则排列，结构精准，边缘清晰，留白关系与中心界限分明，表现出切割、收敛与规则性。"
+      },
+      {
+        "claim_id": "middle_01",
+        "claim_type": "element_sensing",
+        "claim_text": "middle_01 五行候选为 fire。",
+        "visual_unit_ids": [
+          "middle_01"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.middle"
+        ],
+        "evidence_text": "淡粉色菱形，内部嵌有倒置三角形，呈“V”字形放射状，整体排列向外扩散，颜色属暖色调，形态具有放射性，表现出火的炎上和发散特质。"
+      },
+      {
+        "claim_id": "middle_02",
+        "claim_type": "element_sensing",
+        "claim_text": "middle_02 五行候选为 metal。",
+        "visual_unit_ids": [
+          "middle_02"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.middle"
+        ],
+        "evidence_text": "白色留白，窄弧形间隙，均匀切分菱形图案，功能明确为分隔和界定边界，符合金的切割、收敛特性。"
+      },
+      {
+        "claim_id": "outer_01",
+        "claim_type": "element_sensing",
+        "claim_text": "outer_01 五行候选为 water。",
+        "visual_unit_ids": [
+          "outer_01"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "深紫色，矩形呈波浪状边缘，具有流动感和柔和的边界，色调偏冷，形体有向下、包容的趋势，紫色在此深度下可视为水的变体，具有润下和包容特质。"
+      },
+      {
+        "claim_id": "outer_01",
+        "claim_type": "element_sensing",
+        "claim_text": "outer_01 五行候选为 earth。",
+        "visual_unit_ids": [
+          "outer_01"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "厚重的矩形排列，密度高，色彩饱满，形成最外层的包围和承托结构，具有稳定、承载和边界厚实感，体现出土的敦厚、包容和边界属性。"
+      },
+      {
+        "claim_id": "outer_02",
+        "claim_type": "element_sensing",
+        "claim_text": "outer_02 五行候选为 metal。",
+        "visual_unit_ids": [
+          "outer_02"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "宽幅白色留白环形带，明确包裹并衬托整个主体，具有封闭、围合、界定边界的作用，符合金的收敛、围合与裁割特性。"
+      },
+      {
+        "claim_id": "rel_inner_01",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "内圈的核心被外圈单元紧密环绕，构成包围关系。",
+        "visual_unit_ids": [
+          "inner_01",
+          "inner_02"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "浅蓝色三角形与圆形组合（inner_02）紧凑地环绕在中心蓝色花瓣结构（inner_01）外围，形成包围之势。"
+      },
+      {
+        "claim_id": "rel_mid_01",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "留白作为切分手段，将连续的图案打断成独立个体。",
+        "visual_unit_ids": [
+          "middle_01",
+          "middle_02"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.middle"
+        ],
+        "evidence_text": "中圈留白区域（middle_02）均匀地将相邻的粉色菱形（middle_01）分隔开来，形成清晰的单元间距。"
+      },
+      {
+        "claim_id": "rel_outer_01",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "留白作为外围边界，对内进行了明确的包裹和承托。",
+        "visual_unit_ids": [
+          "outer_01",
+          "outer_02"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "外圈留白区域（outer_02）以宽幅环形包裹住所有紫色矩形组合（outer_01）以及整个曼陀罗主体图案，形成最外层的包围。"
+      },
+      {
+        "claim_id": "flow_01",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "outward_expanding",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "内圈的核心水行单元呈放射状花瓣结构，其动态向外延伸，并通过浅蓝色三角形组合（inner_02）的尖端指向外部，直接与中圈的粉色菱形（middle_01）的“V”字形放射状结构呼应，形成一股明显的自中心向外的视觉推力。"
+      },
+      {
+        "claim_id": "flow_02",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "outer_layer_containing",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "外圈的深紫色矩形组合（outer_01）密度高、笔触重，形成一圈厚重的边界，且其波浪形边缘向内微收；外部更有一圈宽阔的白色留白（outer_02）再次包裹，双层结构共同对内部所有圈层构成了强有力的围合和保护。"
+      },
+      {
+        "claim_id": "flow_03",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "continuous",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "三圈之间通过颜色渐变和形状交替实现连贯过渡：内圈蓝→中圈粉→外圈紫，色彩过渡柔和；内圈三角形与圆形→中圈菱形与三角形→外圈矩形与半圆点，形状存在拓扑关联，无生硬断裂。"
+      }
+    ]
+  },
+  "model_trace": {
+    "vision": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ],
+    "foundation_analysis": [
+      {
+        "model": "deepseek-v4-pro",
+        "base_url": "https://api.deepseek.com",
+        "endpoint_url": "https://api.deepseek.com/chat/completions",
+        "result": "success"
+      }
+    ]
+  }
+}

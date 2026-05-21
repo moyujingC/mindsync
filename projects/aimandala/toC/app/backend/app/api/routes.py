@@ -108,6 +108,17 @@ class SeededMandalaLLMClient:
         system_prompt: str,
         user_prompt: str,
     ) -> str:
+        if "生成圈内五行识别、圈内关系和三圈能量流动" in user_prompt:
+            foundation = self.visual_observations.get("foundation_image_reading")
+            if isinstance(foundation, dict):
+                return json.dumps(
+                    {
+                        "element_sensing": foundation.get("element_sensing", {}),
+                        "intra_circle_relations": foundation.get("intra_circle_relations", {}),
+                        "cross_circle_flow": foundation.get("cross_circle_flow", {}),
+                    },
+                    ensure_ascii=False,
+                )
         if self.delegate is not None:
             generated = self.delegate.generate_text(
                 task=task,
@@ -116,7 +127,7 @@ class SeededMandalaLLMClient:
             )
             if generated:
                 return generated
-        if "请从已有证据中选择报告主轴" in user_prompt:
+        if "请从已有证据中选择报告切入点" in user_prompt:
             return json.dumps(
                 {
                     "core_thesis": "画面显示财富议题里需要先稳住承载，再向外表达价值。",

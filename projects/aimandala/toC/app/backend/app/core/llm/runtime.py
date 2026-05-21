@@ -133,17 +133,20 @@ class OpenAICompatibleLLMClient:
         self.last_attempt_trace = []
         task_config = self.config.resolve_task_config(task)
         fallback_task_config = self.config.resolve_fallback_task_config(task)
-        schema_json = json.dumps(schema, ensure_ascii=False, indent=2)
-        system_prompt = render_prompt_template("json/object_system.md")
-        user_prompt = render_prompt_template(
-            "json/schema_user.md",
-            prompt=prompt.strip(),
-            schema_json=schema_json,
-        )
         normalized_image_paths = self._normalize_image_paths(
             image_path=image_path,
             image_paths=image_paths,
         )
+        system_prompt = render_prompt_template("json/object_system.md")
+        if task.strip().lower() == "vision" and normalized_image_paths:
+            user_prompt = prompt.strip()
+        else:
+            schema_json = json.dumps(schema, ensure_ascii=False, indent=2)
+            user_prompt = render_prompt_template(
+                "json/schema_user.md",
+                prompt=prompt.strip(),
+                schema_json=schema_json,
+            )
         messages = self._build_messages(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
@@ -613,6 +616,10 @@ def create_llm_client_from_env() -> LLMClient:
 
 
 def load_private_env_file() -> None:
+    if os.getenv("AIMANDALA_DISABLE_DEFAULT_ENV_FILE", "").strip() == "1":
+        env_file = os.getenv("AIMANDALA_ENV_FILE", "").strip()
+        if not env_file:
+            return
     env_file = os.getenv("AIMANDALA_ENV_FILE", "").strip()
     env_path = (
         Path(env_file).expanduser()
