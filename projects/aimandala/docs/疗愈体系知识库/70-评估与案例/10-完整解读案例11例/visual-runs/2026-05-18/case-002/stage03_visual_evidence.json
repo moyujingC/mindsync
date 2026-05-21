@@ -1,0 +1,247 @@
+{
+  "stage": "stage-03-visual-evidence",
+  "status": "complete",
+  "global_visual_summary": "这幅曼陀罗画作以中心的粉红色八瓣花为核心，周围环绕着八个黄色莲花图案，每个莲花被红色边框包围，整体结构对称且色彩鲜明。外圈由绿色叶片构成，形成完整的圆形边界。",
+  "circles": {
+    "inner": {
+      "summary": "内圈包含一个粉红色的八瓣花，花瓣边缘有黄色线条勾勒，整体位于画面中心位置。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "center",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "粉红色渐变",
+          "color_confidence": "high",
+          "shape": "八瓣花",
+          "size_tendency": "large",
+          "adjacency": [
+            "yellow_lines"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心位置有一个明显的粉红色八瓣花，花瓣边缘有黄色线条勾勒。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "内圈包含一个粉红色的八瓣花，花瓣边缘有黄色线条勾勒，整体位于画面中心位置。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "center",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "粉红色渐变",
+            "color_confidence": "high",
+            "shape": "八瓣花",
+            "size_tendency": "large",
+            "adjacency": [
+              "yellow_lines"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中心位置有一个明显的粉红色八瓣花，花瓣边缘有黄色线条勾勒。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "middle": {
+      "summary": "中圈由八个黄色莲花图案组成，每个莲花被红色边框包围，莲花之间由绿色叶状图案连接，形成环形结构。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "莲花",
+          "size_tendency": "medium",
+          "adjacency": [
+            "red_borders",
+            "green_leaves"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈有八个黄色莲花图案，每个莲花被红色边框包围，莲花之间由绿色叶状图案连接。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-002",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "红色",
+          "color_confidence": "high",
+          "shape": "波浪形边框",
+          "size_tendency": "medium",
+          "adjacency": [
+            "yellow_lotuses",
+            "green_leaves"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈的每个莲花都被红色波浪形边框包围。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-003",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "绿色",
+          "color_confidence": "high",
+          "shape": "叶状图案",
+          "size_tendency": "small",
+          "adjacency": [
+            "yellow_lotuses",
+            "red_borders"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈的莲花之间由绿色叶状图案连接。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "中圈由八个黄色莲花图案组成，每个莲花被红色边框包围，莲花之间由绿色叶状图案连接，形成环形结构。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "莲花",
+            "size_tendency": "medium",
+            "adjacency": [
+              "red_borders",
+              "green_leaves"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈有八个黄色莲花图案，每个莲花被红色边框包围，莲花之间由绿色叶状图案连接。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-002",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "红色",
+            "color_confidence": "high",
+            "shape": "波浪形边框",
+            "size_tendency": "medium",
+            "adjacency": [
+              "yellow_lotuses",
+              "green_leaves"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈的每个莲花都被红色波浪形边框包围。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-003",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "绿色",
+            "color_confidence": "high",
+            "shape": "叶状图案",
+            "size_tendency": "small",
+            "adjacency": [
+              "yellow_lotuses",
+              "red_borders"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈的莲花之间由绿色叶状图案连接。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "outer": {
+      "summary": "外圈由绿色叶片构成，叶片呈放射状排列，围绕整个曼陀罗画作，形成完整的圆形边界。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "绿色",
+          "color_confidence": "high",
+          "shape": "叶片",
+          "size_tendency": "large",
+          "adjacency": [
+            "middle_circle"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈由绿色叶片构成，叶片呈放射状排列，围绕整个曼陀罗画作。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "外圈由绿色叶片构成，叶片呈放射状排列，围绕整个曼陀罗画作，形成完整的圆形边界。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "绿色",
+            "color_confidence": "high",
+            "shape": "叶片",
+            "size_tendency": "large",
+            "adjacency": [
+              "middle_circle"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "外圈由绿色叶片构成，叶片呈放射状排列，围绕整个曼陀罗画作。",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  "evidence_refs": [
+    "中心有一个粉红色的八瓣花，花瓣边缘有黄色线条勾勒。",
+    "中圈有八个黄色莲花图案，每个莲花被红色波浪形边框包围。",
+    "中圈的莲花之间由绿色叶状图案连接。",
+    "外圈由绿色叶片构成，叶片呈放射状排列，围绕整个曼陀罗画作。"
+  ],
+  "evidence_summary": [
+    "中心有一个粉红色的八瓣花，花瓣边缘有黄色线条勾勒。",
+    "中圈有八个黄色莲花图案，每个莲花被红色波浪形边框包围。",
+    "中圈的莲花之间由绿色叶状图案连接。",
+    "外圈由绿色叶片构成，叶片呈放射状排列，围绕整个曼陀罗画作。"
+  ],
+  "excluded_marks": [
+    {
+      "id": "template_line_001",
+      "source_type": "template_line",
+      "reason": "模板自带黑色线稿不作为画作元素，除非用户明显主动填涂或加粗。",
+      "visible_evidence": "画作中的黑色轮廓线为模板自带线稿，未被用户填涂或加粗。"
+    }
+  ],
+  "uncertainties": [],
+  "model_trace": [
+    {
+      "model": "qwen-vl-max-latest",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "result": "success"
+    }
+  ]
+}

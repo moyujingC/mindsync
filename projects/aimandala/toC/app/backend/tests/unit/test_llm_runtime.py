@@ -137,6 +137,34 @@ def test_structured_generation_uses_fallback_after_invalid_json_retries():
     assert client.last_attempt_trace[1]["result"] == "success"
 
 
+def test_build_messages_supports_multiple_images(tmp_path):
+    first = tmp_path / "first.png"
+    second = tmp_path / "second.jpg"
+    first.write_bytes(b"first")
+    second.write_bytes(b"second")
+    client = OpenAICompatibleLLMClient(
+        LLMClientConfig(
+            default=LLMTaskConfig(
+                base_url="https://example.test",
+                api_key="test-key",
+                model="test-model",
+            )
+        )
+    )
+
+    messages = client._build_messages(  # noqa: SLF001 - verifies outbound vision payload shape.
+        system_prompt="system",
+        user_prompt="user",
+        image_paths=[str(first), str(second)],
+    )
+
+    content = messages[1]["content"]
+    image_items = [item for item in content if item["type"] == "image_url"]
+    assert len(image_items) == 2
+    assert image_items[0]["image_url"]["url"].startswith("data:image/png;base64,")
+    assert image_items[1]["image_url"]["url"].startswith("data:image/jpeg;base64,")
+
+
 class _ScriptedLLMClient(OpenAICompatibleLLMClient):
     def __init__(
         self,
@@ -167,7 +195,7 @@ class _ScriptedLLMClient(OpenAICompatibleLLMClient):
     def _extract_text_from_response(self, raw_payload: str):
         return raw_payload
 
-    def _build_messages(self, *, system_prompt: str, user_prompt: str, image_path: str | None):
+    def _build_messages(self, *, system_prompt: str, user_prompt: str, image_paths):
         return [{"role": "user", "content": user_prompt}]
 
     def _encode_image_as_data_url(self, image_path: str) -> str:

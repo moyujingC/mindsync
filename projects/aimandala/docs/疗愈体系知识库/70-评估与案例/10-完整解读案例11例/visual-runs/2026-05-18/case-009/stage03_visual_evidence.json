@@ -1,0 +1,164 @@
+{
+  "stage": "stage-03-visual-evidence",
+  "status": "complete",
+  "global_visual_summary": "整张曼陀罗画作以紫色为主色调，呈现出对称的花卉和卷曲图案，中心区域有复杂的几何形状，周围环绕着花瓣和装饰性线条，整体布局均匀且充满细节。",
+  "circles": {
+    "inner": {
+      "summary": "内圈包含一个由多个小三角形和心形组成的复杂几何图案，颜色为深紫色，位于画作中心。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "center",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "深紫色",
+          "color_confidence": "high",
+          "shape": "几何图案",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-001"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心区域有明显的深紫色几何图案，由多个小三角形和心形组成。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "内圈包含一个由多个小三角形和心形组成的复杂几何图案，颜色为深紫色，位于画作中心。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "center",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "深紫色",
+            "color_confidence": "high",
+            "shape": "几何图案",
+            "size_tendency": "small",
+            "adjacency": [
+              "middle-001"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中心区域有明显的深紫色几何图案，由多个小三角形和心形组成。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "middle": {
+      "summary": "中圈由八个对称的花瓣状图案组成，每个花瓣内部有小花和装饰性线条，颜色为浅紫色，与内圈相连。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "浅紫色",
+          "color_confidence": "high",
+          "shape": "花瓣状",
+          "size_tendency": "medium",
+          "adjacency": [
+            "inner-001",
+            "outer-001"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈有八个对称的花瓣状图案，每个花瓣内部有小花和装饰性线条，颜色为浅紫色。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "中圈由八个对称的花瓣状图案组成，每个花瓣内部有小花和装饰性线条，颜色为浅紫色，与内圈相连。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "浅紫色",
+            "color_confidence": "high",
+            "shape": "花瓣状",
+            "size_tendency": "medium",
+            "adjacency": [
+              "inner-001",
+              "outer-001"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈有八个对称的花瓣状图案，每个花瓣内部有小花和装饰性线条，颜色为浅紫色。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "outer": {
+      "summary": "外圈由八个大型卷曲图案组成，每个图案边缘有珠状装饰，颜色为浅紫色，与中圈相连，形成完整的圆形结构。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "浅紫色",
+          "color_confidence": "high",
+          "shape": "卷曲图案",
+          "size_tendency": "large",
+          "adjacency": [
+            "middle-001"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈有八个大型卷曲图案，每个图案边缘有珠状装饰，颜色为浅紫色，与中圈相连。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "外圈由八个大型卷曲图案组成，每个图案边缘有珠状装饰，颜色为浅紫色，与中圈相连，形成完整的圆形结构。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "浅紫色",
+            "color_confidence": "high",
+            "shape": "卷曲图案",
+            "size_tendency": "large",
+            "adjacency": [
+              "middle-001"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "外圈有八个大型卷曲图案，每个图案边缘有珠状装饰，颜色为浅紫色，与中圈相连。",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  "evidence_refs": [
+    "内圈中心有一个深紫色的几何图案，由多个小三角形和心形组成。",
+    "中圈有八个对称的花瓣状图案，每个花瓣内部有小花和装饰性线条，颜色为浅紫色。",
+    "外圈有八个大型卷曲图案，每个图案边缘有珠状装饰，颜色为浅紫色。"
+  ],
+  "evidence_summary": [
+    "内圈中心有一个深紫色的几何图案，由多个小三角形和心形组成。",
+    "中圈有八个对称的花瓣状图案，每个花瓣内部有小花和装饰性线条，颜色为浅紫色。",
+    "外圈有八个大型卷曲图案，每个图案边缘有珠状装饰，颜色为浅紫色。"
+  ],
+  "excluded_marks": [],
+  "uncertainties": [],
+  "model_trace": [
+    {
+      "model": "qwen-vl-max-latest",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "result": "success"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "status": "env_check",
+  "ready": true,
+  "planned_run_count": 1,
+  "missing_required": [],
+  "text_model_ready": true,
+  "text_model_matches_app": true,
+  "primary_vision_ready": true,
+  "fallback_vision_ready": false,
+  "vision_ready": true,
+  "primary_vision_matches_app": true,
+  "fallback_vision_matches_app": false,
+  "app_vision_ready": true,
+  "notes": [
+    "Stage-03 visual review must use real models.",
+    "Text route must match DeepSeek v4.",
+    "Vision route must match Qwen/DashScope.",
+    "Secret values are never printed."
+  ]
+}

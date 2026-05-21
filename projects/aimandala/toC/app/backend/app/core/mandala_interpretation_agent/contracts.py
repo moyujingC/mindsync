@@ -57,6 +57,7 @@ EXECUTION_BLOCKS = [
 @dataclass(frozen=True)
 class MandalaImageInput:
     local_path: str
+    marked_local_path: str = ""
     storage_backend: str = ""
     storage_key: str = ""
 

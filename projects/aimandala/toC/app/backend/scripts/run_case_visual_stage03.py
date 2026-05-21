@@ -264,7 +264,10 @@ def parse_complete_case(case_path: Path, *, assets_dir: Path) -> CompleteCaseVis
 def build_agent_input(case: CompleteCaseVisualInput) -> MandalaAgentInput:
     return MandalaAgentInput(
         report_mode="lite",
-        image=MandalaImageInput(local_path=str(case.image_path)),
+        image=MandalaImageInput(
+            local_path=str(case.image_path),
+            marked_local_path=str(case.marked_image_path),
+        ),
         user_context=MandalaUserContext(
             theme="wealth",
             theme_label="财富议题",

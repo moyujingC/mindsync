@@ -73,17 +73,23 @@ def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_pat
     env_file = tmp_path / "aimandala.local.env"
     env_file.write_text(
         "\n".join(
-            [
-                "AIMANDALA_LLM_API_KEY=file-key",
-                "AIMANDALA_LLM_VISION_FALLBACK_API_KEY=file-vision-key",
-                "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL=https://vision.example.test",
-                "AIMANDALA_LLM_VISION_FALLBACK_MODEL=vision-model",
+                [
+                    "AIMANDALA_LLM_API_KEY=file-key",
+                    "AIMANDALA_LLM_BASE_URL=https://api.deepseek.com",
+                    "AIMANDALA_LLM_MODEL=deepseek-v4-pro",
+                    "AIMANDALA_LLM_VISION_FALLBACK_API_KEY=file-vision-key",
+                    "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1",
+                    "AIMANDALA_LLM_VISION_FALLBACK_MODEL=qwen-vl-max-latest",
             ]
         ),
         encoding="utf-8",
     )
     monkeypatch.setenv("AIMANDALA_ENV_FILE", str(env_file))
     monkeypatch.delenv("AIMANDALA_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_CHAT_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_CHAT_MODEL", raising=False)
     monkeypatch.delenv("AIMANDALA_LLM_VISION_API_KEY", raising=False)
     monkeypatch.delenv("AIMANDALA_LLM_VISION_BASE_URL", raising=False)
     monkeypatch.delenv("AIMANDALA_LLM_VISION_MODEL", raising=False)
@@ -100,6 +106,9 @@ def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_pat
     assert payload["missing_api_required"] == ["AIMANDALA_REDEEM_CODES"]
     assert payload["planned_run_count"] == 1
     assert payload["vision_ready"] is True
+    assert payload["app_vision_ready"] is True
+    assert payload["text_model_ready"] is True
+    assert payload["text_model_matches_app"] is True
 
 
 def test_build_env_check_payload_requires_any_vision_route(monkeypatch):
@@ -120,6 +129,48 @@ def test_build_env_check_payload_requires_any_vision_route(monkeypatch):
     assert "AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*" in payload["missing_required"]
 
 
+def test_build_env_check_payload_requires_qwen_dashscope_vision_route(monkeypatch):
+    runner = _load_runner_module()
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "text-key")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "vision-key")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_BASE_URL", "https://vision.example.test")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "other-vision-model")
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "CODE-LITE:lite")
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_VISION_FALLBACK_MODEL", raising=False)
+
+    payload = runner.build_env_check_payload(planned_runs=[])
+
+    assert payload["ready"] is False
+    assert payload["vision_ready"] is True
+    assert payload["app_vision_ready"] is False
+    assert "Qwen/DashScope vision route matching app runtime" in payload["missing_required"]
+
+
+def test_build_env_check_payload_requires_deepseek_v4_text_route(monkeypatch):
+    runner = _load_runner_module()
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "text-key")
+    monkeypatch.setenv("AIMANDALA_LLM_BASE_URL", "https://example.test")
+    monkeypatch.setenv("AIMANDALA_LLM_MODEL", "other-text-model")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "vision-key")
+    monkeypatch.setenv(
+        "AIMANDALA_LLM_VISION_BASE_URL",
+        "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    )
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "qwen-vl-max-latest")
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "CODE-LITE:lite")
+    monkeypatch.delenv("AIMANDALA_LLM_CHAT_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_CHAT_MODEL", raising=False)
+
+    payload = runner.build_env_check_payload(planned_runs=[])
+
+    assert payload["ready"] is False
+    assert payload["text_model_ready"] is True
+    assert payload["text_model_matches_app"] is False
+    assert "DeepSeek v4 text route matching app runtime" in payload["missing_required"]
+
+
 def test_regression_env_example_exists():
     runner = _load_runner_module()
     env_example = Path(runner.BACKEND_ROOT) / ".env.regression.example"
@@ -132,11 +183,13 @@ def test_env_file_argument_overrides_environment(monkeypatch, tmp_path):
     env_file = tmp_path / "override.env"
     env_file.write_text(
         "\n".join(
-            [
-                "AIMANDALA_LLM_API_KEY=override-key",
-                "AIMANDALA_LLM_VISION_API_KEY=override-vision-key",
-                "AIMANDALA_LLM_VISION_BASE_URL=https://vision.override.test",
-                "AIMANDALA_LLM_VISION_MODEL=override-model",
+                [
+                    "AIMANDALA_LLM_API_KEY=override-key",
+                    "AIMANDALA_LLM_BASE_URL=https://api.deepseek.com",
+                    "AIMANDALA_LLM_MODEL=deepseek-v4-pro",
+                    "AIMANDALA_LLM_VISION_API_KEY=override-vision-key",
+                    "AIMANDALA_LLM_VISION_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1",
+                    "AIMANDALA_LLM_VISION_MODEL=qwen-vl-max-latest",
                 "AIMANDALA_REDEEM_CODES=CODE-LITE:lite",
             ]
         ),
@@ -144,6 +197,10 @@ def test_env_file_argument_overrides_environment(monkeypatch, tmp_path):
     )
     monkeypatch.setenv("AIMANDALA_ENV_FILE", "ignored.env")
     monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "shell-key")
+    monkeypatch.delenv("AIMANDALA_LLM_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_CHAT_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_CHAT_MODEL", raising=False)
     monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "shell-vision-key")
     monkeypatch.setenv("AIMANDALA_LLM_VISION_BASE_URL", "https://shell.example.test")
     monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "shell-model")
@@ -153,3 +210,5 @@ def test_env_file_argument_overrides_environment(monkeypatch, tmp_path):
     payload = runner.build_env_check_payload(planned_runs=[])
 
     assert payload["ready"] is True
+    assert payload["app_vision_ready"] is True
+    assert payload["text_model_matches_app"] is True

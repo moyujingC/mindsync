@@ -74,6 +74,7 @@ class LLMClient(Protocol):
         prompt: str,
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
     ) -> Optional[Dict[str, Any]]:
         ...
 
@@ -97,6 +98,7 @@ class NoopLLMClient:
         prompt: str,
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
     ) -> Optional[Dict[str, Any]]:
         return None
 
@@ -125,6 +127,7 @@ class OpenAICompatibleLLMClient:
         prompt: str,
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
     ) -> Optional[Dict[str, Any]]:
         self.last_error_detail = {}
         self.last_attempt_trace = []
@@ -137,12 +140,16 @@ class OpenAICompatibleLLMClient:
             prompt=prompt.strip(),
             schema_json=schema_json,
         )
+        normalized_image_paths = self._normalize_image_paths(
+            image_path=image_path,
+            image_paths=image_paths,
+        )
         messages = self._build_messages(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
-            image_path=image_path,
+            image_paths=normalized_image_paths,
         )
-        is_vision_image_task = task.strip().lower() == "vision" and bool(image_path)
+        is_vision_image_task = task.strip().lower() == "vision" and bool(normalized_image_paths)
         if is_vision_image_task:
             raw = self._request_chat_completion(
                 task_config=task_config,
@@ -197,7 +204,7 @@ class OpenAICompatibleLLMClient:
         messages = self._build_messages(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
-            image_path=None,
+            image_paths=[],
         )
         raw = self._request_chat_completion(
             task_config=task_config,
@@ -215,7 +222,7 @@ class OpenAICompatibleLLMClient:
         *,
         system_prompt: str,
         user_prompt: str,
-        image_path: Optional[str],
+        image_paths: Sequence[str],
     ) -> list[Dict[str, Any]]:
         messages: list[Dict[str, Any]] = [
             {
@@ -223,24 +230,39 @@ class OpenAICompatibleLLMClient:
                 "content": system_prompt,
             }
         ]
-        if image_path:
+        if image_paths:
+            content: list[Dict[str, Any]] = [{"type": "text", "text": user_prompt}]
+            for path in image_paths:
+                content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": self._encode_image_as_data_url(path),
+                        },
+                    }
+                )
             messages.append(
                 {
                     "role": "user",
-                    "content": [
-                        {"type": "text", "text": user_prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": self._encode_image_as_data_url(image_path),
-                            },
-                        },
-                    ],
+                    "content": content,
                 }
             )
         else:
             messages.append({"role": "user", "content": user_prompt})
         return messages
+
+    def _normalize_image_paths(
+        self,
+        *,
+        image_path: Optional[str],
+        image_paths: Optional[Sequence[str]],
+    ) -> list[str]:
+        normalized: list[str] = []
+        if image_paths:
+            normalized.extend(str(path) for path in image_paths if str(path).strip())
+        elif image_path:
+            normalized.append(image_path)
+        return normalized
 
     def _encode_image_as_data_url(self, image_path: str) -> str:
         path = Path(image_path)

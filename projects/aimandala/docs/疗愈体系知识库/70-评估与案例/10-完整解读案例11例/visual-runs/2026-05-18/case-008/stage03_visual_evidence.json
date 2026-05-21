@@ -1,0 +1,280 @@
+{
+  "stage": "stage-03-visual-evidence",
+  "status": "complete",
+  "global_visual_summary": "这幅曼陀罗画作以绿色和棕色为主色调，中心为一个黄色圆形，周围环绕着绿色的螺旋状图案。内圈有四个棕色的叶片状结构，中圈由多个绿色圆形组成，外圈则由棕色边框和绿色叶子构成。整体构图对称，色彩分布均匀。",
+  "circles": {
+    "inner": {
+      "summary": "内圈中心是一个黄色圆形，周围有绿色的螺旋状图案，四个棕色的叶片状结构向外延伸。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "center",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "yellow",
+          "color_confidence": "high",
+          "shape": "circle",
+          "size_tendency": "small",
+          "adjacency": [
+            "green spiral"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心区域有一个明显的黄色圆形。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-002",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "green",
+          "color_confidence": "high",
+          "shape": "spiral",
+          "size_tendency": "medium",
+          "adjacency": [
+            "yellow circle",
+            "brown leaves"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "黄色圆形周围有绿色的螺旋状图案。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-003",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "brown",
+          "color_confidence": "high",
+          "shape": "leaf",
+          "size_tendency": "large",
+          "adjacency": [
+            "green circular pattern"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "四个棕色的叶片状结构从中心向外延伸。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "内圈中心是一个黄色圆形，周围有绿色的螺旋状图案，四个棕色的叶片状结构向外延伸。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "center",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "yellow",
+            "color_confidence": "high",
+            "shape": "circle",
+            "size_tendency": "small",
+            "adjacency": [
+              "green spiral"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中心区域有一个明显的黄色圆形。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-002",
+            "position": "inner",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "green",
+            "color_confidence": "high",
+            "shape": "spiral",
+            "size_tendency": "medium",
+            "adjacency": [
+              "yellow circle",
+              "brown leaves"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "黄色圆形周围有绿色的螺旋状图案。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-003",
+            "position": "inner",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "brown",
+            "color_confidence": "high",
+            "shape": "leaf",
+            "size_tendency": "large",
+            "adjacency": [
+              "green circular pattern"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "四个棕色的叶片状结构从中心向外延伸。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "middle": {
+      "summary": "中圈由多个绿色圆形组成，围绕着内圈的棕色叶片状结构。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "green",
+          "color_confidence": "high",
+          "shape": "circle",
+          "size_tendency": "medium",
+          "adjacency": [
+            "brown leaves",
+            "outer ring"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈由多个绿色圆形组成，围绕着内圈的棕色叶片状结构。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "中圈由多个绿色圆形组成，围绕着内圈的棕色叶片状结构。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "green",
+            "color_confidence": "high",
+            "shape": "circle",
+            "size_tendency": "medium",
+            "adjacency": [
+              "brown leaves",
+              "outer ring"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈由多个绿色圆形组成，围绕着内圈的棕色叶片状结构。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "outer": {
+      "summary": "外圈由棕色边框和绿色叶子构成，形成一个对称的图案。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "brown",
+          "color_confidence": "high",
+          "shape": "ring",
+          "size_tendency": "large",
+          "adjacency": [
+            "green leaves"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈有一个明显的棕色边框。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-002",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "green",
+          "color_confidence": "high",
+          "shape": "leaf",
+          "size_tendency": "medium",
+          "adjacency": [
+            "brown ring"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈有多个绿色叶子，分布在棕色边框周围。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "外圈由棕色边框和绿色叶子构成，形成一个对称的图案。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "brown",
+            "color_confidence": "high",
+            "shape": "ring",
+            "size_tendency": "large",
+            "adjacency": [
+              "green leaves"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "外圈有一个明显的棕色边框。",
+            "confidence": "high"
+          },
+          {
+            "id": "outer-002",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "green",
+            "color_confidence": "high",
+            "shape": "leaf",
+            "size_tendency": "medium",
+            "adjacency": [
+              "brown ring"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "外圈有多个绿色叶子，分布在棕色边框周围。",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  "evidence_refs": [
+    "中心区域有一个黄色圆形，周围有绿色的螺旋状图案。",
+    "内圈有四个棕色的叶片状结构，向外延伸。",
+    "中圈由多个绿色圆形组成，围绕着内圈的棕色叶片状结构。",
+    "外圈由棕色边框和绿色叶子构成，形成一个对称的图案。"
+  ],
+  "evidence_summary": [
+    "中心区域有一个黄色圆形，周围有绿色的螺旋状图案。",
+    "内圈有四个棕色的叶片状结构，向外延伸。",
+    "中圈由多个绿色圆形组成，围绕着内圈的棕色叶片状结构。",
+    "外圈由棕色边框和绿色叶子构成，形成一个对称的图案。"
+  ],
+  "excluded_marks": [
+    {
+      "id": "template_line_001",
+      "source_type": "template_line",
+      "reason": "模板自带黑色线稿不作为画作元素，除非用户明显主动填涂或加粗。",
+      "visible_evidence": "画作中的黑色线条是模板自带的，未被用户填涂或加粗。"
+    }
+  ],
+  "uncertainties": [],
+  "model_trace": [
+    {
+      "model": "qwen-vl-max-latest",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "result": "success"
+    }
+  ]
+}

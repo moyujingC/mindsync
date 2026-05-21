@@ -1,0 +1,356 @@
+{
+  "stage": "stage-03-visual-evidence",
+  "status": "complete",
+  "global_visual_summary": "这幅曼陀罗画作以中心的黄色星形图案为核心，周围环绕着蓝色果实和绿色叶片，整体呈现出对称且有序的结构。外圈主要由绿色叶子构成，形成一圈连续的叶环。画作中未见明显的模板线或三圈标记线被填涂。",
+  "circles": {
+    "inner": {
+      "summary": "内圈以黄色星形为中心，周围有四个蓝色果实和四个黄色三角形，整体呈放射状排列。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "center",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "星形",
+          "size_tendency": "large",
+          "adjacency": [
+            "inner-002",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心位置有一个清晰的黄色星形图案，由多个尖角组成。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-002",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "圆形",
+          "size_tendency": "small",
+          "adjacency": [
+            "inner-001",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "在星形的四个方向上各有一个蓝色圆形果实。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-003",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "三角形",
+          "size_tendency": "medium",
+          "adjacency": [
+            "inner-001",
+            "inner-002"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "在星形与蓝色果实之间有四个黄色三角形。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "内圈以黄色星形为中心，周围有四个蓝色果实和四个黄色三角形，整体呈放射状排列。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "center",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "星形",
+            "size_tendency": "large",
+            "adjacency": [
+              "inner-002",
+              "inner-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中心位置有一个清晰的黄色星形图案，由多个尖角组成。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-002",
+            "position": "inner",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "蓝色",
+            "color_confidence": "high",
+            "shape": "圆形",
+            "size_tendency": "small",
+            "adjacency": [
+              "inner-001",
+              "inner-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "在星形的四个方向上各有一个蓝色圆形果实。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-003",
+            "position": "inner",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "三角形",
+            "size_tendency": "medium",
+            "adjacency": [
+              "inner-001",
+              "inner-002"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "在星形与蓝色果实之间有四个黄色三角形。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "middle": {
+      "summary": "中圈由蓝色果实和绿色叶片组成，蓝色果实位于四个方向，绿色叶片围绕其分布。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "圆形",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-002",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈有四个蓝色圆形果实，分别位于上下左右四个方向。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-002",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "绿色",
+          "color_confidence": "high",
+          "shape": "叶片",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "middle-001",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "绿色叶片围绕蓝色果实分布，形成连续的叶环。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-003",
+          "position": "middle",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "留白间隔",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-001",
+            "middle-002"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "蓝色果实与绿色叶片之间存在白色留白区域，作为间隔。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "中圈由蓝色果实和绿色叶片组成，蓝色果实位于四个方向，绿色叶片围绕其分布。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "蓝色",
+            "color_confidence": "high",
+            "shape": "圆形",
+            "size_tendency": "small",
+            "adjacency": [
+              "middle-002",
+              "middle-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈有四个蓝色圆形果实，分别位于上下左右四个方向。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-002",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "绿色",
+            "color_confidence": "high",
+            "shape": "叶片",
+            "size_tendency": "scattered",
+            "adjacency": [
+              "middle-001",
+              "middle-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "绿色叶片围绕蓝色果实分布，形成连续的叶环。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-003",
+            "position": "middle",
+            "source_type": "blank_space",
+            "include_in_interpretation": true,
+            "color": "白色留白",
+            "color_confidence": "high",
+            "shape": "留白间隔",
+            "size_tendency": "small",
+            "adjacency": [
+              "middle-001",
+              "middle-002"
+            ],
+            "is_blank_space": true,
+            "metal_candidate": true,
+            "visible_evidence": "蓝色果实与绿色叶片之间存在白色留白区域，作为间隔。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "outer": {
+      "summary": "外圈由连续的绿色叶片构成，形成一个完整的叶环，覆盖整个外圈区域。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "绿色",
+          "color_confidence": "high",
+          "shape": "叶片",
+          "size_tendency": "scattered",
+          "adjacency": [
+            "outer-002"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈由大量绿色叶片组成，形成连续的叶环。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-002",
+          "position": "outer",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色留白",
+          "color_confidence": "high",
+          "shape": "留白间隔",
+          "size_tendency": "small",
+          "adjacency": [
+            "outer-001"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "绿色叶片之间存在白色留白区域，作为间隔。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "外圈由连续的绿色叶片构成，形成一个完整的叶环，覆盖整个外圈区域。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "绿色",
+            "color_confidence": "high",
+            "shape": "叶片",
+            "size_tendency": "scattered",
+            "adjacency": [
+              "outer-002"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "外圈由大量绿色叶片组成，形成连续的叶环。",
+            "confidence": "high"
+          },
+          {
+            "id": "outer-002",
+            "position": "outer",
+            "source_type": "blank_space",
+            "include_in_interpretation": true,
+            "color": "白色留白",
+            "color_confidence": "high",
+            "shape": "留白间隔",
+            "size_tendency": "small",
+            "adjacency": [
+              "outer-001"
+            ],
+            "is_blank_space": true,
+            "metal_candidate": true,
+            "visible_evidence": "绿色叶片之间存在白色留白区域，作为间隔。",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  "evidence_refs": [
+    "内圈中心为黄色星形，周围有蓝色果实和黄色三角形，呈放射状排列。",
+    "中圈由蓝色果实和绿色叶片组成，蓝色果实位于四个方向，绿色叶片围绕其分布。",
+    "外圈由连续的绿色叶片构成，形成完整的叶环，叶片间有白色留白作为间隔。"
+  ],
+  "evidence_summary": [
+    "内圈中心为黄色星形，周围有蓝色果实和黄色三角形，呈放射状排列。",
+    "中圈由蓝色果实和绿色叶片组成，蓝色果实位于四个方向，绿色叶片围绕其分布。",
+    "外圈由连续的绿色叶片构成，形成完整的叶环，叶片间有白色留白作为间隔。"
+  ],
+  "excluded_marks": [
+    {
+      "id": "template_line_001",
+      "source_type": "template_line",
+      "reason": "模板自带的黑色线稿不作为画作元素，除非用户明显主动填涂或加粗。",
+      "visible_evidence": "画作外围有一圈黑色圆环，但未被填涂或加粗，属于模板线稿。"
+    }
+  ],
+  "uncertainties": [],
+  "model_trace": [
+    {
+      "model": "qwen-vl-max-latest",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "result": "success"
+    }
+  ]
+}

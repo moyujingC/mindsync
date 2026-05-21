@@ -1,0 +1,477 @@
+{
+  "stage": "stage-03-visual-evidence",
+  "status": "complete",
+  "global_visual_summary": "这幅曼陀罗画作以中心蓝色星形为核心，周围环绕橙色花瓣和黄色装饰图案，整体呈现对称的花卉结构，色彩鲜明，线条清晰。",
+  "circles": {
+    "inner": {
+      "summary": "内圈包含一个蓝色星形，中心为橙色星形，周围有黄色圆点和弧形装饰。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "center",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "星形",
+          "size_tendency": "medium",
+          "adjacency": [
+            "inner-002",
+            "inner-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心区域有一个明显的蓝色星形图案，颜色均匀，边界清晰。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-002",
+          "position": "center",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "橙色",
+          "color_confidence": "high",
+          "shape": "星形",
+          "size_tendency": "small",
+          "adjacency": [
+            "inner-001"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "蓝色星形中心有一个较小的橙色星形，颜色饱满，形状规则。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-003",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "圆形和弧形",
+          "size_tendency": "small",
+          "adjacency": [
+            "inner-001",
+            "inner-004"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "蓝色星形周围有多个黄色小圆点和弧形装饰，分布均匀。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "内圈包含一个蓝色星形，中心为橙色星形，周围有黄色圆点和弧形装饰。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "center",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "蓝色",
+            "color_confidence": "high",
+            "shape": "星形",
+            "size_tendency": "medium",
+            "adjacency": [
+              "inner-002",
+              "inner-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中心区域有一个明显的蓝色星形图案，颜色均匀，边界清晰。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-002",
+            "position": "center",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "橙色",
+            "color_confidence": "high",
+            "shape": "星形",
+            "size_tendency": "small",
+            "adjacency": [
+              "inner-001"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "蓝色星形中心有一个较小的橙色星形，颜色饱满，形状规则。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-003",
+            "position": "inner",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "圆形和弧形",
+            "size_tendency": "small",
+            "adjacency": [
+              "inner-001",
+              "inner-004"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "蓝色星形周围有多个黄色小圆点和弧形装饰，分布均匀。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "middle": {
+      "summary": "中圈由橙色花瓣和黄色装饰组成，花瓣间有蓝色圆点和数字8的图案。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "橙色",
+          "color_confidence": "high",
+          "shape": "花瓣",
+          "size_tendency": "large",
+          "adjacency": [
+            "middle-002",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈有八个橙色花瓣，每个花瓣形状完整，颜色均匀。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-002",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "曲线和珠串",
+          "size_tendency": "medium",
+          "adjacency": [
+            "middle-001",
+            "middle-004"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "橙色花瓣之间有黄色曲线和珠串装饰，形成连续的图案。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-003",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "圆形",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-002",
+            "middle-004"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "黄色珠串中有蓝色小圆点，分布在多个位置，颜色明显。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-004",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "数字8",
+          "size_tendency": "small",
+          "adjacency": [
+            "middle-002",
+            "middle-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "黄色珠串中有多个数字8图案，形状清晰，颜色一致。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "中圈由橙色花瓣和黄色装饰组成，花瓣间有蓝色圆点和数字8的图案。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "橙色",
+            "color_confidence": "high",
+            "shape": "花瓣",
+            "size_tendency": "large",
+            "adjacency": [
+              "middle-002",
+              "middle-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈有八个橙色花瓣，每个花瓣形状完整，颜色均匀。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-002",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "曲线和珠串",
+            "size_tendency": "medium",
+            "adjacency": [
+              "middle-001",
+              "middle-004"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "橙色花瓣之间有黄色曲线和珠串装饰，形成连续的图案。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-003",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "蓝色",
+            "color_confidence": "high",
+            "shape": "圆形",
+            "size_tendency": "small",
+            "adjacency": [
+              "middle-002",
+              "middle-004"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "黄色珠串中有蓝色小圆点，分布在多个位置，颜色明显。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-004",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "数字8",
+            "size_tendency": "small",
+            "adjacency": [
+              "middle-002",
+              "middle-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "黄色珠串中有多个数字8图案，形状清晰，颜色一致。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "outer": {
+      "summary": "外圈由黄色花瓣和白色背景组成，花瓣上有黄色珠串和小花图案。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "花瓣",
+          "size_tendency": "large",
+          "adjacency": [
+            "outer-002",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈有多个黄色花瓣，每个花瓣形状完整，颜色均匀。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-002",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "珠串",
+          "size_tendency": "medium",
+          "adjacency": [
+            "outer-001",
+            "outer-003"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "黄色花瓣上有黄色珠串装饰，形成连续的图案。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-003",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "小花",
+          "size_tendency": "small",
+          "adjacency": [
+            "outer-001",
+            "outer-002"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "黄色珠串中有多个黄色小花图案，形状清晰，颜色一致。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-004",
+          "position": "outer",
+          "source_type": "blank_space",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "白色",
+          "color_confidence": "high",
+          "shape": "留白",
+          "size_tendency": "large",
+          "adjacency": [
+            "outer-001",
+            "outer-002",
+            "outer-003"
+          ],
+          "is_blank_space": true,
+          "metal_candidate": true,
+          "visible_evidence": "外圈花瓣之间有大面积白色留白，形成明显的间隔。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "外圈由黄色花瓣和白色背景组成，花瓣上有黄色珠串和小花图案。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "花瓣",
+            "size_tendency": "large",
+            "adjacency": [
+              "outer-002",
+              "outer-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "外圈有多个黄色花瓣，每个花瓣形状完整，颜色均匀。",
+            "confidence": "high"
+          },
+          {
+            "id": "outer-002",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "珠串",
+            "size_tendency": "medium",
+            "adjacency": [
+              "outer-001",
+              "outer-003"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "黄色花瓣上有黄色珠串装饰，形成连续的图案。",
+            "confidence": "high"
+          },
+          {
+            "id": "outer-003",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "小花",
+            "size_tendency": "small",
+            "adjacency": [
+              "outer-001",
+              "outer-002"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "黄色珠串中有多个黄色小花图案，形状清晰，颜色一致。",
+            "confidence": "high"
+          },
+          {
+            "id": "outer-004",
+            "position": "outer",
+            "source_type": "blank_space",
+            "include_in_interpretation": true,
+            "color": "白色",
+            "color_confidence": "high",
+            "shape": "留白",
+            "size_tendency": "large",
+            "adjacency": [
+              "outer-001",
+              "outer-002",
+              "outer-003"
+            ],
+            "is_blank_space": true,
+            "metal_candidate": true,
+            "visible_evidence": "外圈花瓣之间有大面积白色留白，形成明显的间隔。",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  "evidence_refs": [
+    "内圈中心有一个蓝色星形，内部包含橙色星形，周围有黄色装饰。",
+    "中圈由橙色花瓣和黄色珠串组成，珠串中有蓝色圆点和数字8图案。",
+    "外圈由黄色花瓣和白色留白组成，花瓣上有黄色珠串和小花图案。"
+  ],
+  "evidence_summary": [
+    "内圈中心有一个蓝色星形，内部包含橙色星形，周围有黄色装饰。",
+    "中圈由橙色花瓣和黄色珠串组成，珠串中有蓝色圆点和数字8图案。",
+    "外圈由黄色花瓣和白色留白组成，花瓣上有黄色珠串和小花图案。"
+  ],
+  "excluded_marks": [
+    {
+      "id": "excluded-001",
+      "source_type": "template_line",
+      "reason": "模板自带黑色线稿不作为画作元素，除非用户明显主动填涂或加粗。",
+      "visible_evidence": "画作中的黑色轮廓线是模板自带的，未被用户主动填涂或加粗。"
+    },
+    {
+      "id": "excluded-002",
+      "source_type": "therapist_marker",
+      "reason": "三圈标记图只用于确认圈层边界，不能把标记线颜色当成画作颜色。",
+      "visible_evidence": "三圈标记线的颜色与画作实际颜色不符，仅用于圈层划分。"
+    }
+  ],
+  "uncertainties": [],
+  "model_trace": [
+    {
+      "model": "qwen-vl-max-latest",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "result": "success"
+    }
+  ]
+}

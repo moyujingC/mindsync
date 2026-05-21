@@ -97,6 +97,7 @@ class SeededMandalaLLMClient:
         prompt: str,
         schema: dict[str, Any],
         image_path: str | None = None,
+        image_paths: list[str] | None = None,
     ) -> dict[str, Any]:
         return self.visual_observations
 

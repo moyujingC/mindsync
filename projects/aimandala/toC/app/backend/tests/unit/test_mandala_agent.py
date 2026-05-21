@@ -43,9 +43,34 @@ class StubMandalaLLMClient:
                         {
                             "id": "inner-001",
                             "position": "中心",
+                            "source_type": "user_painted",
+                            "include_in_interpretation": True,
+                            "exclude_reason": "none",
                             "color": "蓝色",
+                            "color_confidence": "high",
                             "shape": "圆形",
+                            "size_tendency": "medium",
+                            "adjacency": ["inner-002"],
+                            "is_blank_space": False,
+                            "metal_candidate": False,
                             "visible_evidence": "内圈蓝色圆形。",
+                            "confidence": "high",
+                        },
+                        {
+                            "id": "inner-002",
+                            "position": "center",
+                            "source_type": "template_line",
+                            "include_in_interpretation": False,
+                            "exclude_reason": "template_line",
+                            "color": "黑色",
+                            "color_confidence": "high",
+                            "shape": "模板线稿",
+                            "size_tendency": "small",
+                            "adjacency": [],
+                            "is_blank_space": False,
+                            "metal_candidate": False,
+                            "visible_evidence": "模板自带黑线，不进入解读。",
+                            "confidence": "high",
                         }
                     ],
                 },
@@ -55,9 +80,34 @@ class StubMandalaLLMClient:
                         {
                             "id": "middle-001",
                             "position": "中圈",
+                            "source_type": "user_painted",
+                            "include_in_interpretation": True,
+                            "exclude_reason": "none",
                             "color": "粉色",
+                            "color_confidence": "high",
                             "shape": "花瓣",
+                            "size_tendency": "medium",
+                            "adjacency": ["middle-002"],
+                            "is_blank_space": False,
+                            "metal_candidate": False,
                             "visible_evidence": "中圈粉色花瓣。",
+                            "confidence": "high",
+                        },
+                        {
+                            "id": "middle-002",
+                            "position": "middle",
+                            "source_type": "blank_space",
+                            "include_in_interpretation": True,
+                            "exclude_reason": "none",
+                            "color": "白色留白",
+                            "color_confidence": "high",
+                            "shape": "留白间隔",
+                            "size_tendency": "scattered",
+                            "adjacency": ["middle-001"],
+                            "is_blank_space": True,
+                            "metal_candidate": True,
+                            "visible_evidence": "中圈花瓣之间有留白间隔。",
+                            "confidence": "high",
                         }
                     ],
                 },
@@ -67,14 +117,31 @@ class StubMandalaLLMClient:
                         {
                             "id": "outer-001",
                             "position": "外圈",
+                            "source_type": "blank_space",
+                            "include_in_interpretation": True,
+                            "exclude_reason": "none",
                             "color": "白色",
+                            "color_confidence": "high",
                             "shape": "边界",
+                            "size_tendency": "large",
+                            "adjacency": [],
+                            "is_blank_space": True,
+                            "metal_candidate": True,
                             "visible_evidence": "外圈白色边界。",
+                            "confidence": "high",
                         }
                     ],
                 },
             },
             "evidence_summary": ["内圈蓝色圆形", "中圈粉色花瓣", "外圈白色边界"],
+            "excluded_marks": [
+                {
+                    "id": "excluded-001",
+                    "source_type": "template_line",
+                    "reason": "模板黑线不进入解读",
+                    "visible_evidence": "内圈模板黑线。",
+                }
+            ],
             "uncertainties": [],
         }
 
@@ -138,6 +205,37 @@ def _agent_input(tmp_path: Path, *, theme: str = "wealth") -> MandalaAgentInput:
     )
 
 
+def test_stage03_passes_marked_image_as_second_vision_input(tmp_path):
+    image_path = tmp_path / "mandala.jpg"
+    marked_image_path = tmp_path / "mandala-3q.jpg"
+    image_path.write_bytes(b"fake-image")
+    marked_image_path.write_bytes(b"fake-marked-image")
+    llm_client = StubMandalaLLMClient()
+    agent_input = MandalaAgentInput(
+        report_mode="lite",
+        image=MandalaImageInput(
+            local_path=str(image_path),
+            marked_local_path=str(marked_image_path),
+        ),
+        user_context=MandalaUserContext(theme="wealth", theme_label="财富议题"),
+        circle_boundaries={
+            "inner_radius": 35,
+            "middle_radius": 65,
+            "radius_unit": "normalized_percent",
+            "source": "manual",
+        },
+    )
+
+    MandalaInterpretationAgent(llm_client=llm_client)._run_block_2(
+        agent_input=agent_input,
+        knowledge_pack=KnowledgePackBuilder().build(theme="wealth"),
+    )
+
+    vision_call = llm_client.structured_calls[0]
+    assert vision_call["image_paths"] == [str(image_path), str(marked_image_path)]
+    assert "三圈标记图，仅用于确认内圈、中圈、外圈边界" in vision_call["prompt"]
+
+
 def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     llm_client = StubMandalaLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
@@ -151,6 +249,8 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert theme_entries["wealth_next_exploration_mapping"]["status"] == "loaded"
     assert "父亲关系 / 权威与成功" in theme_entries["wealth_next_exploration_mapping"]["text"]
     assert knowledge_pack["entries"]["report_style_guide"]["status"] == "loaded"
+    assert knowledge_pack["entries"]["visual_recognition_schema"]["status"] == "loaded"
+    assert "模板自带黑色线稿不作为画作元素" in knowledge_pack["entries"]["visual_recognition_schema"]["text"]
     result = MandalaInterpretationAgent(llm_client=llm_client).run(
         agent_input=_agent_input(tmp_path),
         knowledge_pack=knowledge_pack,
@@ -159,6 +259,10 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert result.agent_output["status"] == "complete"
     assert result.agent_input["user_context"]["theme"] == "wealth"
     assert result.knowledge_pack["theme"] == "wealth"
+    stage03 = result.stage_outputs["stage-03-visual-evidence"]
+    assert stage03["excluded_marks"][0]["source_type"] == "template_line"
+    assert stage03["circles"]["outer"]["visual_units"][0]["metal_candidate"] is True
+    assert stage03["circles"]["middle"]["visual_units"][1]["is_blank_space"] is True
     assert result.stage_outputs["stage-06-per-circle-element-generation-control"]["theme"] == "wealth"
     stage06 = result.stage_outputs["stage-06-per-circle-element-generation-control"]
     assert stage06["scope"]["five_element_scope"] == "intra_circle_visual_elements"
@@ -168,6 +272,11 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     assert stage06["per_circle"]["inner"]["element_signals"]
     assert stage06["per_circle"]["middle"]["element_signals"]
     assert stage06["per_circle"]["outer"]["element_signals"]
+    inner_signal_evidence = [
+        signal["evidence"]
+        for signal in stage06["per_circle"]["inner"]["element_signals"]
+    ]
+    assert "黑色" not in " ".join(inner_signal_evidence)
     assert result.stage_outputs["stage-12-healing-direction-and-report-branching"]["report_mode"] == "lite"
     theme_route = result.stage_outputs["stage-12-healing-direction-and-report-branching"]["theme_route"]
     assert theme_route["theme"] == "wealth"
@@ -188,6 +297,11 @@ def test_mandala_agent_produces_complete_path_artifacts(tmp_path):
     report_prompt_payload = _extract_prompt_payload(llm_client.text_calls[-1]["user_prompt"])
     assert report_prompt_payload["writing_inputs"]["theme_route"]["selected_clause_ids"]
     assert report_prompt_payload["writing_inputs"]["five_element"]["scope"]["five_element_scope"] == "intra_circle_visual_elements"
+    vision_prompt = llm_client.structured_calls[0]["prompt"]
+    assert "source_type" in vision_prompt
+    assert "模板黑线、印刷线稿、三圈标记线不是用户画作内容" in vision_prompt
+    assert "精简知识包" not in vision_prompt
+    assert "用户主题" not in vision_prompt
 
 
 def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
@@ -295,6 +409,57 @@ def test_mandala_agent_quality_gate_rejects_empty_visual_evidence(tmp_path):
 
     assert quality["passed"] is False
     assert "missing_stage03_visual_units" in quality["failure_ids"]
+
+
+def test_mandala_agent_quality_gate_rejects_included_template_line(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    stage_outputs = deepcopy(result.stage_outputs)
+    stage_outputs["stage-03-visual-evidence"]["circles"]["inner"]["visual_units"][1][
+        "include_in_interpretation"
+    ] = True
+
+    quality = run_quality_gate(
+        stage_outputs=stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=result.final_report_md,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "invalid_stage03_visual_schema" in quality["failure_ids"]
+    assert "inner_1_template_line_included" in quality["details"]["visual_schema_issues"]
+
+
+def test_mandala_agent_quality_gate_rejects_blank_space_without_metal_candidate(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    stage_outputs = deepcopy(result.stage_outputs)
+    stage_outputs["stage-03-visual-evidence"]["circles"]["middle"]["visual_units"][1][
+        "metal_candidate"
+    ] = False
+
+    quality = run_quality_gate(
+        stage_outputs=stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=result.final_report_md,
+        report_context_package=result.report_context_package,
+    )
+
+    assert quality["passed"] is False
+    assert "invalid_stage03_visual_schema" in quality["failure_ids"]
+    assert (
+        "middle_1_blank_space_without_metal_candidate"
+        in quality["details"]["visual_schema_issues"]
+    )
 
 
 def test_mandala_agent_quality_gate_rejects_financial_promises(tmp_path):
@@ -575,9 +740,9 @@ def test_mandala_agent_quality_gate_accepts_raw_visual_observation(tmp_path):
     )
     stage_outputs = deepcopy(result.stage_outputs)
     stage_outputs["stage-03-visual-evidence"]["circles"] = {
-        "inner": {"summary": "", "visual_units": [], "raw_observation": {"center": "中心红色星形。"}},
-        "middle": {"summary": "", "visual_units": [], "raw_observation": {"colors": "中圈绿色叶片。"}},
-        "outer": {"summary": "", "visual_units": [], "raw_observation": {"boundary": "外圈边界闭合。"}},
+        "inner": {"summary": "中心红色星形。", "visual_units": [], "raw_observation": {"center": "中心红色星形。"}},
+        "middle": {"summary": "中圈绿色叶片。", "visual_units": [], "raw_observation": {"colors": "中圈绿色叶片。"}},
+        "outer": {"summary": "外圈边界闭合。", "visual_units": [], "raw_observation": {"boundary": "外圈边界闭合。"}},
     }
 
     quality = run_quality_gate(
@@ -587,7 +752,8 @@ def test_mandala_agent_quality_gate_accepts_raw_visual_observation(tmp_path):
         report_context_package=result.report_context_package,
     )
 
-    assert quality["passed"] is True
+    assert quality["passed"] is False
+    assert "invalid_stage03_visual_schema" in quality["failure_ids"]
 
 
 def test_wealth_runtime_routes_and_context():

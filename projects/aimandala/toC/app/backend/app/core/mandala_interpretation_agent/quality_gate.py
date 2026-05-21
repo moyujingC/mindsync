@@ -248,6 +248,9 @@ def run_quality_gate(
     missing_visual_units = _missing_visual_units(stage03)
     if missing_visual_units:
         failure_ids.append("missing_stage03_visual_units")
+    visual_schema_issues = _visual_schema_issues(stage03)
+    if visual_schema_issues:
+        failure_ids.append("invalid_stage03_visual_schema")
 
     evidence_map = report_context_package.get("evidence_map")
     if not isinstance(evidence_map, list) or not evidence_map:
@@ -267,6 +270,7 @@ def run_quality_gate(
             "report_shape_issues": report_shape_issues,
             "missing_context_fields": missing_context_fields,
             "missing_visual_units": missing_visual_units,
+            "visual_schema_issues": visual_schema_issues,
         },
     }
 
@@ -337,6 +341,42 @@ def _circle_has_visual_evidence(circle: Any) -> bool:
     if isinstance(raw_observation, dict):
         return any(str(value).strip() for value in raw_observation.values())
     return False
+
+
+def _visual_schema_issues(stage03: Any) -> list[str]:
+    if not isinstance(stage03, dict):
+        return ["stage03_not_object"]
+    circles = stage03.get("circles")
+    if not isinstance(circles, dict):
+        return ["circles_not_object"]
+    issues: list[str] = []
+    for circle_key in ["inner", "middle", "outer"]:
+        circle = circles.get(circle_key)
+        if not isinstance(circle, dict):
+            issues.append(f"{circle_key}_missing")
+            continue
+        units = circle.get("visual_units")
+        if not isinstance(units, list) or not units:
+            issues.append(f"{circle_key}_visual_units_missing")
+            continue
+        interpretable_count = 0
+        for index, unit in enumerate(units):
+            if not isinstance(unit, dict):
+                issues.append(f"{circle_key}_{index}_unit_not_object")
+                continue
+            source_type = str(unit.get("source_type") or "user_painted").strip()
+            include = unit.get("include_in_interpretation")
+            if include is not False:
+                interpretable_count += 1
+            if source_type in {"template_line", "therapist_marker"} and include is not False:
+                issues.append(f"{circle_key}_{index}_{source_type}_included")
+            if source_type in {"user_painted", "blank_space"} and not str(unit.get("visible_evidence") or "").strip():
+                issues.append(f"{circle_key}_{index}_missing_visible_evidence")
+            if bool(unit.get("is_blank_space")) and unit.get("metal_candidate") is not True:
+                issues.append(f"{circle_key}_{index}_blank_space_without_metal_candidate")
+        if interpretable_count == 0:
+            issues.append(f"{circle_key}_no_interpretable_visual_units")
+    return issues
 
 
 def _unsafe_boundary_terms(final_report_md: str) -> list[str]:

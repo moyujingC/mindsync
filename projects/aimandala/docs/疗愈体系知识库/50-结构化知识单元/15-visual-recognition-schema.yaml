@@ -1,0 +1,169 @@
+id: aimandala.visual_recognition_schema.v0_1
+version: 0.1.0
+status: draft
+content_source_status: case_reviewed_rule
+source_verification_status: source_verification_pending
+date: 2026-05-18
+owner: CEO / Knowledge Base
+type: runtime_schema
+product: aimandala
+applies_to:
+  - mandala_interpretation_agent
+  - stage-03-visual-evidence
+  - visual_review
+source_of_truth: projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/15-visual-recognition-schema.yaml
+
+purpose:
+  - 约束视觉模型只输出画面事实，不输出心理判断。
+  - 区分原画作元素、模板黑线和疗愈师三圈标记线。
+  - 为圈内五行分析提供元素级输入。
+  - 为 11 个完整案例的人工审核提供统一字段。
+
+global_rules:
+  observation_scope:
+    - 只观察用户原画作。
+    - 疗愈师三圈标记图只能用于确认圈层边界，不能把标记线颜色当成画作颜色。
+    - 模板自带黑色线稿不作为画作元素，除非用户明显对黑线进行了主动填涂或加粗。
+    - 画作外边以内的留白可以记录为画面留白。
+    - 留白如果在圈内切分、包围或隔开其他元素，应记录为 metal_candidate=true。
+  interpretation_boundary:
+    - stage-03 只输出可见事实和不确定项。
+    - 不做财富、关系、健康、心理或人格判断。
+    - 不判断整圈五行。
+    - 不分析跨圈五行生克。
+  confidence_policy:
+    high: 肉眼清楚可见，且不依赖主观推断。
+    medium: 可见但颜色、边界或归属有轻微不确定。
+    low: 只能作为待人工确认线索，不能进入强结论。
+
+required_output:
+  global_visual_summary:
+    type: string
+    description: 用 1 到 2 句话概括整张画的可见事实，不写解释。
+  circles:
+    type: object
+    required_keys:
+      - inner
+      - middle
+      - outer
+    circle_payload:
+      summary:
+        type: string
+        description: 本圈可见事实摘要。
+      visual_units:
+        type: array
+        min_items: 1
+        item_fields:
+          id:
+            type: string
+            required: true
+            format: inner-001 / middle-001 / outer-001
+          position:
+            type: string
+            required: true
+            allowed:
+              - inner
+              - middle
+              - outer
+              - center
+              - boundary
+              - background_within_outer_edge
+          source_type:
+            type: string
+            required: true
+            allowed:
+              - user_painted
+              - blank_space
+              - template_line
+              - therapist_marker
+              - uncertain
+          include_in_interpretation:
+            type: boolean
+            required: true
+            description: 只有 user_painted 和 blank_space 通常可进入后续解读。
+          exclude_reason:
+            type: string
+            required: false
+            allowed:
+              - template_line
+              - therapist_marker
+              - outside_outer_edge
+              - too_uncertain
+              - none
+          color:
+            type: string
+            required: true
+            description: 颜色事实，尽量写具体色名和深浅，例如红色渐变、浅蓝色、白色留白。
+          color_confidence:
+            type: string
+            required: true
+            allowed:
+              - high
+              - medium
+              - low
+          shape:
+            type: string
+            required: true
+            description: 可见形状，例如圆形、三角形、花瓣、条带、波纹、留白间隔。
+          size_tendency:
+            type: string
+            required: true
+            allowed:
+              - large
+              - medium
+              - small
+              - scattered
+              - unknown
+          adjacency:
+            type: array
+            required: true
+            description: 与哪些元素相邻、接触、隔开或包围。
+          is_blank_space:
+            type: boolean
+            required: true
+          metal_candidate:
+            type: boolean
+            required: true
+            description: 留白、白色、灰色、边界、切分、规则感可作为金候选。
+          visible_evidence:
+            type: string
+            required: true
+            description: 用一句话写肉眼依据。
+          confidence:
+            type: string
+            required: true
+            allowed:
+              - high
+              - medium
+              - low
+  evidence_summary:
+    type: array
+    description: 只列可进入解读的高价值画面事实。
+  excluded_marks:
+    type: array
+    description: 记录已排除的模板线、三圈标记线或其他非画作元素。
+  uncertainties:
+    type: array
+    description: 记录需要人工确认的颜色、边界、圈层归属或元素关系。
+
+review_flags:
+  - id: visual.marker_line_confusion
+    label: 疗愈师三圈标记线误识别
+    trigger: 视觉输出把三圈标记线颜色写入 user_painted 元素。
+    severity: high
+  - id: visual.template_black_line_confusion
+    label: 模板黑线误识别
+    trigger: 视觉输出把模板黑色线稿作为金、水或边界元素进入解读。
+    severity: high
+  - id: visual.blank_space_missed
+    label: 留白漏判
+    trigger: 圈内明显留白切分、包围或隔开元素，但没有记录 blank_space 或 metal_candidate。
+    severity: high
+  - id: visual.color_misread
+    label: 颜色误判
+    trigger: 关键颜色误判会改变五行，例如红色渐变被判为粉色，浅蓝圆形被判为白色留白。
+    severity: high
+  - id: visual.adjacency_missing
+    label: 相邻关系缺失
+    trigger: 需要判断五行生克或无根之木时，未记录元素是否相邻、接触或被隔开。
+    severity: medium

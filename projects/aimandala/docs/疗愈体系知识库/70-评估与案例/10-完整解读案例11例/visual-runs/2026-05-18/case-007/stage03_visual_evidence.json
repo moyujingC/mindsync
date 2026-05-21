@@ -1,0 +1,319 @@
+{
+  "stage": "stage-03-visual-evidence",
+  "status": "complete",
+  "global_visual_summary": "这幅曼陀罗画作以中心橙色圆为核心，周围环绕着蓝色锯齿状图案和黄色小点，中圈由紫色花瓣和黄色花朵组成，外圈则有蓝色云朵状图案和橙色女性符号。整体色彩丰富，结构对称，留白较少。",
+  "circles": {
+    "inner": {
+      "summary": "内圈包含一个橙色圆形中心，周围是蓝色锯齿状图案和黄色小点，构成一个放射状的星形结构。",
+      "visual_units": [
+        {
+          "id": "inner-001",
+          "position": "center",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "橙色",
+          "color_confidence": "high",
+          "shape": "圆形",
+          "size_tendency": "large",
+          "adjacency": [
+            "蓝色锯齿状图案",
+            "黄色小点"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中心有一个明显的橙色圆形，颜色均匀，边缘清晰。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-002",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "锯齿状",
+          "size_tendency": "medium",
+          "adjacency": [
+            "橙色圆形",
+            "黄色小点"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "围绕中心橙色圆形的是蓝色锯齿状图案，形成星形轮廓。",
+          "confidence": "high"
+        },
+        {
+          "id": "inner-003",
+          "position": "inner",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "小点",
+          "size_tendency": "small",
+          "adjacency": [
+            "蓝色锯齿状图案",
+            "橙色圆形"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "在蓝色锯齿状图案之间分布着多个黄色小点，均匀排列。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "内圈包含一个橙色圆形中心，周围是蓝色锯齿状图案和黄色小点，构成一个放射状的星形结构。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "center",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "橙色",
+            "color_confidence": "high",
+            "shape": "圆形",
+            "size_tendency": "large",
+            "adjacency": [
+              "蓝色锯齿状图案",
+              "黄色小点"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中心有一个明显的橙色圆形，颜色均匀，边缘清晰。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-002",
+            "position": "inner",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "蓝色",
+            "color_confidence": "high",
+            "shape": "锯齿状",
+            "size_tendency": "medium",
+            "adjacency": [
+              "橙色圆形",
+              "黄色小点"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "围绕中心橙色圆形的是蓝色锯齿状图案，形成星形轮廓。",
+            "confidence": "high"
+          },
+          {
+            "id": "inner-003",
+            "position": "inner",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "小点",
+            "size_tendency": "small",
+            "adjacency": [
+              "蓝色锯齿状图案",
+              "橙色圆形"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "在蓝色锯齿状图案之间分布着多个黄色小点，均匀排列。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "middle": {
+      "summary": "中圈由八个紫色花瓣和八个黄色花朵组成，每个花瓣内含一个黄色花朵，形成对称的八瓣花结构。",
+      "visual_units": [
+        {
+          "id": "middle-001",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "紫色",
+          "color_confidence": "high",
+          "shape": "花瓣",
+          "size_tendency": "medium",
+          "adjacency": [
+            "黄色花朵",
+            "蓝色云朵状图案"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "中圈有八个紫色花瓣，每个花瓣形状相似，大小一致。",
+          "confidence": "high"
+        },
+        {
+          "id": "middle-002",
+          "position": "middle",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "黄色",
+          "color_confidence": "high",
+          "shape": "花朵",
+          "size_tendency": "small",
+          "adjacency": [
+            "紫色花瓣"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "每个紫色花瓣内有一个黄色花朵，花朵由六个花瓣组成，中心为黄色圆点。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "中圈由八个紫色花瓣和八个黄色花朵组成，每个花瓣内含一个黄色花朵，形成对称的八瓣花结构。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "紫色",
+            "color_confidence": "high",
+            "shape": "花瓣",
+            "size_tendency": "medium",
+            "adjacency": [
+              "黄色花朵",
+              "蓝色云朵状图案"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "中圈有八个紫色花瓣，每个花瓣形状相似，大小一致。",
+            "confidence": "high"
+          },
+          {
+            "id": "middle-002",
+            "position": "middle",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "黄色",
+            "color_confidence": "high",
+            "shape": "花朵",
+            "size_tendency": "small",
+            "adjacency": [
+              "紫色花瓣"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "每个紫色花瓣内有一个黄色花朵，花朵由六个花瓣组成，中心为黄色圆点。",
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    "outer": {
+      "summary": "外圈由八个蓝色云朵状图案和八个橙色女性符号组成，交替排列，形成完整的圆形边界。",
+      "visual_units": [
+        {
+          "id": "outer-001",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "蓝色",
+          "color_confidence": "high",
+          "shape": "云朵状",
+          "size_tendency": "medium",
+          "adjacency": [
+            "橙色女性符号",
+            "紫色花瓣"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "外圈有八个蓝色云朵状图案，每个图案形状类似云朵，边缘呈波浪状。",
+          "confidence": "high"
+        },
+        {
+          "id": "outer-002",
+          "position": "outer",
+          "source_type": "user_painted",
+          "include_in_interpretation": true,
+          "exclude_reason": "none",
+          "color": "橙色",
+          "color_confidence": "high",
+          "shape": "女性符号",
+          "size_tendency": "small",
+          "adjacency": [
+            "蓝色云朵状图案"
+          ],
+          "is_blank_space": false,
+          "metal_candidate": false,
+          "visible_evidence": "每个蓝色云朵状图案内有一个橙色女性符号，符号由一个圆圈和一个十字组成。",
+          "confidence": "high"
+        }
+      ],
+      "raw_observation": {
+        "summary": "外圈由八个蓝色云朵状图案和八个橙色女性符号组成，交替排列，形成完整的圆形边界。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "蓝色",
+            "color_confidence": "high",
+            "shape": "云朵状",
+            "size_tendency": "medium",
+            "adjacency": [
+              "橙色女性符号",
+              "紫色花瓣"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "外圈有八个蓝色云朵状图案，每个图案形状类似云朵，边缘呈波浪状。",
+            "confidence": "high"
+          },
+          {
+            "id": "outer-002",
+            "position": "outer",
+            "source_type": "user_painted",
+            "include_in_interpretation": true,
+            "color": "橙色",
+            "color_confidence": "high",
+            "shape": "女性符号",
+            "size_tendency": "small",
+            "adjacency": [
+              "蓝色云朵状图案"
+            ],
+            "is_blank_space": false,
+            "metal_candidate": false,
+            "visible_evidence": "每个蓝色云朵状图案内有一个橙色女性符号，符号由一个圆圈和一个十字组成。",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  "evidence_refs": [
+    "中心橙色圆形被蓝色锯齿状图案和黄色小点包围，形成放射状结构。",
+    "中圈由八个紫色花瓣和八个黄色花朵组成，每个花瓣内含一个黄色花朵。",
+    "外圈由八个蓝色云朵状图案和八个橙色女性符号交替排列，形成完整边界。"
+  ],
+  "evidence_summary": [
+    "中心橙色圆形被蓝色锯齿状图案和黄色小点包围，形成放射状结构。",
+    "中圈由八个紫色花瓣和八个黄色花朵组成，每个花瓣内含一个黄色花朵。",
+    "外圈由八个蓝色云朵状图案和八个橙色女性符号交替排列，形成完整边界。"
+  ],
+  "excluded_marks": [
+    {
+      "id": "excluded-001",
+      "source_type": "template_line",
+      "reason": "模板自带黑色线稿不作为画作元素，除非用户明显主动填涂或加粗。",
+      "visible_evidence": "画作中的黑色线条为模板线，未被用户主动填涂或加粗。"
+    }
+  ],
+  "uncertainties": [],
+  "model_trace": [
+    {
+      "model": "qwen-vl-max-latest",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "result": "success"
+    }
+  ]
+}
