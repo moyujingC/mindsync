@@ -97,7 +97,16 @@ git diff --check
 如果显式设置 `AIMANDALA_LLM_BACKEND=openai_compatible`，也会走同一套 OpenAI-compatible 客户端。
 本地未配置任何模型信息时，后端回退到 `noop`。
 
-本地可以用私有环境文件集中放密钥，文件不要提交：
+本地可以用私有环境文件集中放密钥，文件不要提交。默认推荐复制 `.env.regression.example` 到 backend 本地忽略文件：
+
+```bash
+cp projects/aimandala/toC/app/backend/.env.regression.example \
+  projects/aimandala/toC/app/backend/.env.local
+```
+
+填入真实 key 后，后端和本目录脚本会自动读取 `.env.local`。已经在 shell 里设置的变量优先级更高，不会被文件覆盖。
+
+也可以把私有环境文件放在仓库外，并通过 `--env-file` 显式传入：
 
 ```bash
 python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py \
@@ -108,7 +117,7 @@ python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.
   --mode both
 ```
 
-私有环境文件使用普通 `KEY=VALUE` 格式。已经在 shell 里设置的变量优先级更高，不会被文件覆盖。
+私有环境文件使用普通 `KEY=VALUE` 格式。
 报告内容质量回归必须使用和应用一致的真实模型。单元测试里的 mock / stub 只用于验证代码合同，不作为报告内容质量评估依据。
 文字模型必须使用 DeepSeek v4 路线，例如：
 
@@ -128,6 +137,28 @@ AIMANDALA_LLM_VISION_MODEL=qwen-vl-max-latest
 ```
 
 如果文字模型不是 DeepSeek v4，或视觉模型不是 Qwen/DashScope，`run_wealth_report_regression.py --check-env` 会判定未 ready。否则测试只能证明流程可跑，不能作为报告质量或画面识别质量评估依据。
+
+## 11 个完整案例基础图像解读
+
+完整案例的基础层图像解读使用同一份 `.env.local`，不需要额外传 key。先检查环境：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py --check-env
+```
+
+跑单个案例：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py --case-id case-001
+```
+
+跑全部 11 个案例：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py
+```
+
+输出会写入 `projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/foundation-runs/<日期>/`。这一步必须使用真实视觉模型，不能用 mock / stub 结果做人工审核依据。
 
 ## 兑换码配置
 
