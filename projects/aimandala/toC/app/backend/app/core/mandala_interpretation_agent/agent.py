@@ -559,7 +559,7 @@ class MandalaInterpretationAgent:
         match = re.fullmatch(r"(inner|middle|outer)-0*(\d+)", normalized)
         if match:
             return f"{match.group(1)}-{int(match.group(2)):03d}"
-        return normalized
+        return fallback
 
     def _normalize_visual_unit_ref(
         self,

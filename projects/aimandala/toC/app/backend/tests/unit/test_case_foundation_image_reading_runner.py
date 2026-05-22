@@ -176,6 +176,49 @@ def test_build_env_check_accepts_deepseek_and_qwen_dashscope(monkeypatch):
     assert payload["planned_run_count"] == 1
 
 
+def test_build_env_check_accepts_doubao_ark_vision_route(monkeypatch):
+    runner = _load_runner_module()
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "text-key")
+    monkeypatch.setenv("AIMANDALA_LLM_BASE_URL", "https://api.deepseek.com")
+    monkeypatch.setenv("AIMANDALA_LLM_MODEL", "deepseek-v4-pro")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "vision-key")
+    monkeypatch.setenv(
+        "AIMANDALA_LLM_VISION_BASE_URL",
+        "https://ark.cn-beijing.volces.com/api/v3",
+    )
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "ep-20260522000000-test")
+
+    payload = runner.build_env_check_payload(
+        planned_runs=[{"case_id": "case-001"}],
+        vision_provider="doubao",
+    )
+
+    assert payload["ready"] is True
+    assert payload["vision_provider"] == "doubao"
+    assert payload["app_vision_ready"] is True
+
+
+def test_build_env_check_rejects_doubao_without_ark_endpoint(monkeypatch):
+    runner = _load_runner_module()
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "text-key")
+    monkeypatch.setenv("AIMANDALA_LLM_BASE_URL", "https://api.deepseek.com")
+    monkeypatch.setenv("AIMANDALA_LLM_MODEL", "deepseek-v4-pro")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "vision-key")
+    monkeypatch.setenv(
+        "AIMANDALA_LLM_VISION_BASE_URL",
+        "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    )
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "qwen-vl-max-latest")
+
+    payload = runner.build_env_check_payload(
+        planned_runs=[{"case_id": "case-001"}],
+        vision_provider="doubao",
+    )
+
+    assert payload["ready"] is False
+    assert "Doubao/Volcengine Ark vision route with ep-* model endpoint" in payload["missing_required"]
+
+
 def test_render_review_markdown_contains_foundation_review_tables():
     runner = _load_runner_module()
     case = runner.load_complete_cases(runner.CASE_ROOT, case_id="case-001")[0]

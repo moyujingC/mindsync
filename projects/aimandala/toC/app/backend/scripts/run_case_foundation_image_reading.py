@@ -24,6 +24,7 @@ CASE_ROOT = (
     / "10-完整解读案例11例"
 )
 DEFAULT_OUTPUT_ROOT = CASE_ROOT / "foundation-runs" / date.today().isoformat()
+VISION_PROVIDERS = {"qwen", "doubao", "custom"}
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
@@ -65,6 +66,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--case-root", default=str(CASE_ROOT), help="Complete 11-case directory.")
     parser.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT), help="Output directory.")
     parser.add_argument("--case-id", default="", help="Run one case id only, for example case-001.")
+    parser.add_argument(
+        "--vision-provider",
+        choices=sorted(VISION_PROVIDERS),
+        default="qwen",
+        help="Vision route requirement for review runs.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Validate planned cases without calling models.")
     parser.add_argument("--check-env", action="store_true", help="Check real model environment without calling models.")
     parser.add_argument(
@@ -80,6 +87,7 @@ def main() -> int:
     args = build_parser().parse_args()
     if args.env_file.strip():
         os.environ["AIMANDALA_ENV_FILE"] = args.env_file.strip()
+    vision_provider = args.vision_provider.strip().lower()
 
     case_root = Path(args.case_root)
     output_root = Path(args.output_root)
@@ -99,7 +107,10 @@ def main() -> int:
         return 0
 
     if args.check_env:
-        payload = build_env_check_payload(planned_runs=planned)
+        payload = build_env_check_payload(
+            planned_runs=planned,
+            vision_provider=vision_provider,
+        )
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0 if payload["ready"] else 2
 
@@ -108,7 +119,10 @@ def main() -> int:
         print(json.dumps({"status": "refreshed", "results": results}, ensure_ascii=False, indent=2))
         return 0 if all(item["status"] == "complete" for item in results) else 2
 
-    env_check = build_env_check_payload(planned_runs=planned)
+    env_check = build_env_check_payload(
+        planned_runs=planned,
+        vision_provider=vision_provider,
+    )
     if not env_check["ready"]:
         print(json.dumps(env_check, ensure_ascii=False, indent=2))
         return 2
@@ -230,8 +244,13 @@ def build_agent_input(case: CompleteCaseFoundationInput) -> MandalaAgentInput:
     )
 
 
-def build_env_check_payload(*, planned_runs: list[dict[str, Any]]) -> dict[str, Any]:
+def build_env_check_payload(
+    *,
+    planned_runs: list[dict[str, Any]],
+    vision_provider: str = "qwen",
+) -> dict[str, Any]:
     load_private_env_file()
+    normalized_provider = _normalize_vision_provider(vision_provider)
     primary_vision_ready = all(
         os.getenv(name)
         for name in [
@@ -248,8 +267,14 @@ def build_env_check_payload(*, planned_runs: list[dict[str, Any]]) -> dict[str, 
             "AIMANDALA_LLM_VISION_FALLBACK_MODEL",
         ]
     )
-    primary_vision_matches_app = _is_qwen_dashscope_vision_route("AIMANDALA_LLM_VISION")
-    fallback_vision_matches_app = _is_qwen_dashscope_vision_route("AIMANDALA_LLM_VISION_FALLBACK")
+    primary_vision_matches_app = _vision_route_matches_provider(
+        "AIMANDALA_LLM_VISION",
+        provider=normalized_provider,
+    )
+    fallback_vision_matches_app = _vision_route_matches_provider(
+        "AIMANDALA_LLM_VISION_FALLBACK",
+        provider=normalized_provider,
+    )
     vision_ready = primary_vision_ready or fallback_vision_ready
     app_vision_ready = (
         (primary_vision_ready and primary_vision_matches_app)
@@ -265,10 +290,11 @@ def build_env_check_payload(*, planned_runs: list[dict[str, Any]]) -> dict[str, 
     if not vision_ready:
         missing_required.append("AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*")
     elif not app_vision_ready:
-        missing_required.append("Qwen/DashScope vision route matching app runtime")
+        missing_required.append(_vision_route_requirement_label(normalized_provider))
     return {
         "status": "env_check",
         "ready": not missing_required,
+        "vision_provider": normalized_provider,
         "planned_run_count": len(planned_runs),
         "missing_required": missing_required,
         "text_model_ready": text_model_ready,
@@ -282,7 +308,7 @@ def build_env_check_payload(*, planned_runs: list[dict[str, Any]]) -> dict[str, 
         "notes": [
             "Foundation image reading review must use real models.",
             "Text route must match DeepSeek v4.",
-            "Vision route must match Qwen/DashScope.",
+            f"Vision route must match {normalized_provider}.",
             "Secret values are never printed.",
         ],
     }
@@ -936,6 +962,33 @@ def _is_qwen_dashscope_vision_route(prefix: str) -> bool:
     base_url = os.getenv(f"{prefix}_BASE_URL", "").strip().lower()
     model = os.getenv(f"{prefix}_MODEL", "").strip().lower()
     return "dashscope.aliyuncs.com" in base_url and model.startswith("qwen")
+
+
+def _is_doubao_ark_vision_route(prefix: str) -> bool:
+    base_url = os.getenv(f"{prefix}_BASE_URL", "").strip().lower()
+    model = os.getenv(f"{prefix}_MODEL", "").strip().lower()
+    return "ark.cn-beijing.volces.com/api/v3" in base_url and model.startswith("ep-")
+
+
+def _normalize_vision_provider(value: str) -> str:
+    normalized = value.strip().lower() or "qwen"
+    return normalized if normalized in VISION_PROVIDERS else "qwen"
+
+
+def _vision_route_matches_provider(prefix: str, *, provider: str) -> bool:
+    if provider == "qwen":
+        return _is_qwen_dashscope_vision_route(prefix)
+    if provider == "doubao":
+        return _is_doubao_ark_vision_route(prefix)
+    return True
+
+
+def _vision_route_requirement_label(provider: str) -> str:
+    if provider == "doubao":
+        return "Doubao/Volcengine Ark vision route with ep-* model endpoint"
+    if provider == "custom":
+        return "Configured OpenAI-compatible vision route"
+    return "Qwen/DashScope vision route matching app runtime"
 
 
 if __name__ == "__main__":

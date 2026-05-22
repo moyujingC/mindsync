@@ -1,0 +1,378 @@
+{
+  "stage": "foundation-image-reading",
+  "status": "complete",
+  "foundation_image_reading": {
+    "visual_observation": {
+      "overall_observation": {
+        "first_impression": "画面是一个对称的曼陀罗图案，以蓝色中心花为核心，向外依次环绕浅蓝色三角形、粉色带图案菱形、粉色小半圆和紫色几何块，色彩柔和，层次分明。",
+        "main_visual_content": "中心是蓝色花瓣状花形，周围一圈浅蓝色三角形，再外是粉色带内部三角形的菱形，接着是粉色小半圆和紫色不同形状的块，整体呈同心圆对称分布。",
+        "visual_atmosphere": "色彩以蓝、粉、紫为主，柔和清新，图案规整对称，给人秩序感和宁静感。",
+        "visual_weight_and_rhythm": "视觉重心在中心蓝色花，向外各圈层元素重复排列，节奏均匀，从中心向外颜色和形状逐渐变化，形成由内到外的视觉流动。"
+      },
+      "three_circle_observation": {
+        "inner": "内圈以蓝色为主，中心是蓝色花形，周围环绕浅蓝色带圆的三角形，元素集中，色彩统一。",
+        "middle": "中圈是粉色带内部三角形的菱形，围绕内圈的浅蓝色三角形，形状规则，排列紧密。",
+        "outer": "外圈包含粉色小半圆和紫色不同形状的块，分为多层，最外层是紫色M形和长方块，中间层是粉色小半圆，层次丰富。",
+        "cross_circle_visual_connection": "内圈的浅蓝色三角形与中圈的粉色菱形通过白色留白隔开，中圈的粉色菱形与外圈的粉色小半圆、紫色块也通过留白衔接，整体各圈层通过留白和相似的对称排列形成连贯的曼陀罗结构。"
+      },
+      "circle_visual_units": {
+        "inner": {
+          "composition_description": "内圈主要由蓝色花形和浅蓝色带圆的三角形组成，中心花形占据内圈大部分，三角形环绕在花形外侧。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "unit_name": "蓝色中心花形",
+              "position": "内圈中心，占据内圈核心区域，外侧接近浅蓝色三角形。",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色到蓝色的渐变（或均匀蓝色），中心小圆颜色更深。",
+              "shape_description": "中心是小圆，周围放射状花瓣，花瓣边缘有锯齿状装饰圈。",
+              "texture_and_density": "笔触均匀，花瓣和中心圆填充密实，装饰圈线条细腻。",
+              "spatial_relations": "位于内圈中心，内侧无元素（是中心），外侧被白色留白隔开后接近浅蓝色三角形；被白色留白在外侧形成的空间环绕，与浅蓝色三角形不直接接触。",
+              "blank_space_role": "在花形外侧形成环状留白，隔开花形和浅蓝色三角形，承托花形的中心地位。",
+              "energy_ratio_percent": 60.0,
+              "rich_visual_description": ""
+            },
+            {
+              "id": "inner-002",
+              "unit_name": "浅蓝色带圆三角形",
+              "position": "内圈外侧，环绕蓝色中心花形，内侧接近蓝色花形的留白，外侧接近中圈的粉色菱形。",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色，内部小圆颜色稍深（或同色）。",
+              "shape_description": "三角形，内部有一个小圆，多个三角形均匀环绕成一圈。",
+              "texture_and_density": "填充密实，笔触均匀，三角形和小圆的线条清晰。",
+              "spatial_relations": "位于内圈外侧，内侧被白色留白隔开后接近蓝色中心花形，外侧接近中圈的粉色菱形；每个三角形之间被白色留白间隔，彼此不直接相邻，整体环绕中心花形。",
+              "blank_space_role": "在三角形内侧和之间形成留白，隔开中心花形和三角形，以及三角形彼此，使元素排列有序。",
+              "energy_ratio_percent": 40.0,
+              "rich_visual_description": ""
+            }
+          ]
+        },
+        "middle": {
+          "composition_description": "中圈由粉色带内部三角形的菱形组成，均匀排列成一圈，围绕内圈的浅蓝色三角形，菱形之间有白色留白。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "unit_name": "粉色带内部三角形菱形",
+              "position": "中圈，环绕内圈的浅蓝色三角形，内侧接近内圈留白，外侧接近外圈的粉色小半圆。",
+              "source_type": "user_painted",
+              "color_description": "粉色，内部三角形颜色稍浅（或同色）。",
+              "shape_description": "菱形，内部有一个或多个三角形组成的图案，多个菱形均匀排列成一圈。",
+              "texture_and_density": "填充密实，笔触均匀，内部三角形的线条清晰。",
+              "spatial_relations": "位于中圈，内侧被白色留白隔开后接近内圈的浅蓝色三角形，外侧被白色留白隔开后接近外圈的粉色小半圆；每个菱形之间被白色留白间隔，彼此不直接相邻，整体环绕内圈。",
+              "blank_space_role": "在菱形内侧和之间形成留白，隔开内圈三角形和菱形，以及菱形彼此，使中圈图案有序排列。",
+              "energy_ratio_percent": 100.0,
+              "rich_visual_description": ""
+            }
+          ]
+        },
+        "outer": {
+          "composition_description": "外圈包含多层元素，内层是粉色小半圆，中间层是紫色长方块和M形块，最外层是紫色M形块，各层通过留白隔开，元素丰富。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "unit_name": "粉色小半圆",
+              "position": "外圈内侧，靠近中圈的粉色菱形，外侧接近紫色块。",
+              "source_type": "blank_space",
+              "color_description": "白色（留白），形状为小半圆。",
+              "shape_description": "小半圆，多个小半圆均匀排列成一圈，形成一个环状的留白区域。",
+              "texture_and_density": "无填充，是空白的纸面，密度为0。",
+              "spatial_relations": "位于外圈内侧，内侧被白色留白隔开后接近中圈的粉色菱形，外侧被白色留白隔开后接近紫色块；每个小半圆之间相互连接（或间隔小），形成连续的半圆环，与内侧粉色菱形和外侧紫色块通过留白隔开。",
+              "blank_space_role": "作为中圈粉色菱形和外圈紫色块之间的过渡留白，切分外圈的不同紫色块区域，同时承托粉色小半圆的形状（未被涂色的半圆区域）。",
+              "energy_ratio_percent": 30.0,
+              "rich_visual_description": ""
+            },
+            {
+              "id": "outer-002",
+              "unit_name": "紫色几何块（长方块和M形）",
+              "position": "外圈外侧，分为两层，内层是长方块，外层是M形，内侧接近粉色小半圆。",
+              "source_type": "user_painted",
+              "color_description": "紫色，不同形状的块颜色一致。",
+              "shape_description": "包含长方块和M形块，长方块和M形块交替或分层排列，形成外圈的最外层和中间层。",
+              "texture_and_density": "填充密实，笔触均匀，形状清晰。",
+              "spatial_relations": "位于外圈外侧，内侧被白色留白隔开后接近粉色小半圆；长方块和M形块之间紧密排列（或通过小留白隔开），整体环绕在粉色小半圆外侧，形成外圈的紫色区域。",
+              "blank_space_role": "在紫色块内侧与粉色小半圆之间形成留白，隔开不同颜色区域，使外圈层次分明。",
+              "energy_ratio_percent": 70.0,
+              "rich_visual_description": ""
+            }
+          ]
+        }
+      }
+    },
+    "element_sensing": {
+      "inner": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "inner-001",
+            "element": "water",
+            "basis": [
+              "颜色为浅蓝色到蓝色渐变，属于水的主色。形状为放射状花瓣，中心有小圆，符合水性向下、流动、收藏的形态特征。"
+            ],
+            "confidence": "high",
+            "notes": "占比60%，是内圈乃至整个曼陀罗的核心能量，能量集中且颜色统一。"
+          },
+          {
+            "visual_unit_id": "inner-002",
+            "element": "water",
+            "basis": [
+              "颜色为浅蓝色，属于水的主色。形状为三角形，有向外、向上的动势，但颜色五行优先判为水，三角形只是为其水性能量增添了上升和扩散的形态特征，不改变主五行。"
+            ],
+            "confidence": "high",
+            "notes": "占比40%，环绕中心花形，形成水的延续和扩散，三角形形态削弱了水的沉静感，增添了动态。"
+          }
+        ],
+        "summary": ""
+      },
+      "middle": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "middle-001",
+            "element": "fire",
+            "basis": [
+              "颜色为粉色，粉色常为火性或土性暧昧色。此处粉色形状为菱形，且内部有三角形，形态尖锐、有方向性，与火的活跃、向外特性相符。整体粉色带内部三角形图案，给人温暖、绽放的视觉感，优先判为火。"
+            ],
+            "confidence": "medium",
+            "notes": "占比100%，是中圈唯一元素，粉色带内部三角形，其形状的尖锐和图案的动感增强了火的属性，使中圈能量明确向外。"
+          }
+        ],
+        "summary": ""
+      },
+      "outer": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "outer-001",
+            "element": "metal",
+            "basis": [
+              "此单元为白色留白构成的形状，白色属金。形状为小半圆，但本质是留白区域，含金性切割、收束之义。"
+            ],
+            "confidence": "high",
+            "notes": "占比30%，作为过渡性留白区域，切分中圈和外圈的紫色块，体现金的分离和界定作用。"
+          },
+          {
+            "visual_unit_id": "outer-002",
+            "element": "fire",
+            "basis": [
+              "颜色为紫色。紫色为木或火暧昧色，此处紫色为不同形状的实色块，填充密实、压住感强，且与外圈的扩张形态结合，优先判为火。"
+            ],
+            "confidence": "medium",
+            "notes": "占比70%，是外圈主导能量，紫色块形状明确（长方块和M形），有向外扩散的态势，与火的热烈、向外特性一致。"
+          }
+        ],
+        "summary": ""
+      }
+    },
+    "intra_circle_relations": {
+      "inner": {
+        "relations": [
+          {
+            "relation_id": "inner-rel-001",
+            "relation_type": "generating",
+            "involved_visual_unit_ids": [
+              "inner-001",
+              "inner-002"
+            ],
+            "visible_basis": "从中心花形（inner-001）到浅蓝色三角形（inner-002），虽然有白色留白隔开，但双侧元素均为水，形体之间并无直接生克关系。此处不判定为生克，留待三圈流动分析。",
+            "confidence": "low",
+            "notes": "同属水元素，无生克关系，仅为同类能量的向外延续。留白暂不作金性切割，因留白区域狭窄且为环形，不构成强力分离。"
+          }
+        ],
+        "summary": "内圈关系为水元素的同类延续与叠加，能量统一但形态有动态变化。"
+      },
+      "middle": {
+        "relations": [],
+        "summary": "中圈仅有单一元素，内部关系简单，粉色菱形单元之间无能量互动。"
+      },
+      "outer": {
+        "relations": [
+          {
+            "relation_id": "outer-rel-001",
+            "relation_type": "cut_by_metal",
+            "involved_visual_unit_ids": [
+              "outer-001",
+              "outer-002"
+            ],
+            "visible_basis": "粉色小半圆（outer-001，金性留白）位于紫色几何块（outer-002，火）的内侧，作为一道环状留白，将外圈紫色的各层（长方块和M形）与中圈粉色菱形切分开。",
+            "confidence": "high",
+            "notes": "留白明确作为分离区，金切火，使外圈火能量被约束在特定区域，不再向内延伸。"
+          }
+        ],
+        "summary": "外圈存在金性留白对火性紫色块的切分，形成结构化的能量分布。"
+      }
+    },
+    "cross_circle_flow": {
+      "flow_observations": [
+        {
+          "flow_id": "flow-001",
+          "flow_type": "continuous",
+          "involved_circles": [
+            "inner",
+            "middle"
+          ],
+          "visual_basis": "内圈的浅蓝色三角形（inner-002）与中圈的粉色菱形（middle-001）之间虽然被白色留白隔开，但两者在形状上存在呼应：三角形与菱形均是带有尖角的几何图形，且排列都非常规整，视觉上的节奏从内向外延续。这种形态上的连续性弥补了留白造成的间隔，形成了结构上的顺畅流动。",
+          "confidence": "medium",
+          "notes": "留白在此处作为过渡，而非阻断，三圈的形态和排列延续性强。"
+        },
+        {
+          "flow_id": "flow-002",
+          "flow_type": "outward_expanding",
+          "involved_circles": [
+            "inner",
+            "middle",
+            "outer"
+          ],
+          "visual_basis": "从内圈到外圈，元素形状从小到大、从简单到复杂：中心花形 -> 三角形 -> 菱形 -> 小半圆留白 -> 紫色长方块和M形。色彩从蓝色过渡到粉色再过渡到紫色，整体呈现明显的由内向外扩张的趋势。",
+          "confidence": "high",
+          "notes": "形状和颜色的渐变都支持能量向外扩散，最终被外圈的紫色块承接。"
+        },
+        {
+          "flow_id": "flow-003",
+          "flow_type": "outer_layer_containing",
+          "involved_circles": [
+            "outer",
+            "inner",
+            "middle"
+          ],
+          "visual_basis": "外圈由两层紫色几何块（outer-002）构成一个封闭的环形，最外层的M形块形成坚实的边界。这个边界将所有内圈和中圈的能量包裹在内，形成一种明确的容纳结构。",
+          "confidence": "high",
+          "notes": "外圈紫色的封闭感强，能量虽有向外扩张的动势，但最终被外圈边界收束，不会散逸。"
+        }
+      ],
+      "summary": ""
+    },
+    "evidence_links": [
+      {
+        "claim_id": "inner-001",
+        "claim_type": "element_sensing",
+        "claim_text": "inner-001 五行候选为 water。",
+        "visual_unit_ids": [
+          "inner-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "颜色为浅蓝色到蓝色渐变，属于水的主色。形状为放射状花瓣，中心有小圆，符合水性向下、流动、收藏的形态特征。"
+      },
+      {
+        "claim_id": "inner-002",
+        "claim_type": "element_sensing",
+        "claim_text": "inner-002 五行候选为 water。",
+        "visual_unit_ids": [
+          "inner-002"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "颜色为浅蓝色，属于水的主色。形状为三角形，有向外、向上的动势，但颜色五行优先判为水，三角形只是为其水性能量增添了上升和扩散的形态特征，不改变主五行。"
+      },
+      {
+        "claim_id": "middle-001",
+        "claim_type": "element_sensing",
+        "claim_text": "middle-001 五行候选为 fire。",
+        "visual_unit_ids": [
+          "middle-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.middle"
+        ],
+        "evidence_text": "颜色为粉色，粉色常为火性或土性暧昧色。此处粉色形状为菱形，且内部有三角形，形态尖锐、有方向性，与火的活跃、向外特性相符。整体粉色带内部三角形图案，给人温暖、绽放的视觉感，优先判为火。"
+      },
+      {
+        "claim_id": "outer-001",
+        "claim_type": "element_sensing",
+        "claim_text": "outer-001 五行候选为 metal。",
+        "visual_unit_ids": [
+          "outer-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "此单元为白色留白构成的形状，白色属金。形状为小半圆，但本质是留白区域，含金性切割、收束之义。"
+      },
+      {
+        "claim_id": "outer-002",
+        "claim_type": "element_sensing",
+        "claim_text": "outer-002 五行候选为 fire。",
+        "visual_unit_ids": [
+          "outer-002"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "颜色为紫色。紫色为木或火暧昧色，此处紫色为不同形状的实色块，填充密实、压住感强，且与外圈的扩张形态结合，优先判为火。"
+      },
+      {
+        "claim_id": "inner-rel-001",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "同属水元素，无生克关系，仅为同类能量的向外延续。留白暂不作金性切割，因留白区域狭窄且为环形，不构成强力分离。",
+        "visual_unit_ids": [
+          "inner-001",
+          "inner-002"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "从中心花形（inner-001）到浅蓝色三角形（inner-002），虽然有白色留白隔开，但双侧元素均为水，形体之间并无直接生克关系。此处不判定为生克，留待三圈流动分析。"
+      },
+      {
+        "claim_id": "outer-rel-001",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "留白明确作为分离区，金切火，使外圈火能量被约束在特定区域，不再向内延伸。",
+        "visual_unit_ids": [
+          "outer-001",
+          "outer-002"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "粉色小半圆（outer-001，金性留白）位于紫色几何块（outer-002，火）的内侧，作为一道环状留白，将外圈紫色的各层（长方块和M形）与中圈粉色菱形切分开。"
+      },
+      {
+        "claim_id": "flow-001",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "continuous",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "内圈的浅蓝色三角形（inner-002）与中圈的粉色菱形（middle-001）之间虽然被白色留白隔开，但两者在形状上存在呼应：三角形与菱形均是带有尖角的几何图形，且排列都非常规整，视觉上的节奏从内向外延续。这种形态上的连续性弥补了留白造成的间隔，形成了结构上的顺畅流动。"
+      },
+      {
+        "claim_id": "flow-002",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "outward_expanding",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "从内圈到外圈，元素形状从小到大、从简单到复杂：中心花形 -> 三角形 -> 菱形 -> 小半圆留白 -> 紫色长方块和M形。色彩从蓝色过渡到粉色再过渡到紫色，整体呈现明显的由内向外扩张的趋势。"
+      },
+      {
+        "claim_id": "flow-003",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "outer_layer_containing",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "外圈由两层紫色几何块（outer-002）构成一个封闭的环形，最外层的M形块形成坚实的边界。这个边界将所有内圈和中圈的能量包裹在内，形成一种明确的容纳结构。"
+      }
+    ]
+  },
+  "model_trace": {
+    "vision": [
+      {
+        "model": "ep-20260316095322-94wf5",
+        "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+        "endpoint_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+        "result": "success"
+      }
+    ],
+    "foundation_analysis": [
+      {
+        "model": "deepseek-v4-pro",
+        "base_url": "https://api.deepseek.com",
+        "endpoint_url": "https://api.deepseek.com/chat/completions",
+        "result": "success"
+      }
+    ]
+  }
+}
