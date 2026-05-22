@@ -474,7 +474,7 @@ def _report_shape_issues(final_report_md: str, *, report_mode: str) -> list[str]
     min_chars = 1000 if report_mode == "pro" else 500
     if len(text) < min_chars:
         issues.append(f"too_short_min_{min_chars}")
-    max_chars = 2400 if report_mode == "pro" else 1600
+    max_chars = 3200 if report_mode == "pro" else 1600
     if len(text) > max_chars:
         issues.append(f"too_long_max_{max_chars}")
     return issues

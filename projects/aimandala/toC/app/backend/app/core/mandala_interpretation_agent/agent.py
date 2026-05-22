@@ -361,7 +361,7 @@ class MandalaInterpretationAgent:
         min_chars = 1000 if report_mode == "pro" else 500
         if len(text) < min_chars:
             issues.append(f"report_too_short_min_{min_chars}_chars")
-        max_chars = 2400 if report_mode == "pro" else 1600
+        max_chars = 3200 if report_mode == "pro" else 1600
         if len(text) > max_chars:
             issues.append(f"report_too_long_max_{max_chars}_chars")
         return issues

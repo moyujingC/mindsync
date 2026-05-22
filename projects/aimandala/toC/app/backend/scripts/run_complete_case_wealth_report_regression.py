@@ -41,7 +41,6 @@ ReportMode = Literal["lite", "pro"]
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
-from app.api.routes import SeededMandalaLLMClient  # noqa: E402
 from app.core.llm.runtime import create_llm_client_from_env, load_private_env_file  # noqa: E402
 from app.core.mandala_interpretation_agent.agent import MandalaInterpretationAgent  # noqa: E402
 from app.core.mandala_interpretation_agent.artifact_store import MandalaInterpretationArtifactStore  # noqa: E402
@@ -63,6 +62,44 @@ class CompleteCaseReportInput:
     title: str
     topic_tags: str
     source_foundation_path: Path
+
+
+class FoundationVisualSeedLLMClient:
+    """Seed only the visual observation and delegate text stages to the real model."""
+
+    def __init__(self, *, visual_observation: dict[str, Any], delegate: Any) -> None:
+        self.visual_observation = visual_observation
+        self.delegate = delegate
+        self.last_attempt_trace = [{"source": "golden_foundation.visual_observation"}]
+
+    def generate_structured(
+        self,
+        *,
+        task: str,
+        prompt: str,
+        schema: dict[str, Any],
+        image_path: str | None = None,
+        image_paths: list[str] | None = None,
+        disable_thinking: bool | None = None,
+    ) -> dict[str, Any]:
+        return {"visual_observation": self.visual_observation}
+
+    def generate_text(
+        self,
+        *,
+        task: str,
+        system_prompt: str,
+        user_prompt: str,
+        disable_thinking: bool | None = None,
+    ) -> str:
+        generated = self.delegate.generate_text(
+            task=task,
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            disable_thinking=disable_thinking,
+        )
+        self.last_attempt_trace = list(getattr(self.delegate, "last_attempt_trace", []))
+        return generated
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -131,8 +168,8 @@ def main() -> int:
             started_at = datetime.now(timezone.utc)
             try:
                 seed_payload = load_foundation_seed(case.source_foundation_path)
-                seeded_client = SeededMandalaLLMClient(
-                    visual_observations=seed_payload,
+                seeded_client = FoundationVisualSeedLLMClient(
+                    visual_observation=extract_visual_observation_seed(seed_payload),
                     delegate=llm_client,
                 )
                 agent_input = build_agent_input(case, report_mode=mode)
@@ -246,7 +283,116 @@ def load_foundation_seed(path: Path) -> dict[str, Any]:
     foundation = payload.get("foundation_image_reading")
     if not isinstance(foundation, dict):
         raise ValueError(f"invalid foundation seed payload: {path}")
+    if not foundation.get("evidence_links"):
+        foundation["evidence_links"] = build_evidence_links_from_foundation(foundation)
     return payload
+
+
+def extract_visual_observation_seed(payload: dict[str, Any]) -> dict[str, Any]:
+    foundation = payload.get("foundation_image_reading")
+    if not isinstance(foundation, dict):
+        raise ValueError("foundation_image_reading missing in seed payload")
+    visual_observation = foundation.get("visual_observation")
+    if not isinstance(visual_observation, dict):
+        raise ValueError("visual_observation missing in seed payload")
+    return visual_observation
+
+
+def build_evidence_links_from_foundation(foundation: dict[str, Any]) -> list[dict[str, Any]]:
+    links: list[dict[str, Any]] = []
+    visual_units_by_id = visual_units_by_id_from_foundation(foundation)
+
+    element_sensing = foundation.get("element_sensing")
+    if isinstance(element_sensing, dict):
+        for circle_key, circle in element_sensing.items():
+            if not isinstance(circle, dict):
+                continue
+            candidates = circle.get("element_candidates")
+            if not isinstance(candidates, list):
+                continue
+            for item in candidates:
+                if not isinstance(item, dict):
+                    continue
+                unit_id = str(item.get("visual_unit_id") or "").strip()
+                basis = "；".join(_string_list(item.get("basis")))
+                unit = visual_units_by_id.get(unit_id, {})
+                links.append(
+                    {
+                        "claim_id": unit_id,
+                        "claim_type": "element_sensing",
+                        "claim_text": f"{unit_id} 五行候选为 {item.get('element', '')}。".strip(),
+                        "visual_unit_ids": [unit_id] if unit_id else [],
+                        "circle_observation_refs": [f"visual_observation.circle_visual_units.{circle_key}"],
+                        "evidence_text": basis or str(unit.get("rich_visual_description") or "").strip(),
+                    }
+                )
+
+    relations = foundation.get("intra_circle_relations")
+    if isinstance(relations, dict):
+        for circle_key, circle in relations.items():
+            if not isinstance(circle, dict):
+                continue
+            circle_relations = circle.get("relations")
+            if not isinstance(circle_relations, list):
+                continue
+            for item in circle_relations:
+                if not isinstance(item, dict):
+                    continue
+                relation_id = str(item.get("relation_id") or "").strip()
+                links.append(
+                    {
+                        "claim_id": relation_id,
+                        "claim_type": "intra_circle_relation",
+                        "claim_text": str(item.get("notes") or item.get("relation_type") or "").strip(),
+                        "visual_unit_ids": _string_list(item.get("involved_visual_unit_ids")),
+                        "circle_observation_refs": [f"visual_observation.circle_visual_units.{circle_key}"],
+                        "evidence_text": str(item.get("visible_basis") or "").strip(),
+                    }
+                )
+
+    flow = foundation.get("cross_circle_flow")
+    flow_observations = flow.get("flow_observations") if isinstance(flow, dict) else []
+    if isinstance(flow_observations, list):
+        for item in flow_observations:
+            if not isinstance(item, dict):
+                continue
+            flow_id = str(item.get("flow_id") or "").strip()
+            links.append(
+                {
+                    "claim_id": flow_id,
+                    "claim_type": "cross_circle_flow",
+                    "claim_text": str(item.get("flow_type") or "").strip(),
+                    "visual_unit_ids": [],
+                    "circle_observation_refs": ["visual_observation.three_circle_observation"],
+                    "evidence_text": str(item.get("visual_basis") or "").strip(),
+                }
+            )
+    return [link for link in links if link.get("claim_id") or link.get("evidence_text")]
+
+
+def visual_units_by_id_from_foundation(foundation: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    units_by_id: dict[str, dict[str, Any]] = {}
+    visual_observation = foundation.get("visual_observation")
+    circles = (
+        visual_observation.get("circle_visual_units")
+        if isinstance(visual_observation, dict)
+        else {}
+    )
+    if not isinstance(circles, dict):
+        return units_by_id
+    for circle in circles.values():
+        if not isinstance(circle, dict):
+            continue
+        units = circle.get("visual_units")
+        if not isinstance(units, list):
+            continue
+        for unit in units:
+            if not isinstance(unit, dict):
+                continue
+            unit_id = str(unit.get("id") or "").strip()
+            if unit_id:
+                units_by_id[unit_id] = unit
+    return units_by_id
 
 
 def build_agent_input(case: CompleteCaseReportInput, *, report_mode: ReportMode) -> MandalaAgentInput:
@@ -325,7 +471,7 @@ def write_run_index(
     for case in cases:
         for mode in ["lite", "pro"]:
             key = f"{case.case_id}:{mode}"
-            result = result_by_key.get(key, {})
+            result = result_by_key.get(key) or _existing_mode_result(output_root, case.case_id, mode)
             rows.append(
                 f"| {case.case_id} | {mode} | {result.get('status', 'unknown')} | "
                 f"{result.get('duration_seconds', '')} | "
@@ -349,6 +495,23 @@ def write_run_index(
     path = output_root / "README.md"
     path.write_text(content, encoding="utf-8")
     return path
+
+
+def _existing_mode_result(output_root: Path, case_id: str, mode: str) -> dict[str, Any]:
+    mode_root = output_root / case_id / mode
+    quality_path = mode_root / "quality_gate.json"
+    report_path = mode_root / "final_report.md"
+    if not quality_path.exists() or not report_path.exists():
+        return {}
+    try:
+        quality = json.loads(quality_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"status": "existing_invalid"}
+    return {
+        "case_id": case_id,
+        "mode": mode,
+        "status": "existing_passed" if quality.get("passed") is True else "existing_failed",
+    }
 
 
 def _extract_title(text: str, fallback: str) -> str:
@@ -377,6 +540,12 @@ def _first_existing_path(paths: list[Path]) -> Path:
         if path.exists():
             return path
     return paths[0]
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item).strip() for item in value if str(item).strip()]
 
 
 def _repo_relative(path: Path) -> str:

@@ -883,6 +883,34 @@ def test_mandala_agent_quality_gate_rejects_overlong_lite_report(tmp_path):
     assert "too_long_max_1600" in quality["details"]["report_shape_issues"]
 
 
+def test_mandala_agent_quality_gate_allows_longer_pro_report(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    agent_input = _agent_input(tmp_path)
+    agent_input = MandalaAgentInput(
+        report_mode="pro",
+        image=agent_input.image,
+        user_context=agent_input.user_context,
+        circle_boundaries=agent_input.circle_boundaries,
+        output_requirements=agent_input.output_requirements,
+    )
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=agent_input,
+        knowledge_pack=knowledge_pack,
+    )
+    report = "# 财富议题曼陀罗解读报告\n\n## 五行感知\n五行中的水与金是当前画面依据。\n\n" + "画面依据与财富解读。" * 230
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert "too_long_max_2400" not in quality["details"]["report_shape_issues"]
+    assert "too_long_max_3200" not in quality["details"]["report_shape_issues"]
+
+
 def test_mandala_agent_quality_gate_allows_boundary_disclaimer(tmp_path):
     llm_client = StubMandalaLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
