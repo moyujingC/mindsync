@@ -215,6 +215,39 @@ def test_vision_image_structured_generation_uses_prompt_without_schema_wrapper(t
     assert client.last_user_prompt == "vision prompt only"
 
 
+def test_vision_image_structured_generation_can_enable_thinking(tmp_path):
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"fake")
+    client = _ScriptedLLMClient(['{"ok": true}'])
+
+    result = client.generate_structured(
+        task="vision",
+        prompt="vision prompt only",
+        schema={"type": "object", "required": ["ok"]},
+        image_path=str(image_path),
+        disable_thinking=False,
+    )
+
+    assert result == {"ok": True}
+    assert client.last_disable_thinking is False
+
+
+def test_vision_image_structured_generation_defaults_to_thinking_off(tmp_path):
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"fake")
+    client = _ScriptedLLMClient(['{"ok": true}'])
+
+    result = client.generate_structured(
+        task="vision",
+        prompt="vision prompt only",
+        schema={"type": "object", "required": ["ok"]},
+        image_path=str(image_path),
+    )
+
+    assert result == {"ok": True}
+    assert client.last_disable_thinking is True
+
+
 class _ScriptedLLMClient(OpenAICompatibleLLMClient):
     def __init__(
         self,
@@ -242,6 +275,7 @@ class _ScriptedLLMClient(OpenAICompatibleLLMClient):
         self.responses = list(responses)
         self.request_count = 0
         self.last_user_prompt = ""
+        self.last_disable_thinking = None
 
     def _extract_text_from_response(self, raw_payload: str):
         return raw_payload
@@ -263,6 +297,7 @@ class _ScriptedLLMClient(OpenAICompatibleLLMClient):
         validate_text,
         attempt_trace,
     ):
+        self.last_disable_thinking = disable_thinking
         total_attempts = self.config.max_retries + 1
         for attempt_index in range(total_attempts):
             self.request_count += 1

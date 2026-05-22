@@ -143,22 +143,30 @@ AIMANDALA_LLM_VISION_MODEL=qwen-vl-max-latest
 完整案例的基础层图像解读使用同一份 `.env.local`，不需要额外传 key。先检查环境：
 
 ```bash
-python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py --check-env
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py \
+  --vision-provider qwen \
+  --thinking-mode off \
+  --check-env
 ```
 
 跑单个案例：
 
 ```bash
-python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py --case-id case-001
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py \
+  --case-id case-001 \
+  --vision-provider qwen \
+  --thinking-mode off
 ```
 
 跑全部 11 个案例：
 
 ```bash
-python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py \
+  --vision-provider qwen \
+  --thinking-mode off
 ```
 
-输出会写入 `projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/foundation-runs/<日期>/`。这一步必须使用真实视觉模型，不能用 mock / stub 结果做人工审核依据。
+输出会写入 `projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/foundation-runs/<日期>/<视觉模型>/thinking-<on|off>/`。如需对照豆包视觉模型，将 `--vision-provider` 改为 `doubao`；如需对照 thinking 开关，将 `--thinking-mode` 改为 `on`。这一步必须使用真实视觉模型，不能用 mock / stub 结果做人工审核依据。
 
 ## 兑换码配置
 

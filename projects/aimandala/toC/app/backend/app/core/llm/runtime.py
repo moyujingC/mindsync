@@ -75,6 +75,7 @@ class LLMClient(Protocol):
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
         image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[Dict[str, Any]]:
         ...
 
@@ -84,6 +85,7 @@ class LLMClient(Protocol):
         task: str,
         system_prompt: str,
         user_prompt: str,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         ...
 
@@ -99,6 +101,7 @@ class NoopLLMClient:
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
         image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[Dict[str, Any]]:
         return None
 
@@ -108,6 +111,7 @@ class NoopLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         return None
 
@@ -128,6 +132,7 @@ class OpenAICompatibleLLMClient:
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
         image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[Dict[str, Any]]:
         self.last_error_detail = {}
         self.last_attempt_trace = []
@@ -153,13 +158,18 @@ class OpenAICompatibleLLMClient:
             image_paths=normalized_image_paths,
         )
         is_vision_image_task = task.strip().lower() == "vision" and bool(normalized_image_paths)
+        active_disable_thinking = (
+            disable_thinking
+            if disable_thinking is not None
+            else (True if is_vision_image_task else False)
+        )
         if is_vision_image_task:
             raw = self._request_chat_completion(
                 task_config=task_config,
                 fallback_task_config=fallback_task_config,
                 messages=messages,
                 expect_json=False,
-                disable_thinking=True,
+                disable_thinking=active_disable_thinking,
                 validate_text=self._is_json_object_response,
             )
             if not raw:
@@ -174,7 +184,7 @@ class OpenAICompatibleLLMClient:
             fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=True,
-            disable_thinking=False,
+            disable_thinking=active_disable_thinking,
             validate_text=self._is_json_object_response,
         )
         if raw is None and task.strip().lower() == "vision":
@@ -183,7 +193,7 @@ class OpenAICompatibleLLMClient:
                 fallback_task_config=fallback_task_config,
                 messages=messages,
                 expect_json=False,
-                disable_thinking=False,
+                disable_thinking=active_disable_thinking,
                 validate_text=self._is_json_object_response,
             )
         if not raw:
@@ -199,6 +209,7 @@ class OpenAICompatibleLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         self.last_error_detail = {}
         self.last_attempt_trace = []
@@ -209,12 +220,13 @@ class OpenAICompatibleLLMClient:
             user_prompt=user_prompt,
             image_paths=[],
         )
+        active_disable_thinking = True if disable_thinking is None else disable_thinking
         raw = self._request_chat_completion(
             task_config=task_config,
             fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=False,
-            disable_thinking=True,
+            disable_thinking=active_disable_thinking,
         )
         if not raw:
             return None

@@ -25,6 +25,7 @@ class MandalaInterpretationAgent:
         *,
         agent_input: MandalaAgentInput,
         knowledge_pack: dict[str, Any],
+        disable_thinking: bool | None = None,
     ) -> MandalaAgentResult:
         input_payload = agent_input.to_dict()
         input_payload["knowledge_pack"] = {
@@ -37,6 +38,7 @@ class MandalaInterpretationAgent:
         stage_outputs.update(self._build_input_context(agent_input=agent_input))
         stage_outputs["foundation-image-reading"] = self.run_foundation_image_reading(
             agent_input=agent_input,
+            disable_thinking=disable_thinking,
         )
         stage_outputs["theme-translation-route"] = self._build_theme_route_stage(
             agent_input=agent_input,
@@ -47,6 +49,7 @@ class MandalaInterpretationAgent:
                 agent_input=agent_input,
                 knowledge_pack=knowledge_pack,
                 stage_outputs=stage_outputs,
+                disable_thinking=disable_thinking,
             )
         )
         stage_outputs.update(
@@ -54,6 +57,7 @@ class MandalaInterpretationAgent:
                 agent_input=agent_input,
                 knowledge_pack=knowledge_pack,
                 stage_outputs=stage_outputs,
+                disable_thinking=disable_thinking,
             )
         )
 
@@ -122,12 +126,14 @@ class MandalaInterpretationAgent:
         self,
         *,
         agent_input: MandalaAgentInput,
+        disable_thinking: bool | None = None,
     ) -> dict[str, Any]:
         visual_payload = self.llm_client.generate_structured(
             task="vision",
             prompt=self._visual_observation_prompt(),
             schema=self._visual_observation_schema(),
             image_paths=self._vision_image_paths(agent_input),
+            disable_thinking=disable_thinking,
         )
         if not isinstance(visual_payload, dict):
             error_detail = {
@@ -142,6 +148,7 @@ class MandalaInterpretationAgent:
         vision_trace = list(getattr(self.llm_client, "last_attempt_trace", []))
         foundation_analysis = self._run_foundation_analysis_from_visual(
             visual_observation=visual_observation,
+            disable_thinking=disable_thinking,
         )
         analysis_trace = list(getattr(self.llm_client, "last_attempt_trace", []))
         return self._normalize_foundation_image_reading(
@@ -161,6 +168,7 @@ class MandalaInterpretationAgent:
         self,
         *,
         visual_observation: dict[str, Any],
+        disable_thinking: bool | None = None,
     ) -> dict[str, Any]:
         text = self.llm_client.generate_text(
             task="chat",
@@ -173,6 +181,7 @@ class MandalaInterpretationAgent:
                     indent=2,
                 ),
             ),
+            disable_thinking=disable_thinking,
         )
         payload = self._parse_json_text(text) or {}
         return {
@@ -203,6 +212,7 @@ class MandalaInterpretationAgent:
         agent_input: MandalaAgentInput,
         knowledge_pack: dict[str, Any],
         stage_outputs: dict[str, Any],
+        disable_thinking: bool | None = None,
     ) -> dict[str, Any]:
         text = self.llm_client.generate_text(
             task="chat",
@@ -212,6 +222,7 @@ class MandalaInterpretationAgent:
                 knowledge_pack=knowledge_pack,
                 stage_outputs=stage_outputs,
             ),
+            disable_thinking=disable_thinking,
         )
         payload = self._parse_json_text(text) or {}
         core_thesis = str(payload.get("core_thesis") or "").strip() or "画面呈现出自我稳定与外部表达之间的调节过程。"
@@ -271,6 +282,7 @@ class MandalaInterpretationAgent:
         agent_input: MandalaAgentInput,
         knowledge_pack: dict[str, Any],
         stage_outputs: dict[str, Any],
+        disable_thinking: bool | None = None,
     ) -> dict[str, Any]:
         report_prompt = self._report_prompt(
             agent_input=agent_input,
@@ -281,6 +293,7 @@ class MandalaInterpretationAgent:
             task="chat",
             system_prompt=load_prompt_template("report/system.md"),
             user_prompt=report_prompt,
+            disable_thinking=disable_thinking,
         )
         if not report_text or not report_text.strip():
             raise RuntimeError("chat_model_failed: empty final report")
@@ -298,6 +311,7 @@ class MandalaInterpretationAgent:
                     draft_issues_json=json.dumps(draft_issues, ensure_ascii=False),
                     previous_report=markdown,
                 ),
+                disable_thinking=disable_thinking,
             )
             if retry_text and retry_text.strip():
                 markdown = retry_text.strip()

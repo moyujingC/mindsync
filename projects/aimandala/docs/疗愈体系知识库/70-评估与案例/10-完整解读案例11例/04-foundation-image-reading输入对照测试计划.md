@@ -53,8 +53,10 @@
 ## 模型要求
 
 - 必须使用真实视觉模型。
-- 视觉模型优先使用 Qwen/DashScope。
-- 如需对照豆包视觉模型，使用 `--vision-provider doubao`，并把输出写入 `foundation-runs/<日期>/doubao/`，避免覆盖默认 Qwen 结果。
+- 视觉模型优先使用 Qwen/DashScope，同时保留豆包对照。
+- 如需对照豆包视觉模型，使用 `--vision-provider doubao`。
+- 如需对照 thinking 开关，使用 `--thinking-mode on|off`。
+- 默认输出按 `foundation-runs/<日期>/<视觉模型>/thinking-<on|off>/` 分组，避免覆盖不同实验结果。
 - 豆包 provider 要求视觉配置指向火山方舟 OpenAI 兼容入口，`AIMANDALA_LLM_VISION_MODEL` 使用 `ep-*` 推理接入点 ID。
 - 文字整理如需使用文本模型，优先使用 DeepSeek v4。
 - 输出必须记录模型名称、base_url、时间和关键参数。

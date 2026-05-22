@@ -174,6 +174,7 @@ def test_build_env_check_accepts_deepseek_and_qwen_dashscope(monkeypatch):
     assert payload["text_model_matches_app"] is True
     assert payload["app_vision_ready"] is True
     assert payload["planned_run_count"] == 1
+    assert payload["thinking_mode"] == "off"
 
 
 def test_build_env_check_accepts_doubao_ark_vision_route(monkeypatch):
@@ -196,6 +197,27 @@ def test_build_env_check_accepts_doubao_ark_vision_route(monkeypatch):
     assert payload["ready"] is True
     assert payload["vision_provider"] == "doubao"
     assert payload["app_vision_ready"] is True
+
+
+def test_build_env_check_records_thinking_mode(monkeypatch):
+    runner = _load_runner_module()
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "text-key")
+    monkeypatch.setenv("AIMANDALA_LLM_BASE_URL", "https://api.deepseek.com")
+    monkeypatch.setenv("AIMANDALA_LLM_MODEL", "deepseek-v4-pro")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "vision-key")
+    monkeypatch.setenv(
+        "AIMANDALA_LLM_VISION_BASE_URL",
+        "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    )
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "qwen-vl-max-latest")
+
+    payload = runner.build_env_check_payload(
+        planned_runs=[{"case_id": "case-001"}],
+        thinking_mode="on",
+    )
+
+    assert payload["ready"] is True
+    assert payload["thinking_mode"] == "on"
 
 
 def test_build_env_check_rejects_doubao_without_ark_endpoint(monkeypatch):
@@ -336,3 +358,23 @@ def test_refresh_existing_reviews_uses_existing_foundation_json_without_model(tm
         }
     ]
     assert "## 原文、人工基准与模型对照" in (output_dir / "case-001-review.md").read_text(encoding="utf-8")
+
+
+def test_run_meta_records_provider_and_timing():
+    runner = _load_runner_module()
+    started_at = runner.datetime(2026, 5, 22, 8, 0, tzinfo=runner.timezone.utc)
+    finished_at = runner.datetime(2026, 5, 22, 8, 0, 5, tzinfo=runner.timezone.utc)
+
+    meta = runner._run_meta(  # noqa: SLF001 - metadata helper coverage.
+        vision_provider="doubao",
+        thinking_mode="on",
+        started_at=started_at,
+        finished_at=finished_at,
+        duration_seconds=5.1234,
+    )
+
+    assert meta["vision_provider"] == "doubao"
+    assert meta["thinking_mode"] == "on"
+    assert meta["started_at"] == started_at.isoformat()
+    assert meta["finished_at"] == finished_at.isoformat()
+    assert meta["duration_seconds"] == 5.123

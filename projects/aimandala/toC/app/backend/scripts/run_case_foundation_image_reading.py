@@ -7,8 +7,9 @@ import json
 import os
 import re
 import sys
+import time
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,7 @@ CASE_ROOT = (
 )
 DEFAULT_OUTPUT_ROOT = CASE_ROOT / "foundation-runs" / date.today().isoformat()
 VISION_PROVIDERS = {"qwen", "doubao", "custom"}
+THINKING_MODES = {"on", "off"}
 
 sys.path.insert(0, str(BACKEND_ROOT))
 
@@ -72,6 +74,12 @@ def build_parser() -> argparse.ArgumentParser:
         default="qwen",
         help="Vision route requirement for review runs.",
     )
+    parser.add_argument(
+        "--thinking-mode",
+        choices=sorted(THINKING_MODES),
+        default="off",
+        help="Whether to request model thinking during the run.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Validate planned cases without calling models.")
     parser.add_argument("--check-env", action="store_true", help="Check real model environment without calling models.")
     parser.add_argument(
@@ -90,7 +98,12 @@ def main() -> int:
     vision_provider = args.vision_provider.strip().lower()
 
     case_root = Path(args.case_root)
-    output_root = Path(args.output_root)
+    thinking_mode = _normalize_thinking_mode(args.thinking_mode)
+    output_root = _resolve_output_root(
+        raw_output_root=args.output_root,
+        vision_provider=vision_provider,
+        thinking_mode=thinking_mode,
+    )
     cases = load_complete_cases(case_root, case_id=args.case_id.strip() or None)
     planned = [
         {
@@ -110,6 +123,7 @@ def main() -> int:
         payload = build_env_check_payload(
             planned_runs=planned,
             vision_provider=vision_provider,
+            thinking_mode=thinking_mode,
         )
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0 if payload["ready"] else 2
@@ -122,6 +136,7 @@ def main() -> int:
     env_check = build_env_check_payload(
         planned_runs=planned,
         vision_provider=vision_provider,
+        thinking_mode=thinking_mode,
     )
     if not env_check["ready"]:
         print(json.dumps(env_check, ensure_ascii=False, indent=2))
@@ -134,30 +149,48 @@ def main() -> int:
     for case in cases:
         output_dir = output_root / case.case_id
         output_dir.mkdir(parents=True, exist_ok=True)
+        case_started_at = datetime.now(timezone.utc)
+        case_started_monotonic = time.monotonic()
         try:
             foundation_image_reading = agent.run_foundation_image_reading(
-                agent_input=build_agent_input(case)
+                agent_input=build_agent_input(case),
+                disable_thinking=_thinking_mode_enabled(thinking_mode) is False,
             )
+            case_finished_at = datetime.now(timezone.utc)
             files = write_foundation_artifacts(
                 output_dir=output_dir,
                 case=case,
                 foundation_image_reading=foundation_image_reading,
                 env_check=env_check,
+                run_meta=_run_meta(
+                    vision_provider=vision_provider,
+                    thinking_mode=thinking_mode,
+                    started_at=case_started_at,
+                    finished_at=case_finished_at,
+                    duration_seconds=time.monotonic() - case_started_monotonic,
+                ),
             )
             results.append(
                 {
                     "case_id": case.case_id,
                     "status": "complete",
                     "output_dir": str(output_dir),
+                    "started_at": case_started_at.isoformat(),
+                    "finished_at": case_finished_at.isoformat(),
+                    "duration_seconds": round(time.monotonic() - case_started_monotonic, 3),
                     "files": [str(path) for path in files],
                 }
             )
         except Exception as error:  # noqa: BLE001 - batch runner should keep failures readable.
+            case_finished_at = datetime.now(timezone.utc)
             error_payload = {
                 "case_id": case.case_id,
                 "status": "failed",
                 "error": str(error),
                 "output_dir": str(output_dir),
+                "started_at": case_started_at.isoformat(),
+                "finished_at": case_finished_at.isoformat(),
+                "duration_seconds": round(time.monotonic() - case_started_monotonic, 3),
             }
             (output_dir / "run_error.json").write_text(
                 json.dumps(error_payload, ensure_ascii=False, indent=2) + "\n",
@@ -165,7 +198,12 @@ def main() -> int:
             )
             results.append(error_payload)
             exit_code = 2
-    write_run_index(output_root=output_root, cases=cases, results=results, env_check=env_check)
+    write_run_index(
+        output_root=output_root,
+        cases=cases,
+        results=results,
+        env_check=env_check,
+    )
     print(json.dumps({"status": "complete", "results": results}, ensure_ascii=False, indent=2))
     return exit_code
 
@@ -248,9 +286,11 @@ def build_env_check_payload(
     *,
     planned_runs: list[dict[str, Any]],
     vision_provider: str = "qwen",
+    thinking_mode: str = "off",
 ) -> dict[str, Any]:
     load_private_env_file()
     normalized_provider = _normalize_vision_provider(vision_provider)
+    normalized_thinking_mode = _normalize_thinking_mode(thinking_mode)
     primary_vision_ready = all(
         os.getenv(name)
         for name in [
@@ -293,8 +333,10 @@ def build_env_check_payload(
         missing_required.append(_vision_route_requirement_label(normalized_provider))
     return {
         "status": "env_check",
+        "checked_at": datetime.now(timezone.utc).isoformat(),
         "ready": not missing_required,
         "vision_provider": normalized_provider,
+        "thinking_mode": normalized_thinking_mode,
         "planned_run_count": len(planned_runs),
         "missing_required": missing_required,
         "text_model_ready": text_model_ready,
@@ -309,6 +351,7 @@ def build_env_check_payload(
             "Foundation image reading review must use real models.",
             "Text route must match DeepSeek v4.",
             f"Vision route must match {normalized_provider}.",
+            f"Thinking mode is {normalized_thinking_mode}.",
             "Secret values are never printed.",
         ],
     }
@@ -357,10 +400,14 @@ def write_foundation_artifacts(
     case: CompleteCaseFoundationInput,
     foundation_image_reading: dict[str, Any],
     env_check: dict[str, Any],
+    run_meta: dict[str, Any],
 ) -> list[Path]:
     files: dict[str, str] = {
         "foundation_image_reading.json": json.dumps(
-            foundation_image_reading,
+            {
+                **foundation_image_reading,
+                "run_meta": run_meta,
+            },
             ensure_ascii=False,
             indent=2,
         )
@@ -388,14 +435,15 @@ def write_run_index(
 ) -> Path:
     output_root.mkdir(parents=True, exist_ok=True)
     rows = [
-        "| 案例 | 状态 | 审核入口 | 原画作 | 三圈标记图 |",
-        "| --- | --- | --- | --- | --- |",
+        "| 案例 | 状态 | 耗时秒 | 审核入口 | 原画作 | 三圈标记图 |",
+        "| --- | --- | --- | --- | --- | --- |",
     ]
     result_by_case = {str(item.get("case_id")): item for item in results}
     for case in cases:
         result = result_by_case.get(case.case_id, {})
         rows.append(
             f"| {case.case_id} | {result.get('status', 'unknown')} | "
+            f"{result.get('duration_seconds', '')} | "
             f"[{case.case_id}/{case.case_id}-review.md]({case.case_id}/{case.case_id}-review.md) | "
             f"`{_repo_relative(case.image_path)}` | `{_repo_relative(case.marked_image_path)}` |"
         )
@@ -404,7 +452,9 @@ def write_run_index(
             "# foundation_image_reading 审核运行索引",
             "",
             f"> 生成日期：{date.today().isoformat()}",
+            f"> 生成时间（UTC）：{datetime.now(timezone.utc).isoformat()}",
             "> 模型要求：文字 DeepSeek v4；视觉 Qwen/DashScope。",
+            f"> thinking_mode：{env_check.get('thinking_mode')}",
             f"> env_ready：{env_check.get('ready')}",
             f"> app_vision_ready：{env_check.get('app_vision_ready')}",
             f"> text_model_matches_app：{env_check.get('text_model_matches_app')}",
@@ -973,6 +1023,48 @@ def _is_doubao_ark_vision_route(prefix: str) -> bool:
 def _normalize_vision_provider(value: str) -> str:
     normalized = value.strip().lower() or "qwen"
     return normalized if normalized in VISION_PROVIDERS else "qwen"
+
+
+def _normalize_thinking_mode(value: str) -> str:
+    normalized = value.strip().lower() or "off"
+    return normalized if normalized in THINKING_MODES else "off"
+
+
+def _thinking_mode_enabled(value: str) -> bool:
+    return _normalize_thinking_mode(value) == "on"
+
+
+def _run_meta(
+    *,
+    vision_provider: str,
+    thinking_mode: str,
+    started_at: datetime,
+    finished_at: datetime,
+    duration_seconds: float,
+) -> dict[str, Any]:
+    return {
+        "vision_provider": _normalize_vision_provider(vision_provider),
+        "thinking_mode": _normalize_thinking_mode(thinking_mode),
+        "started_at": started_at.isoformat(),
+        "finished_at": finished_at.isoformat(),
+        "duration_seconds": round(duration_seconds, 3),
+    }
+
+
+def _resolve_output_root(
+    *,
+    raw_output_root: str,
+    vision_provider: str,
+    thinking_mode: str,
+) -> Path:
+    output_root = Path(raw_output_root)
+    if output_root == DEFAULT_OUTPUT_ROOT:
+        return (
+            DEFAULT_OUTPUT_ROOT
+            / _normalize_vision_provider(vision_provider)
+            / f"thinking-{_normalize_thinking_mode(thinking_mode)}"
+        )
+    return output_root
 
 
 def _vision_route_matches_provider(prefix: str, *, provider: str) -> bool:

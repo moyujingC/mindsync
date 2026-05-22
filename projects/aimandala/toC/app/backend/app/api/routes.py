@@ -98,6 +98,7 @@ class SeededMandalaLLMClient:
         schema: dict[str, Any],
         image_path: str | None = None,
         image_paths: list[str] | None = None,
+        disable_thinking: bool | None = None,
     ) -> dict[str, Any]:
         return self.visual_observations
 
@@ -107,6 +108,7 @@ class SeededMandalaLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        disable_thinking: bool | None = None,
     ) -> str:
         if "生成圈内五行识别、圈内关系和三圈能量流动" in user_prompt:
             foundation = self.visual_observations.get("foundation_image_reading")
