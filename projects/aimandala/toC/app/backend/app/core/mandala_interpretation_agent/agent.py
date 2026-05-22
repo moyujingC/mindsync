@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 from uuid import uuid4
 
@@ -362,27 +363,41 @@ class MandalaInterpretationAgent:
     ) -> dict[str, Any]:
         raw = payload.get("foundation_image_reading")
         foundation = raw if isinstance(raw, dict) else payload
+        visual_observation = self._normalize_visual_observation(
+            foundation.get("visual_observation")
+        )
+        unit_id_map = self._visual_unit_id_map(visual_observation)
+        element_sensing = self._normalize_layered_payload(
+            foundation.get("element_sensing"),
+            default_list_key="element_candidates",
+            unit_id_map=unit_id_map,
+        )
+        intra_circle_relations = self._normalize_layered_payload(
+            foundation.get("intra_circle_relations"),
+            default_list_key="relations",
+            unit_id_map=unit_id_map,
+        )
+        cross_circle_flow = self._normalize_cross_circle_flow(
+            foundation.get("cross_circle_flow")
+        )
+        normalized_foundation = {
+            "visual_observation": visual_observation,
+            "element_sensing": element_sensing,
+            "intra_circle_relations": intra_circle_relations,
+            "cross_circle_flow": cross_circle_flow,
+        }
         normalized = {
             "stage": "foundation-image-reading",
             "status": "complete",
             "foundation_image_reading": {
-                "visual_observation": self._normalize_visual_observation(
-                    foundation.get("visual_observation")
-                ),
-                "element_sensing": self._normalize_layered_payload(
-                    foundation.get("element_sensing"),
-                    default_list_key="element_candidates",
-                ),
-                "intra_circle_relations": self._normalize_layered_payload(
-                    foundation.get("intra_circle_relations"),
-                    default_list_key="relations",
-                ),
-                "cross_circle_flow": self._normalize_cross_circle_flow(
-                    foundation.get("cross_circle_flow")
-                ),
+                "visual_observation": visual_observation,
+                "element_sensing": element_sensing,
+                "intra_circle_relations": intra_circle_relations,
+                "cross_circle_flow": cross_circle_flow,
                 "evidence_links": self._normalize_evidence_links(
                     foundation.get("evidence_links"),
-                    foundation=foundation,
+                    foundation=normalized_foundation,
+                    unit_id_map=unit_id_map,
                 ),
             },
             "model_trace": (
@@ -440,8 +455,13 @@ class MandalaInterpretationAgent:
         source_type = str(unit.get("source_type") or "user_painted").strip()
         if source_type not in {"user_painted", "blank_space"}:
             source_type = "user_painted"
+        unit_id = self._canonical_visual_unit_id(
+            unit.get("id"),
+            circle_key=circle_key,
+            index=index,
+        )
         return {
-            "id": str(unit.get("id") or f"{circle_key}-{index + 1:03d}").strip(),
+            "id": unit_id,
             "unit_name": str(unit.get("unit_name") or unit.get("name") or "").strip(),
             "position": str(unit.get("position") or circle_key).strip(),
             "source_type": source_type,
@@ -495,11 +515,69 @@ class MandalaInterpretationAgent:
         except (TypeError, ValueError):
             return 0.0
 
+    def _visual_unit_id_map(self, visual_observation: dict[str, Any]) -> dict[str, str]:
+        mapping: dict[str, str] = {}
+        circles = (
+            visual_observation.get("circle_visual_units")
+            if isinstance(visual_observation, dict)
+            else {}
+        )
+        if not isinstance(circles, dict):
+            return mapping
+        for circle_key, circle in circles.items():
+            if not isinstance(circle, dict):
+                continue
+            units = circle.get("visual_units")
+            if not isinstance(units, list):
+                continue
+            for index, unit in enumerate(units):
+                if not isinstance(unit, dict):
+                    continue
+                canonical = self._canonical_visual_unit_id(
+                    unit.get("id"),
+                    circle_key=str(circle_key),
+                    index=index,
+                )
+                raw = str(unit.get("id") or "").strip()
+                if raw:
+                    mapping[raw] = canonical
+                mapping[canonical] = canonical
+        return mapping
+
+    def _canonical_visual_unit_id(
+        self,
+        value: Any,
+        *,
+        circle_key: str,
+        index: int,
+    ) -> str:
+        fallback = f"{circle_key}-{index + 1:03d}"
+        raw = str(value or "").strip()
+        if not raw:
+            return fallback
+        normalized = raw.replace("_", "-")
+        match = re.fullmatch(r"(inner|middle|outer)-0*(\d+)", normalized)
+        if match:
+            return f"{match.group(1)}-{int(match.group(2)):03d}"
+        return normalized
+
+    def _normalize_visual_unit_ref(
+        self,
+        value: Any,
+        *,
+        unit_id_map: dict[str, str],
+    ) -> str:
+        raw = str(value or "").strip()
+        if not raw:
+            return ""
+        return unit_id_map.get(raw) or unit_id_map.get(raw.replace("_", "-")) or raw.replace("_", "-")
+
     def _normalize_layered_payload(
         self,
         value: Any,
         *,
         default_list_key: str,
+        unit_id_map: dict[str, str] | None = None,
     ) -> dict[str, dict[str, Any]]:
         raw = value if isinstance(value, dict) else {}
         normalized = {}
@@ -511,6 +589,7 @@ class MandalaInterpretationAgent:
                 default_list_key: self._normalize_layer_items(
                     items,
                     default_list_key=default_list_key,
+                    unit_id_map=unit_id_map or {},
                 ),
                 "summary": str(circle_payload.get("summary") or "").strip(),
             }
@@ -521,18 +600,27 @@ class MandalaInterpretationAgent:
         items: Any,
         *,
         default_list_key: str,
+        unit_id_map: dict[str, str],
     ) -> list[Any]:
         if not isinstance(items, list):
             return []
-        if default_list_key != "element_candidates":
-            return items
         normalized_items: list[Any] = []
         for item in items:
             if not isinstance(item, dict):
                 normalized_items.append(item)
                 continue
             normalized = dict(item)
-            normalized["basis"] = self._string_list(normalized.get("basis"))
+            if default_list_key == "element_candidates":
+                normalized["basis"] = self._string_list(normalized.get("basis"))
+                normalized["visual_unit_id"] = self._normalize_visual_unit_ref(
+                    normalized.get("visual_unit_id"),
+                    unit_id_map=unit_id_map,
+                )
+            elif default_list_key == "relations":
+                normalized["involved_visual_unit_ids"] = [
+                    self._normalize_visual_unit_ref(value, unit_id_map=unit_id_map)
+                    for value in self._string_list(normalized.get("involved_visual_unit_ids"))
+                ]
             normalized_items.append(normalized)
         return normalized_items
 
@@ -549,6 +637,7 @@ class MandalaInterpretationAgent:
         value: Any,
         *,
         foundation: dict[str, Any],
+        unit_id_map: dict[str, str],
     ) -> list[dict[str, Any]]:
         if not isinstance(value, list):
             return self._build_evidence_links_from_foundation(foundation)
@@ -561,7 +650,10 @@ class MandalaInterpretationAgent:
                     "claim_id": str(item.get("claim_id") or "").strip(),
                     "claim_type": str(item.get("claim_type") or "").strip(),
                     "claim_text": str(item.get("claim_text") or "").strip(),
-                    "visual_unit_ids": self._string_list(item.get("visual_unit_ids")),
+                    "visual_unit_ids": [
+                        self._normalize_visual_unit_ref(unit_id, unit_id_map=unit_id_map)
+                        for unit_id in self._string_list(item.get("visual_unit_ids"))
+                    ],
                     "circle_observation_refs": self._string_list(
                         item.get("circle_observation_refs")
                     ),

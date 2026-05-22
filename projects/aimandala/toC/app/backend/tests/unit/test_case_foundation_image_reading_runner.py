@@ -289,7 +289,7 @@ def test_refresh_existing_reviews_uses_existing_foundation_json_without_model(tm
         {
             "case_id": "case-001",
             "status": "complete",
-            "review_path": str(output_dir / "review.md"),
+            "review_path": str(output_dir / "case-001-review.md"),
         }
     ]
-    assert "## 原文、人工基准与模型对照" in (output_dir / "review.md").read_text(encoding="utf-8")
+    assert "## 原文、人工基准与模型对照" in (output_dir / "case-001-review.md").read_text(encoding="utf-8")

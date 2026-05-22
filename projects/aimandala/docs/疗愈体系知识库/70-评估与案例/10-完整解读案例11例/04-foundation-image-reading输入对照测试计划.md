@@ -33,7 +33,7 @@
 每个案例输出：
 
 - `foundation_image_reading.json`
-- `review.md`
+- `case-xxx-review.md`
 - `env_check.json`
 
 输出结构必须遵循：

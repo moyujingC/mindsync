@@ -1,6 +1,6 @@
 # foundation_image_reading 审核运行索引
 
-> 生成日期：2026-05-21
+> 生成日期：2026-05-22
 > 模型要求：文字 DeepSeek v4；视觉 Qwen/DashScope。
 > env_ready：True
 > app_vision_ready：True

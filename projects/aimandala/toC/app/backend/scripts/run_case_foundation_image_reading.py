@@ -307,7 +307,7 @@ def refresh_existing_reviews(
             )
             continue
         foundation_image_reading = json.loads(foundation_path.read_text(encoding="utf-8"))
-        review_path = output_dir / "review.md"
+        review_path = output_dir / f"{case.case_id}-review.md"
         review_path.write_text(
             _render_review_markdown(
                 case=case,
@@ -340,7 +340,7 @@ def write_foundation_artifacts(
         )
         + "\n",
         "env_check.json": json.dumps(env_check, ensure_ascii=False, indent=2) + "\n",
-        "review.md": _render_review_markdown(
+        f"{case.case_id}-review.md": _render_review_markdown(
             case=case,
             foundation_image_reading=foundation_image_reading,
         ),
@@ -370,7 +370,7 @@ def write_run_index(
         result = result_by_case.get(case.case_id, {})
         rows.append(
             f"| {case.case_id} | {result.get('status', 'unknown')} | "
-            f"[{case.case_id}/review.md]({case.case_id}/review.md) | "
+            f"[{case.case_id}/{case.case_id}-review.md]({case.case_id}/{case.case_id}-review.md) | "
             f"`{_repo_relative(case.image_path)}` | `{_repo_relative(case.marked_image_path)}` |"
         )
     content = "\n".join(
