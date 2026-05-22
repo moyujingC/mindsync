@@ -1,0 +1,7 @@
+{
+  "agent_version": "mandala-interpretation-agent-v1",
+  "status": "complete",
+  "report_mode": "lite",
+  "stage_count": 12,
+  "quality_gate_passed": true
+}

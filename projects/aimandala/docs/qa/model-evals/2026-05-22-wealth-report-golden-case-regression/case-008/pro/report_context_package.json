@@ -1,0 +1,792 @@
+{
+  "report_id": "mandala-interpretation-7da9ffc4473f",
+  "report_mode": "pro",
+  "user_context": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "painting_intention": "case-008 【案例8】用五行感知法+相生相克发解读财富提升（完整解读）",
+    "painting_feeling": ""
+  },
+  "foundation_image_reading": {
+    "stage": "foundation-image-reading",
+    "status": "complete",
+    "foundation_image_reading": {
+      "visual_observation": {
+        "overall_observation": {
+          "first_impression": "这幅画以深浅绿色、棕色和黄色为主，第一眼给人一种厚重、堆叠、植物向外生长但承载较重的感觉。整体像一朵由叶片和粗重棕色长条组成的花，画面并不轻盈。",
+          "visual_atmosphere": "氛围偏沉稳、压实、用力。深绿色和褐色占比较高，黄色中心相对明亮，外围浅绿色叶片带来外放和生长感。",
+          "visual_weight_and_rhythm": "视觉重量主要落在中圈深绿色叶片/圆瓣和棕色长条上。棕色长条形成四向或多向支撑，绿色叶片层层堆叠，外圈浅绿色叶片让节奏继续向外扩展。",
+          "healing_language_note": "疗愈师语言可以表达为：画面里有很强的努力、支撑和向外生长的力量，同时也有一些比较厚、比较累的承载感，需要被温和地松动和照看。"
+        },
+        "three_circle_observation": {
+          "inner": "内圈为黄色中心和绿色/棕色环状结构。黄色中心较亮，周围有绿色和棕色形成的环状或瓣状过渡。",
+          "middle": "中圈有大量深绿色叶片或圆瓣，以及棕色长条。深绿色区域较浓重，棕色长条明显并具有方向性，图案之间存在留白。",
+          "outer": "外圈有浅绿色叶片和棕色边界，部分黄色也出现在外围。外圈叶片向外展开，形成比中圈更轻一些的外层，但仍被棕色结构和留白分隔。",
+          "cross_circle_visual_connection": "三圈整体从黄色中心过渡到深绿色和棕色中圈，再到浅绿色外圈。绿色从内到外持续出现，棕色长条在中外圈承担连接和压实作用。",
+          "cross_circle_visual_evidence": "中心黄色被绿色/棕色环绕；中圈深绿色和棕色最密；外圈浅绿色叶片继续向外延伸。不同图案之间有留白作为分隔。"
+        },
+        "circle_visual_units": {
+          "inner": {
+            "composition_description": "内圈由黄色中心、绿色环状/瓣状结构、棕色边缘和留白组成。黄色中心是最明亮区域，绿色和棕色形成外侧包围。",
+            "visual_units": [
+              {
+                "id": "inner-001",
+                "unit_name": "黄色中心",
+                "position": "内圈中心",
+                "source_type": "user_painted",
+                "color_description": "黄色，较明亮。",
+                "shape_description": "圆形或花心状中心。",
+                "texture_and_density": "面积较小但亮度高，是中心焦点。",
+                "spatial_relations": "被绿色和棕色环状结构包围。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "黄色中心像整幅画的明亮核心。它面积不大，但在深绿和棕色包围中很显眼。"
+              },
+              {
+                "id": "inner-002",
+                "unit_name": "内圈绿色环状结构",
+                "position": "黄色中心外侧",
+                "source_type": "user_painted",
+                "color_description": "绿色，部分偏浅或中等深度。",
+                "shape_description": "环状、瓣状或叶状结构。",
+                "texture_and_density": "围绕中心重复，密度中等。",
+                "spatial_relations": "包围黄色中心，并与棕色边缘和留白相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "绿色环状结构让中心开始呈现植物性和生长感。它连接黄色中心和外侧更厚重的结构。"
+              },
+              {
+                "id": "inner-003",
+                "unit_name": "内圈棕色边缘",
+                "position": "内圈绿色结构附近",
+                "source_type": "user_painted",
+                "color_description": "棕色或褐色。",
+                "shape_description": "环形边缘或短条状边界。",
+                "texture_and_density": "颜色较沉，形成压实边界。",
+                "spatial_relations": "邻近黄色中心和绿色环状结构，也与中圈棕色长条呼应。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "棕色边缘让内圈不只是明亮和生长，也带有较重的承载和框定感。"
+              },
+              {
+                "id": "inner-004",
+                "unit_name": "内圈留白",
+                "position": "黄色、绿色、棕色结构之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "细小间隔。",
+                "texture_and_density": "面积较小。",
+                "spatial_relations": "隔开中心和周边结构，帮助识别层次。",
+                "blank_space_role": "形成中心与包围层之间的边界。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "内圈留白让黄色中心、绿色环和棕色边缘之间有清楚分隔。"
+              }
+            ]
+          },
+          "middle": {
+            "composition_description": "中圈由大量深绿色叶片/圆瓣、棕色长条和留白组成，是全画最厚重的区域。绿色呈堆叠感，棕色长条有强方向性。",
+            "visual_units": [
+              {
+                "id": "middle-001",
+                "unit_name": "深绿色叶片/圆瓣堆叠",
+                "position": "中圈主体",
+                "source_type": "user_painted",
+                "color_description": "深绿色，局部较浓重、偏黯淡。",
+                "shape_description": "叶片、圆瓣或云团状重复结构。",
+                "texture_and_density": "密度高，层层堆叠，视觉重量大。",
+                "spatial_relations": "围绕中心重复，并与棕色长条相邻或被其压住/穿插。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "中圈深绿色区域让画面显得厚重。它们不是轻薄叶片，而是一层层堆起来的绿色团块。"
+              },
+              {
+                "id": "middle-002",
+                "unit_name": "棕色长条",
+                "position": "中圈四向或多向支撑处",
+                "source_type": "user_painted",
+                "color_description": "棕色或褐色，颜色较重。",
+                "shape_description": "长条状、粗条状，沿多个方向伸展。",
+                "texture_and_density": "笔触较重，面积明显，形成强支撑。",
+                "spatial_relations": "穿过或压在深绿色区域附近，并向外圈延伸。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "棕色长条是中圈最有重量的结构之一。它们像粗重的梁或根，给画面带来明显承载和压力感。"
+              },
+              {
+                "id": "middle-003",
+                "unit_name": "中圈留白",
+                "position": "深绿色和棕色结构之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "不规则间隔，沿叶片和长条边缘分布。",
+                "texture_and_density": "在厚重色块之间形成分隔。",
+                "spatial_relations": "隔开深绿色叶片和棕色长条，也切分同类绿色团块。",
+                "blank_space_role": "切分厚重色块，形成边界和缝隙。",
+                "energy_ratio_percent": 33.34,
+                "rich_visual_description": "中圈留白在深绿和棕色之间提供空间。它让厚重结构仍然有可辨边界。"
+              }
+            ]
+          },
+          "outer": {
+            "composition_description": "外圈由浅绿色叶片、棕色边界、少量黄色和留白组成。相比中圈，外圈更向外展开，但仍保留棕色压实和边界感。",
+            "visual_units": [
+              {
+                "id": "outer-001",
+                "unit_name": "浅绿色外圈叶片",
+                "position": "外圈最外侧",
+                "source_type": "user_painted",
+                "color_description": "浅绿色或中浅绿色。",
+                "shape_description": "叶片状，尖端向外，重复展开。",
+                "texture_and_density": "数量多，形成外圈生长边缘。",
+                "spatial_relations": "同类叶片围绕中心重复，邻近棕色边界和留白。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "浅绿色叶片让外圈有比中圈更轻的生长感。它们从厚重中圈向外打开，形成外部扩展。"
+              },
+              {
+                "id": "outer-002",
+                "unit_name": "外圈棕色边界/长条延伸",
+                "position": "外圈中段和边缘",
+                "source_type": "user_painted",
+                "color_description": "棕色或褐色。",
+                "shape_description": "边界线、长条或粗轮廓结构。",
+                "texture_and_density": "较重，局部形成外圈限制。",
+                "spatial_relations": "与浅绿色叶片和中圈棕色长条呼应，部分延伸到外侧。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "外圈棕色结构延续中圈的重量。它让外圈的生长不是完全轻快，而是仍带有承载和边界。"
+              },
+              {
+                "id": "outer-003",
+                "unit_name": "外圈少量黄色",
+                "position": "外圈局部节点",
+                "source_type": "user_painted",
+                "color_description": "黄色，小面积。",
+                "shape_description": "小花形、点状或局部片段。",
+                "texture_and_density": "数量不多，作为明亮节点。",
+                "spatial_relations": "与绿色叶片、棕色结构和留白相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "外圈黄色面积不大，但提供明亮点，让外圈不完全被绿棕主导。"
+              },
+              {
+                "id": "outer-004",
+                "unit_name": "外圈留白",
+                "position": "外圈外边以内的图案之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "不规则空隙，围绕叶片和棕色结构。",
+                "texture_and_density": "多处出现，面积中等。",
+                "spatial_relations": "隔开绿色叶片、棕色边界和黄色节点。",
+                "blank_space_role": "隔开外圈生长结构，形成边界和空间。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "外圈留白让叶片之间保持距离，也让外圈边界不完全封死。"
+              }
+            ]
+          }
+        }
+      },
+      "element_sensing": {
+        "inner": {
+          "element_candidates": [],
+          "summary": ""
+        },
+        "middle": {
+          "element_candidates": [],
+          "summary": ""
+        },
+        "outer": {
+          "element_candidates": [],
+          "summary": ""
+        }
+      },
+      "intra_circle_relations": {
+        "inner": {
+          "relations": [],
+          "summary": ""
+        },
+        "middle": {
+          "relations": [],
+          "summary": ""
+        },
+        "outer": {
+          "relations": [],
+          "summary": ""
+        }
+      },
+      "cross_circle_flow": {
+        "flow_observations": [
+          {
+            "flow_id": "flow-01",
+            "flow_type": "outward_expanding",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "从内圈黄色中心（土）开始，能量通过木性（绿）从内圈到中圈深绿层层堆叠，再到外圈浅绿叶片向外展开，三圈绿色依次传递，形成明确的由内向外的生长和扩展动势。",
+            "confidence": "high",
+            "notes": "尽管中圈厚重，但整体结构依然呈现出从中心向外延伸的放射状能量。"
+          },
+          {
+            "flow_id": "flow-02",
+            "flow_type": "middle_layer_blocked",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "中圈是全画最厚重的区域，由深绿色木和棕色土密集对抗，并被金性留白大量切分。相比内圈亮色核心和外圈浅色叶片，中圈形成了能量最淤积、最不流畅的阻塞层。",
+            "confidence": "high",
+            "notes": "中圈的沉重、对抗和被切割状态，构成了能量从内向外流动的主要障碍。"
+          },
+          {
+            "flow_id": "flow-03",
+            "flow_type": "outer_layer_containing",
+            "involved_circles": [
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "外圈的棕色边界/长条延伸（土），直接延续自中圈的棕色长条，对外圈生长的浅绿色叶片形成了明确的包裹和边界限制，使得向外扩展的能量最终被土性结构环抱和框定。",
+            "confidence": "high",
+            "notes": "这种环抱既是外部轮廓的界定，也对向外扩张的能量形成了一种强力约束。"
+          }
+        ],
+        "summary": ""
+      },
+      "evidence_links": [
+        {
+          "claim_id": "flow-01",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outward_expanding",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "从内圈黄色中心（土）开始，能量通过木性（绿）从内圈到中圈深绿层层堆叠，再到外圈浅绿叶片向外展开，三圈绿色依次传递，形成明确的由内向外的生长和扩展动势。"
+        },
+        {
+          "claim_id": "flow-02",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "middle_layer_blocked",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "中圈是全画最厚重的区域，由深绿色木和棕色土密集对抗，并被金性留白大量切分。相比内圈亮色核心和外圈浅色叶片，中圈形成了能量最淤积、最不流畅的阻塞层。"
+        },
+        {
+          "claim_id": "flow-03",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outer_layer_containing",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "外圈的棕色边界/长条延伸（土），直接延续自中圈的棕色长条，对外圈生长的浅绿色叶片形成了明确的包裹和边界限制，使得向外扩展的能量最终被土性结构环抱和框定。"
+        }
+      ]
+    },
+    "model_trace": {
+      "vision": [
+        {
+          "source": "golden_foundation.visual_observation"
+        }
+      ],
+      "foundation_analysis": [
+        {
+          "model": "deepseek-v4-pro",
+          "base_url": "https://api.deepseek.com",
+          "endpoint_url": "https://api.deepseek.com/chat/completions",
+          "result": "success"
+        }
+      ]
+    }
+  },
+  "visual_observation": {
+    "overall_observation": {
+      "first_impression": "这幅画以深浅绿色、棕色和黄色为主，第一眼给人一种厚重、堆叠、植物向外生长但承载较重的感觉。整体像一朵由叶片和粗重棕色长条组成的花，画面并不轻盈。",
+      "visual_atmosphere": "氛围偏沉稳、压实、用力。深绿色和褐色占比较高，黄色中心相对明亮，外围浅绿色叶片带来外放和生长感。",
+      "visual_weight_and_rhythm": "视觉重量主要落在中圈深绿色叶片/圆瓣和棕色长条上。棕色长条形成四向或多向支撑，绿色叶片层层堆叠，外圈浅绿色叶片让节奏继续向外扩展。",
+      "healing_language_note": "疗愈师语言可以表达为：画面里有很强的努力、支撑和向外生长的力量，同时也有一些比较厚、比较累的承载感，需要被温和地松动和照看。"
+    },
+    "three_circle_observation": {
+      "inner": "内圈为黄色中心和绿色/棕色环状结构。黄色中心较亮，周围有绿色和棕色形成的环状或瓣状过渡。",
+      "middle": "中圈有大量深绿色叶片或圆瓣，以及棕色长条。深绿色区域较浓重，棕色长条明显并具有方向性，图案之间存在留白。",
+      "outer": "外圈有浅绿色叶片和棕色边界，部分黄色也出现在外围。外圈叶片向外展开，形成比中圈更轻一些的外层，但仍被棕色结构和留白分隔。",
+      "cross_circle_visual_connection": "三圈整体从黄色中心过渡到深绿色和棕色中圈，再到浅绿色外圈。绿色从内到外持续出现，棕色长条在中外圈承担连接和压实作用。",
+      "cross_circle_visual_evidence": "中心黄色被绿色/棕色环绕；中圈深绿色和棕色最密；外圈浅绿色叶片继续向外延伸。不同图案之间有留白作为分隔。"
+    },
+    "circle_visual_units": {
+      "inner": {
+        "composition_description": "内圈由黄色中心、绿色环状/瓣状结构、棕色边缘和留白组成。黄色中心是最明亮区域，绿色和棕色形成外侧包围。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "unit_name": "黄色中心",
+            "position": "内圈中心",
+            "source_type": "user_painted",
+            "color_description": "黄色，较明亮。",
+            "shape_description": "圆形或花心状中心。",
+            "texture_and_density": "面积较小但亮度高，是中心焦点。",
+            "spatial_relations": "被绿色和棕色环状结构包围。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "黄色中心像整幅画的明亮核心。它面积不大，但在深绿和棕色包围中很显眼。"
+          },
+          {
+            "id": "inner-002",
+            "unit_name": "内圈绿色环状结构",
+            "position": "黄色中心外侧",
+            "source_type": "user_painted",
+            "color_description": "绿色，部分偏浅或中等深度。",
+            "shape_description": "环状、瓣状或叶状结构。",
+            "texture_and_density": "围绕中心重复，密度中等。",
+            "spatial_relations": "包围黄色中心，并与棕色边缘和留白相邻。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "绿色环状结构让中心开始呈现植物性和生长感。它连接黄色中心和外侧更厚重的结构。"
+          },
+          {
+            "id": "inner-003",
+            "unit_name": "内圈棕色边缘",
+            "position": "内圈绿色结构附近",
+            "source_type": "user_painted",
+            "color_description": "棕色或褐色。",
+            "shape_description": "环形边缘或短条状边界。",
+            "texture_and_density": "颜色较沉，形成压实边界。",
+            "spatial_relations": "邻近黄色中心和绿色环状结构，也与中圈棕色长条呼应。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "棕色边缘让内圈不只是明亮和生长，也带有较重的承载和框定感。"
+          },
+          {
+            "id": "inner-004",
+            "unit_name": "内圈留白",
+            "position": "黄色、绿色、棕色结构之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "细小间隔。",
+            "texture_and_density": "面积较小。",
+            "spatial_relations": "隔开中心和周边结构，帮助识别层次。",
+            "blank_space_role": "形成中心与包围层之间的边界。",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "内圈留白让黄色中心、绿色环和棕色边缘之间有清楚分隔。"
+          }
+        ]
+      },
+      "middle": {
+        "composition_description": "中圈由大量深绿色叶片/圆瓣、棕色长条和留白组成，是全画最厚重的区域。绿色呈堆叠感，棕色长条有强方向性。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "unit_name": "深绿色叶片/圆瓣堆叠",
+            "position": "中圈主体",
+            "source_type": "user_painted",
+            "color_description": "深绿色，局部较浓重、偏黯淡。",
+            "shape_description": "叶片、圆瓣或云团状重复结构。",
+            "texture_and_density": "密度高，层层堆叠，视觉重量大。",
+            "spatial_relations": "围绕中心重复，并与棕色长条相邻或被其压住/穿插。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "中圈深绿色区域让画面显得厚重。它们不是轻薄叶片，而是一层层堆起来的绿色团块。"
+          },
+          {
+            "id": "middle-002",
+            "unit_name": "棕色长条",
+            "position": "中圈四向或多向支撑处",
+            "source_type": "user_painted",
+            "color_description": "棕色或褐色，颜色较重。",
+            "shape_description": "长条状、粗条状，沿多个方向伸展。",
+            "texture_and_density": "笔触较重，面积明显，形成强支撑。",
+            "spatial_relations": "穿过或压在深绿色区域附近，并向外圈延伸。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "棕色长条是中圈最有重量的结构之一。它们像粗重的梁或根，给画面带来明显承载和压力感。"
+          },
+          {
+            "id": "middle-003",
+            "unit_name": "中圈留白",
+            "position": "深绿色和棕色结构之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "不规则间隔，沿叶片和长条边缘分布。",
+            "texture_and_density": "在厚重色块之间形成分隔。",
+            "spatial_relations": "隔开深绿色叶片和棕色长条，也切分同类绿色团块。",
+            "blank_space_role": "切分厚重色块，形成边界和缝隙。",
+            "energy_ratio_percent": 33.34,
+            "rich_visual_description": "中圈留白在深绿和棕色之间提供空间。它让厚重结构仍然有可辨边界。"
+          }
+        ]
+      },
+      "outer": {
+        "composition_description": "外圈由浅绿色叶片、棕色边界、少量黄色和留白组成。相比中圈，外圈更向外展开，但仍保留棕色压实和边界感。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "unit_name": "浅绿色外圈叶片",
+            "position": "外圈最外侧",
+            "source_type": "user_painted",
+            "color_description": "浅绿色或中浅绿色。",
+            "shape_description": "叶片状，尖端向外，重复展开。",
+            "texture_and_density": "数量多，形成外圈生长边缘。",
+            "spatial_relations": "同类叶片围绕中心重复，邻近棕色边界和留白。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "浅绿色叶片让外圈有比中圈更轻的生长感。它们从厚重中圈向外打开，形成外部扩展。"
+          },
+          {
+            "id": "outer-002",
+            "unit_name": "外圈棕色边界/长条延伸",
+            "position": "外圈中段和边缘",
+            "source_type": "user_painted",
+            "color_description": "棕色或褐色。",
+            "shape_description": "边界线、长条或粗轮廓结构。",
+            "texture_and_density": "较重，局部形成外圈限制。",
+            "spatial_relations": "与浅绿色叶片和中圈棕色长条呼应，部分延伸到外侧。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "外圈棕色结构延续中圈的重量。它让外圈的生长不是完全轻快，而是仍带有承载和边界。"
+          },
+          {
+            "id": "outer-003",
+            "unit_name": "外圈少量黄色",
+            "position": "外圈局部节点",
+            "source_type": "user_painted",
+            "color_description": "黄色，小面积。",
+            "shape_description": "小花形、点状或局部片段。",
+            "texture_and_density": "数量不多，作为明亮节点。",
+            "spatial_relations": "与绿色叶片、棕色结构和留白相邻。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "外圈黄色面积不大，但提供明亮点，让外圈不完全被绿棕主导。"
+          },
+          {
+            "id": "outer-004",
+            "unit_name": "外圈留白",
+            "position": "外圈外边以内的图案之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "不规则空隙，围绕叶片和棕色结构。",
+            "texture_and_density": "多处出现，面积中等。",
+            "spatial_relations": "隔开绿色叶片、棕色边界和黄色节点。",
+            "blank_space_role": "隔开外圈生长结构，形成边界和空间。",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "外圈留白让叶片之间保持距离，也让外圈边界不完全封死。"
+          }
+        ]
+      }
+    }
+  },
+  "element_sensing": {
+    "inner": {
+      "element_candidates": [],
+      "summary": ""
+    },
+    "middle": {
+      "element_candidates": [],
+      "summary": ""
+    },
+    "outer": {
+      "element_candidates": [],
+      "summary": ""
+    }
+  },
+  "intra_circle_relations": {
+    "inner": {
+      "relations": [],
+      "summary": ""
+    },
+    "middle": {
+      "relations": [],
+      "summary": ""
+    },
+    "outer": {
+      "relations": [],
+      "summary": ""
+    }
+  },
+  "cross_circle_flow": {
+    "flow_observations": [
+      {
+        "flow_id": "flow-01",
+        "flow_type": "outward_expanding",
+        "involved_circles": [
+          "inner",
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "从内圈黄色中心（土）开始，能量通过木性（绿）从内圈到中圈深绿层层堆叠，再到外圈浅绿叶片向外展开，三圈绿色依次传递，形成明确的由内向外的生长和扩展动势。",
+        "confidence": "high",
+        "notes": "尽管中圈厚重，但整体结构依然呈现出从中心向外延伸的放射状能量。"
+      },
+      {
+        "flow_id": "flow-02",
+        "flow_type": "middle_layer_blocked",
+        "involved_circles": [
+          "inner",
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "中圈是全画最厚重的区域，由深绿色木和棕色土密集对抗，并被金性留白大量切分。相比内圈亮色核心和外圈浅色叶片，中圈形成了能量最淤积、最不流畅的阻塞层。",
+        "confidence": "high",
+        "notes": "中圈的沉重、对抗和被切割状态，构成了能量从内向外流动的主要障碍。"
+      },
+      {
+        "flow_id": "flow-03",
+        "flow_type": "outer_layer_containing",
+        "involved_circles": [
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "外圈的棕色边界/长条延伸（土），直接延续自中圈的棕色长条，对外圈生长的浅绿色叶片形成了明确的包裹和边界限制，使得向外扩展的能量最终被土性结构环抱和框定。",
+        "confidence": "high",
+        "notes": "这种环抱既是外部轮廓的界定，也对向外扩张的能量形成了一种强力约束。"
+      }
+    ],
+    "summary": ""
+  },
+  "theme_interpretation": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.metal_excess",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.outer_boundary_thick_closed",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_deservingness",
+        "wealth.approval_driven_earning",
+        "wealth.low_action",
+        "wealth.low_world_connection"
+      ],
+      "selected_module_ids": [
+        "wealth.deservingness_self_worth",
+        "wealth.career_value_exchange",
+        "wealth.body_fear_action",
+        "wealth.world_connection_market",
+        "wealth.safety_scarcity_control"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.safety_scarcity",
+          "recommended_topic": "安全感 / 匮乏感",
+          "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+          "matched_signals": [
+            "厚重"
+          ],
+          "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+          "avoid": [
+            "不判断现实贫穷或心理问题。"
+          ]
+        },
+        {
+          "id": "wealth.next.body_capacity",
+          "recommended_topic": "身体承载 / 行动力 / 健康身体",
+          "recommended_intention": "我想探索：我的身体是否能接住更多行动、机会和资源。",
+          "matched_signals": [
+            "外圈厚重"
+          ],
+          "why_not_expand_now": "本次只说明财富行动需要身体承载，不做健康判断。",
+          "avoid": [
+            "不输出疾病、部位或医疗判断。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.approval_driven_earning",
+          "title": "求认可式赚钱",
+          "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+          "report_language": [
+            "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+            "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+          ],
+          "healing_direction": [
+            "自我价值确认。",
+            "放松外界标准。",
+            "区分收入结果和自我价值。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "core_thesis": "财富能量的核心卡点，在于中圈的‘努力证明’与‘厚重承载’已经变成阻碍流动的惯性力量。外在有很强的创造和生长意图，但内在的交换机制被用力、对标准和被认可的执着紧紧压住。疏通的关键不是做得更多，而是松动中圈的沉重对抗，让价值以更省力、更连接、更配得的方式向外流动。",
+  "healing_direction": "配得感与自我价值确认（松动‘需要用力证明才能拥有’的内在逻辑）；行动力与身体承载的修复（让中圈沉重能量松下来，释放流动空间）；安全感与控制感的放松（将土性承载从‘压住’调整为‘温和托住’）。",
+  "final_report": {
+    "report_id": "mandala-interpretation-7da9ffc4473f",
+    "report_mode": "pro",
+    "title": "曼陀罗解读报告",
+    "markdown": "# 财富议题：当承载变成了惯性，价值需要更轻地流向世界\n\n## 画面证据总览\n\n这幅曼陀罗的第一印象是“努力”——一种植物般向外生长的努力，但它并不轻盈。画面以深浅绿色、棕色和黄色为主，视觉重量几乎全部压在了中圈：深绿色叶片层层堆叠，粗重的棕色长条像梁柱一样支撑着整个结构。黄色中心虽然明亮，却在厚重包围中显得很小；外围浅绿色叶片试图向外展开，却被棕色边界紧紧托住。留白在各个圈层反复出现，像一道道切分线，把结构、情绪和行动空间彼此隔开。\n\n三条可见的依据值得你先放在心里：第一，中圈是全画最密、最重的区域，深绿与棕色形成高强度对抗；第二，棕色长条从中圈延伸到外圈，把“承载”带到了与外界接触的边界上；第三，外圈的浅绿叶片虽然向外生长，但并没有真正打开与世界的通道，更多是在既有边界内重复展开。\n\n## 圈内元素五行感知\n\n我们把目光先放进中圈内部。这里主要有三组信号。一组是深绿色叶片堆叠，颜色浓重、层层叠放，对应木性的生长与扩展，但表达方式更接近“用力长出”。另一组是粗重的棕色长条，颜色沉着、方向明确，对应土性的承载与支撑，但视觉上更像承重柱。第三组是分布在深绿与棕色之间的大量留白，对应金性的切割、区分与边界。\n\n这三组元素在中圈内部的关系很特别。土性棕色长条似乎在压住木性绿色团块，木想要长出去，土却在往下镇住；这可以读作圈内一种“木土相克”的紧张关系候选——生长的冲动被承载的责任紧紧按着。而金性留白反复出现在两者之间，像是不断在说“这里也需要划清”、“那里也需要守住”。所以中圈不只是一块厚重的区域，它更像是一个持续绷着、一直在对抗和切分自己的能量场。\n\n再看内圈。内圈最中心是一小片明亮的黄色，对应土性的温养和资源根基。黄色外围有一圈绿色环状结构，对应木性生发，紧贴着棕色边缘，棕色在这里也是土性但更偏压实。内圈里这些元素面积都不大，彼此靠近，更像是“核心种子”还在一层保护膜里。黄色和绿色之间、绿色和棕色之间有细小留白，这里的金性力量并不强烈，更多只是为层次留出呼吸感。\n\n外圈由较多浅绿色叶片主导，颜色偏轻、向外展开，属于木性的延展力。部分棕色结构延续到外圈边界，土性承载进一步向外传递。外圈还点缀了少量黄色节点，像是把内圈一点资源之光带到了边缘。但外圈的木性生长虽然多，却被棕色边界环抱住，留白也在外圈形成空隙，所以向外的力量并没有冲出边界，而是被温和地圈了回来。\n\n## 财富核心主轴\n\n现在我们一起把这些画面信息，放回你的财富议题里。\n\n你的金钱、价值与资源的流动，始终缠绕着一个很深的模式：你很清楚自己必须“做些什么”才能拥有，而且那些“做”往往不只是做事，更像是在承担。中圈那层厚重的深绿和棕色，其实很像你日常在面对收入、事业或责任时的状态——一边很想创造价值、想要生长，一边又有太多现实压力、别人的期待、还有自己给自己的标准，重重叠叠地落在身上。\n\n画面里最累的地方，不是没有能力，也不是没有方向。而是你把“承载”当成了价值的前提。你觉得必须先扛得住、撑得起、被认可，才有资格谈流动。这会让财富通道变得很紧：机会来了要先评估是否够格，收入来了要反复确认自己值不值得，连表达价值都要先确保不出错。\n\n所以现金、机会、回报并不是没有在靠近你，它们在。只是你接收它们的方式，一直透过层层“配得上吗”“做得够好吗”“够安全吗”的过滤网。这幅画在提醒的是：真正的疏通，不是再多背一重，而是开始练习——有些价值、有些资源，你可以不用扛着去接，而是可以站着、放松着、被流向。\n\n## 三圈分层解读\n\n我们从你最熟悉的中圈开始。中圈是你情绪与关系运作最密集的地方。深绿色叶片堆叠的画面，很像你在工作中、合作中反复出现的一个动作：把任务、责任、别人的情绪一层一层往自己身上放。棕色长条是那些“我必须做到”“我不做就会塌下来”的信念支撑。而留白则是你内在的高标准，它帮你分清什么该是你做的、什么不该是，但也同时让你经常感到被切割成好几块——要照顾家庭、要维持关系、要证明事业表现。这些都不是判断，而是画面已经说出来的线索：你的力量多半用在“撑住”而非“流动”。如果这些线索在现实中有回响，值得你温柔地往里面多看一点。\n\n接着我们往内圈看，回到你的核心。内圈那片明亮的黄色中心，其实是你很早就认得自己的一个部分：你知道自己有价值，知道自己有资源，知道有些东西是可以给的。但它被绿和棕色的结构裹得很紧，像是一个还没被完全允许展开的种子。这对应着你对自己“值得拥有”的底层怀疑：不是不想要，而是内心深处还没松口同意。那个棕色边缘像一则旧信息——“不能只靠天赋，不能太轻松，要辛苦才配拿”。这很可能牵动着你在家庭或成长经验里学到的一种价值规则，但目前在画面上还只是线索，而不是绝对原因。\n\n再往外圈看，这是你与外部世界、事业现实接触的地方。浅绿色叶片确实在向外生长，说明你是有向外打开意愿的，不是封闭的人。但棕色边界在这里变成了“边界感很重”的双刃剑：一方面它保护你不被消耗，另一方面它也让你不容易被市场真正看见。那些黄色节点是你要分享出去的价值，但被留白隔开，就像你的专业、你的服务、你的表达常常停在“准备好但还没发出”的状态。身体也可能在这里给出信号，当你要跨出一步面对人群、客户或公开场合时，会先感到疲惫而非兴奋——这更像是在提醒你：行动之前，需要先把中圈消耗性的承载松一松。\n\n## 财富主轴收束\n\n所以回到你最初的意图：财富提升。这幅画没有说你不努力，恰恰相反，它看见了你所有的努力。但它也很清晰地画出一条路径——从小我用力撑，走向让世界接住你一部分。内圈的核心资源是够的，外圈的方向也是对的。真正让金钱、机会和回报卡住的地方，是中圈那层“我必须证明自己够重，才值得被爱、被支付”的惯性。当这层惯性松下来，财富流动会从“争取”慢慢转成“交换”——那是价值自然的呼吸，不需要你一直憋着气扛。\n\n## 低风险行动建议\n\n你可以从三个小的觉察动作开始，不用改变任何外在收入数字。\n\n第一个，每天找一个你已经创造价值、但不是靠“扛”出来的瞬间。可能是一次轻松的沟通、一个别人感谢你的小忙。用笔记下来，只是确认：价值也可以在不沉重的状态里发生。\n\n第二个，当你下一次准备报价、谈钱或提出资源需求时，先感受一下胸口或肩膀。如果那里发紧，试着默念一句：我可以先接住，再成长。不用先证明完一切才允许自己开口。\n\n第三个，每周从外圈挑一个黄色节点，把它“发出去”。比如你一直没有分享的一个想法、一段经验、一个小服务，用最轻的方式让它在现实里被看见一回。不需要完美，只需要让它离开你的边界。\n\n## 下一次曼陀罗探索建议\n\n基于画面中厚重承载与安全感的线索还没有完全展开，下一次可以聚焦在：安全感与匮乏感。建议的意图是“我想探索金钱在我的生命里承担了哪些安全感功能”。画面上中圈的深绿与棕色对抗、以及外圈被边界环抱的结构，都在暗示财富不只关于收入，还牵动着底层的安稳与控制。这会帮你进一步看清，当你在为财富用力时，究竟是在为“生存”用力，还是为“证明”用力。\n\n另外，外圈的身体线索也值得再往深处走一步。下一次也可以选择身体承载与行动力方向，意图是“我想探索我的身体是否能接住更多行动、机会和资源”。目前你的行动表现更像是在厚重结构里吃力移动，这背后可能和身体的接收能力有关，值得用另一幅曼陀罗温柔地探一探。",
+    "summary": "财富能量的核心卡点，在于中圈的‘努力证明’与‘厚重承载’已经变成阻碍流动的惯性力量。外在有很强的创造和生长意图，但内在的交换机制被用力、对标准和被认可的执着紧紧压住。疏通的关键不是做得更多，而是松动中圈的沉重对抗，让价值以更省力、更连接、更配得的方式向外流动。"
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "黄色中心像整幅画的明亮核心。它面积不大，但在深绿和棕色包围中很显眼。"
+    },
+    {
+      "id": "inner-002",
+      "circle": "inner",
+      "visible_evidence": "绿色环状结构让中心开始呈现植物性和生长感。它连接黄色中心和外侧更厚重的结构。"
+    },
+    {
+      "id": "inner-003",
+      "circle": "inner",
+      "visible_evidence": "棕色边缘让内圈不只是明亮和生长，也带有较重的承载和框定感。"
+    },
+    {
+      "id": "inner-004",
+      "circle": "inner",
+      "visible_evidence": "内圈留白让黄色中心、绿色环和棕色边缘之间有清楚分隔。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "中圈深绿色区域让画面显得厚重。它们不是轻薄叶片，而是一层层堆起来的绿色团块。"
+    },
+    {
+      "id": "middle-002",
+      "circle": "middle",
+      "visible_evidence": "棕色长条是中圈最有重量的结构之一。它们像粗重的梁或根，给画面带来明显承载和压力感。"
+    },
+    {
+      "id": "middle-003",
+      "circle": "middle",
+      "visible_evidence": "中圈留白在深绿和棕色之间提供空间。它让厚重结构仍然有可辨边界。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "浅绿色叶片让外圈有比中圈更轻的生长感。它们从厚重中圈向外打开，形成外部扩展。"
+    },
+    {
+      "id": "outer-002",
+      "circle": "outer",
+      "visible_evidence": "外圈棕色结构延续中圈的重量。它让外圈的生长不是完全轻快，而是仍带有承载和边界。"
+    },
+    {
+      "id": "outer-003",
+      "circle": "outer",
+      "visible_evidence": "外圈黄色面积不大，但提供明亮点，让外圈不完全被绿棕主导。"
+    },
+    {
+      "id": "outer-004",
+      "circle": "outer",
+      "visible_evidence": "外圈留白让叶片之间保持距离，也让外圈边界不完全封死。"
+    }
+  ],
+  "boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "golden_case_seed"
+  },
+  "permissions": {
+    "can_answer_follow_up": false,
+    "post_mvp_agent": "report_qa_agent",
+    "allow_seeded_short_report": false
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "case-005",
+  "mode": "lite",
+  "status": "failed",
+  "error": "Remote end closed connection without response",
+  "output_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-22-wealth-report-golden-case-regression/case-005/lite",
+  "started_at": "2026-05-22T16:02:54.572829+00:00",
+  "finished_at": "2026-05-22T16:03:09.962559+00:00"
+}

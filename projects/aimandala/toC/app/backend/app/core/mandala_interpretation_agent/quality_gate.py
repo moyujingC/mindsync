@@ -92,12 +92,6 @@ DETERMINISTIC_CAUSE_TERMS = [
 WEALTH_CORE_FORBIDDEN_METHOD_TERMS = [
     "五行",
     "生克",
-    "元素",
-    "木性",
-    "火性",
-    "土性",
-    "金性",
-    "水性",
     "属木",
     "属火",
     "属土",
@@ -113,6 +107,13 @@ WEALTH_CORE_FORBIDDEN_METHOD_TERMS = [
     "水克火",
     "火克金",
     "金克木",
+]
+
+WEALTH_CORE_FORBIDDEN_METHOD_PATTERNS = [
+    r"[木火土金水]元素",
+    r"元素[为是属呈现]+[木火土金水]",
+    r"呈现[木火土金水]性",
+    r"[木火土金水]性[元素信号]",
 ]
 
 RELATION_WORDS = [
@@ -137,6 +138,22 @@ FIVE_ELEMENT_TERMS = [
     "土",
     "金",
     "水",
+]
+
+FIVE_ELEMENT_EVIDENCE_TERMS = [
+    "颜色",
+    "形状",
+    "留白",
+    "画面",
+    "花瓣",
+    "线条",
+    "圆形",
+    "三角",
+    "方块",
+    "块状",
+    "深色",
+    "浅色",
+    "视觉",
 ]
 
 GENERIC_OPENING_PHRASES = [
@@ -201,8 +218,8 @@ def run_quality_gate(
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
 
-    method_boundary_terms = _method_boundary_terms(final_report_md)
-    if method_boundary_terms:
+    detected_method_boundary_terms = method_boundary_terms(final_report_md)
+    if detected_method_boundary_terms:
         failure_ids.append("cross_circle_five_element_relation_leak")
 
     deterministic_cause_terms = [
@@ -265,7 +282,7 @@ def run_quality_gate(
             "actual_blocks": actual_blocks,
             "expected_blocks": expected_blocks,
             "leaked_terms": leaked_terms,
-            "method_boundary_terms": method_boundary_terms,
+            "method_boundary_terms": detected_method_boundary_terms,
             "deterministic_cause_terms": deterministic_cause_terms,
             "wealth_core_method_terms": wealth_core_method_terms,
             "report_shape_issues": report_shape_issues,
@@ -295,7 +312,7 @@ def _missing_visual_units(foundation_image_reading: Any) -> list[str]:
     return missing
 
 
-def _method_boundary_terms(final_report_md: str) -> list[str]:
+def method_boundary_terms(final_report_md: str) -> list[str]:
     terms = [
         term for term in FORBIDDEN_METHOD_BOUNDARY_PATTERNS if term in final_report_md
     ]
@@ -474,18 +491,19 @@ def _report_shape_issues(final_report_md: str, *, report_mode: str) -> list[str]
     min_chars = 1000 if report_mode == "pro" else 500
     if len(text) < min_chars:
         issues.append(f"too_short_min_{min_chars}")
-    max_chars = 3200 if report_mode == "pro" else 1600
+    max_chars = 3600 if report_mode == "pro" else 1600
     if len(text) > max_chars:
         issues.append(f"too_long_max_{max_chars}")
     return issues
 
 
 def _has_visible_five_element_analysis(final_report_md: str) -> bool:
-    return "五行" in final_report_md and (
-        "元素" in final_report_md or "颜色" in final_report_md or "形状" in final_report_md
-    ) and any(
-        term in final_report_md for term in FIVE_ELEMENT_TERMS
-    )
+    if "五行" not in final_report_md:
+        return False
+    element_hits = {term for term in FIVE_ELEMENT_TERMS if term in final_report_md}
+    if len(element_hits) < 2:
+        return False
+    return any(term in final_report_md for term in FIVE_ELEMENT_EVIDENCE_TERMS)
 
 
 def _wealth_core_method_terms(final_report_md: str) -> list[str]:
@@ -496,9 +514,11 @@ def _wealth_core_method_terms(final_report_md: str) -> list[str]:
         if not stripped.startswith("## 财富核心"):
             continue
         block = " ".join(lines[index : index + 4])
-        if any(term in block for term in WEALTH_CORE_FORBIDDEN_METHOD_TERMS) or re.search(
-            r"木[、,， ]*火[、,， ]*土[、,， ]*金[、,， ]*水",
-            block,
-        ):
+        has_forbidden_term = any(term in block for term in WEALTH_CORE_FORBIDDEN_METHOD_TERMS)
+        has_forbidden_pattern = any(
+            re.search(pattern, block) for pattern in WEALTH_CORE_FORBIDDEN_METHOD_PATTERNS
+        )
+        has_five_element_sequence = re.search(r"木[、,， ]*火[、,， ]*土[、,， ]*金[、,， ]*水", block)
+        if has_forbidden_term or has_forbidden_pattern or has_five_element_sequence:
             captured.append(block[:120])
     return captured

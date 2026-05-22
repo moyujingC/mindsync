@@ -1,0 +1,1529 @@
+{
+  "input-context": {
+    "stage": "input-context",
+    "status": "complete",
+    "report_mode": "pro",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-004-mandala.jpg",
+      "marked_local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-004-mandala-3q.jpg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "user-input-context": {
+    "stage": "user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "case-004 【案例4】用五行感知+相生相克法解读情感和财富课题（完整解读）",
+      "painting_feeling": ""
+    }
+  },
+  "circle-boundary-context": {
+    "stage": "circle-boundary-context",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "golden_case_seed"
+    }
+  },
+  "foundation-image-reading": {
+    "stage": "foundation-image-reading",
+    "status": "complete",
+    "foundation_image_reading": {
+      "visual_observation": {
+        "overall_observation": {
+          "first_impression": "这幅画给人的第一感受是圆满、繁复、装饰性强。粉色中心被多层黄、绿、蓝、粉紫花环包围，整体像一朵层层展开的圆形花。",
+          "visual_atmosphere": "画面偏明亮、柔和、规整，三圈边界清楚。颜色较丰富，但排列秩序强，给人一种被花环包裹的稳定感。",
+          "visual_weight_and_rhythm": "视觉重心在大面积粉色圆心，向外逐层形成黄色花瓣、蓝绿色小花和粉紫外缘。节奏细密但不散乱，重复单元沿圆周均匀排布。",
+          "healing_language_note": "疗愈师语言可表达为：画面里有很多被温柔包围和层层守护的感觉，也有许多细小而有秩序的表达，像是内在正在用较稳定的方式整理感受。"
+        },
+        "three_circle_observation": {
+          "inner": "内圈中心是粉色圆形，外侧有红/粉色小花瓣和黄色花瓣结构。中心圆较大，涂色相对集中，是整幅画的视觉核心。",
+          "middle": "中圈以黄色、绿色、蓝色小花或叶形环状重复为主，图案密集，并形成层层同心环。中圈颜色比内圈更丰富，重复结构更细。",
+          "outer": "外圈有粉紫色和黄色小花瓣重复，整体形成较完整的圆形花环。外缘边界较完整，装饰性强，留白主要在花瓣和小单元之间。",
+          "cross_circle_visual_connection": "三圈之间过渡自然，都是圆形花环式层层扩展。内圈从大面积粉色中心开始，中圈变成多色细密小花，外圈再形成粉紫和黄色的完整边缘。",
+          "cross_circle_visual_evidence": "中心圆、黄色花瓣、中圈蓝绿色小花和外圈粉紫小花都沿同一圆心排列；各圈通过重复花瓣结构衔接，没有明显断裂或偏移。"
+        },
+        "circle_visual_units": {
+          "inner": {
+            "composition_description": "内圈由粉色中心圆、红/粉小花瓣、黄色花瓣和局部留白构成。中心粉色面积最大，外侧黄色花瓣形成托举和过渡。",
+            "visual_units": [
+              {
+                "id": "inner-001",
+                "unit_name": "粉色中心圆",
+                "position": "内圈中心",
+                "source_type": "user_painted",
+                "color_description": "粉色，面积较大，颜色整体柔和。",
+                "shape_description": "圆形，边界相对完整。",
+                "texture_and_density": "涂色集中，视觉重量较大。",
+                "spatial_relations": "被外侧红/粉小花瓣和黄色花瓣环绕，作为整幅画中心。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "粉色中心圆像画面的心口位置，柔和而稳定。它占据内圈核心，使整幅画从中心开始有明确的温柔基调。"
+              },
+              {
+                "id": "inner-002",
+                "unit_name": "红粉小花瓣环",
+                "position": "粉色中心圆外侧",
+                "source_type": "user_painted",
+                "color_description": "红色或粉红色，局部与中心粉色相近。",
+                "shape_description": "小花瓣状，围绕中心重复。",
+                "texture_and_density": "小而密，形成中心圆外的细圈。",
+                "spatial_relations": "内侧贴近粉色中心圆，外侧邻近黄色花瓣。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "红粉小花瓣让中心圆不显得孤立，像一层细小的情感纹理，把中心向外打开。"
+              },
+              {
+                "id": "inner-003",
+                "unit_name": "黄色内圈花瓣",
+                "position": "内圈外段",
+                "source_type": "user_painted",
+                "color_description": "黄色，亮度较高。",
+                "shape_description": "花瓣或尖瓣状，围绕中心成环。",
+                "texture_and_density": "重复密度高，形成内圈向中圈的主要过渡。",
+                "spatial_relations": "包围红粉小花瓣环，外侧连接中圈多色小花环。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "黄色花瓣把粉色中心托起来，也让内圈有更明亮的扩展层。它是内圈进入中圈前最明显的一圈结构。"
+              },
+              {
+                "id": "inner-004",
+                "unit_name": "内圈花瓣间留白",
+                "position": "中心圆外侧各花瓣之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "细小间隔，顺着花瓣边界出现。",
+                "texture_and_density": "分布细密但面积较小。",
+                "spatial_relations": "隔开红粉小花瓣和黄色花瓣，使花瓣结构清楚。",
+                "blank_space_role": "切分花瓣，形成花瓣边界。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "内圈留白主要服务于花瓣分隔，让中心周围的多层花瓣能被清楚看见。"
+              }
+            ]
+          },
+          "middle": {
+            "composition_description": "中圈由黄色、绿色、蓝色小花或叶形单元层层重复组成，是整幅画最细密的环带。不同颜色小单元彼此相邻，整体呈均匀同心重复。",
+            "visual_units": [
+              {
+                "id": "middle-001",
+                "unit_name": "黄色小花/花瓣环",
+                "position": "中圈内侧与中段",
+                "source_type": "user_painted",
+                "color_description": "黄色，明亮。",
+                "shape_description": "小花瓣或小花形，重复成环。",
+                "texture_and_density": "密度高，排列均匀。",
+                "spatial_relations": "与绿色、蓝色小花/叶形相邻，围绕中心重复。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "黄色小花环延续内圈黄色，使中圈有明亮、稳定的重复节奏。"
+              },
+              {
+                "id": "middle-002",
+                "unit_name": "绿色小叶/小花环",
+                "position": "中圈中段",
+                "source_type": "user_painted",
+                "color_description": "绿色，分布均匀。",
+                "shape_description": "小叶形或小花形，边缘圆润。",
+                "texture_and_density": "重复密集，形成连续环带。",
+                "spatial_relations": "与蓝色和黄色单元交替或相邻，同类元素均匀环绕中心。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "绿色小叶让中圈增加生长感。它们细密排列，使中圈显得有生机但仍保持规整。"
+              },
+              {
+                "id": "middle-003",
+                "unit_name": "蓝色小花/小叶环",
+                "position": "中圈外侧局部",
+                "source_type": "user_painted",
+                "color_description": "蓝色或浅蓝色。",
+                "shape_description": "小花或小叶状，重复出现。",
+                "texture_and_density": "数量较多，和绿色、黄色共同形成多色环。",
+                "spatial_relations": "与绿色、黄色小单元相邻，并被细小留白区分。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "蓝色小花让中圈从暖色中心过渡到更清凉的层次。它们在多色小单元中提供明显的色彩变化。"
+              },
+              {
+                "id": "middle-004",
+                "unit_name": "中圈细小留白",
+                "position": "中圈小花/小叶之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "细缝状或小片间隔。",
+                "texture_and_density": "数量多，面积小。",
+                "spatial_relations": "隔开黄、绿、蓝小单元，也隔开同类重复元素。",
+                "blank_space_role": "细分密集图案，保留单元边界。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "中圈留白面积不大，但在密集重复中很重要。它使多色小单元不会完全粘连。"
+              }
+            ]
+          },
+          "outer": {
+            "composition_description": "外圈由粉紫色花瓣、黄色小花瓣和留白组成，形成完整边缘花环。外圈重复密度高，边界较圆满。",
+            "visual_units": [
+              {
+                "id": "outer-001",
+                "unit_name": "粉紫外圈花瓣",
+                "position": "外圈最外缘",
+                "source_type": "user_painted",
+                "color_description": "粉紫色，局部偏粉或偏紫。",
+                "shape_description": "小花瓣状，沿外缘连续重复。",
+                "texture_and_density": "重复密集，形成完整花环边界。",
+                "spatial_relations": "同类花瓣环绕中心均匀排列，与黄色小花瓣和留白相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "粉紫外圈花瓣像画面的外层花边，让整幅画的边界柔和而完整。"
+              },
+              {
+                "id": "outer-002",
+                "unit_name": "黄色外圈小花瓣",
+                "position": "外圈内侧和粉紫花瓣之间",
+                "source_type": "user_painted",
+                "color_description": "黄色，小面积重复。",
+                "shape_description": "小花瓣或小点状花形。",
+                "texture_and_density": "与粉紫花瓣交错重复。",
+                "spatial_relations": "邻近粉紫花瓣，形成外圈暖色节点。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "黄色小花瓣让外圈不只是粉紫色边界，也保留了和内中圈黄色结构的呼应。"
+              },
+              {
+                "id": "outer-003",
+                "unit_name": "外圈留白",
+                "position": "外圈花瓣之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "小片间隔和外缘空隙。",
+                "texture_and_density": "分布均匀，面积较小。",
+                "spatial_relations": "隔开粉紫和黄色花瓣，也形成外圈边界呼吸空间。",
+                "blank_space_role": "隔开外圈花瓣，形成外缘呼吸感。",
+                "energy_ratio_percent": 33.34,
+                "rich_visual_description": "外圈留白让密集花瓣之间仍有空间。它使完整边界不显得沉闷，而是保持细腻的呼吸感。"
+              }
+            ]
+          }
+        }
+      },
+      "element_sensing": {
+        "inner": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "inner-001",
+              "element": "fire",
+              "basis": [
+                "粉色中心圆，面积大、视觉权重高，颜色柔和但热烈向外，形状闭合圆满，整体为典型火性核心。"
+              ],
+              "confidence": "high",
+              "notes": "粉色为火，圆形加重火的聚集和稳定感。"
+            },
+            {
+              "visual_unit_id": "inner-002",
+              "element": "fire",
+              "basis": [
+                "红粉小花瓣环，颜色与中心相近，密集环绕，形成火的同心扩展层。"
+              ],
+              "confidence": "high",
+              "notes": "红粉仍属火系，花瓣状让火带有开放和情感纹理感。"
+            },
+            {
+              "visual_unit_id": "inner-003",
+              "element": "earth",
+              "basis": [
+                "黄色内圈花瓣，亮度高且在火外形成托举环，是典型的火生土过渡层。"
+              ],
+              "confidence": "high",
+              "notes": "黄色为土，火之后出现大面积土性结构，符合能量舒展后的稳定需要。"
+            },
+            {
+              "visual_unit_id": "inner-004",
+              "element": "metal",
+              "basis": [
+                "留白切分红粉花瓣与黄色花瓣，形成清晰的边界和价值感，不粘连，性质偏金。"
+              ],
+              "confidence": "high",
+              "notes": "细小留白严格隔开花瓣，强调秩序和分辨，属金。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "middle-001",
+              "element": "earth",
+              "basis": [
+                "黄色小花/花瓣环，延续内圈土性，密集重复，形成稳定和滋养的中圈基底。"
+              ],
+              "confidence": "high",
+              "notes": "黄色为土，大量规律性重复增强土的承托和整理功能。"
+            },
+            {
+              "visual_unit_id": "middle-002",
+              "element": "wood",
+              "basis": [
+                "绿色小叶/小花环，颜色绿且形状似叶，排列有序，体现温和生长和结构伸张。"
+              ],
+              "confidence": "high",
+              "notes": "绿色为木，小叶形使木性更明确，但仍受规整排列约束。"
+            },
+            {
+              "visual_unit_id": "middle-003",
+              "element": "water",
+              "basis": [
+                "蓝色小花/小叶环，颜色清凉内收，与水元素的内省和流动特性一致。"
+              ],
+              "confidence": "high",
+              "notes": "蓝色为水，小花形态让水带有一点向外表达，但仍以收为主。"
+            },
+            {
+              "visual_unit_id": "middle-004",
+              "element": "metal",
+              "basis": [
+                "细小留白细分黄、绿、蓝单元，形成区分和控制，保证多色不混乱。"
+              ],
+              "confidence": "high",
+              "notes": "金性留白在中圈高密度区起到明确的规范与区分作用。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "outer-001",
+              "element": "wood",
+              "basis": [
+                "粉紫外圈花瓣，紫色偏浅、粉感强，边缘柔和的开放花瓣形，整体呈现伸展和装饰感，更接近浅紫开放的木性。"
+              ],
+              "confidence": "high",
+              "notes": "浅粉紫加重复花瓣形，木性为主，形成外层生长与围合。"
+            },
+            {
+              "visual_unit_id": "outer-002",
+              "element": "earth",
+              "basis": [
+                "黄色外圈小花瓣，与中圈土性呼应，保持边界内的暖性和稳定。"
+              ],
+              "confidence": "high",
+              "notes": "黄色为土，小面积出现，但连接内外圈的土能流量。"
+            },
+            {
+              "visual_unit_id": "outer-003",
+              "element": "metal",
+              "basis": [
+                "外圈留白，隔开粉紫花瓣与黄色花瓣，形成边界呼吸感，避免过度封闭。"
+              ],
+              "confidence": "high",
+              "notes": "留白作为金，让外缘不至于完全密实压住，保有出口感。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "intra_circle_relations": {
+        "inner": {
+          "relations": [
+            {
+              "relation_id": "IR-IN-001",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "inner-001",
+                "inner-002",
+                "inner-003"
+              ],
+              "visible_basis": "粉色中心圆（火）向外直接连接红粉小花瓣环（火），再连接黄色内圈花瓣（土），三者连续无阻，形成火生土的结构。",
+              "confidence": "high",
+              "notes": "火生土自然过渡，黄色花瓣层承接了火的能量。"
+            },
+            {
+              "relation_id": "IR-IN-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "inner-002",
+                "inner-003"
+              ],
+              "visible_basis": "红粉小花瓣环与黄色内圈花瓣之间被内侧细小留白（inner-004）严格隔开，使火与土的能量传递被适度截断和区分。",
+              "confidence": "high",
+              "notes": "留白制造了节奏感，不让火直接漫到土。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "relations": [
+            {
+              "relation_id": "IR-MD-001",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "middle-002",
+                "middle-001"
+              ],
+              "visible_basis": "绿色小叶环（木）紧邻黄色小花环（土），构成木克土的潜在关系，但因排列规整且间隔小，视觉上转为相克中的制约与营养交换。",
+              "confidence": "medium",
+              "notes": "木土相邻，规整排列让制约关系表现为结构上的咬合，但仍为generating下的张力。"
+            },
+            {
+              "relation_id": "IR-MD-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "middle-002",
+                "middle-003"
+              ],
+              "visible_basis": "绿色小叶与蓝色小花之间被细小留白隔开，木与水不能直接相连，视觉上表现为属性转换有间距。",
+              "confidence": "high",
+              "notes": "留白让木的伸展不能直接汲取水，需通过金来过渡。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "relations": [
+            {
+              "relation_id": "IR-OT-001",
+              "relation_type": "surrounded_by",
+              "involved_visual_unit_ids": [
+                "outer-002"
+              ],
+              "visible_basis": "黄色外圈小花瓣被粉紫花瓣环（木）包围，形成土被木包围的结构。",
+              "confidence": "high",
+              "notes": "小土块在木性花环中，体现包裹与装饰关系。"
+            },
+            {
+              "relation_id": "IR-OT-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "outer-001",
+                "outer-002"
+              ],
+              "visible_basis": "粉紫外圈花瓣与黄色外圈小花瓣之间被留白隔开，木与土不能直接融合，由金控制间距。",
+              "confidence": "high",
+              "notes": "留白保障了外圈呼吸，避免木把土完全封死。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "cross_circle_flow": {
+        "flow_observations": [
+          {
+            "flow_id": "CF-001",
+            "flow_type": "outward_expanding",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "从中心大块粉色出发，经中圈多色细小单元到外圈完整花瓣环，视觉结构连续同心扩展，无断裂。",
+            "confidence": "high",
+            "notes": "层层放大，能量从集中到细密再到闭合，是典型的外扩-收束模式。"
+          },
+          {
+            "flow_id": "CF-002",
+            "flow_type": "continuous",
+            "involved_circles": [
+              "inner",
+              "middle"
+            ],
+            "visual_basis": "内圈黄色花瓣直接导引到中圈黄色小花环，颜色和形状高度一致，构成土性能量的直接延续。",
+            "confidence": "high",
+            "notes": "黄色作为稳定轴，让内中圈土能流无断点。"
+          },
+          {
+            "flow_id": "CF-003",
+            "flow_type": "outer_layer_containing",
+            "involved_circles": [
+              "outer"
+            ],
+            "visual_basis": "外圈粉紫花瓣与留白形成完整且带呼吸感的边界，包容中内圈所有内容，能量不散。",
+            "confidence": "high",
+            "notes": "外缘木金结构起到温和的闭合作用，整体呈现守护感。"
+          }
+        ],
+        "summary": ""
+      },
+      "evidence_links": [
+        {
+          "claim_id": "inner-001",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-001 五行候选为 fire。",
+          "visual_unit_ids": [
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "粉色中心圆，面积大、视觉权重高，颜色柔和但热烈向外，形状闭合圆满，整体为典型火性核心。"
+        },
+        {
+          "claim_id": "inner-002",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-002 五行候选为 fire。",
+          "visual_unit_ids": [
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "红粉小花瓣环，颜色与中心相近，密集环绕，形成火的同心扩展层。"
+        },
+        {
+          "claim_id": "inner-003",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-003 五行候选为 earth。",
+          "visual_unit_ids": [
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "黄色内圈花瓣，亮度高且在火外形成托举环，是典型的火生土过渡层。"
+        },
+        {
+          "claim_id": "inner-004",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "inner-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "留白切分红粉花瓣与黄色花瓣，形成清晰的边界和价值感，不粘连，性质偏金。"
+        },
+        {
+          "claim_id": "middle-001",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-001 五行候选为 earth。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "黄色小花/花瓣环，延续内圈土性，密集重复，形成稳定和滋养的中圈基底。"
+        },
+        {
+          "claim_id": "middle-002",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-002 五行候选为 wood。",
+          "visual_unit_ids": [
+            "middle-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "绿色小叶/小花环，颜色绿且形状似叶，排列有序，体现温和生长和结构伸张。"
+        },
+        {
+          "claim_id": "middle-003",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-003 五行候选为 water。",
+          "visual_unit_ids": [
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "蓝色小花/小叶环，颜色清凉内收，与水元素的内省和流动特性一致。"
+        },
+        {
+          "claim_id": "middle-004",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "middle-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "细小留白细分黄、绿、蓝单元，形成区分和控制，保证多色不混乱。"
+        },
+        {
+          "claim_id": "outer-001",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "outer-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "粉紫外圈花瓣，紫色偏浅、粉感强，边缘柔和的开放花瓣形，整体呈现伸展和装饰感，更接近浅紫开放的木性。"
+        },
+        {
+          "claim_id": "outer-002",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-002 五行候选为 earth。",
+          "visual_unit_ids": [
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "黄色外圈小花瓣，与中圈土性呼应，保持边界内的暖性和稳定。"
+        },
+        {
+          "claim_id": "outer-003",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-003 五行候选为 metal。",
+          "visual_unit_ids": [
+            "outer-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈留白，隔开粉紫花瓣与黄色花瓣，形成边界呼吸感，避免过度封闭。"
+        },
+        {
+          "claim_id": "IR-IN-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "火生土自然过渡，黄色花瓣层承接了火的能量。",
+          "visual_unit_ids": [
+            "inner-001",
+            "inner-002",
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "粉色中心圆（火）向外直接连接红粉小花瓣环（火），再连接黄色内圈花瓣（土），三者连续无阻，形成火生土的结构。"
+        },
+        {
+          "claim_id": "IR-IN-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白制造了节奏感，不让火直接漫到土。",
+          "visual_unit_ids": [
+            "inner-002",
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "红粉小花瓣环与黄色内圈花瓣之间被内侧细小留白（inner-004）严格隔开，使火与土的能量传递被适度截断和区分。"
+        },
+        {
+          "claim_id": "IR-MD-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "木土相邻，规整排列让制约关系表现为结构上的咬合，但仍为generating下的张力。",
+          "visual_unit_ids": [
+            "middle-002",
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "绿色小叶环（木）紧邻黄色小花环（土），构成木克土的潜在关系，但因排列规整且间隔小，视觉上转为相克中的制约与营养交换。"
+        },
+        {
+          "claim_id": "IR-MD-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白让木的伸展不能直接汲取水，需通过金来过渡。",
+          "visual_unit_ids": [
+            "middle-002",
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "绿色小叶与蓝色小花之间被细小留白隔开，木与水不能直接相连，视觉上表现为属性转换有间距。"
+        },
+        {
+          "claim_id": "IR-OT-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "小土块在木性花环中，体现包裹与装饰关系。",
+          "visual_unit_ids": [
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "黄色外圈小花瓣被粉紫花瓣环（木）包围，形成土被木包围的结构。"
+        },
+        {
+          "claim_id": "IR-OT-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白保障了外圈呼吸，避免木把土完全封死。",
+          "visual_unit_ids": [
+            "outer-001",
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "粉紫外圈花瓣与黄色外圈小花瓣之间被留白隔开，木与土不能直接融合，由金控制间距。"
+        },
+        {
+          "claim_id": "CF-001",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outward_expanding",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "从中心大块粉色出发，经中圈多色细小单元到外圈完整花瓣环，视觉结构连续同心扩展，无断裂。"
+        },
+        {
+          "claim_id": "CF-002",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "continuous",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "内圈黄色花瓣直接导引到中圈黄色小花环，颜色和形状高度一致，构成土性能量的直接延续。"
+        },
+        {
+          "claim_id": "CF-003",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outer_layer_containing",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "外圈粉紫花瓣与留白形成完整且带呼吸感的边界，包容中内圈所有内容，能量不散。"
+        }
+      ]
+    },
+    "model_trace": {
+      "vision": [
+        {
+          "source": "golden_foundation.visual_observation"
+        }
+      ],
+      "foundation_analysis": [
+        {
+          "model": "deepseek-v4-pro",
+          "base_url": "https://api.deepseek.com",
+          "endpoint_url": "https://api.deepseek.com/chat/completions",
+          "result": "success"
+        }
+      ]
+    }
+  },
+  "theme-translation-route": {
+    "stage": "theme-translation-route",
+    "status": "complete",
+    "theme": "wealth",
+    "route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.weak_fire_many",
+        "visual.metal_excess",
+        "visual.water_fire_conflict",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.approval_driven_earning",
+        "wealth.low_deservingness"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.deservingness_self_worth",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.self_worth",
+          "recommended_topic": "自我价值 / 配得感",
+          "recommended_intention": "我想探索：我是否允许自己的价值被看见、被支付，并稳定接住回报。",
+          "matched_signals": [
+            "内圈收缩"
+          ],
+          "why_not_expand_now": "本次只翻译到财富中的收钱、定价和接收能力。",
+          "avoid": [
+            "不说用户没有价值感。"
+          ]
+        },
+        {
+          "id": "wealth.next.safety_scarcity",
+          "recommended_topic": "安全感 / 匮乏感",
+          "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+          "matched_signals": [
+            "收缩"
+          ],
+          "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+          "avoid": [
+            "不判断现实贫穷或心理问题。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.approval_driven_earning",
+          "title": "求认可式赚钱",
+          "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+          "report_language": [
+            "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+            "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+          ],
+          "healing_direction": [
+            "自我价值确认。",
+            "放松外界标准。",
+            "区分收入结果和自我价值。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "report-thesis-selection": {
+    "stage": "report-thesis-selection",
+    "status": "complete",
+    "core_thesis": "当土性承载力被木火金多方向拉扯时，财富稳定感被关系、情绪和标准消耗，调整在于让土的承接重新获得呼吸和选择权。",
+    "entry_circle": "middle",
+    "entry_signal": "中圈密集多色小花环，黄色、绿色、蓝色单元反复交替排列，被细小留白精细切分。",
+    "entry_reason": "中圈是画面最细密、关系最复杂的环带，黄色（土）同时与内圈火生土和外圈木克土形成张力场，最能解释财富议题中“承接与消耗”的核心矛盾。中圈土被木（绿）包围、被水（蓝）清凉、被金（留白）规整，直接对应财富翻译中配得感不足、行动力受阻和情绪型漏财等线索。",
+    "narrative_order": [
+      "middle",
+      "inner",
+      "outer"
+    ],
+    "integrated_context_threads": [
+      "财富中的情绪消费与关系承接",
+      "自我价值与配得感",
+      "行动力与安全感的身体表现"
+    ],
+    "evidence_refs": [
+      "inner-001",
+      "inner-003",
+      "middle-001",
+      "middle-002",
+      "middle-003",
+      "middle-004",
+      "outer-001",
+      "outer-002",
+      "outer-003",
+      "IR-IN-001",
+      "IR-MD-001",
+      "IR-MD-002",
+      "IR-OT-001",
+      "IR-OT-002",
+      "CF-001",
+      "CF-002"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.weak_fire_many",
+        "visual.metal_excess",
+        "visual.water_fire_conflict",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.approval_driven_earning",
+        "wealth.low_deservingness"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.deservingness_self_worth",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.self_worth",
+          "recommended_topic": "自我价值 / 配得感",
+          "recommended_intention": "我想探索：我是否允许自己的价值被看见、被支付，并稳定接住回报。",
+          "matched_signals": [
+            "内圈收缩"
+          ],
+          "why_not_expand_now": "本次只翻译到财富中的收钱、定价和接收能力。",
+          "avoid": [
+            "不说用户没有价值感。"
+          ]
+        },
+        {
+          "id": "wealth.next.safety_scarcity",
+          "recommended_topic": "安全感 / 匮乏感",
+          "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+          "matched_signals": [
+            "收缩"
+          ],
+          "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+          "avoid": [
+            "不判断现实贫穷或心理问题。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.approval_driven_earning",
+          "title": "求认可式赚钱",
+          "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+          "report_language": [
+            "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+            "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+          ],
+          "healing_direction": [
+            "自我价值确认。",
+            "放松外界标准。",
+            "区分收入结果和自我价值。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "user-facing-framing": {
+    "stage": "user-facing-framing",
+    "status": "complete",
+    "framing": "从画面来看，中间这一圈花环看起来最忙碌，既有明亮温暖的黄色，也有清清的蓝绿色，而且它们被细细地隔开来。这很像你在财富和关系里常常同时在做很多事，承担很多情绪，但每一件事之间都需要很大的力气去维持和区分。我们从这里出发来聊聊，这份忙和累到底在替你在意什么。",
+    "entry_circle": "middle",
+    "entry_signal": "中圈密集多色小花环，黄色、绿色、蓝色单元反复交替排列，被细小留白精细切分。",
+    "entry_reason": "中圈是画面最细密、关系最复杂的环带，黄色（土）同时与内圈火生土和外圈木克土形成张力场，最能解释财富议题中“承接与消耗”的核心矛盾。中圈土被木（绿）包围、被水（蓝）清凉、被金（留白）规整，直接对应财富翻译中配得感不足、行动力受阻和情绪型漏财等线索。",
+    "narrative_order": [
+      "middle",
+      "inner",
+      "outer"
+    ],
+    "integrated_context_threads": [
+      "财富中的情绪消费与关系承接",
+      "自我价值与配得感",
+      "行动力与安全感的身体表现"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.weak_fire_many",
+        "visual.metal_excess",
+        "visual.water_fire_conflict",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.approval_driven_earning",
+        "wealth.low_deservingness"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.deservingness_self_worth",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.self_worth",
+          "recommended_topic": "自我价值 / 配得感",
+          "recommended_intention": "我想探索：我是否允许自己的价值被看见、被支付，并稳定接住回报。",
+          "matched_signals": [
+            "内圈收缩"
+          ],
+          "why_not_expand_now": "本次只翻译到财富中的收钱、定价和接收能力。",
+          "avoid": [
+            "不说用户没有价值感。"
+          ]
+        },
+        {
+          "id": "wealth.next.safety_scarcity",
+          "recommended_topic": "安全感 / 匮乏感",
+          "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+          "matched_signals": [
+            "收缩"
+          ],
+          "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+          "avoid": [
+            "不判断现实贫穷或心理问题。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.approval_driven_earning",
+          "title": "求认可式赚钱",
+          "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+          "report_language": [
+            "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+            "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+          ],
+          "healing_direction": [
+            "自我价值确认。",
+            "放松外界标准。",
+            "区分收入结果和自我价值。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "report-branching-plan": {
+    "stage": "report-branching-plan",
+    "status": "complete",
+    "healing_direction": "帮助用户看见“土”在中圈的多方拉扯，把注意力从对外关系的承接转向内在选择权的恢复；练习让黄色土性的稳定优先于绿色木性的扩张，通过小步行动重新建立配得感和价值交换节奏。",
+    "report_mode": "pro",
+    "entry_circle": "middle",
+    "entry_signal": "中圈密集多色小花环，黄色、绿色、蓝色单元反复交替排列，被细小留白精细切分。",
+    "entry_reason": "中圈是画面最细密、关系最复杂的环带，黄色（土）同时与内圈火生土和外圈木克土形成张力场，最能解释财富议题中“承接与消耗”的核心矛盾。中圈土被木（绿）包围、被水（蓝）清凉、被金（留白）规整，直接对应财富翻译中配得感不足、行动力受阻和情绪型漏财等线索。",
+    "narrative_order": [
+      "middle",
+      "inner",
+      "outer"
+    ],
+    "integrated_context_threads": [
+      "财富中的情绪消费与关系承接",
+      "自我价值与配得感",
+      "行动力与安全感的身体表现"
+    ],
+    "writing_input_refs": [
+      "inner-001",
+      "inner-003",
+      "middle-001",
+      "middle-002",
+      "middle-003",
+      "middle-004",
+      "outer-001",
+      "outer-002",
+      "outer-003",
+      "IR-IN-001",
+      "IR-MD-001",
+      "IR-MD-002",
+      "IR-OT-001",
+      "IR-OT-002",
+      "CF-001",
+      "CF-002"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.weak_fire_many",
+        "visual.metal_excess",
+        "visual.water_fire_conflict",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.approval_driven_earning",
+        "wealth.low_deservingness"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.deservingness_self_worth",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.self_worth",
+          "recommended_topic": "自我价值 / 配得感",
+          "recommended_intention": "我想探索：我是否允许自己的价值被看见、被支付，并稳定接住回报。",
+          "matched_signals": [
+            "内圈收缩"
+          ],
+          "why_not_expand_now": "本次只翻译到财富中的收钱、定价和接收能力。",
+          "avoid": [
+            "不说用户没有价值感。"
+          ]
+        },
+        {
+          "id": "wealth.next.safety_scarcity",
+          "recommended_topic": "安全感 / 匮乏感",
+          "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+          "matched_signals": [
+            "收缩"
+          ],
+          "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+          "avoid": [
+            "不判断现实贫穷或心理问题。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.approval_driven_earning",
+          "title": "求认可式赚钱",
+          "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+          "report_language": [
+            "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+            "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+          ],
+          "healing_direction": [
+            "自我价值确认。",
+            "放松外界标准。",
+            "区分收入结果和自我价值。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "lite-report-draft": {
+    "stage": "lite-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "pro-report-draft": {
+    "stage": "pro-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 财富议题：层层叠叠的花环里，谁在替你承受重量\n\n## 画面证据总览\n这幅画的底色是温柔而有秩序的。整体像一朵圆满绽放的花，粉色的圆心被多重黄、绿、蓝、粉紫的花瓣层层包裹，画面规整、明亮，三圈边界清楚。视觉重心落在中心大面积粉色上，向外逐层展开成细密的花瓣环带，最终收束于外圈完整的粉紫花边。有三处画面证据值得先看见：第一，中圈是所有环带里最密集、最忙碌的区域，黄、绿、蓝三色小单元被细小的留白一格一格精细切分开，像一个人同时在处理好几件事，又在心里为每件事画了清晰的线；第二，中心的粉色面积虽大，但被红粉小花和黄色花瓣层层环绕，核心温柔却不直接接触外界；第三，外圈粉紫花瓣形成完整的花环边界，花瓣之间仍有细小留白，边界完整但不沉闷，像在对外说“我可以亲近，但也需要呼吸”。\n\n## 圈内元素的五行感知\n先看中圈。中圈是整个画面最细密、信息量最丰富的环带。黄色小花和花瓣元素重复密集，黄色在五行感知里对应土，代表承接、稳定和滋养的能力，大量的规律性重复让这种土性显得格外负重。与土性紧邻的绿色叶形小花，绿色对应木，带着伸展和生长的意图，但排列规整，每一步都走得很小心。蓝色小花偏水，颜色清凉内收，在中圈外侧保留了一块安静的情绪空间。所有这些黄、绿、蓝单元之间，被细小留白严严格隔开——留白在五行里属金，代表边界、标准和分辨。中圈内部存在一组值得关注的关系候选：木土相邻，规整排列让绿色的生长力被土性秩序框住，形成一种“想扩展却每一步都在负重”的张力。而木与水之间又被金性留白隔开，情绪和行动不容易直接接通，往往要先经过一轮自我审视才能转化成可执行的步骤。\n\n再看内圈。中心粉色大圆面积最大、视觉权重最高，粉色对应火，颜色柔和但向外扩散的意图明显，是画面的核心热量来源。紧贴火心的红粉小花瓣延续了火性，形成同心的情感纹理层。外围一圈明亮的黄色花瓣，黄色属土，构成了火生土的自然承接关系。不过，火层与土层之间同样被细小留白截断，这是一种金的介入，让热情没有直接漫到承载层，而是在传递过程中被适度节制。内圈内部这组火-土-金的结构，像是在说：我有温度，但习惯了先包一层缓冲再给出去。\n\n外圈由粉紫色花瓣重复排列构成。浅粉紫加开放花瓣形，在五行感知里偏木，带着向外伸展和装饰的特质，形成画面的外层生长与围合。点状黄色小花瓣保留了土性的暖意，而花瓣间的留白再次以金性的姿态出现，让边界既有花环的完整感，又不至于封死。外圈内部存在这样一组关系候选：黄色小土块被粉紫木性花瓣包围，构成一种被期待和装饰紧密包裹的模式；同时，木与土之间被金性留白隔开，让这种包裹不至于让人窒息，边界保有呼吸出口。\n\n## 财富核心主轴\n这幅画在财富上想说的，其实聚焦在一个状态上：你不是没有能力创造价值，而是承接价值的容器被塞得太满了。中圈那块最忙碌的土，一直在同时承托内圈的热情、外圈的伸展，还有它自己内部的情绪起伏，却很少被减轻过负担。收入进帐时，你可能还没来得及感受“我拥有了”，能量就已经被预分成很多份——这笔要给谁，那笔要留着以备不时之需，还有一些要在情绪低落时换来片刻的平静。消费有时候不是真的缺那样东西，而是那个动作能让自己觉得“我还能照顾点什么”。赚钱也可能悄悄背上了“证明自己值得”的任务，让你在用力的同时不太敢真正放松接收。画面在提醒你的是：你的细腻、体恤和觉察本身就是价值，但当这些价值在向外交换时，中间经过了太多自我审视，进来的能量还没来得及沉淀成底气，就被切分得零零散散。\n\n## 三圈分层解读\n先从中圈看起——这也是这幅画财富故事的起点。这里黄绿蓝小花被精细切分开，特别像你在生活中同时在进行好几件事、照顾好几段关系的状态。你可能很善于承接别人的情绪和期待，甚至在别人还没开口之前就已经在心里帮他预留了位置。绿色部分的生长感提醒你确实有向外发展的愿望，但因为紧贴着土、又遇到金的分隔，行动很容易被“这样做对不对”“够不够好”打断。蓝色小花收得很深，有时候你干脆不想动了，觉得安静待着比出去冲要安全——这种内收带来的可能是行动上的暂缓，也可能对应着一种模式：当情绪低或疲惫时，会通过花钱让自己舒服一点，让消费暂时替代安抚。关系里的给予、被需要和情绪起伏，就这样和金钱的流进流出绑在了一起。\n\n往里走，看到内圈这块粉红色。它映射的是你初衷里的热情、对关系的柔软，以及愿意表达自己的那份在意。但这块火外面裹着一层黄，托是托住了，却也隔了一层——你可能不太习惯直接把自己的需要放在前面，更自然的做法是先照顾环境、先体谅别人，然后再看自己还能剩下什么。放到财富上，这种模式可能表现为：用心提供了服务，但在开价时心里先虚了一下，或者收到钱时第一反应是“我是不是该多付出一点”。身体也可能在配合这个状态，比如肩颈容易紧、背容易酸，像一直在扛着东西而很少卸下来。\n\n最后看外圈。粉紫花瓣形成的完整花环，说明你在别人眼中很可能是一个体面、周到、有分寸的人。外层的木性愿意向外伸展和联结，点状的黄色小土块保持着对他人的暖意，而留白的存在让你对外界的给予保持着筛选——你不会随便让别人进入，但你也不容易让资源流得很深。外圈边界完整但带呼吸孔，这可能意味着在现实层面你有收入、有循环，但你并没有完全信任这个循环能稳稳接住你。关系里被需要、被认可的信号，有时候会变成衡量自我价值的外部参照，这也让赚钱这件事容易累——因为你不仅在交换价值，还在用这份交换确认自己值不值得被好好对待。\n\n## 财富主轴收束\n把三圈的画面收束回来，财富落到现实中的感觉大概是这样的：你有能力、有体恤、有审美，这些早就是你的资源。但这些资源在向外流动时，中间经过了太多“别人怎么看”“我有没有做好”“是不是该保留更多”的自我审视。中圈那块最忙碌的承接力，一直在同时应付内圈的温度、外圈的伸展，还有自己内部的情绪起落，却很少腾出空来对自己好一点。钱在你这里的课题不是“有没有”，而是“来了以后去了哪里”。如果承接的空间一直满负荷，新的机会就很难自然落袋，收了也容易散在情绪出口或关系的被动给予里。画面不是在说你不懂管理，而是在轻声问：你能不能先接住自己的价值，再考虑替别人兜底。\n\n## 低风险行动建议\n- **为情绪消费设一个小小的停顿**：不是不准自己花钱，而是在每次感觉到“突然很想买点什么”的时候，先喝半杯水，或站到窗边看一分钟外面的光。这个动作本身不解决情绪，但它能帮你区分——这次消费是在照顾真实需求，还是在代偿某种安抚。\n- **给中圈的那片大地留一丝空隙**：每天找一段很短的时间，不做任何人的承接者。哪怕只是五分钟，把手上的事全部放下来，不需要想接下来要做什么，只是让身体回到“没人等我、我也不必回应”的状态。这等于在画里那圈细密留白中，开一扇只属于自己的小门。\n- **试着记录“被接住的时刻”**：不光是记收入和支出，也记下“今天我允许自己被支持了”。可能是接受了别人的帮忙，也可能是收了款之后心里没有自动打折。连续记几天，回头看看那些微小的瞬间，它们是你在现实里练习稳稳接住更多的基础。\n\n## 下一次曼陀罗探索建议\n**推荐方向一：自我价值与配得感**  \n这次解读里我们看到，内圈的火虽然温暖，但被层层土的承接和金的挡板护在中间，你对自己的核心价值似乎保留着一份审慎，不太习惯直接让它裸露在交换中。下一次探索可以用一幅曼陀罗来单独感受：“我是否允许自己的价值被看见、被支付，并稳定地接住回报。”这个方向本次没有展开，是因为我们先把焦点放在财富流动中的承接与消耗上，而配得感是更深一层的地基，值得单独画一次。"
+  },
+  "visual-assets": {
+    "stage": "visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "final-report-assembly": {
+    "stage": "final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-8617623b9ec1",
+      "report_mode": "pro",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 财富议题：层层叠叠的花环里，谁在替你承受重量\n\n## 画面证据总览\n这幅画的底色是温柔而有秩序的。整体像一朵圆满绽放的花，粉色的圆心被多重黄、绿、蓝、粉紫的花瓣层层包裹，画面规整、明亮，三圈边界清楚。视觉重心落在中心大面积粉色上，向外逐层展开成细密的花瓣环带，最终收束于外圈完整的粉紫花边。有三处画面证据值得先看见：第一，中圈是所有环带里最密集、最忙碌的区域，黄、绿、蓝三色小单元被细小的留白一格一格精细切分开，像一个人同时在处理好几件事，又在心里为每件事画了清晰的线；第二，中心的粉色面积虽大，但被红粉小花和黄色花瓣层层环绕，核心温柔却不直接接触外界；第三，外圈粉紫花瓣形成完整的花环边界，花瓣之间仍有细小留白，边界完整但不沉闷，像在对外说“我可以亲近，但也需要呼吸”。\n\n## 圈内元素的五行感知\n先看中圈。中圈是整个画面最细密、信息量最丰富的环带。黄色小花和花瓣元素重复密集，黄色在五行感知里对应土，代表承接、稳定和滋养的能力，大量的规律性重复让这种土性显得格外负重。与土性紧邻的绿色叶形小花，绿色对应木，带着伸展和生长的意图，但排列规整，每一步都走得很小心。蓝色小花偏水，颜色清凉内收，在中圈外侧保留了一块安静的情绪空间。所有这些黄、绿、蓝单元之间，被细小留白严严格隔开——留白在五行里属金，代表边界、标准和分辨。中圈内部存在一组值得关注的关系候选：木土相邻，规整排列让绿色的生长力被土性秩序框住，形成一种“想扩展却每一步都在负重”的张力。而木与水之间又被金性留白隔开，情绪和行动不容易直接接通，往往要先经过一轮自我审视才能转化成可执行的步骤。\n\n再看内圈。中心粉色大圆面积最大、视觉权重最高，粉色对应火，颜色柔和但向外扩散的意图明显，是画面的核心热量来源。紧贴火心的红粉小花瓣延续了火性，形成同心的情感纹理层。外围一圈明亮的黄色花瓣，黄色属土，构成了火生土的自然承接关系。不过，火层与土层之间同样被细小留白截断，这是一种金的介入，让热情没有直接漫到承载层，而是在传递过程中被适度节制。内圈内部这组火-土-金的结构，像是在说：我有温度，但习惯了先包一层缓冲再给出去。\n\n外圈由粉紫色花瓣重复排列构成。浅粉紫加开放花瓣形，在五行感知里偏木，带着向外伸展和装饰的特质，形成画面的外层生长与围合。点状黄色小花瓣保留了土性的暖意，而花瓣间的留白再次以金性的姿态出现，让边界既有花环的完整感，又不至于封死。外圈内部存在这样一组关系候选：黄色小土块被粉紫木性花瓣包围，构成一种被期待和装饰紧密包裹的模式；同时，木与土之间被金性留白隔开，让这种包裹不至于让人窒息，边界保有呼吸出口。\n\n## 财富核心主轴\n这幅画在财富上想说的，其实聚焦在一个状态上：你不是没有能力创造价值，而是承接价值的容器被塞得太满了。中圈那块最忙碌的土，一直在同时承托内圈的热情、外圈的伸展，还有它自己内部的情绪起伏，却很少被减轻过负担。收入进帐时，你可能还没来得及感受“我拥有了”，能量就已经被预分成很多份——这笔要给谁，那笔要留着以备不时之需，还有一些要在情绪低落时换来片刻的平静。消费有时候不是真的缺那样东西，而是那个动作能让自己觉得“我还能照顾点什么”。赚钱也可能悄悄背上了“证明自己值得”的任务，让你在用力的同时不太敢真正放松接收。画面在提醒你的是：你的细腻、体恤和觉察本身就是价值，但当这些价值在向外交换时，中间经过了太多自我审视，进来的能量还没来得及沉淀成底气，就被切分得零零散散。\n\n## 三圈分层解读\n先从中圈看起——这也是这幅画财富故事的起点。这里黄绿蓝小花被精细切分开，特别像你在生活中同时在进行好几件事、照顾好几段关系的状态。你可能很善于承接别人的情绪和期待，甚至在别人还没开口之前就已经在心里帮他预留了位置。绿色部分的生长感提醒你确实有向外发展的愿望，但因为紧贴着土、又遇到金的分隔，行动很容易被“这样做对不对”“够不够好”打断。蓝色小花收得很深，有时候你干脆不想动了，觉得安静待着比出去冲要安全——这种内收带来的可能是行动上的暂缓，也可能对应着一种模式：当情绪低或疲惫时，会通过花钱让自己舒服一点，让消费暂时替代安抚。关系里的给予、被需要和情绪起伏，就这样和金钱的流进流出绑在了一起。\n\n往里走，看到内圈这块粉红色。它映射的是你初衷里的热情、对关系的柔软，以及愿意表达自己的那份在意。但这块火外面裹着一层黄，托是托住了，却也隔了一层——你可能不太习惯直接把自己的需要放在前面，更自然的做法是先照顾环境、先体谅别人，然后再看自己还能剩下什么。放到财富上，这种模式可能表现为：用心提供了服务，但在开价时心里先虚了一下，或者收到钱时第一反应是“我是不是该多付出一点”。身体也可能在配合这个状态，比如肩颈容易紧、背容易酸，像一直在扛着东西而很少卸下来。\n\n最后看外圈。粉紫花瓣形成的完整花环，说明你在别人眼中很可能是一个体面、周到、有分寸的人。外层的木性愿意向外伸展和联结，点状的黄色小土块保持着对他人的暖意，而留白的存在让你对外界的给予保持着筛选——你不会随便让别人进入，但你也不容易让资源流得很深。外圈边界完整但带呼吸孔，这可能意味着在现实层面你有收入、有循环，但你并没有完全信任这个循环能稳稳接住你。关系里被需要、被认可的信号，有时候会变成衡量自我价值的外部参照，这也让赚钱这件事容易累——因为你不仅在交换价值，还在用这份交换确认自己值不值得被好好对待。\n\n## 财富主轴收束\n把三圈的画面收束回来，财富落到现实中的感觉大概是这样的：你有能力、有体恤、有审美，这些早就是你的资源。但这些资源在向外流动时，中间经过了太多“别人怎么看”“我有没有做好”“是不是该保留更多”的自我审视。中圈那块最忙碌的承接力，一直在同时应付内圈的温度、外圈的伸展，还有自己内部的情绪起落，却很少腾出空来对自己好一点。钱在你这里的课题不是“有没有”，而是“来了以后去了哪里”。如果承接的空间一直满负荷，新的机会就很难自然落袋，收了也容易散在情绪出口或关系的被动给予里。画面不是在说你不懂管理，而是在轻声问：你能不能先接住自己的价值，再考虑替别人兜底。\n\n## 低风险行动建议\n- **为情绪消费设一个小小的停顿**：不是不准自己花钱，而是在每次感觉到“突然很想买点什么”的时候，先喝半杯水，或站到窗边看一分钟外面的光。这个动作本身不解决情绪，但它能帮你区分——这次消费是在照顾真实需求，还是在代偿某种安抚。\n- **给中圈的那片大地留一丝空隙**：每天找一段很短的时间，不做任何人的承接者。哪怕只是五分钟，把手上的事全部放下来，不需要想接下来要做什么，只是让身体回到“没人等我、我也不必回应”的状态。这等于在画里那圈细密留白中，开一扇只属于自己的小门。\n- **试着记录“被接住的时刻”**：不光是记收入和支出，也记下“今天我允许自己被支持了”。可能是接受了别人的帮忙，也可能是收了款之后心里没有自动打折。连续记几天，回头看看那些微小的瞬间，它们是你在现实里练习稳稳接住更多的基础。\n\n## 下一次曼陀罗探索建议\n**推荐方向一：自我价值与配得感**  \n这次解读里我们看到，内圈的火虽然温暖，但被层层土的承接和金的挡板护在中间，你对自己的核心价值似乎保留着一份审慎，不太习惯直接让它裸露在交换中。下一次探索可以用一幅曼陀罗来单独感受：“我是否允许自己的价值被看见、被支付，并稳定地接住回报。”这个方向本次没有展开，是因为我们先把焦点放在财富流动中的承接与消耗上，而配得感是更深一层的地基，值得单独画一次。",
+      "summary": "当土性承载力被木火金多方向拉扯时，财富稳定感被关系、情绪和标准消耗，调整在于让土的承接重新获得呼吸和选择权。"
+    }
+  }
+}

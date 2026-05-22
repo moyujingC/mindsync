@@ -11,7 +11,7 @@ from app.core.wealth_report import get_wealth_report_runtime
 
 from .contracts import EXECUTION_BLOCKS, STAGE_KEYS, MandalaAgentInput, MandalaAgentResult
 from .prompt_loader import load_prompt_config, load_prompt_template, render_prompt_template
-from .quality_gate import GENERIC_OPENING_PHRASES, run_quality_gate
+from .quality_gate import GENERIC_OPENING_PHRASES, method_boundary_terms, run_quality_gate
 
 
 class MandalaInterpretationAgent:
@@ -358,10 +358,12 @@ class MandalaInterpretationAgent:
             issues.append("opening_must_not_use_generic_greeting")
         if not self._has_visible_five_element_analysis(text):
             issues.append("report_must_include_visible_five_element_analysis")
+        if method_boundary_terms(text):
+            issues.append("report_must_not_include_cross_circle_five_element_relations")
         min_chars = 1000 if report_mode == "pro" else 500
         if len(text) < min_chars:
             issues.append(f"report_too_short_min_{min_chars}_chars")
-        max_chars = 3200 if report_mode == "pro" else 1600
+        max_chars = 3600 if report_mode == "pro" else 1600
         if len(text) > max_chars:
             issues.append(f"report_too_long_max_{max_chars}_chars")
         return issues

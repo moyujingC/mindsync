@@ -690,6 +690,30 @@ def test_mandala_agent_quality_gate_rejects_report_without_five_element_analysis
     assert "missing_visible_five_element_analysis" in quality["failure_ids"]
 
 
+def test_mandala_agent_quality_gate_accepts_five_element_analysis_with_blank_space_evidence(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = (
+        "# 财富议题曼陀罗解读报告\n\n"
+        "从五行的角度看，中圈浅紫色花瓣带有木的生长气质，"
+        "而包围它们的大面积白色留白对应金。"
+        + "画面依据与财富解读。" * 80
+    )
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert "missing_visible_five_element_analysis" not in quality["failure_ids"]
+
+
 def test_mandala_agent_quality_gate_rejects_cross_circle_five_element_relations(tmp_path):
     llm_client = StubMandalaLLMClient()
     knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
@@ -794,6 +818,33 @@ def test_mandala_agent_quality_gate_rejects_methods_leak_into_wealth_core(tmp_pa
 
     assert quality["passed"] is False
     assert "wealth_core_method_leak" in quality["failure_ids"]
+
+
+def test_mandala_agent_quality_gate_allows_healer_language_in_wealth_core(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+        knowledge_pack=knowledge_pack,
+    )
+    report = (
+        "# 财富议题曼陀罗解读报告\n\n"
+        "## 五行感知\n"
+        "五行元素里，颜色和形状都需要逐个拆看。\n\n"
+        "## 财富核心主轴\n"
+        "你内在那团想要创造、想要被认可的热度，被一层水性的边界包着。"
+        "这让你在推动财富流动时，常常一边冲、一边收，身体和情绪先紧绷起来。"
+        + "画面依据与财富解读。" * 80
+    )
+
+    quality = run_quality_gate(
+        stage_outputs=result.stage_outputs,
+        execution_trace=result.execution_trace,
+        final_report_md=report,
+        report_context_package=result.report_context_package,
+    )
+
+    assert "wealth_core_method_leak" not in quality["failure_ids"]
 
 
 def test_mandala_agent_quality_gate_rejects_deterministic_family_cause(tmp_path):
@@ -909,6 +960,7 @@ def test_mandala_agent_quality_gate_allows_longer_pro_report(tmp_path):
 
     assert "too_long_max_2400" not in quality["details"]["report_shape_issues"]
     assert "too_long_max_3200" not in quality["details"]["report_shape_issues"]
+    assert "too_long_max_3600" not in quality["details"]["report_shape_issues"]
 
 
 def test_mandala_agent_quality_gate_allows_boundary_disclaimer(tmp_path):
