@@ -508,7 +508,8 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
     report_prompt = llm_client.text_calls[-1]["user_prompt"]
 
     assert "Pro 版结构固定为 8 段" in report_prompt
-    assert "标题必须明确包含“财富议题”" in report_prompt
+    assert "第一行必须直接写成" in report_prompt
+    assert "第一行必须直接写成 `# 财富议题：...`" in report_prompt
     assert "不要用“好的”" in report_prompt
     assert "圈内元素五行感知" in report_prompt
     assert "先写元素，再写圈层" in report_prompt
@@ -523,6 +524,31 @@ def test_mandala_agent_report_prompt_includes_mode_structure(tmp_path):
     assert "下一次曼陀罗探索建议" in report_prompt
     assert "报告语言风格只遵循知识包中的《报告语言风格指南》" in report_prompt
     assert "报告语言风格只遵循知识包中的《报告语言风格指南》" in report_prompt
+
+
+def test_mandala_agent_lite_prompt_requires_five_element_and_non_cross_circle_language(tmp_path):
+    llm_client = StubMandalaLLMClient()
+    knowledge_pack = KnowledgePackBuilder().build(theme="wealth")
+    agent_input = _agent_input(tmp_path)
+    agent_input = MandalaAgentInput(
+        report_mode="lite",
+        image=agent_input.image,
+        user_context=agent_input.user_context,
+        circle_boundaries=agent_input.circle_boundaries,
+        output_requirements=agent_input.output_requirements,
+    )
+    MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=agent_input,
+        knowledge_pack=knowledge_pack,
+    )
+
+    report_prompt = llm_client.text_calls[-1]["user_prompt"]
+
+    assert "必须使用下面的 Markdown 标题顺序" in report_prompt
+    assert "## 五行感知" in report_prompt
+    assert "必须出现“五行”两个字" in report_prompt
+    assert "跨圈承接表达，不要写“中圈影响外圈”" in report_prompt
+    assert "某圈框住某圈" in report_prompt
 
 
 def test_mandala_agent_foundation_reading_keeps_intra_circle_relations(tmp_path):
