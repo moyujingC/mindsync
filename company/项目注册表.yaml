@@ -49,6 +49,20 @@ objects:
       - "作为个人求职执行项目，而不是抽象产品化实验"
       - "与怀瑾握瑜保持边界：前者服务当前求职闭环，后者探索可产品化的方法与服务模型"
 
+  - id: "healing-courses"
+    name: "疗愈课程体系"
+    slug: "healing-courses"
+    kind: "product"
+    status: "draft"
+    goal: "AI 心理学、疗愈、中国传统文化与教练技术课程产品化"
+    company_entry: "company/projects/疗愈课程体系/PROJECT.md"
+    workspace_entry: "projects/healing-courses/PROJECT.md"
+    runtime_directory: "projects/healing-courses"
+    purpose:
+      - "承接面向普通用户的疗愈与成长课程产品线"
+      - "将 AI 心理学、曼陀罗疗愈、中国传统文化与教练技术转译为可学习、可练习、可复用的课程"
+      - "与一镜一梳共享曼陀罗疗愈知识资产，但交付形态聚焦课程、练习与陪伴"
+
   - id: "research-center"
     name: "研究中心"
     slug: "research-center"
