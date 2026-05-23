@@ -757,7 +757,7 @@ export function MobileWebRuntime({
   function handleReportSecondaryAction() {
     if (currentRuntimeProps.route === "loading") {
       setRuntimeProps({
-        route: "reportEntry",
+        route: "upload",
         uploadDraft: uploadDraftForReturn,
       });
       return;
@@ -956,10 +956,7 @@ export function MobileWebRuntime({
         });
       }}
       onUploadContinue={() => {
-        setRuntimeProps({
-          route: "reportEntry",
-          uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
-        });
+        void handleUploadContinue();
       }}
       onReportEntryBack={() => {
         setRuntimeProps({

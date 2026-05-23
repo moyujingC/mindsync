@@ -76,6 +76,7 @@ describe("MobileWebRuntime", () => {
         IS_REACT_ACT_ENVIRONMENT?: boolean;
       }
     ).IS_REACT_ACT_ENVIRONMENT = true;
+    HTMLElement.prototype.scrollIntoView = vi.fn();
     vi.clearAllMocks();
     vi.mocked(api.createWealthReport).mockResolvedValue(createWealthReportResponse());
     vi.mocked(api.uploadImage).mockResolvedValue(createUploadResponse());
@@ -92,7 +93,64 @@ describe("MobileWebRuntime", () => {
     container.remove();
   });
 
-  it("选择 Lite 时调用当前财富报告入口", async () => {
+  it("上传页开始解读时直接进入生成并调用当前财富报告入口", async () => {
+    const input: MobileWebRouteInput = {
+      route: "upload",
+      params: {
+        session: createMobileWebGuestSession("runtime-test"),
+        draft: {
+          imagePath: "blob:runtime-preview",
+          theme: "wealth",
+          reportType: "lite",
+          reportVariant: "lite",
+          redeemCode: "MVP-LITE",
+          paintingIntention: "看见财富卡点",
+          paintingFeeling: "平静",
+          innerRadius: 0.36,
+          middleRadius: 0.64,
+          browserFile: new File(["mandala"], "mandala.png", { type: "image/png" }),
+        },
+      },
+    };
+
+    await act(async () => {
+      root.render(<MobileWebRuntime input={input} />);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("开始解读");
+    });
+
+    const startButton = Array.from(container.querySelectorAll("button")).find((item) =>
+      item.textContent?.includes("开始解读"),
+    );
+    expect(startButton).toBeTruthy();
+
+    await act(async () => {
+      startButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
+      expect(api.uploadImage).toHaveBeenCalledWith(expect.any(File));
+      expect(api.createWealthReport).toHaveBeenCalledWith(
+        expect.objectContaining({
+          image_path: "/tmp/runtime-upload.png",
+          storage_backend: "local",
+          storage_key: "uploads/runtime-upload.png",
+          report_mode: "lite",
+          redeem_code: "MVP-LITE",
+          painting_intention: "看见财富卡点",
+          painting_feeling: "平静",
+          inner_radius: 36,
+          middle_radius: 64,
+        }),
+      );
+    });
+    expect(container.textContent).toContain("财富议题曼陀罗解读");
+  });
+
+  it("保留选择页入口，选择 Lite 时调用当前财富报告入口", async () => {
     const input: MobileWebRouteInput = {
       route: "reportEntry",
       params: {
