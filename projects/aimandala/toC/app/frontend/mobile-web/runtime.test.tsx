@@ -7,6 +7,7 @@ import { act } from "react";
 
 vi.mock("../shared/api", () => ({
   createWealthReport: vi.fn(),
+  uploadImage: vi.fn(),
 }));
 
 import * as api from "../shared/api";
@@ -29,6 +30,19 @@ function createWealthReportResponse(): WealthReportResponse {
     prompt_pack_manifest: { pack_id: "wealth-report-v1.0.0" },
     quality_gate: {},
     run_summary: {},
+  };
+}
+
+function createUploadResponse() {
+  return {
+    success: true,
+    image_path: "/tmp/runtime-upload.png",
+    storage_backend: "local",
+    storage_key: "uploads/runtime-upload.png",
+    original_filename: "mandala.png",
+    content_type: "image/png",
+    size_bytes: 8,
+    image_url: "https://img.example.com/uploads/runtime-upload.png",
   };
 }
 
@@ -64,6 +78,7 @@ describe("MobileWebRuntime", () => {
     ).IS_REACT_ACT_ENVIRONMENT = true;
     vi.clearAllMocks();
     vi.mocked(api.createWealthReport).mockResolvedValue(createWealthReportResponse());
+    vi.mocked(api.uploadImage).mockResolvedValue(createUploadResponse());
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -83,7 +98,7 @@ describe("MobileWebRuntime", () => {
       params: {
         session: createMobileWebGuestSession("runtime-test"),
         draft: {
-          imagePath: "/tmp/manual-circle-mandala.png",
+          imagePath: "blob:runtime-preview",
           theme: "wealth",
           reportType: "lite",
           reportVariant: "lite",
@@ -92,6 +107,7 @@ describe("MobileWebRuntime", () => {
           paintingFeeling: "平静",
           innerRadius: 0.36,
           middleRadius: 0.64,
+          browserFile: new File(["mandala"], "mandala.png", { type: "image/png" }),
         },
       },
     };
@@ -114,9 +130,12 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
+      expect(api.uploadImage).toHaveBeenCalledWith(expect.any(File));
       expect(api.createWealthReport).toHaveBeenCalledWith(
         expect.objectContaining({
-          image_path: "/tmp/manual-circle-mandala.png",
+          image_path: "/tmp/runtime-upload.png",
+          storage_backend: "local",
+          storage_key: "uploads/runtime-upload.png",
           report_mode: "lite",
           redeem_code: "MVP-LITE",
           painting_intention: "看见财富卡点",
