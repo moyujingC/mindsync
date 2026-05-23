@@ -9,7 +9,7 @@ vi.mock("./httpClient", () => ({
 }));
 
 vi.mock("./config", () => ({
-  getAimandalaApiBaseUrl: () => "http://localhost:8000",
+  getAimandalaApiBaseUrl: () => "http://127.0.0.1:8100",
 }));
 
 import { createWealthReport, uploadImage } from "./services";
@@ -32,7 +32,7 @@ describe("shared/api services", () => {
     });
 
     expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/wealth-reports",
+      "http://127.0.0.1:8100/api/wealth-reports",
       expect.objectContaining({
         method: "POST",
         headers: {
@@ -59,7 +59,7 @@ describe("shared/api services", () => {
     await uploadImage(file);
 
     expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/uploads",
+      "http://127.0.0.1:8100/api/uploads",
       expect.objectContaining({
         method: "POST",
         body: expect.any(FormData),

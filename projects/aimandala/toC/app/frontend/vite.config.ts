@@ -47,7 +47,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target:
-          process.env.AIMANDALA_VITE_PROXY_TARGET || "http://127.0.0.1:8000",
+          process.env.AIMANDALA_VITE_PROXY_TARGET || "http://127.0.0.1:8100",
         changeOrigin: true,
       },
     },

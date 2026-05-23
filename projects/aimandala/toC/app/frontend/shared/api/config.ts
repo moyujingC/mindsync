@@ -1,4 +1,4 @@
-export const DEFAULT_AIMANDALA_API_BASE_URL = "http://localhost:8000";
+export const DEFAULT_AIMANDALA_API_BASE_URL = "http://127.0.0.1:8100";
 
 interface ProcessLikeEnv {
   AIMANDALA_API_BASE_URL?: string;
