@@ -1,9 +1,9 @@
 # Runbooks
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：Engineer
-> last_updated：2026-05-11
+> last_updated：2026-05-23
 > source_of_truth：projects/aimandala/docs/runbooks/README.md
 
 这里放 `一镜一梳 / aimandala` 的运行说明、联调手册和操作型 runbook。
@@ -105,27 +105,27 @@
 4. `shared/tools/ci/server-automation-run.sh`
    - 负责把 guard -> 执行 -> finalizer 接成统一服务器执行链
 
-解读报告生成的新控制层已经进入 `mandala_interpretation_agent` 离线原型。当前实现入口看：
+解读报告生成的新控制层正在切到 `mandala_interpretation_agent` 端到端直出原型。当前目标链路看：
 
 1. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/agent.py`
-   - 负责单智能体主运行链路和 16 个 `stage-*` 输出
+   - 负责智能体主运行链路，目标输出 `visual_draft / prompt_pack / final_report / quality_gate`
 2. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/contracts.py`
-   - 负责输入 / 输出合同和 stage key 列表
-3. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/knowledge_pack_builder.py`
-   - 负责构建精简知识包，避免把完整 Markdown 真值源塞进模型上下文
+   - 负责端到端输入 / 输出合同
+3. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/prompt_pack_builder.py`
+   - 负责构建版本化稳定前缀包，用于 DeepSeek 上下文缓存
 4. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/quality_gate.py`
-   - 负责中间交付物、最终报告和上下文包的质量门
+   - 负责视觉草稿、最终报告和越界内容的质量门
 5. `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/artifact_store.py`
-   - 负责写出审阅用中间交付物
-6. `projects/aimandala/toC/app/backend/scripts/run_mandala_interpretation_agent_fixture.py`
-   - 负责离线 fixture 运行和真实模型产物落盘
+   - 负责写出审阅用产物
+6. `projects/aimandala/toC/app/backend/scripts/run_mandala_e2e_report_fixture.py`
+   - 负责端到端直出离线 fixture 运行和真实模型产物落盘
 
 当前文档入口看：
 
 1. [../architecture/解读智能层-曼陀罗解读智能体架构.md](../architecture/解读智能层-曼陀罗解读智能体架构.md)
 2. [../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md](../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md)
-3. [../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md](../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md)
-4. [../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md](../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md)
+3. [../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md](../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md)
+4. [../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md](../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md)
 
 这里的正式边界是：
 

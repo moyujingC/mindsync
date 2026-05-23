@@ -1,9 +1,9 @@
 # Architecture
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.3.0
 > owner：Architect
-> last_updated：2026-05-17
+> last_updated：2026-05-23
 > source_of_truth：projects/aimandala/docs/architecture/README.md
 
 这里放 `一镜一梳 / aimandala` 当前仍生效的技术架构文档。
@@ -56,7 +56,7 @@
    - 建立 To C 主产品当前目录、前后端和知识包边界
 2. 再看 `解读智能层-曼陀罗解读智能体架构`
    - 理解报告生成为什么从 legacy report pipeline（旧报告流水线）切到 `mandala_interpretation_agent`
-   - 理解当前已落地的是离线原型，API 旁路接入仍在后续阶段
+   - 理解新目标链路是 `visual_draft / prompt_pack / final_report / quality_gate`
 3. 再看 `../疗愈体系知识库/README.md`
    - 理解三圈五行方法、知识源入口和知识包压缩依据
 4. 最后看 CI/CD 与 Automation 两份专项架构
@@ -71,10 +71,10 @@
   - [解读智能层-曼陀罗解读智能体架构.md](./解读智能层-曼陀罗解读智能体架构.md)
   - [../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md](../specs/2026-05-11-曼陀罗解读智能体-MVP实施规格.md)
   - [../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md](../tasks/2026-05-11-曼陀罗解读智能体-MVP实施计划.md)
-  - [../qa/2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md](../qa/2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md)
+  - [../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md](../qa/2026-05-11-曼陀罗解读智能体-MVP-QA基线.md)
 
 ## 6. 当前边界提醒
 
-- `mandala_interpretation_agent` 已有离线原型、fixture runner（样例运行器）和质量门，不等于已经替换线上 API 主链
+- `mandala_interpretation_agent` 正在从旧离线原型切到端到端直出链路，不等于已经替换线上 API 主链
 - `mvp-ci` 仍是日常最小可信质量门；`aimandala-ci`、deploy、nightly smoke、auto-repair 属于增强链路
 - Automation 节点相关文档应与 `runbooks/README.md` 一起阅读，区分“架构边界”和“实际操作步骤”

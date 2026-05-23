@@ -1,9 +1,9 @@
 # QA
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：Test / QA
-> last_updated：2026-05-11
+> last_updated：2026-05-23
 > source_of_truth：projects/aimandala/docs/qa/README.md
 
 这里放 `一镜一梳` 当前主链路的验收清单、验证记录与样本验证文档。
@@ -50,8 +50,8 @@
 
 - [2026-05-11-runbook-体系优化验证记录.md](./2026-05-11-runbook-体系优化验证记录.md)
 - [2026-05-11-runbook-体系优化-QA基线.md](./2026-05-11-runbook-体系优化-QA基线.md)
-- [2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md](./2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md)
 - [2026-05-11-曼陀罗解读智能体-MVP-QA基线.md](./2026-05-11-曼陀罗解读智能体-MVP-QA基线.md)
+- [2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md](./2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md)
 - [2026-05-22-财富报告黄金案例集QA基线.md](./2026-05-22-wealth-report-golden-case-baseline.md)
 - [2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md](./2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md)
 - [2026-05-06-mvp-国产视觉模型评测验证记录.md](./2026-05-06-mvp-国产视觉模型评测验证记录.md)
@@ -82,8 +82,8 @@
 
 - `2026-05-11-runbook-体系优化验证记录.md` 是当前 runbook 体系治理的验证记录，固定保存入口唯一性、当前 / 历史分离、类型分层和控制层映射检查结论。
 - `2026-05-11-runbook-体系优化-QA基线.md` 是当前 runbook 体系治理的 QA baseline，固定验证 runbook 入口、task / runbook 边界和 control layer（控制层）映射。
-- `2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md` 是当前 `mandala_interpretation_agent` 离线原型的验证记录，固定说明新模块、fixture runner、质量门、无模型失败路径和 legacy 全量 unit 残留失败。
-- `2026-05-11-曼陀罗解读智能体-MVP-QA基线.md` 是当前报告生成重建的 QA 质量门，固定验证三圈五行方法真值源、解读智能层架构、16 个 stage 输出、5 个 execution block trace、真实模型输出和旧链路隔离。
+- `2026-05-11-曼陀罗解读智能体-MVP-QA基线.md` 是报告生成重建的 QA 质量门入口，当前应按端到端直出架构更新为 `visual_draft / prompt_pack / final_report / quality_gate` 验证口径。
+- `2026-05-12-曼陀罗解读智能体-MVP-离线原型验证记录.md` 是旧离线原型验证记录，保留用于追溯新模块、fixture runner、质量门、无模型失败路径和 legacy 全量 unit 残留失败，不再作为端到端直出链路的当前完成态证明。
 - `2026-05-06-mvp-视觉模型默认接入QA-Gate-Review.md` 是当前 MVP 视觉模型默认接入的最终质量门结论，统一收束人工细看、端到端 smoke、前端 runtime smoke、流派保真和最终 3 图复测；配套证据目录为 `model-evals/2026-05-06-vision-mvp-final-smoke/`。
 - `2026-05-06-mvp-国产视觉模型评测验证记录.md` 是当前第一轮国产视觉模型真实 API 评测结果，记录 `qwen-vl-max-latest`、`glm-4v-plus` 与 `Doubao-Seed-1.6-vision` 在 4 个脱敏 fixture 上的结果。
 - `2026-05-05-mvp-国产视觉模型评测基线.md` 是当前 MVP 国产视觉模型选型的正式 QA baseline，固定用脱敏 fixture 对候选视觉模型做三圈识别适配评测，不把第三方中转或国外视觉模型列为生产默认候选。
