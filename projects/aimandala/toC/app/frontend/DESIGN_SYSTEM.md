@@ -129,8 +129,8 @@
 
 ## 开发壳与兼容层最终瘦身规则
 
-- `styles.css` 后续只保留 legacy page、未迁移历史块与必要兼容规则，不再承载 `browser-shell`、`browser-debug-panel` 或开发壳基础类
-- `browser-shell`、`browser-debug-panel` 的静态视觉统一进入 `mobile-web/styles/dev-shell.css`
+- `styles.css` 后续只保留未迁移历史块与必要兼容规则，不再承载 `browser-shell` 或开发壳基础类
+- `browser-shell` 的静态视觉统一进入 `mobile-web/styles/dev-shell.css`
 - `.mw-visually-hidden` 这类稳定辅助类统一进入 `utilities.css`；`.field`、`.muted`、`.runtime-state`、`.eyebrow` 等开发壳基础类统一进入 `dev-shell.css`
 - 开发壳静态布局不得继续使用大段 inline style；仅运行时动态值允许保留在 JSX 中
 
@@ -167,7 +167,7 @@
 - `report-entry.css` 中 Lite / Pro 选择卡、price pill、footnote、弱文本和暗底文字层级，应优先消费产品级 semantic token，例如 `--am-text-*`、`--am-border-*`、`--am-status-info`，不要继续重复书写同一组语义色
 - `Report Entry` 的页面级渐变、暗底氛围背景和 hero 纹理仍可留在页面层；只有重复语义色需要优先收进 token
 - `dev-shell.css` 可定义少量 Web 本地 token，例如 panel surface、panel border、muted text、warning/error text、active surface；这些 token 只服务开发壳，不进入 `shared/design-system/tokens.ts`
-- `browser-shell`、`browser-debug-panel` 新增静态视觉应继续优先复用 `--am-dev-*` 本地 token，不再把重复色直接写回 `dev-shell.css`
+- `browser-shell` 新增静态视觉应继续优先复用 `--am-dev-*` 本地 token，不再把重复色直接写回 `dev-shell.css`
 
 ## 最终 Inline Style 边界
 

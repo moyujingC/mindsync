@@ -20,7 +20,6 @@ export default defineConfig({
         "shared/ui/report.tsx",
         "shared/ui/upload.tsx",
         "mobile-web/app.tsx",
-        "mobile-web/browser-debug-panel.tsx",
         "mobile-web/controller.ts",
         "mobile-web/identity.ts",
         "mobile-web/state.ts",
