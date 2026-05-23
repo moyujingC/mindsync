@@ -4,7 +4,6 @@ export type MobileWebRouteId =
   | "reportEntry"
   | "loading"
   | "report"
-  | "reportLegacy"
   | "history"
   | "historyRecordDetail";
 
@@ -19,8 +18,7 @@ export const mobileWebRoutes: MobileWebRouteDefinition[] = [
   { id: "upload", path: "/upload", title: "上传画作" },
   { id: "reportEntry", path: "/report-entry", title: "Lite / Pro 选择页" },
   { id: "loading", path: "/loading", title: "解读生成中" },
-  { id: "report", path: "/report", title: "Lite 解读报告" },
-  { id: "reportLegacy", path: "/report-legacy", title: "报告旧版对照" },
+  { id: "report", path: "/report", title: "新版解读报告" },
   { id: "history", path: "/history", title: "历史解读" },
   {
     id: "historyRecordDetail",

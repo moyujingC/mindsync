@@ -1,91 +1,15 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import type {
-  LiteStructuredReport,
-  MandalaFlowState,
-  ProStructuredReport,
-} from "../types";
+import type { MandalaFlowState } from "../types";
 import {
   SharedHistoryRecordsList,
   SharedLoadingProgressCard,
-  SharedProStructuredReportCards,
   SharedReportEntrySelectionPage,
-  SharedStructuredReportCards,
   SharedUploadChecklistCard,
   SharedUploadDetectionCard,
   SharedUploadDraftSummaryCard,
 } from "./index";
-
-const structured: LiteStructuredReport = {
-  topic_context: {
-    topic: "intimate_relationship",
-    topic_label: "亲密关系",
-    report_mode: "lite",
-    orientation: {
-      intro: "这份报告会从亲密关系这个议题角度看这张画。",
-      focus: "这个议题通常关注靠近、边界、安全感和依恋模式。",
-      key_terms: [
-        {
-          term: "依恋模式",
-          explanation: "你在靠近与保持安全距离之间形成的惯性。",
-        },
-      ],
-    },
-  },
-  current_reading: "你最近在慢慢收拢自己的注意力。",
-  visual_basis: "中心更稳，外围更轻。",
-  pattern_interpretation: "你在想靠近与想退后之间摆动，这像是先靠近再缩回的保护模式。",
-  life_connection: "在关系里，一段关系更靠近时会先暂停一下。",
-  lite_healing_guidance: {
-    directions: [
-      {
-        title: "先稳住自己",
-        content: "先把注意力放回到自己此刻最想守住的部分。",
-      },
-    ],
-    micro_practices: [
-      {
-        title: "一句真实感受",
-        content: "先说出一句真实感受，而不是立刻解释。",
-      },
-    ],
-  },
-  pro_report_entry: {
-    title: "另一份更深的独立报告",
-    summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
-    product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
-  },
-};
-
-const proStructured: ProStructuredReport = {
-  topic_context: {
-    topic: "intimate_relationship",
-    topic_label: "亲密关系",
-    report_mode: "pro",
-    orientation: {
-      intro: "这份报告会从亲密关系这个议题角度看这张画。",
-      focus: "这个议题通常关注靠近、边界、安全感和依恋模式。",
-      key_terms: [],
-    },
-  },
-  deep_impression: "你正在把原本分散的注意力重新拉回中心。",
-  evidence_digest: "核心感受已经很浓，但暂时不想完全暴露出来；相邻区域贴得较近，说明感受之间正在互相牵动。",
-  imbalance_diagnosis: "主要失衡是边界过紧，判断依据是外围张力仍然比较明显。",
-  root_cause_chain: {
-    surface: "关系靠近时先暂停。",
-    mechanism: "你会用回撤保留掌控感。",
-    core: "担心主动表达之后失去掌控感。",
-  },
-  deep_structure_interpretation: "在亲密关系议题下，这更像是靠近需求与安全边界之间的拉扯。",
-  healing_plan: [
-    {
-      phase: "第一阶段",
-      focus: "先辨认自己最想守住的是什么。",
-      practice: "每天写下一句最真实的担心。",
-    },
-  ],
-};
 
 const flowState: MandalaFlowState = {
   step: "liteGenerating",
@@ -112,34 +36,12 @@ const flowState: MandalaFlowState = {
 };
 
 describe("shared ui", () => {
-  it("渲染 structured report cards", () => {
-    const html = renderToStaticMarkup(
-      <SharedStructuredReportCards structured={structured} />,
-    );
-
-    expect(html).toContain("模式命名");
-    expect(html).toContain("现实连接");
-    expect(html).toContain("轻量调节方向");
-    expect(html).toContain("现在可以先做的小练习");
-    expect(html).toContain("独立产品入口");
-  });
-
-  it("渲染 pro structured report cards", () => {
-    const html = renderToStaticMarkup(
-      <SharedProStructuredReportCards structured={proStructured} />,
-    );
-
-    expect(html).toContain("深度第一印象");
-    expect(html).toContain("证据摘要与结构展开");
-    expect(html).toContain("完整疗愈方案");
-  });
-
   it("渲染 loading progress card", () => {
     const html = renderToStaticMarkup(
       <SharedLoadingProgressCard state={flowState} />,
     );
 
-    expect(html).toContain("正在生成一镜 Lite 版");
+    expect(html).toContain("正在生成新版解读报告");
     expect(html).toContain("62%");
   });
 
@@ -202,8 +104,6 @@ describe("shared ui", () => {
 
     expect(html).toContain("选择 Lite");
     expect(html).toContain("优惠券 / 兑换码");
-    expect(html).toContain("温柔提示");
-    expect(html).toContain("当前主题");
   });
 
   it("渲染 upload shared cards", () => {
@@ -238,7 +138,7 @@ describe("shared ui", () => {
     );
 
     expect(html).toContain("迁移期推荐流程");
-    expect(html).toContain("使用当前三圈");
+    expect(html).toContain("三圈人工确认");
     expect(html).toContain("主题与补充信息");
   });
 });

@@ -64,10 +64,7 @@ import type {
 import {
   applyError,
   getGenerationPresentation,
-  getLiteStructuredReport,
-  hasProReportAccess,
   initialMandalaFlowState,
-  resolveSelfUnderstandingReportCta,
 } from "../shared/core";
 
 function readBrowserShellInitialState() {
@@ -568,7 +565,13 @@ export function MobileWebBrowserShell() {
             return liteSnapshot;
           }
 
-          if (hasProReportAccess(liteSnapshot.state)) {
+          if (
+            liteSnapshot.state.report?.version === "pro" ||
+            Boolean(
+              liteSnapshot.state.report?.can_upgrade ||
+                liteSnapshot.state.status?.can_upgrade,
+            )
+          ) {
             return pollMobileWebReportUntilReady(
               currentInterpretationId,
               "pro",
@@ -715,31 +718,7 @@ export function MobileWebBrowserShell() {
         return;
       }
 
-      const resultCta = resolveSelfUnderstandingReportCta({
-        theme: draft.theme,
-        canUpgrade: Boolean(
-          previewFlowState?.report?.can_upgrade ||
-            previewFlowState?.status?.can_upgrade,
-        ),
-        hasProAccess: hasProReportAccess(previewFlowState ?? initialMandalaFlowState),
-        structured: getLiteStructuredReport(previewFlowState?.report ?? null),
-      });
-
-      if (resultCta.intent === "open_pro_report") {
-        setDraft((current) => mergeMobileWebUploadDraft(current, {
-          reportType: "pro",
-        }));
-        setRoute("loading");
-        return;
-      }
-
-      if (resultCta.intent === "restart_upload") {
-        setPreviewFlowState(null);
-        setRoute("upload");
-        return;
-      }
-
-      setRoute("reportEntry");
+      setRoute("upload");
       return;
     }
 
@@ -960,11 +939,7 @@ export function MobileWebBrowserShell() {
                       setRoute(event.target.value as MobileWebRouteId);
                     }}
                   >
-                    {PREVIEW_ROUTE_OPTIONS.filter((option) => (
-                      previewChannel === "mobile-web"
-                        ? true
-                        : option.value !== "reportLegacy"
-                    )).map((option) => (
+                    {PREVIEW_ROUTE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>

@@ -17,10 +17,7 @@ import {
 } from "../mobile-web/state";
 import {
   applyError,
-  getLiteStructuredReport,
-  hasProReportAccess,
   initialMandalaFlowState,
-  resolveSelfUnderstandingReportCta,
 } from "../shared/core";
 import type {
   FrontendUserSession,
@@ -385,31 +382,6 @@ export function MiniappRuntime({
           } else {
             setActiveRoute("upload");
           }
-          return;
-        }
-
-        const resultCta = resolveSelfUnderstandingReportCta({
-          theme: draft.theme,
-          canUpgrade: Boolean(
-            flowState.report?.can_upgrade || flowState.status?.can_upgrade,
-          ),
-          hasProAccess: hasProReportAccess(flowState),
-          structured: getLiteStructuredReport(flowState.report),
-        });
-
-        if (
-          resultCta.intent === "open_pro_report" &&
-          flowState.interpretation?.interpretation_id
-        ) {
-          setDraft((current) =>
-            mergeMobileWebUploadDraft(current, { reportType: "pro" }),
-          );
-          setActiveRoute("loading");
-          return;
-        }
-
-        if (resultCta.intent === "open_report_entry") {
-          setActiveRoute("reportEntry");
           return;
         }
 

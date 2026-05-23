@@ -1,4 +1,4 @@
-import { getFlowStepLabel, getLiteStructuredReport } from "../shared/core";
+import { getFlowStepLabel } from "../shared/core";
 import type { MandalaFlowState } from "../shared/types";
 
 export interface MobileWebPageViewModel {
@@ -15,8 +15,6 @@ export function createMobileWebPageViewModel(
   state: MandalaFlowState,
   primaryActionLabel: string,
 ): MobileWebPageViewModel {
-  const structured = getLiteStructuredReport(state.report);
-
   if (state.lastError) {
     return {
       step: getFlowStepLabel(state),
@@ -29,12 +27,12 @@ export function createMobileWebPageViewModel(
     };
   }
 
-  if (structured) {
+  if (state.report?.report) {
     return {
       step: getFlowStepLabel(state),
       primaryActionLabel,
-      title: state.report?.title ?? structured.topic_context.topic_label,
-      subtitle: structured.current_reading,
+      title: state.report?.title ?? "你的曼陀罗解读",
+      subtitle: state.report?.overall_impression ?? state.report.report,
       reportMarkdown: state.report?.report ?? null,
       interpretationId: state.interpretation?.interpretation_id ?? null,
       lastError: null,

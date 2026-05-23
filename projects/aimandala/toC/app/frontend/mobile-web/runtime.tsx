@@ -18,10 +18,7 @@ import { ensureUploadedImagePath } from "./upload-runtime";
 import {
   applyDetection,
   getGenerationPresentation,
-  getLiteStructuredReport,
-  hasProReportAccess,
   initialMandalaFlowState,
-  resolveSelfUnderstandingReportCta,
   selectImage,
 } from "../shared/core";
 import type {
@@ -160,7 +157,6 @@ function getDraftFromInput(
 
   if (
     input.route === "report" ||
-    input.route === "reportLegacy" ||
     input.route === "history" ||
     input.route === "historyRecordDetail"
   ) {
@@ -599,26 +595,8 @@ export function MobileWebRuntime({
         return;
       }
 
-      const resultCta = resolveSelfUnderstandingReportCta({
-        theme: currentUploadDraft?.theme,
-        canUpgrade: Boolean(
-          currentRuntimeProps.flowState.report?.can_upgrade ||
-            currentRuntimeProps.flowState.status?.can_upgrade,
-        ),
-        hasProAccess: hasProReportAccess(currentRuntimeProps.flowState),
-        structured: getLiteStructuredReport(currentRuntimeProps.flowState.report),
-      });
-
-      if (resultCta.intent === "restart_upload") {
-        setRuntimeProps({
-          route: "upload",
-          uploadDraft: currentUploadDraft ?? uploadDraftForReturn,
-        });
-        return;
-      }
-
       setRuntimeProps({
-        route: "reportEntry",
+        route: "upload",
         uploadDraft: currentUploadDraft ?? uploadDraftForReturn,
       });
       return;

@@ -14,7 +14,6 @@ export default defineConfig({
       include: [
         "shared/core/flow.ts",
         "shared/core/identity.ts",
-        "shared/core/report-structure.ts",
         "shared/core/themes.ts",
         "shared/ui/history.tsx",
         "shared/ui/report-entry.tsx",
@@ -32,7 +31,6 @@ export default defineConfig({
         "mobile-web/page-shells/loading-page.tsx",
         "mobile-web/page-shells/report-page.tsx",
       ],
-      exclude: ["mobile-web/page-shells/report-page-legacy.tsx"],
       thresholds: {
         lines: 60,
         functions: 60,

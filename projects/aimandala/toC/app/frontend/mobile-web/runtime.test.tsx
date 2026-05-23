@@ -19,30 +19,16 @@ function createWealthReportResponse(): WealthReportResponse {
   return {
     success: true,
     report_id: "wealth-runtime-1",
-    topic: "wealth",
     report_mode: "lite",
     final_report_md: "# 财富议题曼陀罗解读\n\n当前财富议题可以先看边界与行动。",
     final_report: {
       title: "财富议题曼陀罗解读",
       summary: "当前财富议题可以先看边界与行动。",
     },
-    selected_signal_ids: ["signal.middle.flow"],
-    selected_clause_ids: ["wealth.action"],
-    selected_module_ids: ["wealth-lite"],
-    boundaries: ["聚焦财富议题，不输出财务承诺。"],
-    topic_context: {
-      topic: "wealth",
-      topic_label: "财富议题",
-      report_mode: "lite",
-      orientation: {
-        intro: "这份报告会从财富议题角度看这张画。",
-        focus: "关注金钱、安全感、行动和现实承载。",
-        key_terms: [],
-      },
-    },
+    visual_draft: { visual_observation: {} },
+    prompt_pack_manifest: { pack_id: "wealth-report-v1.0.0" },
     quality_gate: {},
-    agent_output: {},
-    report_context_package: {},
+    run_summary: {},
   };
 }
 

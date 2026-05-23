@@ -232,7 +232,6 @@ export function createPreviewAppProps(
       };
 
     case "report":
-    case "reportLegacy":
       return {
         route,
         uploadDraft: draft,

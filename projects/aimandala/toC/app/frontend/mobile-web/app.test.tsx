@@ -145,31 +145,9 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("你最近更想先稳住自己，再决定要不要继续靠近。");
-    expect(html).toContain("阅读路径：议题理解 · 当前命中 · 画面依据 · 模式解释 · 现实连接 · 轻量疗愈");
-    expect(html).not.toContain("<h3>整体命中</h3>");
-    expect(html).toContain("模式解释");
-    expect(html).toContain("议题理解");
-    expect(html).toContain("看看另一份更深的 Pro 报告");
-    expect(html).toContain("更深层结构继续理解这张画");
-  });
-
-  it("reportLegacy 仍保留旧报告页壳", () => {
-    const html = renderToStaticMarkup(
-      <MobileWebApp
-        route="reportLegacy"
-        flowState={flowState}
-        uploadDraft={{
-          imagePath: "/tmp/sample.png",
-          theme: "intimate_relationship",
-          paintingIntention: "",
-          paintingFeeling: "",
-        }}
-      />,
-    );
-
-    expect(html).toContain("Lite版基础解读");
-    expect(html).toContain("保存报告");
+    expect(html).toContain("这份报告已经按新版解读链路生成");
+    expect(html).toContain("阅读路径：报告内容待补齐");
+    expect(html).toContain("重新上传画作");
   });
 
   it("loading 路由在 Pro 等待中不再提示后台历史入口", () => {

@@ -5,12 +5,7 @@ import {
   ReportSections,
   UploadAssetStatusCard,
 } from "../components/report-cards";
-import {
-  getLiteStructuredReport,
-  getThemeDisplayName,
-  hasProReportAccess,
-  resolveSelfUnderstandingReportCta,
-} from "../../shared/core";
+import { getThemeDisplayName } from "../../shared/core";
 import type { MandalaFlowState } from "../../shared/types";
 import { getUploadAssetRef, type MobileWebUploadDraft } from "../state";
 import type { ReportPageSection } from "../pages";
@@ -86,46 +81,63 @@ function parseReportSections(markdown: string | null | undefined): ReportPageSec
   return sections;
 }
 
-function buildSelfUnderstandingSections(structured: NonNullable<ReturnType<typeof getLiteStructuredReport>>): ReportPageSection[] {
+function getRecordString(
+  record: Record<string, unknown> | null | undefined,
+  key: string,
+): string | null {
+  const value = record?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function buildReportEvidenceSections(state: MandalaFlowState): ReportPageSection[] {
   const sections: ReportPageSection[] = [];
+  const visualDraft = state.report?.visual_draft ?? null;
+  const promptPackManifest = state.report?.prompt_pack_manifest ?? null;
+  const qualityGate = state.report?.quality_gate ?? null;
+  const runSummary = state.report?.run_summary ?? null;
 
-  const pushSection = (id: string, heading: string, body: string | null | undefined) => {
-    if (typeof body !== "string" || !body.trim()) {
-      return;
-    }
+  const visualDraftText =
+    getRecordString(visualDraft, "visual_draft_md") ??
+    getRecordString(visualDraft, "visual_observation_md") ??
+    getRecordString(visualDraft, "summary") ??
+    getRecordString(visualDraft, "global_visual_summary");
+  if (visualDraftText) {
     sections.push({
-      id,
-      heading,
-      body: body.trim(),
+      id: "visual-draft",
+      heading: "视觉草稿",
+      body: visualDraftText,
     });
-  };
+  }
 
-  const orientation = structured.topic_context.orientation;
-  pushSection(
-    "topic-orientation",
-    "议题理解",
-    [orientation.intro, orientation.focus]
-      .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
-      .join("\n\n"),
-  );
-  pushSection("current-reading", "当前命中", structured.current_reading);
-  pushSection("visual-basis", "画面依据", structured.visual_basis);
-  pushSection("pattern-interpretation", "模式解释", structured.pattern_interpretation);
-  pushSection("life-connection", "现实连接", structured.life_connection);
-  pushSection(
-    "lite-healing",
-    "轻量疗愈",
-    [
-      ...(structured.lite_healing_guidance?.directions ?? []).map(
-        (item) => `${item.title ?? "轻量方向"}：${item.content ?? ""}`,
-      ),
-      ...(structured.lite_healing_guidance?.micro_practices ?? []).map(
-        (item) => `${item.title ?? "小练习"}：${item.content ?? ""}`,
-      ),
-    ]
-      .filter((item): item is string => Boolean(item.trim()))
-      .join("\n\n"),
-  );
+  const promptPackId =
+    getRecordString(promptPackManifest, "pack_id") ??
+    getRecordString(promptPackManifest, "id") ??
+    getRecordString(promptPackManifest, "version");
+  const qualityStatus =
+    getRecordString(qualityGate, "status") ??
+    getRecordString(qualityGate, "result") ??
+    (typeof qualityGate?.passed === "boolean" ? (qualityGate.passed ? "passed" : "failed") : null);
+  const runSummaryLines = runSummary
+    ? Object.entries(runSummary)
+        .filter(([, value]) => ["string", "number", "boolean"].includes(typeof value))
+        .map(([key, value]) => `${key}: ${String(value)}`)
+    : [];
+
+  const runtimeText = [
+    promptPackId ? `提示词包：${promptPackId}` : null,
+    qualityStatus ? `质量门：${qualityStatus}` : null,
+    runSummaryLines.length ? runSummaryLines.join("\n") : null,
+  ]
+    .filter((item): item is string => Boolean(item))
+    .join("\n");
+
+  if (runtimeText) {
+    sections.push({
+      id: "run-summary",
+      heading: "运行摘要",
+      body: runtimeText,
+    });
+  }
 
   return sections;
 }
@@ -140,30 +152,22 @@ export function MobileWebReportPage({
   onSecondaryAction,
   primaryDisabled = false,
 }: MobileWebReportPageProps) {
-  const structured = getLiteStructuredReport(state.report);
   const uploadAsset = uploadDraft ? getUploadAssetRef(uploadDraft) : null;
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const isLoading = state.step === "liteGenerating";
   const isError = state.step === "error";
   const isProReport = state.report?.version === "pro" || state.step === "proReady";
   const canRetryRefresh = Boolean(isError && state.interpretation?.interpretation_id);
-  const themeLabel = structured?.topic_context.topic_label ?? getThemeDisplayName(uploadDraft?.theme) ?? "财富议题";
-  const resultCta = resolveSelfUnderstandingReportCta({
-    theme: uploadDraft?.theme,
-    canUpgrade: Boolean(state.report?.can_upgrade || state.status?.can_upgrade),
-    hasProAccess: hasProReportAccess(state),
-    structured,
-  });
+  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富议题";
   const existingHint = state.interpretation?.existing
     ? "当前命中了已有解读记录，本次直接复用了同一用户、同一图片、同一主题下的现有结果。"
     : null;
   const reportSections = parseReportSections(typeof state.report?.report === "string" ? state.report.report : null);
-  const selfUnderstandingSections = structured ? buildSelfUnderstandingSections(structured) : [];
+  const evidenceSections = buildReportEvidenceSections(state);
   const reportTitle = state.report?.title || (isProReport ? "一梳 Pro 版" : "你的曼陀罗解读");
   const reportSubtitle = isProReport
     ? "当前正在查看 Pro 版解读。"
-    : structured?.current_reading ||
-      state.report?.overall_impression ||
+    : state.report?.overall_impression ||
       "曼曼已经把这一轮 Lite 版解读整理好了。";
   const generatedAt = new Date().toLocaleDateString("zh-CN", {
     year: "numeric",
@@ -177,52 +181,35 @@ export function MobileWebReportPage({
       : "已完成";
   const primaryLabel = isLoading
     ? "继续查看生成进度"
-      : canRetryRefresh
-        ? "重试刷新结果"
-        : isProReport
-        ? "查看历史记录"
-        : resultCta.primaryLabel;
+    : canRetryRefresh
+      ? "重试刷新结果"
+      : "重新上传画作";
   const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
   const footerHint = isLoading
-      ? "当前仍在生成 Lite 结果，你可以继续等待，或先返回上传页调整输入。"
+    ? "当前仍在生成，你可以继续等待，或先返回上传页调整输入。"
     : canRetryRefresh
       ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
       : isProReport
-        ? "当前已经进入一梳 Pro 版，可以先回看历史记录，或返回上传页重新开始。"
+        ? "Lite / Pro 只是入口差异，报告页统一展示新版直出结果。"
         : isError
           ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
-          : resultCta.footerHint;
-  const readingSections: ReportPageSection[] = selfUnderstandingSections.length
-      ? selfUnderstandingSections
-      : reportSections.length
-        ? reportSections
-        : structured
-          ? [
-              {
-                id: "fallback-impression",
-                heading: "当前命中",
-                body: structured.current_reading,
-              },
-            ]
-          : [
-              {
-                id: "empty-report",
-                heading: "报告内容待补齐",
-                body: "当前还没有可展示的完整正文内容。我们先把主路径和内容承载位置缝顺，后续再按 Figma 设计稿复刻正式报告页。",
-              },
-            ];
-  const summaryComparable = stripMarkdown(reportSubtitle);
-  const dedupedSections = readingSections.filter(
-    (section, index) =>
-      !(index === 0 && stripMarkdown(section.body) === summaryComparable),
-  );
-  const contentSections =
-    dedupedSections.length > 0 ? dedupedSections : readingSections;
+          : "这份报告已经按新版解读链路生成。你可以回到上传页，重新选择 Lite 或 Pro 入口生成下一份。";
+  const readingSections: ReportPageSection[] =
+    reportSections.length > 0
+      ? reportSections
+      : [
+          {
+            id: "empty-report",
+            heading: "报告内容待补齐",
+            body: "当前还没有可展示的完整正文内容。请确认后端 /api/wealth-reports 已返回 final_report_md。",
+          },
+        ];
+  const contentSections = [...readingSections, ...evidenceSections];
   const readingPath =
     contentSections
       .map((section) => section.heading)
       .filter(Boolean)
-      .join(" · ") || "整体命中 · 画面依据 · 状态解释";
+      .join(" · ") || "完整解读 · 视觉草稿 · 运行摘要";
   const reportToneLabel = isProReport ? "一梳 Pro 版" : "一镜 Lite 版";
 
   return (
@@ -277,8 +264,8 @@ export function MobileWebReportPage({
 
       <section className="mw-report-story">
         <div className="mw-report-story__intro">
-          <span className="mw-report-story__eyebrow">疗愈阅读</span>
-          <p>下面这一段，会沿着画面的线索，慢慢把这次状态展开。</p>
+          <span className="mw-report-story__eyebrow">新版报告</span>
+          <p>下面这一段，会直接展示最终正文，再补上视觉草稿和运行摘要，方便你核对链路。</p>
         </div>
         <ReportSections sections={contentSections} />
       </section>

@@ -20,30 +20,16 @@ function createWealthReportResponse(
   return {
     success: true,
     report_id: "wealth-1",
-    topic: "wealth",
     report_mode: reportMode,
     final_report_md: "# 财富议题曼陀罗解读\n\n当前财富能量稳定。",
     final_report: {
       title: "财富议题曼陀罗解读",
       summary: "当前财富能量稳定。",
     },
-    selected_signal_ids: ["signal.outer.boundary"],
-    selected_clause_ids: ["wealth.boundary"],
-    selected_module_ids: ["wealth-lite"],
-    boundaries: ["聚焦财富议题，不输出财务承诺。"],
-    topic_context: {
-      topic: "wealth",
-      topic_label: "财富议题",
-      report_mode: reportMode,
-      orientation: {
-        intro: "这份报告会从财富议题角度看这张画。",
-        focus: "关注金钱、安全感、行动和现实承载。",
-        key_terms: [],
-      },
-    },
+    visual_draft: { visual_observation: {} },
+    prompt_pack_manifest: { pack_id: "wealth-report-v1.0.0" },
     quality_gate: {},
-    agent_output: {},
-    report_context_package: {},
+    run_summary: {},
   };
 }
 

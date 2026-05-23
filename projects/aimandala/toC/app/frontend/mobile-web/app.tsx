@@ -6,7 +6,6 @@ import { MobileWebHistoryPage } from "./page-shells/history-page";
 import { MobileWebHistoryRecordDetailPage } from "./page-shells/history-record-detail-page";
 import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
-import { MobileWebLegacyReportPage } from "./page-shells/report-page-legacy";
 import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
 import type { MobileWebRouteId } from "./routes";
@@ -166,24 +165,6 @@ export function MobileWebApp({
       }
       return (
         <MobileWebReportPage
-          route={route}
-          state={flowState}
-          uploadDraft={uploadDraft}
-          environmentLabel={environmentLabel}
-          environmentDetail={environmentDetail}
-          environmentTone={environmentTone}
-          onPrimaryAction={onReportPrimaryAction}
-          onSecondaryAction={onReportSecondaryAction}
-          primaryDisabled={reportPrimaryDisabled}
-        />
-      );
-
-    case "reportLegacy":
-      if (!flowState) {
-        return "Missing flow state";
-      }
-      return (
-        <MobileWebLegacyReportPage
           route={route}
           state={flowState}
           uploadDraft={uploadDraft}

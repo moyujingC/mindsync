@@ -134,12 +134,6 @@
 - `.mw-visually-hidden` 这类稳定辅助类统一进入 `utilities.css`；`.field`、`.muted`、`.runtime-state`、`.eyebrow` 等开发壳基础类统一进入 `dev-shell.css`
 - 开发壳静态布局不得继续使用大段 inline style；仅运行时动态值允许保留在 JSX 中
 
-## Legacy Report 隔离规则
-
-- `report-page-legacy.tsx` 视为历史对照页，不参与主链设计演进，但其静态视觉仍必须进入独立页面样式层，例如 `mobile-web/styles/pages/report-legacy.css`
-- legacy 页面允许保留少量运行时几何值，例如三圈预览尺寸、pattern CSS variable 注入；不允许继续扩张大段静态 inline style
-- `styles.css` 不再承载 legacy 页面以外的视觉规则；legacy 页面即使继续保留，也应优先走 `pages/*.css`，而不是回写兼容层
-
 ## 共享 Token 对齐规则
 
 - Web CSS token 仍是设计系统真理源；命名与语义以 `mobile-web/styles/tokens.css` 为准

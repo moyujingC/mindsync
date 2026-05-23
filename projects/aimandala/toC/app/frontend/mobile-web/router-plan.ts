@@ -42,7 +42,6 @@ export type MobileWebRouteInput =
   | { route: "reportEntry"; params: UploadRouteInput }
   | { route: "loading"; params: LiteReportRouteInput }
   | { route: "report"; params: ExistingReportRouteInput }
-  | { route: "reportLegacy"; params: ExistingReportRouteInput }
   | { route: "history"; params: HistoryRouteInput }
   | { route: "historyRecordDetail"; params: HistoryRecordDetailRouteInput };
 
@@ -97,15 +96,6 @@ export async function resolveMobileWebRouteProps(
       };
     }
 
-    case "reportLegacy": {
-      const report = await loadExistingReportPage(input.params.interpretationId);
-      return {
-        route: "reportLegacy",
-        flowState: report.state,
-        uploadDraft: input.params.uploadDraft,
-      };
-    }
-
     case "history": {
       const userId = resolveMobileWebCanonicalUserId(input.params);
       if (!userId) {
@@ -139,5 +129,5 @@ function assertNever(input: never): never {
 }
 
 export function isReportLikeRoute(route: MobileWebRouteId): boolean {
-  return route === "loading" || route === "report" || route === "reportLegacy";
+  return route === "loading" || route === "report";
 }

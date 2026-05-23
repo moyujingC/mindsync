@@ -47,7 +47,6 @@ export interface UploadImageResponse {
   original_filename: string;
   content_type?: string | null;
   size_bytes: number;
-  // Temporary access URL. Long-lived identity lives in storage_backend + storage_key.
   image_url?: string | null;
   image_local_expires_at?: string | null;
 }
@@ -55,7 +54,6 @@ export interface UploadImageResponse {
 export interface CreateInterpretationRequest {
   user_id: string;
   image_path: string;
-  // Compatibility-only temporary URL; formal creation should rely on storage_key.
   image_url?: string | null;
   storage_backend?: string | null;
   storage_key?: string | null;
@@ -113,18 +111,13 @@ export interface WealthReportRequest {
 export interface WealthReportResponse {
   success: boolean;
   report_id: string;
-  topic: "wealth";
   report_mode: InterpretationVersion | string;
   final_report_md: string;
   final_report: Record<string, unknown>;
-  selected_signal_ids: string[];
-  selected_clause_ids: string[];
-  selected_module_ids: string[];
-  boundaries: string[];
-  topic_context: ReportTopicContext;
-  quality_gate: Record<string, unknown>;
-  agent_output: Record<string, unknown>;
-  report_context_package: Record<string, unknown>;
+  visual_draft?: Record<string, unknown> | null;
+  prompt_pack_manifest?: Record<string, unknown> | null;
+  quality_gate?: Record<string, unknown> | null;
+  run_summary?: Record<string, unknown> | null;
 }
 
 export interface CreateInterpretationResponse {
@@ -184,132 +177,12 @@ export interface InterpretationStatusResponse {
   image_local_expires_at?: string | null;
 }
 
-export interface ReportTopicContext {
-  topic: string;
-  topic_label: string;
-  report_mode: InterpretationVersion | string;
-  orientation: {
-    intro: string;
-    focus: string;
-    key_terms: Array<{
-      term: string;
-      explanation: string;
-    }>;
-  };
-}
-
-export interface LiteStructuredReport {
-  prompt_preview?: string | null;
-  prompt_schema_validation_issues?: string[] | null;
-  topic_context: ReportTopicContext;
-  current_reading: string;
-  visual_basis: string;
-  pattern_interpretation: string;
-  life_connection: string;
-  self_understanding_blocks?: {
-    title?: string;
-    opening_hit?: string;
-    visual_evidence?: {
-      summary?: string;
-      anchors?: string[];
-    } | null;
-    state_interpretation?: {
-      current_state?: string;
-      emotional_tension?: string;
-      explanation_chain?: string;
-    } | null;
-    pattern_naming?: {
-      pattern_name?: string;
-      pattern_description?: string;
-      protective_logic?: string;
-    } | null;
-    reality_connection?: {
-      life_dimension?: string;
-      typical_scene?: string;
-      current_impact?: string;
-    } | null;
-    next_step?: {
-      direction?: string;
-      action?: string;
-    } | null;
-    theme_insights?: {
-      scene?: string;
-      impact?: string;
-      awareness?: string;
-    } | null;
-    daily_awareness?: Array<{
-      day?: number;
-      title?: string;
-      content?: string;
-    }> | null;
-  } | null;
-  story?: {
-    base?: { content?: string; connector?: string | null } | null;
-    contradiction?: { content?: string; connector?: string | null } | null;
-    pattern?: { content?: string; connector?: string | null } | null;
-    defense?: { content?: string; connector?: string | null } | null;
-    block?: { content?: string; connector?: string | null } | null;
-    light?: { content?: string; connector?: string | null } | null;
-  } | null;
-  theme_insights?: {
-    scene?: string;
-    impact?: string;
-    awareness?: string;
-  } | null;
-  three_awareness?: Array<{
-    day?: number;
-    title?: string;
-    content?: string;
-  }> | null;
-  lite_healing_guidance?: {
-    directions?: Array<{
-      title?: string;
-      content?: string;
-    }> | null;
-    micro_practices?: Array<{
-      title?: string;
-      content?: string;
-    }> | null;
-  } | null;
-  six_insights_rendered?: Record<string, string> | null;
-  experiment_rendered?: string | null;
-  pro_report_entry: {
-    title?: string;
-    summary?: string;
-    product_note?: string;
-  };
-  pro_teaser?: string | null;
-}
-
-export interface ProStructuredReport {
-  prompt_preview?: string | null;
-  prompt_schema_validation_issues?: string[] | null;
-  topic_context: ReportTopicContext;
-  deep_impression: string;
-  evidence_digest: string;
-  imbalance_diagnosis: string;
-  root_cause_chain: {
-    surface?: string;
-    mechanism?: string;
-    core?: string;
-  };
-  deep_structure_interpretation: string;
-  healing_plan: Array<{ phase?: string; focus?: string; practice?: string }>;
-  first_impression?: string | null;
-  core_insight_table?: Record<string, string> | null;
-  three_circles_detailed?: Record<string, { label?: string; reading?: string }> | null;
-  micro_analysis_detailed?: Record<string, string> | null;
-  imbalance_confirmed?: Record<string, string> | null;
-  root_cause?: Record<string, string> | null;
-  healing_suggestions?: Array<{ phase?: string; focus?: string; practice?: string }> | null;
-}
-
 export interface ReportResponse {
   interpretation_id: string;
   version: InterpretationVersion | string;
   title?: string | null;
   overall_impression?: string | null;
-  structured?: LiteStructuredReport | Record<string, unknown> | null;
+  structured?: Record<string, unknown> | null;
   report?: string | null;
   ai_qa_context?: string | null;
   can_upgrade: boolean;
@@ -319,6 +192,10 @@ export interface ReportResponse {
   storage_backend?: string | null;
   storage_key?: string | null;
   image_local_expires_at?: string | null;
+  visual_draft?: Record<string, unknown> | null;
+  prompt_pack_manifest?: Record<string, unknown> | null;
+  quality_gate?: Record<string, unknown> | null;
+  run_summary?: Record<string, unknown> | null;
 }
 
 export type ReportDebugProfileResponse = Record<string, unknown> & {

@@ -1,10 +1,9 @@
-import type { LiteStructuredReport, MandalaFlowState } from "../../shared/types";
+import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadAssetRef } from "../state";
 import {
   SharedLoadingProgressCard,
   SharedMetricsRow,
   SharedReportSections,
-  SharedStructuredReportCards,
   type SharedMetricItem,
   type SharedReportSection,
 } from "../../shared/ui";
@@ -16,16 +15,6 @@ export interface ReportMetricsRowProps {
 
 export function ReportMetricsRow({ metrics }: ReportMetricsRowProps) {
   return <SharedMetricsRow metrics={metrics as SharedMetricItem[]} />;
-}
-
-export interface StructuredReportCardsProps {
-  structured: LiteStructuredReport;
-}
-
-export function StructuredReportCards({
-  structured,
-}: StructuredReportCardsProps) {
-  return <SharedStructuredReportCards structured={structured} />;
 }
 
 export interface ReportSectionsProps {
