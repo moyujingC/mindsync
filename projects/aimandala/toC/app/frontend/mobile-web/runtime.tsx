@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { resolveMobileWebCanonicalUserId } from "./identity";
@@ -216,6 +216,7 @@ export function MobileWebRuntime({
   const [runtimeHistoryOpeningReportType, setRuntimeHistoryOpeningReportType] =
     useState<InterpretationVersion | null>(null);
   const [runtimeHistoryRefreshHint, setRuntimeHistoryRefreshHint] = useState<string | null>(null);
+  const liveGenerationInFlightRef = useRef(false);
   const activeRuntimeUploadDraft = runtimeUploadDraft ?? runtimeProps?.uploadDraft ?? null;
 
   useEffect(() => {
@@ -387,7 +388,8 @@ export function MobileWebRuntime({
   useEffect(() => {
     if (
       !runtimeProps ||
-      runtimeProps.route !== "loading"
+      runtimeProps.route !== "loading" ||
+      liveGenerationInFlightRef.current
     ) {
       return;
     }
@@ -817,6 +819,7 @@ export function MobileWebRuntime({
     setRuntimeBusy(true);
     setRuntimeUploadDetecting(true);
     setRuntimeUploadDetectError(null);
+    liveGenerationInFlightRef.current = true;
 
     try {
       const resolvedImagePath = await ensureUploadedImagePath(
@@ -886,6 +889,7 @@ export function MobileWebRuntime({
     } finally {
       setRuntimeUploadDetecting(false);
       setRuntimeBusy(false);
+      liveGenerationInFlightRef.current = false;
     }
   }
 

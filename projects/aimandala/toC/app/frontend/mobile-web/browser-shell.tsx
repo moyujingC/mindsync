@@ -520,7 +520,7 @@ export function MobileWebBrowserShell() {
 
   function handlePreviewSecondaryAction() {
     if (route === "loading") {
-      setRoute("reportEntry");
+      setRoute("upload");
       return;
     }
 
@@ -537,6 +537,72 @@ export function MobileWebBrowserShell() {
   }
 
   function handlePreviewBackAction() {}
+
+  async function handlePreviewStartReport(reportType: MobileWebReportProductType) {
+    if (previewFlowRunning) {
+      return;
+    }
+
+    const nextDraft = mergeMobileWebUploadDraft(draft, {
+      reportType,
+    });
+    setDraft(nextDraft);
+    setPreviewFlowState(null);
+    setRoute("loading");
+
+    setPreviewFlowRunning(true);
+    try {
+      const resolvedImagePath = await ensureUploadedImagePath(
+        nextDraft,
+        (uploaded) => {
+          setDraft((current) => ({
+            ...current,
+            uploadAsset: toMobileWebUploadAssetRef(uploaded),
+          }));
+        },
+      );
+      const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
+      const result = await runMobileWebReportFlow(
+        toStartCreatePayload(
+          {
+            ...nextDraft,
+            uploadAsset: nextAssetRef,
+          },
+          userId,
+        ),
+        getDraftReportVariant(nextDraft),
+      );
+      const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
+      setPreviewFlowState(result.state);
+      if (result.state.step === "liteGenerating") {
+        setRoute("loading");
+        return;
+      }
+      await finalizePreviewSelectedReport({
+        interpretationId: result.state.interpretation?.interpretation_id ?? "demo-interpretation-id",
+        state: result.state,
+        draft: draftWithUpload,
+        userId,
+        historyQuery: previewHistoryQuery,
+        setPreviewFlowState,
+        setPreviewHistoryRecords,
+        setPreviewHistoryStatusLabel,
+        setPreviewHistoryStatusDetail,
+        setPreviewHistoryStatusTone,
+        setRoute,
+      });
+    } catch (error) {
+      setPreviewFlowState(
+        applyError(
+          initialMandalaFlowState,
+          error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
+        ),
+      );
+      setRoute("report");
+    } finally {
+      setPreviewFlowRunning(false);
+    }
+  }
 
   async function handlePreviewOpenHistoryRecord(
     interpretationId: string,
@@ -862,8 +928,7 @@ export function MobileWebBrowserShell() {
                   }
                 }}
                 onUploadContinue={async () => {
-                  setPreviewFlowState(null);
-                  setRoute("reportEntry");
+                  await handlePreviewStartReport("lite");
                 }}
                 onUploadBack={() => {
                   setRoute("landing");
@@ -872,63 +937,7 @@ export function MobileWebBrowserShell() {
                   setRoute("upload");
                 }}
                 onReportEntryChooseReportType={async (reportType: MobileWebReportProductType) => {
-                  const nextDraft = mergeMobileWebUploadDraft(draft, {
-                    reportType,
-                  });
-                  setDraft(nextDraft);
-                  setPreviewFlowState(null);
-                  setRoute("loading");
-
-                  setPreviewFlowRunning(true);
-                  try {
-                    const resolvedImagePath = await ensureUploadedImagePath(
-                      nextDraft,
-                      (uploaded) => {
-                        setDraft((current) => ({
-                          ...current,
-                          uploadAsset: toMobileWebUploadAssetRef(uploaded),
-                        }));
-                      },
-                    );
-                    const result = await runMobileWebReportFlow(
-                      toStartCreatePayload(
-                        {
-                          ...nextDraft,
-                          uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-                        },
-                        userId,
-                      ),
-                      getDraftReportVariant(nextDraft),
-                    );
-                    setPreviewFlowState(result.state);
-                    if (result.state.step === "liteGenerating") {
-                      setRoute("loading");
-                      return;
-                    }
-                    await finalizePreviewSelectedReport({
-                      interpretationId: result.state.interpretation?.interpretation_id ?? "demo-interpretation-id",
-                      state: result.state,
-                      draft: { ...nextDraft, uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath) },
-                      userId,
-                      historyQuery: previewHistoryQuery,
-                      setPreviewFlowState,
-                      setPreviewHistoryRecords,
-                      setPreviewHistoryStatusLabel,
-                      setPreviewHistoryStatusDetail,
-                      setPreviewHistoryStatusTone,
-                      setRoute,
-                    });
-                  } catch (error) {
-                    setPreviewFlowState(
-                      applyError(
-                        initialMandalaFlowState,
-                        error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
-                      ),
-                    );
-                    setRoute("report");
-                  } finally {
-                    setPreviewFlowRunning(false);
-                  }
+                  await handlePreviewStartReport(reportType);
                 }}
                 onLoadingLeaveLater={() => {
                   void handlePreviewLeaveLoadingLater();
