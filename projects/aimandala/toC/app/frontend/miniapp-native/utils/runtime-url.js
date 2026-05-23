@@ -38,7 +38,6 @@ function buildRuntimeUrl(input) {
     interpretationId: input.interpretationId || null,
     reportVariant: input.reportVariant || null,
     miniappAutoRecover: input.autoRecover ? "1" : null,
-    miniappPaymentResult: input.paymentResult || null,
   });
 
   return `${joinBaseAndPath(input.config.runtimeBaseUrl, input.config.runtimePath)}?${query}`;

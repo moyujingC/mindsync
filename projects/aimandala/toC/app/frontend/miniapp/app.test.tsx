@@ -38,7 +38,6 @@ describe("MiniappApp", () => {
     expect(getMiniappLiveConfig()).toEqual({
       miniappLiveEnabled: false,
       wechatSessionEnabled: false,
-      wechatPayEnabled: false,
     });
   });
 });

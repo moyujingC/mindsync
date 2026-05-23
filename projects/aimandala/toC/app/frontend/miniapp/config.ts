@@ -1,7 +1,6 @@
 export interface MiniappLiveConfig {
   miniappLiveEnabled: boolean;
   wechatSessionEnabled: boolean;
-  wechatPayEnabled: boolean;
 }
 
 function readEnvFlag(name: string): boolean {
@@ -18,6 +17,5 @@ export function getMiniappLiveConfig(): MiniappLiveConfig {
     wechatSessionEnabled: readEnvFlag(
       "VITE_AIMANDALA_MINIAPP_WECHAT_SESSION_ENABLED",
     ),
-    wechatPayEnabled: readEnvFlag("VITE_AIMANDALA_MINIAPP_WECHAT_PAY_ENABLED"),
   };
 }

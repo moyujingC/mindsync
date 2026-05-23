@@ -36,7 +36,6 @@ Page({
           route: this.lastRuntimeOptions.route,
           interpretationId: this.lastRuntimeOptions.interpretationId,
           autoRecover: this.lastRuntimeOptions.autoRecover,
-          paymentResult: this.lastRuntimeOptions.paymentResult,
         },
       );
       this.reloadRuntime(this.lastRuntimeOptions);
@@ -68,7 +67,6 @@ Page({
         interpretationId: normalizeValue(query.interpretationId) || null,
         reportVariant: normalizeValue(query.reportVariant) || "lite",
         autoRecover: normalizeValue(query.miniappAutoRecover) === "1",
-        paymentResult: normalizeValue(query.miniappPaymentResult) || null,
       });
     } catch (error) {
       this.setData({
@@ -88,7 +86,6 @@ Page({
       interpretationId: options.interpretationId,
       reportVariant: options.reportVariant,
       autoRecover: Boolean(options.autoRecover),
-      paymentResult: options.paymentResult || null,
     };
     const runtimeSrc = buildRuntimeUrl({
       config: this.runtimeConfig,
@@ -97,7 +94,6 @@ Page({
       interpretationId: options.interpretationId,
       reportVariant: options.reportVariant,
       autoRecover: options.autoRecover,
-      paymentResult: options.paymentResult,
     });
     console.info(
       "[aimandala-miniapp-native] runtime reload",

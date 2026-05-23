@@ -40,7 +40,7 @@ runtimeBaseUrl=https://web-gray.jingshu.cc&runtimePath=/
 ## 说明
 
 - 浏览器调试壳仍保留在 `../miniapp/`
-- 当前 native 壳不接入登录、支付和历史接口，只负责把 H5 runtime 拉起
+- 当前 native 壳不接入登录和历史接口，只负责把 H5 runtime 拉起
 - `project.config.json` 保持仓库安全占位值；灰度联调时应通过未提交的 `project.private.config.json` 覆盖真实 `appid`
 - 真机联调前必须确认：
   - 开发者工具已勾选合法域名 / web-view 白名单

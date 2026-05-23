@@ -60,8 +60,8 @@ export function MiniappRuntime({
     ? "当前为 miniapp live 联调"
     : "当前为 miniapp 灰度关闭联调";
   const environmentDetail = config.miniappLiveEnabled
-    ? "当前会优先尝试走 miniapp session / order / payment / reconcile 真实链路；如宿主能力缺失，会回退到联调 stub。"
-    : "miniapp live 能力默认关闭；当前仍可在联调环境中复用 API 合同和宿主占位能力。";
+    ? "当前优先走 miniapp session 联调和 H5 runtime，页面能力继续复用财富报告主链路。"
+    : "miniapp live 能力默认关闭；当前仍保留 H5 runtime 预览和会话恢复。";
   const environmentTone: "preview" | "runtime" = config.miniappLiveEnabled
     ? "runtime"
     : "preview";
