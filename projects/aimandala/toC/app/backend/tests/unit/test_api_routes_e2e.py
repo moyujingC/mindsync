@@ -132,3 +132,37 @@ def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
     assert payload["prompt_pack_manifest"]["pack_id"] == "wealth-report-v1.0.0"
     assert payload["quality_gate"]["passed"] is True
     assert payload["run_summary"]["status"] == "complete"
+
+
+def test_create_app_loads_redeem_codes_before_route_authorization(
+    monkeypatch,
+    tmp_path,
+):
+    env_file = tmp_path / "aimandala.env"
+    env_file.write_text(
+        "\n".join(
+            [
+                "AIMANDALA_REDEEM_CODES=ENV-LITE:lite",
+                "AIMANDALA_LLM_API_KEY=env-key",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("AIMANDALA_ENV_FILE", str(env_file))
+    monkeypatch.delenv("AIMANDALA_REDEEM_CODES", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_API_KEY", raising=False)
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/wealth-reports",
+        json={
+            "image_path": str(image_path),
+            "report_mode": "lite",
+            "redeem_code": "ENV-LITE",
+        },
+    )
+
+    assert response.status_code == 200

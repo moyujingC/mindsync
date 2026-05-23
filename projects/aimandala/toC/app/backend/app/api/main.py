@@ -3,10 +3,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.llm.runtime import load_private_env_file
+
 from .routes import router
 
 
 def create_app() -> FastAPI:
+    load_private_env_file()
+
     app = FastAPI(
         title="AI-Mandala To C Backend",
         version="0.1.0",
