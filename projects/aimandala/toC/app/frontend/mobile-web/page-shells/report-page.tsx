@@ -3,11 +3,10 @@ import { mobileWebRoutes, type MobileWebRouteId } from "../routes";
 import {
   LoadingProgressCard,
   ReportSections,
-  UploadAssetStatusCard,
 } from "../components/report-cards";
 import { getThemeDisplayName } from "../../shared/core";
 import type { MandalaFlowState } from "../../shared/types";
-import { getUploadAssetRef, type MobileWebUploadDraft } from "../state";
+import type { MobileWebUploadDraft } from "../state";
 import type { ReportPageSection } from "../pages";
 
 export interface MobileWebReportPageProps {
@@ -152,7 +151,6 @@ export function MobileWebReportPage({
   onSecondaryAction,
   primaryDisabled = false,
 }: MobileWebReportPageProps) {
-  const uploadAsset = uploadDraft ? getUploadAssetRef(uploadDraft) : null;
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const isLoading = state.step === "liteGenerating";
   const isError = state.step === "error";
@@ -164,11 +162,15 @@ export function MobileWebReportPage({
     : null;
   const reportSections = parseReportSections(typeof state.report?.report === "string" ? state.report.report : null);
   const evidenceSections = buildReportEvidenceSections(state);
-  const reportTitle = state.report?.title || (isProReport ? "一梳 Pro 版" : "你的曼陀罗解读");
-  const reportSubtitle = isProReport
-    ? "当前正在查看 Pro 版解读。"
-    : state.report?.overall_impression ||
-      "曼曼已经把这一轮 Lite 版解读整理好了。";
+  const reportTitle = isError
+    ? "报告暂未生成"
+    : state.report?.title || (isProReport ? "一梳 Pro 版" : "你的曼陀罗解读");
+  const reportSubtitle = isError
+    ? "这次生成没有完成，请先查看下方提示，再返回上传页调整输入。"
+    : isProReport
+      ? "当前正在查看 Pro 版解读。"
+      : state.report?.overall_impression ||
+        "曼曼已经把这一轮 Lite 版解读整理好了。";
   const generatedAt = new Date().toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "long",
@@ -204,7 +206,7 @@ export function MobileWebReportPage({
             body: "当前还没有可展示的完整正文内容。请确认后端 /api/wealth-reports 已返回 final_report_md。",
           },
         ];
-  const contentSections = [...readingSections, ...evidenceSections];
+  const contentSections = isError ? [] : [...readingSections, ...evidenceSections];
   const readingPath =
     contentSections
       .map((section) => section.heading)
@@ -262,13 +264,15 @@ export function MobileWebReportPage({
 
       {isLoading ? <LoadingProgressCard state={state} /> : null}
 
-      <section className="mw-report-story">
-        <div className="mw-report-story__intro">
-          <span className="mw-report-story__eyebrow">新版报告</span>
-          <p>下面这一段，会直接展示最终正文，再补上视觉草稿和运行摘要，方便你核对链路。</p>
-        </div>
-        <ReportSections sections={contentSections} />
-      </section>
+      {!isError ? (
+        <section className="mw-report-story">
+          <div className="mw-report-story__intro">
+            <span className="mw-report-story__eyebrow">新版报告</span>
+            <p>下面这一段，会直接展示最终正文，再补上视觉草稿和运行摘要，方便你核对链路。</p>
+          </div>
+          <ReportSections sections={contentSections} />
+        </section>
+      ) : null}
 
       {state.lastError ? (
         <section className="mw-inline-banner mw-inline-banner--preview">
@@ -290,10 +294,6 @@ export function MobileWebReportPage({
           </div>
         </div>
       </footer>
-
-      {environmentLabel && uploadDraft ? (
-        <UploadAssetStatusCard imagePath={uploadDraft.imagePath} uploadAsset={uploadAsset} />
-      ) : null}
     </MobileWebAppShell>
   );
 }

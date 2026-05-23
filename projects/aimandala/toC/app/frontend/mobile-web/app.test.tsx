@@ -115,6 +115,39 @@ describe("MobileWebApp", () => {
     expect(html).toContain("重新上传画作");
   });
 
+  it("report 错误态不渲染正文占位和上传调试信息", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="report"
+        flowState={{
+          ...flowState,
+          step: "error",
+          report: null,
+          lastError: "报告生成需要先配置可用的优惠券或兑换码。",
+        }}
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          paintingIntention: "",
+          paintingFeeling: "",
+          uploadAsset: {
+            runtimeImagePath: "/tmp/runtime.png",
+            storageBackend: "local",
+            storageKey: "uploads/sample.png",
+          },
+        }}
+        environmentLabel="当前为联调运行时"
+      />,
+    );
+
+    expect(html).toContain("报告暂未生成");
+    expect(html).toContain("当前流程有异常");
+    expect(html).toContain("报告生成需要先配置可用的优惠券或兑换码。");
+    expect(html).not.toContain("报告内容待补齐");
+    expect(html).not.toContain("调试信息");
+    expect(html).not.toContain("运行时图片路径");
+  });
+
   it("loading 路由在 Pro 等待中不再提示后台历史入口", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp

@@ -131,12 +131,6 @@
     rgba(255, 251, 245, 0.96);
 }
 
-.mw-card--debug {
-  margin-top: 6px;
-  background: rgba(255, 252, 247, 0.82);
-  box-shadow: none;
-}
-
 .mw-card__header {
   display: flex;
   align-items: center;
