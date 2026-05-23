@@ -1,9 +1,9 @@
 # Backend
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.3.0
 > owner：Engineer
-> last_updated：2026-05-16
+> last_updated：2026-05-23
 > source_of_truth：projects/aimandala/toC/app/backend/README.md
 
 这里是 `一镜一梳` To C 主产品的后端入口。当前后端已经切到新报告链路，核心路径为：
@@ -40,7 +40,7 @@
 - `app/core/uploads/`：上传存储策略，后续需要重新接入当前报告 API。
 - `app/core/analysis/circle_detector.py`：三圈边界默认检测壳，后续需要接入新输入流程。
 - `tests/`：后端自动化测试。
-- `scripts/run_mandala_interpretation_agent_fixture.py`：新智能体 fixture 审阅脚本。
+- `scripts/run_mandala_e2e_report_fixture.py`：端到端直出 fixture 审阅脚本。
 
 ## 最小运行前提
 
@@ -60,7 +60,7 @@ uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
 - `POST /api/wealth-reports`
 - `GET /health`
 
-`POST /api/wealth-reports` 当前要求传入后端可读取的 `image_path` 和可用的 `redeem_code`。如果没有配置真实 LLM，也可以传入 `visual_observations` 作为已提取画面证据，用于本地 dry-run（不调用视觉模型的试跑）。
+`POST /api/wealth-reports` 当前要求传入后端可读取的 `image_path` 和可用的 `redeem_code`。如果没有配置真实 LLM，也可以传入已提取的视觉草稿或视觉证据，用于本地 dry-run（不调用视觉模型的试跑）。
 
 ## 当前边界
 

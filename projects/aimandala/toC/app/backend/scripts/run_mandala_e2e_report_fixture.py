@@ -1,4 +1,4 @@
-"""Run the mandala interpretation agent against one fixture and write review artifacts."""
+"""Run the end-to-end mandala report fixture and write review artifacts."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ DEFAULT_OUTPUT_ROOT = (
     / "docs"
     / "qa"
     / "model-evals"
-    / "2026-05-11-mandala-interpretation-agent"
+    / "2026-05-23-mandala-e2e-report-fixture"
 )
 
 sys.path.insert(0, str(BACKEND_ROOT))
