@@ -46,46 +46,11 @@ const flowState: MandalaFlowState = {
     title: "Lite 解读报告",
     overall_impression: "你正在把注意力收回自己身上。",
     structured: {
-      topic_context: {
-        topic: "intimate_relationship",
-        topic_label: "亲密关系",
-        report_mode: "lite",
-        orientation: {
-          intro: "这份报告会从亲密关系这个议题角度看这张画。",
-          focus: "这个议题通常关注靠近、边界、安全感和依恋模式。",
-          key_terms: [
-            {
-              term: "安全感",
-              explanation: "你在关系中能否感到自己可以被接住。",
-            },
-          ],
-        },
-      },
-      current_reading: "你最近更想先稳住自己，再决定要不要继续靠近。",
-      visual_basis: "中心颜色更浓，外围线条更轻。",
-      pattern_interpretation: "你会先有表达冲动，随后又迅速回撤；这样能先保住安全感。",
-      life_connection: "关系要更进一步时会想暂停一下，会让对方感到你忽近忽远。",
-      lite_healing_guidance: {
-        directions: [
-          {
-            title: "轻量调节方向",
-            content: "先让自己慢一点，再决定要不要继续靠近。",
-          },
-        ],
-        micro_practices: [
-          {
-            title: "一句小练习",
-            content: "先把真实感受说出一句就好。",
-          },
-        ],
-      },
-      pro_report_entry: {
-        title: "另一份更深的独立报告",
-        summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
-        product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
-      },
+      title: "Lite 解读报告",
+      summary: "你正在把注意力收回自己身上。",
+      report_mode: "lite",
     },
-    report: null,
+    report: "# Lite 解读报告\n\n你正在把注意力收回自己身上。",
     ai_qa_context: null,
     can_upgrade: true,
     upgrade_price: 39,
@@ -146,7 +111,7 @@ describe("MobileWebApp", () => {
     );
 
     expect(html).toContain("这份报告已经按新版解读链路生成");
-    expect(html).toContain("阅读路径：报告内容待补齐");
+    expect(html).toContain("阅读路径：Lite 解读报告");
     expect(html).toContain("重新上传画作");
   });
 

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -56,32 +55,4 @@ class PromptPackBuilder:
             manifest=manifest,
             files=files,
             stable_prefix=stable_prefix,
-        )
-
-
-def write_prompt_pack_files() -> None:
-    """Create a versioned prompt pack skeleton if it does not already exist."""
-    pack_dir = PROMPTS_ROOT / "wealth-report-v1.0.0"
-    pack_dir.mkdir(parents=True, exist_ok=True)
-    files = {
-        "00-system.md": "你是专业的曼陀罗解读写作者，负责把视觉草稿和稳定前缀写成财富议题报告。",
-        "10-mandala-manual.md": "这里放完整手册原文的稳定锚定片段。",
-        "20-wealth-topic-rules.md": "这里放财富议题 routing 规则的稳定片段。",
-        "30-style-guide.md": "这里放报告语言风格指南。",
-        "40-safety-boundary.md": "这里放安全边界与禁止内容。",
-        "50-output-contract.md": "这里放输出合同和报告结构约束。",
-    }
-    for filename, content in files.items():
-        path = pack_dir / filename
-        if not path.exists():
-            path.write_text(content + "\n", encoding="utf-8")
-    manifest = {
-        "pack_id": "wealth-report-v1.0.0",
-        "file_order": list(files.keys()),
-    }
-    manifest_path = pack_dir / "manifest.json"
-    if not manifest_path.exists():
-        manifest_path.write_text(
-            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
         )

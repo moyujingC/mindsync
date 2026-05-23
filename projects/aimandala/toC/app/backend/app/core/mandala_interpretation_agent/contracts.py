@@ -1,4 +1,4 @@
-"""Contracts for the mandala interpretation agent MVP."""
+"""Contracts for the end-to-end mandala interpretation agent."""
 
 from __future__ import annotations
 
@@ -7,42 +7,6 @@ from typing import Any, Literal
 
 
 REPORT_MODES = {"lite", "pro"}
-
-
-STAGE_KEYS = [
-    "input-context",
-    "user-input-context",
-    "circle-boundary-context",
-    "foundation-image-reading",
-    "theme-translation-route",
-    "report-thesis-selection",
-    "user-facing-framing",
-    "report-branching-plan",
-    "lite-report-draft",
-    "pro-report-draft",
-    "visual-assets",
-    "final-report-assembly",
-]
-
-
-EXECUTION_BLOCKS = [
-    {
-        "block_id": "input-and-boundary",
-        "stage_keys": STAGE_KEYS[0:3],
-    },
-    {
-        "block_id": "foundation-image-reading",
-        "stage_keys": STAGE_KEYS[3:4],
-    },
-    {
-        "block_id": "theme-translation-and-thesis",
-        "stage_keys": STAGE_KEYS[4:8],
-    },
-    {
-        "block_id": "report-writing-and-assembly",
-        "stage_keys": STAGE_KEYS[8:12],
-    },
-]
 
 
 @dataclass(frozen=True)
@@ -58,8 +22,8 @@ class MandalaImageInput:
 
 @dataclass(frozen=True)
 class MandalaUserContext:
-    theme: str = "general"
-    theme_label: str = "全面解读"
+    theme: str = "wealth"
+    theme_label: str = "财富议题"
     painting_intention: str = ""
     painting_feeling: str = ""
 
@@ -71,7 +35,7 @@ class MandalaUserContext:
 class MandalaOutputRequirements:
     language: str = "zh-CN"
     audience: str = "普通用户"
-    tone: str = "温和、具体、有解读感"
+    tone: str = "像疗愈师带用户看画"
     forbidden_terms: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -84,8 +48,8 @@ class MandalaAgentInput:
     user_context: MandalaUserContext
     circle_boundaries: dict[str, Any]
     report_mode: Literal["lite", "pro"] = "lite"
-    agent_version: str = "mandala-interpretation-agent-v1"
-    knowledge_pack: dict[str, Any] = field(default_factory=dict)
+    agent_version: str = "mandala-e2e-agent-v1"
+    prompt_pack_id: str = "wealth-report-v1.0.0"
     output_requirements: MandalaOutputRequirements = field(default_factory=MandalaOutputRequirements)
 
     def __post_init__(self) -> None:
@@ -99,7 +63,7 @@ class MandalaAgentInput:
             "image": self.image.to_dict(),
             "user_context": self.user_context.to_dict(),
             "circle_boundaries": self.circle_boundaries,
-            "knowledge_pack": self.knowledge_pack,
+            "prompt_pack_id": self.prompt_pack_id,
             "output_requirements": self.output_requirements.to_dict(),
         }
 
@@ -107,12 +71,9 @@ class MandalaAgentInput:
 @dataclass(frozen=True)
 class MandalaAgentResult:
     agent_input: dict[str, Any]
-    knowledge_pack: dict[str, Any]
-    agent_output: dict[str, Any]
-    interpretation_artifacts: dict[str, Any]
-    stage_outputs: dict[str, Any]
-    execution_trace: list[dict[str, Any]]
+    visual_draft: dict[str, Any]
+    prompt_pack_manifest: dict[str, Any]
     final_report: dict[str, Any]
     final_report_md: str
-    report_context_package: dict[str, Any]
     quality_gate: dict[str, Any]
+    run_summary: dict[str, Any]

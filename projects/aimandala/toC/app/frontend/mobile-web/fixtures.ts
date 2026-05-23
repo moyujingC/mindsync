@@ -76,53 +76,9 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
     overall_impression:
       "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
     structured: {
-      topic_context: {
-        topic: "wealth",
-        topic_label: "财富议题",
-        report_mode: "lite",
-        orientation: {
-          intro: "这份报告会从财富议题角度看这张画。",
-          focus: "这个议题会从金钱、安全感、行动节奏和现实承载来理解这张画。",
-          key_terms: [],
-        },
-      },
-      current_reading:
-        "你当前的表达像是在试着把注意力从外部噪音收回来，先回到自己的中心。",
-      visual_basis:
-        "中心颜色密度更高，外围线条更轻，说明你正在把主要能量压缩到一个更可控的范围里。",
-      pattern_interpretation:
-        "既有想进一步整理内在感受的需求，也保留了对外部变化的敏感度，因此画面同时出现稳住与扩张的张力。",
-      life_connection:
-        "留意你在哪些场景里最容易重新被外部节奏带走。",
-      lite_healing_guidance: {
-        directions: [
-          {
-            title: "先把节奏放缓一点",
-            content: "这次先不急着回应外部变化，先确认自己真正想守住的是什么。",
-          },
-          {
-            title: "把理解放回现实场景",
-            content: "留意你在哪些场景里最容易重新被外部节奏带走。",
-          },
-        ],
-        micro_practices: [
-          {
-            title: "一句停顿",
-            content: "遇到想立刻回应的时候，先停三秒，再决定要不要开口。",
-          },
-          {
-            title: "一句记录",
-            content: "把今天最明显的一次收紧感写下来，只记录，不分析。",
-          },
-        ],
-      },
-      pro_report_entry: {
-        title: "另一份更深的独立报告",
-        summary:
-          "如果你希望从更深层结构继续理解这张画，Pro 会提供更完整的结构、根因与疗愈视角。",
-        product_note:
-          "Pro 不是 Lite 的升级版，而是另一份独立购买、独立成立的深度完整解读。",
-      },
+      title: version === "pro" ? "一镜：冰封的太阳 - Pro版" : "一镜 Lite 版预览",
+      summary: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
+      report_mode: version,
     },
     report:
       version === "pro"

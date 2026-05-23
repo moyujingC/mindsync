@@ -191,14 +191,10 @@ def _create_report(
         "duration_seconds": duration_seconds,
         "report_id": payload.get("report_id"),
         "quality_gate_passed": quality_gate.get("passed"),
-        "selected_clause_count": len(payload.get("selected_clause_ids") or []),
         "final_report_chars": len(payload.get("final_report_md") or ""),
         "output_dir": str(save_dir / mode) if save_dir is not None else "",
-        "attempt_trace": (
-            payload.get("report_context_package", {})
-            .get("visual_observation", {})
-            .get("model_trace", [])
-        ),
+        "prompt_pack_id": (payload.get("prompt_pack_manifest") or {}).get("pack_id"),
+        "model_trace": (payload.get("run_summary") or {}).get("model_trace", []),
     }
     if save_dir is not None:
         _write_report_artifacts(
@@ -225,19 +221,16 @@ def _write_report_artifacts(
         "request.json": request_payload,
         "upload.json": upload_payload,
         "response.json": response_payload,
+        "visual_draft.json": response_payload.get("visual_draft") or {},
+        "prompt_pack_manifest.json": response_payload.get("prompt_pack_manifest") or {},
         "final_report.json": response_payload.get("final_report") or {},
         "quality_gate.json": response_payload.get("quality_gate") or {},
-        "report_context_package.json": response_payload.get("report_context_package") or {},
-        "agent_output.json": response_payload.get("agent_output") or {},
-        "route_summary.json": {
-            "topic": response_payload.get("topic"),
+        "run_summary.json": response_payload.get("run_summary") or {},
+        "report_summary.json": {
             "report_mode": response_payload.get("report_mode"),
             "report_id": response_payload.get("report_id"),
             "duration_seconds": duration_seconds,
-            "selected_signal_ids": response_payload.get("selected_signal_ids") or [],
-            "selected_clause_ids": response_payload.get("selected_clause_ids") or [],
-            "selected_module_ids": response_payload.get("selected_module_ids") or [],
-            "boundaries": response_payload.get("boundaries") or [],
+            "prompt_pack_id": (response_payload.get("prompt_pack_manifest") or {}).get("pack_id"),
         },
     }
     for filename, payload in files.items():

@@ -1,4 +1,4 @@
-"""Artifact writer for mandala interpretation agent review outputs."""
+"""Artifact writer for mandala end-to-end report review outputs."""
 
 from __future__ import annotations
 
@@ -16,14 +16,11 @@ class MandalaInterpretationArtifactStore:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         files = {
             "agent_input.json": result.agent_input,
-            "knowledge_pack.json": result.knowledge_pack,
-            "agent_output.json": result.agent_output,
-            "interpretation_artifacts.json": result.interpretation_artifacts,
-            "stage_outputs.json": result.stage_outputs,
-            "execution_trace.json": result.execution_trace,
+            "visual_draft.json": result.visual_draft,
+            "prompt_pack_manifest.json": result.prompt_pack_manifest,
             "final_report.json": result.final_report,
-            "report_context_package.json": result.report_context_package,
             "quality_gate.json": result.quality_gate,
+            "run_summary.json": result.run_summary,
         }
         written: list[Path] = []
         for name, payload in files.items():
@@ -34,7 +31,13 @@ class MandalaInterpretationArtifactStore:
             )
             written.append(path)
 
-        markdown_path = self.output_dir / "final_report.md"
-        markdown_path.write_text(result.final_report_md + "\n", encoding="utf-8")
-        written.append(markdown_path)
+        markdown_files = {
+            "visual_draft.md": json.dumps(result.visual_draft, ensure_ascii=False, indent=2),
+            "final_report.md": result.final_report_md,
+        }
+        for name, content in markdown_files.items():
+            path = self.output_dir / name
+            path.write_text(content.strip() + "\n", encoding="utf-8")
+            written.append(path)
+
         return written
