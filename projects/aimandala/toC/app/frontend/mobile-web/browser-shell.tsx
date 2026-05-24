@@ -160,6 +160,15 @@ export function MobileWebBrowserShell() {
     useState<InterpretationVersion | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
+  const [runtimeDebugState, setRuntimeDebugState] = useState<{
+    route: string;
+    isBusy: boolean;
+    isUploading: boolean;
+    uploadErrorMessage: string | null;
+    reportStage: string | null;
+    reportId: string | null;
+    imagePath: string | null;
+  } | null>(null);
   const userId = session.canonicalUserId;
   const activePreviewImagePath = draft.uploadAsset?.runtimeImagePath ?? draft.imagePath;
   const activePreviewStep = previewFlowState?.step ?? "idle";
@@ -173,6 +182,14 @@ export function MobileWebBrowserShell() {
     previewHistoryOpeningId ??
     interpretationId ??
     null;
+  const activeRuntimeState = previewMode ? null : runtimeDebugState;
+  const panelRoute = previewMode ? route : activeRuntimeState?.route ?? route;
+  const panelBusy = previewMode ? previewFlowRunning : activeRuntimeState?.isBusy ?? false;
+  const panelUploading = previewMode ? previewFlowRunning && route === "upload" : activeRuntimeState?.isUploading ?? false;
+  const panelError = previewMode ? activePreviewError : activeRuntimeState?.uploadErrorMessage ?? null;
+  const panelReportStage = previewMode ? activePreviewStep : activeRuntimeState?.reportStage ?? "idle";
+  const panelReportId = previewMode ? activePreviewReportId : activeRuntimeState?.reportId ?? null;
+  const panelImagePath = previewMode ? activePreviewImagePath : activeRuntimeState?.imagePath ?? activePreviewImagePath;
 
   const input = useMemo(
     () => createPreviewRouteInput(route, draft, interpretationId, session, {
@@ -773,27 +790,31 @@ export function MobileWebBrowserShell() {
                   <dl className="browser-shell__status-grid">
                     <div>
                       <dt>当前路由</dt>
-                      <dd>{route}</dd>
+                      <dd>{panelRoute}</dd>
                     </div>
                     <div>
                       <dt>生成中</dt>
-                      <dd>{previewFlowRunning ? "是" : "否"}</dd>
+                      <dd>{panelBusy ? "是" : "否"}</dd>
+                    </div>
+                    <div>
+                      <dt>上传中</dt>
+                      <dd>{panelUploading ? "是" : "否"}</dd>
                     </div>
                     <div>
                       <dt>报告阶段</dt>
-                      <dd>{activePreviewStep}</dd>
+                      <dd>{panelReportStage}</dd>
                     </div>
                     <div>
                       <dt>报告 ID</dt>
-                      <dd>{activePreviewReportId ?? "未生成"}</dd>
+                      <dd>{panelReportId ?? "未生成"}</dd>
                     </div>
                     <div>
                       <dt>图片路径</dt>
-                      <dd>{activePreviewImagePath}</dd>
+                      <dd>{panelImagePath}</dd>
                     </div>
                     <div>
                       <dt>最近错误</dt>
-                      <dd>{activePreviewError ?? "无"}</dd>
+                      <dd>{panelError ?? "无"}</dd>
                     </div>
                   </dl>
                 </section>
@@ -1062,6 +1083,9 @@ export function MobileWebBrowserShell() {
                   : undefined
               }
               environmentTone={import.meta.env.DEV ? "runtime" : undefined}
+              onDebugStateChange={(state) => {
+                setRuntimeDebugState(state);
+              }}
             />
           )}
           </div>

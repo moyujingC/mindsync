@@ -101,6 +101,15 @@ export interface MobileWebRuntimeProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  onDebugStateChange?: (state: {
+    route: string;
+    isBusy: boolean;
+    isUploading: boolean;
+    uploadErrorMessage: string | null;
+    reportStage: string | null;
+    reportId: string | null;
+    imagePath: string | null;
+  }) => void;
 }
 
 const defaultUploadDraft: MobileWebUploadDraft = {
@@ -194,6 +203,7 @@ export function MobileWebRuntime({
   environmentLabel,
   environmentDetail,
   environmentTone,
+  onDebugStateChange,
 }: MobileWebRuntimeProps) {
   const { loading, error, props } = useMobileWebRouteLoader(input);
   const [runtimeProps, setRuntimeProps] = useState<MobileWebAppProps | null>(null);
@@ -467,6 +477,36 @@ export function MobileWebRuntime({
     runtimeProps?.uploadDraft?.reportVariant,
   ]);
 
+  useEffect(() => {
+    if (!onDebugStateChange) {
+      return;
+    }
+
+    onDebugStateChange({
+      route: runtimeProps?.route ?? input.route,
+      isBusy: runtimeBusy || runtimeUploadDetecting,
+      isUploading: runtimeBusy,
+      uploadErrorMessage: runtimeUploadDetectError,
+      reportStage: runtimeProps?.flowState?.step ?? null,
+      reportId: runtimeProps?.flowState?.interpretation?.interpretation_id ?? null,
+      imagePath:
+        activeRuntimeUploadDraft?.uploadAsset?.runtimeImagePath ??
+        activeRuntimeUploadDraft?.imagePath ??
+        null,
+    });
+  }, [
+    activeRuntimeUploadDraft?.imagePath,
+    activeRuntimeUploadDraft?.uploadAsset?.runtimeImagePath,
+    input.route,
+    onDebugStateChange,
+    runtimeBusy,
+    runtimeProps?.flowState?.interpretation?.interpretation_id,
+    runtimeProps?.flowState?.step,
+    runtimeProps?.route,
+    runtimeUploadDetectError,
+    runtimeUploadDetecting,
+  ]);
+
   if (loading) {
     return <>{loadingFallback}</>;
   }
@@ -486,9 +526,9 @@ export function MobileWebRuntime({
     return <>Missing runtime mobile web props</>;
   }
 
-  const currentRuntimeProps = runtimeProps;
   const currentUploadDraft = activeRuntimeUploadDraft;
   const uploadDraftForReturn = currentUploadDraft ?? defaultUploadDraft;
+  const currentRuntimeProps = runtimeProps;
 
   async function handleReportPrimaryAction() {
     if (!currentRuntimeProps.flowState || runtimeBusy) {
