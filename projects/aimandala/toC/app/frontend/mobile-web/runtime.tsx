@@ -885,7 +885,6 @@ export function MobileWebRuntime({
     } catch (uploadError) {
       const message = uploadError instanceof Error ? uploadError.message : "Failed to continue upload";
       setRuntimeUploadDetectError(message);
-      throw uploadError;
     } finally {
       setRuntimeUploadDetecting(false);
       setRuntimeBusy(false);
@@ -947,13 +946,17 @@ export function MobileWebRuntime({
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}
+      isUploading={runtimeBusy}
+      uploadErrorMessage={runtimeUploadDetectError}
       detection={runtimeUploadDetection}
       onUploadDraftChange={(patch) => {
+        setRuntimeUploadDetectError(null);
         setRuntimeUploadDraft((current) =>
           mergeMobileWebUploadDraft(current ?? defaultUploadDraft, patch),
         );
       }}
       onUploadBack={() => {
+        setRuntimeUploadDetectError(null);
         setRuntimeProps({
           route: "landing",
           uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,

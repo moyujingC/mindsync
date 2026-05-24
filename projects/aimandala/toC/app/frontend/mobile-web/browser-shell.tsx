@@ -161,6 +161,18 @@ export function MobileWebBrowserShell() {
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
   const userId = session.canonicalUserId;
+  const activePreviewImagePath = draft.uploadAsset?.runtimeImagePath ?? draft.imagePath;
+  const activePreviewStep = previewFlowState?.step ?? "idle";
+  const activePreviewError =
+    previewDetectError ??
+    previewFlowState?.lastError ??
+    previewFlowState?.report?.error ??
+    null;
+  const activePreviewReportId =
+    previewFlowState?.interpretation?.interpretation_id ??
+    previewHistoryOpeningId ??
+    interpretationId ??
+    null;
 
   const input = useMemo(
     () => createPreviewRouteInput(route, draft, interpretationId, session, {
@@ -752,6 +764,40 @@ export function MobileWebBrowserShell() {
                   </div>
                 </div>
 
+                <section className="browser-shell__status-card" aria-label="当前联调状态">
+                  <header className="browser-shell__status-card-header">
+                    <strong>当前联调状态</strong>
+                    <span>{previewMode ? "本地预览" : "真实联调"}</span>
+                  </header>
+
+                  <dl className="browser-shell__status-grid">
+                    <div>
+                      <dt>当前路由</dt>
+                      <dd>{route}</dd>
+                    </div>
+                    <div>
+                      <dt>生成中</dt>
+                      <dd>{previewFlowRunning ? "是" : "否"}</dd>
+                    </div>
+                    <div>
+                      <dt>报告阶段</dt>
+                      <dd>{activePreviewStep}</dd>
+                    </div>
+                    <div>
+                      <dt>报告 ID</dt>
+                      <dd>{activePreviewReportId ?? "未生成"}</dd>
+                    </div>
+                    <div>
+                      <dt>图片路径</dt>
+                      <dd>{activePreviewImagePath}</dd>
+                    </div>
+                    <div>
+                      <dt>最近错误</dt>
+                      <dd>{activePreviewError ?? "无"}</dd>
+                    </div>
+                  </dl>
+                </section>
+
                   <label className="field field--checkbox">
                     <input
                       type="checkbox"
@@ -886,6 +932,7 @@ export function MobileWebBrowserShell() {
                 uploadDraft={draft}
                 activeHistoryFilter={(previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
                 historyQuery={previewHistoryQuery}
+                isUploading={previewFlowRunning && route === "upload"}
                 historyActionBusy={
                   previewFlowRunning &&
                   (route === "history" || route === "historyRecordDetail")

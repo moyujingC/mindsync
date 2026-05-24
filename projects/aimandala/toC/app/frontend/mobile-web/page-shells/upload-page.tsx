@@ -10,6 +10,8 @@ export interface MobileWebUploadPageProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  isUploading?: boolean;
+  errorMessage?: string | null;
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onContinue?: () => void;
   onBack?: () => void;
@@ -599,6 +601,8 @@ export function MobileWebUploadPage({
   environmentLabel,
   environmentDetail,
   environmentTone = "preview",
+  isUploading = false,
+  errorMessage = null,
   onDraftChange,
   onContinue,
   onBack,
@@ -1088,6 +1092,12 @@ export function MobileWebUploadPage({
 
       <div className="am-upload-bottom-sheet">
         <section className="am-upload-form-surface">
+          {errorMessage ? (
+            <div className="am-upload-detect-status is-error" role="alert">
+              <p>{errorMessage}</p>
+            </div>
+          ) : null}
+
           <ThemeSelector
             value={draft.theme}
             onChange={(nextValue) => onDraftChange?.({ theme: nextValue })}
@@ -1123,7 +1133,7 @@ export function MobileWebUploadPage({
           <div className="am-upload-spacer" />
           <BottomPanel
             canContinue={canContinue}
-            isUploading={false}
+            isUploading={isUploading}
             onContinue={onContinue}
           />
         </section>

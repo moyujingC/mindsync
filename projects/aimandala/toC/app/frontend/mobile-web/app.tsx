@@ -43,11 +43,13 @@ export interface MobileWebAppProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  uploadErrorMessage?: string | null;
   onLandingStart?: () => void;
   onLandingOpenHistory?: () => void;
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onUploadContinue?: () => void;
   onUploadBack?: () => void;
+  isUploading?: boolean;
   onReportEntryBack?: () => void;
   onReportEntryChooseReportType?: (reportType: MobileWebReportProductType) => void;
   onLoadingLeaveLater?: () => void;
@@ -86,11 +88,13 @@ export function MobileWebApp({
   environmentLabel,
   environmentDetail,
   environmentTone,
+  uploadErrorMessage = null,
   onLandingStart,
   onLandingOpenHistory,
   onUploadDraftChange,
   onUploadContinue,
   onUploadBack,
+  isUploading = false,
   onReportEntryBack,
   onReportEntryChooseReportType,
   onLoadingLeaveLater,
@@ -126,6 +130,8 @@ export function MobileWebApp({
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}
+          isUploading={isUploading}
+          errorMessage={uploadErrorMessage}
           onDraftChange={onUploadDraftChange}
           onContinue={onUploadContinue}
           onBack={onUploadBack}

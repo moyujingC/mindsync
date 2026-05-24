@@ -249,4 +249,44 @@ describe("MobileWebRuntime", () => {
     });
     expect(container.textContent).not.toContain("报告内容待补齐");
   });
+
+  it("上传页开始解读失败时会在当前页面展示错误", async () => {
+    const input: MobileWebRouteInput = {
+      route: "upload",
+      params: {
+        session: createMobileWebGuestSession("runtime-test"),
+        draft: {
+          imagePath: "/tmp/preview-only.png",
+          theme: "wealth",
+          reportType: "lite",
+          reportVariant: "lite",
+          redeemCode: "MVP-LITE",
+          paintingIntention: "看见财富卡点",
+          paintingFeeling: "平静",
+          innerRadius: 0.36,
+          middleRadius: 0.64,
+        },
+      },
+    };
+
+    await act(async () => {
+      root.render(<MobileWebRuntime input={input} />);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    const startButton = Array.from(container.querySelectorAll("button")).find((item) =>
+      item.textContent?.includes("开始解读"),
+    );
+    expect(startButton).toBeTruthy();
+
+    await act(async () => {
+      startButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("请先选择本地曼陀罗图片并完成上传。");
+    });
+    expect(api.uploadImage).not.toHaveBeenCalled();
+    expect(api.createWealthReport).not.toHaveBeenCalled();
+  });
 });

@@ -145,6 +145,52 @@ body {
   gap: 16px;
 }
 
+.browser-shell__status-card {
+  grid-column: 1 / -1;
+  padding: 16px;
+  border: 1px solid rgba(139, 103, 55, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 252, 247, 0.72);
+}
+
+.browser-shell__status-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.browser-shell__status-card-header strong {
+  color: var(--am-dev-text-primary);
+}
+
+.browser-shell__status-card-header span {
+  color: var(--am-dev-text-warning);
+  font-size: 12px;
+}
+
+.browser-shell__status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+  margin: 0;
+}
+
+.browser-shell__status-grid dt {
+  margin: 0 0 4px;
+  color: var(--am-dev-text-muted);
+  font-size: 11px;
+}
+
+.browser-shell__status-grid dd {
+  margin: 0;
+  color: var(--am-dev-text-primary);
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
 .browser-shell__fixture-list {
   display: grid;
   gap: 8px;
