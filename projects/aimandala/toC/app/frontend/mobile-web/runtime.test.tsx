@@ -205,4 +205,48 @@ describe("MobileWebRuntime", () => {
     });
     expect(container.textContent).toContain("财富议题曼陀罗解读");
   });
+
+  it("兑换码缺失时会保留明确错误而不是伪装成未生成报告", async () => {
+    vi.mocked(api.createWealthReport).mockRejectedValueOnce(
+      new Error("报告生成需要先配置可用的优惠券或兑换码。"),
+    );
+
+    const input: MobileWebRouteInput = {
+      route: "upload",
+      params: {
+        session: createMobileWebGuestSession("runtime-test"),
+        draft: {
+          imagePath: "blob:runtime-preview",
+          theme: "wealth",
+          reportType: "lite",
+          reportVariant: "lite",
+          redeemCode: "",
+          paintingIntention: "看见财富卡点",
+          paintingFeeling: "平静",
+          innerRadius: 0.36,
+          middleRadius: 0.64,
+          browserFile: new File(["mandala"], "mandala.png", { type: "image/png" }),
+        },
+      },
+    };
+
+    await act(async () => {
+      root.render(<MobileWebRuntime input={input} />);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    const startButton = Array.from(container.querySelectorAll("button")).find((item) =>
+      item.textContent?.includes("开始解读"),
+    );
+    expect(startButton).toBeTruthy();
+
+    await act(async () => {
+      startButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("报告生成需要先配置可用的优惠券或兑换码。");
+    });
+    expect(container.textContent).not.toContain("报告内容待补齐");
+  });
 });

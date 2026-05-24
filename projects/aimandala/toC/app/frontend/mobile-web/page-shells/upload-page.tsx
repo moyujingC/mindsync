@@ -1094,6 +1094,20 @@ export function MobileWebUploadPage({
           />
 
           <div className="am-upload-form-stack">
+            <label className="am-report-entry-redeem">
+              <span className="am-report-entry-redeem__label">
+                优惠券 / 兑换码
+              </span>
+              <input
+                className="am-report-entry-redeem__input"
+                value={draft.redeemCode ?? ""}
+                onChange={(event) => onDraftChange?.({ redeemCode: event.target.value })}
+                placeholder="请输入可用兑换码"
+              />
+              <span className="am-report-entry-redeem__hint">
+                系统会在生成前校验兑换码，校验通过后进入解读等待页。
+              </span>
+            </label>
             <TextInputField
               placeholder="记录绘画前设定的意图"
               value={draft.paintingIntention}
