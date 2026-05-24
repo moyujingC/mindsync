@@ -43,6 +43,15 @@ export interface MobileWebRouteLoaderState {
   props: MobileWebAppProps | null;
 }
 
+type MobileWebRuntimePhase =
+  | "idle"
+  | "uploading_image"
+  | "building_request"
+  | "requesting_report"
+  | "waiting_report"
+  | "report_ready"
+  | "failed";
+
 const DEFAULT_INNER_RADIUS = 0.35;
 const DEFAULT_MIDDLE_RADIUS = 0.65;
 
@@ -103,6 +112,7 @@ export interface MobileWebRuntimeProps {
   environmentTone?: "preview" | "runtime";
   onDebugStateChange?: (state: {
     route: string;
+    phase: MobileWebRuntimePhase;
     isBusy: boolean;
     isUploading: boolean;
     uploadErrorMessage: string | null;
@@ -208,6 +218,8 @@ export function MobileWebRuntime({
   const { loading, error, props } = useMobileWebRouteLoader(input);
   const [runtimeProps, setRuntimeProps] = useState<MobileWebAppProps | null>(null);
   const [runtimeBusy, setRuntimeBusy] = useState(false);
+  const [runtimePhase, setRuntimePhase] =
+    useState<MobileWebRuntimePhase>("idle");
   const inputUploadDraft = getDraftFromInput(input);
   const userId = getUserIdFromInput(input);
   const [runtimeUploadDraft, setRuntimeUploadDraft] = useState<MobileWebUploadDraft | null>(
@@ -484,8 +496,9 @@ export function MobileWebRuntime({
 
     onDebugStateChange({
       route: runtimeProps?.route ?? input.route,
+      phase: runtimePhase,
       isBusy: runtimeBusy || runtimeUploadDetecting,
-      isUploading: runtimeBusy,
+      isUploading: runtimePhase === "uploading_image",
       uploadErrorMessage: runtimeUploadDetectError,
       reportStage: runtimeProps?.flowState?.step ?? null,
       reportId: runtimeProps?.flowState?.interpretation?.interpretation_id ?? null,
@@ -499,6 +512,7 @@ export function MobileWebRuntime({
     activeRuntimeUploadDraft?.uploadAsset?.runtimeImagePath,
     input.route,
     onDebugStateChange,
+    runtimePhase,
     runtimeBusy,
     runtimeProps?.flowState?.interpretation?.interpretation_id,
     runtimeProps?.flowState?.step,
@@ -857,6 +871,7 @@ export function MobileWebRuntime({
     let resolvedDetection: DetectCirclesResponse;
 
     setRuntimeBusy(true);
+    setRuntimePhase("uploading_image");
     setRuntimeUploadDetecting(true);
     setRuntimeUploadDetectError(null);
     liveGenerationInFlightRef.current = true;
@@ -876,6 +891,7 @@ export function MobileWebRuntime({
         },
       );
       const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
+      setRuntimePhase("building_request");
       resolvedDetection =
         typeof draftToUse.innerRadius === "number" &&
         !Number.isNaN(draftToUse.innerRadius) &&
@@ -901,6 +917,7 @@ export function MobileWebRuntime({
         },
       });
 
+      setRuntimePhase("requesting_report");
       const result = await runMobileWebReportFlow(
         toStartCreatePayload(
           {
@@ -922,9 +939,11 @@ export function MobileWebRuntime({
         flowState: result.state,
         uploadDraft: nextDraft,
       });
+      setRuntimePhase(result.state.step === "liteGenerating" ? "waiting_report" : "report_ready");
     } catch (uploadError) {
       const message = uploadError instanceof Error ? uploadError.message : "Failed to continue upload";
       setRuntimeUploadDetectError(message);
+      setRuntimePhase("failed");
     } finally {
       setRuntimeUploadDetecting(false);
       setRuntimeBusy(false);

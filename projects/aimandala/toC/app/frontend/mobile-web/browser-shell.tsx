@@ -162,6 +162,7 @@ export function MobileWebBrowserShell() {
     useState<string | null>(null);
   const [runtimeDebugState, setRuntimeDebugState] = useState<{
     route: string;
+    phase: "idle" | "uploading_image" | "building_request" | "requesting_report" | "waiting_report" | "report_ready" | "failed";
     isBusy: boolean;
     isUploading: boolean;
     uploadErrorMessage: string | null;
@@ -184,6 +185,7 @@ export function MobileWebBrowserShell() {
     null;
   const activeRuntimeState = previewMode ? null : runtimeDebugState;
   const panelRoute = previewMode ? route : activeRuntimeState?.route ?? route;
+  const panelPhase = previewMode ? (previewFlowRunning ? "waiting_report" : "idle") : activeRuntimeState?.phase ?? "idle";
   const panelBusy = previewMode ? previewFlowRunning : activeRuntimeState?.isBusy ?? false;
   const panelUploading = previewMode ? previewFlowRunning && route === "upload" : activeRuntimeState?.isUploading ?? false;
   const panelError = previewMode ? activePreviewError : activeRuntimeState?.uploadErrorMessage ?? null;
@@ -788,6 +790,24 @@ export function MobileWebBrowserShell() {
                   </header>
 
                   <dl className="browser-shell__status-grid">
+                    <div>
+                      <dt>当前阶段</dt>
+                      <dd>
+                        {panelPhase === "uploading_image"
+                          ? "上传图片"
+                          : panelPhase === "building_request"
+                            ? "整理请求"
+                            : panelPhase === "requesting_report"
+                              ? "请求报告"
+                              : panelPhase === "waiting_report"
+                                ? "等待结果"
+                                : panelPhase === "report_ready"
+                                  ? "报告已生成"
+                                  : panelPhase === "failed"
+                                    ? "失败"
+                                    : "待机"}
+                      </dd>
+                    </div>
                     <div>
                       <dt>当前路由</dt>
                       <dd>{panelRoute}</dd>
