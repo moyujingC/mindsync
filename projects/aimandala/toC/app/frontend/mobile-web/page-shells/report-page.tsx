@@ -189,13 +189,13 @@ export function MobileWebReportPage({
   const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
   const footerHint = isLoading
     ? "当前仍在生成，你可以继续等待，或先返回上传页调整输入。"
-    : canRetryRefresh
-      ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
-      : isProReport
-        ? "Lite / Pro 只是入口差异，报告页统一展示新版直出结果。"
+      : canRetryRefresh
+        ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
+        : isProReport
+        ? "当前正在查看 Pro 版解读。"
         : isError
           ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
-          : "这份报告已经按新版解读链路生成。你可以回到上传页，重新选择 Lite 或 Pro 入口生成下一份。";
+          : "这份报告已经按新版解读链路生成。你可以回到上传页，重新发起下一次解读。";
   const readingSections: ReportPageSection[] =
     reportSections.length > 0
       ? reportSections

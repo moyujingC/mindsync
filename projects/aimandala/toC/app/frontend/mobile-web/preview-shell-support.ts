@@ -31,7 +31,6 @@ export const PREVIEW_ROUTE_OPTIONS: Array<{
 }> = [
   { label: "落地页", value: "landing" },
   { label: "上传", value: "upload" },
-  { label: "Lite / Pro 选择页", value: "reportEntry" },
   { label: "加载", value: "loading" },
   { label: "新版解读报告", value: "report" },
   { label: "历史", value: "history" },
