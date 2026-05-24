@@ -279,7 +279,7 @@
 - 开发辅助层默认可折叠，不作为正式产品界面的一部分
 - 手机页面内会直接标明当前是“本地预览模式”还是“联调运行时”
 - history 页会额外标明当前展示的是“真实记录”还是“占位记录”
-- history 列表项现在会在打开记录时进入受控禁用态，并提示当前正在读取真实状态后再跳转到 `loading / Lite / Pro`
+  - history 列表项现在会在打开记录时进入受控禁用态，并提示当前正在读取真实状态后再跳转到 `loading / report`
 - history descriptor 现在会把原始 `status / generation_stage / progress` 收口成更接近用户语义的状态标签、阶段说明与可读时间
 - history 打开已有 `Lite + Pro` 记录时会直接读取 Pro 报告，不再额外触发 upgrade 或绕回 Lite
 
@@ -332,7 +332,7 @@
 - history 列表查询已开始统一收口到 `historyQuery`，为后续扩展 `theme / limit` 留出稳定接口面
 - history 页主题筛选已开始进入页面层，不再只是后端预留字段
 - history 页显示数量切换已开始进入页面层，不再只是查询参数占位
-- history 列表项已开始能回到 loading / Lite / Pro，而不再只是停在信息展示
+- history 列表项已开始能回到 loading / report，而不再只是停在信息展示
 - history 列表项已开始直接提示当前记录版本是 `Lite` 还是 `Lite + Pro`
 - history 列表项已开始直接打开已有 Pro 报告，而不再重复触发 Lite 刷新
 - 正式 `MobileWebRuntime` 已补上与预览壳一致的 loading 自动推进与 report 最小动作回路

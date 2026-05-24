@@ -678,7 +678,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
       setPreviewHistoryStatusLabel(`已载入 ${preset.label}`);
-      setPreviewHistoryStatusDetail("当前已填入测试图、默认主题和人工三圈比例，可直接进入 Lite / Pro 选择。");
+      setPreviewHistoryStatusDetail("当前已填入测试图、默认主题和人工三圈比例，可直接进入解读生成。");
       setPreviewHistoryStatusTone("preview");
       setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);

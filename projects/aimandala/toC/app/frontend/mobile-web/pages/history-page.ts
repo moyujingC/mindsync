@@ -73,7 +73,7 @@ export function createHistoryPageDescriptor(
   return {
     pageId: "history-page",
     title: "历史解读",
-    subtitle: "查看已经生成的 Lite / Pro 解读记录。",
+    subtitle: "查看已经生成的曼陀罗解读记录。",
     summary: {
       total: records.length,
       ready,
