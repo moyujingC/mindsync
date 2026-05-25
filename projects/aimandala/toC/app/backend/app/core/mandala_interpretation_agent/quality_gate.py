@@ -23,6 +23,18 @@ FORBIDDEN_DIAGNOSTIC_TERMS = [
     "医疗建议",
 ]
 
+CROSS_CIRCLE_FIVE_ELEMENT_TERMS = [
+    "金",
+    "木",
+    "水",
+    "火",
+    "土",
+    "相生",
+    "相克",
+    "克",
+    "生",
+]
+
 
 def run_quality_gate(
     *,
@@ -35,6 +47,14 @@ def run_quality_gate(
 
     if not isinstance(visual_draft, dict) or not visual_draft:
         failure_ids.append("missing_visual_draft")
+    visual_draft_md = (
+        str(visual_draft.get("visual_draft_md") or "")
+        if isinstance(visual_draft, dict)
+        else ""
+    )
+    cross_circle_leaked_terms = _cross_circle_five_element_terms(visual_draft_md)
+    if cross_circle_leaked_terms:
+        failure_ids.append("visual_draft_cross_circle_five_element_leak")
 
     if not isinstance(prompt_pack_manifest, dict) or not prompt_pack_manifest:
         failure_ids.append("missing_prompt_pack_manifest")
@@ -69,5 +89,31 @@ def run_quality_gate(
         "failure_ids": failure_ids,
         "details": {
             "leaked_terms": leaked_terms,
+            "cross_circle_leaked_terms": cross_circle_leaked_terms,
         },
     }
+
+
+def _cross_circle_five_element_terms(markdown: str) -> list[str]:
+    section = _extract_markdown_section(markdown, "三圈能量流动")
+    if not section:
+        return []
+    return [term for term in CROSS_CIRCLE_FIVE_ELEMENT_TERMS if term in section]
+
+
+def _extract_markdown_section(markdown: str, heading: str) -> str:
+    lines = markdown.splitlines()
+    in_section = False
+    section_lines: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            normalized = stripped.lstrip("#").strip()
+            if in_section:
+                break
+            if normalized == heading:
+                in_section = True
+                continue
+        if in_section:
+            section_lines.append(line)
+    return "\n".join(section_lines).strip()

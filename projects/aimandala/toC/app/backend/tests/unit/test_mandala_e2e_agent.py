@@ -130,6 +130,7 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
     report_text_call = llm_client.text_calls[1]
     assert vision_text_call["task"] == "vision"
     assert "00-曼陀罗基础层解读流程.md" in vision_text_call["system_prompt"]
+    assert "三圈能量流动里只写流动状态" in vision_text_call["user_prompt"]
     assert "10-财富/11-财富议题手册.md" not in vision_text_call["system_prompt"]
     assert "50-结构化知识单元/40-wealth-report-routing.yaml" not in vision_text_call["system_prompt"]
     assert "90-来源原文/01-曼陀罗解读手册原文.md" not in vision_text_call["system_prompt"]
@@ -150,6 +151,34 @@ def test_two_pass_rewrites_structured_visual_draft_to_markdown(tmp_path):
     assert "visual.circle" not in result.visual_draft["visual_draft_md"]
     assert "## 整体画面" in result.visual_draft["visual_draft_md"]
     assert len([call for call in llm_client.text_calls if call["task"] == "vision"]) == 2
+
+
+def test_two_pass_visual_draft_does_not_leak_cross_circle_five_elements(tmp_path):
+    llm_client = StubE2ELLMClient()
+    MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+    )
+
+    vision_prompt = llm_client.text_calls[0]["user_prompt"]
+    assert "三圈能量流动里只写流动状态" in vision_prompt
+    assert "五行只用于圈内元素观察" in vision_prompt
+    assert "不要把三圈联动写成五行生克" in vision_prompt
+
+
+def test_quality_gate_flags_cross_circle_five_element_leak():
+    from app.core.mandala_interpretation_agent.quality_gate import run_quality_gate
+
+    quality = run_quality_gate(
+        visual_draft={
+            "visual_draft_md": "## 三圈能量流动\n这里出现水克火与金克火。",
+        },
+        prompt_pack_manifest={"pack_id": "wealth-report-v1.0.0"},
+        final_report_md="# 财富议题曼陀罗解读报告",
+        final_report={"report_id": "report-1"},
+    )
+
+    assert quality["passed"] is False
+    assert "visual_draft_cross_circle_five_element_leak" in quality["failure_ids"]
 
 
 def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tmp_path):
