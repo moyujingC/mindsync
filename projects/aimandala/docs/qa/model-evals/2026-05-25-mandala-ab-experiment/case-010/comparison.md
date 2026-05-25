@@ -7,16 +7,16 @@
 
 ## A 方案
 
-- 生产角色：default_production
-- 可复用视觉基准：True
-- 质量门：True
+- 生产角色：未运行
+- 可复用视觉基准：未运行
+- 质量门：未运行
 - 报告：a/final_report.md
 
 ## B 方案
 
-- 生产角色：未运行
-- 可复用视觉基准：未运行
-- 质量门：未运行
+- 生产角色：ab_experiment_only
+- 可复用视觉基准：False
+- 质量门：True
 - 报告：b/final_report.md
 
 ## 人工评审建议
