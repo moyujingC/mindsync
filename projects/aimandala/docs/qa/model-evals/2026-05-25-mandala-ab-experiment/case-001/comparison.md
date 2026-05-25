@@ -12,7 +12,7 @@
 - 质量门：True
 - 报告：a/final_report.md
 - 视觉基准：a/visual_draft.md
-- 本轮状态：极简 `observe.md` 后，语言更自然，但圈层归属没有改善。
+- 本轮状态：极简 `observe.md` 后，语言更自然；按修正后的人工校准基线，当前视觉观察可接受。
 
 ## B 方案
 
