@@ -58,6 +58,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--case-root", default=str(CASE_ROOT), help="Complete 11-case directory.")
     parser.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT), help="Output directory.")
     parser.add_argument("--case-id", default="case-001", help="Run one case id only.")
+    parser.add_argument(
+        "--variant",
+        choices=["a", "b", "both"],
+        default="both",
+        help="Which variant(s) to run for each case.",
+    )
     parser.add_argument("--env-file", default="", help="Private env file to load before running.")
     parser.add_argument("--thinking-mode", choices=["default", "on", "off"], default="off")
     return parser
@@ -85,20 +91,24 @@ def main() -> int:
         a_dir.mkdir(parents=True, exist_ok=True)
         b_dir.mkdir(parents=True, exist_ok=True)
 
-        a_result = _run_variant(
-            client=client,
-            case=case,
-            variant="two_pass_e2e",
-            output_dir=a_dir,
-            thinking_mode=args.thinking_mode,
-        )
-        b_result = _run_variant(
-            client=client,
-            case=case,
-            variant="single_pass_e2e",
-            output_dir=b_dir,
-            thinking_mode=args.thinking_mode,
-        )
+        a_result = None
+        b_result = None
+        if args.variant in {"a", "both"}:
+            a_result = _run_variant(
+                client=client,
+                case=case,
+                variant="two_pass_e2e",
+                output_dir=a_dir,
+                thinking_mode=args.thinking_mode,
+            )
+        if args.variant in {"b", "both"}:
+            b_result = _run_variant(
+                client=client,
+                case=case,
+                variant="single_pass_e2e",
+                output_dir=b_dir,
+                thinking_mode=args.thinking_mode,
+            )
 
         _write_comparison(case_dir / "comparison.md", case=case, a_result=a_result, b_result=b_result)
         results.append(
@@ -106,8 +116,8 @@ def main() -> int:
                 "case_id": case.case_id,
                 "status": "complete",
                 "case_dir": str(case_dir),
-                "a": a_result["run_summary"].get("production_role"),
-                "b": b_result["run_summary"].get("production_role"),
+                "a": a_result["run_summary"].get("production_role") if a_result else None,
+                "b": b_result["run_summary"].get("production_role") if b_result else None,
             }
         )
 
@@ -116,7 +126,22 @@ def main() -> int:
         "output_root": str(output_root),
         "results": results,
     }
-    (output_root / "run_summary.json").write_text(
+    summary_path = output_root / "run_summary.json"
+    if summary_path.exists():
+        try:
+            existing = json.loads(summary_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            existing = {}
+        existing_results = existing.get("results") if isinstance(existing, dict) else []
+        merged_by_case: dict[str, dict[str, Any]] = {}
+        if isinstance(existing_results, list):
+            for item in existing_results:
+                if isinstance(item, dict) and item.get("case_id"):
+                    merged_by_case[str(item["case_id"])] = item
+        for item in results:
+            merged_by_case[str(item["case_id"])] = item
+        summary["results"] = [merged_by_case[key] for key in sorted(merged_by_case)]
+    summary_path.write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
@@ -133,8 +158,8 @@ def load_cases(case_root: Path, *, case_id: str) -> list[AbCaseInput]:
         current_id = case_path.stem
         if case_id and current_id != case_id:
             continue
-        image_path = assets_dir / f"{current_id}-mandala.jpg"
-        marked_image_path = assets_dir / f"{current_id}-mandala-3q.jpg"
+        image_path = _first_existing_asset(assets_dir, f"{current_id}-mandala", ["jpg", "jpeg", "png"])
+        marked_image_path = _first_existing_asset(assets_dir, f"{current_id}-mandala-3q", ["jpg", "jpeg", "png"])
         cases.append(
             AbCaseInput(
                 case_id=current_id,
@@ -223,16 +248,16 @@ def _write_comparison(path: Path, *, case: AbCaseInput, a_result: dict[str, Any]
         "",
         "## A 方案",
         "",
-        f"- 生产角色：{a_result['run_summary'].get('production_role')}",
-        f"- 可复用视觉基准：{a_result['run_summary'].get('reusable_visual_baseline')}",
-        f"- 质量门：{a_result['quality_gate'].get('passed')}",
+        f"- 生产角色：{a_result['run_summary'].get('production_role')}" if a_result else "- 生产角色：未运行",
+        f"- 可复用视觉基准：{a_result['run_summary'].get('reusable_visual_baseline')}" if a_result else "- 可复用视觉基准：未运行",
+        f"- 质量门：{a_result['quality_gate'].get('passed')}" if a_result else "- 质量门：未运行",
         f"- 报告：a/final_report.md",
         "",
         "## B 方案",
         "",
-        f"- 生产角色：{b_result['run_summary'].get('production_role')}",
-        f"- 可复用视觉基准：{b_result['run_summary'].get('reusable_visual_baseline')}",
-        f"- 质量门：{b_result['quality_gate'].get('passed')}",
+        f"- 生产角色：{b_result['run_summary'].get('production_role')}" if b_result else "- 生产角色：未运行",
+        f"- 可复用视觉基准：{b_result['run_summary'].get('reusable_visual_baseline')}" if b_result else "- 可复用视觉基准：未运行",
+        f"- 质量门：{b_result['quality_gate'].get('passed')}" if b_result else "- 质量门：未运行",
         f"- 报告：b/final_report.md",
         "",
         "## 人工评审建议",
@@ -263,6 +288,14 @@ def _extract_title(text: str, fallback: str) -> str:
         if stripped.startswith("# "):
             return stripped[2:].strip()
     return fallback
+
+
+def _first_existing_asset(assets_dir: Path, stem: str, suffixes: list[str]) -> Path:
+    for suffix in suffixes:
+        path = assets_dir / f"{stem}.{suffix}"
+        if path.exists():
+            return path
+    return assets_dir / f"{stem}.{suffixes[0]}"
 
 
 def _extract_metadata_bullet(text: str, label: str) -> str:
