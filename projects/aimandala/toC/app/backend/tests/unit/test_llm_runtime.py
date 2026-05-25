@@ -248,6 +248,24 @@ def test_vision_image_structured_generation_defaults_to_thinking_off(tmp_path):
     assert client.last_disable_thinking is True
 
 
+def test_text_generation_supports_multiple_images(tmp_path):
+    first = tmp_path / "first.png"
+    second = tmp_path / "second.jpg"
+    first.write_bytes(b"first")
+    second.write_bytes(b"second")
+    client = _ScriptedLLMClient(["ok"])
+
+    result = client.generate_text(
+        task="chat",
+        system_prompt="system",
+        user_prompt="user",
+        image_paths=[str(first), str(second)],
+    )
+
+    assert result == "ok"
+    assert client.last_user_prompt == "user"
+
+
 class _ScriptedLLMClient(OpenAICompatibleLLMClient):
     def __init__(
         self,

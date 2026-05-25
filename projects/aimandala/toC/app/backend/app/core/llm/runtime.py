@@ -18,6 +18,7 @@ from .prompt_loader import render_prompt_template
 
 DEFAULT_DEEPSEEK_V4_MODEL = "deepseek-v4-pro"
 DEFAULT_DEEPSEEK_V4_BASE_URL = "https://api.deepseek.com"
+DEFAULT_LLM_TIMEOUT_SECONDS = 360
 
 
 @dataclass(frozen=True)
@@ -85,6 +86,8 @@ class LLMClient(Protocol):
         task: str,
         system_prompt: str,
         user_prompt: str,
+        image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
         disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         ...
@@ -111,6 +114,8 @@ class NoopLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
         disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         return None
@@ -209,16 +214,22 @@ class OpenAICompatibleLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
         disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         self.last_error_detail = {}
         self.last_attempt_trace = []
         task_config = self.config.resolve_task_config(task)
         fallback_task_config = self.config.resolve_fallback_task_config(task)
+        normalized_image_paths = self._normalize_image_paths(
+            image_path=image_path,
+            image_paths=image_paths,
+        )
         messages = self._build_messages(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
-            image_paths=[],
+            image_paths=normalized_image_paths,
         )
         active_disable_thinking = True if disable_thinking is None else disable_thinking
         raw = self._request_chat_completion(
@@ -654,7 +665,7 @@ def load_private_env_file() -> None:
 def load_modern_llm_client_config_from_env() -> Optional[LLMClientConfig]:
     timeout_seconds = _read_positive_int_env(
         "AIMANDALA_LLM_TIMEOUT_SECONDS",
-        default=30,
+        default=DEFAULT_LLM_TIMEOUT_SECONDS,
     )
     max_retries = _read_non_negative_int_env(
         "AIMANDALA_LLM_MAX_RETRIES",
@@ -699,7 +710,7 @@ def load_modern_llm_client_config_from_env() -> Optional[LLMClientConfig]:
 def load_llm_client_config_from_env() -> LLMClientConfig:
     timeout_seconds = _read_positive_int_env(
         "AIMANDALA_LLM_TIMEOUT_SECONDS",
-        default=30,
+        default=DEFAULT_LLM_TIMEOUT_SECONDS,
     )
     max_retries = _read_non_negative_int_env(
         "AIMANDALA_LLM_MAX_RETRIES",
@@ -750,7 +761,7 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
 
     timeout_seconds = _read_positive_int_env(
         "AIMANDALA_LLM_TIMEOUT_SECONDS",
-        default=30,
+        default=DEFAULT_LLM_TIMEOUT_SECONDS,
     )
     max_retries = _read_non_negative_int_env(
         "AIMANDALA_LLM_MAX_RETRIES",

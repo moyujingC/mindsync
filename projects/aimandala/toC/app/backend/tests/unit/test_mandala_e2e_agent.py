@@ -11,7 +11,13 @@ from app.core.mandala_interpretation_agent import (
     MandalaOutputRequirements,
     MandalaUserContext,
 )
+from app.core.mandala_interpretation_agent.foundation_prompt_pack_builder import (
+    FoundationPromptPackBuilder,
+)
 from app.core.mandala_interpretation_agent.prompt_pack_builder import PromptPackBuilder
+from app.core.mandala_interpretation_agent.wealth_prompt_pack_builder import (
+    WealthPromptPackBuilder,
+)
 
 
 class StubE2ELLMClient:
@@ -21,84 +27,48 @@ class StubE2ELLMClient:
         self.last_attempt_trace = [{"model": "stub", "status": "ok"}]
         self.vision_calls: list[dict] = []
         self.text_calls: list[dict] = []
+        self.return_structured_first_vision_text = False
 
     def generate_structured(self, **kwargs):
         self.vision_calls.append(kwargs)
-        return {
-            "visual_observation": {
-                "overall_observation": {
-                    "first_impression": "画面整体偏向收束后再展开。",
-                    "main_visual_content": "中心圆形、重复花瓣和外圈留白。",
-                    "visual_atmosphere": "柔和但有边界。",
-                    "visual_weight_and_rhythm": "中心较重，外圈较轻。",
-                },
-                "three_circle_observation": {
-                    "inner": "内圈收束。",
-                    "middle": "中圈重复展开。",
-                    "outer": "外圈留白边界明显。",
-                    "cross_circle_visual_connection": "从中心向外展开后又被边界收住。",
-                },
-                "circle_visual_units": {
-                    "inner": {
-                        "composition_description": "内圈一个蓝色圆形。",
-                        "visual_units": [
-                            {
-                                "id": "inner-001",
-                                "unit_name": "蓝色圆形",
-                                "position": "内圈",
-                                "source_type": "user_painted",
-                                "color_description": "蓝色",
-                                "shape_description": "圆形",
-                                "texture_and_density": "集中。",
-                                "spatial_relations": "位于中心。",
-                                "blank_space_role": "none",
-                                "energy_ratio_percent": 100,
-                                "rich_visual_description": "中心蓝色圆形。",
-                            }
-                        ],
-                    },
-                    "middle": {
-                        "composition_description": "中圈粉色重复图案。",
-                        "visual_units": [
-                            {
-                                "id": "middle-001",
-                                "unit_name": "粉色花瓣",
-                                "position": "中圈",
-                                "source_type": "user_painted",
-                                "color_description": "粉色",
-                                "shape_description": "花瓣",
-                                "texture_and_density": "重复。",
-                                "spatial_relations": "围绕中心展开。",
-                                "blank_space_role": "none",
-                                "energy_ratio_percent": 100,
-                                "rich_visual_description": "中圈粉色花瓣。",
-                            }
-                        ],
-                    },
-                    "outer": {
-                        "composition_description": "外圈白色留白明显。",
-                        "visual_units": [
-                            {
-                                "id": "outer-001",
-                                "unit_name": "外圈留白",
-                                "position": "外圈",
-                                "source_type": "blank_space",
-                                "color_description": "白色留白",
-                                "shape_description": "边界状",
-                                "texture_and_density": "清楚。",
-                                "spatial_relations": "包围外圈。",
-                                "blank_space_role": "形成边界。",
-                                "energy_ratio_percent": 100,
-                                "rich_visual_description": "外圈留白形成边界。",
-                            }
-                        ],
-                    },
-                },
-            }
-        }
+        return (
+            "## 整体画面\n"
+            "画面先给人一种收住后再展开的感觉，中心稳定，向外有层次地铺开。\n\n"
+            "## 三圈观察\n"
+            "内圈是蓝色的中心结构，偏向安静、聚焦和向内整合；中圈有粉色与紫色交织的重复元素，像是热情、标准和规则感在相互拉扯；外圈是紫色长方形与大量留白，显得外层更松、更空，也更像在等待被填满。\n\n"
+            "## 主要视觉单元\n"
+            "可以清楚看到内圈蓝色圆形，中圈粉色花瓣与紫色方块，外圈紫色矩形和留白边界。各单元之间不是孤立出现，而是通过重复、切分和留白形成关系。\n\n"
+            "## 留白与相邻关系\n"
+            "留白并不是背景噪音，而是画作内部非常重要的一部分。它在中圈和外圈之间形成切分，也让外圈的紫色显得更疏、更多空位。\n\n"
+            "## 可供后续解读的视觉重点\n"
+            "这幅画最值得保留的视觉线索，是内圈的稳定核心、中圈被切分的重复结构，以及外圈大量留白带来的收缩和未完成感。"
+        )
 
     def generate_text(self, **kwargs):
         self.text_calls.append(kwargs)
+        if kwargs.get("task") == "vision":
+            if "方案 B：单阶段端到端直出" in kwargs.get("user_prompt", ""):
+                return (
+                    "# 财富议题曼陀罗解读报告\n\n"
+                    "## 整体感受\n"
+                    "这是一份单阶段直出的财富议题报告。\n\n"
+                    "## 财富主线\n"
+                    "画面显示财富议题需要从内在稳定走向外在表达。\n"
+                )
+            if self.return_structured_first_vision_text and "上一轮输出仍然偏结构化" not in kwargs.get("user_prompt", ""):
+                return "```json\n{\"visual.circle.inner\": true}\n```"
+            return (
+                "## 整体画面\n"
+                "画面先给人一种收住后再展开的感觉，中心稳定，向外有层次地铺开。\n\n"
+                "## 三圈观察\n"
+                "内圈是蓝色的中心结构，偏向安静、聚焦和向内整合；中圈有粉色与紫色交织的重复元素，像是热情、标准和规则感在相互拉扯；外圈是紫色长方形与大量留白，显得外层更松、更空，也更像在等待被填满。\n\n"
+                "## 主要视觉单元\n"
+                "可以清楚看到内圈蓝色圆形，中圈粉色花瓣与紫色方块，外圈紫色矩形和留白边界。各单元之间不是孤立出现，而是通过重复、切分和留白形成关系。\n\n"
+                "## 留白与相邻关系\n"
+                "留白并不是背景噪音，而是画作内部非常重要的一部分。它在中圈和外圈之间形成切分，也让外圈的紫色显得更疏、更多空位。\n\n"
+                "## 可供后续解读的视觉重点\n"
+                "这幅画最值得保留的视觉线索，是内圈的稳定核心、中圈被切分的重复结构，以及外圈大量留白带来的收缩和未完成感。"
+            )
         return (
             "# 财富议题曼陀罗解读报告\n\n"
             "## 整体感受\n"
@@ -139,20 +109,130 @@ def _agent_input(tmp_path: Path) -> MandalaAgentInput:
 
 
 def test_end_to_end_agent_returns_new_contract(tmp_path):
-    result = MandalaInterpretationAgent(llm_client=StubE2ELLMClient()).run(
+    llm_client = StubE2ELLMClient()
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
         agent_input=_agent_input(tmp_path),
     )
 
-    assert result.visual_draft["visual_observation"]["circle_visual_units"]["inner"]["visual_units"]
+    assert "## 整体画面" in result.visual_draft["visual_draft_md"]
+    assert "## 三圈观察" in result.visual_draft["visual_draft_md"]
     assert result.prompt_pack_manifest["pack_id"] == "wealth-report-v1.0.0"
     assert result.final_report["report_mode"] == "lite"
     assert result.quality_gate["passed"] is True
     assert result.run_summary["status"] == "complete"
+    assert result.run_summary["agent_variant"] == "two_pass_e2e"
+    assert result.run_summary["reusable_visual_baseline"] is True
+    assert result.run_summary["production_role"] == "default_production"
+    assert result.visual_draft["reusable_visual_baseline"] is True
+    assert result.run_summary["foundation_prompt_pack"]["pack_id"] == "foundation-vision-v1.0.0"
+    assert result.run_summary["wealth_prompt_pack"]["pack_id"] == "wealth-reasoning-v1.0.0"
+    vision_text_call = llm_client.text_calls[0]
+    report_text_call = llm_client.text_calls[1]
+    assert vision_text_call["task"] == "vision"
+    assert "00-曼陀罗基础层解读流程.md" in vision_text_call["system_prompt"]
+    assert "10-财富/11-财富议题手册.md" not in vision_text_call["system_prompt"]
+    assert "50-结构化知识单元/40-wealth-report-routing.yaml" not in vision_text_call["system_prompt"]
+    assert "90-来源原文/01-曼陀罗解读手册原文.md" not in vision_text_call["system_prompt"]
+    assert "本次视觉观察任务" in vision_text_call["user_prompt"]
+    assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in report_text_call["system_prompt"]
+    assert "50-结构化知识单元/45-wealth-emergent-topic-translation.yaml" in report_text_call["system_prompt"]
+
+
+def test_two_pass_rewrites_structured_visual_draft_to_markdown(tmp_path):
+    llm_client = StubE2ELLMClient()
+    llm_client.return_structured_first_vision_text = True
+
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=_agent_input(tmp_path),
+    )
+
+    assert "```json" not in result.visual_draft["visual_draft_md"]
+    assert "visual.circle" not in result.visual_draft["visual_draft_md"]
+    assert "## 整体画面" in result.visual_draft["visual_draft_md"]
+    assert len([call for call in llm_client.text_calls if call["task"] == "vision"]) == 2
+
+
+def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tmp_path):
+    llm_client = StubE2ELLMClient()
+    agent_input = _agent_input(tmp_path)
+    single_pass_input = MandalaAgentInput(
+        report_mode=agent_input.report_mode,
+        image=agent_input.image,
+        user_context=agent_input.user_context,
+        circle_boundaries=agent_input.circle_boundaries,
+        agent_variant="single_pass_e2e",
+        output_requirements=agent_input.output_requirements,
+    )
+
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(
+        agent_input=single_pass_input,
+    )
+
+    assert result.run_summary["agent_variant"] == "single_pass_e2e"
+    assert result.visual_draft["mode"] == "internal_visual_reasoning"
+    assert result.visual_draft["reusable_visual_baseline"] is False
+    assert result.run_summary["reusable_visual_baseline"] is False
+    assert result.run_summary["production_role"] == "ab_experiment_only"
+    assert llm_client.vision_calls == []
+    assert len(llm_client.text_calls) == 1
+    assert llm_client.text_calls[0]["task"] == "vision"
+    assert llm_client.text_calls[0]["image_paths"]
+    assert "方案 B：单阶段端到端直出" in llm_client.text_calls[0]["user_prompt"]
+    assert "00-曼陀罗基础层解读流程.md" in llm_client.text_calls[0]["system_prompt"]
+    assert "50-结构化知识单元/40-wealth-report-routing.yaml" in llm_client.text_calls[0]["system_prompt"]
+    assert "50-结构化知识单元/40-wealth-report-routing.yaml" in llm_client.text_calls[0]["system_prompt"]
+    assert result.quality_gate["passed"] is True
 
 
 def test_prompt_pack_builder_uses_real_files():
     pack = PromptPackBuilder().build()
 
     assert pack.pack_id == "wealth-report-v1.0.0"
-    assert pack.manifest["file_count"] == 6
-    assert "财富议题的路由规则" in pack.stable_prefix
+    assert pack.manifest["file_count"] == 1
+    assert "财富议题" in pack.stable_prefix
+    assert "财务预测" in pack.stable_prefix
+
+
+def test_foundation_prompt_pack_builder_uses_mandala_foundation_documents():
+    pack = FoundationPromptPackBuilder().build()
+
+    assert pack.pack_id == "foundation-vision-v1.0.0"
+    assert pack.manifest["file_count"] >= 20
+    assert pack.manifest["char_count"] > 50000
+    assert "00-曼陀罗基础层解读流程.md" in pack.stable_prefix
+    assert "20-圈内五行解读/五行生克/01-木生火.md" in pack.stable_prefix
+    assert "01-画面信号总目录.md" not in pack.stable_prefix
+    assert "40-组合模式/12-高频组合模式.md" not in pack.stable_prefix
+    assert "visual.circle.inner" not in pack.stable_prefix
+    assert "10-财富/11-财富议题手册.md" not in pack.stable_prefix
+    assert "50-结构化知识单元/40-wealth-report-routing.yaml" not in pack.stable_prefix
+    assert "90-来源原文/01-曼陀罗解读手册原文.md" not in pack.stable_prefix
+
+
+def test_wealth_prompt_pack_builder_uses_topic_and_report_documents():
+    pack = WealthPromptPackBuilder().build()
+
+    assert pack.pack_id == "wealth-reasoning-v1.0.0"
+    assert pack.manifest["file_count"] >= 20
+    assert pack.manifest["char_count"] > 120000
+    assert "10-财富/11-财富议题手册.md" in pack.stable_prefix
+    assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in pack.stable_prefix
+    assert "50-结构化知识单元/40-wealth-report-routing.yaml" in pack.stable_prefix
+    assert "30-应用适配/10-aimandala/07-报告语言风格指南.md" in pack.stable_prefix
+
+
+def test_generated_prompt_pack_precedence(tmp_path):
+    generated_root = tmp_path / "generated_prompt_packs"
+    foundation_dir = generated_root / "foundation-vision-v1.0.0"
+    foundation_dir.mkdir(parents=True)
+    (foundation_dir / "prompt.md").write_text("generated foundation", encoding="utf-8")
+    (foundation_dir / "manifest.json").write_text(
+        '{"pack_id":"foundation-vision-v1.0.0","file_order":["a.md"],"file_count":1,"char_count":20,"pack_hash":"abc","build_mode":"generated"}',
+        encoding="utf-8",
+    )
+
+    pack = FoundationPromptPackBuilder(generated_root=generated_root).build()
+
+    assert pack.stable_prefix == "generated foundation"
+    assert pack.manifest["build_mode"] == "generated"
+    assert pack.pack_id == "foundation-vision-v1.0.0"
