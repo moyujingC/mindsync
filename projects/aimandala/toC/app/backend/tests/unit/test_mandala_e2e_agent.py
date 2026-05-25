@@ -229,13 +229,42 @@ def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tm
     assert result.quality_gate["passed"] is True
 
 
+def test_pro_report_mode_uses_pro_prompt_pack(tmp_path):
+    llm_client = StubE2ELLMClient()
+    agent_input = _agent_input(tmp_path)
+    pro_input = MandalaAgentInput(
+        report_mode="pro",
+        image=agent_input.image,
+        user_context=agent_input.user_context,
+        circle_boundaries=agent_input.circle_boundaries,
+        agent_variant="two_pass_e2e",
+        output_requirements=agent_input.output_requirements,
+    )
+
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(agent_input=pro_input)
+
+    assert result.final_report["report_mode"] == "pro"
+    assert "一梳 Pro 版" in llm_client.text_calls[1]["system_prompt"]
+    assert "一镜 Lite 版" not in llm_client.text_calls[1]["system_prompt"]
+
+
 def test_prompt_pack_builder_uses_real_files():
     pack = PromptPackBuilder().build()
 
     assert pack.pack_id == "wealth-report-v1.0.0"
-    assert pack.manifest["file_count"] == 1
+    assert pack.manifest["file_count"] == 2
     assert "财富议题" in pack.stable_prefix
     assert "财务预测" in pack.stable_prefix
+    assert "一镜 Lite 版" in pack.stable_prefix
+
+
+def test_prompt_pack_builder_uses_pro_files():
+    pack = PromptPackBuilder(report_mode="pro").build()
+
+    assert pack.pack_id == "wealth-report-v1.0.0"
+    assert pack.manifest["file_count"] == 2
+    assert "一梳 Pro 版" in pack.stable_prefix
+    assert "一镜 Lite 版" not in pack.stable_prefix
 
 
 def test_foundation_prompt_pack_builder_uses_mandala_foundation_documents():

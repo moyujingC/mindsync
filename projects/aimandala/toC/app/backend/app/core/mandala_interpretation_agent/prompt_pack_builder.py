@@ -20,8 +20,9 @@ class PromptPack:
 
 
 class PromptPackBuilder:
-    def __init__(self, *, pack_id: str = "wealth-report-v1.0.0") -> None:
+    def __init__(self, *, pack_id: str = "wealth-report-v1.0.0", report_mode: str = "lite") -> None:
         self.pack_id = pack_id
+        self.report_mode = report_mode
 
     def build(self) -> PromptPack:
         pack_dir = PROMPTS_ROOT / self.pack_id
@@ -31,6 +32,12 @@ class PromptPackBuilder:
         filenames = [
             "00-output-instruction.md",
         ]
+        if self.report_mode == "lite":
+            filenames.append("01-lite-report-instruction.md")
+        elif self.report_mode == "pro":
+            filenames.append("02-pro-report-instruction.md")
+        else:
+            raise ValueError(f"unsupported report_mode for prompt pack: {self.report_mode}")
         files: list[tuple[str, str]] = []
         for filename in filenames:
             path = pack_dir / filename

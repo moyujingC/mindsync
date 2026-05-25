@@ -29,7 +29,7 @@ class MandalaInterpretationAgent:
         knowledge_pack: dict[str, Any] | None = None,
         disable_thinking: bool | None = None,
     ) -> MandalaAgentResult:
-        prompt_pack = PromptPackBuilder(pack_id=agent_input.prompt_pack_id).build()
+        prompt_pack = PromptPackBuilder(pack_id=agent_input.prompt_pack_id, report_mode=agent_input.report_mode).build()
         foundation_prompt_pack = FoundationPromptPackBuilder().build()
         wealth_prompt_pack = WealthPromptPackBuilder().build()
         if agent_input.agent_variant == "single_pass_e2e":
