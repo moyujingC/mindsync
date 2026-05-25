@@ -23,10 +23,11 @@
     "10-曼陀罗/20-圈内五行解读/五行生克/09-木克土.md",
     "10-曼陀罗/20-圈内五行解读/五行生克/10-土克水.md",
     "10-曼陀罗/30-跨圈能量解读/README.md",
-    "10-曼陀罗/30-跨圈能量解读/01-三圈结构法.md"
+    "10-曼陀罗/30-跨圈能量解读/01-三圈结构法.md",
+    "70-评估与案例/10-完整解读案例11例/90-来源原文/01-完整解读案例11例合并原文.md"
   ],
-  "file_count": 22,
-  "char_count": 52904,
-  "pack_hash": "78df7921a2274039f2f109a51fe2ff2af89a38f0549ef4eb01b514059bf31bcc",
-  "build_mode": "generated"
+  "file_count": 23,
+  "char_count": 76750,
+  "pack_hash": "a18ba3c4f49e33de6a7a4395c5399dd259f6bf645a8aae73f65c9c5eb3a391a3",
+  "build_mode": "source"
 }

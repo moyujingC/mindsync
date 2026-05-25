@@ -18,6 +18,13 @@ MANDALA_FOUNDATION_ROOT = (
     / "20-流派层"
     / "10-曼陀罗"
 )
+COMPLETE_CASE_SOURCE_ROOT = (
+    AIMANDALA_ROOT
+    / "docs"
+    / "疗愈体系知识库"
+    / "70-评估与案例"
+    / "10-完整解读案例11例"
+)
 GENERATED_PROMPT_PACKS_ROOT = Path(__file__).with_name("generated_prompt_packs")
 FOUNDATION_VISION_SOURCE_FILES = [
     "00-曼陀罗基础层解读流程.md",
@@ -42,6 +49,13 @@ FOUNDATION_VISION_SOURCE_FILES = [
     "20-圈内五行解读/五行生克/10-土克水.md",
     "30-跨圈能量解读/README.md",
     "30-跨圈能量解读/01-三圈结构法.md",
+]
+FOUNDATION_VISION_EXTERNAL_SOURCE_FILES = [
+    (
+        COMPLETE_CASE_SOURCE_ROOT,
+        "90-来源原文/01-完整解读案例11例合并原文.md",
+        "70-评估与案例/10-完整解读案例11例/90-来源原文/01-完整解读案例11例合并原文.md",
+    ),
 ]
 
 
@@ -89,11 +103,20 @@ class FoundationPromptPackBuilder:
             if not text:
                 continue
             files.append((f"10-曼陀罗/{relative_path}", text))
+        for root, relative_path, prompt_relative_path in FOUNDATION_VISION_EXTERNAL_SOURCE_FILES:
+            path = root / relative_path
+            if not path.exists():
+                raise FileNotFoundError(f"foundation prompt source not found: {path}")
+            text = path.read_text(encoding="utf-8").strip()
+            if not text:
+                continue
+            files.append((prompt_relative_path, text))
 
         stable_prefix = "\n\n".join(
             [
                 "# 曼陀罗基础层长上下文知识包",
                 "以下内容来自疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗。",
+                "完整案例原文来自疗愈体系知识库/70-评估与案例/10-完整解读案例11例，用于补充疗愈师实际看画与组织观察的范式。",
                 "本知识包只用于 Vision Pass：观察原画、确认三圈、描述视觉事实、识别圈内五行线索、判断圈内五行生克线索、观察三圈能量流动。",
                 "本阶段不要生成财富报告、心理结论、身体结论、关系结论或疗愈建议。",
                 "来源文档中的目录、索引或示例只作为方法依据；不要照抄机器标签、ID、JSON、YAML、schema 或 stage 表述。",

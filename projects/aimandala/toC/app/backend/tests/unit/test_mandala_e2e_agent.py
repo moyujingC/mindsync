@@ -134,7 +134,7 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
     assert "三圈标记图确认内圈、中圈、外圈的边界" in vision_text_call["user_prompt"]
     assert "10-财富/11-财富议题手册.md" not in vision_text_call["system_prompt"]
     assert "50-结构化知识单元/40-wealth-report-routing.yaml" not in vision_text_call["system_prompt"]
-    assert "90-来源原文/01-曼陀罗解读手册原文.md" not in vision_text_call["system_prompt"]
+    assert "90-来源原文/01-完整解读案例11例合并原文.md" in vision_text_call["system_prompt"]
     assert "本次视觉观察任务" in vision_text_call["user_prompt"]
     assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in report_text_call["system_prompt"]
     assert "50-结构化知识单元/45-wealth-emergent-topic-translation.yaml" in report_text_call["system_prompt"]
@@ -251,7 +251,7 @@ def test_foundation_prompt_pack_builder_uses_mandala_foundation_documents():
     assert "visual.circle.inner" not in pack.stable_prefix
     assert "10-财富/11-财富议题手册.md" not in pack.stable_prefix
     assert "50-结构化知识单元/40-wealth-report-routing.yaml" not in pack.stable_prefix
-    assert "90-来源原文/01-曼陀罗解读手册原文.md" not in pack.stable_prefix
+    assert "90-来源原文/01-完整解读案例11例合并原文.md" in pack.stable_prefix
 
 
 def test_wealth_prompt_pack_builder_uses_topic_and_report_documents():
