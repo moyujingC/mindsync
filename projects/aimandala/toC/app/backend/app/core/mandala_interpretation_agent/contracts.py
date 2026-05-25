@@ -7,6 +7,7 @@ from typing import Any, Literal
 
 
 REPORT_MODES = {"lite", "pro"}
+AGENT_VARIANTS = {"two_pass_e2e", "single_pass_e2e"}
 
 
 @dataclass(frozen=True)
@@ -50,11 +51,14 @@ class MandalaAgentInput:
     report_mode: Literal["lite", "pro"] = "lite"
     agent_version: str = "mandala-e2e-agent-v1"
     prompt_pack_id: str = "wealth-report-v1.0.0"
+    agent_variant: str = "two_pass_e2e"
     output_requirements: MandalaOutputRequirements = field(default_factory=MandalaOutputRequirements)
 
     def __post_init__(self) -> None:
         if self.report_mode not in REPORT_MODES:
             raise ValueError(f"unsupported report_mode: {self.report_mode}")
+        if self.agent_variant not in AGENT_VARIANTS:
+            raise ValueError(f"unsupported agent_variant: {self.agent_variant}")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -64,6 +68,7 @@ class MandalaAgentInput:
             "user_context": self.user_context.to_dict(),
             "circle_boundaries": self.circle_boundaries,
             "prompt_pack_id": self.prompt_pack_id,
+            "agent_variant": self.agent_variant,
             "output_requirements": self.output_requirements.to_dict(),
         }
 

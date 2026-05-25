@@ -1,0 +1,13 @@
+{
+  "status": "complete",
+  "output_root": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-mandala-ab-experiment",
+  "results": [
+    {
+      "case_id": "case-001",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-mandala-ab-experiment/case-001",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    }
+  ]
+}

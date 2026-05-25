@@ -32,7 +32,7 @@ class MandalaInterpretationArtifactStore:
             written.append(path)
 
         markdown_files = {
-            "visual_draft.md": json.dumps(result.visual_draft, ensure_ascii=False, indent=2),
+            "visual_draft.md": _visual_draft_markdown(result.visual_draft),
             "final_report.md": result.final_report_md,
         }
         for name, content in markdown_files.items():
@@ -41,3 +41,10 @@ class MandalaInterpretationArtifactStore:
             written.append(path)
 
         return written
+
+
+def _visual_draft_markdown(visual_draft: dict) -> str:
+    markdown = visual_draft.get("visual_draft_md")
+    if isinstance(markdown, str) and markdown.strip():
+        return markdown.strip()
+    return json.dumps(visual_draft, ensure_ascii=False, indent=2)

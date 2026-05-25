@@ -25,6 +25,7 @@ router = APIRouter(prefix="/api", tags=["aimandala"])
 class WealthReportRequest(BaseModel):
     image_path: str = Field(..., description="Backend-readable local image path")
     report_mode: Literal["lite", "pro"] = "lite"
+    agent_variant: Literal["two_pass_e2e", "single_pass_e2e"] = "two_pass_e2e"
     painting_intention: str = ""
     painting_feeling: str = ""
     inner_radius: int = Field(default=35, ge=1, le=99)
@@ -71,6 +72,7 @@ def _build_llm_client() -> object:
 def _build_agent_input(payload: WealthReportRequest) -> MandalaAgentInput:
     return MandalaAgentInput(
         report_mode=payload.report_mode,
+        agent_variant=payload.agent_variant,
         image=MandalaImageInput(
             local_path=payload.image_path,
             storage_backend=payload.storage_backend,

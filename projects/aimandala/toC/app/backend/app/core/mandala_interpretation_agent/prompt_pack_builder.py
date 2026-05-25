@@ -29,12 +29,7 @@ class PromptPackBuilder:
             raise FileNotFoundError(f"prompt pack not found: {pack_dir}")
 
         filenames = [
-            "00-system.md",
-            "10-mandala-manual.md",
-            "20-wealth-topic-rules.md",
-            "30-style-guide.md",
-            "40-safety-boundary.md",
-            "50-output-contract.md",
+            "00-output-instruction.md",
         ]
         files: list[tuple[str, str]] = []
         for filename in filenames:
