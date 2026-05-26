@@ -7,6 +7,7 @@ from typing import Any, Literal
 
 
 REPORT_MODES = {"lite", "pro"}
+PUBLIC_REPORT_MODES = {"lite"}
 AGENT_VARIANTS = {"two_pass_e2e", "single_pass_e2e"}
 
 
@@ -59,6 +60,9 @@ class MandalaAgentInput:
             raise ValueError(f"unsupported report_mode: {self.report_mode}")
         if self.agent_variant not in AGENT_VARIANTS:
             raise ValueError(f"unsupported agent_variant: {self.agent_variant}")
+
+    def is_public_mode(self) -> bool:
+        return self.report_mode in PUBLIC_REPORT_MODES
 
     def to_dict(self) -> dict[str, Any]:
         return {

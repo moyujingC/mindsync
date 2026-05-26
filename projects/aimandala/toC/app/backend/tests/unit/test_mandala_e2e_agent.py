@@ -230,7 +230,7 @@ def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tm
     assert result.quality_gate["passed"] is True
 
 
-def test_pro_report_mode_uses_pro_prompt_pack(tmp_path):
+def test_pro_report_mode_remains_internal_prelaunch(tmp_path):
     llm_client = StubE2ELLMClient()
     agent_input = _agent_input(tmp_path)
     pro_input = MandalaAgentInput(
@@ -244,6 +244,7 @@ def test_pro_report_mode_uses_pro_prompt_pack(tmp_path):
 
     result = MandalaInterpretationAgent(llm_client=llm_client).run(agent_input=pro_input)
 
+    assert pro_input.is_public_mode() is False
     assert result.final_report["report_mode"] == "pro"
     assert "一梳 Pro 版" in llm_client.text_calls[1]["system_prompt"]
     assert "一镜 Lite 版" not in llm_client.text_calls[1]["system_prompt"]

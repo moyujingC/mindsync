@@ -60,7 +60,7 @@ class StubRouteLLMClient:
 
 
 def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
-    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite;MVP-PRO:pro")
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
     monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
@@ -87,6 +87,25 @@ def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
     assert payload["prompt_pack_manifest"]["pack_id"] == "wealth-report-v1.0.0"
     assert payload["quality_gate"]["passed"] is True
     assert payload["run_summary"]["status"] == "complete"
+
+
+def test_create_wealth_report_rejects_pro_for_mvp(monkeypatch, tmp_path):
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/wealth-reports",
+        json={
+            "image_path": str(image_path),
+            "report_mode": "pro",
+            "redeem_code": "MVP-LITE",
+        },
+    )
+
+    assert response.status_code == 422
 
 
 def test_create_app_loads_redeem_codes_before_route_authorization(

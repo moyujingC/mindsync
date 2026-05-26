@@ -24,7 +24,7 @@ router = APIRouter(prefix="/api", tags=["aimandala"])
 
 class WealthReportRequest(BaseModel):
     image_path: str = Field(..., description="Backend-readable local image path")
-    report_mode: Literal["lite", "pro"] = "lite"
+    report_mode: Literal["lite"] = "lite"
     agent_variant: Literal["two_pass_e2e", "single_pass_e2e"] = "two_pass_e2e"
     painting_intention: str = ""
     painting_feeling: str = ""
@@ -97,6 +97,11 @@ def _build_agent_input(payload: WealthReportRequest) -> MandalaAgentInput:
 
 
 def _authorize_report_access(payload: WealthReportRequest) -> None:
+    if payload.report_mode != "lite":
+        raise HTTPException(
+            status_code=403,
+            detail="Pro 版当前为 MVP 预备能力，暂不上线。",
+        )
     configured_codes = os.getenv("AIMANDALA_REDEEM_CODES", "").strip()
     if not configured_codes:
         raise HTTPException(
