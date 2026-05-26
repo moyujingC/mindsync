@@ -1,9 +1,9 @@
 # 一镜一梳项目工作区
 
 > 状态：current
-> 版本：0.4.3
+> 版本：0.4.4
 > owner：CEO / Orchestrator
-> last_updated：2026-04-18
+> last_updated：2026-05-26
 > source_of_truth：projects/aimandala/PROJECT.md
 > 公司侧入口：[company/projects/一镜一梳/PROJECT.md](../../company/projects/一镜一梳/PROJECT.md)
 > reviewers：CEO / Orchestrator, Architect, Engineer, Test / QA
@@ -91,6 +91,7 @@
 - 当前 Aimandala 固定开发 worktree 为 `aimandala/dev`
 - 固定本地路径为 `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-dev`
 - `codex/aimandala-dual-channel-ui` 继续只作为临时并行实验 worktree
+- 当前财富解读报告以 Lite 作为对外交付版本，Pro 作为内部预备形态暂不上线
 
 ## 7. 协作约束
 
@@ -104,6 +105,7 @@
 - 批次 E 的 miniapp live 能力允许并入 `main`，但必须默认灰度关闭
 - 后续继续摘入 miniapp 内容时，默认只从 `codex/aimandala-dual-channel-ui` 这条并行线继续
 - 后续新知识库、新曼陀罗解读智能体和新报告链路默认采用硬切换，不为旧画面翻译、旧 stage 产物、旧主题名或旧测试保留兼容层；除非任务明确要求兼容，否则直接按新契约重做。
+- 任何财富报告相关对外口径都应默认以 Lite 为准，Pro 仅保留内部评测和预备入口
 
 ## 8. 当前正式范围
 

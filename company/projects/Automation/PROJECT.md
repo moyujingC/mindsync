@@ -1,9 +1,9 @@
 # Automation Platform 入口
 
 > 状态：current
-> 版本：0.1.2
+> 版本：0.1.3
 > owner：CEO / Orchestrator, Engineer
-> 最后更新：2026-05-12
+> 最后更新：2026-05-26
 > source_of_truth：company/projects/Automation/PROJECT.md
 
 这份文档是 `mindsync` 中 `Automation Platform` 的公司级 capability 入口。
@@ -59,6 +59,16 @@ MVP 阶段临时冻结规则：
 - 当前运行态已停用 `paperclip-heartbeat.timer` 与 `automation-maintenance.timer`
 - 后续恢复任何服务器写入链路前，必须先完成独立验证与人工确认
 
+### 3.0 MVP 上线判断补充
+
+对接入 `Automation Platform` 的项目，MVP 上线判断默认还应满足：
+
+- 对外交付版本唯一，公开口径不分裂
+- 内部预备能力不直接对外开放
+- 冻结规则与执行入口的状态描述一致
+- 运行时、测试、文档三者对同一上线状态给出相同信号
+- 如果系统仍然同时保留“公开上线”和“内部预备”两个口径，必须先收束到一个默认口径
+
 ### 3.1 `server_automation`
 
 面向：
@@ -98,6 +108,11 @@ MVP 阶段补充：
 - 其他需要人工审核的普通研发任务
 
 当前正式宿主是用户当前这台 Mac，由本地执行器承接，不再默认落到 automation 服务器。
+
+MVP 阶段默认补充：
+
+- 当前普通研发任务的公开发布口径仍应由项目级文档定义
+- 如果某个产品版本只允许内部预备，不应在任务系统里被描述成已公开上线
 
 普通任务当前正式承载位置不是单独项目，而是三层分布：
 
