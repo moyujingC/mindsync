@@ -12,6 +12,7 @@ SKILLS=(
   "handoff-packaging"
   "research-brief"
   "research-synthesis"
+  "source-to-review"
   "knowledge-ingest"
   "insight-handoff"
   "product-framing-spec"

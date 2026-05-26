@@ -78,6 +78,11 @@
 - 每个 skill 的完整示例调用覆盖
 - 统一接入后的执行结果校验
 
+已额外提供：
+
+- Claude Code 项目级 slash 命令示例：`/.claude/commands/source-to-review.md`
+- 本机 Claude 运行时同步脚本已包含 `source-to-review`
+
 ## 当前运行时策略
 
 当前 skill 采用双层结构：
