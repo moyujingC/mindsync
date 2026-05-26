@@ -1,9 +1,9 @@
 # Codex automation memory
 
 - Automation ID: codex
-- Last run: 2026-05-25T15:02:26Z
+- Last run: 2026-05-26T15:02:41Z
 - Current focus: daily review for MindSync based on today’s task/docs/worktree traces.
-- Main line today: `aimandala` mandala interpretation agent consolidation, especially prompt pack generation, A/B model evaluation, quality gate traces, and architecture sync.
-- Key evidence today: commits built deploy-time prompt packs, added and ran `two_pass_e2e` vs `single_pass_e2e` experiments across 10 cases, reduced `observe.md` to a one-sentence visual observation prompt, corrected case-001 baseline scope, and updated the interpretation-agent architecture.
-- Adjacent work today: `healing-courses` gained a wealth-topic course input draft; this is useful but not the same execution line as Web MVP report-chain closure.
-- Key judgment: today served the `aimandala` main line by clarifying production-vs-experiment architecture, but drift risk moved from old frontend cleanup to model-eval expansion. Tomorrow should convert A/B findings into a short production action list and run upload -> three-circle confirmation -> A-path Lite/Pro report end-to-end.
+- Main line today: `aimandala` report-chain收口, especially wealth report prompt packs, Lite public-launch boundary, quality gates, and background cue wording.
+- Key evidence today: docs and code commits narrowed wealth reports to Lite public launch, removed wealth YAML runtime inputs, split wealth report prompts for Lite/Pro, clarified background cue layering and ontology wording, and reran complete-case lite fixture/regression reports.
+- Adjacent work today: repeated evaluation and documentation work is still valuable, but it can become high-quality delay if it is not converted into one end-to-end upload -> report verification.
+- Key judgment: today mostly served the main line by turning architecture and prompt decisions into narrower runtime contracts; tomorrow should stop expanding eval surface and instead verify the live path, lock the Lite output contract, and record only the minimum residual risk.
