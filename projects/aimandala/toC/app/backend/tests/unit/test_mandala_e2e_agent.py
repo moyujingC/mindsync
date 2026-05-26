@@ -254,10 +254,13 @@ def test_prompt_pack_builder_uses_real_files():
     pack = PromptPackBuilder().build()
 
     assert pack.pack_id == "wealth-report-v1.0.0"
-    assert pack.manifest["file_count"] == 2
+    assert pack.manifest["file_order"] == ["lite-report-prompt.md"]
+    assert pack.manifest["file_count"] == 1
     assert pack.manifest["prompt_budget"]["estimated_tokens"] > 0
     assert pack.manifest["prompt_budget"]["warning_level"] == "none"
     assert "财富议题" in pack.stable_prefix
+    assert "一镜 Lite 版" in pack.stable_prefix
+    assert "一梳 Pro 版" not in pack.stable_prefix
     assert "财务预测" in pack.stable_prefix
     assert "一镜 Lite 版" in pack.stable_prefix
 
@@ -266,7 +269,8 @@ def test_prompt_pack_builder_uses_pro_files():
     pack = PromptPackBuilder(report_mode="pro").build()
 
     assert pack.pack_id == "wealth-report-v1.0.0"
-    assert pack.manifest["file_count"] == 2
+    assert pack.manifest["file_order"] == ["pro-report-prompt.md"]
+    assert pack.manifest["file_count"] == 1
     assert "一梳 Pro 版" in pack.stable_prefix
     assert "一镜 Lite 版" not in pack.stable_prefix
 

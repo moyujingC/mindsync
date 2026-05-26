@@ -31,13 +31,10 @@ class PromptPackBuilder:
         if not pack_dir.exists():
             raise FileNotFoundError(f"prompt pack not found: {pack_dir}")
 
-        filenames = [
-            "00-output-instruction.md",
-        ]
         if self.report_mode == "lite":
-            filenames.append("01-lite-report-instruction.md")
+            filenames = ["lite-report-prompt.md"]
         elif self.report_mode == "pro":
-            filenames.append("02-pro-report-instruction.md")
+            filenames = ["pro-report-prompt.md"]
         else:
             raise ValueError(f"unsupported report_mode for prompt pack: {self.report_mode}")
         files: list[tuple[str, str]] = []
