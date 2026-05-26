@@ -36,4 +36,4 @@ coverage:
 expected_observations:
   - 可用于视觉模型三圈边界、颜色和结构观察稳定性对比
 review_entrypoints:
-  - projects/aimandala/toC/app/backend/scripts/run_vision_model_evals.py
+  - projects/aimandala/toC/app/backend/scripts/run_mandala_e2e_report_fixture.py

@@ -37,12 +37,16 @@ python3 $REPO_ROOT/projects/aimandala/scripts/validate_fixtures.py
 - evidence 正文里的人工摘录是否足以放行
 - 图片内容本身是否满足业务语义，只检查文件存在性与字段治理
 
-Golden 审阅资产另由 Batch F 导出入口生成：
+当前 Lite 报告复跑入口：
 
 ```bash
-python3 $REPO_ROOT/projects/aimandala/scripts/export_fixture_golden.py --fixture-id toc-mvp-fixture-001 --version lite
-python3 $REPO_ROOT/projects/aimandala/scripts/export_fixture_golden.py --fixture-id toc-mvp-fixture-002 --version pro
-python3 $REPO_ROOT/projects/aimandala/scripts/export_fixture_golden.py --fixture-id toc-mvp-fixture-002 --version lite
+python3 $REPO_ROOT/projects/aimandala/toC/app/backend/scripts/run_mandala_e2e_report_fixture.py \
+  --image-path $REPO_ROOT/projects/aimandala/fixtures/toc-mvp/assets/IMG_5081.jpeg \
+  --marked-image-path $REPO_ROOT/projects/aimandala/fixtures/toc-mvp/assets/IMG_5081.jpeg \
+  --report-mode lite \
+  --intention "观察画面结构与三圈边界" \
+  --feeling "保持开放观察" \
+  --save-dir $REPO_ROOT/projects/aimandala/docs/qa/model-evals/2026-05-26-latest-fixture-lite/toc-mvp-fixture-009
 ```
 
 ## 2. 当前已固化的样本
@@ -89,7 +93,7 @@ python3 $REPO_ROOT/projects/aimandala/scripts/export_fixture_golden.py --fixture
 - 比对截图或 Markdown 内容
 - 自动判定 AI 生成内容质量
 
-完整报告快照、debug trace 和人工审阅结论由 `fixtures/toc-mvp/golden/` 承接。
+完整报告快照、debug trace 和人工审阅结论由 `docs/qa/model-evals/` 承接。
 
 当前首批 golden 审阅结论：
 
