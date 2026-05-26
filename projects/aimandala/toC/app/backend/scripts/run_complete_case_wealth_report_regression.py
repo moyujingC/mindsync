@@ -90,8 +90,12 @@ class FoundationVisualSeedLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        image_path: str | None = None,
+        image_paths: list[str] | None = None,
         disable_thinking: bool | None = None,
     ) -> str:
+        if task == "vision":
+            return render_seeded_visual_observation(self.visual_observation)
         generated = self.delegate.generate_text(
             task=task,
             system_prompt=system_prompt,
@@ -215,7 +219,13 @@ def main() -> int:
                 results.append(error_payload)
                 exit_code = 2
 
-    write_run_index(output_root=output_root, cases=cases, results=results, env_check=env_check)
+    write_run_index(
+        output_root=output_root,
+        cases=cases,
+        modes=modes,
+        results=results,
+        env_check=env_check,
+    )
     print(json.dumps({"status": "complete", "results": results}, ensure_ascii=False, indent=2))
     return exit_code
 
@@ -296,6 +306,44 @@ def extract_visual_observation_seed(payload: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(visual_observation, dict):
         raise ValueError("visual_observation missing in seed payload")
     return visual_observation
+
+
+def render_seeded_visual_observation(visual_observation: dict[str, Any]) -> str:
+    """Convert golden foundation visual observation into the agent's visual draft text."""
+    sections: list[str] = ["# 黄金基础图像解读种子"]
+    section_specs = [
+        ("## 整体观察", visual_observation.get("overall_observation")),
+        ("## 三圈观察", visual_observation.get("three_circle_observation")),
+    ]
+    for title, payload in section_specs:
+        if isinstance(payload, dict):
+            sections.append(title)
+            for key, value in payload.items():
+                if isinstance(value, str) and value.strip():
+                    sections.append(f"- {key}: {value.strip()}")
+
+    circle_units = visual_observation.get("circle_visual_units")
+    if isinstance(circle_units, dict):
+        sections.append("## 圈层视觉单元")
+        for circle_key, circle_payload in circle_units.items():
+            if not isinstance(circle_payload, dict):
+                continue
+            sections.append(f"### {circle_key}")
+            composition = str(circle_payload.get("composition_description") or "").strip()
+            if composition:
+                sections.append(composition)
+            units = circle_payload.get("visual_units")
+            if not isinstance(units, list):
+                continue
+            for unit in units:
+                if not isinstance(unit, dict):
+                    continue
+                unit_name = str(unit.get("unit_name") or unit.get("id") or "visual_unit").strip()
+                description = str(unit.get("rich_visual_description") or "").strip()
+                if description:
+                    sections.append(f"- {unit_name}: {description}")
+
+    return "\n\n".join(section for section in sections if section.strip())
 
 
 def build_evidence_links_from_foundation(foundation: dict[str, Any]) -> list[dict[str, Any]]:
@@ -456,6 +504,7 @@ def write_run_index(
     *,
     output_root: Path,
     cases: list[CompleteCaseReportInput],
+    modes: list[ReportMode],
     results: list[dict[str, Any]],
     env_check: dict[str, Any],
 ) -> Path:
@@ -469,7 +518,7 @@ def write_run_index(
         for item in results
     }
     for case in cases:
-        for mode in ["lite", "pro"]:
+        for mode in modes:
             key = f"{case.case_id}:{mode}"
             result = result_by_key.get(key) or _existing_mode_result(output_root, case.case_id, mode)
             rows.append(
