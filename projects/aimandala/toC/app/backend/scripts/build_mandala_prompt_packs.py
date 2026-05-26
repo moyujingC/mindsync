@@ -44,7 +44,7 @@ def main() -> int:
     output_root = Path(args.output_root)
     packs = [
         FoundationPromptPackBuilder(use_generated=False).build_from_sources(),
-        WealthPromptPackBuilder(use_generated=False).build(),
+        WealthPromptPackBuilder(use_generated=False).build_from_sources(),
     ]
     for pack in packs:
         pack_dir = output_root / pack.pack_id

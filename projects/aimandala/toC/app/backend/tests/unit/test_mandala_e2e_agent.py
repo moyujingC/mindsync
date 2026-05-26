@@ -133,11 +133,12 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
     assert "确认内圈、中圈、外圈的边界" in vision_text_call["user_prompt"]
     assert "标记线不是画作内容" in vision_text_call["user_prompt"]
     assert "10-财富/11-财富议题手册.md" not in vision_text_call["system_prompt"]
-    assert "50-结构化知识单元/40-wealth-report-routing.yaml" not in vision_text_call["system_prompt"]
+    assert "50-结构化知识单元" not in vision_text_call["system_prompt"]
     assert "90-来源原文/01-完整解读案例11例合并原文.md" in vision_text_call["system_prompt"]
     assert "本次视觉观察任务" in vision_text_call["user_prompt"]
     assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in report_text_call["system_prompt"]
-    assert "50-结构化知识单元/45-wealth-emergent-topic-translation.yaml" in report_text_call["system_prompt"]
+    assert "50-结构化知识单元" not in report_text_call["system_prompt"]
+    assert "12-财富中的浮现议题回译规则.md" in report_text_call["system_prompt"]
 
 
 def test_two_pass_rewrites_structured_visual_draft_to_markdown(tmp_path):
@@ -224,8 +225,8 @@ def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tm
     assert llm_client.text_calls[0]["image_paths"]
     assert "方案 B：单阶段端到端直出" in llm_client.text_calls[0]["user_prompt"]
     assert "00-曼陀罗基础层解读流程.md" in llm_client.text_calls[0]["system_prompt"]
-    assert "50-结构化知识单元/40-wealth-report-routing.yaml" in llm_client.text_calls[0]["system_prompt"]
-    assert "50-结构化知识单元/40-wealth-report-routing.yaml" in llm_client.text_calls[0]["system_prompt"]
+    assert "50-结构化知识单元" not in llm_client.text_calls[0]["system_prompt"]
+    assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in llm_client.text_calls[0]["system_prompt"]
     assert result.quality_gate["passed"] is True
 
 
@@ -253,6 +254,8 @@ def test_prompt_pack_builder_uses_real_files():
 
     assert pack.pack_id == "wealth-report-v1.0.0"
     assert pack.manifest["file_count"] == 2
+    assert pack.manifest["prompt_budget"]["estimated_tokens"] > 0
+    assert pack.manifest["prompt_budget"]["warning_level"] == "none"
     assert "财富议题" in pack.stable_prefix
     assert "财务预测" in pack.stable_prefix
     assert "一镜 Lite 版" in pack.stable_prefix
@@ -273,13 +276,16 @@ def test_foundation_prompt_pack_builder_uses_mandala_foundation_documents():
     assert pack.pack_id == "foundation-vision-v1.0.0"
     assert pack.manifest["file_count"] >= 20
     assert pack.manifest["char_count"] > 50000
+    assert pack.manifest["prompt_budget"]["estimated_tokens"] > 50000
+    assert pack.manifest["prompt_budget"]["remaining_tokens"] > 0
+    assert pack.manifest["prompt_budget"]["warning_level"] == "none"
     assert "00-曼陀罗基础层解读流程.md" in pack.stable_prefix
     assert "20-圈内五行解读/五行生克/01-木生火.md" in pack.stable_prefix
     assert "01-画面信号总目录.md" not in pack.stable_prefix
     assert "40-组合模式/12-高频组合模式.md" not in pack.stable_prefix
     assert "visual.circle.inner" not in pack.stable_prefix
     assert "10-财富/11-财富议题手册.md" not in pack.stable_prefix
-    assert "50-结构化知识单元/40-wealth-report-routing.yaml" not in pack.stable_prefix
+    assert "50-结构化知识单元" not in pack.stable_prefix
     assert "90-来源原文/01-完整解读案例11例合并原文.md" in pack.stable_prefix
 
 
@@ -287,11 +293,15 @@ def test_wealth_prompt_pack_builder_uses_topic_and_report_documents():
     pack = WealthPromptPackBuilder().build()
 
     assert pack.pack_id == "wealth-reasoning-v1.0.0"
-    assert pack.manifest["file_count"] >= 20
-    assert pack.manifest["char_count"] > 120000
+    assert pack.manifest["file_count"] >= 19
+    assert pack.manifest["char_count"] > 60000
+    assert pack.manifest["prompt_budget"]["estimated_tokens"] > 50000
+    assert pack.manifest["prompt_budget"]["remaining_tokens"] > 0
+    assert pack.manifest["prompt_budget"]["warning_level"] == "none"
     assert "10-财富/11-财富议题手册.md" in pack.stable_prefix
     assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in pack.stable_prefix
-    assert "50-结构化知识单元/40-wealth-report-routing.yaml" in pack.stable_prefix
+    assert "50-结构化知识单元" not in pack.stable_prefix
+    assert "10-财富/12-财富中的浮现议题回译规则.md" in pack.stable_prefix
     assert "30-应用适配/10-aimandala/07-报告语言风格指南.md" in pack.stable_prefix
 
 
@@ -310,3 +320,4 @@ def test_generated_prompt_pack_precedence(tmp_path):
     assert pack.stable_prefix == "generated foundation"
     assert pack.manifest["build_mode"] == "generated"
     assert pack.pack_id == "foundation-vision-v1.0.0"
+    assert pack.manifest["prompt_budget"]["estimated_tokens"] > 0

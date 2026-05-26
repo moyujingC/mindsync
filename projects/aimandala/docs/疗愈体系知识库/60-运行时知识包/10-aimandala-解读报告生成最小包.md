@@ -66,15 +66,11 @@
 7. [01-解读与个案沟通流程.md](../30-应用适配/10-aimandala/01-解读与个案沟通流程.md)
 8. [02-解读报告组织规范.md](../30-应用适配/10-aimandala/02-解读报告组织规范.md)
 9. [04-Lite-Pro报告分流与交付口径.md](../30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md)
-10. [10-aimandala-report-generation.yaml](../50-结构化知识单元/10-aimandala-report-generation.yaml)
+10. [部署生成的 prompt pack](../../../toC/app/backend/app/core/mandala_interpretation_agent/generated_prompt_packs/foundation-vision-v1.0.0/prompt.md)
 
-## 3. 结构化单元
+## 3. 运行时输入
 
-当前第一份结构化单元是：
-
-```text
-../50-结构化知识单元/10-aimandala-report-generation.yaml
-```
+当前运行时输入来自部署生成的 prompt pack，不再直接引用 YAML 结构化单元。
 
 它覆盖：
 

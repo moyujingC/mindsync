@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .prompt_budget import build_prompt_budget_manifest
+
 
 PROMPTS_ROOT = Path(__file__).with_name("prompt_packs")
 
@@ -52,6 +54,7 @@ class PromptPackBuilder:
             "pack_hash": hashlib.sha256(stable_prefix.encode("utf-8")).hexdigest(),
             "file_count": len(files),
         }
+        manifest["prompt_budget"] = build_prompt_budget_manifest(stable_prefix)
         return PromptPack(
             pack_id=self.pack_id,
             manifest=manifest,

@@ -36,15 +36,15 @@ class KnowledgePackBuilder:
             "theme": normalized_theme,
             "entries": {
                 "report_generation": self._read_text(
-                    "50-结构化知识单元/10-aimandala-report-generation.yaml",
+                    "30-应用适配/10-aimandala/05-报告任务定义.md",
                     max_chars=4200,
                 ),
                 "runtime_index": self._read_text(
-                    "60-运行时知识包/20-aimandala-report-runtime-index.yaml",
+                    "60-运行时知识包/README.md",
                     max_chars=2600,
                 ),
                 "foundation_image_reading_schema": self._read_text(
-                    "50-结构化知识单元/16-foundation-image-reading-schema.yaml",
+                    "20-疗愈体系/20-流派层/10-曼陀罗/00-曼陀罗基础层解读流程.md",
                     max_chars=16000,
                 ),
                 "mandala_signal_index": self._read_text(
@@ -115,16 +115,16 @@ class KnowledgePackBuilder:
                 "30-应用适配/10-aimandala/06-财富议题解读报告模板.md",
                 max_chars=3600,
             ),
-            "wealth_clauses": self._read_text(
-                "50-结构化知识单元/20-wealth-issue-clauses.yaml",
+            "wealth_signal_translation": self._read_text(
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md",
                 max_chars=16000,
             ),
-            "wealth_routing": self._read_text(
-                "50-结构化知识单元/40-wealth-report-routing.yaml",
+            "wealth_report_routing_notes": self._read_text(
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/02-报告路由位置说明.md",
                 max_chars=16000,
             ),
             "wealth_emergent_topic_translation": self._read_text(
-                "50-结构化知识单元/45-wealth-emergent-topic-translation.yaml",
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/12-财富中的浮现议题回译规则.md",
                 max_chars=24000,
             ),
             "wealth_next_exploration_mapping": self._read_text(

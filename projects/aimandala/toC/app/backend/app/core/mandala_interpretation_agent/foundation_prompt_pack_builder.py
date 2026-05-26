@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .prompt_budget import build_prompt_budget_manifest
+
 
 AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
 MANDALA_FOUNDATION_ROOT = (
@@ -88,7 +90,9 @@ class FoundationPromptPackBuilder:
             generated_pack = self._load_generated_pack()
             if generated_pack is not None:
                 return generated_pack
-        return self.build_from_sources()
+        raise FileNotFoundError(
+            f"generated foundation prompt pack not found: {self.generated_root / self.pack_id}"
+        )
 
     def build_from_sources(self) -> FoundationPromptPack:
         if not self.mandala_root.exists():
@@ -142,6 +146,7 @@ class FoundationPromptPackBuilder:
             "pack_hash": hashlib.sha256(stable_prefix.encode("utf-8")).hexdigest(),
             "build_mode": "source",
         }
+        manifest["prompt_budget"] = build_prompt_budget_manifest(stable_prefix)
         return FoundationPromptPack(
             pack_id=self.pack_id,
             manifest=manifest,
@@ -159,6 +164,7 @@ class FoundationPromptPackBuilder:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if not isinstance(manifest, dict):
             raise ValueError(f"generated prompt pack manifest must be an object: {manifest_path}")
+        manifest.setdefault("prompt_budget", build_prompt_budget_manifest(stable_prefix))
         files = [
             (str(path), "")
             for path in manifest.get("file_order", [])

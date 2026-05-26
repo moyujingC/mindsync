@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .prompt_budget import build_prompt_budget_manifest
+
 
 AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
 WEALTH_TOPIC_ROOT = (
@@ -18,9 +20,6 @@ WEALTH_TOPIC_ROOT = (
     / "10-议题层"
     / "30-主议题报告包"
     / "10-财富"
-)
-STRUCTURED_KB_ROOT = (
-    AIMANDALA_ROOT / "docs" / "疗愈体系知识库" / "50-结构化知识单元"
 )
 APP_ADAPTATION_ROOT = (
     AIMANDALA_ROOT / "docs" / "疗愈体系知识库" / "30-应用适配" / "10-aimandala"
@@ -44,14 +43,12 @@ class WealthPromptPackBuilder:
         *,
         pack_id: str = "wealth-reasoning-v1.0.0",
         wealth_root: Path | None = None,
-        structured_root: Path | None = None,
         app_adaptation_root: Path | None = None,
         generated_root: Path | None = None,
         use_generated: bool = True,
     ) -> None:
         self.pack_id = pack_id
         self.wealth_root = wealth_root or WEALTH_TOPIC_ROOT
-        self.structured_root = structured_root or STRUCTURED_KB_ROOT
         self.app_adaptation_root = app_adaptation_root or APP_ADAPTATION_ROOT
         self.generated_root = generated_root or GENERATED_PROMPT_PACKS_ROOT
         self.use_generated = use_generated
@@ -61,21 +58,21 @@ class WealthPromptPackBuilder:
             generated_pack = self._load_generated_pack()
             if generated_pack is not None:
                 return generated_pack
+        raise FileNotFoundError(
+            f"generated wealth prompt pack not found: {self.generated_root / self.pack_id}"
+        )
+
+    def build_from_sources(self) -> WealthPromptPack:
+        if not self.wealth_root.exists():
+            raise FileNotFoundError(f"wealth prompt source root not found: {self.wealth_root}")
+
         files: list[tuple[str, str]] = []
         for path in self._collect_md_files(self.wealth_root):
             rel = path.relative_to(self.wealth_root).as_posix()
-            files.append((f"10-议题层/30-主议题报告包/10-财富/{rel}", path.read_text(encoding="utf-8").strip()))
-        for relative_path in [
-            "10-aimandala-report-generation.yaml",
-            "16-foundation-image-reading-schema.yaml",
-            "20-wealth-issue-clauses.yaml",
-            "30-wealth-evidence-links.yaml",
-            "40-wealth-report-routing.yaml",
-            "45-wealth-emergent-topic-translation.yaml",
-        ]:
-            path = self.structured_root / relative_path
-            if path.exists():
-                files.append((f"50-结构化知识单元/{relative_path}", path.read_text(encoding="utf-8").strip()))
+            files.append((
+                f"10-议题层/30-主议题报告包/10-财富/{rel}",
+                path.read_text(encoding="utf-8").strip(),
+            ))
         for relative_path in [
             "01-解读与个案沟通流程.md",
             "02-解读报告组织规范.md",
@@ -87,34 +84,39 @@ class WealthPromptPackBuilder:
         ]:
             path = self.app_adaptation_root / relative_path
             if path.exists():
-                files.append((f"30-应用适配/10-aimandala/{relative_path}", path.read_text(encoding="utf-8").strip()))
+                files.append((
+                    f"30-应用适配/10-aimandala/{relative_path}",
+                    path.read_text(encoding="utf-8").strip(),
+                ))
 
         stable_prefix = "\n\n".join(
             [
                 "# 财富主题长上下文知识包",
                 "以下内容用于财富议题报告生成与议题翻译，不用于视觉层基础识别。",
                 "正式生产默认优先复用同一财富主题基准，保证多议题时可追溯、一致。",
+                "本知识包由 Markdown 源文档在部署期生成；运行时不读取 YAML 结构化知识单元。",
                 *[
                     f"## 来源文件：{relative_path}\n\n{text}"
                     for relative_path, text in files
+                    if text
                 ],
             ]
         ).strip()
         manifest = {
             "pack_id": self.pack_id,
             "wealth_root": self._relative_or_string(self.wealth_root),
-            "structured_root": self._relative_or_string(self.structured_root),
             "app_adaptation_root": self._relative_or_string(self.app_adaptation_root),
-            "file_order": [name for name, _ in files],
-            "file_count": len(files),
+            "file_order": [name for name, text in files if text],
+            "file_count": len([text for _, text in files if text]),
             "char_count": len(stable_prefix),
             "pack_hash": hashlib.sha256(stable_prefix.encode("utf-8")).hexdigest(),
             "build_mode": "source",
         }
+        manifest["prompt_budget"] = build_prompt_budget_manifest(stable_prefix)
         return WealthPromptPack(
             pack_id=self.pack_id,
             manifest=manifest,
-            files=files,
+            files=[(name, text) for name, text in files if text],
             stable_prefix=stable_prefix,
         )
 
@@ -128,6 +130,7 @@ class WealthPromptPackBuilder:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if not isinstance(manifest, dict):
             raise ValueError(f"generated prompt pack manifest must be an object: {manifest_path}")
+        manifest.setdefault("prompt_budget", build_prompt_budget_manifest(stable_prefix))
         files = [
             (str(path), "")
             for path in manifest.get("file_order", [])

@@ -1,4 +1,4 @@
-"""Native wealth report routing backed by the new healing knowledge base."""
+"""Native wealth report routing backed by generated prompt packs."""
 
 from __future__ import annotations
 
@@ -7,7 +7,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-import yaml
+from app.core.mandala_interpretation_agent.wealth_prompt_pack_builder import (
+    WealthPromptPackBuilder,
+)
 
 
 SEMANTIC_ROUTE_RULES: dict[str, list[list[list[str]]]] = {
@@ -67,6 +69,183 @@ SEMANTIC_ROUTE_RULES: dict[str, list[list[list[str]]]] = {
 }
 
 
+ROUTE_TABLE: tuple[dict[str, Any], ...] = (
+    {
+        "signal_id": "visual.outer_red_or_fire_excess",
+        "candidate_clauses": ("wealth.emotional_spending", "wealth.low_action"),
+        "candidate_modules": ("wealth.emotion_spending_protective_habits", "wealth.body_fear_action"),
+        "report_boundary": "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+    },
+    {
+        "signal_id": "visual.weak_fire_many",
+        "candidate_clauses": ("wealth.approval_driven_earning", "wealth.emotional_spending"),
+        "candidate_modules": ("wealth.deservingness_self_worth", "wealth.emotion_spending_protective_habits"),
+        "report_boundary": "适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。",
+    },
+    {
+        "signal_id": "visual.metal_excess",
+        "candidate_clauses": ("wealth.low_deservingness", "wealth.approval_driven_earning"),
+        "candidate_modules": ("wealth.deservingness_self_worth", "wealth.career_value_exchange"),
+        "report_boundary": "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+    },
+    {
+        "signal_id": "visual.weak_or_fragmented_earth",
+        "candidate_clauses": ("wealth.low_capacity", "wealth.scarcity_and_insecurity"),
+        "candidate_modules": ("wealth.safety_scarcity_control", "wealth.body_fear_action"),
+        "report_boundary": "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+    },
+    {
+        "signal_id": "visual.water_fire_conflict",
+        "candidate_clauses": ("wealth.low_action", "wealth.emotional_spending", "wealth.scarcity_and_insecurity"),
+        "candidate_modules": (
+            "wealth.body_fear_action",
+            "wealth.emotion_spending_protective_habits",
+            "wealth.safety_scarcity_control",
+        ),
+        "report_boundary": "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+    },
+    {
+        "signal_id": "visual.rootless_wood",
+        "candidate_clauses": ("wealth.low_action", "wealth.low_capacity"),
+        "candidate_modules": ("wealth.body_fear_action", "wealth.passion_needs_abundance"),
+        "report_boundary": "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+    },
+    {
+        "signal_id": "visual.fragmented_white_or_metal_cut",
+        "candidate_clauses": ("wealth.approval_driven_earning", "wealth.low_action"),
+        "candidate_modules": ("wealth.deservingness_self_worth", "wealth.body_fear_action"),
+        "report_boundary": "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+    },
+    {
+        "signal_id": "visual.outer_world_closed_or_blank",
+        "candidate_clauses": ("wealth.low_world_connection", "wealth.low_action"),
+        "candidate_modules": ("wealth.world_connection_market", "wealth.career_value_exchange"),
+        "report_boundary": "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+    },
+    {
+        "signal_id": "visual.inner_contracted_outer_strong",
+        "candidate_clauses": ("wealth.success_visibility_threat", "wealth.low_deservingness", "wealth.low_capacity"),
+        "candidate_modules": (
+            "wealth.deservingness_self_worth",
+            "wealth.body_fear_action",
+            "wealth.world_connection_market",
+        ),
+        "report_boundary": "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+    },
+    {
+        "signal_id": "visual.middle_tangled_relationship_pull",
+        "candidate_clauses": (
+            "wealth.exchange_boundary_imbalance",
+            "wealth.receiving_and_pricing_pressure",
+            "wealth.emotional_spending",
+        ),
+        "candidate_modules": (
+            "wealth.world_connection_market",
+            "wealth.career_value_exchange",
+            "wealth.emotion_spending_protective_habits",
+        ),
+        "report_boundary": "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+    },
+    {
+        "signal_id": "visual.outer_boundary_broken",
+        "candidate_clauses": ("wealth.resource_leakage", "wealth.exchange_boundary_imbalance", "wealth.low_world_connection"),
+        "candidate_modules": (
+            "wealth.safety_scarcity_control",
+            "wealth.world_connection_market",
+            "wealth.career_value_exchange",
+        ),
+        "report_boundary": "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+    },
+    {
+        "signal_id": "visual.outer_boundary_thick_closed",
+        "candidate_clauses": (
+            "wealth.difficulty_receiving_support",
+            "wealth.scarcity_and_insecurity",
+            "wealth.success_visibility_threat",
+        ),
+        "candidate_modules": (
+            "wealth.safety_scarcity_control",
+            "wealth.world_connection_market",
+            "wealth.parents_family_money_scripts",
+        ),
+        "report_boundary": "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+    },
+    {
+        "signal_id": "visual.fragmented_dots_scattered_energy",
+        "candidate_clauses": ("wealth.scattered_goals", "wealth.resource_leakage", "wealth.low_action"),
+        "candidate_modules": ("wealth.body_fear_action", "wealth.passion_needs_abundance", "wealth.safety_scarcity_control"),
+        "report_boundary": "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+    },
+    {
+        "signal_id": "visual.center_clear_outer_weak",
+        "candidate_clauses": ("wealth.value_expression_block", "wealth.low_world_connection", "wealth.low_action"),
+        "candidate_modules": (
+            "wealth.career_value_exchange",
+            "wealth.world_connection_market",
+            "wealth.passion_needs_abundance",
+        ),
+        "report_boundary": "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+    },
+    {
+        "signal_id": "visual.heavy_overfilled_composition",
+        "candidate_clauses": ("wealth.hardship_earning_belief", "wealth.scarcity_and_insecurity", "wealth.low_capacity"),
+        "candidate_modules": ("wealth.safety_scarcity_control", "wealth.body_fear_action", "wealth.money_beliefs"),
+        "report_boundary": "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+    },
+    {
+        "signal_id": "visual.color_blocks_split",
+        "candidate_clauses": ("wealth.scattered_goals", "wealth.low_action", "wealth.success_visibility_threat"),
+        "candidate_modules": ("wealth.body_fear_action", "wealth.passion_needs_abundance", "wealth.deservingness_self_worth"),
+        "report_boundary": "适合表达取舍两难和行动主线不清，不能替用户做现实选择。",
+    },
+)
+
+
+NEXT_EXPLORATION_MAPPINGS: tuple[dict[str, Any], ...] = (
+    {
+        "id": "wealth.next.self_worth",
+        "recommended_topic": "自我价值 / 配得感",
+        "recommended_intention": "我想探索：我是否允许自己的价值被看见、被支付，并稳定接住回报。",
+        "trigger_signals": ("内圈收缩", "中心空缺", "金多", "白色切分", "价值线索被压低"),
+        "why_not_expand_now": "本次只翻译到财富中的收钱、定价和接收能力。",
+        "avoid": ("不说用户没有价值感。",),
+    },
+    {
+        "id": "wealth.next.safety_scarcity",
+        "recommended_topic": "安全感 / 匮乏感",
+        "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+        "trigger_signals": ("厚重", "深色", "收缩", "外圈防御", "过满", "用户提到紧张或怕不够"),
+        "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+        "avoid": ("不判断现实贫穷或心理问题。",),
+    },
+    {
+        "id": "wealth.next.relationship_boundary",
+        "recommended_topic": "关系与交换边界 / 人际关系",
+        "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+        "trigger_signals": ("中圈缠绕", "中圈拉扯", "中圈断裂", "留白切分", "外圈缺口", "用户提到合作或人情压力"),
+        "why_not_expand_now": "本次只回到财富中的交换边界，不展开完整关系报告。",
+        "avoid": ("不把关系状态写成财富问题原因。",),
+    },
+)
+
+
+QUALITY_CHECKS = (
+    "是否明确 user_theme 为财富。",
+    "是否至少引用一个可见画面信号。",
+    "是否说明选中的财富模块或条款。",
+    "是否保留 Lite / Pro 边界。",
+    "是否避免财务建议、心理诊断和确定性承诺。",
+)
+
+
+SAFETY_BOUNDARIES = (
+    "不判断用户收入、资产、债务、投资前景或职业成败。",
+    "不给买卖、辞职、创业、借贷、融资等决策建议。",
+    "不把父母、家庭、身体或画面符号写成确定因果。",
+    "不对创伤、成瘾、债务危机、家庭暴力或自伤风险做 AI 单独处理。",
+)
+
+
 @dataclass(frozen=True)
 class WealthRouteMatch:
     """Selected wealth report routing result for one visual input."""
@@ -79,68 +258,33 @@ class WealthRouteMatch:
 
 
 class WealthReportRuntime:
-    """Read and query the native `wealth` report knowledge units.
+    """Query wealth report routing from generated deploy-time knowledge.
 
-    This runtime intentionally does not import the old `wealth_career` theme pack.
-    It reads the new source-of-truth YAML files from `疗愈体系知识库` directly.
+    The old YAML files are intentionally not runtime inputs. This runtime requires
+    the generated wealth prompt pack to exist, then uses the compact routing table
+    kept in code for deterministic pre-routing.
     """
 
-    def __init__(self, *, kb_root: Path | None = None) -> None:
-        self.kb_root = kb_root or self._default_kb_root()
-        self.routing_path = (
-            self.kb_root / "50-结构化知识单元" / "40-wealth-report-routing.yaml"
-        )
-        self.clauses_path = (
-            self.kb_root / "50-结构化知识单元" / "20-wealth-issue-clauses.yaml"
-        )
-        self.runtime_index_path = (
-            self.kb_root / "60-运行时知识包" / "20-aimandala-report-runtime-index.yaml"
-        )
-        self._routing: dict[str, Any] | None = None
-        self._clauses: dict[str, Any] | None = None
-        self._runtime_index: dict[str, Any] | None = None
+    def __init__(self, *, generated_root: Path | None = None) -> None:
+        self._pack_builder = WealthPromptPackBuilder(generated_root=generated_root)
+        self._prompt_pack = None
 
-    @staticmethod
-    def _default_kb_root() -> Path:
-        return (
-            Path(__file__).resolve().parents[6]
-            / "docs"
-            / "疗愈体系知识库"
-        )
-
-    def load_routing(self) -> dict[str, Any]:
-        if self._routing is None:
-            self._routing = self._load_yaml(self.routing_path)
-        return self._routing
-
-    def load_clauses(self) -> dict[str, Any]:
-        if self._clauses is None:
-            self._clauses = self._load_yaml(self.clauses_path)
-        return self._clauses
-
-    def load_runtime_index(self) -> dict[str, Any]:
-        if self._runtime_index is None:
-            self._runtime_index = self._load_yaml(self.runtime_index_path)
-        return self._runtime_index
-
-    def _load_yaml(self, path: Path) -> dict[str, Any]:
-        if not path.exists():
-            raise FileNotFoundError(f"wealth runtime source missing: {path}")
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-        return data if isinstance(data, dict) else {}
+    def load_prompt_pack(self):
+        if self._prompt_pack is None:
+            self._prompt_pack = self._pack_builder.build()
+        return self._prompt_pack
 
     def get_topic_context(self, *, report_mode: str) -> dict[str, Any]:
         """Return the product-facing topic context for native wealth reports."""
 
-        clauses = self.load_clauses()
-        definition = clauses.get("domain_definition", {})
+        self.load_prompt_pack()
         return {
             "topic": "wealth",
-            "topic_label": str(definition.get("title") or "财富议题"),
+            "topic_label": "财富议题",
             "report_mode": report_mode,
             "orientation": {
                 "intro": "这份报告会从财富议题角度看这张画。",
-                "focus": str(definition.get("summary") or "").strip(),
+                "focus": "财富议题关注人与金钱、价值、资源、世界和行动之间的关系，不直接判断用户有没有钱或能不能赚钱。",
                 "key_terms": [
                     {
                         "term": "金钱关系",
@@ -159,15 +303,12 @@ class WealthReportRuntime:
         }
 
     def get_quality_controls(self) -> tuple[str, ...]:
-        routing = self.load_routing()
-        controls = routing.get("quality_checks", [])
-        return tuple(str(item).strip() for item in controls if str(item).strip())
+        self.load_prompt_pack()
+        return QUALITY_CHECKS
 
     def get_safety_boundaries(self) -> tuple[str, ...]:
-        routing = self.load_routing()
-        safety = routing.get("safety", {})
-        global_avoid = safety.get("global_avoid", []) if isinstance(safety, dict) else []
-        return tuple(str(item).strip() for item in global_avoid if str(item).strip())
+        self.load_prompt_pack()
+        return SAFETY_BOUNDARIES
 
     def route_visual_observations(
         self,
@@ -177,32 +318,22 @@ class WealthReportRuntime:
     ) -> WealthRouteMatch:
         """Select candidate wealth clauses/modules from structured observations."""
 
-        routing = self.load_routing()
-        routes = routing.get("visual_signal_routes", [])
-        mode_policy = (
-            routing.get("module_selection", {}).get(report_mode, {})
-            if isinstance(routing.get("module_selection"), dict)
-            else {}
-        )
-        max_clauses = int(mode_policy.get("max_issue_clauses") or 2)
-        max_modules = int(mode_policy.get("max_primary_modules") or 2)
-
+        self.load_prompt_pack()
+        max_clauses = 2 if report_mode == "lite" else 4
+        max_modules = 2 if report_mode == "lite" else 5
         signal_ids: list[str] = []
         clause_ids: list[str] = []
         module_ids: list[str] = []
         boundaries: list[str] = []
         observation_text = self._flatten_observations(observations)
 
-        for route in routes:
-            if not isinstance(route, dict):
+        for route in ROUTE_TABLE:
+            signal_id = str(route.get("signal_id") or "")
+            if not self._semantic_route_matches_observation(signal_id, observation_text):
                 continue
-            if not self._route_matches_observation(route, observation_text):
-                continue
-            signal_id = str(route.get("signal_id") or "").strip()
-            if signal_id:
-                signal_ids.append(signal_id)
-            clause_ids.extend(self._string_items(route.get("candidate_clauses", [])))
-            module_ids.extend(self._string_items(route.get("candidate_modules", [])))
+            signal_ids.append(signal_id)
+            clause_ids.extend(self._string_items(route.get("candidate_clauses", ())))
+            module_ids.extend(self._string_items(route.get("candidate_modules", ())))
             boundary = str(route.get("report_boundary") or "").strip()
             if boundary:
                 boundaries.append(boundary)
@@ -221,63 +352,12 @@ class WealthReportRuntime:
         )
 
     def get_clause(self, clause_id: str) -> dict[str, Any]:
-        clauses = self.load_clauses().get("clauses", [])
-        for clause in clauses:
-            if isinstance(clause, dict) and clause.get("id") == clause_id:
-                return clause
-        return {}
+        self.load_prompt_pack()
+        return {"id": clause_id} if clause_id else {}
 
     def get_module(self, module_id: str) -> dict[str, Any]:
-        modules = self.load_routing().get("knowledge_modules", [])
-        for module in modules:
-            if isinstance(module, dict) and module.get("module_id") == module_id:
-                return module
-        return {}
-
-    def _route_matches_observation(
-        self,
-        route: dict[str, Any],
-        observation_text: str,
-    ) -> bool:
-        keyword_groups = route.get("match_keywords")
-        if isinstance(keyword_groups, dict):
-            any_groups = keyword_groups.get("any", [])
-            if isinstance(any_groups, list):
-                for group in any_groups:
-                    terms = (
-                        [str(item).strip() for item in group if str(item).strip()]
-                        if isinstance(group, list)
-                        else [str(group).strip()]
-                    )
-                    if terms and all(term in observation_text for term in terms):
-                        return True
-            all_terms = keyword_groups.get("all", [])
-            if isinstance(all_terms, list):
-                terms = [str(item).strip() for item in all_terms if str(item).strip()]
-                if terms and all(term in observation_text for term in terms):
-                    return True
-
-        signal_id = str(route.get("signal_id") or "")
-        label = str(route.get("label") or "")
-        if self._semantic_route_matches_observation(signal_id, observation_text):
-            return True
-        haystack = f"{signal_id} {label}"
-        keywords = {
-            "outer_red_or_fire_excess": ("外圈", "红", "火", "热"),
-            "weak_fire_many": ("弱火", "火弱", "淡红", "火多"),
-            "metal_excess": ("金多", "白", "金色", "金"),
-            "weak_or_fragmented_earth": ("土弱", "土零散", "不成片", "零散"),
-            "water_fire_conflict": ("水火", "水火相冲", "冲突"),
-            "rootless_wood": ("木无根", "无根", "绿色", "木"),
-            "fragmented_white_or_metal_cut": ("白色", "割裂", "截断", "碎"),
-            "outer_world_closed_or_blank": ("外圈", "留白", "空白", "闭合"),
-        }
-        for key, terms in keywords.items():
-            if key in signal_id or key in haystack:
-                return all(term in observation_text for term in terms[:1]) and any(
-                    term in observation_text for term in terms[1:]
-                )
-        return bool(label and label in observation_text)
+        self.load_prompt_pack()
+        return {"module_id": module_id} if module_id else {}
 
     def _semantic_route_matches_observation(
         self,
@@ -303,26 +383,11 @@ class WealthReportRuntime:
         *,
         report_mode: str,
     ) -> list[dict[str, Any]]:
-        recommendations = self.load_routing().get("next_exploration_recommendations", {})
-        if not isinstance(recommendations, dict):
-            return []
-        policy = recommendations.get("policy", {})
         mode_limit = 1 if report_mode == "lite" else 2
-        if isinstance(policy, dict):
-            raw_limit = policy.get("lite_max") if report_mode == "lite" else policy.get("pro_max")
-            try:
-                mode_limit = int(raw_limit or mode_limit)
-            except (TypeError, ValueError):
-                mode_limit = 1 if report_mode == "lite" else 2
-
         normalized_text = self._normalize_observation_text(observation_text)
         candidates: list[dict[str, Any]] = []
-        for item in recommendations.get("mappings", []):
-            if not isinstance(item, dict):
-                continue
-            trigger_signals = self._string_items(item.get("trigger_signals", []))
-            if not trigger_signals:
-                continue
+        for item in NEXT_EXPLORATION_MAPPINGS:
+            trigger_signals = self._string_items(item.get("trigger_signals", ()))
             matched = [
                 signal
                 for signal in trigger_signals
@@ -337,7 +402,7 @@ class WealthReportRuntime:
                     "recommended_intention": item.get("recommended_intention"),
                     "matched_signals": matched[:3],
                     "why_not_expand_now": item.get("why_not_expand_now"),
-                    "avoid": item.get("avoid", [])[:2] if isinstance(item.get("avoid"), list) else [],
+                    "avoid": self._string_items(item.get("avoid", ()))[:2],
                 }
             )
         return candidates[: max(mode_limit, 0)]
@@ -392,7 +457,7 @@ class WealthReportRuntime:
         return " ".join(parts)
 
     def _string_items(self, value: Any) -> list[str]:
-        if not isinstance(value, list):
+        if not isinstance(value, (list, tuple)):
             return []
         return [str(item).strip() for item in value if str(item).strip()]
 
