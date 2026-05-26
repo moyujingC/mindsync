@@ -88,9 +88,9 @@ knowledge_modules:
   - module_id: wealth.money_shame_receiving
     title: 金钱羞耻与不敢收钱
     handbook_ref: 11-财富议题手册.md#37-金钱羞耻与不敢收钱
-    status: source_needed
+    status: source_supported_draft
     report_use: 作为收费、开价、谈薪、收礼和接受支持相关的探索方向。
-    output_strength: weak
+    output_strength: cautious
 
   - module_id: wealth.emotion_spending_protective_habits
     title: 情绪、消费与保护性习惯
@@ -109,9 +109,9 @@ knowledge_modules:
   - module_id: wealth.career_value_exchange
     title: 事业、能力与价值交换
     handbook_ref: 11-财富议题手册.md#310-事业能力与价值交换
-    status: source_needed
+    status: source_supported_draft
     report_use: 连接能力表达、价值交换、服务边界和现实市场。
-    output_strength: weak
+    output_strength: normal
 
   - module_id: wealth.world_connection_market
     title: 世界链接、客户、市场与合作

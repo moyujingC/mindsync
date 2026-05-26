@@ -166,6 +166,20 @@ evidence_links:
     status: draft
     notes: 未直接讨论市场、客户或合作关系，只能作为与世界连接的上位启发。
 
+  - evidence_id: wealth.family_loyalty_success_resistance.say_yes_to_money.family_success_01
+    clause_id: wealth.family_loyalty_success_resistance
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 90-章节摘要与主题标注.md#第二章
+    evidence_type: supports_concept
+    support_level: weak
+    summary: 第二章和第三章对父母金钱观、成功压力与家族忠诚有上位启发，可弱支持成功被体验成离开或背叛的追问方向。
+    supported_part:
+      - mechanism
+      - report_language
+    status: draft
+    notes: 目前仍是弱支持，不适合升级为强结论。
+
   - evidence_id: wealth.global.say_yes_to_money.safety_boundary_01
     clause_id: wealth
     source_id: healing.say_yes_to_money
@@ -222,6 +236,20 @@ evidence_links:
       - report_language
     status: reviewed
     notes: 直接支持"不敢收钱/不敢开价"的羞恥機制。原文"骄傲"对应报告中的"亏欠感"，"不值得/不够好"对应"被评价的压力"。
+
+  - evidence_id: wealth.money_shame.say_yes_to_money.receiving_support_01
+    clause_id: wealth.money_shame
+    source_id: healing.say_yes_to_money
+    source_path: projects/research-center/kb/sources/healing/对财富说是
+    source_location: 05-第二章是什么在制约你拥有金钱.md#把钱花在别人身上比花在自己身上更容易
+    evidence_type: supports_concept
+    support_level: direct
+    summary: 第二章指出有些人把金钱花在别人身上更容易，对自己花钱会愤怒，可直接支持“收受支持困难”和“不敢收钱”相关的财富羞耻机制。
+    supported_part:
+      - mechanism
+      - report_language
+    status: reviewed
+    notes: 可支持收费、收礼、接受支持等动作的羞耻或亏欠感表达。
 
   - evidence_id: wealth.money_shame.say_yes_to_money.women_self_worth_01
     clause_id: wealth.money_shame
@@ -305,3 +333,18 @@ evidence_links:
       - healing_direction
     status: reviewed
     notes: 可支持报告中低风险觉察方向："财富行动不一定是要大动作，先从小的、可执行的一步开始"。
+
+  - evidence_id: wealth.career_value_exchange.act_simple.value_goal_01
+    clause_id: wealth.career_value_exchange
+    source_id: healing.act_simple
+    source_path: projects/research-center/kb/sources/healing/ACT就这么简单
+    source_location: 27-第19章 知道什么重要.md#价值与目标
+    evidence_type: supports_concept
+    support_level: direct
+    summary: ACT 区分价值与目标，强调价值是持续行动中渴望表现出的总体特质，可直接支持财富报告中把“我有什么价值”翻译成“我如何让世界看见并交换这个价值”。
+    supported_part:
+      - mechanism
+      - report_language
+      - healing_direction
+    status: reviewed
+    notes: 适合作为事业、能力与价值交换模块的主要来源支撑。

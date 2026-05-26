@@ -272,6 +272,38 @@ clauses:
         - 不强迫用户社交或合作。
         - 不把内向或谨慎写成问题。
 
+  - id: wealth.family_loyalty_success_resistance
+    title: 家族忠诚与不允许成功
+    provenance:
+      source_status: ai_draft
+      validation_status: source_verification_pending
+      evidence_refs:
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#36-家族忠诚与不允许成功
+      needs_backfill_from:
+        - 家庭系统
+        - 家族治疗
+        - 代际创伤
+        - 社会流动压力
+    summary: 用户可能在靠近成功时体验到归属、背叛或离开原家庭的压力。
+    typical_signals:
+      - 一边想成功，一边怕成功带来关系距离。
+      - 觉得更好的结果会让自己和原家庭不一样。
+      - 成功、曝光或资源增加时，内心出现退缩。
+    report_language:
+      - 当用户一边想要成功、一边害怕成功带来关系距离时，可以把它看成成功被体验成离开或背叛的压力。
+      - 这条线索更适合作为追问方向，而不是强结论。
+    healing_direction:
+      - 家庭脚本回看。
+      - 成功许可觉察。
+      - 观察归属感和成长之间的拉扯。
+    visual_mapping_candidates:
+      - 金多可能与规则、认可和成功压力相关。
+      - 外圈厚重闭合可能与保护和收缩相关。
+    safety:
+      avoid:
+        - 不写成家族决定用户财富状态。
+        - 不写成强因果结论。
+
   - id: wealth.receiving_and_pricing_pressure
     title: 不敢收钱与开价压力
     provenance:
@@ -526,6 +558,103 @@ clauses:
       avoid:
         - 不要求用户信任所有人。
         - 不否定必要的边界和谨慎。
+
+  - id: wealth.money_shame
+    title: 金钱羞耻
+    provenance:
+      source_status: source_supported_draft
+      validation_status: source_verification_pending
+      evidence_refs:
+        - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml#wealth.money_shame.say_yes_to_money.spending_on_self_shame_01
+        - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml#wealth.money_shame.say_yes_to_money.cannot_ask_for_money_01
+      needs_backfill_from:
+        - 羞耻与自我价值
+        - 边界与谈判心理
+    summary: 用户可能在收费、开价、谈薪、收礼和接受支持时感到羞耻、亏欠或被评价的压力。
+    typical_signals:
+      - 害怕开口收钱。
+      - 害怕被认为太贵或太功利。
+      - 接受支持时感觉亏欠。
+      - 谈价时很容易缩回去。
+    report_language:
+      - 你可能不是不想收，而是“收”的动作会触发羞耻、亏欠或被评价的压力。
+      - 先看见“收”背后带着什么，比立刻改价格更重要。
+    healing_direction:
+      - 金钱羞耻觉察。
+      - 收受动作练习。
+      - 观察开价时的身体反应。
+    visual_mapping_candidates:
+      - 金多、白色割裂或边界感强时，可作为相关线索。
+    safety:
+      avoid:
+        - 不把羞耻写成道德失败。
+        - 不替用户制定价格或谈判策略。
+
+  - id: wealth.emotion_spending_protective_habits
+    title: 情绪、消费与保护性习惯
+    provenance:
+      source_status: ai_draft
+      validation_status: source_verification_pending
+      evidence_refs:
+        - projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md#38-情绪消费与保护性习惯
+      needs_backfill_from:
+        - CBT
+        - ACT
+        - 情绪调节
+        - 成瘾替代
+        - 消费心理
+    summary: 用户可能通过消费、拖延或逃避来安抚情绪或保护自己。
+    typical_signals:
+      - 开心时奖励性消费，不开心时安抚性消费。
+      - 拖延、逃避或冲动决策反复出现。
+      - 花钱更像是在处理情绪，而不只是处理需要。
+    report_language:
+      - 钱在替情绪出口工作。
+      - 消费本身可能不是问题，问题是它承担了太多安抚功能。
+    healing_direction:
+      - 情绪消费觉察。
+      - 记录消费前后的感受。
+      - 建立不靠消费也能安抚自己的方式。
+    visual_mapping_candidates:
+      - 外圈红色多。
+      - 水火相冲。
+    safety:
+      avoid:
+        - 不直接说用户乱花钱。
+        - 不做财务管理承诺。
+
+  - id: wealth.career_value_exchange
+    title: 事业、能力与价值交换
+    provenance:
+      source_status: source_supported_draft
+      validation_status: source_verification_pending
+      evidence_refs:
+        - projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/30-wealth-evidence-links.yaml#wealth.value_expression_block.act_simple.commitment_action_01
+      needs_backfill_from:
+        - 职业发展
+        - 价值定价
+        - 服务关系
+        - 边界
+        - 市场反馈
+    summary: 用户可能有能力、有经验或有热情，但没有稳定被表达、被交换和被世界接住。
+    typical_signals:
+      - 有价值但难以被看见。
+      - 想法很多但现实落地少。
+      - 服务、能力、定价和表达之间断开。
+    report_language:
+      - 你可能需要把“我有什么价值”翻译成“我如何让世界看见并交换这个价值”。
+      - 财富行动不一定要大动作，先从小的、可执行的一步开始。
+    healing_direction:
+      - 价值表达练习。
+      - 小步行动。
+      - 服务与边界整理。
+    visual_mapping_candidates:
+      - 中心清晰但外圈弱。
+      - 外圈留白多。
+    safety:
+      avoid:
+        - 不替用户做职业选择。
+        - 不承诺成交或客户结果。
 
 safety:
   global_avoid:
