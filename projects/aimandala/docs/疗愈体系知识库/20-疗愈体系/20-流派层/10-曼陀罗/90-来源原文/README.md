@@ -1,7 +1,7 @@
 # 曼陀罗来源原文
 
 > 状态：draft
-> 版本：0.1.0
+> 文档版本：0.1.0
 > date：2026-05-17
 > owner：CEO / Knowledge Base
 > source_of_truth：当前目录/20-疗愈体系/20-流派层/10-曼陀罗/90-来源原文/README.md

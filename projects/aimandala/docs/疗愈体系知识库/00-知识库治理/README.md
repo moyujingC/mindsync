@@ -1,10 +1,10 @@
 # 知识库治理
 
 > 状态：draft
-> 版本：0.1.0
+> 文档版本：0.1.0
 > date：2026-05-27
 > owner：CEO / Knowledge Base
-> source_of_truth：当前目录/README.md
+> source_of_truth：00-知识库治理/README.md
 
 本目录定义疗愈体系知识库的治理规则、维护规范和建设决策。
 

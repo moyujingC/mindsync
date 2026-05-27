@@ -1,9 +1,11 @@
 # foundation_image_reading 输入对照测试计划
 
 > 状态：draft
-> 版本：0.1.0
-> date：2026-05-21
+> 文档版本：0.2.0
+> date：2026-05-27
 > owner：CEO / Knowledge Base
+
+> **说明**：结构化 YAML 单元层已降级为历史说明位。基础层输出 schema 见 `05-foundation-image-reading黄金样例集/` 下的实际输出文件。
 
 本文用于规划 11 个完整案例的基础层图像解读输入对照测试。
 
@@ -36,9 +38,7 @@
 - `case-xxx-review.md`
 - `env_check.json`
 
-输出结构必须遵循：
-
-- [../../50-结构化知识单元/16-foundation-image-reading-schema.yaml](../../50-结构化知识单元/16-foundation-image-reading-schema.yaml)
+输出结构必须遵循 `05-foundation-image-reading黄金样例集/` 下的实际输出文件格式。
 
 ## 评估重点
 
@@ -70,5 +70,4 @@
 审核结果应优先反写到：
 
 - `foundation_image_reading` prompt。
-- `16-foundation-image-reading-schema.yaml`。
 - `05-foundation-image-reading黄金样例集/`。

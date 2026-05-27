@@ -1,7 +1,7 @@
 # 应用适配
 
 > 状态：draft
-> 版本：0.1.3
+> 文档版本：0.1.3
 > date：2026-05-15
 > owner：CEO / Knowledge Base
 > source_of_truth：当前目录/30-应用适配/README.md

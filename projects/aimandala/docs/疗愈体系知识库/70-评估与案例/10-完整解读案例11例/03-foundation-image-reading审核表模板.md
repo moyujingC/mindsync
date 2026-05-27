@@ -1,10 +1,11 @@
 # foundation_image_reading 审核表模板
 
 > 状态：draft
-> 版本：0.1.0
-> date：2026-05-21
+> 文档版本：0.2.0
+> date：2026-05-27
 > owner：CEO / Knowledge Base
-> schema：projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元/16-foundation-image-reading-schema.yaml
+
+> **说明**：结构化 YAML 单元层已降级为历史说明位。基础层输出 schema 的字段定义见 `05-foundation-image-reading黄金样例集/` 下的实际输出文件，作为事实上的 schema 来源。
 
 本文用于审核基础层图像解读结果。
 

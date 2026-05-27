@@ -1,10 +1,10 @@
 # 案例源
 
 > 状态：draft
-> 版本：0.1.0
+> 文档版本：0.1.0
 > date：2026-05-13
 > owner：CEO / Knowledge Base
-> source_of_truth：当前目录/10-参考来源索引/案例源/README.md
+> source_of_truth：当前目录/05-参考来源索引/案例源/README.md
 
 这里收口疗愈体系知识库使用的原始案例源。
 

@@ -1,7 +1,7 @@
 # Lite / Pro 报告分流与交付口径
 
 > 状态：draft
-> 版本：0.1.0
+> 文档版本：0.1.0
 > date：2026-05-15
 > owner：CEO / Knowledge Base
 > source_of_truth：当前目录/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md

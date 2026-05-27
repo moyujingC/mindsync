@@ -1,7 +1,7 @@
 # 评估与案例
 
 > 状态：draft
-> 版本：0.1.0
+> 文档版本：0.1.0
 > date：2026-05-14
 > owner：CEO / Knowledge Base
 > source_of_truth：当前目录/70-评估与案例/README.md
