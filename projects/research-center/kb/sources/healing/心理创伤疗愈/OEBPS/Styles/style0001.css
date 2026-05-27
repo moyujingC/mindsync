@@ -1,0 +1,392 @@
+body{ margin:0; padding:0;}
+
+/*标题*/
+.p1{
+	text-align:center;
+	font-size:1.5em;	
+	color:#a9732d;
+	
+	font-weight:normal;
+	line-height:200%;
+	}/*标题1*/
+.p2{
+	font-size:1.4em;
+	text-align:left;
+	color:#a9732d;
+	text-indent:0em;
+	
+	font-weight:normal;
+	line-height:200%;
+	}/*标题2*/
+
+/*图书名称--------------------------------------*/
+.p3{
+	font-size:1.3em;
+	text-align:left;
+	color:#a9732d;
+	text-indent:0em;
+	/*微软雅黑*/
+	font-weight:normal;
+	line-height:200%;
+	}/*标题3*/
+/*图书名称--------------------------------------*/
+
+/*副书名/作者/译者/英文书名---------------------*/
+.p4{
+	font-size:1.2em;
+	text-align:left;
+	color:#a9732d;
+	text-indent:0em;
+	
+	font-weight:normal;
+	line-height:200%;
+}/*标题4*/
+/*副书名/作者/译者/英文书名---------------------*/
+
+.p5{
+	font-size:1.1em;
+	text-align:left;
+	color:#a9732d;
+	text-indent:0em;
+	
+	font-weight:normal;
+	line-height:200%;
+	}/*标题5*/
+
+/*丛书系列-------------------------------*/
+.p6{
+	font-size:1.0em;
+	text-align:left;
+	color:#a9732d;	
+	text-indent:0em;
+	
+	font-weight:normal;
+	line-height:200%;
+	}/*标题6*/
+/*丛书系列-------------------------------*/
+
+/*知识点标题-------------------------------*/
+.p7 {
+	/*雅黑*/
+	font-size: 1.1em; 
+	text-align: center;
+	background-color: #d9d9d9;
+}
+/*知识点标题-------------------------------*/
+
+.yanse{
+	color:#a9732d;
+	/*雅黑*/
+	text-indent:2em;
+	font-size:1.0em;
+	line-height:200%;
+	}/*一般修饰序和正文中出现的小标题、名人名言*/
+
+.yanse1{
+	color:#a9732d;
+	/*华文楷体*/
+	text-indent:2em;
+	font-size:1.0em;
+	line-height:200%;
+	}/*一般修饰序和正文中出现的小标题、名人名言*/
+
+/*居右-----------------------------------------*/
+.you{
+	text-align:right;
+	
+	font-size:1.0em;
+	line-height:200%;
+	}/*一般修饰序和正文中出现的名人名言作者*/
+/*居右-----------------------------------------*/
+
+/*引文居右-----------------------------------------*/
+.you1{
+	text-align:right;
+	/*华文楷体*/
+	font-size:1.0em;
+	line-height:200%;
+	}
+/*引文居右-----------------------------------------*/
+
+/*正文------------------------------------------*/
+.ziti{
+	
+	text-indent:2em;
+	font-size:1.0em;
+	line-height:200%;
+	}
+/*正文------------------------------------------*/
+
+/*正文强制靠左------------------------------------------*/
+.ziti0{
+	
+        text-align:left;
+        text-indent:0em;
+	font-size:1.0em;
+	line-height:200%;
+	}
+/*正文强制靠左------------------------------------------*/
+
+/*引文--------------------------------------*/
+.ziti1{
+   
+   text-indent:2em;
+   font-size:1.0em;
+   line-height:200%;
+  }
+/*引文--------------------------------------*/
+
+/*版权所有信息-----------------------------*/
+.ziti2{
+	
+	font-size:1.0em;
+	line-height:150%;
+	text-align:left;
+	}
+/*版权所有信息-----------------------------*/
+
+/*客服信息---------------------------------*/
+.ziti3{
+	/*华文楷体*/
+	font-size:1.0em;
+	line-height:100%;
+	text-align:left;
+	}
+/*客服信息---------------------------------*/
+
+/*ISBN号-----------------------------------*/
+.ziti4{
+	
+	font-size:1.0em;
+	line-height:100%;
+	color:#a9732d;
+	text-align:left;
+	}
+/*ISBN号-----------------------------------*/
+
+
+/*引文列表-----------------------------------*/
+.ziti7{
+	
+   	text-indent:3em;
+  	font-size:1.0em;
+  	 line-height:200%;
+     }
+/*引文列表-----------------------------------*/
+
+
+
+
+/*图说-------------------------------------*/
+.middle-img{
+	text-align:center; 
+	margin:0;
+	/*华文楷体*/
+	font-size:1.0em; 
+	line-height:200%;
+	}  /*用作插图及图注*/
+.middle-img-1{
+	text-align:justify; 
+	margin:0;
+	/*华文楷体*/
+	font-size:1.0em; 
+	line-height:200%;
+	}  /*用作插图及图注*/
+/*图说-------------------------------------*/
+
+/*引文标题---------------------------------*/
+.middle-img1{
+	text-align:center; 
+	margin:0;
+	
+	font-size:1.0em; 
+	line-height:200%;
+	}
+/*引文标题---------------------------------*/
+
+.pic{
+	text-align:center;
+	margin-top:10px;
+	margin-bottom:10px;
+	}/*居中*/
+/**/
+/*图片*/
+.pic-float-l{float:left;margin-top:10px;margin-right:10px;margin-bottom:10px;margin-left:0px;}/*居左绕文*/
+/*图片*/
+.pic-float-r{float:right;margin-top:10px;margin-right:0px;margin-left:10px;margin-bottom:10px;}/*居右绕文*/
+/*图片*/
+.pic-l{text-align:left;margin-top:10px;margin-bottom:10px;margin-left:2em;}/*居左不绕文*/
+/*图片*/
+.pic-r{text-align:right;margin-top:10px;margin-right:0px;margin-bottom:10px;}/*居右不绕文*/
+/*附注标题*/
+
+/*注解内容--------------------------------*/
+.fnote{
+	font-size:1.0em;
+	
+	text-indent:0em;
+	margin:0;
+	text-align:justify;
+	line-height:200%;
+	}
+/*注解内容--------------------------------*/
+
+/*目录页*/
+.contents-title{
+	font-size:2em;
+	
+	line-height:200%;
+	text-align:center;
+	font-weight:normal;
+	}
+/*目录一级标题*/
+.contents1{
+	font-size:1.0em;
+	margin-left:0em;
+	
+	line-height:200%;
+	text-align:justify;
+	}
+/*目录二级标题*/
+.contents2{
+	font-size:1.0em;
+	margin-left:1em;
+	
+	line-height:200%;
+	text-align:justify;
+	}
+/*目录三级标题*/
+.contents3{
+	font-size:1.0em;
+	margin-left:2em;
+	
+	line-height:200%;
+	text-align:justify;
+	}
+/*目录四级标题*/
+.contents4{
+	font-size:1.0em;
+	margin-left:3em;
+	
+	line-height:200%;
+	text-align:justify;
+	}
+/*代码或代码上方文字*/
+.codelist{
+    
+    font-size:1.0em;
+    text-indent: 2em;
+    line-height:200%;
+    background-color: #efefef;
+    border-bottom: solid 1px #d9d9d9;
+}
+/*标题左边框*/
+.div0{
+	padding: 0.5em 0.5em 0.5em 1em;
+	margin: 5% 0em 0em 0.5em;
+	border-left: solid 1.5px #d9d9d9;
+}
+/*线框层*/
+.div1{
+	padding: 0.5em;
+	margin: 1.5em 0 1.5em 0;
+	border: solid 1px #d9d9d9;
+        background-color: #efefef;
+}
+/*上下虚线框*/
+.div2 {
+	border-top: dotted 1px #000000;
+	border-bottom: dotted 1px #000000;
+	padding: 0.2em;
+}
+/*带颜色*/
+.color{
+    color:#a9732d;
+}
+/*加粗*/
+.bold {
+    font-weight: bold;
+}
+/*段落中图1em*/
+.formula-1em {
+	height: 1em;
+}
+/*段落中图1.5em*/
+.formula-1-5em {
+	height: 1.5em;
+}
+/*段落中图2em*/
+.formula-2em {
+	height: 2em;
+}
+/*段落中图2.5em*/
+.formula-2-5em {
+  height: 2.5em;
+}
+
+/*诗歌标题样式*/
+.poem-t1{ 
+    font-size:1.5em;	
+    color:#a9732d;
+    
+    font-weight:normal;
+    line-height:200%;
+}
+
+/*诗歌标题样式2*/
+.poem-t2{ 
+    font-size:1.5em;	
+    
+    font-weight:normal;
+}
+
+/*诗歌标题样式3*/
+.poem-t3{ 
+    font-size:1.4em;	
+    
+    font-weight:normal;
+    line-height:200%;
+}
+
+/*诗歌样式1*/
+.poem1{ 
+    
+    font-size:1.0em;
+    margin-left: 2em;
+    line-height: 200%;
+}
+/*诗歌样式2*/
+.poem2{ 
+    /*华文楷体*/
+    font-size:1.0em;
+    margin-left: 2em;
+    line-height: 200%;
+}
+
+a{text-decoration:none;}
+a:hover{color:#a9732d; text-decoration:underline;}
+img{border:0;}
+.mu_1{
+	font-size:1.5em; 
+	
+        color:#a9732d;
+	font-weight: normal;
+	text-align:left;
+	line-height:200%;
+}
+.mu_2{
+	
+	font-size:1.3em; 
+	
+	font-weight: normal;
+	text-align:left;
+	line-height:200%;
+	text-indent:2em;
+	}
+.mu_3{
+	font-size:1.0em;
+        
+        text-align:justify;
+        text-indent:4em;
+        line-height:200%;
+	}

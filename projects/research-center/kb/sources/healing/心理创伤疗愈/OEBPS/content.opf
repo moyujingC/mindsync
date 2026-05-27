@@ -1,0 +1,474 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="uid">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:title>身体从未忘记：心理创伤疗愈中的大脑、心智和身体</dc:title>
+    <dc:creator opf:role="aut" opf:file-as="著, （美）范德考克">（美）范德考克 著</dc:creator>
+    <dc:identifier id="uid">3675214318</dc:identifier>
+    <dc:contributor>李智</dc:contributor>
+    <dc:date>2016-02-29T16:00:00+00:00</dc:date>
+    <dc:language>zh</dc:language>
+    <dc:identifier opf:scheme="calibre">d3d011e7-f7ac-499a-9bfe-d5cd0eef3c77</dc:identifier>
+    <!-- Extra MetaData from RESC
+<meta content="0.7.4" name="Sigil version"/>
+-->
+    <meta name="cover" content="x_2b4d37d6-72ee-4c42-9be5-ba77f5733969"/>
+    <meta name="output encoding" content="utf-8"/>
+    <meta name="primary-writing-mode" content="horizontal-lr"/>
+    <!-- BEGIN INFORMATION ONLY 
+<meta name="Cover ThumbNail Image" content="Images/image00286.jpeg" />
+<meta name="Drm Ebookbase Book Id" content="0006004570948" />
+<meta name="ASIN" content="B01EYCCO8A" />
+<meta name="Creator Software" content="201" />
+<meta name="Creator Major Version" content="2" />
+<meta name="Creator Minor Version" content="9" />
+<meta name="Creator Build Number" content="0" />
+<meta name="Clipping Limit" content="100" />
+<meta name="Text to Speech Disabled" content="0" />
+<meta name="Font Signature (hex)" content="8300000000040108100000000000008000200000000000000000000000000000ecbef4ed01b701ea01e801f607b107b807b2409440984099409c409d40a648e348e048e148e26082608a608b608101288e011c8b021efd01288d037e9a037e8c037e88037e89" />
+<meta name="Tamper Proof Keys (hex)" content="01000000d000000001940000000191000000019500000001960000000197" />
+<meta name="Unknown_(403) (hex)" content="00" />
+<meta name="K8(129)_Masthead/Cover_Image" content="kindle:embed:000N" />
+<meta name="Unknown_but_changes_with_file_name_only_542" content="HkXd" />
+<meta name="sample" content="0" />
+<meta name="kindlegen_BuildRev_Number" content="0620-33c6046" />
+<meta name="kindlegen_Source-Target" content="Source-Target:c1-c2 KT_Version:2.9 Build:0805-4a0c57c" />
+<meta name="Unknown_(405) (hex)" content="00" />
+<meta name="Language_524" content="zh" />
+<meta name="Watermark (hex)" content="6174763a6b696e3a323a5861496f66693237544d614e6d5265513034714841527754432b3432742f3942643936736f52486b52313044486c625a56545479467546504f44674876795531444c62454142307735706b704150594f37533370437748623633743658635554532f39325237762f4c64746533534236664567584c747545697262324f504a4d6a5a316e556c573846303951696144727633326672617266377a4e682f37747165464c39774958624277513d3a6d53674a4b4f4c6b43756a66586d4a492f7a6f62786d63704d4d6f3d" />
+<meta name="Container_Info" content="2400x3840:0-24|" />
+<meta name="Unknown_522" content="jixiegongyechubanshe" />
+<meta name="547 (hex)" content="496e4d656d6f7279" />
+<meta name="StartOffset" content="48423" />
+<meta name="Rental_Indicator" content="0000000000000000" />
+<meta name="override-kindle-fonts" content="false" />
+<meta name="K8(125)_Count_of_Resources_Fonts_Images" content="24" />
+<meta name="Has Fake Cover" content="0" />
+<meta name="548 (hex)" content="496e4d656d6f7279" />
+<meta name="K8(121)_Boundary_Section" content="254" />
+<meta name="kindlegen_Input_Source_Type" content="dtc-mobi" />
+<meta name="Updated_Title" content="身体从未忘记：心理创伤疗愈中的大脑、心智和身体 (心理创伤疗愈经典畅销丛书)" />
+<meta name="ASIN_504" content="B01EYCCO8A" />
+<meta name="Unknown_(407) (hex)" content="0000000000000000" />
+<meta name="cdeType" content="EBOK" />
+<meta name="K8(131)_Unidentified_Count" content="4294967295" />
+END INFORMATION ONLY -->
+    <meta name="calibre:title_sort" content="身体从未忘记：心理创伤疗愈中的大脑、心智和身体"/>
+    <meta name="calibre:author_link_map" content="{&quot;（美）范德考克 著&quot;: &quot;&quot;}"/>
+  </metadata>
+  <manifest>
+    <item id="x_cover.xhtml" media-type="application/xhtml+xml" href="Text/cover_page.xhtml"/>
+    <item id="x_copyright.xhtml" media-type="application/xhtml+xml" href="Text/part0000.xhtml"/>
+    <item id="x_content" media-type="application/xhtml+xml" href="Text/part0001.xhtml"/>
+    <item id="x_chapter.xhtml" media-type="application/xhtml+xml" href="Text/part0002.xhtml"/>
+    <item id="x_chapter1.xhtml" media-type="application/xhtml+xml" href="Text/part0003.xhtml"/>
+    <item id="x_chapter2.xhtml" media-type="application/xhtml+xml" href="Text/part0004.xhtml"/>
+    <item id="x_chapter3.xhtml" media-type="application/xhtml+xml" href="Text/part0005.xhtml"/>
+    <item id="x_chapter4.xhtml" media-type="application/xhtml+xml" href="Text/part0006.xhtml"/>
+    <item id="x_chapter5.xhtml" media-type="application/xhtml+xml" href="Text/part0007.xhtml"/>
+    <item id="x_chapter6.xhtml" media-type="application/xhtml+xml" href="Text/part0008.xhtml"/>
+    <item id="x_chapter7.xhtml" media-type="application/xhtml+xml" href="Text/part0009.xhtml"/>
+    <item id="x_chapter8.xhtml" media-type="application/xhtml+xml" href="Text/part0010.xhtml"/>
+    <item id="x_chapter9.xhtml" media-type="application/xhtml+xml" href="Text/part0011.xhtml"/>
+    <item id="x_chapter10.xhtml" media-type="application/xhtml+xml" href="Text/part0012.xhtml"/>
+    <item id="x_chapter11.xhtml" media-type="application/xhtml+xml" href="Text/part0013.xhtml"/>
+    <item id="x_chapter12.xhtml" media-type="application/xhtml+xml" href="Text/part0014.xhtml"/>
+    <item id="x_chapter13.xhtml" media-type="application/xhtml+xml" href="Text/part0015.xhtml"/>
+    <item id="x_chapter14.xhtml" media-type="application/xhtml+xml" href="Text/part0016.xhtml"/>
+    <item id="x_chapter15.xhtml" media-type="application/xhtml+xml" href="Text/part0017.xhtml"/>
+    <item id="x_chapter16.xhtml" media-type="application/xhtml+xml" href="Text/part0018.xhtml"/>
+    <item id="x_chapter17.xhtml" media-type="application/xhtml+xml" href="Text/part0019.xhtml"/>
+    <item id="x_chapter18.xhtml" media-type="application/xhtml+xml" href="Text/part0020.xhtml"/>
+    <item id="x_chapter19.xhtml" media-type="application/xhtml+xml" href="Text/part0021.xhtml"/>
+    <item id="x_chapter20.xhtml" media-type="application/xhtml+xml" href="Text/part0022.xhtml"/>
+    <item id="x_chapter21.xhtml" media-type="application/xhtml+xml" href="Text/part0023.xhtml"/>
+    <item id="x_chapter22.xhtml" media-type="application/xhtml+xml" href="Text/part0024.xhtml"/>
+    <item id="x_chapter23.xhtml" media-type="application/xhtml+xml" href="Text/part0025.xhtml"/>
+    <item id="x_chapter24.xhtml" media-type="application/xhtml+xml" href="Text/part0026.xhtml"/>
+    <item id="x_chapter25.xhtml" media-type="application/xhtml+xml" href="Text/part0027.xhtml"/>
+    <item id="x_chapter26.xhtml" media-type="application/xhtml+xml" href="Text/part0028.xhtml"/>
+    <item id="x_chapter27.xhtml" media-type="application/xhtml+xml" href="Text/part0029.xhtml"/>
+    <item id="x_chapter28.xhtml" media-type="application/xhtml+xml" href="Text/part0030.xhtml"/>
+    <item id="x_chapter29.xhtml" media-type="application/xhtml+xml" href="Text/part0031.xhtml"/>
+    <item id="x_chapter30.xhtml" media-type="application/xhtml+xml" href="Text/part0032.xhtml"/>
+    <item id="x_chapter31.xhtml" media-type="application/xhtml+xml" href="Text/part0033.xhtml"/>
+    <item id="x_chapter32.xhtml" media-type="application/xhtml+xml" href="Text/part0034.xhtml"/>
+    <item id="x_chapter33.xhtml" media-type="application/xhtml+xml" href="Text/part0035.xhtml"/>
+    <item id="x_chapter34.xhtml" media-type="application/xhtml+xml" href="Text/part0036.xhtml"/>
+    <item id="x_chapter35.xhtml" media-type="application/xhtml+xml" href="Text/part0037.xhtml"/>
+    <item id="x_chapter36.xhtml" media-type="application/xhtml+xml" href="Text/part0038.xhtml"/>
+    <item id="x_chapter37.xhtml" media-type="application/xhtml+xml" href="Text/part0039.xhtml"/>
+    <item id="x_chapter38.xhtml" media-type="application/xhtml+xml" href="Text/part0040.xhtml"/>
+    <item id="x_chapter39.xhtml" media-type="application/xhtml+xml" href="Text/part0041.xhtml"/>
+    <item id="x_chapter40.xhtml" media-type="application/xhtml+xml" href="Text/part0042.xhtml"/>
+    <item id="x_chapter41.xhtml" media-type="application/xhtml+xml" href="Text/part0043.xhtml"/>
+    <item id="x_chapter42.xhtml" media-type="application/xhtml+xml" href="Text/part0044.xhtml"/>
+    <item id="x_chapter43.xhtml" media-type="application/xhtml+xml" href="Text/part0045.xhtml"/>
+    <item id="x_chapter44.xhtml" media-type="application/xhtml+xml" href="Text/part0046.xhtml"/>
+    <item id="x_chapter45.xhtml" media-type="application/xhtml+xml" href="Text/part0047.xhtml"/>
+    <item id="x_chapter46.xhtml" media-type="application/xhtml+xml" href="Text/part0048.xhtml"/>
+    <item id="x_chapter47.xhtml" media-type="application/xhtml+xml" href="Text/part0049.xhtml"/>
+    <item id="x_chapter48.xhtml" media-type="application/xhtml+xml" href="Text/part0050.xhtml"/>
+    <item id="x_chapter49.xhtml" media-type="application/xhtml+xml" href="Text/part0051.xhtml"/>
+    <item id="x_chapter50.xhtml" media-type="application/xhtml+xml" href="Text/part0052.xhtml"/>
+    <item id="x_chapter51.xhtml" media-type="application/xhtml+xml" href="Text/part0053.xhtml"/>
+    <item id="x_chapter52.xhtml" media-type="application/xhtml+xml" href="Text/part0054.xhtml"/>
+    <item id="x_chapter53.xhtml" media-type="application/xhtml+xml" href="Text/part0055.xhtml"/>
+    <item id="x_chapter54.xhtml" media-type="application/xhtml+xml" href="Text/part0056.xhtml"/>
+    <item id="x_chapter55.xhtml" media-type="application/xhtml+xml" href="Text/part0057.xhtml"/>
+    <item id="x_chapter56.xhtml" media-type="application/xhtml+xml" href="Text/part0058.xhtml"/>
+    <item id="x_chapter57.xhtml" media-type="application/xhtml+xml" href="Text/part0059.xhtml"/>
+    <item id="x_chapter58.xhtml" media-type="application/xhtml+xml" href="Text/part0060.xhtml"/>
+    <item id="x_chapter59.xhtml" media-type="application/xhtml+xml" href="Text/part0061.xhtml"/>
+    <item id="x_chapter60.xhtml" media-type="application/xhtml+xml" href="Text/part0062.xhtml"/>
+    <item id="x_chapter61.xhtml" media-type="application/xhtml+xml" href="Text/part0063.xhtml"/>
+    <item id="x_chapter62.xhtml" media-type="application/xhtml+xml" href="Text/part0064.xhtml"/>
+    <item id="x_chapter63.xhtml" media-type="application/xhtml+xml" href="Text/part0065.xhtml"/>
+    <item id="x_chapter64.xhtml" media-type="application/xhtml+xml" href="Text/part0066.xhtml"/>
+    <item id="x_chapter65.xhtml" media-type="application/xhtml+xml" href="Text/part0067.xhtml"/>
+    <item id="x_chapter66.xhtml" media-type="application/xhtml+xml" href="Text/part0068.xhtml"/>
+    <item id="x_chapter67.xhtml" media-type="application/xhtml+xml" href="Text/part0069.xhtml"/>
+    <item id="x_chapter68.xhtml" media-type="application/xhtml+xml" href="Text/part0070.xhtml"/>
+    <item id="x_chapter69.xhtml" media-type="application/xhtml+xml" href="Text/part0071.xhtml"/>
+    <item id="x_chapter70.xhtml" media-type="application/xhtml+xml" href="Text/part0072.xhtml"/>
+    <item id="x_chapter71.xhtml" media-type="application/xhtml+xml" href="Text/part0073.xhtml"/>
+    <item id="x_chapter72.xhtml" media-type="application/xhtml+xml" href="Text/part0074.xhtml"/>
+    <item id="x_chapter73.xhtml" media-type="application/xhtml+xml" href="Text/part0075.xhtml"/>
+    <item id="x_chapter74.xhtml" media-type="application/xhtml+xml" href="Text/part0076.xhtml"/>
+    <item id="x_chapter75.xhtml" media-type="application/xhtml+xml" href="Text/part0077.xhtml"/>
+    <item id="x_chapter76.xhtml" media-type="application/xhtml+xml" href="Text/part0078.xhtml"/>
+    <item id="x_chapter77.xhtml" media-type="application/xhtml+xml" href="Text/part0079.xhtml"/>
+    <item id="x_chapter78.xhtml" media-type="application/xhtml+xml" href="Text/part0080.xhtml"/>
+    <item id="x_chapter79.xhtml" media-type="application/xhtml+xml" href="Text/part0081.xhtml"/>
+    <item id="x_chapter80.xhtml" media-type="application/xhtml+xml" href="Text/part0082.xhtml"/>
+    <item id="x_chapter81.xhtml" media-type="application/xhtml+xml" href="Text/part0083.xhtml"/>
+    <item id="x_chapter82.xhtml" media-type="application/xhtml+xml" href="Text/part0084.xhtml"/>
+    <item id="x_chapter83.xhtml" media-type="application/xhtml+xml" href="Text/part0085.xhtml"/>
+    <item id="x_chapter84.xhtml" media-type="application/xhtml+xml" href="Text/part0086.xhtml"/>
+    <item id="x_chapter85.xhtml" media-type="application/xhtml+xml" href="Text/part0087.xhtml"/>
+    <item id="x_chapter86.xhtml" media-type="application/xhtml+xml" href="Text/part0088.xhtml"/>
+    <item id="x_chapter87.xhtml" media-type="application/xhtml+xml" href="Text/part0089.xhtml"/>
+    <item id="x_chapter88.xhtml" media-type="application/xhtml+xml" href="Text/part0090.xhtml"/>
+    <item id="x_chapter89.xhtml" media-type="application/xhtml+xml" href="Text/part0091.xhtml"/>
+    <item id="x_chapter90.xhtml" media-type="application/xhtml+xml" href="Text/part0092.xhtml"/>
+    <item id="x_chapter91.xhtml" media-type="application/xhtml+xml" href="Text/part0093.xhtml"/>
+    <item id="x_chapter92.xhtml" media-type="application/xhtml+xml" href="Text/part0094.xhtml"/>
+    <item id="x_chapter93.xhtml" media-type="application/xhtml+xml" href="Text/part0095.xhtml"/>
+    <item id="x_chapter94.xhtml" media-type="application/xhtml+xml" href="Text/part0096.xhtml"/>
+    <item id="x_chapter95.xhtml" media-type="application/xhtml+xml" href="Text/part0097.xhtml"/>
+    <item id="x_chapter96.xhtml" media-type="application/xhtml+xml" href="Text/part0098.xhtml"/>
+    <item id="x_chapter97.xhtml" media-type="application/xhtml+xml" href="Text/part0099.xhtml"/>
+    <item id="x_chapter98.xhtml" media-type="application/xhtml+xml" href="Text/part0100.xhtml"/>
+    <item id="x_chapter99.xhtml" media-type="application/xhtml+xml" href="Text/part0101.xhtml"/>
+    <item id="x_chapter100.xhtml" media-type="application/xhtml+xml" href="Text/part0102.xhtml"/>
+    <item id="x_chapter101.xhtml" media-type="application/xhtml+xml" href="Text/part0103.xhtml"/>
+    <item id="x_chapter102.xhtml" media-type="application/xhtml+xml" href="Text/part0104.xhtml"/>
+    <item id="x_chapter103.xhtml" media-type="application/xhtml+xml" href="Text/part0105.xhtml"/>
+    <item id="x_chapter104.xhtml" media-type="application/xhtml+xml" href="Text/part0106.xhtml"/>
+    <item id="x_chapter105.xhtml" media-type="application/xhtml+xml" href="Text/part0107.xhtml"/>
+    <item id="x_chapter106.xhtml" media-type="application/xhtml+xml" href="Text/part0108.xhtml"/>
+    <item id="x_chapter107.xhtml" media-type="application/xhtml+xml" href="Text/part0109.xhtml"/>
+    <item id="x_chapter108.xhtml" media-type="application/xhtml+xml" href="Text/part0110.xhtml"/>
+    <item id="x_chapter109.xhtml" media-type="application/xhtml+xml" href="Text/part0111.xhtml"/>
+    <item id="x_chapter110.xhtml" media-type="application/xhtml+xml" href="Text/part0112.xhtml"/>
+    <item id="x_chapter111.xhtml" media-type="application/xhtml+xml" href="Text/part0113.xhtml"/>
+    <item id="x_chapter112.xhtml" media-type="application/xhtml+xml" href="Text/part0114.xhtml"/>
+    <item id="x_chapter113.xhtml" media-type="application/xhtml+xml" href="Text/part0115.xhtml"/>
+    <item id="x_chapter114.xhtml" media-type="application/xhtml+xml" href="Text/part0116.xhtml"/>
+    <item id="x_chapter115.xhtml" media-type="application/xhtml+xml" href="Text/part0117.xhtml"/>
+    <item id="x_chapter116.xhtml" media-type="application/xhtml+xml" href="Text/part0118.xhtml"/>
+    <item id="x_chapter117.xhtml" media-type="application/xhtml+xml" href="Text/part0119.xhtml"/>
+    <item id="x_chapter118.xhtml" media-type="application/xhtml+xml" href="Text/part0120.xhtml"/>
+    <item id="x_chapter119.xhtml" media-type="application/xhtml+xml" href="Text/part0121.xhtml"/>
+    <item id="x_chapter120.xhtml" media-type="application/xhtml+xml" href="Text/part0122.xhtml"/>
+    <item id="x_chapter121.xhtml" media-type="application/xhtml+xml" href="Text/part0123.xhtml"/>
+    <item id="x_chapter122.xhtml" media-type="application/xhtml+xml" href="Text/part0124.xhtml"/>
+    <item id="x_chapter123.xhtml" media-type="application/xhtml+xml" href="Text/part0125.xhtml"/>
+    <item id="x_chapter124.xhtml" media-type="application/xhtml+xml" href="Text/part0126.xhtml"/>
+    <item id="x_chapter125.xhtml" media-type="application/xhtml+xml" href="Text/part0127.xhtml"/>
+    <item id="x_chapter126.xhtml" media-type="application/xhtml+xml" href="Text/part0128.xhtml"/>
+    <item id="x_chapter127.xhtml" media-type="application/xhtml+xml" href="Text/part0129.xhtml"/>
+    <item id="x_chapter128.xhtml" media-type="application/xhtml+xml" href="Text/part0130.xhtml"/>
+    <item id="x_chapter129.xhtml" media-type="application/xhtml+xml" href="Text/part0131.xhtml"/>
+    <item id="x_chapter130.xhtml" media-type="application/xhtml+xml" href="Text/part0132.xhtml"/>
+    <item id="x_chapter131.xhtml" media-type="application/xhtml+xml" href="Text/part0133.xhtml"/>
+    <item id="x_chapter132.xhtml" media-type="application/xhtml+xml" href="Text/part0134.xhtml"/>
+    <item id="x_chapter133.xhtml" media-type="application/xhtml+xml" href="Text/part0135.xhtml"/>
+    <item id="x_chapter134.xhtml" media-type="application/xhtml+xml" href="Text/part0136.xhtml"/>
+    <item id="x_chapter135.xhtml" media-type="application/xhtml+xml" href="Text/part0137.xhtml"/>
+    <item id="x_chapter136.xhtml" media-type="application/xhtml+xml" href="Text/part0138.xhtml"/>
+    <item id="x_chapter137.xhtml" media-type="application/xhtml+xml" href="Text/part0139.xhtml"/>
+    <item id="x_chapter138.xhtml" media-type="application/xhtml+xml" href="Text/part0140.xhtml"/>
+    <item id="x_chapter139.xhtml" media-type="application/xhtml+xml" href="Text/part0141.xhtml"/>
+    <item id="x_chapter140.xhtml" media-type="application/xhtml+xml" href="Text/part0142.xhtml"/>
+    <item id="x_chapter141.xhtml" media-type="application/xhtml+xml" href="Text/part0143.xhtml"/>
+    <item id="x_chapter142.xhtml" media-type="application/xhtml+xml" href="Text/part0144.xhtml"/>
+    <item id="x_chapter143.xhtml" media-type="application/xhtml+xml" href="Text/part0145.xhtml"/>
+    <item id="x_chapter144.xhtml" media-type="application/xhtml+xml" href="Text/part0146.xhtml"/>
+    <item id="x_chapter145.xhtml" media-type="application/xhtml+xml" href="Text/part0147.xhtml"/>
+    <item id="x_chapter146.xhtml" media-type="application/xhtml+xml" href="Text/part0148.xhtml"/>
+    <item id="x_chapter147.xhtml" media-type="application/xhtml+xml" href="Text/part0149.xhtml"/>
+    <item id="x_chapter148.xhtml" media-type="application/xhtml+xml" href="Text/part0150.xhtml"/>
+    <item id="x_chapter149.xhtml" media-type="application/xhtml+xml" href="Text/part0151.xhtml"/>
+    <item id="x_chapter150.xhtml" media-type="application/xhtml+xml" href="Text/part0152.xhtml"/>
+    <item id="x_chapter151.xhtml" media-type="application/xhtml+xml" href="Text/part0153.xhtml"/>
+    <item id="x_chapter152.xhtml" media-type="application/xhtml+xml" href="Text/part0154.xhtml"/>
+    <item id="x_chapter153.xhtml" media-type="application/xhtml+xml" href="Text/part0155.xhtml"/>
+    <item id="x_chapter154.xhtml" media-type="application/xhtml+xml" href="Text/part0156.xhtml"/>
+    <item id="x_chapter155.xhtml" media-type="application/xhtml+xml" href="Text/part0157.xhtml"/>
+    <item id="x_chapter156.xhtml" media-type="application/xhtml+xml" href="Text/part0158.xhtml"/>
+    <item id="x_chapter157.xhtml" media-type="application/xhtml+xml" href="Text/part0159.xhtml"/>
+    <item id="x_chapter158.xhtml" media-type="application/xhtml+xml" href="Text/part0160.xhtml"/>
+    <item id="x_chapter159.xhtml" media-type="application/xhtml+xml" href="Text/part0161.xhtml"/>
+    <item id="x_chapter160.xhtml" media-type="application/xhtml+xml" href="Text/part0162.xhtml"/>
+    <item id="x_chapter161.xhtml" media-type="application/xhtml+xml" href="Text/part0163.xhtml"/>
+    <item id="x_chapter162.xhtml" media-type="application/xhtml+xml" href="Text/part0164.xhtml"/>
+    <item id="x_chapter163.xhtml" media-type="application/xhtml+xml" href="Text/part0165.xhtml"/>
+    <item id="x_chapter164.xhtml" media-type="application/xhtml+xml" href="Text/part0166.xhtml"/>
+    <item id="x_chapter165.xhtml" media-type="application/xhtml+xml" href="Text/part0167.xhtml"/>
+    <item id="x_chapter166.xhtml" media-type="application/xhtml+xml" href="Text/part0168.xhtml"/>
+    <item id="x_chapter167.xhtml" media-type="application/xhtml+xml" href="Text/part0169.xhtml"/>
+    <item id="x_chapter168.xhtml" media-type="application/xhtml+xml" href="Text/part0170.xhtml"/>
+    <item id="x_chapter169.xhtml" media-type="application/xhtml+xml" href="Text/part0171.xhtml"/>
+    <item id="x_chapter170.xhtml" media-type="application/xhtml+xml" href="Text/part0172.xhtml"/>
+    <item id="x_chapter171.xhtml" media-type="application/xhtml+xml" href="Text/part0173.xhtml"/>
+    <item id="x_chapter172.xhtml" media-type="application/xhtml+xml" href="Text/part0174.xhtml"/>
+    <item id="x_chapter173.xhtml" media-type="application/xhtml+xml" href="Text/part0175.xhtml"/>
+    <item id="x_chapter174.xhtml" media-type="application/xhtml+xml" href="Text/part0176.xhtml"/>
+    <item id="x_chapter175.xhtml" media-type="application/xhtml+xml" href="Text/part0177.xhtml"/>
+    <item id="x_chapter176.xhtml" media-type="application/xhtml+xml" href="Text/part0178.xhtml"/>
+    <item id="x_chapter177.xhtml" media-type="application/xhtml+xml" href="Text/part0179.xhtml"/>
+    <item id="x_chapter178.xhtml" media-type="application/xhtml+xml" href="Text/part0180.xhtml"/>
+    <item id="x_chapter179.xhtml" media-type="application/xhtml+xml" href="Text/part0181.xhtml"/>
+    <item id="x_chapter180.xhtml" media-type="application/xhtml+xml" href="Text/part0182.xhtml"/>
+    <item id="x_chapter181.xhtml" media-type="application/xhtml+xml" href="Text/part0183.xhtml"/>
+    <item id="x_chapter182.xhtml" media-type="application/xhtml+xml" href="Text/part0184.xhtml"/>
+    <item id="x_chapter183.xhtml" media-type="application/xhtml+xml" href="Text/part0185.xhtml"/>
+    <item id="x_chapter184.xhtml" media-type="application/xhtml+xml" href="Text/part0186.xhtml"/>
+    <item id="ncx" media-type="application/x-dtbncx+xml" href="toc.ncx"/>
+    <item id="item188" media-type="text/css" href="Styles/style0001.css"/>
+    <item id="x_2b4d37d6-72ee-4c42-9be5-ba77f5733969" media-type="image/jpeg" href="Images/cover00284.jpeg"/>
+    <item id="item189" media-type="image/jpeg" href="Images/image00263.jpeg"/>
+    <item id="item190" media-type="image/jpeg" href="Images/image00264.jpeg"/>
+    <item id="item191" media-type="image/jpeg" href="Images/image00265.jpeg"/>
+    <item id="item192" media-type="image/jpeg" href="Images/image00266.jpeg"/>
+    <item id="item193" media-type="image/jpeg" href="Images/image00267.jpeg"/>
+    <item id="item194" media-type="image/jpeg" href="Images/image00268.jpeg"/>
+    <item id="item195" media-type="image/jpeg" href="Images/image00269.jpeg"/>
+    <item id="item196" media-type="image/jpeg" href="Images/image00270.jpeg"/>
+    <item id="item197" media-type="image/jpeg" href="Images/image00271.jpeg"/>
+    <item id="item198" media-type="image/jpeg" href="Images/image00272.jpeg"/>
+    <item id="item199" media-type="image/jpeg" href="Images/image00273.jpeg"/>
+    <item id="item200" media-type="image/jpeg" href="Images/image00274.jpeg"/>
+    <item id="item201" media-type="image/jpeg" href="Images/image00275.jpeg"/>
+    <item id="item202" media-type="image/jpeg" href="Images/image00276.jpeg"/>
+    <item id="item203" media-type="image/jpeg" href="Images/image00277.jpeg"/>
+    <item id="item204" media-type="image/jpeg" href="Images/image00278.jpeg"/>
+    <item id="item205" media-type="image/jpeg" href="Images/image00279.jpeg"/>
+    <item id="item206" media-type="image/jpeg" href="Images/image00280.jpeg"/>
+    <item id="item207" media-type="image/jpeg" href="Images/image00281.jpeg"/>
+    <item id="item208" media-type="image/jpeg" href="Images/image00282.jpeg"/>
+    <item id="item209" media-type="image/jpeg" href="Images/image00283.jpeg"/>
+    <item href="Text/3.html" id="id" media-type="application/xhtml+xml"/>
+    <item href="Text/33.html" id="id1" media-type="application/xhtml+xml"/>
+    <item href="Images/1234.jpeg" id="id2" media-type="image/jpeg"/>
+    <item href="Images/12345.jpeg" id="id3" media-type="image/jpeg"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="x_copyright.xhtml"/>
+    <itemref idref="x_content"/>
+    <itemref idref="id"/>
+    <itemref idref="x_chapter.xhtml"/>
+    <itemref idref="x_chapter1.xhtml"/>
+    <itemref idref="x_chapter2.xhtml"/>
+    <itemref idref="x_chapter3.xhtml"/>
+    <itemref idref="x_chapter4.xhtml"/>
+    <itemref idref="x_chapter5.xhtml"/>
+    <itemref idref="x_chapter6.xhtml"/>
+    <itemref idref="x_chapter7.xhtml"/>
+    <itemref idref="x_chapter8.xhtml"/>
+    <itemref idref="x_chapter9.xhtml"/>
+    <itemref idref="x_chapter10.xhtml"/>
+    <itemref idref="x_chapter11.xhtml"/>
+    <itemref idref="x_chapter12.xhtml"/>
+    <itemref idref="x_chapter13.xhtml"/>
+    <itemref idref="x_chapter14.xhtml"/>
+    <itemref idref="x_chapter15.xhtml"/>
+    <itemref idref="x_chapter16.xhtml"/>
+    <itemref idref="x_chapter17.xhtml"/>
+    <itemref idref="x_chapter18.xhtml"/>
+    <itemref idref="x_chapter19.xhtml"/>
+    <itemref idref="x_chapter20.xhtml"/>
+    <itemref idref="x_chapter21.xhtml"/>
+    <itemref idref="x_chapter22.xhtml"/>
+    <itemref idref="x_chapter23.xhtml"/>
+    <itemref idref="x_chapter24.xhtml"/>
+    <itemref idref="x_chapter25.xhtml"/>
+    <itemref idref="x_chapter26.xhtml"/>
+    <itemref idref="x_chapter27.xhtml"/>
+    <itemref idref="x_chapter28.xhtml"/>
+    <itemref idref="x_chapter29.xhtml"/>
+    <itemref idref="x_chapter30.xhtml"/>
+    <itemref idref="x_chapter31.xhtml"/>
+    <itemref idref="x_chapter32.xhtml"/>
+    <itemref idref="x_chapter33.xhtml"/>
+    <itemref idref="x_chapter34.xhtml"/>
+    <itemref idref="x_chapter35.xhtml"/>
+    <itemref idref="x_chapter36.xhtml"/>
+    <itemref idref="x_chapter37.xhtml"/>
+    <itemref idref="x_chapter38.xhtml"/>
+    <itemref idref="x_chapter39.xhtml"/>
+    <itemref idref="x_chapter40.xhtml"/>
+    <itemref idref="x_chapter41.xhtml"/>
+    <itemref idref="x_chapter42.xhtml"/>
+    <itemref idref="x_chapter43.xhtml"/>
+    <itemref idref="x_chapter44.xhtml"/>
+    <itemref idref="x_chapter45.xhtml"/>
+    <itemref idref="x_chapter46.xhtml"/>
+    <itemref idref="x_chapter47.xhtml"/>
+    <itemref idref="x_chapter48.xhtml"/>
+    <itemref idref="x_chapter49.xhtml"/>
+    <itemref idref="x_chapter50.xhtml"/>
+    <itemref idref="x_chapter51.xhtml"/>
+    <itemref idref="x_chapter52.xhtml"/>
+    <itemref idref="x_chapter53.xhtml"/>
+    <itemref idref="x_chapter54.xhtml"/>
+    <itemref idref="x_chapter55.xhtml"/>
+    <itemref idref="x_chapter56.xhtml"/>
+    <itemref idref="x_chapter57.xhtml"/>
+    <itemref idref="x_chapter58.xhtml"/>
+    <itemref idref="x_chapter59.xhtml"/>
+    <itemref idref="x_chapter60.xhtml"/>
+    <itemref idref="x_chapter61.xhtml"/>
+    <itemref idref="x_chapter62.xhtml"/>
+    <itemref idref="x_chapter63.xhtml"/>
+    <itemref idref="x_chapter64.xhtml"/>
+    <itemref idref="x_chapter65.xhtml"/>
+    <itemref idref="x_chapter66.xhtml"/>
+    <itemref idref="x_chapter67.xhtml"/>
+    <itemref idref="x_chapter68.xhtml"/>
+    <itemref idref="x_chapter69.xhtml"/>
+    <itemref idref="x_chapter70.xhtml"/>
+    <itemref idref="x_chapter71.xhtml"/>
+    <itemref idref="x_chapter72.xhtml"/>
+    <itemref idref="x_chapter73.xhtml"/>
+    <itemref idref="x_chapter74.xhtml"/>
+    <itemref idref="x_chapter75.xhtml"/>
+    <itemref idref="x_chapter76.xhtml"/>
+    <itemref idref="x_chapter77.xhtml"/>
+    <itemref idref="x_chapter78.xhtml"/>
+    <itemref idref="x_chapter79.xhtml"/>
+    <itemref idref="x_chapter80.xhtml"/>
+    <itemref idref="x_chapter81.xhtml"/>
+    <itemref idref="x_chapter82.xhtml"/>
+    <itemref idref="x_chapter83.xhtml"/>
+    <itemref idref="x_chapter84.xhtml"/>
+    <itemref idref="x_chapter85.xhtml"/>
+    <itemref idref="x_chapter86.xhtml"/>
+    <itemref idref="x_chapter87.xhtml"/>
+    <itemref idref="x_chapter88.xhtml"/>
+    <itemref idref="x_chapter89.xhtml"/>
+    <itemref idref="x_chapter90.xhtml"/>
+    <itemref idref="x_chapter91.xhtml"/>
+    <itemref idref="x_chapter92.xhtml"/>
+    <itemref idref="x_chapter93.xhtml"/>
+    <itemref idref="x_chapter94.xhtml"/>
+    <itemref idref="x_chapter95.xhtml"/>
+    <itemref idref="x_chapter96.xhtml"/>
+    <itemref idref="x_chapter97.xhtml"/>
+    <itemref idref="x_chapter98.xhtml"/>
+    <itemref idref="x_chapter99.xhtml"/>
+    <itemref idref="x_chapter100.xhtml"/>
+    <itemref idref="x_chapter101.xhtml"/>
+    <itemref idref="x_chapter102.xhtml"/>
+    <itemref idref="x_chapter103.xhtml"/>
+    <itemref idref="x_chapter104.xhtml"/>
+    <itemref idref="x_chapter105.xhtml"/>
+    <itemref idref="x_chapter106.xhtml"/>
+    <itemref idref="x_chapter107.xhtml"/>
+    <itemref idref="x_chapter108.xhtml"/>
+    <itemref idref="x_chapter109.xhtml"/>
+    <itemref idref="x_chapter110.xhtml"/>
+    <itemref idref="x_chapter111.xhtml"/>
+    <itemref idref="x_chapter112.xhtml"/>
+    <itemref idref="x_chapter113.xhtml"/>
+    <itemref idref="x_chapter114.xhtml"/>
+    <itemref idref="x_chapter115.xhtml"/>
+    <itemref idref="x_chapter116.xhtml"/>
+    <itemref idref="x_chapter117.xhtml"/>
+    <itemref idref="x_chapter118.xhtml"/>
+    <itemref idref="x_chapter119.xhtml"/>
+    <itemref idref="x_chapter120.xhtml"/>
+    <itemref idref="x_chapter121.xhtml"/>
+    <itemref idref="x_chapter122.xhtml"/>
+    <itemref idref="x_chapter123.xhtml"/>
+    <itemref idref="x_chapter124.xhtml"/>
+    <itemref idref="x_chapter125.xhtml"/>
+    <itemref idref="x_chapter126.xhtml"/>
+    <itemref idref="x_chapter127.xhtml"/>
+    <itemref idref="x_chapter128.xhtml"/>
+    <itemref idref="x_chapter129.xhtml"/>
+    <itemref idref="x_chapter130.xhtml"/>
+    <itemref idref="x_chapter131.xhtml"/>
+    <itemref idref="x_chapter132.xhtml"/>
+    <itemref idref="x_chapter133.xhtml"/>
+    <itemref idref="x_chapter134.xhtml"/>
+    <itemref idref="x_chapter135.xhtml"/>
+    <itemref idref="x_chapter136.xhtml"/>
+    <itemref idref="x_chapter137.xhtml"/>
+    <itemref idref="x_chapter138.xhtml"/>
+    <itemref idref="x_chapter139.xhtml"/>
+    <itemref idref="x_chapter140.xhtml"/>
+    <itemref idref="x_chapter141.xhtml"/>
+    <itemref idref="x_chapter142.xhtml"/>
+    <itemref idref="x_chapter143.xhtml"/>
+    <itemref idref="x_chapter144.xhtml"/>
+    <itemref idref="x_chapter145.xhtml"/>
+    <itemref idref="x_chapter146.xhtml"/>
+    <itemref idref="x_chapter147.xhtml"/>
+    <itemref idref="x_chapter148.xhtml"/>
+    <itemref idref="x_chapter149.xhtml"/>
+    <itemref idref="x_chapter150.xhtml"/>
+    <itemref idref="x_chapter151.xhtml"/>
+    <itemref idref="x_chapter152.xhtml"/>
+    <itemref idref="x_chapter153.xhtml"/>
+    <itemref idref="x_chapter154.xhtml"/>
+    <itemref idref="x_chapter155.xhtml"/>
+    <itemref idref="x_chapter156.xhtml"/>
+    <itemref idref="x_chapter157.xhtml"/>
+    <itemref idref="x_chapter158.xhtml"/>
+    <itemref idref="x_chapter159.xhtml"/>
+    <itemref idref="x_chapter160.xhtml"/>
+    <itemref idref="x_chapter161.xhtml"/>
+    <itemref idref="x_chapter162.xhtml"/>
+    <itemref idref="x_chapter163.xhtml"/>
+    <itemref idref="x_chapter164.xhtml"/>
+    <itemref idref="x_chapter165.xhtml"/>
+    <itemref idref="x_chapter166.xhtml"/>
+    <itemref idref="x_chapter167.xhtml"/>
+    <itemref idref="x_chapter168.xhtml"/>
+    <itemref idref="x_chapter169.xhtml"/>
+    <itemref idref="x_chapter170.xhtml"/>
+    <itemref idref="x_chapter171.xhtml"/>
+    <itemref idref="x_chapter172.xhtml"/>
+    <itemref idref="x_chapter173.xhtml"/>
+    <itemref idref="x_chapter174.xhtml"/>
+    <itemref idref="x_chapter175.xhtml"/>
+    <itemref idref="x_chapter176.xhtml"/>
+    <itemref idref="x_chapter177.xhtml"/>
+    <itemref idref="x_chapter178.xhtml"/>
+    <itemref idref="x_chapter179.xhtml"/>
+    <itemref idref="x_chapter180.xhtml"/>
+    <itemref idref="x_chapter181.xhtml"/>
+    <itemref idref="x_chapter182.xhtml"/>
+    <itemref idref="x_chapter183.xhtml"/>
+    <itemref idref="x_chapter184.xhtml"/>
+    <itemref idref="id1"/>
+    <itemref idref="x_cover.xhtml" linear="no"/>
+    </spine>
+  <tours>
+    </tours>
+  <guide>
+    <reference type="toc" title="Table of Contents" href="Text/part0001.xhtml"/>
+    <reference type="cover" title="Cover" href="Text/cover_page.xhtml"/>
+  </guide>
+</package>
