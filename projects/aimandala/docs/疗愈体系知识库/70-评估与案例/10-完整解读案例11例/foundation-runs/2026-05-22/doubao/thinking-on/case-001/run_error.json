@@ -1,9 +1,0 @@
-{
-  "case_id": "case-001",
-  "status": "failed",
-  "error": "vision_model_failed: empty or invalid visual_observation payload {\"last_error_detail\": {\"kind\": \"timeout\", \"timeout_seconds\": 240, \"task_model\": \"ep-20260316095322-94wf5\", \"base_url\": \"https://ark.cn-beijing.volces.com/api/v3\"}, \"last_attempt_trace\": [{\"model\": \"ep-20260316095322-94wf5\", \"base_url\": \"https://ark.cn-beijing.volces.com/api/v3\", \"endpoint_url\": \"https://ark.cn-beijing.volces.com/api/v3/chat/completions\", \"result\": \"timeout\", \"timeout_seconds\": 240}]}",
-  "output_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/foundation-runs/2026-05-22/doubao/thinking-on/case-001",
-  "started_at": "2026-05-22T13:11:08.832128+00:00",
-  "finished_at": "2026-05-22T13:15:09.487507+00:00",
-  "duration_seconds": 240.655
-}
