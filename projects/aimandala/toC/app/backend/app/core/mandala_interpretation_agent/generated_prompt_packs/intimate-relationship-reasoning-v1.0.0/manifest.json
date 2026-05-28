@@ -1,7 +1,9 @@
 {
   "pack_id": "intimate-relationship-reasoning-v1.0.0",
-  "topic_root": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/20-亲密关系",
-  "app_adaptation_root": "projects/aimandala/docs/疗愈体系知识库/30-应用适配/10-aimandala",
+  "topic_key": "intimate-relationship",
+  "topic_label": "亲密关系",
+  "topic_root": "aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/20-亲密关系",
+  "app_adaptation_root": "aimandala/docs/疗愈体系知识库/30-应用适配/10-aimandala",
   "file_order": [
     "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/01-基础信号亲密关系翻译总表.md",
     "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/02-报告路由位置说明.md",

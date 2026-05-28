@@ -18,6 +18,13 @@ from app.core.mandala_interpretation_agent.intimate_relationship_prompt_pack_bui
     IntimateRelationshipPromptPackBuilder,
 )
 from app.core.mandala_interpretation_agent.prompt_pack_builder import PromptPackBuilder
+from app.core.mandala_interpretation_agent.topic_prompt_pack_builder import (
+    TopicPromptPackBuilder,
+)
+from app.core.mandala_interpretation_agent.topic_prompt_pack_registry import (
+    TOPIC_PROMPT_PACK_CONFIGS,
+    get_topic_config,
+)
 from app.core.mandala_interpretation_agent.wealth_prompt_pack_builder import (
     WealthPromptPackBuilder,
 )
@@ -119,7 +126,7 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
 
     assert "## 整体画面" in result.visual_draft["visual_draft_md"]
     assert "## 三圈观察" in result.visual_draft["visual_draft_md"]
-    assert result.prompt_pack_manifest["pack_id"] == "wealth-report-v1.0.0"
+    assert result.prompt_pack_manifest["pack_id"] == "topic-report-v1.0.0"
     assert result.final_report["report_mode"] == "lite"
     assert result.quality_gate["passed"] is True
     assert result.run_summary["status"] == "complete"
@@ -128,7 +135,7 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
     assert result.run_summary["production_role"] == "default_production"
     assert result.visual_draft["reusable_visual_baseline"] is True
     assert result.run_summary["foundation_prompt_pack"]["pack_id"] == "foundation-vision-v1.0.0"
-    assert result.run_summary["wealth_prompt_pack"]["pack_id"] == "wealth-reasoning-v1.0.0"
+    assert result.run_summary["topic_prompt_pack"]["pack_id"] == "wealth-reasoning-v1.0.0"
     vision_text_call = llm_client.text_calls[0]
     report_text_call = llm_client.text_calls[1]
     assert vision_text_call["task"] == "vision"
@@ -176,7 +183,7 @@ def test_quality_gate_flags_cross_circle_five_element_leak():
         visual_draft={
             "visual_draft_md": "## 三圈能量流动\n这里出现水克火与金克火。",
         },
-        prompt_pack_manifest={"pack_id": "wealth-report-v1.0.0"},
+        prompt_pack_manifest={"pack_id": "topic-report-v1.0.0"},
         final_report_md="# 财富关系曼陀罗解读报告",
         final_report={"report_id": "report-1"},
     )
@@ -192,7 +199,7 @@ def test_quality_gate_does_not_flag_normal_flow_words():
         visual_draft={
             "visual_draft_md": "## 三圈能量流动\n内圈能量形成承接，外圈趋于堵塞。",
         },
-        prompt_pack_manifest={"pack_id": "wealth-report-v1.0.0"},
+        prompt_pack_manifest={"pack_id": "topic-report-v1.0.0"},
         final_report_md="# 财富关系曼陀罗解读报告",
         final_report={"report_id": "report-1"},
     )
@@ -256,8 +263,8 @@ def test_pro_report_mode_remains_internal_prelaunch(tmp_path):
 def test_prompt_pack_builder_uses_real_files():
     pack = PromptPackBuilder().build()
 
-    assert pack.pack_id == "wealth-report-v1.0.0"
-    assert pack.manifest["file_order"] == ["lite-report-prompt.md"]
+    assert pack.pack_id == "topic-report-v1.0.0"
+    assert pack.manifest["file_order"] == ["topic-lite-report-prompt.md"]
     assert pack.manifest["file_count"] == 1
     assert pack.manifest["prompt_budget"]["estimated_tokens"] > 0
     assert pack.manifest["prompt_budget"]["warning_level"] == "none"
@@ -271,11 +278,19 @@ def test_prompt_pack_builder_uses_real_files():
 def test_prompt_pack_builder_uses_pro_files():
     pack = PromptPackBuilder(report_mode="pro").build()
 
-    assert pack.pack_id == "wealth-report-v1.0.0"
-    assert pack.manifest["file_order"] == ["pro-report-prompt.md"]
+    assert pack.pack_id == "topic-report-v1.0.0"
+    assert pack.manifest["file_order"] == ["topic-pro-report-prompt.md"]
     assert pack.manifest["file_count"] == 1
     assert "一梳 Pro 版" in pack.stable_prefix
     assert "一镜 Lite 版" not in pack.stable_prefix
+
+
+def test_prompt_pack_builder_keeps_legacy_wealth_pack_available():
+    pack = PromptPackBuilder(pack_id="wealth-report-v1.0.0").build()
+
+    assert pack.pack_id == "wealth-report-v1.0.0"
+    assert pack.manifest["file_order"] == ["lite-report-prompt.md"]
+    assert "财富关系" in pack.stable_prefix
 
 
 def test_foundation_prompt_pack_builder_uses_mandala_foundation_documents():
@@ -328,6 +343,50 @@ def test_intimate_relationship_prompt_pack_builder_uses_topic_and_report_documen
     assert "20-亲密关系/12-亲密关系中的背景线索回译规则.md" in pack.stable_prefix
     assert "30-应用适配/10-aimandala/06b-亲密关系议题解读报告模板.md" in pack.stable_prefix
     assert "30-应用适配/10-aimandala/07-报告语言风格指南.md" in pack.stable_prefix
+
+
+def test_topic_prompt_pack_registry_covers_all_report_topics():
+    assert len(TOPIC_PROMPT_PACK_CONFIGS) == 8
+    for config in TOPIC_PROMPT_PACK_CONFIGS:
+        pack = TopicPromptPackBuilder(config=config, use_generated=False).build_from_sources()
+
+        assert pack.pack_id == config.pack_id
+        assert pack.manifest["topic_key"] == config.topic_key
+        assert pack.manifest["topic_label"] == config.label
+        assert pack.manifest["file_count"] >= 8
+        assert pack.manifest["prompt_budget"]["warning_level"] == "none"
+        assert config.report_template_file in pack.stable_prefix
+
+
+def test_agent_selects_topic_prompt_pack_from_user_theme(tmp_path):
+    llm_client = StubE2ELLMClient()
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+    agent_input = MandalaAgentInput(
+        report_mode="lite",
+        image=MandalaImageInput(local_path=str(image_path)),
+        user_context=MandalaUserContext(
+            theme="intimate_relationship",
+            theme_label="亲密关系",
+            painting_intention="想看亲密关系模式",
+            painting_feeling="有点拉扯",
+        ),
+        circle_boundaries={
+            "inner_radius": 35,
+            "middle_radius": 65,
+            "radius_unit": "normalized_percent",
+            "source": "manual",
+        },
+        output_requirements=MandalaOutputRequirements(),
+    )
+
+    result = MandalaInterpretationAgent(llm_client=llm_client).run(agent_input=agent_input)
+
+    assert result.final_report["title"] == "亲密关系曼陀罗解读报告"
+    assert result.run_summary["topic_prompt_pack"]["pack_id"] == get_topic_config(
+        "intimate-relationship"
+    ).pack_id
+    assert "20-亲密关系/11-亲密关系议题手册.md" in llm_client.text_calls[1]["system_prompt"]
 
 
 def test_generated_prompt_pack_precedence(tmp_path):

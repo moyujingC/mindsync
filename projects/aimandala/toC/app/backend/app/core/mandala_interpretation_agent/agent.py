@@ -13,7 +13,8 @@ from .foundation_prompt_pack_builder import FoundationPromptPackBuilder
 from .prompt_loader import load_prompt_template
 from .prompt_pack_builder import PromptPackBuilder
 from .quality_gate import run_quality_gate
-from .wealth_prompt_pack_builder import WealthPromptPackBuilder
+from .topic_prompt_pack_builder import TopicPromptPackBuilder
+from .topic_prompt_pack_registry import get_topic_config_for_theme
 
 
 class MandalaInterpretationAgent:
@@ -29,9 +30,15 @@ class MandalaInterpretationAgent:
         knowledge_pack: dict[str, Any] | None = None,
         disable_thinking: bool | None = None,
     ) -> MandalaAgentResult:
-        prompt_pack = PromptPackBuilder(pack_id=agent_input.prompt_pack_id, report_mode=agent_input.report_mode).build()
+        topic_config = get_topic_config_for_theme(agent_input.user_context.theme)
+        topic_label = topic_config.label
+        prompt_pack = PromptPackBuilder(
+            pack_id=agent_input.prompt_pack_id,
+            report_mode=agent_input.report_mode,
+            topic_label=topic_label,
+        ).build()
         foundation_prompt_pack = FoundationPromptPackBuilder().build()
-        wealth_prompt_pack = WealthPromptPackBuilder().build()
+        topic_prompt_pack = TopicPromptPackBuilder(config=topic_config).build()
         if agent_input.agent_variant == "single_pass_e2e":
             visual_draft = {
                 "agent_variant": "single_pass_e2e",
@@ -44,7 +51,8 @@ class MandalaInterpretationAgent:
                 agent_input=agent_input,
                 prompt_pack=prompt_pack,
                 foundation_prompt_pack=foundation_prompt_pack,
-                wealth_prompt_pack=wealth_prompt_pack,
+                topic_prompt_pack=topic_prompt_pack,
+                topic_label=topic_label,
                 disable_thinking=disable_thinking,
             )
         else:
@@ -60,14 +68,15 @@ class MandalaInterpretationAgent:
                 agent_input=agent_input,
                 prompt_pack=prompt_pack,
                 foundation_prompt_pack=foundation_prompt_pack,
-                wealth_prompt_pack=wealth_prompt_pack,
+                topic_prompt_pack=topic_prompt_pack,
+                topic_label=topic_label,
                 visual_draft=visual_draft,
                 disable_thinking=disable_thinking,
             )
         final_report = {
             "report_id": f"mandala-e2e-{uuid4().hex[:12]}",
             "report_mode": agent_input.report_mode,
-            "title": "财富关系曼陀罗解读报告",
+            "title": f"{topic_label}曼陀罗解读报告",
             "markdown": final_report_md,
         }
         quality_gate = run_quality_gate(
@@ -75,6 +84,7 @@ class MandalaInterpretationAgent:
             prompt_pack_manifest=prompt_pack.manifest,
             final_report_md=final_report_md,
             final_report=final_report,
+            topic_label=topic_label,
         )
         run_summary = {
             "agent_version": agent_input.agent_version,
@@ -88,7 +98,7 @@ class MandalaInterpretationAgent:
             "report_mode": agent_input.report_mode,
             "prompt_pack_id": prompt_pack.pack_id,
             "foundation_prompt_pack": foundation_prompt_pack.manifest,
-            "wealth_prompt_pack": wealth_prompt_pack.manifest,
+            "topic_prompt_pack": topic_prompt_pack.manifest,
             "status": "complete" if quality_gate["passed"] else "failed_quality_gate",
             "prompt_cache": {
                 "hit_tokens": int(getattr(self.llm_client, "last_prompt_cache_hit_tokens", 0) or 0),
@@ -183,19 +193,20 @@ class MandalaInterpretationAgent:
         agent_input: MandalaAgentInput,
         prompt_pack,
         foundation_prompt_pack,
-        wealth_prompt_pack,
+        topic_prompt_pack,
+        topic_label: str,
         visual_draft: dict[str, Any],
         disable_thinking: bool | None,
     ) -> str:
         user_prompt = "\n\n".join(
             [
                 f"报告模式：{agent_input.report_mode}",
-                f"用户主题：{agent_input.user_context.theme_label}",
+                f"用户主题：{topic_label}",
                 f"用户意图：{agent_input.user_context.painting_intention}",
                 f"用户感受：{agent_input.user_context.painting_feeling}",
                 "视觉草稿：",
                 json.dumps(visual_draft, ensure_ascii=False, indent=2),
-                "请直接输出用户可读的财富关系 Markdown 报告。",
+                f"请直接输出用户可读的{topic_label} Markdown 报告。",
             ]
         )
         text = self.llm_client.generate_text(
@@ -203,7 +214,7 @@ class MandalaInterpretationAgent:
             system_prompt="\n\n".join(
                 [
                     foundation_prompt_pack.stable_prefix,
-                    wealth_prompt_pack.stable_prefix,
+                    topic_prompt_pack.stable_prefix,
                     "# 报告生成稳定规则",
                     prompt_pack.stable_prefix,
                 ]
@@ -221,23 +232,24 @@ class MandalaInterpretationAgent:
         agent_input: MandalaAgentInput,
         prompt_pack,
         foundation_prompt_pack,
-        wealth_prompt_pack,
+        topic_prompt_pack,
+        topic_label: str,
         disable_thinking: bool | None,
     ) -> str:
         system_prompt = "\n\n".join(
             [
                 foundation_prompt_pack.stable_prefix,
-                wealth_prompt_pack.stable_prefix,
+                topic_prompt_pack.stable_prefix,
                 prompt_pack.stable_prefix,
             ]
         )
         user_prompt = "\n\n".join(
             [
                 "你正在执行方案 B：单阶段端到端直出。",
-                "请一次性查看用户原画作和三圈标记图，内部完成画面观察、圈内五行识别、圈内五行关系、三圈能量流动判断，再直接输出用户可读的财富关系 Markdown 报告。",
+                f"请一次性查看用户原画作和三圈标记图，内部完成画面观察、圈内五行识别、圈内五行关系、三圈能量流动判断，再直接输出用户可读的{topic_label} Markdown 报告。",
                 "不要输出 JSON，不要输出独立视觉草稿，不要泄漏内部推理过程。",
                 f"报告模式：{agent_input.report_mode}",
-                f"用户主题：{agent_input.user_context.theme_label}",
+                f"用户主题：{topic_label}",
                 f"用户意图：{agent_input.user_context.painting_intention}",
                 f"用户感受：{agent_input.user_context.painting_feeling}",
             ]

@@ -43,7 +43,7 @@ class StubRouteLLMClient:
                 "内圈蓝色中心，中圈粉色和紫色重复单元，外圈留白与紫色矩形构成主要视觉结构。\n"
             )
         return (
-            "# 财富议题曼陀罗解读报告\n\n"
+            "# 财富关系曼陀罗解读报告\n\n"
             "## 整体感受\n"
             "这幅画先给人的感觉是先收住，再向外展开。\n\n"
             "## 三圈观察\n"
@@ -53,7 +53,7 @@ class StubRouteLLMClient:
             "## 跨圈衔接\n"
             "三圈之间是先展开后收束的结构。\n\n"
             "## 财富主线\n"
-            "财富议题更像是先稳住承载，再进入交换。\n\n"
+            "财富关系更像是先稳住承载，再进入交换。\n\n"
             "## 后续建议\n"
             "可以先做一个很小的价值表达动作。\n"
         )
@@ -84,7 +84,7 @@ def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
     assert payload["report_mode"] == "lite"
     assert payload["final_report_md"]
     assert payload["visual_draft"]
-    assert payload["prompt_pack_manifest"]["pack_id"] == "wealth-report-v1.0.0"
+    assert payload["prompt_pack_manifest"]["pack_id"] == "topic-report-v1.0.0"
     assert payload["quality_gate"]["passed"] is True
     assert payload["run_summary"]["status"] == "complete"
 

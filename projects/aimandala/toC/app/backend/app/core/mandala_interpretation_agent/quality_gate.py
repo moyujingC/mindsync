@@ -47,6 +47,7 @@ def run_quality_gate(
     prompt_pack_manifest: dict[str, Any],
     final_report_md: str,
     final_report: dict[str, Any],
+    topic_label: str = "财富关系",
 ) -> dict[str, Any]:
     failure_ids: list[str] = []
 
@@ -83,8 +84,8 @@ def run_quality_gate(
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
 
-    if "财富关系" not in final_report_md:
-        failure_ids.append("missing_wealth_topic")
+    if topic_label and topic_label not in final_report_md:
+        failure_ids.append("missing_topic_label")
 
     if not final_report.get("report_id"):
         failure_ids.append("missing_report_id")

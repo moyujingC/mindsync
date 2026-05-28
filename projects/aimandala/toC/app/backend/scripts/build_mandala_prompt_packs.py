@@ -18,11 +18,12 @@ if str(BACKEND_ROOT) not in sys.path:
 from app.core.mandala_interpretation_agent.foundation_prompt_pack_builder import (  # noqa: E402
     FoundationPromptPackBuilder,
 )
-from app.core.mandala_interpretation_agent.intimate_relationship_prompt_pack_builder import (  # noqa: E402
-    IntimateRelationshipPromptPackBuilder,
+from app.core.mandala_interpretation_agent.topic_prompt_pack_builder import (  # noqa: E402
+    TopicPromptPackBuilder,
 )
-from app.core.mandala_interpretation_agent.wealth_prompt_pack_builder import (  # noqa: E402
-    WealthPromptPackBuilder,
+from app.core.mandala_interpretation_agent.topic_prompt_pack_registry import (  # noqa: E402
+    TOPIC_CONFIG_BY_KEY,
+    TOPIC_PROMPT_PACK_CONFIGS,
 )
 
 
@@ -34,12 +35,11 @@ GENERATED_ROOT = (
     / "generated_prompt_packs"
 )
 
-PACK_BUILDERS = {
-    "foundation": FoundationPromptPackBuilder,
-    "intimate-relationship": IntimateRelationshipPromptPackBuilder,
-    "wealth": WealthPromptPackBuilder,
-    "wealth-relationship": WealthPromptPackBuilder,
-    "all": None,
+PACK_TOPICS = {
+    "foundation",
+    "wealth",
+    "all",
+    *TOPIC_CONFIG_BY_KEY.keys(),
 }
 
 
@@ -54,7 +54,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--topic",
-        choices=sorted(PACK_BUILDERS),
+        choices=sorted(PACK_TOPICS),
         default="all",
         help="Prompt pack topic to rebuild.",
     )
@@ -67,7 +67,7 @@ def main() -> int:
 
     output_root = Path(args.output_root)
     pack_builders = _pack_builders_for_topic(args.topic)
-    packs = [builder(use_generated=False).build_from_sources() for builder in pack_builders]
+    packs = [builder().build_from_sources() for builder in pack_builders]
     report_entries: list[dict[str, Any]] = []
     for pack in packs:
         pack_dir = output_root / pack.pack_id
@@ -111,14 +111,19 @@ def main() -> int:
 def _pack_builders_for_topic(topic: str):
     if topic == "all":
         return [
-            FoundationPromptPackBuilder,
-            WealthPromptPackBuilder,
-            IntimateRelationshipPromptPackBuilder,
+            lambda: FoundationPromptPackBuilder(use_generated=False),
+            *[
+                lambda config=config: TopicPromptPackBuilder(config=config, use_generated=False)
+                for config in TOPIC_PROMPT_PACK_CONFIGS
+            ],
         ]
-    builder = PACK_BUILDERS[topic]
-    if builder is None:
+    if topic == "foundation":
+        return [lambda: FoundationPromptPackBuilder(use_generated=False)]
+    topic_key = "wealth-relationship" if topic == "wealth" else topic
+    if topic_key not in TOPIC_CONFIG_BY_KEY:
         raise ValueError(f"unsupported topic: {topic}")
-    return [builder]
+    config = TOPIC_CONFIG_BY_KEY[topic_key]
+    return [lambda: TopicPromptPackBuilder(config=config, use_generated=False)]
 
 
 def _build_report(*, topic: str, output_root: Path, entries: list[dict[str, Any]]) -> str:

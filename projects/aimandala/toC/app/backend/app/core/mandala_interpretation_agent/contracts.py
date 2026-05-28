@@ -51,7 +51,7 @@ class MandalaAgentInput:
     circle_boundaries: dict[str, Any]
     report_mode: Literal["lite", "pro"] = "lite"
     agent_version: str = "mandala-e2e-agent-v1"
-    prompt_pack_id: str = "wealth-report-v1.0.0"
+    prompt_pack_id: str = "topic-report-v1.0.0"
     agent_variant: str = "two_pass_e2e"
     output_requirements: MandalaOutputRequirements = field(default_factory=MandalaOutputRequirements)
 
