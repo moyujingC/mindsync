@@ -4,7 +4,7 @@
 > 内容来源状态：ai_draft
 > 来源验证状态：source_verification_pending
 > 文档版本：0.3.0
-> date：2026-05-27
+> last_updated：2026-05-27
 > owner：CEO / Knowledge Base
 > source_of_truth：当前目录/README.md
 

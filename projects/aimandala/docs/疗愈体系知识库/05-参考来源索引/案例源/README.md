@@ -2,7 +2,7 @@
 
 > 状态：draft
 > 文档版本：0.1.0
-> date：2026-05-13
+> last_updated：2026-05-13
 > owner：CEO / Knowledge Base
 > source_of_truth：当前目录/05-参考来源索引/案例源/README.md
 

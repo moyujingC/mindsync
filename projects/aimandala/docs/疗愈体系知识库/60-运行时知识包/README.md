@@ -21,5 +21,5 @@
 ## 当前可用包
 
 - [10-aimandala-解读报告生成最小包.md](10-aimandala-解读报告生成最小包.md)：当前第一版报告生成入口，先覆盖主题确认、三圈解读、综合判断和调整建议。
-- [../30-应用适配/10-aimandala/06-财富议题解读报告模板.md](../30-应用适配/10-aimandala/06-财富议题解读报告模板.md)：财富主题报告的段落模板，供 `user_theme: 财富` 时组装输出顺序使用。
+- [../30-应用适配/10-aimandala/06-财富关系议题解读报告模板.md](../30-应用适配/10-aimandala/06-财富关系议题解读报告模板.md)：财富关系主题报告的段落模板，供 `user_theme: 财富关系` 时组装输出顺序使用。
 - 部署生成的 `app/core/mandala_interpretation_agent/generated_prompt_packs/*`：实际运行时读取的 prompt pack。

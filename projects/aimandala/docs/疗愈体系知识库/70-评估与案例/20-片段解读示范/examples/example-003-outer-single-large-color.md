@@ -14,8 +14,7 @@
 ## 图片占位
 
 后续请按编号放入：`assets/example-003-outer-single-large-color.jpg`。
-
-![example-003 示范图](../assets/example-003-outer-single-large-color.jpg)
+![[example_003.JPG|151]]
 
 ## 原始示范文本
 
