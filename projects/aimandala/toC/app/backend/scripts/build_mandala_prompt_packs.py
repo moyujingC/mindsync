@@ -18,6 +18,9 @@ if str(BACKEND_ROOT) not in sys.path:
 from app.core.mandala_interpretation_agent.foundation_prompt_pack_builder import (  # noqa: E402
     FoundationPromptPackBuilder,
 )
+from app.core.mandala_interpretation_agent.intimate_relationship_prompt_pack_builder import (  # noqa: E402
+    IntimateRelationshipPromptPackBuilder,
+)
 from app.core.mandala_interpretation_agent.wealth_prompt_pack_builder import (  # noqa: E402
     WealthPromptPackBuilder,
 )
@@ -33,6 +36,7 @@ GENERATED_ROOT = (
 
 PACK_BUILDERS = {
     "foundation": FoundationPromptPackBuilder,
+    "intimate-relationship": IntimateRelationshipPromptPackBuilder,
     "wealth": WealthPromptPackBuilder,
     "wealth-relationship": WealthPromptPackBuilder,
     "all": None,
@@ -106,7 +110,11 @@ def main() -> int:
 
 def _pack_builders_for_topic(topic: str):
     if topic == "all":
-        return [FoundationPromptPackBuilder, WealthPromptPackBuilder]
+        return [
+            FoundationPromptPackBuilder,
+            WealthPromptPackBuilder,
+            IntimateRelationshipPromptPackBuilder,
+        ]
     builder = PACK_BUILDERS[topic]
     if builder is None:
         raise ValueError(f"unsupported topic: {topic}")

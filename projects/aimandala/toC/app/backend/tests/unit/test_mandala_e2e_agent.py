@@ -14,6 +14,9 @@ from app.core.mandala_interpretation_agent import (
 from app.core.mandala_interpretation_agent.foundation_prompt_pack_builder import (
     FoundationPromptPackBuilder,
 )
+from app.core.mandala_interpretation_agent.intimate_relationship_prompt_pack_builder import (
+    IntimateRelationshipPromptPackBuilder,
+)
 from app.core.mandala_interpretation_agent.prompt_pack_builder import PromptPackBuilder
 from app.core.mandala_interpretation_agent.wealth_prompt_pack_builder import (
     WealthPromptPackBuilder,
@@ -307,6 +310,23 @@ def test_wealth_prompt_pack_builder_uses_topic_and_report_documents():
     assert "10-财富关系/10-财富关系翻译层/01-基础信号财富关系翻译总表.md" in pack.stable_prefix
     assert "50-结构化知识单元" not in pack.stable_prefix
     assert "10-财富关系/12-财富关系中的浮现议题回译规则.md" in pack.stable_prefix
+    assert "30-应用适配/10-aimandala/07-报告语言风格指南.md" in pack.stable_prefix
+
+
+def test_intimate_relationship_prompt_pack_builder_uses_topic_and_report_documents():
+    pack = IntimateRelationshipPromptPackBuilder().build()
+
+    assert pack.pack_id == "intimate-relationship-reasoning-v1.0.0"
+    assert pack.manifest["file_count"] >= 18
+    assert pack.manifest["char_count"] > 40000
+    assert pack.manifest["prompt_budget"]["estimated_tokens"] > 30000
+    assert pack.manifest["prompt_budget"]["remaining_tokens"] > 0
+    assert pack.manifest["prompt_budget"]["warning_level"] == "none"
+    assert "20-亲密关系/11-亲密关系议题手册.md" in pack.stable_prefix
+    assert "20-亲密关系/10-亲密关系翻译层/01-基础信号亲密关系翻译总表.md" in pack.stable_prefix
+    assert "50-结构化知识单元" not in pack.stable_prefix
+    assert "20-亲密关系/12-亲密关系中的背景线索回译规则.md" in pack.stable_prefix
+    assert "30-应用适配/10-aimandala/06b-亲密关系议题解读报告模板.md" in pack.stable_prefix
     assert "30-应用适配/10-aimandala/07-报告语言风格指南.md" in pack.stable_prefix
 
 

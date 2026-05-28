@@ -13,7 +13,7 @@ when_to_use: >
   当用户要求“重新打包某个议题 prompt pack”“同步知识库到 prompt pack”“检查 prompt cache 是否够用”，
   或需要手动刷新 Aimandala 生成式报告用长上下文知识包时使用。
 inputs:
-  - topic：foundation / wealth-relationship / all
+  - topic：foundation / wealth-relationship / intimate-relationship / all
   - 知识库源目录与报告模板
   - 输出目录 generated_prompt_packs
 outputs:
@@ -42,7 +42,8 @@ handoff_to:
 
 - `foundation`：曼陀罗基础视觉层长上下文知识包。
 - `wealth-relationship`：财富关系议题报告生成长上下文知识包。
-- `all`：全量重包选项，依次重包 `foundation` 和 `wealth-relationship`。
+- `intimate-relationship`：亲密关系议题报告生成长上下文知识包。
+- `all`：全量重包选项，依次重包 `foundation`、`wealth-relationship` 和 `intimate-relationship`。
 
 ## 财富关系 pack 明确打包清单
 
@@ -64,9 +65,30 @@ handoff_to:
 - `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/generated_prompt_packs/wealth-reasoning-v1.0.0/prompt.md`
 - `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/generated_prompt_packs/wealth-reasoning-v1.0.0/manifest.json`
 
+## 亲密关系 pack 明确打包清单
+
+当前 `intimate-relationship` 会打包：
+
+- `projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/20-亲密关系/`
+  - 目录下全部 Markdown 文件，按路径排序。
+- `projects/aimandala/docs/疗愈体系知识库/30-应用适配/10-aimandala/`
+  - `01-解读与个案沟通流程.md`
+  - `02-解读报告组织规范.md`
+  - `03-解读报告生成最小规则.md`
+  - `04-Lite-Pro报告分流与交付口径.md`
+  - `05-报告任务定义.md`
+  - `06b-亲密关系议题解读报告模板.md`
+  - `07-报告语言风格指南.md`
+
+输出位置：
+
+- `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/generated_prompt_packs/intimate-relationship-reasoning-v1.0.0/prompt.md`
+- `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/generated_prompt_packs/intimate-relationship-reasoning-v1.0.0/manifest.json`
+
 维护入口：
 
 - `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/wealth_prompt_pack_builder.py`
+- `projects/aimandala/toC/app/backend/app/core/mandala_interpretation_agent/intimate_relationship_prompt_pack_builder.py`
 - `projects/aimandala/toC/app/backend/scripts/build_mandala_prompt_packs.py`
 
 ## 结构更新机制
@@ -105,13 +127,22 @@ Codex 需要先确保本地链接存在：
 shared/tools/sync-codex-research-center-skills.sh install
 ```
 
-如果 `/` 菜单没有刷新，重开 Codex 会话或重载应用。默认重包 `wealth-relationship`。如果需要别的 topic，在命令后补充说明，例如“重包 foundation”或“重包 all”。
+如果 `/` 菜单没有刷新，重开 Codex 会话或重载应用。默认重包 `wealth-relationship`。如果需要别的 topic，在命令后补充说明，例如“重包 foundation”“重包亲密关系”或“重包 all”。
 
 ```bash
 cd projects/aimandala/toC/app/backend
 python3 scripts/build_mandala_prompt_packs.py \
   --topic wealth-relationship \
   --report-path /tmp/wealth-relationship-prompt-pack-report.md
+```
+
+需要重包亲密关系时运行：
+
+```bash
+cd projects/aimandala/toC/app/backend
+python3 scripts/build_mandala_prompt_packs.py \
+  --topic intimate-relationship \
+  --report-path /tmp/intimate-relationship-prompt-pack-report.md
 ```
 
 需要全量重包时运行：
