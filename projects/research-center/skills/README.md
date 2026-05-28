@@ -43,6 +43,7 @@
 - `ui-ux-console-design`
 - `cicd-check`
 - `mvp-deploy-trigger`
+- `prompt-pack-rebuild`
 
 ## 配套文档
 
