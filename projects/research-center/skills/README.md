@@ -82,6 +82,7 @@
 已额外提供：
 
 - Claude Code 项目级 slash 命令示例：`/.claude/commands/source-to-review.md`
+- Prompt pack 手动重包 slash 命令：`/.claude/commands/prompt-pack-rebuild.md`
 - 本机 Claude 运行时同步脚本已包含 `source-to-review`
 
 ## 当前运行时策略

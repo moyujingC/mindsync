@@ -34,6 +34,7 @@ handoff_to:
 这个 skill 当前只有手动入口：
 
 - 人工触发：开发者手动执行脚本，生成报告并检查 diff。
+- Slash command：在支持项目命令的客户端里使用 `/prompt-pack-rebuild`。
 - 部署链路：当前不接入，部署时仍保持只 copy backend 的既有方式。
 
 ## 当前支持的 topic
@@ -90,6 +91,14 @@ handoff_to:
 ## 手动执行
 
 在仓库根目录运行：
+
+也可以在支持 slash command 的客户端里输入：
+
+```text
+/prompt-pack-rebuild
+```
+
+默认重包 `wealth-relationship`。如果需要别的 topic，在命令后补充说明，例如“重包 foundation”或“重包 all”。
 
 ```bash
 cd projects/aimandala/toC/app/backend
