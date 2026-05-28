@@ -34,7 +34,8 @@ handoff_to:
 这个 skill 当前只有手动入口：
 
 - 人工触发：开发者手动执行脚本，生成报告并检查 diff。
-- Slash command：在支持项目命令的客户端里使用 `/prompt-pack-rebuild`。
+- Codex：同步到 `~/.codex/skills/prompt-pack-rebuild` 后，在新会话或重载后用 `/prompt-pack-rebuild`。
+- Claude：项目命令文件为 `.claude/commands/prompt-pack-rebuild.md`。
 - 部署链路：当前不接入，部署时仍保持只 copy backend 的既有方式。
 
 ## 当前支持的 topic
@@ -98,7 +99,13 @@ handoff_to:
 /prompt-pack-rebuild
 ```
 
-默认重包 `wealth-relationship`。如果需要别的 topic，在命令后补充说明，例如“重包 foundation”或“重包 all”。
+Codex 需要先确保本地链接存在：
+
+```bash
+shared/tools/sync-codex-research-center-skills.sh install
+```
+
+如果 `/` 菜单没有刷新，重开 Codex 会话或重载应用。默认重包 `wealth-relationship`。如果需要别的 topic，在命令后补充说明，例如“重包 foundation”或“重包 all”。
 
 ```bash
 cd projects/aimandala/toC/app/backend

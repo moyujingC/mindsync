@@ -83,6 +83,7 @@
 
 - Claude Code 项目级 slash 命令示例：`/.claude/commands/source-to-review.md`
 - Prompt pack 手动重包 slash 命令：`/.claude/commands/prompt-pack-rebuild.md`
+- Codex 本地 skill 同步脚本：`shared/tools/sync-codex-research-center-skills.sh`
 - 本机 Claude 运行时同步脚本已包含 `source-to-review`
 
 ## 当前运行时策略
