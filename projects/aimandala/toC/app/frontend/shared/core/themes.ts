@@ -1,12 +1,13 @@
 export const themeDisplayNames: Record<string, string> = {
-  wealth: "财富议题",
+  wealth: "财富关系",
   general: "全面解读",
   father_relationship: "父亲关系",
   mother_relationship: "母亲关系",
   intimate_relationship: "亲密关系",
   parent_child_relationship: "亲子关系",
-  wealth_career: "财富事业",
-  health_wellness: "身体健康",
+  wealth_career: "事业发展",
+  career_development: "事业发展",
+  health_wellness: "健康身体",
   personal_growth: "个人成长",
 };
 

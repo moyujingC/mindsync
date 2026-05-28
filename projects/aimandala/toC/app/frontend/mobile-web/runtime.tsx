@@ -673,7 +673,7 @@ export function MobileWebRuntime({
         uploadDraft: currentUploadDraft ?? undefined,
         historyQuery: nextQuery,
         historyStatusLabel: "当前显示真实历史记录",
-        historyStatusDetail: `历史页已按${theme ? `主题“${theme}”` : "全部主题"}重新请求真实记录。`,
+        historyStatusDetail: `历史页已按${theme ? `议题“${theme}”` : "全部议题"}重新请求真实记录。`,
         historyStatusTone: "runtime",
       });
     } catch (historyError) {
@@ -899,7 +899,7 @@ export function MobileWebRuntime({
         !Number.isNaN(draftToUse.middleRadius)
           ? buildManualDetection(draftToUse.innerRadius, draftToUse.middleRadius)
           : (() => {
-              throw new Error("请先手动确认三圈边界，再生成财富议题报告。");
+              throw new Error("请先手动确认三圈边界，再生成财富关系报告。");
             })();
       setRuntimeUploadDetection(resolvedDetection);
       setRuntimeProps({

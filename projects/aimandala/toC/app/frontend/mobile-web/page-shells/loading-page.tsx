@@ -22,16 +22,16 @@ const tips = [
 ];
 
 const liteStages = [
-  "接收画作与主题...",
+  "接收画作与议题...",
   "识别画面结构...",
   "提炼主要视觉线索...",
-  "连接主题知识库...",
+  "连接议题知识库...",
   "润色文字表达...",
   "解读完成！",
 ];
 
 const proStages = [
-  "接收画作与主题...",
+  "接收画作与议题...",
   "识别画面结构...",
   "生成 Lite 基础线索...",
   "展开 Pro 深度分析...",
@@ -152,7 +152,7 @@ function resolveLoadingUiState(
       currentMessage: "准备解读任务...",
       estimatedTime: "预计约 2 分钟",
       versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
-      speedNote: "正在接收画作与主题信息。",
+      speedNote: "正在接收画作与议题信息。",
     };
   }
 
@@ -175,10 +175,10 @@ function resolveLoadingUiState(
         stages,
         progress,
         currentStageIndex: 3,
-        currentMessage: "连接主题知识库...",
+        currentMessage: "连接议题知识库...",
         estimatedTime: "预计约 60-90 秒",
         versionDescription: "Lite 版会先整理核心线索与总体印象。",
-        speedNote: "正在把画面信息与你选择的解读主题连接起来。",
+        speedNote: "正在把画面信息与你选择的解读议题连接起来。",
       };
     }
 
@@ -212,7 +212,7 @@ function resolveLoadingUiState(
     currentMessage: "准备解读任务...",
     estimatedTime: "预计约 60-90 秒",
     versionDescription: "Lite 版会先整理核心线索与总体印象。",
-    speedNote: "正在接收画作与主题信息。",
+    speedNote: "正在接收画作与议题信息。",
   };
 }
 

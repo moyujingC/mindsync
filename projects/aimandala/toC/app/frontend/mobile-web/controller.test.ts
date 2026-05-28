@@ -21,9 +21,9 @@ function createWealthReportResponse(
     success: true,
     report_id: "wealth-1",
     report_mode: reportMode,
-    final_report_md: "# 财富议题曼陀罗解读\n\n当前财富能量稳定。",
+    final_report_md: "# 财富关系曼陀罗解读\n\n当前财富能量稳定。",
     final_report: {
-      title: "财富议题曼陀罗解读",
+      title: "财富关系曼陀罗解读",
       summary: "当前财富能量稳定。",
     },
     visual_draft: { visual_observation: {} },

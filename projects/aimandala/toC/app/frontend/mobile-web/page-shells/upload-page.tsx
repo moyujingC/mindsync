@@ -54,6 +54,16 @@ const ICON_COINS: IconNode[] = [
   ["path", { d: "M7 6h1v4", key: "1obek4" }],
   ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }],
 ];
+const ICON_HEART: IconNode[] = [
+  ["path", { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z", key: "c3ymky" }],
+];
+const ICON_BRIEFCASE: IconNode[] = [
+  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
+  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }],
+];
+const ICON_ACTIVITY: IconNode[] = [
+  ["path", { d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2", key: "169zse" }],
+];
 const ICON_BOOK_OPEN: IconNode[] = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
   [
@@ -125,7 +135,10 @@ function LucideIcon({
 }
 
 const themes: ThemeItem[] = [
-  { value: "wealth", label: "财富", subLabel: "议题", icon: ICON_COINS },
+  { value: "wealth", label: "财富关系", subLabel: "金钱、资源与配得感", icon: ICON_COINS },
+  { value: "intimate_relationship", label: "亲密关系", subLabel: "情感、依恋与连接", icon: ICON_HEART },
+  { value: "career_development", label: "事业发展", subLabel: "行动、机会与价值表达", icon: ICON_BRIEFCASE },
+  { value: "health_wellness", label: "健康身体", subLabel: "能量、承载与身心连接", icon: ICON_ACTIVITY },
 ];
 
 function UploadSlider({
@@ -325,7 +338,7 @@ function ThemeSelector({
   value?: string;
   onChange?: (nextValue: string) => void;
 }) {
-  const normalizedValue = value === "wealth" ? value : themes[0].value;
+  const normalizedValue = themes.some((theme) => theme.value === value) ? value : themes[0].value;
   const [selected, setSelected] = useState(normalizedValue);
   const [activeDotIndex, setActiveDotIndex] = useState(0);
   const [pageCount, setPageCount] = useState(1);
@@ -413,7 +426,7 @@ function ThemeSelector({
   return (
     <div className="am-theme-selector">
       <p className="am-theme-selector__title">
-        当前解读主题 <span className="am-theme-selector__required">*</span>
+        当前解读议题 <span className="am-theme-selector__required">*</span>
       </p>
 
       <div

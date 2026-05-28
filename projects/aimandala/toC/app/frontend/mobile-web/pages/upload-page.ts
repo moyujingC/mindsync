@@ -49,8 +49,8 @@ export function createUploadPageDescriptor(
       },
       {
         id: "theme",
-        title: "主题与补充信息",
-        description: `主题：${draft.theme}；意图：${draft.paintingIntention || "未填写"}；感受：${draft.paintingFeeling || "未填写"}`,
+        title: "议题与补充信息",
+        description: `议题：${draft.theme}；意图：${draft.paintingIntention || "未填写"}；感受：${draft.paintingFeeling || "未填写"}`,
       },
       {
         id: "upload-meta",
@@ -73,7 +73,7 @@ export function createUploadPageDescriptor(
         value: draft.imagePath || "暂未选择",
       },
       {
-        label: "解读主题",
+        label: "解读议题",
         value: draft.theme || "general",
       },
       {
@@ -109,7 +109,7 @@ export function createUploadPageDescriptor(
       },
       {
         id: "context",
-        label: "补充主题与创作信息",
+        label: "补充议题与创作信息",
         status:
           draft.theme || draft.paintingIntention || draft.paintingFeeling
             ? "done"

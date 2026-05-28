@@ -21,10 +21,10 @@ function createWealthReportResponse(): WealthReportResponse {
     success: true,
     report_id: "wealth-runtime-1",
     report_mode: "lite",
-    final_report_md: "# 财富议题曼陀罗解读\n\n当前财富议题可以先看边界与行动。",
+    final_report_md: "# 财富关系曼陀罗解读\n\n当前财富关系可以先看边界与行动。",
     final_report: {
-      title: "财富议题曼陀罗解读",
-      summary: "当前财富议题可以先看边界与行动。",
+      title: "财富关系曼陀罗解读",
+      summary: "当前财富关系可以先看边界与行动。",
     },
     visual_draft: { visual_observation: {} },
     prompt_pack_manifest: { pack_id: "wealth-report-v1.0.0" },
@@ -147,7 +147,7 @@ describe("MobileWebRuntime", () => {
         }),
       );
     });
-    expect(container.textContent).toContain("财富议题曼陀罗解读");
+    expect(container.textContent).toContain("财富关系曼陀罗解读");
   });
 
   it("保留选择页入口，选择 Lite 时调用当前财富报告入口", async () => {
@@ -203,7 +203,7 @@ describe("MobileWebRuntime", () => {
         }),
       );
     });
-    expect(container.textContent).toContain("财富议题曼陀罗解读");
+    expect(container.textContent).toContain("财富关系曼陀罗解读");
   });
 
   it("兑换码缺失时会保留明确错误而不是伪装成未生成报告", async () => {

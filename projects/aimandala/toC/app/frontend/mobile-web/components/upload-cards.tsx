@@ -169,7 +169,7 @@ export function UploadFormCard({
         </label>
 
         <label className="mw-form-field">
-          <span>财富议题</span>
+          <span>解读议题</span>
           <input
             value={draft.theme}
             onChange={(event) => {

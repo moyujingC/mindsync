@@ -123,7 +123,7 @@ export function SharedReportEntrySelectionPage({
             你选的不是“更贵或更便宜”，而是这一次更适合自己的阅读深度。
           </p>
           <div className="am-report-entry-theme-pill">
-            <span className="am-report-entry-theme-pill__label">当前主题</span>
+            <span className="am-report-entry-theme-pill__label">当前议题</span>
             <span>{descriptor.themeLabel}</span>
           </div>
         </div>

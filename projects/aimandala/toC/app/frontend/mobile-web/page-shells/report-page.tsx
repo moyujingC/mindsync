@@ -156,9 +156,9 @@ export function MobileWebReportPage({
   const isError = state.step === "error";
   const isProReport = state.report?.version === "pro" || state.step === "proReady";
   const canRetryRefresh = Boolean(isError && state.interpretation?.interpretation_id);
-  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富议题";
+  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富关系";
   const existingHint = state.interpretation?.existing
-    ? "当前命中了已有解读记录，本次直接复用了同一用户、同一图片、同一主题下的现有结果。"
+    ? "当前命中了已有解读记录，本次直接复用了同一用户、同一图片、同一议题下的现有结果。"
     : null;
   const reportSections = parseReportSections(typeof state.report?.report === "string" ? state.report.report : null);
   const evidenceSections = buildReportEvidenceSections(state);

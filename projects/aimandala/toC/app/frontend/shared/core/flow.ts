@@ -93,7 +93,7 @@ export function applyWealthReport(
   response: WealthReportResponse,
 ): MandalaFlowState {
   const finalReport = response.final_report;
-  const title = getReportStringValue(finalReport, "title") ?? "财富议题曼陀罗解读";
+  const title = getReportStringValue(finalReport, "title") ?? "财富关系曼陀罗解读";
   const overallImpression =
     getReportStringValue(finalReport, "summary") ??
     getReportStringValue(finalReport, "overall_impression");

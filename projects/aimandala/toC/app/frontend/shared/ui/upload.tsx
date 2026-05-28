@@ -114,7 +114,7 @@ export function SharedUploadDraftSummaryCard({
   return (
     <article className="am-card mw-card">
       <div className="am-card__header mw-card__header">
-        <h3>{section?.title || "主题与补充信息"}</h3>
+        <h3>{section?.title || "议题与补充信息"}</h3>
       </div>
       <p>{section?.description}</p>
       <dl className="mw-field-list">

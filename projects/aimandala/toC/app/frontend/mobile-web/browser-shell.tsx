@@ -709,7 +709,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
       setPreviewHistoryStatusLabel(`已载入 ${preset.label}`);
-      setPreviewHistoryStatusDetail("当前已填入测试图、默认主题和人工三圈比例，可直接进入解读生成。");
+      setPreviewHistoryStatusDetail("当前已填入测试图、默认议题和人工三圈比例，可直接进入解读生成。");
       setPreviewHistoryStatusTone("preview");
       setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);
@@ -892,7 +892,7 @@ export function MobileWebBrowserShell() {
                 </label>
 
                 <label className="field">
-                  <span>主题</span>
+                  <span>议题</span>
                   <input
                     value={draft.theme}
                     onChange={(event) => {

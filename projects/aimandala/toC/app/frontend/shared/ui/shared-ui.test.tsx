@@ -126,11 +126,11 @@ describe("shared ui", () => {
         <SharedUploadDraftSummaryCard
           section={{
             id: "theme",
-            title: "主题与补充信息",
+            title: "议题与补充信息",
             description: "当前先展示共享摘要内容。",
           }}
           fields={[
-            { label: "解读主题", value: "亲密关系" },
+            { label: "解读议题", value: "亲密关系" },
             { label: "创作感受", value: "有一点保护，也有一点想靠近。" },
           ]}
         />
@@ -139,6 +139,6 @@ describe("shared ui", () => {
 
     expect(html).toContain("迁移期推荐流程");
     expect(html).toContain("三圈人工确认");
-    expect(html).toContain("主题与补充信息");
+    expect(html).toContain("议题与补充信息");
   });
 });

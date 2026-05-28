@@ -82,9 +82,9 @@ describe("shared/core flow", () => {
       success: true,
       report_id: "wealth-1",
       report_mode: "lite",
-      final_report_md: "# 财富议题曼陀罗解读\n\n当前财富能量稳定。",
+      final_report_md: "# 财富关系曼陀罗解读\n\n当前财富能量稳定。",
       final_report: {
-        title: "财富议题曼陀罗解读",
+        title: "财富关系曼陀罗解读",
         summary: "当前财富能量稳定。",
       },
       visual_draft: { summary: "视觉草稿" },
@@ -94,9 +94,9 @@ describe("shared/core flow", () => {
     } as WealthReportResponse);
 
     expect(snapshot.step).toBe("liteReady");
-    expect(snapshot.report?.title).toBe("财富议题曼陀罗解读");
+    expect(snapshot.report?.title).toBe("财富关系曼陀罗解读");
     expect(snapshot.report?.overall_impression).toBe("当前财富能量稳定。");
-    expect(snapshot.report?.report).toContain("财富议题曼陀罗解读");
+    expect(snapshot.report?.report).toContain("财富关系曼陀罗解读");
     expect(snapshot.report?.visual_draft).toBeTruthy();
     expect(snapshot.report?.prompt_pack_manifest).toBeTruthy();
   });
