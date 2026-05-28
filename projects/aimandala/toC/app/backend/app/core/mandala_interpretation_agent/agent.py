@@ -67,7 +67,7 @@ class MandalaInterpretationAgent:
         final_report = {
             "report_id": f"mandala-e2e-{uuid4().hex[:12]}",
             "report_mode": agent_input.report_mode,
-            "title": "财富议题曼陀罗解读报告",
+            "title": "财富关系曼陀罗解读报告",
             "markdown": final_report_md,
         }
         quality_gate = run_quality_gate(
@@ -195,7 +195,7 @@ class MandalaInterpretationAgent:
                 f"用户感受：{agent_input.user_context.painting_feeling}",
                 "视觉草稿：",
                 json.dumps(visual_draft, ensure_ascii=False, indent=2),
-                "请直接输出用户可读的财富议题 Markdown 报告。",
+                "请直接输出用户可读的财富关系 Markdown 报告。",
             ]
         )
         text = self.llm_client.generate_text(
@@ -234,7 +234,7 @@ class MandalaInterpretationAgent:
         user_prompt = "\n\n".join(
             [
                 "你正在执行方案 B：单阶段端到端直出。",
-                "请一次性查看用户原画作和三圈标记图，内部完成画面观察、圈内五行识别、圈内五行关系、三圈能量流动判断，再直接输出用户可读的财富议题 Markdown 报告。",
+                "请一次性查看用户原画作和三圈标记图，内部完成画面观察、圈内五行识别、圈内五行关系、三圈能量流动判断，再直接输出用户可读的财富关系 Markdown 报告。",
                 "不要输出 JSON，不要输出独立视觉草稿，不要泄漏内部推理过程。",
                 f"报告模式：{agent_input.report_mode}",
                 f"用户主题：{agent_input.user_context.theme_label}",

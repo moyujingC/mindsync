@@ -83,7 +83,7 @@ def run_quality_gate(
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
 
-    if "财富议题" not in final_report_md:
+    if "财富关系" not in final_report_md:
         failure_ids.append("missing_wealth_topic")
 
     if not final_report.get("report_id"):

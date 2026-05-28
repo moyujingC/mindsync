@@ -49,11 +49,11 @@ class StubE2ELLMClient:
         if kwargs.get("task") == "vision":
             if "方案 B：单阶段端到端直出" in kwargs.get("user_prompt", ""):
                 return (
-                    "# 财富议题曼陀罗解读报告\n\n"
+                    "# 财富关系曼陀罗解读报告\n\n"
                     "## 整体感受\n"
-                    "这是一份单阶段直出的财富议题报告。\n\n"
+                    "这是一份单阶段直出的财富关系报告。\n\n"
                     "## 财富主线\n"
-                    "画面显示财富议题需要从内在稳定走向外在表达。\n"
+                    "画面显示财富关系需要从内在稳定走向外在表达。\n"
                 )
             if self.return_structured_first_vision_text and "上一轮输出仍然偏结构化" not in kwargs.get("user_prompt", ""):
                 return "```json\n{\"visual.circle.inner\": true}\n```"
@@ -70,7 +70,7 @@ class StubE2ELLMClient:
                 "这幅画最值得保留的视觉线索，是内圈的稳定核心、中圈被切分的重复结构，以及外圈大量留白带来的收缩和未完成感。"
             )
         return (
-            "# 财富议题曼陀罗解读报告\n\n"
+            "# 财富关系曼陀罗解读报告\n\n"
             "## 整体感受\n"
             "这幅画先给人的感觉是先收住，再向外展开。\n\n"
             "## 三圈观察\n"
@@ -80,7 +80,7 @@ class StubE2ELLMClient:
             "## 跨圈衔接\n"
             "三圈之间是先展开后收束的结构。\n\n"
             "## 财富主线\n"
-            "财富议题更像是先稳住承载，再进入交换。\n\n"
+            "财富关系更像是先稳住承载，再进入交换。\n\n"
             "## 后续建议\n"
             "可以先做一个很小的价值表达动作。\n"
         )
@@ -94,7 +94,7 @@ def _agent_input(tmp_path: Path) -> MandalaAgentInput:
         image=MandalaImageInput(local_path=str(image_path)),
         user_context=MandalaUserContext(
             theme="wealth",
-            theme_label="财富议题",
+            theme_label="财富关系",
             painting_intention="想看财富卡点",
             painting_feeling="有点紧",
         ),
@@ -132,13 +132,13 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
     assert "00-曼陀罗基础层解读流程.md" in vision_text_call["system_prompt"]
     assert "确认内圈、中圈、外圈的边界" in vision_text_call["user_prompt"]
     assert "标记线不是画作内容" in vision_text_call["user_prompt"]
-    assert "10-财富/11-财富议题手册.md" not in vision_text_call["system_prompt"]
+    assert "10-财富关系/11-财富关系议题手册.md" not in vision_text_call["system_prompt"]
     assert "50-结构化知识单元" not in vision_text_call["system_prompt"]
     assert "90-来源原文/01-完整解读案例11例合并原文.md" in vision_text_call["system_prompt"]
     assert "本次视觉观察任务" in vision_text_call["user_prompt"]
-    assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in report_text_call["system_prompt"]
+    assert "10-财富关系/10-财富关系翻译层/01-基础信号财富关系翻译总表.md" in report_text_call["system_prompt"]
     assert "50-结构化知识单元" not in report_text_call["system_prompt"]
-    assert "12-财富中的浮现议题回译规则.md" in report_text_call["system_prompt"]
+    assert "12-财富关系中的浮现议题回译规则.md" in report_text_call["system_prompt"]
 
 
 def test_two_pass_rewrites_structured_visual_draft_to_markdown(tmp_path):
@@ -174,7 +174,7 @@ def test_quality_gate_flags_cross_circle_five_element_leak():
             "visual_draft_md": "## 三圈能量流动\n这里出现水克火与金克火。",
         },
         prompt_pack_manifest={"pack_id": "wealth-report-v1.0.0"},
-        final_report_md="# 财富议题曼陀罗解读报告",
+        final_report_md="# 财富关系曼陀罗解读报告",
         final_report={"report_id": "report-1"},
     )
 
@@ -190,7 +190,7 @@ def test_quality_gate_does_not_flag_normal_flow_words():
             "visual_draft_md": "## 三圈能量流动\n内圈能量形成承接，外圈趋于堵塞。",
         },
         prompt_pack_manifest={"pack_id": "wealth-report-v1.0.0"},
-        final_report_md="# 财富议题曼陀罗解读报告",
+        final_report_md="# 财富关系曼陀罗解读报告",
         final_report={"report_id": "report-1"},
     )
 
@@ -226,7 +226,7 @@ def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tm
     assert "方案 B：单阶段端到端直出" in llm_client.text_calls[0]["user_prompt"]
     assert "00-曼陀罗基础层解读流程.md" in llm_client.text_calls[0]["system_prompt"]
     assert "50-结构化知识单元" not in llm_client.text_calls[0]["system_prompt"]
-    assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in llm_client.text_calls[0]["system_prompt"]
+    assert "10-财富关系/10-财富关系翻译层/01-基础信号财富关系翻译总表.md" in llm_client.text_calls[0]["system_prompt"]
     assert result.quality_gate["passed"] is True
 
 
@@ -258,7 +258,7 @@ def test_prompt_pack_builder_uses_real_files():
     assert pack.manifest["file_count"] == 1
     assert pack.manifest["prompt_budget"]["estimated_tokens"] > 0
     assert pack.manifest["prompt_budget"]["warning_level"] == "none"
-    assert "财富议题" in pack.stable_prefix
+    assert "财富关系" in pack.stable_prefix
     assert "一镜 Lite 版" in pack.stable_prefix
     assert "一梳 Pro 版" not in pack.stable_prefix
     assert "财务预测" in pack.stable_prefix
@@ -289,7 +289,7 @@ def test_foundation_prompt_pack_builder_uses_mandala_foundation_documents():
     assert "01-画面信号总目录.md" not in pack.stable_prefix
     assert "40-组合模式/12-高频组合模式.md" not in pack.stable_prefix
     assert "visual.circle.inner" not in pack.stable_prefix
-    assert "10-财富/11-财富议题手册.md" not in pack.stable_prefix
+    assert "10-财富关系/11-财富关系议题手册.md" not in pack.stable_prefix
     assert "50-结构化知识单元" not in pack.stable_prefix
     assert "90-来源原文/01-完整解读案例11例合并原文.md" in pack.stable_prefix
 
@@ -303,10 +303,10 @@ def test_wealth_prompt_pack_builder_uses_topic_and_report_documents():
     assert pack.manifest["prompt_budget"]["estimated_tokens"] > 50000
     assert pack.manifest["prompt_budget"]["remaining_tokens"] > 0
     assert pack.manifest["prompt_budget"]["warning_level"] == "none"
-    assert "10-财富/11-财富议题手册.md" in pack.stable_prefix
-    assert "10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md" in pack.stable_prefix
+    assert "10-财富关系/11-财富关系议题手册.md" in pack.stable_prefix
+    assert "10-财富关系/10-财富关系翻译层/01-基础信号财富关系翻译总表.md" in pack.stable_prefix
     assert "50-结构化知识单元" not in pack.stable_prefix
-    assert "10-财富/12-财富中的浮现议题回译规则.md" in pack.stable_prefix
+    assert "10-财富关系/12-财富关系中的浮现议题回译规则.md" in pack.stable_prefix
     assert "30-应用适配/10-aimandala/07-报告语言风格指南.md" in pack.stable_prefix
 
 

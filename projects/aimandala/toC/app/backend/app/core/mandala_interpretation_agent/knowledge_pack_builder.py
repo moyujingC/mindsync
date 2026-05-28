@@ -108,27 +108,27 @@ class KnowledgePackBuilder:
                 max_chars=3200,
             ),
             "wealth_handbook": self._read_text(
-                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md",
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富关系/11-财富关系议题手册.md",
                 max_chars=12000,
             ),
             "wealth_report_template": self._read_text(
-                "30-应用适配/10-aimandala/06-财富议题解读报告模板.md",
+                "30-应用适配/10-aimandala/06-财富关系议题解读报告模板.md",
                 max_chars=3600,
             ),
             "wealth_signal_translation": self._read_text(
-                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md",
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富关系/10-财富关系翻译层/01-基础信号财富关系翻译总表.md",
                 max_chars=16000,
             ),
             "wealth_report_routing_notes": self._read_text(
-                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/02-报告路由位置说明.md",
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富关系/10-财富关系翻译层/02-报告路由位置说明.md",
                 max_chars=16000,
             ),
             "wealth_emergent_topic_translation": self._read_text(
-                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/12-财富中的浮现议题回译规则.md",
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富关系/12-财富关系中的浮现议题回译规则.md",
                 max_chars=24000,
             ),
             "wealth_next_exploration_mapping": self._read_text(
-                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富/13-下一次探索建议映射表.md",
+                "20-疗愈体系/10-议题层/30-主议题报告包/10-财富关系/13-下一次探索建议映射表.md",
                 max_chars=6000,
             ),
         }

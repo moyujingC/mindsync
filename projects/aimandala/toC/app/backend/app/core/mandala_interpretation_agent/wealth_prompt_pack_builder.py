@@ -19,7 +19,7 @@ WEALTH_TOPIC_ROOT = (
     / "20-疗愈体系"
     / "10-议题层"
     / "30-主议题报告包"
-    / "10-财富"
+    / "10-财富关系"
 )
 APP_ADAPTATION_ROOT = (
     AIMANDALA_ROOT / "docs" / "疗愈体系知识库" / "30-应用适配" / "10-aimandala"
@@ -70,7 +70,7 @@ class WealthPromptPackBuilder:
         for path in self._collect_md_files(self.wealth_root):
             rel = path.relative_to(self.wealth_root).as_posix()
             files.append((
-                f"10-议题层/30-主议题报告包/10-财富/{rel}",
+                f"10-议题层/30-主议题报告包/10-财富关系/{rel}",
                 path.read_text(encoding="utf-8").strip(),
             ))
         for relative_path in [
@@ -79,7 +79,7 @@ class WealthPromptPackBuilder:
             "03-解读报告生成最小规则.md",
             "04-Lite-Pro报告分流与交付口径.md",
             "05-报告任务定义.md",
-            "06-财富议题解读报告模板.md",
+            "06-财富关系议题解读报告模板.md",
             "07-报告语言风格指南.md",
         ]:
             path = self.app_adaptation_root / relative_path
@@ -91,9 +91,9 @@ class WealthPromptPackBuilder:
 
         stable_prefix = "\n\n".join(
             [
-                "# 财富主题长上下文知识包",
-                "以下内容用于财富议题报告生成与议题翻译，不用于视觉层基础识别。",
-                "正式生产默认优先复用同一财富主题基准，保证多议题时可追溯、一致。",
+                "# 财富关系议题长上下文知识包",
+                "以下内容用于财富关系报告生成与议题翻译，不用于视觉层基础识别。",
+                "正式生产默认优先复用同一财富关系基准，保证多议题时可追溯、一致。",
                 "本知识包由 Markdown 源文档在部署期生成；运行时不读取 YAML 结构化知识单元。",
                 *[
                     f"## 来源文件：{relative_path}\n\n{text}"

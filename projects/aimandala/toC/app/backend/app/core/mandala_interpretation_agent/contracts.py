@@ -25,7 +25,7 @@ class MandalaImageInput:
 @dataclass(frozen=True)
 class MandalaUserContext:
     theme: str = "wealth"
-    theme_label: str = "财富议题"
+    theme_label: str = "财富关系"
     painting_intention: str = ""
     painting_feeling: str = ""
 
