@@ -7,7 +7,9 @@ export const themeDisplayNames: Record<string, string> = {
   parent_child_relationship: "亲子关系",
   wealth_career: "事业发展",
   career_development: "事业发展",
-  health_wellness: "健康身体",
+  body_health: "身体健康",
+  health_body: "身体健康",
+  health_wellness: "身体健康",
   personal_growth: "个人成长",
 };
 

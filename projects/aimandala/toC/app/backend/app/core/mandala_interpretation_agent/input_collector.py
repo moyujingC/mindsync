@@ -120,7 +120,9 @@ def _resolve_aimandala_path(raw_path: str) -> Path:
 def _theme_label(theme: str) -> str:
     labels = {
         "general": "全面解读",
-        "health_wellness": "健康疗愈",
+        "body_health": "身体健康",
+        "health_body": "身体健康",
+        "health_wellness": "身体健康",
         "intimate_relationship": "亲密关系",
         "wealth_career": "财富事业",
         "personal_growth": "个人成长",

@@ -13,7 +13,7 @@ when_to_use: >
   当用户要求“重新打包某个议题 prompt pack”“同步知识库到 prompt pack”“检查 prompt cache 是否够用”，
   或需要手动刷新 Aimandala 生成式报告用长上下文知识包时使用。
 inputs:
-  - topic：foundation / wealth-relationship / intimate-relationship / father-relationship / mother-relationship / parent-child-relationship / interpersonal-relationship / career-development / health-body / all
+  - topic：foundation / wealth-relationship / intimate-relationship / father-relationship / mother-relationship / parent-child-relationship / interpersonal-relationship / career-development / body-health / all
   - 知识库源目录与报告模板
   - 输出目录 generated_prompt_packs
 outputs:
@@ -48,7 +48,7 @@ handoff_to:
 - `parent-child-relationship`：亲子关系议题报告生成长上下文知识包。
 - `interpersonal-relationship`：人际关系议题报告生成长上下文知识包。
 - `career-development`：事业发展议题报告生成长上下文知识包。
-- `health-body`：健康身体议题报告生成长上下文知识包。
+- `body-health`：身体健康议题报告生成长上下文知识包。
 - `all`：全量重包选项，依次重包 `foundation` 和全部 8 个主议题。
 
 ## 议题 pack 配置化打包规则
@@ -82,7 +82,7 @@ handoff_to:
 | `parent-child-relationship` | `parent-child-relationship-reasoning-v1.0.0` | `50-亲子关系` | `06e-亲子关系议题解读报告模板.md` |
 | `interpersonal-relationship` | `interpersonal-relationship-reasoning-v1.0.0` | `60-人际关系` | `06f-人际关系议题解读报告模板.md` |
 | `career-development` | `career-development-reasoning-v1.0.0` | `70-事业发展` | `06g-事业发展议题解读报告模板.md` |
-| `health-body` | `health-body-reasoning-v1.0.0` | `80-健康身体` | `06h-健康身体议题解读报告模板.md` |
+| `body-health` | `body-health-reasoning-v1.0.0` | `80-身体健康` | `06h-身体健康议题解读报告模板.md` |
 
 维护入口：
 

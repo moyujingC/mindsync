@@ -111,12 +111,12 @@ TOPIC_PROMPT_PACK_CONFIGS = [
         report_template_file="06g-事业发展议题解读报告模板.md",
     ),
     TopicPromptPackConfig(
-        topic_key="health-body",
-        theme_aliases=("health_body", "health_wellness"),
-        label="健康身体",
-        pack_id="health-body-reasoning-v1.0.0",
-        source_dir_name="80-健康身体",
-        report_template_file="06h-健康身体议题解读报告模板.md",
+        topic_key="body-health",
+        theme_aliases=("body_health", "health_body", "health_wellness"),
+        label="身体健康",
+        pack_id="body-health-reasoning-v1.0.0",
+        source_dir_name="80-身体健康",
+        report_template_file="06h-身体健康议题解读报告模板.md",
     ),
 ]
 

@@ -138,7 +138,7 @@ const themes: ThemeItem[] = [
   { value: "wealth", label: "财富关系", subLabel: "金钱、资源与配得感", icon: ICON_COINS },
   { value: "intimate_relationship", label: "亲密关系", subLabel: "情感、依恋与连接", icon: ICON_HEART },
   { value: "career_development", label: "事业发展", subLabel: "行动、机会与价值表达", icon: ICON_BRIEFCASE },
-  { value: "health_wellness", label: "健康身体", subLabel: "能量、承载与身心连接", icon: ICON_ACTIVITY },
+  { value: "body_health", label: "身体健康", subLabel: "能量、承载与身心连接", icon: ICON_ACTIVITY },
 ];
 
 function UploadSlider({
