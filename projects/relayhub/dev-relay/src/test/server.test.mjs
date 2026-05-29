@@ -1497,7 +1497,7 @@ test("POST /v1/messages maps anthropic messages into upstream chat completions a
   });
 });
 
-test("POST /v1/messages drops client max_tokens for chat-completions upstreams", async () => {
+test("POST /v1/messages caps client max_tokens for chat-completions upstreams", async () => {
   let observedBody = null;
 
   await withMockUpstream(async (request, response) => {
@@ -1545,7 +1545,7 @@ test("POST /v1/messages drops client max_tokens for chat-completions upstreams",
     }, state);
   });
 
-  assert.equal(observedBody.max_tokens, undefined);
+  assert.equal(observedBody.max_tokens, 4096);
 });
 
 test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-style entries", async () => {
@@ -1619,7 +1619,7 @@ test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-st
   });
 });
 
-test("POST /v1/messages drops client max_tokens for native anthropic upstreams", async () => {
+test("POST /v1/messages caps client max_tokens for native anthropic upstreams", async () => {
   let observedBody = null;
 
   await withMockUpstream(async (request, response) => {
@@ -1665,7 +1665,7 @@ test("POST /v1/messages drops client max_tokens for native anthropic upstreams",
     }, state);
   });
 
-  assert.equal(observedBody.max_tokens, undefined);
+  assert.equal(observedBody.max_tokens, 4096);
 });
 
 test("POST /v1/messages collapses think blocks for native anthropic upstream responses", async () => {

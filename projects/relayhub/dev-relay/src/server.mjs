@@ -12,6 +12,7 @@ const RELAY_TASK_MODEL_PREFIX = "relayhub-task-";
 const RELAY_ENTRY_MODEL_PREFIX = "relayhub-entry-";
 const CLAUDE_ENTRY_ID = "entry-claude-ide-local";
 const CODEX_ENTRY_ID = "entry-codex-ide-local";
+const DEFAULT_ANTHROPIC_OUTPUT_LIMIT = 4096;
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -182,13 +183,25 @@ function buildAnthropicMessagesUpstreamUrl(baseUrl) {
   return new URL("messages", normalized);
 }
 
-function stripAnthropicOutputLimit(payload) {
+function resolveAnthropicOutputLimit() {
+  const configured = Number(process.env.RELAYHUB_ANTHROPIC_MAX_TOKENS ?? DEFAULT_ANTHROPIC_OUTPUT_LIMIT);
+  if (!Number.isFinite(configured) || configured < 1) {
+    return DEFAULT_ANTHROPIC_OUTPUT_LIMIT;
+  }
+
+  return Math.floor(configured);
+}
+
+function normalizeAnthropicOutputLimit(payload) {
   if (!payload || typeof payload !== "object") {
     return payload;
   }
 
   const { max_tokens: _maxTokens, ...rest } = payload;
-  return rest;
+  return {
+    ...rest,
+    max_tokens: resolveAnthropicOutputLimit()
+  };
 }
 
 function normalizeReasoningEffort(value) {
@@ -1108,7 +1121,7 @@ async function proxyAnthropicMessages(request, response) {
   const entry = resolved.entry;
   if (shouldProxyAnthropicMessagesNatively(entry)) {
     const upstreamBody = {
-      ...stripAnthropicOutputLimit(body),
+      ...normalizeAnthropicOutputLimit(body),
       model: entry.modelId
     };
     const bodyText = JSON.stringify(upstreamBody);
@@ -1267,6 +1280,7 @@ async function proxyAnthropicMessages(request, response) {
     messages: mapAnthropicMessagesToOpenAI(body),
     temperature: body.temperature,
     top_p: body.top_p,
+    max_tokens: resolveAnthropicOutputLimit(),
     stream: false,
     tools: mapAnthropicToolsToOpenAI(body.tools),
     tool_choice: mapAnthropicToolChoiceToOpenAI(body.tool_choice) ?? (body.tools?.length ? "auto" : undefined)
