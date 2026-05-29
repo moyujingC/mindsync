@@ -35,9 +35,7 @@ jobs:
         with:
           fetch-depth: 1
           sparse-checkout: |
-            .github/workflows/relayhub-ci-deploy.yml
             projects/relayhub
-            shared/tools/ci
 
       - name: Check Node.js
         run: |
