@@ -39,10 +39,11 @@ jobs:
             projects/relayhub
             shared/tools/ci
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 20
+      - name: Check Node.js
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Install Console Dependencies
         run: |
