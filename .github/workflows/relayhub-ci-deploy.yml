@@ -32,6 +32,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/workflows/relayhub-ci-deploy.yml
+            projects/relayhub
+            shared/tools/ci
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -76,6 +82,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            projects/relayhub
 
       - name: Prepare SSH Key
         env:
@@ -107,6 +117,22 @@ jobs:
           ssh-keygen -y -f ~/.ssh/relayhub_release >/dev/null
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
+      - name: Sync RelayHub Files
+        env:
+          SSH_HOST: ${{ secrets.RELAYHUB_RELEASE_HOST }}
+          SSH_USER: ${{ secrets.RELAYHUB_RELEASE_USER }}
+        run: |
+          set -euo pipefail
+          rsync \
+            -az \
+            --delete \
+            --exclude node_modules/ \
+            --exclude .next/ \
+            --exclude out/ \
+            -e "ssh -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -i ~/.ssh/relayhub_release" \
+            projects/relayhub/ \
+            "$SSH_USER@$SSH_HOST:/opt/aimandala-release/worktrees/relayhub-dev-deploy/projects/relayhub/"
+
       - name: Deploy RelayHub Release Stack
         env:
           SSH_HOST: ${{ secrets.RELAYHUB_RELEASE_HOST }}
@@ -119,7 +145,7 @@ jobs:
             -o StrictHostKeyChecking=yes \
             -i ~/.ssh/relayhub_release \
             "$SSH_USER@$SSH_HOST" \
-            "SOURCE_REPO=/opt/aimandala-release/app/mindsync bash -s" \
+            "SOURCE_REPO=/opt/aimandala-release/app/mindsync SKIP_GIT_SYNC=1 bash -s" \
             < projects/relayhub/deploy/release-console/deploy-relayhub-release-stack.sh
 
       - name: Smoke Check RelayHub
