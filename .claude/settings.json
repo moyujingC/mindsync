@@ -1,9 +1,12 @@
 {
   "env": {
     "ANTHROPIC_BASE_URL": "https://aitechflux.com",
-    "ANTHROPIC_MODEL": "Claude混合版",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "Claude混合版",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "Claude混合版",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "Claude混合版"
+    "ANTHROPIC_MODEL": "gpt-5.5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "gpt-5.5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "gpt-5.5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "gpt-5.5",
+    "ANTHROPIC_REASONING_MODEL": "gpt-5.5",
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "gpt-5.5"
   }
 }
