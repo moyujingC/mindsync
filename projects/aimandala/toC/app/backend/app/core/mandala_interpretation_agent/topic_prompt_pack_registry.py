@@ -112,7 +112,7 @@ TOPIC_PROMPT_PACK_CONFIGS = [
     ),
     TopicPromptPackConfig(
         topic_key="body-health",
-        theme_aliases=("body_health", "health_body", "health_wellness"),
+        theme_aliases=("body_health",),
         label="身体健康",
         pack_id="body-health-reasoning-v1.0.0",
         source_dir_name="80-身体健康",

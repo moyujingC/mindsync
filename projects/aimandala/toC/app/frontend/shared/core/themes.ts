@@ -8,8 +8,6 @@ export const themeDisplayNames: Record<string, string> = {
   wealth_career: "事业发展",
   career_development: "事业发展",
   body_health: "身体健康",
-  health_body: "身体健康",
-  health_wellness: "身体健康",
   personal_growth: "个人成长",
 };
 
