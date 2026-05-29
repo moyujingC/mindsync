@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://aitechflux.com",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8787",
     "ANTHROPIC_MODEL": "Claude混合版",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "Claude混合版",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "Claude混合版",
