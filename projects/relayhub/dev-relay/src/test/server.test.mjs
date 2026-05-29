@@ -1545,7 +1545,7 @@ test("POST /v1/messages caps client max_tokens for chat-completions upstreams", 
     }, state);
   });
 
-  assert.equal(observedBody.max_tokens, 4096);
+  assert.equal(observedBody.max_tokens, 1024);
 });
 
 test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-style entries", async () => {
@@ -1665,7 +1665,7 @@ test("POST /v1/messages caps client max_tokens for native anthropic upstreams", 
     }, state);
   });
 
-  assert.equal(observedBody.max_tokens, 4096);
+  assert.equal(observedBody.max_tokens, 1024);
 });
 
 test("POST /v1/messages collapses think blocks for native anthropic upstream responses", async () => {

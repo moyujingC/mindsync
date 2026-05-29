@@ -12,7 +12,7 @@ const RELAY_TASK_MODEL_PREFIX = "relayhub-task-";
 const RELAY_ENTRY_MODEL_PREFIX = "relayhub-entry-";
 const CLAUDE_ENTRY_ID = "entry-claude-ide-local";
 const CODEX_ENTRY_ID = "entry-codex-ide-local";
-const DEFAULT_ANTHROPIC_OUTPUT_LIMIT = 4096;
+const DEFAULT_ANTHROPIC_OUTPUT_LIMIT = 1024;
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
