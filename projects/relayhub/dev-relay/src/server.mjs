@@ -182,6 +182,15 @@ function buildAnthropicMessagesUpstreamUrl(baseUrl) {
   return new URL("messages", normalized);
 }
 
+function stripAnthropicOutputLimit(payload) {
+  if (!payload || typeof payload !== "object") {
+    return payload;
+  }
+
+  const { max_tokens: _maxTokens, ...rest } = payload;
+  return rest;
+}
+
 function normalizeReasoningEffort(value) {
   return value === "low" || value === "medium" || value === "high" ? value : null;
 }
@@ -1099,7 +1108,7 @@ async function proxyAnthropicMessages(request, response) {
   const entry = resolved.entry;
   if (shouldProxyAnthropicMessagesNatively(entry)) {
     const upstreamBody = {
-      ...body,
+      ...stripAnthropicOutputLimit(body),
       model: entry.modelId
     };
     const bodyText = JSON.stringify(upstreamBody);
@@ -1258,7 +1267,6 @@ async function proxyAnthropicMessages(request, response) {
     messages: mapAnthropicMessagesToOpenAI(body),
     temperature: body.temperature,
     top_p: body.top_p,
-    max_tokens: body.max_tokens,
     stream: false,
     tools: mapAnthropicToolsToOpenAI(body.tools),
     tool_choice: mapAnthropicToolChoiceToOpenAI(body.tool_choice) ?? (body.tools?.length ? "auto" : undefined)
