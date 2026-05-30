@@ -8,6 +8,9 @@ from .contracts import (
     MandalaImageInput,
     MandalaOutputRequirements,
     MandalaUserContext,
+    ReportFollowupContext,
+    ReportFollowupInput,
+    ReportFollowupResult,
     ReportPersona,
 )
 
@@ -19,5 +22,8 @@ __all__ = [
     "MandalaInterpretationAgent",
     "MandalaInterpretationArtifactStore",
     "MandalaUserContext",
+    "ReportFollowupContext",
+    "ReportFollowupInput",
+    "ReportFollowupResult",
     "ReportPersona",
 ]

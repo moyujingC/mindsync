@@ -18,8 +18,12 @@ from app.core.mandala_interpretation_agent import (
     MandalaInterpretationArtifactStore,
     MandalaOutputRequirements,
     MandalaUserContext,
+    ReportFollowupContext,
+    ReportFollowupInput,
+    ReportPersona,
 )
 from app.core.uploads import create_upload_storage_from_env
+from app.core.mandala_interpretation_agent.report_followup_agent import ReportFollowupAgent
 
 
 router = APIRouter(prefix="/api", tags=["aimandala"])
@@ -48,6 +52,35 @@ class WealthReportResponse(BaseModel):
     prompt_pack_manifest: dict[str, object]
     quality_gate: dict[str, object]
     run_summary: dict[str, object]
+
+
+class ReportFollowupTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ReportFollowupRequest(BaseModel):
+    report_id: str
+    question: str
+    report_mode: Literal["lite", "pro"] | str = "lite"
+    final_report_md: str
+    final_report: dict[str, object] = Field(default_factory=dict)
+    visual_draft: dict[str, object] | None = None
+    history: list[ReportFollowupTurn] = Field(default_factory=list)
+    theme: str = "wealth"
+    theme_label: str = "财富关系"
+    painting_intention: str = ""
+    painting_feeling: str = ""
+
+
+class ReportFollowupResponse(BaseModel):
+    success: bool
+    report_id: str
+    answer_md: str
+    referenced_report_sections: list[dict[str, str]]
+    safety: dict[str, object]
+    out_of_scope: bool
+    persona: dict[str, object]
 
 
 class UploadImageResponse(BaseModel):
@@ -119,6 +152,18 @@ def _authorize_report_access(payload: WealthReportRequest) -> None:
         )
 
 
+def _authorize_followup_access(payload: ReportFollowupRequest) -> None:
+    if os.getenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "").strip() != "1":
+        raise HTTPException(status_code=403, detail="报告追问功能当前未开启。")
+    if not payload.final_report_md.strip():
+        raise HTTPException(status_code=422, detail="报告追问需要绑定本次报告正文。")
+    report_id_from_artifact = payload.final_report.get("report_id")
+    if report_id_from_artifact and str(report_id_from_artifact) != payload.report_id:
+        raise HTTPException(status_code=422, detail="追问请求与当前报告不匹配。")
+    if payload.report_mode == "pro" and os.getenv("AIMANDALA_REPORT_FOLLOWUP_INTERNAL_ONLY", "1") == "1":
+        raise HTTPException(status_code=403, detail="Pro 报告追问当前仅用于内部评测。")
+
+
 @router.post("/wealth-reports", response_model=WealthReportResponse)
 async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResponse:
     _authorize_report_access(payload)
@@ -147,6 +192,43 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
         quality_gate=result.quality_gate,
         run_summary=result.run_summary,
     )
+
+
+@router.post("/report-followups", response_model=ReportFollowupResponse)
+async def create_report_followup(payload: ReportFollowupRequest) -> ReportFollowupResponse:
+    _authorize_followup_access(payload)
+    persona_payload = payload.final_report.get("persona") if isinstance(payload.final_report, dict) else None
+    persona = ReportPersona()
+    if isinstance(persona_payload, dict):
+        persona = ReportPersona(
+            persona_id=str(persona_payload.get("persona_id") or "manman"),
+            persona_version=str(persona_payload.get("persona_version") or "manman-report-companion-v0.1"),
+            display_name=str(persona_payload.get("display_name") or "曼曼"),
+            role_label=str(persona_payload.get("role_label") or "AI 报告陪读 avatar"),
+            scope=str(persona_payload.get("scope") or "陪用户读懂本次曼陀罗报告，并在报告范围内回答追问"),
+            boundaries=[
+                str(item)
+                for item in persona_payload.get("boundaries", [])
+                if isinstance(item, str) and item.strip()
+            ],
+        )
+    context = ReportFollowupContext(
+        report_id=payload.report_id,
+        report_mode=payload.report_mode,
+        theme=payload.theme,
+        theme_label=payload.theme_label,
+        painting_intention=payload.painting_intention,
+        painting_feeling=payload.painting_feeling,
+        final_report_md=payload.final_report_md,
+        final_report=payload.final_report,
+        visual_draft=payload.visual_draft,
+        recent_followup_turns=[turn.model_dump() for turn in payload.history],
+        persona=persona,
+    )
+    result = ReportFollowupAgent(llm_client=_build_llm_client()).run(
+        followup_input=ReportFollowupInput(context=context, question=payload.question)
+    )
+    return ReportFollowupResponse(success=True, **result.to_dict())
 
 
 @router.post("/uploads", response_model=UploadImageResponse)

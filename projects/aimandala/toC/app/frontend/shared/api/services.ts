@@ -1,6 +1,8 @@
 import { getAimandalaApiBaseUrl } from "./config";
 import { fetchJson } from "./httpClient";
 import type {
+  ReportFollowupRequest,
+  ReportFollowupResponse,
   UploadImageResponse,
   WealthReportRequest,
   WealthReportResponse,
@@ -14,6 +16,18 @@ export async function createWealthReport(
   payload: WealthReportRequest,
 ): Promise<WealthReportResponse> {
   return fetchJson<WealthReportResponse>(buildUrl("/api/wealth-reports"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function createReportFollowup(
+  payload: ReportFollowupRequest,
+): Promise<ReportFollowupResponse> {
+  return fetchJson<ReportFollowupResponse>(buildUrl("/api/report-followups"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

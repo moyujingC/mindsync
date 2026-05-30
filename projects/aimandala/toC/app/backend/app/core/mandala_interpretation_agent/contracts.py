@@ -101,6 +101,61 @@ class MandalaAgentInput:
 
 
 @dataclass(frozen=True)
+class ReportFollowupContext:
+    report_id: str
+    report_mode: Literal["lite", "pro"] | str
+    theme: str = "wealth"
+    theme_label: str = "财富关系"
+    painting_intention: str = ""
+    painting_feeling: str = ""
+    final_report_md: str = ""
+    final_report: dict[str, Any] = field(default_factory=dict)
+    visual_draft: dict[str, Any] | None = None
+    recent_followup_turns: list[dict[str, str]] = field(default_factory=list)
+    persona: ReportPersona = field(default_factory=ReportPersona)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "report_id": self.report_id,
+            "report_mode": self.report_mode,
+            "theme": self.theme,
+            "theme_label": self.theme_label,
+            "painting_intention": self.painting_intention,
+            "painting_feeling": self.painting_feeling,
+            "final_report_md": self.final_report_md,
+            "final_report": self.final_report,
+            "visual_draft": self.visual_draft,
+            "recent_followup_turns": self.recent_followup_turns,
+            "persona": self.persona.to_dict(),
+        }
+
+
+@dataclass(frozen=True)
+class ReportFollowupInput:
+    context: ReportFollowupContext
+    question: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "context": self.context.to_dict(),
+            "question": self.question,
+        }
+
+
+@dataclass(frozen=True)
+class ReportFollowupResult:
+    report_id: str
+    answer_md: str
+    referenced_report_sections: list[dict[str, str]]
+    safety: dict[str, Any]
+    out_of_scope: bool
+    persona: dict[str, Any]
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class MandalaAgentResult:
     agent_input: dict[str, Any]
     visual_draft: dict[str, Any]

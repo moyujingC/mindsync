@@ -129,6 +129,35 @@ export interface ReportPersona {
   boundaries: string[];
 }
 
+export interface ReportFollowupTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface ReportFollowupRequest {
+  report_id: string;
+  question: string;
+  report_mode?: InterpretationVersion | string;
+  final_report_md: string;
+  final_report?: Record<string, unknown>;
+  visual_draft?: Record<string, unknown> | null;
+  history?: ReportFollowupTurn[];
+  theme?: string;
+  theme_label?: string;
+  painting_intention?: string;
+  painting_feeling?: string;
+}
+
+export interface ReportFollowupResponse {
+  success: boolean;
+  report_id: string;
+  answer_md: string;
+  referenced_report_sections: Array<{ label: string; quote: string }>;
+  safety: Record<string, unknown>;
+  out_of_scope: boolean;
+  persona: ReportPersona | Record<string, unknown>;
+}
+
 export interface CreateInterpretationResponse {
   success: boolean;
   interpretation_id: string;

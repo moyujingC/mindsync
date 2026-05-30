@@ -5,9 +5,12 @@ import {
   ReportSections,
 } from "../components/report-cards";
 import { getThemeDisplayName } from "../../shared/core";
-import type { MandalaFlowState } from "../../shared/types";
+import { createReportFollowup } from "../../shared/api";
+import { isReportFollowupEnabled } from "../../shared/api/config";
+import type { MandalaFlowState, ReportFollowupTurn } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 import type { ReportPageSection } from "../pages";
+import { useEffect, useState } from "react";
 
 export interface MobileWebReportPageProps {
   route?: MobileWebRouteId;
@@ -20,6 +23,8 @@ export interface MobileWebReportPageProps {
   onSecondaryAction?: () => void;
   primaryDisabled?: boolean;
 }
+
+interface FollowupMessage extends ReportFollowupTurn {}
 
 function stripMarkdown(text: string): string {
   return text
@@ -151,6 +156,10 @@ export function MobileWebReportPage({
   onSecondaryAction,
   primaryDisabled = false,
 }: MobileWebReportPageProps) {
+  const [followupInput, setFollowupInput] = useState("");
+  const [followupMessages, setFollowupMessages] = useState<FollowupMessage[]>([]);
+  const [followupError, setFollowupError] = useState<string | null>(null);
+  const [followupSending, setFollowupSending] = useState(false);
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const isLoading = state.step === "liteGenerating";
   const isError = state.step === "error";
@@ -214,6 +223,52 @@ export function MobileWebReportPage({
       .filter(Boolean)
       .join(" · ") || "完整解读 · 视觉草稿 · 运行摘要";
   const reportToneLabel = isProReport ? "一梳 Pro 版" : "一镜 Lite 版";
+  const followupEnabled = isReportFollowupEnabled() && !isLoading && !isError && Boolean(state.report?.report);
+
+  useEffect(() => {
+    setFollowupMessages([]);
+    setFollowupInput("");
+    setFollowupError(null);
+    setFollowupSending(false);
+  }, [state.report?.interpretation_id]);
+
+  async function handleSendFollowup() {
+    const question = followupInput.trim();
+    const report = state.report;
+    if (!question || followupSending || !report?.interpretation_id || !report.report) {
+      return;
+    }
+    const userMessage: FollowupMessage = { role: "user", content: question };
+    const history = followupMessages;
+    setFollowupMessages((current) => [...current, userMessage]);
+    setFollowupInput("");
+    setFollowupError(null);
+    setFollowupSending(true);
+    try {
+      const response = await createReportFollowup({
+        report_id: report.interpretation_id,
+        question,
+        report_mode: report.version,
+        final_report_md: report.report,
+        final_report: report.structured ?? {},
+        visual_draft: report.visual_draft ?? null,
+        history,
+        theme: uploadDraft?.theme ?? "wealth",
+        theme_label: themeLabel,
+        painting_intention: uploadDraft?.paintingIntention ?? "",
+        painting_feeling: uploadDraft?.paintingFeeling ?? "",
+      });
+      setFollowupMessages((current) => [
+        ...current,
+        { role: "assistant", content: response.answer_md },
+      ]);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "报告追问暂时不可用，请稍后再试。";
+      setFollowupError(message);
+    } finally {
+      setFollowupSending(false);
+    }
+  }
 
   return (
     <MobileWebAppShell
@@ -279,6 +334,40 @@ export function MobileWebReportPage({
         <section className="mw-inline-banner mw-inline-banner--preview">
           <strong>当前流程有异常</strong>
           <p>{state.lastError}</p>
+        </section>
+      ) : null}
+
+      {followupEnabled ? (
+        <section className="mw-inline-banner mw-inline-banner--runtime">
+          <strong>对这份报告有疑问，可以问{personaName}。</strong>
+          <p>{personaName}会基于本次画作和报告内容，陪你把某一段看得更清楚。</p>
+          {followupMessages.length === 0 ? (
+            <p>嗨，我是{personaName}。你可以问我这份解读里最在意的部分，我会陪你一起读清楚。</p>
+          ) : null}
+          {followupMessages.map((message, index) => (
+            <p key={`${message.role}-${index}`}>
+              <strong>{message.role === "user" ? "你" : personaName}：</strong>{message.content}
+            </p>
+          ))}
+          {followupError ? <p>{followupError}</p> : null}
+          <div className="mw-button-row">
+            <input
+              value={followupInput}
+              disabled={followupSending}
+              onChange={(event) => setFollowupInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !followupSending) {
+                  event.preventDefault();
+                  void handleSendFollowup();
+                }
+              }}
+              placeholder="输入你想继续追问的报告问题"
+            />
+            <button type="button" className="mw-primary-button" disabled={followupSending || !followupInput.trim()} onClick={() => void handleSendFollowup()}>
+              {followupSending ? `${personaName}正在整理这段线索` : `问${personaName}`}
+            </button>
+          </div>
+          <p>{personaName}只能解释本次报告和画面线索，不能替代专业心理咨询、医疗建议、财务建议或重大现实决策。</p>
         </section>
       ) : null}
 

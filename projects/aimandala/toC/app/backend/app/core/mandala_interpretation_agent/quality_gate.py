@@ -183,6 +183,28 @@ def run_quality_gate(
     }
 
 
+def run_followup_answer_gate(answer_md: str) -> dict[str, Any]:
+    persona_overreach_terms = _persona_overreach_terms(answer_md, {})
+    leaked_terms = [
+        term
+        for term in [*FORBIDDEN_FINANCIAL_PROMISE_TERMS, *FORBIDDEN_DIAGNOSTIC_TERMS]
+        if term.lower() in answer_md.lower()
+    ]
+    failure_ids: list[str] = []
+    if persona_overreach_terms:
+        failure_ids.append("followup_answer_persona_boundary_overreach")
+    if leaked_terms:
+        failure_ids.append("followup_answer_safety_boundary_leak")
+    return {
+        "passed": not failure_ids,
+        "failure_ids": failure_ids,
+        "details": {
+            "leaked_terms": leaked_terms,
+            "persona_overreach_terms": persona_overreach_terms,
+        },
+    }
+
+
 def _persona_overreach_terms(final_report_md: str, final_report: dict[str, Any]) -> list[str]:
     persona = final_report.get("persona") if isinstance(final_report, dict) else None
     persona_text = ""

@@ -12,7 +12,7 @@ vi.mock("./config", () => ({
   getAimandalaApiBaseUrl: () => "http://127.0.0.1:8100",
 }));
 
-import { createWealthReport, uploadImage } from "./services";
+import { createReportFollowup, createWealthReport, uploadImage } from "./services";
 
 describe("shared/api services", () => {
   beforeEach(() => {
@@ -46,6 +46,37 @@ describe("shared/api services", () => {
           painting_feeling: "有点紧",
           inner_radius: 35,
           middle_radius: 65,
+        }),
+      }),
+    );
+  });
+
+  it("createReportFollowup sends report-bound context to the followup endpoint", async () => {
+    await createReportFollowup({
+      report_id: "report-1",
+      question: "这段是什么意思？",
+      report_mode: "lite",
+      final_report_md: "# 财富关系曼陀罗解读报告",
+      final_report: { report_id: "report-1" },
+      visual_draft: { visual_draft_md: "视觉草稿" },
+      history: [{ role: "user", content: "上一问" }],
+    });
+
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      "http://127.0.0.1:8100/api/report-followups",
+      expect.objectContaining({
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          report_id: "report-1",
+          question: "这段是什么意思？",
+          report_mode: "lite",
+          final_report_md: "# 财富关系曼陀罗解读报告",
+          final_report: { report_id: "report-1" },
+          visual_draft: { visual_draft_md: "视觉草稿" },
+          history: [{ role: "user", content: "上一问" }],
         }),
       }),
     );

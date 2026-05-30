@@ -13,6 +13,10 @@ class StubRouteLLMClient:
     last_prompt_cache_miss_tokens = 0
     last_attempt_trace = [{"model": "stub", "status": "ok"}]
 
+    def __init__(self, followup_answer: str | None = None) -> None:
+        self.followup_answer = followup_answer
+        self.text_calls = []
+
     def generate_structured(self, **kwargs):
         return (
             "## 整体画面\n"
@@ -24,6 +28,9 @@ class StubRouteLLMClient:
         )
 
     def generate_text(self, **kwargs):
+        self.text_calls.append(kwargs)
+        if self.followup_answer is not None and kwargs.get("task") == "chat" and "本次报告全文" in kwargs.get("user_prompt", ""):
+            return self.followup_answer
         if kwargs.get("task") == "vision":
             if "上一轮输出仍然偏结构化" in kwargs.get("user_prompt", ""):
                 return (
@@ -110,6 +117,94 @@ def test_create_wealth_report_rejects_pro_for_mvp(monkeypatch, tmp_path):
 
     assert response.status_code == 403
 
+
+def test_report_followup_disabled_by_default(monkeypatch):
+    monkeypatch.delenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", raising=False)
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient("不应调用"))
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/report-followups",
+        json={
+            "report_id": "report-1",
+            "question": "这段是什么意思？",
+            "final_report_md": "# 财富关系曼陀罗解读报告",
+            "final_report": {"report_id": "report-1"},
+        },
+    )
+
+    assert response.status_code == 403
+
+
+def test_report_followup_rejects_mismatched_report_id(monkeypatch):
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "1")
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient("不应调用"))
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/report-followups",
+        json={
+            "report_id": "report-1",
+            "question": "这段是什么意思？",
+            "final_report_md": "# 财富关系曼陀罗解读报告",
+            "final_report": {"report_id": "report-2"},
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_report_followup_returns_answer_when_enabled(monkeypatch):
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "1")
+    monkeypatch.setattr(
+        api_routes,
+        "create_llm_client_from_env",
+        lambda: StubRouteLLMClient("这对应报告里的三圈观察：内圈较稳，中圈有重复。"),
+    )
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/report-followups",
+        json={
+            "report_id": "report-1",
+            "question": "三圈观察是什么意思？",
+            "report_mode": "lite",
+            "theme_label": "财富关系",
+            "final_report_md": "# 财富关系曼陀罗解读报告\n\n## 三圈观察\n内圈较稳，中圈有重复。",
+            "final_report": {"report_id": "report-1"},
+            "visual_draft": {"visual_draft_md": "## 三圈观察\n内圈较稳。"},
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["report_id"] == "report-1"
+    assert "三圈观察" in payload["answer_md"]
+    assert payload["persona"]["persona_id"] == "manman"
+    assert payload["safety"]["precheck"]["passed"] is True
+
+
+def test_report_followup_precheck_blocks_diagnostic_question(monkeypatch):
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "1")
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient("不应调用"))
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/report-followups",
+        json={
+            "report_id": "report-1",
+            "question": "我是不是抑郁症？",
+            "final_report_md": "# 财富关系曼陀罗解读报告",
+            "final_report": {"report_id": "report-1"},
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["out_of_scope"] is True
+    assert "followup_diagnostic_request" in payload["safety"]["failure_ids"]
+    assert "不能做心理诊断" in payload["answer_md"]
 
 def test_create_app_loads_redeem_codes_before_route_authorization(
     monkeypatch,
