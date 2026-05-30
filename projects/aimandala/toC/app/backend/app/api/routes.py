@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
@@ -13,6 +15,7 @@ from app.core.mandala_interpretation_agent import (
     MandalaAgentInput,
     MandalaImageInput,
     MandalaInterpretationAgent,
+    MandalaInterpretationArtifactStore,
     MandalaOutputRequirements,
     MandalaUserContext,
 )
@@ -24,7 +27,7 @@ router = APIRouter(prefix="/api", tags=["aimandala"])
 
 class WealthReportRequest(BaseModel):
     image_path: str = Field(..., description="Backend-readable local image path")
-    report_mode: Literal["lite"] = "lite"
+    report_mode: Literal["lite", "pro"] = "lite"
     agent_variant: Literal["two_pass_e2e", "single_pass_e2e"] = "two_pass_e2e"
     painting_intention: str = ""
     painting_feeling: str = ""
@@ -129,9 +132,13 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
                 "quality_gate": result.quality_gate,
             },
         )
+    report_id = str(result.run_summary.get("report_id") or result.final_report.get("report_id") or "")
+    if report_id:
+        store = MandalaInterpretationArtifactStore(output_dir=Path("data/reports") / report_id)
+        store.write(result)
     return WealthReportResponse(
         success=True,
-        report_id=str(result.final_report.get("report_id") or ""),
+        report_id=report_id,
         report_mode=payload.report_mode,
         final_report_md=result.final_report_md,
         final_report=result.final_report,
@@ -167,3 +174,11 @@ async def upload_image(file: UploadFile = File(...)) -> UploadImageResponse:
         image_url=stored.image_url,
         image_local_expires_at=stored.local_expires_at,
     )
+
+
+@router.get("/wealth-reports/{report_id}/visual-draft")
+async def get_visual_draft(report_id: str) -> dict:
+    path = Path("data/reports") / report_id / "visual_draft.json"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Visual draft not found")
+    return json.loads(path.read_text(encoding="utf-8"))

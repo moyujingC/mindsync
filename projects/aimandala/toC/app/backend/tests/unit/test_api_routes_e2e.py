@@ -84,9 +84,12 @@ def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
     assert payload["report_mode"] == "lite"
     assert payload["final_report_md"]
     assert payload["visual_draft"]
-    assert payload["prompt_pack_manifest"]["pack_id"] == "topic-report-v1.0.0"
+    assert payload["prompt_pack_manifest"]["pack_id"] == "wealth-relationship-report-v1.0.0"
     assert payload["quality_gate"]["passed"] is True
     assert payload["run_summary"]["status"] == "complete"
+    assert payload["final_report"]["persona"]["persona_id"] == "manman"
+    assert payload["final_report"]["persona"]["display_name"] == "曼曼"
+    assert payload["run_summary"]["persona_id"] == "manman"
 
 
 def test_create_wealth_report_rejects_pro_for_mvp(monkeypatch, tmp_path):
@@ -105,7 +108,7 @@ def test_create_wealth_report_rejects_pro_for_mvp(monkeypatch, tmp_path):
         },
     )
 
-    assert response.status_code == 422
+    assert response.status_code == 403
 
 
 def test_create_app_loads_redeem_codes_before_route_authorization(

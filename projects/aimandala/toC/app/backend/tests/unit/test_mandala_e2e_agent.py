@@ -126,8 +126,14 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
 
     assert "## 整体画面" in result.visual_draft["visual_draft_md"]
     assert "## 三圈观察" in result.visual_draft["visual_draft_md"]
-    assert result.prompt_pack_manifest["pack_id"] == "topic-report-v1.0.0"
+    assert result.prompt_pack_manifest["pack_id"] == "wealth-relationship-report-v1.0.0"
     assert result.final_report["report_mode"] == "lite"
+    assert result.final_report["persona"]["persona_id"] == "manman"
+    assert result.final_report["persona"]["display_name"] == "曼曼"
+    assert result.final_report["persona"]["role_label"] == "AI 报告陪读 avatar"
+    assert result.agent_input["persona"]["persona_version"] == "manman-report-companion-v0.1"
+    assert result.run_summary["persona_id"] == "manman"
+    assert result.run_summary["persona_version"] == "manman-report-companion-v0.1"
     assert result.quality_gate["passed"] is True
     assert result.run_summary["status"] == "complete"
     assert result.run_summary["agent_variant"] == "two_pass_e2e"
@@ -146,9 +152,17 @@ def test_end_to_end_agent_returns_new_contract(tmp_path):
     assert "50-结构化知识单元" not in vision_text_call["system_prompt"]
     assert "90-来源原文/01-完整解读案例11例合并原文.md" in vision_text_call["system_prompt"]
     assert "本次视觉观察任务" in vision_text_call["user_prompt"]
+    assert "曼曼" not in vision_text_call["system_prompt"]
+    assert "曼曼" not in vision_text_call["user_prompt"]
+    assert "陪读" not in vision_text_call["system_prompt"]
+    assert "陪读" not in vision_text_call["user_prompt"]
     assert "10-财富关系/10-财富关系翻译层/01-基础信号财富关系翻译总表.md" in report_text_call["system_prompt"]
     assert "50-结构化知识单元" not in report_text_call["system_prompt"]
     assert "12-财富关系中的浮现议题回译规则.md" in report_text_call["system_prompt"]
+    assert "曼曼报告陪读叙事边界" in report_text_call["user_prompt"]
+    assert "AI 报告陪读 avatar" in report_text_call["user_prompt"]
+    assert "只陪用户读懂本次曼陀罗报告" in report_text_call["user_prompt"]
+    assert "不要自称心理咨询师" in report_text_call["user_prompt"]
 
 
 def test_two_pass_rewrites_structured_visual_draft_to_markdown(tmp_path):
@@ -208,6 +222,39 @@ def test_quality_gate_does_not_flag_normal_flow_words():
     assert quality["details"]["cross_circle_leaked_terms"] == []
 
 
+def test_quality_gate_allows_light_persona_reading_language():
+    from app.core.mandala_interpretation_agent.quality_gate import run_quality_gate
+
+    quality = run_quality_gate(
+        visual_draft={
+            "visual_draft_md": "## 三圈能量流动\n内圈能量形成承接，外圈趋于堵塞。",
+        },
+        prompt_pack_manifest={"pack_id": "topic-report-v1.0.0"},
+        final_report_md="# 财富关系曼陀罗解读报告\n\n曼曼陪你一起读懂这份报告里的线索。",
+        final_report={"report_id": "report-1"},
+    )
+
+    assert quality["passed"] is True
+    assert quality["details"]["persona_overreach_terms"] == []
+
+
+def test_quality_gate_flags_persona_boundary_overreach():
+    from app.core.mandala_interpretation_agent.quality_gate import run_quality_gate
+
+    quality = run_quality_gate(
+        visual_draft={
+            "visual_draft_md": "## 三圈能量流动\n内圈能量形成承接，外圈趋于堵塞。",
+        },
+        prompt_pack_manifest={"pack_id": "topic-report-v1.0.0"},
+        final_report_md="# 财富关系曼陀罗解读报告\n\n我是你的心理咨询师，我会一直陪着你。",
+        final_report={"report_id": "report-1"},
+    )
+
+    assert quality["passed"] is False
+    assert "final_report_persona_boundary_overreach" in quality["failure_ids"]
+    assert "我是你的心理咨询师" in quality["details"]["persona_overreach_terms"]
+
+
 def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tmp_path):
     llm_client = StubE2ELLMClient()
     agent_input = _agent_input(tmp_path)
@@ -234,6 +281,7 @@ def test_single_pass_agent_variant_generates_report_with_one_vision_text_call(tm
     assert llm_client.text_calls[0]["task"] == "vision"
     assert llm_client.text_calls[0]["image_paths"]
     assert "方案 B：单阶段端到端直出" in llm_client.text_calls[0]["user_prompt"]
+    assert "曼曼报告陪读叙事边界" in llm_client.text_calls[0]["user_prompt"]
     assert "00-曼陀罗基础层解读流程.md" in llm_client.text_calls[0]["system_prompt"]
     assert "50-结构化知识单元" not in llm_client.text_calls[0]["system_prompt"]
     assert "10-财富关系/10-财富关系翻译层/01-基础信号财富关系翻译总表.md" in llm_client.text_calls[0]["system_prompt"]
@@ -264,7 +312,7 @@ def test_prompt_pack_builder_uses_real_files():
     pack = PromptPackBuilder().build()
 
     assert pack.pack_id == "topic-report-v1.0.0"
-    assert pack.manifest["file_order"] == ["topic-lite-report-prompt.md"]
+    assert pack.manifest["file_order"] == ["lite-report-prompt.md"]
     assert pack.manifest["file_count"] == 1
     assert pack.manifest["prompt_budget"]["estimated_tokens"] > 0
     assert pack.manifest["prompt_budget"]["warning_level"] == "none"
@@ -279,7 +327,7 @@ def test_prompt_pack_builder_uses_pro_files():
     pack = PromptPackBuilder(report_mode="pro").build()
 
     assert pack.pack_id == "topic-report-v1.0.0"
-    assert pack.manifest["file_order"] == ["topic-pro-report-prompt.md"]
+    assert pack.manifest["file_order"] == ["pro-report-prompt.md"]
     assert pack.manifest["file_count"] == 1
     assert "一梳 Pro 版" in pack.stable_prefix
     assert "一镜 Lite 版" not in pack.stable_prefix

@@ -12,7 +12,7 @@ from .contracts import MandalaAgentInput, MandalaAgentResult
 from .foundation_prompt_pack_builder import FoundationPromptPackBuilder
 from .prompt_loader import load_prompt_template
 from .prompt_pack_builder import PromptPackBuilder
-from .quality_gate import run_quality_gate
+from .quality_gate import FORBIDDEN_METAPHOR_TERMS, run_quality_gate
 from .topic_prompt_pack_builder import TopicPromptPackBuilder
 from .topic_prompt_pack_registry import get_topic_config_for_theme
 
@@ -32,8 +32,9 @@ class MandalaInterpretationAgent:
     ) -> MandalaAgentResult:
         topic_config = get_topic_config_for_theme(agent_input.user_context.theme)
         topic_label = topic_config.label
+        prompt_pack_id = agent_input.prompt_pack_id or f"{topic_config.topic_key}-report-v1.0.0"
         prompt_pack = PromptPackBuilder(
-            pack_id=agent_input.prompt_pack_id,
+            pack_id=prompt_pack_id,
             report_mode=agent_input.report_mode,
             topic_label=topic_label,
         ).build()
@@ -73,11 +74,23 @@ class MandalaInterpretationAgent:
                 visual_draft=visual_draft,
                 disable_thinking=disable_thinking,
             )
+            final_report_md = self._rewrite_for_quality_if_needed(
+                agent_input=agent_input,
+                prompt_pack=prompt_pack,
+                foundation_prompt_pack=foundation_prompt_pack,
+                topic_prompt_pack=topic_prompt_pack,
+                topic_label=topic_label,
+                visual_draft=visual_draft,
+                final_report_md=final_report_md,
+                disable_thinking=disable_thinking,
+            )
+        report_id = f"mandala-e2e-{uuid4().hex[:12]}"
         final_report = {
-            "report_id": f"mandala-e2e-{uuid4().hex[:12]}",
+            "report_id": report_id,
             "report_mode": agent_input.report_mode,
             "title": f"{topic_label}曼陀罗解读报告",
             "markdown": final_report_md,
+            "persona": agent_input.persona.to_dict(),
         }
         quality_gate = run_quality_gate(
             visual_draft=visual_draft,
@@ -105,6 +118,9 @@ class MandalaInterpretationAgent:
                 "miss_tokens": int(getattr(self.llm_client, "last_prompt_cache_miss_tokens", 0) or 0),
             },
             "model_trace": list(getattr(self.llm_client, "last_attempt_trace", [])),
+            "report_id": report_id,
+            "persona_id": agent_input.persona.persona_id,
+            "persona_version": agent_input.persona.persona_version,
         }
         return MandalaAgentResult(
             agent_input=agent_input.to_dict(),
@@ -187,6 +203,84 @@ class MandalaInterpretationAgent:
             "production_role": "default_production",
         }
 
+    def _rewrite_for_quality_if_needed(
+        self,
+        *,
+        agent_input: MandalaAgentInput,
+        prompt_pack,
+        foundation_prompt_pack,
+        topic_prompt_pack,
+        topic_label: str,
+        visual_draft: dict[str, Any],
+        final_report_md: str,
+        disable_thinking: bool | None,
+    ) -> str:
+        current_report_md = final_report_md
+        for _ in range(4):
+            provisional_report = {
+                "report_id": "quality-precheck",
+                "report_mode": agent_input.report_mode,
+                "title": f"{topic_label}曼陀罗解读报告",
+                "markdown": current_report_md,
+            }
+            quality_gate = run_quality_gate(
+                visual_draft=visual_draft,
+                prompt_pack_manifest=prompt_pack.manifest,
+                final_report_md=current_report_md,
+                final_report=provisional_report,
+                topic_label=topic_label,
+            )
+            forbidden_terms = quality_gate.get("details", {}).get("forbidden_metaphor_terms") or []
+            if quality_gate.get("passed") or not forbidden_terms:
+                return current_report_md
+
+            rewrite_prompt = "\n\n".join(
+                [
+                    "上一版报告没有通过质量门，因为出现了禁止的隐喻、空间化、角色化或物品化表达。",
+                    "请在不改变画面依据、五行推导、核心卡点、7 天路径和整体结构的前提下，重写整份报告。",
+                    "必须删除或替换这些词：" + "、".join(str(term) for term in forbidden_terms),
+                    "注意：这不是建议，而是硬性质量门。最终报告中一个禁止词都不能保留，也不能新增禁止词。",
+                    "替换规则：改成直接机制语言、身体感或现实动作。例如写报价、展示、接收反馈、收到支持、完成交换，不要写自然景观、物品或角色。",
+                    "除非原画视觉草稿明确描述了某个图像元素，否则不要把用户或财富关系比作植物、容器、道路、桥、河、海、作品、礼物、舞台或角色。",
+                    "禁止词全集：" + "、".join(FORBIDDEN_METAPHOR_TERMS),
+                    "原始视觉草稿：",
+                    json.dumps(visual_draft, ensure_ascii=False, indent=2),
+                    "需要重写的报告：",
+                    current_report_md,
+                ]
+            )
+            rewritten = self.llm_client.generate_text(
+                task="chat",
+                system_prompt="\n\n".join(
+                    [
+                        foundation_prompt_pack.stable_prefix,
+                        topic_prompt_pack.stable_prefix,
+                        "# 报告生成稳定规则",
+                        prompt_pack.stable_prefix,
+                    ]
+                ),
+                user_prompt=rewrite_prompt,
+                disable_thinking=False if disable_thinking is None else disable_thinking,
+            )
+            if not rewritten or not rewritten.strip():
+                return current_report_md
+            current_report_md = rewritten.strip()
+        return current_report_md
+
+    def _persona_narration_boundary(self, agent_input: MandalaAgentInput) -> str:
+        persona = agent_input.persona
+        return "\n".join(
+            [
+                "# 曼曼报告陪读叙事边界",
+                f"{persona.display_name}的定位是{persona.role_label}，只陪用户读懂本次曼陀罗报告。",
+                f"适用范围：{persona.scope}。",
+                "报告可以使用“曼曼陪你一起读懂这幅画”这类轻量陪读语气，但不要让曼曼大量第一人称出场。",
+                "不要自称心理咨询师、咨询师、治疗师、真实疗愈师或长期陪伴者。",
+                "不要承诺治愈、改善、诊断、医疗建议、财务预测、投资建议或重大现实决策。",
+                "如果提到追问，只能表达为基于本次画作和本次报告内容继续解释。",
+            ]
+        )
+
     def _build_final_report(
         self,
         *,
@@ -204,6 +298,7 @@ class MandalaInterpretationAgent:
                 f"用户主题：{topic_label}",
                 f"用户意图：{agent_input.user_context.painting_intention}",
                 f"用户感受：{agent_input.user_context.painting_feeling}",
+                self._persona_narration_boundary(agent_input),
                 "视觉草稿：",
                 json.dumps(visual_draft, ensure_ascii=False, indent=2),
                 f"请直接输出用户可读的{topic_label} Markdown 报告。",
@@ -252,6 +347,7 @@ class MandalaInterpretationAgent:
                 f"用户主题：{topic_label}",
                 f"用户意图：{agent_input.user_context.painting_intention}",
                 f"用户感受：{agent_input.user_context.painting_feeling}",
+                self._persona_narration_boundary(agent_input),
             ]
         )
         text = self.llm_client.generate_text(

@@ -161,6 +161,7 @@ export function MobileWebReportPage({
     ? "当前命中了已有解读记录，本次直接复用了同一用户、同一图片、同一议题下的现有结果。"
     : null;
   const reportSections = parseReportSections(typeof state.report?.report === "string" ? state.report.report : null);
+  const personaName = state.report?.persona?.display_name || "曼曼";
   const evidenceSections = buildReportEvidenceSections(state);
   const reportTitle = isError
     ? "报告暂未生成"
@@ -170,7 +171,7 @@ export function MobileWebReportPage({
     : isProReport
       ? "当前正在查看 Pro 版解读。"
       : state.report?.overall_impression ||
-        "曼曼已经把这一轮 Lite 版解读整理好了。";
+        `${personaName}已经帮你整理出这幅画里最核心的一条线索。`;
   const generatedAt = new Date().toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "long",
@@ -188,7 +189,7 @@ export function MobileWebReportPage({
       : "重新上传画作";
   const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
   const footerHint = isLoading
-    ? "当前仍在生成，你可以继续等待，或先返回上传页调整输入。"
+    ? `${personaName}正在整理这幅画里的线索。`
       : canRetryRefresh
         ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
         : isProReport
@@ -227,7 +228,7 @@ export function MobileWebReportPage({
     >
       <section className="mw-report-hero">
         <div className="mw-report-hero__copy">
-          <p className="mw-report-hero__brandline">一镜一梳 · 曼曼陪你慢一点看见这幅画</p>
+          <p className="mw-report-hero__brandline">一镜一梳 · {personaName}陪你一起读懂这幅画</p>
           <p className="mw-kicker">{reportToneLabel}</p>
           <h2>{reportTitle}</h2>
           <p className="mw-report-hero__summary">{reportSubtitle}</p>

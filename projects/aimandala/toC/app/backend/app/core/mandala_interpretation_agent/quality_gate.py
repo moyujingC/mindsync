@@ -12,6 +12,51 @@ FORBIDDEN_FINAL_REPORT_TERMS = [
     "quality_gate",
 ]
 
+FORBIDDEN_METAPHOR_TERMS = [
+    "礼物",
+    "花园",
+    "堡垒",
+    "围墙",
+    "城墙",
+    "城门",
+    "宫殿",
+    "宇宙",
+    "旅程",
+    "邀请函",
+    "工匠",
+    "认证员",
+    "园丁",
+    "守门人",
+    "宝藏",
+    "商人",
+    "独木桥",
+    "桥",
+    "推门",
+    "大舞台",
+    "海洋",
+    "小池塘",
+    "河",
+    "清泉",
+    "大海",
+    "画布",
+    "考卷",
+    "钻石",
+    "原石",
+    "审判锤",
+    "钱宝宝",
+    "容器",
+    "通道",
+    "出口",
+    "路标",
+    "道路",
+    "直道",
+    "院子",
+    "围栏",
+    "工具箱",
+    "瓶口",
+    "芬芳",
+]
+
 FORBIDDEN_FINANCIAL_PROMISE_TERMS = [
     "财务预测",
     "收益预测",
@@ -21,6 +66,33 @@ FORBIDDEN_FINANCIAL_PROMISE_TERMS = [
 FORBIDDEN_DIAGNOSTIC_TERMS = [
     "心理诊断",
     "医疗建议",
+]
+
+FORBIDDEN_PERSONA_OVERREACH_TERMS = [
+    "我是你的心理咨询师",
+    "我是你的咨询师",
+    "我是你的治疗师",
+    "我是你的疗愈师",
+    "作为你的心理咨询师",
+    "作为你的咨询师",
+    "作为你的治疗师",
+    "作为你的疗愈师",
+    "我会一直陪着你",
+    "一直陪着你",
+    "长期陪伴你",
+    "持续陪伴你",
+    "只有曼曼懂你",
+    "你离不开我",
+    "你只要相信曼曼",
+    "不要告诉别人，只和我说",
+    "不要告诉你的朋友",
+    "不要告诉你的家人",
+    "不用找专业人士",
+    "我会治愈你",
+    "保证改善",
+    "根治",
+    "疗愈成功",
+    "彻底好起来",
 ]
 
 CROSS_CIRCLE_FIVE_ELEMENT_TERMS = [
@@ -81,8 +153,17 @@ def run_quality_gate(
     leaked_terms.extend(
         term for term in FORBIDDEN_DIAGNOSTIC_TERMS if term.lower() in final_report_md.lower()
     )
+    metaphor_terms = [
+        term for term in FORBIDDEN_METAPHOR_TERMS if term.lower() in final_report_md.lower()
+    ]
+    persona_overreach_terms = _persona_overreach_terms(final_report_md, final_report)
+    leaked_terms.extend(metaphor_terms)
     if leaked_terms:
         failure_ids.append("final_report_internal_text_leak")
+    if metaphor_terms:
+        failure_ids.append("final_report_over_metaphor")
+    if persona_overreach_terms:
+        failure_ids.append("final_report_persona_boundary_overreach")
 
     if topic_label and topic_label not in final_report_md:
         failure_ids.append("missing_topic_label")
@@ -95,9 +176,20 @@ def run_quality_gate(
         "failure_ids": failure_ids,
         "details": {
             "leaked_terms": leaked_terms,
+            "forbidden_metaphor_terms": metaphor_terms,
+            "persona_overreach_terms": persona_overreach_terms,
             "cross_circle_leaked_terms": cross_circle_leaked_terms,
         },
     }
+
+
+def _persona_overreach_terms(final_report_md: str, final_report: dict[str, Any]) -> list[str]:
+    persona = final_report.get("persona") if isinstance(final_report, dict) else None
+    persona_text = ""
+    if isinstance(persona, dict):
+        persona_text = "\n".join(str(value) for value in persona.values())
+    text = f"{final_report_md}\n{persona_text}".lower()
+    return [term for term in FORBIDDEN_PERSONA_OVERREACH_TERMS if term.lower() in text]
 
 
 def _cross_circle_five_element_terms(markdown: str) -> list[str]:

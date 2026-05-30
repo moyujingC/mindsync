@@ -26,6 +26,9 @@ from app.core.llm.runtime import create_llm_client_from_env, load_private_env_fi
 from app.core.mandala_interpretation_agent.prompt_pack_builder import (  # noqa: E402
     PromptPackBuilder,
 )
+from app.core.mandala_interpretation_agent.topic_prompt_pack_registry import (  # noqa: E402
+    get_topic_config_for_theme,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -50,6 +53,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="User feeling passed to the reasoning pass.",
     )
     parser.add_argument(
+        "--theme",
+        default="wealth",
+        help="Theme/topic for the report (e.g. wealth, intimate_relationship, father_relationship).",
+    )
+    parser.add_argument(
         "--thinking-mode",
         choices=["default", "on", "off"],
         default="off",
@@ -71,7 +79,12 @@ def main() -> int:
     if not marked_image_path.exists():
         raise FileNotFoundError(f"marked image not found: {marked_image_path}")
 
-    builder = PromptPackBuilder()
+    topic_config = get_topic_config_for_theme(args.theme)
+    builder = PromptPackBuilder(
+        pack_id=f"{topic_config.topic_key}-report-v1.0.0",
+        report_mode="lite",
+        topic_label=topic_config.label,
+    )
     prompt_pack = builder.build()
     prompt_pack_manifest_path = _resolve_output_dir(args.save_dir) / "prompt_pack_manifest.json"
     output_dir = _resolve_output_dir(args.save_dir)
@@ -94,6 +107,7 @@ def main() -> int:
             image_path=image_path,
             marked_image_path=marked_image_path,
             report_mode=mode,
+            topic_label=topic_config.label,
             intention=args.intention,
             feeling=args.feeling,
             thinking_mode=args.thinking_mode,
@@ -131,6 +145,7 @@ def _run_one_mode(
     image_path: Path,
     marked_image_path: Path,
     report_mode: str,
+    topic_label: str,
     intention: str,
     feeling: str,
     thinking_mode: str,
@@ -148,6 +163,7 @@ def _run_one_mode(
         prompt_pack=prompt_pack,
         visual_draft=visual_draft,
         report_mode=report_mode,
+        topic_label=topic_label,
         intention=intention,
         feeling=feeling,
         thinking_mode=thinking_mode,
@@ -200,7 +216,7 @@ def _generate_visual_draft(*, client, image_path: Path, marked_image_path: Path,
     }
 
 
-def _generate_final_report(*, client, prompt_pack, visual_draft: dict, report_mode: str, intention: str, feeling: str, thinking_mode: str) -> str:
+def _generate_final_report(*, client, prompt_pack, visual_draft: dict, report_mode: str, topic_label: str, intention: str, feeling: str, thinking_mode: str) -> str:
     user_prompt = "\n\n".join(
         [
             f"报告模式：{report_mode}",
@@ -208,7 +224,7 @@ def _generate_final_report(*, client, prompt_pack, visual_draft: dict, report_mo
             f"用户感受：{feeling}",
             "视觉草稿：",
             visual_draft["markdown"],
-            "请依据上述稳定前缀和视觉草稿，直接生成用户可见的财富议题 Markdown 报告。",
+            f"请依据上述稳定前缀和视觉草稿，直接生成用户可见的{topic_label} Markdown 报告。",
         ]
     )
     raw = client.generate_text(

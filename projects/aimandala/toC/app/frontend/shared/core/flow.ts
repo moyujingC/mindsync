@@ -3,6 +3,7 @@ import type {
   DetectCirclesResponse,
   InterpretationStatusResponse,
   MandalaFlowState,
+  ReportPersona,
   ReportResponse,
   SelectedImageRef,
   WealthReportResponse,
@@ -88,6 +89,35 @@ function getReportStringValue(
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+function parseReportPersona(source: Record<string, unknown>): ReportPersona | null {
+  const value = source.persona;
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const persona = value as Record<string, unknown>;
+  const personaId = getReportStringValue(persona, "persona_id");
+  const personaVersion = getReportStringValue(persona, "persona_version");
+  const displayName = getReportStringValue(persona, "display_name");
+  const roleLabel = getReportStringValue(persona, "role_label");
+  const scope = getReportStringValue(persona, "scope");
+  const boundaries = Array.isArray(persona.boundaries)
+    ? persona.boundaries.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    : [];
+
+  if (!personaId || !personaVersion || !displayName || !roleLabel || !scope) {
+    return null;
+  }
+
+  return {
+    persona_id: personaId,
+    persona_version: personaVersion,
+    display_name: displayName,
+    role_label: roleLabel,
+    scope,
+    boundaries,
+  };
+}
+
 export function applyWealthReport(
   state: MandalaFlowState,
   response: WealthReportResponse,
@@ -97,12 +127,14 @@ export function applyWealthReport(
   const overallImpression =
     getReportStringValue(finalReport, "summary") ??
     getReportStringValue(finalReport, "overall_impression");
+  const persona = parseReportPersona(finalReport);
   const report: ReportResponse = {
     interpretation_id: response.report_id,
     version: response.report_mode,
     title,
     overall_impression: overallImpression,
     structured: finalReport,
+    persona,
     report: response.final_report_md,
     ai_qa_context: null,
     can_upgrade: false,

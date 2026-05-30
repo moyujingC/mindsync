@@ -120,6 +120,15 @@ export interface WealthReportResponse {
   run_summary?: Record<string, unknown> | null;
 }
 
+export interface ReportPersona {
+  persona_id: string;
+  persona_version: string;
+  display_name: string;
+  role_label: string;
+  scope: string;
+  boundaries: string[];
+}
+
 export interface CreateInterpretationResponse {
   success: boolean;
   interpretation_id: string;
@@ -183,6 +192,7 @@ export interface ReportResponse {
   title?: string | null;
   overall_impression?: string | null;
   structured?: Record<string, unknown> | null;
+  persona?: ReportPersona | null;
   report?: string | null;
   ai_qa_context?: string | null;
   can_upgrade: boolean;

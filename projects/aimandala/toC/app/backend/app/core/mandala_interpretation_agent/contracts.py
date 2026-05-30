@@ -45,15 +45,37 @@ class MandalaOutputRequirements:
 
 
 @dataclass(frozen=True)
+class ReportPersona:
+    persona_id: str = "manman"
+    persona_version: str = "manman-report-companion-v0.1"
+    display_name: str = "曼曼"
+    role_label: str = "AI 报告陪读 avatar"
+    scope: str = "陪用户读懂本次曼陀罗报告，并在报告范围内回答追问"
+    boundaries: list[str] = field(
+        default_factory=lambda: [
+            "不是心理咨询师",
+            "不是真实疗愈师",
+            "不提供长期陪伴",
+            "不提供医疗建议、心理诊断、财务建议或重大现实决策",
+            "只基于本次画作和本次报告内容陪用户理解",
+        ]
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class MandalaAgentInput:
     image: MandalaImageInput
     user_context: MandalaUserContext
     circle_boundaries: dict[str, Any]
     report_mode: Literal["lite", "pro"] = "lite"
     agent_version: str = "mandala-e2e-agent-v1"
-    prompt_pack_id: str = "topic-report-v1.0.0"
+    prompt_pack_id: str = ""
     agent_variant: str = "two_pass_e2e"
     output_requirements: MandalaOutputRequirements = field(default_factory=MandalaOutputRequirements)
+    persona: ReportPersona = field(default_factory=ReportPersona)
 
     def __post_init__(self) -> None:
         if self.report_mode not in REPORT_MODES:
@@ -74,6 +96,7 @@ class MandalaAgentInput:
             "prompt_pack_id": self.prompt_pack_id,
             "agent_variant": self.agent_variant,
             "output_requirements": self.output_requirements.to_dict(),
+            "persona": self.persona.to_dict(),
         }
 
 

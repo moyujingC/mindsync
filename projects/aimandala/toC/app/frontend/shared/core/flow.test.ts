@@ -86,6 +86,14 @@ describe("shared/core flow", () => {
       final_report: {
         title: "财富关系曼陀罗解读",
         summary: "当前财富能量稳定。",
+        persona: {
+          persona_id: "manman",
+          persona_version: "manman-report-companion-v0.1",
+          display_name: "曼曼",
+          role_label: "AI 报告陪读 avatar",
+          scope: "陪用户读懂本次曼陀罗报告，并在报告范围内回答追问",
+          boundaries: ["不是心理咨询师"],
+        },
       },
       visual_draft: { summary: "视觉草稿" },
       prompt_pack_manifest: { pack_id: "wealth-report-v1.0.0" },
@@ -97,6 +105,8 @@ describe("shared/core flow", () => {
     expect(snapshot.report?.title).toBe("财富关系曼陀罗解读");
     expect(snapshot.report?.overall_impression).toBe("当前财富能量稳定。");
     expect(snapshot.report?.report).toContain("财富关系曼陀罗解读");
+    expect(snapshot.report?.persona?.persona_id).toBe("manman");
+    expect(snapshot.report?.persona?.display_name).toBe("曼曼");
     expect(snapshot.report?.visual_draft).toBeTruthy();
     expect(snapshot.report?.prompt_pack_manifest).toBeTruthy();
   });
@@ -108,6 +118,7 @@ describe("shared/core flow", () => {
       title: "一梳 Pro 版",
       overall_impression: "需要更深分析",
       structured: null,
+      persona: null,
       report: "pro body",
       ai_qa_context: null,
       can_upgrade: false,
