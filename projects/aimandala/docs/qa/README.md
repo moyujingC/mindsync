@@ -33,6 +33,7 @@
 
 进入本目录前，先对齐这些长期入口：
 
+- [MVP-上线范围与-Go-No-Go-标准.md](../specs/MVP-上线范围与-Go-No-Go-标准.md)
 - [ToC-MVP-产品规范.md](../specs/ToC-MVP-产品规范.md)
 - [ToC-MVP-技术方案.md](../architecture/ToC-MVP-技术方案.md)
 - [本项目 PROJECT.md](../../PROJECT.md)
@@ -48,6 +49,7 @@
 
 当前优先阅读：
 
+- [MVP-主流程验收表.md](./MVP-主流程验收表.md)
 - [2026-05-11-runbook-体系优化验证记录.md](./2026-05-11-runbook-体系优化验证记录.md)
 - [2026-05-11-runbook-体系优化-QA基线.md](./2026-05-11-runbook-体系优化-QA基线.md)
 - [2026-05-11-曼陀罗解读智能体-MVP-QA基线.md](./2026-05-11-曼陀罗解读智能体-MVP-QA基线.md)
