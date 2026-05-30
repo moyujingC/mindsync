@@ -52,6 +52,7 @@
 - [MVP-主流程验收表.md](./MVP-主流程验收表.md)
 - [Lite-Pro-权限与支付验收表.md](./Lite-Pro-权限与支付验收表.md)
 - [Lite-Pro-报告内容-Smoke-Test-记录.md](./Lite-Pro-报告内容-Smoke-Test-记录.md)
+- [Followup-MVP-验收记录.md](./Followup-MVP-验收记录.md)
 - [2026-05-11-runbook-体系优化验证记录.md](./2026-05-11-runbook-体系优化验证记录.md)
 - [2026-05-11-runbook-体系优化-QA基线.md](./2026-05-11-runbook-体系优化-QA基线.md)
 - [2026-05-11-曼陀罗解读智能体-MVP-QA基线.md](./2026-05-11-曼陀罗解读智能体-MVP-QA基线.md)
