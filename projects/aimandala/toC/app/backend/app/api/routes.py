@@ -24,6 +24,7 @@ from app.core.mandala_interpretation_agent import (
 )
 from app.core.uploads import create_upload_storage_from_env
 from app.core.mandala_interpretation_agent.report_followup_agent import ReportFollowupAgent
+from app.core.mandala_interpretation_agent.report_followup_context import build_report_section_map
 
 
 router = APIRouter(prefix="/api", tags=["aimandala"])
@@ -222,6 +223,7 @@ async def create_report_followup(payload: ReportFollowupRequest) -> ReportFollow
         final_report_md=payload.final_report_md,
         final_report=payload.final_report,
         visual_draft=payload.visual_draft,
+        report_sections=build_report_section_map(payload.final_report_md),
         recent_followup_turns=[turn.model_dump() for turn in payload.history],
         persona=persona,
     )

@@ -24,7 +24,10 @@ export interface MobileWebReportPageProps {
   primaryDisabled?: boolean;
 }
 
-interface FollowupMessage extends ReportFollowupTurn {}
+interface FollowupMessage extends ReportFollowupTurn {
+  references?: string[];
+  boundary?: boolean;
+}
 
 function stripMarkdown(text: string): string {
   return text
@@ -159,6 +162,7 @@ export function MobileWebReportPage({
   const [followupInput, setFollowupInput] = useState("");
   const [followupMessages, setFollowupMessages] = useState<FollowupMessage[]>([]);
   const [followupError, setFollowupError] = useState<string | null>(null);
+  const [followupStatus, setFollowupStatus] = useState<string | null>(null);
   const [followupSending, setFollowupSending] = useState(false);
   const previewImage = uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const isLoading = state.step === "liteGenerating";
@@ -229,6 +233,7 @@ export function MobileWebReportPage({
     setFollowupMessages([]);
     setFollowupInput("");
     setFollowupError(null);
+    setFollowupStatus(null);
     setFollowupSending(false);
   }, [state.report?.interpretation_id]);
 
@@ -243,6 +248,7 @@ export function MobileWebReportPage({
     setFollowupMessages((current) => [...current, userMessage]);
     setFollowupInput("");
     setFollowupError(null);
+    setFollowupStatus(`${personaName}正在基于这份报告整理线索。`);
     setFollowupSending(true);
     try {
       const response = await createReportFollowup({
@@ -258,13 +264,24 @@ export function MobileWebReportPage({
         painting_intention: uploadDraft?.paintingIntention ?? "",
         painting_feeling: uploadDraft?.paintingFeeling ?? "",
       });
+      const references = response.referenced_report_sections
+        .map((section) => section.title || section.label || section.excerpt || section.quote || "")
+        .filter(Boolean)
+        .slice(0, 3);
       setFollowupMessages((current) => [
         ...current,
-        { role: "assistant", content: response.answer_md },
+        {
+          role: "assistant",
+          content: response.answer_md,
+          references,
+          boundary: response.out_of_scope,
+        },
       ]);
+      setFollowupStatus(response.out_of_scope ? `${personaName}已把问题拉回本次报告边界。` : "已基于本次报告整理好回复。");
     } catch (error) {
       const message = error instanceof Error ? error.message : "报告追问暂时不可用，请稍后再试。";
       setFollowupError(message);
+      setFollowupStatus(null);
     } finally {
       setFollowupSending(false);
     }
@@ -341,14 +358,22 @@ export function MobileWebReportPage({
         <section className="mw-inline-banner mw-inline-banner--runtime">
           <strong>对这份报告有疑问，可以问{personaName}。</strong>
           <p>{personaName}会基于本次画作和报告内容，陪你把某一段看得更清楚。</p>
+          <p>可以问：这段报告是什么意思、这个画面线索如何理解、这周可以从哪里开始。不能问：诊断、预测、投资建议或让{personaName}替你做决定。</p>
           {followupMessages.length === 0 ? (
             <p>嗨，我是{personaName}。你可以问我这份解读里最在意的部分，我会陪你一起读清楚。</p>
           ) : null}
           {followupMessages.map((message, index) => (
-            <p key={`${message.role}-${index}`}>
-              <strong>{message.role === "user" ? "你" : personaName}：</strong>{message.content}
-            </p>
+            <div key={`${message.role}-${index}`}>
+              <p>
+                <strong>{message.role === "user" ? "你" : personaName}：</strong>{message.content}
+              </p>
+              {message.boundary ? <p>这是一条边界回应。</p> : null}
+              {message.references && message.references.length > 0 ? (
+                <p>参考报告段落：{message.references.join("、")}</p>
+              ) : null}
+            </div>
           ))}
+          {followupStatus ? <p>{followupStatus}</p> : null}
           {followupError ? <p>{followupError}</p> : null}
           <div className="mw-button-row">
             <input

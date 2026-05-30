@@ -6,7 +6,7 @@ from typing import Any
 
 from app.core.llm.runtime import LLMClient
 
-from .contracts import ReportFollowupInput, ReportFollowupResult
+from .contracts import ReportFollowupInput, ReportFollowupResult, ReportSectionReference
 from .quality_gate import run_followup_answer_gate
 
 CRISIS_TERMS = ["自杀", "自伤", "不想活", "活不下去", "伤害别人", "杀了", "被伤害"]
@@ -50,7 +50,11 @@ class ReportFollowupAgent:
         return ReportFollowupResult(
             report_id=context.report_id,
             answer_md=answer_md,
-            referenced_report_sections=_extract_referenced_sections(answer_md, context.final_report_md),
+            referenced_report_sections=_extract_referenced_sections(
+                answer_md,
+                context.final_report_md,
+                context.report_sections,
+            ),
             safety={
                 "precheck": precheck,
                 "postcheck": postcheck,
@@ -92,6 +96,8 @@ class ReportFollowupAgent:
                 f"绘画时感受：{context.painting_feeling or '未填写'}",
                 "视觉草稿摘要：",
                 _compact_visual_draft(context.visual_draft),
+                "报告可引用段落：",
+                _format_report_sections(context.report_sections),
                 "本次报告全文：",
                 context.final_report_md.strip(),
                 "本轮追问历史：",
@@ -155,13 +161,34 @@ def _compact_visual_draft(visual_draft: dict[str, Any] | None) -> str:
     return "无"
 
 
-def _extract_referenced_sections(answer_md: str, report_md: str) -> list[dict[str, str]]:
+def _format_report_sections(report_sections: list[ReportSectionReference]) -> str:
+    if not report_sections:
+        return "无"
+    return "\n".join(
+        f"{section.section_id}｜{section.title}｜{section.excerpt}"
+        for section in report_sections[:12]
+        if section.title or section.excerpt
+    ) or "无"
+
+
+def _extract_referenced_sections(
+    answer_md: str,
+    report_md: str,
+    report_sections: list[ReportSectionReference] | None = None,
+) -> list[dict[str, str]]:
     sections: list[dict[str, str]] = []
+    for section in report_sections or []:
+        if not section.title:
+            continue
+        if section.title in answer_md or section.section_id in answer_md:
+            sections.append(section.to_dict())
+    if sections:
+        return sections[:3]
     headings = [line.lstrip("#").strip() for line in report_md.splitlines() if line.strip().startswith("#")]
     for heading in headings:
         if heading and heading in answer_md:
-            sections.append({"label": heading, "quote": heading})
+            sections.append({"section_id": "", "title": heading, "excerpt": heading})
     if sections:
         return sections[:3]
     first_heading = headings[0] if headings else "本次报告"
-    return [{"label": first_heading, "quote": first_heading}]
+    return [{"section_id": "", "title": first_heading, "excerpt": first_heading}]

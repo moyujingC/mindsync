@@ -101,6 +101,16 @@ class MandalaAgentInput:
 
 
 @dataclass(frozen=True)
+class ReportSectionReference:
+    section_id: str
+    title: str
+    excerpt: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class ReportFollowupContext:
     report_id: str
     report_mode: Literal["lite", "pro"] | str
@@ -111,6 +121,7 @@ class ReportFollowupContext:
     final_report_md: str = ""
     final_report: dict[str, Any] = field(default_factory=dict)
     visual_draft: dict[str, Any] | None = None
+    report_sections: list[ReportSectionReference] = field(default_factory=list)
     recent_followup_turns: list[dict[str, str]] = field(default_factory=list)
     persona: ReportPersona = field(default_factory=ReportPersona)
 
@@ -125,6 +136,7 @@ class ReportFollowupContext:
             "final_report_md": self.final_report_md,
             "final_report": self.final_report,
             "visual_draft": self.visual_draft,
+            "report_sections": [section.to_dict() for section in self.report_sections],
             "recent_followup_turns": self.recent_followup_turns,
             "persona": self.persona.to_dict(),
         }

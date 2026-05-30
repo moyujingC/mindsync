@@ -29,6 +29,7 @@ export default defineConfig({
         "mobile-web/page-shells/history-page.tsx",
         "mobile-web/page-shells/loading-page.tsx",
         "mobile-web/page-shells/report-page.tsx",
+        "mobile-web/page-shells/pro-report-page.tsx",
       ],
       thresholds: {
         lines: 60,

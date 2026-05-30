@@ -148,11 +148,19 @@ export interface ReportFollowupRequest {
   painting_feeling?: string;
 }
 
+export interface ReportSectionReference {
+  section_id?: string;
+  title?: string;
+  excerpt?: string;
+  label?: string;
+  quote?: string;
+}
+
 export interface ReportFollowupResponse {
   success: boolean;
   report_id: string;
   answer_md: string;
-  referenced_report_sections: Array<{ label: string; quote: string }>;
+  referenced_report_sections: ReportSectionReference[];
   safety: Record<string, unknown>;
   out_of_scope: boolean;
   persona: ReportPersona | Record<string, unknown>;
