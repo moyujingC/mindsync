@@ -77,6 +77,16 @@ function IconReport() {
   );
 }
 
+function IconChat() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M6.5 17.5H6A3.5 3.5 0 0 1 2.5 14V8.5A3.5 3.5 0 0 1 6 5h12a3.5 3.5 0 0 1 3.5 3.5V14a3.5 3.5 0 0 1-3.5 3.5h-5.2L8 20.5v-3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M7.5 10.5H16.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M7.5 13.5H13.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function StepCard({ num, icon, title, desc }: { num: number; icon: ReactNode; title: string; desc: string }) {
   return (
     <div className="am-step-flow-card">
@@ -355,12 +365,13 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
 
       <section className="am-landing-section am-landing-section--steps">
         <div className="am-landing-section__glow am-landing-section__glow--steps" />
-        <h2>三步开始解读</h2>
+        <h2>四步开始解读</h2>
         <div className="am-step-flow">
           <div className="am-step-flow__line" aria-hidden="true" />
           <StepCard num={1} icon={<IconUpload />} title="上传画作" desc={"拍清整幅\n即可开始"} />
           <StepCard num={2} icon={<IconAnalyze />} title="手动设定" desc={"跟随直觉\n调节三圈"} />
           <StepCard num={3} icon={<IconReport />} title="查看报告" desc={"先看 Lite\n再决定深入"} />
+          <StepCard num={4} icon={<IconChat />} title="继续追问" desc={"围绕报告\n再聊清楚"} />
         </div>
       </section>
 
