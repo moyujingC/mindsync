@@ -23,9 +23,20 @@
 | 用途 | 模型名 |
 | --- | --- |
 | 默认高性能 | `gpt-5.5` |
-| DeepSeek（深度求索）高质量候选 | `deepseek-v4-pro` |
-| Qwen（通义千问）中文与轻中等开发候选 | `Qwen3.6-35B-A3B` |
-| 成本优先候选 | `高性能低价模型` |
+| DeepSeek（深度求索）高质量文本候选 | `deepseek-v4-pro` |
+| Qwen（通义千问）中文与轻中等文本候选 | `Qwen3.6-35B-A3B` |
+| 成本优先文本候选 | `高性能低价模型` |
+
+当前已知限制：
+
+- `deepseek-v4-pro` 在这条 AITechFlux Claude Code 直连路径上只接受 `text`（文本）消息块。
+- 如果当前 Claude Code 会话里包含截图、图片或其他视觉上下文，Claude Code 可能发送 `image_url`（图片链接）消息块，AITechFlux 会返回类似错误：
+
+```text
+messages[19]: unknown variant image_url, expected text
+```
+
+- 遇到这个错误时，切回 `gpt-5.5`，或新开一个不含图片上下文的纯文本 Claude Code 会话再切 `deepseek-v4-pro`。
 
 切换命令：
 
@@ -47,5 +58,7 @@ node shared/tools/switch-vscode-claude-code-model.mjs cheap
 - `ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro`
 - `ANTHROPIC_DEFAULT_SONNET_MODEL=Qwen3.6-35B-A3B`
 - `ANTHROPIC_DEFAULT_HAIKU_MODEL=高性能低价模型`
+
+这三个槽位只是为了在选择器里可选。包含截图或图片的任务仍建议使用 `gpt-5.5`。
 
 切换后需要重载 VS Code，确保后台 Claude Code 进程重新读取 `.claude/settings.json`。

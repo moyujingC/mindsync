@@ -28,6 +28,12 @@ const SELECTOR_MODELS = {
   ANTHROPIC_DEFAULT_HAIKU_MODEL: "高性能低价模型",
 };
 
+const TEXT_ONLY_MODELS = new Set([
+  "deepseek-v4-pro",
+  "Qwen3.6-35B-A3B",
+  "高性能低价模型",
+]);
+
 function usage() {
   console.log(`Usage:
   node shared/tools/switch-vscode-claude-code-model.mjs <preset-or-model>
@@ -78,4 +84,7 @@ for (const [key, value] of Object.entries(SELECTOR_MODELS)) {
 fs.writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 console.log(`VS Code Claude Code model set to ${model}`);
 console.log("Selector slots: Opus=deepseek-v4-pro, Sonnet=Qwen3.6-35B-A3B, Haiku=高性能低价模型");
+if (TEXT_ONLY_MODELS.has(model)) {
+  console.log("Warning: selected model is text-only on the current AITechFlux Claude Code path. Use gpt-5.5 for chats that include screenshots/images.");
+}
 console.log(`Updated ${settingsPath}`);
