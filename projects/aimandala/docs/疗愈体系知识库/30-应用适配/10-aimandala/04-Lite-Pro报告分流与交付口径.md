@@ -4,7 +4,7 @@
 > 文档版本：0.3.0
 > date：2026-05-31
 > owner：Product Spec Lead
-> source_of_truth：当前目录/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md
+> source_of_truth：projects/aimandala/docs/疗愈体系知识库/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md
 > product_decision：projects/aimandala/docs/decisions/2026-05-29-Lite-Pro版本关系与内容边界决策.md
 
 本文把 `Lite / Pro` 报告口径接入疗愈体系知识库。
