@@ -18,12 +18,15 @@ const MODEL_PRESETS = {
 
 const MODEL_KEYS = [
   "ANTHROPIC_MODEL",
-  "ANTHROPIC_DEFAULT_OPUS_MODEL",
-  "ANTHROPIC_DEFAULT_SONNET_MODEL",
-  "ANTHROPIC_DEFAULT_HAIKU_MODEL",
   "ANTHROPIC_REASONING_MODEL",
   "CLAUDE_CODE_SUBAGENT_MODEL",
 ];
+
+const SELECTOR_MODELS = {
+  ANTHROPIC_DEFAULT_OPUS_MODEL: "deepseek-v4-pro",
+  ANTHROPIC_DEFAULT_SONNET_MODEL: "Qwen3.6-35B-A3B",
+  ANTHROPIC_DEFAULT_HAIKU_MODEL: "高性能低价模型",
+};
 
 function usage() {
   console.log(`Usage:
@@ -68,6 +71,11 @@ for (const key of MODEL_KEYS) {
   settings.env[key] = model;
 }
 
+for (const [key, value] of Object.entries(SELECTOR_MODELS)) {
+  settings.env[key] = value;
+}
+
 fs.writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 console.log(`VS Code Claude Code model set to ${model}`);
+console.log("Selector slots: Opus=deepseek-v4-pro, Sonnet=Qwen3.6-35B-A3B, Haiku=高性能低价模型");
 console.log(`Updated ${settingsPath}`);

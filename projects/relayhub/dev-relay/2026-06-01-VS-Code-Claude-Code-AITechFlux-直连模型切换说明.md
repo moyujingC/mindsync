@@ -11,7 +11,10 @@
 ```json
 {
   "ANTHROPIC_BASE_URL": "https://aitechflux.com",
-  "ANTHROPIC_MODEL": "gpt-5.5"
+  "ANTHROPIC_MODEL": "gpt-5.5",
+  "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro",
+  "ANTHROPIC_DEFAULT_SONNET_MODEL": "Qwen3.6-35B-A3B",
+  "ANTHROPIC_DEFAULT_HAIKU_MODEL": "高性能低价模型"
 }
 ```
 
@@ -36,10 +39,13 @@ node shared/tools/switch-vscode-claude-code-model.mjs cheap
 脚本会同步更新：
 
 - `ANTHROPIC_MODEL`
-- `ANTHROPIC_DEFAULT_OPUS_MODEL`
-- `ANTHROPIC_DEFAULT_SONNET_MODEL`
-- `ANTHROPIC_DEFAULT_HAIKU_MODEL`
 - `ANTHROPIC_REASONING_MODEL`
 - `CLAUDE_CODE_SUBAGENT_MODEL`
+
+为了让 VS Code Claude Code 的模型选择器里能直接出现三个候选，脚本会固定保留：
+
+- `ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro`
+- `ANTHROPIC_DEFAULT_SONNET_MODEL=Qwen3.6-35B-A3B`
+- `ANTHROPIC_DEFAULT_HAIKU_MODEL=高性能低价模型`
 
 切换后需要重载 VS Code，确保后台 Claude Code 进程重新读取 `.claude/settings.json`。
