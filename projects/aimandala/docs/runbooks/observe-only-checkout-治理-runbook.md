@@ -52,7 +52,7 @@
 每次升级、巡检异常排查或 maintenance 前，先执行：
 
 ```bash
-ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
+ssh -i "$HOME/.ssh/automationKey.pem" -o IdentitiesOnly=yes ubuntu@150.158.9.95 '
   set -e
   cd /opt/automation/app/mindsync
   echo "[mindsync]"
