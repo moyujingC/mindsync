@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .contracts import ReportFollowupContext, ReportSectionReference
+from .contracts import ReportFollowupContext, ReportPersona, ReportSectionReference
 
 
 class ReportFollowupContextStore:
@@ -55,6 +55,7 @@ class ReportFollowupContextStore:
                 for item in payload.get("recent_followup_turns", [])
                 if isinstance(item, dict)
             ],
+            persona=_persona_from_payload(payload.get("persona")),
         )
 
     def _path_for_report(self, report_id: str) -> Path:
@@ -104,3 +105,20 @@ def _strip_markdown(text: str) -> str:
     for marker in replacements:
         stripped = stripped.replace(marker, "")
     return "\n".join(line.strip() for line in stripped.splitlines() if line.strip())
+
+
+def _persona_from_payload(payload: Any) -> ReportPersona:
+    if isinstance(payload, dict):
+        return ReportPersona(
+            persona_id=str(payload.get("persona_id") or "manman"),
+            persona_version=str(payload.get("persona_version") or "manman-report-companion-v0.1"),
+            display_name=str(payload.get("display_name") or "曼曼"),
+            role_label=str(payload.get("role_label") or "AI 报告陪读 avatar"),
+            scope=str(payload.get("scope") or "陪用户读懂本次曼陀罗报告，并在报告范围内回答追问"),
+            boundaries=[
+                str(item)
+                for item in payload.get("boundaries", [])
+                if isinstance(item, str) and item.strip()
+            ],
+        )
+    return ReportPersona()

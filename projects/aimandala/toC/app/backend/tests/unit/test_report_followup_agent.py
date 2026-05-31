@@ -153,6 +153,30 @@ def test_report_followup_keeps_recent_turns_without_long_term_memory():
     assert "system" not in user_prompt
 
 
+def test_report_followup_blocks_persona_identity_boundary_question():
+    llm_client = StubFollowupLLMClient("不应调用")
+    result = ReportFollowupAgent(llm_client=llm_client).run(
+        followup_input=_followup_input("曼曼你是不是我的疗愈师或心理咨询师？")
+    )
+
+    assert result.out_of_scope is True
+    assert "followup_persona_identity_boundary" in result.safety["failure_ids"]
+    assert "AI 报告陪读 avatar" in result.answer_md
+    assert llm_client.text_calls == []
+
+
+def test_report_followup_blocks_long_term_memory_and_decision_request():
+    llm_client = StubFollowupLLMClient("不应调用")
+    result = ReportFollowupAgent(llm_client=llm_client).run(
+        followup_input=_followup_input("你以后都记住我的财富模式，长期陪我做决定可以吗？")
+    )
+
+    assert result.out_of_scope is True
+    assert "followup_out_of_scope" in result.safety["failure_ids"]
+    assert "曼曼只能解释本次报告和画面线索" in result.answer_md
+    assert llm_client.text_calls == []
+
+
 def test_report_followup_postcheck_replaces_overreach_answer():
     llm_client = StubFollowupLLMClient("我是你的心理咨询师，我会一直陪着你。")
     result = ReportFollowupAgent(llm_client=llm_client).run(

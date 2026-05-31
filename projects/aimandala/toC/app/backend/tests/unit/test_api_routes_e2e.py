@@ -99,6 +99,37 @@ def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
     assert payload["run_summary"]["persona_id"] == "manman"
 
 
+def test_create_wealth_report_writes_followup_context(monkeypatch, tmp_path):
+    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_CONTEXT_DIR", str(tmp_path / "followup-contexts"))
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/wealth-reports",
+        json={
+            "image_path": str(image_path),
+            "report_mode": "lite",
+            "agent_variant": "two_pass_e2e",
+            "redeem_code": "MVP-LITE",
+            "painting_intention": "想看财富卡点",
+            "painting_feeling": "有点紧",
+        },
+    )
+
+    assert response.status_code == 200
+    report_id = response.json()["report_id"]
+    stored_context = api_routes._followup_context_store().read(report_id)
+    assert stored_context is not None
+    assert stored_context.report_id == report_id
+    assert stored_context.painting_intention == "想看财富卡点"
+    assert stored_context.final_report_md
+    assert stored_context.report_sections
+    assert stored_context.persona.persona_id == "manman"
+
+
 def test_create_wealth_report_rejects_pro_for_mvp(monkeypatch, tmp_path):
     monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
     monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
@@ -185,6 +216,67 @@ def test_report_followup_returns_answer_when_enabled(monkeypatch):
     assert payload["safety"]["precheck"]["passed"] is True
 
 
+def test_report_followup_uses_stored_context_with_minimal_request(monkeypatch, tmp_path):
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_CONTEXT_DIR", str(tmp_path / "followup-contexts"))
+    llm_client = StubRouteLLMClient("这对应报告里的三圈观察：内圈较稳，中圈有重复。")
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: llm_client)
+    api_routes._followup_context_store().write(
+        api_routes.ReportFollowupContext(
+            report_id="stored-report-1",
+            report_mode="lite",
+            theme_label="财富关系",
+            painting_intention="想看财富卡点",
+            painting_feeling="有点紧",
+            final_report_md="# 财富关系曼陀罗解读报告\n\n## 三圈观察\n内圈较稳，中圈有重复。",
+            final_report={"report_id": "stored-report-1", "persona": api_routes.ReportPersona().to_dict()},
+            visual_draft={"visual_draft_md": "## 三圈观察\n内圈较稳。"},
+            report_sections=api_routes.build_report_section_map(
+                "# 财富关系曼陀罗解读报告\n\n## 三圈观察\n内圈较稳，中圈有重复。"
+            ),
+            persona=api_routes.ReportPersona(),
+        )
+    )
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/report-followups",
+        json={
+            "report_id": "stored-report-1",
+            "question": "三圈观察是什么意思？",
+            "history": [{"role": "user", "content": "报告最重要的一句话是什么？"}],
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["report_id"] == "stored-report-1"
+    assert "三圈观察" in payload["answer_md"]
+    assert payload["persona"]["persona_id"] == "manman"
+    assert llm_client.text_calls
+    assert "想看财富卡点" in llm_client.text_calls[0]["user_prompt"]
+    assert "用户：报告最重要的一句话是什么？" in llm_client.text_calls[0]["user_prompt"]
+
+
+def test_report_followup_context_miss_without_fallback_returns_404(monkeypatch, tmp_path):
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "1")
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_CONTEXT_DIR", str(tmp_path / "followup-contexts"))
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient("不应调用"))
+
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/report-followups",
+        json={
+            "report_id": "missing-report",
+            "question": "三圈观察是什么意思？",
+        },
+    )
+
+    assert response.status_code == 404
+    assert "未找到本次报告追问上下文" in response.json()["detail"]
+
+
 def test_report_followup_precheck_blocks_diagnostic_question(monkeypatch):
     monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "1")
     monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient("不应调用"))
@@ -205,6 +297,7 @@ def test_report_followup_precheck_blocks_diagnostic_question(monkeypatch):
     assert payload["out_of_scope"] is True
     assert "followup_diagnostic_request" in payload["safety"]["failure_ids"]
     assert "不能做心理诊断" in payload["answer_md"]
+
 
 def test_create_app_loads_redeem_codes_before_route_authorization(
     monkeypatch,

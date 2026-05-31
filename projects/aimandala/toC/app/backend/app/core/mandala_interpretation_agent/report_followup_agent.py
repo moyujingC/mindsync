@@ -10,9 +10,50 @@ from .contracts import ReportFollowupInput, ReportFollowupResult, ReportSectionR
 from .quality_gate import run_followup_answer_gate
 
 CRISIS_TERMS = ["自杀", "自伤", "不想活", "活不下去", "伤害别人", "杀了", "被伤害"]
-DIAGNOSTIC_REQUEST_TERMS = ["抑郁症", "焦虑症", "人格障碍", "诊断", "病吗", "吃药", "药物"]
+DIAGNOSTIC_REQUEST_TERMS = [
+    "抑郁症",
+    "焦虑症",
+    "人格障碍",
+    "诊断",
+    "病吗",
+    "吃药",
+    "药物",
+]
+IDENTITY_BOUNDARY_TERMS = [
+    "你的疗愈师",
+    "我的疗愈师",
+    "是疗愈师",
+    "你的心理咨询师",
+    "我的心理咨询师",
+    "是心理咨询师",
+    "你的咨询师",
+    "我的咨询师",
+    "是咨询师",
+    "你的治疗师",
+    "我的治疗师",
+    "是治疗师",
+]
 FINANCIAL_DECISION_TERMS = ["买哪只股票", "投资什么", "收益预测", "会赚钱吗", "财务预测"]
-OUT_OF_SCOPE_TERMS = ["上次", "长期人格", "永久记住", "以后任何事", "替我决定", "帮我决定"]
+OUT_OF_SCOPE_TERMS = [
+    "上次",
+    "之前所有画",
+    "所有画",
+    "跨报告",
+    "长期人格",
+    "长期记忆",
+    "永久记住",
+    "记住我",
+    "记住我的",
+    "以后都记住",
+    "一直记得",
+    "长期陪我",
+    "长期陪伴",
+    "一直陪我",
+    "长期做决定",
+    "以后任何事",
+    "替我决定",
+    "帮我决定",
+]
 
 
 class ReportFollowupAgent:
@@ -127,6 +168,12 @@ def run_followup_precheck(question: str) -> dict[str, Any]:
             "passed": False,
             "failure_ids": ["followup_diagnostic_request"],
             "safe_reply": "曼曼不能做心理诊断或医疗判断。我们可以回到本次报告和画面线索，只看这段内容在提醒你留意什么感受或处境。",
+        }
+    if _contains_any(normalized, IDENTITY_BOUNDARY_TERMS):
+        return {
+            "passed": False,
+            "failure_ids": ["followup_persona_identity_boundary"],
+            "safe_reply": "曼曼不是疗愈师、心理咨询师或治疗师，只是 Aimandala 的 AI 报告陪读 avatar。我们可以继续围绕本次报告和画面线索，把你在意的段落读清楚。",
         }
     if _contains_any(normalized, FINANCIAL_DECISION_TERMS):
         return {

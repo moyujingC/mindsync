@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from app.core.llm import NoopLLMClient, create_llm_client_from_env
 from app.core.mandala_interpretation_agent import (
     MandalaAgentInput,
+    MandalaAgentResult,
     MandalaImageInput,
     MandalaInterpretationAgent,
     MandalaInterpretationArtifactStore,
@@ -24,7 +25,10 @@ from app.core.mandala_interpretation_agent import (
 )
 from app.core.uploads import create_upload_storage_from_env
 from app.core.mandala_interpretation_agent.report_followup_agent import ReportFollowupAgent
-from app.core.mandala_interpretation_agent.report_followup_context import build_report_section_map
+from app.core.mandala_interpretation_agent.report_followup_context import (
+    ReportFollowupContextStore,
+    build_report_section_map,
+)
 
 
 router = APIRouter(prefix="/api", tags=["aimandala"])
@@ -64,7 +68,7 @@ class ReportFollowupRequest(BaseModel):
     report_id: str
     question: str
     report_mode: Literal["lite", "pro"] | str = "lite"
-    final_report_md: str
+    final_report_md: str = ""
     final_report: dict[str, object] = Field(default_factory=dict)
     visual_draft: dict[str, object] | None = None
     history: list[ReportFollowupTurn] = Field(default_factory=list)
@@ -104,6 +108,93 @@ def _build_llm_client() -> object:
             detail="LLM runtime is not configured.",
         )
     return llm_client
+
+
+def _followup_context_store() -> ReportFollowupContextStore:
+    root_dir = os.getenv("AIMANDALA_REPORT_FOLLOWUP_CONTEXT_DIR", "data/report-followup-contexts")
+    return ReportFollowupContextStore(root_dir=Path(root_dir))
+
+
+def _persona_from_payload(payload: dict[str, object] | None) -> ReportPersona:
+    if isinstance(payload, dict):
+        return ReportPersona(
+            persona_id=str(payload.get("persona_id") or "manman"),
+            persona_version=str(payload.get("persona_version") or "manman-report-companion-v0.1"),
+            display_name=str(payload.get("display_name") or "曼曼"),
+            role_label=str(payload.get("role_label") or "AI 报告陪读 avatar"),
+            scope=str(payload.get("scope") or "陪用户读懂本次曼陀罗报告，并在报告范围内回答追问"),
+            boundaries=[
+                str(item)
+                for item in payload.get("boundaries", [])
+                if isinstance(item, str) and item.strip()
+            ],
+        )
+    return ReportPersona()
+
+
+def _build_followup_context_from_request(payload: ReportFollowupRequest) -> ReportFollowupContext:
+    persona_payload = payload.final_report.get("persona") if isinstance(payload.final_report, dict) else None
+    return ReportFollowupContext(
+        report_id=payload.report_id,
+        report_mode=payload.report_mode,
+        theme=payload.theme,
+        theme_label=payload.theme_label,
+        painting_intention=payload.painting_intention,
+        painting_feeling=payload.painting_feeling,
+        final_report_md=payload.final_report_md,
+        final_report=payload.final_report,
+        visual_draft=payload.visual_draft,
+        report_sections=build_report_section_map(payload.final_report_md),
+        recent_followup_turns=[turn.model_dump() for turn in payload.history],
+        persona=_persona_from_payload(persona_payload),
+    )
+
+
+def _build_followup_context_from_result(
+    *,
+    payload: WealthReportRequest,
+    result: MandalaAgentResult,
+    report_id: str,
+) -> ReportFollowupContext:
+    persona_payload = result.final_report.get("persona") if isinstance(result.final_report, dict) else None
+    return ReportFollowupContext(
+        report_id=report_id,
+        report_mode=payload.report_mode,
+        theme="wealth",
+        theme_label="财富关系",
+        painting_intention=payload.painting_intention,
+        painting_feeling=payload.painting_feeling,
+        final_report_md=result.final_report_md,
+        final_report=result.final_report,
+        visual_draft=result.visual_draft,
+        report_sections=build_report_section_map(result.final_report_md),
+        persona=_persona_from_payload(persona_payload),
+    )
+
+
+def _resolve_followup_context(payload: ReportFollowupRequest) -> ReportFollowupContext:
+    stored_context = _followup_context_store().read(payload.report_id)
+    if stored_context is not None:
+        report_id_from_artifact = stored_context.final_report.get("report_id")
+        if report_id_from_artifact and str(report_id_from_artifact) != payload.report_id:
+            raise HTTPException(status_code=422, detail="追问请求与当前报告不匹配。")
+        return ReportFollowupContext(
+            report_id=stored_context.report_id,
+            report_mode=stored_context.report_mode,
+            theme=stored_context.theme,
+            theme_label=stored_context.theme_label,
+            painting_intention=stored_context.painting_intention,
+            painting_feeling=stored_context.painting_feeling,
+            final_report_md=stored_context.final_report_md,
+            final_report=stored_context.final_report,
+            visual_draft=stored_context.visual_draft,
+            report_sections=stored_context.report_sections,
+            recent_followup_turns=[turn.model_dump() for turn in payload.history],
+            persona=stored_context.persona,
+        )
+    if not payload.final_report_md.strip():
+        raise HTTPException(status_code=404, detail="未找到本次报告追问上下文，请重新打开或生成报告。")
+    return _build_followup_context_from_request(payload)
 
 
 def _build_agent_input(payload: WealthReportRequest) -> MandalaAgentInput:
@@ -156,8 +247,6 @@ def _authorize_report_access(payload: WealthReportRequest) -> None:
 def _authorize_followup_access(payload: ReportFollowupRequest) -> None:
     if os.getenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "").strip() != "1":
         raise HTTPException(status_code=403, detail="报告追问功能当前未开启。")
-    if not payload.final_report_md.strip():
-        raise HTTPException(status_code=422, detail="报告追问需要绑定本次报告正文。")
     report_id_from_artifact = payload.final_report.get("report_id")
     if report_id_from_artifact and str(report_id_from_artifact) != payload.report_id:
         raise HTTPException(status_code=422, detail="追问请求与当前报告不匹配。")
@@ -182,6 +271,13 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
     if report_id:
         store = MandalaInterpretationArtifactStore(output_dir=Path("data/reports") / report_id)
         store.write(result)
+        _followup_context_store().write(
+            _build_followup_context_from_result(
+                payload=payload,
+                result=result,
+                report_id=report_id,
+            )
+        )
     return WealthReportResponse(
         success=True,
         report_id=report_id,
@@ -198,35 +294,9 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
 @router.post("/report-followups", response_model=ReportFollowupResponse)
 async def create_report_followup(payload: ReportFollowupRequest) -> ReportFollowupResponse:
     _authorize_followup_access(payload)
-    persona_payload = payload.final_report.get("persona") if isinstance(payload.final_report, dict) else None
-    persona = ReportPersona()
-    if isinstance(persona_payload, dict):
-        persona = ReportPersona(
-            persona_id=str(persona_payload.get("persona_id") or "manman"),
-            persona_version=str(persona_payload.get("persona_version") or "manman-report-companion-v0.1"),
-            display_name=str(persona_payload.get("display_name") or "曼曼"),
-            role_label=str(persona_payload.get("role_label") or "AI 报告陪读 avatar"),
-            scope=str(persona_payload.get("scope") or "陪用户读懂本次曼陀罗报告，并在报告范围内回答追问"),
-            boundaries=[
-                str(item)
-                for item in persona_payload.get("boundaries", [])
-                if isinstance(item, str) and item.strip()
-            ],
-        )
-    context = ReportFollowupContext(
-        report_id=payload.report_id,
-        report_mode=payload.report_mode,
-        theme=payload.theme,
-        theme_label=payload.theme_label,
-        painting_intention=payload.painting_intention,
-        painting_feeling=payload.painting_feeling,
-        final_report_md=payload.final_report_md,
-        final_report=payload.final_report,
-        visual_draft=payload.visual_draft,
-        report_sections=build_report_section_map(payload.final_report_md),
-        recent_followup_turns=[turn.model_dump() for turn in payload.history],
-        persona=persona,
-    )
+    context = _resolve_followup_context(payload)
+    if context.report_mode == "pro" and os.getenv("AIMANDALA_REPORT_FOLLOWUP_INTERNAL_ONLY", "1") == "1":
+        raise HTTPException(status_code=403, detail="Pro 报告追问当前仅用于内部评测。")
     result = ReportFollowupAgent(llm_client=_build_llm_client()).run(
         followup_input=ReportFollowupInput(context=context, question=payload.question)
     )

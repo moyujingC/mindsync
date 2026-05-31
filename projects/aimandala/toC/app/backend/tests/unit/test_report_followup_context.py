@@ -28,6 +28,22 @@ def test_report_followup_context_store_round_trips_single_report_context(tmp_pat
     assert restored.recent_followup_turns[0]["role"] == "user"
 
 
+def test_report_followup_context_store_preserves_persona_metadata(tmp_path):
+    context = ReportFollowupContext(
+        report_id="report-1",
+        report_mode="lite",
+        final_report_md="# 报告标题\n\n开头。",
+    )
+    store = ReportFollowupContextStore(root_dir=tmp_path)
+
+    store.write(context)
+    restored = store.read("report-1")
+
+    assert restored is not None
+    assert restored.persona.persona_id == "manman"
+    assert restored.persona.display_name == "曼曼"
+
+
 def test_report_followup_context_store_sanitizes_report_id(tmp_path):
     store = ReportFollowupContextStore(root_dir=tmp_path)
     context = ReportFollowupContext(report_id="../report-1", report_mode="lite")
