@@ -62,37 +62,7 @@
 
 - 已沉淀为长期操作手册的 runbook 默认从 [../runbooks/README.md](../runbooks/README.md) 进入，不再保留在 `docs/tasks/` 作为当前任务入口。
 
-当前已沉淀：
-
-- `2026-05-11-Paperclip-v2026.428.0-升级验证计划.md`
-- `2026-05-11-曼陀罗解读智能体-MVP实施计划.md`
-- `2026-05-05-mvp-国产视觉模型评测实施计划.md`
-- `2026-04-26-历史任务全量关闭与新基线切换实施计划.md`
-- `2026-04-21-local-mac-execution-host-pilot-plan.md`
-- `2026-04-19-server-automation-blocking-sample-interpretation-plan.md`
-- `2026-04-19-server-automation-task-template-semantics-repair-plan.md`
-- `2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md`
-- `2026-04-19-paperclip-native-execution-routing-plan.md`
-- `2026-04-16-mvp-上线前质量收口总任务草案.md`
-- `2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md`
-- `2026-04-14-miniapp-batch-a-shared-foundation-audit.md`
-- `2026-04-14-batch-b-历史记录详情与显式报告类型实施计划.md`
-- `2026-04-15-miniapp-batch-c-静态壳与页面闭环实施计划.md`
-- `2026-04-15-miniapp-batch-d-api-contract-stub-only-实施计划.md`
-- `2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md`
-- `2026-04-13-miniapp-gray-checklist.md`
-- `2026-04-13-miniapp-gray-config-manifest.md`
-- `2026-04-13-miniapp-native-gray-execution-plan.md`
-- `2026-04-13-miniapp-wechatpay-live-execution-plan.md`
-- `2026-04-04-首批迁移清单.md`
-- `2026-04-04-迁移剩余主功能清单.md`
-- `2026-04-05-ui-restart-plan.md`
-- `2026-04-05-腾讯云部署环境模板.md`
-- `2026-04-07-架构质量整改清单.md`
-- `2026-04-10-服务器部署与运维手册.md`
-- `2026-04-11-v21-knowledge-remaining-execution-plan.md`
-- `2026-04-12-迁移收官与正式版收口总计划.md`
-- `2026-04-12-v22-knowledge-workbench-execution-plan.md`
+历史阶段计划清单已由本目录文件本身和 git 历史承接；默认不要从 README 展开长串日期文件。需要追溯旧窗口时，可按主题在本目录中查找对应日期计划。
 
 其中带“迁移”字样的阶段文档已转入历史参考口径，不再作为默认任务入口。
 execution routing 旧 phase 1 / phase 2 文档链也已转入历史参考口径，不再作为默认任务入口。

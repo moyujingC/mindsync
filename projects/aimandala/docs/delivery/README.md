@@ -1,18 +1,20 @@
 # Delivery
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Engineer / Test / QA
-> last_updated：2026-05-11
+> last_updated：2026-05-31
 > source_of_truth：projects/aimandala/docs/delivery/README.md
 
 这里放 `一镜一梳` 当前正式交付记录。
 
 `delivery` 不是实现前置文档，而是实现和验证之后的正式收口产物。
 
-## 当前正式入口
+## 当前交付记录
 
-当前只保留以下交付文档：
+当前交付记录用于追溯已经完成的阶段交付，不作为实现前置入口；最新实现前置入口仍应从 [../specs/README.md](../specs/README.md)、[../tasks/README.md](../tasks/README.md) 和 [../qa/README.md](../qa/README.md) 进入。
+
+当前保留以下交付文档：
 
 1. [2026-05-06-mvp-视觉模型默认接入交付记录.md](2026-05-06-mvp-视觉模型默认接入交付记录.md)
 2. [2026-05-03-多项目-heartbeat-运行态落地交付记录.md](2026-05-03-多项目-heartbeat-运行态落地交付记录.md)
@@ -31,6 +33,7 @@
 
 - 交付前先确认 [../qa/README.md](../qa/README.md) 中的验证记录已更新
 - 交付内容应明确已完成项、未完成项、风险和下一步
+- 带日期交付文档默认是证据链和历史收口产物，不长期占用 `current`
 - 不再把旧窗口交付链作为默认阅读入口
 
 旧 `2026-05-10-三圈五行流派解读方法实施闭环交付记录.md` 已归档到 [../archive/legacy-report-generation-2026-05-10/](../archive/legacy-report-generation-2026-05-10/)，只用于追溯旧报告生成链路。
