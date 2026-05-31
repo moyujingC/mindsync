@@ -11,9 +11,10 @@ const MODEL_PRESETS = {
   "deepseek-v4-pro": "deepseek-v4-pro",
   qwen: "Qwen3.6-35B-A3B",
   "qwen3.6-35b-a3b": "Qwen3.6-35B-A3B",
-  cheap: "高性能低价模型",
-  "high-performance-low-cost": "高性能低价模型",
-  "高性能低价模型": "高性能低价模型",
+  fast: "高性能极速模型",
+  cheap: "高性能极速模型",
+  "high-performance-fast": "高性能极速模型",
+  "高性能极速模型": "高性能极速模型",
 };
 
 const MODEL_KEYS = [
@@ -25,13 +26,13 @@ const MODEL_KEYS = [
 const SELECTOR_MODELS = {
   ANTHROPIC_DEFAULT_OPUS_MODEL: "deepseek-v4-pro",
   ANTHROPIC_DEFAULT_SONNET_MODEL: "Qwen3.6-35B-A3B",
-  ANTHROPIC_DEFAULT_HAIKU_MODEL: "高性能低价模型",
+  ANTHROPIC_DEFAULT_HAIKU_MODEL: "高性能极速模型",
 };
 
 const TEXT_ONLY_MODELS = new Set([
   "deepseek-v4-pro",
   "Qwen3.6-35B-A3B",
-  "高性能低价模型",
+  "高性能极速模型",
 ]);
 
 function usage() {
@@ -42,7 +43,7 @@ Presets:
   default | gpt55                  -> gpt-5.5
   deepseek | deepseek-v4-pro       -> deepseek-v4-pro
   qwen | qwen3.6-35b-a3b          -> Qwen3.6-35B-A3B
-  cheap | high-performance-low-cost -> 高性能低价模型
+  fast | cheap | high-performance-fast -> 高性能极速模型
 `);
 }
 
@@ -83,7 +84,7 @@ for (const [key, value] of Object.entries(SELECTOR_MODELS)) {
 
 fs.writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 console.log(`VS Code Claude Code model set to ${model}`);
-console.log("Selector slots: Opus=deepseek-v4-pro, Sonnet=Qwen3.6-35B-A3B, Haiku=高性能低价模型");
+console.log("Selector slots: Opus=deepseek-v4-pro, Sonnet=Qwen3.6-35B-A3B, Haiku=高性能极速模型");
 if (TEXT_ONLY_MODELS.has(model)) {
   console.log("Warning: selected model is text-only on the current AITechFlux Claude Code path. Use gpt-5.5 for chats that include screenshots/images.");
 }

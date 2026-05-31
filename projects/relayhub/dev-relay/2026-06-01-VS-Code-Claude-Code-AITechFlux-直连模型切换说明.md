@@ -14,7 +14,7 @@
   "ANTHROPIC_MODEL": "gpt-5.5",
   "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro",
   "ANTHROPIC_DEFAULT_SONNET_MODEL": "Qwen3.6-35B-A3B",
-  "ANTHROPIC_DEFAULT_HAIKU_MODEL": "高性能低价模型"
+  "ANTHROPIC_DEFAULT_HAIKU_MODEL": "高性能极速模型"
 }
 ```
 
@@ -25,7 +25,7 @@
 | 默认高性能 | `gpt-5.5` |
 | DeepSeek（深度求索）高质量文本候选 | `deepseek-v4-pro` |
 | Qwen（通义千问）中文与轻中等文本候选 | `Qwen3.6-35B-A3B` |
-| 成本优先文本候选 | `高性能低价模型` |
+| 极速文本候选 | `高性能极速模型` |
 
 当前已知限制：
 
@@ -44,7 +44,7 @@ messages[19]: unknown variant image_url, expected text
 node shared/tools/switch-vscode-claude-code-model.mjs gpt55
 node shared/tools/switch-vscode-claude-code-model.mjs deepseek
 node shared/tools/switch-vscode-claude-code-model.mjs qwen
-node shared/tools/switch-vscode-claude-code-model.mjs cheap
+node shared/tools/switch-vscode-claude-code-model.mjs fast
 ```
 
 脚本会同步更新：
@@ -57,7 +57,7 @@ node shared/tools/switch-vscode-claude-code-model.mjs cheap
 
 - `ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro`
 - `ANTHROPIC_DEFAULT_SONNET_MODEL=Qwen3.6-35B-A3B`
-- `ANTHROPIC_DEFAULT_HAIKU_MODEL=高性能低价模型`
+- `ANTHROPIC_DEFAULT_HAIKU_MODEL=高性能极速模型`
 
 这三个槽位只是为了在选择器里可选。包含截图或图片的任务仍建议使用 `gpt-5.5`。
 
