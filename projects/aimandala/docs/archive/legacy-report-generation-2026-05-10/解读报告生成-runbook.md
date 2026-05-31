@@ -1,10 +1,12 @@
 # 一镜一梳解读报告生成 Runbook
 
-> 状态：current
+> 状态：archived
 > 版本：0.1.0
 > owner：Engineer / Product Knowledge
 > last_updated：2026-05-11
-> source_of_truth：projects/aimandala/docs/runbooks/解读报告生成-runbook.md
+> source_of_truth：projects/aimandala/docs/archive/legacy-report-generation-2026-05-10/解读报告生成-runbook.md
+
+> 归档说明：本文件仅供历史追溯，不再作为 active 默认入口；当前报告生成链路以 docs/specs、docs/qa、docs/runbooks 下的最新入口为准。
 
 ## 1. 目标
 
