@@ -191,7 +191,7 @@ Aimandala 当前的 CI/CD 不是单一流水线，而是两层结构：
 实际操作和当前控制层入口，要同时看：
 
 - [../runbooks/README.md](../runbooks/README.md)
-- [../tasks/aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
+- [../runbooks/aimandala-pr-质量门-runbook.md](../runbooks/aimandala-pr-质量门-runbook.md)
 
 当前已知控制层入口包括：
 
