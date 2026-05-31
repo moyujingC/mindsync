@@ -73,7 +73,7 @@
 
 如需追溯历史行为、旧实现细节或阶段性收口过程，可查：
 
-- 历史仓库：[/Users/xinran/Downloads/dev/ai-mandala](/Users/xinran/Downloads/dev/ai-mandala)
+- 历史仓库：`ai-mandala` 历史 checkout（本机路径以个人环境为准，不作为仓库真理源）
 - 项目历史资料：[projects/aimandala/docs](./docs)
 - 公司侧历史草案：[company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md](../../company/projects/一镜一梳/AI-Mandala-迁移范围与工作区草案.md)
 
@@ -89,7 +89,7 @@
 - miniapp live 相关能力默认灰度关闭，不构成当前 Web 公开首发阻塞项
 - 历史记录继续兼容读取，但不作为后续功能设计基线
 - 当前 Aimandala 固定开发 worktree 为 `aimandala/dev`
-- 固定本地路径为 `/Users/xinran/Downloads/dev/mindsync-worktrees/aimandala-dev`
+- 本地路径按个人环境解析，不写入项目入口作为长期真理源
 - `codex/aimandala-dual-channel-ui` 继续只作为临时并行实验 worktree
 - 当前财富解读报告以 Lite 作为对外交付版本，Pro 作为内部预备形态暂不上线
 

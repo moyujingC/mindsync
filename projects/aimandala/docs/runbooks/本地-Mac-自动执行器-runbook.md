@@ -144,13 +144,13 @@ shared/tools/install-paperclip-local-executor-launchd.sh unload
 当前 launchd 配置每 300 秒执行一次：
 
 ```bash
-node /Users/xinran/.mindsync/runtime/mindsync/shared/tools/paperclip-local-executor.mjs daemon-tick --execute --json
+node "$MINDSYNC_RUNTIME_ROOT/shared/tools/paperclip-local-executor.mjs" daemon-tick --execute --json
 ```
 
 launchd 使用 runtime checkout：
 
 ```bash
-/Users/xinran/.mindsync/runtime/mindsync
+$MINDSYNC_RUNTIME_ROOT
 ```
 
 安装脚本会把当前仓库的 `shared/tools/` 同步到 runtime checkout。
@@ -199,7 +199,7 @@ node shared/tools/paperclip-local-executor.mjs stop --issue <id-or-identifier>
 
 1. 优先 `local-worktree`
 2. 其次 `local-monorepo`
-3. 再其次 `/Users/...` 本地路径
+3. 再其次本地项目路径（按个人环境解析，不写死 `/Users/...`）
 4. 都没有时退回当前进程 cwd
 
 因此如果任务跑到了错误目录，优先检查 project workspace 配置，而不是直接改 agent prompt。
