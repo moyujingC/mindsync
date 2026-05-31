@@ -1,10 +1,10 @@
 # Observe-only Checkout 治理 Runbook
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.2.1
 > owner：Engineer
-> last_updated：2026-05-11
-> source_of_truth：projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md
+> last_updated：2026-05-31
+> source_of_truth：projects/aimandala/docs/runbooks/observe-only-checkout-治理-runbook.md
 
 ## 1. 目标
 

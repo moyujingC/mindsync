@@ -135,4 +135,4 @@ sudo journalctl -u paperclip-heartbeat.service -n 200 --no-pager
 
 1. [../specs/2026-05-03-observe-only-checkout-治理规格.md](../specs/2026-05-03-observe-only-checkout-治理规格.md)
 2. [../tasks/2026-05-03-observe-only-checkout-治理实施计划.md](../tasks/2026-05-03-observe-only-checkout-治理实施计划.md)
-3. [../runbooks/2026-05-03-observe-only-checkout-治理-runbook.md](../runbooks/2026-05-03-observe-only-checkout-治理-runbook.md)
+3. [../runbooks/observe-only-checkout-治理-runbook.md](../runbooks/observe-only-checkout-治理-runbook.md)

@@ -8,7 +8,7 @@
 > 项目：aimandala
 > 阶段：architecture
 > depends_on：projects/aimandala/docs/architecture/CI-CD与自动修复架构.md
-> depends_on：projects/aimandala/docs/runbooks/2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md
+> depends_on：projects/aimandala/docs/runbooks/observe-only-checkout-治理-runbook.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 背景
@@ -140,7 +140,7 @@ Automation 节点当前不应承接：
 
 相关治理已转入正式 runbook：
 
-- [../runbooks/2026-05-03-observe-only-checkout-治理-runbook.md](../runbooks/2026-05-03-observe-only-checkout-治理-runbook.md)
+- [../runbooks/observe-only-checkout-治理-runbook.md](../runbooks/observe-only-checkout-治理-runbook.md)
 
 当前架构上要明确两点：
 

@@ -1,6 +1,6 @@
 # Automation 节点多项目 Heartbeat 上线 Runbook
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Engineer
 > last_updated：2026-05-03
@@ -286,4 +286,4 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 - 这轮正式交付：
   - [../delivery/2026-05-03-多项目-heartbeat-运行态落地交付记录.md](../delivery/2026-05-03-多项目-heartbeat-运行态落地交付记录.md)
 - 后续 observe-only checkout 治理：
-  - [2026-05-03-observe-only-checkout-治理-runbook.md](2026-05-03-observe-only-checkout-治理-runbook.md)
+  - [observe-only-checkout-治理-runbook.md](observe-only-checkout-治理-runbook.md)

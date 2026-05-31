@@ -7,7 +7,7 @@
 > source_of_truth：projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md
 > 项目：aimandala
 > 阶段：verification
-> depends_on：projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md
+> depends_on：projects/aimandala/docs/runbooks/observe-only-checkout-治理-runbook.md
 > depends_on：projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-治理-qa-basis.md
 
 ## 1. 当前验证结论
