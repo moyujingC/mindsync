@@ -1,9 +1,9 @@
 # Runbooks
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.2.1
 > owner：Engineer
-> last_updated：2026-05-23
+> last_updated：2026-05-31
 > source_of_truth：projects/aimandala/docs/runbooks/README.md
 
 这里放 `一镜一梳 / aimandala` 的运行说明、联调手册和操作型 runbook。
@@ -60,23 +60,22 @@
 
 ### 4.2 当前 manual runbooks
 
-1. [历史任务批量关闭-runbook.md](./历史任务批量关闭-runbook.md)
-2. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](./2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
-3. [兑换码与付费最小闭环-runbook.md](./兑换码与付费最小闭环-runbook.md)
+1. [服务器部署与运维手册.md](./服务器部署与运维手册.md)
+2. [历史任务批量关闭-runbook.md](./历史任务批量关闭-runbook.md)
+3. [2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md](./2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md)
+4. [兑换码与付费最小闭环-runbook.md](./兑换码与付费最小闭环-runbook.md)
 
 ### 4.3 当前 control-backed runbooks
 
 1. [2026-05-03-observe-only-checkout-治理-runbook.md](./2026-05-03-observe-only-checkout-治理-runbook.md)
 2. [本地-Mac-自动执行器-runbook.md](./本地-Mac-自动执行器-runbook.md)
+3. [aimandala-pr-质量门-runbook.md](./aimandala-pr-质量门-runbook.md)
 
-### 4.4 control-backed runbook-like 交付手册
+### 4.4 历史兼容说明
 
-下面两份目前仍保留在 `docs/tasks/`，但语义上更接近 runbook-like 操作手册，而不是任务计划：
+`服务器部署与运维手册.md` 和 `aimandala-pr-质量门-runbook.md` 已从 `docs/tasks/` 迁入本目录。后续默认从本 README 进入；旧路径不再作为任务目录入口。
 
-1. [2026-04-10-服务器部署与运维手册.md](../tasks/2026-04-10-服务器部署与运维手册.md)
-2. [aimandala-pr-质量门-runbook.md](../tasks/aimandala-pr-质量门-runbook.md)
-
-其中 `aimandala-pr-质量门-runbook.md` 应按 control-backed runbook-like delivery manual 阅读：
+其中 `aimandala-pr-质量门-runbook.md` 应按 control-backed delivery manual 阅读：
 
 1. 当前 MVP 主链控制层入口是 `.github/workflows/mvp-ci.yml`
 2. 增强链路控制层入口是 `.github/workflows/aimandala-ci.yml`
@@ -161,6 +160,8 @@
 当前补充说明：
 
 - `历史任务批量关闭-runbook.md` 是当前控制面旧任务清噪的正式操作入口，固定使用 `done + 历史基线重置 comment` 的统一收口口径，并把后续第一主线明确切到普通任务本地 Mac 自动执行。
+- `服务器部署与运维手册.md` 是当前服务器分工、部署路径、健康检查、证书和日常运维命令的项目级 runbook。
+- `aimandala-pr-质量门-runbook.md` 是当前 PR、合并和部署前质量门判断的 control-backed runbook，固定区分 `mvp-ci` 最小主链与 `aimandala-ci` 增强链路。
 - `2026-05-03-automation-节点多项目-heartbeat-上线-runbook.md` 是当前 automation 节点把单项目 heartbeat 升级成多项目 heartbeat 的正式上线手册，固定覆盖备份、doctor、systemd 验证、坏 target 演练与回滚。
 - `2026-05-03-observe-only-checkout-治理-runbook.md` 是当前 automation 节点主镜像区与巡检区治理的正式操作入口，固定把 `/opt/automation/app/mindsync` 与 `/opt/automation/app/mindsync-heartbeat` 定义为 observe-only checkout，并要求升级前先检查干净性、先备份再清理历史残留、最后同步 issue 状态。
 - `execution routing` 的当前正式入口已转为 `../specs/2026-04-19-paperclip-native-execution-routing-spec.md`、`../tasks/2026-04-19-paperclip-native-execution-routing-plan.md` 与 `../qa/2026-04-19-paperclip-native-execution-routing-qa-basis.md`。

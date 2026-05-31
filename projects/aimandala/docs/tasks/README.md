@@ -60,12 +60,7 @@
 
 补充边界：
 
-- `2026-04-10-服务器部署与运维手册.md`
-  - 当前保留在 `docs/tasks/`，但语义上更接近 runbook-like 运维手册
-  - 默认应从 `docs/runbooks/README.md` 跳转进入，而不是把它当普通任务计划阅读
-- `aimandala-pr-质量门-runbook.md`
-  - 当前保留在 `docs/tasks/`，但语义上更接近 delivery runbook
-  - 默认也应从 `docs/runbooks/README.md` 进入
+- 已沉淀为长期操作手册的 runbook 默认从 [../runbooks/README.md](../runbooks/README.md) 进入，不再保留在 `docs/tasks/` 作为当前任务入口。
 
 当前已沉淀：
 

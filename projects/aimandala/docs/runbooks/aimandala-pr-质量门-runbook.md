@@ -1,10 +1,10 @@
 # Aimandala PR 质量门 Runbook
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.2.1
 > owner：Engineer
-> last_updated：2026-05-11
-> source_of_truth：projects/aimandala/docs/tasks/aimandala-pr-质量门-runbook.md
+> last_updated：2026-05-31
+> source_of_truth：projects/aimandala/docs/runbooks/aimandala-pr-质量门-runbook.md
 > 项目：aimandala
 > 阶段：delivery
 > reviewers：Engineer, Test / QA
