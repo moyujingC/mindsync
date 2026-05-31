@@ -1,9 +1,9 @@
 # Architecture
 
 > 状态：current
-> 版本：0.3.0
+> 版本：0.3.1
 > owner：Architect
-> last_updated：2026-05-23
+> last_updated：2026-05-31
 > source_of_truth：projects/aimandala/docs/architecture/README.md
 
 这里放 `一镜一梳 / aimandala` 当前仍生效的技术架构文档。
