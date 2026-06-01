@@ -1,0 +1,238 @@
+落地页（Landing Page）
+
+> 与现有上传页同一工程，沿用设计规范
+
+---
+
+## 页面定位
+
+**用户场景**：首次访问产品的用户，被氛围感设计吸引，引导免费体验
+
+**入口**：扫码、分享链接、社交媒体
+
+**出口**：点击「开始体验」→ 跳转「上传页」
+
+---
+
+## 核心信息
+
+- **产品名**：一镜一梳
+- **副标题**：AI解读曼陀罗画作 · 探索内心世界
+- **CTA**：开始体验（新用户前3次免费）
+- **定价提示**：3次免费体验，之后需付费
+
+---
+
+## 页面结构（单屏滚动，强视觉优先）
+
+### Section 1: Hero 首屏（重点：氛围感）
+
+**背景设计**：
+- 深海军蓝渐变背景（沿用设计规范）
+- **背景动画元素**：
+  - 缓慢漂浮的金色粒子（5-8个，大小不一）
+  - 或：微妙的曼陀罗几何线条光晕（半透明，缓慢旋转）
+  - 或：星空/宇宙感的光点闪烁
+
+**核心视觉**：
+- 中央：大型曼陀罗图案/Logo（200-250px）
+- 动画：缓慢旋转（20s一圈）+ 轻微脉动发光
+- 曼陀罗可以是：抽象几何图案、品牌Logo、或抽象光晕
+
+**文案**：
+- 主标题：「画出你的潜意识」（24px，白色）
+- 副标题：「AI解读曼陀罗画作 · 探索内心世界」（14px，透明度0.8）
+- 小字提示：「新用户可享3次免费体验」（12px，金色）
+
+**CTA**：
+- 按钮：「开始体验」（胶囊形状，金色渐变）
+- 位置：距底部 80px
+
+**下滑提示**：
+- 底部箭头动画（上下浮动）
+- 文字：「滑动了解详情」
+
+---
+
+### Section 2: 三步流程（简洁版）
+
+**背景**：米白色，圆角上边缘
+
+**布局**：
+```
+三步探索内心世界
+
+① 上传画作      ② AI分析        ③ 获得解读
+   ↓               ↓               ↓
+拍摄或上传       智能识别         个性化报告
+曼陀罗图像       颜色与结构       与疗愈建议
+```
+
+**设计**：
+- 水平排列三个步骤
+- 圆形数字标记 + 图标
+- 细线连接
+- 简洁图标风格
+
+---
+
+### Section 3: 价格说明
+
+**背景**：深海军蓝渐变
+
+**内容**：
+```
+简单透明的价格
+
+Lite 体验版
+前 3 次免费
+之后 9.9元/次
+
+Pro 深度版
+39元/次
+完整诊断 + 21天疗愈方案
+
+[查看详细对比]
+```
+
+**设计**：
+- 两档并排卡片
+- Lite卡片突出「前3次免费」
+- Pro卡片标准展示
+- 「查看详细对比」展开完整对比表
+
+---
+
+### Section 4: FAQ
+
+**背景**：米白色
+
+**问题列表**（4-5个）：
+1. 曼陀罗解读是什么？
+2. 需要什么样的画作？
+3. 解读结果准确吗？
+4. 我的隐私如何保护？
+5. 免费次数用完后怎么办？
+
+---
+
+### Section 5: 底部 CTA
+
+**背景**：深海军蓝渐变
+
+**内容**：
+- 标题：「准备好探索内心了吗？」
+- 按钮：「开始免费体验」
+- 小字：「无需注册，前3次免费」
+
+**Footer**：
+- Logo + 产品名
+- 简单链接：关于我们、隐私政策、联系
+- 版权信息
+
+---
+
+## 跳转关系
+
+```
+落地页
+├── 点击「开始体验」/「开始免费体验」→ 上传页
+├── 点击「查看详细对比」→ 展开价格对比
+└── 其他链接 → 对应页面
+```
+
+---
+
+## 设计重点
+
+1. **首屏氛围感**（最重要）
+   - 背景动画/粒子效果
+   - 中央曼陀罗的旋转发光
+   - 整体营造神秘、灵性、平静的氛围
+
+2. **信息简洁**
+   - 去掉复杂卖点说明
+   - 用户看不懂的技术术语（双轨、五行等）不放
+   - 聚焦「上传→分析→获得解读」的核心价值
+
+3. **视觉层次**
+   - 深色背景 → 米白卡片 → 深色CTA区
+   - 金色点缀用于关键元素
+
+---
+
+## Figma Make 提示词
+
+```
+Create a mobile landing page (375px) for "一镜一梳" mandala interpretation app.
+
+Context: New page in existing project with upload page already designed. Use the same design system (colors, fonts from existing page).
+
+Design Focus: Atmospheric, mystical, calming vibe. Strong visual impact on first screen.
+
+Page Flow:
+- Entry: User scans QR or clicks link
+- Exit: Click "开始体验" → Navigate to upload page
+
+Page Sections:
+
+1. Hero Section (Full screen, priority on atmosphere):
+   - Background: Deep navy gradient with animated elements:
+     * Floating golden particles (5-8 particles, subtle)
+     * OR slow-rotating mandala geometric patterns (semi-transparent)
+     * OR starfield/cosmos light effects
+   - Center: Large mandala logo/image (200-250px)
+     * Slow rotation animation (20s per cycle)
+     * Pulsing glow effect
+   - Headline: "画出你的潜意识" (centered, white)
+   - Subheadline: "AI解读曼陀罗画作 · 探索内心世界"
+   - Small text: "新用户可享3次免费体验" (gold color)
+   - CTA button: "开始体验" (capsule shape, gold gradient)
+   - Bottom: Scroll down indicator with bouncing arrow
+
+2. Three Steps Section:
+   - Cream background with rounded top corners
+   - Title: "三步探索内心世界"
+   - Horizontal 3 steps with icons:
+     1. 上传画作 (upload icon)
+     2. AI分析 (analysis icon)
+     3. 获得解读 (report icon)
+   - Connecting lines between steps
+
+3. Pricing Section:
+   - Back to navy gradient
+   - Title: "简单透明的价格"
+   - Two pricing cards side by side:
+     * Lite: "前3次免费" highlighted, then 9.9元/次
+     * Pro: 39元/次, "完整诊断 + 21天疗愈"
+   - "查看详细对比" expandable link
+
+4. FAQ Section:
+   - Cream background
+   - 4-5 accordion questions:
+     * 曼陀罗解读是什么？
+     * 需要什么样的画作？
+     * 解读结果准确吗？
+     * 免费次数用完后怎么办？
+
+5. Footer CTA:
+   - Navy gradient
+   - "准备好探索内心了吗？"
+   - CTA: "开始免费体验"
+   - Simple footer with links
+
+Key Notes:
+- Focus on atmospheric background animation in hero section
+- No technical feature list (remove "双轨颜色", "五行理论" etc.)
+- No testimonials section
+- Clean, minimal information
+- 3 free trials highlighted
+
+Use existing design system from upload page. Mobile-first, 375px width.
+```
+
+---
+
+*与上传页同一工程，沿用设计规范*
+*页面宽度: 375px*
+*Lite定价: 前3次免费，之后9.9元/次*
