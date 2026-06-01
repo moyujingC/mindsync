@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.3
 > owner：CEO / Orchestrator, Engineer
-> 最后更新：2026-05-26
+> 最后更新：2026-06-01
 > source_of_truth：company/projects/Automation/PROJECT.md
 
 这份文档是 `mindsync` 中 `Automation Platform` 的公司级 capability 入口。
@@ -35,12 +35,23 @@
 
 `Automation Platform` 更像执行底座，负责把控制面的执行语义落到真实宿主机、工作区与巡检链路上。
 
+截至 `2026-06-01`，`MindSync` 已将 `Paperclip` 推荐目标版本提升到 `v2026.529.0`。从这一版开始，默认分工也同步收口为：
+
+- `Paperclip`
+  - 优先负责 review / dependency（审阅 / 依赖）交互
+  - 优先负责 execution workspace lifecycle（执行工作区生命周期）与 finalize（收尾）保证
+- `Automation Platform`
+  - 保留 route policy（路由策略）
+  - 保留 freeze policy（冻结策略）
+  - 保留宿主机边界与只读 / 可写执行链约束
+  - 保留治理审计与健康巡检
+
 当前默认分层应理解为：
 
 - `Paperclip`
   - 建任务、分派、回写、协作与状态观察
 - `Automation Platform`
-  - 负责执行分流、宿主机边界、workspace materialization（工作区实例化）与健康检查
+  - 负责执行分流、宿主机边界、workspace 审计与健康检查
 - `MindSync`
   - 负责长期治理文档、项目工作区、实现与交付材料
 
@@ -132,16 +143,21 @@ MVP 阶段默认补充：
 
 - 版本基线与升级后最小回归检查
   - 看 [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
-  - 当前推荐目标版本：`v2026.428.0`
+  - 当前推荐目标版本：`v2026.529.0`
   - 当前最低安全修复线：`v2026.416.0`
   - 当前项目已验证基线：`v2026.416.0`
-  - 升级验证任务：看 [2026-05-11-Paperclip-v2026.428.0-升级验证计划.md](../../../projects/aimandala/docs/tasks/2026-05-11-Paperclip-v2026.428.0-升级验证计划.md)
+  - 升级验证任务：应以 `v2026.529.0` 为目标版本，替代旧的 `v2026.428.0` 验证计划
 - `codex_local` 的正式安全边界
   - 看 [company/Paperclip-Agent-模型配置总表.md](../../../company/Paperclip-Agent-模型配置总表.md)
   - 与 [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md) 配套阅读
 - execution policy 与本地 `review:*` / `task_class` 语义的原则级映射
   - 看 [company/任务审阅与状态流转规范.md](../../../company/任务审阅与状态流转规范.md)
   - 与 [company/任务类型与标签规范.md](../../../company/任务类型与标签规范.md) 配套阅读
+
+当前默认原则：
+
+- `Paperclip` 原生能力优先承接 review 动作、document review（文档审阅）、dependency / finalize 和 workspace lifecycle 主流程
+- `MindSync` 本地治理继续定义 `review:*`、`task_class:*`、`execution_route:*` 与冻结边界
 
 ## 4. 公司级边界与项目级边界
 

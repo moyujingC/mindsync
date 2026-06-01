@@ -575,9 +575,9 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 这份 runbook 同时承担 `aimandala` 当前 `Paperclip` 服务端版本基线入口。
 
-截至 `2026-05-11`，当前正式治理口径固定为：
+截至 `2026-06-01`，当前正式治理口径固定为：
 
-- 当前推荐目标版本：`v2026.428.0`
+- 当前推荐目标版本：`v2026.529.0`
 - 当前最低安全修复线：`v2026.416.0`
 - 当前项目已验证基线：`v2026.416.0`
 - 当前升级状态：`待计划内验证后升级`
@@ -585,15 +585,19 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
   - 官方 GitHub Releases
   - 官方 GitHub Security Advisories
   - 官方仓库近期高影响 merged changes（已合并改动）
-  - [2026-05-11-Paperclip-周检报告.md](../../../../company/knowledge-base/system/paperclip-weekly-reviews/2026-05-11-Paperclip-周检报告.md)
+  - `2026-06-01` 周检结论
 
-为什么当前推荐目标切到 `v2026.428.0`：
+为什么当前推荐目标切到 `v2026.529.0`：
 
-1. `2026-04-28` 官方发布了 `v2026.428.0`
-2. 截至 `2026-05-11`，官方没有更高 stable release（稳定正式发布版）
-3. `2026-05-04` 至 `2026-05-11` 未出现新的 security advisory（安全通告）
+1. `2026-05-30` 官方发布了 `v2026.529.0`
+2. 截至 `2026-06-01`，官方没有更高 stable release（稳定正式发布版）
+3. `2026-05-25` 至 `2026-06-01` 未出现新的 security advisory（安全通告）
 4. 按当前版本判断规则，无安全紧急性时默认优先采用最新 stable release
-5. `v2026.428.0` 包含 productivity review（生产力审阅）、recovery（恢复）与 issue ownership（问题归属）等控制面改进，和当前 `MindSync` 任务审阅与恢复治理相关
+5. `v2026.529.0` 额外包含：
+   - inline document annotations（文档内联批注）
+   - accepted-plan exact-once decomposition（计划只分解一次）
+   - tighter workspace finalize gates（更严格的工作区收尾闸门）
+6. 上述变更直接命中 `MindSync` 当前 review、document handoff、execution workspace 与 dependency（依赖）治理主链
 
 为什么仍保留 `v2026.416.0` 为最低安全修复线：
 
@@ -602,11 +606,11 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 3. 其中至少一条 critical（严重）级 execution workspace 命令注入问题明确写明修复版本为 `v2026.416.0`
 4. 当前 `aimandala` 已正式依赖 execution workspace policy、`/opt/automation/worktrees` 与 authenticated（鉴权）模式，因此不应继续停留在更低版本口径
 
-为什么当前不直接把已验证基线改成 `v2026.428.0`：
+为什么当前不直接把已验证基线改成 `v2026.529.0`：
 
-1. `v2026.428.0` 是推荐目标，不等于当前项目已完成验证
+1. `v2026.529.0` 是推荐目标，不等于当前项目已完成验证
 2. 当前部署包含自定义 Dockerfile、Hermes、`pi_local` / `codex_local` / `claude_local` 运行链和本地 / 服务器分流治理
-3. 升级前必须先完成 [2026-05-11-Paperclip-v2026.428.0-升级验证计划.md](../../docs/tasks/2026-05-11-Paperclip-v2026.428.0-升级验证计划.md)
+3. 升级前必须先完成一份面向 `v2026.529.0` 的新验证计划，替代旧的 `v2026.428.0` 验证计划
 
 当前版本判断规则：
 
@@ -623,14 +627,21 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 1. execution workspace 真实绑定仍正常
    - 重点看 issue 上的 `executionWorkspaceId` / `currentExecutionWorkspace`
    - 不只看 project policy 是否存在
+   - 同时验证 `finalize` 后的 workspace 状态与宿主机 worktree 状态一致
 2. heartbeat 与 execution health strict gate 通过
    - 不新增 `execution_workspace_policy_not_materialized`
    - 不新增 `server_writable_execution_not_allowed`
-3. `manual-review-required` 任务未被误送入 `server_automation`
-4. `done` 的服务器侧 issue 不再留下 dirty worktree
-5. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
-6. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
-7. 若本轮升级涉及 auth / host / port 相关修复
+3. accepted plan 不重复分解子任务
+   - review / accept 后不应再次 fan-out（扇出）相同子任务
+4. blocker 未解除前，下游 issue 不提前唤醒
+   - finalize 后再触发 dependent issue wake（依赖任务唤醒）
+5. issue document 审阅能力可用
+   - document locks、inline annotations 至少完成一轮最小验证
+6. `manual-review-required` 任务未被误送入 `server_automation`
+7. `done` 的服务器侧 issue 不再留下 dirty worktree
+8. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
+9. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
+10. 若本轮升级涉及 auth / host / port 相关修复
    - 同步验证公网入口、Tailscale 入口、`publicBaseUrl` 与回跳行为
 
 当前补充治理要求：
@@ -641,6 +652,9 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 本文
    - [company/服务器与基础设施入口.md](../../../../company/服务器与基础设施入口.md)
    - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](../../../../company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+4. 升级到 `v2026.529.0` 后，默认采用：
+   - `Paperclip` 原生 structured interactions、document locks、inline annotations、finalize gates 与 exact-once decomposition 作为主机制
+   - `MindSync` 本地治理继续保留 `type:*`、`review:*`、`task_class:*`、`execution_route:*`、冻结策略与审计兜底
 
 ## 4.2 `hermes_local` 容器原生方案
 

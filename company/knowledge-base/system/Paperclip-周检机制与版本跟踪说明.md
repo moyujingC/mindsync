@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.1
 > owner：Research & Knowledge Lead, Engineer
-> last_updated：2026-05-11
+> last_updated：2026-06-01
 > source_of_truth：company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md
 
 这份文档用于定义 `墨予镜` 如何持续跟踪 `Paperclip` 上游更新，并把“看到更新”收束成“对 `MindSync` 有什么影响、该不该升级、下一步怎么迭代”的正式机制。
@@ -156,9 +156,9 @@
 
 ### 8.1 当前版本分层口径
 
-截至 `2026-05-11`，`MindSync` 对 `Paperclip` 版本统一使用三层表达：
+截至 `2026-06-01`，`MindSync` 对 `Paperclip` 版本统一使用三层表达：
 
-1. 推荐目标版本：`v2026.428.0`
+1. 推荐目标版本：`v2026.529.0`
 2. 最低安全修复线：`v2026.416.0`
 3. 项目已验证基线：`v2026.416.0`
 
