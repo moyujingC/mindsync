@@ -1,8 +1,10 @@
 FROM node:20-bookworm-slim AS base
 ARG USER_UID=1000
 ARG USER_GID=1000
-RUN sed -i 's|http://deb.debian.org/debian|https://mirrors.cloud.tencent.com/debian|g' /etc/apt/sources.list.d/debian.sources \
-  && sed -i 's|http://deb.debian.org/debian-security|https://mirrors.cloud.tencent.com/debian-security|g' /etc/apt/sources.list.d/debian.sources \
+RUN sed -i 's|http://deb.debian.org/debian|http://mirrors.cloud.tencent.com/debian|g' /etc/apt/sources.list.d/debian.sources \
+  && sed -i 's|http://deb.debian.org/debian-security|http://mirrors.cloud.tencent.com/debian-security|g' /etc/apt/sources.list.d/debian.sources \
+  && sed -i 's|https://mirrors.cloud.tencent.com/debian|http://mirrors.cloud.tencent.com/debian|g' /etc/apt/sources.list.d/debian.sources \
+  && sed -i 's|https://mirrors.cloud.tencent.com/debian-security|http://mirrors.cloud.tencent.com/debian-security|g' /etc/apt/sources.list.d/debian.sources \
   && apt-get -o Acquire::ForceIPv4=true update \
   && apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends ca-certificates gosu curl git wget ripgrep python3 python3-venv \
   && rm -rf /var/lib/apt/lists/* \
