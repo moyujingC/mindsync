@@ -1,12 +1,13 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type * as ApiConfigModule from "../../shared/api/config";
 
 const { isReportFollowupEnabledMock } = vi.hoisted(() => ({
   isReportFollowupEnabledMock: vi.fn(),
 }));
 
 vi.mock("../../shared/api/config", async () => {
-  const actual = await vi.importActual<typeof import("../../shared/api/config")>("../../shared/api/config");
+  const actual = await vi.importActual<typeof ApiConfigModule>("../../shared/api/config");
   return {
     ...actual,
     isReportFollowupEnabled: isReportFollowupEnabledMock,

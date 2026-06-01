@@ -1,5 +1,5 @@
-import { MobileWebAppShell } from "../app-shell";
-import { mobileWebRoutes, type MobileWebRouteId } from "../routes";
+import brandPattern from "../assets/pattern.webp";
+import { type MobileWebRouteId } from "../routes";
 import {
   LoadingProgressCard,
   ReportSections,
@@ -10,7 +10,7 @@ import { isReportFollowupEnabled } from "../../shared/api/config";
 import type { MandalaFlowState, ReportFollowupTurn } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 import type { ReportPageSection } from "../pages";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
 export interface MobileWebReportPageProps {
   route?: MobileWebRouteId;
@@ -39,6 +39,33 @@ function stripMarkdown(text: string): string {
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     .replace(/^>\s?/gm, "")
     .trim();
+}
+
+function ReportBackIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 6L9 12L15 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ReportShareIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M18 8a3 3 0 1 0-2.82-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M6 14a3 3 0 1 0 2.82 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M15.3 7.4 8.7 10.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M8.7 13.4 15.3 16.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ReportSparkleIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 3 14.1 8.8 20 11 14.1 13.2 12 19 9.9 13.2 4 11 9.9 8.8 12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 function parseReportSections(markdown: string | null | undefined): ReportPageSection[] {
@@ -228,6 +255,9 @@ export function MobileWebReportPage({
       .join(" · ") || "完整解读 · 视觉草稿 · 运行摘要";
   const reportToneLabel = isProReport ? "一梳 Pro 版" : "一镜 Lite 版";
   const followupEnabled = isReportFollowupEnabled() && !isLoading && !isError && Boolean(state.report?.report);
+  const reportPatternStyle = {
+    ["--am-pattern-image" as string]: `url(${brandPattern})`,
+  } as CSSProperties;
 
   useEffect(() => {
     setFollowupMessages([]);
@@ -288,127 +318,159 @@ export function MobileWebReportPage({
   }
 
   return (
-    <MobileWebAppShell
-      route={
-        mobileWebRoutes.find((item) => item.id === "report") ??
-        mobileWebRoutes[0]
-      }
-      environmentLabel={environmentLabel}
-      environmentDetail={environmentDetail}
-      environmentTone={environmentTone}
-      hideHeader
-    >
+    <main className="mw-report-page" style={reportPatternStyle}>
+      <nav className="mw-report-nav" aria-label="报告导航">
+        <button type="button" className="mw-report-nav__button" onClick={onSecondaryAction} aria-label="返回上传页">
+          <ReportBackIcon />
+        </button>
+        <div className="mw-report-nav__brand">
+          <span>{isProReport ? "解读报告(Pro版)" : "解读报告(Lite版)"}</span>
+        </div>
+        <button type="button" className="mw-report-nav__button" aria-label="分享报告">
+          <ReportShareIcon />
+        </button>
+      </nav>
+
       <section className="mw-report-hero">
+        <div className="am-pattern-overlay" />
+        <span className="mw-report-hero__glow" aria-hidden="true" />
+        <span className="am-floating-particle mw-report-particle mw-report-particle--one" aria-hidden="true" />
+        <span className="am-floating-particle mw-report-particle mw-report-particle--two" aria-hidden="true" />
+        <span className="am-floating-particle mw-report-particle mw-report-particle--three" aria-hidden="true" />
+
+        <div className="mw-report-hero__preview">
+          <span className="mw-report-hero__preview-glow" aria-hidden="true" />
+          <div className="mw-report-hero__image-shell">
+            {previewImage ? (
+              <img
+                className="mw-report-hero__image"
+                src={previewImage}
+                alt="当前曼陀罗"
+              />
+            ) : (
+              <span className="mw-report-hero__image-placeholder" aria-hidden="true" />
+            )}
+          </div>
+          <span className="mw-report-hero__badge">{isProReport ? "Pro版" : "Lite版"}</span>
+        </div>
+
         <div className="mw-report-hero__copy">
           <p className="mw-report-hero__brandline">一镜一梳 · {personaName}陪你一起读懂这幅画</p>
-          <p className="mw-kicker">{reportToneLabel}</p>
-          <h2>{reportTitle}</h2>
+          <h1>{reportTitle}</h1>
+          <span className="mw-report-hero__date">{generatedAt}生成</span>
           <p className="mw-report-hero__summary">{reportSubtitle}</p>
           <div className="mw-report-hero__meta">
-            <span className="mw-badge">{isProReport ? "Pro" : "Lite"}</span>
-            <span className="mw-badge">{themeLabel}</span>
-            <span className="mw-badge">{statusLabel}</span>
-            <span className="mw-report-hero__date">{generatedAt}</span>
+            <span>{reportToneLabel}</span>
+            <span>{themeLabel}</span>
+            <span>{statusLabel}</span>
           </div>
-          {!isLoading && !isError ? (
-            <p className="mw-report-hero__path">阅读路径：{readingPath}</p>
-          ) : null}
-          {!isLoading && !isError ? (
-            <p className="mw-report-hero__whisper">先看见，再理解，最后才是决定下一步。</p>
-          ) : null}
         </div>
-        {previewImage ? (
-          <div className="mw-report-hero__preview">
-            <img
-              className="mw-report-hero__image"
-              src={previewImage}
-              alt="当前曼陀罗"
-            />
-          </div>
-        ) : null}
       </section>
 
-      {existingHint ? (
-        <section className="mw-inline-banner mw-inline-banner--runtime">
-          <strong>当前复用了已有记录</strong>
-          <p>{existingHint}</p>
-        </section>
-      ) : null}
+      <section className="mw-report-content">
+        <span className="mw-report-content__noise" aria-hidden="true" />
 
-      {isLoading ? <LoadingProgressCard state={state} /> : null}
+        {environmentLabel ? (
+          <section className={`mw-inline-banner mw-inline-banner--${environmentTone}`}>
+            <strong>{environmentLabel}</strong>
+            <p>{environmentDetail}</p>
+          </section>
+        ) : null}
 
-      {!isError ? (
-        <section className="mw-report-story">
-          <div className="mw-report-story__intro">
-            <span className="mw-report-story__eyebrow">新版报告</span>
-            <p>下面这一段，会直接展示最终正文，再补上视觉草稿和运行摘要，方便你核对链路。</p>
-          </div>
-          <ReportSections sections={contentSections} />
-        </section>
-      ) : null}
+        {existingHint ? (
+          <section className="mw-inline-banner mw-inline-banner--runtime">
+            <strong>当前复用了已有记录</strong>
+            <p>{existingHint}</p>
+          </section>
+        ) : null}
 
-      {state.lastError ? (
-        <section className="mw-inline-banner mw-inline-banner--preview">
-          <strong>当前流程有异常</strong>
-          <p>{state.lastError}</p>
-        </section>
-      ) : null}
+        {isLoading ? <LoadingProgressCard state={state} /> : null}
 
-      {followupEnabled ? (
-        <section className="mw-inline-banner mw-inline-banner--runtime">
-          <strong>对这份报告有疑问，可以问{personaName}。</strong>
-          <p>{personaName}会基于本次画作和报告内容，陪你把某一段看得更清楚。</p>
-          <p>可以问：这段报告是什么意思、这个画面线索如何理解、这周可以从哪里开始。不能问：诊断、预测、投资建议或让{personaName}替你做决定。</p>
-          {followupMessages.length === 0 ? (
-            <p>嗨，我是{personaName}。你可以问我这份解读里最在意的部分，我会陪你一起读清楚。</p>
-          ) : null}
-          {followupMessages.map((message, index) => (
-            <div key={`${message.role}-${index}`}>
-              <p>
-                <strong>{message.role === "user" ? "你" : personaName}：</strong>{message.content}
-              </p>
-              {message.boundary ? <p>这是一条边界回应。</p> : null}
-              {message.references && message.references.length > 0 ? (
-                <p>参考报告段落：{message.references.join("、")}</p>
+        {!isError ? (
+          <section className="mw-report-story">
+            <article className="mw-report-impression">
+              <div className="mw-report-impression__title">
+                <span aria-hidden="true" />
+                <strong>整体印象</strong>
+              </div>
+              <p>{reportSubtitle}</p>
+              {!isLoading && !isError ? (
+                <small>阅读路径：{readingPath}</small>
               ) : null}
-            </div>
-          ))}
-          {followupStatus ? <p>{followupStatus}</p> : null}
-          {followupError ? <p>{followupError}</p> : null}
-          <div className="mw-button-row">
-            <input
-              value={followupInput}
-              disabled={followupSending}
-              onChange={(event) => setFollowupInput(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !followupSending) {
-                  event.preventDefault();
-                  void handleSendFollowup();
-                }
-              }}
-              placeholder="输入你想继续追问的报告问题"
-            />
-            <button type="button" className="mw-primary-button" disabled={followupSending || !followupInput.trim()} onClick={() => void handleSendFollowup()}>
-              {followupSending ? `${personaName}正在整理这段线索` : `问${personaName}`}
-            </button>
-          </div>
-          <p>{personaName}只能解释本次报告和画面线索，不能替代专业心理咨询、医疗建议、财务建议或重大现实决策。</p>
-        </section>
-      ) : null}
+            </article>
 
-      <footer className="mw-footer-action">
-        <div className="mw-footer-panel">
-          <p className="mw-footer-hint">{footerHint}</p>
-          <div className="mw-button-row">
-            <button type="button" className="mw-secondary-button" onClick={onSecondaryAction}>
-              {secondaryLabel}
-            </button>
-            <button type="button" className="mw-primary-button" onClick={onPrimaryAction} disabled={primaryDisabled}>
-              {primaryLabel}
-            </button>
+            <div className="mw-report-story__intro">
+              <ReportSparkleIcon />
+              <span>报告正文</span>
+              <i aria-hidden="true" />
+            </div>
+            <ReportSections sections={contentSections} />
+          </section>
+        ) : null}
+
+        {state.lastError ? (
+          <section className="mw-inline-banner mw-inline-banner--preview">
+            <strong>当前流程有异常</strong>
+            <p>{state.lastError}</p>
+          </section>
+        ) : null}
+
+        {followupEnabled ? (
+          <section className="mw-report-followup">
+            <strong>对这份报告有疑问，可以问{personaName}。</strong>
+            <p>{personaName}会基于本次画作和报告内容，陪你把某一段看得更清楚。</p>
+            <p>可以问：这段报告是什么意思、这个画面线索如何理解、这周可以从哪里开始。不能问：诊断、预测、投资建议或让{personaName}替你做决定。</p>
+            {followupMessages.length === 0 ? (
+              <p>嗨，我是{personaName}。你可以问我这份解读里最在意的部分，我会陪你一起读清楚。</p>
+            ) : null}
+            {followupMessages.map((message, index) => (
+              <div key={`${message.role}-${index}`} className="mw-report-followup__message">
+                <p>
+                  <strong>{message.role === "user" ? "你" : personaName}：</strong>{message.content}
+                </p>
+                {message.boundary ? <p>这是一条边界回应。</p> : null}
+                {message.references && message.references.length > 0 ? (
+                  <p>参考报告段落：{message.references.join("、")}</p>
+                ) : null}
+              </div>
+            ))}
+            {followupStatus ? <p>{followupStatus}</p> : null}
+            {followupError ? <p>{followupError}</p> : null}
+            <div className="mw-button-row">
+              <input
+                value={followupInput}
+                disabled={followupSending}
+                onChange={(event) => setFollowupInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !followupSending) {
+                    event.preventDefault();
+                    void handleSendFollowup();
+                  }
+                }}
+                placeholder="输入你想继续追问的报告问题"
+              />
+              <button type="button" className="mw-primary-button" disabled={followupSending || !followupInput.trim()} onClick={() => void handleSendFollowup()}>
+                {followupSending ? `${personaName}正在整理这段线索` : `问${personaName}`}
+              </button>
+            </div>
+            <p>{personaName}只能解释本次报告和画面线索，不能替代专业心理咨询、医疗建议、财务建议或重大现实决策。</p>
+          </section>
+        ) : null}
+
+        <footer className="mw-footer-action">
+          <div className="mw-footer-panel">
+            <p className="mw-footer-hint">{footerHint}</p>
+            <div className="mw-button-row">
+              <button type="button" className="mw-secondary-button" onClick={onSecondaryAction}>
+                {secondaryLabel}
+              </button>
+              <button type="button" className="mw-primary-button" onClick={onPrimaryAction} disabled={primaryDisabled}>
+                {primaryLabel}
+              </button>
+            </div>
           </div>
-        </div>
-      </footer>
-    </MobileWebAppShell>
+        </footer>
+      </section>
+    </main>
   );
 }
