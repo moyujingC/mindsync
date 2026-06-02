@@ -122,10 +122,11 @@ jobs:
         with:
           ref: ${{ needs.resolve-target.outputs.deploy_sha }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 20
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Prepare SSH Key
         id: dev_prepare_ssh
@@ -272,10 +273,11 @@ jobs:
         with:
           ref: ${{ needs.resolve-target.outputs.deploy_sha }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 20
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Prepare SSH Key
         id: prod_prepare_ssh

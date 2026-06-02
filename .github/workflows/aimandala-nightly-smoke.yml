@@ -46,10 +46,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 20
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Resolve Dev Smoke Mode
         id: dev_mode
@@ -123,10 +124,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 20
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Resolve Prod Smoke Mode
         id: prod_mode

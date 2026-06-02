@@ -34,10 +34,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 20
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Run Auto Repair
         env:
