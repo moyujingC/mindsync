@@ -15,10 +15,7 @@ import {
   type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "../mobile-web/state";
-import {
-  applyError,
-  initialMandalaFlowState,
-} from "../shared/core";
+import { applyError, initialMandalaFlowState } from "../shared/core";
 import type {
   FrontendUserSession,
   InterpretationListQuery,
@@ -30,10 +27,7 @@ import type { HistoryFilterId } from "../mobile-web/components/history-cards";
 import type { MiniappRouteId } from "./routes";
 import { createMiniappDraft, createMiniappPreviewProps } from "./fixtures";
 import { getMiniappLiveConfig } from "./config";
-import {
-  persistMiniappSession,
-  resolveMiniappSession,
-} from "./identity";
+import { persistMiniappSession, resolveMiniappSession } from "./identity";
 
 export interface MiniappRuntimeProps {
   route: MiniappRouteId;
@@ -146,7 +140,9 @@ export function MiniappRuntime({
       void query;
       setRecords([]);
       setHistoryStatusLabel("历史记录暂未接入当前报告 API");
-      setHistoryStatusDetail("当前小程序壳只复用财富报告生成入口，历史列表后续按新 report_id 存储模型重做。");
+      setHistoryStatusDetail(
+        "当前小程序壳只复用财富报告生成入口，历史列表后续按新 report_id 存储模型重做。",
+      );
       setHistoryRefreshHint(formatHistoryRefreshHint());
     } finally {
       setHistoryRefreshBusy(false);
@@ -426,7 +422,9 @@ export function MiniappRuntime({
         void (async () => {
           void interpretationId;
           setHistoryStatusLabel("历史详情暂未接入当前报告 API");
-          setHistoryStatusDetail("小程序历史详情会在新 report_id 存储模型完成后重做。");
+          setHistoryStatusDetail(
+            "小程序历史详情会在新 report_id 存储模型完成后重做。",
+          );
           setRecord(null);
           setActiveRoute("history");
         })();

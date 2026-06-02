@@ -78,7 +78,9 @@ describe("MobileWebRuntime", () => {
     ).IS_REACT_ACT_ENVIRONMENT = true;
     HTMLElement.prototype.scrollIntoView = vi.fn();
     vi.clearAllMocks();
-    vi.mocked(api.createWealthReport).mockResolvedValue(createWealthReportResponse());
+    vi.mocked(api.createWealthReport).mockResolvedValue(
+      createWealthReportResponse(),
+    );
     vi.mocked(api.uploadImage).mockResolvedValue(createUploadResponse());
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -108,7 +110,9 @@ describe("MobileWebRuntime", () => {
           paintingFeeling: "平静",
           innerRadius: 0.36,
           middleRadius: 0.64,
-          browserFile: new File(["mandala"], "mandala.png", { type: "image/png" }),
+          browserFile: new File(["mandala"], "mandala.png", {
+            type: "image/png",
+          }),
         },
       },
     };
@@ -122,8 +126,8 @@ describe("MobileWebRuntime", () => {
       expect(container.textContent).toContain("开始解读");
     });
 
-    const startButton = Array.from(container.querySelectorAll("button")).find((item) =>
-      item.textContent?.includes("开始解读"),
+    const startButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("开始解读"),
     );
     expect(startButton).toBeTruthy();
 
@@ -165,7 +169,9 @@ describe("MobileWebRuntime", () => {
           paintingFeeling: "平静",
           innerRadius: 0.36,
           middleRadius: 0.64,
-          browserFile: new File(["mandala"], "mandala.png", { type: "image/png" }),
+          browserFile: new File(["mandala"], "mandala.png", {
+            type: "image/png",
+          }),
         },
       },
     };
@@ -178,8 +184,8 @@ describe("MobileWebRuntime", () => {
       expect(container.textContent).toContain("选择 Lite");
     });
 
-    const liteButton = Array.from(container.querySelectorAll("button")).find((item) =>
-      item.textContent?.includes("选择 Lite"),
+    const liteButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("选择 Lite"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -225,7 +231,9 @@ describe("MobileWebRuntime", () => {
           paintingFeeling: "平静",
           innerRadius: 0.36,
           middleRadius: 0.64,
-          browserFile: new File(["mandala"], "mandala.png", { type: "image/png" }),
+          browserFile: new File(["mandala"], "mandala.png", {
+            type: "image/png",
+          }),
         },
       },
     };
@@ -235,8 +243,8 @@ describe("MobileWebRuntime", () => {
       await new Promise((resolve) => window.setTimeout(resolve, 0));
     });
 
-    const startButton = Array.from(container.querySelectorAll("button")).find((item) =>
-      item.textContent?.includes("开始解读"),
+    const startButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("开始解读"),
     );
     expect(startButton).toBeTruthy();
 
@@ -245,7 +253,9 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("报告生成需要先配置可用的优惠券或兑换码。");
+      expect(container.textContent).toContain(
+        "报告生成需要先配置可用的优惠券或兑换码。",
+      );
     });
     expect(container.textContent).not.toContain("报告内容待补齐");
   });
@@ -274,8 +284,8 @@ describe("MobileWebRuntime", () => {
       await new Promise((resolve) => window.setTimeout(resolve, 0));
     });
 
-    const startButton = Array.from(container.querySelectorAll("button")).find((item) =>
-      item.textContent?.includes("开始解读"),
+    const startButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("开始解读"),
     );
     expect(startButton).toBeTruthy();
 
@@ -284,7 +294,9 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("请先选择本地曼陀罗图片并完成上传。");
+      expect(container.textContent).toContain(
+        "请先选择本地曼陀罗图片并完成上传。",
+      );
     });
     expect(api.uploadImage).not.toHaveBeenCalled();
     expect(api.createWealthReport).not.toHaveBeenCalled();

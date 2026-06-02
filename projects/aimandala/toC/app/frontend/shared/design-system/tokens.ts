@@ -26,8 +26,8 @@ export const aimandalaDesignTokens = {
       info500: "#7a8ea8",
     },
     typography: {
-      fontBody: "\"Noto Sans SC\", \"PingFang SC\", \"Hiragino Sans GB\", sans-serif",
-      fontDisplay: "\"Noto Serif SC\", \"Songti SC\", serif",
+      fontBody: '"Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif',
+      fontDisplay: '"Noto Serif SC", "Songti SC", serif',
       textXs: "11px",
       textSm: "12px",
       textMd: "14px",
@@ -100,7 +100,8 @@ export const aimandalaDesignTokens = {
       onDarkFaint: "rgba(232, 220, 200, 0.45)",
     },
     action: {
-      primaryBg: "linear-gradient(135deg, #9b4030 0%, #c87850 30%, #d4a054 60%, #c87850 85%, #9b4030 100%)",
+      primaryBg:
+        "linear-gradient(135deg, #9b4030 0%, #c87850 30%, #d4a054 60%, #c87850 85%, #9b4030 100%)",
       primaryText: "#f5efe2",
       secondaryBg: "rgba(255, 255, 255, 0.86)",
       secondaryText: "#5d4d37",

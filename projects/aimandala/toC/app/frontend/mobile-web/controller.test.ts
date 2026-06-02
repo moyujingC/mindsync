@@ -12,7 +12,10 @@ import {
   runMobileWebLiteFlow,
   runMobileWebReportFlow,
 } from "./controller";
-import type { InterpretationVersion, WealthReportResponse } from "../shared/types";
+import type {
+  InterpretationVersion,
+  WealthReportResponse,
+} from "../shared/types";
 
 function createWealthReportResponse(
   reportMode: InterpretationVersion = "lite",
@@ -39,7 +42,9 @@ describe("mobile-web controller", () => {
   });
 
   it("runMobileWebLiteFlow 使用人工三圈参数调用财富报告入口", async () => {
-    vi.mocked(api.createWealthReport).mockResolvedValue(createWealthReportResponse());
+    vi.mocked(api.createWealthReport).mockResolvedValue(
+      createWealthReportResponse(),
+    );
 
     const snapshot = await runMobileWebLiteFlow({
       userId: "user-1",
@@ -79,7 +84,9 @@ describe("mobile-web controller", () => {
   });
 
   it("runMobileWebReportFlow 在 pro 模式下也会调用同一个财富报告入口", async () => {
-    vi.mocked(api.createWealthReport).mockResolvedValue(createWealthReportResponse("pro"));
+    vi.mocked(api.createWealthReport).mockResolvedValue(
+      createWealthReportResponse("pro"),
+    );
 
     const snapshot = await runMobileWebReportFlow(
       {
@@ -114,7 +121,9 @@ describe("mobile-web controller", () => {
 
     expect(api.createWealthReport).not.toHaveBeenCalled();
     expect(snapshot.state.step).toBe("error");
-    expect(snapshot.state.lastError).toContain("manual three-circle boundaries are required");
+    expect(snapshot.state.lastError).toContain(
+      "manual three-circle boundaries are required",
+    );
   });
 
   it("refreshMobileWebReport 在当前 API 下明确不可用", async () => {
@@ -125,6 +134,8 @@ describe("mobile-web controller", () => {
     );
 
     expect(snapshot.state.step).toBe("error");
-    expect(snapshot.state.lastError).toContain("Report refresh is not available");
+    expect(snapshot.state.lastError).toContain(
+      "Report refresh is not available",
+    );
   });
 });

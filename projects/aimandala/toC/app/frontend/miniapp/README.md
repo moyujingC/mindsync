@@ -6,7 +6,6 @@
 > last_updated：2026-05-06
 > source_of_truth：projects/aimandala/toC/app/frontend/miniapp/README.md
 
-
 这里放 `一镜一梳` 后续小程序端的实现入口。
 
 当前阶段还不恢复小程序 UI，但默认应复用：

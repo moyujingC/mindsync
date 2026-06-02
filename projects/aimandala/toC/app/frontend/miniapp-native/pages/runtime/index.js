@@ -47,8 +47,7 @@ Page({
     if (!isRuntimeConfigReady(config)) {
       this.setData({
         booting: false,
-        errorMessage:
-          "请在微信开发者工具启动参数里提供 runtimeBaseUrl。",
+        errorMessage: "请在微信开发者工具启动参数里提供 runtimeBaseUrl。",
       });
       return;
     }

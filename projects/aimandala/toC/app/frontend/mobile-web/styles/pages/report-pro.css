@@ -101,7 +101,13 @@
 
 .am-pro-report-hero {
   position: relative;
-  background: linear-gradient(180deg, #1a2844 0%, #1e2d4d 50%, #223358 80%, #2a3d65 100%);
+  background: linear-gradient(
+    180deg,
+    #1a2844 0%,
+    #1e2d4d 50%,
+    #223358 80%,
+    #2a3d65 100%
+  );
 }
 
 .am-pro-report-hero__pattern {

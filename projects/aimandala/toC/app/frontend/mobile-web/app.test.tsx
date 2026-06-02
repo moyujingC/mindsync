@@ -89,8 +89,8 @@ describe("MobileWebApp", () => {
     const html = renderToStaticMarkup(<MobileWebApp route="landing" />);
 
     expect(html).toContain("画出你的潜意识");
-    expect(html).toContain("AI 解读曼陀罗画作  ·  探索内心世界");
-    expect(html).toContain("融合阴阳五行三才的东方解读视角");
+    expect(html).toContain("AI解读曼陀罗画作 · 探索内心世界");
+    expect(html).toContain("来自东方的五行智慧");
     expect(html).toContain("开始体验");
     expect(html).toContain("历史解读");
     expect(html).toContain("滑动了解详情");

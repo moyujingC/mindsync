@@ -6,7 +6,6 @@
 > last_updated：2026-05-06
 > source_of_truth：projects/aimandala/toC/app/frontend/DESIGN_SYSTEM.md
 
-
 ## 目标
 
 这份文档定义 `aimandala` 当前前端的样式地基，用来约束 Web 与 miniapp 后续继续统一到组件层时的最小共识。

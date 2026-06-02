@@ -6,7 +6,6 @@
 > last_updated：2026-05-06
 > source_of_truth：projects/aimandala/toC/app/frontend/shared/ui/README.md
 
-
 这里承接 `一镜一梳 To C` 当前第一批双端共享展示 UI。
 
 当前优先承接：

@@ -6,7 +6,6 @@
 > last_updated：2026-05-06
 > source_of_truth：projects/aimandala/toC/app/frontend/shared/README.md
 
-
 这里承接 `一镜一梳` To C 前端的共享层。
 
 当前目录分成三类：

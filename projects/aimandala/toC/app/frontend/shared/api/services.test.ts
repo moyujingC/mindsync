@@ -12,7 +12,11 @@ vi.mock("./config", () => ({
   getAimandalaApiBaseUrl: () => "http://127.0.0.1:8100",
 }));
 
-import { createReportFollowup, createWealthReport, uploadImage } from "./services";
+import {
+  createReportFollowup,
+  createWealthReport,
+  uploadImage,
+} from "./services";
 
 describe("shared/api services", () => {
   beforeEach(() => {

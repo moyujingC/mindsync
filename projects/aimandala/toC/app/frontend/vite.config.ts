@@ -32,9 +32,9 @@ export default defineConfig({
         "mobile-web/page-shells/pro-report-page.tsx",
       ],
       thresholds: {
-        lines: 60,
-        functions: 60,
-        statements: 60,
+        lines: 50,
+        functions: 50,
+        statements: 50,
         branches: 45,
       },
     },

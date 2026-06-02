@@ -33,7 +33,11 @@
   top: -8px;
   width: 60px;
   height: 50px;
-  background: radial-gradient(ellipse, rgba(212, 160, 84, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse,
+    rgba(212, 160, 84, 0.1) 0%,
+    transparent 70%
+  );
 }
 
 .mw-report-nav::after {
@@ -41,7 +45,11 @@
   top: 8px;
   width: 30px;
   height: 28px;
-  background: radial-gradient(circle, rgba(200, 120, 80, 0.08) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(200, 120, 80, 0.08) 0%,
+    transparent 70%
+  );
 }
 
 .mw-report-nav__button {
@@ -81,7 +89,13 @@
   gap: 14px;
   padding: 30px 24px 42px;
   border-radius: 0;
-  background: linear-gradient(180deg, #1a2844 0%, #1e2d4d 50%, #223358 80%, #2a3d65 100%);
+  background: linear-gradient(
+    180deg,
+    #1a2844 0%,
+    #1e2d4d 50%,
+    #223358 80%,
+    #2a3d65 100%
+  );
   border: 0;
   box-shadow: none;
   color: var(--am-text-on-dark);
@@ -99,7 +113,11 @@
   height: 150px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(212, 160, 84, 0.1) 0%, transparent 60%);
+  background: radial-gradient(
+    ellipse,
+    rgba(212, 160, 84, 0.1) 0%,
+    transparent 60%
+  );
   pointer-events: none;
 }
 
@@ -144,7 +162,12 @@
   position: absolute;
   inset: -6px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(212, 160, 84, 0.3), rgba(200, 120, 80, 0.15), rgba(212, 160, 84, 0.3));
+  background: conic-gradient(
+    from 0deg,
+    rgba(212, 160, 84, 0.3),
+    rgba(200, 120, 80, 0.15),
+    rgba(212, 160, 84, 0.3)
+  );
   filter: blur(4px);
   animation: mw-report-spin 20s linear infinite;
 }
@@ -175,7 +198,16 @@
 .mw-report-hero__image-placeholder {
   background:
     radial-gradient(circle at 50% 50%, #f5efe2 0 22%, transparent 23% 100%),
-    conic-gradient(from 0deg, #c25b56, #d4883e, #c8a066, #5b8c5a, #4a7fb5, #8b6aae, #c25b56);
+    conic-gradient(
+      from 0deg,
+      #c25b56,
+      #d4883e,
+      #c8a066,
+      #5b8c5a,
+      #4a7fb5,
+      #8b6aae,
+      #c25b56
+    );
   opacity: 0.88;
 }
 
@@ -269,7 +301,10 @@
   inset: 0;
   pointer-events: none;
   opacity: 0.035;
-  background-image: radial-gradient(rgba(74, 61, 48, 0.18) 0.55px, transparent 0.55px);
+  background-image: radial-gradient(
+    rgba(74, 61, 48, 0.18) 0.55px,
+    transparent 0.55px
+  );
   background-size: 7px 7px;
 }
 
@@ -298,7 +333,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 30% 20%, rgba(158, 170, 155, 0.08) 0%, transparent 50%);
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(158, 170, 155, 0.08) 0%,
+    transparent 50%
+  );
   pointer-events: none;
 }
 
@@ -369,7 +408,11 @@
 .mw-report-story__intro i {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(200, 120, 80, 0.2) 0%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(200, 120, 80, 0.2) 0%,
+    transparent 100%
+  );
 }
 
 .mw-card--report-section,
@@ -392,7 +435,11 @@
   bottom: 0;
   width: 3px;
   border-radius: 2px 0 0 2px;
-  background: linear-gradient(180deg, var(--am-color-copper-400), rgba(200, 120, 80, 0.52));
+  background: linear-gradient(
+    180deg,
+    var(--am-color-copper-400),
+    rgba(200, 120, 80, 0.52)
+  );
 }
 
 .mw-card--report-section-lead::after {
@@ -403,7 +450,11 @@
   width: 80px;
   height: 80px;
   pointer-events: none;
-  background: radial-gradient(circle at 80% 20%, rgba(200, 160, 102, 0.12) 0%, transparent 60%);
+  background: radial-gradient(
+    circle at 80% 20%,
+    rgba(200, 160, 102, 0.12) 0%,
+    transparent 60%
+  );
 }
 
 .mw-section-index {

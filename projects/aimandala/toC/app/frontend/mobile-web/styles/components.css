@@ -36,7 +36,11 @@
   width: 60%;
   height: 45%;
   border-radius: 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 100%
+  );
   pointer-events: none;
 }
 
@@ -168,7 +172,11 @@
 
 .mw-card--asset {
   background:
-    radial-gradient(circle at top right, rgba(184, 144, 86, 0.18), transparent 34%),
+    radial-gradient(
+      circle at top right,
+      rgba(184, 144, 86, 0.18),
+      transparent 34%
+    ),
     rgba(255, 251, 245, 0.96);
 }
 
@@ -489,7 +497,11 @@
   left: -50px;
   width: 200px;
   height: 280px;
-  background: radial-gradient(ellipse, rgba(212, 160, 84, 0.07) 0%, transparent 60%);
+  background: radial-gradient(
+    ellipse,
+    rgba(212, 160, 84, 0.07) 0%,
+    transparent 60%
+  );
 }
 
 .am-ambient-glow--bottom {
@@ -498,7 +510,11 @@
   width: 300px;
   height: 200px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(158, 170, 155, 0.06) 0%, transparent 60%);
+  background: radial-gradient(
+    ellipse,
+    rgba(158, 170, 155, 0.06) 0%,
+    transparent 60%
+  );
 }
 
 .am-floating-particle {
@@ -780,7 +796,11 @@
   inset: 0 auto auto 0;
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, rgba(200, 160, 102, 0.68), rgba(200, 160, 102, 0.04));
+  background: linear-gradient(
+    90deg,
+    rgba(200, 160, 102, 0.68),
+    rgba(200, 160, 102, 0.04)
+  );
 }
 
 @media (min-width: 641px) {

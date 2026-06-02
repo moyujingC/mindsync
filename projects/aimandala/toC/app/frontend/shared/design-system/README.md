@@ -6,7 +6,6 @@
 > last_updated：2026-05-06
 > source_of_truth：projects/aimandala/toC/app/frontend/shared/design-system/README.md
 
-
 这里承接 `一镜一梳 To C` 双端共享 UI 的设计系统基础层。
 
 当前先收：

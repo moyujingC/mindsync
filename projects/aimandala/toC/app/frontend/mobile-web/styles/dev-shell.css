@@ -64,7 +64,9 @@ body {
 }
 
 .browser-shell__workspace--with-panel {
-  grid-template-columns: minmax(280px, 360px) minmax(320px, 430px) minmax(300px, 380px) minmax(300px, 420px);
+  grid-template-columns:
+    minmax(280px, 360px) minmax(320px, 430px) minmax(300px, 380px)
+    minmax(300px, 420px);
   align-items: start;
   justify-content: center;
   gap: 20px;

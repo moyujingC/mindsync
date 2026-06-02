@@ -3,7 +3,11 @@
   border: 1px solid rgba(106, 82, 50, 0.12);
   border-radius: var(--am-radius-xl);
   background:
-    radial-gradient(circle at top right, rgba(184, 144, 86, 0.22), transparent 34%),
+    radial-gradient(
+      circle at top right,
+      rgba(184, 144, 86, 0.22),
+      transparent 34%
+    ),
     rgba(255, 251, 245, 0.96);
   box-shadow: 0 16px 40px rgba(75, 50, 19, 0.06);
 }
@@ -68,25 +72,41 @@
 
 .mw-card--history-ready {
   background:
-    radial-gradient(circle at top right, rgba(74, 140, 104, 0.1), transparent 34%),
+    radial-gradient(
+      circle at top right,
+      rgba(74, 140, 104, 0.1),
+      transparent 34%
+    ),
     rgba(255, 251, 245, 0.96);
 }
 
 .mw-card--history-pending {
   background:
-    radial-gradient(circle at top right, rgba(172, 129, 72, 0.1), transparent 34%),
+    radial-gradient(
+      circle at top right,
+      rgba(172, 129, 72, 0.1),
+      transparent 34%
+    ),
     rgba(255, 251, 245, 0.96);
 }
 
 .mw-card--history-proPending {
   background:
-    radial-gradient(circle at top right, rgba(200, 120, 80, 0.12), transparent 34%),
+    radial-gradient(
+      circle at top right,
+      rgba(200, 120, 80, 0.12),
+      transparent 34%
+    ),
     rgba(255, 251, 245, 0.96);
 }
 
 .mw-card--history-proReady {
   background:
-    radial-gradient(circle at top right, rgba(111, 92, 190, 0.12), transparent 34%),
+    radial-gradient(
+      circle at top right,
+      rgba(111, 92, 190, 0.12),
+      transparent 34%
+    ),
     rgba(255, 251, 245, 0.96);
 }
 

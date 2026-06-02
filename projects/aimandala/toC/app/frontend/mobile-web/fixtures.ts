@@ -76,7 +76,8 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
     overall_impression:
       "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
     structured: {
-      title: version === "pro" ? "一镜：冰封的太阳 - Pro版" : "一镜 Lite 版预览",
+      title:
+        version === "pro" ? "一镜：冰封的太阳 - Pro版" : "一镜 Lite 版预览",
       summary: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
       report_mode: version,
     },
@@ -144,7 +145,8 @@ export function createPreviewAppProps(
       imagePath: draft.imagePath,
     },
     detection: uploadDetection ?? createMockDetection(),
-    geometry: (uploadDetection ?? createMockDetection()).geometry_suggestion ?? null,
+    geometry:
+      (uploadDetection ?? createMockDetection()).geometry_suggestion ?? null,
     interpretation: createMockInterpretation(),
     status: createMockStatus(),
     report: createMockReport(),

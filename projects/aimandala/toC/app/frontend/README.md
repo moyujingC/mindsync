@@ -6,7 +6,6 @@
 > last_updated：2026-05-06
 > source_of_truth：projects/aimandala/toC/app/frontend/README.md
 
-
 这里放 `一镜一梳` To C 主产品的用户端前端入口。
 
 当前已知事实：
