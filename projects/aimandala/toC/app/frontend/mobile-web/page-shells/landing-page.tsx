@@ -1,7 +1,8 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 
 import logoNiwu from "../assets/logo-niwu.webp";
-import brandPattern from "../assets/pattern.webp";
+import logoNiwuHero from "../assets/logo-niwu-hero.png";
+import brandPattern from "../assets/pattern-clean.webp";
 
 export interface MobileWebLandingPageProps {
   onStart?: () => void;
@@ -42,59 +43,6 @@ function FloatingParticles() {
         />
       ))}
     </>
-  );
-}
-
-function IconUpload() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 16V6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M8.5 9.5L12 6L15.5 9.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6 18.5H18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconAnalyze() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="5" y="5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="15" y="5" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="5" y="15" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.6" />
-      <circle cx="15.5" cy="15.5" r="3.5" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function IconReport() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M8 5.5H14L18 9.5V18a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 7 18V7A1.5 1.5 0 0 1 8.5 5.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M14 5.5V9.5H18" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M10 12H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M10 15H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconChat() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M6.5 17.5H6A3.5 3.5 0 0 1 2.5 14V8.5A3.5 3.5 0 0 1 6 5h12a3.5 3.5 0 0 1 3.5 3.5V14a3.5 3.5 0 0 1-3.5 3.5h-5.2L8 20.5v-3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M7.5 10.5H16.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M7.5 13.5H13.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function StepCard({ num, icon, title, desc }: { num: number; icon: ReactNode; title: string; desc: string }) {
-  return (
-    <div className="am-step-flow-card">
-      <div className="am-step-flow-card__num">{num}</div>
-      <div className="am-step-flow-card__icon">{icon}</div>
-      <div className="am-step-flow-card__title">{title}</div>
-      <div className="am-step-flow-card__desc">{desc}</div>
-    </div>
   );
 }
 
@@ -149,23 +97,21 @@ function FAQItem({ item, defaultOpen = false }: { item: FAQItemData; defaultOpen
   );
 }
 
-function PriceCompare({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
-
+function PriceCompare({ onClose }: { onClose: () => void }) {
   const rows = [
-    { feature: "AI 色彩解读", lite: true, pro: true },
-    { feature: "结构分析", lite: true, pro: true },
-    { feature: "基础情绪洞察", lite: true, pro: true },
-    { feature: "深度心理分析", lite: false, pro: true },
-    { feature: "进阶行动建议", lite: false, pro: true },
-    { feature: "个性化深度报告", lite: false, pro: true },
-    { feature: "历史记录存档", lite: false, pro: true },
+    { feature: "图像解读", lite: "✓", pro: "✓" },
+    { feature: "状态线索", lite: "✓", pro: "✓" },
+    { feature: "结构分析", lite: "简要", pro: "完整" },
+    { feature: "关系模式", lite: "—", pro: "✓" },
+    { feature: "追问引导", lite: "简要", pro: "深入" },
+    { feature: "整合建议", lite: "—", pro: "✓" },
+    { feature: "报告完整度", lite: "轻量", pro: "完整" },
   ];
 
   return (
     <div className="am-price-compare">
       <div className="am-price-compare__header">
-        <span>功能对比</span>
+        <span>解读内容</span>
         <button type="button" onClick={onClose}>
           收起
         </button>
@@ -182,8 +128,8 @@ function PriceCompare({ open, onClose }: { open: boolean; onClose: () => void })
           {rows.map((row) => (
             <tr key={row.feature}>
               <td>{row.feature}</td>
-              <td className="am-price-compare__lite">{row.lite ? "✓" : "—"}</td>
-              <td className="am-price-compare__pro">{row.pro ? "✓" : "—"}</td>
+              <td className="am-price-compare__lite">{row.lite}</td>
+              <td className="am-price-compare__pro">{row.pro}</td>
             </tr>
           ))}
         </tbody>
@@ -299,7 +245,7 @@ const heroRingStyle = {
 
 export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandingPageProps) {
   const [showScrollCue, setShowScrollCue] = useState(true);
-  const [compareOpen, setCompareOpen] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(true);
 
   useEffect(() => {
     const dismissScrollCue = () => {
@@ -341,13 +287,13 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
           <div className="am-logo-ring__outer" />
           <div className="am-logo-ring__inner" />
           <div className="am-logo-ring__pulse" />
-          <img src={logoNiwu} alt="一镜一梳" className="am-logo-image" />
+          <img src={logoNiwuHero} alt="一镜一梳" className="am-logo-image" />
         </div>
 
         <div className="am-hero-copy">
           <h1>画出你的潜意识</h1>
-          <p className="am-hero-subtitle">AI 解读曼陀罗画作  ·  探索内心世界</p>
-          <p className="am-hero-price">融合阴阳五行三才的东方解读视角</p>
+          <p className="am-hero-subtitle">AI解读曼陀罗画作 · 探索内心世界</p>
+          <p className="am-hero-price">来自东方的五行智慧</p>
         </div>
 
         <button type="button" className="am-primary-cta" onClick={onStart}>
@@ -363,44 +309,30 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
         </div>
       </section>
 
-      <section className="am-landing-section am-landing-section--steps">
-        <div className="am-landing-section__glow am-landing-section__glow--steps" />
-        <h2>四步开始解读</h2>
-        <div className="am-step-flow">
-          <div className="am-step-flow__line" aria-hidden="true" />
-          <StepCard num={1} icon={<IconUpload />} title="上传画作" desc={"拍清整幅\n即可开始"} />
-          <StepCard num={2} icon={<IconAnalyze />} title="手动设定" desc={"跟随直觉\n调节三圈"} />
-          <StepCard num={3} icon={<IconReport />} title="查看报告" desc={"先看 Lite\n再决定深入"} />
-          <StepCard num={4} icon={<IconChat />} title="继续追问" desc={"围绕报告\n再聊清楚"} />
-        </div>
-      </section>
-
       <section className="am-landing-section am-landing-section--pricing">
         <div className="am-pattern-overlay" />
-        <h2>先轻体验，再决定深入</h2>
+        <h2>先照见，再决定是否深入</h2>
         <div className="am-pricing-grid am-pricing-grid--landing">
           <article className="am-pricing-panel am-pricing-panel--lite">
-            <p className="am-pricing-panel__eyebrow">一镜 Lite 版</p>
-            <div className="am-pricing-panel__badge">体验版</div>
-            <p className="am-pricing-panel__meta">价格 9.9 元/次</p>
-            <p className="am-pricing-panel__desc">首次体验，5-6 个核心洞察</p>
+            <p className="am-pricing-panel__eyebrow">一镜 Lite</p>
+            <p className="am-pricing-panel__desc">先获得一份轻量解读，看见此刻最明显的状态线索。</p>
+            <div className="am-pricing-panel__badge">9.9 元</div>
           </article>
           <article className="am-pricing-panel am-pricing-panel--pro">
-            <div className="am-pricing-panel__title-row">
-              <p className="am-pricing-panel__eyebrow am-pricing-panel__eyebrow--pro">一梳 Pro 版</p>
-              <span className="am-pricing-panel__tag">更深入</span>
-            </div>
-            <p className="am-pricing-panel__price">
-              49<span>元/次</span>
-            </p>
-            <p className="am-pricing-panel__desc">继续深入，20+ 条分析与建议</p>
+            <p className="am-pricing-panel__eyebrow am-pricing-panel__eyebrow--pro">一梳 Pro</p>
+            <p className="am-pricing-panel__desc">在 Lite 基础上继续深入，解锁完整报告，有疑惑还可以追问。</p>
+            <div className="am-pricing-panel__badge am-pricing-panel__badge--pro">再付 29 元升级</div>
           </article>
         </div>
-        <button type="button" className={`am-compare-toggle${compareOpen ? " is-open" : ""}`} onClick={() => setCompareOpen((value) => !value)}>
-          <span>{compareOpen ? "收起版本对比" : "查看版本对比"}</span>
-          <i aria-hidden="true">›</i>
+        <button
+          type="button"
+          className={`am-compare-toggle${compareOpen ? " is-open" : ""}`}
+          onClick={() => setCompareOpen((value) => !value)}
+        >
+          <span>{compareOpen ? "收起对比" : "展开对比"}</span>
+          <i aria-hidden="true">⌄</i>
         </button>
-        <PriceCompare open={compareOpen} onClose={() => setCompareOpen(false)} />
+        {compareOpen ? <PriceCompare onClose={() => setCompareOpen(false)} /> : null}
       </section>
 
       <section className="am-landing-section am-landing-section--faq">

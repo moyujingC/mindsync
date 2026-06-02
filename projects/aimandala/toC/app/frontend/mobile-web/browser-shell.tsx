@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { MiniappApp } from "../miniapp/app";
@@ -54,6 +54,34 @@ import {
   getGenerationPresentation,
   initialMandalaFlowState,
 } from "../shared/core";
+
+type RuntimeDebugState = {
+  route: string;
+  phase: "idle" | "uploading_image" | "building_request" | "requesting_report" | "waiting_report" | "report_ready" | "failed";
+  isBusy: boolean;
+  isUploading: boolean;
+  uploadErrorMessage: string | null;
+  reportStage: string | null;
+  reportId: string | null;
+  imagePath: string | null;
+};
+
+function isSameRuntimeDebugState(
+  current: RuntimeDebugState | null,
+  next: RuntimeDebugState,
+) {
+  return Boolean(
+    current &&
+      current.route === next.route &&
+      current.phase === next.phase &&
+      current.isBusy === next.isBusy &&
+      current.isUploading === next.isUploading &&
+      current.uploadErrorMessage === next.uploadErrorMessage &&
+      current.reportStage === next.reportStage &&
+      current.reportId === next.reportId &&
+      current.imagePath === next.imagePath,
+  );
+}
 
 function readBrowserShellInitialState() {
   const defaultDraft = DEFAULT_PREVIEW_DRAFT;
@@ -160,16 +188,7 @@ export function MobileWebBrowserShell() {
     useState<InterpretationVersion | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
-  const [runtimeDebugState, setRuntimeDebugState] = useState<{
-    route: string;
-    phase: "idle" | "uploading_image" | "building_request" | "requesting_report" | "waiting_report" | "report_ready" | "failed";
-    isBusy: boolean;
-    isUploading: boolean;
-    uploadErrorMessage: string | null;
-    reportStage: string | null;
-    reportId: string | null;
-    imagePath: string | null;
-  } | null>(null);
+  const [runtimeDebugState, setRuntimeDebugState] = useState<RuntimeDebugState | null>(null);
   const userId = session.canonicalUserId;
   const activePreviewImagePath = draft.uploadAsset?.runtimeImagePath ?? draft.imagePath;
   const activePreviewStep = previewFlowState?.step ?? "idle";
@@ -212,6 +231,11 @@ export function MobileWebBrowserShell() {
       ),
     [draft, previewFlowState, previewHistoryRecords, route],
   );
+  const handleRuntimeDebugStateChange = useCallback((state: RuntimeDebugState) => {
+    setRuntimeDebugState((current) => (
+      isSameRuntimeDebugState(current, state) ? current : state
+    ));
+  }, []);
 
   useEffect(() => {
     setUserIdInput(session.canonicalUserId);
@@ -1103,9 +1127,7 @@ export function MobileWebBrowserShell() {
                   : undefined
               }
               environmentTone={import.meta.env.DEV ? "runtime" : undefined}
-              onDebugStateChange={(state) => {
-                setRuntimeDebugState(state);
-              }}
+              onDebugStateChange={handleRuntimeDebugStateChange}
             />
           )}
           </div>
