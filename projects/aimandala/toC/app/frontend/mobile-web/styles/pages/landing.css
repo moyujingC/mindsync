@@ -500,7 +500,7 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  width: auto;
+  width: 110px;
   margin: 22px auto 0;
   left: 50%;
   transform: translateX(-50%);
@@ -512,6 +512,12 @@
   font-size: 14px;
   font-weight: 700;
   box-shadow: none;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.am-compare-toggle:hover:not(:disabled) {
+  transform: translateX(-50%);
 }
 
 .am-compare-toggle i {
