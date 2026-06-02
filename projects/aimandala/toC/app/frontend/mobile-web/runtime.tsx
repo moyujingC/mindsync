@@ -165,6 +165,62 @@ function createRuntimeLoadingState(
   };
 }
 
+function createHistoryRuntimeLoadingState(
+  interpretationId: string,
+  reportType: InterpretationVersion,
+  record: InterpretationRecordResponse,
+  imagePath: string | null,
+): MandalaFlowState {
+  const baseState = imagePath
+    ? selectImage(initialMandalaFlowState, imagePath)
+    : initialMandalaFlowState;
+
+  return {
+    ...baseState,
+    step:
+      record.status === "completed" &&
+      record.generation_progress >= 100 &&
+      reportType === "pro"
+        ? "proReady"
+        : record.status === "completed" && record.generation_progress >= 100
+          ? "liteReady"
+          : "liteGenerating",
+    interpretation: {
+      success: true,
+      interpretation_id: interpretationId,
+      version: reportType,
+      status: record.status,
+      generation_stage: record.generation_stage,
+      generation_progress: record.generation_progress,
+      three_circles: {
+        inner_radius: record.three_circles.inner_radius,
+        middle_radius: record.three_circles.middle_radius,
+      },
+      auto_detected: record.auto_detected,
+      existing: true,
+      report_ready: record.status === "completed" && record.generation_progress >= 100,
+    },
+    status: {
+      interpretation_id: interpretationId,
+      status: record.status,
+      generation_stage: record.generation_stage,
+      generation_progress: record.generation_progress,
+      report_ready: record.status === "completed" && record.generation_progress >= 100,
+      version_purchased: record.version_purchased,
+      three_circles: {
+        inner_radius: record.three_circles.inner_radius,
+        middle_radius: record.three_circles.middle_radius,
+      },
+      auto_detected: record.auto_detected,
+      can_upgrade: record.can_upgrade,
+      image_url: record.image_url,
+      storage_backend: record.storage_backend,
+      storage_key: record.storage_key,
+      image_local_expires_at: record.image_local_expires_at,
+    },
+  };
+}
+
 function getDraftFromInput(
   input: MobileWebRouteInput,
 ): MobileWebUploadDraft | null {
@@ -801,6 +857,7 @@ export function MobileWebRuntime({
       }
 
       setRuntimeProps({
+        ...currentRuntimeProps,
         route: "historyRecordDetail",
         record,
         uploadDraft: currentUploadDraft ?? undefined,
@@ -844,13 +901,90 @@ export function MobileWebRuntime({
     setRuntimeHistoryOpeningReportType(null);
     setRuntimeProps({
       route: "history",
-      records: runtimeProps?.records ?? [],
+      records: currentRuntimeProps.records ?? [],
       uploadDraft: uploadDraftForReturn,
       historyQuery: runtimeHistoryQuery,
       historyStatusLabel: "已返回历史记录",
       historyStatusDetail: "你可以继续切换其他记录，或刷新查看最新状态。",
       historyStatusTone: "runtime",
     });
+  }
+
+  async function handleHistoryRecordDetailOpenReport(
+    reportType: InterpretationVersion,
+  ) {
+    if (
+      runtimeBusy ||
+      runtimeHistoryBusy ||
+      currentRuntimeProps.route !== "historyRecordDetail"
+    ) {
+      return;
+    }
+
+    const recordToOpen = currentRuntimeProps.record;
+    if (!recordToOpen) {
+      return;
+    }
+
+    const interpretationId = recordToOpen.interpretation_id;
+    const imagePath =
+      currentUploadDraft?.uploadAsset?.runtimeImagePath ??
+      currentUploadDraft?.imagePath ??
+      null;
+    const nextDraft = mergeMobileWebUploadDraft(
+      currentUploadDraft ?? uploadDraftForReturn,
+      {
+        reportType,
+      },
+    );
+
+    setRuntimeHistoryOpeningReportType(reportType);
+    setRuntimeUploadDraft(nextDraft);
+    setRuntimeBusy(true);
+    setRuntimePhase("waiting_report");
+    setRuntimeProps({
+      ...currentRuntimeProps,
+      route: "loading",
+      flowState: createHistoryRuntimeLoadingState(
+        interpretationId,
+        reportType,
+        recordToOpen,
+        imagePath,
+      ),
+      uploadDraft: nextDraft,
+    });
+
+    try {
+      const refreshed = await refreshMobileWebReport(
+        interpretationId,
+        reportType,
+        createHistoryRuntimeLoadingState(
+          interpretationId,
+          reportType,
+          recordToOpen,
+          imagePath,
+        ),
+      );
+      setRuntimeProps({
+        route:
+          refreshed.state.step === "liteGenerating" ||
+          (reportType === "pro" && refreshed.state.step !== "proReady")
+            ? "loading"
+            : "report",
+        flowState: refreshed.state,
+        uploadDraft: nextDraft,
+      });
+      setRuntimePhase(
+        refreshed.state.step === "error"
+          ? "failed"
+          : refreshed.state.step === "liteGenerating"
+            ? "waiting_report"
+            : "report_ready",
+      );
+    } finally {
+      setRuntimeHistoryOpeningReportType(null);
+      setRuntimeBusy(false);
+    }
   }
 
   async function handleUploadContinue(forcedDraft?: MobileWebUploadDraft | null) {
@@ -943,6 +1077,10 @@ export function MobileWebRuntime({
     } catch (uploadError) {
       const message = uploadError instanceof Error ? uploadError.message : "Failed to continue upload";
       setRuntimeUploadDetectError(message);
+      setRuntimeProps({
+        route: "upload",
+        uploadDraft: draftToUse,
+      });
       setRuntimePhase("failed");
     } finally {
       setRuntimeUploadDetecting(false);
@@ -1022,7 +1160,11 @@ export function MobileWebRuntime({
         });
       }}
       onUploadContinue={() => {
-        void handleUploadContinue();
+        setRuntimeUploadDetectError(null);
+        setRuntimeProps({
+          route: "reportEntry",
+          uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft,
+        });
       }}
       onReportEntryBack={() => {
         setRuntimeProps({
@@ -1063,7 +1205,7 @@ export function MobileWebRuntime({
       onHistoryRefresh={handleHistoryRefresh}
       onHistoryOpenRecord={handleHistoryOpenRecord}
       onHistoryRecordDetailBack={handleHistoryRecordDetailBack}
-      onHistoryRecordDetailOpenReport={undefined}
+      onHistoryRecordDetailOpenReport={handleHistoryRecordDetailOpenReport}
     />
   );
 }

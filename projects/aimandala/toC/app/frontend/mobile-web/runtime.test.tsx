@@ -11,10 +11,14 @@ vi.mock("../shared/api", () => ({
 }));
 
 import * as api from "../shared/api";
+import * as loaders from "./loaders";
 import { createMobileWebGuestSession } from "./identity";
 import { MobileWebRuntime } from "./runtime";
 import type { MobileWebRouteInput } from "./router-plan";
-import type { WealthReportResponse } from "../shared/types";
+import type {
+  InterpretationRecordResponse,
+  WealthReportResponse,
+} from "../shared/types";
 
 function createWealthReportResponse(): WealthReportResponse {
   return {
@@ -43,6 +47,25 @@ function createUploadResponse() {
     content_type: "image/png",
     size_bytes: 8,
     image_url: "https://img.example.com/uploads/runtime-upload.png",
+  };
+}
+
+function createHistoryRecord(): InterpretationRecordResponse {
+  return {
+    interpretation_id: "ipt-history-runtime-1",
+    user_id: "runtime-user-1",
+    theme: "wealth",
+    status: "completed",
+    generation_stage: "report_ready",
+    generation_progress: 100,
+    version_purchased: ["lite", "pro"],
+    three_circles: {
+      inner_radius: 0.31,
+      middle_radius: 0.63,
+    },
+    auto_detected: false,
+    can_upgrade: false,
+    created_at: "2026-04-11T08:00:00.000Z",
   };
 }
 
@@ -95,7 +118,7 @@ describe("MobileWebRuntime", () => {
     container.remove();
   });
 
-  it("上传页开始解读时直接进入生成并调用当前财富报告入口", async () => {
+  it("上传页开始解读会先进入选择页，再由 Lite 入口触发当前财富报告生成", async () => {
     const input: MobileWebRouteInput = {
       route: "upload",
       params: {
@@ -133,6 +156,19 @@ describe("MobileWebRuntime", () => {
 
     await act(async () => {
       startButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("选择 Lite");
+    });
+
+    const liteButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("选择 Lite"),
+    );
+    expect(liteButton).toBeTruthy();
+
+    await act(async () => {
+      liteButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
 
     await waitForAssertion(() => {
@@ -253,6 +289,19 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
+      expect(container.textContent).toContain("选择 Lite");
+    });
+
+    const liteButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("选择 Lite"),
+    );
+    expect(liteButton).toBeTruthy();
+
+    await act(async () => {
+      liteButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
       expect(container.textContent).toContain(
         "报告生成需要先配置可用的优惠券或兑换码。",
       );
@@ -294,11 +343,82 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
+      expect(container.textContent).toContain("选择 Lite");
+    });
+
+    const liteButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("选择 Lite"),
+    );
+    expect(liteButton).toBeTruthy();
+
+    await act(async () => {
+      liteButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
       expect(container.textContent).toContain(
         "请先选择本地曼陀罗图片并完成上传。",
       );
     });
     expect(api.uploadImage).not.toHaveBeenCalled();
     expect(api.createWealthReport).not.toHaveBeenCalled();
+  });
+
+  it("历史详情页点击打开 Lite 报告会跳转到报告页而不是停留原地", async () => {
+    vi.spyOn(loaders, "loadHistoryPage").mockResolvedValueOnce({
+      records: [createHistoryRecord()],
+    });
+    const input: MobileWebRouteInput = {
+      route: "history",
+      params: {
+        session: createMobileWebGuestSession("runtime-test"),
+        uploadDraft: {
+          imagePath: "/tmp/runtime-history.png",
+          theme: "wealth",
+          reportType: "lite",
+          reportVariant: "lite",
+          paintingIntention: "",
+          paintingFeeling: "",
+        },
+      },
+    };
+
+    await act(async () => {
+      root.render(<MobileWebRuntime input={input} />);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.querySelector(".mw-history-record__action")).toBeTruthy();
+    });
+
+    const detailButton = container.querySelector<HTMLButtonElement>(
+      ".mw-history-record__action",
+    );
+    expect(detailButton).toBeTruthy();
+
+    await act(async () => {
+      detailButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("打开 Lite 报告");
+    });
+
+    const liteButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("打开 Lite 报告"),
+    );
+    expect(liteButton).toBeTruthy();
+
+    await act(async () => {
+      liteButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("报告暂未生成");
+      expect(container.textContent).toContain("重试刷新结果");
+    });
   });
 });
