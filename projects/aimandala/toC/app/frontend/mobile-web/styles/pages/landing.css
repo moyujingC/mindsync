@@ -68,17 +68,6 @@
   margin-bottom: 24px;
 }
 
-.am-logo-ring::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.12), transparent 30%),
-    radial-gradient(circle, rgba(212, 160, 84, 0.08) 0%, rgba(200, 120, 80, 0.04) 45%, rgba(26, 40, 68, 0) 72%);
-  box-shadow: inset 0 0 0 1px rgba(232, 220, 200, 0.06);
-}
-
 .am-logo-ring__glow {
   position: absolute;
   inset: -30px;
