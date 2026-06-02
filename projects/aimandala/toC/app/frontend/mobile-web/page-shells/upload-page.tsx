@@ -74,6 +74,14 @@ const ICON_BOOK_OPEN: IconNode[] = [
     },
   ],
 ];
+const ICON_ROTATE_CCW: IconNode[] = [
+  ["path", { d: "M3 2v6h6", key: "r1" }],
+  ["path", { d: "M3 8a9 9 0 1 0 3-5.7L3 5", key: "r2" }],
+];
+const ICON_EYE: IconNode[] = [
+  ["path", { d: "M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z", key: "e1" }],
+  ["circle", { cx: "12", cy: "12", r: "2.8", key: "e2" }],
+];
 const ICON_LOCK: IconNode[] = [
   ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
   ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }],
@@ -135,10 +143,14 @@ function LucideIcon({
 }
 
 const themes: ThemeItem[] = [
-  { value: "wealth", label: "财富关系", subLabel: "金钱、资源与配得感", icon: ICON_COINS },
-  { value: "intimate_relationship", label: "亲密关系", subLabel: "情感、依恋与连接", icon: ICON_HEART },
-  { value: "career_development", label: "事业发展", subLabel: "行动、机会与价值表达", icon: ICON_BRIEFCASE },
-  { value: "body_health", label: "身体健康", subLabel: "能量、承载与身心连接", icon: ICON_ACTIVITY },
+  { value: "wealth", label: "财富", subLabel: "关系", icon: ICON_COINS },
+  { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_HEART },
+  { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_HEART },
+  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_ACTIVITY },
+  { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_HEART },
+  { value: "personal_growth", label: "个人", subLabel: "成长", icon: ICON_ACTIVITY },
+  { value: "career_development", label: "事业", subLabel: "发展", icon: ICON_BRIEFCASE },
+  { value: "body_health", label: "身体", subLabel: "健康", icon: ICON_ACTIVITY },
 ];
 
 function UploadSlider({
@@ -340,8 +352,6 @@ function ThemeSelector({
 }) {
   const normalizedValue = themes.some((theme) => theme.value === value) ? value : themes[0].value;
   const [selected, setSelected] = useState(normalizedValue);
-  const [activeDotIndex, setActiveDotIndex] = useState(0);
-  const [pageCount, setPageCount] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dragStateRef = useRef({
     pointerId: -1,
@@ -356,31 +366,6 @@ function ThemeSelector({
       setSelected(normalizedValue);
     }
   }, [normalizedValue, selected]);
-
-  const updatePagination = () => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const viewportWidth = Math.max(container.clientWidth, 1);
-    const maxScrollLeft = Math.max(container.scrollWidth - container.clientWidth, 0);
-    const nextPageCount = Math.max(1, Math.ceil(container.scrollWidth / viewportWidth));
-    const nextDotIndex =
-      nextPageCount <= 1 || maxScrollLeft <= 0
-        ? 0
-        : Math.round((container.scrollLeft / maxScrollLeft) * (nextPageCount - 1));
-    setPageCount(nextPageCount);
-    setActiveDotIndex(Math.max(0, Math.min(nextPageCount - 1, nextDotIndex)));
-  };
-
-  useEffect(() => {
-    updatePagination();
-    const onResize = () => updatePagination();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  useEffect(() => {
-    updatePagination();
-  }, [themes.length]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     const container = scrollRef.current;
@@ -420,7 +405,6 @@ function ThemeSelector({
       const selectedButton = container.children[selectedIndex] as HTMLElement | undefined;
       selectedButton?.scrollIntoView({ inline: "nearest", block: "nearest" });
     }
-    updatePagination();
   }, [selected]);
 
   return (
@@ -437,7 +421,6 @@ function ThemeSelector({
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
         onPointerLeave={handlePointerEnd}
-        onScroll={updatePagination}
       >
         {themes.map((theme) => {
           const isSelected = selected === theme.value;
@@ -482,11 +465,11 @@ function ThemeSelector({
       </div>
 
       <div className="am-theme-selector__dots">
-        {Array.from({ length: pageCount }).map((_, index) => {
-          const isSelected = activeDotIndex === index;
+        {themes.map((theme) => {
+          const isSelected = selected === theme.value;
           return (
             <div
-              key={`dot-${index}`}
+              key={`dot-${theme.value}`}
               className={`am-theme-selector__dot${isSelected ? " is-active" : ""}`}
             />
           );
@@ -573,6 +556,7 @@ export function MobileWebUploadPage({
   const [localPreview, setLocalPreview] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [showOriginalPreview, setShowOriginalPreview] = useState(false);
   const [previewImageScale, setPreviewImageScale] = useState(1);
   const [previewImageOffset, setPreviewImageOffset] = useState({ x: 0, y: 0 });
   const [guideImageScale, setGuideImageScale] = useState(1);
@@ -908,14 +892,19 @@ export function MobileWebUploadPage({
     <div className="am-page am-upload-page">
       <div className="am-upload-hero" style={uploadPatternStyle}>
         <div className="am-pattern-overlay" />
+        <div className="am-upload-hero__glow am-upload-hero__glow--right" />
+        <div className="am-upload-hero__glow am-upload-hero__glow--left" />
+        <div className="am-upload-hero__glow am-upload-hero__glow--center" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--top" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--left" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--right" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--mid" />
 
         <div className="am-upload-topbar">
           <button type="button" className="am-upload-back" onClick={onBack} aria-label="返回首页">
             <NavBackIcon />
           </button>
-          <div className="am-upload-brandmark">
-            <span>一镜一梳</span>
-          </div>
+          <h1 className="am-upload-title">上传曼陀罗画作</h1>
           {environmentLabel ? (
             <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
               <strong>{environmentLabel}</strong>
@@ -974,7 +963,9 @@ export function MobileWebUploadPage({
                   alt="曼陀罗预览"
                   className="am-upload-disc__image"
                   style={{
-                    transform: `translate(${previewImageOffset.x}px, ${previewImageOffset.y}px) scale(${previewImageScale})`,
+                    transform: showOriginalPreview
+                      ? "translate(0px, 0px) scale(1)"
+                      : `translate(${previewImageOffset.x}px, ${previewImageOffset.y}px) scale(${previewImageScale})`,
                   }}
                 />
               ) : null}
@@ -992,18 +983,12 @@ export function MobileWebUploadPage({
                 </button>
               ) : null}
               {previewSrc ? (
-                <>
-                  <div className="am-upload-disc__hover-mask" aria-hidden="true">
-                    <div className="am-upload-disc__hover-copy">
-                      <span className="am-upload-disc__placeholder-icon am-upload-disc__placeholder-icon--hover"><UploadGlyph /></span>
-                      <span className="am-upload-disc__hover-text">点击更换图片</span>
-                    </div>
+                <div className="am-upload-disc__hover-mask" aria-hidden="true">
+                  <div className="am-upload-disc__hover-copy">
+                    <span className="am-upload-disc__placeholder-icon am-upload-disc__placeholder-icon--hover"><UploadGlyph /></span>
+                    <span className="am-upload-disc__hover-text">点击更换图片</span>
                   </div>
-                  <div className="am-upload-disc__rings" aria-hidden="true">
-                    <span className="am-upload-disc__ring am-upload-disc__ring--inner" />
-                    <span className="am-upload-disc__ring am-upload-disc__ring--middle" />
-                  </div>
-                </>
+                </div>
               ) : null}
             </div>
           </div>
@@ -1020,6 +1005,36 @@ export function MobileWebUploadPage({
               event.currentTarget.value = "";
             }}
           />
+        </div>
+
+        <div className="am-upload-actions">
+          <button
+            type="button"
+            className="am-upload-action-button"
+            disabled={!previewSrc}
+            onClick={() => {
+              if (!previewSrc) return;
+              setIsGuideOpen(true);
+            }}
+          >
+            <LucideIcon iconNode={ICON_ROTATE_CCW} size={13} strokeWidth={1.8} />
+            <span>重新校准画作</span>
+          </button>
+          <button
+            type="button"
+            className="am-upload-action-button"
+            disabled={!previewSrc}
+            onPointerDown={() => {
+              if (!previewSrc) return;
+              setShowOriginalPreview(true);
+            }}
+            onPointerUp={() => setShowOriginalPreview(false)}
+            onPointerLeave={() => setShowOriginalPreview(false)}
+            onPointerCancel={() => setShowOriginalPreview(false)}
+          >
+            <LucideIcon iconNode={ICON_EYE} size={13} strokeWidth={1.8} />
+            <span>按住查看原图</span>
+          </button>
         </div>
 
         <div className="am-upload-sliders">
@@ -1066,20 +1081,6 @@ export function MobileWebUploadPage({
           />
 
           <div className="am-upload-form-stack">
-            <label className="am-report-entry-redeem">
-              <span className="am-report-entry-redeem__label">
-                优惠券 / 兑换码
-              </span>
-              <input
-                className="am-report-entry-redeem__input"
-                value={draft.redeemCode ?? ""}
-                onChange={(event) => onDraftChange?.({ redeemCode: event.target.value })}
-                placeholder="请输入可用兑换码"
-              />
-              <span className="am-report-entry-redeem__hint">
-                系统会在生成前校验兑换码，校验通过后进入解读等待页。
-              </span>
-            </label>
             <TextInputField
               placeholder="记录绘画前设定的意图"
               value={draft.paintingIntention}
