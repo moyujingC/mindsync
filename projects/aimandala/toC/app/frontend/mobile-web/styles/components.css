@@ -525,7 +525,7 @@
     rgba(212, 160, 84, 0.8) 0%,
     rgba(212, 160, 84, 0) 70%
   );
-  box-shadow: 0 0 12px rgba(212, 160, 84, 0.35);
+  box-shadow: 0 0 12px rgba(212, 160, 84, 0.4);
   animation-name: am-float;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;

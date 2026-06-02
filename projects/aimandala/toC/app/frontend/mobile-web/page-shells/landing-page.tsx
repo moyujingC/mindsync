@@ -24,6 +24,7 @@ function FloatingParticles() {
     { left: "50%", top: "30%", size: 4, delay: "1.8s", duration: "7.5s" },
     { left: "65%", top: "75%", size: 3, delay: "0.8s", duration: "6.8s" },
     { left: "35%", top: "45%", size: 2, delay: "3s", duration: "8.5s" },
+    { left: "20%", top: "52%", size: 3, delay: "2.4s", duration: "7.2s" },
   ];
 
   return (
