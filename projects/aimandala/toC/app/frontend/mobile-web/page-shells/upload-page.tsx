@@ -57,6 +57,28 @@ const ICON_COINS: IconNode[] = [
 const ICON_HEART: IconNode[] = [
   ["path", { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z", key: "c3ymky" }],
 ];
+const ICON_USER: IconNode[] = [
+  ["path", { d: "M18 21a6 6 0 0 0-12 0", key: "u1" }],
+  ["circle", { cx: "12", cy: "8", r: "4", key: "u2" }],
+];
+const ICON_USERS: IconNode[] = [
+  ["path", { d: "M16 21a4 4 0 0 0-8 0", key: "us1" }],
+  ["circle", { cx: "12", cy: "9", r: "3", key: "us2" }],
+  ["path", { d: "M22 21a4 4 0 0 0-3-3.87", key: "us3" }],
+  ["path", { d: "M2 21a4 4 0 0 1 3-3.87", key: "us4" }],
+];
+const ICON_BABY: IconNode[] = [
+  ["path", { d: "M9 12h6", key: "b1" }],
+  ["path", { d: "M10 16h4", key: "b2" }],
+  ["circle", { cx: "12", cy: "10", r: "5", key: "b3" }],
+  ["path", { d: "M10 4.5c.8-1 2.2-1.5 3.5-1", key: "b4" }],
+];
+const ICON_USERS_ROUND: IconNode[] = [
+  ["path", { d: "M2 21a8 8 0 0 1 12 0", key: "ur1" }],
+  ["circle", { cx: "8", cy: "8", r: "4", key: "ur2" }],
+  ["path", { d: "M14 21a6 6 0 0 1 8 0", key: "ur3" }],
+  ["circle", { cx: "18", cy: "9", r: "3", key: "ur4" }],
+];
 const ICON_BRIEFCASE: IconNode[] = [
   ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
   ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }],
@@ -145,10 +167,10 @@ function LucideIcon({
 const themes: ThemeItem[] = [
   { value: "wealth", label: "财富", subLabel: "关系", icon: ICON_COINS },
   { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_HEART },
-  { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_HEART },
-  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_ACTIVITY },
-  { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_HEART },
-  { value: "personal_growth", label: "个人", subLabel: "成长", icon: ICON_ACTIVITY },
+  { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_USER },
+  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_USERS },
+  { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_BABY },
+  { value: "personal_growth", label: "人际", subLabel: "关系", icon: ICON_USERS_ROUND },
   { value: "career_development", label: "事业", subLabel: "发展", icon: ICON_BRIEFCASE },
   { value: "body_health", label: "身体", subLabel: "健康", icon: ICON_ACTIVITY },
 ];

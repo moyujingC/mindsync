@@ -153,7 +153,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 .am-upload-disc-shell {
@@ -371,7 +371,7 @@
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin: 4px 0 8px;
+  margin: 6px 0 8px;
 }
 
 .am-upload-action-button {
@@ -399,15 +399,15 @@
   display: grid;
   gap: 16px;
   margin-top: 8px;
-  padding: 0 6px;
+  padding: 0 12px;
 }
 
 .am-upload-slider {
   --am-upload-slider-value-color: var(--am-text-accent);
   display: grid;
-  grid-template-columns: 56px 1fr 32px;
+  grid-template-columns: 88px 1fr 36px;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .am-upload-slider--gold {
