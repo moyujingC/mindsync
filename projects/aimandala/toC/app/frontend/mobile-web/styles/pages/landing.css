@@ -60,18 +60,18 @@
 
 .am-logo-ring {
   position: relative;
-  width: min(72vw, 328px);
-  height: min(72vw, 328px);
+  width: min(220px, 58vw);
+  height: min(220px, 58vw);
   display: grid;
   place-items: center;
-  margin-top: 17vh;
-  margin-bottom: 20px;
+  margin-top: 18vh;
+  margin-bottom: 24px;
 }
 
 .am-logo-ring::before {
   content: "";
   position: absolute;
-  inset: 20px;
+  inset: 0;
   border-radius: 50%;
   background:
     radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.12), transparent 30%),
@@ -81,7 +81,7 @@
 
 .am-logo-ring__glow {
   position: absolute;
-  inset: -18px;
+  inset: -30px;
   border-radius: 50%;
   background: conic-gradient(
     from 0deg,
@@ -103,19 +103,19 @@
 }
 
 .am-logo-ring__outer {
-  inset: 0;
+  inset: -18px;
   border: 1px solid rgba(212, 160, 84, 0.2);
   animation: am-logo-rotate-reverse 25s linear infinite;
 }
 
 .am-logo-ring__inner {
-  inset: 10px;
+  inset: -12px;
   border: 1px dashed rgba(200, 120, 80, 0.15);
   animation: am-logo-rotate 35s linear infinite;
 }
 
 .am-logo-ring__pulse {
-  inset: 14px;
+  inset: -5px;
   background: radial-gradient(
     circle,
     rgba(212, 160, 84, 0.15) 0%,
@@ -127,10 +127,10 @@
 .am-logo-image {
   position: relative;
   z-index: 2;
-  width: 66%;
-  height: 66%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 12px 22px rgba(16, 26, 43, 0.34));
+  filter: drop-shadow(0 4px 24px rgba(212, 160, 84, 0.25));
 }
 
 @keyframes am-logo-pulse {
