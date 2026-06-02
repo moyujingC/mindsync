@@ -1,11 +1,11 @@
 # 馨冉求职项目入口
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：CEO / Orchestrator
-> 最后更新：2026-04-27
+> 最后更新：2026-06-02
 > source_of_truth：company/projects/馨冉求职/PROJECT.md
-> 对应项目工作区：[projects/xinran-jobhunt](projects/xinran-jobhunt)
+> 对应项目工作区：[projects/xinran-jobhunt](../../../projects/xinran-jobhunt)
 > 项目类型：个人求职执行项目
 
 这份文档是 `馨冉求职` 在 `mindsync` 中的公司侧项目入口。
@@ -68,8 +68,12 @@
 
 - [company/projects/怀瑾握瑜/PROJECT.md](../../../company/projects/怀瑾握瑜/PROJECT.md)
 
-## 6. 当前阶段执行文档
+## 6. 当前阶段执行入口
 
-当前阶段与求职直接相关的执行文档，优先从这里进入：
+当前阶段的执行细节不在公司侧维护，默认进入项目工作区：
 
-- [2026-05-07-找工作执行计划.md](./2026-05-07-找工作执行计划.md)
+- [projects/xinran-jobhunt/PROJECT.md](../../../projects/xinran-jobhunt/PROJECT.md)
+- [2026-06-01 求职重启执行计划](../../../projects/xinran-jobhunt/tasks/2026-06-01-求职重启执行计划.md)
+- [2026-06-01 投递系统](../../../projects/xinran-jobhunt/tasks/2026-06-01-投递系统.md)
+
+公司侧曾有的 2026-05-07 执行三件套已被 2026-06 工作区文档覆盖，相关文件已删除，不再作为当前入口。
