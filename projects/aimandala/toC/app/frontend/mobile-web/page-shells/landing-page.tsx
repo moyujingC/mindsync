@@ -413,10 +413,10 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
       <section className="am-landing-section am-landing-section--final">
         <div className="am-pattern-overlay" />
         <div className="am-landing-section__glow am-landing-section__glow--final" />
-        <h2>准备好读读这幅画了吗？</h2>
+        <h3>准备好读读你的画了吗？</h3>
         <button type="button" className="am-primary-cta am-primary-cta--compact" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
-          <span className="am-primary-cta__label">开始体验</span>
+          <span className="am-primary-cta__label">开始上传画作</span>
         </button>
         <div className="am-landing-footer-divider" />
         <div className="am-landing-footer-brand">
