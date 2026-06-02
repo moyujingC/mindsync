@@ -196,7 +196,9 @@ export function MobileWebHistoryPage({
                     <div className="mw-history-record__meta">
                       <span className="mw-history-clock" aria-hidden="true" />
                       <span>{item.subtitle.replace("创建于 ", "")}</span>
-                      <strong>{item.focusReportType === "pro" ? "Pro" : "Lite"}</strong>
+                      <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
+                        {item.focusReportType === "pro" ? "Pro" : "Lite"}
+                      </strong>
                     </div>
                     {!item.recordReady ? (
                       <div className="mw-history-record__progress">

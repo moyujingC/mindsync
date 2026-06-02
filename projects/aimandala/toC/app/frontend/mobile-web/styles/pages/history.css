@@ -23,7 +23,7 @@
     radial-gradient(circle at 52% 18%, rgba(198, 151, 87, 0.1), transparent 2px),
     radial-gradient(circle at 86% 39%, rgba(238, 232, 220, 0.28), transparent 2px),
     radial-gradient(circle at 26% 66%, rgba(238, 232, 220, 0.14), transparent 2px),
-    linear-gradient(rgba(20, 32, 58, 0.9), rgba(16, 27, 49, 0.96)),
+    linear-gradient(rgba(16, 27, 49, 0.94), rgba(13, 24, 44, 0.98)),
     url("../../assets/pattern-clean.webp");
   background-size: auto, auto, auto, auto, 520px;
 }
@@ -110,9 +110,10 @@
   border: 1px solid rgba(206, 174, 121, 0.12);
   border-radius: 22px;
   background:
-    linear-gradient(180deg, rgba(41, 52, 78, 0.72), rgba(14, 24, 43, 0.94)),
-    url("../../assets/pattern.webp");
-  background-size: auto, 480px;
+    radial-gradient(ellipse at 24% 22%, rgba(117, 137, 165, 0.28), transparent 26%),
+    radial-gradient(circle at 94% 18%, rgba(238, 184, 91, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(41, 52, 78, 0.78), rgba(14, 24, 43, 0.96));
+  background-size: auto;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 18px 42px rgba(0, 0, 0, 0.2);
 }
 
@@ -121,12 +122,14 @@
   inset: 0;
   opacity: 0.95;
   background:
-    radial-gradient(ellipse at 20% 24%, rgba(151, 162, 179, 0.2), transparent 19%),
+    radial-gradient(ellipse at 20% 24%, rgba(151, 162, 179, 0.24), transparent 18%),
+    radial-gradient(ellipse at 24% 20%, rgba(238, 232, 220, 0.1), transparent 21%),
     radial-gradient(circle at 88% 8%, rgba(238, 232, 220, 0.68), transparent 3px),
     radial-gradient(circle at 97% 52%, rgba(238, 178, 86, 0.52), transparent 2px),
-    linear-gradient(160deg, transparent 0 54%, rgba(0, 0, 0, 0.35) 54%),
-    linear-gradient(24deg, transparent 0 29%, rgba(65, 85, 126, 0.32) 29% 37%, transparent 37%),
-    linear-gradient(340deg, transparent 0 69%, rgba(64, 88, 128, 0.34) 69% 78%, transparent 78%);
+    linear-gradient(160deg, transparent 0 55%, rgba(4, 10, 22, 0.62) 55%),
+    linear-gradient(22deg, transparent 0 28%, rgba(57, 75, 112, 0.46) 28% 37%, transparent 37%),
+    linear-gradient(340deg, transparent 0 66%, rgba(58, 80, 118, 0.5) 66% 77%, transparent 77%),
+    linear-gradient(18deg, transparent 0 62%, rgba(32, 47, 75, 0.58) 62% 71%, transparent 71%);
 }
 
 .mw-history-intro__moon {
@@ -239,28 +242,33 @@
 .mw-history-record__thumb {
   min-height: 101px;
   background:
-    linear-gradient(rgba(14, 24, 43, 0.06), rgba(14, 24, 43, 0.2)),
-    url("../../assets/pattern.webp");
-  background-size: cover, 260px;
+    radial-gradient(circle at center, rgba(255, 240, 210, 0.18) 0 8%, transparent 9%),
+    repeating-radial-gradient(circle at center, transparent 0 12px, rgba(20, 25, 43, 0.34) 13px 15px),
+    repeating-conic-gradient(from 12deg, #e44caa 0 8deg, #1fb39e 8deg 16deg, #f2994a 16deg 24deg, #2d4b8f 24deg 32deg, #7e2a78 32deg 40deg);
+  background-size: cover;
   background-position: center;
 }
 
 .mw-history-record__thumb--1 {
-  filter: hue-rotate(8deg) saturate(1.08);
+  filter: hue-rotate(8deg) saturate(1.12);
 }
 
 .mw-history-record__thumb--2 {
   background:
-    radial-gradient(circle at 42% 36%, rgba(223, 139, 65, 0.28), transparent 34%),
-    linear-gradient(155deg, rgba(92, 45, 14, 0.18), rgba(14, 24, 43, 0.12)),
-    url("../../assets/pattern.webp");
-  background-size: auto, auto, 300px;
+    radial-gradient(circle at 48% 50%, rgba(255, 207, 110, 0.24) 0 9%, transparent 10%),
+    repeating-radial-gradient(circle at center, transparent 0 13px, rgba(47, 25, 12, 0.34) 14px 16px),
+    repeating-conic-gradient(from -8deg, #2e1d16 0 10deg, #d67432 10deg 18deg, #edc174 18deg 28deg, #305f61 28deg 36deg, #782f20 36deg 44deg);
+  background-size: cover;
   background-position: center;
-  filter: hue-rotate(35deg) saturate(1.2) brightness(0.92);
+  filter: saturate(1.12) brightness(0.92);
 }
 
 .mw-history-record__thumb--3 {
-  filter: hue-rotate(120deg) saturate(0.9) brightness(0.78);
+  background:
+    radial-gradient(circle at center, rgba(240, 219, 181, 0.16) 0 10%, transparent 11%),
+    repeating-radial-gradient(circle at center, transparent 0 14px, rgba(11, 28, 45, 0.42) 15px 17px),
+    repeating-conic-gradient(from 18deg, #214960 0 8deg, #b2484c 8deg 16deg, #36918c 16deg 24deg, #572c62 24deg 32deg, #133141 32deg 40deg);
+  filter: saturate(0.95) brightness(0.82);
 }
 
 .mw-history-record__body {
@@ -301,7 +309,7 @@
   font-weight: 700;
 }
 
-.mw-history-record__meta strong {
+.mw-history-version {
   min-width: 42px;
   padding: 2px 10px;
   border: 1px solid rgba(222, 185, 111, 0.24);
@@ -310,6 +318,15 @@
   color: #f2bf60;
   font-size: 13px;
   text-align: center;
+}
+
+.mw-history-version--lite {
+  border-color: rgba(172, 205, 153, 0.24);
+  color: #b7d2a8;
+}
+
+.mw-history-version--pro {
+  color: #f2bf60;
 }
 
 .mw-history-clock {
