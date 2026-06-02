@@ -1,9 +1,9 @@
 # 馨冉求职项目工作区
 
 > 状态：current
-> 版本：0.2.0
+> 版本：0.2.1
 > owner：CEO / Orchestrator
-> last_updated：2026-06-01
+> last_updated：2026-06-02
 > source_of_truth：projects/xinran-jobhunt/PROJECT.md
 > 公司侧入口：[company/projects/馨冉求职/PROJECT.md](../../company/projects/馨冉求职/PROJECT.md)
 > 项目类型：个人求职执行项目
@@ -78,7 +78,7 @@
 
 当前最小闭环：
 
-1. 更新 AI 项目事实底稿，统一 AI-Mandala、MindSync、RelayHub 的求职表达边界。
+1. 更新 AI 项目事实底稿，统一 AI-Mandala、MindSync 的求职表达边界。
 2. 更新中文主简历母版到 2026-06 口径。
 3. 派生 AI 产品经理版和 AI 转型咨询顾问版两份中文简历。
 4. 新增基础作品集，先用 Markdown 支撑投递和面试。
