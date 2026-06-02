@@ -17,7 +17,7 @@
 
 .am-upload-hero {
   position: relative;
-  min-height: 456px;
+  min-height: 444px;
   padding: 0 16px 16px;
   background: linear-gradient(
     180deg,
@@ -109,7 +109,7 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  min-height: 56px;
+  min-height: 54px;
   padding: 12px 0;
   font-family: var(--am-font-body);
   overflow: hidden;
@@ -130,7 +130,7 @@
 }
 
 .am-upload-title {
-  margin: 0 0 0 12px;
+  margin: 0 0 0 14px;
   color: var(--am-text-accent);
   font-family: var(--am-font-display);
   font-size: 18px;
@@ -153,7 +153,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .am-upload-disc-shell {
@@ -371,7 +371,7 @@
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin: 6px 0 8px;
+  margin: 8px 0 10px;
 }
 
 .am-upload-action-button {
@@ -555,7 +555,7 @@
 .am-upload-bottom-sheet {
   position: relative;
   z-index: 2;
-  margin-top: -16px;
+  margin-top: -18px;
 }
 
 .am-upload-form-surface,
@@ -566,7 +566,7 @@
 .am-upload-form-surface {
   position: relative;
   overflow: hidden;
-  padding: 24px 24px 24px;
+  padding: 26px 24px 24px;
   border-radius: 24px 24px 0 0;
   background: var(--am-surface-primary);
   box-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
@@ -823,7 +823,7 @@
 .am-upload-bottom-panel {
   position: relative;
   overflow: hidden;
-  padding: 10px 0 12px;
+  padding: 12px 0 12px;
   background: var(--am-surface-primary);
   border-top: 1px solid rgba(200, 120, 80, 0.1);
 }
@@ -869,7 +869,7 @@
   align-items: flex-start;
   justify-content: center;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .am-upload-bottom-panel__lock {
