@@ -5,6 +5,7 @@ import type { MobileWebRouteDefinition } from "./routes";
 export interface MobileWebAppShellProps {
   route: MobileWebRouteDefinition;
   children: ReactNode;
+  className?: string;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
@@ -14,13 +15,14 @@ export interface MobileWebAppShellProps {
 export function MobileWebAppShell({
   route,
   children,
+  className,
   environmentLabel,
   environmentDetail,
   environmentTone = "preview",
   hideHeader = false,
 }: MobileWebAppShellProps) {
   return (
-    <main className="mw-app-shell">
+    <main className={`mw-app-shell${className ? ` ${className}` : ""}`}>
       {hideHeader ? null : (
         <header className="mw-app-shell__header">
           <div>
