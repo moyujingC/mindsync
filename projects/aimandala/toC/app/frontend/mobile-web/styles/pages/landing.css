@@ -20,7 +20,7 @@
   background:
     linear-gradient(180deg, rgba(20, 30, 56, 0.95), rgba(26, 40, 68, 0.94)),
     var(--am-surface-hero);
-  border-radius: 32px 32px 24px 24px;
+  border-radius: 32px 32px 0 0;
 }
 
 .am-landing-hero .am-pattern-overlay,
@@ -250,6 +250,8 @@
 }
 
 .am-landing-section--steps {
+  position: relative;
+  z-index: 3;
   margin-top: -20px;
   padding: 38px 24px 42px;
   border-radius: 24px 24px 0 0;
