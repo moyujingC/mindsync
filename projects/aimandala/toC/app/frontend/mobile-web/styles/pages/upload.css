@@ -11,7 +11,7 @@
 
 .am-upload-hero {
   position: relative;
-  min-height: 448px;
+  min-height: 468px;
   padding: 0 16px 14px;
   background: #24365f;
 }
@@ -545,7 +545,7 @@
 .am-upload-bottom-sheet {
   position: relative;
   z-index: 2;
-  margin-top: -24px;
+  margin-top: -12px;
 }
 
 .am-upload-form-surface,
