@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
 
-import brandPattern from "../assets/pattern.webp";
 import type { MobileWebUploadDraft } from "../state";
 import type { DetectCirclesResponse } from "../../shared/types";
 
@@ -607,9 +606,6 @@ export function MobileWebUploadPage({
     ["--am-upload-inner" as string]: `${innerRadius}%`,
     ["--am-upload-middle" as string]: `${middleRadius}%`,
   } as CSSProperties;
-  const uploadPatternStyle = {
-    ["--am-pattern-image" as string]: `url(${brandPattern})`,
-  } as CSSProperties;
 
   useEffect(() => {
     if (!isGuideOpen) return;
@@ -912,8 +908,7 @@ export function MobileWebUploadPage({
 
   return (
     <div className="am-page am-upload-page">
-      <div className="am-upload-hero" style={uploadPatternStyle}>
-        <div className="am-pattern-overlay" />
+      <div className="am-upload-hero">
         <div className="am-upload-hero__glow am-upload-hero__glow--right" />
         <div className="am-upload-hero__glow am-upload-hero__glow--left" />
         <div className="am-upload-hero__glow am-upload-hero__glow--center" />
