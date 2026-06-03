@@ -24,8 +24,8 @@
     radial-gradient(circle at 86% 39%, rgba(238, 232, 220, 0.28), transparent 2px),
     radial-gradient(circle at 26% 66%, rgba(238, 232, 220, 0.14), transparent 2px),
     linear-gradient(rgba(16, 27, 49, 0.94), rgba(13, 24, 44, 0.98)),
-    url("../../assets/pattern-clean.webp");
-  background-size: auto, auto, auto, auto, 520px;
+    url("../../assets/history-dunhuang-pattern-clean.png");
+  background-size: auto, auto, auto, auto, 360px;
 }
 
 .mw-history-page::before,
@@ -112,8 +112,10 @@
   background:
     radial-gradient(ellipse at 24% 22%, rgba(117, 137, 165, 0.28), transparent 26%),
     radial-gradient(circle at 94% 18%, rgba(238, 184, 91, 0.08), transparent 22%),
-    linear-gradient(180deg, rgba(41, 52, 78, 0.78), rgba(14, 24, 43, 0.96));
-  background-size: auto;
+    linear-gradient(180deg, rgba(41, 52, 78, 0.78), rgba(14, 24, 43, 0.96)),
+    url("../../assets/history-dunhuang-pattern-clean.png");
+  background-size: auto, auto, auto, 360px;
+  background-position: center, center, center, 18% 40%;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 18px 42px rgba(0, 0, 0, 0.2);
 }
 
@@ -242,33 +244,33 @@
 .mw-history-record__thumb {
   min-height: 101px;
   background:
-    radial-gradient(circle at center, rgba(255, 240, 210, 0.18) 0 8%, transparent 9%),
-    repeating-radial-gradient(circle at center, transparent 0 12px, rgba(20, 25, 43, 0.34) 13px 15px),
-    repeating-conic-gradient(from 12deg, #e44caa 0 8deg, #1fb39e 8deg 16deg, #f2994a 16deg 24deg, #2d4b8f 24deg 32deg, #7e2a78 32deg 40deg);
-  background-size: cover;
-  background-position: center;
+    linear-gradient(rgba(14, 24, 43, 0.04), rgba(14, 24, 43, 0.18)),
+    url("../../assets/history-dunhuang-pattern-clean.png");
+  background-size: cover, 250px;
+  background-position: center, 24% 28%;
 }
 
 .mw-history-record__thumb--1 {
-  filter: hue-rotate(8deg) saturate(1.12);
+  background-position: center, 24% 28%;
+  filter: saturate(1.08);
 }
 
 .mw-history-record__thumb--2 {
   background:
-    radial-gradient(circle at 48% 50%, rgba(255, 207, 110, 0.24) 0 9%, transparent 10%),
-    repeating-radial-gradient(circle at center, transparent 0 13px, rgba(47, 25, 12, 0.34) 14px 16px),
-    repeating-conic-gradient(from -8deg, #2e1d16 0 10deg, #d67432 10deg 18deg, #edc174 18deg 28deg, #305f61 28deg 36deg, #782f20 36deg 44deg);
-  background-size: cover;
-  background-position: center;
-  filter: saturate(1.12) brightness(0.92);
+    linear-gradient(rgba(14, 24, 43, 0.02), rgba(14, 24, 43, 0.14)),
+    url("../../assets/history-dunhuang-pattern-clean.png");
+  background-size: cover, 275px;
+  background-position: center, 48% 28%;
+  filter: hue-rotate(16deg) saturate(1.08) brightness(0.92);
 }
 
 .mw-history-record__thumb--3 {
   background:
-    radial-gradient(circle at center, rgba(240, 219, 181, 0.16) 0 10%, transparent 11%),
-    repeating-radial-gradient(circle at center, transparent 0 14px, rgba(11, 28, 45, 0.42) 15px 17px),
-    repeating-conic-gradient(from 18deg, #214960 0 8deg, #b2484c 8deg 16deg, #36918c 16deg 24deg, #572c62 24deg 32deg, #133141 32deg 40deg);
-  filter: saturate(0.95) brightness(0.82);
+    linear-gradient(rgba(14, 24, 43, 0.08), rgba(14, 24, 43, 0.28)),
+    url("../../assets/history-dunhuang-pattern-clean.png");
+  background-size: cover, 270px;
+  background-position: center, 22% 68%;
+  filter: hue-rotate(135deg) saturate(0.92) brightness(0.78);
 }
 
 .mw-history-record__body {
