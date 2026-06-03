@@ -112,7 +112,7 @@
   display: grid;
   place-items: center;
   background: transparent;
-  color: rgba(232, 220, 200, 0.5);
+  color: rgba(232, 220, 200, 0.68);
 }
 
 .am-upload-title {
@@ -120,7 +120,7 @@
   color: var(--am-text-accent);
   font-family: var(--am-font-display);
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.06em;
 }
 
@@ -264,6 +264,7 @@
 .am-upload-disc__hover-text {
   font-size: 14px;
   color: var(--am-text-accent);
+  font-weight: 500;
 }
 
 .am-upload-disc__placeholder {
@@ -304,6 +305,7 @@
 .am-upload-disc__placeholder-text {
   font-size: 14px;
   color: #e8dcc8;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -368,9 +370,9 @@
   border: 1px solid rgba(212, 160, 84, 0.18);
   border-radius: 999px;
   background: rgba(138, 124, 108, 0.08);
-  color: rgba(232, 220, 200, 0.6);
+  color: rgba(232, 220, 200, 0.74);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .am-upload-action-button:hover:not(:disabled) {
@@ -406,14 +408,15 @@
 
 .am-upload-slider__label {
   font-size: 12px;
-  color: rgba(232, 220, 200, 0.45);
+  color: rgba(232, 220, 200, 0.58);
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .am-upload-slider strong {
-  color: rgba(232, 220, 200, 0.4);
+  color: rgba(232, 220, 200, 0.54);
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   text-align: right;
 }
 
@@ -494,7 +497,8 @@
   text-align: center;
   font-size: 12px;
   line-height: 1.6;
-  color: rgba(232, 220, 200, 0.35);
+  color: rgba(232, 220, 200, 0.48);
+  font-weight: 500;
 }
 
 .am-upload-detect-status {
@@ -599,7 +603,7 @@
   padding: 0 4px;
   color: var(--am-text-primary);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .am-upload-form-title span {
@@ -639,6 +643,12 @@
   color: #3d2e1e;
   font-size: var(--am-text-md);
   font-family: var(--am-font-body);
+  font-weight: 500;
+}
+
+.am-upload-text-input__control::placeholder {
+  color: rgba(108, 84, 58, 0.72);
+  font-weight: 500;
 }
 
 .am-upload-text-input__control--textarea {
@@ -666,7 +676,7 @@
   padding: 0 4px;
   color: #3d2e1e;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .am-theme-selector__required {
@@ -772,10 +782,12 @@
 
 .am-theme-selector__label {
   color: #3d2e1e;
+  font-weight: 600;
 }
 
 .am-theme-selector__sub {
   color: #9b7a5a;
+  font-weight: 600;
 }
 
 .am-theme-selector__card.is-active .am-theme-selector__label {
@@ -846,7 +858,7 @@
   color: var(--am-action-primary-text);
   font-family: var(--am-font-display);
   font-size: var(--am-text-lg);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.08em;
 }
 
@@ -870,6 +882,7 @@
   font-size: 11px;
   line-height: 1.5;
   text-align: center;
+  font-weight: 500;
 }
 
 .am-upload-bottom-panel__link {
