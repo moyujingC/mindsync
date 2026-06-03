@@ -554,7 +554,8 @@ function BottomPanel({
           >
             隐私政策
           </button>
-          ，画作将被加密存储并仅用于解读
+          <br />
+          画作将被加密存储并仅用于解读
         </p>
       </div>
     </div>
