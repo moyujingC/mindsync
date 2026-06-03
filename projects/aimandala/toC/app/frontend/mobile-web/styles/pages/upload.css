@@ -545,7 +545,7 @@
 .am-upload-bottom-sheet {
   position: relative;
   z-index: 2;
-  margin-top: -12px;
+  margin-top: -24px;
 }
 
 .am-upload-form-surface,
