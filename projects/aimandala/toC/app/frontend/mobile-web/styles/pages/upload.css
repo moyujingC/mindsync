@@ -144,12 +144,12 @@
 
 .am-upload-disc-shell {
   position: relative;
-  width: 255px;
-  height: 255px;
-  min-width: 255px;
-  min-height: 255px;
+  width: 220px;
+  height: 220px;
+  min-width: 220px;
+  min-height: 220px;
   aspect-ratio: 1 / 1;
-  flex: 0 0 255px;
+  flex: 0 0 220px;
   cursor: pointer;
 }
 
