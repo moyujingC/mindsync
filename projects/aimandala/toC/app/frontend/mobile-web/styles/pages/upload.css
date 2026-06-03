@@ -1,7 +1,7 @@
 .am-upload-page {
   --am-pattern-image: none;
   min-height: 100vh;
-  background: linear-gradient(180deg, #23365d 0 51%, var(--am-surface-primary) 51% 100%);
+  background: var(--am-surface-primary);
 }
 
 .am-upload-page,
@@ -13,7 +13,7 @@
   position: relative;
   min-height: 448px;
   padding: 0 16px 14px;
-  background: #23365d;
+  background: #24365f;
 }
 
 .am-upload-hero__glow,
@@ -99,8 +99,8 @@
   padding: 16px 0 12px;
   font-family: var(--am-font-body);
   overflow: hidden;
-  background: #23365d;
-  border-bottom: 1px solid rgba(212, 160, 84, 0.15);
+  background: #24365f;
+  border-bottom: 1px solid rgba(212, 160, 84, 0.12);
 }
 
 .am-upload-back {
