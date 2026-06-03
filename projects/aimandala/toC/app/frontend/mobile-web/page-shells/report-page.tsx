@@ -22,6 +22,9 @@ export interface MobileWebReportPageProps {
   onPrimaryAction?: () => void;
   onSecondaryAction?: () => void;
   primaryDisabled?: boolean;
+  primaryLabel?: string;
+  secondaryLabel?: string;
+  footerHint?: string;
 }
 
 interface FollowupMessage extends ReportFollowupTurn {
@@ -185,6 +188,9 @@ export function MobileWebReportPage({
   onPrimaryAction,
   onSecondaryAction,
   primaryDisabled = false,
+  primaryLabel,
+  secondaryLabel,
+  footerHint,
 }: MobileWebReportPageProps) {
   const [followupInput, setFollowupInput] = useState("");
   const [followupMessages, setFollowupMessages] = useState<FollowupMessage[]>([]);
@@ -222,13 +228,13 @@ export function MobileWebReportPage({
     : isError
       ? "等待重试"
       : "已完成";
-  const primaryLabel = isLoading
+  const resolvedPrimaryLabel = primaryLabel ?? (isLoading
     ? "继续查看生成进度"
     : canRetryRefresh
       ? "重试刷新结果"
-      : "重新上传画作";
-  const secondaryLabel = isLoading || isError ? "返回上传页" : "重新上传画作";
-  const footerHint = isLoading
+      : "重新上传画作");
+  const resolvedSecondaryLabel = secondaryLabel ?? (isLoading || isError ? "返回上传页" : "重新上传画作");
+  const resolvedFooterHint = footerHint ?? (isLoading
     ? `${personaName}正在整理这幅画里的线索。`
       : canRetryRefresh
         ? "这次结果拉取没有顺利完成，你可以先重试刷新当前结果，或返回上传页重新开始。"
@@ -236,7 +242,7 @@ export function MobileWebReportPage({
         ? "当前正在查看 Pro 版解读。"
         : isError
           ? "这次主路径没有顺利完成，你可以返回上传页调整输入后重试。"
-          : "这份报告已经按新版解读链路生成。你可以回到上传页，重新发起下一次解读。";
+          : "这份报告已经按新版解读链路生成。你可以回到上传页，重新发起下一次解读。");
   const readingSections: ReportPageSection[] =
     reportSections.length > 0
       ? reportSections
@@ -459,13 +465,13 @@ export function MobileWebReportPage({
 
         <footer className="mw-footer-action">
           <div className="mw-footer-panel">
-            <p className="mw-footer-hint">{footerHint}</p>
+            <p className="mw-footer-hint">{resolvedFooterHint}</p>
             <div className="mw-button-row">
               <button type="button" className="mw-secondary-button" onClick={onSecondaryAction}>
-                {secondaryLabel}
+                {resolvedSecondaryLabel}
               </button>
               <button type="button" className="mw-primary-button" onClick={onPrimaryAction} disabled={primaryDisabled}>
-                {primaryLabel}
+                {resolvedPrimaryLabel}
               </button>
             </div>
           </div>

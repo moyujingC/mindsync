@@ -145,6 +145,30 @@ function formatHistoryRefreshHint(date = new Date()): string {
   }).format(date)}`;
 }
 
+function resolvePreviewReportFooterState(
+  flowState: MandalaFlowState | null,
+  draft: MobileWebUploadDraft,
+) {
+  if (!flowState || flowState.step === "liteGenerating" || flowState.step === "error") {
+    return {};
+  }
+
+  const isProReport = flowState.report?.version === "pro" || flowState.step === "proReady";
+  if (isProReport) {
+    return {
+      primaryLabel: "重新上传画作",
+      secondaryLabel: "返回上传页",
+      footerHint: "Pro 完整解读已经生成完成。你可以重新开始下一次解读，或回到上传页继续查看别的作品。",
+    };
+  }
+
+  return {
+    primaryLabel: "升级到 Pro 版本",
+    secondaryLabel: "重新上传画作",
+    footerHint: "如果你想继续深入读这幅画，可以在 Lite 基础上升级到 Pro 完整解读。",
+  };
+}
+
 export function MobileWebBrowserShell() {
   const initialState = readBrowserShellInitialState();
   const [forceCleanMode] = useState(initialState.cleanMode);
@@ -211,6 +235,10 @@ export function MobileWebBrowserShell() {
   const panelReportStage = previewMode ? activePreviewStep : activeRuntimeState?.reportStage ?? "idle";
   const panelReportId = previewMode ? activePreviewReportId : activeRuntimeState?.reportId ?? null;
   const panelImagePath = previewMode ? activePreviewImagePath : activeRuntimeState?.imagePath ?? activePreviewImagePath;
+  const previewReportFooterState = resolvePreviewReportFooterState(
+    previewFlowState,
+    draft,
+  );
 
   const input = useMemo(
     () => createPreviewRouteInput(route, draft, interpretationId, session, {
@@ -549,6 +577,15 @@ export function MobileWebBrowserShell() {
 
         setPreviewFlowState(null);
         setRoute("upload");
+        return;
+      }
+
+      const isProReport =
+        previewFlowState?.report?.version === "pro" ||
+        previewFlowState?.step === "proReady";
+      if (!isProReport) {
+        setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "pro" }));
+        setRoute("reportEntry");
         return;
       }
 
@@ -1040,12 +1077,18 @@ export function MobileWebBrowserShell() {
                   }
                 }}
                 onUploadContinue={async () => {
-                  await handlePreviewStartReport("lite");
+                  setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "lite" }));
+                  setRoute("reportEntry");
                 }}
                 onUploadBack={() => {
                   setRoute("landing");
                 }}
                 onReportEntryBack={() => {
+                  if ((draft.reportType ?? draft.reportVariant ?? "lite") === "pro" && previewFlowState) {
+                    setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "lite" }));
+                    setRoute("report");
+                    return;
+                  }
                   setRoute("upload");
                 }}
                 onReportEntryChooseReportType={async (reportType: MobileWebReportProductType) => {
@@ -1058,6 +1101,9 @@ export function MobileWebBrowserShell() {
                 onReportSecondaryAction={handlePreviewSecondaryAction}
                 onReportBackAction={handlePreviewBackAction}
                 reportPrimaryDisabled={route === "loading" && previewFlowRunning}
+                reportPrimaryLabel={previewReportFooterState.primaryLabel}
+                reportSecondaryLabel={previewReportFooterState.secondaryLabel}
+                reportFooterHint={previewReportFooterState.footerHint}
                 onHistoryBackToUpload={() => {
                   setRoute("upload");
                 }}

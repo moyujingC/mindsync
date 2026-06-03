@@ -22,6 +22,8 @@ export interface SharedReportEntryDescriptor {
   description: string;
   themeLabel: string;
   footnote: string;
+  heroHint?: string;
+  redeemHint?: string;
   cards: SharedReportEntryCardDescriptor[];
 }
 
@@ -120,7 +122,7 @@ export function SharedReportEntrySelectionPage({
             {descriptor.description}
           </p>
           <p className="am-report-entry-hero__hint">
-            你选的不是“更贵或更便宜”，而是这一次更适合自己的阅读深度。
+            {descriptor.heroHint ?? "你选的不是“更贵或更便宜”，而是这一次更适合自己的阅读深度。"}
           </p>
           <div className="am-report-entry-theme-pill">
             <span className="am-report-entry-theme-pill__label">当前议题</span>
@@ -142,7 +144,7 @@ export function SharedReportEntrySelectionPage({
             placeholder="请输入可用兑换码"
           />
           <p className="am-report-entry-redeem__hint">
-            系统会在生成前校验兑换码；Lite 和 Pro 仍按所选版本生成。
+            {descriptor.redeemHint ?? "系统会在生成前校验兑换码；Lite 和 Pro 仍按所选版本生成。"}
           </p>
         </section>
 

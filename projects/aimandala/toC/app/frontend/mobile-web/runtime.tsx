@@ -262,6 +262,38 @@ function formatHistoryRefreshHint(date = new Date()): string {
   }).format(date)}`;
 }
 
+function resolveReportFooterState(
+  flowState: MandalaFlowState | undefined,
+  draft: MobileWebUploadDraft | null,
+): {
+  primaryLabel?: string;
+  secondaryLabel?: string;
+  footerHint?: string;
+} {
+  if (!flowState || flowState.step === "liteGenerating" || flowState.step === "error") {
+    return {};
+  }
+
+  const isProReport = flowState.report?.version === "pro" || flowState.step === "proReady";
+  if (isProReport) {
+    return {
+      primaryLabel: "重新上传画作",
+      secondaryLabel: "返回上传页",
+      footerHint: "Pro 完整解读已经生成完成。你可以重新开始下一次解读，或回到上传页继续查看别的作品。",
+    };
+  }
+
+  if ((draft?.reportType ?? draft?.reportVariant ?? "lite") === "lite") {
+    return {
+      primaryLabel: "升级到 Pro 版本",
+      secondaryLabel: "重新上传画作",
+      footerHint: "如果你想继续深入读这幅画，可以在 Lite 基础上升级到 Pro 完整解读。",
+    };
+  }
+
+  return {};
+}
+
 export function MobileWebRuntime({
   input,
   loadingFallback = "Loading mobile web route...",
@@ -599,6 +631,10 @@ export function MobileWebRuntime({
   const currentUploadDraft = activeRuntimeUploadDraft;
   const uploadDraftForReturn = currentUploadDraft ?? defaultUploadDraft;
   const currentRuntimeProps = runtimeProps;
+  const reportFooterState = resolveReportFooterState(
+    currentRuntimeProps.flowState,
+    currentUploadDraft,
+  );
 
   async function handleReportPrimaryAction() {
     if (!currentRuntimeProps.flowState || runtimeBusy) {
@@ -652,6 +688,30 @@ export function MobileWebRuntime({
         } finally {
           setRuntimeBusy(false);
         }
+        return;
+      }
+
+      const isProReport =
+        currentRuntimeProps.flowState.report?.version === "pro" ||
+        currentRuntimeProps.flowState.step === "proReady";
+      const isLiteDraft =
+        (currentUploadDraft?.reportType ??
+          currentUploadDraft?.reportVariant ??
+          "lite") === "lite";
+
+      if (!isProReport && isLiteDraft) {
+        const nextDraft = mergeMobileWebUploadDraft(
+          currentUploadDraft ?? uploadDraftForReturn,
+          {
+            reportType: "pro",
+          },
+        );
+        setRuntimeUploadDraft(nextDraft);
+        setRuntimeProps({
+          route: "reportEntry",
+          uploadDraft: nextDraft,
+          flowState: currentRuntimeProps.flowState,
+        });
         return;
       }
 
@@ -1161,12 +1221,40 @@ export function MobileWebRuntime({
       }}
       onUploadContinue={() => {
         setRuntimeUploadDetectError(null);
+        const nextDraft = mergeMobileWebUploadDraft(
+          runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft,
+          {
+            reportType: "lite",
+          },
+        );
+        setRuntimeUploadDraft(nextDraft);
         setRuntimeProps({
           route: "reportEntry",
-          uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft,
+          uploadDraft: nextDraft,
         });
       }}
       onReportEntryBack={() => {
+        const isProPayment =
+          (runtimeUploadDraft?.reportType ??
+            runtimeUploadDraft?.reportVariant ??
+            "lite") === "pro";
+
+        if (isProPayment && runtimeProps.flowState) {
+          const nextDraft = mergeMobileWebUploadDraft(
+            runtimeUploadDraft ?? uploadDraftForReturn,
+            {
+              reportType: "lite",
+            },
+          );
+          setRuntimeUploadDraft(nextDraft);
+          setRuntimeProps({
+            route: "report",
+            flowState: runtimeProps.flowState,
+            uploadDraft: nextDraft,
+          });
+          return;
+        }
+
         setRuntimeProps({
           route: "upload",
           uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
@@ -1187,6 +1275,9 @@ export function MobileWebRuntime({
       onReportSecondaryAction={handleReportSecondaryAction}
       onReportBackAction={handleReportBackAction}
       reportPrimaryDisabled={runtimeBusy}
+      reportPrimaryLabel={reportFooterState.primaryLabel}
+      reportSecondaryLabel={reportFooterState.secondaryLabel}
+      reportFooterHint={reportFooterState.footerHint}
       onHistoryBackToUpload={handleHistoryBackToUpload}
       historyQuery={runtimeProps.historyQuery ?? runtimeHistoryQuery}
       activeHistoryFilter={(runtimeProps.historyQuery?.filter as HistoryFilterId | undefined) ?? (runtimeHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}

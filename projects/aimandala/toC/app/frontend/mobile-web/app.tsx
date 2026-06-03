@@ -57,6 +57,9 @@ export interface MobileWebAppProps {
   onReportSecondaryAction?: () => void;
   onReportBackAction?: () => void;
   reportPrimaryDisabled?: boolean;
+  reportPrimaryLabel?: string;
+  reportSecondaryLabel?: string;
+  reportFooterHint?: string;
   onHistoryBackToUpload?: () => void;
   onHistoryFilterChange?: (filter: HistoryFilterId) => void;
   onHistoryThemeChange?: (theme?: string) => void;
@@ -101,6 +104,9 @@ export function MobileWebApp({
   onReportPrimaryAction,
   onReportSecondaryAction,
   reportPrimaryDisabled = false,
+  reportPrimaryLabel,
+  reportSecondaryLabel,
+  reportFooterHint,
   onHistoryBackToUpload,
   onHistoryFilterChange,
   onHistoryThemeChange,
@@ -180,6 +186,9 @@ export function MobileWebApp({
           onPrimaryAction={onReportPrimaryAction}
           onSecondaryAction={onReportSecondaryAction}
           primaryDisabled={reportPrimaryDisabled}
+          primaryLabel={reportPrimaryLabel}
+          secondaryLabel={reportSecondaryLabel}
+          footerHint={reportFooterHint}
         />
       );
 

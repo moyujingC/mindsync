@@ -80,4 +80,18 @@ describe("MobileWebReportPage followup", () => {
     expect(html).toContain("输入你想继续追问的报告问题");
     expect(html).toContain("不能替代专业心理咨询、医疗建议、财务建议或重大现实决策");
   });
+
+  it("可以按运行时传入的升级文案渲染底部动作", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebReportPage
+        state={flowState}
+        primaryLabel="升级到 Pro 版本"
+        secondaryLabel="重新上传画作"
+        footerHint="如果你想继续深入读这幅画，可以在 Lite 基础上升级到 Pro 完整解读。"
+      />,
+    );
+
+    expect(html).toContain("升级到 Pro 版本");
+    expect(html).toContain("如果你想继续深入读这幅画");
+  });
 });

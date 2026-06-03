@@ -81,17 +81,19 @@ describe("shared ui", () => {
       <SharedReportEntrySelectionPage
         descriptor={{
           statusLabel: "作品识别完成",
-          title: "这次你想用哪种方式开始解读？",
-          description: "先选这次想看的深度，再进入对应的解读生成页。",
+          title: "确认支付 Lite 解读",
+          description: "支付完成后，会立即进入 Lite 解读生成页。",
           themeLabel: "亲密关系",
-          footnote: "两种都会基于这次上传的同一幅作品继续解读。",
+          footnote: "本次会先生成 Lite 报告；看完后，再决定要不要升级。",
+          heroHint: "这一步会先帮你拿到第一份 Lite 解读。",
+          redeemHint: "系统会在支付前校验兑换码；支付成功后会直接开始 Lite 解读。",
           cards: [
             {
               id: "lite",
               title: "Lite",
               description: "先快速看清这次画面最明显的状态主线。",
               bullets: ["重点接住状态主线"],
-              cta: "选择 Lite",
+              cta: "确认支付并开始 Lite 解读",
               note: "适合快速进入。",
               priceLabel: "9.9 元",
               tone: "lite",
@@ -102,7 +104,7 @@ describe("shared ui", () => {
       />,
     );
 
-    expect(html).toContain("选择 Lite");
+    expect(html).toContain("确认支付并开始 Lite 解读");
     expect(html).toContain("优惠券 / 兑换码");
   });
 
