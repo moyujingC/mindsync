@@ -6,9 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .runtime_paths import AIMANDALA_ROOT, BACKEND_ROOT, relative_to_known_root
 
-BACKEND_ROOT = Path(__file__).resolve().parents[3]
-AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
 HEALING_KB_ROOT = AIMANDALA_ROOT / "docs" / "疗愈体系知识库"
 METHOD_SOURCE = (
     HEALING_KB_ROOT
@@ -148,10 +147,7 @@ class KnowledgePackBuilder:
         }
 
     def _relative_or_string(self, path: Path) -> str:
-        try:
-            return str(path.relative_to(AIMANDALA_ROOT.parent.parent))
-        except ValueError:
-            return str(path)
+        return relative_to_known_root(path)
 
 
 def knowledge_pack_to_prompt_fragment(knowledge_pack: dict[str, Any]) -> str:

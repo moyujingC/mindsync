@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import Any
 
 from .prompt_budget import build_prompt_budget_manifest
+from .runtime_paths import AIMANDALA_ROOT, relative_to_known_root
 
 
-AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
 MANDALA_FOUNDATION_ROOT = (
     AIMANDALA_ROOT
     / "docs"
@@ -178,7 +178,4 @@ class FoundationPromptPackBuilder:
         )
 
     def _relative_or_string(self, path: Path) -> str:
-        try:
-            return str(path.relative_to(AIMANDALA_ROOT.parents[1]))
-        except ValueError:
-            return str(path)
+        return relative_to_known_root(path)
