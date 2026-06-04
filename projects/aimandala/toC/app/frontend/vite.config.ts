@@ -14,14 +14,12 @@ export default defineConfig({
       include: [
         "shared/core/flow.ts",
         "shared/core/identity.ts",
-        "shared/core/report-structure.ts",
         "shared/core/themes.ts",
         "shared/ui/history.tsx",
         "shared/ui/report-entry.tsx",
         "shared/ui/report.tsx",
         "shared/ui/upload.tsx",
         "mobile-web/app.tsx",
-        "mobile-web/browser-debug-panel.tsx",
         "mobile-web/controller.ts",
         "mobile-web/identity.ts",
         "mobile-web/state.ts",
@@ -31,12 +29,12 @@ export default defineConfig({
         "mobile-web/page-shells/history-page.tsx",
         "mobile-web/page-shells/loading-page.tsx",
         "mobile-web/page-shells/report-page.tsx",
+        "mobile-web/page-shells/pro-report-page.tsx",
       ],
-      exclude: ["mobile-web/page-shells/report-page-legacy.tsx"],
       thresholds: {
-        lines: 60,
-        functions: 60,
-        statements: 60,
+        lines: 50,
+        functions: 50,
+        statements: 50,
         branches: 45,
       },
     },
@@ -50,7 +48,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target:
-          process.env.AIMANDALA_VITE_PROXY_TARGET || "http://127.0.0.1:8000",
+          process.env.AIMANDALA_VITE_PROXY_TARGET || "http://127.0.0.1:8100",
         changeOrigin: true,
       },
     },

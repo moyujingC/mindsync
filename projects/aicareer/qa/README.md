@@ -1,4 +1,10 @@
 # QA
+> 状态：current
+> 版本：0.1.0
+> owner：Test / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/qa/README.md
+
 
 这里放 `怀瑾握瑜` 的验收标准、测试清单和验证记录。
 

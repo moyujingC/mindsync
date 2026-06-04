@@ -18,7 +18,7 @@ export async function bootMobileWebRouteExample() {
     params: {
       draft: {
         imagePath: "/tmp/example-mandala.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
       },

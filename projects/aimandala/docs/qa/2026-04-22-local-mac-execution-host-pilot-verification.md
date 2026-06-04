@@ -1,6 +1,6 @@
 # Aimandala 本地 Mac 执行节点单机试点接入前置验证记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-22
@@ -33,8 +33,8 @@
 
 本轮至少要确认下面条件同时成立：
 
-1. [.paperclip.yaml](.paperclip.yaml)、[Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)、[服务器与基础设施入口.md](company/服务器与基础设施入口.md) 对宿主语义的解释一致
-2. [本地-Mac-执行节点单机试点-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md) 已成为当前普通任务本地接入的正式操作入口
+1. [.paperclip.yaml](.paperclip.yaml)、[Paperclip-Agent-模型配置总表.md](../../../../company/Paperclip-Agent-模型配置总表.md)、[服务器与基础设施入口.md](../../../../company/服务器与基础设施入口.md) 对宿主语义的解释一致
+2. [本地-Mac-执行节点单机试点-runbook.md](../../../../projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md) 已成为当前普通任务本地接入的正式操作入口
 3. [paperclip-local-env.sh](shared/tools/paperclip-local-env.sh) 已被正式纳入连接合同，且脚本职责清晰
 4. `MIN-137`、`MIN-133` 已被固定为摘要任务反例，不再允许被误解释为本地试点执行目标
 5. 真实运行态接入仍被明确留在下一轮，不在本记录中伪装成已完成事实
@@ -46,8 +46,8 @@
 已复核以下治理源：
 
 1. [.paperclip.yaml](.paperclip.yaml)
-2. [Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
-3. [服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+2. [Paperclip-Agent-模型配置总表.md](../../../../company/Paperclip-Agent-模型配置总表.md)
+3. [服务器与基础设施入口.md](../../../../company/服务器与基础设施入口.md)
 
 观察到的正式事实：
 
@@ -92,8 +92,8 @@
 
 已复核：
 
-1. [本地-Mac-执行节点单机试点-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md)
-2. [runbooks/README.md](projects/aimandala/docs/runbooks/README.md)
+1. [本地-Mac-执行节点单机试点-runbook.md](../../../../projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md)
+2. [runbooks/README.md](../../../../projects/aimandala/docs/runbooks/README.md)
 
 观察到的正式事实：
 
@@ -128,9 +128,9 @@
 
 已复核：
 
-1. [2026-04-21-local-mac-execution-host-pilot-spec.md](projects/aimandala/docs/specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
-2. [2026-04-21-local-mac-execution-host-pilot-plan.md](projects/aimandala/docs/tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
-3. [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](projects/aimandala/docs/qa/2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
+1. [2026-04-21-local-mac-execution-host-pilot-spec.md](../specs/2026-04-21-local-mac-execution-host-pilot-spec.md)
+2. [2026-04-21-local-mac-execution-host-pilot-plan.md](../tasks/2026-04-21-local-mac-execution-host-pilot-plan.md)
+3. [2026-04-21-local-mac-execution-host-pilot-qa-basis.md](./2026-04-21-local-mac-execution-host-pilot-qa-basis.md)
 
 观察到的正式事实：
 
@@ -176,5 +176,5 @@
 
 1. 用 [paperclip-local-env.sh](shared/tools/paperclip-local-env.sh) 在你的 Mac 上完成基础连接验证
 2. 选择 1 条真实 `local_manual_review` 普通任务作为正样本
-3. 按 [本地-Mac-执行节点单机试点-runbook.md](projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md) 跑完最小闭环
+3. 按 [本地-Mac-执行节点单机试点-runbook.md](../../../../projects/aimandala/docs/runbooks/本地-Mac-执行节点单机试点-runbook.md) 跑完最小闭环
 4. 再补真实运行态 verification 与 delivery

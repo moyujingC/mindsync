@@ -3,11 +3,15 @@
 :root {
   /* Core color tokens */
   --am-color-ink-950: #141e38;
+  --am-color-ink-925: #17233d;
   --am-color-ink-900: #1a2844;
+  --am-color-ink-850: #1c2b49;
   --am-color-ink-800: #1e2d4d;
   --am-color-ink-700: #253860;
+  --am-color-ink-650: #2a3d65;
   --am-color-ink-600: #2a4070;
   --am-color-sand-50: #fffbf5;
+  --am-color-sand-80: #faf8f5;
   --am-color-sand-100: #f5efe2;
   --am-color-sand-150: #f0e6d6;
   --am-color-sand-200: #ede6d8;
@@ -58,13 +62,15 @@
   --am-radius-md: 16px;
   --am-radius-lg: 20px;
   --am-radius-xl: 24px;
+  --am-radius-2xl: 26px;
   --am-radius-pill: 999px;
 
   /* Shadow tokens */
   --am-shadow-soft: 0 10px 28px rgba(15, 27, 51, 0.12);
   --am-shadow-card: 0 18px 38px rgba(15, 27, 51, 0.16);
-  --am-shadow-accent: 0 4px 24px rgba(155, 64, 48, 0.35);
-  --am-shadow-accent-glow: 0 0 40px rgba(212, 160, 84, 0.15);
+  --am-shadow-float: 0 18px 40px rgba(26, 40, 68, 0.2);
+  --am-shadow-accent: 0 4px 18px rgba(155, 64, 48, 0.3);
+  --am-shadow-accent-glow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   /* Motion tokens */
   --am-motion-fast: 160ms;
@@ -96,9 +102,15 @@
     var(--am-color-ink-900) 100%
   );
   --am-surface-primary: var(--am-color-sand-150);
+  --am-surface-cream: var(--am-color-sand-150);
   --am-surface-card: rgba(255, 251, 245, 0.88);
   --am-surface-card-strong: rgba(255, 252, 247, 0.98);
   --am-surface-card-soft: rgba(255, 255, 255, 0.78);
+  --am-surface-frosted: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(245, 239, 226, 0.8) 100%
+  );
   --am-surface-card-warm: rgba(255, 250, 244, 0.9);
   --am-surface-card-warm-strong: rgba(255, 244, 237, 0.92);
   --am-surface-overlay: rgba(20, 30, 56, 0.6);
@@ -133,6 +145,11 @@
     var(--am-color-gold-300) 60%,
     var(--am-color-copper-400) 85%,
     var(--am-color-copper-500) 100%
+  );
+  --am-action-primary-highlight: radial-gradient(
+    ellipse,
+    rgba(232, 220, 200, 0.2) 0%,
+    transparent 70%
   );
   --am-action-primary-text: var(--am-color-sand-100);
   --am-action-secondary-bg: rgba(255, 255, 255, 0.86);

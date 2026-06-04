@@ -1,0 +1,204 @@
+{
+  "case_id": "case-010",
+  "stage": "foundation_image_reading",
+  "status": "visual_observation_seeded__foundation_sections_pending",
+  "foundation_image_reading": {
+    "visual_observation": {
+      "overall_observation": {
+        "first_impression": "这幅画第一眼是绿色枝条很多、方向很多、粉色花团围绕外圈。整体不像一个稳定向外扩展的圆，而更像许多枝条在空间里寻找方向，外面有一圈柔软但密集的花团。",
+        "visual_atmosphere": "氛围偏分散、线性、带有努力生长感。绿色枝条和小节点让画面有行动线索，粉色花团让外圈有温柔、人缘或情感性的外部呈现。",
+        "visual_weight_and_rhythm": "视觉重心分散在中心和中圈的绿色枝条上，外圈粉色花团形成环状包围。绿色枝条多方向伸展，节奏不像均匀花瓣，而像多条线同时向不同位置延伸。",
+        "healing_language_note": "疗愈师语言可以表达为：画面里有许多想要生长、连接和行动的线索，只是方向比较多；外圈的粉色花团也提示这份行动外面包着一层柔软的关系或感受。"
+      },
+      "three_circle_observation": {
+        "inner": "内圈和中心附近以绿色枝条、小节点、绿色几何块和留白为主。中心不以单一圆形或花心占据，而是由较细的绿色线条和节点组成。",
+        "middle": "中圈有多方向绿色枝条、绿色几何块、黄色/绿色小星点和大量留白。枝条方向分散，部分向外延伸，局部与外圈花团靠近。",
+        "outer": "外圈以粉色花团围绕，部分绿色枝条继续向外伸展，另有绿色几何块出现在外圈。粉色花团形成环状外部呈现，但不是完全均匀的单色外圈。",
+        "cross_circle_visual_connection": "绿色枝条从中心和中圈向外延伸，是跨圈主要连续线索。外圈粉色花团形成包围层，与内部绿色枝条在视觉上形成内外对比。",
+        "cross_circle_visual_evidence": "中心和中圈均可见多方向绿色枝条，部分枝条延伸到外圈；外圈粉色花团围绕整体，绿色几何块在外圈也有出现；留白贯穿枝条之间。"
+      },
+      "circle_visual_units": {
+        "inner": {
+          "composition_description": "内圈由绿色枝条、小节点、绿色几何块和留白组成。中心感较弱，主要依靠线条和节点构成。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "unit_name": "中心绿色枝条",
+              "position": "内圈中心附近",
+              "source_type": "user_painted",
+              "color_description": "绿色，线条状。",
+              "shape_description": "细枝条、分叉线条，方向不完全一致。",
+              "texture_and_density": "线性较强，数量不多但方向明显。",
+              "spatial_relations": "从中心附近向中圈延伸，与小节点和留白相邻。",
+              "blank_space_role": "none",
+              "rich_visual_description": "中心绿色枝条不像一个稳定花心，而像从内部伸出的几条生长线。它让内圈一开始就带有方向和行动感。"
+            },
+            {
+              "id": "inner-002",
+              "unit_name": "内圈小节点/星点",
+              "position": "内圈枝条附近",
+              "source_type": "user_painted",
+              "color_description": "黄色或绿色小点，颜色较浅。",
+              "shape_description": "小星点、小圆点或小节点。",
+              "texture_and_density": "零散分布，形成细小节点。",
+              "spatial_relations": "附着在绿色枝条附近，和留白相邻。",
+              "blank_space_role": "none",
+              "rich_visual_description": "小节点让绿色枝条不只是线条，也有一些可停靠的点。它们是后续判断生长是否有落点的重要视觉事实。"
+            },
+            {
+              "id": "inner-003",
+              "unit_name": "内圈留白",
+              "position": "中心绿色枝条之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "枝条之间的大量空隙。",
+              "texture_and_density": "留白面积较大，中心区域不拥挤。",
+              "spatial_relations": "隔开绿色枝条和小节点，也形成中心空间。",
+              "blank_space_role": "隔开线性元素，形成中心开放空间。",
+              "rich_visual_description": "内圈留白让中心显得空而分散。绿色枝条之间没有被大面积色块填满。"
+            }
+          ]
+        },
+        "middle": {
+          "composition_description": "中圈由多方向绿色枝条、绿色几何块、黄色/绿色小点和留白构成，是全画行动线索最密集的区域。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "unit_name": "多方向绿色枝条",
+              "position": "中圈主体",
+              "source_type": "user_painted",
+              "color_description": "绿色，线条较细。",
+              "shape_description": "枝条状、分叉状，多方向伸展。",
+              "texture_and_density": "数量多，线性分散，方向不统一。",
+              "spatial_relations": "同类枝条彼此分散，有的朝外圈延伸，有的在中圈内部交错；枝条之间有大量留白。",
+              "blank_space_role": "none",
+              "rich_visual_description": "中圈绿色枝条是这幅画最重要的视觉单元。它们像许多行动线同时伸出，但方向较多、彼此并不完全聚拢。"
+            },
+            {
+              "id": "middle-002",
+              "unit_name": "绿色几何块",
+              "position": "中圈局部及靠外位置",
+              "source_type": "user_painted",
+              "color_description": "绿色，块状填色。",
+              "shape_description": "菱形、方形或不规则几何块。",
+              "texture_and_density": "数量不多但形状明确，较枝条更有块面感。",
+              "spatial_relations": "分布在枝条附近或外圈交界处，与粉色花团和留白相邻。",
+              "blank_space_role": "none",
+              "rich_visual_description": "绿色几何块给线性的枝条增加了块面节点。它们像行动线上的局部目标或结构。"
+            },
+            {
+              "id": "middle-003",
+              "unit_name": "中圈黄色/绿色小星点",
+              "position": "中圈枝条之间",
+              "source_type": "user_painted",
+              "color_description": "黄色和绿色小点或小星。",
+              "shape_description": "小星点、小叶点或圆点。",
+              "texture_and_density": "零散、细小，数量较多。",
+              "spatial_relations": "散布在绿色枝条之间，被留白分开。",
+              "blank_space_role": "none",
+              "rich_visual_description": "这些小星点让中圈枝条之间有细碎的节点感。它们不是主结构，但能提示能量分布细而散。"
+            },
+            {
+              "id": "middle-004",
+              "unit_name": "中圈大量留白",
+              "position": "绿色枝条和节点之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "大面积开放空间和枝条间空隙。",
+              "texture_and_density": "留白比例较高。",
+              "spatial_relations": "隔开多方向绿色枝条、绿色几何块和小点，使中圈呈分散状态。",
+              "blank_space_role": "隔开线性行动元素，形成分散和开放空间。",
+              "rich_visual_description": "中圈留白让枝条之间有很大距离，也让行动线看起来不聚焦。后续判断方向分散必须保留这个事实。"
+            }
+          ]
+        },
+        "outer": {
+          "composition_description": "外圈由粉色花团、向外延伸的绿色枝条、绿色几何块和留白组成。粉色花团形成外部环绕，绿色枝条穿插或伸向外圈。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "unit_name": "粉色外圈花团",
+              "position": "外圈主体边缘",
+              "source_type": "user_painted",
+              "color_description": "粉色，局部较浅，重复成团。",
+              "shape_description": "花团、花簇或卷曲花形，沿外圈围绕。",
+              "texture_and_density": "密度较高，形成外圈柔软包围。",
+              "spatial_relations": "同类粉色花团围绕中心，包在绿色枝条外侧，与绿色几何块和留白相邻。",
+              "blank_space_role": "none",
+              "rich_visual_description": "粉色花团让外圈呈现柔软、有人情味的花环。它们包围内部绿色枝条，但不完全吸收内部的分散方向。"
+            },
+            {
+              "id": "outer-002",
+              "unit_name": "外圈延伸绿色枝条",
+              "position": "中圈到外圈过渡处",
+              "source_type": "user_painted",
+              "color_description": "绿色，线条状。",
+              "shape_description": "枝条状，部分伸入外圈花团附近。",
+              "texture_and_density": "延续中圈线性结构，数量较少但方向明显。",
+              "spatial_relations": "从中圈向外延伸，靠近或穿入粉色花团之间。",
+              "blank_space_role": "none",
+              "rich_visual_description": "部分绿色枝条没有停在中圈，而是继续向外圈走。它们是跨圈连接的重要视觉证据。"
+            },
+            {
+              "id": "outer-003",
+              "unit_name": "外圈绿色几何块",
+              "position": "外圈局部节点",
+              "source_type": "user_painted",
+              "color_description": "绿色，块状。",
+              "shape_description": "菱形、方形或不规则几何块。",
+              "texture_and_density": "数量不多，但位置靠外，形状清楚。",
+              "spatial_relations": "位于粉色花团附近，与绿色枝条和留白相邻。",
+              "blank_space_role": "none",
+              "rich_visual_description": "外圈绿色几何块像外部现实中的几个明确节点。它们和内部枝条呼应，但更靠近外部边缘。"
+            },
+            {
+              "id": "outer-004",
+              "unit_name": "外圈留白",
+              "position": "粉色花团、绿色枝条和几何块之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "外圈花团间空隙和背景空间。",
+              "texture_and_density": "面积中等，贯穿外圈。",
+              "spatial_relations": "隔开粉色花团、绿色枝条和绿色几何块。",
+              "blank_space_role": "隔开外圈花团和绿色行动线，形成外部空间。",
+              "rich_visual_description": "外圈留白让花团和绿色结构保持距离，也让外圈不是完全密闭的花环。"
+            }
+          ]
+        }
+      }
+    },
+    "element_sensing": {
+      "inner": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "intra_circle_relations": {
+      "inner": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "cross_circle_flow": {
+      "flow_observations": [],
+      "summary": "待用真实视觉模型按基础层 schema 生成。"
+    },
+    "evidence_links": []
+  }
+}

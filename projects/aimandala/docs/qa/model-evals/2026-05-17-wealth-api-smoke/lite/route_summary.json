@@ -1,0 +1,42 @@
+{
+  "topic": "wealth",
+  "report_mode": "lite",
+  "report_id": "mandala-interpretation-199d1d6d8c7a",
+  "duration_seconds": 71.58,
+  "selected_signal_ids": [
+    "visual.outer_red_or_fire_excess",
+    "visual.weak_fire_many",
+    "visual.metal_excess",
+    "visual.water_fire_conflict",
+    "visual.outer_world_closed_or_blank",
+    "visual.inner_contracted_outer_strong",
+    "visual.middle_tangled_relationship_pull",
+    "visual.outer_boundary_broken",
+    "visual.outer_boundary_thick_closed",
+    "visual.fragmented_dots_scattered_energy",
+    "visual.center_clear_outer_weak",
+    "visual.color_blocks_split"
+  ],
+  "selected_clause_ids": [
+    "wealth.emotional_spending",
+    "wealth.low_action"
+  ],
+  "selected_module_ids": [
+    "wealth.emotion_spending_protective_habits",
+    "wealth.body_fear_action"
+  ],
+  "boundaries": [
+    "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+    "适合表达渴望被看见、被认可或被情绪影响，不能写成固定人格结论。",
+    "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+    "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+    "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+    "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+    "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+    "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+    "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+    "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+    "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+    "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+  ]
+}

@@ -1,0 +1,1375 @@
+{
+  "method_source": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-曼陀罗基础层解读流程.md",
+  "execution_blocks": [
+    {
+      "block_id": "input-and-boundary",
+      "stage_keys": [
+        "input-context",
+        "user-input-context",
+        "circle-boundary-context"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "foundation-image-reading",
+      "stage_keys": [
+        "foundation-image-reading"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "theme-translation-and-thesis",
+      "stage_keys": [
+        "theme-translation-route",
+        "report-thesis-selection",
+        "user-facing-framing",
+        "report-branching-plan"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "report-writing-and-assembly",
+      "stage_keys": [
+        "lite-report-draft",
+        "pro-report-draft",
+        "visual-assets",
+        "final-report-assembly"
+      ],
+      "status": "complete"
+    }
+  ],
+  "stage_outputs": {
+    "input-context": {
+      "stage": "input-context",
+      "status": "complete",
+      "report_mode": "lite",
+      "image": {
+        "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-005-mandala.jpg",
+        "marked_local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-005-mandala-3q.jpg",
+        "storage_backend": "",
+        "storage_key": ""
+      },
+      "agent_version": "mandala-interpretation-agent-v1"
+    },
+    "user-input-context": {
+      "stage": "user-input-context",
+      "status": "complete",
+      "user_context": {
+        "theme": "wealth",
+        "theme_label": "财富议题",
+        "painting_intention": "case-005 【案例5】用五行感知+相生相克法解读成长与财富（完整解读）",
+        "painting_feeling": ""
+      }
+    },
+    "circle-boundary-context": {
+      "stage": "circle-boundary-context",
+      "status": "complete",
+      "circle_boundaries": {
+        "inner_radius": 35,
+        "middle_radius": 65,
+        "radius_unit": "normalized_percent",
+        "source": "golden_case_seed"
+      }
+    },
+    "foundation-image-reading": {
+      "stage": "foundation-image-reading",
+      "status": "complete",
+      "foundation_image_reading": {
+        "visual_observation": {
+          "overall_observation": {
+            "first_impression": "这幅画第一眼看起来像一朵有强烈中心力量的星形花。橙红色中心和蓝色花瓣形成鲜明对比，外圈黄色长花瓣向外展开，整体有明亮、扩张和被留白包围的感觉。",
+            "visual_atmosphere": "画面氛围偏有力、清亮、向外打开。橙红和蓝色的对比让中心有张力，外圈大面积留白让黄色花瓣显得更突出。",
+            "visual_weight_and_rhythm": "视觉重心集中在橙红星形中心和蓝色花瓣环。中圈尖角、圆点和蓝色花瓣交替出现，外圈黄色长花瓣与点状黄色形成较大的外放节奏。",
+            "healing_language_note": "疗愈师语言可以表达为：画面中有一股想要打开和向外伸展的力量，同时蓝色与橙红的对比也提示内在不同感受需要被一起安放。"
+          },
+          "three_circle_observation": {
+            "inner": "内圈中心为橙色/红橙星形，周围有蓝色花瓣状结构、黄色小圆和白色留白。橙红中心醒目，蓝色花瓣围绕其外，形成明显的冷暖对照。",
+            "middle": "中圈有橙色尖角、蓝色花瓣、黄色圆点和白色留白交替出现。中圈延续内圈的橙蓝对比，并加入更明确的重复节奏。",
+            "outer": "外圈以黄色长花瓣和点状黄色为主，夹有蓝色小圆或孔状结构，并存在大量留白。黄色长花瓣向外伸展，构成外圈最主要的开放形态。",
+            "cross_circle_visual_connection": "三圈整体从橙红中心向蓝色花瓣再向黄色外瓣展开，层次清楚。橙蓝对比主要集中在内中圈，外圈转向黄色和留白，形成从中心张力到外部展开的变化。",
+            "cross_circle_visual_evidence": "中心橙红星形、蓝色花瓣、橙色尖角和外圈黄色长花瓣都以同一中心放射排列；留白在内中外圈均出现，并在外圈面积明显增大。"
+          },
+          "circle_visual_units": {
+            "inner": {
+              "composition_description": "内圈由橙红星形、蓝色花瓣状结构、黄色小圆和留白组成。橙红中心和蓝色外层形成强对比，黄色小圆提供细节点。",
+              "visual_units": [
+                {
+                  "id": "inner-001",
+                  "unit_name": "橙红中心星形",
+                  "position": "内圈中心",
+                  "source_type": "user_painted",
+                  "color_description": "橙色到红橙色，颜色较暖、较醒目。",
+                  "shape_description": "星形或多尖角花形，尖角向外。",
+                  "texture_and_density": "中心色彩集中，视觉重量强。",
+                  "spatial_relations": "被蓝色花瓣状结构包围，并与黄色小圆、留白相邻。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "橙红中心星形是整幅画的视觉发动点。它带有明显的尖角和热度，使画面中心有强烈启动感。"
+                },
+                {
+                  "id": "inner-002",
+                  "unit_name": "蓝色内圈花瓣",
+                  "position": "橙红中心外侧",
+                  "source_type": "user_painted",
+                  "color_description": "蓝色，较饱和。",
+                  "shape_description": "花瓣状或弧形片状，环绕中心。",
+                  "texture_and_density": "围绕中心重复，形成冷色包围层。",
+                  "spatial_relations": "包围橙红星形，与黄色小圆和留白穿插。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "蓝色花瓣把橙红中心包住，形成明显冷暖对比。它让中心的热度被一层流动的蓝色结构围绕。"
+                },
+                {
+                  "id": "inner-003",
+                  "unit_name": "黄色小圆点",
+                  "position": "内圈蓝色花瓣附近",
+                  "source_type": "user_painted",
+                  "color_description": "黄色，小面积点状。",
+                  "shape_description": "圆形或小点状。",
+                  "texture_and_density": "小而重复，作为细节点穿插。",
+                  "spatial_relations": "分布在蓝色花瓣和橙红结构附近，与留白相邻。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "黄色小圆点为内圈增加细小的明亮节点。它们不是主结构，但会影响局部关系判断。"
+                },
+                {
+                  "id": "inner-004",
+                  "unit_name": "内圈留白",
+                  "position": "橙红、蓝色、黄色元素之间",
+                  "source_type": "blank_space",
+                  "color_description": "纸面白色留白。",
+                  "shape_description": "不规则间隔，沿尖角和花瓣边界出现。",
+                  "texture_and_density": "多处穿插，面积中等。",
+                  "spatial_relations": "隔开橙红中心、蓝色花瓣和黄色小圆。",
+                  "blank_space_role": "切分冷暖色块，形成元素边界。",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "内圈留白让橙红与蓝色之间的边界更加明显。它使强烈对比不完全粘连。"
+                }
+              ]
+            },
+            "middle": {
+              "composition_description": "中圈延续橙蓝对比，由橙色尖角、蓝色花瓣、黄色圆点和留白交替组成。这里的重复节奏比内圈更外放。",
+              "visual_units": [
+                {
+                  "id": "middle-001",
+                  "unit_name": "橙色尖角组",
+                  "position": "中圈放射结构",
+                  "source_type": "user_painted",
+                  "color_description": "橙色或橙红色。",
+                  "shape_description": "尖角或三角形放射结构。",
+                  "texture_and_density": "重复排列，方向向外。",
+                  "spatial_relations": "与蓝色花瓣交替，并靠近黄色圆点和留白。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "橙色尖角让中圈保持向外冲出的动势。它们和蓝色花瓣交替，使中圈有明显的冷暖拉扯。"
+                },
+                {
+                  "id": "middle-002",
+                  "unit_name": "蓝色中圈花瓣",
+                  "position": "中圈橙色尖角之间",
+                  "source_type": "user_painted",
+                  "color_description": "蓝色，与内圈蓝色相呼应。",
+                  "shape_description": "花瓣状或弧形片状。",
+                  "texture_and_density": "重复出现，分布在尖角之间。",
+                  "spatial_relations": "与橙色尖角相邻或交替，周边有黄色圆点和留白。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "蓝色中圈花瓣让橙色尖角之间有流动的冷色缓冲。它们在中圈形成重要的相邻关系。"
+                },
+                {
+                  "id": "middle-003",
+                  "unit_name": "黄色圆点组",
+                  "position": "中圈局部节点",
+                  "source_type": "user_painted",
+                  "color_description": "黄色，小圆点。",
+                  "shape_description": "圆形点状，重复出现。",
+                  "texture_and_density": "小而多，形成细小节奏。",
+                  "spatial_relations": "分布在橙色尖角和蓝色花瓣附近，被留白局部隔开。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "黄色圆点像中圈的小节点，让大块橙蓝结构之间有更细的节奏。"
+                },
+                {
+                  "id": "middle-004",
+                  "unit_name": "中圈留白",
+                  "position": "中圈橙蓝黄元素之间",
+                  "source_type": "blank_space",
+                  "color_description": "纸面白色留白。",
+                  "shape_description": "随尖角和花瓣边界形成不规则间隔。",
+                  "texture_and_density": "多处出现，参与中圈切分。",
+                  "spatial_relations": "隔开橙色尖角、蓝色花瓣和黄色圆点。",
+                  "blank_space_role": "切分元素，形成冷暖结构之间的边界。",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "中圈留白帮助橙色尖角和蓝色花瓣保持各自形态。它也是后续判断局部关系的重要依据。"
+                }
+              ]
+            },
+            "outer": {
+              "composition_description": "外圈以黄色长花瓣为主，辅以黄色点状结构、蓝色小圆和大量留白。外圈的主体更轻、更向外伸展。",
+              "visual_units": [
+                {
+                  "id": "outer-001",
+                  "unit_name": "黄色长花瓣",
+                  "position": "外圈主瓣",
+                  "source_type": "user_painted",
+                  "color_description": "黄色，面积较大。",
+                  "shape_description": "长花瓣形，尖端向外，放射状排列。",
+                  "texture_and_density": "外圈主结构，重复数量较多，间隔较清楚。",
+                  "spatial_relations": "同类黄色长花瓣围绕中心均匀展开，花瓣之间有大量留白。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "黄色长花瓣让外圈明显向外打开。它们不像内中圈那样拥挤，而是在留白中一瓣一瓣伸展。"
+                },
+                {
+                  "id": "outer-002",
+                  "unit_name": "黄色点状外缘",
+                  "position": "黄色长花瓣内部或边缘",
+                  "source_type": "user_painted",
+                  "color_description": "黄色小点。",
+                  "shape_description": "点状或小圆点，沿花瓣或外缘排列。",
+                  "texture_and_density": "小而密，形成装饰性节奏。",
+                  "spatial_relations": "附着在黄色长花瓣附近或沿外缘重复。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "黄色点状结构让外圈有细密装饰感，也让黄色长花瓣不只是大色块。"
+                },
+                {
+                  "id": "outer-003",
+                  "unit_name": "蓝色小圆/孔状结构",
+                  "position": "外圈黄色花瓣之间或内部局部",
+                  "source_type": "user_painted",
+                  "color_description": "蓝色，小面积。",
+                  "shape_description": "小圆或孔状结构。",
+                  "texture_and_density": "数量不多但颜色对比明显。",
+                  "spatial_relations": "夹在黄色花瓣和留白之间，与黄色形成局部对比。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "蓝色小圆在外圈黄色结构中形成冷色节点。虽然面积小，但会影响外圈局部关系。"
+                },
+                {
+                  "id": "outer-004",
+                  "unit_name": "外圈大量留白",
+                  "position": "黄色长花瓣之间及外圈背景",
+                  "source_type": "blank_space",
+                  "color_description": "纸面白色留白。",
+                  "shape_description": "大面积开放空间，围绕长花瓣形成间隔。",
+                  "texture_and_density": "面积明显大于内中圈留白。",
+                  "spatial_relations": "隔开黄色长花瓣，也承托蓝色小圆和点状结构。",
+                  "blank_space_role": "隔开、承托并扩大外圈空间感。",
+                  "energy_ratio_percent": 25.0,
+                  "rich_visual_description": "外圈留白让黄色花瓣显得更独立、更向外伸展。它是外圈轻盈感和开放感的重要来源。"
+                }
+              ]
+            }
+          }
+        },
+        "element_sensing": {
+          "inner": {
+            "element_candidates": [
+              {
+                "visual_unit_id": "inner-001",
+                "element": "fire",
+                "basis": [
+                  "颜色为橙色到红橙色，暖色醒目，星形尖角向外，中心集中感强，具有典型的火性向外、温暖和醒目特征。"
+                ],
+                "confidence": "high",
+                "notes": "形状星形尖角会增强火的向外发散特征，不作为独立五行依据。"
+              },
+              {
+                "visual_unit_id": "inner-002",
+                "element": "water",
+                "basis": [
+                  "颜色为较饱和的蓝色，花瓣状弧形片状环绕，形态流动，符合水性寒凉、润下、流动的特征。"
+                ],
+                "confidence": "high",
+                "notes": "形状为花瓣状环绕，形态上增加水的流动和包围感。"
+              },
+              {
+                "visual_unit_id": "inner-003",
+                "element": "earth",
+                "basis": [
+                  "颜色为黄色，小面积点状，依照黄色属土的基本原则进行判断。"
+                ],
+                "confidence": "high",
+                "notes": "形状为小而重复的圆点，形态上有土的稳定、居中、承载和调和特征。"
+              },
+              {
+                "visual_unit_id": "inner-004",
+                "element": "metal",
+                "basis": [
+                  "纸面白色留白，按规则留白一律按金处理。"
+                ],
+                "confidence": "high",
+                "notes": "留白切割色块，形成清晰边界和空间感，符合金的决断和边界特征。"
+              }
+            ],
+            "summary": ""
+          },
+          "middle": {
+            "element_candidates": [
+              {
+                "visual_unit_id": "middle-001",
+                "element": "fire",
+                "basis": [
+                  "颜色为橙色或橙红色，与内圈火色呼应，尖角或三角形放射结构向外，具有火的温暖、向外和动态特征。"
+                ],
+                "confidence": "high",
+                "notes": "形状为尖角放射，增强火的外向和突破特征。"
+              },
+              {
+                "visual_unit_id": "middle-002",
+                "element": "water",
+                "basis": [
+                  "颜色为蓝色，与内圈水色呼应，花瓣状弧形片状，形态流动，符合水性。"
+                ],
+                "confidence": "high",
+                "notes": "形状为花瓣状，形态增加水的流动特征。"
+              },
+              {
+                "visual_unit_id": "middle-003",
+                "element": "earth",
+                "basis": [
+                  "颜色为黄色，小圆点重复出现，按黄色属土的基本原则判断。"
+                ],
+                "confidence": "high",
+                "notes": "形状为小而重复的圆点，增加土的调和、细化特征。"
+              },
+              {
+                "visual_unit_id": "middle-004",
+                "element": "metal",
+                "basis": [
+                  "纸面白色留白，按规则留白一律按金处理。"
+                ],
+                "confidence": "high",
+                "notes": "留白切割冷暖结构，形成清晰边界，符合金的特征。"
+              }
+            ],
+            "summary": ""
+          },
+          "outer": {
+            "element_candidates": [
+              {
+                "visual_unit_id": "outer-001",
+                "element": "earth",
+                "basis": [
+                  "颜色为黄色，面积较大，长花瓣放射状排列，按黄色属土的基本原则判断。"
+                ],
+                "confidence": "high",
+                "notes": "形状为长花瓣向外伸展，形态上增加土的承载和包容特征，但方向向外。"
+              },
+              {
+                "visual_unit_id": "outer-003",
+                "element": "water",
+                "basis": [
+                  "颜色为蓝色，小面积小圆或孔状结构，按蓝色属水的基本原则判断。"
+                ],
+                "confidence": "high",
+                "notes": "形状为小圆点，面积小，作为辅助水的节点。"
+              },
+              {
+                "visual_unit_id": "outer-004",
+                "element": "metal",
+                "basis": [
+                  "纸面白色留白，大面积开放空间，按规则留白一律按金处理。"
+                ],
+                "confidence": "high",
+                "notes": "留白面积显著大于内中圈，金的切割和舒张特征更明显。"
+              }
+            ],
+            "summary": ""
+          }
+        },
+        "intra_circle_relations": {
+          "inner": {
+            "relations": [
+              {
+                "relation_id": "inner-rel-001",
+                "relation_type": "surrounded_by",
+                "involved_visual_unit_ids": [
+                  "inner-001",
+                  "inner-002"
+                ],
+                "visible_basis": "内圈蓝色花瓣（水）空间上环绕包围在橙红中心星形（火）外侧。",
+                "confidence": "high",
+                "notes": "水火相克的结构通过空间包围关系呈现，水包围火，约束火的扩张。"
+              },
+              {
+                "relation_id": "inner-rel-002",
+                "relation_type": "separated_by_blank_space",
+                "involved_visual_unit_ids": [
+                  "inner-001",
+                  "inner-004"
+                ],
+                "visible_basis": "内圈留白（金）直接介入橙红中心（火）和蓝色花瓣（水）之间，形成不规则间隔，切分冷暖色块。",
+                "confidence": "high",
+                "notes": "金性留白切割火水直接接触，使对立能量不完全粘连或直接相冲。"
+              },
+              {
+                "relation_id": "inner-rel-003",
+                "relation_type": "generating",
+                "involved_visual_unit_ids": [
+                  "inner-001",
+                  "inner-003"
+                ],
+                "visible_basis": "黄色小圆点（土）分布在橙红中心星形（火）附近，空间上相邻，且视觉上下文显示黄土区域未被留白隔开，符合火生土的条件。",
+                "confidence": "medium",
+                "notes": "火能生土，黄色小圆点能量占比与火接近但面积分散，效力可能有限。"
+              }
+            ],
+            "summary": ""
+          },
+          "middle": {
+            "relations": [
+              {
+                "relation_id": "middle-rel-001",
+                "relation_type": "imbalance_candidate",
+                "involved_visual_unit_ids": [
+                  "middle-001",
+                  "middle-002",
+                  "middle-004"
+                ],
+                "visible_basis": "中圈橙色尖角（火）和蓝色花瓣（水）等量交替，火被水克但火势不弱，形成强势水火对峙。留白（金）切入二者之间，未有效化解对立的黏着感。",
+                "confidence": "medium",
+                "notes": "火与水的能量占比相同，交替出现形成明显的反复拉扯，构成圈内能量失稳的候选。"
+              },
+              {
+                "relation_id": "middle-rel-002",
+                "relation_type": "separated_by_blank_space",
+                "involved_visual_unit_ids": [
+                  "middle-001",
+                  "middle-004"
+                ],
+                "visible_basis": "中圈留白（金）隔开橙色尖角（火）和蓝色花瓣（水），形成清晰边界，避免二者直接黏连。",
+                "confidence": "high",
+                "notes": "金性留白发挥切割和稳定作用，让水火对峙不被直接紧贴。"
+              }
+            ],
+            "summary": ""
+          },
+          "outer": {
+            "relations": [
+              {
+                "relation_id": "outer-rel-001",
+                "relation_type": "generating",
+                "involved_visual_unit_ids": [
+                  "outer-001",
+                  "outer-004"
+                ],
+                "visible_basis": "外圈黄色长花瓣（土）之间有大量留白（金）紧邻并隔开花瓣，形成土生金的连续能量转化。",
+                "confidence": "high",
+                "notes": "黄土大面积承载和舒张为金性留白提供基础，金又从土中生而切割空间，符合土生金的特征。"
+              },
+              {
+                "relation_id": "outer-rel-002",
+                "relation_type": "cut_by_metal",
+                "involved_visual_unit_ids": [
+                  "outer-001",
+                  "outer-004"
+                ],
+                "visible_basis": "外圈大量留白（金）大面积切入并隔开黄色长花瓣（土），使土元素被切割成分离的单元。",
+                "confidence": "high",
+                "notes": "金的切割力让黄土不能连成大块，趋向单元化和清晰化。"
+              },
+              {
+                "relation_id": "outer-rel-003",
+                "relation_type": "generating",
+                "involved_visual_unit_ids": [
+                  "outer-004",
+                  "outer-003"
+                ],
+                "visible_basis": "外圈蓝色小圆/孔状结构（水）夹在黄色花瓣和留白之间，留白（金）与它相邻，金可生水。",
+                "confidence": "medium",
+                "notes": "金生水的关系在外圈局部成立，但水元素占比很小，影响较弱。"
+              }
+            ],
+            "summary": ""
+          }
+        },
+        "cross_circle_flow": {
+          "flow_observations": [
+            {
+              "flow_id": "flow-001",
+              "flow_type": "outward_expanding",
+              "involved_circles": [
+                "inner",
+                "middle",
+                "outer"
+              ],
+              "visual_basis": "三圈整体从中心橙红星形开始，经中圈水火交替的尖角和花瓣，最终到外圈黄色长花瓣在大量留白中向外放射状伸展，形成清晰的从内而外的扩张动势。",
+              "confidence": "high",
+              "notes": "外圈留白面积显著增大，支撑了这种轻快的外散感。"
+            },
+            {
+              "flow_id": "flow-002",
+              "flow_type": "inner_outer_mismatch",
+              "involved_circles": [
+                "inner",
+                "outer"
+              ],
+              "visual_basis": "内圈能量以火水对峙为主，呈现强张力和包围；外圈能量转为土金生化和金水相生，表现得更舒张、轻快。内外能量在紧张度和五行构成上不一致。",
+              "confidence": "high",
+              "notes": "内圈的热压感与外圈黄土金生的舒展感形成明显差异。"
+            }
+          ],
+          "summary": ""
+        },
+        "evidence_links": [
+          {
+            "claim_id": "inner-001",
+            "claim_type": "element_sensing",
+            "claim_text": "inner-001 五行候选为 fire。",
+            "visual_unit_ids": [
+              "inner-001"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "颜色为橙色到红橙色，暖色醒目，星形尖角向外，中心集中感强，具有典型的火性向外、温暖和醒目特征。"
+          },
+          {
+            "claim_id": "inner-002",
+            "claim_type": "element_sensing",
+            "claim_text": "inner-002 五行候选为 water。",
+            "visual_unit_ids": [
+              "inner-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "颜色为较饱和的蓝色，花瓣状弧形片状环绕，形态流动，符合水性寒凉、润下、流动的特征。"
+          },
+          {
+            "claim_id": "inner-003",
+            "claim_type": "element_sensing",
+            "claim_text": "inner-003 五行候选为 earth。",
+            "visual_unit_ids": [
+              "inner-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "颜色为黄色，小面积点状，依照黄色属土的基本原则进行判断。"
+          },
+          {
+            "claim_id": "inner-004",
+            "claim_type": "element_sensing",
+            "claim_text": "inner-004 五行候选为 metal。",
+            "visual_unit_ids": [
+              "inner-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "纸面白色留白，按规则留白一律按金处理。"
+          },
+          {
+            "claim_id": "middle-001",
+            "claim_type": "element_sensing",
+            "claim_text": "middle-001 五行候选为 fire。",
+            "visual_unit_ids": [
+              "middle-001"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "颜色为橙色或橙红色，与内圈火色呼应，尖角或三角形放射结构向外，具有火的温暖、向外和动态特征。"
+          },
+          {
+            "claim_id": "middle-002",
+            "claim_type": "element_sensing",
+            "claim_text": "middle-002 五行候选为 water。",
+            "visual_unit_ids": [
+              "middle-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "颜色为蓝色，与内圈水色呼应，花瓣状弧形片状，形态流动，符合水性。"
+          },
+          {
+            "claim_id": "middle-003",
+            "claim_type": "element_sensing",
+            "claim_text": "middle-003 五行候选为 earth。",
+            "visual_unit_ids": [
+              "middle-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "颜色为黄色，小圆点重复出现，按黄色属土的基本原则判断。"
+          },
+          {
+            "claim_id": "middle-004",
+            "claim_type": "element_sensing",
+            "claim_text": "middle-004 五行候选为 metal。",
+            "visual_unit_ids": [
+              "middle-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "纸面白色留白，按规则留白一律按金处理。"
+          },
+          {
+            "claim_id": "outer-001",
+            "claim_type": "element_sensing",
+            "claim_text": "outer-001 五行候选为 earth。",
+            "visual_unit_ids": [
+              "outer-001"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "颜色为黄色，面积较大，长花瓣放射状排列，按黄色属土的基本原则判断。"
+          },
+          {
+            "claim_id": "outer-003",
+            "claim_type": "element_sensing",
+            "claim_text": "outer-003 五行候选为 water。",
+            "visual_unit_ids": [
+              "outer-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "颜色为蓝色，小面积小圆或孔状结构，按蓝色属水的基本原则判断。"
+          },
+          {
+            "claim_id": "outer-004",
+            "claim_type": "element_sensing",
+            "claim_text": "outer-004 五行候选为 metal。",
+            "visual_unit_ids": [
+              "outer-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "纸面白色留白，大面积开放空间，按规则留白一律按金处理。"
+          },
+          {
+            "claim_id": "inner-rel-001",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "水火相克的结构通过空间包围关系呈现，水包围火，约束火的扩张。",
+            "visual_unit_ids": [
+              "inner-001",
+              "inner-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "内圈蓝色花瓣（水）空间上环绕包围在橙红中心星形（火）外侧。"
+          },
+          {
+            "claim_id": "inner-rel-002",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "金性留白切割火水直接接触，使对立能量不完全粘连或直接相冲。",
+            "visual_unit_ids": [
+              "inner-001",
+              "inner-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "内圈留白（金）直接介入橙红中心（火）和蓝色花瓣（水）之间，形成不规则间隔，切分冷暖色块。"
+          },
+          {
+            "claim_id": "inner-rel-003",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "火能生土，黄色小圆点能量占比与火接近但面积分散，效力可能有限。",
+            "visual_unit_ids": [
+              "inner-001",
+              "inner-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "黄色小圆点（土）分布在橙红中心星形（火）附近，空间上相邻，且视觉上下文显示黄土区域未被留白隔开，符合火生土的条件。"
+          },
+          {
+            "claim_id": "middle-rel-001",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "火与水的能量占比相同，交替出现形成明显的反复拉扯，构成圈内能量失稳的候选。",
+            "visual_unit_ids": [
+              "middle-001",
+              "middle-002",
+              "middle-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "中圈橙色尖角（火）和蓝色花瓣（水）等量交替，火被水克但火势不弱，形成强势水火对峙。留白（金）切入二者之间，未有效化解对立的黏着感。"
+          },
+          {
+            "claim_id": "middle-rel-002",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "金性留白发挥切割和稳定作用，让水火对峙不被直接紧贴。",
+            "visual_unit_ids": [
+              "middle-001",
+              "middle-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "中圈留白（金）隔开橙色尖角（火）和蓝色花瓣（水），形成清晰边界，避免二者直接黏连。"
+          },
+          {
+            "claim_id": "outer-rel-001",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "黄土大面积承载和舒张为金性留白提供基础，金又从土中生而切割空间，符合土生金的特征。",
+            "visual_unit_ids": [
+              "outer-001",
+              "outer-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "外圈黄色长花瓣（土）之间有大量留白（金）紧邻并隔开花瓣，形成土生金的连续能量转化。"
+          },
+          {
+            "claim_id": "outer-rel-002",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "金的切割力让黄土不能连成大块，趋向单元化和清晰化。",
+            "visual_unit_ids": [
+              "outer-001",
+              "outer-004"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "外圈大量留白（金）大面积切入并隔开黄色长花瓣（土），使土元素被切割成分离的单元。"
+          },
+          {
+            "claim_id": "outer-rel-003",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "金生水的关系在外圈局部成立，但水元素占比很小，影响较弱。",
+            "visual_unit_ids": [
+              "outer-004",
+              "outer-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "外圈蓝色小圆/孔状结构（水）夹在黄色花瓣和留白之间，留白（金）与它相邻，金可生水。"
+          },
+          {
+            "claim_id": "flow-001",
+            "claim_type": "cross_circle_flow",
+            "claim_text": "outward_expanding",
+            "visual_unit_ids": [],
+            "circle_observation_refs": [
+              "visual_observation.three_circle_observation"
+            ],
+            "evidence_text": "三圈整体从中心橙红星形开始，经中圈水火交替的尖角和花瓣，最终到外圈黄色长花瓣在大量留白中向外放射状伸展，形成清晰的从内而外的扩张动势。"
+          },
+          {
+            "claim_id": "flow-002",
+            "claim_type": "cross_circle_flow",
+            "claim_text": "inner_outer_mismatch",
+            "visual_unit_ids": [],
+            "circle_observation_refs": [
+              "visual_observation.three_circle_observation"
+            ],
+            "evidence_text": "内圈能量以火水对峙为主，呈现强张力和包围；外圈能量转为土金生化和金水相生，表现得更舒张、轻快。内外能量在紧张度和五行构成上不一致。"
+          }
+        ]
+      },
+      "model_trace": {
+        "vision": [
+          {
+            "source": "golden_foundation.visual_observation"
+          }
+        ],
+        "foundation_analysis": [
+          {
+            "model": "deepseek-v4-pro",
+            "base_url": "https://api.deepseek.com",
+            "endpoint_url": "https://api.deepseek.com/chat/completions",
+            "result": "success"
+          }
+        ]
+      }
+    },
+    "theme-translation-route": {
+      "stage": "theme-translation-route",
+      "status": "complete",
+      "theme": "wealth",
+      "route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.water_fire_conflict",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.middle_tangled_relationship_pull",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.relationship_boundary",
+            "recommended_topic": "关系与交换边界 / 人际关系",
+            "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+            "matched_signals": [
+              "中圈拉扯"
+            ],
+            "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+            "avoid": [
+              "不直接定性亲密关系、父亲关系或母亲关系。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "ai_draft",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "report-thesis-selection": {
+      "stage": "report-thesis-selection",
+      "status": "complete",
+      "core_thesis": "财富议题的核心是内心的热力（火）与深层的不安和克制（水）正在持续对峙，导致行动反复被打断，资源难以稳定积累。调整方向是把这股强烈的能量从内部拉扯中解放出来，让火的热能透过土的稳定和金的结构，真正向外转化成可承接的行动和成果。",
+      "entry_circle": "inner",
+      "entry_signal": "内圈橙红中心星形被蓝色花瓣包围形成暖冷强烈对比，同时内圈留白切割二者，构成明显水火相克结构与金性边界介入。",
+      "entry_reason": "这幅画第一眼最吸睛、最有张力的就是中心的橙红色星形和紧紧包围它的蓝色。对财富议题来说，这里直接映射了用户内心热情与恐惧、冲动与克制同时存在的核心冲突，这是理解后面所有财富流动和行动节奏的钥匙。从能量最强的矛盾点切入，用户最容易感到被理解，也最能解释为什么想动又动不起来。",
+      "narrative_order": [
+        "inner",
+        "middle",
+        "outer"
+      ],
+      "integrated_context_threads": [
+        "emotion",
+        "relationship",
+        "body"
+      ],
+      "evidence_refs": [
+        "inner-001",
+        "inner-002",
+        "inner-004",
+        "inner-rel-001",
+        "inner-rel-002",
+        "middle-001",
+        "middle-002",
+        "middle-004",
+        "middle-rel-001",
+        "outer-001",
+        "outer-004",
+        "outer-rel-001",
+        "flow-001",
+        "flow-002"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.water_fire_conflict",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.middle_tangled_relationship_pull",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.relationship_boundary",
+            "recommended_topic": "关系与交换边界 / 人际关系",
+            "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+            "matched_signals": [
+              "中圈拉扯"
+            ],
+            "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+            "avoid": [
+              "不直接定性亲密关系、父亲关系或母亲关系。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "ai_draft",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "user-facing-framing": {
+      "stage": "user-facing-framing",
+      "status": "complete",
+      "framing": "这张画里最有力的部分，是中间这颗温热、想要冲出去的橙红色星星，同时又被一层冷静的蓝色紧紧环抱住。在财富上，你很可能常常感受到这股“想要”和“害怕”或“再等等”同时存在的拉扯。我们先从这里讲起，因为这解释了为什么有时心里很有想法、也会努力，但最后行动和结果好像总是差一步。",
+      "entry_circle": "inner",
+      "entry_signal": "内圈橙红中心星形被蓝色花瓣包围形成暖冷强烈对比，同时内圈留白切割二者，构成明显水火相克结构与金性边界介入。",
+      "entry_reason": "这幅画第一眼最吸睛、最有张力的就是中心的橙红色星形和紧紧包围它的蓝色。对财富议题来说，这里直接映射了用户内心热情与恐惧、冲动与克制同时存在的核心冲突，这是理解后面所有财富流动和行动节奏的钥匙。从能量最强的矛盾点切入，用户最容易感到被理解，也最能解释为什么想动又动不起来。",
+      "narrative_order": [
+        "inner",
+        "middle",
+        "outer"
+      ],
+      "integrated_context_threads": [
+        "emotion",
+        "relationship",
+        "body"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.water_fire_conflict",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.middle_tangled_relationship_pull",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.relationship_boundary",
+            "recommended_topic": "关系与交换边界 / 人际关系",
+            "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+            "matched_signals": [
+              "中圈拉扯"
+            ],
+            "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+            "avoid": [
+              "不直接定性亲密关系、父亲关系或母亲关系。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "ai_draft",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "report-branching-plan": {
+      "stage": "report-branching-plan",
+      "status": "complete",
+      "healing_direction": "通过身体的微小行动打破内心的“想动但不能动”的冰冻状态，同时用土元素的稳定和记录，为火的热情和金的边界感建立衔接，让财富能量从内部的“消耗性拉扯”转向外部的“有序扩张”。重点不是马上赚钱，而是帮助火找到水浇不灭、又能安全落地的出口。",
+      "report_mode": "lite",
+      "entry_circle": "inner",
+      "entry_signal": "内圈橙红中心星形被蓝色花瓣包围形成暖冷强烈对比，同时内圈留白切割二者，构成明显水火相克结构与金性边界介入。",
+      "entry_reason": "这幅画第一眼最吸睛、最有张力的就是中心的橙红色星形和紧紧包围它的蓝色。对财富议题来说，这里直接映射了用户内心热情与恐惧、冲动与克制同时存在的核心冲突，这是理解后面所有财富流动和行动节奏的钥匙。从能量最强的矛盾点切入，用户最容易感到被理解，也最能解释为什么想动又动不起来。",
+      "narrative_order": [
+        "inner",
+        "middle",
+        "outer"
+      ],
+      "integrated_context_threads": [
+        "emotion",
+        "relationship",
+        "body"
+      ],
+      "writing_input_refs": [
+        "inner-001",
+        "inner-002",
+        "inner-004",
+        "inner-rel-001",
+        "inner-rel-002",
+        "middle-001",
+        "middle-002",
+        "middle-004",
+        "middle-rel-001",
+        "outer-001",
+        "outer-004",
+        "outer-rel-001",
+        "flow-001",
+        "flow-002"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.water_fire_conflict",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.middle_tangled_relationship_pull",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.relationship_boundary",
+            "recommended_topic": "关系与交换边界 / 人际关系",
+            "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+            "matched_signals": [
+              "中圈拉扯"
+            ],
+            "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+            "avoid": [
+              "不直接定性亲密关系、父亲关系或母亲关系。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "ai_draft",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "lite-report-draft": {
+      "stage": "lite-report-draft",
+      "status": "complete",
+      "enabled": true,
+      "markdown": "# 财富议题：被围住的热力，如何安全地向外生长\n\n这幅画第一眼让人感觉到一股清晰的向外扩张的力道——中心的橙红色星形醒目而主动，最外圈的黄色长花瓣在大量留白中一瓣一瓣打开，整张画有着从内而外、层层展开的明确动势。同时，你很难忽略内圈那层蓝色花瓣的包围，它柔和却坚定地环绕着中心的炽热，让“想冲出去”的念头和“需要再稳一稳”的感受同时出现。外圈的留白面积很大，给了黄色花瓣足够的空间去伸展，但也让这些花瓣显得各自独立，少了些连成一片的厚实承接。\n\n画面最抓眼睛的两条线索：一是内圈橙红中心被蓝色花瓣环绕，中间由白色留白切分边界；二是外圈大量黄色花瓣在一瓣一瓣向外展开的同时，彼此之间被大面积留白隔开，结构清晰却不密集。\n\n先从画面最强的那组对比说起。内圈的橙红色星形，颜色暖而醒目，从五行感知来看，这对应的是火——温热、启动、想要向外发散。围绕它的蓝色花瓣，呈流动的弧形，对应水的清凉、包裹与流动。单看这一圈，就是一组水火相邻、水包围火的关系候选——火想要扩张，水却从四周收紧边界。内圈的白色留白在这里扮演金的角色，切割与清晰，它介入在火与水之间，让两种力量没有直接黏连，这既是保护，也让对立更明白地呈现给你看。中圈延续了这个水火往复的节奏：橙色尖角对应火，蓝色花瓣对应水，二者交替出现，中间同样有留白划开结构。两种力量几乎同等强度地轮转，像热情和顾虑在不断对话，谁都不退让，谁也说服不了谁。外圈的画面感受却完全不同：大面积的黄色长花瓣，颜色是土性的黄，面积舒展，对应土的承载和耐心；同样大幅增加的白色留白对应金的舒张与切割。一圈内部，土生金的关系很清晰——花瓣被留白隔开之后，每一瓣的边界更明确、更独立，但也因此少了一点连成一片、厚实承接的感觉。\n\n在你的财富议题里，这幅画把内在的绳结翻到纸上：你并不是没有能力，也不是不想行动，而是内心的热情和一种深层的不安在反复拉扯，行动被情绪托着上下起伏，不容易稳定地积累和沉淀。你很可能曾经在快要往前一步的时候，心里某个部分把你拉回来再审一次、再安全一点，于是赚钱的冲劲和留住钱的稳定感都变得断断续续。外圈那份向外舒展的土性质感和清晰的留白结构，提示你其实有耐心把事情做出条理和边界，只是这一面需要更放松地接住从内心涌上来的热度，而不是先被中间的拉扯消磨掉力气。\n\n接下来一周，不妨做一件很小的事：每天花几分钟，把心里“想做但没去做”的念头写下来，在它旁边补一句“如果只走很小很小一步，那一步会是什么”。不用逼自己真的做很多，只需要练习把冲动翻译成一个可以被承接、被规划的具体动作。让火有地方落地，而不是被冷水浇回去。\n\n下一次曼陀罗探索，如果想继续往下走，可以看看中圈交替出现的拉扯感，在自己的合作、人情或日常交换里，是不是也有类似的“要给多少、边界放在哪里”的往复。那个方向能帮你把财富中付出与回报的平衡看得更清楚。"
+    },
+    "pro-report-draft": {
+      "stage": "pro-report-draft",
+      "status": "complete",
+      "enabled": false,
+      "markdown": ""
+    },
+    "visual-assets": {
+      "stage": "visual-assets",
+      "status": "skipped",
+      "reason": "mvp_no_image_generation"
+    },
+    "final-report-assembly": {
+      "stage": "final-report-assembly",
+      "status": "complete",
+      "final_report": {
+        "report_id": "mandala-interpretation-fb5fd3251bd0",
+        "report_mode": "lite",
+        "title": "曼陀罗解读报告",
+        "markdown": "# 财富议题：被围住的热力，如何安全地向外生长\n\n这幅画第一眼让人感觉到一股清晰的向外扩张的力道——中心的橙红色星形醒目而主动，最外圈的黄色长花瓣在大量留白中一瓣一瓣打开，整张画有着从内而外、层层展开的明确动势。同时，你很难忽略内圈那层蓝色花瓣的包围，它柔和却坚定地环绕着中心的炽热，让“想冲出去”的念头和“需要再稳一稳”的感受同时出现。外圈的留白面积很大，给了黄色花瓣足够的空间去伸展，但也让这些花瓣显得各自独立，少了些连成一片的厚实承接。\n\n画面最抓眼睛的两条线索：一是内圈橙红中心被蓝色花瓣环绕，中间由白色留白切分边界；二是外圈大量黄色花瓣在一瓣一瓣向外展开的同时，彼此之间被大面积留白隔开，结构清晰却不密集。\n\n先从画面最强的那组对比说起。内圈的橙红色星形，颜色暖而醒目，从五行感知来看，这对应的是火——温热、启动、想要向外发散。围绕它的蓝色花瓣，呈流动的弧形，对应水的清凉、包裹与流动。单看这一圈，就是一组水火相邻、水包围火的关系候选——火想要扩张，水却从四周收紧边界。内圈的白色留白在这里扮演金的角色，切割与清晰，它介入在火与水之间，让两种力量没有直接黏连，这既是保护，也让对立更明白地呈现给你看。中圈延续了这个水火往复的节奏：橙色尖角对应火，蓝色花瓣对应水，二者交替出现，中间同样有留白划开结构。两种力量几乎同等强度地轮转，像热情和顾虑在不断对话，谁都不退让，谁也说服不了谁。外圈的画面感受却完全不同：大面积的黄色长花瓣，颜色是土性的黄，面积舒展，对应土的承载和耐心；同样大幅增加的白色留白对应金的舒张与切割。一圈内部，土生金的关系很清晰——花瓣被留白隔开之后，每一瓣的边界更明确、更独立，但也因此少了一点连成一片、厚实承接的感觉。\n\n在你的财富议题里，这幅画把内在的绳结翻到纸上：你并不是没有能力，也不是不想行动，而是内心的热情和一种深层的不安在反复拉扯，行动被情绪托着上下起伏，不容易稳定地积累和沉淀。你很可能曾经在快要往前一步的时候，心里某个部分把你拉回来再审一次、再安全一点，于是赚钱的冲劲和留住钱的稳定感都变得断断续续。外圈那份向外舒展的土性质感和清晰的留白结构，提示你其实有耐心把事情做出条理和边界，只是这一面需要更放松地接住从内心涌上来的热度，而不是先被中间的拉扯消磨掉力气。\n\n接下来一周，不妨做一件很小的事：每天花几分钟，把心里“想做但没去做”的念头写下来，在它旁边补一句“如果只走很小很小一步，那一步会是什么”。不用逼自己真的做很多，只需要练习把冲动翻译成一个可以被承接、被规划的具体动作。让火有地方落地，而不是被冷水浇回去。\n\n下一次曼陀罗探索，如果想继续往下走，可以看看中圈交替出现的拉扯感，在自己的合作、人情或日常交换里，是不是也有类似的“要给多少、边界放在哪里”的往复。那个方向能帮你把财富中付出与回报的平衡看得更清楚。",
+        "summary": "财富议题的核心是内心的热力（火）与深层的不安和克制（水）正在持续对峙，导致行动反复被打断，资源难以稳定积累。调整方向是把这股强烈的能量从内部拉扯中解放出来，让火的热能透过土的稳定和金的结构，真正向外转化成可承接的行动和成果。"
+      }
+    }
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "橙红中心星形是整幅画的视觉发动点。它带有明显的尖角和热度，使画面中心有强烈启动感。"
+    },
+    {
+      "id": "inner-002",
+      "circle": "inner",
+      "visible_evidence": "蓝色花瓣把橙红中心包住，形成明显冷暖对比。它让中心的热度被一层流动的蓝色结构围绕。"
+    },
+    {
+      "id": "inner-003",
+      "circle": "inner",
+      "visible_evidence": "黄色小圆点为内圈增加细小的明亮节点。它们不是主结构，但会影响局部关系判断。"
+    },
+    {
+      "id": "inner-004",
+      "circle": "inner",
+      "visible_evidence": "内圈留白让橙红与蓝色之间的边界更加明显。它使强烈对比不完全粘连。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "橙色尖角让中圈保持向外冲出的动势。它们和蓝色花瓣交替，使中圈有明显的冷暖拉扯。"
+    },
+    {
+      "id": "middle-002",
+      "circle": "middle",
+      "visible_evidence": "蓝色中圈花瓣让橙色尖角之间有流动的冷色缓冲。它们在中圈形成重要的相邻关系。"
+    },
+    {
+      "id": "middle-003",
+      "circle": "middle",
+      "visible_evidence": "黄色圆点像中圈的小节点，让大块橙蓝结构之间有更细的节奏。"
+    },
+    {
+      "id": "middle-004",
+      "circle": "middle",
+      "visible_evidence": "中圈留白帮助橙色尖角和蓝色花瓣保持各自形态。它也是后续判断局部关系的重要依据。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "黄色长花瓣让外圈明显向外打开。它们不像内中圈那样拥挤，而是在留白中一瓣一瓣伸展。"
+    },
+    {
+      "id": "outer-002",
+      "circle": "outer",
+      "visible_evidence": "黄色点状结构让外圈有细密装饰感，也让黄色长花瓣不只是大色块。"
+    },
+    {
+      "id": "outer-003",
+      "circle": "outer",
+      "visible_evidence": "蓝色小圆在外圈黄色结构中形成冷色节点。虽然面积小，但会影响外圈局部关系。"
+    },
+    {
+      "id": "outer-004",
+      "circle": "outer",
+      "visible_evidence": "外圈留白让黄色花瓣显得更独立、更向外伸展。它是外圈轻盈感和开放感的重要来源。"
+    }
+  ]
+}

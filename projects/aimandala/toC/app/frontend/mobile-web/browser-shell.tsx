@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { MobileWebApp } from "./app";
-import { BrowserDebugPanel } from "./browser-debug-panel";
-import { ManualReviewPanel } from "./manual-review-panel";
 import { MiniappApp } from "../miniapp/app";
 import type { MiniappRouteId } from "../miniapp/routes";
 import { createPreviewAppProps } from "./fixtures";
@@ -13,7 +11,7 @@ import {
 import {
   pollMobileWebReportUntilReady,
   refreshMobileWebReport,
-  runMobileWebLiteFlow,
+  runMobileWebReportFlow,
 } from "./controller";
 import {
   createPreviewRouteInput,
@@ -32,11 +30,6 @@ import {
   resolveMobileWebSession,
   updateMobileWebSessionCanonicalUserId,
 } from "./identity";
-import type {
-  DebugTimelineEntry,
-  DebugTimelineSnapshot,
-  MobileWebRuntimeDebugSnapshot,
-} from "./debug-observer";
 import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
 import {
   getDraftReportVariant,
@@ -48,28 +41,47 @@ import {
 } from "./state";
 import { ensureUploadedImagePath } from "./upload-runtime";
 import type { HistoryFilterId } from "./components/history-cards";
-import {
-  clearApiDebugTrace,
-  subscribeApiDebugTrace,
-  type ApiDebugTraceEntry,
-} from "../shared/api/debugTrace";
 import type {
-  DetectCirclesResponse,
   FrontendUserSession,
+  DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
   InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
-import { getInterpretationList } from "../shared/api";
 import {
   applyError,
   getGenerationPresentation,
-  getLiteStructuredReport,
-  hasProReportAccess,
   initialMandalaFlowState,
-  resolveSelfUnderstandingReportCta,
 } from "../shared/core";
+
+type RuntimeDebugState = {
+  route: string;
+  phase: "idle" | "uploading_image" | "building_request" | "requesting_report" | "waiting_report" | "report_ready" | "failed";
+  isBusy: boolean;
+  isUploading: boolean;
+  uploadErrorMessage: string | null;
+  reportStage: string | null;
+  reportId: string | null;
+  imagePath: string | null;
+};
+
+function isSameRuntimeDebugState(
+  current: RuntimeDebugState | null,
+  next: RuntimeDebugState,
+) {
+  return Boolean(
+    current &&
+      current.route === next.route &&
+      current.phase === next.phase &&
+      current.isBusy === next.isBusy &&
+      current.isUploading === next.isUploading &&
+      current.uploadErrorMessage === next.uploadErrorMessage &&
+      current.reportStage === next.reportStage &&
+      current.reportId === next.reportId &&
+      current.imagePath === next.imagePath,
+  );
+}
 
 function readBrowserShellInitialState() {
   const defaultDraft = DEFAULT_PREVIEW_DRAFT;
@@ -133,6 +145,30 @@ function formatHistoryRefreshHint(date = new Date()): string {
   }).format(date)}`;
 }
 
+function resolvePreviewReportFooterState(
+  flowState: MandalaFlowState | null,
+  draft: MobileWebUploadDraft,
+) {
+  if (!flowState || flowState.step === "liteGenerating" || flowState.step === "error") {
+    return {};
+  }
+
+  const isProReport = flowState.report?.version === "pro" || flowState.step === "proReady";
+  if (isProReport) {
+    return {
+      primaryLabel: "重新上传画作",
+      secondaryLabel: "返回上传页",
+      footerHint: "Pro 完整解读已经生成完成。你可以重新开始下一次解读，或回到上传页继续查看别的作品。",
+    };
+  }
+
+  return {
+    primaryLabel: "升级到 Pro 版本",
+    secondaryLabel: "重新上传画作",
+    footerHint: "如果你想继续深入读这幅画，可以在 Lite 基础上升级到 Pro 完整解读。",
+  };
+}
+
 export function MobileWebBrowserShell() {
   const initialState = readBrowserShellInitialState();
   const [forceCleanMode] = useState(initialState.cleanMode);
@@ -151,6 +187,10 @@ export function MobileWebBrowserShell() {
   const [controlsOpen, setControlsOpen] = useState(initialState.controlsOpen);
   const [previewFlowState, setPreviewFlowState] =
     useState<MandalaFlowState | null>(null);
+  const [previewDetection, setPreviewDetection] =
+    useState<DetectCirclesResponse | null>(null);
+  const [previewDetectError, setPreviewDetectError] =
+    useState<string | null>(null);
   const [previewFlowRunning, setPreviewFlowRunning] = useState(false);
   const [previewHistoryRecords, setPreviewHistoryRecords] =
     useState<InterpretationRecordResponse[] | null>(null);
@@ -172,17 +212,33 @@ export function MobileWebBrowserShell() {
     useState<InterpretationVersion | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
-  const [apiTraces, setApiTraces] = useState<ApiDebugTraceEntry[]>([]);
-  const [runtimeDebugSnapshot, setRuntimeDebugSnapshot] =
-    useState<MobileWebRuntimeDebugSnapshot | null>(null);
-  const [timelineEntries, setTimelineEntries] = useState<DebugTimelineEntry[]>([]);
-  const previewTimelineSignatureRef = useRef<string>("");
-  const runtimeTimelineSignatureRef = useRef<string>("");
-  const previewSessionRef = useRef<string>("preview-idle");
-  const runtimeSessionRef = useRef<string>("runtime-idle");
-  const previewLastStepRef = useRef<string>("idle");
-  const runtimeLastStepRef = useRef<string>("idle");
+  const [runtimeDebugState, setRuntimeDebugState] = useState<RuntimeDebugState | null>(null);
   const userId = session.canonicalUserId;
+  const activePreviewImagePath = draft.uploadAsset?.runtimeImagePath ?? draft.imagePath;
+  const activePreviewStep = previewFlowState?.step ?? "idle";
+  const activePreviewError =
+    previewDetectError ??
+    previewFlowState?.lastError ??
+    previewFlowState?.report?.error ??
+    null;
+  const activePreviewReportId =
+    previewFlowState?.interpretation?.interpretation_id ??
+    previewHistoryOpeningId ??
+    interpretationId ??
+    null;
+  const activeRuntimeState = previewMode ? null : runtimeDebugState;
+  const panelRoute = previewMode ? route : activeRuntimeState?.route ?? route;
+  const panelPhase = previewMode ? (previewFlowRunning ? "waiting_report" : "idle") : activeRuntimeState?.phase ?? "idle";
+  const panelBusy = previewMode ? previewFlowRunning : activeRuntimeState?.isBusy ?? false;
+  const panelUploading = previewMode ? previewFlowRunning && route === "upload" : activeRuntimeState?.isUploading ?? false;
+  const panelError = previewMode ? activePreviewError : activeRuntimeState?.uploadErrorMessage ?? null;
+  const panelReportStage = previewMode ? activePreviewStep : activeRuntimeState?.reportStage ?? "idle";
+  const panelReportId = previewMode ? activePreviewReportId : activeRuntimeState?.reportId ?? null;
+  const panelImagePath = previewMode ? activePreviewImagePath : activeRuntimeState?.imagePath ?? activePreviewImagePath;
+  const previewReportFooterState = resolvePreviewReportFooterState(
+    previewFlowState,
+    draft,
+  );
 
   const input = useMemo(
     () => createPreviewRouteInput(route, draft, interpretationId, session, {
@@ -203,6 +259,11 @@ export function MobileWebBrowserShell() {
       ),
     [draft, previewFlowState, previewHistoryRecords, route],
   );
+  const handleRuntimeDebugStateChange = useCallback((state: RuntimeDebugState) => {
+    setRuntimeDebugState((current) => (
+      isSameRuntimeDebugState(current, state) ? current : state
+    ));
+  }, []);
 
   useEffect(() => {
     setUserIdInput(session.canonicalUserId);
@@ -230,6 +291,8 @@ export function MobileWebBrowserShell() {
       preserveRecordsOnError?: boolean;
     },
   ) {
+    void nextQuery;
+    void options;
     if (draft.browserFile && !draft.uploadAsset) {
       setPreviewHistoryStatusLabel("当前显示占位历史记录");
       setPreviewHistoryStatusDetail("当前浏览器文件还没完成上传换路径，因此历史页先不请求真实接口。");
@@ -238,23 +301,11 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    try {
-      const records = await getInterpretationList(userId, nextQuery);
-      setPreviewHistoryRecords(records);
-      setPreviewHistoryStatusLabel(options?.successLabel ?? "当前显示真实历史记录");
-      setPreviewHistoryStatusDetail(options?.successDetail ?? "历史页已按当前查询条件重新请求真实记录。");
-      setPreviewHistoryStatusTone(options?.successTone ?? "runtime");
-      setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
-    } catch (error) {
-      if (!options?.preserveRecordsOnError) {
-        setPreviewHistoryRecords(null);
-      }
-      setPreviewHistoryStatusLabel(options?.failureLabel ?? "历史记录已回退到占位数据");
-      setPreviewHistoryStatusDetail(
-        options?.failureDetail ?? `真实历史拉取失败：${error instanceof Error ? error.message : "unknown error"}`,
-      );
-      setPreviewHistoryStatusTone(options?.failureTone ?? "preview");
-    }
+    setPreviewHistoryRecords(null);
+    setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
+    setPreviewHistoryStatusDetail("当前只保留财富报告生成入口，历史列表需要按新 report_id 存储模型重做。");
+    setPreviewHistoryStatusTone("preview");
+    setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
   }
 
   useEffect(() => {
@@ -273,65 +324,14 @@ export function MobileWebBrowserShell() {
     const refreshHistory = async () => {
       setPreviewHistoryRefreshing(true);
 
-      try {
-        let resolvedQuery = previewHistoryQuery;
-        let records = await getInterpretationList(userId, resolvedQuery);
-        let switchedToReady = false;
-
-        if (cancelled) {
-          return;
-        }
-
-        if (resolvedQuery.filter === "pending" && records.length === 0) {
-          const readyQuery: InterpretationListQuery = {
-            ...resolvedQuery,
-            filter: "ready",
-          };
-          const readyRecords = await getInterpretationList(userId, readyQuery);
-          if (cancelled) {
-            return;
-          }
-
-          if (readyRecords.length > 0) {
-            resolvedQuery = readyQuery;
-            records = readyRecords;
-            switchedToReady = true;
-          }
-        }
-
-        const stillPending = records.some(
-          (record) => !getGenerationPresentation(record).isReady,
-        );
-
-        setPreviewHistoryQuery(resolvedQuery);
-        setPreviewHistoryRecords(records);
+      if (!cancelled) {
+        setPreviewHistoryRecords(null);
         setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
-        setPreviewHistoryStatusLabel(
-          switchedToReady ? "已有新的完整报告可查看" : "已自动刷新历史记录",
-        );
-        setPreviewHistoryStatusDetail(
-          switchedToReady
-            ? "刚才生成中的解读已完成，历史页已自动切到“可查看”，方便你直接打开报告。"
-            : stillPending
-              ? "检测到仍有生成中的解读，已为你更新最新状态。"
-              : "历史记录已更新到最新状态。",
-        );
-        setPreviewHistoryStatusTone("runtime");
-      } catch (error) {
-        if (cancelled) {
-          return;
-        }
-
-        setPreviewHistoryStatusLabel("自动刷新暂时失败");
-        setPreviewHistoryStatusDetail(
-          error instanceof Error ? error.message : "真实历史自动刷新失败",
-        );
+        setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
+        setPreviewHistoryStatusDetail("自动刷新已停用；历史列表会在新报告存储模型完成后重做。");
         setPreviewHistoryStatusTone("preview");
-      } finally {
-        if (!cancelled) {
-          setPreviewHistoryRefreshing(false);
-        }
       }
+      setPreviewHistoryRefreshing(false);
     };
 
     const timer = window.setInterval(() => {
@@ -377,198 +377,6 @@ export function MobileWebBrowserShell() {
       window.history.replaceState(null, "", `${nextPath}${window.location.search}`);
     }
   }, [route]);
-
-  useEffect(() => subscribeApiDebugTrace(setApiTraces), []);
-
-  function appendTimelineEntry(
-    source: "preview" | "runtime",
-    sessionId: string,
-    snapshot: DebugTimelineSnapshot,
-  ) {
-    const flowStep = snapshot.flowState?.step ?? "idle";
-    const reportVersion = snapshot.report?.version ?? "none";
-    const title = `${flowStep}${reportVersion !== "none" ? ` / ${reportVersion}` : ""}`;
-    const subtitleParts = [
-      `route=${snapshot.route}`,
-      snapshot.status
-        ? `progress=${snapshot.status.generation_progress}%`
-        : snapshot.uploadDetecting
-          ? "detecting"
-          : null,
-      snapshot.detectError ? `detectError=${snapshot.detectError}` : null,
-    ].filter(Boolean);
-
-    const entry: DebugTimelineEntry = {
-      id:
-        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      sessionId,
-      createdAt: new Date().toISOString(),
-      source,
-      title,
-      subtitle: subtitleParts.join(" · ") || "状态快照",
-      snapshot,
-    };
-
-    setTimelineEntries((current) => [entry, ...current].slice(0, 80));
-  }
-
-  function createDebugSessionId(prefix: "preview" | "runtime"): string {
-    return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
-  }
-
-  function resolveSessionId(input: {
-    source: "preview" | "runtime";
-    currentSessionId: string;
-    currentStep: string;
-    lastStep: string;
-    interpretationId?: string | null;
-    route: string;
-    previewMode: boolean;
-  }): string {
-    const {
-      source,
-      currentSessionId,
-      currentStep,
-      lastStep,
-      interpretationId,
-      route,
-      previewMode,
-    } = input;
-
-    const taskStarting =
-      route === "loading" &&
-      ["idle", "liteReady", "proReady", "error"].includes(lastStep) &&
-      ["detectingCircles", "liteGenerating", "liteReady", "proReady"].includes(currentStep);
-    const gainedInterpretation =
-      !currentSessionId.includes(interpretationId ?? "") &&
-      Boolean(interpretationId);
-    const restartedAfterIdle =
-      lastStep === "idle" &&
-      currentStep !== "idle" &&
-      (route === "loading" || (!previewMode && route === "upload"));
-
-    if (taskStarting || gainedInterpretation || restartedAfterIdle) {
-      return createDebugSessionId(source);
-    }
-
-    return currentSessionId;
-  }
-
-  useEffect(() => {
-    if (!localDebugEnabled) {
-      return;
-    }
-
-    const snapshot: DebugTimelineSnapshot = {
-      route,
-      previewMode: true,
-      uploadDraft: draft,
-      flowState: previewFlowState,
-      report: previewFlowState?.report ?? null,
-      status: previewFlowState?.status ?? null,
-      runtimeBusy: previewFlowRunning,
-      historyBusy: Boolean(previewHistoryOpeningId),
-    };
-    const signature = JSON.stringify({
-      route,
-      draft,
-      step: previewFlowState?.step ?? null,
-      interpretationId: previewFlowState?.interpretation?.interpretation_id ?? null,
-      statusStage: previewFlowState?.status?.generation_stage ?? null,
-      statusProgress: previewFlowState?.status?.generation_progress ?? null,
-      reportVersion: previewFlowState?.report?.version ?? null,
-      previewFlowRunning,
-    });
-
-    if (signature === previewTimelineSignatureRef.current) {
-      return;
-    }
-
-    previewTimelineSignatureRef.current = signature;
-    const nextSessionId = resolveSessionId({
-      source: "preview",
-      currentSessionId: previewSessionRef.current,
-      currentStep: previewFlowState?.step ?? "idle",
-      lastStep: previewLastStepRef.current,
-      interpretationId: previewFlowState?.interpretation?.interpretation_id,
-      route,
-      previewMode: true,
-    });
-
-    previewSessionRef.current = nextSessionId;
-    previewLastStepRef.current = previewFlowState?.step ?? "idle";
-    appendTimelineEntry("preview", nextSessionId, snapshot);
-  }, [
-    draft,
-    localDebugEnabled,
-    previewFlowRunning,
-    previewFlowState,
-    previewHistoryOpeningId,
-    route,
-  ]);
-
-  useEffect(() => {
-    if (!localDebugEnabled || !runtimeDebugSnapshot) {
-      return;
-    }
-
-    const snapshot: DebugTimelineSnapshot = {
-      route: runtimeDebugSnapshot.route,
-      previewMode: false,
-      uploadDraft: runtimeDebugSnapshot.uploadDraft,
-      flowState: runtimeDebugSnapshot.flowState,
-      detection: runtimeDebugSnapshot.detection,
-      detectError: runtimeDebugSnapshot.uploadDetectError,
-      report: runtimeDebugSnapshot.report,
-      status: runtimeDebugSnapshot.status,
-      runtimeBusy: runtimeDebugSnapshot.runtimeBusy,
-      historyBusy: runtimeDebugSnapshot.historyBusy,
-      uploadDetecting: runtimeDebugSnapshot.uploadDetecting,
-    };
-    const signature = JSON.stringify({
-      route: runtimeDebugSnapshot.route,
-      uploadDraft: runtimeDebugSnapshot.uploadDraft,
-      step: runtimeDebugSnapshot.flowState?.step ?? null,
-      interpretationId:
-        runtimeDebugSnapshot.flowState?.interpretation?.interpretation_id ?? null,
-      statusStage: runtimeDebugSnapshot.status?.generation_stage ?? null,
-      statusProgress: runtimeDebugSnapshot.status?.generation_progress ?? null,
-      reportVersion: runtimeDebugSnapshot.report?.version ?? null,
-      detect: runtimeDebugSnapshot.detection
-        ? {
-            inner: runtimeDebugSnapshot.detection.inner_radius,
-            middle: runtimeDebugSnapshot.detection.middle_radius,
-            confidence: runtimeDebugSnapshot.detection.confidence,
-          }
-        : null,
-      detectError: runtimeDebugSnapshot.uploadDetectError,
-      uploadDetecting: runtimeDebugSnapshot.uploadDetecting,
-      runtimeBusy: runtimeDebugSnapshot.runtimeBusy,
-      historyBusy: runtimeDebugSnapshot.historyBusy,
-    });
-
-    if (signature === runtimeTimelineSignatureRef.current) {
-      return;
-    }
-
-    runtimeTimelineSignatureRef.current = signature;
-    const nextSessionId = resolveSessionId({
-      source: "runtime",
-      currentSessionId: runtimeSessionRef.current,
-      currentStep: runtimeDebugSnapshot.flowState?.step ?? "idle",
-      lastStep: runtimeLastStepRef.current,
-      interpretationId:
-        runtimeDebugSnapshot.flowState?.interpretation?.interpretation_id,
-      route: runtimeDebugSnapshot.route,
-      previewMode: false,
-    });
-
-    runtimeSessionRef.current = nextSessionId;
-    runtimeLastStepRef.current = runtimeDebugSnapshot.flowState?.step ?? "idle";
-    appendTimelineEntry("runtime", nextSessionId, snapshot);
-  }, [localDebugEnabled, runtimeDebugSnapshot]);
 
   useEffect(() => {
     if (!pendingPresetId) {
@@ -619,7 +427,13 @@ export function MobileWebBrowserShell() {
             return liteSnapshot;
           }
 
-          if (hasProReportAccess(liteSnapshot.state)) {
+          if (
+            liteSnapshot.state.report?.version === "pro" ||
+            Boolean(
+              liteSnapshot.state.report?.can_upgrade ||
+                liteSnapshot.state.status?.can_upgrade,
+            )
+          ) {
             return pollMobileWebReportUntilReady(
               currentInterpretationId,
               "pro",
@@ -766,31 +580,16 @@ export function MobileWebBrowserShell() {
         return;
       }
 
-      const resultCta = resolveSelfUnderstandingReportCta({
-        theme: draft.theme,
-        canUpgrade: Boolean(
-          previewFlowState?.report?.can_upgrade ||
-            previewFlowState?.status?.can_upgrade,
-        ),
-        hasProAccess: hasProReportAccess(previewFlowState ?? initialMandalaFlowState),
-        structured: getLiteStructuredReport(previewFlowState?.report ?? null),
-      });
-
-      if (resultCta.intent === "open_pro_report") {
-        setDraft((current) => mergeMobileWebUploadDraft(current, {
-          reportType: "pro",
-        }));
-        setRoute("loading");
+      const isProReport =
+        previewFlowState?.report?.version === "pro" ||
+        previewFlowState?.step === "proReady";
+      if (!isProReport) {
+        setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "pro" }));
+        setRoute("reportEntry");
         return;
       }
 
-      if (resultCta.intent === "restart_upload") {
-        setPreviewFlowState(null);
-        setRoute("upload");
-        return;
-      }
-
-      setRoute("reportEntry");
+      setRoute("upload");
       return;
     }
 
@@ -813,7 +612,7 @@ export function MobileWebBrowserShell() {
 
   function handlePreviewSecondaryAction() {
     if (route === "loading") {
-      setRoute("reportEntry");
+      setRoute("upload");
       return;
     }
 
@@ -830,6 +629,72 @@ export function MobileWebBrowserShell() {
   }
 
   function handlePreviewBackAction() {}
+
+  async function handlePreviewStartReport(reportType: MobileWebReportProductType) {
+    if (previewFlowRunning) {
+      return;
+    }
+
+    const nextDraft = mergeMobileWebUploadDraft(draft, {
+      reportType,
+    });
+    setDraft(nextDraft);
+    setPreviewFlowState(null);
+    setRoute("loading");
+
+    setPreviewFlowRunning(true);
+    try {
+      const resolvedImagePath = await ensureUploadedImagePath(
+        nextDraft,
+        (uploaded) => {
+          setDraft((current) => ({
+            ...current,
+            uploadAsset: toMobileWebUploadAssetRef(uploaded),
+          }));
+        },
+      );
+      const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
+      const result = await runMobileWebReportFlow(
+        toStartCreatePayload(
+          {
+            ...nextDraft,
+            uploadAsset: nextAssetRef,
+          },
+          userId,
+        ),
+        getDraftReportVariant(nextDraft),
+      );
+      const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
+      setPreviewFlowState(result.state);
+      if (result.state.step === "liteGenerating") {
+        setRoute("loading");
+        return;
+      }
+      await finalizePreviewSelectedReport({
+        interpretationId: result.state.interpretation?.interpretation_id ?? "demo-interpretation-id",
+        state: result.state,
+        draft: draftWithUpload,
+        userId,
+        historyQuery: previewHistoryQuery,
+        setPreviewFlowState,
+        setPreviewHistoryRecords,
+        setPreviewHistoryStatusLabel,
+        setPreviewHistoryStatusDetail,
+        setPreviewHistoryStatusTone,
+        setRoute,
+      });
+    } catch (error) {
+      setPreviewFlowState(
+        applyError(
+          initialMandalaFlowState,
+          error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
+        ),
+      );
+      setRoute("report");
+    } finally {
+      setPreviewFlowRunning(false);
+    }
+  }
 
   async function handlePreviewOpenHistoryRecord(
     interpretationId: string,
@@ -905,7 +770,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
       setPreviewHistoryStatusLabel(`已载入 ${preset.label}`);
-      setPreviewHistoryStatusDetail("当前已填入测试图与默认主题，可直接在上传页做三圈识别并进入 Lite / Pro 选择。");
+      setPreviewHistoryStatusDetail("当前已填入测试图、默认议题和人工三圈比例，可直接进入解读生成。");
       setPreviewHistoryStatusTone("preview");
       setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);
@@ -979,6 +844,62 @@ export function MobileWebBrowserShell() {
                   </div>
                 </div>
 
+                <section className="browser-shell__status-card" aria-label="当前联调状态">
+                  <header className="browser-shell__status-card-header">
+                    <strong>当前联调状态</strong>
+                    <span>{previewMode ? "本地预览" : "真实联调"}</span>
+                  </header>
+
+                  <dl className="browser-shell__status-grid">
+                    <div>
+                      <dt>当前阶段</dt>
+                      <dd>
+                        {panelPhase === "uploading_image"
+                          ? "上传图片"
+                          : panelPhase === "building_request"
+                            ? "整理请求"
+                            : panelPhase === "requesting_report"
+                              ? "请求报告"
+                              : panelPhase === "waiting_report"
+                                ? "等待结果"
+                                : panelPhase === "report_ready"
+                                  ? "报告已生成"
+                                  : panelPhase === "failed"
+                                    ? "失败"
+                                    : "待机"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>当前路由</dt>
+                      <dd>{panelRoute}</dd>
+                    </div>
+                    <div>
+                      <dt>生成中</dt>
+                      <dd>{panelBusy ? "是" : "否"}</dd>
+                    </div>
+                    <div>
+                      <dt>上传中</dt>
+                      <dd>{panelUploading ? "是" : "否"}</dd>
+                    </div>
+                    <div>
+                      <dt>报告阶段</dt>
+                      <dd>{panelReportStage}</dd>
+                    </div>
+                    <div>
+                      <dt>报告 ID</dt>
+                      <dd>{panelReportId ?? "未生成"}</dd>
+                    </div>
+                    <div>
+                      <dt>图片路径</dt>
+                      <dd>{panelImagePath}</dd>
+                    </div>
+                    <div>
+                      <dt>最近错误</dt>
+                      <dd>{panelError ?? "无"}</dd>
+                    </div>
+                  </dl>
+                </section>
+
                   <label className="field field--checkbox">
                     <input
                       type="checkbox"
@@ -1011,11 +932,7 @@ export function MobileWebBrowserShell() {
                       setRoute(event.target.value as MobileWebRouteId);
                     }}
                   >
-                    {PREVIEW_ROUTE_OPTIONS.filter((option) => (
-                      previewChannel === "mobile-web"
-                        ? true
-                        : option.value !== "reportLegacy"
-                    )).map((option) => (
+                    {PREVIEW_ROUTE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -1036,7 +953,7 @@ export function MobileWebBrowserShell() {
                 </label>
 
                 <label className="field">
-                  <span>主题</span>
+                  <span>议题</span>
                   <input
                     value={draft.theme}
                     onChange={(event) => {
@@ -1117,6 +1034,7 @@ export function MobileWebBrowserShell() {
                 uploadDraft={draft}
                 activeHistoryFilter={(previewHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}
                 historyQuery={previewHistoryQuery}
+                isUploading={previewFlowRunning && route === "upload"}
                 historyActionBusy={
                   previewFlowRunning &&
                   (route === "history" || route === "historyRecordDetail")
@@ -1133,10 +1051,11 @@ export function MobileWebBrowserShell() {
                   import.meta.env.DEV && route === "upload"
                     ? previewFlowRunning
                       ? "当前正在尝试刷新或执行真实 Lite 主路径，请先等待 create/status/report 链路返回。"
-                      : "上传页的三圈检测可切到真实接口触发；其它页面默认保持正式界面观感。"
+                      : "上传页的三圈边界由用户手动调整；其它页面默认保持正式界面观感。"
                     : undefined
                 }
                 environmentTone={import.meta.env.DEV ? "preview" : undefined}
+                detection={previewDetection}
                 onLandingStart={() => {
                   setRoute("upload");
                 }}
@@ -1158,72 +1077,22 @@ export function MobileWebBrowserShell() {
                   }
                 }}
                 onUploadContinue={async () => {
-                  setPreviewFlowState(null);
+                  setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "lite" }));
                   setRoute("reportEntry");
                 }}
                 onUploadBack={() => {
                   setRoute("landing");
                 }}
                 onReportEntryBack={() => {
+                  if ((draft.reportType ?? draft.reportVariant ?? "lite") === "pro" && previewFlowState) {
+                    setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "lite" }));
+                    setRoute("report");
+                    return;
+                  }
                   setRoute("upload");
                 }}
                 onReportEntryChooseReportType={async (reportType: MobileWebReportProductType) => {
-                  const nextDraft = mergeMobileWebUploadDraft(draft, {
-                    reportType,
-                  });
-                  setDraft(nextDraft);
-                  setPreviewFlowState(null);
-                  setRoute("loading");
-
-                  setPreviewFlowRunning(true);
-                  try {
-                    const resolvedImagePath = await ensureUploadedImagePath(
-                      nextDraft,
-                      (uploaded) => {
-                        setDraft((current) => ({
-                          ...current,
-                          uploadAsset: toMobileWebUploadAssetRef(uploaded),
-                        }));
-                      },
-                    );
-                    const result = await runMobileWebLiteFlow(
-                      toStartCreatePayload(
-                        {
-                          ...nextDraft,
-                          uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
-                        },
-                        userId,
-                      ),
-                    );
-                    setPreviewFlowState(result.state);
-                    if (result.state.step === "liteGenerating") {
-                      setRoute("loading");
-                      return;
-                    }
-                    await finalizePreviewSelectedReport({
-                      interpretationId: result.state.interpretation?.interpretation_id ?? "demo-interpretation-id",
-                      state: result.state,
-                      draft: { ...nextDraft, uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath) },
-                      userId,
-                      historyQuery: previewHistoryQuery,
-                      setPreviewFlowState,
-                      setPreviewHistoryRecords,
-                      setPreviewHistoryStatusLabel,
-                      setPreviewHistoryStatusDetail,
-                      setPreviewHistoryStatusTone,
-                      setRoute,
-                    });
-                  } catch (error) {
-                    setPreviewFlowState(
-                      applyError(
-                        initialMandalaFlowState,
-                        error instanceof Error ? error.message : "报告生成失败，请稍后重试。",
-                      ),
-                    );
-                    setRoute("report");
-                  } finally {
-                    setPreviewFlowRunning(false);
-                  }
+                  await handlePreviewStartReport(reportType);
                 }}
                 onLoadingLeaveLater={() => {
                   void handlePreviewLeaveLoadingLater();
@@ -1232,6 +1101,9 @@ export function MobileWebBrowserShell() {
                 onReportSecondaryAction={handlePreviewSecondaryAction}
                 onReportBackAction={handlePreviewBackAction}
                 reportPrimaryDisabled={route === "loading" && previewFlowRunning}
+                reportPrimaryLabel={previewReportFooterState.primaryLabel}
+                reportSecondaryLabel={previewReportFooterState.secondaryLabel}
+                reportFooterHint={previewReportFooterState.footerHint}
                 onHistoryBackToUpload={() => {
                   setRoute("upload");
                 }}
@@ -1301,42 +1173,10 @@ export function MobileWebBrowserShell() {
                   : undefined
               }
               environmentTone={import.meta.env.DEV ? "runtime" : undefined}
-              onDebugSnapshotChange={setRuntimeDebugSnapshot}
+              onDebugStateChange={handleRuntimeDebugStateChange}
             />
           )}
           </div>
-
-          {localDebugEnabled && controlsOpen ? (
-            <ManualReviewPanel
-              route={route}
-              previewMode={previewMode}
-              draft={draft}
-              interpretationId={interpretationId}
-              flowState={previewFlowState}
-              detection={null}
-              runtimeSnapshot={runtimeDebugSnapshot}
-            />
-          ) : null}
-
-          {localDebugEnabled && controlsOpen ? (
-            <BrowserDebugPanel
-              route={route}
-              previewMode={previewMode}
-              draft={draft}
-              interpretationId={interpretationId}
-              userId={userId}
-              flowState={previewFlowState}
-              detection={null}
-              detectError={null}
-              detecting={false}
-              runtimeSnapshot={runtimeDebugSnapshot}
-              apiTraces={apiTraces}
-              timelineEntries={timelineEntries}
-              onClearApiTraces={() => {
-                clearApiDebugTrace();
-              }}
-            />
-          ) : null}
         </div>
       </section>
     </div>

@@ -1,0 +1,761 @@
+@charset "utf-8";
+body {
+	font-family: "宋体","STSong";
+}
+/*封面*/
+.frontCover{
+	qrfullpage:1;
+	text-align:center;
+}
+/* 默认正文 */
+p {
+	margin-top: 0;
+	font-size: 1em;
+	line-height: 1.3em;
+	text-indent: 2em;
+	text-align: justify;
+}
+/* 版权页选用 */
+/* 版权页标题 */
+h2.copyright-title {
+	margin: 0 0 0.375em;
+	font-family:"宋体","STSong";
+	font-size: 1.2em;
+	line-height: 1.2;
+	font-weight: 800;
+	text-indent: 0;
+}
+/* 默认版权信息页内容 */
+p.copyright-text {
+	margin: 0;
+	font-family:"黑体";
+	font-size: 0.875em;
+	line-height: 1.2;
+	text-indent: 0em;
+}
+/* p.copyright-text-1 */
+p.copyright-text-1 {
+	margin: 0.5em 0 0;
+	font-family:"黑体";
+	font-size: 0.875em;
+	line-height: 1.2;
+	text-indent: 2em;
+}
+
+
+/* p.copyright-text-3 */
+p.copyright-text-3 {
+	margin: 0.5em 0 0;
+	font-family:"黑体";
+	font-size: 0.875em;
+	line-height: 1.2;
+	text-indent: 2em;
+	text-align: center;
+
+}
+
+
+/* p.copyright-text-2 */
+p.copyright-text-2 {
+	margin: 1.1em 0 1.1em;
+	font-family:"黑体";
+	font-size: 0.875em;
+	line-height: 1.2;
+	text-indent: 0;
+}
+/* 扉页选用 */
+/* 扉页标题 */
+h2.fy-title {
+	margin: 10% 0 0.375em;
+	font-family:"黑体"
+	font-size: 3.5em;
+	line-height: 1.2;
+	text-indent: 0;
+	text-align: center;
+}
+/*扉页内容 */
+p.feiye {
+	margin: 1em 0 0;
+	font-family:"黑体";
+	font-size: 0.9em;
+ 	color:#666;
+	line-height: 1.2;
+	text-indent: 0;
+	text-align: center;
+}
+/* p.feiye2 */
+p.feiye2 {
+	margin: 0em 0 0;
+	font-family:"黑体";
+	font-size: 1.1em;
+ 	color:#000;
+	line-height: 1.2;
+	text-indent: 0;
+	text-align: center;
+}
+/* 扉页内容2 */
+p.feiye-text2 {
+	margin: 1em 0;
+	font-family: '楷体';
+	font-size: 1em;
+	line-height: 1.1em;
+	text-indent: 6em;
+}
+/* 扉页出版社 */
+p.publisher {
+	margin: 5em 0 -0.5em 0;
+	font-family:"黑体";
+	font-size: 0.9em;
+ 	color:#000;
+	line-height: 1.2;
+	text-indent: 0;
+	text-align: center;
+}
+
+/* 前言章标题 */
+h1.x-jianjie {
+	margin: 10% 0 0.5em;
+	font-family:"黑体";
+	font-size: 1em;
+	color: #000;
+	line-height: 1.2;
+	font-weight: normal;
+	text-indent: 0;
+	text-align: center;
+}
+/* 前言主标题 */
+h1.preface-title {
+	margin: 5% 0 1.3em 0;
+	font-family:"宋体","STSong";
+	font-size: 1em;
+	color: #000;
+	font-weight: 500;
+	text-indent: 0;
+	text-align:center;
+}
+/* 前言文中小标题 */
+
+h3.preface {
+	font-family:"宋体","STSong";
+	font-size: 1.3em;
+	color: #833e46;
+	font-weight: 500;
+	text-indent: 0;
+	text-align: center;
+}
+/* 前言正文 */
+p.preface-text {
+	margin: 1em 0;
+	font-family:"宋体","STSong";
+	font-size: 0.875em;
+	line-height: 1.2em;
+	text-indent: 2em;
+}
+/* 一级标题 */
+h1 {
+	margin: 5% 0 1.5em;
+	font-family:"宋体","STSong";
+	font-size: 1.6em;
+	color: #000;
+	font-weight: bold;
+	text-indent: 0;
+	text-align:center;
+}
+/* 二级标题 */
+h2 {
+	margin: 1.5em 0 1.3em;
+	font-family:"宋体","STSong";
+	font-size: 1.3em;
+	line-height: 1.2;
+	color: #000;
+	font-weight: bold;
+	text-indent: 0;
+	text-align: center;
+}
+/* 二级标题居左 */
+h2.title-2-l {
+	margin: 1.5em 0 1.3em;
+	font-family:"宋体","STSong";
+	font-size: 1em;
+	line-height: 1.2;
+	color: #000;
+	font-weight: bold;
+	text-indent: 0;
+	text-align: left;
+}
+/* 三级标题 */
+h3 {
+	margin: 1.3em 0 1em;
+	font-family:"宋体","STSong";
+	font-size: 1.2em;
+	line-height: 1.2;
+	color: #000;
+	font-weight: bold;
+	text-indent: 0;
+	text-align: left;
+}
+/* 四级标题 */
+h4.title-4 {
+	margin: 1.2em 0 0.8em;
+	font-family:"宋体","STSong";
+	font-size: 1.1em;
+	line-height: 1.2;
+	color: #000;
+	font-weight: bold;
+	text-indent: 0;
+	text-align: center;
+}
+/* 五级标题 */
+h5.title-5 {
+	margin: 0.8em 0 0.5em;
+	font-family:"宋体","STSong";
+	font-size: 1em;
+	color: #000;
+	line-height: 1.55556;
+	text-indent: 2em;
+	font-weight: bold;
+}
+/* 六级标题 */
+h6.title-6 {
+	margin: 0.5em 0 0.3em;
+	font-family:"宋体","STSong";
+	font-size: 0.9em;
+	color: #833e46;
+	line-height: 1.55556;
+	text-indent: 2em;
+	font-weight: normal;
+}
+/* 副标题 */
+p.sub-title {
+	margin: 0 0 0.1em 0;
+	font-family:"宋体","STSong";
+	font-size: 0.9em;
+	line-height: 1.2;
+	color: #833e46;
+	font-weight: normal;
+	text-indent: 0;
+	text-align: left;
+}
+/* 作者 */
+p.author {
+	margin: 0;
+	font-family: '楷体';
+	font-size: 0.85em;
+	line-height: 1.2;
+	text-indent: 0;
+	text-align: left;
+}
+/* 作者居中 */
+p.author-c {
+	margin: 0;
+	font-family: '楷体';
+	font-size: 0.85em;
+	line-height: 1.2;
+	text-indent: 0;
+	text-align:center;
+}
+/* 正文居中 */
+p.center {
+	margin: 1em 0em 1em 0em;
+	font-size: 1em;
+	line-height: 1.05;
+	font-family: '宋体';
+	text-align: center;
+	text-indent: 0em;
+}
+/* 正文居中 */
+p.center11 {
+	margin: 0.5em 0em;
+	font-size: 3em;
+	line-height: 1.05;
+	font-family: '楷体';
+	text-align: center;
+	text-indent: 0em;
+}/* 正文居中 */
+p.center22 {
+	margin: 0.5em 0em;
+	font-size: 1.5em;
+	line-height: 1.05;
+	font-family: '楷体';
+	text-align: center;
+	text-indent: 0em;
+}
+/* 正文居中加粗2 */
+p.center2 {
+	margin: 0.5em 0.5em;
+	font-size: 1em;
+	line-height: 1.2;
+	font-family:"黑体";
+	text-align: center;
+	text-indent: 0em;
+}
+/* 正文居中加粗3 */
+p.center3 {
+	margin: 0.5em 0.5em;
+	font-size: 2em;
+	line-height: 1.2;
+	font-family:"宋体","STSong";
+	font-weight: bold;
+	text-align: center;
+	text-indent: 0em;
+}
+/* 正文居中加粗4 */
+p.center4 {
+	margin: 0.5em 0.5em;
+	font-size: 1.5em;
+	line-height: 1.2;
+	font-family:"宋体","STSong";
+	font-weight: bold;
+	text-align: center;
+	text-indent: 0em;
+}
+/* 正文居中加粗5 */
+p.center5 {
+	margin: 0.5em 0.5em;
+	font-size: 1.3em;
+	line-height: 1.2;
+	font-family:"宋体","STSong";
+	font-weight: bold;
+	text-align: center;
+	text-indent: 0em;
+}
+/* 正文居中加粗6 */
+p.center6 {
+	margin: 0.5em 0.5em;
+	font-size: 0.8em;
+	line-height: 1.2;
+	font-family:"宋体","STSong";
+	font-weight: bold;
+	text-align: center;
+	text-indent: 0em;
+}
+/* 正文居右 */
+p.right {
+	margin: 1.16667em 0;
+	font-size: 1em;
+	line-height: 1.2;
+	text-indent: 0em;
+	font-family: '宋体';
+	text-align: right;
+}
+/* 正文仿宋 */
+p.text-fs {
+	margin: 1.16667em 0;
+	font-family: '仿宋';
+	font-size: 1em;
+	line-height: 1.2;
+	text-indent: 2em;
+}
+/* 正文小标题黑体1 */
+p.text-ht1 {
+	margin: 1.16667em 0;
+	font-family:"黑体";
+	font-size: 1.2em;
+	line-height: 1.2;
+	text-indent: 2em;
+}
+
+/* 正文小标题黑体2 */
+p.text-ht2 {
+	margin: 1.16667em 0;
+	font-family:"黑体";
+	font-size: 1.1em;
+	line-height: 1.2;
+	text-indent: 2em;
+}
+
+/* 正文黑体 */
+p.text-ht {
+	margin: 1.16667em 0;
+	font-family:"黑体";
+	font-size: 1.0em;
+	line-height: 1.2;
+	text-indent: 2em;
+}
+/* 正文黑体无缩进 */
+p.text-ht-none {
+	margin: 1.16667em 0;
+	font-family:"黑体";
+	font-size: 1.0em;
+	line-height: 1.2;
+	text-indent: 0em;
+}
+
+
+/* 正文黑体居中 */
+p.text-ht-c {
+	margin: 1.16667em 0;
+	font-family:"黑体";
+	font-size: 1em;
+	line-height: 1.2;
+	text-indent: 0;
+	text-align: center;
+
+}
+/* 正文楷体 */
+p.text-kt {
+	margin: 0.5em 0;
+	font-family: '楷体';
+	font-size: 1em;
+	line-height: 1.2em;
+	text-indent: 2em;
+}
+/* 正文楷体 */
+p.text-kt2 {
+	margin: 0.5em 0;
+	font-family: '楷体';
+	font-size: 1em;
+	line-height: 1.2em;
+	text-indent: 6em;
+}
+/* 正文无缩进 */
+p.text-none {
+	margin: 1em 0;
+	font-size: 1em;
+	line-height: 1.2;
+	text-indent: 0;
+}
+/* 正文缩进4em */
+p.text-indent {
+	margin: 1em 0;
+	font-size: 1em;
+	line-height: 1.2;
+	text-indent: 4em;
+}
+
+/* 落款/日期*/
+p.text-kt-r {
+	margin: 1em 0;
+	font-family: '楷体';
+	font-size: 1em;
+	line-height: 1.2;
+	text-align: right;
+	text-indent: 0em;
+}
+
+/* 楷体无缩进(书信开头) */
+p.text-kt-none {
+	margin: 1.16667em 0;
+	font-family: '楷体';
+	font-size: 1em;
+	line-height: 1.2;
+	text-indent: 0em;
+}
+/*生僻字 */
+img.rarefont {
+	vertical-align: middle;
+	width: 3.5%;
+
+}
+
+
+/* 图片80 */
+div.bodypic-c-80 {
+	width: 100%;
+	margin: 0.55556% auto;
+	text-align: center;
+}
+/* 图片50 */
+div.bodypic-c-50 {
+	width: 40%;
+	margin: 0.55556% auto;
+	text-align: center;
+}
+/* 图片落款 */
+div.bodypic-r-35 {
+	width: 40%;
+	margin: 0.55556% auto;
+	text-align: right;}
+               div.bodypic-r-35 img {
+               width:35%;
+               display:block;
+               margin:0 0 0.27273em auto;}
+
+/* 垂直居中图 */
+div.bodypic-m {
+	tb-vertical-align: middle;
+}
+/* 图注居中 */
+p.imgnote-c {
+	margin: 0 0 1.66667em;
+	font-family: '楷体';
+	font-size: 0.8em;
+	line-height: 1.33333;
+	text-align: center;
+        color: #5e5e5e;
+
+}
+/* 图注居左 */
+p.imgnote-l {
+	margin: 0 0 1.66667em;
+	font-family: '楷体';
+	font-size: 0.66667em;
+	line-height: 1.83333;
+	text-align: left;
+}
+/* 表头居左 */
+p.imgtitle-l {
+	margin: 0;
+	font-family: '楷体';
+	font-size: 0.77778em;
+	line-height: 1.57143;
+	text-align: left;
+}
+/* 表头居中 */
+p.imgtitle-c {
+	margin: 0;
+	font-family: '楷体';
+	font-size: 0.77778em;
+	line-height: 1.57143;
+	text-align: center;
+}
+/* 章文 */
+p.section-text {
+	margin: 0.5em 0;
+	font-family: '楷体';
+	font-size: 0.77778em;
+	text-indent: 0;
+}
+/* 行内楷体 */
+span.kaiti {
+	font-family: '楷体';
+	font-size: 1em;
+	color: #222;
+}
+/* 行内仿宋 */
+span.fangsong {
+	font-family: '仿宋';
+	font-size: 1em;
+	color: #222;
+}
+/* 行内黑体 */
+span.heiti {
+	font-family:"黑体";
+	font-size: 1em;
+	color: #222;
+}
+/* 行内颜色 */
+span.color {
+	font-size: 1em;
+	color: #f40c2d;
+}
+/* 行内加粗 */
+span.bold {
+	font-size: 1em;
+	font-weight: bold;
+}
+/* 边框 */
+.border {
+	border: 1px #cd0102 solid;
+	padding: 0.2em 0.2em;
+}
+/* 圆角边框 */
+.border2 {
+	border: 1px #cd0102 solid;
+	padding: 0.2em 0.2em;
+	border-radius:5px;
+}
+/* 底纹 */
+.background-color {
+	background-color: #e8e8e8;
+	padding: 0.1em 0.1em;
+}
+/* 边框底纹 */
+.background-color-border {
+	border: 1px #ffffff solid;
+	background-color: #dadada;
+	padding: 0.2em 0.0.2em;
+}
+/* 行内小字 */
+span.small {
+	font-size: 0.7em;
+	line-height: 1.2em;
+}
+/* 行内大字 */
+span.big {
+	font-size: 3em;
+	line-height: 1.2em;
+}
+/* 行内反色 */
+span.word-light {
+	color: #ffffff;
+	background-color: #b3b3b3;
+	padding: 0.2em 0.2em;
+}
+/* 诗歌标题居中 */
+p.poem-title {
+	padding-left: 2em;
+	margin: 0;
+	font-family: '楷体';
+	font-size: 18px;
+	font-weight: bold;
+	text-align: left;
+}
+/* 诗歌居左 */
+p.poem-l {
+	padding-left: 2em;
+	margin: 0;
+	font-family: '楷体';
+	font-size: 16px;
+	font-weight: normal;
+	text-align: left;
+}
+/* 诗歌居中 */
+p.poem-c {
+	margin: 0;
+	font-family: '楷体';
+	font-size: 16px;
+	font-weight: normal;
+	text-align: center;
+}
+/* 默认图片高4em */
+img.img-h4 {
+	height:4em;
+	width:4em;
+}
+/* 默认图片高2em */
+img.img-h2 {
+	height:2.5em;
+}
+/* 默认图片高100% */
+img.img-h100 {
+	height: 100%;
+}
+/* 默认图片高50% */
+img.img-h50 {
+	height: 50%;
+}
+/* 默认图片横跨 */
+img.img-full {
+	width: 160%;
+}
+/* 跳转注注释 */
+p.note {
+font-family:"黑体";
+	font-size: 14px;
+	text-align: justify;
+	color: #696969;
+	text-indent: 0em;
+}
+/* 表格 */
+table.tablebody {
+	font-family:"黑体";
+	font-weight: normal;
+	font-size: 14px;
+	margin:0.5em auto;
+}
+/* .td */
+.td {
+	font-family:"黑体";
+	font-weight: normal;
+	font-size: 12px;
+}
+/* .tr */
+.tr {
+	font-family:"黑体";
+	font-weight: normal;
+	font-size: 12px;
+}
+
+
+/* 默认有序列表-数字 */
+ol.olist1 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: decimal;
+	margin-left: 1em;
+}
+/* 默认有序列表-0开头的数字 */
+ol.olist2 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: decimal-leading-zero;
+	margin-left: 1em;
+}
+/* 默认有序列表-小写英文字母 */
+ol.olist3 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: lower-alpha;
+	margin-left: 1em;
+}
+/* 默认有序列表-大写英文字母 */
+ol.olist4 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: upper-alpha;
+	margin-left: 1em;
+}
+/* 默认有序列表-大写罗马数字 */
+ol.olist5 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: upper-roman;
+	margin-left: 1em;
+}
+/* 默认无序列表-实心圆 */
+ul.ulist1 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: disc;
+	margin-left: 1em;
+}
+/* 默认无序列表-空心圆 */
+ul.ulist2 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: circle;
+	margin-left: 1em;
+}
+/* 默认无序列表-实心方块 */
+ul.ulist3 {
+	font-family: '楷体';
+	font-size: 16px;
+	list-style-type: square;
+	margin-left: 1em;
+}
+/* 全屏背景色 */
+body.background-color {
+	background-color: #FFF5EE;
+	fontsize-adjust: fixed;
+}
+/* 超链接 */
+a.link {
+	color: #000;
+	text-decoration: underline;
+}
+/* 首字下沉 */
+p.dropcaps-word {
+	float: left;
+	margin: 0;
+	padding: 0 0.1em 0 0;
+	line-height: 1em;
+}
+/* 拼音 */
+rt.* {
+	font-size: 0.6em;
+	font-family: "ZY-SANSSERIF", "Questrial";
+}
+/* 图片右浮动 */
+img.float_right
+{
+	float:right;
+	margin:0 1% 0 1%;
+	width:120px;
+	height:auto;
+}
+
+table.table-init
+{
+}
+
+.table-init td
+{
+	vertical-align:bottom;
+	width:8em;
+}
+
+span.color1 {
+	font-size: 1.5em;
+	color: #f40c2d;
+}

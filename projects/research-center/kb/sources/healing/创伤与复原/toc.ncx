@@ -1,0 +1,453 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="zho">
+  <head>
+    <meta content="f7529a28-061a-40dc-b063-42a2a8d10cb8" name="dtb:uid"/>
+    <meta content="4" name="dtb:depth"/>
+    <meta content="calibre (1.43.0)" name="dtb:generator"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
+  <docTitle>
+    <text>创伤与复原 (心理创伤疗愈经典畅销丛书)</text>
+  </docTitle>
+  <navMap>
+    <navPoint class="chapter" id="num_1" playOrder="1">
+      <navLabel>
+        <text>推荐序一 与创伤真正和解</text>
+      </navLabel>
+      <content src="text/part0002.html"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_2" playOrder="2">
+      <navLabel>
+        <text>推荐序二 穿越创伤的旅程：为了重生</text>
+      </navLabel>
+      <content src="text/part0003.html"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_3" playOrder="3">
+      <navLabel>
+        <text>前言 记住暴行，揭露真相</text>
+      </navLabel>
+      <content src="text/part0004.html"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_4" playOrder="4">
+      <navLabel>
+        <text>第一部分 创伤性障碍</text>
+      </navLabel>
+      <content src="text/part0005.html"/>
+      <navPoint class="chapter" id="num_5" playOrder="4">
+        <navLabel>
+          <text>第1章 一段被遗忘的历史</text>
+        </navLabel>
+        <content src="text/part0005.html"/>
+        <navPoint class="chapter" id="num_6" playOrder="5">
+          <navLabel>
+            <text>面对人的脆弱性与劣根性</text>
+          </navLabel>
+          <content src="text/part0006.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_7" playOrder="6">
+          <navLabel>
+            <text>歇斯底里症的英雄时代</text>
+          </navLabel>
+          <content src="text/part0007.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_8" playOrder="7">
+          <navLabel>
+            <text>喝彩渐歇，英雄退却</text>
+          </navLabel>
+          <content src="text/part0008.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_9" playOrder="8">
+          <navLabel>
+            <text>战争创伤神经性官能症</text>
+          </navLabel>
+          <content src="text/part0009.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_10" playOrder="9">
+          <navLabel>
+            <text>难以磨灭的长期烙印</text>
+          </navLabel>
+          <content src="text/part0010.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_11" playOrder="10">
+          <navLabel>
+            <text>两性战争中的战场神经性官能症</text>
+          </navLabel>
+          <content src="text/part0011.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_12" playOrder="11">
+          <navLabel>
+            <text>第一次进入公共讨论的领域</text>
+          </navLabel>
+          <content src="text/part0012.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_13" playOrder="12">
+        <navLabel>
+          <text>第2章 恐怖经历</text>
+        </navLabel>
+        <content src="text/part0013.html"/>
+        <navPoint class="chapter" id="num_14" playOrder="13">
+          <navLabel>
+            <text>自我防御系统瓦解之后</text>
+          </navLabel>
+          <content src="text/part0014.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_15" playOrder="14">
+          <navLabel>
+            <text>过度警觉</text>
+          </navLabel>
+          <content src="text/part0015.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_16" playOrder="15">
+          <navLabel>
+            <text>记忆侵扰</text>
+          </navLabel>
+          <content src="text/part0016.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_17" playOrder="16">
+          <navLabel>
+            <text>禁闭畏缩</text>
+          </navLabel>
+          <content src="text/part0017.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_18" playOrder="17">
+          <navLabel>
+            <text>创伤症状的矛盾冲突</text>
+          </navLabel>
+          <content src="text/part0018.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_19" playOrder="18">
+        <navLabel>
+          <text>第3章 外部关系的断绝</text>
+        </navLabel>
+        <content src="text/part0019.html"/>
+        <navPoint class="chapter" id="num_20" playOrder="19">
+          <navLabel>
+            <text>受损的自我</text>
+          </navLabel>
+          <content src="text/part0020.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_21" playOrder="20">
+          <navLabel>
+            <text>脆弱性与适应性</text>
+          </navLabel>
+          <content src="text/part0021.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_22" playOrder="21">
+          <navLabel>
+            <text>社会支持的影响</text>
+          </navLabel>
+          <content src="text/part0022.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_23" playOrder="22">
+          <navLabel>
+            <text>最亲近之人的评价</text>
+          </navLabel>
+          <content src="text/part0023.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_24" playOrder="23">
+          <navLabel>
+            <text>社群的角色</text>
+          </navLabel>
+          <content src="text/part0024.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_25" playOrder="24">
+        <navLabel>
+          <text>第4章 囚禁</text>
+        </navLabel>
+        <content src="text/part0025.html"/>
+        <navPoint class="chapter" id="num_26" playOrder="25">
+          <navLabel>
+            <text>心理上的支配</text>
+          </navLabel>
+          <content src="text/part0026.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_27" playOrder="26">
+          <navLabel>
+            <text>断绝与外界的联结感</text>
+          </navLabel>
+          <content src="text/part0027.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_28" playOrder="27">
+          <navLabel>
+            <text>彻底投降</text>
+          </navLabel>
+          <content src="text/part0028.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_29" playOrder="28">
+          <navLabel>
+            <text>长期创伤症候群</text>
+          </navLabel>
+          <content src="text/part0029.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_30" playOrder="29">
+          <navLabel>
+            <text>人际关系的重大改变</text>
+          </navLabel>
+          <content src="text/part0030.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_31" playOrder="30">
+        <navLabel>
+          <text>第5章 受虐儿童</text>
+        </navLabel>
+        <content src="text/part0031.html"/>
+        <navPoint class="chapter" id="num_32" playOrder="31">
+          <navLabel>
+            <text>受虐环境</text>
+          </navLabel>
+          <content src="text/part0032.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_33" playOrder="32">
+          <navLabel>
+            <text>双重思想</text>
+          </navLabel>
+          <content src="text/part0033.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_34" playOrder="33">
+          <navLabel>
+            <text>双重自我</text>
+          </navLabel>
+          <content src="text/part0034.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_35" playOrder="34">
+          <navLabel>
+            <text>对身体的攻击</text>
+          </navLabel>
+          <content src="text/part0035.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_36" playOrder="35">
+          <navLabel>
+            <text>长大的孩子</text>
+          </navLabel>
+          <content src="text/part0036.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_37" playOrder="36">
+        <navLabel>
+          <text>第6章 一个全新的诊断分析</text>
+        </navLabel>
+        <content src="text/part0037.html"/>
+        <navPoint class="chapter" id="num_38" playOrder="37">
+          <navLabel>
+            <text>错误的诊断标签</text>
+          </navLabel>
+          <content src="text/part0038.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_39" playOrder="38">
+          <navLabel>
+            <text>新概念的需要</text>
+          </navLabel>
+          <content src="text/part0039.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_40" playOrder="39">
+          <navLabel>
+            <text>成为精神科患者的创伤患者</text>
+          </navLabel>
+          <content src="text/part0040.html"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint class="chapter" id="num_41" playOrder="40">
+      <navLabel>
+        <text>第二部分 复原的阶段</text>
+      </navLabel>
+      <content src="text/part0041.html"/>
+      <navPoint class="chapter" id="num_42" playOrder="40">
+        <navLabel>
+          <text>第7章 治疗关系</text>
+        </navLabel>
+        <content src="text/part0041.html"/>
+        <navPoint class="chapter" id="num_43" playOrder="41">
+          <navLabel>
+            <text>首要原则：恢复自主权</text>
+          </navLabel>
+          <content src="text/part0042.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_44" playOrder="42">
+          <navLabel>
+            <text>创伤性移情作用</text>
+          </navLabel>
+          <content src="text/part0043.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_45" playOrder="43">
+          <navLabel>
+            <text>创伤性反向移情作用</text>
+          </navLabel>
+          <content src="text/part0044.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_46" playOrder="44">
+          <navLabel>
+            <text>卷入受害者与加害者的冲突里</text>
+          </navLabel>
+          <content src="text/part0045.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_47" playOrder="45">
+          <navLabel>
+            <text>治疗契约</text>
+          </navLabel>
+          <content src="text/part0046.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_48" playOrder="46">
+          <navLabel>
+            <text>治疗师的支持系统</text>
+          </navLabel>
+          <content src="text/part0047.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_49" playOrder="47">
+        <navLabel>
+          <text>第8章 安全</text>
+        </navLabel>
+        <content src="text/part0048.html"/>
+        <navPoint class="chapter" id="num_50" playOrder="48">
+          <navLabel>
+            <text>给难题命名</text>
+          </navLabel>
+          <content src="text/part0049.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_51" playOrder="49">
+          <navLabel>
+            <text>恢复主导权</text>
+          </navLabel>
+          <content src="text/part0050.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_52" playOrder="50">
+          <navLabel>
+            <text>建立安全环境</text>
+          </navLabel>
+          <content src="text/part0051.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_53" playOrder="51">
+          <navLabel>
+            <text>照顾自己，掌控身体</text>
+          </navLabel>
+          <content src="text/part0052.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_54" playOrder="52">
+          <navLabel>
+            <text>完成第一阶段</text>
+          </navLabel>
+          <content src="text/part0053.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_55" playOrder="53">
+        <navLabel>
+          <text>第9章 回顾与哀悼</text>
+        </navLabel>
+        <content src="text/part0054.html"/>
+        <navPoint class="chapter" id="num_56" playOrder="54">
+          <navLabel>
+            <text>重建创伤故事</text>
+          </navLabel>
+          <content src="text/part0055.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_57" playOrder="55">
+          <navLabel>
+            <text>转化创伤记忆</text>
+          </navLabel>
+          <content src="text/part0056.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_58" playOrder="56">
+          <navLabel>
+            <text>哀悼创伤导致的损失</text>
+          </navLabel>
+          <content src="text/part0057.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_59" playOrder="57">
+        <navLabel>
+          <text>第10章 重建联系感</text>
+        </navLabel>
+        <content src="text/part0058.html"/>
+        <navPoint class="chapter" id="num_60" playOrder="58">
+          <navLabel>
+            <text>学习战斗</text>
+          </navLabel>
+          <content src="text/part0059.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_61" playOrder="59">
+          <navLabel>
+            <text>与自己和解</text>
+          </navLabel>
+          <content src="text/part0060.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_62" playOrder="60">
+          <navLabel>
+            <text>重新与人建立心理联系</text>
+          </navLabel>
+          <content src="text/part0061.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_63" playOrder="61">
+          <navLabel>
+            <text>追寻创伤患者的使命</text>
+          </navLabel>
+          <content src="text/part0062.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_64" playOrder="62">
+          <navLabel>
+            <text>创伤的解脱</text>
+          </navLabel>
+          <content src="text/part0063.html"/>
+        </navPoint>
+      </navPoint>
+      <navPoint class="chapter" id="num_65" playOrder="63">
+        <navLabel>
+          <text>第11章 共通性</text>
+        </navLabel>
+        <content src="text/part0064.html"/>
+        <navPoint class="chapter" id="num_66" playOrder="64">
+          <navLabel>
+            <text>借助他人找回自己</text>
+          </navLabel>
+          <content src="text/part0065.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_67" playOrder="65">
+          <navLabel>
+            <text>为安全而组建的团体</text>
+          </navLabel>
+          <content src="text/part0066.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_68" playOrder="66">
+          <navLabel>
+            <text>回顾与哀悼的团体</text>
+          </navLabel>
+          <content src="text/part0067.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_69" playOrder="67">
+          <navLabel>
+            <text>团体帮助成员，成员启发团体</text>
+          </navLabel>
+          <content src="text/part0068.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_70" playOrder="68">
+          <navLabel>
+            <text>临别的仪式</text>
+          </navLabel>
+          <content src="text/part0069.html"/>
+        </navPoint>
+        <navPoint class="chapter" id="num_71" playOrder="69">
+          <navLabel>
+            <text>再创联系的团体</text>
+          </navLabel>
+          <content src="text/part0070.html"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint class="chapter" id="num_72" playOrder="70">
+      <navLabel>
+        <text>后记 创伤的矛盾冲突仍未休</text>
+      </navLabel>
+      <content src="text/part0071.html"/>
+    </navPoint>
+    <navPoint class="chapter" id="num_73" playOrder="71">
+      <navLabel>
+        <text>附表</text>
+      </navLabel>
+      <content src="text/part0072.html"/>
+    </navPoint>
+  </navMap>
+</ncx>

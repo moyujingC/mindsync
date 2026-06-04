@@ -1,0 +1,367 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "pro",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5065.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看自己是否能稳定接住资源和机会。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作整体呈现出对称且富有层次的结构，色彩明亮且分布均匀，从中心向外逐步展开。画面以粉紫色为核心，向外延伸出黄色、蓝色、绿色和橙色等多种颜色的图案，形成一种和谐而充满生机的视觉效果。图案设计包括花瓣状、星形和几何形状，显示出绘画者在创作过程中注重秩序与美感。",
+    "circles": {
+      "inner": {
+        "summary": "放射状排列；花瓣状",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "",
+            "shape": "花瓣状",
+            "visible_evidence": "放射状排列；花瓣状"
+          }
+        ],
+        "raw_observation": {
+          "color": "粉紫色",
+          "shape": "花瓣状",
+          "pattern": "放射状排列"
+        }
+      },
+      "middle": {
+        "summary": "交替排列；星形、菱形",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "",
+            "shape": "星形、菱形",
+            "visible_evidence": "交替排列；星形、菱形"
+          }
+        ],
+        "raw_observation": {
+          "color": "黄色、蓝色",
+          "shape": "星形、菱形",
+          "pattern": "交替排列"
+        }
+      },
+      "outer": {
+        "summary": "重复排列；叶子状、菱形",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "",
+            "shape": "叶子状、菱形",
+            "visible_evidence": "重复排列；叶子状、菱形"
+          }
+        ],
+        "raw_observation": {
+          "color": "绿色、橙色、粉色",
+          "shape": "叶子状、菱形",
+          "pattern": "重复排列"
+        }
+      }
+    },
+    "evidence_refs": [
+      "内圈以粉紫色为主，呈现花瓣状放射排列，象征内在的平静与自我价值感。",
+      "中圈包含黄色星形和蓝色菱形交替排列，表现出能量流动与情绪的平衡。",
+      "外圈由绿色叶子状和橙色菱形组成，显示对外界的连接与行动力。",
+      "整体色彩明亮且分布均匀，反映积极的心态与生命力。",
+      "图案对称且有序，体现内心的稳定与协调。"
+    ],
+    "uncertainties": [
+      "无法确定具体颜色深浅是否影响解读结果。",
+      "未明确各颜色之间的比例关系，可能影响五行属性的判断。",
+      "缺乏关于绘画者创作时的具体心理状态的信息。"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "放射状排列；花瓣状",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "花瓣状"
+        ],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "交替排列；星形、菱形",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "星形、菱形"
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "重复排列；叶子状、菱形",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "叶子状、菱形"
+        ],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。"
+    ],
+    "per_circle": {
+      "inner": {
+        "visual_summary": "放射状排列；花瓣状",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "花瓣状"
+        ],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "交替排列；星形、菱形",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "星形、菱形"
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "重复排列；叶子状、菱形",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "叶子状、菱形"
+        ],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": []
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": []
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": []
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "放射状排列；花瓣状"
+      },
+      {
+        "id": "middle-001",
+        "circle": "middle",
+        "visible_evidence": "交替排列；星形、菱形"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "重复排列；叶子状、菱形"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "你的内在价值感与秩序感已经形成稳定的核心，但向外拓展接收资源时仍带有谨慎与控制的模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "内圈以粉紫色为主，呈现花瓣状放射排列，象征内在的平静与自我价值感。",
+      "中圈包含黄色星形和蓝色菱形交替排列，表现出能量流动与情绪的平衡。",
+      "外圈由绿色叶子状和橙色菱形组成，显示对外界的连接与行动力。",
+      "整体色彩明亮且分布均匀，反映积极的心态与生命力。",
+      "图案对称且有序，体现内心的稳定与协调。",
+      "内圈到中圈已有表达，外圈边界仍较谨慎。"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [],
+      "selected_clause_ids": [],
+      "selected_module_ids": [],
+      "clauses": [],
+      "modules": [],
+      "boundaries": []
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "你已具备接住资源的内在根基，现在更关键的是让接收的动作变得松弛与流动。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [],
+      "selected_clause_ids": [],
+      "selected_module_ids": [],
+      "clauses": [],
+      "modules": [],
+      "boundaries": []
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "在保持内在稳定感的同时，练习对外界的信任与放松控制，允许资源以更自然的方式流入外层边界。",
+    "report_mode": "pro",
+    "writing_input_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "内圈以粉紫色为主，呈现花瓣状放射排列，象征内在的平静与自我价值感。",
+      "中圈包含黄色星形和蓝色菱形交替排列，表现出能量流动与情绪的平衡。",
+      "外圈由绿色叶子状和橙色菱形组成，显示对外界的连接与行动力。",
+      "整体色彩明亮且分布均匀，反映积极的心态与生命力。",
+      "图案对称且有序，体现内心的稳定与协调。",
+      "内圈到中圈已有表达，外圈边界仍较谨慎。"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [],
+      "selected_clause_ids": [],
+      "selected_module_ids": [],
+      "clauses": [],
+      "modules": [],
+      "boundaries": []
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 财富议题曼陀罗解读报告\n\n## 画面证据总览\n从你的曼陀罗画作中，可以看到几个清晰的信息线索：内圈以粉紫色为主，呈花瓣状放射排列，给人的第一印象是内在有相当稳定的平和感与自我重视度。中圈的黄色星形和蓝色菱形以交替方式展开，暗示情绪与能量在流动中寻找均衡。外圈则由绿色叶子状和橙色菱形重复排列而成，整体色彩明亮匀称，但外圈边界显得相对收敛。这些画面依据共同指向一种“内稳外慎”的格局。\n\n## 财富核心主轴\n你在金钱、价值与资源交换中的根本机制是：价值感已经沉淀为核心资产，但接收外来的机会和资源时，仍倾向于用审慎与控制来保护内在秩序，尚未让接收动作变得足够松弛。\n\n## 三圈分层解读\n- **内圈：自我价值与资源根基**  \n  内圈的花瓣状放射排列象征你对自己的认可已经形成稳定的中心。这种自我价值感是接住资源的基础，就像一个有根的花萼，知道自己的分量，不容易被外部评价摇动。\n\n- **中圈：能量流动与交换情绪**  \n  中圈交替出现黄色星形和蓝色菱形，反映出你在付出与接收之间保持着动态调节。黄色星形对应的主动展现和积极拓展，与蓝色菱形代表的冷静权衡交替出现，表明你在交换价值时既渴望连接，又习惯先停下来判断安全边界。\n\n- **外圈：对外行动与机会接纳**  \n  外圈的叶子状图形展现生命力和对外延伸的意愿，橙色菱形则蕴含行动热情。值得留意的是，这些图形以重复且有序的方式排列，显示出清晰的自我边界，但也因此让对外接收的姿态稍显谨慎，资源的进入仿佛需要先通过一道“审核”。\n\n## 浮现议题回译\n你提出的关切——“自己是否能稳定接住资源和机会”，在画面上已经呈现出一个重要的内在对话。内圈的平静价值感说明，你并不缺底气；中圈的交替节奏反映出情绪和理性在反复确认“这是否安全”。这种审慎可能来自过去希望通过掌控来避免失望的经验，也可能与外圈边界过于规整有关。换句话说，你在事业、关系或家庭中，往往先把事情安排周全，再允许资源进入。这股保护力如果过度使用，会让一些不按你预设路径到来的机会被挡在门外。\n\n## 低风险行动建议\n1. **做一个“接收练习”**  \n   接下来一周，每天找一个小机会刻意接受别人的好意，例如接受一句赞美而不立刻用自谦打回去，或者接受一次顺手帮助。把注意力放在接收时的身体感受上，而非马上计算如何回馈。\n\n2. **在规则里留一道缝隙**  \n   在你习惯的时间表或计划中，留出一次“非结构时间”，允许事情不像日常那样规整。观察当你不那么控制进程时，什么资源自然地流动过来，并记录下你的真实感受。\n\n3. **重新定义外圈边界**  \n   在纸上重新画一次外圈图案，这次有意让某个图形略微突破规则排列的边缘。这不是让你放弃所有秩序，而是体验一下在安全框架内，允许少量不规则的状态存在，帮助外圈从“谨慎守界”转向“弹性容新”。"
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-34da6febd5d0",
+      "report_mode": "pro",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 财富议题曼陀罗解读报告\n\n## 画面证据总览\n从你的曼陀罗画作中，可以看到几个清晰的信息线索：内圈以粉紫色为主，呈花瓣状放射排列，给人的第一印象是内在有相当稳定的平和感与自我重视度。中圈的黄色星形和蓝色菱形以交替方式展开，暗示情绪与能量在流动中寻找均衡。外圈则由绿色叶子状和橙色菱形重复排列而成，整体色彩明亮匀称，但外圈边界显得相对收敛。这些画面依据共同指向一种“内稳外慎”的格局。\n\n## 财富核心主轴\n你在金钱、价值与资源交换中的根本机制是：价值感已经沉淀为核心资产，但接收外来的机会和资源时，仍倾向于用审慎与控制来保护内在秩序，尚未让接收动作变得足够松弛。\n\n## 三圈分层解读\n- **内圈：自我价值与资源根基**  \n  内圈的花瓣状放射排列象征你对自己的认可已经形成稳定的中心。这种自我价值感是接住资源的基础，就像一个有根的花萼，知道自己的分量，不容易被外部评价摇动。\n\n- **中圈：能量流动与交换情绪**  \n  中圈交替出现黄色星形和蓝色菱形，反映出你在付出与接收之间保持着动态调节。黄色星形对应的主动展现和积极拓展，与蓝色菱形代表的冷静权衡交替出现，表明你在交换价值时既渴望连接，又习惯先停下来判断安全边界。\n\n- **外圈：对外行动与机会接纳**  \n  外圈的叶子状图形展现生命力和对外延伸的意愿，橙色菱形则蕴含行动热情。值得留意的是，这些图形以重复且有序的方式排列，显示出清晰的自我边界，但也因此让对外接收的姿态稍显谨慎，资源的进入仿佛需要先通过一道“审核”。\n\n## 浮现议题回译\n你提出的关切——“自己是否能稳定接住资源和机会”，在画面上已经呈现出一个重要的内在对话。内圈的平静价值感说明，你并不缺底气；中圈的交替节奏反映出情绪和理性在反复确认“这是否安全”。这种审慎可能来自过去希望通过掌控来避免失望的经验，也可能与外圈边界过于规整有关。换句话说，你在事业、关系或家庭中，往往先把事情安排周全，再允许资源进入。这股保护力如果过度使用，会让一些不按你预设路径到来的机会被挡在门外。\n\n## 低风险行动建议\n1. **做一个“接收练习”**  \n   接下来一周，每天找一个小机会刻意接受别人的好意，例如接受一句赞美而不立刻用自谦打回去，或者接受一次顺手帮助。把注意力放在接收时的身体感受上，而非马上计算如何回馈。\n\n2. **在规则里留一道缝隙**  \n   在你习惯的时间表或计划中，留出一次“非结构时间”，允许事情不像日常那样规整。观察当你不那么控制进程时，什么资源自然地流动过来，并记录下你的真实感受。\n\n3. **重新定义外圈边界**  \n   在纸上重新画一次外圈图案，这次有意让某个图形略微突破规则排列的边缘。这不是让你放弃所有秩序，而是体验一下在安全框架内，允许少量不规则的状态存在，帮助外圈从“谨慎守界”转向“弹性容新”。",
+      "summary": "你的内在价值感与秩序感已经形成稳定的核心，但向外拓展接收资源时仍带有谨慎与控制的模式。"
+    }
+  }
+}

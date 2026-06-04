@@ -1,0 +1,438 @@
+{
+  "method_source": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-画面信号映射审核与结构化计划.md",
+  "execution_blocks": [
+    {
+      "block_id": "block-1-input-and-boundary",
+      "stage_keys": [
+        "stage-00-input-context",
+        "stage-01-user-input-context",
+        "stage-02-circle-boundary-decision"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-2-visual-and-direct-check",
+      "stage_keys": [
+        "stage-03-visual-evidence",
+        "stage-04-direct-judgment-high-hit-check"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-3-circle-rule-reasoning",
+      "stage_keys": [
+        "stage-05-per-circle-color-shape-element-sensing",
+        "stage-06-per-circle-element-generation-control",
+        "stage-07-per-circle-imbalance-patterns",
+        "stage-08-energy-flow-diagnosis",
+        "stage-09-evidence-consolidation"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-4-thesis-and-writing-input",
+      "stage_keys": [
+        "stage-10-core-thesis-selection",
+        "stage-11-user-facing-framing",
+        "stage-12-healing-direction-and-report-branching"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-5-report-and-quality",
+      "stage_keys": [
+        "stage-13-lite-report-draft",
+        "stage-14-pro-report-draft",
+        "stage-15-visual-assets",
+        "stage-16-final-report-assembly"
+      ],
+      "status": "complete"
+    }
+  ],
+  "stage_outputs": {
+    "stage-00-input-context": {
+      "stage": "stage-00-input-context",
+      "status": "complete",
+      "report_mode": "pro",
+      "image": {
+        "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5063.jpeg",
+        "storage_backend": "",
+        "storage_key": ""
+      },
+      "agent_version": "mandala-interpretation-agent-v1"
+    },
+    "stage-01-user-input-context": {
+      "stage": "stage-01-user-input-context",
+      "status": "complete",
+      "user_context": {
+        "theme": "wealth",
+        "theme_label": "财富议题",
+        "painting_intention": "想看自己的价值表达和现实交换哪里卡住。",
+        "painting_feeling": ""
+      }
+    },
+    "stage-02-circle-boundary-decision": {
+      "stage": "stage-02-circle-boundary-decision",
+      "status": "complete",
+      "circle_boundaries": {
+        "inner_radius": 35,
+        "middle_radius": 65,
+        "radius_unit": "normalized_percent",
+        "source": "manual_regression_default"
+      }
+    },
+    "stage-03-visual-evidence": {
+      "stage": "stage-03-visual-evidence",
+      "status": "complete",
+      "global_visual_summary": "这幅曼陀罗画作以中心的粉色区域和紫色星形为核心，向外辐射出绿色、黄色和蓝色的叶片状图案，边缘由灰色小石块环绕。整体构图对称且充满自然元素，色彩明亮且层次分明。",
+      "circles": {
+        "inner": {
+          "summary": "放射状线条",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "position": "inner",
+              "color": "",
+              "shape": "放射状线条",
+              "visible_evidence": "放射状线条"
+            }
+          ],
+          "raw_observation": {
+            "center_shape": "星形",
+            "center_color": "紫色",
+            "surrounding_color": "粉色",
+            "patterns": "放射状线条"
+          }
+        },
+        "middle": {
+          "summary": "绿色、黄色、蓝色；叶片状",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "position": "middle",
+              "color": "绿色、黄色、蓝色",
+              "shape": "叶片状",
+              "visible_evidence": "绿色、黄色、蓝色；叶片状"
+            }
+          ],
+          "raw_observation": {
+            "dominant_colors": [
+              "绿色",
+              "黄色",
+              "蓝色"
+            ],
+            "shapes": "叶片状",
+            "arrangement": "交错分布",
+            "additional_elements": "棕色种子状图案"
+          }
+        },
+        "outer": {
+          "summary": "蓝色与绿色交替",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "position": "outer",
+              "color": "蓝色与绿色交替",
+              "shape": "",
+              "visible_evidence": "蓝色与绿色交替"
+            }
+          ],
+          "raw_observation": {
+            "border_pattern": "灰色小石块",
+            "color_distribution": "蓝色与绿色交替",
+            "shape_details": "扇形和三角形组合"
+          }
+        }
+      },
+      "evidence_refs": [
+        "中心区域为紫色星形，周围是粉色背景，可能代表内在核心或自我价值的表达。",
+        "中圈以绿色、黄色和蓝色为主，叶片状图案交错分布，暗示成长、生机与能量流动。",
+        "外圈由灰色小石块构成边界，内部有蓝色与绿色的扇形和三角形，可能象征现实世界的稳定与外部环境的连接。",
+        "棕色种子状图案分布在中圈，可能表示潜在的成长或财富积累的种子。",
+        "整体色彩明亮且和谐，可能反映积极的情绪状态和对未来的希望。"
+      ],
+      "uncertainties": [
+        "无法确定颜色深浅是否代表情绪强度或能量水平。",
+        "无法确认种子状图案的具体含义，可能是象征性元素，也可能只是装饰。",
+        "外圈的灰色小石块是否代表某种防御机制或边界感尚不明确。"
+      ],
+      "model_trace": [
+        {
+          "model": "qwen-vl-max-latest",
+          "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+          "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+          "result": "success"
+        }
+      ]
+    },
+    "stage-04-direct-judgment-high-hit-check": {
+      "stage": "stage-04-direct-judgment-high-hit-check",
+      "status": "complete",
+      "hits": [],
+      "non_hits": [],
+      "uncertain_items": [],
+      "conflicts": [],
+      "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-05-per-circle-color-shape-element-sensing": {
+      "stage": "stage-05-per-circle-color-shape-element-sensing",
+      "status": "complete",
+      "per_circle": {
+        "inner": {
+          "visual_summary": "放射状线条",
+          "dominant_colors": [],
+          "dominant_shapes": [
+            "放射状线条"
+          ],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "绿色、黄色、蓝色；叶片状",
+          "dominant_colors": [
+            "绿色、黄色、蓝色"
+          ],
+          "dominant_shapes": [
+            "叶片状"
+          ],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "蓝色与绿色交替",
+          "dominant_colors": [
+            "蓝色与绿色交替"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-06-per-circle-element-generation-control": {
+      "stage": "stage-06-per-circle-element-generation-control",
+      "status": "complete",
+      "theme": "wealth",
+      "control_notes": [
+        "按当前画面证据和精简知识包推导，不新增画面事实。"
+      ],
+      "per_circle": {
+        "inner": {
+          "visual_summary": "放射状线条",
+          "dominant_colors": [],
+          "dominant_shapes": [
+            "放射状线条"
+          ],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "绿色、黄色、蓝色；叶片状",
+          "dominant_colors": [
+            "绿色、黄色、蓝色"
+          ],
+          "dominant_shapes": [
+            "叶片状"
+          ],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "蓝色与绿色交替",
+          "dominant_colors": [
+            "蓝色与绿色交替"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-07-per-circle-imbalance-patterns": {
+      "stage": "stage-07-per-circle-imbalance-patterns",
+      "status": "complete",
+      "candidates": [
+        {
+          "circle": "inner",
+          "candidate": "needs_human_review",
+          "basis": []
+        },
+        {
+          "circle": "middle",
+          "candidate": "needs_human_review",
+          "basis": [
+            "绿色、黄色、蓝色"
+          ]
+        },
+        {
+          "circle": "outer",
+          "candidate": "needs_human_review",
+          "basis": [
+            "蓝色与绿色交替"
+          ]
+        }
+      ]
+    },
+    "stage-08-energy-flow-diagnosis": {
+      "stage": "stage-08-energy-flow-diagnosis",
+      "status": "complete",
+      "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-09-evidence-consolidation": {
+      "stage": "stage-09-evidence-consolidation",
+      "status": "complete",
+      "evidence_map": [
+        {
+          "id": "inner-001",
+          "circle": "inner",
+          "visible_evidence": "放射状线条"
+        },
+        {
+          "id": "middle-001",
+          "circle": "middle",
+          "visible_evidence": "绿色、黄色、蓝色；叶片状"
+        },
+        {
+          "id": "outer-001",
+          "circle": "outer",
+          "visible_evidence": "蓝色与绿色交替"
+        }
+      ]
+    },
+    "stage-10-core-thesis-selection": {
+      "stage": "stage-10-core-thesis-selection",
+      "status": "complete",
+      "core_thesis": "内在价值感（内圈放射状紫星）已具备初步表达，但从中圈的情绪/资源流动到外圈的现实交换与边界，仍然存在一个从“生长”到“稳固落地”的谨慎过渡。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
+      }
+    },
+    "stage-11-user-facing-framing": {
+      "stage": "stage-11-user-facing-framing",
+      "status": "complete",
+      "framing": "你的曼陀罗显示，关于自我价值的核心有一股很强的向外放射的意愿（紫色星形放射线条），并且你已经有许多在生长的资源与能力（中圈丰富的绿叶与色彩）。但目前，这些资源和能力似乎还卡在“如何安全地拿到现实世界去交换”这一步——外圈的灰色石块边框，既是你对稳定界限的需要，也可能让你的价值表达暂时偏向保守。",
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
+      }
+    },
+    "stage-12-healing-direction-and-report-branching": {
+      "stage": "stage-12-healing-direction-and-report-branching",
+      "status": "complete",
+      "healing_direction": "在尊重你对安全感和秩序的需要（灰色石块边界）的同时，逐步练习将中圈已具备的丰富生命力（绿、黄、蓝叶片）向外圈做小成本的现实交换试验，把“种子”（棕色图案）种进具体、微小的现实行动中。",
+      "report_mode": "pro",
+      "writing_input_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [],
+        "selected_clause_ids": [],
+        "selected_module_ids": [],
+        "clauses": [],
+        "modules": [],
+        "boundaries": []
+      }
+    },
+    "stage-13-lite-report-draft": {
+      "stage": "stage-13-lite-report-draft",
+      "status": "complete",
+      "enabled": false,
+      "markdown": ""
+    },
+    "stage-14-pro-report-draft": {
+      "stage": "stage-14-pro-report-draft",
+      "status": "complete",
+      "enabled": true,
+      "markdown": "# 财富议题：从内在放射到现实落地的谨慎过渡\n\n## 画面证据总览\n你的曼陀罗提供了五条可见画面依据，共同指向价值表达与现实交换之间的关系。中心区域的紫色星形被粉色背景包围，这是内在核心与自我价值感正在向外放射的直接视觉信号。中圈以绿色、黄色和蓝色叶片状图案交错分布，暗示你所具备的生长力、资源与多面向能力已经相当丰富。棕色种子状图案散布在中圈，象征尚未充分外化的潜在价值积累。外圈由灰色小石块构成边界，内部有蓝色与绿色的扇形和三角形，显示你对外部现实环境的边界感与稳定需求十分清晰。整体色彩明亮且对称，说明这些议题并非源于匮乏，而是源于如何转换。\n\n## 财富核心主轴\n你的财富机制卡在“丰富的中圈资源”与“谨慎的外圈边界”之间——内在有明确的表达欲和充足的能力储备，但现实交换的通道仍然偏向保守。\n\n## 三圈分层解读\n**内圈·放射状线条与紫色星形**：曼陀罗的中心是你财富议题的起点。紫色星形带有自我价值的尊贵感，放射状线条表明你并不缺乏向外表达的意愿。问题不在于你没有价值，而在于这股放射力在离开中心后，遇到了一层谨慎的过滤。\n\n**中圈·绿色、黄色、蓝色叶片与棕色种子**：叶片形态指向生长、情绪流通和心智创造力，绿色涉及滋养与积累，黄色关乎自信与可见性，蓝色指向沟通和表达路径。棕色种子状图案提示你手里已经握有不少可以变现或交换的东西，它们只是还留在“准备中”的状态。\n\n**外圈·灰色小石块边界与蓝绿交替**：灰色石块构成的边界是你对安全感和秩序的需要，它没有问题，但当前它的作用更像围栏而非桥梁。蓝绿交替的扇形与三角形表明你具备连接现实的能力，只是在边界处多了一道自检程序，导致交换动作变小或推迟。\n\n## 浮现议题回译\n你提到的“价值表达和现实交换哪里卡住”，在画面中体现为几条具体线索。**在事业或工作上**：那些蓝色叶片代表的表达欲和沟通能力，可能因为对外界评价的顾虑而收束，你把本该说出去的报价、提案或合作邀约压在灰色边界以内。**在关系层面**：绿色叶片的滋养特质容易让你先付出情感或时间，却不太习惯将这种付出对等地兑换成可量化的回报，交换的天平偏向单侧。**在身体和情绪线索上**：整体明亮的色彩没有紧绷感，说明你并非对抗性卡住，而是等待一个“足够安全”的时机，这种等待本身需要被看见。\n\n## 低风险行动建议\n第一，从灰色边框开一扇小窗。选一件你已经准备好的中圈“种子”——比如一项技能、一个想法或一个作品——在本周内做一次低风险的现实交换尝试，例如发布一段专业分享、给出一个明确的报价、或者向值得信赖的人清晰表达你的需求，只做一次，不求结果。\n\n第二，给价值通道做一次改写练习。取一张白纸，左侧列出你中圈已经具备的能力或资源（用绿色、黄色、蓝色标记），右侧写下这些能力可以在现实世界交换什么，中间用箭头连接。在箭头旁边写上“允许通过”，用这个动作逐步让边界从障碍变成门禁。\n\n第三，观察灰色石块何时出现。下一次当你准备表达价值或进行交换时，注意到自己是否在后退、拖延或自我怀疑，把这种感受记录下来，不评判，只观察。连续记录三次后，你会对自己的保守模式产生新的理解，从而在选择中拥有更多主动权。"
+    },
+    "stage-15-visual-assets": {
+      "stage": "stage-15-visual-assets",
+      "status": "skipped",
+      "reason": "mvp_no_image_generation"
+    },
+    "stage-16-final-report-assembly": {
+      "stage": "stage-16-final-report-assembly",
+      "status": "complete",
+      "final_report": {
+        "report_id": "mandala-interpretation-41ed02a40e06",
+        "report_mode": "pro",
+        "title": "曼陀罗解读报告",
+        "markdown": "# 财富议题：从内在放射到现实落地的谨慎过渡\n\n## 画面证据总览\n你的曼陀罗提供了五条可见画面依据，共同指向价值表达与现实交换之间的关系。中心区域的紫色星形被粉色背景包围，这是内在核心与自我价值感正在向外放射的直接视觉信号。中圈以绿色、黄色和蓝色叶片状图案交错分布，暗示你所具备的生长力、资源与多面向能力已经相当丰富。棕色种子状图案散布在中圈，象征尚未充分外化的潜在价值积累。外圈由灰色小石块构成边界，内部有蓝色与绿色的扇形和三角形，显示你对外部现实环境的边界感与稳定需求十分清晰。整体色彩明亮且对称，说明这些议题并非源于匮乏，而是源于如何转换。\n\n## 财富核心主轴\n你的财富机制卡在“丰富的中圈资源”与“谨慎的外圈边界”之间——内在有明确的表达欲和充足的能力储备，但现实交换的通道仍然偏向保守。\n\n## 三圈分层解读\n**内圈·放射状线条与紫色星形**：曼陀罗的中心是你财富议题的起点。紫色星形带有自我价值的尊贵感，放射状线条表明你并不缺乏向外表达的意愿。问题不在于你没有价值，而在于这股放射力在离开中心后，遇到了一层谨慎的过滤。\n\n**中圈·绿色、黄色、蓝色叶片与棕色种子**：叶片形态指向生长、情绪流通和心智创造力，绿色涉及滋养与积累，黄色关乎自信与可见性，蓝色指向沟通和表达路径。棕色种子状图案提示你手里已经握有不少可以变现或交换的东西，它们只是还留在“准备中”的状态。\n\n**外圈·灰色小石块边界与蓝绿交替**：灰色石块构成的边界是你对安全感和秩序的需要，它没有问题，但当前它的作用更像围栏而非桥梁。蓝绿交替的扇形与三角形表明你具备连接现实的能力，只是在边界处多了一道自检程序，导致交换动作变小或推迟。\n\n## 浮现议题回译\n你提到的“价值表达和现实交换哪里卡住”，在画面中体现为几条具体线索。**在事业或工作上**：那些蓝色叶片代表的表达欲和沟通能力，可能因为对外界评价的顾虑而收束，你把本该说出去的报价、提案或合作邀约压在灰色边界以内。**在关系层面**：绿色叶片的滋养特质容易让你先付出情感或时间，却不太习惯将这种付出对等地兑换成可量化的回报，交换的天平偏向单侧。**在身体和情绪线索上**：整体明亮的色彩没有紧绷感，说明你并非对抗性卡住，而是等待一个“足够安全”的时机，这种等待本身需要被看见。\n\n## 低风险行动建议\n第一，从灰色边框开一扇小窗。选一件你已经准备好的中圈“种子”——比如一项技能、一个想法或一个作品——在本周内做一次低风险的现实交换尝试，例如发布一段专业分享、给出一个明确的报价、或者向值得信赖的人清晰表达你的需求，只做一次，不求结果。\n\n第二，给价值通道做一次改写练习。取一张白纸，左侧列出你中圈已经具备的能力或资源（用绿色、黄色、蓝色标记），右侧写下这些能力可以在现实世界交换什么，中间用箭头连接。在箭头旁边写上“允许通过”，用这个动作逐步让边界从障碍变成门禁。\n\n第三，观察灰色石块何时出现。下一次当你准备表达价值或进行交换时，注意到自己是否在后退、拖延或自我怀疑，把这种感受记录下来，不评判，只观察。连续记录三次后，你会对自己的保守模式产生新的理解，从而在选择中拥有更多主动权。",
+        "summary": "内在价值感（内圈放射状紫星）已具备初步表达，但从中圈的情绪/资源流动到外圈的现实交换与边界，仍然存在一个从“生长”到“稳固落地”的谨慎过渡。"
+      }
+    }
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "放射状线条"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "绿色、黄色、蓝色；叶片状"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "蓝色与绿色交替"
+    }
+  ]
+}

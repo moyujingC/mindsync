@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "round_id": "round-002",
+  "round_index": 2,
+  "fixture_id": "toc-mvp-fixture-005",
+  "model": "ep-20260316095322-94wf5",
+  "candidate_id": "doubao-vision",
+  "duration_ms": 10771,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5065.jpeg",
+  "output": {
+    "center_observation": "画面中心是一个粉色的星形图案，周围环绕着橙色的花瓣状图形，中心区域色彩丰富且图案密集，呈现出对称的花纹结构。",
+    "circle_boundaries": {
+      "inner": "内圈大致以绿色区域为边界，包含中心的粉色星形和橙色花瓣图形，边界相对清晰，图案紧凑。",
+      "middle": "中圈以蓝色区域为边界，包含黄色的星形图案和蓝色的带花纹区域，与内圈和外圈的图案风格有明显区分，边界较清晰。",
+      "outer": "外圈以粉色区域为边界，包含绿色的叶子状图形、黄色的菱形和橙色的图形，图案相对内圈和中圈稍显松散，边界清晰。"
+    },
+    "dominant_colors": [
+      "粉色",
+      "绿色",
+      "黄色",
+      "蓝色",
+      "橙色",
+      "紫色"
+    ],
+    "structure_notes": [
+      "整体图案对称，各圈层图案风格有变化，内圈图案密集，中圈和外圈相对有序。",
+      "颜色块分布均匀，无明显留白区域，图案连接紧密，无断裂或偏移现象。",
+      "各圈层之间层次分明，通过颜色和图案类型区分。"
+    ],
+    "risk_flags": [],
+    "confidence": "high"
+  }
+}

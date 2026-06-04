@@ -1,5 +1,5 @@
-version: 0.1.0
-last_updated: 2026-04-05
+version: 0.1.1
+last_updated: 2026-05-11
 source_of_truth: projects/research-center/kb/preference-memory/review-patterns.yaml
 description: >
   创作者 review 反馈的第一版结构化记录。
@@ -19,6 +19,21 @@ review_events:
       - 不直接复制行业大V的整体口气和位置感
       - 保留个人分享的活人感
       - 不把男性化表达外壳直接迁移到自己身上
+  - source_id: anti-ai-writing-style-2026-05-11
+    reviewed_at: 2026-05-11
+    value_type: expression_constraint
+    final_decision: approve_as_long_lived_constraint
+    source:
+      - projects/research-center/kb/sources/ai/2026-05-11-SOTA-Sync-这个表达式用了就像在用AI.md
+      - user_review: "删掉明显的“不是 X，而是 Y”式对照句，减少空泛强调，把部分句子改成更直接的工程说明。"
+    keep:
+      - 正式文档应优先使用直接、具体、工程化的表达
+      - 写完后自查并删除明显的 AI 写作痕迹
+      - 把空泛强调和模板化连接词改成具体说明
+    watch:
+      - 避免“不是 X，而是 Y”式先否定再重构的弱对照
+      - 避免机械三连、夸大语气和节拍器式段落
+      - 避免为了显得有洞见而设置的弱对照
 
 stable_patterns:
   - pattern_id: initial-review-as-learning-signal
@@ -45,6 +60,12 @@ stable_patterns:
     evidence_count: 1
     confidence: 0.88
     last_seen: 2026-04-05
+  - pattern_id: direct-engineering-writing-over-ai-rhythm
+    pattern_type: expression
+    description: 正式文档偏好直接、具体、工程化的表达；应删掉明显的 AI 写作节奏，包括“不是 X，而是 Y”式弱对照、空泛强调、机械三连和模板化连接词。
+    evidence_count: 2
+    confidence: 0.9
+    last_seen: 2026-05-11
 
 hard_constraints:
   - constraint_id: do-not-assume-user-view
@@ -59,3 +80,9 @@ hard_constraints:
   - constraint_id: no-direct-copy-of-identity-shell
     description: 不直接复制他人的身份感、行业位置感或性别化表达外壳到创作者自己的表达中。
     last_seen: 2026-04-05
+  - constraint_id: no-ai-style-weak-contrast
+    description: 正式文档、方案、总结和交付说明中，默认避免“不是 X，而是 Y”式先否定再重构的弱对照；只有在确实需要做技术区分时才使用。
+    last_seen: 2026-05-11
+  - constraint_id: no-generic-emphasis-rhythm
+    description: 避免用“核心、关键、真正、显著、系统性、根本”等空泛强调词制造判断感；优先改成具体对象、约束、动作和证据。
+    last_seen: 2026-05-11

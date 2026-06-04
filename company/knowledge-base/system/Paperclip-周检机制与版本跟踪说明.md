@@ -1,9 +1,9 @@
 # Paperclip 周检机制与版本跟踪说明
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Research & Knowledge Lead, Engineer
-> last_updated：2026-04-27
+> last_updated：2026-06-01
 > source_of_truth：company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md
 
 这份文档用于定义 `墨予镜` 如何持续跟踪 `Paperclip` 上游更新，并把“看到更新”收束成“对 `MindSync` 有什么影响、该不该升级、下一步怎么迭代”的正式机制。
@@ -95,28 +95,28 @@
 
 做影响判断时，默认至少对照这些本地入口：
 
-1. [.paperclip.yaml](.paperclip.yaml)
-2. [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
-3. [company/Paperclip任务系统优化方案.md](company/Paperclip任务系统优化方案.md)
-4. [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
-5. [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-6. [company/任务创建模板.md](company/任务创建模板.md)
-7. [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md)
-8. [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-9. [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+1. [.paperclip.yaml](../.paperclip.yaml)
+2. [Paperclip-Agent-模型配置总表.md](../../Paperclip-Agent-模型配置总表.md)
+3. [Paperclip任务系统优化方案.md](../../Paperclip任务系统优化方案.md)
+4. [任务审阅与状态流转规范.md](../../任务审阅与状态流转规范.md)
+5. [任务类型与标签规范.md](../../任务类型与标签规范.md)
+6. [任务创建模板.md](../../任务创建模板.md)
+7. [Automation入口.md](../../projects/Automation/PROJECT.md)
+8. [服务器与基础设施入口.md](../../服务器与基础设施入口.md)
+9. [paperclip-automation README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
 
 若周检结论已经形成稳定治理口径，应继续把结论回写到正式入口，而不是只停留在周检归档里。
 
 当前最常见的回写目标包括：
 
 1. 项目级版本基线与升级回归清单
-   - [projects/aimandala/deploy/paperclip-automation/README.md](projects/aimandala/deploy/paperclip-automation/README.md)
+   - [paperclip-automation README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
 2. `codex_local` 等关键 adapter 的正式安全边界
-   - [company/Paperclip-Agent-模型配置总表.md](company/Paperclip-Agent-模型配置总表.md)
-   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
+   - [Paperclip-Agent-模型配置总表.md](../../Paperclip-Agent-模型配置总表.md)
+   - [服务器与基础设施入口.md](../../服务器与基础设施入口.md)
 3. execution policy 与本地治理语义的原则级映射
-   - [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
-   - [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
+   - [任务审阅与状态流转规范.md](../../任务审阅与状态流转规范.md)
+   - [任务类型与标签规范.md](../../任务类型与标签规范.md)
 
 ## 6. 标准输出问题
 
@@ -153,6 +153,22 @@
 3. 若上游功能虽新，但会明显冲击现有执行链，先列为 `should`，不急着同周切换
 4. 默认不建议 `canary`（预发布试跑版）；只有当正式版明显不能覆盖已命中的关键痛点时，才允许把更激进路径列入 `optional`
 5. 若本地已有重度定制部署，例如自定义 Dockerfile、Hermes、`pi` provider、自建本地执行器，则升级建议必须附带回归清单
+
+### 8.1 当前版本分层口径
+
+截至 `2026-06-01`，`MindSync` 对 `Paperclip` 版本统一使用三层表达：
+
+1. 推荐目标版本：`v2026.529.0`
+2. 最低安全修复线：`v2026.416.0`
+3. 项目已验证基线：`v2026.416.0`
+
+这三层不能混用：
+
+1. 推荐目标版本用于说明下一次计划内升级应面向哪里
+2. 最低安全修复线用于判断是否存在必须立刻处理的安全风险
+3. 项目已验证基线用于说明当前 `aimandala` 部署链路已经完成过哪一版的最小回归
+
+若推荐目标版本高于项目已验证基线，应先创建独立升级验证任务，再进入运行时升级。
 
 ## 9. 当前自动化口径
 
@@ -194,11 +210,11 @@
 
 每次正式周检输出，优先复用：
 
-- [templates/Paperclip-周检报告模板.md](company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
+- [templates/Paperclip-周检报告模板.md](../../../company/knowledge-base/system/templates/Paperclip-周检报告模板.md)
 
 如果某周结论值得长期追溯，建议再归档到：
 
-- [paperclip-weekly-reviews/README.md](company/knowledge-base/system/paperclip-weekly-reviews/README.md)
+- [paperclip-weekly-reviews/README.md](../../../company/knowledge-base/system/paperclip-weekly-reviews/README.md)
 
 默认只有满足下面任一条件时，才建议归档，而不是每周固定落盘：
 

@@ -8,7 +8,6 @@ import {
 
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
-import { chatWithInterpretationReport } from "../../shared/api/services";
 import { getThemeDisplayName } from "../../shared/core";
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
@@ -713,7 +712,7 @@ export function MobileWebProReportPage({
   const hasProReport = state.report?.version === "pro" && sections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;
-  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "全面解读";
+  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富关系";
   const generatedAt = useMemo(
     () =>
       new Date().toLocaleDateString("zh-CN", {
@@ -756,29 +755,17 @@ export function MobileWebProReportPage({
     setChatError(null);
     setChatSending(true);
 
-    try {
-      const response = await chatWithInterpretationReport(interpretationId, {
-        message: next,
-        history,
-      });
-      setChatMessages((current) => [
-        ...current,
-        { role: "assistant", content: response.reply },
-      ]);
-    } catch (error) {
-      const messageText =
-        error instanceof Error ? error.message : "AI 问答暂时没有连上，请稍后再试。";
-      setChatError(messageText);
-      setChatMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          content: `这次追问暂时没有顺利返回：${messageText}`,
-        },
-      ]);
-    } finally {
-      setChatSending(false);
-    }
+    void history;
+    const messageText = "报告追问暂未接入当前财富报告 API。";
+    setChatError(messageText);
+    setChatMessages((current) => [
+      ...current,
+      {
+        role: "assistant",
+        content: messageText,
+      },
+    ]);
+    setChatSending(false);
   }
 
   function openChatWithQuestion(question?: string) {

@@ -1,5 +1,11 @@
 # Aimandala Frontend Design System
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/app/frontend/DESIGN_SYSTEM.md
+
 ## 目标
 
 这份文档定义 `aimandala` 当前前端的样式地基，用来约束 Web 与 miniapp 后续继续统一到组件层时的最小共识。
@@ -122,16 +128,10 @@
 
 ## 开发壳与兼容层最终瘦身规则
 
-- `styles.css` 后续只保留 legacy page、未迁移历史块与必要兼容规则，不再承载 `browser-shell`、`browser-debug-panel` 或开发壳基础类
-- `browser-shell`、`browser-debug-panel` 的静态视觉统一进入 `mobile-web/styles/dev-shell.css`
+- `styles.css` 后续只保留未迁移历史块与必要兼容规则，不再承载 `browser-shell` 或开发壳基础类
+- `browser-shell` 的静态视觉统一进入 `mobile-web/styles/dev-shell.css`
 - `.mw-visually-hidden` 这类稳定辅助类统一进入 `utilities.css`；`.field`、`.muted`、`.runtime-state`、`.eyebrow` 等开发壳基础类统一进入 `dev-shell.css`
 - 开发壳静态布局不得继续使用大段 inline style；仅运行时动态值允许保留在 JSX 中
-
-## Legacy Report 隔离规则
-
-- `report-page-legacy.tsx` 视为历史对照页，不参与主链设计演进，但其静态视觉仍必须进入独立页面样式层，例如 `mobile-web/styles/pages/report-legacy.css`
-- legacy 页面允许保留少量运行时几何值，例如三圈预览尺寸、pattern CSS variable 注入；不允许继续扩张大段静态 inline style
-- `styles.css` 不再承载 legacy 页面以外的视觉规则；legacy 页面即使继续保留，也应优先走 `pages/*.css`，而不是回写兼容层
 
 ## 共享 Token 对齐规则
 
@@ -159,14 +159,13 @@
 - 重复出现在多个页面或组件层的正文色、弱正文色、暖色标题色、状态 badge 色、表层卡片色、表单边框色，应优先收进 semantic token
 - `components.css`、`loading.css`、`history.css`、`report-lite.css`、`report-pro.css` 中的重复语义色应优先消费 token，而不是继续各自保留独立十六进制值
 - 装饰性渐变、halo、ring、图片容器高光与页面级氛围色可以暂留页面 CSS，等后续视觉重设计时再统一
-- `report-legacy.css` 继续视为隔离历史页，不纳入本轮 token 清扫目标
 
 ## Report Entry 与 Dev Shell Token 规则
 
 - `report-entry.css` 中 Lite / Pro 选择卡、price pill、footnote、弱文本和暗底文字层级，应优先消费产品级 semantic token，例如 `--am-text-*`、`--am-border-*`、`--am-status-info`，不要继续重复书写同一组语义色
 - `Report Entry` 的页面级渐变、暗底氛围背景和 hero 纹理仍可留在页面层；只有重复语义色需要优先收进 token
 - `dev-shell.css` 可定义少量 Web 本地 token，例如 panel surface、panel border、muted text、warning/error text、active surface；这些 token 只服务开发壳，不进入 `shared/design-system/tokens.ts`
-- `browser-shell`、`browser-debug-panel` 新增静态视觉应继续优先复用 `--am-dev-*` 本地 token，不再把重复色直接写回 `dev-shell.css`
+- `browser-shell` 新增静态视觉应继续优先复用 `--am-dev-*` 本地 token，不再把重复色直接写回 `dev-shell.css`
 
 ## 最终 Inline Style 边界
 

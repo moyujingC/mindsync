@@ -1,0 +1,76 @@
+{
+  "status": "complete",
+  "output_root": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment",
+  "results": [
+    {
+      "case_id": "case-001",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-001",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-002",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-002",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-003",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-003",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-004",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-004",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-005",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-005",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-007",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-007",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-008",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-008",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-009",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-009",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-010",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-010",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    },
+    {
+      "case_id": "case-011",
+      "status": "complete",
+      "case_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-25-221818-mandala-ab-experiment/case-011",
+      "a": "default_production",
+      "b": "ab_experiment_only"
+    }
+  ]
+}

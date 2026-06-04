@@ -38,7 +38,7 @@ export function MobileWebHistoryRecordDetailPage({
         <h2>{descriptor.title}</h2>
         <p className="mw-history-detail-hero__subtitle">{descriptor.subtitle}</p>
         <p className="mw-meta mw-history-detail-hero__meta">
-          主题：{descriptor.themeLabel} · 可查看版本：{descriptor.versionSummary}
+          议题：{descriptor.themeLabel} · 可查看版本：{descriptor.versionSummary}
         </p>
       </section>
 

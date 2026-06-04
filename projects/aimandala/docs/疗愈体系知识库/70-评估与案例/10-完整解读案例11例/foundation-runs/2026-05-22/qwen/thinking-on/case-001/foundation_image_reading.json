@@ -1,0 +1,476 @@
+{
+  "stage": "foundation-image-reading",
+  "status": "complete",
+  "foundation_image_reading": {
+    "visual_observation": {
+      "overall_observation": {
+        "first_impression": "画面呈现高度对称的圆形结构，以蓝、紫、粉三色为主调，色彩柔和且层次分明，整体视觉稳定、有序，具有强烈的节奏感和几何美感。",
+        "main_visual_content": "中心为蓝色放射状花瓣图案，向外依次是蓝色三角形、粉色菱形、紫色矩形及紫色半圆小点组成的环带，各圈层之间通过留白分隔，形成清晰的层级结构。",
+        "visual_atmosphere": "宁静、平衡、富有秩序感，色彩过渡自然，线条规整，给人以平和与专注的视觉体验。",
+        "visual_weight_and_rhythm": "视觉重心集中在中心区域，从内到外呈递减式分布；节奏由中心密集的放射线逐渐过渡为外围重复的几何块状排列，形成由紧致到舒展的动态变化。"
+      },
+      "three_circle_observation": {
+        "inner": "内圈以蓝色为主，包含中心圆形和放射状花瓣结构，周围环绕一圈蓝色三角形，构成核心视觉焦点，内部元素紧密排列，密度高。",
+        "middle": "中圈由粉色菱形块与浅蓝色三角形交替组成，菱形块内含三角形嵌套结构，颜色对比明显，布局规律性强，占据画面中段主要视觉空间。",
+        "outer": "外圈由紫色矩形块和紫色半圆小点构成双层结构，矩形块呈连续排列，其外侧点缀半圆小点，形成边界装饰效果，整体轮廓完整。",
+        "cross_circle_visual_connection": "各圈层通过颜色渐变和形状衔接实现视觉连接：内圈蓝色向中圈粉色过渡，中圈粉色与外圈紫色在色调上形成冷暖对比；相邻圈层之间均以留白作为分隔，保持独立性的同时维持整体统一性。"
+      },
+      "circle_visual_units": {
+        "inner": {
+          "composition_description": "内圈由中心蓝色圆形、放射状花瓣和外层蓝色三角形构成，整体呈同心圆结构，花瓣与三角形之间有明确留白间隔，形成清晰的层次。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "unit_name": "蓝色放射状花瓣",
+              "position": "位于内圈中心区域，靠近画作最内侧",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色，带有轻微渐变，边缘略深",
+              "shape_description": "由多个扇形瓣片组成，呈放射状排列，共约12个瓣片，每个瓣片呈弧形",
+              "texture_and_density": "笔触均匀，填充较密，无明显空白",
+              "spatial_relations": "位于内圈中心，外侧紧邻蓝色三角形，被白色留白包裹；每个瓣片之间由细窄留白隔开，不直接接触。",
+              "blank_space_role": "",
+              "energy_ratio_percent": 60.0,
+              "rich_visual_description": "中心蓝色放射状花瓣是整个画面的核心，每个瓣片从中心向外延伸，呈现出轮辐般的视觉效果，颜色柔和但具有方向性引导作用，视觉重量集中于中心点。"
+            },
+            {
+              "id": "inner-002",
+              "unit_name": "蓝色三角形",
+              "position": "位于内圈外侧，围绕花瓣分布",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色，接近天蓝色，略带透明感",
+              "shape_description": "等腰三角形，底边朝外，顶点朝内，每个三角形内含一个小圆形",
+              "texture_and_density": "填色均匀，笔触细腻，密度适中",
+              "spatial_relations": "位于内圈外侧，内侧紧挨蓝色花瓣，外侧接近中圈粉色菱形；每个三角形之间由白色留白隔开，彼此不直接相邻。",
+              "blank_space_role": "",
+              "energy_ratio_percent": 40.0,
+              "rich_visual_description": "蓝色三角形呈环状分布，每个三角形内部的小圆为空白，形成视觉上的‘眼’状结构，增强图案的节奏感和细节丰富度。"
+            }
+          ]
+        },
+        "middle": {
+          "composition_description": "中圈由两组交替元素构成：一组为粉色菱形块，另一组为浅蓝色三角形，两者交错排列，形成环状结构，中间有留白间隔。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "unit_name": "粉色菱形块",
+              "position": "位于中圈外侧，靠近外圈边界",
+              "source_type": "user_painted",
+              "color_description": "淡粉色，边缘略深，内部有浅色渐变",
+              "shape_description": "菱形，内部嵌套一个倒置三角形，形成‘M’形结构",
+              "texture_and_density": "填色较密，笔触均匀，边缘清晰",
+              "spatial_relations": "位于中圈外侧，内侧紧邻浅蓝色三角形，外侧接近紫色矩形块；每个菱形块之间由白色留白隔开，不直接相邻。",
+              "blank_space_role": "",
+              "energy_ratio_percent": 55.0,
+              "rich_visual_description": "粉色菱形块呈规则环状排列，内部嵌套的倒三角形增加了视觉复杂性，颜色柔和但存在感强，是中圈的主要视觉载体。"
+            },
+            {
+              "id": "middle-002",
+              "unit_name": "浅蓝色三角形",
+              "position": "位于中圈内侧，夹在粉色菱形之间",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色，比内圈三角形略浅，接近水色",
+              "shape_description": "等腰三角形，底边朝外，顶点朝内，内部含小圆形",
+              "texture_and_density": "填色均匀，密度中等，边缘清晰",
+              "spatial_relations": "位于中圈内侧，内侧紧邻蓝色放射状花瓣，外侧紧挨粉色菱形块；每个三角形之间由白色留白隔开，彼此不直接接触。",
+              "blank_space_role": "",
+              "energy_ratio_percent": 45.0,
+              "rich_visual_description": "浅蓝色三角形作为中圈的过渡元素，与内圈蓝色形成呼应，同时与粉色菱形形成冷暖对比，增强了层次感。"
+            }
+          ]
+        },
+        "outer": {
+          "composition_description": "外圈由两层结构组成：内层为紫色矩形块，外层为紫色半圆小点，两者共同构成边界装饰，整体呈连续闭合形态，外部留白形成画作边界。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "unit_name": "紫色矩形块",
+              "position": "位于外圈内侧，紧贴中圈粉色菱形",
+              "source_type": "user_painted",
+              "color_description": "深紫色，略带蓝调，边缘有轻微晕染",
+              "shape_description": "长方形，横向排列，两端略呈弧形，形成类似砖块的外观",
+              "texture_and_density": "填色较密，笔触均匀，边缘清晰",
+              "spatial_relations": "位于外圈内侧，内侧紧邻粉色菱形块，外侧紧挨紫色半圆小点；每个矩形块之间由白色留白隔开，不直接相邻。",
+              "blank_space_role": "",
+              "energy_ratio_percent": 70.0,
+              "rich_visual_description": "紫色矩形块呈连续排列，形成外圈主体结构，颜色深沉，具有封闭性和边界感，是外圈的主要视觉支撑。"
+            },
+            {
+              "id": "outer-002",
+              "unit_name": "紫色半圆小点",
+              "position": "位于外圈外侧，围绕矩形块分布",
+              "source_type": "user_painted",
+              "color_description": "淡紫色，与矩形块同色系但更浅",
+              "shape_description": "半圆形，大小一致，呈环状排列",
+              "texture_and_density": "填色均匀，密度较低，边缘清晰",
+              "spatial_relations": "位于外圈外侧，内侧紧邻紫色矩形块，外侧接近画作边界；每个半圆小点之间由白色留白隔开，不直接接触。",
+              "blank_space_role": "",
+              "energy_ratio_percent": 30.0,
+              "rich_visual_description": "紫色半圆小点作为外圈的装饰元素，数量较多，排列整齐，增强了整体的精致感和节奏感。"
+            },
+            {
+              "id": "outer-003",
+              "unit_name": "留白间隔",
+              "position": "分布在紫色矩形块与半圆小点之间，以及各元素间隙",
+              "source_type": "blank_space",
+              "color_description": "纯白色",
+              "shape_description": "不规则形状的空白区域，包括矩形块之间的缝隙、半圆小点之间的空隙",
+              "texture_and_density": "无纹理，完全空白",
+              "spatial_relations": "位于紫色矩形块之间、半圆小点之间以及矩形块与半圆小点之间，起到切分、隔开和承托作用；将不同元素分隔开来，避免视觉拥挤。",
+              "blank_space_role": "切分、隔开、承托",
+              "energy_ratio_percent": 0.0,
+              "rich_visual_description": "留白贯穿外圈，不仅分隔了紫色矩形块与半圆小点，还形成了视觉呼吸空间，使外圈结构不显压抑，增强整体通透感。"
+            }
+          ]
+        }
+      }
+    },
+    "element_sensing": {
+      "inner": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "inner-001",
+            "element": "water",
+            "basis": [
+              "浅蓝色为主，属水；放射状花瓣形似水流波动。"
+            ],
+            "confidence": "high",
+            "notes": "能量占比60%，为内圈主要能量。"
+          },
+          {
+            "visual_unit_id": "inner-002",
+            "element": "water",
+            "basis": [
+              "浅蓝色，属水；三角形有向外指向，但未改变水性。"
+            ],
+            "confidence": "high",
+            "notes": "内部小圆增加通透感，能量占比40%。"
+          }
+        ],
+        "summary": ""
+      },
+      "middle": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "middle-001",
+            "element": "fire",
+            "basis": [
+              "淡粉色，渐变柔和，属火；菱形嵌套三角形增强发散感。"
+            ],
+            "confidence": "medium",
+            "notes": "颜色较淡火势不强，能量占比55%。"
+          },
+          {
+            "visual_unit_id": "middle-002",
+            "element": "water",
+            "basis": [
+              "浅蓝色，属水。"
+            ],
+            "confidence": "high",
+            "notes": "能量占比45%，与内圈水呼应。"
+          }
+        ],
+        "summary": ""
+      },
+      "outer": {
+        "element_candidates": [
+          {
+            "visual_unit_id": "outer-001",
+            "element": "fire",
+            "basis": [
+              "深紫色，浓重封闭，压住感强，属火。"
+            ],
+            "confidence": "high",
+            "notes": "能量占比70%，外圈主导能量。"
+          },
+          {
+            "visual_unit_id": "outer-002",
+            "element": "wood",
+            "basis": [
+              "淡紫色，半圆开放，偏木。"
+            ],
+            "confidence": "medium",
+            "notes": "颜色浅、形态柔和，具生长伸展感。"
+          },
+          {
+            "visual_unit_id": "outer-003",
+            "element": "metal",
+            "basis": [
+              "留白，属金。"
+            ],
+            "confidence": "high",
+            "notes": "切分、隔开各元素，无能量占比。"
+          }
+        ],
+        "summary": ""
+      }
+    },
+    "intra_circle_relations": {
+      "inner": {
+        "relations": [],
+        "summary": "内圈仅含水元素单元，关系为同类延续，无明确生克或失衡证据。"
+      },
+      "middle": {
+        "relations": [
+          {
+            "relation_id": "middle_rel_01",
+            "relation_type": "controlling",
+            "involved_visual_unit_ids": [
+              "middle-002",
+              "middle-001"
+            ],
+            "visible_basis": "浅蓝色三角形紧邻粉色菱形块，水克火。",
+            "confidence": "high",
+            "notes": "水元素克制火元素，可能压制中圈火性的显现。"
+          }
+        ],
+        "summary": ""
+      },
+      "outer": {
+        "relations": [
+          {
+            "relation_id": "outer_rel_01",
+            "relation_type": "separated_by_blank_space",
+            "involved_visual_unit_ids": [
+              "outer-001",
+              "outer-002",
+              "outer-003"
+            ],
+            "visible_basis": "紫色矩形块与半圆小点之间被留白隔开，能量流动受阻。",
+            "confidence": "high",
+            "notes": "木生火的直接连接因留白而中断，木火能量不能顺利相生。"
+          },
+          {
+            "relation_id": "outer_rel_02",
+            "relation_type": "cut_by_metal",
+            "involved_visual_unit_ids": [
+              "outer-003",
+              "outer-001"
+            ],
+            "visible_basis": "金属留白紧邻切除紫色矩形块，造成火性被分隔削弱。",
+            "confidence": "high",
+            "notes": "火元素被留白金所克，封闭性更强，但能量被切割成孤立块。"
+          }
+        ],
+        "summary": ""
+      }
+    },
+    "cross_circle_flow": {
+      "flow_observations": [
+        {
+          "flow_id": "flow_01",
+          "flow_type": "interrupted",
+          "involved_circles": [
+            "inner",
+            "middle"
+          ],
+          "visual_basis": "内圈与中圈之间以白色留白分隔，色彩由蓝向粉过渡虽有渐变，但物理上被留白切断。",
+          "confidence": "high",
+          "notes": "内圈水能量向中圈过渡时受阻，可能影响能量连续性。"
+        },
+        {
+          "flow_id": "flow_02",
+          "flow_type": "interrupted",
+          "involved_circles": [
+            "middle",
+            "outer"
+          ],
+          "visual_basis": "中圈与外圈之间有留白分隔，粉色与紫色对比鲜明但隔断。",
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "flow_id": "flow_03",
+          "flow_type": "outer_layer_containing",
+          "involved_circles": [
+            "outer"
+          ],
+          "visual_basis": "外圈由紫色矩形块和半圆小点组成完整环状边界，整体轮廓包裹内中所有内容。",
+          "confidence": "high",
+          "notes": "外圈形成封闭容器感，能量向内收敛。"
+        }
+      ],
+      "summary": ""
+    },
+    "evidence_links": [
+      {
+        "claim_id": "inner-001",
+        "claim_type": "element_sensing",
+        "claim_text": "inner-001 五行候选为 water。",
+        "visual_unit_ids": [
+          "inner-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "浅蓝色为主，属水；放射状花瓣形似水流波动。"
+      },
+      {
+        "claim_id": "inner-002",
+        "claim_type": "element_sensing",
+        "claim_text": "inner-002 五行候选为 water。",
+        "visual_unit_ids": [
+          "inner-002"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.inner"
+        ],
+        "evidence_text": "浅蓝色，属水；三角形有向外指向，但未改变水性。"
+      },
+      {
+        "claim_id": "middle-001",
+        "claim_type": "element_sensing",
+        "claim_text": "middle-001 五行候选为 fire。",
+        "visual_unit_ids": [
+          "middle-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.middle"
+        ],
+        "evidence_text": "淡粉色，渐变柔和，属火；菱形嵌套三角形增强发散感。"
+      },
+      {
+        "claim_id": "middle-002",
+        "claim_type": "element_sensing",
+        "claim_text": "middle-002 五行候选为 water。",
+        "visual_unit_ids": [
+          "middle-002"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.middle"
+        ],
+        "evidence_text": "浅蓝色，属水。"
+      },
+      {
+        "claim_id": "outer-001",
+        "claim_type": "element_sensing",
+        "claim_text": "outer-001 五行候选为 fire。",
+        "visual_unit_ids": [
+          "outer-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "深紫色，浓重封闭，压住感强，属火。"
+      },
+      {
+        "claim_id": "outer-002",
+        "claim_type": "element_sensing",
+        "claim_text": "outer-002 五行候选为 wood。",
+        "visual_unit_ids": [
+          "outer-002"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "淡紫色，半圆开放，偏木。"
+      },
+      {
+        "claim_id": "outer-003",
+        "claim_type": "element_sensing",
+        "claim_text": "outer-003 五行候选为 metal。",
+        "visual_unit_ids": [
+          "outer-003"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "留白，属金。"
+      },
+      {
+        "claim_id": "middle_rel_01",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "水元素克制火元素，可能压制中圈火性的显现。",
+        "visual_unit_ids": [
+          "middle-002",
+          "middle-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.middle"
+        ],
+        "evidence_text": "浅蓝色三角形紧邻粉色菱形块，水克火。"
+      },
+      {
+        "claim_id": "outer_rel_01",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "木生火的直接连接因留白而中断，木火能量不能顺利相生。",
+        "visual_unit_ids": [
+          "outer-001",
+          "outer-002",
+          "outer-003"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "紫色矩形块与半圆小点之间被留白隔开，能量流动受阻。"
+      },
+      {
+        "claim_id": "outer_rel_02",
+        "claim_type": "intra_circle_relation",
+        "claim_text": "火元素被留白金所克，封闭性更强，但能量被切割成孤立块。",
+        "visual_unit_ids": [
+          "outer-003",
+          "outer-001"
+        ],
+        "circle_observation_refs": [
+          "visual_observation.circle_visual_units.outer"
+        ],
+        "evidence_text": "金属留白紧邻切除紫色矩形块，造成火性被分隔削弱。"
+      },
+      {
+        "claim_id": "flow_01",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "interrupted",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "内圈与中圈之间以白色留白分隔，色彩由蓝向粉过渡虽有渐变，但物理上被留白切断。"
+      },
+      {
+        "claim_id": "flow_02",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "interrupted",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "中圈与外圈之间有留白分隔，粉色与紫色对比鲜明但隔断。"
+      },
+      {
+        "claim_id": "flow_03",
+        "claim_type": "cross_circle_flow",
+        "claim_text": "outer_layer_containing",
+        "visual_unit_ids": [],
+        "circle_observation_refs": [
+          "visual_observation.three_circle_observation"
+        ],
+        "evidence_text": "外圈由紫色矩形块和半圆小点组成完整环状边界，整体轮廓包裹内中所有内容。"
+      }
+    ]
+  },
+  "model_trace": {
+    "vision": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ],
+    "foundation_analysis": [
+      {
+        "model": "deepseek-v4-pro",
+        "base_url": "https://api.deepseek.com",
+        "endpoint_url": "https://api.deepseek.com/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "run_meta": {
+    "vision_provider": "qwen",
+    "thinking_mode": "on",
+    "started_at": "2026-05-22T12:50:30.226191+00:00",
+    "finished_at": "2026-05-22T12:53:46.846361+00:00",
+    "duration_seconds": 196.62
+  }
+}

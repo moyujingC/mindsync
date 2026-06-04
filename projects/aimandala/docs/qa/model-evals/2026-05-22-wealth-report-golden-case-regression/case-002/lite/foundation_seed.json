@@ -1,0 +1,204 @@
+{
+  "case_id": "case-002",
+  "stage": "foundation_image_reading",
+  "status": "visual_observation_seeded__foundation_sections_pending",
+  "foundation_image_reading": {
+    "visual_observation": {
+      "overall_observation": {
+        "first_impression": "这幅画像一朵从中心向外开放的大花，红色渐变、黄色花形和绿色叶片共同形成生长感。整体看起来有热度、有扩张，也有很多颜色之间的间隔，让画面在丰盛中带着评估和停顿。",
+        "visual_atmosphere": "画面氛围偏明亮、向外展开、生命力强。红色粗轮廓让画面有明显行动感，黄色花形带来承托感，绿色叶片则让外围有继续生长的趋势。",
+        "visual_weight_and_rhythm": "视觉重心在中心红黄莲花，之后通过黄花、绿叶和红色粗轮廓向中外圈扩散。重复节奏较强，外圈绿色叶片更外放，留白在不同颜色之间形成清楚的分隔。",
+        "healing_language_note": "如果用疗愈师语言表达，这幅画里有很明显的向上和向外的力量，同时也能看到这股力量在不同颜色、不同形状之间需要找到更稳的衔接和落点。"
+      },
+      "three_circle_observation": {
+        "inner": "内圈是中心莲花状结构，主要由红色渐变花瓣和黄色花瓣组成。红色渐变花瓣在外层更醒目，黄色花瓣在内侧和花瓣间穿插。花瓣之间有纸面留白，留白也属于画作视觉内容。",
+        "middle": "中圈围绕中心展开，有多组黄色花朵或花茎状结构、绿色块状叶片和红色粗轮廓。红色粗轮廓包住或连接部分黄色花形，绿色块状叶片穿插在花茎和红色轮廓之间，不同颜色图案之间有明显留白。",
+        "outer": "外圈由更外围的绿色叶片、红色粗轮廓外缘和部分延伸到外侧的黄色花形组成。绿色叶片数量较多，呈向外伸展状态；红色粗轮廓形成多个大块外轮廓；颜色图案之间同样保留留白。",
+        "cross_circle_visual_connection": "三圈之间整体是连续开放的，从中心莲花逐渐扩展到中圈花形和外圈叶片。连续性主要来自花形、叶片和红色轮廓的重复延伸；断开感来自不同颜色图案之间的留白。",
+        "cross_circle_visual_evidence": "中心莲花、中圈花茎和外圈叶片都沿同一圆心重复展开；红色粗轮廓从中圈延伸到外圈；绿色叶片在中圈出现并在外圈变多。留白则在黄、绿、红之间不断形成间隔。"
+      },
+      "circle_visual_units": {
+        "inner": {
+          "composition_description": "内圈由红色渐变花瓣、黄色内侧花瓣和花瓣间留白组成，整体呈中心莲花。红色负责外层打开，黄色穿插在内侧和花瓣之间，留白让花瓣关系更清楚。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "unit_name": "红色渐变莲花瓣",
+              "position": "内圈中心外层",
+              "source_type": "user_painted",
+              "color_description": "红色渐变，部分位置偏深红，向内或向边缘有深浅变化。",
+              "shape_description": "莲花状花瓣，放射状向外打开，边缘较尖但整体仍有花瓣弧度。",
+              "texture_and_density": "颜色不完全平涂，渐变感明显，花瓣围绕中心密集排列。",
+              "spatial_relations": "与黄色花瓣交错排列，花瓣间被留白切分，整体围绕中心重复。",
+              "blank_space_role": "none",
+              "rich_visual_description": "红色渐变花瓣是内圈最醒目的视觉力量。它们从中心向外打开，使内圈呈现出启动、展开和带热度的视觉状态。"
+            },
+            {
+              "id": "inner-002",
+              "unit_name": "黄色内侧花瓣",
+              "position": "内圈中心与红色花瓣之间",
+              "source_type": "user_painted",
+              "color_description": "黄色，局部有深浅变化。",
+              "shape_description": "较小花瓣或花形片段，穿插在红色花瓣内侧和间隙中。",
+              "texture_and_density": "密度集中，作为中心花形的支撑层。",
+              "spatial_relations": "与红色渐变花瓣相邻或交错，部分位置靠近花瓣间留白。",
+              "blank_space_role": "none",
+              "rich_visual_description": "黄色花瓣让内圈不只是红色向外打开，也有一层更稳、更托底的视觉内容。它们在红色之间穿插，使中心花形更丰厚。"
+            },
+            {
+              "id": "inner-003",
+              "unit_name": "内圈花瓣间留白",
+              "position": "红色与黄色花瓣之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "沿花瓣间隙形成细窄或楔形空间。",
+              "texture_and_density": "面积不大，但在花瓣之间多处出现。",
+              "spatial_relations": "隔开红色花瓣、黄色花瓣，也让中心莲花结构更清楚。",
+              "blank_space_role": "切分花瓣，隔开不同颜色，同时形成花瓣边界。",
+              "rich_visual_description": "内圈留白帮助区分每片花瓣的位置和层次。它不是画面缺失，而是中心莲花能被看清的重要结构。"
+            }
+          ]
+        },
+        "middle": {
+          "composition_description": "中圈由黄色花形/花茎、绿色块状叶片、红色粗轮廓和图案间留白组成。红色轮廓在中圈形成包裹与连接，绿色叶片穿插其间，黄色花形向外重复。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "unit_name": "黄色花形与花茎组",
+              "position": "中圈主体重复花形",
+              "source_type": "user_painted",
+              "color_description": "黄色为主，局部与红色、绿色相邻。",
+              "shape_description": "花朵或花茎状结构，向外伸展，重复出现。",
+              "texture_and_density": "重复密度高，构成中圈的主要明亮区域。",
+              "spatial_relations": "部分被红色粗轮廓包住或连接，附近穿插绿色块状叶片，和相邻颜色之间有留白。",
+              "blank_space_role": "none",
+              "rich_visual_description": "黄色花形让中圈有丰盛、开放的视觉感。它们不是孤立存在，而是被红色轮廓连接或包住，并与绿色叶片共同组成复杂的中圈结构。"
+            },
+            {
+              "id": "middle-002",
+              "unit_name": "绿色块状叶片",
+              "position": "中圈黄花与红色轮廓之间",
+              "source_type": "user_painted",
+              "color_description": "绿色，饱和度中等，部分位置偏深。",
+              "shape_description": "块状叶片或短叶形，边缘有弯曲感。",
+              "texture_and_density": "分布在多个方向，作为黄色花形之间的穿插元素。",
+              "spatial_relations": "靠近黄色花茎和红色粗轮廓，部分被留白隔开，同类绿叶围绕中心重复。",
+              "blank_space_role": "none",
+              "rich_visual_description": "绿色叶片让中圈多了一层生长方向。它们穿插在花形和红色轮廓之间，使画面不是单纯的花朵重复，而是有生长和转向。"
+            },
+            {
+              "id": "middle-003",
+              "unit_name": "红色粗轮廓",
+              "position": "中圈贯穿花形外侧",
+              "source_type": "user_painted",
+              "color_description": "红色，颜色较醒目，线条或轮廓较粗。",
+              "shape_description": "粗轮廓线和弧形包围结构，局部包住黄色花形。",
+              "texture_and_density": "连续度高于黄色和绿色单元，形成中圈骨架。",
+              "spatial_relations": "包住或连接黄色花形，邻近绿色叶片，并向外圈延伸。",
+              "blank_space_role": "none",
+              "rich_visual_description": "红色粗轮廓像中圈的动线和边界。它既把部分花形包住，也让中圈和外圈之间有一条可见的延伸路径。"
+            },
+            {
+              "id": "middle-004",
+              "unit_name": "中圈图案间留白",
+              "position": "黄色、绿色、红色图案之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "不规则缝隙，随花形、叶形和红色轮廓变化。",
+              "texture_and_density": "多处出现，形成颜色之间的间隔。",
+              "spatial_relations": "隔开黄花、绿叶和红色轮廓，也让局部元素不能完全连成一片。",
+              "blank_space_role": "隔开不同颜色图案，形成边界和筛选感。",
+              "rich_visual_description": "中圈留白在复杂颜色之间提供分隔。它让画面看起来不至于完全拥挤，也让每个颜色单元的关系变得可判断。"
+            }
+          ]
+        },
+        "outer": {
+          "composition_description": "外圈延续中圈的红色轮廓，并放大绿色叶片的向外伸展。黄色花形部分延伸到外侧，留白继续分隔不同颜色图案。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "unit_name": "外围绿色叶片",
+              "position": "外圈最外侧和外圈侧缘",
+              "source_type": "user_painted",
+              "color_description": "绿色，部分叶片偏浅，外缘更明亮。",
+              "shape_description": "长叶片或羽状叶片，向外伸展，边缘有尖端。",
+              "texture_and_density": "数量较多，重复围绕外圈展开。",
+              "spatial_relations": "同类叶片环绕中心向外重复，部分与红色轮廓和黄色花形相邻，中间有留白。",
+              "blank_space_role": "none",
+              "rich_visual_description": "外圈绿色叶片是画面最明显的外放部分。它们从花形结构向外伸展，让整幅画有继续生长、继续探索外部空间的趋势。"
+            },
+            {
+              "id": "outer-002",
+              "unit_name": "外圈红色粗轮廓延伸",
+              "position": "外圈中外段",
+              "source_type": "user_painted",
+              "color_description": "红色，与中圈红色轮廓一致。",
+              "shape_description": "大块弧形或轮廓结构，延伸并包围部分外圈图案。",
+              "texture_and_density": "较粗、较醒目，形成外圈骨架。",
+              "spatial_relations": "从中圈延伸到外圈，包围或连接黄色花形，并与绿色叶片相邻。",
+              "blank_space_role": "none",
+              "rich_visual_description": "红色轮廓在外圈继续存在，使中圈的行动线没有突然中断。它像一条从内向外走的视觉路径，把花形和叶片连接起来。"
+            },
+            {
+              "id": "outer-003",
+              "unit_name": "外侧黄色花形延伸",
+              "position": "外圈靠外边缘",
+              "source_type": "user_painted",
+              "color_description": "黄色，局部与红色轮廓、绿色叶片相邻。",
+              "shape_description": "花瓣或花形延伸结构，和中圈黄色花形同源。",
+              "texture_and_density": "分布在多个方向，形成外圈明亮节点。",
+              "spatial_relations": "部分被红色轮廓包住或连接，附近有绿色叶片和留白。",
+              "blank_space_role": "none",
+              "rich_visual_description": "黄色花形从中圈延伸到外圈，使画面的丰盛感没有停在内部，而是继续到现实边缘。"
+            },
+            {
+              "id": "outer-004",
+              "unit_name": "外圈留白",
+              "position": "外圈外边以内的图案间隔",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "沿绿叶、红轮廓和黄花之间形成不规则间隔。",
+              "texture_and_density": "数量多，贯穿外圈。",
+              "spatial_relations": "隔开绿色、红色、黄色图案；只要在外圈外边以内，均作为画作内留白记录。",
+              "blank_space_role": "隔开不同颜色图案，切分外圈行动和生长结构。",
+              "rich_visual_description": "外圈留白让外放的绿色叶片和红黄结构保持边界。它使画面有空间感，也让外圈的扩张不是完全连成一片。"
+            }
+          ]
+        }
+      }
+    },
+    "element_sensing": {
+      "inner": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "intra_circle_relations": {
+      "inner": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "cross_circle_flow": {
+      "flow_observations": [],
+      "summary": "待用真实视觉模型按基础层 schema 生成。"
+    },
+    "evidence_links": []
+  }
+}

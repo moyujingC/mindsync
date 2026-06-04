@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "fixture_id": "toc-mvp-fixture-004",
+  "model": "glm-4v-plus",
+  "candidate_id": "glm-vision",
+  "duration_ms": 12025,
+  "image_path": "fixtures/toc-mvp/assets/IMG_5063.jpeg",
+  "output": {
+    "center_observation": "中心区域有一个紫色的星形图案，周围环绕着黄色和绿色的叶子状图案。",
+    "circle_boundaries": {
+      "inner": "内圈由紫色星形和周围的黄色、绿色叶子组成。",
+      "middle": "中圈由蓝色和绿色的扇形图案组成。",
+      "outer": "外圈由灰色和蓝色的扇形图案组成。"
+    },
+    "dominant_colors": [
+      "紫色",
+      "黄色",
+      "绿色",
+      "蓝色",
+      "灰色"
+    ],
+    "structure_notes": [
+      "图案对称",
+      "颜色分布均匀",
+      "层次分明"
+    ],
+    "risk_flags": [
+      "无明显的风险标志"
+    ],
+    "confidence": "medium"
+  }
+}

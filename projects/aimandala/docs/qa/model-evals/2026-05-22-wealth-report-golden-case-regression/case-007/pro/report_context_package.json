@@ -1,0 +1,1237 @@
+{
+  "report_id": "mandala-interpretation-ec9c8f4e3dae",
+  "report_mode": "pro",
+  "user_context": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "painting_intention": "case-007 【案例7】用五行感知法和相生相克解读事业发展（完整解读）",
+    "painting_feeling": ""
+  },
+  "foundation_image_reading": {
+    "stage": "foundation-image-reading",
+    "status": "complete",
+    "foundation_image_reading": {
+      "visual_observation": {
+        "overall_observation": {
+          "first_impression": "这幅画第一眼是明亮的花形结构，中心橙色圆形很醒目，外侧蓝色、黄色和紫色层层展开。整体有装饰感和开放感，也有多方向重复带来的分散感。",
+          "visual_atmosphere": "氛围偏明快、外放、带一点童趣。蓝色云状外圈让画面有柔软包裹感，紫色尖瓣和黄色花形让中圈更活跃。",
+          "visual_weight_and_rhythm": "视觉重心在橙色中心圆和蓝色齿状环。中圈紫色尖瓣、黄色花形和外圈蓝色云状结构形成大节奏，橙色圆点沿外侧重复，视觉动势向外扩散。",
+          "healing_language_note": "疗愈师语言可以表达为：画面里有很明显的明亮和向外表达的愿望，同时多层重复也提示这份表达需要找到更聚焦的方向。"
+        },
+        "three_circle_observation": {
+          "inner": "内圈以橙色中心圆、蓝色齿状环和黄色小点为主。橙色中心圆较大，蓝色齿状环围绕其外，黄色小点在蓝色区域附近重复。",
+          "middle": "中圈有紫色尖瓣、黄色花形和蓝色背景或间隔，重复感较强。紫色尖瓣向外伸展，黄色花形在其间形成明亮节点。",
+          "outer": "外圈有蓝色云状结构和橙色圆点，图案沿外缘重复。蓝色云状外圈形成柔软边界，橙色圆点分布在外侧节点。",
+          "cross_circle_visual_connection": "三圈从橙色中心到蓝色环，再到紫黄花形和蓝色云状外圈，整体连续展开。蓝色从内圈齿状环延伸到外圈云状结构，橙色从中心圆延伸到外圈圆点。",
+          "cross_circle_visual_evidence": "橙色中心圆与外圈橙色圆点形成呼应；蓝色在内圈和外圈都占明显位置；紫色尖瓣和黄色花形位于两层蓝色结构之间。"
+        },
+        "circle_visual_units": {
+          "inner": {
+            "composition_description": "内圈由橙色中心圆、蓝色齿状环、黄色小点和留白组成。橙色中心被蓝色环包围，黄色小点增加细节。",
+            "visual_units": [
+              {
+                "id": "inner-001",
+                "unit_name": "橙色中心圆",
+                "position": "内圈中心",
+                "source_type": "user_painted",
+                "color_description": "橙色，偏明亮。",
+                "shape_description": "圆形，边界较清楚。",
+                "texture_and_density": "面积较大，涂色较集中。",
+                "spatial_relations": "被蓝色齿状环包围，作为视觉中心。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "橙色中心圆是这幅画最直接的视觉焦点。它稳定地坐在中心，并向外引出蓝色和黄色结构。"
+              },
+              {
+                "id": "inner-002",
+                "unit_name": "蓝色齿状环",
+                "position": "橙色中心圆外侧",
+                "source_type": "user_painted",
+                "color_description": "蓝色或浅蓝色。",
+                "shape_description": "齿状或波齿状环形结构，围绕中心。",
+                "texture_and_density": "重复密集，形成中心外包围层。",
+                "spatial_relations": "包围橙色中心圆，外侧邻近黄色小点和中圈紫色尖瓣。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "蓝色齿状环像中心外的一圈流动边界。它让中心橙色被清楚包住，同时带有波动和节奏。"
+              },
+              {
+                "id": "inner-003",
+                "unit_name": "黄色小点",
+                "position": "内圈蓝色环外侧附近",
+                "source_type": "user_painted",
+                "color_description": "黄色，小面积。",
+                "shape_description": "小圆点或点状结构。",
+                "texture_and_density": "重复点状，作为细小节奏。",
+                "spatial_relations": "靠近蓝色齿状环，与中圈黄色花形形成颜色呼应。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "黄色小点在内圈形成明亮的细节，连接中心和外侧花形结构。"
+              },
+              {
+                "id": "inner-004",
+                "unit_name": "内圈留白",
+                "position": "橙色、蓝色和黄色元素之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "小片或细缝状间隔。",
+                "texture_and_density": "面积较小。",
+                "spatial_relations": "隔开橙色中心、蓝色齿状环和黄色小点。",
+                "blank_space_role": "形成元素边界。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "内圈留白面积不大，但帮助区分中心圆、蓝色环和黄色小点。"
+              }
+            ]
+          },
+          "middle": {
+            "composition_description": "中圈由紫色尖瓣、黄色花形、蓝色背景/间隔和留白组成。紫色和黄色形成主要花形，蓝色作为过渡和包围。",
+            "visual_units": [
+              {
+                "id": "middle-001",
+                "unit_name": "紫色尖瓣",
+                "position": "中圈主瓣",
+                "source_type": "user_painted",
+                "color_description": "紫色，局部偏浅或中等饱和。",
+                "shape_description": "尖瓣或三角尖形，向外展开。",
+                "texture_and_density": "重复排列，形成中圈主结构。",
+                "spatial_relations": "同类尖瓣围绕中心重复，和黄色花形、蓝色背景相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "紫色尖瓣让中圈有明显外放和方向感。它们像一层尖形花瓣，把内圈向外推开。"
+              },
+              {
+                "id": "middle-002",
+                "unit_name": "黄色花形",
+                "position": "中圈紫色尖瓣之间",
+                "source_type": "user_painted",
+                "color_description": "黄色，明亮。",
+                "shape_description": "小花形或花瓣组合。",
+                "texture_and_density": "重复出现，构成明亮节点。",
+                "spatial_relations": "位于紫色尖瓣之间或附近，和蓝色区域相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "黄色花形让中圈在紫色尖瓣之间有明亮的支点。它们使中圈不只是尖锐外放，也有花朵般的柔和。"
+              },
+              {
+                "id": "middle-003",
+                "unit_name": "中圈蓝色背景/间隔",
+                "position": "中圈紫黄图案周围",
+                "source_type": "user_painted",
+                "color_description": "蓝色或浅蓝色。",
+                "shape_description": "片状背景或间隔形态。",
+                "texture_and_density": "分布在紫黄图案之间，面积中等。",
+                "spatial_relations": "承接内圈蓝色齿状环，并与外圈蓝色云状结构呼应。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "中圈蓝色让紫色和黄色图案之间有冷色承接，也让内外蓝色结构形成连续线索。"
+              },
+              {
+                "id": "middle-004",
+                "unit_name": "中圈留白",
+                "position": "紫色、黄色、蓝色图案之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "局部细小间隔。",
+                "texture_and_density": "面积不大但多处存在。",
+                "spatial_relations": "隔开紫色尖瓣、黄色花形和蓝色区域。",
+                "blank_space_role": "切分中圈图案，保留单元边界。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "中圈留白让多色花形结构保持清楚，便于后续判断颜色之间的局部关系。"
+              }
+            ]
+          },
+          "outer": {
+            "composition_description": "外圈由蓝色云状结构、橙色圆点和留白组成。蓝色云状外缘形成柔软包围，橙色圆点沿外侧重复。",
+            "visual_units": [
+              {
+                "id": "outer-001",
+                "unit_name": "蓝色云状外圈",
+                "position": "外圈主体边缘",
+                "source_type": "user_painted",
+                "color_description": "蓝色或浅蓝色。",
+                "shape_description": "云朵状、波浪状外缘，圆润重复。",
+                "texture_and_density": "形成较大面积外圈包围层。",
+                "spatial_relations": "同类云状结构沿外缘重复，包围中圈紫黄花形。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "蓝色云状外圈让画面外缘显得柔软。它像一圈包裹层，把中圈的尖瓣和花形托住。"
+              },
+              {
+                "id": "outer-002",
+                "unit_name": "外圈橙色圆点",
+                "position": "蓝色云状结构内或外侧节点",
+                "source_type": "user_painted",
+                "color_description": "橙色，和中心圆呼应。",
+                "shape_description": "圆形点状或小圆。",
+                "texture_and_density": "多个重复，沿外侧分布。",
+                "spatial_relations": "嵌在或靠近蓝色云状结构，同类圆点围绕中心重复。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "橙色圆点把中心橙色带到外圈。它们像外缘的小太阳，使外圈仍保留中心热度的回声。"
+              },
+              {
+                "id": "outer-003",
+                "unit_name": "外圈留白",
+                "position": "蓝色云状结构和橙色圆点之间及外侧",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "空隙和外缘背景。",
+                "texture_and_density": "分布在外圈边缘。",
+                "spatial_relations": "隔开云状结构、橙色圆点和外部纸面空间。",
+                "blank_space_role": "隔开外圈节点，形成外缘呼吸空间。",
+                "energy_ratio_percent": 33.34,
+                "rich_visual_description": "外圈留白让云状边缘和橙色圆点保持松动，不至于完全挤在一起。"
+              }
+            ]
+          }
+        }
+      },
+      "element_sensing": {
+        "inner": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "inner-002",
+              "element": "water",
+              "basis": [
+                "蓝色齿状环形结构。齿状形态在此处为水流或波动感，不改变颜色主体的水性。"
+              ],
+              "confidence": "high",
+              "notes": "蓝色为水；波齿状加强循环流动感，不转化为金或火。"
+            },
+            {
+              "visual_unit_id": "inner-004",
+              "element": "metal",
+              "basis": [
+                "留白，按规则直接判金。"
+              ],
+              "confidence": "high",
+              "notes": "留白为金。形成元素边界。"
+            },
+            {
+              "visual_unit_id": "inner-001",
+              "element": "fire",
+              "basis": [
+                "橙色中心圆，大面积高能量集中。橙色明亮集中，倾向火性为主。"
+              ],
+              "confidence": "medium",
+              "notes": "橙色可兼属火或土。此处为中心圆，高占比集中，偏火。"
+            },
+            {
+              "visual_unit_id": "inner-003",
+              "element": "earth",
+              "basis": [
+                "黄色小点。小面积黄色，形状为点状，无强烈扩张感，暂定土。"
+              ],
+              "confidence": "medium",
+              "notes": "黄色可土可金。点状细节感弱，偏土。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "middle-003",
+              "element": "water",
+              "basis": [
+                "蓝色背景/间隔。颜色为蓝色，主水。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "middle-004",
+              "element": "metal",
+              "basis": [
+                "中圈留白，按规则判金。"
+              ],
+              "confidence": "high",
+              "notes": "留白为金。切分图案。"
+            },
+            {
+              "visual_unit_id": "middle-001",
+              "element": "wood",
+              "basis": [
+                "紫色尖瓣，向外展开，尖瓣状有生发外放感。紫色偏浅或中等饱和，开放而非压住。"
+              ],
+              "confidence": "medium",
+              "notes": "紫色尖瓣展开感明显，取木。若深紫压住则改火，但观察描述未提深浓压住。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "outer-003",
+              "element": "metal",
+              "basis": [
+                "外圈留白，按规则判金。"
+              ],
+              "confidence": "high",
+              "notes": "留白金性。"
+            },
+            {
+              "visual_unit_id": "outer-001",
+              "element": "water",
+              "basis": [
+                "蓝色云状外圈。蓝色为水，云状柔软包裹增强水性特征。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "intra_circle_relations": {
+        "inner": {
+          "relations": [
+            {
+              "relation_id": "r-inner-1",
+              "relation_type": "surrounded_by",
+              "involved_visual_unit_ids": [
+                "inner-001"
+              ],
+              "visible_basis": "橙色中心圆被蓝色齿状环包围。空间关系：inner-002包围inner-001。",
+              "confidence": "high",
+              "notes": "水包围火。"
+            },
+            {
+              "relation_id": "r-inner-2",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "inner-003"
+              ],
+              "visible_basis": "黄色小点与蓝色齿状环之间有留白区隔。留白切分使土性黄色小点在空间上不直接邻接蓝色齿状环。",
+              "confidence": "medium",
+              "notes": "黄色小点被金性留白隔开。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "relations": [
+            {
+              "relation_id": "r-middle-1",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "middle-001"
+              ],
+              "visible_basis": "紫色尖瓣与黄色花形、蓝色背景之间有留白切分。中圈留白隔开多色图案。",
+              "confidence": "medium",
+              "notes": "木性单元被金切分。局部能量存在'cut_by_metal'特征，但各单元均有间隔，更偏向整体隔开。"
+            },
+            {
+              "relation_id": "r-middle-2",
+              "relation_type": "blocked_cycle",
+              "involved_visual_unit_ids": [
+                "middle-001",
+                "middle-003"
+              ],
+              "visible_basis": "木性紫色尖瓣与水性蓝色背景被留白分开，无法形成水生木的直接连续。",
+              "confidence": "medium",
+              "notes": "水木之间被金性留白阻隔。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "relations": [
+            {
+              "relation_id": "r-outer-1",
+              "relation_type": "insufficient_evidence",
+              "involved_visual_unit_ids": [
+                "outer-001",
+                "outer-002"
+              ],
+              "visible_basis": "橙色圆点嵌在或靠近蓝色云状结构。颜色非生克明确关系。",
+              "confidence": "low",
+              "notes": "橙色圆点五行识别为ambiguous或暂未定。土/火与水的生克需明确五行后才能判定，现有证据不足。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "cross_circle_flow": {
+        "flow_observations": [
+          {
+            "flow_id": "f-1",
+            "flow_type": "outward_expanding",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "橙色中心圆到齿状环到紫色尖瓣再到蓝色云状外缘，紫瓣尖形外展，外圈云状重复扩散，整体动势向外。",
+            "confidence": "high",
+            "notes": "从中心向外展开的结构。"
+          },
+          {
+            "flow_id": "f-2",
+            "flow_type": "outer_layer_containing",
+            "involved_circles": [
+              "outer"
+            ],
+            "visual_basis": "蓝色云状外圈形成柔软大结构包裹中圈和内圈。",
+            "confidence": "high",
+            "notes": "外圈云状包围感明显。"
+          },
+          {
+            "flow_id": "f-3",
+            "flow_type": "inner_outer_mismatch",
+            "involved_circles": [
+              "inner",
+              "outer"
+            ],
+            "visual_basis": "中心橙色圆为高占比实心集中点，外圈是云状松散结构，虽颜色呼应但密度和形态显著不同，存在内实外松的不匹配。",
+            "confidence": "medium",
+            "notes": "内圈实心集中对应外圈云状柔软释放。"
+          }
+        ],
+        "summary": ""
+      },
+      "evidence_links": [
+        {
+          "claim_id": "inner-002",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-002 五行候选为 water。",
+          "visual_unit_ids": [
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "蓝色齿状环形结构。齿状形态在此处为水流或波动感，不改变颜色主体的水性。"
+        },
+        {
+          "claim_id": "inner-004",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "inner-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "留白，按规则直接判金。"
+        },
+        {
+          "claim_id": "inner-001",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-001 五行候选为 fire。",
+          "visual_unit_ids": [
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "橙色中心圆，大面积高能量集中。橙色明亮集中，倾向火性为主。"
+        },
+        {
+          "claim_id": "inner-003",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-003 五行候选为 earth。",
+          "visual_unit_ids": [
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "黄色小点。小面积黄色，形状为点状，无强烈扩张感，暂定土。"
+        },
+        {
+          "claim_id": "middle-003",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-003 五行候选为 water。",
+          "visual_unit_ids": [
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "蓝色背景/间隔。颜色为蓝色，主水。"
+        },
+        {
+          "claim_id": "middle-004",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "middle-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈留白，按规则判金。"
+        },
+        {
+          "claim_id": "middle-001",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "紫色尖瓣，向外展开，尖瓣状有生发外放感。紫色偏浅或中等饱和，开放而非压住。"
+        },
+        {
+          "claim_id": "outer-003",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-003 五行候选为 metal。",
+          "visual_unit_ids": [
+            "outer-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈留白，按规则判金。"
+        },
+        {
+          "claim_id": "outer-001",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-001 五行候选为 water。",
+          "visual_unit_ids": [
+            "outer-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "蓝色云状外圈。蓝色为水，云状柔软包裹增强水性特征。"
+        },
+        {
+          "claim_id": "r-inner-1",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "水包围火。",
+          "visual_unit_ids": [
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "橙色中心圆被蓝色齿状环包围。空间关系：inner-002包围inner-001。"
+        },
+        {
+          "claim_id": "r-inner-2",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "黄色小点被金性留白隔开。",
+          "visual_unit_ids": [
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "黄色小点与蓝色齿状环之间有留白区隔。留白切分使土性黄色小点在空间上不直接邻接蓝色齿状环。"
+        },
+        {
+          "claim_id": "r-middle-1",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "木性单元被金切分。局部能量存在'cut_by_metal'特征，但各单元均有间隔，更偏向整体隔开。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "紫色尖瓣与黄色花形、蓝色背景之间有留白切分。中圈留白隔开多色图案。"
+        },
+        {
+          "claim_id": "r-middle-2",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "水木之间被金性留白阻隔。",
+          "visual_unit_ids": [
+            "middle-001",
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "木性紫色尖瓣与水性蓝色背景被留白分开，无法形成水生木的直接连续。"
+        },
+        {
+          "claim_id": "r-outer-1",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "橙色圆点五行识别为ambiguous或暂未定。土/火与水的生克需明确五行后才能判定，现有证据不足。",
+          "visual_unit_ids": [
+            "outer-001",
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "橙色圆点嵌在或靠近蓝色云状结构。颜色非生克明确关系。"
+        },
+        {
+          "claim_id": "f-1",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outward_expanding",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "橙色中心圆到齿状环到紫色尖瓣再到蓝色云状外缘，紫瓣尖形外展，外圈云状重复扩散，整体动势向外。"
+        },
+        {
+          "claim_id": "f-2",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outer_layer_containing",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "蓝色云状外圈形成柔软大结构包裹中圈和内圈。"
+        },
+        {
+          "claim_id": "f-3",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "inner_outer_mismatch",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "中心橙色圆为高占比实心集中点，外圈是云状松散结构，虽颜色呼应但密度和形态显著不同，存在内实外松的不匹配。"
+        }
+      ]
+    },
+    "model_trace": {
+      "vision": [
+        {
+          "source": "golden_foundation.visual_observation"
+        }
+      ],
+      "foundation_analysis": [
+        {
+          "model": "deepseek-v4-pro",
+          "base_url": "https://api.deepseek.com",
+          "endpoint_url": "https://api.deepseek.com/chat/completions",
+          "result": "success"
+        }
+      ]
+    }
+  },
+  "visual_observation": {
+    "overall_observation": {
+      "first_impression": "这幅画第一眼是明亮的花形结构，中心橙色圆形很醒目，外侧蓝色、黄色和紫色层层展开。整体有装饰感和开放感，也有多方向重复带来的分散感。",
+      "visual_atmosphere": "氛围偏明快、外放、带一点童趣。蓝色云状外圈让画面有柔软包裹感，紫色尖瓣和黄色花形让中圈更活跃。",
+      "visual_weight_and_rhythm": "视觉重心在橙色中心圆和蓝色齿状环。中圈紫色尖瓣、黄色花形和外圈蓝色云状结构形成大节奏，橙色圆点沿外侧重复，视觉动势向外扩散。",
+      "healing_language_note": "疗愈师语言可以表达为：画面里有很明显的明亮和向外表达的愿望，同时多层重复也提示这份表达需要找到更聚焦的方向。"
+    },
+    "three_circle_observation": {
+      "inner": "内圈以橙色中心圆、蓝色齿状环和黄色小点为主。橙色中心圆较大，蓝色齿状环围绕其外，黄色小点在蓝色区域附近重复。",
+      "middle": "中圈有紫色尖瓣、黄色花形和蓝色背景或间隔，重复感较强。紫色尖瓣向外伸展，黄色花形在其间形成明亮节点。",
+      "outer": "外圈有蓝色云状结构和橙色圆点，图案沿外缘重复。蓝色云状外圈形成柔软边界，橙色圆点分布在外侧节点。",
+      "cross_circle_visual_connection": "三圈从橙色中心到蓝色环，再到紫黄花形和蓝色云状外圈，整体连续展开。蓝色从内圈齿状环延伸到外圈云状结构，橙色从中心圆延伸到外圈圆点。",
+      "cross_circle_visual_evidence": "橙色中心圆与外圈橙色圆点形成呼应；蓝色在内圈和外圈都占明显位置；紫色尖瓣和黄色花形位于两层蓝色结构之间。"
+    },
+    "circle_visual_units": {
+      "inner": {
+        "composition_description": "内圈由橙色中心圆、蓝色齿状环、黄色小点和留白组成。橙色中心被蓝色环包围，黄色小点增加细节。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "unit_name": "橙色中心圆",
+            "position": "内圈中心",
+            "source_type": "user_painted",
+            "color_description": "橙色，偏明亮。",
+            "shape_description": "圆形，边界较清楚。",
+            "texture_and_density": "面积较大，涂色较集中。",
+            "spatial_relations": "被蓝色齿状环包围，作为视觉中心。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "橙色中心圆是这幅画最直接的视觉焦点。它稳定地坐在中心，并向外引出蓝色和黄色结构。"
+          },
+          {
+            "id": "inner-002",
+            "unit_name": "蓝色齿状环",
+            "position": "橙色中心圆外侧",
+            "source_type": "user_painted",
+            "color_description": "蓝色或浅蓝色。",
+            "shape_description": "齿状或波齿状环形结构，围绕中心。",
+            "texture_and_density": "重复密集，形成中心外包围层。",
+            "spatial_relations": "包围橙色中心圆，外侧邻近黄色小点和中圈紫色尖瓣。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "蓝色齿状环像中心外的一圈流动边界。它让中心橙色被清楚包住，同时带有波动和节奏。"
+          },
+          {
+            "id": "inner-003",
+            "unit_name": "黄色小点",
+            "position": "内圈蓝色环外侧附近",
+            "source_type": "user_painted",
+            "color_description": "黄色，小面积。",
+            "shape_description": "小圆点或点状结构。",
+            "texture_and_density": "重复点状，作为细小节奏。",
+            "spatial_relations": "靠近蓝色齿状环，与中圈黄色花形形成颜色呼应。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "黄色小点在内圈形成明亮的细节，连接中心和外侧花形结构。"
+          },
+          {
+            "id": "inner-004",
+            "unit_name": "内圈留白",
+            "position": "橙色、蓝色和黄色元素之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "小片或细缝状间隔。",
+            "texture_and_density": "面积较小。",
+            "spatial_relations": "隔开橙色中心、蓝色齿状环和黄色小点。",
+            "blank_space_role": "形成元素边界。",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "内圈留白面积不大，但帮助区分中心圆、蓝色环和黄色小点。"
+          }
+        ]
+      },
+      "middle": {
+        "composition_description": "中圈由紫色尖瓣、黄色花形、蓝色背景/间隔和留白组成。紫色和黄色形成主要花形，蓝色作为过渡和包围。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "unit_name": "紫色尖瓣",
+            "position": "中圈主瓣",
+            "source_type": "user_painted",
+            "color_description": "紫色，局部偏浅或中等饱和。",
+            "shape_description": "尖瓣或三角尖形，向外展开。",
+            "texture_and_density": "重复排列，形成中圈主结构。",
+            "spatial_relations": "同类尖瓣围绕中心重复，和黄色花形、蓝色背景相邻。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "紫色尖瓣让中圈有明显外放和方向感。它们像一层尖形花瓣，把内圈向外推开。"
+          },
+          {
+            "id": "middle-002",
+            "unit_name": "黄色花形",
+            "position": "中圈紫色尖瓣之间",
+            "source_type": "user_painted",
+            "color_description": "黄色，明亮。",
+            "shape_description": "小花形或花瓣组合。",
+            "texture_and_density": "重复出现，构成明亮节点。",
+            "spatial_relations": "位于紫色尖瓣之间或附近，和蓝色区域相邻。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "黄色花形让中圈在紫色尖瓣之间有明亮的支点。它们使中圈不只是尖锐外放，也有花朵般的柔和。"
+          },
+          {
+            "id": "middle-003",
+            "unit_name": "中圈蓝色背景/间隔",
+            "position": "中圈紫黄图案周围",
+            "source_type": "user_painted",
+            "color_description": "蓝色或浅蓝色。",
+            "shape_description": "片状背景或间隔形态。",
+            "texture_and_density": "分布在紫黄图案之间，面积中等。",
+            "spatial_relations": "承接内圈蓝色齿状环，并与外圈蓝色云状结构呼应。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "中圈蓝色让紫色和黄色图案之间有冷色承接，也让内外蓝色结构形成连续线索。"
+          },
+          {
+            "id": "middle-004",
+            "unit_name": "中圈留白",
+            "position": "紫色、黄色、蓝色图案之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "局部细小间隔。",
+            "texture_and_density": "面积不大但多处存在。",
+            "spatial_relations": "隔开紫色尖瓣、黄色花形和蓝色区域。",
+            "blank_space_role": "切分中圈图案，保留单元边界。",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "中圈留白让多色花形结构保持清楚，便于后续判断颜色之间的局部关系。"
+          }
+        ]
+      },
+      "outer": {
+        "composition_description": "外圈由蓝色云状结构、橙色圆点和留白组成。蓝色云状外缘形成柔软包围，橙色圆点沿外侧重复。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "unit_name": "蓝色云状外圈",
+            "position": "外圈主体边缘",
+            "source_type": "user_painted",
+            "color_description": "蓝色或浅蓝色。",
+            "shape_description": "云朵状、波浪状外缘，圆润重复。",
+            "texture_and_density": "形成较大面积外圈包围层。",
+            "spatial_relations": "同类云状结构沿外缘重复，包围中圈紫黄花形。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "蓝色云状外圈让画面外缘显得柔软。它像一圈包裹层，把中圈的尖瓣和花形托住。"
+          },
+          {
+            "id": "outer-002",
+            "unit_name": "外圈橙色圆点",
+            "position": "蓝色云状结构内或外侧节点",
+            "source_type": "user_painted",
+            "color_description": "橙色，和中心圆呼应。",
+            "shape_description": "圆形点状或小圆。",
+            "texture_and_density": "多个重复，沿外侧分布。",
+            "spatial_relations": "嵌在或靠近蓝色云状结构，同类圆点围绕中心重复。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "橙色圆点把中心橙色带到外圈。它们像外缘的小太阳，使外圈仍保留中心热度的回声。"
+          },
+          {
+            "id": "outer-003",
+            "unit_name": "外圈留白",
+            "position": "蓝色云状结构和橙色圆点之间及外侧",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "空隙和外缘背景。",
+            "texture_and_density": "分布在外圈边缘。",
+            "spatial_relations": "隔开云状结构、橙色圆点和外部纸面空间。",
+            "blank_space_role": "隔开外圈节点，形成外缘呼吸空间。",
+            "energy_ratio_percent": 33.34,
+            "rich_visual_description": "外圈留白让云状边缘和橙色圆点保持松动，不至于完全挤在一起。"
+          }
+        ]
+      }
+    }
+  },
+  "element_sensing": {
+    "inner": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "inner-002",
+          "element": "water",
+          "basis": [
+            "蓝色齿状环形结构。齿状形态在此处为水流或波动感，不改变颜色主体的水性。"
+          ],
+          "confidence": "high",
+          "notes": "蓝色为水；波齿状加强循环流动感，不转化为金或火。"
+        },
+        {
+          "visual_unit_id": "inner-004",
+          "element": "metal",
+          "basis": [
+            "留白，按规则直接判金。"
+          ],
+          "confidence": "high",
+          "notes": "留白为金。形成元素边界。"
+        },
+        {
+          "visual_unit_id": "inner-001",
+          "element": "fire",
+          "basis": [
+            "橙色中心圆，大面积高能量集中。橙色明亮集中，倾向火性为主。"
+          ],
+          "confidence": "medium",
+          "notes": "橙色可兼属火或土。此处为中心圆，高占比集中，偏火。"
+        },
+        {
+          "visual_unit_id": "inner-003",
+          "element": "earth",
+          "basis": [
+            "黄色小点。小面积黄色，形状为点状，无强烈扩张感，暂定土。"
+          ],
+          "confidence": "medium",
+          "notes": "黄色可土可金。点状细节感弱，偏土。"
+        }
+      ],
+      "summary": ""
+    },
+    "middle": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "middle-003",
+          "element": "water",
+          "basis": [
+            "蓝色背景/间隔。颜色为蓝色，主水。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "middle-004",
+          "element": "metal",
+          "basis": [
+            "中圈留白，按规则判金。"
+          ],
+          "confidence": "high",
+          "notes": "留白为金。切分图案。"
+        },
+        {
+          "visual_unit_id": "middle-001",
+          "element": "wood",
+          "basis": [
+            "紫色尖瓣，向外展开，尖瓣状有生发外放感。紫色偏浅或中等饱和，开放而非压住。"
+          ],
+          "confidence": "medium",
+          "notes": "紫色尖瓣展开感明显，取木。若深紫压住则改火，但观察描述未提深浓压住。"
+        }
+      ],
+      "summary": ""
+    },
+    "outer": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "outer-003",
+          "element": "metal",
+          "basis": [
+            "外圈留白，按规则判金。"
+          ],
+          "confidence": "high",
+          "notes": "留白金性。"
+        },
+        {
+          "visual_unit_id": "outer-001",
+          "element": "water",
+          "basis": [
+            "蓝色云状外圈。蓝色为水，云状柔软包裹增强水性特征。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        }
+      ],
+      "summary": ""
+    }
+  },
+  "intra_circle_relations": {
+    "inner": {
+      "relations": [
+        {
+          "relation_id": "r-inner-1",
+          "relation_type": "surrounded_by",
+          "involved_visual_unit_ids": [
+            "inner-001"
+          ],
+          "visible_basis": "橙色中心圆被蓝色齿状环包围。空间关系：inner-002包围inner-001。",
+          "confidence": "high",
+          "notes": "水包围火。"
+        },
+        {
+          "relation_id": "r-inner-2",
+          "relation_type": "separated_by_blank_space",
+          "involved_visual_unit_ids": [
+            "inner-003"
+          ],
+          "visible_basis": "黄色小点与蓝色齿状环之间有留白区隔。留白切分使土性黄色小点在空间上不直接邻接蓝色齿状环。",
+          "confidence": "medium",
+          "notes": "黄色小点被金性留白隔开。"
+        }
+      ],
+      "summary": ""
+    },
+    "middle": {
+      "relations": [
+        {
+          "relation_id": "r-middle-1",
+          "relation_type": "separated_by_blank_space",
+          "involved_visual_unit_ids": [
+            "middle-001"
+          ],
+          "visible_basis": "紫色尖瓣与黄色花形、蓝色背景之间有留白切分。中圈留白隔开多色图案。",
+          "confidence": "medium",
+          "notes": "木性单元被金切分。局部能量存在'cut_by_metal'特征，但各单元均有间隔，更偏向整体隔开。"
+        },
+        {
+          "relation_id": "r-middle-2",
+          "relation_type": "blocked_cycle",
+          "involved_visual_unit_ids": [
+            "middle-001",
+            "middle-003"
+          ],
+          "visible_basis": "木性紫色尖瓣与水性蓝色背景被留白分开，无法形成水生木的直接连续。",
+          "confidence": "medium",
+          "notes": "水木之间被金性留白阻隔。"
+        }
+      ],
+      "summary": ""
+    },
+    "outer": {
+      "relations": [
+        {
+          "relation_id": "r-outer-1",
+          "relation_type": "insufficient_evidence",
+          "involved_visual_unit_ids": [
+            "outer-001",
+            "outer-002"
+          ],
+          "visible_basis": "橙色圆点嵌在或靠近蓝色云状结构。颜色非生克明确关系。",
+          "confidence": "low",
+          "notes": "橙色圆点五行识别为ambiguous或暂未定。土/火与水的生克需明确五行后才能判定，现有证据不足。"
+        }
+      ],
+      "summary": ""
+    }
+  },
+  "cross_circle_flow": {
+    "flow_observations": [
+      {
+        "flow_id": "f-1",
+        "flow_type": "outward_expanding",
+        "involved_circles": [
+          "inner",
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "橙色中心圆到齿状环到紫色尖瓣再到蓝色云状外缘，紫瓣尖形外展，外圈云状重复扩散，整体动势向外。",
+        "confidence": "high",
+        "notes": "从中心向外展开的结构。"
+      },
+      {
+        "flow_id": "f-2",
+        "flow_type": "outer_layer_containing",
+        "involved_circles": [
+          "outer"
+        ],
+        "visual_basis": "蓝色云状外圈形成柔软大结构包裹中圈和内圈。",
+        "confidence": "high",
+        "notes": "外圈云状包围感明显。"
+      },
+      {
+        "flow_id": "f-3",
+        "flow_type": "inner_outer_mismatch",
+        "involved_circles": [
+          "inner",
+          "outer"
+        ],
+        "visual_basis": "中心橙色圆为高占比实心集中点，外圈是云状松散结构，虽颜色呼应但密度和形态显著不同，存在内实外松的不匹配。",
+        "confidence": "medium",
+        "notes": "内圈实心集中对应外圈云状柔软释放。"
+      }
+    ],
+    "summary": ""
+  },
+  "theme_interpretation": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.metal_excess",
+        "visual.weak_or_fragmented_earth",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.low_deservingness",
+        "wealth.approval_driven_earning"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.deservingness_self_worth",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.relationship_boundary",
+          "recommended_topic": "关系与交换边界 / 人际关系",
+          "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+          "matched_signals": [
+            "留白切分"
+          ],
+          "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+          "avoid": [
+            "不直接定性亲密关系、父亲关系或母亲关系。"
+          ]
+        },
+        {
+          "id": "wealth.next.career_expression",
+          "recommended_topic": "事业发展 / 价值表达 / 世界连接",
+          "recommended_intention": "我想探索：我的价值如何被世界看见、理解并交换。",
+          "matched_signals": [
+            "外圈弱",
+            "外圈空"
+          ],
+          "why_not_expand_now": "本次只回到财富中的价值表达和现实交换。",
+          "avoid": [
+            "不替用户做职业选择或商业决策。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.approval_driven_earning",
+          "title": "求认可式赚钱",
+          "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+          "report_language": [
+            "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+            "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+          ],
+          "healing_direction": [
+            "自我价值确认。",
+            "放松外界标准。",
+            "区分收入结果和自我价值。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。"
+      ]
+    }
+  },
+  "core_thesis": "内在火光稳定而外放行动被切分，财富议题聚焦于：如何让清晰的价值意图穿过自我评判与行动卡点，抵达现实世界的交换与承接。",
+  "healing_direction": "释放被自我评判切分的行动力，让内在价值意图连贯地流向现实交换，建立“我可以稳步行动并被世界承接”的安全感。",
+  "final_report": {
+    "report_id": "mandala-interpretation-ec9c8f4e3dae",
+    "report_mode": "pro",
+    "title": "曼陀罗解读报告",
+    "markdown": "# 曼陀罗财富议题解读：当外放的能量被切分\n\n## 画面证据总览\n\n这副曼陀罗第一眼看过去，是一朵正在绽放的花：橙色圆心很稳地坐在中央，紫色尖瓣向外张开，黄色花形嵌在中间作明亮的节点，最外圈是蓝灰色的云状结构轻轻包裹整个画面。整体氛围明亮、有童趣，也带着向外表达的愿望。仔细看会发现三个关键信号：第一，中圈的紫瓣和黄瓣之间存在明显的白色留白，彼此被隔开；第二，内圈橙色圆心周围是一圈蓝灰色齿状环，圆心被紧紧包围；第三，外圈的云状边缘柔软松弛，和内部实心集中的圆心形成“内紧外松”的对比。这些信号指向一个核心张力——想表达、想行动的能量很强，但在向外走的过程里被频繁切分和暂停。\n\n## 圈内元素五行感知\n\n内圈部分，我们看中心橙色的圆。橙色在这里饱满集中，视觉密度很高，对应火性的温热、聚焦和发光。它周边是蓝色的齿状环，蓝色主水，齿状形态本身像水波或流动的边界，不改变颜色主体的水性。蓝色齿状环紧紧包住橙色圆心，从空间关系上形成“水包围火”的圈内关系候选。黄色小点分布在蓝色环附近，小面积、点状、无扩张感，暂取土性；这些点被白色留白隔开，白色留白属金，形成“土被金切分”的圈内关系候选。内圈给人的感受是：火光很明确，但被一圈水性的流动边界包裹，又加上细微的金性切分，让热度不容易顺畅辐射出去。\n\n中圈部分，紫瓣是这里最外放的元素。紫色偏浅或中等饱和，瓣形向外展开，带有生长和表达的方向感，取木性。黄色花形位于紫瓣之间，明亮但面积不大，取土性。蓝灰色背景分布在紫黄图案周围，蓝色主水。圈内的白色留白把紫色尖瓣、黄色花形和蓝色背景都隔开；这里有两个值得注意的圈内关系候选——木性紫瓣整体被金性留白切分，同时木和水之间也因金性留白无法形成连续承接。这意味着中圈外放的行动能量，在画面层面就缺少被承接的路径：想动，但每一步都被某种内在的评判或标准暂停了。\n\n外圈部分，蓝灰色云状结构呈波浪形、柔软地包裹画面外缘，蓝色主水，云状形态强化了水性在外的包容和缓冲特征。橙色圆点嵌在云状结构内外，橙色的五行识别较模糊，可视具体情况倾向火或土；它与蓝灰色云状结构之间没有明确的生克空间关系，外圈内部更接近“相互接纳但不激烈互动”的状态。外圈的白色留白位于云状结构和圆点之间，属金，为外缘保留呼吸空间。\n\n## 财富核心主轴\n\n这副画的财富线索，主要不在“能不能赚钱”，而在“价值向外走的过程里，被谁喊了暂停”。中圈那些被隔开的紫色尖瓣，很像你心底想做的事、想表达的能力、想推出去的作品——念头很清楚，冲动也很真实，但每往前走一步，就有一个内在的声音在说：再检查一次、别人会怎么看、我还不够好。于是行动变成一段一段的，热情被自己反复审视切割。内圈那团紧紧被蓝色环包住的橙色火，则是你很清楚自己有什么核心能力和渴望，只是它暂时被保护在一个安全的边界里，还没找到稳定的方式连接到现实世界的交换场。外圈的蓝色云状结构虽然在承接，但承接的方式更像一层柔软的缓冲层，不是在“接住并回馈你”，而是在“缓和和吸收”——这会让你的价值表达出去之后，回音变得模糊，不容易形成清晰的收入或资源回流。\n\n## 三圈分层解读\n\n我们先从中圈开始看。中圈是行动和情绪的表达层。紫瓣外放的形态显示你在事业和个人价值表达上有很强的推动力，你很清楚自己可以输出专业、服务或创意，也想被看见。但那些白色留白在间隙里频繁出现，对应到财富场景里，很像你在定价格、收钱、谈合作的时候，被内在标准或对外界评价的敏感打断。你可能一边说“我要做这件事”，一边在心里迟疑别人愿不愿意为此买单。如果你曾经在事业推进中感到“想冲又突然收住”，或者完成了作品却在最后一步不敢报价——这张中圈的画面就是那个停顿的形状。\n\n接着往内走，看内圈。内圈是价值感和自我认同的本源层。中心那团橙色火，是你很清楚自己的核心光芒在哪里：某种审美能力、某种共情力、某种把事情变美的天赋。但蓝色齿状环把它围住，再加上黄色小点被留白反复隔开，这很可能对应一个待验证的假设：你的价值感，被一个内在的“安全管理员”一直守护着，它怕这团火被外面的人否定或利用，所以让火保持在被包围但不灼伤的状态。这层线索如果延展到身体或家庭背景，可能指向你在很小的时候就学会了“不主动索要太多”——对支持、对资源、对容许自己拥有，都带着一种克制。这不是缺陷，而是你曾经用来保护自己的方式。\n\n再看向外圈。外圈是现实交换和承接层。蓝灰色云状结构在画面里是柔软的、波动的，不那么确定地包裹住所有东西。它对中圈和内圈形成承接，但这种承接不是“稳稳托住并回弹”，而更像是缓冲和吸收。财富上这可能表现为：你有收入、有资源进来，但进来的方式和数量总是不完全清晰；别人给你的回馈常常不那么直接，或者你做完事之后，钱来得很慢、很模糊。外圈那些橙色圆点是内圈火光的回声，说明你的价值确实被世界留意到了，但还缺少一个更实在的容器把它们收纳下来。\n\n## 财富主轴收束\n\n回到财富的主轴上，这副画不是在说“你缺什么”，而是在说“你的价值已经生成，只是还没找到连贯的通道走出去并回来”。中圈的行动被切分，不意味着你不能行动，而是你需要在行动和暂停之间重新设计自己的节奏；内圈的橙火被保护，不意味着你不够好，而是你过去对自我价值的保护，和现在你想要的“被世界看见并交换”，需要一个新的协定。外圈承接不够实在，恰恰说明接下来可以做的事情很简单：不是再努力证明自己，而是把那些做完却没落地的部分，一个一个收进口袋。\n\n## 低风险行动建议\n\n第一个方向，是为自己的行动建立一个“不审查时间”。每天设定十五分钟，在这段时间里做任何跟财富目标相关的事——发一条专业内容、整理报价单、联络一位潜在合作方——唯一规则是过程中不评判自己做得够不够好，结束之后再回头看。这个练习不要求结果，只训练“行动不被切分”的体验。第二个方向，是给每一件你付出的劳动做一个“回音记录”：不管有没有收到钱，都写下来你给出的价值是什么，以及世界给了你什么回馈。这个动作能帮你把外圈模糊的承接，慢慢翻译成你自己看得懂的交换信号。第三个方向，是找一个你目前可以调整的小价格边界——也许是一个服务的定价、一个收费的时间节点——试着把它向前推一点点，同时记下身体和情绪的反应。\n\n## 下一次曼陀罗探索建议\n\n建议方向一，可以带着“我的价值如何被世界承接并交换”这个意图再画一张曼陀罗。这次解读看到你的外圈云状结构虽然柔软，但橙色圆点的呼应说明世界已经留意到你的存在；下次可以更聚焦地探索“交换和回馈的容器”长什么样子。建议方向二，如果你愿意，也可以探索“关系与交换边界”——中圈的留白切分有可能也出现在你与他人的资源往来、请求支持或设下边界的时候，这张画还没展开这部分线索。下一次你可以带着这个好奇去画，看看自己如何在关系中交换价值而不耗竭。",
+    "summary": "内在火光稳定而外放行动被切分，财富议题聚焦于：如何让清晰的价值意图穿过自我评判与行动卡点，抵达现实世界的交换与承接。"
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "橙色中心圆是这幅画最直接的视觉焦点。它稳定地坐在中心，并向外引出蓝色和黄色结构。"
+    },
+    {
+      "id": "inner-002",
+      "circle": "inner",
+      "visible_evidence": "蓝色齿状环像中心外的一圈流动边界。它让中心橙色被清楚包住，同时带有波动和节奏。"
+    },
+    {
+      "id": "inner-003",
+      "circle": "inner",
+      "visible_evidence": "黄色小点在内圈形成明亮的细节，连接中心和外侧花形结构。"
+    },
+    {
+      "id": "inner-004",
+      "circle": "inner",
+      "visible_evidence": "内圈留白面积不大，但帮助区分中心圆、蓝色环和黄色小点。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "紫色尖瓣让中圈有明显外放和方向感。它们像一层尖形花瓣，把内圈向外推开。"
+    },
+    {
+      "id": "middle-002",
+      "circle": "middle",
+      "visible_evidence": "黄色花形让中圈在紫色尖瓣之间有明亮的支点。它们使中圈不只是尖锐外放，也有花朵般的柔和。"
+    },
+    {
+      "id": "middle-003",
+      "circle": "middle",
+      "visible_evidence": "中圈蓝色让紫色和黄色图案之间有冷色承接，也让内外蓝色结构形成连续线索。"
+    },
+    {
+      "id": "middle-004",
+      "circle": "middle",
+      "visible_evidence": "中圈留白让多色花形结构保持清楚，便于后续判断颜色之间的局部关系。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "蓝色云状外圈让画面外缘显得柔软。它像一圈包裹层，把中圈的尖瓣和花形托住。"
+    },
+    {
+      "id": "outer-002",
+      "circle": "outer",
+      "visible_evidence": "橙色圆点把中心橙色带到外圈。它们像外缘的小太阳，使外圈仍保留中心热度的回声。"
+    },
+    {
+      "id": "outer-003",
+      "circle": "outer",
+      "visible_evidence": "外圈留白让云状边缘和橙色圆点保持松动，不至于完全挤在一起。"
+    }
+  ],
+  "boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "golden_case_seed"
+  },
+  "permissions": {
+    "can_answer_follow_up": false,
+    "post_mvp_agent": "report_qa_agent",
+    "allow_seeded_short_report": false
+  }
+}

@@ -1,4 +1,10 @@
 # Artifact Readiness Checklist
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Test / QA
+> last_updated：2026-05-06
+> source_of_truth：projects/aicareer/qa/2026-04-06-spec-to-architecture-readiness-check.md
+
 
 ## 1. 基本信息
 

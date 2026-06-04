@@ -1,5 +1,11 @@
 # Aimandala Miniapp Token Mapping
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/app/frontend/miniapp-native/DESIGN_TOKEN_MAPPING.md
+
 ## 目标
 
 这份文档定义 `mobile-web` 设计 token 到 `miniapp-native` 的手工映射规则，帮助后续把小程序端逐步拉回同一套设计语言。
@@ -40,16 +46,16 @@
 
 ## Miniapp 首轮对照表
 
-| Miniapp 文件 | 选择器/语义 | 当前值 | 对应 Web semantic token | 是否可直接落到 WXSS | 降级说明 |
-| --- | --- | --- | --- | --- | --- |
-| `app.wxss` | `page` 背景 | `#f6f0e8` | `--am-surface-primary` | 是 | 小程序直接用纯色浅底，不保留 Web 背景纹理 |
-| `app.wxss` | `page` 主文字 | `#2f2620` | `--am-text-primary` | 是 | 当前可直接映射为主正文色 |
-| `pages/runtime/index.wxss` | `.runtime-page` 背景渐变起点 | `#f6f0e8` | `--am-surface-primary` | 是 | 允许保留简单线性渐变 |
-| `pages/runtime/index.wxss` | `.runtime-page` 背景渐变终点 | `#f1e6d6` | `--am-surface-primary` 的浅深变化 | 是 | 视作同一页面 surface 的轻微层次变化 |
-| `pages/runtime/index.wxss` | `.runtime-page__state` 主文字 | `#2f2620` | `--am-text-primary` | 是 | 对应运行态正文与标题容器文字色 |
-| `pages/runtime/index.wxss` | `.runtime-page__state--error` 错误文字 | `#7a3023` | `--am-color-danger-600` / `status.danger` | 是 | miniapp 直接用纯色错误态，不叠加 Web 错误面板背景 |
-| `pages/runtime/index.wxss` | `.runtime-page__title` 标题字号/字重 | `40rpx` / `600` | `--am-text-xl` + display/body 标题语义 | 部分 | WXSS 保留现有字号，语义上归入标题层级 |
-| `pages/runtime/index.wxss` | `.runtime-page__copy` 正文字号/行高 | `28rpx` / `1.6` | `--am-text-md` + `--am-leading-body` | 部分 | rpx 与 px 不直接等值，按正文层级手工映射 |
+| Miniapp 文件               | 选择器/语义                            | 当前值          | 对应 Web semantic token                   | 是否可直接落到 WXSS | 降级说明                                          |
+| -------------------------- | -------------------------------------- | --------------- | ----------------------------------------- | ------------------- | ------------------------------------------------- |
+| `app.wxss`                 | `page` 背景                            | `#f6f0e8`       | `--am-surface-primary`                    | 是                  | 小程序直接用纯色浅底，不保留 Web 背景纹理         |
+| `app.wxss`                 | `page` 主文字                          | `#2f2620`       | `--am-text-primary`                       | 是                  | 当前可直接映射为主正文色                          |
+| `pages/runtime/index.wxss` | `.runtime-page` 背景渐变起点           | `#f6f0e8`       | `--am-surface-primary`                    | 是                  | 允许保留简单线性渐变                              |
+| `pages/runtime/index.wxss` | `.runtime-page` 背景渐变终点           | `#f1e6d6`       | `--am-surface-primary` 的浅深变化         | 是                  | 视作同一页面 surface 的轻微层次变化               |
+| `pages/runtime/index.wxss` | `.runtime-page__state` 主文字          | `#2f2620`       | `--am-text-primary`                       | 是                  | 对应运行态正文与标题容器文字色                    |
+| `pages/runtime/index.wxss` | `.runtime-page__state--error` 错误文字 | `#7a3023`       | `--am-color-danger-600` / `status.danger` | 是                  | miniapp 直接用纯色错误态，不叠加 Web 错误面板背景 |
+| `pages/runtime/index.wxss` | `.runtime-page__title` 标题字号/字重   | `40rpx` / `600` | `--am-text-xl` + display/body 标题语义    | 部分                | WXSS 保留现有字号，语义上归入标题层级             |
+| `pages/runtime/index.wxss` | `.runtime-page__copy` 正文字号/行高    | `28rpx` / `1.6` | `--am-text-md` + `--am-leading-body`      | 部分                | rpx 与 px 不直接等值，按正文层级手工映射          |
 
 ## 当前推荐映射
 

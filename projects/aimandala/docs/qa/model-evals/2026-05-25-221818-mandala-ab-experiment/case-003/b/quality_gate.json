@@ -1,0 +1,10 @@
+{
+  "passed": false,
+  "failure_ids": [
+    "missing_wealth_topic"
+  ],
+  "details": {
+    "leaked_terms": [],
+    "cross_circle_leaked_terms": []
+  }
+}

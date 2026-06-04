@@ -1,0 +1,29 @@
+{
+  "status": "complete",
+  "duration_seconds": 71.61,
+  "upload": {
+    "storage_backend": "local",
+    "storage_key": "fa7ae5097e4d41679d3f2fe2d66b2b9d.jpeg",
+    "size_bytes": 3026573,
+    "image_path_exists": true
+  },
+  "reports": [
+    {
+      "mode": "lite",
+      "duration_seconds": 71.58,
+      "report_id": "mandala-interpretation-199d1d6d8c7a",
+      "quality_gate_passed": true,
+      "selected_clause_count": 2,
+      "final_report_chars": 835,
+      "output_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/qa/model-evals/2026-05-17-wealth-api-smoke/lite",
+      "attempt_trace": [
+        {
+          "model": "qwen-vl-max-latest",
+          "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+          "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+          "result": "success"
+        }
+      ]
+    }
+  ]
+}

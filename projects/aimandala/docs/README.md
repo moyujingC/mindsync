@@ -1,12 +1,18 @@
 # Docs
 
+> 状态：current
+> 版本：0.1.0
+> owner：CEO / Orchestrator
+> last_updated：2026-05-10
+> source_of_truth：projects/aimandala/docs/README.md
+
 这里放 `一镜一梳` 的正式项目 artifact。
 
 当前统一收敛为以下子目录：
 
 - `specs/`
 - `architecture/`
-- `sources/`
+- `疗愈体系知识库/`
 - `runbooks/`
 - `tasks/`
 - `qa/`
@@ -21,8 +27,8 @@
   - 功能定义、用户链路、页面与能力描述
 - `architecture/`
   - 技术架构、信息流、模块边界
-- `sources/`
-  - 项目级源资料镜像、原始知识材料入口、正式依据分层与运行时映射
+- `疗愈体系知识库/`
+  - 曼陀罗解读、疗愈体系、来源索引、产品适配和运行时知识包入口
 - `runbooks/`
   - 本地联调、运维与操作手册
 - `tasks/`
@@ -36,25 +42,18 @@
 
 使用规则：
 
-- `sources/` 不是当前 `spec` 或 `architecture` 的替代目录
-- 需要追溯知识来源、历史原文和运行时保真映射时，优先进入 [sources/README.md](sources/README.md)
+- `疗愈体系知识库/` 不是当前 `spec` 或 `architecture` 的替代目录
+- 需要追溯知识来源、历史原文和运行时保真映射时，优先进入 [疗愈体系知识库/README.md](疗愈体系知识库/README.md)
 
-当前如果要推进“报告链路保真重构”，默认从下面这组 artifact 进入：
+当前如果要推进“报告生成方法 / 知识保真 / 报告重建”，默认从下面这组 artifact 进入：
 
-- [specs/2026-04-18-报告链路保真重构总规格.md](specs/2026-04-18-报告链路保真重构总规格.md)
-- [specs/2026-04-19-解读教程算法保真修复规格.md](specs/2026-04-19-解读教程算法保真修复规格.md)
-- [specs/2026-04-19-固定样本人工-golden-审阅规格.md](specs/2026-04-19-固定样本人工-golden-审阅规格.md)
-- [architecture/2026-04-18-报告链路保真重构技术方案.md](architecture/2026-04-18-报告链路保真重构技术方案.md)
-- [tasks/2026-04-18-报告链路保真重构实施总计划.md](tasks/2026-04-18-报告链路保真重构实施总计划.md)
-- [tasks/2026-04-19-Batch-A-源资料到-runtime-evidence-保真重构实施计划.md](tasks/2026-04-19-Batch-A-源资料到-runtime-evidence-保真重构实施计划.md)
-- [tasks/2026-04-19-Batch-F-固定样本人工-golden-审阅实施计划.md](tasks/2026-04-19-Batch-F-固定样本人工-golden-审阅实施计划.md)
-- [qa/2026-04-18-报告链路保真重构验证基线.md](qa/2026-04-18-报告链路保真重构验证基线.md)
-- [qa/2026-04-19-Batch-A-runtime-evidence-验证记录.md](qa/2026-04-19-Batch-A-runtime-evidence-验证记录.md)
-- [qa/2026-04-19-Batch-F-golden-审阅记录.md](qa/2026-04-19-Batch-F-golden-审阅记录.md)
-- [delivery/2026-04-18-报告链路保真重构交付记录.md](delivery/2026-04-18-报告链路保真重构交付记录.md)
-- [delivery/2026-04-19-Batch-A-runtime-evidence-交付记录.md](delivery/2026-04-19-Batch-A-runtime-evidence-交付记录.md)
-- [delivery/2026-04-19-Batch-F-golden-审阅交付记录.md](delivery/2026-04-19-Batch-F-golden-审阅交付记录.md)
+- [疗愈体系知识库/README.md](疗愈体系知识库/README.md)
+- [疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/README.md](疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/README.md)
+- [疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-曼陀罗基础层解读流程.md](疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-曼陀罗基础层解读流程.md)
+- [疗愈体系知识库/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md](疗愈体系知识库/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md)
+
+旧报告链路文档、Batch A-H 旧链路文档和旧报告样本已从 active 入口清理，不再作为当前报告生成依据。
 
 知识源追溯与运行时映射统一从这里进入：
 
-- [sources/知识库构建/README.md](sources/知识库构建/README.md)
+- [疗愈体系知识库/05-参考来源索引/README.md](疗愈体系知识库/05-参考来源索引/README.md)

@@ -1,156 +1,118 @@
 # Aimandala CI/CD、测试与自动修复方案
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：Engineer
-> last_updated：2026-04-12
+> last_updated：2026-05-17
 > source_of_truth：projects/aimandala/docs/architecture/CI-CD与自动修复架构.md
 > 项目：aimandala
 > 阶段：architecture
 > depends_on：projects/aimandala/PROJECT.md
-> depends_on：projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md
+> depends_on：projects/aimandala/docs/runbooks/README.md
 > reviewers：CEO / Orchestrator, Engineer, Test / QA
 
 ## 1. 背景
 
-当前 `aimandala` 已具备 `main -> dev`、`release -> prod` 的发布主链，但此前仓库内只有一条单独的 deploy workflow。
+Aimandala 当前的 CI/CD 不是单一流水线，而是两层结构：
 
-这会带来 4 个问题：
+1. `mvp-ci`
+   - 日常最小可信质量门
+2. 增强链路
+   - `aimandala-ci`
+   - `deploy`
+   - `nightly-smoke`
+   - `auto-repair`
 
-1. PR 缺少统一的自动化质量门
-2. 部署失败和 smoke 失败没有统一缺陷路由
-3. 自托管 runner 角色未收口为正式 runbook
-4. 自动修复没有受控边界，容易要么完全没有，要么越权碰生产
+这份文档的重点，是把这两层关系说清楚，避免把“增强链路”误写成“日常唯一主链”。
 
-## 2. 本轮目标
+## 2. 当前仓库里的真实入口
 
-本轮只解决第一阶段最小闭环：
+当前已存在的 workflow 文件：
 
-1. 保留 GitHub 作为代码托管与 workflow 编排入口
-2. 全部 workflow 迁到 self-hosted runner 标签：
-   - `self-hosted`
-   - `linux`
-   - `mindsync-ci`
-   - `aimandala`
-3. 把 CI、deploy、nightly smoke、auto-repair 拆成 4 条职责清晰的流水线
-4. 用 Paperclip 承接失败任务，而不是另起 Jira / Linear / 禅道
-5. 自动修复只处理测试、类型检查、构建和确定性脚本失败
+1. `.github/workflows/mvp-ci.yml`
+2. `.github/workflows/mvp-deploy.yml`
+3. `.github/workflows/aimandala-ci.yml`
+4. `.github/workflows/aimandala-deploy.yml`
+5. `.github/workflows/aimandala-nightly-smoke.yml`
+6. `.github/workflows/aimandala-auto-repair.yml`
 
-当前执行角色分工遵循公司级说明：
+当前更准确的理解是：
 
-- [CI/CD 角色分工说明](../../../../company/CI-CD-角色分工说明.md)
+- `mvp-ci` / `mvp-deploy` 负责 MVP 日常主链
+- `aimandala-*` 负责增强自动化、故障建单、nightly smoke（夜间冒烟检查）和自动修复实验
 
-## 3. 当前范围
+## 3. 当前架构目标
 
-### 3.1 要做
+当前 CI/CD 架构要解决四类问题：
+
+1. 日常开发至少有一条稳定、可解释的最小质量门
+2. 增强检查和部署链不要和最小质量门混成一团
+3. runner（自托管执行机）、Paperclip issue 路由和 heartbeat 要有正式边界
+4. 自动修复必须有明确的允许范围，不能越权碰生产
+
+## 4. 分层口径
+
+### 4.1 第一层：MVP 最小主链
+
+入口：
+
+- `.github/workflows/mvp-ci.yml`
+- `.github/workflows/mvp-deploy.yml`
+
+职责：
+
+- 提供当前日常最小可信红绿灯
+- 支撑 MVP 主线的基本构建、测试和部署判断
+
+使用原则：
+
+- 判断“今天这条主链能不能继续开发/合并”，优先看 `mvp-ci`
+- 不应要求日常每次都先看增强链路才算可用
+
+### 4.2 第二层：增强链路
+
+入口：
 
 - `.github/workflows/aimandala-ci.yml`
 - `.github/workflows/aimandala-deploy.yml`
 - `.github/workflows/aimandala-nightly-smoke.yml`
 - `.github/workflows/aimandala-auto-repair.yml`
-- `shared/tools/ci/` 下的共享脚本
-- `projects/aimandala/deploy/github-runner/` 下的 runner runbook
 
-### 3.2 不做
+职责：
 
-- 不迁出 GitHub 到 Woodpecker / Drone
-- 不引入独立 bug tracker 平台
-- 不自动修线上业务 bug
-- 不自动修 production deploy 失败
-- 不自动合并 auto-repair 产出的修复分支
+- 更细的前后端 / 知识质量门
+- deploy 与 smoke 的故障路由
+- Paperclip issue 建单
+- 白名单范围内的自动修复
 
-## 4. 设计口径
+使用原则：
 
-### 4.1 Workflow 拆分
+- 它们是增强治理，不是所有日常开发的唯一阻断门
 
-- `ci`
-  - 负责前端、后端、知识脚本质量门
-- `deploy`
-  - 只负责 `main -> dev`、`release -> prod` 与最小 smoke
-- `nightly-smoke`
-  - 负责定时健康检查和可选深度回归
-- `auto-repair`
-  - 只在 `ci` 失败时尝试隔离分支修复
+## 5. 当前增强链路的模块边界
 
-### 4.2 Paperclip 故障路由
+### 5.1 `aimandala-ci`
 
-失败来源固定为：
+负责：
 
-- `ci-test-failure`
-- `build-failure`
-- `deploy-or-smoke-failure`
-- `infra-runner-failure`
+- 更细粒度的前端、后端、知识质量检查
+- 为自动修复和 Paperclip 路由提供失败上下文
 
-默认标签映射：
+### 5.2 `aimandala-deploy`
 
-- CI / build 失败：
-  - `type:execution`
-- deploy / smoke 失败：
-  - `type:artifact`
-  - `review:deliverable`
+负责：
 
-聚合键固定为：
+- 增强部署链
+- 最小 smoke 衔接
 
-```text
-子任务：<repository>::<workflow>::<branch>::<job>::<sha>::<kind>
-父任务：<repository>::<workflow>::<branch>::<sha>::commit-summary
-```
+### 5.3 `aimandala-nightly-smoke`
 
-当前面板口径补充如下：
+负责：
 
-1. 同一提交的 `ci` 先创建一个父任务
-2. `frontend-ci / backend-ci / knowledge-ci` 等失败项作为子任务挂到该父任务下
-3. 标题默认对齐 GitHub：
-   - 父任务：直接使用 GitHub workflow run 编号，例如 `#24`
-   - 子任务：直接使用 GitHub job 名，例如 `knowledge-quality`、`deploy-dev`
-   - 标题中不再额外写 `成功 / 失败 / 汇总` 等状态描述
-4. 层级默认对齐 GitHub：
-   - workflow 分组下先看到 run 父任务
-   - 展开 run 父任务后，再看到该次 run 下的 job 子任务
-5. 同一个 job 在不同提交下必须形成不同子任务，不能跨 commit 复用旧单
+- 定时健康检查
+- 手动或定时深度回归入口
 
-补充治理约束：
-
-6. `queued` 超过阈值的 workflow 不再当作代码失败处理，而是固定归类为 `infra-runner-failure`
-7. issue 评论应固定带出当前判断、已做动作、下一步动作、谁来解除阻塞
-8. 运行侧默认补充执行基线：
-   - `cwd`
-   - `branch`
-   - `head sha`
-   - `dirty`
-   - 是否出现 workspace drift
-9. `activeRun=running` 但长期没有评论或状态回写的 issue，必须被执行健康巡检标记为疑似卡住
-
-### 4.3 自动修复边界
-
-自动修复只允许在下面条件同时满足时触发：
-
-1. 来源于 `ci`
-2. 命中白名单 job + step
-3. 有可重放的 repro command
-4. 有明确 allowlist 文件范围
-5. 修复发生在 `codex/auto-fix/<run-id>` 之类的隔离分支
-
-默认白名单：
-
-- `frontend-ci / Run Vitest`
-- `frontend-ci / Run Typecheck`
-- `frontend-ci / Run Mobile Web Build`
-- `backend-ci / Run Pytest`
-- `knowledge-ci / Run Knowledge Validation`
-- `knowledge-ci / Run Knowledge Evals`
-
-默认不允许：
-
-- 直接改 `main`
-- 直接改 `release`
-- 自动合并
-- 自动发布
-- 自动 SSH 进服务器改现场
-
-### 4.4 Nightly Smoke
-
-nightly smoke 分两层：
+推荐分成两层理解：
 
 1. `basic`
    - 健康检查
@@ -162,22 +124,100 @@ nightly smoke 分两层：
    - history
    - 可选 upgrade / pro
 
-定时任务默认走 `basic`，手动触发才进入 `deep`。
+### 5.4 `aimandala-auto-repair`
 
-## 5. 验收口径
+负责：
 
-### 5.1 目标行为
+- 只在白名单失败里尝试自动修复
+- 不直接写生产，不直接自动合并
 
-1. PR 到 `main` 时可看到 `ci` 红绿状态
-2. 推送到 `main` 时自动部署 dev
-3. 推送到 `release` 时自动部署 prod
-4. nightly smoke 可单独运行，不依赖 deploy
-5. CI / deploy / smoke 失败可回写到 Paperclip
-6. auto-repair 只在白名单内尝试修复
+## 6. Paperclip 故障路由边界
 
-### 5.2 当前已知残留
+当前增强链路失败后，可通过 Paperclip 进行故障收口。
 
-1. GitHub 上的真实 runner token、Secrets、vars 仍需在线环境配置
-2. Paperclip 的实际 issue 创建需要 runner 能访问对应 API
-3. runner 宕机告警要依赖外部 watchdog 调度 `check-runner-heartbeat.mjs`
-4. 执行中任务的卡住检测依赖 `check-paperclip-execution-health.mjs`
+失败来源可按下面几类理解：
+
+1. `ci-test-failure`
+2. `build-failure`
+3. `deploy-or-smoke-failure`
+4. `infra-runner-failure`
+
+默认标签口径：
+
+- CI / build 失败：
+  - `type:execution`
+- deploy / smoke 失败：
+  - `type:artifact`
+  - `review:deliverable`
+
+当前关键治理规则：
+
+1. 同一 workflow run 下，允许父任务 + job 子任务层级
+2. 同一 job 在不同提交下不能复用旧任务
+3. runner 长时间 `queued` 不应误判成代码问题
+4. 长时间运行但无状态回写的任务，应交给 execution health（执行健康巡检）处理
+
+## 7. 自动修复边界
+
+自动修复只应在下面条件同时满足时触发：
+
+1. 来自增强 `ci`
+2. 命中白名单 job + step
+3. 有可复放的 repro command（复现场景命令）
+4. 有明确 allowlist 文件范围
+5. 修复发生在隔离分支
+
+典型白名单包括：
+
+- `frontend-ci / Run Vitest`
+- `frontend-ci / Run Typecheck`
+- `frontend-ci / Run Mobile Web Build`
+- `backend-ci / Run Pytest`
+- `knowledge-ci / Run Knowledge Validation`
+- `knowledge-ci / Run Knowledge Evals`
+
+默认禁止：
+
+- 直接改 `main`
+- 直接改 `release`
+- 自动合并
+- 自动发布
+- 自动 SSH 到线上改现场
+
+## 8. 与 runbook / control layer 的关系
+
+这份文档讲的是“系统边界”。
+
+实际操作和当前控制层入口，要同时看：
+
+- [../runbooks/README.md](../runbooks/README.md)
+- [../runbooks/aimandala-pr-质量门-runbook.md](../runbooks/aimandala-pr-质量门-runbook.md)
+
+当前已知控制层入口包括：
+
+1. `shared/tools/ci/paperclip-ci-issue.mjs`
+2. `shared/tools/ci/check-paperclip-execution-health.mjs`
+3. `shared/tools/ci/check-runner-heartbeat.mjs`
+4. `shared/tools/ci/server-automation-guard.mjs`
+5. `shared/tools/ci/server-automation-finalizer.mjs`
+6. `shared/tools/ci/server-automation-run.sh`
+
+## 9. 当前已知残留
+
+截至 `2026-05-17`，这套架构仍有这些残留：
+
+1. GitHub secrets、runner token 和部分在线环境变量依赖实际部署侧配置
+2. Paperclip 建单是否完全闭环，仍取决于 runner 到 Paperclip API 的联通性
+3. runner 宕机与卡住任务治理，仍依赖 heartbeat 和 execution health 脚本
+4. 文档口径已明确，但“当前默认看 `mvp-ci`，增强链路另算”仍需要持续执行纪律
+
+## 10. 当前最重要的判断规则
+
+如果你只想快速判断一件事：
+
+1. 日常开发是否过最小门
+   - 看 `mvp-ci`
+2. 增强回归、nightly、Paperclip 建单或 auto-repair 是否成立
+   - 看 `aimandala-*` 这一组增强链路
+3. runner / heartbeat / 故障收口怎么操作
+   - 回 `runbooks/README.md`

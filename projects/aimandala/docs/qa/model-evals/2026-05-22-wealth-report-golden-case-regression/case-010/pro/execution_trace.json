@@ -1,0 +1,38 @@
+[
+  {
+    "block_id": "input-and-boundary",
+    "stage_keys": [
+      "input-context",
+      "user-input-context",
+      "circle-boundary-context"
+    ],
+    "status": "complete"
+  },
+  {
+    "block_id": "foundation-image-reading",
+    "stage_keys": [
+      "foundation-image-reading"
+    ],
+    "status": "complete"
+  },
+  {
+    "block_id": "theme-translation-and-thesis",
+    "stage_keys": [
+      "theme-translation-route",
+      "report-thesis-selection",
+      "user-facing-framing",
+      "report-branching-plan"
+    ],
+    "status": "complete"
+  },
+  {
+    "block_id": "report-writing-and-assembly",
+    "stage_keys": [
+      "lite-report-draft",
+      "pro-report-draft",
+      "visual-assets",
+      "final-report-assembly"
+    ],
+    "status": "complete"
+  }
+]

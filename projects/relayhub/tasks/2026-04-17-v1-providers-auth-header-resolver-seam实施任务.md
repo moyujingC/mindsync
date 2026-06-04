@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers auth header resolver seam 实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-auth-header-resolver-seam实施任务.md
+
 ## Summary
 
 本轮为 Providers real-fetch transport 增加显式 auth header resolver seam，仅补“认证头注入能力占位”，不定义真实认证方案，不改变默认 mock 启动。

@@ -1,4 +1,5 @@
 import http from "node:http";
+import { createHash } from "node:crypto";
 import { appendFile, mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
@@ -11,6 +12,7 @@ const RELAY_TASK_MODEL_PREFIX = "relayhub-task-";
 const RELAY_ENTRY_MODEL_PREFIX = "relayhub-entry-";
 const CLAUDE_ENTRY_ID = "entry-claude-ide-local";
 const CODEX_ENTRY_ID = "entry-codex-ide-local";
+const DEFAULT_ANTHROPIC_OUTPUT_LIMIT = 1024;
 
 function json(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -179,6 +181,27 @@ function buildResponsesUpstreamUrl(baseUrl) {
 function buildAnthropicMessagesUpstreamUrl(baseUrl) {
   const normalized = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
   return new URL("messages", normalized);
+}
+
+function resolveAnthropicOutputLimit() {
+  const configured = Number(process.env.RELAYHUB_ANTHROPIC_MAX_TOKENS ?? DEFAULT_ANTHROPIC_OUTPUT_LIMIT);
+  if (!Number.isFinite(configured) || configured < 1) {
+    return DEFAULT_ANTHROPIC_OUTPUT_LIMIT;
+  }
+
+  return Math.floor(configured);
+}
+
+function normalizeAnthropicOutputLimit(payload) {
+  if (!payload || typeof payload !== "object") {
+    return payload;
+  }
+
+  const { max_tokens: _maxTokens, ...rest } = payload;
+  return {
+    ...rest,
+    max_tokens: resolveAnthropicOutputLimit()
+  };
 }
 
 function normalizeReasoningEffort(value) {
@@ -577,6 +600,34 @@ function anthropicBlocksToText(content) {
     .join("\n");
 }
 
+function anthropicBlocksToReasoningContent(content) {
+  if (!Array.isArray(content)) {
+    return null;
+  }
+
+  const reasoningParts = [];
+  for (const block of content) {
+    if (!block || typeof block !== "object") {
+      continue;
+    }
+
+    if (typeof block.reasoning_content === "string" && block.reasoning_content.trim()) {
+      reasoningParts.push(block.reasoning_content);
+      continue;
+    }
+
+    if (block.type === "thinking" && typeof block.thinking === "string" && block.thinking.trim()) {
+      reasoningParts.push(block.thinking);
+    }
+  }
+
+  if (reasoningParts.length === 0) {
+    return null;
+  }
+
+  return reasoningParts.join("\n");
+}
+
 function mapAnthropicMessagesToOpenAI(body) {
   const messages = [];
 
@@ -602,10 +653,12 @@ function mapAnthropicMessagesToOpenAI(body) {
 
     if (message.role === "assistant" && Array.isArray(message.content)) {
       const toolUseBlocks = message.content.filter((block) => block?.type === "tool_use");
+      const reasoningContent = anthropicBlocksToReasoningContent(message.content);
       if (toolUseBlocks.length > 0) {
         messages.push({
           role: "assistant",
           content: anthropicBlocksToText(message.content) || null,
+          ...(reasoningContent ? { reasoning_content: reasoningContent } : {}),
           tool_calls: toolUseBlocks.map((toolUseBlock, index) => ({
             id: toolUseBlock.id ?? `toolu_${Date.now()}_${index}`,
             type: "function",
@@ -642,10 +695,22 @@ function mapAnthropicMessagesToOpenAI(body) {
       }
     }
 
-    messages.push({
+    const mappedMessage = {
       role: message.role,
       content: anthropicBlocksToText(message.content)
-    });
+    };
+
+    if (message.role === "assistant") {
+      const reasoningContent =
+        typeof message.reasoning_content === "string" && message.reasoning_content.trim()
+          ? message.reasoning_content
+          : anthropicBlocksToReasoningContent(message.content);
+      if (reasoningContent) {
+        mappedMessage.reasoning_content = reasoningContent;
+      }
+    }
+
+    messages.push(mappedMessage);
   }
 
   return messages;
@@ -717,6 +782,19 @@ function collapseThinkBlocks(text) {
   });
 }
 
+function buildAnthropicThinkingBlock(reasoningContent) {
+  const normalizedReasoning = String(reasoningContent ?? "").trim();
+  if (!normalizedReasoning) {
+    return null;
+  }
+
+  return {
+    type: "thinking",
+    thinking: normalizedReasoning,
+    signature: createHash("sha256").update(normalizedReasoning).digest("base64")
+  };
+}
+
 function collapseThinkBlocksInAnthropicPayload(payload) {
   if (!payload || !Array.isArray(payload.content)) {
     return payload;
@@ -741,11 +819,22 @@ function mapOpenAIChoiceToAnthropic(choice) {
   const message = choice?.message ?? {};
   const toolCalls = Array.isArray(message.tool_calls) ? message.tool_calls : [];
   const content = [];
+  const reasoningContent =
+    typeof message.reasoning_content === "string" && message.reasoning_content.trim()
+      ? message.reasoning_content
+      : null;
 
   if (typeof message.content === "string" && message.content.length > 0) {
     content.push({
       type: "text",
-      text: collapseThinkBlocks(message.content)
+      text: collapseThinkBlocks(message.content),
+      ...(reasoningContent ? { reasoning_content: reasoningContent } : {})
+    });
+  } else if (reasoningContent) {
+    content.push({
+      type: "text",
+      text: "",
+      reasoning_content: reasoningContent
     });
   }
 
@@ -769,6 +858,7 @@ function mapOpenAIChoiceToAnthropic(choice) {
     id: choice?.id ?? undefined,
     role: "assistant",
     content,
+    ...(reasoningContent ? { reasoning_content: reasoningContent } : {}),
     stop_reason: mapFinishReasonToAnthropic(choice?.finish_reason, toolCalls.length > 0)
   };
 }
@@ -788,6 +878,7 @@ function buildAnthropicMessagePayload(entry, upstreamPayload, body) {
     role: "assistant",
     model: entry.modelId,
     content: mappedChoice.content,
+    ...(mappedChoice.reasoning_content ? { reasoning_content: mappedChoice.reasoning_content } : {}),
     stop_reason: mappedChoice.stop_reason,
     stop_sequence: null,
     usage: {
@@ -1030,7 +1121,7 @@ async function proxyAnthropicMessages(request, response) {
   const entry = resolved.entry;
   if (shouldProxyAnthropicMessagesNatively(entry)) {
     const upstreamBody = {
-      ...body,
+      ...normalizeAnthropicOutputLimit(body),
       model: entry.modelId
     };
     const bodyText = JSON.stringify(upstreamBody);
@@ -1189,7 +1280,7 @@ async function proxyAnthropicMessages(request, response) {
     messages: mapAnthropicMessagesToOpenAI(body),
     temperature: body.temperature,
     top_p: body.top_p,
-    max_tokens: body.max_tokens,
+    max_tokens: resolveAnthropicOutputLimit(),
     stream: false,
     tools: mapAnthropicToolsToOpenAI(body.tools),
     tool_choice: mapAnthropicToolChoiceToOpenAI(body.tool_choice) ?? (body.tools?.length ? "auto" : undefined)

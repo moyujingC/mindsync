@@ -1,5 +1,11 @@
 # RelayHub v1 VS Code Claude Code 本机直接可用收口交付说明
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/delivery/2026-04-27-v1-VS-Code-Claude-Code-本机直接可用收口-交付说明.md
+
 ## Summary
 
 本轮交付的目标不是继续补治理口径，而是让当前这台机器上的 `VS Code / Claude Code` 尽快进入可直接使用状态。

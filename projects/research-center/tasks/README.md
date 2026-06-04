@@ -1,5 +1,11 @@
 # Tasks
 
+> 状态：current
+> 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/research-center/tasks/README.md
+
 这里放 `研究中心` 的任务拆解与执行计划。
 
 建议区分：
@@ -17,4 +23,4 @@
 - 协作者
 - 完成标准
 
-- [2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md](projects/research-center/tasks/2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md)
+- [2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md](./2026-04-27-Paperclip-Claude-Local-主备模型切换-实施任务.md)

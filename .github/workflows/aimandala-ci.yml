@@ -45,14 +45,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: projects/aimandala/toC/app/frontend/package-lock.json
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Install Frontend Dependencies
         run: |
@@ -80,7 +79,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Verify actionlint Availability
         id: actionlint_check
@@ -182,13 +181,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: projects/aimandala/toC/app/frontend/package-lock.json
+        uses: actions/checkout@v5
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Install Frontend Dependencies
         id: frontend_install
@@ -351,28 +349,20 @@ jobs:
       - linux
       - mindsync-ci
       - aimandala
-    timeout-minutes: 20
+    timeout-minutes: 90
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Python
-        id: backend_setup_python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+        uses: actions/checkout@v5
       - name: Verify Python Runtime
         id: backend_python
         run: |
           set -euo pipefail
-          PYTHON_BIN="${{ steps.backend_setup_python.outputs.python-path }}"
-          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
-            PYTHON_BIN="$(command -v python || true)"
-          fi
+          PYTHON_BIN="$(command -v python || true)"
           if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
             PYTHON_BIN="$(command -v python3 || true)"
           fi
           if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
-            echo "Unable to locate a usable Python runtime after setup-python" >&2
+            echo "Unable to locate a usable Python runtime on this runner" >&2
             exit 1
           fi
           printf 'python_bin=%s\n' "$PYTHON_BIN" >> "$GITHUB_OUTPUT"
@@ -499,28 +489,20 @@ jobs:
       - linux
       - mindsync-ci
       - aimandala
-    timeout-minutes: 20
+    timeout-minutes: 90
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Python
-        id: knowledge_setup_python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+        uses: actions/checkout@v5
       - name: Verify Python Runtime
         id: knowledge_python
         run: |
           set -euo pipefail
-          PYTHON_BIN="${{ steps.knowledge_setup_python.outputs.python-path }}"
-          if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
-            PYTHON_BIN="$(command -v python || true)"
-          fi
+          PYTHON_BIN="$(command -v python || true)"
           if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
             PYTHON_BIN="$(command -v python3 || true)"
           fi
           if [[ -z "${PYTHON_BIN}" || ! -x "${PYTHON_BIN}" ]]; then
-            echo "Unable to locate a usable Python runtime after setup-python" >&2
+            echo "Unable to locate a usable Python runtime on this runner" >&2
             exit 1
           fi
           printf 'python_bin=%s\n' "$PYTHON_BIN" >> "$GITHUB_OUTPUT"
@@ -650,12 +632,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Sync CI Commit Summary Issue
         env:

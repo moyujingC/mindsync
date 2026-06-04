@@ -1,0 +1,18 @@
+name: mvp-deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deprecated:
+    name: deprecated
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop Deprecated Workflow
+        run: |
+          echo "mvp-deploy.yml has been retired." >&2
+          echo "Use .github/workflows/aimandala-deploy.yml for the active Aimandala deployment pipeline." >&2
+          exit 1

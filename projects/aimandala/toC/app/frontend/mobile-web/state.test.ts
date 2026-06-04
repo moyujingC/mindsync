@@ -7,7 +7,8 @@ describe("mobile-web state", () => {
     const payload = toStartCreatePayload(
       {
         imagePath: "/tmp/sample.png",
-        theme: "general",
+        theme: "wealth",
+        redeemCode: " MVP-LITE ",
         paintingIntention: "",
         paintingFeeling: "",
         innerRadius: 0.33,
@@ -18,13 +19,14 @@ describe("mobile-web state", () => {
 
     expect(payload.innerRadius).toBe(33);
     expect(payload.middleRadius).toBe(66);
+    expect(payload.redeemCode).toBe("MVP-LITE");
   });
 
   it("toStartCreatePayload 保留已经是百分比的输入", () => {
     const payload = toStartCreatePayload(
       {
         imagePath: "/tmp/sample.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
         innerRadius: 33,
@@ -41,7 +43,7 @@ describe("mobile-web state", () => {
     const payload = toStartCreatePayload(
       {
         imagePath: "/tmp/sample.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
         uploadAsset: {

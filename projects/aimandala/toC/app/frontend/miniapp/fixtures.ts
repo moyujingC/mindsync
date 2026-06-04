@@ -19,6 +19,8 @@ export function createMiniappDraft(
     reportVariant: "lite",
     paintingIntention: "想看看最近的状态",
     paintingFeeling: "一边紧，一边想整理清楚",
+    innerRadius: 0.35,
+    middleRadius: 0.65,
     ...patch,
   };
 }
@@ -56,7 +58,7 @@ function createMiniappStatus(
       inner_radius: 0.34,
       middle_radius: 0.66,
     },
-    auto_detected: true,
+    auto_detected: false,
     can_upgrade: true,
     ...patch,
   };
@@ -69,39 +71,9 @@ function createMiniappReport(version: "lite" | "pro" = "lite"): ReportResponse {
     title: version === "pro" ? "一镜一梳 Pro 版预览" : "一镜一梳 Lite 版预览",
     overall_impression: "这是一份供 miniapp 静态壳审阅使用的本地示例。",
     structured: {
-      topic_context: {
-        topic: "general",
-        topic_label: "全面解读",
-        report_mode: version,
-        orientation: {
-          intro: "这份报告会从全面解读这个议题角度看这张画。",
-          focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
-          key_terms: [],
-        },
-      },
-      current_reading: "你正在把注意力慢慢收回中心。",
-      visual_basis: "中心更聚拢，外围更松开。",
-      pattern_interpretation: "你在想整理自己，也在想如何继续往前。",
-      life_connection: "先把感受放回一个现实场景里看。",
-      lite_healing_guidance: {
-        directions: [
-          {
-            title: "先做轻量调节",
-            content: "先让自己停一下，辨认此刻最想守住的感受。",
-          },
-        ],
-        micro_practices: [
-          {
-            title: "一句记录",
-            content: "先写下一句真实感受，不做额外解释。",
-          },
-        ],
-      },
-      pro_report_entry: {
-        title: "另一份更深的独立报告",
-        summary: "如果你希望从更深层结构继续理解这张画，可以查看 Pro 报告。",
-        product_note: "Pro 是独立购买、独立成立的深度完整解读。",
-      },
+      title: version === "pro" ? "一镜一梳 Pro 版预览" : "一镜一梳 Lite 版预览",
+      summary: "这是一份供 miniapp 静态壳审阅使用的本地示例。",
+      report_mode: version,
     },
     report:
       version === "pro"
@@ -135,7 +107,7 @@ function createMiniappFlowState(
         inner_radius: 0.34,
         middle_radius: 0.66,
       },
-      auto_detected: true,
+      auto_detected: false,
       existing: false,
       report_ready: true,
     },
@@ -160,7 +132,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.29,
         middle_radius: 0.62,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: true,
       created_at: "2026-04-15T09:20:00+08:00",
       upgrade_history: [],
@@ -177,7 +149,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.31,
         middle_radius: 0.64,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: false,
       created_at: "2026-04-15T08:10:00+08:00",
       upgrade_history: [
@@ -201,7 +173,7 @@ function createMiniappRecords(): InterpretationRecordResponse[] {
         inner_radius: 0.37,
         middle_radius: 0.68,
       },
-      auto_detected: true,
+      auto_detected: false,
       can_upgrade: false,
       created_at: "2026-04-15T07:40:00+08:00",
       upgrade_history: [
@@ -231,7 +203,7 @@ export function createMiniappPreviewProps(
       return {
         route: "upload",
         uploadDraft: createMiniappDraft(),
-        uploadDetection: createMiniappDetection(),
+        detection: createMiniappDetection(),
       };
     case "reportEntry":
       return {

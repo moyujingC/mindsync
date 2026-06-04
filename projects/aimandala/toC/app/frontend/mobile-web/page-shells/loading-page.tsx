@@ -22,16 +22,16 @@ const tips = [
 ];
 
 const liteStages = [
-  "接收画作与主题...",
+  "接收画作与议题...",
   "识别画面结构...",
   "提炼主要视觉线索...",
-  "连接主题知识库...",
+  "连接议题知识库...",
   "润色文字表达...",
   "解读完成！",
 ];
 
 const proStages = [
-  "接收画作与主题...",
+  "接收画作与议题...",
   "识别画面结构...",
   "生成 Lite 基础线索...",
   "展开 Pro 深度分析...",
@@ -152,7 +152,7 @@ function resolveLoadingUiState(
       currentMessage: "准备解读任务...",
       estimatedTime: "预计约 2 分钟",
       versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
-      speedNote: "正在接收画作与主题信息。",
+      speedNote: "正在接收画作与议题信息。",
     };
   }
 
@@ -175,10 +175,10 @@ function resolveLoadingUiState(
         stages,
         progress,
         currentStageIndex: 3,
-        currentMessage: "连接主题知识库...",
+        currentMessage: "连接议题知识库...",
         estimatedTime: "预计约 60-90 秒",
         versionDescription: "Lite 版会先整理核心线索与总体印象。",
-        speedNote: "正在把画面信息与你选择的解读主题连接起来。",
+        speedNote: "正在把画面信息与你选择的解读议题连接起来。",
       };
     }
 
@@ -212,7 +212,7 @@ function resolveLoadingUiState(
     currentMessage: "准备解读任务...",
     estimatedTime: "预计约 60-90 秒",
     versionDescription: "Lite 版会先整理核心线索与总体印象。",
-    speedNote: "正在接收画作与主题信息。",
+    speedNote: "正在接收画作与议题信息。",
   };
 }
 
@@ -329,7 +329,7 @@ export function MobileWebLoadingPage({
   const loadingUi = useMemo(() => resolveLoadingUiState(state, isPro), [state, isPro]);
   const { currentMessage, currentStageIndex, estimatedTime, progress, stages, speedNote, versionDescription } = loadingUi;
   const versionTitle = isPro ? "Pro 版完整解读" : "Lite 版基础解读";
-  const showLeaveLater = isPro && !hasReadyReport(state, isPro);
+  const showLeaveLater = false;
   const estimatedSeconds = Math.max(
     0,
     (isPro ? 120 : 90) - Math.floor((progress / 100) * (isPro ? 120 : 90)),
@@ -396,14 +396,14 @@ export function MobileWebLoadingPage({
           <div className="am-loading-action-card">
             <div className="am-loading-action-card__copy">
               <strong>不用一直停留在这里</strong>
-              <p>Pro 解读会继续在后台生成。你可以先离开，稍后从历史记录回来查看；历史页也会自动刷新，并支持你手动立即刷新。</p>
+              <p>当前版本会在本页同步等待报告返回。你也可以先返回上传页调整输入后重新生成。</p>
             </div>
             <button
               type="button"
               className="am-loading-action-button"
               onClick={onLeaveLater}
             >
-              稍后去历史记录查看
+              返回上传页
             </button>
           </div>
         ) : null}

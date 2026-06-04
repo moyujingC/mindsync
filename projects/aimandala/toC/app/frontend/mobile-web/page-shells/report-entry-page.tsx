@@ -10,12 +10,14 @@ import type { CSSProperties } from "react";
 export interface MobileWebReportEntryPageProps {
   draft: MobileWebUploadDraft;
   onBack?: () => void;
+  onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onChooseReportType?: (reportType: MobileWebReportProductType) => void;
 }
 
 export function MobileWebReportEntryPage({
   draft,
   onBack,
+  onDraftChange,
   onChooseReportType,
 }: MobileWebReportEntryPageProps) {
   const descriptor = createReportEntryPageDescriptor(draft);
@@ -27,6 +29,8 @@ export function MobileWebReportEntryPage({
     <SharedReportEntrySelectionPage
       descriptor={descriptor}
       onBack={onBack}
+      redeemCode={draft.redeemCode ?? ""}
+      onRedeemCodeChange={(redeemCode) => onDraftChange?.({ redeemCode })}
       onChoose={
         onChooseReportType
           ? (cardId) => onChooseReportType(cardId as MobileWebReportProductType)

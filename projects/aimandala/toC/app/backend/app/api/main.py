@@ -1,12 +1,16 @@
-"""Minimal FastAPI app for the first AI-Mandala To C backend migration slice."""
+"""FastAPI app for the Aimandala To C backend."""
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes_v2 import router as router_v2
+from app.core.llm.runtime import load_private_env_file
+
+from .routes import router
 
 
 def create_app() -> FastAPI:
+    load_private_env_file()
+
     app = FastAPI(
         title="AI-Mandala To C Backend",
         version="0.1.0",
@@ -41,7 +45,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(router_v2)
+    app.include_router(router)
 
     @app.get("/health", tags=["system"])
     async def health():

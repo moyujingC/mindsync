@@ -1,0 +1,999 @@
+{
+  "report_id": "mandala-interpretation-598cb4d9c3a8",
+  "report_mode": "lite",
+  "user_context": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "painting_intention": "case-009 【案例9】 用五行感知法+相生相克法解读自我提升（完整解读）",
+    "painting_feeling": ""
+  },
+  "foundation_image_reading": {
+    "stage": "foundation-image-reading",
+    "status": "complete",
+    "foundation_image_reading": {
+      "visual_observation": {
+        "overall_observation": {
+          "first_impression": "这幅画几乎完全由紫色和留白构成，第一眼很清淡、对称、装饰性强。中心区域紫色更满，中圈和外圈留白明显增多，整体像一朵浅紫色的花在白色空间里展开。",
+          "visual_atmosphere": "氛围偏安静、轻盈、灵性化，也带一点距离感。紫色线条和花形柔和，留白面积大，让画面显得不拥挤但也不完全充满。",
+          "visual_weight_and_rhythm": "视觉重心在内圈紫色几何花形，中外圈通过紫色花瓣、卷草状大形和点状装饰向外重复。节奏有装饰感，留白在中外圈形成明显间隔。",
+          "healing_language_note": "疗愈师语言可以表达为：画面里有很细腻、向上和向内修习的气质，同时也有很多尚未被填满的空间，像是在给成长和表达保留位置。"
+        },
+        "three_circle_observation": {
+          "inner": "内圈为紫色几何花形和留白。紫色偏浅，中心区域填色较多，几何结构清楚，整体呈莲花或几何花形。",
+          "middle": "中圈有紫色花瓣或卷曲结构，白色留白较多。紫色面积相对内圈减少，花形和卷曲单元被留白分隔。",
+          "outer": "外圈由紫色卷草状大形、外缘花形和点状装饰构成。外侧留白明显，紫色结构沿圆周重复但不连成整片。",
+          "cross_circle_visual_connection": "三圈都以紫色和留白为主，颜色连续性很强。内圈较满，中圈和外圈留白逐渐增多，形成从中心填满到外部空白增多的变化。",
+          "cross_circle_visual_evidence": "紫色从内圈几何花形延伸到中圈花瓣/卷曲结构，再延伸到外圈卷草和点状装饰；留白在中圈和外圈占比明显。"
+        },
+        "circle_visual_units": {
+          "inner": {
+            "composition_description": "内圈由浅紫几何花形、局部紫色填充和留白组成。紫色在内圈最集中，几何线条和花形结构较完整。",
+            "visual_units": [
+              {
+                "id": "inner-001",
+                "unit_name": "浅紫几何花形",
+                "position": "内圈中心",
+                "source_type": "user_painted",
+                "color_description": "浅紫色，整体偏淡，局部深浅不完全均匀。",
+                "shape_description": "几何花形或莲花状结构，内部有重复三角/花瓣式分割。",
+                "texture_and_density": "内圈紫色填充较多，图案密度较高。",
+                "spatial_relations": "位于中心，被中圈紫色花瓣和留白包围。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 50.0,
+                "rich_visual_description": "浅紫几何花形是整幅画的核心。它有清楚的中心和重复结构，带有安静、细腻的视觉气质。"
+              },
+              {
+                "id": "inner-002",
+                "unit_name": "内圈留白",
+                "position": "紫色几何花形内部和周边",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "细小间隔和几何分割空间。",
+                "texture_and_density": "相对中外圈较少，但仍参与分割。",
+                "spatial_relations": "切分紫色几何花形内部结构，并形成中心图案边界。",
+                "blank_space_role": "切分几何花形，形成内部结构。",
+                "energy_ratio_percent": 50.0,
+                "rich_visual_description": "内圈留白让紫色花形的几何结构被看见。它不是空白背景，而是参与花形分割。"
+              }
+            ]
+          },
+          "middle": {
+            "composition_description": "中圈由紫色花瓣/卷曲结构和较多留白组成。紫色从中心延续出来，但被留白分成多个独立单元。",
+            "visual_units": [
+              {
+                "id": "middle-001",
+                "unit_name": "紫色花瓣/卷曲结构",
+                "position": "中圈主体",
+                "source_type": "user_painted",
+                "color_description": "浅紫或紫色，部分线条较淡。",
+                "shape_description": "花瓣状、卷曲状或装饰性弧形。",
+                "texture_and_density": "重复出现，面积比内圈更分散。",
+                "spatial_relations": "同类紫色单元围绕中心重复，彼此被留白隔开。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 50.0,
+                "rich_visual_description": "中圈紫色单元像从中心长出的花瓣和卷曲纹样。它们保持同一色系，但不再像内圈那样填满。"
+              },
+              {
+                "id": "middle-002",
+                "unit_name": "中圈大面积留白",
+                "position": "紫色中圈单元之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "较大块开放空间，沿紫色花瓣间分布。",
+                "texture_and_density": "面积明显，留白比例较高。",
+                "spatial_relations": "隔开紫色花瓣/卷曲结构，也形成中圈开放空间。",
+                "blank_space_role": "切分紫色单元，形成开放空间和边界。",
+                "energy_ratio_percent": 50.0,
+                "rich_visual_description": "中圈留白很醒目，它让紫色图案显得轻而分散。后续判断紫色是否被切分，需要重点看这里。"
+              }
+            ]
+          },
+          "outer": {
+            "composition_description": "外圈由紫色卷草状大形、点状装饰、外缘花形和大量留白组成。外圈装饰感强，但紫色仍被留白分开。",
+            "visual_units": [
+              {
+                "id": "outer-001",
+                "unit_name": "紫色卷草状大形",
+                "position": "外圈主体",
+                "source_type": "user_painted",
+                "color_description": "紫色，偏浅或中等深度。",
+                "shape_description": "卷草状、弧形、花蔓状大形。",
+                "texture_and_density": "重复围绕外圈，线条装饰性强。",
+                "spatial_relations": "同类卷草结构围绕中心重复，并与点状装饰、留白相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "外圈紫色卷草状大形让画面有明显装饰性。它们向外卷曲展开，但不完全连成一片。"
+              },
+              {
+                "id": "outer-002",
+                "unit_name": "紫色点状装饰",
+                "position": "外圈外缘和卷草附近",
+                "source_type": "user_painted",
+                "color_description": "紫色小点或淡紫点状。",
+                "shape_description": "点状、小圆点或细小装饰点。",
+                "texture_and_density": "细密重复，形成外缘纹理。",
+                "spatial_relations": "分布在卷草状大形附近，与留白交替。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "点状装饰让外圈有细腻纹理。它们虽然小，但提供了外圈重复节奏。"
+              },
+              {
+                "id": "outer-003",
+                "unit_name": "外圈留白",
+                "position": "外圈紫色图案之间及外缘",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "大面积空白和图案间隔。",
+                "texture_and_density": "面积大，贯穿外圈。",
+                "spatial_relations": "隔开紫色卷草、点状装饰和外缘花形，使外圈紫色不连续。",
+                "blank_space_role": "切分外圈紫色结构，形成开放空间。",
+                "energy_ratio_percent": 33.34,
+                "rich_visual_description": "外圈留白是这幅画的重要视觉事实。它让紫色外圈显得轻、空，也让每个装饰单元彼此保持距离。"
+              }
+            ]
+          }
+        }
+      },
+      "element_sensing": {
+        "inner": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "inner-001",
+              "element": "wood",
+              "basis": [
+                "颜色是浅紫色、整体偏淡，形状是莲花状几何花形，开放、向上、灵性化的视觉气质符合木的柔韧与生长感。"
+              ],
+              "confidence": "high",
+              "notes": "浅紫、莲花形、填色较多但不厚重，木性明显。几何结构赋予它一定秩序感，但不改变颜色主导的木性。"
+            },
+            {
+              "visual_unit_id": "inner-002",
+              "element": "metal",
+              "basis": [
+                "留白一律按金处理，参与切分内部结构。"
+              ],
+              "confidence": "high",
+              "notes": "留白作为金的切分作用在内圈较明显，但面积小于中外圈留白。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "middle-001",
+              "element": "wood",
+              "basis": [
+                "紫色花瓣/卷曲结构、浅淡紫色、装饰性弧形，延续内圈木性，向外生长。"
+              ],
+              "confidence": "medium",
+              "notes": "中圈紫色更分散、留白增多，木能量比内圈弱，但仍保持木质柔韧、开放的形态。"
+            },
+            {
+              "visual_unit_id": "middle-002",
+              "element": "metal",
+              "basis": [
+                "留白一律按金处理，大面积切分紫色单元。"
+              ],
+              "confidence": "high",
+              "notes": "中圈留白面积大，金能量对木的切分作用显著。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "outer-001",
+              "element": "wood",
+              "basis": [
+                "紫色卷草状大形，弧形、花蔓状、装饰性强，保持木的舒展和装饰性。"
+              ],
+              "confidence": "medium",
+              "notes": "外圈卷草结构舒展、柔韧，仍属木，但能量更分散，装饰性为主。"
+            },
+            {
+              "visual_unit_id": "outer-002",
+              "element": "wood",
+              "basis": [
+                "紫色点状装饰，细小、重复、向外延伸，延续木的扩散性。"
+              ],
+              "confidence": "medium",
+              "notes": "点状装饰虽小，但整体形成向外节奏，辅助木能量，但与留白交替出现。"
+            },
+            {
+              "visual_unit_id": "outer-003",
+              "element": "metal",
+              "basis": [
+                "留白一律按金处理，大面积切分外圈紫色结构。"
+              ],
+              "confidence": "high",
+              "notes": "外圈留白面积最大，金能量主导外圈空间节奏。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "intra_circle_relations": {
+        "inner": {
+          "relations": [
+            {
+              "relation_id": "inner-rel-001",
+              "relation_type": "cut_by_metal",
+              "involved_visual_unit_ids": [
+                "inner-002",
+                "inner-001"
+              ],
+              "visible_basis": "内圈留白紧挨着切分紫色几何花形内部结构，形成细小间隔和几何分割空间。",
+              "confidence": "high",
+              "notes": "内圈金切木关系明显，但切分面积较小，尚未造成木能量断裂。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "relations": [
+            {
+              "relation_id": "middle-rel-001",
+              "relation_type": "cut_by_metal",
+              "involved_visual_unit_ids": [
+                "middle-002",
+                "middle-001"
+              ],
+              "visible_basis": "中圈大面积留白将紫色花瓣/卷曲结构分隔成多个独立单元，彼此被白色空间隔开。",
+              "confidence": "high",
+              "notes": "中圈金切木作用显著，木单元之间连接中断，形成孤立的花瓣状结构。"
+            },
+            {
+              "relation_id": "middle-rel-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "middle-001"
+              ],
+              "visible_basis": "中圈紫色单元彼此被留白隔开，没有形成连续面。",
+              "confidence": "high",
+              "notes": "紫色花瓣之间无直接相连，中圈木能量被金完全分隔。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "relations": [
+            {
+              "relation_id": "outer-rel-001",
+              "relation_type": "cut_by_metal",
+              "involved_visual_unit_ids": [
+                "outer-003",
+                "outer-001",
+                "outer-002"
+              ],
+              "visible_basis": "外圈留白大面积隔开紫色卷草、点状装饰和外缘花形，紫色结构不连续。",
+              "confidence": "high",
+              "notes": "外圈金切木作用最强，紫色装饰单元完全被白色空间分隔开。"
+            },
+            {
+              "relation_id": "outer-rel-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "outer-001",
+                "outer-002"
+              ],
+              "visible_basis": "紫色卷草状大形与点状装饰之间被留白隔开，没有连成整片。",
+              "confidence": "high",
+              "notes": "外圈木能量被金分隔为多个独立装饰单元，整体呈现松散结构。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "cross_circle_flow": {
+        "flow_observations": [
+          {
+            "flow_id": "flow-001",
+            "flow_type": "continuous",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "紫色从内圈几何花形延续到中圈花瓣/卷曲结构，再延伸到外圈卷草和点状装饰，颜色连续性很强。",
+            "confidence": "high",
+            "notes": "木能量从中心向外层连续延伸，保持同一色系，形成生长感。"
+          },
+          {
+            "flow_id": "flow-002",
+            "flow_type": "outer_layer_scattered",
+            "involved_circles": [
+              "outer"
+            ],
+            "visual_basis": "外圈紫色卷草、点状装饰和外缘花形被大面积留白分隔，紫色结构不连成整片，装饰单元分散。",
+            "confidence": "high",
+            "notes": "外圈木能量被金切分后呈现散点状分布，没有形成包围或收束力。"
+          },
+          {
+            "flow_id": "flow-003",
+            "flow_type": "outward_expanding",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "视觉重心在内圈紫色几何花形，中外圈通过紫色花瓣、卷草状大形和点状装饰向外重复，留白逐渐增多，形成从中心填满到外部空白增多的扩散趋势。",
+            "confidence": "medium",
+            "notes": "整体动势从内向外扩展，但外圈能量分散，扩展力减弱。"
+          }
+        ],
+        "summary": ""
+      },
+      "evidence_links": [
+        {
+          "claim_id": "inner-001",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "颜色是浅紫色、整体偏淡，形状是莲花状几何花形，开放、向上、灵性化的视觉气质符合木的柔韧与生长感。"
+        },
+        {
+          "claim_id": "inner-002",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-002 五行候选为 metal。",
+          "visual_unit_ids": [
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "留白一律按金处理，参与切分内部结构。"
+        },
+        {
+          "claim_id": "middle-001",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "紫色花瓣/卷曲结构、浅淡紫色、装饰性弧形，延续内圈木性，向外生长。"
+        },
+        {
+          "claim_id": "middle-002",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-002 五行候选为 metal。",
+          "visual_unit_ids": [
+            "middle-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "留白一律按金处理，大面积切分紫色单元。"
+        },
+        {
+          "claim_id": "outer-001",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "outer-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "紫色卷草状大形，弧形、花蔓状、装饰性强，保持木的舒展和装饰性。"
+        },
+        {
+          "claim_id": "outer-002",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-002 五行候选为 wood。",
+          "visual_unit_ids": [
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "紫色点状装饰，细小、重复、向外延伸，延续木的扩散性。"
+        },
+        {
+          "claim_id": "outer-003",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-003 五行候选为 metal。",
+          "visual_unit_ids": [
+            "outer-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "留白一律按金处理，大面积切分外圈紫色结构。"
+        },
+        {
+          "claim_id": "inner-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "内圈金切木关系明显，但切分面积较小，尚未造成木能量断裂。",
+          "visual_unit_ids": [
+            "inner-002",
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "内圈留白紧挨着切分紫色几何花形内部结构，形成细小间隔和几何分割空间。"
+        },
+        {
+          "claim_id": "middle-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "中圈金切木作用显著，木单元之间连接中断，形成孤立的花瓣状结构。",
+          "visual_unit_ids": [
+            "middle-002",
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈大面积留白将紫色花瓣/卷曲结构分隔成多个独立单元，彼此被白色空间隔开。"
+        },
+        {
+          "claim_id": "middle-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "紫色花瓣之间无直接相连，中圈木能量被金完全分隔。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈紫色单元彼此被留白隔开，没有形成连续面。"
+        },
+        {
+          "claim_id": "outer-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "外圈金切木作用最强，紫色装饰单元完全被白色空间分隔开。",
+          "visual_unit_ids": [
+            "outer-003",
+            "outer-001",
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈留白大面积隔开紫色卷草、点状装饰和外缘花形，紫色结构不连续。"
+        },
+        {
+          "claim_id": "outer-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "外圈木能量被金分隔为多个独立装饰单元，整体呈现松散结构。",
+          "visual_unit_ids": [
+            "outer-001",
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "紫色卷草状大形与点状装饰之间被留白隔开，没有连成整片。"
+        },
+        {
+          "claim_id": "flow-001",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "continuous",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "紫色从内圈几何花形延续到中圈花瓣/卷曲结构，再延伸到外圈卷草和点状装饰，颜色连续性很强。"
+        },
+        {
+          "claim_id": "flow-002",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outer_layer_scattered",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "外圈紫色卷草、点状装饰和外缘花形被大面积留白分隔，紫色结构不连成整片，装饰单元分散。"
+        },
+        {
+          "claim_id": "flow-003",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outward_expanding",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "视觉重心在内圈紫色几何花形，中外圈通过紫色花瓣、卷草状大形和点状装饰向外重复，留白逐渐增多，形成从中心填满到外部空白增多的扩散趋势。"
+        }
+      ]
+    },
+    "model_trace": {
+      "vision": [
+        {
+          "source": "golden_foundation.visual_observation"
+        }
+      ],
+      "foundation_analysis": [
+        {
+          "model": "deepseek-v4-pro",
+          "base_url": "https://api.deepseek.com",
+          "endpoint_url": "https://api.deepseek.com/chat/completions",
+          "result": "success"
+        }
+      ]
+    }
+  },
+  "visual_observation": {
+    "overall_observation": {
+      "first_impression": "这幅画几乎完全由紫色和留白构成，第一眼很清淡、对称、装饰性强。中心区域紫色更满，中圈和外圈留白明显增多，整体像一朵浅紫色的花在白色空间里展开。",
+      "visual_atmosphere": "氛围偏安静、轻盈、灵性化，也带一点距离感。紫色线条和花形柔和，留白面积大，让画面显得不拥挤但也不完全充满。",
+      "visual_weight_and_rhythm": "视觉重心在内圈紫色几何花形，中外圈通过紫色花瓣、卷草状大形和点状装饰向外重复。节奏有装饰感，留白在中外圈形成明显间隔。",
+      "healing_language_note": "疗愈师语言可以表达为：画面里有很细腻、向上和向内修习的气质，同时也有很多尚未被填满的空间，像是在给成长和表达保留位置。"
+    },
+    "three_circle_observation": {
+      "inner": "内圈为紫色几何花形和留白。紫色偏浅，中心区域填色较多，几何结构清楚，整体呈莲花或几何花形。",
+      "middle": "中圈有紫色花瓣或卷曲结构，白色留白较多。紫色面积相对内圈减少，花形和卷曲单元被留白分隔。",
+      "outer": "外圈由紫色卷草状大形、外缘花形和点状装饰构成。外侧留白明显，紫色结构沿圆周重复但不连成整片。",
+      "cross_circle_visual_connection": "三圈都以紫色和留白为主，颜色连续性很强。内圈较满，中圈和外圈留白逐渐增多，形成从中心填满到外部空白增多的变化。",
+      "cross_circle_visual_evidence": "紫色从内圈几何花形延伸到中圈花瓣/卷曲结构，再延伸到外圈卷草和点状装饰；留白在中圈和外圈占比明显。"
+    },
+    "circle_visual_units": {
+      "inner": {
+        "composition_description": "内圈由浅紫几何花形、局部紫色填充和留白组成。紫色在内圈最集中，几何线条和花形结构较完整。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "unit_name": "浅紫几何花形",
+            "position": "内圈中心",
+            "source_type": "user_painted",
+            "color_description": "浅紫色，整体偏淡，局部深浅不完全均匀。",
+            "shape_description": "几何花形或莲花状结构，内部有重复三角/花瓣式分割。",
+            "texture_and_density": "内圈紫色填充较多，图案密度较高。",
+            "spatial_relations": "位于中心，被中圈紫色花瓣和留白包围。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 50.0,
+            "rich_visual_description": "浅紫几何花形是整幅画的核心。它有清楚的中心和重复结构，带有安静、细腻的视觉气质。"
+          },
+          {
+            "id": "inner-002",
+            "unit_name": "内圈留白",
+            "position": "紫色几何花形内部和周边",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "细小间隔和几何分割空间。",
+            "texture_and_density": "相对中外圈较少，但仍参与分割。",
+            "spatial_relations": "切分紫色几何花形内部结构，并形成中心图案边界。",
+            "blank_space_role": "切分几何花形，形成内部结构。",
+            "energy_ratio_percent": 50.0,
+            "rich_visual_description": "内圈留白让紫色花形的几何结构被看见。它不是空白背景，而是参与花形分割。"
+          }
+        ]
+      },
+      "middle": {
+        "composition_description": "中圈由紫色花瓣/卷曲结构和较多留白组成。紫色从中心延续出来，但被留白分成多个独立单元。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "unit_name": "紫色花瓣/卷曲结构",
+            "position": "中圈主体",
+            "source_type": "user_painted",
+            "color_description": "浅紫或紫色，部分线条较淡。",
+            "shape_description": "花瓣状、卷曲状或装饰性弧形。",
+            "texture_and_density": "重复出现，面积比内圈更分散。",
+            "spatial_relations": "同类紫色单元围绕中心重复，彼此被留白隔开。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 50.0,
+            "rich_visual_description": "中圈紫色单元像从中心长出的花瓣和卷曲纹样。它们保持同一色系，但不再像内圈那样填满。"
+          },
+          {
+            "id": "middle-002",
+            "unit_name": "中圈大面积留白",
+            "position": "紫色中圈单元之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "较大块开放空间，沿紫色花瓣间分布。",
+            "texture_and_density": "面积明显，留白比例较高。",
+            "spatial_relations": "隔开紫色花瓣/卷曲结构，也形成中圈开放空间。",
+            "blank_space_role": "切分紫色单元，形成开放空间和边界。",
+            "energy_ratio_percent": 50.0,
+            "rich_visual_description": "中圈留白很醒目，它让紫色图案显得轻而分散。后续判断紫色是否被切分，需要重点看这里。"
+          }
+        ]
+      },
+      "outer": {
+        "composition_description": "外圈由紫色卷草状大形、点状装饰、外缘花形和大量留白组成。外圈装饰感强，但紫色仍被留白分开。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "unit_name": "紫色卷草状大形",
+            "position": "外圈主体",
+            "source_type": "user_painted",
+            "color_description": "紫色，偏浅或中等深度。",
+            "shape_description": "卷草状、弧形、花蔓状大形。",
+            "texture_and_density": "重复围绕外圈，线条装饰性强。",
+            "spatial_relations": "同类卷草结构围绕中心重复，并与点状装饰、留白相邻。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "外圈紫色卷草状大形让画面有明显装饰性。它们向外卷曲展开，但不完全连成一片。"
+          },
+          {
+            "id": "outer-002",
+            "unit_name": "紫色点状装饰",
+            "position": "外圈外缘和卷草附近",
+            "source_type": "user_painted",
+            "color_description": "紫色小点或淡紫点状。",
+            "shape_description": "点状、小圆点或细小装饰点。",
+            "texture_and_density": "细密重复，形成外缘纹理。",
+            "spatial_relations": "分布在卷草状大形附近，与留白交替。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "点状装饰让外圈有细腻纹理。它们虽然小，但提供了外圈重复节奏。"
+          },
+          {
+            "id": "outer-003",
+            "unit_name": "外圈留白",
+            "position": "外圈紫色图案之间及外缘",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "大面积空白和图案间隔。",
+            "texture_and_density": "面积大，贯穿外圈。",
+            "spatial_relations": "隔开紫色卷草、点状装饰和外缘花形，使外圈紫色不连续。",
+            "blank_space_role": "切分外圈紫色结构，形成开放空间。",
+            "energy_ratio_percent": 33.34,
+            "rich_visual_description": "外圈留白是这幅画的重要视觉事实。它让紫色外圈显得轻、空，也让每个装饰单元彼此保持距离。"
+          }
+        ]
+      }
+    }
+  },
+  "element_sensing": {
+    "inner": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "inner-001",
+          "element": "wood",
+          "basis": [
+            "颜色是浅紫色、整体偏淡，形状是莲花状几何花形，开放、向上、灵性化的视觉气质符合木的柔韧与生长感。"
+          ],
+          "confidence": "high",
+          "notes": "浅紫、莲花形、填色较多但不厚重，木性明显。几何结构赋予它一定秩序感，但不改变颜色主导的木性。"
+        },
+        {
+          "visual_unit_id": "inner-002",
+          "element": "metal",
+          "basis": [
+            "留白一律按金处理，参与切分内部结构。"
+          ],
+          "confidence": "high",
+          "notes": "留白作为金的切分作用在内圈较明显，但面积小于中外圈留白。"
+        }
+      ],
+      "summary": ""
+    },
+    "middle": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "middle-001",
+          "element": "wood",
+          "basis": [
+            "紫色花瓣/卷曲结构、浅淡紫色、装饰性弧形，延续内圈木性，向外生长。"
+          ],
+          "confidence": "medium",
+          "notes": "中圈紫色更分散、留白增多，木能量比内圈弱，但仍保持木质柔韧、开放的形态。"
+        },
+        {
+          "visual_unit_id": "middle-002",
+          "element": "metal",
+          "basis": [
+            "留白一律按金处理，大面积切分紫色单元。"
+          ],
+          "confidence": "high",
+          "notes": "中圈留白面积大，金能量对木的切分作用显著。"
+        }
+      ],
+      "summary": ""
+    },
+    "outer": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "outer-001",
+          "element": "wood",
+          "basis": [
+            "紫色卷草状大形，弧形、花蔓状、装饰性强，保持木的舒展和装饰性。"
+          ],
+          "confidence": "medium",
+          "notes": "外圈卷草结构舒展、柔韧，仍属木，但能量更分散，装饰性为主。"
+        },
+        {
+          "visual_unit_id": "outer-002",
+          "element": "wood",
+          "basis": [
+            "紫色点状装饰，细小、重复、向外延伸，延续木的扩散性。"
+          ],
+          "confidence": "medium",
+          "notes": "点状装饰虽小，但整体形成向外节奏，辅助木能量，但与留白交替出现。"
+        },
+        {
+          "visual_unit_id": "outer-003",
+          "element": "metal",
+          "basis": [
+            "留白一律按金处理，大面积切分外圈紫色结构。"
+          ],
+          "confidence": "high",
+          "notes": "外圈留白面积最大，金能量主导外圈空间节奏。"
+        }
+      ],
+      "summary": ""
+    }
+  },
+  "intra_circle_relations": {
+    "inner": {
+      "relations": [
+        {
+          "relation_id": "inner-rel-001",
+          "relation_type": "cut_by_metal",
+          "involved_visual_unit_ids": [
+            "inner-002",
+            "inner-001"
+          ],
+          "visible_basis": "内圈留白紧挨着切分紫色几何花形内部结构，形成细小间隔和几何分割空间。",
+          "confidence": "high",
+          "notes": "内圈金切木关系明显，但切分面积较小，尚未造成木能量断裂。"
+        }
+      ],
+      "summary": ""
+    },
+    "middle": {
+      "relations": [
+        {
+          "relation_id": "middle-rel-001",
+          "relation_type": "cut_by_metal",
+          "involved_visual_unit_ids": [
+            "middle-002",
+            "middle-001"
+          ],
+          "visible_basis": "中圈大面积留白将紫色花瓣/卷曲结构分隔成多个独立单元，彼此被白色空间隔开。",
+          "confidence": "high",
+          "notes": "中圈金切木作用显著，木单元之间连接中断，形成孤立的花瓣状结构。"
+        },
+        {
+          "relation_id": "middle-rel-002",
+          "relation_type": "separated_by_blank_space",
+          "involved_visual_unit_ids": [
+            "middle-001"
+          ],
+          "visible_basis": "中圈紫色单元彼此被留白隔开，没有形成连续面。",
+          "confidence": "high",
+          "notes": "紫色花瓣之间无直接相连，中圈木能量被金完全分隔。"
+        }
+      ],
+      "summary": ""
+    },
+    "outer": {
+      "relations": [
+        {
+          "relation_id": "outer-rel-001",
+          "relation_type": "cut_by_metal",
+          "involved_visual_unit_ids": [
+            "outer-003",
+            "outer-001",
+            "outer-002"
+          ],
+          "visible_basis": "外圈留白大面积隔开紫色卷草、点状装饰和外缘花形，紫色结构不连续。",
+          "confidence": "high",
+          "notes": "外圈金切木作用最强，紫色装饰单元完全被白色空间分隔开。"
+        },
+        {
+          "relation_id": "outer-rel-002",
+          "relation_type": "separated_by_blank_space",
+          "involved_visual_unit_ids": [
+            "outer-001",
+            "outer-002"
+          ],
+          "visible_basis": "紫色卷草状大形与点状装饰之间被留白隔开，没有连成整片。",
+          "confidence": "high",
+          "notes": "外圈木能量被金分隔为多个独立装饰单元，整体呈现松散结构。"
+        }
+      ],
+      "summary": ""
+    }
+  },
+  "cross_circle_flow": {
+    "flow_observations": [
+      {
+        "flow_id": "flow-001",
+        "flow_type": "continuous",
+        "involved_circles": [
+          "inner",
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "紫色从内圈几何花形延续到中圈花瓣/卷曲结构，再延伸到外圈卷草和点状装饰，颜色连续性很强。",
+        "confidence": "high",
+        "notes": "木能量从中心向外层连续延伸，保持同一色系，形成生长感。"
+      },
+      {
+        "flow_id": "flow-002",
+        "flow_type": "outer_layer_scattered",
+        "involved_circles": [
+          "outer"
+        ],
+        "visual_basis": "外圈紫色卷草、点状装饰和外缘花形被大面积留白分隔，紫色结构不连成整片，装饰单元分散。",
+        "confidence": "high",
+        "notes": "外圈木能量被金切分后呈现散点状分布，没有形成包围或收束力。"
+      },
+      {
+        "flow_id": "flow-003",
+        "flow_type": "outward_expanding",
+        "involved_circles": [
+          "inner",
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "视觉重心在内圈紫色几何花形，中外圈通过紫色花瓣、卷草状大形和点状装饰向外重复，留白逐渐增多，形成从中心填满到外部空白增多的扩散趋势。",
+        "confidence": "medium",
+        "notes": "整体动势从内向外扩展，但外圈能量分散，扩展力减弱。"
+      }
+    ],
+    "summary": ""
+  },
+  "theme_interpretation": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.metal_excess",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_deservingness",
+        "wealth.approval_driven_earning"
+      ],
+      "selected_module_ids": [
+        "wealth.deservingness_self_worth",
+        "wealth.career_value_exchange"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.self_worth",
+          "recommended_topic": "自我价值 / 配得感",
+          "recommended_intention": "我想探索：我是否允许自己的价值被看见、被支付，并稳定接住回报。",
+          "matched_signals": [
+            "内圈收缩"
+          ],
+          "why_not_expand_now": "本次只翻译到财富中的收钱、定价和接收能力。",
+          "avoid": [
+            "不说用户没有价值感。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_deservingness",
+          "title": "配得感不足",
+          "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+          "report_language": [
+            "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+            "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+          ],
+          "healing_direction": [
+            "配得感练习。",
+            "自我价值确认。",
+            "区分价值创造和自我证明。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.approval_driven_earning",
+          "title": "求认可式赚钱",
+          "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+          "report_language": [
+            "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+            "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+          ],
+          "healing_direction": [
+            "自我价值确认。",
+            "放松外界标准。",
+            "区分收入结果和自我价值。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.deservingness_self_worth",
+          "title": "配得感与自我价值",
+          "status": "source_supported_draft",
+          "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        }
+      ],
+      "boundaries": [
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "core_thesis": "内在木（价值感与分享欲）已经长成一朵精致丰沛的花，但在向外连接和交换的过程中被大量金（高标准、评判与留白）切成孤立的片段，导致财富能量“有核但散开”——你很清楚自己能提供什么，却在走近关系和现实市场时反复被自己的标准打散。",
+  "healing_direction": "从配得感与自我价值的区分开始：确认价值可以只是“存在”而不是不断证明；邀请用户练习在保持精细度的同时允许自己被真正看见、被支付、被稳定承接，并逐步减少多余的金切分。",
+  "final_report": {
+    "report_id": "mandala-interpretation-598cb4d9c3a8",
+    "report_mode": "lite",
+    "title": "曼陀罗解读报告",
+    "markdown": "# 财富议题：你的中心已开花，只是向外伸展时被标准切得很碎\n\n这幅画一眼看过去很安静，紫色和留白交替展开，像一朵浅淡的花在白色空间里轻轻呼吸。视觉重心稳稳落在正中心——那里紫色最深、最完整，花瓣层层叠叠，结构清晰。而从中圈开始，紫色被大面积的留白分隔成一片一片独立的花瓣和卷草纹样，到了外圈，紫色更是变成了散点的装饰，彼此之间隔着大片空白。整幅画的能量从中心的饱满，走向外层的分散与断续。\n\n中心那朵浅紫色的几何花形，颜色偏淡但填得很用心，形状像开放的莲花，带着柔韧、向上生长的气质。在五行感知里，这种浅紫、舒展的花形对应木——一种愿意打磨自己、也渴望向外表达的柔性能量。而花形内部那些细小的留白隔线，本身是白色纸面，在画面中承担金的切分作用；它们把花朵切出漂亮的几何层次，但每一刀都很轻，还没有伤到木的连续性。这一圈里的关系更像是一种自我雕琢：你习惯用高标准来整理自己，让内在质地更精致，但暂时还没对自己下重手。\n\n当你从内圈往中圈、外圈看，会发现同一股浅紫色一直在向外延伸，颜色没有换过，说明你内在那个想要表达、想要被看见的核心动力是连续的。但走到中圈，紫色花瓣已经被大片白色分隔成彼此孤立的小单元，木的生长轨迹在这里被打断了——这很像你在情绪和关系的层面，当想要把内在的丰沛分享出去时，常常被内在的审视或外界的标准拦住，让表达变得断续、欲言又止。再到外圈的现实层，这种分隔更明显：卷草纹和点状装饰被大面积留白隔开，紫色根本无法连成一片。你内在积累了很多细腻的能力与见解，但当这些要走向外部世界、进入实际的价值交换时，它们被你的“高质量标准”逐一审查，最后只能在现实里零星地透出一点，散散地落在外面。\n\n从财富议题来翻译这幅画，它不是在说你没有能力或没有资源。恰恰相反，你的中心是扎实的、有内容的，你很清楚自己可以给出什么。问题出在“给出”的路上：你每向外走一步，就多加一层标准来审视自己——表达够不够精准、价值够不够纯粹、对方会不会认可。这些标准本身不是坏的，它们让你保持质感，但当它们密集到把通路切成碎片时，财富能量就很难形成一条稳定流动的管道。你可能会发现，你做的事很多、想得很深，但收进来的回报和回应是断续的、散点式的，很难聚成一股持续涌向你的流。\n\n这个阶段不需要急着做更多、证明更多。可以试着做一个小练习：接下来一周，在你最擅长的事情里，有意识地在三个场合“不修饰地让别人看见你的好”——不必把表达打磨到完美才出手，不必等到所有条件都准备好才接受回馈。看看当你的木少被金切几刀时，那些散在外面的碎片会不会自己靠拢一点。\n\n下一次曼陀罗探索可以继续深入这个方向：“我是否允许自己的价值被支付、被接住，而不只是被欣赏。”在这次画面里，还没有展开的是接收端的线索——那些流向你的通道，是否也被你自己的标准挡在了外面。",
+    "summary": "内在木（价值感与分享欲）已经长成一朵精致丰沛的花，但在向外连接和交换的过程中被大量金（高标准、评判与留白）切成孤立的片段，导致财富能量“有核但散开”——你很清楚自己能提供什么，却在走近关系和现实市场时反复被自己的标准打散。"
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "浅紫几何花形是整幅画的核心。它有清楚的中心和重复结构，带有安静、细腻的视觉气质。"
+    },
+    {
+      "id": "inner-002",
+      "circle": "inner",
+      "visible_evidence": "内圈留白让紫色花形的几何结构被看见。它不是空白背景，而是参与花形分割。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "中圈紫色单元像从中心长出的花瓣和卷曲纹样。它们保持同一色系，但不再像内圈那样填满。"
+    },
+    {
+      "id": "middle-002",
+      "circle": "middle",
+      "visible_evidence": "中圈留白很醒目，它让紫色图案显得轻而分散。后续判断紫色是否被切分，需要重点看这里。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "外圈紫色卷草状大形让画面有明显装饰性。它们向外卷曲展开，但不完全连成一片。"
+    },
+    {
+      "id": "outer-002",
+      "circle": "outer",
+      "visible_evidence": "点状装饰让外圈有细腻纹理。它们虽然小，但提供了外圈重复节奏。"
+    },
+    {
+      "id": "outer-003",
+      "circle": "outer",
+      "visible_evidence": "外圈留白是这幅画的重要视觉事实。它让紫色外圈显得轻、空，也让每个装饰单元彼此保持距离。"
+    }
+  ],
+  "boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "golden_case_seed"
+  },
+  "permissions": {
+    "can_answer_follow_up": false,
+    "post_mvp_agent": "report_qa_agent",
+    "allow_seeded_short_report": false
+  }
+}

@@ -1,0 +1,1176 @@
+{
+  "method_source": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-曼陀罗基础层解读流程.md",
+  "execution_blocks": [
+    {
+      "block_id": "input-and-boundary",
+      "stage_keys": [
+        "input-context",
+        "user-input-context",
+        "circle-boundary-context"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "foundation-image-reading",
+      "stage_keys": [
+        "foundation-image-reading"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "theme-translation-and-thesis",
+      "stage_keys": [
+        "theme-translation-route",
+        "report-thesis-selection",
+        "user-facing-framing",
+        "report-branching-plan"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "report-writing-and-assembly",
+      "stage_keys": [
+        "lite-report-draft",
+        "pro-report-draft",
+        "visual-assets",
+        "final-report-assembly"
+      ],
+      "status": "complete"
+    }
+  ],
+  "stage_outputs": {
+    "input-context": {
+      "stage": "input-context",
+      "status": "complete",
+      "report_mode": "lite",
+      "image": {
+        "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-011-mandala.jpg",
+        "marked_local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-011-mandala-3q.jpg",
+        "storage_backend": "",
+        "storage_key": ""
+      },
+      "agent_version": "mandala-interpretation-agent-v1"
+    },
+    "user-input-context": {
+      "stage": "user-input-context",
+      "status": "complete",
+      "user_context": {
+        "theme": "wealth",
+        "theme_label": "财富议题",
+        "painting_intention": "case-011 【案例11】用五行感知法+相生相克法解读财富成长（完整解读）",
+        "painting_feeling": ""
+      }
+    },
+    "circle-boundary-context": {
+      "stage": "circle-boundary-context",
+      "status": "complete",
+      "circle_boundaries": {
+        "inner_radius": 35,
+        "middle_radius": 65,
+        "radius_unit": "normalized_percent",
+        "source": "golden_case_seed"
+      }
+    },
+    "foundation-image-reading": {
+      "stage": "foundation-image-reading",
+      "status": "complete",
+      "foundation_image_reading": {
+        "visual_observation": {
+          "overall_observation": {
+            "first_impression": "这幅画给人的第一感受是清冷、理性、结构清楚。黄色星形在中心和中圈形成稳定骨架，蓝色水滴围绕中圈，外圈大量绿色小叶向外环绕，但这些叶片彼此分散、没有明显枝干连接。",
+            "visual_atmosphere": "氛围偏冷静、克制、有条理。黄色、蓝色、绿色和留白的分布较清楚，整体不像混乱涂抹，而是有明确层次。",
+            "visual_weight_and_rhythm": "视觉重心在黄色星形/花形中心，中圈蓝色水滴形成深色节点，外圈绿色小叶数量多、细碎重复。节奏由中心几何稳定逐渐转向外圈分散生长。",
+            "healing_language_note": "疗愈师语言可以表达为：画面里有清楚的理性结构和向外成长的愿望，同时外圈的小叶还需要更稳定的连接和支撑，让生长更聚合。"
+          },
+          "three_circle_observation": {
+            "inner": "内圈为黄色星形或花形和白色/留白结构。黄色中心结构清楚，带有几何和花形结合的特征，留白参与形成中心边界。",
+            "middle": "中圈有黄色尖角、蓝色水滴状结构和部分白色留白。蓝色水滴较醒目，分布在黄色结构外侧或之间，黄色尖角有向外指向感。",
+            "outer": "外圈有大量绿色叶片向外环绕。绿色叶片分散成多个独立小叶，没有明显枝干把它们连接成树枝或整片叶丛；外圈留白较多。",
+            "cross_circle_visual_connection": "三圈结构清楚，从黄色中心到中圈蓝色水滴和黄色尖角，再到外圈绿色小叶。内中圈更像几何骨架，外圈则变成分散的小叶重复。",
+            "cross_circle_visual_evidence": "黄色星形从内圈延续到中圈尖角，蓝色水滴围绕中圈，外圈绿色叶片数量多但彼此独立；留白在三圈中都参与分隔。"
+          },
+          "circle_visual_units": {
+            "inner": {
+              "composition_description": "内圈由黄色星形/花形和留白组成。黄色结构是中心骨架，留白帮助形成清晰边界。",
+              "visual_units": [
+                {
+                  "id": "inner-001",
+                  "unit_name": "黄色中心星形/花形",
+                  "position": "内圈中心",
+                  "source_type": "user_painted",
+                  "color_description": "黄色，较明亮。",
+                  "shape_description": "星形或花形，几何感强，边缘有尖角。",
+                  "texture_and_density": "中心集中，涂色相对均匀。",
+                  "spatial_relations": "被内圈留白包围，并与中圈黄色尖角结构呼应。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 50.0,
+                  "rich_visual_description": "黄色中心星形像画面的结构核心。它稳定、清楚，给整幅画建立了几何化的中心秩序。"
+                },
+                {
+                  "id": "inner-002",
+                  "unit_name": "内圈留白",
+                  "position": "黄色中心星形周围",
+                  "source_type": "blank_space",
+                  "color_description": "纸面白色留白。",
+                  "shape_description": "围绕黄色尖角和花形边界形成间隔。",
+                  "texture_and_density": "面积中等，边界清楚。",
+                  "spatial_relations": "包围和切分黄色中心结构，并和中圈留白相连。",
+                  "blank_space_role": "包围黄色中心，形成中心边界和清晰结构。",
+                  "energy_ratio_percent": 50.0,
+                  "rich_visual_description": "内圈留白让黄色中心不显得拥挤。它提供了清晰边界，也让中心的几何结构更突出。"
+                }
+              ]
+            },
+            "middle": {
+              "composition_description": "中圈由黄色尖角、蓝色水滴和留白组成。黄色结构带有向外指向，蓝色水滴形成深色情绪节点或流动节点，留白将它们分隔。",
+              "visual_units": [
+                {
+                  "id": "middle-001",
+                  "unit_name": "黄色尖角结构",
+                  "position": "中圈内侧到中段",
+                  "source_type": "user_painted",
+                  "color_description": "黄色，延续内圈黄色。",
+                  "shape_description": "尖角、三角或箭头感花瓣，方向指向外圈。",
+                  "texture_and_density": "重复围绕中心，形成中圈骨架。",
+                  "spatial_relations": "与蓝色水滴和留白相邻，并从内圈黄色中心向外延伸。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 33.33,
+                  "rich_visual_description": "黄色尖角让中圈有向外突破的方向感。它延续中心黄色结构，把内圈的秩序带向外层。"
+                },
+                {
+                  "id": "middle-002",
+                  "unit_name": "蓝色水滴状结构",
+                  "position": "中圈黄色尖角之间或外侧",
+                  "source_type": "user_painted",
+                  "color_description": "深蓝色或蓝色，部分较浓。",
+                  "shape_description": "水滴状、小圆头加尾部的滴状结构。",
+                  "texture_and_density": "颜色较深，视觉存在感强，围绕中心重复。",
+                  "spatial_relations": "分布在黄色尖角之间或旁侧，被留白隔开，并靠近外圈绿色叶片内侧。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 33.33,
+                  "rich_visual_description": "蓝色水滴是中圈最醒目的冷色节点。它们围绕黄色结构出现，形成与黄色尖角并存的中圈状态。"
+                },
+                {
+                  "id": "middle-003",
+                  "unit_name": "中圈留白",
+                  "position": "黄色尖角和蓝色水滴之间",
+                  "source_type": "blank_space",
+                  "color_description": "纸面白色留白。",
+                  "shape_description": "不规则间隔，沿黄色和蓝色图案边缘分布。",
+                  "texture_and_density": "面积中等，边界清楚。",
+                  "spatial_relations": "隔开黄色尖角和蓝色水滴，也与内圈和外圈留白相连。",
+                  "blank_space_role": "切分黄色和蓝色元素，形成中圈边界。",
+                  "energy_ratio_percent": 33.34,
+                  "rich_visual_description": "中圈留白使黄色尖角和蓝色水滴之间保持距离。它是后续判断二者是否相邻、是否被隔开的关键。"
+                }
+              ]
+            },
+            "outer": {
+              "composition_description": "外圈由大量绿色小叶、外圈留白和外缘边界组成。绿色叶片向外环绕但彼此独立，没有明显枝干把小叶连接成树状结构。",
+              "visual_units": [
+                {
+                  "id": "outer-001",
+                  "unit_name": "分散绿色小叶",
+                  "position": "外圈主体",
+                  "source_type": "user_painted",
+                  "color_description": "绿色，颜色相对均匀。",
+                  "shape_description": "小叶片状，尖端向外或沿圆周排列。",
+                  "texture_and_density": "数量多，分散重复，单片较小。",
+                  "spatial_relations": "同类叶片围绕中心重复，但彼此之间有留白，没有明显枝干连接。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 33.33,
+                  "rich_visual_description": "外圈绿色小叶很多，显示出明显的生长愿望。关键事实是它们是一片片分散的小叶，而不是被枝干串联起来的大树结构。"
+                },
+                {
+                  "id": "outer-002",
+                  "unit_name": "外圈留白",
+                  "position": "绿色小叶之间及外圈背景",
+                  "source_type": "blank_space",
+                  "color_description": "纸面白色留白。",
+                  "shape_description": "叶片之间的空隙和背景空间。",
+                  "texture_and_density": "面积较多，贯穿外圈。",
+                  "spatial_relations": "隔开每片绿色小叶，也隔开绿色小叶与中圈蓝黄结构。",
+                  "blank_space_role": "切分绿色小叶，形成小叶分散和无枝干连接的视觉事实。",
+                  "energy_ratio_percent": 33.33,
+                  "rich_visual_description": "外圈留白是判断绿色小叶分散的关键。它让叶片看起来彼此独立，缺少连续枝干支撑。"
+                },
+                {
+                  "id": "outer-003",
+                  "unit_name": "外圈圆形边界",
+                  "position": "外圈最外缘",
+                  "source_type": "user_painted",
+                  "color_description": "淡色或线性边界，颜色不作为主要画作色块。",
+                  "shape_description": "圆形外缘线或边界。",
+                  "texture_and_density": "较轻，作为外部轮廓。",
+                  "spatial_relations": "包围绿色小叶和留白，形成画面外边界。",
+                  "blank_space_role": "none",
+                  "energy_ratio_percent": 33.34,
+                  "rich_visual_description": "外圈边界让绿色小叶仍处在一个圆形范围内。边界本身不是重点颜色，但它提供了外部范围。"
+                }
+              ]
+            }
+          }
+        },
+        "element_sensing": {
+          "inner": {
+            "element_candidates": [
+              {
+                "visual_unit_id": "inner-001",
+                "element": "earth",
+                "basis": [
+                  "黄色、星形/花形、中心集中、几何感强，是画面结构核心。"
+                ],
+                "confidence": "high",
+                "notes": "黄色中心星形像画面的结构核心。它稳定、清楚，给整幅画建立了几何化的中心秩序。占比50%，是内圈主要能量。"
+              },
+              {
+                "visual_unit_id": "inner-002",
+                "element": "metal",
+                "basis": [
+                  "留白。"
+                ],
+                "confidence": "high",
+                "notes": "围绕黄色中心，形成清晰边界，使中心结构更突出。占比50%，辅助能量。"
+              }
+            ],
+            "summary": ""
+          },
+          "middle": {
+            "element_candidates": [
+              {
+                "visual_unit_id": "middle-001",
+                "element": "earth",
+                "basis": [
+                  "黄色，延续内圈黄色尖角结构。"
+                ],
+                "confidence": "high",
+                "notes": "黄色尖角让中圈有向外突破的方向感，延续中心骨架。占比33.33%，中圈主要能量之一。形状尖角有向外指向性，辅助说明其能量形态。"
+              },
+              {
+                "visual_unit_id": "middle-002",
+                "element": "water",
+                "basis": [
+                  "蓝色、水滴状。"
+                ],
+                "confidence": "high",
+                "notes": "蓝色水滴是中圈最醒目的冷色节点，颜色较深。占比33.33%，中圈主要能量之一。"
+              },
+              {
+                "visual_unit_id": "middle-003",
+                "element": "metal",
+                "basis": [
+                  "留白。"
+                ],
+                "confidence": "high",
+                "notes": "隔开黄色尖角和蓝色水滴，形成中圈边界。占比33.34%，辅助能量。"
+              }
+            ],
+            "summary": ""
+          },
+          "outer": {
+            "element_candidates": [
+              {
+                "visual_unit_id": "outer-001",
+                "element": "wood",
+                "basis": [
+                  "绿色小叶片状，向外生长。"
+                ],
+                "confidence": "high",
+                "notes": "外圈绿色小叶很多，显示出明显的生长愿望。关键事实是它们是一片片分散的小叶，而不是被枝干串联起来的大树结构。占比33.33%，但分散且无枝干。"
+              },
+              {
+                "visual_unit_id": "outer-002",
+                "element": "metal",
+                "basis": [
+                  "留白。"
+                ],
+                "confidence": "high",
+                "notes": "大量留白隔开每片绿色小叶，形成分散和无枝干连接的视觉事实。占比33.33%，切分作用明显。"
+              },
+              {
+                "visual_unit_id": "outer-003",
+                "element": "earth",
+                "basis": [
+                  "外圈圆形边界，作为外部轮廓，颜色较淡。"
+                ],
+                "confidence": "medium",
+                "notes": "边界让绿色小叶仍处在一个圆形范围内，但本身颜色很淡，能量较弱。占比33.34%，但非主要画作色块。"
+              }
+            ],
+            "summary": ""
+          }
+        },
+        "intra_circle_relations": {
+          "inner": {
+            "relations": [
+              {
+                "relation_id": "inner-rel-01",
+                "relation_type": "separated_by_blank_space",
+                "involved_visual_unit_ids": [
+                  "inner-001",
+                  "inner-002"
+                ],
+                "visible_basis": "留白（inner-002）包围并切分黄色中心星形（inner-001），形成清晰边界。",
+                "confidence": "high",
+                "notes": "留白作为金属性元素，紧挨着土性中心并形成边界，但未形成包围态势，主要是分隔。"
+              }
+            ],
+            "summary": "内圈结构清晰，土性中心被金性留白分隔，形成清晰的中心骨架。"
+          },
+          "middle": {
+            "relations": [
+              {
+                "relation_id": "middle-rel-01",
+                "relation_type": "separated_by_blank_space",
+                "involved_visual_unit_ids": [
+                  "middle-001",
+                  "middle-002",
+                  "middle-003"
+                ],
+                "visible_basis": "留白（middle-003）切分黄色尖角（middle-001）和蓝色水滴（middle-002），使二者保持距离。",
+                "confidence": "high",
+                "notes": "土性尖角与水性水滴被金性留白隔开，二者没有直接相邻，因此无法直接形成土克水的关系。"
+              },
+              {
+                "relation_id": "middle-rel-02",
+                "relation_type": "generating",
+                "involved_visual_unit_ids": [
+                  "middle-003",
+                  "middle-002"
+                ],
+                "visible_basis": "金性留白（middle-003）紧挨着水性水滴（middle-002），形成金生水。",
+                "confidence": "medium",
+                "notes": "留白作为金，在空间上紧贴水滴，提供了金生水的条件。水生木的环节在此中断。"
+              }
+            ],
+            "summary": "中圈土、水被金分隔，能量未连续流动，仅存在金生水的局部关系。"
+          },
+          "outer": {
+            "relations": [
+              {
+                "relation_id": "outer-rel-01",
+                "relation_type": "rootless_wood",
+                "involved_visual_unit_ids": [
+                  "outer-001"
+                ],
+                "visible_basis": "外圈绿色小叶（outer-001）被大量留白（outer-002）隔开，且无枝干连接，同时中圈仅存的蓝色水滴（middle-002）被留白（middle-003）隔开，无法直接连接到外圈绿植。",
+                "confidence": "high",
+                "notes": "木元素分散、无连接，且无法得到水的直接滋养，符合无根之木的视觉表现。"
+              },
+              {
+                "relation_id": "outer-rel-02",
+                "relation_type": "cut_by_metal",
+                "involved_visual_unit_ids": [
+                  "outer-001",
+                  "outer-002"
+                ],
+                "visible_basis": "外圈大量留白（outer-002）紧挨着并切分每一片绿色小叶（outer-001），形成叶片彼此独立的视觉事实。",
+                "confidence": "high",
+                "notes": "金性留白对木性小叶的切分作用非常明显，导致木能量分散、无法聚合。"
+              }
+            ],
+            "summary": "外圈木元素被金大量切分，且无根，能量分散。"
+          }
+        },
+        "cross_circle_flow": {
+          "flow_observations": [
+            {
+              "flow_id": "flow-01",
+              "flow_type": "continuous",
+              "involved_circles": [
+                "inner",
+                "middle"
+              ],
+              "visual_basis": "黄色星形从内圈中心（inner-001）连续延续到中圈的黄色尖角结构（middle-001），视觉线条连贯。",
+              "confidence": "high",
+              "notes": "内中两圈通过土性黄色尖角形成连续结构，构成稳定的几何骨架，能量从中心向外传递。"
+            },
+            {
+              "flow_id": "flow-02",
+              "flow_type": "outer_layer_scattered",
+              "involved_circles": [
+                "outer"
+              ],
+              "visual_basis": "外圈大量绿色小叶（outer-001）彼此被留白（outer-002）分开，没有枝干连接，呈现分散状态，与内中圈稳定的几何骨架形成鲜明对比。",
+              "confidence": "high",
+              "notes": "能量由内圈的集中稳定，到中圈的节点分布，再到外圈的完全分散，呈现外散趋势。"
+            },
+            {
+              "flow_id": "flow-03",
+              "flow_type": "middle_layer_blocked",
+              "involved_circles": [
+                "middle",
+                "outer"
+              ],
+              "visual_basis": "中圈的蓝色水滴（middle-002）被金性留白（middle-003）隔开，无法直接与外圈绿色小叶（outer-001）相连，水木能量流动中断。",
+              "confidence": "high",
+              "notes": "中圈到外圈的能量传递被阻断，水无法滋养外圈的木，导致外圈木的生长失去根基。"
+            }
+          ],
+          "summary": "能量从内圈的集中稳定，通过中圈的土性骨架延续，但在中圈至外圈的传递中被阻断，导致外圈木能量过度分散且无根，整体呈现‘内稳外散，中层受阻’的流动模式。"
+        },
+        "evidence_links": [
+          {
+            "claim_id": "inner-001",
+            "claim_type": "element_sensing",
+            "claim_text": "inner-001 五行候选为 earth。",
+            "visual_unit_ids": [
+              "inner-001"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "黄色、星形/花形、中心集中、几何感强，是画面结构核心。"
+          },
+          {
+            "claim_id": "inner-002",
+            "claim_type": "element_sensing",
+            "claim_text": "inner-002 五行候选为 metal。",
+            "visual_unit_ids": [
+              "inner-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "留白。"
+          },
+          {
+            "claim_id": "middle-001",
+            "claim_type": "element_sensing",
+            "claim_text": "middle-001 五行候选为 earth。",
+            "visual_unit_ids": [
+              "middle-001"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "黄色，延续内圈黄色尖角结构。"
+          },
+          {
+            "claim_id": "middle-002",
+            "claim_type": "element_sensing",
+            "claim_text": "middle-002 五行候选为 water。",
+            "visual_unit_ids": [
+              "middle-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "蓝色、水滴状。"
+          },
+          {
+            "claim_id": "middle-003",
+            "claim_type": "element_sensing",
+            "claim_text": "middle-003 五行候选为 metal。",
+            "visual_unit_ids": [
+              "middle-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "留白。"
+          },
+          {
+            "claim_id": "outer-001",
+            "claim_type": "element_sensing",
+            "claim_text": "outer-001 五行候选为 wood。",
+            "visual_unit_ids": [
+              "outer-001"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "绿色小叶片状，向外生长。"
+          },
+          {
+            "claim_id": "outer-002",
+            "claim_type": "element_sensing",
+            "claim_text": "outer-002 五行候选为 metal。",
+            "visual_unit_ids": [
+              "outer-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "留白。"
+          },
+          {
+            "claim_id": "outer-003",
+            "claim_type": "element_sensing",
+            "claim_text": "outer-003 五行候选为 earth。",
+            "visual_unit_ids": [
+              "outer-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "外圈圆形边界，作为外部轮廓，颜色较淡。"
+          },
+          {
+            "claim_id": "inner-rel-01",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "留白作为金属性元素，紧挨着土性中心并形成边界，但未形成包围态势，主要是分隔。",
+            "visual_unit_ids": [
+              "inner-001",
+              "inner-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.inner"
+            ],
+            "evidence_text": "留白（inner-002）包围并切分黄色中心星形（inner-001），形成清晰边界。"
+          },
+          {
+            "claim_id": "middle-rel-01",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "土性尖角与水性水滴被金性留白隔开，二者没有直接相邻，因此无法直接形成土克水的关系。",
+            "visual_unit_ids": [
+              "middle-001",
+              "middle-002",
+              "middle-003"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "留白（middle-003）切分黄色尖角（middle-001）和蓝色水滴（middle-002），使二者保持距离。"
+          },
+          {
+            "claim_id": "middle-rel-02",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "留白作为金，在空间上紧贴水滴，提供了金生水的条件。水生木的环节在此中断。",
+            "visual_unit_ids": [
+              "middle-003",
+              "middle-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.middle"
+            ],
+            "evidence_text": "金性留白（middle-003）紧挨着水性水滴（middle-002），形成金生水。"
+          },
+          {
+            "claim_id": "outer-rel-01",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "木元素分散、无连接，且无法得到水的直接滋养，符合无根之木的视觉表现。",
+            "visual_unit_ids": [
+              "outer-001"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "外圈绿色小叶（outer-001）被大量留白（outer-002）隔开，且无枝干连接，同时中圈仅存的蓝色水滴（middle-002）被留白（middle-003）隔开，无法直接连接到外圈绿植。"
+          },
+          {
+            "claim_id": "outer-rel-02",
+            "claim_type": "intra_circle_relation",
+            "claim_text": "金性留白对木性小叶的切分作用非常明显，导致木能量分散、无法聚合。",
+            "visual_unit_ids": [
+              "outer-001",
+              "outer-002"
+            ],
+            "circle_observation_refs": [
+              "visual_observation.circle_visual_units.outer"
+            ],
+            "evidence_text": "外圈大量留白（outer-002）紧挨着并切分每一片绿色小叶（outer-001），形成叶片彼此独立的视觉事实。"
+          },
+          {
+            "claim_id": "flow-01",
+            "claim_type": "cross_circle_flow",
+            "claim_text": "continuous",
+            "visual_unit_ids": [],
+            "circle_observation_refs": [
+              "visual_observation.three_circle_observation"
+            ],
+            "evidence_text": "黄色星形从内圈中心（inner-001）连续延续到中圈的黄色尖角结构（middle-001），视觉线条连贯。"
+          },
+          {
+            "claim_id": "flow-02",
+            "claim_type": "cross_circle_flow",
+            "claim_text": "outer_layer_scattered",
+            "visual_unit_ids": [],
+            "circle_observation_refs": [
+              "visual_observation.three_circle_observation"
+            ],
+            "evidence_text": "外圈大量绿色小叶（outer-001）彼此被留白（outer-002）分开，没有枝干连接，呈现分散状态，与内中圈稳定的几何骨架形成鲜明对比。"
+          },
+          {
+            "claim_id": "flow-03",
+            "claim_type": "cross_circle_flow",
+            "claim_text": "middle_layer_blocked",
+            "visual_unit_ids": [],
+            "circle_observation_refs": [
+              "visual_observation.three_circle_observation"
+            ],
+            "evidence_text": "中圈的蓝色水滴（middle-002）被金性留白（middle-003）隔开，无法直接与外圈绿色小叶（outer-001）相连，水木能量流动中断。"
+          }
+        ]
+      },
+      "model_trace": {
+        "vision": [
+          {
+            "source": "golden_foundation.visual_observation"
+          }
+        ],
+        "foundation_analysis": [
+          {
+            "model": "deepseek-v4-pro",
+            "base_url": "https://api.deepseek.com",
+            "endpoint_url": "https://api.deepseek.com/chat/completions",
+            "result": "success"
+          }
+        ]
+      }
+    },
+    "theme-translation-route": {
+      "stage": "theme-translation-route",
+      "status": "complete",
+      "theme": "wealth",
+      "route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.rootless_wood",
+          "visual.fragmented_white_or_metal_cut",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.low_deservingness",
+          "wealth.approval_driven_earning"
+        ],
+        "selected_module_ids": [
+          "wealth.deservingness_self_worth",
+          "wealth.career_value_exchange"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.safety_scarcity",
+            "recommended_topic": "安全感 / 匮乏感",
+            "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+            "matched_signals": [
+              "深色"
+            ],
+            "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+            "avoid": [
+              "不判断现实贫穷或心理问题。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.low_deservingness",
+            "title": "配得感不足",
+            "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+            "report_language": [
+              "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+              "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+            ],
+            "healing_direction": [
+              "配得感练习。",
+              "自我价值确认。",
+              "区分价值创造和自我证明。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.approval_driven_earning",
+            "title": "求认可式赚钱",
+            "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+            "report_language": [
+              "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+              "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+            ],
+            "healing_direction": [
+              "自我价值确认。",
+              "放松外界标准。",
+              "区分收入结果和自我价值。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.deservingness_self_worth",
+            "title": "配得感与自我价值",
+            "status": "source_supported_draft",
+            "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+            "output_strength": "normal"
+          },
+          {
+            "module_id": "wealth.career_value_exchange",
+            "title": "事业、能力与价值交换",
+            "status": "source_needed",
+            "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+            "output_strength": "weak"
+          }
+        ],
+        "boundaries": [
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+          "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "report-thesis-selection": {
+      "stage": "report-thesis-selection",
+      "status": "complete",
+      "core_thesis": "你内在的价值骨架（土）原本是清晰的，但它被过多规则和评判（金）层层切割，导致本该滋养成长的能量（水）无法流向行动与资源（木），使外在的财富生长变得分散、无根且疲惫。",
+      "entry_circle": "inner",
+      "entry_signal": "黄色中心星形/花形（inner-001）",
+      "entry_reason": "这是画面视觉权重最高、最稳定的结构核心，也是用户财富议题的‘价值骨架’。从内圈土性中心切入，能先帮用户确认已经拥有的内在稳定性和配得感基础，再向外逐层看到能量分散与阻断，符合财富议题的探索逻辑。",
+      "narrative_order": [
+        "inner",
+        "middle",
+        "outer"
+      ],
+      "integrated_context_threads": [
+        "wealth.low_deservingness",
+        "wealth.approval_driven_earning"
+      ],
+      "evidence_refs": [
+        "inner-001",
+        "inner-002",
+        "inner-rel-01",
+        "middle-001",
+        "middle-002",
+        "middle-003",
+        "middle-rel-01",
+        "middle-rel-02",
+        "outer-001",
+        "outer-002",
+        "outer-rel-01",
+        "outer-rel-02",
+        "flow-01",
+        "flow-02",
+        "flow-03"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.rootless_wood",
+          "visual.fragmented_white_or_metal_cut",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.low_deservingness",
+          "wealth.approval_driven_earning"
+        ],
+        "selected_module_ids": [
+          "wealth.deservingness_self_worth",
+          "wealth.career_value_exchange"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.safety_scarcity",
+            "recommended_topic": "安全感 / 匮乏感",
+            "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+            "matched_signals": [
+              "深色"
+            ],
+            "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+            "avoid": [
+              "不判断现实贫穷或心理问题。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.low_deservingness",
+            "title": "配得感不足",
+            "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+            "report_language": [
+              "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+              "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+            ],
+            "healing_direction": [
+              "配得感练习。",
+              "自我价值确认。",
+              "区分价值创造和自我证明。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.approval_driven_earning",
+            "title": "求认可式赚钱",
+            "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+            "report_language": [
+              "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+              "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+            ],
+            "healing_direction": [
+              "自我价值确认。",
+              "放松外界标准。",
+              "区分收入结果和自我价值。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.deservingness_self_worth",
+            "title": "配得感与自我价值",
+            "status": "source_supported_draft",
+            "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+            "output_strength": "normal"
+          },
+          {
+            "module_id": "wealth.career_value_exchange",
+            "title": "事业、能力与价值交换",
+            "status": "source_needed",
+            "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+            "output_strength": "weak"
+          }
+        ],
+        "boundaries": [
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+          "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "user-facing-framing": {
+      "stage": "user-facing-framing",
+      "status": "complete",
+      "framing": "这幅画的核心，是你心里一个很清楚的‘我是谁’和‘我有什么价值’的结构。我们先从这个最稳定的中心开始看。",
+      "entry_circle": "inner",
+      "entry_signal": "黄色中心星形/花形（inner-001）",
+      "entry_reason": "这是画面视觉权重最高、最稳定的结构核心，也是用户财富议题的‘价值骨架’。从内圈土性中心切入，能先帮用户确认已经拥有的内在稳定性和配得感基础，再向外逐层看到能量分散与阻断，符合财富议题的探索逻辑。",
+      "narrative_order": [
+        "inner",
+        "middle",
+        "outer"
+      ],
+      "integrated_context_threads": [
+        "wealth.low_deservingness",
+        "wealth.approval_driven_earning"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.rootless_wood",
+          "visual.fragmented_white_or_metal_cut",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.low_deservingness",
+          "wealth.approval_driven_earning"
+        ],
+        "selected_module_ids": [
+          "wealth.deservingness_self_worth",
+          "wealth.career_value_exchange"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.safety_scarcity",
+            "recommended_topic": "安全感 / 匮乏感",
+            "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+            "matched_signals": [
+              "深色"
+            ],
+            "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+            "avoid": [
+              "不判断现实贫穷或心理问题。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.low_deservingness",
+            "title": "配得感不足",
+            "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+            "report_language": [
+              "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+              "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+            ],
+            "healing_direction": [
+              "配得感练习。",
+              "自我价值确认。",
+              "区分价值创造和自我证明。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.approval_driven_earning",
+            "title": "求认可式赚钱",
+            "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+            "report_language": [
+              "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+              "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+            ],
+            "healing_direction": [
+              "自我价值确认。",
+              "放松外界标准。",
+              "区分收入结果和自我价值。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.deservingness_self_worth",
+            "title": "配得感与自我价值",
+            "status": "source_supported_draft",
+            "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+            "output_strength": "normal"
+          },
+          {
+            "module_id": "wealth.career_value_exchange",
+            "title": "事业、能力与价值交换",
+            "status": "source_needed",
+            "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+            "output_strength": "weak"
+          }
+        ],
+        "boundaries": [
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+          "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "report-branching-plan": {
+      "stage": "report-branching-plan",
+      "status": "complete",
+      "healing_direction": "减少内在评判与过度分析（金）的切割，重新让自我价值的核心（土）滋养内心的流动与信任（水），使外显的行动与财富生长（木）获得真正的根基与滋养。",
+      "report_mode": "lite",
+      "entry_circle": "inner",
+      "entry_signal": "黄色中心星形/花形（inner-001）",
+      "entry_reason": "这是画面视觉权重最高、最稳定的结构核心，也是用户财富议题的‘价值骨架’。从内圈土性中心切入，能先帮用户确认已经拥有的内在稳定性和配得感基础，再向外逐层看到能量分散与阻断，符合财富议题的探索逻辑。",
+      "narrative_order": [
+        "inner",
+        "middle",
+        "outer"
+      ],
+      "integrated_context_threads": [
+        "wealth.low_deservingness",
+        "wealth.approval_driven_earning"
+      ],
+      "writing_input_refs": [
+        "inner-001",
+        "inner-002",
+        "inner-rel-01",
+        "middle-001",
+        "middle-002",
+        "middle-003",
+        "middle-rel-01",
+        "middle-rel-02",
+        "outer-001",
+        "outer-002",
+        "outer-rel-01",
+        "outer-rel-02",
+        "flow-01",
+        "flow-02",
+        "flow-03"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.metal_excess",
+          "visual.weak_or_fragmented_earth",
+          "visual.rootless_wood",
+          "visual.fragmented_white_or_metal_cut",
+          "visual.outer_world_closed_or_blank",
+          "visual.inner_contracted_outer_strong",
+          "visual.fragmented_dots_scattered_energy",
+          "visual.center_clear_outer_weak",
+          "visual.heavy_overfilled_composition",
+          "visual.color_blocks_split"
+        ],
+        "selected_clause_ids": [
+          "wealth.low_deservingness",
+          "wealth.approval_driven_earning"
+        ],
+        "selected_module_ids": [
+          "wealth.deservingness_self_worth",
+          "wealth.career_value_exchange"
+        ],
+        "next_exploration_recommendations": [
+          {
+            "id": "wealth.next.safety_scarcity",
+            "recommended_topic": "安全感 / 匮乏感",
+            "recommended_intention": "我想探索：金钱在我的生命里承担了哪些安全感功能。",
+            "matched_signals": [
+              "深色"
+            ],
+            "why_not_expand_now": "本次只说明财富紧绷和承载压力，不展开完整安全感议题。",
+            "avoid": [
+              "不判断现实贫穷或心理问题。"
+            ]
+          }
+        ],
+        "clauses": [
+          {
+            "id": "wealth.low_deservingness",
+            "title": "配得感不足",
+            "summary": "用户可能不太允许自己拥有更多，或对自己值得被支付、被支持、被看见有怀疑。",
+            "report_language": [
+              "从财富议题来看，这里更像是在说一种“我值不值得拥有”的拉扯。",
+              "你可能不是没有能力创造价值，而是内在还没有完全允许自己稳定地接住更多。"
+            ],
+            "healing_direction": [
+              "配得感练习。",
+              "自我价值确认。",
+              "区分价值创造和自我证明。"
+            ],
+            "source_status": "ai_draft"
+          },
+          {
+            "id": "wealth.approval_driven_earning",
+            "title": "求认可式赚钱",
+            "summary": "用户可能把赚钱、成绩或客户认可当成证明自己值得的方式。",
+            "report_language": [
+              "这条线索像是在提醒你：财富不只是收入问题，也牵动着“我是否被认可”的需要。",
+              "当赚钱变成证明自己的方式，行动会变得很用力，也更容易被外界评价牵动。"
+            ],
+            "healing_direction": [
+              "自我价值确认。",
+              "放松外界标准。",
+              "区分收入结果和自我价值。"
+            ],
+            "source_status": "ai_draft"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.deservingness_self_worth",
+            "title": "配得感与自我价值",
+            "status": "source_supported_draft",
+            "report_use": "解释是否允许自己拥有、收取、被支付、被看见。",
+            "output_strength": "normal"
+          },
+          {
+            "module_id": "wealth.career_value_exchange",
+            "title": "事业、能力与价值交换",
+            "status": "source_needed",
+            "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+            "output_strength": "weak"
+          }
+        ],
+        "boundaries": [
+          "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+          "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+          "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+          "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+          "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+          "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+          "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+        ]
+      }
+    },
+    "lite-report-draft": {
+      "stage": "lite-report-draft",
+      "status": "complete",
+      "enabled": true,
+      "markdown": "# 财富议题：当规则切割了价值，成长便找不到扎根的土壤\n\n这幅曼陀罗给人第一印象是清冷而理性的，结构清楚，层次分明。但继续看下去，会发现外圈那些绿色的叶子虽然很多，却是一片片独立散开的，彼此之间没有枝干连接。整幅画的能量，从中心非常稳定的骨架，到外圈变成了一种细碎而分散的生长。\n\n在五行层面，最明显的是中心那个黄色的星形/花形图案——它明亮、几何感强，稳稳坐在画面最核心的位置，对应土的品质，像你内在本来就有的价值骨架。同时围绕中心的留白，在三圈里都参与切分，把本来可以连接的元素隔开了；这种留白对应金的切割性。中圈里，蓝色的水滴形状带着水的流动感，黄色尖角延续中心的土性能量向外指向，但留白把它们隔开，让这些元素各自独立存在；蓝色水滴紧挨着留白，形成金生水的圈内关系候选。外圈大量绿色小叶对应木的生长愿望，但被金性留白不断切割，让这种生长看起来努力却无根。\n\n回到财富这条主线，你内在其实一直有一个清楚而稳定的“我有什么价值”的认知，不是没有能力，也不是不愿意成长。问题在于，你内心有太多规则、标准和评判，像画面里一层层的留白那样，把你原本可以顺畅给予自己的肯定与滋养隔开了。这些标准甚至可能让你习惯性地用赚钱、成绩或别人的认可，来证明自己值得被看见。于是，外圈那些想去行动、想去创造财富的能量，虽然很多，却缺少内在情感的持续滋养，显得分散、用力而且疲惫，好像每一片叶子都在独自承担生长的压力。\n\n近期可以试着做一件很小的事：在有条件收下一句感谢、一次肯定或一笔合理收入的时候，让自己安静地收下，不要在心里立刻用“我做得还不够”把它切掉。这不是偷懒，而是让你的价值骨架，有机会重新成为承接与滋养的起点。\n\n下一次曼陀罗探索，可以继续看向那些蓝色水滴背后的情绪——比如“安全感”与“匮乏感”的线索，它们在这次画面里已经浮现，只是还没有完全展开。探索的方向可以设定为：“我想了解，金钱在我的生命里承担了哪些安全感功能。”"
+    },
+    "pro-report-draft": {
+      "stage": "pro-report-draft",
+      "status": "complete",
+      "enabled": false,
+      "markdown": ""
+    },
+    "visual-assets": {
+      "stage": "visual-assets",
+      "status": "skipped",
+      "reason": "mvp_no_image_generation"
+    },
+    "final-report-assembly": {
+      "stage": "final-report-assembly",
+      "status": "complete",
+      "final_report": {
+        "report_id": "mandala-interpretation-0906cd6d1948",
+        "report_mode": "lite",
+        "title": "曼陀罗解读报告",
+        "markdown": "# 财富议题：当规则切割了价值，成长便找不到扎根的土壤\n\n这幅曼陀罗给人第一印象是清冷而理性的，结构清楚，层次分明。但继续看下去，会发现外圈那些绿色的叶子虽然很多，却是一片片独立散开的，彼此之间没有枝干连接。整幅画的能量，从中心非常稳定的骨架，到外圈变成了一种细碎而分散的生长。\n\n在五行层面，最明显的是中心那个黄色的星形/花形图案——它明亮、几何感强，稳稳坐在画面最核心的位置，对应土的品质，像你内在本来就有的价值骨架。同时围绕中心的留白，在三圈里都参与切分，把本来可以连接的元素隔开了；这种留白对应金的切割性。中圈里，蓝色的水滴形状带着水的流动感，黄色尖角延续中心的土性能量向外指向，但留白把它们隔开，让这些元素各自独立存在；蓝色水滴紧挨着留白，形成金生水的圈内关系候选。外圈大量绿色小叶对应木的生长愿望，但被金性留白不断切割，让这种生长看起来努力却无根。\n\n回到财富这条主线，你内在其实一直有一个清楚而稳定的“我有什么价值”的认知，不是没有能力，也不是不愿意成长。问题在于，你内心有太多规则、标准和评判，像画面里一层层的留白那样，把你原本可以顺畅给予自己的肯定与滋养隔开了。这些标准甚至可能让你习惯性地用赚钱、成绩或别人的认可，来证明自己值得被看见。于是，外圈那些想去行动、想去创造财富的能量，虽然很多，却缺少内在情感的持续滋养，显得分散、用力而且疲惫，好像每一片叶子都在独自承担生长的压力。\n\n近期可以试着做一件很小的事：在有条件收下一句感谢、一次肯定或一笔合理收入的时候，让自己安静地收下，不要在心里立刻用“我做得还不够”把它切掉。这不是偷懒，而是让你的价值骨架，有机会重新成为承接与滋养的起点。\n\n下一次曼陀罗探索，可以继续看向那些蓝色水滴背后的情绪——比如“安全感”与“匮乏感”的线索，它们在这次画面里已经浮现，只是还没有完全展开。探索的方向可以设定为：“我想了解，金钱在我的生命里承担了哪些安全感功能。”",
+        "summary": "你内在的价值骨架（土）原本是清晰的，但它被过多规则和评判（金）层层切割，导致本该滋养成长的能量（水）无法流向行动与资源（木），使外在的财富生长变得分散、无根且疲惫。"
+      }
+    }
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "黄色中心星形像画面的结构核心。它稳定、清楚，给整幅画建立了几何化的中心秩序。"
+    },
+    {
+      "id": "inner-002",
+      "circle": "inner",
+      "visible_evidence": "内圈留白让黄色中心不显得拥挤。它提供了清晰边界，也让中心的几何结构更突出。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "黄色尖角让中圈有向外突破的方向感。它延续中心黄色结构，把内圈的秩序带向外层。"
+    },
+    {
+      "id": "middle-002",
+      "circle": "middle",
+      "visible_evidence": "蓝色水滴是中圈最醒目的冷色节点。它们围绕黄色结构出现，形成与黄色尖角并存的中圈状态。"
+    },
+    {
+      "id": "middle-003",
+      "circle": "middle",
+      "visible_evidence": "中圈留白使黄色尖角和蓝色水滴之间保持距离。它是后续判断二者是否相邻、是否被隔开的关键。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "外圈绿色小叶很多，显示出明显的生长愿望。关键事实是它们是一片片分散的小叶，而不是被枝干串联起来的大树结构。"
+    },
+    {
+      "id": "outer-002",
+      "circle": "outer",
+      "visible_evidence": "外圈留白是判断绿色小叶分散的关键。它让叶片看起来彼此独立，缺少连续枝干支撑。"
+    },
+    {
+      "id": "outer-003",
+      "circle": "outer",
+      "visible_evidence": "外圈边界让绿色小叶仍处在一个圆形范围内。边界本身不是重点颜色，但它提供了外部范围。"
+    }
+  ]
+}

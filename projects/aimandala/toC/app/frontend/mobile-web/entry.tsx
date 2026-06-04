@@ -1,4 +1,3 @@
-import { getInterpretationList } from "../shared/api";
 import { initialMandalaFlowState } from "../shared/core";
 
 import { bootstrapMobileWebFlow, refreshMobileWebReport, runMobileWebLiteFlow } from "./controller";
@@ -8,13 +7,14 @@ import { mobileWebRoutes } from "./routes";
 import { getMobileWebPrimaryAction, toStartCreatePayload } from "./state";
 import { createMobileWebPageViewModel } from "./view-model";
 import { resolveMobileWebRouteProps } from "./router-plan";
+import type { InterpretationRecordResponse } from "../shared/types";
 
 export async function renderUploadEntry(imagePath: string) {
   const bootstrap = await bootstrapMobileWebFlow(imagePath);
   const descriptor = createUploadPageDescriptor(
     {
       imagePath,
-      theme: "general",
+      theme: "wealth",
       paintingIntention: "",
       paintingFeeling: "",
     },
@@ -39,9 +39,11 @@ export async function renderLiteResultEntry(params: {
     toStartCreatePayload(
       {
         imagePath: params.imagePath,
-        theme: params.theme || "general",
+        theme: params.theme || "wealth",
         paintingIntention: params.paintingIntention || "",
         paintingFeeling: params.paintingFeeling || "",
+        innerRadius: 0.35,
+        middleRadius: 0.65,
       },
       params.userId,
     ),
@@ -61,7 +63,8 @@ export async function renderLiteResultEntry(params: {
 }
 
 export async function renderHistoryEntry(userId: string) {
-  const records = await getInterpretationList(userId);
+  void userId;
+  const records: InterpretationRecordResponse[] = [];
   const descriptor = createHistoryPageDescriptor(records);
 
   return (
@@ -96,7 +99,7 @@ export async function renderRouteEntry() {
     params: {
       draft: {
         imagePath: "/tmp/example-mandala.png",
-        theme: "general",
+        theme: "wealth",
         paintingIntention: "",
         paintingFeeling: "",
       },

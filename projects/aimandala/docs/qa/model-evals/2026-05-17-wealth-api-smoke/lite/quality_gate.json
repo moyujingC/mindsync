@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "failure_ids": [],
+  "details": {
+    "missing_stages": [],
+    "actual_blocks": [
+      "block-1-input-and-boundary",
+      "block-2-visual-and-direct-check",
+      "block-3-circle-rule-reasoning",
+      "block-4-thesis-and-writing-input",
+      "block-5-report-and-quality"
+    ],
+    "expected_blocks": [
+      "block-1-input-and-boundary",
+      "block-2-visual-and-direct-check",
+      "block-3-circle-rule-reasoning",
+      "block-4-thesis-and-writing-input",
+      "block-5-report-and-quality"
+    ],
+    "leaked_terms": [],
+    "method_boundary_terms": [],
+    "deterministic_cause_terms": [],
+    "wealth_core_method_terms": [],
+    "report_shape_issues": [],
+    "missing_context_fields": [],
+    "missing_visual_units": []
+  }
+}

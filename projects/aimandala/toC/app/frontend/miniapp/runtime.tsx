@@ -15,22 +15,7 @@ import {
   type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "../mobile-web/state";
-import {
-  createInterpretation,
-  createMiniappOrder,
-  exchangeMiniappSession,
-  getInterpretation,
-  getInterpretationList,
-  notifyMiniappWechatPayment,
-  reconcileMiniappOrder,
-} from "../shared/api";
-import {
-  applyError,
-  getLiteStructuredReport,
-  hasProReportAccess,
-  initialMandalaFlowState,
-  resolveSelfUnderstandingReportCta,
-} from "../shared/core";
+import { applyError, initialMandalaFlowState } from "../shared/core";
 import type {
   FrontendUserSession,
   InterpretationListQuery,
@@ -42,12 +27,7 @@ import type { HistoryFilterId } from "../mobile-web/components/history-cards";
 import type { MiniappRouteId } from "./routes";
 import { createMiniappDraft, createMiniappPreviewProps } from "./fixtures";
 import { getMiniappLiveConfig } from "./config";
-import { resolveMiniappHostAdapter } from "./host";
-import {
-  persistMiniappSession,
-  resolveMiniappSession,
-  sessionFromMiniappExchange,
-} from "./identity";
+import { persistMiniappSession, resolveMiniappSession } from "./identity";
 
 export interface MiniappRuntimeProps {
   route: MiniappRouteId;
@@ -74,8 +54,8 @@ export function MiniappRuntime({
     ? "当前为 miniapp live 联调"
     : "当前为 miniapp 灰度关闭联调";
   const environmentDetail = config.miniappLiveEnabled
-    ? "当前会优先尝试走 miniapp session / order / payment / reconcile 真实链路；如宿主能力缺失，会回退到联调 stub。"
-    : "miniapp live 能力默认关闭；当前仍可在联调环境中复用 API 合同和宿主占位能力。";
+    ? "当前优先走 miniapp session 联调和 H5 runtime，页面能力继续复用财富报告主链路。"
+    : "miniapp live 能力默认关闭；当前仍保留 H5 runtime 预览和会话恢复。";
   const environmentTone: "preview" | "runtime" = config.miniappLiveEnabled
     ? "runtime"
     : "preview";
@@ -149,36 +129,20 @@ export function MiniappRuntime({
   );
 
   async function ensureRuntimeSession(): Promise<FrontendUserSession> {
-    if (config.miniappLiveEnabled && config.wechatSessionEnabled) {
-      const host = resolveMiniappHostAdapter();
-      const loginResult = await host.login();
-      const exchanged = await exchangeMiniappSession({
-        code: loginResult.code,
-      });
-      const nextSession = sessionFromMiniappExchange(exchanged);
-      setSession(nextSession);
-      return nextSession;
-    }
-
-    const exchanged = await exchangeMiniappSession({
-      debug_canonical_user_id: session.canonicalUserId,
-    });
-    const nextSession = sessionFromMiniappExchange(exchanged);
-    setSession(nextSession);
-    return nextSession;
+    return session;
   }
 
   async function refreshHistory(query = historyQuery): Promise<void> {
     setHistoryRefreshBusy(true);
     try {
       const activeSession = await ensureRuntimeSession();
-      const nextRecords = await getInterpretationList(
-        activeSession.canonicalUserId,
-        query,
+      void activeSession;
+      void query;
+      setRecords([]);
+      setHistoryStatusLabel("历史记录暂未接入当前报告 API");
+      setHistoryStatusDetail(
+        "当前小程序壳只复用财富报告生成入口，历史列表后续按新 report_id 存储模型重做。",
       );
-      setRecords(nextRecords);
-      setHistoryStatusLabel("当前显示真实 miniapp 历史");
-      setHistoryStatusDetail("历史记录已按 miniapp 当前用户与筛选条件刷新。");
       setHistoryRefreshHint(formatHistoryRefreshHint());
     } finally {
       setHistoryRefreshBusy(false);
@@ -240,32 +204,7 @@ export function MiniappRuntime({
   }
 
   async function purchaseProReport(interpretationId: string): Promise<void> {
-    const activeSession = await ensureRuntimeSession();
-    const order = await createMiniappOrder({
-      interpretation_id: interpretationId,
-      product_type: "pro",
-      channel: "miniapp",
-      open_id: activeSession.platformUserId ?? undefined,
-      debug_canonical_user_id:
-        config.miniappLiveEnabled && config.wechatSessionEnabled
-          ? undefined
-          : activeSession.canonicalUserId,
-    });
-
-    if (order.wechat_pay_payload?.mode === "wechatpay") {
-      const host = resolveMiniappHostAdapter();
-      await host.requestPayment(order.wechat_pay_payload.request_payment_args);
-    }
-
-    await notifyMiniappWechatPayment({
-      order_id: order.order_id,
-      event: "paid",
-      payment_reference:
-        order.wechat_pay_payload?.mode === "wechatpay"
-          ? "miniapp-host-payment"
-          : "miniapp-stub-payment",
-    });
-    await reconcileMiniappOrder(order.order_id);
+    throw new Error(`Pro 购买暂未接入当前财富报告 API：${interpretationId}`);
   }
 
   async function handleChooseReportType(
@@ -442,31 +381,6 @@ export function MiniappRuntime({
           return;
         }
 
-        const resultCta = resolveSelfUnderstandingReportCta({
-          theme: draft.theme,
-          canUpgrade: Boolean(
-            flowState.report?.can_upgrade || flowState.status?.can_upgrade,
-          ),
-          hasProAccess: hasProReportAccess(flowState),
-          structured: getLiteStructuredReport(flowState.report),
-        });
-
-        if (
-          resultCta.intent === "open_pro_report" &&
-          flowState.interpretation?.interpretation_id
-        ) {
-          setDraft((current) =>
-            mergeMobileWebUploadDraft(current, { reportType: "pro" }),
-          );
-          setActiveRoute("loading");
-          return;
-        }
-
-        if (resultCta.intent === "open_report_entry") {
-          setActiveRoute("reportEntry");
-          return;
-        }
-
         setFlowState(null);
         setActiveRoute("upload");
       }}
@@ -506,9 +420,13 @@ export function MiniappRuntime({
       }}
       onHistoryOpenRecord={(interpretationId) => {
         void (async () => {
-          const nextRecord = await getInterpretation(interpretationId);
-          setRecord(nextRecord);
-          setActiveRoute("historyRecordDetail");
+          void interpretationId;
+          setHistoryStatusLabel("历史详情暂未接入当前报告 API");
+          setHistoryStatusDetail(
+            "小程序历史详情会在新 report_id 存储模型完成后重做。",
+          );
+          setRecord(null);
+          setActiveRoute("history");
         })();
       }}
       onHistoryRecordDetailBack={() => {

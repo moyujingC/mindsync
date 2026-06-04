@@ -1,0 +1,18 @@
+name: mvp-ci
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deprecated:
+    name: deprecated
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop Deprecated Workflow
+        run: |
+          echo "mvp-ci.yml has been retired." >&2
+          echo "Use .github/workflows/aimandala-ci.yml for the active Aimandala CI pipeline." >&2
+          exit 1

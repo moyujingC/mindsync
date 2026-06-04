@@ -18,8 +18,8 @@
 
 这些分别看：
 
-- [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
-- [company/项目与仓库映射.md](company/项目与仓库映射.md)
+- [company/Git仓库管理系统说明.md](./company/Git仓库管理系统说明.md)
+- [company/项目与仓库映射.md](./company/项目与仓库映射.md)
 
 ## 1. 一句话定义
 
@@ -149,8 +149,8 @@
 ## 7. 推荐搭配阅读
 
 - 仓库与 worktree 的总口径：
-  - [company/Git仓库管理系统说明.md](company/Git仓库管理系统说明.md)
+  - [company/Git仓库管理系统说明.md](./company/Git仓库管理系统说明.md)
 - 项目与历史仓库映射：
-  - [company/项目与仓库映射.md](company/项目与仓库映射.md)
+  - [company/项目与仓库映射.md](./company/项目与仓库映射.md)
 - 系统层解释：
-  - [company/knowledge-base/system/MindSync-设计机制分析.md](company/knowledge-base/system/MindSync-设计机制分析.md)
+  - [company/knowledge-base/system/MindSync-设计机制分析.md](./company/knowledge-base/system/MindSync-设计机制分析.md)

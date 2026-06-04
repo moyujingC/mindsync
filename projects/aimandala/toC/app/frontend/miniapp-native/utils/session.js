@@ -23,52 +23,18 @@ function readStoredSession() {
   }
 }
 
-function requestLoginCode() {
-  return new Promise((resolve, reject) => {
-    wx.login({
-      success(result) {
-        if (result && result.code) {
-          resolve(result.code);
-          return;
-        }
-        reject(new Error("wx.login 未返回可用 code"));
-      },
-      fail(error) {
-        reject(error);
-      },
-    });
-  });
+function createLocalSession(query) {
+  const debugUserId = normalizeValue(query && query.debugCanonicalUserId);
+  const token = Date.now().toString(36);
+  return {
+    canonicalUserId: debugUserId || `guest:miniapp:native:${token}`,
+    openId: normalizeValue(query && query.openId) || "miniapp-native-preview",
+    sessionId: null,
+    displayLabel: "小程序本地预览会话",
+  };
 }
 
-function exchangeSession(config, payload) {
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url: `${config.apiBaseUrl.replace(/\/$/, "")}/api/v2/miniapp/session/exchange`,
-      method: "POST",
-      header: {
-        "content-type": "application/json",
-      },
-      data: payload,
-      success(response) {
-        if (response.statusCode >= 400) {
-          reject(
-            new Error(
-              (response.data && response.data.detail) ||
-                "miniapp session exchange failed",
-            ),
-          );
-          return;
-        }
-        resolve(response.data);
-      },
-      fail(error) {
-        reject(error);
-      },
-    });
-  });
-}
-
-async function ensureMiniappSession(config, query) {
+async function ensureMiniappSession(_config, query) {
   const queryUserId = normalizeValue(query && query.userId);
   const queryOpenId = normalizeValue(query && query.openId);
   if (queryUserId && queryOpenId) {
@@ -87,18 +53,7 @@ async function ensureMiniappSession(config, query) {
     return stored;
   }
 
-  const code = await requestLoginCode();
-  const response = await exchangeSession(config, {
-    code,
-    debug_canonical_user_id:
-      normalizeValue(query && query.debugCanonicalUserId) || null,
-  });
-  const session = {
-    canonicalUserId: response.canonical_user_id,
-    openId: response.open_id,
-    sessionId: response.session_id || null,
-    displayLabel: response.display_label || "微信已绑定会话",
-  };
+  const session = createLocalSession(query);
   persistSession(session);
   return session;
 }

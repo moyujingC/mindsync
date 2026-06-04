@@ -59,13 +59,13 @@ export function SharedUploadDetectionCard({
   return (
     <article className="am-card mw-card">
       <div className="am-card__header mw-card__header">
-        <h3>{section?.title || "三圈检测"}</h3>
+        <h3>{section?.title || "三圈人工确认"}</h3>
         <span className="am-badge mw-badge">
-          {detection ? "已生成建议" : isDetecting ? "检测中" : "等待检测"}
+          {detection ? "已确认" : isDetecting ? "确认中" : "等待确认"}
         </span>
       </div>
 
-      <p>{section?.description || "等待调用 detect-circles 获取三圈建议。"}</p>
+      <p>{section?.description || "请在画作上手动调整内中圈和中外圈边界。"}</p>
 
       {!detection ? (
         <button
@@ -74,7 +74,7 @@ export function SharedUploadDetectionCard({
           onClick={onPreviewDetect}
           disabled={isDetecting}
         >
-          {isDetecting ? "正在检测..." : "触发三圈检测"}
+          {isDetecting ? "正在确认..." : "使用当前三圈"}
         </button>
       ) : null}
 
@@ -93,7 +93,7 @@ export function SharedUploadDetectionCard({
             <strong>{Math.round(detection.middle_radius * 100)}%</strong>
           </article>
           <article className="am-card am-card--metric mw-metric-card">
-            <span>识别方法</span>
+            <span>确认来源</span>
             <strong>{detection.method}</strong>
           </article>
         </div>
@@ -114,7 +114,7 @@ export function SharedUploadDraftSummaryCard({
   return (
     <article className="am-card mw-card">
       <div className="am-card__header mw-card__header">
-        <h3>{section?.title || "主题与补充信息"}</h3>
+        <h3>{section?.title || "议题与补充信息"}</h3>
       </div>
       <p>{section?.description}</p>
       <dl className="mw-field-list">

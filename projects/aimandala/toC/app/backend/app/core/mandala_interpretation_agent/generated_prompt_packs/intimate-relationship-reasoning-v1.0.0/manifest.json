@@ -1,0 +1,44 @@
+{
+  "pack_id": "intimate-relationship-reasoning-v1.0.0",
+  "topic_key": "intimate-relationship",
+  "topic_label": "亲密关系",
+  "topic_root": "aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/20-亲密关系",
+  "app_adaptation_root": "aimandala/docs/疗愈体系知识库/30-应用适配/10-aimandala",
+  "file_order": [
+    "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/01-基础信号亲密关系翻译总表.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/02-报告路由位置说明.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/03-颜色亲密关系翻译表.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/04-形状亲密关系翻译表.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/05-跨圈状态亲密关系翻译表.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/06-组合模式亲密关系翻译表.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/10-亲密关系翻译层/README.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/11-亲密关系议题手册.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/12-亲密关系中的背景线索回译规则.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/13-下一次探索建议映射表.md",
+    "10-议题层/30-主议题报告包/20-亲密关系/README.md",
+    "30-应用适配/10-aimandala/01-解读与个案沟通流程.md",
+    "30-应用适配/10-aimandala/02-解读报告组织规范.md",
+    "30-应用适配/10-aimandala/03-解读报告生成最小规则.md",
+    "30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md",
+    "30-应用适配/10-aimandala/05-报告任务定义.md",
+    "30-应用适配/10-aimandala/06b-亲密关系议题解读报告模板.md",
+    "30-应用适配/10-aimandala/07-报告语言风格指南.md"
+  ],
+  "file_count": 18,
+  "char_count": 45466,
+  "pack_hash": "c1d9363917ba7d46b6b233f4b36b1a7d805fd343b77f69112b4a620008a0258f",
+  "build_mode": "generated",
+  "prompt_budget": {
+    "estimator": "tiktoken:cl100k_base",
+    "context_limit_tokens": 1000000,
+    "estimated_tokens": 37138,
+    "remaining_tokens": 962862,
+    "usage_ratio": 0.0371,
+    "usage_percent": 3.71,
+    "warning_level": "none",
+    "warning_thresholds": {
+      "soft_warning_ratio": 0.5,
+      "hard_warning_ratio": 0.8
+    }
+  }
+}

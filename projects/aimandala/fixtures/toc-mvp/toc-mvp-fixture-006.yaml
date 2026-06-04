@@ -1,0 +1,39 @@
+id: toc-mvp-fixture-006
+status: current
+owner: Test / QA
+scope: To C MVP
+theme: general
+fixture_type: vision-stability
+asset_ref:
+  kind: image-asset
+  asset_path: fixtures/toc-mvp/assets/IMG_5067.jpeg
+  evidence_path: fixtures/toc-mvp/evidence/toc-mvp-fixture-006.md
+  note: 视觉模型稳定性评测扩展样本
+input:
+  user_profile: qa-fixture-user-006
+  image_path: fixtures/toc-mvp/assets/IMG_5067.jpeg
+  image_label: 脱敏稳定性评测画作 006
+  painting_intention: 观察画面结构与三圈边界
+  painting_feeling: 保持开放观察
+  expected_report_version: lite
+execution:
+  create_twice: false
+  upgrade_to_pro: false
+validation:
+  report_version: lite
+  existing_on_repeat: false
+  fallback_used: false
+  warning_ids: []
+  required_structured_fields:
+    - center_observation
+    - circle_boundaries
+    - dominant_colors
+    - structure_notes
+    - risk_flags
+    - confidence
+coverage:
+  - VISION-STABILITY
+expected_observations:
+  - 可用于视觉模型三圈边界、颜色和结构观察稳定性对比
+review_entrypoints:
+  - projects/aimandala/toC/app/backend/scripts/run_mandala_e2e_report_fixture.py

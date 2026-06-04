@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "failure_ids": [],
+  "details": {
+    "leaked_terms": [],
+    "cross_circle_leaked_terms": []
+  }
+}

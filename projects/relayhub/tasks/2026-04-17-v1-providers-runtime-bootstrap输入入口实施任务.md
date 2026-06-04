@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers Runtime Bootstrap 输入入口实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-runtime-bootstrap输入入口实施任务.md
+
 ## 目标
 
 在 services 层为 `ProvidersRuntimeBootstrap` 新增正式 bootstrap 输入入口，把直接传 `sourceFactoryOptions` 的方式收束成单一 input 对象，同时保持默认 mock 行为与现有 options 注入兼容。

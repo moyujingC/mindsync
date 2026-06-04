@@ -28,8 +28,30 @@ fi
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 VENV_ROOT="${MINDSYNC_CI_VENV_ROOT:-$HOME/.cache/mindsync-ci/python}"
 PIP_CACHE_DIR="${PIP_CACHE_DIR:-$HOME/.cache/pip}"
+PIP_DEFAULT_TIMEOUT="${PIP_DEFAULT_TIMEOUT:-120}"
+PIP_RETRIES="${PIP_RETRIES:-10}"
+CI_INSTALL_RETRIES="${CI_INSTALL_RETRIES:-3}"
 
 mkdir -p "$VENV_ROOT" "$PIP_CACHE_DIR"
+
+run_pip_install() {
+  local attempt=1
+  local max_attempts="$CI_INSTALL_RETRIES"
+
+  while (( attempt <= max_attempts )); do
+    if "$@"; then
+      return 0
+    fi
+
+    if (( attempt == max_attempts )); then
+      return 1
+    fi
+
+    echo "[ci] pip install failed on attempt ${attempt}/${max_attempts}; retrying in $((attempt * 5))s" >&2
+    sleep $((attempt * 5))
+    attempt=$((attempt + 1))
+  done
+}
 
 HASH_INPUT_FILE="$(mktemp)"
 cleanup() {
@@ -62,8 +84,16 @@ else
   "$PYTHON_BIN" -m venv "$TMP_VENV_DIR"
   export PIP_DISABLE_PIP_VERSION_CHECK=1
   export PIP_CACHE_DIR
-  "$TMP_VENV_DIR/bin/python" -m pip install --upgrade pip setuptools wheel
-  "$TMP_VENV_DIR/bin/python" -m pip install -r "$REQUIREMENTS_FILE" "${EXTRA_PACKAGES[@]}"
+  export PIP_DEFAULT_TIMEOUT
+  export PIP_RETRIES
+  run_pip_install "$TMP_VENV_DIR/bin/python" -m pip install \
+    --timeout "$PIP_DEFAULT_TIMEOUT" \
+    --retries "$PIP_RETRIES" \
+    --upgrade pip setuptools wheel
+  run_pip_install "$TMP_VENV_DIR/bin/python" -m pip install \
+    --timeout "$PIP_DEFAULT_TIMEOUT" \
+    --retries "$PIP_RETRIES" \
+    -r "$REQUIREMENTS_FILE" "${EXTRA_PACKAGES[@]}"
   touch "$TMP_VENV_DIR/.ready"
   rm -rf "$VENV_DIR"
   mv "$TMP_VENV_DIR" "$VENV_DIR"

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package version="2.0" unique-identifier="uid" xmlns="http://www.idpf.org/2007/opf">
+  <metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:dcterms="http://purl.org/dc/terms/">
+    <dc:identifier id="uid">0</dc:identifier>
+    <dc:title>59383</dc:title>
+    <dc:creator opf:role="aut">王铮</dc:creator>
+    <dc:language>zh-CN</dc:language>
+    <dc:date opf:event="">2022-07-01</dc:date>
+    <dc:publisher>人民邮电出版社</dc:publisher>
+    <dc:description>格式塔心理咨询理论与实践</dc:description>
+    <dc:subject>心理咨询</dc:subject>
+    <dc:type>EPUB</dc:type>
+    <dc:date opf:event="modification">2022-08-18</dc:date>
+    <meta name="cover" content="cover_jpg" />
+    <dc:source>1</dc:source>
+    <meta content="0.9.7" name="Sigil version" />
+  </metadata>
+  <manifest>
+    <item id="copyright1.xhtml" href="Text/copyright1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter001.xhtml" href="Text/Chapter001.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter002.xhtml" href="Text/Chapter002.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter003.xhtml" href="Text/Chapter003.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter004.xhtml" href="Text/Chapter004.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter005.xhtml" href="Text/Chapter005.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter006.xhtml" href="Text/Chapter006.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter007.xhtml" href="Text/Chapter007.xhtml" media-type="application/xhtml+xml"/>
+    <item id="Chapter008.xhtml" href="Text/Chapter008.xhtml" media-type="application/xhtml+xml"/>
+    <item id="copyright.xhtml" href="Text/copyright.xhtml" media-type="application/xhtml+xml"/>
+    <item id="cover_jpg" href="Images/cover.jpg" media-type="image/jpeg"/>
+    <item id="cover.xhtml" href="Text/cover.xhtml" media-type="application/xhtml+xml"/>
+    <item id="css_Style111_css" href="Styles/Style111.css" media-type="text/css"/>
+    <item id="Images_59383-0085-85_217_599_790_920_jpg" href="Images/59383-0085-85_217_599_790_920.jpg" media-type="image/jpeg"/>
+    <item id="Images_59383-0096-96_184_120_832_653_jpg" href="Images/59383-0096-96_184_120_832_653.jpg" media-type="image/jpeg"/>
+    <item id="Images_59383-0104-104_0268_jpg" href="Images/59383-0104-104_0268.jpg" media-type="image/jpeg"/>
+    <item id="Images_59383-0121-121_0304_jpg" href="Images/59383-0121-121_0304.jpg" media-type="image/jpeg"/>
+    <item id="Images_59383-0141-141_204_483_796_811_jpg" href="Images/59383-0141-141_204_483_796_811.jpg" media-type="image/jpeg"/>
+    <item id="Images_59383-0188-188_0455_jpg" href="Images/59383-0188-188_0455.jpg" media-type="image/jpeg"/>
+    <item id="titlepage_xhtml" href="Text/titlepage.xhtml" media-type="application/xhtml+xml"/>
+    <item id="toc_ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+    <item id="sgc-toc.css" href="Styles/sgc-toc.css" media-type="text/css"/>
+    <item id="toc.xhtml" href="Text/toc.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine toc="toc_ncx">
+    <itemref idref="cover.xhtml"/>
+    <itemref idref="titlepage_xhtml"/>
+    <itemref idref="copyright.xhtml"/>
+    <itemref idref="toc.xhtml"/>
+    <itemref idref="copyright1.xhtml"/>
+    <itemref idref="Chapter001.xhtml"/>
+    <itemref idref="Chapter002.xhtml"/>
+    <itemref idref="Chapter003.xhtml"/>
+    <itemref idref="Chapter004.xhtml"/>
+    <itemref idref="Chapter005.xhtml"/>
+    <itemref idref="Chapter006.xhtml"/>
+    <itemref idref="Chapter007.xhtml"/>
+    <itemref idref="Chapter008.xhtml"/>
+  </spine>
+  <guide>
+    <reference type="toc" title="目录" href="Text/toc.xhtml"/>
+  </guide>
+</package>

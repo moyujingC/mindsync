@@ -1,0 +1,32 @@
+{
+  "agent_version": "mandala-interpretation-agent-v1",
+  "report_mode": "lite",
+  "image": {
+    "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5063.jpeg",
+    "storage_backend": "",
+    "storage_key": ""
+  },
+  "user_context": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "painting_intention": "想看自己的价值表达和现实交换哪里卡住。",
+    "painting_feeling": ""
+  },
+  "circle_boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "manual_regression_default"
+  },
+  "knowledge_pack": {
+    "pack_id": "mandala-interpretation-agent-compact",
+    "theme": "wealth",
+    "method_source": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-画面信号映射审核与结构化计划.md"
+  },
+  "output_requirements": {
+    "language": "zh-CN",
+    "audience": "普通用户",
+    "tone": "温和、具体、有解读感",
+    "forbidden_terms": []
+  }
+}

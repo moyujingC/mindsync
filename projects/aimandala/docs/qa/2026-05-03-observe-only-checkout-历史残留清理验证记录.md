@@ -1,13 +1,13 @@
 # Observe-only Checkout 历史残留清理验证记录
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-05-03
 > source_of_truth：projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-历史残留清理验证记录.md
 > 项目：aimandala
 > 阶段：verification
-> depends_on：projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md
+> depends_on：projects/aimandala/docs/runbooks/observe-only-checkout-治理-runbook.md
 > depends_on：projects/aimandala/docs/qa/2026-05-03-observe-only-checkout-治理-qa-basis.md
 
 ## 1. 当前验证结论

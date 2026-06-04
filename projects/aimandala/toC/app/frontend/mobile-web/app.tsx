@@ -6,11 +6,11 @@ import { MobileWebHistoryPage } from "./page-shells/history-page";
 import { MobileWebHistoryRecordDetailPage } from "./page-shells/history-record-detail-page";
 import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
-import { MobileWebLegacyReportPage } from "./page-shells/report-page-legacy";
 import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
 import type { MobileWebRouteId } from "./routes";
 import type {
+  DetectCirclesResponse,
   InterpretationListQuery,
   InterpretationRecordResponse,
   InterpretationVersion,
@@ -26,6 +26,7 @@ export interface MobileWebAppProps {
   route: MobileWebRouteId;
   uploadDraft?: MobileWebUploadDraft;
   flowState?: MandalaFlowState;
+  detection?: DetectCirclesResponse | null;
   records?: InterpretationRecordResponse[];
   historyQuery?: InterpretationListQuery;
   record?: InterpretationRecordResponse;
@@ -42,11 +43,13 @@ export interface MobileWebAppProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  uploadErrorMessage?: string | null;
   onLandingStart?: () => void;
   onLandingOpenHistory?: () => void;
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onUploadContinue?: () => void;
   onUploadBack?: () => void;
+  isUploading?: boolean;
   onReportEntryBack?: () => void;
   onReportEntryChooseReportType?: (reportType: MobileWebReportProductType) => void;
   onLoadingLeaveLater?: () => void;
@@ -54,6 +57,9 @@ export interface MobileWebAppProps {
   onReportSecondaryAction?: () => void;
   onReportBackAction?: () => void;
   reportPrimaryDisabled?: boolean;
+  reportPrimaryLabel?: string;
+  reportSecondaryLabel?: string;
+  reportFooterHint?: string;
   onHistoryBackToUpload?: () => void;
   onHistoryFilterChange?: (filter: HistoryFilterId) => void;
   onHistoryThemeChange?: (theme?: string) => void;
@@ -68,6 +74,7 @@ export function MobileWebApp({
   route,
   uploadDraft,
   flowState,
+  detection = null,
   records = [],
   historyQuery,
   record,
@@ -84,17 +91,22 @@ export function MobileWebApp({
   environmentLabel,
   environmentDetail,
   environmentTone,
+  uploadErrorMessage = null,
   onLandingStart,
   onLandingOpenHistory,
   onUploadDraftChange,
   onUploadContinue,
   onUploadBack,
+  isUploading = false,
   onReportEntryBack,
   onReportEntryChooseReportType,
   onLoadingLeaveLater,
   onReportPrimaryAction,
   onReportSecondaryAction,
   reportPrimaryDisabled = false,
+  reportPrimaryLabel,
+  reportSecondaryLabel,
+  reportFooterHint,
   onHistoryBackToUpload,
   onHistoryFilterChange,
   onHistoryThemeChange,
@@ -120,9 +132,12 @@ export function MobileWebApp({
       return (
         <MobileWebUploadPage
           draft={uploadDraft}
+          detection={detection}
           environmentLabel={environmentLabel}
           environmentDetail={environmentDetail}
           environmentTone={environmentTone}
+          isUploading={isUploading}
+          errorMessage={uploadErrorMessage}
           onDraftChange={onUploadDraftChange}
           onContinue={onUploadContinue}
           onBack={onUploadBack}
@@ -137,6 +152,7 @@ export function MobileWebApp({
         <MobileWebReportEntryPage
           draft={uploadDraft}
           onBack={onReportEntryBack}
+          onDraftChange={onUploadDraftChange}
           onChooseReportType={onReportEntryChooseReportType}
         />
       );
@@ -170,24 +186,9 @@ export function MobileWebApp({
           onPrimaryAction={onReportPrimaryAction}
           onSecondaryAction={onReportSecondaryAction}
           primaryDisabled={reportPrimaryDisabled}
-        />
-      );
-
-    case "reportLegacy":
-      if (!flowState) {
-        return "Missing flow state";
-      }
-      return (
-        <MobileWebLegacyReportPage
-          route={route}
-          state={flowState}
-          uploadDraft={uploadDraft}
-          environmentLabel={environmentLabel}
-          environmentDetail={environmentDetail}
-          environmentTone={environmentTone}
-          onPrimaryAction={onReportPrimaryAction}
-          onSecondaryAction={onReportSecondaryAction}
-          primaryDisabled={reportPrimaryDisabled}
+          primaryLabel={reportPrimaryLabel}
+          secondaryLabel={reportSecondaryLabel}
+          footerHint={reportFooterHint}
         />
       );
 

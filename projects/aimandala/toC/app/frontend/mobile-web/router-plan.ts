@@ -1,4 +1,3 @@
-import { getInterpretation } from "../shared/api";
 import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUploadPage } from "./loaders";
 import { resolveMobileWebCanonicalUserId } from "./identity";
 import type { MobileWebAppProps } from "./app";
@@ -43,7 +42,6 @@ export type MobileWebRouteInput =
   | { route: "reportEntry"; params: UploadRouteInput }
   | { route: "loading"; params: LiteReportRouteInput }
   | { route: "report"; params: ExistingReportRouteInput }
-  | { route: "reportLegacy"; params: ExistingReportRouteInput }
   | { route: "history"; params: HistoryRouteInput }
   | { route: "historyRecordDetail"; params: HistoryRecordDetailRouteInput };
 
@@ -98,15 +96,6 @@ export async function resolveMobileWebRouteProps(
       };
     }
 
-    case "reportLegacy": {
-      const report = await loadExistingReportPage(input.params.interpretationId);
-      return {
-        route: "reportLegacy",
-        flowState: report.state,
-        uploadDraft: input.params.uploadDraft,
-      };
-    }
-
     case "history": {
       const userId = resolveMobileWebCanonicalUserId(input.params);
       if (!userId) {
@@ -125,12 +114,9 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "historyRecordDetail": {
-      const record = await getInterpretation(input.params.interpretationId);
-      return {
-        route: "historyRecordDetail",
-        record,
-        uploadDraft: input.params.uploadDraft,
-      };
+      throw new Error(
+        `历史记录详情暂未接入当前财富报告 API：${input.params.interpretationId}`,
+      );
     }
 
   }
@@ -143,5 +129,5 @@ function assertNever(input: never): never {
 }
 
 export function isReportLikeRoute(route: MobileWebRouteId): boolean {
-  return route === "loading" || route === "report" || route === "reportLegacy";
+  return route === "loading" || route === "report";
 }

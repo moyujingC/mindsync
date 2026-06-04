@@ -1,29 +1,34 @@
 # Mobile Web
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/app/frontend/mobile-web/README.md
+
+
 这里放 `一镜一梳` 当前手机端 Web 版的实现入口。
 
 当前这里已经恢复了 mobile-web 的页面层、运行时层和浏览器宿主层，但默认仍应按下面方式接共享层：
 
 - 从 `../shared/types` 读取 DTO 和流程类型
-- 从 `../shared/api` 调用当前 `V2` 后端接口
+- 从 `../shared/api` 调用当前财富报告后端入口
 - 从 `../shared/core` 读取流程状态与纯函数
 
 当前建议的接入顺序：
 
 1. 上传页
    - 选择图片
-   - 调用 `detect-circles`
+   - 手动确认三圈边界
 2. 加载页
-   - 调用 `createInterpretation`
-   - 轮询 `status`
+   - 调用 `createWealthReport`
+   - 等待 `/api/wealth-reports` 返回财富报告
 3. Lite 结果页
-   - 调用 `report`
    - 渲染结构化 Lite 字段
 4. 历史页
-   - 调用用户历史列表
+   - 后续按新 report_id 存储模型重做
 5. Upgrade 页
-   - 当前已走真实 `upgrade + report(version=pro)` 最小闭环
-   - 正式生成链路已切到当前 prompt/schema 主干，可继续围绕内容质量迭代
+   - 后续围绕当前财富报告能力重新接入
 
 当前不建议在这里直接复制历史前端结构，而是优先按共享层边界重组。
 
@@ -274,7 +279,7 @@
 - 开发辅助层默认可折叠，不作为正式产品界面的一部分
 - 手机页面内会直接标明当前是“本地预览模式”还是“联调运行时”
 - history 页会额外标明当前展示的是“真实记录”还是“占位记录”
-- history 列表项现在会在打开记录时进入受控禁用态，并提示当前正在读取真实状态后再跳转到 `loading / Lite / Pro`
+  - history 列表项现在会在打开记录时进入受控禁用态，并提示当前正在读取真实状态后再跳转到 `loading / report`
 - history descriptor 现在会把原始 `status / generation_stage / progress` 收口成更接近用户语义的状态标签、阶段说明与可读时间
 - history 打开已有 `Lite + Pro` 记录时会直接读取 Pro 报告，不再额外触发 upgrade 或绕回 Lite
 
@@ -288,8 +293,8 @@
    - 先选图
    - 支持浏览器原生选图
    - 支持本地缩略预览
-   - 支持模拟三圈检测结果
-   - 只有检测完成后才能继续
+   - 支持手动调整并确认三圈边界
+   - 只有三圈边界确认后才能继续
 2. loading 页
    - 已有进度条和阶段列表
    - 已开始按受控节奏自动轮询真实 `status`
@@ -317,7 +322,7 @@
 
 当前这些动作不再是纯占位：
 
-- 上传页的 `detect-circles` 已开始支持真实接口触发
+- 上传页的三圈边界已切为用户手动调整，不再依赖 `detect-circles` 才能继续
 - 浏览器原生选图已开始先换成后端本地临时 `image_path`
 - 上传页摘要区已开始展示 `storage_backend / storage_key / image_url / image_local_expires_at`
 - 预览壳里的 Lite 主路径已开始尝试真实 `create + status + report`
@@ -327,11 +332,11 @@
 - history 列表查询已开始统一收口到 `historyQuery`，为后续扩展 `theme / limit` 留出稳定接口面
 - history 页主题筛选已开始进入页面层，不再只是后端预留字段
 - history 页显示数量切换已开始进入页面层，不再只是查询参数占位
-- history 列表项已开始能回到 loading / Lite / Pro，而不再只是停在信息展示
+- history 列表项已开始能回到 loading / report，而不再只是停在信息展示
 - history 列表项已开始直接提示当前记录版本是 `Lite` 还是 `Lite + Pro`
 - history 列表项已开始直接打开已有 Pro 报告，而不再重复触发 Lite 刷新
 - 正式 `MobileWebRuntime` 已补上与预览壳一致的 loading 自动推进与 report 最小动作回路
-- 正式 `MobileWebRuntime` 的 upload 页已补上页面内 draft 编辑、三圈检测与继续进入 loading 的动作
+- 正式 `MobileWebRuntime` 的 upload 页已补上页面内 draft 编辑、三圈人工确认与继续进入 loading 的动作
 - Lite / Pro richer structured report 已开始贯通到 mobile-web 页面壳，而不再只依赖 markdown 正文
 - report 页在 structured 卡片可用时，已开始优先走卡片阅读顺序，减少与原始正文的重复信息
 - report 页现在会显示 `prompt_schema_validation_issues` 的结构校验状态，方便联调时快速定位缺字段
@@ -348,7 +353,7 @@
 
 - 已迁入并可重复联调：
   - 上传选图与上传对象换路径
-  - 三圈检测
+  - 三圈人工确认
   - Lite `create + status + report`
   - `existing` 复用提示
   - 历史记录加载、筛选、回到 `loading / Lite / Pro`

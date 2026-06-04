@@ -1,0 +1,32 @@
+{
+  "agent_version": "mandala-interpretation-agent-v1",
+  "report_mode": "lite",
+  "image": {
+    "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5062.jpeg",
+    "storage_backend": "",
+    "storage_key": ""
+  },
+  "user_context": {
+    "theme": "general",
+    "theme_label": "全面解读",
+    "painting_intention": "再次验证相同输入是否复用",
+    "painting_feeling": "保持不变"
+  },
+  "circle_boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "manual"
+  },
+  "knowledge_pack": {
+    "pack_id": "mandala-interpretation-agent-v1-compact",
+    "theme": "general",
+    "method_source": "projects/aimandala/docs/疗愈体系知识库/10-参考来源索引/00-原始来源存档/知识库构建/三圈五行流派解读方法与步骤.md"
+  },
+  "output_requirements": {
+    "language": "zh-CN",
+    "audience": "普通用户",
+    "tone": "温和、具体、有解读感",
+    "forbidden_terms": []
+  }
+}

@@ -22,7 +22,7 @@ const flowState: MandalaFlowState = {
       inner_radius: 0.28,
       middle_radius: 0.63,
     },
-    auto_detected: true,
+    auto_detected: false,
     existing: false,
     report_ready: true,
   },
@@ -37,7 +37,7 @@ const flowState: MandalaFlowState = {
       inner_radius: 0.28,
       middle_radius: 0.63,
     },
-    auto_detected: true,
+    auto_detected: false,
     can_upgrade: true,
   },
   report: {
@@ -46,46 +46,11 @@ const flowState: MandalaFlowState = {
     title: "Lite 解读报告",
     overall_impression: "你正在把注意力收回自己身上。",
     structured: {
-      topic_context: {
-        topic: "intimate_relationship",
-        topic_label: "亲密关系",
-        report_mode: "lite",
-        orientation: {
-          intro: "这份报告会从亲密关系这个议题角度看这张画。",
-          focus: "这个议题通常关注靠近、边界、安全感和依恋模式。",
-          key_terms: [
-            {
-              term: "安全感",
-              explanation: "你在关系中能否感到自己可以被接住。",
-            },
-          ],
-        },
-      },
-      current_reading: "你最近更想先稳住自己，再决定要不要继续靠近。",
-      visual_basis: "中心颜色更浓，外围线条更轻。",
-      pattern_interpretation: "你会先有表达冲动，随后又迅速回撤；这样能先保住安全感。",
-      life_connection: "关系要更进一步时会想暂停一下，会让对方感到你忽近忽远。",
-      lite_healing_guidance: {
-        directions: [
-          {
-            title: "轻量调节方向",
-            content: "先让自己慢一点，再决定要不要继续靠近。",
-          },
-        ],
-        micro_practices: [
-          {
-            title: "一句小练习",
-            content: "先把真实感受说出一句就好。",
-          },
-        ],
-      },
-      pro_report_entry: {
-        title: "另一份更深的独立报告",
-        summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
-        product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
-      },
+      title: "Lite 解读报告",
+      summary: "你正在把注意力收回自己身上。",
+      report_mode: "lite",
     },
-    report: null,
+    report: "# Lite 解读报告\n\n你正在把注意力收回自己身上。",
     ai_qa_context: null,
     can_upgrade: true,
     upgrade_price: 39,
@@ -97,7 +62,7 @@ const flowState: MandalaFlowState = {
 const historyRecord: InterpretationRecordResponse = {
   interpretation_id: "ipt-history-1",
   user_id: "demo-user",
-  theme: "general",
+  theme: "wealth",
   status: "processing",
   generation_stage: "generating_lite",
   generation_progress: 52,
@@ -106,7 +71,7 @@ const historyRecord: InterpretationRecordResponse = {
     inner_radius: 0.3,
     middle_radius: 0.62,
   },
-  auto_detected: true,
+  auto_detected: false,
   can_upgrade: false,
   created_at: "2026-04-11T08:00:00.000Z",
   upgrade_history: [
@@ -124,8 +89,8 @@ describe("MobileWebApp", () => {
     const html = renderToStaticMarkup(<MobileWebApp route="landing" />);
 
     expect(html).toContain("画出你的潜意识");
-    expect(html).toContain("AI 解读曼陀罗画作  ·  探索内心世界");
-    expect(html).toContain("融合阴阳五行三才的东方解读视角");
+    expect(html).toContain("AI解读曼陀罗画作 · 探索内心世界");
+    expect(html).toContain("来自东方的五行智慧");
     expect(html).toContain("开始体验");
     expect(html).toContain("历史解读");
     expect(html).toContain("滑动了解详情");
@@ -138,41 +103,70 @@ describe("MobileWebApp", () => {
         flowState={flowState}
         uploadDraft={{
           imagePath: "/tmp/sample.png",
-          theme: "intimate_relationship",
+          theme: "wealth",
           paintingIntention: "",
           paintingFeeling: "",
         }}
       />,
     );
 
-    expect(html).toContain("你最近更想先稳住自己，再决定要不要继续靠近。");
-    expect(html).toContain("阅读路径：议题理解 · 当前命中 · 画面依据 · 模式解释 · 现实连接 · 轻量疗愈");
-    expect(html).not.toContain("<h3>整体命中</h3>");
-    expect(html).toContain("模式解释");
-    expect(html).toContain("议题理解");
-    expect(html).toContain("看看另一份更深的 Pro 报告");
-    expect(html).toContain("更深层结构继续理解这张画");
+    expect(html).toContain("这份报告已经按新版解读链路生成");
+    expect(html).toContain("阅读路径：Lite 解读报告");
+    expect(html).toContain("重新上传画作");
   });
 
-  it("reportLegacy 仍保留旧报告页壳", () => {
+  it("report 主路由默认不渲染追问入口", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
-        route="reportLegacy"
+        route="report"
         flowState={flowState}
         uploadDraft={{
           imagePath: "/tmp/sample.png",
-          theme: "intimate_relationship",
+          theme: "wealth",
           paintingIntention: "",
           paintingFeeling: "",
         }}
       />,
     );
 
-    expect(html).toContain("Lite版基础解读");
-    expect(html).toContain("保存报告");
+    expect(html).not.toContain("对这份报告有疑问，可以问曼曼");
+    expect(html).not.toContain("输入你想继续追问的报告问题");
   });
 
-  it("loading 路由在 Pro 等待中明确提示可去历史记录查看", () => {
+  it("report 错误态不渲染正文占位和上传调试信息", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="report"
+        flowState={{
+          ...flowState,
+          step: "error",
+          report: null,
+          lastError: "报告生成需要先配置可用的优惠券或兑换码。",
+        }}
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          paintingIntention: "",
+          paintingFeeling: "",
+          uploadAsset: {
+            runtimeImagePath: "/tmp/runtime.png",
+            storageBackend: "local",
+            storageKey: "uploads/sample.png",
+          },
+        }}
+        environmentLabel="当前为联调运行时"
+      />,
+    );
+
+    expect(html).toContain("报告暂未生成");
+    expect(html).toContain("当前流程有异常");
+    expect(html).toContain("报告生成需要先配置可用的优惠券或兑换码。");
+    expect(html).not.toContain("报告内容待补齐");
+    expect(html).not.toContain("调试信息");
+    expect(html).not.toContain("运行时图片路径");
+  });
+
+  it("loading 路由在 Pro 等待中不再提示后台历史入口", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="loading"
@@ -195,7 +189,7 @@ describe("MobileWebApp", () => {
         }}
         uploadDraft={{
           imagePath: "/tmp/sample.png",
-          theme: "general",
+          theme: "wealth",
           reportType: "pro",
           reportVariant: "pro",
           paintingIntention: "",
@@ -204,9 +198,10 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("Pro 解读会继续在后台生成");
-    expect(html).toContain("历史页也会自动刷新，并支持你手动立即刷新");
-    expect(html).toContain("稍后去历史记录查看");
+    expect(html).toContain("Pro 版完整解读");
+    expect(html).toContain("正在生成基础线索，随后展开 Pro 深度分析");
+    expect(html).not.toContain("Pro 解读会继续在后台生成");
+    expect(html).not.toContain("稍后去历史记录查看");
   });
 
   it("history 路由会渲染刷新提示与生成中的阶段进度", () => {
@@ -214,7 +209,7 @@ describe("MobileWebApp", () => {
       <MobileWebApp
         route="history"
         records={[historyRecord]}
-        historyQuery={{ filter: "pending", limit: 20, theme: "general" }}
+        historyQuery={{ filter: "pending", limit: 20, theme: "wealth" }}
         historyStatusLabel="Pro 解读仍在生成中"
         historyStatusDetail="你已经离开等待页，系统会继续在后台生成。"
         historyStatusTone="runtime"

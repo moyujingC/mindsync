@@ -34,6 +34,7 @@ secrets/
 node_modules/
 projects/relayhub/console/dist/
 projects/relayhub/control-plane/data/
+projects/aimandala/toC/app/backend/data/
 
 # Python cache
 __pycache__/

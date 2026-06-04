@@ -99,7 +99,7 @@ export function UploadAssetCard({
         <span className="mw-upload-dropzone__icon">+</span>
         <strong>{hasImage ? "重新选择一张画作" : "选择一张曼陀罗画作"}</strong>
         <small>
-          当前先接浏览器原生选图，后续再把文件对象和上传接口正式串起来。
+          浏览器选图会保留本地预览，生成报告前会上传到后端并换成运行时可读取的图片路径。
         </small>
       </button>
 
@@ -133,7 +133,7 @@ export function UploadAssetCard({
       <div className="mw-upload-hint">
         <span>当前文件</span>
         <strong>{imagePath || "尚未选择文件"}</strong>
-        <small>浏览器选图会先回填为 `browser-file:文件名`，后续再换成后端可复用的真实图片路径。</small>
+        <small>本地文件会在点击生成报告后上传，成功后摘要区会展示存储后端、对象 key 和远程 URL。</small>
         {imagePath.startsWith("browser-file:") ? null : (
           <small>如果已经换到运行时路径，下面的摘要区会展示存储后端、对象 key 和远程 URL。</small>
         )}
@@ -169,7 +169,7 @@ export function UploadFormCard({
         </label>
 
         <label className="mw-form-field">
-          <span>解读主题</span>
+          <span>解读议题</span>
           <input
             value={draft.theme}
             onChange={(event) => {
@@ -177,7 +177,7 @@ export function UploadFormCard({
                 theme: event.target.value,
               });
             }}
-            placeholder="general"
+            placeholder="wealth"
           />
         </label>
 

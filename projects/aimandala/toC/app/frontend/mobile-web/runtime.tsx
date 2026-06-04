@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
-
-const DEFAULT_INNER_RADIUS = 0.35;
-const DEFAULT_MIDDLE_RADIUS = 0.65;
+import { useEffect, useRef, useState } from "react";
 
 import { MobileWebApp } from "./app";
 import { resolveMobileWebCanonicalUserId } from "./identity";
@@ -14,17 +11,14 @@ import {
 import type { MobileWebAppProps } from "./app";
 import {
   pollMobileWebReportUntilReady,
-  runMobileWebLiteFlow,
+  runMobileWebReportFlow,
   refreshMobileWebReport,
 } from "./controller";
 import { ensureUploadedImagePath } from "./upload-runtime";
 import {
   applyDetection,
   getGenerationPresentation,
-  getLiteStructuredReport,
-  hasProReportAccess,
   initialMandalaFlowState,
-  resolveSelfUnderstandingReportCta,
   selectImage,
 } from "../shared/core";
 import type {
@@ -42,13 +36,24 @@ import {
   type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "./state";
-import type { MobileWebRuntimeDebugSnapshot } from "./debug-observer";
 
 export interface MobileWebRouteLoaderState {
   loading: boolean;
   error: string | null;
   props: MobileWebAppProps | null;
 }
+
+type MobileWebRuntimePhase =
+  | "idle"
+  | "uploading_image"
+  | "building_request"
+  | "requesting_report"
+  | "waiting_report"
+  | "report_ready"
+  | "failed";
+
+const DEFAULT_INNER_RADIUS = 0.35;
+const DEFAULT_MIDDLE_RADIUS = 0.65;
 
 export function useMobileWebRouteLoader(
   input: MobileWebRouteInput,
@@ -105,28 +110,28 @@ export interface MobileWebRuntimeProps {
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
-  onDebugSnapshotChange?: (snapshot: MobileWebRuntimeDebugSnapshot | null) => void;
+  onDebugStateChange?: (state: {
+    route: string;
+    phase: MobileWebRuntimePhase;
+    isBusy: boolean;
+    isUploading: boolean;
+    uploadErrorMessage: string | null;
+    reportStage: string | null;
+    reportId: string | null;
+    imagePath: string | null;
+  }) => void;
 }
 
 const defaultUploadDraft: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
-  theme: "general",
+  theme: "wealth",
   reportType: "lite",
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
+  innerRadius: DEFAULT_INNER_RADIUS,
+  middleRadius: DEFAULT_MIDDLE_RADIUS,
 };
-
-function hasManualCircleRadii(
-  draft: MobileWebUploadDraft | null,
-): draft is MobileWebUploadDraft & { innerRadius: number; middleRadius: number } {
-  return (
-    typeof draft?.innerRadius === "number" &&
-    !Number.isNaN(draft.innerRadius) &&
-    typeof draft.middleRadius === "number" &&
-    !Number.isNaN(draft.middleRadius)
-  );
-}
 
 function normalizeCircleRatio(value: number): number {
   const normalized = value <= 1 ? value : value / 100;
@@ -160,14 +165,59 @@ function createRuntimeLoadingState(
   };
 }
 
-function buildDeferredHistoryQuery(
-  query: InterpretationListQuery,
-  draft: MobileWebUploadDraft | null,
-): InterpretationListQuery {
+function createHistoryRuntimeLoadingState(
+  interpretationId: string,
+  reportType: InterpretationVersion,
+  record: InterpretationRecordResponse,
+  imagePath: string | null,
+): MandalaFlowState {
+  const baseState = imagePath
+    ? selectImage(initialMandalaFlowState, imagePath)
+    : initialMandalaFlowState;
+
   return {
-    ...query,
-    filter: "pending",
-    theme: draft?.theme ?? query.theme,
+    ...baseState,
+    step:
+      record.status === "completed" &&
+      record.generation_progress >= 100 &&
+      reportType === "pro"
+        ? "proReady"
+        : record.status === "completed" && record.generation_progress >= 100
+          ? "liteReady"
+          : "liteGenerating",
+    interpretation: {
+      success: true,
+      interpretation_id: interpretationId,
+      version: reportType,
+      status: record.status,
+      generation_stage: record.generation_stage,
+      generation_progress: record.generation_progress,
+      three_circles: {
+        inner_radius: record.three_circles.inner_radius,
+        middle_radius: record.three_circles.middle_radius,
+      },
+      auto_detected: record.auto_detected,
+      existing: true,
+      report_ready: record.status === "completed" && record.generation_progress >= 100,
+    },
+    status: {
+      interpretation_id: interpretationId,
+      status: record.status,
+      generation_stage: record.generation_stage,
+      generation_progress: record.generation_progress,
+      report_ready: record.status === "completed" && record.generation_progress >= 100,
+      version_purchased: record.version_purchased,
+      three_circles: {
+        inner_radius: record.three_circles.inner_radius,
+        middle_radius: record.three_circles.middle_radius,
+      },
+      auto_detected: record.auto_detected,
+      can_upgrade: record.can_upgrade,
+      image_url: record.image_url,
+      storage_backend: record.storage_backend,
+      storage_key: record.storage_key,
+      image_local_expires_at: record.image_local_expires_at,
+    },
   };
 }
 
@@ -180,7 +230,6 @@ function getDraftFromInput(
 
   if (
     input.route === "report" ||
-    input.route === "reportLegacy" ||
     input.route === "history" ||
     input.route === "historyRecordDetail"
   ) {
@@ -213,6 +262,38 @@ function formatHistoryRefreshHint(date = new Date()): string {
   }).format(date)}`;
 }
 
+function resolveReportFooterState(
+  flowState: MandalaFlowState | undefined,
+  draft: MobileWebUploadDraft | null,
+): {
+  primaryLabel?: string;
+  secondaryLabel?: string;
+  footerHint?: string;
+} {
+  if (!flowState || flowState.step === "liteGenerating" || flowState.step === "error") {
+    return {};
+  }
+
+  const isProReport = flowState.report?.version === "pro" || flowState.step === "proReady";
+  if (isProReport) {
+    return {
+      primaryLabel: "重新上传画作",
+      secondaryLabel: "返回上传页",
+      footerHint: "Pro 完整解读已经生成完成。你可以重新开始下一次解读，或回到上传页继续查看别的作品。",
+    };
+  }
+
+  if ((draft?.reportType ?? draft?.reportVariant ?? "lite") === "lite") {
+    return {
+      primaryLabel: "升级到 Pro 版本",
+      secondaryLabel: "重新上传画作",
+      footerHint: "如果你想继续深入读这幅画，可以在 Lite 基础上升级到 Pro 完整解读。",
+    };
+  }
+
+  return {};
+}
+
 export function MobileWebRuntime({
   input,
   loadingFallback = "Loading mobile web route...",
@@ -220,16 +301,23 @@ export function MobileWebRuntime({
   environmentLabel,
   environmentDetail,
   environmentTone,
-  onDebugSnapshotChange,
+  onDebugStateChange,
 }: MobileWebRuntimeProps) {
   const { loading, error, props } = useMobileWebRouteLoader(input);
   const [runtimeProps, setRuntimeProps] = useState<MobileWebAppProps | null>(null);
   const [runtimeBusy, setRuntimeBusy] = useState(false);
+  const [runtimePhase, setRuntimePhase] =
+    useState<MobileWebRuntimePhase>("idle");
   const inputUploadDraft = getDraftFromInput(input);
   const userId = getUserIdFromInput(input);
   const [runtimeUploadDraft, setRuntimeUploadDraft] = useState<MobileWebUploadDraft | null>(
     inputUploadDraft ?? null,
   );
+  const [runtimeUploadDetection, setRuntimeUploadDetection] =
+    useState<DetectCirclesResponse | null>(null);
+  const [runtimeUploadDetecting, setRuntimeUploadDetecting] = useState(false);
+  const [runtimeUploadDetectError, setRuntimeUploadDetectError] =
+    useState<string | null>(null);
   const [runtimeHistoryQuery, setRuntimeHistoryQuery] =
     useState<InterpretationListQuery>({ filter: "all", limit: 20 });
   const [runtimeHistoryBusy, setRuntimeHistoryBusy] = useState(false);
@@ -238,6 +326,7 @@ export function MobileWebRuntime({
   const [runtimeHistoryOpeningReportType, setRuntimeHistoryOpeningReportType] =
     useState<InterpretationVersion | null>(null);
   const [runtimeHistoryRefreshHint, setRuntimeHistoryRefreshHint] = useState<string | null>(null);
+  const liveGenerationInFlightRef = useRef(false);
   const activeRuntimeUploadDraft = runtimeUploadDraft ?? runtimeProps?.uploadDraft ?? null;
 
   useEffect(() => {
@@ -266,9 +355,6 @@ export function MobileWebRuntime({
     }
 
     setRuntimeUploadDraft(inputUploadDraft);
-    setRuntimeUploadDetection(null);
-    setRuntimeUploadDetecting(false);
-    setRuntimeUploadDetectError(null);
     setRuntimeHistoryQuery({ filter: "all", limit: 20 });
     setRuntimeHistoryOpeningId(null);
     setRuntimeHistoryOpeningReportType(null);
@@ -412,7 +498,8 @@ export function MobileWebRuntime({
   useEffect(() => {
     if (
       !runtimeProps ||
-      runtimeProps.route !== "loading"
+      runtimeProps.route !== "loading" ||
+      liveGenerationInFlightRef.current
     ) {
       return;
     }
@@ -427,10 +514,6 @@ export function MobileWebRuntime({
     if (!interpretationId) {
       return;
     }
-
-    const selectedVariant = getDraftReportVariant(
-      runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft,
-    );
 
     let cancelled = false;
 
@@ -448,79 +531,16 @@ export function MobileWebRuntime({
       }
     };
 
-    const loadingTask = selectedVariant === "pro"
-      ? (async () => {
-          const liteSnapshot = loadingState.step === "liteGenerating"
-            ? await pollMobileWebReportUntilReady(
-                interpretationId,
-                "lite",
-                loadingState,
-                { onTick: handleTick },
-              )
-            : { state: loadingState };
-
-          if (liteSnapshot.state.step === "liteGenerating" || liteSnapshot.state.step === "error") {
-            return liteSnapshot;
-          }
-
-          if (hasProReportAccess(liteSnapshot.state)) {
-            return pollMobileWebReportUntilReady(
-              interpretationId,
-              "pro",
-              liteSnapshot.state,
-              { onTick: handleTick },
-            );
-          }
-
-          return pollMobileWebReportUntilReady(
-            interpretationId,
-            "pro",
-            liteSnapshot.state,
-            { onTick: handleTick },
-          );
-        })()
-      : pollMobileWebReportUntilReady(
-          interpretationId,
-          "lite",
-          loadingState,
-          { onTick: handleTick },
-        );
+    const loadingTask = pollMobileWebReportUntilReady(
+      interpretationId,
+      "lite",
+      loadingState,
+      { onTick: handleTick },
+    );
 
     void loadingTask
       .then(async (snapshot) => {
         if (cancelled) {
-          return;
-        }
-
-        if (selectedVariant === "pro") {
-          const proReady =
-            snapshot.report?.version === "pro" &&
-            typeof snapshot.report.report === "string" &&
-            snapshot.report.report.trim();
-
-          if (snapshot.state.step === "error") {
-            setRuntimeProps({
-              route: "report",
-              flowState: snapshot.state,
-              uploadDraft: currentUploadDraft ?? undefined,
-            });
-            return;
-          }
-
-          if (!proReady) {
-            setRuntimeProps({
-              route: "loading",
-              flowState: snapshot.state,
-              uploadDraft: currentUploadDraft ?? undefined,
-            });
-            return;
-          }
-
-          setRuntimeProps({
-            route: "report",
-            flowState: snapshot.state,
-            uploadDraft: currentUploadDraft ?? undefined,
-          });
           return;
         }
 
@@ -533,11 +553,11 @@ export function MobileWebRuntime({
           return;
         }
 
-        await finalizeSelectedReport(
-          interpretationId,
-          snapshot.state,
-          currentUploadDraft,
-        );
+        setRuntimeProps({
+          route: "report",
+          flowState: snapshot.state,
+          uploadDraft: currentUploadDraft ?? undefined,
+        });
       })
       .finally(() => {
         if (!cancelled) {
@@ -558,46 +578,35 @@ export function MobileWebRuntime({
   ]);
 
   useEffect(() => {
-    if (!onDebugSnapshotChange) {
+    if (!onDebugStateChange) {
       return;
     }
 
-    if (!runtimeProps) {
-      onDebugSnapshotChange(null);
-      return;
-    }
-
-    const flowState = runtimeProps.flowState ?? null;
-    const report = flowState?.report ?? null;
-
-    onDebugSnapshotChange({
-      route: runtimeProps.route,
-      runtimeBusy,
-      historyBusy: runtimeHistoryBusy,
-      uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft ?? null,
-      flowState,
-      reportSummary: report
-        ? {
-            version: report.version,
-            title: report.title,
-            canUpgrade: report.can_upgrade,
-            hasStructured: Boolean(report.structured),
-            hasMarkdown:
-              typeof report.report === "string" && report.report.trim().length > 0,
-            aiQaContext:
-              typeof report.ai_qa_context === "string" &&
-              report.ai_qa_context.trim().length > 0,
-          }
-        : null,
-      status: flowState?.status ?? null,
-      report,
+    onDebugStateChange({
+      route: runtimeProps?.route ?? input.route,
+      phase: runtimePhase,
+      isBusy: runtimeBusy || runtimeUploadDetecting,
+      isUploading: runtimePhase === "uploading_image",
+      uploadErrorMessage: runtimeUploadDetectError,
+      reportStage: runtimeProps?.flowState?.step ?? null,
+      reportId: runtimeProps?.flowState?.interpretation?.interpretation_id ?? null,
+      imagePath:
+        activeRuntimeUploadDraft?.uploadAsset?.runtimeImagePath ??
+        activeRuntimeUploadDraft?.imagePath ??
+        null,
     });
   }, [
-    onDebugSnapshotChange,
+    activeRuntimeUploadDraft?.imagePath,
+    activeRuntimeUploadDraft?.uploadAsset?.runtimeImagePath,
+    input.route,
+    onDebugStateChange,
+    runtimePhase,
     runtimeBusy,
-    runtimeHistoryBusy,
-    runtimeProps,
-    runtimeUploadDraft,
+    runtimeProps?.flowState?.interpretation?.interpretation_id,
+    runtimeProps?.flowState?.step,
+    runtimeProps?.route,
+    runtimeUploadDetectError,
+    runtimeUploadDetecting,
   ]);
 
   if (loading) {
@@ -619,45 +628,13 @@ export function MobileWebRuntime({
     return <>Missing runtime mobile web props</>;
   }
 
-  const currentRuntimeProps = runtimeProps;
   const currentUploadDraft = activeRuntimeUploadDraft;
   const uploadDraftForReturn = currentUploadDraft ?? defaultUploadDraft;
-
-  async function finalizeSelectedReport(
-    interpretationId: string,
-    state: MandalaFlowState,
-    draft: MobileWebUploadDraft | null,
-  ) {
-    if (getDraftReportVariant(draft ?? defaultUploadDraft) === "pro" && interpretationId) {
-      const proReport = await refreshMobileWebReport(interpretationId, "pro", state);
-      const proReady =
-        proReport.report?.version === "pro" &&
-        typeof proReport.report.report === "string" &&
-        proReport.report.report.trim();
-
-      if (!proReady) {
-        setRuntimeProps({
-          route: "loading",
-          flowState: proReport.state,
-          uploadDraft: draft ?? undefined,
-        });
-        return;
-      }
-
-      setRuntimeProps({
-        route: "report",
-        flowState: proReport.state,
-        uploadDraft: draft ?? undefined,
-      });
-      return;
-    }
-
-    setRuntimeProps({
-      route: "report",
-      flowState: state,
-      uploadDraft: draft ?? undefined,
-    });
-  }
+  const currentRuntimeProps = runtimeProps;
+  const reportFooterState = resolveReportFooterState(
+    currentRuntimeProps.flowState,
+    currentUploadDraft,
+  );
 
   async function handleReportPrimaryAction() {
     if (!currentRuntimeProps.flowState || runtimeBusy) {
@@ -679,19 +656,11 @@ export function MobileWebRuntime({
           "lite",
           currentRuntimeProps.flowState,
         );
-        if (refreshed.state.step === "liteGenerating") {
-          setRuntimeProps({
-            route: "loading",
-            flowState: refreshed.state,
-            uploadDraft: currentUploadDraft ?? undefined,
-          });
-        } else {
-          await finalizeSelectedReport(
-            interpretationId,
-            refreshed.state,
-            currentUploadDraft,
-          );
-        }
+        setRuntimeProps({
+          route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
+          flowState: refreshed.state,
+          uploadDraft: currentUploadDraft ?? undefined,
+        });
       } finally {
         setRuntimeBusy(false);
       }
@@ -711,60 +680,44 @@ export function MobileWebRuntime({
             "lite",
             currentRuntimeProps.flowState,
           );
-          if (refreshed.state.step === "liteGenerating") {
-            setRuntimeProps({
-              route: "loading",
-              flowState: refreshed.state,
-              uploadDraft: currentUploadDraft ?? undefined,
-            });
-          } else {
-            await finalizeSelectedReport(
-              interpretationId,
-              refreshed.state,
-              currentUploadDraft,
-            );
-          }
+          setRuntimeProps({
+            route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
+            flowState: refreshed.state,
+            uploadDraft: currentUploadDraft ?? undefined,
+          });
         } finally {
           setRuntimeBusy(false);
         }
         return;
       }
 
-      const resultCta = resolveSelfUnderstandingReportCta({
-        theme: currentUploadDraft?.theme,
-        canUpgrade: Boolean(
-          currentRuntimeProps.flowState.report?.can_upgrade ||
-            currentRuntimeProps.flowState.status?.can_upgrade,
-        ),
-        hasProAccess: hasProReportAccess(currentRuntimeProps.flowState),
-        structured: getLiteStructuredReport(currentRuntimeProps.flowState.report),
-      });
+      const isProReport =
+        currentRuntimeProps.flowState.report?.version === "pro" ||
+        currentRuntimeProps.flowState.step === "proReady";
+      const isLiteDraft =
+        (currentUploadDraft?.reportType ??
+          currentUploadDraft?.reportVariant ??
+          "lite") === "lite";
 
-      if (resultCta.intent === "open_pro_report") {
-        const nextDraft = currentUploadDraft
-          ? mergeMobileWebUploadDraft(currentUploadDraft, { reportType: "pro" })
-          : mergeMobileWebUploadDraft(uploadDraftForReturn, { reportType: "pro" });
-
+      if (!isProReport && isLiteDraft) {
+        const nextDraft = mergeMobileWebUploadDraft(
+          currentUploadDraft ?? uploadDraftForReturn,
+          {
+            reportType: "pro",
+          },
+        );
         setRuntimeUploadDraft(nextDraft);
         setRuntimeProps({
-          route: "loading",
-          flowState: currentRuntimeProps.flowState,
+          route: "reportEntry",
           uploadDraft: nextDraft,
-        });
-        return;
-      }
-
-      if (resultCta.intent === "restart_upload") {
-        setRuntimeProps({
-          route: "upload",
-          uploadDraft: currentUploadDraft ?? uploadDraftForReturn,
+          flowState: currentRuntimeProps.flowState,
         });
         return;
       }
 
       setRuntimeProps({
-        route: "reportEntry",
-        uploadDraft: currentUploadDraft ?? undefined,
+        route: "upload",
+        uploadDraft: currentUploadDraft ?? uploadDraftForReturn,
       });
       return;
     }
@@ -836,7 +789,7 @@ export function MobileWebRuntime({
         uploadDraft: currentUploadDraft ?? undefined,
         historyQuery: nextQuery,
         historyStatusLabel: "当前显示真实历史记录",
-        historyStatusDetail: `历史页已按${theme ? `主题“${theme}”` : "全部主题"}重新请求真实记录。`,
+        historyStatusDetail: `历史页已按${theme ? `议题“${theme}”` : "全部议题"}重新请求真实记录。`,
         historyStatusTone: "runtime",
       });
     } catch (historyError) {
@@ -964,6 +917,7 @@ export function MobileWebRuntime({
       }
 
       setRuntimeProps({
+        ...currentRuntimeProps,
         route: "historyRecordDetail",
         record,
         uploadDraft: currentUploadDraft ?? undefined,
@@ -973,65 +927,10 @@ export function MobileWebRuntime({
     }
   }
 
-  async function handleHistoryRecordDetailOpenReport(
-    reportType: InterpretationVersion,
-  ) {
-    if (
-      runtimeBusy ||
-      runtimeHistoryBusy ||
-      currentRuntimeProps.route !== "historyRecordDetail" ||
-      !currentRuntimeProps.record
-    ) {
-      return;
-    }
-
-    const record = currentRuntimeProps.record;
-    const nextDraft = mergeMobileWebUploadDraft(
-      currentUploadDraft ?? uploadDraftForReturn,
-      { reportType },
-    );
-
-    setRuntimeBusy(true);
-    setRuntimeHistoryOpeningId(record.interpretation_id);
-    setRuntimeHistoryOpeningReportType(reportType);
-    try {
-      const refreshed = await refreshMobileWebReport(
-        record.interpretation_id,
-        reportType,
-        initialMandalaFlowState,
-      );
-      setRuntimeUploadDraft(nextDraft);
-
-      if (reportType === "pro") {
-        const proReady =
-          refreshed.report?.version === "pro" &&
-          typeof refreshed.report.report === "string" &&
-          refreshed.report.report.trim();
-
-        setRuntimeProps({
-          route: proReady ? "report" : "loading",
-          flowState: refreshed.state,
-          uploadDraft: nextDraft,
-        });
-        return;
-      }
-
-      setRuntimeProps({
-        route: refreshed.state.step === "liteGenerating" ? "loading" : "report",
-        flowState: refreshed.state,
-        uploadDraft: nextDraft,
-      });
-    } finally {
-      setRuntimeHistoryOpeningId(null);
-      setRuntimeHistoryOpeningReportType(null);
-      setRuntimeBusy(false);
-    }
-  }
-
   function handleReportSecondaryAction() {
     if (currentRuntimeProps.route === "loading") {
       setRuntimeProps({
-        route: "reportEntry",
+        route: "upload",
         uploadDraft: uploadDraftForReturn,
       });
       return;
@@ -1051,51 +950,6 @@ export function MobileWebRuntime({
     });
   }
 
-  async function handleLoadingLeaveLater() {
-    const draftForHistory =
-      currentUploadDraft ?? currentRuntimeProps.uploadDraft ?? uploadDraftForReturn ?? defaultUploadDraft;
-    const nextQuery = buildDeferredHistoryQuery(runtimeHistoryQuery, draftForHistory);
-
-    if (!userId || runtimeHistoryBusy) {
-      setRuntimeProps({
-        route: "upload",
-        uploadDraft: draftForHistory,
-      });
-      return;
-    }
-
-    setRuntimeHistoryBusy(true);
-    setRuntimeHistoryQuery(nextQuery);
-    try {
-      const history = await loadHistoryPage(userId, nextQuery);
-      setRuntimeHistoryRefreshHint(formatHistoryRefreshHint());
-      setRuntimeProps({
-        route: "history",
-        records: history.records,
-        uploadDraft: draftForHistory,
-        historyQuery: nextQuery,
-        historyStatusLabel: "Pro 解读仍在生成中",
-        historyStatusDetail: "你已经离开等待页，系统会继续在后台生成。稍后可直接从这里返回查看完整 Pro 报告。",
-        historyStatusTone: "runtime",
-      });
-    } catch (historyError) {
-      setRuntimeProps({
-        route: "history",
-        records: [],
-        uploadDraft: draftForHistory,
-        historyQuery: nextQuery,
-        historyStatusLabel: "历史记录拉取失败",
-        historyStatusDetail:
-          historyError instanceof Error
-            ? historyError.message
-            : "Failed to load interpretation history",
-        historyStatusTone: "runtime",
-      });
-    } finally {
-      setRuntimeHistoryBusy(false);
-    }
-  }
-
   function handleHistoryBackToUpload() {
     setRuntimeProps({
       route: "upload",
@@ -1107,13 +961,90 @@ export function MobileWebRuntime({
     setRuntimeHistoryOpeningReportType(null);
     setRuntimeProps({
       route: "history",
-      records: runtimeProps?.records ?? [],
+      records: currentRuntimeProps.records ?? [],
       uploadDraft: uploadDraftForReturn,
       historyQuery: runtimeHistoryQuery,
       historyStatusLabel: "已返回历史记录",
       historyStatusDetail: "你可以继续切换其他记录，或刷新查看最新状态。",
       historyStatusTone: "runtime",
     });
+  }
+
+  async function handleHistoryRecordDetailOpenReport(
+    reportType: InterpretationVersion,
+  ) {
+    if (
+      runtimeBusy ||
+      runtimeHistoryBusy ||
+      currentRuntimeProps.route !== "historyRecordDetail"
+    ) {
+      return;
+    }
+
+    const recordToOpen = currentRuntimeProps.record;
+    if (!recordToOpen) {
+      return;
+    }
+
+    const interpretationId = recordToOpen.interpretation_id;
+    const imagePath =
+      currentUploadDraft?.uploadAsset?.runtimeImagePath ??
+      currentUploadDraft?.imagePath ??
+      null;
+    const nextDraft = mergeMobileWebUploadDraft(
+      currentUploadDraft ?? uploadDraftForReturn,
+      {
+        reportType,
+      },
+    );
+
+    setRuntimeHistoryOpeningReportType(reportType);
+    setRuntimeUploadDraft(nextDraft);
+    setRuntimeBusy(true);
+    setRuntimePhase("waiting_report");
+    setRuntimeProps({
+      ...currentRuntimeProps,
+      route: "loading",
+      flowState: createHistoryRuntimeLoadingState(
+        interpretationId,
+        reportType,
+        recordToOpen,
+        imagePath,
+      ),
+      uploadDraft: nextDraft,
+    });
+
+    try {
+      const refreshed = await refreshMobileWebReport(
+        interpretationId,
+        reportType,
+        createHistoryRuntimeLoadingState(
+          interpretationId,
+          reportType,
+          recordToOpen,
+          imagePath,
+        ),
+      );
+      setRuntimeProps({
+        route:
+          refreshed.state.step === "liteGenerating" ||
+          (reportType === "pro" && refreshed.state.step !== "proReady")
+            ? "loading"
+            : "report",
+        flowState: refreshed.state,
+        uploadDraft: nextDraft,
+      });
+      setRuntimePhase(
+        refreshed.state.step === "error"
+          ? "failed"
+          : refreshed.state.step === "liteGenerating"
+            ? "waiting_report"
+            : "report_ready",
+      );
+    } finally {
+      setRuntimeHistoryOpeningReportType(null);
+      setRuntimeBusy(false);
+    }
   }
 
   async function handleUploadContinue(forcedDraft?: MobileWebUploadDraft | null) {
@@ -1126,16 +1057,21 @@ export function MobileWebRuntime({
     if (!draftToUse) {
       return;
     }
+    if (!userId) {
+      setRuntimeUploadDetectError("Missing user id for mobile web runtime");
+      return;
+    }
 
-    const resolvedDetection = buildManualDetection(
-      draftToUse.innerRadius ?? DEFAULT_INNER_RADIUS,
-      draftToUse.middleRadius ?? DEFAULT_MIDDLE_RADIUS,
-    );
+    let resolvedDetection: DetectCirclesResponse;
 
     setRuntimeBusy(true);
+    setRuntimePhase("uploading_image");
+    setRuntimeUploadDetecting(true);
+    setRuntimeUploadDetectError(null);
+    liveGenerationInFlightRef.current = true;
 
     try {
-        const resolvedImagePath = await ensureUploadedImagePath(
+      const resolvedImagePath = await ensureUploadedImagePath(
         draftToUse,
         (uploaded) => {
           setRuntimeUploadDraft((current) => (
@@ -1148,51 +1084,68 @@ export function MobileWebRuntime({
           ));
         },
       );
+      const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
+      setRuntimePhase("building_request");
+      resolvedDetection =
+        typeof draftToUse.innerRadius === "number" &&
+        !Number.isNaN(draftToUse.innerRadius) &&
+        typeof draftToUse.middleRadius === "number" &&
+        !Number.isNaN(draftToUse.middleRadius)
+          ? buildManualDetection(draftToUse.innerRadius, draftToUse.middleRadius)
+          : (() => {
+              throw new Error("请先手动确认三圈边界，再生成财富关系报告。");
+            })();
+      setRuntimeUploadDetection(resolvedDetection);
       setRuntimeProps({
         route: "loading",
         flowState: createRuntimeLoadingState(
           {
             ...draftToUse,
-            uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+            uploadAsset: nextAssetRef,
           },
           resolvedDetection,
         ),
         uploadDraft: {
           ...draftToUse,
-          uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+          uploadAsset: nextAssetRef,
         },
       });
 
-      const result = await runMobileWebLiteFlow(
+      setRuntimePhase("requesting_report");
+      const result = await runMobileWebReportFlow(
         toStartCreatePayload(
           {
             ...draftToUse,
-            uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+            uploadAsset: nextAssetRef,
             innerRadius: resolvedDetection.inner_radius,
             middleRadius: resolvedDetection.middle_radius,
           },
           userId,
         ),
+        getDraftReportVariant(draftToUse),
       );
       const nextDraft = {
         ...draftToUse,
-        uploadAsset: toMobileWebUploadAssetRef(resolvedImagePath),
+        uploadAsset: nextAssetRef,
       };
-      if (result.state.step === "liteGenerating") {
-        setRuntimeProps({
-          route: "loading",
-          flowState: result.state,
-          uploadDraft: nextDraft,
-        });
-      } else {
-        await finalizeSelectedReport(
-          result.state.interpretation?.interpretation_id ?? "",
-          result.state,
-          nextDraft,
-        );
-      }
+      setRuntimeProps({
+        route: result.state.step === "liteGenerating" ? "loading" : "report",
+        flowState: result.state,
+        uploadDraft: nextDraft,
+      });
+      setRuntimePhase(result.state.step === "liteGenerating" ? "waiting_report" : "report_ready");
+    } catch (uploadError) {
+      const message = uploadError instanceof Error ? uploadError.message : "Failed to continue upload";
+      setRuntimeUploadDetectError(message);
+      setRuntimeProps({
+        route: "upload",
+        uploadDraft: draftToUse,
+      });
+      setRuntimePhase("failed");
     } finally {
+      setRuntimeUploadDetecting(false);
       setRuntimeBusy(false);
+      liveGenerationInFlightRef.current = false;
     }
   }
 
@@ -1250,24 +1203,58 @@ export function MobileWebRuntime({
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}
+      isUploading={runtimeBusy}
+      uploadErrorMessage={runtimeUploadDetectError}
+      detection={runtimeUploadDetection}
       onUploadDraftChange={(patch) => {
+        setRuntimeUploadDetectError(null);
         setRuntimeUploadDraft((current) =>
           mergeMobileWebUploadDraft(current ?? defaultUploadDraft, patch),
         );
       }}
       onUploadBack={() => {
+        setRuntimeUploadDetectError(null);
         setRuntimeProps({
           route: "landing",
           uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
         });
       }}
       onUploadContinue={() => {
+        setRuntimeUploadDetectError(null);
+        const nextDraft = mergeMobileWebUploadDraft(
+          runtimeUploadDraft ?? runtimeProps.uploadDraft ?? defaultUploadDraft,
+          {
+            reportType: "lite",
+          },
+        );
+        setRuntimeUploadDraft(nextDraft);
         setRuntimeProps({
           route: "reportEntry",
-          uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
+          uploadDraft: nextDraft,
         });
       }}
       onReportEntryBack={() => {
+        const isProPayment =
+          (runtimeUploadDraft?.reportType ??
+            runtimeUploadDraft?.reportVariant ??
+            "lite") === "pro";
+
+        if (isProPayment && runtimeProps.flowState) {
+          const nextDraft = mergeMobileWebUploadDraft(
+            runtimeUploadDraft ?? uploadDraftForReturn,
+            {
+              reportType: "lite",
+            },
+          );
+          setRuntimeUploadDraft(nextDraft);
+          setRuntimeProps({
+            route: "report",
+            flowState: runtimeProps.flowState,
+            uploadDraft: nextDraft,
+          });
+          return;
+        }
+
         setRuntimeProps({
           route: "upload",
           uploadDraft: runtimeUploadDraft ?? runtimeProps.uploadDraft,
@@ -1283,11 +1270,14 @@ export function MobileWebRuntime({
         setRuntimeUploadDraft(nextDraft);
         void handleUploadContinue(nextDraft);
       }}
-      onLoadingLeaveLater={handleLoadingLeaveLater}
+      onLoadingLeaveLater={undefined}
       onReportPrimaryAction={handleReportPrimaryAction}
       onReportSecondaryAction={handleReportSecondaryAction}
       onReportBackAction={handleReportBackAction}
       reportPrimaryDisabled={runtimeBusy}
+      reportPrimaryLabel={reportFooterState.primaryLabel}
+      reportSecondaryLabel={reportFooterState.secondaryLabel}
+      reportFooterHint={reportFooterState.footerHint}
       onHistoryBackToUpload={handleHistoryBackToUpload}
       historyQuery={runtimeProps.historyQuery ?? runtimeHistoryQuery}
       activeHistoryFilter={(runtimeProps.historyQuery?.filter as HistoryFilterId | undefined) ?? (runtimeHistoryQuery.filter as HistoryFilterId | undefined) ?? "all"}

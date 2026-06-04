@@ -86,11 +86,11 @@
 
 任何 Agent 第一次进入 `内容矩阵` 项目时，默认优先读取以下材料：
 
-1. [PROJECT.md](company/projects/内容矩阵/PROJECT.md)
-2. [company/内容矩阵.md](company/内容矩阵.md)
-3. [company/项目与仓库映射.md](company/项目与仓库映射.md)
-4. [个人真实信息与表达基线.md](company/projects/内容矩阵/个人真实信息与表达基线.md)
-5. [个人号内容协作规则.md](company/projects/内容矩阵/个人号内容协作规则.md)
+1. [PROJECT.md](../../../company/projects/内容矩阵/PROJECT.md)
+2. [company/内容矩阵.md](../../../company/内容矩阵.md)
+3. [company/项目与仓库映射.md](../../../company/项目与仓库映射.md)
+4. [个人真实信息与表达基线.md](../../../company/projects/内容矩阵/个人真实信息与表达基线.md)
+5. [个人号内容协作规则.md](../../../company/projects/内容矩阵/个人号内容协作规则.md)
 
 如果任务明确只涉及 `墨予镜` 个人号，还必须继续确认：
 
@@ -136,3 +136,9 @@
 - 项目新名称：`内容矩阵`
 - 当前目录名：`内容矩阵`
 - 历史文件里的“归档项目：墨予镜 IP”允许暂时保留
+
+## 9. 当前阶段执行文档
+
+当前阶段与 `找工作`、`AIMANDALA MVP` 直接相关的内容执行文档，优先从这里进入：
+
+- [2026-05-07-近期内容清单.md](./2026-05-07-近期内容清单.md)

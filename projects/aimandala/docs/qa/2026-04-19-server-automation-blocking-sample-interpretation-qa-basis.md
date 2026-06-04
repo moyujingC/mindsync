@@ -1,6 +1,6 @@
 # Aimandala Server Automation Blocking Sample Interpretation QA Basis
 
-> 状态：current
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：Test / QA
 > last_updated：2026-04-21

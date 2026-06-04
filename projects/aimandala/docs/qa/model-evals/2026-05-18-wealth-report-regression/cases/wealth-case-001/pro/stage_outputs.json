@@ -1,0 +1,757 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "pro",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5057.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看自己和金钱、价值、资源流动之间的关系。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作以明亮的黄色为背景，中心是一个红色星形图案，周围环绕着八个紫色和黄色相间的圆形图案，每个圆形内都有蓝色花朵。外圈由蓝色波浪状图案构成，整体呈现出对称和谐的视觉效果。",
+    "circles": {
+      "inner": {
+        "summary": "圆形",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "",
+            "shape": "圆形",
+            "visible_evidence": "圆形"
+          }
+        ],
+        "raw_observation": {
+          "color": "黄色",
+          "shape": "圆形",
+          "details": "中心区域为红色星形图案，周围有八个紫色和黄色相间的圆形，每个圆形内有蓝色花朵，形成一个复杂的几何图案。"
+        }
+      },
+      "middle": {
+        "summary": "圆形、弧形",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "",
+            "shape": "圆形、弧形",
+            "visible_evidence": "圆形、弧形"
+          }
+        ],
+        "raw_observation": {
+          "color": "绿色、橙色、紫色",
+          "shape": "圆形、弧形",
+          "details": "中圈包含多个绿色和橙色的弧形图案，连接着内外圈的元素，形成了过渡性的视觉结构。"
+        }
+      },
+      "outer": {
+        "summary": "波浪状",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "",
+            "shape": "波浪状",
+            "visible_evidence": "波浪状"
+          }
+        ],
+        "raw_observation": {
+          "color": "蓝色",
+          "shape": "波浪状",
+          "details": "外圈由蓝色波浪状图案构成，围绕整个曼陀罗，形成一种流动的边界。"
+        }
+      }
+    },
+    "evidence_refs": [
+      "中心红色星形图案可能代表核心能量或焦点。",
+      "八个紫色和黄色相间的圆形图案可能象征平衡与和谐。",
+      "蓝色波浪状外圈可能表示流动性和变化。",
+      "整体对称性表明内在秩序和稳定感。"
+    ],
+    "uncertainties": [
+      "无法确定具体颜色的深浅程度是否影响解读。",
+      "某些细节如小圆点的具体含义需要进一步分析。",
+      "整体图案的复杂性可能导致多义性解释。"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "圆形",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "圆形"
+        ],
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "",
+            "shape": "圆形",
+            "visible_evidence": "圆形"
+          }
+        ],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "圆形、弧形",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "圆形、弧形"
+        ],
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "",
+            "shape": "圆形、弧形",
+            "visible_evidence": "圆形、弧形"
+          }
+        ],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "波浪状",
+        "dominant_colors": [],
+        "dominant_shapes": [
+          "波浪状"
+        ],
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "",
+            "shape": "波浪状",
+            "visible_evidence": "波浪状"
+          }
+        ],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。",
+      "五行分析只识别每圈内部的视觉元素属性，不给整圈贴单一五行标签。",
+      "五行生克只在同一圈内部的元素之间判断。",
+      "三圈联动不使用五行生克关系，只分析内圈、中圈、外圈之间的层级承接。"
+    ],
+    "scope": {
+      "five_element_scope": "intra_circle_visual_elements",
+      "circle_primary_element_labeling": "excluded",
+      "intra_circle_element_relations": "allowed",
+      "cross_circle_five_element_relations": "excluded",
+      "report_rule": "报告必须展示圈内元素五行和同圈生克候选，不得把一个圈简化成单一五行。"
+    },
+    "profile": {
+      "scope": "intra_circle_visual_elements",
+      "per_circle": {
+        "inner": {
+          "circle": "inner",
+          "element_signals": [],
+          "present_elements": [],
+          "intra_circle_relations": [],
+          "evidence": {
+            "colors": [],
+            "shapes": [
+              "圆形"
+            ],
+            "summary": "圆形"
+          },
+          "interpretation_hint": "当前圈层的五行信号不足，报告只能保留为待确认线索。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+        },
+        "middle": {
+          "circle": "middle",
+          "element_signals": [],
+          "present_elements": [],
+          "intra_circle_relations": [],
+          "evidence": {
+            "colors": [],
+            "shapes": [
+              "圆形、弧形"
+            ],
+            "summary": "圆形、弧形"
+          },
+          "interpretation_hint": "当前圈层的五行信号不足，报告只能保留为待确认线索。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+        },
+        "outer": {
+          "circle": "outer",
+          "element_signals": [
+            {
+              "unit_id": "outer-001",
+              "element": "water",
+              "label": "水",
+              "source_type": "shape",
+              "evidence": "波浪状",
+              "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            },
+            {
+              "unit_id": "outer-001",
+              "element": "water",
+              "label": "水",
+              "source_type": "evidence",
+              "evidence": "波浪状",
+              "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+            }
+          ],
+          "present_elements": [
+            {
+              "element": "water",
+              "label": "水"
+            }
+          ],
+          "intra_circle_relations": [],
+          "evidence": {
+            "colors": [],
+            "shapes": [
+              "波浪状"
+            ],
+            "summary": "波浪状"
+          },
+          "interpretation_hint": "外圈现实层内识别到水等元素信号，需按圈内元素组合与相邻关系解读。",
+          "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+        }
+      },
+      "dominant_elements": [
+        {
+          "element": "water",
+          "label": "水",
+          "score": 1
+        }
+      ],
+      "report_language": [
+        "当前圈层的五行信号不足，报告只能保留为待确认线索。",
+        "当前圈层的五行信号不足，报告只能保留为待确认线索。",
+        "外圈现实层内识别到水等元素信号，需按圈内元素组合与相邻关系解读。"
+      ],
+      "intra_circle_rule": "五行生克只用于同一圈内部已经识别出的视觉元素之间。",
+      "cross_circle_rule": "三圈联动分析使用圈层结构，不使用五行生克。"
+    },
+    "per_circle": {
+      "inner": {
+        "circle": "inner",
+        "element_signals": [],
+        "present_elements": [],
+        "intra_circle_relations": [],
+        "evidence": {
+          "colors": [],
+          "shapes": [
+            "圆形"
+          ],
+          "summary": "圆形"
+        },
+        "interpretation_hint": "当前圈层的五行信号不足，报告只能保留为待确认线索。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+      },
+      "middle": {
+        "circle": "middle",
+        "element_signals": [],
+        "present_elements": [],
+        "intra_circle_relations": [],
+        "evidence": {
+          "colors": [],
+          "shapes": [
+            "圆形、弧形"
+          ],
+          "summary": "圆形、弧形"
+        },
+        "interpretation_hint": "当前圈层的五行信号不足，报告只能保留为待确认线索。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+      },
+      "outer": {
+        "circle": "outer",
+        "element_signals": [
+          {
+            "unit_id": "outer-001",
+            "element": "water",
+            "label": "水",
+            "source_type": "shape",
+            "evidence": "波浪状",
+            "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          },
+          {
+            "unit_id": "outer-001",
+            "element": "water",
+            "label": "水",
+            "source_type": "evidence",
+            "evidence": "波浪状",
+            "hint": "水性指向流动、感受、恐惧、智慧和深层安全感。"
+          }
+        ],
+        "present_elements": [
+          {
+            "element": "water",
+            "label": "水"
+          }
+        ],
+        "intra_circle_relations": [],
+        "evidence": {
+          "colors": [],
+          "shapes": [
+            "波浪状"
+          ],
+          "summary": "波浪状"
+        },
+        "interpretation_hint": "外圈现实层内识别到水等元素信号，需按圈内元素组合与相邻关系解读。",
+        "scope_note": "仅解释本圈内部视觉元素及同圈生克候选，不给整圈贴单一五行标签。"
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": []
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": []
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": []
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "圆形"
+      },
+      {
+        "id": "middle-001",
+        "circle": "middle",
+        "visible_evidence": "圆形、弧形"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "波浪状"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "你的金钱关系正处在从谨慎建构到流动酝酿的过渡阶段，安全感的底色依然牢固，但现实行动的信号已经开始松动。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "stage-03-visual-evidence.global_visual_summary",
+      "stage-06-per-circle-element-generation-control.per_circle.outer",
+      "stage-08-energy-flow-diagnosis.diagnosis"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.scarcity_and_insecurity"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.safety_scarcity_control"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.scarcity_and_insecurity",
+          "title": "匮乏感和安全感不足",
+          "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+          "report_language": [
+            "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+            "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+          ],
+          "healing_direction": [
+            "安全感重建。",
+            "金钱信念梳理。",
+            "身体稳定练习。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。"
+      ]
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "这幅曼陀罗画出了你内在财富秩序的基本结构：中心有稳定能量（红色星形），中圈用重复的节奏在整合，外圈用波浪边界表达对流动的觉察与防御。表面上怕失控，实际上你已经开始让‘水的感受’进入边界，只是还不确定可以放开多少。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.scarcity_and_insecurity"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.safety_scarcity_control"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.scarcity_and_insecurity",
+          "title": "匮乏感和安全感不足",
+          "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+          "report_language": [
+            "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+            "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+          ],
+          "healing_direction": [
+            "安全感重建。",
+            "金钱信念梳理。",
+            "身体稳定练习。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。"
+      ]
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "疗愈不必急于打破边界，而是从‘承认流动已在门外’开始。外圈的波浪状水元素，是这幅画里最有力的改写入口。可以尝试在既有的秩序感中，有意识地添加更灵动的小弧线或不规则色点，用身体感受去体验金钱的微流动，而不是用头脑控制全局。",
+    "report_mode": "pro",
+    "writing_input_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001",
+      "stage-03-visual-evidence.global_visual_summary",
+      "stage-06-per-circle-element-generation-control.per_circle.outer",
+      "stage-08-energy-flow-diagnosis.diagnosis"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.water_fire_conflict"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action",
+        "wealth.scarcity_and_insecurity"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action",
+        "wealth.safety_scarcity_control"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.scarcity_and_insecurity",
+          "title": "匮乏感和安全感不足",
+          "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+          "report_language": [
+            "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+            "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+          ],
+          "healing_direction": [
+            "安全感重建。",
+            "金钱信念梳理。",
+            "身体稳定练习。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "model_scaffold",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。"
+      ]
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 财富议题曼陀罗解读报告\n\n## 画面证据总览\n这幅曼陀罗以明亮的黄色为背景，中心为一枚红色星形图案。星形周围环绕着八个紫黄相间的圆形，每个圆形内部均绘有蓝色花朵。中圈由绿色与橙色的弧形结构组成，外圈则为连绵的蓝色波浪状图案，整体呈现出对称且复杂的视觉秩序。以下为三条可见画面依据：第一，中心红色星形占据画面的核心位置，色彩饱和且形状锐利，暗示内在存在一个活跃的焦点能量。第二，八个紫黄交替的圆形有规律地排列，形成一种重复的节律感，如同某种协调机制正在维持平衡。第三，外圈波浪状边界没有缺口，封闭却并非僵硬直线，它在保护的同时也透出流动感。\n\n## 圈内元素五行感知\n内圈以圆形为主要形状信号。圆形在传统五行感知中常与金元素对应，代表收敛、边界与结构。中心红色的星形虽被视觉识别，但填写时的颜色信息为空白，因此红色无法作为确定元素的基础，只能暂记为一种潜在的暖色视觉能量，不失为一种观察线索。同一圈层内目前没有其他可识别的元素信号，尚无法构建圈内元素生克候选。\n\n中圈以圆形与弧形为主要形状信号。弧形可理解为水元素的一种延伸形态，带有流动、过渡和情绪色彩。绿色与橙色在画面中确有呈现，但在数据中对应的颜色字段为空，因此这些颜色在五行对应上只能视为候选感知，不能变成结论。中圈内部可见的弧形动作暗示了感受在整理与过渡，若假设弧形对应水，圆形对应金，则圈内存在金生水的候选关系：即结构（圆形秩序）催生了情感流动（弧形过渡）。但此事仍需结合整幅画的表达谨慎看待。\n\n外圈以波浪状为主要形状信号。波浪状直接对应水元素，指向流动、感受、深层安全感和对变化的觉察。外圈没有其他显著颜色与形状信号可以对应其余四行，因此该圈内元素种类单一，不存在圈内五行生克关系候选。\n\n## 财富核心主轴\n你的金钱关系正处在从谨慎建构到流动酝酿的过渡阶段，安全感的底色依然牢固，但现实行动的信号已经开始松动。\n\n## 三圈分层解读\n内圈对应财富的本源层。中心那枚红色星形像一个被圆形容器小心护住的核心焦点，它承载着你与价值、自我认同之间最原始的连接。这种结构显示你对于金钱持有一种高度集中的自我要求，想要掌控、想要明确。然而圆形边界的存在也说明，你很难让这个核心能量直接暴露在外，习惯先把一切收束进一个安全的形状里，才敢说“这是我的”。\n\n中圈对应财富的情绪层。那些绿色与橙色的弧形在内外圈之间反复交叠，仿佛在完成一种周转与协调。你在面对金钱时，情绪并非没有反应，而是被转换成了许多需要来回协商的动作——想要靠近又折返，想表达又收回。这种中间层的过渡状态让财富决策常带上一丝犹豫，情绪一旦没有得到理顺，价值就容易停留在心里，而难以顺利走向交换。\n\n外圈对应财富的现实层。蓝色波浪状边界既是你对外在环境流动性的敏锐感知，也是一种现实防护。你确实察觉到了金钱世界的起伏与不可控，但选择以一种闭环的方式把自己包裹起来。这会带来稳定，也同时让机会的流入变缓。波浪已显示出你对变化的认知，只是目前还被约束在边界之内，尚未完全转化为向外舒展的实际行动。\n\n## 浮现议题回译\n画面中紫黄相间的圆形重复出现，这种带有节律感的排列，可能在关系中体现为你在乎公平交换，也很容易感知到“谁给得多谁给得少”。此时金钱就不只是金钱，更像是一种关系中的平衡器。中圈那些不断折叠的弧形动作，也指向身体常处于警觉或收缩状态——可能表现为对花钱后的身体紧张、对收入波动的胃部反应。绿色与橙色的交织，还可能在家庭线索上浮现：关于资源分配的旧记忆，或许会时不时影响你今天如何看待“够不够”。所有这些情绪、身体、关系的线索，最终都汇拢到一个核心议题——你是否愿意让价值和资源，在一种更松弛的状态下流动进来，而不是由边界决定一切。\n\n## 低风险行动建议\n第一，尝试在账单或记账页旁边另开一栏，记录每次重要消费前后的身体感受和情绪变化。不评判，只观察。这会帮你看见哪些花费其实在替情绪工作。第二，每周选定一个微小且无关紧要的金钱行动刻意“放手”，例如比平时多付一点点小费，或让朋友先选餐厅。目的不是改变金额，而是改变你对流动的容许度。第三，画一张只有波浪、弧线而不含任何方形或封闭圆形的小速写，画后静坐两分钟，感受身体在“打开边界”时的微反应。让身体慢慢熟悉——安全，不一定必须靠封闭来达成。"
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-0304200037a6",
+      "report_mode": "pro",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 财富议题曼陀罗解读报告\n\n## 画面证据总览\n这幅曼陀罗以明亮的黄色为背景，中心为一枚红色星形图案。星形周围环绕着八个紫黄相间的圆形，每个圆形内部均绘有蓝色花朵。中圈由绿色与橙色的弧形结构组成，外圈则为连绵的蓝色波浪状图案，整体呈现出对称且复杂的视觉秩序。以下为三条可见画面依据：第一，中心红色星形占据画面的核心位置，色彩饱和且形状锐利，暗示内在存在一个活跃的焦点能量。第二，八个紫黄交替的圆形有规律地排列，形成一种重复的节律感，如同某种协调机制正在维持平衡。第三，外圈波浪状边界没有缺口，封闭却并非僵硬直线，它在保护的同时也透出流动感。\n\n## 圈内元素五行感知\n内圈以圆形为主要形状信号。圆形在传统五行感知中常与金元素对应，代表收敛、边界与结构。中心红色的星形虽被视觉识别，但填写时的颜色信息为空白，因此红色无法作为确定元素的基础，只能暂记为一种潜在的暖色视觉能量，不失为一种观察线索。同一圈层内目前没有其他可识别的元素信号，尚无法构建圈内元素生克候选。\n\n中圈以圆形与弧形为主要形状信号。弧形可理解为水元素的一种延伸形态，带有流动、过渡和情绪色彩。绿色与橙色在画面中确有呈现，但在数据中对应的颜色字段为空，因此这些颜色在五行对应上只能视为候选感知，不能变成结论。中圈内部可见的弧形动作暗示了感受在整理与过渡，若假设弧形对应水，圆形对应金，则圈内存在金生水的候选关系：即结构（圆形秩序）催生了情感流动（弧形过渡）。但此事仍需结合整幅画的表达谨慎看待。\n\n外圈以波浪状为主要形状信号。波浪状直接对应水元素，指向流动、感受、深层安全感和对变化的觉察。外圈没有其他显著颜色与形状信号可以对应其余四行，因此该圈内元素种类单一，不存在圈内五行生克关系候选。\n\n## 财富核心主轴\n你的金钱关系正处在从谨慎建构到流动酝酿的过渡阶段，安全感的底色依然牢固，但现实行动的信号已经开始松动。\n\n## 三圈分层解读\n内圈对应财富的本源层。中心那枚红色星形像一个被圆形容器小心护住的核心焦点，它承载着你与价值、自我认同之间最原始的连接。这种结构显示你对于金钱持有一种高度集中的自我要求，想要掌控、想要明确。然而圆形边界的存在也说明，你很难让这个核心能量直接暴露在外，习惯先把一切收束进一个安全的形状里，才敢说“这是我的”。\n\n中圈对应财富的情绪层。那些绿色与橙色的弧形在内外圈之间反复交叠，仿佛在完成一种周转与协调。你在面对金钱时，情绪并非没有反应，而是被转换成了许多需要来回协商的动作——想要靠近又折返，想表达又收回。这种中间层的过渡状态让财富决策常带上一丝犹豫，情绪一旦没有得到理顺，价值就容易停留在心里，而难以顺利走向交换。\n\n外圈对应财富的现实层。蓝色波浪状边界既是你对外在环境流动性的敏锐感知，也是一种现实防护。你确实察觉到了金钱世界的起伏与不可控，但选择以一种闭环的方式把自己包裹起来。这会带来稳定，也同时让机会的流入变缓。波浪已显示出你对变化的认知，只是目前还被约束在边界之内，尚未完全转化为向外舒展的实际行动。\n\n## 浮现议题回译\n画面中紫黄相间的圆形重复出现，这种带有节律感的排列，可能在关系中体现为你在乎公平交换，也很容易感知到“谁给得多谁给得少”。此时金钱就不只是金钱，更像是一种关系中的平衡器。中圈那些不断折叠的弧形动作，也指向身体常处于警觉或收缩状态——可能表现为对花钱后的身体紧张、对收入波动的胃部反应。绿色与橙色的交织，还可能在家庭线索上浮现：关于资源分配的旧记忆，或许会时不时影响你今天如何看待“够不够”。所有这些情绪、身体、关系的线索，最终都汇拢到一个核心议题——你是否愿意让价值和资源，在一种更松弛的状态下流动进来，而不是由边界决定一切。\n\n## 低风险行动建议\n第一，尝试在账单或记账页旁边另开一栏，记录每次重要消费前后的身体感受和情绪变化。不评判，只观察。这会帮你看见哪些花费其实在替情绪工作。第二，每周选定一个微小且无关紧要的金钱行动刻意“放手”，例如比平时多付一点点小费，或让朋友先选餐厅。目的不是改变金额，而是改变你对流动的容许度。第三，画一张只有波浪、弧线而不含任何方形或封闭圆形的小速写，画后静坐两分钟，感受身体在“打开边界”时的微反应。让身体慢慢熟悉——安全，不一定必须靠封闭来达成。",
+      "summary": "你的金钱关系正处在从谨慎建构到流动酝酿的过渡阶段，安全感的底色依然牢固，但现实行动的信号已经开始松动。"
+    }
+  }
+}

@@ -1,4 +1,9 @@
 # 研究结论 Handoff 给 Architect
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Research & Knowledge Lead
+> last_updated：2026-05-06
+> source_of_truth：projects/research-center/delivery/2026-04-06-研究结论-Handoff给Architect.md
 > 来源：研究中心首批研究成果
 > 交付时间：2026-04-06
 > 交付对象：Architect
@@ -28,10 +33,10 @@
 4. **质量控制**：内置自动化测试和验证机制，支持AI生成内容的自动校验
 
 ## 4. 相关材料链接
-- [OpenHands Agent框架拆解研究-综合结论.md](projects/research-center/research/2026-04-06-OpenHands-Agent框架拆解研究-综合结论.md)
-- [AI时代软件工程协作最佳实践研究-综合结论.md](projects/research-center/research/2026-04-06-AI时代软件工程协作最佳实践研究-综合结论.md)
+- [OpenHands Agent框架拆解研究-综合结论.md](../research/2026-04-06-OpenHands-Agent框架拆解研究-综合结论.md)
+- [AI时代软件工程协作最佳实践研究-综合结论.md](../research/2026-04-06-AI时代软件工程协作最佳实践研究-综合结论.md)
 - 知识库条目：
-  - [KB-20260406-0001-Agent框架SDK优先设计模式](projects/research-center/kb/KB-20260406-0001-Agent框架SDK优先设计模式.md)
-  - [KB-20260406-0002-LLM无关抽象层设计模式](projects/research-center/kb/KB-20260406-0002-LLM无关抽象层设计模式.md)
-  - [KB-20260406-0003-AI辅助开发角色分层协作方法](projects/research-center/kb/KB-20260406-0003-AI辅助开发角色分层协作方法.md)
-  - [KB-20260406-0004-AI生成内容双验证模式](projects/research-center/kb/KB-20260406-0004-AI生成内容双验证模式.md)
+  - [KB-20260406-0001-Agent框架SDK优先设计模式](../kb/KB-20260406-0001-Agent框架SDK优先设计模式.md)
+  - [KB-20260406-0002-LLM无关抽象层设计模式](../kb/KB-20260406-0002-LLM无关抽象层设计模式.md)
+  - [KB-20260406-0003-AI辅助开发角色分层协作方法](../kb/KB-20260406-0003-AI辅助开发角色分层协作方法.md)
+  - [KB-20260406-0004-AI生成内容双验证模式](../kb/KB-20260406-0004-AI生成内容双验证模式.md)

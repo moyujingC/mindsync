@@ -1,5 +1,11 @@
 # RelayHub v1：AITechFlux 中转入口预置接入 QA Basis
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Architect / Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/qa/2026-04-21-v1-AITechFlux-中转入口预置接入-qa-basis.md
+
 ## Summary
 
 本轮 QA 只验证 `AITechFlux` 作为系统预置中转入口被正确接入，不验证新的路由、部署或入口内多模型目录能力。

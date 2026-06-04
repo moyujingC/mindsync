@@ -562,9 +562,9 @@ export const seedEntryBindings = [
   {
     entryId: "entry-paperclip-claude-local-server",
     defaultModelEntryId: "preset-aitechflux-relay",
-    fallbackModelEntryId: "preset-openrouter-coding",
-    reasoningEffortOverride: null,
-    statusNote: "服务器 claude_local 跟随服务器 Anthropic 兼容入口。"
+    fallbackModelEntryId: null,
+    reasoningEffortOverride: "high",
+    statusNote: "Paperclip claude_local 固定走 AITechFlux Anthropic 兼容入口，避免 DeepSeek thinking mode reasoning_content 回传问题。"
   },
   {
     entryId: "entry-paperclip-codex-local-mac",

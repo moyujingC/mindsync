@@ -1,0 +1,14 @@
+{
+  "prompt_cache": {
+    "hit_tokens": 0,
+    "miss_tokens": 0
+  },
+  "model_trace": [
+    {
+      "model": "deepseek-v4-pro",
+      "base_url": "https://api.deepseek.com",
+      "endpoint_url": "https://api.deepseek.com/chat/completions",
+      "result": "success"
+    }
+  ]
+}

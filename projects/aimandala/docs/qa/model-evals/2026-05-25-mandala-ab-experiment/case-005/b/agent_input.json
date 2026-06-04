@@ -1,0 +1,30 @@
+{
+  "agent_version": "mandala-e2e-agent-v1",
+  "report_mode": "lite",
+  "image": {
+    "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-005-mandala.jpg",
+    "marked_local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-005-mandala-3q.jpg",
+    "storage_backend": "",
+    "storage_key": ""
+  },
+  "user_context": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "painting_intention": "A/B 对照：case-005 【案例5】用五行感知+相生相克法解读成长与财富（完整解读）",
+    "painting_feeling": ""
+  },
+  "circle_boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "ab_experiment"
+  },
+  "prompt_pack_id": "wealth-report-v1.0.0",
+  "agent_variant": "single_pass_e2e",
+  "output_requirements": {
+    "language": "zh-CN",
+    "audience": "普通用户",
+    "tone": "像疗愈师带用户看画",
+    "forbidden_terms": []
+  }
+}

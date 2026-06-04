@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"
+   "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="dtb:uid" content="0"/>
+    <meta name="dtb:depth" content="4"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle>
+    <text>59383</text>
+  </docTitle>
+  <navMap>   <navPoint id="navPoint-1" playOrder="1">
+      <navLabel>
+        <text>封面</text>
+      </navLabel>
+      <content src="Text/cover.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-2" playOrder="2">
+      <navLabel>
+        <text>扉页</text>
+      </navLabel>
+      <content src="Text/titlepage.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-3" playOrder="3">
+      <navLabel>
+        <text>版权页</text>
+      </navLabel>
+      <content src="Text/copyright.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-4" playOrder="4">
+      <navLabel>
+        <text>目录</text>
+      </navLabel>
+      <content src="Text/toc.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-1" playOrder="1">
+      <navLabel>
+        <text>内 容 提 要</text>
+      </navLabel>
+      <content src="Text/copyright1.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-2" playOrder="2">
+      <navLabel>
+        <text>推荐序1</text>
+      </navLabel>
+      <content src="Text/Chapter001.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-3" playOrder="3">
+      <navLabel>
+        <text>推荐序2</text>
+      </navLabel>
+      <content src="Text/Chapter002.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-4" playOrder="4">
+      <navLabel>
+        <text>推荐序3</text>
+      </navLabel>
+      <content src="Text/Chapter003.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-5" playOrder="5">
+      <navLabel>
+        <text>前言</text>
+      </navLabel>
+      <content src="Text/Chapter004.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-6" playOrder="6">
+      <navLabel>
+        <text>第一篇 理论篇</text>
+      </navLabel>
+      <content src="Text/Chapter005.xhtml"/>
+      <navPoint id="navPoint-7" playOrder="7">
+        <navLabel>
+          <text>第1章 格式塔心理咨询概述</text>
+        </navLabel>
+        <content src="Text/Chapter005.xhtml#a011"/>
+        <navPoint id="navPoint-8" playOrder="8">
+          <navLabel>
+            <text>什么是格式塔</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a012"/>
+        </navPoint>
+        <navPoint id="navPoint-9" playOrder="9">
+          <navLabel>
+            <text>格式塔心理咨询与格式塔心理学</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a013"/>
+        </navPoint>
+        <navPoint id="navPoint-10" playOrder="10">
+          <navLabel>
+            <text>格式塔心理咨询与精神分析</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a014"/>
+        </navPoint>
+        <navPoint id="navPoint-11" playOrder="11">
+          <navLabel>
+            <text>格式塔心理咨询与心理剧</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a015"/>
+        </navPoint>
+        <navPoint id="navPoint-12" playOrder="12">
+          <navLabel>
+            <text>格式塔心理咨询与人本主义</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a016"/>
+        </navPoint>
+        <navPoint id="navPoint-13" playOrder="13">
+          <navLabel>
+            <text>格式塔心理咨询的整合性</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a017"/>
+        </navPoint>
+        <navPoint id="navPoint-14" playOrder="14">
+          <navLabel>
+            <text>格式塔心理咨询的推广运用</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a018"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-15" playOrder="15">
+        <navLabel>
+          <text>第2章 现象学方法</text>
+        </navLabel>
+        <content src="Text/Chapter005.xhtml#a019"/>
+        <navPoint id="navPoint-16" playOrder="16">
+          <navLabel>
+            <text>格式塔心理咨询中的现象学</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a020"/>
+          <navPoint id="navPoint-17" playOrder="17">
+            <navLabel>
+              <text>悬搁</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_1"/>
+          </navPoint>
+          <navPoint id="navPoint-18" playOrder="18">
+            <navLabel>
+              <text>好奇心</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_2"/>
+          </navPoint>
+          <navPoint id="navPoint-19" playOrder="19">
+            <navLabel>
+              <text>描述</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_3"/>
+          </navPoint>
+          <navPoint id="navPoint-20" playOrder="20">
+            <navLabel>
+              <text>同等化</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_4"/>
+          </navPoint>
+        </navPoint>
+        <navPoint id="navPoint-21" playOrder="21">
+          <navLabel>
+            <text>现象学探索方法的精髓和五不原则</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a021"/>
+        </navPoint>
+        <navPoint id="navPoint-22" playOrder="22">
+          <navLabel>
+            <text>此时此刻</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a022"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-23" playOrder="23">
+        <navLabel>
+          <text>第3章 我-你关系</text>
+        </navLabel>
+        <content src="Text/Chapter005.xhtml#a023"/>
+        <navPoint id="navPoint-24" playOrder="24">
+          <navLabel>
+            <text>我-你关系的重要性</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a024"/>
+        </navPoint>
+        <navPoint id="navPoint-25" playOrder="25">
+          <navLabel>
+            <text>我-你关系的工作</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a025"/>
+          <navPoint id="navPoint-26" playOrder="26">
+            <navLabel>
+              <text>包容性</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_5"/>
+          </navPoint>
+          <navPoint id="navPoint-27" playOrder="27">
+            <navLabel>
+              <text>存在性</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_6"/>
+          </navPoint>
+          <navPoint id="navPoint-28" playOrder="28">
+            <navLabel>
+              <text>接触性</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_7"/>
+          </navPoint>
+          <navPoint id="navPoint-29" playOrder="29">
+            <navLabel>
+              <text>灵活性</text>
+            </navLabel>
+            <content src="Text/Chapter005.xhtml#sigil_toc_id_8"/>
+          </navPoint>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-30" playOrder="30">
+        <navLabel>
+          <text>第4章 场</text>
+        </navLabel>
+        <content src="Text/Chapter005.xhtml#a026"/>
+        <navPoint id="navPoint-31" playOrder="31">
+          <navLabel>
+            <text>场的理解</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a027"/>
+        </navPoint>
+        <navPoint id="navPoint-32" playOrder="32">
+          <navLabel>
+            <text>系统论</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a028"/>
+        </navPoint>
+        <navPoint id="navPoint-33" playOrder="33">
+          <navLabel>
+            <text>时间场、空间场</text>
+          </navLabel>
+          <content src="Text/Chapter005.xhtml#a029"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint-34" playOrder="34">
+      <navLabel>
+        <text>第二篇 概念篇</text>
+      </navLabel>
+      <content src="Text/Chapter006.xhtml"/>
+      <navPoint id="navPoint-35" playOrder="35">
+        <navLabel>
+          <text>第5章 觉察</text>
+        </navLabel>
+        <content src="Text/Chapter006.xhtml#a031"/>
+        <navPoint id="navPoint-36" playOrder="36">
+          <navLabel>
+            <text>觉察的理解与重要性</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a032"/>
+        </navPoint>
+        <navPoint id="navPoint-37" playOrder="37">
+          <navLabel>
+            <text>自我觉察的特点和区域</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a033"/>
+          <navPoint id="navPoint-38" playOrder="38">
+            <navLabel>
+              <text>内部区域觉察</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_9"/>
+          </navPoint>
+          <navPoint id="navPoint-39" playOrder="39">
+            <navLabel>
+              <text>外部区域觉察</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_10"/>
+          </navPoint>
+          <navPoint id="navPoint-40" playOrder="40">
+            <navLabel>
+              <text>中间区域觉察</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_11"/>
+          </navPoint>
+        </navPoint>
+        <navPoint id="navPoint-41" playOrder="41">
+          <navLabel>
+            <text>三维一体，精微觉察</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a034"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-42" playOrder="42">
+        <navLabel>
+          <text>第6章 当下</text>
+        </navLabel>
+        <content src="Text/Chapter006.xhtml#a035"/>
+        <navPoint id="navPoint-43" playOrder="43">
+          <navLabel>
+            <text>回归当下</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a036"/>
+        </navPoint>
+        <navPoint id="navPoint-44" playOrder="44">
+          <navLabel>
+            <text>回归当下的途径</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a037"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-45" playOrder="45">
+        <navLabel>
+          <text>第7章 接触</text>
+        </navLabel>
+        <content src="Text/Chapter006.xhtml#a038"/>
+        <navPoint id="navPoint-46" playOrder="46">
+          <navLabel>
+            <text>接触</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a039"/>
+        </navPoint>
+        <navPoint id="navPoint-47" playOrder="47">
+          <navLabel>
+            <text>边界</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a040"/>
+        </navPoint>
+        <navPoint id="navPoint-48" playOrder="48">
+          <navLabel>
+            <text>接触的抗拒模式</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a041"/>
+          <navPoint id="navPoint-49" playOrder="49">
+            <navLabel>
+              <text>投射</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_12"/>
+          </navPoint>
+          <navPoint id="navPoint-50" playOrder="50">
+            <navLabel>
+              <text>内射</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_13"/>
+          </navPoint>
+          <navPoint id="navPoint-51" playOrder="51">
+            <navLabel>
+              <text>回射</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_14"/>
+          </navPoint>
+          <navPoint id="navPoint-52" playOrder="52">
+            <navLabel>
+              <text>偏转</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_15"/>
+          </navPoint>
+          <navPoint id="navPoint-53" playOrder="53">
+            <navLabel>
+              <text>融合</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_16"/>
+          </navPoint>
+          <navPoint id="navPoint-54" playOrder="54">
+            <navLabel>
+              <text>低敏感</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_17"/>
+          </navPoint>
+          <navPoint id="navPoint-55" playOrder="55">
+            <navLabel>
+              <text>自我中心主义</text>
+            </navLabel>
+            <content src="Text/Chapter006.xhtml#sigil_toc_id_18"/>
+          </navPoint>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-56" playOrder="56">
+        <navLabel>
+          <text>第8章 体验循环</text>
+        </navLabel>
+        <content src="Text/Chapter006.xhtml#a042"/>
+        <navPoint id="navPoint-57" playOrder="57">
+          <navLabel>
+            <text>体验循环阶段划分</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a043"/>
+        </navPoint>
+        <navPoint id="navPoint-58" playOrder="58">
+          <navLabel>
+            <text>体验循环模式下的评估</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a044"/>
+        </navPoint>
+        <navPoint id="navPoint-59" playOrder="59">
+          <navLabel>
+            <text>开始新的接触：感知</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a045"/>
+        </navPoint>
+        <navPoint id="navPoint-60" playOrder="60">
+          <navLabel>
+            <text>开始新的接触：识别</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a046"/>
+        </navPoint>
+        <navPoint id="navPoint-61" playOrder="61">
+          <navLabel>
+            <text>开始新的接触：赋能、行动</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a047"/>
+        </navPoint>
+        <navPoint id="navPoint-62" playOrder="62">
+          <navLabel>
+            <text>开始新的接触：充分接触、吸收</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a048"/>
+        </navPoint>
+        <navPoint id="navPoint-63" playOrder="63">
+          <navLabel>
+            <text>开始新的接触：消退、撤回</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a049"/>
+        </navPoint>
+        <navPoint id="navPoint-64" playOrder="64">
+          <navLabel>
+            <text>体验循环中的阴阳平衡</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a050"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-65" playOrder="65">
+        <navLabel>
+          <text>第9章 极性</text>
+        </navLabel>
+        <content src="Text/Chapter006.xhtml#a051"/>
+        <navPoint id="navPoint-66" playOrder="66">
+          <navLabel>
+            <text>对极性的理解</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a052"/>
+        </navPoint>
+        <navPoint id="navPoint-67" playOrder="67">
+          <navLabel>
+            <text>针对极性开展工作</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a053"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-68" playOrder="68">
+        <navLabel>
+          <text>第10章 固着的格式塔</text>
+        </navLabel>
+        <content src="Text/Chapter006.xhtml#a054"/>
+        <navPoint id="navPoint-69" playOrder="69">
+          <navLabel>
+            <text>固着格式塔的表现</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a055"/>
+        </navPoint>
+        <navPoint id="navPoint-70" playOrder="70">
+          <navLabel>
+            <text>对固着格式塔的解读</text>
+          </navLabel>
+          <content src="Text/Chapter006.xhtml#a056"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint-71" playOrder="71">
+      <navLabel>
+        <text>第三篇 技能篇</text>
+      </navLabel>
+      <content src="Text/Chapter007.xhtml"/>
+      <navPoint id="navPoint-72" playOrder="72">
+        <navLabel>
+          <text>第11章 心理地图</text>
+        </navLabel>
+        <content src="Text/Chapter007.xhtml#a058"/>
+        <navPoint id="navPoint-73" playOrder="73">
+          <navLabel>
+            <text>引用心理地图开展工作的方式</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a059"/>
+        </navPoint>
+        <navPoint id="navPoint-74" playOrder="74">
+          <navLabel>
+            <text>心理地图的作用</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a060"/>
+        </navPoint>
+        <navPoint id="navPoint-75" playOrder="75">
+          <navLabel>
+            <text>使用心理地图的注意事项</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a061"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-76" playOrder="76">
+        <navLabel>
+          <text>第12章 实验</text>
+        </navLabel>
+        <content src="Text/Chapter007.xhtml#a062"/>
+        <navPoint id="navPoint-77" playOrder="77">
+          <navLabel>
+            <text>实验的步骤</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a063"/>
+        </navPoint>
+        <navPoint id="navPoint-78" playOrder="78">
+          <navLabel>
+            <text>实验的干预技术</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a064"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-79" playOrder="79">
+        <navLabel>
+          <text>第13章 未完成事件工作路径</text>
+        </navLabel>
+        <content src="Text/Chapter007.xhtml#a065"/>
+        <navPoint id="navPoint-80" playOrder="80">
+          <navLabel>
+            <text>未完成事件的形成</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a066"/>
+        </navPoint>
+        <navPoint id="navPoint-81" playOrder="81">
+          <navLabel>
+            <text>未完成事件工作路径</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a067"/>
+          <navPoint id="navPoint-82" playOrder="82">
+            <navLabel>
+              <text>导入</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_19"/>
+          </navPoint>
+          <navPoint id="navPoint-83" playOrder="83">
+            <navLabel>
+              <text>叙事</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_20"/>
+          </navPoint>
+          <navPoint id="navPoint-84" playOrder="84">
+            <navLabel>
+              <text>图像</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_21"/>
+          </navPoint>
+          <navPoint id="navPoint-85" playOrder="85">
+            <navLabel>
+              <text>退行</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_22"/>
+          </navPoint>
+          <navPoint id="navPoint-86" playOrder="86">
+            <navLabel>
+              <text>表达</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_23"/>
+          </navPoint>
+          <navPoint id="navPoint-87" playOrder="87">
+            <navLabel>
+              <text>接触</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_24"/>
+          </navPoint>
+          <navPoint id="navPoint-88" playOrder="88">
+            <navLabel>
+              <text>道歉</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_25"/>
+          </navPoint>
+          <navPoint id="navPoint-89" playOrder="89">
+            <navLabel>
+              <text>成长</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_26"/>
+          </navPoint>
+          <navPoint id="navPoint-90" playOrder="90">
+            <navLabel>
+              <text>回看</text>
+            </navLabel>
+            <content src="Text/Chapter007.xhtml#sigil_toc_id_27"/>
+          </navPoint>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-91" playOrder="91">
+        <navLabel>
+          <text>第14章 空椅子</text>
+        </navLabel>
+        <content src="Text/Chapter007.xhtml#a068"/>
+        <navPoint id="navPoint-92" playOrder="92">
+          <navLabel>
+            <text>椅子的选择</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a069"/>
+        </navPoint>
+        <navPoint id="navPoint-93" playOrder="93">
+          <navLabel>
+            <text>椅子的设置</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a070"/>
+        </navPoint>
+        <navPoint id="navPoint-94" playOrder="94">
+          <navLabel>
+            <text>两极的整合</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a071"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-95" playOrder="95">
+        <navLabel>
+          <text>第15章 梦工作</text>
+        </navLabel>
+        <content src="Text/Chapter007.xhtml#a072"/>
+        <navPoint id="navPoint-96" playOrder="96">
+          <navLabel>
+            <text>梦是现实生活的完形</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a073"/>
+        </navPoint>
+        <navPoint id="navPoint-97" playOrder="97">
+          <navLabel>
+            <text>只有造梦者才知道梦的意义</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a074"/>
+        </navPoint>
+        <navPoint id="navPoint-98" playOrder="98">
+          <navLabel>
+            <text>梦里的自己才是真实的自己</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a075"/>
+        </navPoint>
+        <navPoint id="navPoint-99" playOrder="99">
+          <navLabel>
+            <text>梦工作的技术与干预</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a076"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-100" playOrder="100">
+        <navLabel>
+          <text>第16章 移情</text>
+        </navLabel>
+        <content src="Text/Chapter007.xhtml#a077"/>
+        <navPoint id="navPoint-101" playOrder="101">
+          <navLabel>
+            <text>对移情开展工作</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a078"/>
+        </navPoint>
+        <navPoint id="navPoint-102" playOrder="102">
+          <navLabel>
+            <text>对反移情开展工作及心理咨询师的自我开放</text>
+          </navLabel>
+          <content src="Text/Chapter007.xhtml#a079"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint-103" playOrder="103">
+      <navLabel>
+        <text>第四篇 应用篇</text>
+      </navLabel>
+      <content src="Text/Chapter008.xhtml"/>
+      <navPoint id="navPoint-104" playOrder="104">
+        <navLabel>
+          <text>第17章 格式塔团体心理咨询</text>
+        </navLabel>
+        <content src="Text/Chapter008.xhtml#a081"/>
+        <navPoint id="navPoint-105" playOrder="105">
+          <navLabel>
+            <text>格式塔团体心理咨询的形成和特点</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a082"/>
+        </navPoint>
+        <navPoint id="navPoint-106" playOrder="106">
+          <navLabel>
+            <text>格式塔团体心理咨询的设置</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a083"/>
+        </navPoint>
+        <navPoint id="navPoint-107" playOrder="107">
+          <navLabel>
+            <text>孕妇团体心理咨询</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a084"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-108" playOrder="108">
+        <navLabel>
+          <text>第18章 格式塔取向的心理危机干预</text>
+        </navLabel>
+        <content src="Text/Chapter008.xhtml#a085"/>
+        <navPoint id="navPoint-109" playOrder="109">
+          <navLabel>
+            <text>格式塔取向心理危机干预的主要观点</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a086"/>
+          <navPoint id="navPoint-110" playOrder="110">
+            <navLabel>
+              <text>危机干预需要系统的视角</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_28"/>
+          </navPoint>
+          <navPoint id="navPoint-111" playOrder="111">
+            <navLabel>
+              <text>危机干预需要立足于现象学的视角</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_29"/>
+          </navPoint>
+          <navPoint id="navPoint-112" playOrder="112">
+            <navLabel>
+              <text>危机干预需要立足发展和人本主义的视角</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_30"/>
+          </navPoint>
+        </navPoint>
+        <navPoint id="navPoint-113" playOrder="113">
+          <navLabel>
+            <text>格式塔取向心理危机干预的具体建议</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a087"/>
+          <navPoint id="navPoint-114" playOrder="114">
+            <navLabel>
+              <text>注重此时此地的觉察</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_31"/>
+          </navPoint>
+          <navPoint id="navPoint-115" playOrder="115">
+            <navLabel>
+              <text>慎重处理情绪问题</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_32"/>
+          </navPoint>
+          <navPoint id="navPoint-116" playOrder="116">
+            <navLabel>
+              <text>发展支持性资源</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_33"/>
+          </navPoint>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-117" playOrder="117">
+        <navLabel>
+          <text>第19章 格式塔取向的临床心理督导</text>
+        </navLabel>
+        <content src="Text/Chapter008.xhtml#a088"/>
+        <navPoint id="navPoint-118" playOrder="118">
+          <navLabel>
+            <text>心理督导的分类</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a089"/>
+        </navPoint>
+        <navPoint id="navPoint-119" playOrder="119">
+          <navLabel>
+            <text>格式塔取向的临床心理督导发展阶段</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a090"/>
+          <navPoint id="navPoint-120" playOrder="120">
+            <navLabel>
+              <text>第一阶段：关系建立阶段</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_34"/>
+          </navPoint>
+          <navPoint id="navPoint-121" playOrder="121">
+            <navLabel>
+              <text>第二阶段：对话与觉察阶段</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_35"/>
+          </navPoint>
+          <navPoint id="navPoint-122" playOrder="122">
+            <navLabel>
+              <text>第三阶段：教育与指导阶段</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_36"/>
+          </navPoint>
+          <navPoint id="navPoint-123" playOrder="123">
+            <navLabel>
+              <text>第四阶段：整合与总结阶段</text>
+            </navLabel>
+            <content src="Text/Chapter008.xhtml#sigil_toc_id_37"/>
+          </navPoint>
+        </navPoint>
+      </navPoint>
+      <navPoint id="navPoint-124" playOrder="124">
+        <navLabel>
+          <text>附录</text>
+        </navLabel>
+        <content src="Text/Chapter008.xhtml#a091"/>
+        <navPoint id="navPoint-125" playOrder="125">
+          <navLabel>
+            <text>案例一：我要真实地表达——倾听受伤女孩心灵深处的声音</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a092"/>
+        </navPoint>
+        <navPoint id="navPoint-126" playOrder="126">
+          <navLabel>
+            <text>案例二：当熊爸爸遇上熊孩子——家庭咨询案例</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a093"/>
+        </navPoint>
+        <navPoint id="navPoint-127" playOrder="127">
+          <navLabel>
+            <text>案例三：盗梦空间——格式塔梦工作</text>
+          </navLabel>
+          <content src="Text/Chapter008.xhtml#a094"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+  </navMap>
+</ncx>

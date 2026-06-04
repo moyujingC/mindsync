@@ -1497,6 +1497,57 @@ test("POST /v1/messages maps anthropic messages into upstream chat completions a
   });
 });
 
+test("POST /v1/messages caps client max_tokens for chat-completions upstreams", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "chatcmpl-no-max-tokens",
+      object: "chat.completion",
+      model: observedBody.model,
+      choices: [
+        {
+          index: 0,
+          message: { role: "assistant", content: "ok" },
+          finish_reason: "stop"
+        }
+      ],
+      usage: {
+        prompt_tokens: 12,
+        completion_tokens: 8
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          }),
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 32000,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "hello relay" }] }
+            ]
+          })
+        });
+
+        assert.equal(response.status, 200);
+      });
+    }, state);
+  });
+
+  assert.equal(observedBody.max_tokens, 1024);
+});
+
 test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-style entries", async () => {
   let observedBody = null;
   let observedHeaders = null;
@@ -1566,6 +1617,55 @@ test("POST /v1/messages proxies natively to anthropic upstream for AITechFlux-st
     assert.equal(observedHeaders["x-api-key"], "sk-second");
     assert.equal(observedHeaders.authorization, "Bearer sk-second");
   });
+});
+
+test("POST /v1/messages caps client max_tokens for native anthropic upstreams", async () => {
+  let observedBody = null;
+
+  await withMockUpstream(async (request, response) => {
+    observedBody = await readRequestJson(request);
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      id: "msg_native_no_max_tokens",
+      type: "message",
+      role: "assistant",
+      model: observedBody.model,
+      content: [{ type: "text", text: "ok" }],
+      stop_reason: "end_turn",
+      usage: {
+        input_tokens: 12,
+        output_tokens: 1
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.tasks[0].defaultModelEntryId = "model-second";
+    state.modelEntries[1].baseUrl = upstreamBaseUrl;
+    state.modelEntries[1].modelId = "Claude混合版";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const response = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          }),
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 32000,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "hello native" }] }
+            ]
+          })
+        });
+
+        assert.equal(response.status, 200);
+      });
+    }, state);
+  });
+
+  assert.equal(observedBody.max_tokens, 1024);
 });
 
 test("POST /v1/messages collapses think blocks for native anthropic upstream responses", async () => {
@@ -1823,6 +1923,114 @@ test("POST /v1/messages preserves all anthropic tool_use ids when sending tool r
       content: "matched server.mjs"
     }
   ]);
+});
+
+test("POST /v1/messages preserves reasoning_content across mapped OpenAI-compatible turns", async () => {
+  const observedBodies = [];
+
+  await withMockUpstream(async (request, response) => {
+    observedBodies.push(await readRequestJson(request));
+    response.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+
+    if (observedBodies.length === 1) {
+      response.end(JSON.stringify({
+        id: "chatcmpl_reasoning_1",
+        object: "chat.completion",
+        model: "deepseek-v4-pro",
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: "assistant",
+              content: "first answer",
+              reasoning_content: "private chain of thought token"
+            },
+            finish_reason: "stop"
+          }
+        ],
+        usage: {
+          input_tokens: 11,
+          output_tokens: 5
+        }
+      }));
+      return;
+    }
+
+    response.end(JSON.stringify({
+      id: "chatcmpl_reasoning_2",
+      object: "chat.completion",
+      model: "deepseek-v4-pro",
+      choices: [
+        {
+          index: 0,
+          message: {
+            role: "assistant",
+            content: "second answer"
+          },
+          finish_reason: "stop"
+        }
+      ],
+      usage: {
+        input_tokens: 16,
+        output_tokens: 4
+      }
+    }));
+  }, async (upstreamBaseUrl) => {
+    const state = createState();
+    state.modelEntries[0].baseUrl = upstreamBaseUrl;
+    state.modelEntries[0].modelId = "deepseek-v4-pro";
+    state.modelEntries[0].providerLabel = "DeepSeek";
+
+    await withTempState(async () => {
+      await withServer(createDevRelayServer(), async (baseUrl) => {
+        const first = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          }),
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 64,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "question one" }] }
+            ]
+          })
+        });
+
+        assert.equal(first.status, 200);
+        const firstPayload = await first.json();
+        assert.equal(firstPayload.content[0].reasoning_content, "private chain of thought token");
+
+        const second = await fetch(`${baseUrl}/v1/messages`, {
+          method: "POST",
+          headers: withRelayAuthorization(DEFAULT_RELAY_TOKEN, {
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01"
+          }),
+          body: JSON.stringify({
+            model: "ignored-by-relay",
+            max_tokens: 64,
+            messages: [
+              { role: "user", content: [{ type: "text", text: "question one" }] },
+              {
+                role: "assistant",
+                content: firstPayload.content
+              },
+              { role: "user", content: [{ type: "text", text: "question two" }] }
+            ]
+          })
+        });
+
+        assert.equal(second.status, 200);
+      });
+    }, state);
+  });
+
+  assert.equal(observedBodies.length, 2);
+  assert.equal(observedBodies[1].messages[1].role, "assistant");
+  assert.equal(observedBodies[1].messages[1].content, "first answer");
+  assert.equal(observedBodies[1].messages[1].reasoning_content, "private chain of thought token");
 });
 
 test("POST /v1/messages returns anthropic streaming events when stream=true", async () => {

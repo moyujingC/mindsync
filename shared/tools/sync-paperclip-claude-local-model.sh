@@ -10,11 +10,13 @@ COMPANY_ID="${PAPERCLIP_COMPANY_ID:-be191a6e-7447-4821-a93d-9114214c4a64}"
 CONTROL_PLANE_BASE_URL="${CONTROL_PLANE_BASE_URL:-http://127.0.0.1:4318}"
 ENTRY_ID="${ENTRY_ID:-entry-paperclip-claude-local-server}"
 RELAYHUB_INTERNAL_TOKEN="${RELAYHUB_INTERNAL_TOKEN:-}"
+USE_CONTROL_PLANE_BINDING="${USE_CONTROL_PLANE_BINDING:-0}"
 
-PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://api.deepseek.com/anthropic}"
-PRIMARY_MODEL="${PRIMARY_MODEL:-deepseek-v4-pro}"
-BACKUP_BASE_URL="${BACKUP_BASE_URL:-https://api.deepseek.com/anthropic}"
-BACKUP_MODEL="${BACKUP_MODEL:-deepseek-v4-flash}"
+PRIMARY_BASE_URL="${PRIMARY_BASE_URL:-https://relayhub.jingshu.cc/claude}"
+PRIMARY_MODEL="${PRIMARY_MODEL:-relayhub-entry-paperclip-claude-local-server}"
+RELAYHUB_RELAY_TOKEN="${RELAYHUB_RELAY_TOKEN:-relayhub-release-claude}"
+BACKUP_BASE_URL="${BACKUP_BASE_URL:-https://relayhub.jingshu.cc/claude}"
+BACKUP_MODEL="${BACKUP_MODEL:-relayhub-entry-paperclip-claude-local-server}"
 
 read_token() {
   ruby -rjson -e '
@@ -36,14 +38,21 @@ Env overrides:
   PAPERCLIP_COMPANY_ID
   CONTROL_PLANE_BASE_URL
   RELAYHUB_INTERNAL_TOKEN
+  USE_CONTROL_PLANE_BINDING
   ENTRY_ID
   PRIMARY_BASE_URL
   PRIMARY_MODEL
+  RELAYHUB_RELAY_TOKEN
   BACKUP_BASE_URL
   BACKUP_MODEL
 
 Notes:
   - This script is now an initialization / repair tool.
+  - Default claude_local mode is Claude Code API-key mode via RelayHub:
+    ANTHROPIC_BASE_URL=https://relayhub.jingshu.cc/claude and
+    ANTHROPIC_MODEL=relayhub-entry-paperclip-claude-local-server.
+  - Set USE_CONTROL_PLANE_BINDING=1 only when the RelayHub entry binding is
+    known to resolve to a Claude Code-compatible Anthropic base URL and model.
   - Steady-state Paperclip usage should point claude_local at RelayHub once,
     then switch model / api key / reasoning effort in RelayHub only.
 EOF
@@ -63,6 +72,17 @@ require_cmd curl
 require_cmd jq
 
 read_binding_defaults() {
+  if [[ "${USE_CONTROL_PLANE_BINDING}" != "1" ]]; then
+    RESOLVED_MODEL_ID="${ENTRY_ID}"
+    RESOLVED_BASE_URL="${PRIMARY_BASE_URL}"
+    RESOLVED_MODEL="${PRIMARY_MODEL}"
+    RESOLVED_REASONING_EFFORT=""
+    RESOLVED_API_KEY="${RELAYHUB_RELAY_TOKEN}"
+    RESOLVED_HAS_STORED_API_KEY="true"
+    export RESOLVED_MODEL_ID RESOLVED_BASE_URL RESOLVED_MODEL RESOLVED_REASONING_EFFORT RESOLVED_API_KEY RESOLVED_HAS_STORED_API_KEY
+    return
+  fi
+
   local resolved_json
   resolved_json="$(relayhub_fetch_entry_binding_json "${CONTROL_PLANE_BASE_URL}" "${ENTRY_ID}" "${RELAYHUB_INTERNAL_TOKEN}")"
   relayhub_export_entry_binding_env "${resolved_json}"
@@ -125,24 +145,28 @@ resolved_api_key = os.environ["RESOLVED_API_KEY"]
 env["ANTHROPIC_BASE_URL"] = plain(primary_base_url)
 env["ANTHROPIC_MODEL"] = plain(primary_model)
 env["ANTHROPIC_API_KEY"] = plain(resolved_api_key)
+env["ANTHROPIC_AUTH_TOKEN"] = plain(resolved_api_key)
 env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = plain(primary_model)
 env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = plain(primary_model)
 env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = plain(primary_model)
 env.setdefault("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", plain("1"))
 
 adapter_config["env"] = env
+adapter_config["model"] = primary_model
 adapter_config["paperclipModelRouting"] = {
     "primary": {
-        "provider": "DeepSeek",
+        "provider": "RelayHub Claude Code",
         "baseUrl": primary_base_url,
         "model": primary_model,
+        "authMode": "api_key",
     },
     "backup": {
-        "provider": "DeepSeek",
+        "provider": "RelayHub Claude Code",
         "baseUrl": backup_base_url,
         "model": backup_model,
         "note": "备用口径，当前未声明为自动回退。",
     },
+    "note": "Claude Code uses ANTHROPIC_API_KEY/ANTHROPIC_AUTH_TOKEN; no interactive Claude login is required.",
 }
 
 print(json.dumps({

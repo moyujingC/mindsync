@@ -298,7 +298,8 @@
   margin-top: 18px;
   padding: 18px;
   border-radius: 22px;
-  background: linear-gradient(
+  background:
+    linear-gradient(
       180deg,
       rgba(255, 248, 239, 0.12),
       rgba(255, 244, 229, 0.06)

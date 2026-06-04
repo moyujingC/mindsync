@@ -5,8 +5,7 @@ import {
   applyInterpretationCreated,
   applyReport,
   applyStatus,
-  getLiteStructuredReport,
-  getProStructuredReport,
+  applyWealthReport,
   initialMandalaFlowState,
   selectImage,
 } from "./flow";
@@ -14,7 +13,7 @@ import type {
   CreateInterpretationResponse,
   DetectCirclesResponse,
   InterpretationStatusResponse,
-  ReportResponse,
+  WealthReportResponse,
 } from "../types";
 
 const detection: DetectCirclesResponse = {
@@ -45,7 +44,7 @@ const interpretation: CreateInterpretationResponse = {
     inner_radius: 12,
     middle_radius: 24,
   },
-  auto_detected: true,
+  auto_detected: false,
   existing: false,
   report_ready: false,
 };
@@ -61,62 +60,55 @@ const readyStatus: InterpretationStatusResponse = {
     inner_radius: 12,
     middle_radius: 24,
   },
-  auto_detected: true,
+  auto_detected: false,
   can_upgrade: true,
 };
 
 describe("shared/core flow", () => {
-  it("推进 lite 状态链路并提取结构化报告", () => {
+  it("推进 lite 状态链路", () => {
     const selected = selectImage(initialMandalaFlowState, "/tmp/sample.png");
     const detected = applyDetection(selected, detection);
     const created = applyInterpretationCreated(detected, interpretation);
     const ready = applyStatus(created, readyStatus);
 
-    const liteReport: ReportResponse = {
-      interpretation_id: "ipt-lite-1",
-      version: "lite",
-      title: "一镜 Lite 版",
-      overall_impression: "整体稳定",
-      structured: {
-        topic_context: {
-          topic: "general",
-          topic_label: "全面解读",
-          report_mode: "lite",
-          orientation: {
-            intro: "这份报告会从全面解读这个议题角度看这张画。",
-            focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
-            key_terms: [],
-          },
-        },
-        current_reading: "整体稳定",
-        visual_basis: "线条细密",
-        pattern_interpretation: "情绪平稳",
-        life_connection: "当下可以先稳住节奏。",
-        lite_healing_guidance: {
-          directions: [{ title: "先稳住节奏", content: "先不要急着推进，保留一点观察空间。" }],
-          micro_practices: [{ title: "一句记录", content: "写下一句此刻最真实的感受。" }],
-        },
-        pro_report_entry: {
-          title: "另一份更深的独立报告",
-          summary: "如果你希望从更深层结构继续理解这张画，可以看看 Pro 报告。",
-          product_note: "Pro 不是 Lite 的升级版，而是另一份独立购买的完整解读。",
-        },
-      },
-      report: "lite body",
-      ai_qa_context: null,
-      can_upgrade: true,
-      upgrade_price: 39,
-      error: null,
-    };
-
-    const completed = applyReport(ready, liteReport);
-
     expect(selected.selectedImage?.imagePath).toBe("/tmp/sample.png");
     expect(detected.step).toBe("detectingCircles");
     expect(created.step).toBe("liteGenerating");
     expect(ready.step).toBe("liteReady");
-    expect(completed.step).toBe("liteReady");
-    expect(getLiteStructuredReport(completed.report)?.pro_report_entry.summary).toContain("更深层结构");
+  });
+
+  it("applyWealthReport 直挂新版返回结构", () => {
+    const snapshot = applyWealthReport(initialMandalaFlowState, {
+      success: true,
+      report_id: "wealth-1",
+      report_mode: "lite",
+      final_report_md: "# 财富关系曼陀罗解读\n\n当前财富能量稳定。",
+      final_report: {
+        title: "财富关系曼陀罗解读",
+        summary: "当前财富能量稳定。",
+        persona: {
+          persona_id: "manman",
+          persona_version: "manman-report-companion-v0.1",
+          display_name: "曼曼",
+          role_label: "AI 报告陪读 avatar",
+          scope: "陪用户读懂本次曼陀罗报告，并在报告范围内回答追问",
+          boundaries: ["不是心理咨询师"],
+        },
+      },
+      visual_draft: { summary: "视觉草稿" },
+      prompt_pack_manifest: { pack_id: "wealth-report-v1.0.0" },
+      quality_gate: { status: "passed" },
+      run_summary: { duration_ms: 1234 },
+    } as WealthReportResponse);
+
+    expect(snapshot.step).toBe("liteReady");
+    expect(snapshot.report?.title).toBe("财富关系曼陀罗解读");
+    expect(snapshot.report?.overall_impression).toBe("当前财富能量稳定。");
+    expect(snapshot.report?.report).toContain("财富关系曼陀罗解读");
+    expect(snapshot.report?.persona?.persona_id).toBe("manman");
+    expect(snapshot.report?.persona?.display_name).toBe("曼曼");
+    expect(snapshot.report?.visual_draft).toBeTruthy();
+    expect(snapshot.report?.prompt_pack_manifest).toBeTruthy();
   });
 
   it("对 pro 报告直接进入 proReady 语义", () => {
@@ -125,28 +117,8 @@ describe("shared/core flow", () => {
       version: "pro",
       title: "一梳 Pro 版",
       overall_impression: "需要更深分析",
-      structured: {
-        topic_context: {
-          topic: "general",
-          topic_label: "全面解读",
-          report_mode: "pro",
-          orientation: {
-            intro: "这份报告会从全面解读这个议题角度看这张画。",
-            focus: "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
-            key_terms: [],
-          },
-        },
-        deep_impression: "边界感偏强",
-        evidence_digest: "线条边界清楚。",
-        imbalance_diagnosis: "边界收紧。",
-        root_cause_chain: {
-          surface: "先控制。",
-          mechanism: "用掌控感降低不确定。",
-          core: "害怕失去主动权。",
-        },
-        deep_structure_interpretation: "这更像控制感背后的安全议题。",
-        healing_plan: [],
-      },
+      structured: null,
+      persona: null,
       report: "pro body",
       ai_qa_context: null,
       can_upgrade: false,
@@ -156,6 +128,5 @@ describe("shared/core flow", () => {
 
     expect(proState.step).toBe("proReady");
     expect(proState.report?.version).toBe("pro");
-    expect(getProStructuredReport(proState.report)?.deep_impression).toBe("边界感偏强");
   });
 });

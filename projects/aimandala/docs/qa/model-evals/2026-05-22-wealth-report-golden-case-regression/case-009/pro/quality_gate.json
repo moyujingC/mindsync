@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "failure_ids": [],
+  "details": {
+    "missing_stages": [],
+    "actual_blocks": [
+      "input-and-boundary",
+      "foundation-image-reading",
+      "theme-translation-and-thesis",
+      "report-writing-and-assembly"
+    ],
+    "expected_blocks": [
+      "input-and-boundary",
+      "foundation-image-reading",
+      "theme-translation-and-thesis",
+      "report-writing-and-assembly"
+    ],
+    "leaked_terms": [],
+    "method_boundary_terms": [],
+    "deterministic_cause_terms": [],
+    "wealth_core_method_terms": [],
+    "report_shape_issues": [],
+    "missing_context_fields": [],
+    "missing_visual_units": [],
+    "visual_schema_issues": []
+  }
+}

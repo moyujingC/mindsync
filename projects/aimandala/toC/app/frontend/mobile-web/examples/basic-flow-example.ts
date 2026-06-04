@@ -13,9 +13,11 @@ async function example() {
   const payload = toStartCreatePayload(
     {
       imagePath: "/tmp/example-mandala.png",
-      theme: "general",
+      theme: "wealth",
       paintingIntention: "我想看看自己最近的状态",
       paintingFeeling: "画的时候有点紧又有点平静",
+      innerRadius: 0.35,
+      middleRadius: 0.65,
     },
     "demo-user",
   );
@@ -27,9 +29,9 @@ async function example() {
   console.log("title", viewModel.title);
   console.log("subtitle", viewModel.subtitle);
 
-  if (result.interpretation?.interpretation_id) {
+  if (result.report?.interpretation_id) {
     const refreshed = await refreshMobileWebReport(
-      result.interpretation.interpretation_id,
+      result.report.interpretation_id,
       "lite",
       result.state,
     );

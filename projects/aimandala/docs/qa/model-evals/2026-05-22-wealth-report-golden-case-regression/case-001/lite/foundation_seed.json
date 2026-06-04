@@ -1,0 +1,192 @@
+{
+  "case_id": "case-001",
+  "stage": "foundation_image_reading",
+  "status": "visual_observation_seeded__foundation_sections_pending",
+  "foundation_image_reading": {
+    "visual_observation": {
+      "overall_observation": {
+        "first_impression": "这幅画给人的第一感受是规整、轻柔、带着清楚边界的层层展开。画面以浅蓝、粉色和浅紫为主，整体没有沉重的深色压迫感，但大量重复的小单元和留白切分，让柔和中带着一种被分隔、被约束的秩序感。",
+        "visual_atmosphere": "整体氛围偏清透、克制、对称。内圈较安静，中圈温柔但分块明显，外圈装饰感强，像一层层被安排好的花边向外铺开。",
+        "visual_weight_and_rhythm": "视觉重心稳定在浅蓝色中心区域，外圈通过粉色块、紫色长方块和外缘齿状块形成连续重复。节奏很规整，但每一层都被留白分隔，重复感强于流动感。",
+        "healing_language_note": "如果用疗愈师语言表达，这幅画不是失控或混乱的画，而是有很多已经形成的秩序和保护；同时，画面也提示有些柔软的感受被分成一小块一小块，需要被更连续地看见和安放。"
+      },
+      "three_circle_observation": {
+        "inner": "内圈由浅蓝色中心花形、外侧波浪边、浅蓝三角环和局部留白组成。中心花形呈放射状展开，蓝色笔触有深浅不均，说明视觉上不是完全平涂。三角形内部有浅蓝色圆形，不是白色填充。",
+        "middle": "中圈主体是粉色方形或近似方形块，每个粉色块内部都有三角形结构。粉色块围绕中心重复排列，块与块之间有明显纸面留白，留白把粉色单元切分成独立重复组。",
+        "outer": "外圈由三层主要单元构成：靠内侧一圈粉色小块或半圆点，中间一圈紫色圆角长方块，最外缘一圈紫色类矩形齿状块。最外缘紫色块外侧有向内凹陷的三角形边缘，外圈整体留白较多，紫色和粉色都被分割成独立单元。",
+        "cross_circle_visual_connection": "三圈边界清楚，层层环绕的同心结构很稳定。内圈到中圈的过渡由浅蓝转为粉色，视觉上有明显圈层切换；中圈到外圈继续保持重复和对称，但颜色、形状和尺度发生明显变化。",
+        "cross_circle_visual_evidence": "三圈都沿中心对称重复；内圈是浅蓝花形和三角环，中圈是粉色方块环，外圈是粉色小块与紫色块环。各圈之间不是自然渐变，而是通过颜色和形状的变化形成清晰分层。"
+      },
+      "circle_visual_units": {
+        "inner": {
+          "composition_description": "内圈由中心浅蓝花形、蓝色波浪边、浅蓝三角环、三角内浅蓝圆形和包围/切分这些图形的留白共同组成。蓝色是主视觉，留白主要出现在中心花形周围和三角环之间。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "unit_name": "中心浅蓝放射花形",
+              "position": "内圈中心",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色为主，局部笔触有深浅不一，不是完全均匀填色。",
+              "shape_description": "放射状花瓣结构，花瓣围绕中心均匀展开，整体圆润。",
+              "texture_and_density": "涂色较轻，笔触能看到深浅变化，密度集中在中心花形区域。",
+              "spatial_relations": "被内圈留白包围，并与外侧蓝色波浪边、浅蓝三角环形成同心层次。",
+              "blank_space_role": "none",
+              "rich_visual_description": "中心花形像一朵浅蓝色的圆形花，从中心向四周均匀打开。它是内圈最稳定的视觉重心，但蓝色笔触并不完全均匀，保留了手绘时的轻重变化。"
+            },
+            {
+              "id": "inner-002",
+              "unit_name": "浅蓝波浪边",
+              "position": "中心花形外缘",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色，颜色与中心花形接近。",
+              "shape_description": "围绕中心的一圈波浪状边缘，起到连接中心和三角环的作用。",
+              "texture_and_density": "线性和色块感并存，重复节奏较均匀。",
+              "spatial_relations": "内侧邻近中心花形，外侧邻近浅蓝三角环，被留白局部分隔。",
+              "blank_space_role": "none",
+              "rich_visual_description": "波浪边像一圈柔和的过渡带，把中心花形向外推开。它让内圈不只是一个中心点，而是形成一层有节奏的内在扩散。"
+            },
+            {
+              "id": "inner-003",
+              "unit_name": "浅蓝三角环与内嵌圆形",
+              "position": "内圈外缘",
+              "source_type": "user_painted",
+              "color_description": "浅蓝色三角形，三角形内部有同为浅蓝色的圆形。",
+              "shape_description": "一圈重复三角形，每个三角形内部嵌有圆形；三角形尖端朝向外侧，圆形较小且居中。",
+              "texture_and_density": "重复密度高，排列整齐，单元之间有规则间隔。",
+              "spatial_relations": "同类三角单元围绕中心均匀重复，三角之间和三角内外均有留白参与切分。",
+              "blank_space_role": "none",
+              "rich_visual_description": "三角环让内圈外缘出现更明确的结构感。每个三角形内部不是白色留白，而是浅蓝色圆形，这一点会影响后续对颜色和形状的判断。"
+            },
+            {
+              "id": "inner-004",
+              "unit_name": "内圈留白",
+              "position": "中心花形周围与三角环之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "不规则但随图形结构形成包围和间隔。",
+              "texture_and_density": "面积不大但作用明显，分布在浅蓝图形之间。",
+              "spatial_relations": "包围中心花瓣区域，并对浅蓝三角环形成切分；也隔开同类三角单元。",
+              "blank_space_role": "包围中心图案，切分三角环，并作为浅蓝元素之间的间隔。",
+              "rich_visual_description": "内圈留白不是空缺背景，而是参与组织图形的视觉成分。它让中心花形、波浪边和三角环之间保持距离，也让浅蓝色的流动被清楚地分层。"
+            }
+          ]
+        },
+        "middle": {
+          "composition_description": "中圈由一圈粉色近方形块组成，每个粉色块内含三角形结构。粉色块之间的纸面留白非常关键，它把中圈切成一个个重复但彼此独立的单元。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "unit_name": "粉色近方形块组",
+              "position": "中圈主体环带",
+              "source_type": "user_painted",
+              "color_description": "粉色为主，整体偏柔和，局部深浅随手绘略有变化。",
+              "shape_description": "近方形或方块状单元，内部带三角形结构。",
+              "texture_and_density": "重复数量较多，排列均匀，单元边界清楚。",
+              "spatial_relations": "同类粉色块环绕中心重复排列；每个块与相邻块之间被留白隔开。",
+              "blank_space_role": "none",
+              "rich_visual_description": "中圈最醒目的内容是一圈粉色块。它们不是连续色带，而是一个个独立的粉色单元，每个单元内部还有三角形结构，形成温柔但被分格的画面节奏。"
+            },
+            {
+              "id": "middle-002",
+              "unit_name": "粉色块间留白",
+              "position": "中圈粉色块之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "沿粉色块边界形成间隔，局部呈窄缝或楔形空间。",
+              "texture_and_density": "重复出现，密度与粉色块一致。",
+              "spatial_relations": "隔开相邻粉色块，也让每个粉色块内部结构更独立。",
+              "blank_space_role": "切分粉色块，隔开同类重复元素，使中圈表达呈分段状态。",
+              "rich_visual_description": "中圈留白是判断中圈视觉关系的关键。它不是零散背景，而是持续把粉色块分开，让中圈看起来有温度但不连续。"
+            }
+          ]
+        },
+        "outer": {
+          "composition_description": "外圈由粉色小块、紫色圆角长方块、紫色外缘齿状块和大量留白构成。外圈的重复更密，装饰性更强，但各类单元都保持明显分隔。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "unit_name": "内侧粉色小块环",
+              "position": "外圈靠近中圈的内侧",
+              "source_type": "user_painted",
+              "color_description": "粉色，小面积重复。",
+              "shape_description": "半圆或小块状，沿圆周排布。",
+              "texture_and_density": "小而密，重复节奏较稳定。",
+              "spatial_relations": "位于中圈粉色方块外侧，与紫色块之间有留白分隔，同类小块也被留白隔开。",
+              "blank_space_role": "none",
+              "rich_visual_description": "这一圈粉色小块像从中圈向外延伸出的细小回声。它们面积不大，但在中圈和紫色外圈之间形成过渡层。"
+            },
+            {
+              "id": "outer-002",
+              "unit_name": "紫色圆角长方块环",
+              "position": "外圈中段",
+              "source_type": "user_painted",
+              "color_description": "浅紫色或紫色，颜色相对稳定。",
+              "shape_description": "圆角长方块，横向沿圆周排列。",
+              "texture_and_density": "重复度高，单元规整，彼此之间有固定间隔。",
+              "spatial_relations": "同类紫色长方块围绕中心重复；内侧邻近粉色小块，外侧邻近紫色外缘齿状块，中间由留白分隔。",
+              "blank_space_role": "none",
+              "rich_visual_description": "紫色圆角长方块让外圈出现整齐、克制的边界感。它们像一圈规整的外部结构，彼此相似但并不相连。"
+            },
+            {
+              "id": "outer-003",
+              "unit_name": "紫色外缘齿状块",
+              "position": "外圈最外沿",
+              "source_type": "user_painted",
+              "color_description": "浅紫色或紫色，与外圈中段颜色接近。",
+              "shape_description": "类似矩形或城墙齿状重复块，外侧边缘有向内凹陷的三角形缺口。",
+              "texture_and_density": "重复密集，形成清晰外缘。",
+              "spatial_relations": "同类外缘块沿最外圈重复排列，彼此被留白分开，并与内侧紫色圆角长方块形成双层紫色结构。",
+              "blank_space_role": "none",
+              "rich_visual_description": "最外缘紫色块形成清楚的外部轮廓。每个块并不是简单长方形，外侧有内凹的三角形边缘，让外圈带一点齿状、防护感的视觉特征。"
+            },
+            {
+              "id": "outer-004",
+              "unit_name": "外圈留白",
+              "position": "外圈各类粉色与紫色单元之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "分布在小块、长方块和外缘齿状块之间，形成窄缝和间隔。",
+              "texture_and_density": "留白数量多，贯穿外圈多层重复结构。",
+              "spatial_relations": "切分粉色小块、紫色圆角长方块和紫色外缘块，也隔开同类重复元素。",
+              "blank_space_role": "切分、隔开并形成外圈边界节奏。",
+              "rich_visual_description": "外圈留白让紫色和粉色都不能连成整片色带，而是呈一个个独立单元。它是外圈规整感、距离感和分段节奏的重要来源。"
+            }
+          ]
+        }
+      }
+    },
+    "element_sensing": {
+      "inner": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "intra_circle_relations": {
+      "inner": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "cross_circle_flow": {
+      "flow_observations": [],
+      "summary": "待用真实视觉模型按基础层 schema 生成。"
+    },
+    "evidence_links": []
+  }
+}

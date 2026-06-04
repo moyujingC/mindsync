@@ -1,11 +1,9 @@
-import { getInterpretationList } from "../shared/api";
 import type {
   FrontendUserSession,
   InterpretationListQuery,
   InterpretationRecordResponse,
   MandalaFlowState,
 } from "../shared/types";
-import type { HistoryFilterId } from "./components/history-cards";
 import {
   refreshMobileWebReport,
 } from "./controller";
@@ -18,11 +16,13 @@ import {
 
 export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
   imagePath: "/tmp/example-mandala.png",
-  theme: "general",
+  theme: "wealth",
   reportType: "lite",
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
+  innerRadius: 0.35,
+  middleRadius: 0.65,
 };
 
 export const PREVIEW_ROUTE_OPTIONS: Array<{
@@ -31,10 +31,9 @@ export const PREVIEW_ROUTE_OPTIONS: Array<{
 }> = [
   { label: "落地页", value: "landing" },
   { label: "上传", value: "upload" },
-  { label: "Lite / Pro 选择页", value: "reportEntry" },
+  { label: "付款", value: "reportEntry" },
   { label: "加载", value: "loading" },
-  { label: "Lite 解读报告", value: "report" },
-  { label: "报告旧版对照", value: "reportLegacy" },
+  { label: "新版解读报告", value: "report" },
   { label: "历史", value: "history" },
   { label: "历史记录详情", value: "historyRecordDetail" },
 ];
@@ -90,7 +89,6 @@ export function createPreviewRouteInput(
       };
 
     case "report":
-    case "reportLegacy":
       return {
         route,
         params: {
@@ -171,20 +169,10 @@ export async function finalizePreviewSelectedReport(
     setRoute("report");
   }
 
-  try {
-    const records = await getInterpretationList(userId, {
-      filter: historyQuery.filter as HistoryFilterId | undefined,
-      limit: historyQuery.limit,
-      theme: historyQuery.theme,
-    });
-    setPreviewHistoryRecords(records);
-    setPreviewHistoryStatusLabel("当前显示真实历史记录");
-    setPreviewHistoryStatusDetail("刚完成的主路径结果已尝试回流到真实历史列表。");
-    setPreviewHistoryStatusTone("runtime");
-  } catch {
-    setPreviewHistoryRecords(null);
-    setPreviewHistoryStatusLabel("历史记录暂时回退到占位数据");
-    setPreviewHistoryStatusDetail("真实主路径已执行，但历史列表拉取失败，因此仍显示 fixture。");
-    setPreviewHistoryStatusTone("preview");
-  }
+  void userId;
+  void historyQuery;
+  setPreviewHistoryRecords(null);
+  setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
+  setPreviewHistoryStatusDetail("财富报告已生成；历史列表需要后续按新 report_id 存储模型重做。");
+  setPreviewHistoryStatusTone("preview");
 }

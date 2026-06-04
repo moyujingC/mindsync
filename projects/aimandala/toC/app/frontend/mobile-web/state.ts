@@ -20,6 +20,7 @@ export interface MobileWebUploadDraft {
   theme: string;
   reportVariant?: MobileWebReportVariant;
   reportType?: MobileWebReportProductType;
+  redeemCode?: string;
   paintingIntention: string;
   paintingFeeling: string;
   innerRadius?: number;
@@ -151,6 +152,7 @@ export function toStartCreatePayload(
     storageKey: getUploadAssetRef(draft)?.storageKey,
     imageLocalExpiresAt: getUploadAssetRef(draft)?.imageLocalExpiresAt,
     theme: draft.theme,
+    redeemCode: draft.redeemCode?.trim() || undefined,
     paintingIntention: draft.paintingIntention,
     paintingFeeling: draft.paintingFeeling,
     innerRadius: normalizeCirclePercent(draft.innerRadius),

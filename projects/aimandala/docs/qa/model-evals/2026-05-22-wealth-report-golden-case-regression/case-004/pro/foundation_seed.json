@@ -1,0 +1,204 @@
+{
+  "case_id": "case-004",
+  "stage": "foundation_image_reading",
+  "status": "visual_observation_seeded__foundation_sections_pending",
+  "foundation_image_reading": {
+    "visual_observation": {
+      "overall_observation": {
+        "first_impression": "这幅画给人的第一感受是圆满、繁复、装饰性强。粉色中心被多层黄、绿、蓝、粉紫花环包围，整体像一朵层层展开的圆形花。",
+        "visual_atmosphere": "画面偏明亮、柔和、规整，三圈边界清楚。颜色较丰富，但排列秩序强，给人一种被花环包裹的稳定感。",
+        "visual_weight_and_rhythm": "视觉重心在大面积粉色圆心，向外逐层形成黄色花瓣、蓝绿色小花和粉紫外缘。节奏细密但不散乱，重复单元沿圆周均匀排布。",
+        "healing_language_note": "疗愈师语言可表达为：画面里有很多被温柔包围和层层守护的感觉，也有许多细小而有秩序的表达，像是内在正在用较稳定的方式整理感受。"
+      },
+      "three_circle_observation": {
+        "inner": "内圈中心是粉色圆形，外侧有红/粉色小花瓣和黄色花瓣结构。中心圆较大，涂色相对集中，是整幅画的视觉核心。",
+        "middle": "中圈以黄色、绿色、蓝色小花或叶形环状重复为主，图案密集，并形成层层同心环。中圈颜色比内圈更丰富，重复结构更细。",
+        "outer": "外圈有粉紫色和黄色小花瓣重复，整体形成较完整的圆形花环。外缘边界较完整，装饰性强，留白主要在花瓣和小单元之间。",
+        "cross_circle_visual_connection": "三圈之间过渡自然，都是圆形花环式层层扩展。内圈从大面积粉色中心开始，中圈变成多色细密小花，外圈再形成粉紫和黄色的完整边缘。",
+        "cross_circle_visual_evidence": "中心圆、黄色花瓣、中圈蓝绿色小花和外圈粉紫小花都沿同一圆心排列；各圈通过重复花瓣结构衔接，没有明显断裂或偏移。"
+      },
+      "circle_visual_units": {
+        "inner": {
+          "composition_description": "内圈由粉色中心圆、红/粉小花瓣、黄色花瓣和局部留白构成。中心粉色面积最大，外侧黄色花瓣形成托举和过渡。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "unit_name": "粉色中心圆",
+              "position": "内圈中心",
+              "source_type": "user_painted",
+              "color_description": "粉色，面积较大，颜色整体柔和。",
+              "shape_description": "圆形，边界相对完整。",
+              "texture_and_density": "涂色集中，视觉重量较大。",
+              "spatial_relations": "被外侧红/粉小花瓣和黄色花瓣环绕，作为整幅画中心。",
+              "blank_space_role": "none",
+              "rich_visual_description": "粉色中心圆像画面的心口位置，柔和而稳定。它占据内圈核心，使整幅画从中心开始有明确的温柔基调。"
+            },
+            {
+              "id": "inner-002",
+              "unit_name": "红粉小花瓣环",
+              "position": "粉色中心圆外侧",
+              "source_type": "user_painted",
+              "color_description": "红色或粉红色，局部与中心粉色相近。",
+              "shape_description": "小花瓣状，围绕中心重复。",
+              "texture_and_density": "小而密，形成中心圆外的细圈。",
+              "spatial_relations": "内侧贴近粉色中心圆，外侧邻近黄色花瓣。",
+              "blank_space_role": "none",
+              "rich_visual_description": "红粉小花瓣让中心圆不显得孤立，像一层细小的情感纹理，把中心向外打开。"
+            },
+            {
+              "id": "inner-003",
+              "unit_name": "黄色内圈花瓣",
+              "position": "内圈外段",
+              "source_type": "user_painted",
+              "color_description": "黄色，亮度较高。",
+              "shape_description": "花瓣或尖瓣状，围绕中心成环。",
+              "texture_and_density": "重复密度高，形成内圈向中圈的主要过渡。",
+              "spatial_relations": "包围红粉小花瓣环，外侧连接中圈多色小花环。",
+              "blank_space_role": "none",
+              "rich_visual_description": "黄色花瓣把粉色中心托起来，也让内圈有更明亮的扩展层。它是内圈进入中圈前最明显的一圈结构。"
+            },
+            {
+              "id": "inner-004",
+              "unit_name": "内圈花瓣间留白",
+              "position": "中心圆外侧各花瓣之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "细小间隔，顺着花瓣边界出现。",
+              "texture_and_density": "分布细密但面积较小。",
+              "spatial_relations": "隔开红粉小花瓣和黄色花瓣，使花瓣结构清楚。",
+              "blank_space_role": "切分花瓣，形成花瓣边界。",
+              "rich_visual_description": "内圈留白主要服务于花瓣分隔，让中心周围的多层花瓣能被清楚看见。"
+            }
+          ]
+        },
+        "middle": {
+          "composition_description": "中圈由黄色、绿色、蓝色小花或叶形单元层层重复组成，是整幅画最细密的环带。不同颜色小单元彼此相邻，整体呈均匀同心重复。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "unit_name": "黄色小花/花瓣环",
+              "position": "中圈内侧与中段",
+              "source_type": "user_painted",
+              "color_description": "黄色，明亮。",
+              "shape_description": "小花瓣或小花形，重复成环。",
+              "texture_and_density": "密度高，排列均匀。",
+              "spatial_relations": "与绿色、蓝色小花/叶形相邻，围绕中心重复。",
+              "blank_space_role": "none",
+              "rich_visual_description": "黄色小花环延续内圈黄色，使中圈有明亮、稳定的重复节奏。"
+            },
+            {
+              "id": "middle-002",
+              "unit_name": "绿色小叶/小花环",
+              "position": "中圈中段",
+              "source_type": "user_painted",
+              "color_description": "绿色，分布均匀。",
+              "shape_description": "小叶形或小花形，边缘圆润。",
+              "texture_and_density": "重复密集，形成连续环带。",
+              "spatial_relations": "与蓝色和黄色单元交替或相邻，同类元素均匀环绕中心。",
+              "blank_space_role": "none",
+              "rich_visual_description": "绿色小叶让中圈增加生长感。它们细密排列，使中圈显得有生机但仍保持规整。"
+            },
+            {
+              "id": "middle-003",
+              "unit_name": "蓝色小花/小叶环",
+              "position": "中圈外侧局部",
+              "source_type": "user_painted",
+              "color_description": "蓝色或浅蓝色。",
+              "shape_description": "小花或小叶状，重复出现。",
+              "texture_and_density": "数量较多，和绿色、黄色共同形成多色环。",
+              "spatial_relations": "与绿色、黄色小单元相邻，并被细小留白区分。",
+              "blank_space_role": "none",
+              "rich_visual_description": "蓝色小花让中圈从暖色中心过渡到更清凉的层次。它们在多色小单元中提供明显的色彩变化。"
+            },
+            {
+              "id": "middle-004",
+              "unit_name": "中圈细小留白",
+              "position": "中圈小花/小叶之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "细缝状或小片间隔。",
+              "texture_and_density": "数量多，面积小。",
+              "spatial_relations": "隔开黄、绿、蓝小单元，也隔开同类重复元素。",
+              "blank_space_role": "细分密集图案，保留单元边界。",
+              "rich_visual_description": "中圈留白面积不大，但在密集重复中很重要。它使多色小单元不会完全粘连。"
+            }
+          ]
+        },
+        "outer": {
+          "composition_description": "外圈由粉紫色花瓣、黄色小花瓣和留白组成，形成完整边缘花环。外圈重复密度高，边界较圆满。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "unit_name": "粉紫外圈花瓣",
+              "position": "外圈最外缘",
+              "source_type": "user_painted",
+              "color_description": "粉紫色，局部偏粉或偏紫。",
+              "shape_description": "小花瓣状，沿外缘连续重复。",
+              "texture_and_density": "重复密集，形成完整花环边界。",
+              "spatial_relations": "同类花瓣环绕中心均匀排列，与黄色小花瓣和留白相邻。",
+              "blank_space_role": "none",
+              "rich_visual_description": "粉紫外圈花瓣像画面的外层花边，让整幅画的边界柔和而完整。"
+            },
+            {
+              "id": "outer-002",
+              "unit_name": "黄色外圈小花瓣",
+              "position": "外圈内侧和粉紫花瓣之间",
+              "source_type": "user_painted",
+              "color_description": "黄色，小面积重复。",
+              "shape_description": "小花瓣或小点状花形。",
+              "texture_and_density": "与粉紫花瓣交错重复。",
+              "spatial_relations": "邻近粉紫花瓣，形成外圈暖色节点。",
+              "blank_space_role": "none",
+              "rich_visual_description": "黄色小花瓣让外圈不只是粉紫色边界，也保留了和内中圈黄色结构的呼应。"
+            },
+            {
+              "id": "outer-003",
+              "unit_name": "外圈留白",
+              "position": "外圈花瓣之间",
+              "source_type": "blank_space",
+              "color_description": "纸面白色留白。",
+              "shape_description": "小片间隔和外缘空隙。",
+              "texture_and_density": "分布均匀，面积较小。",
+              "spatial_relations": "隔开粉紫和黄色花瓣，也形成外圈边界呼吸空间。",
+              "blank_space_role": "隔开外圈花瓣，形成外缘呼吸感。",
+              "rich_visual_description": "外圈留白让密集花瓣之间仍有空间。它使完整边界不显得沉闷，而是保持细腻的呼吸感。"
+            }
+          ]
+        }
+      }
+    },
+    "element_sensing": {
+      "inner": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "element_candidates": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "intra_circle_relations": {
+      "inner": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "middle": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      },
+      "outer": {
+        "relations": [],
+        "summary": "待用真实视觉模型按基础层 schema 生成。"
+      }
+    },
+    "cross_circle_flow": {
+      "flow_observations": [],
+      "summary": "待用真实视觉模型按基础层 schema 生成。"
+    },
+    "evidence_links": []
+  }
+}

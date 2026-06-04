@@ -1,5 +1,11 @@
 # Native App
 
+> 状态：current
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/aimandala/toC/app/frontend/native-app/README.md
+
 这里放 `一镜一梳` 未来原生 App 端的实现入口。
 
 当前阶段还不恢复 App UI，但默认应复用：
@@ -11,7 +17,7 @@
 后续 App 端建议优先复用 mobile-web 已经验证过的流程语义，再替换平台层：
 
 1. 上传与相册权限
-2. 三圈检测确认
+2. 三圈人工确认
 3. Lite 结果页
 4. 历史记录与状态页
 5. Pro 入口与支付适配

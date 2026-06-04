@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import base64
 import json
 import mimetypes
@@ -10,9 +9,16 @@ import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Protocol, Sequence
+from typing import Any, Callable, Dict, Optional, Protocol, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+from .prompt_loader import render_prompt_template
+
+
+DEFAULT_DEEPSEEK_V4_MODEL = "deepseek-v4-pro"
+DEFAULT_DEEPSEEK_V4_BASE_URL = "https://api.deepseek.com"
+DEFAULT_LLM_TIMEOUT_SECONDS = 360
 
 
 @dataclass(frozen=True)
@@ -69,6 +75,8 @@ class LLMClient(Protocol):
         prompt: str,
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[Dict[str, Any]]:
         ...
 
@@ -78,6 +86,9 @@ class LLMClient(Protocol):
         task: str,
         system_prompt: str,
         user_prompt: str,
+        image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         ...
 
@@ -92,6 +103,8 @@ class NoopLLMClient:
         prompt: str,
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[Dict[str, Any]]:
         return None
 
@@ -101,6 +114,9 @@ class NoopLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
         return None
 
@@ -110,6 +126,8 @@ class OpenAICompatibleLLMClient:
 
     def __init__(self, config: LLMClientConfig) -> None:
         self.config = config
+        self.last_error_detail: dict[str, Any] = {}
+        self.last_attempt_trace: list[dict[str, Any]] = []
 
     def generate_structured(
         self,
@@ -118,43 +136,61 @@ class OpenAICompatibleLLMClient:
         prompt: str,
         schema: Dict[str, Any],
         image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[Dict[str, Any]]:
+        self.last_error_detail = {}
+        self.last_attempt_trace = []
         task_config = self.config.resolve_task_config(task)
         fallback_task_config = self.config.resolve_fallback_task_config(task)
-        schema_json = json.dumps(schema, ensure_ascii=False, indent=2)
-        system_prompt = (
-            "你是一名严格输出 JSON 的助手。"
-            "只返回一个 JSON 对象，不要输出解释、前缀、代码块或额外文本。"
+        normalized_image_paths = self._normalize_image_paths(
+            image_path=image_path,
+            image_paths=image_paths,
         )
-        user_prompt = (
-            f"{prompt.strip()}\n\n"
-            "请严格依据下面的 JSON Schema 输出：\n"
-            f"{schema_json}"
-        )
+        system_prompt = render_prompt_template("json/object_system.md")
+        if task.strip().lower() == "vision" and normalized_image_paths:
+            user_prompt = prompt.strip()
+        else:
+            schema_json = json.dumps(schema, ensure_ascii=False, indent=2)
+            user_prompt = render_prompt_template(
+                "json/schema_user.md",
+                prompt=prompt.strip(),
+                schema_json=schema_json,
+            )
         messages = self._build_messages(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
-            image_path=image_path,
+            image_paths=normalized_image_paths,
         )
-        is_vision_image_task = task.strip().lower() == "vision" and bool(image_path)
+        is_vision_image_task = task.strip().lower() == "vision" and bool(normalized_image_paths)
+        active_disable_thinking = (
+            disable_thinking
+            if disable_thinking is not None
+            else (True if is_vision_image_task else False)
+        )
         if is_vision_image_task:
             raw = self._request_chat_completion(
                 task_config=task_config,
                 fallback_task_config=fallback_task_config,
                 messages=messages,
                 expect_json=False,
-                disable_thinking=True,
+                disable_thinking=active_disable_thinking,
+                validate_text=self._is_json_object_response,
             )
             if not raw:
                 return None
-            return self._parse_json_response(raw)
+            parsed = self._parse_json_response(raw)
+            if parsed is None:
+                self._record_json_parse_failure(raw, task=task)
+            return parsed
 
         raw = self._request_chat_completion(
             task_config=task_config,
             fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=True,
-            disable_thinking=False,
+            disable_thinking=active_disable_thinking,
+            validate_text=self._is_json_object_response,
         )
         if raw is None and task.strip().lower() == "vision":
             raw = self._request_chat_completion(
@@ -162,11 +198,15 @@ class OpenAICompatibleLLMClient:
                 fallback_task_config=fallback_task_config,
                 messages=messages,
                 expect_json=False,
-                disable_thinking=False,
+                disable_thinking=active_disable_thinking,
+                validate_text=self._is_json_object_response,
             )
         if not raw:
             return None
-        return self._parse_json_response(raw)
+        parsed = self._parse_json_response(raw)
+        if parsed is None:
+            self._record_json_parse_failure(raw, task=task)
+        return parsed
 
     def generate_text(
         self,
@@ -174,20 +214,30 @@ class OpenAICompatibleLLMClient:
         task: str,
         system_prompt: str,
         user_prompt: str,
+        image_path: Optional[str] = None,
+        image_paths: Optional[Sequence[str]] = None,
+        disable_thinking: Optional[bool] = None,
     ) -> Optional[str]:
+        self.last_error_detail = {}
+        self.last_attempt_trace = []
         task_config = self.config.resolve_task_config(task)
         fallback_task_config = self.config.resolve_fallback_task_config(task)
+        normalized_image_paths = self._normalize_image_paths(
+            image_path=image_path,
+            image_paths=image_paths,
+        )
         messages = self._build_messages(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
-            image_path=None,
+            image_paths=normalized_image_paths,
         )
+        active_disable_thinking = True if disable_thinking is None else disable_thinking
         raw = self._request_chat_completion(
             task_config=task_config,
             fallback_task_config=fallback_task_config,
             messages=messages,
             expect_json=False,
-            disable_thinking=False,
+            disable_thinking=active_disable_thinking,
         )
         if not raw:
             return None
@@ -198,7 +248,7 @@ class OpenAICompatibleLLMClient:
         *,
         system_prompt: str,
         user_prompt: str,
-        image_path: Optional[str],
+        image_paths: Sequence[str],
     ) -> list[Dict[str, Any]]:
         messages: list[Dict[str, Any]] = [
             {
@@ -206,24 +256,39 @@ class OpenAICompatibleLLMClient:
                 "content": system_prompt,
             }
         ]
-        if image_path:
+        if image_paths:
+            content: list[Dict[str, Any]] = [{"type": "text", "text": user_prompt}]
+            for path in image_paths:
+                content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": self._encode_image_as_data_url(path),
+                        },
+                    }
+                )
             messages.append(
                 {
                     "role": "user",
-                    "content": [
-                        {"type": "text", "text": user_prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": self._encode_image_as_data_url(image_path),
-                            },
-                        },
-                    ],
+                    "content": content,
                 }
             )
         else:
             messages.append({"role": "user", "content": user_prompt})
         return messages
+
+    def _normalize_image_paths(
+        self,
+        *,
+        image_path: Optional[str],
+        image_paths: Optional[Sequence[str]],
+    ) -> list[str]:
+        normalized: list[str] = []
+        if image_paths:
+            normalized.extend(str(path) for path in image_paths if str(path).strip())
+        elif image_path:
+            normalized.append(image_path)
+        return normalized
 
     def _encode_image_as_data_url(self, image_path: str) -> str:
         path = Path(image_path)
@@ -239,6 +304,7 @@ class OpenAICompatibleLLMClient:
         messages: Sequence[Dict[str, Any]],
         expect_json: bool,
         disable_thinking: bool,
+        validate_text: Optional[Callable[[str], bool]] = None,
     ) -> Optional[str]:
         configs_to_try = [task_config]
         if (
@@ -248,12 +314,21 @@ class OpenAICompatibleLLMClient:
             configs_to_try.append(fallback_task_config)
 
         for active_config in configs_to_try:
+            attempt_trace: dict[str, Any] = {
+                "model": active_config.model,
+                "base_url": active_config.base_url,
+                "endpoint_url": active_config.endpoint_url,
+                "result": "pending",
+            }
             result = self._request_single_chat_completion(
                 task_config=active_config,
                 messages=messages,
                 expect_json=expect_json,
                 disable_thinking=disable_thinking,
+                validate_text=validate_text,
+                attempt_trace=attempt_trace,
             )
+            self.last_attempt_trace.append(attempt_trace)
             if result is not None:
                 return result
         return None
@@ -265,6 +340,8 @@ class OpenAICompatibleLLMClient:
         messages: Sequence[Dict[str, Any]],
         expect_json: bool,
         disable_thinking: bool,
+        validate_text: Optional[Callable[[str], bool]],
+        attempt_trace: dict[str, Any],
     ) -> Optional[str]:
         payload: Dict[str, Any] = {
             "model": task_config.model,
@@ -286,7 +363,56 @@ class OpenAICompatibleLLMClient:
             try:
                 with urlopen(request, timeout=self.config.timeout_seconds) as response:
                     raw_payload = response.read().decode("utf-8")
-            except (HTTPError, URLError, TimeoutError, ValueError):
+                attempt_trace["result"] = "response"
+            except HTTPError as error:
+                attempt_trace["result"] = "http_error"
+                attempt_trace["status"] = getattr(error, "code", None)
+                self.last_error_detail = {
+                    "kind": "http_error",
+                    "status": getattr(error, "code", None),
+                    "reason": str(getattr(error, "reason", "") or ""),
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
+                if attempt_index < total_attempts - 1:
+                    self._sleep_for_retry(attempt_index)
+                    continue
+                return None
+            except URLError as error:
+                attempt_trace["result"] = "url_error"
+                attempt_trace["reason"] = str(getattr(error, "reason", "") or error)
+                self.last_error_detail = {
+                    "kind": "url_error",
+                    "reason": str(getattr(error, "reason", "") or error),
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
+                if attempt_index < total_attempts - 1:
+                    self._sleep_for_retry(attempt_index)
+                    continue
+                return None
+            except TimeoutError:
+                attempt_trace["result"] = "timeout"
+                attempt_trace["timeout_seconds"] = self.config.timeout_seconds
+                self.last_error_detail = {
+                    "kind": "timeout",
+                    "timeout_seconds": self.config.timeout_seconds,
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
+                if attempt_index < total_attempts - 1:
+                    self._sleep_for_retry(attempt_index)
+                    continue
+                return None
+            except ValueError as error:
+                attempt_trace["result"] = "value_error"
+                attempt_trace["reason"] = str(error)
+                self.last_error_detail = {
+                    "kind": "value_error",
+                    "reason": str(error),
+                    "task_model": task_config.model,
+                    "base_url": task_config.base_url,
+                }
                 if attempt_index < total_attempts - 1:
                     self._sleep_for_retry(attempt_index)
                     continue
@@ -294,7 +420,32 @@ class OpenAICompatibleLLMClient:
 
             parsed_text = self._extract_text_from_response(raw_payload)
             if parsed_text is not None:
+                if validate_text is not None and not validate_text(parsed_text):
+                    preview = parsed_text.strip().replace("\n", " ")[:240]
+                    self.last_error_detail = {
+                        "kind": "invalid_json_response",
+                        "response_length": len(parsed_text),
+                        "response_preview": preview,
+                        "task_model": task_config.model,
+                        "base_url": task_config.base_url,
+                    }
+                    attempt_trace["result"] = "invalid_json_response"
+                    attempt_trace["invalid_json_attempts"] = (
+                        int(attempt_trace.get("invalid_json_attempts") or 0) + 1
+                    )
+                    if attempt_index < total_attempts - 1:
+                        self._sleep_for_retry(attempt_index)
+                        continue
+                    return None
+                self.last_error_detail = {}
+                attempt_trace["result"] = "success"
                 return parsed_text
+            self.last_error_detail = {
+                "kind": "invalid_response_payload",
+                "task_model": task_config.model,
+                "base_url": task_config.base_url,
+            }
+            attempt_trace["result"] = "invalid_response_payload"
             if attempt_index < total_attempts - 1:
                 self._sleep_for_retry(attempt_index)
                 continue
@@ -361,6 +512,18 @@ class OpenAICompatibleLLMClient:
             return parsed
         return None
 
+    def _record_json_parse_failure(self, text: str, *, task: str) -> None:
+        preview = text.strip().replace("\n", " ")[:240]
+        self.last_error_detail = {
+            "kind": "invalid_json_response",
+            "task": task,
+            "response_length": len(text),
+            "response_preview": preview,
+        }
+
+    def _is_json_object_response(self, text: str) -> bool:
+        return self._parse_json_response(text) is not None
+
     def _extract_json_object(self, text: str) -> Optional[str]:
         start = text.find("{")
         end = text.rfind("}")
@@ -394,123 +557,6 @@ class OpenAICompatibleLLMClient:
             return
         wait_seconds = (self.config.retry_backoff_ms * (attempt_index + 1)) / 1000
         time.sleep(wait_seconds)
-
-
-class LLMCircleDetectionBackend:
-    """Vision-backed three-circle detection using the shared LLM client."""
-
-    def __init__(self, llm_client: LLMClient) -> None:
-        self.llm_client = llm_client
-
-    async def detect_circles(
-        self,
-        image_path: str,
-        use_ai: bool = True,
-        use_opencv: bool = True,
-        confidence_threshold: float = 0.3,
-    ) -> Dict[str, Any]:
-        del use_opencv
-        if not use_ai:
-            return self._build_fallback_payload(
-                reason="ai_disabled",
-                confidence_threshold=confidence_threshold,
-            )
-
-        schema = {
-            "type": "object",
-            "required": ["inner_radius", "middle_radius", "confidence", "method"],
-            "properties": {
-                "inner_radius": {"type": "number"},
-                "middle_radius": {"type": "number"},
-                "confidence": {"type": "number"},
-                "method": {"type": "string"},
-                "summary": {"type": "string"},
-            },
-        }
-        prompt = (
-            "请识别一张曼陀罗绘画中的三圈结构。\n"
-            "输出内圈和中圈相对于整张图外圈半径的比例，范围 0-1。\n"
-            "如果图中不够清晰，也请给出最合理估计，并在 confidence 中体现不确定性。\n"
-            "method 字段只能输出以下固定值之一：llm_vision、llm_vision_estimated。"
-        )
-        payload = await asyncio.to_thread(
-            self.llm_client.generate_structured,
-            task="vision",
-            prompt=prompt,
-            schema=schema,
-            image_path=image_path,
-        )
-        if not isinstance(payload, dict):
-            return self._build_fallback_payload(
-                reason="llm_empty_response",
-                confidence_threshold=confidence_threshold,
-            )
-
-        inner = self._normalize_ratio(payload.get("inner_radius"), default=0.33)
-        middle = self._normalize_ratio(payload.get("middle_radius"), default=0.66)
-        middle = max(middle, inner + 0.05)
-        middle = min(middle, 0.9)
-        confidence = self._normalize_confidence(payload.get("confidence"), default=0.55)
-        method = self._normalize_method(payload.get("method"))
-        summary = payload.get("summary")
-
-        return {
-            "inner_radius": inner,
-            "middle_radius": middle,
-            "confidence": confidence,
-            "method": method,
-            "debug_info": {
-                "backend": "llm_vision",
-                "summary": summary if isinstance(summary, str) else None,
-                "confidence_threshold": confidence_threshold,
-            },
-        }
-
-    def _normalize_ratio(self, value: Any, *, default: float) -> float:
-        try:
-            ratio = float(value)
-        except (TypeError, ValueError):
-            return default
-        if ratio > 1.0:
-            ratio = ratio / 100.0
-        return max(0.1, min(ratio, 0.9))
-
-    def _normalize_confidence(self, value: Any, *, default: float) -> float:
-        try:
-            confidence = float(value)
-        except (TypeError, ValueError):
-            return default
-        if confidence > 1.0:
-            confidence = confidence / 100.0
-        return max(0.0, min(confidence, 1.0))
-
-    def _normalize_method(self, value: Any) -> str:
-        raw = str(value or "").strip().lower()
-        if raw in {"llm_vision", "ai_vision"}:
-            return "llm_vision"
-        if raw in {"llm_vision_estimated", "estimated", "estimate"}:
-            return "llm_vision_estimated"
-        if any(token in raw for token in ["估计", "estimate", "unclear", "不够清晰"]):
-            return "llm_vision_estimated"
-        return "llm_vision"
-
-    def _build_fallback_payload(
-        self,
-        *,
-        reason: str,
-        confidence_threshold: float,
-    ) -> Dict[str, Any]:
-        return {
-            "inner_radius": 0.33,
-            "middle_radius": 0.66,
-            "confidence": 0.2,
-            "method": "llm_fallback",
-            "debug_info": {
-                "backend": "llm_vision",
-                "reason": reason,
-                "confidence_threshold": confidence_threshold,
-            },
-        }
 
 
 class LLMReportChatRuntime:
@@ -577,8 +623,12 @@ class LLMReportChatRuntime:
 
 
 def create_llm_client_from_env() -> LLMClient:
+    load_private_env_file()
     backend = os.getenv("AIMANDALA_LLM_BACKEND", "").strip().lower()
     if backend in {"", "noop", "none"}:
+        modern_config = load_modern_llm_client_config_from_env()
+        if modern_config is not None:
+            return OpenAICompatibleLLMClient(modern_config)
         legacy_config = load_legacy_llm_client_config_from_env()
         if legacy_config is not None:
             return OpenAICompatibleLLMClient(legacy_config)
@@ -588,10 +638,34 @@ def create_llm_client_from_env() -> LLMClient:
     raise ValueError(f"Unsupported LLM backend: {backend}")
 
 
-def load_llm_client_config_from_env() -> LLMClientConfig:
+def load_private_env_file() -> None:
+    if os.getenv("AIMANDALA_DISABLE_DEFAULT_ENV_FILE", "").strip() == "1":
+        env_file = os.getenv("AIMANDALA_ENV_FILE", "").strip()
+        if not env_file:
+            return
+    env_file = os.getenv("AIMANDALA_ENV_FILE", "").strip()
+    env_path = (
+        Path(env_file).expanduser()
+        if env_file
+        else Path(__file__).resolve().parents[3] / ".env.local"
+    )
+    if not env_path.exists():
+        return
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        normalized_key = key.strip()
+        if not normalized_key or normalized_key in os.environ:
+            continue
+        os.environ[normalized_key] = _strip_env_value(value)
+
+
+def load_modern_llm_client_config_from_env() -> Optional[LLMClientConfig]:
     timeout_seconds = _read_positive_int_env(
         "AIMANDALA_LLM_TIMEOUT_SECONDS",
-        default=30,
+        default=DEFAULT_LLM_TIMEOUT_SECONDS,
     )
     max_retries = _read_non_negative_int_env(
         "AIMANDALA_LLM_MAX_RETRIES",
@@ -602,17 +676,63 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
         default=400,
     )
     default_base_url = os.getenv("AIMANDALA_LLM_BASE_URL", "").strip()
-    default_model = os.getenv("AIMANDALA_LLM_MODEL", "").strip()
+    default_model = os.getenv(
+        "AIMANDALA_LLM_MODEL",
+        DEFAULT_DEEPSEEK_V4_MODEL,
+    ).strip() or DEFAULT_DEEPSEEK_V4_MODEL
     default_api_key = os.getenv("AIMANDALA_LLM_API_KEY", "").strip() or None
     default_api_key_header = (
         os.getenv("AIMANDALA_LLM_API_KEY_HEADER", "Authorization").strip()
         or "Authorization"
     )
-    if not default_base_url:
-        raise ValueError("Missing required LLM config: AIMANDALA_LLM_BASE_URL")
-    if not default_model:
-        raise ValueError("Missing required LLM config: AIMANDALA_LLM_MODEL")
+    if not any([default_base_url, default_api_key]):
+        return None
+    default_task = LLMTaskConfig(
+        base_url=default_base_url or DEFAULT_DEEPSEEK_V4_BASE_URL,
+        api_key=default_api_key,
+        model=default_model,
+        api_key_header=default_api_key_header,
+    )
+    return LLMClientConfig(
+        default=default_task,
+        chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task)
+        or default_task,
+        chat_fallback=_load_task_config_from_env("AIMANDALA_LLM_CHAT_FALLBACK", fallback=default_task),
+        vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task)
+        or default_task,
+        vision_fallback=_load_task_config_from_env("AIMANDALA_LLM_VISION_FALLBACK", fallback=default_task),
+        timeout_seconds=timeout_seconds,
+        max_retries=max_retries,
+        retry_backoff_ms=retry_backoff_ms,
+    )
 
+
+def load_llm_client_config_from_env() -> LLMClientConfig:
+    timeout_seconds = _read_positive_int_env(
+        "AIMANDALA_LLM_TIMEOUT_SECONDS",
+        default=DEFAULT_LLM_TIMEOUT_SECONDS,
+    )
+    max_retries = _read_non_negative_int_env(
+        "AIMANDALA_LLM_MAX_RETRIES",
+        default=2,
+    )
+    retry_backoff_ms = _read_non_negative_int_env(
+        "AIMANDALA_LLM_RETRY_BACKOFF_MS",
+        default=400,
+    )
+    default_base_url = (
+        os.getenv("AIMANDALA_LLM_BASE_URL", "").strip()
+        or DEFAULT_DEEPSEEK_V4_BASE_URL
+    )
+    default_model = os.getenv(
+        "AIMANDALA_LLM_MODEL",
+        DEFAULT_DEEPSEEK_V4_MODEL,
+    ).strip() or DEFAULT_DEEPSEEK_V4_MODEL
+    default_api_key = os.getenv("AIMANDALA_LLM_API_KEY", "").strip() or None
+    default_api_key_header = (
+        os.getenv("AIMANDALA_LLM_API_KEY_HEADER", "Authorization").strip()
+        or "Authorization"
+    )
     default_task = LLMTaskConfig(
         base_url=default_base_url,
         api_key=default_api_key,
@@ -622,9 +742,11 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
 
     return LLMClientConfig(
         default=default_task,
-        chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task),
+        chat=_load_task_config_from_env("AIMANDALA_LLM_CHAT", fallback=default_task)
+        or default_task,
         chat_fallback=_load_task_config_from_env("AIMANDALA_LLM_CHAT_FALLBACK", fallback=default_task),
-        vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task),
+        vision=_load_task_config_from_env("AIMANDALA_LLM_VISION", fallback=default_task)
+        or default_task,
         vision_fallback=_load_task_config_from_env("AIMANDALA_LLM_VISION_FALLBACK", fallback=default_task),
         timeout_seconds=timeout_seconds,
         max_retries=max_retries,
@@ -633,15 +755,13 @@ def load_llm_client_config_from_env() -> LLMClientConfig:
 
 
 def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
-    glm_key = os.getenv("GLM_API_KEY", "").strip()
-    doubao_key = os.getenv("DOUBAO_API_KEY", "").strip()
-    moonshot_key = os.getenv("MOONSHOT_API_KEY", "").strip()
-    if not any([glm_key, doubao_key, moonshot_key]):
+    legacy_api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    if not legacy_api_key:
         return None
 
     timeout_seconds = _read_positive_int_env(
         "AIMANDALA_LLM_TIMEOUT_SECONDS",
-        default=30,
+        default=DEFAULT_LLM_TIMEOUT_SECONDS,
     )
     max_retries = _read_non_negative_int_env(
         "AIMANDALA_LLM_MAX_RETRIES",
@@ -653,44 +773,19 @@ def load_legacy_llm_client_config_from_env() -> Optional[LLMClientConfig]:
     )
 
     default_task = _build_legacy_task_config(
-        base_url="https://open.bigmodel.cn/api/paas/v4",
-        api_key=glm_key or doubao_key or moonshot_key or None,
-        model="glm-4",
-    )
-    chat = (
-        _build_legacy_task_config(
-            base_url="https://api.moonshot.cn/v1",
-            api_key=moonshot_key,
-            model="moonshot-v1-8k",
-        )
-        if moonshot_key
-        else default_task
-    )
-    vision = (
-        _build_legacy_task_config(
-            base_url="https://ark.cn-beijing.volces.com/api/v3",
-            api_key=doubao_key,
-            model=os.getenv("DOUBAO_VISION_ENDPOINT_ID", "").strip() or "ep-20260316095322-94wf5",
-        )
-        if doubao_key
-        else None
-    )
-    vision_fallback = (
-        _build_legacy_task_config(
-            base_url="https://api.moonshot.cn/v1",
-            api_key=moonshot_key,
-            model="moonshot-v1-8k-vision-preview",
-        )
-        if moonshot_key
-        else None
+        base_url=os.getenv("AIMANDALA_LLM_BASE_URL", "").strip()
+        or DEFAULT_DEEPSEEK_V4_BASE_URL,
+        api_key=legacy_api_key,
+        model=os.getenv("AIMANDALA_LLM_MODEL", "").strip()
+        or DEFAULT_DEEPSEEK_V4_MODEL,
     )
 
     return LLMClientConfig(
         default=default_task,
-        chat=chat,
-        chat_fallback=default_task,
-        vision=vision,
-        vision_fallback=vision_fallback,
+        chat=default_task,
+        chat_fallback=None,
+        vision=default_task,
+        vision_fallback=None,
         timeout_seconds=timeout_seconds,
         max_retries=max_retries,
         retry_backoff_ms=retry_backoff_ms,
@@ -730,6 +825,13 @@ def _build_legacy_task_config(
         model=model,
         api_key_header="Authorization",
     )
+
+
+def _strip_env_value(raw_value: str) -> str:
+    value = raw_value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        return value[1:-1]
+    return value
 
 
 def _read_positive_int_env(name: str, *, default: int) -> int:

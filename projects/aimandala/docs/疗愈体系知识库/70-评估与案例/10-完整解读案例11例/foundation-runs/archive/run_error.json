@@ -1,0 +1,9 @@
+{
+  "case_id": "case-001",
+  "status": "failed",
+  "error": "vision_model_failed: empty or invalid visual_observation payload {\"last_error_detail\": {\"kind\": \"url_error\", \"reason\": \"EOF occurred in violation of protocol (_ssl.c:2423)\", \"task_model\": \"ep-20260316095322-94wf5\", \"base_url\": \"https://ark.cn-beijing.volces.com/api/v3\"}, \"last_attempt_trace\": [{\"model\": \"ep-20260316095322-94wf5\", \"base_url\": \"https://ark.cn-beijing.volces.com/api/v3\", \"endpoint_url\": \"https://ark.cn-beijing.volces.com/api/v3/chat/completions\", \"result\": \"url_error\", \"reason\": \"EOF occurred in violation of protocol (_ssl.c:2423)\"}]}",
+  "output_dir": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/foundation-runs/2026-05-22/doubao/thinking-off/case-001",
+  "started_at": "2026-05-22T12:50:49.829534+00:00",
+  "finished_at": "2026-05-22T12:50:52.662941+00:00",
+  "duration_seconds": 2.833
+}

@@ -12,7 +12,7 @@
 
 它应被理解为：
 
-- `aimandala` 对 [company/projects/Automation/PROJECT.md](company/projects/Automation/PROJECT.md) 的项目级落地
+- `aimandala` 对 [company/projects/Automation/PROJECT.md](../../../../company/projects/Automation/PROJECT.md) 的项目级落地
 - 当前首个正式项目级实例 runbook
 - 不是公司级 `Automation Platform` 的总入口
 
@@ -81,6 +81,16 @@
 
 ### 2.1 工作区边界原则
 
+从 `2026-05-12` 起，MVP 阶段先冻结服务器端自动写仓库能力：
+
+1. `Paperclip` control plane 继续运行
+2. `paperclip-heartbeat.timer` 暂停
+3. `automation-maintenance.timer` 暂停
+4. `server_automation` 自动写代码、auto-repair、自动 finalizer commit 全部暂停
+5. 服务器只保留只读巡检、人工部署前检查和人工触发的 deploy / smoke
+6. 产品代码、文档和普通研发修改默认回到本地 Mac 执行
+7. 恢复服务器自动写入前，必须先完成独立验证并显式撤销 `PAPERCLIP_SERVER_AUTOMATION_FREEZE=1`
+
 当前 automation 节点必须遵守下面三条边界：
 
 1. heartbeat / maintenance / runner-doctor 不再使用主镜像区作为 `WorkingDirectory`
@@ -113,7 +123,8 @@
 
 1. `automation-execution`
    - CI 失败修复、deploy、smoke、runner、maintenance、infra 巡检
-   - 允许服务器端执行和自动提交
+   - 历史默认允许服务器端执行和自动提交
+   - MVP 阶段当前冻结，不再自动写仓库或自动提交
 2. `manual-review-required`
    - 产品功能开发、UI / 文案、一般业务逻辑、普通研发任务
    - 默认回到本地执行，不允许服务器 Adapter 自动闭环
@@ -252,6 +263,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 统一服务器侧执行包装器
    - 固定顺序：guard -> 执行命令 -> finalizer
    - 适用于 deploy / smoke / runner / maintenance / 受控修复这类服务器自动化任务
+   - MVP 阶段若 `PAPERCLIP_SERVER_AUTOMATION_FREEZE=1`，命中 `automation-execution + server_automation` 时应直接拒绝执行
 7. heartbeat / 巡检编排
    - 先跑 runner heartbeat
    - 再跑 execution health check strict gate
@@ -278,6 +290,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
      - 始终先执行最小 guard，拒绝 observe-only checkout
      - 只有显式满足 `automation-execution + server_automation` 时才要求 worktree 根并触发 finalizer
    - 这样做是为了避免把所有运行都误判成服务器自动化任务，但仍保证共享 checkout 永远不会被执行链写入
+   - MVP 阶段支持 `PAPERCLIP_SERVER_AUTOMATION_FREEZE=1`，用于冻结服务器端真实写执行
 11. `shared/tools/sync-paperclip-server-automation-command-override.sh`
    - 管理 runtime `adapterConfig.command` override 的状态、dry-run、sync、rollback
    - 当前默认目标固定为 `Engineer,Test / QA`
@@ -409,7 +422,7 @@ node shared/tools/ci/diagnose-paperclip-server-automation-materialization.mjs \
 1. 运行时写脏
    - 典型信号：
      - 主镜像区出现业务文件被改写
-     - `knowledge/builds/current/*` 这类受版本管理的编译产物被改写或删除
+     - 受版本管理的正式资产被改写或删除
      - heartbeat strict gate 同时报出 `execution_workspace_policy_not_materialized`
    - 处理口径：
      - 先保留现场
@@ -440,7 +453,7 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
    - 确认不再有“只存在于服务器、尚未入库”的必要内容
 2. 如果仍有受版本管理文件被删除或改写
    - 先判断它是正式资产还是运行时垃圾
-   - 像 `toC/data/knowledge/builds/current/index.json` 这类正式编译产物，应先恢复到仓库基线，再继续排查为什么会被执行链写脏
+   - 若出现正式资产被改写或删除，应先恢复到仓库基线，再继续排查为什么会被执行链写脏
 3. 只有在“服务器现场已完成回收、本地权威仓库已有对应内容”之后
    - 才允许做 checkout 收敛
    - 否则 maintenance 的 fail-fast 应继续保留
@@ -562,21 +575,42 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 这份 runbook 同时承担 `aimandala` 当前 `Paperclip` 服务端版本基线入口。
 
-截至 `2026-04-27`，当前正式治理口径固定为：
+截至 `2026-06-01`，当前正式治理口径固定为：
 
-- 当前推荐目标版本：`v2026.416.0`
-- 当前推荐已验证基线：`v2026.416.0`
+- 当前推荐目标版本：`v2026.529.0`
+- 当前最低安全修复线：`v2026.416.0`
+- 当前项目已验证基线：`v2026.416.0`
+- 当前升级状态：`待计划内验证后升级`
 - 当前判断证据：
   - 官方 GitHub Releases
   - 官方 GitHub Security Advisories
   - 官方仓库近期高影响 merged changes（已合并改动）
+  - `2026-06-01` 周检结论
 
-为什么当前要以 `v2026.416.0` 为基线：
+为什么当前推荐目标切到 `v2026.529.0`：
+
+1. `2026-05-30` 官方发布了 `v2026.529.0`
+2. 截至 `2026-06-01`，官方没有更高 stable release（稳定正式发布版）
+3. `2026-05-25` 至 `2026-06-01` 未出现新的 security advisory（安全通告）
+4. 按当前版本判断规则，无安全紧急性时默认优先采用最新 stable release
+5. `v2026.529.0` 额外包含：
+   - inline document annotations（文档内联批注）
+   - accepted-plan exact-once decomposition（计划只分解一次）
+   - tighter workspace finalize gates（更严格的工作区收尾闸门）
+6. 上述变更直接命中 `MindSync` 当前 review、document handoff、execution workspace 与 dependency（依赖）治理主链
+
+为什么仍保留 `v2026.416.0` 为最低安全修复线：
 
 1. `2026-04-16` 官方发布了 `v2026.416.0`
 2. 同日公开了多条安全通告
 3. 其中至少一条 critical（严重）级 execution workspace 命令注入问题明确写明修复版本为 `v2026.416.0`
 4. 当前 `aimandala` 已正式依赖 execution workspace policy、`/opt/automation/worktrees` 与 authenticated（鉴权）模式，因此不应继续停留在更低版本口径
+
+为什么当前不直接把已验证基线改成 `v2026.529.0`：
+
+1. `v2026.529.0` 是推荐目标，不等于当前项目已完成验证
+2. 当前部署包含自定义 Dockerfile、Hermes、`pi_local` / `codex_local` / `claude_local` 运行链和本地 / 服务器分流治理
+3. 升级前必须先完成一份面向 `v2026.529.0` 的新验证计划，替代旧的 `v2026.428.0` 验证计划
 
 当前版本判断规则：
 
@@ -593,14 +627,21 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 1. execution workspace 真实绑定仍正常
    - 重点看 issue 上的 `executionWorkspaceId` / `currentExecutionWorkspace`
    - 不只看 project policy 是否存在
+   - 同时验证 `finalize` 后的 workspace 状态与宿主机 worktree 状态一致
 2. heartbeat 与 execution health strict gate 通过
    - 不新增 `execution_workspace_policy_not_materialized`
    - 不新增 `server_writable_execution_not_allowed`
-3. `manual-review-required` 任务未被误送入 `server_automation`
-4. `done` 的服务器侧 issue 不再留下 dirty worktree
-5. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
-6. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
-7. 若本轮升级涉及 auth / host / port 相关修复
+3. accepted plan 不重复分解子任务
+   - review / accept 后不应再次 fan-out（扇出）相同子任务
+4. blocker 未解除前，下游 issue 不提前唤醒
+   - finalize 后再触发 dependent issue wake（依赖任务唤醒）
+5. issue document 审阅能力可用
+   - document locks、inline annotations 至少完成一轮最小验证
+6. `manual-review-required` 任务未被误送入 `server_automation`
+7. `done` 的服务器侧 issue 不再留下 dirty worktree
+8. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
+9. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
+10. 若本轮升级涉及 auth / host / port 相关修复
    - 同步验证公网入口、Tailscale 入口、`publicBaseUrl` 与回跳行为
 
 当前补充治理要求：
@@ -609,8 +650,11 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. 但项目级正式版本口径仍以本 runbook 为 deploy 入口
 3. 若后续推荐目标版本变化，应同步更新：
    - 本文
-   - [company/服务器与基础设施入口.md](company/服务器与基础设施入口.md)
-   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+   - [company/服务器与基础设施入口.md](../../../../company/服务器与基础设施入口.md)
+   - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](../../../../company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
+4. 升级到 `v2026.529.0` 后，默认采用：
+   - `Paperclip` 原生 structured interactions、document locks、inline annotations、finalize gates 与 exact-once decomposition 作为主机制
+   - `MindSync` 本地治理继续保留 `type:*`、`review:*`、`task_class:*`、`execution_route:*`、冻结策略与审计兜底
 
 ## 4.2 `hermes_local` 容器原生方案
 

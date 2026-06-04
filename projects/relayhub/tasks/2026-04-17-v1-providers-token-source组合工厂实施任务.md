@@ -1,5 +1,11 @@
 # 2026-04-17 v1 Providers token source 组合工厂实施任务
 
+> 状态：historical-reference
+> 版本：0.1.0
+> owner：Engineer
+> last_updated：2026-05-06
+> source_of_truth：projects/relayhub/tasks/2026-04-17-v1-providers-token-source组合工厂实施任务.md
+
 ## Summary
 
 在现有 `token provider seam` 之上新增正式 `token source factory`，把 `default-disabled / static / global token source` 收束成单一可测试入口，并接入现有 Providers runtime/deployment/browser 输入链。

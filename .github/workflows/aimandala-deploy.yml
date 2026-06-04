@@ -1,15 +1,14 @@
 name: deploy
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - ci
+    types:
+      - completed
     branches:
       - main
       - release
-    paths:
-      - "projects/aimandala/toC/**"
-      - "projects/aimandala/deploy/**"
-      - "shared/tools/ci/**"
-      - ".github/workflows/aimandala-deploy.yml"
   workflow_dispatch:
     inputs:
       target:
@@ -21,22 +20,96 @@ on:
           - prod
 
 concurrency:
-  group: aimandala-deploy-${{ github.ref_name }}-${{ github.event.inputs.target || github.ref_name }}
+  group: aimandala-deploy-${{ github.event.workflow_run.head_branch || github.ref_name }}-${{ github.event.inputs.target || github.event.workflow_run.head_branch || github.ref_name }}
   cancel-in-progress: false
 
 permissions:
   contents: read
+  actions: read
 
 env:
   PAPERCLIP_COMPANY_ID: "be191a6e-7447-4821-a93d-9114214c4a64"
   PAPERCLIP_PROJECT_NAME: "一镜一梳"
 
 jobs:
+  resolve-target:
+    name: resolve-target
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      target: ${{ steps.resolve.outputs.target }}
+      branch: ${{ steps.resolve.outputs.branch }}
+      deploy_sha: ${{ steps.resolve.outputs.deploy_sha }}
+      source_run_url: ${{ steps.resolve.outputs.source_run_url }}
+    steps:
+      - name: Resolve Deploy Source
+        id: resolve
+        uses: actions/github-script@v8
+        with:
+          script: |
+            if (context.eventName === "workflow_run") {
+              const run = context.payload.workflow_run;
+              if (run.name !== "ci") {
+                core.setFailed(`Unexpected workflow_run source: ${run.name}`);
+                return;
+              }
+
+              const branch = run.head_branch;
+              if (!["main", "release"].includes(branch)) {
+                core.setFailed(`Unsupported workflow_run branch: ${branch}`);
+                return;
+              }
+
+              core.setOutput("branch", branch);
+              core.setOutput("target", branch === "main" ? "dev" : "prod");
+              core.setOutput("deploy_sha", run.head_sha);
+              core.setOutput("source_run_url", run.html_url);
+              return;
+            }
+
+            const target = context.payload.inputs.target;
+            const branch = target === "prod" ? "release" : "main";
+            const currentRef = context.ref.replace("refs/heads/", "");
+            if (currentRef !== branch) {
+              core.setFailed(`Manual deploy for ${target} must be dispatched from ${branch}.`);
+              return;
+            }
+
+            const runs = await github.paginate(
+              github.rest.actions.listWorkflowRuns,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: "aimandala-ci.yml",
+                branch,
+                event: "push",
+                status: "completed",
+                per_page: 20,
+              }
+            );
+
+            const latestRun = runs.find(
+              (run) => run.name === "ci" && run.conclusion === "success"
+            );
+
+            if (!latestRun) {
+              core.setFailed(`No successful push-triggered aimandala ci run found on ${branch}.`);
+              return;
+            }
+
+            core.setOutput("branch", branch);
+            core.setOutput("target", target);
+            core.setOutput("deploy_sha", latestRun.head_sha);
+            core.setOutput("source_run_url", latestRun.html_url);
+
   deploy-dev:
     name: deploy-dev
-    if: |
-      (github.event_name == 'push' && github.ref_name == 'main') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'dev')
+    needs:
+      - resolve-target
+    if: needs.resolve-target.outputs.target == 'dev'
     runs-on:
       - self-hosted
       - linux
@@ -45,11 +118,15 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v5
         with:
-          node-version: 20
+          ref: ${{ needs.resolve-target.outputs.deploy_sha }}
+
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Prepare SSH Key
         id: dev_prepare_ssh
@@ -83,13 +160,14 @@ jobs:
           ssh-keygen -y -f ~/.ssh/aimandala_dev >/dev/null 2>>"$RUNNER_TEMP/deploy-dev-prepare.log"
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>&1 | tee "$RUNNER_TEMP/deploy-dev-prepare.log"
 
-      - name: Deploy Main To Dev Server
+      - name: Deploy Tested Main Commit To Dev Server
         id: dev_remote_deploy
         if: steps.dev_prepare_ssh.outcome == 'success'
         continue-on-error: true
         env:
           SSH_HOST: ${{ secrets.AIMANDALA_DEV_HOST }}
           SSH_USER: ${{ secrets.AIMANDALA_DEV_USER }}
+          DEPLOY_SHA: ${{ needs.resolve-target.outputs.deploy_sha }}
         run: |
           set -euo pipefail
           ssh \
@@ -97,13 +175,13 @@ jobs:
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -i ~/.ssh/aimandala_dev \
-            "$SSH_USER@$SSH_HOST" '
-            set -e
+            "$SSH_USER@$SSH_HOST" "
+            set -euo pipefail
             cd /opt/aimandala-main/app/mindsync
             git fetch origin main
-            git reset --hard origin/main
+            git reset --hard '$DEPLOY_SHA'
             /opt/aimandala-main/scripts/deploy-main.sh
-          ' 2>&1 | tee "$RUNNER_TEMP/deploy-dev-remote.log"
+          " 2>&1 | tee "$RUNNER_TEMP/deploy-dev-remote.log"
 
       - name: Smoke Check Dev Server
         id: dev_smoke
@@ -131,7 +209,7 @@ jobs:
             SUMMARY_FILE="$RUNNER_TEMP/deploy-dev-prepare.log"
           elif [[ "${{ steps.dev_remote_deploy.outcome }}" != "success" ]]; then
             FAILED=1
-            FAILED_STEP="Deploy Main To Dev Server"
+            FAILED_STEP="Deploy Tested Main Commit To Dev Server"
             SUMMARY_FILE="$RUNNER_TEMP/deploy-dev-remote.log"
           elif [[ "${{ steps.dev_smoke.outcome }}" != "success" ]]; then
             FAILED=1
@@ -163,9 +241,9 @@ jobs:
             --kind "deploy-or-smoke-failure" \
             --workflow "deploy" \
             --repository "${{ github.repository }}" \
-            --branch "${{ github.ref_name }}" \
+            --branch "${{ needs.resolve-target.outputs.branch }}" \
             --job "deploy-dev" \
-            --sha "${{ github.sha }}" \
+            --sha "${{ needs.resolve-target.outputs.deploy_sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --failed-step "${{ steps.dev_result.outputs.failed_step }}" \
             --summary-file "${{ steps.dev_result.outputs.summary_file }}" \
@@ -180,9 +258,9 @@ jobs:
 
   deploy-prod:
     name: deploy-prod
-    if: |
-      (github.event_name == 'push' && github.ref_name == 'release') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'prod')
+    needs:
+      - resolve-target
+    if: needs.resolve-target.outputs.target == 'prod'
     runs-on:
       - self-hosted
       - linux
@@ -191,11 +269,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v5
         with:
-          node-version: 20
+          ref: ${{ needs.resolve-target.outputs.deploy_sha }}
+
+      - name: Verify Node Runtime
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
 
       - name: Prepare SSH Key
         id: prod_prepare_ssh
@@ -229,13 +311,14 @@ jobs:
           ssh-keygen -y -f ~/.ssh/aimandala_prod >/dev/null 2>>"$RUNNER_TEMP/deploy-prod-prepare.log"
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>&1 | tee "$RUNNER_TEMP/deploy-prod-prepare.log"
 
-      - name: Deploy Release To Production Server
+      - name: Deploy Tested Release Commit To Production Server
         id: prod_remote_deploy
         if: steps.prod_prepare_ssh.outcome == 'success'
         continue-on-error: true
         env:
           SSH_HOST: ${{ secrets.AIMANDALA_PROD_HOST }}
           SSH_USER: ${{ secrets.AIMANDALA_PROD_USER }}
+          DEPLOY_SHA: ${{ needs.resolve-target.outputs.deploy_sha }}
         run: |
           set -euo pipefail
           ssh \
@@ -243,15 +326,15 @@ jobs:
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             -i ~/.ssh/aimandala_prod \
-            "$SSH_USER@$SSH_HOST" '
-            set -e
+            "$SSH_USER@$SSH_HOST" "
+            set -euo pipefail
             cd /opt/aimandala-release/app/mindsync
             git fetch origin release
-            git reset --hard origin/release
+            git reset --hard '$DEPLOY_SHA'
             cd projects/aimandala/deploy/docker
             docker compose -f docker-compose.release.yml --env-file .env.release build
             docker compose -f docker-compose.release.yml --env-file .env.release up -d
-          ' 2>&1 | tee "$RUNNER_TEMP/deploy-prod-remote.log"
+          " 2>&1 | tee "$RUNNER_TEMP/deploy-prod-remote.log"
 
       - name: Smoke Check Production
         id: prod_smoke
@@ -279,7 +362,7 @@ jobs:
             SUMMARY_FILE="$RUNNER_TEMP/deploy-prod-prepare.log"
           elif [[ "${{ steps.prod_remote_deploy.outcome }}" != "success" ]]; then
             FAILED=1
-            FAILED_STEP="Deploy Release To Production Server"
+            FAILED_STEP="Deploy Tested Release Commit To Production Server"
             SUMMARY_FILE="$RUNNER_TEMP/deploy-prod-remote.log"
           elif [[ "${{ steps.prod_smoke.outcome }}" != "success" ]]; then
             FAILED=1
@@ -311,9 +394,9 @@ jobs:
             --kind "deploy-or-smoke-failure" \
             --workflow "deploy" \
             --repository "${{ github.repository }}" \
-            --branch "${{ github.ref_name }}" \
+            --branch "${{ needs.resolve-target.outputs.branch }}" \
             --job "deploy-prod" \
-            --sha "${{ github.sha }}" \
+            --sha "${{ needs.resolve-target.outputs.deploy_sha }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --failed-step "${{ steps.prod_result.outputs.failed_step }}" \
             --summary-file "${{ steps.prod_result.outputs.summary_file }}" \

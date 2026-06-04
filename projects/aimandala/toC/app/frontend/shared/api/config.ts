@@ -1,12 +1,15 @@
-export const DEFAULT_AIMANDALA_API_BASE_URL = "http://localhost:8000";
+export const DEFAULT_AIMANDALA_API_BASE_URL = "http://127.0.0.1:8100";
 
 interface ProcessLikeEnv {
   AIMANDALA_API_BASE_URL?: string;
   NEXT_PUBLIC_AIMANDALA_API_BASE_URL?: string;
+  AIMANDALA_REPORT_FOLLOWUP_ENABLED?: string;
+  NEXT_PUBLIC_AIMANDALA_REPORT_FOLLOWUP_ENABLED?: string;
 }
 
 interface ImportMetaEnvLike extends ProcessLikeEnv {
   VITE_AIMANDALA_API_BASE_URL?: string;
+  VITE_AIMANDALA_REPORT_FOLLOWUP_ENABLED?: string;
 }
 
 export function getAimandalaApiBaseUrl(): string {
@@ -33,4 +36,26 @@ export function getAimandalaApiBaseUrl(): string {
   }
 
   return DEFAULT_AIMANDALA_API_BASE_URL;
+}
+
+function isTruthyFlag(value: string | undefined): boolean {
+  return value === "1" || value === "true" || value === "TRUE";
+}
+
+export function isReportFollowupEnabled(): boolean {
+  const fromImportMeta = (
+    import.meta as ImportMeta & { env?: ImportMetaEnvLike }
+  ).env?.VITE_AIMANDALA_REPORT_FOLLOWUP_ENABLED;
+
+  const processLike = globalThis as typeof globalThis & {
+    process?: {
+      env?: ProcessLikeEnv;
+    };
+  };
+
+  const fromProcess =
+    processLike.process?.env?.AIMANDALA_REPORT_FOLLOWUP_ENABLED ||
+    processLike.process?.env?.NEXT_PUBLIC_AIMANDALA_REPORT_FOLLOWUP_ENABLED;
+
+  return isTruthyFlag(fromImportMeta) || isTruthyFlag(fromProcess);
 }

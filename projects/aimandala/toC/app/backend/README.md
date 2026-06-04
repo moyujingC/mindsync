@@ -1,240 +1,180 @@
 # Backend
 
-这里放 `一镜一梳` To C 主产品的后端实现入口和流程编排代码。
+> 状态：current
+> 版本：0.3.0
+> owner：Engineer
+> last_updated：2026-05-23
+> source_of_truth：projects/aimandala/toC/app/backend/README.md
 
-职责：
+这里是 `一镜一梳` To C 主产品的后端入口。当前后端已经切到新报告链路，核心路径为：
 
-- 接收输入
-- 调用领域流程
-- 组织主链路输出
+```text
+/api/wealth-reports
+-> MandalaInterpretationAgent
+-> WealthReportRuntime
+-> projects/aimandala/docs/疗愈体系知识库
+```
+
+## 当前职责
+
+- 接收报告生成请求。
+- 调用曼陀罗解读智能体。
+- 从疗愈体系知识库读取财富议题 runtime 知识。
+- 返回用户可见报告和最小审阅 trace。
 
 不在这里放：
 
-- 复杂领域规则
-- 测试代码
-- 无关的历史脚本
-- 前端 UI 代码
-
-## 当前状态
-
-当前这里承接的是 `一镜一梳` To C 主线在 `mindsync` 里的正式后端入口。
-
-已经迁入并可运行的内容：
-
-- `app/core/pipeline/data_models.py`
-- `app/core/pipeline/store.py`
-- `app/core/pipeline/orchestrator_v2.py`
-- `app/core/analysis/circle_detector.py`
-- `app/core/safety/protocol.py`
-- `app/api/main.py`
-- `app/api/routes_v2.py`
-
-当前这批实现的目标不是复刻历史仓库全部能力，而是维护当前正式 To C 主路径，并持续迭代质量。
+- 旧报告管线。
+- 旧知识 runtime pack。
+- 小程序渠道 stub。
+- 无关历史脚本。
+- 前端 UI 代码。
 
 ## 当前目录约定
 
-- `app/`
-  - 当前后端实现主入口
-- `tests/`
-  - 后端自动化测试
-- `data/interpretations/`
-  - 本地联调时生成的运行时解读记录
-- `data/uploads/`
-  - 本地联调时保存的临时上传文件
-
-其中：
-
-- `data/interpretations/` 和 `data/uploads/` 都属于运行时目录
-- 它们不是正式 fixture，也不是应进入 Git 的项目资产
-- 需要长期保留的样本应转移到项目级 `fixtures/` 或 `toC/data/`
+- `app/api/main.py`：FastAPI app 入口。
+- `app/api/routes.py`：当前报告 API。
+- `app/core/mandala_interpretation_agent/`：曼陀罗解读智能体。
+- `app/core/wealth_report/`：财富议题报告 runtime。
+- `app/core/llm/`：OpenAI-compatible（兼容 OpenAI 协议）模型客户端。
+- `app/core/uploads/`：上传存储策略，后续需要重新接入当前报告 API。
+- `app/core/analysis/circle_detector.py`：三圈边界默认检测壳，后续需要接入新输入流程。
+- `tests/`：后端自动化测试。
+- `scripts/run_mandala_e2e_report_fixture.py`：端到端直出 fixture 审阅脚本。
 
 ## 最小运行前提
 
-当前后端还没有单独收口为完整 Python 工程文件，因此最小运行前提先以文档明确：
-
 - Python `3.11+`
-- 当前至少需要可用的 Python 包：
-  - `fastapi`
-  - `pydantic`
-  - `PyYAML`
-  - `pytest`
-  - `anyio`
-- 如需启用腾讯云 COS，还需要：
-  - `cos-python-sdk-v5`
-
-说明：
-
-- 当前这些依赖仍主要由本地开发环境承接
-- 这份 README 先把“最小可运行前提”显式写出，避免继续依赖隐含本机环境
-- 如果后续正式收口后端工作区，应补独立依赖文件
+- `requirements.release.txt` 中列出的运行依赖
+- 本地测试还需要 `pytest`
 
 ## 最小启动方式
 
-当前最小本地启动方式：
-
 ```bash
-cd .
 export PYTHONPATH=projects/aimandala/toC/app/backend
 uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-如果本机没有 `uvicorn`，应先在当前 Python 环境中安装对应依赖。
-
-## 最小测试方式
-
-当前建议至少保留下面两条验证命令：
-
-```bash
-cd .
-pytest projects/aimandala/toC/app/backend/tests/unit
-```
-
-```bash
-cd .
-pytest projects/aimandala/toC/app/backend/tests/unit/test_pipeline_orchestrator.py
-```
-
 ## 当前可用接口
 
-当前最小 `V2` API 包含：
-
-- `POST /api/v2/upload-image`
-- `POST /api/v2/detect-circles`
-- `POST /api/v2/interpretations`
-- `GET /api/v2/interpretations/{interpretation_id}`
-- `GET /api/v2/interpretations/{interpretation_id}/status`
-- `GET /api/v2/interpretations/{interpretation_id}/report`
-- `POST /api/v2/interpretations/{interpretation_id}/chat`
-- `POST /api/v2/interpretations/{interpretation_id}/upgrade`
-- `GET /api/v2/users/{user_id}/interpretations`
-- `GET /api/v2/pricing`
+- `POST /api/wealth-reports`
 - `GET /health`
 
-其中当前已经打通的最小行为：
-
-- 浏览器上传文件可以先落到后端本地临时路径
-- 本地上传会返回可直接访问的本地读取地址，供开发与 smoke test 使用
-- 本地临时上传目录会清理超过 24 小时的旧文件
-- 上传存储已经抽成独立策略层；本地开发默认走 `local`，正式 `release` 明确走 `cos`
-- `s3 / oss` 已有 dry-run 远程元数据语义，可先产出稳定的 `storage_key / image_url`
-- `cos` 已接入真实上传实现；即使走腾讯云 COS，后端也仍会保留本地 `image_path`，保证当前 detect/create/report 主链无需改契约
-- 远程上传后端现在已补上环境变量配置校验，能区分“缺配置”和“实现未接入”
-- 上传响应已开始返回统一的 `storage_backend / storage_key / image_url` 元数据
-- 上传响应现已补充 `image_local_expires_at`，前端可以明确感知本地临时路径的预计过期时间
-- `create` 请求现已支持透传 `image_url / storage_backend / storage_key / image_local_expires_at` 并入库，保证图片生命周期后续可追踪
-- 本地上传文件现在可通过 `GET /api/v2/uploads/{storage_key}` 读取，便于 preview/runtime 继续消费同一份上传对象语义
-- 独立三圈检测接口可用
-- Lite 初始化可创建记录
-- 会生成一份迁移期 `一镜 Lite 版` 报告
-- Lite 报告已经开始按 `layer_1 / layer_2` 的结构字段输出更完整的故事、主题洞察、小觉察和实验内容
-- Lite 报告内容已经开始受 `theme / painting_intention / painting_feeling / 三圈参数` 影响，不再只是固定模板
-- Lite 报告文案与结构已开始明显向旧主线正式报告靠拢，包含更接近正式产品口吻的标题、整体印象、心灵画像故事、主题表现、六个核心洞察与小实验
-- 同一用户 / 同一图片 / 同一主题会复用已有记录
-- 记录、状态、报告、历史列表都可以查询
-- `upgrade` 已能写入并读取 `一梳 Pro 版` 报告
-- Pro 报告已经开始按 `layer_3 / layer_4` 输出第一眼直觉、核心洞察、三圈画像、根源分析与调节建议
-- Pro 报告内容也已经开始受 `theme / painting_intention / painting_feeling / 三圈参数` 影响，不再只是固定模板
-- Pro 报告文案与结构也已开始向旧主线正式深度报告靠拢，包含第一眼直觉、核心洞察表格、Lite 基础承接、三圈深度诊断、失衡识别、根源探索与针对失衡问题的疗愈建议
-- Lite / Pro 最终 markdown 都已接入 safety disclaimer 包装
-- Lite / Pro 正式报告主链已收口为知识优先本地组装：`Layer0 / 四步法 / projection / narrative projection -> Lite/Pro 知识骨架 -> 最终报告`
-- 当前后端仍保留 `prompt_preview` / `prompt_schema_validation_issues` 作为前端兼容字段，但它们不再表示模型主生成入口
-- Lite / Pro 的最终 `report.structured` 字段契约现已集中在 `app/core/pipeline/structured_report_schema.py`
-- 后端现已补上统一 LLM client，仅用于三圈 AI 识别与 Pro 报告内 AI 追问；Lite / Pro 报告正文不再由 LLM 结构生成覆盖
-- Pro 报告页对应的 AI 问答现已补上真实接口，基于当前报告 markdown、QA 上下文和历史对话生成延展回答
+`POST /api/wealth-reports` 当前要求传入后端可读取的 `image_path` 和可用的 `redeem_code`。如果没有配置真实 LLM，也可以传入已提取的视觉草稿或视觉证据，用于本地 dry-run（不调用视觉模型的试跑）。
 
 ## 当前边界
 
-当前实现明确还没有接入：
-
-- 基于 `s3 / oss` dry-run 升级为真实远程上传实现
-- 更完整的上传生命周期治理（例如引用计数、后台清理任务、持久化策略）
-- knowledge engine
-- 更精细的 CV/OpenCV 几何检测与多模型路由策略
-- To B / Studio / V3
-
-也就是说，当前 Lite / Pro `report` 已回到知识优先本地生成主链；统一 LLM client 只承担三圈 AI 识别和 Pro 内追问。报告正文质量的后续优化应继续沿知识库、projection、骨架组装链路推进，而不是恢复 prompt runtime 覆盖。
+- 当前只保留财富议题报告主线。
+- 上传入口和 Web 报告生成已接入当前报告 API；真实支付网关、订单、历史记录、小程序登录等渠道能力尚未重新接入。
+- Lite / Pro 生成当前先通过兑换码授权，不伪造支付完成。
+- Web 和小程序后续应共用报告生成核心，但各自的登录、支付、上传和渠道壳需要单独重做。
+- 早期报告管线和小程序后端 stub 已移除；后续渠道能力需要围绕当前报告核心重新接入。
 
 ## 验证
 
-当前建议的基础验证命令：
-
 ```bash
-pytest projects/aimandala/toC/app/backend/tests/unit
+pytest projects/aimandala/toC/app/backend/tests/unit -q
 ```
 
-最近一轮迁移验证通过的单测规模是：
+```bash
+git diff --check
+```
 
-- 当前覆盖 `test_api_health.py`、`test_circle_detector.py`、`test_pipeline_data_models.py`、`test_pipeline_orchestrator.py`、`test_prompt_builder.py`、`test_report_blueprints.py`、`test_safety_protocol.py`、`test_upload_storage.py`
+## LLM 配置
 
-## COS 配置
+默认优先使用 DeepSeek v4 兼容配置：
 
-如需切到腾讯云 COS，当前可用环境变量如下：
-
-- `AIMANDALA_UPLOAD_BACKEND=cos`
-- `AIMANDALA_UPLOAD_COS_SECRET_ID`
-- `AIMANDALA_UPLOAD_COS_SECRET_KEY`
-- `AIMANDALA_UPLOAD_COS_BUCKET`
-- `AIMANDALA_UPLOAD_COS_REGION`
-- `AIMANDALA_UPLOAD_COS_KEY_PREFIX`（可选，默认 `aimandala/uploads`）
-- `AIMANDALA_UPLOAD_COS_PUBLIC_BASE_URL`（可选，可指向备案后的正式域名或 CDN 域名）
-- `AIMANDALA_COS_SIGNED_URL_TTL_SECONDS`（可选，默认 `900`，控制前端读取图片时的签名 URL 有效期）
-- `AIMANDALA_UPLOAD_LOCAL_RETENTION_HOURS`（可选，默认 `24`，控制本地临时文件过期窗口）
-
-说明：
-
-- `COS` 当前会真实上传远端对象，同时保留本地临时文件，避免现有 `image_path` 主链断掉
-- `image_url` 在 `COS` 下是临时签名 URL；长期定位以 `storage_backend + storage_key` 为准
-- 若未安装 `cos-python-sdk-v5`，接口会返回 `501`
-
-## Unified LLM 配置
-
-如需把三圈识别和报告内 AI 问答接到真实模型，优先使用下面这组环境变量：
-
-- `AIMANDALA_LLM_BACKEND`（本地可缺省为 `noop`；正式 `release` 应显式设为 `openai_compatible`）
-- `AIMANDALA_LLM_BASE_URL`（`openai_compatible` 模式必填，例如 `https://<host>/v1`）
-- `AIMANDALA_LLM_API_KEY`（可选，取决于网关要求）
-- `AIMANDALA_LLM_API_KEY_HEADER`（可选，默认 `Authorization`）
-- `AIMANDALA_LLM_MODEL`（必填，默认模型）
-- `AIMANDALA_LLM_CHAT_MODEL`（可选，报告追问专用模型）
-- `AIMANDALA_LLM_VISION_MODEL`（可选，三圈识别专用视觉模型）
+- `AIMANDALA_LLM_BASE_URL`，默认 `https://api.deepseek.com`
+- `AIMANDALA_LLM_API_KEY`
+- `AIMANDALA_LLM_MODEL`，默认 `deepseek-v4-pro`
+- `AIMANDALA_LLM_CHAT_MODEL`（可选）
+- `AIMANDALA_LLM_VISION_MODEL`（可选）
 - `AIMANDALA_LLM_TIMEOUT_SECONDS`（可选，默认 `30`）
 - `AIMANDALA_LLM_MAX_RETRIES`（可选，默认 `2`）
 - `AIMANDALA_LLM_RETRY_BACKOFF_MS`（可选，默认 `400`）
 
-说明：
+如果只设置了 `AIMANDALA_LLM_API_KEY`，后端会自动启用兼容客户端并使用 DeepSeek v4 默认值。
+如果显式设置 `AIMANDALA_LLM_BACKEND=openai_compatible`，也会走同一套 OpenAI-compatible 客户端。
+本地未配置任何模型信息时，后端回退到 `noop`。
 
-- `AIMANDALA_LLM_BACKEND=noop` 时，Lite / Pro 报告仍按知识优先本地链路生成，三圈识别回落为默认几何建议，report chat 不会得到真实模型回复
-- `release` 环境若需要 AI 三圈识别或报告追问，不应使用 `noop`
-- `openai_compatible` 当前基于 `/chat/completions` 协议，支持文本生成、JSON 结构生成和图片输入
-- `AIMANDALA_LLM_CHAT_MODEL / AIMANDALA_LLM_VISION_MODEL` 未设置时，会回退到 `AIMANDALA_LLM_MODEL`
-- 报告正文不再支持通过 LLM report/prompt runtime 配置覆盖
-
-最小示例：
+本地可以用私有环境文件集中放密钥，文件不要提交。默认推荐复制 `.env.regression.example` 到 backend 本地忽略文件：
 
 ```bash
-export AIMANDALA_LLM_BACKEND=openai_compatible
-export AIMANDALA_LLM_BASE_URL="https://<your-gateway>/v1"
-export AIMANDALA_LLM_API_KEY="<your-api-key>"
-export AIMANDALA_LLM_MODEL="gpt-4.1"
-export AIMANDALA_LLM_CHAT_MODEL="gpt-4.1-mini"
-export AIMANDALA_LLM_VISION_MODEL="gpt-4.1"
-export AIMANDALA_LLM_TIMEOUT_SECONDS=30
-export AIMANDALA_LLM_MAX_RETRIES=2
-export AIMANDALA_LLM_RETRY_BACKOFF_MS=400
+cp projects/aimandala/toC/app/backend/.env.regression.example \
+  projects/aimandala/toC/app/backend/.env.local
 ```
 
-部署模板参考：
+填入真实 key 后，后端和本目录脚本会自动读取 `.env.local`。已经在 shell 里设置的变量优先级更高，不会被文件覆盖。
 
-- `projects/aimandala/docs/tasks/2026-04-05-腾讯云部署环境模板.md`
-- `projects/aimandala/toC/app/backend/.env.production.example`
-- `projects/aimandala/deploy/tencent-cloud/aimandala-backend.service.example`
-- `projects/aimandala/deploy/tencent-cloud/aimandala-api.nginx.conf.example`
+也可以把私有环境文件放在仓库外，并通过 `--env-file` 显式传入：
 
-## 下一步建议
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py \
+  --env-file /absolute/path/to/aimandala.local.env \
+  --check-env
+python3 projects/aimandala/toC/app/backend/scripts/run_wealth_report_regression.py \
+  --env-file /absolute/path/to/aimandala.local.env \
+  --mode both
+```
 
-后续优先级建议：
+私有环境文件使用普通 `KEY=VALUE` 格式。
+报告内容质量回归必须使用和应用一致的真实模型。单元测试里的 mock / stub 只用于验证代码合同，不作为报告内容质量评估依据。
+文字模型必须使用 DeepSeek v4 路线，例如：
 
-1. 把本地临时上传升级成正式图片存储方案
-2. 继续增强 Lite / Pro 知识库 projection 与报告骨架质量
-3. 针对三圈识别和报告追问分别收口 provider 选择与线上配置
-4. 继续完善 safety / knowledge 的正式编排与回归评估
+```bash
+AIMANDALA_LLM_BASE_URL=https://api.deepseek.com
+AIMANDALA_LLM_MODEL=deepseek-v4-pro
+AIMANDALA_LLM_CHAT_MODEL=deepseek-v4-pro
+```
+
+视觉模型可以走主配置 `AIMANDALA_LLM_VISION_*`，也可以走 fallback 配置 `AIMANDALA_LLM_VISION_FALLBACK_*`。
+本地做财富回归时，可以直接复制 `.env.regression.example` 生成私有文件。
+财富视觉回归必须使用和应用一致的 Qwen/DashScope 视觉路线，例如：
+
+```bash
+AIMANDALA_LLM_VISION_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+AIMANDALA_LLM_VISION_MODEL=qwen-vl-max-latest
+```
+
+如果文字模型不是 DeepSeek v4，或视觉模型不是 Qwen/DashScope，`run_wealth_report_regression.py --check-env` 会判定未 ready。否则测试只能证明流程可跑，不能作为报告质量或画面识别质量评估依据。
+
+## 11 个完整案例基础图像解读
+
+完整案例的基础层图像解读使用同一份 `.env.local`，不需要额外传 key。先检查环境：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py \
+  --vision-provider qwen \
+  --thinking-mode off \
+  --check-env
+```
+
+跑单个案例：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py \
+  --case-id case-001 \
+  --vision-provider qwen \
+  --thinking-mode off
+```
+
+跑全部 11 个案例：
+
+```bash
+python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py \
+  --vision-provider qwen \
+  --thinking-mode off
+```
+
+输出会写入 `projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/foundation-runs/<日期>/<视觉模型>/thinking-<on|off>/`。如需对照豆包视觉模型，将 `--vision-provider` 改为 `doubao`；如需对照 thinking 开关，将 `--thinking-mode` 改为 `on`。这一步必须使用真实视觉模型，不能用 mock / stub 结果做人工审核依据。
+
+## 兑换码配置
+
+`/api/wealth-reports` 端到端报告生成需要配置 `AIMANDALA_REDEEM_CODES`。格式为：
+
+```bash
+AIMANDALA_REDEEM_CODES="CODE-LITE:lite;CODE-PRO:pro;CODE-ALL:lite,pro"
+```
+
+未配置、未传码、或兑换码不适用于所选 Lite / Pro 版本时，`/api/wealth-reports` 会返回 `402`。
+说明：`run_wealth_report_regression.py` 直接调用智能体，不经过 API 兑换码校验，所以真实样例回归不需要兑换码。

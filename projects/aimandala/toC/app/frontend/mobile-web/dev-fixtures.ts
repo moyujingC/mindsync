@@ -23,7 +23,7 @@ export const mobileWebDevFixturePresets: MobileWebDevFixturePreset[] = [
     filename: "mandala-test-01.JPG",
     contentType: "image/jpeg",
     draftPatch: {
-      theme: "general",
+      theme: "wealth",
       reportType: "lite",
       reportVariant: "lite",
       paintingIntention: "",
@@ -31,13 +31,13 @@ export const mobileWebDevFixturePresets: MobileWebDevFixturePreset[] = [
     },
   },
   {
-    id: "mandala-test-02-general",
-    label: "测试图 02 / General",
+    id: "mandala-test-02-wealth",
+    label: "测试图 02 / 财富",
     imageUrl: mandalaTest02Url,
     filename: "mandala-test-02.jpeg",
     contentType: "image/jpeg",
     draftPatch: {
-      theme: "general",
+      theme: "wealth",
       reportType: "lite",
       reportVariant: "lite",
       paintingIntention: "",

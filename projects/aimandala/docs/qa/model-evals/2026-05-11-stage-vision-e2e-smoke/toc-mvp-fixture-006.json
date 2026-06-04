@@ -1,0 +1,362 @@
+{
+  "fixture_id": "toc-mvp-fixture-006",
+  "image_asset": "fixtures/toc-mvp/assets/IMG_5067.jpeg",
+  "upload": {
+    "storage_backend": "local",
+    "storage_key": "dccde11096a84331801f8def76f6b549.jpeg",
+    "content_type": "image/jpeg",
+    "size_bytes": 3096659
+  },
+  "detect": {
+    "method": "llm_vision_estimated",
+    "confidence": 0.95,
+    "inner_radius": 0.45,
+    "middle_radius": 0.75,
+    "debug_backend": "smoke_llm_vision"
+  },
+  "create": {
+    "interpretation_id": "e308efb5-2314-4a12-ae40-e67546d9c081",
+    "version": "lite",
+    "status": "completed",
+    "generation_stage": "completed",
+    "generation_progress": 100,
+    "three_circles": {
+      "inner_radius": 45,
+      "middle_radius": 75
+    },
+    "auto_detected": false,
+    "report_ready": true
+  },
+  "status": {
+    "interpretation_id": "e308efb5-2314-4a12-ae40-e67546d9c081",
+    "status": "completed",
+    "generation_stage": "completed",
+    "generation_progress": 100,
+    "report_ready": true,
+    "version_purchased": [
+      "lite"
+    ],
+    "three_circles": {
+      "inner_radius": 45,
+      "middle_radius": 75
+    },
+    "auto_detected": false
+  },
+  "lite_report": {
+    "version": "lite",
+    "title": "通用解读中，水多木漂正在成为这次画作",
+    "overall_impression": "这份解读会先回应你本次的主题：想更看清自己现在的状态，也想知道接下来怎么更稳地往前。。",
+    "error": null,
+    "visual_basis": "内圈：中心是一个紫色八角星，内部有从中心向外辐射的细线，颜色渐变明显，呈现光晕效果。；蓝色三角形围绕中心八角星分布，与绿色三角形交替出现，形成交叉网格结构。\n中圈：中间区域为黄色底色，作为背景，上面分布着新月和星星图案。；黄色新月分布在四个方向，每个新月由一个完整的圆和一个弯月组成，呈对称布局。\n外圈：外圈由绿色和蓝色组成的锯齿形图案构成，形成连续的环状边框，具有强烈的视觉边界感。；蓝色锯齿形与绿色锯齿形交替排列，构成外圈的装饰性边框，增强图案的整体性。",
+    "style_review_fields": {},
+    "prompt_schema_validation_issues": []
+  },
+  "pro_report": {
+    "version": "pro",
+    "title": "一梳 Pro 版报告",
+    "overall_impression": "这份深度报告会在「通用解读中，水多木漂正在成为这次画作」的基础上，继续看你在「通用解读」中的核心流动。",
+    "error": null,
+    "structured_keys": [
+      "deep_impression",
+      "deep_structure_interpretation",
+      "evidence_digest",
+      "healing_plan",
+      "imbalance_diagnosis",
+      "prompt_preview",
+      "prompt_schema_validation_issues",
+      "root_cause_chain",
+      "topic_context"
+    ],
+    "style_review_fields": {
+      "deep_impression": "这份深度报告会在「通用解读中，水多木漂正在成为这次画作」的基础上，继续看你在「通用解读」中的核心流动。",
+      "deep_structure_interpretation": "在全面解读这个议题下，这份 Pro 解读会把画面证据、失衡判断和根因链放在一起看。\n\n心理层面先保持开放，不做诊断式定性。\n\n更深的核心需要在完整 stage 证据和用户主题中谨慎确认。",
+      "evidence_digest": "inner:水 -> middle:土 -> outer:木\n\n当前最需要关注的线索是：水多木漂。\n\n内圈：内圈像是这张画的核心房间。它约占 45%，说明你最先守住的是核心自我和安全感；你不是没有力量，而是在确认这份力量能不能被自己接住。\n\n中圈：中圈约占 75%，更像关系和现实任务所在的位置。这里已经开始重新连接外部，但仍然带着谨慎，说明你不是拒绝关系，而是在判断怎样靠近才不耗尽自己。\n\n外圈：外圈更像你给世界看的边界。它不是单纯的防御，而是在提醒你：哪些地方可以继续开放，哪些地方需要先保留一点距离。\n\n节奏关系应由 stage-08 的能量流动诊断支撑。\n\n关系模式需要结合「通用解读」主题知识进一步确认。\n\n行动模式需要回到画面证据和用户意图共同判断。",
+      "imbalance_diagnosis": "水多木漂\n\n当前最需要关注的线索是：水多木漂。\n\n该判断应回到 stage-03 到 stage-07 的证据链确认。\n\n能量层面等待 stage-08 完整诊断。\n\n心理层面先保持开放，不做诊断式定性。",
+      "root_cause_chain": {
+        "surface": "在「通用解读」主题下，先观察它如何进入现实选择。",
+        "mechanism": "心理层面先保持开放，不做诊断式定性。",
+        "core": "更深的核心需要在完整 stage 证据和用户主题中谨慎确认。"
+      },
+      "healing_plan": [
+        {
+          "phase": "当前阶段",
+          "focus": "先稳定",
+          "practice": "每天记录一个最明显的身体或情绪信号。"
+        },
+        {
+          "phase": "接下来",
+          "focus": "再连接",
+          "practice": "把这个信号放回「通用解读」里的一个真实场景。"
+        },
+        {
+          "phase": "继续深化",
+          "focus": "小步行动",
+          "practice": "选择一个今天能完成的低压力动作。"
+        }
+      ],
+      "topic_context": {
+        "topic": "general",
+        "topic_label": "全面解读",
+        "report_mode": "pro",
+        "orientation": {
+          "intro": "这份报告会从全面解读这个议题角度看这张画。",
+          "focus": "这个议题会从整体状态、能量分布、情绪模式和当下可走的一小步来理解这张画。",
+          "key_terms": []
+        }
+      }
+    }
+  },
+  "validation": {
+    "ok": true,
+    "failures": []
+  },
+  "runtime_diagnostics": {
+    "record_found": true,
+    "status": "completed",
+    "generation_stage": "completed",
+    "generation_progress": 100,
+    "lite_ready": true,
+    "pro_ready": true,
+    "stage_process": {
+      "passed": true,
+      "failure_reason": "",
+      "failure_detail": {},
+      "process_contract": {
+        "generation_mode": "stage_based_runtime",
+        "target_report": "pro",
+        "package_status": "formal",
+        "blocking_reasons": [],
+        "completed_stages": [
+          "stage-00-input-context",
+          "stage-01-user-input-context",
+          "stage-02-circle-boundary-decision",
+          "stage-03-visual-evidence",
+          "stage-04-direct-judgment-high-hit-check",
+          "stage-05-per-circle-color-shape-element-sensing",
+          "stage-06-per-circle-element-generation-control",
+          "stage-07-per-circle-imbalance-patterns",
+          "stage-08-energy-flow-diagnosis",
+          "stage-09-evidence-consolidation",
+          "stage-10-core-thesis-selection",
+          "stage-11-user-facing-framing",
+          "stage-12-healing-direction-and-report-branching"
+        ],
+        "incomplete_stages": [],
+        "knowledge_ref_count": 17
+      },
+      "stage_03_visual_evidence": {
+        "status": "complete",
+        "failure_reason": null,
+        "global_visual_summary": "一幅对称的圆形图案，中心为紫色星形结构，周围环绕蓝色和绿色三角形构成的几何图形，外圈包含黄色月亮、粉色与紫色星星以及蓝绿相间的锯齿边框。整体色彩丰富，结构分明。",
+        "circles": {
+          "inner": {
+            "summary": "中心区域以紫色为主，呈八角星形状，内部有放射状线条，外围由蓝色和绿色三角形交错构成。",
+            "visual_unit_count": 2,
+            "sample_visual_units": [
+              {
+                "id": "inner_01",
+                "position": "中心",
+                "color": "紫色",
+                "secondary_colors": [
+                  "浅紫色",
+                  "白色"
+                ],
+                "shade": "中等",
+                "saturation": "高",
+                "shape": "八角星",
+                "shape_arrangement": "放射状",
+                "area_ratio": 0.2,
+                "fill_state": "完全填充",
+                "whitespace_state": "无空白",
+                "description": "中心是一个紫色八角星，内部有从中心向外辐射的细线，颜色渐变明显，呈现光晕效果。"
+              },
+              {
+                "id": "inner_02",
+                "position": "围绕中心八角星",
+                "color": "蓝色",
+                "secondary_colors": [
+                  "绿色",
+                  "黄色"
+                ],
+                "shade": "深",
+                "saturation": "高",
+                "shape": "三角形",
+                "shape_arrangement": "交错排列",
+                "area_ratio": 0.4,
+                "fill_state": "完全填充",
+                "whitespace_state": "无空白",
+                "description": "蓝色三角形围绕中心八角星分布，与绿色三角形交替出现，形成交叉网格结构。"
+              }
+            ]
+          },
+          "middle": {
+            "summary": "中间区域为黄色背景，分布着黄色新月、粉色和紫色星星，以及绿色与蓝色的边框装饰。",
+            "visual_unit_count": 2,
+            "sample_visual_units": [
+              {
+                "id": "middle_01",
+                "position": "环形区域",
+                "color": "黄色",
+                "secondary_colors": [
+                  "淡黄色",
+                  "白色"
+                ],
+                "shade": "浅",
+                "saturation": "中等",
+                "shape": "圆形背景",
+                "shape_arrangement": "均匀铺满",
+                "area_ratio": 0.5,
+                "fill_state": "完全填充",
+                "whitespace_state": "无空白",
+                "description": "中间区域为黄色底色，作为背景，上面分布着新月和星星图案。"
+              },
+              {
+                "id": "middle_02",
+                "position": "分布在黄色背景上",
+                "color": "黄色",
+                "secondary_colors": [
+                  "橙色"
+                ],
+                "shade": "中等",
+                "saturation": "高",
+                "shape": "新月",
+                "shape_arrangement": "对称分布",
+                "area_ratio": 0.1,
+                "fill_state": "完全填充",
+                "whitespace_state": "有黑色轮廓线",
+                "description": "黄色新月分布在四个方向，每个新月由一个完整的圆和一个弯月组成，呈对称布局。"
+              }
+            ]
+          },
+          "outer": {
+            "summary": "最外层为绿色与蓝色相间的锯齿状边框，构成封闭圆形边界。",
+            "visual_unit_count": 2,
+            "sample_visual_units": [
+              {
+                "id": "outer_01",
+                "position": "最外圈",
+                "color": "绿色",
+                "secondary_colors": [
+                  "蓝色"
+                ],
+                "shade": "深",
+                "saturation": "高",
+                "shape": "锯齿形边框",
+                "shape_arrangement": "连续环绕",
+                "area_ratio": 0.3,
+                "fill_state": "完全填充",
+                "whitespace_state": "无空白",
+                "description": "外圈由绿色和蓝色组成的锯齿形图案构成，形成连续的环状边框，具有强烈的视觉边界感。"
+              },
+              {
+                "id": "outer_02",
+                "position": "外圈边缘",
+                "color": "蓝色",
+                "secondary_colors": [
+                  "绿色"
+                ],
+                "shade": "中等",
+                "saturation": "高",
+                "shape": "锯齿形",
+                "shape_arrangement": "交替排列",
+                "area_ratio": 0.2,
+                "fill_state": "完全填充",
+                "whitespace_state": "无空白",
+                "description": "蓝色锯齿形与绿色锯齿形交替排列，构成外圈的装饰性边框，增强图案的整体性。"
+              }
+            ]
+          }
+        },
+        "evidence_refs": [
+          "中心为紫色八角星，内部有放射状线条",
+          "蓝色与绿色三角形交错构成内圈几何结构",
+          "中圈为黄色背景，分布黄色新月与粉色、紫色星星",
+          "外圈为绿色与蓝色交替的锯齿形边框",
+          "整体图案呈高度对称布局"
+        ],
+        "uncertainties": [],
+        "model_trace": {
+          "attempt_trace": [
+            {
+              "model": "qwen-vl-max-latest",
+              "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+              "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+              "result": "success",
+              "status": null,
+              "reason": null
+            }
+          ],
+          "last_error_detail": {}
+        }
+      },
+      "stage_04_direct_judgment": {
+        "status": "complete",
+        "failure_reason": null,
+        "hits": [],
+        "program_matches": [
+          {
+            "mode": "大面积黄色",
+            "mode_id": "direct_judgment.large_yellow_mass",
+            "hit_strength": "full_hit",
+            "vision_hit": null,
+            "program_hit": true,
+            "cross_validation": null,
+            "visual_unit_refs": [
+              "middle_01"
+            ],
+            "visible_evidence": [
+              "画面存在成片黄色。"
+            ],
+            "knowledge_refs": [
+              "direct_judgment.large_yellow_mass"
+            ],
+            "reasoning": null
+          },
+          {
+            "mode": "蓝绿搭配",
+            "mode_id": "direct_judgment.blue_green_expression",
+            "hit_strength": "full_hit",
+            "vision_hit": null,
+            "program_hit": true,
+            "cross_validation": null,
+            "visual_unit_refs": [
+              "inner_02",
+              "outer_01"
+            ],
+            "visible_evidence": [
+              "画面同时出现蓝色和绿色。"
+            ],
+            "knowledge_refs": [
+              "direct_judgment.blue_green_expression"
+            ],
+            "reasoning": null
+          }
+        ],
+        "non_hits": [],
+        "uncertain_items": [],
+        "conflicts": [],
+        "knowledge_refs": [
+          "direct_judgment.large_yellow_mass",
+          "direct_judgment.blue_green_expression"
+        ],
+        "summary": "",
+        "model_trace": {
+          "attempt_trace": [
+            {
+              "model": "qwen-vl-max-latest",
+              "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+              "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+              "result": "success",
+              "status": null,
+              "reason": null
+            }
+          ],
+          "last_error_detail": {}
+        }
+      },
+      "fidelity_flags": [],
+      "fallback_summary": {},
+      "visual_basis_source": null
+    }
+  }
+}

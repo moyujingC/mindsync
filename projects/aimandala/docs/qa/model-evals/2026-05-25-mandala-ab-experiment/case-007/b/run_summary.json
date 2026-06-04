@@ -1,0 +1,90 @@
+{
+  "agent_version": "mandala-e2e-agent-v1",
+  "agent_variant": "single_pass_e2e",
+  "reusable_visual_baseline": false,
+  "production_role": "ab_experiment_only",
+  "report_mode": "lite",
+  "prompt_pack_id": "wealth-report-v1.0.0",
+  "foundation_prompt_pack": {
+    "pack_id": "foundation-vision-v1.0.0",
+    "mandala_root": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗",
+    "file_order": [
+      "10-曼陀罗/00-曼陀罗基础层解读流程.md",
+      "10-曼陀罗/10-画面识别与描述/README.md",
+      "10-曼陀罗/10-画面识别与描述/02-画面分析基础.md",
+      "10-曼陀罗/10-画面识别与描述/03-形状识别与感知.md",
+      "10-曼陀罗/10-画面识别与描述/04-颜色识别与感知.md",
+      "10-曼陀罗/20-圈内五行解读/README.md",
+      "10-曼陀罗/20-圈内五行解读/01-五行感知法.md",
+      "10-曼陀罗/20-圈内五行解读/02-五行相生相克解读法.md",
+      "10-曼陀罗/20-圈内五行解读/03-五行失衡类型.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/README.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/01-木生火.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/02-火生土.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/03-土生金.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/04-金生水.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/05-水生木.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/06-水克火.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/07-火克金.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/08-金克木.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/09-木克土.md",
+      "10-曼陀罗/20-圈内五行解读/五行生克/10-土克水.md",
+      "10-曼陀罗/30-跨圈能量解读/README.md",
+      "10-曼陀罗/30-跨圈能量解读/01-三圈结构法.md"
+    ],
+    "file_count": 22,
+    "char_count": 52904,
+    "pack_hash": "78df7921a2274039f2f109a51fe2ff2af89a38f0549ef4eb01b514059bf31bcc",
+    "build_mode": "generated"
+  },
+  "wealth_prompt_pack": {
+    "pack_id": "wealth-reasoning-v1.0.0",
+    "wealth_root": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/10-议题层/30-主议题报告包/10-财富",
+    "structured_root": "projects/aimandala/docs/疗愈体系知识库/50-结构化知识单元",
+    "app_adaptation_root": "projects/aimandala/docs/疗愈体系知识库/30-应用适配/10-aimandala",
+    "file_order": [
+      "10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/01-基础信号财富翻译总表.md",
+      "10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/02-报告路由位置说明.md",
+      "10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/03-颜色财富翻译表.md",
+      "10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/04-形状财富翻译表.md",
+      "10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/05-跨圈状态财富翻译表.md",
+      "10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/06-组合模式财富翻译表.md",
+      "10-议题层/30-主议题报告包/10-财富/10-财富议题翻译层/README.md",
+      "10-议题层/30-主议题报告包/10-财富/11-财富议题手册.md",
+      "10-议题层/30-主议题报告包/10-财富/12-财富中的浮现议题回译规则.md",
+      "10-议题层/30-主议题报告包/10-财富/13-下一次探索建议映射表.md",
+      "10-议题层/30-主议题报告包/10-财富/90-财富议题案例反推.md",
+      "10-议题层/30-主议题报告包/10-财富/README.md",
+      "50-结构化知识单元/10-aimandala-report-generation.yaml",
+      "50-结构化知识单元/16-foundation-image-reading-schema.yaml",
+      "50-结构化知识单元/20-wealth-issue-clauses.yaml",
+      "50-结构化知识单元/30-wealth-evidence-links.yaml",
+      "50-结构化知识单元/40-wealth-report-routing.yaml",
+      "50-结构化知识单元/45-wealth-emergent-topic-translation.yaml",
+      "30-应用适配/10-aimandala/01-解读与个案沟通流程.md",
+      "30-应用适配/10-aimandala/02-解读报告组织规范.md",
+      "30-应用适配/10-aimandala/03-解读报告生成最小规则.md",
+      "30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md",
+      "30-应用适配/10-aimandala/05-报告任务定义.md",
+      "30-应用适配/10-aimandala/06-财富议题解读报告模板.md",
+      "30-应用适配/10-aimandala/07-报告语言风格指南.md"
+    ],
+    "file_count": 25,
+    "char_count": 135325,
+    "pack_hash": "1e706525c4bf15afd70ca2d2c14e19fef6f6059c24e88896aa2573d7b978475e",
+    "build_mode": "generated"
+  },
+  "status": "complete",
+  "prompt_cache": {
+    "hit_tokens": 0,
+    "miss_tokens": 0
+  },
+  "model_trace": [
+    {
+      "model": "qwen-vl-max-latest",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "result": "success"
+    }
+  ]
+}

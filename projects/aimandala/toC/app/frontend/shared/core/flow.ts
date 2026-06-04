@@ -2,11 +2,11 @@ import type {
   CreateInterpretationResponse,
   DetectCirclesResponse,
   InterpretationStatusResponse,
-  LiteStructuredReport,
   MandalaFlowState,
-  ProStructuredReport,
+  ReportPersona,
   ReportResponse,
   SelectedImageRef,
+  WealthReportResponse,
 } from "../types";
 
 export const initialMandalaFlowState: MandalaFlowState = {
@@ -81,6 +81,74 @@ export function applyReport(
   };
 }
 
+function getReportStringValue(
+  source: Record<string, unknown>,
+  key: string,
+): string | null {
+  const value = source[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function parseReportPersona(source: Record<string, unknown>): ReportPersona | null {
+  const value = source.persona;
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const persona = value as Record<string, unknown>;
+  const personaId = getReportStringValue(persona, "persona_id");
+  const personaVersion = getReportStringValue(persona, "persona_version");
+  const displayName = getReportStringValue(persona, "display_name");
+  const roleLabel = getReportStringValue(persona, "role_label");
+  const scope = getReportStringValue(persona, "scope");
+  const boundaries = Array.isArray(persona.boundaries)
+    ? persona.boundaries.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    : [];
+
+  if (!personaId || !personaVersion || !displayName || !roleLabel || !scope) {
+    return null;
+  }
+
+  return {
+    persona_id: personaId,
+    persona_version: personaVersion,
+    display_name: displayName,
+    role_label: roleLabel,
+    scope,
+    boundaries,
+  };
+}
+
+export function applyWealthReport(
+  state: MandalaFlowState,
+  response: WealthReportResponse,
+): MandalaFlowState {
+  const finalReport = response.final_report;
+  const title = getReportStringValue(finalReport, "title") ?? "财富关系曼陀罗解读";
+  const overallImpression =
+    getReportStringValue(finalReport, "summary") ??
+    getReportStringValue(finalReport, "overall_impression");
+  const persona = parseReportPersona(finalReport);
+  const report: ReportResponse = {
+    interpretation_id: response.report_id,
+    version: response.report_mode,
+    title,
+    overall_impression: overallImpression,
+    structured: finalReport,
+    persona,
+    report: response.final_report_md,
+    ai_qa_context: null,
+    can_upgrade: false,
+    upgrade_price: null,
+    error: response.success ? null : "财富报告质量门未通过",
+    visual_draft: response.visual_draft,
+    prompt_pack_manifest: response.prompt_pack_manifest,
+    quality_gate: response.quality_gate,
+    run_summary: response.run_summary,
+  };
+
+  return applyReport(state, report);
+}
+
 export function applyError(
   state: MandalaFlowState,
   message: string,
@@ -90,55 +158,4 @@ export function applyError(
     step: "error",
     lastError: message,
   };
-}
-
-export function getLiteStructuredReport(
-  report: ReportResponse | null,
-): LiteStructuredReport | null {
-  if (!report?.structured) {
-    return null;
-  }
-
-  const structured = report.structured as Partial<LiteStructuredReport>;
-  if (
-    typeof structured.topic_context !== "object" ||
-    structured.topic_context === null ||
-    typeof structured.current_reading !== "string" ||
-    typeof structured.visual_basis !== "string" ||
-    typeof structured.pattern_interpretation !== "string" ||
-    typeof structured.life_connection !== "string" ||
-    typeof structured.pro_report_entry !== "object" ||
-    structured.pro_report_entry === null
-  ) {
-    return null;
-  }
-
-  return structured as LiteStructuredReport;
-}
-
-export function getProStructuredReport(
-  report: ReportResponse | null,
-): ProStructuredReport | null {
-  if (!report?.structured || report.version !== "pro") {
-    return null;
-  }
-
-  const structured = report.structured as Partial<ProStructuredReport>;
-  if (
-    typeof structured !== "object" ||
-    structured === null ||
-    typeof structured.topic_context !== "object" ||
-    structured.topic_context === null ||
-    typeof structured.deep_impression !== "string" ||
-    typeof structured.evidence_digest !== "string" ||
-    typeof structured.imbalance_diagnosis !== "string" ||
-    typeof structured.root_cause_chain !== "object" ||
-    structured.root_cause_chain === null ||
-    typeof structured.deep_structure_interpretation !== "string" ||
-    !Array.isArray(structured.healing_plan)
-  ) {
-    return null;
-  }
-
-  return structured as ProStructuredReport;
 }

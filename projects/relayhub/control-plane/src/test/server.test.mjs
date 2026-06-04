@@ -237,6 +237,11 @@ test("GET /entry-bindings returns per-entry default model bindings", async () =>
     assert.ok(claudeLocalMac);
     assert.equal(typeof claudeLocalMac.statusNote, "string");
     assert.equal(claudeLocalMac.reasoningEffortOverride, null);
+    const claudeLocal = payload.find((item) => item.entryId === "entry-paperclip-claude-local-server");
+    assert.ok(claudeLocal);
+    assert.equal(typeof claudeLocal.statusNote, "string");
+    assert.equal(claudeLocal.defaultModelEntryId, "preset-aitechflux-relay");
+    assert.equal(claudeLocal.reasoningEffortOverride, "high");
   });
 });
 
@@ -305,8 +310,9 @@ test("GET /entry-bindings/resolutions returns public resolved entry view without
       assert.ok(resolved);
       assert.equal(resolved.alias, "relayhub-entry-paperclip-claude-local-server");
       assert.equal(resolved.clientFamily, "paperclip");
-      assert.equal(resolved.reasoningEffortOverride, null);
-      assert.equal(resolved.effectiveReasoningEffort, null);
+      assert.equal(resolved.reasoningEffortOverride, "high");
+      assert.equal(resolved.effectiveReasoningEffort, "high");
+      assert.equal(resolved.resolvedModel.id, "preset-aitechflux-relay");
       assert.equal(typeof resolved.resolvedModel.baseUrl, "string");
       assert.equal(typeof resolved.resolvedModel.modelId, "string");
       assert.equal(typeof resolved.resolvedModel.hasStoredApiKey, "boolean");

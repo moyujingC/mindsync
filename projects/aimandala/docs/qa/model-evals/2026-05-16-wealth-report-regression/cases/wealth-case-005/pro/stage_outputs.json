@@ -1,0 +1,700 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "pro",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看财富议题背后的情绪、关系和行动拉扯。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作呈现出高度对称和有序的结构，中心为一个由紫色、蓝色和绿色构成的复杂星形图案，周围环绕着黄色背景上的月亮、星星等符号，外圈则以蓝绿色的锯齿状图案作为边框。整体色彩明亮且分布均匀，表现出一种平衡与和谐的状态。",
+    "circles": {
+      "inner": {
+        "summary": "紫色、蓝色、绿色；几何对称；三角形、菱形",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "紫色、蓝色、绿色",
+            "shape": "['三角形', '菱形']",
+            "visible_evidence": "紫色、蓝色、绿色；几何对称；三角形、菱形"
+          }
+        ],
+        "raw_observation": {
+          "center_shape": "六角星",
+          "colors": [
+            "紫色",
+            "蓝色",
+            "绿色"
+          ],
+          "shapes": [
+            "三角形",
+            "菱形"
+          ],
+          "pattern": "几何对称",
+          "energy_state": "稳定"
+        }
+      },
+      "middle": {
+        "summary": "均匀",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "position": "middle",
+            "color": "均匀",
+            "shape": "",
+            "visible_evidence": "均匀"
+          }
+        ],
+        "raw_observation": {
+          "background_color": "黄色",
+          "symbols": [
+            "月亮",
+            "星星"
+          ],
+          "color_distribution": "均匀",
+          "shape_pattern": "重复排列",
+          "energy_flow": "顺畅"
+        }
+      },
+      "outer": {
+        "summary": "蓝绿色、绿色",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "蓝绿色、绿色",
+            "shape": "",
+            "visible_evidence": "蓝绿色、绿色"
+          }
+        ],
+        "raw_observation": {
+          "border_pattern": "锯齿状",
+          "colors": [
+            "蓝绿色",
+            "绿色"
+          ],
+          "structure": "连续闭合",
+          "edge_integrity": "完整"
+        }
+      }
+    },
+    "evidence_refs": [
+      "中心区域呈现复杂的几何对称结构，表明内在秩序感较强。",
+      "中圈使用黄色背景并点缀月亮和星星，象征能量流动和情绪状态的平稳。",
+      "外圈为蓝绿色锯齿状边框，边界完整且闭合，显示对外界有清晰的界限意识。",
+      "整体色彩明亮且分布均匀，体现一种和谐与平衡的状态。"
+    ],
+    "uncertainties": [
+      "无法确定具体颜色深浅是否代表某种特定能量强度。",
+      "无法判断符号（如月亮、星星）的具体含义是否与个人经验相关。",
+      "缺乏关于创作时心理状态的直接信息，难以完全解读其背后的动机。"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "紫色、蓝色、绿色；几何对称；三角形、菱形",
+        "dominant_colors": [
+          "紫色、蓝色、绿色"
+        ],
+        "dominant_shapes": [
+          "['三角形', '菱形']"
+        ],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "均匀",
+        "dominant_colors": [
+          "均匀"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "蓝绿色、绿色",
+        "dominant_colors": [
+          "蓝绿色、绿色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。"
+    ],
+    "per_circle": {
+      "inner": {
+        "visual_summary": "紫色、蓝色、绿色；几何对称；三角形、菱形",
+        "dominant_colors": [
+          "紫色、蓝色、绿色"
+        ],
+        "dominant_shapes": [
+          "['三角形', '菱形']"
+        ],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "均匀",
+        "dominant_colors": [
+          "均匀"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "蓝绿色、绿色",
+        "dominant_colors": [
+          "蓝绿色、绿色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": [
+          "紫色、蓝色、绿色"
+        ]
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": [
+          "均匀"
+        ]
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": [
+          "蓝绿色、绿色"
+        ]
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "紫色、蓝色、绿色；几何对称；三角形、菱形"
+      },
+      {
+        "id": "middle-001",
+        "circle": "middle",
+        "visible_evidence": "均匀"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "蓝绿色、绿色"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "您在追求财富的过程中，内在已建立起一定的秩序与稳定感，这驱使您向外流动和表达，但在面对外部世界时仍保持着谨慎的边界和自我保护。",
+    "evidence_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.outer_boundary_thick_closed"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action",
+        "wealth.difficulty_receiving_support",
+        "wealth.scarcity_and_insecurity"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control",
+        "wealth.parents_family_money_scripts"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.difficulty_receiving_support",
+          "title": "接受支持困难",
+          "summary": "用户可能习惯一个人扛，不容易接受帮助、资源、合作、礼物、推荐或机会。",
+          "report_language": [
+            "财富不只来自自己用力，也来自能否接受合适的支持。",
+            "如果你只允许自己付出、不太允许被支持，财富流动就容易只剩消耗，不容易形成互惠。"
+          ],
+          "healing_direction": [
+            "练习接受一个小支持。",
+            "区分支持和亏欠。",
+            "看见合作中的互惠关系。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.scarcity_and_insecurity",
+          "title": "匮乏感和安全感不足",
+          "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+          "report_language": [
+            "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+            "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+          ],
+          "healing_direction": [
+            "安全感重建。",
+            "金钱信念梳理。",
+            "身体稳定练习。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.parents_family_money_scripts",
+          "title": "父母关系与家庭金钱脚本",
+          "status": "source_supported_draft",
+          "report_use": "连接早期家庭中关于钱、成功、承担、收受和风险的学习。",
+          "output_strength": "cautious"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+      ]
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "从您的曼陀罗中，我看到了一个关于财富的稳定内核。中心的对称星形和冷色调，意味着您对于财富或许已经有了相当清晰的思考和内在规划（证据 inner-001）。这份安定感正向您生活的其他方面顺畅地流动着（证据 middle-001）。不过，画作外圈那条完整闭合的边界，似乎也反映出您在将内在的秩序付诸行动、与外界互动时，仍保留着一份审慎和观察（证据 outer-001）。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.outer_boundary_thick_closed"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action",
+        "wealth.difficulty_receiving_support",
+        "wealth.scarcity_and_insecurity"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control",
+        "wealth.parents_family_money_scripts"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.difficulty_receiving_support",
+          "title": "接受支持困难",
+          "summary": "用户可能习惯一个人扛，不容易接受帮助、资源、合作、礼物、推荐或机会。",
+          "report_language": [
+            "财富不只来自自己用力，也来自能否接受合适的支持。",
+            "如果你只允许自己付出、不太允许被支持，财富流动就容易只剩消耗，不容易形成互惠。"
+          ],
+          "healing_direction": [
+            "练习接受一个小支持。",
+            "区分支持和亏欠。",
+            "看见合作中的互惠关系。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.scarcity_and_insecurity",
+          "title": "匮乏感和安全感不足",
+          "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+          "report_language": [
+            "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+            "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+          ],
+          "healing_direction": [
+            "安全感重建。",
+            "金钱信念梳理。",
+            "身体稳定练习。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.parents_family_money_scripts",
+          "title": "父母关系与家庭金钱脚本",
+          "status": "source_supported_draft",
+          "report_use": "连接早期家庭中关于钱、成功、承担、收受和风险的学习。",
+          "output_strength": "cautious"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+      ]
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "整合内在秩序与外在行动。探索并舒缓您在财富议题上与外界的边界感，在保有内在安全核心的同时，适度开放以连接新的可能。",
+    "report_mode": "pro",
+    "writing_input_refs": [
+      "inner-001",
+      "middle-001",
+      "outer-001"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.outer_boundary_thick_closed"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action",
+        "wealth.difficulty_receiving_support",
+        "wealth.scarcity_and_insecurity"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange",
+        "wealth.safety_scarcity_control",
+        "wealth.parents_family_money_scripts"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.difficulty_receiving_support",
+          "title": "接受支持困难",
+          "summary": "用户可能习惯一个人扛，不容易接受帮助、资源、合作、礼物、推荐或机会。",
+          "report_language": [
+            "财富不只来自自己用力，也来自能否接受合适的支持。",
+            "如果你只允许自己付出、不太允许被支持，财富流动就容易只剩消耗，不容易形成互惠。"
+          ],
+          "healing_direction": [
+            "练习接受一个小支持。",
+            "区分支持和亏欠。",
+            "看见合作中的互惠关系。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.scarcity_and_insecurity",
+          "title": "匮乏感和安全感不足",
+          "summary": "用户可能把钱当成安全感来源，即使有进账也难以真正安心。",
+          "report_language": [
+            "这里的财富卡点更像是安全感在向钱借力：钱越重要，内在越容易紧绷。",
+            "这不一定代表现实资源真的不足，也可能是内在长期处在“不够用”的预设里。"
+          ],
+          "healing_direction": [
+            "安全感重建。",
+            "金钱信念梳理。",
+            "身体稳定练习。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.safety_scarcity_control",
+          "title": "安全感、匮乏与控制",
+          "status": "source_supported_draft",
+          "report_use": "解释钱是否在替安全感工作，以及紧绷和控制感如何影响财富流动。",
+          "output_strength": "normal"
+        },
+        {
+          "module_id": "wealth.parents_family_money_scripts",
+          "title": "父母关系与家庭金钱脚本",
+          "status": "source_supported_draft",
+          "report_use": "连接早期家庭中关于钱、成功、承担、收受和风险的学习。",
+          "output_strength": "cautious"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+      ]
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 财富议题：内在秩序稳固，外在连接待舒展\n\n## 画面证据总览\n画作整体呈现出高度对称与和谐的结构，为解读财富议题提供了三条清晰的画面依据。首先，中心区域由紫色、蓝色和绿色构成的六角星形及几何对称图案，显示出您对金钱与价值拥有相当清晰的内在规划与理性思考。其次，中圈以明亮的黄色为背景，反复排列着月亮和星星符号，色彩分布均匀，象征着这种内在秩序正以平稳、顺畅的方式向外流动，情绪状态较为安定。最后，外圈采用蓝绿色的锯齿状边框，结构连续且闭合完整，这表明您在将内在想法付诸实践、与外部世界互动时，设下了一道审慎而清晰的界限，保持着观察的姿态。\n\n## 财富核心主轴\n您的财富运作机制，目前更像是“在稳固的内在世界里完成了对价值的深度思辨，但尚未允许这份价值与外部世界进行充分、松弛的交换与连接”。\n\n## 三圈分层解读\n**内圈（核心信念）：** 内圈复杂的几何对称与冷色调，直指您对财富的认知早已不是模糊的感受，而是形成了某种内在的、近乎严谨的秩序与原则。这反映在现实中，您可能有着周密的理财计划或清晰的价值标准。然而，这种“稳定”如果过于紧绷，也可能演变为一种对金钱的控制感，让钱在替您内心的安全感工作，而非自由流动的能量。\n\n**中圈（情绪与人际）：** 中圈均匀分布的色彩与象征性的星月符号，描绘出您在人际关系和情绪层面对财富的平稳表达。您或许在工作或生活中能冷静地讨论财富，但这种顺畅的流动在中圈就停下了，就像能量在舒适区里打转。它提示着，您的价值可能已经在熟悉的圈层中得到了认可，但因为习惯独自承担或不易接受外界支持，它还没有被推向更广阔的市场或合作中。\n\n**外圈（行动与现实）：** 外圈那道完整闭合的蓝绿色锯齿边界，是这幅画在财富议题上最关键的表达。它揭示了您在与世界交换价值时，行动上有着明显的谨慎与自我保护。财富需要行动来承接，而这道边界或许让您在面对机会、合作或市场时，习惯先退回观察、评估风险，使得想法和计划落地缓慢，甚至错过了让价值被看见和交换的可能。\n\n## 浮现议题回译\n画面中从内到外的流动，在即将进入现实世界时被一道保护性的边界所环绕，这很像您在事业或工作关系中的某些片刻：已经充分准备好了自己，却在外界要求、冲突或激烈竞争面前，本能地选择先保护自己的安全与宁静。这种“一个人扛”的模式，可能让您即便有能力，也较少体验到合作之下的轻松互惠。更深一层看，这种对外界资源和支持的审慎，或许与早期家庭中关于金钱的隐性剧本有关——比如“受人帮助是一种亏欠”或“资源需要靠自己牢牢守住”。这使得您在财富的接收通道上，不自觉地变得更为收紧，也让丰盛感更多停留在头脑层面，而非身心一致的真实体验。\n\n## 低风险行动建议\n1.  **进行一次“安全地开放边界”的微练习：** 从一件极小的、非工作核心的事情开始，有意识地接受一次来自他人的微小支持或资源，比如请同事推荐一本书、接受朋友的一份小吃，并在心里完整地体会这次单纯的收受，不急于回报。\n2.  **拆解一个计划并付诸微行动：** 选择一个您已思考很久但尚未落地的财富相关想法，将它拆解为三个可在30分钟内完成的、不依赖任何人的具体步骤。本周内完成的第一步，然后观察自己在这个过程中的情绪变化，尤其是面对不确定性时的紧绷感。\n3.  **梳理一条来自家庭的“金钱信息”：** 花几天时间，去留意那些反复出现在您脑海中的、关于金钱和承担的内心声音，比如“钱很难赚”或“求人不如求己”。辨认其中是否有来自父母或家族的声音，将它们写下来，作为觉察现有的金钱脚本、而非立即批判或改变的对象。"
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-8ac6d80ec719",
+      "report_mode": "pro",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 财富议题：内在秩序稳固，外在连接待舒展\n\n## 画面证据总览\n画作整体呈现出高度对称与和谐的结构，为解读财富议题提供了三条清晰的画面依据。首先，中心区域由紫色、蓝色和绿色构成的六角星形及几何对称图案，显示出您对金钱与价值拥有相当清晰的内在规划与理性思考。其次，中圈以明亮的黄色为背景，反复排列着月亮和星星符号，色彩分布均匀，象征着这种内在秩序正以平稳、顺畅的方式向外流动，情绪状态较为安定。最后，外圈采用蓝绿色的锯齿状边框，结构连续且闭合完整，这表明您在将内在想法付诸实践、与外部世界互动时，设下了一道审慎而清晰的界限，保持着观察的姿态。\n\n## 财富核心主轴\n您的财富运作机制，目前更像是“在稳固的内在世界里完成了对价值的深度思辨，但尚未允许这份价值与外部世界进行充分、松弛的交换与连接”。\n\n## 三圈分层解读\n**内圈（核心信念）：** 内圈复杂的几何对称与冷色调，直指您对财富的认知早已不是模糊的感受，而是形成了某种内在的、近乎严谨的秩序与原则。这反映在现实中，您可能有着周密的理财计划或清晰的价值标准。然而，这种“稳定”如果过于紧绷，也可能演变为一种对金钱的控制感，让钱在替您内心的安全感工作，而非自由流动的能量。\n\n**中圈（情绪与人际）：** 中圈均匀分布的色彩与象征性的星月符号，描绘出您在人际关系和情绪层面对财富的平稳表达。您或许在工作或生活中能冷静地讨论财富，但这种顺畅的流动在中圈就停下了，就像能量在舒适区里打转。它提示着，您的价值可能已经在熟悉的圈层中得到了认可，但因为习惯独自承担或不易接受外界支持，它还没有被推向更广阔的市场或合作中。\n\n**外圈（行动与现实）：** 外圈那道完整闭合的蓝绿色锯齿边界，是这幅画在财富议题上最关键的表达。它揭示了您在与世界交换价值时，行动上有着明显的谨慎与自我保护。财富需要行动来承接，而这道边界或许让您在面对机会、合作或市场时，习惯先退回观察、评估风险，使得想法和计划落地缓慢，甚至错过了让价值被看见和交换的可能。\n\n## 浮现议题回译\n画面中从内到外的流动，在即将进入现实世界时被一道保护性的边界所环绕，这很像您在事业或工作关系中的某些片刻：已经充分准备好了自己，却在外界要求、冲突或激烈竞争面前，本能地选择先保护自己的安全与宁静。这种“一个人扛”的模式，可能让您即便有能力，也较少体验到合作之下的轻松互惠。更深一层看，这种对外界资源和支持的审慎，或许与早期家庭中关于金钱的隐性剧本有关——比如“受人帮助是一种亏欠”或“资源需要靠自己牢牢守住”。这使得您在财富的接收通道上，不自觉地变得更为收紧，也让丰盛感更多停留在头脑层面，而非身心一致的真实体验。\n\n## 低风险行动建议\n1.  **进行一次“安全地开放边界”的微练习：** 从一件极小的、非工作核心的事情开始，有意识地接受一次来自他人的微小支持或资源，比如请同事推荐一本书、接受朋友的一份小吃，并在心里完整地体会这次单纯的收受，不急于回报。\n2.  **拆解一个计划并付诸微行动：** 选择一个您已思考很久但尚未落地的财富相关想法，将它拆解为三个可在30分钟内完成的、不依赖任何人的具体步骤。本周内完成的第一步，然后观察自己在这个过程中的情绪变化，尤其是面对不确定性时的紧绷感。\n3.  **梳理一条来自家庭的“金钱信息”：** 花几天时间，去留意那些反复出现在您脑海中的、关于金钱和承担的内心声音，比如“钱很难赚”或“求人不如求己”。辨认其中是否有来自父母或家族的声音，将它们写下来，作为觉察现有的金钱脚本、而非立即批判或改变的对象。",
+      "summary": "您在追求财富的过程中，内在已建立起一定的秩序与稳定感，这驱使您向外流动和表达，但在面对外部世界时仍保持着谨慎的边界和自我保护。"
+    }
+  }
+}

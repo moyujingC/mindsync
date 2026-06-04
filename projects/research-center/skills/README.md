@@ -23,6 +23,7 @@
 - `media-transcribe`
 - `research-brief`
 - `research-synthesis`
+- `source-to-review`
 - `handoff-packaging`
 - `insight-extraction`
 - `expression-extraction`
@@ -30,6 +31,7 @@
 - `knowledge-ingest`
 - `fact-check-gate`
 - `qa-gate-review`
+- `doc-governance`
 - `task-routing`
 - `artifact-readiness-check`
 - `business-diagnosis`
@@ -39,6 +41,9 @@
 - `review-feedback-to-memory`
 - `knowledge-relink-maintenance`
 - `ui-ux-console-design`
+- `cicd-check`
+- `mvp-deploy-trigger`
+- `prompt-pack-rebuild`
 
 ## 配套文档
 
@@ -66,12 +71,20 @@
 
 - 7 个核心角色的基础 skill 引用接入
 - 多条真实试跑链路验证
+- 文档治理执行层 skill 已在仓库内落盘
 
 当前还没有完成：
 
 - skill 的运行时自动发现
 - 每个 skill 的完整示例调用覆盖
 - 统一接入后的执行结果校验
+
+已额外提供：
+
+- Claude Code 项目级 slash 命令示例：`/.claude/commands/source-to-review.md`
+- Prompt pack 手动重包 slash 命令：`/.claude/commands/prompt-pack-rebuild.md`
+- Codex 本地 skill 同步脚本：`shared/tools/sync-codex-research-center-skills.sh`
+- 本机 Claude 运行时同步脚本已包含 `source-to-review`
 
 ## 当前运行时策略
 

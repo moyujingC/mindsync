@@ -9,107 +9,95 @@ vi.mock("./httpClient", () => ({
 }));
 
 vi.mock("./config", () => ({
-  getAimandalaApiBaseUrl: () => "http://localhost:8000",
+  getAimandalaApiBaseUrl: () => "http://127.0.0.1:8100",
 }));
 
 import {
-  createMiniappOrder,
-  exchangeMiniappSession,
-  getMiniappOrder,
-  notifyMiniappWechatPayment,
-  reconcileMiniappOrder,
+  createReportFollowup,
+  createWealthReport,
+  uploadImage,
 } from "./services";
 
-describe("shared/api services miniapp contracts", () => {
+describe("shared/api services", () => {
   beforeEach(() => {
     fetchJsonMock.mockReset();
     fetchJsonMock.mockResolvedValue({});
   });
 
-  it("exchangeMiniappSession 使用固定路径和 JSON body", async () => {
-    await exchangeMiniappSession({
-      code: "demo-code",
-      debug_canonical_user_id: "user-1",
+  it("createWealthReport uses the native wealth report endpoint", async () => {
+    await createWealthReport({
+      image_path: "/tmp/mandala.png",
+      report_mode: "lite",
+      redeem_code: "MVP-LITE",
+      painting_intention: "想看财富卡点",
+      painting_feeling: "有点紧",
+      inner_radius: 35,
+      middle_radius: 65,
     });
 
     expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/session/exchange",
+      "http://127.0.0.1:8100/api/wealth-reports",
       expect.objectContaining({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          code: "demo-code",
-          debug_canonical_user_id: "user-1",
+          image_path: "/tmp/mandala.png",
+          report_mode: "lite",
+          redeem_code: "MVP-LITE",
+          painting_intention: "想看财富卡点",
+          painting_feeling: "有点紧",
+          inner_radius: 35,
+          middle_radius: 65,
         }),
       }),
     );
   });
 
-  it("createMiniappOrder 使用 orders create contract", async () => {
-    await createMiniappOrder({
-      interpretation_id: "ipt-1",
-      product_type: "pro",
-      channel: "miniapp",
-      open_id: "openid-1",
+  it("createReportFollowup sends report-bound context to the followup endpoint", async () => {
+    await createReportFollowup({
+      report_id: "report-1",
+      question: "这段是什么意思？",
+      report_mode: "lite",
+      final_report_md: "# 财富关系曼陀罗解读报告",
+      final_report: { report_id: "report-1" },
+      visual_draft: { visual_draft_md: "视觉草稿" },
+      history: [{ role: "user", content: "上一问" }],
     });
 
     expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/orders",
+      "http://127.0.0.1:8100/api/report-followups",
       expect.objectContaining({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          interpretation_id: "ipt-1",
-          product_type: "pro",
-          channel: "miniapp",
-          open_id: "openid-1",
+          report_id: "report-1",
+          question: "这段是什么意思？",
+          report_mode: "lite",
+          final_report_md: "# 财富关系曼陀罗解读报告",
+          final_report: { report_id: "report-1" },
+          visual_draft: { visual_draft_md: "视觉草稿" },
+          history: [{ role: "user", content: "上一问" }],
         }),
       }),
     );
   });
 
-  it("getMiniappOrder 使用 order detail contract", async () => {
-    await getMiniappOrder("order/1");
-
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/orders/order%2F1",
-    );
-  });
-
-  it("reconcileMiniappOrder 使用 order reconcile contract", async () => {
-    await reconcileMiniappOrder("order-2");
-
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/orders/order-2/reconcile",
-      expect.objectContaining({
-        method: "POST",
-      }),
-    );
-  });
-
-  it("notifyMiniappWechatPayment 使用 wechat notify contract", async () => {
-    await notifyMiniappWechatPayment({
-      order_id: "order-3",
-      event: "paid",
-      payment_reference: "wx-demo",
+  it("uploadImage sends browser files to the upload endpoint", async () => {
+    const file = new File([new Uint8Array([1, 2, 3])], "mandala.png", {
+      type: "image/png",
     });
 
+    await uploadImage(file);
+
     expect(fetchJsonMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v2/miniapp/payments/wechat/notify",
+      "http://127.0.0.1:8100/api/uploads",
       expect.objectContaining({
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_id: "order-3",
-          event: "paid",
-          payment_reference: "wx-demo",
-        }),
+        body: expect.any(FormData),
       }),
     );
   });

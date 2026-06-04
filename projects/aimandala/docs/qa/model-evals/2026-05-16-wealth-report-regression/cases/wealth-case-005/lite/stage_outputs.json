@@ -1,0 +1,539 @@
+{
+  "stage-00-input-context": {
+    "stage": "stage-00-input-context",
+    "status": "complete",
+    "report_mode": "lite",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5067.jpeg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "stage-01-user-input-context": {
+    "stage": "stage-01-user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "想看财富议题背后的情绪、关系和行动拉扯。",
+      "painting_feeling": ""
+    }
+  },
+  "stage-02-circle-boundary-decision": {
+    "stage": "stage-02-circle-boundary-decision",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "manual_regression_default"
+    }
+  },
+  "stage-03-visual-evidence": {
+    "stage": "stage-03-visual-evidence",
+    "status": "complete",
+    "global_visual_summary": "这幅曼陀罗画作以对称的几何图案为核心，中心是一个由紫色和粉色构成的八角星形，周围环绕着蓝色和绿色的三角形与菱形结构。中圈包含黄色背景上的月亮、星星等天体符号，外圈则由蓝绿相间的锯齿状图案组成，整体色彩明亮且富有层次感。",
+    "circles": {
+      "inner": {
+        "summary": "中心区域以紫色为主，向外过渡至蓝色和绿色",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "position": "inner",
+            "color": "中心区域以紫色为主，向外过渡至蓝色和绿色",
+            "shape": "",
+            "visible_evidence": "中心区域以紫色为主，向外过渡至蓝色和绿色"
+          }
+        ],
+        "raw_observation": {
+          "center_shape": "八角星",
+          "center_color": "紫色与粉色渐变",
+          "central_pattern": "放射状线条从中心圆向外延伸",
+          "surrounding_shapes": [
+            "蓝色三角形",
+            "绿色三角形",
+            "黄色菱形"
+          ],
+          "color_distribution": "中心区域以紫色为主，向外过渡至蓝色和绿色"
+        }
+      },
+      "middle": {
+        "summary": "",
+        "visual_units": [],
+        "raw_observation": {
+          "background_color": "浅黄色",
+          "primary_symbols": [
+            "黄色圆形（太阳）",
+            "新月形（月亮）",
+            "粉色五角星",
+            "紫色六角星"
+          ],
+          "symbol_arrangement": "太阳与月亮交替分布于四周，星星均匀散布在间隙中",
+          "pattern_type": "重复性天体符号排列",
+          "shape_relationships": "所有符号围绕中心对称分布，形成稳定和谐的视觉效果"
+        }
+      },
+      "outer": {
+        "summary": "平滑无杂乱线条",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "position": "outer",
+            "color": "",
+            "shape": "",
+            "visible_evidence": "平滑无杂乱线条"
+          }
+        ],
+        "raw_observation": {
+          "border_pattern": "蓝绿色锯齿状连续图案",
+          "color_scheme": "蓝色与绿色交替",
+          "edge_detail": "锯齿边缘清晰，无破损或缺口",
+          "thickness": "边界较厚，完整闭合",
+          "texture": "平滑无杂乱线条"
+        }
+      }
+    },
+    "evidence_refs": [
+      "中心八角星结构象征内在秩序与能量汇聚",
+      "紫色与粉色渐变表示柔和的自我价值感和创造力",
+      "蓝色与绿色三角形代表成长与稳定性的结合",
+      "中圈天体符号（太阳、月亮、星星）暗示财富流动中的周期性与平衡",
+      "外圈锯齿状边框完整闭合，显示对外界有清晰边界与防护意识"
+    ],
+    "uncertainties": [
+      "无法确定具体颜色深浅是否对应特定情绪强度",
+      "未明确判断是否存在潜在的情绪波动线索",
+      "缺乏关于用户主观意图的直接信息，难以完全解读画面背后的个人含义"
+    ],
+    "model_trace": [
+      {
+        "model": "qwen-vl-max-latest",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        "result": "success"
+      }
+    ]
+  },
+  "stage-04-direct-judgment-high-hit-check": {
+    "stage": "stage-04-direct-judgment-high-hit-check",
+    "status": "complete",
+    "hits": [],
+    "non_hits": [],
+    "uncertain_items": [],
+    "conflicts": [],
+    "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+    "evidence_refs": [
+      "inner-001",
+      "outer-001"
+    ]
+  },
+  "stage-05-per-circle-color-shape-element-sensing": {
+    "stage": "stage-05-per-circle-color-shape-element-sensing",
+    "status": "complete",
+    "per_circle": {
+      "inner": {
+        "visual_summary": "中心区域以紫色为主，向外过渡至蓝色和绿色",
+        "dominant_colors": [
+          "中心区域以紫色为主，向外过渡至蓝色和绿色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "平滑无杂乱线条",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-06-per-circle-element-generation-control": {
+    "stage": "stage-06-per-circle-element-generation-control",
+    "status": "complete",
+    "theme": "wealth",
+    "control_notes": [
+      "按当前画面证据和精简知识包推导，不新增画面事实。"
+    ],
+    "per_circle": {
+      "inner": {
+        "visual_summary": "中心区域以紫色为主，向外过渡至蓝色和绿色",
+        "dominant_colors": [
+          "中心区域以紫色为主，向外过渡至蓝色和绿色"
+        ],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.inner",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "middle": {
+        "visual_summary": "",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.middle",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      },
+      "outer": {
+        "visual_summary": "平滑无杂乱线条",
+        "dominant_colors": [],
+        "dominant_shapes": [],
+        "knowledge_refs": [
+          "circle.outer",
+          "elements.color_meanings",
+          "elements.five_elements",
+          "themes.wealth"
+        ]
+      }
+    }
+  },
+  "stage-07-per-circle-imbalance-patterns": {
+    "stage": "stage-07-per-circle-imbalance-patterns",
+    "status": "complete",
+    "candidates": [
+      {
+        "circle": "inner",
+        "candidate": "needs_human_review",
+        "basis": [
+          "中心区域以紫色为主，向外过渡至蓝色和绿色"
+        ]
+      },
+      {
+        "circle": "middle",
+        "candidate": "needs_human_review",
+        "basis": []
+      },
+      {
+        "circle": "outer",
+        "candidate": "needs_human_review",
+        "basis": []
+      }
+    ]
+  },
+  "stage-08-energy-flow-diagnosis": {
+    "stage": "stage-08-energy-flow-diagnosis",
+    "status": "complete",
+    "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "outer-001"
+    ]
+  },
+  "stage-09-evidence-consolidation": {
+    "stage": "stage-09-evidence-consolidation",
+    "status": "complete",
+    "evidence_map": [
+      {
+        "id": "inner-001",
+        "circle": "inner",
+        "visible_evidence": "中心区域以紫色为主，向外过渡至蓝色和绿色"
+      },
+      {
+        "id": "outer-001",
+        "circle": "outer",
+        "visible_evidence": "平滑无杂乱线条"
+      }
+    ]
+  },
+  "stage-10-core-thesis-selection": {
+    "stage": "stage-10-core-thesis-selection",
+    "status": "complete",
+    "core_thesis": "财富张力源于内圈价值感（紫）向行动（蓝绿）的过渡受阻，导致进出边界过度谨慎。",
+    "evidence_refs": [
+      "inner-001",
+      "outer-001",
+      "中心八角星结构象征内在秩序与能量汇聚",
+      "紫色与粉色渐变表示柔和的自我价值感和创造力",
+      "蓝色与绿色三角形代表成长与稳定性的结合",
+      "中圈天体符号（太阳、月亮、星星）暗示财富流动中的周期性与平衡",
+      "外圈锯齿状边框完整闭合，显示对外界有清晰边界与防护意识",
+      "内圈到中圈已有表达，外圈边界仍较谨慎"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+      ]
+    }
+  },
+  "stage-11-user-facing-framing": {
+    "stage": "stage-11-user-facing-framing",
+    "status": "complete",
+    "framing": "你的财富拉扯，看起来是你已经很能感受自身价值（内圈的紫），但要把这份价值变成具体行动和结果时（中圈的蓝绿与天体符号），会下意识回到“保护层”里，用谨慎的边界把自己圈住（外圈厚实锯齿）。这不是你不够努力，而是你内在的“流动节律”还没完全信任外面的世界。",
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+      ]
+    }
+  },
+  "stage-12-healing-direction-and-report-branching": {
+    "stage": "stage-12-healing-direction-and-report-branching",
+    "status": "complete",
+    "healing_direction": "在守住边界的前提下，给中圈的“周期与平衡”留出实验空间。",
+    "report_mode": "lite",
+    "writing_input_refs": [
+      "inner-001",
+      "outer-001",
+      "中心八角星结构象征内在秩序与能量汇聚",
+      "紫色与粉色渐变表示柔和的自我价值感和创造力",
+      "蓝色与绿色三角形代表成长与稳定性的结合",
+      "中圈天体符号（太阳、月亮、星星）暗示财富流动中的周期性与平衡",
+      "外圈锯齿状边框完整闭合，显示对外界有清晰边界与防护意识",
+      "内圈到中圈已有表达，外圈边界仍较谨慎"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_world_closed_or_blank",
+        "visual.outer_boundary_broken",
+        "visual.outer_boundary_thick_closed"
+      ],
+      "selected_clause_ids": [
+        "wealth.low_world_connection",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.world_connection_market",
+        "wealth.career_value_exchange"
+      ],
+      "clauses": [
+        {
+          "id": "wealth.low_world_connection",
+          "title": "与世界链接不足",
+          "summary": "用户可能不愿意打开表达、合作、服务、市场或客户关系，倾向于一个人扛。",
+          "report_language": [
+            "财富不是只发生在自己内部，它也需要和世界、他人、资源产生连接。",
+            "如果你习惯一个人扛，价值可能已经存在，但还没有充分被表达和交换出去。"
+          ],
+          "healing_direction": [
+            "与世界链接练习。",
+            "小范围表达价值。",
+            "练习合作、服务和真实呈现。"
+          ],
+          "source_status": "model_scaffold"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "model_scaffold"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.world_connection_market",
+          "title": "世界链接、客户、市场与合作",
+          "status": "source_needed",
+          "report_use": "观察用户是否允许自己被世界看见、回应和选择。",
+          "output_strength": "weak"
+        },
+        {
+          "module_id": "wealth.career_value_exchange",
+          "title": "事业、能力与价值交换",
+          "status": "source_needed",
+          "report_use": "连接能力表达、价值交换、服务边界和现实市场。",
+          "output_strength": "weak"
+        }
+      ],
+      "boundaries": [
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+        "适合表达防御、谨慎和支持通道收紧，不能把自我保护写成问题。"
+      ]
+    }
+  },
+  "stage-13-lite-report-draft": {
+    "stage": "stage-13-lite-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 曼陀罗解读报告：财富议题\n\n## 一、画面速写\n你的曼陀罗以对称的几何图案展开，中心是一枚由紫色与粉色构成的八角星，向外自然过渡到蓝色与绿色的三角形、菱形结构。中圈在温暖的浅黄色背景上，出现了太阳、月亮与星星等天体符号，它们交替排列、稳定地环绕中心。最外圈则是蓝绿相间的锯齿状边框，线条平滑完整，形成一个清晰而厚实的闭合边界。整体色彩明亮而富有层次，既有内在的柔和，也有结构的秩序感。\n\n## 二、财富张力解读\n你的财富拉扯，看起来是你已经很能感受自身价值（内圈的紫），但要把这份价值变成具体行动和结果时（中圈的蓝绿与天体符号），会下意识回到“保护层”里，用谨慎的边界把自己圈住（外圈厚实锯齿）。这并不是你不够努力，而是你内在的“流动节律”还没完全信任外面的世界。\n\n具体来看，这幅曼陀罗呈现了两个明显的财富信号：\n\n**1. 价值已经存在，但还没有充分流向世界**\n\n中心柔和的紫色与粉色，代表你对自己有温和的价值感，也有创造力。但当这种价值感向外走，遇到代表成长与稳定性的蓝色、绿色时，你可能会停下来。你不是没有内容，而是习惯一个人扛，不太愿意把自己放进关系、市场或合作里去表达。财富不止发生在内部，它也需要被世界看见、回应、交换。\n\n**2. 行动容易被情绪或谨慎打断**\n\n外圈那个厚实完整的锯齿边框，一方面说明你有很好的自我保护能力，这本身没有问题。但另一方面，它也可能让你的行动在“要走出去”的那一刻变得格外谨慎。你可能有很多想法，但落地往往被情绪、关系拉扯或自我怀疑卡住。财富的流动需要现实行动来承接，如果行动一再被打断，价值就很难完成真正的交换。\n\n## 三、空间中的周期感\n值得留意的是，你中圈的天空里出现了太阳、月亮和星星。这不是偶然的。这些天体符号在财富议题中，常常在提醒你：金钱、价值、机会都有自己的节奏与周期。有时需要发光（太阳），有时需要沉淀（月亮），有时只需安静存在（星星）。所以你现在的“谨慎”和“犹豫”，不一定是问题，可能只是你正处于一个正在酝酿、还未到全力输出的阶段。你可以允许自己拥有这种节奏，而不必用“不够快”来评判自己。\n\n## 四、温和的成长方向\n在守住边界的前提下，你可以试着给中圈的“周期与平衡”留出一点实验空间。不需要马上把城墙拆掉，只需要在城墙内开一扇小窗。\n\n- **小范围让价值被看见：** 选一个你感到安全的场合，把你的想法、作品或能力，轻轻地分享出去。不是为了立刻获得回报，只是为了练习“表达”这个动作本身。\n- **恢复低压力的小步行动：** 找出你一直想做但不敢做的事，把它拆成很小的一步。每天只做那一步，比如写下一句话、联系一个人、公开一个观点。用很小的现实结果，慢慢重建你对“行动－反馈”这条通路的信任感。\n- **接纳流动的节律：** 当你又想回到保护层时，可以对自己说：“这段日子我只是在积蓄，我还没到需要大量输出的阶段。” 不把自我保护看成问题，只是同时保留一点点向外试探的意愿。\n\n财富的流动，从来不是一夜之间冲出去的结果，而是一点一点让自己相信：我值得被世界接住，世界也会用它的方式回应我。你现在的曼陀罗，已经画出了这个可能的开始。"
+  },
+  "stage-14-pro-report-draft": {
+    "stage": "stage-14-pro-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "stage-15-visual-assets": {
+    "stage": "stage-15-visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "stage-16-final-report-assembly": {
+    "stage": "stage-16-final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-dda5273560e5",
+      "report_mode": "lite",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 曼陀罗解读报告：财富议题\n\n## 一、画面速写\n你的曼陀罗以对称的几何图案展开，中心是一枚由紫色与粉色构成的八角星，向外自然过渡到蓝色与绿色的三角形、菱形结构。中圈在温暖的浅黄色背景上，出现了太阳、月亮与星星等天体符号，它们交替排列、稳定地环绕中心。最外圈则是蓝绿相间的锯齿状边框，线条平滑完整，形成一个清晰而厚实的闭合边界。整体色彩明亮而富有层次，既有内在的柔和，也有结构的秩序感。\n\n## 二、财富张力解读\n你的财富拉扯，看起来是你已经很能感受自身价值（内圈的紫），但要把这份价值变成具体行动和结果时（中圈的蓝绿与天体符号），会下意识回到“保护层”里，用谨慎的边界把自己圈住（外圈厚实锯齿）。这并不是你不够努力，而是你内在的“流动节律”还没完全信任外面的世界。\n\n具体来看，这幅曼陀罗呈现了两个明显的财富信号：\n\n**1. 价值已经存在，但还没有充分流向世界**\n\n中心柔和的紫色与粉色，代表你对自己有温和的价值感，也有创造力。但当这种价值感向外走，遇到代表成长与稳定性的蓝色、绿色时，你可能会停下来。你不是没有内容，而是习惯一个人扛，不太愿意把自己放进关系、市场或合作里去表达。财富不止发生在内部，它也需要被世界看见、回应、交换。\n\n**2. 行动容易被情绪或谨慎打断**\n\n外圈那个厚实完整的锯齿边框，一方面说明你有很好的自我保护能力，这本身没有问题。但另一方面，它也可能让你的行动在“要走出去”的那一刻变得格外谨慎。你可能有很多想法，但落地往往被情绪、关系拉扯或自我怀疑卡住。财富的流动需要现实行动来承接，如果行动一再被打断，价值就很难完成真正的交换。\n\n## 三、空间中的周期感\n值得留意的是，你中圈的天空里出现了太阳、月亮和星星。这不是偶然的。这些天体符号在财富议题中，常常在提醒你：金钱、价值、机会都有自己的节奏与周期。有时需要发光（太阳），有时需要沉淀（月亮），有时只需安静存在（星星）。所以你现在的“谨慎”和“犹豫”，不一定是问题，可能只是你正处于一个正在酝酿、还未到全力输出的阶段。你可以允许自己拥有这种节奏，而不必用“不够快”来评判自己。\n\n## 四、温和的成长方向\n在守住边界的前提下，你可以试着给中圈的“周期与平衡”留出一点实验空间。不需要马上把城墙拆掉，只需要在城墙内开一扇小窗。\n\n- **小范围让价值被看见：** 选一个你感到安全的场合，把你的想法、作品或能力，轻轻地分享出去。不是为了立刻获得回报，只是为了练习“表达”这个动作本身。\n- **恢复低压力的小步行动：** 找出你一直想做但不敢做的事，把它拆成很小的一步。每天只做那一步，比如写下一句话、联系一个人、公开一个观点。用很小的现实结果，慢慢重建你对“行动－反馈”这条通路的信任感。\n- **接纳流动的节律：** 当你又想回到保护层时，可以对自己说：“这段日子我只是在积蓄，我还没到需要大量输出的阶段。” 不把自我保护看成问题，只是同时保留一点点向外试探的意愿。\n\n财富的流动，从来不是一夜之间冲出去的结果，而是一点一点让自己相信：我值得被世界接住，世界也会用它的方式回应我。你现在的曼陀罗，已经画出了这个可能的开始。",
+      "summary": "财富张力源于内圈价值感（紫）向行动（蓝绿）的过渡受阻，导致进出边界过度谨慎。"
+    }
+  }
+}

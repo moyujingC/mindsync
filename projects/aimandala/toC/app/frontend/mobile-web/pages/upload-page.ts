@@ -49,8 +49,8 @@ export function createUploadPageDescriptor(
       },
       {
         id: "theme",
-        title: "主题与补充信息",
-        description: `主题：${draft.theme}；意图：${draft.paintingIntention || "未填写"}；感受：${draft.paintingFeeling || "未填写"}`,
+        title: "议题与补充信息",
+        description: `议题：${draft.theme}；意图：${draft.paintingIntention || "未填写"}；感受：${draft.paintingFeeling || "未填写"}`,
       },
       {
         id: "upload-meta",
@@ -61,10 +61,10 @@ export function createUploadPageDescriptor(
       },
       {
         id: "circles",
-        title: "三圈检测",
+        title: "三圈人工确认",
         description: detection
-          ? `当前检测结果：内圈 ${Math.round(detection.inner_radius * 100)}%，中圈 ${Math.round(detection.middle_radius * 100)}%，方法 ${detection.method}。`
-          : "等待调用 detect-circles 获取三圈建议。",
+          ? `当前确认结果：内圈 ${Math.round(detection.inner_radius * 100)}%，中圈 ${Math.round(detection.middle_radius * 100)}%，来源 ${detection.method}。`
+          : "请在画作上手动调整内中圈和中外圈边界。",
       },
     ],
     fields: [
@@ -73,7 +73,7 @@ export function createUploadPageDescriptor(
         value: draft.imagePath || "暂未选择",
       },
       {
-        label: "解读主题",
+        label: "解读议题",
         value: draft.theme || "general",
       },
       {
@@ -109,7 +109,7 @@ export function createUploadPageDescriptor(
       },
       {
         id: "context",
-        label: "补充主题与创作信息",
+        label: "补充议题与创作信息",
         status:
           draft.theme || draft.paintingIntention || draft.paintingFeeling
             ? "done"
@@ -117,7 +117,7 @@ export function createUploadPageDescriptor(
       },
       {
         id: "detect",
-        label: "等待三圈检测",
+        label: "确认三圈边界",
         status: detection ? "done" : "pending",
       },
     ],

@@ -1,0 +1,1155 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="zh">
+<head>
+<meta content="3675214318" name="dtb:uid"/>
+<meta content="3" name="dtb:depth"/>
+<meta content="mobiunpack.py" name="dtb:generator"/>
+<meta content="0" name="dtb:totalPageCount"/>
+<meta content="0" name="dtb:maxPageNumber"/>
+</head>
+<docTitle>
+<text>身体从未忘记：心理创伤疗愈中的大脑、心智和身体</text>
+</docTitle>
+<navMap>
+    <navPoint id="np_1" playOrder="1">
+    <navLabel>
+    <text>赞誉</text>
+    </navLabel>
+    <content src="Text/part0002.xhtml"/>
+    </navPoint>
+    <navPoint id="np_2" playOrder="2">
+    <navLabel>
+    <text>推荐序</text>
+    </navLabel>
+    <content src="Text/part0003.xhtml"/>
+    </navPoint>
+    <navPoint id="np_3" playOrder="3">
+    <navLabel>
+    <text>译者序</text>
+    </navLabel>
+    <content src="Text/part0004.xhtml"/>
+    </navPoint>
+    <navPoint id="np_4" playOrder="4">
+    <navLabel>
+    <text>序言 面对创伤</text>
+    </navLabel>
+    <content src="Text/part0005.xhtml"/>
+    </navPoint>
+    <navPoint id="np_5" playOrder="5">
+    <navLabel>
+    <text>第一部分 创伤的重新发现</text>
+    </navLabel>
+    <content src="Text/part0006.xhtml"/>
+      <navPoint id="np_6" playOrder="6">
+      <navLabel>
+      <text>第1章　越战士兵的经验</text>
+      </navLabel>
+      <content src="Text/part0006.xhtml"/>
+        <navPoint id="np_7" playOrder="7">
+        <navLabel>
+        <text>创伤和自我失控</text>
+        </navLabel>
+        <content src="Text/part0007.xhtml"/>
+        </navPoint>
+        <navPoint id="np_8" playOrder="8">
+        <navLabel>
+        <text>情感麻木</text>
+        </navLabel>
+        <content src="Text/part0008.xhtml"/>
+        </navPoint>
+        <navPoint id="np_9" playOrder="9">
+        <navLabel>
+        <text>重整感知</text>
+        </navLabel>
+        <content src="Text/part0009.xhtml"/>
+        </navPoint>
+        <navPoint id="np_10" playOrder="10">
+        <navLabel>
+        <text>困于创伤中</text>
+        </navLabel>
+        <content src="Text/part0010.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_11" playOrder="11">
+      <navLabel>
+      <text>第2章 理解心智和大脑的革命</text>
+      </navLabel>
+      <content src="Text/part0011.xhtml"/>
+        <navPoint id="np_12" playOrder="12">
+        <navLabel>
+        <text>黎明前的创伤</text>
+        </navLabel>
+        <content src="Text/part0012.xhtml"/>
+        </navPoint>
+        <navPoint id="np_13" playOrder="13">
+        <navLabel>
+        <text>痛苦的意义</text>
+        </navLabel>
+        <content src="Text/part0013.xhtml"/>
+        </navPoint>
+        <navPoint id="np_14" playOrder="14">
+        <navLabel>
+        <text>无法逃避的电击</text>
+        </navLabel>
+        <content src="Text/part0014.xhtml"/>
+        </navPoint>
+        <navPoint id="np_15" playOrder="15">
+        <navLabel>
+        <text>创伤成瘾：痛苦的愉悦和愉悦的痛苦</text>
+        </navLabel>
+        <content src="Text/part0015.xhtml"/>
+        </navPoint>
+        <navPoint id="np_16" playOrder="16">
+        <navLabel>
+        <text>平息大脑</text>
+        </navLabel>
+        <content src="Text/part0016.xhtml"/>
+        </navPoint>
+        <navPoint id="np_17" playOrder="17">
+        <navLabel>
+        <text>制药行业的胜利</text>
+        </navLabel>
+        <content src="Text/part0017.xhtml"/>
+        </navPoint>
+        <navPoint id="np_18" playOrder="18">
+        <navLabel>
+        <text>是一种适应方式，还是一种疾病</text>
+        </navLabel>
+        <content src="Text/part0018.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_19" playOrder="19">
+      <navLabel>
+      <text>第3章 窥视大脑：神经科学的革命</text>
+      </navLabel>
+      <content src="Text/part0019.xhtml"/>
+        <navPoint id="np_20" playOrder="20">
+        <navLabel>
+        <text>无法描述的恐怖</text>
+        </navLabel>
+        <content src="Text/part0020.xhtml"/>
+        </navPoint>
+        <navPoint id="np_21" playOrder="21">
+        <navLabel>
+        <text>转到一侧大脑</text>
+        </navLabel>
+        <content src="Text/part0021.xhtml"/>
+        </navPoint>
+        <navPoint id="np_22" playOrder="22">
+        <navLabel>
+        <text>卡在战斗或逃跑反应中</text>
+        </navLabel>
+        <content src="Text/part0022.xhtml"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="np_23" playOrder="23">
+    <navLabel>
+    <text>第二部分 创伤中的大脑</text>
+    </navLabel>
+    <content src="Text/part0023.xhtml"/>
+      <navPoint id="np_24" playOrder="24">
+      <navLabel>
+      <text>第4章　逃生：生存的解剖学</text>
+      </navLabel>
+      <content src="Text/part0023.xhtml#a2"/>
+        <navPoint id="np_25" playOrder="25">
+        <navLabel>
+        <text>生存系统</text>
+        </navLabel>
+        <content src="Text/part0024.xhtml"/>
+        </navPoint>
+        <navPoint id="np_26" playOrder="26">
+        <navLabel>
+        <text>从下脑到上脑</text>
+        </navLabel>
+        <content src="Text/part0025.xhtml"/>
+        </navPoint>
+        <navPoint id="np_27" playOrder="27">
+        <navLabel>
+        <text>互相借鉴：人际神经生物学</text>
+        </navLabel>
+        <content src="Text/part0026.xhtml"/>
+        </navPoint>
+        <navPoint id="np_28" playOrder="28">
+        <navLabel>
+        <text>辨别危险：厨房和烟雾探测器</text>
+        </navLabel>
+        <content src="Text/part0027.xhtml"/>
+        </navPoint>
+        <navPoint id="np_29" playOrder="29">
+        <navLabel>
+        <text>控制应激反应：瞭望塔</text>
+        </navLabel>
+        <content src="Text/part0028.xhtml"/>
+        </navPoint>
+        <navPoint id="np_30" playOrder="30">
+        <navLabel>
+        <text>骑手和马</text>
+        </navLabel>
+        <content src="Text/part0029.xhtml"/>
+        </navPoint>
+        <navPoint id="np_31" playOrder="31">
+        <navLabel>
+        <text>斯坦和乌特的大脑</text>
+        </navLabel>
+        <content src="Text/part0030.xhtml"/>
+        </navPoint>
+        <navPoint id="np_32" playOrder="32">
+        <navLabel>
+        <text>解离和重现</text>
+        </navLabel>
+        <content src="Text/part0031.xhtml"/>
+        </navPoint>
+        <navPoint id="np_33" playOrder="33">
+        <navLabel>
+        <text>过度敏感的烟雾探测器</text>
+        </navLabel>
+        <content src="Text/part0032.xhtml"/>
+        </navPoint>
+        <navPoint id="np_34" playOrder="34">
+        <navLabel>
+        <text>计时器的崩溃</text>
+        </navLabel>
+        <content src="Text/part0033.xhtml"/>
+        </navPoint>
+        <navPoint id="np_35" playOrder="35">
+        <navLabel>
+        <text>丘脑功能受损</text>
+        </navLabel>
+        <content src="Text/part0034.xhtml"/>
+        </navPoint>
+        <navPoint id="np_36" playOrder="36">
+        <navLabel>
+        <text>人格解体：与自我的分离</text>
+        </navLabel>
+        <content src="Text/part0035.xhtml"/>
+        </navPoint>
+        <navPoint id="np_37" playOrder="37">
+        <navLabel>
+        <text>活在当下</text>
+        </navLabel>
+        <content src="Text/part0036.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_38" playOrder="38">
+      <navLabel>
+      <text>第5章 身体与大脑的连接</text>
+      </navLabel>
+      <content src="Text/part0037.xhtml"/>
+        <navPoint id="np_39" playOrder="39">
+        <navLabel>
+        <text>窥视神经系统</text>
+        </navLabel>
+        <content src="Text/part0038.xhtml"/>
+        </navPoint>
+        <navPoint id="np_40" playOrder="40">
+        <navLabel>
+        <text>爱的神经密码</text>
+        </navLabel>
+        <content src="Text/part0039.xhtml"/>
+        </navPoint>
+        <navPoint id="np_41" playOrder="41">
+        <navLabel>
+        <text>安全和互惠</text>
+        </navLabel>
+        <content src="Text/part0040.xhtml"/>
+        </navPoint>
+        <navPoint id="np_42" playOrder="42">
+        <navLabel>
+        <text>三种层次的安全感</text>
+        </navLabel>
+        <content src="Text/part0041.xhtml"/>
+        </navPoint>
+        <navPoint id="np_43" playOrder="43">
+        <navLabel>
+        <text>战斗或逃跑，还是崩溃</text>
+        </navLabel>
+        <content src="Text/part0042.xhtml"/>
+        </navPoint>
+        <navPoint id="np_44" playOrder="44">
+        <navLabel>
+        <text>我们何以为人</text>
+        </navLabel>
+        <content src="Text/part0043.xhtml"/>
+        </navPoint>
+        <navPoint id="np_45" playOrder="45">
+        <navLabel>
+        <text>自卫或放松</text>
+        </navLabel>
+        <content src="Text/part0044.xhtml"/>
+        </navPoint>
+        <navPoint id="np_46" playOrder="46">
+        <navLabel>
+        <text>新的治疗手段</text>
+        </navLabel>
+        <content src="Text/part0045.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_47" playOrder="47">
+      <navLabel>
+      <text>第6章 失去身体，失去自我</text>
+      </navLabel>
+      <content src="Text/part0046.xhtml"/>
+        <navPoint id="np_48" playOrder="48">
+        <navLabel>
+        <text>失去你的身体</text>
+        </navLabel>
+        <content src="Text/part0047.xhtml"/>
+        </navPoint>
+        <navPoint id="np_49" playOrder="49">
+        <navLabel>
+        <text>我们何以知道我们是活着的</text>
+        </navLabel>
+        <content src="Text/part0048.xhtml"/>
+        </navPoint>
+        <navPoint id="np_50" playOrder="50">
+        <navLabel>
+        <text>自我感知系统</text>
+        </navLabel>
+        <content src="Text/part0049.xhtml"/>
+        </navPoint>
+        <navPoint id="np_51" playOrder="51">
+        <navLabel>
+        <text>危机下的自我</text>
+        </navLabel>
+        <content src="Text/part0050.xhtml"/>
+        </navPoint>
+        <navPoint id="np_52" playOrder="52">
+        <navLabel>
+        <text>拥有自我能动性</text>
+        </navLabel>
+        <content src="Text/part0051.xhtml"/>
+        </navPoint>
+        <navPoint id="np_53" playOrder="53">
+        <navLabel>
+        <text>述情障碍：无法描述感觉</text>
+        </navLabel>
+        <content src="Text/part0052.xhtml"/>
+        </navPoint>
+        <navPoint id="np_54" playOrder="54">
+        <navLabel>
+        <text>人格解体</text>
+        </navLabel>
+        <content src="Text/part0053.xhtml"/>
+        </navPoint>
+        <navPoint id="np_55" playOrder="55">
+        <navLabel>
+        <text>和身体做朋友</text>
+        </navLabel>
+        <content src="Text/part0054.xhtml"/>
+        </navPoint>
+        <navPoint id="np_56" playOrder="56">
+        <navLabel>
+        <text>连接自我，连接他人</text>
+        </navLabel>
+        <content src="Text/part0055.xhtml"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="np_57" playOrder="57">
+    <navLabel>
+    <text>第三部分 儿童的心智</text>
+    </navLabel>
+    <content src="Text/part0056.xhtml"/>
+      <navPoint id="np_58" playOrder="58">
+      <navLabel>
+      <text>第7章　调和波长：依恋和情绪调谐</text>
+      </navLabel>
+      <content src="Text/part0056.xhtml#a3"/>
+        <navPoint id="np_59" playOrder="59">
+        <navLabel>
+        <text>没有母亲的人</text>
+        </navLabel>
+        <content src="Text/part0057.xhtml"/>
+        </navPoint>
+        <navPoint id="np_60" playOrder="60">
+        <navLabel>
+        <text>一个安全的基地</text>
+        </navLabel>
+        <content src="Text/part0058.xhtml"/>
+        </navPoint>
+        <navPoint id="np_61" playOrder="61">
+        <navLabel>
+        <text>情绪协调之舞</text>
+        </navLabel>
+        <content src="Text/part0059.xhtml"/>
+        </navPoint>
+        <navPoint id="np_62" playOrder="62">
+        <navLabel>
+        <text>真实感</text>
+        </navLabel>
+        <content src="Text/part0060.xhtml"/>
+        </navPoint>
+        <navPoint id="np_63" playOrder="63">
+        <navLabel>
+        <text>与既有的父母相处</text>
+        </navLabel>
+        <content src="Text/part0061.xhtml"/>
+        </navPoint>
+        <navPoint id="np_64" playOrder="64">
+        <navLabel>
+        <text>内在的混乱</text>
+        </navLabel>
+        <content src="Text/part0062.xhtml"/>
+        </navPoint>
+        <navPoint id="np_65" playOrder="65">
+        <navLabel>
+        <text>混乱依恋的长期后果</text>
+        </navLabel>
+        <content src="Text/part0063.xhtml"/>
+        </navPoint>
+        <navPoint id="np_66" playOrder="66">
+        <navLabel>
+        <text>人格解离：知道或者不知道</text>
+        </navLabel>
+        <content src="Text/part0064.xhtml"/>
+        </navPoint>
+        <navPoint id="np_67" playOrder="67">
+        <navLabel>
+        <text>恢复情绪协调</text>
+        </navLabel>
+        <content src="Text/part0065.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_68" playOrder="68">
+      <navLabel>
+      <text>第8章 困于关系之中：忽视与虐待的代价</text>
+      </navLabel>
+      <content src="Text/part0066.xhtml"/>
+        <navPoint id="np_69" playOrder="69">
+        <navLabel>
+        <text>恐怖和麻木</text>
+        </navLabel>
+        <content src="Text/part0067.xhtml"/>
+        </navPoint>
+        <navPoint id="np_70" playOrder="70">
+        <navLabel>
+        <text>破碎的世界地图</text>
+        </navLabel>
+        <content src="Text/part0068.xhtml"/>
+        </navPoint>
+        <navPoint id="np_71" playOrder="71">
+        <navLabel>
+        <text>学会记住</text>
+        </navLabel>
+        <content src="Text/part0069.xhtml"/>
+        </navPoint>
+        <navPoint id="np_72" playOrder="72">
+        <navLabel>
+        <text>憎恨你的家庭</text>
+        </navLabel>
+        <content src="Text/part0070.xhtml"/>
+        </navPoint>
+        <navPoint id="np_73" playOrder="73">
+        <navLabel>
+        <text>重演创伤</text>
+        </navLabel>
+        <content src="Text/part0071.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_74" playOrder="74">
+      <navLabel>
+      <text>第9章 与爱何干</text>
+      </navLabel>
+      <content src="Text/part0072.xhtml"/>
+        <navPoint id="np_75" playOrder="75">
+        <navLabel>
+        <text>你如何考虑创伤历史</text>
+        </navLabel>
+        <content src="Text/part0073.xhtml"/>
+        </navPoint>
+        <navPoint id="np_76" playOrder="76">
+        <navLabel>
+        <text>自残</text>
+        </navLabel>
+        <content src="Text/part0074.xhtml"/>
+        </navPoint>
+        <navPoint id="np_77" playOrder="77">
+        <navLabel>
+        <text>诊断的权力和力量</text>
+        </navLabel>
+        <content src="Text/part0075.xhtml"/>
+        </navPoint>
+        <navPoint id="np_78" playOrder="78">
+        <navLabel>
+        <text>隐藏的流行病学</text>
+        </navLabel>
+        <content src="Text/part0076.xhtml"/>
+        </navPoint>
+        <navPoint id="np_79" playOrder="79">
+        <navLabel>
+        <text>当问题行为成为解决方式</text>
+        </navLabel>
+        <content src="Text/part0077.xhtml"/>
+        </navPoint>
+        <navPoint id="np_80" playOrder="80">
+        <navLabel>
+        <text>儿童虐待：国家最严重的公共卫生问题</text>
+        </navLabel>
+        <content src="Text/part0078.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_81" playOrder="81">
+      <navLabel>
+      <text>第10章 发展性创伤：隐藏的蔓延</text>
+      </navLabel>
+      <content src="Text/part0079.xhtml"/>
+        <navPoint id="np_82" playOrder="82">
+        <navLabel>
+        <text>坏的基因？</text>
+        </navLabel>
+        <content src="Text/part0080.xhtml"/>
+        </navPoint>
+        <navPoint id="np_83" playOrder="83">
+        <navLabel>
+        <text>猴子澄清“先天还是后天”这一经典问题</text>
+        </navLabel>
+        <content src="Text/part0081.xhtml"/>
+        </navPoint>
+        <navPoint id="np_84" playOrder="84">
+        <navLabel>
+        <text>美国国家儿童创伤压力网络</text>
+        </navLabel>
+        <content src="Text/part0082.xhtml"/>
+        </navPoint>
+        <navPoint id="np_85" playOrder="85">
+        <navLabel>
+        <text>诊断的权力</text>
+        </navLabel>
+        <content src="Text/part0083.xhtml"/>
+        </navPoint>
+        <navPoint id="np_86" playOrder="86">
+        <navLabel>
+        <text>社会关系塑造个体发展</text>
+        </navLabel>
+        <content src="Text/part0084.xhtml"/>
+        </navPoint>
+        <navPoint id="np_87" playOrder="87">
+        <navLabel>
+        <text>乱伦的长期影响</text>
+        </navLabel>
+        <content src="Text/part0085.xhtml"/>
+        </navPoint>
+        <navPoint id="np_88" playOrder="88">
+        <navLabel>
+        <text>DSM-5：名副其实的诊断自助餐</text>
+        </navLabel>
+        <content src="Text/part0086.xhtml"/>
+        </navPoint>
+        <navPoint id="np_89" playOrder="89">
+        <navLabel>
+        <text>“发展性创伤障碍”（DTD）会造成怎样的影响</text>
+        </navLabel>
+        <content src="Text/part0087.xhtml"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="np_90" playOrder="90">
+    <navLabel>
+    <text>第四部分 创伤的印记</text>
+    </navLabel>
+    <content src="Text/part0088.xhtml"/>
+      <navPoint id="np_91" playOrder="91">
+      <navLabel>
+      <text>第11章　发现秘密：创伤性记忆的问题</text>
+      </navLabel>
+      <content src="Text/part0088.xhtml#a4"/>
+        <navPoint id="np_92" playOrder="92">
+        <navLabel>
+        <text>潮水般的感觉和图像</text>
+        </navLabel>
+        <content src="Text/part0089.xhtml"/>
+        </navPoint>
+        <navPoint id="np_93" playOrder="93">
+        <navLabel>
+        <text>普通记忆和创伤性记忆</text>
+        </navLabel>
+        <content src="Text/part0090.xhtml"/>
+        </navPoint>
+        <navPoint id="np_94" playOrder="94">
+        <navLabel>
+        <text>创伤揭秘</text>
+        </navLabel>
+        <content src="Text/part0091.xhtml"/>
+        </navPoint>
+        <navPoint id="np_95" playOrder="95">
+        <navLabel>
+        <text>失忆、解离和重现</text>
+        </navLabel>
+        <content src="Text/part0092.xhtml"/>
+        </navPoint>
+        <navPoint id="np_96" playOrder="96">
+        <navLabel>
+        <text>“谈话治疗”的起源</text>
+        </navLabel>
+        <content src="Text/part0093.xhtml"/>
+        </navPoint>
+        <navPoint id="np_97" playOrder="97">
+        <navLabel>
+        <text>法庭上的创伤性记忆</text>
+        </navLabel>
+        <content src="Text/part0094.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_98" playOrder="98">
+      <navLabel>
+      <text>第12章 难以承受的记忆</text>
+      </navLabel>
+      <content src="Text/part0095.xhtml"/>
+        <navPoint id="np_99" playOrder="99">
+        <navLabel>
+        <text>创伤的新面孔</text>
+        </navLabel>
+        <content src="Text/part0096.xhtml"/>
+        </navPoint>
+        <navPoint id="np_100" playOrder="100">
+        <navLabel>
+        <text>创伤再发现</text>
+        </navLabel>
+        <content src="Text/part0097.xhtml"/>
+        </navPoint>
+        <navPoint id="np_101" playOrder="101">
+        <navLabel>
+        <text>抑制性记忆的科学</text>
+        </navLabel>
+        <content src="Text/part0098.xhtml"/>
+        </navPoint>
+        <navPoint id="np_102" playOrder="102">
+        <navLabel>
+        <text>正常记忆和创伤性记忆</text>
+        </navLabel>
+        <content src="Text/part0099.xhtml"/>
+        </navPoint>
+        <navPoint id="np_103" playOrder="103">
+        <navLabel>
+        <text>聆听幸存者</text>
+        </navLabel>
+        <content src="Text/part0100.xhtml"/>
+        </navPoint>
+        <navPoint id="np_104" playOrder="104">
+        <navLabel>
+        <text>南希的故事</text>
+        </navLabel>
+        <content src="Text/part0101.xhtml"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="np_105" playOrder="105">
+    <navLabel>
+    <text>第五部分 康复之路</text>
+    </navLabel>
+    <content src="Text/part0102.xhtml"/>
+      <navPoint id="np_106" playOrder="106">
+      <navLabel>
+      <text>第13章　疗愈创伤，拥抱自我</text>
+      </navLabel>
+      <content src="Text/part0102.xhtml#a5"/>
+        <navPoint id="np_107" playOrder="107">
+        <navLabel>
+        <text>治疗的新关注</text>
+        </navLabel>
+        <content src="Text/part0103.xhtml"/>
+        </navPoint>
+        <navPoint id="np_108" playOrder="108">
+        <navLabel>
+        <text>边缘系统治疗</text>
+        </navLabel>
+        <content src="Text/part0104.xhtml"/>
+        </navPoint>
+        <navPoint id="np_109" playOrder="109">
+        <navLabel>
+        <text>和情绪脑友好相处</text>
+        </navLabel>
+        <content src="Text/part0105.xhtml"/>
+        </navPoint>
+        <navPoint id="np_110" playOrder="110">
+        <navLabel>
+        <text>选择专业的治疗师</text>
+        </navLabel>
+        <content src="Text/part0106.xhtml"/>
+        </navPoint>
+        <navPoint id="np_111" playOrder="111">
+        <navLabel>
+        <text>整合创伤性记忆</text>
+        </navLabel>
+        <content src="Text/part0107.xhtml"/>
+        </navPoint>
+        <navPoint id="np_112" playOrder="112">
+        <navLabel>
+        <text>认知行为治疗（CBT）</text>
+        </navLabel>
+        <content src="Text/part0108.xhtml"/>
+        </navPoint>
+        <navPoint id="np_113" playOrder="113">
+        <navLabel>
+        <text>脱敏治疗</text>
+        </navLabel>
+        <content src="Text/part0109.xhtml"/>
+        </navPoint>
+        <navPoint id="np_114" playOrder="114">
+        <navLabel>
+        <text>药物令我们安全接触创伤</text>
+        </navLabel>
+        <content src="Text/part0110.xhtml"/>
+        </navPoint>
+        <navPoint id="np_115" playOrder="115">
+        <navLabel>
+        <text>药物的效果如何</text>
+        </navLabel>
+        <content src="Text/part0111.xhtml"/>
+        </navPoint>
+        <navPoint id="np_116" playOrder="116">
+        <navLabel>
+        <text>康复之路就是生活之路</text>
+        </navLabel>
+        <content src="Text/part0112.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_117" playOrder="117">
+      <navLabel>
+      <text>第14章 语言的奇迹和暴政</text>
+      </navLabel>
+      <content src="Text/part0113.xhtml"/>
+        <navPoint id="np_118" playOrder="118">
+        <navLabel>
+        <text>不能说出的真实</text>
+        </navLabel>
+        <content src="Text/part0114.xhtml"/>
+        </navPoint>
+        <navPoint id="np_119" playOrder="119">
+        <navLabel>
+        <text>打破沉默</text>
+        </navLabel>
+        <content src="Text/part0115.xhtml"/>
+        </navPoint>
+        <navPoint id="np_120" playOrder="120">
+        <navLabel>
+        <text>自我发现的奇迹</text>
+        </navLabel>
+        <content src="Text/part0116.xhtml"/>
+        </navPoint>
+        <navPoint id="np_121" playOrder="121">
+        <navLabel>
+        <text>了解自我或讲出你的故事？我们的双重意识系统</text>
+        </navLabel>
+        <content src="Text/part0117.xhtml"/>
+        </navPoint>
+        <navPoint id="np_122" playOrder="122">
+        <navLabel>
+        <text>身体就是桥梁</text>
+        </navLabel>
+        <content src="Text/part0118.xhtml"/>
+        </navPoint>
+        <navPoint id="np_123" playOrder="123">
+        <navLabel>
+        <text>写给自己</text>
+        </navLabel>
+        <content src="Text/part0119.xhtml"/>
+        </navPoint>
+        <navPoint id="np_124" playOrder="124">
+        <navLabel>
+        <text>艺术、音乐和舞蹈</text>
+        </navLabel>
+        <content src="Text/part0120.xhtml"/>
+        </navPoint>
+        <navPoint id="np_125" playOrder="125">
+        <navLabel>
+        <text>语言的局限</text>
+        </navLabel>
+        <content src="Text/part0121.xhtml"/>
+        </navPoint>
+        <navPoint id="np_126" playOrder="126">
+        <navLabel>
+        <text>处理现实</text>
+        </navLabel>
+        <content src="Text/part0122.xhtml"/>
+        </navPoint>
+        <navPoint id="np_127" playOrder="127">
+        <navLabel>
+        <text>与身体重建联系</text>
+        </navLabel>
+        <content src="Text/part0123.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_128" playOrder="128">
+      <navLabel>
+      <text>第15章 放下过去：眼动脱敏和再加工</text>
+      </navLabel>
+      <content src="Text/part0124.xhtml"/>
+        <navPoint id="np_129" playOrder="129">
+        <navLabel>
+        <text>学习EMDR</text>
+        </navLabel>
+        <content src="Text/part0125.xhtml"/>
+        </navPoint>
+        <navPoint id="np_130" playOrder="130">
+        <navLabel>
+        <text>EMDR：最初的起源</text>
+        </navLabel>
+        <content src="Text/part0126.xhtml"/>
+        </navPoint>
+        <navPoint id="np_131" playOrder="131">
+        <navLabel>
+        <text>研究EMDR</text>
+        </navLabel>
+        <content src="Text/part0127.xhtml"/>
+        </navPoint>
+        <navPoint id="np_132" playOrder="132">
+        <navLabel>
+        <text>EMDR是另一种暴露疗法吗</text>
+        </navLabel>
+        <content src="Text/part0128.xhtml"/>
+        </navPoint>
+        <navPoint id="np_133" playOrder="133">
+        <navLabel>
+        <text>用EMDR处理创伤</text>
+        </navLabel>
+        <content src="Text/part0129.xhtml"/>
+        </navPoint>
+        <navPoint id="np_134" playOrder="134">
+        <navLabel>
+        <text>EMDR与睡眠之间的联系</text>
+        </navLabel>
+        <content src="Text/part0130.xhtml"/>
+        </navPoint>
+        <navPoint id="np_135" playOrder="135">
+        <navLabel>
+        <text>关联和统合</text>
+        </navLabel>
+        <content src="Text/part0131.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_136" playOrder="136">
+      <navLabel>
+      <text>第16章 瑜伽：在身体中栖息</text>
+      </navLabel>
+      <content src="Text/part0132.xhtml"/>
+        <navPoint id="np_137" playOrder="137">
+        <navLabel>
+        <text>无法逃避电击的后遗症</text>
+        </navLabel>
+        <content src="Text/part0133.xhtml"/>
+        </navPoint>
+        <navPoint id="np_138" playOrder="138">
+        <navLabel>
+        <text>麻木的内在</text>
+        </navLabel>
+        <content src="Text/part0134.xhtml"/>
+        </navPoint>
+        <navPoint id="np_139" playOrder="139">
+        <navLabel>
+        <text>瑜伽的治疗效果：自上而下的调节</text>
+        </navLabel>
+        <content src="Text/part0135.xhtml"/>
+        </navPoint>
+        <navPoint id="np_140" playOrder="140">
+        <navLabel>
+        <text>在瑜伽中探索</text>
+        </navLabel>
+        <content src="Text/part0136.xhtml"/>
+        </navPoint>
+        <navPoint id="np_141" playOrder="141">
+        <navLabel>
+        <text>学会自我调节</text>
+        </navLabel>
+        <content src="Text/part0137.xhtml"/>
+        </navPoint>
+        <navPoint id="np_142" playOrder="142">
+        <navLabel>
+        <text>认识自我：培养内感觉（interoception）</text>
+        </navLabel>
+        <content src="Text/part0138.xhtml"/>
+        </navPoint>
+        <navPoint id="np_143" playOrder="143">
+        <navLabel>
+        <text>瑜伽和自我意识的神经科学</text>
+        </navLabel>
+        <content src="Text/part0139.xhtml"/>
+        </navPoint>
+        <navPoint id="np_144" playOrder="144">
+        <navLabel>
+        <text>学会交流</text>
+        </navLabel>
+        <content src="Text/part0140.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_145" playOrder="145">
+      <navLabel>
+      <text>第17章 自我的领导力：拼起碎片</text>
+      </navLabel>
+      <content src="Text/part0141.xhtml"/>
+        <navPoint id="np_146" playOrder="146">
+        <navLabel>
+        <text>绝望时需要采取绝望的手段</text>
+        </navLabel>
+        <content src="Text/part0142.xhtml"/>
+        </navPoint>
+        <navPoint id="np_147" playOrder="147">
+        <navLabel>
+        <text>思维是一块马赛克</text>
+        </navLabel>
+        <content src="Text/part0143.xhtml"/>
+        </navPoint>
+        <navPoint id="np_148" playOrder="148">
+        <navLabel>
+        <text>自我领导力</text>
+        </navLabel>
+        <content src="Text/part0144.xhtml"/>
+        </navPoint>
+        <navPoint id="np_149" playOrder="149">
+        <navLabel>
+        <text>认识内心的景观</text>
+        </navLabel>
+        <content src="Text/part0145.xhtml"/>
+        </navPoint>
+        <navPoint id="np_150" playOrder="150">
+        <navLabel>
+        <text>与各部分自我一起生活</text>
+        </navLabel>
+        <content src="Text/part0146.xhtml"/>
+        </navPoint>
+        <navPoint id="np_151" playOrder="151">
+        <navLabel>
+        <text>与管理者们的会面</text>
+        </navLabel>
+        <content src="Text/part0147.xhtml"/>
+        </navPoint>
+        <navPoint id="np_152" playOrder="152">
+        <navLabel>
+        <text>灭火</text>
+        </navLabel>
+        <content src="Text/part0148.xhtml"/>
+        </navPoint>
+        <navPoint id="np_153" playOrder="153">
+        <navLabel>
+        <text>毒性的负担</text>
+        </navLabel>
+        <content src="Text/part0149.xhtml"/>
+        </navPoint>
+        <navPoint id="np_154" playOrder="154">
+        <navLabel>
+        <text>解锁过去</text>
+        </navLabel>
+        <content src="Text/part0150.xhtml"/>
+        </navPoint>
+        <navPoint id="np_155" playOrder="155">
+        <navLabel>
+        <text>自我同情的力量：在类风湿关节炎的治疗中使用IFS</text>
+        </navLabel>
+        <content src="Text/part0151.xhtml"/>
+        </navPoint>
+        <navPoint id="np_156" playOrder="156">
+        <navLabel>
+        <text>解放被流亡的自我</text>
+        </navLabel>
+        <content src="Text/part0152.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_157" playOrder="157">
+      <navLabel>
+      <text>第18章 填补空洞：创造结构</text>
+      </navLabel>
+      <content src="Text/part0153.xhtml"/>
+        <navPoint id="np_158" playOrder="158">
+        <navLabel>
+        <text>重建内在地图</text>
+        </navLabel>
+        <content src="Text/part0154.xhtml"/>
+        </navPoint>
+        <navPoint id="np_159" playOrder="159">
+        <navLabel>
+        <text>再寻过往</text>
+        </navLabel>
+        <content src="Text/part0155.xhtml"/>
+        </navPoint>
+        <navPoint id="np_160" playOrder="160">
+        <navLabel>
+        <text>重述你的人生</text>
+        </navLabel>
+        <content src="Text/part0156.xhtml"/>
+        </navPoint>
+        <navPoint id="np_161" playOrder="161">
+        <navLabel>
+        <text>敢于说出真相</text>
+        </navLabel>
+        <content src="Text/part0157.xhtml"/>
+        </navPoint>
+        <navPoint id="np_162" playOrder="162">
+        <navLabel>
+        <text>痛苦回忆的解药</text>
+        </navLabel>
+        <content src="Text/part0158.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_163" playOrder="163">
+      <navLabel>
+      <text>第19章 重新连接大脑：神经反馈治疗</text>
+      </navLabel>
+      <content src="Text/part0159.xhtml"/>
+        <navPoint id="np_164" playOrder="164">
+        <navLabel>
+        <text>测绘脑电路图</text>
+        </navLabel>
+        <content src="Text/part0160.xhtml"/>
+        </navPoint>
+        <navPoint id="np_165" playOrder="165">
+        <navLabel>
+        <text>大脑的交响曲</text>
+        </navLabel>
+        <content src="Text/part0161.xhtml"/>
+        </navPoint>
+        <navPoint id="np_166" playOrder="166">
+        <navLabel>
+        <text>神经反馈的诞生</text>
+        </navLabel>
+        <content src="Text/part0162.xhtml"/>
+        </navPoint>
+        <navPoint id="np_167" playOrder="167">
+        <navLabel>
+        <text>从无家可归者庇护所到护士站</text>
+        </navLabel>
+        <content src="Text/part0163.xhtml"/>
+        </navPoint>
+        <navPoint id="np_168" playOrder="168">
+        <navLabel>
+        <text>神经反馈入门</text>
+        </navLabel>
+        <content src="Text/part0164.xhtml"/>
+        </navPoint>
+        <navPoint id="np_169" playOrder="169">
+        <navLabel>
+        <text>脑电波基础：从慢波到快波</text>
+        </navLabel>
+        <content src="Text/part0165.xhtml"/>
+        </navPoint>
+        <navPoint id="np_170" playOrder="170">
+        <navLabel>
+        <text>帮助大脑集中注意力</text>
+        </navLabel>
+        <content src="Text/part0166.xhtml"/>
+        </navPoint>
+        <navPoint id="np_171" playOrder="171">
+        <navLabel>
+        <text>我的大脑到底是哪里出了问题</text>
+        </navLabel>
+        <content src="Text/part0167.xhtml"/>
+        </navPoint>
+        <navPoint id="np_172" playOrder="172">
+        <navLabel>
+        <text>脑外伤如何改变脑电波</text>
+        </navLabel>
+        <content src="Text/part0168.xhtml"/>
+        </navPoint>
+        <navPoint id="np_173" playOrder="173">
+        <navLabel>
+        <text>神经反馈和学习障碍</text>
+        </navLabel>
+        <content src="Text/part0169.xhtml"/>
+        </navPoint>
+        <navPoint id="np_174" playOrder="174">
+        <navLabel>
+        <text>Alpha-Theta（α-θ）训练</text>
+        </navLabel>
+        <content src="Text/part0170.xhtml"/>
+        </navPoint>
+        <navPoint id="np_175" playOrder="175">
+        <navLabel>
+        <text>神经反馈、创伤后应激障碍和物质成瘾</text>
+        </navLabel>
+        <content src="Text/part0171.xhtml"/>
+        </navPoint>
+        <navPoint id="np_176" playOrder="176">
+        <navLabel>
+        <text>神经反馈治疗的未来</text>
+        </navLabel>
+        <content src="Text/part0172.xhtml"/>
+        </navPoint>
+      </navPoint>
+      <navPoint id="np_177" playOrder="177">
+      <navLabel>
+      <text>第20章 找到你内心的声音：内在的韵律和戏剧</text>
+      </navLabel>
+      <content src="Text/part0173.xhtml"/>
+        <navPoint id="np_178" playOrder="178">
+        <navLabel>
+        <text>战争戏剧</text>
+        </navLabel>
+        <content src="Text/part0174.xhtml"/>
+        </navPoint>
+        <navPoint id="np_179" playOrder="179">
+        <navLabel>
+        <text>协同一致之时</text>
+        </navLabel>
+        <content src="Text/part0175.xhtml"/>
+        </navPoint>
+        <navPoint id="np_180" playOrder="180">
+        <navLabel>
+        <text>通过戏剧治疗创伤</text>
+        </navLabel>
+        <content src="Text/part0176.xhtml"/>
+        </navPoint>
+        <navPoint id="np_181" playOrder="181">
+        <navLabel>
+        <text>让投入变得安全</text>
+        </navLabel>
+        <content src="Text/part0177.xhtml"/>
+        </navPoint>
+        <navPoint id="np_182" playOrder="182">
+        <navLabel>
+        <text>城市即兴（UI）剧团</text>
+        </navLabel>
+        <content src="Text/part0178.xhtml"/>
+        </navPoint>
+        <navPoint id="np_183" playOrder="183">
+        <navLabel>
+        <text>可能性剧团</text>
+        </navLabel>
+        <content src="Text/part0179.xhtml"/>
+        </navPoint>
+        <navPoint id="np_184" playOrder="184">
+        <navLabel>
+        <text>莎士比亚的判决</text>
+        </navLabel>
+        <content src="Text/part0180.xhtml"/>
+        </navPoint>
+        <navPoint id="np_185" playOrder="185">
+        <navLabel>
+        <text>治疗和戏剧</text>
+        </navLabel>
+        <content src="Text/part0181.xhtml"/>
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="np_186" playOrder="186">
+    <navLabel>
+    <text>后记 需要做出的选择</text>
+    </navLabel>
+    <content src="Text/part0182.xhtml"/>
+    </navPoint>
+    <navPoint id="np_187" playOrder="187">
+    <navLabel>
+    <text>附录 关于新增“发展性创伤障碍”（developmental trauma disorder）的意见</text>
+    </navLabel>
+    <content src="Text/part0183.xhtml"/>
+    </navPoint>
+    <navPoint id="np_188" playOrder="188">
+    <navLabel>
+    <text>资料来源</text>
+    </navLabel>
+    <content src="Text/part0184.xhtml"/>
+    </navPoint>
+    <navPoint id="np_189" playOrder="189">
+    <navLabel>
+    <text>扩展阅读</text>
+    </navLabel>
+    <content src="Text/part0185.xhtml"/>
+    </navPoint>
+    <navPoint id="np_190" playOrder="190">
+    <navLabel>
+    <text>注释</text>
+    </navLabel>
+    <content src="Text/part0186.xhtml"/>
+    </navPoint>
+  </navMap>
+</ncx>

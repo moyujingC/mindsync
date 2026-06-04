@@ -100,7 +100,7 @@ export function SharedHistoryThemeTabs({
             }}
             disabled={disabled}
           >
-            {isAll ? "全部主题" : getThemeDisplayName(theme) ?? theme}
+            {isAll ? "全部议题" : getThemeDisplayName(theme) ?? theme}
           </button>
         );
       })}
@@ -160,15 +160,15 @@ function getEmptyStateCopy(activeFilter: SharedHistoryFilterId, activeTheme?: st
   switch (activeFilter) {
     case "ready":
       return themeLabel
-        ? `当前主题“${themeLabel}”下还没有可直接打开的报告，可以先回到上传主路径生成一条记录。`
+        ? `当前议题“${themeLabel}”下还没有可直接打开的报告，可以先回到上传主路径生成一条记录。`
         : "当前还没有可直接打开的报告，可以先回到上传主路径生成一条记录。";
     case "pending":
       return themeLabel
-        ? `当前主题“${themeLabel}”下没有生成中的记录，后续新的解读流程会出现在这里。`
+        ? `当前议题“${themeLabel}”下没有生成中的记录，后续新的解读流程会出现在这里。`
         : "当前没有生成中的记录，后续新的解读流程会出现在这里。";
     case "all":
       return themeLabel
-        ? `当前主题“${themeLabel}”下还没有生成过 To C 解读，后续可从上传主路径进入。`
+        ? `当前议题“${themeLabel}”下还没有生成过 To C 解读，后续可从上传主路径进入。`
         : "当前用户还没有生成过 To C 解读，后续可从上传主路径进入。";
   }
 }
@@ -245,7 +245,7 @@ export function SharedHistoryRecordsList({
               {item.helperNote ? (
                 <p className="mw-meta mw-meta--soft">{item.helperNote}</p>
               ) : null}
-              <p className="mw-meta">主题：{item.themeLabel} · 可查看版本：{item.versionSummary}</p>
+              <p className="mw-meta">议题：{item.themeLabel} · 可查看版本：{item.versionSummary}</p>
               <p className="mw-meta">Interpretation ID: {item.interpretationId}</p>
               <div className="mw-button-row">
                 {actionBusy && activeRecordId === item.interpretationId ? (

@@ -1,13 +1,16 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ChangeEvent } from "react";
 
-import brandPattern from "../assets/pattern.webp";
 import type { MobileWebUploadDraft } from "../state";
+import type { DetectCirclesResponse } from "../../shared/types";
 
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
+  detection?: DetectCirclesResponse | null;
   environmentLabel?: string;
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
+  isUploading?: boolean;
+  errorMessage?: string | null;
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onContinue?: () => void;
   onBack?: () => void;
@@ -44,62 +47,43 @@ function UploadGlyph() {
 type IconNode = ["path" | "circle" | "rect", Record<string, string>];
 
 const ICON_CHECK: IconNode[] = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const ICON_STAR: IconNode[] = [["path", { d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z", key: "r04s7s" }]];
-const ICON_USER: IconNode[] = [
-  ["path", { d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2", key: "975kel" }],
-  ["circle", { cx: "12", cy: "7", r: "4", key: "17ys0d" }],
-];
-const ICON_USERS: IconNode[] = [
-  ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
-  ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
-  ["path", { d: "M16 3.13a4 4 0 0 1 0 7.75", key: "1da9ce" }],
-];
-const ICON_BABY: IconNode[] = [
-  ["path", { d: "M9 12h.01", key: "157uk2" }],
-  ["path", { d: "M15 12h.01", key: "1k8ypt" }],
-  ["path", { d: "M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5", key: "1u7htd" }],
-  [
-    "path",
-    {
-      d: "M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1",
-      key: "5yv0yz",
-    },
-  ],
-];
 const ICON_COINS: IconNode[] = [
   ["circle", { cx: "8", cy: "8", r: "6", key: "3yglwk" }],
   ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }],
   ["path", { d: "M7 6h1v4", key: "1obek4" }],
   ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }],
 ];
-const ICON_HEART_PULSE: IconNode[] = [
-  [
-    "path",
-    {
-      d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
-      key: "c3ymky",
-    },
-  ],
-  ["path", { d: "M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27", key: "1uw2ng" }],
+const ICON_HEART: IconNode[] = [
+  ["path", { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z", key: "c3ymky" }],
 ];
-const ICON_SPROUT: IconNode[] = [
-  ["path", { d: "M7 20h10", key: "e6iznv" }],
-  ["path", { d: "M10 20c5.5-2.5.8-6.4 3-10", key: "161w41" }],
-  [
-    "path",
-    {
-      d: "M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z",
-      key: "9gtqwd",
-    },
-  ],
-  [
-    "path",
-    {
-      d: "M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z",
-      key: "bkxnd2",
-    },
-  ],
+const ICON_USER: IconNode[] = [
+  ["path", { d: "M18 21a6 6 0 0 0-12 0", key: "u1" }],
+  ["circle", { cx: "12", cy: "8", r: "4", key: "u2" }],
+];
+const ICON_USERS: IconNode[] = [
+  ["path", { d: "M16 21a4 4 0 0 0-8 0", key: "us1" }],
+  ["circle", { cx: "12", cy: "9", r: "3", key: "us2" }],
+  ["path", { d: "M22 21a4 4 0 0 0-3-3.87", key: "us3" }],
+  ["path", { d: "M2 21a4 4 0 0 1 3-3.87", key: "us4" }],
+];
+const ICON_BABY: IconNode[] = [
+  ["path", { d: "M9 12h6", key: "b1" }],
+  ["path", { d: "M10 16h4", key: "b2" }],
+  ["circle", { cx: "12", cy: "10", r: "5", key: "b3" }],
+  ["path", { d: "M10 4.5c.8-1 2.2-1.5 3.5-1", key: "b4" }],
+];
+const ICON_USERS_ROUND: IconNode[] = [
+  ["path", { d: "M2 21a8 8 0 0 1 12 0", key: "ur1" }],
+  ["circle", { cx: "8", cy: "8", r: "4", key: "ur2" }],
+  ["path", { d: "M14 21a6 6 0 0 1 8 0", key: "ur3" }],
+  ["circle", { cx: "18", cy: "9", r: "3", key: "ur4" }],
+];
+const ICON_BRIEFCASE: IconNode[] = [
+  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
+  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }],
+];
+const ICON_ACTIVITY: IconNode[] = [
+  ["path", { d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2", key: "169zse" }],
 ];
 const ICON_BOOK_OPEN: IconNode[] = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
@@ -110,6 +94,14 @@ const ICON_BOOK_OPEN: IconNode[] = [
       key: "ruj8y",
     },
   ],
+];
+const ICON_ROTATE_CCW: IconNode[] = [
+  ["path", { d: "M3 2v6h6", key: "r1" }],
+  ["path", { d: "M3 8a9 9 0 1 0 3-5.7L3 5", key: "r2" }],
+];
+const ICON_EYE: IconNode[] = [
+  ["path", { d: "M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z", key: "e1" }],
+  ["circle", { cx: "12", cy: "12", r: "2.8", key: "e2" }],
 ];
 const ICON_LOCK: IconNode[] = [
   ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
@@ -172,14 +164,14 @@ function LucideIcon({
 }
 
 const themes: ThemeItem[] = [
-  { value: "general", label: "全面", subLabel: "解读", icon: ICON_STAR },
-  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_USER },
+  { value: "wealth", label: "财富", subLabel: "关系", icon: ICON_COINS },
+  { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_HEART },
   { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_USER },
-  { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_USERS },
+  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_USERS },
   { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_BABY },
-  { value: "wealth_career", label: "财富", subLabel: "事业", icon: ICON_COINS },
-  { value: "health_wellness", label: "身体", subLabel: "健康", icon: ICON_HEART_PULSE },
-  { value: "personal_growth", label: "个人", subLabel: "成长", icon: ICON_SPROUT },
+  { value: "personal_growth", label: "人际", subLabel: "关系", icon: ICON_USERS_ROUND },
+  { value: "career_development", label: "事业", subLabel: "发展", icon: ICON_BRIEFCASE },
+  { value: "body_health", label: "身体", subLabel: "健康", icon: ICON_ACTIVITY },
 ];
 
 function UploadSlider({
@@ -379,9 +371,8 @@ function ThemeSelector({
   value?: string;
   onChange?: (nextValue: string) => void;
 }) {
-  const [selected, setSelected] = useState(value ?? themes[0].value);
-  const [activeDotIndex, setActiveDotIndex] = useState(0);
-  const [pageCount, setPageCount] = useState(1);
+  const normalizedValue = themes.some((theme) => theme.value === value) ? value : themes[0].value;
+  const [selected, setSelected] = useState(normalizedValue);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dragStateRef = useRef({
     pointerId: -1,
@@ -392,35 +383,10 @@ function ThemeSelector({
   const suppressNextClickRef = useRef(false);
 
   useEffect(() => {
-    if (value && value !== selected) {
-      setSelected(value);
+    if (normalizedValue !== selected) {
+      setSelected(normalizedValue);
     }
-  }, [value, selected]);
-
-  const updatePagination = () => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const viewportWidth = Math.max(container.clientWidth, 1);
-    const maxScrollLeft = Math.max(container.scrollWidth - container.clientWidth, 0);
-    const nextPageCount = Math.max(1, Math.ceil(container.scrollWidth / viewportWidth));
-    const nextDotIndex =
-      nextPageCount <= 1 || maxScrollLeft <= 0
-        ? 0
-        : Math.round((container.scrollLeft / maxScrollLeft) * (nextPageCount - 1));
-    setPageCount(nextPageCount);
-    setActiveDotIndex(Math.max(0, Math.min(nextPageCount - 1, nextDotIndex)));
-  };
-
-  useEffect(() => {
-    updatePagination();
-    const onResize = () => updatePagination();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  useEffect(() => {
-    updatePagination();
-  }, [themes.length]);
+  }, [normalizedValue, selected]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     const container = scrollRef.current;
@@ -460,13 +426,12 @@ function ThemeSelector({
       const selectedButton = container.children[selectedIndex] as HTMLElement | undefined;
       selectedButton?.scrollIntoView({ inline: "nearest", block: "nearest" });
     }
-    updatePagination();
   }, [selected]);
 
   return (
     <div className="am-theme-selector">
       <p className="am-theme-selector__title">
-        选择解读主题 <span className="am-theme-selector__required">*</span>
+        当前解读议题 <span className="am-theme-selector__required">*</span>
       </p>
 
       <div
@@ -477,7 +442,6 @@ function ThemeSelector({
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
         onPointerLeave={handlePointerEnd}
-        onScroll={updatePagination}
       >
         {themes.map((theme) => {
           const isSelected = selected === theme.value;
@@ -522,11 +486,11 @@ function ThemeSelector({
       </div>
 
       <div className="am-theme-selector__dots">
-        {Array.from({ length: pageCount }).map((_, index) => {
-          const isSelected = activeDotIndex === index;
+        {themes.map((theme) => {
+          const isSelected = selected === theme.value;
           return (
             <div
-              key={`dot-${index}`}
+              key={`dot-${theme.value}`}
               className={`am-theme-selector__dot${isSelected ? " is-active" : ""}`}
             />
           );
@@ -590,7 +554,8 @@ function BottomPanel({
           >
             隐私政策
           </button>
-          ，画作将被加密存储并仅用于解读
+          <br />
+          画作将被加密存储并仅用于解读
         </p>
       </div>
     </div>
@@ -599,9 +564,12 @@ function BottomPanel({
 
 export function MobileWebUploadPage({
   draft,
+  detection = null,
   environmentLabel,
   environmentDetail,
   environmentTone = "preview",
+  isUploading = false,
+  errorMessage = null,
   onDraftChange,
   onContinue,
   onBack,
@@ -610,6 +578,7 @@ export function MobileWebUploadPage({
   const [localPreview, setLocalPreview] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [showOriginalPreview, setShowOriginalPreview] = useState(false);
   const [previewImageScale, setPreviewImageScale] = useState(1);
   const [previewImageOffset, setPreviewImageOffset] = useState({ x: 0, y: 0 });
   const [guideImageScale, setGuideImageScale] = useState(1);
@@ -637,9 +606,6 @@ export function MobileWebUploadPage({
   const discStyle = {
     ["--am-upload-inner" as string]: `${innerRadius}%`,
     ["--am-upload-middle" as string]: `${middleRadius}%`,
-  } as CSSProperties;
-  const uploadPatternStyle = {
-    ["--am-pattern-image" as string]: `url(${brandPattern})`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -943,16 +909,20 @@ export function MobileWebUploadPage({
 
   return (
     <div className="am-page am-upload-page">
-      <div className="am-upload-hero" style={uploadPatternStyle}>
-        <div className="am-pattern-overlay" />
+      <div className="am-upload-hero">
+        <div className="am-upload-hero__glow am-upload-hero__glow--right" />
+        <div className="am-upload-hero__glow am-upload-hero__glow--left" />
+        <div className="am-upload-hero__glow am-upload-hero__glow--center" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--top" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--left" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--right" />
+        <div className="am-upload-hero__spark am-upload-hero__spark--mid" />
 
         <div className="am-upload-topbar">
           <button type="button" className="am-upload-back" onClick={onBack} aria-label="返回首页">
             <NavBackIcon />
           </button>
-          <div className="am-upload-brandmark">
-            <span>一镜一梳</span>
-          </div>
+          <h1 className="am-upload-title">上传曼陀罗画作</h1>
           {environmentLabel ? (
             <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
               <strong>{environmentLabel}</strong>
@@ -1011,7 +981,9 @@ export function MobileWebUploadPage({
                   alt="曼陀罗预览"
                   className="am-upload-disc__image"
                   style={{
-                    transform: `translate(${previewImageOffset.x}px, ${previewImageOffset.y}px) scale(${previewImageScale})`,
+                    transform: showOriginalPreview
+                      ? "translate(0px, 0px) scale(1)"
+                      : `translate(${previewImageOffset.x}px, ${previewImageOffset.y}px) scale(${previewImageScale})`,
                   }}
                 />
               ) : null}
@@ -1029,18 +1001,12 @@ export function MobileWebUploadPage({
                 </button>
               ) : null}
               {previewSrc ? (
-                <>
-                  <div className="am-upload-disc__hover-mask" aria-hidden="true">
-                    <div className="am-upload-disc__hover-copy">
-                      <span className="am-upload-disc__placeholder-icon am-upload-disc__placeholder-icon--hover"><UploadGlyph /></span>
-                      <span className="am-upload-disc__hover-text">点击更换图片</span>
-                    </div>
+                <div className="am-upload-disc__hover-mask" aria-hidden="true">
+                  <div className="am-upload-disc__hover-copy">
+                    <span className="am-upload-disc__placeholder-icon am-upload-disc__placeholder-icon--hover"><UploadGlyph /></span>
+                    <span className="am-upload-disc__hover-text">点击更换图片</span>
                   </div>
-                  <div className="am-upload-disc__rings" aria-hidden="true">
-                    <span className="am-upload-disc__ring am-upload-disc__ring--inner" />
-                    <span className="am-upload-disc__ring am-upload-disc__ring--middle" />
-                  </div>
-                </>
+                </div>
               ) : null}
             </div>
           </div>
@@ -1057,6 +1023,36 @@ export function MobileWebUploadPage({
               event.currentTarget.value = "";
             }}
           />
+        </div>
+
+        <div className="am-upload-actions">
+          <button
+            type="button"
+            className="am-upload-action-button"
+            disabled={!previewSrc}
+            onClick={() => {
+              if (!previewSrc) return;
+              setIsGuideOpen(true);
+            }}
+          >
+            <LucideIcon iconNode={ICON_ROTATE_CCW} size={13} strokeWidth={1.8} />
+            <span>重新校准画作</span>
+          </button>
+          <button
+            type="button"
+            className="am-upload-action-button"
+            disabled={!previewSrc}
+            onPointerDown={() => {
+              if (!previewSrc) return;
+              setShowOriginalPreview(true);
+            }}
+            onPointerUp={() => setShowOriginalPreview(false)}
+            onPointerLeave={() => setShowOriginalPreview(false)}
+            onPointerCancel={() => setShowOriginalPreview(false)}
+          >
+            <LucideIcon iconNode={ICON_EYE} size={13} strokeWidth={1.8} />
+            <span>按住查看原图</span>
+          </button>
         </div>
 
         <div className="am-upload-sliders">
@@ -1091,6 +1087,12 @@ export function MobileWebUploadPage({
 
       <div className="am-upload-bottom-sheet">
         <section className="am-upload-form-surface">
+          {errorMessage ? (
+            <div className="am-upload-detect-status is-error" role="alert">
+              <p>{errorMessage}</p>
+            </div>
+          ) : null}
+
           <ThemeSelector
             value={draft.theme}
             onChange={(nextValue) => onDraftChange?.({ theme: nextValue })}
@@ -1112,7 +1114,7 @@ export function MobileWebUploadPage({
           <div className="am-upload-spacer" />
           <BottomPanel
             canContinue={canContinue}
-            isUploading={false}
+            isUploading={isUploading}
             onContinue={onContinue}
           />
         </section>

@@ -1,0 +1,1310 @@
+{
+  "input-context": {
+    "stage": "input-context",
+    "status": "complete",
+    "report_mode": "lite",
+    "image": {
+      "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-002-mandala.jpg",
+      "marked_local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/assets/case-002-mandala-3q.jpg",
+      "storage_backend": "",
+      "storage_key": ""
+    },
+    "agent_version": "mandala-interpretation-agent-v1"
+  },
+  "user-input-context": {
+    "stage": "user-input-context",
+    "status": "complete",
+    "user_context": {
+      "theme": "wealth",
+      "theme_label": "财富议题",
+      "painting_intention": "case-002 【案例2】用五行感知-相生相克法解读财富和个人成长（完整解读）",
+      "painting_feeling": ""
+    }
+  },
+  "circle-boundary-context": {
+    "stage": "circle-boundary-context",
+    "status": "complete",
+    "circle_boundaries": {
+      "inner_radius": 35,
+      "middle_radius": 65,
+      "radius_unit": "normalized_percent",
+      "source": "golden_case_seed"
+    }
+  },
+  "foundation-image-reading": {
+    "stage": "foundation-image-reading",
+    "status": "complete",
+    "foundation_image_reading": {
+      "visual_observation": {
+        "overall_observation": {
+          "first_impression": "这幅画像一朵从中心向外开放的大花，红色渐变、黄色花形和绿色叶片共同形成生长感。整体看起来有热度、有扩张，也有很多颜色之间的间隔，让画面在丰盛中带着评估和停顿。",
+          "visual_atmosphere": "画面氛围偏明亮、向外展开、生命力强。红色粗轮廓让画面有明显行动感，黄色花形带来承托感，绿色叶片则让外围有继续生长的趋势。",
+          "visual_weight_and_rhythm": "视觉重心在中心红黄莲花，之后通过黄花、绿叶和红色粗轮廓向中外圈扩散。重复节奏较强，外圈绿色叶片更外放，留白在不同颜色之间形成清楚的分隔。",
+          "healing_language_note": "如果用疗愈师语言表达，这幅画里有很明显的向上和向外的力量，同时也能看到这股力量在不同颜色、不同形状之间需要找到更稳的衔接和落点。"
+        },
+        "three_circle_observation": {
+          "inner": "内圈是中心莲花状结构，主要由红色渐变花瓣和黄色花瓣组成。红色渐变花瓣在外层更醒目，黄色花瓣在内侧和花瓣间穿插。花瓣之间有纸面留白，留白也属于画作视觉内容。",
+          "middle": "中圈围绕中心展开，有多组黄色花朵或花茎状结构、绿色块状叶片和红色粗轮廓。红色粗轮廓包住或连接部分黄色花形，绿色块状叶片穿插在花茎和红色轮廓之间，不同颜色图案之间有明显留白。",
+          "outer": "外圈由更外围的绿色叶片、红色粗轮廓外缘和部分延伸到外侧的黄色花形组成。绿色叶片数量较多，呈向外伸展状态；红色粗轮廓形成多个大块外轮廓；颜色图案之间同样保留留白。",
+          "cross_circle_visual_connection": "三圈之间整体是连续开放的，从中心莲花逐渐扩展到中圈花形和外圈叶片。连续性主要来自花形、叶片和红色轮廓的重复延伸；断开感来自不同颜色图案之间的留白。",
+          "cross_circle_visual_evidence": "中心莲花、中圈花茎和外圈叶片都沿同一圆心重复展开；红色粗轮廓从中圈延伸到外圈；绿色叶片在中圈出现并在外圈变多。留白则在黄、绿、红之间不断形成间隔。"
+        },
+        "circle_visual_units": {
+          "inner": {
+            "composition_description": "内圈由红色渐变花瓣、黄色内侧花瓣和花瓣间留白组成，整体呈中心莲花。红色负责外层打开，黄色穿插在内侧和花瓣之间，留白让花瓣关系更清楚。",
+            "visual_units": [
+              {
+                "id": "inner-001",
+                "unit_name": "红色渐变莲花瓣",
+                "position": "内圈中心外层",
+                "source_type": "user_painted",
+                "color_description": "红色渐变，部分位置偏深红，向内或向边缘有深浅变化。",
+                "shape_description": "莲花状花瓣，放射状向外打开，边缘较尖但整体仍有花瓣弧度。",
+                "texture_and_density": "颜色不完全平涂，渐变感明显，花瓣围绕中心密集排列。",
+                "spatial_relations": "与黄色花瓣交错排列，花瓣间被留白切分，整体围绕中心重复。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "红色渐变花瓣是内圈最醒目的视觉力量。它们从中心向外打开，使内圈呈现出启动、展开和带热度的视觉状态。"
+              },
+              {
+                "id": "inner-002",
+                "unit_name": "黄色内侧花瓣",
+                "position": "内圈中心与红色花瓣之间",
+                "source_type": "user_painted",
+                "color_description": "黄色，局部有深浅变化。",
+                "shape_description": "较小花瓣或花形片段，穿插在红色花瓣内侧和间隙中。",
+                "texture_and_density": "密度集中，作为中心花形的支撑层。",
+                "spatial_relations": "与红色渐变花瓣相邻或交错，部分位置靠近花瓣间留白。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "黄色花瓣让内圈不只是红色向外打开，也有一层更稳、更托底的视觉内容。它们在红色之间穿插，使中心花形更丰厚。"
+              },
+              {
+                "id": "inner-003",
+                "unit_name": "内圈花瓣间留白",
+                "position": "红色与黄色花瓣之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "沿花瓣间隙形成细窄或楔形空间。",
+                "texture_and_density": "面积不大，但在花瓣之间多处出现。",
+                "spatial_relations": "隔开红色花瓣、黄色花瓣，也让中心莲花结构更清楚。",
+                "blank_space_role": "切分花瓣，隔开不同颜色，同时形成花瓣边界。",
+                "energy_ratio_percent": 33.34,
+                "rich_visual_description": "内圈留白帮助区分每片花瓣的位置和层次。它不是画面缺失，而是中心莲花能被看清的重要结构。"
+              }
+            ]
+          },
+          "middle": {
+            "composition_description": "中圈由黄色花形/花茎、绿色块状叶片、红色粗轮廓和图案间留白组成。红色轮廓在中圈形成包裹与连接，绿色叶片穿插其间，黄色花形向外重复。",
+            "visual_units": [
+              {
+                "id": "middle-001",
+                "unit_name": "黄色花形与花茎组",
+                "position": "中圈主体重复花形",
+                "source_type": "user_painted",
+                "color_description": "黄色为主，局部与红色、绿色相邻。",
+                "shape_description": "花朵或花茎状结构，向外伸展，重复出现。",
+                "texture_and_density": "重复密度高，构成中圈的主要明亮区域。",
+                "spatial_relations": "部分被红色粗轮廓包住或连接，附近穿插绿色块状叶片，和相邻颜色之间有留白。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "黄色花形让中圈有丰盛、开放的视觉感。它们不是孤立存在，而是被红色轮廓连接或包住，并与绿色叶片共同组成复杂的中圈结构。"
+              },
+              {
+                "id": "middle-002",
+                "unit_name": "绿色块状叶片",
+                "position": "中圈黄花与红色轮廓之间",
+                "source_type": "user_painted",
+                "color_description": "绿色，饱和度中等，部分位置偏深。",
+                "shape_description": "块状叶片或短叶形，边缘有弯曲感。",
+                "texture_and_density": "分布在多个方向，作为黄色花形之间的穿插元素。",
+                "spatial_relations": "靠近黄色花茎和红色粗轮廓，部分被留白隔开，同类绿叶围绕中心重复。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "绿色叶片让中圈多了一层生长方向。它们穿插在花形和红色轮廓之间，使画面不是单纯的花朵重复，而是有生长和转向。"
+              },
+              {
+                "id": "middle-003",
+                "unit_name": "红色粗轮廓",
+                "position": "中圈贯穿花形外侧",
+                "source_type": "user_painted",
+                "color_description": "红色，颜色较醒目，线条或轮廓较粗。",
+                "shape_description": "粗轮廓线和弧形包围结构，局部包住黄色花形。",
+                "texture_and_density": "连续度高于黄色和绿色单元，形成中圈骨架。",
+                "spatial_relations": "包住或连接黄色花形，邻近绿色叶片，并向外圈延伸。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "红色粗轮廓像中圈的动线和边界。它既把部分花形包住，也让中圈和外圈之间有一条可见的延伸路径。"
+              },
+              {
+                "id": "middle-004",
+                "unit_name": "中圈图案间留白",
+                "position": "黄色、绿色、红色图案之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "不规则缝隙，随花形、叶形和红色轮廓变化。",
+                "texture_and_density": "多处出现，形成颜色之间的间隔。",
+                "spatial_relations": "隔开黄花、绿叶和红色轮廓，也让局部元素不能完全连成一片。",
+                "blank_space_role": "隔开不同颜色图案，形成边界和筛选感。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "中圈留白在复杂颜色之间提供分隔。它让画面看起来不至于完全拥挤，也让每个颜色单元的关系变得可判断。"
+              }
+            ]
+          },
+          "outer": {
+            "composition_description": "外圈延续中圈的红色轮廓，并放大绿色叶片的向外伸展。黄色花形部分延伸到外侧，留白继续分隔不同颜色图案。",
+            "visual_units": [
+              {
+                "id": "outer-001",
+                "unit_name": "外围绿色叶片",
+                "position": "外圈最外侧和外圈侧缘",
+                "source_type": "user_painted",
+                "color_description": "绿色，部分叶片偏浅，外缘更明亮。",
+                "shape_description": "长叶片或羽状叶片，向外伸展，边缘有尖端。",
+                "texture_and_density": "数量较多，重复围绕外圈展开。",
+                "spatial_relations": "同类叶片环绕中心向外重复，部分与红色轮廓和黄色花形相邻，中间有留白。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "外圈绿色叶片是画面最明显的外放部分。它们从花形结构向外伸展，让整幅画有继续生长、继续探索外部空间的趋势。"
+              },
+              {
+                "id": "outer-002",
+                "unit_name": "外圈红色粗轮廓延伸",
+                "position": "外圈中外段",
+                "source_type": "user_painted",
+                "color_description": "红色，与中圈红色轮廓一致。",
+                "shape_description": "大块弧形或轮廓结构，延伸并包围部分外圈图案。",
+                "texture_and_density": "较粗、较醒目，形成外圈骨架。",
+                "spatial_relations": "从中圈延伸到外圈，包围或连接黄色花形，并与绿色叶片相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "红色轮廓在外圈继续存在，使中圈的行动线没有突然中断。它像一条从内向外走的视觉路径，把花形和叶片连接起来。"
+              },
+              {
+                "id": "outer-003",
+                "unit_name": "外侧黄色花形延伸",
+                "position": "外圈靠外边缘",
+                "source_type": "user_painted",
+                "color_description": "黄色，局部与红色轮廓、绿色叶片相邻。",
+                "shape_description": "花瓣或花形延伸结构，和中圈黄色花形同源。",
+                "texture_and_density": "分布在多个方向，形成外圈明亮节点。",
+                "spatial_relations": "部分被红色轮廓包住或连接，附近有绿色叶片和留白。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "黄色花形从中圈延伸到外圈，使画面的丰盛感没有停在内部，而是继续到现实边缘。"
+              },
+              {
+                "id": "outer-004",
+                "unit_name": "外圈留白",
+                "position": "外圈外边以内的图案间隔",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "沿绿叶、红轮廓和黄花之间形成不规则间隔。",
+                "texture_and_density": "数量多，贯穿外圈。",
+                "spatial_relations": "隔开绿色、红色、黄色图案；只要在外圈外边以内，均作为画作内留白记录。",
+                "blank_space_role": "隔开不同颜色图案，切分外圈行动和生长结构。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "外圈留白让外放的绿色叶片和红黄结构保持边界。它使画面有空间感，也让外圈的扩张不是完全连成一片。"
+              }
+            ]
+          }
+        }
+      },
+      "element_sensing": {
+        "inner": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "inner-001",
+              "element": "fire",
+              "basis": [
+                "红色渐变莲花瓣，颜色红且放射状向外打开，视觉热度高，符合火性。"
+              ],
+              "confidence": "high",
+              "notes": "红色渐变和放射状花瓣形态共同强化火性。"
+            },
+            {
+              "visual_unit_id": "inner-002",
+              "element": "earth",
+              "basis": [
+                "黄色内侧花瓣，黄色为主，形状为承托性花瓣，使中心更丰厚稳定，符合土性。"
+              ],
+              "confidence": "high",
+              "notes": "黄色和承托结构为典型土性。"
+            },
+            {
+              "visual_unit_id": "inner-003",
+              "element": "metal",
+              "basis": [
+                "纸面白色留白，留白一律按金处理，且此处留白切分花瓣形成清晰边界。"
+              ],
+              "confidence": "high",
+              "notes": "留白切分出莲花结构，金性明确。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "middle-001",
+              "element": "earth",
+              "basis": [
+                "黄色花形与花茎组，颜色黄，重复花卉结构偏丰盛承托感，符合土性。"
+              ],
+              "confidence": "high",
+              "notes": "丰盛重复的黄色花形是典型土性表达。"
+            },
+            {
+              "visual_unit_id": "middle-002",
+              "element": "wood",
+              "basis": [
+                "绿色块状叶片，绿色且具生长、穿插、向外伸展的叶形，符合木性。"
+              ],
+              "confidence": "high",
+              "notes": "绿色和叶片生长感指向木性。"
+            },
+            {
+              "visual_unit_id": "middle-003",
+              "element": "fire",
+              "basis": [
+                "红色粗轮廓，颜色红且醒目，包围花形形成明显动线和边界，符合火性。"
+              ],
+              "confidence": "high",
+              "notes": "粗红色轮廓为火性行动线，目视热度高。"
+            },
+            {
+              "visual_unit_id": "middle-004",
+              "element": "metal",
+              "basis": [
+                "中圈图案间留白，纸面白色留白，形成颜色分隔和边界，金性。"
+              ],
+              "confidence": "high",
+              "notes": "留白在黄、绿、红之间分隔，金性切割明显。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "outer-001",
+              "element": "wood",
+              "basis": [
+                "外围绿色叶片，绿色且长羽状向外伸展，生长和扩张感强烈，符合木性。"
+              ],
+              "confidence": "high",
+              "notes": "外圈最醒目的向外生长力量，木性明确。"
+            },
+            {
+              "visual_unit_id": "outer-002",
+              "element": "fire",
+              "basis": [
+                "外圈红色粗轮廓延伸，红色醒目，延续中圈火行动线并向外包围，符合火性。"
+              ],
+              "confidence": "high",
+              "notes": "红色粗轮廓延伸形成连续动力，火性明显。"
+            },
+            {
+              "visual_unit_id": "outer-003",
+              "element": "earth",
+              "basis": [
+                "外侧黄色花形延伸，黄色花形作为丰盛节点，承托外圈结构，符合土性。"
+              ],
+              "confidence": "high",
+              "notes": "黄花延续至外圈提供承托感，土性明确。"
+            },
+            {
+              "visual_unit_id": "outer-004",
+              "element": "metal",
+              "basis": [
+                "外圈留白，纸面白色留白，隔开绿叶、红轮廓和黄花，金性。"
+              ],
+              "confidence": "high",
+              "notes": "外圈留白切分整体扩张结构，金性切割。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "intra_circle_relations": {
+        "inner": {
+          "relations": [
+            {
+              "relation_id": "inner-rel-001",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "inner-001",
+                "inner-002"
+              ],
+              "visible_basis": "红色渐变莲花瓣（火）外层打开，黄色内侧花瓣（土）在内侧和间隙穿插承托，火生土结构，且两者在空间上交错穿插。",
+              "confidence": "high",
+              "notes": "火生土关系清晰，红色花火向外，黄花土承托，形成生成循环。"
+            },
+            {
+              "relation_id": "inner-rel-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "inner-001",
+                "inner-002"
+              ],
+              "visible_basis": "花瓣间留白（金）隔开红色花瓣与黄色花瓣，边界清晰，使火土在视觉上被分切。",
+              "confidence": "high",
+              "notes": "留白金切割火土交接处，形成分隔。"
+            },
+            {
+              "relation_id": "inner-rel-003",
+              "relation_type": "cut_by_metal",
+              "involved_visual_unit_ids": [
+                "inner-003",
+                "inner-001",
+                "inner-002"
+              ],
+              "visible_basis": "金性留白紧挨红色花瓣和黄色花瓣，切分使它们各自成为独立的花瓣单元，边界明确。",
+              "confidence": "high",
+              "notes": "留白金切割火土单元，使内圈莲花结构分明。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "relations": [
+            {
+              "relation_id": "middle-rel-001",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "middle-001",
+                "middle-003"
+              ],
+              "visible_basis": "红色粗轮廓（火）包住或连接黄色花形（土），火生土，视觉上红包围黄，形成加热承托感。",
+              "confidence": "high",
+              "notes": "火包土，火生土，结构性生成关系。"
+            },
+            {
+              "relation_id": "middle-rel-002",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "middle-002",
+                "middle-003",
+                "middle-001"
+              ],
+              "visible_basis": "绿色块状叶片（木）穿插在黄花（土）与红轮廓（火）之间，木生火，木又克土但证据不足，木与火相邻更直接促进火。",
+              "confidence": "medium",
+              "notes": "木穿插近火，支持木生火，但木与土也相邻，属于复合区域。"
+            },
+            {
+              "relation_id": "middle-rel-003",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "middle-004",
+                "middle-001",
+                "middle-002",
+                "middle-003"
+              ],
+              "visible_basis": "中圈图案间留白金分隔黄花、绿叶和红轮廓，使土、木、火单元不能完全融合。",
+              "confidence": "high",
+              "notes": "留白金对三者均施加切割，形成视觉上的评估与停顿。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "relations": [
+            {
+              "relation_id": "outer-rel-001",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "outer-001",
+                "outer-002"
+              ],
+              "visible_basis": "外圈红色粗轮廓延伸（火）与外围绿色叶片（木）相邻，木生火，绿叶支撑红色动力线。",
+              "confidence": "high",
+              "notes": "木生火，绿叶片为红轮廓提供生长基底。"
+            },
+            {
+              "relation_id": "outer-rel-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "outer-004",
+                "outer-001",
+                "outer-002",
+                "outer-003"
+              ],
+              "visible_basis": "外圈留白金隔开绿色叶片、红色轮廓与黄色花形，使木、火、土在外圈被分切。",
+              "confidence": "high",
+              "notes": "外圈留白金限制三元素无边界的融合，形成规则式扩张。"
+            },
+            {
+              "relation_id": "outer-rel-003",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "outer-002",
+                "outer-003"
+              ],
+              "visible_basis": "外圈红色轮廓（火）包住或连接外侧黄色花形延伸（土），火生土，视觉上红色作为黄花的结构骨架。",
+              "confidence": "high",
+              "notes": "火生土，红色轮廓支撑外圈黄花丰盛感。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "cross_circle_flow": {
+        "flow_observations": [
+          {
+            "flow_id": "flow-001",
+            "flow_type": "outward_expanding",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "内圈莲花→中圈黄花、红轮廓→外圈绿叶、红轮廓延伸，视觉连续开放，从中心向外层层扩展，花形和叶片不断重复。",
+            "confidence": "high",
+            "notes": "三圈明显向外生长扩散，力量从中心不断外放。"
+          },
+          {
+            "flow_id": "flow-002",
+            "flow_type": "continuous",
+            "involved_circles": [
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "红色粗轮廓和黄色花形从中圈连续延伸至外圈，绿叶从中圈到外圈数量增加但形态同源，无截断。",
+            "confidence": "high",
+            "notes": "中圈到外圈的力量传递是连续的，红轮廓和黄花为跨圈纽带。"
+          },
+          {
+            "flow_id": "flow-003",
+            "flow_type": "interrupted",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "三圈之间及每圈内部花叶间均存在明显留白分隔，形成边界，使连续扩展伴随停顿和评估。",
+            "confidence": "high",
+            "notes": "留白金虽支持清晰结构，但也形成外扩过程中的中断，能量并非完全流畅融合。"
+          }
+        ],
+        "summary": ""
+      },
+      "evidence_links": [
+        {
+          "claim_id": "inner-001",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-001 五行候选为 fire。",
+          "visual_unit_ids": [
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "红色渐变莲花瓣，颜色红且放射状向外打开，视觉热度高，符合火性。"
+        },
+        {
+          "claim_id": "inner-002",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-002 五行候选为 earth。",
+          "visual_unit_ids": [
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "黄色内侧花瓣，黄色为主，形状为承托性花瓣，使中心更丰厚稳定，符合土性。"
+        },
+        {
+          "claim_id": "inner-003",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-003 五行候选为 metal。",
+          "visual_unit_ids": [
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "纸面白色留白，留白一律按金处理，且此处留白切分花瓣形成清晰边界。"
+        },
+        {
+          "claim_id": "middle-001",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-001 五行候选为 earth。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "黄色花形与花茎组，颜色黄，重复花卉结构偏丰盛承托感，符合土性。"
+        },
+        {
+          "claim_id": "middle-002",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-002 五行候选为 wood。",
+          "visual_unit_ids": [
+            "middle-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "绿色块状叶片，绿色且具生长、穿插、向外伸展的叶形，符合木性。"
+        },
+        {
+          "claim_id": "middle-003",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-003 五行候选为 fire。",
+          "visual_unit_ids": [
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "红色粗轮廓，颜色红且醒目，包围花形形成明显动线和边界，符合火性。"
+        },
+        {
+          "claim_id": "middle-004",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "middle-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈图案间留白，纸面白色留白，形成颜色分隔和边界，金性。"
+        },
+        {
+          "claim_id": "outer-001",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "outer-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外围绿色叶片，绿色且长羽状向外伸展，生长和扩张感强烈，符合木性。"
+        },
+        {
+          "claim_id": "outer-002",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-002 五行候选为 fire。",
+          "visual_unit_ids": [
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈红色粗轮廓延伸，红色醒目，延续中圈火行动线并向外包围，符合火性。"
+        },
+        {
+          "claim_id": "outer-003",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-003 五行候选为 earth。",
+          "visual_unit_ids": [
+            "outer-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外侧黄色花形延伸，黄色花形作为丰盛节点，承托外圈结构，符合土性。"
+        },
+        {
+          "claim_id": "outer-004",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "outer-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈留白，纸面白色留白，隔开绿叶、红轮廓和黄花，金性。"
+        },
+        {
+          "claim_id": "inner-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "火生土关系清晰，红色花火向外，黄花土承托，形成生成循环。",
+          "visual_unit_ids": [
+            "inner-001",
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "红色渐变莲花瓣（火）外层打开，黄色内侧花瓣（土）在内侧和间隙穿插承托，火生土结构，且两者在空间上交错穿插。"
+        },
+        {
+          "claim_id": "inner-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白金切割火土交接处，形成分隔。",
+          "visual_unit_ids": [
+            "inner-001",
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "花瓣间留白（金）隔开红色花瓣与黄色花瓣，边界清晰，使火土在视觉上被分切。"
+        },
+        {
+          "claim_id": "inner-rel-003",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白金切割火土单元，使内圈莲花结构分明。",
+          "visual_unit_ids": [
+            "inner-003",
+            "inner-001",
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "金性留白紧挨红色花瓣和黄色花瓣，切分使它们各自成为独立的花瓣单元，边界明确。"
+        },
+        {
+          "claim_id": "middle-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "火包土，火生土，结构性生成关系。",
+          "visual_unit_ids": [
+            "middle-001",
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "红色粗轮廓（火）包住或连接黄色花形（土），火生土，视觉上红包围黄，形成加热承托感。"
+        },
+        {
+          "claim_id": "middle-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "木穿插近火，支持木生火，但木与土也相邻，属于复合区域。",
+          "visual_unit_ids": [
+            "middle-002",
+            "middle-003",
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "绿色块状叶片（木）穿插在黄花（土）与红轮廓（火）之间，木生火，木又克土但证据不足，木与火相邻更直接促进火。"
+        },
+        {
+          "claim_id": "middle-rel-003",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白金对三者均施加切割，形成视觉上的评估与停顿。",
+          "visual_unit_ids": [
+            "middle-004",
+            "middle-001",
+            "middle-002",
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈图案间留白金分隔黄花、绿叶和红轮廓，使土、木、火单元不能完全融合。"
+        },
+        {
+          "claim_id": "outer-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "木生火，绿叶片为红轮廓提供生长基底。",
+          "visual_unit_ids": [
+            "outer-001",
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈红色粗轮廓延伸（火）与外围绿色叶片（木）相邻，木生火，绿叶支撑红色动力线。"
+        },
+        {
+          "claim_id": "outer-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "外圈留白金限制三元素无边界的融合，形成规则式扩张。",
+          "visual_unit_ids": [
+            "outer-004",
+            "outer-001",
+            "outer-002",
+            "outer-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈留白金隔开绿色叶片、红色轮廓与黄色花形，使木、火、土在外圈被分切。"
+        },
+        {
+          "claim_id": "outer-rel-003",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "火生土，红色轮廓支撑外圈黄花丰盛感。",
+          "visual_unit_ids": [
+            "outer-002",
+            "outer-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "外圈红色轮廓（火）包住或连接外侧黄色花形延伸（土），火生土，视觉上红色作为黄花的结构骨架。"
+        },
+        {
+          "claim_id": "flow-001",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outward_expanding",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "内圈莲花→中圈黄花、红轮廓→外圈绿叶、红轮廓延伸，视觉连续开放，从中心向外层层扩展，花形和叶片不断重复。"
+        },
+        {
+          "claim_id": "flow-002",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "continuous",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "红色粗轮廓和黄色花形从中圈连续延伸至外圈，绿叶从中圈到外圈数量增加但形态同源，无截断。"
+        },
+        {
+          "claim_id": "flow-003",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "interrupted",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "三圈之间及每圈内部花叶间均存在明显留白分隔，形成边界，使连续扩展伴随停顿和评估。"
+        }
+      ]
+    },
+    "model_trace": {
+      "vision": [
+        {
+          "source": "golden_foundation.visual_observation"
+        }
+      ],
+      "foundation_analysis": [
+        {
+          "model": "deepseek-v4-pro",
+          "base_url": "https://api.deepseek.com",
+          "endpoint_url": "https://api.deepseek.com/chat/completions",
+          "result": "success"
+        }
+      ]
+    }
+  },
+  "theme-translation-route": {
+    "stage": "theme-translation-route",
+    "status": "complete",
+    "theme": "wealth",
+    "route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.metal_excess",
+        "visual.weak_or_fragmented_earth",
+        "visual.rootless_wood",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.relationship_boundary",
+          "recommended_topic": "关系与交换边界 / 人际关系",
+          "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+          "matched_signals": [
+            "留白切分"
+          ],
+          "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+          "avoid": [
+            "不直接定性亲密关系、父亲关系或母亲关系。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+        "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "report-thesis-selection": {
+    "stage": "report-thesis-selection",
+    "status": "complete",
+    "core_thesis": "这幅曼陀罗揭示了一个“火—土—金”主导的财富动力结构：强烈的向外展开意愿（火）不断被评判、拆分和自我验证的需要（金）切割，导致丰盛感（土）虽多却难聚拢，形成“有资源、有行动冲动、但行动容易被情绪和评估打断”的财富状态。",
+    "entry_circle": "middle",
+    "entry_signal": "红色粗轮廓（middle-003）在中圈以醒目、连续、粗线的形态包住或连接多组黄色花形（middle-001），同时绿色块状叶片（middle-002）穿插其间，整体形成明显的“行动线包裹丰盛感”的视觉焦点。",
+    "entry_reason": "中圈红色粗轮廓是整幅画中最具结构性和跨圈动力最强的视觉信号。它既是内圈火性向外延伸的承接点，又是外圈木火扩张的出发点，且直接连接财富议题中的行动力与资源流动主题。从这一信号切入，能最自然地解释用户“想动却被评估感拉住”的核心矛盾，而不需要先绕到内圈再推导。",
+    "narrative_order": [
+      "middle",
+      "outer",
+      "inner"
+    ],
+    "integrated_context_threads": [
+      "relationship",
+      "emotion"
+    ],
+    "evidence_refs": [
+      "middle-003",
+      "middle-001",
+      "middle-002",
+      "middle-004",
+      "outer-001",
+      "outer-002",
+      "outer-004",
+      "inner-001",
+      "inner-003"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.metal_excess",
+        "visual.weak_or_fragmented_earth",
+        "visual.rootless_wood",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.relationship_boundary",
+          "recommended_topic": "关系与交换边界 / 人际关系",
+          "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+          "matched_signals": [
+            "留白切分"
+          ],
+          "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+          "avoid": [
+            "不直接定性亲密关系、父亲关系或母亲关系。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+        "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "user-facing-framing": {
+    "stage": "user-facing-framing",
+    "status": "complete",
+    "framing": "你的画里有一股很强的向外力量——它想动、想扩展、想承接更多资源。但同时你也给它装了一整套精密的评估系统，每一步生长都在被仔细检查和分割。我们今天就从这股“想动又频频评估”的地方开始看，看看你的财富流动在哪个环节先卡住了。",
+    "entry_circle": "middle",
+    "entry_signal": "红色粗轮廓（middle-003）在中圈以醒目、连续、粗线的形态包住或连接多组黄色花形（middle-001），同时绿色块状叶片（middle-002）穿插其间，整体形成明显的“行动线包裹丰盛感”的视觉焦点。",
+    "entry_reason": "中圈红色粗轮廓是整幅画中最具结构性和跨圈动力最强的视觉信号。它既是内圈火性向外延伸的承接点，又是外圈木火扩张的出发点，且直接连接财富议题中的行动力与资源流动主题。从这一信号切入，能最自然地解释用户“想动却被评估感拉住”的核心矛盾，而不需要先绕到内圈再推导。",
+    "narrative_order": [
+      "middle",
+      "outer",
+      "inner"
+    ],
+    "integrated_context_threads": [
+      "relationship",
+      "emotion"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.metal_excess",
+        "visual.weak_or_fragmented_earth",
+        "visual.rootless_wood",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.relationship_boundary",
+          "recommended_topic": "关系与交换边界 / 人际关系",
+          "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+          "matched_signals": [
+            "留白切分"
+          ],
+          "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+          "avoid": [
+            "不直接定性亲密关系、父亲关系或母亲关系。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+        "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "report-branching-plan": {
+    "stage": "report-branching-plan",
+    "status": "complete",
+    "healing_direction": "在保留清晰判断力的同时，适当减少对每一步行动的事前切割，允许火性能量以更连续、不急迫的方式流向现实的资源承接，先恢复“小步行动—承接反馈—再调整”的流动感。",
+    "report_mode": "lite",
+    "entry_circle": "middle",
+    "entry_signal": "红色粗轮廓（middle-003）在中圈以醒目、连续、粗线的形态包住或连接多组黄色花形（middle-001），同时绿色块状叶片（middle-002）穿插其间，整体形成明显的“行动线包裹丰盛感”的视觉焦点。",
+    "entry_reason": "中圈红色粗轮廓是整幅画中最具结构性和跨圈动力最强的视觉信号。它既是内圈火性向外延伸的承接点，又是外圈木火扩张的出发点，且直接连接财富议题中的行动力与资源流动主题。从这一信号切入，能最自然地解释用户“想动却被评估感拉住”的核心矛盾，而不需要先绕到内圈再推导。",
+    "narrative_order": [
+      "middle",
+      "outer",
+      "inner"
+    ],
+    "integrated_context_threads": [
+      "relationship",
+      "emotion"
+    ],
+    "writing_input_refs": [
+      "middle-003",
+      "middle-001",
+      "middle-002",
+      "middle-004",
+      "outer-001",
+      "outer-002",
+      "outer-004",
+      "inner-001",
+      "inner-003"
+    ],
+    "theme_route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.metal_excess",
+        "visual.weak_or_fragmented_earth",
+        "visual.rootless_wood",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.fragmented_dots_scattered_energy",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.relationship_boundary",
+          "recommended_topic": "关系与交换边界 / 人际关系",
+          "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+          "matched_signals": [
+            "留白切分"
+          ],
+          "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+          "avoid": [
+            "不直接定性亲密关系、父亲关系或母亲关系。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "只能说承接、稳定和资源容器可能需要加强，不能预测存款或财富结果。",
+        "适合表达成长动力有但滋养不足，不能写成用户没有能力。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达目标、行动或资源分散，不能替用户做职业或商业取舍。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "lite-report-draft": {
+    "stage": "lite-report-draft",
+    "status": "complete",
+    "enabled": true,
+    "markdown": "# 财富议题曼陀罗解读：行动与评估之间的资源流动\n\n**画面证据速写**\n\n这幅画的整体气质像一朵正在全力打开的花——生命力很强，热度高，方向感也很明确。红色、黄色、绿色层层向外展开，形成一股明显的生长势头。但仔细观察会发现，几乎所有颜色区块之间都嵌着纸面留白，花与叶、红与绿被清楚地隔开。\n\n最显眼的画面内容在中圈：几组粗壮的红色轮廓线像骨架一样，包住或连接着多组黄色花形，绿色块状叶片穿插其间。这些红色线条是整幅画里最有结构感的信号——它们既把丰盛的黄色花形托住，又形成一条从内向外延伸的行动路径。\n\n**五行感知**\n\n中圈的红色粗轮廓颜色醒目、连续且呈包围姿态，视觉热度高，对应五行中的火性，代表推动力和行动意愿。被它包住的黄色花形颜色偏暖，重复出现且形态丰盛，属于土性的承托与资源感。红色轮廓与黄色花形在空间上紧密相邻，形成圈内“火生土”的关系候选——行动加热承托，资源感被行动力托起。但中圈内大量纸面留白（金性）将黄花、绿叶和红轮廓逐一隔开，火、土、木三者在同圈内被反复切分，行动力与资源感之间始终保留着等待评估的边界。\n\n**财富核心解读**\n\n你的财富画面里，资源和行动意愿都不缺——那层层打开的黄色花形和向外延伸的红色线条，都是你已经拥有的丰盛潜力和想动起来的信号。问题出在“动”的过程里：每一步扩张都伴随着一道审视的目光，像在出手之前先把事情拆开来检验好几遍，确认安全了才能走下一步。这在保护你的同时，也让资源的聚合变得困难——丰盛感一直散在不同区块里，很难形成一个能稳定承托收入的容器。红色的行动冲动越强，金性的自我检验就越密集；黄色的资源越丰富，被切分的次数就越多。这可能会在现实里表现为：想法很多、机会也看得到，但落到行动时容易犹豫，或者刚动一下就因为情绪或关系因素停下来，甚至通过消费来安抚那些还没来得及消化的紧张感。待验证的线索是中圈红色轮廓包裹黄色花形的方式——这种“包裹感”可能涉及你在关系中的付出与回报边界，比如替别人承担情绪成本，或者开价时会先在心里反复衡量对方能不能接受。回到中圈看一看，那些被红色行动线包住却没有完全融合的黄色花形，也许在告诉你：财富行动的节奏可以更连续一点，不必每一次生长都先让评判走在前面。外圈的绿色叶片告诉你成长方向明确，内圈那朵红黄交织的莲花也说明你本源的动力足够；现在只需要让中圈那段“边动边审”的惯性松一松，资源就有机会聚拢。\n\n**温和行动建议**\n\n下一次当你面对一个和钱有关的决定——哪怕是小小的开价、一次争取——试着在行动之前只做一次核对，然后就让它流动出去。关注一下“核对完”到“实际动”之间的身体感受：是不是喉咙发紧，或者呼吸变浅。那可能是你的判断力在替情绪值班，而不只是在保护你的资源。\n\n**下一次曼陀罗探索建议**\n\n画面中大量留白将中圈的黄色花形（资源感）和红色轮廓（行动力）隔开，视觉上很像在关系交换中反复出现的边界判断。如果愿意更深入，下一次可以探索“关系与交换边界”这个方向：看看你在合作、人情往来和付出回报之间，如何拿捏价值交换的尺度。"
+  },
+  "pro-report-draft": {
+    "stage": "pro-report-draft",
+    "status": "complete",
+    "enabled": false,
+    "markdown": ""
+  },
+  "visual-assets": {
+    "stage": "visual-assets",
+    "status": "skipped",
+    "reason": "mvp_no_image_generation"
+  },
+  "final-report-assembly": {
+    "stage": "final-report-assembly",
+    "status": "complete",
+    "final_report": {
+      "report_id": "mandala-interpretation-cc87d12eeb29",
+      "report_mode": "lite",
+      "title": "曼陀罗解读报告",
+      "markdown": "# 财富议题曼陀罗解读：行动与评估之间的资源流动\n\n**画面证据速写**\n\n这幅画的整体气质像一朵正在全力打开的花——生命力很强，热度高，方向感也很明确。红色、黄色、绿色层层向外展开，形成一股明显的生长势头。但仔细观察会发现，几乎所有颜色区块之间都嵌着纸面留白，花与叶、红与绿被清楚地隔开。\n\n最显眼的画面内容在中圈：几组粗壮的红色轮廓线像骨架一样，包住或连接着多组黄色花形，绿色块状叶片穿插其间。这些红色线条是整幅画里最有结构感的信号——它们既把丰盛的黄色花形托住，又形成一条从内向外延伸的行动路径。\n\n**五行感知**\n\n中圈的红色粗轮廓颜色醒目、连续且呈包围姿态，视觉热度高，对应五行中的火性，代表推动力和行动意愿。被它包住的黄色花形颜色偏暖，重复出现且形态丰盛，属于土性的承托与资源感。红色轮廓与黄色花形在空间上紧密相邻，形成圈内“火生土”的关系候选——行动加热承托，资源感被行动力托起。但中圈内大量纸面留白（金性）将黄花、绿叶和红轮廓逐一隔开，火、土、木三者在同圈内被反复切分，行动力与资源感之间始终保留着等待评估的边界。\n\n**财富核心解读**\n\n你的财富画面里，资源和行动意愿都不缺——那层层打开的黄色花形和向外延伸的红色线条，都是你已经拥有的丰盛潜力和想动起来的信号。问题出在“动”的过程里：每一步扩张都伴随着一道审视的目光，像在出手之前先把事情拆开来检验好几遍，确认安全了才能走下一步。这在保护你的同时，也让资源的聚合变得困难——丰盛感一直散在不同区块里，很难形成一个能稳定承托收入的容器。红色的行动冲动越强，金性的自我检验就越密集；黄色的资源越丰富，被切分的次数就越多。这可能会在现实里表现为：想法很多、机会也看得到，但落到行动时容易犹豫，或者刚动一下就因为情绪或关系因素停下来，甚至通过消费来安抚那些还没来得及消化的紧张感。待验证的线索是中圈红色轮廓包裹黄色花形的方式——这种“包裹感”可能涉及你在关系中的付出与回报边界，比如替别人承担情绪成本，或者开价时会先在心里反复衡量对方能不能接受。回到中圈看一看，那些被红色行动线包住却没有完全融合的黄色花形，也许在告诉你：财富行动的节奏可以更连续一点，不必每一次生长都先让评判走在前面。外圈的绿色叶片告诉你成长方向明确，内圈那朵红黄交织的莲花也说明你本源的动力足够；现在只需要让中圈那段“边动边审”的惯性松一松，资源就有机会聚拢。\n\n**温和行动建议**\n\n下一次当你面对一个和钱有关的决定——哪怕是小小的开价、一次争取——试着在行动之前只做一次核对，然后就让它流动出去。关注一下“核对完”到“实际动”之间的身体感受：是不是喉咙发紧，或者呼吸变浅。那可能是你的判断力在替情绪值班，而不只是在保护你的资源。\n\n**下一次曼陀罗探索建议**\n\n画面中大量留白将中圈的黄色花形（资源感）和红色轮廓（行动力）隔开，视觉上很像在关系交换中反复出现的边界判断。如果愿意更深入，下一次可以探索“关系与交换边界”这个方向：看看你在合作、人情往来和付出回报之间，如何拿捏价值交换的尺度。",
+      "summary": "这幅曼陀罗揭示了一个“火—土—金”主导的财富动力结构：强烈的向外展开意愿（火）不断被评判、拆分和自我验证的需要（金）切割，导致丰盛感（土）虽多却难聚拢，形成“有资源、有行动冲动、但行动容易被情绪和评估打断”的财富状态。"
+    }
+  }
+}

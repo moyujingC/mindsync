@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：CEO / Orchestrator
-> last_updated：2026-04-05
+> last_updated：2026-06-01
 > source_of_truth：company/Paperclip任务系统优化方案.md
 
 这份文档定义 `知行工坊` 当前阶段对 Paperclip 任务系统的优化方向。
@@ -18,6 +18,22 @@
 - agent 默认行为
 
 收束成一套长期可维护的系统。
+
+截至 `2026-06-01`，`MindSync` 已将 `Paperclip` 推荐目标版本提升到 `v2026.529.0`。
+因此当前默认边界也同步调整为：
+
+- `Paperclip` 原生优先负责：
+  - structured interactions（结构化交互）
+  - document locks（文档锁）与 inline annotations（内联批注）
+  - blocker / dependency（阻塞 / 依赖）推进
+  - accepted-plan exact-once decomposition（计划只分解一次）
+  - execution workspace lifecycle（执行工作区生命周期）
+  - productivity review / liveness recovery（生产力审阅 / 存活恢复）
+- `MindSync` 本地治理继续负责：
+  - `type:*`、`review:*`、`task_class:*`、`execution_route:*`
+  - 冻结策略与执行边界
+  - `blocked` 原因解释
+  - 仓库治理源与运行态的持续对账
 
 ## 1. 当前暴露出的根问题
 
@@ -56,6 +72,11 @@
 - 再用脚本、入口文档和面板视图把这层语义固定下来
 - 最后再判断是否有必要下沉为原生字段
 
+当前额外不做：
+
+- 不再把 review 交互、文档审阅、依赖推进与工作区主机制继续作为本地长期自定义目标
+- 不重复实现上游已经稳定覆盖的运行时主能力
+
 ## 4. 任务系统的目标形态
 
 ### 4.1 任务分层
@@ -83,14 +104,15 @@
   - 只表达流程信号，不承担全部语义
 - `issue documents`
   - 表达 `plan`、`research-brief`、正式 handoff、阶段产物
+  - 文档审阅默认优先结合 `Paperclip` 原生 document lock / annotation 能力
 - `labels`
   - 后续用于补充 `type:*` 与 `review:*` 语义
 
 当前约定以：
 
-- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-- [company/任务创建模板.md](company/任务创建模板.md)
-- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](../company/任务类型与标签规范.md)
+- [company/任务创建模板.md](../company/任务创建模板.md)
+- [company/顶层任务收束规则.md](../company/顶层任务收束规则.md)
 
 为执行入口。
 
@@ -122,6 +144,8 @@
 - 正常推进中的执行任务
 - 已长时间无活动的“假进行中”任务
 
+升级到 `v2026.529.0` 后，这类“卡住 / 假进行中”识别应优先利用原生 productivity review 与 liveness recovery，再由本地审计补业务解释。
+
 ### 5.3 `in_review`
 
 `in_review` 在 `知行工坊` 中不是单一语义。
@@ -134,9 +158,11 @@
 
 这部分规则以：
 
-- [company/任务审阅与状态流转规范.md](company/任务审阅与状态流转规范.md)
+- [company/任务审阅与状态流转规范.md](../company/任务审阅与状态流转规范.md)
 
 为准。
+
+同时默认优先使用 `Paperclip` 原生 structured interactions、approval / signoff 与 document annotations 来承载 review 动作。
 
 ## 6. 面板首屏应暴露的系统信号
 
@@ -181,7 +207,7 @@
 
 ### 6.2 为什么先做这一层
 
-因为这层信息不依赖新数据库字段，且能直接改变使用体验：
+因为这层信息既可以来自 `Paperclip` 原生恢复 / productivity 信号，也可以来自本地语义审计，且能直接改变使用体验：
 
 - 从“任务很多”变成“现在该处理什么”
 - 从“靠标题猜上下文”变成“系统自己给出行动信号”
@@ -230,6 +256,11 @@
 - 可直接对 `CI/CD / Deploy` 类时序任务应用“仅关注最新 `3` 次”的窗口规则，避免旧 run 长期污染看板
 - 可直接暴露 `execution_workspace_policy_not_materialized`
 - 可直接暴露 `server_writable_execution_not_allowed`
+
+升级到 `v2026.529.0` 后，这些审计项的默认职责应改成：
+
+1. 先验证原生 workspace / finalize / dependency 行为是否兑现
+2. 再补本地执行边界、标签缺失与治理漂移解释
 
 ### 7.3 服务器 Automation 与本地任务的正式分流
 
@@ -313,9 +344,9 @@
 
 当前已先在治理层补齐：
 
-- [company/任务类型与标签规范.md](company/任务类型与标签规范.md)
-- [company/任务创建模板.md](company/任务创建模板.md)
-- [company/顶层任务收束规则.md](company/顶层任务收束规则.md)
+- [company/任务类型与标签规范.md](../company/任务类型与标签规范.md)
+- [company/任务创建模板.md](../company/任务创建模板.md)
+- [company/顶层任务收束规则.md](../company/顶层任务收束规则.md)
 
 若要处理某一批具体存量任务，应额外创建项目级或阶段性交付文档，不直接写入 `company/` 规则层。
 
@@ -338,6 +369,14 @@
 1. 标签和派生语义仍不足以稳定表达任务类型
 2. UI 和脚本层已经证明这些语义是长期稳定的
 3. `知行工坊` 之外的其他公司样本也需要同一能力
+
+同时默认不再把下面几类能力列入“优先补本地原生字段化”的范围：
+
+- review 交互
+- 文档审阅
+- 依赖推进
+- plan 分解去重
+- workspace lifecycle 主流程
 
 ## 10. 一句话结论
 

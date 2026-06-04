@@ -19,7 +19,7 @@
 
 ## 2. 输出位置
 
-- [Skill 体系阶段性综合判断](projects/research-center/research/2026-04-04-Skill体系阶段性综合判断.md)
+- [Skill 体系阶段性综合判断](../research/2026-04-04-Skill体系阶段性综合判断.md)
 
 ## 3. 按 Skill 走的过程
 

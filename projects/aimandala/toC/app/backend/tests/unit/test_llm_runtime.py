@@ -1,262 +1,333 @@
-"""Unit tests for the shared LLM runtime wiring."""
+"""Tests for LLM runtime configuration defaults."""
 
-import json
+from __future__ import annotations
+
 import os
-import sys
-from pathlib import Path
-from unittest.mock import patch
 
-sys.path.insert(
-    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
+import pytest
 
 from app.core.llm.runtime import (
+    DEFAULT_DEEPSEEK_V4_BASE_URL,
+    DEFAULT_DEEPSEEK_V4_MODEL,
+    LLMClientConfig,
+    LLMTaskConfig,
     NoopLLMClient,
     OpenAICompatibleLLMClient,
     create_llm_client_from_env,
+    load_private_env_file,
+    load_modern_llm_client_config_from_env,
 )
 
 
-class _FakeHTTPResponse:
-    def __init__(self, payload: str):
-        self._payload = payload.encode("utf-8")
+def test_load_modern_llm_client_config_defaults_to_deepseek_v4(
+    monkeypatch,
+):
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "test-key")
+    monkeypatch.delenv("AIMANDALA_LLM_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_MODEL", raising=False)
 
-    def __enter__(self):
-        return self
+    config = load_modern_llm_client_config_from_env()
 
-    def __exit__(self, exc_type, exc, tb):
-        return False
-
-    def read(self):
-        return self._payload
+    assert config is not None
+    assert config.default.base_url == DEFAULT_DEEPSEEK_V4_BASE_URL
+    assert config.default.model == DEFAULT_DEEPSEEK_V4_MODEL
+    assert config.default.api_key == "test-key"
 
 
-def test_create_llm_client_from_env_defaults_to_noop():
-    with patch.dict(os.environ, {}, clear=False):
-        client = create_llm_client_from_env()
+def test_create_llm_client_from_env_auto_enables_deepseek_v4_when_only_key_is_set(
+    monkeypatch,
+):
+    monkeypatch.delenv("AIMANDALA_LLM_BACKEND", raising=False)
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "test-key")
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+
+    client = create_llm_client_from_env()
+
+    assert isinstance(client, OpenAICompatibleLLMClient)
+    assert client.config.default.base_url == DEFAULT_DEEPSEEK_V4_BASE_URL
+    assert client.config.default.model == DEFAULT_DEEPSEEK_V4_MODEL
+
+
+def test_create_llm_client_from_env_returns_noop_without_llm_configuration(
+    monkeypatch,
+):
+    monkeypatch.delenv("AIMANDALA_LLM_BACKEND", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_BASE_URL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+
+    client = create_llm_client_from_env()
 
     assert isinstance(client, NoopLLMClient)
 
 
-def test_create_llm_client_from_env_returns_openai_compatible_client():
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_LLM_BACKEND": "openai_compatible",
-            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_API_KEY": "secret",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_CHAT_MODEL": "gpt-chat",
-            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
-            "AIMANDALA_LLM_TIMEOUT_SECONDS": "18",
-            "AIMANDALA_LLM_MAX_RETRIES": "3",
-            "AIMANDALA_LLM_RETRY_BACKOFF_MS": "250",
-        },
-        clear=False,
-    ):
-        client = create_llm_client_from_env()
-
-    assert isinstance(client, OpenAICompatibleLLMClient)
-    assert client.config.default.base_url == "https://example.com/v1"
-    assert client.config.default.model == "gpt-test"
-    assert client.config.chat is not None
-    assert client.config.chat.model == "gpt-chat"
-    assert client.config.vision is not None
-    assert client.config.vision.model == "gpt-vision"
-    assert client.config.timeout_seconds == 18
-    assert client.config.max_retries == 3
-    assert client.config.retry_backoff_ms == 250
-
-
-def test_create_llm_client_from_env_supports_chat_and_vision_overrides():
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_LLM_BACKEND": "openai_compatible",
-            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_API_KEY": "default-secret",
-            "AIMANDALA_LLM_MODEL": "gpt-default",
-            "AIMANDALA_LLM_CHAT_BASE_URL": "https://moonshot.example.com/v1",
-            "AIMANDALA_LLM_CHAT_API_KEY": "kimi-secret",
-            "AIMANDALA_LLM_CHAT_MODEL": "moonshot-v1-8k",
-            "AIMANDALA_LLM_VISION_BASE_URL": "https://ark.example.com/v3",
-            "AIMANDALA_LLM_VISION_API_KEY": "doubao-secret",
-            "AIMANDALA_LLM_VISION_MODEL": "ep-vision",
-        },
-        clear=False,
-    ):
-        client = create_llm_client_from_env()
-
-    assert isinstance(client, OpenAICompatibleLLMClient)
-    assert client.config.chat is not None
-    assert client.config.chat.model == "moonshot-v1-8k"
-    assert client.config.vision is not None
-    assert client.config.vision.model == "ep-vision"
-
-
-def test_create_llm_client_from_env_supports_legacy_model_envs():
-    with patch.dict(
-        os.environ,
-        {
-            "GLM_API_KEY": "glm-secret",
-            "DOUBAO_API_KEY": "doubao-secret",
-            "DOUBAO_ENDPOINT_ID": "ep-pro",
-            "DOUBAO_VISION_ENDPOINT_ID": "ep-vision",
-            "MOONSHOT_API_KEY": "kimi-secret",
-        },
-        clear=False,
-    ):
-        client = create_llm_client_from_env()
-
-    assert isinstance(client, OpenAICompatibleLLMClient)
-    assert client.config.default.base_url == "https://open.bigmodel.cn/api/paas/v4"
-    assert client.config.default.model == "glm-4"
-    assert client.config.vision is not None
-    assert client.config.vision.model == "ep-vision"
-    assert client.config.chat is not None
-    assert client.config.chat.base_url == "https://api.moonshot.cn/v1"
-    assert client.config.chat.model == "moonshot-v1-8k"
-
-
-def test_openai_compatible_llm_client_parses_code_fenced_json_payload():
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_LLM_BACKEND": "openai_compatible",
-            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
-        },
-        clear=False,
-    ):
-        client = create_llm_client_from_env()
-
-    response_payload = json.dumps(
-        {
-            "choices": [
-                {
-                    "message": {
-                        "content": "```json\n{\"title\": \"来自 LLM 的标题\"}\n```",
-                    }
-                }
+def test_load_private_env_file_sets_missing_values_without_overriding_shell(
+    tmp_path,
+    monkeypatch,
+):
+    env_file = tmp_path / "aimandala.env"
+    env_file.write_text(
+        "\n".join(
+            [
+                "AIMANDALA_LLM_API_KEY=file-key",
+                "AIMANDALA_LLM_MODEL='deepseek-v4-pro'",
+                "AIMANDALA_LLM_BASE_URL=https://example.test",
             ]
-        }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("AIMANDALA_ENV_FILE", str(env_file))
+    monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "shell-key")
+    monkeypatch.delenv("AIMANDALA_LLM_MODEL", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_BASE_URL", raising=False)
+
+    load_private_env_file()
+
+    assert os.environ["AIMANDALA_LLM_API_KEY"] == "shell-key"
+    assert os.environ["AIMANDALA_LLM_MODEL"] == "deepseek-v4-pro"
+    assert os.environ["AIMANDALA_LLM_BASE_URL"] == "https://example.test"
+
+
+@pytest.mark.requires_default_env_file
+def test_load_private_env_file_defaults_to_backend_env_local(
+    tmp_path,
+    monkeypatch,
+):
+    runtime_file = tmp_path / "app" / "core" / "llm" / "runtime.py"
+    backend_env = tmp_path / ".env.local"
+    runtime_file.parent.mkdir(parents=True)
+    runtime_file.write_text("", encoding="utf-8")
+    backend_env.write_text(
+        "\n".join(
+            [
+                "AIMANDALA_LLM_API_KEY=local-key",
+                "AIMANDALA_LLM_MODEL=deepseek-v4-pro",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.delenv("AIMANDALA_ENV_FILE", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("AIMANDALA_LLM_MODEL", raising=False)
+    monkeypatch.setattr(
+        "app.core.llm.runtime.__file__",
+        str(runtime_file),
     )
 
-    with patch(
-        "app.core.llm.runtime.urlopen",
-        return_value=_FakeHTTPResponse(response_payload),
-    ):
-        result = client.generate_structured(
-            task="vision",
-            prompt="请生成 lite",
-            schema={"type": "object"},
-        )
+    load_private_env_file()
 
-    assert isinstance(result, dict)
-    assert result["title"] == "来自 LLM 的标题"
+    assert os.environ["AIMANDALA_LLM_API_KEY"] == "local-key"
+    assert os.environ["AIMANDALA_LLM_MODEL"] == "deepseek-v4-pro"
 
 
-def test_openai_compatible_llm_client_uses_non_json_mode_for_vision_image_requests(tmp_path: Path):
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_LLM_BACKEND": "openai_compatible",
-            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
-            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
-            "AIMANDALA_LLM_MAX_RETRIES": "0",
-        },
-        clear=False,
-    ):
-        client = create_llm_client_from_env()
+def test_structured_generation_retries_invalid_json_response():
+    client = _ScriptedLLMClient(["not json", '{"ok": true}'])
 
-    calls: list[dict[str, object]] = []
+    result = client.generate_structured(
+        task="vision",
+        prompt="return json",
+        schema={"type": "object"},
+        image_path="/tmp/fake.png",
+    )
 
-    def _fake_urlopen(request, timeout=0):
-        del timeout
-        payload = json.loads(request.data.decode("utf-8"))
-        calls.append(payload)
-        return _FakeHTTPResponse(
-            json.dumps(
-                {
-                    "choices": [
-                        {
-                            "message": {
-                                "content": "{\"global_visual_summary\": \"内圈蓝白，中圈粉白，外圈粉紫与白色留白。\"}",
-                            }
-                        }
-                    ]
-                }
+    assert result == {"ok": True}
+    assert client.request_count == 2
+    assert client.last_attempt_trace[0]["result"] == "success"
+    assert client.last_attempt_trace[0]["invalid_json_attempts"] == 1
+
+
+def test_structured_generation_uses_fallback_after_invalid_json_retries():
+    primary = LLMTaskConfig(
+        base_url="https://primary.example.test",
+        api_key="primary-key",
+        model="primary-model",
+    )
+    fallback = LLMTaskConfig(
+        base_url="https://fallback.example.test",
+        api_key="fallback-key",
+        model="fallback-model",
+    )
+    client = _ScriptedLLMClient(
+        ["not json", '{"fallback": true}'],
+        max_retries=0,
+        primary=primary,
+        fallback=fallback,
+    )
+
+    result = client.generate_structured(
+        task="vision",
+        prompt="return json",
+        schema={"type": "object"},
+        image_path="/tmp/fake.png",
+    )
+
+    assert result == {"fallback": True}
+    assert client.request_count == 2
+    assert [attempt["model"] for attempt in client.last_attempt_trace] == [
+        "primary-model",
+        "fallback-model",
+    ]
+    assert client.last_attempt_trace[0]["result"] == "invalid_json_response"
+    assert client.last_attempt_trace[1]["result"] == "success"
+
+
+def test_build_messages_supports_multiple_images(tmp_path):
+    first = tmp_path / "first.png"
+    second = tmp_path / "second.jpg"
+    first.write_bytes(b"first")
+    second.write_bytes(b"second")
+    client = OpenAICompatibleLLMClient(
+        LLMClientConfig(
+            default=LLMTaskConfig(
+                base_url="https://example.test",
+                api_key="test-key",
+                model="test-model",
             )
         )
+    )
 
-    with patch("app.core.llm.runtime.urlopen", side_effect=_fake_urlopen):
-        image_path = tmp_path / "sample01.jpg"
-        image_path.write_bytes(b"fake-image")
+    messages = client._build_messages(  # noqa: SLF001 - verifies outbound vision payload shape.
+        system_prompt="system",
+        user_prompt="user",
+        image_paths=[str(first), str(second)],
+    )
 
-        result = client.generate_structured(
-            task="vision",
-            prompt="请生成视觉摘要",
-            schema={"type": "object"},
-            image_path=str(image_path),
+    content = messages[1]["content"]
+    image_items = [item for item in content if item["type"] == "image_url"]
+    assert len(image_items) == 2
+    assert image_items[0]["image_url"]["url"].startswith("data:image/png;base64,")
+    assert image_items[1]["image_url"]["url"].startswith("data:image/jpeg;base64,")
+
+
+def test_vision_image_structured_generation_uses_prompt_without_schema_wrapper(tmp_path):
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"fake")
+    client = _ScriptedLLMClient(['{"ok": true}'])
+
+    result = client.generate_structured(
+        task="vision",
+        prompt="vision prompt only",
+        schema={"type": "object", "required": ["ok"]},
+        image_path=str(image_path),
+    )
+
+    assert result == {"ok": True}
+    assert client.last_user_prompt == "vision prompt only"
+
+
+def test_vision_image_structured_generation_can_enable_thinking(tmp_path):
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"fake")
+    client = _ScriptedLLMClient(['{"ok": true}'])
+
+    result = client.generate_structured(
+        task="vision",
+        prompt="vision prompt only",
+        schema={"type": "object", "required": ["ok"]},
+        image_path=str(image_path),
+        disable_thinking=False,
+    )
+
+    assert result == {"ok": True}
+    assert client.last_disable_thinking is False
+
+
+def test_vision_image_structured_generation_defaults_to_thinking_off(tmp_path):
+    image_path = tmp_path / "mandala.png"
+    image_path.write_bytes(b"fake")
+    client = _ScriptedLLMClient(['{"ok": true}'])
+
+    result = client.generate_structured(
+        task="vision",
+        prompt="vision prompt only",
+        schema={"type": "object", "required": ["ok"]},
+        image_path=str(image_path),
+    )
+
+    assert result == {"ok": True}
+    assert client.last_disable_thinking is True
+
+
+def test_text_generation_supports_multiple_images(tmp_path):
+    first = tmp_path / "first.png"
+    second = tmp_path / "second.jpg"
+    first.write_bytes(b"first")
+    second.write_bytes(b"second")
+    client = _ScriptedLLMClient(["ok"])
+
+    result = client.generate_text(
+        task="chat",
+        system_prompt="system",
+        user_prompt="user",
+        image_paths=[str(first), str(second)],
+    )
+
+    assert result == "ok"
+    assert client.last_user_prompt == "user"
+
+
+class _ScriptedLLMClient(OpenAICompatibleLLMClient):
+    def __init__(
+        self,
+        responses: list[str],
+        *,
+        max_retries: int = 1,
+        primary: LLMTaskConfig | None = None,
+        fallback: LLMTaskConfig | None = None,
+    ) -> None:
+        default_task = primary or LLMTaskConfig(
+            base_url="https://example.test",
+            api_key="test-key",
+            model="test-model",
         )
-
-    assert isinstance(result, dict)
-    assert result["global_visual_summary"] == "内圈蓝白，中圈粉白，外圈粉紫与白色留白。"
-    assert len(calls) == 1
-    assert "response_format" not in calls[0]
-    assert calls[0]["thinking"] == {"type": "disabled"}
-
-
-def test_openai_compatible_llm_client_disables_thinking_for_vision_image_requests(tmp_path: Path):
-    with patch.dict(
-        os.environ,
-        {
-            "AIMANDALA_LLM_BACKEND": "openai_compatible",
-            "AIMANDALA_LLM_BASE_URL": "https://example.com/v1",
-            "AIMANDALA_LLM_MODEL": "gpt-test",
-            "AIMANDALA_LLM_VISION_MODEL": "gpt-vision",
-            "AIMANDALA_LLM_TIMEOUT_SECONDS": "5",
-            "AIMANDALA_LLM_MAX_RETRIES": "0",
-        },
-        clear=False,
-    ):
-        client = create_llm_client_from_env()
-
-    calls: list[dict[str, object]] = []
-
-    def _fake_urlopen(request, timeout=0):
-        del timeout
-        payload = json.loads(request.data.decode("utf-8"))
-        calls.append(payload)
-        return _FakeHTTPResponse(
-            json.dumps(
-                {
-                    "choices": [
-                        {
-                            "message": {
-                                "content": "{\"global_visual_summary\": \"内圈蓝白，中圈粉白，外圈粉紫与白色留白。\"}",
-                            }
-                        }
-                    ]
-                }
+        super().__init__(
+            LLMClientConfig(
+                default=default_task,
+                vision=default_task,
+                vision_fallback=fallback,
+                timeout_seconds=1,
+                max_retries=max_retries,
+                retry_backoff_ms=0,
             )
         )
+        self.responses = list(responses)
+        self.request_count = 0
+        self.last_user_prompt = ""
+        self.last_disable_thinking = None
 
-    with patch("app.core.llm.runtime.urlopen", side_effect=_fake_urlopen):
-        image_path = tmp_path / "sample01.jpg"
-        image_path.write_bytes(b"fake-image")
+    def _extract_text_from_response(self, raw_payload: str):
+        return raw_payload
 
-        result = client.generate_structured(
-            task="vision",
-            prompt="请生成视觉摘要",
-            schema={"type": "object"},
-            image_path=str(image_path),
-        )
+    def _build_messages(self, *, system_prompt: str, user_prompt: str, image_paths):
+        self.last_user_prompt = user_prompt
+        return [{"role": "user", "content": user_prompt}]
 
-    assert isinstance(result, dict)
-    assert result["global_visual_summary"] == "内圈蓝白，中圈粉白，外圈粉紫与白色留白。"
-    assert len(calls) == 1
-    assert calls[0]["thinking"] == {"type": "disabled"}
-    assert "response_format" not in calls[0]
+    def _encode_image_as_data_url(self, image_path: str) -> str:
+        return "data:image/png;base64,ZmFrZQ=="
+
+    def _request_single_chat_completion(
+        self,
+        *,
+        task_config,
+        messages,
+        expect_json,
+        disable_thinking,
+        validate_text,
+        attempt_trace,
+    ):
+        self.last_disable_thinking = disable_thinking
+        total_attempts = self.config.max_retries + 1
+        for attempt_index in range(total_attempts):
+            self.request_count += 1
+            response = self.responses.pop(0)
+            if validate_text is not None and not validate_text(response):
+                attempt_trace["result"] = "invalid_json_response"
+                attempt_trace["invalid_json_attempts"] = (
+                    int(attempt_trace.get("invalid_json_attempts") or 0) + 1
+                )
+                if attempt_index < total_attempts - 1:
+                    continue
+                return None
+            attempt_trace["result"] = "success"
+            return response
+        return None

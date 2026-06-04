@@ -1,0 +1,1467 @@
+{
+  "report_id": "mandala-interpretation-a46272e0dec6",
+  "report_mode": "lite",
+  "user_context": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "painting_intention": "case-003 【案例3】用五行感知＋相生相克法解读个人成长（完整解读）",
+    "painting_feeling": ""
+  },
+  "foundation_image_reading": {
+    "stage": "foundation-image-reading",
+    "status": "complete",
+    "foundation_image_reading": {
+      "visual_observation": {
+        "overall_observation": {
+          "first_impression": "这幅画的第一感受是多彩、复杂、能量很满。红、黄、绿、蓝、紫在三圈中反复出现，画面像一个不断旋转和交织的花形系统，视觉信息量很大。",
+          "visual_atmosphere": "整体氛围偏活跃、开放、丰富，也有一定拥挤感。颜色之间的对比强，形状方向多，留白穿插在复杂图案之间，使画面既有秩序又有多股力量同时存在。",
+          "visual_weight_and_rhythm": "视觉重心在红黄星形中心，但中圈和外圈的多色重复图案把注意力持续向外拉。节奏不是单一平稳的，而是多色、多方向、多形状共同形成的快速重复。",
+          "healing_language_note": "疗愈师语言可以表达为：画面里有很多生命力和正在表达的部分，它们都想被看见；同时，这些部分也需要被慢慢梳理，让不同方向的力量找到更清楚的位置。"
+        },
+        "three_circle_observation": {
+          "inner": "内圈为中心红黄星形、绿色圆心，以及周边绿色圆形、黄色环、蓝色弧形和红色尖角。内圈颜色已经比较丰富，不是单一中心结构。",
+          "middle": "中圈有绿色、黄色、蓝色、红色和紫色同时出现。图案之间存在留白，颜色关系复杂，重复度高，局部有尖角、弧形和块状结构交错。",
+          "outer": "外圈有绿色长条或叶形结构向外支撑，也有紫色弧形、红色块、蓝色水滴状元素和黄色外缘交替出现。外圈图案重复明显，色彩仍然丰富。",
+          "cross_circle_visual_connection": "三圈之间连续性较强，因为多种颜色从内到外都在重复出现；但每一圈的形状组合都更复杂，跨圈不是单一路径，而是多条颜色和形状线索同时向外扩展。",
+          "cross_circle_visual_evidence": "红、黄、绿、蓝、紫在不同圈层反复出现；中心星形、中圈多色尖角/弧形、外圈绿色长条和蓝色水滴都围绕同一中心展开。留白在多色元素之间持续切分。"
+        },
+        "circle_visual_units": {
+          "inner": {
+            "composition_description": "内圈由红黄星形中心、绿色圆心、绿色小圆环、黄色环、蓝色弧形和红色尖角组成。它已经包含多种颜色和形状，是整幅画多元素并存的起点。",
+            "visual_units": [
+              {
+                "id": "inner-001",
+                "unit_name": "红黄中心星形",
+                "position": "内圈中心",
+                "source_type": "user_painted",
+                "color_description": "红色和黄色并存，中心区域颜色对比明显。",
+                "shape_description": "星形或多尖角花形，围绕中心展开。",
+                "texture_and_density": "颜色集中，面积不大但视觉权重高。",
+                "spatial_relations": "包围绿色圆心，并与外围绿色圆形、黄色环形成同心扩展。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "中心红黄星形像整幅画的发动点。它颜色明亮、形状尖锐，使内圈一开始就带有明显的启动和张力。"
+              },
+              {
+                "id": "inner-002",
+                "unit_name": "绿色圆心与绿色小圆环",
+                "position": "内圈中心及中心周边",
+                "source_type": "user_painted",
+                "color_description": "绿色，局部为圆心或小圆点。",
+                "shape_description": "中心圆点和围绕中心的一圈绿色小圆。",
+                "texture_and_density": "小而重复，形成围绕中心的节奏。",
+                "spatial_relations": "绿色圆心被红黄星形包围；绿色小圆环绕中心，与黄色环和蓝色弧形相邻。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "绿色圆点让中心的尖锐星形中有一个圆形焦点。外围绿色小圆则把中心向外扩展成一圈重复节点。"
+              },
+              {
+                "id": "inner-003",
+                "unit_name": "蓝色弧形与红色尖角",
+                "position": "内圈外侧",
+                "source_type": "user_painted",
+                "color_description": "蓝色弧形和红色尖角并列出现。",
+                "shape_description": "蓝色呈弧形或半环状，红色呈尖角状向外伸出。",
+                "texture_and_density": "数量重复，围绕中心形成多方向小结构。",
+                "spatial_relations": "与绿色小圆、黄色环相邻，并向中圈复杂图案过渡。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "蓝色弧形和红色尖角让内圈外缘出现水滴和火焰般的对比。它们是内圈进入中圈复杂关系的过渡单元。"
+              },
+              {
+                "id": "inner-004",
+                "unit_name": "内圈留白",
+                "position": "内圈多色元素之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "细小间隔，随星形、圆形和弧形变化。",
+                "texture_and_density": "面积不大但分布广。",
+                "spatial_relations": "切分红、黄、绿、蓝等多色元素，使内圈单元边界可辨认。",
+                "blank_space_role": "切分多色元素，形成边界。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "内圈留白让复杂颜色没有完全糊成一团。它帮助后续识别每一类颜色和形状的相邻关系。"
+              }
+            ]
+          },
+          "middle": {
+            "composition_description": "中圈是全画最复杂的区域之一，绿色、黄色、蓝色、红色、紫色同时出现。视觉单元以重复的多色组合为主，留白穿插其间。",
+            "visual_units": [
+              {
+                "id": "middle-001",
+                "unit_name": "中圈多色组合图案",
+                "position": "中圈主体",
+                "source_type": "user_painted",
+                "color_description": "绿色、黄色、蓝色、红色和紫色并存，颜色对比强。",
+                "shape_description": "由尖角、弧形、块状和水滴状片段组合成重复图案。",
+                "texture_and_density": "密度高，重复度高，视觉信息丰富。",
+                "spatial_relations": "同类组合围绕中心重复；组合内部不同颜色相邻、穿插并被留白切分。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "中圈像多个多色小系统围绕中心旋转。每个系统内部有不同颜色和形状，后续不能只按单一颜色概括。"
+              },
+              {
+                "id": "middle-002",
+                "unit_name": "紫色尖角/弧形元素",
+                "position": "中圈外侧局部",
+                "source_type": "user_painted",
+                "color_description": "紫色，部分偏深，需后续按暧昧色规则判断。",
+                "shape_description": "尖角或弧形片段，和其他颜色图案交错。",
+                "texture_and_density": "重复出现但不是整圈连续色带。",
+                "spatial_relations": "与绿色、蓝色、红色、黄色元素相邻，并被留白切分。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 33.33,
+                "rich_visual_description": "紫色元素在中圈提供了较强的调性变化。它既不是单独一圈，也不是背景，而是嵌在多色结构中的重要颜色。"
+              },
+              {
+                "id": "middle-003",
+                "unit_name": "中圈留白",
+                "position": "中圈多色图案之间",
+                "source_type": "blank_space",
+                "color_description": "纸面白色留白。",
+                "shape_description": "不规则间隔，沿多色图案边缘展开。",
+                "texture_and_density": "多处出现，在复杂图案中承担分隔作用。",
+                "spatial_relations": "隔开不同颜色，也隔开同类重复组合。",
+                "blank_space_role": "切分、隔开并帮助识别复杂局部关系。",
+                "energy_ratio_percent": 33.34,
+                "rich_visual_description": "中圈留白是后续判断关系的重要依据。没有这些留白，多色图案会难以区分相邻、包围和切分关系。"
+              }
+            ]
+          },
+          "outer": {
+            "composition_description": "外圈由绿色长条/叶形、紫色弧形、红色块、蓝色水滴状元素、黄色外缘和留白组成。外圈继续保持多元素并存，但向外支撑和外缘装饰更明显。",
+            "visual_units": [
+              {
+                "id": "outer-001",
+                "unit_name": "绿色长条/叶形结构",
+                "position": "外圈向外支撑位置",
+                "source_type": "user_painted",
+                "color_description": "绿色，较明亮。",
+                "shape_description": "长条或叶形，朝外延伸。",
+                "texture_and_density": "重复出现，形成外圈支撑感。",
+                "spatial_relations": "同类绿色结构围绕中心重复，连接或邻近紫色、蓝色、红色元素。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "绿色长条像外圈的支架，把复杂多色结构向外撑开。它们给外圈带来明显的生长和方向感。"
+              },
+              {
+                "id": "outer-002",
+                "unit_name": "蓝色水滴状元素",
+                "position": "外圈局部重复区域",
+                "source_type": "user_painted",
+                "color_description": "蓝色，较饱和。",
+                "shape_description": "水滴状或椭圆滴状，局部成组出现。",
+                "texture_and_density": "重复分布，与红色和绿色形成对比。",
+                "spatial_relations": "与红色块、绿色长条、紫色弧形相邻，周边有留白。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "蓝色水滴让外圈出现流动感。它们夹在多色图案中，后续需要保留其位置和相邻关系。"
+              },
+              {
+                "id": "outer-003",
+                "unit_name": "紫色弧形与红色块",
+                "position": "外圈多色图案中段",
+                "source_type": "user_painted",
+                "color_description": "紫色和红色并存，紫色需后续按暧昧色规则判断。",
+                "shape_description": "紫色多为弧形或尖弧，红色多为块状或片状。",
+                "texture_and_density": "重复出现，与绿色和蓝色共同形成外圈图案。",
+                "spatial_relations": "与绿色长条、蓝色水滴和黄色外缘交替出现，并被留白隔开。",
+                "blank_space_role": "none",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "紫色和红色在外圈增加了张力和装饰性。它们使外圈不只是绿色向外延伸，而是多股颜色共同构成现实层画面。"
+              },
+              {
+                "id": "outer-004",
+                "unit_name": "黄色外缘与外圈留白",
+                "position": "外圈边缘及图案间",
+                "source_type": "blank_space",
+                "color_description": "包含纸面白色留白；黄色外缘另作为相邻颜色事实记录在描述中。",
+                "shape_description": "留白沿多色图案边缘形成间隔，黄色外缘呈环状或边缘片段。",
+                "texture_and_density": "留白分布广，黄色外缘有边界感。",
+                "spatial_relations": "留白隔开外圈多色元素，黄色外缘邻近绿色、紫色和蓝色元素。",
+                "blank_space_role": "切分外圈多色结构，并形成外缘空间。",
+                "energy_ratio_percent": 25.0,
+                "rich_visual_description": "外圈留白让复杂多色结构保持可辨认。黄色外缘提供一层边界感，和留白一起影响后续对外圈关系的判断。"
+              }
+            ]
+          }
+        }
+      },
+      "element_sensing": {
+        "inner": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "inner-001",
+              "element": "fire",
+              "basis": [
+                "红色主火；黄色同属火；星形尖角外放增强火象。占比25%且视觉权重高，是内圈主要能量。"
+              ],
+              "confidence": "high",
+              "notes": "避免加木性解释。"
+            },
+            {
+              "visual_unit_id": "inner-002",
+              "element": "wood",
+              "basis": [
+                "绿色主木；圆心与小圆环形状虽小但重复成环有生长感。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "inner-003",
+              "element": "water",
+              "basis": [
+                "蓝色主水；弧形呈水滴或流动感；红色尖角部分存疑，但本单元以蓝色为主。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "inner-003",
+              "element": "fire",
+              "basis": [
+                "本单元同时含红色尖角，形状尖锐外放，红色主火。"
+              ],
+              "confidence": "medium",
+              "notes": "与蓝色弧形并置，局部火水并存。"
+            },
+            {
+              "visual_unit_id": "inner-004",
+              "element": "metal",
+              "basis": [
+                "留白一律为金。在内圈中切分多色元素，形成边界。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "middle-001",
+              "element": "wood",
+              "basis": [
+                "中圈多色组合以绿为主，为本圈主要颜色之一。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "middle-001",
+              "element": "earth",
+              "basis": [
+                "黄色是组合中的固定元素，出现面积大，主土。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "middle-001",
+              "element": "water",
+              "basis": [
+                "组合中含蓝色水滴或弧形部分。"
+              ],
+              "confidence": "medium",
+              "notes": "需结合形状确认。"
+            },
+            {
+              "visual_unit_id": "middle-002",
+              "element": "fire",
+              "basis": [
+                "紫色偏深且与尖角并置，按规则偏向火。需后续按暧昧色确认，暂列。"
+              ],
+              "confidence": "low",
+              "notes": "紫色需最终判断木/火。"
+            },
+            {
+              "visual_unit_id": "middle-003",
+              "element": "metal",
+              "basis": [
+                "留白一律为金。中圈留白分布广，在多色图案间起切割作用。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "element_candidates": [
+            {
+              "visual_unit_id": "outer-001",
+              "element": "wood",
+              "basis": [
+                "绿色长条/叶形结构主木。占比达25%，且长条向外延伸，木象明显。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "outer-002",
+              "element": "water",
+              "basis": [
+                "蓝色水滴状元素主水。形状呈水滴状有流动感。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "outer-003",
+              "element": "fire",
+              "basis": [
+                "红色块主火。紫色弧形待确认为火还是木，暂随红定为火。"
+              ],
+              "confidence": "medium",
+              "notes": "紫色需后续确认。"
+            },
+            {
+              "visual_unit_id": "outer-004",
+              "element": "metal",
+              "basis": [
+                "留白一律为金；外圈留白在外缘切分多色结构。"
+              ],
+              "confidence": "high",
+              "notes": ""
+            },
+            {
+              "visual_unit_id": "outer-004",
+              "element": "earth",
+              "basis": [
+                "黄色外缘在主色中为辅，但具边界和承载感，属于土。"
+              ],
+              "confidence": "medium",
+              "notes": ""
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "intra_circle_relations": {
+        "inner": {
+          "relations": [
+            {
+              "relation_id": "inner-rel-001",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "inner-002",
+                "inner-001"
+              ],
+              "visible_basis": "绿色圆心与绿色小圆环（木）直接包围红黄中心星形（火），视觉上相邻且无留白隔开。木生火。",
+              "confidence": "high",
+              "notes": "木生火，中心能量被木性支撑。"
+            },
+            {
+              "relation_id": "inner-rel-002",
+              "relation_type": "imbalance_candidate",
+              "involved_visual_unit_ids": [
+                "inner-001",
+                "inner-003"
+              ],
+              "visible_basis": "红黄火中心占比25%，视觉权重高；而蓝色水单元被火包围且面积小。火盛水弱，水火直接相邻且火压水。",
+              "confidence": "medium",
+              "notes": "火势可能过强，水被压制；需后续确认。"
+            },
+            {
+              "relation_id": "inner-rel-003",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "inner-002",
+                "inner-003"
+              ],
+              "visible_basis": "绿色圆形元素与蓝色弧形、红色尖角之间存在留白切分，不是直接相邻。",
+              "confidence": "high",
+              "notes": "木水未必直接相生，中间有金性留白隔开。"
+            }
+          ],
+          "summary": ""
+        },
+        "middle": {
+          "relations": [
+            {
+              "relation_id": "middle-rel-001",
+              "relation_type": "imbalance_candidate",
+              "involved_visual_unit_ids": [
+                "middle-001"
+              ],
+              "visible_basis": "中圈多色组合整体占比极高（>33%），且内部木、土、水等多种五行密集穿插，被大量金性留白切分。颜色间对比强，重复度高，视觉信息拥挤。",
+              "confidence": "medium",
+              "notes": "多五行密集并存，可能造成中圈能量调度压力。"
+            },
+            {
+              "relation_id": "middle-rel-002",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "middle-001",
+                "middle-002"
+              ],
+              "visible_basis": "中圈多色组合单元与紫色尖角单元之间存在留白，不是连续色带。",
+              "confidence": "high",
+              "notes": "留白切分多色组合与紫色单元，不能直接论生克。"
+            }
+          ],
+          "summary": ""
+        },
+        "outer": {
+          "relations": [
+            {
+              "relation_id": "outer-rel-001",
+              "relation_type": "generating",
+              "involved_visual_unit_ids": [
+                "outer-002",
+                "outer-001"
+              ],
+              "visible_basis": "蓝色水滴（水）与绿色长条叶形（木）在外圈紧挨着，水木相邻且无留白阻隔。水生木。",
+              "confidence": "high",
+              "notes": "水生木，支撑外圈生长感。"
+            },
+            {
+              "relation_id": "outer-rel-002",
+              "relation_type": "controlling",
+              "involved_visual_unit_ids": [
+                "outer-003",
+                "outer-001"
+              ],
+              "visible_basis": "红色块/紫色弧形（火）与绿色长条（木）紧邻，火克木。外圈部分区域火木直接接触。",
+              "confidence": "medium",
+              "notes": "火克木关系存在于局部，可能削弱木的延伸。"
+            },
+            {
+              "relation_id": "outer-rel-003",
+              "relation_type": "separated_by_blank_space",
+              "involved_visual_unit_ids": [
+                "outer-001",
+                "outer-004"
+              ],
+              "visible_basis": "绿色长条与黄色外缘/留白之间被留白切开，未连续。",
+              "confidence": "high",
+              "notes": "留白导致的间隔，使土性边界不完全包裹木。"
+            }
+          ],
+          "summary": ""
+        }
+      },
+      "cross_circle_flow": {
+        "flow_observations": [
+          {
+            "flow_id": "flow-001",
+            "flow_type": "outward_expanding",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "中心红黄星形向外扩展，中圈多色图案围绕，外圈绿色长条向外延伸。多色从内到外重复，整体呈放射状。",
+            "confidence": "high",
+            "notes": "能量由内向外扩张明显。"
+          },
+          {
+            "flow_id": "flow-002",
+            "flow_type": "continuous",
+            "involved_circles": [
+              "inner",
+              "middle",
+              "outer"
+            ],
+            "visual_basis": "红、黄、绿、蓝、紫五色在三圈反复出现，中心星形、中圈多色尖角、外圈绿色长条与水滴均围绕同一中心展开。色与形持续向外传递。",
+            "confidence": "high",
+            "notes": "连续性来自跨圈的颜色和形状重复。"
+          },
+          {
+            "flow_id": "flow-003",
+            "flow_type": "inner_outer_mismatch",
+            "involved_circles": [
+              "inner",
+              "outer"
+            ],
+            "visual_basis": "内圈以火为中心张力强，外圈虽向外扩展但火木并存且存在火克木、留白切分，外圈生长感与内圈的火力可能不一致。",
+            "confidence": "medium",
+            "notes": "外圈的复杂结构与内圈尖锐中心形成节奏差异。"
+          }
+        ],
+        "summary": ""
+      },
+      "evidence_links": [
+        {
+          "claim_id": "inner-001",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-001 五行候选为 fire。",
+          "visual_unit_ids": [
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "红色主火；黄色同属火；星形尖角外放增强火象。占比25%且视觉权重高，是内圈主要能量。"
+        },
+        {
+          "claim_id": "inner-002",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-002 五行候选为 wood。",
+          "visual_unit_ids": [
+            "inner-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "绿色主木；圆心与小圆环形状虽小但重复成环有生长感。"
+        },
+        {
+          "claim_id": "inner-003",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-003 五行候选为 water。",
+          "visual_unit_ids": [
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "蓝色主水；弧形呈水滴或流动感；红色尖角部分存疑，但本单元以蓝色为主。"
+        },
+        {
+          "claim_id": "inner-003",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-003 五行候选为 fire。",
+          "visual_unit_ids": [
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "本单元同时含红色尖角，形状尖锐外放，红色主火。"
+        },
+        {
+          "claim_id": "inner-004",
+          "claim_type": "element_sensing",
+          "claim_text": "inner-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "inner-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "留白一律为金。在内圈中切分多色元素，形成边界。"
+        },
+        {
+          "claim_id": "middle-001",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈多色组合以绿为主，为本圈主要颜色之一。"
+        },
+        {
+          "claim_id": "middle-001",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-001 五行候选为 earth。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "黄色是组合中的固定元素，出现面积大，主土。"
+        },
+        {
+          "claim_id": "middle-001",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-001 五行候选为 water。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "组合中含蓝色水滴或弧形部分。"
+        },
+        {
+          "claim_id": "middle-002",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-002 五行候选为 fire。",
+          "visual_unit_ids": [
+            "middle-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "紫色偏深且与尖角并置，按规则偏向火。需后续按暧昧色确认，暂列。"
+        },
+        {
+          "claim_id": "middle-003",
+          "claim_type": "element_sensing",
+          "claim_text": "middle-003 五行候选为 metal。",
+          "visual_unit_ids": [
+            "middle-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "留白一律为金。中圈留白分布广，在多色图案间起切割作用。"
+        },
+        {
+          "claim_id": "outer-001",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-001 五行候选为 wood。",
+          "visual_unit_ids": [
+            "outer-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "绿色长条/叶形结构主木。占比达25%，且长条向外延伸，木象明显。"
+        },
+        {
+          "claim_id": "outer-002",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-002 五行候选为 water。",
+          "visual_unit_ids": [
+            "outer-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "蓝色水滴状元素主水。形状呈水滴状有流动感。"
+        },
+        {
+          "claim_id": "outer-003",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-003 五行候选为 fire。",
+          "visual_unit_ids": [
+            "outer-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "红色块主火。紫色弧形待确认为火还是木，暂随红定为火。"
+        },
+        {
+          "claim_id": "outer-004",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-004 五行候选为 metal。",
+          "visual_unit_ids": [
+            "outer-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "留白一律为金；外圈留白在外缘切分多色结构。"
+        },
+        {
+          "claim_id": "outer-004",
+          "claim_type": "element_sensing",
+          "claim_text": "outer-004 五行候选为 earth。",
+          "visual_unit_ids": [
+            "outer-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "黄色外缘在主色中为辅，但具边界和承载感，属于土。"
+        },
+        {
+          "claim_id": "inner-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "木生火，中心能量被木性支撑。",
+          "visual_unit_ids": [
+            "inner-002",
+            "inner-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "绿色圆心与绿色小圆环（木）直接包围红黄中心星形（火），视觉上相邻且无留白隔开。木生火。"
+        },
+        {
+          "claim_id": "inner-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "火势可能过强，水被压制；需后续确认。",
+          "visual_unit_ids": [
+            "inner-001",
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "红黄火中心占比25%，视觉权重高；而蓝色水单元被火包围且面积小。火盛水弱，水火直接相邻且火压水。"
+        },
+        {
+          "claim_id": "inner-rel-003",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "木水未必直接相生，中间有金性留白隔开。",
+          "visual_unit_ids": [
+            "inner-002",
+            "inner-003"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.inner"
+          ],
+          "evidence_text": "绿色圆形元素与蓝色弧形、红色尖角之间存在留白切分，不是直接相邻。"
+        },
+        {
+          "claim_id": "middle-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "多五行密集并存，可能造成中圈能量调度压力。",
+          "visual_unit_ids": [
+            "middle-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈多色组合整体占比极高（>33%），且内部木、土、水等多种五行密集穿插，被大量金性留白切分。颜色间对比强，重复度高，视觉信息拥挤。"
+        },
+        {
+          "claim_id": "middle-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白切分多色组合与紫色单元，不能直接论生克。",
+          "visual_unit_ids": [
+            "middle-001",
+            "middle-002"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.middle"
+          ],
+          "evidence_text": "中圈多色组合单元与紫色尖角单元之间存在留白，不是连续色带。"
+        },
+        {
+          "claim_id": "outer-rel-001",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "水生木，支撑外圈生长感。",
+          "visual_unit_ids": [
+            "outer-002",
+            "outer-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "蓝色水滴（水）与绿色长条叶形（木）在外圈紧挨着，水木相邻且无留白阻隔。水生木。"
+        },
+        {
+          "claim_id": "outer-rel-002",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "火克木关系存在于局部，可能削弱木的延伸。",
+          "visual_unit_ids": [
+            "outer-003",
+            "outer-001"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "红色块/紫色弧形（火）与绿色长条（木）紧邻，火克木。外圈部分区域火木直接接触。"
+        },
+        {
+          "claim_id": "outer-rel-003",
+          "claim_type": "intra_circle_relation",
+          "claim_text": "留白导致的间隔，使土性边界不完全包裹木。",
+          "visual_unit_ids": [
+            "outer-001",
+            "outer-004"
+          ],
+          "circle_observation_refs": [
+            "visual_observation.circle_visual_units.outer"
+          ],
+          "evidence_text": "绿色长条与黄色外缘/留白之间被留白切开，未连续。"
+        },
+        {
+          "claim_id": "flow-001",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "outward_expanding",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "中心红黄星形向外扩展，中圈多色图案围绕，外圈绿色长条向外延伸。多色从内到外重复，整体呈放射状。"
+        },
+        {
+          "claim_id": "flow-002",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "continuous",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "红、黄、绿、蓝、紫五色在三圈反复出现，中心星形、中圈多色尖角、外圈绿色长条与水滴均围绕同一中心展开。色与形持续向外传递。"
+        },
+        {
+          "claim_id": "flow-003",
+          "claim_type": "cross_circle_flow",
+          "claim_text": "inner_outer_mismatch",
+          "visual_unit_ids": [],
+          "circle_observation_refs": [
+            "visual_observation.three_circle_observation"
+          ],
+          "evidence_text": "内圈以火为中心张力强，外圈虽向外扩展但火木并存且存在火克木、留白切分，外圈生长感与内圈的火力可能不一致。"
+        }
+      ]
+    },
+    "model_trace": {
+      "vision": [
+        {
+          "source": "golden_foundation.visual_observation"
+        }
+      ],
+      "foundation_analysis": [
+        {
+          "model": "deepseek-v4-pro",
+          "base_url": "https://api.deepseek.com",
+          "endpoint_url": "https://api.deepseek.com/chat/completions",
+          "result": "success"
+        }
+      ]
+    }
+  },
+  "visual_observation": {
+    "overall_observation": {
+      "first_impression": "这幅画的第一感受是多彩、复杂、能量很满。红、黄、绿、蓝、紫在三圈中反复出现，画面像一个不断旋转和交织的花形系统，视觉信息量很大。",
+      "visual_atmosphere": "整体氛围偏活跃、开放、丰富，也有一定拥挤感。颜色之间的对比强，形状方向多，留白穿插在复杂图案之间，使画面既有秩序又有多股力量同时存在。",
+      "visual_weight_and_rhythm": "视觉重心在红黄星形中心，但中圈和外圈的多色重复图案把注意力持续向外拉。节奏不是单一平稳的，而是多色、多方向、多形状共同形成的快速重复。",
+      "healing_language_note": "疗愈师语言可以表达为：画面里有很多生命力和正在表达的部分，它们都想被看见；同时，这些部分也需要被慢慢梳理，让不同方向的力量找到更清楚的位置。"
+    },
+    "three_circle_observation": {
+      "inner": "内圈为中心红黄星形、绿色圆心，以及周边绿色圆形、黄色环、蓝色弧形和红色尖角。内圈颜色已经比较丰富，不是单一中心结构。",
+      "middle": "中圈有绿色、黄色、蓝色、红色和紫色同时出现。图案之间存在留白，颜色关系复杂，重复度高，局部有尖角、弧形和块状结构交错。",
+      "outer": "外圈有绿色长条或叶形结构向外支撑，也有紫色弧形、红色块、蓝色水滴状元素和黄色外缘交替出现。外圈图案重复明显，色彩仍然丰富。",
+      "cross_circle_visual_connection": "三圈之间连续性较强，因为多种颜色从内到外都在重复出现；但每一圈的形状组合都更复杂，跨圈不是单一路径，而是多条颜色和形状线索同时向外扩展。",
+      "cross_circle_visual_evidence": "红、黄、绿、蓝、紫在不同圈层反复出现；中心星形、中圈多色尖角/弧形、外圈绿色长条和蓝色水滴都围绕同一中心展开。留白在多色元素之间持续切分。"
+    },
+    "circle_visual_units": {
+      "inner": {
+        "composition_description": "内圈由红黄星形中心、绿色圆心、绿色小圆环、黄色环、蓝色弧形和红色尖角组成。它已经包含多种颜色和形状，是整幅画多元素并存的起点。",
+        "visual_units": [
+          {
+            "id": "inner-001",
+            "unit_name": "红黄中心星形",
+            "position": "内圈中心",
+            "source_type": "user_painted",
+            "color_description": "红色和黄色并存，中心区域颜色对比明显。",
+            "shape_description": "星形或多尖角花形，围绕中心展开。",
+            "texture_and_density": "颜色集中，面积不大但视觉权重高。",
+            "spatial_relations": "包围绿色圆心，并与外围绿色圆形、黄色环形成同心扩展。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "中心红黄星形像整幅画的发动点。它颜色明亮、形状尖锐，使内圈一开始就带有明显的启动和张力。"
+          },
+          {
+            "id": "inner-002",
+            "unit_name": "绿色圆心与绿色小圆环",
+            "position": "内圈中心及中心周边",
+            "source_type": "user_painted",
+            "color_description": "绿色，局部为圆心或小圆点。",
+            "shape_description": "中心圆点和围绕中心的一圈绿色小圆。",
+            "texture_and_density": "小而重复，形成围绕中心的节奏。",
+            "spatial_relations": "绿色圆心被红黄星形包围；绿色小圆环绕中心，与黄色环和蓝色弧形相邻。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "绿色圆点让中心的尖锐星形中有一个圆形焦点。外围绿色小圆则把中心向外扩展成一圈重复节点。"
+          },
+          {
+            "id": "inner-003",
+            "unit_name": "蓝色弧形与红色尖角",
+            "position": "内圈外侧",
+            "source_type": "user_painted",
+            "color_description": "蓝色弧形和红色尖角并列出现。",
+            "shape_description": "蓝色呈弧形或半环状，红色呈尖角状向外伸出。",
+            "texture_and_density": "数量重复，围绕中心形成多方向小结构。",
+            "spatial_relations": "与绿色小圆、黄色环相邻，并向中圈复杂图案过渡。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "蓝色弧形和红色尖角让内圈外缘出现水滴和火焰般的对比。它们是内圈进入中圈复杂关系的过渡单元。"
+          },
+          {
+            "id": "inner-004",
+            "unit_name": "内圈留白",
+            "position": "内圈多色元素之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "细小间隔，随星形、圆形和弧形变化。",
+            "texture_and_density": "面积不大但分布广。",
+            "spatial_relations": "切分红、黄、绿、蓝等多色元素，使内圈单元边界可辨认。",
+            "blank_space_role": "切分多色元素，形成边界。",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "内圈留白让复杂颜色没有完全糊成一团。它帮助后续识别每一类颜色和形状的相邻关系。"
+          }
+        ]
+      },
+      "middle": {
+        "composition_description": "中圈是全画最复杂的区域之一，绿色、黄色、蓝色、红色、紫色同时出现。视觉单元以重复的多色组合为主，留白穿插其间。",
+        "visual_units": [
+          {
+            "id": "middle-001",
+            "unit_name": "中圈多色组合图案",
+            "position": "中圈主体",
+            "source_type": "user_painted",
+            "color_description": "绿色、黄色、蓝色、红色和紫色并存，颜色对比强。",
+            "shape_description": "由尖角、弧形、块状和水滴状片段组合成重复图案。",
+            "texture_and_density": "密度高，重复度高，视觉信息丰富。",
+            "spatial_relations": "同类组合围绕中心重复；组合内部不同颜色相邻、穿插并被留白切分。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "中圈像多个多色小系统围绕中心旋转。每个系统内部有不同颜色和形状，后续不能只按单一颜色概括。"
+          },
+          {
+            "id": "middle-002",
+            "unit_name": "紫色尖角/弧形元素",
+            "position": "中圈外侧局部",
+            "source_type": "user_painted",
+            "color_description": "紫色，部分偏深，需后续按暧昧色规则判断。",
+            "shape_description": "尖角或弧形片段，和其他颜色图案交错。",
+            "texture_and_density": "重复出现但不是整圈连续色带。",
+            "spatial_relations": "与绿色、蓝色、红色、黄色元素相邻，并被留白切分。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 33.33,
+            "rich_visual_description": "紫色元素在中圈提供了较强的调性变化。它既不是单独一圈，也不是背景，而是嵌在多色结构中的重要颜色。"
+          },
+          {
+            "id": "middle-003",
+            "unit_name": "中圈留白",
+            "position": "中圈多色图案之间",
+            "source_type": "blank_space",
+            "color_description": "纸面白色留白。",
+            "shape_description": "不规则间隔，沿多色图案边缘展开。",
+            "texture_and_density": "多处出现，在复杂图案中承担分隔作用。",
+            "spatial_relations": "隔开不同颜色，也隔开同类重复组合。",
+            "blank_space_role": "切分、隔开并帮助识别复杂局部关系。",
+            "energy_ratio_percent": 33.34,
+            "rich_visual_description": "中圈留白是后续判断关系的重要依据。没有这些留白，多色图案会难以区分相邻、包围和切分关系。"
+          }
+        ]
+      },
+      "outer": {
+        "composition_description": "外圈由绿色长条/叶形、紫色弧形、红色块、蓝色水滴状元素、黄色外缘和留白组成。外圈继续保持多元素并存，但向外支撑和外缘装饰更明显。",
+        "visual_units": [
+          {
+            "id": "outer-001",
+            "unit_name": "绿色长条/叶形结构",
+            "position": "外圈向外支撑位置",
+            "source_type": "user_painted",
+            "color_description": "绿色，较明亮。",
+            "shape_description": "长条或叶形，朝外延伸。",
+            "texture_and_density": "重复出现，形成外圈支撑感。",
+            "spatial_relations": "同类绿色结构围绕中心重复，连接或邻近紫色、蓝色、红色元素。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "绿色长条像外圈的支架，把复杂多色结构向外撑开。它们给外圈带来明显的生长和方向感。"
+          },
+          {
+            "id": "outer-002",
+            "unit_name": "蓝色水滴状元素",
+            "position": "外圈局部重复区域",
+            "source_type": "user_painted",
+            "color_description": "蓝色，较饱和。",
+            "shape_description": "水滴状或椭圆滴状，局部成组出现。",
+            "texture_and_density": "重复分布，与红色和绿色形成对比。",
+            "spatial_relations": "与红色块、绿色长条、紫色弧形相邻，周边有留白。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "蓝色水滴让外圈出现流动感。它们夹在多色图案中，后续需要保留其位置和相邻关系。"
+          },
+          {
+            "id": "outer-003",
+            "unit_name": "紫色弧形与红色块",
+            "position": "外圈多色图案中段",
+            "source_type": "user_painted",
+            "color_description": "紫色和红色并存，紫色需后续按暧昧色规则判断。",
+            "shape_description": "紫色多为弧形或尖弧，红色多为块状或片状。",
+            "texture_and_density": "重复出现，与绿色和蓝色共同形成外圈图案。",
+            "spatial_relations": "与绿色长条、蓝色水滴和黄色外缘交替出现，并被留白隔开。",
+            "blank_space_role": "none",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "紫色和红色在外圈增加了张力和装饰性。它们使外圈不只是绿色向外延伸，而是多股颜色共同构成现实层画面。"
+          },
+          {
+            "id": "outer-004",
+            "unit_name": "黄色外缘与外圈留白",
+            "position": "外圈边缘及图案间",
+            "source_type": "blank_space",
+            "color_description": "包含纸面白色留白；黄色外缘另作为相邻颜色事实记录在描述中。",
+            "shape_description": "留白沿多色图案边缘形成间隔，黄色外缘呈环状或边缘片段。",
+            "texture_and_density": "留白分布广，黄色外缘有边界感。",
+            "spatial_relations": "留白隔开外圈多色元素，黄色外缘邻近绿色、紫色和蓝色元素。",
+            "blank_space_role": "切分外圈多色结构，并形成外缘空间。",
+            "energy_ratio_percent": 25.0,
+            "rich_visual_description": "外圈留白让复杂多色结构保持可辨认。黄色外缘提供一层边界感，和留白一起影响后续对外圈关系的判断。"
+          }
+        ]
+      }
+    }
+  },
+  "element_sensing": {
+    "inner": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "inner-001",
+          "element": "fire",
+          "basis": [
+            "红色主火；黄色同属火；星形尖角外放增强火象。占比25%且视觉权重高，是内圈主要能量。"
+          ],
+          "confidence": "high",
+          "notes": "避免加木性解释。"
+        },
+        {
+          "visual_unit_id": "inner-002",
+          "element": "wood",
+          "basis": [
+            "绿色主木；圆心与小圆环形状虽小但重复成环有生长感。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "inner-003",
+          "element": "water",
+          "basis": [
+            "蓝色主水；弧形呈水滴或流动感；红色尖角部分存疑，但本单元以蓝色为主。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "inner-003",
+          "element": "fire",
+          "basis": [
+            "本单元同时含红色尖角，形状尖锐外放，红色主火。"
+          ],
+          "confidence": "medium",
+          "notes": "与蓝色弧形并置，局部火水并存。"
+        },
+        {
+          "visual_unit_id": "inner-004",
+          "element": "metal",
+          "basis": [
+            "留白一律为金。在内圈中切分多色元素，形成边界。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        }
+      ],
+      "summary": ""
+    },
+    "middle": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "middle-001",
+          "element": "wood",
+          "basis": [
+            "中圈多色组合以绿为主，为本圈主要颜色之一。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "middle-001",
+          "element": "earth",
+          "basis": [
+            "黄色是组合中的固定元素，出现面积大，主土。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "middle-001",
+          "element": "water",
+          "basis": [
+            "组合中含蓝色水滴或弧形部分。"
+          ],
+          "confidence": "medium",
+          "notes": "需结合形状确认。"
+        },
+        {
+          "visual_unit_id": "middle-002",
+          "element": "fire",
+          "basis": [
+            "紫色偏深且与尖角并置，按规则偏向火。需后续按暧昧色确认，暂列。"
+          ],
+          "confidence": "low",
+          "notes": "紫色需最终判断木/火。"
+        },
+        {
+          "visual_unit_id": "middle-003",
+          "element": "metal",
+          "basis": [
+            "留白一律为金。中圈留白分布广，在多色图案间起切割作用。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        }
+      ],
+      "summary": ""
+    },
+    "outer": {
+      "element_candidates": [
+        {
+          "visual_unit_id": "outer-001",
+          "element": "wood",
+          "basis": [
+            "绿色长条/叶形结构主木。占比达25%，且长条向外延伸，木象明显。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "outer-002",
+          "element": "water",
+          "basis": [
+            "蓝色水滴状元素主水。形状呈水滴状有流动感。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "outer-003",
+          "element": "fire",
+          "basis": [
+            "红色块主火。紫色弧形待确认为火还是木，暂随红定为火。"
+          ],
+          "confidence": "medium",
+          "notes": "紫色需后续确认。"
+        },
+        {
+          "visual_unit_id": "outer-004",
+          "element": "metal",
+          "basis": [
+            "留白一律为金；外圈留白在外缘切分多色结构。"
+          ],
+          "confidence": "high",
+          "notes": ""
+        },
+        {
+          "visual_unit_id": "outer-004",
+          "element": "earth",
+          "basis": [
+            "黄色外缘在主色中为辅，但具边界和承载感，属于土。"
+          ],
+          "confidence": "medium",
+          "notes": ""
+        }
+      ],
+      "summary": ""
+    }
+  },
+  "intra_circle_relations": {
+    "inner": {
+      "relations": [
+        {
+          "relation_id": "inner-rel-001",
+          "relation_type": "generating",
+          "involved_visual_unit_ids": [
+            "inner-002",
+            "inner-001"
+          ],
+          "visible_basis": "绿色圆心与绿色小圆环（木）直接包围红黄中心星形（火），视觉上相邻且无留白隔开。木生火。",
+          "confidence": "high",
+          "notes": "木生火，中心能量被木性支撑。"
+        },
+        {
+          "relation_id": "inner-rel-002",
+          "relation_type": "imbalance_candidate",
+          "involved_visual_unit_ids": [
+            "inner-001",
+            "inner-003"
+          ],
+          "visible_basis": "红黄火中心占比25%，视觉权重高；而蓝色水单元被火包围且面积小。火盛水弱，水火直接相邻且火压水。",
+          "confidence": "medium",
+          "notes": "火势可能过强，水被压制；需后续确认。"
+        },
+        {
+          "relation_id": "inner-rel-003",
+          "relation_type": "separated_by_blank_space",
+          "involved_visual_unit_ids": [
+            "inner-002",
+            "inner-003"
+          ],
+          "visible_basis": "绿色圆形元素与蓝色弧形、红色尖角之间存在留白切分，不是直接相邻。",
+          "confidence": "high",
+          "notes": "木水未必直接相生，中间有金性留白隔开。"
+        }
+      ],
+      "summary": ""
+    },
+    "middle": {
+      "relations": [
+        {
+          "relation_id": "middle-rel-001",
+          "relation_type": "imbalance_candidate",
+          "involved_visual_unit_ids": [
+            "middle-001"
+          ],
+          "visible_basis": "中圈多色组合整体占比极高（>33%），且内部木、土、水等多种五行密集穿插，被大量金性留白切分。颜色间对比强，重复度高，视觉信息拥挤。",
+          "confidence": "medium",
+          "notes": "多五行密集并存，可能造成中圈能量调度压力。"
+        },
+        {
+          "relation_id": "middle-rel-002",
+          "relation_type": "separated_by_blank_space",
+          "involved_visual_unit_ids": [
+            "middle-001",
+            "middle-002"
+          ],
+          "visible_basis": "中圈多色组合单元与紫色尖角单元之间存在留白，不是连续色带。",
+          "confidence": "high",
+          "notes": "留白切分多色组合与紫色单元，不能直接论生克。"
+        }
+      ],
+      "summary": ""
+    },
+    "outer": {
+      "relations": [
+        {
+          "relation_id": "outer-rel-001",
+          "relation_type": "generating",
+          "involved_visual_unit_ids": [
+            "outer-002",
+            "outer-001"
+          ],
+          "visible_basis": "蓝色水滴（水）与绿色长条叶形（木）在外圈紧挨着，水木相邻且无留白阻隔。水生木。",
+          "confidence": "high",
+          "notes": "水生木，支撑外圈生长感。"
+        },
+        {
+          "relation_id": "outer-rel-002",
+          "relation_type": "controlling",
+          "involved_visual_unit_ids": [
+            "outer-003",
+            "outer-001"
+          ],
+          "visible_basis": "红色块/紫色弧形（火）与绿色长条（木）紧邻，火克木。外圈部分区域火木直接接触。",
+          "confidence": "medium",
+          "notes": "火克木关系存在于局部，可能削弱木的延伸。"
+        },
+        {
+          "relation_id": "outer-rel-003",
+          "relation_type": "separated_by_blank_space",
+          "involved_visual_unit_ids": [
+            "outer-001",
+            "outer-004"
+          ],
+          "visible_basis": "绿色长条与黄色外缘/留白之间被留白切开，未连续。",
+          "confidence": "high",
+          "notes": "留白导致的间隔，使土性边界不完全包裹木。"
+        }
+      ],
+      "summary": ""
+    }
+  },
+  "cross_circle_flow": {
+    "flow_observations": [
+      {
+        "flow_id": "flow-001",
+        "flow_type": "outward_expanding",
+        "involved_circles": [
+          "inner",
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "中心红黄星形向外扩展，中圈多色图案围绕，外圈绿色长条向外延伸。多色从内到外重复，整体呈放射状。",
+        "confidence": "high",
+        "notes": "能量由内向外扩张明显。"
+      },
+      {
+        "flow_id": "flow-002",
+        "flow_type": "continuous",
+        "involved_circles": [
+          "inner",
+          "middle",
+          "outer"
+        ],
+        "visual_basis": "红、黄、绿、蓝、紫五色在三圈反复出现，中心星形、中圈多色尖角、外圈绿色长条与水滴均围绕同一中心展开。色与形持续向外传递。",
+        "confidence": "high",
+        "notes": "连续性来自跨圈的颜色和形状重复。"
+      },
+      {
+        "flow_id": "flow-003",
+        "flow_type": "inner_outer_mismatch",
+        "involved_circles": [
+          "inner",
+          "outer"
+        ],
+        "visual_basis": "内圈以火为中心张力强，外圈虽向外扩展但火木并存且存在火克木、留白切分，外圈生长感与内圈的火力可能不一致。",
+        "confidence": "medium",
+        "notes": "外圈的复杂结构与内圈尖锐中心形成节奏差异。"
+      }
+    ],
+    "summary": ""
+  },
+  "theme_interpretation": {
+    "theme": "wealth",
+    "theme_label": "财富议题",
+    "route": {
+      "theme": "wealth",
+      "status": "matched",
+      "selected_signal_ids": [
+        "visual.outer_red_or_fire_excess",
+        "visual.metal_excess",
+        "visual.water_fire_conflict",
+        "visual.fragmented_white_or_metal_cut",
+        "visual.outer_world_closed_or_blank",
+        "visual.inner_contracted_outer_strong",
+        "visual.middle_tangled_relationship_pull",
+        "visual.center_clear_outer_weak",
+        "visual.heavy_overfilled_composition",
+        "visual.color_blocks_split"
+      ],
+      "selected_clause_ids": [
+        "wealth.emotional_spending",
+        "wealth.low_action"
+      ],
+      "selected_module_ids": [
+        "wealth.emotion_spending_protective_habits",
+        "wealth.body_fear_action"
+      ],
+      "next_exploration_recommendations": [
+        {
+          "id": "wealth.next.relationship_boundary",
+          "recommended_topic": "关系与交换边界 / 人际关系",
+          "recommended_intention": "我想探索：我在关系、合作和人情往来中如何交换价值与资源。",
+          "matched_signals": [
+            "留白切分"
+          ],
+          "why_not_expand_now": "本次只回到财富中的付出回报、价格边界和资源流动。",
+          "avoid": [
+            "不直接定性亲密关系、父亲关系或母亲关系。"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "wealth.emotional_spending",
+          "title": "情绪型漏财",
+          "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+          "report_language": [
+            "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+            "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+          ],
+          "healing_direction": [
+            "情绪消费觉察。",
+            "记录消费前后的感受。",
+            "建立不靠消费也能安抚自己的方式。"
+          ],
+          "source_status": "ai_draft"
+        },
+        {
+          "id": "wealth.low_action",
+          "title": "行动力不足",
+          "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+          "report_language": [
+            "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+            "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+          ],
+          "healing_direction": [
+            "行动力训练。",
+            "每天一个低压力小行动。",
+            "把计划拆成更小的现实步骤。"
+          ],
+          "source_status": "ai_draft"
+        }
+      ],
+      "modules": [
+        {
+          "module_id": "wealth.emotion_spending_protective_habits",
+          "title": "情绪、消费与保护性习惯",
+          "status": "ai_draft",
+          "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+          "output_strength": "cautious"
+        },
+        {
+          "module_id": "wealth.body_fear_action",
+          "title": "身体连接、恐惧与行动力",
+          "status": "source_supported_draft",
+          "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+          "output_strength": "normal"
+        }
+      ],
+      "boundaries": [
+        "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+        "适合表达标准、评判和证明压力，不能否定用户努力和现实目标。",
+        "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+        "适合表达标准、信息或行动被打断，不能只凭截断信号生成财富结论。",
+        "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+        "适合表达想向外发展但内在承接紧张，不能断言用户害怕成功。",
+        "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+        "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。",
+        "适合表达用力、负担和休息困难，不能否定用户现实努力或责任。",
+        "适合表达取舍两难和行动主线不清，不能替用户做现实选择。"
+      ]
+    }
+  },
+  "core_thesis": "体内资源充沛但调度拥堵，财富流动急需找回行动与边界之间的清晰节奏。",
+  "healing_direction": "把中圈密集的‘多线程’慢慢拆成可辨识的步骤，恢复从冲动到行动的衔接，并借助外圈已有的支撑结构，让财富不再是情绪出口，而是可反复回收的价值流动。",
+  "final_report": {
+    "report_id": "mandala-interpretation-a46272e0dec6",
+    "report_mode": "lite",
+    "title": "曼陀罗解读报告",
+    "markdown": "# 财富议题：当能量过于拥挤，价值需要一条更清晰的路径\n\n这幅画第一眼给人的感觉是生命力很满，颜色丰富、形状多变，像是很多个自己在同时说话。不过仔细看下来，最引人注意的并不是中心或边缘，而是中间那一段——那里色彩堆叠得最密，尖角、弧形、块状图案不断地重复、交错，被许多细碎的留白切开。在财富的探索里，这种画面往往对应着一种熟悉的体验：明明内在有很多资源，却总是在“快要落地”的时候卡住，好像被什么东西反复拦截。\n\n现在我们先把画面里几个关键的颜色和形状拆开来看。中圈那些反复出现的绿色，对应的是木的能量，代表想法和计划的生长感；大面积铺开的黄色属土，像是一种想把事情承接住、稳定住的本能；嵌在其中的蓝色弧形和水滴状片段，则带着水的特质，与情绪、流动和深层需求有关。这些元素在同一个圈层里紧挨着，彼此之间几乎没有空隙，只能靠留白来勉强切开——留白在五行中属金，作用是切割和划界。这里存在一组圈内元素关系候选：木、土、水密集并存，金不断介入切分，视觉上形成了多股力量同时争抢注意力的局面。反映在实际感受上，就是想法、情绪、标准和关系期待全部挤在一起，容易让人在做决定的时候来回拉扯，花很多力气却迟迟没有把价值推出去。\n\n顺着中圈的拥挤感往回看内圈，你会发现这幅画的发动点其实是一簇红黄星形。红色和黄色都属火，形状尖锐、向外放射，是整张画里最果决、最有冲劲的部分；旁边一圈绿色圆心属木，正紧紧包着这团火，形成木生火的支撑关系。这说明你的内在底火并不弱，甚至可以说行动的热情一直都有。但同时，内圈外侧那几抹细小的蓝色弧形属水，被大面积的红色尖角围在很小的空间里——圈内火盛水弱的候选关系显示，那股冲锋的力量跑得太快，留给沉静、反思和等待的空间并不多。这可能意味着，很多金钱和精力上的决定，是在还没有充分消化之前就被情绪推着做出去的。\n\n再看外圈，绿色长条像叶脉一样向外延伸，这是木的能量在试图把价值送到现实世界；蓝色水滴紧挨着绿色长条，水生木的关系给这种输送提供了润滑和持续感。但值得注意的是，同一圈里红色块和紫色弧形也紧贴着绿色长条——火克木的关系候选说明，外圈向外推动的时候，常常被另一股急躁的、想要立刻看到结果的力量消耗，导致原本可以稳定生长的部分被阶段性打断。这不像资源不足，更像是能量的输出节奏一直在快与折返之间切换，让现实回报变得不稳定。\n\n财富的核心议题，落在每一次决定前的“缝隙”太小。你的热情、想法和承担意愿都很真实，但它们常常在还没有被区分清楚之前，就已经被情绪或关系期待一起推了出去。试着在接下来一周，每当想花钱、想承诺、想承担某个东西的时候，给自己一个小小的暂停——哪怕只是喝一口水、走几步路，让身体先动而不是立刻做决定。这个停顿不是为了阻止你行动，而是为了让你内在的判断力有空间重新打开，让每一笔付出都能走得更完整。\n\n下一次曼陀罗探索，可以往“关系与交换边界”的方向走。这张画里反复出现的留白，其实一直在帮你画边界，只是现在它们还比较碎，可以慢慢拼起来——这或许正是下一幅画可以深入的方向。",
+    "summary": "体内资源充沛但调度拥堵，财富流动急需找回行动与边界之间的清晰节奏。"
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "中心红黄星形像整幅画的发动点。它颜色明亮、形状尖锐，使内圈一开始就带有明显的启动和张力。"
+    },
+    {
+      "id": "inner-002",
+      "circle": "inner",
+      "visible_evidence": "绿色圆点让中心的尖锐星形中有一个圆形焦点。外围绿色小圆则把中心向外扩展成一圈重复节点。"
+    },
+    {
+      "id": "inner-003",
+      "circle": "inner",
+      "visible_evidence": "蓝色弧形和红色尖角让内圈外缘出现水滴和火焰般的对比。它们是内圈进入中圈复杂关系的过渡单元。"
+    },
+    {
+      "id": "inner-004",
+      "circle": "inner",
+      "visible_evidence": "内圈留白让复杂颜色没有完全糊成一团。它帮助后续识别每一类颜色和形状的相邻关系。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "中圈像多个多色小系统围绕中心旋转。每个系统内部有不同颜色和形状，后续不能只按单一颜色概括。"
+    },
+    {
+      "id": "middle-002",
+      "circle": "middle",
+      "visible_evidence": "紫色元素在中圈提供了较强的调性变化。它既不是单独一圈，也不是背景，而是嵌在多色结构中的重要颜色。"
+    },
+    {
+      "id": "middle-003",
+      "circle": "middle",
+      "visible_evidence": "中圈留白是后续判断关系的重要依据。没有这些留白，多色图案会难以区分相邻、包围和切分关系。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "绿色长条像外圈的支架，把复杂多色结构向外撑开。它们给外圈带来明显的生长和方向感。"
+    },
+    {
+      "id": "outer-002",
+      "circle": "outer",
+      "visible_evidence": "蓝色水滴让外圈出现流动感。它们夹在多色图案中，后续需要保留其位置和相邻关系。"
+    },
+    {
+      "id": "outer-003",
+      "circle": "outer",
+      "visible_evidence": "紫色和红色在外圈增加了张力和装饰性。它们使外圈不只是绿色向外延伸，而是多股颜色共同构成现实层画面。"
+    },
+    {
+      "id": "outer-004",
+      "circle": "outer",
+      "visible_evidence": "外圈留白让复杂多色结构保持可辨认。黄色外缘提供一层边界感，和留白一起影响后续对外圈关系的判断。"
+    }
+  ],
+  "boundaries": {
+    "inner_radius": 35,
+    "middle_radius": 65,
+    "radius_unit": "normalized_percent",
+    "source": "golden_case_seed"
+  },
+  "permissions": {
+    "can_answer_follow_up": false,
+    "post_mvp_agent": "report_qa_agent",
+    "allow_seeded_short_report": false
+  }
+}

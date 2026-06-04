@@ -22,6 +22,8 @@ export interface SharedReportEntryDescriptor {
   description: string;
   themeLabel: string;
   footnote: string;
+  heroHint?: string;
+  redeemHint?: string;
   cards: SharedReportEntryCardDescriptor[];
 }
 
@@ -87,6 +89,8 @@ export interface SharedReportEntrySelectionPageProps {
   heroClassName?: string;
   heroPatternClassName?: string;
   heroPatternStyle?: SharedReportEntryPatternStyle;
+  redeemCode?: string;
+  onRedeemCodeChange?: (value: string) => void;
   onBack?: () => void;
   onChoose?: (cardId: string) => void;
 }
@@ -96,6 +100,8 @@ export function SharedReportEntrySelectionPage({
   heroClassName,
   heroPatternClassName,
   heroPatternStyle,
+  redeemCode = "",
+  onRedeemCodeChange,
   onBack,
   onChoose,
 }: SharedReportEntrySelectionPageProps) {
@@ -116,16 +122,32 @@ export function SharedReportEntrySelectionPage({
             {descriptor.description}
           </p>
           <p className="am-report-entry-hero__hint">
-            你选的不是“更贵或更便宜”，而是这一次更适合自己的阅读深度。
+            {descriptor.heroHint ?? "你选的不是“更贵或更便宜”，而是这一次更适合自己的阅读深度。"}
           </p>
           <div className="am-report-entry-theme-pill">
-            <span className="am-report-entry-theme-pill__label">当前主题</span>
+            <span className="am-report-entry-theme-pill__label">当前议题</span>
             <span>{descriptor.themeLabel}</span>
           </div>
         </div>
       </div>
 
       <div className="am-report-entry-body">
+        <section className="am-report-entry-redeem">
+          <label className="am-report-entry-redeem__label" htmlFor="am-report-entry-redeem-code">
+            优惠券 / 兑换码
+          </label>
+          <input
+            id="am-report-entry-redeem-code"
+            className="am-report-entry-redeem__input"
+            value={redeemCode}
+            onChange={(event) => onRedeemCodeChange?.(event.target.value)}
+            placeholder="请输入可用兑换码"
+          />
+          <p className="am-report-entry-redeem__hint">
+            {descriptor.redeemHint ?? "系统会在生成前校验兑换码；Lite 和 Pro 仍按所选版本生成。"}
+          </p>
+        </section>
+
         {descriptor.cards.map((card) => (
           <SharedReportEntryCard
             key={card.id}

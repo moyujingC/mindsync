@@ -1,0 +1,632 @@
+{
+  "method_source": "projects/aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-画面信号映射审核与结构化计划.md",
+  "execution_blocks": [
+    {
+      "block_id": "block-1-input-and-boundary",
+      "stage_keys": [
+        "stage-00-input-context",
+        "stage-01-user-input-context",
+        "stage-02-circle-boundary-decision"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-2-visual-and-direct-check",
+      "stage_keys": [
+        "stage-03-visual-evidence",
+        "stage-04-direct-judgment-high-hit-check"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-3-circle-rule-reasoning",
+      "stage_keys": [
+        "stage-05-per-circle-color-shape-element-sensing",
+        "stage-06-per-circle-element-generation-control",
+        "stage-07-per-circle-imbalance-patterns",
+        "stage-08-energy-flow-diagnosis",
+        "stage-09-evidence-consolidation"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-4-thesis-and-writing-input",
+      "stage_keys": [
+        "stage-10-core-thesis-selection",
+        "stage-11-user-facing-framing",
+        "stage-12-healing-direction-and-report-branching"
+      ],
+      "status": "complete"
+    },
+    {
+      "block_id": "block-5-report-and-quality",
+      "stage_keys": [
+        "stage-13-lite-report-draft",
+        "stage-14-pro-report-draft",
+        "stage-15-visual-assets",
+        "stage-16-final-report-assembly"
+      ],
+      "status": "complete"
+    }
+  ],
+  "stage_outputs": {
+    "stage-00-input-context": {
+      "stage": "stage-00-input-context",
+      "status": "complete",
+      "report_mode": "lite",
+      "image": {
+        "local_path": "/Users/xinran/Downloads/dev/mindsync/projects/aimandala/fixtures/toc-mvp/assets/IMG_5065.jpeg",
+        "storage_backend": "",
+        "storage_key": ""
+      },
+      "agent_version": "mandala-interpretation-agent-v1"
+    },
+    "stage-01-user-input-context": {
+      "stage": "stage-01-user-input-context",
+      "status": "complete",
+      "user_context": {
+        "theme": "wealth",
+        "theme_label": "财富议题",
+        "painting_intention": "想看自己是否能稳定接住资源和机会。",
+        "painting_feeling": ""
+      }
+    },
+    "stage-02-circle-boundary-decision": {
+      "stage": "stage-02-circle-boundary-decision",
+      "status": "complete",
+      "circle_boundaries": {
+        "inner_radius": 35,
+        "middle_radius": 65,
+        "radius_unit": "normalized_percent",
+        "source": "manual_regression_default"
+      }
+    },
+    "stage-03-visual-evidence": {
+      "stage": "stage-03-visual-evidence",
+      "status": "complete",
+      "global_visual_summary": "这幅曼陀罗画作整体呈现出高度对称和有序的结构，色彩丰富且分布均匀，主要由粉色、紫色、黄色、绿色、蓝色和橙色构成。中心区域为一个复杂的多层花瓣图案，向外依次扩展为星形、菱形和叶状图案，外圈以粉紫色为主，形成柔和的边界。整体画面充满生机与和谐感，颜色过渡自然，无明显断裂或留白。",
+      "circles": {
+        "inner": {
+          "summary": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。",
+          "visual_units": [
+            {
+              "id": "inner-001",
+              "position": "inner",
+              "color": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。",
+              "shape": "",
+              "visible_evidence": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。"
+            }
+          ],
+          "raw_observation": {
+            "color_distribution": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。",
+            "shape_pattern": "核心为多层花瓣结构，呈放射状排列，内部线条清晰，形状规整。",
+            "energy_state": "内圈能量集中且稳定，显示出内在的秩序感和自我认同的完整性。"
+          }
+        },
+        "middle": {
+          "summary": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。",
+          "visual_units": [
+            {
+              "id": "middle-001",
+              "position": "middle",
+              "color": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。",
+              "shape": "",
+              "visible_evidence": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。"
+            }
+          ],
+          "raw_observation": {
+            "color_distribution": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。",
+            "shape_pattern": "星形与菱形交替排列，形成规律的几何图案，线条流畅，连接紧密。",
+            "energy_state": "中圈能量流动顺畅，表现出情绪的稳定和人际互动的和谐，但存在一定的规则性和结构性限制。"
+          }
+        },
+        "outer": {
+          "summary": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。",
+          "visual_units": [
+            {
+              "id": "outer-001",
+              "position": "outer",
+              "color": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。",
+              "shape": "",
+              "visible_evidence": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。"
+            }
+          ],
+          "raw_observation": {
+            "color_distribution": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。",
+            "shape_pattern": "叶状图案重复排列，形成连续的环形结构，边缘完整，无缺口。",
+            "energy_state": "外圈能量稳定且封闭，显示出对外界的保护意识和现实层面的完整呈现。"
+          }
+        }
+      },
+      "evidence_refs": [
+        "内圈核心为多层花瓣结构，颜色集中在紫色和粉色，表现出内在的秩序感和自我认同的完整性。",
+        "中圈以黄色星形和蓝色点缀为主，形成规律的几何图案，表明情绪稳定和人际互动的和谐。",
+        "外圈以绿色叶状图案和粉紫色背景为主，边缘完整，显示对外界的保护意识和现实层面的完整呈现。",
+        "整体色彩丰富且分布均匀，颜色过渡自然，无明显断裂或留白，体现出高度的和谐与平衡。",
+        "画面中无明显的负面信号，如黑色、深红或尖锐形状，整体氛围积极向上。"
+      ],
+      "uncertainties": [
+        "无法确定具体颜色的深浅程度是否影响其象征意义，需结合更多上下文判断。",
+        "虽然画面整体和谐，但无法排除某些细微的不协调可能被忽略，需进一步细致观察。",
+        "外圈的粉紫色背景可能代表金属性，但其具体含义需结合其他元素综合判断。"
+      ],
+      "model_trace": [
+        {
+          "model": "qwen-vl-max-latest",
+          "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+          "endpoint_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+          "result": "success"
+        }
+      ]
+    },
+    "stage-04-direct-judgment-high-hit-check": {
+      "stage": "stage-04-direct-judgment-high-hit-check",
+      "status": "complete",
+      "hits": [],
+      "non_hits": [],
+      "uncertain_items": [],
+      "conflicts": [],
+      "summary": "MVP 首轮只记录直断互验入口，不强行判定高命中模式。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-05-per-circle-color-shape-element-sensing": {
+      "stage": "stage-05-per-circle-color-shape-element-sensing",
+      "status": "complete",
+      "per_circle": {
+        "inner": {
+          "visual_summary": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。",
+          "dominant_colors": [
+            "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。",
+          "dominant_colors": [
+            "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。",
+          "dominant_colors": [
+            "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-06-per-circle-element-generation-control": {
+      "stage": "stage-06-per-circle-element-generation-control",
+      "status": "complete",
+      "theme": "wealth",
+      "control_notes": [
+        "按当前画面证据和精简知识包推导，不新增画面事实。"
+      ],
+      "per_circle": {
+        "inner": {
+          "visual_summary": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。",
+          "dominant_colors": [
+            "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.inner",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "middle": {
+          "visual_summary": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。",
+          "dominant_colors": [
+            "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.middle",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        },
+        "outer": {
+          "visual_summary": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。",
+          "dominant_colors": [
+            "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。"
+          ],
+          "dominant_shapes": [],
+          "knowledge_refs": [
+            "circle.outer",
+            "elements.color_meanings",
+            "elements.five_elements",
+            "themes.wealth"
+          ]
+        }
+      }
+    },
+    "stage-07-per-circle-imbalance-patterns": {
+      "stage": "stage-07-per-circle-imbalance-patterns",
+      "status": "complete",
+      "candidates": [
+        {
+          "circle": "inner",
+          "candidate": "needs_human_review",
+          "basis": [
+            "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。"
+          ]
+        },
+        {
+          "circle": "middle",
+          "candidate": "needs_human_review",
+          "basis": [
+            "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。"
+          ]
+        },
+        {
+          "circle": "outer",
+          "candidate": "needs_human_review",
+          "basis": [
+            "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。"
+          ]
+        }
+      ]
+    },
+    "stage-08-energy-flow-diagnosis": {
+      "stage": "stage-08-energy-flow-diagnosis",
+      "status": "complete",
+      "diagnosis": "内圈到中圈已有表达，外圈边界仍较谨慎。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001"
+      ]
+    },
+    "stage-09-evidence-consolidation": {
+      "stage": "stage-09-evidence-consolidation",
+      "status": "complete",
+      "evidence_map": [
+        {
+          "id": "inner-001",
+          "circle": "inner",
+          "visible_evidence": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。"
+        },
+        {
+          "id": "middle-001",
+          "circle": "middle",
+          "visible_evidence": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。"
+        },
+        {
+          "id": "outer-001",
+          "circle": "outer",
+          "visible_evidence": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。"
+        }
+      ]
+    },
+    "stage-10-core-thesis-selection": {
+      "stage": "stage-10-core-thesis-selection",
+      "status": "complete",
+      "core_thesis": "财富承载能力的内在条件是完整的，外在执行框架已初步形成，但现实边界的谨慎防御状态可能是阻碍资源稳定流入的关键。",
+      "evidence_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001",
+        "stage-03-visual-evidence.global_visual_summary",
+        "stage-08-energy-flow-diagnosis"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.water_fire_conflict",
+          "visual.outer_world_closed_or_blank",
+          "visual.middle_tangled_relationship_pull",
+          "visual.outer_boundary_broken",
+          "visual.center_clear_outer_weak"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action"
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "model_scaffold"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "model_scaffold",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+          "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。"
+        ]
+      }
+    },
+    "stage-11-user-facing-framing": {
+      "stage": "stage-11-user-facing-framing",
+      "status": "complete",
+      "framing": "在财富承载的稳定性上，你其实拥有一个丰富且有序的内在核心，这代表着清晰的自我认知和吸引资源的能力。你的行动和人际网络也呈现出积极的能量流动。不过，在如何让这些资源和机会真正进入并留在你的现实世界中，可能存在一层不易察觉的自我保护，让接收的通道看似完整却有些封闭。",
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.water_fire_conflict",
+          "visual.outer_world_closed_or_blank",
+          "visual.middle_tangled_relationship_pull",
+          "visual.outer_boundary_broken",
+          "visual.center_clear_outer_weak"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action"
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "model_scaffold"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "model_scaffold",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+          "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。"
+        ]
+      }
+    },
+    "stage-12-healing-direction-and-report-branching": {
+      "stage": "stage-12-healing-direction-and-report-branching",
+      "status": "complete",
+      "healing_direction": "探索外圈边界所代表的谨慎与保护意识，看看它是在守护既有秩序，还是在无意识地隔绝新的可能性。尝试在保持内在核心稳定的同时，主动为外边界创造一个小开口，允许适量的、可控的新的财富能量流入，体验安全接收的过程。",
+      "report_mode": "lite",
+      "writing_input_refs": [
+        "inner-001",
+        "middle-001",
+        "outer-001",
+        "stage-03-visual-evidence.global_visual_summary",
+        "stage-08-energy-flow-diagnosis"
+      ],
+      "theme_route": {
+        "theme": "wealth",
+        "status": "matched",
+        "selected_signal_ids": [
+          "visual.outer_red_or_fire_excess",
+          "visual.water_fire_conflict",
+          "visual.outer_world_closed_or_blank",
+          "visual.middle_tangled_relationship_pull",
+          "visual.outer_boundary_broken",
+          "visual.center_clear_outer_weak"
+        ],
+        "selected_clause_ids": [
+          "wealth.emotional_spending",
+          "wealth.low_action"
+        ],
+        "selected_module_ids": [
+          "wealth.emotion_spending_protective_habits",
+          "wealth.body_fear_action"
+        ],
+        "clauses": [
+          {
+            "id": "wealth.emotional_spending",
+            "title": "情绪型漏财",
+            "summary": "用户可能通过消费安抚情绪，或让情绪压力影响财富决策。",
+            "report_language": [
+              "这里更像是钱在替情绪出口工作：消费本身可能不是问题，问题是它承担了太多安抚功能。",
+              "如果情绪没有被看见，财富流动就容易变成一边进入、一边被情绪带走。"
+            ],
+            "healing_direction": [
+              "情绪消费觉察。",
+              "记录消费前后的感受。",
+              "建立不靠消费也能安抚自己的方式。"
+            ],
+            "source_status": "model_scaffold"
+          },
+          {
+            "id": "wealth.low_action",
+            "title": "行动力不足",
+            "summary": "用户可能有想法但落地少，行动容易被情绪、关系或自我怀疑打断。",
+            "report_language": [
+              "财富流动需要行动承接；如果行动一再被打断，价值就很难真正进入现实交换。",
+              "这里更像是在提醒你先恢复小步行动，而不是一次性逼自己完成很大的改变。"
+            ],
+            "healing_direction": [
+              "行动力训练。",
+              "每天一个低压力小行动。",
+              "把计划拆成更小的现实步骤。"
+            ],
+            "source_status": "model_scaffold"
+          }
+        ],
+        "modules": [
+          {
+            "module_id": "wealth.emotion_spending_protective_habits",
+            "title": "情绪、消费与保护性习惯",
+            "status": "model_scaffold",
+            "report_use": "把漏财、消费和拖延从道德评价降级为情绪和保护功能观察。",
+            "output_strength": "cautious"
+          },
+          {
+            "module_id": "wealth.body_fear_action",
+            "title": "身体连接、恐惧与行动力",
+            "status": "source_supported_draft",
+            "report_use": "解释想行动但身体收缩、机会来了却退回去等状态。",
+            "output_strength": "normal"
+          }
+        ],
+        "boundaries": [
+          "只能说可能存在外放、消耗或情绪带动消费，不能直接断言用户现实漏财。",
+          "适合表达热情与恐惧、行动与情绪之间的拉扯，不能写成医学或心理诊断。",
+          "适合表达现实连接、行动或价值交换不足，不能把内向、学习或灵性倾向写成问题。",
+          "适合把关系拉扯回译为交换边界、开价压力或情绪消耗，不能展开成亲密关系报告。",
+          "适合表达资源边界和现实承接不稳，不能判断用户真实存款、支出或债务。",
+          "适合表达内在价值尚未充分外化，不能承诺市场反馈、客户或成交结果。"
+        ]
+      }
+    },
+    "stage-13-lite-report-draft": {
+      "stage": "stage-13-lite-report-draft",
+      "status": "complete",
+      "enabled": true,
+      "markdown": "# 财富议题：你吸引资源的内核稳定，卡点在于接收边界的无意识紧闭\n\n## 画面证据速写\n\n这幅曼陀罗呈现出高度对称的放射状结构，整体色彩丰富且分布均匀，没有突兀的断裂或留白。从画面中可以观察到两个关键特征：其一，内圈以紫色和粉色构成多层放射状花瓣，线条规整且能量集中，这表明你内在的自我价值感和秩序感相当清晰，具备吸引资源的基础心力。中圈的黄色星形图案与蓝色点缀交替排列，形成规律的几何连接，显示出你在人际互动中的情绪稳定与能量流动的和谐。其二，外圈由绿色叶状图案紧密环绕，粉紫色背景完整包裹，形成了一个连续且无明显缺口的保护环，边界感极强，这在能量层面呈现出一种“包裹严密”的状态——虽然稳固了内在秩序，但也可能让外界的资源和机会难以自然渗透进来。\n\n## 财富核心解读\n\n你吸引资源和机会的内在磁场是完整而有序的，但外圈那层严密的自我边界在守护既有秩序的同时，可能无意识地将新的财富流动挡在了门外，这使得价值交换的通道看似完整却处于半封闭状态。\n\n## 温和行动建议\n\n接下来一周，可以专门设立一个金额很小的“允许意外流入”清单——哪怕只是几块钱的返现、一笔意料之外的小额红包，都把它当作一次边界打开的安全实验。记录下接收那一刻身体上的细微感觉，比如呼吸是否变浅、肩膀是否微微收紧或胸口是否有暖意，不需要评判自己是否因为这点小钱而紧张或想推掉。反复进行这样低风险的练习，能帮助你在不破坏内在稳定感的前提下，让接收的通道逐渐放松下来，重新建立与外界资源安全连接的身体记忆。此刻你不需要急着做出大的改变，只需要温柔地问自己：如果我允许一点点的、没有压力的资源流入，我的边界是在保护我，还是在限制我？"
+    },
+    "stage-14-pro-report-draft": {
+      "stage": "stage-14-pro-report-draft",
+      "status": "complete",
+      "enabled": false,
+      "markdown": ""
+    },
+    "stage-15-visual-assets": {
+      "stage": "stage-15-visual-assets",
+      "status": "skipped",
+      "reason": "mvp_no_image_generation"
+    },
+    "stage-16-final-report-assembly": {
+      "stage": "stage-16-final-report-assembly",
+      "status": "complete",
+      "final_report": {
+        "report_id": "mandala-interpretation-c2753c801539",
+        "report_mode": "lite",
+        "title": "曼陀罗解读报告",
+        "markdown": "# 财富议题：你吸引资源的内核稳定，卡点在于接收边界的无意识紧闭\n\n## 画面证据速写\n\n这幅曼陀罗呈现出高度对称的放射状结构，整体色彩丰富且分布均匀，没有突兀的断裂或留白。从画面中可以观察到两个关键特征：其一，内圈以紫色和粉色构成多层放射状花瓣，线条规整且能量集中，这表明你内在的自我价值感和秩序感相当清晰，具备吸引资源的基础心力。中圈的黄色星形图案与蓝色点缀交替排列，形成规律的几何连接，显示出你在人际互动中的情绪稳定与能量流动的和谐。其二，外圈由绿色叶状图案紧密环绕，粉紫色背景完整包裹，形成了一个连续且无明显缺口的保护环，边界感极强，这在能量层面呈现出一种“包裹严密”的状态——虽然稳固了内在秩序，但也可能让外界的资源和机会难以自然渗透进来。\n\n## 财富核心解读\n\n你吸引资源和机会的内在磁场是完整而有序的，但外圈那层严密的自我边界在守护既有秩序的同时，可能无意识地将新的财富流动挡在了门外，这使得价值交换的通道看似完整却处于半封闭状态。\n\n## 温和行动建议\n\n接下来一周，可以专门设立一个金额很小的“允许意外流入”清单——哪怕只是几块钱的返现、一笔意料之外的小额红包，都把它当作一次边界打开的安全实验。记录下接收那一刻身体上的细微感觉，比如呼吸是否变浅、肩膀是否微微收紧或胸口是否有暖意，不需要评判自己是否因为这点小钱而紧张或想推掉。反复进行这样低风险的练习，能帮助你在不破坏内在稳定感的前提下，让接收的通道逐渐放松下来，重新建立与外界资源安全连接的身体记忆。此刻你不需要急着做出大的改变，只需要温柔地问自己：如果我允许一点点的、没有压力的资源流入，我的边界是在保护我，还是在限制我？",
+        "summary": "财富承载能力的内在条件是完整的，外在执行框架已初步形成，但现实边界的谨慎防御状态可能是阻碍资源稳定流入的关键。"
+      }
+    }
+  },
+  "evidence_map": [
+    {
+      "id": "inner-001",
+      "circle": "inner",
+      "visible_evidence": "中心区域以紫色和粉色为主，形成放射状的花瓣图案，周围环绕着黄色和橙色的渐变花瓣。"
+    },
+    {
+      "id": "middle-001",
+      "circle": "middle",
+      "visible_evidence": "中圈以黄色和蓝色为主，黄色形成星形图案，蓝色点缀在星形之间，橙色作为点缀分布在菱形中。"
+    },
+    {
+      "id": "outer-001",
+      "circle": "outer",
+      "visible_evidence": "外圈以绿色和粉紫色为主，绿色形成叶状图案，粉紫色作为背景色，橙色和黄色点缀其间。"
+    }
+  ]
+}
