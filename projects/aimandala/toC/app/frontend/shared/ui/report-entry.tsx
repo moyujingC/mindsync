@@ -39,7 +39,7 @@ function EntryArrowGlyph() {
 function BackGlyph() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M15 18 9 12l6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14.5 6.5 9 12l5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -217,15 +217,14 @@ export function SharedReportEntrySelectionPage({
           style={heroPatternStyle}
         />
         <div className="am-report-entry-topbar">
-          <button type="button" onClick={onBack} className="am-report-entry-back">
+          <button type="button" onClick={onBack} className="am-report-entry-back" aria-label="返回">
             <BackGlyph />
-            <span>返回</span>
           </button>
-          <div className="am-report-entry-topbar__status">{descriptor.statusLabel}</div>
-          <div className="am-report-entry-topbar__spacer" />
+          <h1 className="am-report-entry-topbar__title">确认支付</h1>
+          <div className="am-report-entry-topbar__spacer" aria-hidden="true" />
         </div>
         <div className="am-report-entry-hero__content">
-          <h1 className="am-report-entry-hero__title">{descriptor.title}</h1>
+          <h2 className="am-report-entry-hero__title">{descriptor.title}</h2>
           <p className="am-report-entry-hero__description">
             {descriptor.description}
           </p>
