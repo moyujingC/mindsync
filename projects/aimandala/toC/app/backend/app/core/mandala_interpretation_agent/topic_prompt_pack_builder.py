@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .prompt_budget import build_prompt_budget_manifest
+from .runtime_paths import relative_to_known_root
 from .topic_prompt_pack_registry import (
     APP_ADAPTATION_ROOT,
     GENERATED_PROMPT_PACKS_ROOT,
@@ -133,7 +134,4 @@ class TopicPromptPackBuilder:
         return [path for path in sorted(root.rglob("*.md")) if path.is_file()]
 
     def _relative_or_string(self, path: Path) -> str:
-        try:
-            return str(path.relative_to(TOPIC_REPORT_PACKS_ROOT.parents[5]))
-        except ValueError:
-            return str(path)
+        return relative_to_known_root(path)

@@ -11,9 +11,8 @@ from .contracts import (
     MandalaOutputRequirements,
     MandalaUserContext,
 )
+from .runtime_paths import AIMANDALA_ROOT, REPO_ROOT
 
-
-AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
 MANIFEST_PATH = AIMANDALA_ROOT / "fixtures" / "manifest.yaml"
 
 
@@ -110,7 +109,7 @@ def _parse_simple_yaml(path: Path) -> dict[str, Any]:
 def _resolve_aimandala_path(raw_path: str) -> Path:
     path = raw_path.strip()
     if path.startswith("$REPO_ROOT/"):
-        return AIMANDALA_ROOT.parents[1] / path[len("$REPO_ROOT/") :]
+        return REPO_ROOT / path[len("$REPO_ROOT/") :]
     candidate = Path(path)
     if candidate.is_absolute():
         return candidate

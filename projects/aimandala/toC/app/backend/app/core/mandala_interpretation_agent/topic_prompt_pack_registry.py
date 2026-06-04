@@ -5,8 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-
-AIMANDALA_ROOT = Path(__file__).resolve().parents[6]
+from .runtime_paths import AIMANDALA_ROOT
 TOPIC_REPORT_PACKS_ROOT = (
     AIMANDALA_ROOT
     / "docs"
