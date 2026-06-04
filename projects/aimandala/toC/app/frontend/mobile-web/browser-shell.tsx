@@ -147,7 +147,7 @@ function formatHistoryRefreshHint(date = new Date()): string {
 
 function resolvePreviewReportFooterState(
   flowState: MandalaFlowState | null,
-  draft: MobileWebUploadDraft,
+  _draft: MobileWebUploadDraft,
 ) {
   if (!flowState || flowState.step === "liteGenerating" || flowState.step === "error") {
     return {};

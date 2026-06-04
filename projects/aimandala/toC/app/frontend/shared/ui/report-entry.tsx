@@ -37,6 +37,7 @@ function EntryArrowGlyph() {
 }
 
 function SharedReportEntryCard({
+  id,
   title,
   description,
   bullets,
@@ -45,17 +46,21 @@ function SharedReportEntryCard({
   note,
   priceLabel,
   availability,
+  redeemCode,
+  redeemHint,
+  onRedeemCodeChange,
   onClick,
 }: SharedReportEntryCardDescriptor & {
+  redeemCode?: string;
+  redeemHint?: string;
+  onRedeemCodeChange?: (value: string) => void;
   onClick?: () => void;
 }) {
   const isAvailable = availability === "available";
+  const redeemInputId = `am-report-entry-redeem-code-${id}`;
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={!isAvailable}
+    <article
       className={`am-report-entry-card am-report-entry-card--${tone}${isAvailable ? " is-available" : " is-unavailable"}`}
     >
       <div className="am-report-entry-card__topline" />
@@ -67,6 +72,26 @@ function SharedReportEntryCard({
         </span>
       </div>
       <p className="am-report-entry-card__description">{description}</p>
+
+      <section className="am-report-entry-redeem" aria-label="优惠券或兑换码">
+        <div className="am-report-entry-redeem__head">
+          <label className="am-report-entry-redeem__label" htmlFor={redeemInputId}>
+            优惠券 / 兑换码
+          </label>
+          <span className="am-report-entry-redeem__optional">可选</span>
+        </div>
+        <input
+          id={redeemInputId}
+          className="am-report-entry-redeem__input"
+          value={redeemCode}
+          onChange={(event) => onRedeemCodeChange?.(event.target.value)}
+          placeholder="请输入可用兑换码"
+        />
+        <p className="am-report-entry-redeem__hint">
+          {redeemHint ?? "系统会在生成前校验兑换码；Lite 和 Pro 仍按所选版本生成。"}
+        </p>
+      </section>
+
       <div className="am-report-entry-card__bullets">
         {bullets.map((item) => (
           <div key={item} className="am-report-entry-card__bullet">
@@ -76,11 +101,16 @@ function SharedReportEntryCard({
         ))}
       </div>
       <p className="am-report-entry-card__note">{note}</p>
-      <div className="am-report-entry-card__cta">
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={!isAvailable}
+        className="am-report-entry-card__cta"
+      >
         <span>{cta}</span>
         <EntryArrowGlyph />
-      </div>
-    </button>
+      </button>
+    </article>
   );
 }
 
@@ -132,26 +162,13 @@ export function SharedReportEntrySelectionPage({
       </div>
 
       <div className="am-report-entry-body">
-        <section className="am-report-entry-redeem">
-          <label className="am-report-entry-redeem__label" htmlFor="am-report-entry-redeem-code">
-            优惠券 / 兑换码
-          </label>
-          <input
-            id="am-report-entry-redeem-code"
-            className="am-report-entry-redeem__input"
-            value={redeemCode}
-            onChange={(event) => onRedeemCodeChange?.(event.target.value)}
-            placeholder="请输入可用兑换码"
-          />
-          <p className="am-report-entry-redeem__hint">
-            {descriptor.redeemHint ?? "系统会在生成前校验兑换码；Lite 和 Pro 仍按所选版本生成。"}
-          </p>
-        </section>
-
         {descriptor.cards.map((card) => (
           <SharedReportEntryCard
             key={card.id}
             {...card}
+            redeemCode={redeemCode}
+            redeemHint={descriptor.redeemHint}
+            onRedeemCodeChange={onRedeemCodeChange}
             onClick={
               card.availability === "available" && onChoose
                 ? () => onChoose(card.id)
