@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 
 export type SharedReportEntryAvailability = "available";
 
@@ -36,6 +36,42 @@ function EntryArrowGlyph() {
   );
 }
 
+function BackGlyph() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 18 9 12l6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SparklesGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 3.5 13.7 8l4.8 1.7-4.8 1.7L12 16l-1.7-4.6-4.8-1.7L10.3 8 12 3.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M18.5 14.5 19.3 17l2.2.8-2.2.8-.8 2.4-.8-2.4-2.2-.8 2.2-.8.8-2.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M5 15.5 5.6 17l1.4.5-1.4.5L5 19.5 4.4 18 3 17.5l1.4-.5.6-1.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function CoinsGlyph() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 7.5c0 2-1.6 3.5-3.5 3.5S2 9.5 2 7.5 3.6 4 5.5 4 9 5.5 9 7.5Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M14 14.5c0 2-1.6 3.5-3.5 3.5S7 16.5 7 14.5 8.6 11 10.5 11 14 12.5 14 14.5Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M22 11.5c0 2-1.6 3.5-3.5 3.5S15 13.5 15 11.5 16.6 8 18.5 8 22 9.5 22 11.5Z" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function CheckGlyph() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="m5 12 4 4 10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function SharedReportEntryCard({
   id,
   title,
@@ -58,49 +94,87 @@ function SharedReportEntryCard({
 }) {
   const isAvailable = availability === "available";
   const redeemInputId = `am-report-entry-redeem-code-${id}`;
+  const [redeemState, setRedeemState] = useState<"idle" | "ready" | "empty">("idle");
+
+  const handleRedeem = () => {
+    setRedeemState(redeemCode?.trim() ? "ready" : "empty");
+  };
+
+  const handleRedeemCodeChange = (value: string) => {
+    if (redeemState !== "idle") {
+      setRedeemState("idle");
+    }
+    onRedeemCodeChange?.(value);
+  };
+  const priceMatch = priceLabel.match(/^(.+?)\s*(元)$/);
 
   return (
     <article
       className={`am-report-entry-card am-report-entry-card--${tone}${isAvailable ? " is-available" : " is-unavailable"}`}
     >
-      <div className="am-report-entry-card__topline" />
-      <div className="am-report-entry-card__eyebrow">解读版本</div>
       <div className="am-report-entry-card__head">
-        <h2 className="am-report-entry-card__title">{title}</h2>
+        <div className="am-report-entry-card__version">
+          <span className="am-report-entry-card__icon">
+            <SparklesGlyph />
+          </span>
+          <div>
+            <div className="am-report-entry-card__eyebrow">解读版本</div>
+            <h2 className="am-report-entry-card__title">{title}</h2>
+          </div>
+        </div>
         <span className="am-report-entry-card__price">
-          {priceLabel}
+          {priceMatch ? (
+            <>
+              <span className="am-report-entry-card__price-main">{priceMatch[1]}</span>
+              <span className="am-report-entry-card__price-unit">{priceMatch[2]}</span>
+            </>
+          ) : (
+            priceLabel
+          )}
         </span>
       </div>
-      <p className="am-report-entry-card__description">{description}</p>
+      {description ? <p className="am-report-entry-card__description">{description}</p> : null}
 
       <section className="am-report-entry-redeem" aria-label="优惠券或兑换码">
-        <div className="am-report-entry-redeem__head">
-          <label className="am-report-entry-redeem__label" htmlFor={redeemInputId}>
-            优惠券 / 兑换码
-          </label>
-          <span className="am-report-entry-redeem__optional">可选</span>
+        <label className="am-report-entry-redeem__label" htmlFor={redeemInputId}>
+          优惠券 / 兑换码
+        </label>
+        <div className="am-report-entry-redeem__row">
+          <input
+            id={redeemInputId}
+            className={`am-report-entry-redeem__input am-report-entry-redeem__input--${redeemState}`}
+            value={redeemCode}
+            onChange={(event) => handleRedeemCodeChange(event.target.value)}
+          />
+          <button
+            type="button"
+            className="am-report-entry-redeem__button"
+            onClick={handleRedeem}
+          >
+            兑换
+          </button>
         </div>
-        <input
-          id={redeemInputId}
-          className="am-report-entry-redeem__input"
-          value={redeemCode}
-          onChange={(event) => onRedeemCodeChange?.(event.target.value)}
-          placeholder="请输入可用兑换码"
-        />
-        <p className="am-report-entry-redeem__hint">
-          {redeemHint ?? "系统会在生成前校验兑换码；Lite 和 Pro 仍按所选版本生成。"}
-        </p>
+        {redeemState !== "idle" ? (
+          <p className={`am-report-entry-redeem__hint am-report-entry-redeem__hint--${redeemState}`}>
+            {redeemState === "empty"
+              ? "请先输入优惠券或兑换码。"
+              : redeemHint ?? "兑换码已填写，支付时会一起校验。"}
+          </p>
+        ) : null}
       </section>
 
       <div className="am-report-entry-card__bullets">
+        <div className="am-report-entry-card__bullets-title">本次 Lite 解读会包含</div>
         {bullets.map((item) => (
           <div key={item} className="am-report-entry-card__bullet">
-            <span className="am-report-entry-card__bullet-dot">·</span>
+            <span className="am-report-entry-card__bullet-dot">
+              <CheckGlyph />
+            </span>
             <span>{item}</span>
           </div>
         ))}
       </div>
-      <p className="am-report-entry-card__note">{note}</p>
+      {note ? <p className="am-report-entry-card__note">{note}</p> : null}
       <button
         type="button"
         onClick={onClick}
@@ -108,7 +182,7 @@ function SharedReportEntryCard({
         className="am-report-entry-card__cta"
       >
         <span>{cta}</span>
-        <EntryArrowGlyph />
+        {cta.length > 4 ? <EntryArrowGlyph /> : null}
       </button>
     </article>
   );
@@ -142,11 +216,15 @@ export function SharedReportEntrySelectionPage({
           className={`am-report-entry-hero__pattern${heroPatternClassName ? ` ${heroPatternClassName}` : ""}`}
           style={heroPatternStyle}
         />
-        <button type="button" onClick={onBack} className="am-report-entry-back">
-          返回
-        </button>
+        <div className="am-report-entry-topbar">
+          <button type="button" onClick={onBack} className="am-report-entry-back">
+            <BackGlyph />
+            <span>返回</span>
+          </button>
+          <div className="am-report-entry-topbar__status">{descriptor.statusLabel}</div>
+          <div className="am-report-entry-topbar__spacer" />
+        </div>
         <div className="am-report-entry-hero__content">
-          <div className="am-report-entry-hero__eyebrow">{descriptor.statusLabel}</div>
           <h1 className="am-report-entry-hero__title">{descriptor.title}</h1>
           <p className="am-report-entry-hero__description">
             {descriptor.description}
@@ -156,6 +234,7 @@ export function SharedReportEntrySelectionPage({
           </p>
           <div className="am-report-entry-theme-pill">
             <span className="am-report-entry-theme-pill__label">当前议题</span>
+            <CoinsGlyph />
             <span>{descriptor.themeLabel}</span>
           </div>
         </div>
@@ -177,10 +256,10 @@ export function SharedReportEntrySelectionPage({
           />
         ))}
 
-        <section className="am-report-entry-footnote">
+        {descriptor.footnote ? <section className="am-report-entry-footnote">
           <div className="am-report-entry-footnote__label">温柔提示</div>
           {descriptor.footnote}
-        </section>
+        </section> : null}
       </div>
     </div>
   );

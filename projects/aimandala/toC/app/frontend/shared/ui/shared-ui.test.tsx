@@ -93,7 +93,7 @@ describe("shared ui", () => {
               title: "Lite",
               description: "先快速看清这次画面最明显的状态主线。",
               bullets: ["重点接住状态主线"],
-              cta: "确认支付并开始 Lite 解读",
+              cta: "确认支付",
               note: "适合快速进入。",
               priceLabel: "9.9 元",
               tone: "lite",
@@ -104,7 +104,7 @@ describe("shared ui", () => {
       />,
     );
 
-    expect(html).toContain("确认支付并开始 Lite 解读");
+    expect(html).toContain("确认支付");
     expect(html).toContain("优惠券 / 兑换码");
   });
 

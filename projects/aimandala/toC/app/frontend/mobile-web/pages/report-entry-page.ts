@@ -41,17 +41,17 @@ export function createReportEntryPageDescriptor(
     title: isProUpgrade ? "确认升级到 Pro 深度解读" : "确认支付 Lite 解读",
     description: isProUpgrade
       ? "补齐这一步后，会继续生成 Pro 完整报告。"
-      : "支付完成后，会立即进入 Lite 解读生成页。",
+      : "支付完成后，会进入 Lite 解读生成流程。",
     themeLabel,
     footnote: isProUpgrade
       ? "这一步会沿用刚才同一幅画作与同一议题继续升级，不需要重新上传或重新识别。"
-      : "本次会先生成 Lite 报告；看完后，如果你想继续深入，再进入 Pro 升级付款页。",
+      : "",
     heroHint: isProUpgrade
       ? "这一步不是重新开始，而是在刚才那份 Lite 解读基础上继续深入。"
-      : "这一步会先帮你拿到第一份 Lite 解读，读完之后再决定要不要继续升级。",
+      : "这一步会先用刚才选的 Lite 版本，支付之后无法再改动。",
     redeemHint: isProUpgrade
       ? "系统会在升级前校验兑换码；升级成功后会继续生成 Pro 完整报告。"
-      : "系统会在支付前校验兑换码；支付成功后会直接开始 Lite 解读。",
+      : "兑换码已填写，支付时会一起校验。",
     cards: isProUpgrade
       ? [
           {
@@ -62,7 +62,7 @@ export function createReportEntryPageDescriptor(
               "会展开更完整的状态解释链与现实连接",
               "可继续看到三圈能量、失衡诊断与更深层建议",
             ],
-            cta: "确认支付并升级到 Pro",
+            cta: "确认支付",
             note: "适合已经读完 Lite，想继续看清这幅画更深层结构的人。",
             priceLabel: "再付 29 元升级",
             tone: "pro",
@@ -73,13 +73,14 @@ export function createReportEntryPageDescriptor(
           {
             id: "lite",
             title: "Lite",
-            description: "先快速看清这次画面最明显的状态主线。",
+            description: "",
             bullets: [
-              "重点接住这次最突出的状态与气氛",
-              "阅读更轻，适合先进入这次解读",
+              "重点描述这次画面最突出的状态与气氛",
+              "阅读简短，适合先快速看清这次解读",
+              "适合快速进入；之后想深入，可在 Lite 基础上升级 Pro",
             ],
-            cta: "确认支付并开始 Lite 解读",
-            note: "适合先快速进入，再决定要不要继续看得更深。",
+            cta: "确认支付",
+            note: "",
             priceLabel: "9.9 元",
             tone: "lite",
             availability: "available",

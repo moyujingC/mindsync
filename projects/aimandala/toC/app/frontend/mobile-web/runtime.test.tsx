@@ -159,11 +159,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认支付");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认支付"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -217,11 +217,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认支付");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认支付"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -289,11 +289,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认支付");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认支付"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -343,11 +343,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认支付");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认支付"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -459,7 +459,7 @@ describe("MobileWebRuntime", () => {
     });
 
     const litePayButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认支付"),
     );
     expect(litePayButton).toBeTruthy();
 
@@ -484,7 +484,7 @@ describe("MobileWebRuntime", () => {
 
     await waitForAssertion(() => {
       expect(container.textContent).toContain("确认升级到 Pro 深度解读");
-      expect(container.textContent).toContain("确认支付并升级到 Pro");
+      expect(container.textContent).toContain("确认支付");
       expect(container.textContent).toContain("再付 29 元升级");
     });
   });
