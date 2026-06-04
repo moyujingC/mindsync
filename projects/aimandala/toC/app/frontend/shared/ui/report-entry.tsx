@@ -220,7 +220,7 @@ export function SharedReportEntrySelectionPage({
           <button type="button" onClick={onBack} className="am-report-entry-back" aria-label="返回">
             <BackGlyph />
           </button>
-          <h1 className="am-report-entry-topbar__title">确认支付</h1>
+          <h1 className="am-report-entry-topbar__title">待支付</h1>
           <div className="am-report-entry-topbar__spacer" aria-hidden="true" />
         </div>
         <div className="am-report-entry-hero__content">
