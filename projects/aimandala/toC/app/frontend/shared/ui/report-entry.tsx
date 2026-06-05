@@ -29,6 +29,61 @@ export interface SharedReportEntryDescriptor {
   cards: SharedReportEntryCardDescriptor[];
 }
 
+type RedeemResult =
+  | {
+      state: "success";
+      message: string;
+      discountLabel: string;
+      payableLabel: string;
+    }
+  | {
+      state: "error" | "empty";
+      message: string;
+    };
+
+function formatCurrencyAmount(amount: number): string {
+  return Number.isInteger(amount) ? `${amount}` : amount.toFixed(1);
+}
+
+function parsePriceAmount(priceLabel: string): number | null {
+  const match = priceLabel.match(/(\d+(?:\.\d+)?)/);
+  return match ? Number(match[1]) : null;
+}
+
+export function resolveReportEntryRedeemResult({
+  cardId,
+  code,
+  priceLabel,
+}: {
+  cardId: string;
+  code: string;
+  priceLabel: string;
+}): RedeemResult {
+  const normalizedCode = code.trim().toUpperCase().replace(/-/g, "_");
+  if (!normalizedCode) {
+    return { state: "empty", message: "请先输入优惠券或兑换码。" };
+  }
+
+  const expectedCode = cardId === "pro" ? "MVP_PRO" : "MVP_LITE";
+  if (normalizedCode !== expectedCode) {
+    return {
+      state: "error",
+      message: cardId === "pro"
+        ? "兑换失败：当前 Pro 升级可用兑换码为 MVP_PRO。"
+        : "兑换失败：当前 Lite 解读可用兑换码为 MVP_LITE。",
+    };
+  }
+
+  const priceAmount = parsePriceAmount(priceLabel) ?? 0;
+  const discountLabel = `${formatCurrencyAmount(priceAmount)} 元`;
+  return {
+    state: "success",
+    message: "兑换成功：MVP 体验券已应用。",
+    discountLabel,
+    payableLabel: "0 元",
+  };
+}
+
 function EntryArrowGlyph() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -88,19 +143,24 @@ function SharedReportEntryCard({
 }) {
   const isAvailable = availability === "available";
   const redeemInputId = `am-report-entry-redeem-code-${id}`;
-  const [redeemState, setRedeemState] = useState<"idle" | "ready" | "empty">("idle");
+  const [redeemResult, setRedeemResult] = useState<RedeemResult | null>(null);
 
   const handleRedeem = () => {
-    setRedeemState(redeemCode?.trim() ? "ready" : "empty");
+    setRedeemResult(resolveReportEntryRedeemResult({
+      cardId: id,
+      code: redeemCode ?? "",
+      priceLabel,
+    }));
   };
 
   const handleRedeemCodeChange = (value: string) => {
-    if (redeemState !== "idle") {
-      setRedeemState("idle");
+    if (redeemResult) {
+      setRedeemResult(null);
     }
     onRedeemCodeChange?.(value);
   };
   const priceMatch = priceLabel.match(/^(.+?)\s*(元)$/);
+  const redeemState = redeemResult?.state ?? "idle";
 
   return (
     <article
@@ -148,11 +208,14 @@ function SharedReportEntryCard({
             兑换
           </button>
         </div>
-        {redeemState !== "idle" ? (
+        {redeemResult ? (
           <p className={`am-report-entry-redeem__hint am-report-entry-redeem__hint--${redeemState}`}>
-            {redeemState === "empty"
-              ? "请先输入优惠券或兑换码。"
-              : redeemHint ?? "兑换码已填写，当前会随解读请求一起保留。"}
+            <span>{redeemResult.message}</span>
+            {redeemResult.state === "success" ? (
+              <span className="am-report-entry-redeem__summary">
+                已优惠 {redeemResult.discountLabel}，当前应付 {redeemResult.payableLabel}
+              </span>
+            ) : null}
           </p>
         ) : null}
       </section>
