@@ -1,0 +1,243 @@
+import { Container, CTAButton, ResearchCard, SectionLabel, Pill } from '../shared';
+import { Link } from '../../router';
+import { products, tracks, articles } from '../../data';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
+
+const heroImg = 'https://images.unsplash.com/photo-1768836180164-070b4c1a8f94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1600&q=80';
+
+export function HomePage() {
+  const featured = ['ash', 'rosebud', 'rocky-ai', 'eleos-health']
+    .map(s => products.find(p => p.slug === s)!).filter(Boolean);
+
+  return (
+    <main>
+      {/* HERO */}
+      <section className="relative overflow-hidden">
+        <div className="paper-grain absolute inset-0 pointer-events-none opacity-60" />
+        <Container className="pt-20 md:pt-28 pb-16 md:pb-24 relative">
+          <div className="grid md:grid-cols-12 gap-10 items-center">
+            <div className="md:col-span-7">
+              <SectionLabel>OBSERVATORY · ISSUE 01 · 2026 SPRING</SectionLabel>
+              <h1 className="mt-5 mb-6 leading-[1.25]" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.4rem)' }}>
+                心理疗愈 AI<br />
+                <span style={{ color: 'var(--accent-green)' }}>产品观察室</span>
+              </h1>
+              <p className="m-0 max-w-[560px] text-[16px]" style={{ color: 'var(--ink-secondary)', lineHeight: 1.9 }}>
+                这是一份个人研究项目：我整理了 45 篇原始拆解文档，去重成 17 个值得长期跟踪的产品、7 个赛道、4 个重点样本，从创业视角看 AI 在心理领域的真实机会与边界。
+              </p>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <CTAButton to={{ name: 'map' }}>浏览产品地图</CTAButton>
+                <CTAButton to={{ name: 'method' }} variant="ghost">查看研究方法</CTAButton>
+              </div>
+              <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-[560px]">
+                <Stat n="45" l="原始拆解文档" />
+                <Stat n="17" l="去重产品" />
+                <Stat n="7" l="覆盖赛道" />
+                <Stat n="4" l="重点样本" />
+              </div>
+            </div>
+            <div className="md:col-span-5">
+              <div className="relative hairline rounded-md overflow-hidden" style={{ background: 'var(--bg-soft)' }}>
+                <div className="aspect-[4/5]">
+                  <ImageWithFallback src={heroImg} alt="安静的研究室——温柔自然光下的工作台"
+                    className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 backdrop-blur-md"
+                  style={{ background: 'rgba(251,251,249,0.78)', borderTop: '1px solid var(--line)' }}>
+                  <div className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--ink-tertiary)' }}>FIELD NOTE · 01</div>
+                  <div className="text-[13px] mt-1" style={{ color: 'var(--ink-primary)' }}>"克制是稀缺的产品力——大多数 AI 产品在抢着'给'，最好的心理 AI 在练习'接住'。"</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* TRACK MAP PREVIEW */}
+      <section className="py-16 md:py-24 hairline-t" style={{ background: 'var(--bg-soft)' }}>
+        <Container>
+          <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+            <div>
+              <SectionLabel>PRODUCT MAP</SectionLabel>
+              <h2 className="mt-3 mb-2">7 个赛道，17 款产品</h2>
+              <p className="m-0 max-w-[560px]" style={{ color: 'var(--ink-secondary)' }}>
+                按"AI 在体验中承担的角色"为轴，把这一新兴领域分成 7 个赛道。每个赛道都有自己的产品语言、监管阈值与商业范式。
+              </p>
+            </div>
+            <Link to={{ name: 'map' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看完整地图 →</Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {tracks.map((t, i) => {
+              const count = products.filter(p => p.track === t.name).length;
+              return (
+                <div key={t.name} className="hairline rounded-md p-5 group cursor-default"
+                  style={{ background: 'var(--bg-paper)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-mono text-[11px]" style={{ color: 'var(--ink-tertiary)' }}>
+                      0{i + 1}
+                    </span>
+                    <span className="text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>{count} 个产品</span>
+                  </div>
+                  <h4 className="m-0 mb-2">{t.name}</h4>
+                  <p className="m-0 text-[13px]" style={{ color: 'var(--ink-secondary)' }}>{t.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </Container>
+      </section>
+
+      {/* METHOD */}
+      <section className="py-16 md:py-24">
+        <Container>
+          <div className="grid md:grid-cols-12 gap-10">
+            <div className="md:col-span-4">
+              <SectionLabel>RESEARCH METHOD</SectionLabel>
+              <h2 className="mt-3 mb-5">用 7 把尺子拆每一款产品</h2>
+              <p className="m-0" style={{ color: 'var(--ink-secondary)' }}>
+                完整方法论由 7 个维度组成：场景、关系、输入、干预、记忆、边界、商业。下方先展示其中 5 个常用维度，便于快速理解我们如何看一款产品。
+              </p>
+              <div className="mt-6">
+                <Link to={{ name: 'method' }} style={{ color: 'var(--accent-green)' }}>查看完整 7 维方法论 →</Link>
+              </div>
+            </div>
+            <div className="md:col-span-8 grid sm:grid-cols-2 gap-3">
+              {[
+                ['01', '用户痛点', '它解决的是真实痛点，还是想象中的需求？'],
+                ['02', '心理学机制', '它背后引用的是哪种心理学技术？被严肃执行了吗？'],
+                ['03', 'AI 能力边界', 'AI 在体验里承担什么、不承担什么？边界稳定吗？'],
+                ['04', '商业模式', '它向谁收钱？这门生意可持续吗？'],
+                ['05', '安全与信任', '高风险情境的降级与转介，做到了什么程度？'],
+              ].map(([n, t, d]) => (
+                <div key={n} className="hairline rounded-md p-5" style={{ background: 'var(--bg-paper)' }}>
+                  <div className="font-mono text-[11px] tracking-widest mb-2" style={{ color: 'var(--accent-green)' }}>METHOD {n}</div>
+                  <h4 className="m-0 mb-2">{t}</h4>
+                  <p className="m-0 text-[13px]" style={{ color: 'var(--ink-secondary)' }}>{d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* FEATURED PRODUCTS */}
+      <section className="py-16 md:py-24 hairline-t hairline-b" style={{ background: 'var(--bg-cool)' }}>
+        <Container>
+          <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+            <div>
+              <SectionLabel>FEATURED · 代表产品</SectionLabel>
+              <h2 className="mt-3 mb-2">先从这 4 款产品开始</h2>
+              <p className="m-0 max-w-[560px]" style={{ color: 'var(--ink-secondary)' }}>
+                它们分别代表"陪伴 / 日记 / 教练 / 临床"四种 AI 在心理领域的典型角色——是理解这个赛道最经济的样本。
+              </p>
+            </div>
+            <Link to={{ name: 'map' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看全部 17 款 →</Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featured.map(p => <ResearchCard key={p.slug} p={p} />)}
+          </div>
+        </Container>
+      </section>
+
+      {/* ARTICLES */}
+      <section className="py-16 md:py-24">
+        <Container>
+          <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+            <div>
+              <SectionLabel>FIELD NOTES · 首发文章</SectionLabel>
+              <h2 className="mt-3 mb-2">先发布的 2 篇，与 1 个后续选题</h2>
+              <p className="m-0 max-w-[560px] mt-2" style={{ color: 'var(--ink-secondary)' }}>
+                文章不追产能：先有判断再有文章。下面是已经写完的 2 篇首发拆解，加上 1 个正在准备中的下一篇选题。
+              </p>
+            </div>
+            <Link to={{ name: 'articles' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看文章列表 →</Link>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {articles.slice(0, 2).map((a, i) => (
+              <Link key={a.slug} to={{ name: 'article', slug: a.slug }}
+                className="block hairline rounded-md p-6 md:p-7 no-underline hover:no-underline group"
+                style={{ background: 'var(--bg-paper)' }}>
+                <div className="flex items-center gap-3 mb-3 text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>
+                  <span className="font-mono">№ {String(i + 1).padStart(2, '0')}</span>
+                  <span>·</span>
+                  <Pill>{a.tag}</Pill>
+                  <span>·</span>
+                  <span>{a.readTime}</span>
+                </div>
+                <h3 className="m-0 mb-3 group-hover:underline underline-offset-4" style={{ fontSize: '1.2rem' }}>{a.title}</h3>
+                <p className="m-0 text-[14px]" style={{ color: 'var(--ink-secondary)' }}>{a.excerpt}</p>
+                <div className="mt-5 flex items-center justify-between text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>
+                  <span className="font-mono">{a.date}</span>
+                  <span style={{ color: 'var(--accent-green)' }}>阅读全文 →</span>
+                </div>
+              </Link>
+            ))}
+            <div className="block hairline rounded-md p-6 md:p-7"
+              style={{ background: 'var(--bg-soft)', borderStyle: 'dashed' }}>
+              <div className="flex items-center gap-3 mb-3 text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>
+                <span className="font-mono">NEXT</span>
+                <span>·</span>
+                <Pill tone="warm">后续选题</Pill>
+              </div>
+              <h3 className="m-0 mb-3" style={{ fontSize: '1.2rem' }}>临床场景里，AI 不要做主角</h3>
+              <p className="m-0 text-[14px]" style={{ color: 'var(--ink-secondary)' }}>
+                以 Eleos Health 为样本，谈被严格监管的领域里，AI 应该处在副驾位置的产品判断。计划在下一期发布。
+              </p>
+              <div className="mt-5 text-[12px] font-mono" style={{ color: 'var(--ink-tertiary)' }}>
+                筹备中 · 暂未发布
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ABOUT / SUBSCRIBE */}
+      <section className="py-16 md:py-24 hairline-t" style={{ background: 'var(--bg-soft)' }}>
+        <Container>
+          <div className="grid md:grid-cols-12 gap-10">
+            <div className="md:col-span-6">
+              <SectionLabel>ABOUT</SectionLabel>
+              <h2 className="mt-3 mb-4">一份个人研究项目，<br />不是产品导航站。</h2>
+              <p className="m-0 max-w-[480px]" style={{ color: 'var(--ink-secondary)' }}>
+                我先整理出 45 篇原始拆解文档，再去重成 17 个值得长期跟踪的产品，用创业视角去看每一款产品背后的机会与风险。每段评价都标注来源和置信度——置信度反映的是资料可核验程度，不是产品好坏。
+              </p>
+              <div className="mt-7 flex gap-3">
+                <CTAButton to={{ name: 'about' }} variant="ghost">关于观察室</CTAButton>
+                <CTAButton to={{ name: 'method' }} variant="ghost">研究方法</CTAButton>
+              </div>
+            </div>
+            <div className="md:col-span-6">
+              <div className="hairline rounded-md p-7" style={{ background: 'var(--bg-paper)' }}>
+                <div className="font-mono text-[11px] tracking-widest uppercase mb-3" style={{ color: 'var(--accent-green)' }}>SUBSCRIBE</div>
+                <h3 className="m-0 mb-3">订阅每月一封的观察通讯</h3>
+                <p className="m-0 mb-5 text-[14px]" style={{ color: 'var(--ink-secondary)' }}>
+                  每月 1 封，约 1500 字。包含当月最值得关注的 2–3 款产品、1 个赛道判断、1 份方法论卡片。低频，不打扰。
+                </p>
+                <form className="flex flex-col sm:flex-row gap-2" onSubmit={(e) => e.preventDefault()}>
+                  <input type="email" placeholder="your@email.com"
+                    className="flex-1 px-4 py-2.5 rounded-sm hairline text-[14px] outline-none"
+                    style={{ background: 'var(--bg-base)', color: 'var(--ink-primary)' }} />
+                  <button type="submit"
+                    className="px-5 py-2.5 rounded-sm text-[14px]"
+                    style={{ background: 'var(--ink-primary)', color: '#F6F7F5' }}>订阅</button>
+                </form>
+                <div className="mt-3 text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>
+                  · 你的邮箱不会被分享。随时可退订。
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+    </main>
+  );
+}
+
+function Stat({ n, l }: { n: string; l: string }) {
+  return (
+    <div>
+      <div className="font-serif" style={{ fontSize: '2.2rem', color: 'var(--ink-primary)', lineHeight: 1 }}>{n}</div>
+      <div className="text-[12px] mt-1" style={{ color: 'var(--ink-tertiary)' }}>{l}</div>
+    </div>
+  );
+}

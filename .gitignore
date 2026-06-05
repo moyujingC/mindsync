@@ -33,6 +33,7 @@ secrets/
 # Node modules (if any)
 node_modules/
 projects/relayhub/console/dist/
+projects/research-center/research/心理疗愈app/心理疗愈AI产品观察室/dist/
 projects/relayhub/control-plane/data/
 projects/aimandala/toC/app/backend/data/
 
