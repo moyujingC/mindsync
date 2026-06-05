@@ -237,6 +237,10 @@
   height: var(--am-upload-middle);
 }
 
+.am-upload-disc.is-showing-original .am-upload-disc__boundary {
+  opacity: 0;
+}
+
 .am-upload-disc__hover-mask {
   position: absolute;
   inset: 0;
@@ -401,6 +405,12 @@
 
 .am-upload-action-button:hover:not(:disabled) {
   transform: none;
+}
+
+.am-upload-action-button.is-pressed:not(:disabled) {
+  border-color: rgba(212, 160, 84, 0.5);
+  background: rgba(212, 160, 84, 0.18);
+  color: #f8e2b2;
 }
 
 .am-upload-action-button:disabled {

@@ -600,6 +600,11 @@ export function MobileWebUploadPage({
     ["--am-upload-inner" as string]: `${innerRadius}%`,
     ["--am-upload-middle" as string]: `${middleRadius}%`,
   } as CSSProperties;
+  const showOriginalImage = () => {
+    if (!previewSrc) return;
+    setShowOriginalPreview(true);
+  };
+  const hideOriginalImage = () => setShowOriginalPreview(false);
 
   useEffect(() => {
     if (!isGuideOpen) return;
@@ -936,7 +941,7 @@ export function MobileWebUploadPage({
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--left" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top-left" />
             <div
-              className={`am-upload-disc${isDragOver ? " is-dragover" : ""}${previewSrc ? " has-image" : ""}`}
+              className={`am-upload-disc${isDragOver ? " is-dragover" : ""}${previewSrc ? " has-image" : ""}${showOriginalPreview ? " is-showing-original" : ""}`}
               style={discStyle}
               role="button"
               tabIndex={0}
@@ -1040,15 +1045,22 @@ export function MobileWebUploadPage({
           </button>
           <button
             type="button"
-            className="am-upload-action-button"
+            className={`am-upload-action-button${showOriginalPreview ? " is-pressed" : ""}`}
             disabled={!previewSrc}
-            onPointerDown={() => {
+            onPointerDown={(event) => {
               if (!previewSrc) return;
-              setShowOriginalPreview(true);
+              event.currentTarget.setPointerCapture?.(event.pointerId);
+              showOriginalImage();
             }}
-            onPointerUp={() => setShowOriginalPreview(false)}
-            onPointerLeave={() => setShowOriginalPreview(false)}
-            onPointerCancel={() => setShowOriginalPreview(false)}
+            onPointerUp={hideOriginalImage}
+            onPointerCancel={hideOriginalImage}
+            onMouseDown={showOriginalImage}
+            onMouseUp={hideOriginalImage}
+            onMouseLeave={hideOriginalImage}
+            onTouchStart={showOriginalImage}
+            onTouchEnd={hideOriginalImage}
+            onTouchCancel={hideOriginalImage}
+            onBlur={hideOriginalImage}
           >
             <LucideIcon iconNode={ICON_EYE} size={13} strokeWidth={1.8} />
             <span>按住查看原图</span>
