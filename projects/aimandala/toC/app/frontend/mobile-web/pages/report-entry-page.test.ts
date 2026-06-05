@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createReportEntryPageDescriptor } from "./report-entry-page";
 
 describe("report-entry page descriptor", () => {
-  it("在 wealth 议题下默认进入 Lite 付款页", () => {
+  it("在 wealth 议题下默认进入 Lite 直生成页", () => {
     const descriptor = createReportEntryPageDescriptor({
       theme: "wealth",
       reportType: "lite",
@@ -14,11 +14,11 @@ describe("report-entry page descriptor", () => {
     expect(descriptor.title).toContain("Lite");
     expect(lite?.availability).toBe("available");
     expect(lite?.priceLabel).toBe("9.9 元");
-    expect(lite?.cta).toContain("确认支付");
+    expect(lite?.cta).toContain("开始解读");
     expect(descriptor.cards).toHaveLength(1);
   });
 
-  it("升级场景下切到 Pro 付款页并显示补差价", () => {
+  it("升级场景下切到 Pro 直生成页并显示升级价", () => {
     const descriptor = createReportEntryPageDescriptor({
       theme: "intimate_relationship",
       reportType: "pro",
@@ -29,5 +29,6 @@ describe("report-entry page descriptor", () => {
     expect(ids).toEqual(["pro"]);
     expect(descriptor.description).toContain("Pro 完整报告");
     expect(descriptor.cards[0]?.priceLabel).toBe("再付 29 元升级");
+    expect(descriptor.cards[0]?.cta).toBe("升级 Pro版");
   });
 });

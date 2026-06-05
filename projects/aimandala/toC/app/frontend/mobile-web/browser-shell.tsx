@@ -39,6 +39,11 @@ import {
   type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "./state";
+import {
+  getGeneratedReportEntry,
+  listGeneratedReportRecords,
+  saveGeneratedReport,
+} from "./generated-report-store";
 import { ensureUploadedImagePath } from "./upload-runtime";
 import type { HistoryFilterId } from "./components/history-cards";
 import type {
@@ -291,8 +296,6 @@ export function MobileWebBrowserShell() {
       preserveRecordsOnError?: boolean;
     },
   ) {
-    void nextQuery;
-    void options;
     if (draft.browserFile && !draft.uploadAsset) {
       setPreviewHistoryStatusLabel("当前显示占位历史记录");
       setPreviewHistoryStatusDetail("当前浏览器文件还没完成上传换路径，因此历史页先不请求真实接口。");
@@ -301,10 +304,11 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    setPreviewHistoryRecords(null);
-    setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
-    setPreviewHistoryStatusDetail("当前只保留财富报告生成入口，历史列表需要按新 report_id 存储模型重做。");
-    setPreviewHistoryStatusTone("preview");
+    const records = listGeneratedReportRecords(nextQuery);
+    setPreviewHistoryRecords(records);
+    setPreviewHistoryStatusLabel(options?.successLabel ?? (records.length ? "已读取本地生成历史" : "暂无本地历史记录"));
+    setPreviewHistoryStatusDetail(options?.successDetail ?? (records.length ? "当前历史页展示本浏览器内生成过的 Lite / Pro 报告。" : "完成一次 Lite 或 Pro 解读后，这里会出现可回看的报告。"));
+    setPreviewHistoryStatusTone(options?.successTone ?? "preview");
     setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
   }
 
@@ -325,10 +329,10 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryRefreshing(true);
 
       if (!cancelled) {
-        setPreviewHistoryRecords(null);
+        setPreviewHistoryRecords(listGeneratedReportRecords(previewHistoryQuery));
         setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
-        setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
-        setPreviewHistoryStatusDetail("自动刷新已停用；历史列表会在新报告存储模型完成后重做。");
+        setPreviewHistoryStatusLabel("已刷新本地历史记录");
+        setPreviewHistoryStatusDetail("当前历史页展示本浏览器内生成过的 Lite / Pro 报告。");
         setPreviewHistoryStatusTone("preview");
       }
       setPreviewHistoryRefreshing(false);
@@ -666,6 +670,11 @@ export function MobileWebBrowserShell() {
       );
       const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
       setPreviewFlowState(result.state);
+      saveGeneratedReport({
+        userId,
+        draft: draftWithUpload,
+        state: result.state,
+      });
       if (result.state.step === "liteGenerating") {
         setRoute("loading");
         return;
@@ -706,6 +715,10 @@ export function MobileWebBrowserShell() {
     setPreviewHistoryOpeningId(interpretationId);
     try {
       setInterpretationId(interpretationId);
+      const entry = getGeneratedReportEntry(interpretationId);
+      if (entry) {
+        setDraft(entry.draft);
+      }
       setRoute("historyRecordDetail");
     } finally {
       setPreviewHistoryOpeningId(null);
@@ -729,7 +742,8 @@ export function MobileWebBrowserShell() {
       );
       setPreviewFlowState(refreshed.state);
       setInterpretationId(interpretationId);
-      setDraft((current) => mergeMobileWebUploadDraft(current, { reportType }));
+      const entry = getGeneratedReportEntry(interpretationId);
+      setDraft((current) => mergeMobileWebUploadDraft(entry?.draft ?? current, { reportType }));
 
       if (reportType === "pro") {
         const proReady =

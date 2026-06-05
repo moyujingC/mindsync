@@ -152,7 +152,7 @@ function SharedReportEntryCard({
           <p className={`am-report-entry-redeem__hint am-report-entry-redeem__hint--${redeemState}`}>
             {redeemState === "empty"
               ? "请先输入优惠券或兑换码。"
-              : redeemHint ?? "兑换码已填写，支付时会一起校验。"}
+              : redeemHint ?? "兑换码已填写，当前会随解读请求一起保留。"}
           </p>
         ) : null}
       </section>
@@ -210,7 +210,7 @@ export function SharedReportEntrySelectionPage({
           className={`am-report-entry-hero__pattern${heroPatternClassName ? ` ${heroPatternClassName}` : ""}`}
           style={heroPatternStyle}
         />
-        <SharedAppTopBar title="待支付" onBack={onBack} />
+        <SharedAppTopBar title={descriptor.statusLabel} onBack={onBack} />
         <div className="am-report-entry-hero__content">
           <h2 className="am-report-entry-hero__title">{descriptor.title}</h2>
           <p className="am-report-entry-hero__description">

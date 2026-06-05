@@ -115,7 +115,7 @@ describe("MobileWebApp", () => {
     expect(html).toContain("重新上传画作");
   });
 
-  it("report 主路由默认不渲染追问入口", () => {
+  it("report 主路由默认渲染追问入口", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="report"
@@ -129,8 +129,8 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).not.toContain("对这份报告有疑问，可以问曼曼");
-    expect(html).not.toContain("输入你想继续追问的报告问题");
+    expect(html).toContain("对这份报告有疑问，可以问曼曼");
+    expect(html).toContain("输入你想继续追问的报告问题");
   });
 
   it("report 错误态不渲染正文占位和上传调试信息", () => {

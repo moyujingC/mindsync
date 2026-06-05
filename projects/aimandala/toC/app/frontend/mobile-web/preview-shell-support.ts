@@ -150,7 +150,7 @@ export async function finalizePreviewSelectedReport(
   } = args;
 
   let finalState = state;
-  if (getDraftReportVariant(draft) === "pro") {
+  if (getDraftReportVariant(draft) === "pro" && state.report?.version !== "pro") {
     const proReport = await refreshMobileWebReport(
       interpretationId,
       "pro",
@@ -172,7 +172,7 @@ export async function finalizePreviewSelectedReport(
   void userId;
   void historyQuery;
   setPreviewHistoryRecords(null);
-  setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
-  setPreviewHistoryStatusDetail("财富报告已生成；历史列表需要后续按新 report_id 存储模型重做。");
+  setPreviewHistoryStatusLabel("报告已写入历史记录");
+  setPreviewHistoryStatusDetail("你可以从历史页重新打开这份报告，并继续测试报告追问。");
   setPreviewHistoryStatusTone("preview");
 }

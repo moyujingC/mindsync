@@ -120,6 +120,16 @@ export interface WealthReportResponse {
   run_summary?: Record<string, unknown> | null;
 }
 
+export interface WealthReportRecordResponse {
+  report_id: string;
+  report_mode: InterpretationVersion | string;
+  theme: string;
+  status: string;
+  generation_stage: string;
+  generation_progress: number;
+  created_at: string;
+}
+
 export interface ReportPersona {
   persona_id: string;
   persona_version: string;

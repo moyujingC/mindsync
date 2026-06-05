@@ -12,6 +12,7 @@ import type { MobileWebUploadPageProps } from "./page-shells/upload-page";
 import type { MobileWebUploadDraft } from "./state";
 import { toStartCreatePayload } from "./state";
 import type { InterpretationListQuery } from "../shared/types";
+import { listGeneratedReportRecords } from "./generated-report-store";
 
 export async function loadUploadPage(
   draft: MobileWebUploadDraft,
@@ -71,9 +72,8 @@ export async function loadHistoryPage(
     limit: query.limit,
     theme: query.theme,
   };
-  void historyQuery;
-
   return {
-    records: [],
+    records: listGeneratedReportRecords(historyQuery),
+    historyQuery,
   };
 }

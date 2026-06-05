@@ -4,6 +4,7 @@ import type {
   ReportFollowupRequest,
   ReportFollowupResponse,
   UploadImageResponse,
+  WealthReportRecordResponse,
   WealthReportRequest,
   WealthReportResponse,
 } from "../types";
@@ -22,6 +23,18 @@ export async function createWealthReport(
     },
     body: JSON.stringify(payload),
   });
+}
+
+export async function listWealthReports(): Promise<WealthReportRecordResponse[]> {
+  return fetchJson<WealthReportRecordResponse[]>(buildUrl("/api/wealth-reports"));
+}
+
+export async function getWealthReport(
+  reportId: string,
+): Promise<WealthReportResponse> {
+  return fetchJson<WealthReportResponse>(
+    buildUrl(`/api/wealth-reports/${encodeURIComponent(reportId)}`),
+  );
 }
 
 export async function createReportFollowup(

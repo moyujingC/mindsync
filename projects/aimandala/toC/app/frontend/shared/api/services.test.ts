@@ -15,6 +15,8 @@ vi.mock("./config", () => ({
 import {
   createReportFollowup,
   createWealthReport,
+  getWealthReport,
+  listWealthReports,
   uploadImage,
 } from "./services";
 
@@ -83,6 +85,22 @@ describe("shared/api services", () => {
           history: [{ role: "user", content: "上一问" }],
         }),
       }),
+    );
+  });
+
+  it("listWealthReports reads the report history endpoint", async () => {
+    await listWealthReports();
+
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      "http://127.0.0.1:8100/api/wealth-reports",
+    );
+  });
+
+  it("getWealthReport reads a stored report artifact", async () => {
+    await getWealthReport("report-1");
+
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      "http://127.0.0.1:8100/api/wealth-reports/report-1",
     );
   });
 

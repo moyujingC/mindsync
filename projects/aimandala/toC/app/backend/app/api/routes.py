@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -57,6 +58,16 @@ class WealthReportResponse(BaseModel):
     prompt_pack_manifest: dict[str, object]
     quality_gate: dict[str, object]
     run_summary: dict[str, object]
+
+
+class WealthReportRecordResponse(BaseModel):
+    report_id: str
+    report_mode: Literal["lite", "pro"] | str = "lite"
+    theme: str = "wealth"
+    status: str = "completed"
+    generation_stage: str = "report_ready"
+    generation_progress: int = 100
+    created_at: str = ""
 
 
 class ReportFollowupTurn(BaseModel):
@@ -225,33 +236,52 @@ def _build_agent_input(payload: WealthReportRequest) -> MandalaAgentInput:
 
 
 def _authorize_report_access(payload: WealthReportRequest) -> None:
-    if payload.report_mode != "lite":
-        raise HTTPException(
-            status_code=403,
-            detail="Pro 版当前为 MVP 预备能力，暂不上线。",
-        )
-    configured_codes = os.getenv("AIMANDALA_REDEEM_CODES", "").strip()
-    if not configured_codes:
-        raise HTTPException(
-            status_code=402,
-            detail="报告生成需要先配置可用的优惠券或兑换码。",
-        )
-    submitted_code = payload.redeem_code.strip().upper()
-    if not submitted_code:
-        raise HTTPException(
-            status_code=402,
-            detail="请输入有效的优惠券或兑换码后再生成报告。",
-        )
+    # MVP trial path: payment is intentionally bypassed so Lite and Pro can both
+    # be generated end-to-end before the real order/payment chain is rebuilt.
+    _ = payload
+
+
+def _report_root_dir() -> Path:
+    return Path(os.getenv("AIMANDALA_REPORT_ARTIFACT_DIR", "data/reports"))
+
+
+def _read_report_json(report_dir: Path, filename: str) -> dict[str, object]:
+    path = report_dir / filename
+    if not path.exists():
+        return {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return payload if isinstance(payload, dict) else {}
+
+
+def _read_wealth_report_artifact(report_id: str) -> WealthReportResponse:
+    report_dir = _report_root_dir() / report_id
+    final_report_md_path = report_dir / "final_report.md"
+    if not final_report_md_path.exists():
+        raise HTTPException(status_code=404, detail="Report artifact not found.")
+
+    final_report = _read_report_json(report_dir, "final_report.json")
+    run_summary = _read_report_json(report_dir, "run_summary.json")
+    report_mode = str(final_report.get("report_mode") or run_summary.get("report_mode") or "lite")
+
+    return WealthReportResponse(
+        success=True,
+        report_id=report_id,
+        report_mode=report_mode,
+        final_report_md=final_report_md_path.read_text(encoding="utf-8"),
+        final_report=final_report,
+        visual_draft=_read_report_json(report_dir, "visual_draft.json"),
+        prompt_pack_manifest=_read_report_json(report_dir, "prompt_pack_manifest.json"),
+        quality_gate=_read_report_json(report_dir, "quality_gate.json"),
+        run_summary=run_summary,
+    )
 
 
 def _authorize_followup_access(payload: ReportFollowupRequest) -> None:
-    if os.getenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "").strip() != "1":
+    if os.getenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "1").strip() == "0":
         raise HTTPException(status_code=403, detail="报告追问功能当前未开启。")
     report_id_from_artifact = payload.final_report.get("report_id")
     if report_id_from_artifact and str(report_id_from_artifact) != payload.report_id:
         raise HTTPException(status_code=422, detail="追问请求与当前报告不匹配。")
-    if payload.report_mode == "pro" and os.getenv("AIMANDALA_REPORT_FOLLOWUP_INTERNAL_ONLY", "1") == "1":
-        raise HTTPException(status_code=403, detail="Pro 报告追问当前仅用于内部评测。")
 
 
 @router.post("/wealth-reports", response_model=WealthReportResponse)
@@ -269,7 +299,7 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
         )
     report_id = str(result.run_summary.get("report_id") or result.final_report.get("report_id") or "")
     if report_id:
-        store = MandalaInterpretationArtifactStore(output_dir=Path("data/reports") / report_id)
+        store = MandalaInterpretationArtifactStore(output_dir=_report_root_dir() / report_id)
         store.write(result)
         _followup_context_store().write(
             _build_followup_context_from_result(
@@ -291,12 +321,42 @@ async def create_wealth_report(payload: WealthReportRequest) -> WealthReportResp
     )
 
 
+@router.get("/wealth-reports", response_model=list[WealthReportRecordResponse])
+async def list_wealth_reports() -> list[WealthReportRecordResponse]:
+    root_dir = _report_root_dir()
+    if not root_dir.exists():
+        return []
+
+    records: list[WealthReportRecordResponse] = []
+    for report_dir in sorted(root_dir.iterdir(), key=lambda path: path.stat().st_mtime, reverse=True):
+        if not report_dir.is_dir() or not (report_dir / "final_report.md").exists():
+            continue
+        final_report = _read_report_json(report_dir, "final_report.json")
+        run_summary = _read_report_json(report_dir, "run_summary.json")
+        report_mode = str(final_report.get("report_mode") or run_summary.get("report_mode") or "lite")
+        records.append(
+            WealthReportRecordResponse(
+                report_id=report_dir.name,
+                report_mode=report_mode,
+                theme=str(run_summary.get("theme") or "wealth"),
+                created_at=str(
+                    run_summary.get("created_at")
+                    or datetime.fromtimestamp(report_dir.stat().st_mtime, tz=timezone.utc).isoformat()
+                ),
+            )
+        )
+    return records
+
+
+@router.get("/wealth-reports/{report_id}", response_model=WealthReportResponse)
+async def get_wealth_report(report_id: str) -> WealthReportResponse:
+    return _read_wealth_report_artifact(report_id)
+
+
 @router.post("/report-followups", response_model=ReportFollowupResponse)
 async def create_report_followup(payload: ReportFollowupRequest) -> ReportFollowupResponse:
     _authorize_followup_access(payload)
     context = _resolve_followup_context(payload)
-    if context.report_mode == "pro" and os.getenv("AIMANDALA_REPORT_FOLLOWUP_INTERNAL_ONLY", "1") == "1":
-        raise HTTPException(status_code=403, detail="Pro 报告追问当前仅用于内部评测。")
     result = ReportFollowupAgent(llm_client=_build_llm_client()).run(
         followup_input=ReportFollowupInput(context=context, question=payload.question)
     )

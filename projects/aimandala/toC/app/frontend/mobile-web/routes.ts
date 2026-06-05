@@ -16,7 +16,7 @@ export interface MobileWebRouteDefinition {
 export const mobileWebRoutes: MobileWebRouteDefinition[] = [
   { id: "landing", path: "/", title: "一镜一梳" },
   { id: "upload", path: "/upload", title: "上传画作" },
-  { id: "reportEntry", path: "/report-entry", title: "解读付款页" },
+  { id: "reportEntry", path: "/report-entry", title: "解读确认页" },
   { id: "loading", path: "/loading", title: "解读生成中" },
   { id: "report", path: "/report", title: "新版解读报告" },
   { id: "history", path: "/history", title: "历史解读" },

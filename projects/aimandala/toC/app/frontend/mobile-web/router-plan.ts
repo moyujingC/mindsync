@@ -1,5 +1,6 @@
 import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUploadPage } from "./loaders";
 import { resolveMobileWebCanonicalUserId } from "./identity";
+import { getGeneratedReportEntry, listGeneratedReportRecords } from "./generated-report-store";
 import type { MobileWebAppProps } from "./app";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
@@ -114,9 +115,18 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "historyRecordDetail": {
-      throw new Error(
-        `历史记录详情暂未接入当前财富报告 API：${input.params.interpretationId}`,
+      const entry = getGeneratedReportEntry(input.params.interpretationId);
+      const record = listGeneratedReportRecords({ limit: 100 }).find(
+        (candidate) => candidate.interpretation_id === input.params.interpretationId,
       );
+      if (!entry || !record) {
+        throw new Error(`未找到本地历史记录：${input.params.interpretationId}`);
+      }
+      return {
+        route: "historyRecordDetail",
+        record,
+        uploadDraft: entry.draft,
+      };
     }
 
   }

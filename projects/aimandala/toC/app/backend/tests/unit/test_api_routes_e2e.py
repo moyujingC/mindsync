@@ -67,7 +67,7 @@ class StubRouteLLMClient:
 
 
 def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
-    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
+    monkeypatch.setenv("AIMANDALA_REPORT_ARTIFACT_DIR", str(tmp_path / "reports"))
     monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
@@ -79,7 +79,6 @@ def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
             "image_path": str(image_path),
             "report_mode": "lite",
             "agent_variant": "two_pass_e2e",
-            "redeem_code": "MVP-LITE",
             "painting_intention": "想看财富卡点",
             "painting_feeling": "有点紧",
         },
@@ -100,7 +99,7 @@ def test_create_wealth_report_returns_new_contract(monkeypatch, tmp_path):
 
 
 def test_create_wealth_report_writes_followup_context(monkeypatch, tmp_path):
-    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
+    monkeypatch.setenv("AIMANDALA_REPORT_ARTIFACT_DIR", str(tmp_path / "reports"))
     monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_CONTEXT_DIR", str(tmp_path / "followup-contexts"))
     monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
     image_path = tmp_path / "mandala.jpg"
@@ -113,7 +112,6 @@ def test_create_wealth_report_writes_followup_context(monkeypatch, tmp_path):
             "image_path": str(image_path),
             "report_mode": "lite",
             "agent_variant": "two_pass_e2e",
-            "redeem_code": "MVP-LITE",
             "painting_intention": "想看财富卡点",
             "painting_feeling": "有点紧",
         },
@@ -130,8 +128,8 @@ def test_create_wealth_report_writes_followup_context(monkeypatch, tmp_path):
     assert stored_context.persona.persona_id == "manman"
 
 
-def test_create_wealth_report_rejects_pro_for_mvp(monkeypatch, tmp_path):
-    monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "MVP-LITE:lite")
+def test_create_wealth_report_allows_pro_with_payment_bypassed(monkeypatch, tmp_path):
+    monkeypatch.setenv("AIMANDALA_REPORT_ARTIFACT_DIR", str(tmp_path / "reports"))
     monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
     image_path = tmp_path / "mandala.jpg"
     image_path.write_bytes(b"fake-image")
@@ -142,15 +140,43 @@ def test_create_wealth_report_rejects_pro_for_mvp(monkeypatch, tmp_path):
         json={
             "image_path": str(image_path),
             "report_mode": "pro",
-            "redeem_code": "MVP-LITE",
         },
     )
 
-    assert response.status_code == 403
+    assert response.status_code == 200
+    assert response.json()["report_mode"] == "pro"
 
 
-def test_report_followup_disabled_by_default(monkeypatch):
-    monkeypatch.delenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", raising=False)
+def test_get_wealth_report_reads_stored_artifact(monkeypatch, tmp_path):
+    monkeypatch.setenv("AIMANDALA_REPORT_ARTIFACT_DIR", str(tmp_path / "reports"))
+    monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient())
+    image_path = tmp_path / "mandala.jpg"
+    image_path.write_bytes(b"fake-image")
+
+    client = TestClient(create_app())
+    created = client.post(
+        "/api/wealth-reports",
+        json={
+            "image_path": str(image_path),
+            "report_mode": "lite",
+            "agent_variant": "two_pass_e2e",
+        },
+    )
+
+    assert created.status_code == 200
+    report_id = created.json()["report_id"]
+
+    fetched = client.get(f"/api/wealth-reports/{report_id}")
+
+    assert fetched.status_code == 200
+    payload = fetched.json()
+    assert payload["report_id"] == report_id
+    assert payload["final_report_md"]
+    assert payload["final_report"]["report_id"] == report_id
+
+
+def test_report_followup_can_be_disabled_explicitly(monkeypatch):
+    monkeypatch.setenv("AIMANDALA_REPORT_FOLLOWUP_ENABLED", "0")
     monkeypatch.setattr(api_routes, "create_llm_client_from_env", lambda: StubRouteLLMClient("不应调用"))
 
     client = TestClient(create_app())
