@@ -43,7 +43,7 @@ export default function MandalaApp() {
             "设计 Lite / Pro 产品分层：Lite 面向首次体验用户，Pro 从 Lite 后升级，不提供独立购买入口。",
             "拆分报告生成链路：将视觉观察、领域知识、用户意图和输出规范分层处理，避免报告变成简单的「看图说话」。",
             "设计报告追问边界：追问只围绕本次画作和本次报告，不做长期陪伴，不做心理咨询，不替代医疗或人生决策。",
-            "将产品迁入 MindSync Monorepo 正式工作区，持续完善项目入口、产品规范、知识层、报告契约和交付文档。",
+            "将产品迁入 MindSync（知行工坊）Monorepo 正式工作区，持续完善项目入口、产品规范、知识层、报告契约和交付文档。",
           ]}
         />
       </Section>
@@ -119,7 +119,7 @@ export default function MandalaApp() {
           modules={[
             { title: "产品结果", body: "To C MVP 主路径、Lite / Pro 分层、报告追问入口已形成完整闭环。" },
             { title: "系统结果", body: "两段式报告生成链路、prompt pack、质量门已沉淀为可复用资产。" },
-            { title: "治理结果", body: "项目进入 MindSync Monorepo，有项目入口、规范和后续迭代路径。" },
+            { title: "治理结果", body: "项目进入 MindSync（知行工坊）Monorepo，有项目入口、规范和后续迭代路径。" },
           ]}
         />
       </Section>
