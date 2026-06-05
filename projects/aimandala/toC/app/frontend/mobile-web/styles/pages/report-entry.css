@@ -1,5 +1,8 @@
 .am-report-entry-page {
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  border-radius: 32px;
   background:
     radial-gradient(ellipse at 86% 8%, rgba(200, 120, 80, 0.1), transparent 28%),
     radial-gradient(ellipse at 0% 72%, rgba(212, 160, 84, 0.08), transparent 34%),
@@ -10,7 +13,6 @@
 
 .am-report-entry-hero {
   position: relative;
-  min-height: 100%;
   overflow: hidden;
   padding: 12px 24px 14px;
 }
@@ -55,8 +57,9 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  min-height: 56px;
-  padding: 16px 0 12px;
+  min-height: 86px;
+  margin: -12px -24px 0;
+  padding: 28px 24px 18px;
   overflow: hidden;
   border-bottom: 1px solid rgba(212, 160, 84, 0.15);
   background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #1a2844 100%);
@@ -92,7 +95,7 @@
 .am-report-entry-hero__content {
   position: relative;
   z-index: 1;
-  margin-top: 26px;
+  margin-top: 34px;
 }
 
 .am-report-entry-hero__title {
@@ -151,7 +154,7 @@
   z-index: 1;
   display: grid;
   gap: 16px;
-  margin: 8px 28px 0;
+  margin: 8px 22px 0;
 }
 
 .am-report-entry-card {
