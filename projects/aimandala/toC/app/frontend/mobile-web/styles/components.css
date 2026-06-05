@@ -3,8 +3,10 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  min-height: 56px;
-  padding: 16px 0 12px;
+  min-height: 86px;
+  margin-right: calc(var(--am-app-topbar-bleed, 0px) * -1);
+  margin-left: calc(var(--am-app-topbar-bleed, 0px) * -1);
+  padding: 28px 24px 18px;
   overflow: hidden;
   border-bottom: 1px solid rgba(212, 160, 84, 0.15);
   background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #1a2844 100%);

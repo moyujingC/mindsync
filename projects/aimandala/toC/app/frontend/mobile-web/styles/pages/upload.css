@@ -10,6 +10,7 @@
 }
 
 .am-upload-hero {
+  --am-app-topbar-bleed: 16px;
   position: relative;
   min-height: 468px;
   padding: 0 16px 14px;

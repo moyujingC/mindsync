@@ -12,9 +12,10 @@
 }
 
 .am-report-entry-hero {
+  --am-app-topbar-bleed: 24px;
   position: relative;
   overflow: hidden;
-  padding: 12px 24px 14px;
+  padding: 0 24px 14px;
 }
 
 .am-report-entry-hero__pattern {
@@ -50,12 +51,6 @@
   width: 210px;
   height: 270px;
   background: radial-gradient(ellipse, rgba(212, 160, 84, 0.07), transparent 60%);
-}
-
-.am-report-entry-hero > .am-app-topbar {
-  min-height: 86px;
-  margin: -12px -24px 0;
-  padding: 28px 24px 18px;
 }
 
 .am-report-entry-hero__content {
