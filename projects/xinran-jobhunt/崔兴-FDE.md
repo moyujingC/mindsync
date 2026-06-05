@@ -8,10 +8,10 @@
 
 ## 核心技能
 
-* AI 落地：AI 工作流设计、Agent 协作、Prompt Pack、质量门、结构化知识库、RAG 思路
-* 工程能力：Python、React、TypeScript、Git、Monorepo、API 与前后端协作理解
-* 客户现场：需求诊断、流程拆解、方案设计、复杂交易推进、风险识别、跨角色沟通
-* 交付能力：PoC 路径设计、MVP 范围控制、项目文档、任务拆解、验证与复盘
+* 方案落地：业务流程拆解、PoC 设计、AI 工作流搭建、交付边界定义、验收口径设计
+* AI 工程协作：Prompt Pack、Agent 协作、结构化知识库、RAG 思路、质量门与安全边界
+* 技术实现：Python、React、TypeScript、Git、API 联调、Monorepo、前后端协作理解
+* 客户现场：需求访谈、风险识别、方案演示、跨角色沟通、交付复盘与文档沉淀
 
 ## 融合创新期：AI 应用落地实践（2025.01 - 至今）
 

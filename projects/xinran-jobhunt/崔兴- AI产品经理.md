@@ -8,10 +8,10 @@
 
 ## 核心技能
 
-* AI 产品：多模态大模型应用、Prompt Pack 设计、RAG 思路、AI Agent 工作流、质量门与安全边界
-* 产品能力：需求调研、用户路径设计、MVP 范围控制、版本取舍、原型设计、报告体验设计
-* 业务能力：高信任服务洞察、非标准需求拆解、商业模式判断、用户访谈与服务流程沉淀
-* 技术理解：Python、React、TypeScript、Git、Monorepo、API 与前后端协作理解
+* AI 产品设计：多模态输入、AI 报告生成链路、Prompt Pack、RAG 思路、AI Agent 体验边界
+* 产品方法：用户路径设计、PRD / 原型、MVP 范围控制、版本规划、需求优先级与体验迭代
+* 增长与商业：付费路径设计、Lite / Pro 分层、用户反馈收集、早期验证与转化假设
+* 技术协作：Python、React、TypeScript、API 理解、Monorepo、前后端联调与问题定位
 
 ## 融合创新期：AI 产品实践（2025.01 - 至今）
 
