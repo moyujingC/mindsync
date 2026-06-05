@@ -159,11 +159,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("开始解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("开始解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -217,11 +217,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("开始解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("开始解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -289,11 +289,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("开始解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("开始解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -343,11 +343,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("开始解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("开始解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -459,7 +459,7 @@ describe("MobileWebRuntime", () => {
     });
 
     const litePayButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("开始解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(litePayButton).toBeTruthy();
 

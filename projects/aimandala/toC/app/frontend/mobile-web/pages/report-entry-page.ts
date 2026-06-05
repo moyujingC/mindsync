@@ -82,7 +82,7 @@ export function createReportEntryPageDescriptor(
               "它可能对应你最近的哪种关系、压力或期待",
               "接下来可以先照顾自己哪一部分",
             ],
-            cta: "开始解读",
+            cta: "确认解读",
             note: "",
             priceLabel: "9.9 元",
             tone: "lite",

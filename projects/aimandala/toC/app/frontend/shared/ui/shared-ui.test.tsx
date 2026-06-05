@@ -95,7 +95,7 @@ describe("shared ui", () => {
               description: "先快速看清这次画面最明显的状态主线。",
               bulletsTitle: "读完你会更清楚",
               bullets: ["重点接住状态主线"],
-              cta: "开始解读",
+              cta: "确认解读",
               note: "适合快速进入。",
               priceLabel: "9.9 元",
               tone: "lite",
@@ -106,7 +106,7 @@ describe("shared ui", () => {
       />,
     );
 
-    expect(html).toContain("开始解读");
+    expect(html).toContain("确认解读");
     expect(html).toContain("优惠券 / 兑换码");
     expect(html).toContain("读完你会更清楚");
   });

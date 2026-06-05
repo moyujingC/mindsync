@@ -14,7 +14,7 @@ describe("report-entry page descriptor", () => {
     expect(descriptor.title).toContain("Lite");
     expect(lite?.availability).toBe("available");
     expect(lite?.priceLabel).toBe("9.9 元");
-    expect(lite?.cta).toContain("开始解读");
+    expect(lite?.cta).toContain("确认解读");
     expect(lite?.bulletsTitle).toBe("读完你会更清楚");
     expect(lite?.bullets).toContain("这幅画最想提醒你的情绪是什么");
     expect(lite?.bullets.join("")).not.toContain("Pro");
