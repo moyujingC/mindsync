@@ -928,9 +928,13 @@ export function MobileWebUploadPage({
             <div className="am-upload-disc-shell__halo" />
             <div className="am-upload-disc-shell__rim" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top-right" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--right" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--bottom-right" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--bottom" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--bottom-left" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--left" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top-left" />
             <div
               className={`am-upload-disc${isDragOver ? " is-dragover" : ""}${previewSrc ? " has-image" : ""}`}
               style={discStyle}

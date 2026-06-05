@@ -139,7 +139,7 @@
 
 .am-upload-disc-shell__rim {
   position: absolute;
-  inset: 0;
+  inset: 2px;
   z-index: 10;
   border-radius: 50%;
   border: 2px dashed rgba(212, 160, 84, 0.3);
@@ -313,16 +313,40 @@
   transform: translateY(-50%);
 }
 
+.am-upload-disc-shell__spark--top-right {
+  top: 14.6%;
+  right: 14.6%;
+  transform: translate(50%, -50%);
+}
+
+.am-upload-disc-shell__spark--bottom-right {
+  right: 14.6%;
+  bottom: 14.6%;
+  transform: translate(50%, 50%);
+}
+
 .am-upload-disc-shell__spark--bottom {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
 }
 
+.am-upload-disc-shell__spark--bottom-left {
+  bottom: 14.6%;
+  left: 14.6%;
+  transform: translate(-50%, 50%);
+}
+
 .am-upload-disc-shell__spark--left {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.am-upload-disc-shell__spark--top-left {
+  top: 14.6%;
+  left: 14.6%;
+  transform: translate(-50%, -50%);
 }
 
 .am-upload-actions {
