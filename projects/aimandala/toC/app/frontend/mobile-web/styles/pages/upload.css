@@ -314,14 +314,14 @@
 }
 
 .am-upload-disc-shell__spark--top-right {
-  top: 14.6%;
-  right: 14.6%;
+  top: 15.6%;
+  right: 15.6%;
   transform: translate(50%, -50%);
 }
 
 .am-upload-disc-shell__spark--bottom-right {
-  right: 14.6%;
-  bottom: 14.6%;
+  right: 15.6%;
+  bottom: 15.6%;
   transform: translate(50%, 50%);
 }
 
@@ -332,8 +332,8 @@
 }
 
 .am-upload-disc-shell__spark--bottom-left {
-  bottom: 14.6%;
-  left: 14.6%;
+  bottom: 15.6%;
+  left: 15.6%;
   transform: translate(-50%, 50%);
 }
 
@@ -344,8 +344,8 @@
 }
 
 .am-upload-disc-shell__spark--top-left {
-  top: 14.6%;
-  left: 14.6%;
+  top: 15.6%;
+  left: 15.6%;
   transform: translate(-50%, -50%);
 }
 
