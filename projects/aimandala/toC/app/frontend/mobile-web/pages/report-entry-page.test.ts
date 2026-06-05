@@ -15,6 +15,8 @@ describe("report-entry page descriptor", () => {
     expect(lite?.availability).toBe("available");
     expect(lite?.priceLabel).toBe("9.9 元");
     expect(lite?.cta).toContain("开始解读");
+    expect(lite?.bullets).toContain("看见这幅画最突出的情绪线索与当下状态");
+    expect(lite?.bullets.join("")).not.toContain("Pro");
     expect(descriptor.cards).toHaveLength(1);
   });
 

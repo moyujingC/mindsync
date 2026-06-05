@@ -75,9 +75,9 @@ export function createReportEntryPageDescriptor(
             title: "Lite",
             description: "",
             bullets: [
-              "重点描述这次画面最突出的状态与气氛",
-              "阅读简短，适合先快速看清这次解读",
-              "适合快速进入；之后想深入，可在 Lite 基础上升级 Pro",
+              "看见这幅画最突出的情绪线索与当下状态",
+              "用简短文字帮你把模糊感受整理成清晰表达",
+              "带着一个可理解的方向，继续回到自己的生活现场",
             ],
             cta: "开始解读",
             note: "",
