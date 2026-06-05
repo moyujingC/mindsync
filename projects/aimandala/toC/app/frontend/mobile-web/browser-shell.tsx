@@ -174,6 +174,10 @@ function resolvePreviewReportFooterState(
   };
 }
 
+function resolvePreviewRedeemCode(reportType: MobileWebReportProductType): string {
+  return reportType === "pro" ? "MVP-PRO" : "MVP-LITE";
+}
+
 export function MobileWebBrowserShell() {
   const initialState = readBrowserShellInitialState();
   const [forceCleanMode] = useState(initialState.cleanMode);
@@ -641,6 +645,7 @@ export function MobileWebBrowserShell() {
 
     const nextDraft = mergeMobileWebUploadDraft(draft, {
       reportType,
+      redeemCode: draft.redeemCode?.trim() || resolvePreviewRedeemCode(reportType),
     });
     setDraft(nextDraft);
     setPreviewFlowState(null);
@@ -656,8 +661,24 @@ export function MobileWebBrowserShell() {
             uploadAsset: toMobileWebUploadAssetRef(uploaded),
           }));
         },
+        { allowExistingImagePath: previewMode },
       );
       const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
+      const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
+      if (previewMode) {
+        const previewReportState = createPreviewAppProps("report", draftWithUpload).flowState;
+        if (!previewReportState) {
+          throw new Error("本地预览报告状态生成失败。");
+        }
+        setPreviewFlowState(previewReportState);
+        saveGeneratedReport({
+          userId,
+          draft: draftWithUpload,
+          state: previewReportState,
+        });
+        setRoute("report");
+        return;
+      }
       const result = await runMobileWebReportFlow(
         toStartCreatePayload(
           {
@@ -668,7 +689,6 @@ export function MobileWebBrowserShell() {
         ),
         getDraftReportVariant(nextDraft),
       );
-      const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
       setPreviewFlowState(result.state);
       saveGeneratedReport({
         userId,
