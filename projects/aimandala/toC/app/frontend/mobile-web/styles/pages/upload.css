@@ -165,6 +165,10 @@
   box-shadow: 0 0 0 4px rgba(212, 160, 84, 0.24);
 }
 
+.am-upload-disc.has-image {
+  z-index: 20;
+}
+
 .am-upload-disc__surface {
   position: absolute;
   inset: -4px;
