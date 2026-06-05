@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ChangeEvent } fro
 
 import type { MobileWebUploadDraft } from "../state";
 import type { DetectCirclesResponse } from "../../shared/types";
+import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
 
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
@@ -25,14 +26,6 @@ type ThemeItem = {
 
 const DEFAULT_INNER_RADIUS = 0.35;
 const DEFAULT_MIDDLE_RADIUS = 0.65;
-
-function NavBackIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function UploadGlyph() {
   return (
@@ -918,20 +911,17 @@ export function MobileWebUploadPage({
         <div className="am-upload-hero__spark am-upload-hero__spark--right" />
         <div className="am-upload-hero__spark am-upload-hero__spark--mid" />
 
-        <div className="am-upload-topbar">
-          <button type="button" className="am-upload-back" onClick={onBack} aria-label="返回首页">
-            <NavBackIcon />
-          </button>
-          <h1 className="am-upload-title">上传曼陀罗画作</h1>
-          {environmentLabel ? (
+        <SharedAppTopBar
+          title="上传曼陀罗画作"
+          backLabel="返回首页"
+          onBack={onBack}
+          trailing={environmentLabel ? (
             <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
               <strong>{environmentLabel}</strong>
               <span>{environmentDetail}</span>
             </div>
-          ) : (
-            <div className="am-upload-topbar__spacer" aria-hidden="true" />
-          )}
-        </div>
+          ) : undefined}
+        />
 
         <div className="am-upload-preview-zone">
           <div className="am-upload-disc-shell">

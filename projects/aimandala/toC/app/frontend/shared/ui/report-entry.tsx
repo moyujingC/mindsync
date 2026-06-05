@@ -1,5 +1,7 @@
 import { useState, type CSSProperties } from "react";
 
+import { SharedAppTopBar } from "./app-top-bar";
+
 export type SharedReportEntryAvailability = "available";
 
 type SharedReportEntryPatternStyle = CSSProperties;
@@ -32,14 +34,6 @@ function EntryArrowGlyph() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M5 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       <path d="m13 7 5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function BackGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5 9 12l5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -216,13 +210,7 @@ export function SharedReportEntrySelectionPage({
           className={`am-report-entry-hero__pattern${heroPatternClassName ? ` ${heroPatternClassName}` : ""}`}
           style={heroPatternStyle}
         />
-        <div className="am-report-entry-topbar">
-          <button type="button" onClick={onBack} className="am-report-entry-back" aria-label="返回">
-            <BackGlyph />
-          </button>
-          <h1 className="am-report-entry-topbar__title">待支付</h1>
-          <div className="am-report-entry-topbar__spacer" aria-hidden="true" />
-        </div>
+        <SharedAppTopBar title="待支付" onBack={onBack} />
         <div className="am-report-entry-hero__content">
           <h2 className="am-report-entry-hero__title">{descriptor.title}</h2>
           <p className="am-report-entry-hero__description">

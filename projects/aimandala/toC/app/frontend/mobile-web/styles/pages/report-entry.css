@@ -52,44 +52,10 @@
   background: radial-gradient(ellipse, rgba(212, 160, 84, 0.07), transparent 60%);
 }
 
-.am-report-entry-topbar {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
+.am-report-entry-hero > .am-app-topbar {
   min-height: 86px;
   margin: -12px -24px 0;
   padding: 28px 24px 18px;
-  overflow: hidden;
-  border-bottom: 1px solid rgba(212, 160, 84, 0.15);
-  background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #1a2844 100%);
-  font-family: var(--am-font-body);
-}
-
-.am-report-entry-back {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  padding: 4px;
-  border: 0;
-  border-radius: var(--am-radius-pill);
-  background: transparent;
-  color: rgba(232, 220, 200, 0.68);
-}
-
-.am-report-entry-topbar__title {
-  margin: 0 0 0 14px;
-  color: var(--am-text-accent);
-  font-family: var(--am-font-display);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-}
-
-.am-report-entry-topbar__spacer {
-  width: 28px;
-  height: 28px;
 }
 
 .am-report-entry-hero__content {

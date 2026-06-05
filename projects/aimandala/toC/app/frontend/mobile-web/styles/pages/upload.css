@@ -98,45 +98,6 @@
   background: rgba(122, 142, 168, 0.25);
 }
 
-.am-upload-topbar {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  min-height: 56px;
-  padding: 16px 0 12px;
-  font-family: var(--am-font-body);
-  overflow: hidden;
-  background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #1a2844 100%);
-  border-bottom: 1px solid rgba(212, 160, 84, 0.15);
-}
-
-.am-upload-back {
-  width: 30px;
-  height: 30px;
-  padding: 4px;
-  border: 0;
-  border-radius: var(--am-radius-pill);
-  display: grid;
-  place-items: center;
-  background: transparent;
-  color: rgba(232, 220, 200, 0.68);
-}
-
-.am-upload-title {
-  margin: 0 0 0 14px;
-  color: var(--am-text-accent);
-  font-family: var(--am-font-display);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-}
-
-.am-upload-topbar__spacer {
-  width: 28px;
-  height: 28px;
-}
-
 .am-dev-pill--upload {
   display: none;
 }
