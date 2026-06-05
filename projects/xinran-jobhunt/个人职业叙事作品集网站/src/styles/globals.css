@@ -1,0 +1,9 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #F9F7F3;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
