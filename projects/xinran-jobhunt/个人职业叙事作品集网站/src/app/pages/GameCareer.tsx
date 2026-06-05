@@ -4,6 +4,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Mandala } from "../components/Mandala";
 import { Reveal } from "../components/Reveal";
+import { RoleFit } from "./_blocks";
 
 type Project = { name: string; role: string; duty: string };
 type AccordionItem = { title: string; projects: Project[] };
@@ -347,6 +348,23 @@ export default function GameCareer() {
                 </Reveal>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="py-16 md:py-24">
+          <div className="max-w-4xl mx-auto px-6 md:px-10">
+            <Reveal>
+              <SectionHeader index="0 5" title="岗位相关性" />
+            </Reveal>
+            <Reveal delay={80}>
+              <RoleFit
+                items={[
+                  { role: "AI 产品经理", fit: "证明我理解工程实现、模块边界、研发协作和技术风险，不只是停留在需求文档层。" },
+                  { role: "AI 转型咨询顾问", fit: "证明我能在跨角色环境中推动流程、版本、评审和交付，把复杂工作组织起来。" },
+                  { role: "FDE", fit: "证明我有真实工程底座和跨模块交付经验，能和客户现场的技术团队一起判断可行性并推进落地。" },
+                ]}
+              />
+            </Reveal>
           </div>
         </section>
       </main>

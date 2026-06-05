@@ -8,6 +8,7 @@ type NavItem =
 
 const items: NavItem[] = [
   { type: "anchor", hash: "#story", label: "职业故事" },
+  { type: "anchor", hash: "#roles", label: "适配岗位" },
   { type: "dropdown", hash: "#works", label: "作品集" },
   { type: "anchor", hash: "#abilities", label: "能力" },
   { type: "anchor", hash: "#contact", label: "联系我" },

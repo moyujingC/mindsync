@@ -7,6 +7,7 @@ import {
   ModuleGrid,
   DecisionTable,
   Boundary,
+  RoleFit,
 } from "./_blocks";
 
 const ACCENT = "#9B8AB8";
@@ -104,11 +105,14 @@ export default function HealingAIResearch() {
           ]}
         />
         <div className="mt-8">
-          <Prose>
-            <p>这个项目证明我能从竞品和行业观察中抽象产品判断，并把判断落回自己的产品设计。</p>
-            <p><span style={{ color: ACCENT }}>对应 AI 产品经理岗位 ｜ </span>体现用户场景分析、竞品拆解、产品边界设计和风险意识。</p>
-            <p><span style={{ color: ACCENT }}>对应 AI 转型咨询顾问岗位 ｜ </span>体现对行业落地可行性、工具边界和组织采用风险的判断能力。</p>
-          </Prose>
+          <RoleFit
+            accent={ACCENT}
+            items={[
+              { role: "AI 产品经理", fit: "体现用户场景分析、竞品拆解、产品边界设计和风险意识。" },
+              { role: "AI 转型咨询顾问", fit: "体现对行业落地可行性、工具边界和组织采用风险的判断能力。" },
+              { role: "FDE", fit: "体现我能在客户落地前识别高风险边界，判断 AI 适合承担什么、不适合承担什么。" },
+            ]}
+          />
         </div>
         <div className="mt-6">
           <Boundary accent={ACCENT}>

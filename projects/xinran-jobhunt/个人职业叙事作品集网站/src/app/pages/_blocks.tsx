@@ -278,6 +278,32 @@ export function Boundary({ children, accent = "#8B5A2B" }: { children: ReactNode
   );
 }
 
+export function RoleFit({
+  items,
+  accent = "#8B5A2B",
+}: {
+  items: { role: string; fit: string }[];
+  accent?: string;
+}) {
+  return (
+    <div className="grid md:grid-cols-3 gap-5">
+      {items.map((item) => (
+        <div key={item.role} className="bg-white/70 border border-[#8B5A2B]/10 p-6 rounded-sm">
+          <div
+            className="text-xs tracking-[0.35em] mb-3"
+            style={{ color: accent, ...sans }}
+          >
+            {item.role}
+          </div>
+          <p className="text-[#2C3E50]/78" style={{ ...sans, fontSize: "0.88rem", lineHeight: 1.7 }}>
+            {item.fit}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function PageShell({ children }: { children: ReactNode }) {
   return (
     <div

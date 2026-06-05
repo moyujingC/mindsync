@@ -4,9 +4,9 @@ import { Reveal } from "./Reveal";
 const evolution = [
   "技术实现",
   "项目组织",
-  "产品主导",
   "高信任服务",
-  "AI产品化",
+  "AI 产品化",
+  "客户现场落地",
 ];
 
 export function Hero() {
@@ -55,8 +55,8 @@ export function Hero() {
             className="max-w-2xl text-[#2C3E50]/80 leading-[2] mb-14"
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1rem" }}
           >
-            技术出身的复杂问题解决者：从代码实现到高信任定制方案，
-            再到 AI 时代的产品化与系统化落地。
+            技术出身的复杂问题解决者：能从真实业务现场出发，
+            把高信任、非标准化场景拆成 AI 产品、工作流和可验证交付方案。
           </p>
         </Reveal>
 
@@ -90,7 +90,7 @@ export function Hero() {
               className="group inline-flex items-center px-8 py-3 bg-[#8B5A2B] text-[#F9F7F3] tracking-[0.2em] hover:bg-[#2C3E50] transition-all duration-500"
               style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.875rem" }}
             >
-              了解我的故事
+              了解职业主线
               <span className="ml-3 transition-transform duration-500 group-hover:translate-x-1">→</span>
             </a>
             <a

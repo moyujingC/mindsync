@@ -7,6 +7,7 @@ import {
   StepFlow,
   ModuleGrid,
   Boundary,
+  RoleFit,
 } from "./_blocks";
 
 const ACCENT = "#6FA8A0";
@@ -108,11 +109,14 @@ export default function HealingKB() {
           ]}
         />
         <div className="mt-8">
-          <Prose>
-            <p>这个项目证明我能把非标准化经验转成结构化知识，并进一步接入 AI 产品工作流。</p>
-            <p><span style={{ color: ACCENT }}>对应 AI 产品经理岗位 ｜ </span>体现领域知识建模、AI 输出规范设计和高信任场景的质量控制能力。</p>
-            <p><span style={{ color: ACCENT }}>对应 AI 转型咨询顾问岗位 ｜ </span>体现把专家经验沉淀成 SOP、知识库和可复用工作流的能力。</p>
-          </Prose>
+          <RoleFit
+            accent={ACCENT}
+            items={[
+              { role: "AI 产品经理", fit: "体现领域知识建模、AI 输出规范设计和高信任场景的质量控制能力。" },
+              { role: "AI 转型咨询顾问", fit: "体现把专家经验沉淀成 SOP、知识库和可复用工作流的能力。" },
+              { role: "FDE", fit: "体现我能把专家经验转成系统可调用的知识层、输出契约和质量检查规则。" },
+            ]}
+          />
         </div>
         <div className="mt-6">
           <Boundary accent={ACCENT}>

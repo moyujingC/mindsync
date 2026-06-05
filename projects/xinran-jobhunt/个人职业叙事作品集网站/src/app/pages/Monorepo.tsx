@@ -8,6 +8,7 @@ import {
   ModuleGrid,
   DecisionTable,
   Boundary,
+  RoleFit,
 } from "./_blocks";
 
 const ACCENT = "#2C3E50";
@@ -116,11 +117,14 @@ export default function Monorepo() {
           ]}
         />
         <div className="mt-8">
-          <Prose>
-            <p>这个项目证明我能把模糊的长期工作拆成系统结构、角色边界和可执行流程。</p>
-            <p><span style={{ color: ACCENT }}>对应 AI 产品经理岗位 ｜ </span>体现信息架构、工作流产品思维、复杂系统拆解和工程协作理解。</p>
-            <p><span style={{ color: ACCENT }}>对应 AI 转型咨询顾问岗位 ｜ </span>体现组织知识治理、AI 协作流程设计和从工具使用走向工作系统建设的能力。</p>
-          </Prose>
+          <RoleFit
+            accent={ACCENT}
+            items={[
+              { role: "AI 产品经理", fit: "体现信息架构、工作流产品思维、复杂系统拆解和工程协作理解。" },
+              { role: "AI 转型咨询顾问", fit: "体现组织知识治理、AI 协作流程设计和从工具使用走向工作系统建设的能力。" },
+              { role: "FDE", fit: "体现我能为复杂客户场景搭建 Agent 协作、项目入口、交付 artifact 和可回写的工作系统。" },
+            ]}
+          />
         </div>
         <div className="mt-6">
           <Boundary accent={ACCENT}>

@@ -8,6 +8,7 @@ import {
   ModuleGrid,
   DecisionTable,
   Boundary,
+  RoleFit,
 } from "./_blocks";
 
 const ACCENT = "#8B5A2B";
@@ -124,11 +125,14 @@ export default function MandalaApp() {
       </Section>
 
       <Section index="0 8" title="岗位相关性 ｜ Relevance & 边界" shaded accent={ACCENT}>
-        <Prose>
-          <p>这个项目体现的是我从真实一线服务痛点出发，定义 AI 产品、控制 MVP 范围、设计 AI 工作流和安全边界的能力。</p>
-          <p><span style={{ color: ACCENT }}>对应 AI 产品经理岗位 ｜ </span>证明我不只会写需求，还能理解技术链路、报告质量、用户路径和上线边界之间的关系。</p>
-          <p><span style={{ color: ACCENT }}>对应 AI 转型咨询顾问岗位 ｜ </span>证明我能把一个高信任、非标准化的服务场景拆成可落地的 AI 工作流。</p>
-        </Prose>
+        <RoleFit
+          accent={ACCENT}
+          items={[
+            { role: "AI 产品经理", fit: "证明我能从真实痛点定义 MVP、产品分层、用户路径、AI 输出质量和上线边界。" },
+            { role: "AI 转型咨询顾问", fit: "证明我能把高信任、非标准化的一线服务拆成可复用的 AI 工作流。" },
+            { role: "FDE", fit: "证明我能把业务场景转成可验证 PoC、报告生成链路、质量门和后续迭代入口。" },
+          ]}
+        />
         <div className="mt-6">
           <Boundary accent={ACCENT}>
             不把它写成心理治疗工具、医疗诊断产品或成熟商业化平台。更稳妥的表达是：曼陀罗绘画解读与自我探索 Web MVP；提供参考性结构化报告和后续建议，可与人工咨询配合，但不替代专业医疗和心理治疗。
