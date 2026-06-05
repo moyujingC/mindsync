@@ -10,6 +10,7 @@ export interface SharedReportEntryCardDescriptor {
   id: string;
   title: string;
   description: string;
+  bulletsTitle?: string;
   bullets: string[];
   cta: string;
   note: string;
@@ -123,6 +124,7 @@ function SharedReportEntryCard({
   id,
   title,
   description,
+  bulletsTitle,
   bullets,
   tone,
   cta,
@@ -219,7 +221,7 @@ function SharedReportEntryCard({
       </section>
 
       <div className="am-report-entry-card__bullets">
-        <div className="am-report-entry-card__bullets-title">本次 Lite 解读会包含</div>
+        <div className="am-report-entry-card__bullets-title">{bulletsTitle ?? "这次解读会包含"}</div>
         {bullets.map((item) => (
           <div key={item} className="am-report-entry-card__bullet">
             <span className="am-report-entry-card__bullet-dot">

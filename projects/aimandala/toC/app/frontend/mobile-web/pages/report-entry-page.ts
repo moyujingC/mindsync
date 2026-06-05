@@ -10,6 +10,7 @@ export interface ReportEntryCardDescriptor {
   id: MobileWebReportProductType;
   title: string;
   description: string;
+  bulletsTitle?: string;
   bullets: string[];
   cta: string;
   note: string;
@@ -58,6 +59,7 @@ export function createReportEntryPageDescriptor(
             id: "pro",
             title: "Pro",
             description: "在 Lite 基础上继续深入，解锁完整报告与追问能力。",
+            bulletsTitle: "Pro 会继续展开",
             bullets: [
               "会展开更完整的状态解释链与现实连接",
               "可继续看到三圈能量、失衡诊断与更深层建议",
@@ -74,10 +76,11 @@ export function createReportEntryPageDescriptor(
             id: "lite",
             title: "Lite",
             description: "",
+            bulletsTitle: "读完你会更清楚",
             bullets: [
-              "看见这幅画最突出的情绪线索与当下状态",
-              "用简短文字帮你把模糊感受整理成清晰表达",
-              "带着一个可理解的方向，继续回到自己的生活现场",
+              "这幅画最想提醒你的情绪是什么",
+              "它可能对应你最近的哪种关系、压力或期待",
+              "接下来可以先照顾自己哪一部分",
             ],
             cta: "开始解读",
             note: "",

@@ -93,6 +93,7 @@ describe("shared ui", () => {
               id: "lite",
               title: "Lite",
               description: "先快速看清这次画面最明显的状态主线。",
+              bulletsTitle: "读完你会更清楚",
               bullets: ["重点接住状态主线"],
               cta: "开始解读",
               note: "适合快速进入。",
@@ -107,6 +108,7 @@ describe("shared ui", () => {
 
     expect(html).toContain("开始解读");
     expect(html).toContain("优惠券 / 兑换码");
+    expect(html).toContain("读完你会更清楚");
   });
 
   it("计算 report-entry 兑换结果", () => {
