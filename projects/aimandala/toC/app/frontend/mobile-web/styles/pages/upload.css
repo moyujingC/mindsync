@@ -527,41 +527,14 @@
   position: relative;
   overflow: hidden;
   padding: 28px 22px 22px;
-  border-radius: 32px 32px 0 0;
+  border-radius: 0;
   background: var(--am-surface-primary);
   box-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
 }
 
 .am-upload-form-surface::before,
 .am-upload-form-surface::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.am-upload-form-surface::before {
-  top: -15px;
-  right: 20px;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(
-    circle,
-    rgba(212, 160, 84, 0.06) 0%,
-    transparent 60%
-  );
-}
-
-.am-upload-form-surface::after {
-  bottom: 40px;
-  left: -15px;
-  width: 70px;
-  height: 70px;
-  background: radial-gradient(
-    circle,
-    rgba(200, 120, 80, 0.04) 0%,
-    transparent 60%
-  );
+  content: none;
 }
 
 .am-upload-form-surface > * {
