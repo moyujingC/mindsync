@@ -1,17 +1,23 @@
 import { useState, useMemo } from 'react';
 import { Container, ResearchCard, SectionLabel, Pill } from '../shared';
-import { products, tracks, Track, Confidence } from '../../data';
+import { products, tracks, featuredProductSlugs, Track, Confidence } from '../../data';
 
 const confidenceLevels: Confidence[] = ['高', '中', '低', '待核验'];
+const featuredSlugSet = new Set<string>(featuredProductSlugs);
 
 export function MapPage() {
   const [activeTrack, setActiveTrack] = useState<Track | 'all'>('all');
   const [activeConf, setActiveConf] = useState<Confidence | 'all'>('all');
+  const isDefaultView = activeTrack === 'all' && activeConf === 'all';
 
   const filtered = useMemo(() => products.filter(p =>
     (activeTrack === 'all' || p.track === activeTrack) &&
     (activeConf === 'all' || p.confidence === activeConf)
   ), [activeTrack, activeConf]);
+  const featured = useMemo(
+    () => products.filter((product) => featuredSlugSet.has(product.slug)),
+    []
+  );
 
   return (
     <main>
@@ -39,10 +45,30 @@ export function MapPage() {
 
       <section className="py-12 md:py-16">
         <Container>
+          {isDefaultView && (
+            <div className="mb-16">
+              <div className="flex items-baseline gap-4 mb-5 hairline-b pb-3">
+                <span className="font-mono text-[12px]" style={{ color: 'var(--accent-green)' }}>START</span>
+                <h2 className="m-0">先读这 4 个重点样本</h2>
+                <span className="text-[13px]" style={{ color: 'var(--ink-tertiary)' }}>
+                  分别代表心理伴侣、AI 日记、AI 教练、临床工作流四种路径
+                </span>
+              </div>
+              <p className="m-0 mb-6 max-w-[720px] text-[14px]" style={{ color: 'var(--ink-secondary)' }}>
+                它们不是推荐榜单，而是理解这个赛道的入口样本。先看这 4 个，再看其余产品，会更容易分辨不同创业路径的机会、责任和风险。
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {featured.map(p => <ResearchCard key={p.slug} p={p} />)}
+              </div>
+            </div>
+          )}
+
           {activeTrack === 'all' ? (
             <div className="space-y-16">
               {tracks.map((t, i) => {
-                const list = filtered.filter(p => p.track === t.name);
+                const list = filtered.filter(p =>
+                  p.track === t.name && (!isDefaultView || !featuredSlugSet.has(p.slug))
+                );
                 if (!list.length) return null;
                 return (
                   <div key={t.name}>
