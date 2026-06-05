@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 function AppTopBarBackIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M14.5 6.5 9 12l5.5 5.5"
         stroke="currentColor"
