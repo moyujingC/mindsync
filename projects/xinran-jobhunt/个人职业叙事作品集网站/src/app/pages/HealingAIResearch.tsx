@@ -16,7 +16,7 @@ export default function HealingAIResearch() {
     <PageShell>
       <PageHero
         eyebrow="P R O J E C T &nbsp; 0 4"
-        title="心理疗愈 AI 应用观察"
+        title="心理疗愈 AI 产品观察"
         subtitle="AI + 人文场景的产品分析与趋势洞察"
         oneLiner="围绕心理疗愈、陪伴、情绪支持和自我探索类 AI 产品，观察产品模式、技术路径、边界风险和落地机会。"
         role="独立研究员 / AI 产品观察者"

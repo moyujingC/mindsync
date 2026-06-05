@@ -45,7 +45,7 @@ export const works: WorkSummary[] = [
     navLabel: "疗愈知识库",
   },
   {
-    title: "心理疗愈 AI 应用观察",
+    title: "心理疗愈 AI 产品观察",
     subtitle: "产品分析与趋势洞察",
     role: "独立研究员",
     period: "2026 — 至今",
@@ -73,4 +73,3 @@ export const worksLinks = works.map(({ to, navLabel, title }) => ({
   label: navLabel,
   title,
 }));
-
