@@ -68,9 +68,7 @@ export function resolveReportEntryRedeemResult({
   if (normalizedCode !== expectedCode) {
     return {
       state: "error",
-      message: cardId === "pro"
-        ? "兑换失败：当前 Pro 升级可用兑换码为 MVP_PRO。"
-        : "兑换失败：当前 Lite 解读可用兑换码为 MVP_LITE。",
+      message: "兑换失败：兑换码无效或不适用于当前解读版本。",
     };
   }
 

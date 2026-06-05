@@ -144,7 +144,7 @@ describe("shared ui", () => {
       priceLabel: "9.9 元",
     })).toEqual({
       state: "error",
-      message: "兑换失败：当前 Lite 解读可用兑换码为 MVP_LITE。",
+      message: "兑换失败：兑换码无效或不适用于当前解读版本。",
     });
   });
 
