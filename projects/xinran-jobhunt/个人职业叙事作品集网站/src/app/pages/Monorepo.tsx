@@ -39,7 +39,7 @@ export default function Monorepo() {
         <BulletList
           accent={ACCENT}
           items={[
-            "设计并落地 MindSync Monorepo / 公司工作空间。",
+            "设计并落地 MindSync（知行工坊）Monorepo / 公司工作空间。",
             "建立 company、projects、agents、shared、knowledge-base 五层结构。",
             "建立项目注册表、公司蓝图、研发原则、任务状态流转规则和文档治理入口。",
             "将 AI 产品、研究、内容、求职材料等项目纳入统一工作区。",
