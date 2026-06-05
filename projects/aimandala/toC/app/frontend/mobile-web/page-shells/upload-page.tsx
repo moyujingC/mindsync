@@ -981,6 +981,12 @@ export function MobileWebUploadPage({
                   }}
                 />
               ) : null}
+              {previewSrc ? (
+                <>
+                  <div className="am-upload-disc__boundary am-upload-disc__boundary--inner" aria-hidden="true" />
+                  <div className="am-upload-disc__boundary am-upload-disc__boundary--middle" aria-hidden="true" />
+                </>
+              ) : null}
               {!previewSrc ? (
                 <button
                   type="button"

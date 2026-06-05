@@ -213,10 +213,34 @@
   will-change: transform;
 }
 
+.am-upload-disc__boundary {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  border-radius: 50%;
+  border: 1.5px solid rgba(248, 226, 178, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(34, 48, 78, 0.2),
+    0 0 10px rgba(212, 160, 84, 0.18);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.am-upload-disc__boundary--inner {
+  width: var(--am-upload-inner);
+  height: var(--am-upload-inner);
+}
+
+.am-upload-disc__boundary--middle {
+  width: var(--am-upload-middle);
+  height: var(--am-upload-middle);
+}
+
 .am-upload-disc__hover-mask {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
