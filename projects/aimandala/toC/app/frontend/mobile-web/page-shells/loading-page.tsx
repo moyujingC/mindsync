@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
-import loadingMeditation from "../assets/loading-meditation.webp";
+import loadingMeditationVideo from "../assets/3.2 耐心等候（冥想）.mp4";
+import loadingMeditationPoster from "../assets/loading-meditation.webp";
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
 import type { MandalaFlowState } from "../../shared/types";
@@ -359,7 +360,18 @@ export function MobileWebLoadingPage({
 
         <div className="am-loading-visual-ring">
           <div className="am-loading-visual-ring__outer" />
-          <img src={loadingMeditation} alt="曼曼冥想中" className="am-loading-video am-loading-video--image" />
+          <video
+            className="am-loading-video am-loading-video--media"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster={loadingMeditationPoster}
+            aria-label="曼曼冥想中"
+          >
+            <source src={loadingMeditationVideo} type="video/mp4" />
+          </video>
         </div>
 
         <div className="am-loading-copy">
