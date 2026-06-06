@@ -77,9 +77,9 @@ export const products: Product[] = [
       learningCard:
         '在高敏感领域，越想做“更像人”的产品，就越要先把边界和安全做好。',
       sources: [
-        { label: 'Slingshot AI 官网', note: '研究实验室定位与 psychology foundation model 口径，2026-06-07 访问' },
-        { label: 'Ash 官方产品页 / 安全与隐私页', note: '产品定位、记忆、安全和隐私边界，2026-06-07 访问' },
-        { label: 'Business Wire 官方发布稿', note: '公开发布时间、融资与 beta 用户口径，2026-06-07 复核' },
+        { label: 'Slingshot AI 官网', note: '主要用来确认公司定位，以及它如何描述自己的心理学基础模型。' },
+        { label: 'Ash 官方产品页 / 安全与隐私页', note: '主要用来确认产品定位、长期记忆、安全边界和隐私处理方式。' },
+        { label: '官方发布稿', note: '主要用来交叉看发布时间、公开融资口径和 beta 阶段信息。' },
       ],
     },
   },
@@ -155,9 +155,9 @@ export const products: Product[] = [
       learningCard:
         'Rosebud 最值钱的地方，是它把“写下来”慢慢变成“看见自己”。',
       sources: [
-        { label: 'Rosebud 官网', note: '产品定位、定价与核心文案，2026-06-07 访问' },
-        { label: 'Rosebud 帮助中心 / 隐私政策', note: '长期记忆、Persona、偏好学习与数据治理说明，2026-06-07 访问' },
-        { label: 'TechCrunch 报道', note: '2025 年融资与 AI mentor 方向口径，2026-06-07 复核' },
+        { label: 'Rosebud 官网', note: '主要用来确认它如何定义自己、怎么收费，以及核心产品文案。' },
+        { label: 'Rosebud 帮助中心 / 隐私政策', note: '主要用来确认长期记忆、Persona、偏好学习和数据治理口径。' },
+        { label: 'TechCrunch 报道', note: '主要用来补充融资信息和它对外讲述的增长方向。' },
       ],
     },
   },
@@ -234,9 +234,9 @@ export const products: Product[] = [
       learningCard:
         'Rocky.ai 最值钱的不是“会问问题”，而是“能把一套方法稳定交付出去”。',
       sources: [
-        { label: 'Rocky.ai 官网', note: '平台定位、目标用户与白标能力，2026-06-07 访问' },
-        { label: 'Rocky.ai 帮助中心', note: 'COE、AMGS、RAG、Agent 配置与企业数据说明，2026-06-07 访问' },
-        { label: '隐私与 IP 页面', note: '数据处理与部署口径，2026-06-07 访问' },
+        { label: 'Rocky.ai 官网', note: '主要用来确认平台定位、目标用户，以及白标和组织场景能力。' },
+        { label: 'Rocky.ai 帮助中心', note: '主要用来确认 COE、AMGS、RAG、Agent 配置和产品运转方式。' },
+        { label: '隐私与 IP 页面', note: '主要用来确认数据处理、部署位置和企业数据边界。' },
       ],
     },
   },
@@ -313,9 +313,9 @@ export const products: Product[] = [
       learningCard:
         'Eleos 最值得学的，不是“AI 更懂情绪”，而是“AI 更懂机构风险和工作流”。',
       sources: [
-        { label: 'Eleos 官网 / 产品页 / 安全页', note: 'System of Action、Documentation、EHR 接入与治理口径，2026-06-07 访问' },
-        { label: '官方发布稿', note: 'Series C、Polaris AI、ISO 42001 与 agent 扩展口径，2026-06-07 复核' },
-        { label: '公开工程与研究叙事', note: '用于理解其技术方向，但未公开的实现细节不写成事实' },
+        { label: 'Eleos 官网 / 产品页 / 安全页', note: '主要用来确认 System of Action、Documentation、EHR 接入方式和治理口径。' },
+        { label: '官方发布稿', note: '主要用来确认 Polaris AI、融资、认证和 agent 扩展方向。' },
+        { label: '公开工程与研究叙事', note: '主要用来帮助理解它的技术方向；未公开的实现细节没有当成事实引用。' },
       ],
     },
   },
