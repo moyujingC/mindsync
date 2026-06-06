@@ -30,6 +30,15 @@ export interface Product {
     coreExperienceLong: string;
     psychMechanism: string[];
     aiRole: string;
+    technical?: {
+      evidenceLevel: string;
+      architecture: string;
+      verified: string[];
+      likelyPath: string[];
+      risks: string[];
+      openQuestions: string[];
+      notFacts: string[];
+    };
     business: string;
     safety: string;
     inspiration: string[];

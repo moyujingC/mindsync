@@ -48,6 +48,41 @@ const items = [
   },
 ];
 
+const techItems = [
+  {
+    t: '输入 / 输出模态',
+    desc: '看产品处理文字、语音、图片、日记、量表、临床会话还是行为数据，以及输出对话、报告、行动计划、临床记录或风险提醒。',
+  },
+  {
+    t: '模型策略',
+    desc: '区分通用 LLM 封装、垂直模型、微调模型、多模型协同和工作流系统。没有官方证据时，不写具体模型供应商。',
+  },
+  {
+    t: '上下文与记忆',
+    desc: '看产品只记当前会话，还是有跨会话长期记忆；记忆是否可见、可编辑、可删除。',
+  },
+  {
+    t: '知识与 RAG',
+    desc: 'RAG 是检索增强生成。心理产品里的重点不是回答更长，而是解释能否回到知识库、用户资料或本次输入证据。',
+  },
+  {
+    t: '编排与工作流',
+    desc: '看 AI 是自由聊天，还是先分类、再检索、再生成、再安全审查，并在不同风险等级下切换流程。',
+  },
+  {
+    t: '安全护栏',
+    desc: '看自伤、他伤、危机、未成年人、医疗诊断等场景是否被识别，触发后是拒答、降级、转介还是人工介入。',
+  },
+  {
+    t: '数据、安全与合规',
+    desc: '看加密、删除、导出、训练用途、HIPAA、SOC2、GDPR、企业数据隔离和临床审计，不替产品做合规背书。',
+  },
+  {
+    t: '评估与可观测性',
+    desc: '看产品如何评估回答质量、安全性、危机识别、过度建议、依赖风险、错误解释和长期效果。',
+  },
+];
+
 export function MethodPage() {
   return (
     <main>
@@ -95,6 +130,33 @@ export function MethodPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-16 hairline-t" style={{ background: 'var(--bg-paper)' }}>
+        <Container>
+          <div className="grid md:grid-cols-12 gap-10 items-start">
+            <div className="md:col-span-4">
+              <SectionLabel>TECHNICAL METHOD · 技术架构</SectionLabel>
+              <h2 className="mt-4 mb-4">再用 8 个问题看它怎么被做出来</h2>
+              <p className="m-0" style={{ color: 'var(--ink-secondary)', lineHeight: 1.8 }}>
+                产品 7 维回答用户体验，技术 8 维回答实现路径。所有技术判断都会区分官方确认、可信公开来源、功能推断和待核验内容。
+              </p>
+            </div>
+            <div className="md:col-span-8">
+              <div className="grid sm:grid-cols-2 gap-4">
+                {techItems.map((item, i) => (
+                  <div key={item.t} className="hairline rounded-md p-5" style={{ background: 'var(--bg-soft)' }}>
+                    <div className="font-mono text-[11px] tracking-widest mb-2" style={{ color: 'var(--accent-blue)' }}>
+                      TECH {String(i + 1).padStart(2, '0')}
+                    </div>
+                    <h3 className="m-0 mb-2" style={{ fontSize: '1rem' }}>{item.t}</h3>
+                    <p className="m-0 text-[14px]" style={{ color: 'var(--ink-secondary)', lineHeight: 1.75 }}>{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </Container>
       </section>

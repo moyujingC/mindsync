@@ -24,6 +24,15 @@ const templateProduct: Product = {
     coreExperienceLong: '核心体验（长版）：从打开 App 到完成一次有意义的互动的完整路径，关键交互节点，节奏与情绪。',
     psychMechanism: ['对应的心理学技术 1。', '对应的心理学技术 2。', '对应的心理学技术 3。'],
     aiRole: 'AI 的角色：在体验里 AI 承担什么、不承担什么。能力边界如何被设计。',
+    technical: {
+      evidenceLevel: '证据等级：官方确认 / 可信公开来源 / 功能推断。',
+      architecture: '技术架构判断：这款产品属于哪一种 AI 实现原型。',
+      verified: ['已核验技术事实 1。', '已核验技术事实 2。'],
+      likelyPath: ['可能实现路径 1。', '可能实现路径 2。'],
+      risks: ['技术风险 1。', '技术风险 2。'],
+      openQuestions: ['待核验问题 1。', '待核验问题 2。'],
+      notFacts: ['不能公开写成事实的技术说法 1。', '不能公开写成事实的技术说法 2。'],
+    },
     business: '商业模式：向谁收钱，订阅价位/企业合同/平台分成等。',
     safety: '安全边界：高风险场景下的降级、转介与免责设计。',
     inspiration: ['启发 1', '启发 2', '启发 3'],
@@ -36,6 +45,7 @@ export function ProductPage({ slug, template }: Props) {
   const p = template ? templateProduct : products.find(x => x.slug === slug);
   if (!p) return <div className="py-40 text-center">未找到该产品</div>;
   const d = p.detail ?? templateProduct.detail!;
+  const offset = d.technical ? 1 : 0;
 
   return (
     <main>
@@ -99,20 +109,25 @@ export function ProductPage({ slug, template }: Props) {
               <Block label="03" title="核心体验"><p>{d.coreExperienceLong}</p></Block>
               <Block label="04" title="心理学机制"><ul>{d.psychMechanism.map((x, i) => <li key={i}>{x}</li>)}</ul></Block>
               <Block label="05" title="AI 的角色"><p>{d.aiRole}</p></Block>
-              <Block label="06" title="商业模式"><p>{d.business}</p></Block>
-              <Block label="07" title="安全边界">
+              {d.technical && (
+                <Block label="06" title="AI 技术架构">
+                  <TechnicalSection technical={d.technical} />
+                </Block>
+              )}
+              <Block label={String(6 + offset).padStart(2, '0')} title="商业模式"><p>{d.business}</p></Block>
+              <Block label={String(7 + offset).padStart(2, '0')} title="安全边界">
                 <div className="hairline rounded-md p-5" style={{ background: 'rgba(184,107,94,0.06)', borderColor: 'rgba(184,107,94,0.3)' }}>
                   <div className="font-mono text-[11px] tracking-widest mb-2" style={{ color: 'var(--accent-risk)' }}>SAFETY NOTE</div>
                   <p className="m-0">{d.safety}</p>
                 </div>
               </Block>
-              <Block label="08" title="风险提示">
+              <Block label={String(8 + offset).padStart(2, '0')} title="风险提示">
                 <div className="hairline rounded-md p-5" style={{ background: 'rgba(214,166,106,0.08)', borderColor: 'rgba(214,166,106,0.35)' }}>
                   <div className="font-mono text-[11px] tracking-widest mb-2" style={{ color: 'var(--accent-warm)' }}>RISK NOTE · 待核验事项</div>
                   <p className="m-0">{p.risk}</p>
                 </div>
               </Block>
-              <Block label="09" title="创业启发"><ul>{d.inspiration.map((x, i) => <li key={i}>{x}</li>)}</ul></Block>
+              <Block label={String(9 + offset).padStart(2, '0')} title="创业启发"><ul>{d.inspiration.map((x, i) => <li key={i}>{x}</li>)}</ul></Block>
             </article>
 
             <aside className="md:col-span-4 md:sticky md:top-24 self-start space-y-5">
@@ -160,5 +175,48 @@ function Block({ label, title, children }: { label: string; title: string; child
       </div>
       <div className="hairline-t pt-4">{children}</div>
     </section>
+  );
+}
+
+function TechnicalSection({ technical }: { technical: NonNullable<NonNullable<Product['detail']>['technical']> }) {
+  return (
+    <div className="space-y-5">
+      <div className="hairline rounded-md p-5" style={{ background: 'var(--bg-cool)' }}>
+        <div className="font-mono text-[11px] tracking-widest uppercase mb-2" style={{ color: 'var(--accent-blue)' }}>EVIDENCE · 证据等级</div>
+        <p className="m-0">{technical.evidenceLevel}</p>
+      </div>
+      <TechList title="技术架构判断" items={[technical.architecture]} />
+      <TechList title="已核验事实" items={technical.verified} />
+      <TechList title="可能实现路径" items={technical.likelyPath} />
+      <TechList title="技术风险" items={technical.risks} tone="risk" />
+      <TechList title="待核验问题" items={technical.openQuestions} tone="warm" />
+      <TechList title="不能公开写成事实" items={technical.notFacts} tone="muted" />
+    </div>
+  );
+}
+
+function TechList({
+  title,
+  items,
+  tone = 'default',
+}: {
+  title: string;
+  items: string[];
+  tone?: 'default' | 'risk' | 'warm' | 'muted';
+}) {
+  const color = {
+    default: 'var(--accent-green)',
+    risk: 'var(--accent-risk)',
+    warm: 'var(--accent-warm)',
+    muted: 'var(--ink-tertiary)',
+  }[tone];
+
+  return (
+    <div>
+      <div className="font-mono text-[11px] tracking-widest uppercase mb-2" style={{ color }}>{title}</div>
+      <ul className="m-0">
+        {items.map((item, i) => <li key={i}>{item}</li>)}
+      </ul>
+    </div>
   );
 }

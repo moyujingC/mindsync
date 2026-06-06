@@ -36,6 +36,35 @@ export const products: Product[] = [
       ],
       aiRole:
         'AI 在 Ash 中承担陪伴与对话的主体角色。具体能力边界、是否对高风险话题做主动降级，需继续观察。',
+      technical: {
+        evidenceLevel: 'A/B/C 混合：官方披露心理学基础模型、三阶段训练、长期记忆、语音/文字交互与双层安全系统；底层模型、RAG、向量库和云厂商未公开。',
+        architecture: '聊天陪伴型 + 垂直心理模型叙事。公开资料显示它更像“垂直领域模型 + 产品化对话系统”，而非普通聊天应用。',
+        verified: [
+          '官方使用 psychology foundation model、behavioral health data、clinical fine-tuning、reinforcement learning 等表述。',
+          '官方披露支持文字与语音交互，并强调跨会话记忆和模式识别。',
+          '官方披露 layered / dual-layered safety system，并发布过自杀 / 自伤相关安全研究预印本。',
+        ],
+        likelyPath: [
+          '文字 / 语音输入 -> 意图与风险分类 -> 用户历史记忆召回 -> 主对话生成 -> 双层安全审查 -> 文本 / 语音输出。',
+          '长期记忆可能由结构化摘要、语义检索、用户状态或画像共同支撑，但公开资料没有确认具体方案。',
+          '周报和模式洞察可能由后台异步任务聚合一段时间内的对话生成。',
+        ],
+        risks: [
+          '长期记忆越强，误记、错误模式归因和依赖风险越高。',
+          '产品叙事靠近 therapy，但法律条款声明不提供医疗建议、诊断或治疗，用户理解边界需要持续观察。',
+          '强化学习的优化目标未公开，无法判断它如何平衡满意度、留存和真实心理改善。',
+        ],
+        openQuestions: [
+          '底层模型是从头训练、基于开源模型继续训练，还是混合使用第三方 frontier model？',
+          '长期记忆是否使用向量数据库、摘要记忆、知识图谱或状态机？',
+          '双层安全系统的两层分别是什么？',
+        ],
+        notFacts: [
+          '不能写 Ash 使用 GPT-4o、Claude、Llama、Mistral 或某个具体底层模型。',
+          '不能写 Ash 使用 RAG、向量数据库或知识图谱。',
+          '不能写 Ash 已被临床证明有效治疗心理疾病。',
+        ],
+      },
       business: '面向 C 端的订阅模式细节、企业 / 机构合作路径，以及背后 Slingshot AI 的融资与商业化策略，均需继续核验。',
       safety:
         '在自伤、伤人、急性危机等高风险表述下，是否有稳定可审计的降级与转介机制，是这一品类共同的考验，Ash 的具体策略需继续观察。',
@@ -82,6 +111,36 @@ export const products: Product[] = [
       ],
       aiRole:
         'AI 承担"耐心的提问者 + 模式归纳者"角色，不下判断、不给治疗性建议。',
+      technical: {
+        evidenceLevel: 'A/B/C 混合：官方披露 AI analysis、long-term memory、Learned Preferences、Persona、语音日记、图片/手写输入、Firestore 与 OpenAI / Anthropic / Groq 处理链路；RAG 和向量库未确认。',
+        architecture: 'AI 日记 + 长期记忆 + 个性化反思。它围绕日记条目、长期记忆、偏好学习、Persona 和周期性洞察形成自我反思系统。',
+        verified: [
+          '官方帮助中心披露 AI 会提取 moods、topics、relationships 和 patterns。',
+          '官方披露 long-term memory、Learned Preferences、AI personalization、voice journaling、图片输入与手写日记扫描。',
+          '隐私政策披露使用 Google Firestore，以及 OpenAI、Anthropic、Groq 处理 AI operations 和 language processing。',
+        ],
+        likelyPath: [
+          '文本 / 语音 / 图片 / 手写日记输入 -> 转写 / OCR / 图片解释 -> Firestore 存储 -> AI analysis -> 长期记忆与偏好更新 -> 个性化追问 / 周报。',
+          '长期记忆可能同时包含结构化用户记忆和按语义或主题检索的历史条目，但官方未披露具体实现。',
+          '多模型供应商可能承担不同任务，但路由规则未公开。',
+        ],
+        risks: [
+          '云端保存日记内容提升跨设备体验，也提高敏感数据治理要求。',
+          'BAA 与 ZDR 降低第三方处理风险，但日记内容仍会经过外部 AI 服务。',
+          '官方承认长期记忆对具体时间不强，也承认 AI 幻觉。',
+          '隐私政策披露尚未完成专业安全风险评估和正式事件响应计划。',
+        ],
+        openQuestions: [
+          '长期记忆到底是向量检索、结构化记忆、摘要链、知识图谱，还是组合方案？',
+          'OpenAI、Anthropic、Groq 分别承担哪些任务？',
+          '是否有危机识别分类器、人工升级机制或热线提示触发规则？',
+        ],
+        notFacts: [
+          '不能写 Rosebud 使用 GPT-4、GPT-4o、Claude 3.5 或 o1 作为核心模型。',
+          '不能写 Rosebud 使用 Pinecone、pgvector、Supabase、PostgreSQL、React Native 或 Expo。',
+          '不能写 Rosebud 已通过 HIPAA 认证或采用端到端加密。',
+        ],
+      },
       business: '面向 C 端订阅；具体定价档位、企业 / 团队版形态以官方页面为准。',
       safety:
         '长期日记数据极度敏感，加密、可导出、可删除是基础。明确告知用户它不是治疗工具，是产品诚意的体现。',
@@ -128,6 +187,37 @@ export const products: Product[] = [
       ],
       aiRole:
         'AI 在 Rocky.ai 中承担"结构化提问者 + 进度追踪者 + 角色扮演伙伴"。它的稳定性比"聪明"更重要。',
+      technical: {
+        evidenceLevel: 'A/B/C 混合：官方披露 Knowledge-Driven AI Architecture、RAG、modular AI agents、AMGS、Google Cloud Frankfurt，以及 OpenAI / Gemini / Claude 微服务；底层 RAG 与 agent runtime 细节未公开。',
+        architecture: 'AI 教练平台 + RAG + 模块化 agent + 白标工作流。它更像企业 / 教练方法论封装平台，而非单一聊天机器人。',
+        verified: [
+          '帮助中心明确提出 Knowledge-Driven AI Architecture 和 RAG，用于定制和扩展 coaching content。',
+          '官方披露 modular AI agents、Quest 级 Agent 配置、预设 Coach / Role-play / Tutor 等 Agent 类型。',
+          '官方披露 Automated Memory and Goal Generation System，会把用户对话和洞察解析成个性化知识片段和可追踪目标。',
+          '官方称核心系统 proprietary，同时会把 OpenAI ChatGPT、Google Gemini、Anthropic Claude 作为 LLM micro-services 用于文本摘要和分析。',
+        ],
+        likelyPath: [
+          '组织 / 教练上传内容 -> Program / Quest / Content / Bot Questions 结构化 -> RAG 检索 -> Quest 级 Agent 配置 -> 对话编排 -> 目标 / 记忆生成 -> 角色扮演 / 反馈 / 进度跟踪。',
+          'RAG 可能由内容索引、metadata filtering、role / group targeting 组成。',
+          'Role-play 可能由场景脚本、对话 Agent、评分规则和即时反馈组合支撑。',
+        ],
+        risks: [
+          'proprietary AI models 与外部 LLM micro-services 的边界不透明。',
+          'multi-agent 的营销表达和真实工程复杂度可能存在差距。',
+          '企业知识接入带来幻觉、权限泄露和跨客户数据隔离风险。',
+          'coaching 与 therapy 边界需要明确，公开资料没有完整披露危机场景机制。',
+        ],
+        openQuestions: [
+          'proprietary AI models 是独立训练模型、微调模型、规则/编排系统，还是特定任务模型？',
+          'RAG 是否使用向量数据库、metadata filtering、hybrid search、reranking 和权限过滤？',
+          'AMGS 的用户记忆能否查看、编辑、删除和纠错？',
+        ],
+        notFacts: [
+          '不能写 Rocky.ai 使用 GPT-4、Claude 或 Gemini 作为主模型。',
+          '不能写 Rocky.ai 基于 LangChain、LlamaIndex、Pinecone、Weaviate 或 pgvector。',
+          '不能写 Rocky.ai 有完整自主多智能体协作系统，或可安全用于心理治疗场景。',
+        ],
+      },
       business: '同时存在面向 C 端的订阅与面向 B 端（企业、教育机构、教练业务）的白标 / 合作模式；定价细节与合同结构以官方为准。',
       safety:
         '必须显式区分"coaching"与"therapy"。在用户出现心理疾病线索时，应有清晰的转介路径而不是继续 coaching。',
@@ -174,6 +264,38 @@ export const products: Product[] = [
       ],
       aiRole:
         'AI 严格定位在"非治疗性工作"——文档、合规、督导素材整理。AI 不替代治疗师与来访之间的临床关系。',
+      technical: {
+        evidenceLevel: 'A/B/C 混合：官方披露 Polaris AI、Google Cloud multimodal model family、行为健康真实会话数据、浏览器扩展嵌入 EHR、合规认证与安全页；工程博客披露过 RAG / VectorDB 和 lakehouse 实践。',
+        architecture: '临床机构工作流 AI + Polaris AI + EHR 嵌入 + 合规治理。AI 的位置在机构工作流里，覆盖记录、合规、质量、收入周期和临床洞察。',
+        verified: [
+          'Eleos Documentation 支持实时环境音频捕获和简短文本摘要输入，输出 progress note 建议，服务者需要 review / edit 后提交。',
+          'Polaris AI 官方称由 Google Cloud multimodal model family 启用，并结合 Eleos 自有行为健康真实会话数据集。',
+          '官方披露通过 browser extension 嵌入 web-based EHR 工作流。',
+          '安全页公开 HIPAA compliant、SOC 2 Type II、HITRUST、ISO 27001、ISO 27799、ISO 42001 等安全与合规口径。',
+          '工程博客披露过 RAG + VectorDB：de-identified notes、Pinecone serverless、按 healthcare organization 建 namespace 隔离。',
+        ],
+        likelyPath: [
+          '临床会话音频 / 文本摘要 / EHR 上下文 -> ASR 或多模态音频理解 -> 临床要点抽取 -> note 建议生成 -> 合规模板 / 规则校验 -> 治疗师 review / edit -> 浏览器扩展写入 EHR。',
+          'Clinical Insights Agent 可能使用 client journey、历史 note、治疗目标、指南和研究资料做检索增强。',
+          'AWS 与 Google Cloud 可能形成混合架构，但这只是对公开资料差异的合理解释。',
+        ],
+        risks: [
+          '行为健康会话中的停顿、语气、隐喻、创伤叙事和多参与者对话容易被错误理解。',
+          'note 生成若遗漏 intervention、client response、progress、action plan、Golden Thread 等要素，可能带来拒付和审计风险。',
+          'browser extension 降低集成门槛，也会面对 EHR 页面结构变化、权限、浏览器环境和可审计性问题。',
+          'RAG / VectorDB 与 de-identified notes 能提升个性化，也带来跨客户隔离、PHI 去标识化充分性、embedding 泄露和误召回风险。',
+        ],
+        openQuestions: [
+          'Polaris AI 到底是基于 Gemini family 做 fine-tuning、RAG、prompting，还是更深层 model adaptation？',
+          'Polaris 是否替代原 AWS NLP engine，还是只用于新产品 / 新能力？',
+          'browser extension 如何写回 EHR？是否自动填充、人工复制或受控写入？是否有审计日志？',
+        ],
+        notFacts: [
+          '不能写 Eleos 使用 Gemini / Vertex AI 作为唯一底层模型。',
+          '不能写 Eleos 全站部署在 Google Cloud。',
+          '不能写 Eleos 不存储任何音频或转录，或已经完全解决幻觉、prompt injection 和 PHI 泄露。',
+        ],
+      },
       business: '面向行为健康机构的 B2B SaaS / 合作模式；具体定价、合同结构与客户规模需继续核验。',
       safety:
         'HIPAA / SOC2 等合规是入场券；录音、转写、AI 提取的责任划分必须在合同与产品流程中显式约定。',
