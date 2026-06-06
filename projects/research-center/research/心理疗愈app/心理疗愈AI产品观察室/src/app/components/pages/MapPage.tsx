@@ -24,7 +24,7 @@ export function MapPage() {
       <section className="pt-16 md:pt-20 pb-10" style={{ background: 'var(--bg-soft)' }}>
         <Container>
           <SectionLabel>PRODUCT MAP · 产品地图</SectionLabel>
-          <h1 className="mt-4 mb-4" style={{ fontSize: 'clamp(1.9rem, 3.4vw, 2.6rem)' }}>17 款 AI 心理产品，按赛道排列</h1>
+          <h1 className="mt-4 mb-4" style={{ fontSize: 'clamp(1.9rem, 3.4vw, 2.6rem)' }}>AI 心理产品，按角色与赛道排列</h1>
           <p className="m-0 max-w-[680px]" style={{ color: 'var(--ink-secondary)' }}>
             这张地图按"AI 在体验中承担的角色"分组。每张产品卡是一份研究摘要——不是导航条目，请用阅读研究卡的姿势来看它们。
           </p>
@@ -49,13 +49,13 @@ export function MapPage() {
             <div className="mb-16">
               <div className="flex items-baseline gap-4 mb-5 hairline-b pb-3">
                 <span className="font-mono text-[12px]" style={{ color: 'var(--accent-green)' }}>START</span>
-                <h2 className="m-0">先读这 4 个重点样本</h2>
+                <h2 className="m-0">先读这些重点样本</h2>
                 <span className="text-[13px]" style={{ color: 'var(--ink-tertiary)' }}>
                   分别代表心理伴侣、AI 日记、AI 教练、临床工作流四种路径
                 </span>
               </div>
               <p className="m-0 mb-6 max-w-[720px] text-[14px]" style={{ color: 'var(--ink-secondary)' }}>
-                它们不是推荐榜单，而是理解这个赛道的入口样本。先看这 4 个，再看其余产品，会更容易分辨不同创业路径的机会、责任和风险。
+                它们不是推荐榜单，而是理解这个赛道的入口样本。先看这些代表产品，再看其余产品，会更容易分辨不同创业路径的机会、责任和风险。
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {featured.map(p => <ResearchCard key={p.slug} p={p} />)}

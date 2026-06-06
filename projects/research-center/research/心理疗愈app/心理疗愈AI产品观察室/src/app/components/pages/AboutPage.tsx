@@ -7,9 +7,9 @@ export function AboutPage() {
         <Container>
           <Reading>
             <SectionLabel>ABOUT · 关于观察室</SectionLabel>
-            <h1 className="mt-4 mb-5" style={{ fontSize: 'clamp(1.9rem, 3.2vw, 2.4rem)' }}>一份个人研究项目：45 篇拆解，17 个产品，7 个赛道。</h1>
+            <h1 className="mt-4 mb-5" style={{ fontSize: 'clamp(1.9rem, 3.2vw, 2.4rem)' }}>一份长期观察 AI 心理产品的个人研究项目。</h1>
             <p className="m-0" style={{ color: 'var(--ink-secondary)', fontSize: '1.05rem', lineHeight: 1.9 }}>
-              过去这段时间，我陆续整理了 45 篇 AI 心理疗愈产品的原始拆解文档。把重复、近似与停更的样本合并去重之后，剩下 17 个值得长期跟踪的产品、7 个我自己定义的赛道，以及 4 个用来打底的重点样本。
+              我持续整理 AI 心理疗愈产品的公开资料、上手体验和技术线索，把它们放进同一套观察框架里比较：它们面向谁，AI 承担什么角色，技术路径是否可信，安全边界是否稳定。
             </p>
             <p className="m-0 mt-4" style={{ color: 'var(--ink-secondary)', fontSize: '1.05rem', lineHeight: 1.9 }}>
               这是一份带创业视角的观察笔记：我关心 AI 在心理领域真实可做的事、做得通的商业模式，以及那些"听上去很美但需要继续核验"的部分。所有判断都尽量标注资料的可核验程度——置信度不是产品好坏评分。

@@ -1,6 +1,6 @@
 import { Container, CTAButton, ResearchCard, SectionLabel, Pill } from '../shared';
 import { Link } from '../../router';
-import { products, tracks, articles, featuredProducts } from '../../data';
+import { tracks, articles, featuredProducts } from '../../data';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 const heroImg = 'https://images.unsplash.com/photo-1768836180164-070b4c1a8f94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1600&q=80';
@@ -51,16 +51,15 @@ export function TrackPreviewSection() {
           <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
             <div>
               <SectionLabel>PRODUCT MAP</SectionLabel>
-              <h2 className="mt-3 mb-2">7 个赛道，17 款产品</h2>
+              <h2 className="mt-3 mb-2">按角色分组的产品地图</h2>
               <p className="m-0 max-w-[560px]" style={{ color: 'var(--ink-secondary)' }}>
-                按"AI 在体验中承担的角色"为轴，把这一新兴领域分成 7 个赛道。每个赛道都有自己的产品语言、监管阈值与商业范式。
+                按"AI 在体验中承担的角色"为轴，把这一新兴领域拆成几种典型路径。每条路径都有自己的产品语言、监管阈值与商业范式。
               </p>
             </div>
             <Link to={{ name: 'map' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看完整地图 →</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {tracks.map((t, i) => {
-              const count = products.filter(p => p.track === t.name).length;
               return (
                 <div key={t.name} className="hairline rounded-md p-5 group cursor-default"
                   style={{ background: 'var(--bg-paper)' }}>
@@ -68,7 +67,7 @@ export function TrackPreviewSection() {
                     <span className="font-mono text-[11px]" style={{ color: 'var(--ink-tertiary)' }}>
                       0{i + 1}
                     </span>
-                    <span className="text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>{count} 个产品</span>
+                    <span className="text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>研究路径</span>
                   </div>
                   <h4 className="m-0 mb-2">{t.name}</h4>
                   <p className="m-0 text-[13px]" style={{ color: 'var(--ink-secondary)' }}>{t.desc}</p>
@@ -124,12 +123,12 @@ export function FeaturedProductsSection() {
           <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
             <div>
               <SectionLabel>FEATURED · 代表产品</SectionLabel>
-              <h2 className="mt-3 mb-2">先从这 4 款产品开始</h2>
+              <h2 className="mt-3 mb-2">先从这些代表样本开始</h2>
               <p className="m-0 max-w-[560px]" style={{ color: 'var(--ink-secondary)' }}>
-                它们分别代表"陪伴 / 日记 / 教练 / 临床"四种 AI 在心理领域的典型角色——是理解这个赛道最经济的样本。
+                它们分别代表"陪伴 / 日记 / 教练 / 临床"几种 AI 在心理领域的典型角色，是理解这个赛道最经济的入口。
               </p>
             </div>
-            <Link to={{ name: 'map' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看全部 17 款 →</Link>
+            <Link to={{ name: 'map' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看完整地图 →</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {featuredProducts.map(p => <ResearchCard key={p.slug} p={p} />)}
@@ -203,7 +202,7 @@ export function AboutSubscribeSection() {
               <SectionLabel>ABOUT</SectionLabel>
               <h2 className="mt-3 mb-4">一份个人研究项目，<br />不是产品导航站。</h2>
               <p className="m-0 max-w-[480px]" style={{ color: 'var(--ink-secondary)' }}>
-                我先整理出 45 篇原始拆解文档，再去重成 17 个值得长期跟踪的产品，用创业视角去看每一款产品背后的机会与风险。每段评价都标注来源和置信度——置信度反映的是资料可核验程度，不是产品好坏。
+                我持续整理 AI 心理疗愈产品的公开资料和上手观察，用创业视角去看每一款产品背后的机会与风险。每段评价都标注来源和置信度——置信度反映的是资料可核验程度，不是产品好坏。
               </p>
               <div className="mt-7 flex gap-3">
                 <CTAButton to={{ name: 'about' }} variant="ghost">关于观察室</CTAButton>

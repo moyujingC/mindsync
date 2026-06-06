@@ -59,7 +59,7 @@ export const articles: Article[] = [
   {
     slug: 'safety-rails-for-mental-ai',
     title: '心理类 AI 的安全护栏，应该长什么样',
-    excerpt: '从 self-harm 提及识别到稳定转介路径，谈一谈我们在拆解 17 款产品时形成的最小安全清单。',
+    excerpt: '从 self-harm 提及识别到稳定转介路径，谈一谈我们在持续拆解产品时形成的最小安全清单。',
     date: '2026-02-27',
     tag: '安全与信任',
     readTime: '14 分钟',
