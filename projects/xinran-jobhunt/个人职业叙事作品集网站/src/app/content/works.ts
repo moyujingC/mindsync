@@ -53,7 +53,7 @@ export const works: WorkSummary[] = [
     tags: ["竞品分析", "行业洞察", "AI+人文"],
     accent: "#9B8AB8",
     to: "/works/healing-ai-research",
-    navLabel: "行业研究",
+    navLabel: "心理疗愈AI研学",
   },
   {
     title: "游戏开发技术履历",
