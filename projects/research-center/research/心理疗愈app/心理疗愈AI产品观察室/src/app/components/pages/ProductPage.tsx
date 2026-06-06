@@ -224,15 +224,15 @@ function TechnicalSection({ technical }: { technical: NonNullable<NonNullable<Pr
   return (
     <div className="space-y-5">
       <div className="hairline rounded-md p-5" style={{ background: 'var(--bg-cool)' }}>
-        <div className="font-mono text-[11px] tracking-widest uppercase mb-2" style={{ color: 'var(--accent-blue)' }}>EVIDENCE · 证据等级</div>
+        <div className="font-mono text-[11px] tracking-widest uppercase mb-2" style={{ color: 'var(--accent-blue)' }}>HOW TO READ · 怎么看这一段</div>
         <p className="m-0">{technical.evidenceLevel}</p>
       </div>
-      <TechList title="技术架构判断" items={[technical.architecture]} />
-      <TechList title="已核验事实" items={technical.verified} />
-      <TechList title="可能实现路径" items={technical.likelyPath} />
-      <TechList title="技术风险" items={technical.risks} tone="risk" />
-      <TechList title="待核验问题" items={technical.openQuestions} tone="warm" />
-      <TechList title="不能公开写成事实" items={technical.notFacts} tone="muted" />
+      <TechList title="一句话理解" items={[technical.architecture]} />
+      <TechList title="已经能确认的部分" items={technical.verified} />
+      <TechList title="大概是怎么运转的" items={technical.likelyPath} />
+      <TechList title="这里最容易出问题的地方" items={technical.risks} tone="risk" />
+      <TechList title="还有哪些没公开说清楚" items={technical.openQuestions} tone="warm" />
+      <TechList title="这些话现在还不能直接下结论" items={technical.notFacts} tone="muted" />
     </div>
   );
 }
