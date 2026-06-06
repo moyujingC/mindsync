@@ -1,5 +1,6 @@
 import { Mandala } from "./Mandala";
 import { Reveal } from "./Reveal";
+import { getPortfolioTargetProfile, type PortfolioTarget } from "../content/portfolioTargets";
 
 const evolution = [
   "技术实现",
@@ -9,7 +10,19 @@ const evolution = [
   "客户现场落地",
 ];
 
-export function Hero() {
+const targetOptions: Array<{ value: PortfolioTarget; label: string }> = [
+  { value: "ai-product-manager", label: "AI 产品经理" },
+  { value: "ai-transformation-consultant", label: "AI 转型咨询顾问" },
+  { value: "fde-ai-solution-engineer", label: "FDE / AI 解决方案工程师" },
+];
+
+type HeroProps = {
+  target: PortfolioTarget;
+  profile: ReturnType<typeof getPortfolioTargetProfile>;
+  onTargetChange: (target: PortfolioTarget) => void;
+};
+
+export function Hero({ target, profile, onTargetChange }: HeroProps) {
   return (
     <section
       id="hero"
@@ -53,6 +66,41 @@ export function Hero() {
         </Reveal>
 
         <Reveal delay={320}>
+          <div className="mb-8">
+            <div
+              className="text-xs tracking-[0.3em] text-[#8B5A2B]/80 mb-4"
+              style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
+            >
+              投 递 版 本
+            </div>
+            <div className="inline-flex flex-wrap gap-2 rounded-full border border-[#8B5A2B]/15 bg-white/70 p-2">
+              {targetOptions.map((option) => {
+                const active = option.value === target;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => onTargetChange(option.value)}
+                    className={`px-4 py-2 text-sm transition-colors ${
+                      active ? "bg-[#8B5A2B] text-[#F9F7F3]" : "text-[#2C3E50]/72 hover:text-[#8B5A2B]"
+                    }`}
+                    style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+            <p
+              className="max-w-2xl mt-4 text-[#2C3E50]/68 leading-[1.8]"
+              style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.92rem" }}
+            >
+              当前为{profile.shortLabel}，页面会自动调整岗位顺序和案例展示优先级。
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={380}>
           <p
             className="max-w-2xl text-[#2C3E50]/80 leading-[2] mb-14"
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1rem" }}
@@ -62,7 +110,7 @@ export function Hero() {
           </p>
         </Reveal>
 
-        <Reveal delay={420}>
+        <Reveal delay={480}>
           <div className="mb-16">
             <div className="text-xs tracking-[0.3em] text-[#8B5A2B]/80 mb-5" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
               职 业 演 进
@@ -85,7 +133,7 @@ export function Hero() {
           </div>
         </Reveal>
 
-        <Reveal delay={560}>
+        <Reveal delay={620}>
           <div className="flex flex-wrap gap-4">
             <a
               href="#story"

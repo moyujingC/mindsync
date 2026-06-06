@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { worksLinks } from "../worksLinks";
+import { getRoleLinks, getWorkLinks } from "../content/portfolioTargets";
+import { usePortfolioTarget } from "../usePortfolioTarget";
 
 type NavItem =
   | { type: "anchor"; hash: string; label: string }
   | { type: "dropdown"; key: "roles" | "works"; label: string; hash: string };
-
-const roleLinks = [
-  { hash: "#role-ai-product-manager", label: "AI 产品经理" },
-  { hash: "#role-ai-transformation-consultant", label: "AI 转型咨询顾问" },
-  { hash: "#role-fde-ai-solution-engineer", label: "FDE / AI 解决方案工程师" },
-];
 
 const items: NavItem[] = [
   { type: "anchor", hash: "#story", label: "职业故事" },
@@ -27,8 +22,11 @@ export function Nav() {
   const [mobileDropdown, setMobileDropdown] = useState<"roles" | "works" | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { search, target } = usePortfolioTarget();
   const isHome = location.pathname === "/";
-  const homeHref = (hash: string) => (isHome ? hash : "/");
+  const roleLinks = getRoleLinks(target);
+  const worksLinks = getWorkLinks(target);
+  const homeHref = (hash: string) => (isHome ? hash : `/${search}`);
 
   const scrollToRole = (hash: string) => {
     const scroll = () => {
@@ -36,7 +34,7 @@ export function Nav() {
     };
 
     if (!isHome) {
-      navigate("/");
+      navigate({ pathname: "/", search });
       window.setTimeout(scroll, 120);
       return;
     }
@@ -60,7 +58,7 @@ export function Nav() {
     >
       <div className="max-w-6xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
         <Link
-          to="/"
+          to={{ pathname: "/", search }}
           className="font-serif tracking-widest text-[#2C3E50] hover:text-[#8B5A2B] transition-colors"
           style={{ fontFamily: "'Noto Serif SC', serif", fontSize: "1.05rem" }}
         >
@@ -129,7 +127,7 @@ export function Nav() {
                       : worksLinks.map((link) => (
                           <Link
                             key={link.to}
-                            to={link.to}
+                            to={{ pathname: link.to, search }}
                             onClick={() => setDesktopDropdown(null)}
                             className="block px-5 py-2.5 text-sm text-[#2C3E50]/85 hover:text-[#8B5A2B] hover:bg-[#8B5A2B]/5 transition-colors tracking-wider"
                             style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
@@ -200,7 +198,7 @@ export function Nav() {
                         : worksLinks.map((link) => (
                             <Link
                               key={link.to}
-                              to={link.to}
+                              to={{ pathname: link.to, search }}
                               onClick={() => setOpen(false)}
                               className="text-sm text-[#2C3E50]/80 hover:text-[#8B5A2B] transition-colors py-1"
                               style={{ fontFamily: "'Noto Sans SC', sans-serif" }}

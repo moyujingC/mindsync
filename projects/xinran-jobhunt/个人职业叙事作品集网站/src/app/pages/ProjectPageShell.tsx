@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Mandala } from "../components/Mandala";
+import { usePortfolioTarget } from "../usePortfolioTarget";
 
 export function ProjectPageShell({
   eyebrow,
@@ -17,6 +18,8 @@ export function ProjectPageShell({
   accent?: string;
   children?: ReactNode;
 }) {
+  const { search } = usePortfolioTarget();
+
   return (
     <div className="min-h-screen bg-[#F9F7F3] text-[#2C3E50]" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
       <Nav />
@@ -24,7 +27,7 @@ export function ProjectPageShell({
         <Mandala className="absolute -top-32 -right-32 w-[600px] h-[600px] pointer-events-none" opacity={0.05} />
         <div className="relative max-w-4xl mx-auto px-6 md:px-10">
           <Link
-            to="/"
+            to={{ pathname: "/", search }}
             className="inline-flex items-center text-sm text-[#8B5A2B] hover:text-[#2C3E50] transition-colors mb-10 tracking-wider"
           >
             <span className="mr-2">←</span> 返回首页

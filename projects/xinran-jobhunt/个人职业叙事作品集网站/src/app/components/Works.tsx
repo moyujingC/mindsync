@@ -1,6 +1,7 @@
 import { Link } from "react-router";
-import { works } from "../content/works";
+import { getOrderedWorks, type PortfolioTarget } from "../content/portfolioTargets";
 import { Reveal } from "./Reveal";
+import { usePortfolioTarget } from "../usePortfolioTarget";
 
 function ProjectCover({ accent, label }: { accent: string; label: string }) {
   return (
@@ -37,7 +38,10 @@ function ProjectCover({ accent, label }: { accent: string; label: string }) {
   );
 }
 
-export function Works() {
+export function Works({ target }: { target: PortfolioTarget }) {
+  const works = getOrderedWorks(target);
+  const { search } = usePortfolioTarget();
+
   return (
     <section id="works" className="relative py-28 md:py-36 bg-[#F4F1EA]">
       <div className="max-w-6xl mx-auto px-6 md:px-10">
@@ -59,7 +63,7 @@ export function Works() {
         <div className="grid md:grid-cols-2 gap-8 md:gap-10 md:auto-rows-fr items-stretch">
           {works.map((p, i) => (
             <Reveal key={p.title} delay={i * 100} className="h-full">
-              <Link to={p.to} className="block h-full">
+              <Link to={{ pathname: p.to, search }} className="block h-full">
               <article className="group h-full flex flex-col bg-white/70 border border-[#8B5A2B]/10 hover:border-[#8B5A2B]/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_-25px_rgba(44,62,80,0.3)]">
                 <ProjectCover accent={p.accent} label={`Project 0${i + 1}`} />
                 <div className="p-8 flex flex-col flex-1">

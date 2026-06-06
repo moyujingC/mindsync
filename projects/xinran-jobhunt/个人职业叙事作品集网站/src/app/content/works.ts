@@ -1,4 +1,5 @@
 export type WorkSummary = {
+  id: string;
   title: string;
   subtitle: string;
   role: string;
@@ -12,6 +13,7 @@ export type WorkSummary = {
 
 export const works: WorkSummary[] = [
   {
+    id: "mandala-app",
     title: "一镜一梳",
     subtitle: "曼陀罗绘画 AI 解读应用",
     role: "创始人 & AI 产品负责人",
@@ -23,6 +25,7 @@ export const works: WorkSummary[] = [
     navLabel: "AI产品实践",
   },
   {
+    id: "monorepo",
     title: "知行工坊",
     subtitle: "Monorepo 一人公司操作系统",
     role: "系统设计者",
@@ -34,6 +37,7 @@ export const works: WorkSummary[] = [
     navLabel: "系统与工具",
   },
   {
+    id: "healing-kb",
     title: "曼陀罗疗愈知识库",
     subtitle: "结构化东方疗愈体系",
     role: "体系构建者",
@@ -45,6 +49,7 @@ export const works: WorkSummary[] = [
     navLabel: "疗愈知识库",
   },
   {
+    id: "healing-ai-research",
     title: "心理疗愈 AI 产品观察",
     subtitle: "产品分析与趋势洞察",
     role: "独立研究员",
@@ -53,9 +58,10 @@ export const works: WorkSummary[] = [
     tags: ["竞品分析", "行业洞察", "AI+人文"],
     accent: "#9B8AB8",
     to: "/works/healing-ai-research",
-    navLabel: "心理疗愈AI研学",
+    navLabel: "AI产品观察",
   },
   {
+    id: "game-career",
     title: "游戏开发技术履历",
     subtitle: "主机 / 端游 / 移动端研发经验",
     role: "游戏程序员 / 制作人",

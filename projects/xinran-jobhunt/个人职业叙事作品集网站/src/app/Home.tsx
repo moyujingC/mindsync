@@ -6,8 +6,11 @@ import { RoleTracks } from "./components/RoleTracks";
 import { Abilities } from "./components/Abilities";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import { usePortfolioTarget } from "./usePortfolioTarget";
 
 export default function Home() {
+  const { target, profile, setTarget } = usePortfolioTarget();
+
   return (
     <div
       className="min-h-screen bg-[#F9F7F3] text-[#2C3E50]"
@@ -15,10 +18,10 @@ export default function Home() {
     >
       <Nav />
       <main>
-        <Hero />
+        <Hero target={target} profile={profile} onTargetChange={setTarget} />
         <Story />
-        <RoleTracks />
-        <Works />
+        <RoleTracks target={target} />
+        <Works target={target} />
         <Abilities />
         <Contact />
       </main>
