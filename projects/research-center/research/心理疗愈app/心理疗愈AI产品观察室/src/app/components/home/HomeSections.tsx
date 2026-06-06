@@ -87,21 +87,21 @@ export function MethodPreviewSection() {
           <div className="grid md:grid-cols-12 gap-10">
             <div className="md:col-span-4">
               <SectionLabel>RESEARCH METHOD</SectionLabel>
-              <h2 className="mt-3 mb-5">用 7 把尺子拆每一款产品</h2>
+              <h2 className="mt-3 mb-5">从产品判断走到技术判断</h2>
               <p className="m-0" style={{ color: 'var(--ink-secondary)' }}>
-                完整方法论由 7 个维度组成：场景、关系、输入、干预、记忆、边界、商业。下方先展示其中 5 个常用维度，便于快速理解我们如何看一款产品。
+                每款产品会先看场景、关系、输入、干预、记忆、边界与商业，再补一层 AI 技术架构：模型策略、记忆、RAG、工作流、安全护栏与合规证据。
               </p>
               <div className="mt-6">
-                <Link to={{ name: 'method' }} style={{ color: 'var(--accent-green)' }}>查看完整 7 维方法论 →</Link>
+                <Link to={{ name: 'method' }} style={{ color: 'var(--accent-green)' }}>查看完整研究方法 →</Link>
               </div>
             </div>
             <div className="md:col-span-8 grid sm:grid-cols-2 gap-3">
               {[
                 ['01', '用户痛点', '它解决的是真实痛点，还是想象中的需求？'],
                 ['02', '心理学机制', '它背后引用的是哪种心理学技术？被严肃执行了吗？'],
-                ['03', 'AI 能力边界', 'AI 在体验里承担什么、不承担什么？边界稳定吗？'],
+                ['03', '技术实现路径', '它只是通用模型封装，还是有记忆、检索、编排和垂直数据？'],
                 ['04', '商业模式', '它向谁收钱？这门生意可持续吗？'],
-                ['05', '安全与信任', '高风险情境的降级与转介，做到了什么程度？'],
+                ['05', '安全与信任', '高风险情境的识别、降级与转介，做到了什么程度？'],
               ].map(([n, t, d]) => (
                 <div key={n} className="hairline rounded-md p-5" style={{ background: 'var(--bg-paper)' }}>
                   <div className="font-mono text-[11px] tracking-widest mb-2" style={{ color: 'var(--accent-green)' }}>METHOD {n}</div>
@@ -145,9 +145,9 @@ export function ArticlesPreviewSection() {
           <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
             <div>
               <SectionLabel>FIELD NOTES · 首发文章</SectionLabel>
-              <h2 className="mt-3 mb-2">先发布的 2 篇，与 1 个后续选题</h2>
+              <h2 className="mt-3 mb-2">先发布一组可复用的观察样张</h2>
               <p className="m-0 max-w-[560px] mt-2" style={{ color: 'var(--ink-secondary)' }}>
-                文章不追产能：先有判断再有文章。下面是已经写完的 2 篇首发拆解，加上 1 个正在准备中的下一篇选题。
+                文章不追产能：先把判断讲清楚，再发布给读者。这里先放产品地图、AI 安全边界和临床工作流三个方向的样张。
               </p>
             </div>
             <Link to={{ name: 'articles' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看文章列表 →</Link>

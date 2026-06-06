@@ -89,8 +89,6 @@ export function Footer() {
         <FooterCol title="关于" items={[
           { label: '关于观察室', to: { name: 'about' } },
           { label: '免责声明', to: { name: 'disclaimer' } },
-          { label: '产品详情页模板', to: { name: 'product-template' } },
-          { label: '文章详情页模板', to: { name: 'article-template' } },
         ]} />
       </Container>
       <div className="hairline-t">
