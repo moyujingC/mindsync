@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import loadingMeditationVideo from "../assets/3.2 耐心等候（冥想）.mp4";
 import loadingMeditationPoster from "../assets/loading-meditation.webp";
-import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
+import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
 import type { MandalaFlowState } from "../../shared/types";
 
 export interface MobileWebLoadingPageProps {
@@ -246,14 +246,6 @@ function FloatingParticlesSmall() {
   );
 }
 
-function LoadingBackIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 function LoadingCloseIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -338,18 +330,16 @@ export function MobileWebLoadingPage({
 
   return (
     <div className="am-page am-loading-page">
-      <div className="am-loading-topbar">
-        <button type="button" className="am-icon-button" onClick={onBack} aria-label="返回上传页">
-          <LoadingBackIcon />
-        </button>
-        <div className="am-loading-brand">
-          <img src={logoNiwu} alt="一镜一梳" />
-          <span>一镜一梳</span>
-        </div>
-        <button type="button" className="am-icon-button" onClick={onClose} aria-label="关闭">
-          <LoadingCloseIcon />
-        </button>
-      </div>
+      <SharedAppTopBar
+        title="一镜一梳"
+        backLabel="返回上传页"
+        onBack={onBack}
+        trailing={(
+          <button type="button" className="am-icon-button" onClick={onClose} aria-label="关闭">
+            <LoadingCloseIcon />
+          </button>
+        )}
+      />
 
       <div className="am-loading-body" style={loadingPatternStyle}>
         <div className="am-pattern-overlay am-loading-surface-pattern" />

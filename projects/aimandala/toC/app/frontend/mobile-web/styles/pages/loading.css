@@ -1,5 +1,6 @@
 .am-loading-page {
   --am-pattern-image: none;
+  --am-app-topbar-bleed: 0px;
   background: linear-gradient(
     180deg,
     var(--am-color-ink-950) 0%,
@@ -7,23 +8,6 @@
     var(--am-color-ink-800) 60%,
     var(--am-color-ink-900) 100%
   );
-}
-
-.am-loading-topbar {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px;
-  background: linear-gradient(
-    135deg,
-    var(--am-color-ink-900) 0%,
-    var(--am-color-ink-800) 50%,
-    var(--am-color-ink-900) 100%
-  );
-  border-bottom: 1px solid rgba(212, 160, 84, 0.15);
 }
 
 .am-loading-topbar__ornament {
@@ -39,27 +23,6 @@
     rgba(212, 160, 84, 0.11) 0%,
     transparent 72%
   );
-}
-
-.am-loading-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.am-loading-brand img {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-}
-
-.am-loading-brand span {
-  color: var(--am-text-accent);
-  font-family: var(--am-font-display);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
 }
 
 .am-loading-body {
