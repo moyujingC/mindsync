@@ -8,6 +8,8 @@ const contacts = [
   { icon: BookOpen, label: "公众号", value: "@墨予镜", href: "#" },
 ];
 
+const opportunityFocus = ["AI 产品从 0 到 1", "业务流程 AI 化 / Agent 工作流", "AI + 高信任服务场景解决方案"];
+
 export function Contact() {
   return (
     <section id="contact" className="relative py-28 md:py-36 bg-[#2C3E50] overflow-hidden">
@@ -30,14 +32,26 @@ export function Contact() {
         </Reveal>
 
         <Reveal delay={120}>
-          <p
-            className="max-w-2xl mx-auto text-center text-[#F9F7F3]/75 leading-[2.1] mb-14"
-            style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1rem" }}
-          >
-            期待交流 AI 产品从 0 到 1、业务流程 AI 化 / Agent 工作流落地、AI + 高信任服务场景的产品与解决方案机会。
-            <br className="hidden md:inline" />
-            建议优先通过邮箱联系我，我会尽快回复。
-          </p>
+          <div className="max-w-3xl mx-auto text-center mb-14" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
+            <p className="text-[#F9F7F3]/78 leading-[1.9]" style={{ fontSize: "1rem" }}>
+              如果你的团队正在推进这些方向，欢迎联系我。
+            </p>
+            <div className="grid md:grid-cols-3 gap-3 mt-6">
+              {opportunityFocus.map((item) => (
+                <div key={item} className="border-y border-[#C9A57A]/25 py-3 px-4">
+                  <p className="text-[#F9F7F3]/88 leading-[1.7]" style={{ fontSize: "0.92rem" }}>
+                    {item}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-6 text-[#F9F7F3]/68 leading-[1.8]" style={{ fontSize: "0.92rem" }}>
+              首选邮箱沟通：
+              <a href="mailto:alinecui@qq.com" className="text-[#C9A57A] hover:text-[#F9F7F3] transition-colors">
+                alinecui@qq.com
+              </a>
+            </p>
+          </div>
         </Reveal>
 
         <Reveal delay={220}>
