@@ -34,7 +34,7 @@ export function HeroSection() {
                 <div className="absolute bottom-0 left-0 right-0 p-4 backdrop-blur-md"
                   style={{ background: 'rgba(251,251,249,0.78)', borderTop: '1px solid var(--line)' }}>
                   <div className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--ink-tertiary)' }}>FIELD NOTE · 01</div>
-                  <div className="text-[13px] mt-1" style={{ color: 'var(--ink-primary)' }}>"克制是稀缺的产品力——大多数 AI 产品在抢着'给'，最好的心理 AI 在练习'接住'。"</div>
+                  <div className="text-[13px] mt-1" style={{ color: 'var(--ink-primary)' }}>"克制是稀缺的产品力——很多 AI 产品在抢着'给'，更成熟的心理 AI 在练习'接住'。"</div>
                 </div>
               </div>
             </div>
@@ -179,9 +179,9 @@ export function ArticlesPreviewSection() {
                 <span>·</span>
                 <Pill tone="warm">后续选题</Pill>
               </div>
-              <h3 className="m-0 mb-3" style={{ fontSize: '1.2rem' }}>临床场景里，AI 不要做主角</h3>
+              <h3 className="m-0 mb-3" style={{ fontSize: '1.2rem' }}>临床场景里，AI 更适合做副驾</h3>
               <p className="m-0 text-[14px]" style={{ color: 'var(--ink-secondary)' }}>
-                以 Eleos Health 为样本，谈被严格监管的领域里，AI 应该处在副驾位置的产品判断。计划在下一期发布。
+                以 Eleos Health 为样本，谈被严格监管的领域里，AI 如何服务专业人员而不是替代专业判断。计划在下一期发布。
               </p>
               <div className="mt-5 text-[12px] font-mono" style={{ color: 'var(--ink-tertiary)' }}>
                 筹备中 · 暂未发布

@@ -93,7 +93,7 @@ export function MethodPage() {
               <SectionLabel>RESEARCH METHOD · 方法论</SectionLabel>
               <h1 className="mt-4 mb-5" style={{ fontSize: 'clamp(1.9rem, 3.4vw, 2.6rem)' }}>7 把尺子：<br />我们怎么拆解一款 AI 心理产品</h1>
               <p className="m-0 max-w-[600px]" style={{ color: 'var(--ink-secondary)' }}>
-                这一套问题清单是观察室的工作流。每一款进入产品地图的样本，都会被同一组问题问一遍——这让我们的判断有迹可循、可被你反驳。
+                这一套问题清单是观察室的工作流。每一款进入产品地图的样本，都会被同一组问题问一遍，让判断有迹可循，也便于读者检查和反驳。
               </p>
             </div>
             <div className="md:col-span-5">

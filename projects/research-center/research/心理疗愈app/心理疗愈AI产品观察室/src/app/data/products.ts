@@ -88,7 +88,7 @@ export const products: Product[] = [
     oneLiner: 'AI journaling app：用户写下或说出想法，AI 帮助 discover patterns 并给出 personalized reflection prompts。',
     coreExperience: '写 / 说想法 → AI 基于内容追问 → 周期性归纳模式 → 提供个性化反思引导。',
     worthLearning: '用"提问 + 反思引导"承担 AI 的价值，明确避开"治疗师"叙事，回到自我书写本身。',
-    risk: '长期记忆要真正转化成洞察与行动，否则只是数据沉淀；不要直接断言这是"真正护城河"，复购与留存数据需继续核验。',
+    risk: '长期记忆要转化成洞察与行动，否则只是数据沉淀；复购与留存数据仍需继续核验。',
     confidence: '高',
     imageSource: '产品官网 / App Store / 官方社交分享图，访问日期：2026-06-04',
     image: PLACEHOLDER('#6F93B7', 'Rosebud'),
@@ -150,7 +150,7 @@ export const products: Product[] = [
         '在心理相关产品里，明确"我不是治疗"反而能换来更稳定的信任。',
       ],
       learningCard:
-        '日记类 AI 的真正考验，是长期记忆能不能持续被翻译成对用户有用的洞察。',
+        '日记类 AI 的长期价值，取决于记忆能不能持续被翻译成对用户有用的洞察。',
       sources: [
         { label: 'Rosebud 官网', note: '产品定位、功能与隐私说明，2026-06-04 访问' },
         { label: 'App Store 评价', note: '长期用户反馈样本，需要持续抽样核验' },
@@ -227,7 +227,7 @@ export const products: Product[] = [
         '在 B2B 与 B2B2C 上，客户成功体系比模型选型更决定生死。',
       ],
       learningCard:
-        'AI 教练真正的护城河，可能不在模型，而在"谁帮你把它分发到组织里"。',
+        'AI 教练的商业差异，可能不只在模型，也在"谁帮你把它分发到组织里"。',
       sources: [
         { label: 'Rocky.ai 官网', note: '产品介绍、目标用户与企业 / 白标页面，2026-06-04 访问' },
         { label: '行业公开报道', note: '商业模式与客户结构以多源交叉核验为准' },
