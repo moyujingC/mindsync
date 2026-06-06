@@ -25,14 +25,14 @@
 | 01 | Ash / Slingshot AI | 已完成首稿 | 已按统一结构重写 |
 | 02 | Rosebud | 已完成首稿 | 已补官网、帮助中心、隐私政策与融资报道核验 |
 | 03 | Rocky.ai | 已完成首稿 | 已补官网、帮助中心、隐私政策与平台架构核验 |
-| 04 | Eleos Health | 待写 | 建议优先写机构工作流、合规和嵌入式能力 |
+| 04 | Eleos Health | 已完成首稿 | 已补官网、产品页、安全页与官方发布稿核验 |
 
 ## 建议写作顺序
 
 1. Ash  
 2. Rosebud  
 3. Rocky.ai  
-4. Eleos Health  
+4. Eleos Health
 
 这个顺序对应四种不同的研究价值：
 
@@ -49,3 +49,12 @@
 2. 后续从中筛选适合公开分享的内容，再同步到观察室网站
 
 现阶段不需要为了网站表达压缩研究深度。
+
+## 当前完成度
+
+4 个重点样本的首轮正式研究稿已经齐了：
+
+- [01_Ash_Slingshot_AI_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/01_Ash_Slingshot_AI_正式研究文档.md)
+- [02_Rosebud_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/02_Rosebud_正式研究文档.md)
+- [03_Rocky_ai_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/03_Rocky_ai_正式研究文档.md)
+- [04_Eleos_Health_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/04_Eleos_Health_正式研究文档.md)
