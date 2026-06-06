@@ -8,12 +8,13 @@ export const articles: Article[] = [
     date: '2026-05-22',
     tag: '赛道判断',
     readTime: '12 分钟',
+    status: 'published',
     body: [
       { type: 'p', text: '过去 18 个月，越来越多 AI 心理产品在描述自己时，悄悄把"陪伴"和"治疗"混用。这不是文案问题，是定位问题——更是责任问题。' },
       { type: 'h2', text: '一、"治疗"是一个有边界的词' },
       { type: 'p', text: '在大多数司法辖区，"心理治疗"由持证专业人员提供，受到伦理、保密与转介义务的多重约束。AI 产品声称自己提供"治疗"，意味着默认承担同等责任，但绝大多数产品并未做好对应的准备。' },
       { type: 'h2', text: '二、把"陪伴"做好，并不丢人' },
-      { type: 'p', text: 'Ash、Pi 这类产品的真正价值，正是在不僭越的前提下，把"被听见"这件被严重低估的体验做扎实。这本身就足以是一个百亿级市场。' },
+      { type: 'p', text: 'Ash、Pi 这类产品的价值，正是在不僭越的前提下，把"被听见"这件被长期低估的体验做扎实。它不必冒充治疗，也可以形成清晰的用户价值。' },
       { type: 'quote', text: '克制是产品力。在 AI 心理赛道，能力边界越清晰，信任越容易积累。' },
       { type: 'h2', text: '三、产品语言的三条建议' },
       { type: 'ul', items: ['避免使用 therapy / treatment / 治疗 / 疗愈 / 治愈类词汇，除非你确实承担相应监管义务。', '清晰说明 AI 不是持证心理工作者，并保留显式的转介路径。', '把"边界"写进产品本身——例如高风险话题的稳定降级行为。'] },
@@ -26,6 +27,7 @@ export const articles: Article[] = [
     date: '2026-05-08',
     tag: '产品方法',
     readTime: '8 分钟',
+    status: 'published',
     body: [
       { type: 'p', text: '当我们追问 Rosebud 这类产品的护城河时，答案不是模型，不是提示词，而是一件很朴素的事：你在它里面待了多久。' },
       { type: 'h2', text: '长期记忆是用户的资产，不是工程的特性' },
@@ -39,6 +41,7 @@ export const articles: Article[] = [
     date: '2026-04-21',
     tag: '商业模式',
     readTime: '10 分钟',
+    status: 'planned',
   },
   {
     slug: 'clinical-ai-side-driver',
@@ -47,6 +50,7 @@ export const articles: Article[] = [
     date: '2026-04-03',
     tag: '赛道判断',
     readTime: '9 分钟',
+    status: 'planned',
   },
   {
     slug: 'cn-mental-ai-localization',
@@ -55,6 +59,7 @@ export const articles: Article[] = [
     date: '2026-03-18',
     tag: '本地化观察',
     readTime: '11 分钟',
+    status: 'planned',
   },
   {
     slug: 'safety-rails-for-mental-ai',
@@ -63,5 +68,6 @@ export const articles: Article[] = [
     date: '2026-02-27',
     tag: '安全与信任',
     readTime: '14 分钟',
+    status: 'planned',
   },
 ];

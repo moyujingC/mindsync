@@ -34,8 +34,7 @@ export function AboutPage() {
             <blockquote>把"边界"写在产品语言、研究语言与读者关系里——这是我们对自己的最低要求。</blockquote>
             <p>我们尤其警惕两类内容：把"陪伴"写成"治疗"，把"AI 工具"写成"心理咨询师"。如果你在文中发现任何这类滑动，请直接来信指出。</p>
             <h2>联系</h2>
-            <p>邮箱：<a href="mailto:hello@psy-ai-observatory.example">hello@psy-ai-observatory.example</a>（示例邮箱）<br />
-            想推荐产品、纠错或合作研究，欢迎来信。我们读每一封。</p>
+            <p>目前观察室以低频公开更新为主，暂不开放产品收录申请。若你想推荐产品、纠错或补充公开资料，可以通过我发布这篇内容的渠道留言或联系。</p>
           </Reading>
 
           <div className="mt-12 flex gap-3 justify-center">

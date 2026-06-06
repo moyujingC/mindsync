@@ -3,10 +3,8 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 export type Route =
   | { name: 'home' }
   | { name: 'map' }
-  | { name: 'product-template' }
   | { name: 'product'; slug: string }
   | { name: 'articles' }
-  | { name: 'article-template' }
   | { name: 'article'; slug: string }
   | { name: 'method' }
   | { name: 'about' }

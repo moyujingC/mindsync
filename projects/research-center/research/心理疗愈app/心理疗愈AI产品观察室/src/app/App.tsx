@@ -15,10 +15,8 @@ function Routes() {
     case 'home': return <HomePage />;
     case 'map': return <MapPage />;
     case 'product': return <ProductPage slug={route.slug} />;
-    case 'product-template': return <ProductPage template />;
     case 'articles': return <ArticlesPage />;
     case 'article': return <ArticlePage slug={route.slug} />;
-    case 'article-template': return <ArticlePage isTemplate />;
     case 'method': return <MethodPage />;
     case 'about': return <AboutPage />;
     case 'disclaimer': return <DisclaimerPage />;

@@ -35,23 +35,42 @@ export function ArticlesPage() {
 }
 
 function ArticleRow({ a, i }: { a: Article; i: number }) {
+  const published = a.status !== 'planned' && Boolean(a.body?.length);
+  const content = (
+    <>
+      <div className="md:col-span-2 flex md:flex-col md:items-start gap-3 md:gap-1">
+        <span className="font-mono text-[11px] tracking-widest" style={{ color: published ? 'var(--accent-green)' : 'var(--ink-tertiary)' }}>№ {String(i + 1).padStart(2, '0')}</span>
+        <span className="font-mono text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>{a.date}</span>
+      </div>
+      <div className="md:col-span-10">
+        <div className="flex items-center gap-2 mb-2 text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>
+          <Pill tone={published ? undefined : 'warm'}>{published ? a.tag : '后续选题'}</Pill><span>·</span><span>{a.readTime}</span>
+        </div>
+        <h3 className={`m-0 mb-3 ${published ? 'group-hover:underline underline-offset-4' : ''}`} style={{ fontSize: '1.3rem' }}>{a.title}</h3>
+        <p className="m-0 text-[14.5px]" style={{ color: 'var(--ink-secondary)' }}>{a.excerpt}</p>
+        {!published && (
+          <div className="mt-4 text-[12px] font-mono" style={{ color: 'var(--ink-tertiary)' }}>
+            筹备中 · 暂未发布
+          </div>
+        )}
+      </div>
+    </>
+  );
+
   return (
     <li>
-      <Link to={{ name: 'article', slug: a.slug }}
-        className="hairline rounded-md p-6 md:p-7 grid md:grid-cols-12 gap-6 no-underline hover:no-underline group items-start"
-        style={{ background: 'var(--bg-paper)' }}>
-        <div className="md:col-span-2 flex md:flex-col md:items-start gap-3 md:gap-1">
-          <span className="font-mono text-[11px] tracking-widest" style={{ color: 'var(--accent-green)' }}>№ {String(i + 1).padStart(2, '0')}</span>
-          <span className="font-mono text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>{a.date}</span>
+      {published ? (
+        <Link to={{ name: 'article', slug: a.slug }}
+          className="hairline rounded-md p-6 md:p-7 grid md:grid-cols-12 gap-6 no-underline hover:no-underline group items-start"
+          style={{ background: 'var(--bg-paper)' }}>
+          {content}
+        </Link>
+      ) : (
+        <div className="hairline rounded-md p-6 md:p-7 grid md:grid-cols-12 gap-6 items-start"
+          style={{ background: 'var(--bg-soft)', borderStyle: 'dashed' }}>
+          {content}
         </div>
-        <div className="md:col-span-10">
-          <div className="flex items-center gap-2 mb-2 text-[12px]" style={{ color: 'var(--ink-tertiary)' }}>
-            <Pill>{a.tag}</Pill><span>·</span><span>{a.readTime}</span>
-          </div>
-          <h3 className="m-0 mb-3 group-hover:underline underline-offset-4" style={{ fontSize: '1.3rem' }}>{a.title}</h3>
-          <p className="m-0 text-[14.5px]" style={{ color: 'var(--ink-secondary)' }}>{a.excerpt}</p>
-        </div>
-      </Link>
+      )}
     </li>
   );
 }

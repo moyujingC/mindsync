@@ -54,5 +54,6 @@ export interface Article {
   date: string;
   tag: string;
   readTime: string;
+  status?: 'published' | 'planned';
   body?: { type: 'h2' | 'h3' | 'p' | 'quote' | 'ul'; text?: string; items?: string[] }[];
 }
