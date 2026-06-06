@@ -34,9 +34,9 @@ export function Contact() {
             className="max-w-2xl mx-auto text-center text-[#F9F7F3]/75 leading-[2.1] mb-14"
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1rem" }}
           >
-            我是一个始终在高复杂度、高信任场景中工作的问题解决者。
+            欢迎交流 AI 产品经理、AI 工作流落地、AI + 高信任服务场景相关机会。
             <br className="hidden md:inline" />
-            我相信，专业性是建立信任的基础，而解决真实问题是所有工作的最终价值。
+            可通过邮箱、GitHub 或公众号与我联系。
           </p>
         </Reveal>
 
