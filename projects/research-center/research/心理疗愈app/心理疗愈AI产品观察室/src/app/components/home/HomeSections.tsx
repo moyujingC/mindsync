@@ -194,14 +194,16 @@ export function ArticlesPreviewSection() {
 }
 
 export function AboutSubscribeSection() {
+  const showSubscribe = false;
+
   return (
       <section className="py-16 md:py-24 hairline-t" style={{ background: 'var(--bg-soft)' }}>
         <Container>
           <div className="grid md:grid-cols-12 gap-10">
-            <div className="md:col-span-6">
+            <div className={showSubscribe ? 'md:col-span-6' : 'md:col-span-8'}>
               <SectionLabel>ABOUT</SectionLabel>
               <h2 className="mt-3 mb-4">一份个人研究项目，<br />不是产品导航站。</h2>
-              <p className="m-0 max-w-[480px]" style={{ color: 'var(--ink-secondary)' }}>
+              <p className="m-0 max-w-[620px]" style={{ color: 'var(--ink-secondary)' }}>
                 我持续整理 AI 心理疗愈产品的公开资料和上手观察，用创业视角去看每一款产品背后的机会与风险。每段评价都标注来源和置信度——置信度反映的是资料可核验程度，不是产品好坏。
               </p>
               <div className="mt-7 flex gap-3">
@@ -209,7 +211,7 @@ export function AboutSubscribeSection() {
                 <CTAButton to={{ name: 'method' }} variant="ghost">研究方法</CTAButton>
               </div>
             </div>
-            <div className="md:col-span-6">
+            {showSubscribe && <div className="md:col-span-6">
               <div className="hairline rounded-md p-7" style={{ background: 'var(--bg-paper)' }}>
                 <div className="font-mono text-[11px] tracking-widest uppercase mb-3" style={{ color: 'var(--accent-green)' }}>SUBSCRIBE</div>
                 <h3 className="m-0 mb-3">订阅每月一封的观察通讯</h3>
@@ -228,7 +230,7 @@ export function AboutSubscribeSection() {
                   · 你的邮箱不会被分享。随时可退订。
                 </div>
               </div>
-            </div>
+            </div>}
           </div>
         </Container>
       </section>
