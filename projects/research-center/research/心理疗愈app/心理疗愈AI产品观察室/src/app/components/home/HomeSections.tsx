@@ -138,6 +138,67 @@ export function FeaturedProductsSection() {
   );
 }
 
+export function FocusRoutesSection() {
+  const routes = [
+    {
+      code: '01',
+      title: '高关系强度消费者心理产品',
+      product: 'Ash / Slingshot AI',
+      note: '重点不是“会聊天”，而是“关系 + 垂直模型 + 安全系统”如何一起成立。',
+      tone: 'green' as const,
+    },
+    {
+      code: '02',
+      title: '自我记录型长期陪跑产品',
+      product: 'Rosebud',
+      note: '最稳的切入口是高频低门槛习惯，再把价值做在长期记忆和反思连续性上。',
+      tone: 'blue' as const,
+    },
+    {
+      code: '03',
+      title: '方法论平台化产品',
+      product: 'Rocky.ai',
+      note: '卖的不只是 bot，而是把专家知识、流程、角色和交付结构打包进平台。',
+      tone: 'warm' as const,
+    },
+    {
+      code: '04',
+      title: '高责任医疗工作流产品',
+      product: 'Eleos Health',
+      note: '在高监管行业，更值钱的是“懂机构风险和工作流”，不是“更会安慰人”。',
+      tone: 'default' as const,
+    },
+  ];
+
+  return (
+      <section className="py-16 md:py-24 hairline-t" style={{ background: 'var(--bg-soft)' }}>
+        <Container>
+          <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+            <div>
+              <SectionLabel>FOCUS ROUTES · 四条高价值路线</SectionLabel>
+              <h2 className="mt-3 mb-2">这 4 个样本，不是同一类产品里的平替</h2>
+              <p className="m-0 max-w-[700px]" style={{ color: 'var(--ink-secondary)' }}>
+                这轮研究最重要的收获，不是“哪一款更好”，而是把心理疗愈 / 行为健康 AI 拆成了 4 条不同路线：高关系消费者产品、自我记录型长期陪跑、方法论平台化，以及高责任工作流系统。
+              </p>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {routes.map((route) => (
+              <div key={route.code} className="hairline rounded-md p-6" style={{ background: 'var(--bg-paper)' }}>
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="font-mono text-[11px] tracking-widest" style={{ color: 'var(--ink-tertiary)' }}>{route.code}</span>
+                  <Pill tone={route.tone}>{route.product}</Pill>
+                </div>
+                <h3 className="m-0 mb-3" style={{ fontSize: '1.15rem' }}>{route.title}</h3>
+                <p className="m-0 text-[14px]" style={{ color: 'var(--ink-secondary)', lineHeight: 1.8 }}>{route.note}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+  );
+}
+
 export function ArticlesPreviewSection() {
   return (
       <section className="py-16 md:py-24">

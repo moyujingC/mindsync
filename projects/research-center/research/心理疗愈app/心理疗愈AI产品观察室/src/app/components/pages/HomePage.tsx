@@ -2,6 +2,7 @@ import {
   AboutSubscribeSection,
   ArticlesPreviewSection,
   FeaturedProductsSection,
+  FocusRoutesSection,
   HeroSection,
   MethodPreviewSection,
   TrackPreviewSection,
@@ -14,6 +15,7 @@ export function HomePage() {
       <TrackPreviewSection />
       <MethodPreviewSection />
       <FeaturedProductsSection />
+      <FocusRoutesSection />
       <ArticlesPreviewSection />
       <AboutSubscribeSection />
     </main>
