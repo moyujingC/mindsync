@@ -34,9 +34,9 @@ export function Contact() {
             className="max-w-2xl mx-auto text-center text-[#F9F7F3]/75 leading-[2.1] mb-14"
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1rem" }}
           >
-            欢迎交流 AI 产品经理、AI 工作流落地、AI + 高信任服务场景相关机会。
+            期待交流 AI 产品从 0 到 1、业务流程 AI 化 / Agent 工作流落地、AI + 高信任服务场景的产品与解决方案机会。
             <br className="hidden md:inline" />
-            可通过邮箱、GitHub 或公众号与我联系。
+            建议优先通过邮箱联系我，我会尽快回复。
           </p>
         </Reveal>
 
