@@ -43,10 +43,12 @@ export function Hero() {
 
         <Reveal delay={220}>
           <p
-            className="text-[#2C3E50]/70 mb-10 tracking-wide"
+            className="max-w-4xl text-[#2C3E50]/70 mb-10 tracking-wide leading-relaxed"
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1.05rem" }}
           >
-            18 年跨领域探索者 &nbsp;|&nbsp; AI 独立开发者
+            AI 产品经理 <span className="text-[#8B5A2B]/60 mx-2">|</span>
+            AI 转型咨询顾问 <span className="text-[#8B5A2B]/60 mx-2">|</span>
+            FDE / AI 解决方案工程师
           </p>
         </Reveal>
 
