@@ -204,6 +204,24 @@ describe("MobileWebApp", () => {
     expect(html).not.toContain("稍后去历史记录查看");
   });
 
+  it("reportEntry 路由缺少三圈结果时回退到上传页", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="reportEntry"
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          paintingIntention: "",
+          paintingFeeling: "",
+        }}
+      />,
+    );
+
+    expect(html).toContain("上传曼陀罗画作");
+    expect(html).not.toContain("待支付");
+    expect(html).not.toContain("确认解读");
+  });
+
   it("history 路由会渲染刷新提示与生成中的阶段进度", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp

@@ -81,7 +81,7 @@ describe("shared ui", () => {
     const html = renderToStaticMarkup(
       <SharedReportEntrySelectionPage
         descriptor={{
-          statusLabel: "作品识别完成",
+          statusLabel: "待支付",
           title: "开始 Lite 解读",
           description: "点击开始后，会立即进入 Lite 解读生成页。",
           themeLabel: "亲密关系",

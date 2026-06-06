@@ -38,7 +38,7 @@ export function createReportEntryPageDescriptor(
     (draft.reportType ?? draft.reportVariant) === "pro";
 
   return {
-    statusLabel: isProUpgrade ? "Lite 解读已完成" : "作品识别完成",
+    statusLabel: "待支付",
     title: isProUpgrade ? "升级到 Pro 深度解读" : "开始 Lite 解读",
     description: isProUpgrade
       ? "点击升级后，会直接跳过 Pro 支付确认，继续生成 Pro 完整报告。"

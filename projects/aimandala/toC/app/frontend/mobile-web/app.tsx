@@ -20,7 +20,7 @@ import type {
   MobileWebReportProductType,
   MobileWebUploadDraft,
 } from "./state";
-import { getDraftReportVariant } from "./state";
+import { getDraftReportVariant, hasDraftResolvedCircleRadii } from "./state";
 
 export interface MobileWebAppProps {
   route: MobileWebRouteId;
@@ -147,6 +147,22 @@ export function MobileWebApp({
     case "reportEntry":
       if (!uploadDraft) {
         return "Missing upload draft";
+      }
+      if (!hasDraftResolvedCircleRadii(uploadDraft)) {
+        return (
+          <MobileWebUploadPage
+            draft={uploadDraft}
+            detection={detection}
+            environmentLabel={environmentLabel}
+            environmentDetail={environmentDetail}
+            environmentTone={environmentTone}
+            isUploading={isUploading}
+            errorMessage={uploadErrorMessage}
+            onDraftChange={onUploadDraftChange}
+            onContinue={onUploadContinue}
+            onBack={onUploadBack}
+          />
+        );
       }
       return (
         <MobileWebReportEntryPage

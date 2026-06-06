@@ -33,6 +33,7 @@ import {
 import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
 import {
   getDraftReportVariant,
+  hasDraftResolvedCircleRadii,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
@@ -1111,7 +1112,11 @@ export function MobileWebBrowserShell() {
                   }
                 }}
                 onUploadContinue={async () => {
-                  setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "lite" }));
+                  const nextDraft = mergeMobileWebUploadDraft(draft, { reportType: "lite" });
+                  setDraft(nextDraft);
+                  if (!hasDraftResolvedCircleRadii(nextDraft)) {
+                    return;
+                  }
                   setRoute("reportEntry");
                 }}
                 onUploadBack={() => {

@@ -30,6 +30,7 @@ import type {
 } from "../shared/types";
 import {
   getDraftReportVariant,
+  hasDraftResolvedCircleRadii,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
@@ -1244,6 +1245,9 @@ export function MobileWebRuntime({
           },
         );
         setRuntimeUploadDraft(nextDraft);
+        if (!hasDraftResolvedCircleRadii(nextDraft)) {
+          return;
+        }
         setRuntimeProps({
           route: "reportEntry",
           uploadDraft: nextDraft,

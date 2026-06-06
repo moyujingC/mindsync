@@ -80,6 +80,17 @@ export function getDraftRuntimeImagePath(
   return getUploadAssetRef(draft)?.runtimeImagePath || draft.imagePath;
 }
 
+export function hasDraftResolvedCircleRadii(
+  draft: Pick<MobileWebUploadDraft, "innerRadius" | "middleRadius">,
+): boolean {
+  return (
+    typeof draft.innerRadius === "number" &&
+    !Number.isNaN(draft.innerRadius) &&
+    typeof draft.middleRadius === "number" &&
+    !Number.isNaN(draft.middleRadius)
+  );
+}
+
 export function getDraftUploadImageResponse(
   draft: MobileWebUploadDraft,
 ): UploadImageResponse | null {

@@ -3,7 +3,7 @@ import { resolveMobileWebCanonicalUserId } from "./identity";
 import { getGeneratedReportEntry, listGeneratedReportRecords } from "./generated-report-store";
 import type { MobileWebAppProps } from "./app";
 import type { MobileWebRouteId } from "./routes";
-import type { MobileWebUploadDraft } from "./state";
+import { hasDraftResolvedCircleRadii, type MobileWebUploadDraft } from "./state";
 import type {
   FrontendUserSession,
   InterpretationListQuery,
@@ -66,6 +66,13 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "reportEntry": {
+      if (!hasDraftResolvedCircleRadii(input.params.draft)) {
+        const upload = await loadUploadPage(input.params.draft);
+        return {
+          route: "upload",
+          uploadDraft: upload.draft,
+        };
+      }
       return {
         route: "reportEntry",
         uploadDraft: input.params.draft,

@@ -11,6 +11,7 @@ describe("report-entry page descriptor", () => {
     const lite = descriptor.cards.find((card) => card.id === "lite");
 
     expect(descriptor.themeLabel).toBe("财富关系");
+    expect(descriptor.statusLabel).toBe("待支付");
     expect(descriptor.title).toContain("Lite");
     expect(lite?.availability).toBe("available");
     expect(lite?.priceLabel).toBe("9.9 元");
@@ -30,6 +31,7 @@ describe("report-entry page descriptor", () => {
     const ids = descriptor.cards.map((card) => card.id);
 
     expect(descriptor.themeLabel).toBe("亲密关系");
+    expect(descriptor.statusLabel).toBe("待支付");
     expect(ids).toEqual(["pro"]);
     expect(descriptor.description).toContain("Pro 完整报告");
     expect(descriptor.cards[0]?.priceLabel).toBe("再付 29 元升级");
