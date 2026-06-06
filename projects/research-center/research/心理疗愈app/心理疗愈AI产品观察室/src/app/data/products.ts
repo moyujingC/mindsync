@@ -10,33 +10,33 @@ export const products: Product[] = [
     slug: 'ash',
     name: 'Ash / Slingshot AI',
     track: 'AI 心理伴侣',
-    oneLiner: '高关系强度的消费者心理产品：用 “mental health research lab + psychology foundation model” 讲一个比普通陪伴 AI 更重的故事。',
-    coreExperience: '文字 / 语音对话 + 长期记忆 + 模式识别，把单轮安慰推进成持续关系体验。',
-    worthLearning: '它最值得学的不是界面，而是“垂直模型叙事 + 高责任关系设计 + 安全系统”如何一起成立。',
-    risk: '公开语言明显靠近 therapy，但法律边界后撤；用户认知和公司责任口径之间始终有张力。',
+    oneLiner: '比普通陪伴 AI 更进一步：它想做的不是一次聊天，而是一段持续的心理支持关系。',
+    coreExperience: '文字 / 语音对话 + 长期记忆 + 模式识别，让产品从“会回应”走向“会持续理解”。',
+    worthLearning: '它把模型叙事、关系设计和安全系统放在了一起，这是心理 AI 里少见的重投入路线。',
+    risk: '产品语言靠近“治疗感”，但法律边界明显后撤，这种张力会一直存在。',
     confidence: '高',
     imageSource: '官方产品页 / 官方博客与安全说明，访问日期：2026-06-07',
     image: PLACEHOLDER('#6A9B8A', 'Ash'),
     url: 'https://www.talktoash.com',
     detail: {
       take30s:
-        'Ash 不是普通“AI 陪聊”。它真正值得研究的地方，是把自己做成“心理健康研究实验室 + 心理学基础模型 + 消费者关系型产品”这一整套叙事。',
+        'Ash 不是普通“AI 陪聊”。它想做的是更长期、更像被持续理解的心理支持体验。',
       positioning:
-        '面向个体消费者的高关系强度心理支持产品。Ash 作为消费者入口，背后承接的是 Slingshot AI 所主张的 psychology foundation model 与研究实验室定位。',
+        '面向个体消费者的心理支持产品。它一边做对话体验，一边把自己讲成“心理学基础模型”的消费者入口。',
       userPain: [
         '用户在情绪波动时需要一个随时可用、低羞耻感、低解释成本的表达出口。',
         '通用聊天机器人会顺从、安慰、给建议，但未必能稳定维持心理支持语境。',
         '传统心理咨询有价格、预约、污名与持续性门槛，很多人需要更轻的长期中间形态。',
       ],
       coreExperienceLong:
-        '用户通过文字或语音进入对话，Ash 试图建立一种比普通 AI 更接近治疗式关系感的持续体验。它强调跨会话记忆、模式识别与后续 insight，重点不是“这一轮回复好不好”，而是“长期聊下来是否持续被理解和推进”。',
+        '用户通过文字或语音进入对话，Ash 强调跨会话记忆、模式识别和后续 insight。它要解决的不是“这一轮回复好不好”，而是“长期聊下来，用户会不会感觉自己被持续理解”。',
       psychMechanism: [
         '官方提到模型学习了 CBT、DBT、ACT、psychodynamic therapy、motivational interviewing 等多种治疗风格与方法。',
         '公开资料显示它更像“多流派心理支持能力的模型化”，而不是某一疗法脚本的产品化。',
         '公开资料不足以证明它已达到临床有效治疗水平，也不足以证明每一种疗法都被严肃执行。',
       ],
       aiRole:
-        'AI 在 Ash 中承担持续关系型对话者的主体角色：倾听、追问、记忆、模式识别与风险场景下的安全降级。',
+        'AI 在这里承担的是持续关系型对话者：倾听、追问、记忆和在高风险场景下主动收住边界。',
       technical: {
         evidenceLevel: 'A/B/C 混合：官方披露 psychology foundation model、behavioral health data、clinical fine-tuning、reinforcement learning、长期记忆与双层安全系统；底层模型、RAG、向量库和云厂商未公开。',
         architecture: '高关系强度的关系型对话系统 + 垂直心理模型叙事。它更像“垂直领域模型 + 产品化关系系统”，而不是普通聊天应用。',
@@ -66,16 +66,16 @@ export const products: Product[] = [
           '不能写 Ash 已被临床证明有效治疗心理疾病。',
         ],
       },
-      business: '公开发布阶段以免费 app 获取规模、关系密度和模型迭代数据为主；后续可能走订阅、EAP 或平台化延展，但当前还不足以写成已验证闭环。',
+      business: '当前更像先做规模和关系密度，再看订阅、企业福利或平台能力延展。',
       safety:
-        '官方明确承认 Ash 会出错，也明确说它不能替代临床专业人员。真正要看的，不是它会不会安慰，而是它在高风险场景下是否能稳定降级、触发资源并避免被误当成治疗服务。',
+        '官方明确承认 Ash 会出错，也明确说它不能替代临床专业人员。真正要看的，是它能不能在高风险场景下稳定收住边界。',
       inspiration: [
         '垂直模型叙事比“套一层通用模型”更容易建立高位品牌。',
         '在高敏感领域，关系设计本身就是产品核心。',
         '安全系统要被单独设计和单独评估，不能只靠提示词后处理。',
       ],
       learningCard:
-        '在心理这种高敏感领域，“基础模型 + 产品入口”双层叙事，是一种高回报但高责任的创业姿态。',
+        '在高敏感领域，越想做“更像人”的产品，就越要先把边界和安全做好。',
       sources: [
         { label: 'Slingshot AI 官网', note: '研究实验室定位与 psychology foundation model 口径，2026-06-07 访问' },
         { label: 'Ash 官方产品页 / 安全与隐私页', note: '产品定位、记忆、安全和隐私边界，2026-06-07 访问' },
@@ -87,33 +87,33 @@ export const products: Product[] = [
     slug: 'rosebud',
     name: 'Rosebud',
     track: 'AI 日记与自我探索',
-    oneLiner: '最值得研究的不是“AI 陪你写日记”，而是它把 journaling、long-term memory 和 personalized reflection 组合成了一套持续使用系统。',
+    oneLiner: '它最有意思的地方，不是“陪你写日记”，而是“越写越懂你”。',
     coreExperience: '文本 / 语音 / 图片 / 手写输入 → 单条反思 → 长期记忆更新 → 周报与模式洞察。',
-    worthLearning: '它把高频、低门槛的 journaling 场景做成了长期关系型产品，比“AI 治疗师”更稳、更适合产品化学习。',
-    risk: '产品越像长期理解你的对象，用户就越会默认信任它；而它的治理成熟度目前并没有完全跟上这种关系强度。',
+    worthLearning: '这是非常稳的一条路线：从高频、低门槛习惯切入，再把价值做深。',
+    risk: '产品越像“懂你的人”，用户就越容易高估它的判断准确性和治理成熟度。',
     confidence: '高',
     imageSource: '官网 / 帮助中心 / 隐私政策，访问日期：2026-06-07',
     image: PLACEHOLDER('#6F93B7', 'Rosebud'),
     url: 'https://www.rosebud.app',
     detail: {
       take30s:
-        'Rosebud 真正值得研究的，不是 AI 会不会陪你写日记，而是它把日记、长期记忆、偏好学习和周期性反思，做成了一套会随着使用时间不断变强的产品。',
+        'Rosebud 的重点不是“AI 陪你写日记”，而是“这套系统会随着你的持续使用而变强”。',
       positioning:
-        '面向希望持续做自我反思和个人成长的用户，把“写日记”从空白页升级成有 AI 陪跑、追问、回顾和归纳的连续系统。对外明确不以“治疗”或“治疗师”叙事自居。',
+        '面向希望持续做自我反思和个人成长的用户，把“写日记”升级成有 AI 追问、回顾和归纳的连续系统。它刻意不把自己讲成治疗工具。',
       userPain: [
         '用户想整理情绪和想法，但很难长期坚持单纯书写。',
         '用户愿意记录，但传统日记无法主动帮助他们看见模式。',
         '用户真正需要的不是“今天写了一篇”，而是“持续写下来以后，我有没有更理解自己”。',
       ],
       coreExperienceLong:
-        '用户通过文本、语音、图片甚至手写扫描输入内容；系统先处理单条 entry，给出反思或 dig deeper 式追问，再逐步提取重要人物、重复议题、目标和偏好，转入长期记忆层，最后生成 weekly report、主题模式和行动提示。',
+        '用户通过文本、语音、图片甚至手写扫描输入内容；系统先处理单条内容，再逐步提取重要人物、重复议题和偏好，转入长期记忆层，最后生成周报和模式洞察。',
       psychMechanism: [
         '官方科学页强调 proven journaling methods 和 evidence-based therapeutic modalities。',
         '它的心理学基础更像是把表达性书写、自我反思和行为改变支持做成连续产品，而不是套一套治疗脚本。',
         '公开资料不足以证明它在临床心理治疗层面有效，也不足以证明它适合承接中高风险心理问题。',
       ],
       aiRole:
-        'AI 在 Rosebud 中更像“耐心的提问者 + 模式归纳者 + 长期陪跑系统”，重点不是给答案，而是帮助用户慢慢看见自己。',
+        'AI 在 Rosebud 中更像“耐心的提问者 + 模式归纳者”，重点不是给答案，而是帮助用户慢慢看见自己。',
       technical: {
         evidenceLevel: 'A/B/C 混合：官方披露 AI analysis、long-term memory、Learned Preferences、Persona、语音日记、图片/手写输入、Firestore 与 OpenAI / Anthropic / Groq 链路；RAG 和向量库未确认。',
         architecture: '自我记录型长期关系系统：以单条日记分析为入口，用长期记忆、偏好学习和 Persona 把一次次反思串成连续体验。',
@@ -144,16 +144,16 @@ export const products: Product[] = [
           '不能写 Rosebud 已通过 HIPAA 认证或采用端到端加密。',
         ],
       },
-      business: '当前是典型 freemium + premium subscription 路线：先用低门槛高频习惯进入，再把真正的产品壁垒做在记忆、连续性和个性化上。',
+      business: '很清楚的订阅产品逻辑：先抓住习惯，再把价值做在长期记忆和连续体验上。',
       safety:
-        '长期日记数据极度敏感。问题不只是加不加密，而是当产品越来越像“了解你的人”时，用户会不会高估它的判断准确性和治理成熟度。',
+        '长期日记数据极度敏感。真正的问题不只是加密，而是用户会不会把它当成一个比实际更可靠的“理解者”。',
       inspiration: [
         '先抓住高频、可持续、低门槛行为，再叠加 AI 深度。',
         '长期记忆比单轮对话更能构成留存壁垒。',
         '个性化不只是换语气，而是让系统逐步学会用户偏好。',
       ],
       learningCard:
-        'Rosebud 最值钱的地方，不是“它会陪你写”，而是“它会随着你持续写而逐渐变强”。',
+        'Rosebud 最值钱的地方，是它把“写下来”慢慢变成“看见自己”。',
       sources: [
         { label: 'Rosebud 官网', note: '产品定位、定价与核心文案，2026-06-07 访问' },
         { label: 'Rosebud 帮助中心 / 隐私政策', note: '长期记忆、Persona、偏好学习与数据治理说明，2026-06-07 访问' },
@@ -165,33 +165,33 @@ export const products: Product[] = [
     slug: 'rocky-ai',
     name: 'Rocky.ai',
     track: 'AI 教练与个人成长',
-    oneLiner: '它不是一个 AI 教练，而是一套企业级 AI 教练基础设施：白标、知识接入、角色扮演、目标跟踪和多智能体编排都在这里。',
-    coreExperience: '组织上传方法论和内容 → Quest / Agent 配置 → 用户进入教练或角色扮演场景 → 系统跟踪目标、记忆和进度。',
-    worthLearning: '它把专家服务和教练方法论做成了可配置平台，而不是单一聊天窗口。',
-    risk: '平台能力越强，就越容易被客户配置到过界场景；尤其要防止从 coaching 滑向治疗替代。',
+    oneLiner: '它卖的不是一个 AI 教练，而是一整套“把教练方法规模化交付”的平台。',
+    coreExperience: '组织上传方法论和内容 → Quest / Agent 配置 → 用户进入场景 → 系统跟踪目标、记忆和进度。',
+    worthLearning: '它把专家服务做成平台，这比单一聊天窗口更有商业想象力。',
+    risk: '平台能力越强，越要防止客户把它配置到不该接的高风险场景。',
     confidence: '高',
     imageSource: '官网 / 帮助中心 / 隐私政策，访问日期：2026-06-07',
     image: PLACEHOLDER('#D6A66A', 'Rocky.ai'),
     url: 'https://rocky.ai',
     detail: {
       take30s:
-        'Rocky.ai 真正值得研究的，不是“AI 教练会不会聊天”，而是它把自己做成了一套企业级 AI 教练基础设施：可白标、可接知识、可按场景配置 Agent、可承接教练和角色扮演流程。',
+        'Rocky.ai 真正值得研究的，不是“AI 教练会不会聊天”，而是它把教练服务做成了可配置、可白标、可规模化交付的平台。',
       positioning:
-        '面向组织、教练、培训方和个人成长场景的 AI 教练平台。它卖的不只是对话，而是把组织知识、方法论和教练流程打包进 AI 系统里的能力。',
+        '面向组织、教练和培训方的 AI 教练平台。它卖的不只是对话，而是把方法论、内容和流程打包进系统里的能力。',
       userPain: [
         '教练、顾问和培训方的服务很难规模化。',
         '组织内部知识、方法论和培训内容很难被持续调用。',
         '传统培训容易停留在一次性学习，缺乏日常微练习和行为跟踪。',
       ],
       coreExperienceLong:
-        '组织或教练方先配置品牌、Programs、Quests、知识内容和 AI Agents；用户再进入某个教练主题、角色扮演或自评场景，由 COE 编排合适模块，结合组织知识推进对话，并把目标和洞察沉淀到 AMGS 中，形成下一次持续跟进。',
+        '组织或教练方先配置品牌、Programs、Quests、知识内容和 AI Agents；用户再进入教练、角色扮演或自评场景，系统结合组织知识推进对话，并把目标和洞察沉淀成后续跟进。',
       psychMechanism: [
         '公开资料显示它的方法基础更偏教练学、正向心理学和行为改变，而不是临床心理治疗。',
         '它试图把“教练方法”做成可配置模块，而不是把某位教练的人格简单复制成聊天 bot。',
         '公开资料不足以证明它适合承担治疗责任，也不足以证明它适合替代人工处理复杂心理困扰。',
       ],
       aiRole:
-        'AI 在 Rocky.ai 中承担结构化提问者、进度追踪者、角色扮演伙伴与组织方法论执行器的角色。',
+        'AI 在 Rocky.ai 中承担结构化提问者、进度追踪者、角色扮演伙伴和方法论执行器的角色。',
       technical: {
         evidenceLevel: 'A/B/C 混合：官方披露 Knowledge-Driven AI Architecture、RAG、COE、AMGS、modular AI agents、Google Cloud Frankfurt，以及 OpenAI / Gemini / Claude 微服务；底层运行时细节未公开。',
         architecture: '知识驱动的多智能体教练平台：白标应用、内容知识层、对话编排、目标生成和企业级部署共同构成价值。',
@@ -223,16 +223,16 @@ export const products: Product[] = [
           '不能写 Rocky.ai 有完整自主多智能体协作系统，或可安全用于心理治疗场景。',
         ],
       },
-      business: '明显的 B2B / 白标平台路径：它不是用单个 AI 教练抢用户注意力，而是试图成为组织和专业服务方的 AI 交付底座。',
+      business: '很明确的 B2B / 白标平台路线：核心不是抢个人用户，而是成为组织和专业服务方的交付底座。',
       safety:
-        '平台能力强不代表应该无边界扩展到心理治疗或危机干预。真正的挑战不是模型聪明不聪明，而是哪些场景平台根本不该接。',
+        '平台能力强不代表应该无边界扩展到心理治疗或危机干预。真正的挑战，是先定义哪些场景根本不该接。',
       inspiration: [
         '不要把“AI 教练”只做成一个聊天窗口。',
         '平台化会比单点工具更适合 B2B 价值捕获。',
         '多智能体真正有价值的地方，在于任务分工，而不是概念包装。',
       ],
       learningCard:
-        'Rocky.ai 最值钱的不是“会问问题”，而是“把问题、内容、角色、目标和交付流程一起产品化”。',
+        'Rocky.ai 最值钱的不是“会问问题”，而是“能把一套方法稳定交付出去”。',
       sources: [
         { label: 'Rocky.ai 官网', note: '平台定位、目标用户与白标能力，2026-06-07 访问' },
         { label: 'Rocky.ai 帮助中心', note: 'COE、AMGS、RAG、Agent 配置与企业数据说明，2026-06-07 访问' },
@@ -244,33 +244,33 @@ export const products: Product[] = [
     slug: 'eleos-health',
     name: 'Eleos Health',
     track: '临床与机构工作流',
-    oneLiner: '它不是“AI 写病历工具”，而是把 documentation、compliance 和 revenue cycle 串成一条机构工作流的 System of Action。',
+    oneLiner: '它卖的不是“AI 写病历”，而是“让机构少出错、少漏钱、少返工”的工作流系统。',
     coreExperience: '会谈音频或摘要进入系统 → 生成 note suggestions → 运行 clinical / compliance / revenue agents → 在 EHR 工作流中完成修正与提交。',
-    worthLearning: '它展示了高责任行业里最稳的一类 AI 路线：不替代专业人员，而是深入最痛、最贵、最可量化的流程问题。',
-    risk: '当 AI 从建议走向前置阻断和引导，问题就不只是准确率，而是治理、审计和责任链是否成立。',
+    worthLearning: '它代表了高责任行业里最稳的一条 AI 路线：不替代专业人员，而是深入最贵的流程问题。',
+    risk: '当 AI 进入临床和合规主链路，问题就不只是准确率，而是治理、审计和责任链是否成立。',
     confidence: '高',
     imageSource: '官网 / 产品页 / 安全页 / 官方发布稿，访问日期：2026-06-07',
     image: PLACEHOLDER('#5F8FAA', 'Eleos Health'),
     url: 'https://eleos.health',
     detail: {
       take30s:
-        'Eleos Health 最值得研究的，不是“AI 写病历”，而是它把自己从环境式 AI 记录员，进一步做成了面向 community-based care 的 System of Action。',
+        'Eleos Health 最值得研究的，不是“AI 写病历”，而是它把记录、合规和收入保护做成了一套机构工作流系统。',
       positioning:
-        '面向行为健康和社区型照护机构的工作流型 AI 平台：覆盖 documentation、clinical insights、compliance 和 revenue cycle management。',
+        '面向行为健康和社区型照护机构的工作流型 AI 平台：覆盖记录、临床洞察、合规和收入周期管理。',
       userPain: [
         '行为健康和社区照护场景的文书要求高，且直接影响 reimbursement 和 audit。',
         '提供者在写进展笔记、补文书、追合规要求上消耗大量时间。',
         '传统 CQI 多在事后才发现问题，临床、合规和收入团队的数据常常分散。',
       ],
       coreExperienceLong:
-        '提供者通过浏览器扩展或移动端在现有 EHR 工作流中使用 Eleos。系统接收会谈音频或关键要点摘要，先生成结构化、临床相关、合规导向的 note suggestions，再把临床线索、合规要求与 payer 规则放进同一条 AI 工作流中，提前发现会影响过审、报销和质量管理的问题。',
+        '提供者通过浏览器扩展或移动端在现有 EHR 工作流中使用 Eleos。系统先生成结构化 note suggestions，再把临床线索、合规要求和 payer 规则放进同一条工作流里，提前发现会影响过审、报销和质量管理的问题。',
       psychMechanism: [
         '公开资料显示 Eleos 并不是做治疗建议替代，而是建立在行为健康临床工作流上。',
         '平台强调识别 CBT、DBT、MI、ACT 等 evidence-based techniques，也强调 therapeutic themes、treatment goals 和 social determinants of health。',
         '它的价值更偏 provider support，而不是直接面向患者的自主治疗建议。',
       ],
       aiRole:
-        'AI 在 Eleos 中承担临床副驾和机构工作流系统的角色：记录、提炼、校验、提醒和提前阻断风险，但不取代临床关系和自主专业判断。',
+        'AI 在 Eleos 中承担临床副驾和机构工作流系统的角色：记录、提炼、校验、提醒和提前阻断风险。',
       technical: {
         evidenceLevel: 'A/B/C 混合：官方披露 Polaris AI、Google Cloud + Gemini family、behavioral health 真实会话数据、browser extension、workflow agents 与多项认证；具体底层服务拓扑和检索细节未完全公开。',
         architecture: '高责任医疗工作流系统：音频原生、多模态、workflow agents、EHR 嵌入和合规治理共同构成价值，而不是单一笔记生成器。',
@@ -302,16 +302,16 @@ export const products: Product[] = [
           '不能写 Eleos 不存储任何音频或转录，或已经完全解决幻觉、prompt injection 和 PHI 泄露。',
         ],
       },
-      business: '典型的高 ARPU B2B 医疗平台路径：价值不只在效率提升，更在降低拒付、减少返工、提前发现风险和改善机构质量管理。',
+      business: '很清楚的高客单价 B2B 医疗平台路线：价值不只在提效，更在少拒付、少返工和更稳的质量管理。',
       safety:
-        '在 Eleos 这里，安全治理不是附属项，而是进入市场的基础设施。当 AI 从“建议”走向“提前阻断和引导”，真正的问题就变成了治理、透明度和可追责性。',
+        '在 Eleos 这里，安全治理不是附属项，而是产品本身。当 AI 开始影响流程，治理、透明度和可追责性就必须跟上。',
       inspiration: [
         '不要只盯着“让医生少写字”，要盯着“机构哪里最容易损失钱和质量”。',
         '在高监管行业，嵌入工作流往往比重做系统更现实。',
         '认证、治理和责任设计本身就是产品能力。',
       ],
       learningCard:
-        'Eleos 最值得学的不是“AI 更懂情绪”，而是“AI 更懂机构风险和工作流”。',
+        'Eleos 最值得学的，不是“AI 更懂情绪”，而是“AI 更懂机构风险和工作流”。',
       sources: [
         { label: 'Eleos 官网 / 产品页 / 安全页', note: 'System of Action、Documentation、EHR 接入与治理口径，2026-06-07 访问' },
         { label: '官方发布稿', note: 'Series C、Polaris AI、ISO 42001 与 agent 扩展口径，2026-06-07 复核' },
