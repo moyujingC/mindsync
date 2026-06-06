@@ -83,8 +83,8 @@ export function Contact() {
         <Reveal delay={320}>
           <div className="text-center">
             <a
-              href="#"
-              download
+              href="/cui-xing-resume.pdf"
+              download="崔兴简历.pdf"
               className="group inline-flex items-center px-9 py-3.5 bg-[#8B5A2B] text-[#F9F7F3] tracking-[0.25em] hover:bg-[#C9A57A] hover:text-[#2C3E50] transition-all duration-500"
               style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.875rem" }}
             >
