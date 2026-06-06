@@ -18,17 +18,11 @@ export function HeroSection() {
                 <span style={{ color: 'var(--accent-green)' }}>产品观察室</span>
               </h1>
               <p className="m-0 max-w-[560px] text-[16px]" style={{ color: 'var(--ink-secondary)', lineHeight: 1.9 }}>
-                这是一份个人研究项目：我整理了 45 篇原始拆解文档，去重成 17 个值得长期跟踪的产品、7 个赛道、4 个重点样本，从创业视角看 AI 在心理领域的真实机会与边界。
+                这是一份个人研究项目：我持续观察心理疗愈领域的 AI 产品，从创业视角拆解它们的产品语言、技术路径、商业逻辑与安全边界。
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <CTAButton to={{ name: 'map' }}>浏览产品地图</CTAButton>
                 <CTAButton to={{ name: 'method' }} variant="ghost">查看研究方法</CTAButton>
-              </div>
-              <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-[560px]">
-                <Stat n="45" l="原始拆解文档" />
-                <Stat n="17" l="去重产品" />
-                <Stat n="7" l="覆盖赛道" />
-                <Stat n="4" l="重点样本" />
               </div>
             </div>
             <div className="md:col-span-5">
@@ -239,14 +233,5 @@ export function AboutSubscribeSection() {
           </div>
         </Container>
       </section>
-  );
-}
-
-function Stat({ n, l }: { n: string; l: string }) {
-  return (
-    <div>
-      <div className="font-serif" style={{ fontSize: '2.2rem', color: 'var(--ink-primary)', lineHeight: 1 }}>{n}</div>
-      <div className="text-[12px] mt-1" style={{ color: 'var(--ink-tertiary)' }}>{l}</div>
-    </div>
   );
 }
