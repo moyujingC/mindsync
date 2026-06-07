@@ -469,6 +469,83 @@ export function LeftPanel({
                   onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { quoteBg: value, placeholderBg: value })}
                 />
               </div>
+
+              <div className="pt-1 border-t border-border/60 space-y-2.5">
+                <div className="text-[10.5px] text-muted-foreground">版式参数</div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <ThemeNumberField
+                    label="H2 字号"
+                    value={selectedLayoutTheme.headingFontSize}
+                    suffix="px"
+                    min={16}
+                    max={32}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { headingFontSize: value })}
+                  />
+                  <ThemeNumberField
+                    label="段间距"
+                    value={selectedLayoutTheme.paragraphSpacing}
+                    suffix="px"
+                    min={8}
+                    max={32}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { paragraphSpacing: value })}
+                  />
+                  <ThemeNumberField
+                    label="区块间距"
+                    value={selectedLayoutTheme.sectionSpacing}
+                    suffix="px"
+                    min={16}
+                    max={40}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { sectionSpacing: value })}
+                  />
+                  <ThemeNumberField
+                    label="图片圆角"
+                    value={selectedLayoutTheme.imageRadius}
+                    suffix="px"
+                    min={0}
+                    max={24}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { imageRadius: value })}
+                  />
+                  <ThemeNumberField
+                    label="引用圆角"
+                    value={selectedLayoutTheme.quoteRadius}
+                    suffix="px"
+                    min={0}
+                    max={24}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { quoteRadius: value })}
+                  />
+                  <ThemeNumberField
+                    label="引用边线"
+                    value={selectedLayoutTheme.quoteBorderWidth}
+                    suffix="px"
+                    min={1}
+                    max={8}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { quoteBorderWidth: value })}
+                  />
+                  <ThemeNumberField
+                    label="CTA 圆角"
+                    value={selectedLayoutTheme.ctaRadius}
+                    suffix="px"
+                    min={0}
+                    max={999}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { ctaRadius: value })}
+                  />
+                  <div className="space-y-1.5">
+                    <label className="text-[10.5px] text-muted-foreground">图注对齐</label>
+                    <Select
+                      value={selectedLayoutTheme.captionAlign}
+                      onValueChange={(value: "left" | "center") => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { captionAlign: value })}
+                    >
+                      <SelectTrigger className="h-8 bg-card border-border text-[11.5px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="center">居中</SelectItem>
+                        <SelectItem value="left">左对齐</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         ) : null}
@@ -519,6 +596,43 @@ function ThemeColorField({ label, value, onChange }: { label: string; value: str
           onChange={(event) => onChange(event.target.value)}
           className="h-7 border-0 bg-transparent px-0 py-0 text-[11px] shadow-none focus-visible:ring-0"
         />
+      </div>
+    </div>
+  );
+}
+
+function ThemeNumberField({
+  label,
+  value,
+  onChange,
+  suffix,
+  min,
+  max,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  suffix: string;
+  min: number;
+  max: number;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[10.5px] text-muted-foreground">{label}</label>
+      <div className="relative">
+        <Input
+          type="number"
+          value={String(value)}
+          min={min}
+          max={max}
+          onChange={(event) => {
+            const next = Number(event.target.value);
+            if (!Number.isFinite(next)) return;
+            onChange(Math.max(min, Math.min(max, next)));
+          }}
+          className="bg-card border-border h-8 pr-9 text-[11.5px]"
+        />
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">{suffix}</span>
       </div>
     </div>
   );

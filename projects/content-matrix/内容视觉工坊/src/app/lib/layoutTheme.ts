@@ -15,6 +15,14 @@ export interface WechatLayoutTheme {
   figureBg: string;
   placeholderBg: string;
   placeholderBorder: string;
+  headingFontSize: number;
+  paragraphSpacing: number;
+  sectionSpacing: number;
+  imageRadius: number;
+  quoteRadius: number;
+  quoteBorderWidth: number;
+  ctaRadius: number;
+  captionAlign: "left" | "center";
 }
 
 export function buildWechatLayoutTheme(theme?: WechatLayoutThemeAsset): WechatLayoutTheme {
@@ -34,6 +42,14 @@ export function buildWechatLayoutTheme(theme?: WechatLayoutThemeAsset): WechatLa
       figureBg: theme.figureBg,
       placeholderBg: theme.placeholderBg,
       placeholderBorder: theme.placeholderBorder,
+      headingFontSize: theme.headingFontSize,
+      paragraphSpacing: theme.paragraphSpacing,
+      sectionSpacing: theme.sectionSpacing,
+      imageRadius: theme.imageRadius,
+      quoteRadius: theme.quoteRadius,
+      quoteBorderWidth: theme.quoteBorderWidth,
+      ctaRadius: theme.ctaRadius,
+      captionAlign: theme.captionAlign,
     };
   }
 
@@ -52,6 +68,14 @@ export function buildWechatLayoutTheme(theme?: WechatLayoutThemeAsset): WechatLa
     figureBg: "rgb(237, 231, 220)",
     placeholderBg: "rgb(250, 246, 238)",
     placeholderBorder: "rgb(212, 202, 184)",
+    headingFontSize: 22,
+    paragraphSpacing: 18,
+    sectionSpacing: 28,
+    imageRadius: 8,
+    quoteRadius: 10,
+    quoteBorderWidth: 4,
+    ctaRadius: 999,
+    captionAlign: "center",
   };
 }
 

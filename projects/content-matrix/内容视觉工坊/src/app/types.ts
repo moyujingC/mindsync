@@ -41,6 +41,14 @@ export interface WechatLayoutThemeAsset {
   figureBg: string;
   placeholderBg: string;
   placeholderBorder: string;
+  headingFontSize: number;
+  paragraphSpacing: number;
+  sectionSpacing: number;
+  imageRadius: number;
+  quoteRadius: number;
+  quoteBorderWidth: number;
+  ctaRadius: number;
+  captionAlign: "left" | "center";
   pinned?: boolean;
 }
 

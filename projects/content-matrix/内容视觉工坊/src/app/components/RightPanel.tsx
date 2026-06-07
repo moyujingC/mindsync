@@ -116,7 +116,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
               <article className="px-6 py-5 text-[13px] leading-[1.95]" style={{ fontFamily: "var(--font-sans-cn)", color: theme.bodyColor }}>
                 {data.draftReview.preview.intro ? (
                   <InheritBlock>
-                    <p className="italic text-[12.5px] leading-[1.85]" style={{ color: theme.mutedColor }}>
+                    <p className="italic text-[12.5px] leading-[1.85]" style={{ color: theme.mutedColor, marginBottom: theme.paragraphSpacing }}>
                       {data.draftReview.preview.intro}
                     </p>
                   </InheritBlock>
@@ -194,8 +194,8 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
 function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock; inlineImage?: string; theme: ReturnType<typeof buildWechatLayoutTheme> }) {
   if (block.type === "heading2") {
     return (
-      <InheritBlock className="mt-6">
-        <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "15.5px", fontWeight: 600, color: theme.headingColor }}>
+      <InheritBlock className="mt-0" >
+        <h2 style={{ marginTop: theme.sectionSpacing, fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 6.5, 15)}px`, fontWeight: 600, color: theme.headingColor }}>
           {block.text}
         </h2>
       </InheritBlock>
@@ -204,8 +204,8 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "blockquote") {
     return (
-      <InheritBlock className="mt-5">
-        <blockquote className="px-4 py-3 text-[12.5px] leading-[1.85]" style={{ fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `3px solid ${theme.quoteBorder}`, color: theme.bodyColor }}>
+      <InheritBlock className="mt-0">
+        <blockquote className="px-4 py-3 text-[12.5px] leading-[1.85]" style={{ marginTop: theme.paragraphSpacing, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${theme.quoteBorderWidth}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
           {block.text}
         </blockquote>
       </InheritBlock>
@@ -214,8 +214,8 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "ordered-list") {
     return (
-      <InheritBlock className="mt-3">
-        <ol className="space-y-2 pl-0.5">
+      <InheritBlock className="mt-0">
+        <ol className="space-y-2 pl-0.5" style={{ marginTop: theme.paragraphSpacing }}>
           {block.items.map((item, i) => (
             <li key={`${item}-${i}`} className="flex gap-2.5">
               <span className="shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600, color: theme.headingColor }}>{i + 1}.</span>
@@ -229,10 +229,10 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "image") {
     return (
-      <SystemBlock label={`${block.placementLabel} · 正文配图`} className="mt-5">
+      <SystemBlock label={`${block.placementLabel} · 正文配图`} className="mt-0" style={{ marginTop: theme.sectionSpacing }}>
         <figure>
           {inlineImage ? (
-            <div className="rounded-md overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg }}>
+            <div className="overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg, borderRadius: theme.imageRadius }}>
               <ImageWithFallback
                 src={inlineImage}
                 alt={`正文配图 ${block.imageId}`}
@@ -240,12 +240,12 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
               />
             </div>
           ) : (
-            <div className="rounded-md border border-dashed px-4 py-10 text-center" style={{ background: theme.placeholderBg, borderColor: theme.placeholderBorder, color: theme.mutedColor }}>
+            <div className="border border-dashed px-4 py-10 text-center" style={{ background: theme.placeholderBg, borderColor: theme.placeholderBorder, color: theme.mutedColor, borderRadius: theme.imageRadius }}>
               <AlertTriangle className="w-4 h-4 mx-auto mb-2" />
               <div className="text-[11px]">图片尚未生成</div>
             </div>
           )}
-          <figcaption className="text-center text-[11px] text-muted-foreground mt-2">▲ {block.caption}</figcaption>
+          <figcaption className="text-[11px] text-muted-foreground mt-2" style={{ textAlign: theme.captionAlign }}>▲ {block.caption}</figcaption>
         </figure>
       </SystemBlock>
     );
@@ -253,16 +253,16 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "cta") {
     return (
-      <SystemBlock label="结尾 CTA · 系统生成" className="mt-7 pt-5 border-t border-dashed border-border/80">
+      <SystemBlock label="结尾 CTA · 系统生成" className="pt-5 border-t border-dashed border-border/80" style={{ marginTop: theme.sectionSpacing + 4 }}>
         <div className="text-center text-[11.5px] text-muted-foreground">
           <div className="mb-2.5" style={{ fontFamily: "var(--font-serif)", color: theme.headingColor, fontWeight: 500 }}>—— {block.title} ——</div>
-          <span className="inline-block px-3 py-1 rounded-full text-[11px]" style={{ background: theme.ctaBg, color: theme.ctaText }}>{block.buttonText}</span>
+          <span className="inline-block px-3 py-1 text-[11px]" style={{ background: theme.ctaBg, color: theme.ctaText, borderRadius: theme.ctaRadius }}>{block.buttonText}</span>
         </div>
       </SystemBlock>
     );
   }
 
-  return <p className="mt-5">{block.text}</p>;
+  return <p style={{ marginTop: theme.paragraphSpacing }}>{block.text}</p>;
 }
 
 const stageLabelMap: Record<GenerationStageStatus, string> = {
@@ -293,9 +293,9 @@ function InheritBlock({ children, className = "" }: { children: React.ReactNode;
   );
 }
 
-function SystemBlock({ children, label, className = "" }: { children: React.ReactNode; label: string; className?: string }) {
+function SystemBlock({ children, label, className = "", style }: { children: React.ReactNode; label: string; className?: string; style?: React.CSSProperties }) {
   return (
-    <div className={`relative group ${className}`}>
+    <div className={`relative group ${className}`} style={style}>
       <span className="absolute -left-3 top-0 bottom-0 w-px bg-primary/55" aria-hidden></span>
       <span className="absolute -top-2 right-0 text-[9.5px] text-primary/85 bg-white px-1.5 py-[1px] rounded-sm border border-primary/20 whitespace-nowrap">
         {label}
