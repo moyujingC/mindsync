@@ -63,15 +63,20 @@
 }
 
 .mw-history-intro {
-  min-height: 214px;
+  min-height: 188px;
   margin-top: 24px;
   overflow: hidden;
   border: 1px solid rgba(212, 160, 84, 0.15);
   border-radius: 18px;
   background:
-    linear-gradient(160deg, rgba(20, 32, 55, 0.9) 0%, rgba(30, 45, 70, 0.5) 40%, rgba(18, 28, 48, 0.8) 100%),
+    radial-gradient(ellipse at calc(100% + 20px) -34px, rgba(212, 160, 84, 0.12) 0%, rgba(212, 160, 84, 0.04) 50%, transparent 70%),
+    radial-gradient(ellipse at 14% calc(100% + 20px), rgba(200, 120, 80, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse at 24% 22%, rgba(117, 137, 165, 0.24), transparent 24%),
+    radial-gradient(circle at 94% 18%, rgba(238, 184, 91, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(34, 46, 72, 0.92), rgba(15, 25, 44, 0.98)),
     url("../../assets/history-dunhuang-pattern-clean.png");
-  background-size: auto, 300px;
+  background-size: auto, auto, auto, auto, auto, 360px;
+  background-position: center, center, center, center, center, 18% 40%;
   box-shadow:
     0 4px 30px rgba(212, 160, 84, 0.08),
     0 0 60px rgba(17, 26, 48, 0.5);
@@ -81,8 +86,10 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at calc(100% + 20px) -34px, rgba(212, 160, 84, 0.12) 0%, rgba(212, 160, 84, 0.04) 50%, transparent 70%),
-    radial-gradient(ellipse at 14% calc(100% + 20px), rgba(200, 120, 80, 0.08) 0%, transparent 70%);
+    linear-gradient(rgba(18, 29, 50, 0.42), rgba(10, 18, 34, 0.66)),
+    linear-gradient(160deg, transparent 0 56%, rgba(4, 10, 22, 0.34) 56%),
+    linear-gradient(22deg, transparent 0 27%, rgba(58, 78, 116, 0.22) 27% 38%, transparent 38%),
+    linear-gradient(340deg, transparent 0 63%, rgba(63, 83, 120, 0.24) 63% 77%, transparent 77%);
 }
 
 .mw-history-intro__moon {
@@ -272,11 +279,11 @@
 }
 
 .mw-history-intro h2 {
-  margin-top: 48px;
-  margin-bottom: 8px;
+  margin-top: 42px;
+  margin-bottom: 6px;
   color: #ede4d4;
   font-family: var(--am-font-display);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: 0.08em;
@@ -284,9 +291,9 @@
 
 .mw-history-intro p {
   margin-top: 0;
-  margin-bottom: 26px;
+  margin-bottom: 18px;
   color: rgba(232, 220, 200, 0.45);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.7;
 }
 
