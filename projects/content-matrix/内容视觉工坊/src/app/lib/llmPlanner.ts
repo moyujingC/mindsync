@@ -27,7 +27,8 @@ function buildPrompt(request: PlannerRequest) {
 - 配图要服务阅读节奏，不要让图抢掉正文中心
 
 文章标题：${request.articleTitle}
-风格预设：${request.styleName}
+知识卡风格参考：${request.knowledgeCardStyleName}
+正文配图风格参考：${request.inlineImageStyleName}
 卡片比例：${request.cardRatio}
 卡片尺寸：${request.cardWidth}x${request.cardHeight}
 

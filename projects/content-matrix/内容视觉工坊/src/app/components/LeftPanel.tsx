@@ -3,8 +3,9 @@ import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useRef, useState } from "react";
-import type { InputMode, WorkspaceData } from "../types";
+import type { InputMode, StyleSelectionKey, WorkspaceData } from "../types";
 
 interface LeftPanelProps {
   data: WorkspaceData;
@@ -14,6 +15,7 @@ interface LeftPanelProps {
   onGenerateAll: () => Promise<void>;
   onGenerateLayout: () => Promise<void>;
   onSetOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => void;
+  onSetStyleSelection: (key: StyleSelectionKey, index: number) => void;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -27,14 +29,20 @@ export function LeftPanel({
   onGenerateAll,
   onGenerateLayout,
   onSetOutputToggle,
+  onSetStyleSelection,
   isTablet,
   isOpen,
   onClose,
 }: LeftPanelProps) {
-  const [activeStyle, setActiveStyle] = useState(data.activeStyleIndex);
   const [ratio, setRatio] = useState(data.cardSize.ratio);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const isGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
+  const styleTargets: Array<{ key: StyleSelectionKey; label: string; hint: string }> = [
+    { key: "knowledgeCards", label: "知识卡片", hint: "小红书 / 观点卡" },
+    { key: "wechatInlineImages", label: "正文配图", hint: "公众号中段插图" },
+    { key: "wechatCover", label: "公众号封面", hint: "文章入口图" },
+    { key: "xiaohongshuCover", label: "小红书封面", hint: "笔记首图" },
+  ];
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
@@ -207,6 +215,47 @@ export function LeftPanel({
           </div>
         </div>
 
+        <div className="rounded-lg border border-border bg-card/70 overflow-hidden">
+          <div className="px-3.5 py-2.5 border-b border-border/60 flex items-center justify-between">
+            <div>
+              <div className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>输出风格分配</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">四种图片各自独立选择，不再共用同一套风格</div>
+            </div>
+          </div>
+          <div className="divide-y divide-border/60">
+            {styleTargets.map((target) => (
+              <div key={target.key} className="px-3.5 py-3 space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-[11.5px]" style={{ fontWeight: 500 }}>{target.label}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">{target.hint}</div>
+                  </div>
+                  <div className="flex shrink-0 gap-1">
+                    {data.styleAssets[data.styleSelections[target.key]]?.palette.slice(0, 3).map((color) => (
+                      <span key={`${target.key}-${color}`} className="w-3 h-3 rounded-full border border-border/70" style={{ backgroundColor: color }} />
+                    ))}
+                  </div>
+                </div>
+                <Select
+                  value={String(data.styleSelections[target.key])}
+                  onValueChange={(value) => onSetStyleSelection(target.key, Number(value))}
+                >
+                  <SelectTrigger className="h-9 bg-card border-border text-[11.5px]">
+                    <SelectValue placeholder="选择风格" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {data.styleAssets.map((style, index) => (
+                      <SelectItem key={`${target.key}-${style.name}`} value={String(index)}>
+                        {style.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Style asset library — slimmer */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
@@ -218,12 +267,11 @@ export function LeftPanel({
           </div>
           <div className="rounded-lg border border-border bg-card/60 overflow-hidden divide-y divide-border/60">
             {data.styleAssets.map((s, i) => (
-              <button
+              <div
                 key={i}
-                onClick={() => setActiveStyle(i)}
-                className={`w-full text-left flex items-center transition-colors ${activeStyle === i ? "bg-card" : "hover:bg-secondary/30"}`}
+                className="w-full text-left flex items-center transition-colors hover:bg-secondary/30"
               >
-                <div className="w-1 self-stretch" style={{ background: activeStyle === i ? "var(--primary)" : "transparent" }}></div>
+                <div className="w-1 self-stretch bg-transparent"></div>
                 <div className="w-11 h-11 shrink-0 flex flex-col my-2 ml-2.5 rounded-sm overflow-hidden" style={{ background: s.palette[0] }}>
                   <div className="flex-1 p-1.5 flex flex-col justify-between">
                     <div className="space-y-[3px]">
@@ -240,7 +288,7 @@ export function LeftPanel({
                   </div>
                   <div className="text-[10.5px] text-muted-foreground mt-0.5 truncate">{s.desc} · {s.meta}</div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
           <button className="w-full text-[11px] text-muted-foreground hover:text-foreground py-1.5 transition-colors">

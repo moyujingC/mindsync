@@ -21,6 +21,7 @@ export default function App() {
     copyWechatHtml,
     copyFeedback,
     setOutputToggle,
+    setStyleSelection,
   } = useWorkspaceDocument();
 
   return (
@@ -58,6 +59,7 @@ export default function App() {
           onGenerateAll={regenerateAllCardImages}
           onGenerateLayout={generateLayoutPreview}
           onSetOutputToggle={setOutputToggle}
+          onSetStyleSelection={setStyleSelection}
           isTablet={isTablet}
           isOpen={layout.isLeftPanelOpen}
           onClose={closePanels}

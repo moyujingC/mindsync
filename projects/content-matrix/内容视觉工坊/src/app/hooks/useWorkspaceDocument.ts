@@ -6,7 +6,7 @@ import { generateCardImage } from "../lib/generateCardImage";
 import { generateCoverImage } from "../lib/generateCoverImage";
 import { generateWechatInlineImage } from "../lib/generateWechatInlineImage";
 import { buildDraftReview, buildWechatInlineImages } from "../lib/layoutGeneration";
-import type { WorkspaceData } from "../types";
+import type { StyleSelectionKey, WorkspaceData } from "../types";
 
 function formatNowTime() {
   return new Date().toLocaleTimeString("zh-CN", {
@@ -26,6 +26,11 @@ function updateGenerationTimestamp(workspace: WorkspaceData, generatedAt: string
   };
 }
 
+function getStyleName(workspace: WorkspaceData, key: StyleSelectionKey) {
+  const index = workspace.styleSelections[key];
+  return workspace.styleAssets[index]?.name ?? workspace.styleAssets[0]?.name ?? "默认风格";
+}
+
 function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "xiaohongshuCover") {
   const cover = workspace.covers.find((item) => item.key === coverKey);
   if (!cover) return null;
@@ -35,7 +40,7 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
     articleTitle: workspace.article.title,
     coverThemeTitle: workspace.analysis.coverTheme.title,
     coverThemeKeywords: workspace.analysis.coverTheme.keywords,
-    styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+    styleName: getStyleName(workspace, coverKey),
     ratio: cover.ratio,
   };
 }
@@ -56,7 +61,7 @@ function buildWechatInlineImageRequest(workspace: WorkspaceData, imageId: string
     sectionSummary: image.sectionSummary,
     sectionQuote: image.sectionQuote,
     visualDirection: image.visualDirection,
-    styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+    styleName: getStyleName(workspace, "wechatInlineImages"),
     ratio: image.ratio,
     width: image.width,
     height: image.height,
@@ -233,7 +238,8 @@ export function useWorkspaceDocument() {
     const planned = await planCards({
       articleTitle: parsed.article.title,
       rawText: text,
-      styleName: initialWorkspaceData.styleAssets[initialWorkspaceData.activeStyleIndex]?.name ?? "默认风格",
+      knowledgeCardStyleName: getStyleName(workspace, "knowledgeCards"),
+      inlineImageStyleName: getStyleName(workspace, "wechatInlineImages"),
       cardRatio: initialWorkspaceData.cardSize.ratio,
       cardWidth: initialWorkspaceData.cardSize.width,
       cardHeight: initialWorkspaceData.cardSize.height,
@@ -309,7 +315,8 @@ export function useWorkspaceDocument() {
     const planned = await planCards({
       articleTitle: workspace.article.title,
       rawText: workspace.article.rawText,
-      styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+      knowledgeCardStyleName: getStyleName(workspace, "knowledgeCards"),
+      inlineImageStyleName: getStyleName(workspace, "wechatInlineImages"),
       cardRatio: workspace.cardSize.ratio,
       cardWidth: workspace.cardSize.width,
       cardHeight: workspace.cardSize.height,
@@ -373,7 +380,7 @@ export function useWorkspaceDocument() {
       const result = await generateCardImage({
         title: card.title,
         summary: card.summary,
-        styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+        styleName: getStyleName(workspace, "knowledgeCards"),
         ratio: workspace.cardSize.ratio,
         width: workspace.cardSize.width,
         height: workspace.cardSize.height,
@@ -516,7 +523,7 @@ export function useWorkspaceDocument() {
         const result = await generateCardImage({
           title: card.title,
           summary: card.summary,
-          styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+          styleName: getStyleName(workspace, "knowledgeCards"),
           ratio: workspace.cardSize.ratio,
           width: workspace.cardSize.width,
           height: workspace.cardSize.height,
@@ -787,6 +794,15 @@ export function useWorkspaceDocument() {
         outputToggles: prev.outputToggles.map((item) =>
           item.key === key ? { ...item, enabled } : item,
         ),
+      }));
+    },
+    setStyleSelection: (key: StyleSelectionKey, index: number) => {
+      setWorkspace((prev) => ({
+        ...prev,
+        styleSelections: {
+          ...prev.styleSelections,
+          [key]: index,
+        },
       }));
     },
   };

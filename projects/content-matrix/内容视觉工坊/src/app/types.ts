@@ -22,6 +22,19 @@ export interface StyleAsset {
   pinned?: boolean;
 }
 
+export type StyleSelectionKey =
+  | "knowledgeCards"
+  | "wechatInlineImages"
+  | "wechatCover"
+  | "xiaohongshuCover";
+
+export interface StyleSelectionMap {
+  knowledgeCards: number;
+  wechatInlineImages: number;
+  wechatCover: number;
+  xiaohongshuCover: number;
+}
+
 export interface UploadedArticle {
   fileName: string;
   updatedAt: string;
@@ -125,7 +138,8 @@ export interface WechatInlineImagePlan {
 export interface PlannerRequest {
   articleTitle: string;
   rawText: string;
-  styleName: string;
+  knowledgeCardStyleName: string;
+  inlineImageStyleName: string;
   cardRatio: string;
   cardWidth: number;
   cardHeight: number;
@@ -282,7 +296,7 @@ export interface WorkspaceData {
   outputToggles: OutputToggleItem[];
   cardSize: CardSizeSpec;
   styleAssets: StyleAsset[];
-  activeStyleIndex: number;
+  styleSelections: StyleSelectionMap;
   generation: GenerationOverview;
   knowledgeCards: KnowledgeCardItem[];
   wechatInlineImages: WechatInlineImageAsset[];

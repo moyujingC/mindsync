@@ -14,6 +14,9 @@ interface CenterPanelProps {
 export function CenterPanel({ data, onReplanContent, onRegenerateCardImage, onRegenerateInlineImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
   const isBatchGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
   const isReplanning = data.workflowStages.find((stage) => stage.key === "contentAnalysis")?.status === "processing";
+  const cardStyleName = data.styleAssets[data.styleSelections.knowledgeCards]?.name ?? "默认风格";
+  const inlineStyleName = data.styleAssets[data.styleSelections.wechatInlineImages]?.name ?? "默认风格";
+
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
       {/* Summary bar — two stable rows */}
@@ -34,7 +37,7 @@ export function CenterPanel({ data, onReplanContent, onRegenerateCardImage, onRe
           </div>
         </div>
         <div className="mt-1.5 text-[11px] text-muted-foreground">
-          {data.article.wordCount.toLocaleString()} 字 · {data.parsedMarkdown.structure.subheadings} 小标题 · 风格 {data.styleAssets[data.activeStyleIndex].name}
+          {data.article.wordCount.toLocaleString()} 字 · {data.parsedMarkdown.structure.subheadings} 小标题 · 卡片 {shortStyleName(cardStyleName)} · 配图 {shortStyleName(inlineStyleName)}
         </div>
         <div className="mt-2 text-[10.5px] text-muted-foreground">
           文生图输入：整篇正文全文 · 由模型自动拆图与配图
@@ -121,7 +124,7 @@ export function CenterPanel({ data, onReplanContent, onRegenerateCardImage, onRe
             <div className="flex items-baseline gap-3">
               <span className="text-[10px] text-muted-foreground tracking-[0.2em]">03</span>
               <h3 className="text-[17px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>图片生成结果</h3>
-              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 卡片 + {data.wechatInlineImages.length} 正文配图 + {data.generation.coversCount} 封面 · {data.styleAssets[data.activeStyleIndex].name}</span>
+              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 卡片 + {data.wechatInlineImages.length} 正文配图 + {data.generation.coversCount} 封面 · 已独立分配风格</span>
             </div>
             <button
               onClick={() => onRegenerateAllCardImages()}
@@ -166,6 +169,11 @@ export function CenterPanel({ data, onReplanContent, onRegenerateCardImage, onRe
       </div>
     </main>
   );
+}
+
+function shortStyleName(name: string) {
+  const parts = name.split("·").map((item) => item.trim()).filter(Boolean);
+  return parts[parts.length - 1] || name;
 }
 
 function InlineImageCard({ image, onRegenerate }: { image: WechatInlineImageAsset; onRegenerate: (imageId: string) => Promise<void> }) {
