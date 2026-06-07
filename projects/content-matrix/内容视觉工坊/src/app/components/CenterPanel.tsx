@@ -61,7 +61,7 @@ export function CenterPanel({ data, onRegenerateCardImage }: CenterPanelProps) {
               </div>
               <ol className="divide-y divide-border/50">
                 {data.cardPlan.map((card) => (
-                  <li key={i} className="px-4 py-2.5 flex items-baseline gap-3 text-[12.5px] hover:bg-secondary/25 transition-colors">
+                  <li key={card.index} className="px-4 py-2.5 flex items-baseline gap-3 text-[12.5px] hover:bg-secondary/25 transition-colors">
                     <span className="text-[10px] text-muted-foreground tracking-widest shrink-0">{String(card.index).padStart(2, "0")}</span>
                     <div className="flex-1 min-w-0">
                       <span className="text-foreground/90 block leading-snug" style={{ fontFamily: "var(--font-serif)" }}>{card.title}</span>
@@ -118,8 +118,8 @@ export function CenterPanel({ data, onRegenerateCardImage }: CenterPanelProps) {
 
           {/* Knowledge cards */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-            {data.knowledgeCards.map((c, i) => (
-              <KnowledgeCard key={i} c={c} onRegenerate={onRegenerateCardImage} />
+            {data.knowledgeCards.map((card) => (
+              <KnowledgeCard key={card.n} c={card} onRegenerate={onRegenerateCardImage} />
             ))}
           </div>
 
@@ -225,9 +225,24 @@ function ResultCardShell({
   );
 }
 
-function ToolBtn({ children, title, onClick }: { children: React.ReactNode; title: string; onClick?: () => void }) {
+function ToolBtn({
+  children,
+  title,
+  onClick,
+  disabled = false,
+}: {
+  children: React.ReactNode;
+  title: string;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
   return (
-    <button title={title} onClick={onClick} className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
+    <button
+      title={title}
+      onClick={onClick}
+      disabled={disabled}
+      className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
+    >
       {children}
     </button>
   );
@@ -236,6 +251,7 @@ function ToolBtn({ children, title, onClick }: { children: React.ReactNode; titl
 function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate: (cardNumber: string) => Promise<void> }) {
   const failed = c.state === "failed";
   const processing = c.state === "processing";
+  const providerLabel = c.provider === "image-model" ? "真实出图" : c.provider === "llm" ? "真实 LLM" : "示例图";
   return (
     <ResultCardShell
       aspect="3/4"
@@ -271,10 +287,10 @@ function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate
       }
       title={c.title}
       caption={c.composition}
-      spec="3:4 · 1536×2048"
+      spec={`${providerLabel} · 3:4 · 1536×2048`}
       actions={
         <>
-          <ToolBtn title="重生成" onClick={() => onRegenerate(c.n)}><RefreshCw className="w-3.5 h-3.5" /></ToolBtn>
+          <ToolBtn title="重生成" onClick={processing ? undefined : () => onRegenerate(c.n)} disabled={processing}><RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} /></ToolBtn>
           <ToolBtn title="替换图片"><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="大图预览"><Maximize2 className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
