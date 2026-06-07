@@ -1020,5 +1020,36 @@ export function useWorkspaceDocument() {
         };
       });
     },
+    updateWechatLayoutTheme: (index: number, patch: Partial<WorkspaceData["layoutThemes"][number]>) => {
+      setWorkspace((prev) => {
+        const baseWorkspace = {
+          ...prev,
+          layoutThemes: prev.layoutThemes.map((theme, themeIndex) =>
+            themeIndex === index ? { ...theme, ...patch } : theme,
+          ),
+        };
+        const nextWorkspace = withFreshDraftReview(baseWorkspace);
+
+        return {
+          ...nextWorkspace,
+          workflowStages: markDraftSyncPending(
+            {
+              ...nextWorkspace,
+              workflowStages: nextWorkspace.workflowStages.map((stage) =>
+                stage.key === "layoutGeneration"
+                  ? {
+                      ...stage,
+                      status: "success",
+                      detail: "公众号排版主题已更新",
+                      providerLabel: "本地排版器",
+                    }
+                  : stage,
+              ),
+            },
+            "排版主题已调整，可重新复制到公众号编辑器",
+          ),
+        };
+      });
+    },
   };
 }

@@ -22,6 +22,7 @@ interface LeftPanelProps {
   onSetOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => void;
   onSetStyleSelection: (key: StyleSelectionKey, index: number) => void;
   onSetCardSize: (nextCardSize: WorkspaceData["cardSize"]) => void;
+  onUpdateWechatLayoutTheme: (index: number, patch: Partial<WorkspaceData["layoutThemes"][number]>) => void;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -42,6 +43,7 @@ export function LeftPanel({
   onSetOutputToggle,
   onSetStyleSelection,
   onSetCardSize,
+  onUpdateWechatLayoutTheme,
   isTablet,
   isOpen,
   onClose,
@@ -69,6 +71,7 @@ export function LeftPanel({
       : data.styleAssets[data.styleSelections[key]]?.palette ?? [];
   const getThemeOptions = (key: StyleSelectionKey) =>
     key === "wechatLayout" ? data.layoutThemes : data.styleAssets;
+  const selectedLayoutTheme = data.layoutThemes[data.styleSelections.wechatLayout];
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
@@ -209,7 +212,7 @@ export function LeftPanel({
               </div>
               <span className="flex items-center gap-2 text-[12.5px] shrink-0">
                 <span className="w-5 h-5 rounded-sm bg-primary/90 text-primary-foreground flex items-center justify-center text-[10px]" style={{ fontFamily: "var(--font-serif)" }}>墨</span>
-                <span style={{ fontWeight: 500 }}>墨予镜</span>
+                <span style={{ fontWeight: 500 }}>{selectedLayoutTheme?.accountName ?? "墨予镜"}</span>
               </span>
             </div>
           </div>
@@ -417,6 +420,58 @@ export function LeftPanel({
             + 新建排版主题
           </button>
         </div>
+
+        {selectedLayoutTheme ? (
+          <div className="rounded-lg border border-border bg-card/70 overflow-hidden">
+            <div className="px-3.5 py-3 border-b border-border/60">
+              <div className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>当前排版主题编辑</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">先支持公众号名和核心配色，改完会立即刷新右侧阅读预览与导出 HTML。</div>
+            </div>
+            <div className="px-3.5 py-3 space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-[10.5px] text-muted-foreground">公众号名称</label>
+                <Input
+                  value={selectedLayoutTheme.accountName}
+                  onChange={(event) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { accountName: event.target.value })}
+                  className="bg-card border-border h-8 text-[11.5px]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5">
+                <ThemeColorField
+                  label="外层底色"
+                  value={selectedLayoutTheme.shellBg}
+                  onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { shellBg: value, previewPalette: [value, selectedLayoutTheme.previewPalette[1], selectedLayoutTheme.previewPalette[2], selectedLayoutTheme.previewPalette[3]] })}
+                />
+                <ThemeColorField
+                  label="正文底色"
+                  value={selectedLayoutTheme.articleBg}
+                  onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { articleBg: value, previewPalette: [selectedLayoutTheme.previewPalette[0], value, selectedLayoutTheme.previewPalette[2], selectedLayoutTheme.previewPalette[3]] })}
+                />
+                <ThemeColorField
+                  label="标题颜色"
+                  value={selectedLayoutTheme.headingColor}
+                  onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { headingColor: value, titleColor: value, quoteBorder: value, ctaBg: value, previewPalette: [selectedLayoutTheme.previewPalette[0], selectedLayoutTheme.previewPalette[1], value, selectedLayoutTheme.previewPalette[3]] })}
+                />
+                <ThemeColorField
+                  label="正文文字"
+                  value={selectedLayoutTheme.bodyColor}
+                  onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { bodyColor: value })}
+                />
+                <ThemeColorField
+                  label="辅助文字"
+                  value={selectedLayoutTheme.mutedColor}
+                  onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { mutedColor: value, placeholderBorder: value, previewPalette: [selectedLayoutTheme.previewPalette[0], selectedLayoutTheme.previewPalette[1], selectedLayoutTheme.previewPalette[2], value] })}
+                />
+                <ThemeColorField
+                  label="引用背景"
+                  value={selectedLayoutTheme.quoteBg}
+                  onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { quoteBg: value, placeholderBg: value })}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {/* Footer actions */}
@@ -446,4 +501,32 @@ export function LeftPanel({
       </aside>
     </>
   );
+}
+
+function ThemeColorField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[10.5px] text-muted-foreground">{label}</label>
+      <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2 py-1.5">
+        <input
+          type="color"
+          value={normalizeColor(value)}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-6 w-6 rounded border border-border bg-transparent p-0"
+        />
+        <Input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-7 border-0 bg-transparent px-0 py-0 text-[11px] shadow-none focus-visible:ring-0"
+        />
+      </div>
+    </div>
+  );
+}
+
+function normalizeColor(value: string) {
+  if (value.startsWith("#")) return value;
+  const parts = value.match(/\d+/g)?.map(Number);
+  if (!parts || parts.length < 3) return "#000000";
+  return `#${parts.slice(0, 3).map((part) => part.toString(16).padStart(2, "0")).join("")}`;
 }

@@ -23,6 +23,7 @@ export interface StyleAsset {
 }
 
 export interface WechatLayoutThemeAsset {
+  accountName: string;
   name: string;
   desc: string;
   meta: string;

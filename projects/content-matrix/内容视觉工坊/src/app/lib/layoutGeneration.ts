@@ -340,10 +340,11 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 export function buildDraftReview(workspace: WorkspaceData): DraftReview {
   const inlineImages = workspace.wechatInlineImages.length > 0 ? workspace.wechatInlineImages : buildWechatInlineImages(workspace);
   const imagePlacements = buildImagePlacements(inlineImages);
+  const layoutTheme = workspace.layoutThemes[workspace.styleSelections.wechatLayout];
   const preview = buildPreview(
     workspace.article.rawText,
     workspace.article.title,
-    "墨予镜",
+    layoutTheme?.accountName ?? "墨予镜",
     imagePlacements,
   );
 
