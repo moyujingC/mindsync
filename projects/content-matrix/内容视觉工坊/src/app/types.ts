@@ -6,6 +6,14 @@ export type ReviewCheckStatus = "pass" | "warn" | "fail";
 
 export type GenerationStageStatus = "idle" | "processing" | "success" | "failed";
 
+export type WorkspaceStageKey =
+  | "upload"
+  | "markdownParse"
+  | "contentAnalysis"
+  | "imageGeneration"
+  | "layoutGeneration"
+  | "draftSync";
+
 export interface StyleAsset {
   name: string;
   desc: string;
@@ -172,12 +180,29 @@ export interface LayoutImagePlacement {
   rationale: string;
 }
 
+export type DraftPreviewBlock =
+  | { type: "paragraph"; text: string }
+  | { type: "heading2"; text: string }
+  | { type: "blockquote"; text: string }
+  | { type: "ordered-list"; items: string[] }
+  | { type: "image"; cardNumber: string; placementLabel: string; caption: string }
+  | { type: "cta"; title: string; buttonText: string };
+
+export interface DraftPreview {
+  title: string;
+  accountName: string;
+  publishDate: string;
+  intro?: string;
+  blocks: DraftPreviewBlock[];
+}
+
 export interface DraftReview {
   readyTitle: string;
   readyDescription: string;
   reviewChecks: ReviewCheck[];
   syncStatus: SyncStatusItem[];
   imagePlacements: LayoutImagePlacement[];
+  preview: DraftPreview;
 }
 
 export interface ReviewCheck {

@@ -12,6 +12,7 @@ interface LeftPanelProps {
   setInputMode: (mode: InputMode) => void;
   onImportMarkdown: (file: File) => Promise<void>;
   onGenerateAll: () => Promise<void>;
+  onGenerateLayout: () => Promise<void>;
   onSetOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => void;
   isTablet: boolean;
   isOpen: boolean;
@@ -24,6 +25,7 @@ export function LeftPanel({
   setInputMode,
   onImportMarkdown,
   onGenerateAll,
+  onGenerateLayout,
   onSetOutputToggle,
   isTablet,
   isOpen,
@@ -258,7 +260,12 @@ export function LeftPanel({
           {isGenerating ? "生成中" : "生成全部"}
         </Button>
         <div className="mt-2 flex items-center justify-between text-[11.5px]">
-          <button className="text-foreground/85 hover:text-foreground px-1.5 py-1">仅生成排版</button>
+          <button
+            onClick={() => onGenerateLayout()}
+            className="text-foreground/85 hover:text-foreground px-1.5 py-1"
+          >
+            仅生成排版
+          </button>
           <span className="text-border">·</span>
           <button className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-1.5 py-1">
             <Eraser className="w-3 h-3" /> 清空内容

@@ -4,6 +4,7 @@ import { parseMarkdownFileContent } from "../lib/markdown";
 import { planCards } from "../lib/planCards";
 import { generateCardImage } from "../lib/generateCardImage";
 import { generateCoverImage } from "../lib/generateCoverImage";
+import { buildDraftReview } from "../lib/layoutGeneration";
 import type { WorkspaceData } from "../types";
 
 function formatNowTime() {
@@ -42,6 +43,15 @@ function isOutputEnabled(workspace: WorkspaceData, key: "knowledgeCards" | "wech
   return workspace.outputToggles.find((item) => item.key === key)?.enabled ?? false;
 }
 
+function markDraftSyncPending(workspace: WorkspaceData, detail: string): WorkspaceData["workflowStages"] {
+  return workspace.workflowStages.map((stage) => {
+    if (stage.key === "draftSync") {
+      return { ...stage, status: "idle", detail };
+    }
+    return stage;
+  });
+}
+
 export function useWorkspaceDocument() {
   const [workspace, setWorkspace] = useState<WorkspaceData>(initialWorkspaceData);
   const [rawMarkdownText, setRawMarkdownText] = useState<string>("");
@@ -52,6 +62,49 @@ export function useWorkspaceDocument() {
       rawMarkdownText,
     };
   }, [workspace, rawMarkdownText]);
+
+  async function generateLayoutPreview(nextWorkspace?: WorkspaceData) {
+    const baseWorkspace = nextWorkspace ?? workspace;
+
+    setWorkspace((prev) => ({
+      ...prev,
+      workflowStages: prev.workflowStages.map((stage) =>
+        stage.key === "layoutGeneration"
+          ? { ...stage, status: "processing", detail: "正在生成公众号排版预览…", providerLabel: "本地排版器" }
+          : stage,
+      ),
+    }));
+
+    const draftReview = buildDraftReview(baseWorkspace);
+
+    setWorkspace((prev) => ({
+      ...baseWorkspace,
+      draftReview,
+      generation: {
+        ...baseWorkspace.generation,
+        layoutStatus: "已生成",
+        summaryMeta: baseWorkspace.generation.summaryMeta.map((item) =>
+          item.label === "排版" ? { ...item, value: "已生成", emerald: true } : item,
+        ),
+      },
+      workflowStages: markDraftSyncPending(
+        {
+          ...baseWorkspace,
+          workflowStages: baseWorkspace.workflowStages.map((stage) =>
+            stage.key === "layoutGeneration"
+              ? {
+                  ...stage,
+                  status: "success",
+                  detail: `排版预览已生成，并编排 ${draftReview.imagePlacements.length} 处插图位`,
+                  providerLabel: "本地排版器",
+                }
+              : stage,
+          ),
+        },
+        "排版已更新，可同步到公众号草稿箱",
+      ),
+    }));
+  }
 
   async function importMarkdownFile(file: File) {
     const text = await file.text();
@@ -84,13 +137,13 @@ export function useWorkspaceDocument() {
       cardHeight: initialWorkspaceData.cardSize.height,
     });
 
-    setWorkspace((prev) => ({
-      ...prev,
+    const nextWorkspace: WorkspaceData = {
+      ...workspace,
       article: parsed.article,
       parsedMarkdown: parsed.parsedMarkdown,
       analysis: planned.analysis,
       cardPlan: planned.cardPlan,
-      workflowStages: prev.workflowStages.map((stage) => {
+      workflowStages: workspace.workflowStages.map((stage) => {
         if (stage.key === "upload") {
           return { ...stage, status: "success", detail: "Markdown 文件已读取" };
         }
@@ -105,9 +158,18 @@ export function useWorkspaceDocument() {
             providerLabel: planned.provider === "llm" ? "真实 LLM" : "本地兜底",
           };
         }
+        if (stage.key === "layoutGeneration") {
+          return { ...stage, status: "idle", detail: "等待生成公众号排版预览", providerLabel: undefined };
+        }
+        if (stage.key === "draftSync") {
+          return { ...stage, status: "idle", detail: "排版更新后可同步到公众号草稿箱", providerLabel: undefined };
+        }
         return stage;
       }),
-    }));
+    };
+
+    setWorkspace(nextWorkspace);
+    await generateLayoutPreview(nextWorkspace);
   }
 
   async function regenerateCardImage(cardNumber: string) {
@@ -144,10 +206,16 @@ export function useWorkspaceDocument() {
             ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
             : item,
         ),
-        workflowStages: prev.workflowStages.map((stage) =>
-          stage.key === "imageGeneration"
-            ? { ...stage, status: "success", detail: `卡片 ${cardNumber} 图片已生成`, providerLabel: "gpt-image-2" }
-            : stage,
+        workflowStages: markDraftSyncPending(
+          {
+            ...prev,
+            workflowStages: prev.workflowStages.map((stage) =>
+              stage.key === "imageGeneration"
+                ? { ...stage, status: "success", detail: `卡片 ${cardNumber} 图片已生成`, providerLabel: "gpt-image-2" }
+                : stage,
+            ),
+          },
+          "图片已更新，如需入库请重新同步草稿",
         ),
       }));
     } catch (error) {
@@ -309,24 +377,30 @@ export function useWorkspaceDocument() {
     setWorkspace((prev) => ({
       ...prev,
       generation: updateGenerationTimestamp(prev, generatedAt),
-      workflowStages: prev.workflowStages.map((stage) =>
-        stage.key === "imageGeneration"
-          ? failedCount === 0
-            ? {
-                ...stage,
-                status: "success",
-                detail: `已完成 ${successCount} 项视觉素材生成`,
-                providerLabel: "gpt-image-2",
-                retryable: false,
-              }
-            : {
-                ...stage,
-                status: "failed",
-                detail: `已生成 ${successCount} 项，失败 ${failedCount} 项，可局部重试`,
-                providerLabel: "gpt-image-2",
-                retryable: true,
-              }
-          : stage,
+      workflowStages: markDraftSyncPending(
+        {
+          ...prev,
+          workflowStages: prev.workflowStages.map((stage) =>
+            stage.key === "imageGeneration"
+              ? failedCount === 0
+                ? {
+                    ...stage,
+                    status: "success",
+                    detail: `已完成 ${successCount} 项视觉素材生成`,
+                    providerLabel: "gpt-image-2",
+                    retryable: false,
+                  }
+                : {
+                    ...stage,
+                    status: "failed",
+                    detail: `已生成 ${successCount} 项，失败 ${failedCount} 项，可局部重试`,
+                    providerLabel: "gpt-image-2",
+                    retryable: true,
+                  }
+              : stage,
+          ),
+        },
+        "图片已更新，如需入库请重新同步草稿",
       ),
     }));
   }
@@ -366,10 +440,16 @@ export function useWorkspaceDocument() {
               }
             : item,
         ),
-        workflowStages: prev.workflowStages.map((stage) =>
-          stage.key === "imageGeneration"
-            ? { ...stage, status: "success", detail: `${request.label}已生成`, providerLabel: "gpt-image-2" }
-            : stage,
+        workflowStages: markDraftSyncPending(
+          {
+            ...prev,
+            workflowStages: prev.workflowStages.map((stage) =>
+              stage.key === "imageGeneration"
+                ? { ...stage, status: "success", detail: `${request.label}已生成`, providerLabel: "gpt-image-2" }
+                : stage,
+            ),
+          },
+          "封面已更新，如需入库请重新同步草稿",
         ),
       }));
     } catch (error) {
@@ -395,6 +475,7 @@ export function useWorkspaceDocument() {
     regenerateCardImage,
     regenerateAllCardImages,
     regenerateCoverAsset,
+    generateLayoutPreview,
     setOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => {
       setWorkspace((prev) => ({
         ...prev,

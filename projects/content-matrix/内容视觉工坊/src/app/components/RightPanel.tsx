@@ -1,7 +1,7 @@
-import { CheckCircle2, ExternalLink, RefreshCw, Smartphone, Eye, X } from "lucide-react";
+import { CheckCircle2, ExternalLink, RefreshCw, Smartphone, Eye, X, AlertTriangle } from "lucide-react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import type { GenerationStageStatus, ReviewCheck, SyncStatusItem, WorkspaceData } from "../types";
+import type { DraftPreviewBlock, GenerationStageStatus, ReviewCheck, WorkspaceData } from "../types";
 
 interface RightPanelProps {
   data: WorkspaceData;
@@ -94,91 +94,34 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
               {/* Header */}
               <div className="px-6 pt-5 pb-3.5 border-b border-border/50">
                 <h1 className="text-[#1a1a1a] leading-[1.45]" style={{ fontFamily: "var(--font-serif)", fontSize: "19px", fontWeight: 600 }}>
-                  在算法替你思考之前，先把判断力留下来
+                  {data.draftReview.preview.title}
                 </h1>
                 <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
                 <div className="w-5 h-5 rounded-full bg-primary/90 text-primary-foreground flex items-center justify-center text-[9px]" style={{ fontFamily: "var(--font-serif)" }}>墨</div>
-                <span className="text-foreground/80">墨予镜</span>
+                <span className="text-foreground/80">{data.draftReview.preview.accountName}</span>
                   <span>·</span>
-                  <span>2026年6月7日</span>
+                  <span>{data.draftReview.preview.publishDate}</span>
                   <span className="ml-auto text-primary/80">关注</span>
                 </div>
               </div>
 
               {/* Body */}
               <article className="px-6 py-5 text-[13px] leading-[1.95] text-[#2a2a2a]" style={{ fontFamily: "var(--font-sans-cn)" }}>
-                {/* Intro — markdown inherited */}
-                <InheritBlock>
-                  <p className="italic text-[#7a7568] text-[12.5px] leading-[1.85]">
-                    写给在 AI 工具丛林里有点迷路的内容创作者。这不是一篇关于「怎么用 AI」的文章，是关于「怎么不被 AI 用掉」的笔记。
-                  </p>
-                </InheritBlock>
+                {data.draftReview.preview.intro ? (
+                  <InheritBlock>
+                    <p className="italic text-[#7a7568] text-[12.5px] leading-[1.85]">
+                      {data.draftReview.preview.intro}
+                    </p>
+                  </InheritBlock>
+                ) : null}
 
-                <InheritBlock className="mt-5">
-                  <h2 className="text-[#1f3a36]" style={{ fontFamily: "var(--font-serif)", fontSize: "15.5px", fontWeight: 600 }}>
-                    一 · 信息过载时代，判断力比知识更稀缺
-                  </h2>
-                </InheritBlock>
-
-                <p className="mt-3">
-                  过去十年我们以为最值钱的是知识，现在发现真正稀缺的是<MarkBold>「在一堆都对的答案里，挑出最适合此刻的那一个」</MarkBold>的能力。
-                </p>
-
-                {/* image slot — system added */}
-                <SystemBlock label="图片位 · 知识卡片 01" className="mt-5">
-                  <figure>
-                    <div className="rounded-md overflow-hidden bg-[#ece6d6] relative" style={{ aspectRatio: "3/4", maxHeight: 300 }}>
-                      <ImageWithFallback
-                        src="https://images.unsplash.com/photo-1686806372785-fcfe9efa9b70?w=700&q=80"
-                        alt="知识卡片 01"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    </div>
-                    <figcaption className="text-center text-[11px] text-muted-foreground mt-2">▲ 判断力比知识更稀缺</figcaption>
-                  </figure>
-                </SystemBlock>
-
-                <InheritBlock className="mt-5">
-                  <blockquote className="bg-[#f6f2e8] border-l-[3px] border-[#1f3a36] px-4 py-3 text-[12.5px] text-[#3a3a3a] leading-[1.85]" style={{ fontFamily: "var(--font-serif)" }}>
-                    提示词不是工作，提问才是。创作者的护城河，正在向「问什么」迁移。
-                  </blockquote>
-                </InheritBlock>
-
-                <InheritBlock className="mt-6">
-                  <h2 className="text-[#1f3a36]" style={{ fontFamily: "var(--font-serif)", fontSize: "15.5px", fontWeight: 600 }}>
-                    二 · 三个练习：把判断力的肌肉养回来
-                  </h2>
-                </InheritBlock>
-
-                <InheritBlock className="mt-3">
-                  <ol className="space-y-2 pl-0.5">
-                    {[
-                      ["每天 20 分钟不被推荐流喂养", "只读一段自己挑的、长一点的文字。"],
-                      ["把「我觉得」放回文章里", "在 AI 的工整里，留一处不工整的、属于你的判断。"],
-                      ["保留一份「不发布」的写作", "写给自己看，不为流量校准语气。"],
-                    ].map(([t, d], i) => (
-                      <li key={i} className="flex gap-2.5">
-                        <span className="text-[#1f3a36] shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{i + 1}.</span>
-                        <div>
-                          <span style={{ fontWeight: 500 }}>{t}</span>
-                          <span className="text-muted-foreground"> —— {d}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </InheritBlock>
-
-                <p className="mt-5">
-                  AI 给的是答案，编辑要的是问题。<MarkBold>越是工具普及的时代，越要把「为什么是这一个」想清楚。</MarkBold>
-                </p>
-
-                {/* CTA — system added */}
-                <SystemBlock label="结尾 CTA · 系统生成" className="mt-7 pt-5 border-t border-dashed border-border/80">
-                  <div className="text-center text-[11.5px] text-muted-foreground">
-                    <div className="mb-2.5" style={{ fontFamily: "var(--font-serif)", color: "#1f3a36", fontWeight: 500 }}>—— 如果这段文字让你停了一下，欢迎留言告诉我 ——</div>
-                    <span className="inline-block px-3 py-1 rounded-full bg-[#1f3a36] text-white text-[11px]">点亮「在看」 · 分享给同样在思考的人</span>
-                  </div>
-                </SystemBlock>
+                {data.draftReview.preview.blocks.map((block, index) => (
+                  <PreviewBlock
+                    key={`${block.type}-${index}`}
+                    block={block}
+                    cardImage={block.type === "image" ? data.knowledgeCards.find((item) => item.n === block.cardNumber)?.img : undefined}
+                  />
+                ))}
               </article>
             </div>
           </div>
@@ -190,10 +133,14 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
             <div className="px-4 py-3 border-b border-border/70 flex items-center justify-between">
               <div>
                 <div className="text-[12px]" style={{ fontWeight: 500 }}>草稿同步状态</div>
-                <div className="text-[10.5px] text-muted-foreground mt-0.5">最近同步：2026-06-07 14:32 · 墨予镜</div>
+                <div className="text-[10.5px] text-muted-foreground mt-0.5">{draftSyncStage?.detail ?? "尚未同步到公众号草稿箱"}</div>
               </div>
-              <span className="inline-flex items-center gap-1 text-[10.5px] text-emerald-800 bg-emerald-700/10 px-2 py-1 rounded">
-                <CheckCircle2 className="w-3 h-3" /> 草稿已创建
+              <span className={`inline-flex items-center gap-1 text-[10.5px] px-2 py-1 rounded ${
+                draftSyncStage?.status === "success"
+                  ? "text-emerald-800 bg-emerald-700/10"
+                  : "text-muted-foreground bg-secondary/70"
+              }`}>
+                <CheckCircle2 className="w-3 h-3" /> {draftSyncStage?.status === "success" ? "草稿已创建" : "等待同步"}
               </span>
             </div>
             <ul className="divide-y divide-border/60">
@@ -229,6 +176,80 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
       </aside>
     </>
   );
+}
+
+function PreviewBlock({ block, cardImage }: { block: DraftPreviewBlock; cardImage?: string }) {
+  if (block.type === "heading2") {
+    return (
+      <InheritBlock className="mt-6">
+        <h2 className="text-[#1f3a36]" style={{ fontFamily: "var(--font-serif)", fontSize: "15.5px", fontWeight: 600 }}>
+          {block.text}
+        </h2>
+      </InheritBlock>
+    );
+  }
+
+  if (block.type === "blockquote") {
+    return (
+      <InheritBlock className="mt-5">
+        <blockquote className="bg-[#f6f2e8] border-l-[3px] border-[#1f3a36] px-4 py-3 text-[12.5px] text-[#3a3a3a] leading-[1.85]" style={{ fontFamily: "var(--font-serif)" }}>
+          {block.text}
+        </blockquote>
+      </InheritBlock>
+    );
+  }
+
+  if (block.type === "ordered-list") {
+    return (
+      <InheritBlock className="mt-3">
+        <ol className="space-y-2 pl-0.5">
+          {block.items.map((item, i) => (
+            <li key={`${item}-${i}`} className="flex gap-2.5">
+              <span className="text-[#1f3a36] shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{i + 1}.</span>
+              <div>{item}</div>
+            </li>
+          ))}
+        </ol>
+      </InheritBlock>
+    );
+  }
+
+  if (block.type === "image") {
+    return (
+      <SystemBlock label={`${block.placementLabel} · 知识卡片 ${block.cardNumber}`} className="mt-5">
+        <figure>
+          {cardImage ? (
+            <div className="rounded-md overflow-hidden bg-[#ece6d6] relative" style={{ aspectRatio: "3/4", maxHeight: 300 }}>
+              <ImageWithFallback
+                src={cardImage}
+                alt={`知识卡片 ${block.cardNumber}`}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="rounded-md bg-[#f5efe2] border border-dashed border-border px-4 py-10 text-center text-muted-foreground">
+              <AlertTriangle className="w-4 h-4 mx-auto mb-2" />
+              <div className="text-[11px]">图片尚未生成</div>
+            </div>
+          )}
+          <figcaption className="text-center text-[11px] text-muted-foreground mt-2">▲ {block.caption}</figcaption>
+        </figure>
+      </SystemBlock>
+    );
+  }
+
+  if (block.type === "cta") {
+    return (
+      <SystemBlock label="结尾 CTA · 系统生成" className="mt-7 pt-5 border-t border-dashed border-border/80">
+        <div className="text-center text-[11.5px] text-muted-foreground">
+          <div className="mb-2.5" style={{ fontFamily: "var(--font-serif)", color: "#1f3a36", fontWeight: 500 }}>—— {block.title} ——</div>
+          <span className="inline-block px-3 py-1 rounded-full bg-[#1f3a36] text-white text-[11px]">{block.buttonText}</span>
+        </div>
+      </SystemBlock>
+    );
+  }
+
+  return <p className="mt-5">{block.text}</p>;
 }
 
 const stageLabelMap: Record<GenerationStageStatus, string> = {
@@ -268,16 +289,5 @@ function SystemBlock({ children, label, className = "" }: { children: React.Reac
       </span>
       {children}
     </div>
-  );
-}
-
-function MarkBold({ children }: { children: React.ReactNode }) {
-  return (
-    <strong
-      className="text-[#1f3a36] relative px-0.5"
-      style={{ fontWeight: 600, backgroundImage: "linear-gradient(to top, rgba(31,58,54,0.10) 0%, rgba(31,58,54,0.10) 30%, transparent 30%)" }}
-    >
-      {children}
-    </strong>
   );
 }

@@ -15,6 +15,7 @@ export default function App() {
     regenerateCardImage,
     regenerateAllCardImages,
     regenerateCoverAsset,
+    generateLayoutPreview,
     setOutputToggle,
   } = useWorkspaceDocument();
 
@@ -51,6 +52,7 @@ export default function App() {
           setInputMode={setInputMode}
           onImportMarkdown={importMarkdownFile}
           onGenerateAll={regenerateAllCardImages}
+          onGenerateLayout={generateLayoutPreview}
           onSetOutputToggle={setOutputToggle}
           isTablet={isTablet}
           isOpen={layout.isLeftPanelOpen}
