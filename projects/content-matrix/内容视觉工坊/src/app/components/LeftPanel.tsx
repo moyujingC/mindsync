@@ -437,6 +437,24 @@ export function LeftPanel({
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <label className="text-[10.5px] text-muted-foreground">结尾标题</label>
+                <Input
+                  value={selectedLayoutTheme.ctaTitle}
+                  onChange={(event) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { ctaTitle: event.target.value })}
+                  className="bg-card border-border h-8 text-[11.5px]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10.5px] text-muted-foreground">结尾按钮文案</label>
+                <Input
+                  value={selectedLayoutTheme.ctaButtonText}
+                  onChange={(event) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { ctaButtonText: event.target.value })}
+                  className="bg-card border-border h-8 text-[11.5px]"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-2.5">
                 <ThemeColorField
                   label="外层底色"
@@ -528,6 +546,30 @@ export function LeftPanel({
                     min={0}
                     max={999}
                     onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { ctaRadius: value })}
+                  />
+                  <ThemeNumberField
+                    label="首图下边距"
+                    value={selectedLayoutTheme.coverBottomSpacing}
+                    suffix="px"
+                    min={0}
+                    max={40}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { coverBottomSpacing: value })}
+                  />
+                  <ThemeNumberField
+                    label="正文图间距"
+                    value={selectedLayoutTheme.inlineImageSpacing}
+                    suffix="px"
+                    min={8}
+                    max={40}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { inlineImageSpacing: value })}
+                  />
+                  <ThemeNumberField
+                    label="引用块间距"
+                    value={selectedLayoutTheme.quoteSpacing}
+                    suffix="px"
+                    min={8}
+                    max={32}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { quoteSpacing: value })}
                   />
                   <div className="space-y-1.5">
                     <label className="text-[10.5px] text-muted-foreground">图注对齐</label>

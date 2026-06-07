@@ -208,7 +208,14 @@ function buildBodyBlock(paragraph: string): DraftPreviewBlock | null {
   return text ? { type: "paragraph", text } : null;
 }
 
-function buildPreview(rawText: string, articleTitle: string, accountName: string, imagePlacements: LayoutImagePlacement[]): DraftPreview {
+function buildPreview(
+  rawText: string,
+  articleTitle: string,
+  accountName: string,
+  imagePlacements: LayoutImagePlacement[],
+  ctaTitle: string,
+  ctaButtonText: string,
+): DraftPreview {
   const blocks: DraftPreviewBlock[] = [];
   const { intro, sections } = parseMarkdownSections(rawText);
   const placementMap = new Map(imagePlacements.map((placement) => [cleanInlineMarkdown(placement.sectionHeading), placement]));
@@ -250,8 +257,8 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
 
   blocks.push({
     type: "cta",
-    title: "如果这段文字让你停了一下，欢迎留言告诉我",
-    buttonText: "点亮「在看」 · 分享给同样在思考的人",
+    title: ctaTitle,
+    buttonText: ctaButtonText,
   });
 
   return {
@@ -273,7 +280,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
   if (wechatCover?.img) {
     htmlParts.push(
-      `<p style="margin:0 0 20px;"><img src="${escapeHtml(wechatCover.img)}" alt="${escapeHtml(workspace.article.title)}" style="display:block;width:100%;max-width:720px;height:auto;border-radius:${theme.imageRadius}px;" /></p>`,
+      `<p style="margin:0 0 ${theme.coverBottomSpacing}px;"><img src="${escapeHtml(wechatCover.img)}" alt="${escapeHtml(workspace.article.title)}" style="display:block;width:100%;max-width:720px;height:auto;border-radius:${theme.imageRadius}px;" /></p>`,
     );
   }
 
@@ -298,7 +305,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
     if (block.type === "blockquote") {
       htmlParts.push(
-        `<blockquote style="margin:${theme.paragraphSpacing}px 0 0;padding:14px 16px;border-left:${theme.quoteBorderWidth}px solid ${theme.quoteBorder};border-radius:${theme.quoteRadius}px;background:${theme.quoteBg};color:${theme.bodyColor};">${escapeHtml(block.text)}</blockquote>`,
+        `<blockquote style="margin:${theme.quoteSpacing}px 0 0;padding:14px 16px;border-left:${theme.quoteBorderWidth}px solid ${theme.quoteBorder};border-radius:${theme.quoteRadius}px;background:${theme.quoteBg};color:${theme.bodyColor};">${escapeHtml(block.text)}</blockquote>`,
       );
       continue;
     }
@@ -316,11 +323,11 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
       const inlineImage = workspace.wechatInlineImages.find((item) => item.id === block.imageId);
       if (inlineImage?.img) {
         htmlParts.push(
-          `<figure style="margin:${theme.sectionSpacing}px 0 0;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:8px;font-size:13px;color:${theme.mutedColor};">${escapeHtml(block.caption)}</figcaption></figure>`,
+          `<figure style="margin:${theme.inlineImageSpacing}px 0 0;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:8px;font-size:13px;color:${theme.mutedColor};">${escapeHtml(block.caption)}</figcaption></figure>`,
         );
       } else {
         htmlParts.push(
-          `<p style="margin:${theme.sectionSpacing}px 0 0;padding:12px 14px;background:${theme.placeholderBg};border:1px dashed ${theme.placeholderBorder};border-radius:${theme.imageRadius}px;color:${theme.mutedColor};">[正文配图待补：${escapeHtml(block.caption)}]</p>`,
+          `<p style="margin:${theme.inlineImageSpacing}px 0 0;padding:12px 14px;background:${theme.placeholderBg};border:1px dashed ${theme.placeholderBorder};border-radius:${theme.imageRadius}px;color:${theme.mutedColor};">[正文配图待补：${escapeHtml(block.caption)}]</p>`,
         );
       }
       continue;
@@ -346,6 +353,8 @@ export function buildDraftReview(workspace: WorkspaceData): DraftReview {
     workspace.article.title,
     layoutTheme?.accountName ?? "墨予镜",
     imagePlacements,
+    layoutTheme?.ctaTitle ?? "如果这段文字让你停了一下，欢迎留言告诉我",
+    layoutTheme?.ctaButtonText ?? "点亮「在看」 · 分享给同样在思考的人",
   );
 
   return {

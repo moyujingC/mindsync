@@ -205,7 +205,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
   if (block.type === "blockquote") {
     return (
       <InheritBlock className="mt-0">
-        <blockquote className="px-4 py-3 text-[12.5px] leading-[1.85]" style={{ marginTop: theme.paragraphSpacing, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${theme.quoteBorderWidth}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
+        <blockquote className="px-4 py-3 text-[12.5px] leading-[1.85]" style={{ marginTop: theme.quoteSpacing, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${theme.quoteBorderWidth}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
           {block.text}
         </blockquote>
       </InheritBlock>
@@ -229,7 +229,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "image") {
     return (
-      <SystemBlock label={`${block.placementLabel} · 正文配图`} className="mt-0" style={{ marginTop: theme.sectionSpacing }}>
+      <SystemBlock label={`${block.placementLabel} · 正文配图`} className="mt-0" style={{ marginTop: theme.inlineImageSpacing }}>
         <figure>
           {inlineImage ? (
             <div className="overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg, borderRadius: theme.imageRadius }}>

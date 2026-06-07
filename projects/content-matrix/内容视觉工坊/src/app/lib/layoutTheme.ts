@@ -23,6 +23,11 @@ export interface WechatLayoutTheme {
   quoteBorderWidth: number;
   ctaRadius: number;
   captionAlign: "left" | "center";
+  ctaTitle: string;
+  ctaButtonText: string;
+  coverBottomSpacing: number;
+  inlineImageSpacing: number;
+  quoteSpacing: number;
 }
 
 export function buildWechatLayoutTheme(theme?: WechatLayoutThemeAsset): WechatLayoutTheme {
@@ -50,6 +55,11 @@ export function buildWechatLayoutTheme(theme?: WechatLayoutThemeAsset): WechatLa
       quoteBorderWidth: theme.quoteBorderWidth,
       ctaRadius: theme.ctaRadius,
       captionAlign: theme.captionAlign,
+      ctaTitle: theme.ctaTitle,
+      ctaButtonText: theme.ctaButtonText,
+      coverBottomSpacing: theme.coverBottomSpacing,
+      inlineImageSpacing: theme.inlineImageSpacing,
+      quoteSpacing: theme.quoteSpacing,
     };
   }
 
@@ -76,6 +86,11 @@ export function buildWechatLayoutTheme(theme?: WechatLayoutThemeAsset): WechatLa
     quoteBorderWidth: 4,
     ctaRadius: 999,
     captionAlign: "center",
+    ctaTitle: "如果这段文字让你停了一下，欢迎留言告诉我",
+    ctaButtonText: "点亮「在看」 · 分享给同样在思考的人",
+    coverBottomSpacing: 20,
+    inlineImageSpacing: 28,
+    quoteSpacing: 18,
   };
 }
 
