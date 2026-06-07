@@ -1,6 +1,6 @@
 .am-landing-page {
   --am-pattern-image: var(--am-hero-pattern);
-  --am-landing-next-peek: clamp(18px, 2.25vh, 28px);
+  --am-landing-next-peek: clamp(36px, 4.5vh, 48px);
   position: relative;
   background: var(--am-color-ink-950);
 }
