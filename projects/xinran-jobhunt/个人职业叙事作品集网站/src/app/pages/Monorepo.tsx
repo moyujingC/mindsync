@@ -20,7 +20,7 @@ export default function Monorepo() {
         eyebrow="P R O J E C T &nbsp; 0 2"
         title="知行工坊"
         subtitle="AI 一人公司 Monorepo / 公司工作空间"
-        oneLiner="一套中文语境下的 AI 一人公司工作系统，用 Monorepo 管理公司治理、项目入口、角色定义、知识库、共享工具和阶段 artifact。"
+        oneLiner="一个自用中的 AI 一人公司工作系统原型：把公司治理、项目入口、角色定义、知识库、共享工具和阶段 artifact 收束到同一仓库，减少长期协作对聊天记录的依赖。"
         role="系统设计者 / 一人公司工作空间搭建者 / Agent 协作机制推进者"
         period="2026 — 至今"
         tags={["Monorepo", "Agent 协作", "Docs As System", "知识治理", "任务流转"]}
@@ -49,7 +49,28 @@ export default function Monorepo() {
         />
       </Section>
 
-      <Section index="0 3" title="系统结构 ｜ 五层架构" accent={ACCENT}>
+      <Section index="0 3" title="真实案例 ｜ 一个项目如何进入系统" accent={ACCENT}>
+        <div className="space-y-6">
+          <StepFlow
+            accent={ACCENT}
+            steps={[
+              { title: "需求进入", note: "从心理疗愈 AI 产品观察需求出发，而不是先空想系统结构。" },
+              { title: "对象归类", note: "在 company/项目注册表.yaml 中确认它归属于研究中心能力线。" },
+              { title: "双入口建立", note: "公司侧入口放在 company/projects/研究中心/PROJECT.md，项目侧入口放在 projects/research-center/PROJECT.md。" },
+              { title: "研究工作区落地", note: "具体内容进入 projects/research-center/research/心理疗愈app/心理疗愈AI产品观察室。" },
+              { title: "实现与发布", note: "研究内容继续演变为独立 Vite 站点，而不是留在聊天记录里。" },
+              { title: "资产回写", note: "结论继续回写到项目文档、任务文档和知识资产，方便下次接手。" },
+            ]}
+          />
+          <Prose>
+            <p>这套系统不是先做一个抽象 Monorepo 再找场景，而是在真实项目推进中慢慢长出来的。</p>
+            <p>以「心理疗愈 AI 产品观察」为例：它先是研究需求，然后被归到研究中心能力线，接着在正式工作区内形成独立研究站点，最后继续反哺到内容、产品判断和后续工作流里。</p>
+            <p>这正是知行工坊想解决的问题：把一次性的聊天和灵感，变成有入口、有边界、有后续可交接能力的长期资产。</p>
+          </Prose>
+        </div>
+      </Section>
+
+      <Section index="0 4" title="系统结构 ｜ 五层架构" shaded accent={ACCENT}>
         <ModuleGrid
           accent={ACCENT}
           modules={[
@@ -58,22 +79,6 @@ export default function Monorepo() {
             { title: "projects", body: "项目工作区、项目实现和项目级文档。" },
             { title: "shared", body: "共享脚本、模板和跨项目工具。" },
             { title: "company / knowledge-base", body: "长期复用知识沉淀。" },
-          ]}
-        />
-      </Section>
-
-      <Section index="0 4" title="任务流转 ｜ 从需求到交付" shaded accent={ACCENT}>
-        <StepFlow
-          accent={ACCENT}
-          steps={[
-            { title: "输入", note: "用户想法、项目问题、研究材料或业务判断。" },
-            { title: "Framing", note: "判断任务属于产品、能力、品牌还是治理。" },
-            { title: "Spec", note: "把模糊目标写成边界清楚的需求或问题定义。" },
-            { title: "Task", note: "拆成可执行任务，明确 owner、状态和验收方式。" },
-            { title: "Implementation", note: "在对应项目工作区内实现，不混入公司级文档。" },
-            { title: "QA", note: "用验证记录确认是否满足目标。" },
-            { title: "Delivery", note: "交付说明沉淀为后续角色可接手的 artifact。" },
-            { title: "Knowledge", note: "长期有效的判断进入知识库。" },
           ]}
         />
       </Section>
@@ -92,40 +97,54 @@ export default function Monorepo() {
         />
       </Section>
 
-      <Section index="0 6" title="可视化证据 ｜ Artifact" shaded accent={ACCENT}>
-        <ModuleGrid
+      <Section index="0 6" title="真实物证 ｜ Artifact" shaded accent={ACCENT}>
+        <DecisionTable
           accent={ACCENT}
-          modules={[
-            { title: "Monorepo 五层结构图", body: "公司、项目、角色、共享、知识层的边界与连接。" },
-            { title: "项目注册表", body: "所有在册项目的入口、负责人与状态。" },
-            { title: "Agent 角色边界示意", body: "产品、研究、内容、工程、QA 等角色协作图。" },
-            { title: "Spec / Task / QA / Delivery 流程卡", body: "阶段 artifact 在项目中的位置与流转。" },
-            { title: "聊天 → artifact → knowledge", body: "对话沉淀为可复用知识的转化路径。" },
-            { title: "多项目工作区地图", body: "AI 产品、研究、内容、求职等并行项目的全景。" },
+          headers={["真实物证", "仓库位置", "说明什么"]}
+          rows={[
+            ["项目注册表", "company/项目注册表.yaml", "公司对象不是口头约定，而是有唯一权威清单；当前登记 8 个对象。"],
+            ["公司蓝图", "company/公司蓝图.md", "公司定义、对象类型、角色哲学和长期原则有稳定落点。"],
+            ["任务审阅规范", "company/任务审阅与状态流转规范.md", "任务 review 不是靠聊天猜语义，而是有明确状态流转规则。"],
+            ["角色入口", "agents/*/AGENTS.md", "当前独立维护 10 个核心角色入口，明确谁负责什么。"],
+            ["研究中心双入口", "company/projects/研究中心/PROJECT.md + projects/research-center/PROJECT.md", "公司级说明和项目级工作区明确分层，不把治理文档和实现混在一起。"],
+            ["真实项目落地样例", "projects/research-center/research/心理疗愈app/心理疗愈AI产品观察室", "这套系统已经承载真实研究项目，并继续演变为独立前端站点。"],
           ]}
         />
       </Section>
 
-      <Section index="0 7" title="当前结果与岗位相关性" accent={ACCENT}>
-        <ModuleGrid
-          accent={ACCENT}
-          modules={[
-            { title: "承载公司治理", body: "公司蓝图、研发原则、任务规范。" },
-            { title: "承载项目推进", body: "AI 产品、研究中心、内容体系、求职材料。" },
-            { title: "承载角色协作", body: "产品、研究、内容、工程、QA 等角色入口。" },
-            { title: "承载知识沉淀", body: "把阶段性研究和实践结果转为长期知识。" },
-          ]}
-        />
-        <div className="mt-8">
-          <RoleFit
+      <Section index="0 7" title="当前结果 ｜ 目前已经跑起来什么" accent={ACCENT}>
+        <div className="space-y-6">
+          <ModuleGrid
+            cols={2}
+            accent={ACCENT}
+            modules={[
+              { title: "8 个公司对象已统一登记", body: "产品、能力和品牌对象都已经进入 company/项目注册表.yaml，不再依赖聊天记忆。"},
+              { title: "10 个核心角色入口已独立维护", body: "CEO、产品、研究、架构、工程、QA、内容等角色有各自 AGENTS.md。"},
+              { title: "8 个主工作区已进入 projects", body: "研究、内容、求职、产品和共享能力底座都在同一仓库内并行推进。"},
+              { title: "至少 1 条跨项目链路已反复使用", body: "研究需求可以进入研究中心，演变为站点，再继续反哺内容和产品判断。"},
+            ]}
+          />
+          <BulletList
             accent={ACCENT}
             items={[
-              { role: "AI 产品经理", fit: "体现信息架构、工作流产品思维、复杂系统拆解和工程协作理解。" },
-              { role: "AI 转型咨询顾问", fit: "体现组织知识治理、AI 协作流程设计和从工具使用走向工作系统建设的能力。" },
-              { role: "FDE", fit: "体现我能为复杂客户场景搭建 Agent 协作、项目入口、交付 artifact 和可回写的工作系统。" },
+              "它已经承载公司治理：公司蓝图、研发原则、任务规范、对象注册表都有正式入口。",
+              "它已经承载项目推进：一镜一梳、研究中心、内容矩阵、馨冉求职等工作不再散落在多个平级仓库里。",
+              "它已经承载角色协作：当任务需要换角色时，有明确入口而不是重新口头解释上下文。",
+              "它已经承载知识沉淀：研究与交付可以继续回写成长期资产，而不是停留在一次性交付。",
             ]}
           />
         </div>
+      </Section>
+
+      <Section index="0 8" title="岗位相关性 ｜ Relevance & 边界" accent={ACCENT}>
+        <RoleFit
+          accent={ACCENT}
+          items={[
+            { role: "AI 产品经理", fit: "体现信息架构、工作流产品思维、复杂系统拆解和工程协作理解。" },
+            { role: "AI 转型咨询顾问", fit: "体现组织知识治理、AI 协作流程设计和从工具使用走向工作系统建设的能力。" },
+            { role: "FDE", fit: "体现我能为复杂客户场景搭建 Agent 协作、项目入口、交付 artifact 和可回写的工作系统。" },
+          ]}
+        />
         <div className="mt-6">
           <Boundary accent={ACCENT}>
             不把它写成成熟商业化 SaaS、企业级多人平台或完全自动化公司。更稳妥的表达是：自用 AI 一人公司工作系统；Monorepo 实践；一人公司操作系统原型。
