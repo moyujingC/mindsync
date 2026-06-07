@@ -209,7 +209,7 @@
 
 .am-primary-cta:hover:not(:disabled),
 .am-primary-cta:focus-visible:not(:disabled) {
-  transform: translateY(18px);
+  transform: translateY(17px);
 }
 
 .am-primary-cta__label {
