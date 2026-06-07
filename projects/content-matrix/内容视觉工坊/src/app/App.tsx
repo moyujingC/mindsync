@@ -13,6 +13,7 @@ export default function App() {
     workspace,
     importMarkdownFile,
     regenerateCardImage,
+    regenerateWechatInlineImageAsset,
     regenerateAllCardImages,
     regenerateCoverAsset,
     generateLayoutPreview,
@@ -63,6 +64,7 @@ export default function App() {
         <CenterPanel
           data={workspace}
           onRegenerateCardImage={regenerateCardImage}
+          onRegenerateInlineImage={regenerateWechatInlineImageAsset}
           onRegenerateAllCardImages={regenerateAllCardImages}
           onRegenerateCoverAsset={regenerateCoverAsset}
         />

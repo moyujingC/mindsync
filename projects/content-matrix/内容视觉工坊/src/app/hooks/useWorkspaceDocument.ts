@@ -72,6 +72,13 @@ function markDraftSyncPending(workspace: WorkspaceData, detail: string): Workspa
   });
 }
 
+function withFreshDraftReview(workspace: WorkspaceData) {
+  return {
+    ...workspace,
+    draftReview: buildDraftReview(workspace),
+  };
+}
+
 export function useWorkspaceDocument() {
   const [workspace, setWorkspace] = useState<WorkspaceData>(initialWorkspaceData);
   const [rawMarkdownText, setRawMarkdownText] = useState<string>("");
@@ -287,6 +294,66 @@ export function useWorkspaceDocument() {
     }
   }
 
+  async function regenerateWechatInlineImageAsset(imageId: string) {
+    const request = buildWechatInlineImageRequest(workspace, imageId);
+    if (!request) return;
+
+    setWorkspace((prev) => ({
+      ...prev,
+      wechatInlineImages: prev.wechatInlineImages.map((item) =>
+        item.id === imageId ? { ...item, state: "processing" } : item,
+      ),
+      workflowStages: prev.workflowStages.map((stage) =>
+        stage.key === "imageGeneration"
+          ? { ...stage, status: "processing", detail: `正在生成正文配图 ${imageId}…`, providerLabel: "gpt-image-2" }
+          : stage,
+      ),
+    }));
+
+    try {
+      const result = await generateWechatInlineImage(request);
+      setWorkspace((prev) => {
+        const nextWorkspace = withFreshDraftReview({
+          ...prev,
+          generation: updateGenerationTimestamp(prev, formatNowTime()),
+          wechatInlineImages: prev.wechatInlineImages.map((item) =>
+            item.id === imageId
+              ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
+              : item,
+          ),
+        });
+
+        return {
+          ...nextWorkspace,
+          workflowStages: markDraftSyncPending(
+            {
+              ...nextWorkspace,
+              workflowStages: nextWorkspace.workflowStages.map((stage) =>
+                stage.key === "imageGeneration"
+                  ? { ...stage, status: "success", detail: `正文配图 ${imageId} 已生成`, providerLabel: "gpt-image-2" }
+                  : stage,
+              ),
+            },
+            "正文配图已更新，如需入库请重新同步草稿",
+          ),
+        };
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "正文配图生成失败";
+      setWorkspace((prev) => ({
+        ...prev,
+        wechatInlineImages: prev.wechatInlineImages.map((item) =>
+          item.id === imageId ? { ...item, state: "failed" } : item,
+        ),
+        workflowStages: prev.workflowStages.map((stage) =>
+          stage.key === "imageGeneration"
+            ? { ...stage, status: "failed", detail: message, retryable: true, providerLabel: "gpt-image-2" }
+            : stage,
+        ),
+      }));
+    }
+  }
+
   async function regenerateAllCardImages() {
     const shouldGenerateCards = isOutputEnabled(workspace, "knowledgeCards");
     const enabledCoverKeys = workspace.covers
@@ -475,35 +542,41 @@ export function useWorkspaceDocument() {
 
     const generatedAt = formatNowTime();
 
-    setWorkspace((prev) => ({
-      ...prev,
-      generation: updateGenerationTimestamp(prev, generatedAt),
-      workflowStages: markDraftSyncPending(
-        {
-          ...prev,
-          workflowStages: prev.workflowStages.map((stage) =>
-            stage.key === "imageGeneration"
-              ? failedCount === 0
-                ? {
-                    ...stage,
-                    status: "success",
-                    detail: `已完成 ${successCount} 项视觉素材生成`,
-                    providerLabel: "gpt-image-2",
-                    retryable: false,
-                  }
-                : {
-                    ...stage,
-                    status: "failed",
-                    detail: `已生成 ${successCount} 项，失败 ${failedCount} 项，可局部重试`,
-                    providerLabel: "gpt-image-2",
-                    retryable: true,
-                  }
-              : stage,
-          ),
-        },
-        "图片已更新，如需入库请重新同步草稿",
-      ),
-    }));
+    setWorkspace((prev) => {
+      const nextWorkspace = withFreshDraftReview({
+        ...prev,
+        generation: updateGenerationTimestamp(prev, generatedAt),
+      });
+
+      return {
+        ...nextWorkspace,
+        workflowStages: markDraftSyncPending(
+          {
+            ...nextWorkspace,
+            workflowStages: nextWorkspace.workflowStages.map((stage) =>
+              stage.key === "imageGeneration"
+                ? failedCount === 0
+                  ? {
+                      ...stage,
+                      status: "success",
+                      detail: `已完成 ${successCount} 项视觉素材生成`,
+                      providerLabel: "gpt-image-2",
+                      retryable: false,
+                    }
+                  : {
+                      ...stage,
+                      status: "failed",
+                      detail: `已生成 ${successCount} 项，失败 ${failedCount} 项，可局部重试`,
+                      providerLabel: "gpt-image-2",
+                      retryable: true,
+                    }
+                : stage,
+            ),
+          },
+          "图片已更新，如需入库请重新同步草稿",
+        ),
+      };
+    });
   }
 
   async function regenerateCoverAsset(coverKey: "wechatCover" | "xiaohongshuCover") {
@@ -526,33 +599,39 @@ export function useWorkspaceDocument() {
 
     try {
       const result = await generateCoverImage(request);
-      setWorkspace((prev) => ({
-        ...prev,
-        generation: updateGenerationTimestamp(prev, formatNowTime()),
-        covers: prev.covers.map((item) =>
-          item.key === coverKey
-            ? {
-                ...item,
-                img: result.imageUrl,
-                state: "ok",
-                provider: result.provider,
-                imagePrompt: result.prompt,
-                status: "已生成 · AI",
-              }
-            : item,
-        ),
-        workflowStages: markDraftSyncPending(
-          {
-            ...prev,
-            workflowStages: prev.workflowStages.map((stage) =>
-              stage.key === "imageGeneration"
-                ? { ...stage, status: "success", detail: `${request.label}已生成`, providerLabel: "gpt-image-2" }
-                : stage,
-            ),
-          },
-          "封面已更新，如需入库请重新同步草稿",
-        ),
-      }));
+      setWorkspace((prev) => {
+        const nextWorkspace = withFreshDraftReview({
+          ...prev,
+          generation: updateGenerationTimestamp(prev, formatNowTime()),
+          covers: prev.covers.map((item) =>
+            item.key === coverKey
+              ? {
+                  ...item,
+                  img: result.imageUrl,
+                  state: "ok",
+                  provider: result.provider,
+                  imagePrompt: result.prompt,
+                  status: "已生成 · AI",
+                }
+              : item,
+          ),
+        });
+
+        return {
+          ...nextWorkspace,
+          workflowStages: markDraftSyncPending(
+            {
+              ...nextWorkspace,
+              workflowStages: nextWorkspace.workflowStages.map((stage) =>
+                stage.key === "imageGeneration"
+                  ? { ...stage, status: "success", detail: `${request.label}已生成`, providerLabel: "gpt-image-2" }
+                  : stage,
+              ),
+            },
+            "封面已更新，如需入库请重新同步草稿",
+          ),
+        };
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : "封面生成失败";
       setWorkspace((prev) => ({
@@ -574,6 +653,7 @@ export function useWorkspaceDocument() {
     derived,
     importMarkdownFile,
     regenerateCardImage,
+    regenerateWechatInlineImageAsset,
     regenerateAllCardImages,
     regenerateCoverAsset,
     generateLayoutPreview,

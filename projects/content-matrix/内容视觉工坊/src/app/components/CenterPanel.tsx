@@ -5,11 +5,12 @@ import type { CoverAsset, GenerationStageStatus, KnowledgeCardItem, WechatInline
 interface CenterPanelProps {
   data: WorkspaceData;
   onRegenerateCardImage: (cardNumber: string) => Promise<void>;
+  onRegenerateInlineImage: (imageId: string) => Promise<void>;
   onRegenerateAllCardImages: () => Promise<void>;
   onRegenerateCoverAsset: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
 }
 
-export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
+export function CenterPanel({ data, onRegenerateCardImage, onRegenerateInlineImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
   const isBatchGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
@@ -139,7 +140,7 @@ export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardIm
           </div>
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
             {data.wechatInlineImages.map((image) => (
-              <InlineImageCard key={image.id} image={image} />
+              <InlineImageCard key={image.id} image={image} onRegenerate={onRegenerateInlineImage} />
             ))}
           </div>
 
@@ -161,7 +162,7 @@ export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardIm
   );
 }
 
-function InlineImageCard({ image }: { image: WechatInlineImageAsset }) {
+function InlineImageCard({ image, onRegenerate }: { image: WechatInlineImageAsset; onRegenerate: (imageId: string) => Promise<void> }) {
   const failed = image.state === "failed";
   const processing = image.state === "processing";
   const providerLabel = image.provider === "image-model" ? "真实出图" : "示例图";
@@ -198,7 +199,10 @@ function InlineImageCard({ image }: { image: WechatInlineImageAsset }) {
               <AlertTriangle className="w-4 h-4 text-amber-800" />
             </div>
             <div className="text-[12.5px] text-amber-900" style={{ fontWeight: 500 }}>生成失败</div>
-            <div className="text-[10.5px] text-muted-foreground leading-relaxed">prompt 触发了安全限制 · 可批量重试</div>
+            <div className="text-[10.5px] text-muted-foreground leading-relaxed">prompt 触发了安全限制 · 可单独重试</div>
+            <button onClick={() => onRegenerate(image.id)} className="mt-1 inline-flex items-center gap-1 text-[11.5px] text-primary bg-card border border-border rounded-md px-2.5 py-1 hover:bg-secondary/60">
+              <RefreshCw className="w-3 h-3" /> 重新生成
+            </button>
           </div>
         )
       }
@@ -207,7 +211,7 @@ function InlineImageCard({ image }: { image: WechatInlineImageAsset }) {
       spec={`${providerLabel} · ${sectionTypeLabelMap[image.sectionType]} · ${image.ratio} · ${image.width}×${image.height}`}
       actions={
         <>
-          <ToolBtn title="当前仅支持批量生成" disabled><RefreshCw className="w-3.5 h-3.5" /></ToolBtn>
+          <ToolBtn title="重生成" onClick={processing ? undefined : () => onRegenerate(image.id)} disabled={processing}><RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} /></ToolBtn>
           <ToolBtn title="替换图片" disabled><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="大图预览"><Maximize2 className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
