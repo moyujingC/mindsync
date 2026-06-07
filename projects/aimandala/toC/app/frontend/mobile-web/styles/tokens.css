@@ -554,6 +554,116 @@
   );
   --mw-history-intro-title: #ede4d4;
   --mw-history-intro-copy: rgba(232, 220, 200, 0.45);
+  --mw-history-banner-strong: #f4c166;
+  --mw-history-banner-copy: rgba(238, 232, 220, 0.62);
+  --mw-history-refresh-border: rgba(219, 177, 102, 0.28);
+  --mw-history-refresh-bg: rgba(78, 72, 70, 0.72);
+  --mw-history-refresh-text: #f2bf60;
+  --mw-history-section-title: var(--am-color-gold-300);
+  --mw-history-section-copy: rgba(232, 220, 200, 0.45);
+  --mw-history-record-border: rgba(212, 160, 84, 0.15);
+  --mw-history-record-bg: linear-gradient(
+    160deg,
+    rgba(22, 35, 60, 0.85) 0%,
+    rgba(28, 42, 72, 0.65) 50%,
+    rgba(22, 35, 60, 0.75) 100%
+  );
+  --mw-history-record-shadow: 0 2px 20px rgba(17, 26, 48, 0.5);
+  --mw-history-record-thumb-overlay: linear-gradient(
+      rgba(14, 24, 43, 0.04),
+      rgba(14, 24, 43, 0.18)
+    ),
+    url("../../assets/history-dunhuang-pattern-clean.png");
+  --mw-history-record-thumb-fade: linear-gradient(
+    90deg,
+    transparent 50%,
+    rgba(22, 35, 60, 0.6) 100%
+  );
+  --mw-history-record-title: #ede4d4;
+  --mw-history-record-icon: var(--am-color-gold-300);
+  --mw-history-record-meta: rgba(232, 220, 200, 0.6);
+  --mw-history-version-border: rgba(212, 160, 84, 0.2);
+  --mw-history-version-bg: rgba(212, 160, 84, 0.1);
+  --mw-history-version-text: #e0b46a;
+  --mw-history-version-lite-border: rgba(158, 170, 155, 0.22);
+  --mw-history-version-lite-bg: rgba(158, 170, 155, 0.1);
+  --mw-history-version-lite-text: #a8c4a0;
+  --mw-history-progress-text: #e0b46a;
+  --mw-history-progress-track-border: rgba(212, 160, 84, 0.15);
+  --mw-history-progress-track-bg: rgba(22, 35, 60, 0.8);
+  --mw-history-progress-fill: linear-gradient(
+    90deg,
+    rgba(212, 160, 84, 0.6),
+    rgba(200, 120, 80, 0.7)
+  );
+  --mw-history-progress-fill-shadow: 0 0 8px rgba(212, 160, 84, 0.4);
+  --mw-history-status-border: rgba(212, 160, 84, 0.25);
+  --mw-history-status-bg: rgba(212, 160, 84, 0.12);
+  --mw-history-status-text: #e0b46a;
+  --mw-history-status-ready-border: rgba(158, 170, 155, 0.25);
+  --mw-history-status-ready-bg: rgba(158, 170, 155, 0.12);
+  --mw-history-status-ready-text: #a8c4a0;
+  --mw-history-separator-line: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 160, 84, 0.25),
+    transparent
+  );
+  --mw-history-separator-dot: radial-gradient(
+    circle,
+    rgba(212, 160, 84, 0.6) 0%,
+    rgba(200, 120, 80, 0.3) 100%
+  );
+  --mw-history-separator-dot-shadow: 0 0 10px rgba(212, 160, 84, 0.35);
+  --mw-history-summary-card-border: rgba(212, 160, 84, 0.18);
+  --mw-history-summary-card-bg: linear-gradient(
+    160deg,
+    rgba(22, 35, 60, 0.7) 0%,
+    rgba(18, 28, 48, 0.5) 100%
+  );
+  --mw-history-summary-card-shadow: 0 2px 16px rgba(212, 160, 84, 0.08);
+  --mw-history-summary-card-line: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 160, 84, 0.35),
+    transparent
+  );
+  --mw-history-summary-strong: #e0b46a;
+  --mw-history-summary-strong-ready: #a8c4a0;
+  --mw-history-summary-copy: rgba(232, 220, 200, 0.4);
+  --mw-history-filter-title: rgba(212, 160, 84, 0.5);
+  --mw-history-pill-border: rgba(138, 124, 108, 0.12);
+  --mw-history-pill-bg: rgba(138, 124, 108, 0.06);
+  --mw-history-pill-text: rgba(232, 220, 200, 0.4);
+  --mw-history-pill-active-border: rgba(200, 120, 80, 0.4);
+  --mw-history-pill-active-bg: linear-gradient(
+    135deg,
+    rgba(200, 120, 80, 0.22),
+    rgba(212, 160, 84, 0.14)
+  );
+  --mw-history-pill-active-text: #ede4d4;
+  --mw-history-pill-active-shadow: 0 0 12px rgba(212, 160, 84, 0.1);
+  --mw-history-theme-card-border: rgba(138, 124, 108, 0.15);
+  --mw-history-theme-card-bg: rgba(22, 35, 60, 0.6);
+  --mw-history-theme-card-text: rgba(232, 220, 200, 0.5);
+  --mw-history-theme-card-active-border: rgba(212, 160, 84, 0.45);
+  --mw-history-theme-card-active-bg: linear-gradient(
+    135deg,
+    rgba(200, 120, 80, 0.18) 0%,
+    rgba(212, 160, 84, 0.12) 50%,
+    rgba(200, 120, 80, 0.1) 100%
+  );
+  --mw-history-theme-card-active-text: #ede4d4;
+  --mw-history-theme-card-active-shadow: 0 2px 16px rgba(212, 160, 84, 0.15);
+  --mw-history-theme-card-check: rgba(212, 160, 84, 0.6);
+  --mw-history-theme-card-check-mark: var(--am-color-ink-800);
+  --mw-history-theme-dot: rgba(212, 160, 84, 0.15);
+  --mw-history-theme-dot-active: var(--am-color-gold-300);
+  --mw-history-empty-border: rgba(132, 112, 83, 0.18);
+  --mw-history-empty-copy: rgba(238, 232, 220, 0.45);
+  --mw-history-empty-button-border: rgba(117, 132, 160, 0.18);
+  --mw-history-empty-button-bg: rgba(35, 45, 69, 0.78);
+  --mw-history-empty-button-text: rgba(238, 232, 220, 0.62);
 
   /* Dev-shell local tokens */
   --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
