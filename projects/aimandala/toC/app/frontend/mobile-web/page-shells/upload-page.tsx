@@ -424,7 +424,7 @@ function ThemeSelector({
   return (
     <div className="am-theme-selector">
       <p className="am-theme-selector__title">
-        当前解读议题 <span className="am-theme-selector__required">*</span>
+        选择解读议题 <span className="am-theme-selector__required">*</span>
       </p>
 
       <div
@@ -1002,7 +1002,7 @@ export function MobileWebUploadPage({
                   }}
                 >
                   <span className="am-upload-disc__placeholder-icon"><UploadGlyph /></span>
-                  <span className="am-upload-disc__placeholder-text">{isDragOver ? "释放以上传" : "点击上传"}</span>
+                  <span className="am-upload-disc__placeholder-text">{isDragOver ? "释放以上传" : "点击上传或拍照"}</span>
                 </button>
               ) : null}
               {previewSrc ? (
