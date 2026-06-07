@@ -897,6 +897,7 @@
   line-height: 1.5;
   text-align: center;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .am-upload-bottom-panel__link {
