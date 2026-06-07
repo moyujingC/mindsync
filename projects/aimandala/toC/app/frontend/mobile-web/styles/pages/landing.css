@@ -167,7 +167,7 @@
 .am-hero-copy h1 {
   margin: 0;
   font-family: var(--am-font-display);
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: 0.08em;
   line-height: 1.35;
@@ -178,7 +178,7 @@
 
 .am-hero-subtitle {
   margin: 0;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.65;
   letter-spacing: 0.03em;
@@ -190,7 +190,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 600;
   line-height: 1.6;
   letter-spacing: 0.06em;
