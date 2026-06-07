@@ -195,7 +195,7 @@ export function useWorkspaceDocument() {
         parsedMarkdown: parsed.parsedMarkdown,
         analysis: planned.analysis,
         cardPlan: planned.cardPlan,
-      } as WorkspaceData),
+      } as WorkspaceData, planned.inlineImagePlan),
       workflowStages: workspace.workflowStages.map((stage) => {
         if (stage.key === "upload") {
           return { ...stage, status: "success", detail: "Markdown 文件已读取" };

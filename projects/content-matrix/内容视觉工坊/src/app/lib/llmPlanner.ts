@@ -11,6 +11,7 @@ function buildPrompt(request: PlannerRequest) {
 3. 为每张卡片生成一句摘要
 4. 提炼 1-3 句重点句
 5. 生成一个封面主题和关键词
+6. 规划公众号正文配图，决定哪些小节需要配图，并给出每张图的用途和视觉方向
 
 必须返回 JSON，不要输出额外解释。
 
@@ -20,6 +21,10 @@ function buildPrompt(request: PlannerRequest) {
 - 标题必须短、清楚、适合做视觉卡片标题
 - 摘要是一句话，适合显示在工作台里
 - 不要编造原文没有的观点
+- 正文配图不是知识卡片，不是封面，不是海报
+- 正文配图应优先对应文章里的 \`##\` 小节
+- 不是每个小节都必须配图，按需要决定，控制在 1-4 张
+- 配图要服务阅读节奏，不要让图抢掉正文中心
 
 文章标题：${request.articleTitle}
 风格预设：${request.styleName}
@@ -48,6 +53,18 @@ ${request.rawText}
       "index": 1,
       "title": "卡片标题",
       "summary": "卡片摘要"
+    }
+  ],
+  "inlineImagePlan": [
+    {
+      "sectionHeading": "文章中的某个 H2 小节标题",
+      "sectionType": "concept",
+      "sectionTheme": "这一张图要表达的主题",
+      "sectionKeywords": ["关键词1", "关键词2"],
+      "sectionSummary": "这一节的简短摘要",
+      "sectionQuote": "可选的重点句，没有就留空字符串",
+      "visualDirection": "这张图该怎么画，偏什么气质",
+      "rationale": "为什么这一节需要配图，以及它应该放在这里承担什么作用"
     }
   ]
 }
@@ -88,7 +105,7 @@ export async function planCardsWithLLM(request: PlannerRequest): Promise<Planner
     messages: [
       {
         role: "system",
-        content: "你是一个严格返回 JSON 的中文内容视觉策划助手。",
+        content: "你是一个严格返回 JSON 的中文内容视觉策划助手。sectionType 只能是 concept、quote、method、transition。",
       },
       {
         role: "user",

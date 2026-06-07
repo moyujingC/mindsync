@@ -6,6 +6,7 @@ import type {
   ParsedMarkdownDocument,
   ReviewCheck,
   WechatInlineImageAsset,
+  WechatInlineImagePlan,
   WechatInlineSectionType,
   WorkspaceData,
 } from "../types";
@@ -73,13 +74,35 @@ function buildVisualDirection(sectionType: WechatInlineSectionType, sectionTheme
   return `围绕“${sectionTheme}”做抽象概念意象图，安静、克制、有人文思考感。`;
 }
 
-export function buildWechatInlineImages(workspace: WorkspaceData): WechatInlineImageAsset[] {
+export function buildWechatInlineImages(workspace: WorkspaceData, inlinePlans?: WechatInlineImagePlan[]): WechatInlineImageAsset[] {
+  if (inlinePlans && inlinePlans.length > 0) {
+    return inlinePlans.map((plan, index) => ({
+      id: `inline-${String(index + 1).padStart(2, "0")}`,
+      placementLabel: `图片位 #${index + 1}`,
+      sectionHeading: plan.sectionHeading,
+      sectionType: plan.sectionType,
+      sectionTheme: plan.sectionTheme,
+      sectionKeywords: plan.sectionKeywords,
+      sectionSummary: plan.sectionSummary,
+      sectionQuote: plan.sectionQuote || undefined,
+      visualDirection: plan.visualDirection,
+      rationale: plan.rationale,
+      ratio: "16:9",
+      width: 1536,
+      height: 864,
+      img: "",
+      state: "idle",
+      provider: "mock",
+    }));
+  }
+
   return workspace.cardPlan.map((card) => {
     const sectionQuote = extractSectionQuote(card.summary, workspace.analysis.keyQuotes);
     const sectionType = classifySectionType(card.summary, sectionQuote);
     return {
       id: `inline-${String(card.index).padStart(2, "0")}`,
       placementLabel: `图片位 #${card.index}`,
+      sectionHeading: card.title,
       sectionType,
       sectionTheme: card.title,
       sectionKeywords: [card.title, workspace.analysis.coverTheme.title, ...workspace.analysis.coverTheme.keywords.split("/").map((item) => item.trim())]
@@ -88,6 +111,7 @@ export function buildWechatInlineImages(workspace: WorkspaceData): WechatInlineI
       sectionSummary: card.summary,
       sectionQuote,
       visualDirection: buildVisualDirection(sectionType, card.title),
+      rationale: `放在“${card.title}”相关段落之后，用来给长文阅读换气，并轻量强化当前段落主题。`,
       ratio: "16:9",
       width: 1536,
       height: 864,
@@ -102,8 +126,9 @@ function buildImagePlacements(inlineImages: WechatInlineImageAsset[]) {
   return inlineImages.map<LayoutImagePlacement>((image) => ({
     imageId: image.id,
     placementLabel: image.placementLabel,
+    sectionHeading: image.sectionHeading,
     anchorText: image.sectionQuote || image.sectionTheme,
-    rationale: `放在“${image.sectionTheme}”相关段落之后，用来给长文阅读换气，并轻量强化当前段落主题。`,
+    rationale: image.rationale,
     sectionType: image.sectionType,
   }));
 }
@@ -185,14 +210,14 @@ function buildBodyBlock(paragraph: string): DraftPreviewBlock | null {
 function buildPreview(rawText: string, articleTitle: string, accountName: string, imagePlacements: LayoutImagePlacement[]): DraftPreview {
   const blocks: DraftPreviewBlock[] = [];
   const { intro, sections } = parseMarkdownSections(rawText);
-  let imageIndex = 0;
+  const placementMap = new Map(imagePlacements.map((placement) => [cleanInlineMarkdown(placement.sectionHeading), placement]));
 
   for (const section of sections) {
     if (section.heading) {
       blocks.push({ type: "heading2", text: section.heading });
     }
 
-    const placement = section.heading && imageIndex < imagePlacements.length ? imagePlacements[imageIndex] : null;
+    const placement = section.heading ? placementMap.get(cleanInlineMarkdown(section.heading)) ?? null : null;
     let imageInserted = false;
 
     for (const paragraph of section.blocks) {
@@ -212,16 +237,13 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
       }
     }
 
-    if (placement) {
-      imageIndex += 1;
-      if (!imageInserted) {
-        blocks.push({
-          type: "image",
-          imageId: placement.imageId,
-          placementLabel: placement.placementLabel,
-          caption: placement.anchorText,
-        });
-      }
+    if (placement && !imageInserted) {
+      blocks.push({
+        type: "image",
+        imageId: placement.imageId,
+        placementLabel: placement.placementLabel,
+        caption: placement.anchorText,
+      });
     }
   }
 

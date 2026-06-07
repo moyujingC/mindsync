@@ -1,4 +1,4 @@
-import type { ArticleAnalysis, CardPlan, PlannerResponse } from "../types";
+import type { PlannerResponse, WechatInlineImagePlan, WechatInlineSectionType } from "../types";
 
 function extractSections(rawText: string) {
   const lines = rawText.split(/\r?\n/);
@@ -30,6 +30,26 @@ function cleanText(text: string) {
     .trim();
 }
 
+function classifySectionType(summary: string, quote?: string): WechatInlineSectionType {
+  if (quote) return "quote";
+  if (/^\d+\./m.test(summary) || /练习|步骤|方法|建议|清单/.test(summary)) return "method";
+  if (/判断力|提问|留白|筛选|边界|表达|思考/.test(summary)) return "concept";
+  return "transition";
+}
+
+function buildVisualDirection(sectionType: WechatInlineSectionType, sectionTheme: string) {
+  if (sectionType === "quote") {
+    return `围绕“${sectionTheme}”做轻观点感的编辑插图，不做大字海报，更像杂志内页的安静观点图。`;
+  }
+  if (sectionType === "method") {
+    return `围绕“${sectionTheme}”表达方法感、秩序感和结构感，但不要做步骤罗列或教程卡片。`;
+  }
+  if (sectionType === "transition") {
+    return `围绕“${sectionTheme}”做阅读换气图，强调停顿感、留白感和节奏缓冲，不承载完整信息。`;
+  }
+  return `围绕“${sectionTheme}”做抽象概念意象图，安静、克制、有人文思考感。`;
+}
+
 function pickKeyQuotes(rawText: string) {
   const quoteBlocks = rawText
     .split(/\r?\n/)
@@ -57,6 +77,21 @@ export function planKnowledgeCardsFromArticle(rawText: string): Omit<PlannerResp
 
   const keyQuotes = pickKeyQuotes(rawText);
   const firstTitle = cardPlan[0]?.title || "文章主观点";
+  const inlineImagePlan: WechatInlineImagePlan[] = cardPlan.map((card) => {
+    const sectionQuote = keyQuotes.find((quote) => card.summary.includes(quote) || quote.includes(card.summary.slice(0, 12)));
+    const sectionType = classifySectionType(card.summary, sectionQuote);
+
+    return {
+      sectionHeading: card.title,
+      sectionType,
+      sectionTheme: card.title,
+      sectionKeywords: [card.title, firstTitle, ...keyQuotes].filter(Boolean).slice(0, 5),
+      sectionSummary: card.summary,
+      sectionQuote,
+      visualDirection: buildVisualDirection(sectionType, card.title),
+      rationale: `放在“${card.title}”这一节的前半段后，用来给长文阅读换气，并轻量强化当前段落主题。`,
+    };
+  });
 
   return {
     analysis: {
@@ -72,5 +107,6 @@ export function planKnowledgeCardsFromArticle(rawText: string): Omit<PlannerResp
       },
     },
     cardPlan,
+    inlineImagePlan,
   };
 }

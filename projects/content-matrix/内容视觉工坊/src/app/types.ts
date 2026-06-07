@@ -111,6 +111,17 @@ export interface CardPlan {
   summary: string;
 }
 
+export interface WechatInlineImagePlan {
+  sectionHeading: string;
+  sectionType: WechatInlineSectionType;
+  sectionTheme: string;
+  sectionKeywords: string[];
+  sectionSummary: string;
+  sectionQuote?: string;
+  visualDirection: string;
+  rationale: string;
+}
+
 export interface PlannerRequest {
   articleTitle: string;
   rawText: string;
@@ -124,6 +135,7 @@ export interface PlannerResponse {
   provider: "local-fallback" | "llm";
   analysis: ArticleAnalysis;
   cardPlan: CardPlan[];
+  inlineImagePlan: WechatInlineImagePlan[];
 }
 
 export interface GenerateCardImageRequest {
@@ -161,12 +173,14 @@ export type WechatInlineSectionType = "concept" | "quote" | "method" | "transiti
 export interface WechatInlineImageAsset {
   id: string;
   placementLabel: string;
+  sectionHeading: string;
   sectionType: WechatInlineSectionType;
   sectionTheme: string;
   sectionKeywords: string[];
   sectionSummary: string;
   sectionQuote?: string;
   visualDirection: string;
+  rationale: string;
   ratio: string;
   width: number;
   height: number;
@@ -216,6 +230,7 @@ export interface WorkflowStage {
 export interface LayoutImagePlacement {
   imageId: string;
   placementLabel: string;
+  sectionHeading: string;
   anchorText: string;
   rationale: string;
   sectionType: WechatInlineSectionType;
