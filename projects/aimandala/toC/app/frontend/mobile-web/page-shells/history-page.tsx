@@ -167,25 +167,29 @@ export function MobileWebHistoryPage({
         </header>
 
         <section className="mw-history-intro">
-          <div className="mw-history-intro__sky" />
-          <div className="mw-history-intro__moon" />
-          <span className="mw-history-intro__cloud mw-history-intro__cloud--one" aria-hidden="true" />
-          <span className="mw-history-intro__cloud mw-history-intro__cloud--two" aria-hidden="true" />
-          <span className="mw-history-intro__cloud mw-history-intro__cloud--three" aria-hidden="true" />
-          <span className="mw-history-intro__star mw-history-intro__star--one" aria-hidden="true" />
-          <span className="mw-history-intro__star mw-history-intro__star--two" aria-hidden="true" />
-          <span className="mw-history-intro__star mw-history-intro__star--three" aria-hidden="true" />
-          <span className="mw-history-intro__star mw-history-intro__star--four" aria-hidden="true" />
-          <span className="mw-history-intro__star mw-history-intro__star--five" aria-hidden="true" />
-          <span className="mw-history-intro__crane mw-history-intro__crane--one" aria-hidden="true" />
-          <span className="mw-history-intro__crane mw-history-intro__crane--two" aria-hidden="true" />
-          <span className="mw-history-intro__mountain mw-history-intro__mountain--back-right" aria-hidden="true" />
-          <span className="mw-history-intro__mountain mw-history-intro__mountain--back-left" aria-hidden="true" />
-          <span className="mw-history-intro__mountain mw-history-intro__mountain--mid" aria-hidden="true" />
-          <span className="mw-history-intro__mountain mw-history-intro__mountain--edge" aria-hidden="true" />
-          <span className="mw-history-intro__lotus" aria-hidden="true" />
-          <h2>查看已生成的解读记录</h2>
-          <p>{descriptor.subtitle}</p>
+          <div className="mw-history-intro__halo mw-history-intro__halo--top" aria-hidden="true" />
+          <div className="mw-history-intro__halo mw-history-intro__halo--bottom" aria-hidden="true" />
+          <div className="mw-history-intro__content">
+            <div className="mw-history-intro__sky" />
+            <div className="mw-history-intro__moon" />
+            <span className="mw-history-intro__cloud mw-history-intro__cloud--one" aria-hidden="true" />
+            <span className="mw-history-intro__cloud mw-history-intro__cloud--two" aria-hidden="true" />
+            <span className="mw-history-intro__cloud mw-history-intro__cloud--three" aria-hidden="true" />
+            <span className="mw-history-intro__star mw-history-intro__star--one" aria-hidden="true" />
+            <span className="mw-history-intro__star mw-history-intro__star--two" aria-hidden="true" />
+            <span className="mw-history-intro__star mw-history-intro__star--three" aria-hidden="true" />
+            <span className="mw-history-intro__star mw-history-intro__star--four" aria-hidden="true" />
+            <span className="mw-history-intro__star mw-history-intro__star--five" aria-hidden="true" />
+            <span className="mw-history-intro__crane mw-history-intro__crane--one" aria-hidden="true" />
+            <span className="mw-history-intro__crane mw-history-intro__crane--two" aria-hidden="true" />
+            <span className="mw-history-intro__mountain mw-history-intro__mountain--back-right" aria-hidden="true" />
+            <span className="mw-history-intro__mountain mw-history-intro__mountain--back-left" aria-hidden="true" />
+            <span className="mw-history-intro__mountain mw-history-intro__mountain--mid" aria-hidden="true" />
+            <span className="mw-history-intro__mountain mw-history-intro__mountain--edge" aria-hidden="true" />
+            <span className="mw-history-intro__lotus" aria-hidden="true" />
+            <h2>查看已生成的解读记录</h2>
+            <p>{descriptor.subtitle}</p>
+          </div>
           <span className="mw-history-intro__glow-line" aria-hidden="true" />
         </section>
 
