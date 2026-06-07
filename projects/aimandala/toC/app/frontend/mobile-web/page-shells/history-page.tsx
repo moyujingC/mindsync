@@ -10,7 +10,7 @@ const themeOptions = [
   { id: "mother_relationship", labelTop: "母亲", labelBottom: "关系", icon: "person" },
   { id: "intimate_relationship", labelTop: "亲密", labelBottom: "关系", icon: "group" },
   { id: "parent_child_relationship", labelTop: "亲子", labelBottom: "关系", icon: "moon" },
-  { id: "wealth", labelTop: "财富", labelBottom: "关系", icon: "sparkle" },
+  { id: "wealth", labelTop: "财富", labelBottom: "事业", icon: "sparkle" },
   { id: "personal_growth", labelTop: "个人", labelBottom: "成长", icon: "star" },
   { id: "career_development", labelTop: "事业", labelBottom: "发展", icon: "sparkle" },
 ] as const;
@@ -21,6 +21,12 @@ const limitOptions = [
   { value: 50, label: "6 个月" },
   { value: 100, label: "12 个月" },
 ] as const;
+
+const statusOptions: Array<{ id: HistoryFilterId; label: string }> = [
+  { id: "all", label: "全部" },
+  { id: "ready", label: "可查看" },
+  { id: "pending", label: "生成中" },
+];
 
 export interface MobileWebHistoryPageProps {
   records: InterpretationRecordResponse[];
@@ -70,11 +76,23 @@ export function MobileWebHistoryPage({
   const descriptor = createHistoryPageDescriptor(records);
   const activeTheme = historyQuery?.theme;
   const activeLimit = historyQuery?.limit ?? 20;
-  const featuredItems = descriptor.items.slice(0, 4);
-  const activeSummary = {
-    ready: descriptor.summary.ready,
-    pending: descriptor.summary.pending,
-  };
+  const pendingItems = descriptor.items.filter((item) => !item.recordReady);
+  const filteredItems = descriptor.items.filter((item) => {
+    const matchesTheme = !activeTheme || item.theme === activeTheme;
+    if (!matchesTheme) {
+      return false;
+    }
+
+    switch (activeFilter) {
+      case "ready":
+        return item.recordReady;
+      case "pending":
+        return !item.recordReady;
+      case "all":
+      default:
+        return true;
+    }
+  });
 
   const renderIcon = (icon: (typeof themeOptions)[number]["icon"]) => {
     switch (icon) {
@@ -132,10 +150,10 @@ export function MobileWebHistoryPage({
       hideHeader
     >
       <div className="mw-history-page">
-        <header className="mw-history-header">
+        <header className="am-app-topbar mw-history-topbar" style={{ ["--am-app-topbar-bleed" as string]: "0px" }}>
           <button
             type="button"
-            className="mw-history-back"
+            className="am-app-topbar__back"
             aria-label="返回上传页"
             onClick={onBackToUpload}
           >
@@ -144,7 +162,8 @@ export function MobileWebHistoryPage({
               <path d="M9 12h12" />
             </svg>
           </button>
-          <h1>{descriptor.title}</h1>
+          <h1 className="am-app-topbar__title">{descriptor.title}</h1>
+          <span className="am-app-topbar__spacer" aria-hidden="true" />
         </header>
 
         <section className="mw-history-intro">
@@ -166,7 +185,7 @@ export function MobileWebHistoryPage({
           <span className="mw-history-intro__mountain mw-history-intro__mountain--edge" aria-hidden="true" />
           <span className="mw-history-intro__lotus" aria-hidden="true" />
           <h2>查看已生成的解读记录</h2>
-          <p>这里保留你已经生成过的所有解读记录，方便你随时回看。</p>
+          <p>{descriptor.subtitle}</p>
           <span className="mw-history-intro__glow-line" aria-hidden="true" />
         </section>
 
@@ -188,92 +207,92 @@ export function MobileWebHistoryPage({
 
         <section className="mw-history-featured">
           <h2>待查看的解读</h2>
-          <p>这里会优先显示还在生成中，或刚生成完成、还没来得及查看的报告。</p>
-          <div className="mw-history-featured__list">
-            {featuredItems.map((item, index) => {
-              const imageUrl = getRecordImage(item.interpretationId);
-              const isBusy = actionBusy && activeRecordId === item.interpretationId;
-              const progressPercent = Number.parseInt(item.progressLabel.replace(/\D/g, ""), 10);
+          <p>这里会优先显示还在生成中的报告，方便你稍后回来继续查看。</p>
+          {pendingItems.length ? (
+            <div className="mw-history-record-list">
+              {pendingItems.map((item, index) => {
+                const imageUrl = getRecordImage(item.interpretationId);
+                const isBusy = actionBusy && activeRecordId === item.interpretationId;
+                const progressPercent = Number.parseInt(item.progressLabel.replace(/\D/g, ""), 10);
 
-              return (
-                <article
-                  key={item.interpretationId}
-                  className={`mw-history-record mw-history-record--${item.statusTone}`}
-                >
-                  <div
-                    className={`mw-history-record__thumb mw-history-record__thumb--${index % 4}`}
-                    style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
-                  />
-                  <div className="mw-history-record__body">
-                    <div className="mw-history-record__title-row">
-                      <span className="mw-history-record__icon">{item.recordReady ? "♡" : "✧"}</span>
-                      <h3>{item.themeLabel}</h3>
-                    </div>
-                    <div className="mw-history-record__meta">
-                      <span className="mw-history-clock" aria-hidden="true" />
-                      <span>{item.subtitle.replace("创建于 ", "")}</span>
-                      <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
-                        {item.focusReportType === "pro" ? "Pro" : "Lite"}
-                      </strong>
-                    </div>
-                    {!item.recordReady ? (
+                return (
+                  <article
+                    key={`pending-${item.interpretationId}`}
+                    className={`mw-history-record mw-history-record--featured mw-history-record--${item.statusTone}`}
+                  >
+                    <div
+                      className={`mw-history-record__thumb mw-history-record__thumb--${index % 4}`}
+                      style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+                    />
+                    <div className="mw-history-record__body">
+                      <div className="mw-history-record__title-row">
+                        <span className="mw-history-record__icon" aria-hidden="true">✧</span>
+                        <h3>{item.themeLabel}</h3>
+                      </div>
+                      <div className="mw-history-record__meta">
+                        <span className="mw-history-clock" aria-hidden="true" />
+                        <span>{item.subtitle.replace("创建于 ", "")}</span>
+                        <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
+                          {item.focusReportType === "pro" ? "Pro" : "Lite"}
+                        </strong>
+                      </div>
                       <div className="mw-history-record__progress">
                         <span>{Number.isNaN(progressPercent) ? item.progressLabel : `${progressPercent}%`}</span>
                         <div>
-                          <i style={{ width: `${Number.isNaN(progressPercent) ? 55 : progressPercent}%` }} />
+                          <i style={{ width: `${Number.isNaN(progressPercent) ? 40 : Math.max(8, progressPercent)}%` }} />
                         </div>
                       </div>
-                    ) : null}
-                  </div>
-                  <button
-                    type="button"
-                    className="mw-history-record__action"
-                    onClick={() => {
-                      onOpenRecord?.(item.interpretationId);
-                    }}
-                    disabled={filterBusy || actionBusy}
-                  >
-                    <span aria-hidden="true">{item.recordReady ? "⊙" : "◔"}</span>
-                    {isBusy ? "正在打开..." : item.recordReady ? "待查看" : "生成中"}
-                  </button>
-                  {!item.recordReady ? (
-                    <span className="mw-history-sr">
-                      阶段：{item.stageLabel} 进度：{item.progressLabel} {item.actionLabel}
-                    </span>
-                  ) : null}
-                </article>
-              );
-            })}
-          </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="mw-history-status-pill mw-history-status-pill--pending"
+                      onClick={() => {
+                        onOpenRecord?.(item.interpretationId);
+                      }}
+                      disabled={filterBusy || actionBusy}
+                    >
+                      {isBusy ? "打开中..." : "生成中"}
+                    </button>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="mw-history-featured__empty">当前没有生成中的解读。</p>
+          )}
         </section>
+
+        <div className="mw-history-separator" aria-hidden="true">
+          <span />
+        </div>
 
         <section className="mw-history-all">
           <h2>全部历史记录</h2>
+
           <div className="mw-history-summary">
-            <article>
-              <strong>{activeSummary.ready}</strong>
+            <article className="mw-history-summary__card mw-history-summary__card--ready">
+              <strong>{descriptor.summary.ready}</strong>
               <span>可查看</span>
             </article>
-            <article>
-              <strong>{activeSummary.pending}</strong>
+            <article className="mw-history-summary__card mw-history-summary__card--pending">
+              <strong>{descriptor.summary.pending}</strong>
               <span>生成中</span>
             </article>
+          </div>
+
+          <div className="mw-history-separator mw-history-separator--compact" aria-hidden="true">
+            <span />
           </div>
 
           <section className="mw-history-filter-block">
             <h3>状态</h3>
             <div className="mw-history-pill-row">
-              {[
-                { id: "all", label: "全部" },
-                { id: "ready", label: "可查看" },
-                { id: "pending", label: "待查看" },
-                { id: "pending", label: "生成中" },
-              ].map((option, index) => (
+              {statusOptions.map((option) => (
                 <button
-                  key={`${option.label}-${index}`}
+                  key={option.id}
                   type="button"
                   className={`mw-history-pill${activeFilter === option.id ? " is-active" : ""}`}
-                  onClick={() => onFilterChange?.(option.id as HistoryFilterId)}
+                  onClick={() => onFilterChange?.(option.id)}
                   disabled={filterBusy}
                 >
                   {option.label}
@@ -297,29 +316,26 @@ export function MobileWebHistoryPage({
                   >
                     {active ? <span className="mw-history-theme-card__check" /> : null}
                     <span className="mw-history-theme-card__icon">{renderIcon(theme.icon)}</span>
-                    <strong>{theme.labelTop}<br />{theme.labelBottom}</strong>
+                    <strong>
+                      {theme.labelTop}
+                      <br />
+                      {theme.labelBottom}
+                    </strong>
                   </button>
                 );
               })}
             </div>
             <div className="mw-history-theme-dots">
-              {themeOptions.map((theme) => (
-                <span key={`dot-${theme.id ?? "all"}`} className={!activeTheme && !theme.id ? "is-active" : ""} />
-              ))}
+              {themeOptions.map((theme) => {
+                const active = theme.id ? activeTheme === theme.id : !activeTheme;
+                return <span key={`dot-${theme.id ?? "all"}`} className={active ? "is-active" : ""} />;
+              })}
             </div>
           </section>
 
           <section className="mw-history-filter-block">
             <h3>时间范围</h3>
-            <div className="mw-history-pill-row mw-history-pill-row--time">
-              <button type="button" className="mw-history-pill is-active" disabled={filterBusy}>
-                最近几月
-              </button>
-              <button type="button" className="mw-history-pill" disabled={filterBusy}>
-                自定义范围
-              </button>
-            </div>
-            <div className="mw-history-pill-row mw-history-pill-row--time">
+            <div className="mw-history-pill-row">
               {limitOptions.map((option) => (
                 <button
                   key={option.value}
@@ -337,27 +353,73 @@ export function MobileWebHistoryPage({
           {filterBusy ? (
             <section className="mw-inline-banner mw-inline-banner--runtime">
               <strong>正在切换历史筛选</strong>
-              <p>当前正在按所选筛选条件重新请求真实历史记录。</p>
+              <p>当前正在按所选条件重新请求真实记录。</p>
             </section>
           ) : null}
 
           {actionBusy ? (
             <section className="mw-inline-banner mw-inline-banner--runtime">
               <strong>正在打开历史记录</strong>
-              <p>当前正在刷新这条记录的真实状态，并根据结果跳转到 loading 或 report。</p>
+              <p>当前正在刷新这条记录的真实状态，并按结果跳转到等待页或报告页。</p>
             </section>
           ) : null}
 
-          <section className="mw-history-empty">
-            <p>当前筛选条件下没有记录</p>
-            <button
-              type="button"
-              className="mw-secondary-button"
-              onClick={onBackToUpload}
-            >
-              ← 返回上传页
-            </button>
-          </section>
+          {filteredItems.length ? (
+            <div className="mw-history-record-list mw-history-record-list--all">
+              {filteredItems.map((item, index) => {
+                const imageUrl = getRecordImage(item.interpretationId);
+                const isBusy = actionBusy && activeRecordId === item.interpretationId;
+
+                return (
+                  <article
+                    key={item.interpretationId}
+                    className={`mw-history-record mw-history-record--${item.statusTone}`}
+                  >
+                    <div
+                      className={`mw-history-record__thumb mw-history-record__thumb--${index % 4}`}
+                      style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+                    />
+                    <div className="mw-history-record__body">
+                      <div className="mw-history-record__title-row">
+                        <span className="mw-history-record__icon" aria-hidden="true">
+                          {item.recordReady ? "♡" : "✧"}
+                        </span>
+                        <h3>{item.themeLabel}</h3>
+                      </div>
+                      <div className="mw-history-record__meta">
+                        <span className="mw-history-clock" aria-hidden="true" />
+                        <span>{item.subtitle.replace("创建于 ", "")}</span>
+                        <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
+                          {item.focusReportType === "pro" ? "Pro" : "Lite"}
+                        </strong>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className={`mw-history-status-pill${item.recordReady ? " mw-history-status-pill--ready" : " mw-history-status-pill--pending"}`}
+                      onClick={() => {
+                        onOpenRecord?.(item.interpretationId);
+                      }}
+                      disabled={filterBusy || actionBusy}
+                    >
+                      {isBusy ? "打开中..." : item.recordReady ? "可查看" : "生成中"}
+                    </button>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <section className="mw-history-empty">
+              <p>当前筛选条件下没有记录</p>
+              <button
+                type="button"
+                className="mw-secondary-button"
+                onClick={onBackToUpload}
+              >
+                返回上传页
+              </button>
+            </section>
+          )}
         </section>
       </div>
     </MobileWebAppShell>
