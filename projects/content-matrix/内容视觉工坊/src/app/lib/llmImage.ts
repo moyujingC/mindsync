@@ -1,26 +1,45 @@
 import OpenAI from "openai";
-import { buildCardImagePrompt } from "./imagePrompt";
-import type { GenerateCardImageRequest, GenerateCardImageResponse } from "../types";
+import { buildCardImagePrompt, buildCoverImagePrompt } from "./imagePrompt";
+import type {
+  GenerateCardImageRequest,
+  GenerateCardImageResponse,
+  GenerateCoverImageRequest,
+  GenerateCoverImageResponse,
+} from "../types";
 
-export async function generateCardImageWithModel(request: GenerateCardImageRequest): Promise<GenerateCardImageResponse> {
+function getImageSizeFromRatio(ratio: string) {
+  const normalized = ratio.replace(/\s+/g, "");
+  if (normalized === "3:4" || normalized === "9:16") {
+    return "1024x1536" as const;
+  }
+  if (normalized === "4:3" || normalized === "2.35:1" || normalized === "2.35:1") {
+    return "1536x1024" as const;
+  }
+  return "1024x1024" as const;
+}
+
+function createImageClient() {
   const apiKey = process.env.AITECHFLUX_API_KEY;
   if (!apiKey) {
     throw new Error("Missing AITECHFLUX_API_KEY");
   }
 
   const baseURL = process.env.AITECHFLUX_BASE_URL || "https://aitechflux.com/v1";
-  const model = process.env.AITECHFLUX_IMAGE_MODEL || "gpt-image-2";
-  const prompt = buildCardImagePrompt(request);
 
-  const client = new OpenAI({
+  return new OpenAI({
     apiKey,
     baseURL,
   });
+}
+
+async function generateImage(prompt: string, ratio: string) {
+  const model = process.env.AITECHFLUX_IMAGE_MODEL || "gpt-image-2";
+  const client = createImageClient();
 
   const result = await client.images.generate({
     model,
     prompt,
-    size: "1024x1536",
+    size: getImageSizeFromRatio(ratio),
     quality: "high",
     n: 1,
   });
@@ -34,8 +53,18 @@ export async function generateCardImageWithModel(request: GenerateCardImageReque
   }
 
   return {
-    provider: "image-model",
+    provider: "image-model" as const,
     imageUrl: url || `data:image/png;base64,${b64}`,
     prompt,
   };
+}
+
+export async function generateCardImageWithModel(request: GenerateCardImageRequest): Promise<GenerateCardImageResponse> {
+  const prompt = buildCardImagePrompt(request);
+  return generateImage(prompt, request.ratio);
+}
+
+export async function generateCoverImageWithModel(request: GenerateCoverImageRequest): Promise<GenerateCoverImageResponse> {
+  const prompt = buildCoverImagePrompt(request);
+  return generateImage(prompt, request.ratio);
 }

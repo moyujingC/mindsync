@@ -3,6 +3,7 @@ import { workspaceData as initialWorkspaceData } from "../mockData";
 import { parseMarkdownFileContent } from "../lib/markdown";
 import { planCards } from "../lib/planCards";
 import { generateCardImage } from "../lib/generateCardImage";
+import { generateCoverImage } from "../lib/generateCoverImage";
 import type { WorkspaceData } from "../types";
 
 function formatNowTime() {
@@ -20,6 +21,20 @@ function updateGenerationTimestamp(workspace: WorkspaceData, generatedAt: string
     summaryMeta: workspace.generation.summaryMeta.map((item) =>
       item.label === "生成时间" ? { ...item, value: generatedAt } : item,
     ),
+  };
+}
+
+function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "xiaohongshuCover") {
+  const cover = workspace.covers.find((item) => item.key === coverKey);
+  if (!cover) return null;
+
+  return {
+    label: cover.label,
+    articleTitle: workspace.article.title,
+    coverThemeTitle: workspace.analysis.coverTheme.title,
+    coverThemeKeywords: workspace.analysis.coverTheme.keywords,
+    styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+    ratio: cover.ratio,
   };
 }
 
@@ -154,12 +169,13 @@ export function useWorkspaceDocument() {
     setWorkspace((prev) => ({
       ...prev,
       knowledgeCards: prev.knowledgeCards.map((item) => ({ ...item, state: "processing" })),
+      covers: prev.covers.map((item) => ({ ...item, state: "processing" })),
       workflowStages: prev.workflowStages.map((stage) =>
         stage.key === "imageGeneration"
           ? {
               ...stage,
               status: "processing",
-              detail: `正在批量生成 ${prev.knowledgeCards.length} 张卡片图片…`,
+              detail: `正在批量生成 ${prev.knowledgeCards.length} 张卡片和 ${prev.covers.length} 张封面…`,
               providerLabel: "gpt-image-2",
               retryable: false,
             }
@@ -169,6 +185,7 @@ export function useWorkspaceDocument() {
 
     let successCount = 0;
     let failedCount = 0;
+    const totalAssets = cards.length + workspace.covers.length;
 
     for (const card of cards) {
       try {
@@ -194,7 +211,7 @@ export function useWorkspaceDocument() {
               ? {
                   ...stage,
                   status: "processing",
-                  detail: `批量生成中：已完成 ${successCount}/${cards.length} 张`,
+                  detail: `批量生成中：已完成 ${successCount + failedCount}/${totalAssets} 项`,
                   providerLabel: "gpt-image-2",
                 }
               : stage,
@@ -212,7 +229,60 @@ export function useWorkspaceDocument() {
               ? {
                   ...stage,
                   status: "processing",
-                  detail: `批量生成中：已完成 ${successCount + failedCount}/${cards.length} 张，失败 ${failedCount} 张`,
+                  detail: `批量生成中：已完成 ${successCount + failedCount}/${totalAssets} 项，失败 ${failedCount} 项`,
+                  providerLabel: "gpt-image-2",
+                }
+              : stage,
+          ),
+        }));
+      }
+    }
+
+    for (const cover of workspace.covers) {
+      const request = buildCoverRequest(workspace, cover.key);
+      if (!request) continue;
+
+      try {
+        const result = await generateCoverImage(request);
+        successCount += 1;
+        setWorkspace((prev) => ({
+          ...prev,
+          covers: prev.covers.map((item) =>
+            item.key === cover.key
+              ? {
+                  ...item,
+                  img: result.imageUrl,
+                  state: "ok",
+                  provider: result.provider,
+                  imagePrompt: result.prompt,
+                  status: "已生成 · AI",
+                }
+              : item,
+          ),
+          workflowStages: prev.workflowStages.map((stage) =>
+            stage.key === "imageGeneration"
+              ? {
+                  ...stage,
+                  status: "processing",
+                  detail: `批量生成中：已完成 ${successCount + failedCount}/${totalAssets} 项`,
+                  providerLabel: "gpt-image-2",
+                }
+              : stage,
+          ),
+        }));
+      } catch {
+        failedCount += 1;
+        setWorkspace((prev) => ({
+          ...prev,
+          covers: prev.covers.map((item) =>
+            item.key === cover.key ? { ...item, state: "failed", status: "生成失败" } : item,
+          ),
+          workflowStages: prev.workflowStages.map((stage) =>
+            stage.key === "imageGeneration"
+              ? {
+                  ...stage,
+                  status: "processing",
+                  detail: `批量生成中：已完成 ${successCount + failedCount}/${totalAssets} 项，失败 ${failedCount} 项`,
                   providerLabel: "gpt-image-2",
                 }
               : stage,
@@ -232,14 +302,14 @@ export function useWorkspaceDocument() {
             ? {
                 ...stage,
                 status: "success",
-                detail: `已完成 ${successCount} 张卡片图片生成`,
+                detail: `已完成 ${successCount} 项视觉素材生成`,
                 providerLabel: "gpt-image-2",
                 retryable: false,
               }
             : {
                 ...stage,
                 status: "failed",
-                detail: `已生成 ${successCount} 张，失败 ${failedCount} 张，可局部重试`,
+                detail: `已生成 ${successCount} 项，失败 ${failedCount} 项，可局部重试`,
                 providerLabel: "gpt-image-2",
                 retryable: true,
               }
@@ -248,11 +318,67 @@ export function useWorkspaceDocument() {
     }));
   }
 
+  async function regenerateCoverAsset(coverKey: "wechatCover" | "xiaohongshuCover") {
+    const request = buildCoverRequest(workspace, coverKey);
+    if (!request) return;
+
+    setWorkspace((prev) => ({
+      ...prev,
+      covers: prev.covers.map((item) =>
+        item.key === coverKey ? { ...item, state: "processing", status: "生成中" } : item,
+      ),
+      workflowStages: prev.workflowStages.map((stage) =>
+        stage.key === "imageGeneration"
+          ? { ...stage, status: "processing", detail: `正在生成${request.label}…`, providerLabel: "gpt-image-2" }
+          : stage,
+      ),
+    }));
+
+    try {
+      const result = await generateCoverImage(request);
+      setWorkspace((prev) => ({
+        ...prev,
+        generation: updateGenerationTimestamp(prev, formatNowTime()),
+        covers: prev.covers.map((item) =>
+          item.key === coverKey
+            ? {
+                ...item,
+                img: result.imageUrl,
+                state: "ok",
+                provider: result.provider,
+                imagePrompt: result.prompt,
+                status: "已生成 · AI",
+              }
+            : item,
+        ),
+        workflowStages: prev.workflowStages.map((stage) =>
+          stage.key === "imageGeneration"
+            ? { ...stage, status: "success", detail: `${request.label}已生成`, providerLabel: "gpt-image-2" }
+            : stage,
+        ),
+      }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "封面生成失败";
+      setWorkspace((prev) => ({
+        ...prev,
+        covers: prev.covers.map((item) =>
+          item.key === coverKey ? { ...item, state: "failed", status: "生成失败" } : item,
+        ),
+        workflowStages: prev.workflowStages.map((stage) =>
+          stage.key === "imageGeneration"
+            ? { ...stage, status: "failed", detail: message, retryable: true, providerLabel: "gpt-image-2" }
+            : stage,
+        ),
+      }));
+    }
+  }
+
   return {
     workspace,
     derived,
     importMarkdownFile,
     regenerateCardImage,
     regenerateAllCardImages,
+    regenerateCoverAsset,
   };
 }

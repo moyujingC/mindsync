@@ -1,15 +1,16 @@
 import { RefreshCw, Image as ImageIcon, AlertTriangle, CheckCircle2, Layers, MoreHorizontal, Maximize2, Quote, LoaderCircle } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import type { GenerationStageStatus, KnowledgeCardItem, WorkspaceData, WorkflowStage } from "../types";
+import type { CoverAsset, GenerationStageStatus, KnowledgeCardItem, WorkspaceData, WorkflowStage } from "../types";
 
 interface CenterPanelProps {
   data: WorkspaceData;
   onRegenerateCardImage: (cardNumber: string) => Promise<void>;
   onRegenerateAllCardImages: () => Promise<void>;
+  onRegenerateCoverAsset: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
 }
 
-export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardImages }: CenterPanelProps) {
-  const isBatchGenerating = data.knowledgeCards.some((card) => card.state === "processing");
+export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
+  const isBatchGenerating = [...data.knowledgeCards, ...data.covers].some((item) => item.state === "processing");
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
       {/* Summary bar — two stable rows */}
@@ -140,7 +141,7 @@ export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardIm
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
             {data.covers.map((cover) => (
               <div key={cover.label} className={cover.wide ? "xl:col-span-3" : "xl:col-span-2"}>
-                <CoverCard {...cover} />
+                <CoverCard cover={cover} onRegenerate={onRegenerateCoverAsset} />
               </div>
             ))}
           </div>
@@ -309,36 +310,69 @@ function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate
   );
 }
 
-function CoverCard({ label, ratio, status, img, wide }: { label: string; ratio: string; status: string; img: string; wide?: boolean }) {
+function CoverCard({
+  cover,
+  onRegenerate,
+}: {
+  cover: CoverAsset;
+  onRegenerate: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
+}) {
+  const processing = cover.state === "processing";
+  const failed = cover.state === "failed";
+  const providerLabel = cover.provider === "image-model" ? "真实出图" : "示例图";
   return (
     <ResultCardShell
-      aspect={wide ? "2.35/1" : "3/4"}
-      cornerChip={ratio}
-      statusChip={<><span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span> {status}</>}
+      aspect={cover.wide ? "2.35/1" : "3/4"}
+      cornerChip={cover.ratio}
+      statusChip={
+        processing ? (
+          <><LoaderCircle className="w-3 h-3 animate-spin" /> 生成中</>
+        ) : failed ? (
+          <><AlertTriangle className="w-3 h-3" /> 生成失败</>
+        ) : (
+          <><span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span> {cover.status}</>
+        )
+      }
       imageNode={
-        <>
-          <ImageWithFallback src={img} alt={label} className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
-          <div className="absolute bottom-3.5 left-4 right-4 text-white">
-            <div className="text-[10px] tracking-[0.2em] opacity-80">JUDGEMENT · 2026</div>
-            <div className="leading-tight mt-0.5" style={{ fontFamily: "var(--font-serif)", fontSize: wide ? "22px" : "18px", fontWeight: 600 }}>
-              在算法替你思考之前
+        cover.img && !failed ? (
+          <>
+            <ImageWithFallback src={cover.img} alt={cover.label} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
+            <div className="absolute bottom-3.5 left-4 right-4 text-white">
+              <div className="text-[10px] tracking-[0.2em] opacity-80">JUDGEMENT · 2026</div>
+              <div className="leading-tight mt-0.5" style={{ fontFamily: "var(--font-serif)", fontSize: cover.wide ? "22px" : "18px", fontWeight: 600 }}>
+                在算法替你思考之前
+              </div>
+              {cover.wide && <div className="text-[12px] opacity-85 mt-1" style={{ fontFamily: "var(--font-serif)" }}>—— 写给被推荐流喂大的内容创作者</div>}
             </div>
-            {wide && <div className="text-[12px] opacity-85 mt-1" style={{ fontFamily: "var(--font-serif)" }}>—— 写给被推荐流喂大的内容创作者</div>}
+          </>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-6 bg-[#f3ecdb]">
+            {processing ? <LoaderCircle className="w-5 h-5 text-primary animate-spin" /> : <AlertTriangle className="w-5 h-5 text-amber-800" />}
+            <div className="text-[12.5px] text-foreground" style={{ fontWeight: 500 }}>{processing ? "正在生成封面" : "封面生成失败"}</div>
+            <div className="text-[10.5px] text-muted-foreground leading-relaxed">
+              {processing ? "已提交到 gpt-image-2，通常需要几秒钟" : "可以继续重试，或稍后更换风格再生成"}
+            </div>
           </div>
-        </>
+        )
       }
       title={
         <span className="inline-flex items-center gap-1.5">
           <Layers className="w-3.5 h-3.5 text-muted-foreground" />
-          {label}
+          {cover.label}
         </span>
       }
       caption="主标题、副线及账号信息已嵌入封面"
-      spec={wide ? "2.35:1 · 公众号" : "3:4 · 小红书"}
+      spec={`${providerLabel} · ${cover.wide ? "2.35:1 · 公众号" : "3:4 · 小红书"}`}
       actions={
         <>
-          <ToolBtn title="重生成"><RefreshCw className="w-3.5 h-3.5" /></ToolBtn>
+          <ToolBtn
+            title="重生成"
+            onClick={processing ? undefined : () => onRegenerate(cover.key)}
+            disabled={processing}
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} />
+          </ToolBtn>
           <ToolBtn title="替换图片"><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
         </>

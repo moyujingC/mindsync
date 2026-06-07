@@ -68,10 +68,14 @@ export interface KnowledgeCardItem {
 }
 
 export interface CoverAsset {
+  key: "wechatCover" | "xiaohongshuCover";
   label: string;
   ratio: string;
   status: string;
   img: string;
+  state?: CardGenerationState;
+  provider?: "mock" | "image-model";
+  imagePrompt?: string;
   wide?: boolean;
 }
 
@@ -124,6 +128,21 @@ export interface GenerateCardImageRequest {
 }
 
 export interface GenerateCardImageResponse {
+  provider: "image-model";
+  imageUrl: string;
+  prompt: string;
+}
+
+export interface GenerateCoverImageRequest {
+  label: string;
+  articleTitle: string;
+  coverThemeTitle: string;
+  coverThemeKeywords: string;
+  styleName: string;
+  ratio: string;
+}
+
+export interface GenerateCoverImageResponse {
   provider: "image-model";
   imageUrl: string;
   prompt: string;

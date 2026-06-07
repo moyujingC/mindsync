@@ -183,17 +183,23 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
   ],
   covers: [
     {
+      key: "wechatCover",
       label: "公众号封面",
       ratio: "2.35 : 1",
       status: "已生成 · v2",
       img: "https://images.unsplash.com/photo-1714636608872-048fc9231892?w=1400&q=80",
+      state: "ok",
+      provider: "mock",
       wide: true,
     },
     {
+      key: "xiaohongshuCover",
       label: "小红书封面",
       ratio: "3 : 4",
       status: "已生成 · v1",
       img: "https://images.unsplash.com/photo-1646600950096-0489e2a461cc?w=900&q=80",
+      state: "ok",
+      provider: "mock",
     },
   ],
   draftReview: {

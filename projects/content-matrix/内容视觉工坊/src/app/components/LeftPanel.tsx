@@ -21,7 +21,7 @@ export function LeftPanel({ data, inputMode, setInputMode, onImportMarkdown, onG
   const [activeStyle, setActiveStyle] = useState(data.activeStyleIndex);
   const [ratio, setRatio] = useState(data.cardSize.ratio);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const isGenerating = data.knowledgeCards.some((card) => card.state === "processing");
+  const isGenerating = [...data.knowledgeCards, ...data.covers].some((item) => item.state === "processing");
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
