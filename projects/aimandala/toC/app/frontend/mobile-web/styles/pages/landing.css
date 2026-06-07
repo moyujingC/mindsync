@@ -15,7 +15,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 34px 22px 20px;
+  padding: 32px 22px 8px;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(20, 30, 56, 0.95), rgba(26, 40, 68, 0.94)),
@@ -60,8 +60,8 @@
 
 .am-logo-ring {
   position: relative;
-  width: min(220px, 58vw);
-  height: min(220px, 58vw);
+  width: min(210px, 58vw);
+  height: min(210px, 58vw);
   display: grid;
   place-items: center;
   margin-top: 12vh;
@@ -130,7 +130,7 @@
   }
 
   50% {
-    transform: scale(1.15);
+    transform: scale(1.2);
     opacity: 0.8;
   }
 }
@@ -167,10 +167,10 @@
 .am-hero-copy h1 {
   margin: 0;
   font-family: var(--am-font-display);
-  font-size: 24px;
+  font-size: 27px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  line-height: 1.35;
+  line-height: 1.45;
   color: #efe1cd;
   text-shadow: 0 3px 12px rgba(5, 10, 24, 0.22);
   white-space: nowrap;
@@ -178,9 +178,9 @@
 
 .am-hero-subtitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.65;
+  line-height: 1.55;
   letter-spacing: 0.03em;
   color: rgba(232, 220, 200, 0.66);
 }
@@ -190,7 +190,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.6;
   letter-spacing: 0.06em;
@@ -198,24 +198,24 @@
 }
 
 .am-primary-cta {
-  width: min(68vw, 286px);
-  height: 58px;
-  margin-top: 8px;
+  width: min(68vw, 210px);
+  height: 48px;
+  margin-top: 18px;
   border-radius: 999px;
   transform: translateY(18px);
 }
 
 .am-primary-cta__label {
   font-family: var(--am-font-display);
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 700;
   letter-spacing: 0.08em;
 }
 
 .am-scroll-cue {
   position: absolute;
   left: 50%;
-  bottom: 22px;
+  bottom: 10px;
   z-index: 3;
   transform: translateX(-50%);
   display: flex;
@@ -229,7 +229,7 @@
 }
 
 .am-scroll-cue span {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -241,7 +241,7 @@
 
 .am-scroll-cue i {
   font-style: normal;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 0.9;
   animation: am-scroll-bob 1.9s infinite ease-in-out;
 }
@@ -273,8 +273,8 @@
   margin: 0;
   text-align: center;
   font-family: var(--am-font-display);
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 640;
   letter-spacing: 0.12em;
   line-height: 1.5;
 }
@@ -303,7 +303,7 @@
 .am-landing-section--steps {
   position: relative;
   z-index: 3;
-  margin-top: -38px;
+  margin-top: -54px;
   padding: 38px 24px 42px;
   border-radius: 24px 24px 0 0;
 }
@@ -365,7 +365,7 @@
     rgba(212, 160, 84, 0.08)
   );
   font-family: var(--am-font-display);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--am-color-copper-400);
 }
@@ -374,7 +374,7 @@
   width: 48px;
   height: 48px;
   margin-top: 12px;
-  border-radius: 16px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
   border: 1px solid rgba(138, 124, 108, 0.12);
@@ -389,7 +389,7 @@
 
 .am-step-flow-card__title {
   margin-top: 10px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--am-text-primary);
   line-height: 1.35;
@@ -423,28 +423,28 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 12px;
   margin-top: 36px;
 }
 
 .am-pricing-panel {
   position: relative;
   min-height: 156px;
-  padding: 24px 20px 18px;
+  padding: 18px 20px 18px;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(232, 220, 200, 0.12);
   box-shadow: none;
 }
 
 .am-pricing-panel--lite {
-  background: rgba(158, 170, 155, 0.1);
+  background: rgba(158, 170, 155, 0.12);
   border-color: rgba(158, 170, 155, 0.24);
 }
 
 .am-pricing-panel--pro {
-  background: rgba(212, 160, 84, 0.08);
+  background: rgba(212, 160, 84, 0.12);
   border-color: rgba(212, 160, 84, 0.28);
 }
 
