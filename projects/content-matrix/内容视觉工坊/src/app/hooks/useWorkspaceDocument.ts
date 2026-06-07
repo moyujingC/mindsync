@@ -5,6 +5,24 @@ import { planCards } from "../lib/planCards";
 import { generateCardImage } from "../lib/generateCardImage";
 import type { WorkspaceData } from "../types";
 
+function formatNowTime() {
+  return new Date().toLocaleTimeString("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+function updateGenerationTimestamp(workspace: WorkspaceData, generatedAt: string): WorkspaceData["generation"] {
+  return {
+    ...workspace.generation,
+    generatedAt,
+    summaryMeta: workspace.generation.summaryMeta.map((item) =>
+      item.label === "生成时间" ? { ...item, value: generatedAt } : item,
+    ),
+  };
+}
+
 export function useWorkspaceDocument() {
   const [workspace, setWorkspace] = useState<WorkspaceData>(initialWorkspaceData);
   const [rawMarkdownText, setRawMarkdownText] = useState<string>("");
@@ -101,6 +119,7 @@ export function useWorkspaceDocument() {
 
       setWorkspace((prev) => ({
         ...prev,
+        generation: updateGenerationTimestamp(prev, formatNowTime()),
         knowledgeCards: prev.knowledgeCards.map((item) =>
           item.n === cardNumber
             ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
@@ -128,10 +147,112 @@ export function useWorkspaceDocument() {
     }
   }
 
+  async function regenerateAllCardImages() {
+    const cards = workspace.knowledgeCards;
+    if (cards.length === 0) return;
+
+    setWorkspace((prev) => ({
+      ...prev,
+      knowledgeCards: prev.knowledgeCards.map((item) => ({ ...item, state: "processing" })),
+      workflowStages: prev.workflowStages.map((stage) =>
+        stage.key === "imageGeneration"
+          ? {
+              ...stage,
+              status: "processing",
+              detail: `正在批量生成 ${prev.knowledgeCards.length} 张卡片图片…`,
+              providerLabel: "gpt-image-2",
+              retryable: false,
+            }
+          : stage,
+      ),
+    }));
+
+    let successCount = 0;
+    let failedCount = 0;
+
+    for (const card of cards) {
+      try {
+        const result = await generateCardImage({
+          title: card.title,
+          summary: card.summary,
+          styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+          ratio: workspace.cardSize.ratio,
+          width: workspace.cardSize.width,
+          height: workspace.cardSize.height,
+        });
+
+        successCount += 1;
+        setWorkspace((prev) => ({
+          ...prev,
+          knowledgeCards: prev.knowledgeCards.map((item) =>
+            item.n === card.n
+              ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
+              : item,
+          ),
+          workflowStages: prev.workflowStages.map((stage) =>
+            stage.key === "imageGeneration"
+              ? {
+                  ...stage,
+                  status: "processing",
+                  detail: `批量生成中：已完成 ${successCount}/${cards.length} 张`,
+                  providerLabel: "gpt-image-2",
+                }
+              : stage,
+          ),
+        }));
+      } catch {
+        failedCount += 1;
+        setWorkspace((prev) => ({
+          ...prev,
+          knowledgeCards: prev.knowledgeCards.map((item) =>
+            item.n === card.n ? { ...item, state: "failed" } : item,
+          ),
+          workflowStages: prev.workflowStages.map((stage) =>
+            stage.key === "imageGeneration"
+              ? {
+                  ...stage,
+                  status: "processing",
+                  detail: `批量生成中：已完成 ${successCount + failedCount}/${cards.length} 张，失败 ${failedCount} 张`,
+                  providerLabel: "gpt-image-2",
+                }
+              : stage,
+          ),
+        }));
+      }
+    }
+
+    const generatedAt = formatNowTime();
+
+    setWorkspace((prev) => ({
+      ...prev,
+      generation: updateGenerationTimestamp(prev, generatedAt),
+      workflowStages: prev.workflowStages.map((stage) =>
+        stage.key === "imageGeneration"
+          ? failedCount === 0
+            ? {
+                ...stage,
+                status: "success",
+                detail: `已完成 ${successCount} 张卡片图片生成`,
+                providerLabel: "gpt-image-2",
+                retryable: false,
+              }
+            : {
+                ...stage,
+                status: "failed",
+                detail: `已生成 ${successCount} 张，失败 ${failedCount} 张，可局部重试`,
+                providerLabel: "gpt-image-2",
+                retryable: true,
+              }
+          : stage,
+      ),
+    }));
+  }
+
   return {
     workspace,
     derived,
     importMarkdownFile,
     regenerateCardImage,
+    regenerateAllCardImages,
   };
 }

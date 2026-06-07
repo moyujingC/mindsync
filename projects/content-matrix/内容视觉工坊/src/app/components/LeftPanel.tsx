@@ -11,15 +11,17 @@ interface LeftPanelProps {
   inputMode: InputMode;
   setInputMode: (mode: InputMode) => void;
   onImportMarkdown: (file: File) => Promise<void>;
+  onGenerateAll: () => Promise<void>;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function LeftPanel({ data, inputMode, setInputMode, onImportMarkdown, isTablet, isOpen, onClose }: LeftPanelProps) {
+export function LeftPanel({ data, inputMode, setInputMode, onImportMarkdown, onGenerateAll, isTablet, isOpen, onClose }: LeftPanelProps) {
   const [activeStyle, setActiveStyle] = useState(data.activeStyleIndex);
   const [ratio, setRatio] = useState(data.cardSize.ratio);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const isGenerating = data.knowledgeCards.some((card) => card.state === "processing");
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
@@ -233,8 +235,13 @@ export function LeftPanel({ data, inputMode, setInputMode, onImportMarkdown, isT
 
       {/* Footer actions */}
       <div className="px-5 py-3.5 border-t border-border bg-card/80 shrink-0">
-        <Button className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 shadow-[inset_0_-1px_0_rgba(0,0,0,0.18)]">
-          <Sparkles className="w-4 h-4" /> 生成全部
+        <Button
+          onClick={() => onGenerateAll()}
+          disabled={isGenerating}
+          className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 shadow-[inset_0_-1px_0_rgba(0,0,0,0.18)] disabled:opacity-60"
+        >
+          <Sparkles className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
+          {isGenerating ? "生成中" : "生成全部"}
         </Button>
         <div className="mt-2 flex items-center justify-between text-[11.5px]">
           <button className="text-foreground/85 hover:text-foreground px-1.5 py-1">仅生成排版</button>

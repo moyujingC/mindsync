@@ -5,9 +5,11 @@ import type { GenerationStageStatus, KnowledgeCardItem, WorkspaceData, WorkflowS
 interface CenterPanelProps {
   data: WorkspaceData;
   onRegenerateCardImage: (cardNumber: string) => Promise<void>;
+  onRegenerateAllCardImages: () => Promise<void>;
 }
 
-export function CenterPanel({ data, onRegenerateCardImage }: CenterPanelProps) {
+export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardImages }: CenterPanelProps) {
+  const isBatchGenerating = data.knowledgeCards.some((card) => card.state === "processing");
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
       {/* Summary bar — two stable rows */}
@@ -113,7 +115,14 @@ export function CenterPanel({ data, onRegenerateCardImage }: CenterPanelProps) {
               <h3 className="text-[17px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>图片生成结果</h3>
               <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 卡片 + {data.generation.coversCount} 封面 · {data.styleAssets[data.activeStyleIndex].name}</span>
             </div>
-            <button className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11.5px] px-2 py-1 rounded hover:bg-secondary/50"><RefreshCw className="w-3 h-3" /> 全部重生成</button>
+            <button
+              onClick={() => onRegenerateAllCardImages()}
+              disabled={isBatchGenerating}
+              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11.5px] px-2 py-1 rounded hover:bg-secondary/50 disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
+            >
+              <RefreshCw className={`w-3 h-3 ${isBatchGenerating ? "animate-spin" : ""}`} />
+              {isBatchGenerating ? "批量生成中" : "全部重生成"}
+            </button>
           </div>
 
           {/* Knowledge cards */}
