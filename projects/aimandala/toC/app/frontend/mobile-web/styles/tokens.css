@@ -602,6 +602,80 @@
     rgb(var(--am-rgb-gold-300) / 0.04)
   );
   --am-landing-step-icon-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  --am-landing-pricing-panel-bg: rgba(255, 255, 255, 0.06);
+  --am-landing-pricing-panel-border: rgb(var(--am-rgb-sand-300) / 0.12);
+  --am-landing-pricing-panel-lite-bg: rgba(158, 170, 155, 0.12);
+  --am-landing-pricing-panel-lite-border: rgba(158, 170, 155, 0.24);
+  --am-landing-pricing-panel-pro-bg: rgb(var(--am-rgb-gold-300) / 0.12);
+  --am-landing-pricing-panel-pro-border: rgb(var(--am-rgb-gold-300) / 0.28);
+  --am-landing-pricing-lite-text: #9eaa9b;
+  --am-landing-pricing-desc: rgb(var(--am-rgb-sand-300) / 0.5);
+  --am-landing-pricing-badge-lite-border: rgba(158, 170, 155, 0.22);
+  --am-landing-pricing-badge-lite-bg: rgba(158, 170, 155, 0.12);
+  --am-landing-pricing-badge-lite-text: #c1cbbd;
+  --am-landing-pricing-badge-pro-border: rgb(var(--am-rgb-gold-300) / 0.28);
+  --am-landing-pricing-badge-pro-bg: rgb(var(--am-rgb-gold-300) / 0.14);
+  --am-landing-compare-border: rgb(var(--am-rgb-gold-300) / 0.18);
+  --am-landing-compare-bg: rgba(26, 40, 68, 0.32);
+  --am-landing-compare-header-border: rgb(var(--am-rgb-gold-300) / 0.1);
+  --am-landing-compare-header-button: rgb(var(--am-rgb-sand-300) / 0.48);
+  --am-landing-compare-row-border: rgb(var(--am-rgb-gold-300) / 0.055);
+  --am-landing-compare-head: rgb(var(--am-rgb-sand-300) / 0.48);
+  --am-landing-compare-copy: rgb(var(--am-rgb-sand-300) / 0.62);
+  --am-landing-compare-lite: #c1cbbd;
+  --am-landing-faq-glow: radial-gradient(
+    circle,
+    rgb(var(--am-rgb-copper-400) / 0.04) 0%,
+    transparent 60%
+  );
+  --am-landing-faq-item-border: rgba(138, 124, 108, 0.12);
+  --am-landing-faq-item-bg: rgba(138, 124, 108, 0.06);
+  --am-landing-faq-item-open-bg: linear-gradient(
+    135deg,
+    rgb(var(--am-rgb-copper-400) / 0.06) 0%,
+    rgb(var(--am-rgb-gold-300) / 0.04) 100%
+  );
+  --am-landing-faq-item-open-border: rgb(var(--am-rgb-copper-400) / 0.2);
+  --am-landing-faq-item-open-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  --am-landing-faq-accent-open: linear-gradient(
+    180deg,
+    var(--am-color-copper-400),
+    var(--am-color-gold-300)
+  );
+  --am-landing-faq-toggle-bg: rgba(138, 124, 108, 0.12);
+  --am-landing-faq-toggle-open-bg: linear-gradient(
+    135deg,
+    var(--am-color-copper-400),
+    var(--am-color-gold-300)
+  );
+  --am-landing-faq-answer-border: rgb(var(--am-rgb-copper-400) / 0.1);
+  --am-landing-faq-note-border: rgb(var(--am-rgb-copper-400) / 0.3);
+  --am-landing-faq-note-bg: rgb(var(--am-rgb-copper-400) / 0.06);
+  --am-landing-faq-price-lite-bg: rgba(158, 170, 155, 0.1);
+  --am-landing-faq-price-lite-border: rgba(158, 170, 155, 0.2);
+  --am-landing-faq-price-pro-bg: rgb(var(--am-rgb-gold-300) / 0.08);
+  --am-landing-faq-price-pro-border: rgb(var(--am-rgb-gold-300) / 0.25);
+  --am-landing-faq-price-lite-text: #9eaa9b;
+  --am-landing-final-bg: linear-gradient(
+    180deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    var(--am-color-ink-950) 100%
+  );
+  --am-landing-final-glow: radial-gradient(
+    ellipse,
+    rgb(var(--am-rgb-gold-300) / 0.08) 0%,
+    transparent 60%
+  );
+  --am-landing-footer-divider: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(var(--am-rgb-sand-300) / 0.18) 20%,
+    rgb(var(--am-rgb-sand-300) / 0.18) 80%,
+    transparent 100%
+  );
+  --am-landing-footer-link: rgb(var(--am-rgb-sand-300) / 0.52);
+  --am-landing-footer-copy: rgb(var(--am-rgb-sand-300) / 0.32);
 
   --mw-history-shell-bg:
     radial-gradient(circle at 78% 5%, rgba(145, 134, 132, 0.2), transparent 18%),
