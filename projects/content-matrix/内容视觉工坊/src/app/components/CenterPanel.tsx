@@ -91,6 +91,9 @@ export function CenterPanel({ data }: CenterPanelProps) {
                 <div className="text-[10.5px] text-muted-foreground mt-2 leading-relaxed">
                   {data.analysis.imageGenerationSource.strategy}
                 </div>
+                <div className="mt-2 text-[10px] text-foreground/70">
+                  当前结果来源：{data.workflowStages.find((stage) => stage.key === "contentAnalysis")?.providerLabel ?? "未标记"}
+                </div>
               </div>
             </div>
           </div>

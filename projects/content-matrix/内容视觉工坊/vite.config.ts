@@ -3,7 +3,11 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import type { Connect } from 'vite'
+import dotenv from 'dotenv'
 import { planKnowledgeCardsFromArticle } from './src/app/lib/cardPlanning'
+import { planCardsWithLLM } from './src/app/lib/llmPlanner'
+
+dotenv.config({ path: path.resolve(__dirname, '.env.local') })
 
 
 function figmaAssetResolver() {
@@ -47,12 +51,20 @@ function localPlanCardsApi() {
 
         try {
           const body = await jsonBodyParser(req)
-          const planned = planKnowledgeCardsFromArticle(body.rawText || '')
+          let planned
+
+          try {
+            planned = await planCardsWithLLM(body)
+          } catch (error) {
+            console.warn('[plan-cards] falling back to local planner:', error instanceof Error ? error.message : error)
+            planned = {
+              provider: 'local-fallback',
+              ...planKnowledgeCardsFromArticle(body.rawText || ''),
+            }
+          }
+
           res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({
-            provider: 'local-fallback',
-            ...planned,
-          }))
+          res.end(JSON.stringify(planned))
         } catch (error) {
           res.statusCode = 500
           res.setHeader('Content-Type', 'application/json')

@@ -8,4 +8,17 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
+
+  ## LLM planning
+
+  The local dev server exposes `POST /api/plan-cards`.
+
+  By default it falls back to the local planner.
+  To enable real LLM planning, create a `.env` file based on `.env.example` and provide:
+
+  - `AITECHFLUX_API_KEY`
+  - `AITECHFLUX_BASE_URL`
+  - `AITECHFLUX_PLAN_MODEL`
+
+  Current integration assumes an OpenAI-compatible API endpoint.
   
