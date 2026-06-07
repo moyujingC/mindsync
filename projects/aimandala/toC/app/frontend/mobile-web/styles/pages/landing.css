@@ -1,5 +1,6 @@
 .am-landing-page {
   --am-pattern-image: var(--am-hero-pattern);
+  --am-landing-next-peek: clamp(56px, 6.5vh, 72px);
   position: relative;
   background: var(--am-color-ink-950);
 }
@@ -310,7 +311,7 @@
 .am-landing-section--steps {
   position: relative;
   z-index: 3;
-  margin-top: -96px;
+  margin-top: calc(var(--am-landing-next-peek) * -1);
   padding: 38px 24px 42px;
   border-radius: 24px 24px 0 0;
 }
