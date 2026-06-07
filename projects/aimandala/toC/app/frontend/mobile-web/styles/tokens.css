@@ -902,6 +902,19 @@
   --am-dev-surface-stage-success: rgba(235, 246, 240, 0.9);
   --am-dev-surface-stage-running: rgba(255, 246, 230, 0.9);
   --am-dev-surface-stage-error: rgba(255, 238, 235, 0.9);
+  --am-dev-shell-canvas: #b8b8b8;
+  --am-dev-shell-review: linear-gradient(
+    180deg,
+    rgba(35, 49, 86, 0.92) 0%,
+    rgba(25, 37, 67, 0.96) 100%
+  );
+  --am-dev-shell-phone-bg: var(--am-color-ink-950);
+  --am-dev-shell-phone-shadow: 0 24px 80px rgba(15, 27, 51, 0.28);
+  --am-dev-shell-version-border: rgba(205, 172, 119, 0.28);
+  --am-dev-shell-version-bg: rgba(205, 172, 119, 0.1);
+  --am-dev-shell-toggle-bg: rgba(139, 103, 55, 0.14);
+  --am-dev-shell-status-border: rgba(139, 103, 55, 0.18);
+  --am-dev-shell-status-bg: rgba(255, 252, 247, 0.72);
   --am-dev-border-panel: rgba(88, 67, 43, 0.12);
   --am-dev-border-panel-soft: rgba(88, 67, 43, 0.1);
   --am-dev-border-subtle: rgba(112, 90, 63, 0.12);
