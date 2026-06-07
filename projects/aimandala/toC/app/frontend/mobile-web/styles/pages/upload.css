@@ -604,7 +604,7 @@
   overflow: hidden;
   padding: 16px 22px 16px;
   border-radius: 28px 28px 0 0;
-  background: var(--am-surface-primary);
+  background: #f4e9d7;
   box-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
 }
 
