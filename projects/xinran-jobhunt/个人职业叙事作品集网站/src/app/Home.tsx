@@ -19,9 +19,9 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
+        <Works target={target} />
         <Story />
         <RoleTracks target={target} />
-        <Works target={target} />
         <Abilities />
         <Contact />
       </main>

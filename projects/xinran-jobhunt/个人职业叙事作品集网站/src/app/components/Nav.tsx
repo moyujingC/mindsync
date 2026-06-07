@@ -8,9 +8,9 @@ type NavItem =
   | { type: "dropdown"; key: "roles" | "works"; label: string; hash: string };
 
 const items: NavItem[] = [
+  { type: "dropdown", key: "works", hash: "#works", label: "作品集" },
   { type: "anchor", hash: "#story", label: "职业故事" },
   { type: "dropdown", key: "roles", hash: "#roles", label: "适配岗位" },
-  { type: "dropdown", key: "works", hash: "#works", label: "作品集" },
   { type: "anchor", hash: "#abilities", label: "能力" },
   { type: "anchor", hash: "#contact", label: "联系我" },
 ];
