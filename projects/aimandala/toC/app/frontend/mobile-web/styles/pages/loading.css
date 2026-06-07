@@ -83,17 +83,8 @@
   line-height: 1.4;
 }
 
-.am-loading-copy p {
-  margin: 8px auto 0;
-  max-width: 280px;
-  font-size: 13px;
-  color: rgba(232, 220, 200, 0.55);
-  letter-spacing: 0.04em;
-  line-height: 1.7;
-}
-
 .am-loading-copy__eta {
-  margin-top: 10px;
+  margin-top: 12px;
   display: inline-flex;
   align-items: center;
   padding: 6px 12px;
