@@ -15,7 +15,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 46px 22px 38px;
+  padding: 34px 22px 20px;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(20, 30, 56, 0.95), rgba(26, 40, 68, 0.94)),
@@ -32,8 +32,8 @@
 }
 
 .am-history-pill {
-  top: 38px;
-  right: 26px;
+  top: 28px;
+  right: 18px;
   z-index: 4;
   display: inline-flex;
   align-items: center;
@@ -41,7 +41,7 @@
   border: 0;
   background: transparent;
   color: rgba(232, 220, 200, 0.78);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -64,8 +64,8 @@
   height: min(220px, 58vw);
   display: grid;
   place-items: center;
-  margin-top: 18vh;
-  margin-bottom: 24px;
+  margin-top: 12vh;
+  margin-bottom: 14px;
 }
 
 .am-logo-ring__glow {
@@ -158,9 +158,10 @@
 .am-hero-copy {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 0;
   text-align: center;
+  transform: translateY(-16px);
 }
 
 .am-hero-copy h1 {
@@ -199,8 +200,9 @@
 .am-primary-cta {
   width: min(68vw, 286px);
   height: 58px;
-  margin-top: 26px;
+  margin-top: 8px;
   border-radius: 999px;
+  transform: translateY(-18px);
 }
 
 .am-primary-cta__label {
@@ -213,7 +215,7 @@
 .am-scroll-cue {
   position: absolute;
   left: 50%;
-  bottom: 42px;
+  bottom: 22px;
   z-index: 3;
   transform: translateX(-50%);
   display: flex;
@@ -227,7 +229,7 @@
 }
 
 .am-scroll-cue span {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -239,7 +241,7 @@
 
 .am-scroll-cue i {
   font-style: normal;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 0.9;
   animation: am-scroll-bob 1.9s infinite ease-in-out;
 }
@@ -301,7 +303,7 @@
 .am-landing-section--steps {
   position: relative;
   z-index: 3;
-  margin-top: -20px;
+  margin-top: -38px;
   padding: 38px 24px 42px;
   border-radius: 24px 24px 0 0;
 }
