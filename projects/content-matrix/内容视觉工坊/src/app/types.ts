@@ -1,6 +1,6 @@
 export type InputMode = "md" | "text";
 
-export type CardGenerationState = "ok" | "failed";
+export type CardGenerationState = "idle" | "processing" | "ok" | "failed";
 
 export type ReviewCheckStatus = "pass" | "warn" | "fail";
 
@@ -63,6 +63,8 @@ export interface KnowledgeCardItem {
   composition: string;
   img: string;
   state: CardGenerationState;
+  provider?: "mock" | "llm" | "image-model";
+  imagePrompt?: string;
 }
 
 export interface CoverAsset {
@@ -110,6 +112,21 @@ export interface PlannerResponse {
   provider: "local-fallback" | "llm";
   analysis: ArticleAnalysis;
   cardPlan: CardPlan[];
+}
+
+export interface GenerateCardImageRequest {
+  title: string;
+  summary: string;
+  styleName: string;
+  ratio: string;
+  width: number;
+  height: number;
+}
+
+export interface GenerateCardImageResponse {
+  provider: "image-model";
+  imageUrl: string;
+  prompt: string;
 }
 
 export interface GenerationOverview {

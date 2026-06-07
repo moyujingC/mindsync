@@ -151,6 +151,7 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
       composition: "暖米色纸面 / 手绘箭头 / 主标题居中偏上 / 留白底部 30%",
       img: "https://images.unsplash.com/photo-1686806372785-fcfe9efa9b70?w=900&q=80",
       state: "ok",
+      provider: "mock",
     },
     {
       n: "02",
@@ -159,6 +160,7 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
       composition: "深墨绿底 / 米白衬线大字 / 引号装饰 / 右下作者签名印",
       img: "https://images.unsplash.com/photo-1760840415409-bf4b6b14988e?w=900&q=80",
       state: "ok",
+      provider: "mock",
     },
     {
       n: "03",
@@ -167,6 +169,7 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
       composition: "列表式构图 / 三栏编号 / 衬线小标题 / 卡片底部页脚条",
       img: "",
       state: "failed",
+      provider: "mock",
     },
     {
       n: "04",
@@ -175,6 +178,7 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
       composition: "纸质纹理 / 手写下划线 / 段落式版面 / 关键词以橙朱标记",
       img: "https://images.unsplash.com/photo-1778664305516-8243da9c2098?w=900&q=80",
       state: "ok",
+      provider: "mock",
     },
   ],
   covers: [

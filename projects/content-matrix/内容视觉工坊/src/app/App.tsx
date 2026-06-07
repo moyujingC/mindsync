@@ -9,7 +9,7 @@ import { PanelLeft, FileText } from "lucide-react";
 
 export default function App() {
   const { layout, isTablet, setInputMode, toggleLeftPanel, toggleRightPanel, closePanels } = useWorkspaceLayout();
-  const { workspace, importMarkdownFile } = useWorkspaceDocument();
+  const { workspace, importMarkdownFile, regenerateCardImage } = useWorkspaceDocument();
 
   return (
     <div className="size-full flex flex-col bg-background text-foreground" style={{ fontFamily: "var(--font-sans-cn)" }}>
@@ -47,7 +47,7 @@ export default function App() {
           isOpen={layout.isLeftPanelOpen}
           onClose={closePanels}
         />
-        <CenterPanel data={workspace} />
+        <CenterPanel data={workspace} onRegenerateCardImage={regenerateCardImage} />
         <RightPanel
           data={workspace}
           isTablet={isTablet}

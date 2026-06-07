@@ -4,9 +4,10 @@ import type { GenerationStageStatus, KnowledgeCardItem, WorkspaceData, WorkflowS
 
 interface CenterPanelProps {
   data: WorkspaceData;
+  onRegenerateCardImage: (cardNumber: string) => Promise<void>;
 }
 
-export function CenterPanel({ data }: CenterPanelProps) {
+export function CenterPanel({ data, onRegenerateCardImage }: CenterPanelProps) {
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
       {/* Summary bar — two stable rows */}
@@ -118,7 +119,7 @@ export function CenterPanel({ data }: CenterPanelProps) {
           {/* Knowledge cards */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
             {data.knowledgeCards.map((c, i) => (
-              <KnowledgeCard key={i} c={c} />
+              <KnowledgeCard key={i} c={c} onRegenerate={onRegenerateCardImage} />
             ))}
           </div>
 
@@ -224,24 +225,37 @@ function ResultCardShell({
   );
 }
 
-function ToolBtn({ children, title }: { children: React.ReactNode; title: string }) {
+function ToolBtn({ children, title, onClick }: { children: React.ReactNode; title: string; onClick?: () => void }) {
   return (
-    <button title={title} className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
+    <button title={title} onClick={onClick} className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
       {children}
     </button>
   );
 }
 
-function KnowledgeCard({ c }: { c: KnowledgeCardItem }) {
+function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate: (cardNumber: string) => Promise<void> }) {
   const failed = c.state === "failed";
+  const processing = c.state === "processing";
   return (
     <ResultCardShell
       aspect="3/4"
       cornerChip={c.n}
-      statusChip={!failed ? <><span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span> 已就绪</> : null}
+      statusChip={
+        processing ? (
+          <><LoaderCircle className="w-3 h-3 animate-spin" /> 生成中</>
+        ) : !failed ? (
+          <><span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span> 已就绪</>
+        ) : null
+      }
       imageNode={
         !failed && c.img ? (
           <ImageWithFallback src={c.img} alt={typeof c.title === "string" ? c.title : ""} className="absolute inset-0 w-full h-full object-cover" />
+        ) : processing ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-6 bg-[#f3ecdb]">
+            <LoaderCircle className="w-5 h-5 text-primary animate-spin" />
+            <div className="text-[12.5px] text-foreground" style={{ fontWeight: 500 }}>正在生成图片</div>
+            <div className="text-[10.5px] text-muted-foreground leading-relaxed">已提交到 gpt-image-2，通常需要几秒钟</div>
+          </div>
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-6 bg-[#f3ecdb]">
             <div className="w-9 h-9 rounded-full bg-amber-700/10 flex items-center justify-center">
@@ -249,7 +263,7 @@ function KnowledgeCard({ c }: { c: KnowledgeCardItem }) {
             </div>
             <div className="text-[12.5px] text-amber-900" style={{ fontWeight: 500 }}>生成失败</div>
             <div className="text-[10.5px] text-muted-foreground leading-relaxed">prompt 触发了安全限制 · 可调整后重试</div>
-            <button className="mt-1 inline-flex items-center gap-1 text-[11.5px] text-primary bg-card border border-border rounded-md px-2.5 py-1 hover:bg-secondary/60">
+            <button onClick={() => onRegenerate(c.n)} className="mt-1 inline-flex items-center gap-1 text-[11.5px] text-primary bg-card border border-border rounded-md px-2.5 py-1 hover:bg-secondary/60">
               <RefreshCw className="w-3 h-3" /> 重新生成
             </button>
           </div>
@@ -260,7 +274,7 @@ function KnowledgeCard({ c }: { c: KnowledgeCardItem }) {
       spec="3:4 · 1536×2048"
       actions={
         <>
-          <ToolBtn title="重生成"><RefreshCw className="w-3.5 h-3.5" /></ToolBtn>
+          <ToolBtn title="重生成" onClick={() => onRegenerate(c.n)}><RefreshCw className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="替换图片"><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="大图预览"><Maximize2 className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
