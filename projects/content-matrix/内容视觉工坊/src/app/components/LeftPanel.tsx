@@ -193,144 +193,139 @@ export function LeftPanel({
 
         <Separator />
 
-        {/* Output settings — merged compact block */}
-        <div className="rounded-lg bg-card border border-border overflow-hidden">
-          {/* Account header */}
-          <button className="w-full flex items-center justify-between px-3.5 py-2.5 border-b border-border/60 hover:bg-secondary/30 transition-colors">
-            <span className="flex items-center gap-2 text-[12.5px]">
-              <span className="w-5 h-5 rounded-sm bg-primary/90 text-primary-foreground flex items-center justify-center text-[10px]" style={{ fontFamily: "var(--font-serif)" }}>墨</span>
-              <span style={{ fontWeight: 500 }}>墨予镜</span>
-              <span className="text-[10.5px] text-muted-foreground">订阅号</span>
-            </span>
-            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
-
-          {/* Output toggles */}
-          <div className="divide-y divide-border/60">
-            {[
-              ...data.outputToggles,
-            ].map((item) => (
-              <div key={item.key} className="flex items-center justify-between px-3.5 py-2 text-[12px]">
-                <span>{item.label}</span>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[10.5px] text-muted-foreground">{item.hint}</span>
-                  <Switch
-                    checked={item.enabled}
-                    onCheckedChange={(checked) => onSetOutputToggle(item.key, checked)}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Card size — inline within same module */}
-          <div className="border-t border-border/60 bg-secondary/25 px-3.5 py-3 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>卡片尺寸</span>
-              <span className="text-[10px] text-muted-foreground">{data.cardSize.ratio} · {data.cardSize.width} × {data.cardSize.height}</span>
-            </div>
-            <div className="grid grid-cols-4 gap-1 bg-card p-1 rounded">
-              {data.cardSize.ratioOptions.map(r => (
-                <button
-                  key={r}
-                  onClick={() => {
-                    const preset = ratioPresets[r] ?? { width: data.cardSize.width, height: data.cardSize.height };
-                    setWidthInput(String(preset.width));
-                    setHeightInput(String(preset.height));
-                    onSetCardSize({
-                      ...data.cardSize,
-                      ratio: r,
-                      width: preset.width,
-                      height: preset.height,
-                    });
-                  }}
-                  className={`text-[11px] py-1 rounded transition-all ${data.cardSize.ratio === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                >{r}</button>
-              ))}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="flex-1 relative">
-                <Input
-                  value={widthInput}
-                  onChange={(event) => setWidthInput(event.target.value)}
-                  onBlur={() => {
-                    const width = Number(widthInput);
-                    if (!Number.isFinite(width) || width <= 0) {
-                      setWidthInput(String(data.cardSize.width));
-                      return;
-                    }
-                    onSetCardSize({
-                      ...data.cardSize,
-                      width,
-                    });
-                  }}
-                  className="bg-card border-border pr-7 text-[11.5px] h-8"
-                />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">W</span>
-              </div>
-              <span className="text-muted-foreground/70 text-[11px]">×</span>
-              <div className="flex-1 relative">
-                <Input
-                  value={heightInput}
-                  onChange={(event) => setHeightInput(event.target.value)}
-                  onBlur={() => {
-                    const height = Number(heightInput);
-                    if (!Number.isFinite(height) || height <= 0) {
-                      setHeightInput(String(data.cardSize.height));
-                      return;
-                    }
-                    onSetCardSize({
-                      ...data.cardSize,
-                      height,
-                    });
-                  }}
-                  className="bg-card border-border pr-7 text-[11.5px] h-8"
-                />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">H</span>
-              </div>
-            </div>
-            <div className="text-[10px] text-muted-foreground">尺寸变更只影响知识卡片，现有卡片会标记为需重生成。</div>
-          </div>
-        </div>
-
         <div className="rounded-lg border border-border bg-card/70 overflow-hidden">
-          <div className="px-3.5 py-2.5 border-b border-border/60 flex items-center justify-between">
-            <div>
-              <div className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>输出风格分配</div>
-              <div className="text-[10px] text-muted-foreground mt-0.5">四种图片各自独立选择，不再共用同一套风格</div>
+          <div className="px-3.5 py-3 border-b border-border/60">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>输出配置</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">按输出类型分别控制开关、风格和尺寸，避免在不同面板之间跳转。</div>
+              </div>
+              <span className="flex items-center gap-2 text-[12.5px] shrink-0">
+                <span className="w-5 h-5 rounded-sm bg-primary/90 text-primary-foreground flex items-center justify-center text-[10px]" style={{ fontFamily: "var(--font-serif)" }}>墨</span>
+                <span style={{ fontWeight: 500 }}>墨予镜</span>
+              </span>
             </div>
           </div>
+
           <div className="divide-y divide-border/60">
-            {styleTargets.map((target) => (
-              <div key={target.key} className="px-3.5 py-3 space-y-2">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="text-[11.5px]" style={{ fontWeight: 500 }}>{target.label}</div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5">{target.hint}</div>
+            {styleTargets.map((target) => {
+              const toggle = data.outputToggles.find((item) => item.key === target.key);
+              if (!toggle) return null;
+
+              return (
+                <section key={target.key} className="px-3.5 py-3 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="text-[12px]" style={{ fontWeight: 600 }}>{target.label}</div>
+                        <span className="text-[10px] text-muted-foreground">{toggle.hint}</span>
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-1">{target.hint}</div>
+                    </div>
+                    <Switch
+                      checked={toggle.enabled}
+                      onCheckedChange={(checked) => onSetOutputToggle(toggle.key, checked)}
+                    />
                   </div>
-                  <div className="flex shrink-0 gap-1">
-                    {data.styleAssets[data.styleSelections[target.key]]?.palette.slice(0, 3).map((color) => (
-                      <span key={`${target.key}-${color}`} className="w-3 h-3 rounded-full border border-border/70" style={{ backgroundColor: color }} />
-                    ))}
+
+                  <div className="rounded-md border border-border/70 bg-secondary/20 px-2.5 py-2.5 space-y-2.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-[10.5px] text-muted-foreground">风格方案</div>
+                      <div className="flex shrink-0 gap-1">
+                        {data.styleAssets[data.styleSelections[target.key]]?.palette.slice(0, 3).map((color) => (
+                          <span key={`${target.key}-${color}`} className="w-3 h-3 rounded-full border border-border/70" style={{ backgroundColor: color }} />
+                        ))}
+                      </div>
+                    </div>
+                    <Select
+                      value={String(data.styleSelections[target.key])}
+                      onValueChange={(value) => onSetStyleSelection(target.key, Number(value))}
+                    >
+                      <SelectTrigger className="h-9 bg-card border-border text-[11.5px]">
+                        <SelectValue placeholder="选择风格" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {data.styleAssets.map((style, index) => (
+                          <SelectItem key={`${target.key}-${style.name}`} value={String(index)}>
+                            {style.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {target.key === "knowledgeCards" ? (
+                      <div className="pt-1 space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10.5px] text-muted-foreground">卡片尺寸</span>
+                          <span className="text-[10px] text-muted-foreground">{data.cardSize.ratio} · {data.cardSize.width} × {data.cardSize.height}</span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-1 bg-card p-1 rounded">
+                          {data.cardSize.ratioOptions.map(r => (
+                            <button
+                              key={r}
+                              onClick={() => {
+                                const preset = ratioPresets[r] ?? { width: data.cardSize.width, height: data.cardSize.height };
+                                setWidthInput(String(preset.width));
+                                setHeightInput(String(preset.height));
+                                onSetCardSize({
+                                  ...data.cardSize,
+                                  ratio: r,
+                                  width: preset.width,
+                                  height: preset.height,
+                                });
+                              }}
+                              className={`text-[11px] py-1 rounded transition-all ${data.cardSize.ratio === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                            >{r}</button>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <div className="flex-1 relative">
+                            <Input
+                              value={widthInput}
+                              onChange={(event) => setWidthInput(event.target.value)}
+                              onBlur={() => {
+                                const width = Number(widthInput);
+                                if (!Number.isFinite(width) || width <= 0) {
+                                  setWidthInput(String(data.cardSize.width));
+                                  return;
+                                }
+                                onSetCardSize({
+                                  ...data.cardSize,
+                                  width,
+                                });
+                              }}
+                              className="bg-card border-border pr-7 text-[11.5px] h-8"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">W</span>
+                          </div>
+                          <span className="text-muted-foreground/70 text-[11px]">×</span>
+                          <div className="flex-1 relative">
+                            <Input
+                              value={heightInput}
+                              onChange={(event) => setHeightInput(event.target.value)}
+                              onBlur={() => {
+                                const height = Number(heightInput);
+                                if (!Number.isFinite(height) || height <= 0) {
+                                  setHeightInput(String(data.cardSize.height));
+                                  return;
+                                }
+                                onSetCardSize({
+                                  ...data.cardSize,
+                                  height,
+                                });
+                              }}
+                              className="bg-card border-border pr-7 text-[11.5px] h-8"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">H</span>
+                          </div>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">尺寸变更只影响知识卡片，现有卡片会标记为需重生成。</div>
+                      </div>
+                    ) : null}
                   </div>
-                </div>
-                <Select
-                  value={String(data.styleSelections[target.key])}
-                  onValueChange={(value) => onSetStyleSelection(target.key, Number(value))}
-                >
-                  <SelectTrigger className="h-9 bg-card border-border text-[11.5px]">
-                    <SelectValue placeholder="选择风格" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {data.styleAssets.map((style, index) => (
-                      <SelectItem key={`${target.key}-${style.name}`} value={String(index)}>
-                        {style.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
+                </section>
+              );
+            })}
           </div>
         </div>
 
