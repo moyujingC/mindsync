@@ -1,6 +1,6 @@
 .am-landing-page {
   --am-pattern-image: var(--am-hero-pattern);
-  --am-landing-next-peek: clamp(56px, 6.5vh, 72px);
+  --am-landing-next-peek: clamp(28px, 3.4vh, 40px);
   position: relative;
   background: var(--am-color-ink-950);
 }
@@ -12,12 +12,12 @@
 }
 
 .am-landing-hero {
-  min-height: calc(100vh - 118px);
+  min-height: calc(100vh - 92px);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 22px 28px;
+  padding: 30px 22px 20px;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(20, 30, 56, 0.95), rgba(26, 40, 68, 0.94)),
