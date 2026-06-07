@@ -170,6 +170,85 @@
   --am-progress-warm: linear-gradient(90deg, #8f6939, #d0aa73);
   --am-progress-copper: linear-gradient(90deg, #ba6e48, #f0b179);
 
+  /* Upload page tokens */
+  --am-upload-action-border: rgba(212, 160, 84, 0.14);
+  --am-upload-action-bg: rgba(138, 124, 108, 0.05);
+  --am-upload-action-text: rgba(232, 220, 200, 0.68);
+  --am-upload-action-active-border: rgba(212, 160, 84, 0.5);
+  --am-upload-action-active-bg: rgba(212, 160, 84, 0.18);
+  --am-upload-action-active-text: #f8e2b2;
+  --am-upload-slider-label: rgba(232, 220, 200, 0.58);
+  --am-upload-slider-value: rgba(232, 220, 200, 0.54);
+  --am-upload-slider-track: linear-gradient(
+    90deg,
+    rgba(212, 160, 84, 0.1),
+    rgba(200, 120, 80, 0.08)
+  );
+  --am-upload-slider-fill: linear-gradient(
+    90deg,
+    var(--am-color-copper-400),
+    var(--am-color-gold-300)
+  );
+  --am-upload-slider-thumb-bg: radial-gradient(
+      ellipse at 38% 32%,
+      rgba(255, 253, 245, 0.95) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 60% 68%,
+      rgba(190, 170, 140, 0.35) 0%,
+      transparent 50%
+    ),
+    radial-gradient(circle at 50% 50%, #f5f0e6 0%, #e8dcc8 50%, #d8cbae 100%);
+  --am-upload-slider-thumb-border: rgba(212, 160, 84, 0.5);
+  --am-upload-slider-thumb-shadow: 0 2px 6px rgba(80, 50, 20, 0.35),
+    0 1px 2px rgba(80, 50, 20, 0.25),
+    inset 0 1px 2px rgba(255, 250, 235, 0.7),
+    inset 0 -1px 1px rgba(180, 150, 110, 0.25);
+  --am-upload-guidance-text: rgba(232, 220, 200, 0.48);
+  --am-upload-detect-border: rgba(212, 160, 84, 0.14);
+  --am-upload-detect-bg: rgba(26, 40, 68, 0.32);
+  --am-upload-detect-text: rgba(232, 220, 200, 0.56);
+  --am-upload-detect-button-border: rgba(212, 160, 84, 0.22);
+  --am-upload-detect-button-bg: rgba(26, 40, 68, 0.36);
+  --am-upload-bottom-sheet-fill: #223358;
+  --am-upload-form-surface: #f4e9d7;
+  --am-upload-form-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
+  --am-upload-input-border: rgba(200, 120, 80, 0.15);
+  --am-upload-input-focus-border: rgba(212, 160, 84, 0.45);
+  --am-upload-input-focus-bg: rgba(212, 160, 84, 0.03);
+  --am-upload-input-focus-shadow: 0 0 0 3px rgba(212, 160, 84, 0.08);
+  --am-upload-input-text: #3d2e1e;
+  --am-upload-input-placeholder: rgba(108, 84, 58, 0.72);
+  --am-upload-input-count: rgba(155, 122, 90, 0.5);
+  --am-upload-input-icon: rgba(200, 120, 80, 0.3);
+  --am-upload-theme-title: #3d2e1e;
+  --am-upload-theme-card-border: rgba(200, 120, 80, 0.15);
+  --am-upload-theme-card-bg: var(--am-color-sand-200);
+  --am-upload-theme-card-active-border: rgba(212, 160, 84, 0.4);
+  --am-upload-theme-card-active-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-800) 0%,
+    var(--am-color-ink-700) 40%,
+    var(--am-color-ink-600) 70%,
+    var(--am-color-ink-800) 100%
+  );
+  --am-upload-theme-card-active-shadow: 0 6px 16px rgba(26, 40, 68, 0.28);
+  --am-upload-theme-card-glow: radial-gradient(
+    circle at 70% 20%,
+    rgba(212, 160, 84, 0.2) 0%,
+    transparent 50%
+  );
+  --am-upload-theme-check-bg: rgba(212, 160, 84, 0.5);
+  --am-upload-theme-icon: #9b6840;
+  --am-upload-theme-label: #3d2e1e;
+  --am-upload-theme-sub: #9b7a5a;
+  --am-upload-theme-active-sub: rgba(212, 160, 84, 0.7);
+  --am-upload-theme-dot-bg: rgba(200, 120, 80, 0.2);
+  --am-upload-bottom-panel-border: rgba(200, 120, 80, 0.1);
+  --am-upload-bottom-cta-shadow: 0 10px 22px rgba(200, 120, 80, 0.18);
+  --am-upload-privacy-text: #9b7a5a;
+
   /* Dev-shell local tokens */
   --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
   --am-dev-surface-panel-strong: rgba(248, 244, 238, 0.92);
