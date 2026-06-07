@@ -1,10 +1,11 @@
 body {
-  background: #141e38;
+  background: #b8b8b8;
   font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
 }
 
 .browser-shell {
   min-height: 100vh;
+  background: #b8b8b8;
 }
 
 .browser-shell__panel {
