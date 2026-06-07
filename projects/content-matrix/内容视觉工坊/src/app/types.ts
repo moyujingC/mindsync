@@ -97,6 +97,14 @@ export interface GenerationOverview {
   summaryMeta: DraftMetaSummaryItem[];
 }
 
+export interface WorkflowStage {
+  key: WorkspaceStageKey;
+  label: string;
+  status: GenerationStageStatus;
+  detail: string;
+  retryable?: boolean;
+}
+
 export interface LayoutImagePlacement {
   cardNumber: string;
   placementLabel: string;
@@ -127,6 +135,7 @@ export interface WorkspaceData {
   article: UploadedArticle;
   parsedMarkdown: ParsedMarkdownDocument;
   analysis: ArticleAnalysis;
+  workflowStages: WorkflowStage[];
   outputToggles: OutputToggleItem[];
   cardSize: CardSizeSpec;
   styleAssets: StyleAsset[];

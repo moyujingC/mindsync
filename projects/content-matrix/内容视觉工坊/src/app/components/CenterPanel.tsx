@@ -1,6 +1,6 @@
-import { RefreshCw, Image as ImageIcon, AlertTriangle, CheckCircle2, Layers, MoreHorizontal, Maximize2, Quote } from "lucide-react";
+import { RefreshCw, Image as ImageIcon, AlertTriangle, CheckCircle2, Layers, MoreHorizontal, Maximize2, Quote, LoaderCircle } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import type { KnowledgeCardItem, WorkspaceData } from "../types";
+import type { GenerationStageStatus, KnowledgeCardItem, WorkspaceData, WorkflowStage } from "../types";
 
 interface CenterPanelProps {
   data: WorkspaceData;
@@ -31,6 +31,11 @@ export function CenterPanel({ data }: CenterPanelProps) {
         </div>
         <div className="mt-2 text-[10.5px] text-muted-foreground">
           文生图输入：整篇正文全文 · 由模型自动拆图与配图
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {data.workflowStages.slice(0, 5).map((stage) => (
+            <StageChip key={stage.key} stage={stage} />
+          ))}
         </div>
       </div>
 
@@ -135,6 +140,24 @@ function Meta({ label, value, emerald }: { label: string; value: string; emerald
       <span className="text-[10px] text-muted-foreground tracking-[0.18em]">{label}</span>
       <span className={`text-[13px] mt-1 ${emerald ? "text-emerald-800" : "text-foreground"}`} style={{ fontWeight: 500 }}>{value}</span>
     </div>
+  );
+}
+
+function StageChip({ stage }: { stage: WorkflowStage }) {
+  const styles: Record<GenerationStageStatus, string> = {
+    idle: "bg-secondary/60 text-muted-foreground",
+    processing: "bg-secondary text-foreground",
+    success: "bg-emerald-700/10 text-emerald-800",
+    failed: "bg-amber-700/10 text-amber-900",
+  };
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10.5px] ${styles[stage.status]}`}>
+      {stage.status === "processing" ? <LoaderCircle className="w-3 h-3 animate-spin" /> : null}
+      {stage.status === "success" ? <CheckCircle2 className="w-3 h-3" /> : null}
+      {stage.status === "failed" ? <AlertTriangle className="w-3 h-3" /> : null}
+      <span>{stage.label}</span>
+    </span>
   );
 }
 

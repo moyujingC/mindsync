@@ -39,6 +39,14 @@ export const workspaceData: WorkspaceData = {
       keywords: "判断力 / 信息筛选 / 提问 / 编辑视角",
     },
   },
+  workflowStages: [
+    { key: "upload", label: "原稿上传", status: "success", detail: "Markdown 文件已读取" },
+    { key: "markdownParse", label: "Markdown 解析", status: "success", detail: "标题、引用、列表等结构已识别" },
+    { key: "contentAnalysis", label: "内容拆解", status: "success", detail: "已拆为 4 张卡片，并提炼金句与封面主题" },
+    { key: "imageGeneration", label: "图片生成", status: "failed", detail: "4 张卡片中 1 张生成失败，可局部重试", retryable: true },
+    { key: "layoutGeneration", label: "排版生成", status: "success", detail: "公众号正文预览已生成，并完成插图位编排" },
+    { key: "draftSync", label: "草稿同步", status: "success", detail: "公众号草稿已创建，可继续重新同步或打开草稿" },
+  ],
   outputToggles: [
     { key: "knowledgeCards", label: "生成知识卡片", hint: "4 张", enabled: true },
     { key: "wechatCover", label: "生成公众号封面", hint: "2.35 : 1", enabled: true },

@@ -1,7 +1,7 @@
 import { CheckCircle2, ExternalLink, RefreshCw, Smartphone, Eye, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import type { ReviewCheck, SyncStatusItem, WorkspaceData } from "../types";
+import type { GenerationStageStatus, ReviewCheck, SyncStatusItem, WorkspaceData } from "../types";
 
 interface RightPanelProps {
   data: WorkspaceData;
@@ -11,6 +11,7 @@ interface RightPanelProps {
 }
 
 export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps) {
+  const draftSyncStage = data.workflowStages.find((stage) => stage.key === "draftSync");
   const panelClassName = isTablet
     ? `absolute inset-y-0 right-0 z-30 w-[min(464px,96vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "translate-x-full"}`
     : "w-[420px] xl:w-[464px] shrink-0 border-l border-border bg-card/40 flex flex-col overflow-hidden";
@@ -49,7 +50,9 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
               <div className="text-[10.5px] text-muted-foreground mt-0.5">{data.draftReview.readyDescription}</div>
             </div>
           </div>
-          <span className="text-[10px] text-muted-foreground tracking-[0.15em]">READY</span>
+          <span className={`text-[10px] tracking-[0.15em] ${draftSyncStage?.status === "success" ? "text-emerald-800" : "text-muted-foreground"}`}>
+            {draftSyncStage ? stageLabelMap[draftSyncStage.status] : "READY"}
+          </span>
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           {data.draftReview.reviewChecks.map((check) => <ReviewCheckCard key={check.title} check={check} />)}
@@ -227,6 +230,13 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
     </>
   );
 }
+
+const stageLabelMap: Record<GenerationStageStatus, string> = {
+  idle: "IDLE",
+  processing: "RUNNING",
+  success: "READY",
+  failed: "FAILED",
+};
 
 function ReviewCheckCard({ check }: { check: ReviewCheck }) {
   return (
