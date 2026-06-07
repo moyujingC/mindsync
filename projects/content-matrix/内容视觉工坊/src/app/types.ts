@@ -19,6 +19,7 @@ export interface UploadedArticle {
   updatedAt: string;
   wordCount: number;
   title: string;
+  rawText: string;
 }
 
 export interface MarkdownStructureSummary {
@@ -90,6 +91,12 @@ export interface ArticleAnalysis {
   coverTheme: CoverTheme;
 }
 
+export interface CardPlan {
+  index: number;
+  title: string;
+  summary: string;
+}
+
 export interface GenerationOverview {
   generatedAt: string;
   cardsCount: number;
@@ -136,6 +143,7 @@ export interface WorkspaceData {
   article: UploadedArticle;
   parsedMarkdown: ParsedMarkdownDocument;
   analysis: ArticleAnalysis;
+  cardPlan: CardPlan[];
   workflowStages: WorkflowStage[];
   outputToggles: OutputToggleItem[];
   cardSize: CardSizeSpec;

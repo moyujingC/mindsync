@@ -26,7 +26,6 @@ function buildStructureTags(summary: MarkdownStructureSummary) {
 export interface ParsedMarkdownPayload {
   article: UploadedArticle;
   parsedMarkdown: ParsedMarkdownDocument;
-  rawText: string;
 }
 
 export function parseMarkdownFileContent(fileName: string, rawText: string): ParsedMarkdownPayload {
@@ -47,12 +46,12 @@ export function parseMarkdownFileContent(fileName: string, rawText: string): Par
       updatedAt: new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }),
       wordCount: rawText.trim().length,
       title,
+      rawText,
     },
     parsedMarkdown: {
       status: "parsed",
       structure,
       structureTags: buildStructureTags(structure),
     },
-    rawText,
   };
 }

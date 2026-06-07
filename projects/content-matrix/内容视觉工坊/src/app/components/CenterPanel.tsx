@@ -55,14 +55,17 @@ export function CenterPanel({ data }: CenterPanelProps) {
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-7 rounded-lg border border-border bg-card/70">
               <div className="px-4 py-2 border-b border-border/60 flex items-center justify-between text-[10.5px] text-muted-foreground tracking-wide">
-                <span>拆解为 4 张知识卡片</span>
+                <span>拆解为 {data.cardPlan.length} 张知识卡片</span>
                 <span>对应 H2 段落</span>
               </div>
               <ol className="divide-y divide-border/50">
-                {data.analysis.cardOutlineTitles.map((title, i) => (
+                {data.cardPlan.map((card) => (
                   <li key={i} className="px-4 py-2.5 flex items-baseline gap-3 text-[12.5px] hover:bg-secondary/25 transition-colors">
-                    <span className="text-[10px] text-muted-foreground tracking-widest shrink-0">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="text-foreground/90 flex-1 leading-snug" style={{ fontFamily: "var(--font-serif)" }}>{title}</span>
+                    <span className="text-[10px] text-muted-foreground tracking-widest shrink-0">{String(card.index).padStart(2, "0")}</span>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-foreground/90 block leading-snug" style={{ fontFamily: "var(--font-serif)" }}>{card.title}</span>
+                      <span className="text-[10.5px] text-muted-foreground mt-0.5 block truncate">{card.summary}</span>
+                    </div>
                   </li>
                 ))}
               </ol>
