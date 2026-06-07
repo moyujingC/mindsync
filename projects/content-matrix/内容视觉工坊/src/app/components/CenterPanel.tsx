@@ -29,6 +29,9 @@ export function CenterPanel({ data }: CenterPanelProps) {
         <div className="mt-1.5 text-[11px] text-muted-foreground">
           {data.article.wordCount.toLocaleString()} 字 · {data.parsedMarkdown.structure.subheadings} 小标题 · 风格 {data.styleAssets[data.activeStyleIndex].name}
         </div>
+        <div className="mt-2 text-[10.5px] text-muted-foreground">
+          文生图输入：整篇正文全文 · 由模型自动拆图与配图
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -74,9 +77,12 @@ export function CenterPanel({ data }: CenterPanelProps) {
                 </div>
               </div>
               <div className="rounded-lg border border-border bg-card/70 p-4">
-                <div className="text-[10.5px] text-muted-foreground mb-1 tracking-wide">封面主题</div>
+                <div className="text-[10.5px] text-muted-foreground mb-1 tracking-wide">封面主题与拆图策略</div>
                 <div className="text-[14px] text-foreground/95 leading-snug" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{data.analysis.coverTheme.title}</div>
                 <div className="text-[10.5px] text-muted-foreground mt-1.5">{data.analysis.coverTheme.keywords}</div>
+                <div className="text-[10.5px] text-muted-foreground mt-2 leading-relaxed">
+                  {data.analysis.imageGenerationSource.strategy}
+                </div>
               </div>
             </div>
           </div>

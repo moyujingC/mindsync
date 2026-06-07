@@ -19,6 +19,10 @@ export const workspaceData: WorkspaceData = {
     structureTags: ["1 标题", "6 小标题", "14 加粗", "3 引用"],
   },
   analysis: {
+    imageGenerationSource: {
+      contentKind: "full-article-text",
+      strategy: "直接将全文交给大模型，由模型自动拆成 4 张知识卡片并生成每张图的视觉方案",
+    },
     cardOutlineTitles: [
       "信息过载时代，判断力比知识更稀缺",
       "AI 给的是答案，编辑要的是问题",
@@ -137,11 +141,11 @@ export const workspaceData: WorkspaceData = {
   ],
   draftReview: {
     readyTitle: "可同步到草稿箱",
-    readyDescription: "4 项审稿检查全部通过",
+    readyDescription: "系统已完成结构继承、重点识别和插图位编排",
     reviewChecks: [
-      { title: "Markdown 结构", detail: "6 H2 · 3 引用 · 4 列表", status: "pass" },
+      { title: "Markdown 结构", detail: "6 H2 · 3 引用 · 4 列表已保留", status: "pass" },
       { title: "重点句识别", detail: "3 处金句已强调", status: "pass" },
-      { title: "插图位匹配", detail: "4 / 4 完成", status: "pass" },
+      { title: "插图位编排", detail: "系统已决定 4 处插图位置", status: "pass" },
       { title: "公众号格式", detail: "标题、首图、摘要合规", status: "pass" },
     ],
     syncStatus: [
@@ -149,6 +153,32 @@ export const workspaceData: WorkspaceData = {
       { label: "卡片素材上传", note: "4 张 · 上传至素材库「2026-06」" },
       { label: "封面上传", note: "公众号封面 v2 · 小红书封面 v1" },
       { label: "草稿创建", note: "draft_id: msg_8c91a · 公众号后台可见" },
+    ],
+    imagePlacements: [
+      {
+        cardNumber: "01",
+        placementLabel: "图片位 #1",
+        anchorText: "一 · 信息过载时代，判断力比知识更稀缺",
+        rationale: "用于承接第一节主观点，在首个论点段后插入，避免开头信息密度过高。",
+      },
+      {
+        cardNumber: "02",
+        placementLabel: "图片位 #2",
+        anchorText: "提示词不是工作，提问才是。",
+        rationale: "与金句形成并列强化，适合放在引用块后承接观点转折。",
+      },
+      {
+        cardNumber: "03",
+        placementLabel: "图片位 #3",
+        anchorText: "三个练习：把判断力的肌肉养回来",
+        rationale: "对应方法段落，帮助长列表内容中段换气。",
+      },
+      {
+        cardNumber: "04",
+        placementLabel: "图片位 #4",
+        anchorText: "把「我觉得」放回文章里",
+        rationale: "放在文章后段，用于强调作者判断与全文收束。",
+      },
     ],
   },
 };

@@ -54,6 +54,17 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
         <div className="grid grid-cols-2 gap-1.5">
           {data.draftReview.reviewChecks.map((check) => <ReviewCheckCard key={check.title} check={check} />)}
         </div>
+        <div className="mt-3 rounded-lg border border-border/70 bg-card/70 px-3 py-2.5">
+          <div className="text-[10.5px] text-muted-foreground tracking-wide mb-2">系统插图位编排</div>
+          <div className="space-y-2">
+            {data.draftReview.imagePlacements.slice(0, 2).map((placement) => (
+              <div key={placement.cardNumber} className="text-[10.5px] leading-relaxed text-muted-foreground">
+                <span className="text-foreground/90" style={{ fontWeight: 500 }}>{placement.placementLabel}</span>
+                <span> · {placement.anchorText}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Phone-like preview */}

@@ -35,6 +35,11 @@ export interface ParsedMarkdownDocument {
   structureTags: string[];
 }
 
+export interface ImageGenerationSource {
+  contentKind: "full-article-text";
+  strategy: string;
+}
+
 export interface OutputToggleItem {
   key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover";
   label: string;
@@ -78,6 +83,7 @@ export interface CoverTheme {
 }
 
 export interface ArticleAnalysis {
+  imageGenerationSource: ImageGenerationSource;
   cardOutlineTitles: string[];
   keyQuotes: string[];
   coverTheme: CoverTheme;
@@ -91,11 +97,19 @@ export interface GenerationOverview {
   summaryMeta: DraftMetaSummaryItem[];
 }
 
+export interface LayoutImagePlacement {
+  cardNumber: string;
+  placementLabel: string;
+  anchorText: string;
+  rationale: string;
+}
+
 export interface DraftReview {
   readyTitle: string;
   readyDescription: string;
   reviewChecks: ReviewCheck[];
   syncStatus: SyncStatusItem[];
+  imagePlacements: LayoutImagePlacement[];
 }
 
 export interface ReviewCheck {
