@@ -29,6 +29,8 @@ export default function App() {
     setStyleSelection,
     setCardSize,
     updateWechatLayoutTheme,
+    exportWechatLayoutTheme,
+    importWechatLayoutTheme,
   } = useWorkspaceDocument();
 
   return (
@@ -74,6 +76,8 @@ export default function App() {
           onSetStyleSelection={setStyleSelection}
           onSetCardSize={setCardSize}
           onUpdateWechatLayoutTheme={updateWechatLayoutTheme}
+          onExportWechatLayoutTheme={exportWechatLayoutTheme}
+          onImportWechatLayoutTheme={importWechatLayoutTheme}
           isTablet={isTablet}
           isOpen={layout.isLeftPanelOpen}
           onClose={closePanels}

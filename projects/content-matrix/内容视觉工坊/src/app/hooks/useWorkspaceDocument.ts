@@ -84,6 +84,59 @@ function withFreshDraftReview(workspace: WorkspaceData) {
   };
 }
 
+function createLayoutThemeDefaults() {
+  return initialWorkspaceData.layoutThemes[0];
+}
+
+function normalizeImportedLayoutTheme(input: unknown): WorkspaceData["layoutThemes"][number] {
+  const fallback = createLayoutThemeDefaults();
+  const raw = (input && typeof input === "object") ? input as Record<string, unknown> : {};
+
+  const readString = (key: keyof typeof fallback) =>
+    typeof raw[key] === "string" && raw[key] ? raw[key] as string : fallback[key] as string;
+  const readNumber = (key: keyof typeof fallback) =>
+    typeof raw[key] === "number" && Number.isFinite(raw[key]) ? raw[key] as number : fallback[key] as number;
+
+  const previewPalette = Array.isArray(raw.previewPalette)
+    ? raw.previewPalette.filter((item): item is string => typeof item === "string").slice(0, 4)
+    : fallback.previewPalette;
+
+  return {
+    accountName: readString("accountName"),
+    name: readString("name"),
+    desc: readString("desc"),
+    meta: readString("meta"),
+    previewPalette: previewPalette.length === 4 ? previewPalette : fallback.previewPalette,
+    shellBg: readString("shellBg"),
+    articleBg: readString("articleBg"),
+    titleColor: readString("titleColor"),
+    headingColor: readString("headingColor"),
+    bodyColor: readString("bodyColor"),
+    mutedColor: readString("mutedColor"),
+    quoteBg: readString("quoteBg"),
+    quoteBorder: readString("quoteBorder"),
+    ctaBg: readString("ctaBg"),
+    ctaText: readString("ctaText"),
+    figureBg: readString("figureBg"),
+    placeholderBg: readString("placeholderBg"),
+    placeholderBorder: readString("placeholderBorder"),
+    headingFontSize: readNumber("headingFontSize"),
+    paragraphSpacing: readNumber("paragraphSpacing"),
+    sectionSpacing: readNumber("sectionSpacing"),
+    imageRadius: readNumber("imageRadius"),
+    quoteRadius: readNumber("quoteRadius"),
+    quoteBorderWidth: readNumber("quoteBorderWidth"),
+    ctaRadius: readNumber("ctaRadius"),
+    captionAlign: raw.captionAlign === "left" ? "left" : raw.captionAlign === "center" ? "center" : fallback.captionAlign,
+    ctaTitle: readString("ctaTitle"),
+    ctaButtonText: readString("ctaButtonText"),
+    coverBottomSpacing: readNumber("coverBottomSpacing"),
+    inlineImageSpacing: readNumber("inlineImageSpacing"),
+    quoteSpacing: readNumber("quoteSpacing"),
+    pinned: typeof raw.pinned === "boolean" ? raw.pinned : fallback.pinned,
+  };
+}
+
 function buildKnowledgeCardComposition(title: string, index: number) {
   const presets = [
     "主标题居中偏上 / 纸感底纹 / 留白底部 30%",
@@ -1047,6 +1100,58 @@ export function useWorkspaceDocument() {
               ),
             },
             "排版主题已调整，可重新复制到公众号编辑器",
+          ),
+        };
+      });
+    },
+    exportWechatLayoutTheme: async (index: number) => {
+      const theme = workspace.layoutThemes[index];
+      if (!theme) return;
+
+      const slug = theme.name.replace(/\s+/g, "-").replace(/[^\w\u4e00-\u9fa5-]+/g, "").toLowerCase() || "wechat-layout-theme";
+      const blob = new Blob([`${JSON.stringify(theme, null, 2)}\n`], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${slug}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    },
+    importWechatLayoutTheme: async (file: File) => {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as unknown;
+      const nextTheme = normalizeImportedLayoutTheme(parsed);
+
+      setWorkspace((prev) => {
+        const nextThemes = [...prev.layoutThemes, nextTheme];
+        const nextWorkspace = withFreshDraftReview({
+          ...prev,
+          layoutThemes: nextThemes,
+          styleSelections: {
+            ...prev.styleSelections,
+            wechatLayout: nextThemes.length - 1,
+          },
+        });
+
+        return {
+          ...nextWorkspace,
+          workflowStages: markDraftSyncPending(
+            {
+              ...nextWorkspace,
+              workflowStages: nextWorkspace.workflowStages.map((stage) =>
+                stage.key === "layoutGeneration"
+                  ? {
+                      ...stage,
+                      status: "success",
+                      detail: `已导入排版主题：${nextTheme.name}`,
+                      providerLabel: "本地排版器",
+                    }
+                  : stage,
+              ),
+            },
+            "排版主题已导入，可重新复制到公众号编辑器",
           ),
         };
       });

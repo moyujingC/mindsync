@@ -1,4 +1,4 @@
-import { FileText, Clipboard, CheckCircle2, RefreshCw, Eraser, Sparkles, ChevronDown, FileType2, Pin, X, Upload } from "lucide-react";
+import { FileText, Clipboard, CheckCircle2, RefreshCw, Eraser, Sparkles, ChevronDown, FileType2, Pin, X, Upload, Download, Import } from "lucide-react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Separator } from "./ui/separator";
@@ -23,6 +23,8 @@ interface LeftPanelProps {
   onSetStyleSelection: (key: StyleSelectionKey, index: number) => void;
   onSetCardSize: (nextCardSize: WorkspaceData["cardSize"]) => void;
   onUpdateWechatLayoutTheme: (index: number, patch: Partial<WorkspaceData["layoutThemes"][number]>) => void;
+  onExportWechatLayoutTheme: (index: number) => Promise<void>;
+  onImportWechatLayoutTheme: (file: File) => Promise<void>;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -44,6 +46,8 @@ export function LeftPanel({
   onSetStyleSelection,
   onSetCardSize,
   onUpdateWechatLayoutTheme,
+  onExportWechatLayoutTheme,
+  onImportWechatLayoutTheme,
   isTablet,
   isOpen,
   onClose,
@@ -51,6 +55,7 @@ export function LeftPanel({
   const [widthInput, setWidthInput] = useState(String(data.cardSize.width));
   const [heightInput, setHeightInput] = useState(String(data.cardSize.height));
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const layoutThemeImportRef = useRef<HTMLInputElement | null>(null);
   const isGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
   const styleTargets: Array<{ key: StyleSelectionKey; label: string; hint: string; toggleKey?: "knowledgeCards" | "wechatCover" | "xiaohongshuCover" }> = [
     { key: "knowledgeCards", label: "知识卡片", hint: "小红书 / 观点卡", toggleKey: "knowledgeCards" },
@@ -388,8 +393,33 @@ export function LeftPanel({
               <span className="text-[10.5px] text-muted-foreground tracking-[0.15em]">排版主题</span>
               <span className="text-[10px] text-muted-foreground/70">{data.layoutThemes.length} 套</span>
             </div>
-            <button className="text-[10.5px] text-muted-foreground hover:text-foreground">管理</button>
+            <div className="flex items-center gap-1">
+              <button
+                className="text-[10.5px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                onClick={() => layoutThemeImportRef.current?.click()}
+              >
+                <Import className="w-3 h-3" /> 导入
+              </button>
+              <button
+                className="text-[10.5px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                onClick={() => void onExportWechatLayoutTheme(data.styleSelections.wechatLayout)}
+              >
+                <Download className="w-3 h-3" /> 导出
+              </button>
+            </div>
           </div>
+          <input
+            ref={layoutThemeImportRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={async (event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              await onImportWechatLayoutTheme(file);
+              event.currentTarget.value = "";
+            }}
+          />
           <div className="rounded-lg border border-border bg-card/60 overflow-hidden divide-y divide-border/60">
             {data.layoutThemes.map((theme, i) => (
               <div
