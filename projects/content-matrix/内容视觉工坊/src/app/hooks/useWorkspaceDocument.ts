@@ -79,6 +79,55 @@ function withFreshDraftReview(workspace: WorkspaceData) {
   };
 }
 
+function buildKnowledgeCardComposition(title: string, index: number) {
+  const presets = [
+    "主标题居中偏上 / 纸感底纹 / 留白底部 30%",
+    "观点标题突出 / 层次简洁 / 视觉重心稳定",
+    "结构感排版 / 信息层级清楚 / 适合知识卡展示",
+    "克制留白 / 轻编辑感 / 强调单一主题",
+  ];
+
+  return presets[(index - 1) % presets.length] || `围绕「${title}」做单张知识卡排版`;
+}
+
+function buildKnowledgeCardsFromPlan(workspace: WorkspaceData, plan: WorkspaceData["cardPlan"]) {
+  return plan.map((card) => ({
+    n: String(card.index).padStart(2, "0"),
+    title: card.title,
+    summary: card.summary,
+    composition: buildKnowledgeCardComposition(card.title, card.index),
+    img: "",
+    state: "idle" as const,
+    provider: "mock" as const,
+  }));
+}
+
+function resetCoversForReplan(workspace: WorkspaceData) {
+  return workspace.covers.map((cover) => ({
+    ...cover,
+    img: "",
+    state: "idle" as const,
+    provider: undefined,
+    imagePrompt: undefined,
+    status: "待生成",
+  }));
+}
+
+function buildGenerationSummary(workspace: WorkspaceData, cardCount: number) {
+  return {
+    ...workspace.generation,
+    cardsCount: cardCount,
+    coversCount: workspace.covers.length,
+    layoutStatus: "已生成",
+    summaryMeta: workspace.generation.summaryMeta.map((item) => {
+      if (item.label === "知识卡片") return { ...item, value: `${cardCount} 张` };
+      if (item.label === "封面") return { ...item, value: `${workspace.covers.length} 张` };
+      if (item.label === "排版") return { ...item, value: "已生成", emerald: true };
+      return item;
+    }),
+  };
+}
+
 export function useWorkspaceDocument() {
   const [workspace, setWorkspace] = useState<WorkspaceData>(initialWorkspaceData);
   const [rawMarkdownText, setRawMarkdownText] = useState<string>("");
@@ -196,6 +245,7 @@ export function useWorkspaceDocument() {
       parsedMarkdown: parsed.parsedMarkdown,
       analysis: planned.analysis,
       cardPlan: planned.cardPlan,
+      knowledgeCards: buildKnowledgeCardsFromPlan(workspace, planned.cardPlan),
       wechatInlineImages: buildWechatInlineImages({
         ...workspace,
         article: parsed.article,
@@ -203,6 +253,8 @@ export function useWorkspaceDocument() {
         analysis: planned.analysis,
         cardPlan: planned.cardPlan,
       } as WorkspaceData, planned.inlineImagePlan),
+      covers: resetCoversForReplan(workspace),
+      generation: buildGenerationSummary(workspace, planned.cardPlan.length),
       workflowStages: workspace.workflowStages.map((stage) => {
         if (stage.key === "upload") {
           return { ...stage, status: "success", detail: "Markdown 文件已读取" };
@@ -223,6 +275,75 @@ export function useWorkspaceDocument() {
         }
         if (stage.key === "draftSync") {
           return { ...stage, status: "idle", detail: "排版更新后可同步到公众号草稿箱", providerLabel: undefined };
+        }
+        return stage;
+      }),
+    };
+
+    setWorkspace(nextWorkspace);
+    await generateLayoutPreview(nextWorkspace);
+  }
+
+  async function replanContent() {
+    if (!workspace.article.rawText.trim()) return;
+
+    setWorkspace((prev) => ({
+      ...prev,
+      workflowStages: prev.workflowStages.map((stage) => {
+        if (stage.key === "contentAnalysis") {
+          return { ...stage, status: "processing", detail: "正在重新调用拆图规划服务…", providerLabel: undefined };
+        }
+        if (stage.key === "imageGeneration") {
+          return { ...stage, status: "idle", detail: "等待基于新规划生成图片", retryable: false, providerLabel: undefined };
+        }
+        if (stage.key === "layoutGeneration") {
+          return { ...stage, status: "idle", detail: "等待基于新规划生成排版预览", providerLabel: undefined };
+        }
+        if (stage.key === "draftSync") {
+          return { ...stage, status: "idle", detail: "等待基于新规划重新生成正文", providerLabel: undefined };
+        }
+        return stage;
+      }),
+    }));
+
+    const planned = await planCards({
+      articleTitle: workspace.article.title,
+      rawText: workspace.article.rawText,
+      styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+      cardRatio: workspace.cardSize.ratio,
+      cardWidth: workspace.cardSize.width,
+      cardHeight: workspace.cardSize.height,
+    });
+
+    const nextWorkspace: WorkspaceData = {
+      ...workspace,
+      analysis: planned.analysis,
+      cardPlan: planned.cardPlan,
+      knowledgeCards: buildKnowledgeCardsFromPlan(workspace, planned.cardPlan),
+      wechatInlineImages: buildWechatInlineImages({
+        ...workspace,
+        analysis: planned.analysis,
+        cardPlan: planned.cardPlan,
+      } as WorkspaceData, planned.inlineImagePlan),
+      covers: resetCoversForReplan(workspace),
+      generation: buildGenerationSummary(workspace, planned.cardPlan.length),
+      workflowStages: workspace.workflowStages.map((stage) => {
+        if (stage.key === "contentAnalysis") {
+          return {
+            ...stage,
+            status: "success",
+            detail: `已重新拆为 ${planned.cardPlan.length} 张卡片，并更新正文配图规划`,
+            providerLabel: planned.provider === "llm" ? "真实 LLM" : "本地兜底",
+          };
+        }
+        if (stage.key === "imageGeneration") {
+          return { ...stage, status: "idle", detail: "等待基于新规划生成图片", retryable: false, providerLabel: undefined };
+        }
+        if (stage.key === "layoutGeneration") {
+          return { ...stage, status: "idle", detail: "等待生成公众号排版预览", providerLabel: undefined };
+        }
+        if (stage.key === "draftSync") {
+          return { ...stage, status: "idle", detail: "排版更新后可复制到公众号编辑器", providerLabel: undefined };
         }
         return stage;
       }),
@@ -652,6 +773,7 @@ export function useWorkspaceDocument() {
     workspace,
     derived,
     importMarkdownFile,
+    replanContent,
     regenerateCardImage,
     regenerateWechatInlineImageAsset,
     regenerateAllCardImages,

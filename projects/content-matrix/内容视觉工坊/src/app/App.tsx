@@ -12,6 +12,7 @@ export default function App() {
   const {
     workspace,
     importMarkdownFile,
+    replanContent,
     regenerateCardImage,
     regenerateWechatInlineImageAsset,
     regenerateAllCardImages,
@@ -63,6 +64,7 @@ export default function App() {
         />
         <CenterPanel
           data={workspace}
+          onReplanContent={replanContent}
           onRegenerateCardImage={regenerateCardImage}
           onRegenerateInlineImage={regenerateWechatInlineImageAsset}
           onRegenerateAllCardImages={regenerateAllCardImages}

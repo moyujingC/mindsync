@@ -4,14 +4,16 @@ import type { CoverAsset, GenerationStageStatus, KnowledgeCardItem, WechatInline
 
 interface CenterPanelProps {
   data: WorkspaceData;
+  onReplanContent: () => Promise<void>;
   onRegenerateCardImage: (cardNumber: string) => Promise<void>;
   onRegenerateInlineImage: (imageId: string) => Promise<void>;
   onRegenerateAllCardImages: () => Promise<void>;
   onRegenerateCoverAsset: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
 }
 
-export function CenterPanel({ data, onRegenerateCardImage, onRegenerateInlineImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
+export function CenterPanel({ data, onReplanContent, onRegenerateCardImage, onRegenerateInlineImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
   const isBatchGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
+  const isReplanning = data.workflowStages.find((stage) => stage.key === "contentAnalysis")?.status === "processing";
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
       {/* Summary bar — two stable rows */}
@@ -53,8 +55,12 @@ export function CenterPanel({ data, onRegenerateCardImage, onRegenerateInlineIma
               <h3 className="text-[14.5px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>内容拆解</h3>
               <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">系统对这篇文章的理解</span>
             </div>
-            <button className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-secondary/50">
-              <RefreshCw className="w-3 h-3" /> 重新拆解
+            <button
+              onClick={() => onReplanContent()}
+              disabled={isReplanning}
+              className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-secondary/50 disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
+            >
+              <RefreshCw className={`w-3 h-3 ${isReplanning ? "animate-spin" : ""}`} /> {isReplanning ? "拆解中" : "重新拆解"}
             </button>
           </div>
           <div className="grid grid-cols-12 gap-4">
