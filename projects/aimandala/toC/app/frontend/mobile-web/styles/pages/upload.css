@@ -393,7 +393,8 @@
   display: flex;
   justify-content: center;
   gap: 14px;
-  margin: 16px 0 14px;
+  margin: 16px 0 6px;
+  font-weight: 500;
 }
 
 .am-upload-action-button {
@@ -423,7 +424,7 @@
 }
 
 .am-upload-action-button:disabled {
-  opacity: 0.45;
+  opacity: 0.8;
 }
 
 .am-upload-sliders {
