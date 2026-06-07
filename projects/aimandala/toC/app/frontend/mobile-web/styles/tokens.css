@@ -224,7 +224,7 @@
   --am-upload-input-icon: rgba(200, 120, 80, 0.3);
   --am-upload-theme-title: #3d2e1e;
   --am-upload-theme-card-border: rgba(200, 120, 80, 0.15);
-  --am-upload-theme-card-bg: var(--am-color-sand-200);
+  --am-upload-theme-card-bg: var(--am-upload-form-surface);
   --am-upload-theme-card-active-border: rgba(212, 160, 84, 0.4);
   --am-upload-theme-card-active-bg: linear-gradient(
     135deg,
