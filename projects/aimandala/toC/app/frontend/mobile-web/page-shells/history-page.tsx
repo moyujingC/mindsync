@@ -76,7 +76,7 @@ export function MobileWebHistoryPage({
   const descriptor = createHistoryPageDescriptor(records);
   const activeTheme = historyQuery?.theme;
   const activeLimit = historyQuery?.limit ?? 20;
-  const pendingItems = descriptor.items.filter((item) => !item.recordReady);
+  const pendingItems = descriptor.items.slice(0, 4);
   const filteredItems = descriptor.items.filter((item) => {
     const matchesTheme = !activeTheme || item.theme === activeTheme;
     if (!matchesTheme) {
@@ -211,7 +211,7 @@ export function MobileWebHistoryPage({
 
         <section className="mw-history-featured">
           <h2>待查看的解读</h2>
-          <p>这里会优先显示还在生成中的报告，方便你稍后回来继续查看。</p>
+          <p>这里会优先显示还在生成中，或刚生成完成、还没来得及查看的报告。</p>
           {pendingItems.length ? (
             <div className="mw-history-record-list">
               {pendingItems.map((item, index) => {
