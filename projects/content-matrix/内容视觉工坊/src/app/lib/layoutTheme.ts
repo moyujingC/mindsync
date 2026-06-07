@@ -1,4 +1,4 @@
-import type { StyleAsset } from "../types";
+import type { WechatLayoutThemeAsset } from "../types";
 
 export interface WechatLayoutTheme {
   shellBg: string;
@@ -17,31 +17,47 @@ export interface WechatLayoutTheme {
   placeholderBorder: string;
 }
 
-export function buildWechatLayoutTheme(style?: StyleAsset): WechatLayoutTheme {
-  const palette = style?.palette ?? ["#f3ecdb", "#1f3a36", "#b86b3a", "#8a8270"];
-  const [base, strong, accent, muted] = palette;
+export function buildWechatLayoutTheme(theme?: WechatLayoutThemeAsset): WechatLayoutTheme {
+  if (theme) {
+    return {
+      shellBg: theme.shellBg,
+      phoneBg: mix(theme.shellBg, "#ffffff", 0.84),
+      articleBg: theme.articleBg,
+      titleColor: theme.titleColor,
+      headingColor: theme.headingColor,
+      bodyColor: theme.bodyColor,
+      mutedColor: theme.mutedColor,
+      quoteBg: theme.quoteBg,
+      quoteBorder: theme.quoteBorder,
+      ctaBg: theme.ctaBg,
+      ctaText: theme.ctaText,
+      figureBg: theme.figureBg,
+      placeholderBg: theme.placeholderBg,
+      placeholderBorder: theme.placeholderBorder,
+    };
+  }
 
   return {
-    shellBg: mix(base, "#e8e3d6", 0.68),
-    phoneBg: mix(base, "#ffffff", 0.86),
+    shellBg: "rgb(244, 240, 232)",
+    phoneBg: "rgb(252, 250, 246)",
     articleBg: "#ffffff",
-    titleColor: mix(strong, "#111111", 0.72),
-    headingColor: strong,
-    bodyColor: mix(strong, "#2a2a2a", 0.42),
-    mutedColor: mix(muted, "#777777", 0.58),
-    quoteBg: mix(base, "#f6f2e8", 0.78),
-    quoteBorder: strong,
-    ctaBg: strong,
+    titleColor: "rgb(35, 35, 35)",
+    headingColor: "#222222",
+    bodyColor: "rgb(49, 49, 49)",
+    mutedColor: "rgb(134, 128, 116)",
+    quoteBg: "rgb(246, 242, 232)",
+    quoteBorder: "#222222",
+    ctaBg: "#222222",
     ctaText: "#ffffff",
-    figureBg: mix(base, "#ece6d6", 0.74),
-    placeholderBg: mix(base, "#faf6ee", 0.8),
-    placeholderBorder: mix(muted, "#d8cfbd", 0.62),
+    figureBg: "rgb(237, 231, 220)",
+    placeholderBg: "rgb(250, 246, 238)",
+    placeholderBorder: "rgb(212, 202, 184)",
   };
 }
 
-function mix(hexA: string, hexB: string, weightA: number) {
-  const a = parseHex(hexA);
-  const b = parseHex(hexB);
+function mix(colorA: string, colorB: string, weightA: number) {
+  const a = parseColor(colorA);
+  const b = parseColor(colorB);
   const weightB = 1 - weightA;
   const r = Math.round(a.r * weightA + b.r * weightB);
   const g = Math.round(a.g * weightA + b.g * weightB);
@@ -49,8 +65,13 @@ function mix(hexA: string, hexB: string, weightA: number) {
   return `rgb(${r}, ${g}, ${bl})`;
 }
 
-function parseHex(hex: string) {
-  const normalized = hex.replace("#", "");
+function parseColor(color: string) {
+  if (color.startsWith("rgb")) {
+    const parts = color.match(/\d+/g)?.map(Number) ?? [0, 0, 0];
+    return { r: parts[0] ?? 0, g: parts[1] ?? 0, b: parts[2] ?? 0 };
+  }
+
+  const normalized = color.replace("#", "");
   const full = normalized.length === 3
     ? normalized.split("").map((char) => `${char}${char}`).join("")
     : normalized;

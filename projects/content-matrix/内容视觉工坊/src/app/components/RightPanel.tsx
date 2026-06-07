@@ -17,8 +17,8 @@ interface RightPanelProps {
 export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, isTablet, isOpen, onClose }: RightPanelProps) {
   const draftSyncStage = data.workflowStages.find((stage) => stage.key === "draftSync");
   const isTextMode = inputMode === "text";
-  const layoutStyle = data.styleAssets[data.styleSelections.wechatLayout];
-  const theme = buildWechatLayoutTheme(layoutStyle);
+  const layoutTheme = data.layoutThemes[data.styleSelections.wechatLayout];
+  const theme = buildWechatLayoutTheme(layoutTheme);
   const panelClassName = isTablet
     ? `absolute inset-y-0 right-0 z-30 w-[min(464px,96vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "translate-x-full"}`
     : "w-[420px] xl:w-[464px] shrink-0 border-l border-border bg-card/40 flex flex-col overflow-hidden";

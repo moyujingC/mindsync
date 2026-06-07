@@ -22,6 +22,27 @@ export interface StyleAsset {
   pinned?: boolean;
 }
 
+export interface WechatLayoutThemeAsset {
+  name: string;
+  desc: string;
+  meta: string;
+  previewPalette: string[];
+  shellBg: string;
+  articleBg: string;
+  titleColor: string;
+  headingColor: string;
+  bodyColor: string;
+  mutedColor: string;
+  quoteBg: string;
+  quoteBorder: string;
+  ctaBg: string;
+  ctaText: string;
+  figureBg: string;
+  placeholderBg: string;
+  placeholderBorder: string;
+  pinned?: boolean;
+}
+
 export type StyleSelectionKey =
   | "knowledgeCards"
   | "wechatInlineImages"
@@ -301,6 +322,7 @@ export interface WorkspaceData {
   outputToggles: OutputToggleItem[];
   cardSize: CardSizeSpec;
   styleAssets: StyleAsset[];
+  layoutThemes: WechatLayoutThemeAsset[];
   styleSelections: StyleSelectionMap;
   generation: GenerationOverview;
   knowledgeCards: KnowledgeCardItem[];

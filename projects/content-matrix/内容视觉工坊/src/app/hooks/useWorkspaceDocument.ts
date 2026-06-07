@@ -26,7 +26,7 @@ function updateGenerationTimestamp(workspace: WorkspaceData, generatedAt: string
   };
 }
 
-function getStyleName(workspace: WorkspaceData, key: StyleSelectionKey) {
+function getImageStyleName(workspace: WorkspaceData, key: Exclude<StyleSelectionKey, "wechatLayout">) {
   const index = workspace.styleSelections[key];
   return workspace.styleAssets[index]?.name ?? workspace.styleAssets[0]?.name ?? "默认风格";
 }
@@ -40,7 +40,7 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
     articleTitle: workspace.article.title,
     coverThemeTitle: workspace.analysis.coverTheme.title,
     coverThemeKeywords: workspace.analysis.coverTheme.keywords,
-    styleName: getStyleName(workspace, coverKey),
+    styleName: getImageStyleName(workspace, coverKey),
     ratio: cover.ratio,
   };
 }
@@ -61,7 +61,7 @@ function buildWechatInlineImageRequest(workspace: WorkspaceData, imageId: string
     sectionSummary: image.sectionSummary,
     sectionQuote: image.sectionQuote,
     visualDirection: image.visualDirection,
-    styleName: getStyleName(workspace, "wechatInlineImages"),
+    styleName: getImageStyleName(workspace, "wechatInlineImages"),
     ratio: image.ratio,
     width: image.width,
     height: image.height,
@@ -305,8 +305,8 @@ export function useWorkspaceDocument() {
     const planned = await planCards({
       articleTitle: parsed.article.title,
       rawText: text,
-      knowledgeCardStyleName: getStyleName(workspace, "knowledgeCards"),
-      inlineImageStyleName: getStyleName(workspace, "wechatInlineImages"),
+      knowledgeCardStyleName: getImageStyleName(workspace, "knowledgeCards"),
+      inlineImageStyleName: getImageStyleName(workspace, "wechatInlineImages"),
       cardRatio: initialWorkspaceData.cardSize.ratio,
       cardWidth: initialWorkspaceData.cardSize.width,
       cardHeight: initialWorkspaceData.cardSize.height,
@@ -396,8 +396,8 @@ export function useWorkspaceDocument() {
     const planned = await planCards({
       articleTitle: title,
       rawText,
-      knowledgeCardStyleName: getStyleName(workspace, "knowledgeCards"),
-      inlineImageStyleName: getStyleName(workspace, "wechatInlineImages"),
+      knowledgeCardStyleName: getImageStyleName(workspace, "knowledgeCards"),
+      inlineImageStyleName: getImageStyleName(workspace, "wechatInlineImages"),
       cardRatio: workspace.cardSize.ratio,
       cardWidth: workspace.cardSize.width,
       cardHeight: workspace.cardSize.height,
@@ -482,8 +482,8 @@ export function useWorkspaceDocument() {
     const planned = await planCards({
       articleTitle: workspace.article.title,
       rawText: workspace.article.rawText,
-      knowledgeCardStyleName: getStyleName(workspace, "knowledgeCards"),
-      inlineImageStyleName: getStyleName(workspace, "wechatInlineImages"),
+      knowledgeCardStyleName: getImageStyleName(workspace, "knowledgeCards"),
+      inlineImageStyleName: getImageStyleName(workspace, "wechatInlineImages"),
       cardRatio: workspace.cardSize.ratio,
       cardWidth: workspace.cardSize.width,
       cardHeight: workspace.cardSize.height,
@@ -547,7 +547,7 @@ export function useWorkspaceDocument() {
       const result = await generateCardImage({
         title: card.title,
         summary: card.summary,
-        styleName: getStyleName(workspace, "knowledgeCards"),
+        styleName: getImageStyleName(workspace, "knowledgeCards"),
         ratio: workspace.cardSize.ratio,
         width: workspace.cardSize.width,
         height: workspace.cardSize.height,
@@ -690,7 +690,7 @@ export function useWorkspaceDocument() {
         const result = await generateCardImage({
           title: card.title,
           summary: card.summary,
-          styleName: getStyleName(workspace, "knowledgeCards"),
+          styleName: getImageStyleName(workspace, "knowledgeCards"),
           ratio: workspace.cardSize.ratio,
           width: workspace.cardSize.width,
           height: workspace.cardSize.height,

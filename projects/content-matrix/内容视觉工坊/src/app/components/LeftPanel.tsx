@@ -63,6 +63,12 @@ export function LeftPanel({
     "1:1": { width: 1536, height: 1536 },
     "9:16": { width: 1080, height: 1920 },
   };
+  const getThemePalette = (key: StyleSelectionKey) =>
+    key === "wechatLayout"
+      ? data.layoutThemes[data.styleSelections.wechatLayout]?.previewPalette ?? []
+      : data.styleAssets[data.styleSelections[key]]?.palette ?? [];
+  const getThemeOptions = (key: StyleSelectionKey) =>
+    key === "wechatLayout" ? data.layoutThemes : data.styleAssets;
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
@@ -236,7 +242,7 @@ export function LeftPanel({
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-[10.5px] text-muted-foreground">风格方案</div>
                       <div className="flex shrink-0 gap-1">
-                        {data.styleAssets[data.styleSelections[target.key]]?.palette.slice(0, 3).map((color) => (
+                        {getThemePalette(target.key).slice(0, 3).map((color) => (
                           <span key={`${target.key}-${color}`} className="w-3 h-3 rounded-full border border-border/70" style={{ backgroundColor: color }} />
                         ))}
                       </div>
@@ -249,7 +255,7 @@ export function LeftPanel({
                         <SelectValue placeholder="选择风格" />
                       </SelectTrigger>
                       <SelectContent>
-                        {data.styleAssets.map((style, index) => (
+                        {getThemeOptions(target.key).map((style, index) => (
                           <SelectItem key={`${target.key}-${style.name}`} value={String(index)}>
                             {style.name}
                           </SelectItem>
@@ -338,7 +344,7 @@ export function LeftPanel({
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
               <span className="text-[10.5px] text-muted-foreground tracking-[0.15em]">风格资产</span>
-              <span className="text-[10px] text-muted-foreground/70">4 套</span>
+              <span className="text-[10px] text-muted-foreground/70">{data.styleAssets.length} 套</span>
             </div>
             <button className="text-[10.5px] text-muted-foreground hover:text-foreground">管理</button>
           </div>
@@ -370,6 +376,45 @@ export function LeftPanel({
           </div>
           <button className="w-full text-[11px] text-muted-foreground hover:text-foreground py-1.5 transition-colors">
             + 新建风格方案
+          </button>
+        </div>
+
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-[10.5px] text-muted-foreground tracking-[0.15em]">排版主题</span>
+              <span className="text-[10px] text-muted-foreground/70">{data.layoutThemes.length} 套</span>
+            </div>
+            <button className="text-[10.5px] text-muted-foreground hover:text-foreground">管理</button>
+          </div>
+          <div className="rounded-lg border border-border bg-card/60 overflow-hidden divide-y divide-border/60">
+            {data.layoutThemes.map((theme, i) => (
+              <div
+                key={i}
+                className="w-full text-left flex items-center transition-colors hover:bg-secondary/30"
+              >
+                <div className="w-1 self-stretch bg-transparent"></div>
+                <div className="w-11 h-11 shrink-0 flex flex-col my-2 ml-2.5 rounded-sm overflow-hidden border border-border/60" style={{ background: theme.previewPalette[0] }}>
+                  <div className="flex-1 p-1.5 flex flex-col justify-between">
+                    <div className="space-y-[3px]">
+                      <div className="h-[3px] rounded-full w-6" style={{ background: theme.previewPalette[2], opacity: 0.92 }}></div>
+                      <div className="h-[2px] rounded-full w-7" style={{ background: theme.previewPalette[3], opacity: 0.7 }}></div>
+                    </div>
+                    <div className="h-1.5 w-4 rounded-sm" style={{ background: theme.previewPalette[1], border: "1px solid rgba(0,0,0,0.06)" }}></div>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0 px-3 py-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[12px] truncate" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{theme.name}</span>
+                    {theme.pinned && <Pin className="w-2.5 h-2.5 text-muted-foreground/70 shrink-0" />}
+                  </div>
+                  <div className="text-[10.5px] text-muted-foreground mt-0.5 truncate">{theme.desc} · {theme.meta}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button className="w-full text-[11px] text-muted-foreground hover:text-foreground py-1.5 transition-colors">
+            + 新建排版主题
           </button>
         </div>
       </div>

@@ -264,8 +264,8 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
 }
 
 function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview) {
-  const layoutStyle = workspace.styleAssets[workspace.styleSelections.wechatLayout];
-  const theme = buildWechatLayoutTheme(layoutStyle);
+  const layoutTheme = workspace.layoutThemes[workspace.styleSelections.wechatLayout];
+  const theme = buildWechatLayoutTheme(layoutTheme);
   const wechatCover = workspace.covers.find((item) => item.key === "wechatCover" && item.img);
   const htmlParts: string[] = [
     `<section data-tool="content-matrix" style="font-size:16px;line-height:1.8;color:${theme.bodyColor};background:${theme.articleBg};">`,
