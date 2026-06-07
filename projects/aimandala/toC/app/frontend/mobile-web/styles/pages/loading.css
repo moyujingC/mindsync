@@ -1,13 +1,7 @@
 .am-loading-page {
   --am-pattern-image: none;
   --am-app-topbar-bleed: 0px;
-  background: linear-gradient(
-    180deg,
-    var(--am-color-ink-950) 0%,
-    var(--am-color-ink-900) 30%,
-    var(--am-color-ink-800) 60%,
-    var(--am-color-ink-900) 100%
-  );
+  background: var(--am-loading-page-bg);
 }
 
 .am-loading-topbar__ornament {
@@ -18,11 +12,7 @@
   height: 52px;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(
-    ellipse,
-    rgba(212, 160, 84, 0.11) 0%,
-    transparent 72%
-  );
+  background: var(--am-loading-topbar-ornament);
 }
 
 .am-loading-body {
@@ -53,7 +43,7 @@
 
 .am-loading-visual-ring__outer {
   inset: 0;
-  border: 1px solid rgba(212, 160, 84, 0.18);
+  border: 1px solid var(--am-loading-visual-ring-border);
 }
 
 .am-loading-video {
@@ -64,12 +54,12 @@
   height: var(--am-loading-visual-size);
   object-fit: cover;
   border-radius: 50%;
-  filter: drop-shadow(0 3px 18px rgba(212, 160, 84, 0.2));
+  filter: var(--am-loading-visual-video-shadow);
   overflow: hidden;
 }
 
 .am-loading-video--media {
-  background: rgba(20, 30, 56, 0.5);
+  background: var(--am-loading-visual-video-bg);
 }
 
 .am-loading-copy {
@@ -91,26 +81,18 @@
   padding: 6px 12px;
   border-radius: var(--am-radius-pill);
   font-size: 12px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: var(--am-loading-version-shadow);
 }
 
 .am-loading-version--lite {
-  background: linear-gradient(
-    90deg,
-    rgba(74, 127, 181, 0.3),
-    rgba(122, 142, 168, 0.2)
-  );
-  border: 1px solid rgba(122, 142, 168, 0.4);
-  color: #7a8ea8;
+  background: var(--am-loading-version-lite-bg);
+  border: 1px solid var(--am-loading-version-lite-border);
+  color: var(--am-loading-version-lite-text);
 }
 
 .am-loading-version--pro {
-  background: linear-gradient(
-    90deg,
-    rgba(155, 64, 48, 0.3),
-    rgba(200, 120, 80, 0.2)
-  );
-  border: 1px solid rgba(200, 120, 80, 0.4);
+  background: var(--am-loading-version-pro-bg);
+  border: 1px solid var(--am-loading-version-pro-border);
   color: var(--am-text-accent);
 }
 
@@ -139,15 +121,9 @@
 
 .am-loading-progress-card,
 .am-loading-log-card {
-  background: linear-gradient(
-    180deg,
-    rgba(26, 40, 68, 0.72),
-    rgba(23, 36, 63, 0.58)
-  );
-  border: 1px solid rgba(212, 160, 84, 0.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 18px 40px rgba(8, 14, 27, 0.24);
+  background: var(--am-loading-panel-bg);
+  border: 1px solid var(--am-loading-panel-border);
+  box-shadow: var(--am-loading-panel-shadow);
 }
 
 .am-loading-progress-value {
@@ -168,7 +144,7 @@
 
 .am-loading-progress-value small {
   font-size: 14px;
-  color: rgba(212, 160, 84, 0.72);
+  color: var(--am-loading-progress-value-note);
 }
 
 .am-loading-progress-track,
@@ -182,12 +158,12 @@
   margin-top: 12px;
   height: 6px;
   overflow: hidden;
-  background: rgba(232, 220, 200, 0.1);
+  background: var(--am-loading-progress-track-bg);
 }
 
 .am-loading-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #9b4030, #c87850, #d4a054);
+  background: var(--am-loading-progress-fill-bg);
 }
 
 .am-loading-progress-shimmer {
@@ -195,12 +171,7 @@
   top: 0;
   width: 40px;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.22),
-    transparent
-  );
+  background: var(--am-loading-progress-shimmer-bg);
   pointer-events: none;
   animation: am-loading-shimmer 2s ease-in-out infinite;
 }
@@ -213,13 +184,13 @@
 .am-loading-progress-text {
   margin-top: 10px;
   font-size: 13px;
-  color: rgba(232, 220, 200, 0.64);
+  color: var(--am-loading-progress-text);
 }
 
 .am-loading-progress-note {
   margin-top: 6px;
   font-size: 11px;
-  color: rgba(232, 220, 200, 0.42);
+  color: var(--am-loading-progress-note);
 }
 
 .am-loading-speed-note {
@@ -232,32 +203,24 @@
 }
 
 .am-loading-speed-note--lite {
-  background: rgba(74, 127, 181, 0.08);
-  border: 1px solid rgba(74, 127, 181, 0.2);
-  color: rgba(122, 142, 168, 0.82);
+  background: var(--am-loading-speed-lite-bg);
+  border: 1px solid var(--am-loading-speed-lite-border);
+  color: var(--am-loading-speed-lite-text);
 }
 
 .am-loading-speed-note--pro {
-  background: rgba(200, 120, 80, 0.08);
-  border: 1px solid rgba(200, 120, 80, 0.2);
-  color: rgba(212, 160, 84, 0.82);
+  background: var(--am-loading-speed-pro-bg);
+  border: 1px solid var(--am-loading-speed-pro-border);
+  color: var(--am-loading-speed-pro-text);
 }
 
 .am-loading-action-card {
   margin-top: 18px;
   padding: 18px;
   border-radius: 22px;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 248, 239, 0.12),
-      rgba(255, 244, 229, 0.06)
-    ),
-    rgba(23, 36, 63, 0.9);
-  border: 1px solid rgba(212, 160, 84, 0.14);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 18px 40px rgba(8, 14, 27, 0.24);
+  background: var(--am-loading-action-card-bg);
+  border: 1px solid var(--am-loading-action-card-border);
+  box-shadow: var(--am-loading-action-card-shadow);
 }
 
 .am-loading-action-card__copy strong {
@@ -271,7 +234,7 @@
   margin: 8px 0 0;
   font-size: 12px;
   line-height: 1.7;
-  color: rgba(232, 220, 200, 0.72);
+  color: var(--am-loading-action-copy);
 }
 
 .am-loading-action-button {
@@ -279,14 +242,14 @@
   margin-top: 14px;
   padding: 12px 18px;
   border-radius: var(--am-radius-pill);
-  border: 1px solid rgba(212, 160, 84, 0.18);
-  background: rgba(255, 248, 239, 0.92);
+  border: 1px solid var(--am-loading-action-button-border);
+  background: var(--am-loading-action-button-bg);
   color: var(--am-action-secondary-text);
   font-family: var(--am-font-display);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  box-shadow: var(--am-loading-action-button-shadow);
 }
 
 .am-loading-log-title,
@@ -296,7 +259,7 @@
 }
 
 .am-loading-log-title {
-  color: rgba(232, 220, 200, 0.38);
+  color: var(--am-loading-log-title);
 }
 
 .am-loading-log-list {
@@ -326,7 +289,7 @@
 }
 
 .am-loading-log-item.is-done .am-loading-log-dot {
-  background: rgba(72, 187, 120, 0.15);
+  background: var(--am-loading-log-done-dot);
 }
 
 .am-loading-log-item.is-done .am-loading-log-dot svg {
@@ -339,11 +302,11 @@
 }
 
 .am-loading-log-item.is-active .am-loading-log-dot {
-  background: rgba(212, 168, 83, 0.15);
+  background: var(--am-loading-log-active-dot);
 }
 
 .am-loading-log-item.is-waiting {
-  color: rgba(113, 128, 150, 0.6);
+  color: var(--am-loading-log-waiting);
 }
 
 .am-loading-log-item.is-waiting .am-loading-log-dot {
@@ -351,7 +314,7 @@
 }
 
 .am-loading-log-item.is-waiting .am-loading-log-dot svg {
-  color: rgba(113, 128, 150, 0.5);
+  color: var(--am-loading-log-waiting-icon);
 }
 
 .am-loading-log-dot__pulse {
@@ -359,15 +322,15 @@
   height: 6px;
   border-radius: 50%;
   background: var(--am-text-accent);
-  box-shadow: 0 0 0 6px rgba(212, 168, 83, 0.14);
+  box-shadow: var(--am-loading-log-pulse-shadow);
   animation: am-loading-pulse 1.5s ease-in-out infinite;
 }
 
 .am-loading-tip-card {
-  background: rgba(250, 248, 245, 0.95);
+  background: var(--am-loading-tip-card-bg);
   color: var(--am-text-primary);
-  border: 1px solid rgba(200, 120, 80, 0.1);
-  box-shadow: 0 18px 38px rgba(15, 27, 51, 0.16);
+  border: 1px solid var(--am-loading-tip-card-border);
+  box-shadow: var(--am-loading-tip-card-shadow);
 }
 
 .am-loading-tip-head {
@@ -401,21 +364,21 @@
   width: 5px;
   height: 5px;
   border-radius: var(--am-radius-pill);
-  background: rgba(138, 124, 108, 0.2);
+  background: var(--am-loading-tip-dots-bg);
 }
 
 .am-loading-tip-dots span.is-active {
   width: 16px;
-  background: linear-gradient(90deg, #c87850, #d4a054);
+  background: var(--am-loading-tip-dots-active);
 }
 
 .am-loading-error-card {
   margin-top: 20px;
   padding: 14px 16px;
   border-radius: 20px;
-  background: rgba(194, 91, 86, 0.14);
-  border: 1px solid rgba(194, 91, 86, 0.28);
-  box-shadow: 0 16px 32px rgba(45, 12, 12, 0.18);
+  background: var(--am-loading-error-bg);
+  border: 1px solid var(--am-loading-error-border);
+  box-shadow: var(--am-loading-error-shadow);
 }
 
 .am-loading-error-card__title {
@@ -428,7 +391,7 @@
   margin: 6px 0 0;
   font-size: 12px;
   line-height: 1.6;
-  color: rgba(255, 226, 224, 0.86);
+  color: var(--am-loading-error-copy);
 }
 
 @keyframes am-loading-pulse {
