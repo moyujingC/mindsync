@@ -348,14 +348,14 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
           <span className="am-primary-cta__shine" aria-hidden="true" />
           <span className="am-primary-cta__label">开始体验</span>
         </button>
-      </section>
 
-      <div className={`am-scroll-cue${showScrollCue ? "" : " is-hidden"}`}>
-        <span>滑动了解详情</span>
-        <i className="am-scroll-cue__arrow" aria-hidden="true">
-          ⌄
-        </i>
-      </div>
+        <div className={`am-scroll-cue${showScrollCue ? "" : " is-hidden"}`}>
+          <span>滑动了解详情</span>
+          <i className="am-scroll-cue__arrow" aria-hidden="true">
+            ⌄
+          </i>
+        </div>
+      </section>
 
       <section className="am-landing-section am-landing-section--steps">
         <div className="am-landing-section__glow am-landing-section__glow--steps" />

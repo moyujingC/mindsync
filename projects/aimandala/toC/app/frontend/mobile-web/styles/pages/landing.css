@@ -216,7 +216,7 @@
 .am-scroll-cue {
   position: absolute;
   left: 50%;
-  bottom: calc(100vh - 118px);
+  bottom: 26px;
   z-index: 5;
   transform: translateX(-50%);
   display: flex;
@@ -254,7 +254,7 @@
 
 @media (max-width: 640px) {
   .am-scroll-cue {
-    bottom: calc(100vh - 110px);
+    bottom: 22px;
   }
 }
 
