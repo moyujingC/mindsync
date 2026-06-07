@@ -594,7 +594,7 @@
   position: relative;
   overflow: hidden;
   padding: 28px 22px 22px;
-  border-radius: 0;
+  border-radius: 28px 28px 0 0;
   background: var(--am-surface-primary);
   box-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
 }
@@ -651,9 +651,10 @@
   outline: none;
   background: transparent;
   color: #3d2e1e;
-  font-size: 15px;
+  font-size: 14px;
   font-family: var(--am-font-body);
-  font-weight: 500;
+  font-weight: 400;
+  opacity: 0.8;
 }
 
 .am-upload-text-input__control::placeholder {
