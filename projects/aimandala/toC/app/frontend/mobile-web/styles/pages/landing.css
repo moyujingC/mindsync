@@ -12,7 +12,7 @@
 }
 
 .am-landing-hero {
-  min-height: calc(100vh - 92px);
+  min-height: calc(100vh - 14px);
   z-index: 2;
   display: flex;
   flex-direction: column;
