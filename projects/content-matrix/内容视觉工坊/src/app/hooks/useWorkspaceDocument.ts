@@ -135,6 +135,10 @@ function markAssetsStaleForStyle(workspace: WorkspaceData, key: StyleSelectionKe
     };
   }
 
+  if (key === "wechatLayout") {
+    return workspace;
+  }
+
   return {
     ...workspace,
     covers: workspace.covers.map((item) =>
@@ -968,13 +972,38 @@ export function useWorkspaceDocument() {
     },
     setStyleSelection: (key: StyleSelectionKey, index: number) => {
       setWorkspace((prev) => {
-        const nextWorkspace = markAssetsStaleForStyle({
+        const baseWorkspace = {
           ...prev,
           styleSelections: {
             ...prev.styleSelections,
             [key]: index,
           },
-        }, key);
+        };
+
+        if (key === "wechatLayout") {
+          const nextWorkspace = withFreshDraftReview(baseWorkspace);
+          return {
+            ...nextWorkspace,
+            workflowStages: markDraftSyncPending(
+              {
+                ...nextWorkspace,
+                workflowStages: nextWorkspace.workflowStages.map((stage) =>
+                  stage.key === "layoutGeneration"
+                    ? {
+                        ...stage,
+                        status: "success",
+                        detail: "公众号排版风格已更新",
+                        providerLabel: "本地排版器",
+                      }
+                    : stage,
+                ),
+              },
+              "排版风格已调整，可重新复制到公众号编辑器",
+            ),
+          };
+        }
+
+        const nextWorkspace = markAssetsStaleForStyle(baseWorkspace, key);
 
         return {
           ...nextWorkspace,

@@ -92,7 +92,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
         <div className="px-5 pb-3">
           {/* legend — once, not repeated per block */}
           <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-2 px-0.5">
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-[#cfc6b3]"></span>{isTextMode ? "文本输入" : "来自 Markdown"}</span>
+            <span className="inline-flex items-center gap-1"><span className="w-2 h-px" style={{ background: theme.placeholderBorder }}></span>{isTextMode ? "文本输入" : "来自 Markdown"}</span>
             <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-primary/55"></span>{isTextMode ? "仅生成图片" : "系统加工"}</span>
           </div>
 
@@ -104,11 +104,11 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                   {data.draftReview.preview.title}
                 </h1>
                 <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
-                <div className="w-5 h-5 rounded-full bg-primary/90 text-primary-foreground flex items-center justify-center text-[9px]" style={{ fontFamily: "var(--font-serif)" }}>墨</div>
-                <span className="text-foreground/80">{data.draftReview.preview.accountName}</span>
+                <div className="w-5 h-5 rounded-full text-primary-foreground flex items-center justify-center text-[9px]" style={{ fontFamily: "var(--font-serif)", background: theme.headingColor }}>墨</div>
+                <span style={{ color: theme.bodyColor }}>{data.draftReview.preview.accountName}</span>
                   <span>·</span>
                   <span>{data.draftReview.preview.publishDate}</span>
-                  <span className="ml-auto text-primary/80">关注</span>
+                  <span className="ml-auto" style={{ color: theme.headingColor }}>关注</span>
                 </div>
               </div>
 
@@ -218,7 +218,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
         <ol className="space-y-2 pl-0.5">
           {block.items.map((item, i) => (
             <li key={`${item}-${i}`} className="flex gap-2.5">
-              <span className="text-[#1f3a36] shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{i + 1}.</span>
+              <span className="shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600, color: theme.headingColor }}>{i + 1}.</span>
               <div>{item}</div>
             </li>
           ))}
@@ -287,7 +287,7 @@ function ReviewCheckCard({ check }: { check: ReviewCheck }) {
 function InheritBlock({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`relative ${className}`}>
-      <span className="absolute -left-3 top-0 bottom-0 w-px bg-[#cfc6b3]" aria-hidden></span>
+      <span className="absolute -left-3 top-0 bottom-0 w-px bg-border/80" aria-hidden></span>
       {children}
     </div>
   );
