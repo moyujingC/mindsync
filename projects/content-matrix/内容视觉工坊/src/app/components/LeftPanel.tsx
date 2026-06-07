@@ -12,12 +12,23 @@ interface LeftPanelProps {
   setInputMode: (mode: InputMode) => void;
   onImportMarkdown: (file: File) => Promise<void>;
   onGenerateAll: () => Promise<void>;
+  onSetOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => void;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function LeftPanel({ data, inputMode, setInputMode, onImportMarkdown, onGenerateAll, isTablet, isOpen, onClose }: LeftPanelProps) {
+export function LeftPanel({
+  data,
+  inputMode,
+  setInputMode,
+  onImportMarkdown,
+  onGenerateAll,
+  onSetOutputToggle,
+  isTablet,
+  isOpen,
+  onClose,
+}: LeftPanelProps) {
   const [activeStyle, setActiveStyle] = useState(data.activeStyleIndex);
   const [ratio, setRatio] = useState(data.cardSize.ratio);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -156,7 +167,10 @@ export function LeftPanel({ data, inputMode, setInputMode, onImportMarkdown, onG
                 <span>{item.label}</span>
                 <div className="flex items-center gap-2.5">
                   <span className="text-[10.5px] text-muted-foreground">{item.hint}</span>
-                  <Switch defaultChecked={item.enabled} />
+                  <Switch
+                    checked={item.enabled}
+                    onCheckedChange={(checked) => onSetOutputToggle(item.key, checked)}
+                  />
                 </div>
               </div>
             ))}

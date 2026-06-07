@@ -38,6 +38,10 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
   };
 }
 
+function isOutputEnabled(workspace: WorkspaceData, key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover") {
+  return workspace.outputToggles.find((item) => item.key === key)?.enabled ?? false;
+}
+
 export function useWorkspaceDocument() {
   const [workspace, setWorkspace] = useState<WorkspaceData>(initialWorkspaceData);
   const [rawMarkdownText, setRawMarkdownText] = useState<string>("");
@@ -163,19 +167,28 @@ export function useWorkspaceDocument() {
   }
 
   async function regenerateAllCardImages() {
-    const cards = workspace.knowledgeCards;
-    if (cards.length === 0) return;
+    const shouldGenerateCards = isOutputEnabled(workspace, "knowledgeCards");
+    const enabledCoverKeys = workspace.covers
+      .filter((cover) => isOutputEnabled(workspace, cover.key))
+      .map((cover) => cover.key);
+    const cards = shouldGenerateCards ? workspace.knowledgeCards : [];
+
+    if (cards.length === 0 && enabledCoverKeys.length === 0) return;
 
     setWorkspace((prev) => ({
       ...prev,
-      knowledgeCards: prev.knowledgeCards.map((item) => ({ ...item, state: "processing" })),
-      covers: prev.covers.map((item) => ({ ...item, state: "processing" })),
+      knowledgeCards: prev.knowledgeCards.map((item) =>
+        shouldGenerateCards ? { ...item, state: "processing" } : item,
+      ),
+      covers: prev.covers.map((item) =>
+        enabledCoverKeys.includes(item.key) ? { ...item, state: "processing", status: "生成中" } : item,
+      ),
       workflowStages: prev.workflowStages.map((stage) =>
         stage.key === "imageGeneration"
           ? {
               ...stage,
               status: "processing",
-              detail: `正在批量生成 ${prev.knowledgeCards.length} 张卡片和 ${prev.covers.length} 张封面…`,
+              detail: `正在批量生成 ${cards.length} 张卡片和 ${enabledCoverKeys.length} 张封面…`,
               providerLabel: "gpt-image-2",
               retryable: false,
             }
@@ -185,7 +198,7 @@ export function useWorkspaceDocument() {
 
     let successCount = 0;
     let failedCount = 0;
-    const totalAssets = cards.length + workspace.covers.length;
+    const totalAssets = cards.length + enabledCoverKeys.length;
 
     for (const card of cards) {
       try {
@@ -238,7 +251,7 @@ export function useWorkspaceDocument() {
       }
     }
 
-    for (const cover of workspace.covers) {
+    for (const cover of workspace.covers.filter((item) => enabledCoverKeys.includes(item.key))) {
       const request = buildCoverRequest(workspace, cover.key);
       if (!request) continue;
 
@@ -319,6 +332,8 @@ export function useWorkspaceDocument() {
   }
 
   async function regenerateCoverAsset(coverKey: "wechatCover" | "xiaohongshuCover") {
+    if (!isOutputEnabled(workspace, coverKey)) return;
+
     const request = buildCoverRequest(workspace, coverKey);
     if (!request) return;
 
@@ -380,5 +395,13 @@ export function useWorkspaceDocument() {
     regenerateCardImage,
     regenerateAllCardImages,
     regenerateCoverAsset,
+    setOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => {
+      setWorkspace((prev) => ({
+        ...prev,
+        outputToggles: prev.outputToggles.map((item) =>
+          item.key === key ? { ...item, enabled } : item,
+        ),
+      }));
+    },
   };
 }
