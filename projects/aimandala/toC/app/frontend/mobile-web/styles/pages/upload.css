@@ -703,7 +703,7 @@
 
 .am-theme-selector__scroll {
   display: flex;
-  gap: 14px;
+  gap: 11.2px;
   width: 100%;
   overflow-x: auto;
   padding-bottom: 12px;
