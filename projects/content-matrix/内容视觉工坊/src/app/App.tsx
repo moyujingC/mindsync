@@ -1,0 +1,58 @@
+import { TopNav } from "./components/TopNav";
+import { LeftPanel } from "./components/LeftPanel";
+import { CenterPanel } from "./components/CenterPanel";
+import { RightPanel } from "./components/RightPanel";
+import { workspaceData } from "./mockData";
+import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout";
+import { Button } from "./components/ui/button";
+import { PanelLeft, FileText } from "lucide-react";
+
+export default function App() {
+  const { layout, isTablet, setInputMode, toggleLeftPanel, toggleRightPanel, closePanels } = useWorkspaceLayout();
+
+  return (
+    <div className="size-full flex flex-col bg-background text-foreground" style={{ fontFamily: "var(--font-sans-cn)" }}>
+      <TopNav />
+      <div className="flex-1 min-h-0 flex relative overflow-hidden">
+        {isTablet && (
+          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="pointer-events-auto shadow-sm"
+              onClick={toggleLeftPanel}
+            >
+              <PanelLeft className="w-4 h-4" />
+              输入与设置
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="pointer-events-auto shadow-sm"
+              onClick={toggleRightPanel}
+            >
+              <FileText className="w-4 h-4" />
+              审稿预览
+            </Button>
+          </div>
+        )}
+
+        <LeftPanel
+          data={workspaceData}
+          inputMode={layout.inputMode}
+          setInputMode={setInputMode}
+          isTablet={isTablet}
+          isOpen={layout.isLeftPanelOpen}
+          onClose={closePanels}
+        />
+        <CenterPanel data={workspaceData} />
+        <RightPanel
+          data={workspaceData}
+          isTablet={isTablet}
+          isOpen={layout.isRightPanelOpen}
+          onClose={closePanels}
+        />
+      </div>
+    </div>
+  );
+}
