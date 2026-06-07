@@ -448,6 +448,112 @@
   );
   --am-report-entry-footnote-border: rgba(200, 120, 80, 0.16);
   --am-report-entry-footnote-bg: rgba(240, 230, 214, 0.92);
+  --mw-history-shell-bg:
+    radial-gradient(circle at 78% 5%, rgba(145, 134, 132, 0.2), transparent 18%),
+    linear-gradient(180deg, #0e1628 0%, #152038 40%, #111a30 100%);
+  --mw-history-shell-text: rgba(238, 232, 220, 0.78);
+  --mw-history-page-bg:
+    radial-gradient(circle at 14% 6%, rgba(200, 160, 100, 0.08), transparent 22%),
+    radial-gradient(circle at 92% 22%, rgba(212, 160, 84, 0.06), transparent 28%),
+    radial-gradient(circle at 12% 60%, rgba(158, 170, 155, 0.05), transparent 20%),
+    radial-gradient(circle at 55% 100%, rgba(200, 140, 80, 0.05), transparent 26%),
+    linear-gradient(rgba(16, 27, 49, 0.94), rgba(13, 24, 44, 0.98)),
+    url("../../assets/history-dunhuang-pattern-clean.png");
+  --mw-history-page-overlay:
+    radial-gradient(circle at 20% 12%, rgba(232, 184, 101, 0.08), transparent 28%),
+    radial-gradient(circle at 80% 18%, rgba(110, 142, 173, 0.12), transparent 32%);
+  --mw-history-intro-border: rgba(212, 160, 84, 0.15);
+  --mw-history-intro-bg: linear-gradient(
+    160deg,
+    rgba(20, 32, 55, 0.9) 0%,
+    rgba(30, 45, 70, 0.5) 40%,
+    rgba(18, 28, 48, 0.8) 100%
+  );
+  --mw-history-intro-shadow: 0 4px 30px rgba(212, 160, 84, 0.08),
+    0 0 60px rgba(17, 26, 48, 0.5);
+  --mw-history-intro-halo-top: radial-gradient(
+    ellipse,
+    rgba(212, 160, 84, 0.12) 0%,
+    rgba(212, 160, 84, 0.04) 50%,
+    transparent 70%
+  );
+  --mw-history-intro-halo-bottom: radial-gradient(
+    ellipse,
+    rgba(200, 120, 80, 0.08) 0%,
+    transparent 70%
+  );
+  --mw-history-intro-sky:
+    linear-gradient(rgba(18, 29, 50, 0.42), rgba(10, 18, 34, 0.66)),
+    linear-gradient(160deg, transparent 0 56%, rgba(4, 10, 22, 0.34) 56%),
+    linear-gradient(22deg, transparent 0 27%, rgba(58, 78, 116, 0.22) 27% 38%, transparent 38%),
+    linear-gradient(340deg, transparent 0 63%, rgba(63, 83, 120, 0.24) 63% 77%, transparent 77%);
+  --mw-history-intro-moon-shadow:
+    inset -8px 3px 0 rgba(212, 160, 84, 0.65),
+    0 0 40px rgba(212, 160, 84, 0.35),
+    0 0 80px rgba(212, 160, 84, 0.18),
+    0 0 120px rgba(212, 160, 84, 0.08);
+  --mw-history-intro-cloud-one: radial-gradient(
+    ellipse,
+    rgba(200, 180, 150, 0.18) 0%,
+    rgba(158, 170, 155, 0.08) 50%,
+    transparent 80%
+  );
+  --mw-history-intro-cloud-two: radial-gradient(
+    ellipse,
+    rgba(212, 180, 120, 0.14) 0%,
+    transparent 75%
+  );
+  --mw-history-intro-cloud-three: radial-gradient(
+    ellipse,
+    rgba(200, 180, 150, 0.1) 0%,
+    transparent 75%
+  );
+  --mw-history-intro-star-one-bg: rgba(232, 220, 200, 0.7);
+  --mw-history-intro-star-one-shadow: 0 0 8px rgba(232, 220, 200, 0.5);
+  --mw-history-intro-star-two-bg: rgba(212, 160, 84, 0.6);
+  --mw-history-intro-star-two-shadow: 0 0 6px rgba(212, 160, 84, 0.4);
+  --mw-history-intro-star-three-bg: rgba(232, 220, 200, 0.55);
+  --mw-history-intro-star-three-shadow: 0 0 5px rgba(232, 220, 200, 0.35);
+  --mw-history-intro-star-four-bg: rgba(232, 220, 200, 0.45);
+  --mw-history-intro-star-four-shadow: 0 0 4px rgba(232, 220, 200, 0.25);
+  --mw-history-intro-star-five-bg: rgba(212, 160, 84, 0.4);
+  --mw-history-intro-star-five-shadow: 0 0 4px rgba(212, 160, 84, 0.2);
+  --mw-history-intro-crane: rgba(232, 220, 200, 0.18);
+  --mw-history-intro-crane-soft: rgba(232, 220, 200, 0.12);
+  --mw-history-intro-mountain-back-right: linear-gradient(
+    to top,
+    rgba(6, 10, 20, 1) 0%,
+    rgba(10, 16, 30, 0.7) 50%,
+    transparent 100%
+  );
+  --mw-history-intro-mountain-back-left: linear-gradient(
+    to top,
+    rgba(6, 10, 20, 1) 0%,
+    rgba(10, 16, 30, 0.65) 50%,
+    transparent 100%
+  );
+  --mw-history-intro-mountain-mid: linear-gradient(
+    to top,
+    rgba(12, 18, 35, 0.85) 0%,
+    rgba(16, 24, 45, 0.35) 65%,
+    transparent 100%
+  );
+  --mw-history-intro-mountain-edge: rgba(212, 160, 84, 0.15);
+  --mw-history-intro-lotus-bg: radial-gradient(
+    ellipse at bottom,
+    rgba(212, 160, 84, 0.18) 0%,
+    transparent 80%
+  );
+  --mw-history-intro-lotus-shadow: 0 -3px 14px rgba(212, 160, 84, 0.1);
+  --mw-history-intro-glow-line: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 160, 84, 0.25) 30%,
+    rgba(200, 120, 80, 0.2) 70%,
+    transparent
+  );
+  --mw-history-intro-title: #ede4d4;
+  --mw-history-intro-copy: rgba(232, 220, 200, 0.45);
 
   /* Dev-shell local tokens */
   --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
