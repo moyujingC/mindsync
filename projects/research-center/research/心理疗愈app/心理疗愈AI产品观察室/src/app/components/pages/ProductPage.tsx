@@ -69,11 +69,21 @@ export function ProductPage({ slug }: Props) {
         <Container>
           <div className="grid md:grid-cols-12 gap-10">
             <article className="md:col-span-8 prose-cn">
+              <SectionDivider
+                eyebrow="PRODUCT READ"
+                title="先看懂这款产品到底在解决什么问题"
+                body="这一部分先不急着谈模型和架构，而是先回答：它面向谁、解决什么痛点、体验是怎么成立的。"
+              />
               <Block label="01" title="产品定位"><p>{detail.positioning}</p></Block>
               <Block label="02" title="用户痛点"><ul>{detail.userPain.map((x, i) => <li key={i}>{x}</li>)}</ul></Block>
               <Block label="03" title="核心体验"><p>{detail.coreExperienceLong}</p></Block>
               <Block label="04" title="心理学机制"><ul>{detail.psychMechanism.map((x, i) => <li key={i}>{x}</li>)}</ul></Block>
               <Block label="05" title="AI 的角色"><p>{detail.aiRole}</p></Block>
+              <SectionDivider
+                eyebrow="SYSTEM VIEW"
+                title="再看它背后的技术、边界和商业判断"
+                body="这部分不是为了证明“技术多先进”，而是帮助读者判断：这套产品大概怎么运转、哪里最容易出问题、哪些结论还不能下得太早。"
+              />
               {detail.technical && (
                 <Block label="06" title="AI 技术架构">
                   <TechnicalSection technical={detail.technical} />
@@ -200,12 +210,38 @@ function ProductStubPage({ p }: { p: Product }) {
 
 function Block({ label, title, children }: { label: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="mb-12">
-      <div className="flex items-baseline gap-3 mb-3">
-        <span className="font-mono text-[12px] tracking-widest" style={{ color: 'var(--accent-green)' }}>{label}</span>
-        <h2 className="m-0" style={{ fontSize: '1.35rem' }}>{title}</h2>
+    <section className="mb-12 md:grid md:grid-cols-12 md:gap-8">
+      <div className="md:col-span-3 mb-3 md:mb-0">
+        <div className="flex items-baseline gap-3 md:block">
+          <span className="font-mono text-[12px] tracking-widest block mb-2" style={{ color: 'var(--accent-green)' }}>{label}</span>
+          <h2 className="m-0 leading-tight" style={{ fontSize: '1.2rem' }}>{title}</h2>
+        </div>
       </div>
-      <div className="hairline-t pt-4">{children}</div>
+      <div className="md:col-span-9">
+        <div className="hairline-t pt-4">{children}</div>
+      </div>
+    </section>
+  );
+}
+
+function SectionDivider({
+  eyebrow,
+  title,
+  body,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <section className="mb-10 pb-4 hairline-b">
+      <div className="font-mono text-[11px] tracking-widest uppercase mb-3" style={{ color: 'var(--ink-tertiary)' }}>
+        {eyebrow}
+      </div>
+      <h2 className="m-0 mb-3" style={{ fontSize: '1.45rem' }}>{title}</h2>
+      <p className="m-0 max-w-[760px]" style={{ color: 'var(--ink-secondary)', lineHeight: 1.8 }}>
+        {body}
+      </p>
     </section>
   );
 }
