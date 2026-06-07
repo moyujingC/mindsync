@@ -45,14 +45,14 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
             </div>
             <div>
-              <div className="text-[12.5px] text-foreground" style={{ fontWeight: 500 }}>可同步到草稿箱</div>
-              <div className="text-[10.5px] text-muted-foreground mt-0.5">4 项审稿检查全部通过</div>
+              <div className="text-[12.5px] text-foreground" style={{ fontWeight: 500 }}>{data.draftReview.readyTitle}</div>
+              <div className="text-[10.5px] text-muted-foreground mt-0.5">{data.draftReview.readyDescription}</div>
             </div>
           </div>
           <span className="text-[10px] text-muted-foreground tracking-[0.15em]">READY</span>
         </div>
         <div className="grid grid-cols-2 gap-1.5">
-          {data.reviewChecks.map((check) => <ReviewCheckCard key={check.title} check={check} />)}
+          {data.draftReview.reviewChecks.map((check) => <ReviewCheckCard key={check.title} check={check} />)}
         </div>
       </div>
 
@@ -183,7 +183,7 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
               </span>
             </div>
             <ul className="divide-y divide-border/60">
-              {data.syncStatus.map((row) => (
+              {data.draftReview.syncStatus.map((row) => (
                 <li key={row.label} className="px-4 py-2.5 flex items-center gap-2.5 text-[11.5px]">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                   <span className="shrink-0" style={{ fontWeight: 500 }}>{row.label}</span>

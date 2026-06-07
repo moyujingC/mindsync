@@ -6,7 +6,34 @@ export const workspaceData: WorkspaceData = {
     updatedAt: "14:23",
     wordCount: 3284,
     title: "在算法替你思考之前，先把判断力留下来",
-    statsLine: "1 标题 · 6 小标题 · 14 加粗 · 3 引用",
+  },
+  parsedMarkdown: {
+    status: "parsed",
+    structure: {
+      headings: 1,
+      subheadings: 6,
+      bolds: 14,
+      quotes: 3,
+      lists: 4,
+    },
+    structureTags: ["1 标题", "6 小标题", "14 加粗", "3 引用"],
+  },
+  analysis: {
+    cardOutlineTitles: [
+      "信息过载时代，判断力比知识更稀缺",
+      "AI 给的是答案，编辑要的是问题",
+      "三个练习：每天留 20 分钟「不被喂养」的时间",
+      "把「我觉得」重新放进文章里",
+    ],
+    keyQuotes: [
+      "提示词不是工作，提问才是。",
+      "AI 写得越像范文，越要敢于不工整。",
+      "把判断的肌肉，每天养 20 分钟。",
+    ],
+    coverTheme: {
+      title: "判断力 · 在算法之外",
+      keywords: "判断力 / 信息筛选 / 提问 / 编辑视角",
+    },
   },
   outputToggles: [
     { key: "knowledgeCards", label: "生成知识卡片", hint: "4 张", enabled: true },
@@ -47,25 +74,18 @@ export const workspaceData: WorkspaceData = {
     },
   ],
   activeStyleIndex: 0,
-  summaryMeta: [
-    { label: "知识卡片", value: "4 张" },
-    { label: "封面", value: "2 张" },
-    { label: "排版", value: "已生成", emerald: true },
-    { label: "生成时间", value: "14:31" },
-  ],
-  cardOutlineTitles: [
-    "信息过载时代，判断力比知识更稀缺",
-    "AI 给的是答案，编辑要的是问题",
-    "三个练习：每天留 20 分钟「不被喂养」的时间",
-    "把「我觉得」重新放进文章里",
-  ],
-  keyQuotes: [
-    "提示词不是工作，提问才是。",
-    "AI 写得越像范文，越要敢于不工整。",
-    "把判断的肌肉，每天养 20 分钟。",
-  ],
-  coverThemeTitle: "判断力 · 在算法之外",
-  coverThemeKeywords: "判断力 / 信息筛选 / 提问 / 编辑视角",
+  generation: {
+    generatedAt: "14:31",
+    cardsCount: 4,
+    coversCount: 2,
+    layoutStatus: "已生成",
+    summaryMeta: [
+      { label: "知识卡片", value: "4 张" },
+      { label: "封面", value: "2 张" },
+      { label: "排版", value: "已生成", emerald: true },
+      { label: "生成时间", value: "14:31" },
+    ],
+  },
   knowledgeCards: [
     {
       n: "01",
@@ -115,16 +135,20 @@ export const workspaceData: WorkspaceData = {
       img: "https://images.unsplash.com/photo-1646600950096-0489e2a461cc?w=900&q=80",
     },
   ],
-  reviewChecks: [
-    { title: "Markdown 结构", detail: "6 H2 · 3 引用 · 4 列表", status: "pass" },
-    { title: "重点句识别", detail: "3 处金句已强调", status: "pass" },
-    { title: "插图位匹配", detail: "4 / 4 完成", status: "pass" },
-    { title: "公众号格式", detail: "标题、首图、摘要合规", status: "pass" },
-  ],
-  syncStatus: [
-    { label: "正文排版", note: "Markdown 已转为公众号 HTML · 6 段落" },
-    { label: "卡片素材上传", note: "4 张 · 上传至素材库「2026-06」" },
-    { label: "封面上传", note: "公众号封面 v2 · 小红书封面 v1" },
-    { label: "草稿创建", note: "draft_id: msg_8c91a · 公众号后台可见" },
-  ],
+  draftReview: {
+    readyTitle: "可同步到草稿箱",
+    readyDescription: "4 项审稿检查全部通过",
+    reviewChecks: [
+      { title: "Markdown 结构", detail: "6 H2 · 3 引用 · 4 列表", status: "pass" },
+      { title: "重点句识别", detail: "3 处金句已强调", status: "pass" },
+      { title: "插图位匹配", detail: "4 / 4 完成", status: "pass" },
+      { title: "公众号格式", detail: "标题、首图、摘要合规", status: "pass" },
+    ],
+    syncStatus: [
+      { label: "正文排版", note: "Markdown 已转为公众号 HTML · 6 段落" },
+      { label: "卡片素材上传", note: "4 张 · 上传至素材库「2026-06」" },
+      { label: "封面上传", note: "公众号封面 v2 · 小红书封面 v1" },
+      { label: "草稿创建", note: "draft_id: msg_8c91a · 公众号后台可见" },
+    ],
+  },
 };

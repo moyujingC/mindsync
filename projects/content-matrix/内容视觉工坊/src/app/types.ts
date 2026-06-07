@@ -4,6 +4,8 @@ export type CardGenerationState = "ok" | "failed";
 
 export type ReviewCheckStatus = "pass" | "warn" | "fail";
 
+export type GenerationStageStatus = "idle" | "processing" | "success" | "failed";
+
 export interface StyleAsset {
   name: string;
   desc: string;
@@ -17,7 +19,20 @@ export interface UploadedArticle {
   updatedAt: string;
   wordCount: number;
   title: string;
-  statsLine: string;
+}
+
+export interface MarkdownStructureSummary {
+  headings: number;
+  subheadings: number;
+  bolds: number;
+  quotes: number;
+  lists: number;
+}
+
+export interface ParsedMarkdownDocument {
+  status: "parsed";
+  structure: MarkdownStructureSummary;
+  structureTags: string[];
 }
 
 export interface OutputToggleItem {
@@ -57,6 +72,32 @@ export interface DraftMetaSummaryItem {
   emerald?: boolean;
 }
 
+export interface CoverTheme {
+  title: string;
+  keywords: string;
+}
+
+export interface ArticleAnalysis {
+  cardOutlineTitles: string[];
+  keyQuotes: string[];
+  coverTheme: CoverTheme;
+}
+
+export interface GenerationOverview {
+  generatedAt: string;
+  cardsCount: number;
+  coversCount: number;
+  layoutStatus: string;
+  summaryMeta: DraftMetaSummaryItem[];
+}
+
+export interface DraftReview {
+  readyTitle: string;
+  readyDescription: string;
+  reviewChecks: ReviewCheck[];
+  syncStatus: SyncStatusItem[];
+}
+
 export interface ReviewCheck {
   title: string;
   detail: string;
@@ -70,19 +111,16 @@ export interface SyncStatusItem {
 
 export interface WorkspaceData {
   article: UploadedArticle;
+  parsedMarkdown: ParsedMarkdownDocument;
+  analysis: ArticleAnalysis;
   outputToggles: OutputToggleItem[];
   cardSize: CardSizeSpec;
   styleAssets: StyleAsset[];
   activeStyleIndex: number;
-  summaryMeta: DraftMetaSummaryItem[];
-  cardOutlineTitles: string[];
-  keyQuotes: string[];
-  coverThemeTitle: string;
-  coverThemeKeywords: string;
+  generation: GenerationOverview;
   knowledgeCards: KnowledgeCardItem[];
   covers: CoverAsset[];
-  reviewChecks: ReviewCheck[];
-  syncStatus: SyncStatusItem[];
+  draftReview: DraftReview;
 }
 
 export interface WorkspaceLayoutState {

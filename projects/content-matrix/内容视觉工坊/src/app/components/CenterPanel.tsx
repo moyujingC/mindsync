@@ -21,13 +21,13 @@ export function CenterPanel({ data }: CenterPanelProps) {
             {data.article.title}
           </h1>
           <div className="hidden lg:flex items-baseline gap-7 shrink-0 text-[12px]">
-            {data.summaryMeta.map((item) => (
+            {data.generation.summaryMeta.map((item) => (
               <Meta key={item.label} label={item.label} value={item.value} emerald={item.emerald} />
             ))}
           </div>
         </div>
         <div className="mt-1.5 text-[11px] text-muted-foreground">
-          {data.article.wordCount.toLocaleString()} 字 · 6 小标题 · 风格 {data.styleAssets[data.activeStyleIndex].name}
+          {data.article.wordCount.toLocaleString()} 字 · {data.parsedMarkdown.structure.subheadings} 小标题 · 风格 {data.styleAssets[data.activeStyleIndex].name}
         </div>
       </div>
 
@@ -51,7 +51,7 @@ export function CenterPanel({ data }: CenterPanelProps) {
                 <span>对应 H2 段落</span>
               </div>
               <ol className="divide-y divide-border/50">
-                {data.cardOutlineTitles.map((title, i) => (
+                {data.analysis.cardOutlineTitles.map((title, i) => (
                   <li key={i} className="px-4 py-2.5 flex items-baseline gap-3 text-[12.5px] hover:bg-secondary/25 transition-colors">
                     <span className="text-[10px] text-muted-foreground tracking-widest shrink-0">{String(i + 1).padStart(2, "0")}</span>
                     <span className="text-foreground/90 flex-1 leading-snug" style={{ fontFamily: "var(--font-serif)" }}>{title}</span>
@@ -66,7 +66,7 @@ export function CenterPanel({ data }: CenterPanelProps) {
                   <span className="text-[10.5px] text-muted-foreground tracking-wide">识别金句 · 将在排版中强调</span>
                 </div>
                 <div className="space-y-2">
-                  {data.keyQuotes.map((q, i) => (
+                  {data.analysis.keyQuotes.map((q, i) => (
                     <div key={i} className="text-[12.5px] leading-snug pl-3 border-l-2 border-primary/40 text-foreground/90" style={{ fontFamily: "var(--font-serif)" }}>
                       「{q}」
                     </div>
@@ -75,8 +75,8 @@ export function CenterPanel({ data }: CenterPanelProps) {
               </div>
               <div className="rounded-lg border border-border bg-card/70 p-4">
                 <div className="text-[10.5px] text-muted-foreground mb-1 tracking-wide">封面主题</div>
-                <div className="text-[14px] text-foreground/95 leading-snug" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{data.coverThemeTitle}</div>
-                <div className="text-[10.5px] text-muted-foreground mt-1.5">{data.coverThemeKeywords}</div>
+                <div className="text-[14px] text-foreground/95 leading-snug" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{data.analysis.coverTheme.title}</div>
+                <div className="text-[10.5px] text-muted-foreground mt-1.5">{data.analysis.coverTheme.keywords}</div>
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@ export function CenterPanel({ data }: CenterPanelProps) {
             <div className="flex items-baseline gap-3">
               <span className="text-[10px] text-muted-foreground tracking-[0.2em]">03</span>
               <h3 className="text-[17px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>图片生成结果</h3>
-              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.knowledgeCards.length} 卡片 + {data.covers.length} 封面 · {data.styleAssets[data.activeStyleIndex].name}</span>
+              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 卡片 + {data.generation.coversCount} 封面 · {data.styleAssets[data.activeStyleIndex].name}</span>
             </div>
             <button className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11.5px] px-2 py-1 rounded hover:bg-secondary/50"><RefreshCw className="w-3 h-3" /> 全部重生成</button>
           </div>

@@ -78,7 +78,7 @@ export function LeftPanel({ data, inputMode, setInputMode, isTablet, isOpen, onC
               </div>
             </div>
             <div className="px-4 py-2.5 border-t border-border/60 flex items-center justify-between text-[11px] text-muted-foreground">
-              <span>{data.article.statsLine}</span>
+              <span>{data.parsedMarkdown.structureTags.join(" · ")}</span>
               <button className="text-primary/85 hover:text-primary inline-flex items-center gap-1">
                 <RefreshCw className="w-3 h-3" /> 重传
               </button>
