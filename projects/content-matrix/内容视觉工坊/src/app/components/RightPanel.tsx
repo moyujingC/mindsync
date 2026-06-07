@@ -5,12 +5,14 @@ import type { DraftPreviewBlock, GenerationStageStatus, ReviewCheck, WorkspaceDa
 
 interface RightPanelProps {
   data: WorkspaceData;
+  copyFeedback: string;
+  onCopyWechatHtml: () => Promise<void>;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps) {
+export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isOpen, onClose }: RightPanelProps) {
   const draftSyncStage = data.workflowStages.find((stage) => stage.key === "draftSync");
   const panelClassName = isTablet
     ? `absolute inset-y-0 right-0 z-30 w-[min(464px,96vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "translate-x-full"}`
@@ -133,7 +135,7 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
             <div className="px-4 py-3 border-b border-border/70 flex items-center justify-between">
               <div>
                 <div className="text-[12px]" style={{ fontWeight: 500 }}>草稿同步状态</div>
-                <div className="text-[10.5px] text-muted-foreground mt-0.5">{draftSyncStage?.detail ?? "尚未同步到公众号草稿箱"}</div>
+                <div className="text-[10.5px] text-muted-foreground mt-0.5">{copyFeedback || draftSyncStage?.detail || "尚未复制公众号正文"}</div>
               </div>
               <span className={`inline-flex items-center gap-1 text-[10.5px] px-2 py-1 rounded ${
                 draftSyncStage?.status === "success"
@@ -158,19 +160,23 @@ export function RightPanel({ data, isTablet, isOpen, onClose }: RightPanelProps)
 
       {/* Actions */}
       <div className="px-5 py-3.5 border-t border-border bg-card/80 shrink-0">
-        <Button className="w-full h-10 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[inset_0_-1px_0_rgba(0,0,0,0.18)]">
-          <CheckCircle2 className="w-4 h-4" /> 同步到公众号草稿
+        <Button
+          onClick={() => void onCopyWechatHtml()}
+          className="w-full h-10 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[inset_0_-1px_0_rgba(0,0,0,0.18)]"
+        >
+          <CheckCircle2 className="w-4 h-4" />
+          复制公众号正文
         </Button>
         <div className="mt-2 flex items-center justify-between text-[11.5px]">
           <button className="text-foreground/85 hover:text-foreground inline-flex items-center gap-1 px-1.5 py-1">
-            <RefreshCw className="w-3 h-3" /> 重新同步
+            <RefreshCw className="w-3 h-3" /> 重新生成排版
           </button>
           <span className="text-border">·</span>
           <button className="text-foreground/85 hover:text-foreground inline-flex items-center gap-1 px-1.5 py-1">
-            <ExternalLink className="w-3 h-3" /> 打开草稿
+            <ExternalLink className="w-3 h-3" /> 打开公众号编辑器
           </button>
           <span className="text-border">·</span>
-          <span className="text-[10.5px] text-muted-foreground">仅写入草稿箱</span>
+          <span className="text-[10.5px] text-muted-foreground">先复制再粘贴</span>
         </div>
       </div>
       </aside>

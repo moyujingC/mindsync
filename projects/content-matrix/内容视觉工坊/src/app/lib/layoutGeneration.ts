@@ -9,6 +9,15 @@ import type {
   WorkspaceData,
 } from "../types";
 
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function cleanInlineMarkdown(text: string) {
   return text
     .replace(/\*\*([^*]+)\*\*/g, "$1")
@@ -144,10 +153,89 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
   };
 }
 
+function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview) {
+  const wechatCover = workspace.covers.find((item) => item.key === "wechatCover" && item.img);
+  const htmlParts: string[] = [
+    `<section data-tool="content-matrix" style="font-size:16px;line-height:1.8;color:#222222;">`,
+  ];
+
+  if (wechatCover?.img) {
+    htmlParts.push(
+      `<p style="margin:0 0 20px;"><img src="${escapeHtml(wechatCover.img)}" alt="${escapeHtml(workspace.article.title)}" style="display:block;width:100%;max-width:720px;height:auto;border-radius:6px;" /></p>`,
+    );
+  }
+
+  if (preview.intro) {
+    htmlParts.push(
+      `<p style="margin:0 0 18px;color:#666666;font-size:15px;"><em>${escapeHtml(preview.intro)}</em></p>`,
+    );
+  }
+
+  for (const block of preview.blocks) {
+    if (block.type === "heading2") {
+      htmlParts.push(
+        `<h2 style="margin:28px 0 12px;font-size:22px;line-height:1.45;color:#1f3a36;">${escapeHtml(block.text)}</h2>`,
+      );
+      continue;
+    }
+
+    if (block.type === "paragraph") {
+      htmlParts.push(`<p style="margin:0 0 18px;">${escapeHtml(block.text)}</p>`);
+      continue;
+    }
+
+    if (block.type === "blockquote") {
+      htmlParts.push(
+        `<blockquote style="margin:20px 0;padding:14px 16px;border-left:4px solid #1f3a36;background:#f6f2e8;color:#3a3a3a;">${escapeHtml(block.text)}</blockquote>`,
+      );
+      continue;
+    }
+
+    if (block.type === "ordered-list") {
+      htmlParts.push(`<ol style="margin:0 0 18px;padding-left:22px;">`);
+      for (const item of block.items) {
+        htmlParts.push(`<li style="margin:0 0 8px;">${escapeHtml(item)}</li>`);
+      }
+      htmlParts.push(`</ol>`);
+      continue;
+    }
+
+    if (block.type === "image") {
+      const card = workspace.knowledgeCards.find((item) => item.n === block.cardNumber);
+      if (card?.img) {
+        htmlParts.push(
+          `<figure style="margin:24px 0;text-align:center;"><img src="${escapeHtml(card.img)}" alt="${escapeHtml(card.title)}" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border-radius:6px;" /><figcaption style="margin-top:8px;font-size:13px;color:#888888;">${escapeHtml(block.caption)}</figcaption></figure>`,
+        );
+      } else {
+        htmlParts.push(
+          `<p style="margin:18px 0;padding:12px 14px;background:#faf6ee;border:1px dashed #d8cfbd;color:#8a7f6b;">[图片待补：${escapeHtml(block.caption)}]</p>`,
+        );
+      }
+      continue;
+    }
+
+    if (block.type === "cta") {
+      htmlParts.push(
+        `<section style="margin:32px 0 8px;padding-top:18px;border-top:1px dashed #d8cfbd;text-align:center;"><p style="margin:0 0 12px;color:#1f3a36;">${escapeHtml(block.title)}</p><p style="margin:0;"><span style="display:inline-block;padding:7px 14px;border-radius:999px;background:#1f3a36;color:#ffffff;font-size:13px;">${escapeHtml(block.buttonText)}</span></p></section>`,
+      );
+    }
+  }
+
+  htmlParts.push(`</section>`);
+  return htmlParts.join("");
+}
+
 export function buildDraftReview(workspace: WorkspaceData): DraftReview {
   const imagePlacements = buildImagePlacements(
     workspace.knowledgeCards,
     workspace.cardPlan.map((item) => item.title),
+  );
+
+  const preview = buildPreview(
+    workspace.article.rawText,
+    workspace.article.title,
+    "墨予镜",
+    imagePlacements,
   );
 
   return {
@@ -158,14 +246,10 @@ export function buildDraftReview(workspace: WorkspaceData): DraftReview {
       { label: "正文排版", note: `Markdown 已转为公众号阅读稿 · ${workspace.cardPlan.length} 个内容段` },
       { label: "卡片插图位", note: `${imagePlacements.length} 处插图位置已编排` },
       { label: "封面状态", note: "已保留公众号封面和小红书封面的输出位" },
-      { label: "草稿同步", note: "尚未同步到公众号草稿箱" },
+      { label: "正文复制", note: "可复制 HTML 后手动粘贴到公众号编辑器" },
     ],
     imagePlacements,
-    preview: buildPreview(
-      workspace.article.rawText,
-      workspace.article.title,
-      "墨予镜",
-      imagePlacements,
-    ),
+    preview,
+    editorHtml: renderWechatEditorHtml(workspace, preview),
   };
 }

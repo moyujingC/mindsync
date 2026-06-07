@@ -55,6 +55,7 @@ function markDraftSyncPending(workspace: WorkspaceData, detail: string): Workspa
 export function useWorkspaceDocument() {
   const [workspace, setWorkspace] = useState<WorkspaceData>(initialWorkspaceData);
   const [rawMarkdownText, setRawMarkdownText] = useState<string>("");
+  const [copyFeedback, setCopyFeedback] = useState<string>("");
 
   const derived = useMemo(() => {
     return {
@@ -103,6 +104,31 @@ export function useWorkspaceDocument() {
         },
         "排版已更新，可同步到公众号草稿箱",
       ),
+    }));
+  }
+
+  async function copyWechatHtml() {
+    const html = workspace.draftReview.editorHtml;
+    if (!html) return;
+
+    await navigator.clipboard.writeText(html);
+    setCopyFeedback("已复制 HTML，可直接粘贴到公众号编辑器");
+
+    setWorkspace((prev) => ({
+      ...prev,
+      workflowStages: prev.workflowStages.map((stage) =>
+        stage.key === "draftSync"
+          ? { ...stage, status: "success", detail: "公众号 HTML 已复制到剪贴板", providerLabel: "手动粘贴" }
+          : stage,
+      ),
+      draftReview: {
+        ...prev.draftReview,
+        syncStatus: prev.draftReview.syncStatus.map((row) =>
+          row.label === "正文复制"
+            ? { ...row, note: "HTML 已复制，可直接粘贴到公众号编辑器" }
+            : row,
+        ),
+      },
     }));
   }
 
@@ -476,6 +502,8 @@ export function useWorkspaceDocument() {
     regenerateAllCardImages,
     regenerateCoverAsset,
     generateLayoutPreview,
+    copyWechatHtml,
+    copyFeedback,
     setOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => {
       setWorkspace((prev) => ({
         ...prev,

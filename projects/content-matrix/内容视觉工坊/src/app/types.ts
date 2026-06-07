@@ -203,6 +203,7 @@ export interface DraftReview {
   syncStatus: SyncStatusItem[];
   imagePlacements: LayoutImagePlacement[];
   preview: DraftPreview;
+  editorHtml: string;
 }
 
 export interface ReviewCheck {

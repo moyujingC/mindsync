@@ -16,6 +16,8 @@ export default function App() {
     regenerateAllCardImages,
     regenerateCoverAsset,
     generateLayoutPreview,
+    copyWechatHtml,
+    copyFeedback,
     setOutputToggle,
   } = useWorkspaceDocument();
 
@@ -66,6 +68,8 @@ export default function App() {
         />
         <RightPanel
           data={workspace}
+          copyFeedback={copyFeedback}
+          onCopyWechatHtml={copyWechatHtml}
           isTablet={isTablet}
           isOpen={layout.isRightPanelOpen}
           onClose={closePanels}

@@ -265,5 +265,6 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
         { type: "cta", title: "如果这段文字让你停了一下，欢迎留言告诉我", buttonText: "点亮「在看」 · 分享给同样在思考的人" },
       ],
     },
+    editorHtml: "<section data-tool=\"content-matrix\"><p>mock html</p></section>",
   },
 };
