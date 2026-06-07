@@ -22,7 +22,6 @@
 
 - 求职方向梳理
 - 简历、作品集、自述等材料生产
-- 岗位筛选、投递与跟进
 - 面试准备、复盘与下一步动作
 
 ## 2. 与怀瑾握瑜的边界
@@ -73,7 +72,9 @@
 当前阶段的执行细节不在公司侧维护，默认进入项目工作区：
 
 - [projects/xinran-jobhunt/PROJECT.md](../../../projects/xinran-jobhunt/PROJECT.md)
-- [2026-06-01 求职重启执行计划](../../../projects/xinran-jobhunt/tasks/2026-06-01-求职重启执行计划.md)
-- [2026-06-01 投递系统](../../../projects/xinran-jobhunt/tasks/2026-06-01-投递系统.md)
+- [AI 产品经理版中文简历](../../../projects/xinran-jobhunt/崔兴-AI产品经理.md)
+- [AI 转型咨询顾问版中文简历](../../../projects/xinran-jobhunt/崔兴-AI转型咨询顾问.md)
+- [FDE 版中文简历](../../../projects/xinran-jobhunt/崔兴-FDE.md)
+- [个人职业叙事作品集网站](../../../projects/xinran-jobhunt/个人职业叙事作品集网站/README.md)
 
-公司侧曾有的 2026-05-07 执行三件套已被 2026-06 工作区文档覆盖，相关文件已删除，不再作为当前入口。
+当前不再在仓库内维护投递台账、岗位池或招聘平台操作材料，相关动作直接在外部招聘 App 中处理。
