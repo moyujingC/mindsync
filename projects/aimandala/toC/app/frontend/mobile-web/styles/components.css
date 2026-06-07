@@ -7,8 +7,8 @@
   margin-left: calc(var(--am-app-topbar-bleed, 0px) * -1);
   padding: 12px 16px;
   overflow: hidden;
-  border-bottom: 1px solid rgba(212, 160, 84, 0.15);
-  background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #1a2844 100%);
+  border-bottom: var(--am-shell-topbar-border);
+  background: var(--am-shell-topbar-bg);
   font-family: var(--am-font-body);
 }
 
@@ -47,7 +47,7 @@
   border: 0;
   border-radius: var(--am-radius-pill);
   background: transparent;
-  color: rgba(232, 220, 200, 0.5);
+  color: var(--am-shell-topbar-icon);
 }
 
 .am-app-topbar__title {
@@ -226,28 +226,18 @@
 .mw-card,
 .mw-metric-card {
   padding: 18px 16px;
-  border: 1px solid rgba(138, 124, 108, 0.12);
+  border: 1px solid var(--am-shell-card-border);
   border-radius: var(--am-radius-md);
   background: var(--am-surface-frosted);
-  box-shadow: 0 12px 28px rgba(74, 61, 48, 0.05);
+  box-shadow: var(--am-shell-card-shadow);
 }
 
 .mw-card--accent {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 245, 229, 0.98),
-    rgba(255, 250, 243, 0.95)
-  );
+  background: var(--am-shell-card-accent-bg);
 }
 
 .mw-card--asset {
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(184, 144, 86, 0.18),
-      transparent 34%
-    ),
-    rgba(255, 251, 245, 0.96);
+  background: var(--am-shell-card-asset-bg);
 }
 
 .mw-card__header {

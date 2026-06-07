@@ -66,8 +66,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(212, 160, 84, 0.15);
-  background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #1a2844 100%);
+  border-bottom: var(--am-shell-topbar-border);
+  background: var(--am-shell-topbar-bg);
 }
 
 .am-pro-report-topbar__action {
@@ -79,7 +79,7 @@
   padding: 4px;
   border: 0;
   background: transparent;
-  color: rgba(232, 220, 200, 0.5);
+  color: var(--am-shell-topbar-icon);
 }
 
 .am-pro-report-topbar__brand {

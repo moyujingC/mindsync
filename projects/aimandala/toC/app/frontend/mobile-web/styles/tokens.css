@@ -349,6 +349,28 @@
     var(--am-color-copper-400) 40%,
     var(--am-color-gold-300) 100%
   );
+  --am-shell-topbar-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    var(--am-color-ink-900) 100%
+  );
+  --am-shell-topbar-border: 1px solid rgba(212, 160, 84, 0.15);
+  --am-shell-topbar-icon: rgba(232, 220, 200, 0.5);
+  --am-shell-card-border: rgba(138, 124, 108, 0.12);
+  --am-shell-card-shadow: 0 12px 28px rgba(74, 61, 48, 0.05);
+  --am-shell-card-accent-bg: linear-gradient(
+    180deg,
+    rgba(255, 245, 229, 0.98),
+    rgba(255, 250, 243, 0.95)
+  );
+  --am-shell-card-asset-bg:
+    radial-gradient(
+      circle at top right,
+      rgba(184, 144, 86, 0.18),
+      transparent 34%
+    ),
+    rgba(255, 251, 245, 0.96);
 
   /* Dev-shell local tokens */
   --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
