@@ -49,23 +49,23 @@ export default function Monorepo() {
         />
       </Section>
 
-      <Section index="0 3" title="真实案例 ｜ 一个项目如何进入系统" accent={ACCENT}>
+      <Section index="0 3" title="真实案例 ｜ 研究母库如何和项目研究衔接" accent={ACCENT}>
         <div className="space-y-6">
           <StepFlow
             accent={ACCENT}
             steps={[
-              { title: "需求进入", note: "从心理疗愈 AI 产品观察需求出发，而不是先空想系统结构。" },
-              { title: "对象归类", note: "在 company/项目注册表.yaml 中确认它归属于研究中心能力线。" },
-              { title: "双入口建立", note: "公司侧入口放在 company/projects/研究中心/PROJECT.md，项目侧入口放在 projects/research-center/PROJECT.md。" },
-              { title: "研究工作区落地", note: "具体内容进入 projects/research-center/research/心理疗愈app/心理疗愈AI产品观察室。" },
-              { title: "实现与发布", note: "研究内容继续演变为独立 Vite 站点，而不是留在聊天记录里。" },
-              { title: "资产回写", note: "结论继续回写到项目文档、任务文档和知识资产，方便下次接手。" },
+              { title: "研究项目区", note: "心理疗愈 app 研究先留在 projects/research-center/research/，允许保留原始报告和过程材料。" },
+              { title: "研究母库", note: "从项目研究中抽取长期可复用判断，进入 projects/research-center/kb/ 这一层。" },
+              { title: "主题分流", note: "AI 产品方法进入 kb/wiki/ai；可核验心理学方法才谨慎进入 kb/wiki/healing。" },
+              { title: "产品化知识库", note: "已经明确服务 Aimandala 的知识，再进入 projects/aimandala/docs/疗愈体系知识库/。" },
+              { title: "公司级知识库", note: "只有跨项目、跨角色、边界清楚的稳定知识，才晋升到 company/knowledge-base/。" },
+              { title: "对外发布", note: "适合公开表达的部分，再转去网站、内容矩阵或作品集，而不是直接暴露原始研究材料。" },
             ]}
           />
           <Prose>
-            <p>这套系统不是先做一个抽象 Monorepo 再找场景，而是在真实项目推进中慢慢长出来的。</p>
-            <p>以「心理疗愈 AI 产品观察」为例：它先是研究需求，然后被归到研究中心能力线，接着在正式工作区内形成独立研究站点，最后继续反哺到内容、产品判断和后续工作流里。</p>
-            <p>这正是知行工坊想解决的问题：把一次性的聊天和灵感，变成有入口、有边界、有后续可交接能力的长期资产。</p>
+            <p>这套系统的关键，不是把所有资料都叫做“知识库”，而是明确不同产物应该去哪里。</p>
+            <p>我在 2026-06-08 新补的《研究母库与项目研究衔接说明》中，把这条链路正式写清了：研究项目区保留过程材料；研究母库沉淀长期判断；产品化知识库只接收已经能服务产品链路的知识；公司级知识库只保留成熟稳定的跨项目资产。</p>
+            <p>这正是知行工坊要解决的问题：让研究、知识、产品和内容之间有明确的中间层，而不是所有东西都混在一个文件夹或一次聊天里。</p>
           </Prose>
         </div>
       </Section>
@@ -106,8 +106,9 @@ export default function Monorepo() {
             ["公司蓝图", "company/公司蓝图.md", "公司定义、对象类型、角色哲学和长期原则有稳定落点。"],
             ["任务审阅规范", "company/任务审阅与状态流转规范.md", "任务 review 不是靠聊天猜语义，而是有明确状态流转规则。"],
             ["角色入口", "agents/*/AGENTS.md", "当前独立维护 10 个核心角色入口，明确谁负责什么。"],
+            ["研究母库衔接文档", "projects/research-center/kb/研究母库与项目研究衔接说明.md", "明确写清 research、kb、产品化知识库和公司级知识库四层分工。"],
             ["研究中心双入口", "company/projects/研究中心/PROJECT.md + projects/research-center/PROJECT.md", "公司级说明和项目级工作区明确分层，不把治理文档和实现混在一起。"],
-            ["真实项目落地样例", "projects/research-center/research/心理疗愈app/心理疗愈AI产品观察室", "这套系统已经承载真实研究项目，并继续演变为独立前端站点。"],
+            ["研究母库目录", "projects/research-center/kb/", "研究母库不是单篇文档，而是一层正式工作区，包含 README、模板、规则和主题知识。"],
           ]}
         />
       </Section>
@@ -121,7 +122,7 @@ export default function Monorepo() {
               { title: "8 个公司对象已统一登记", body: "产品、能力和品牌对象都已经进入 company/项目注册表.yaml，不再依赖聊天记忆。"},
               { title: "10 个核心角色入口已独立维护", body: "CEO、产品、研究、架构、工程、QA、内容等角色有各自 AGENTS.md。"},
               { title: "8 个主工作区已进入 projects", body: "研究、内容、求职、产品和共享能力底座都在同一仓库内并行推进。"},
-              { title: "至少 1 条跨项目链路已反复使用", body: "研究需求可以进入研究中心，演变为站点，再继续反哺内容和产品判断。"},
+              { title: "知识分流规则已正式成文", body: "研究区、研究母库、产品化知识库、公司级知识库之间的边界不再靠口头约定。"},
             ]}
           />
           <BulletList
