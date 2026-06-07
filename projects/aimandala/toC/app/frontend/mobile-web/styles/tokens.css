@@ -548,6 +548,61 @@
   --am-loading-error-shadow: 0 16px 32px rgba(45, 12, 12, 0.18);
   --am-loading-error-copy: rgba(255, 226, 224, 0.86);
 
+  /* Landing page tokens */
+  --am-landing-page-bg: var(--am-color-ink-950);
+  --am-landing-hero-overlay: linear-gradient(
+    180deg,
+    rgba(20, 30, 56, 0.95),
+    rgba(26, 40, 68, 0.94)
+  );
+  --am-landing-history-pill-text: rgb(var(--am-rgb-sand-300) / 0.78);
+  --am-landing-logo-glow: conic-gradient(
+    from 0deg,
+    rgb(var(--am-rgb-gold-300) / 0.15),
+    rgb(var(--am-rgb-copper-400) / 0.08),
+    rgba(122, 142, 168, 0.1),
+    rgb(var(--am-rgb-gold-300) / 0.15)
+  );
+  --am-landing-logo-outer-border: rgb(var(--am-rgb-gold-300) / 0.2);
+  --am-landing-logo-inner-border: rgb(var(--am-rgb-copper-400) / 0.15);
+  --am-landing-logo-pulse: radial-gradient(
+    circle,
+    rgb(var(--am-rgb-gold-300) / 0.15) 0%,
+    transparent 70%
+  );
+  --am-landing-hero-title: #efe1cd;
+  --am-landing-hero-title-shadow: 0 3px 12px rgba(5, 10, 24, 0.22);
+  --am-landing-hero-subtitle: rgb(var(--am-rgb-sand-300) / 0.66);
+  --am-landing-hero-price: var(--am-color-gold-300);
+  --am-landing-scroll-cue: rgba(227, 219, 204, 0.36);
+  --am-landing-scroll-cue-arrow: rgba(223, 215, 202, 0.36);
+  --am-landing-steps-glow: radial-gradient(
+    circle,
+    rgb(var(--am-rgb-gold-300) / 0.06) 0%,
+    transparent 60%
+  );
+  --am-landing-steps-line: linear-gradient(
+    90deg,
+    transparent,
+    rgb(var(--am-rgb-copper-400) / 0.2),
+    rgb(var(--am-rgb-gold-300) / 0.3),
+    rgb(var(--am-rgb-copper-400) / 0.2),
+    transparent
+  );
+  --am-landing-step-num-border: rgb(var(--am-rgb-copper-400) / 0.2);
+  --am-landing-step-num-bg: linear-gradient(
+    135deg,
+    rgb(var(--am-rgb-copper-400) / 0.12),
+    rgb(var(--am-rgb-gold-300) / 0.08)
+  );
+  --am-landing-step-icon-border: rgba(138, 124, 108, 0.12);
+  --am-landing-step-icon-bg: linear-gradient(
+    135deg,
+    rgb(var(--am-rgb-copper-400) / 0.06),
+    rgb(var(--am-rgb-gold-300) / 0.04)
+  );
+  --am-landing-step-icon-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+
   --mw-history-shell-bg:
     radial-gradient(circle at 78% 5%, rgba(145, 134, 132, 0.2), transparent 18%),
     linear-gradient(180deg, #0e1628 0%, #152038 40%, #111a30 100%);

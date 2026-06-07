@@ -2,7 +2,7 @@
   --am-pattern-image: var(--am-hero-pattern);
   --am-landing-next-peek: clamp(36px, 4.5vh, 48px);
   position: relative;
-  background: var(--am-color-ink-950);
+  background: var(--am-landing-page-bg);
 }
 
 .am-landing-hero,
@@ -20,7 +20,7 @@
   padding: 30px 22px 20px;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(20, 30, 56, 0.95), rgba(26, 40, 68, 0.94)),
+    var(--am-landing-hero-overlay),
     var(--am-surface-hero);
   border-radius: 32px 32px 0 0;
 }
@@ -42,7 +42,7 @@
   gap: 7px;
   border: 0;
   background: transparent;
-  color: rgba(232, 220, 200, 0.78);
+  color: var(--am-landing-history-pill-text);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -74,13 +74,7 @@
   position: absolute;
   inset: -30px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    rgba(212, 160, 84, 0.15),
-    rgba(200, 120, 80, 0.08),
-    rgba(122, 142, 168, 0.1),
-    rgba(212, 160, 84, 0.15)
-  );
+  background: var(--am-landing-logo-glow);
   filter: blur(12px);
   animation: am-logo-rotate 30s linear infinite;
 }
@@ -95,23 +89,19 @@
 
 .am-logo-ring__outer {
   inset: -18px;
-  border: 1px solid rgba(212, 160, 84, 0.2);
+  border: 1px solid var(--am-landing-logo-outer-border);
   animation: am-logo-rotate-reverse 25s linear infinite;
 }
 
 .am-logo-ring__inner {
   inset: -12px;
-  border: 1px dashed rgba(200, 120, 80, 0.15);
+  border: 1px dashed var(--am-landing-logo-inner-border);
   animation: am-logo-rotate 35s linear infinite;
 }
 
 .am-logo-ring__pulse {
   inset: -5px;
-  background: radial-gradient(
-    circle,
-    rgba(212, 160, 84, 0.15) 0%,
-    transparent 70%
-  );
+  background: var(--am-landing-logo-pulse);
   animation: am-logo-pulse 3.8s ease-in-out infinite;
 }
 
@@ -121,7 +111,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 4px 24px rgba(212, 160, 84, 0.25));
+  filter: var(--am-component-logo-shadow);
 }
 
 @keyframes am-logo-pulse {
@@ -173,8 +163,8 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   line-height: 1.45;
-  color: #efe1cd;
-  text-shadow: 0 3px 12px rgba(5, 10, 24, 0.22);
+  color: var(--am-landing-hero-title);
+  text-shadow: var(--am-landing-hero-title-shadow);
   white-space: nowrap;
 }
 
@@ -184,7 +174,7 @@
   font-weight: 600;
   line-height: 1.55;
   letter-spacing: 0.03em;
-  color: rgba(232, 220, 200, 0.66);
+  color: var(--am-landing-hero-subtitle);
 }
 
 .am-hero-price {
@@ -196,7 +186,7 @@
   font-weight: 600;
   line-height: 1.6;
   letter-spacing: 0.06em;
-  color: #d4a054;
+  color: var(--am-landing-hero-price);
 }
 
 .am-primary-cta {
@@ -229,7 +219,7 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  color: rgba(227, 219, 204, 0.36);
+  color: var(--am-landing-scroll-cue);
   transition:
     opacity 0.25s ease,
     transform 0.25s ease;
@@ -243,7 +233,7 @@
 
 .am-scroll-cue__arrow {
   display: inline-block;
-  color: rgba(223, 215, 202, 0.36);
+  color: var(--am-landing-scroll-cue-arrow);
 }
 
 .am-scroll-cue i {
@@ -326,11 +316,7 @@
   right: 30px;
   width: 80px;
   height: 80px;
-  background: radial-gradient(
-    circle,
-    rgba(212, 160, 84, 0.06) 0%,
-    transparent 60%
-  );
+  background: var(--am-landing-steps-glow);
 }
 
 .am-step-flow {
@@ -346,14 +332,7 @@
   left: 20%;
   right: 20%;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(200, 120, 80, 0.2),
-    rgba(212, 160, 84, 0.3),
-    rgba(200, 120, 80, 0.2),
-    transparent
-  );
+  background: var(--am-landing-steps-line);
 }
 
 .am-step-flow-card {
@@ -371,12 +350,8 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(200, 120, 80, 0.2);
-  background: linear-gradient(
-    135deg,
-    rgba(200, 120, 80, 0.12),
-    rgba(212, 160, 84, 0.08)
-  );
+  border: 1px solid var(--am-landing-step-num-border);
+  background: var(--am-landing-step-num-bg);
   font-family: var(--am-font-display);
   font-size: 14px;
   font-weight: 600;
@@ -390,13 +365,9 @@
   border-radius: 12px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(138, 124, 108, 0.12);
-  background: linear-gradient(
-    135deg,
-    rgba(200, 120, 80, 0.06),
-    rgba(212, 160, 84, 0.04)
-  );
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--am-landing-step-icon-border);
+  background: var(--am-landing-step-icon-bg);
+  box-shadow: var(--am-landing-step-icon-shadow);
   color: var(--am-color-copper-400);
 }
 
@@ -421,7 +392,7 @@
   min-height: auto;
   padding: 48px 26px 40px;
   background:
-    linear-gradient(180deg, rgba(20, 30, 56, 0.95), rgba(26, 40, 68, 0.94)),
+    var(--am-landing-hero-overlay),
     var(--am-surface-hero);
   color: var(--am-text-on-dark);
 }
