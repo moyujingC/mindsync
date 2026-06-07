@@ -9,7 +9,7 @@ import { Footer } from "./components/Footer";
 import { usePortfolioTarget } from "./usePortfolioTarget";
 
 export default function Home() {
-  const { target, profile, setTarget } = usePortfolioTarget();
+  const { target } = usePortfolioTarget();
 
   return (
     <div
@@ -18,7 +18,7 @@ export default function Home() {
     >
       <Nav />
       <main>
-        <Hero target={target} profile={profile} onTargetChange={setTarget} />
+        <Hero />
         <Story />
         <RoleTracks target={target} />
         <Works target={target} />
