@@ -289,9 +289,9 @@
 
 .am-report-entry-redeem__button {
   flex: 0 0 auto;
-  min-width: 84px;
+  min-width: 72px;
   height: 43px;
-  padding: 0 18px;
+  padding: 0 10px;
   border: 1px solid rgba(200, 120, 80, 0.35);
   border-radius: 12px;
   background: rgba(212, 160, 84, 0.12);
@@ -389,8 +389,10 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 50px;
+  max-width: 293px;
+  height: 48px;
   margin-top: 24px;
+  margin-inline: auto;
   padding: 0 18px;
   border: 0;
   border-radius: var(--am-radius-pill);
