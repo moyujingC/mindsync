@@ -83,19 +83,6 @@
   line-height: 1.4;
 }
 
-.am-loading-copy__eta {
-  margin-top: 12px;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: var(--am-radius-pill);
-  border: 1px solid rgba(212, 160, 84, 0.16);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(232, 220, 200, 0.72);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-}
-
 .am-loading-version {
   display: inline-flex;
   align-items: center;

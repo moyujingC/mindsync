@@ -320,7 +320,7 @@ export function MobileWebLoadingPage({
   }, []);
 
   const loadingUi = useMemo(() => resolveLoadingUiState(state, isPro), [state, isPro]);
-  const { currentMessage, currentStageIndex, estimatedTime, progress, stages, speedNote } = loadingUi;
+  const { currentMessage, currentStageIndex, progress, stages, speedNote } = loadingUi;
   const versionTitle = isPro ? "Pro 版完整解读" : "Lite 版基础解读";
   const showLeaveLater = false;
   const estimatedSeconds = Math.max(
@@ -370,7 +370,6 @@ export function MobileWebLoadingPage({
             <span>{versionTitle}</span>
           </div>
           <h1>正在解读中...</h1>
-          <div className="am-loading-copy__eta">{estimatedTime}</div>
         </div>
 
         <div className="am-loading-progress-card">
