@@ -161,7 +161,7 @@
   gap: 6px;
   padding: 0;
   text-align: center;
-  transform: translateY(-16px);
+  transform: translateY(18px);
 }
 
 .am-hero-copy h1 {
@@ -202,7 +202,7 @@
   height: 58px;
   margin-top: 8px;
   border-radius: 999px;
-  transform: translateY(-18px);
+  transform: translateY(18px);
 }
 
 .am-primary-cta__label {
