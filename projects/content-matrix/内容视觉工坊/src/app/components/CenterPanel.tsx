@@ -1,9 +1,10 @@
 import { RefreshCw, Image as ImageIcon, AlertTriangle, CheckCircle2, Layers, MoreHorizontal, Maximize2, Quote, LoaderCircle } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import type { CoverAsset, GenerationStageStatus, KnowledgeCardItem, WechatInlineImageAsset, WorkspaceData, WorkflowStage } from "../types";
+import type { CoverAsset, GenerationStageStatus, InputMode, KnowledgeCardItem, WechatInlineImageAsset, WorkspaceData, WorkflowStage } from "../types";
 
 interface CenterPanelProps {
   data: WorkspaceData;
+  inputMode: InputMode;
   onReplanContent: () => Promise<void>;
   onRegenerateCardImage: (cardNumber: string) => Promise<void>;
   onRegenerateInlineImage: (imageId: string) => Promise<void>;
@@ -11,7 +12,7 @@ interface CenterPanelProps {
   onRegenerateCoverAsset: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
 }
 
-export function CenterPanel({ data, onReplanContent, onRegenerateCardImage, onRegenerateInlineImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
+export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCardImage, onRegenerateInlineImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
   const isBatchGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
   const isReplanning = data.workflowStages.find((stage) => stage.key === "contentAnalysis")?.status === "processing";
   const cardStyleName = data.styleAssets[data.styleSelections.knowledgeCards]?.name ?? "默认风格";
@@ -63,14 +64,14 @@ export function CenterPanel({ data, onReplanContent, onRegenerateCardImage, onRe
               disabled={isReplanning}
               className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-secondary/50 disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
             >
-              <RefreshCw className={`w-3 h-3 ${isReplanning ? "animate-spin" : ""}`} /> {isReplanning ? "拆解中" : "重新拆解"}
+              <RefreshCw className={`w-3 h-3 ${isReplanning ? "animate-spin" : ""}`} /> {isReplanning ? (inputMode === "text" ? "拆图中" : "拆解中") : (inputMode === "text" ? "重新拆图" : "重新拆解")}
             </button>
           </div>
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-7 rounded-lg border border-border bg-card/70">
               <div className="px-4 py-2 border-b border-border/60 flex items-center justify-between text-[10.5px] text-muted-foreground tracking-wide">
                 <span>拆解为 {data.cardPlan.length} 张知识卡片</span>
-                <span>对应 H2 段落</span>
+                <span>{inputMode === "text" ? "基于全文语义拆图" : "对应 H2 段落"}</span>
               </div>
               <ol className="divide-y divide-border/50">
                 {data.cardPlan.map((card) => (

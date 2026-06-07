@@ -1,10 +1,11 @@
 import { CheckCircle2, ExternalLink, RefreshCw, Smartphone, Eye, X, AlertTriangle } from "lucide-react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import type { DraftPreviewBlock, GenerationStageStatus, ReviewCheck, WorkspaceData } from "../types";
+import type { DraftPreviewBlock, GenerationStageStatus, InputMode, ReviewCheck, WorkspaceData } from "../types";
 
 interface RightPanelProps {
   data: WorkspaceData;
+  inputMode: InputMode;
   copyFeedback: string;
   onCopyWechatHtml: () => Promise<void>;
   isTablet: boolean;
@@ -12,8 +13,9 @@ interface RightPanelProps {
   onClose: () => void;
 }
 
-export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isOpen, onClose }: RightPanelProps) {
+export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, isTablet, isOpen, onClose }: RightPanelProps) {
   const draftSyncStage = data.workflowStages.find((stage) => stage.key === "draftSync");
+  const isTextMode = inputMode === "text";
   const panelClassName = isTablet
     ? `absolute inset-y-0 right-0 z-30 w-[min(464px,96vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "translate-x-full"}`
     : "w-[420px] xl:w-[464px] shrink-0 border-l border-border bg-card/40 flex flex-col overflow-hidden";
@@ -25,12 +27,12 @@ export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isO
       <div className="px-5 pt-4 pb-3 flex items-end justify-between border-b border-border/70">
         <div className="flex items-baseline gap-2">
           <span className="text-[10px] text-muted-foreground tracking-[0.2em]">03</span>
-          <h2 className="text-[13.5px] tracking-wide" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>公众号审稿</h2>
+          <h2 className="text-[13.5px] tracking-wide" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{isTextMode ? "图片模式说明" : "公众号审稿"}</h2>
         </div>
         <div className="flex items-center gap-3 text-[10.5px] text-muted-foreground">
           <div className="flex items-center gap-1">
             <Eye className="w-3 h-3" />
-            <span>iPhone 视图</span>
+            <span>{isTextMode ? "文本模式" : "iPhone 视图"}</span>
           </div>
           {isTablet && (
             <button className="hover:text-foreground" onClick={onClose} aria-label="关闭">
@@ -60,7 +62,7 @@ export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isO
           {data.draftReview.reviewChecks.map((check) => <ReviewCheckCard key={check.title} check={check} />)}
         </div>
         <div className="mt-3 rounded-lg border border-border/70 bg-card/70 px-3 py-2.5">
-          <div className="text-[10.5px] text-muted-foreground tracking-wide mb-2">系统插图位编排</div>
+          <div className="text-[10.5px] text-muted-foreground tracking-wide mb-2">{isTextMode ? "模式说明" : "系统插图位编排"}</div>
           <div className="space-y-2">
             {data.draftReview.imagePlacements.slice(0, 2).map((placement) => (
               <div key={placement.imageId} className="text-[10.5px] leading-relaxed text-muted-foreground">
@@ -77,18 +79,18 @@ export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isO
         <div className="px-5 pt-4 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
             <Smartphone className="w-3 h-3" />
-            <span>微信公众号 · 阅读视图</span>
+            <span>{isTextMode ? "纯文本模式 · 图片工作流" : "微信公众号 · 阅读视图"}</span>
             <span className="opacity-60">·</span>
-            <span>375 × auto</span>
+            <span>{isTextMode ? "不生成排版" : "375 × auto"}</span>
           </div>
-          <span className="text-[10px] text-muted-foreground">滚动查看完整审稿</span>
+          <span className="text-[10px] text-muted-foreground">{isTextMode ? "当前仅展示模式说明" : "滚动查看完整审稿"}</span>
         </div>
 
         <div className="px-5 pb-3">
           {/* legend — once, not repeated per block */}
           <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-2 px-0.5">
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-[#cfc6b3]"></span>来自 Markdown</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-primary/55"></span>系统加工</span>
+            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-[#cfc6b3]"></span>{isTextMode ? "文本输入" : "来自 Markdown"}</span>
+            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-primary/55"></span>{isTextMode ? "仅生成图片" : "系统加工"}</span>
           </div>
 
           <div className="rounded-[14px] bg-[#e8e3d6] p-2.5 border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
@@ -162,21 +164,22 @@ export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isO
       <div className="px-5 py-3.5 border-t border-border bg-card/80 shrink-0">
         <Button
           onClick={() => void onCopyWechatHtml()}
+          disabled={isTextMode || !data.draftReview.editorHtml}
           className="w-full h-10 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[inset_0_-1px_0_rgba(0,0,0,0.18)]"
         >
           <CheckCircle2 className="w-4 h-4" />
-          复制公众号正文
+          {isTextMode ? "纯文本模式不生成正文" : "复制公众号正文"}
         </Button>
         <div className="mt-2 flex items-center justify-between text-[11.5px]">
-          <button className="text-foreground/85 hover:text-foreground inline-flex items-center gap-1 px-1.5 py-1">
-            <RefreshCw className="w-3 h-3" /> 重新生成排版
+          <button className="text-foreground/85 hover:text-foreground inline-flex items-center gap-1 px-1.5 py-1" disabled={isTextMode}>
+            <RefreshCw className="w-3 h-3" /> {isTextMode ? "排版未启用" : "重新生成排版"}
           </button>
           <span className="text-border">·</span>
-          <button className="text-foreground/85 hover:text-foreground inline-flex items-center gap-1 px-1.5 py-1">
-            <ExternalLink className="w-3 h-3" /> 打开公众号编辑器
+          <button className="text-foreground/85 hover:text-foreground inline-flex items-center gap-1 px-1.5 py-1" disabled={isTextMode}>
+            <ExternalLink className="w-3 h-3" /> {isTextMode ? "公众号链路未启用" : "打开公众号编辑器"}
           </button>
           <span className="text-border">·</span>
-          <span className="text-[10.5px] text-muted-foreground">先复制再粘贴</span>
+          <span className="text-[10.5px] text-muted-foreground">{isTextMode ? "请直接生成图片素材" : "先复制再粘贴"}</span>
         </div>
       </div>
       </aside>

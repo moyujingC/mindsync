@@ -78,6 +78,7 @@ export default function App() {
         />
         <CenterPanel
           data={workspace}
+          inputMode={layout.inputMode}
           onReplanContent={replanContent}
           onRegenerateCardImage={regenerateCardImage}
           onRegenerateInlineImage={regenerateWechatInlineImageAsset}
@@ -86,6 +87,7 @@ export default function App() {
         />
         <RightPanel
           data={workspace}
+          inputMode={layout.inputMode}
           copyFeedback={copyFeedback}
           onCopyWechatHtml={copyWechatHtml}
           isTablet={isTablet}
