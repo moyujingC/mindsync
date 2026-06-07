@@ -2,13 +2,14 @@ import { TopNav } from "./components/TopNav";
 import { LeftPanel } from "./components/LeftPanel";
 import { CenterPanel } from "./components/CenterPanel";
 import { RightPanel } from "./components/RightPanel";
-import { workspaceData } from "./mockData";
 import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout";
+import { useWorkspaceDocument } from "./hooks/useWorkspaceDocument";
 import { Button } from "./components/ui/button";
 import { PanelLeft, FileText } from "lucide-react";
 
 export default function App() {
   const { layout, isTablet, setInputMode, toggleLeftPanel, toggleRightPanel, closePanels } = useWorkspaceLayout();
+  const { workspace, importMarkdownFile } = useWorkspaceDocument();
 
   return (
     <div className="size-full flex flex-col bg-background text-foreground" style={{ fontFamily: "var(--font-sans-cn)" }}>
@@ -38,16 +39,17 @@ export default function App() {
         )}
 
         <LeftPanel
-          data={workspaceData}
+          data={workspace}
           inputMode={layout.inputMode}
           setInputMode={setInputMode}
+          onImportMarkdown={importMarkdownFile}
           isTablet={isTablet}
           isOpen={layout.isLeftPanelOpen}
           onClose={closePanels}
         />
-        <CenterPanel data={workspaceData} />
+        <CenterPanel data={workspace} />
         <RightPanel
-          data={workspaceData}
+          data={workspace}
           isTablet={isTablet}
           isOpen={layout.isRightPanelOpen}
           onClose={closePanels}

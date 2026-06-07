@@ -1,23 +1,25 @@
-import { FileText, Clipboard, CheckCircle2, RefreshCw, Eraser, Sparkles, ChevronDown, FileType2, Pin, X } from "lucide-react";
+import { FileText, Clipboard, CheckCircle2, RefreshCw, Eraser, Sparkles, ChevronDown, FileType2, Pin, X, Upload } from "lucide-react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { InputMode, WorkspaceData } from "../types";
 
 interface LeftPanelProps {
   data: WorkspaceData;
   inputMode: InputMode;
   setInputMode: (mode: InputMode) => void;
+  onImportMarkdown: (file: File) => Promise<void>;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function LeftPanel({ data, inputMode, setInputMode, isTablet, isOpen, onClose }: LeftPanelProps) {
+export function LeftPanel({ data, inputMode, setInputMode, onImportMarkdown, isTablet, isOpen, onClose }: LeftPanelProps) {
   const [activeStyle, setActiveStyle] = useState(data.activeStyleIndex);
   const [ratio, setRatio] = useState(data.cardSize.ratio);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
@@ -59,7 +61,36 @@ export function LeftPanel({ data, inputMode, setInputMode, isTablet, isOpen, onC
         </div>
 
         {inputMode === "md" ? (
-          <div className="rounded-lg border border-border bg-card overflow-hidden shadow-[0_1px_0_rgba(0,0,0,0.02),0_4px_16px_-12px_rgba(31,58,54,0.18)]">
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full rounded-lg border border-dashed border-border bg-card/70 hover:bg-card transition-colors text-left px-4 py-3 shadow-[0_1px_0_rgba(0,0,0,0.02),0_4px_16px_-12px_rgba(31,58,54,0.18)]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-md bg-secondary/60 flex items-center justify-center">
+                  <Upload className="w-4 h-4 text-primary/80" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[12.5px]" style={{ fontWeight: 500 }}>上传 Markdown 文档</div>
+                  <div className="text-[10.5px] text-muted-foreground mt-0.5">支持 `.md`，导入后自动识别标题和结构</div>
+                </div>
+              </div>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".md,text/markdown,text/plain"
+              className="hidden"
+              onChange={async (event) => {
+                const file = event.target.files?.[0];
+                if (!file) return;
+                await onImportMarkdown(file);
+                event.currentTarget.value = "";
+              }}
+            />
+
+            <div className="rounded-lg border border-border bg-card overflow-hidden shadow-[0_1px_0_rgba(0,0,0,0.02),0_4px_16px_-12px_rgba(31,58,54,0.18)]">
             <div className="p-4 bg-gradient-to-br from-[#efe9da]/70 via-card to-card">
               <div className="flex items-start gap-3">
                 <div className="w-9 h-11 rounded-sm bg-card border border-border flex items-center justify-center shrink-0">
@@ -79,10 +110,15 @@ export function LeftPanel({ data, inputMode, setInputMode, isTablet, isOpen, onC
             </div>
             <div className="px-4 py-2.5 border-t border-border/60 flex items-center justify-between text-[11px] text-muted-foreground">
               <span>{data.parsedMarkdown.structureTags.join(" · ")}</span>
-              <button className="text-primary/85 hover:text-primary inline-flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-primary/85 hover:text-primary inline-flex items-center gap-1"
+              >
                 <RefreshCw className="w-3 h-3" /> 重传
               </button>
             </div>
+          </div>
           </div>
         ) : (
           <div className="space-y-2">

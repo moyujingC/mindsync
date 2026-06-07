@@ -30,9 +30,10 @@ export interface MarkdownStructureSummary {
 }
 
 export interface ParsedMarkdownDocument {
-  status: "parsed";
+  status: "idle" | "parsed" | "failed";
   structure: MarkdownStructureSummary;
   structureTags: string[];
+  errorMessage?: string;
 }
 
 export interface ImageGenerationSource {
