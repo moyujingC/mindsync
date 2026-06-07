@@ -103,6 +103,7 @@ function buildKnowledgeCardsFromPlan(workspace: WorkspaceData, plan: WorkspaceDa
     composition: buildKnowledgeCardComposition(card.title, card.index),
     img: "",
     state: "idle" as const,
+    isStale: false,
     provider: "mock" as const,
   }));
 }
@@ -112,10 +113,42 @@ function resetCoversForReplan(workspace: WorkspaceData) {
     ...cover,
     img: "",
     state: "idle" as const,
+    isStale: false,
     provider: undefined,
     imagePrompt: undefined,
     status: "待生成",
   }));
+}
+
+function markAssetsStaleForStyle(workspace: WorkspaceData, key: StyleSelectionKey) {
+  if (key === "knowledgeCards") {
+    return {
+      ...workspace,
+      knowledgeCards: workspace.knowledgeCards.map((item) => ({ ...item, isStale: Boolean(item.img) || item.state === "failed" })),
+    };
+  }
+
+  if (key === "wechatInlineImages") {
+    return {
+      ...workspace,
+      wechatInlineImages: workspace.wechatInlineImages.map((item) => ({ ...item, isStale: Boolean(item.img) || item.state === "failed" })),
+    };
+  }
+
+  return {
+    ...workspace,
+    covers: workspace.covers.map((item) =>
+      item.key === key ? { ...item, isStale: Boolean(item.img) || item.state === "failed" } : item,
+    ),
+  };
+}
+
+function markKnowledgeCardsStaleForSize(workspace: WorkspaceData, nextCardSize: WorkspaceData["cardSize"]) {
+  return {
+    ...workspace,
+    cardSize: nextCardSize,
+    knowledgeCards: workspace.knowledgeCards.map((item) => ({ ...item, isStale: Boolean(item.img) || item.state === "failed" })),
+  };
 }
 
 function buildGenerationSummary(workspace: WorkspaceData, cardCount: number) {
@@ -391,7 +424,7 @@ export function useWorkspaceDocument() {
         generation: updateGenerationTimestamp(prev, formatNowTime()),
         knowledgeCards: prev.knowledgeCards.map((item) =>
           item.n === cardNumber
-            ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
+            ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
             : item,
         ),
         workflowStages: markDraftSyncPending(
@@ -446,7 +479,7 @@ export function useWorkspaceDocument() {
           generation: updateGenerationTimestamp(prev, formatNowTime()),
           wechatInlineImages: prev.wechatInlineImages.map((item) =>
             item.id === imageId
-              ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
+              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
               : item,
           ),
         });
@@ -534,7 +567,7 @@ export function useWorkspaceDocument() {
           ...prev,
           knowledgeCards: prev.knowledgeCards.map((item) =>
             item.n === card.n
-              ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
+              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
               : item,
           ),
           workflowStages: prev.workflowStages.map((stage) =>
@@ -580,7 +613,7 @@ export function useWorkspaceDocument() {
           ...prev,
           wechatInlineImages: prev.wechatInlineImages.map((item) =>
             item.id === inlineImage.id
-              ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
+              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
               : item,
           ),
           workflowStages: prev.workflowStages.map((stage) =>
@@ -630,6 +663,7 @@ export function useWorkspaceDocument() {
                   ...item,
                   img: result.imageUrl,
                   state: "ok",
+                  isStale: false,
                   provider: result.provider,
                   imagePrompt: result.prompt,
                   status: "已生成 · AI",
@@ -737,6 +771,7 @@ export function useWorkspaceDocument() {
                   ...item,
                   img: result.imageUrl,
                   state: "ok",
+                  isStale: false,
                   provider: result.provider,
                   imagePrompt: result.prompt,
                   status: "已生成 · AI",
@@ -797,13 +832,29 @@ export function useWorkspaceDocument() {
       }));
     },
     setStyleSelection: (key: StyleSelectionKey, index: number) => {
-      setWorkspace((prev) => ({
-        ...prev,
-        styleSelections: {
-          ...prev.styleSelections,
-          [key]: index,
-        },
-      }));
+      setWorkspace((prev) => {
+        const nextWorkspace = markAssetsStaleForStyle({
+          ...prev,
+          styleSelections: {
+            ...prev.styleSelections,
+            [key]: index,
+          },
+        }, key);
+
+        return {
+          ...nextWorkspace,
+          workflowStages: markDraftSyncPending(nextWorkspace, "风格已调整，相关图片建议重新生成"),
+        };
+      });
+    },
+    setCardSize: (nextCardSize: WorkspaceData["cardSize"]) => {
+      setWorkspace((prev) => {
+        const nextWorkspace = markKnowledgeCardsStaleForSize(prev, nextCardSize);
+        return {
+          ...nextWorkspace,
+          workflowStages: markDraftSyncPending(nextWorkspace, "卡片尺寸已调整，知识卡片建议重新生成"),
+        };
+      });
     },
   };
 }

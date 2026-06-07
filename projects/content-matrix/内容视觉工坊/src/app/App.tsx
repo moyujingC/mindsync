@@ -22,6 +22,7 @@ export default function App() {
     copyFeedback,
     setOutputToggle,
     setStyleSelection,
+    setCardSize,
   } = useWorkspaceDocument();
 
   return (
@@ -60,6 +61,7 @@ export default function App() {
           onGenerateLayout={generateLayoutPreview}
           onSetOutputToggle={setOutputToggle}
           onSetStyleSelection={setStyleSelection}
+          onSetCardSize={setCardSize}
           isTablet={isTablet}
           isOpen={layout.isLeftPanelOpen}
           onClose={closePanels}

@@ -84,6 +84,7 @@ export interface KnowledgeCardItem {
   composition: string;
   img: string;
   state: CardGenerationState;
+  isStale?: boolean;
   provider?: "mock" | "llm" | "image-model";
   imagePrompt?: string;
 }
@@ -95,6 +96,7 @@ export interface CoverAsset {
   status: string;
   img: string;
   state?: CardGenerationState;
+  isStale?: boolean;
   provider?: "mock" | "image-model";
   imagePrompt?: string;
   wide?: boolean;
@@ -200,6 +202,7 @@ export interface WechatInlineImageAsset {
   height: number;
   img: string;
   state: CardGenerationState;
+  isStale?: boolean;
   provider?: "mock" | "image-model";
   imagePrompt?: string;
 }

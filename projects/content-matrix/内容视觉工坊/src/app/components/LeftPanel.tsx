@@ -4,7 +4,7 @@ import { Switch } from "./ui/switch";
 import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { InputMode, StyleSelectionKey, WorkspaceData } from "../types";
 
 interface LeftPanelProps {
@@ -16,6 +16,7 @@ interface LeftPanelProps {
   onGenerateLayout: () => Promise<void>;
   onSetOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => void;
   onSetStyleSelection: (key: StyleSelectionKey, index: number) => void;
+  onSetCardSize: (nextCardSize: WorkspaceData["cardSize"]) => void;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -30,11 +31,13 @@ export function LeftPanel({
   onGenerateLayout,
   onSetOutputToggle,
   onSetStyleSelection,
+  onSetCardSize,
   isTablet,
   isOpen,
   onClose,
 }: LeftPanelProps) {
-  const [ratio, setRatio] = useState(data.cardSize.ratio);
+  const [widthInput, setWidthInput] = useState(String(data.cardSize.width));
+  const [heightInput, setHeightInput] = useState(String(data.cardSize.height));
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const isGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
   const styleTargets: Array<{ key: StyleSelectionKey; label: string; hint: string }> = [
@@ -43,10 +46,21 @@ export function LeftPanel({
     { key: "wechatCover", label: "公众号封面", hint: "文章入口图" },
     { key: "xiaohongshuCover", label: "小红书封面", hint: "笔记首图" },
   ];
+  const ratioPresets: Record<string, { width: number; height: number }> = {
+    "3:4": { width: 1536, height: 2048 },
+    "4:3": { width: 2048, height: 1536 },
+    "1:1": { width: 1536, height: 1536 },
+    "9:16": { width: 1080, height: 1920 },
+  };
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
     : "w-[minmax(320px,360px)] max-w-[360px] min-w-[320px] shrink-0 border-r border-border bg-card/40 flex flex-col overflow-hidden";
+
+  useEffect(() => {
+    setWidthInput(String(data.cardSize.width));
+    setHeightInput(String(data.cardSize.height));
+  }, [data.cardSize.width, data.cardSize.height]);
 
   return (
     <>
@@ -190,28 +204,69 @@ export function LeftPanel({
           <div className="border-t border-border/60 bg-secondary/25 px-3.5 py-3 space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>卡片尺寸</span>
-              <span className="text-[10px] text-muted-foreground">{ratio} · {data.cardSize.width} × {data.cardSize.height}</span>
+              <span className="text-[10px] text-muted-foreground">{data.cardSize.ratio} · {data.cardSize.width} × {data.cardSize.height}</span>
             </div>
             <div className="grid grid-cols-4 gap-1 bg-card p-1 rounded">
               {data.cardSize.ratioOptions.map(r => (
                 <button
                   key={r}
-                  onClick={() => setRatio(r)}
-                  className={`text-[11px] py-1 rounded transition-all ${ratio === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  onClick={() => {
+                    const preset = ratioPresets[r] ?? { width: data.cardSize.width, height: data.cardSize.height };
+                    setWidthInput(String(preset.width));
+                    setHeightInput(String(preset.height));
+                    onSetCardSize({
+                      ...data.cardSize,
+                      ratio: r,
+                      width: preset.width,
+                      height: preset.height,
+                    });
+                  }}
+                  className={`text-[11px] py-1 rounded transition-all ${data.cardSize.ratio === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 >{r}</button>
               ))}
             </div>
             <div className="flex items-center gap-1.5">
               <div className="flex-1 relative">
-                <Input defaultValue={String(data.cardSize.width)} className="bg-card border-border pr-7 text-[11.5px] h-8" />
+                <Input
+                  value={widthInput}
+                  onChange={(event) => setWidthInput(event.target.value)}
+                  onBlur={() => {
+                    const width = Number(widthInput);
+                    if (!Number.isFinite(width) || width <= 0) {
+                      setWidthInput(String(data.cardSize.width));
+                      return;
+                    }
+                    onSetCardSize({
+                      ...data.cardSize,
+                      width,
+                    });
+                  }}
+                  className="bg-card border-border pr-7 text-[11.5px] h-8"
+                />
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">W</span>
               </div>
               <span className="text-muted-foreground/70 text-[11px]">×</span>
               <div className="flex-1 relative">
-                <Input defaultValue={String(data.cardSize.height)} className="bg-card border-border pr-7 text-[11.5px] h-8" />
+                <Input
+                  value={heightInput}
+                  onChange={(event) => setHeightInput(event.target.value)}
+                  onBlur={() => {
+                    const height = Number(heightInput);
+                    if (!Number.isFinite(height) || height <= 0) {
+                      setHeightInput(String(data.cardSize.height));
+                      return;
+                    }
+                    onSetCardSize({
+                      ...data.cardSize,
+                      height,
+                    });
+                  }}
+                  className="bg-card border-border pr-7 text-[11.5px] h-8"
+                />
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">H</span>
               </div>
             </div>
+            <div className="text-[10px] text-muted-foreground">尺寸变更只影响知识卡片，现有卡片会标记为需重生成。</div>
           </div>
         </div>
 

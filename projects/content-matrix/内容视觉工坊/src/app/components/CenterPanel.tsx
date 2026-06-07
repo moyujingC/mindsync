@@ -179,7 +179,7 @@ function shortStyleName(name: string) {
 function InlineImageCard({ image, onRegenerate }: { image: WechatInlineImageAsset; onRegenerate: (imageId: string) => Promise<void> }) {
   const failed = image.state === "failed";
   const processing = image.state === "processing";
-  const providerLabel = image.provider === "image-model" ? "真实出图" : "示例图";
+  const providerLabel = image.isStale ? "需重生成" : image.provider === "image-model" ? "真实出图" : "示例图";
   const sectionTypeLabelMap: Record<WechatInlineImageAsset["sectionType"], string> = {
     concept: "概念图",
     quote: "轻观点图",
@@ -345,7 +345,7 @@ function ToolBtn({
 function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate: (cardNumber: string) => Promise<void> }) {
   const failed = c.state === "failed";
   const processing = c.state === "processing";
-  const providerLabel = c.provider === "image-model" ? "真实出图" : c.provider === "llm" ? "真实 LLM" : "示例图";
+  const providerLabel = c.isStale ? "需重生成" : c.provider === "image-model" ? "真实出图" : c.provider === "llm" ? "真实 LLM" : "示例图";
   return (
     <ResultCardShell
       aspect="3/4"
@@ -403,7 +403,7 @@ function CoverCard({
 }) {
   const processing = cover.state === "processing";
   const failed = cover.state === "failed";
-  const providerLabel = cover.provider === "image-model" ? "真实出图" : "示例图";
+  const providerLabel = cover.isStale ? "需重生成" : cover.provider === "image-model" ? "真实出图" : "示例图";
   return (
     <ResultCardShell
       aspect={cover.wide ? "2.35/1" : "3/4"}
