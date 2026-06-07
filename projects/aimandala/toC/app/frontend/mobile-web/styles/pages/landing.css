@@ -1,5 +1,6 @@
 .am-landing-page {
   --am-pattern-image: var(--am-hero-pattern);
+  position: relative;
   background: var(--am-color-ink-950);
 }
 
@@ -10,12 +11,12 @@
 }
 
 .am-landing-hero {
-  min-height: 100vh;
+  min-height: calc(100vh - 118px);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 22px 8px;
+  padding: 30px 22px 28px;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(20, 30, 56, 0.95), rgba(26, 40, 68, 0.94)),
@@ -215,8 +216,8 @@
 .am-scroll-cue {
   position: absolute;
   left: 50%;
-  bottom: 10px;
-  z-index: 3;
+  bottom: calc(100vh - 118px);
+  z-index: 5;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -249,6 +250,12 @@
 .am-scroll-cue.is-hidden {
   opacity: 0;
   pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .am-scroll-cue {
+    bottom: calc(100vh - 110px);
+  }
 }
 
 @keyframes am-scroll-bob {
@@ -303,7 +310,7 @@
 .am-landing-section--steps {
   position: relative;
   z-index: 3;
-  margin-top: -54px;
+  margin-top: -96px;
   padding: 38px 24px 42px;
   border-radius: 24px 24px 0 0;
 }
