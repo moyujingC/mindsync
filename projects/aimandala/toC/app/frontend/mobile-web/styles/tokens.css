@@ -664,6 +664,150 @@
   --mw-history-empty-button-border: rgba(117, 132, 160, 0.18);
   --mw-history-empty-button-bg: rgba(35, 45, 69, 0.78);
   --mw-history-empty-button-text: rgba(238, 232, 220, 0.62);
+  --am-report-pro-error-border: rgba(195, 91, 86, 0.18);
+  --am-report-pro-error-bg: rgba(255, 255, 255, 0.75);
+  --am-report-pro-error-shadow: 0 12px 30px rgba(26, 40, 68, 0.08);
+  --am-report-pro-hero-bg: linear-gradient(
+    180deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    #223358 80%,
+    var(--am-color-ink-650) 100%
+  );
+  --am-report-pro-hero-eyebrow: rgba(212, 160, 84, 0.72);
+  --am-report-pro-hero-line: linear-gradient(
+    90deg,
+    rgba(212, 160, 84, 0),
+    rgba(212, 160, 84, 0.8),
+    rgba(212, 160, 84, 0)
+  );
+  --am-report-pro-hero-date: rgba(232, 220, 200, 0.45);
+  --am-report-pro-badge-border: rgba(255, 255, 255, 0.08);
+  --am-report-pro-badge-bg: rgba(255, 255, 255, 0.08);
+  --am-report-pro-badge-text: rgba(232, 220, 200, 0.82);
+  --am-report-pro-badge-primary-border: rgba(212, 160, 84, 0.18);
+  --am-report-pro-badge-primary-bg: rgba(212, 160, 84, 0.14);
+  --am-report-pro-summary-border: rgba(232, 220, 200, 0.12);
+  --am-report-pro-summary-bg: linear-gradient(
+    180deg,
+    rgba(245, 239, 226, 0.14) 0%,
+    rgba(245, 239, 226, 0.08) 100%
+  );
+  --am-report-pro-summary-shadow: 0 18px 36px rgba(8, 14, 28, 0.18);
+  --am-report-pro-summary-label: rgba(212, 160, 84, 0.86);
+  --am-report-pro-summary-body: rgba(232, 220, 200, 0.88);
+  --am-report-pro-summary-hint: rgba(232, 220, 200, 0.56);
+  --am-report-pro-preview-halo: radial-gradient(
+    circle,
+    rgba(212, 160, 84, 0.22) 0%,
+    rgba(212, 160, 84, 0.08) 42%,
+    rgba(26, 40, 68, 0) 72%
+  );
+  --am-report-pro-preview-aura: conic-gradient(
+    from 0deg,
+    rgba(212, 160, 84, 0.26),
+    rgba(200, 120, 80, 0.14),
+    rgba(212, 160, 84, 0.26)
+  );
+  --am-report-pro-preview-frame-shadow: 0 0 20px rgba(200, 160, 102, 0.22),
+    inset 0 0 18px rgba(200, 160, 102, 0.08);
+  --am-report-pro-preview-ring-middle: rgba(255, 208, 0, 0.96);
+  --am-report-pro-preview-ring-middle-shadow: 0 0 8px rgba(255, 208, 0, 0.55);
+  --am-report-pro-preview-ring-inner: rgba(0, 255, 208, 0.96);
+  --am-report-pro-preview-ring-inner-shadow: 0 0 8px rgba(0, 255, 208, 0.55);
+  --am-report-pro-preview-pill-border: rgba(212, 160, 84, 0.3);
+  --am-report-pro-preview-pill-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-800) 0%,
+    var(--am-color-ink-700) 100%
+  );
+  --am-report-pro-preview-pill-shadow: 0 8px 18px rgba(26, 40, 68, 0.2);
+  --am-report-pro-surface-shadow: 0 -6px 28px rgba(26, 40, 68, 0.16);
+  --am-report-pro-surface-handle: rgba(138, 124, 108, 0.18);
+  --am-report-pro-waiting-border: rgba(138, 124, 108, 0.12);
+  --am-report-pro-waiting-bg: rgba(255, 255, 255, 0.68);
+  --am-report-pro-waiting-icon-bg: rgba(212, 160, 84, 0.08);
+  --am-report-pro-kicker-line-start: rgba(138, 124, 108, 0);
+  --am-report-pro-kicker-line-end: rgba(138, 124, 108, 0.18);
+  --am-report-pro-markdown-divider: linear-gradient(
+    90deg,
+    rgba(200, 160, 102, 0.45),
+    rgba(200, 160, 102, 0.08)
+  );
+  --am-report-pro-markdown-rule: linear-gradient(
+    90deg,
+    rgba(200, 160, 102, 0.28),
+    rgba(200, 160, 102, 0.06)
+  );
+  --am-report-pro-table-border: rgba(200, 160, 102, 0.18);
+  --am-report-pro-table-bg: rgba(255, 255, 255, 0.36);
+  --am-report-pro-table-head-bg: rgba(200, 160, 102, 0.12);
+  --am-report-pro-table-cell-border: rgba(200, 160, 102, 0.12);
+  --am-report-pro-chat-entry-border: rgba(212, 160, 84, 0.2);
+  --am-report-pro-chat-entry-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    var(--am-color-ink-700) 100%
+  );
+  --am-report-pro-chat-entry-shadow: 0 14px 28px rgba(26, 40, 68, 0.16);
+  --am-report-pro-chat-entry-icon-bg: rgba(212, 160, 84, 0.15);
+  --am-report-pro-chat-entry-subtitle: rgba(232, 220, 200, 0.5);
+  --am-report-pro-chat-chip-border: rgba(212, 160, 84, 0.15);
+  --am-report-pro-chat-chip-bg: rgba(212, 160, 84, 0.1);
+  --am-report-pro-chat-chip-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --am-report-pro-chat-chip-text: rgba(232, 220, 200, 0.78);
+  --am-report-pro-chat-button-border: rgba(212, 160, 84, 0.25);
+  --am-report-pro-chat-button-bg: rgba(212, 160, 84, 0.15);
+  --am-report-pro-chat-button-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --am-report-pro-action-primary-border: rgba(212, 160, 84, 0.24);
+  --am-report-pro-action-primary-shadow: 0 12px 24px rgba(155, 64, 48, 0.16);
+  --am-report-pro-action-secondary-border: rgba(200, 160, 102, 0.3);
+  --am-report-pro-action-secondary-shadow: 0 8px 18px rgba(26, 40, 68, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --am-report-pro-info-border: rgba(138, 124, 108, 0.1);
+  --am-report-pro-info-bg: rgba(255, 255, 255, 0.58);
+  --am-report-pro-disclaimer-border: rgba(200, 120, 80, 0.1);
+  --am-report-pro-disclaimer-bg: rgba(200, 120, 80, 0.05);
+  --am-report-pro-footer-line: linear-gradient(
+    90deg,
+    transparent,
+    rgba(138, 124, 108, 0.2),
+    transparent
+  );
+  --am-report-pro-modal-backdrop: rgba(0, 0, 0, 0.6);
+  --am-report-pro-modal-bg: linear-gradient(
+    180deg,
+    var(--am-color-sand-100) 0%,
+    var(--am-color-sand-200) 100%
+  );
+  --am-report-pro-modal-header-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    var(--am-color-ink-700) 100%
+  );
+  --am-report-pro-modal-handle: rgba(232, 220, 200, 0.2);
+  --am-report-pro-modal-icon-bg: rgba(212, 160, 84, 0.15);
+  --am-report-pro-modal-close-bg: rgba(255, 255, 255, 0.1);
+  --am-report-pro-chat-avatar-bg: rgba(212, 160, 84, 0.2);
+  --am-report-pro-chat-assistant-border: rgba(212, 160, 84, 0.1);
+  --am-report-pro-chat-assistant-bg: rgba(255, 255, 255, 0.82);
+  --am-report-pro-chat-user-bg: linear-gradient(
+    135deg,
+    var(--am-color-copper-500) 0%,
+    var(--am-color-copper-400) 100%
+  );
+  --am-report-pro-modal-footer-border: rgba(138, 124, 108, 0.12);
+  --am-report-pro-modal-footer-bg: rgba(245, 239, 226, 0.96);
+  --am-report-pro-modal-input-border: rgba(138, 124, 108, 0.16);
+  --am-report-pro-modal-input-bg: rgba(255, 255, 255, 0.88);
+  --am-report-pro-modal-send-bg: linear-gradient(
+    135deg,
+    var(--am-color-copper-500) 0%,
+    var(--am-color-copper-400) 50%,
+    var(--am-color-gold-300) 100%
+  );
 
   /* Dev-shell local tokens */
   --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
