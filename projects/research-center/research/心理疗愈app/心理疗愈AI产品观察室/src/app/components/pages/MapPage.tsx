@@ -57,6 +57,11 @@ export function MapPage() {
               <p className="m-0 mb-6 max-w-[720px] text-[14px]" style={{ color: 'var(--ink-secondary)' }}>
                 它们不是推荐榜单，而是理解这个赛道的入口样本。先看这些代表产品，再看其余产品，会更容易分辨不同创业路径的机会、责任和风险。
               </p>
+              <div className="mb-6">
+                <Link to={{ name: 'focus' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>
+                  先看 4 个重点样本总览 →
+                </Link>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {featured.map(p => <ResearchCard key={p.slug} p={p} />)}
               </div>

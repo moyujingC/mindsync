@@ -2,6 +2,7 @@ import { RouterProvider, useRouter } from './router';
 import { Header, Footer } from './components/layout';
 import { HomePage } from './components/pages/HomePage';
 import { MapPage } from './components/pages/MapPage';
+import { FocusPage } from './components/pages/FocusPage';
 import { ProductPage } from './components/pages/ProductPage';
 import { ArticlesPage } from './components/pages/ArticlesPage';
 import { ArticlePage } from './components/pages/ArticlePage';
@@ -14,6 +15,7 @@ function Routes() {
   switch (route.name) {
     case 'home': return <HomePage />;
     case 'map': return <MapPage />;
+    case 'focus': return <FocusPage />;
     case 'product': return <ProductPage slug={route.slug} />;
     case 'articles': return <ArticlesPage />;
     case 'article': return <ArticlePage slug={route.slug} />;

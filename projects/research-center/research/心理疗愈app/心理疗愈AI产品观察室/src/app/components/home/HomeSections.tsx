@@ -128,7 +128,10 @@ export function FeaturedProductsSection() {
                 它们分别代表"陪伴 / 日记 / 教练 / 临床"几种 AI 在心理领域的典型角色，是理解这个赛道最经济的入口。
               </p>
             </div>
-            <Link to={{ name: 'map' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>查看完整地图 →</Link>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link to={{ name: 'focus' }} className="text-[14px]" style={{ color: 'var(--accent-green)' }}>先看重点样本总览 →</Link>
+              <Link to={{ name: 'map' }} className="text-[14px]" style={{ color: 'var(--ink-tertiary)' }}>查看完整地图 →</Link>
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {featuredProducts.map(p => <ResearchCard key={p.slug} p={p} />)}

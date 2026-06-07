@@ -4,6 +4,7 @@ import { Container } from './shared';
 
 const navItems: { label: string; route: Route }[] = [
   { label: '首页', route: { name: 'home' } },
+  { label: '重点样本', route: { name: 'focus' } },
   { label: '产品地图', route: { name: 'map' } },
   { label: '赛道观察', route: { name: 'articles' } },
   { label: '方法论', route: { name: 'method' } },
@@ -82,6 +83,7 @@ export function Footer() {
           </p>
         </div>
         <FooterCol title="导航" items={[
+          { label: '重点样本', to: { name: 'focus' } },
           { label: '产品地图', to: { name: 'map' } },
           { label: '赛道观察', to: { name: 'articles' } },
           { label: '方法论', to: { name: 'method' } },
