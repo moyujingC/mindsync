@@ -1,11 +1,18 @@
-import { Mail, Github, BookOpen, Download } from "lucide-react";
+import { Mail, Github, BookOpen, Download, ExternalLink } from "lucide-react";
 import { Reveal } from "./Reveal";
 import { Mandala } from "./Mandala";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 const contacts = [
   { icon: Mail, label: "邮箱", value: "alinecui@qq.com", href: "mailto:alinecui@qq.com" },
   { icon: Github, label: "GitHub", value: "github.com/MindSyncHub", href: "https://github.com/MindSyncHub" },
-  { icon: BookOpen, label: "公众号", value: "@墨予镜", href: "#" },
+  { icon: ExternalLink, label: "小红书", value: "墨予镜", href: "https://xhslink.com/m/7VPwpjmF501" },
 ];
 
 const opportunityFocus = ["AI 产品从 0 到 1", "业务流程 AI 化 / Agent 工作流", "AI + 高信任服务场景解决方案"];
@@ -55,11 +62,13 @@ export function Contact() {
         </Reveal>
 
         <Reveal delay={220}>
-          <div className="grid sm:grid-cols-3 gap-4 md:gap-6 mb-14">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-14">
             {contacts.map((c) => (
               <a
                 key={c.label}
                 href={c.href}
+                target={c.href.startsWith("http") ? "_blank" : undefined}
+                rel={c.href.startsWith("http") ? "noreferrer" : undefined}
                 className="group flex flex-col items-center text-center p-8 bg-white/[0.04] border border-[#F9F7F3]/10 hover:border-[#C9A57A]/60 hover:bg-white/[0.07] transition-all duration-500"
               >
                 <c.icon className="w-6 h-6 text-[#C9A57A] mb-4 transition-transform duration-500 group-hover:scale-110" strokeWidth={1.2} />
@@ -77,6 +86,51 @@ export function Contact() {
                 </div>
               </a>
             ))}
+            <Dialog>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="group flex flex-col items-center text-center p-8 bg-white/[0.04] border border-[#F9F7F3]/10 hover:border-[#C9A57A]/60 hover:bg-white/[0.07] transition-all duration-500"
+                >
+                  <BookOpen className="w-6 h-6 text-[#C9A57A] mb-4 transition-transform duration-500 group-hover:scale-110" strokeWidth={1.2} />
+                  <div
+                    className="text-xs tracking-[0.3em] text-[#C9A57A] mb-2"
+                    style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
+                  >
+                    公众号
+                  </div>
+                  <div
+                    className="text-[#F9F7F3]/85 group-hover:text-[#C9A57A] transition-colors"
+                    style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.9rem" }}
+                  >
+                    墨予镜
+                  </div>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="border-[#C9A57A]/35 bg-[#F9F7F3] text-[#2C3E50] sm:max-w-sm">
+                <DialogTitle
+                  className="text-center text-[#2C3E50]"
+                  style={{ fontFamily: "'Noto Serif SC', serif", fontWeight: 500 }}
+                >
+                  微信公众号：墨予镜
+                </DialogTitle>
+                <DialogDescription
+                  className="text-center text-[#2C3E50]/68"
+                  style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
+                >
+                  微信扫码关注，或在微信内搜索「墨予镜」。
+                </DialogDescription>
+                <div className="mx-auto mt-2 w-full max-w-[258px] overflow-hidden border border-[#2C3E50]/10 bg-white p-3">
+                  <img
+                    src="/moyujing-wechat-qrcode.jpg"
+                    alt="微信公众号墨予镜二维码"
+                    className="block h-auto w-full"
+                    width={258}
+                    height={258}
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </Reveal>
 
