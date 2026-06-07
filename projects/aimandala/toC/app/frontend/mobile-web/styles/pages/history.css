@@ -63,7 +63,7 @@
 }
 
 .mw-history-intro {
-  min-height: 172px;
+  min-height: 154px;
   margin-top: 24px;
   overflow: hidden;
   border: 1px solid rgba(212, 160, 84, 0.15);
@@ -118,10 +118,10 @@
 
 .mw-history-intro__moon {
   position: absolute;
-  top: 10px;
-  right: 18px;
-  width: 42px;
-  height: 42px;
+  top: 8px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   box-shadow:
     inset -8px 3px 0 rgba(212, 160, 84, 0.65),
@@ -145,28 +145,28 @@
 }
 
 .mw-history-intro__cloud--one {
-  top: 14px;
+  top: 12px;
   left: 16px;
-  width: 70px;
-  height: 22px;
+  width: 58px;
+  height: 18px;
   background: radial-gradient(ellipse, rgba(200, 180, 150, 0.18) 0%, rgba(158, 170, 155, 0.08) 50%, transparent 80%);
   transform: rotate(-8deg);
 }
 
 .mw-history-intro__cloud--two {
-  top: 28px;
-  left: 40px;
-  width: 55px;
-  height: 16px;
+  top: 24px;
+  left: 34px;
+  width: 46px;
+  height: 14px;
   background: radial-gradient(ellipse, rgba(212, 180, 120, 0.14) 0%, transparent 75%);
   transform: rotate(5deg);
 }
 
 .mw-history-intro__cloud--three {
   top: 8px;
-  left: 55px;
-  width: 40px;
-  height: 14px;
+  left: 46px;
+  width: 32px;
+  height: 11px;
   background: radial-gradient(ellipse, rgba(200, 180, 150, 0.1) 0%, transparent 75%);
   transform: rotate(-3deg);
 }
@@ -177,34 +177,34 @@
 
 .mw-history-intro__star--one {
   top: 8px;
-  right: 68px;
-  width: 4px;
-  height: 4px;
+  right: 60px;
+  width: 3px;
+  height: 3px;
   background: rgba(232, 220, 200, 0.7);
   box-shadow: 0 0 8px rgba(232, 220, 200, 0.5);
 }
 
 .mw-history-intro__star--two {
-  top: 42px;
-  right: 62px;
-  width: 3px;
-  height: 3px;
+  top: 36px;
+  right: 56px;
+  width: 2px;
+  height: 2px;
   background: rgba(212, 160, 84, 0.6);
   box-shadow: 0 0 6px rgba(212, 160, 84, 0.4);
 }
 
 .mw-history-intro__star--three {
   top: 4px;
-  right: 44px;
-  width: 2.5px;
-  height: 2.5px;
+  right: 40px;
+  width: 2px;
+  height: 2px;
   background: rgba(232, 220, 200, 0.55);
   box-shadow: 0 0 5px rgba(232, 220, 200, 0.35);
 }
 
 .mw-history-intro__star--four {
-  top: 20px;
-  right: 78px;
+  top: 18px;
+  right: 68px;
   width: 2px;
   height: 2px;
   background: rgba(232, 220, 200, 0.45);
@@ -212,8 +212,8 @@
 }
 
 .mw-history-intro__star--five {
-  top: 50px;
-  right: 45px;
+  top: 42px;
+  right: 40px;
   width: 2px;
   height: 2px;
   background: rgba(212, 160, 84, 0.4);
@@ -227,17 +227,17 @@
 }
 
 .mw-history-intro__crane--one {
-  top: 22px;
-  right: 100px;
-  width: 18px;
+  top: 18px;
+  right: 92px;
+  width: 14px;
   transform: rotate(-10deg);
 }
 
 .mw-history-intro__crane--two {
-  top: 17px;
-  right: 122px;
-  width: 14px;
-  height: 5px;
+  top: 14px;
+  right: 110px;
+  width: 11px;
+  height: 4px;
   border-top-width: 1px;
   border-top-color: rgba(232, 220, 200, 0.12);
   transform: rotate(-15deg);
@@ -252,34 +252,34 @@
 .mw-history-intro__mountain--back-right {
   right: 0;
   left: auto;
-  height: 50px;
+  height: 40px;
   background: linear-gradient(to top, rgba(6, 10, 20, 1) 0%, rgba(10, 16, 30, 0.7) 50%, transparent 100%);
   clip-path: polygon(45% 100%, 50% 50%, 58% 68%, 65% 25%, 75% 52%, 82% 15%, 92% 40%, 100% 28%, 100% 100%);
 }
 
 .mw-history-intro__mountain--back-left {
-  height: 46px;
+  height: 38px;
   background: linear-gradient(to top, rgba(6, 10, 20, 1) 0%, rgba(10, 16, 30, 0.65) 50%, transparent 100%);
   clip-path: polygon(0% 100%, 0% 32%, 6% 48%, 14% 22%, 22% 42%, 32% 18%, 42% 48%, 50% 62%, 50% 100%);
 }
 
 .mw-history-intro__mountain--mid {
-  height: 34px;
+  height: 28px;
   background: linear-gradient(to top, rgba(12, 18, 35, 0.85) 0%, rgba(16, 24, 45, 0.35) 65%, transparent 100%);
   clip-path: polygon(0% 100%, 8% 58%, 20% 72%, 35% 42%, 50% 62%, 65% 38%, 78% 58%, 92% 45%, 100% 52%, 100% 100%);
 }
 
 .mw-history-intro__mountain--edge {
-  height: 50px;
+  height: 40px;
   background: rgba(212, 160, 84, 0.15);
   clip-path: polygon(45% 100%, 50% 50%, 58% 68%, 65% 25%, 75% 52%, 82% 15%, 92% 40%, 100% 28%, 100% 28.5%, 92% 40.5%, 82% 15.5%, 75% 52.5%, 65% 25.5%, 58% 68.5%, 50% 50.5%, 45% 100%);
 }
 
 .mw-history-intro__lotus {
-  bottom: 4px;
+  bottom: 2px;
   left: 50%;
-  width: 50px;
-  height: 18px;
+  width: 40px;
+  height: 12px;
   border-radius: 50% 50% 0 0;
   background: radial-gradient(ellipse at bottom, rgba(212, 160, 84, 0.18) 0%, transparent 80%);
   box-shadow: 0 -3px 14px rgba(212, 160, 84, 0.1);
@@ -304,11 +304,11 @@
 }
 
 .mw-history-intro h2 {
-  margin-top: 44px;
-  margin-bottom: 4px;
+  margin-top: 38px;
+  margin-bottom: 3px;
   color: #ede4d4;
   font-family: var(--am-font-display);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.36;
   letter-spacing: 0.08em;
@@ -316,10 +316,10 @@
 
 .mw-history-intro p {
   margin-top: 0;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   color: rgba(232, 220, 200, 0.45);
-  font-size: 12px;
-  line-height: 1.7;
+  font-size: 11px;
+  line-height: 1.6;
 }
 
 .mw-inline-banner {
