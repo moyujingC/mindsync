@@ -853,7 +853,8 @@
 }
 
 .am-upload-bottom-cta {
-  width: 100%;
+  width: 85%;
+  margin: 0 auto;
   height: 46px;
   display: flex;
   align-items: center;
