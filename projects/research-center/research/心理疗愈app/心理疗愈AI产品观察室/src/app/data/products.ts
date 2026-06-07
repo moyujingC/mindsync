@@ -15,8 +15,9 @@ export const products: Product[] = [
     worthLearning: '它把模型叙事、关系设计和安全系统放在了一起，这是心理 AI 里少见的重投入路线。',
     risk: '产品语言靠近“治疗感”，但法律边界明显后撤，这种张力会一直存在。',
     confidence: '高',
-    imageSource: '官方产品页 / 官方博客与安全说明，访问日期：2026-06-07',
-    image: PLACEHOLDER('#6A9B8A', 'Ash'),
+    imageSource: '官方站点社交分享图（talktoash.com），访问日期：2026-06-07',
+    image: 'https://framerusercontent.com/images/9AcZJyICevtVVL9vPJdPtQt7O44.png',
+    imageAlt: 'Ash 官方站点分享图',
     url: 'https://www.talktoash.com',
     detail: {
       take30s:
@@ -92,8 +93,9 @@ export const products: Product[] = [
     worthLearning: '这是非常稳的一条路线：从高频、低门槛习惯切入，再把价值做深。',
     risk: '产品越像“懂你的人”，用户就越容易高估它的判断准确性和治理成熟度。',
     confidence: '高',
-    imageSource: '官网 / 帮助中心 / 隐私政策，访问日期：2026-06-07',
-    image: PLACEHOLDER('#6F93B7', 'Rosebud'),
+    imageSource: 'Rosebud 官网产品截图（screenshot-insights.png），访问日期：2026-06-07',
+    image: 'https://cdn.prod.website-files.com/64066f7ba948a8b9d8b1ca0e/66ae966d486187deaf914d80_screenshot-insights.png',
+    imageAlt: 'Rosebud 官方产品截图',
     url: 'https://www.rosebud.app',
     detail: {
       take30s:
@@ -170,8 +172,9 @@ export const products: Product[] = [
     worthLearning: '它把专家服务做成平台，这比单一聊天窗口更有商业想象力。',
     risk: '平台能力越强，越要防止客户把它配置到不该接的高风险场景。',
     confidence: '高',
-    imageSource: '官网 / 帮助中心 / 隐私政策，访问日期：2026-06-07',
-    image: PLACEHOLDER('#D6A66A', 'Rocky.ai'),
+    imageSource: 'Rocky.ai 官网桌面产品图（Growth Mindset Coach Desktop），访问日期：2026-06-07',
+    image: 'https://cdn.prod.website-files.com/5cababa1447a045322eefab7/63ab6ff3268d1883f75bd58e_Rocky-App-Growth-Mindset-Coach-Desktop.png',
+    imageAlt: 'Rocky.ai 官方桌面产品图',
     url: 'https://rocky.ai',
     detail: {
       take30s:
@@ -249,8 +252,9 @@ export const products: Product[] = [
     worthLearning: '它代表了高责任行业里最稳的一条 AI 路线：不替代专业人员，而是深入最贵的流程问题。',
     risk: '当 AI 进入临床和合规主链路，问题就不只是准确率，而是治理、审计和责任链是否成立。',
     confidence: '高',
-    imageSource: '官网 / 产品页 / 安全页 / 官方发布稿，访问日期：2026-06-07',
-    image: PLACEHOLDER('#5F8FAA', 'Eleos Health'),
+    imageSource: 'Eleos 官网 Documentation 产品页 Hero 图，访问日期：2026-06-07',
+    image: 'https://eleos.health/wp-content/uploads/2026/04/202406_Website_Documentation_Hero_v1_AA.svg',
+    imageAlt: 'Eleos Health 官方 Documentation 产品图',
     url: 'https://eleos.health',
     detail: {
       take30s:
