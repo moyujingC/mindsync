@@ -76,13 +76,24 @@ body {
 .browser-shell__phone {
   width: min(100%, 430px);
   margin: 0 auto;
+  height: min(852px, calc(100vh - 48px));
   min-height: 780px;
+  display: flex;
+  flex-direction: column;
   padding: 0;
   border: 0;
   border-radius: 32px;
   background: #141e38;
   box-shadow: 0 24px 80px rgba(15, 27, 51, 0.28);
   overflow: hidden;
+}
+
+.browser-shell__phone > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 
 .browser-shell__devbar {
@@ -275,6 +286,7 @@ body {
   }
 
   .browser-shell__phone {
+    height: min(852px, calc(100vh - 32px));
     min-height: auto;
   }
 }
