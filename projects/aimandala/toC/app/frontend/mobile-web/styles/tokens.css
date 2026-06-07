@@ -248,6 +248,107 @@
   --am-upload-bottom-panel-border: rgba(200, 120, 80, 0.1);
   --am-upload-bottom-cta-shadow: 0 10px 22px rgba(200, 120, 80, 0.18);
   --am-upload-privacy-text: #9b7a5a;
+  --am-upload-hero-bg: linear-gradient(
+    180deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 20%,
+    var(--am-upload-bottom-sheet-fill) 40%,
+    var(--am-color-ink-700) 60%,
+    var(--am-color-ink-800) 80%,
+    var(--am-color-ink-900) 100%
+  );
+  --am-upload-hero-glow-right: radial-gradient(
+    ellipse at 40% 50%,
+    rgba(200, 120, 80, 0.08) 0%,
+    rgba(200, 120, 80, 0.03) 45%,
+    transparent 70%
+  );
+  --am-upload-hero-glow-left: radial-gradient(
+    ellipse,
+    rgba(212, 160, 84, 0.06) 0%,
+    transparent 60%
+  );
+  --am-upload-hero-glow-center: radial-gradient(
+    circle,
+    rgba(212, 160, 84, 0.05) 0%,
+    rgba(200, 120, 80, 0.03) 40%,
+    transparent 65%
+  );
+  --am-upload-hero-spark-gold-bg: rgba(212, 160, 84, 0.3);
+  --am-upload-hero-spark-gold-shadow: 0 0 8px rgba(212, 160, 84, 0.2);
+  --am-upload-hero-spark-copper-bg: rgba(200, 120, 80, 0.25);
+  --am-upload-hero-spark-copper-shadow: 0 0 6px rgba(200, 120, 80, 0.15);
+  --am-upload-hero-spark-light-bg: rgba(232, 220, 200, 0.2);
+  --am-upload-hero-spark-light-shadow: 0 0 6px rgba(232, 220, 200, 0.1);
+  --am-upload-hero-spark-blue-bg: rgba(122, 142, 168, 0.25);
+  --am-upload-disc-halo: radial-gradient(
+    circle,
+    rgba(212, 160, 84, 0.1) 20%,
+    rgba(200, 120, 80, 0.06) 45%,
+    rgba(26, 40, 68, 0.03) 65%,
+    transparent 85%
+  );
+  --am-upload-disc-rim-border: rgba(212, 160, 84, 0.3);
+  --am-upload-disc-rim-shadow: inset 0 0 30px rgba(212, 160, 84, 0.04);
+  --am-upload-disc-drag-shadow: 0 0 0 4px rgba(212, 160, 84, 0.24);
+  --am-upload-disc-surface: conic-gradient(
+    from 0deg,
+    var(--am-color-gold-300),
+    var(--am-color-copper-400),
+    var(--am-color-copper-500),
+    var(--am-color-copper-400),
+    var(--am-color-gold-300),
+    var(--am-color-sand-300),
+    var(--am-color-info-500),
+    #4a6080,
+    var(--am-color-ink-800),
+    #4a6080,
+    var(--am-color-info-500),
+    var(--am-color-sand-300),
+    var(--am-color-gold-300)
+  );
+  --am-upload-disc-inner-border: rgba(200, 120, 80, 0.15);
+  --am-upload-disc-boundary-border: rgba(248, 226, 178, 0.72);
+  --am-upload-disc-boundary-shadow: 0 0 0 1px rgba(34, 48, 78, 0.2),
+    0 0 10px rgba(212, 160, 84, 0.18);
+  --am-upload-disc-hover-mask: rgba(20, 30, 56, 0.72);
+  --am-upload-disc-placeholder-text: var(--am-color-sand-300);
+  --am-upload-disc-placeholder-icon-border: rgba(212, 160, 84, 0.2);
+  --am-upload-disc-placeholder-icon-bg: linear-gradient(
+    135deg,
+    rgba(212, 160, 84, 0.15),
+    rgba(200, 120, 80, 0.1)
+  );
+  --am-upload-disc-placeholder-icon-shadow: 0 4px 20px rgba(212, 160, 84, 0.15);
+  --am-upload-disc-placeholder-hover-border: rgba(212, 160, 84, 0.48);
+  --am-upload-disc-placeholder-hover-shadow: 0 4px 30px rgba(212, 160, 84, 0.28);
+  --am-upload-disc-spark-bg: rgba(212, 160, 84, 0.6);
+  --am-upload-disc-spark-shadow: 0 0 6px rgba(212, 160, 84, 0.6);
+  --am-upload-detect-success-border: rgba(100, 200, 100, 0.22);
+  --am-upload-detect-error-border: rgba(200, 80, 80, 0.24);
+  --am-upload-guide-overlay-bg: rgba(8, 10, 16, 0.96);
+  --am-upload-guide-copy-bg: linear-gradient(
+    180deg,
+    rgba(20, 30, 56, 0.88) 0%,
+    rgba(20, 30, 56, 0.56) 100%
+  );
+  --am-upload-guide-copy-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  --am-upload-guide-copy-primary: rgba(196, 144, 78, 0.96);
+  --am-upload-guide-copy-secondary: rgba(184, 134, 72, 0.88);
+  --am-upload-guide-copy-text-shadow: 0 2px 12px rgba(0, 0, 0, 0.42);
+  --am-upload-guide-rim-border: rgba(212, 160, 84, 0.95);
+  --am-upload-guide-rim-mask: 0 0 0 9999px rgba(0, 0, 0, 0.78);
+  --am-upload-guide-cross: rgba(255, 64, 64, 0.95);
+  --am-upload-guide-control-border: rgba(232, 220, 200, 0.35);
+  --am-upload-guide-control-bg: rgba(26, 40, 68, 0.45);
+  --am-upload-guide-zoom-value: rgba(232, 220, 200, 0.92);
+  --am-upload-guide-primary-border: rgba(212, 160, 84, 0.45);
+  --am-upload-guide-primary-bg: linear-gradient(
+    135deg,
+    var(--am-color-copper-500) 0%,
+    var(--am-color-copper-400) 40%,
+    var(--am-color-gold-300) 100%
+  );
 
   /* Dev-shell local tokens */
   --am-dev-surface-panel: rgba(255, 250, 242, 0.82);
