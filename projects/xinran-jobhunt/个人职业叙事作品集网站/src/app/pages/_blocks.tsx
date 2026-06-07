@@ -4,6 +4,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Mandala } from "../components/Mandala";
 import { Reveal } from "../components/Reveal";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
 const serif = { fontFamily: "'Noto Serif SC', serif" } as const;
 const sans = { fontFamily: "'Inter', 'Noto Sans SC', sans-serif" } as const;
@@ -209,6 +210,47 @@ export function ModuleGrid({
             {m.body}
           </p>
         </div>
+      ))}
+    </div>
+  );
+}
+
+export function EvidenceGallery({
+  items,
+  accent = "#8B5A2B",
+}: {
+  items: { title: string; body: string; src: string; alt: string }[];
+  accent?: string;
+}) {
+  return (
+    <div className="grid gap-6 md:grid-cols-3">
+      {items.map((item, index) => (
+        <article
+          key={item.title}
+          className="overflow-hidden bg-white/72 border border-[#8B5A2B]/10 rounded-sm shadow-[0_10px_40px_-30px_rgba(44,62,80,0.4)]"
+        >
+          <div className="px-5 pt-5 pb-3">
+            <div className="text-xs tracking-[0.4em] mb-2" style={{ color: accent, ...sans }}>
+              {String(index + 1).padStart(2, "0")}
+            </div>
+            <h3 className="text-[#2C3E50]" style={{ ...serif, fontSize: "1rem", fontWeight: 500 }}>
+              {item.title}
+            </h3>
+          </div>
+          <div className="px-5">
+            <div className="overflow-hidden rounded-sm border border-[#8B5A2B]/10 bg-[#F4F1EA]">
+              <ImageWithFallback
+                src={item.src}
+                alt={item.alt}
+                className="block w-full h-auto"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <p className="px-5 py-4 text-[#2C3E50]/76" style={{ ...sans, fontSize: "0.88rem", lineHeight: 1.7 }}>
+            {item.body}
+          </p>
+        </article>
       ))}
     </div>
   );

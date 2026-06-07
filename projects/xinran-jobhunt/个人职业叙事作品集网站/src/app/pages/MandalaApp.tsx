@@ -6,6 +6,7 @@ import {
   BulletList,
   StepFlow,
   ModuleGrid,
+  EvidenceGallery,
   DecisionTable,
   Boundary,
   RoleFit,
@@ -100,17 +101,39 @@ export default function MandalaApp() {
       </Section>
 
       <Section index="0 6" title="可视化证据 ｜ Artifact" shaded accent={ACCENT}>
-        <ModuleGrid
-          accent={ACCENT}
-          modules={[
-            { title: "To C MVP 用户路径图", body: "从上传到追问的 8 步主路径与设计意图。" },
-            { title: "Lite / Pro 产品分层图", body: "明确分层关系与付费升级动线。" },
-            { title: "Vision / Reasoning 工作流图", body: "两段式报告生成链路结构。" },
-            { title: "报告追问边界说明", body: "围绕本次画作与报告范围的对话契约。" },
-            { title: "Prompt Pack 结构示意", body: "主题、知识、规范的分层组织方式。" },
-            { title: "质量门检查清单", body: "对越界表达、医疗化与无证据判断的拦截规则。" },
-          ]}
-        />
+        <div className="space-y-8">
+          <EvidenceGallery
+            accent={ACCENT}
+            items={[
+              {
+                title: "落地页",
+                src: "/works/mandala-app/landing.png",
+                alt: "一镜一梳落地页截图",
+                body: "首页先给出产品气质、价值承诺和单一主按钮，目标不是解释全部功能，而是让首次用户明确这是一款围绕曼陀罗解读展开的自我探索产品。",
+              },
+              {
+                title: "上传页",
+                src: "/works/mandala-app/upload.png",
+                alt: "一镜一梳上传页截图",
+                body: "上传页把三圈边界调整、当前议题选择、创作意图和创作感受放在同一主路径里，体现这个产品不是简单传图，而是在组织图像证据和用户上下文。",
+              },
+              {
+                title: "付款页",
+                src: "/works/mandala-app/payment.png",
+                alt: "一镜一梳付款页截图",
+                body: "付款页只承接 Lite 解读确认和最小支付动作，把版本、价格、适用场景和结果预期讲清楚，避免用户在高信任场景里被复杂商业动线打断。",
+              },
+            ]}
+          />
+          <ModuleGrid
+            accent={ACCENT}
+            modules={[
+              { title: "主路径已落到页面层", body: "不是抽象流程图，而是真实可点开的落地页、上传页和支付页。" },
+              { title: "关键输入已结构化", body: "三圈边界、议题、创作意图和创作感受都已经在页面层承接。" },
+              { title: "付费转化点已明确", body: "Lite 解读确认页把价格、版本和行动按钮收束成单一决策面。" },
+            ]}
+          />
+        </div>
       </Section>
 
       <Section index="0 7" title="当前结果 ｜ Outcome" accent={ACCENT}>
