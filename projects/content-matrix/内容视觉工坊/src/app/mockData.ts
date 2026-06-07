@@ -133,6 +133,7 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
   styleSelections: {
     knowledgeCards: 0,
     wechatInlineImages: 1,
+    wechatLayout: 1,
     wechatCover: 2,
     xiaohongshuCover: 0,
   },

@@ -2,6 +2,7 @@ import { CheckCircle2, ExternalLink, RefreshCw, Smartphone, Eye, X, AlertTriangl
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import type { DraftPreviewBlock, GenerationStageStatus, InputMode, ReviewCheck, WorkspaceData } from "../types";
+import { buildWechatLayoutTheme } from "../lib/layoutTheme";
 
 interface RightPanelProps {
   data: WorkspaceData;
@@ -16,6 +17,8 @@ interface RightPanelProps {
 export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, isTablet, isOpen, onClose }: RightPanelProps) {
   const draftSyncStage = data.workflowStages.find((stage) => stage.key === "draftSync");
   const isTextMode = inputMode === "text";
+  const layoutStyle = data.styleAssets[data.styleSelections.wechatLayout];
+  const theme = buildWechatLayoutTheme(layoutStyle);
   const panelClassName = isTablet
     ? `absolute inset-y-0 right-0 z-30 w-[min(464px,96vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "translate-x-full"}`
     : "w-[420px] xl:w-[464px] shrink-0 border-l border-border bg-card/40 flex flex-col overflow-hidden";
@@ -93,11 +96,11 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
             <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-primary/55"></span>{isTextMode ? "仅生成图片" : "系统加工"}</span>
           </div>
 
-          <div className="rounded-[14px] bg-[#e8e3d6] p-2.5 border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
-            <div className="rounded-[10px] bg-white shadow-sm border border-border/70 overflow-hidden">
+          <div className="rounded-[14px] p-2.5 border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]" style={{ background: theme.shellBg }}>
+            <div className="rounded-[10px] shadow-sm border border-border/70 overflow-hidden" style={{ background: theme.articleBg }}>
               {/* Header */}
               <div className="px-6 pt-5 pb-3.5 border-b border-border/50">
-                <h1 className="text-[#1a1a1a] leading-[1.45]" style={{ fontFamily: "var(--font-serif)", fontSize: "19px", fontWeight: 600 }}>
+                <h1 className="leading-[1.45]" style={{ fontFamily: "var(--font-serif)", fontSize: "19px", fontWeight: 600, color: theme.titleColor }}>
                   {data.draftReview.preview.title}
                 </h1>
                 <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
@@ -110,10 +113,10 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
               </div>
 
               {/* Body */}
-              <article className="px-6 py-5 text-[13px] leading-[1.95] text-[#2a2a2a]" style={{ fontFamily: "var(--font-sans-cn)" }}>
+              <article className="px-6 py-5 text-[13px] leading-[1.95]" style={{ fontFamily: "var(--font-sans-cn)", color: theme.bodyColor }}>
                 {data.draftReview.preview.intro ? (
                   <InheritBlock>
-                    <p className="italic text-[#7a7568] text-[12.5px] leading-[1.85]">
+                    <p className="italic text-[12.5px] leading-[1.85]" style={{ color: theme.mutedColor }}>
                       {data.draftReview.preview.intro}
                     </p>
                   </InheritBlock>
@@ -124,6 +127,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                     key={`${block.type}-${index}`}
                     block={block}
                     inlineImage={block.type === "image" ? data.wechatInlineImages.find((item) => item.id === block.imageId)?.img : undefined}
+                    theme={theme}
                   />
                 ))}
               </article>
@@ -187,11 +191,11 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
   );
 }
 
-function PreviewBlock({ block, inlineImage }: { block: DraftPreviewBlock; inlineImage?: string }) {
+function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock; inlineImage?: string; theme: ReturnType<typeof buildWechatLayoutTheme> }) {
   if (block.type === "heading2") {
     return (
       <InheritBlock className="mt-6">
-        <h2 className="text-[#1f3a36]" style={{ fontFamily: "var(--font-serif)", fontSize: "15.5px", fontWeight: 600 }}>
+        <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "15.5px", fontWeight: 600, color: theme.headingColor }}>
           {block.text}
         </h2>
       </InheritBlock>
@@ -201,7 +205,7 @@ function PreviewBlock({ block, inlineImage }: { block: DraftPreviewBlock; inline
   if (block.type === "blockquote") {
     return (
       <InheritBlock className="mt-5">
-        <blockquote className="bg-[#f6f2e8] border-l-[3px] border-[#1f3a36] px-4 py-3 text-[12.5px] text-[#3a3a3a] leading-[1.85]" style={{ fontFamily: "var(--font-serif)" }}>
+        <blockquote className="px-4 py-3 text-[12.5px] leading-[1.85]" style={{ fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `3px solid ${theme.quoteBorder}`, color: theme.bodyColor }}>
           {block.text}
         </blockquote>
       </InheritBlock>
@@ -228,7 +232,7 @@ function PreviewBlock({ block, inlineImage }: { block: DraftPreviewBlock; inline
       <SystemBlock label={`${block.placementLabel} · 正文配图`} className="mt-5">
         <figure>
           {inlineImage ? (
-            <div className="rounded-md overflow-hidden bg-[#ece6d6] relative" style={{ aspectRatio: "16/9", maxHeight: 240 }}>
+            <div className="rounded-md overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg }}>
               <ImageWithFallback
                 src={inlineImage}
                 alt={`正文配图 ${block.imageId}`}
@@ -236,7 +240,7 @@ function PreviewBlock({ block, inlineImage }: { block: DraftPreviewBlock; inline
               />
             </div>
           ) : (
-            <div className="rounded-md bg-[#f5efe2] border border-dashed border-border px-4 py-10 text-center text-muted-foreground">
+            <div className="rounded-md border border-dashed px-4 py-10 text-center" style={{ background: theme.placeholderBg, borderColor: theme.placeholderBorder, color: theme.mutedColor }}>
               <AlertTriangle className="w-4 h-4 mx-auto mb-2" />
               <div className="text-[11px]">图片尚未生成</div>
             </div>
@@ -251,8 +255,8 @@ function PreviewBlock({ block, inlineImage }: { block: DraftPreviewBlock; inline
     return (
       <SystemBlock label="结尾 CTA · 系统生成" className="mt-7 pt-5 border-t border-dashed border-border/80">
         <div className="text-center text-[11.5px] text-muted-foreground">
-          <div className="mb-2.5" style={{ fontFamily: "var(--font-serif)", color: "#1f3a36", fontWeight: 500 }}>—— {block.title} ——</div>
-          <span className="inline-block px-3 py-1 rounded-full bg-[#1f3a36] text-white text-[11px]">{block.buttonText}</span>
+          <div className="mb-2.5" style={{ fontFamily: "var(--font-serif)", color: theme.headingColor, fontWeight: 500 }}>—— {block.title} ——</div>
+          <span className="inline-block px-3 py-1 rounded-full text-[11px]" style={{ background: theme.ctaBg, color: theme.ctaText }}>{block.buttonText}</span>
         </div>
       </SystemBlock>
     );

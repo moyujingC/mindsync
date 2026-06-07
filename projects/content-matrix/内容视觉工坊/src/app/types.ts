@@ -25,12 +25,14 @@ export interface StyleAsset {
 export type StyleSelectionKey =
   | "knowledgeCards"
   | "wechatInlineImages"
+  | "wechatLayout"
   | "wechatCover"
   | "xiaohongshuCover";
 
 export interface StyleSelectionMap {
   knowledgeCards: number;
   wechatInlineImages: number;
+  wechatLayout: number;
   wechatCover: number;
   xiaohongshuCover: number;
 }

@@ -10,6 +10,7 @@ import type {
   WechatInlineSectionType,
   WorkspaceData,
 } from "../types";
+import { buildWechatLayoutTheme } from "./layoutTheme";
 
 function escapeHtml(text: string) {
   return text
@@ -263,9 +264,11 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
 }
 
 function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview) {
+  const layoutStyle = workspace.styleAssets[workspace.styleSelections.wechatLayout];
+  const theme = buildWechatLayoutTheme(layoutStyle);
   const wechatCover = workspace.covers.find((item) => item.key === "wechatCover" && item.img);
   const htmlParts: string[] = [
-    `<section data-tool="content-matrix" style="font-size:16px;line-height:1.8;color:#222222;">`,
+    `<section data-tool="content-matrix" style="font-size:16px;line-height:1.8;color:${theme.bodyColor};background:${theme.articleBg};">`,
   ];
 
   if (wechatCover?.img) {
@@ -276,26 +279,26 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
   if (preview.intro) {
     htmlParts.push(
-      `<p style="margin:0 0 18px;color:#666666;font-size:15px;"><em>${escapeHtml(preview.intro)}</em></p>`,
+      `<p style="margin:0 0 18px;color:${theme.mutedColor};font-size:15px;"><em>${escapeHtml(preview.intro)}</em></p>`,
     );
   }
 
   for (const block of preview.blocks) {
     if (block.type === "heading2") {
       htmlParts.push(
-        `<h2 style="margin:28px 0 12px;font-size:22px;line-height:1.45;color:#1f3a36;">${escapeHtml(block.text)}</h2>`,
+        `<h2 style="margin:28px 0 12px;font-size:22px;line-height:1.45;color:${theme.headingColor};">${escapeHtml(block.text)}</h2>`,
       );
       continue;
     }
 
     if (block.type === "paragraph") {
-      htmlParts.push(`<p style="margin:0 0 18px;">${escapeHtml(block.text)}</p>`);
+      htmlParts.push(`<p style="margin:0 0 18px;color:${theme.bodyColor};">${escapeHtml(block.text)}</p>`);
       continue;
     }
 
     if (block.type === "blockquote") {
       htmlParts.push(
-        `<blockquote style="margin:20px 0;padding:14px 16px;border-left:4px solid #1f3a36;background:#f6f2e8;color:#3a3a3a;">${escapeHtml(block.text)}</blockquote>`,
+        `<blockquote style="margin:20px 0;padding:14px 16px;border-left:4px solid ${theme.quoteBorder};background:${theme.quoteBg};color:${theme.bodyColor};">${escapeHtml(block.text)}</blockquote>`,
       );
       continue;
     }
@@ -313,11 +316,11 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
       const inlineImage = workspace.wechatInlineImages.find((item) => item.id === block.imageId);
       if (inlineImage?.img) {
         htmlParts.push(
-          `<figure style="margin:24px 0;text-align:center;"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:6px;" /><figcaption style="margin-top:8px;font-size:13px;color:#888888;">${escapeHtml(block.caption)}</figcaption></figure>`,
+          `<figure style="margin:24px 0;text-align:center;"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:6px;background:${theme.figureBg};" /><figcaption style="margin-top:8px;font-size:13px;color:${theme.mutedColor};">${escapeHtml(block.caption)}</figcaption></figure>`,
         );
       } else {
         htmlParts.push(
-          `<p style="margin:18px 0;padding:12px 14px;background:#faf6ee;border:1px dashed #d8cfbd;color:#8a7f6b;">[正文配图待补：${escapeHtml(block.caption)}]</p>`,
+          `<p style="margin:18px 0;padding:12px 14px;background:${theme.placeholderBg};border:1px dashed ${theme.placeholderBorder};color:${theme.mutedColor};">[正文配图待补：${escapeHtml(block.caption)}]</p>`,
         );
       }
       continue;
@@ -325,7 +328,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
     if (block.type === "cta") {
       htmlParts.push(
-        `<section style="margin:32px 0 8px;padding-top:18px;border-top:1px dashed #d8cfbd;text-align:center;"><p style="margin:0 0 12px;color:#1f3a36;">${escapeHtml(block.title)}</p><p style="margin:0;"><span style="display:inline-block;padding:7px 14px;border-radius:999px;background:#1f3a36;color:#ffffff;font-size:13px;">${escapeHtml(block.buttonText)}</span></p></section>`,
+        `<section style="margin:32px 0 8px;padding-top:18px;border-top:1px dashed ${theme.placeholderBorder};text-align:center;"><p style="margin:0 0 12px;color:${theme.headingColor};">${escapeHtml(block.title)}</p><p style="margin:0;"><span style="display:inline-block;padding:7px 14px;border-radius:999px;background:${theme.ctaBg};color:${theme.ctaText};font-size:13px;">${escapeHtml(block.buttonText)}</span></p></section>`,
       );
     }
   }

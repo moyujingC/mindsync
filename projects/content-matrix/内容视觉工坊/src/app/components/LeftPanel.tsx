@@ -50,11 +50,12 @@ export function LeftPanel({
   const [heightInput, setHeightInput] = useState(String(data.cardSize.height));
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const isGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
-  const styleTargets: Array<{ key: StyleSelectionKey; label: string; hint: string }> = [
-    { key: "knowledgeCards", label: "知识卡片", hint: "小红书 / 观点卡" },
+  const styleTargets: Array<{ key: StyleSelectionKey; label: string; hint: string; toggleKey?: "knowledgeCards" | "wechatCover" | "xiaohongshuCover" }> = [
+    { key: "knowledgeCards", label: "知识卡片", hint: "小红书 / 观点卡", toggleKey: "knowledgeCards" },
     { key: "wechatInlineImages", label: "正文配图", hint: "公众号中段插图" },
-    { key: "wechatCover", label: "公众号封面", hint: "文章入口图" },
-    { key: "xiaohongshuCover", label: "小红书封面", hint: "笔记首图" },
+    { key: "wechatLayout", label: "公众号排版", hint: "正文阅读稿样式" },
+    { key: "wechatCover", label: "公众号封面", hint: "文章入口图", toggleKey: "wechatCover" },
+    { key: "xiaohongshuCover", label: "小红书封面", hint: "笔记首图", toggleKey: "xiaohongshuCover" },
   ];
   const ratioPresets: Record<string, { width: number; height: number }> = {
     "3:4": { width: 1536, height: 2048 },
@@ -209,8 +210,7 @@ export function LeftPanel({
 
           <div className="divide-y divide-border/60">
             {styleTargets.map((target) => {
-              const toggle = data.outputToggles.find((item) => item.key === target.key);
-              if (!toggle) return null;
+              const toggle = target.toggleKey ? data.outputToggles.find((item) => item.key === target.toggleKey) : null;
 
               return (
                 <section key={target.key} className="px-3.5 py-3 space-y-3">
@@ -218,14 +218,18 @@ export function LeftPanel({
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <div className="text-[12px]" style={{ fontWeight: 600 }}>{target.label}</div>
-                        <span className="text-[10px] text-muted-foreground">{toggle.hint}</span>
+                        {toggle ? <span className="text-[10px] text-muted-foreground">{toggle.hint}</span> : null}
                       </div>
                       <div className="text-[10px] text-muted-foreground mt-1">{target.hint}</div>
                     </div>
-                    <Switch
-                      checked={toggle.enabled}
-                      onCheckedChange={(checked) => onSetOutputToggle(toggle.key, checked)}
-                    />
+                    {toggle ? (
+                      <Switch
+                        checked={toggle.enabled}
+                        onCheckedChange={(checked) => onSetOutputToggle(toggle.key, checked)}
+                      />
+                    ) : (
+                      <span className="text-[10px] px-2 py-1 rounded-full bg-secondary text-muted-foreground">仅排版</span>
+                    )}
                   </div>
 
                   <div className="rounded-md border border-border/70 bg-secondary/20 px-2.5 py-2.5 space-y-2.5">
