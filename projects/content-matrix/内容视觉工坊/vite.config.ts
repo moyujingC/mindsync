@@ -6,7 +6,7 @@ import type { Connect } from 'vite'
 import dotenv from 'dotenv'
 import { planKnowledgeCardsFromArticle } from './src/app/lib/cardPlanning'
 import { planCardsWithLLM } from './src/app/lib/llmPlanner'
-import { generateCardImageWithModel, generateCoverImageWithModel } from './src/app/lib/llmImage'
+import { generateCardImageWithModel, generateCoverImageWithModel, generateWechatInlineImageWithModel } from './src/app/lib/llmImage'
 
 dotenv.config({ path: path.resolve(__dirname, '.env.local') })
 
@@ -135,12 +135,41 @@ function localGenerateCoverImageApi() {
   }
 }
 
+function localGenerateWechatInlineImageApi() {
+  return {
+    name: 'local-generate-wechat-inline-image-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/generate-wechat-inline-image', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'POST') {
+          next()
+          return
+        }
+
+        try {
+          const body = await jsonBodyParser(req)
+          const result = await generateWechatInlineImageWithModel(body)
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(result))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'generate-wechat-inline-image-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
     figmaAssetResolver(),
     localPlanCardsApi(),
     localGenerateCardImageApi(),
     localGenerateCoverImageApi(),
+    localGenerateWechatInlineImageApi(),
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
     react(),

@@ -4,7 +4,8 @@ import { parseMarkdownFileContent } from "../lib/markdown";
 import { planCards } from "../lib/planCards";
 import { generateCardImage } from "../lib/generateCardImage";
 import { generateCoverImage } from "../lib/generateCoverImage";
-import { buildDraftReview } from "../lib/layoutGeneration";
+import { generateWechatInlineImage } from "../lib/generateWechatInlineImage";
+import { buildDraftReview, buildWechatInlineImages } from "../lib/layoutGeneration";
 import type { WorkspaceData } from "../types";
 
 function formatNowTime() {
@@ -41,6 +42,25 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
 
 function isOutputEnabled(workspace: WorkspaceData, key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover") {
   return workspace.outputToggles.find((item) => item.key === key)?.enabled ?? false;
+}
+
+function buildWechatInlineImageRequest(workspace: WorkspaceData, imageId: string) {
+  const image = workspace.wechatInlineImages.find((item) => item.id === imageId);
+  if (!image) return null;
+
+  return {
+    articleTheme: workspace.analysis.coverTheme.title,
+    sectionType: image.sectionType,
+    sectionTheme: image.sectionTheme,
+    sectionKeywords: image.sectionKeywords,
+    sectionSummary: image.sectionSummary,
+    sectionQuote: image.sectionQuote,
+    visualDirection: image.visualDirection,
+    styleName: workspace.styleAssets[workspace.activeStyleIndex]?.name ?? "默认风格",
+    ratio: image.ratio,
+    width: image.width,
+    height: image.height,
+  };
 }
 
 function markDraftSyncPending(workspace: WorkspaceData, detail: string): WorkspaceData["workflowStages"] {
@@ -169,6 +189,13 @@ export function useWorkspaceDocument() {
       parsedMarkdown: parsed.parsedMarkdown,
       analysis: planned.analysis,
       cardPlan: planned.cardPlan,
+      wechatInlineImages: buildWechatInlineImages({
+        ...workspace,
+        article: parsed.article,
+        parsedMarkdown: parsed.parsedMarkdown,
+        analysis: planned.analysis,
+        cardPlan: planned.cardPlan,
+      } as WorkspaceData),
       workflowStages: workspace.workflowStages.map((stage) => {
         if (stage.key === "upload") {
           return { ...stage, status: "success", detail: "Markdown 文件已读取" };
@@ -265,9 +292,10 @@ export function useWorkspaceDocument() {
     const enabledCoverKeys = workspace.covers
       .filter((cover) => isOutputEnabled(workspace, cover.key))
       .map((cover) => cover.key);
+    const inlineImages = workspace.wechatInlineImages;
     const cards = shouldGenerateCards ? workspace.knowledgeCards : [];
 
-    if (cards.length === 0 && enabledCoverKeys.length === 0) return;
+    if (cards.length === 0 && enabledCoverKeys.length === 0 && inlineImages.length === 0) return;
 
     setWorkspace((prev) => ({
       ...prev,
@@ -277,12 +305,13 @@ export function useWorkspaceDocument() {
       covers: prev.covers.map((item) =>
         enabledCoverKeys.includes(item.key) ? { ...item, state: "processing", status: "生成中" } : item,
       ),
+      wechatInlineImages: prev.wechatInlineImages.map((item) => ({ ...item, state: "processing" })),
       workflowStages: prev.workflowStages.map((stage) =>
         stage.key === "imageGeneration"
           ? {
               ...stage,
               status: "processing",
-              detail: `正在批量生成 ${cards.length} 张卡片和 ${enabledCoverKeys.length} 张封面…`,
+              detail: `正在批量生成 ${cards.length} 张知识卡片、${inlineImages.length} 张正文配图和 ${enabledCoverKeys.length} 张封面…`,
               providerLabel: "gpt-image-2",
               retryable: false,
             }
@@ -292,7 +321,7 @@ export function useWorkspaceDocument() {
 
     let successCount = 0;
     let failedCount = 0;
-    const totalAssets = cards.length + enabledCoverKeys.length;
+    const totalAssets = cards.length + inlineImages.length + enabledCoverKeys.length;
 
     for (const card of cards) {
       try {
@@ -330,6 +359,52 @@ export function useWorkspaceDocument() {
           ...prev,
           knowledgeCards: prev.knowledgeCards.map((item) =>
             item.n === card.n ? { ...item, state: "failed" } : item,
+          ),
+          workflowStages: prev.workflowStages.map((stage) =>
+            stage.key === "imageGeneration"
+              ? {
+                  ...stage,
+                  status: "processing",
+                  detail: `批量生成中：已完成 ${successCount + failedCount}/${totalAssets} 项，失败 ${failedCount} 项`,
+                  providerLabel: "gpt-image-2",
+                }
+              : stage,
+          ),
+        }));
+      }
+    }
+
+    for (const inlineImage of inlineImages) {
+      const request = buildWechatInlineImageRequest(workspace, inlineImage.id);
+      if (!request) continue;
+
+      try {
+        const result = await generateWechatInlineImage(request);
+        successCount += 1;
+        setWorkspace((prev) => ({
+          ...prev,
+          wechatInlineImages: prev.wechatInlineImages.map((item) =>
+            item.id === inlineImage.id
+              ? { ...item, img: result.imageUrl, state: "ok", provider: result.provider, imagePrompt: result.prompt }
+              : item,
+          ),
+          workflowStages: prev.workflowStages.map((stage) =>
+            stage.key === "imageGeneration"
+              ? {
+                  ...stage,
+                  status: "processing",
+                  detail: `批量生成中：已完成 ${successCount + failedCount}/${totalAssets} 项`,
+                  providerLabel: "gpt-image-2",
+                }
+              : stage,
+          ),
+        }));
+      } catch {
+        failedCount += 1;
+        setWorkspace((prev) => ({
+          ...prev,
+          wechatInlineImages: prev.wechatInlineImages.map((item) =>
+            item.id === inlineImage.id ? { ...item, state: "failed" } : item,
           ),
           workflowStages: prev.workflowStages.map((stage) =>
             stage.key === "imageGeneration"

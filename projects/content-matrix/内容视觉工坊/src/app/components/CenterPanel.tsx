@@ -1,6 +1,6 @@
 import { RefreshCw, Image as ImageIcon, AlertTriangle, CheckCircle2, Layers, MoreHorizontal, Maximize2, Quote, LoaderCircle } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import type { CoverAsset, GenerationStageStatus, KnowledgeCardItem, WorkspaceData, WorkflowStage } from "../types";
+import type { CoverAsset, GenerationStageStatus, KnowledgeCardItem, WechatInlineImageAsset, WorkspaceData, WorkflowStage } from "../types";
 
 interface CenterPanelProps {
   data: WorkspaceData;
@@ -10,7 +10,7 @@ interface CenterPanelProps {
 }
 
 export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
-  const isBatchGenerating = [...data.knowledgeCards, ...data.covers].some((item) => item.state === "processing");
+  const isBatchGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
       {/* Summary bar — two stable rows */}
@@ -114,7 +114,7 @@ export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardIm
             <div className="flex items-baseline gap-3">
               <span className="text-[10px] text-muted-foreground tracking-[0.2em]">03</span>
               <h3 className="text-[17px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>图片生成结果</h3>
-              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 卡片 + {data.generation.coversCount} 封面 · {data.styleAssets[data.activeStyleIndex].name}</span>
+              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 卡片 + {data.wechatInlineImages.length} 正文配图 + {data.generation.coversCount} 封面 · {data.styleAssets[data.activeStyleIndex].name}</span>
             </div>
             <button
               onClick={() => onRegenerateAllCardImages()}
@@ -133,6 +133,16 @@ export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardIm
             ))}
           </div>
 
+          <div className="mt-8 mb-4 flex items-center gap-3">
+            <span className="text-[10.5px] text-muted-foreground tracking-[0.15em]">公众号正文配图</span>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+            {data.wechatInlineImages.map((image) => (
+              <InlineImageCard key={image.id} image={image} />
+            ))}
+          </div>
+
           {/* Covers divider */}
           <div className="mt-8 mb-4 flex items-center gap-3">
             <span className="text-[10.5px] text-muted-foreground tracking-[0.15em]">封面</span>
@@ -148,6 +158,62 @@ export function CenterPanel({ data, onRegenerateCardImage, onRegenerateAllCardIm
         </section>
       </div>
     </main>
+  );
+}
+
+function InlineImageCard({ image }: { image: WechatInlineImageAsset }) {
+  const failed = image.state === "failed";
+  const processing = image.state === "processing";
+  const providerLabel = image.provider === "image-model" ? "真实出图" : "示例图";
+  const sectionTypeLabelMap: Record<WechatInlineImageAsset["sectionType"], string> = {
+    concept: "概念图",
+    quote: "轻观点图",
+    method: "方法图",
+    transition: "换气图",
+  };
+
+  return (
+    <ResultCardShell
+      aspect="16/9"
+      cornerChip={image.placementLabel}
+      statusChip={
+        processing ? (
+          <><LoaderCircle className="w-3 h-3 animate-spin" /> 生成中</>
+        ) : !failed ? (
+          <><span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span> 已就绪</>
+        ) : null
+      }
+      imageNode={
+        !failed && image.img ? (
+          <ImageWithFallback src={image.img} alt={image.sectionTheme} className="absolute inset-0 w-full h-full object-cover" />
+        ) : processing ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-6 bg-[#f3ecdb]">
+            <LoaderCircle className="w-5 h-5 text-primary animate-spin" />
+            <div className="text-[12.5px] text-foreground" style={{ fontWeight: 500 }}>正在生成正文配图</div>
+            <div className="text-[10.5px] text-muted-foreground leading-relaxed">已提交到 gpt-image-2，通常需要几秒钟</div>
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-6 bg-[#f3ecdb]">
+            <div className="w-9 h-9 rounded-full bg-amber-700/10 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-amber-800" />
+            </div>
+            <div className="text-[12.5px] text-amber-900" style={{ fontWeight: 500 }}>生成失败</div>
+            <div className="text-[10.5px] text-muted-foreground leading-relaxed">prompt 触发了安全限制 · 可批量重试</div>
+          </div>
+        )
+      }
+      title={image.sectionTheme}
+      caption={image.visualDirection}
+      spec={`${providerLabel} · ${sectionTypeLabelMap[image.sectionType]} · ${image.ratio} · ${image.width}×${image.height}`}
+      actions={
+        <>
+          <ToolBtn title="当前仅支持批量生成" disabled><RefreshCw className="w-3.5 h-3.5" /></ToolBtn>
+          <ToolBtn title="替换图片" disabled><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
+          <ToolBtn title="大图预览"><Maximize2 className="w-3.5 h-3.5" /></ToolBtn>
+          <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
+        </>
+      }
+    />
   );
 }
 

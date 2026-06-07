@@ -1,10 +1,12 @@
 import OpenAI from "openai";
-import { buildCardImagePrompt, buildCoverImagePrompt } from "./imagePrompt";
+import { buildCardImagePrompt, buildCoverImagePrompt, buildWechatInlineImagePrompt } from "./imagePrompt";
 import type {
   GenerateCardImageRequest,
   GenerateCardImageResponse,
   GenerateCoverImageRequest,
   GenerateCoverImageResponse,
+  GenerateWechatInlineImageRequest,
+  GenerateWechatInlineImageResponse,
 } from "../types";
 
 function getImageSizeFromRatio(ratio: string) {
@@ -66,5 +68,12 @@ export async function generateCardImageWithModel(request: GenerateCardImageReque
 
 export async function generateCoverImageWithModel(request: GenerateCoverImageRequest): Promise<GenerateCoverImageResponse> {
   const prompt = buildCoverImagePrompt(request);
+  return generateImage(prompt, request.ratio);
+}
+
+export async function generateWechatInlineImageWithModel(
+  request: GenerateWechatInlineImageRequest,
+): Promise<GenerateWechatInlineImageResponse> {
+  const prompt = buildWechatInlineImagePrompt(request);
   return generateImage(prompt, request.ratio);
 }

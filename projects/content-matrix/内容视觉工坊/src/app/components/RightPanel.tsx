@@ -63,7 +63,7 @@ export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isO
           <div className="text-[10.5px] text-muted-foreground tracking-wide mb-2">系统插图位编排</div>
           <div className="space-y-2">
             {data.draftReview.imagePlacements.slice(0, 2).map((placement) => (
-              <div key={placement.cardNumber} className="text-[10.5px] leading-relaxed text-muted-foreground">
+              <div key={placement.imageId} className="text-[10.5px] leading-relaxed text-muted-foreground">
                 <span className="text-foreground/90" style={{ fontWeight: 500 }}>{placement.placementLabel}</span>
                 <span> · {placement.anchorText}</span>
               </div>
@@ -121,7 +121,7 @@ export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isO
                   <PreviewBlock
                     key={`${block.type}-${index}`}
                     block={block}
-                    cardImage={block.type === "image" ? data.knowledgeCards.find((item) => item.n === block.cardNumber)?.img : undefined}
+                    inlineImage={block.type === "image" ? data.wechatInlineImages.find((item) => item.id === block.imageId)?.img : undefined}
                   />
                 ))}
               </article>
@@ -184,7 +184,7 @@ export function RightPanel({ data, copyFeedback, onCopyWechatHtml, isTablet, isO
   );
 }
 
-function PreviewBlock({ block, cardImage }: { block: DraftPreviewBlock; cardImage?: string }) {
+function PreviewBlock({ block, inlineImage }: { block: DraftPreviewBlock; inlineImage?: string }) {
   if (block.type === "heading2") {
     return (
       <InheritBlock className="mt-6">
@@ -222,13 +222,13 @@ function PreviewBlock({ block, cardImage }: { block: DraftPreviewBlock; cardImag
 
   if (block.type === "image") {
     return (
-      <SystemBlock label={`${block.placementLabel} · 知识卡片 ${block.cardNumber}`} className="mt-5">
+      <SystemBlock label={`${block.placementLabel} · 正文配图`} className="mt-5">
         <figure>
-          {cardImage ? (
-            <div className="rounded-md overflow-hidden bg-[#ece6d6] relative" style={{ aspectRatio: "3/4", maxHeight: 300 }}>
+          {inlineImage ? (
+            <div className="rounded-md overflow-hidden bg-[#ece6d6] relative" style={{ aspectRatio: "16/9", maxHeight: 240 }}>
               <ImageWithFallback
-                src={cardImage}
-                alt={`知识卡片 ${block.cardNumber}`}
+                src={inlineImage}
+                alt={`正文配图 ${block.imageId}`}
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>

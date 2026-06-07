@@ -2,10 +2,11 @@ import type {
   DraftPreview,
   DraftPreviewBlock,
   DraftReview,
-  KnowledgeCardItem,
   LayoutImagePlacement,
   ParsedMarkdownDocument,
   ReviewCheck,
+  WechatInlineImageAsset,
+  WechatInlineSectionType,
   WorkspaceData,
 } from "../types";
 
@@ -43,12 +44,62 @@ function splitParagraphs(rawText: string) {
     .filter(Boolean);
 }
 
-function buildImagePlacements(cardItems: KnowledgeCardItem[], sectionTitles: string[]) {
-  return cardItems.slice(0, sectionTitles.length || cardItems.length).map<LayoutImagePlacement>((card, index) => ({
-    cardNumber: card.n,
-    placementLabel: `图片位 #${index + 1}`,
-    anchorText: sectionTitles[index] || card.title,
-    rationale: `放在「${sectionTitles[index] || card.title}」对应段落之后，用来给长文阅读换气，并承接这一节的主观点。`,
+function extractSectionQuote(summary: string, quotes: string[]) {
+  return quotes.find((quote) => summary.includes(quote) || quote.includes(summary.slice(0, 12)));
+}
+
+function classifySectionType(summary: string, quote?: string): WechatInlineSectionType {
+  if (quote) return "quote";
+  if (/^\d+\./m.test(summary) || /练习|步骤|方法|建议|清单/.test(summary)) return "method";
+  if (/判断力|提问|留白|筛选|边界|表达|思考/.test(summary)) return "concept";
+  return "transition";
+}
+
+function buildVisualDirection(sectionType: WechatInlineSectionType, sectionTheme: string) {
+  if (sectionType === "quote") {
+    return `围绕“${sectionTheme}”做轻观点感的编辑插图，不做大字海报，更像杂志内页的安静观点图。`;
+  }
+  if (sectionType === "method") {
+    return `围绕“${sectionTheme}”表达方法感、秩序感和结构感，但不要做步骤罗列或教程卡片。`;
+  }
+  if (sectionType === "transition") {
+    return `围绕“${sectionTheme}”做阅读换气图，强调停顿感、留白感和节奏缓冲，不承载完整信息。`;
+  }
+  return `围绕“${sectionTheme}”做抽象概念意象图，安静、克制、有人文思考感。`;
+}
+
+export function buildWechatInlineImages(workspace: WorkspaceData): WechatInlineImageAsset[] {
+  return workspace.cardPlan.map((card) => {
+    const sectionQuote = extractSectionQuote(card.summary, workspace.analysis.keyQuotes);
+    const sectionType = classifySectionType(card.summary, sectionQuote);
+    return {
+      id: `inline-${String(card.index).padStart(2, "0")}`,
+      placementLabel: `图片位 #${card.index}`,
+      sectionType,
+      sectionTheme: card.title,
+      sectionKeywords: [card.title, workspace.analysis.coverTheme.title, ...workspace.analysis.coverTheme.keywords.split("/").map((item) => item.trim())]
+        .filter(Boolean)
+        .slice(0, 5),
+      sectionSummary: card.summary,
+      sectionQuote,
+      visualDirection: buildVisualDirection(sectionType, card.title),
+      ratio: "16:9",
+      width: 1536,
+      height: 864,
+      img: "",
+      state: "idle",
+      provider: "mock",
+    };
+  });
+}
+
+function buildImagePlacements(inlineImages: WechatInlineImageAsset[]) {
+  return inlineImages.map<LayoutImagePlacement>((image) => ({
+    imageId: image.id,
+    placementLabel: image.placementLabel,
+    anchorText: image.sectionQuote || image.sectionTheme,
+    rationale: `放在“${image.sectionTheme}”相关段落之后，用来给长文阅读换气，并轻量强化当前段落主题。`,
+    sectionType: image.sectionType,
   }));
 }
 
@@ -66,7 +117,7 @@ function buildReviewChecks(parsedMarkdown: ParsedMarkdownDocument, imagePlacemen
     },
     {
       title: "插图位编排",
-      detail: `系统已决定 ${imagePlacements.length} 处插图位置`,
+      detail: `系统已决定 ${imagePlacements.length} 处正文配图位置`,
       status: "pass",
     },
     {
@@ -95,7 +146,7 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
         const placement = imagePlacements[imageIndex];
         blocks.push({
           type: "image",
-          cardNumber: placement.cardNumber,
+          imageId: placement.imageId,
           placementLabel: placement.placementLabel,
           caption: placement.anchorText,
         });
@@ -114,7 +165,7 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
         const placement = imagePlacements[imageIndex];
         blocks.push({
           type: "image",
-          cardNumber: placement.cardNumber,
+          imageId: placement.imageId,
           placementLabel: placement.placementLabel,
           caption: placement.anchorText,
         });
@@ -130,7 +181,7 @@ function buildPreview(rawText: string, articleTitle: string, accountName: string
       const placement = imagePlacements[imageIndex];
       blocks.push({
         type: "image",
-        cardNumber: placement.cardNumber,
+        imageId: placement.imageId,
         placementLabel: placement.placementLabel,
         caption: placement.anchorText,
       });
@@ -201,14 +252,14 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
     }
 
     if (block.type === "image") {
-      const card = workspace.knowledgeCards.find((item) => item.n === block.cardNumber);
-      if (card?.img) {
+      const inlineImage = workspace.wechatInlineImages.find((item) => item.id === block.imageId);
+      if (inlineImage?.img) {
         htmlParts.push(
-          `<figure style="margin:24px 0;text-align:center;"><img src="${escapeHtml(card.img)}" alt="${escapeHtml(card.title)}" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border-radius:6px;" /><figcaption style="margin-top:8px;font-size:13px;color:#888888;">${escapeHtml(block.caption)}</figcaption></figure>`,
+          `<figure style="margin:24px 0;text-align:center;"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:6px;" /><figcaption style="margin-top:8px;font-size:13px;color:#888888;">${escapeHtml(block.caption)}</figcaption></figure>`,
         );
       } else {
         htmlParts.push(
-          `<p style="margin:18px 0;padding:12px 14px;background:#faf6ee;border:1px dashed #d8cfbd;color:#8a7f6b;">[图片待补：${escapeHtml(block.caption)}]</p>`,
+          `<p style="margin:18px 0;padding:12px 14px;background:#faf6ee;border:1px dashed #d8cfbd;color:#8a7f6b;">[正文配图待补：${escapeHtml(block.caption)}]</p>`,
         );
       }
       continue;
@@ -226,11 +277,8 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 }
 
 export function buildDraftReview(workspace: WorkspaceData): DraftReview {
-  const imagePlacements = buildImagePlacements(
-    workspace.knowledgeCards,
-    workspace.cardPlan.map((item) => item.title),
-  );
-
+  const inlineImages = workspace.wechatInlineImages.length > 0 ? workspace.wechatInlineImages : buildWechatInlineImages(workspace);
+  const imagePlacements = buildImagePlacements(inlineImages);
   const preview = buildPreview(
     workspace.article.rawText,
     workspace.article.title,
@@ -239,17 +287,17 @@ export function buildDraftReview(workspace: WorkspaceData): DraftReview {
   );
 
   return {
-    readyTitle: "可同步到草稿箱",
-    readyDescription: "系统已完成结构继承、重点识别和插图位编排",
+    readyTitle: "可复制到公众号编辑器",
+    readyDescription: "系统已完成结构继承、重点识别和正文配图编排",
     reviewChecks: buildReviewChecks(workspace.parsedMarkdown, imagePlacements),
     syncStatus: [
       { label: "正文排版", note: `Markdown 已转为公众号阅读稿 · ${workspace.cardPlan.length} 个内容段` },
-      { label: "卡片插图位", note: `${imagePlacements.length} 处插图位置已编排` },
+      { label: "正文配图", note: `${imagePlacements.length} 张正文配图已规划` },
       { label: "封面状态", note: "已保留公众号封面和小红书封面的输出位" },
       { label: "正文复制", note: "可复制 HTML 后手动粘贴到公众号编辑器" },
     ],
     imagePlacements,
     preview,
-    editorHtml: renderWechatEditorHtml(workspace, preview),
+    editorHtml: renderWechatEditorHtml({ ...workspace, wechatInlineImages: inlineImages }, preview),
   };
 }

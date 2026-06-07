@@ -156,6 +156,46 @@ export interface GenerateCoverImageResponse {
   prompt: string;
 }
 
+export type WechatInlineSectionType = "concept" | "quote" | "method" | "transition";
+
+export interface WechatInlineImageAsset {
+  id: string;
+  placementLabel: string;
+  sectionType: WechatInlineSectionType;
+  sectionTheme: string;
+  sectionKeywords: string[];
+  sectionSummary: string;
+  sectionQuote?: string;
+  visualDirection: string;
+  ratio: string;
+  width: number;
+  height: number;
+  img: string;
+  state: CardGenerationState;
+  provider?: "mock" | "image-model";
+  imagePrompt?: string;
+}
+
+export interface GenerateWechatInlineImageRequest {
+  articleTheme: string;
+  sectionType: WechatInlineSectionType;
+  sectionTheme: string;
+  sectionKeywords: string[];
+  sectionSummary: string;
+  sectionQuote?: string;
+  visualDirection: string;
+  styleName: string;
+  ratio: string;
+  width: number;
+  height: number;
+}
+
+export interface GenerateWechatInlineImageResponse {
+  provider: "image-model";
+  imageUrl: string;
+  prompt: string;
+}
+
 export interface GenerationOverview {
   generatedAt: string;
   cardsCount: number;
@@ -174,10 +214,11 @@ export interface WorkflowStage {
 }
 
 export interface LayoutImagePlacement {
-  cardNumber: string;
+  imageId: string;
   placementLabel: string;
   anchorText: string;
   rationale: string;
+  sectionType: WechatInlineSectionType;
 }
 
 export type DraftPreviewBlock =
@@ -185,7 +226,7 @@ export type DraftPreviewBlock =
   | { type: "heading2"; text: string }
   | { type: "blockquote"; text: string }
   | { type: "ordered-list"; items: string[] }
-  | { type: "image"; cardNumber: string; placementLabel: string; caption: string }
+  | { type: "image"; imageId: string; placementLabel: string; caption: string }
   | { type: "cta"; title: string; buttonText: string };
 
 export interface DraftPreview {
@@ -229,6 +270,7 @@ export interface WorkspaceData {
   activeStyleIndex: number;
   generation: GenerationOverview;
   knowledgeCards: KnowledgeCardItem[];
+  wechatInlineImages: WechatInlineImageAsset[];
   covers: CoverAsset[];
   draftReview: DraftReview;
 }
