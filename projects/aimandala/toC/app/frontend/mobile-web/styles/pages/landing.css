@@ -207,6 +207,11 @@
   transform: translateY(18px);
 }
 
+.am-primary-cta:hover:not(:disabled),
+.am-primary-cta:focus-visible:not(:disabled) {
+  transform: translateY(18px);
+}
+
 .am-primary-cta__label {
   font-family: var(--am-font-display);
   font-size: 16px;
