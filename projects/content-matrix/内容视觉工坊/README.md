@@ -21,4 +21,10 @@
   - `AITECHFLUX_PLAN_MODEL`
 
   Current integration assumes an OpenAI-compatible API endpoint.
+
+  ## Account visual input
+
+  `墨予镜` 的账号定位、封面、长文配图、小红书知识卡片、头像和公众号排版规范见：
+
+  - [墨予镜账号定位与视觉规范](../accounts/墨予镜/账号定位与视觉规范.md)
   
