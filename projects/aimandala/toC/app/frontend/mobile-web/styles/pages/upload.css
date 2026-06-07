@@ -25,6 +25,12 @@
   );
 }
 
+.am-upload-hero > .am-app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--am-z-sticky);
+}
+
 .am-upload-hero__glow,
 .am-upload-hero__spark {
   position: absolute;
