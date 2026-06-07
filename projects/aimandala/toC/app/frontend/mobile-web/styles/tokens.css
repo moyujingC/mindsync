@@ -1038,6 +1038,119 @@
     var(--am-color-gold-300) 100%
   );
 
+  /* Report lite page tokens */
+  --mw-report-nav-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    var(--am-color-ink-900) 100%
+  );
+  --mw-report-nav-border: rgb(var(--am-rgb-gold-300) / 0.15);
+  --mw-report-nav-glow-gold: radial-gradient(
+    ellipse,
+    rgb(var(--am-rgb-gold-300) / 0.1) 0%,
+    transparent 70%
+  );
+  --mw-report-nav-glow-copper: radial-gradient(
+    circle,
+    rgb(var(--am-rgb-copper-400) / 0.08) 0%,
+    transparent 70%
+  );
+  --mw-report-nav-icon: rgb(var(--am-rgb-sand-300) / 0.5);
+  --mw-report-hero-bg: linear-gradient(
+    180deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    #223358 80%,
+    var(--am-color-ink-650) 100%
+  );
+  --mw-report-hero-glow: radial-gradient(
+    ellipse,
+    rgb(var(--am-rgb-gold-300) / 0.1) 0%,
+    transparent 60%
+  );
+  --mw-report-hero-preview-glow: conic-gradient(
+    from 0deg,
+    rgb(var(--am-rgb-gold-300) / 0.3),
+    rgb(var(--am-rgb-copper-400) / 0.15),
+    rgb(var(--am-rgb-gold-300) / 0.3)
+  );
+  --mw-report-hero-image-shell-border: var(--am-color-gold-400);
+  --mw-report-hero-image-shell-shadow: 0 0 20px rgba(200, 160, 102, 0.2),
+    inset 0 0 20px rgba(200, 160, 102, 0.1);
+  --mw-report-hero-image-placeholder:
+    radial-gradient(circle at 50% 50%, var(--am-color-sand-100) 0 22%, transparent 23% 100%),
+    conic-gradient(
+      from 0deg,
+      var(--am-color-danger-500),
+      #d4883e,
+      var(--am-color-gold-400),
+      var(--am-color-success-500),
+      #4a7fb5,
+      #8b6aae,
+      var(--am-color-danger-500)
+    );
+  --mw-report-hero-badge-border: rgb(var(--am-rgb-gold-300) / 0.3);
+  --mw-report-hero-badge-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-800) 0%,
+    var(--am-color-ink-700) 100%
+  );
+  --mw-report-hero-brandline: rgb(var(--am-rgb-gold-300) / 0.58);
+  --mw-report-hero-title: var(--am-color-sand-300);
+  --mw-report-hero-summary: rgb(var(--am-rgb-sand-300) / 0.62);
+  --mw-report-hero-date: rgb(var(--am-rgb-sand-300) / 0.4);
+  --mw-report-hero-meta-border: rgb(var(--am-rgb-gold-300) / 0.16);
+  --mw-report-hero-meta-bg: rgba(26, 40, 68, 0.44);
+  --mw-report-hero-meta-text: rgb(var(--am-rgb-sand-300) / 0.58);
+  --mw-report-content-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
+  --mw-report-content-noise: radial-gradient(
+    rgba(74, 61, 48, 0.18) 0.55px,
+    transparent 0.55px
+  );
+  --mw-report-surface-border: rgba(138, 124, 108, 0.12);
+  --mw-report-surface-shadow: 0 12px 28px rgba(74, 61, 48, 0.05);
+  --mw-report-impression-glow: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(158, 170, 155, 0.08) 0%,
+    transparent 50%
+  );
+  --mw-report-impression-title-bar: linear-gradient(
+    180deg,
+    #9eaa9b,
+    rgba(158, 170, 155, 0.55)
+  );
+  --mw-report-story-line: linear-gradient(
+    90deg,
+    rgb(var(--am-rgb-copper-400) / 0.2) 0%,
+    transparent 100%
+  );
+  --mw-report-section-bar: linear-gradient(
+    180deg,
+    var(--am-color-copper-400),
+    rgb(var(--am-rgb-copper-400) / 0.52)
+  );
+  --mw-report-section-glow: radial-gradient(
+    circle at 80% 20%,
+    rgba(200, 160, 102, 0.12) 0%,
+    transparent 60%
+  );
+  --mw-report-followup-bg: linear-gradient(
+    135deg,
+    var(--am-color-ink-900) 0%,
+    var(--am-color-ink-800) 50%,
+    #223358 100%
+  );
+  --mw-report-followup-border: rgb(var(--am-rgb-gold-300) / 0.14);
+  --mw-report-followup-text: rgb(var(--am-rgb-sand-300) / 0.82);
+  --mw-report-followup-title: var(--am-color-sand-300);
+  --mw-report-followup-copy: rgb(var(--am-rgb-sand-300) / 0.68);
+  --mw-report-followup-input-border: rgb(var(--am-rgb-gold-300) / 0.18);
+  --mw-report-followup-input-bg: rgba(255, 255, 255, 0.08);
+  --mw-report-followup-placeholder: rgb(var(--am-rgb-sand-300) / 0.36);
+  --mw-report-followup-message-border: rgb(var(--am-rgb-gold-300) / 0.1);
+  --mw-report-followup-message-bg: rgba(255, 255, 255, 0.05);
+
   /* Shared component tokens */
   --am-component-topbar-glow-gold: radial-gradient(
     ellipse,

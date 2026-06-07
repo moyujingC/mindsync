@@ -16,8 +16,8 @@
   gap: 12px;
   padding: 12px 16px;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #1a2844 100%);
-  border-bottom: 1px solid rgba(212, 160, 84, 0.15);
+  background: var(--mw-report-nav-bg);
+  border-bottom: 1px solid var(--mw-report-nav-border);
 }
 
 .mw-report-nav::before,
@@ -33,11 +33,7 @@
   top: -8px;
   width: 60px;
   height: 50px;
-  background: radial-gradient(
-    ellipse,
-    rgba(212, 160, 84, 0.1) 0%,
-    transparent 70%
-  );
+  background: var(--mw-report-nav-glow-gold);
 }
 
 .mw-report-nav::after {
@@ -45,11 +41,7 @@
   top: 8px;
   width: 30px;
   height: 28px;
-  background: radial-gradient(
-    circle,
-    rgba(200, 120, 80, 0.08) 0%,
-    transparent 70%
-  );
+  background: var(--mw-report-nav-glow-copper);
 }
 
 .mw-report-nav__button {
@@ -62,7 +54,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: rgba(232, 220, 200, 0.5);
+  color: var(--mw-report-nav-icon);
 }
 
 .mw-report-nav__brand {
@@ -89,13 +81,7 @@
   gap: 14px;
   padding: 30px 24px 42px;
   border-radius: 0;
-  background: linear-gradient(
-    180deg,
-    #1a2844 0%,
-    #1e2d4d 50%,
-    #223358 80%,
-    #2a3d65 100%
-  );
+  background: var(--mw-report-hero-bg);
   border: 0;
   box-shadow: none;
   color: var(--am-text-on-dark);
@@ -113,11 +99,7 @@
   height: 150px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(
-    ellipse,
-    rgba(212, 160, 84, 0.1) 0%,
-    transparent 60%
-  );
+  background: var(--mw-report-hero-glow);
   pointer-events: none;
 }
 
@@ -162,12 +144,7 @@
   position: absolute;
   inset: -6px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    rgba(212, 160, 84, 0.3),
-    rgba(200, 120, 80, 0.15),
-    rgba(212, 160, 84, 0.3)
-  );
+  background: var(--mw-report-hero-preview-glow);
   filter: blur(4px);
   animation: mw-report-spin 20s linear infinite;
 }
@@ -178,11 +155,9 @@
   width: 100px;
   height: 100px;
   overflow: hidden;
-  border: 2.5px solid #c8a066;
+  border: 2.5px solid var(--mw-report-hero-image-shell-border);
   border-radius: 50%;
-  box-shadow:
-    0 0 20px rgba(200, 160, 102, 0.2),
-    inset 0 0 20px rgba(200, 160, 102, 0.1);
+  box-shadow: var(--mw-report-hero-image-shell-shadow);
 }
 
 .mw-report-hero__image,
@@ -196,18 +171,7 @@
 }
 
 .mw-report-hero__image-placeholder {
-  background:
-    radial-gradient(circle at 50% 50%, #f5efe2 0 22%, transparent 23% 100%),
-    conic-gradient(
-      from 0deg,
-      #c25b56,
-      #d4883e,
-      #c8a066,
-      #5b8c5a,
-      #4a7fb5,
-      #8b6aae,
-      #c25b56
-    );
+  background: var(--mw-report-hero-image-placeholder);
   opacity: 0.88;
 }
 
@@ -218,8 +182,8 @@
   bottom: 0;
   padding: 2px 8px;
   border-radius: var(--am-radius-pill);
-  border: 1px solid rgba(212, 160, 84, 0.3);
-  background: linear-gradient(135deg, #1e2d4d 0%, #253860 100%);
+  border: 1px solid var(--mw-report-hero-badge-border);
+  background: var(--mw-report-hero-badge-bg);
   color: var(--am-text-accent);
   font-size: 10px;
   font-weight: 500;
@@ -236,14 +200,14 @@
 
 .mw-report-hero__brandline {
   margin: 0 0 9px;
-  color: rgba(212, 160, 84, 0.58);
+  color: var(--mw-report-hero-brandline);
   font-size: 11px;
   letter-spacing: 0.1em;
 }
 
 .mw-report-hero__copy h1 {
   margin: 0;
-  color: #e8dcc8;
+  color: var(--mw-report-hero-title);
   font-family: var(--am-font-display);
   font-size: 22px;
   font-weight: 600;
@@ -254,14 +218,14 @@
 .mw-report-hero__summary {
   margin: 14px auto 0;
   max-width: 29em;
-  color: rgba(232, 220, 200, 0.62);
+  color: var(--mw-report-hero-summary);
   font-size: 13px;
   line-height: 1.82;
 }
 
 .mw-report-hero__date {
   margin-top: 8px;
-  color: rgba(232, 220, 200, 0.4);
+  color: var(--mw-report-hero-date);
   font-size: 12px;
 }
 
@@ -275,10 +239,10 @@
 
 .mw-report-hero__meta span {
   padding: 4px 9px;
-  border: 1px solid rgba(212, 160, 84, 0.16);
+  border: 1px solid var(--mw-report-hero-meta-border);
   border-radius: var(--am-radius-pill);
-  background: rgba(26, 40, 68, 0.44);
-  color: rgba(232, 220, 200, 0.58);
+  background: var(--mw-report-hero-meta-bg);
+  color: var(--mw-report-hero-meta-text);
   font-size: 11px;
   letter-spacing: 0.04em;
 }
@@ -293,7 +257,7 @@
   overflow: hidden;
   border-radius: 24px 24px 0 0;
   background: var(--am-surface-cream);
-  box-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
+  box-shadow: var(--mw-report-content-shadow);
 }
 
 .mw-report-content__noise {
@@ -301,10 +265,7 @@
   inset: 0;
   pointer-events: none;
   opacity: 0.035;
-  background-image: radial-gradient(
-    rgba(74, 61, 48, 0.18) 0.55px,
-    transparent 0.55px
-  );
+  background-image: var(--mw-report-content-noise);
   background-size: 7px 7px;
 }
 
@@ -318,10 +279,10 @@
 .mw-footer-panel {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(138, 124, 108, 0.12);
+  border: 1px solid var(--mw-report-surface-border);
   border-radius: var(--am-radius-md);
   background: var(--am-surface-frosted);
-  box-shadow: 0 12px 28px rgba(74, 61, 48, 0.05);
+  box-shadow: var(--mw-report-surface-shadow);
 }
 
 .mw-report-impression {
@@ -333,11 +294,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    ellipse at 30% 20%,
-    rgba(158, 170, 155, 0.08) 0%,
-    transparent 50%
-  );
+  background: var(--mw-report-impression-glow);
   pointer-events: none;
 }
 
@@ -353,7 +310,7 @@
   width: 4px;
   height: 20px;
   border-radius: var(--am-radius-pill);
-  background: linear-gradient(180deg, #9eaa9b, rgba(158, 170, 155, 0.55));
+  background: var(--mw-report-impression-title-bar);
 }
 
 .mw-report-impression__title strong {
@@ -408,11 +365,7 @@
 .mw-report-story__intro i {
   flex: 1;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(200, 120, 80, 0.2) 0%,
-    transparent 100%
-  );
+  background: var(--mw-report-story-line);
 }
 
 .mw-card--report-section,
@@ -420,7 +373,7 @@
   position: relative;
   overflow: hidden;
   padding: 16px 16px 16px 20px;
-  border: 1px solid rgba(138, 124, 108, 0.12);
+  border: 1px solid var(--mw-report-surface-border);
   border-radius: var(--am-radius-sm);
   background: var(--am-surface-frosted);
   box-shadow: none;
@@ -435,11 +388,7 @@
   bottom: 0;
   width: 3px;
   border-radius: 2px 0 0 2px;
-  background: linear-gradient(
-    180deg,
-    var(--am-color-copper-400),
-    rgba(200, 120, 80, 0.52)
-  );
+  background: var(--mw-report-section-bar);
 }
 
 .mw-card--report-section-lead::after {
@@ -450,11 +399,7 @@
   width: 80px;
   height: 80px;
   pointer-events: none;
-  background: radial-gradient(
-    circle at 80% 20%,
-    rgba(200, 160, 102, 0.12) 0%,
-    transparent 60%
-  );
+  background: var(--mw-report-section-glow);
 }
 
 .mw-section-index {
@@ -495,9 +440,9 @@
 
 .mw-report-followup {
   padding: 18px;
-  background: linear-gradient(135deg, #1a2844 0%, #1e2d4d 50%, #223358 100%);
-  border-color: rgba(212, 160, 84, 0.14);
-  color: rgba(232, 220, 200, 0.82);
+  background: var(--mw-report-followup-bg);
+  border-color: var(--mw-report-followup-border);
+  color: var(--mw-report-followup-text);
   box-shadow: var(--am-shadow-float);
 }
 
@@ -518,7 +463,7 @@
 
 .mw-report-followup strong {
   display: block;
-  color: #e8dcc8;
+  color: var(--mw-report-followup-title);
   font-family: var(--am-font-display);
   font-size: 15px;
   letter-spacing: 0.06em;
@@ -526,7 +471,7 @@
 
 .mw-report-followup p {
   margin: 8px 0 0;
-  color: rgba(232, 220, 200, 0.68);
+  color: var(--mw-report-followup-copy);
   font-size: 12.5px;
   line-height: 1.75;
 }
@@ -535,22 +480,22 @@
   width: 100%;
   min-height: 44px;
   padding: 12px 14px;
-  border: 1px solid rgba(212, 160, 84, 0.18);
+  border: 1px solid var(--mw-report-followup-input-border);
   border-radius: var(--am-radius-md);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--mw-report-followup-input-bg);
   color: var(--am-text-on-dark);
 }
 
 .mw-report-followup input::placeholder {
-  color: rgba(232, 220, 200, 0.36);
+  color: var(--mw-report-followup-placeholder);
 }
 
 .mw-report-followup__message {
   margin-top: 10px;
   padding: 10px 12px;
-  border: 1px solid rgba(212, 160, 84, 0.1);
+  border: 1px solid var(--mw-report-followup-message-border);
   border-radius: var(--am-radius-sm);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--mw-report-followup-message-bg);
 }
 
 .mw-footer-action {
