@@ -44,6 +44,11 @@ function splitParagraphs(rawText: string) {
     .filter(Boolean);
 }
 
+interface MarkdownSection {
+  heading?: string;
+  blocks: string[];
+}
+
 function extractSectionQuote(summary: string, quotes: string[]) {
   return quotes.find((quote) => summary.includes(quote) || quote.includes(summary.slice(0, 12)));
 }
@@ -128,64 +133,95 @@ function buildReviewChecks(parsedMarkdown: ParsedMarkdownDocument, imagePlacemen
   ];
 }
 
-function buildPreview(rawText: string, articleTitle: string, accountName: string, imagePlacements: LayoutImagePlacement[]): DraftPreview {
+function parseMarkdownSections(rawText: string) {
   const paragraphs = splitParagraphs(rawText);
-  const blocks: DraftPreviewBlock[] = [];
-  const intro = cleanInlineMarkdown(paragraphs[1] || "");
-  let imageIndex = 0;
+  const hasTitle = paragraphs[0]?.startsWith("# ");
+  const introIndex = hasTitle ? 1 : 0;
+  const intro = cleanInlineMarkdown(paragraphs[introIndex] || "");
+  const bodyParagraphs = paragraphs.slice(introIndex + 1);
+  const sections: MarkdownSection[] = [];
+  let currentSection: MarkdownSection | null = null;
 
-  for (const paragraph of paragraphs.slice(2)) {
-    if (paragraph.startsWith("## ")) {
-      blocks.push({ type: "heading2", text: cleanInlineMarkdown(paragraph.replace(/^##\s+/, "")) });
-      continue;
-    }
-
-    if (paragraph.startsWith(">")) {
-      blocks.push({ type: "blockquote", text: cleanInlineMarkdown(paragraph.replace(/^>\s?/gm, " ")) });
-      if (imageIndex < imagePlacements.length) {
-        const placement = imagePlacements[imageIndex];
-        blocks.push({
-          type: "image",
-          imageId: placement.imageId,
-          placementLabel: placement.placementLabel,
-          caption: placement.anchorText,
-        });
-        imageIndex += 1;
-      }
-      continue;
-    }
-
-    if (/^(\d+\.\s.+\n?)+$/m.test(paragraph)) {
-      const items = paragraph
-        .split(/\r?\n/)
-        .map((line) => cleanInlineMarkdown(line.replace(/^\d+\.\s*/, "")))
-        .filter(Boolean);
-      blocks.push({ type: "ordered-list", items });
-      if (imageIndex < imagePlacements.length) {
-        const placement = imagePlacements[imageIndex];
-        blocks.push({
-          type: "image",
-          imageId: placement.imageId,
-          placementLabel: placement.placementLabel,
-          caption: placement.anchorText,
-        });
-        imageIndex += 1;
-      }
-      continue;
-    }
-
+  for (const paragraph of bodyParagraphs) {
     if (paragraph.startsWith("# ")) continue;
 
-    blocks.push({ type: "paragraph", text: cleanInlineMarkdown(paragraph) });
-    if (imageIndex < imagePlacements.length) {
-      const placement = imagePlacements[imageIndex];
-      blocks.push({
-        type: "image",
-        imageId: placement.imageId,
-        placementLabel: placement.placementLabel,
-        caption: placement.anchorText,
-      });
+    if (paragraph.startsWith("## ")) {
+      currentSection = {
+        heading: cleanInlineMarkdown(paragraph.replace(/^##\s+/, "")),
+        blocks: [],
+      };
+      sections.push(currentSection);
+      continue;
+    }
+
+    if (!currentSection) {
+      currentSection = { blocks: [] };
+      sections.push(currentSection);
+    }
+
+    currentSection.blocks.push(paragraph);
+  }
+
+  return { intro, sections };
+}
+
+function buildBodyBlock(paragraph: string): DraftPreviewBlock | null {
+  if (paragraph.startsWith(">")) {
+    return { type: "blockquote", text: cleanInlineMarkdown(paragraph.replace(/^>\s?/gm, " ")) };
+  }
+
+  if (/^(\d+\.\s.+\n?)+$/m.test(paragraph)) {
+    const items = paragraph
+      .split(/\r?\n/)
+      .map((line) => cleanInlineMarkdown(line.replace(/^\d+\.\s*/, "")))
+      .filter(Boolean);
+    return { type: "ordered-list", items };
+  }
+
+  const text = cleanInlineMarkdown(paragraph);
+  return text ? { type: "paragraph", text } : null;
+}
+
+function buildPreview(rawText: string, articleTitle: string, accountName: string, imagePlacements: LayoutImagePlacement[]): DraftPreview {
+  const blocks: DraftPreviewBlock[] = [];
+  const { intro, sections } = parseMarkdownSections(rawText);
+  let imageIndex = 0;
+
+  for (const section of sections) {
+    if (section.heading) {
+      blocks.push({ type: "heading2", text: section.heading });
+    }
+
+    const placement = section.heading && imageIndex < imagePlacements.length ? imagePlacements[imageIndex] : null;
+    let imageInserted = false;
+
+    for (const paragraph of section.blocks) {
+      const block = buildBodyBlock(paragraph);
+      if (!block) continue;
+
+      blocks.push(block);
+
+      if (!imageInserted && placement) {
+        blocks.push({
+          type: "image",
+          imageId: placement.imageId,
+          placementLabel: placement.placementLabel,
+          caption: placement.anchorText,
+        });
+        imageInserted = true;
+      }
+    }
+
+    if (placement) {
       imageIndex += 1;
+      if (!imageInserted) {
+        blocks.push({
+          type: "image",
+          imageId: placement.imageId,
+          placementLabel: placement.placementLabel,
+          caption: placement.anchorText,
+        });
+      }
     }
   }
 
