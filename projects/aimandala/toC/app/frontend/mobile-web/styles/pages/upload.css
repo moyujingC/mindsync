@@ -600,7 +600,7 @@
 .am-upload-form-surface {
   position: relative;
   overflow: hidden;
-  padding: 28px 22px 22px;
+  padding: 20px 22px 0;
   border-radius: 28px 28px 0 0;
   background: var(--am-surface-primary);
   box-shadow: 0 -4px 24px rgba(26, 40, 68, 0.15);
@@ -839,7 +839,7 @@
 .am-upload-bottom-panel {
   position: relative;
   overflow: hidden;
-  padding: 12px 0 12px;
+  padding: 0;
   background: var(--am-surface-primary);
   border-top: 1px solid rgba(200, 120, 80, 0.1);
 }
