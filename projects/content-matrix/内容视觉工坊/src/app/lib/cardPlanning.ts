@@ -1,9 +1,4 @@
-import type { ArticleAnalysis, CardPlan } from "../types";
-
-interface CardPlanningResult {
-  analysis: ArticleAnalysis;
-  cardPlan: CardPlan[];
-}
+import type { ArticleAnalysis, CardPlan, PlannerResponse } from "../types";
 
 function extractSections(rawText: string) {
   const lines = rawText.split(/\r?\n/);
@@ -46,7 +41,7 @@ function pickKeyQuotes(rawText: string) {
   return [...quoteBlocks, ...boldSnippets].filter(Boolean).slice(0, 3);
 }
 
-export function planKnowledgeCardsFromArticle(rawText: string): CardPlanningResult {
+export function planKnowledgeCardsFromArticle(rawText: string): Omit<PlannerResponse, "provider"> {
   const sections = extractSections(rawText);
 
   const cardPlan: CardPlan[] = sections.slice(0, 6).map((section, index) => {

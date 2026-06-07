@@ -97,6 +97,21 @@ export interface CardPlan {
   summary: string;
 }
 
+export interface PlannerRequest {
+  articleTitle: string;
+  rawText: string;
+  styleName: string;
+  cardRatio: string;
+  cardWidth: number;
+  cardHeight: number;
+}
+
+export interface PlannerResponse {
+  provider: "local-fallback" | "llm";
+  analysis: ArticleAnalysis;
+  cardPlan: CardPlan[];
+}
+
 export interface GenerationOverview {
   generatedAt: string;
   cardsCount: number;
@@ -111,6 +126,7 @@ export interface WorkflowStage {
   status: GenerationStageStatus;
   detail: string;
   retryable?: boolean;
+  providerLabel?: string;
 }
 
 export interface LayoutImagePlacement {

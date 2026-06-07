@@ -160,6 +160,7 @@ function StageChip({ stage }: { stage: WorkflowStage }) {
       {stage.status === "success" ? <CheckCircle2 className="w-3 h-3" /> : null}
       {stage.status === "failed" ? <AlertTriangle className="w-3 h-3" /> : null}
       <span>{stage.label}</span>
+      {stage.providerLabel ? <span className="opacity-80">· {stage.providerLabel}</span> : null}
     </span>
   );
 }
