@@ -705,7 +705,7 @@
 
 .am-theme-selector__scroll {
   display: flex;
-  gap: 11.2px;
+  gap: 10.08px;
   width: 100%;
   overflow-x: auto;
   padding-bottom: 12px;
@@ -721,8 +721,8 @@
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
-  width: 70.2px;
-  height: 79.2px;
+  width: 66.69px;
+  height: 75.24px;
   padding: 10px 8px 9px;
   display: flex;
   flex-direction: column;
