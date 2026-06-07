@@ -166,10 +166,40 @@ function buildGenerationSummary(workspace: WorkspaceData, cardCount: number) {
   };
 }
 
+function buildTextOnlyDraftReview(title: string): WorkspaceData["draftReview"] {
+  return {
+    readyTitle: "纯文本模式仅生成图片",
+    readyDescription: "当前模式不会生成公众号排版、审稿预览或可复制 HTML",
+    reviewChecks: [
+      { title: "输入模式", detail: "当前为纯文本模式，仅走拆图与出图链路", status: "pass" },
+      { title: "排版状态", detail: "未生成公众号正文排版", status: "warn" },
+      { title: "草稿同步", detail: "未启用公众号复制与同步", status: "warn" },
+      { title: "后续动作", detail: "可继续生成知识卡片、正文配图和封面", status: "pass" },
+    ],
+    syncStatus: [
+      { label: "图片生成", note: "纯文本模式可继续生成知识卡片、正文配图与封面" },
+      { label: "公众号排版", note: "当前未生成" },
+      { label: "正文复制", note: "当前未启用" },
+      { label: "草稿同步", note: "当前未启用" },
+    ],
+    imagePlacements: [],
+    preview: {
+      title,
+      accountName: "墨予镜",
+      publishDate: new Date().toLocaleDateString("zh-CN"),
+      intro: "纯文本模式不会生成公众号正文预览。",
+      blocks: [{ type: "paragraph", text: "请使用 Markdown 模式进入公众号排版与复制链路。" }],
+    },
+    editorHtml: "",
+  };
+}
+
 export function useWorkspaceDocument() {
   const [workspace, setWorkspace] = useState<WorkspaceData>(initialWorkspaceData);
   const [rawMarkdownText, setRawMarkdownText] = useState<string>("");
   const [copyFeedback, setCopyFeedback] = useState<string>("");
+  const [textModeTitle, setTextModeTitle] = useState("");
+  const [textModeBody, setTextModeBody] = useState("");
 
   const derived = useMemo(() => {
     return {
@@ -321,6 +351,106 @@ export function useWorkspaceDocument() {
 
     setWorkspace(nextWorkspace);
     await generateLayoutPreview(nextWorkspace);
+  }
+
+  async function importPlainText() {
+    const title = textModeTitle.trim();
+    const body = textModeBody.trim();
+    if (!title || !body) return;
+
+    const rawText = `# ${title}\n\n${body}`;
+    const article = {
+      fileName: "粘贴文本",
+      updatedAt: new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }),
+      wordCount: body.length,
+      title,
+      rawText,
+    };
+
+    setWorkspace((prev) => ({
+      ...prev,
+      workflowStages: prev.workflowStages.map((stage) => {
+        if (stage.key === "upload") {
+          return { ...stage, status: "success", detail: "纯文本内容已录入" };
+        }
+        if (stage.key === "markdownParse") {
+          return { ...stage, status: "idle", detail: "纯文本模式未做 Markdown 解析", providerLabel: undefined };
+        }
+        if (stage.key === "contentAnalysis") {
+          return { ...stage, status: "processing", detail: "正在调用拆图规划服务…" };
+        }
+        if (stage.key === "layoutGeneration") {
+          return { ...stage, status: "idle", detail: "纯文本模式未生成公众号排版", providerLabel: undefined };
+        }
+        if (stage.key === "draftSync") {
+          return { ...stage, status: "idle", detail: "纯文本模式未启用公众号复制", providerLabel: undefined };
+        }
+        return stage;
+      }),
+    }));
+
+    const planned = await planCards({
+      articleTitle: title,
+      rawText,
+      knowledgeCardStyleName: getStyleName(workspace, "knowledgeCards"),
+      inlineImageStyleName: getStyleName(workspace, "wechatInlineImages"),
+      cardRatio: workspace.cardSize.ratio,
+      cardWidth: workspace.cardSize.width,
+      cardHeight: workspace.cardSize.height,
+    });
+
+    const nextWorkspace: WorkspaceData = {
+      ...workspace,
+      article,
+      parsedMarkdown: {
+        status: "idle",
+        structure: { headings: 0, subheadings: 0, bolds: 0, quotes: 0, lists: 0 },
+        structureTags: ["纯文本模式"],
+      },
+      analysis: planned.analysis,
+      cardPlan: planned.cardPlan,
+      knowledgeCards: buildKnowledgeCardsFromPlan(workspace, planned.cardPlan),
+      wechatInlineImages: buildWechatInlineImages({
+        ...workspace,
+        article,
+        analysis: planned.analysis,
+        cardPlan: planned.cardPlan,
+      } as WorkspaceData, planned.inlineImagePlan),
+      covers: resetCoversForReplan(workspace),
+      generation: {
+        ...buildGenerationSummary(workspace, planned.cardPlan.length),
+        layoutStatus: "未生成",
+        summaryMeta: buildGenerationSummary(workspace, planned.cardPlan.length).summaryMeta.map((item) =>
+          item.label === "排版" ? { ...item, value: "未生成", emerald: false } : item,
+        ),
+      },
+      draftReview: buildTextOnlyDraftReview(title),
+      workflowStages: workspace.workflowStages.map((stage) => {
+        if (stage.key === "upload") {
+          return { ...stage, status: "success", detail: "纯文本内容已录入" };
+        }
+        if (stage.key === "markdownParse") {
+          return { ...stage, status: "idle", detail: "纯文本模式未做 Markdown 解析", providerLabel: undefined };
+        }
+        if (stage.key === "contentAnalysis") {
+          return {
+            ...stage,
+            status: "success",
+            detail: `已拆为 ${planned.cardPlan.length} 张卡片，并生成正文配图规划`,
+            providerLabel: planned.provider === "llm" ? "真实 LLM" : "本地兜底",
+          };
+        }
+        if (stage.key === "layoutGeneration") {
+          return { ...stage, status: "idle", detail: "纯文本模式未生成公众号排版", providerLabel: undefined };
+        }
+        if (stage.key === "draftSync") {
+          return { ...stage, status: "idle", detail: "纯文本模式未启用公众号复制", providerLabel: undefined };
+        }
+        return stage;
+      }),
+    };
+
+    setWorkspace(nextWorkspace);
   }
 
   async function replanContent() {
@@ -814,7 +944,12 @@ export function useWorkspaceDocument() {
   return {
     workspace,
     derived,
+    textModeTitle,
+    textModeBody,
+    setTextModeTitle,
+    setTextModeBody,
     importMarkdownFile,
+    importPlainText,
     replanContent,
     regenerateCardImage,
     regenerateWechatInlineImageAsset,

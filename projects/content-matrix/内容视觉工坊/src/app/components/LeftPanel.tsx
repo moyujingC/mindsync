@@ -10,7 +10,12 @@ import type { InputMode, StyleSelectionKey, WorkspaceData } from "../types";
 interface LeftPanelProps {
   data: WorkspaceData;
   inputMode: InputMode;
+  textModeTitle: string;
+  textModeBody: string;
   setInputMode: (mode: InputMode) => void;
+  onTextModeTitleChange: (value: string) => void;
+  onTextModeBodyChange: (value: string) => void;
+  onImportPlainText: () => Promise<void>;
   onImportMarkdown: (file: File) => Promise<void>;
   onGenerateAll: () => Promise<void>;
   onGenerateLayout: () => Promise<void>;
@@ -25,7 +30,12 @@ interface LeftPanelProps {
 export function LeftPanel({
   data,
   inputMode,
+  textModeTitle,
+  textModeBody,
   setInputMode,
+  onTextModeTitleChange,
+  onTextModeBodyChange,
+  onImportPlainText,
   onImportMarkdown,
   onGenerateAll,
   onGenerateLayout,
@@ -159,12 +169,25 @@ export function LeftPanel({
           </div>
         ) : (
           <div className="space-y-2">
-            <Input placeholder="文章标题" className="bg-input-background border-border h-9" />
+            <Input value={textModeTitle} onChange={(event) => onTextModeTitleChange(event.target.value)} placeholder="文章标题" className="bg-input-background border-border h-9" />
             <textarea
+              value={textModeBody}
+              onChange={(event) => onTextModeBodyChange(event.target.value)}
               className="w-full h-40 rounded-md bg-input-background border border-border px-3 py-2 text-[12.5px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring resize-none leading-relaxed"
-              placeholder="将正文粘贴到此处…（推荐使用 Markdown 上传以保留结构）"
+              placeholder="将正文粘贴到此处。纯文本模式只负责拆图与出图，不生成公众号排版。"
             />
-            <p className="text-[10.5px] text-muted-foreground">纯文本模式不会识别小标题、引用等结构。</p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[10.5px] text-muted-foreground">纯文本模式不会识别小标题、引用等结构，也不会进入公众号排版链路。</p>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => void onImportPlainText()}
+                disabled={!textModeTitle.trim() || !textModeBody.trim()}
+                className="shrink-0 h-8"
+              >
+                应用文本
+              </Button>
+            </div>
           </div>
         )}
 
@@ -365,6 +388,7 @@ export function LeftPanel({
         <div className="mt-2 flex items-center justify-between text-[11.5px]">
           <button
             onClick={() => onGenerateLayout()}
+            disabled={inputMode === "text"}
             className="text-foreground/85 hover:text-foreground px-1.5 py-1"
           >
             仅生成排版

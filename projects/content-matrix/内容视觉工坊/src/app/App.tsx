@@ -11,7 +11,12 @@ export default function App() {
   const { layout, isTablet, setInputMode, toggleLeftPanel, toggleRightPanel, closePanels } = useWorkspaceLayout();
   const {
     workspace,
+    textModeTitle,
+    textModeBody,
+    setTextModeTitle,
+    setTextModeBody,
     importMarkdownFile,
+    importPlainText,
     replanContent,
     regenerateCardImage,
     regenerateWechatInlineImageAsset,
@@ -55,7 +60,12 @@ export default function App() {
         <LeftPanel
           data={workspace}
           inputMode={layout.inputMode}
+          textModeTitle={textModeTitle}
+          textModeBody={textModeBody}
           setInputMode={setInputMode}
+          onTextModeTitleChange={setTextModeTitle}
+          onTextModeBodyChange={setTextModeBody}
+          onImportPlainText={importPlainText}
           onImportMarkdown={importMarkdownFile}
           onGenerateAll={regenerateAllCardImages}
           onGenerateLayout={generateLayoutPreview}
