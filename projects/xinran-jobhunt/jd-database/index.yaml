@@ -3,4 +3,21 @@ last_updated: 2026-06-08
 description: >
   馨冉求职 JD 数据库总索引。每次新增岗位时，同时补一条索引记录。
 
-jobs: []
+jobs:
+  - job_id: "2026-06-08-bytedance-ai-builder-pm-intern-001"
+    captured_at: "2026-06-08"
+    company: "字节跳动"
+    role_title: "AI Builder产品实习生"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "analyzed"
+    primary_track: "ai-pm"
+    match_score: 42
+    file: "jobs/2026-06-08-bytedance-ai-builder-pm-intern-001.md"
+    keywords:
+      - "AI产品"
+      - "Demo制作"
+      - "AI Coding"
+      - "低代码"
+      - "PM协作"
+      - "隐私合规"
