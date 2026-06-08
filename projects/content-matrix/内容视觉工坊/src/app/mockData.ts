@@ -157,7 +157,7 @@ AI拓宽了我们的能力边界，我们必须守住自己的精力边界。`,
   ],
   outputToggles: [
     { key: "knowledgeCards", label: "生成知识卡片", hint: "6 张", enabled: true },
-    { key: "wechatCover", label: "生成公众号封面", hint: "2.35 : 1", enabled: true },
+    { key: "wechatCover", label: "生成公众号封面", hint: "2.35 : 1 + 1 : 1", enabled: true },
     { key: "wechatShareCover", label: "生成公众号转发封面", hint: "1 : 1", enabled: true },
     { key: "xiaohongshuCover", label: "生成小红书封面", hint: "3 : 4", enabled: true },
   ],

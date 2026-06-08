@@ -61,8 +61,7 @@ export function LeftPanel({
     { key: "knowledgeCards", label: "知识卡片", hint: "小红书 / 观点卡", toggleKey: "knowledgeCards" },
     { key: "wechatInlineImages", label: "正文配图", hint: "公众号中段插图" },
     { key: "wechatLayout", label: "公众号排版", hint: "正文阅读稿样式" },
-    { key: "wechatCover", label: "公众号封面", hint: "文章入口图", toggleKey: "wechatCover" },
-    { key: "wechatShareCover", label: "公众号转发封面", hint: "聊天窗口 / 朋友圈", toggleKey: "wechatShareCover" },
+    { key: "wechatCover", label: "公众号封面", hint: "列表大图 + 转发小图", toggleKey: "wechatCover" },
     { key: "xiaohongshuCover", label: "小红书封面", hint: "笔记首图", toggleKey: "xiaohongshuCover" },
   ];
   const ratioPresets: Record<string, { width: number; height: number }> = {
