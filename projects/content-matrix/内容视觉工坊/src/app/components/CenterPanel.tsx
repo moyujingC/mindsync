@@ -211,12 +211,20 @@ function sanitizeFilename(input: string) {
   return input.replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, " ").trim();
 }
 
+function getExtensionFromMimeType(mimeType?: string) {
+  if (!mimeType) return "png";
+  if (mimeType.includes("png")) return "png";
+  if (mimeType.includes("jpeg") || mimeType.includes("jpg")) return "jpg";
+  if (mimeType.includes("webp")) return "webp";
+  return "png";
+}
+
 async function downloadImageAsset(imageUrl: string, filename: string) {
   if (typeof window === "undefined") return;
 
-  const ext = imageUrl.startsWith("data:image/png") ? "png" : imageUrl.startsWith("data:image/jpeg") ? "jpg" : "png";
-
   if (imageUrl.startsWith("data:")) {
+    const mimeType = imageUrl.slice(5, imageUrl.indexOf(";"));
+    const ext = getExtensionFromMimeType(mimeType);
     const link = document.createElement("a");
     link.href = imageUrl;
     link.download = `${filename}.${ext}`;
@@ -232,6 +240,7 @@ async function downloadImageAsset(imageUrl: string, filename: string) {
   }
 
   const blob = await response.blob();
+  const ext = getExtensionFromMimeType(blob.type);
   const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = objectUrl;
