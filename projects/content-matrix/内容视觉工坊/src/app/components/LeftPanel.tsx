@@ -76,6 +76,8 @@ export function LeftPanel({
       : data.styleAssets[data.styleSelections[key]]?.palette ?? [];
   const getThemeOptions = (key: StyleSelectionKey) =>
     key === "wechatLayout" ? data.layoutThemes : data.styleAssets;
+  const getSelectedStyleAsset = (key: Exclude<StyleSelectionKey, "wechatLayout">) =>
+    data.styleAssets[data.styleSelections[key]] ?? data.styleAssets[0];
   const selectedLayoutTheme = data.layoutThemes[data.styleSelections.wechatLayout];
   const fitLabelMap: Record<StyleAssetFit, string> = {
     knowledgeCards: "知识卡片",
@@ -281,6 +283,35 @@ export function LeftPanel({
                       </SelectContent>
                     </Select>
 
+                    {target.key !== "wechatLayout" ? (
+                      <div className="space-y-2 rounded-md border border-border/70 bg-card px-2.5 py-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10.5px] text-muted-foreground">参考图样本</span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {getSelectedStyleAsset(target.key).referenceImages.length} 张
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-1.5">
+                          {getSelectedStyleAsset(target.key).referenceImages.slice(0, 4).map((fileName) => (
+                            <div
+                              key={`${target.key}-${fileName}`}
+                              className="aspect-[3/4] overflow-hidden rounded-sm border border-border/60 bg-secondary/30"
+                            >
+                              <img
+                                src={`/风格库/${fileName}`}
+                                alt={fileName}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-[10px] leading-relaxed text-muted-foreground">
+                          {getSelectedStyleAsset(target.key).promptBase}
+                        </div>
+                      </div>
+                    ) : null}
+
                     {target.key === "knowledgeCards" ? (
                       <div className="pt-1 space-y-2.5">
                         <div className="flex items-center justify-between">
@@ -396,6 +427,21 @@ export function LeftPanel({
                       >
                         {fitLabelMap[fitKey]}
                       </span>
+                    ))}
+                  </div>
+                  <div className="mt-1.5 flex gap-1 overflow-hidden">
+                    {s.referenceImages.slice(0, 3).map((fileName) => (
+                      <div
+                        key={`${s.name}-${fileName}`}
+                        className="h-9 w-7 shrink-0 overflow-hidden rounded-[4px] border border-border/60 bg-secondary/30"
+                      >
+                        <img
+                          src={`/风格库/${fileName}`}
+                          alt={fileName}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
                     ))}
                   </div>
                   <div className="text-[10px] text-muted-foreground mt-1 line-clamp-2">
