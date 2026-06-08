@@ -31,17 +31,6 @@ function cleanInlineMarkdown(text: string) {
     .trim();
 }
 
-function isEmphasisParagraph(paragraph: string) {
-  const boldMatches = paragraph.match(/\*\*[^*]+\*\*/g) ?? [];
-  if (boldMatches.length === 0) return false;
-
-  const cleaned = cleanInlineMarkdown(paragraph);
-  const boldLength = boldMatches.reduce((sum, item) => sum + cleanInlineMarkdown(item).length, 0);
-  const boldRatio = cleaned.length > 0 ? boldLength / cleaned.length : 0;
-
-  return boldRatio >= 0.32 || cleaned.length <= 42;
-}
-
 function formatPublishDate() {
   return new Intl.DateTimeFormat("zh-CN", {
     year: "numeric",
@@ -216,7 +205,7 @@ function buildBodyBlock(paragraph: string): DraftPreviewBlock | null {
   }
 
   const text = cleanInlineMarkdown(paragraph);
-  return text ? { type: "paragraph", text, tone: isEmphasisParagraph(paragraph) ? "emphasis" : "body" } : null;
+  return text ? { type: "paragraph", text } : null;
 }
 
 function buildPreview(
@@ -315,13 +304,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
     }
 
     if (block.type === "paragraph") {
-      if (block.tone === "emphasis") {
-        htmlParts.push(
-          `<p style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;color:${theme.headingColor};font-size:15px;font-weight:500;line-height:1.95;">${escapeHtml(block.text)}</p>`,
-        );
-      } else {
-        htmlParts.push(`<p style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;color:${theme.bodyColor};line-height:2;">${escapeHtml(block.text)}</p>`);
-      }
+      htmlParts.push(`<p style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;color:${theme.bodyColor};line-height:2;">${escapeHtml(block.text)}</p>`);
       continue;
     }
 
@@ -386,8 +369,8 @@ function getHtmlBlockSpacing(
 
   if (block.type === "paragraph") {
     return {
-      marginTop: prevBlock?.type === "heading2" ? (block.tone === "emphasis" ? 2 : 0) : prevBlock?.type === "image" ? 18 : block.tone === "emphasis" ? paragraph + 2 : paragraph,
-      marginBottom: nextBlock?.type === "heading2" ? (block.tone === "emphasis" ? 8 : 4) : nextBlock?.type === "image" ? 8 : block.tone === "emphasis" ? 4 : 0,
+      marginTop: prevBlock?.type === "heading2" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
+      marginBottom: nextBlock?.type === "heading2" ? 4 : nextBlock?.type === "image" ? 8 : 0,
     };
   }
 
