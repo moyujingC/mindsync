@@ -14,11 +14,25 @@ export type WorkspaceStageKey =
   | "layoutGeneration"
   | "draftSync";
 
+export type StyleAssetFamily = "主风格" | "辅风格" | "实验风格";
+
+export type StyleAssetFit =
+  | "knowledgeCards"
+  | "wechatInlineImages"
+  | "wechatCover"
+  | "xiaohongshuCover";
+
 export interface StyleAsset {
+  accountName: string;
+  family: StyleAssetFamily;
   name: string;
   desc: string;
   palette: string[];
   meta: string;
+  fit: StyleAssetFit[];
+  mood: string[];
+  promptBase: string;
+  referenceImages: string[];
   pinned?: boolean;
 }
 

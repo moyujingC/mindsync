@@ -5,7 +5,7 @@ import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useEffect, useRef, useState } from "react";
-import type { InputMode, StyleSelectionKey, WorkspaceData } from "../types";
+import type { InputMode, StyleAssetFit, StyleSelectionKey, WorkspaceData } from "../types";
 
 interface LeftPanelProps {
   data: WorkspaceData;
@@ -77,6 +77,12 @@ export function LeftPanel({
   const getThemeOptions = (key: StyleSelectionKey) =>
     key === "wechatLayout" ? data.layoutThemes : data.styleAssets;
   const selectedLayoutTheme = data.layoutThemes[data.styleSelections.wechatLayout];
+  const fitLabelMap: Record<StyleAssetFit, string> = {
+    knowledgeCards: "知识卡片",
+    wechatInlineImages: "正文配图",
+    wechatCover: "公众号封面",
+    xiaohongshuCover: "小红书封面",
+  };
 
   const panelClassName = isTablet
     ? `absolute inset-y-0 left-0 z-30 w-[min(360px,92vw)] bg-card shadow-2xl transition-transform duration-200 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
@@ -265,7 +271,11 @@ export function LeftPanel({
                       <SelectContent>
                         {getThemeOptions(target.key).map((style, index) => (
                           <SelectItem key={`${target.key}-${style.name}`} value={String(index)}>
-                            {style.name}
+                            {"fit" in style
+                              ? `${style.name} · ${style.fit
+                                  .map((fitKey) => fitLabelMap[fitKey])
+                                  .join(" / ")}`
+                              : style.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -373,11 +383,24 @@ export function LeftPanel({
                   </div>
                 </div>
                 <div className="flex-1 min-w-0 px-3 py-2.5">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 min-w-0">
                     <span className="text-[12px] truncate" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{s.name}</span>
                     {s.pinned && <Pin className="w-2.5 h-2.5 text-muted-foreground/70 shrink-0" />}
                   </div>
-                  <div className="text-[10.5px] text-muted-foreground mt-0.5 truncate">{s.desc} · {s.meta}</div>
+                  <div className="text-[10.5px] text-muted-foreground mt-0.5">{s.family} · {s.desc}</div>
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {s.fit.map((fitKey) => (
+                      <span
+                        key={`${s.name}-${fitKey}`}
+                        className="rounded-full border border-border/70 bg-card px-1.5 py-0.5 text-[9.5px] text-muted-foreground"
+                      >
+                        {fitLabelMap[fitKey]}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground mt-1 line-clamp-2">
+                    {s.meta} · 参考图 {s.referenceImages.length} 张 · {s.mood.join(" / ")}
+                  </div>
                 </div>
               </div>
             ))}
