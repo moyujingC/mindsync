@@ -65,11 +65,11 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
           {data.draftReview.reviewChecks.map((check) => <ReviewCheckCard key={check.title} check={check} />)}
         </div>
         <div className="mt-3 rounded-lg border border-border/70 bg-card/70 px-3 py-2.5">
-          <div className="text-[10.5px] text-muted-foreground tracking-wide mb-2">{isTextMode ? "模式说明" : "系统插图位编排"}</div>
+          <div className="text-[10.5px] text-muted-foreground tracking-wide mb-2">{isTextMode ? "模式说明" : "正文配图节奏"}</div>
           <div className="space-y-2">
             {data.draftReview.imagePlacements.slice(0, 2).map((placement) => (
               <div key={placement.imageId} className="text-[10.5px] leading-relaxed text-muted-foreground">
-                <span className="text-foreground/90" style={{ fontWeight: 500 }}>{placement.placementLabel}</span>
+                <span className="text-foreground/90" style={{ fontWeight: 500 }}>{placement.sectionHeading}</span>
                 <span> · {placement.anchorText}</span>
               </div>
             ))}
@@ -93,7 +93,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
           {/* legend — once, not repeated per block */}
           <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-2 px-0.5">
             <span className="inline-flex items-center gap-1"><span className="w-2 h-px" style={{ background: theme.placeholderBorder }}></span>{isTextMode ? "文本输入" : "来自 Markdown"}</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-primary/55"></span>{isTextMode ? "仅生成图片" : "系统加工"}</span>
+            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-primary/55"></span>{isTextMode ? "仅生成图片" : "排版整理"}</span>
           </div>
 
           <div className="rounded-[14px] p-2.5 border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]" style={{ background: theme.shellBg }}>
@@ -121,13 +121,10 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                       style={{
                         marginBottom: theme.paragraphSpacing,
                         background: theme.placeholderBg,
-                        borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`,
+                        borderTop: `1px solid ${theme.placeholderBorder}`,
                         borderRadius: Math.max(theme.quoteRadius - 2, 6),
                       }}
                     >
-                      <div className="mb-2 text-[10px] tracking-[0.18em]" style={{ color: theme.mutedColor }}>
-                        OPENING NOTE
-                      </div>
                       <p className="italic text-[12.5px] leading-[1.9]" style={{ color: theme.bodyColor }}>
                         {data.draftReview.preview.intro}
                       </p>
@@ -215,9 +212,6 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
             borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`,
           }}
         >
-          <div className="mb-1 text-[9.5px] tracking-[0.18em]" style={{ color: theme.mutedColor }}>
-            SECTION
-          </div>
           <h2 style={{ fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 5.5, 16)}px`, fontWeight: 600, lineHeight: 1.55, color: theme.headingColor }}>
             {block.text}
           </h2>
@@ -266,14 +260,11 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
           ) : (
             <div className="border border-dashed px-4 py-10 text-center" style={{ background: theme.placeholderBg, borderColor: theme.placeholderBorder, color: theme.mutedColor, borderRadius: theme.imageRadius }}>
               <AlertTriangle className="w-4 h-4 mx-auto mb-2" />
-              <div className="text-[11px]">图片尚未生成</div>
+              <div className="text-[11px]">这张正文配图还未生成</div>
             </div>
           )}
-          <figcaption className="mt-2.5 space-y-1" style={{ textAlign: theme.captionAlign }}>
-            <div className="text-[9.5px] tracking-[0.14em]" style={{ color: theme.mutedColor }}>
-              INLINE IMAGE
-            </div>
-            <div className="text-[11px] leading-[1.7]" style={{ color: theme.mutedColor }}>
+          <figcaption className="mt-2.5" style={{ textAlign: theme.captionAlign }}>
+            <div className="text-[11px] leading-[1.8]" style={{ color: theme.mutedColor }}>
               {block.caption}
             </div>
           </figcaption>
@@ -293,8 +284,8 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
             borderRadius: Math.max(theme.quoteRadius, 10),
           }}
         >
-          <div className="mb-2 text-[9.5px] tracking-[0.18em]" style={{ color: theme.mutedColor }}>
-            CLOSING NOTE
+          <div className="mb-2 text-[10px]" style={{ color: theme.mutedColor }}>
+            最后想说
           </div>
           <div className="mb-3" style={{ fontFamily: "var(--font-serif)", color: theme.headingColor, fontWeight: 500, lineHeight: 1.8 }}>
             {block.title}

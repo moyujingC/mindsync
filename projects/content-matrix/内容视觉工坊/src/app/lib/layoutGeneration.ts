@@ -286,14 +286,14 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
   if (preview.intro) {
     htmlParts.push(
-      `<section style="margin:0 0 ${theme.paragraphSpacing}px;padding:14px;background:${theme.placeholderBg};border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};border-radius:${Math.max(theme.quoteRadius - 2, 6)}px;"><p style="margin:0 0 8px;color:${theme.mutedColor};font-size:11px;letter-spacing:0.12em;">OPENING NOTE</p><p style="margin:0;color:${theme.bodyColor};font-size:15px;line-height:1.9;"><em>${escapeHtml(preview.intro)}</em></p></section>`,
+      `<section style="margin:0 0 ${theme.paragraphSpacing}px;padding:14px;background:${theme.placeholderBg};border-top:1px solid ${theme.placeholderBorder};border-radius:${Math.max(theme.quoteRadius - 2, 6)}px;"><p style="margin:0;color:${theme.bodyColor};font-size:15px;line-height:1.9;"><em>${escapeHtml(preview.intro)}</em></p></section>`,
     );
   }
 
   for (const block of preview.blocks) {
     if (block.type === "heading2") {
       htmlParts.push(
-        `<section style="margin:${theme.sectionSpacing}px 0 12px;padding-left:12px;border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};"><p style="margin:0 0 4px;color:${theme.mutedColor};font-size:11px;letter-spacing:0.12em;">SECTION</p><h2 style="margin:0;font-size:${theme.headingFontSize}px;line-height:1.55;color:${theme.headingColor};">${escapeHtml(block.text)}</h2></section>`,
+        `<section style="margin:${theme.sectionSpacing}px 0 12px;padding-left:12px;border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};"><h2 style="margin:0;font-size:${theme.headingFontSize}px;line-height:1.55;color:${theme.headingColor};">${escapeHtml(block.text)}</h2></section>`,
       );
       continue;
     }
@@ -323,11 +323,11 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
       const inlineImage = workspace.wechatInlineImages.find((item) => item.id === block.imageId);
       if (inlineImage?.img) {
         htmlParts.push(
-          `<figure style="margin:${theme.inlineImageSpacing}px 0 0;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:10px;"><p style="margin:0 0 4px;color:${theme.mutedColor};font-size:11px;letter-spacing:0.12em;">INLINE IMAGE</p><p style="margin:0;color:${theme.mutedColor};font-size:13px;line-height:1.7;">${escapeHtml(block.caption)}</p></figcaption></figure>`,
+          `<figure style="margin:${theme.inlineImageSpacing}px 0 0;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:10px;"><p style="margin:0;color:${theme.mutedColor};font-size:13px;line-height:1.8;">${escapeHtml(block.caption)}</p></figcaption></figure>`,
         );
       } else {
         htmlParts.push(
-          `<p style="margin:${theme.inlineImageSpacing}px 0 0;padding:12px 14px;background:${theme.placeholderBg};border:1px dashed ${theme.placeholderBorder};border-radius:${theme.imageRadius}px;color:${theme.mutedColor};">[正文配图待补：${escapeHtml(block.caption)}]</p>`,
+          `<p style="margin:${theme.inlineImageSpacing}px 0 0;padding:12px 14px;background:${theme.placeholderBg};border:1px dashed ${theme.placeholderBorder};border-radius:${theme.imageRadius}px;color:${theme.mutedColor};">[这张正文配图还未生成：${escapeHtml(block.caption)}]</p>`,
         );
       }
       continue;
@@ -335,7 +335,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
     if (block.type === "cta") {
       htmlParts.push(
-        `<section style="margin:${theme.sectionSpacing + 6}px 0 8px;padding:16px 14px;background:${theme.placeholderBg};border-top:1px solid ${theme.placeholderBorder};border-radius:${Math.max(theme.quoteRadius, 10)}px;text-align:center;"><p style="margin:0 0 8px;color:${theme.mutedColor};font-size:11px;letter-spacing:0.12em;">CLOSING NOTE</p><p style="margin:0 0 12px;color:${theme.headingColor};line-height:1.8;">${escapeHtml(block.title)}</p><p style="margin:0;color:${theme.mutedColor};font-size:13px;">${escapeHtml(block.buttonText)}</p></section>`,
+        `<section style="margin:${theme.sectionSpacing + 6}px 0 8px;padding:16px 14px;background:${theme.placeholderBg};border-top:1px solid ${theme.placeholderBorder};border-radius:${Math.max(theme.quoteRadius, 10)}px;text-align:center;"><p style="margin:0 0 8px;color:${theme.mutedColor};font-size:12px;">最后想说</p><p style="margin:0 0 12px;color:${theme.headingColor};line-height:1.8;">${escapeHtml(block.title)}</p><p style="margin:0;color:${theme.mutedColor};font-size:13px;">${escapeHtml(block.buttonText)}</p></section>`,
       );
     }
   }
