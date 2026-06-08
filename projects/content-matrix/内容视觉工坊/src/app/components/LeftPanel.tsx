@@ -19,7 +19,7 @@ interface LeftPanelProps {
   onImportMarkdown: (file: File) => Promise<void>;
   onGenerateAll: () => Promise<void>;
   onGenerateLayout: () => Promise<void>;
-  onSetOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => void;
+  onSetOutputToggle: (key: "knowledgeCards" | "wechatCover" | "wechatShareCover" | "xiaohongshuCover", enabled: boolean) => void;
   onSetStyleSelection: (key: StyleSelectionKey, index: number) => void;
   onSetCardSize: (nextCardSize: WorkspaceData["cardSize"]) => void;
   onUpdateWechatLayoutTheme: (index: number, patch: Partial<WorkspaceData["layoutThemes"][number]>) => void;
@@ -57,11 +57,12 @@ export function LeftPanel({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const layoutThemeImportRef = useRef<HTMLInputElement | null>(null);
   const isGenerating = [...data.knowledgeCards, ...data.wechatInlineImages, ...data.covers].some((item) => item.state === "processing");
-  const styleTargets: Array<{ key: StyleSelectionKey; label: string; hint: string; toggleKey?: "knowledgeCards" | "wechatCover" | "xiaohongshuCover" }> = [
+  const styleTargets: Array<{ key: StyleSelectionKey; label: string; hint: string; toggleKey?: "knowledgeCards" | "wechatCover" | "wechatShareCover" | "xiaohongshuCover" }> = [
     { key: "knowledgeCards", label: "知识卡片", hint: "小红书 / 观点卡", toggleKey: "knowledgeCards" },
     { key: "wechatInlineImages", label: "正文配图", hint: "公众号中段插图" },
     { key: "wechatLayout", label: "公众号排版", hint: "正文阅读稿样式" },
     { key: "wechatCover", label: "公众号封面", hint: "文章入口图", toggleKey: "wechatCover" },
+    { key: "wechatShareCover", label: "公众号转发封面", hint: "聊天窗口 / 朋友圈", toggleKey: "wechatShareCover" },
     { key: "xiaohongshuCover", label: "小红书封面", hint: "笔记首图", toggleKey: "xiaohongshuCover" },
   ];
   const ratioPresets: Record<string, { width: number; height: number }> = {
@@ -83,6 +84,7 @@ export function LeftPanel({
     knowledgeCards: "知识卡片",
     wechatInlineImages: "正文配图",
     wechatCover: "公众号封面",
+    wechatShareCover: "公众号转发封面",
     xiaohongshuCover: "小红书封面",
   };
 

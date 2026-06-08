@@ -36,7 +36,7 @@ function getImageStyleAsset(workspace: WorkspaceData, key: Exclude<StyleSelectio
   return workspace.styleAssets[index] ?? workspace.styleAssets[0];
 }
 
-function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "xiaohongshuCover") {
+function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "wechatShareCover" | "xiaohongshuCover") {
   const cover = workspace.covers.find((item) => item.key === coverKey);
   if (!cover) return null;
   const styleAsset = getImageStyleAsset(workspace, coverKey);
@@ -53,7 +53,7 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
   };
 }
 
-function isOutputEnabled(workspace: WorkspaceData, key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover") {
+function isOutputEnabled(workspace: WorkspaceData, key: "knowledgeCards" | "wechatCover" | "wechatShareCover" | "xiaohongshuCover") {
   return workspace.outputToggles.find((item) => item.key === key)?.enabled ?? false;
 }
 
@@ -993,7 +993,7 @@ export function useWorkspaceDocument() {
     });
   }
 
-  async function regenerateCoverAsset(coverKey: "wechatCover" | "xiaohongshuCover") {
+  async function regenerateCoverAsset(coverKey: "wechatCover" | "wechatShareCover" | "xiaohongshuCover") {
     if (!isOutputEnabled(workspace, coverKey)) return;
 
     const request = buildCoverRequest(workspace, coverKey);
@@ -1081,7 +1081,7 @@ export function useWorkspaceDocument() {
     generateLayoutPreview,
     copyWechatHtml,
     copyFeedback,
-    setOutputToggle: (key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover", enabled: boolean) => {
+    setOutputToggle: (key: "knowledgeCards" | "wechatCover" | "wechatShareCover" | "xiaohongshuCover", enabled: boolean) => {
       setWorkspace((prev) => ({
         ...prev,
         outputToggles: prev.outputToggles.map((item) =>

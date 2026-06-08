@@ -9,7 +9,7 @@ interface CenterPanelProps {
   onRegenerateCardImage: (cardNumber: string) => Promise<void>;
   onRegenerateInlineImage: (imageId: string) => Promise<void>;
   onRegenerateAllCardImages: () => Promise<void>;
-  onRegenerateCoverAsset: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
+  onRegenerateCoverAsset: (coverKey: "wechatCover" | "wechatShareCover" | "xiaohongshuCover") => Promise<void>;
 }
 
 export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCardImage, onRegenerateInlineImage, onRegenerateAllCardImages, onRegenerateCoverAsset }: CenterPanelProps) {
@@ -21,6 +21,8 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
     data.knowledgeCards.filter((item) => item.img && item.state !== "failed").length +
     data.wechatInlineImages.filter((item) => item.img && item.state !== "failed").length +
     data.covers.filter((item) => item.img && item.state !== "failed").length;
+  const wechatWideCover = data.covers.find((item) => item.key === "wechatCover" && item.img && item.state !== "failed");
+  const wechatShareCover = data.covers.find((item) => item.key === "wechatShareCover" && item.img && item.state !== "failed");
 
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
@@ -132,6 +134,14 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
               <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 张知识卡片 + {data.wechatInlineImages.length} 张正文配图 + {data.generation.coversCount} 张封面</span>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => void downloadWechatCompositeCover(wechatWideCover?.img, wechatShareCover?.img, data.article.title)}
+                disabled={!wechatWideCover?.img || !wechatShareCover?.img}
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11.5px] px-2 py-1 rounded hover:bg-secondary/50 disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
+              >
+                <Download className="w-3 h-3" />
+                下载公众号拼接封面
+              </button>
               <button
                 onClick={() => void downloadAllAssets(data)}
                 disabled={downloadableCount === 0}
@@ -257,6 +267,60 @@ async function downloadAllAssets(data: WorkspaceData) {
   for (const task of tasks) {
     await downloadImageAsset(task.url, task.filename);
     await new Promise((resolve) => window.setTimeout(resolve, 180));
+  }
+}
+
+async function fetchImageAsObjectUrl(imageUrl: string) {
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(`image fetch failed: ${response.status}`);
+  }
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+}
+
+async function loadImageElement(src: string) {
+  const image = new Image();
+  image.decoding = "async";
+  const loaded = new Promise<HTMLImageElement>((resolve, reject) => {
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("image decode failed"));
+  });
+  image.src = src;
+  return loaded;
+}
+
+async function downloadWechatCompositeCover(wideCoverUrl?: string, squareCoverUrl?: string, articleTitle?: string) {
+  if (!wideCoverUrl || !squareCoverUrl || typeof window === "undefined") return;
+
+  const wideObjectUrl = await fetchImageAsObjectUrl(wideCoverUrl);
+  const squareObjectUrl = await fetchImageAsObjectUrl(squareCoverUrl);
+
+  try {
+    const [wideImage, squareImage] = await Promise.all([
+      loadImageElement(wideObjectUrl),
+      loadImageElement(squareObjectUrl),
+    ]);
+
+    const targetHeight = Math.min(wideImage.height, squareImage.height);
+    const wideWidth = Math.round((wideImage.width / wideImage.height) * targetHeight);
+    const squareWidth = targetHeight;
+    const canvas = document.createElement("canvas");
+    canvas.width = wideWidth + squareWidth;
+    canvas.height = targetHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("canvas unavailable");
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(wideImage, 0, 0, wideWidth, targetHeight);
+    ctx.drawImage(squareImage, wideWidth, 0, squareWidth, targetHeight);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    await downloadImageAsset(dataUrl, sanitizeFilename(`公众号拼接封面-${articleTitle ?? "未命名文章"}`));
+  } finally {
+    URL.revokeObjectURL(wideObjectUrl);
+    URL.revokeObjectURL(squareObjectUrl);
   }
 }
 
@@ -515,7 +579,7 @@ function CoverCard({
   articleTitle: string;
   coverThemeTitle: string;
   coverThemeKeywords: string;
-  onRegenerate: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
+  onRegenerate: (coverKey: "wechatCover" | "wechatShareCover" | "xiaohongshuCover") => Promise<void>;
 }) {
   const processing = cover.state === "processing";
   const failed = cover.state === "failed";
@@ -570,7 +634,7 @@ function CoverCard({
         </span>
       }
       caption="主标题、副线及账号信息已嵌入封面"
-      spec={`${appendGenerationMode(providerLabel, cover.imageGenerationMode)} · ${cover.wide ? "2.35:1 · 公众号" : "3:4 · 小红书"}`}
+      spec={`${appendGenerationMode(providerLabel, cover.imageGenerationMode)} · ${cover.key === "wechatCover" ? "2.35:1 · 公众号列表" : cover.key === "wechatShareCover" ? "1:1 · 公众号转发" : "3:4 · 小红书"}`}
       actions={
         <>
           <ToolBtn

@@ -21,6 +21,7 @@ export type StyleAssetFit =
   | "knowledgeCards"
   | "wechatInlineImages"
   | "wechatCover"
+  | "wechatShareCover"
   | "xiaohongshuCover";
 
 export interface StyleAsset {
@@ -77,6 +78,7 @@ export type StyleSelectionKey =
   | "wechatInlineImages"
   | "wechatLayout"
   | "wechatCover"
+  | "wechatShareCover"
   | "xiaohongshuCover";
 
 export interface StyleSelectionMap {
@@ -84,6 +86,7 @@ export interface StyleSelectionMap {
   wechatInlineImages: number;
   wechatLayout: number;
   wechatCover: number;
+  wechatShareCover: number;
   xiaohongshuCover: number;
 }
 
@@ -116,7 +119,7 @@ export interface ImageGenerationSource {
 }
 
 export interface OutputToggleItem {
-  key: "knowledgeCards" | "wechatCover" | "xiaohongshuCover";
+  key: "knowledgeCards" | "wechatCover" | "wechatShareCover" | "xiaohongshuCover";
   label: string;
   hint: string;
   enabled: boolean;
@@ -143,7 +146,7 @@ export interface KnowledgeCardItem {
 }
 
 export interface CoverAsset {
-  key: "wechatCover" | "xiaohongshuCover";
+  key: "wechatCover" | "wechatShareCover" | "xiaohongshuCover";
   label: string;
   ratio: string;
   status: string;
