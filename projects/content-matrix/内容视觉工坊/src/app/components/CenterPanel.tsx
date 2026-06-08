@@ -160,6 +160,9 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
               </button>
             </div>
           </div>
+          <div className="mb-5 text-[10.5px] text-muted-foreground">
+            新生成的图片会自动保存到 <code className="text-foreground/80">内容视觉工坊/outputs/</code>，下载仅用于额外导出。
+          </div>
 
           {/* Knowledge cards */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">

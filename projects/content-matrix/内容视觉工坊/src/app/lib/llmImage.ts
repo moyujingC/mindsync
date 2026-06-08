@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import { buildCardImagePrompt, buildCoverImagePrompt, buildWechatInlineImagePrompt } from "./imagePrompt";
 import type {
   GenerateCardImageRequest,
@@ -10,6 +11,81 @@ import type {
   GenerateWechatInlineImageRequest,
   GenerateWechatInlineImageResponse,
 } from "../types";
+
+const OUTPUT_ROOT = path.resolve(process.cwd(), "outputs");
+
+function ensureDir(dirPath: string) {
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+
+function sanitizeSegment(input: string) {
+  return input
+    .normalize("NFKC")
+    .replace(/[\\/:*?"<>|]/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80) || "untitled";
+}
+
+function timestampId() {
+  const now = new Date();
+  const parts = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+    "-",
+    String(now.getHours()).padStart(2, "0"),
+    String(now.getMinutes()).padStart(2, "0"),
+    String(now.getSeconds()).padStart(2, "0"),
+  ];
+  return parts.join("");
+}
+
+async function saveGeneratedImage({
+  imageUrl,
+  category,
+  articleTitle,
+  assetLabel,
+}: {
+  imageUrl?: string;
+  category: "knowledge-cards" | "wechat-inline" | "covers";
+  articleTitle: string;
+  assetLabel: string;
+}) {
+  if (!imageUrl) {
+    throw new Error("Missing image payload");
+  }
+
+  const articleDir = sanitizeSegment(articleTitle);
+  const outputDir = path.join(OUTPUT_ROOT, articleDir, category);
+  ensureDir(outputDir);
+
+  const baseName = `${timestampId()}-${sanitizeSegment(assetLabel)}-${crypto.randomBytes(3).toString("hex")}`;
+  const fileName = `${baseName}.png`;
+  const absolutePath = path.join(outputDir, fileName);
+
+  let buffer: Buffer;
+  if (imageUrl.startsWith("data:")) {
+    const commaIndex = imageUrl.indexOf(",");
+    const base64 = imageUrl.slice(commaIndex + 1);
+    buffer = Buffer.from(base64, "base64");
+  } else {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch generated image: ${response.status}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    buffer = Buffer.from(arrayBuffer);
+  }
+
+  fs.writeFileSync(absolutePath, buffer);
+
+  return {
+    savedPath: absolutePath,
+    imageUrl: `/generated-assets/${encodeURIComponent(articleDir)}/${encodeURIComponent(category)}/${encodeURIComponent(fileName)}`,
+  };
+}
 
 function getImageSizeFromRatio(ratio: string) {
   const normalized = ratio.replace(/\s+/g, "");
@@ -96,17 +172,38 @@ async function generateImage(prompt: string, ratio: string, referenceImages: str
 
 export async function generateCardImageWithModel(request: GenerateCardImageRequest): Promise<GenerateCardImageResponse> {
   const prompt = buildCardImagePrompt(request);
-  return generateImage(prompt, request.ratio, request.styleReferenceImages);
+  const generated = await generateImage(prompt, request.ratio, request.styleReferenceImages);
+  const saved = await saveGeneratedImage({
+    imageUrl: generated.imageUrl,
+    category: "knowledge-cards",
+    articleTitle: request.title,
+    assetLabel: request.title,
+  });
+  return { ...generated, ...saved };
 }
 
 export async function generateCoverImageWithModel(request: GenerateCoverImageRequest): Promise<GenerateCoverImageResponse> {
   const prompt = buildCoverImagePrompt(request);
-  return generateImage(prompt, request.ratio, request.styleReferenceImages);
+  const generated = await generateImage(prompt, request.ratio, request.styleReferenceImages);
+  const saved = await saveGeneratedImage({
+    imageUrl: generated.imageUrl,
+    category: "covers",
+    articleTitle: request.articleTitle,
+    assetLabel: request.label,
+  });
+  return { ...generated, ...saved };
 }
 
 export async function generateWechatInlineImageWithModel(
   request: GenerateWechatInlineImageRequest,
 ): Promise<GenerateWechatInlineImageResponse> {
   const prompt = buildWechatInlineImagePrompt(request);
-  return generateImage(prompt, request.ratio, request.styleReferenceImages);
+  const generated = await generateImage(prompt, request.ratio, request.styleReferenceImages);
+  const saved = await saveGeneratedImage({
+    imageUrl: generated.imageUrl,
+    category: "wechat-inline",
+    articleTitle: request.articleTheme,
+    assetLabel: request.sectionTheme,
+  });
+  return { ...generated, ...saved };
 }

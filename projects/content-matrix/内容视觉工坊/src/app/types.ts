@@ -143,6 +143,7 @@ export interface KnowledgeCardItem {
   provider?: "mock" | "llm" | "image-model";
   imagePrompt?: string;
   imageGenerationMode?: ImageGenerationMode;
+  savedPath?: string;
 }
 
 export interface CoverAsset {
@@ -156,6 +157,7 @@ export interface CoverAsset {
   provider?: "mock" | "image-model";
   imagePrompt?: string;
   imageGenerationMode?: ImageGenerationMode;
+  savedPath?: string;
   wide?: boolean;
 }
 
@@ -227,6 +229,7 @@ export interface GenerateCardImageResponse {
   imageUrl: string;
   prompt: string;
   generationMode: ImageGenerationMode;
+  savedPath: string;
 }
 
 export interface GenerateCoverImageRequest {
@@ -245,6 +248,7 @@ export interface GenerateCoverImageResponse {
   imageUrl: string;
   prompt: string;
   generationMode: ImageGenerationMode;
+  savedPath: string;
 }
 
 export type WechatInlineSectionType = "concept" | "quote" | "method" | "transition";
@@ -269,6 +273,7 @@ export interface WechatInlineImageAsset {
   provider?: "mock" | "image-model";
   imagePrompt?: string;
   imageGenerationMode?: ImageGenerationMode;
+  savedPath?: string;
 }
 
 export interface GenerateWechatInlineImageRequest {
@@ -292,6 +297,7 @@ export interface GenerateWechatInlineImageResponse {
   imageUrl: string;
   prompt: string;
   generationMode: ImageGenerationMode;
+  savedPath: string;
 }
 
 export interface GenerationOverview {

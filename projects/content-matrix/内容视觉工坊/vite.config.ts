@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import path from 'path'
+import fs from 'node:fs'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import type { Connect } from 'vite'
@@ -9,6 +10,8 @@ import { planCardsWithLLM } from './src/app/lib/llmPlanner'
 import { generateCardImageWithModel, generateCoverImageWithModel, generateWechatInlineImageWithModel } from './src/app/lib/llmImage'
 
 dotenv.config({ path: path.resolve(__dirname, '.env.local') })
+
+const generatedAssetsRoot = path.resolve(__dirname, 'outputs')
 
 
 function figmaAssetResolver() {
@@ -163,6 +166,32 @@ function localGenerateWechatInlineImageApi() {
   }
 }
 
+function localGeneratedAssetsApi() {
+  return {
+    name: 'local-generated-assets-api',
+    configureServer(server: any) {
+      server.middlewares.use('/generated-assets', (req: Connect.IncomingMessage, res: any, next: any) => {
+        const requestPath = decodeURIComponent((req.url || '').replace(/^\/+/, ''))
+        const filePath = path.resolve(generatedAssetsRoot, requestPath)
+
+        if (!filePath.startsWith(generatedAssetsRoot)) {
+          res.statusCode = 403
+          res.end('Forbidden')
+          return
+        }
+
+        if (!filePath.endsWith('.png') || !fs.existsSync(filePath)) {
+          next()
+          return
+        }
+
+        res.setHeader('Content-Type', 'image/png')
+        fs.createReadStream(filePath).pipe(res)
+      })
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
     figmaAssetResolver(),
@@ -170,6 +199,7 @@ export default defineConfig({
     localGenerateCardImageApi(),
     localGenerateCoverImageApi(),
     localGenerateWechatInlineImageApi(),
+    localGeneratedAssetsApi(),
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
     react(),
