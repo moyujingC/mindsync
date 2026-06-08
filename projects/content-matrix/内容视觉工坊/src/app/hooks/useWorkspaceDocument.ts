@@ -40,6 +40,7 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
   const cover = workspace.covers.find((item) => item.key === coverKey);
   if (!cover) return null;
   const styleAsset = getImageStyleAsset(workspace, coverKey);
+  const isWechatShareCover = coverKey === "wechatShareCover";
 
   return {
     label: cover.label,
@@ -47,8 +48,10 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
     coverThemeTitle: workspace.analysis.coverTheme.title,
     coverThemeKeywords: workspace.analysis.coverTheme.keywords,
     styleName: styleAsset?.name ?? "默认风格",
-    stylePromptBase: styleAsset?.promptBase ?? "",
-    styleReferenceImages: styleAsset?.referenceImages ?? [],
+    stylePromptBase: isWechatShareCover
+      ? `${styleAsset?.promptBase ?? ""} 当前没有专门的转发封面参考图，请只延续账号气质，不要套用知识卡片版式。`
+      : styleAsset?.promptBase ?? "",
+    styleReferenceImages: isWechatShareCover ? [] : styleAsset?.referenceImages ?? [],
     ratio: cover.ratio,
   };
 }
