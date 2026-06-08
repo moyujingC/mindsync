@@ -2,86 +2,148 @@ import type { WorkspaceData } from "./types";
 
 export const workspaceData: WorkspaceData = {
   article: {
-    fileName: "AI时代的判断力.md",
+    fileName: "AI 最磨人的陷阱：拉高了能力，透支了人生.md",
     updatedAt: "14:23",
-    wordCount: 3284,
-    title: "在算法替你思考之前，先把判断力留下来",
-    rawText: `# 在算法替你思考之前，先把判断力留下来
+    wordCount: 3412,
+    title: "AI 最磨人的陷阱：拉高了能力，透支了人生",
+    rawText: `这段时间，我一直在复盘自己长期重度使用AI的真实状态。
 
-写给在 AI 工具丛林里有点迷路的内容创作者。这不是一篇关于「怎么用 AI」的文章，是关于「怎么不被 AI 用掉」的笔记。
+有一个愈发清晰的切身感受：
 
-## 一、信息过载时代，判断力比知识更稀缺
+我从前一直以为，AI会让我的工作和生活变得更轻松。
 
-过去十年我们以为最值钱的是知识，现在发现真正稀缺的是**在一堆都对的答案里，挑出最适合此刻的那一个**的能力。
+可真正高频、沉浸式用下来才发现，我最先收获的不是高效与松弛，而是一种**隐秘极强、慢慢磨人的精神疲惫**。
 
-> 提示词不是工作，提问才是。创作者的护城河，正在向「问什么」迁移。
+现在我终于彻底读懂了这句话：**深度用上AI后，人才真正懂什么叫活儿永远干不完**。
 
-## 二、AI 给的是答案，编辑要的是问题
+这种无休止的忙碌，不是因为我变得更勤奋，也不是我主动内卷内耗。
 
-AI 可以把表达变得更顺，但也可能把判断磨平。越是高效的时候，越要警惕自己是不是只是在顺着工具走。
+所有疲惫的根源，只有核心一句：**AI拉高了所有事情的可行性，却没有同步提升人的精力承载力**。
 
-## 三、三个练习：把判断力的肌肉养回来
+## 以前很多事，不是不想做，是推进成本太高
 
-1. 每天 20 分钟不被推荐流喂养
-2. 把「我觉得」放回文章里
-3. 保留一份不发布的写作
+从前的我，从来不缺想法，尤其是在内容创作这件事上。
 
-## 四、把「我觉得」重新放进文章里
+有独特观点、有完整框架、有满满的表达欲，但绝大多数想法，最终都死死卡在提纲阶段，再也无法向前推进。
 
-AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那些不够圆润的地方。`,
+因为一篇优质的内容，从来不是只有观点就足够的。
+
+只是**推进成本过高，高到让人被动止步、自动筛选、理性放弃**。
+
+## AI打破了成本壁垒，也打开了无限的可能性
+
+而AI的出现，直接推翻了这套天然的自我减负机制。
+
+想不通的难题，可以无限次深度探讨；单薄零散的想法，可以一步步拆解细化；简陋粗糙的提纲，可以多角度推演、丰满成型。
+
+很多人觉得AI只是提速了工作效率，但在我看来，它带来的改变远比这更深刻：**它让我们看见了无数从前被高成本掩盖的人生可能性。**
+
+## 可推进的事越多，需要做的判断就越累
+
+从前做事，天然有终点、有边界。
+
+但进入AI时代，大部分工作都没有了天然终点。
+
+每一个深挖的方向，看起来都合理、都有价值、都值得深耕。可一旦不懂收口、不懂止损，所有“可推进”的机会，最终都会变成无休止的精力消耗。
+
+最后酿成最讽刺的局面：**本该解放人力、减负增效的AI，反而让我们工作时长更长、决策更多、内心更累。**
+
+## 真正的疲惫，从来不是执行，是判断与收口
+
+长期复盘后我彻底明白：AI带来的疲惫，从来都不是身体上的劳累。
+
+真正消耗人的，是**持续筛选、反复判断、不断取舍、强行收口的深度精神内耗**。
+
+**AI可以无休无止继续推进，但人无法时时刻刻持续判断。**
+
+## 做内容的执念，最容易放大这份疲惫
+
+这种隐形内耗，在内容创作者身上体现得最为淋漓尽致。
+
+但可怕的是，一旦陷入这套完美逻辑，一篇轻松的个人随笔，瞬间就会升级为一项繁重的研究项目。
+
+慢慢的，我想通了一个很重要的道理：
+
+**有些文章的价值，不在于完美论证一个道理，而在于把一种人人都有、却无人说透的体验讲清楚。**
+
+## 不是少用AI，而是给自己设边界
+
+彻底想通透后，我完全调整了自己的AI使用逻辑。
+
+但我不再一上来就追问：还能再优化吗？还能再深挖吗？还能再完善得更好吗？
+
+取而代之的，是先问自己几个更核心、更关键的问题：
+
+这件事，当下真的值得做吗？
+
+做到什么程度，就足够够用了？
+
+AI拓宽了我们的能力边界，我们必须守住自己的精力边界。`,
   },
   parsedMarkdown: {
     status: "parsed",
     structure: {
-      headings: 1,
+      headings: 0,
       subheadings: 6,
-      bolds: 14,
-      quotes: 3,
-      lists: 4,
+      bolds: 13,
+      quotes: 0,
+      lists: 0,
     },
-    structureTags: ["1 标题", "6 小标题", "14 加粗", "3 引用"],
+    structureTags: ["0 标题", "6 小标题", "13 加粗", "0 引用"],
   },
   analysis: {
     imageGenerationSource: {
       contentKind: "full-article-text",
-      strategy: "直接将全文交给大模型，由模型自动拆成 4 张知识卡片并生成每张图的视觉方案",
+      strategy: "直接将全文交给大模型，由模型自动拆成 6 张知识卡片并生成每张图的视觉方案",
     },
     cardOutlineTitles: [
-      "信息过载时代，判断力比知识更稀缺",
-      "AI 给的是答案，编辑要的是问题",
-      "三个练习：每天留 20 分钟「不被喂养」的时间",
-      "把「我觉得」重新放进文章里",
+      "以前很多事，不是不想做，是推进成本太高",
+      "AI打破了成本壁垒，也打开了无限的可能性",
+      "可推进的事越多，需要做的判断就越累",
+      "真正的疲惫，从来不是执行，是判断与收口",
+      "做内容的执念，最容易放大这份疲惫",
+      "不是少用AI，而是给自己设边界",
     ],
     keyQuotes: [
-      "提示词不是工作，提问才是。",
-      "AI 写得越像范文，越要敢于不工整。",
-      "把判断的肌肉，每天养 20 分钟。",
+      "隐秘极强、慢慢磨人的精神疲惫",
+      "深度用上AI后，人才真正懂什么叫活儿永远干不完",
+      "AI拉高了所有事情的可行性，却没有同步提升人的精力承载力",
     ],
     coverTheme: {
-      title: "判断力 · 在算法之外",
-      keywords: "判断力 / 信息筛选 / 提问 / 编辑视角",
+      title: "AI 拉高能力，也透支人生",
+      keywords: "精神疲惫 / 精力边界 / 收口判断 / AI 时代主体性",
     },
   },
   cardPlan: [
     {
       index: 1,
-      title: "信息过载时代，判断力比知识更稀缺",
-      summary: "当所有人都能获取同样的资料，谁能筛掉噪音，谁就掌握了下一层级的话语权。",
+      title: "以前很多事，不是不想做，是推进成本太高",
+      summary: "很多有价值的事，从前之所以没继续，不是因为不重要，而是推进成本太高，高到让人理性放弃。",
     },
     {
       index: 2,
-      title: "AI 给的是答案，编辑要的是问题",
-      summary: "提示词不是工作，提问才是。创作者的护城河，正在向「问什么」迁移。",
+      title: "AI打破了成本壁垒，也打开了无限的可能性",
+      summary: "AI 让许多原本推进不了的想法突然变得可落地，也因此放大了人生中所有值得深挖的可能性。",
     },
     {
       index: 3,
-      title: "三个练习：每天留 20 分钟「不被喂养」的时间",
-      summary: "不刷推荐流，不看热搜榜，只读一段自己挑的文字 —— 把判断的肌肉养回来。",
+      title: "可推进的事越多，需要做的判断就越累",
+      summary: "问题不再是能不能做，而是所有方向都能做，最后最耗人的变成了无穷无尽的判断与取舍。",
     },
     {
       index: 4,
-      title: "把「我觉得」重新放进文章里",
-      summary: "AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那些不够圆润的地方。",
+      title: "真正的疲惫，从来不是执行，是判断与收口",
+      summary: "AI 不会累，但人会。真正消耗人的不是执行动作，而是反复筛选、比对、决策与强行收口。",
+    },
+    {
+      index: 5,
+      title: "做内容的执念，最容易放大这份疲惫",
+      summary: "内容创作者最容易把一篇随笔升级成研究项目，最后不是表达更好了，而是被完美主义拖住了。",
+    },
+    {
+      index: 6,
+      title: "不是少用AI，而是给自己设边界",
+      summary: "不是戒掉 AI，而是学会先判断这件事值不值得做、做到什么程度够用，以及哪些方向该主动放弃。",
     },
   ],
   workflowStages: [
@@ -93,7 +155,7 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     { key: "draftSync", label: "草稿同步", status: "success", detail: "公众号草稿已创建，可继续重新同步或打开草稿" },
   ],
   outputToggles: [
-    { key: "knowledgeCards", label: "生成知识卡片", hint: "4 张", enabled: true },
+    { key: "knowledgeCards", label: "生成知识卡片", hint: "6 张", enabled: true },
     { key: "wechatCover", label: "生成公众号封面", hint: "2.35 : 1", enabled: true },
     { key: "xiaohongshuCover", label: "生成小红书封面", hint: "3 : 4", enabled: true },
   ],
@@ -241,11 +303,11 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
   },
   generation: {
     generatedAt: "14:31",
-    cardsCount: 4,
+    cardsCount: 6,
     coversCount: 2,
     layoutStatus: "已生成",
     summaryMeta: [
-      { label: "知识卡片", value: "4 张" },
+      { label: "知识卡片", value: "6 张" },
       { label: "封面", value: "2 张" },
       { label: "排版", value: "已生成", emerald: true },
       { label: "生成时间", value: "14:31" },
@@ -254,8 +316,8 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
   knowledgeCards: [
     {
       n: "01",
-      title: "信息过载时代，判断力比知识更稀缺",
-      summary: "当所有人都能获取同样的资料，谁能筛掉噪音，谁就掌握了下一层级的话语权。",
+      title: "以前很多事，不是不想做，是推进成本太高",
+      summary: "很多有价值的事，从前之所以没继续，不是因为不重要，而是推进成本太高，高到让人理性放弃。",
       composition: "暖米色纸面 / 手绘箭头 / 主标题居中偏上 / 留白底部 30%",
       img: "https://images.unsplash.com/photo-1686806372785-fcfe9efa9b70?w=900&q=80",
       state: "ok",
@@ -263,8 +325,8 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     },
     {
       n: "02",
-      title: "AI 给的是答案，编辑要的是问题",
-      summary: "提示词不是工作，提问才是。创作者的护城河，正在向「问什么」迁移。",
+      title: "AI打破了成本壁垒，也打开了无限的可能性",
+      summary: "AI 让许多原本推进不了的想法突然变得可落地，也因此放大了人生中所有值得深挖的可能性。",
       composition: "深墨绿底 / 米白衬线大字 / 引号装饰 / 右下作者签名印",
       img: "https://images.unsplash.com/photo-1760840415409-bf4b6b14988e?w=900&q=80",
       state: "ok",
@@ -272,8 +334,8 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     },
     {
       n: "03",
-      title: "三个练习：每天留 20 分钟「不被喂养」的时间",
-      summary: "不刷推荐流，不看热搜榜，只读一段自己挑的文字 —— 把判断的肌肉养回来。",
+      title: "可推进的事越多，需要做的判断就越累",
+      summary: "问题不再是能不能做，而是所有方向都能做，最后最耗人的变成了无穷无尽的判断与取舍。",
       composition: "列表式构图 / 三栏编号 / 衬线小标题 / 卡片底部页脚条",
       img: "",
       state: "failed",
@@ -281,10 +343,28 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     },
     {
       n: "04",
-      title: "把「我觉得」重新放进文章里",
-      summary: "AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那些不够圆润的地方。",
+      title: "真正的疲惫，从来不是执行，是判断与收口",
+      summary: "AI 不会累，但人会。真正消耗人的不是执行动作，而是反复筛选、比对、决策与强行收口。",
       composition: "纸质纹理 / 手写下划线 / 段落式版面 / 关键词以橙朱标记",
       img: "https://images.unsplash.com/photo-1778664305516-8243da9c2098?w=900&q=80",
+      state: "ok",
+      provider: "mock",
+    },
+    {
+      n: "05",
+      title: "做内容的执念，最容易放大这份疲惫",
+      summary: "内容创作者最容易把一篇随笔升级成研究项目，最后不是表达更好了，而是被完美主义拖住了。",
+      composition: "轻编辑感构图 / 大面积留白 / 中段观点强调",
+      img: "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?w=900&q=80",
+      state: "ok",
+      provider: "mock",
+    },
+    {
+      n: "06",
+      title: "不是少用AI，而是给自己设边界",
+      summary: "不是戒掉 AI，而是学会先判断这件事值不值得做、做到什么程度够用，以及哪些方向该主动放弃。",
+      composition: "收束感版面 / 低饱和深色底 / 结论居中",
+      img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80",
       state: "ok",
       provider: "mock",
     },
@@ -293,12 +373,12 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     {
       id: "inline-01",
       placementLabel: "图片位 #1",
-      sectionHeading: "信息过载时代，判断力比知识更稀缺",
+      sectionHeading: "以前很多事，不是不想做，是推进成本太高",
       sectionType: "concept",
-      sectionTheme: "信息过载时代，判断力比知识更稀缺",
-      sectionKeywords: ["判断力", "筛选", "留白", "编辑视角"],
-      sectionSummary: "当所有人都能获取同样的资料，谁能筛掉噪音，谁就掌握了下一层级的话语权。",
-      visualDirection: "围绕判断力与筛选做抽象概念意象图，安静、克制、有人文思考感。",
+      sectionTheme: "以前很多事，不是不想做，是推进成本太高",
+      sectionKeywords: ["推进成本", "止步", "筛选", "精力边界"],
+      sectionSummary: "很多有价值的事，从前之所以没继续，不是因为不重要，而是推进成本太高，高到让人理性放弃。",
+      visualDirection: "围绕推进成本、阻力与止步感做抽象概念图，安静、克制、略带内省。",
       rationale: "用于承接第一节主观点，在首个论点段后插入，避免开头信息密度过高。",
       ratio: "16:9",
       width: 1536,
@@ -310,14 +390,13 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     {
       id: "inline-02",
       placementLabel: "图片位 #2",
-      sectionHeading: "AI 给的是答案，编辑要的是问题",
-      sectionType: "quote",
-      sectionTheme: "AI 给的是答案，编辑要的是问题",
-      sectionKeywords: ["提问", "编辑", "问题意识"],
-      sectionSummary: "提示词不是工作，提问才是。创作者的护城河，正在向「问什么」迁移。",
-      sectionQuote: "提示词不是工作，提问才是。",
-      visualDirection: "围绕提问与编辑意识做轻观点感的杂志内页式配图。",
-      rationale: "与金句形成并列强化，适合放在引用块后承接观点转折。",
+      sectionHeading: "AI打破了成本壁垒，也打开了无限的可能性",
+      sectionType: "transition",
+      sectionTheme: "AI打破了成本壁垒，也打开了无限的可能性",
+      sectionKeywords: ["可能性", "落地", "扩张", "AI 协作"],
+      sectionSummary: "AI 让许多原本推进不了的想法突然变得可落地，也因此放大了人生中所有值得深挖的可能性。",
+      visualDirection: "围绕可能性打开、边界扩张和轻微眩晕感做阅读换气图。",
+      rationale: "对应第二节，用于承接从高成本时代进入高可行性时代的转折。",
       ratio: "16:9",
       width: 1536,
       height: 864,
@@ -328,13 +407,13 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     {
       id: "inline-03",
       placementLabel: "图片位 #3",
-      sectionHeading: "三个练习：每天留 20 分钟「不被喂养」的时间",
-      sectionType: "method",
-      sectionTheme: "三个练习：每天留 20 分钟「不被喂养」的时间",
-      sectionKeywords: ["练习", "节奏", "结构感"],
-      sectionSummary: "不刷推荐流，不看热搜榜，只读一段自己挑的文字 —— 把判断的肌肉养回来。",
-      visualDirection: "围绕方法感、结构感和秩序感表达，不做步骤罗列。",
-      rationale: "对应方法段落，帮助长列表内容中段换气。",
+      sectionHeading: "可推进的事越多，需要做的判断就越累",
+      sectionType: "concept",
+      sectionTheme: "可推进的事越多，需要做的判断就越累",
+      sectionKeywords: ["判断", "取舍", "精力消耗", "边界"],
+      sectionSummary: "问题不再是能不能做，而是所有方向都能做，最后最耗人的变成了无穷无尽的判断与取舍。",
+      visualDirection: "围绕判断负荷、分岔路径与精力损耗做概念意象图。",
+      rationale: "对应第三节，帮助长段论述中段换气。",
       ratio: "16:9",
       width: 1536,
       height: 864,
@@ -345,18 +424,52 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     {
       id: "inline-04",
       placementLabel: "图片位 #4",
-      sectionHeading: "把「我觉得」重新放进文章里",
-      sectionType: "transition",
-      sectionTheme: "把「我觉得」重新放进文章里",
-      sectionKeywords: ["表达", "留白", "作者判断"],
-      sectionSummary: "AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那些不够圆润的地方。",
-      visualDirection: "围绕表达与留白做阅读换气图，强调停顿感和轻情绪。",
-      rationale: "放在文章后段，用于强调作者判断与全文收束。",
+      sectionHeading: "真正的疲惫，从来不是执行，是判断与收口",
+      sectionType: "concept",
+      sectionTheme: "真正的疲惫，从来不是执行，是判断与收口",
+      sectionKeywords: ["收口", "判断", "疲惫", "人机协作"],
+      sectionSummary: "AI 不会累，但人会。真正消耗人的不是执行动作，而是反复筛选、比对、决策与强行收口。",
+      visualDirection: "围绕收口、停顿与精神耗损做轻概念配图。",
+      rationale: "对应第四节，在核心结论段落后做视觉停顿。",
       ratio: "16:9",
       width: 1536,
       height: 864,
       img: "https://images.unsplash.com/photo-1517842645767-c639042777db?w=1400&q=80",
       state: "ok",
+      provider: "mock",
+    },
+    {
+      id: "inline-05",
+      placementLabel: "图片位 #5",
+      sectionHeading: "做内容的执念，最容易放大这份疲惫",
+      sectionType: "transition",
+      sectionTheme: "做内容的执念，最容易放大这份疲惫",
+      sectionKeywords: ["内容创作", "完美主义", "随笔", "研究项目"],
+      sectionSummary: "内容创作者最容易把一篇随笔升级成研究项目，最后不是表达更好了，而是被完美主义拖住了。",
+      visualDirection: "围绕创作执念、轻完美主义和被放大的疲惫感做过渡图。",
+      rationale: "对应第五节，帮助从认知问题过渡到内容创作现场。",
+      ratio: "16:9",
+      width: 1536,
+      height: 864,
+      img: "",
+      state: "idle",
+      provider: "mock",
+    },
+    {
+      id: "inline-06",
+      placementLabel: "图片位 #6",
+      sectionHeading: "不是少用AI，而是给自己设边界",
+      sectionType: "transition",
+      sectionTheme: "不是少用AI，而是给自己设边界",
+      sectionKeywords: ["边界", "止损", "够用", "松弛"],
+      sectionSummary: "不是戒掉 AI，而是学会先判断这件事值不值得做、做到什么程度够用，以及哪些方向该主动放弃。",
+      visualDirection: "围绕边界感、松弛感与主动收束做文章结尾的轻收口图。",
+      rationale: "对应最后一节，在收束段后强调全文结论。",
+      ratio: "16:9",
+      width: 1536,
+      height: 864,
+      img: "",
+      state: "idle",
       provider: "mock",
     },
   ],
@@ -382,76 +495,97 @@ AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那�
     },
   ],
   draftReview: {
-    readyTitle: "可同步到草稿箱",
-    readyDescription: "系统已完成结构继承、重点识别和插图位编排",
+    readyTitle: "可复制到公众号编辑器",
+    readyDescription: "系统已完成结构继承、重点识别和正文配图编排",
     reviewChecks: [
-      { title: "Markdown 结构", detail: "6 H2 · 3 引用 · 4 列表已保留", status: "pass" },
-      { title: "重点句识别", detail: "3 处金句已强调", status: "pass" },
-      { title: "插图位编排", detail: "系统已决定 4 处插图位置", status: "pass" },
-      { title: "公众号格式", detail: "标题、首图、摘要合规", status: "pass" },
+      { title: "Markdown 结构", detail: "6 H2 · 13 处重点强调已保留", status: "pass" },
+      { title: "重点句识别", detail: "3 处核心判断已抽出", status: "pass" },
+      { title: "插图位编排", detail: "系统已决定 6 处正文配图位置", status: "pass" },
+      { title: "公众号格式", detail: "标题、导语、正文与结尾 CTA 已整理", status: "pass" },
     ],
     syncStatus: [
-      { label: "正文排版", note: "Markdown 已转为公众号 HTML · 6 段落" },
-      { label: "卡片素材上传", note: "4 张 · 上传至素材库「2026-06」" },
-      { label: "封面上传", note: "公众号封面 v2 · 小红书封面 v1" },
-      { label: "草稿创建", note: "draft_id: msg_8c91a · 公众号后台可见" },
+      { label: "正文排版", note: "Markdown 已转为公众号阅读稿 · 6 个内容段" },
+      { label: "正文配图", note: "6 张正文配图已规划" },
+      { label: "封面状态", note: "已保留公众号封面和小红书封面的输出位" },
+      { label: "正文复制", note: "可复制 HTML 后手动粘贴到公众号编辑器" },
     ],
     imagePlacements: [
       {
         imageId: "inline-01",
         placementLabel: "图片位 #1",
-        sectionHeading: "信息过载时代，判断力比知识更稀缺",
-        anchorText: "一 · 信息过载时代，判断力比知识更稀缺",
+        sectionHeading: "以前很多事，不是不想做，是推进成本太高",
+        anchorText: "以前很多事，不是不想做，是推进成本太高",
         rationale: "用于承接第一节主观点，在首个论点段后插入，避免开头信息密度过高。",
         sectionType: "concept",
       },
       {
         imageId: "inline-02",
         placementLabel: "图片位 #2",
-        sectionHeading: "AI 给的是答案，编辑要的是问题",
-        anchorText: "提示词不是工作，提问才是。",
-        rationale: "与金句形成并列强化，适合放在引用块后承接观点转折。",
-        sectionType: "quote",
+        sectionHeading: "AI打破了成本壁垒，也打开了无限的可能性",
+        anchorText: "AI打破了成本壁垒，也打开了无限的可能性",
+        rationale: "对应第二节，用于承接从高成本时代进入高可行性时代的转折。",
+        sectionType: "transition",
       },
       {
         imageId: "inline-03",
         placementLabel: "图片位 #3",
-        sectionHeading: "三个练习：每天留 20 分钟「不被喂养」的时间",
-        anchorText: "三个练习：把判断力的肌肉养回来",
-        rationale: "对应方法段落，帮助长列表内容中段换气。",
-        sectionType: "method",
+        sectionHeading: "可推进的事越多，需要做的判断就越累",
+        anchorText: "可推进的事越多，需要做的判断就越累",
+        rationale: "对应第三节，帮助长段论述中段换气。",
+        sectionType: "concept",
       },
       {
         imageId: "inline-04",
         placementLabel: "图片位 #4",
-        sectionHeading: "把「我觉得」重新放进文章里",
-        anchorText: "把「我觉得」放回文章里",
-        rationale: "放在文章后段，用于强调作者判断与全文收束。",
+        sectionHeading: "真正的疲惫，从来不是执行，是判断与收口",
+        anchorText: "真正的疲惫，从来不是执行，是判断与收口",
+        rationale: "对应第四节，在核心结论段落后做视觉停顿。",
+        sectionType: "concept",
+      },
+      {
+        imageId: "inline-05",
+        placementLabel: "图片位 #5",
+        sectionHeading: "做内容的执念，最容易放大这份疲惫",
+        anchorText: "做内容的执念，最容易放大这份疲惫",
+        rationale: "对应第五节，帮助从认知问题过渡到内容创作现场。",
+        sectionType: "transition",
+      },
+      {
+        imageId: "inline-06",
+        placementLabel: "图片位 #6",
+        sectionHeading: "不是少用AI，而是给自己设边界",
+        anchorText: "不是少用AI，而是给自己设边界",
+        rationale: "对应最后一节，在收束段后强调全文结论。",
         sectionType: "transition",
       },
     ],
     preview: {
-      title: "在算法替你思考之前，先把判断力留下来",
+      title: "AI 最磨人的陷阱：拉高了能力，透支了人生",
       accountName: "墨予镜",
-      publishDate: "2026年6月7日",
-      intro: "写给在 AI 工具丛林里有点迷路的内容创作者。这不是一篇关于「怎么用 AI」的文章，是关于「怎么不被 AI 用掉」的笔记。",
+      publishDate: "2026年6月8日",
+      intro: "这段时间，我一直在复盘自己长期重度使用 AI 的真实状态。真正高频、沉浸式用下来，我最先收获的不是高效与松弛，而是一种隐秘极强、慢慢磨人的精神疲惫。",
       blocks: [
-        { type: "heading2", text: "一、信息过载时代，判断力比知识更稀缺" },
-        { type: "paragraph", text: "过去十年我们以为最值钱的是知识，现在发现真正稀缺的是在一堆都对的答案里，挑出最适合此刻的那一个的能力。" },
-        { type: "image", imageId: "inline-01", placementLabel: "图片位 #1", caption: "一 · 信息过载时代，判断力比知识更稀缺" },
-        { type: "blockquote", text: "提示词不是工作，提问才是。创作者的护城河，正在向「问什么」迁移。" },
-        { type: "heading2", text: "二、AI 给的是答案，编辑要的是问题" },
-        { type: "paragraph", text: "AI 可以把表达变得更顺，但也可能把判断磨平。越是高效的时候，越要警惕自己是不是只是在顺着工具走。" },
-        { type: "image", imageId: "inline-02", placementLabel: "图片位 #2", caption: "AI 给的是答案，编辑要的是问题" },
-        { type: "heading2", text: "三、三个练习：把判断力的肌肉养回来" },
-        { type: "ordered-list", items: ["每天 20 分钟不被推荐流喂养", "把「我觉得」放回文章里", "保留一份不发布的写作"] },
-        { type: "image", imageId: "inline-03", placementLabel: "图片位 #3", caption: "三个练习：把判断力的肌肉养回来" },
-        { type: "heading2", text: "四、把「我觉得」重新放进文章里" },
-        { type: "paragraph", text: "AI 写得越像范文，越要敢于不工整。判断力的痕迹，就在那些不够圆润的地方。" },
-        { type: "image", imageId: "inline-04", placementLabel: "图片位 #4", caption: "把「我觉得」重新放进文章里" },
-        { type: "cta", title: "如果这段文字让你停了一下，欢迎留言告诉我", buttonText: "点亮「在看」 · 分享给同样在思考的人" },
+        { type: "heading2", text: "以前很多事，不是不想做，是推进成本太高" },
+        { type: "paragraph", text: "从前很多事，不是没有价值，也不是不值得深耕，只是推进成本太高，高到让人被动止步、自动筛选、理性放弃。" },
+        { type: "image", imageId: "inline-01", placementLabel: "图片位 #1", caption: "以前很多事，不是不想做，是推进成本太高" },
+        { type: "heading2", text: "AI打破了成本壁垒，也打开了无限的可能性" },
+        { type: "paragraph", text: "AI 让想不通的难题、单薄的想法和粗糙的提纲都突然有了落地机会，也让无数从前被高成本掩盖的人生可能性浮了上来。" },
+        { type: "image", imageId: "inline-02", placementLabel: "图片位 #2", caption: "AI打破了成本壁垒，也打开了无限的可能性" },
+        { type: "heading2", text: "可推进的事越多，需要做的判断就越累" },
+        { type: "paragraph", text: "进入 AI 时代之后，大部分工作不再有天然终点。所有方向看起来都合理、都值得深挖，最后最耗人的反而变成了持续判断。" },
+        { type: "image", imageId: "inline-03", placementLabel: "图片位 #3", caption: "可推进的事越多，需要做的判断就越累" },
+        { type: "heading2", text: "真正的疲惫，从来不是执行，是判断与收口" },
+        { type: "paragraph", text: "AI 不会疲惫，但人会。真正消耗人的，不是执行动作本身，而是持续筛选、反复判断、不断取舍、强行收口。" },
+        { type: "image", imageId: "inline-04", placementLabel: "图片位 #4", caption: "真正的疲惫，从来不是执行，是判断与收口" },
+        { type: "heading2", text: "做内容的执念，最容易放大这份疲惫" },
+        { type: "paragraph", text: "很多时候我只是想写一篇松弛的随笔，但一旦打开 AI，各种完美主义顾虑就会把轻表达升级成一项繁重的研究项目。" },
+        { type: "image", imageId: "inline-05", placementLabel: "图片位 #5", caption: "做内容的执念，最容易放大这份疲惫" },
+        { type: "heading2", text: "不是少用AI，而是给自己设边界" },
+        { type: "paragraph", text: "不是所有能做的事都要立刻去做，不是所有能深挖的方向都要纳入主线。AI 拓宽了能力边界，我们更要守住精力边界。" },
+        { type: "image", imageId: "inline-06", placementLabel: "图片位 #6", caption: "不是少用AI，而是给自己设边界" },
+        { type: "cta", title: "如果你也有过这种被 AI 拉高能力、却慢慢透支精力的感受，欢迎留言告诉我", buttonText: "点亮「在看」 · 分享给同样在思考的人" },
       ],
     },
-    editorHtml: "<section data-tool=\"content-matrix\"><p>mock html</p></section>",
+    editorHtml: "<section data-tool=\"content-matrix\"><p>已切换到《AI 最磨人的陷阱：拉高了能力，透支了人生》的 mock 审稿内容。</p></section>",
   },
 };
