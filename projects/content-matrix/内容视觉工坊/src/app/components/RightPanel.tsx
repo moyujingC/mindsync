@@ -130,6 +130,8 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                   <PreviewBlock
                     key={`${block.type}-${index}`}
                     block={block}
+                    prevBlock={index > 0 ? data.draftReview.preview.blocks[index - 1] : undefined}
+                    nextBlock={index < data.draftReview.preview.blocks.length - 1 ? data.draftReview.preview.blocks[index + 1] : undefined}
                     inlineImage={block.type === "image" ? data.wechatInlineImages.find((item) => item.id === block.imageId)?.img : undefined}
                     theme={theme}
                   />
@@ -195,14 +197,29 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
   );
 }
 
-function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock; inlineImage?: string; theme: ReturnType<typeof buildWechatLayoutTheme> }) {
+function PreviewBlock({
+  block,
+  prevBlock,
+  nextBlock,
+  inlineImage,
+  theme,
+}: {
+  block: DraftPreviewBlock;
+  prevBlock?: DraftPreviewBlock;
+  nextBlock?: DraftPreviewBlock;
+  inlineImage?: string;
+  theme: ReturnType<typeof buildWechatLayoutTheme>;
+}) {
+  const metrics = getBlockSpacing(block, prevBlock, nextBlock, theme);
+
   if (block.type === "heading2") {
     return (
       <InheritBlock className="mt-0">
         <div
           className="pl-3.5"
           style={{
-            marginTop: theme.sectionSpacing + 4,
+            marginTop: metrics.marginTop,
+            marginBottom: metrics.marginBottom,
             paddingTop: 2,
             borderLeft: `${Math.max(theme.quoteBorderWidth - 2, 1)}px solid ${theme.placeholderBorder}`,
           }}
@@ -218,7 +235,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
   if (block.type === "blockquote") {
     return (
       <InheritBlock className="mt-0">
-        <blockquote className="px-4 py-3.5 text-[12.5px] leading-[1.9]" style={{ marginTop: theme.quoteSpacing + 2, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
+        <blockquote className="px-4 py-3.5 text-[12.5px] leading-[1.9]" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
           {block.text}
         </blockquote>
       </InheritBlock>
@@ -228,7 +245,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
   if (block.type === "ordered-list") {
     return (
       <InheritBlock className="mt-0">
-        <ol className="space-y-2.5 pl-0.5" style={{ marginTop: theme.paragraphSpacing + 2 }}>
+        <ol className="space-y-2.5 pl-0.5" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom }}>
           {block.items.map((item, i) => (
             <li key={`${item}-${i}`} className="flex gap-2.5">
               <span className="shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600, color: theme.headingColor }}>{i + 1}.</span>
@@ -242,7 +259,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "image") {
     return (
-      <SystemBlock className="mt-0" style={{ marginTop: theme.inlineImageSpacing + 2 }}>
+      <SystemBlock className="mt-0" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom }}>
         <figure>
           {inlineImage ? (
             <div className="overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg, borderRadius: theme.imageRadius }}>
@@ -270,7 +287,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "cta") {
     return (
-      <SystemBlock className="pt-0" style={{ marginTop: theme.sectionSpacing + 10 }}>
+      <SystemBlock className="pt-0" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom }}>
         <div
           className="px-4 py-4.5 text-center text-[11.5px] text-muted-foreground"
           style={{
@@ -293,7 +310,59 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
     );
   }
 
-  return <p style={{ marginTop: theme.paragraphSpacing + 2, lineHeight: 2 }}>{block.text}</p>;
+  return <p style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom, lineHeight: 2 }}>{block.text}</p>;
+}
+
+function getBlockSpacing(
+  block: DraftPreviewBlock,
+  prevBlock: DraftPreviewBlock | undefined,
+  nextBlock: DraftPreviewBlock | undefined,
+  theme: ReturnType<typeof buildWechatLayoutTheme>,
+) {
+  const paragraph = theme.paragraphSpacing + 2;
+  const section = theme.sectionSpacing + 4;
+  const image = theme.inlineImageSpacing + 2;
+  const quote = theme.quoteSpacing + 2;
+
+  if (block.type === "heading2") {
+    return {
+      marginTop: prevBlock?.type === "image" ? section + 2 : section,
+      marginBottom: nextBlock?.type === "paragraph" ? 10 : 14,
+    };
+  }
+
+  if (block.type === "paragraph") {
+    return {
+      marginTop: prevBlock?.type === "heading2" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
+      marginBottom: nextBlock?.type === "heading2" ? 4 : nextBlock?.type === "image" ? 8 : 0,
+    };
+  }
+
+  if (block.type === "blockquote") {
+    return {
+      marginTop: prevBlock?.type === "paragraph" ? quote + 2 : quote,
+      marginBottom: nextBlock?.type === "heading2" ? 8 : 2,
+    };
+  }
+
+  if (block.type === "ordered-list") {
+    return {
+      marginTop: prevBlock?.type === "heading2" ? 6 : paragraph,
+      marginBottom: nextBlock?.type === "image" ? 10 : 4,
+    };
+  }
+
+  if (block.type === "image") {
+    return {
+      marginTop: prevBlock?.type === "paragraph" ? image + 2 : image,
+      marginBottom: nextBlock?.type === "paragraph" ? 12 : 6,
+    };
+  }
+
+  return {
+    marginTop: prevBlock ? section + 10 : section + 6,
+    marginBottom: 0,
+  };
 }
 
 const stageLabelMap: Record<GenerationStageStatus, string> = {

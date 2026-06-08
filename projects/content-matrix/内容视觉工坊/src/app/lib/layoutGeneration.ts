@@ -290,28 +290,33 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
     );
   }
 
-  for (const block of preview.blocks) {
+  for (let index = 0; index < preview.blocks.length; index += 1) {
+    const block = preview.blocks[index];
+    const prevBlock = index > 0 ? preview.blocks[index - 1] : undefined;
+    const nextBlock = index < preview.blocks.length - 1 ? preview.blocks[index + 1] : undefined;
+    const metrics = getHtmlBlockSpacing(block, prevBlock, nextBlock, theme);
+
     if (block.type === "heading2") {
       htmlParts.push(
-        `<section style="margin:${theme.sectionSpacing + 4}px 0 14px;padding:2px 0 0 12px;border-left:${Math.max(theme.quoteBorderWidth - 2, 1)}px solid ${theme.placeholderBorder};"><h2 style="margin:0;font-size:${theme.headingFontSize + 1}px;line-height:1.6;color:${theme.headingColor};">${escapeHtml(block.text)}</h2></section>`,
+        `<section style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:2px 0 0 12px;border-left:${Math.max(theme.quoteBorderWidth - 2, 1)}px solid ${theme.placeholderBorder};"><h2 style="margin:0;font-size:${theme.headingFontSize + 1}px;line-height:1.6;color:${theme.headingColor};">${escapeHtml(block.text)}</h2></section>`,
       );
       continue;
     }
 
     if (block.type === "paragraph") {
-      htmlParts.push(`<p style="margin:${theme.paragraphSpacing + 2}px 0 0;color:${theme.bodyColor};line-height:2;">${escapeHtml(block.text)}</p>`);
+      htmlParts.push(`<p style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;color:${theme.bodyColor};line-height:2;">${escapeHtml(block.text)}</p>`);
       continue;
     }
 
     if (block.type === "blockquote") {
       htmlParts.push(
-        `<blockquote style="margin:${theme.quoteSpacing + 2}px 0 0;padding:16px 16px;border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};border-radius:${theme.quoteRadius}px;background:${theme.quoteBg};color:${theme.bodyColor};line-height:1.9;">${escapeHtml(block.text)}</blockquote>`,
+        `<blockquote style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:16px 16px;border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};border-radius:${theme.quoteRadius}px;background:${theme.quoteBg};color:${theme.bodyColor};line-height:1.9;">${escapeHtml(block.text)}</blockquote>`,
       );
       continue;
     }
 
     if (block.type === "ordered-list") {
-      htmlParts.push(`<ol style="margin:${theme.paragraphSpacing + 2}px 0 0;padding-left:22px;">`);
+      htmlParts.push(`<ol style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding-left:22px;">`);
       for (const item of block.items) {
         htmlParts.push(`<li style="margin:0 0 10px;line-height:1.95;">${escapeHtml(item)}</li>`);
       }
@@ -323,11 +328,11 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
       const inlineImage = workspace.wechatInlineImages.find((item) => item.id === block.imageId);
       if (inlineImage?.img) {
         htmlParts.push(
-          `<figure style="margin:${theme.inlineImageSpacing + 2}px 0 0;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:12px;"><p style="margin:0;color:${theme.mutedColor};font-size:12px;line-height:1.9;">${escapeHtml(block.caption)}</p></figcaption></figure>`,
+          `<figure style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:12px;"><p style="margin:0;color:${theme.mutedColor};font-size:12px;line-height:1.9;">${escapeHtml(block.caption)}</p></figcaption></figure>`,
         );
       } else {
         htmlParts.push(
-          `<p style="margin:${theme.inlineImageSpacing + 2}px 0 0;padding:12px 14px;background:${theme.placeholderBg};border:1px dashed ${theme.placeholderBorder};border-radius:${theme.imageRadius}px;color:${theme.mutedColor};">[这张正文配图还未生成：${escapeHtml(block.caption)}]</p>`,
+          `<p style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:12px 14px;background:${theme.placeholderBg};border:1px dashed ${theme.placeholderBorder};border-radius:${theme.imageRadius}px;color:${theme.mutedColor};">[这张正文配图还未生成：${escapeHtml(block.caption)}]</p>`,
         );
       }
       continue;
@@ -335,13 +340,65 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
     if (block.type === "cta") {
       htmlParts.push(
-        `<section style="margin:${theme.sectionSpacing + 10}px 0 8px;padding:18px 14px;background:${theme.placeholderBg};border-top:1px solid ${theme.placeholderBorder};border-radius:${Math.max(theme.quoteRadius, 10)}px;text-align:center;"><p style="margin:0 0 8px;color:${theme.mutedColor};font-size:12px;">最后想说</p><p style="margin:0 0 12px;color:${theme.headingColor};line-height:1.9;">${escapeHtml(block.title)}</p><p style="margin:0;color:${theme.mutedColor};font-size:13px;line-height:1.8;">${escapeHtml(block.buttonText)}</p></section>`,
+        `<section style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:18px 14px;background:${theme.placeholderBg};border-top:1px solid ${theme.placeholderBorder};border-radius:${Math.max(theme.quoteRadius, 10)}px;text-align:center;"><p style="margin:0 0 8px;color:${theme.mutedColor};font-size:12px;">最后想说</p><p style="margin:0 0 12px;color:${theme.headingColor};line-height:1.9;">${escapeHtml(block.title)}</p><p style="margin:0;color:${theme.mutedColor};font-size:13px;line-height:1.8;">${escapeHtml(block.buttonText)}</p></section>`,
       );
     }
   }
 
   htmlParts.push(`</section>`);
   return htmlParts.join("");
+}
+
+function getHtmlBlockSpacing(
+  block: DraftPreviewBlock,
+  prevBlock: DraftPreviewBlock | undefined,
+  nextBlock: DraftPreviewBlock | undefined,
+  theme: ReturnType<typeof buildWechatLayoutTheme>,
+) {
+  const paragraph = theme.paragraphSpacing + 2;
+  const section = theme.sectionSpacing + 4;
+  const image = theme.inlineImageSpacing + 2;
+  const quote = theme.quoteSpacing + 2;
+
+  if (block.type === "heading2") {
+    return {
+      marginTop: prevBlock?.type === "image" ? section + 2 : section,
+      marginBottom: nextBlock?.type === "paragraph" ? 10 : 14,
+    };
+  }
+
+  if (block.type === "paragraph") {
+    return {
+      marginTop: prevBlock?.type === "heading2" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
+      marginBottom: nextBlock?.type === "heading2" ? 4 : nextBlock?.type === "image" ? 8 : 0,
+    };
+  }
+
+  if (block.type === "blockquote") {
+    return {
+      marginTop: prevBlock?.type === "paragraph" ? quote + 2 : quote,
+      marginBottom: nextBlock?.type === "heading2" ? 8 : 2,
+    };
+  }
+
+  if (block.type === "ordered-list") {
+    return {
+      marginTop: prevBlock?.type === "heading2" ? 6 : paragraph,
+      marginBottom: nextBlock?.type === "image" ? 10 : 4,
+    };
+  }
+
+  if (block.type === "image") {
+    return {
+      marginTop: prevBlock?.type === "paragraph" ? image + 2 : image,
+      marginBottom: nextBlock?.type === "paragraph" ? 12 : 6,
+    };
+  }
+
+  return {
+    marginTop: prevBlock ? section + 10 : section + 6,
+    marginBottom: 0,
+  };
 }
 
 export function buildDraftReview(workspace: WorkspaceData): DraftReview {
