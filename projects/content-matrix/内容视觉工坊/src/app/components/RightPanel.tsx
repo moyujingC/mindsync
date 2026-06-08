@@ -90,12 +90,6 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
         </div>
 
         <div className="px-5 pb-3">
-          {/* legend — once, not repeated per block */}
-          <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-2 px-0.5">
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-px" style={{ background: theme.placeholderBorder }}></span>{isTextMode ? "文本输入" : "来自 Markdown"}</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2 h-px bg-primary/55"></span>{isTextMode ? "仅生成图片" : "排版整理"}</span>
-          </div>
-
           <div className="rounded-[14px] p-2.5 border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]" style={{ background: theme.shellBg }}>
             <div className="rounded-[10px] shadow-sm border border-border/70 overflow-hidden" style={{ background: theme.articleBg }}>
               {/* Header */}
@@ -247,7 +241,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "image") {
     return (
-      <SystemBlock label="正文配图" className="mt-0" style={{ marginTop: theme.inlineImageSpacing }}>
+      <SystemBlock className="mt-0" style={{ marginTop: theme.inlineImageSpacing }}>
         <figure>
           {inlineImage ? (
             <div className="overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg, borderRadius: theme.imageRadius }}>
@@ -275,7 +269,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "cta") {
     return (
-      <SystemBlock label="结尾 CTA · 系统生成" className="pt-0" style={{ marginTop: theme.sectionSpacing + 6 }}>
+      <SystemBlock className="pt-0" style={{ marginTop: theme.sectionSpacing + 6 }}>
         <div
           className="px-4 py-4 text-center text-[11.5px] text-muted-foreground"
           style={{
@@ -323,19 +317,16 @@ function ReviewCheckCard({ check }: { check: ReviewCheck }) {
 function InheritBlock({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`relative ${className}`}>
-      <span className="absolute -left-3 top-0 bottom-0 w-px bg-border/80" aria-hidden></span>
+      <span className="absolute -left-2.5 top-1 bottom-1 w-px bg-border/45" aria-hidden></span>
       {children}
     </div>
   );
 }
 
-function SystemBlock({ children, label, className = "", style }: { children: React.ReactNode; label: string; className?: string; style?: React.CSSProperties }) {
+function SystemBlock({ children, className = "", style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   return (
     <div className={`relative group ${className}`} style={style}>
-      <span className="absolute -left-3 top-0 bottom-0 w-px bg-primary/55" aria-hidden></span>
-      <span className="absolute -top-2 right-0 text-[9.5px] text-primary/85 bg-white px-1.5 py-[1px] rounded-sm border border-primary/20 whitespace-nowrap">
-        {label}
-      </span>
+      <span className="absolute -left-2.5 top-1 bottom-1 w-px bg-border/35" aria-hidden></span>
       {children}
     </div>
   );
