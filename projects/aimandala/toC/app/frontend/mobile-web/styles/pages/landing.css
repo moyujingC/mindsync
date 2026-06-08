@@ -494,7 +494,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: rgba(232, 220, 200, 0.62);
+  color: var(--am-landing-compare-toggle);
   font-size: 14px;
   font-weight: 700;
   box-shadow: none;
@@ -508,7 +508,7 @@
 
 .am-compare-toggle i {
   font-style: normal;
-  color: rgba(232, 220, 200, 0.6);
+  color: var(--am-landing-compare-toggle-icon);
 }
 
 .am-compare-toggle.is-open i {

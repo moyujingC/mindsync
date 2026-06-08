@@ -615,6 +615,8 @@
   --am-landing-pricing-badge-lite-text: #c1cbbd;
   --am-landing-pricing-badge-pro-border: rgb(var(--am-rgb-gold-300) / 0.28);
   --am-landing-pricing-badge-pro-bg: rgb(var(--am-rgb-gold-300) / 0.14);
+  --am-landing-compare-toggle: rgb(var(--am-rgb-sand-300) / 0.62);
+  --am-landing-compare-toggle-icon: rgb(var(--am-rgb-sand-300) / 0.6);
   --am-landing-compare-border: rgb(var(--am-rgb-gold-300) / 0.18);
   --am-landing-compare-bg: rgba(26, 40, 68, 0.32);
   --am-landing-compare-header-border: rgb(var(--am-rgb-gold-300) / 0.1);
@@ -1211,10 +1213,14 @@
   --am-component-history-pill-bg: rgba(45, 57, 88, 0.42);
   --am-component-history-pill-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   --am-component-history-pill-text: #f0e3cf;
+  --am-component-dark-chip-border: rgb(var(--am-rgb-gold-300) / 0.2);
+  --am-component-dark-chip-bg: rgba(26, 40, 68, 0.5);
+  --am-component-dark-chip-text: rgb(var(--am-rgb-sand-300) / 0.85);
   --am-component-icon-button-border: rgb(var(--am-rgb-gold-300) / 0.16);
   --am-component-icon-button-bg: rgba(26, 40, 68, 0.38);
   --am-component-icon-button-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   --am-component-icon-button-text: rgb(var(--am-rgb-sand-300) / 0.88);
+  --am-component-icon-button-text-muted: rgb(var(--am-rgb-sand-300) / 0.86);
   --am-component-icon-muted: rgba(113, 128, 150, 0.5);
   --am-component-dev-pill-border: rgb(var(--am-rgb-gold-300) / 0.18);
   --am-component-dev-pill-bg: rgba(20, 30, 56, 0.6);

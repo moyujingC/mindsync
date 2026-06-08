@@ -597,9 +597,9 @@
 .am-history-pill,
 .am-icon-button {
   appearance: none;
-  border: 1px solid rgb(var(--am-rgb-gold-300) / 0.2);
-  background: rgba(26, 40, 68, 0.5);
-  color: rgb(var(--am-rgb-sand-300) / 0.85);
+  border: 1px solid var(--am-component-dark-chip-border);
+  background: var(--am-component-dark-chip-bg);
+  color: var(--am-component-dark-chip-text);
   font-family: var(--am-font-body);
 }
 
@@ -653,7 +653,7 @@
 }
 
 .am-icon-tone-on-dark-muted {
-  color: rgb(var(--am-rgb-sand-300) / 0.86);
+  color: var(--am-component-icon-button-text-muted);
 }
 
 .am-icon-tone-success {
