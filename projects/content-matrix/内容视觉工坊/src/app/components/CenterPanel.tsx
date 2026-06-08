@@ -17,6 +17,10 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
   const isReplanning = data.workflowStages.find((stage) => stage.key === "contentAnalysis")?.status === "processing";
   const cardStyleName = data.styleAssets[data.styleSelections.knowledgeCards]?.name ?? "默认风格";
   const inlineStyleName = data.styleAssets[data.styleSelections.wechatInlineImages]?.name ?? "默认风格";
+  const downloadableCount =
+    data.knowledgeCards.filter((item) => item.img && item.state !== "failed").length +
+    data.wechatInlineImages.filter((item) => item.img && item.state !== "failed").length +
+    data.covers.filter((item) => item.img && item.state !== "failed").length;
 
   return (
     <main className="flex-1 min-w-0 bg-background flex flex-col overflow-hidden xl:min-w-[640px]">
@@ -127,14 +131,24 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
               <h3 className="text-[17px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>图片生成结果</h3>
               <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 张知识卡片 + {data.wechatInlineImages.length} 张正文配图 + {data.generation.coversCount} 张封面</span>
             </div>
-            <button
-              onClick={() => onRegenerateAllCardImages()}
-              disabled={isBatchGenerating}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11.5px] px-2 py-1 rounded hover:bg-secondary/50 disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
-            >
-              <RefreshCw className={`w-3 h-3 ${isBatchGenerating ? "animate-spin" : ""}`} />
-              {isBatchGenerating ? "批量生成中" : "全部重生成"}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => void downloadAllAssets(data)}
+                disabled={downloadableCount === 0}
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11.5px] px-2 py-1 rounded hover:bg-secondary/50 disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
+              >
+                <Download className="w-3 h-3" />
+                下载全部图片
+              </button>
+              <button
+                onClick={() => onRegenerateAllCardImages()}
+                disabled={isBatchGenerating}
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11.5px] px-2 py-1 rounded hover:bg-secondary/50 disabled:opacity-50 disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
+              >
+                <RefreshCw className={`w-3 h-3 ${isBatchGenerating ? "animate-spin" : ""}`} />
+                {isBatchGenerating ? "批量生成中" : "全部重生成"}
+              </button>
+            </div>
           </div>
 
           {/* Knowledge cards */}
@@ -183,6 +197,10 @@ function shortStyleName(name: string) {
   return parts[parts.length - 1] || name;
 }
 
+function sanitizeFilename(input: string) {
+  return input.replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, " ").trim();
+}
+
 async function downloadImageAsset(imageUrl: string, filename: string) {
   if (typeof window === "undefined") return;
 
@@ -212,6 +230,34 @@ async function downloadImageAsset(imageUrl: string, filename: string) {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(objectUrl);
+}
+
+async function downloadAllAssets(data: WorkspaceData) {
+  const tasks: Array<{ url: string; filename: string }> = [
+    ...data.knowledgeCards
+      .filter((item) => item.img && item.state !== "failed")
+      .map((item) => ({
+        url: item.img,
+        filename: sanitizeFilename(`知识卡片-${item.n}-${item.title}`),
+      })),
+    ...data.wechatInlineImages
+      .filter((item) => item.img && item.state !== "failed")
+      .map((item, index) => ({
+        url: item.img,
+        filename: sanitizeFilename(`正文配图-${String(index + 1).padStart(2, "0")}-${item.sectionTheme}`),
+      })),
+    ...data.covers
+      .filter((item) => item.img && item.state !== "failed")
+      .map((item) => ({
+        url: item.img,
+        filename: sanitizeFilename(`${item.label}-${data.article.title}`),
+      })),
+  ];
+
+  for (const task of tasks) {
+    await downloadImageAsset(task.url, task.filename);
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+  }
 }
 
 function getGenerationModeLabel(mode?: "reference-edit" | "prompt-only") {
@@ -276,6 +322,13 @@ function InlineImageCard({ image, onRegenerate }: { image: WechatInlineImageAsse
       actions={
         <>
           <ToolBtn title="重生成" onClick={processing ? undefined : () => onRegenerate(image.id)} disabled={processing}><RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} /></ToolBtn>
+          <ToolBtn
+            title="下载图片"
+            onClick={image.img && !failed ? () => void downloadImageAsset(image.img, sanitizeFilename(`正文配图-${sectionIndex}-${image.sectionTheme}`)) : undefined}
+            disabled={!image.img || failed || processing}
+          >
+            <Download className="w-3.5 h-3.5" />
+          </ToolBtn>
           <ToolBtn title="替换图片" disabled><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="大图预览"><Maximize2 className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
@@ -435,6 +488,13 @@ function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate
       actions={
         <>
           <ToolBtn title="重生成" onClick={processing ? undefined : () => onRegenerate(c.n)} disabled={processing}><RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} /></ToolBtn>
+          <ToolBtn
+            title="下载图片"
+            onClick={c.img && !failed ? () => void downloadImageAsset(c.img, sanitizeFilename(`知识卡片-${c.n}-${c.title}`)) : undefined}
+            disabled={!c.img || failed || processing}
+          >
+            <Download className="w-3.5 h-3.5" />
+          </ToolBtn>
           <ToolBtn title="替换图片"><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="大图预览"><Maximize2 className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
@@ -522,7 +582,7 @@ function CoverCard({
           </ToolBtn>
           <ToolBtn
             title="下载图片"
-            onClick={cover.img && !failed ? () => void downloadImageAsset(cover.img, `${cover.label}-${articleTitle}`) : undefined}
+            onClick={cover.img && !failed ? () => void downloadImageAsset(cover.img, sanitizeFilename(`${cover.label}-${articleTitle}`)) : undefined}
             disabled={!cover.img || failed || processing}
           >
             <Download className="w-3.5 h-3.5" />
