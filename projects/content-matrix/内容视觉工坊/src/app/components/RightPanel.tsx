@@ -4,6 +4,34 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import type { DraftPreviewBlock, GenerationStageStatus, InputMode, ReviewCheck, WorkspaceData } from "../types";
 import { buildWechatLayoutTheme } from "../lib/layoutTheme";
 
+function renderInlinePreview(text: string, theme: ReturnType<typeof buildWechatLayoutTheme>) {
+  const html = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\*\*([^*]+)\*\*/g, `<strong style="font-weight:${theme.strongWeight};color:${theme.strongColor};">$1</strong>`)
+    .replace(/`([^`]+)`/g, `<code>$1</code>`)
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+  return { __html: html };
+}
+
+function renderListMarker(theme: ReturnType<typeof buildWechatLayoutTheme>) {
+  if (theme.unorderedListMarker === "square") return "\u25a0";
+  if (theme.unorderedListMarker === "solid-circle") return "\u2022";
+  return "\u25cb";
+}
+
+function renderOrderedMarker(index: number, theme: ReturnType<typeof buildWechatLayoutTheme>) {
+  if (theme.orderedListMarkerType === "latin-lower") {
+    return `${String.fromCharCode(97 + (index % 26))}.`;
+  }
+  if (theme.orderedListMarkerType === "latin-upper") {
+    return `${String.fromCharCode(65 + (index % 26))}.`;
+  }
+  return `${index + 1}.`;
+}
+
 interface RightPanelProps {
   data: WorkspaceData;
   inputMode: InputMode;
@@ -94,7 +122,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
             <div className="rounded-[10px] shadow-sm border border-border/70 overflow-hidden" style={{ background: theme.articleBg }}>
               {/* Header */}
               <div className="px-6 pt-6 pb-4 border-b border-border/40">
-                <h1 className="leading-[1.5]" style={{ fontFamily: "var(--font-serif)", fontSize: "20px", fontWeight: 600, color: theme.titleColor }}>
+                <h1 className="leading-[1.5]" style={{ fontFamily: "var(--font-serif)", fontSize: `${theme.titleFontSize}px`, fontWeight: 600, color: theme.titleColor }}>
                   {data.draftReview.preview.title}
                 </h1>
                 <div className="mt-2.5 flex items-center gap-2 text-[10.5px] text-muted-foreground">
@@ -107,7 +135,17 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
               </div>
 
               {/* Body */}
-              <article className="px-6 py-6 text-[13px] leading-[1.95]" style={{ fontFamily: "var(--font-sans-cn)", color: theme.bodyColor }}>
+              <article
+                className="py-6"
+                style={{
+                  paddingLeft: `${theme.articlePaddingX}px`,
+                  paddingRight: `${theme.articlePaddingX}px`,
+                  fontFamily: "var(--font-sans-cn)",
+                  fontSize: `${theme.bodyFontSize}px`,
+                  lineHeight: theme.bodyLineHeight,
+                  color: theme.bodyColor,
+                }}
+              >
                 {data.draftReview.preview.intro ? (
                   <InheritBlock>
                     <div
@@ -119,7 +157,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                         borderRadius: Math.max(theme.quoteRadius - 2, 6),
                       }}
                     >
-                      <p className="italic text-[12.5px] leading-[2]" style={{ color: theme.bodyColor }}>
+                      <p className="italic" style={{ fontSize: `${Math.max(theme.bodyFontSize - 0.5, 15)}px`, lineHeight: theme.bodyLineHeight, color: theme.bodyColor }}>
                         {data.draftReview.preview.intro}
                       </p>
                     </div>
@@ -129,6 +167,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                 {data.draftReview.preview.blocks.map((block, index) => (
                   <PreviewBlock
                     key={`${block.type}-${index}`}
+                    headingSequence={getHeadingSequence(data.draftReview.preview.blocks, index)}
                     block={block}
                     prevBlock={index > 0 ? data.draftReview.preview.blocks[index - 1] : undefined}
                     nextBlock={index < data.draftReview.preview.blocks.length - 1 ? data.draftReview.preview.blocks[index + 1] : undefined}
@@ -199,12 +238,14 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
 
 function PreviewBlock({
   block,
+  headingSequence,
   prevBlock,
   nextBlock,
   inlineImage,
   theme,
 }: {
   block: DraftPreviewBlock;
+  headingSequence: number;
   prevBlock?: DraftPreviewBlock;
   nextBlock?: DraftPreviewBlock;
   inlineImage?: string;
@@ -214,19 +255,65 @@ function PreviewBlock({
 
   if (block.type === "heading2") {
     return (
-      <InheritBlock className="mt-0">
+      <SystemBlock className="mt-0">
         <div
-          className="pl-3.5"
           style={{
             marginTop: metrics.marginTop,
             marginBottom: metrics.marginBottom,
-            paddingTop: 2,
-            borderLeft: `${Math.max(theme.quoteBorderWidth - 2, 1)}px solid ${theme.placeholderBorder}`,
+            paddingLeft: `${theme.headingPaddingLeft}px`,
+            borderLeft: `${theme.headingBorderLeftWidth}px solid ${theme.headingColor}`,
           }}
         >
-          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 4.5, 17)}px`, fontWeight: 600, lineHeight: 1.6, color: theme.headingColor }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-sans-cn)",
+              fontSize: `${theme.headingFontSize}px`,
+              fontWeight: 600,
+              lineHeight: theme.headingLineHeight,
+              letterSpacing: `${theme.headingLetterSpacing}em`,
+              color: theme.headingColor,
+            }}
+          >
             {block.text}
           </h2>
+        </div>
+      </SystemBlock>
+    );
+  }
+
+  if (block.type === "heading3") {
+    if (theme.variant === "blueMistCalm") {
+      return (
+        <SystemBlock className="mt-0" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom }}>
+          <div
+            style={{
+              paddingLeft: `${theme.subheadingPaddingLeft}px`,
+              borderLeft: `${theme.subheadingBorderLeftWidth}px solid ${theme.headingColor}`,
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: "var(--font-sans-cn)",
+                fontSize: `${theme.subheadingFontSize}px`,
+                fontWeight: 600,
+                lineHeight: theme.subheadingLineHeight,
+                letterSpacing: `${theme.subheadingLetterSpacing}em`,
+                color: theme.headingColor,
+              }}
+            >
+              {block.text}
+            </h3>
+          </div>
+        </SystemBlock>
+      );
+    }
+
+    return (
+      <InheritBlock className="mt-0">
+        <div className="pl-3" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom, borderLeft: `2px solid ${theme.placeholderBorder}` }}>
+          <h3 style={{ fontFamily: "var(--font-sans-cn)", fontSize: `${Math.max(theme.headingFontSize - 3, 15)}px`, fontWeight: 600, lineHeight: 1.6, color: theme.headingColor }}>
+            {block.text}
+          </h3>
         </div>
       </InheritBlock>
     );
@@ -234,25 +321,109 @@ function PreviewBlock({
 
   if (block.type === "blockquote") {
     return (
-      <InheritBlock className="mt-0">
-        <blockquote className="px-4 py-3.5 text-[12.5px] leading-[1.9]" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
-          {block.text}
+      <SystemBlock className="mt-0">
+        <blockquote
+          style={{
+            marginTop: metrics.marginTop,
+            marginBottom: metrics.marginBottom,
+            paddingTop: `${theme.quotePaddingTop}px`,
+            paddingRight: `${theme.quotePaddingRight}px`,
+            paddingBottom: `${theme.quotePaddingBottom}px`,
+            paddingLeft: `${theme.quotePaddingLeft}px`,
+            fontSize: `${theme.quoteFontSize}px`,
+            lineHeight: theme.quoteLineHeight,
+            letterSpacing: `${theme.quoteLetterSpacing}em`,
+            textAlign: theme.quoteAlign,
+            fontWeight: theme.quoteWeight,
+            background: theme.quoteBg,
+            borderLeft: `${theme.quoteBorderWidth}px solid ${theme.quoteBorder}`,
+            borderRadius: theme.quoteRadius,
+            color: theme.quoteTextColor,
+          }}
+        >
+          <span dangerouslySetInnerHTML={renderInlinePreview(block.text, theme)} />
         </blockquote>
-      </InheritBlock>
+      </SystemBlock>
     );
   }
 
   if (block.type === "ordered-list") {
     return (
       <InheritBlock className="mt-0">
-        <ol className="space-y-2.5 pl-0.5" style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom }}>
+        <ol
+          className="list-none"
+          style={{
+            marginTop: metrics.marginTop,
+            marginBottom: metrics.marginBottom,
+            paddingTop: `${theme.orderedListPaddingTop}px`,
+            paddingBottom: `${theme.orderedListPaddingBottom}px`,
+          }}
+        >
           {block.items.map((item, i) => (
-            <li key={`${item}-${i}`} className="flex gap-2.5">
-              <span className="shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600, color: theme.headingColor }}>{i + 1}.</span>
-              <div>{item}</div>
+            <li
+              key={`${item}-${i}`}
+              className="flex"
+              style={{
+                fontSize: `${theme.orderedListFontSize}px`,
+                lineHeight: theme.orderedListLineHeight,
+                letterSpacing: `${theme.orderedListLetterSpacing}em`,
+                textAlign: theme.orderedListAlign,
+              }}
+            >
+              <span
+                className="shrink-0"
+                style={{
+                  width: `${theme.orderedListIndentLeft}px`,
+                  color: theme.orderedListMarkerColor,
+                  fontWeight: theme.orderedListMarkerWeight,
+                }}
+              >
+                {renderOrderedMarker(i, theme)}
+              </span>
+              <span dangerouslySetInnerHTML={renderInlinePreview(item, theme)} />
             </li>
           ))}
         </ol>
+      </InheritBlock>
+    );
+  }
+
+  if (block.type === "unordered-list") {
+    return (
+      <InheritBlock className="mt-0">
+        <ul
+          className="list-none"
+          style={{
+            marginTop: metrics.marginTop,
+            marginBottom: metrics.marginBottom,
+            paddingTop: `${theme.unorderedListPaddingTop}px`,
+            paddingBottom: `${theme.unorderedListPaddingBottom}px`,
+          }}
+        >
+          {block.items.map((item, i) => (
+            <li
+              key={`${item}-${i}`}
+              className="flex"
+              style={{
+                fontSize: `${theme.unorderedListFontSize}px`,
+                lineHeight: theme.unorderedListLineHeight,
+                letterSpacing: `${theme.unorderedListLetterSpacing}em`,
+                textAlign: theme.unorderedListAlign,
+              }}
+            >
+              <span
+                className="shrink-0"
+                style={{
+                  width: `${theme.unorderedListIndentLeft}px`,
+                  color: theme.unorderedListMarkerColor,
+                }}
+              >
+                {renderListMarker(theme)}
+              </span>
+              <span dangerouslySetInnerHTML={renderInlinePreview(item, theme)} />
+            </li>
+          ))}
+        </ul>
       </InheritBlock>
     );
   }
@@ -310,7 +481,21 @@ function PreviewBlock({
     );
   }
 
-  return <p style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom, lineHeight: 2 }}>{block.text}</p>;
+  return (
+    <p
+      style={{
+        marginTop: metrics.marginTop,
+        marginBottom: metrics.marginBottom,
+        paddingTop: `${theme.bodyPaddingTop}px`,
+        paddingBottom: `${theme.bodyPaddingBottom}px`,
+        lineHeight: theme.bodyLineHeight,
+        letterSpacing: `${theme.bodyLetterSpacing}em`,
+        textAlign: theme.bodyAlign,
+      }}
+    >
+      <span dangerouslySetInnerHTML={renderInlinePreview(block.text, theme)} />
+    </p>
+  );
 }
 
 function getBlockSpacing(
@@ -326,26 +511,40 @@ function getBlockSpacing(
 
   if (block.type === "heading2") {
     return {
-      marginTop: prevBlock?.type === "image" ? section + 2 : section,
-      marginBottom: nextBlock?.type === "paragraph" ? 10 : 14,
+      marginTop: theme.headingMarginTop,
+      marginBottom: theme.headingMarginBottom,
+    };
+  }
+
+  if (block.type === "heading3") {
+    return {
+      marginTop: theme.subheadingMarginTop,
+      marginBottom: theme.subheadingMarginBottom,
     };
   }
 
   if (block.type === "paragraph") {
     return {
-      marginTop: prevBlock?.type === "heading2" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
-      marginBottom: nextBlock?.type === "heading2" ? 4 : nextBlock?.type === "image" ? 8 : 0,
+      marginTop: prevBlock?.type === "heading2" || prevBlock?.type === "heading3" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
+      marginBottom: nextBlock?.type === "heading2" ? 8 : nextBlock?.type === "heading3" ? 6 : nextBlock?.type === "image" ? 8 : 0,
     };
   }
 
   if (block.type === "blockquote") {
     return {
-      marginTop: prevBlock?.type === "paragraph" ? quote + 2 : quote,
-      marginBottom: nextBlock?.type === "heading2" ? 8 : 2,
+      marginTop: theme.quoteMarginTop,
+      marginBottom: theme.quoteMarginBottom,
     };
   }
 
   if (block.type === "ordered-list") {
+    return {
+      marginTop: prevBlock?.type === "heading2" ? 6 : paragraph,
+      marginBottom: nextBlock?.type === "image" ? 10 : 4,
+    };
+  }
+
+  if (block.type === "unordered-list") {
     return {
       marginTop: prevBlock?.type === "heading2" ? 6 : paragraph,
       marginBottom: nextBlock?.type === "image" ? 10 : 4,
@@ -363,6 +562,10 @@ function getBlockSpacing(
     marginTop: prevBlock ? section + 10 : section + 6,
     marginBottom: 0,
   };
+}
+
+function getHeadingSequence(blocks: DraftPreviewBlock[], index: number) {
+  return blocks.slice(0, index + 1).filter((block) => block.type === "heading2").length;
 }
 
 const stageLabelMap: Record<GenerationStageStatus, string> = {

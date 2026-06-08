@@ -31,6 +31,30 @@ function cleanInlineMarkdown(text: string) {
     .trim();
 }
 
+function renderInlineMarkdown(text: string) {
+  return escapeHtml(text)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+}
+
+function renderOrderedMarker(index: number, theme: ReturnType<typeof buildWechatLayoutTheme>) {
+  if (theme.orderedListMarkerType === "latin-lower") {
+    return `${String.fromCharCode(97 + (index % 26))}.`;
+  }
+  if (theme.orderedListMarkerType === "latin-upper") {
+    return `${String.fromCharCode(65 + (index % 26))}.`;
+  }
+  return `${index + 1}.`;
+}
+
+function renderUnorderedMarker(theme: ReturnType<typeof buildWechatLayoutTheme>) {
+  if (theme.unorderedListMarker === "square") return "■";
+  if (theme.unorderedListMarker === "solid-circle") return "•";
+  return "○";
+}
+
 function formatPublishDate() {
   return new Intl.DateTimeFormat("zh-CN", {
     year: "numeric",
@@ -171,6 +195,15 @@ function parseMarkdownSections(rawText: string) {
   for (const paragraph of bodyParagraphs) {
     if (paragraph.startsWith("# ")) continue;
 
+    if (paragraph.startsWith("### ")) {
+      if (!currentSection) {
+        currentSection = { blocks: [] };
+        sections.push(currentSection);
+      }
+      currentSection.blocks.push(paragraph);
+      continue;
+    }
+
     if (paragraph.startsWith("## ")) {
       currentSection = {
         heading: cleanInlineMarkdown(paragraph.replace(/^##\s+/, "")),
@@ -192,6 +225,10 @@ function parseMarkdownSections(rawText: string) {
 }
 
 function buildBodyBlock(paragraph: string): DraftPreviewBlock | null {
+  if (paragraph.startsWith("### ")) {
+    return { type: "heading3", text: cleanInlineMarkdown(paragraph.replace(/^###\s+/, "")) };
+  }
+
   if (paragraph.startsWith(">")) {
     return { type: "blockquote", text: cleanInlineMarkdown(paragraph.replace(/^>\s?/gm, " ")) };
   }
@@ -204,7 +241,16 @@ function buildBodyBlock(paragraph: string): DraftPreviewBlock | null {
     return { type: "ordered-list", items };
   }
 
-  const text = cleanInlineMarkdown(paragraph);
+  if (/^([-*+]\s.+\n?)+$/m.test(paragraph)) {
+    const items = paragraph
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.replace(/^[-*+]\s*/, "").trim());
+    return { type: "unordered-list", items };
+  }
+
+  const text = paragraph.trim();
   return text ? { type: "paragraph", text } : null;
 }
 
@@ -275,7 +321,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
   const theme = buildWechatLayoutTheme(layoutTheme);
   const wechatCover = workspace.covers.find((item) => item.key === "wechatCover" && item.img);
   const htmlParts: string[] = [
-    `<section data-tool="content-matrix" style="font-size:16px;line-height:1.8;color:${theme.bodyColor};background:${theme.articleBg};">`,
+    `<section data-tool="content-matrix" style="font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};color:${theme.bodyColor};background:${theme.articleBg};padding:0 ${theme.articlePaddingX}px;">`,
   ];
 
   if (wechatCover?.img) {
@@ -298,29 +344,46 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
     if (block.type === "heading2") {
       htmlParts.push(
-        `<section style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:2px 0 0 12px;border-left:${Math.max(theme.quoteBorderWidth - 2, 1)}px solid ${theme.placeholderBorder};"><h2 style="margin:0;font-size:${theme.headingFontSize + 1}px;line-height:1.6;color:${theme.headingColor};">${escapeHtml(block.text)}</h2></section>`,
+        `<section style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding-left:${theme.headingPaddingLeft}px;border-left:${theme.headingBorderLeftWidth}px solid ${theme.headingColor};"><h2 style="margin:0;font-size:${theme.headingFontSize}px;line-height:${theme.headingLineHeight};letter-spacing:${theme.headingLetterSpacing}em;color:${theme.headingColor};font-weight:600;">${escapeHtml(block.text)}</h2></section>`,
+      );
+      continue;
+    }
+
+    if (block.type === "heading3") {
+      htmlParts.push(
+        `<section style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding-left:${theme.subheadingPaddingLeft}px;border-left:${theme.subheadingBorderLeftWidth}px solid ${theme.headingColor};"><h3 style="margin:0;font-size:${theme.subheadingFontSize}px;line-height:${theme.subheadingLineHeight};letter-spacing:${theme.subheadingLetterSpacing}em;color:${theme.headingColor};font-weight:600;">${escapeHtml(block.text)}</h3></section>`,
       );
       continue;
     }
 
     if (block.type === "paragraph") {
-      htmlParts.push(`<p style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;color:${theme.bodyColor};line-height:2;">${escapeHtml(block.text)}</p>`);
+      htmlParts.push(`<p style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding-top:${theme.bodyPaddingTop}px;padding-bottom:${theme.bodyPaddingBottom}px;color:${theme.bodyColor};line-height:${theme.bodyLineHeight};letter-spacing:${theme.bodyLetterSpacing}em;text-align:${theme.bodyAlign};">${renderInlineMarkdown(block.text).replace(/<strong>/g, `<strong style="font-weight:${theme.strongWeight};color:${theme.strongColor};">`)}</p>`);
       continue;
     }
 
     if (block.type === "blockquote") {
       htmlParts.push(
-        `<blockquote style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:16px 16px;border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};border-radius:${theme.quoteRadius}px;background:${theme.quoteBg};color:${theme.bodyColor};line-height:1.9;">${escapeHtml(block.text)}</blockquote>`,
+        `<blockquote style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:${theme.quotePaddingTop}px ${theme.quotePaddingRight}px ${theme.quotePaddingBottom}px ${theme.quotePaddingLeft}px;border-left:${theme.quoteBorderWidth}px solid ${theme.quoteBorder};border-radius:${theme.quoteRadius}px;background:${theme.quoteBg};color:${theme.quoteTextColor};font-size:${theme.quoteFontSize}px;line-height:${theme.quoteLineHeight};letter-spacing:${theme.quoteLetterSpacing}em;text-align:${theme.quoteAlign};font-weight:${theme.quoteWeight};">${renderInlineMarkdown(block.text).replace(/<strong>/g, `<strong style="font-weight:${theme.strongWeight};color:${theme.strongColor};">`)}</blockquote>`,
       );
       continue;
     }
 
     if (block.type === "ordered-list") {
-      htmlParts.push(`<ol style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding-left:22px;">`);
-      for (const item of block.items) {
-        htmlParts.push(`<li style="margin:0 0 10px;line-height:1.95;">${escapeHtml(item)}</li>`);
+      htmlParts.push(`<ol style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:${theme.orderedListPaddingTop}px 0 ${theme.orderedListPaddingBottom}px 0;list-style:none;">`);
+      for (let i = 0; i < block.items.length; i += 1) {
+        const item = block.items[i];
+        htmlParts.push(`<li style="display:flex;font-size:${theme.orderedListFontSize}px;line-height:${theme.orderedListLineHeight};letter-spacing:${theme.orderedListLetterSpacing}em;text-align:${theme.orderedListAlign};"><span style="display:inline-block;width:${theme.orderedListIndentLeft}px;color:${theme.orderedListMarkerColor};font-weight:${theme.orderedListMarkerWeight};">${escapeHtml(renderOrderedMarker(i, theme))}</span><span>${renderInlineMarkdown(item).replace(/<strong>/g, `<strong style="font-weight:${theme.strongWeight};color:${theme.strongColor};">`)}</span></li>`);
       }
       htmlParts.push(`</ol>`);
+      continue;
+    }
+
+    if (block.type === "unordered-list") {
+      htmlParts.push(`<ul style="margin:${metrics.marginTop}px 0 ${metrics.marginBottom}px;padding:${theme.unorderedListPaddingTop}px 0 ${theme.unorderedListPaddingBottom}px 0;list-style:none;">`);
+      for (const item of block.items) {
+        htmlParts.push(`<li style="display:flex;font-size:${theme.unorderedListFontSize}px;line-height:${theme.unorderedListLineHeight};letter-spacing:${theme.unorderedListLetterSpacing}em;text-align:${theme.unorderedListAlign};"><span style="display:inline-block;width:${theme.unorderedListIndentLeft}px;color:${theme.unorderedListMarkerColor};">${escapeHtml(renderUnorderedMarker(theme))}</span><span>${renderInlineMarkdown(item).replace(/<strong>/g, `<strong style="font-weight:${theme.strongWeight};color:${theme.strongColor};">`)}</span></li>`);
+      }
+      htmlParts.push(`</ul>`);
       continue;
     }
 
@@ -362,26 +425,40 @@ function getHtmlBlockSpacing(
 
   if (block.type === "heading2") {
     return {
-      marginTop: prevBlock?.type === "image" ? section + 2 : section,
-      marginBottom: nextBlock?.type === "paragraph" ? 10 : 14,
+      marginTop: theme.headingMarginTop,
+      marginBottom: theme.headingMarginBottom,
+    };
+  }
+
+  if (block.type === "heading3") {
+    return {
+      marginTop: theme.subheadingMarginTop,
+      marginBottom: theme.subheadingMarginBottom,
     };
   }
 
   if (block.type === "paragraph") {
     return {
-      marginTop: prevBlock?.type === "heading2" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
-      marginBottom: nextBlock?.type === "heading2" ? 4 : nextBlock?.type === "image" ? 8 : 0,
+      marginTop: prevBlock?.type === "heading2" || prevBlock?.type === "heading3" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
+      marginBottom: nextBlock?.type === "heading2" ? 8 : nextBlock?.type === "heading3" ? 6 : nextBlock?.type === "image" ? 8 : 0,
     };
   }
 
   if (block.type === "blockquote") {
     return {
-      marginTop: prevBlock?.type === "paragraph" ? quote + 2 : quote,
-      marginBottom: nextBlock?.type === "heading2" ? 8 : 2,
+      marginTop: theme.quoteMarginTop,
+      marginBottom: theme.quoteMarginBottom,
     };
   }
 
   if (block.type === "ordered-list") {
+    return {
+      marginTop: prevBlock?.type === "heading2" ? 6 : paragraph,
+      marginBottom: nextBlock?.type === "image" ? 10 : 4,
+    };
+  }
+
+  if (block.type === "unordered-list") {
     return {
       marginTop: prevBlock?.type === "heading2" ? 6 : paragraph,
       marginBottom: nextBlock?.type === "image" ? 10 : 4,

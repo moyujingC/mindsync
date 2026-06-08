@@ -52,12 +52,66 @@ export interface WechatLayoutThemeAsset {
   mutedColor: string;
   quoteBg: string;
   quoteBorder: string;
+  quoteTextColor: string;
+  quoteFontSize: number;
+  quoteLineHeight: number;
+  quoteLetterSpacing: number;
+  quoteAlign: "left" | "justify" | "center";
+  quoteWeight: number;
+  quotePaddingTop: number;
+  quotePaddingRight: number;
+  quotePaddingBottom: number;
+  quotePaddingLeft: number;
+  quoteMarginTop: number;
+  quoteMarginBottom: number;
   ctaBg: string;
   ctaText: string;
   figureBg: string;
   placeholderBg: string;
   placeholderBorder: string;
+  titleFontSize: number;
   headingFontSize: number;
+  headingLineHeight: number;
+  headingLetterSpacing: number;
+  headingMarginTop: number;
+  headingMarginBottom: number;
+  headingPaddingLeft: number;
+  headingBorderLeftWidth: number;
+  subheadingFontSize: number;
+  subheadingLineHeight: number;
+  subheadingLetterSpacing: number;
+  subheadingMarginTop: number;
+  subheadingMarginBottom: number;
+  subheadingPaddingLeft: number;
+  subheadingBorderLeftWidth: number;
+  bodyFontSize: number;
+  bodyLineHeight: number;
+  bodyLetterSpacing: number;
+  bodyAlign: "left" | "justify" | "center";
+  bodyPaddingTop: number;
+  bodyPaddingBottom: number;
+  strongColor: string;
+  strongWeight: number;
+  unorderedListFontSize: number;
+  unorderedListLineHeight: number;
+  unorderedListLetterSpacing: number;
+  unorderedListAlign: "left" | "justify" | "center";
+  unorderedListMarkerColor: string;
+  unorderedListMarker: "solid-circle" | "square" | "hollow-circle";
+  unorderedListIndentLeft: number;
+  unorderedListPaddingTop: number;
+  unorderedListPaddingBottom: number;
+  orderedListFontSize: number;
+  orderedListLineHeight: number;
+  orderedListLetterSpacing: number;
+  orderedListAlign: "left" | "justify" | "center";
+  orderedListMarkerColor: string;
+  orderedListMarkerWeight: number;
+  orderedListMarkerType: "number" | "greek" | "roman-lower" | "roman-upper" | "latin-lower" | "latin-upper";
+  orderedListIndentLeft: number;
+  orderedListPaddingTop: number;
+  orderedListPaddingBottom: number;
+  articlePaddingX: number;
   paragraphSpacing: number;
   sectionSpacing: number;
   imageRadius: number;
@@ -329,8 +383,10 @@ export interface LayoutImagePlacement {
 export type DraftPreviewBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading2"; text: string }
+  | { type: "heading3"; text: string }
   | { type: "blockquote"; text: string }
   | { type: "ordered-list"; items: string[] }
+  | { type: "unordered-list"; items: string[] }
   | { type: "image"; imageId: string; placementLabel: string; caption: string }
   | { type: "cta"; title: string; buttonText: string };
 
