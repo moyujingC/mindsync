@@ -209,13 +209,16 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
     return (
       <InheritBlock className="mt-0">
         <div
-          className="pl-3.5 py-0.5"
+          className="pl-3.5"
           style={{
             marginTop: theme.sectionSpacing,
             borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`,
           }}
         >
-          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 6.5, 15)}px`, fontWeight: 600, color: theme.headingColor }}>
+          <div className="mb-1 text-[9.5px] tracking-[0.18em]" style={{ color: theme.mutedColor }}>
+            SECTION
+          </div>
+          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 5.5, 16)}px`, fontWeight: 600, lineHeight: 1.55, color: theme.headingColor }}>
             {block.text}
           </h2>
         </div>
@@ -286,16 +289,19 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
           className="px-4 py-4 text-center text-[11.5px] text-muted-foreground"
           style={{
             background: theme.placeholderBg,
-            border: `1px solid ${theme.placeholderBorder}`,
+            borderTop: `1px solid ${theme.placeholderBorder}`,
             borderRadius: Math.max(theme.quoteRadius, 10),
           }}
         >
-          <div className="mb-3" style={{ fontFamily: "var(--font-serif)", color: theme.headingColor, fontWeight: 500, lineHeight: 1.7 }}>
+          <div className="mb-2 text-[9.5px] tracking-[0.18em]" style={{ color: theme.mutedColor }}>
+            CLOSING NOTE
+          </div>
+          <div className="mb-3" style={{ fontFamily: "var(--font-serif)", color: theme.headingColor, fontWeight: 500, lineHeight: 1.8 }}>
             {block.title}
           </div>
-          <span className="inline-block px-3.5 py-1.5 text-[11px]" style={{ background: theme.ctaBg, color: theme.ctaText, borderRadius: theme.ctaRadius }}>
+          <div className="text-[11px]" style={{ color: theme.mutedColor }}>
             {block.buttonText}
-          </span>
+          </div>
         </div>
       </SystemBlock>
     );
