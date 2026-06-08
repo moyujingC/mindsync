@@ -57,6 +57,9 @@ function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "
 }
 
 function isOutputEnabled(workspace: WorkspaceData, key: "knowledgeCards" | "wechatCover" | "wechatShareCover" | "xiaohongshuCover") {
+  if (key === "wechatShareCover") {
+    return workspace.outputToggles.find((item) => item.key === "wechatCover")?.enabled ?? false;
+  }
   return workspace.outputToggles.find((item) => item.key === key)?.enabled ?? false;
 }
 

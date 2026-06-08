@@ -186,6 +186,16 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
           <div className="mb-4 text-[10.5px] text-muted-foreground">
             公众号封面会生成列表大图与转发小图两张，并支持自动拼接后下载上传。
           </div>
+          {wechatWideCover?.img && wechatShareCover?.img ? (
+            <div className="mb-5">
+              <WechatCompositePreviewCard
+                articleTitle={data.article.title}
+                wideCoverUrl={wechatWideCover.img}
+                squareCoverUrl={wechatShareCover.img}
+                onDownload={() => void downloadWechatCompositeCover(wechatWideCover.img, wechatShareCover.img, data.article.title)}
+              />
+            </div>
+          ) : null}
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
             {data.covers.map((cover) => (
               <div key={cover.label} className={cover.wide ? "xl:col-span-3" : "xl:col-span-2"}>
@@ -254,6 +264,11 @@ async function downloadImageAsset(imageUrl: string, filename: string) {
   URL.revokeObjectURL(objectUrl);
 }
 
+const WECHAT_COMPOSITE_WIDE_WIDTH = 900;
+const WECHAT_COMPOSITE_SQUARE_SIZE = 383;
+const WECHAT_COMPOSITE_HEIGHT = 383;
+const WECHAT_COMPOSITE_WIDTH = WECHAT_COMPOSITE_WIDE_WIDTH + WECHAT_COMPOSITE_SQUARE_SIZE;
+
 async function downloadAllAssets(data: WorkspaceData) {
   const wechatWideCover = data.covers.find((item) => item.key === "wechatCover" && item.img && item.state !== "failed");
   const wechatShareCover = data.covers.find((item) => item.key === "wechatShareCover" && item.img && item.state !== "failed");
@@ -320,19 +335,16 @@ async function buildWechatCompositeCoverDataUrl(wideCoverUrl?: string, squareCov
       loadImageElement(squareObjectUrl),
     ]);
 
-    const targetHeight = Math.min(wideImage.height, squareImage.height);
-    const wideWidth = Math.round((wideImage.width / wideImage.height) * targetHeight);
-    const squareWidth = targetHeight;
     const canvas = document.createElement("canvas");
-    canvas.width = wideWidth + squareWidth;
-    canvas.height = targetHeight;
+    canvas.width = WECHAT_COMPOSITE_WIDTH;
+    canvas.height = WECHAT_COMPOSITE_HEIGHT;
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("canvas unavailable");
 
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(wideImage, 0, 0, wideWidth, targetHeight);
-    ctx.drawImage(squareImage, wideWidth, 0, squareWidth, targetHeight);
+    ctx.drawImage(wideImage, 0, 0, WECHAT_COMPOSITE_WIDE_WIDTH, WECHAT_COMPOSITE_HEIGHT);
+    ctx.drawImage(squareImage, WECHAT_COMPOSITE_WIDE_WIDTH, 0, WECHAT_COMPOSITE_SQUARE_SIZE, WECHAT_COMPOSITE_SQUARE_SIZE);
 
     return canvas.toDataURL("image/png");
   } finally {
@@ -616,7 +628,7 @@ function CoverCard({
 
   return (
     <ResultCardShell
-      aspect={cover.wide ? "2.35/1" : "3/4"}
+      aspect={cover.key === "wechatShareCover" ? "1/1" : cover.wide ? "2.35/1" : "3/4"}
       cornerChip={cover.ratio}
       statusChip={
         processing ? (
@@ -676,6 +688,42 @@ function CoverCard({
           </ToolBtn>
           <ToolBtn title="替换图片"><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
+        </>
+      }
+    />
+  );
+}
+
+function WechatCompositePreviewCard({
+  articleTitle,
+  wideCoverUrl,
+  squareCoverUrl,
+  onDownload,
+}: {
+  articleTitle: string;
+  wideCoverUrl: string;
+  squareCoverUrl: string;
+  onDownload: () => void;
+}) {
+  return (
+    <ResultCardShell
+      aspect={`${WECHAT_COMPOSITE_WIDTH}/${WECHAT_COMPOSITE_HEIGHT}`}
+      cornerChip="公众号拼接上传图"
+      statusChip={
+        <><span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span> 已就绪</>
+      }
+      imageNode={
+        <div className="absolute inset-0 grid bg-[#ece6d6]" style={{ gridTemplateColumns: `${WECHAT_COMPOSITE_WIDE_WIDTH}fr ${WECHAT_COMPOSITE_SQUARE_SIZE}fr` }}>
+          <ImageWithFallback src={wideCoverUrl} alt={`${articleTitle} 公众号封面`} className="h-full w-full object-cover" />
+          <ImageWithFallback src={squareCoverUrl} alt={`${articleTitle} 公众号转发封面`} className="h-full w-full object-cover" />
+        </div>
+      }
+      title="公众号上传拼接预览"
+      caption="左侧为列表大图，右侧为转发小图，下载后可直接上传到公众号后台裁剪。"
+      spec="PNG · 1283×383 · 双封面拼接"
+      actions={
+        <>
+          <ToolBtn title="下载拼接图" onClick={onDownload}><Download className="w-3.5 h-3.5" /></ToolBtn>
         </>
       }
     />
