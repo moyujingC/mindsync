@@ -183,6 +183,9 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
             <span className="text-[10.5px] text-muted-foreground tracking-[0.15em]">封面</span>
             <div className="flex-1 h-px bg-border"></div>
           </div>
+          <div className="mb-4 text-[10.5px] text-muted-foreground">
+            公众号封面会生成列表大图与转发小图两张，并支持自动拼接后下载上传。
+          </div>
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
             {data.covers.map((cover) => (
               <div key={cover.label} className={cover.wide ? "xl:col-span-3" : "xl:col-span-2"}>
@@ -252,6 +255,8 @@ async function downloadImageAsset(imageUrl: string, filename: string) {
 }
 
 async function downloadAllAssets(data: WorkspaceData) {
+  const wechatWideCover = data.covers.find((item) => item.key === "wechatCover" && item.img && item.state !== "failed");
+  const wechatShareCover = data.covers.find((item) => item.key === "wechatShareCover" && item.img && item.state !== "failed");
   const tasks: Array<{ url: string; filename: string }> = [
     ...data.knowledgeCards
       .filter((item) => item.img && item.state !== "failed")
@@ -277,6 +282,10 @@ async function downloadAllAssets(data: WorkspaceData) {
     await downloadImageAsset(task.url, task.filename);
     await new Promise((resolve) => window.setTimeout(resolve, 180));
   }
+
+  if (wechatWideCover?.img && wechatShareCover?.img) {
+    await downloadWechatCompositeCover(wechatWideCover.img, wechatShareCover.img, data.article.title);
+  }
 }
 
 async function fetchImageAsObjectUrl(imageUrl: string) {
@@ -299,7 +308,7 @@ async function loadImageElement(src: string) {
   return loaded;
 }
 
-async function downloadWechatCompositeCover(wideCoverUrl?: string, squareCoverUrl?: string, articleTitle?: string) {
+async function buildWechatCompositeCoverDataUrl(wideCoverUrl?: string, squareCoverUrl?: string) {
   if (!wideCoverUrl || !squareCoverUrl || typeof window === "undefined") return;
 
   const wideObjectUrl = await fetchImageAsObjectUrl(wideCoverUrl);
@@ -325,12 +334,17 @@ async function downloadWechatCompositeCover(wideCoverUrl?: string, squareCoverUr
     ctx.drawImage(wideImage, 0, 0, wideWidth, targetHeight);
     ctx.drawImage(squareImage, wideWidth, 0, squareWidth, targetHeight);
 
-    const dataUrl = canvas.toDataURL("image/png");
-    await downloadImageAsset(dataUrl, sanitizeFilename(`公众号拼接封面-${articleTitle ?? "未命名文章"}`));
+    return canvas.toDataURL("image/png");
   } finally {
     URL.revokeObjectURL(wideObjectUrl);
     URL.revokeObjectURL(squareObjectUrl);
   }
+}
+
+async function downloadWechatCompositeCover(wideCoverUrl?: string, squareCoverUrl?: string, articleTitle?: string) {
+  const dataUrl = await buildWechatCompositeCoverDataUrl(wideCoverUrl, squareCoverUrl);
+  if (!dataUrl) return;
+  await downloadImageAsset(dataUrl, sanitizeFilename(`公众号拼接封面-${articleTitle ?? "未命名文章"}`));
 }
 
 function getGenerationModeLabel(mode?: "reference-edit" | "prompt-only") {
