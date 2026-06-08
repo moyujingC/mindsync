@@ -41,7 +41,7 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
           {data.article.wordCount.toLocaleString()} 字 · {data.parsedMarkdown.structure.subheadings} 小标题 · 卡片 {shortStyleName(cardStyleName)} · 配图 {shortStyleName(inlineStyleName)}
         </div>
         <div className="mt-2 text-[10.5px] text-muted-foreground">
-          文生图输入：整篇正文全文 · 由模型自动拆图与配图
+          文生图输入：整篇正文全文 · 模型会自行判断拆图数量与段落配图位置
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {data.workflowStages.slice(0, 5).map((stage) => (
@@ -57,7 +57,7 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
             <div className="flex items-baseline gap-3">
               <span className="text-[10px] text-muted-foreground tracking-[0.2em]">02</span>
               <h3 className="text-[14.5px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>内容拆解</h3>
-              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">系统对这篇文章的理解</span>
+              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">这一篇文章会被拆成哪些画面与重点</span>
             </div>
             <button
               onClick={() => onReplanContent()}
@@ -89,7 +89,7 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
               <div className="rounded-lg border border-border bg-card/70 p-4">
                 <div className="flex items-center gap-1.5 mb-2.5">
                   <Quote className="w-3 h-3 text-muted-foreground" />
-                  <span className="text-[10.5px] text-muted-foreground tracking-wide">识别金句 · 将在排版中强调</span>
+                  <span className="text-[10.5px] text-muted-foreground tracking-wide">识别出的重点句</span>
                 </div>
                 <div className="space-y-2">
                   {data.analysis.keyQuotes.map((q, i) => (
@@ -100,14 +100,14 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
                 </div>
               </div>
               <div className="rounded-lg border border-border bg-card/70 p-4">
-                <div className="text-[10.5px] text-muted-foreground mb-1 tracking-wide">封面主题与拆图策略</div>
+                <div className="text-[10.5px] text-muted-foreground mb-1 tracking-wide">封面主题与配图方向</div>
                 <div className="text-[14px] text-foreground/95 leading-snug" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>{data.analysis.coverTheme.title}</div>
                 <div className="text-[10.5px] text-muted-foreground mt-1.5">{data.analysis.coverTheme.keywords}</div>
                 <div className="text-[10.5px] text-muted-foreground mt-2 leading-relaxed">
                   {data.analysis.imageGenerationSource.strategy}
                 </div>
                 <div className="mt-2 text-[10px] text-foreground/70">
-                  当前结果来源：{data.workflowStages.find((stage) => stage.key === "contentAnalysis")?.providerLabel ?? "未标记"}
+                  当前拆解来源：{data.workflowStages.find((stage) => stage.key === "contentAnalysis")?.providerLabel ?? "未标记"}
                 </div>
               </div>
             </div>
@@ -125,7 +125,7 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
             <div className="flex items-baseline gap-3">
               <span className="text-[10px] text-muted-foreground tracking-[0.2em]">03</span>
               <h3 className="text-[17px]" style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}>图片生成结果</h3>
-              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 卡片 + {data.wechatInlineImages.length} 正文配图 + {data.generation.coversCount} 封面 · 已独立分配风格</span>
+              <span className="text-[11.5px] text-muted-foreground ml-1 mb-0.5">{data.generation.cardsCount} 张知识卡片 + {data.wechatInlineImages.length} 张正文配图 + {data.generation.coversCount} 张封面</span>
             </div>
             <button
               onClick={() => onRegenerateAllCardImages()}

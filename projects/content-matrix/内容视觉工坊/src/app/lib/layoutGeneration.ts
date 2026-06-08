@@ -137,23 +137,23 @@ function buildImagePlacements(inlineImages: WechatInlineImageAsset[]) {
 function buildReviewChecks(parsedMarkdown: ParsedMarkdownDocument, imagePlacements: LayoutImagePlacement[]): ReviewCheck[] {
   return [
     {
-      title: "Markdown 结构",
-      detail: `${parsedMarkdown.structure.subheadings} H2 · ${parsedMarkdown.structure.quotes} 引用 · ${parsedMarkdown.structure.lists} 列表已保留`,
+      title: "原文结构",
+      detail: `${parsedMarkdown.structure.subheadings} 个小标题 · ${parsedMarkdown.structure.quotes} 处引用 · ${parsedMarkdown.structure.lists} 组列表已保留`,
       status: "pass",
     },
     {
-      title: "重点句识别",
-      detail: `${Math.max(parsedMarkdown.structure.bolds, 1)} 处重点内容已可用于强调`,
+      title: "重点句处理",
+      detail: `${Math.max(parsedMarkdown.structure.bolds, 1)} 处重点内容已预留强调位置`,
       status: "pass",
     },
     {
-      title: "插图位编排",
-      detail: `系统已决定 ${imagePlacements.length} 处正文配图位置`,
+      title: "配图节奏",
+      detail: `${imagePlacements.length} 处正文配图位置已安排`,
       status: "pass",
     },
     {
-      title: "公众号格式",
-      detail: "标题、首图、段落和结尾 CTA 已整理",
+      title: "公众号版式",
+      detail: "标题、首图、段落层级和结尾收口都已整理",
       status: "pass",
     },
   ];
@@ -358,14 +358,14 @@ export function buildDraftReview(workspace: WorkspaceData): DraftReview {
   );
 
   return {
-    readyTitle: "可复制到公众号编辑器",
-    readyDescription: "系统已完成结构继承、重点识别和正文配图编排",
+    readyTitle: "这篇文章已经可以进入公众号编辑器",
+    readyDescription: "标题、段落节奏、重点句和正文配图位置都已整理好",
     reviewChecks: buildReviewChecks(workspace.parsedMarkdown, imagePlacements),
     syncStatus: [
-      { label: "正文排版", note: `Markdown 已转为公众号阅读稿 · ${workspace.cardPlan.length} 个内容段` },
-      { label: "正文配图", note: `${imagePlacements.length} 张正文配图已规划` },
-      { label: "封面状态", note: "已保留公众号封面和小红书封面的输出位" },
-      { label: "正文复制", note: "可复制 HTML 后手动粘贴到公众号编辑器" },
+      { label: "正文排版", note: `Markdown 已整理成公众号阅读稿 · 共 ${workspace.cardPlan.length} 个主段落` },
+      { label: "正文配图", note: `${imagePlacements.length} 张正文配图已插入对应段落节奏` },
+      { label: "封面输出", note: "公众号封面和小红书封面都保留了独立输出位" },
+      { label: "复制方式", note: "可直接复制正文 HTML，再粘贴进公众号编辑器" },
     ],
     imagePlacements,
     preview,
