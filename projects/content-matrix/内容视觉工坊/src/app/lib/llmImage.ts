@@ -16,7 +16,7 @@ function getImageSizeFromRatio(ratio: string) {
   if (normalized === "3:4" || normalized === "9:16") {
     return "1024x1536" as const;
   }
-  if (normalized === "4:3" || normalized === "2.35:1" || normalized === "2.35:1") {
+  if (normalized === "4:3" || normalized === "16:9" || normalized === "2.35:1") {
     return "1536x1024" as const;
   }
   return "1024x1024" as const;
