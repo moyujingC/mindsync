@@ -50,6 +50,7 @@ async function generateImage(prompt: string, ratio: string, referenceImages: str
   const usableReferenceImages = resolveReferenceImages(referenceImages);
 
   let result;
+  let generationMode: "reference-edit" | "prompt-only" = "prompt-only";
 
   if (usableReferenceImages.length > 0) {
     try {
@@ -61,6 +62,7 @@ async function generateImage(prompt: string, ratio: string, referenceImages: str
         quality: "high",
         n: 1,
       });
+      generationMode = "reference-edit";
     } catch (error) {
       console.warn("[llmImage] reference-image edit failed, falling back to prompt-only generation:", error instanceof Error ? error.message : error);
     }
@@ -88,6 +90,7 @@ async function generateImage(prompt: string, ratio: string, referenceImages: str
     provider: "image-model" as const,
     imageUrl: url || `data:image/png;base64,${b64}`,
     prompt,
+    generationMode,
   };
 }
 

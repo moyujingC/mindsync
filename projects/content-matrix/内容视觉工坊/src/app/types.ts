@@ -1,6 +1,7 @@
 export type InputMode = "md" | "text";
 
 export type CardGenerationState = "idle" | "processing" | "ok" | "failed";
+export type ImageGenerationMode = "reference-edit" | "prompt-only";
 
 export type ReviewCheckStatus = "pass" | "warn" | "fail";
 
@@ -138,6 +139,7 @@ export interface KnowledgeCardItem {
   isStale?: boolean;
   provider?: "mock" | "llm" | "image-model";
   imagePrompt?: string;
+  imageGenerationMode?: ImageGenerationMode;
 }
 
 export interface CoverAsset {
@@ -150,6 +152,7 @@ export interface CoverAsset {
   isStale?: boolean;
   provider?: "mock" | "image-model";
   imagePrompt?: string;
+  imageGenerationMode?: ImageGenerationMode;
   wide?: boolean;
 }
 
@@ -220,6 +223,7 @@ export interface GenerateCardImageResponse {
   provider: "image-model";
   imageUrl: string;
   prompt: string;
+  generationMode: ImageGenerationMode;
 }
 
 export interface GenerateCoverImageRequest {
@@ -237,6 +241,7 @@ export interface GenerateCoverImageResponse {
   provider: "image-model";
   imageUrl: string;
   prompt: string;
+  generationMode: ImageGenerationMode;
 }
 
 export type WechatInlineSectionType = "concept" | "quote" | "method" | "transition";
@@ -260,6 +265,7 @@ export interface WechatInlineImageAsset {
   isStale?: boolean;
   provider?: "mock" | "image-model";
   imagePrompt?: string;
+  imageGenerationMode?: ImageGenerationMode;
 }
 
 export interface GenerateWechatInlineImageRequest {
@@ -282,6 +288,7 @@ export interface GenerateWechatInlineImageResponse {
   provider: "image-model";
   imageUrl: string;
   prompt: string;
+  generationMode: ImageGenerationMode;
 }
 
 export interface GenerationOverview {

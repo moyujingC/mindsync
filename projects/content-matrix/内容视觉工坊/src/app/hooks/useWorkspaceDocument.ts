@@ -672,7 +672,7 @@ export function useWorkspaceDocument() {
         generation: updateGenerationTimestamp(prev, formatNowTime()),
         knowledgeCards: prev.knowledgeCards.map((item) =>
           item.n === cardNumber
-            ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
+            ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt, imageGenerationMode: result.generationMode }
             : item,
         ),
         workflowStages: markDraftSyncPending(
@@ -727,7 +727,7 @@ export function useWorkspaceDocument() {
           generation: updateGenerationTimestamp(prev, formatNowTime()),
           wechatInlineImages: prev.wechatInlineImages.map((item) =>
             item.id === imageId
-              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
+              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt, imageGenerationMode: result.generationMode }
               : item,
           ),
         });
@@ -818,7 +818,7 @@ export function useWorkspaceDocument() {
           ...prev,
           knowledgeCards: prev.knowledgeCards.map((item) =>
             item.n === card.n
-              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
+              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt, imageGenerationMode: result.generationMode }
               : item,
           ),
           workflowStages: prev.workflowStages.map((stage) =>
@@ -864,7 +864,7 @@ export function useWorkspaceDocument() {
           ...prev,
           wechatInlineImages: prev.wechatInlineImages.map((item) =>
             item.id === inlineImage.id
-              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt }
+              ? { ...item, img: result.imageUrl, state: "ok", isStale: false, provider: result.provider, imagePrompt: result.prompt, imageGenerationMode: result.generationMode }
               : item,
           ),
           workflowStages: prev.workflowStages.map((stage) =>
@@ -917,6 +917,7 @@ export function useWorkspaceDocument() {
                   isStale: false,
                   provider: result.provider,
                   imagePrompt: result.prompt,
+                  imageGenerationMode: result.generationMode,
                   status: "已生成 · AI",
                 }
               : item,
@@ -1025,6 +1026,7 @@ export function useWorkspaceDocument() {
                   isStale: false,
                   provider: result.provider,
                   imagePrompt: result.prompt,
+                  imageGenerationMode: result.generationMode,
                   status: "已生成 · AI",
                 }
               : item,

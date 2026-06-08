@@ -183,6 +183,17 @@ function shortStyleName(name: string) {
   return parts[parts.length - 1] || name;
 }
 
+function getGenerationModeLabel(mode?: "reference-edit" | "prompt-only") {
+  if (mode === "reference-edit") return "参考图引导";
+  if (mode === "prompt-only") return "纯提示词";
+  return "";
+}
+
+function appendGenerationMode(providerLabel: string, mode?: "reference-edit" | "prompt-only") {
+  const label = getGenerationModeLabel(mode);
+  return label ? `${providerLabel} · ${label}` : providerLabel;
+}
+
 function InlineImageCard({ image, onRegenerate }: { image: WechatInlineImageAsset; onRegenerate: (imageId: string) => Promise<void> }) {
   const failed = image.state === "failed";
   const processing = image.state === "processing";
@@ -230,7 +241,7 @@ function InlineImageCard({ image, onRegenerate }: { image: WechatInlineImageAsse
       }
       title={image.sectionTheme}
       caption={image.visualDirection}
-      spec={`${providerLabel} · ${sectionTypeLabelMap[image.sectionType]} · ${image.ratio} · ${image.width}×${image.height}`}
+      spec={`${appendGenerationMode(providerLabel, image.imageGenerationMode)} · ${sectionTypeLabelMap[image.sectionType]} · ${image.ratio} · ${image.width}×${image.height}`}
       actions={
         <>
           <ToolBtn title="重生成" onClick={processing ? undefined : () => onRegenerate(image.id)} disabled={processing}><RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} /></ToolBtn>
@@ -389,7 +400,7 @@ function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate
       }
       title={c.title}
       caption={c.composition}
-      spec={`${providerLabel} · 3:4 · 1536×2048`}
+      spec={`${appendGenerationMode(providerLabel, c.imageGenerationMode)} · 3:4 · 1536×2048`}
       actions={
         <>
           <ToolBtn title="重生成" onClick={processing ? undefined : () => onRegenerate(c.n)} disabled={processing}><RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} /></ToolBtn>
@@ -468,7 +479,7 @@ function CoverCard({
         </span>
       }
       caption="主标题、副线及账号信息已嵌入封面"
-      spec={`${providerLabel} · ${cover.wide ? "2.35:1 · 公众号" : "3:4 · 小红书"}`}
+      spec={`${appendGenerationMode(providerLabel, cover.imageGenerationMode)} · ${cover.wide ? "2.35:1 · 公众号" : "3:4 · 小红书"}`}
       actions={
         <>
           <ToolBtn
