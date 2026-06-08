@@ -16,9 +16,11 @@ interface LeftPanelProps {
   inputMode: InputMode;
   textModeTitle: string;
   textModeBody: string;
+  wechatEditorPaste: string;
   setInputMode: (mode: InputMode) => void;
   onTextModeTitleChange: (value: string) => void;
   onTextModeBodyChange: (value: string) => void;
+  onWechatEditorPasteChange: (value: string) => void;
   onImportPlainText: () => Promise<void>;
   onImportMarkdown: (file: File) => Promise<void>;
   onGenerateAll: () => Promise<void>;
@@ -39,9 +41,11 @@ export function LeftPanel({
   inputMode,
   textModeTitle,
   textModeBody,
+  wechatEditorPaste,
   setInputMode,
   onTextModeTitleChange,
   onTextModeBodyChange,
+  onWechatEditorPasteChange,
   onImportPlainText,
   onImportMarkdown,
   onGenerateAll,
@@ -220,6 +224,21 @@ export function LeftPanel({
         )}
 
         <Separator />
+
+        <div className="rounded-lg border border-border bg-card/70 overflow-hidden">
+          <div className="px-3.5 py-3 border-b border-border/60">
+            <div className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>微信编辑器回贴区</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">把你在微信编辑器里排好的内容直接粘贴到这里。先作为回传文本区使用，后面我会按这份内容和截图回抄成正式主题。</div>
+          </div>
+          <div className="p-3.5">
+            <textarea
+              value={wechatEditorPaste}
+              onChange={(event) => onWechatEditorPasteChange(event.target.value)}
+              className="w-full h-40 rounded-md bg-input-background border border-border px-3 py-2 text-[12.5px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring resize-y leading-relaxed"
+              placeholder="把你从微信编辑器里复制出来的内容粘贴到这里。拿不到样式没关系，我会结合截图一起回抄。"
+            />
+          </div>
+        </div>
 
         <div className="rounded-lg border border-border bg-card/70 overflow-hidden">
           <div className="px-3.5 py-3 border-b border-border/60">
@@ -596,12 +615,53 @@ export function LeftPanel({
                 <div className="text-[10.5px] text-muted-foreground">版式参数</div>
                 <div className="grid grid-cols-2 gap-2.5">
                   <ThemeNumberField
-                    label="H2 字号"
+                    label="标题字号"
+                    value={selectedLayoutTheme.titleFontSize}
+                    suffix="px"
+                    min={18}
+                    max={36}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { titleFontSize: value })}
+                  />
+                  <ThemeNumberField
+                    label="一级标题字号"
                     value={selectedLayoutTheme.headingFontSize}
                     suffix="px"
                     min={16}
                     max={32}
                     onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { headingFontSize: value })}
+                  />
+                  <ThemeNumberField
+                    label="二级标题字号"
+                    value={selectedLayoutTheme.subheadingFontSize}
+                    suffix="px"
+                    min={14}
+                    max={28}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { subheadingFontSize: value })}
+                  />
+                  <ThemeNumberField
+                    label="正文字号"
+                    value={selectedLayoutTheme.bodyFontSize}
+                    suffix="px"
+                    min={14}
+                    max={22}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { bodyFontSize: value })}
+                  />
+                  <ThemeNumberField
+                    label="正文行高"
+                    value={selectedLayoutTheme.bodyLineHeight}
+                    suffix=""
+                    min={1.5}
+                    max={2.4}
+                    step={0.02}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { bodyLineHeight: value })}
+                  />
+                  <ThemeNumberField
+                    label="左右边距"
+                    value={selectedLayoutTheme.articlePaddingX}
+                    suffix="px"
+                    min={16}
+                    max={40}
+                    onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { articlePaddingX: value })}
                   />
                   <ThemeNumberField
                     label="段间距"
@@ -616,7 +676,7 @@ export function LeftPanel({
                     value={selectedLayoutTheme.sectionSpacing}
                     suffix="px"
                     min={16}
-                    max={40}
+                    max={64}
                     onChange={(value) => onUpdateWechatLayoutTheme(data.styleSelections.wechatLayout, { sectionSpacing: value })}
                   />
                   <ThemeNumberField
@@ -754,6 +814,7 @@ function ThemeNumberField({
   suffix,
   min,
   max,
+  step,
 }: {
   label: string;
   value: number;
@@ -761,6 +822,7 @@ function ThemeNumberField({
   suffix: string;
   min: number;
   max: number;
+  step?: number;
 }) {
   return (
     <div className="space-y-1.5">
@@ -771,6 +833,7 @@ function ThemeNumberField({
           value={String(value)}
           min={min}
           max={max}
+          step={step}
           onChange={(event) => {
             const next = Number(event.target.value);
             if (!Number.isFinite(next)) return;

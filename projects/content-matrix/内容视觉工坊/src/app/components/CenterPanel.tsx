@@ -44,7 +44,7 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
           </div>
         </div>
         <div className="mt-1.5 text-[11px] text-muted-foreground">
-          {data.article.wordCount.toLocaleString()} 字 · {data.parsedMarkdown.structure.subheadings} 小标题 · 卡片 {shortStyleName(cardStyleName)} · 配图 {shortStyleName(inlineStyleName)}
+          {data.article.wordCount.toLocaleString()} 字 · {data.parsedMarkdown.structure.subheadings} 个一级标题 · 卡片 {shortStyleName(cardStyleName)} · 配图 {shortStyleName(inlineStyleName)}
         </div>
         <div className="mt-2 text-[10.5px] text-muted-foreground">
           文生图输入：整篇正文全文 · 模型会自行判断拆图数量与段落配图位置
@@ -77,7 +77,7 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
             <div className="col-span-7 rounded-lg border border-border bg-card/70">
               <div className="px-4 py-2 border-b border-border/60 flex items-center justify-between text-[10.5px] text-muted-foreground tracking-wide">
                 <span>拆解为 {data.cardPlan.length} 张知识卡片</span>
-                <span>{inputMode === "text" ? "基于全文语义拆图" : "对应 H2 段落"}</span>
+                <span>{inputMode === "text" ? "基于全文语义拆图" : "对应一级标题段落"}</span>
               </div>
               <ol className="divide-y divide-border/50">
                 {data.cardPlan.map((card) => (

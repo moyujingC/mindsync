@@ -16,8 +16,8 @@ function extractTitle(lines: string[]) {
 
 function buildStructureTags(summary: MarkdownStructureSummary) {
   return [
-    `${summary.headings} 标题`,
-    `${summary.subheadings} 小标题`,
+    `${summary.headings} 文章标题`,
+    `${summary.subheadings} 一级标题`,
     `${summary.bolds} 加粗`,
     `${summary.quotes} 引用`,
   ];
