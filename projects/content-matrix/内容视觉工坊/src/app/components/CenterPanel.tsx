@@ -1,4 +1,4 @@
-import { RefreshCw, Image as ImageIcon, AlertTriangle, CheckCircle2, Layers, MoreHorizontal, Maximize2, Quote, LoaderCircle } from "lucide-react";
+import { RefreshCw, Image as ImageIcon, AlertTriangle, CheckCircle2, Layers, MoreHorizontal, Maximize2, Quote, LoaderCircle, Download } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import type { CoverAsset, GenerationStageStatus, InputMode, KnowledgeCardItem, WechatInlineImageAsset, WorkspaceData, WorkflowStage } from "../types";
 
@@ -181,6 +181,37 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
 function shortStyleName(name: string) {
   const parts = name.split("·").map((item) => item.trim()).filter(Boolean);
   return parts[parts.length - 1] || name;
+}
+
+async function downloadImageAsset(imageUrl: string, filename: string) {
+  if (typeof window === "undefined") return;
+
+  const ext = imageUrl.startsWith("data:image/png") ? "png" : imageUrl.startsWith("data:image/jpeg") ? "jpg" : "png";
+
+  if (imageUrl.startsWith("data:")) {
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = `${filename}.${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  }
+
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(`download failed: ${response.status}`);
+  }
+
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = `${filename}.${ext}`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(objectUrl);
 }
 
 function getGenerationModeLabel(mode?: "reference-edit" | "prompt-only") {
@@ -488,6 +519,13 @@ function CoverCard({
             disabled={processing}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${processing ? "animate-spin" : ""}`} />
+          </ToolBtn>
+          <ToolBtn
+            title="下载图片"
+            onClick={cover.img && !failed ? () => void downloadImageAsset(cover.img, `${cover.label}-${articleTitle}`) : undefined}
+            disabled={!cover.img || failed || processing}
+          >
+            <Download className="w-3.5 h-3.5" />
           </ToolBtn>
           <ToolBtn title="替换图片"><ImageIcon className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn title="更多"><MoreHorizontal className="w-3.5 h-3.5" /></ToolBtn>
