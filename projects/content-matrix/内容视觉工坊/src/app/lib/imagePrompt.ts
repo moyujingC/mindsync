@@ -1,5 +1,15 @@
 import type { GenerateCardImageRequest, GenerateCoverImageRequest, GenerateWechatInlineImageRequest } from "../types";
 
+const SAFETY_VISUAL_CONSTRAINTS = `
+- 情绪必须稳定、清醒、有人味，不要惊悚、阴森、压迫、病态、恐怖片感
+- 严禁撕裂人像、破碎面部、双生鬼影、残影分身、异化身体、惊悚剪影、受伤感、诡异凝视
+- 如果使用人物，人物必须自然、完整、平静，不要做成灵异海报或病态肖像
+- 不要把 AI 表达成幽灵、黑影、空洞人脸、背后附体、人格分裂或被吞噬的视觉
+- 不要使用过重的灰黑污渍、血迹联想、尸斑质感、恐怖裂痕、阴间光效
+`.trim();
+
+const SAFETY_VISUAL_CONSTRAINTS_BLOCK = `\n${SAFETY_VISUAL_CONSTRAINTS}`;
+
 export function buildCardImagePrompt(request: GenerateCardImageRequest) {
   return `
 请为一张中文知识卡片生成图片。
@@ -15,6 +25,7 @@ export function buildCardImagePrompt(request: GenerateCardImageRequest) {
 - 不要出现杂乱背景
 - 不要自动生成大量错误中文文字
 - 保留明确文字区域与视觉主体区域
+${SAFETY_VISUAL_CONSTRAINTS}
 
 请生成一张高质量知识卡片图片。
 `.trim();
@@ -56,12 +67,8 @@ export function buildCoverImagePrompt(request: GenerateCoverImageRequest) {
 - 构图要求：${compositionRule}
 - 这是同一内容体系下的封面图，不要做成知识卡片，不要出现纸面信息模块堆叠
 - 整体克制、高级、清晰，不要杂乱背景
-- 情绪必须稳定、清醒、有人味，不要惊悚、阴森、压迫、病态、恐怖片感
-- 严禁撕裂人像、破碎面部、双生鬼影、残影分身、异化身体、惊悚剪影、受伤感、诡异凝视
-- 如果使用人物，人物必须自然、完整、平静，像真实编辑插画或杂志封面，不要做成灵异海报
-- 不要把 AI 表达成幽灵、黑影、空洞人脸、背后附体、人格分裂或被吞噬的视觉
-- 不要使用过重的灰黑污渍、血迹联想、尸斑质感、恐怖裂痕、阴间光效
 - 更适合的方向是：纸本人文科技、安静观察感、克制留白、轻微未来感、理性而温和
+${SAFETY_VISUAL_CONSTRAINTS_BLOCK}
 - 不要自动生成大量错误中文文字
 - 如果出现文字，只保留极少量、可控的中文标题感
 
@@ -88,6 +95,7 @@ export function buildWechatInlineImagePrompt(request: GenerateWechatInlineImageR
 - 更像中文杂志内页插图、概念插图、编辑配图
 - 只表达当前段落的一个核心意象，不试图讲完整观点
 - 风格统一、稳定、可连续用于同一篇文章
+${SAFETY_VISUAL_CONSTRAINTS}
 
 【段落类型】
 ${request.sectionType}
