@@ -7,6 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useEffect, useRef, useState } from "react";
 import type { InputMode, StyleAssetFit, StyleSelectionKey, WorkspaceData } from "../types";
 
+function getStyleReferenceImageSrc(referenceImage: string) {
+  return `/风格库/${referenceImage}`;
+}
+
 interface LeftPanelProps {
   data: WorkspaceData;
   inputMode: InputMode;
@@ -299,7 +303,7 @@ export function LeftPanel({
                               className="aspect-[3/4] overflow-hidden rounded-sm border border-border/60 bg-secondary/30"
                             >
                               <img
-                                src={`/风格库/${fileName}`}
+                                src={getStyleReferenceImageSrc(fileName)}
                                 alt={fileName}
                                 className="h-full w-full object-cover"
                                 loading="lazy"
@@ -437,7 +441,7 @@ export function LeftPanel({
                         className="h-9 w-7 shrink-0 overflow-hidden rounded-[4px] border border-border/60 bg-secondary/30"
                       >
                         <img
-                          src={`/风格库/${fileName}`}
+                          src={getStyleReferenceImageSrc(fileName)}
                           alt={fileName}
                           className="h-full w-full object-cover"
                           loading="lazy"
