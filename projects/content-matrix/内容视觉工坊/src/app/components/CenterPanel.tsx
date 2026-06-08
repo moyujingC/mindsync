@@ -162,7 +162,13 @@ export function CenterPanel({ data, inputMode, onReplanContent, onRegenerateCard
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
             {data.covers.map((cover) => (
               <div key={cover.label} className={cover.wide ? "xl:col-span-3" : "xl:col-span-2"}>
-                <CoverCard cover={cover} onRegenerate={onRegenerateCoverAsset} />
+                <CoverCard
+                  cover={cover}
+                  articleTitle={data.article.title}
+                  coverThemeTitle={data.analysis.coverTheme.title}
+                  coverThemeKeywords={data.analysis.coverTheme.keywords}
+                  onRegenerate={onRegenerateCoverAsset}
+                />
               </div>
             ))}
           </div>
@@ -397,14 +403,27 @@ function KnowledgeCard({ c, onRegenerate }: { c: KnowledgeCardItem; onRegenerate
 
 function CoverCard({
   cover,
+  articleTitle,
+  coverThemeTitle,
+  coverThemeKeywords,
   onRegenerate,
 }: {
   cover: CoverAsset;
+  articleTitle: string;
+  coverThemeTitle: string;
+  coverThemeKeywords: string;
   onRegenerate: (coverKey: "wechatCover" | "xiaohongshuCover") => Promise<void>;
 }) {
   const processing = cover.state === "processing";
   const failed = cover.state === "failed";
   const providerLabel = cover.isStale ? "需重生成" : cover.provider === "image-model" ? "真实出图" : "示例图";
+  const keywordLine = coverThemeKeywords
+    .split("/")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(" · ");
+
   return (
     <ResultCardShell
       aspect={cover.wide ? "2.35/1" : "3/4"}
@@ -424,11 +443,11 @@ function CoverCard({
             <ImageWithFallback src={cover.img} alt={cover.label} className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
             <div className="absolute bottom-3.5 left-4 right-4 text-white">
-              <div className="text-[10px] tracking-[0.2em] opacity-80">JUDGEMENT · 2026</div>
+              <div className="text-[10px] tracking-[0.16em] opacity-80">{coverThemeTitle}</div>
               <div className="leading-tight mt-0.5" style={{ fontFamily: "var(--font-serif)", fontSize: cover.wide ? "22px" : "18px", fontWeight: 600 }}>
-                在算法替你思考之前
+                {articleTitle}
               </div>
-              {cover.wide && <div className="text-[12px] opacity-85 mt-1" style={{ fontFamily: "var(--font-serif)" }}>—— 写给被推荐流喂大的内容创作者</div>}
+              {cover.wide && keywordLine ? <div className="text-[12px] opacity-85 mt-1" style={{ fontFamily: "var(--font-serif)" }}>—— {keywordLine}</div> : null}
             </div>
           </>
         ) : (
