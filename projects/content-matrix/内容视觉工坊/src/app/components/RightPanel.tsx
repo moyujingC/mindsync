@@ -86,40 +86,40 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
             <span className="opacity-60">·</span>
             <span>{isTextMode ? "不生成排版" : "375 × auto"}</span>
           </div>
-          <span className="text-[10px] text-muted-foreground">{isTextMode ? "当前仅展示模式说明" : "滚动查看完整审稿"}</span>
+          <span className="text-[10px] text-muted-foreground">{isTextMode ? "当前仅展示模式说明" : "阅读预览"}</span>
         </div>
 
         <div className="px-5 pb-3">
           <div className="rounded-[14px] p-2.5 border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]" style={{ background: theme.shellBg }}>
             <div className="rounded-[10px] shadow-sm border border-border/70 overflow-hidden" style={{ background: theme.articleBg }}>
               {/* Header */}
-              <div className="px-6 pt-5 pb-3.5 border-b border-border/50">
-                <h1 className="leading-[1.45]" style={{ fontFamily: "var(--font-serif)", fontSize: "19px", fontWeight: 600, color: theme.titleColor }}>
+              <div className="px-6 pt-6 pb-4 border-b border-border/40">
+                <h1 className="leading-[1.5]" style={{ fontFamily: "var(--font-serif)", fontSize: "20px", fontWeight: 600, color: theme.titleColor }}>
                   {data.draftReview.preview.title}
                 </h1>
-                <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
+                <div className="mt-2.5 flex items-center gap-2 text-[10.5px] text-muted-foreground">
                 <div className="w-5 h-5 rounded-full text-primary-foreground flex items-center justify-center text-[9px]" style={{ fontFamily: "var(--font-serif)", background: theme.headingColor }}>墨</div>
                 <span style={{ color: theme.bodyColor }}>{data.draftReview.preview.accountName}</span>
                   <span>·</span>
                   <span>{data.draftReview.preview.publishDate}</span>
-                  <span className="ml-auto" style={{ color: theme.headingColor }}>关注</span>
+                  <span className="ml-auto opacity-70" style={{ color: theme.bodyColor }}>公众号</span>
                 </div>
               </div>
 
               {/* Body */}
-              <article className="px-6 py-5 text-[13px] leading-[1.95]" style={{ fontFamily: "var(--font-sans-cn)", color: theme.bodyColor }}>
+              <article className="px-6 py-6 text-[13px] leading-[1.95]" style={{ fontFamily: "var(--font-sans-cn)", color: theme.bodyColor }}>
                 {data.draftReview.preview.intro ? (
                   <InheritBlock>
                     <div
-                      className="px-4 py-3.5"
+                      className="px-4 py-4"
                       style={{
-                        marginBottom: theme.paragraphSpacing,
+                        marginBottom: theme.paragraphSpacing + 2,
                         background: theme.placeholderBg,
                         borderTop: `1px solid ${theme.placeholderBorder}`,
                         borderRadius: Math.max(theme.quoteRadius - 2, 6),
                       }}
                     >
-                      <p className="italic text-[12.5px] leading-[1.9]" style={{ color: theme.bodyColor }}>
+                      <p className="italic text-[12.5px] leading-[2]" style={{ color: theme.bodyColor }}>
                         {data.draftReview.preview.intro}
                       </p>
                     </div>
@@ -141,24 +141,24 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
 
         {/* Sync status */}
         <div className="px-5 pb-4">
-          <div className="rounded-lg bg-card border border-border">
-            <div className="px-4 py-3 border-b border-border/70 flex items-center justify-between">
+          <div className="rounded-lg bg-card/80 border border-border/70">
+            <div className="px-4 py-3 border-b border-border/60 flex items-center justify-between">
               <div>
-                <div className="text-[12px]" style={{ fontWeight: 500 }}>草稿同步状态</div>
+                <div className="text-[12px]" style={{ fontWeight: 500 }}>复制与同步</div>
                 <div className="text-[10.5px] text-muted-foreground mt-0.5">{copyFeedback || draftSyncStage?.detail || "尚未复制公众号正文"}</div>
               </div>
               <span className={`inline-flex items-center gap-1 text-[10.5px] px-2 py-1 rounded ${
                 draftSyncStage?.status === "success"
-                  ? "text-emerald-800 bg-emerald-700/10"
-                  : "text-muted-foreground bg-secondary/70"
+                  ? "text-foreground bg-secondary/70"
+                  : "text-muted-foreground bg-secondary/50"
               }`}>
-                <CheckCircle2 className="w-3 h-3" /> {draftSyncStage?.status === "success" ? "草稿已创建" : "等待同步"}
+                <CheckCircle2 className={`w-3 h-3 ${draftSyncStage?.status === "success" ? "text-emerald-700" : "text-muted-foreground"}`} /> {draftSyncStage?.status === "success" ? "已就绪" : "待复制"}
               </span>
             </div>
             <ul className="divide-y divide-border/60">
               {data.draftReview.syncStatus.map((row) => (
                 <li key={row.label} className="px-4 py-2.5 flex items-center gap-2.5 text-[11.5px]">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-border shrink-0"></span>
                   <span className="shrink-0" style={{ fontWeight: 500 }}>{row.label}</span>
                   <span className="text-muted-foreground truncate flex-1">{row.note}</span>
                 </li>
