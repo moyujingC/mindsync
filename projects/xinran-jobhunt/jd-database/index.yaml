@@ -13,7 +13,7 @@ jobs:
     status: "analyzed"
     primary_track: "ai-pm"
     match_score: 42
-    file: "jobs/2026-06-08-bytedance-ai-builder-pm-intern-001.md"
+    file: "jobs/2026-06-08-字节跳动-AI Builder产品实习生.md"
     keywords:
       - "AI产品"
       - "Demo制作"
@@ -21,3 +21,20 @@ jobs:
       - "低代码"
       - "PM协作"
       - "隐私合规"
+  - job_id: "2026-06-08-meituan-ai-builder-self-operated-maintenance-001"
+    captured_at: "2026-06-08"
+    company: "美团"
+    role_title: "AI Builder（自营维修项目）"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "analyzed"
+    primary_track: "fde"
+    match_score: 78
+    file: "jobs/2026-06-08-美团-AI Builder（自营维修项目）.md"
+    keywords:
+      - "AI Builder"
+      - "AI Coding"
+      - "Agent"
+      - "Workflow"
+      - "Prompt Engineering"
+      - "RAG"
