@@ -1,4 +1,6 @@
 import OpenAI from "openai";
+import fs from "node:fs";
+import path from "node:path";
 import { buildCardImagePrompt, buildCoverImagePrompt, buildWechatInlineImagePrompt } from "./imagePrompt";
 import type {
   GenerateCardImageRequest,
@@ -34,17 +36,45 @@ function createImageClient() {
   });
 }
 
-async function generateImage(prompt: string, ratio: string) {
+function resolveReferenceImages(referenceImages: string[]) {
+  const root = path.resolve(process.cwd(), "风格库");
+  return referenceImages
+    .map((fileName) => path.join(root, fileName))
+    .filter((filePath) => fs.existsSync(filePath))
+    .slice(0, 6);
+}
+
+async function generateImage(prompt: string, ratio: string, referenceImages: string[] = []) {
   const model = process.env.AITECHFLUX_IMAGE_MODEL || "gpt-image-2";
   const client = createImageClient();
+  const usableReferenceImages = resolveReferenceImages(referenceImages);
 
-  const result = await client.images.generate({
-    model,
-    prompt,
-    size: getImageSizeFromRatio(ratio),
-    quality: "high",
-    n: 1,
-  });
+  let result;
+
+  if (usableReferenceImages.length > 0) {
+    try {
+      result = await client.images.edit({
+        model,
+        image: usableReferenceImages.map((filePath) => fs.createReadStream(filePath)),
+        prompt,
+        size: getImageSizeFromRatio(ratio),
+        quality: "high",
+        n: 1,
+      });
+    } catch (error) {
+      console.warn("[llmImage] reference-image edit failed, falling back to prompt-only generation:", error instanceof Error ? error.message : error);
+    }
+  }
+
+  if (!result) {
+    result = await client.images.generate({
+      model,
+      prompt,
+      size: getImageSizeFromRatio(ratio),
+      quality: "high",
+      n: 1,
+    });
+  }
 
   const first = result.data?.[0];
   const b64 = first?.b64_json;
@@ -63,17 +93,17 @@ async function generateImage(prompt: string, ratio: string) {
 
 export async function generateCardImageWithModel(request: GenerateCardImageRequest): Promise<GenerateCardImageResponse> {
   const prompt = buildCardImagePrompt(request);
-  return generateImage(prompt, request.ratio);
+  return generateImage(prompt, request.ratio, request.styleReferenceImages);
 }
 
 export async function generateCoverImageWithModel(request: GenerateCoverImageRequest): Promise<GenerateCoverImageResponse> {
   const prompt = buildCoverImagePrompt(request);
-  return generateImage(prompt, request.ratio);
+  return generateImage(prompt, request.ratio, request.styleReferenceImages);
 }
 
 export async function generateWechatInlineImageWithModel(
   request: GenerateWechatInlineImageRequest,
 ): Promise<GenerateWechatInlineImageResponse> {
   const prompt = buildWechatInlineImagePrompt(request);
-  return generateImage(prompt, request.ratio);
+  return generateImage(prompt, request.ratio, request.styleReferenceImages);
 }

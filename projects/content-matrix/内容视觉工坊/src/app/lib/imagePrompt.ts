@@ -8,6 +8,7 @@ export function buildCardImagePrompt(request: GenerateCardImageRequest) {
 - 主题：${request.title}
 - 摘要：${request.summary}
 - 风格：${request.styleName}
+- 风格基底：${request.stylePromptBase}
 - 画幅比例：${request.ratio}
 - 体现知识卡片、观点卡片、信息图的版式感
 - 整体克制，适合公众号正文配图和小红书知识卡
@@ -29,6 +30,7 @@ export function buildCoverImagePrompt(request: GenerateCoverImageRequest) {
 - 封面主题：${request.coverThemeTitle}
 - 关键词：${request.coverThemeKeywords}
 - 风格：${request.styleName}
+- 风格基底：${request.stylePromptBase}
 - 画幅比例：${request.ratio}
 - 适合公众号或小红书内容封面，强调标题区和视觉主体区
 - 整体克制、高级、清晰，不要杂乱背景
@@ -82,6 +84,9 @@ ${request.visualDirection}
 
 【风格参考】
 ${request.styleName}
+
+【风格基底】
+${request.stylePromptBase}
 
 【构图要求】
 - 横版

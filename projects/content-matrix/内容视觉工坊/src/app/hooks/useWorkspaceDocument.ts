@@ -31,16 +31,24 @@ function getImageStyleName(workspace: WorkspaceData, key: Exclude<StyleSelection
   return workspace.styleAssets[index]?.name ?? workspace.styleAssets[0]?.name ?? "默认风格";
 }
 
+function getImageStyleAsset(workspace: WorkspaceData, key: Exclude<StyleSelectionKey, "wechatLayout">) {
+  const index = workspace.styleSelections[key];
+  return workspace.styleAssets[index] ?? workspace.styleAssets[0];
+}
+
 function buildCoverRequest(workspace: WorkspaceData, coverKey: "wechatCover" | "xiaohongshuCover") {
   const cover = workspace.covers.find((item) => item.key === coverKey);
   if (!cover) return null;
+  const styleAsset = getImageStyleAsset(workspace, coverKey);
 
   return {
     label: cover.label,
     articleTitle: workspace.article.title,
     coverThemeTitle: workspace.analysis.coverTheme.title,
     coverThemeKeywords: workspace.analysis.coverTheme.keywords,
-    styleName: getImageStyleName(workspace, coverKey),
+    styleName: styleAsset?.name ?? "默认风格",
+    stylePromptBase: styleAsset?.promptBase ?? "",
+    styleReferenceImages: styleAsset?.referenceImages ?? [],
     ratio: cover.ratio,
   };
 }
@@ -52,6 +60,7 @@ function isOutputEnabled(workspace: WorkspaceData, key: "knowledgeCards" | "wech
 function buildWechatInlineImageRequest(workspace: WorkspaceData, imageId: string) {
   const image = workspace.wechatInlineImages.find((item) => item.id === imageId);
   if (!image) return null;
+  const styleAsset = getImageStyleAsset(workspace, "wechatInlineImages");
 
   return {
     articleTheme: workspace.analysis.coverTheme.title,
@@ -61,7 +70,9 @@ function buildWechatInlineImageRequest(workspace: WorkspaceData, imageId: string
     sectionSummary: image.sectionSummary,
     sectionQuote: image.sectionQuote,
     visualDirection: image.visualDirection,
-    styleName: getImageStyleName(workspace, "wechatInlineImages"),
+    styleName: styleAsset?.name ?? "默认风格",
+    stylePromptBase: styleAsset?.promptBase ?? "",
+    styleReferenceImages: styleAsset?.referenceImages ?? [],
     ratio: image.ratio,
     width: image.width,
     height: image.height,
@@ -644,10 +655,13 @@ export function useWorkspaceDocument() {
     }));
 
     try {
+      const styleAsset = getImageStyleAsset(workspace, "knowledgeCards");
       const result = await generateCardImage({
         title: card.title,
         summary: card.summary,
-        styleName: getImageStyleName(workspace, "knowledgeCards"),
+        styleName: styleAsset?.name ?? "默认风格",
+        stylePromptBase: styleAsset?.promptBase ?? "",
+        styleReferenceImages: styleAsset?.referenceImages ?? [],
         ratio: workspace.cardSize.ratio,
         width: workspace.cardSize.width,
         height: workspace.cardSize.height,
@@ -787,10 +801,13 @@ export function useWorkspaceDocument() {
 
     for (const card of cards) {
       try {
+        const styleAsset = getImageStyleAsset(workspace, "knowledgeCards");
         const result = await generateCardImage({
           title: card.title,
           summary: card.summary,
-          styleName: getImageStyleName(workspace, "knowledgeCards"),
+          styleName: styleAsset?.name ?? "默认风格",
+          stylePromptBase: styleAsset?.promptBase ?? "",
+          styleReferenceImages: styleAsset?.referenceImages ?? [],
           ratio: workspace.cardSize.ratio,
           width: workspace.cardSize.width,
           height: workspace.cardSize.height,

@@ -209,6 +209,8 @@ export interface GenerateCardImageRequest {
   title: string;
   summary: string;
   styleName: string;
+  stylePromptBase: string;
+  styleReferenceImages: string[];
   ratio: string;
   width: number;
   height: number;
@@ -226,6 +228,8 @@ export interface GenerateCoverImageRequest {
   coverThemeTitle: string;
   coverThemeKeywords: string;
   styleName: string;
+  stylePromptBase: string;
+  styleReferenceImages: string[];
   ratio: string;
 }
 
@@ -267,6 +271,8 @@ export interface GenerateWechatInlineImageRequest {
   sectionQuote?: string;
   visualDirection: string;
   styleName: string;
+  stylePromptBase: string;
+  styleReferenceImages: string[];
   ratio: string;
   width: number;
   height: number;
