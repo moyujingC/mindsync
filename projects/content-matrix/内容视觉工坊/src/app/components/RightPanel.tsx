@@ -116,9 +116,19 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
               <article className="px-6 py-5 text-[13px] leading-[1.95]" style={{ fontFamily: "var(--font-sans-cn)", color: theme.bodyColor }}>
                 {data.draftReview.preview.intro ? (
                   <InheritBlock>
-                    <p className="italic text-[12.5px] leading-[1.85]" style={{ color: theme.mutedColor, marginBottom: theme.paragraphSpacing }}>
-                      {data.draftReview.preview.intro}
-                    </p>
+                    <div
+                      className="px-4 py-3"
+                      style={{
+                        marginBottom: theme.paragraphSpacing,
+                        background: theme.placeholderBg,
+                        borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`,
+                        borderRadius: Math.max(theme.quoteRadius - 2, 6),
+                      }}
+                    >
+                      <p className="italic text-[12.5px] leading-[1.85]" style={{ color: theme.mutedColor }}>
+                        {data.draftReview.preview.intro}
+                      </p>
+                    </div>
                   </InheritBlock>
                 ) : null}
 
@@ -194,10 +204,18 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
 function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock; inlineImage?: string; theme: ReturnType<typeof buildWechatLayoutTheme> }) {
   if (block.type === "heading2") {
     return (
-      <InheritBlock className="mt-0" >
-        <h2 style={{ marginTop: theme.sectionSpacing, fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 6.5, 15)}px`, fontWeight: 600, color: theme.headingColor }}>
-          {block.text}
-        </h2>
+      <InheritBlock className="mt-0">
+        <div
+          className="pl-3.5 py-0.5"
+          style={{
+            marginTop: theme.sectionSpacing,
+            borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`,
+          }}
+        >
+          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 6.5, 15)}px`, fontWeight: 600, color: theme.headingColor }}>
+            {block.text}
+          </h2>
+        </div>
       </InheritBlock>
     );
   }
@@ -253,10 +271,21 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "cta") {
     return (
-      <SystemBlock label="结尾 CTA · 系统生成" className="pt-5 border-t border-dashed border-border/80" style={{ marginTop: theme.sectionSpacing + 4 }}>
-        <div className="text-center text-[11.5px] text-muted-foreground">
-          <div className="mb-2.5" style={{ fontFamily: "var(--font-serif)", color: theme.headingColor, fontWeight: 500 }}>—— {block.title} ——</div>
-          <span className="inline-block px-3 py-1 text-[11px]" style={{ background: theme.ctaBg, color: theme.ctaText, borderRadius: theme.ctaRadius }}>{block.buttonText}</span>
+      <SystemBlock label="结尾 CTA · 系统生成" className="pt-0" style={{ marginTop: theme.sectionSpacing + 6 }}>
+        <div
+          className="px-4 py-4 text-center text-[11.5px] text-muted-foreground"
+          style={{
+            background: theme.placeholderBg,
+            border: `1px solid ${theme.placeholderBorder}`,
+            borderRadius: Math.max(theme.quoteRadius, 10),
+          }}
+        >
+          <div className="mb-3" style={{ fontFamily: "var(--font-serif)", color: theme.headingColor, fontWeight: 500, lineHeight: 1.7 }}>
+            {block.title}
+          </div>
+          <span className="inline-block px-3.5 py-1.5 text-[11px]" style={{ background: theme.ctaBg, color: theme.ctaText, borderRadius: theme.ctaRadius }}>
+            {block.buttonText}
+          </span>
         </div>
       </SystemBlock>
     );

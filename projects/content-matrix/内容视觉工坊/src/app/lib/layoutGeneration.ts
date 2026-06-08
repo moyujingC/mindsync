@@ -286,14 +286,14 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
   if (preview.intro) {
     htmlParts.push(
-      `<p style="margin:0 0 ${theme.paragraphSpacing}px;color:${theme.mutedColor};font-size:15px;"><em>${escapeHtml(preview.intro)}</em></p>`,
+      `<section style="margin:0 0 ${theme.paragraphSpacing}px;padding:12px 14px;background:${theme.placeholderBg};border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};border-radius:${Math.max(theme.quoteRadius - 2, 6)}px;"><p style="margin:0;color:${theme.mutedColor};font-size:15px;"><em>${escapeHtml(preview.intro)}</em></p></section>`,
     );
   }
 
   for (const block of preview.blocks) {
     if (block.type === "heading2") {
       htmlParts.push(
-        `<h2 style="margin:${theme.sectionSpacing}px 0 12px;font-size:${theme.headingFontSize}px;line-height:1.45;color:${theme.headingColor};">${escapeHtml(block.text)}</h2>`,
+        `<section style="margin:${theme.sectionSpacing}px 0 12px;padding-left:12px;border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};"><h2 style="margin:0;font-size:${theme.headingFontSize}px;line-height:1.45;color:${theme.headingColor};">${escapeHtml(block.text)}</h2></section>`,
       );
       continue;
     }
@@ -335,7 +335,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
     if (block.type === "cta") {
       htmlParts.push(
-        `<section style="margin:${theme.sectionSpacing + 4}px 0 8px;padding-top:18px;border-top:1px dashed ${theme.placeholderBorder};text-align:center;"><p style="margin:0 0 12px;color:${theme.headingColor};">${escapeHtml(block.title)}</p><p style="margin:0;"><span style="display:inline-block;padding:7px 14px;border-radius:${theme.ctaRadius}px;background:${theme.ctaBg};color:${theme.ctaText};font-size:13px;">${escapeHtml(block.buttonText)}</span></p></section>`,
+        `<section style="margin:${theme.sectionSpacing + 6}px 0 8px;padding:16px 14px;background:${theme.placeholderBg};border:1px solid ${theme.placeholderBorder};border-radius:${Math.max(theme.quoteRadius, 10)}px;text-align:center;"><p style="margin:0 0 12px;color:${theme.headingColor};line-height:1.7;">${escapeHtml(block.title)}</p><p style="margin:0;"><span style="display:inline-block;padding:8px 14px;border-radius:${theme.ctaRadius}px;background:${theme.ctaBg};color:${theme.ctaText};font-size:13px;">${escapeHtml(block.buttonText)}</span></p></section>`,
       );
     }
   }
