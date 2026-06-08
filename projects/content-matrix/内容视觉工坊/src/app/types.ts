@@ -291,7 +291,7 @@ export interface LayoutImagePlacement {
 }
 
 export type DraftPreviewBlock =
-  | { type: "paragraph"; text: string }
+  | { type: "paragraph"; text: string; tone?: "body" | "emphasis" }
   | { type: "heading2"; text: string }
   | { type: "blockquote"; text: string }
   | { type: "ordered-list"; items: string[] }

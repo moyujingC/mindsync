@@ -310,6 +310,23 @@ function PreviewBlock({
     );
   }
 
+  if (block.tone === "emphasis") {
+    return (
+      <p
+        style={{
+          marginTop: metrics.marginTop,
+          marginBottom: metrics.marginBottom,
+          lineHeight: 1.95,
+          fontSize: "13.5px",
+          color: theme.headingColor,
+          fontWeight: 500,
+        }}
+      >
+        {block.text}
+      </p>
+    );
+  }
+
   return <p style={{ marginTop: metrics.marginTop, marginBottom: metrics.marginBottom, lineHeight: 2 }}>{block.text}</p>;
 }
 
@@ -333,8 +350,8 @@ function getBlockSpacing(
 
   if (block.type === "paragraph") {
     return {
-      marginTop: prevBlock?.type === "heading2" ? 0 : prevBlock?.type === "image" ? 18 : paragraph,
-      marginBottom: nextBlock?.type === "heading2" ? 4 : nextBlock?.type === "image" ? 8 : 0,
+      marginTop: prevBlock?.type === "heading2" ? (block.tone === "emphasis" ? 2 : 0) : prevBlock?.type === "image" ? 18 : block.tone === "emphasis" ? paragraph + 2 : paragraph,
+      marginBottom: nextBlock?.type === "heading2" ? (block.tone === "emphasis" ? 8 : 4) : nextBlock?.type === "image" ? 8 : block.tone === "emphasis" ? 4 : 0,
     };
   }
 
