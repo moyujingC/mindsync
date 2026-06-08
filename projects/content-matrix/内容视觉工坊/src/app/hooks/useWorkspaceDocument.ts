@@ -84,6 +84,39 @@ function withFreshDraftReview(workspace: WorkspaceData) {
   };
 }
 
+function htmlToPlainText(html: string) {
+  if (typeof document === "undefined") return html;
+  const container = document.createElement("div");
+  container.innerHTML = html;
+  return container.innerText.replace(/\n{3,}/g, "\n\n").trim();
+}
+
+async function copyHtmlViaSelection(html: string) {
+  if (typeof document === "undefined") return false;
+
+  const container = document.createElement("div");
+  container.innerHTML = html;
+  container.contentEditable = "true";
+  container.style.position = "fixed";
+  container.style.pointerEvents = "none";
+  container.style.opacity = "0";
+  container.style.left = "-9999px";
+  container.style.top = "0";
+  document.body.appendChild(container);
+
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(container);
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+
+  const copied = document.execCommand("copy");
+
+  selection?.removeAllRanges();
+  document.body.removeChild(container);
+  return copied;
+}
+
 function createLayoutThemeDefaults() {
   return initialWorkspaceData.layoutThemes[0];
 }
@@ -312,21 +345,35 @@ export function useWorkspaceDocument() {
     const html = workspace.draftReview.editorHtml;
     if (!html) return;
 
-    await navigator.clipboard.writeText(html);
-    setCopyFeedback("已复制 HTML，可直接粘贴到公众号编辑器");
+    const plainText = htmlToPlainText(html);
+
+    if (window.ClipboardItem && navigator.clipboard?.write) {
+      const item = new ClipboardItem({
+        "text/html": new Blob([html], { type: "text/html" }),
+        "text/plain": new Blob([plainText], { type: "text/plain" }),
+      });
+      await navigator.clipboard.write([item]);
+    } else {
+      const copied = await copyHtmlViaSelection(html);
+      if (!copied) {
+        await navigator.clipboard.writeText(plainText);
+      }
+    }
+
+    setCopyFeedback("已复制富文本内容，可直接粘贴到公众号编辑器");
 
     setWorkspace((prev) => ({
       ...prev,
       workflowStages: prev.workflowStages.map((stage) =>
         stage.key === "draftSync"
-          ? { ...stage, status: "success", detail: "公众号 HTML 已复制到剪贴板", providerLabel: "手动粘贴" }
+          ? { ...stage, status: "success", detail: "公众号富文本内容已复制到剪贴板", providerLabel: "手动粘贴" }
           : stage,
       ),
       draftReview: {
         ...prev.draftReview,
         syncStatus: prev.draftReview.syncStatus.map((row) =>
-          row.label === "正文复制"
-            ? { ...row, note: "HTML 已复制，可直接粘贴到公众号编辑器" }
+          row.label === "复制方式"
+            ? { ...row, note: "富文本内容已复制，可直接粘贴到公众号编辑器" }
             : row,
         ),
       },
