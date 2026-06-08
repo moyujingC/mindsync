@@ -21,30 +21,29 @@ export function buildCardImagePrompt(request: GenerateCardImageRequest) {
 }
 
 export function buildCoverImagePrompt(request: GenerateCoverImageRequest) {
-  const isWechatWideCover = request.label === "公众号封面";
-  const isWechatShareCover = request.label === "公众号转发封面";
-  const coverSpecificRules = isWechatWideCover
-    ? `
-- 这是公众号列表页头条封面，画面应为横向长图
-- 强调左中右的阅读节奏，允许标题区与视觉主体并置
-- 不要做成知识卡片，不要出现纸面信息模块堆叠
-- 更像专栏封面、编辑封面、文章入口图
-`.trim()
-    : isWechatShareCover
-      ? `
-- 这是公众号文章被转发到聊天窗口或朋友圈时显示的小方图
-- 必须以 1:1 方形封面思路构图
-- 视觉主体要集中，中心识别度要高
-- 不依赖大段标题，不做长横排版，不做知识卡片结构
-- 即使缩小显示，也要一眼认出主题气质
-- 优先使用单一主体、简洁背景、强中心构图
-`.trim()
-      : `
-- 适合中文内容封面，强调标题区和视觉主体区
-`.trim();
+  const compositionRule =
+    request.ratio === "2.35 : 1"
+      ? "这是公众号列表页头条封面，画面应为横向长图，强调横向阅读节奏，允许标题区与视觉主体并置。"
+      : request.ratio === "1 : 1"
+        ? "这是公众号文章转发时显示的小方图，必须按 1:1 方形封面思路构图，主体集中，中心识别度高。"
+        : "这是内容平台封面图，强调视觉主体清楚、标题区明确。";
 
   return `
 请为中文内容封面生成图片。
+
+这是同一篇文章的一组双封面系统，需要统一视觉语言，但分别适配不同展示位：
+- 图 A：公众号列表大封面，比例 2.35:1
+- 图 B：公众号转发小封面，比例 1:1
+
+两张图必须属于同一套封面系统：
+- 主题一致
+- 气质一致
+- 配色一致
+- 材质一致
+- 主体意象一致
+- 但构图必须分别适配各自比例
+
+当前这一次要生成的是：${request.label}
 
 要求：
 - 封面类型：${request.label}
@@ -54,8 +53,8 @@ export function buildCoverImagePrompt(request: GenerateCoverImageRequest) {
 - 风格：${request.styleName}
 - 风格基底：${request.stylePromptBase}
 - 画幅比例：${request.ratio}
-- 封面专属要求：
-${coverSpecificRules}
+- 构图要求：${compositionRule}
+- 这是同一内容体系下的封面图，不要做成知识卡片，不要出现纸面信息模块堆叠
 - 整体克制、高级、清晰，不要杂乱背景
 - 不要自动生成大量错误中文文字
 - 如果出现文字，只保留极少量、可控的中文标题感
