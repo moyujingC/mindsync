@@ -247,7 +247,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "image") {
     return (
-      <SystemBlock label={`${block.placementLabel} · 正文配图`} className="mt-0" style={{ marginTop: theme.inlineImageSpacing }}>
+      <SystemBlock label="正文配图" className="mt-0" style={{ marginTop: theme.inlineImageSpacing }}>
         <figure>
           {inlineImage ? (
             <div className="overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg, borderRadius: theme.imageRadius }}>

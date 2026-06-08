@@ -193,11 +193,12 @@ function InlineImageCard({ image, onRegenerate }: { image: WechatInlineImageAsse
     method: "方法图",
     transition: "换气图",
   };
+  const sectionIndex = image.id.replace("inline-", "");
 
   return (
     <ResultCardShell
       aspect="16/9"
-      cornerChip={image.placementLabel}
+      cornerChip={`段落配图 ${sectionIndex}`}
       statusChip={
         processing ? (
           <><LoaderCircle className="w-3 h-3 animate-spin" /> 生成中</>
