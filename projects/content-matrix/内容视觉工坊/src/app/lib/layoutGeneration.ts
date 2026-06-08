@@ -286,7 +286,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
 
   if (preview.intro) {
     htmlParts.push(
-      `<section style="margin:0 0 ${theme.paragraphSpacing}px;padding:12px 14px;background:${theme.placeholderBg};border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};border-radius:${Math.max(theme.quoteRadius - 2, 6)}px;"><p style="margin:0;color:${theme.mutedColor};font-size:15px;"><em>${escapeHtml(preview.intro)}</em></p></section>`,
+      `<section style="margin:0 0 ${theme.paragraphSpacing}px;padding:14px;background:${theme.placeholderBg};border-left:${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder};border-radius:${Math.max(theme.quoteRadius - 2, 6)}px;"><p style="margin:0 0 8px;color:${theme.mutedColor};font-size:11px;letter-spacing:0.12em;">OPENING NOTE</p><p style="margin:0;color:${theme.bodyColor};font-size:15px;line-height:1.9;"><em>${escapeHtml(preview.intro)}</em></p></section>`,
     );
   }
 
@@ -323,7 +323,7 @@ function renderWechatEditorHtml(workspace: WorkspaceData, preview: DraftPreview)
       const inlineImage = workspace.wechatInlineImages.find((item) => item.id === block.imageId);
       if (inlineImage?.img) {
         htmlParts.push(
-          `<figure style="margin:${theme.inlineImageSpacing}px 0 0;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:8px;font-size:13px;color:${theme.mutedColor};">${escapeHtml(block.caption)}</figcaption></figure>`,
+          `<figure style="margin:${theme.inlineImageSpacing}px 0 0;text-align:${theme.captionAlign};"><img src="${escapeHtml(inlineImage.img)}" alt="${escapeHtml(inlineImage.sectionTheme)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:${theme.imageRadius}px;background:${theme.figureBg};" /><figcaption style="margin-top:10px;"><p style="margin:0 0 4px;color:${theme.mutedColor};font-size:11px;letter-spacing:0.12em;">INLINE IMAGE</p><p style="margin:0;color:${theme.mutedColor};font-size:13px;line-height:1.7;">${escapeHtml(block.caption)}</p></figcaption></figure>`,
         );
       } else {
         htmlParts.push(

@@ -117,7 +117,7 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                 {data.draftReview.preview.intro ? (
                   <InheritBlock>
                     <div
-                      className="px-4 py-3"
+                      className="px-4 py-3.5"
                       style={{
                         marginBottom: theme.paragraphSpacing,
                         background: theme.placeholderBg,
@@ -125,7 +125,10 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                         borderRadius: Math.max(theme.quoteRadius - 2, 6),
                       }}
                     >
-                      <p className="italic text-[12.5px] leading-[1.85]" style={{ color: theme.mutedColor }}>
+                      <div className="mb-2 text-[10px] tracking-[0.18em]" style={{ color: theme.mutedColor }}>
+                        OPENING NOTE
+                      </div>
+                      <p className="italic text-[12.5px] leading-[1.9]" style={{ color: theme.bodyColor }}>
                         {data.draftReview.preview.intro}
                       </p>
                     </div>
@@ -263,7 +266,14 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
               <div className="text-[11px]">图片尚未生成</div>
             </div>
           )}
-          <figcaption className="text-[11px] text-muted-foreground mt-2" style={{ textAlign: theme.captionAlign }}>▲ {block.caption}</figcaption>
+          <figcaption className="mt-2.5 space-y-1" style={{ textAlign: theme.captionAlign }}>
+            <div className="text-[9.5px] tracking-[0.14em]" style={{ color: theme.mutedColor }}>
+              INLINE IMAGE
+            </div>
+            <div className="text-[11px] leading-[1.7]" style={{ color: theme.mutedColor }}>
+              {block.caption}
+            </div>
+          </figcaption>
         </figure>
       </SystemBlock>
     );

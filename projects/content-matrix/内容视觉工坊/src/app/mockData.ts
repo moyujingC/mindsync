@@ -1,6 +1,7 @@
 import type { WorkspaceData } from "./types";
+import { buildDraftReview } from "./lib/layoutGeneration";
 
-export const workspaceData: WorkspaceData = {
+const baseWorkspaceData = {
   article: {
     fileName: "AI 最磨人的陷阱：拉高了能力，透支了人生.md",
     updatedAt: "14:23",
@@ -494,98 +495,10 @@ AI拓宽了我们的能力边界，我们必须守住自己的精力边界。`,
       provider: "mock",
     },
   ],
-  draftReview: {
-    readyTitle: "可复制到公众号编辑器",
-    readyDescription: "系统已完成结构继承、重点识别和正文配图编排",
-    reviewChecks: [
-      { title: "Markdown 结构", detail: "6 H2 · 13 处重点强调已保留", status: "pass" },
-      { title: "重点句识别", detail: "3 处核心判断已抽出", status: "pass" },
-      { title: "插图位编排", detail: "系统已决定 6 处正文配图位置", status: "pass" },
-      { title: "公众号格式", detail: "标题、导语、正文与结尾 CTA 已整理", status: "pass" },
-    ],
-    syncStatus: [
-      { label: "正文排版", note: "Markdown 已转为公众号阅读稿 · 6 个内容段" },
-      { label: "正文配图", note: "6 张正文配图已规划" },
-      { label: "封面状态", note: "已保留公众号封面和小红书封面的输出位" },
-      { label: "正文复制", note: "可复制 HTML 后手动粘贴到公众号编辑器" },
-    ],
-    imagePlacements: [
-      {
-        imageId: "inline-01",
-        placementLabel: "图片位 #1",
-        sectionHeading: "以前很多事，不是不想做，是推进成本太高",
-        anchorText: "以前很多事，不是不想做，是推进成本太高",
-        rationale: "用于承接第一节主观点，在首个论点段后插入，避免开头信息密度过高。",
-        sectionType: "concept",
-      },
-      {
-        imageId: "inline-02",
-        placementLabel: "图片位 #2",
-        sectionHeading: "AI打破了成本壁垒，也打开了无限的可能性",
-        anchorText: "AI打破了成本壁垒，也打开了无限的可能性",
-        rationale: "对应第二节，用于承接从高成本时代进入高可行性时代的转折。",
-        sectionType: "transition",
-      },
-      {
-        imageId: "inline-03",
-        placementLabel: "图片位 #3",
-        sectionHeading: "可推进的事越多，需要做的判断就越累",
-        anchorText: "可推进的事越多，需要做的判断就越累",
-        rationale: "对应第三节，帮助长段论述中段换气。",
-        sectionType: "concept",
-      },
-      {
-        imageId: "inline-04",
-        placementLabel: "图片位 #4",
-        sectionHeading: "真正的疲惫，从来不是执行，是判断与收口",
-        anchorText: "真正的疲惫，从来不是执行，是判断与收口",
-        rationale: "对应第四节，在核心结论段落后做视觉停顿。",
-        sectionType: "concept",
-      },
-      {
-        imageId: "inline-05",
-        placementLabel: "图片位 #5",
-        sectionHeading: "做内容的执念，最容易放大这份疲惫",
-        anchorText: "做内容的执念，最容易放大这份疲惫",
-        rationale: "对应第五节，帮助从认知问题过渡到内容创作现场。",
-        sectionType: "transition",
-      },
-      {
-        imageId: "inline-06",
-        placementLabel: "图片位 #6",
-        sectionHeading: "不是少用AI，而是给自己设边界",
-        anchorText: "不是少用AI，而是给自己设边界",
-        rationale: "对应最后一节，在收束段后强调全文结论。",
-        sectionType: "transition",
-      },
-    ],
-    preview: {
-      title: "AI 最磨人的陷阱：拉高了能力，透支了人生",
-      accountName: "墨予镜",
-      publishDate: "2026年6月8日",
-      intro: "这段时间，我一直在复盘自己长期重度使用 AI 的真实状态。真正高频、沉浸式用下来，我最先收获的不是高效与松弛，而是一种隐秘极强、慢慢磨人的精神疲惫。",
-      blocks: [
-        { type: "heading2", text: "以前很多事，不是不想做，是推进成本太高" },
-        { type: "paragraph", text: "从前很多事，不是没有价值，也不是不值得深耕，只是推进成本太高，高到让人被动止步、自动筛选、理性放弃。" },
-        { type: "image", imageId: "inline-01", placementLabel: "图片位 #1", caption: "以前很多事，不是不想做，是推进成本太高" },
-        { type: "heading2", text: "AI打破了成本壁垒，也打开了无限的可能性" },
-        { type: "paragraph", text: "AI 让想不通的难题、单薄的想法和粗糙的提纲都突然有了落地机会，也让无数从前被高成本掩盖的人生可能性浮了上来。" },
-        { type: "image", imageId: "inline-02", placementLabel: "图片位 #2", caption: "AI打破了成本壁垒，也打开了无限的可能性" },
-        { type: "heading2", text: "可推进的事越多，需要做的判断就越累" },
-        { type: "paragraph", text: "进入 AI 时代之后，大部分工作不再有天然终点。所有方向看起来都合理、都值得深挖，最后最耗人的反而变成了持续判断。" },
-        { type: "image", imageId: "inline-03", placementLabel: "图片位 #3", caption: "可推进的事越多，需要做的判断就越累" },
-        { type: "heading2", text: "真正的疲惫，从来不是执行，是判断与收口" },
-        { type: "paragraph", text: "AI 不会疲惫，但人会。真正消耗人的，不是执行动作本身，而是持续筛选、反复判断、不断取舍、强行收口。" },
-        { type: "image", imageId: "inline-04", placementLabel: "图片位 #4", caption: "真正的疲惫，从来不是执行，是判断与收口" },
-        { type: "heading2", text: "做内容的执念，最容易放大这份疲惫" },
-        { type: "paragraph", text: "很多时候我只是想写一篇松弛的随笔，但一旦打开 AI，各种完美主义顾虑就会把轻表达升级成一项繁重的研究项目。" },
-        { type: "image", imageId: "inline-05", placementLabel: "图片位 #5", caption: "做内容的执念，最容易放大这份疲惫" },
-        { type: "heading2", text: "不是少用AI，而是给自己设边界" },
-        { type: "paragraph", text: "不是所有能做的事都要立刻去做，不是所有能深挖的方向都要纳入主线。AI 拓宽了能力边界，我们更要守住精力边界。" },
-        { type: "image", imageId: "inline-06", placementLabel: "图片位 #6", caption: "不是少用AI，而是给自己设边界" },
-        { type: "cta", title: "如果你也有过这种被 AI 拉高能力、却慢慢透支精力的感受，欢迎留言告诉我", buttonText: "点亮「在看」 · 分享给同样在思考的人" },
-      ],
-    },
-    editorHtml: "<section data-tool=\"content-matrix\"><p>已切换到《AI 最磨人的陷阱：拉高了能力，透支了人生》的 mock 审稿内容。</p></section>",
-  },
+  draftReview: {} as WorkspaceData["draftReview"],
+};
+
+export const workspaceData: WorkspaceData = {
+  ...baseWorkspaceData,
+  draftReview: buildDraftReview(baseWorkspaceData as WorkspaceData),
 };
