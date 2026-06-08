@@ -202,11 +202,12 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
         <div
           className="pl-3.5"
           style={{
-            marginTop: theme.sectionSpacing,
-            borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`,
+            marginTop: theme.sectionSpacing + 4,
+            paddingTop: 2,
+            borderLeft: `${Math.max(theme.quoteBorderWidth - 2, 1)}px solid ${theme.placeholderBorder}`,
           }}
         >
-          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 5.5, 16)}px`, fontWeight: 600, lineHeight: 1.55, color: theme.headingColor }}>
+          <h2 style={{ fontFamily: "var(--font-serif)", fontSize: `${Math.max(theme.headingFontSize - 4.5, 17)}px`, fontWeight: 600, lineHeight: 1.6, color: theme.headingColor }}>
             {block.text}
           </h2>
         </div>
@@ -217,7 +218,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
   if (block.type === "blockquote") {
     return (
       <InheritBlock className="mt-0">
-        <blockquote className="px-4 py-3 text-[12.5px] leading-[1.85]" style={{ marginTop: theme.quoteSpacing, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${theme.quoteBorderWidth}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
+        <blockquote className="px-4 py-3.5 text-[12.5px] leading-[1.9]" style={{ marginTop: theme.quoteSpacing + 2, fontFamily: "var(--font-serif)", background: theme.quoteBg, borderLeft: `${Math.max(theme.quoteBorderWidth - 1, 2)}px solid ${theme.quoteBorder}`, borderRadius: theme.quoteRadius, color: theme.bodyColor }}>
           {block.text}
         </blockquote>
       </InheritBlock>
@@ -227,7 +228,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
   if (block.type === "ordered-list") {
     return (
       <InheritBlock className="mt-0">
-        <ol className="space-y-2 pl-0.5" style={{ marginTop: theme.paragraphSpacing }}>
+        <ol className="space-y-2.5 pl-0.5" style={{ marginTop: theme.paragraphSpacing + 2 }}>
           {block.items.map((item, i) => (
             <li key={`${item}-${i}`} className="flex gap-2.5">
               <span className="shrink-0" style={{ fontFamily: "var(--font-serif)", fontWeight: 600, color: theme.headingColor }}>{i + 1}.</span>
@@ -241,7 +242,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "image") {
     return (
-      <SystemBlock className="mt-0" style={{ marginTop: theme.inlineImageSpacing }}>
+      <SystemBlock className="mt-0" style={{ marginTop: theme.inlineImageSpacing + 2 }}>
         <figure>
           {inlineImage ? (
             <div className="overflow-hidden relative" style={{ aspectRatio: "16/9", maxHeight: 240, background: theme.figureBg, borderRadius: theme.imageRadius }}>
@@ -257,8 +258,8 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
               <div className="text-[11px]">这张正文配图还未生成</div>
             </div>
           )}
-          <figcaption className="mt-2.5" style={{ textAlign: theme.captionAlign }}>
-            <div className="text-[11px] leading-[1.8]" style={{ color: theme.mutedColor }}>
+          <figcaption className="mt-3" style={{ textAlign: theme.captionAlign }}>
+            <div className="text-[10.5px] leading-[1.9]" style={{ color: theme.mutedColor }}>
               {block.caption}
             </div>
           </figcaption>
@@ -269,9 +270,9 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
 
   if (block.type === "cta") {
     return (
-      <SystemBlock className="pt-0" style={{ marginTop: theme.sectionSpacing + 6 }}>
+      <SystemBlock className="pt-0" style={{ marginTop: theme.sectionSpacing + 10 }}>
         <div
-          className="px-4 py-4 text-center text-[11.5px] text-muted-foreground"
+          className="px-4 py-4.5 text-center text-[11.5px] text-muted-foreground"
           style={{
             background: theme.placeholderBg,
             borderTop: `1px solid ${theme.placeholderBorder}`,
@@ -292,7 +293,7 @@ function PreviewBlock({ block, inlineImage, theme }: { block: DraftPreviewBlock;
     );
   }
 
-  return <p style={{ marginTop: theme.paragraphSpacing }}>{block.text}</p>;
+  return <p style={{ marginTop: theme.paragraphSpacing + 2, lineHeight: 2 }}>{block.text}</p>;
 }
 
 const stageLabelMap: Record<GenerationStageStatus, string> = {
