@@ -276,11 +276,11 @@ export function LeftPanel({
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-[10px] text-muted-foreground">
-                    {savedWechatEditorImport ? `已保存：${savedWechatEditorImport.path}` : "可保存为本地 JSON，后续我直接读取文件，不再靠截图。"}
+                    {savedWechatEditorImport ? `当前基准：${savedWechatEditorImport.label} · ${savedWechatEditorImport.path}` : "可保存为本地 JSON，后续我直接读取文件，不再靠截图。"}
                   </div>
                   <Button type="button" size="sm" className="h-7 px-2.5 shrink-0" onClick={() => void onSaveWechatEditorImport()}>
                     <Save className="w-3 h-3" />
-                    保存
+                    保存为蓝雾静读版
                   </Button>
                 </div>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10.5px] text-muted-foreground">

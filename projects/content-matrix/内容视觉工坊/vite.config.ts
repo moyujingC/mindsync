@@ -223,6 +223,7 @@ function localSaveWechatEditorImportApi() {
 
           const filePath = path.join(dir, `${stamp}_${slug}.json`)
           const payload = {
+            label: body.label || '未命名样式样本',
             savedAt: timestamp.toISOString(),
             title: body.title || '',
             html: body.html || '',
@@ -234,6 +235,7 @@ function localSaveWechatEditorImportApi() {
 
           res.setHeader('Content-Type', 'application/json')
           res.end(JSON.stringify({
+            label: payload.label,
             savedAt: payload.savedAt,
             path: filePath,
           }))

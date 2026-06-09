@@ -449,6 +449,7 @@ export interface WechatEditorImportSummary {
 }
 
 export interface SavedWechatEditorImport {
+  label: string;
   savedAt: string;
   path: string;
 }

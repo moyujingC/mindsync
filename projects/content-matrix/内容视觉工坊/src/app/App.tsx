@@ -71,6 +71,7 @@ export default function App() {
   async function handleSaveWechatEditorImport() {
     if (!wechatEditorImportSummary) return;
     const saved = await saveWechatEditorImport({
+      label: "蓝雾静读版",
       title: workspace.article.title || "wechat-editor-import",
       html: wechatEditorImportSummary.html,
       plainText: wechatEditorImportSummary.plainText,

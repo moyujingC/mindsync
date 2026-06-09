@@ -145,6 +145,7 @@ export function parseWechatEditorPastePayload(html: string, plainText: string): 
 }
 
 export async function saveWechatEditorImport(payload: {
+  label: string;
   title: string;
   html: string;
   plainText: string;
