@@ -3,7 +3,24 @@ import { Link } from '../../router';
 import { tracks, articles, featuredProducts } from '../../data';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
-const heroImg = 'https://images.unsplash.com/photo-1768836180164-070b4c1a8f94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1600&q=80';
+const heroImg = `data:image/svg+xml;utf8,${encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1000'>
+    <rect width='800' height='1000' fill='#F3EEE7'/>
+    <circle cx='610' cy='270' r='250' fill='#E9E3DA' opacity='0.9'/>
+    <circle cx='430' cy='690' r='220' fill='#ECE7DF' opacity='0.95'/>
+    <path d='M-30 180 C140 110, 260 260, 390 210 S650 130, 840 235' fill='none' stroke='#C7BEB2' stroke-width='24' stroke-linecap='round' opacity='0.45'/>
+    <path d='M70 130 C220 250, 330 150, 470 265 S700 335, 840 225' fill='none' stroke='#D5CDC2' stroke-width='18' stroke-linecap='round' opacity='0.6'/>
+    <path d='M100 790 C250 700, 360 855, 500 785 S700 720, 830 820' fill='none' stroke='#CFC6BA' stroke-width='16' stroke-linecap='round' opacity='0.5'/>
+    <rect x='118' y='212' width='250' height='140' rx='16' fill='#F7F4EF' opacity='0.82'/>
+    <rect x='152' y='250' width='130' height='12' rx='6' fill='#C8BFB4'/>
+    <rect x='152' y='280' width='178' height='10' rx='5' fill='#D8D0C6'/>
+    <rect x='152' y='304' width='150' height='10' rx='5' fill='#D8D0C6'/>
+    <rect x='398' y='608' width='220' height='118' rx='16' fill='#F7F4EF' opacity='0.78'/>
+    <rect x='430' y='645' width='118' height='12' rx='6' fill='#C8BFB4'/>
+    <rect x='430' y='674' width='150' height='10' rx='5' fill='#D8D0C6'/>
+    <rect x='430' y='698' width='132' height='10' rx='5' fill='#D8D0C6'/>
+  </svg>`
+)}`;
 
 export function HeroSection() {
   return (
