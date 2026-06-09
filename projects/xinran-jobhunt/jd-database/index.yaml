@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-06-08
+last_updated: 2026-06-09
 description: >
   馨冉求职 JD 数据库总索引。每次新增岗位时，同时补一条索引记录。
 
@@ -276,3 +276,54 @@ jobs:
       - "Agent平台"
       - "Dify"
       - "业务场景落地"
+  - job_id: "2026-06-09-wuxi-biologics-agent-ai-product-manager-001"
+    captured_at: "2026-06-09"
+    company: "药明生物"
+    role_title: "Agent AI Product Manager"
+    city: "上海"
+    source_platform: "LinkedIn公开职位页"
+    status: "analyzed"
+    primary_track: "ai-pm"
+    match_score: 90
+    file: "jobs/2026-06-09-药明生物-Agent AI Product Manager.md"
+    keywords:
+      - "Agentic AI"
+      - "AI Native"
+      - "企业工作流"
+      - "RAG"
+      - "评估体系"
+      - "可观测性"
+  - job_id: "2026-06-09-bytedance-maas-solutions-architect-001"
+    captured_at: "2026-06-09"
+    company: "字节跳动"
+    role_title: "机器学习平台产品解决方案架构师-火山方舟MaaS"
+    city: "上海"
+    source_platform: "LinkedIn公开职位页"
+    status: "analyzed"
+    primary_track: "ai-consulting"
+    match_score: 91
+    file: "jobs/2026-06-09-字节跳动-机器学习平台产品解决方案架构师-火山方舟MaaS.md"
+    keywords:
+      - "MaaS"
+      - "解决方案架构"
+      - "机器学习平台"
+      - "大模型微调"
+      - "推理优化"
+      - "规模化售卖"
+  - job_id: "2026-06-09-bytedance-doubao-fde-001"
+    captured_at: "2026-06-09"
+    company: "字节跳动"
+    role_title: "豆包AI大模型FDE（Forward Deployed Engineer）-火山方舟MaaS"
+    city: "上海"
+    source_platform: "LinkedIn公开职位页"
+    status: "analyzed"
+    primary_track: "fde"
+    match_score: 94
+    file: "jobs/2026-06-09-字节跳动-豆包AI大模型FDE-火山方舟MaaS.md"
+    keywords:
+      - "FDE"
+      - "Multi-Agent"
+      - "RAG"
+      - "Demo"
+      - "智能体工作流"
+      - "企业AI落地"
