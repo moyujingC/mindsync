@@ -1,0 +1,256 @@
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+
+export type ArticleBlock =
+  | { type: "eyebrow"; text: string }
+  | { type: "paragraph"; text: string }
+  | { type: "quote"; text: string }
+  | { type: "section"; title: string; body: string }
+  | { type: "note"; text: string }
+  | { type: "image"; label: string };
+
+export type WorkspaceArticle = {
+  title: string;
+  body: string;
+};
+
+export type GeneratedImageItem = {
+  id: string;
+  imageUrl: string;
+  prompt: string;
+  width: number;
+  height: number;
+};
+
+export type GenerationRecord = {
+  id: string;
+  source: "general-image";
+  title: string;
+  purposeKey: string;
+  purposeLabel: string;
+  presetLabel: string;
+  styleName: string;
+  images: GeneratedImageItem[];
+  createdAt: string;
+};
+
+export type WorkspaceTab = "workbench" | "wechat" | "assets" | "image" | "sync";
+
+type WorkspaceContextValue = {
+  activeTab: WorkspaceTab;
+  setActiveTab: (tab: WorkspaceTab) => void;
+  currentArticle: WorkspaceArticle;
+  setCurrentArticle: (next: WorkspaceArticle) => void;
+  currentArticleBlocks: ArticleBlock[];
+  currentArticleMeta: string;
+  latestGeneration: GenerationRecord | null;
+  setLatestGeneration: (record: GenerationRecord | null) => void;
+};
+
+const DEFAULT_ARTICLE: WorkspaceArticle = {
+  title: "专注不是用力，而是放弃",
+  body: `写在前面
+
+当我们谈论"专注"，常常先入为主地想到压抑、克制、剥夺。但真正的专注不是用力，而是放弃。放弃那些看起来很重要、其实并不属于这一刻的事。
+
+> 真正的专注，不是用力，而是放弃。
+
+提示：如果你正在被碎片化拖着走，这篇文章更适合慢一点看。
+
+一、为什么注意力会碎片化
+
+我们以为是任务在抢夺注意力，其实是切换。每一次切换都需要重新加载上下文，而这种成本很难被察觉。它不像加班一样显眼，但会在一天结束时让人感到疲惫，却说不出做了什么。
+
+二、专注的真正成本
+
+真正的专注从来不是用力，而是放弃。放弃那些看起来很重要、其实并不属于这一刻的事。专注的成本，从来不在“开始”，而在“拒绝”。
+
+图：正文配图占位 · 蓝雾静读
+
+三、把专注当作长期能力
+
+长期的专注需要节律，而不是冲刺。它需要被设计——环境、时段、恢复，缺一不可。当我们把它当作能力来培养，而不是当作一次决心，它才能真正稳定下来。`,
+};
+
+const STORAGE_KEYS = {
+  article: "content-visual-studio.current-article.v1",
+  activeTab: "content-visual-studio.active-tab.v1",
+  latestGeneration: "content-visual-studio.latest-generation.v1",
+} as const;
+
+const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
+
+export function WorkspaceProvider({ children }: { children: ReactNode }) {
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>(() =>
+    readStoredJson(STORAGE_KEYS.activeTab, "workbench")
+  );
+  const [currentArticle, setCurrentArticle] = useState<WorkspaceArticle>(() =>
+    readStoredJson(STORAGE_KEYS.article, DEFAULT_ARTICLE)
+  );
+  const [latestGeneration, setLatestGeneration] = useState<GenerationRecord | null>(() =>
+    readStoredJson(STORAGE_KEYS.latestGeneration, null)
+  );
+
+  const currentArticleBlocks = useMemo(
+    () => buildArticleBlocks(currentArticle.body),
+    [currentArticle.body]
+  );
+  const currentArticleMeta = useMemo(
+    () => buildArticleMeta(currentArticle.body),
+    [currentArticle.body]
+  );
+
+  const value = useMemo(
+    () => ({
+      activeTab,
+      setActiveTab,
+      currentArticle,
+      setCurrentArticle,
+      currentArticleBlocks,
+      currentArticleMeta,
+      latestGeneration,
+      setLatestGeneration,
+    }),
+    [
+      activeTab,
+      currentArticle,
+      currentArticleBlocks,
+      currentArticleMeta,
+      latestGeneration,
+    ]
+  );
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.activeTab, JSON.stringify(activeTab));
+  }, [activeTab]);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.article, JSON.stringify(currentArticle));
+  }, [currentArticle]);
+
+  useEffect(() => {
+    if (!latestGeneration) {
+      window.localStorage.removeItem(STORAGE_KEYS.latestGeneration);
+      return;
+    }
+    window.localStorage.setItem(
+      STORAGE_KEYS.latestGeneration,
+      JSON.stringify(latestGeneration)
+    );
+  }, [latestGeneration]);
+
+  return (
+    <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>
+  );
+}
+
+export function useWorkspace() {
+  const value = useContext(WorkspaceContext);
+  if (!value) {
+    throw new Error("useWorkspace must be used within WorkspaceProvider");
+  }
+  return value;
+}
+
+export function createGenerationId(prefix: string) {
+  return `${prefix}-${Date.now().toString(36)}`;
+}
+
+function readStoredJson<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  const raw = window.localStorage.getItem(key);
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function buildArticleMeta(body: string) {
+  const charCount = body.replace(/\s+/g, "").length;
+  const paragraphCount = body
+    .split(/\n{2,}/)
+    .map((item) => item.trim())
+    .filter(Boolean).length;
+  return `${charCount} 字 · ${paragraphCount} 段`;
+}
+
+function buildArticleBlocks(body: string): ArticleBlock[] {
+  const chunks = body
+    .split(/\n{2,}/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const blocks: ArticleBlock[] = [];
+
+  for (let index = 0; index < chunks.length; index += 1) {
+    const chunk = chunks[index];
+
+    if (/^(写在前面|前言|导读)$/u.test(chunk)) {
+      blocks.push({ type: "eyebrow", text: chunk });
+      continue;
+    }
+
+    if (/^>\s*/.test(chunk)) {
+      blocks.push({ type: "quote", text: chunk.replace(/^>\s*/, "") });
+      continue;
+    }
+
+    if (/^(提示|备注|Note)[:：]/i.test(chunk)) {
+      blocks.push({ type: "note", text: chunk.replace(/^(提示|备注|Note)[:：]\s*/i, "") });
+      continue;
+    }
+
+    if (/^(图|图片)[:：]/.test(chunk)) {
+      blocks.push({ type: "image", label: chunk.replace(/^(图|图片)[:：]\s*/, "") });
+      continue;
+    }
+
+    if (/^#{1,3}\s+/.test(chunk)) {
+      const title = chunk.replace(/^#{1,3}\s+/, "");
+      const next = chunks[index + 1];
+      if (next && !looksLikeStandaloneBlock(next)) {
+        blocks.push({ type: "section", title, body: next });
+        index += 1;
+      } else {
+        blocks.push({ type: "eyebrow", text: title });
+      }
+      continue;
+    }
+
+    if (/^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)) {
+      const next = chunks[index + 1];
+      if (next && !looksLikeStandaloneBlock(next)) {
+        blocks.push({ type: "section", title: chunk, body: next });
+        index += 1;
+      } else {
+        blocks.push({ type: "paragraph", text: chunk });
+      }
+      continue;
+    }
+
+    blocks.push({ type: "paragraph", text: chunk });
+  }
+
+  return blocks.length > 0
+    ? blocks
+    : [{ type: "paragraph", text: body.trim() || DEFAULT_ARTICLE.body }];
+}
+
+function looksLikeStandaloneBlock(chunk: string) {
+  return (
+    /^(写在前面|前言|导读)$/u.test(chunk) ||
+    /^>\s*/.test(chunk) ||
+    /^(提示|备注|Note)[:：]/i.test(chunk) ||
+    /^(图|图片)[:：]/.test(chunk) ||
+    /^#{1,3}\s+/.test(chunk) ||
+    /^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)
+  );
+}
