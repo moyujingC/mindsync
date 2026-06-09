@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import {
   FileText,
   ClipboardPaste,
@@ -20,6 +20,10 @@ import {
   Wand2,
   Minus,
   Plus,
+  RotateCcw,
+  Lock,
+  Unlock,
+  Replace,
 } from "lucide-react";
 import { Panel, Btn, ToggleRow, Tag, COLORS, FoggyArt, Divider } from "./ui-kit";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
@@ -66,6 +70,8 @@ export function Workbench() {
     saveGenerationRecord,
     planningState,
     savePlanningState,
+    workbenchState,
+    setWorkbenchState,
   } = useWorkspace();
   const knowledgePreset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
   const quotePreset = findPreset(DEFAULT_PRESET_KEYS.quoteCard)?.preset;
@@ -116,6 +122,9 @@ export function Workbench() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStatus, setGenerationStatus] = useState("");
   const [generationError, setGenerationError] = useState("");
+  const [regeneratingCardIndex, setRegeneratingCardIndex] = useState<number | null>(null);
+  const replaceCardInputRef = useRef<HTMLInputElement | null>(null);
+  const [replaceTargetCardIndex, setReplaceTargetCardIndex] = useState<number | null>(null);
   const toggleQuote = (i: number) =>
     setSelectedQuotes((s) =>
       s.includes(i) ? s.filter((x) => x !== i) : [...s, i]
@@ -139,11 +148,146 @@ export function Workbench() {
   const latestLogText = latestGeneration
     ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
     : "cover_03 → 桌面与一杯茶";
+  const lockedKnowledgeCardIndexes = workbenchState.lockedKnowledgeCardIndexes;
+  const unlockedPlannedCards = plannedCards.filter(
+    (card) => !lockedKnowledgeCardIndexes.includes(card.index)
+  );
   const estimatedCredits =
-    (outputs.knowledge ? plannedCards.length : 0) +
+    (outputs.knowledge ? unlockedPlannedCards.length : 0) +
     (outputs.quote ? Math.max(1, selectedQuotes.length) : 0) +
     (outputs.cover ? 3 : 0) +
     (outputs.inline ? plannedInlineImages.length : 0);
+
+  function toggleKnowledgeCardLock(cardIndex: number) {
+    const nextLocked = lockedKnowledgeCardIndexes.includes(cardIndex)
+      ? lockedKnowledgeCardIndexes.filter((item) => item !== cardIndex)
+      : [...lockedKnowledgeCardIndexes, cardIndex].sort((a, b) => a - b);
+    setWorkbenchState({
+      ...workbenchState,
+      lockedKnowledgeCardIndexes: nextLocked,
+    });
+  }
+
+  function replaceKnowledgeCardImage(cardIndex: number, imageUrl: string, prompt: string) {
+    const card = plannedCards.find((item) => item.index === cardIndex);
+    if (!card) return;
+
+    const existingRecord = knowledgeGeneration;
+    const nextImages = existingRecord?.images ? [...existingRecord.images] : [];
+    const existingIndex = nextImages.findIndex((item) => item.cardLink?.index === cardIndex);
+    const nextImage = {
+      id: existingIndex >= 0 ? nextImages[existingIndex].id : `manual-${Date.now().toString(36)}-${cardIndex}`,
+      imageUrl,
+      prompt,
+      width: knowledgePreset?.w || 1280,
+      height: knowledgePreset?.h || 1706,
+      cardLink: {
+        index: card.index,
+        title: card.title,
+        summary: card.summary,
+      },
+    };
+
+    if (existingIndex >= 0) {
+      nextImages.splice(existingIndex, 1, nextImage);
+    } else {
+      nextImages.push(nextImage);
+    }
+
+    const nextRecord: GenerationRecord = {
+      id: existingRecord?.id || `gen-${Date.now().toString(36)}`,
+      source: "general-image",
+      title: currentArticle.title,
+      purposeKey: "xhs_card",
+      purposeLabel: "小红书知识卡片 / 图文配图",
+      presetLabel: knowledgePreset?.label || "小红书 3:4 高清 · 1280×1706",
+      styleName: existingRecord?.styleName || "蓝雾静读",
+      images: nextImages.sort((a, b) => (a.cardLink?.index ?? 999) - (b.cardLink?.index ?? 999)),
+      createdAt: new Date().toISOString(),
+    };
+
+    saveGenerationRecord(nextRecord);
+  }
+
+  async function handleRegenerateKnowledgeCard(cardIndex: number) {
+    const preset = knowledgePreset;
+    const card = plannedCards.find((item) => item.index === cardIndex);
+    if (!preset || !card) return;
+
+    setRegeneratingCardIndex(cardIndex);
+    setGenerationError("");
+    setGenerationStatus(`正在重生成知识卡 ${String(cardIndex).padStart(2, "0")}`);
+
+    try {
+      const response = await fetch("/api/generate-images", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          articleTitle: currentArticle.title,
+          prompt: `为文章《${currentArticle.title}》的第 ${card.index} 张小红书知识卡片生成主视觉。卡片标题：${card.title}。卡片摘要：${card.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。`,
+          negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+          width: preset.w,
+          height: preset.h,
+          count: 1,
+          purposeKey: "xhs_card",
+          purposeLabel: "小红书知识卡片 / 图文配图",
+          presetKey: preset.k,
+          presetLabel: preset.label,
+          styleName: "蓝雾静读",
+          cardLink: {
+            index: card.index,
+            title: card.title,
+            summary: card.summary,
+          },
+        }),
+      });
+      const payload = (await response.json()) as GenerationRecord | { message?: string; error?: string };
+      if (!response.ok) {
+        throw new Error(payload.message || payload.error || "知识卡重生成失败");
+      }
+      const record = payload as GenerationRecord;
+      const merged = {
+        ...(knowledgeGeneration || record),
+        ...record,
+        images: [
+          ...(knowledgeGeneration?.images.filter((item) => item.cardLink?.index !== card.index) || []),
+          ...record.images,
+        ].sort((a, b) => (a.cardLink?.index ?? 999) - (b.cardLink?.index ?? 999)),
+        createdAt: new Date().toISOString(),
+      } satisfies GenerationRecord;
+      saveGenerationRecord(merged);
+      setGenerationStatus(`知识卡 ${String(cardIndex).padStart(2, "0")} 已更新`);
+    } catch (error) {
+      setGenerationError(error instanceof Error ? error.message : "知识卡重生成失败");
+      setGenerationStatus("知识卡重生成失败");
+    } finally {
+      setRegeneratingCardIndex(null);
+    }
+  }
+
+  function handleReplaceKnowledgeCardClick(cardIndex: number) {
+    setReplaceTargetCardIndex(cardIndex);
+    replaceCardInputRef.current?.click();
+  }
+
+  function handleKnowledgeCardFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    const targetCardIndex = replaceTargetCardIndex;
+    if (!file || targetCardIndex == null) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const imageUrl = typeof reader.result === "string" ? reader.result : "";
+      if (!imageUrl) return;
+      replaceKnowledgeCardImage(targetCardIndex, imageUrl, `manual replace: ${file.name}`);
+      setGenerationStatus(`知识卡 ${String(targetCardIndex).padStart(2, "0")} 已替换为本地图片`);
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+    setReplaceTargetCardIndex(null);
+  }
 
   async function runPlanning() {
     const preset = knowledgePreset;
@@ -202,6 +346,7 @@ export function Workbench() {
         planning,
         selectedQuotes: resolvedQuotes,
         outputs,
+        lockedKnowledgeCardIndexes,
       });
 
       if (tasks.length === 0) {
@@ -1045,8 +1190,16 @@ export function Workbench() {
                 count={plannedCards.length}
               />
               <div className="grid grid-cols-4 gap-3 mt-2.5">
+                <input
+                  ref={replaceCardInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleKnowledgeCardFileChange}
+                />
                 {plannedCards.map((card, i) => {
                   const linkedImage = knowledgeImagesByCard.get(card.index);
+                  const locked = lockedKnowledgeCardIndexes.includes(card.index);
                   const item = linkedImage
                     ? { mode: "real" as const, image: linkedImage, card, index: i }
                     : { mode: "mock" as const, card, index: i };
@@ -1057,18 +1210,65 @@ export function Workbench() {
                     style={{ border: `1px solid ${COLORS.borderSoft}` }}
                   >
                     {item.mode === "real" ? (
-                      <img
-                        src={item.image.imageUrl}
-                        alt={`知识卡片 ${item.index + 1}`}
-                        style={{
-                          width: "100%",
-                          aspectRatio:
-                            knowledgePreset
-                              ? `${knowledgePreset.w} / ${knowledgePreset.h}`
-                              : "1280 / 1706",
-                          objectFit: "cover",
-                        }}
-                      />
+                      <div className="relative">
+                        <img
+                          src={item.image.imageUrl}
+                          alt={`知识卡片 ${item.index + 1}`}
+                          style={{
+                            width: "100%",
+                            aspectRatio:
+                              knowledgePreset
+                                ? `${knowledgePreset.w} / ${knowledgePreset.h}`
+                                : "1280 / 1706",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
+                          <Tag tone={locked ? "warm" : "blue"}>
+                            {locked ? "已锁定" : "已生成"}
+                          </Tag>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => toggleKnowledgeCardLock(card.index)}
+                              className="w-7 h-7 rounded flex items-center justify-center"
+                              style={{
+                                background: "rgba(251,250,247,0.88)",
+                                border: `1px solid ${COLORS.borderSoft}`,
+                                color: locked ? COLORS.warning : COLORS.textMid,
+                              }}
+                              title={locked ? "解锁卡片" : "锁定卡片"}
+                            >
+                              {locked ? <Unlock size={12} strokeWidth={1.6} /> : <Lock size={12} strokeWidth={1.6} />}
+                            </button>
+                            <button
+                              onClick={() => void handleRegenerateKnowledgeCard(card.index)}
+                              disabled={regeneratingCardIndex === card.index}
+                              className="w-7 h-7 rounded flex items-center justify-center"
+                              style={{
+                                background: "rgba(251,250,247,0.88)",
+                                border: `1px solid ${COLORS.borderSoft}`,
+                                color: COLORS.textMid,
+                                opacity: regeneratingCardIndex === card.index ? 0.55 : 1,
+                              }}
+                              title="单张重生成"
+                            >
+                              <RotateCcw size={12} strokeWidth={1.6} />
+                            </button>
+                            <button
+                              onClick={() => handleReplaceKnowledgeCardClick(card.index)}
+                              className="w-7 h-7 rounded flex items-center justify-center"
+                              style={{
+                                background: "rgba(251,250,247,0.88)",
+                                border: `1px solid ${COLORS.borderSoft}`,
+                                color: COLORS.textMid,
+                              }}
+                              title="替换为本地图片"
+                            >
+                              <Replace size={12} strokeWidth={1.6} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     ) : (
                       <div
                         className="p-3 flex flex-col justify-between"
@@ -1110,6 +1310,34 @@ export function Workbench() {
                           }}
                         >
                           {item.card.summary}
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <button
+                            onClick={() => toggleKnowledgeCardLock(card.index)}
+                            className="flex items-center gap-1"
+                            style={{ color: locked ? COLORS.warning : COLORS.textMuted, fontSize: 10.5 }}
+                          >
+                            {locked ? <Unlock size={11} strokeWidth={1.6} /> : <Lock size={11} strokeWidth={1.6} />}
+                            {locked ? "已锁定" : "锁定"}
+                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => void handleRegenerateKnowledgeCard(card.index)}
+                              className="flex items-center gap-1"
+                              style={{ color: COLORS.textMuted, fontSize: 10.5 }}
+                            >
+                              <RotateCcw size={11} strokeWidth={1.6} />
+                              重生成
+                            </button>
+                            <button
+                              onClick={() => handleReplaceKnowledgeCardClick(card.index)}
+                              className="flex items-center gap-1"
+                              style={{ color: COLORS.textMuted, fontSize: 10.5 }}
+                            >
+                              <Replace size={11} strokeWidth={1.6} />
+                              替换
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1623,6 +1851,7 @@ function buildGenerationTasks({
   planning,
   selectedQuotes,
   outputs,
+  lockedKnowledgeCardIndexes,
 }: {
   articleTitle: string;
   articleBody: string;
@@ -1635,6 +1864,7 @@ function buildGenerationTasks({
     inline: boolean;
     layout: boolean;
   };
+  lockedKnowledgeCardIndexes: number[];
 }) {
   const bodyPreview = articleBody
     .replace(/\s+/g, " ")
@@ -1663,7 +1893,9 @@ function buildGenerationTasks({
   if (outputs.knowledge) {
     const preset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
     if (preset) {
-      planning.cardPlan.forEach((card) => {
+      planning.cardPlan
+        .filter((card) => !lockedKnowledgeCardIndexes.includes(card.index))
+        .forEach((card) => {
         tasks.push({
           articleTitle,
           prompt: `为文章《${articleTitle}》的第 ${card.index} 张小红书知识卡片生成主视觉。卡片标题：${card.title}。卡片摘要：${card.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。文章摘要：${bodyPreview}。`,

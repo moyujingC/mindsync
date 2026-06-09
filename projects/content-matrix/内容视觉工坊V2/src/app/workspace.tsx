@@ -69,6 +69,10 @@ export type PlanningState = {
   updatedAt: string;
 };
 
+export type WorkbenchState = {
+  lockedKnowledgeCardIndexes: number[];
+};
+
 type WorkspaceContextValue = {
   activeTab: WorkspaceTab;
   setActiveTab: (tab: WorkspaceTab) => void;
@@ -82,6 +86,8 @@ type WorkspaceContextValue = {
   planningState: PlanningState | null;
   savePlanningState: (planning: PlanningState) => void;
   clearPlanningState: () => void;
+  workbenchState: WorkbenchState;
+  setWorkbenchState: (next: WorkbenchState) => void;
 };
 
 const DEFAULT_ARTICLE: WorkspaceArticle = {
@@ -114,6 +120,7 @@ const STORAGE_KEYS = {
   activeTab: "content-visual-studio.active-tab.v1",
   generationRecords: "content-visual-studio.generation-records.v1",
   planningState: "content-visual-studio.planning-state.v1",
+  workbenchState: "content-visual-studio.workbench-state.v1",
 } as const;
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
@@ -130,6 +137,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
   const [planningState, setPlanningState] = useState<PlanningState | null>(() =>
     readStoredJson(STORAGE_KEYS.planningState, null)
+  );
+  const [workbenchState, setWorkbenchState] = useState<WorkbenchState>(() =>
+    readStoredJson(STORAGE_KEYS.workbenchState, { lockedKnowledgeCardIndexes: [] })
   );
 
   const currentArticleBlocks = useMemo(
@@ -171,6 +181,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       planningState,
       savePlanningState,
       clearPlanningState,
+      workbenchState,
+      setWorkbenchState,
     }),
     [
       activeTab,
@@ -180,6 +192,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       generationRecords,
       latestGeneration,
       planningState,
+      workbenchState,
     ]
   );
 
@@ -209,6 +222,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
     window.localStorage.setItem(STORAGE_KEYS.planningState, JSON.stringify(planningState));
   }, [planningState]);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.workbenchState, JSON.stringify(workbenchState));
+  }, [workbenchState]);
 
   return (
     <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>
