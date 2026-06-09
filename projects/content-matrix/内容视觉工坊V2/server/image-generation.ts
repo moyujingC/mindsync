@@ -12,6 +12,11 @@ export type GenerateImagesRequest = {
   presetKey: string;
   presetLabel: string;
   styleName: string;
+  cardLink?: {
+    index: number;
+    title: string;
+    summary: string;
+  };
 };
 
 type OpenAICompatibleImageResponse = {
@@ -89,6 +94,7 @@ export async function generateImagesWithModel(request: GenerateImagesRequest) {
           prompt: buildPrompt(request),
           width: request.width,
           height: request.height,
+          cardLink: request.cardLink,
         };
       })
       .filter(Boolean) ?? [];

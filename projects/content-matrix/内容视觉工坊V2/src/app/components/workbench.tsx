@@ -121,6 +121,11 @@ export function Workbench() {
       s.includes(i) ? s.filter((x) => x !== i) : [...s, i]
     );
   const knowledgeGeneration = generationRecords.find((item) => item.purposeKey === "xhs_card");
+  const knowledgeImagesByCard = new Map(
+    (knowledgeGeneration?.images ?? [])
+      .filter((image) => image.cardLink)
+      .map((image) => [image.cardLink!.index, image])
+  );
   const quoteGeneration = generationRecords.find((item) => item.purposeKey === "quote");
   const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
   const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
@@ -207,6 +212,8 @@ export function Workbench() {
         return;
       }
 
+      const groupedRecords = new Map<GenerationPurposeKey, GenerationRecord>();
+
       for (let index = 0; index < tasks.length; index += 1) {
         const task = tasks[index];
         setGenerationStatus(`正在生成 ${task.purposeLabel} · ${index + 1}/${tasks.length}`);
@@ -223,7 +230,23 @@ export function Workbench() {
         if (!response.ok) {
           throw new Error(payload.message || payload.error || `${task.purposeLabel} 生成失败`);
         }
-        saveGenerationRecord(payload as GenerationRecord);
+        const record = payload as GenerationRecord;
+        if (record.purposeKey === "xhs_card") {
+          const existing = groupedRecords.get(record.purposeKey);
+          const mergedRecord = existing
+            ? {
+                ...record,
+                images: [...existing.images, ...record.images].sort(
+                  (a, b) => (a.cardLink?.index ?? 999) - (b.cardLink?.index ?? 999)
+                ),
+              }
+            : record;
+          groupedRecords.set(record.purposeKey, mergedRecord);
+          saveGenerationRecord(mergedRecord);
+        } else {
+          groupedRecords.set(record.purposeKey, record);
+          saveGenerationRecord(record);
+        }
       }
 
       setGenerationStatus(`已完成 ${tasks.length} 个输出项`);
@@ -1022,17 +1045,12 @@ export function Workbench() {
                 count={plannedCards.length}
               />
               <div className="grid grid-cols-4 gap-3 mt-2.5">
-                {(knowledgeGeneration
-                  ? knowledgeGeneration.images.slice(0, plannedCards.length).map((image, i) => ({
-                      mode: "real" as const,
-                      image,
-                      index: i,
-                    }))
-                  : plannedCards.map((card, i) => ({
-                      mode: "mock" as const,
-                      card,
-                      index: i,
-                    }))).map((item) => (
+                {plannedCards.map((card, i) => {
+                  const linkedImage = knowledgeImagesByCard.get(card.index);
+                  const item = linkedImage
+                    ? { mode: "real" as const, image: linkedImage, card, index: i }
+                    : { mode: "mock" as const, card, index: i };
+                  return (
                   <div
                     key={item.mode === "real" ? item.image.id : `${item.card.index}-${item.card.title}`}
                     className="rounded-md overflow-hidden"
@@ -1083,10 +1101,21 @@ export function Workbench() {
                         >
                           {item.card.title}
                         </div>
+                        <div
+                          style={{
+                            color: item.index % 2 === 0 ? "#566477" : "#6A5F4E",
+                            fontSize: 10.5,
+                            lineHeight: 1.45,
+                            marginTop: 6,
+                          }}
+                        >
+                          {item.card.summary}
+                        </div>
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -1624,26 +1653,35 @@ function buildGenerationTasks({
     presetKey: string;
     presetLabel: string;
     styleName: string;
+    cardLink?: {
+      index: number;
+      title: string;
+      summary: string;
+    };
   }> = [];
 
   if (outputs.knowledge) {
     const preset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
     if (preset) {
-      const outline = planning.cardPlan
-        .map((card) => `${card.index}. ${card.title}`)
-        .join("；");
-      tasks.push({
-        articleTitle,
-        prompt: `围绕文章《${articleTitle}》生成一组小红书知识卡片主视觉。当前拆解为 ${planning.cardPlan.length} 张，卡片主线：${outline}。提炼核心观点，画面克制、低饱和、雾蓝基调，适合信息型知识卡传播。文章摘要：${bodyPreview}。`,
-        negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
-        width: preset.w,
-        height: preset.h,
-        count: planning.cardPlan.length,
-        purposeKey: "xhs_card",
-        purposeLabel: "小红书知识卡片 / 图文配图",
-        presetKey: preset.k,
-        presetLabel: preset.label,
-        styleName: "蓝雾静读",
+      planning.cardPlan.forEach((card) => {
+        tasks.push({
+          articleTitle,
+          prompt: `为文章《${articleTitle}》的第 ${card.index} 张小红书知识卡片生成主视觉。卡片标题：${card.title}。卡片摘要：${card.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。文章摘要：${bodyPreview}。`,
+          negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+          width: preset.w,
+          height: preset.h,
+          count: 1,
+          purposeKey: "xhs_card",
+          purposeLabel: "小红书知识卡片 / 图文配图",
+          presetKey: preset.k,
+          presetLabel: preset.label,
+          styleName: "蓝雾静读",
+          cardLink: {
+            index: card.index,
+            title: card.title,
+            summary: card.summary,
+          },
+        });
       });
     }
   }

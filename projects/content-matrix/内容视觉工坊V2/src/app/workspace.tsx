@@ -31,6 +31,11 @@ export type GeneratedImageItem = {
   prompt: string;
   width: number;
   height: number;
+  cardLink?: {
+    index: number;
+    title: string;
+    summary: string;
+  };
 };
 
 export type GenerationPurposeKey =
