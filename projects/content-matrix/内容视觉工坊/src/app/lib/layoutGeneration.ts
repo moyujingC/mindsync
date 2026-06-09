@@ -11,6 +11,7 @@ import type {
   WorkspaceData,
 } from "../types";
 import { buildWechatLayoutTheme } from "./layoutTheme";
+import { renderWechatEditorHtmlV2 } from "./wechatTypographyV2";
 
 function escapeHtml(text: string) {
   return text
@@ -68,6 +69,20 @@ function splitParagraphs(rawText: string) {
     .split(/\n\s*\n/)
     .map((block) => block.trim())
     .filter(Boolean);
+}
+
+function getMarkdownHeadingPrefixes(mode: WorkspaceData["markdownHeadingConfig"]["mode"]) {
+  return mode === "hash1-primary"
+    ? {
+        titlePrefix: "",
+        primaryHeadingPrefix: "# ",
+        secondaryHeadingPrefix: "## ",
+      }
+    : {
+        titlePrefix: "# ",
+        primaryHeadingPrefix: "## ",
+        secondaryHeadingPrefix: "### ",
+      };
 }
 
 interface MarkdownSection {
@@ -183,9 +198,10 @@ function buildReviewChecks(parsedMarkdown: ParsedMarkdownDocument, imagePlacemen
   ];
 }
 
-function parseMarkdownSections(rawText: string) {
+function parseMarkdownSections(rawText: string, headingMode: WorkspaceData["markdownHeadingConfig"]["mode"]) {
   const paragraphs = splitParagraphs(rawText);
-  const hasTitle = paragraphs[0]?.startsWith("# ");
+  const prefixes = getMarkdownHeadingPrefixes(headingMode);
+  const hasTitle = prefixes.titlePrefix ? paragraphs[0]?.startsWith(prefixes.titlePrefix) : false;
   const introIndex = hasTitle ? 1 : 0;
   const intro = cleanInlineMarkdown(paragraphs[introIndex] || "");
   const bodyParagraphs = paragraphs.slice(introIndex + 1);
@@ -193,9 +209,9 @@ function parseMarkdownSections(rawText: string) {
   let currentSection: MarkdownSection | null = null;
 
   for (const paragraph of bodyParagraphs) {
-    if (paragraph.startsWith("# ")) continue;
+    if (prefixes.titlePrefix && paragraph.startsWith(prefixes.titlePrefix)) continue;
 
-    if (paragraph.startsWith("### ")) {
+    if (paragraph.startsWith(prefixes.secondaryHeadingPrefix)) {
       if (!currentSection) {
         currentSection = { blocks: [] };
         sections.push(currentSection);
@@ -204,9 +220,9 @@ function parseMarkdownSections(rawText: string) {
       continue;
     }
 
-    if (paragraph.startsWith("## ")) {
+    if (paragraph.startsWith(prefixes.primaryHeadingPrefix)) {
       currentSection = {
-        heading: cleanInlineMarkdown(paragraph.replace(/^##\s+/, "")),
+        heading: cleanInlineMarkdown(paragraph.replace(/^#{1,3}\s+/, "")),
         blocks: [],
       };
       sections.push(currentSection);
@@ -224,9 +240,11 @@ function parseMarkdownSections(rawText: string) {
   return { intro, sections };
 }
 
-function buildBodyBlock(paragraph: string): DraftPreviewBlock | null {
-  if (paragraph.startsWith("### ")) {
-    return { type: "heading3", text: cleanInlineMarkdown(paragraph.replace(/^###\s+/, "")) };
+function buildBodyBlock(paragraph: string, headingMode: WorkspaceData["markdownHeadingConfig"]["mode"]): DraftPreviewBlock | null {
+  const prefixes = getMarkdownHeadingPrefixes(headingMode);
+
+  if (paragraph.startsWith(prefixes.secondaryHeadingPrefix)) {
+    return { type: "heading3", text: cleanInlineMarkdown(paragraph.replace(/^#{1,3}\s+/, "")) };
   }
 
   if (paragraph.startsWith(">")) {
@@ -261,9 +279,10 @@ function buildPreview(
   imagePlacements: LayoutImagePlacement[],
   ctaTitle: string,
   ctaButtonText: string,
+  headingMode: WorkspaceData["markdownHeadingConfig"]["mode"],
 ): DraftPreview {
   const blocks: DraftPreviewBlock[] = [];
-  const { intro, sections } = parseMarkdownSections(rawText);
+  const { intro, sections } = parseMarkdownSections(rawText, headingMode);
   const placementMap = new Map(imagePlacements.map((placement) => [cleanInlineMarkdown(placement.sectionHeading), placement]));
 
   for (const section of sections) {
@@ -275,7 +294,7 @@ function buildPreview(
     let imageInserted = false;
 
     for (const paragraph of section.blocks) {
-      const block = buildBodyBlock(paragraph);
+      const block = buildBodyBlock(paragraph, headingMode);
       if (!block) continue;
 
       blocks.push(block);
@@ -489,6 +508,7 @@ export function buildDraftReview(workspace: WorkspaceData): DraftReview {
     imagePlacements,
     layoutTheme?.ctaTitle ?? "如果这段文字让你停了一下，欢迎留言告诉我",
     layoutTheme?.ctaButtonText ?? "点亮「在看」 · 分享给同样在思考的人",
+    workspace.markdownHeadingConfig.mode,
   );
 
   return {
@@ -503,6 +523,6 @@ export function buildDraftReview(workspace: WorkspaceData): DraftReview {
     ],
     imagePlacements,
     preview,
-    editorHtml: renderWechatEditorHtml({ ...workspace, wechatInlineImages: inlineImages }, preview),
+    editorHtml: renderWechatEditorHtmlV2({ ...workspace, wechatInlineImages: inlineImages }, preview),
   };
 }

@@ -6,8 +6,13 @@ import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout";
 import { useWorkspaceDocument } from "./hooks/useWorkspaceDocument";
 import { Button } from "./components/ui/button";
 import { PanelLeft, FileText } from "lucide-react";
+import { useState } from "react";
+import { parseWechatEditorPastePayload, saveWechatEditorImport } from "./lib/wechatEditorImport";
+import type { SavedWechatEditorImport, WechatEditorImportSummary } from "./types";
 
 export default function App() {
+  const [wechatEditorImportSummary, setLocalWechatEditorImportSummary] = useState<WechatEditorImportSummary | null>(null);
+  const [savedWechatEditorImport, setSavedWechatEditorImport] = useState<SavedWechatEditorImport | null>(null);
   const { layout, isTablet, setInputMode, toggleLeftPanel, toggleRightPanel, closePanels } = useWorkspaceLayout();
   const {
     workspace,
@@ -31,7 +36,27 @@ export default function App() {
     updateWechatLayoutTheme,
     exportWechatLayoutTheme,
     importWechatLayoutTheme,
+    setWechatEditorImportSummary: syncWechatEditorImportSummary,
+    setMarkdownHeadingMode,
   } = useWorkspaceDocument();
+
+  function importWechatEditorClipboard(payload: { html: string; plainText: string }) {
+    const summary = parseWechatEditorPastePayload(payload.html, payload.plainText);
+    setLocalWechatEditorImportSummary(summary);
+    syncWechatEditorImportSummary(summary);
+    setSavedWechatEditorImport(null);
+  }
+
+  async function handleSaveWechatEditorImport() {
+    if (!wechatEditorImportSummary) return;
+    const saved = await saveWechatEditorImport({
+      title: workspace.article.title || "wechat-editor-import",
+      html: wechatEditorImportSummary.html,
+      plainText: wechatEditorImportSummary.plainText,
+      summary: wechatEditorImportSummary,
+    });
+    setSavedWechatEditorImport(saved);
+  }
 
   return (
     <div className="size-full flex flex-col bg-background text-foreground" style={{ fontFamily: "var(--font-sans-cn)" }}>
@@ -78,6 +103,11 @@ export default function App() {
           onUpdateWechatLayoutTheme={updateWechatLayoutTheme}
           onExportWechatLayoutTheme={exportWechatLayoutTheme}
           onImportWechatLayoutTheme={importWechatLayoutTheme}
+          onSetMarkdownHeadingMode={setMarkdownHeadingMode}
+          onImportWechatEditorClipboard={importWechatEditorClipboard}
+          wechatEditorImportSummary={wechatEditorImportSummary}
+          savedWechatEditorImport={savedWechatEditorImport}
+          onSaveWechatEditorImport={handleSaveWechatEditorImport}
           isTablet={isTablet}
           isOpen={layout.isLeftPanelOpen}
           onClose={closePanels}

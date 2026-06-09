@@ -1,4 +1,5 @@
 export type InputMode = "md" | "text";
+export type MarkdownHeadingMode = "hash1-primary" | "hash2-primary";
 
 export type CardGenerationState = "idle" | "processing" | "ok" | "failed";
 export type ImageGenerationMode = "reference-edit" | "prompt-only";
@@ -165,6 +166,10 @@ export interface ParsedMarkdownDocument {
   structure: MarkdownStructureSummary;
   structureTags: string[];
   errorMessage?: string;
+}
+
+export interface MarkdownHeadingConfig {
+  mode: MarkdownHeadingMode;
 }
 
 export interface ImageGenerationSource {
@@ -419,9 +424,40 @@ export interface SyncStatusItem {
   note: string;
 }
 
+export interface WechatEditorImportedBlock {
+  tag: string;
+  text: string;
+  inlineStyle: string;
+}
+
+export interface WechatEditorImportSummary {
+  source: "html" | "plain-text";
+  html: string;
+  plainText: string;
+  blockCount: number;
+  paragraphCount: number;
+  headingCount: number;
+  listCount: number;
+  quoteCount: number;
+  imageCount: number;
+  strongCount: number;
+  dominantColors: string[];
+  fontSizes: string[];
+  lineHeights: string[];
+  textAligns: string[];
+  sampleBlocks: WechatEditorImportedBlock[];
+}
+
+export interface SavedWechatEditorImport {
+  savedAt: string;
+  path: string;
+}
+
 export interface WorkspaceData {
   article: UploadedArticle;
+  markdownHeadingConfig: MarkdownHeadingConfig;
   parsedMarkdown: ParsedMarkdownDocument;
+  wechatEditorImportSummary: WechatEditorImportSummary | null;
   analysis: ArticleAnalysis;
   cardPlan: CardPlan[];
   workflowStages: WorkflowStage[];

@@ -1,11 +1,11 @@
-import { FileText, Clipboard, CheckCircle2, RefreshCw, Eraser, Sparkles, ChevronDown, FileType2, Pin, X, Upload, Download, Import } from "lucide-react";
+import { FileText, Clipboard, CheckCircle2, RefreshCw, Eraser, Sparkles, ChevronDown, FileType2, Pin, X, Upload, Download, Import, ClipboardPaste, Save } from "lucide-react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useEffect, useRef, useState } from "react";
-import type { InputMode, StyleAssetFit, StyleSelectionKey, WorkspaceData } from "../types";
+import type { InputMode, SavedWechatEditorImport, StyleAssetFit, StyleSelectionKey, WechatEditorImportSummary, WorkspaceData } from "../types";
 
 function getStyleReferenceImageSrc(referenceImage: string) {
   return `/风格库/${referenceImage}`;
@@ -16,11 +16,9 @@ interface LeftPanelProps {
   inputMode: InputMode;
   textModeTitle: string;
   textModeBody: string;
-  wechatEditorPaste: string;
   setInputMode: (mode: InputMode) => void;
   onTextModeTitleChange: (value: string) => void;
   onTextModeBodyChange: (value: string) => void;
-  onWechatEditorPasteChange: (value: string) => void;
   onImportPlainText: () => Promise<void>;
   onImportMarkdown: (file: File) => Promise<void>;
   onGenerateAll: () => Promise<void>;
@@ -31,6 +29,11 @@ interface LeftPanelProps {
   onUpdateWechatLayoutTheme: (index: number, patch: Partial<WorkspaceData["layoutThemes"][number]>) => void;
   onExportWechatLayoutTheme: (index: number) => Promise<void>;
   onImportWechatLayoutTheme: (file: File) => Promise<void>;
+  onSetMarkdownHeadingMode: (mode: "hash1-primary" | "hash2-primary") => void;
+  onImportWechatEditorClipboard: (payload: { html: string; plainText: string }) => void;
+  wechatEditorImportSummary: WechatEditorImportSummary | null;
+  savedWechatEditorImport: SavedWechatEditorImport | null;
+  onSaveWechatEditorImport: () => Promise<void>;
   isTablet: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -41,11 +44,9 @@ export function LeftPanel({
   inputMode,
   textModeTitle,
   textModeBody,
-  wechatEditorPaste,
   setInputMode,
   onTextModeTitleChange,
   onTextModeBodyChange,
-  onWechatEditorPasteChange,
   onImportPlainText,
   onImportMarkdown,
   onGenerateAll,
@@ -56,6 +57,11 @@ export function LeftPanel({
   onUpdateWechatLayoutTheme,
   onExportWechatLayoutTheme,
   onImportWechatLayoutTheme,
+  onSetMarkdownHeadingMode,
+  onImportWechatEditorClipboard,
+  wechatEditorImportSummary,
+  savedWechatEditorImport,
+  onSaveWechatEditorImport,
   isTablet,
   isOpen,
   onClose,
@@ -103,6 +109,13 @@ export function LeftPanel({
     setWidthInput(String(data.cardSize.width));
     setHeightInput(String(data.cardSize.height));
   }, [data.cardSize.width, data.cardSize.height]);
+
+  function handleWechatEditorPaste(event: React.ClipboardEvent<HTMLDivElement>) {
+    event.preventDefault();
+    const html = event.clipboardData.getData("text/html");
+    const plainText = event.clipboardData.getData("text/plain");
+    onImportWechatEditorClipboard({ html, plainText });
+  }
 
   return (
     <>
@@ -198,6 +211,18 @@ export function LeftPanel({
               </button>
             </div>
           </div>
+          <div className="rounded-lg border border-border bg-card/70 p-3">
+            <div className="text-[11px] text-foreground/85 mb-2" style={{ fontWeight: 500 }}>Markdown 标题映射</div>
+            <Select value={data.markdownHeadingConfig.mode} onValueChange={(value: "hash1-primary" | "hash2-primary") => onSetMarkdownHeadingMode(value)}>
+              <SelectTrigger className="h-9 bg-input-background border-border text-[12px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="hash1-primary"># 作为一级标题，## 作为二级标题</SelectItem>
+                <SelectItem value="hash2-primary">## 作为一级标题，### 作为二级标题</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           </div>
         ) : (
           <div className="space-y-2">
@@ -228,15 +253,78 @@ export function LeftPanel({
         <div className="rounded-lg border border-border bg-card/70 overflow-hidden">
           <div className="px-3.5 py-3 border-b border-border/60">
             <div className="text-[11px] text-foreground/85" style={{ fontWeight: 500 }}>微信编辑器回贴区</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">把你在微信编辑器里排好的内容直接粘贴到这里。先作为回传文本区使用，后面我会按这份内容和截图回抄成正式主题。</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">直接从公众号编辑器复制后，在下面粘贴。这里会优先读取富文本 HTML，而不是只收纯文本。</div>
           </div>
-          <div className="p-3.5">
-            <textarea
-              value={wechatEditorPaste}
-              onChange={(event) => onWechatEditorPasteChange(event.target.value)}
-              className="w-full h-40 rounded-md bg-input-background border border-border px-3 py-2 text-[12.5px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring resize-y leading-relaxed"
-              placeholder="把你从微信编辑器里复制出来的内容粘贴到这里。拿不到样式没关系，我会结合截图一起回抄。"
+          <div className="p-3.5 space-y-3">
+            <div
+              contentEditable
+              suppressContentEditableWarning
+              onPaste={handleWechatEditorPaste}
+              className="min-h-32 rounded-md bg-input-background border border-border px-3 py-2 text-[12.5px] text-foreground focus:outline-none focus:ring-1 focus:ring-ring leading-relaxed"
+              data-placeholder="在这里直接粘贴公众号编辑器内容"
+              style={{ whiteSpace: "pre-wrap" }}
             />
+
+            {wechatEditorImportSummary ? (
+              <div className="rounded-md border border-border/70 bg-background/60 p-3 space-y-2.5">
+                <div className="flex items-center gap-2 text-[11px] text-foreground/90" style={{ fontWeight: 500 }}>
+                  <ClipboardPaste className="w-3.5 h-3.5" />
+                  已抓取编辑器内容
+                  <span className="text-[10px] text-muted-foreground font-normal">
+                    {wechatEditorImportSummary.source === "html" ? "富文本 HTML" : "纯文本"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[10px] text-muted-foreground">
+                    {savedWechatEditorImport ? `已保存：${savedWechatEditorImport.path}` : "可保存为本地 JSON，后续我直接读取文件，不再靠截图。"}
+                  </div>
+                  <Button type="button" size="sm" className="h-7 px-2.5 shrink-0" onClick={() => void onSaveWechatEditorImport()}>
+                    <Save className="w-3 h-3" />
+                    保存
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10.5px] text-muted-foreground">
+                  <span>段落 {wechatEditorImportSummary.paragraphCount}</span>
+                  <span>标题 {wechatEditorImportSummary.headingCount}</span>
+                  <span>列表 {wechatEditorImportSummary.listCount}</span>
+                  <span>引用 {wechatEditorImportSummary.quoteCount}</span>
+                  <span>图片 {wechatEditorImportSummary.imageCount}</span>
+                  <span>加粗 {wechatEditorImportSummary.strongCount}</span>
+                </div>
+                <div className="space-y-1.5 text-[10.5px]">
+                  <div>
+                    <span className="text-muted-foreground">颜色：</span>
+                    <span className="text-foreground/90">{wechatEditorImportSummary.dominantColors.join(" / ") || "未抓到内联颜色"}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">字号：</span>
+                    <span className="text-foreground/90">{wechatEditorImportSummary.fontSizes.join(" / ") || "未抓到内联字号"}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">行高：</span>
+                    <span className="text-foreground/90">{wechatEditorImportSummary.lineHeights.join(" / ") || "未抓到内联行高"}</span>
+                  </div>
+                </div>
+                <div className="rounded-sm border border-border/60 bg-card/70 p-2">
+                  <div className="text-[10px] text-muted-foreground mb-1">样例块</div>
+                  <div className="space-y-1.5">
+                    {wechatEditorImportSummary.sampleBlocks.slice(0, 4).map((block, index) => (
+                      <div key={`${block.tag}-${index}`} className="text-[10.5px] leading-relaxed">
+                        <span className="text-foreground/90" style={{ fontWeight: 500 }}>{block.tag}</span>
+                        <span className="text-muted-foreground"> · {block.text || "空文本"}</span>
+                        {block.inlineStyle ? (
+                          <div className="text-[10px] text-muted-foreground/85 mt-0.5 break-all">{block.inlineStyle}</div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-[10.5px] text-muted-foreground">
+                这里需要你直接从公众号编辑器里复制后粘贴。只手动输入文字，没有意义，因为我要拿的是 HTML 结构和内联样式。
+              </div>
+            )}
           </div>
         </div>
 

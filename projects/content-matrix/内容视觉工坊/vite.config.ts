@@ -12,6 +12,7 @@ import { generateCardImageWithModel, generateCoverImageWithModel, generateWechat
 dotenv.config({ path: path.resolve(__dirname, '.env.local') })
 
 const generatedAssetsRoot = path.resolve(__dirname, 'outputs')
+const wechatEditorImportsRoot = path.resolve(generatedAssetsRoot, 'wechat-editor-imports')
 
 
 function figmaAssetResolver() {
@@ -192,6 +193,63 @@ function localGeneratedAssetsApi() {
   }
 }
 
+function slugifyFilename(input: string) {
+  return input
+    .trim()
+    .replace(/[\\/:*?"<>|]+/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80) || 'untitled'
+}
+
+function localSaveWechatEditorImportApi() {
+  return {
+    name: 'local-save-wechat-editor-import-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/save-wechat-editor-import', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'POST') {
+          next()
+          return
+        }
+
+        try {
+          const body = await jsonBodyParser(req)
+          const timestamp = new Date()
+          const stamp = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}-${String(timestamp.getDate()).padStart(2, '0')}_${String(timestamp.getHours()).padStart(2, '0')}-${String(timestamp.getMinutes()).padStart(2, '0')}-${String(timestamp.getSeconds()).padStart(2, '0')}`
+          const slug = slugifyFilename(body.title || 'wechat-editor-import')
+          const dir = wechatEditorImportsRoot
+          fs.mkdirSync(dir, { recursive: true })
+
+          const filePath = path.join(dir, `${stamp}_${slug}.json`)
+          const payload = {
+            savedAt: timestamp.toISOString(),
+            title: body.title || '',
+            html: body.html || '',
+            plainText: body.plainText || '',
+            summary: body.summary || {},
+          }
+
+          fs.writeFileSync(filePath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8')
+
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            savedAt: payload.savedAt,
+            path: filePath,
+          }))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'save-wechat-editor-import-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
     figmaAssetResolver(),
@@ -200,6 +258,7 @@ export default defineConfig({
     localGenerateCoverImageApi(),
     localGenerateWechatInlineImageApi(),
     localGeneratedAssetsApi(),
+    localSaveWechatEditorImportApi(),
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
     react(),

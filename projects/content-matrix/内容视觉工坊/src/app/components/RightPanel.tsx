@@ -16,6 +16,10 @@ function renderInlinePreview(text: string, theme: ReturnType<typeof buildWechatL
   return { __html: html };
 }
 
+function renderWechatEditorHtmlPreview(html: string) {
+  return { __html: html };
+}
+
 function renderListMarker(theme: ReturnType<typeof buildWechatLayoutTheme>) {
   if (theme.unorderedListMarker === "square") return "\u25a0";
   if (theme.unorderedListMarker === "solid-circle") return "\u2022";
@@ -146,35 +150,41 @@ export function RightPanel({ data, inputMode, copyFeedback, onCopyWechatHtml, is
                   color: theme.bodyColor,
                 }}
               >
-                {data.draftReview.preview.intro ? (
-                  <InheritBlock>
-                    <div
-                      className="px-4 py-4"
-                      style={{
-                        marginBottom: theme.paragraphSpacing + 2,
-                        background: theme.placeholderBg,
-                        borderTop: `1px solid ${theme.placeholderBorder}`,
-                        borderRadius: Math.max(theme.quoteRadius - 2, 6),
-                      }}
-                    >
-                      <p className="italic" style={{ fontSize: `${Math.max(theme.bodyFontSize - 0.5, 15)}px`, lineHeight: theme.bodyLineHeight, color: theme.bodyColor }}>
-                        {data.draftReview.preview.intro}
-                      </p>
-                    </div>
-                  </InheritBlock>
-                ) : null}
+                {data.draftReview.editorHtml ? (
+                  <div dangerouslySetInnerHTML={renderWechatEditorHtmlPreview(data.draftReview.editorHtml)} />
+                ) : (
+                  <>
+                    {data.draftReview.preview.intro ? (
+                      <InheritBlock>
+                        <div
+                          className="px-4 py-4"
+                          style={{
+                            marginBottom: theme.paragraphSpacing + 2,
+                            background: theme.placeholderBg,
+                            borderTop: `1px solid ${theme.placeholderBorder}`,
+                            borderRadius: Math.max(theme.quoteRadius - 2, 6),
+                          }}
+                        >
+                          <p className="italic" style={{ fontSize: `${Math.max(theme.bodyFontSize - 0.5, 15)}px`, lineHeight: theme.bodyLineHeight, color: theme.bodyColor }}>
+                            {data.draftReview.preview.intro}
+                          </p>
+                        </div>
+                      </InheritBlock>
+                    ) : null}
 
-                {data.draftReview.preview.blocks.map((block, index) => (
-                  <PreviewBlock
-                    key={`${block.type}-${index}`}
-                    headingSequence={getHeadingSequence(data.draftReview.preview.blocks, index)}
-                    block={block}
-                    prevBlock={index > 0 ? data.draftReview.preview.blocks[index - 1] : undefined}
-                    nextBlock={index < data.draftReview.preview.blocks.length - 1 ? data.draftReview.preview.blocks[index + 1] : undefined}
-                    inlineImage={block.type === "image" ? data.wechatInlineImages.find((item) => item.id === block.imageId)?.img : undefined}
-                    theme={theme}
-                  />
-                ))}
+                    {data.draftReview.preview.blocks.map((block, index) => (
+                      <PreviewBlock
+                        key={`${block.type}-${index}`}
+                        headingSequence={getHeadingSequence(data.draftReview.preview.blocks, index)}
+                        block={block}
+                        prevBlock={index > 0 ? data.draftReview.preview.blocks[index - 1] : undefined}
+                        nextBlock={index < data.draftReview.preview.blocks.length - 1 ? data.draftReview.preview.blocks[index + 1] : undefined}
+                        inlineImage={block.type === "image" ? data.wechatInlineImages.find((item) => item.id === block.imageId)?.img : undefined}
+                        theme={theme}
+                      />
+                    ))}
+                  </>
+                )}
               </article>
             </div>
           </div>

@@ -466,7 +466,7 @@ export function useWorkspaceDocument() {
 
   async function importMarkdownFile(file: File) {
     const text = await file.text();
-    const parsed = parseMarkdownFileContent(file.name, text);
+    const parsed = parseMarkdownFileContent(file.name, text, workspace.markdownHeadingConfig.mode);
 
     setRawMarkdownText(text);
 
@@ -1295,6 +1295,22 @@ export function useWorkspaceDocument() {
             "排版主题已导入，可重新复制到公众号编辑器",
           ),
         };
+      });
+    },
+    setWechatEditorImportSummary: (summary: WorkspaceData["wechatEditorImportSummary"]) => {
+      setWorkspace((prev) => withFreshDraftReview({ ...prev, wechatEditorImportSummary: summary }));
+    },
+    setMarkdownHeadingMode: (mode: "hash1-primary" | "hash2-primary") => {
+      setWorkspace((prev) => {
+        const parsedMarkdown = prev.article.rawText
+          ? parseMarkdownFileContent(prev.article.fileName, prev.article.rawText, mode).parsedMarkdown
+          : prev.parsedMarkdown;
+        const nextWorkspace = {
+          ...prev,
+          markdownHeadingConfig: { mode },
+          parsedMarkdown,
+        };
+        return withFreshDraftReview(nextWorkspace);
       });
     },
   };
