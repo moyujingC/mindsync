@@ -49,6 +49,12 @@ import {
   QUOTES,
   sortImagesByCardIndex,
 } from "./workbench-data";
+import {
+  ControlTowerSidebar,
+  KnowledgeCardResults,
+  ResultRow,
+  SmallLabel,
+} from "./workbench-panels";
 
 export function Workbench() {
   const {
@@ -1278,242 +1284,33 @@ export function Workbench() {
               </div>
             )}
 
-            <div className="mt-2">
-              <ResultRow
-                label="小红书知识卡片"
-                size={
-                  knowledgePreset
-                    ? `${knowledgePreset.aspect} 高清 · ${knowledgePreset.w}×${knowledgePreset.h}`
-                    : "3:4 高清 · 1280×1706"
-                }
-                count={plannedCards.length}
-              />
-              <div className="grid grid-cols-4 gap-3 mt-2.5">
-                <input
-                  ref={replaceCardInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleKnowledgeCardFileChange}
-                />
-                {plannedCards.map((card, i) => {
-                  const linkedImage = knowledgeImagesByCard.get(card.index);
-                  const locked = lockedKnowledgeCardIndexes.includes(card.index);
-                  const status = knowledgeCardStatuses[String(card.index)];
-                  const historyCount = knowledgeCardHistories[String(card.index)]?.length || 0;
-                  const statusBadges = [
-                    status?.edited ? { label: "已编辑", tone: "warm" as const } : null,
-                    status?.replaced ? { label: "已替换", tone: "success" as const } : null,
-                    status?.regenerated ? { label: "已重生", tone: "blue" as const } : null,
-                    locked ? { label: "已锁定", tone: "warm" as const } : null,
-                  ].filter(Boolean) as Array<{ label: string; tone: "blue" | "warm" | "success" }>;
-                  const item = linkedImage
-                    ? { mode: "real" as const, image: linkedImage, card, index: i }
-                    : { mode: "mock" as const, card, index: i };
-                  return (
-                  <div
-                    key={item.mode === "real" ? item.image.id : `${item.card.index}-${item.card.title}`}
-                    className="rounded-md overflow-hidden"
-                    style={{ border: `1px solid ${COLORS.borderSoft}` }}
-                  >
-                    {item.mode === "real" ? (
-                      <div className="relative">
-                        <img
-                          src={item.image.imageUrl}
-                          alt={`知识卡片 ${item.index + 1}`}
-                          style={{
-                            width: "100%",
-                            aspectRatio:
-                              knowledgePreset
-                                ? `${knowledgePreset.w} / ${knowledgePreset.h}`
-                                : "1280 / 1706",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
-                          <div className="flex items-center gap-1 flex-wrap">
-                            <Tag tone={locked ? "warm" : "blue"}>
-                              {locked ? "已锁定" : "已生成"}
-                            </Tag>
-                            {statusBadges
-                              .filter((badge) => badge.label !== "已锁定")
-                              .map((badge) => (
-                                <Tag key={badge.label} tone={badge.tone}>
-                                  {badge.label}
-                                </Tag>
-                              ))}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => toggleKnowledgeCardLock(card.index)}
-                              className="w-7 h-7 rounded flex items-center justify-center"
-                              style={{
-                                background: "rgba(251,250,247,0.88)",
-                                border: `1px solid ${COLORS.borderSoft}`,
-                                color: locked ? COLORS.warning : COLORS.textMid,
-                              }}
-                              title={locked ? "解锁卡片" : "锁定卡片"}
-                            >
-                              {locked ? <Unlock size={12} strokeWidth={1.6} /> : <Lock size={12} strokeWidth={1.6} />}
-                            </button>
-                            <button
-                              onClick={() => void handleRegenerateKnowledgeCard(card.index)}
-                              disabled={regeneratingCardIndex === card.index}
-                              className="w-7 h-7 rounded flex items-center justify-center"
-                              style={{
-                                background: "rgba(251,250,247,0.88)",
-                                border: `1px solid ${COLORS.borderSoft}`,
-                                color: COLORS.textMid,
-                                opacity: regeneratingCardIndex === card.index ? 0.55 : 1,
-                              }}
-                              title="单张重生成"
-                            >
-                              <RotateCcw size={12} strokeWidth={1.6} />
-                            </button>
-                            <button
-                              onClick={() => handleReplaceKnowledgeCardClick(card.index)}
-                              className="w-7 h-7 rounded flex items-center justify-center"
-                              style={{
-                                background: "rgba(251,250,247,0.88)",
-                                border: `1px solid ${COLORS.borderSoft}`,
-                                color: COLORS.textMid,
-                              }}
-                              title="替换为本地图片"
-                            >
-                              <Replace size={12} strokeWidth={1.6} />
-                            </button>
-                            <button
-                              onClick={() => handleRollbackKnowledgeCard(card.index)}
-                              disabled={historyCount === 0}
-                              className="w-7 h-7 rounded flex items-center justify-center"
-                              style={{
-                                background: "rgba(251,250,247,0.88)",
-                                border: `1px solid ${COLORS.borderSoft}`,
-                                color: COLORS.textMid,
-                                opacity: historyCount === 0 ? 0.4 : 1,
-                              }}
-                              title="回退上一版"
-                            >
-                              <History size={12} strokeWidth={1.6} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        className="p-3 flex flex-col justify-between"
-                        style={{
-                          aspectRatio:
-                            knowledgePreset
-                              ? `${knowledgePreset.w} / ${knowledgePreset.h}`
-                              : "1280 / 1706",
-                          background:
-                            item.index % 2 === 0
-                              ? "linear-gradient(160deg,#EEF2F6 0%,#D6DEE7 100%)"
-                              : "linear-gradient(160deg,#F1ECE3 0%,#DACFBE 100%)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            color: item.index % 2 === 0 ? COLORS.blueDeep : "#7A6F5A",
-                            fontSize: 10,
-                            letterSpacing: "0.18em",
-                          }}
-                        >
-                          {String(item.card.index).padStart(2, "0")} / {String(plannedCards.length).padStart(2, "0")}
-                        </div>
-                        <div
-                          style={{
-                            color: item.index % 2 === 0 ? "#2B3645" : "#3D3328",
-                            fontSize: 12,
-                            lineHeight: 1.45,
-                          }}
-                        >
-                          {item.card.title}
-                        </div>
-                        <div
-                          style={{
-                            color: item.index % 2 === 0 ? "#566477" : "#6A5F4E",
-                            fontSize: 10.5,
-                            lineHeight: 1.45,
-                            marginTop: 6,
-                          }}
-                        >
-                          {item.card.summary}
-                        </div>
-                        {statusBadges.length > 0 && (
-                          <div className="mt-2 flex items-center gap-1 flex-wrap">
-                            {statusBadges.map((badge) => (
-                              <Tag key={badge.label} tone={badge.tone}>
-                                {badge.label}
-                              </Tag>
-                            ))}
-                          </div>
-                        )}
-                        {historyCount > 0 && (
-                          <div
-                            className="mt-2"
-                            style={{ color: COLORS.textFaint, fontSize: 10.5 }}
-                          >
-                            可回退 {historyCount} 版
-                          </div>
-                        )}
-                        <div className="mt-3 flex items-center justify-between">
-                          <button
-                            onClick={() => toggleKnowledgeCardLock(card.index)}
-                            className="flex items-center gap-1"
-                            style={{ color: locked ? COLORS.warning : COLORS.textMuted, fontSize: 10.5 }}
-                          >
-                            {locked ? <Unlock size={11} strokeWidth={1.6} /> : <Lock size={11} strokeWidth={1.6} />}
-                            {locked ? "已锁定" : "锁定"}
-                          </button>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => openKnowledgeCardEditor(card.index)}
-                              className="flex items-center gap-1"
-                              style={{ color: COLORS.textMuted, fontSize: 10.5 }}
-                            >
-                              <Pencil size={11} strokeWidth={1.6} />
-                              编辑
-                            </button>
-                            <button
-                              onClick={() => void handleRegenerateKnowledgeCard(card.index)}
-                              className="flex items-center gap-1"
-                              style={{ color: COLORS.textMuted, fontSize: 10.5 }}
-                            >
-                              <RotateCcw size={11} strokeWidth={1.6} />
-                              重生成
-                            </button>
-                            <button
-                              onClick={() => handleReplaceKnowledgeCardClick(card.index)}
-                              className="flex items-center gap-1"
-                              style={{ color: COLORS.textMuted, fontSize: 10.5 }}
-                            >
-                              <Replace size={11} strokeWidth={1.6} />
-                              替换
-                            </button>
-                            <button
-                              onClick={() => handleRollbackKnowledgeCard(card.index)}
-                              className="flex items-center gap-1"
-                              disabled={historyCount === 0}
-                              style={{
-                                color: COLORS.textMuted,
-                                fontSize: 10.5,
-                                opacity: historyCount === 0 ? 0.45 : 1,
-                              }}
-                            >
-                              <History size={11} strokeWidth={1.6} />
-                              回退
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  );
-                })}
-              </div>
-            </div>
+            <KnowledgeCardResults
+              plannedCards={plannedCards}
+              knowledgeSizeLabel={
+                knowledgePreset
+                  ? `${knowledgePreset.aspect} 高清 · ${knowledgePreset.w}×${knowledgePreset.h}`
+                  : "3:4 高清 · 1280×1706"
+              }
+              knowledgeAspectRatio={
+                knowledgePreset
+                  ? `${knowledgePreset.w} / ${knowledgePreset.h}`
+                  : "1280 / 1706"
+              }
+              knowledgeImagesByCard={knowledgeImagesByCard}
+              lockedKnowledgeCardIndexes={lockedKnowledgeCardIndexes}
+              knowledgeCardStatuses={knowledgeCardStatuses}
+              knowledgeCardHistories={knowledgeCardHistories}
+              regeneratingCardIndex={regeneratingCardIndex}
+              replaceCardInputRef={replaceCardInputRef}
+              onReplaceInputChange={handleKnowledgeCardFileChange}
+              onToggleLock={toggleKnowledgeCardLock}
+              onEdit={openKnowledgeCardEditor}
+              onRegenerate={(cardIndex) => {
+                void handleRegenerateKnowledgeCard(cardIndex);
+              }}
+              onReplace={handleReplaceKnowledgeCardClick}
+              onRollback={handleRollbackKnowledgeCard}
+            />
 
             <div className="grid grid-cols-2 gap-5 mt-5">
               <div>
@@ -1687,201 +1484,16 @@ export function Workbench() {
         </div>
       </section>
 
-      {/* RIGHT — control tower */}
-      <aside
-        className="overflow-y-auto px-5 py-6 border-l flex flex-col"
-        style={{ borderColor: COLORS.border, background: COLORS.surface }}
-      >
-        <div
-          className="flex items-center justify-between"
-          style={{
-            color: COLORS.textFaint,
-            fontSize: 11,
-            letterSpacing: "0.12em",
-          }}
-        >
-          <span>CONTROL · 当前任务</span>
-          <span
-            className="flex items-center gap-1.5 px-1.5 rounded"
-            style={{
-              color: COLORS.blueDeep,
-              background: "rgba(91,110,132,0.1)",
-              fontSize: 10.5,
-              height: 18,
-              letterSpacing: "0.04em",
-            }}
-          >
-            <span
-              className="w-1 h-1 rounded-full"
-              style={{ background: COLORS.blueDeep }}
-            />
-            LIVE
-          </span>
-        </div>
-
-        {/* Title + progress as a single block */}
-        <div
-          className="mt-3 rounded-md overflow-hidden"
-          style={{
-            border: `1px solid ${COLORS.border}`,
-            background: COLORS.surfaceAlt,
-          }}
-        >
-          <div className="px-3.5 pt-3 pb-2.5">
-            <div
-              style={{ color: COLORS.text, fontSize: 13.5, lineHeight: 1.4 }}
-            >
-              {currentArticle.title}
-            </div>
-            <div
-              className="mt-1 flex items-center justify-between"
-              style={{ color: COLORS.textFaint, fontSize: 11 }}
-            >
-              <span>T-2406-091 · 14:32</span>
-              <span style={{ color: COLORS.blueDeep }}>生成中 · 7 / 11</span>
-            </div>
-          </div>
-          <div
-            style={{
-              height: 3,
-              background: "rgba(91,110,132,0.12)",
-            }}
-          >
-            <div
-              style={{
-                height: "100%",
-                width: "63%",
-                background: COLORS.blueDeep,
-              }}
-            />
-          </div>
-          <div
-            className="px-3.5 py-1.5 flex items-center justify-between"
-            style={{
-              background: COLORS.pageBg,
-              color: COLORS.textFaint,
-              fontSize: 10.5,
-              letterSpacing: "0.04em",
-            }}
-          >
-            <span>ETA 38s</span>
-            <span>4 张额度 · 已用 3</span>
-          </div>
-        </div>
-
-        {/* Output stats — system info style */}
-        <div className="mt-5">
-          <SmallLabel>本次输出</SmallLabel>
-          <div
-            className="mt-2 rounded-md"
-            style={{
-              background: COLORS.pageBg,
-              border: `1px solid ${COLORS.borderSoft}`,
-              padding: "10px 12px",
-              fontSize: 12,
-              lineHeight: 1.95,
-            }}
-          >
-            {[
-              ["知识卡片", "自动拆分", "4 张"],
-              ["金句卡", "已选生成", "1 张"],
-              ["公众号封面", null, "3 张"],
-              ["正文配图", null, "3 张"],
-            ].map(([k, mode, v]) => (
-              <div
-                key={k as string}
-                className="flex items-center justify-between"
-              >
-                <span
-                  className="flex items-baseline gap-1.5"
-                  style={{ color: COLORS.textMid }}
-                >
-                  <span>{k}</span>
-                  {mode && (
-                    <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
-                      {mode}
-                    </span>
-                  )}
-                </span>
-                <span style={{ color: COLORS.text }}>{v}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Mounted style */}
-        <div className="mt-5">
-          <SmallLabel>当前挂载排版</SmallLabel>
-          <div
-            className="mt-2 rounded-md flex items-center gap-3 px-3 py-2.5"
-            style={{
-              background: COLORS.pageBg,
-              border: `1px solid ${COLORS.borderSoft}`,
-            }}
-          >
-            <FoggyArt
-              hue={0}
-              variant="grid"
-              style={{ width: 28, height: 28, borderRadius: 5 }}
-            />
-            <div className="flex-1 min-w-0">
-              <div
-                className="flex items-center gap-1.5"
-                style={{ color: COLORS.text, fontSize: 12.5 }}
-              >
-                <span
-                  className="w-1 h-1 rounded-full"
-                  style={{ background: COLORS.success }}
-                />
-                蓝雾静读版
-              </div>
-              <div style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
-                15 / 1.85 · #3F4754
-              </div>
-            </div>
-            <button
-              style={{ color: COLORS.textMuted, fontSize: 11 }}
-              className="hover:underline"
-            >
-              切换
-            </button>
-          </div>
-        </div>
-
-        {/* Primary action */}
-        <div className="mt-5">
-          <Btn
-            variant="primary"
-            size="lg"
-            block
-            onClick={() => setActiveTab("wechat")}
-          >
-            <ClipboardCopy size={13} strokeWidth={1.6} />
-            复制到公众号
-          </Btn>
-        </div>
-
-        {/* Last action — single-line log */}
-        <div className="mt-auto pt-5">
-          <SmallLabel>最近一次动作</SmallLabel>
-          <div
-            className="mt-2 rounded px-3 py-2 flex items-center gap-2"
-            style={{
-              background: COLORS.pageBg,
-              border: `1px solid ${COLORS.borderSoft}`,
-              fontFamily:
-                'ui-monospace,"SF Mono",Menlo,monospace',
-              fontSize: 10.5,
-            }}
-          >
-            <Activity size={11} strokeWidth={1.6} color={COLORS.blue} />
-            <span style={{ color: COLORS.textFaint }}>{latestGenerationTime}</span>
-            <span style={{ color: COLORS.textMid }} className="truncate">
-              {latestLogText}
-            </span>
-          </div>
-        </div>
-      </aside>
+      <ControlTowerSidebar
+        currentArticleTitle={currentArticle.title}
+        plannedKnowledgeCount={plannedCards.length}
+        selectedQuoteCount={selectedQuotes.length}
+        coverCount={COVER_DRAFTS.length}
+        inlineCount={plannedInlineImages.length}
+        latestGenerationTime={latestGenerationTime}
+        latestLogText={latestLogText}
+        onOpenWechat={() => setActiveTab("wechat")}
+      />
 
       <Dialog
         open={editingCardIndex != null}
@@ -2081,20 +1693,6 @@ function RangeField({
   );
 }
 
-function SmallLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        color: COLORS.textFaint,
-        fontSize: 10.5,
-        letterSpacing: "0.14em",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 function SecondaryRow({
   icon,
   label,
@@ -2153,25 +1751,6 @@ function SecondaryRow({
         </span>
       </button>
       {open && <div className="px-4 pb-4">{children}</div>}
-    </div>
-  );
-}
-
-function ResultRow({
-  label,
-  size,
-  count,
-}: {
-  label: string;
-  size: string;
-  count: number;
-}) {
-  return (
-    <div className="flex items-center justify-between">
-      <span style={{ color: COLORS.textMid, fontSize: 12.5 }}>
-        {label} <span style={{ color: COLORS.textFaint }}>· {count}</span>
-      </span>
-      <span style={{ color: COLORS.textFaint, fontSize: 11 }}>{size}</span>
     </div>
   );
 }
