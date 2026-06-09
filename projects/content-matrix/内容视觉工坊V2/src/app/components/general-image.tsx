@@ -34,7 +34,7 @@ const RESULTS = [
 ];
 
 export function GeneralImage() {
-  const { currentArticle, setLatestGeneration, setActiveTab } = useWorkspace();
+  const { currentArticle, saveGenerationRecord, setActiveTab } = useWorkspace();
   const [purposeKey, setPurposeKey] = useState("xhs_card");
   const [presetKey, setPresetKey] = useState("xhs-1280");
   const [count, setCount] = useState(4);
@@ -96,7 +96,7 @@ export function GeneralImage() {
 
       const record = payload as GenerationRecord;
       setGeneratedRecord(record);
-      setLatestGeneration(record);
+      saveGenerationRecord(record);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "图片生成失败");
     } finally {

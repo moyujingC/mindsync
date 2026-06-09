@@ -28,11 +28,18 @@ export type GeneratedImageItem = {
   height: number;
 };
 
+export type GenerationPurposeKey =
+  | "xhs_card"
+  | "quote"
+  | "wx_cover"
+  | "wx_inline"
+  | "xhs_full";
+
 export type GenerationRecord = {
   id: string;
   source: "general-image";
   title: string;
-  purposeKey: string;
+  purposeKey: GenerationPurposeKey;
   purposeLabel: string;
   presetLabel: string;
   styleName: string;
@@ -49,8 +56,9 @@ type WorkspaceContextValue = {
   setCurrentArticle: (next: WorkspaceArticle) => void;
   currentArticleBlocks: ArticleBlock[];
   currentArticleMeta: string;
+  generationRecords: GenerationRecord[];
   latestGeneration: GenerationRecord | null;
-  setLatestGeneration: (record: GenerationRecord | null) => void;
+  saveGenerationRecord: (record: GenerationRecord) => void;
 };
 
 const DEFAULT_ARTICLE: WorkspaceArticle = {
@@ -81,7 +89,7 @@ const DEFAULT_ARTICLE: WorkspaceArticle = {
 const STORAGE_KEYS = {
   article: "content-visual-studio.current-article.v1",
   activeTab: "content-visual-studio.active-tab.v1",
-  latestGeneration: "content-visual-studio.latest-generation.v1",
+  generationRecords: "content-visual-studio.generation-records.v1",
 } as const;
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
@@ -93,8 +101,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [currentArticle, setCurrentArticle] = useState<WorkspaceArticle>(() =>
     readStoredJson(STORAGE_KEYS.article, DEFAULT_ARTICLE)
   );
-  const [latestGeneration, setLatestGeneration] = useState<GenerationRecord | null>(() =>
-    readStoredJson(STORAGE_KEYS.latestGeneration, null)
+  const [generationRecords, setGenerationRecords] = useState<GenerationRecord[]>(() =>
+    readStoredJson(STORAGE_KEYS.generationRecords, [])
   );
 
   const currentArticleBlocks = useMemo(
@@ -105,6 +113,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     () => buildArticleMeta(currentArticle.body),
     [currentArticle.body]
   );
+  const latestGeneration = generationRecords[0] ?? null;
+
+  function saveGenerationRecord(record: GenerationRecord) {
+    setGenerationRecords((prev) => {
+      const next = [record, ...prev.filter((item) => item.purposeKey !== record.purposeKey)];
+      return next.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    });
+  }
 
   const value = useMemo(
     () => ({
@@ -114,14 +130,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setCurrentArticle,
       currentArticleBlocks,
       currentArticleMeta,
+      generationRecords,
       latestGeneration,
-      setLatestGeneration,
+      saveGenerationRecord,
     }),
     [
       activeTab,
       currentArticle,
       currentArticleBlocks,
       currentArticleMeta,
+      generationRecords,
       latestGeneration,
     ]
   );
@@ -135,15 +153,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   }, [currentArticle]);
 
   useEffect(() => {
-    if (!latestGeneration) {
-      window.localStorage.removeItem(STORAGE_KEYS.latestGeneration);
+    if (generationRecords.length === 0) {
+      window.localStorage.removeItem(STORAGE_KEYS.generationRecords);
       return;
     }
     window.localStorage.setItem(
-      STORAGE_KEYS.latestGeneration,
-      JSON.stringify(latestGeneration)
+      STORAGE_KEYS.generationRecords,
+      JSON.stringify(generationRecords)
     );
-  }, [latestGeneration]);
+  }, [generationRecords]);
 
   return (
     <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>

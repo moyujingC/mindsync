@@ -23,7 +23,11 @@ import {
 } from "lucide-react";
 import { Panel, Btn, ToggleRow, Tag, COLORS, FoggyArt, Divider } from "./ui-kit";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
-import { useWorkspace } from "../workspace";
+import {
+  useWorkspace,
+  type GenerationPurposeKey,
+  type GenerationRecord,
+} from "../workspace";
 
 const KNOWLEDGE_CARDS = [
   { i: "01", title: "注意力的隐性税收", desc: "持续切换让大脑反复加载上下文，代价比想象中大。" },
@@ -56,7 +60,9 @@ export function Workbench() {
     currentArticle,
     setCurrentArticle,
     currentArticleMeta,
+    generationRecords,
     latestGeneration,
+    saveGenerationRecord,
   } = useWorkspace();
   const knowledgePreset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
   const quotePreset = findPreset(DEFAULT_PRESET_KEYS.quoteCard)?.preset;
@@ -84,10 +90,17 @@ export function Workbench() {
   const [maxCards, setMaxCards] = useState(6);
 
   const [selectedQuotes, setSelectedQuotes] = useState<number[]>([0]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStatus, setGenerationStatus] = useState("");
+  const [generationError, setGenerationError] = useState("");
   const toggleQuote = (i: number) =>
     setSelectedQuotes((s) =>
       s.includes(i) ? s.filter((x) => x !== i) : [...s, i]
     );
+  const knowledgeGeneration = generationRecords.find((item) => item.purposeKey === "xhs_card");
+  const quoteGeneration = generationRecords.find((item) => item.purposeKey === "quote");
+  const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
+  const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
   const latestGenerationTime = latestGeneration
     ? new Date(latestGeneration.createdAt).toLocaleTimeString("zh-CN", {
         hour: "2-digit",
@@ -95,11 +108,66 @@ export function Workbench() {
         hour12: false,
       })
     : "14:35";
-  const latestGenerationImages = latestGeneration?.images ?? [];
-  const latestPurpose = latestGeneration?.purposeKey;
   const latestLogText = latestGeneration
     ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
     : "cover_03 → 桌面与一杯茶";
+  const estimatedCredits =
+    (outputs.knowledge ? 4 : 0) +
+    (outputs.quote ? Math.max(1, selectedQuotes.length) : 0) +
+    (outputs.cover ? 3 : 0) +
+    (outputs.inline ? 3 : 0);
+
+  async function handleStartGeneration() {
+    const tasks = buildGenerationTasks({
+      articleTitle: currentArticle.title,
+      articleBody: currentArticle.body,
+      selectedQuotes: selectedQuotes.map((index) => QUOTES[index] ?? QUOTES[0]),
+      outputs,
+      minCards,
+      maxCards,
+    });
+
+    if (tasks.length === 0) {
+      if (outputs.layout) {
+        setActiveTab("wechat");
+      }
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerationError("");
+
+    try {
+      for (let index = 0; index < tasks.length; index += 1) {
+        const task = tasks[index];
+        setGenerationStatus(`正在生成 ${task.purposeLabel} · ${index + 1}/${tasks.length}`);
+        const response = await fetch("/api/generate-images", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(task),
+        });
+        const payload = (await response.json()) as
+          | GenerationRecord
+          | { message?: string; error?: string };
+        if (!response.ok) {
+          throw new Error(payload.message || payload.error || `${task.purposeLabel} 生成失败`);
+        }
+        saveGenerationRecord(payload as GenerationRecord);
+      }
+
+      setGenerationStatus(`已完成 ${tasks.length} 个输出项`);
+      if (outputs.layout) {
+        setActiveTab("wechat");
+      }
+    } catch (error) {
+      setGenerationError(error instanceof Error ? error.message : "生成失败");
+      setGenerationStatus("生成中断");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
 
   return (
     <div className="grid grid-cols-[332px_1fr_300px] h-full overflow-hidden">
@@ -374,9 +442,15 @@ export function Workbench() {
 
         {/* Primary CTA — first fold */}
         <div className="mt-5 flex items-center gap-2">
-          <Btn variant="primary" size="lg" className="flex-1">
+          <Btn
+            variant="primary"
+            size="lg"
+            className="flex-1"
+            onClick={handleStartGeneration}
+            disabled={isGenerating}
+          >
             <Sparkles size={14} strokeWidth={1.6} />
-            开始生成
+            {isGenerating ? "生成中..." : "开始生成"}
           </Btn>
           <Btn variant="ghost" size="lg">
             <RefreshCw size={12} strokeWidth={1.6} />
@@ -387,8 +461,22 @@ export function Workbench() {
           className="mt-2 text-center"
           style={{ color: COLORS.textFaint, fontSize: 11 }}
         >
-          预计 ≈ 90s · 消耗 4 张额度
+          预计 ≈ {Math.max(24, estimatedCredits * 8)}s · 消耗 {estimatedCredits} 张额度
         </div>
+        {(generationStatus || generationError) && (
+          <div
+            className="mt-2 rounded-md px-3 py-2"
+            style={{
+              background: generationError ? "#FAF2EE" : COLORS.surface,
+              border: `1px solid ${generationError ? "#E8D8CF" : COLORS.borderSoft}`,
+              color: generationError ? "#8A5A46" : COLORS.textMid,
+              fontSize: 11.5,
+              lineHeight: 1.6,
+            }}
+          >
+            {generationError || generationStatus}
+          </div>
+        )}
 
         <Divider />
         <div className="my-5" />
@@ -852,8 +940,8 @@ export function Workbench() {
                 count={4}
               />
               <div className="grid grid-cols-4 gap-3 mt-2.5">
-                {(latestPurpose === "xhs_card"
-                  ? latestGenerationImages.slice(0, 4).map((image, i) => ({
+                {(knowledgeGeneration
+                  ? knowledgeGeneration.images.slice(0, 4).map((image, i) => ({
                       mode: "real" as const,
                       image,
                       index: i,
@@ -941,9 +1029,9 @@ export function Workbench() {
                     border: `1px solid ${COLORS.borderSoft}`,
                   }}
                 >
-                  {latestPurpose === "quote" && latestGenerationImages[0] ? (
+                  {quoteGeneration?.images[0] ? (
                     <img
-                      src={latestGenerationImages[0].imageUrl}
+                      src={quoteGeneration.images[0].imageUrl}
                       alt="最新金句卡"
                       style={{
                         width: "100%",
@@ -994,9 +1082,9 @@ export function Workbench() {
                         height: 56,
                       }}
                     >
-                      {latestPurpose === "wx_cover" && latestGenerationImages[i] ? (
+                      {coverGeneration?.images[i] ? (
                         <img
-                          src={latestGenerationImages[i].imageUrl}
+                          src={coverGeneration.images[i].imageUrl}
                           alt={`封面 ${i + 1}`}
                           style={{ width: 130, height: "100%", objectFit: "cover" }}
                         />
@@ -1046,9 +1134,9 @@ export function Workbench() {
                     className="rounded-md overflow-hidden"
                     style={{ border: `1px solid ${COLORS.borderSoft}` }}
                   >
-                    {latestPurpose === "wx_inline" && latestGenerationImages[i] ? (
+                    {inlineGeneration?.images[i] ? (
                       <img
-                        src={latestGenerationImages[i].imageUrl}
+                        src={inlineGeneration.images[i].imageUrl}
                         alt={`正文配图 ${i + 1}`}
                         style={{
                           width: "100%",
@@ -1401,6 +1489,126 @@ function RangeField({
       </div>
     </div>
   );
+}
+
+function buildGenerationTasks({
+  articleTitle,
+  articleBody,
+  selectedQuotes,
+  outputs,
+  minCards,
+  maxCards,
+}: {
+  articleTitle: string;
+  articleBody: string;
+  selectedQuotes: string[];
+  outputs: {
+    knowledge: boolean;
+    quote: boolean;
+    cover: boolean;
+    inline: boolean;
+    layout: boolean;
+  };
+  minCards: number;
+  maxCards: number;
+}) {
+  const bodyPreview = articleBody
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 140);
+
+  const tasks: Array<{
+    articleTitle: string;
+    prompt: string;
+    negativePrompt: string;
+    width: number;
+    height: number;
+    count: number;
+    purposeKey: GenerationPurposeKey;
+    purposeLabel: string;
+    presetKey: string;
+    presetLabel: string;
+    styleName: string;
+  }> = [];
+
+  if (outputs.knowledge) {
+    const preset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
+    if (preset) {
+      tasks.push({
+        articleTitle,
+        prompt: `围绕文章《${articleTitle}》生成一组小红书知识卡片主视觉。提炼核心观点，画面克制、低饱和、雾蓝基调，适合信息型知识卡传播。文章摘要：${bodyPreview}。拆卡范围控制在 ${minCards}-${maxCards} 张之间。`,
+        negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+        width: preset.w,
+        height: preset.h,
+        count: 4,
+        purposeKey: "xhs_card",
+        purposeLabel: "小红书知识卡片 / 图文配图",
+        presetKey: preset.k,
+        presetLabel: preset.label,
+        styleName: "蓝雾静读",
+      });
+    }
+  }
+
+  if (outputs.quote) {
+    const preset = findPreset(DEFAULT_PRESET_KEYS.quoteCard)?.preset;
+    if (preset) {
+      const quoteText = selectedQuotes[0] || "真正的专注不是用力，而是放弃。";
+      tasks.push({
+        articleTitle,
+        prompt: `为文章《${articleTitle}》生成一张公众号横版金句卡。核心文案是：“${quoteText}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
+        negativePrompt: "高饱和、霓虹、复杂纹理、人物特写、卡通插画、杂乱文字",
+        width: preset.w,
+        height: preset.h,
+        count: 1,
+        purposeKey: "quote",
+        purposeLabel: "金句卡",
+        presetKey: preset.k,
+        presetLabel: preset.label,
+        styleName: "蓝雾静读",
+      });
+    }
+  }
+
+  if (outputs.cover) {
+    const preset = findPreset(DEFAULT_PRESET_KEYS.wechatCover)?.preset;
+    if (preset) {
+      tasks.push({
+        articleTitle,
+        prompt: `为公众号文章《${articleTitle}》生成 3 张封面候选图。方向克制、留白、低饱和雾蓝与暖灰，适合知识型内容封面。文章摘要：${bodyPreview}。`,
+        negativePrompt: "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、文字",
+        width: preset.w,
+        height: preset.h,
+        count: 3,
+        purposeKey: "wx_cover",
+        purposeLabel: "公众号封面",
+        presetKey: preset.k,
+        presetLabel: preset.label,
+        styleName: "蓝雾静读",
+      });
+    }
+  }
+
+  if (outputs.inline) {
+    const preset = findPreset(DEFAULT_PRESET_KEYS.wechatInline)?.preset;
+    if (preset) {
+      tasks.push({
+        articleTitle,
+        prompt: `为文章《${articleTitle}》生成 3 张公众号正文配图。要求适合段落间穿插，风格安静、克制、雾蓝主色，具备抽象自然意象。文章摘要：${bodyPreview}。`,
+        negativePrompt: "高饱和、霓虹、复杂场景、卡通、重文字、噪点过多",
+        width: preset.w,
+        height: preset.h,
+        count: 3,
+        purposeKey: "wx_inline",
+        purposeLabel: "公众号正文配图",
+        presetKey: preset.k,
+        presetLabel: preset.label,
+        styleName: "留白水墨",
+      });
+    }
+  }
+
+  return tasks;
 }
 
 function SmallLabel({ children }: { children: React.ReactNode }) {
