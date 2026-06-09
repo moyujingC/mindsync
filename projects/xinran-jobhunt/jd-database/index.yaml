@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-06-09
+last_updated: 2026-06-10
 description: >
   馨冉求职 JD 数据库总索引。每次新增岗位时，同时补一条索引记录。
 
@@ -769,3 +769,20 @@ jobs:
       - "A/B Test"
       - "Gamification"
       - "AI avatar"
+  - job_id: "2026-06-10-shanghai-hongpaopao-ai-pm-marketing-enterprise-001"
+    captured_at: "2026-06-10"
+    company: "上海红跑跑"
+    role_title: "ai产品经理（智能营销/企业AI应用）"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "analyzed"
+    primary_track: "ai-pm"
+    match_score: 81
+    file: "jobs/2026-06-10-上海红跑跑-ai产品经理（智能营销企业AI应用）.md"
+    keywords:
+      - "智能营销"
+      - "企业AI应用"
+      - "AIGC"
+      - "Agent"
+      - "RAG"
+      - "Workflow"

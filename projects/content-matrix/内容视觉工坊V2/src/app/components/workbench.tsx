@@ -160,6 +160,7 @@ export function Workbench() {
     ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
     : "cover_03 → 桌面与一杯茶";
   const lockedKnowledgeCardIndexes = workbenchState.lockedKnowledgeCardIndexes;
+  const knowledgeCardStatuses = workbenchState.knowledgeCardStatuses;
   const unlockedPlannedCards = plannedCards.filter(
     (card) => !lockedKnowledgeCardIndexes.includes(card.index)
   );
@@ -170,13 +171,32 @@ export function Workbench() {
     (outputs.inline ? plannedInlineImages.length : 0);
 
   function toggleKnowledgeCardLock(cardIndex: number) {
-    const nextLocked = lockedKnowledgeCardIndexes.includes(cardIndex)
-      ? lockedKnowledgeCardIndexes.filter((item) => item !== cardIndex)
-      : [...lockedKnowledgeCardIndexes, cardIndex].sort((a, b) => a - b);
-    setWorkbenchState({
-      ...workbenchState,
-      lockedKnowledgeCardIndexes: nextLocked,
+    setWorkbenchState((prev) => {
+      const nextLocked = prev.lockedKnowledgeCardIndexes.includes(cardIndex)
+        ? prev.lockedKnowledgeCardIndexes.filter((item) => item !== cardIndex)
+        : [...prev.lockedKnowledgeCardIndexes, cardIndex].sort((a, b) => a - b);
+      return {
+        ...prev,
+        lockedKnowledgeCardIndexes: nextLocked,
+      };
     });
+  }
+
+  function updateKnowledgeCardStatus(
+    cardIndex: number,
+    patch: Partial<NonNullable<(typeof workbenchState)["knowledgeCardStatuses"][string]>>
+  ) {
+    setWorkbenchState((prev) => ({
+      ...prev,
+      knowledgeCardStatuses: {
+        ...prev.knowledgeCardStatuses,
+        [String(cardIndex)]: {
+          ...prev.knowledgeCardStatuses[String(cardIndex)],
+          ...patch,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    }));
   }
 
   function updateKnowledgeCardDraft(cardIndex: number, nextTitle: string, nextSummary: string) {
@@ -251,6 +271,9 @@ export function Workbench() {
   function saveKnowledgeCardDraft() {
     if (editingCardIndex == null) return;
     updateKnowledgeCardDraft(editingCardIndex, editingCardTitle, editingCardSummary);
+    updateKnowledgeCardStatus(editingCardIndex, {
+      edited: true,
+    });
     closeKnowledgeCardEditor();
     setGenerationStatus(`知识卡 ${String(editingCardIndex).padStart(2, "0")} 文案已保存`);
   }
@@ -310,6 +333,10 @@ export function Workbench() {
         createdAt: new Date().toISOString(),
       } satisfies GenerationRecord;
       saveGenerationRecord(merged);
+      updateKnowledgeCardStatus(cardIndex, {
+        regenerated: true,
+        replaced: false,
+      });
       setGenerationStatus(`知识卡 ${String(cardIndex).padStart(2, "0")} 已更新`);
     } catch (error) {
       setGenerationError(error instanceof Error ? error.message : "知识卡重生成失败");
@@ -334,6 +361,10 @@ export function Workbench() {
       const imageUrl = typeof reader.result === "string" ? reader.result : "";
       if (!imageUrl) return;
       replaceKnowledgeCardImage(targetCardIndex, imageUrl, `manual replace: ${file.name}`);
+      updateKnowledgeCardStatus(targetCardIndex, {
+        replaced: true,
+        regenerated: false,
+      });
       setGenerationStatus(`知识卡 ${String(targetCardIndex).padStart(2, "0")} 已替换为本地图片`);
     };
     reader.readAsDataURL(file);
@@ -346,6 +377,9 @@ export function Workbench() {
     const nextTitle = editingCardTitle.trim();
     const nextSummary = editingCardSummary.trim();
     updateKnowledgeCardDraft(editingCardIndex, nextTitle, nextSummary);
+    updateKnowledgeCardStatus(editingCardIndex, {
+      edited: true,
+    });
     await handleRegenerateKnowledgeCard(editingCardIndex, {
       title: nextTitle || plannedCards.find((item) => item.index === editingCardIndex)?.title || "",
       summary:
@@ -455,6 +489,14 @@ export function Workbench() {
             : record;
           groupedRecords.set(record.purposeKey, mergedRecord);
           saveGenerationRecord(mergedRecord);
+          record.images.forEach((image) => {
+            if (image.cardLink?.index != null) {
+              updateKnowledgeCardStatus(image.cardLink.index, {
+                replaced: false,
+                regenerated: false,
+              });
+            }
+          });
         } else {
           groupedRecords.set(record.purposeKey, record);
           saveGenerationRecord(record);
@@ -1267,6 +1309,13 @@ export function Workbench() {
                 {plannedCards.map((card, i) => {
                   const linkedImage = knowledgeImagesByCard.get(card.index);
                   const locked = lockedKnowledgeCardIndexes.includes(card.index);
+                  const status = knowledgeCardStatuses[String(card.index)];
+                  const statusBadges = [
+                    status?.edited ? { label: "已编辑", tone: "warm" as const } : null,
+                    status?.replaced ? { label: "已替换", tone: "success" as const } : null,
+                    status?.regenerated ? { label: "已重生", tone: "blue" as const } : null,
+                    locked ? { label: "已锁定", tone: "warm" as const } : null,
+                  ].filter(Boolean) as Array<{ label: string; tone: "blue" | "warm" | "success" }>;
                   const item = linkedImage
                     ? { mode: "real" as const, image: linkedImage, card, index: i }
                     : { mode: "mock" as const, card, index: i };
@@ -1291,9 +1340,18 @@ export function Workbench() {
                           }}
                         />
                         <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
-                          <Tag tone={locked ? "warm" : "blue"}>
-                            {locked ? "已锁定" : "已生成"}
-                          </Tag>
+                          <div className="flex items-center gap-1 flex-wrap">
+                            <Tag tone={locked ? "warm" : "blue"}>
+                              {locked ? "已锁定" : "已生成"}
+                            </Tag>
+                            {statusBadges
+                              .filter((badge) => badge.label !== "已锁定")
+                              .map((badge) => (
+                                <Tag key={badge.label} tone={badge.tone}>
+                                  {badge.label}
+                                </Tag>
+                              ))}
+                          </div>
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => toggleKnowledgeCardLock(card.index)}
@@ -1378,6 +1436,15 @@ export function Workbench() {
                         >
                           {item.card.summary}
                         </div>
+                        {statusBadges.length > 0 && (
+                          <div className="mt-2 flex items-center gap-1 flex-wrap">
+                            {statusBadges.map((badge) => (
+                              <Tag key={badge.label} tone={badge.tone}>
+                                {badge.label}
+                              </Tag>
+                            ))}
+                          </div>
+                        )}
                         <div className="mt-3 flex items-center justify-between">
                           <button
                             onClick={() => toggleKnowledgeCardLock(card.index)}

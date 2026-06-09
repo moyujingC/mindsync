@@ -4,7 +4,9 @@ import {
   useEffect,
   useMemo,
   useState,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
 } from "react";
 import type {
   CardPlan,
@@ -71,6 +73,15 @@ export type PlanningState = {
 
 export type WorkbenchState = {
   lockedKnowledgeCardIndexes: number[];
+  knowledgeCardStatuses: Record<
+    string,
+    {
+      edited?: boolean;
+      replaced?: boolean;
+      regenerated?: boolean;
+      updatedAt: string;
+    }
+  >;
 };
 
 type WorkspaceContextValue = {
@@ -87,7 +98,7 @@ type WorkspaceContextValue = {
   savePlanningState: (planning: PlanningState) => void;
   clearPlanningState: () => void;
   workbenchState: WorkbenchState;
-  setWorkbenchState: (next: WorkbenchState) => void;
+  setWorkbenchState: Dispatch<SetStateAction<WorkbenchState>>;
 };
 
 const DEFAULT_ARTICLE: WorkspaceArticle = {
@@ -139,7 +150,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     readStoredJson(STORAGE_KEYS.planningState, null)
   );
   const [workbenchState, setWorkbenchState] = useState<WorkbenchState>(() =>
-    readStoredJson(STORAGE_KEYS.workbenchState, { lockedKnowledgeCardIndexes: [] })
+    readStoredJson(STORAGE_KEYS.workbenchState, {
+      lockedKnowledgeCardIndexes: [],
+      knowledgeCardStatuses: {},
+    })
   );
 
   const currentArticleBlocks = useMemo(
